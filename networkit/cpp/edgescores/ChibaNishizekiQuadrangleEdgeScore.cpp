@@ -9,8 +9,7 @@
 
 namespace NetworKit {
 
-ChibaNishizekiQuadrangleEdgeScore::ChibaNishizekiQuadrangleEdgeScore(const Graph& G) : EdgeScore<count>(G) {
-}
+ChibaNishizekiQuadrangleEdgeScore::ChibaNishizekiQuadrangleEdgeScore(const Graph& G) : EdgeScore<count>(G) {}
 
 void ChibaNishizekiQuadrangleEdgeScore::run() {
     if (!G->hasEdgeIds()) {
