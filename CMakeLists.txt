@@ -173,12 +173,19 @@ endif()
 
 ################################################################################
 # Use TLX as a CMake submodule
-if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/tlx/CMakeLists.txt")
-	add_subdirectory(extlibs/tlx)
+if(NOT NETWORKIT_EXT_TLX)
+	if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/tlx/CMakeLists.txt")
+		add_subdirectory(extlibs/tlx)
+	else()
+		message(FATAL_ERROR
+				"Missing TLX library in extlibs/tlx "
+				"Please run `git submodule update --init` to fetch the submodule.")
+	endif()
 else()
-	message(FATAL_ERROR
-			"Missing TLX library in extlibs/tlx "
-			"Please run `git submodule update --init` to fetch the submodule.")
+	add_library(tlx STATIC IMPORTED)
+	set_target_properties(tlx PROPERTIES
+			IMPORTED_LOCATION "${NETWORKIT_EXT_TLX}/lib/libtlx.a"
+			INTERFACE_INCLUDE_DIRECTORIES "${NETWORKIT_EXT_TLX}/include/")
 endif()
 
 ################################################################################
