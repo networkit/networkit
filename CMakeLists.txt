@@ -21,6 +21,7 @@ set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Im
 set(NETWORKIT_WITH_SANITIZERS "" CACHE STRING "Uses sanitizers during the compilation")
 set(NETWORKIT_RELEASE_LOGGING "AUTO" CACHE STRING "Do not compile log messages at levels TRACE or DEBUG (AUTO|ON|OFF)")
 set(NETWORKIT_PYTHON_RPATH "" CACHE STRING "Build specific rpath references.")
+set(NETWORKIT_EXT_TLX "" CACHE STRING "Absolute path for external tlx-library. If not set, extlibs/tlx is used")
 
 set (NETWORKIT_CXX_STANDARD "11" CACHE STRING "CXX Version to compile with. Currently fixed to 11")
 
