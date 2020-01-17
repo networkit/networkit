@@ -1,5 +1,5 @@
 /*
- * EdmondsKarp.h
+ * EdmondsKarp.hpp
  *
  *  Created on: 11.06.2014
  *      Author: Michael Wegner (michael.wegner@student.kit.edu), Michael Hamann <michael.hamann@kit.edu>
@@ -17,9 +17,9 @@ namespace NetworKit {
  * @ingroup flow
  * The EdmondsKarp class implements the maximum flow algorithm by Edmonds and Karp.
  */
-class EdmondsKarp {
+class EdmondsKarp final {
 private:
-    const Graph &graph;
+    const Graph *graph;
 
     node source;
     node sink;
