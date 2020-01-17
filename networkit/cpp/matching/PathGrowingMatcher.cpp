@@ -5,8 +5,8 @@
  *      Author: Henning
  */
 
-#include <networkit/matching/PathGrowingMatcher.hpp>
 #include <networkit/auxiliary/BucketPQ.hpp>
+#include <networkit/matching/PathGrowingMatcher.hpp>
 
 namespace NetworKit {
 
@@ -24,7 +24,7 @@ PathGrowingMatcher::PathGrowingMatcher(const Graph& G, const std::vector<double>
 }
 
 void PathGrowingMatcher::run() {
-    count z = G.upperNodeIdBound();
+    count z = G->upperNodeIdBound();
 
     // init matching to empty
     Matching m1(z);
@@ -32,7 +32,7 @@ void PathGrowingMatcher::run() {
     bool takeM1 = true;
 
     // PQ to retrieve vertices with degree > 0 quickly
-    int64_t minKey = -((int64_t) G.numberOfNodes());
+    int64_t minKey = -((int64_t) G->numberOfNodes());
     int64_t maxKey = 0;
     Aux::BucketPQ bpq(z, minKey, maxKey);
 
@@ -44,15 +44,15 @@ void PathGrowingMatcher::run() {
     // alive tracks if vertices are alive or not in the algorithm
     std::vector<bool> alive(z, false);
 
-    G.forNodes([&](node u) {
-        degrees[u] = G.degree(u);
+    G->forNodes([&](node u) {
+        degrees[u] = G->degree(u);
         alive[u] = (degrees[u] > 0);
         if (alive[u]) {
             bpq.insert(-degrees[u], u); // minus to get extractMin functionality
         }
     });
 
-    count numEdges = G.numberOfEdges();
+    count numEdges = G->numberOfEdges();
 
     // main loop
     while (numEdges > 0) {
@@ -68,7 +68,7 @@ void PathGrowingMatcher::run() {
             edgeweight bestWeight = 0;
 
             if (edgeScoresAsWeights) {
-                G.forEdgesOf(v, [&](node, node u, edgeid eid) {
+                G->forEdgesOf(v, [&](node, node u, edgeid eid) {
                     if (alive.at(u)) {
                         if (edgeScores.at(eid) > bestWeight) {
                             bestNeighbor = u;
@@ -77,7 +77,7 @@ void PathGrowingMatcher::run() {
                     }
                 });
             } else {
-                G.forEdgesOf(v, [&](node, node u, edgeweight weight) {
+                G->forEdgesOf(v, [&](node, node u, edgeweight weight) {
                     if (alive.at(u)) {
                         if (weight > bestWeight) {
                             bestNeighbor = u;
@@ -100,7 +100,7 @@ void PathGrowingMatcher::run() {
             }
 
             // remove current vertex and its incident edges from graph
-            G.forEdgesOf(v, [&](node, node u) {
+            G->forEdgesOf(v, [&](node, node u) {
                 if (alive.at(u)) {
                     degrees.at(u)--;
                     numEdges--;
@@ -126,19 +126,19 @@ void PathGrowingMatcher::run() {
     // return the heavier one of the two
     edgeweight weight1 {0};
     if (edgeScoresAsWeights) {
-        G.forEdges([&](node, node, edgeid eid){
+        G->forEdges([&](node, node, edgeid eid){
             weight1 += edgeScores.at(eid);
         });
     } else {
-        weight1 = m1.weight(G);
+        weight1 = m1.weight(*G);
     }
     edgeweight weight2 = 0.;
     if (edgeScoresAsWeights) {
-        G.forEdges([&](node, node, edgeid eid){
+        G->forEdges([&](node, node, edgeid eid){
             weight2 += edgeScores.at(eid);
         });
     } else {
-        weight2 = m2.weight(G);
+        weight2 = m2.weight(*G);
     }
     INFO("weight of first matching: ", weight1);
     INFO("weight of second matching: ", weight2);

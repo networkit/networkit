@@ -1,5 +1,5 @@
 /*
- * PathGrowingMatcher.h
+ * PathGrowingMatcher.hpp
  *
  *  Created on: Jun 13, 2013
  *      Author: Henning
@@ -20,7 +20,7 @@ namespace NetworKit {
  * Computes an approximate maximum weight matching with guarantee 1/2.
  * (Note that better algorithms in terms of approximation quality exist.)
  */
-class PathGrowingMatcher: public Matcher {
+class PathGrowingMatcher final: public Matcher {
 public:
     /**
      * @param[in] G Graph for which matching is computed.
@@ -37,7 +37,7 @@ public:
      * for graph @a G.
      * @return Matching (at least half as heavy as maximum weight matching).
      */
-    virtual void run();
+    void run() override;
 };
 
 } /* namespace NetworKit */
