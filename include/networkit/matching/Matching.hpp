@@ -1,5 +1,5 @@
 /*
- * Matching.h
+ * Matching.hpp
  *
  *  Created on: 03.12.2012
  */
@@ -24,7 +24,7 @@ public:
     /**
      * Construct new Matching.
      *
-     * @param[in]	z	Maximum number of nodes.
+     * @param[in]  z  Maximum number of nodes.
      */
     Matching(count z=0);
 
@@ -50,7 +50,7 @@ public:
     /**
      * Check if node is matched.
      *
-     * @param[in]	u 	node.
+     * @param[in]  u   node.
      * @return @c true if u is matched.
      */
     bool isMatched(node u) const;
@@ -68,8 +68,8 @@ public:
      * Check whether this is a proper matching
      * in the graph, i.e. no two matched edges are adjacent.
      *
-     * @paramt[in]	G	A graph.
-     * @param[out]		@c true if this is a proper matching.
+     * @paramt[in] G  A graph.
+     * @param[out]    @c true if this is a proper matching.
      */
     bool isProper(const Graph& G) const;
 
@@ -110,7 +110,7 @@ public:
 
 protected:
 
-//	const Graph& G;		// reference to graph
+//  const Graph* G;    // pointer to graph
     std::vector<node> data; //!< storage of matching nodes
     // count n; //!< number of nodes
 };
