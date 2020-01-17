@@ -39,7 +39,8 @@ networkit_add_module(community
     cleanup/SingleCommunityCleanUp.cpp
     cleanup/StochasticDistributionCalculator.cpp
 	cleanup/SignificanceCalculator.cpp
-    )
+	EgoSplitting.cpp
+	)
 
 networkit_module_link_modules(community
     auxiliary base coarsening components flow graph matching structures)

@@ -6065,6 +6065,112 @@ cdef cppclass _PythonClusteringFunction(_ClusteringFunction):
 			return move((<Partition>(pyP))._this)
 
 
+cdef extern from "<networkit/graph/Graph.hpp>":
+	cdef struct _WeightedEdge "NetworKit::WeightedEdge":
+		node u
+		node v
+		edgeweight weight
+
+
+cdef extern from "<networkit/community/EgoSplitting.hpp>":
+	cdef cppclass _EgoSplitting "NetworKit::EgoSplitting"(_Algorithm):
+		_EgoSplitting(_Graph G, bool_t parallelEgoNetEvaluation) except +
+		_EgoSplitting(_Graph G, bool_t parallelEgoNetEvaluation, _ClusteringFunction) except +
+		_EgoSplitting(_Graph G, bool_t parallelEgoNetEvaluation, _ClusteringFunction, _ClusteringFunction) except +
+		_Cover getCover() except +
+		unordered_map[string, double] getTimings() except +
+		vector[unordered_map[node, index]] getEgoNetPartitions() except +
+		unordered_map[node, vector[_WeightedEdge]] getEgoNets() except +
+		void setParameters(map[string, string]) except +
+
+
+cdef class EgoSplitting(Algorithm):
+	"""
+	Constructor to the Ego-Splitting community detection algorithm.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph on which the algorithm has to run.
+	localClusteringCallback: lambda
+		(optional) The local clustering algorithm. Takes a Graph and returns a Partition.
+		Alternatively, this can be a ClusteringFunctionFactory.
+		If not specified, a default algorithm is used.
+	globalClusteringCallback: lambda
+		(optional) The global clustering algorithm. Takes a Graph and returns a Partition.
+		Alternatively, this can be a ClusteringFunctionFactory.
+		If not specified, the local clustering algorithm is used.
+	"""
+
+	cdef Graph _G
+	cdef object _localClusteringCallback
+	cdef object _globalClusteringCallback
+	cdef Cover _groundTruth
+
+	def __cinit__(self, Graph G not None, object localClusteringCallback = None,
+			object globalClusteringCallback = None):
+		self._G = G
+		cdef _PythonClusteringFunction localWrapper
+		cdef _PythonClusteringFunction globalWrapper
+		cdef _ClusteringFunction localFunction
+		cdef _ClusteringFunction globalFunction
+		cdef bool_t egoNetsParallel = False
+
+		if localClusteringCallback is None:
+			self._this = new _EgoSplitting(G._this, True)
+		else:
+			if isinstance(localClusteringCallback, ClusteringFunctionFactory):
+				egoNetsParallel = localClusteringCallback.canBeCalledInParallel()
+				localFunction = (<ClusteringFunctionFactory>(localClusteringCallback)).getFunction()
+			else:
+				self._localClusteringCallback = localClusteringCallback
+				localWrapper.setCallback(localClusteringCallback)
+				localFunction = localWrapper
+
+			if globalClusteringCallback is None:
+				globalFunction = localFunction
+			else:
+				if isinstance(globalClusteringCallback, ClusteringFunctionFactory):
+					globalFunction = (<ClusteringFunctionFactory>(globalClusteringCallback)).getFunction()
+				else:
+					self._globalClusteringCallback = globalClusteringCallback
+					globalWrapper.setCallback(globalClusteringCallback)
+					globalFunction = globalWrapper
+			self._this = new _EgoSplitting(G._this, egoNetsParallel, localFunction, globalFunction)
+
+
+
+	"""
+	Get the result of the algorithm.
+	"""
+	def getCover(self):
+		return Cover().setThis((<_EgoSplitting*>(self._this)).getCover())
+
+	"""
+	Get the timings.
+	"""
+	def getTimings(self):
+		return (<_EgoSplitting*>(self._this)).getTimings()
+
+	"""
+	Get the partitions of the EgoNets.
+	"""
+	def getEgoNetPartitions(self):
+		return (<_EgoSplitting*>(self._this)).getEgoNetPartitions()
+
+	"""
+	Get the EgoNet graphs.
+	"""
+	def getEgoNets(self):
+		return (<_EgoSplitting*>(self._this)).getEgoNets()
+
+	"""
+	Set parameters of the algorithm.
+	"""
+	def setParameters(self, parameters):
+		(<_EgoSplitting*>(self._this)).setParameters(parameters)
+
+
 cdef class DissimilarityMeasure:
 	""" Abstract base class for partition/community dissimilarity measures """
 	# TODO: use conventional class design of parametrized constructor, run-method and getters
