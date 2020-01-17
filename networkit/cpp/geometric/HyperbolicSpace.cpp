@@ -2,15 +2,13 @@
  * HyperbolicSpace.cpp
  *
  *  Created on: 20.05.2014
- *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
+ *      Author: Moritz v. Looz
  */
 
 #include <cmath>
-
 #include <cassert>
-
-#include <networkit/geometric/HyperbolicSpace.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/geometric/HyperbolicSpace.hpp>
 
 using std::abs;
 using std::max;
@@ -54,15 +52,6 @@ double HyperbolicSpace::poincareMetric(Point2DWithIndex<double> a, Point2DWithIn
     assert(result >= 0);
     return result;
 }
-
-//double HyperbolicSpace::nativeHyperbolicDistance(double phi_a, double r_a, double phi_b, double r_b) {
-//	/* Returns the hyperbolic distance between points u and v
-//	* 2010 paper, eqn: 5
-//	*/
-//	double deltaPhi = PI - abs(PI-abs(phi_a - phi_b));
-//	double distance = acosh(cosh(r_a)*cosh(r_b) - sinh(r_a)*sinh(r_b)*cos(deltaPhi));
-//	return distance;
-//}
 
 void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, double R, double alpha) {
     fillPoints(angles, radii, 0, 2*PI, 0, R, alpha);
