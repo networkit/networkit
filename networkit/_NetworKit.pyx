@@ -5955,6 +5955,25 @@ cdef class LouvainMapEquation(CommunityDetector):
 		self._this = new _LouvainMapEquation(G._this, hierarchical, maxIterations, parallel)
 
 
+cdef extern from "<networkit/community/LPPotts.hpp>":
+	cdef cppclass _LPPotts "NetworKit::LPPotts"(_CommunityDetectionAlgorithm):
+		_LPPotts(_Graph G, double alpha, count theta, count maxIterations, bool_t para) except +
+		_LPPotts(_Graph G, _Partition baseClustering, double alpha, count theta, count maxIterations, bool_t para) except +
+
+
+cdef class LPPotts(CommunityDetector):
+	"""
+	Community Detection algorithm based on label propagation and the Absolute Potts Model.
+	"""
+	def __cinit__(self, Graph G not None, double alpha = 0.3, theta = none, maxIterations = none,
+	    para = False, Partition baseClustering=None):
+		self._G = G
+		if baseClustering:
+			self._this = new _LPPotts(G._this, baseClustering._this, alpha, theta, maxIterations, para)
+		else:
+			self._this = new _LPPotts(G._this, alpha, theta, maxIterations, para)
+
+
 cdef class DissimilarityMeasure:
 	""" Abstract base class for partition/community dissimilarity measures """
 	# TODO: use conventional class design of parametrized constructor, run-method and getters

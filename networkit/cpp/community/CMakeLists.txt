@@ -18,6 +18,7 @@ networkit_add_module(community
     IsolatedInterpartitionExpansion.cpp
     JaccardMeasure.cpp
     LPDegreeOrdered.cpp
+    LPPotts.cpp
     LocalCoverEvaluation.cpp
 	LouvainMapEquation.cpp
     LocalPartitionEvaluation.cpp
