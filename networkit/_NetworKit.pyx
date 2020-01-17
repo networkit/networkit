@@ -5974,6 +5974,97 @@ cdef class LPPotts(CommunityDetector):
 			self._this = new _LPPotts(G._this, alpha, theta, maxIterations, para)
 
 
+cdef extern from "<networkit/community/ClusteringFunctionFactory.hpp>":
+	cdef cppclass _ClusteringFunction "NetworKit::ClusteringFunction":
+		pass
+
+	cdef cppclass _ClusteringFunctionFactory "NetworKit::ClusteringFunctionFactory":
+		_ClusteringFunction getFunction() except +
+
+
+cdef class ClusteringFunctionFactory:
+	cdef _ClusteringFunctionFactory *_this
+
+	def __cinit__(self):
+		self._this = NULL
+
+	def __dealloc__(self):
+		if self._this != NULL:
+			del self._this
+		self._this = NULL
+
+	cdef _ClusteringFunction getFunction(self):
+		return self._this.getFunction()
+
+	def canBeCalledInParallel(self):
+		return True
+
+
+cdef extern from "<networkit/community/PLM.hpp>":
+	cdef cppclass _PLMFactory "NetworKit::PLMFactory"(_ClusteringFunctionFactory):
+		_PLMFactory(bool_t refine, double gamma, string par)
+
+
+cdef class PLMFactory(ClusteringFunctionFactory):
+	def __cinit__(self, bool_t refine, double gamma, par):
+		self._this = new _PLMFactory(refine, gamma, stdstring(par))
+
+
+cdef extern from "<networkit/community/PLP.hpp>":
+	cdef cppclass _PLPFactory "NetworKit::PLPFactory"(_ClusteringFunctionFactory):
+		_PLPFactory(count theta, count maxIterations)
+
+
+cdef class PLPFactory(ClusteringFunctionFactory):
+	def __cinit__(self, count theta, count maxIterations):
+		self._this = new _PLPFactory(theta, maxIterations)
+
+
+cdef extern from "<networkit/community/LouvainMapEquation.hpp>":
+	cdef cppclass _LouvainMapEquationFactory "NetworKit::LouvainMapEquationFactory"(_ClusteringFunctionFactory):
+		_LouvainMapEquationFactory(bool_t hierarchical, count maxIterations, string parallelization)
+
+
+cdef class LouvainMapEquationFactory(ClusteringFunctionFactory):
+	def __cinit__(self, bool_t hierarchical, count maxIterations, parallelization):
+		self._this = new _LouvainMapEquationFactory(hierarchical, maxIterations, stdstring(parallelization))
+
+
+cdef extern from "<networkit/community/LPPotts.hpp>":
+	cdef cppclass _LPPottsFactory "NetworKit::LPPottsFactory"(_ClusteringFunctionFactory):
+		_LPPottsFactory(double alpha, count theta, count maxIterations, bool_t parallelPropagation)
+
+
+cdef class LPPottsFactory(ClusteringFunctionFactory):
+	def __cinit__(self, double alpha, count theta, count maxIterations, bool_t parallelPropagation):
+		self._this = new _LPPottsFactory(alpha, theta, maxIterations, parallelPropagation)
+
+
+cdef cppclass _PythonClusteringFunction(_ClusteringFunction):
+	object callback
+
+	void setCallback(object callback):
+		this.callback = callback
+
+	_Partition cython_call_operator(const _Graph& G) nogil:
+		cdef string message
+		with gil:
+			pyG = Graph()
+			pyG.setThis(_Graph(G))
+
+			try:
+				pyP = callback(pyG)
+			except Exception as e:
+				if (str(e)) == "Timed out!":
+					print("Timed out!")
+				else:
+					message = stdstring("An Exception occurred in the clustering callback: {0}".format(e))
+					raise(e)
+					throw_runtime_error(message)
+
+			return move((<Partition>(pyP))._this)
+
+
 cdef class DissimilarityMeasure:
 	""" Abstract base class for partition/community dissimilarity measures """
 	# TODO: use conventional class design of parametrized constructor, run-method and getters
