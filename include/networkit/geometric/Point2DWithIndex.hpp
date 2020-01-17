@@ -8,11 +8,11 @@
 #ifndef NETWORKIT_GEOMETRIC_POINT2_D_WITH_INDEX_HPP_
 #define NETWORKIT_GEOMETRIC_POINT2_D_WITH_INDEX_HPP_
 
-#include <vector>
-#include <cinttypes>
 #include <cassert>
+#include <cinttypes>
 #include <cmath>
 #include <cstdint>
+#include <vector>
 #include <networkit/Globals.hpp>
 
 namespace NetworKit {
@@ -22,8 +22,8 @@ namespace NetworKit {
  * Points in any dimension of templated type.
  */
 template<class T>
-class Point2DWithIndex {
-protected:
+class Point2DWithIndex final {
+private:
     T x;
     T y;
     index indice;
