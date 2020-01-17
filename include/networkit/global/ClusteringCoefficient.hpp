@@ -1,5 +1,5 @@
 /*
- * ClusteringCoefficient.h
+ * ClusteringCoefficient.hpp
  *
  *  Created on: 08.04.2013
  *      Author: Lukas Barth, David Weiss
@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup global
  */
-class ClusteringCoefficient {
+class ClusteringCoefficient final {
 
 public:
     /**
@@ -29,13 +29,13 @@ public:
      */
     static double avgLocal(Graph& G, bool turbo = false);
     static double sequentialAvgLocal(const Graph &G);
-    static double approxAvgLocal(Graph& G, const count trials);
+    static double approxAvgLocal(Graph& G, count trials);
 
     /**
      * This calculates the global clustering coefficient
      */
     static double exactGlobal(Graph& G);
-    static double approxGlobal(Graph& G, const count trials);
+    static double approxGlobal(Graph& G, count trials);
 
 };
 
