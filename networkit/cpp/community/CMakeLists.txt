@@ -19,6 +19,7 @@ networkit_add_module(community
     JaccardMeasure.cpp
     LPDegreeOrdered.cpp
     LocalCoverEvaluation.cpp
+	LouvainMapEquation.cpp
     LocalPartitionEvaluation.cpp
     Modularity.cpp
     NMIDistance.cpp
