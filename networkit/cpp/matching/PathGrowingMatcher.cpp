@@ -16,7 +16,6 @@ PathGrowingMatcher::PathGrowingMatcher(const Graph& G): Matcher(G) {
     }
 }
 
-
 PathGrowingMatcher::PathGrowingMatcher(const Graph& G, const std::vector<double>& edgeScores): Matcher(G, edgeScores) {
     if (G.numberOfSelfLoops() > 0) {
         throw std::invalid_argument("G has self-loops and cannot be processed");
