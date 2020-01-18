@@ -11,7 +11,6 @@
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/matching/Matching.hpp>
 
-
 namespace NetworKit {
 
 /**
