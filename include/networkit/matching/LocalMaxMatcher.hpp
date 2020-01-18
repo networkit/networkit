@@ -10,10 +10,10 @@
 
 #include <algorithm>
 #include <set>
+
 #include <networkit/matching/Matcher.hpp>
 
 namespace NetworKit {
-
 
 /**
  * @ingroup matching
