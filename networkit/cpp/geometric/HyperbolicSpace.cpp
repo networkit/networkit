@@ -7,6 +7,7 @@
 
 #include <cmath>
 #include <cassert>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
 
@@ -37,7 +38,7 @@ double HyperbolicSpace::nativeDistance(double firstangle, double firstR, double 
 }
 
 /**
- * This distance measure is taken from the Poincar disc model.
+ * This distance measure is taken from the Poincare disc model.
  */
 double HyperbolicSpace::poincareMetric(double phi_a, double  r_a, double phi_b, double r_b) {
     assert(r_a < 1);
@@ -137,9 +138,6 @@ double HyperbolicSpace::EuclideanRadiusToHyperbolic(double euclideanRadius) {
 
 double HyperbolicSpace::maxRinSlice(double minPhi, double maxPhi, double phi_c, double r_c, double euRadius) {
     double maxCos = max(cos(abs(minPhi - phi_c)), cos(abs(maxPhi - phi_c)));
-    //double mirrorAngle;
-    //if (phi_c >= PI) mirrorAngle = phi_c - PI;
-    //else mirrorAngle = phi_c + PI;
 
     if (minPhi < phi_c && phi_c < maxPhi) maxCos = 1;
     //applying law of cosines here
@@ -185,7 +183,6 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
 
     auto firstlogpart = [](double r, double d, double c) {
         double s = (c*c-d*d);
-        //double denominator = r*r*s*s;
         double rsqs = r*r+s;
         double real = -2*s*sqrt(4*c*c*r*r-rsqs*rsqs);
         double imag = -4*c*c*r*r+2*s*r*r+2*s*s;
@@ -195,7 +192,6 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
     auto secondlogpart = [](double r, double d, double c) {
         double s = (c*c-d*d);
         double rsqs = r*r+s;
-        //double denominator = (r*r-1)*(s-1);
         double real = sqrt(4*c*c*r*r-rsqs*rsqs);
         double imag = 2*c*c*(r*r+1)-(s+1)*rsqs;
         imag = imag / sqrt((s+1)*(s+1)-(4*c*c));

@@ -8,10 +8,10 @@
 #ifndef NETWORKIT_GEOMETRIC_HYPERBOLIC_SPACE_HPP_
 #define NETWORKIT_GEOMETRIC_HYPERBOLIC_SPACE_HPP_
 
-
 #include <cmath>
 #include <map>
 #include <vector>
+
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/geometric/Point2DWithIndex.hpp>
 #include <networkit/viz/Point.hpp>
@@ -202,9 +202,6 @@ public:
      */
     static double hyperbolicSpaceInEuclideanCircle(double r_c, double d_c, double R);
 
-    /**
-     *
-     */
     static double maxRinSlice(double minPhi, double maxPhi, double phi_c, double r_c, double euRadius);
 };
 }
