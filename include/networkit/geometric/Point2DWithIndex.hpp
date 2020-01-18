@@ -13,6 +13,7 @@
 #include <cmath>
 #include <cstdint>
 #include <vector>
+
 #include <networkit/Globals.hpp>
 
 namespace NetworKit {
@@ -52,7 +53,7 @@ public:
 
     Point2DWithIndex& operator+=(const Point2DWithIndex<T>& p);
     Point2DWithIndex& operator-=(const Point2DWithIndex<T>& p);
-    Point2DWithIndex& scale(const T factor);
+    Point2DWithIndex& scale(T factor);
 
     Point2DWithIndex operator-(const Point2DWithIndex<T>& other);
     Point2DWithIndex operator+(const Point2DWithIndex<T>& other);
@@ -60,7 +61,7 @@ public:
     T length() const;
     T squaredLength() const;
 
-    T& operator[](const index i);
+    T& operator[](index i);
     T getX() const;
     T getY() const;
     index getIndex() const;
@@ -114,7 +115,7 @@ Point2DWithIndex<T> Point2DWithIndex<T>::operator+(const Point2DWithIndex<T>& ot
 
 
 template<class T>
-Point2DWithIndex<T>& Point2DWithIndex<T>::scale(const T factor) {
+Point2DWithIndex<T>& Point2DWithIndex<T>::scale(T factor) {
     x *= factor;
     y *= factor;
     return *this;
@@ -123,8 +124,7 @@ Point2DWithIndex<T>& Point2DWithIndex<T>::scale(const T factor) {
 template<class T>
 inline T& Point2DWithIndex<T>::operator [](index i) {
     assert(i >= 0 && i < 2);
-    if (i == 0) return x;
-    else return y;
+    return i ? y : x;
 }
 
 template<class T>
