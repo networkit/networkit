@@ -18,7 +18,6 @@ namespace NetworKit {
  */
 class Matching {
 
-
 public:
 
     /**
@@ -26,8 +25,7 @@ public:
      *
      * @param[in]  z  Maximum number of nodes.
      */
-    Matching(count z=0);
-
+    Matching(count z = 0);
 
     /**
      * Set two nodes @a u and @a v as each others matching partners.
@@ -37,7 +35,6 @@ public:
      */
     void match(node u, node v);
 
-
     /**
      * Reset the two nodes @a u and @a v to unmatched.
      *
@@ -46,7 +43,6 @@ public:
      */
     void unmatch(node u, node v);
 
-
     /**
      * Check if node is matched.
      *
@@ -54,7 +50,6 @@ public:
      * @return @c true if u is matched.
      */
     bool isMatched(node u) const;
-
 
     /**
      * Check if the two nodes @a u and @a v are matched together.
@@ -72,7 +67,6 @@ public:
      * @param[out]    @c true if this is a proper matching.
      */
     bool isProper(const Graph& G) const;
-
 
     /**
      * Get the number of edges in this matching.
@@ -109,10 +103,7 @@ public:
     std::vector<node> getVector() const;
 
 protected:
-
-//  const Graph* G;    // pointer to graph
     std::vector<node> data; //!< storage of matching nodes
-    // count n; //!< number of nodes
 };
 
 } /* namespace NetworKit */
