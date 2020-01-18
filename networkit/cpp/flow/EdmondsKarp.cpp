@@ -2,21 +2,22 @@
  * EdmondsKarp.cpp
  *
  *  Created on: 11.06.2014
- *      Author: Michael Wegner (michael.wegner@student.kit.edu), Michael Hamann <michael.hamann@kit.edu>
+ *     Authors: Michael Wegner <michael.wegner@student.kit.edu>
+ *              Michael Hamann <michael.hamann@kit.edu>
  */
 
 #include <algorithm>
 #include <limits>
 #include <stdexcept>
+
 #include <networkit/flow/EdmondsKarp.hpp>
 
 namespace NetworKit {
 
-EdmondsKarp::EdmondsKarp(const Graph &graph, node source, node sink) : graph(&graph), source(source), sink(sink) {
-}
+EdmondsKarp::EdmondsKarp(const Graph &graph, node source, node sink) : graph(&graph), source(source), sink(sink) {}
 
 edgeweight EdmondsKarp::BFS(std::vector<edgeweight> &residFlow, std::vector<node> &pred) const {
-    pred.clear();
+    std::fill(pred.begin(), pred.end(), none);
     pred.resize(graph->upperNodeIdBound(), none);
     std::vector<edgeweight> gain(graph->upperNodeIdBound(), 0);
 
@@ -24,8 +25,9 @@ edgeweight EdmondsKarp::BFS(std::vector<edgeweight> &residFlow, std::vector<node
     Q.push(source);
     pred[source] = source;
     gain[source] = std::numeric_limits<edgeweight>::max();
-    while (!Q.empty()) {
-        node u = Q.front(); Q.pop();
+    do {
+        node u = Q.front();
+        Q.pop();
 
         bool sinkReached = false;
         graph->forNeighborsOf(u, [&](node, node v, edgeweight weight, edgeid eid){
@@ -46,7 +48,7 @@ edgeweight EdmondsKarp::BFS(std::vector<edgeweight> &residFlow, std::vector<node
         if (sinkReached) {
             return gain[sink];
         }
-    }
+    } while (!Q.empty());
 
     return 0.0;
 }
@@ -59,7 +61,7 @@ void EdmondsKarp::run() {
     std::vector<edgeweight> residFlow(graph->upperEdgeIdBound(), 0.0);
 
     flowValue = 0;
-    while (true) {
+    do {
         std::vector<node> pred;
         edgeweight gain = BFS(residFlow, pred);
         if (gain == 0) break;
@@ -78,7 +80,7 @@ void EdmondsKarp::run() {
             }
             v = u;
         }
-    }
+    } while (true);
 
     graph->parallelForEdges([&](node, node, edgeid eid) {
         flow[eid] = std::max(flow[eid], residFlow[eid]);
@@ -89,7 +91,6 @@ edgeweight EdmondsKarp::getMaxFlow() const {
     return flowValue;
 }
 
-
 std::vector<node> EdmondsKarp::getSourceSet() const {
     // perform bfs from source
     std::vector<bool> visited(graph->upperNodeIdBound(), false);
@@ -99,7 +100,8 @@ std::vector<node> EdmondsKarp::getSourceSet() const {
     Q.push(source);
     visited[source] = true;
     while (!Q.empty()) {
-        node u = Q.front(); Q.pop();
+        node u = Q.front();
+        Q.pop();
         sourceSet.push_back(u);
 
         graph->forNeighborsOf(u, [&](node, node v, edgeweight weight, edgeid eid) {

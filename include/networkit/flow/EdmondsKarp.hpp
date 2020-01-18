@@ -8,8 +8,9 @@
 #ifndef NETWORKIT_FLOW_EDMONDS_KARP_HPP_
 #define NETWORKIT_FLOW_EDMONDS_KARP_HPP_
 
-#include <networkit/graph/Graph.hpp>
 #include <vector>
+
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
