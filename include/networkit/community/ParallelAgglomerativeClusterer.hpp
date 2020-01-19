@@ -1,8 +1,8 @@
 /*
- * ParallelAgglomerativeClusterer.h
+ * ParallelAgglomerativeClusterer.hpp
  *
  *  Created on: 30.10.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu), Henning Meyerhenke (henning.meyerhenke@kit.edu)
+ *      Author: Christian Staudt, Henning Meyerhenke
  */
 
 #ifndef NETWORKIT_COMMUNITY_PARALLEL_AGGLOMERATIVE_CLUSTERER_HPP_
@@ -16,22 +16,22 @@ namespace NetworKit {
  * @ingroup community
  * A parallel agglomerative community detection algorithm, maximizing modularity.
  */
-class ParallelAgglomerativeClusterer: public CommunityDetectionAlgorithm {
+class ParallelAgglomerativeClusterer final: public CommunityDetectionAlgorithm {
 
 public:
     /**
      * Constructor to the parallel agglomerative clusterer.
      *
-     * @param[in]	G	input graph
+     * @param[in] G input graph
      */
     ParallelAgglomerativeClusterer(const Graph& G);
 
     /**
      * Detect communities.
      */
-    virtual void run();
+    void run() override;
 
-    virtual std::string toString() const;
+    std::string toString() const override;
 };
 
 } /* namespace NetworKit */

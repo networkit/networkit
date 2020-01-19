@@ -2,8 +2,8 @@
 #define NETWORKIT_COMMUNITY_LOCAL_PARTITION_EVALUATION_HPP_
 
 #include <networkit/community/LocalCommunityEvaluation.hpp>
-#include <networkit/structures/Partition.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 
@@ -21,8 +21,8 @@ public:
      */
     LocalPartitionEvaluation(const Graph &G, const Partition &P);
 protected:
-    const Graph &G;
-    const Partition &P;
+    const Graph *G;
+    const Partition *P;
 };
 
 }

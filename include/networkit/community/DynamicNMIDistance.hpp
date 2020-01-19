@@ -1,5 +1,5 @@
 /*
- * DynamicNMIDistance.h
+ * DynamicNMIDistance.hpp
  *
  *  Created on: Jun 26, 2013
  *      Author: Henning
@@ -18,7 +18,7 @@ typedef std::vector<std::vector<count> > Matrix;
 /**
  * @ingroup community
  */
-class DynamicNMIDistance: public DissimilarityMeasure {
+class DynamicNMIDistance final: public DissimilarityMeasure {
 public:
 
     /**
@@ -28,7 +28,7 @@ public:
      * of oldGraph and @a newGraph. Nodes of oldGraph not existing in @newGraph are
      * marked by the entry none in @a newClustering.
      */
-    double getDissimilarity(const Graph& newGraph, const Partition& oldClustering, const Partition& newClustering);
+    double getDissimilarity(const Graph& newGraph, const Partition& oldClustering, const Partition& newClustering) override;
 
     void combineValues(double H_sum, double MI, double& NMI, double& NMID) const;
     void sanityCheck(double& NMI, double& NMID) const;

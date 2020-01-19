@@ -1,9 +1,5 @@
-/*
- *
- */
-
-#include <networkit/community/IsolatedInterpartitionExpansion.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
+#include <networkit/community/IsolatedInterpartitionExpansion.hpp>
 
 void NetworKit::IsolatedInterpartitionExpansion::run() {
     hasRun = false;
@@ -11,22 +7,22 @@ void NetworKit::IsolatedInterpartitionExpansion::run() {
     Aux::SignalHandler handler;
 
     values.clear();
-    values.resize(P.upperBound(), 0);
+    values.resize(P->upperBound(), 0);
 
     handler.assureRunning();
 
-    G.forEdges([&](node u, node v, edgeweight w) {
-        if (P[u] != P[v]) {
-            values[P[u]] += w;
-            values[P[v]] += w;
+    G->forEdges([&](node u, node v, edgeweight w) {
+        if ((*P)[u] != (*P)[v]) {
+            values[(*P)[u]] += w;
+            values[(*P)[v]] += w;
         }
     });
 
     handler.assureRunning();
 
-    std::vector<count> clusterSize(P.upperBound(), 0);
-    G.forNodes([&](node u) {
-        ++clusterSize[P[u]];
+    std::vector<count> clusterSize(P->upperBound(), 0);
+    G->forNodes([&](node u) {
+        ++clusterSize[(*P)[u]];
     });
 
     handler.assureRunning();
@@ -36,10 +32,10 @@ void NetworKit::IsolatedInterpartitionExpansion::run() {
     maximumValue = std::numeric_limits<double>::lowest();
     minimumValue = std::numeric_limits<double>::max();
 
-    count n = G.numberOfNodes();
+    count n = G->numberOfNodes();
     count c = 0;
 
-    for (index i = 0; i < P.upperBound(); ++i) {
+    for (index i = 0; i < P->upperBound(); ++i) {
         if (clusterSize[i] > 0) {
             edgeweight cond = values[i] / std::min(clusterSize[i], n - clusterSize[i]);
             unweightedAverage += cond;
@@ -53,7 +49,7 @@ void NetworKit::IsolatedInterpartitionExpansion::run() {
     handler.assureRunning();
 
     unweightedAverage /= c;
-    weightedAverage /= G.numberOfNodes();
+    weightedAverage /= G->numberOfNodes();
 
     hasRun = true;
 }

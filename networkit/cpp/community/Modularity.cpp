@@ -2,7 +2,7 @@
  * Modularity.cpp
  *
  *  Created on: 10.12.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 
@@ -15,9 +15,7 @@
 
 namespace NetworKit {
 
-
-Modularity::Modularity() : QualityMeasure(), gTotalEdgeWeight(0.0) {
-}
+Modularity::Modularity() : QualityMeasure(), gTotalEdgeWeight(0.0) {}
 
 void Modularity::setTotalEdgeWeight(double totalEdgeWeight) {
     gTotalEdgeWeight = totalEdgeWeight;
@@ -27,14 +25,10 @@ void Modularity::setTotalEdgeWeight(double totalEdgeWeight) {
 double Modularity::getQuality(const Partition& zeta, const Graph& G) {
     assert (G.numberOfNodes() <= zeta.numberOfElements());
 
-//	DEBUG("m = " , G.numberOfEdges());
-//	DEBUG("l = " , G.numberOfSelfLoops());
-
     Coverage coverage;
     double cov = coverage.getQuality(zeta, G); // deprecated: intraEdgeWeightSum / gTotalEdgeWeight;
-//	DEBUG("coverage = " , cov);
     double expCov; // term $\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$
-    double modularity; 	// mod = coverage - expected coverage
+    double modularity; // mod = coverage - expected coverage
     if (gTotalEdgeWeight == 0.0) {
         gTotalEdgeWeight = G.totalEdgeWeight(); // compute total edge weight in G
         DEBUG("computed total edge weight: " , gTotalEdgeWeight);
@@ -45,7 +39,7 @@ double Modularity::getQuality(const Partition& zeta, const Graph& G) {
         throw std::invalid_argument("Modularity is undefined for graphs without edges (including self-loops).");
     }
 
-    std::vector<double> incidentWeightSum(zeta.upperBound(), 0.0);	//!< cluster -> sum of the weights of incident edges for all nodes
+    std::vector<double> incidentWeightSum(zeta.upperBound(), 0.0); //!< cluster -> sum of the weights of incident edges for all nodes
 
     // compute volume of each cluster
     G.parallelForNodes([&](node v) {
@@ -58,15 +52,15 @@ double Modularity::getQuality(const Partition& zeta, const Graph& G) {
     });
 
     // compute sum of squared cluster volumes and divide by squared graph volume
-    // double totalIncidentWeight = 0.0; 	//!< term $\sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 $
+    // double totalIncidentWeight = 0.0; //!< term $\sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 $
     expCov = 0.0;
-//	double divisor = 4 * totalEdgeWeight * totalEdgeWeight;
-//	assert (divisor != 0);	// do not divide by 0
+// double divisor = 4 * totalEdgeWeight * totalEdgeWeight;
+// assert (divisor != 0); // do not divide by 0
 
     #pragma omp parallel for reduction(+:expCov)
     for (omp_index c = static_cast<omp_index>(zeta.lowerBound());
          c < static_cast<omp_index>(zeta.upperBound()); ++c) {
-        expCov += ((incidentWeightSum[c] / gTotalEdgeWeight) * (incidentWeightSum[c] / gTotalEdgeWeight )) / 4;	// squared
+        expCov += ((incidentWeightSum[c] / gTotalEdgeWeight) * (incidentWeightSum[c] / gTotalEdgeWeight )) / 4; // squared
     }
 
     DEBUG("expected coverage: " , expCov);
@@ -83,7 +77,7 @@ double Modularity::getQuality(const Partition& zeta, const Graph& G) {
     // reset totalEdgeWeight
     gTotalEdgeWeight = 0.0;
 
-    assert(! std::isnan(modularity));	// do not return NaN
+    assert(! std::isnan(modularity)); // do not return NaN
     // do not return anything not in the range of modularity values
     assert(modularity >= -0.5);
     assert(modularity <= 1);

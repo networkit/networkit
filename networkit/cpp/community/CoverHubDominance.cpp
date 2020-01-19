@@ -1,26 +1,23 @@
-/*
- *
- */
-
-#include <networkit/community/CoverHubDominance.hpp>
-#include <networkit/auxiliary/SignalHandling.hpp>
-#include <networkit/auxiliary/Parallel.hpp>
 #include <atomic>
 #include <memory>
+
+#include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/auxiliary/SignalHandling.hpp>
+#include <networkit/community/CoverHubDominance.hpp>
 
 void NetworKit::CoverHubDominance::run() {
     hasRun = false;
     Aux::SignalHandler handler;
 
-    std::unique_ptr<std::atomic<count>[]> maxInternalDeg(new std::atomic<count>[C.upperBound()]{});
+    std::unique_ptr<std::atomic<count>[]> maxInternalDeg(new std::atomic<count>[C->upperBound()]{});
 
     handler.assureRunning();
 
-    G.balancedParallelForNodes([&](node u) {
-        for (index c : C[u]) {
+    G->balancedParallelForNodes([&](node u) {
+        for (index c : (*C)[u]) {
             count internalDeg = 0;
-            G.forNeighborsOf(u, [&](node v) {
-                if (C[v].count(c) > 0) {
+            G->forNeighborsOf(u, [&](node v) {
+                if ((*C)[v].count(c) > 0) {
                     internalDeg++;
                 }
             });
@@ -31,15 +28,15 @@ void NetworKit::CoverHubDominance::run() {
 
     handler.assureRunning();
 
-    std::vector<count> clusterSizes(C.upperBound(), 0);
+    std::vector<count> clusterSizes(C->upperBound(), 0);
     count numMemberships = 0;
 
-    G.forNodes([&](node u) {
-        for (index c : C[u]) {
+    G->forNodes([&](node u) {
+        for (index c : (*C)[u]) {
             ++clusterSizes[c];
         }
 
-        numMemberships += C[u].size();
+        numMemberships += (*C)[u].size();
     });
 
     handler.assureRunning();
@@ -49,11 +46,11 @@ void NetworKit::CoverHubDominance::run() {
     minimumValue = std::numeric_limits<double>::max();
     maximumValue = std::numeric_limits<double>::lowest();
     values.clear();
-    values.resize(C.upperBound(), 0);
+    values.resize(C->upperBound(), 0);
 
     count numClusters = 0;
 
-    for (index i = 0; i < C.upperBound(); ++i) {
+    for (index i = 0; i < C->upperBound(); ++i) {
         if (clusterSizes[i] > 0) {
             ++numClusters;
 

@@ -1,18 +1,14 @@
-/*
- *
- */
-
+#include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/community/PartitionFragmentation.hpp>
 #include <networkit/community/PartitionIntersection.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
-#include <networkit/auxiliary/SignalHandling.hpp>
 
 void NetworKit::PartitionFragmentation::run() {
     hasRun = false;
 
     Aux::SignalHandler handler;
 
-    ConnectedComponents cc(G);
+    ConnectedComponents cc(*G);
     cc.run();
 
     handler.assureRunning();
@@ -21,29 +17,29 @@ void NetworKit::PartitionFragmentation::run() {
 
     handler.assureRunning();
 
-    Partition ints = PartitionIntersection().calculate(P, ccP);
+    Partition ints = PartitionIntersection().calculate(*P, ccP);
 
     handler.assureRunning();
 
     std::vector<count> intsSizes(ints.upperBound());
-    std::vector<count> PSizes(P.upperBound());
+    std::vector<count> PSizes(P->upperBound());
 
     handler.assureRunning();
 
-    G.forNodes([&](node u) {
+    G->forNodes([&](node u) {
         ++intsSizes[ints[u]];
-        ++PSizes[P[u]];
+        ++PSizes[(*P)[u]];
     });
 
     handler.assureRunning();
 
     values.clear();
-    values.resize(P.upperBound(), std::numeric_limits< double >::max());
+    values.resize(P->upperBound(), std::numeric_limits< double >::max());
 
     handler.assureRunning();
 
-    G.forNodes([&](node u) {
-        values[P[u]] = std::min(values[P[u]], 1.0 - intsSizes[ints[u]] * 1.0 / PSizes[P[u]]);
+    G->forNodes([&](node u) {
+        values[(*P)[u]] = std::min(values[(*P)[u]], 1.0 - intsSizes[ints[u]] * 1.0 / PSizes[(*P)[u]]);
     });
 
     handler.assureRunning();
@@ -55,7 +51,7 @@ void NetworKit::PartitionFragmentation::run() {
 
     count numSubsets = 0;
 
-    for (index i = 0; i < P.upperBound(); ++i) {
+    for (index i = 0; i < P->upperBound(); ++i) {
         if (values[i] < std::numeric_limits< double >::max()) {
             maximumValue = std::max(values[i], maximumValue);
             minimumValue = std::min(values[i], minimumValue);
@@ -69,7 +65,7 @@ void NetworKit::PartitionFragmentation::run() {
     handler.assureRunning();
 
     unweightedAverage /= numSubsets;
-    weightedAverage /= G.numberOfNodes();
+    weightedAverage /= G->numberOfNodes();
 
     hasRun = true;
 }

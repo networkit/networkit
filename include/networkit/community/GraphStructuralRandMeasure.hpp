@@ -1,5 +1,5 @@
 /*
- * GraphStructuralRandMeasure.h
+ * GraphStructuralRandMeasure.hpp
  *
  *  Created on: 16.04.2013
  *      Author: cls
@@ -17,14 +17,12 @@ namespace NetworKit {
  * The graph-structural Rand measure assigns a similarity value in [0,1]
  * to two partitions of a graph, by considering connected pairs of nodes.
  */
-class GraphStructuralRandMeasure: public DissimilarityMeasure {
+class GraphStructuralRandMeasure final: public DissimilarityMeasure {
 
 public:
 
+    double getDissimilarity(const Graph& G, const Partition& first, const Partition& second)override;
 
-    virtual double getDissimilarity(const Graph& G, const Partition& first, const Partition& second);
-
-    //virtual double getDissimilarity(Graph& G, Clustering& zeta1, Graph& G2, Clustering& zeta2);
 };
 
 } /* namespace NetworKit */

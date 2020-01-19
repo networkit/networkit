@@ -10,7 +10,7 @@ namespace NetworKit {
  * Flake, Gary William; Tarjan, Robert E.; Tsioutsiouliklis, Kostas. Graph Clustering and Minimum Cut Trees.
  * Internet Mathematics 1 (2003), no. 4, 385--408.
  */
-class CutClustering : public CommunityDetectionAlgorithm {
+class CutClustering final : public CommunityDetectionAlgorithm {
 public:
     /**
      * Initialize cut clustering algorithm with parameter alpha.
@@ -28,12 +28,12 @@ public:
      * Warning: due to numerical errors the resulting clusters might not be correct.
      * This implementation uses the Edmonds-Karp algorithm for the cut calculation.
      */
-    virtual void run() override;
+    void run() override;
 
     /**
      * @return string representation of algorithm and parameters.
      */
-    virtual std::string toString() const override;
+    std::string toString() const override;
 
     /**
      * Get the complete hierarchy with all possible parameter values.
@@ -49,6 +49,7 @@ public:
      * @return The hierarchy as map
      */
     static std::map<edgeweight, Partition> getClusterHierarchy(const Graph& G);
+
 private:
 
     /**

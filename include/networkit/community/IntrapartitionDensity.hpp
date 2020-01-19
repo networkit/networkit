@@ -9,14 +9,14 @@ namespace NetworKit {
  * The intra-cluster density of a partition is defined as the number of existing edges divided by the number of possible edges.
  * The global value is the sum of all existing intra-cluster edges divided by the sum of all possible intra-cluster edges.
  */
-class IntrapartitionDensity : public LocalPartitionEvaluation {
+class IntrapartitionDensity final : public LocalPartitionEvaluation {
 public:
     using LocalPartitionEvaluation::LocalPartitionEvaluation;
 
     /**
      * Execute the algorithm.
      */
-    virtual void run() override;
+    void run() override;
 
     /**
      * Get the global intra-cluster density.
@@ -35,7 +35,7 @@ public:
      * @return false - high values are better than small values.
      */
     bool isSmallBetter() const override { return false; }
-protected:
+private:
     double globalValue;
 };
 

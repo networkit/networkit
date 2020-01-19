@@ -1,5 +1,5 @@
 /*
- * SampledRandMeasure.h
+ * SampledNodeStructuralRandMeasure.hpp
  *
  *  Created on: 01.07.2013
  *      Author: cls
@@ -18,7 +18,7 @@ namespace NetworKit {
  * to two partitions of a graph, by considering pairs of nodes.
  * This implementation approximates the index by sampling.
  */
-class SampledNodeStructuralRandMeasure: public DissimilarityMeasure {
+class SampledNodeStructuralRandMeasure final : public DissimilarityMeasure {
 
 public:
 
@@ -29,9 +29,9 @@ public:
      */
     SampledNodeStructuralRandMeasure(count maxSamples);
 
-    virtual double getDissimilarity(const Graph& G, const Partition& first, const Partition& second);
+    double getDissimilarity(const Graph& G, const Partition& first, const Partition& second) override;
 
-protected:
+private:
 
     count maxSamples;
 

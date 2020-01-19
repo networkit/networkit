@@ -2,8 +2,8 @@
 #define NETWORKIT_COMMUNITY_LOCAL_COVER_EVALUATION_HPP_
 
 #include <networkit/community/LocalCommunityEvaluation.hpp>
-#include <networkit/structures/Cover.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/structures/Cover.hpp>
 
 namespace NetworKit {
 
@@ -21,8 +21,8 @@ public:
      */
     LocalCoverEvaluation(const Graph &G, const Cover &C);
 protected:
-    const Graph &G;
-    const Cover &C;
+    const Graph *G;
+    const Cover *C;
 };
 
 }

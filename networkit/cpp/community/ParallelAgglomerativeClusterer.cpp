@@ -2,17 +2,18 @@
  * ParallelAgglomerativeClusterer.cpp
  *
  *  Created on: 30.10.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu),
- *      		Henning Meyerhenke (henning.meyerhenke@kit.edu)
+ *      Author: Christian Staudt,
+ *              Henning Meyerhenke
  */
 
-#include <networkit/community/ParallelAgglomerativeClusterer.hpp>
-#include <networkit/scoring/ModularityScoring.hpp>
-#include <networkit/matching/PathGrowingMatcher.hpp>
-#include <networkit/coarsening/MatchingCoarsening.hpp>
 #include <networkit/coarsening/ClusteringProjector.hpp>
+#include <networkit/coarsening/MatchingCoarsening.hpp>
+#include <networkit/community/ParallelAgglomerativeClusterer.hpp>
+#include <networkit/matching/PathGrowingMatcher.hpp>
+#include <networkit/scoring/ModularityScoring.hpp>
 
 namespace NetworKit {
+
 ParallelAgglomerativeClusterer::ParallelAgglomerativeClusterer(const Graph& G) : CommunityDetectionAlgorithm(G) {}
 
 void ParallelAgglomerativeClusterer::run() {
@@ -20,10 +21,9 @@ void ParallelAgglomerativeClusterer::run() {
     count MIN_NUM_COMMUNITIES = 2;
     double REL_REPEAT_THRSH = 5e-3; ///< threshold for minimum number of matching edges relative to number of vertices to proceed agglomeration
 
-
     // copy graph because we make changes due to merges
-    Graph Gcopy(G.numberOfNodes(), true); // make weighted copy
-    G.forEdges([&](node u, node v, edgeweight w){
+    Graph Gcopy(G->numberOfNodes(), true); // make weighted copy
+    G->forEdges([&](node u, node v, edgeweight w){
         Gcopy.addEdge(u, v, w);
     });
 
@@ -77,7 +77,7 @@ void ParallelAgglomerativeClusterer::run() {
     // project clustering back to finest graph
     ClusteringProjector projector;
     Partition zeta = projector.projectBackToFinest(zetaCoarse, mapHierarchy,
-            G);
+           *G);
     result = std::move(zeta);
     hasRun = true;
 }

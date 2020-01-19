@@ -1,9 +1,5 @@
-/*
- *
- */
-
-#include <networkit/community/IsolatedInterpartitionConductance.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
+#include <networkit/community/IsolatedInterpartitionConductance.hpp>
 
 void NetworKit::IsolatedInterpartitionConductance::run() {
     hasRun = false;
@@ -11,28 +7,28 @@ void NetworKit::IsolatedInterpartitionConductance::run() {
     Aux::SignalHandler handler;
 
     values.clear();
-    values.resize(P.upperBound(), 0);
+    values.resize(P->upperBound(), 0);
 
     handler.assureRunning();
 
-    std::vector<edgeweight> clusterVolume(P.upperBound(), 0);
+    std::vector<edgeweight> clusterVolume(P->upperBound(), 0);
     edgeweight totalVolume = 0;
-    G.forEdges([&](node u, node v, edgeweight w) {
-        if (P[u] != P[v]) {
-            values[P[u]] += w;
-            values[P[v]] += w;
+    G->forEdges([&](node u, node v, edgeweight w) {
+        if (&P[u] != &P[v]) {
+            values[(*P)[u]] += w;
+            values[(*P)[v]] += w;
         }
 
-        clusterVolume[P[u]] += w;
-        clusterVolume[P[v]] += w;
+        clusterVolume[(*P)[u]] += w;
+        clusterVolume[(*P)[v]] += w;
         totalVolume += 2 * w;
     });
 
     handler.assureRunning();
 
-    std::vector<count> clusterSize(P.upperBound(), 0);
-    G.forNodes([&](node u) {
-        ++clusterSize[P[u]];
+    std::vector<count> clusterSize(P->upperBound(), 0);
+    G->forNodes([&](node u) {
+        ++clusterSize[(*P)[u]];
     });
 
     handler.assureRunning();
@@ -44,7 +40,7 @@ void NetworKit::IsolatedInterpartitionConductance::run() {
 
     count c = 0;
 
-    for (index i = 0; i < P.upperBound(); ++i) {
+    for (index i = 0; i < P->upperBound(); ++i) {
         if (clusterSize[i] > 0) {
             edgeweight cond = 0;
             auto denominator = std::min(clusterVolume[i], totalVolume - clusterVolume[i]);
@@ -65,7 +61,7 @@ void NetworKit::IsolatedInterpartitionConductance::run() {
     handler.assureRunning();
 
     unweightedAverage /= c;
-    weightedAverage /= G.numberOfNodes();
+    weightedAverage /= G->numberOfNodes();
 
     hasRun = true;
 }

@@ -1,8 +1,8 @@
 /*
- * Modularity.h
+ * Modularity.hpp
  *
  *  Created on: 10.12.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_COMMUNITY_MODULARITY_HPP_
@@ -15,17 +15,18 @@ namespace NetworKit {
 
 /**
  * @ingroup community
- * Modularity is a quality index for community detection. It assigns a quality value in [-0.5, 1.0] to  
- * a partition of a graph which is higher for more modular networks and partitions which better capture 
+ * Modularity is a quality index for community detection. It assigns a quality value in [-0.5, 1.0] to
+ * a partition of a graph which is higher for more modular networks and partitions which better capture
  * the modular structure.
- * 
+ *
  * Modularity is defined as:
  *
- * 	$$mod(\zeta) := \frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}
- * 	- \frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$$
+ * $$mod(\zeta) := \frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}
+ * \frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$$
  */
-class Modularity: public QualityMeasure {
-protected:
+class Modularity final : public QualityMeasure {
+
+private:
     double gTotalEdgeWeight;
 
 public:
@@ -40,7 +41,7 @@ public:
      * @param G The graph.
      * @return The modularity.
      */
-    virtual double getQuality(const Partition& zeta, const Graph& G);
+    double getQuality(const Partition& zeta, const Graph& G) override;
 
     /**
      * @param totalEdgeWeight Sum of all edge weights in @a G. If specified, it does not
