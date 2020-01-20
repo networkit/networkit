@@ -5,9 +5,9 @@
  *      Author: cls
  */
 
-#include <networkit/dynamics/DGSWriter.hpp>
-
 #include <fstream>
+
+#include <networkit/dynamics/DGSWriter.hpp>
 
 namespace NetworKit {
 
@@ -16,7 +16,7 @@ void DGSWriter::write(std::vector<GraphEvent>& stream, const std::string& path) 
 
     out << "DGS004\nnoname 0 0\n";
 
-    for (GraphEvent ev : stream) {
+    for (const auto &ev : stream) {
         switch (ev.type) {
             case GraphEvent::NODE_ADDITION : {
                 out << "an " << ev.u << "\n";
@@ -55,8 +55,6 @@ void DGSWriter::write(std::vector<GraphEvent>& stream, const std::string& path) 
             }
         }
     }
-
 }
-
 
 } /* namespace NetworKit */

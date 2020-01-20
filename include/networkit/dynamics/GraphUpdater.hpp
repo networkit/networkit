@@ -1,5 +1,5 @@
 /*
- * GraphUpdater.h
+ * GraphUpdater.hpp
  *
  *  Created on: 27.12.2013
  *      Author: cls
@@ -8,15 +8,15 @@
 #ifndef NETWORKIT_DYNAMICS_GRAPH_UPDATER_HPP_
 #define NETWORKIT_DYNAMICS_GRAPH_UPDATER_HPP_
 
-#include <networkit/graph/Graph.hpp>
 #include <networkit/dynamics/GraphEvent.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
 /**
  * @ingroup dynamics
  */
-class GraphUpdater {
+class GraphUpdater final {
 
 public:
 
@@ -31,8 +31,8 @@ public:
 
 private:
 
-    Graph& G;
-    std::vector<std::pair<count, count> > size;
+    Graph* G;
+    std::vector<std::pair<count, count>> size;
 };
 
 } /* namespace NetworKit */

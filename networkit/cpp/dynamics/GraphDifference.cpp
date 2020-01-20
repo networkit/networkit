@@ -1,7 +1,3 @@
-/*
- *
- */
-
 #include <string>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -9,7 +5,7 @@
 
 namespace NetworKit {
 
-GraphDifference::GraphDifference(const Graph &G1, const Graph &G2) : G1(G1), G2(G2) {
+GraphDifference::GraphDifference(const Graph &G1, const Graph &G2) : G1(&G1), G2(&G2) {
     if (G1.isDirected() != G2.isDirected()) {
         throw std::runtime_error("Error, either both or none of the graphs must be directed.");
     }
@@ -29,22 +25,22 @@ void GraphDifference::run() {
     numEdgeRemovals = 0;
     numWeightUpdates = 0;
 
-    std::vector<bool> marker(G1.upperNodeIdBound(), false);
-    std::vector<edgeweight> neighborWeights(G1.upperNodeIdBound(), 0);
+    std::vector<bool> marker(G1->upperNodeIdBound(), false);
+    std::vector<edgeweight> neighborWeights(G1->upperNodeIdBound(), 0);
 
     // collect node events and edge removals/additions in separate vectors
     // so we can later put them in the right order: first remove edges,
     // then remove and add nodes and then add edges.
     std::vector<GraphEvent> nodeEvents, edgeRemovals, edgeAdditions;
 
-    node updatedUpperNodeIdBound = G1.upperNodeIdBound();
-    for (node u = 0; u < G1.upperNodeIdBound() || u < G2.upperNodeIdBound(); ++u) {
+    node updatedUpperNodeIdBound = G1->upperNodeIdBound();
+    for (node u = 0; u < G1->upperNodeIdBound() || u < G2->upperNodeIdBound(); ++u) {
         // First, fix non-common nodes
-        if (!G2.hasNode(u) && G1.hasNode(u)) {
+        if (!G2->hasNode(u) && G1->hasNode(u)) {
             nodeEvents.emplace_back(GraphEvent::NODE_REMOVAL, u);
             ++numNodeRemovals;
-        } else if (G2.hasNode(u) && !G1.hasNode(u)) {
-            if (u < G1.upperNodeIdBound()) {
+        } else if (G2->hasNode(u) && !G1->hasNode(u)) {
+            if (u < G1->upperNodeIdBound()) {
                 nodeEvents.emplace_back(GraphEvent::NODE_RESTORATION, u);
                 ++numNodeRestorations;
             } else {
@@ -64,9 +60,9 @@ void GraphDifference::run() {
         }
 
         // mark neighbors of current node in G1
-        if (G1.hasNode(u)) {
-            G1.forNeighborsOf(u, [&](node v, edgeweight w) {
-                    if (G1.isDirected() || u <= v) {
+        if (G1->hasNode(u)) {
+            G1->forNeighborsOf(u, [&](node v, edgeweight w) {
+                    if (G1->isDirected() || u <= v) {
                         TRACE("Marking neighbor of ", u, " in G1 ", v);
                         marker[v] = true;
                         neighborWeights[v] = w;
@@ -74,14 +70,14 @@ void GraphDifference::run() {
                 });
         }
 
-        // unmark common neighbors, detect edge addtions
-        if (G2.hasNode(u)) {
-            G2.forNeighborsOf(u, [&](node v, edgeweight w) {
+        // unmark common neighbors, detect edge additions
+        if (G2->hasNode(u)) {
+            G2->forNeighborsOf(u, [&](node v, edgeweight w) {
                     // for undirected graphs, edges are only added in one direction unless
                     // the other node does not exist in G1 (edges where both nodes do not
                     // exist in G1 have been added above).
-                    if (G1.isDirected() || u <= v) {
-                        if (v < G1.upperNodeIdBound() && marker[v]) {
+                    if (G1->isDirected() || u <= v) {
+                        if (v < G1->upperNodeIdBound() && marker[v]) {
                             if (neighborWeights[v] != w) {
                                 edgeAdditions.emplace_back(GraphEvent::EDGE_WEIGHT_UPDATE, u, v, w);
                                 ++numWeightUpdates;
@@ -96,11 +92,11 @@ void GraphDifference::run() {
                 });
         }
 
-        if (G1.hasNode(u)) {
+        if (G1->hasNode(u)) {
             // detect edge removals, unset the remaining neighbor markers
-            G1.forNeighborsOf(u, [&](node v) {
+            G1->forNeighborsOf(u, [&](node v) {
                     TRACE("Checking again (", u, ",", v, ")");
-                    if (G1.isDirected() || u <= v) {
+                    if (G1->isDirected() || u <= v) {
                         TRACE("Edge (", u, ",", v, ") is considered");
                         if (marker[v]) {
                             TRACE("Deleting (", u, ",", v, ")");
@@ -170,4 +166,4 @@ count GraphDifference::getNumberOfEdgeWeightUpdates() const {
     return numWeightUpdates;
 }
 
-}
+} // namespace NetworKit

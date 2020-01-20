@@ -1,9 +1,9 @@
 #ifndef NETWORKIT_DYNAMICS_GRAPH_DIFFERENCE_HPP_
 #define NETWORKIT_DYNAMICS_GRAPH_DIFFERENCE_HPP_
 
-#include <networkit/graph/Graph.hpp>
-#include <networkit/dynamics/GraphEvent.hpp>
 #include <networkit/base/Algorithm.hpp>
+#include <networkit/dynamics/GraphEvent.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -19,7 +19,7 @@ namespace NetworKit {
  * Note that edge weight differences are not detected but edge
  * addition events set the correct edge weight.
  */
-class GraphDifference : public Algorithm {
+class GraphDifference final : public Algorithm {
 public:
     /**
      * Construct the edge edit difference with two graphs to compare.
@@ -32,7 +32,7 @@ public:
     /**
      * Execute the algorithm and compute the difference.
      */
-    virtual void run() override;
+    void run() override;
 
     /**
      * Get the required edits.
@@ -52,7 +52,7 @@ public:
     count getNumberOfEdits() const;
 
     /**
-     * Get the required number of node addtions.
+     * Get the required number of node additions.
      *
      * @return The number of node additions.
      */
@@ -73,7 +73,7 @@ public:
     count getNumberOfNodeRestorations() const;
 
     /**
-     * Get the required number of edge addtions.
+     * Get the required number of edge additions.
      *
      * @return The number of edge additions.
      */
@@ -93,7 +93,7 @@ public:
      */
     count getNumberOfEdgeWeightUpdates() const;
 private:
-    const Graph &G1, &G2;
+    const Graph *G1, *G2;
     std::vector<GraphEvent> edits;
     count numEdits;
     count numNodeAdditions;

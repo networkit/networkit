@@ -1,5 +1,5 @@
 /*
- * GraphEventProxy.h
+ * GraphEventProxy.hpp
  *
  *  Created on: 03.04.2013
  *      Author: cls
@@ -8,10 +8,10 @@
 #ifndef NETWORKIT_DYNAMICS_GRAPH_EVENT_PROXY_HPP_
 #define NETWORKIT_DYNAMICS_GRAPH_EVENT_PROXY_HPP_
 
-#include <networkit/graph/Graph.hpp>
-#include <networkit/dynamics/GraphEventHandler.hpp>
-
 #include <tlx/define/deprecated.hpp>
+
+#include <networkit/dynamics/GraphEventHandler.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -21,12 +21,11 @@ namespace NetworKit {
  * When these modifiers are called, they are also called on the underlying graphs. Also, all registered
  * observers (type GraphEventHandler) are notified.
  */
-class GraphEventProxy {
+class GraphEventProxy final {
 
-protected:
+private:
 
     std::vector<GraphEventHandler*> observers;
-
 
 public:
 
