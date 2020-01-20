@@ -1,5 +1,5 @@
 /*
- * Eccentricity.h
+ * Eccentricity.hpp
  *
  *  Created on: 19.02.2014
  *      Author: cls

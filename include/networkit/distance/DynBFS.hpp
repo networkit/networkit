@@ -1,5 +1,5 @@
 /*
- * DynBFS.h
+ * DynBFS.hpp
  *
  *  Created on: 17.07.2014
  *      Author: cls, ebergamini
@@ -26,7 +26,7 @@ public:
      *
      * @param G The graph.
      * @param s The source node.
-     * @param   storePredecessors   keep track of the lists of predecessors?
+     * @param storePredecessors keep track of the lists of predecessors?
      */
     DynBFS(const Graph& G, node s, bool storePredecessors = true);
 
@@ -41,7 +41,7 @@ public:
     /* Returns the number of shortest paths to node t.*/
     bigfloat getNumberOfPaths(node t) const;
 
-protected:
+private:
     enum Color {WHITE, BLACK, GRAY};
     std::vector<Color> color;
     count maxDistance;

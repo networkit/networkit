@@ -11,14 +11,15 @@
 namespace NetworKit {
 
 std::pair<node, count> Eccentricity::getValue(const Graph& G, node u) {
+    assert(G.hasNode(u));
     count ecc = 0;
-    node res;
+    node res = none;
     Traversal::BFSfrom(G, u, [&](node v, count dist) {
         ecc = dist;
         res = v;
     });
+    assert(res != none);
     return {res, ecc}; // pair.first is argmax node
 }
-
 
 } /* namespace NetworKit */

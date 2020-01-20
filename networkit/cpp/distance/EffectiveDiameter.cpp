@@ -1,46 +1,43 @@
 /*
-* EffectiveDiameter.cpp
+*  EffectiveDiameter.cpp
 *
 *  Created on: 16.06.2014
 *      Author: Marc Nemes
 */
 
-#include <networkit/distance/EffectiveDiameter.hpp>
-#include <networkit/components/ConnectedComponents.hpp>
-#include <networkit/auxiliary/Random.hpp>
-
 #include <math.h>
-#include <iterator>
-#include <stdlib.h>
 #include <omp.h>
-#include <map>
+
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/distance/EffectiveDiameter.hpp>
 
 namespace NetworKit {
 
-EffectiveDiameter::EffectiveDiameter(const Graph& G, const double ratio) : Algorithm(), G(G), ratio(ratio) {
+EffectiveDiameter::EffectiveDiameter(const Graph& G, const double ratio) : Algorithm(), G(&G), ratio(ratio) {
     if (G.isDirected()) throw std::runtime_error("current implementation can only deal with undirected graphs");
     ConnectedComponents cc(G);
     cc.run();
-    if (cc.getPartition().numberOfSubsets() > 1) throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
+    if (cc.numberOfComponents() > 1) throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
 }
 
 void EffectiveDiameter::run() {
-    count z = G.upperNodeIdBound();
+    count z = G->upperNodeIdBound();
     // saves the reachable nodes of the current iteration
-    std::vector<std::vector<bool> > mCurr(z);
+    std::vector<std::vector<bool>> mCurr(z);
     // saves the reachable nodes of the previous iteration
-    std::vector<std::vector<bool> > mPrev(z);
+    std::vector<std::vector<bool>> mPrev(z);
     // sums over the number of edges needed to reach 90% of all other nodes
     effectiveDiameter = 0;
     // the current distance of the neighborhoods
     count h = 1;
     // number of nodes that need to be connected with all other nodes
-    count threshold = (uint64_t) (ceil(ratio * G.numberOfNodes()) + 0.5);
+    auto threshold = static_cast<count>(std::ceil(ratio * G->numberOfNodes()) + 0.5);
     // nodes that are not connected to enough nodes yet
     std::vector<node> activeNodes;
 
     // initialize all nodes
-    G.forNodes([&](node v){
+    G->forNodes([&](node v){
         std::vector<bool> connectedNodes;
         // initialize n entries with value 0
         connectedNodes.assign(z, 0);
@@ -56,8 +53,8 @@ void EffectiveDiameter::run() {
         for (count x = 0; x < activeNodes.size(); x++) {
             node v = activeNodes[x];
                 mCurr[v] = mPrev[v];
-                G.forNeighborsOf(v, [&](node u) {
-                    for (count i = 0; i < G.numberOfNodes(); i++) {
+                G->forNeighborsOf(v, [&](node u) {
+                    for (count i = 0; i < G->numberOfNodes(); i++) {
                         // add the current neighbor of u to the neighborhood of v
                         mCurr[v][i] = mCurr[v][i] || mPrev[u][i];
                     }
@@ -65,7 +62,7 @@ void EffectiveDiameter::run() {
 
                 // compute the number of connected nodes
                 count numConnectedNodes = 0;
-                for (count i = 0; i < G.numberOfNodes(); i++) {
+                for (count i = 0; i < G->numberOfNodes(); i++) {
                     if (mCurr[v][i] == 1) {
                         numConnectedNodes++;
                     }
@@ -83,7 +80,7 @@ void EffectiveDiameter::run() {
             mPrev = mCurr;
             h++;
     }
-    effectiveDiameter /= G.numberOfNodes();
+    effectiveDiameter /= G->numberOfNodes();
     hasRun = true;
 }
 
@@ -94,5 +91,4 @@ double EffectiveDiameter::getEffectiveDiameter() const {
     return effectiveDiameter;
 }
 
-
-}
+} // namespace NetworKit

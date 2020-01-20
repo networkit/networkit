@@ -9,17 +9,17 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
-#include <networkit/distance/Diameter.hpp>
-#include <networkit/distance/Eccentricity.hpp>
 #include <networkit/distance/BFS.hpp>
+#include <networkit/distance/Diameter.hpp>
 #include <networkit/distance/Dijkstra.hpp>
+#include <networkit/distance/Eccentricity.hpp>
 #include <networkit/graph/BFS.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 
-Diameter::Diameter(const Graph& G, DiameterAlgo algo, double error, count nSamples) : Algorithm(), G(G), error(error), nSamples(nSamples) {
+Diameter::Diameter(const Graph& G, DiameterAlgo algo, double error, count nSamples) : Algorithm(), G(&G), error(error), nSamples(nSamples) {
     if (algo == DiameterAlgo::automatic) {
         this->algo = DiameterAlgo::exact;
     } else {
@@ -35,13 +35,13 @@ Diameter::Diameter(const Graph& G, DiameterAlgo algo, double error, count nSampl
 void Diameter::run() {
     diameterBounds = {0, 0};
     if (algo == DiameterAlgo::exact) {
-        std::get<0>(diameterBounds) = this->exactDiameter(G);
+        std::get<0>(diameterBounds) = this->exactDiameter(*G);
     } else if (algo == DiameterAlgo::estimatedRange) {
-        diameterBounds = this->estimatedDiameterRange(G, error);
+        diameterBounds = this->estimatedDiameterRange(*G, error);
     } else if (algo == DiameterAlgo::estimatedSamples) {
-        std::get<0>(diameterBounds) = this->estimatedVertexDiameter(G, nSamples);
+        std::get<0>(diameterBounds) = this->estimatedVertexDiameter(*G, nSamples);
     } else if (algo == DiameterAlgo::estimatedPedantic) {
-        std::get<0>(diameterBounds) = this->estimatedVertexDiameterPedantic(G);
+        std::get<0>(diameterBounds) = this->estimatedVertexDiameterPedantic(*G);
     } else {
         throw std::runtime_error("should never reach this code as the algorithm should be set correctly in the constructor or fail there");
     }
@@ -172,7 +172,7 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &
         }
     };
 
-    // for each component, find the node with the maximum degreee and add it as start node
+    // for each component, find the node with the maximum degree and add it as start node
     G.forNodes([&](node v) {
         count d = G.degree(v);
         count c = comp.componentOfNode(v);

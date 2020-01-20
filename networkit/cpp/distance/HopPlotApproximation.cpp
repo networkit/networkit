@@ -1,23 +1,20 @@
 /*
-* HopPlotApproximation.cpp
+*  HopPlotApproximation.cpp
 *
 *  Created on: 16.06.2014
 *      Author: Marc Nemes
 */
 
-#include <networkit/distance/HopPlotApproximation.hpp>
-#include <networkit/components/ConnectedComponents.hpp>
-#include <networkit/auxiliary/Random.hpp>
-
 #include <math.h>
-#include <iterator>
-#include <stdlib.h>
 #include <omp.h>
-#include <map>
+
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/distance/HopPlotApproximation.hpp>
 
 namespace NetworKit {
 
-HopPlotApproximation::HopPlotApproximation(const Graph& G, const count maxDistance, const count k, const count r): Algorithm(), G(G), maxDistance(maxDistance), k(k), r(r) {
+HopPlotApproximation::HopPlotApproximation(const Graph& G, count maxDistance, count k, count r): Algorithm(), G(&G), maxDistance(maxDistance), k(k), r(r) {
     if (G.isDirected()) throw std::runtime_error("current implementation can only deal with undirected graphs");
     ConnectedComponents cc(G);
     cc.run();
@@ -25,13 +22,13 @@ HopPlotApproximation::HopPlotApproximation(const Graph& G, const count maxDistan
 }
 
 void HopPlotApproximation::run() {
-    count z = G.upperNodeIdBound();
+    count z = G->upperNodeIdBound();
     // the length of the bitmask where the number of connected nodes is saved
-    count lengthOfBitmask = (count) ceil(log2(G.numberOfNodes()));
+    count lengthOfBitmask = (count) ceil(log2(G->numberOfNodes()));
     // saves all k bitmasks for every node of the current iteration
-    std::vector<std::vector<unsigned int> > mCurr(z);
+    std::vector<std::vector<unsigned int>> mCurr(z);
     // saves all k bitmasks for every node of the previous iteration
-    std::vector<std::vector<unsigned int> > mPrev(z);
+    std::vector<std::vector<unsigned int>> mPrev(z);
     // the maximum possible bitmask based on the random initialization of all k bitmasks
     std::vector<count> highestCount;
     // the current distance of the neighborhoods
@@ -49,7 +46,7 @@ void HopPlotApproximation::run() {
 
     // initialize all vectors
     highestCount.assign(k, 0);
-    G.forNodes([&](node v) {
+    G->forNodes([&](node v) {
         std::vector<unsigned int> bitmasks;
         bitmasks.assign(k, 0);
         mCurr[v] = bitmasks;
@@ -69,7 +66,7 @@ void HopPlotApproximation::run() {
         }
     });
     // at zero distance, all nodes can only reach themselves
-    hopPlot[0] = 1/G.numberOfNodes();
+    hopPlot[0] = 1/G->numberOfNodes();
     // as long as we need to connect more nodes
     while (!activeNodes.empty() && (maxDistance <= 0 || h < maxDistance)) {
         totalConnectedNodes = 0;
@@ -80,7 +77,7 @@ void HopPlotApproximation::run() {
                 // the node is still connected to all previous neighbors
                 mCurr[v][j] = mPrev[v][j];
                 // and to all previous neighbors of all its neighbors
-                G.forNeighborsOf(v, [&](node u) {
+                G->forNeighborsOf(v, [&](node u) {
                     mCurr[v][j] = mCurr[v][j] | mPrev[u][j];
                 });
             }
@@ -103,8 +100,8 @@ void HopPlotApproximation::run() {
             estimatedConnectedNodes = (pow(2,b) / 0.77351);
 
             // enforce monotonicity
-            if (estimatedConnectedNodes > G.numberOfNodes()) {
-                estimatedConnectedNodes = G.numberOfNodes();
+            if (estimatedConnectedNodes > G->numberOfNodes()) {
+                estimatedConnectedNodes = G->numberOfNodes();
             }
 
             // check whether all k bitmask for this node have reached the highest possible value
@@ -117,11 +114,11 @@ void HopPlotApproximation::run() {
             }
 
             // if the node wont change or is connected to enough nodes it must no longer be considered
-            if (estimatedConnectedNodes >= G.numberOfNodes() || nodeFinished) {
+            if (estimatedConnectedNodes >= G->numberOfNodes() || nodeFinished) {
                 // remove the current node from future iterations
                 std::swap(activeNodes[x], activeNodes.back());
                 activeNodes.pop_back();
-                totalConnectedNodes += G.numberOfNodes();
+                totalConnectedNodes += G->numberOfNodes();
                 --x; //don't skip former activeNodes.back() that has been switched to activeNodes[x]
             } else {
                 // add value of the node to all nodes so we can calculate the average
@@ -129,9 +126,9 @@ void HopPlotApproximation::run() {
             }
         }
         // add nodes that are already connected to all nodes
-        totalConnectedNodes += (G.numberOfNodes() - activeNodes.size()) * G.numberOfNodes();
+        totalConnectedNodes += (G->numberOfNodes() - activeNodes.size()) * G->numberOfNodes();
         // compute the fraction of connected nodes
-        hopPlot[h] = totalConnectedNodes/(G.numberOfNodes()*G.numberOfNodes());
+        hopPlot[h] = totalConnectedNodes/(G->numberOfNodes()*G->numberOfNodes());
         if (hopPlot[h] > 1) {
             hopPlot[h] = 1;
         }

@@ -5,10 +5,13 @@
  *      Author: Eugenio Angriman <angrimae@hu-berlin.de>
  */
 
+// networkit-format
+
 #ifndef NETWORKIT_DISTANCE_BIDIRECTIONAL_DIJKSTRA_HPP_
 #define NETWORKIT_DISTANCE_BIDIRECTIONAL_DIJKSTRA_HPP_
 
 #include <networkit/distance/STSP.hpp>
+
 #include <tlx/container/d_ary_addressable_int_heap.hpp>
 
 namespace NetworKit {
@@ -17,7 +20,8 @@ namespace NetworKit {
  * @ingroup distance
  * Bidirectional implementation of the Dijkstra algorithm from two given source and target nodes.
  * Explores the graph from both the source and target nodes until the two explorations meet.
- */ class BidirectionalDijkstra final : public STSP {
+ */
+class BidirectionalDijkstra final : public STSP {
 
 public:
     // Inherit the constructors of STSP.

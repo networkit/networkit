@@ -1,5 +1,5 @@
 /*
- * BFS.h
+ * ReverseBFS.hpp
  *
  *  Created on: Jul 23, 2013
  *      Author: Henning
@@ -15,19 +15,19 @@ namespace NetworKit {
 
 /**
  * @ingroup graph
- * The BFS class is used to do a reverse breadth-first search (following
+ * The ReverseBFS class is used to do a reverse breadth-first search (following
  * the incoming edges of a node) on a Graph from a given source node.
  */
-class ReverseBFS : public SSSP {
+class ReverseBFS final : public SSSP {
 
 public:
   /**
-   * Constructs the BFS class for @a G and source node @a source.
+   * Constructs the ReverseBFS class for @a G and source node @a source.
    *
    * @param G The graph.
    * @param source The source node of the breadth-first search.
-   * @param storePaths	store paths and number of paths?
-   * @param storeStack	maintain a stack of nodes in decreasing order of
+   * @param storePaths store paths and number of paths?
+   * @param storeStack maintain a stack of nodes in decreasing order of
    * distance
    */
   ReverseBFS(const Graph &G, node source, bool storePaths = true,
@@ -39,7 +39,7 @@ public:
    * length (number of edges) of the shortest path from @a source to any other
    * node.
    */
-  virtual void run();
+  void run() override;
 };
 
 } /* namespace NetworKit */

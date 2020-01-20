@@ -1,5 +1,5 @@
 /*
-* NeighborhoodFunction.h
+* NeighborhoodFunction.hpp
 *
 *  Created on: 30.03.2016
 *      Author: Maximilian Vogel
@@ -16,7 +16,7 @@ namespace NetworKit {
 /**
  * @ingroup distance
  */
-class NeighborhoodFunction : public Algorithm {
+class NeighborhoodFunction final : public Algorithm {
 
 public:
     /**
@@ -38,7 +38,7 @@ public:
     std::vector<count> getNeighborhoodFunction() const;
 
 private:
-    const Graph& G;
+    const Graph* G;
     std::vector<count> result;
 };
 

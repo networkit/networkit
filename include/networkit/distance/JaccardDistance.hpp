@@ -1,5 +1,5 @@
 /*
- * JaccardDistance.h
+ * JaccardDistance.hpp
  *
  *  Created on: 17.11.2014
  *      Author: Michael Hamann, Gerd Lindner
@@ -8,10 +8,9 @@
 #ifndef NETWORKIT_DISTANCE_JACCARD_DISTANCE_HPP_
 #define NETWORKIT_DISTANCE_JACCARD_DISTANCE_HPP_
 
+#include <networkit/auxiliary/Timer.hpp>
 #include <networkit/distance/NodeDistance.hpp>
 #include <networkit/graph/Graph.hpp>
-#include <networkit/auxiliary/Timer.hpp>
-
 
 namespace NetworKit {
 
@@ -20,7 +19,7 @@ namespace NetworKit {
  * Jaccard distance assigns a distance value to pairs of nodes
  * according to the similarity of their neighborhoods. Note that we define the JaccardDistance as 1-JaccardSimilarity.
  */
-class JaccardDistance: public NodeDistance {
+class JaccardDistance final : public NodeDistance {
 
 public:
 
@@ -33,21 +32,21 @@ public:
     /**
      * REQ: Needs to be called before getEdgeScores delivers meaningful results.
      */
-    virtual void preprocess();
+     void preprocess() override;
 
     /**
      * Returns the Jaccard distance between node @a u and node @a v.
      * @return Jaccard distance between the two nodes.
      */
-    virtual double distance(node u, node v);
+     double distance(node u, node v) override;
 
     /**
      * Returns the Jaccard distances between all connected nodes.
      * @return Vector containing the Jaccard distances between all connected pairs of nodes.
      */
-    std::vector<double> getEdgeScores();
+    std::vector<double> getEdgeScores() override;
 
-protected:
+private:
     const std::vector<count>& triangles;
     std::vector<double> jDistance; //result vector
 

@@ -7,12 +7,12 @@
 
 #include <omp.h>
 
-#include <networkit/distance/AllSimplePaths.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/distance/AllSimplePaths.hpp>
 
 namespace NetworKit {
 
-    AllSimplePaths::AllSimplePaths(const Graph& G, node source, node target, count cutoff) : G(G), source(source), target(target), cutoff(cutoff) {
+    AllSimplePaths::AllSimplePaths(const Graph& G, node source, node target, count cutoff) : G(&G), source(source), target(target), cutoff(cutoff) {
         if (!G.isDirected()) {
             throw std::runtime_error("Error, AllSimplePaths class has been implemented for directed graphs only.");
         }
@@ -58,7 +58,7 @@ namespace NetworKit {
             if (d <= cutoff) {
 
                 // Reverse visit with InNeighbors.
-                G.forInNeighborsOf(curr, [&](node v) {
+                G->forInNeighborsOf(curr, [&](node v) {
                     // Source node reaches target node.
                     if (v == source) {
                         if (d > cutoff) {
@@ -94,7 +94,7 @@ namespace NetworKit {
 
             // Labels all neighbors with their distances from source
             // only if they can be part of a path from source to target.
-            G.forNeighborsOf(curr, [&](node v) {
+            G->forNeighborsOf(curr, [&](node v) {
                 if (distanceFromSource[v] == none && distanceToTarget[v] != none && (cutoff == none || d + distanceToTarget[v] <= cutoff)) {
                     distanceFromSource[v] = d;
                     q.push(v);
@@ -112,8 +112,8 @@ namespace NetworKit {
 
     void AllSimplePaths::computePaths() {
 
-        std::vector<std::vector<node>> availableSources(G.upperNodeIdBound());
-        G.parallelForNodes([&](node v) {
+        std::vector<std::vector<node>> availableSources(G->upperNodeIdBound());
+        G->parallelForNodes([&](node v) {
             if (v != target && (cutoff == none || distanceFromSource[v] != none)) {
                 availableSources[v] = getAvailableSources(v);
             }
@@ -128,7 +128,7 @@ namespace NetworKit {
             std::vector<std::pair<std::vector<node>, std::vector<bool>>> stack;//(availableSources[source].size());
             std::vector<node>* v = new std::vector<node>;
             *v = {source, availableSources[source][i]};
-            std::vector<bool> visited(G.upperNodeIdBound(), false);
+            std::vector<bool> visited(G->upperNodeIdBound(), false);
             visited[source] = true;
             stack.push_back(std::make_pair(*v, visited));
 
@@ -204,10 +204,9 @@ namespace NetworKit {
     }
 
 
-
     std::vector<node> AllSimplePaths::getAvailableSources(node s, count pathLength) {
         std::vector<node> availableSources;
-        G.forNeighborsOf(s, [&](node v) {
+        G->forNeighborsOf(s, [&](node v) {
 
             // Make sure we are visiting a node that can reach target. Avoid to consider source as a possible source.
             if (distanceFromSource[v] != none){

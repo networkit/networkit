@@ -16,6 +16,7 @@
 #include <networkit/distance/EffectiveDiameter.hpp>
 #include <networkit/distance/EffectiveDiameterApproximation.hpp>
 #include <networkit/distance/HopPlotApproximation.hpp>
+#include <networkit/distance/IncompleteDijkstra.hpp>
 #include <networkit/distance/NeighborhoodFunction.hpp>
 #include <networkit/distance/NeighborhoodFunctionApproximation.hpp>
 #include <networkit/distance/NeighborhoodFunctionHeuristic.hpp>
@@ -107,6 +108,42 @@ TEST_F(DistanceGTest, testAStar) {
     testMesh(10, 10);
     testMesh(1, 15);
     testMesh(25, 5);
+}
+
+TEST_F(DistanceGTest, testIncompleteDijkstra) {
+    Aux::Random::setSeed(42, false);
+    for (auto directed : {true, false}) {
+        for (auto weighted : {true, false}) {
+            auto G = ErdosRenyiGenerator(500, 0.05, directed).generate();
+            if (weighted) {
+                G = GraphTools::toWeighted(G);
+                G.forEdges([&G](const node u, const node v) {
+                    G.setWeight(u, v, Aux::Random::probability());
+                });
+            }
+
+            G.forNodes([&](const node source) {
+                Dijkstra dij(G, source, false, false);
+                dij.run();
+                const auto dists = dij.getDistances();
+                const count reachable = std::count_if(dists.begin(), dists.end(),
+                                                      [](const edgeweight dist) {
+                    return dist != std::numeric_limits<edgeweight>::max();
+                });
+
+                const std::vector<node> sources({source});
+                IncompleteDijkstra iDij(&G, sources);
+
+                for (count i = 0; i < reachable; ++i) {
+                    EXPECT_TRUE(iDij.hasNext());
+                    const auto next = iDij.next();
+                    EXPECT_DOUBLE_EQ(next.second, dists[next.first]);
+                }
+
+                EXPECT_FALSE(iDij.hasNext());
+            });
+        }
+    }
 }
 
 TEST_F(DistanceGTest, testBidirectionalBFS) {

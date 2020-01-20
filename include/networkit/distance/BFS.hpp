@@ -1,5 +1,5 @@
 /*
- * BFS.h
+ * BFS.hpp
  *
  *  Created on: Jul 23, 2013
  *      Author: Henning

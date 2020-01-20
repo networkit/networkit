@@ -1,5 +1,5 @@
 /*
- * DynDijkstra.h
+ * DynDijkstra.hpp
  *
  *  Created on: 21.07.2014
  *      Author: ebergamini
@@ -25,7 +25,7 @@ public:
      *
      * @param G The graph.
      * @param s The source node.
-     * @param   storePredecessors   keep track of the lists of predecessors?
+     * @param storePredecessors keep track of the lists of predecessors?
      */
     DynDijkstra(const Graph& G, node s, bool storePredecessors = true);
 
@@ -39,7 +39,7 @@ public:
     void updateBatch(const std::vector<GraphEvent>& batch) override;
 
 
-protected:
+private:
     enum Color {WHITE, BLACK};
     std::vector<Color> color;
 };

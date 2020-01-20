@@ -47,7 +47,7 @@ public:
 
         init();
         constexpr auto infdist = std::numeric_limits<edgeweight>::max();
-        const count n = G.upperNodeIdBound();
+        const count n = G->upperNodeIdBound();
 
         std::fill(distance.begin(), distance.end(), infdist);
         distance.resize(n, infdist);
@@ -68,7 +68,7 @@ public:
                 break;
             }
 
-            G.forNeighborsOf(top, [&](node u, edgeweight w) {
+            G->forNeighborsOf(top, [&](node u, edgeweight w) {
                 const double newDist = distance[top] + w;
                 if (newDist < distance[u]) {
                     distance[u] = newDist;

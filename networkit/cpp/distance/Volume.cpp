@@ -9,8 +9,6 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphTools.hpp>
 
-#include <unordered_map>
-
 namespace NetworKit {
 
 std::unordered_map<node, double> Volume::nodesWithinDistance(const Graph &G, double r, node n) {
@@ -39,7 +37,7 @@ std::unordered_map<node, double> Volume::nodesWithinDistance(const Graph &G, dou
     return ms;
 }
 
-double Volume::volume(const Graph &G, const double r, const count samples) {
+double Volume::volume(const Graph &G, double r, count samples) {
     double x = 0;
     for (count j = 0; j < samples; j++) {
         x += Volume::nodesWithinDistance(G, r, GraphTools::randomNode(G)).size();
@@ -47,14 +45,14 @@ double Volume::volume(const Graph &G, const double r, const count samples) {
     return x / samples;
 }
 
-std::vector<double> Volume::volume(const Graph &G, const std::vector<double> rs, const count samples) {
+std::vector<double> Volume::volume(const Graph &G, std::vector<double> rs, count samples) {
     std::vector<double> xs(rs.size(), 0);
     double rmax = *std::max_element(std::begin(rs), std::end(rs));
     for (count j = 0; j < samples; j++) {
         std::unordered_map<node, double> ms = Volume::nodesWithinDistance(G, rmax, GraphTools::randomNode(G));
         count i = 0;
-        for (auto &r : rs) {
-            for (auto &it : ms) {
+        for (const auto &r : rs) {
+            for (const auto &it : ms) {
                 if (it.second <= r) {
                     xs[i] += 1;
                 }
@@ -63,7 +61,7 @@ std::vector<double> Volume::volume(const Graph &G, const std::vector<double> rs,
         }
     }
     std::vector<double> ys;
-    for (auto &x : xs) {
+    for (const auto &x : xs) {
         ys.push_back(x / samples);
     }
     return ys;

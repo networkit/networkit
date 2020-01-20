@@ -4,31 +4,33 @@
 *      Author: Maximilian Vogel
 */
 
-#include <networkit/distance/NeighborhoodFunctionHeuristic.hpp>
-#include <networkit/components/ConnectedComponents.hpp>
-#include <networkit/auxiliary/Random.hpp>
+#include <map>
+#include <math.h>
+#include <omp.h>
+
 #include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/distance/Diameter.hpp>
+#include <networkit/distance/NeighborhoodFunctionHeuristic.hpp>
 #include <networkit/graph/BFS.hpp>
 #include <networkit/graph/GraphTools.hpp>
 
-#include <math.h>
-#include <iterator>
-#include <stdlib.h>
-#include <omp.h>
-#include <map>
-
 namespace NetworKit {
 
-NeighborhoodFunctionHeuristic::NeighborhoodFunctionHeuristic(const Graph& G, const count nSamples, const SelectionStrategy strategy) :
+NeighborhoodFunctionHeuristic::NeighborhoodFunctionHeuristic(const Graph& G, count nSamples, SelectionStrategy strategy) :
     Algorithm(),
-    G(G),
-    nSamples((nSamples == 0)? (count)ceil(std::max((double)0.15f * G.numberOfNodes(), sqrt(G.numberOfEdges()))) : nSamples),
+    G(&G),
+    nSamples(!nSamples ? (count)ceil(std::max((double)0.15f * G.numberOfNodes(), sqrt(G.numberOfEdges()))) : nSamples),
     strategy(strategy) {
-    if (G.isDirected()) throw std::runtime_error("current implementation can only deal with undirected graphs");
+
+    if (G.isDirected())
+        throw std::runtime_error("current implementation can only deal with undirected graphs");
     ConnectedComponents cc(G);
     cc.run();
-    if (cc.getPartition().numberOfSubsets() > 1) throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
+    if (cc.numberOfComponents() > 1)
+        throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
+
     if (strategy != SPLIT && strategy != RANDOM) {
         throw std::runtime_error("unknown strategy, choose either split or random");
     }
@@ -37,12 +39,12 @@ NeighborhoodFunctionHeuristic::NeighborhoodFunctionHeuristic(const Graph& G, con
 void NeighborhoodFunctionHeuristic::run() {
     count maxThreads = (count)omp_get_max_threads();
     count dia;
-    if (!G.isWeighted()) {
-        Diameter diam(G);
+    if (!G->isWeighted()) {
+        Diameter diam(*G);
         diam.run();
         dia = diam.getDiameter().first;
     } else {
-        Graph Gcopy = GraphTools::toUnweighted(G);
+        Graph Gcopy = GraphTools::toUnweighted(*G);
         Diameter diam(Gcopy);
         diam.run();
         dia = diam.getDiameter().first;
@@ -50,9 +52,9 @@ void NeighborhoodFunctionHeuristic::run() {
 
     std::vector<node> start_nodes(nSamples);
     if (strategy == SPLIT) {
-        start_nodes = split(G, nSamples);
+        start_nodes = split(*G, nSamples);
     } else if (strategy == RANDOM) {
-        start_nodes = random(G, nSamples);
+        start_nodes = random(*G, nSamples);
     }
 
     // run nSamples BFS and count the distances.
@@ -61,18 +63,18 @@ void NeighborhoodFunctionHeuristic::run() {
     for (omp_index i = 0; i < static_cast<omp_index>(nSamples); ++i) {
         count tid = omp_get_thread_num();
         node u = start_nodes[i];
-        Traversal::BFSfrom(G, u, [&](node, count dist) {
+        Traversal::BFSfrom(*G, u, [&](node, count dist) {
             nf[tid][dist] += 1;
         });
     }
 
-    count n = G.numberOfNodes();
+    count n = G->numberOfNodes();
     result.resize(dia, 0);
     count start = 1;
     count end = dia;
     // enhancements to the result
     if (true) {
-        count m = G.numberOfEdges();
+        count m = G->numberOfEdges();
         result[0] = 2 * m;
         result.back() = n * (n-1);
         start += 1;
