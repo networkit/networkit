@@ -71,10 +71,15 @@ class TestGraph(unittest.TestCase):
 		G.addEdge(3, 2)
 		G.addEdge(1, 2)
 
-		self.assertEqual(sorted(G.neighbors(0)), [1, 2])
-		self.assertEqual(sorted(G.neighbors(1)), [2])
-		self.assertEqual(sorted(G.neighbors(2)), [])
-		self.assertEqual(sorted(G.neighbors(3)), [1, 2])
+		self.assertListEqual(sorted(G.neighbors(0)), [1, 2])
+		self.assertListEqual(sorted(G.neighbors(1)), [2])
+		self.assertListEqual(sorted(G.neighbors(2)), [])
+		self.assertListEqual(sorted(G.neighbors(3)), [1, 2])
+
+		self.assertListEqual(sorted(G.inNeighbors(0)), [])
+		self.assertListEqual(sorted(G.inNeighbors(1)), [0, 3])
+		self.assertListEqual(sorted(G.inNeighbors(2)), [0, 1, 3])
+		self.assertListEqual(sorted(G.inNeighbors(3)), [])
 
 		# Undirected
 		G = nk.Graph(4, False, False)
