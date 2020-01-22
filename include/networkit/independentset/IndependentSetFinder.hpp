@@ -1,8 +1,8 @@
 /*
- * IndependentSetFinder.h
+ * IndependentSetFinder.hpp
  *
  *  Created on: 27.02.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_INDEPENDENTSET_INDEPENDENT_SET_FINDER_HPP_
@@ -17,8 +17,7 @@ namespace NetworKit {
  *
  * Abstract base class for independent set algorithms.
  */
-class
-IndependentSetFinder {
+class IndependentSetFinder {
 
 
 public:
@@ -28,7 +27,7 @@ public:
 
     /**
      * Returns a boolean vector of length n where vec[v] is @c true iff v is in the independent sets.
-     * @param[in]	G	The graph.
+     * @param[in]  G  The graph.
      * @return A boolean vector of length n.
      */
     virtual std::vector<bool> run(const Graph& G) = 0;
