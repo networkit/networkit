@@ -1,5 +1,5 @@
 /*
- * EpidemicSimulationSEIR.h
+ * EpidemicSimulationSEIR.hpp
  *
  *  Created on: 20.11.2015
  *      Author: Christian Staudt
@@ -18,7 +18,7 @@ namespace NetworKit {
  * Node centrality index which ranks nodes by their degree.
  * Optional normalization by maximum degree.
  */
-class EpidemicSimulationSEIR: public Algorithm {
+class EpidemicSimulationSEIR final : public Algorithm {
 public:
     /**
      *
@@ -33,9 +33,9 @@ public:
 
     std::vector<std::vector<count>> getData();
 
-protected:
+private:
 
-    const Graph& G;
+    const Graph* G;
     count tMax;
     double transP;
     count eTime;
@@ -45,7 +45,6 @@ protected:
     std::vector<State> state;
     std::vector<index> timestamp;
     std::vector<std::vector<count>> stats;
-    bool randStartNode;
 
 };
 
