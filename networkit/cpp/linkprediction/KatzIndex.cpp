@@ -2,14 +2,14 @@
  * KatzIndex.cpp
  *
  *  Created on: 30.01.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #include <list>
 
+#include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/linkprediction/KatzIndex.hpp>
 #include <networkit/linkprediction/PredictionsSorter.hpp>
-#include <networkit/auxiliary/Parallel.hpp>
 
 namespace NetworKit {
 

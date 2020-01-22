@@ -1,8 +1,8 @@
 /*
- * KatzIndex.h
+ * KatzIndex.hpp
  *
  *  Created on: 30.01.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_KATZ_INDEX_HPP_
@@ -22,7 +22,7 @@ namespace NetworKit {
  * that is based on the sum of the weighted number of paths of length l
  * where l is smaller than a given limit.
  */
-class KatzIndex : public LinkPredictor {
+class KatzIndex final : public LinkPredictor {
 private:
   count maxPathLength; //!< Maximal length of the paths to consider
 
