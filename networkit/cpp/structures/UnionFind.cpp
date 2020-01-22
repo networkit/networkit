@@ -50,7 +50,7 @@ Partition UnionFind::toPartition() {
     p.setUpperBound(parent.size());
     for (index e = 0; e < parent.size(); ++e) {
         p.moveToSubset(find(e), e);
-    }	
+    }
     return p;
 }
 

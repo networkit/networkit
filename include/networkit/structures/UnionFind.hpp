@@ -1,5 +1,5 @@
 /*
- * UnionFind.h
+ * UnionFind.hpp
  *
  *  Created on: 11.08.2014
  *      Author: Marcel Radermacher
@@ -22,7 +22,7 @@ namespace NetworKit {
  * Uses path compression and union by rank to achieve running time linear in
  * the number of elements times the inverse Ackermann function.
  */
-class UnionFind {
+class UnionFind final {
 private:
     std::vector<index> parent;
     std::vector<unsigned char> rank;
