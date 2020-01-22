@@ -1,8 +1,8 @@
 /*
- * EdgeScoring.h
+ * EdgeScoring.hpp
  *
  *  Created on: 15.10.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_SCORING_EDGE_SCORING_HPP_
