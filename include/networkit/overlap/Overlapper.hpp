@@ -8,14 +8,10 @@
 #ifndef NETWORKIT_OVERLAP_OVERLAPPER_HPP_
 #define NETWORKIT_OVERLAP_OVERLAPPER_HPP_
 
-#include <set>
-#include <vector>
-
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
-
 
 /**
  * @ingroup overlap
