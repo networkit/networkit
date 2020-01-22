@@ -1,8 +1,8 @@
 /*
- * CommonNeighborsIndex.h
+ * CommonNeighborsIndex.hpp
  *
  *  Created on: 06.12.2014
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_COMMON_NEIGHBORS_INDEX_HPP_
@@ -18,7 +18,7 @@ namespace NetworKit {
  * The CommonNeighborsIndex calculates the number of common
  * neighbors of a node-pair in a given graph.
  */
-class CommonNeighborsIndex : public LinkPredictor {
+class CommonNeighborsIndex final : public LinkPredictor {
 private:
   /**
    * Returns the number of common neighbors of the given nodes @a u and @a v.

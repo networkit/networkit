@@ -2,7 +2,7 @@
  * CommonNeighborsIndex.cpp
  *
  *  Created on: 06.12.2014
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #include <networkit/linkprediction/CommonNeighborsIndex.hpp>
