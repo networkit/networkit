@@ -1,5 +1,5 @@
 /*
- * Cover.h
+ * Cover.hpp
  *
  *  Created on: 03.10.2013
  *      Author: cls
@@ -14,8 +14,8 @@
 #include <map>
 #include <cassert>
 #include <limits>
-#include <networkit/structures/Partition.hpp>
 #include <networkit/Globals.hpp>
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 
@@ -24,7 +24,7 @@ namespace NetworKit {
  * Implements a cover of a set, i.e. an assignment of
  * its elements to possibly overlapping subsets.
  */
-class Cover {
+class Cover final {
 
 public:
     /** Default constructor */
@@ -102,7 +102,7 @@ public:
      *
      * @return The set of members of subset @a s.
      */
-    std::set<index> getMembers(const index s) const;
+    std::set<index> getMembers(index s) const;
 
 
     /**
@@ -232,9 +232,6 @@ public:
      * @param func Takes parameters <code>(node, index)</code>
      */
     template<typename Callback> void parallelForEntries(Callback handle) const;
-
-
-
 
 private:
 
