@@ -11,7 +11,6 @@
 #include <networkit/scoring/EdgeScoring.hpp>
 #include <networkit/structures/Partition.hpp>
 
-
 namespace NetworKit {
 
 // TODO: implement modularity as in Python prototype
@@ -21,8 +20,6 @@ namespace NetworKit {
  */
 template<typename T>
 class ModularityScoring final : public EdgeScoring<T> {
-
-private:
 
     double totalEdgeWeight;  //!< total weight of the graph
 
@@ -38,9 +35,7 @@ public:
     /** Default destructor */
     ~ModularityScoring() = default;
 
-
     void scoreEdges(int attrId) override;
-
 
     /**
      * Returns an edge score for an edge (u,v) which expresses the
@@ -55,7 +50,6 @@ public:
      */
     T edgeScore(node u, node v) const override;
 };
-
 
 template<typename T>
 ModularityScoring<T>::ModularityScoring(Graph& G, double gTotalEdgeWeight) : EdgeScoring<T>(G),
@@ -74,13 +68,11 @@ inline T ModularityScoring<T>::edgeScore(node u, node v) const {
     double nom2 = (this->G->weightedDegree(v) / volume);
     double deltaMod = (this->G->weight(u, v) / totalEdgeWeight) -
             (nom1 * nom2);
-//	TRACE("volume: ", volume, ", deltaMod: ", deltaMod, ", totalew: ", totalEdgeWeight);
     return deltaMod;
 }
 
 template<typename T>
 void ModularityScoring<T>::scoreEdges(int) {
-
     // TODO: rewrite with new edge attribute system
 }
 
