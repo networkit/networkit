@@ -7,7 +7,6 @@
 
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/auxiliary/Log.hpp>
-
 #include <networkit/linkprediction/AlgebraicDistanceIndex.hpp>
 
 namespace NetworKit {
