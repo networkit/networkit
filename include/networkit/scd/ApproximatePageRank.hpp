@@ -1,5 +1,5 @@
 /*
- * ApproximatePageRank.h
+ * ApproximatePageRank.hpp
  *
  *  Created on: 26.02.2014
  *      Author: Henning
@@ -17,9 +17,9 @@ namespace NetworKit {
 /**
  * Computes an approximate PageRank vector from a given seed.
  */
-class ApproximatePageRank {
-protected:
-    const Graph& G;
+class ApproximatePageRank final {
+private:
+    const Graph* G;
     double alpha;
     double eps;
 

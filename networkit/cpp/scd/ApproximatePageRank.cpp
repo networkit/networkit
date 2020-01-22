@@ -14,17 +14,17 @@
 namespace NetworKit {
 
 ApproximatePageRank::ApproximatePageRank(const Graph& g, double alpha_, double epsilon):
-        G(g), alpha(alpha_), eps(epsilon) {
+        G(&g), alpha(alpha_), eps(epsilon) {
 
 }
 
 void ApproximatePageRank::push(node u, std::queue<node>& activeNodes) {
     double res = pr_res[u].second;
-    double volume = G.weightedDegree(u, true);
+    double volume = G->weightedDegree(u, true);
 
-    G.forNeighborsOf(u, [&](node, node v, edgeweight w) {
+    G->forNeighborsOf(u, [&](node, node v, edgeweight w) {
         double mass = (1.0 - alpha) * res * w / (2.0 * volume);
-        double vol_v = G.weightedDegree(v, true);
+        double vol_v = G->weightedDegree(v, true);
         // the first check is for making sure the node is not added twice.
         // the second check ensures that enough residual is left.
         if ( pr_res[v].second < vol_v * eps && (pr_res[v].second + mass) >= eps * vol_v ) {
