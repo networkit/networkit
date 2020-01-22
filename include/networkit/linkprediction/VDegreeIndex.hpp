@@ -1,8 +1,8 @@
 /*
- * VDegreeIndex.h
+ * VDegreeIndex.hpp
  *
  *  Created on: 01.04.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_V_DEGREE_INDEX_HPP_
@@ -17,7 +17,7 @@ namespace NetworKit {
  *
  * Index that simply returns the degree of the second given node.
  */
-class VDegreeIndex : public LinkPredictor {
+class VDegreeIndex final : public LinkPredictor {
 private:
   /**
    * Returns the degree of the second node provided, namely @a v.

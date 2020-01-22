@@ -2,7 +2,7 @@
  * VDegreeIndex.cpp
  *
  *  Created on: 01.04.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #include <networkit/linkprediction/VDegreeIndex.hpp>
