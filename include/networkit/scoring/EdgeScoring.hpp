@@ -12,7 +12,6 @@
 
 namespace NetworKit {
 
-
 /**
  * @ingroup scoring
  * Abstract base class for algorithms associating a score with an edge.
@@ -21,8 +20,7 @@ template<typename T>
 class EdgeScoring {
 
 protected:
-
-    Graph* G;	//!< pointer to the graph
+    Graph* G;
 
 public:
 
@@ -42,10 +40,7 @@ EdgeScoring<T>::EdgeScoring(Graph& G) {
 }
 
 template<typename T>
-EdgeScoring<T>::~EdgeScoring() {
-
-}
-
+EdgeScoring<T>::~EdgeScoring() {}
 
 } /* namespace NetworKit */
 #endif // NETWORKIT_SCORING_EDGE_SCORING_HPP_
