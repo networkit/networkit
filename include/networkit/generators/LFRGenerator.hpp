@@ -1,10 +1,10 @@
 #ifndef NETWORKIT_GENERATORS_LFR_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_LFR_GENERATOR_HPP_
 
-#include <networkit/graph/Graph.hpp>
-#include <networkit/structures/Partition.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 
@@ -21,7 +21,7 @@ namespace NetworKit {
  *
  * The edge-switching markov-chain algorithm implementation in NetworKit is used which is different from the implementation in the original LFR benchmark.
  */
-class LFRGenerator : public Algorithm, public StaticGraphGenerator {
+class LFRGenerator final : public Algorithm, public StaticGraphGenerator {
 public:
     /**
      * Initialize the LFR generator for @a n nodes.
@@ -97,14 +97,14 @@ public:
     /**
      * Generates the graph and the community structure.
      */
-    virtual void run() override;
+    void run() override;
 
     /**
      * Generates and returns the graph.
      *
      * @return The generated graph.
      */
-    virtual Graph generate() override;
+    Graph generate() override;
 
     /**
      * Returns (a copy of) the generated graph.
@@ -137,37 +137,32 @@ public:
     /**
      * The name and parameters of the generator
      */
-    virtual std::string toString() const override;
+    std::string toString() const override;
 
     /**
      * If the algorithm uses parallelism (no)
      *
      * @return false, only minor parts are parallelized
      */
-    virtual bool isParallel() const override;
+    bool isParallel() const override;
 
-protected:
+private:
     /*
      * These methods might be overridden by a sub-class which could use a different model or generator in order to generate the parts of the graph.
      */
-    virtual std::vector<std::vector<node>> assignNodesToCommunities();
-    virtual Graph generateIntraClusterGraph(std::vector<count> intraDegreeSequence, const std::vector<node> &localToGlobalNode);
-    virtual Graph generateInterClusterGraph(const std::vector<count> &externalDegreeSequence);
+    std::vector<std::vector<node>> assignNodesToCommunities();
+    Graph generateIntraClusterGraph(std::vector<count> intraDegreeSequence, const std::vector<node> &localToGlobalNode);
+    Graph generateInterClusterGraph(const std::vector<count> &externalDegreeSequence);
 
     count n;
-
     bool hasDegreeSequence;
     std::vector<count> degreeSequence;
-
     bool hasCommunitySizeSequence;
     std::vector<count> communitySizeSequence;
-
     bool hasInternalDegreeSequence;
     std::vector<count> internalDegreeSequence;
-
     bool hasGraph;
     Graph G;
-
     bool hasPartition;
     Partition zeta;
 };

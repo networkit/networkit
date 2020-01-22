@@ -1,10 +1,6 @@
-/*
- *
- */
-
 #include <algorithm>
-#include <random>
 #include <numeric>
+#include <random>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
@@ -555,6 +551,3 @@ std::string NetworKit::LFRGenerator::toString() const {
 bool NetworKit::LFRGenerator::isParallel() const {
     return false;
 }
-
-
-
