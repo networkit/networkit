@@ -21,17 +21,13 @@ namespace NetworKit {
 class EpidemicSimulationSEIR final : public Algorithm {
 public:
     /**
-     *
-     *
      * @param G The network.
-     *
      */
     EpidemicSimulationSEIR(const Graph& G, count tMax, double transP, count eTime, count iTime, node zero);
 
     void run() override;
 
-
-    std::vector<std::vector<count>> getData();
+    std::vector<std::vector<count>> getData() const;
 
 private:
 
@@ -45,7 +41,6 @@ private:
     std::vector<State> state;
     std::vector<index> timestamp;
     std::vector<std::vector<count>> stats;
-
 };
 
 } /* namespace NetworKit */

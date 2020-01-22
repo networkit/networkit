@@ -12,8 +12,7 @@
 
 namespace NetworKit {
 
-EpidemicSimulationSEIR::EpidemicSimulationSEIR(const Graph& G, count tMax, double transP, count eTime, count iTime, node zero) : Algorithm(), G(&G), tMax(tMax), transP(transP), eTime(eTime), iTime(iTime), zero(zero)  {
-}
+EpidemicSimulationSEIR::EpidemicSimulationSEIR(const Graph& G, count tMax, double transP, count eTime, count iTime, node zero) : Algorithm(), G(&G), tMax(tMax), transP(transP), eTime(eTime), iTime(iTime), zero(zero)  {}
 
 void EpidemicSimulationSEIR::run() {
 
@@ -71,7 +70,7 @@ void EpidemicSimulationSEIR::run() {
 
 
     auto census = [&]() {
-        std::vector<count> data = {0, 0, 0, 0, 0};
+        std::vector<count> data(5);
         G->forNodes([&](node v) {
             data[(index) state[v]] += 1;
         });
@@ -102,9 +101,8 @@ void EpidemicSimulationSEIR::run() {
 }
 
 
-std::vector<std::vector<count>> EpidemicSimulationSEIR::getData() {
+std::vector<std::vector<count>> EpidemicSimulationSEIR::getData() const {
     return stats;
 }
-
 
 } /* namespace NetworKit */
