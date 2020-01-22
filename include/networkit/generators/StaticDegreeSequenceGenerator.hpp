@@ -1,5 +1,5 @@
 /*
- * StaticDegreeSequenceGenerator.h
+ * StaticDegreeSequenceGenerator.hpp
  *
  *  Created on: 24.02.2014
  *      Author: Henning
