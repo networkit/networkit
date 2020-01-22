@@ -2,14 +2,14 @@
  * LinkThresholder.cpp
  *
  *  Created on: 01.04.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #include <list>
 
+#include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/linkprediction/LinkThresholder.hpp>
 #include <networkit/linkprediction/PredictionsSorter.hpp>
-#include <networkit/auxiliary/Parallel.hpp>
 
 namespace NetworKit {
 
