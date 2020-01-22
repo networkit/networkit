@@ -265,8 +265,8 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
         TRACE("vMax: ", vMax);
         TRACE("dQMax: ", dQMax);
         if (vMax != none) {
-            addNodeToCommunity(vMax);	// add best node to community
-            currentQ += dQMax;	 // update current community quality
+            addNodeToCommunity(vMax);  // add best node to community
+            currentQ += dQMax;   // update current community quality
             TRACE("community: ", community);
         }
     } while (vMax != none);
@@ -276,9 +276,9 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 
 std::set<node> GCE::expandSeed(node s) {
     if (objective == "M") {
-        return expandseed_internal<true>(G, s);
+        return expandseed_internal<true>(*G, s);
     } else if (objective == "L") {
-        return expandseed_internal<false>(G, s);
+        return expandseed_internal<false>(*G, s);
     } else {
         throw std::runtime_error("unknown objective function");
     }
