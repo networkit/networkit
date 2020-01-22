@@ -2,11 +2,11 @@
  * PredictionsSorter.cpp
  *
  *  Created on: 26.04.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
-#include <networkit/linkprediction/PredictionsSorter.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/linkprediction/PredictionsSorter.hpp>
 
 namespace NetworKit {
 
