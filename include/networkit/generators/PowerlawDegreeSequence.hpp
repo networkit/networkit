@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-class PowerlawDegreeSequence : public Algorithm {
+class PowerlawDegreeSequence final : public Algorithm {
 public:
     /**
      * Generates a powerlaw degree sequence with the given minimum and maximum degree, the powerlaw exponent gamma.
