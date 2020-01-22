@@ -1,8 +1,8 @@
 /*
- * TotalNeighborsIndex.h
+ * TotalNeighborsIndex.hpp
  *
  *  Created on: 05.04.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_TOTAL_NEIGHBORS_INDEX_HPP_
@@ -19,7 +19,7 @@ namespace NetworKit {
  * This index is also known as Total Friends Index and returns
  * the number of nodes in the neighborhood-union of u and v.
  */
-class TotalNeighborsIndex : public LinkPredictor {
+class TotalNeighborsIndex final : public LinkPredictor {
 private:
   /**
    * Returns the number of total union-neighbors for the given node-pair (@a u, @a v).
