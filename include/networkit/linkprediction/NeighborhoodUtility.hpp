@@ -1,8 +1,8 @@
 /*
- * NeighborhoodUtility.h
+ * NeighborhoodUtility.hpp
  *
  *  Created on: 06.04.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_NEIGHBORHOOD_UTILITY_HPP_
@@ -17,7 +17,7 @@ namespace NetworKit {
  *
  * Provides basic operations on neighborhoods in a given graph.
  */
-class NeighborhoodUtility {
+class NeighborhoodUtility final {
 private:
   /**
    * Sorts and returns the neighborhoods of the nodes @a u and @a v in the given graph @a G.
