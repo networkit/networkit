@@ -1,8 +1,8 @@
 /*
- * Overlapper.h
+ * Overlapper.hpp
  *
  *  Created on: 30.10.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_OVERLAP_OVERLAPPER_HPP_
