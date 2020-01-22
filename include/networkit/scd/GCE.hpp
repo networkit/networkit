@@ -13,9 +13,7 @@
 #include <networkit/auxiliary/SetIntersector.hpp>
 #include <networkit/scd/SelectiveCommunityDetector.hpp>
 
-
 namespace NetworKit {
-
 
 /**
  * The Greedy Community Expansion algorithm.
@@ -28,7 +26,6 @@ public:
 
     GCE(const Graph& G, std::string objective);
 
-
     std::map<node, std::set<node>> run(const std::set<node>& seeds) override;
 
     /**
@@ -40,7 +37,6 @@ public:
 
 private:
     std::string objective;    // name of objective function
-
 
 };
 

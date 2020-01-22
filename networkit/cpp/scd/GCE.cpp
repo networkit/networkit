@@ -4,9 +4,9 @@
  * Author: cls
  */
 
+#include <unordered_map>
 
 #include <networkit/scd/GCE.hpp>
-#include <unordered_map>
 
 namespace {
     template <bool> struct ConditionalCount {
@@ -35,7 +35,7 @@ namespace NetworKit {
 
 
 GCE::GCE(const Graph& G, std::string objective) : SelectiveCommunityDetector(G), objective(objective) {
-    if (G.numberOfSelfLoops() > 0) {
+    if (G.numberOfSelfLoops()) {
         throw std::runtime_error("Graphs with self-loops are not supported in GCE");
     }
 }
@@ -250,7 +250,6 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
         // scan shell for node with maximum quality improvement
         dQMax = 0.0; 	// maximum quality improvement
         vMax = none;
-//		for (node v : shell(community)) {
         for (const auto& vs : currentShell) {
             // get values for current node
             assert(intExtDeg(vs.first, community) == std::make_pair(vs.second.degInt, vs.second.degExt));
