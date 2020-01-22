@@ -5,11 +5,11 @@
  *      Author: cls
  */
 
-#include <networkit/structures/Partition.hpp>
-#include <networkit/auxiliary/Parallel.hpp>
+#include <memory>
 #include <algorithm>
 #include <atomic>
-#include <memory>
+#include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 
@@ -28,8 +28,7 @@ Partition::Partition(index z) : z(z), omega(0), data(z, none) {  //z(z-1);data(z
 
 }
 
-Partition::Partition(index z, index defaultValue) : z(z), omega(0), data(z, defaultValue) {  //z(z-1);data(z,none);
-
+Partition::Partition(index z, index defaultValue) : z(z), omega(0), data(z, defaultValue) {  
 }
 
 void Partition::allToSingletons() {
@@ -53,22 +52,6 @@ index Partition::mergeSubsets(index s, index t) {
     }
     return none; // no new cluster formed
 }
-/*
-bool Partition::isOnePartition(Graph& G) { //FIXME what for is elements needed? const std::set<index>& elements
-    index one = data[0];	// first subset id should be equal to all others
-    // TODO: use iterator forEntries and pair-wise comparison?
-    for (index e = 0; e < this->z; ++e) { // FIXME constructor initializes data with z+1, so <= is necessary.
-        if (data[e] != one) {
-            return false;
-        }
-    }
-    return true;
-}*/
-
-/*bool Partition::isSingletonPartition(Graph& G) const { //FIXME what for is elements needed? const std::set<index>& elements
-    return (numberOfElements() == numberOfSubsets());
-}
-*/
 
 count Partition::numberOfSubsets() const {
     auto n = upperBound();

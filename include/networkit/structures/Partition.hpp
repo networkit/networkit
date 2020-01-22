@@ -1,5 +1,5 @@
 /*
- * Partition.h
+ * Partition.hpp
  *
  *  Created on: 03.10.2013
  *      Author: cls
@@ -24,7 +24,7 @@ namespace NetworKit {
  * Implements a partition of a set, i.e. a subdivision of the
  * set into disjoint subsets.
  */
-class Partition {
+class Partition final {
 
 public:
 
@@ -79,7 +79,6 @@ public:
         return this->data[e];
     }
 
-
     /**
      * Extend the data structure and create a slot
      * for one more element. Initializes the entry to none
@@ -91,7 +90,6 @@ public:
         assert (z == data.size()); //(data.size() - 1)
         return z-1;
     }
-
 
     /**
      * Removes the entry for the given element
@@ -225,7 +223,6 @@ public:
      */
     std::vector<count> subsetSizes() const;
 
-
     /**
      * Get a map from subset id to size of the subset.
      *
@@ -233,15 +230,13 @@ public:
      */
     std::map<index, count> subsetSizeMap() const;
 
-
     /**
      * Get the members of the subset @a s.
      *
      * @param s The subset.
      * @return A set containing the members of @a s.
      */
-    std::set<index> getMembers(const index s) const;
-
+    std::set<index> getMembers(index s) const;
 
     /**
      * @return number of elements in the partition.
@@ -249,7 +244,6 @@ public:
     inline count numberOfElements() const {
         return z;	// z is the maximum element id
     }
-
 
     /**
      * Get the current number of sets in this partition.
@@ -264,12 +258,10 @@ public:
      */
     std::vector<index> getVector() const;
 
-
     /**
      * @return the subsets of the partition as a set of sets.
      */
     std::set<std::set<index> > getSubsets() const;
-
 
     /**
      * Get the ids of nonempty subsets.
@@ -286,7 +278,6 @@ public:
     inline void setName(std::string name) {
         this->name = name;
     }
-
 
     /**
      * Get the human-readable identifier.
