@@ -2,7 +2,7 @@
  * AdamicAdarIndex.cpp
  *
  *  Created on: 25.03.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #include <networkit/linkprediction/AdamicAdarIndex.hpp>
