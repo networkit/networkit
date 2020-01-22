@@ -1,8 +1,8 @@
 /*
- * NeighborsMeasureIndex.h
+ * NeighborsMeasureIndex.hpp
  *
  *  Created on: 05.04.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_NEIGHBORS_MEASURE_INDEX_HPP_
@@ -19,7 +19,7 @@ namespace NetworKit {
  * This index is also known as Friends Measure and simply returns
  * the number of connections between neighbors of the given nodes u and v.
  */
-class NeighborsMeasureIndex : public LinkPredictor {
+class NeighborsMeasureIndex final : public LinkPredictor {
 private:
 
   /**
