@@ -20,7 +20,10 @@ class SelectiveCommunityDetector {
 
 public:
 
-    SelectiveCommunityDetector(const Graph& G);
+    /**
+     * @param[in] G the input graph.
+     */
+    SelectiveCommunityDetector(const Graph& G) : G(&G) {}
     virtual ~SelectiveCommunityDetector() = default;
 
     /**
@@ -30,8 +33,7 @@ public:
     virtual std::map<node, std::set<node>> run(const std::set<node>& seeds) = 0;
 
 protected:
-
-    const Graph* G;	//!< the input graph
+    const Graph* G;
 };
 
 } /* namespace NetworKit */
