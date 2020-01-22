@@ -2,7 +2,7 @@
  * JaccardIndex.cpp
  *
  *  Created on: 23.03.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #include <networkit/linkprediction/JaccardIndex.hpp>

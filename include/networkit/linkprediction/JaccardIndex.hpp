@@ -1,8 +1,8 @@
 /*
- * JaccardIndex.h
+ * JaccardIndex.hpp
  *
  *  Created on: 23.03.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_JACCARD_INDEX_HPP_
@@ -19,7 +19,7 @@ namespace NetworKit {
  * This is done through dividing the number of common neighbors by the number of nodes
  * in the neighboorhood-union.
  */
-class JaccardIndex : public LinkPredictor {
+class JaccardIndex final : public LinkPredictor {
 private:
   /**
    * Returns the Jaccard index for the given node-pair (@a u, @a v).
