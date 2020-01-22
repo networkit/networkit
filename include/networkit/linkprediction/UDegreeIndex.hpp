@@ -1,8 +1,8 @@
 /*
- * UDegreeIndex.h
+ * UDegreeIndex.hpp
  *
  *  Created on: 01.04.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_U_DEGREE_INDEX_HPP_
@@ -17,7 +17,7 @@ namespace NetworKit {
  *
  * Index that simply returns the degree of the first given node.
  */
-class UDegreeIndex : public LinkPredictor {
+class UDegreeIndex final : public LinkPredictor {
 private:
   /**
    * Returns the degree of the first node provided, namely @a u.
