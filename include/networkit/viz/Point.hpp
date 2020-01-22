@@ -1,5 +1,5 @@
 /*
- * Point.h
+ * Point.hpp
  *
  *  Created on: Apr 11, 2013
  *      Author: Henning, Manuel Penschuck <networkit@manuel.jetzt>
@@ -20,7 +20,6 @@
 
 #include <tlx/simple_vector.hpp>
 #include <tlx/unused.hpp>
-
 #include <networkit/Globals.hpp>
 
 namespace NetworKit {
@@ -87,7 +86,7 @@ protected:
  * Dimensions at compile-time for performance reasons.
  */
 template <class T = coordinate, size_t Dimensions = 0>
-class Point : public PointImpl::Storage<T, Dimensions> {
+class Point final : public PointImpl::Storage<T, Dimensions> {
 public:
     // Pull in constructors
     using PointImpl::Storage<T, Dimensions>::Storage;
@@ -176,31 +175,31 @@ public:
     }
 
     /// Add constant to each coordinate, in-place
-    Point &operator+=(const T scalar) noexcept {
+    Point &operator+=(T scalar) noexcept {
         apply([&](index, T v) { return v + scalar; });
         return *this;
     }
 
     /// Subtract constant from each coordinate, in-place
-    Point &operator-=(const T scalar) noexcept {
+    Point &operator-=(T scalar) noexcept {
         apply([&](index, T v) { return v - scalar; });
         return *this;
     }
 
     /// Multiply each coordinate with constant, in-place
-    Point &operator*=(const T scalar) noexcept {
+    Point &operator*=(T scalar) noexcept {
         apply([&](index, T v) { return v * scalar; });
         return *this;
     }
 
     /// Alias to (*this) *= factor;
-    Point &scale(const T factor) noexcept {
+    Point &scale(T factor) noexcept {
         *this *= factor;
         return *this;
     }
 
     /// Divide each coordinate with constant, in-place
-    Point &operator/=(const T scalar) noexcept {
+    Point &operator/=(T scalar) noexcept {
         apply([&](index, T v) { return v / scalar; });
         return *this;
     }
@@ -237,7 +236,7 @@ public:
     }
 
     /// Elementwise addition
-    Point operator+(const T scalar) const {
+    Point operator+(T scalar) const {
         auto result = *this;
         result += scalar;
 
@@ -245,21 +244,21 @@ public:
     }
 
     /// Elementwise subtraction
-    Point operator-(const T scalar) const {
+    Point operator-(T scalar) const {
         auto result = *this;
         result -= scalar;
         return result;
     }
 
     /// Elementwise multiplication
-    Point operator*(const T scalar) const {
+    Point operator*(T scalar) const {
         auto result = *this;
         result *= scalar;
         return result;
     }
 
     /// Elementwise division
-    Point operator/(const T scalar) const {
+    Point operator/(T scalar) const {
         auto result = *this;
         result /= scalar;
         return result;
