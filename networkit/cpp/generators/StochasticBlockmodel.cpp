@@ -1,16 +1,16 @@
 /*
-* StochasticBlockmodel.h
+* StochasticBlockmodel.cpp
 *
 *  Created on: 13.08.2014
 *      Author: Christian Staudt
 */
 
-#include <networkit/generators/StochasticBlockmodel.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/generators/StochasticBlockmodel.hpp>
 
 namespace NetworKit {
 
-StochasticBlockmodel::StochasticBlockmodel(count n, count nBlocks, const std::vector<index>& membership, const std::vector<std::vector<double> >& affinity)
+StochasticBlockmodel::StochasticBlockmodel(count n, count nBlocks, const std::vector<index>& membership, const std::vector<std::vector<double>>& affinity)
     : n(n), nBlocks(nBlocks), membership(membership), affinity(affinity) {
     if (affinity.size() != nBlocks) {
         throw std::runtime_error("affinity matrix must be of size nBlocks x nBlocks");
