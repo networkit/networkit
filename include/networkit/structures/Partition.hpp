@@ -8,12 +8,11 @@
 #ifndef NETWORKIT_STRUCTURES_PARTITION_HPP_
 #define NETWORKIT_STRUCTURES_PARTITION_HPP_
 
-#include <set>
-#include <vector>
-#include <map>
 #include <cassert>
-#include <limits>
+#include <map>
+#include <set>
 #include <string>
+#include <vector>
 
 #include <networkit/Globals.hpp>
 
@@ -33,7 +32,7 @@ public:
     /**
      * Create a new partition data structure for @a z elements.
      *
-     * @param[in]	z	maximum index
+     * @param[in] z maximum index
      */
     Partition(index z);
 
@@ -43,8 +42,8 @@ public:
      * WARNING: this circumvents the standard interface and may leave the object
      * in an inconsistent state. Use only in exceptional cases.
      *
-     * @param[in]	z	maximum index
-     * @param[in]	defaultValue
+     * @param[in] z maximum index
+     * @param[in] defaultValue
      */
     Partition(index z, index defaultValue);
 
@@ -54,17 +53,17 @@ public:
     /**
      *  Index operator.
      *
-     *  @param[in]	e	an element
+     *  @param[in] e an element
      */
-    inline index& operator [](const index& e) {
+    inline index& operator [](index e) {
         return this->data[e];
     }
     /**
      * Index operator for const instances of this class.
      *
-     * @param[in]	e	an element
+     * @param[in] e an element
      */
-    inline const index& operator [](const index& e) const {
+    inline const index& operator [](index e) const {
         return this->data[e];
     }
 
@@ -107,8 +106,8 @@ public:
      * @param e The element to add.
      */
     inline void addToSubset(index s, index e) {
-        assert (data[e] == none);	// guarantee that element was unassigned
-        assert (s <= omega);		// do not create new subset ids
+        assert (data[e] == none); // guarantee that element was unassigned
+        assert (s <= omega);  // do not create new subset ids
         data[e] = s;
     }
 
@@ -121,7 +120,7 @@ public:
      */
     inline void moveToSubset(index s, index e) {
         assert (this->contains(e));
-        assert (s <= omega); 		// do not create new subset ids
+        assert (s <= omega);   // do not create new subset ids
         data[e] = s;
     }
 
@@ -158,7 +157,7 @@ public:
     /**
      * Sets an upper bound for the subset ids that CAN be assigned.
      *
-     * @param[in]	upper	highest assigned subset ID + 1
+     * @param[in] upper highest assigned subset ID + 1
      */
     inline void setUpperBound(index upper) {
         this->omega = upper-1;
@@ -198,7 +197,7 @@ public:
      * @return @c true if the assigned subset is valid, @c false otherwise.
      */
     inline bool contains(index e) const {
-        return (e < z) && (data[e] != none);	// e is in the element index range and the entry is not empty
+        return (e < z) && (data[e] != none); // e is in the element index range and the entry is not empty
     }
 
 
@@ -242,7 +241,7 @@ public:
      * @return number of elements in the partition.
      */
     inline count numberOfElements() const {
-        return z;	// z is the maximum element id
+        return z; // z is the maximum element id
     }
 
     /**
@@ -304,9 +303,9 @@ public:
 
 
 private:
-    index z;	//!< maximum element index that can be mapped
-    index omega;	//!< maximum subset index ever assigned
-    std::vector<index> data;  	//!< data container, indexed by element index, containing subset index
+    index z; //!< maximum element index that can be mapped
+    index omega; //!< maximum subset index ever assigned
+    std::vector<index> data; //!< data container, indexed by element index, containing subset index
     std::string name;
 
     /**

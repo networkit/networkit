@@ -5,18 +5,16 @@
  *      Author: cls
  */
 
-#include <memory>
 #include <algorithm>
 #include <atomic>
+#include <memory>
+
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 
-Partition::Partition() : z(0), omega(0), data(0) {
-
-}
-
+Partition::Partition() : z(0), omega(0), data(0) {}
 
 Partition::Partition(const std::vector<index>& data) : z(data.size()), omega(), data(data) {
     auto max_elem = *std::max_element(data.begin(), data.end());
@@ -24,12 +22,9 @@ Partition::Partition(const std::vector<index>& data) : z(data.size()), omega(), 
 }
 
 
-Partition::Partition(index z) : z(z), omega(0), data(z, none) {  //z(z-1);data(z,none);
+Partition::Partition(index z) : z(z), omega(0), data(z, none) {}
 
-}
-
-Partition::Partition(index z, index defaultValue) : z(z), omega(0), data(z, defaultValue) {  
-}
+Partition::Partition(index z, index defaultValue) : z(z), omega(0), data(z, defaultValue) {}
 
 void Partition::allToSingletons() {
     setUpperBound(numberOfElements());
@@ -122,7 +117,7 @@ std::map<index, count> Partition::subsetSizeMap() const {
     return subset2size;
 }
 
-std::set<index> Partition::getMembers(const index s) const {
+std::set<index> Partition::getMembers(index s) const {
     assert (s <= omega);
     std::set<index> subset;
     for (index e = 0; e < this->z; ++e) {
