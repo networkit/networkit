@@ -9,9 +9,9 @@
 #define NETWORKIT_SCD_PAGE_RANK_NIBBLE_HPP_
 
 #include <set>
+
 #include <networkit/graph/Graph.hpp>
 #include <networkit/scd/SelectiveCommunityDetector.hpp>
-
 
 namespace NetworKit {
 
@@ -22,8 +22,6 @@ namespace NetworKit {
  * Simplifications according to D. Gleich's code at URL https://gist.github.com/dgleich/6201856.
  */
 class PageRankNibble final : public SelectiveCommunityDetector {
-
-protected:
 
     double alpha;
     double epsilon;

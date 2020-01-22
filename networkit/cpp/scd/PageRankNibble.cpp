@@ -8,18 +8,17 @@
 #include <algorithm>
 #include <unordered_set>
 #include <vector>
+
 #include <networkit/auxiliary/Parallel.hpp>
-#include <networkit/scd/PageRankNibble.hpp>
 #include <networkit/scd/ApproximatePageRank.hpp>
+#include <networkit/scd/PageRankNibble.hpp>
 
 namespace NetworKit {
 
-PageRankNibble::PageRankNibble(const Graph& g, double alpha, double epsilon): SelectiveCommunityDetector(g), alpha(alpha), epsilon(epsilon) {
-}
+PageRankNibble::PageRankNibble(const Graph& g, double alpha, double epsilon): SelectiveCommunityDetector(g), alpha(alpha), epsilon(epsilon) {}
 
 std::set<node> PageRankNibble::bestSweepSet(std::vector<std::pair<node, double>>& pr) {
     TRACE("Finding best sweep set. Support size: ",  pr.size());
-
 
     // order vertices
     TRACE("Before sorting");
@@ -79,7 +78,6 @@ std::set<node> PageRankNibble::bestSweepSet(std::vector<std::pair<node, double>>
     std::set<node> bestSweepSet(currentSweepSet.begin(), currentSweepSet.begin() + bestSweepSetIndex);
     return bestSweepSet;
 }
-
 
 std::set<node> PageRankNibble::expandSeed(node seed) {
     DEBUG("APR(G, ", alpha, ", ", epsilon, ")");
