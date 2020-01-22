@@ -1,8 +1,8 @@
 /*
- * PreferentialAttachmentIndex.h
+ * PreferentialAttachmentIndex.hpp
  *
  *  Created on: 22.03.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_PREFERENTIAL_ATTACHMENT_INDEX_HPP_
@@ -19,7 +19,7 @@ namespace NetworKit {
  * The run-method simply calculates the product of the number of nodes in the neighborhoods
  * regarding the given nodes.
  */
-class PreferentialAttachmentIndex : public LinkPredictor {
+class PreferentialAttachmentIndex final : public LinkPredictor {
 private:
   /**
    * Returns the product of the cardinalities of the neighborhoods regarding @a u and @a v.
