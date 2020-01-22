@@ -1,8 +1,8 @@
 /*
- * Luby.h
+ * Luby.hpp
  *
  *  Created on: 27.02.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_INDEPENDENTSET_LUBY_HPP_
@@ -18,8 +18,7 @@ namespace NetworKit {
  *
  * Luby's parallel independent set algorithm.
  */
-class
-Luby: public IndependentSetFinder {
+class Luby final : public IndependentSetFinder {
 
 public:
 
