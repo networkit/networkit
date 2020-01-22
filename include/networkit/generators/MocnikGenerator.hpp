@@ -1,5 +1,5 @@
 /*
- * MocnikGenerator.h
+ * MocnikGenerator.hpp
  *
  * Created on: July 7, 2018
  * Author: Franz-Benjamin Mocnik <mail@mocnik-science.net>
@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class MocnikGenerator: public StaticGraphGenerator {
+class MocnikGenerator final: public StaticGraphGenerator {
 private:
     // GENERAL DATA
 
@@ -99,7 +99,6 @@ private:
      */
     void addEdgesToGraph(Graph &G, const count &n, const double &k, const double &relativeWeight, const bool &baseLayer);
 
-protected:
     count dim;
     std::vector<count> ns;
     std::vector<double> ks;
@@ -140,7 +139,7 @@ public:
     MocnikGenerator(count dim, std::vector<count> ns, double k, std::vector<double> weighted);
     MocnikGenerator(count dim, std::vector<count> ns, std::vector<double> ks, std::vector<double> weighted);
 
-    virtual Graph generate();
+    Graph generate() override;
 };
 
 } /* namespace NetworKit */

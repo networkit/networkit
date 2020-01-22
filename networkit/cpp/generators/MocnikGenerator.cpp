@@ -10,8 +10,8 @@
 #include <map>
 #include <vector>
 
-#include <networkit/generators/MocnikGenerator.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/generators/MocnikGenerator.hpp>
 
 namespace NetworKit {
 
