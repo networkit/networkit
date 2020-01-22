@@ -2,7 +2,7 @@
  * AdjustedRandIndex.cpp
  *
  *  Created on: 11.04.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #include <set>
