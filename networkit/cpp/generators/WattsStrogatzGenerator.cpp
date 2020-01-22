@@ -5,9 +5,9 @@
 *      Author: Simon Bischof
 */
 
+#include <networkit/auxiliary/Random.hpp>
 #include <networkit/generators/WattsStrogatzGenerator.hpp>
 #include <networkit/generators/RegularRingLatticeGenerator.hpp>
-#include <networkit/auxiliary/Random.hpp>
 
 namespace NetworKit {
 
