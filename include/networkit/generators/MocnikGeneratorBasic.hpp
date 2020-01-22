@@ -1,5 +1,5 @@
 /*
- * MocnikGeneratorBasic.h
+ * MocnikGeneratorBasic.hpp
  *
  * Created on: July 7, 2018
  * Author: Franz-Benjamin Mocnik <mail@mocnik-science.net>
@@ -25,7 +25,7 @@ private:
      */
     std::vector<std::vector<double>> nodePositions;
 
-protected:
+private:
     count dim;
     count n;
     double k;
@@ -53,7 +53,7 @@ public:
      */
     MocnikGeneratorBasic(count dim, count n, double k);
 
-    virtual Graph generate();
+    Graph generate() override;
 };
 
 } /* namespace NetworKit */
