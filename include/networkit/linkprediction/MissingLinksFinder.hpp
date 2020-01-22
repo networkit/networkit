@@ -1,8 +1,8 @@
 /*
- * MissingLinksFinder.h
+ * MissingLinksFinder.hpp
  *
  *  Created on: 20.03.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_MISSING_LINKS_FINDER_HPP_
@@ -23,9 +23,9 @@ namespace NetworKit {
  * For example in case of distance 2 only node-pairs that would close
  * a triangle in the given graph get returned.
  */
-class MissingLinksFinder {
+class MissingLinksFinder final {
 private:
-  const Graph& G; //!< The graph to find missing links in
+  const Graph* G; //!< The graph to find missing links in
 
 public:
   /**
