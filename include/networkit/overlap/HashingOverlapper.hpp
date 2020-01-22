@@ -1,8 +1,8 @@
 /*
- * HashingOverlapper.h
+ * HashingOverlapper.hpp
  *
  *  Created on: 31.01.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_OVERLAP_HASHING_OVERLAPPER_HPP_
@@ -18,11 +18,11 @@ namespace NetworKit {
  * @ingroup overlap
  * Determines the overlap of multiple partitions by hashing partition identifiers.
  */
-class HashingOverlapper: public Overlapper {
+class HashingOverlapper final : public Overlapper {
 
 public:
 
-    virtual Partition run(const Graph& G, const std::vector<Partition>& clusterings);
+    Partition run(const Graph& G, const std::vector<Partition>& clusterings) override;
 
 };
 
