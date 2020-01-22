@@ -1,5 +1,5 @@
 /*
- * SelectiveCommunityDetector.h
+ * SelectiveCommunityDetector.hpp
  *
  *  Created on: 15.05.2013
  *      Author: cls
@@ -27,11 +27,11 @@ public:
      * Detect communities for given seed nodes.
      * @return a mapping from seed node to community (as a set of nodes)
      */
-    virtual std::map<node, std::set<node> >  run(const std::set<node>& seeds) = 0;
+    virtual std::map<node, std::set<node>> run(const std::set<node>& seeds) = 0;
 
 protected:
 
-    const Graph& G;	//!< the input graph
+    const Graph* G;	//!< the input graph
 };
 
 } /* namespace NetworKit */

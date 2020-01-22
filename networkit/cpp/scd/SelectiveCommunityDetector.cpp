@@ -10,9 +10,9 @@
 namespace NetworKit {
 
 /**
- * @param[in] G	pointer to the considered graph
+ * @param[in] G  pointer to the considered graph
  */
-SelectiveCommunityDetector::SelectiveCommunityDetector(const Graph& G) : G(G) {
+SelectiveCommunityDetector::SelectiveCommunityDetector(const Graph& G) : G(&G) {
 }
 
 
