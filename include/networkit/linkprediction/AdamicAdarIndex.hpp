@@ -20,7 +20,6 @@ namespace NetworKit {
  * common neighbors of u and v.
  */
 class AdamicAdarIndex final : public LinkPredictor {
-private:
   /**
    * Returns the Adamic/Adar Index of the given node-pair (@a u, @a v).
    * @param u First node
