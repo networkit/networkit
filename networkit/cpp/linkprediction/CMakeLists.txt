@@ -2,7 +2,6 @@ networkit_add_module(linkprediction
     AdamicAdarIndex.cpp
     AdjustedRandIndex.cpp
     AlgebraicDistanceIndex.cpp
-    CommonNeighborsIndex.cpp
     EvaluationMetric.cpp
     JaccardIndex.cpp
     KatzIndex.cpp
