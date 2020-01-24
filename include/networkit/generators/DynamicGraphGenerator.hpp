@@ -1,5 +1,5 @@
 /*
- * DynamicGraphGenerator.h
+ * DynamicGraphGenerator.hpp
  *
  *  Created on: 14.01.2014
  *      Author: cls
