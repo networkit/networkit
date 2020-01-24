@@ -1,19 +1,18 @@
 /*
- * HyperbolicGenerator.h
+ * HyperbolicGenerator.hpp
  *
  *  Created on: 20.05.2014
- *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
+ *      Author: Moritz v. Looz
  */
 
 #ifndef NETWORKIT_GENERATORS_HYPERBOLIC_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_HYPERBOLIC_GENERATOR_HPP_
 
 #include <cmath>
-
 #include <vector>
+#include <networkit/auxiliary/Timer.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
 #include <networkit/generators/StaticGraphGenerator.hpp>
-#include <networkit/auxiliary/Timer.hpp>
 #include <networkit/generators/quadtree/Quadtree.hpp>
 
 namespace NetworKit {
@@ -21,7 +20,7 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class HyperbolicGenerator: public StaticGraphGenerator {
+class HyperbolicGenerator final : public StaticGraphGenerator {
     friend class DynamicHyperbolicGenerator;
 public:
 
@@ -46,7 +45,7 @@ public:
     /**
      * @return Graph to be generated according to parameters specified in constructor.
      */
-    Graph generate();
+    Graph generate() override;
 
     /**
      * Set the capacity of a quadtree leaf.
@@ -152,8 +151,6 @@ private:
         Returns the list of points, w, that lies within minTheta and maxTheta
         in the supplied band(That area is called as slab)
         */
-        //TODO: There should be a better way to write the whole thing. Find it.
-        //TODO: This can be done faster. Instead of returning the copying to slab array, just return the indexes and iterate over the band array
         assert(band.size() == bandAngles.size());
 
         vector<Point2DWithIndex<double>> slab;

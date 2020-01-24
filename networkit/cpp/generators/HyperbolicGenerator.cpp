@@ -1,7 +1,7 @@
 /*
  * HyperbolicGenerator.cpp
  *
- *      Authors: Mustafa zdayi and Moritz v. Looz (moritz.looz-corswarem@kit.edu)
+ *      Authors: Mustafa zdayi and Moritz v. Looz
  *
  * This generator contains algorithms described in two publications.
  *
