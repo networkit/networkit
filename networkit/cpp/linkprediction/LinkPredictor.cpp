@@ -15,11 +15,9 @@
 
 namespace NetworKit {
 
-LinkPredictor::LinkPredictor() : G(nullptr), validCache(false) {
-}
+LinkPredictor::LinkPredictor() : G(nullptr), validCache(false) {}
 
-LinkPredictor::LinkPredictor(const Graph& G) : G(&G), validCache(false) {
-}
+LinkPredictor::LinkPredictor(const Graph& G) : G(&G), validCache(false) {}
 
 void LinkPredictor::setGraph(const Graph& newGraph) {
   G = &newGraph;
