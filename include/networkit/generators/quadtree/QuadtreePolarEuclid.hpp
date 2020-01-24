@@ -1,8 +1,8 @@
 /*
- * Quadtree.h
+ * Quadtree.hpp
  *
  *  Created on: 21.05.2014
- *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
+ *      Author: Moritz v. Looz
  */
 
 #ifndef NETWORKIT_GENERATORS_QUADTREE_QUADTREE_POLAR_EUCLID_HPP_
@@ -18,7 +18,7 @@
 namespace NetworKit {
 
 template <class T>
-class QuadtreePolarEuclid {
+class QuadtreePolarEuclid final {
     friend class QuadTreePolarEuclidGTest;
 public:
     QuadtreePolarEuclid() {
