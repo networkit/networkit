@@ -1,5 +1,5 @@
 /*
- * BarabasiAlbertGenerator.h
+ * BarabasiAlbertGenerator.hpp
  *
  *  Created on: May 28, 2013
  *      Author: forigem
@@ -17,7 +17,7 @@ namespace NetworKit {
  * @ingroup generators
  * Generates a scale-free graph using the Barabasi-Albert preferential attachment model.
  */
-class BarabasiAlbertGenerator : public StaticGraphGenerator {
+class BarabasiAlbertGenerator final : public StaticGraphGenerator {
 private:
     Graph initGraph;
     count k{0};    //!< Attachments made per node
