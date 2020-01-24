@@ -1,5 +1,5 @@
 /*
- * ForestFireGenerator.h
+ * DynamicForestFireGenerator.hpp
  *
  *  Created on: 17.01.2014
  *      Author: cls
@@ -21,14 +21,14 @@ namespace NetworKit {
  * - shrinking diameter
  *
  * see Leskovec, Kleinberg, Faloutsos: Graphs over Tim: Densification Laws,
- * 	Shringking Diameters and Possible Explanations
+ *   Shringking Diameters and Possible Explanations
  */
-class DynamicForestFireGenerator: public DynamicGraphGenerator {
+class DynamicForestFireGenerator final : public DynamicGraphGenerator {
 
 public:
 
     /**
-     * @param	p	      "forward burning probability", controls the amount of forward connections burned by each new node
+     * @param  p        "forward burning probability", controls the amount of forward connections burned by each new node
      * @param   directed  whether the generated graph is directed or undirected
      * @param   r         scales down the burning probability for backward connections (ignored for undirected graphs)
      */

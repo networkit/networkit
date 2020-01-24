@@ -1,16 +1,16 @@
 /*
- * ForestFireGenerator.cpp
+ * DynamicForestFireGenerator.cpp
  *
  *  Created on: 17.01.2014
  *      Author: cls
  */
 
-#include <networkit/generators/DynamicForestFireGenerator.hpp>
-#include <networkit/auxiliary/Random.hpp>
-#include <networkit/auxiliary/Log.hpp>
 #include <set>
 #include <unordered_map>
 #include <queue>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/generators/DynamicForestFireGenerator.hpp>
 
 namespace NetworKit {
 
