@@ -1,10 +1,5 @@
-/*
- *
- */
-
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
-
 #include <networkit/generators/EdgeSwitchingMarkovChainGenerator.hpp>
 #include <networkit/generators/HavelHakimiGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>

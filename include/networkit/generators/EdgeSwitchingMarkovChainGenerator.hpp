@@ -22,7 +22,7 @@ namespace NetworKit {
  * in order to limit the running time, at most 200 times as many attempts to perform an edge swap are made (as certain degree distributions
  * do not allow edge swaps at all).
  */
-class EdgeSwitchingMarkovChainGenerator : public StaticDegreeSequenceGenerator {
+class EdgeSwitchingMarkovChainGenerator final : public StaticDegreeSequenceGenerator {
 public:
     /**
      * Initializes the configuration model generator with the given degree sequence @a sequence.
@@ -43,7 +43,7 @@ public:
      * @throws std::runtime_error If the sequence cannot be generated and ignoreIfRealizable is false.
      * @return The generated graph
      */
-    virtual Graph generate() override;
+    Graph generate() override;
 private:
     bool ignoreIfRealizable;
 };
