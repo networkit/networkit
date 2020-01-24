@@ -8,9 +8,9 @@
 
 #include <numeric>
 
+#include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/generators/ChungLuGenerator.hpp>
 #include <networkit/graph/GraphBuilder.hpp>
-#include <networkit/auxiliary/Parallel.hpp>
 
 namespace NetworKit {
 

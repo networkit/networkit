@@ -1,5 +1,5 @@
 /*
- * ChungLu.h
+ * ChungLu.hpp
  *
  *  Created on: Dec 23, 2013
  *      Author: Henning
@@ -30,8 +30,8 @@ namespace NetworKit {
  *
  */
 
-class ChungLuGenerator: public StaticDegreeSequenceGenerator {
-protected:
+class ChungLuGenerator final: public StaticDegreeSequenceGenerator {
+private:
     count sum_deg;
     count n;
 
@@ -41,7 +41,7 @@ public:
     /**
      * Generates graph with expected degree sequence seq.
      */
-    virtual Graph generate();
+    Graph generate() override;
 };
 
 } /* namespace NetworKit */
