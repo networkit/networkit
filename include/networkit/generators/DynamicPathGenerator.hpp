@@ -1,5 +1,5 @@
 /*
- * DynamicPathGenerator.h
+ * DynamicPathGenerator.hpp
  *
  *  Created on: 14.01.2014
  *      Author: cls
@@ -17,7 +17,7 @@ namespace NetworKit {
  * @ingroup generators
  * Example dynamic graph generator: Generates a dynamically growing path.
  */
-class DynamicPathGenerator: public DynamicGraphGenerator {
+class DynamicPathGenerator final : public DynamicGraphGenerator {
 public:
 
     std::vector<GraphEvent> generate(count nSteps) override;
