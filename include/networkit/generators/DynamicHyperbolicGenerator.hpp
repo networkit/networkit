@@ -1,5 +1,5 @@
 /*
- * DynamicHyperbolicGenerator.h
+ * DynamicHyperbolicGenerator.hpp
  *
  *  Created on: 29.07.2014
  *      Author: moritzl
@@ -16,7 +16,7 @@
 
 namespace NetworKit {
 
-class DynamicHyperbolicGenerator: public DynamicGraphGenerator  {
+class DynamicHyperbolicGenerator final : public DynamicGraphGenerator  {
     friend class GeneratorsGTest;
 public:
     /**

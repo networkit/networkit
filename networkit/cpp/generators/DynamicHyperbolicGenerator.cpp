@@ -7,10 +7,10 @@
 
 #include <cmath>
 
+#include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/generators/DynamicHyperbolicGenerator.hpp>
 #include <networkit/generators/HyperbolicGenerator.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
-#include <networkit/auxiliary/Parallel.hpp>
 
 using std::vector;
 namespace NetworKit {
@@ -212,9 +212,6 @@ void DynamicHyperbolicGenerator::moveNode(index toMove) {
 vector<index> DynamicHyperbolicGenerator::getNeighborsInBands(index i, bool bothDirections) {
     const double r = radii[i];
     const double phi = angles[i];
-    //const double coshr = cosh(radii[i]);
-    //const double sinhr = sinh(radii[i]);
-    //const double coshR = cosh(R);
     assert(bands.size() == bandAngles.size());
     assert(bands.size() == bandRadii.size() -1);
     count expectedDegree = (4/PI)*nodeCount*exp(-(radii[i])/2);
