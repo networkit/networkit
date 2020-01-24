@@ -1,5 +1,5 @@
 /*
- * DynamicGenerator.h
+ * DynamicGraphSpurce.hpp
  *
  *  Created on: 03.04.2013
  *      Author: cls
