@@ -3,7 +3,6 @@ networkit_add_module(linkprediction
     AdjustedRandIndex.cpp
     AlgebraicDistanceIndex.cpp
     EvaluationMetric.cpp
-    JaccardIndex.cpp
     KatzIndex.cpp
     LinkPredictor.cpp
     LinkThresholder.cpp

@@ -9,6 +9,7 @@
 #define NETWORKIT_LINKPREDICTION_JACCARD_INDEX_HPP_
 
 #include <networkit/linkprediction/LinkPredictor.hpp>
+#include <networkit/linkprediction/NeighborhoodUtility.hpp>
 
 namespace NetworKit {
 
@@ -20,18 +21,22 @@ namespace NetworKit {
  * in the neighboorhood-union.
  */
 class JaccardIndex final : public LinkPredictor {
-private:
   /**
    * Returns the Jaccard index for the given node-pair (@a u, @a v).
    * @param u First node
    * @param v Second node
    * @return the Jaccard index for the given node-pair (@a u, @a v)
    */
-  double runImpl(node u, node v) override;
+  double runImpl(node u, node v) override {
+      const auto unionSize = NeighborhoodUtility::getNeighborsUnion(*G, u, v).size();
+      if (unionSize == 0) {
+          return 0;
+      }
+      return 1.0 * NeighborhoodUtility::getCommonNeighbors(*G, u, v).size() / unionSize;
+  }
 
 public:
   using LinkPredictor::LinkPredictor;
-  
 };
 
 } // namespace NetworKit
