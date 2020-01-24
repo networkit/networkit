@@ -21,6 +21,7 @@ set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Im
 set(NETWORKIT_WITH_SANITIZERS "" CACHE STRING "Uses sanitizers during the compilation")
 set(NETWORKIT_RELEASE_LOGGING "AUTO" CACHE STRING "Do not compile log messages at levels TRACE or DEBUG (AUTO|ON|OFF)")
 set(NETWORKIT_PYTHON_RPATH "" CACHE STRING "Build specific rpath references.")
+set(NETWORKIT_EXT_TLX "" CACHE STRING "Absolute path for external tlx-library. If not set, extlibs/tlx is used")
 
 set (NETWORKIT_CXX_STANDARD "11" CACHE STRING "CXX Version to compile with. Currently fixed to 11")
 
@@ -173,12 +174,19 @@ endif()
 
 ################################################################################
 # Use TLX as a CMake submodule
-if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/tlx/CMakeLists.txt")
-	add_subdirectory(extlibs/tlx)
+if(NOT NETWORKIT_EXT_TLX)
+	if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/tlx/CMakeLists.txt")
+		add_subdirectory(extlibs/tlx)
+	else()
+		message(FATAL_ERROR
+				"Missing TLX library in extlibs/tlx "
+				"Please run `git submodule update --init` to fetch the submodule.")
+	endif()
 else()
-	message(FATAL_ERROR
-			"Missing TLX library in extlibs/tlx "
-			"Please run `git submodule update --init` to fetch the submodule.")
+	add_library(tlx STATIC IMPORTED)
+	set_target_properties(tlx PROPERTIES
+			IMPORTED_LOCATION "${NETWORKIT_EXT_TLX}/lib/libtlx.a"
+			INTERFACE_INCLUDE_DIRECTORIES "${NETWORKIT_EXT_TLX}/include/")
 endif()
 
 ################################################################################
