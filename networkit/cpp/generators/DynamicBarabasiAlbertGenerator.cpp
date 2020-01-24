@@ -6,7 +6,6 @@
  */
 
 #include <networkit/auxiliary/Random.hpp>
-
 #include <networkit/generators/DynamicBarabasiAlbertGenerator.hpp>
 
 namespace NetworKit {
@@ -54,11 +53,6 @@ void DynamicBarabasiAlbertGenerator::generate() {
     while (targets.size() < k) {
         nAttempts++;
 
-//
-//		if (nAttempts > 100) {
-//			throw std::runtime_error("picking target nodes takes too long - something is wrong");
-//		}
-
         // 2) pick a random number that is 0 or greater and is less than the sum of the weights
         uint64_t rand = Aux::Random::integer(degSum);
 
@@ -77,7 +71,7 @@ void DynamicBarabasiAlbertGenerator::generate() {
 
     for (node v : targets) {
         this->Gproxy->addEdge(u, v);
-        degSum += 2; 	// increment degree sum
+        degSum += 2;   // increment degree sum
     }
 
     this->Gproxy->timeStep(); // trigger a time step
