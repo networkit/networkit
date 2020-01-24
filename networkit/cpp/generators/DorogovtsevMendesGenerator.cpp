@@ -16,8 +16,6 @@ DorogovtsevMendesGenerator::DorogovtsevMendesGenerator(count nNodes): nNodes(nNo
 
 }
 
-
-
 Graph DorogovtsevMendesGenerator::generate() {
     Graph G;
     // create initial triangle
