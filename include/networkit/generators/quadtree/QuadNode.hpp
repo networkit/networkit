@@ -1,17 +1,17 @@
 /*
- * QuadNode.h
+ * QuadNode.hpp
  *
  *  Created on: 21.05.2014
- *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
+ *      Author: Moritz v. Looz
  */
 
 #ifndef NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_HPP_
 #define NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_HPP_
 
-#include <vector>
 #include <algorithm>
-#include <functional>
 #include <assert.h>
+#include <functional>
+#include <vector>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
@@ -24,7 +24,7 @@ using std::cos;
 namespace NetworKit {
 
 template <class T, bool poincare = true>
-class QuadNode {
+class QuadNode final {
     friend class QuadTreeGTest;
 private:
     double leftAngle;
@@ -36,7 +36,7 @@ private:
     static const unsigned coarsenLimit = 4;
     count subTreeSize;
     std::vector<T> content;
-    std::vector<Point2DWithIndex<double> > positions;
+    std::vector<Point2DWithIndex<double>> positions;
     std::vector<double> angles;
     std::vector<double> radii;
     bool isLeaf;
@@ -126,8 +126,6 @@ public:
         } else {
             middleR = acosh((1-balance)*cosh(alpha*maxR) + balance*cosh(alpha*minR))/alpha;
         }
-
-        //one could also use the median here. Results in worse asymptotical complexity, but maybe better runtime?
 
         assert(middleR < maxR);
         assert(middleR > minR);
@@ -636,7 +634,6 @@ public:
                 }
             }
         }
-        //DEBUG("Expected at most ", expectedNeighbours, " neighbours, got ", result.size() - offset);
         return candidatesTested;
     }
 
