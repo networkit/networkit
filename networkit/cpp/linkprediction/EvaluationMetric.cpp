@@ -15,11 +15,9 @@
 
 namespace NetworKit {
 
-EvaluationMetric::EvaluationMetric() : testGraph(nullptr) {
-}
+EvaluationMetric::EvaluationMetric() : testGraph(nullptr) {}
 
-EvaluationMetric::EvaluationMetric(const Graph& testGraph) : testGraph(&testGraph) {
-}
+EvaluationMetric::EvaluationMetric(const Graph& testGraph) : testGraph(&testGraph) {}
 
 void EvaluationMetric::setTestGraph(const Graph& newTestGraph) {
   testGraph = &newTestGraph;

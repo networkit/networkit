@@ -21,8 +21,6 @@ namespace NetworKit {
  * by the link predictor and a testGraph to compare against.
  */
 class EvaluationMetric {
-private:
-
   /**
    * Generates the points on the evaluation curve. Each metric will implement
    * it's own way to generate those points.
@@ -42,7 +40,7 @@ private:
   void setPositivesAndNegatives();
 
   void setTrueAndFalsePositives();
-  
+
   void setTrueAndFalseNegatives();
 
   /**
@@ -123,7 +121,7 @@ public:
    * @return area under the most recently calculated curve
    */
   virtual double getAreaUnderCurve() const;
-  
+
 };
 
 } // namespace NetworKit
