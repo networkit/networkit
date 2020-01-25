@@ -10,8 +10,7 @@
 
 namespace NetworKit {
 
-SameCommunityIndex::SameCommunityIndex() : LinkPredictor(), communities() {
-}
+SameCommunityIndex::SameCommunityIndex() : LinkPredictor(), communities() {}
 
 SameCommunityIndex::SameCommunityIndex(const Graph& graph) : LinkPredictor(graph) {
   PLM communityDetection(graph);

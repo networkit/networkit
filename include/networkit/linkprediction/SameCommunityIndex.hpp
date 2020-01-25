@@ -19,7 +19,6 @@ namespace NetworKit {
  * Index to determine whether two nodes are in the same community.
  */
 class SameCommunityIndex final : public LinkPredictor {
-private:
   Partition communities; //!< The communities of the current graph
 
   /**
@@ -38,7 +37,7 @@ public:
    * @param G The graph to work on
    */
   explicit SameCommunityIndex(const Graph& G);
-  
+
   /**
    * Sets the graph to work on.
    * @param newGraph The graph to work on
