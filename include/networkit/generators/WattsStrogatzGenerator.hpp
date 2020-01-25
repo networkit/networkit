@@ -27,18 +27,18 @@ public:
     * First, a regular ring lattice is generated.
     * Then some edges are rewired randomly.
     *
-    * @param nNodes     number of nodes in target graph
-    * @param nNeighbors    number of neighbors on each side of a node
-    * @param p        rewiring probability
+    * @param nNodes number of nodes in target graph
+    * @param nNeighbors number of neighbors on each side of a node
+    * @param p rewiring probability
     */
     WattsStrogatzGenerator(count nNodes, count nNeighbors, double p);
 
     Graph generate() override;
 
 private:
-        count nNodes;
-        count nNeighbors;
-        double p;
+    count nNodes;
+    count nNeighbors;
+    double p;
 };
 
 } /* namespace NetworKit */
