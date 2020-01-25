@@ -16,16 +16,14 @@ namespace NetworKit {
  * @ingroup generators
  */
 class MocnikGeneratorBasic: public StaticGraphGenerator {
-private:
     // GENERAL DATA
-    
+
     /**
      * Position of each node in space.  The index of the vector is also the number of
      * the node.
      */
     std::vector<std::vector<double>> nodePositions;
 
-private:
     count dim;
     count n;
     double k;
