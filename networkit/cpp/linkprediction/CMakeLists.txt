@@ -10,7 +10,6 @@ networkit_add_module(linkprediction
     NeighborhoodUtility.cpp
     PrecisionRecallMetric.cpp
     PredictionsSorter.cpp
-    PreferentialAttachmentIndex.cpp
     ROCMetric.cpp
     RandomLinkSampler.cpp
     ResourceAllocationIndex.cpp
