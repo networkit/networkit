@@ -7,7 +7,6 @@
 // networkit-format
 
 #include <cmath>
-#include <queue>
 #include <set>
 
 #include <networkit/auxiliary/Random.hpp>
