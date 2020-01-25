@@ -20,7 +20,6 @@ namespace NetworKit {
  * Based on the generated points the area under the curve can be calculated with the trapzoidal rule.
  */
 class ROCMetric final: public EvaluationMetric {
-private:
   /**
    * Generate the points of the Receiver Operating Characteristic curve regarding the previously set predictions.
    * Note that in the case of multiple y-values mapping to the same x-value the highest (=latest) y-value gets picked.
@@ -31,7 +30,7 @@ private:
 
 public:
   using EvaluationMetric::EvaluationMetric;
-  
+
 };
 
 } // namespace NetworKit
