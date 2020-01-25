@@ -7,7 +7,6 @@ networkit_add_module(linkprediction
     LinkPredictor.cpp
     LinkThresholder.cpp
     MissingLinksFinder.cpp
-    NeighborhoodDistanceIndex.cpp
     NeighborhoodUtility.cpp
     NeighborsMeasureIndex.cpp
     PrecisionRecallMetric.cpp
