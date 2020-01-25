@@ -20,7 +20,6 @@ namespace NetworKit {
  * Based on the generated points the area under the curve can be calculated with the trapzoidal rule.
  */
 class PrecisionRecallMetric final : public EvaluationMetric {
-private:
   /**
    * Generates the points for the Precision-Recall curve with respect to the given predictions.
    * The curve assigns every recall-value a corresponding precision as the y-value.
@@ -32,7 +31,7 @@ private:
 
 public:
   using EvaluationMetric::EvaluationMetric;
-  
+
 };
 
 } // namespace NetworKit
