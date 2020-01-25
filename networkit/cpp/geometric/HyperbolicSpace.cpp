@@ -2,15 +2,14 @@
  * HyperbolicSpace.cpp
  *
  *  Created on: 20.05.2014
- *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
+ *      Author: Moritz v. Looz
  */
 
 #include <cmath>
-
 #include <cassert>
 
-#include <networkit/geometric/HyperbolicSpace.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/geometric/HyperbolicSpace.hpp>
 
 using std::abs;
 using std::max;
@@ -39,7 +38,7 @@ double HyperbolicSpace::nativeDistance(double firstangle, double firstR, double 
 }
 
 /**
- * This distance measure is taken from the Poincar disc model.
+ * This distance measure is taken from the Poincare disc model.
  */
 double HyperbolicSpace::poincareMetric(double phi_a, double  r_a, double phi_b, double r_b) {
     assert(r_a < 1);
@@ -54,15 +53,6 @@ double HyperbolicSpace::poincareMetric(Point2DWithIndex<double> a, Point2DWithIn
     assert(result >= 0);
     return result;
 }
-
-//double HyperbolicSpace::nativeHyperbolicDistance(double phi_a, double r_a, double phi_b, double r_b) {
-//	/* Returns the hyperbolic distance between points u and v
-//	* 2010 paper, eqn: 5
-//	*/
-//	double deltaPhi = PI - abs(PI-abs(phi_a - phi_b));
-//	double distance = acosh(cosh(r_a)*cosh(r_b) - sinh(r_a)*sinh(r_b)*cos(deltaPhi));
-//	return distance;
-//}
 
 void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, double R, double alpha) {
     fillPoints(angles, radii, 0, 2*PI, 0, R, alpha);
@@ -148,9 +138,6 @@ double HyperbolicSpace::EuclideanRadiusToHyperbolic(double euclideanRadius) {
 
 double HyperbolicSpace::maxRinSlice(double minPhi, double maxPhi, double phi_c, double r_c, double euRadius) {
     double maxCos = max(cos(abs(minPhi - phi_c)), cos(abs(maxPhi - phi_c)));
-    //double mirrorAngle;
-    //if (phi_c >= PI) mirrorAngle = phi_c - PI;
-    //else mirrorAngle = phi_c + PI;
 
     if (minPhi < phi_c && phi_c < maxPhi) maxCos = 1;
     //applying law of cosines here
@@ -196,7 +183,6 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
 
     auto firstlogpart = [](double r, double d, double c) {
         double s = (c*c-d*d);
-        //double denominator = r*r*s*s;
         double rsqs = r*r+s;
         double real = -2*s*sqrt(4*c*c*r*r-rsqs*rsqs);
         double imag = -4*c*c*r*r+2*s*r*r+2*s*s;
@@ -206,7 +192,6 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
     auto secondlogpart = [](double r, double d, double c) {
         double s = (c*c-d*d);
         double rsqs = r*r+s;
-        //double denominator = (r*r-1)*(s-1);
         double real = sqrt(4*c*c*r*r-rsqs*rsqs);
         double imag = 2*c*c*(r*r+1)-(s+1)*rsqs;
         imag = imag / sqrt((s+1)*(s+1)-(4*c*c));

@@ -1,16 +1,15 @@
 /*
- * Matcher.h
+ * Matcher.hpp
  *
  *  Created on: 30.10.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_MATCHING_MATCHER_HPP_
 #define NETWORKIT_MATCHING_MATCHER_HPP_
 
-#include <networkit/matching/Matching.hpp>
 #include <networkit/base/Algorithm.hpp>
-
+#include <networkit/matching/Matching.hpp>
 
 namespace NetworKit {
 
@@ -20,10 +19,10 @@ namespace NetworKit {
  */
 class Matcher : public Algorithm {
 protected:
-    const Graph& G;
+    const Graph* G;
     Matching M;
-    bool edgeScoresAsWeights;	//<! if true, algorithm should use edge scores instead of edge weights
-    const std::vector<double> edgeScores; 	//<! optional edge scores to be used instead of edge weight
+    bool edgeScoresAsWeights;  //<! if true, algorithm should use edge scores instead of edge weights
+    const std::vector<double> edgeScores;   //<! optional edge scores to be used instead of edge weight
 
 public:
     /**
@@ -41,7 +40,6 @@ public:
 
     /** Default destructor */
     virtual ~Matcher() = default;
-
 
     /**
      * Run the matching algorithm on the stored graph and return a matching.

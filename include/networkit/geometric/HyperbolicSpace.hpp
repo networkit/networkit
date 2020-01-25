@@ -1,17 +1,17 @@
 /*
- * HyperbolicSpace.h
+ * HyperbolicSpace.hpp
  *
  *  Created on: 20.05.2014
- *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
+ *      Author: Moritz v. Looz
  */
 
 #ifndef NETWORKIT_GEOMETRIC_HYPERBOLIC_SPACE_HPP_
 #define NETWORKIT_GEOMETRIC_HYPERBOLIC_SPACE_HPP_
 
 #include <cmath>
-
-#include <vector>
 #include <map>
+#include <vector>
+
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/geometric/Point2DWithIndex.hpp>
 #include <networkit/viz/Point.hpp>
@@ -21,10 +21,10 @@ using std::abs;
 
 namespace NetworKit {
 
-class HyperbolicSpace {
+class HyperbolicSpace final {
 public:
     HyperbolicSpace() = default;
-    virtual ~HyperbolicSpace() = default;
+    ~HyperbolicSpace() = default;
     /**
      * @param angles empty vector to hold angular coordinates of generated points
      * @param radii empty vector to hold radial coordinates of generated points
@@ -47,7 +47,7 @@ public:
 
     /**
      * @param firstangle angular coordinate of the first point
-     * @param firstR radial coordiante of the first point
+     * @param firstR radial coordinate of the first point
      * @param secondangle angular coordinate of the second point
      * @param secondR radial coordinate of the second point
      *
@@ -57,7 +57,7 @@ public:
 
     /**
      * @param firstangle angular coordinate of the first point
-     * @param firstR radial coordiante of the first point
+     * @param firstR radial coordinate of the first point
      * @param secondangle angular coordinate of the second point
      * @param secondR radial coordinate of the second point
      *
@@ -202,9 +202,6 @@ public:
      */
     static double hyperbolicSpaceInEuclideanCircle(double r_c, double d_c, double R);
 
-    /**
-     *
-     */
     static double maxRinSlice(double minPhi, double maxPhi, double phi_c, double r_c, double euRadius);
 };
 }
