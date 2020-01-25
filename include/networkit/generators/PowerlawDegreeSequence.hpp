@@ -3,9 +3,9 @@
 
 #include <vector>
 
+#include <networkit/Globals.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
-#include <networkit/Globals.hpp>
 
 namespace NetworKit {
 
@@ -112,6 +112,7 @@ public:
      * @return A degree that follows the generated distribution.
      */
     count getDegree() const;
+
 private:
     count minDeg, maxDeg;
     double gamma;
