@@ -18,14 +18,15 @@ namespace NetworKit {
  * Index that simply returns the degree of the first given node.
  */
 class UDegreeIndex final : public LinkPredictor {
-private:
   /**
    * Returns the degree of the first node provided, namely @a u.
    * @param u First node
    * @param v Second node
    * @return the degree of the first node provided, namely @a u
    */
-  double runImpl(node u, node v) override;
+  double runImpl(node u, node) override {
+    return G->degree(u);
+  }
 
 public:
   using LinkPredictor::LinkPredictor;
