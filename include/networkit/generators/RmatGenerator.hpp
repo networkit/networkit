@@ -22,7 +22,6 @@ namespace NetworKit {
  * R-MAT: A Recursive Model for Graph Mining. SDM 2004: 442-446.
  */
 class RmatGenerator final: public StaticGraphGenerator {
-private:
     count scale; ///< n = 2^scale
     count edgeFactor;
     double a, b, c; ///< probabilities
@@ -42,7 +41,8 @@ public:
      * @param[in] weighted  result graph weighted?
      * @param[in] reduceNodes  number of random nodes to delete to achieve a given node count
      */
-    RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted=false, count reduceNodes=0);
+    RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d,
+                  bool weighted = false, count reduceNodes = 0);
 
     /**
      * @return Graph to be generated according to parameters specified in constructor.
