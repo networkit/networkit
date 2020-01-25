@@ -20,14 +20,16 @@ namespace NetworKit {
  * the number of nodes in the neighborhood-union of u and v.
  */
 class TotalNeighborsIndex final : public LinkPredictor {
-private:
   /**
    * Returns the number of total union-neighbors for the given node-pair (@a u, @a v).
    * @param u First node
    * @param v Second node
    * @return the number of total union-neighbors for the given node-pair (@a u, @a v)
    */
-  double runImpl(node u, node v) override;
+  double runImpl(node u, node v) override {
+    return NeighborhoodUtility::getNeighborsUnion(*G, u, v).size();
+  }
+
 
 public:
   using LinkPredictor::LinkPredictor;
