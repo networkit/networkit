@@ -14,7 +14,6 @@ networkit_add_module(linkprediction
     RandomLinkSampler.cpp
     ResourceAllocationIndex.cpp
     SameCommunityIndex.cpp
-    VDegreeIndex.cpp
     )
 
 networkit_module_link_modules(linkprediction
