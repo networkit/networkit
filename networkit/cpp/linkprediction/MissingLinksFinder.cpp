@@ -13,8 +13,7 @@
 
 namespace NetworKit {
 
-MissingLinksFinder::MissingLinksFinder(const Graph& G) : G(&G) {
-}
+MissingLinksFinder::MissingLinksFinder(const Graph& G) : G(&G) {}
 
 std::vector<std::pair<node, node>> MissingLinksFinder::findAtDistance(count k) {
   std::vector<std::pair<node, node>> missingLinks;

@@ -8,9 +8,9 @@
 #ifndef NETWORKIT_LINKPREDICTION_MISSING_LINKS_FINDER_HPP_
 #define NETWORKIT_LINKPREDICTION_MISSING_LINKS_FINDER_HPP_
 
-#include <networkit/graph/Graph.hpp>
-
 #include <utility>
+
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -24,7 +24,6 @@ namespace NetworKit {
  * a triangle in the given graph get returned.
  */
 class MissingLinksFinder final {
-private:
   const Graph* G; //!< The graph to find missing links in
 
 public:
