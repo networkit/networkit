@@ -1,5 +1,5 @@
 /*
- * RandomEdgeScore.h
+ * RandomEdgeScore.hpp
  *
  *  Created on: 11.08.2014
  *      Author: Gerd Lindner
@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * Generates a random edge attribute. Each edge is assigned a random value in [0,1].
  */
-class RandomEdgeScore : public EdgeScore<double> {
+class RandomEdgeScore final : public EdgeScore<double> {
 
 public:
 
@@ -24,9 +24,9 @@ public:
      */
     RandomEdgeScore(const Graph& G);
 
-    virtual double score(edgeid eid) override;
-    virtual double score(node u, node v) override;
-    virtual void run() override;
+    double score(edgeid eid) override;
+    double score(node u, node v) override;
+    void run() override;
 };
 
 }

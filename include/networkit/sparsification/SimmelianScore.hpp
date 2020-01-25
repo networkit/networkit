@@ -92,7 +92,7 @@ public:
             count& overlap);
 
 protected:
-    const std::vector<count>& triangles;
+    const std::vector<count>* triangles;
 
 };
 

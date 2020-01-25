@@ -1,5 +1,5 @@
 /*
- * EdgeScoreAsWeight.h
+ * EdgeScoreAsWeight.hpp
  *
  *  Created on: 18.11.2014
  *      Author: Michael Hamann
@@ -12,15 +12,15 @@
 
 namespace NetworKit {
 
-class EdgeScoreAsWeight {
+class EdgeScoreAsWeight final {
 
 public:
     EdgeScoreAsWeight(const Graph& G, const std::vector<double>& score, bool squared = false, edgeweight offset = 1, edgeweight factor = 1);
     Graph calculate();
 
 private:
-    const Graph& G;
-    const std::vector<double>& score;
+    const Graph* G;
+    const std::vector<double>* score;
     bool squared;
     edgeweight offset;
     edgeweight factor;

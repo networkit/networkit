@@ -1,5 +1,5 @@
 /*
- * GeometricMeanScore.h
+ * GeometricMeanScore.hpp
  *
  *  Created on: 18.11.2014
  *      Author: Michael Hamann
@@ -12,16 +12,16 @@
 
 namespace NetworKit {
 
-class GeometricMeanScore : public EdgeScore<double> {
+class GeometricMeanScore final : public EdgeScore<double> {
 
 private:
-    const std::vector<double>& attribute;
+    const std::vector<double>* attribute;
 
 public:
     GeometricMeanScore(const Graph& G, const std::vector<double>& attribute);
-    virtual double score(edgeid eid) override;
-    virtual double score(node u, node v) override;
-    virtual void run() override;
+    double score(edgeid eid) override;
+    double score(node u, node v) override;
+    void run() override;
 };
 
 } // namespace NetworKit

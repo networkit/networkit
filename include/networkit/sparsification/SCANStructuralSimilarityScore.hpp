@@ -6,18 +6,18 @@
 
 namespace NetworKit {
 
-    class SCANStructuralSimilarityScore : public EdgeScore<double> {
+class SCANStructuralSimilarityScore final : public EdgeScore<double> {
 
-    public:
-        SCANStructuralSimilarityScore(const Graph& G, const std::vector<count>& triangles);
-        virtual void run() override;
-        virtual double score(edgeid eid) override;
-        virtual double score(node u, node v) override;
+public:
+    SCANStructuralSimilarityScore(const Graph& G, const std::vector<count>& triangles);
+    void run() override;
+    double score(edgeid eid) override;
+    double score(node u, node v) override;
 
-    private:
-        const std::vector<count>& triangles;
+private:
+    const std::vector<count>* triangles;
 
-    };
+};
 
 } // namespace NetworKit
 

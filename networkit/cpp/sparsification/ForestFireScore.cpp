@@ -19,23 +19,23 @@ namespace NetworKit {
 ForestFireScore::ForestFireScore(const Graph& G, double pf, double targetBurntRatio): EdgeScore<double>(G), pf(pf), targetBurntRatio(targetBurntRatio) {}
 
 void ForestFireScore::run() {
-    if (!G.hasEdgeIds()) {
+    if (!G->hasEdgeIds()) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
-    std::vector<count> burnt (G.upperEdgeIdBound(), 0);
+    std::vector<count> burnt (G->upperEdgeIdBound(), 0);
     count edgesBurnt = 0;
 
     #pragma omp parallel
-    while (edgesBurnt < targetBurntRatio * G.numberOfEdges()) {
+    while (edgesBurnt < targetBurntRatio * G->numberOfEdges()) {
         //Start a new fire
         std::queue<node> activeNodes;
-        std::vector<bool> visited (G.upperNodeIdBound(), false);
-        activeNodes.push(GraphTools::randomNode(G));
+        std::vector<bool> visited (G->upperNodeIdBound(), false);
+        activeNodes.push(GraphTools::randomNode(*G));
 
         auto forwardNeighbors = [&](node u) {
             std::vector<std::pair<node, edgeid>> validEdges;
-            G.forNeighborsOf(u, [&](node, node x, edgeid eid){
+            G->forNeighborsOf(u, [&](node, node x, edgeid eid){
                 if (! visited[x]) {
                     validEdges.emplace_back(x, eid);
                 }
@@ -77,7 +77,7 @@ void ForestFireScore::run() {
         edgesBurnt += localEdgesBurnt;
     }
 
-    std::vector<double> burntNormalized (G.upperEdgeIdBound(), 0.0);
+    std::vector<double> burntNormalized (G->upperEdgeIdBound(), 0.0);
     double maxv = (double) *Aux::Parallel::max_element(std::begin(burnt), std::end(burnt));
 
     if (maxv > 0) {

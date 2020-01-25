@@ -1,5 +1,5 @@
 /*
- * ForestFireScore.h
+ * ForestFireScore.hpp
  *
  *  Created on: 26.08.2014
  *      Author: Gerd Lindner
@@ -16,14 +16,14 @@ namespace NetworKit {
  * Based on the Forest Fire algorithm introduced by Leskovec et al.
  * The burn frequency of the edges is used as edge score.
  */
-class ForestFireScore : public EdgeScore<double> {
+class ForestFireScore final : public EdgeScore<double> {
 
 public:
 
     ForestFireScore(const Graph& graph, double pf, double targetBurntRatio);
-    virtual double score(edgeid eid) override;
-    virtual double score(node u, node v) override;
-    virtual void run() override;
+    double score(edgeid eid) override;
+    double score(node u, node v) override;
+    void run() override;
 
 private:
     double pf;

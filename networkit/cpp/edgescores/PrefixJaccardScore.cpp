@@ -1,27 +1,28 @@
 /*
- * PrefixJaccardScore.h
+ * PrefixJaccardScore.cpp
  *
  *  Created on: 26.09.2014
  *      Author: Michael Hamann
  */
 
-#include <networkit/edgescores/PrefixJaccardScore.hpp>
 #include <omp.h>
+
+#include <networkit/edgescores/PrefixJaccardScore.hpp>
 
 namespace NetworKit {
 
 template <typename AttributeT>
 PrefixJaccardScore<AttributeT>::PrefixJaccardScore(const Graph &G, const std::vector< AttributeT > &attribute) :
-    EdgeScore<double>(G), inAttribute(attribute) {
+    EdgeScore<double>(G), inAttribute(&attribute) {
 }
 
 template <typename AttributeT>
 void PrefixJaccardScore<AttributeT>::run() {
     //this-> required to access members of base class, since this is a template class.
-    if (!this->G.hasEdgeIds()) throw std::runtime_error("Error, edges need to be indexed first");
+    if (!this->G->hasEdgeIds()) throw std::runtime_error("Error, edges need to be indexed first");
 
     this->scoreData.clear();
-    this->scoreData.resize(this->G.upperEdgeIdBound());
+    this->scoreData.resize(this->G->upperEdgeIdBound());
 
     struct RankedEdge {
         node u;
@@ -39,22 +40,22 @@ void PrefixJaccardScore<AttributeT>::run() {
         };
     };
 
-    std::vector<size_t> rankedEdgeBegin(G.upperNodeIdBound() + 1);
+    std::vector<size_t> rankedEdgeBegin(G->upperNodeIdBound() + 1);
     std::vector<RankedEdge> rankedEdges;
-    rankedEdges.reserve(2*G.numberOfEdges());
+    rankedEdges.reserve(2*G->numberOfEdges());
 
-    for (node u = 0; u < G.upperNodeIdBound(); ++u) {
+    for (node u = 0; u < G->upperNodeIdBound(); ++u) {
         rankedEdgeBegin[u] = rankedEdges.size();
-        if (G.hasNode(u)) {
-            G.forEdgesOf(u, [&](node, node v, edgeid eid) {
-                rankedEdges.emplace_back(v, inAttribute[eid], 0);
+        if (G->hasNode(u)) {
+            G->forEdgesOf(u, [&](node, node v, edgeid eid) {
+                rankedEdges.emplace_back(v, ((*inAttribute)[eid]), 0);
             });
         }
     }
-    rankedEdgeBegin[G.upperNodeIdBound()] = rankedEdges.size();
+    rankedEdgeBegin[G->upperNodeIdBound()] = rankedEdges.size();
 
-    this->G.balancedParallelForNodes([&](node u) {
-        if (this->G.degree(u) == 0) return;
+    this->G->balancedParallelForNodes([&](node u) {
+        if (this->G->degree(u) == 0) return;
 
         const auto beginIt = rankedEdges.begin() + rankedEdgeBegin[u];
         const auto endIt = rankedEdges.begin() + rankedEdgeBegin[u+1];
@@ -77,10 +78,10 @@ void PrefixJaccardScore<AttributeT>::run() {
         }
     });
 
-    std::vector<std::vector<bool>> uMarker(omp_get_max_threads(), std::vector<bool>(G.upperNodeIdBound(), false));
+    std::vector<std::vector<bool>> uMarker(omp_get_max_threads(), std::vector<bool>(G->upperNodeIdBound(), false));
     auto vMarker = uMarker;
 
-    this->G.parallelForEdges([&](node u, node v, edgeid eid) {
+    this->G->parallelForEdges([&](node u, node v, edgeid eid) {
         count curRank = 0;
         double bestJaccard = 0;
         auto tid = omp_get_thread_num();
@@ -136,11 +137,11 @@ void PrefixJaccardScore<AttributeT>::run() {
             ++curRank;
         }
 
-        G.forNeighborsOf(u, [&](node w) {
+        G->forNeighborsOf(u, [&](node w) {
             uMarker[tid][w] = false;
         });
 
-        G.forNeighborsOf(v, [&](node w) {
+        G->forNeighborsOf(v, [&](node w) {
             vMarker[tid][w] = false;
         });
 
