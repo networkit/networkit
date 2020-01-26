@@ -9,7 +9,6 @@
 #ifndef NETWORKIT_GENERATORS_DYNAMIC_PUB_WEB_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_DYNAMIC_PUB_WEB_GENERATOR_HPP_
 
-#include <map>
 #include <vector>
 
 #include <networkit/dynamics/GraphEvent.hpp>
