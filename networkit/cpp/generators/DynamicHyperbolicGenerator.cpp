@@ -7,6 +7,8 @@
 
 #include <cmath>
 
+#include <tlx/unused.hpp>
+
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/generators/DynamicHyperbolicGenerator.hpp>
 #include <networkit/generators/HyperbolicGenerator.hpp>
@@ -195,12 +197,10 @@ void DynamicHyperbolicGenerator::moveNode(index toMove) {
         }
     }
     double newradius = acosh(newcosh)/alpha;
-    //assert(abs(newradius - hyperbolicRadius) < moveEachStep);
     if (newradius >= R) newradius = std::nextafter(R, std::numeric_limits<double>::lowest());
     assert(newradius < R);
     assert(newradius >= 0);
 
-    //double angleMovement = Aux::Random::real(-moveDistance/hyperbolicRadius, moveDistance/hyperbolicRadius);
     newphi += angularMovement[toMove]/newradius;
     if (newphi < 0) newphi += (floor(-newphi/(2*PI))+1)*2*PI;
     if (newphi > 2*PI) newphi -= floor(newphi/(2*PI))*2*PI;
@@ -286,11 +286,8 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
             #pragma omp critical
             {
                 bool removed = quad.removeContent(toWiggle[j], oldphi, oldr);
-#ifndef NDEBUG
+                tlx::unused(removed);
                 assert(removed);
-#else
-                ((void)(removed));
-#endif
                 quad.addContent(toWiggle[j], angles[toWiggle[j]], radii[toWiggle[j]]);
             }
         }
