@@ -9,12 +9,10 @@
 
 namespace NetworKit {
 
-DynamicDorogovtsevMendesGenerator::DynamicDorogovtsevMendesGenerator() : initial(true), u(0) {
-
-}
+DynamicDorogovtsevMendesGenerator::DynamicDorogovtsevMendesGenerator() : initial(true), u(0) {}
 
 std::vector<GraphEvent> DynamicDorogovtsevMendesGenerator::generate(count nSteps) {
-    
+
     std::vector<GraphEvent> stream;
 
     if (initial) {
@@ -54,7 +52,4 @@ std::vector<GraphEvent> DynamicDorogovtsevMendesGenerator::generate(count nSteps
     return stream;
 }
 
-
 } /* namespace NetworKit */
-
-
