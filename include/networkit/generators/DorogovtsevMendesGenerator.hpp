@@ -19,7 +19,7 @@ class DorogovtsevMendesGenerator final : public StaticGraphGenerator {
 
 public:
     /**
-    * @param nNodes 	number of nodes in target graph
+    * @param nNodes number of nodes in target graph
     */
     DorogovtsevMendesGenerator(count nNodes);
 
