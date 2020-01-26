@@ -18,7 +18,7 @@ namespace NetworKit {
  * implemented by Fabien Viger and Matthieu Latapy but without the steps for ensuring connectivity is executed. This should lead to a
  * graph that is drawn uniformly at random from all graphs with the given degree sequence.
  *
- * Note that at most 10 times the number of edges edge swaps are performed (same number as in the abovementioned implementation) and
+ * Note that at most 10 times the number of edges edge swaps are performed (same number as in the aforementioned implementation) and
  * in order to limit the running time, at most 200 times as many attempts to perform an edge swap are made (as certain degree distributions
  * do not allow edge swaps at all).
  */

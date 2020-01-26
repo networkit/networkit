@@ -4,9 +4,7 @@
 #include <networkit/generators/HavelHakimiGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>
 
-NetworKit::EdgeSwitchingMarkovChainGenerator::EdgeSwitchingMarkovChainGenerator(const std::vector< NetworKit::count > &sequence, bool ignoreIfRealizable): StaticDegreeSequenceGenerator(sequence), ignoreIfRealizable(ignoreIfRealizable) {
-
-}
+NetworKit::EdgeSwitchingMarkovChainGenerator::EdgeSwitchingMarkovChainGenerator(const std::vector< NetworKit::count > &sequence, bool ignoreIfRealizable): StaticDegreeSequenceGenerator(sequence), ignoreIfRealizable(ignoreIfRealizable) {}
 
 NetworKit::Graph NetworKit::EdgeSwitchingMarkovChainGenerator::generate() {
     Graph result(HavelHakimiGenerator(seq, ignoreIfRealizable).generate());
