@@ -8,11 +8,11 @@
 #ifndef NETWORKIT_GENERATORS_QUADTREE_QUADTREE_POLAR_EUCLID_HPP_
 #define NETWORKIT_GENERATORS_QUADTREE_QUADTREE_POLAR_EUCLID_HPP_
 
-#include <vector>
-#include <memory>
 #include <cmath>
+#include <memory>
 #include <omp.h>
-#include <functional>
+#include <vector>
+
 #include <networkit/generators/quadtree/QuadNodePolarEuclid.hpp>
 
 namespace NetworKit {

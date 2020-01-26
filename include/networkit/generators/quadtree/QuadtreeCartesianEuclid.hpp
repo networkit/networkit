@@ -9,10 +9,10 @@
 #define NETWORKIT_GENERATORS_QUADTREE_QUADTREE_CARTESIAN_EUCLID_HPP_
 
 #include <cmath>
-#include <functional>
 #include <memory>
 #include <omp.h>
 #include <vector>
+
 #include <networkit/generators/quadtree/QuadNodeCartesianEuclid.hpp>
 
 namespace NetworKit {

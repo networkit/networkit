@@ -12,7 +12,7 @@
 #include <memory>
 #include <omp.h>
 #include <vector>
-#include <functional>
+
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/generators/quadtree/QuadNode.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
@@ -88,7 +88,6 @@ public:
     /**
      * Get elements whose hyperbolic distance to the query point is less than the hyperbolic distance
      *
-     *
      * @param circleCenter Cartesian coordinates of the query circle's center
      * @param hyperbolicRadius Radius of the query circle
      */
@@ -116,8 +115,6 @@ public:
             maxPhi = 2*PI;
         } else {
             double spread = asin(radius / r_e);
-            //double phi_c, r_c;
-            //HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
             minPhi = cc_phi - spread;
             maxPhi = cc_phi + spread;
             /**
@@ -143,7 +140,7 @@ public:
 
         for (T denizen : circleDenizens) {
             if (denizen >= size()) {
-                DEBUG("Content ", denizen, " found in quadtree of size ", size(), ", as one of ", circleDenizens.size(), " neighbours.");
+                DEBUG("Content ", denizen, " found in quadtree of size ", size(), ", as one of ", circleDenizens.size(), " neighbors.");
             }
         }
 
@@ -160,7 +157,7 @@ public:
         }
 
         for (T denizen : circleDenizens) {
-            if (denizen >= size()) DEBUG("Content ", denizen, " found in quadtree of size ", size(), ", as one of ", circleDenizens.size(), " neighbours, after sorting");
+            if (denizen >= size()) DEBUG("Content ", denizen, " found in quadtree of size ", size(), ", as one of ", circleDenizens.size(), " neighbors, after sorting");
         }
     }
 
