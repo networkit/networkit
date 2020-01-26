@@ -5,6 +5,8 @@
  *      Author: forigem
  */
 
+#include <fstream>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/generators/DynamicDGSParser.hpp>
