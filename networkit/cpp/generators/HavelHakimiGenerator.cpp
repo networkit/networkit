@@ -6,17 +6,16 @@
  *      Contributors: Hoske/Weisbarth
  */
 
-
 #include <list>
 #include <stack>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/generators/HavelHakimiGenerator.hpp>
 
 namespace NetworKit {
 
 HavelHakimiGenerator::HavelHakimiGenerator(const std::vector<count> &sequence, bool ignoreIfRealizable) :
-        StaticDegreeSequenceGenerator(sequence), ignoreIfRealizable(ignoreIfRealizable) {
-}
+        StaticDegreeSequenceGenerator(sequence), ignoreIfRealizable(ignoreIfRealizable) {}
 
 
 Graph HavelHakimiGenerator::generate() {
@@ -42,7 +41,7 @@ Graph HavelHakimiGenerator::generate() {
     }
 
     index maxDeficit = numDegVals - 1;
-    while (maxDeficit > 0) {
+    while (maxDeficit) {
         // process node in largest bucket
         while(! nodesByDeficit[maxDeficit].empty()) {
             // get element
@@ -57,7 +56,7 @@ Graph HavelHakimiGenerator::generate() {
             index currentNeighborList = maxDeficit;
             std::stack<count> numToMove;
 
-            while (deficit > 0) {
+            while (deficit) {
                 count numDeleteFromCurrentList = 0;
 
                 // search for candidates in current list
