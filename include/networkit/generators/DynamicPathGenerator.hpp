@@ -9,7 +9,6 @@
 #define NETWORKIT_GENERATORS_DYNAMIC_PATH_GENERATOR_HPP_
 
 #include <networkit/generators/DynamicGraphGenerator.hpp>
-#include <map>
 
 namespace NetworKit {
 
