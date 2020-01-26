@@ -21,13 +21,10 @@ namespace NetworKit {
  */
 class DynamicBarabasiAlbertGenerator final : public DynamicGraphSource {
 
-private:
-
     count k;             //!< parameter of the BA model: number of edges per new node
     count degSum;        //!< degree sum of current graph
 
 public:
-
 
     DynamicBarabasiAlbertGenerator(count k = 2);
 

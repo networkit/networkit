@@ -12,7 +12,7 @@ namespace NetworKit {
 
 
 DynamicBarabasiAlbertGenerator::DynamicBarabasiAlbertGenerator(count k) : DynamicGraphSource(), k(k), degSum(0) {
-    if (k <= 0) {
+    if (!k) {
         throw std::runtime_error("k must be at least 1");
     }
 }
@@ -24,11 +24,10 @@ void DynamicBarabasiAlbertGenerator::initializeGraph() {
 
     // The network begins with an initial network of m0 nodes. m0 2 and the degree of each node in the initial network should be at least 1,
     // otherwise it will always remain disconnected from the rest of the network.
-    for (count i = 0; i < k; ++i) {
-        node u = Gproxy->addNode(); // assume node ids are assigned consecutively
-        if (i > 0) {
-            Gproxy->addEdge(u, u - 1); // connect to previous node to create a path
-        }
+    node u = Gproxy->addNode(); // assume node ids are assigned consecutively
+    for (count i = 1; i < k; ++i) {
+        u = Gproxy->addNode(); // assume node ids are assigned consecutively
+        Gproxy->addEdge(u, u - 1); // connect to previous node to create a path
     }
 
     degSum = 2 * G->numberOfEdges();
