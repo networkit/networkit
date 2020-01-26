@@ -25,8 +25,6 @@ void DynamicGraphSource::generateNodes(count n) {
     }
 }
 
-
-
 void DynamicGraphSource::generateEdges(count m) {
     while (G->numberOfEdges() < m) {
         this->generate();
