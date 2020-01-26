@@ -9,9 +9,10 @@
 #define NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_HPP_
 
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 #include <functional>
 #include <vector>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
@@ -26,14 +27,14 @@ namespace NetworKit {
 template <class T, bool poincare = true>
 class QuadNode final {
     friend class QuadTreeGTest;
-private:
+
     double leftAngle;
     double minR;
     double rightAngle;
     double maxR;
     Point2DWithIndex<double> a,b,c,d;
     unsigned capacity;
-    static const unsigned coarsenLimit = 4;
+    static constexpr unsigned coarsenLimit = 4;
     count subTreeSize;
     std::vector<T> content;
     std::vector<Point2DWithIndex<double>> positions;
@@ -67,7 +68,6 @@ public:
 
     /**
      * Construct a QuadNode for polar coordinates.
-     *
      *
      * @param leftAngle Minimal angular coordinate of region, in radians from 0 to 2\pi
      * @param minR Minimal radial coordinate of region, between 0 and 1
@@ -254,7 +254,6 @@ public:
         }
     }
 
-
     /**
      * Check whether the region managed by this node lies outside of an Euclidean circle.
      *
@@ -320,7 +319,6 @@ public:
         Point2DWithIndex<double> query = HyperbolicSpace::polarToCartesian(angle_c, r_c);
         return outOfReach(query, radius);
     }
-
 
     /**
      * @param phi Angular coordinate of query point

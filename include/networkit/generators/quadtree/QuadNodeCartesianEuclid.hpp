@@ -10,10 +10,11 @@
 #ifndef NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_CARTESIAN_EUCLID_HPP_
 #define NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_CARTESIAN_EUCLID_HPP_
 
-#include <assert.h>
 #include <algorithm>
+#include <cassert>
 #include <functional>
 #include <vector>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
 
@@ -27,7 +28,7 @@ namespace NetworKit {
 template <class T>
 class QuadNodeCartesianEuclid final {
     friend class QuadTreeGTest;
-private:
+
     Point<double> minPoint;
     Point<double> maxPoint;
     count dimension;

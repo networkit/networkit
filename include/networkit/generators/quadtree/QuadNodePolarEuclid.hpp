@@ -11,9 +11,10 @@
 #define NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_POLAR_EUCLID_HPP_
 
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 #include <functional>
 #include <vector>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
 
@@ -27,7 +28,7 @@ namespace NetworKit {
 template <class T>
 class QuadNodePolarEuclid final {
     friend class QuadTreeGTest;
-private:
+
     double leftAngle;
     double minR;
     double rightAngle;

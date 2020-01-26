@@ -24,7 +24,7 @@ Graph RegularRingLatticeGenerator::generate() {
             G.addEdge(i, (i + j) % nNodes);
         }
     }
-    
+
     return G;
 }
 
