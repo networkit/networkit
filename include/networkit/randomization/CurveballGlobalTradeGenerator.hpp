@@ -1,5 +1,5 @@
 /*
- * CurveballGlobalTradeGenerator.h
+ * CurveballGlobalTradeGenerator.hpp
  *
  *  Created on: Jul 11, 2017
  *      Author: Hung Tran <htran@ae.cs.uni-frankfurt.de>
@@ -17,16 +17,16 @@
 
 namespace NetworKit {
 
-class CurveballGlobalTradeGenerator {
+class CurveballGlobalTradeGenerator final {
 public:
     using value_type = std::vector<std::pair<node, node>>;
 
-protected:
+private:
     const node numNodes;
     const count numGlobalTrades;
 
 public:
-    CurveballGlobalTradeGenerator(const count run_length, const node num_nodes)
+    CurveballGlobalTradeGenerator(count run_length, node num_nodes)
         : numNodes(num_nodes), numGlobalTrades(run_length) {
         if (num_nodes <= 1)
             throw std::runtime_error("At least two nodes are required.");
