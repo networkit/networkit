@@ -14,20 +14,17 @@
 namespace NetworKit {
 
 RandomSpanningForest::RandomSpanningForest(const Graph& G):
-        SpanningForest(G)
-{
-
-}
+        SpanningForest(G) {}
 
 void RandomSpanningForest::run() {
     // handle disconnected graphs:
     // determine connected components first
     // then start random walk in each component!
-    ConnectedComponents cc(G);
+    ConnectedComponents cc(*G);
     cc.run();
     std::vector<std::vector<node> > comps = cc.getComponents();
 
-    forest = GraphTools::copyNodes(G);
+    forest = GraphTools::copyNodes(*G);
     for (auto comp: comps) {
         std::unordered_set<node> visited;
         const count compSize = comp.size();
@@ -40,7 +37,7 @@ void RandomSpanningForest::run() {
         // random walk starting from root
         while (visited.size() < compSize) {
             // get random neighbor
-            node neigh = GraphTools::randomNeighbor(G, curr);
+            node neigh = GraphTools::randomNeighbor(*G, curr);
 
             // if not seen before, insert tree edge
             if (visited.count(neigh) == 0) {
