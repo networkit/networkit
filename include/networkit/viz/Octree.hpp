@@ -14,6 +14,7 @@
 #include <networkit/algebraic/Vector.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/viz/Point.hpp>
+
 namespace NetworKit {
 
 /**
@@ -34,9 +35,6 @@ public:
      */
     BoundingBox(const Point<T>& center, const T sideLength) : center(center), sideLength(sideLength), halfSideLength(sideLength/2.0), sqSideLength(sideLength*sideLength), dimension(center.getDimensions()) {}
 
-    /**
-     *
-     */
     BoundingBox(const BoundingBox<T>& other) = default;
 
     /**
@@ -148,7 +146,7 @@ struct OctreeNode {
         if (!isLeaf()) {
             centerOfMass.scale(1.0/(double) weight);
 
-            // remove empty childs
+            // remove empty children
             children.erase(std::remove_if(children.begin(), children.end(), [&](OctreeNode<T>& child){return child.isEmpty();}), children.end());
 
             for (auto &child : children) {
@@ -408,7 +406,6 @@ void Octree<T>::approximateDistance(const OctreeNode<T>& node, const Point<T>& p
 
 template<typename T> template<typename L>
 void Octree<T>::approximateDistance(const OctreeNode<T>& node, const Point<T>& p, double sqTheta, L& handle) const {
-    //if (node.isEmpty()) return;
     if (!node.isLeaf()) {
         double sqDist = p.squaredDistance(node.centerOfMass);
         if (sqDist == 0 || node.bBox.getSqSideLength() <= sqTheta * sqDist) {
@@ -422,7 +419,6 @@ void Octree<T>::approximateDistance(const OctreeNode<T>& node, const Point<T>& p
         handle(node.weight, node.centerOfMass, p.squaredDistance(node.centerOfMass));
     }
 }
-
 
 } /* namespace NetworKit */
 

@@ -5,14 +5,14 @@
  *      Author: Michael
  */
 
+#include <vector>
+
 #include <gtest/gtest.h>
 
-#include <networkit/algebraic/Vector.hpp>
-#include <networkit/viz/Octree.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
-
-#include <vector>
+#include <networkit/algebraic/Vector.hpp>
+#include <networkit/viz/Octree.hpp>
 
 namespace NetworKit {
 
@@ -57,9 +57,7 @@ TEST(OctreeGTest, testOctreeWithExample) {
     Octree<double> ocTree(coordinates);
     DEBUG(ocTree.toString());
     std::vector<std::pair<count, Point<double>>> fiveApprox = ocTree.approximateDistance(Point<double>(2.0, 22.0), 0.5);
-//	for (auto &point : fiveApprox) {
-//		INFO(point.first, ": ", point.second.toString());
-//	}
+
     EXPECT_EQ(fiveApprox[0].first, 2u);
     EXPECT_EQ(fiveApprox[1].first, 3u);
     EXPECT_EQ(fiveApprox[2].first, 3u);
