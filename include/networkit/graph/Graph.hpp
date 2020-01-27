@@ -1,8 +1,8 @@
 /*
- * Graph.h
+ * Graph.hpp
  *
  *  Created on: 01.06.2014
- *      Author: Christian Staudt (christian.staudt@kit.edu), Klara Reichard
+ *      Author: Christian Staudt, Klara Reichard
  * (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
  */
 
