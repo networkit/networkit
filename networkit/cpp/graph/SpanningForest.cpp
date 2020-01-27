@@ -12,14 +12,6 @@
 
 namespace NetworKit {
 
-SpanningForest::SpanningForest(const Graph& G): G(&G) {
-
-}
-
-Graph SpanningForest::getForest() {
-    return forest;
-}
-
 void SpanningForest::run() {
     forest = GraphTools::copyNodes(*G);
     std::vector<bool> visited(G->upperNodeIdBound(), false);

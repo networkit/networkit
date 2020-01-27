@@ -21,7 +21,7 @@ protected:
     Graph forest;
 
 public:
-    SpanningForest(const Graph& G);
+    SpanningForest(const Graph& G) : G(&G) {}
     virtual ~SpanningForest() = default;
 
     virtual void run();
@@ -30,7 +30,9 @@ public:
      * @return Forest computed by run method.
      * Note: So far no explicit check if run method has been invoked before.
      */
-    Graph getForest();
+    Graph getForest() {
+        return forest;
+    }
 };
 
 } /* namespace NetworKit */
