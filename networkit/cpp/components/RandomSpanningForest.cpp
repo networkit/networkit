@@ -22,12 +22,11 @@ void RandomSpanningForest::run() {
     // then start random walk in each component!
     ConnectedComponents cc(*G);
     cc.run();
-    std::vector<std::vector<node> > comps = cc.getComponents();
+    const auto comps = cc.getComponents();
 
     forest = GraphTools::copyNodes(*G);
-    for (auto comp: comps) {
+    for (const auto &comp: comps) {
         std::unordered_set<node> visited;
-        const count compSize = comp.size();
 
         // find and process random root
         index rand = Aux::Random::integer(comp.size() - 1);
@@ -35,7 +34,7 @@ void RandomSpanningForest::run() {
         visited.insert(curr);
 
         // random walk starting from root
-        while (visited.size() < compSize) {
+        while (visited.size() < comp.size()) {
             // get random neighbor
             node neigh = GraphTools::randomNeighbor(*G, curr);
 

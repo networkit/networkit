@@ -21,6 +21,7 @@ namespace NetworKit {
 class RandomSpanningForest final : public SpanningForest {
 public:
     RandomSpanningForest(const Graph& G);
+
     ~RandomSpanningForest() = default;
 
     /**
