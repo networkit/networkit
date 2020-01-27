@@ -11,6 +11,8 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/distance/BFS.hpp>
+#include <networkit/distance/Dijkstra.hpp>
 #include <networkit/numerics/LAMG/Lamg.hpp>
 #include <networkit/numerics/ConjugateGradient.hpp>
 #include <networkit/numerics/Preconditioner/DiagonalPreconditioner.hpp>

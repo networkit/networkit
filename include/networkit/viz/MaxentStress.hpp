@@ -12,10 +12,7 @@
 
 #include <networkit/algebraic/CSRMatrix.hpp>
 #include <networkit/auxiliary/StringTools.hpp>
-#include <networkit/distance/BFS.hpp>
-#include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/AlgebraicDistance.hpp>
-#include <networkit/io/LineFileReader.hpp>
 #include <networkit/numerics/LinearSolver.hpp>
 #include <networkit/viz/GraphLayoutAlgorithm.hpp>
 #include <networkit/viz/Octree.hpp>
