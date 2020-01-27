@@ -1,12 +1,12 @@
 
-#include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
-#include <networkit/graph/UnionMaximumSpanningForest.hpp>
+#include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/graph/GraphTools.hpp>
+#include <networkit/graph/UnionMaximumSpanningForest.hpp>
 
 namespace NetworKit {
 
-UnionMaximumSpanningForest::UnionMaximumSpanningForest(const Graph &G) : G(&G), hasWeightedEdges(false), hasUMSF(false), hasAttribute(false) { }
+UnionMaximumSpanningForest::UnionMaximumSpanningForest(const Graph &G) : G(&G), hasWeightedEdges(false), hasUMSF(false), hasAttribute(false) {}
 
 void UnionMaximumSpanningForest::run() {
     hasRun = false;
@@ -139,5 +139,4 @@ bool UnionMaximumSpanningForest::isParallel() const {
     return false;
 }
 
-
-}
+} // namespace NetworKit

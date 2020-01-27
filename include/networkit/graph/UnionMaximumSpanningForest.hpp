@@ -31,7 +31,7 @@ public:
      */
     template <typename A>
     UnionMaximumSpanningForest(const Graph &G, const std::vector<A> &attribute);
-    
+
     /**
      * Execute the algorithm.
      */
@@ -81,13 +81,14 @@ public:
      * @return The name of the algorithm.
      */
     std::string toString() const override;
+
 private:
     struct weightedEdge {
         edgeweight attribute;
         node u;
         node v;
         edgeid eid;
-        
+
         bool operator>(const weightedEdge &other) const {
             return (attribute > other.attribute) || (attribute == other.attribute && (u > other.u || (u == other.u && v > other.v)));
         };
