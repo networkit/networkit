@@ -6,9 +6,8 @@
  */
 // networkit-format
 
-#include <networkit/auxiliary/Random.hpp>
-
 #include "CurveballImpl.hpp"
+#include <networkit/auxiliary/Random.hpp>
 #include <networkit/randomization/Curveball.hpp>
 
 namespace NetworKit {
