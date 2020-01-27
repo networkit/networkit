@@ -8,8 +8,8 @@
 #ifndef NETWORKIT_VIZ_GRAPH_LAYOUT_ALGORITHM_HPP_
 #define NETWORKIT_VIZ_GRAPH_LAYOUT_ALGORITHM_HPP_
 
-#include <vector>
 #include <fstream>
+#include <vector>
 
 #include <networkit/auxiliary/Enforce.hpp>
 #include <networkit/graph/Graph.hpp>
