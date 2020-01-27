@@ -1,5 +1,5 @@
 /*
- * SpanningForest.h
+ * SpanningForest.hpp
  *
  *  Created on: 06.09.2015
  *      Author: Henning
@@ -17,7 +17,7 @@ namespace NetworKit {
  */
 class SpanningForest {
 protected:
-    const Graph& G;
+    const Graph* G;
     Graph forest;
 
 public:
@@ -25,11 +25,6 @@ public:
     virtual ~SpanningForest() = default;
 
     virtual void run();
-
-    /**
-     * Deprecated. Please integrate into run method.
-     */
-    Graph generate();
 
     /**
      * @return Forest computed by run method.
