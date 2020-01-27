@@ -8,7 +8,6 @@
 #ifndef NETWORKIT_VIZ_PIVOT_MDS_HPP_
 #define NETWORKIT_VIZ_PIVOT_MDS_HPP_
 
-
 #include <networkit/algebraic/CSRMatrix.hpp>
 #include <networkit/algebraic/Vector.hpp>
 #include <networkit/graph/Graph.hpp>

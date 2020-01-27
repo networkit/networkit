@@ -5,12 +5,8 @@
  *      Author: Michael Wegner
  */
 
-#include <networkit/algebraic/CSRMatrix.hpp>
-#include <networkit/algebraic/Vector.hpp>
 #include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/auxiliary/Random.hpp>
-#include <networkit/distance/BFS.hpp>
-#include <networkit/distance/Dijkstra.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/viz/PivotMDS.hpp>
 
