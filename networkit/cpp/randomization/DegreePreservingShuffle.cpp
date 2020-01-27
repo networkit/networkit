@@ -2,7 +2,7 @@
  * CurveballUniformTradeGenerator.cpp
  *
  *  Created on: 01.06.2019
- *  	Author: Manuel Penschuck <networkit@manuel.jetzt>
+ *    Author: Manuel Penschuck <networkit@manuel.jetzt>
  */
 // networkit-format
 #include <omp.h>
@@ -137,7 +137,7 @@ static std::vector<index> computePermutation(std::vector<NodeDegree<DegreeT>> &n
 }
 } // namespace DegreePreservingShuffleDetails
 
-DegreePreservingShuffle::DegreePreservingShuffle(const Graph &G) : G{G} {}
+DegreePreservingShuffle::DegreePreservingShuffle(const Graph &G) : G(&G) {}
 DegreePreservingShuffle::~DegreePreservingShuffle() = default;
 
 std::string DegreePreservingShuffle::toString() const {
@@ -145,15 +145,15 @@ std::string DegreePreservingShuffle::toString() const {
 }
 
 void DegreePreservingShuffle::run() {
-    const auto n = G.numberOfNodes();
+    const auto n = G->numberOfNodes();
 
-    if (G.isDirected()) {
+    if (G->isDirected()) {
         // generate sequence of tuple (u, deg(u)) for each u
         std::vector<DegreePreservingShuffleDetails::DirectedNodeDegree> nodeDegrees(n);
 
-        G.parallelForNodes([&](const node u) {
+        G->parallelForNodes([&](const node u) {
             nodeDegrees[u].id = u;
-            nodeDegrees[u].degree = {G.degreeIn(u), G.degreeOut(u)};
+            nodeDegrees[u].degree = {G->degreeIn(u), G->degreeOut(u)};
         });
 
         permutation = DegreePreservingShuffleDetails::computePermutation(nodeDegrees);
@@ -162,9 +162,9 @@ void DegreePreservingShuffle::run() {
         // generate sequence of tuple (u, deg(u)) for each u
         std::vector<DegreePreservingShuffleDetails::UndirectedNodeDegree> nodeDegrees(n);
 
-        G.parallelForNodes([&](const node u) {
+        G->parallelForNodes([&](const node u) {
             nodeDegrees[u].id = u;
-            nodeDegrees[u].degree = G.degree(u);
+            nodeDegrees[u].degree = G->degree(u);
         });
 
         permutation = DegreePreservingShuffleDetails::computePermutation(nodeDegrees);
@@ -172,10 +172,10 @@ void DegreePreservingShuffle::run() {
 }
 
 Graph DegreePreservingShuffle::getGraph() const {
-    const auto n = G.numberOfNodes();
+    const auto n = G->numberOfNodes();
     assert(permutation.size() == n);
 
-    return GraphTools::getRemappedGraph(G, n, [this](node u) { return permutation[u]; });
+    return GraphTools::getRemappedGraph(*G, n, [this](node u) { return permutation[u]; });
 }
 
 } // namespace NetworKit
