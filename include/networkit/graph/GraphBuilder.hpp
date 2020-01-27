@@ -43,7 +43,6 @@ namespace NetworKit {
  */
 
 class GraphBuilder {
-private:
     count n;          //!< current number of nodes
     count selfloops;  //!< currently encountered number of self loops
     std::string name; //!< name of the graph, if not set it will be G#ID
