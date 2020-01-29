@@ -1,5 +1,5 @@
 /*
- * MatrixMarketReader.h
+ * MatrixMarketReader.hpp
  *
  *  Created on: 25.07.2014
  *      Author: dhoske
@@ -19,12 +19,12 @@ namespace NetworKit {
  *
  * Only allows real, symmetric matrices.
  */
-class MatrixMarketReader: public MatrixReader {
+class MatrixMarketReader final : public MatrixReader {
 public:
 
   MatrixMarketReader() = default;
 
-  virtual CSRMatrix read(const std::string& path) override;
+  CSRMatrix read(const std::string& path) override;
 
   /** Reads the matrix in @a in. */
   CSRMatrix read(std::istream& in);
