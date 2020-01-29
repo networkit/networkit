@@ -1,8 +1,8 @@
 /*
- * GraphReader.h
+ * MatrixReader.hpp
  *
  *  Created on: 17.01.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_IO_MATRIX_READER_HPP_
