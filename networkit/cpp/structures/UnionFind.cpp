@@ -11,7 +11,6 @@
 
 namespace NetworKit {
 
-
 void UnionFind::allToSingletons() {
     for (index i = 0; i < parent.size(); ++i) {
         parent[i] = i;
@@ -50,9 +49,8 @@ Partition UnionFind::toPartition() {
     p.setUpperBound(parent.size());
     for (index e = 0; e < parent.size(); ++e) {
         p.moveToSubset(find(e), e);
-    }	
+    }
     return p;
 }
 
-
-}
+} /* namespace NetworKit */

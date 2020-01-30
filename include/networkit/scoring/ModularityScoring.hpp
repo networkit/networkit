@@ -1,17 +1,15 @@
 /*
- * ModularityScoring.h
+ * ModularityScoring.hpp
  *
  *  Created on: 15.10.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_SCORING_MODULARITY_SCORING_HPP_
 #define NETWORKIT_SCORING_MODULARITY_SCORING_HPP_
 
 #include <networkit/scoring/EdgeScoring.hpp>
-
 #include <networkit/structures/Partition.hpp>
-
 
 namespace NetworKit {
 
@@ -21,55 +19,37 @@ namespace NetworKit {
  * @ingroup scoring
  */
 template<typename T>
-class ModularityScoring: public EdgeScoring<T> {
+class ModularityScoring final : public EdgeScoring<T> {
 
-protected:
-
-    double totalEdgeWeight;	//!< total weight of the graph
+    double totalEdgeWeight;  //!< total weight of the graph
 
 public:
 
     /**
-     * @param[in]	G	a graph instance
+     * @param[in]  G  a graph instance
      *
      * Do not modify the graph while using this instance of ModularityScoring.
      */
     ModularityScoring(Graph& G, double gTotalEdgeWeight = 0.0);
 
     /** Default destructor */
-    virtual ~ModularityScoring() = default;
+    ~ModularityScoring() = default;
 
-
-    virtual void scoreEdges(int attrId);
-
+    void scoreEdges(int attrId) override;
 
     /**
      * Returns an edge score for an edge (u,v) which expresses the
      * modularity increase which can be gained by merging
      * the clusters of u and v.
      *
-     *		 $$\Delta mod(c, d) := \frac{1}{2 \omega(E)} \left ( 2 \omega(E) \omega(c,d) - \omega(c) \omega(d) \right ) $$
+     *     $$\Delta mod(c, d) := \frac{1}{2 \omega(E)} \left ( 2 \omega(E) \omega(c,d) - \omega(c) \omega(d) \right ) $$
      *
-     * @param[in]	u	source node id
-     * @param[out]	v	target node id
+     * @param[in]  u  source node id
+     * @param[out]  v  target node id
      *
      */
-    virtual T edgeScore(node u, node v) const;
-
-
-
-//	/**
-//	 * Calculates the difference in modularity that would result from a merger of
-//	 * two clusters.
-//	 *
-//	 */
-//	virtual double deltaMod(index c, index d) =0;
-//
-//	virtual double cutweight(index c, index d) =0;
-//
-//	virtual double weight(index c) =0;
+    T edgeScore(node u, node v) const override;
 };
-
 
 template<typename T>
 ModularityScoring<T>::ModularityScoring(Graph& G, double gTotalEdgeWeight) : EdgeScoring<T>(G),
@@ -88,21 +68,13 @@ inline T ModularityScoring<T>::edgeScore(node u, node v) const {
     double nom2 = (this->G->weightedDegree(v) / volume);
     double deltaMod = (this->G->weight(u, v) / totalEdgeWeight) -
             (nom1 * nom2);
-//	TRACE("volume: ", volume, ", deltaMod: ", deltaMod, ", totalew: ", totalEdgeWeight);
     return deltaMod;
 }
 
 template<typename T>
 void ModularityScoring<T>::scoreEdges(int) {
-
     // TODO: rewrite with new edge attribute system
-
-    // this->G->forEdgesWithAttribute_double(attrId, [&](node u, node v, double attr) {
-    // 	attr = this->edgeScore(u, v);
-    // 	this->G->setAttribute_double(u, v, attrId, attr);
-    // });
 }
-
 
 } /* namespace NetworKit */
 

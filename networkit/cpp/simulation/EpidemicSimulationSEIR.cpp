@@ -1,5 +1,5 @@
 /*
- * EpidemicSimulationSEIR.h
+ * EpidemicSimulationSEIR.cpp
  *
  *  Created on: 20.11.2015
  *      Author: Christian Staudt
@@ -12,8 +12,7 @@
 
 namespace NetworKit {
 
-EpidemicSimulationSEIR::EpidemicSimulationSEIR(const Graph& G, count tMax, double transP, count eTime, count iTime, node zero) : Algorithm(), G(G), tMax(tMax), transP(transP), eTime(eTime), iTime(iTime), zero(zero)  {
-}
+EpidemicSimulationSEIR::EpidemicSimulationSEIR(const Graph& G, count tMax, double transP, count eTime, count iTime, node zero) : Algorithm(), G(&G), tMax(tMax), transP(transP), eTime(eTime), iTime(iTime), zero(zero)  {}
 
 void EpidemicSimulationSEIR::run() {
 
@@ -22,8 +21,8 @@ void EpidemicSimulationSEIR::run() {
     index t = 0;
 
     //initialize state and timestamp arrays
-    state.resize(G.upperNodeIdBound(), State::U);
-    timestamp.resize(G.upperNodeIdBound(), none);
+    state.resize(G->upperNodeIdBound(), State::U);
+    timestamp.resize(G->upperNodeIdBound(), none);
 
     auto setState = [&](node v, State X){
         state[v] = X;
@@ -31,7 +30,7 @@ void EpidemicSimulationSEIR::run() {
     };
 
     // initialize nodes to Susceptible
-    G.parallelForNodes([&](node v) {
+    G->parallelForNodes([&](node v) {
         setState(v, State::S);
     });
 
@@ -53,7 +52,7 @@ void EpidemicSimulationSEIR::run() {
             }
         } else if (state[u] == State::I) {
             // contact neighbors of infectious node
-            G.forNeighborsOf(u, [&](node v){
+            G->forNeighborsOf(u, [&](node v){
                 contact(v);
             });
             // infectious nodes become removed after time
@@ -71,8 +70,8 @@ void EpidemicSimulationSEIR::run() {
 
 
     auto census = [&]() {
-        std::vector<count> data = {0, 0, 0, 0, 0};
-        G.forNodes([&](node v) {
+        std::vector<count> data(5);
+        G->forNodes([&](node v) {
             data[(index) state[v]] += 1;
         });
         return data;
@@ -81,13 +80,13 @@ void EpidemicSimulationSEIR::run() {
 
     // if starting node node provided, start with random node
     if (zero == none) {
-        zero = GraphTools::randomNode(G);
+        zero = GraphTools::randomNode(*G);
     }
     INFO("zero node: ", zero);
     setState(zero, State::I);	// infect node zero
 
     while (t < tMax) {
-        G.parallelForNodes(sweep);
+        G->parallelForNodes(sweep);
         auto populations = census();
 
         for (int s = (int) State::S; s != (int) State::U; ++s) {
@@ -102,9 +101,8 @@ void EpidemicSimulationSEIR::run() {
 }
 
 
-std::vector<std::vector<count>> EpidemicSimulationSEIR::getData() {
+std::vector<std::vector<count>> EpidemicSimulationSEIR::getData() const {
     return stats;
 }
-
 
 } /* namespace NetworKit */

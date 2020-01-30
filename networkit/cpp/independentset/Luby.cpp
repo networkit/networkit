@@ -2,13 +2,12 @@
  * Luby.cpp
  *
  *  Created on: 27.02.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
-#include <networkit/independentset/Luby.hpp>
-
-#include <networkit/auxiliary/Random.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/independentset/Luby.hpp>
 
 namespace NetworKit {
 

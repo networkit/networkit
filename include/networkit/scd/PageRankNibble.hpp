@@ -1,5 +1,5 @@
 /*
- * PageRankNibble.h
+ * PageRankNibble.hpp
  *
  *  Created on: 26.02.2014
  *      Author: Henning
@@ -9,9 +9,9 @@
 #define NETWORKIT_SCD_PAGE_RANK_NIBBLE_HPP_
 
 #include <set>
+
 #include <networkit/graph/Graph.hpp>
 #include <networkit/scd/SelectiveCommunityDetector.hpp>
-
 
 namespace NetworKit {
 
@@ -21,9 +21,7 @@ namespace NetworKit {
  * URL: http://www.math.ucsd.edu/~fan/wp/localpartition.pdf
  * Simplifications according to D. Gleich's code at URL https://gist.github.com/dgleich/6201856.
  */
-class PageRankNibble : public SelectiveCommunityDetector {
-
-protected:
+class PageRankNibble final : public SelectiveCommunityDetector {
 
     double alpha;
     double epsilon;
@@ -40,9 +38,9 @@ public:
      */
     PageRankNibble(const Graph& g, double alpha, double epsilon);
 
-    virtual ~PageRankNibble() = default;
+    ~PageRankNibble() = default;
 
-    virtual std::map<node, std::set<node> >  run(const std::set<node>& seeds) override;
+    std::map<node, std::set<node>> run(const std::set<node>& seeds) override;
 
     /**
      * @param seed Seed node for which a community is to be found.
@@ -50,7 +48,7 @@ public:
      * @return Set of nodes that makes up the best community found around node @a seed.
      *   If target conductance or target size are not fulfilled, an empty set is returned.
      */
-    virtual std::set<node> expandSeed(node seed);
+    std::set<node> expandSeed(node seed);
 };
 
 } /* namespace NetworKit */

@@ -2,11 +2,11 @@
  * IndependentSetFinder.cpp
  *
  *  Created on: 27.02.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
-#include <networkit/independentset/IndependentSetFinder.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/independentset/IndependentSetFinder.hpp>
 
 namespace NetworKit {
 

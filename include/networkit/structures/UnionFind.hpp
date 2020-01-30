@@ -1,5 +1,5 @@
 /*
- * UnionFind.h
+ * UnionFind.hpp
  *
  *  Created on: 11.08.2014
  *      Author: Marcel Radermacher
@@ -11,6 +11,7 @@
 #define NETWORKIT_STRUCTURES_UNION_FIND_HPP_
 
 #include <vector>
+
 #include <networkit/Globals.hpp>
 #include <networkit/structures/Partition.hpp>
 
@@ -22,16 +23,16 @@ namespace NetworKit {
  * Uses path compression and union by rank to achieve running time linear in
  * the number of elements times the inverse Ackermann function.
  */
-class UnionFind {
-private:
+class UnionFind final {
     std::vector<index> parent;
     std::vector<unsigned char> rank;
+
 public:
-        
+
     /**
      * Create a new set representation with not more the @max_element elements.
      * Initially every element is in its own set.
-     * @param max_element maximum number of elements 
+     * @param max_element maximum number of elements
      */
     UnionFind(index max_element) : parent(max_element), rank(max_element, 0) {
         allToSingletons();
@@ -48,9 +49,9 @@ public:
      * Find the representative to element @u
      * @param u element
      * @return representative of set containing @u
-     */	
+     */
     index find(index u);
-    
+
     /**
      *  Merge the two sets contain @u and @v
      *  @param u element u
@@ -61,8 +62,8 @@ public:
     /**
      * Convert the Union Find data structure to a Partition
      * @return Partition equivalent to the union find data structure
-     * */	
+     * */
     Partition toPartition();
 };
-}
+} /* namespace NetworKit */
 #endif // NETWORKIT_STRUCTURES_UNION_FIND_HPP_

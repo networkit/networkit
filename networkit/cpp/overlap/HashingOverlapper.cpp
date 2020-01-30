@@ -2,11 +2,11 @@
  * HashingOverlapper.cpp
  *
  *  Created on: 31.01.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
-#include <networkit/overlap/HashingOverlapper.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/overlap/HashingOverlapper.hpp>
 
 namespace NetworKit {
 
@@ -14,17 +14,6 @@ namespace NetworKit {
 Partition HashingOverlapper::run(const Graph& G, const std::vector<Partition>& clusterings) {
 
     DEBUG("Starting hashing overlapper");
-
-    // hash function sdbm
-    /*auto sdbm = [](int64_t cid) {
-        unsigned char* str = (unsigned char*) &cid;
-        unsigned long h = 0;
-        int c;
-        while ((c = *str++)) {
-            h = c + (h << 6) + (h << 16) - h;
-        }
-        return h;
-    };*/
 
     auto djb2 = [](int64_t cid) {
         unsigned char* str = (unsigned char*) &cid;
@@ -57,7 +46,6 @@ Partition HashingOverlapper::run(const Graph& G, const std::vector<Partition>& c
         const Partition& second = clusterings[1];
 
         // Assumption: second has at least as many nodes as first
-        // TODO: accelerate if necessary and possible by moving if statements out of loop
         G.parallelForNodes([&](node v) {
             if (v >= first.numberOfElements()) {
                 core[v] = none;
