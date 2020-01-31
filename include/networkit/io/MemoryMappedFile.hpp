@@ -1,5 +1,5 @@
 /*
- * MemoryMappedFile.h
+ * MemoryMappedFile.hpp
  *
  *  Created on: 16.07.2018
  *      Author: Manuel Penschuck (networkit@manuel.jetzt)
@@ -24,7 +24,7 @@ struct MemoryMappedFileState;
  *
  * This wrapper is non-copyable but can be cheaply moved and swapped.
  */
-class MemoryMappedFile {
+class MemoryMappedFile final {
 public:
     using value_type = char;
     using const_iterator = const value_type*;
