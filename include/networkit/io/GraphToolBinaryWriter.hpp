@@ -27,14 +27,13 @@ public:
     /**
      * Given the path of an input file, read the graph contained.
      *
-     * @param[in]	path	input file path
+     * @param[in]  path  input file path
      */
     void write(const Graph &G, const std::string &path) override;
 
-protected:
+private:
     bool littleEndianness;
 
-private:
     void writeAdjacencies(std::ofstream &file, const Graph &G);
 
     uint8_t getAdjacencyWidth(uint64_t n) ;
