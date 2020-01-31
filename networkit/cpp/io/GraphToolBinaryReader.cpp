@@ -5,12 +5,11 @@
  *      Author: Maximilian Vogel
  */
 
-#include <networkit/io/GraphToolBinaryReader.hpp>
-#include <networkit/auxiliary/Log.hpp>
-
 #include <sstream>
 
 #include <networkit/auxiliary/Enforce.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/io/GraphToolBinaryReader.hpp>
 
 namespace NetworKit {
 

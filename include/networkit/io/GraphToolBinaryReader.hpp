@@ -1,5 +1,5 @@
 /*
- * GraphToolBinaryReader.h
+ * GraphToolBinaryReader.hpp
  *
  *  Created on: 02.12.14
  *      Author: Maximilian Vogel
@@ -12,7 +12,6 @@
 #include <string>
 #include <unordered_map>
 
-
 #include <networkit/io/GraphReader.hpp>
 
 namespace NetworKit {
@@ -21,7 +20,7 @@ namespace NetworKit {
  * Reads graphs from files in the binary format defined by graph-tool[1].
  * [1]: http://graph-tool.skewed.de/static/doc/gt_format.html
  */
-class GraphToolBinaryReader: public GraphReader {
+class GraphToolBinaryReader final : public GraphReader {
 
 public:
 
@@ -30,14 +29,13 @@ public:
     /**
      * Given the path of an input file, read the graph contained.
      *
-     * @param[in]	path	input file path
+     * @param[in]  path  input file path
      */
-    Graph read(const std::string& path);
-
-protected:
-    bool littleEndianness; 
+    Graph read(const std::string& path) override;
 
 private:
+    bool littleEndianness; 
+    
     void addOutNeighbours(std::ifstream& file, uint64_t numNodes, Graph& G);
 
     std::vector<std::vector<uint64_t>> getOutNeighbours(std::ifstream& file, uint64_t numNodes);
@@ -64,7 +62,7 @@ private:
         } else {
             for (int i = 0; i < width; ++i) {
                 val |= ((Type)bytes[i] << (width-1-i)*8);
-            }		
+            }
         }
         delete[] bytes;
         return val;
