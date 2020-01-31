@@ -1,5 +1,5 @@
 /*
- * LineFileReader.h
+ * LineFileReader.hpp
  *
  *  Created on: 04.10.2013
  *      Author: cls
@@ -17,7 +17,7 @@ namespace NetworKit {
  * @ingroup io
  * Reads a file and puts each line as a string into a vector
  */
-class LineFileReader {
+class LineFileReader final {
 public:
     std::vector<std::string> read(std::string path);
 };
