@@ -1,7 +1,7 @@
 /*
  * NetworkitBinaryWriter.cpp
  *
- * @author Charmaine Ndolo <charmaine.ndolo@b-tu.de>
+ * @author Charmaine Ndolo <charmaine.ndolo@hu-berlin.de>
  */
 
 #include <cstring>
@@ -11,7 +11,6 @@
 #include <networkit/auxiliary/Enforce.hpp>
 #include <networkit/io/NetworkitBinaryGraph.hpp>
 #include <networkit/io/NetworkitBinaryWriter.hpp>
-
 #include <tlx/math/clz.hpp>
 
 namespace NetworKit {
@@ -150,10 +149,10 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
     uint64_t transpWeightSize = 0;
     std::vector<uint64_t> nrOutNbrs;
     std::vector<uint64_t> nrInNbrs;
-    std::vector<size_t> adjOffsets;	//Prefix sum of size encoded adj arrays
-    std::vector<size_t> transpOffsets;	//Prefix sum of encoded transposed adj arrays
-    std::vector<size_t> adjWghtOffsets;	//Prefix sum of size encoded adj weights
-    std::vector<size_t> transpWghtOffsets;	//Prefix sum of encoded transposed weights
+    std::vector<size_t> adjOffsets; //Prefix sum of size encoded adj arrays
+    std::vector<size_t> transpOffsets; //Prefix sum of encoded transposed adj arrays
+    std::vector<size_t> adjWghtOffsets; //Prefix sum of size encoded adj weights
+    std::vector<size_t> transpWghtOffsets;//Prefix sum of encoded transposed weights
 
     auto computeWeightsOffsets = [&] (edgeweight w) {
         uint64_t size = 0;

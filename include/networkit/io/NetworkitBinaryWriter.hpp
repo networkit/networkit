@@ -1,7 +1,7 @@
 /*
  * NetworkitBinaryWriter.hpp
  *
- *      Author: Charmaine Ndolo <charmaine.ndolo@b-tu.de>
+ *      Author: Charmaine Ndolo <charmaine.ndolo@hu-berlin.de>
  */
 
 #ifndef NETWORKIT_IO_NETWORKIT_BINARY_WRITER_HPP_
