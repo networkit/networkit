@@ -2,7 +2,7 @@
  * GraphIO.cpp
  *
  *  Created on: 09.01.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #include <fstream>
