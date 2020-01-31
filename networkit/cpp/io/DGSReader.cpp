@@ -8,8 +8,8 @@
 #include <iostream>
 #include <map>
 
-#include <networkit/io/DGSReader.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/io/DGSReader.hpp>
 
 namespace NetworKit {
 
@@ -78,11 +78,6 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
                     std::string date = dateFullStringSplit[1];
                     nodeDates.push_back(date);
                 }
-
-
-
-
-
             } else if (tag.compare("ae") == 0 && split.size() >= 4) { // add edge
                 std::string edge_from = split[2];
                 std::string edge_to = split[3];
@@ -119,23 +114,14 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
                 std::string edge_to = edgesSplit[1];
                 node u = nodeNames[edge_from];
                 node v = nodeNames[edge_to];
-                //			TRACE("u: " , edge_from , " " , u);
-                //			TRACE("v: " , edge_to , " " , v);
-
                 Gproxy.removeEdge(u, v);
             }
-
-
-
-
-
         }
 
         std::cout << "nodeNames length " << nodeNames.size();
         std::map<std::string, node> ordered(nodeNames.begin(), nodeNames.end());
         for(auto it = ordered.begin(); it != ordered.end(); ++it)
             std::cout << " contents " << it->second << std::endl;
-
     }
 }
 
