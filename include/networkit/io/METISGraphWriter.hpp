@@ -2,7 +2,7 @@
  * METISGraphWriter.hpp
  *
  *  Created on: 30.01.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_IO_METIS_GRAPH_WRITER_HPP_
