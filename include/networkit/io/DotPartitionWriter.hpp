@@ -1,5 +1,5 @@
 /*
- * DotPartitionWriter.h
+ * DotPartitionWriter.hpp
  */
 
 #ifndef NETWORKIT_IO_DOT_PARTITION_WRITER_HPP_
@@ -7,19 +7,19 @@
 
 #include <map>
 
-#include <networkit/structures/Partition.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 
 /**
  * @ingroup io
  */
-class DotPartitionWriter {
+class DotPartitionWriter final {
 public:
-    virtual void write(Graph& graph, Partition& zeta, std::string path) const;
+    void write(Graph& graph, Partition& zeta, std::string path) const;
 
-    virtual std::map<index, double> createHueMap(Graph &graph, Partition& zeta) const;
+    std::map<index, double> createHueMap(Graph &graph, Partition& zeta) const;
 };
 
 } /* namespace NetworKit */
