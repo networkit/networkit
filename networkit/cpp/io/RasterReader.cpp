@@ -78,7 +78,6 @@ RasterReader::read(const std::string& path)
             // read next number
             std::tie(val, it) = Aux::Parsing::strTo<double>(it, end);
             validate += val;
-//			TRACE("row: ", row, ", col: ", col, ", val: ", val);
 
             // divide by "normalizer" and round down
             val *= normalizationFactor;
@@ -88,7 +87,6 @@ RasterReader::read(const std::string& path)
                 // insert random coordinate into coordinate arrays
                 xcoords.push_back(Aux::Random::real(xlb, xub));
                 ycoords.push_back(Aux::Random::real(ylb, yub));
-//				TRACE("point: (", xcoords.back(), ",", ycoords.back(), ")");
             }
 
             // adjust x-coordinate
