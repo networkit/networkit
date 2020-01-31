@@ -1,8 +1,7 @@
-
 /*
- * ThrillGraphBinaryReader.h
+ * ThrillGraphBinaryReader.hpp
  *
- * @author Michael Hamann <michael.hamann@kit.edu>
+ * @author Michael Hamann
  */
 
 #ifndef NETWORKIT_IO_THRILL_GRAPH_BINARY_READER_HPP_
@@ -18,7 +17,7 @@ namespace NetworKit {
 /**
  * Reads a graph format consisting of a serialized DIA of vector<uint32_t> from thrill.
  */
-class ThrillGraphBinaryReader: public GraphReader {
+class ThrillGraphBinaryReader final : public GraphReader {
 
 public:
 
@@ -32,7 +31,7 @@ public:
     /**
      * Given the path of an input file, read the graph contained.
      *
-     * @param[in]	path	input file path
+     * @param[in]  path  input file path
      */
     Graph read(const std::string& path) override;
     Graph read(const std::vector<std::string>& path);
