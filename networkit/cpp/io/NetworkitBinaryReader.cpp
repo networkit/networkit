@@ -4,9 +4,9 @@
  *@author Charmaine Ndolo <charmaine.ndolo@b-tu.de>
  */
 
+#include <atomic>
 #include <fstream>
 #include <string.h>
-#include <atomic>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/io/NetworkitBinaryReader.hpp>

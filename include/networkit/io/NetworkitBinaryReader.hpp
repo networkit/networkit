@@ -1,7 +1,7 @@
 /*
  * NetworkitBinaryReader.hpp
  *
- *      Author: Charmaine Ndolo <charmaine.ndolo@b-tu.de>
+ *      Author: Charmaine Ndolo <charmaine.ndolo@hu-berlin.de>
  */
 
 #ifndef NETWORKIT_IO_NETWORKIT_BINARY_READER_HPP_
@@ -18,7 +18,7 @@ namespace NetworKit {
  * Reads a graph written in the custom Networkit format documented in cpp/io/NetworkitGraph.md
  */
 
-class NetworkitBinaryReader : public GraphReader {
+class NetworkitBinaryReader final : public GraphReader {
 
 public:
     NetworkitBinaryReader() {};
