@@ -241,6 +241,8 @@ def getMaxNumberOfThreads():
 
 def enableNestedParallelism():
 	""" Enable nested parallelism for OpenMP"""
+	from warnings import warn
+	warn("Nested parallelism has been deprecated.")
 	_enableNestedParallelism()
 
 cdef extern from "<networkit/auxiliary/Random.hpp>" namespace "Aux::Random":

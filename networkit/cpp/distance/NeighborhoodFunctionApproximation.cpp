@@ -48,7 +48,6 @@ void NeighborhoodFunctionApproximation::run() {
     std::vector<std::vector<unsigned int>> localHighest(omp_get_max_threads(), std::vector<unsigned int>(k, 0));
 
     std::vector<unsigned int> bitmasks(k, 0);
-    omp_set_nested(1);
     Aux::Random::setSeed(Aux::Random::getSeed(), true);
     G->parallelForNodes([&](node v) {
         mCurr[v] = bitmasks;

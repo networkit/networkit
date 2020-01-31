@@ -228,9 +228,6 @@ void Lamg<Matrix>::parallelSolve(const std::vector<Vector>& rhs, std::vector<Vec
             }
         }
 
-        bool nested = omp_get_nested();
-        if (nested) omp_set_nested(false);
-
 #pragma omp parallel for
         for (omp_index i = 0; i < static_cast<omp_index>(rhs.size()); ++i) {
             index threadId = omp_get_thread_num();
@@ -241,7 +238,6 @@ void Lamg<Matrix>::parallelSolve(const std::vector<Vector>& rhs, std::vector<Vec
             compSolvers[threadId].solve(results[i], rhs[i], stat);
         }
 
-        if (nested) omp_set_nested(true);
     }
 }
 
