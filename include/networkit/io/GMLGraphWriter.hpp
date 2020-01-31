@@ -2,7 +2,7 @@
  * GMLGraphWriter.hpp
  *
  *  Created on: 30.01.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_IO_GML_GRAPH_WRITER_HPP_
@@ -26,8 +26,8 @@ public:
     /**
      * Write a graph @a G and its coordinates to a GML file.
      *
-     * @param[in]	G		Graph of type NetworKit with 2D coordinates.
-     * @param[in]	path	Path to file.
+     * @param[in]  G     Graph of type NetworKit with 2D coordinates.
+     * @param[in]  path  Path to file.
      */
     void write(const Graph &G, const std::string &path) override;
 };
