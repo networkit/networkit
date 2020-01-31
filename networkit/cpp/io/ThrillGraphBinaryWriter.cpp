@@ -1,7 +1,7 @@
 /*
- * ThrillGraphBinaryWriter.hpp
+ * ThrillGraphBinaryWriter.cpp
  *
- * @author Michael Hamann <michael.hamann@kit.edu>
+ * @author Michael Hamann
  */
 
 #include <fstream>
@@ -24,10 +24,10 @@ void ThrillGraphBinaryWriter::write(const Graph &G, const std::string &path) {
 
         if (G.hasNode(u)) {
             G.forEdgesOf(u, [&](node v) {
-                        if (u <= v) {
-                            neighbors.push_back(v);
-                        }
-                    });
+                if (u <= v) {
+                    neighbors.push_back(v);
+                }
+            });
         }
 
         size_t deg = neighbors.size();

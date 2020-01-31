@@ -1,7 +1,7 @@
 /*
  * ThrillGraphBinaryWriter.hpp
  *
- * @author Michael Hamann <michael.hamann@kit.edu>
+ * @author Michael Hamann
  */
 
 #ifndef NETWORKIT_IO_THRILL_GRAPH_BINARY_WRITER_HPP_
