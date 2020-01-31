@@ -8,11 +8,7 @@
  * http://konect.uni-koblenz.de/downloads/konect-handbook.pdf
  *
  */
-
-
-
 #include <networkit/auxiliary/Log.hpp>
-
 #include <networkit/io/KONECTGraphReader.hpp>
 #include <networkit/io/MemoryMappedFile.hpp>
 
@@ -222,7 +218,7 @@ namespace NetworKit{
                     case SUM_WEIGHTS_UP:
                         graph.increaseWeight(source, target, weight);
                         break;
-                    case KEEP_MINIUM_WEIGHT:
+                    case KEEP_MINIMUM_WEIGHT:
                         if(graph.weight(source,target) > weight){
                             graph.setWeight(source,target, weight);
                         }
