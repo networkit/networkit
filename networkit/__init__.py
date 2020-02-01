@@ -161,7 +161,6 @@ def setup():
 	""" This function is run once on module import to configure initial settings """
 	setLogLevel("ERROR")  # set default loglevel for C++ code
 	setPrintLocation(True)
-	enableNestedParallelism()  # enable nested parallelism
 	logging.basicConfig(
 		level=logging.INFO)  # set default loglevel for Python code
 
