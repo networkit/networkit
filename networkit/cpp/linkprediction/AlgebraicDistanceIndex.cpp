@@ -5,29 +5,25 @@
  *      Authors: cls, Kolja Esders
  */
 
-#include <networkit/auxiliary/Random.hpp>
 #include <networkit/auxiliary/Log.hpp>
-
+#include <networkit/auxiliary/Random.hpp>
 #include <networkit/linkprediction/AlgebraicDistanceIndex.hpp>
 
 namespace NetworKit {
 
-AlgebraicDistanceIndex::AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega, index norm) : numSystems(numberSystems), numIters(numberIterations), omega(omega), norm(norm) {
-}
+AlgebraicDistanceIndex::AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega, index norm) : numSystems(numberSystems), numIters(numberIterations), omega(omega), norm(norm) {}
 
-AlgebraicDistanceIndex::AlgebraicDistanceIndex(const Graph& G, count numberSystems, count numberIterations, double omega, index norm) : LinkPredictor(G), numSystems(numberSystems), numIters(numberIterations), omega(omega), norm(norm) {
-}
+AlgebraicDistanceIndex::AlgebraicDistanceIndex(const Graph& G, count numberSystems, count numberIterations, double omega, index norm) : LinkPredictor(G), numSystems(numberSystems), numIters(numberIterations), omega(omega), norm(norm) {}
 
 void AlgebraicDistanceIndex::preprocess() {
     Aux::Timer running1;
     running1.start();
-    // random init
     randomInit();
 
     // main loop
     for (index iter = 0; iter < numIters; ++iter) {
         // store previous iteration
-        std::vector<std::vector<double> > oldLoads = loads;
+        std::vector<std::vector<double>> oldLoads = loads;
 
         for (index sys = 0; sys < numSystems; ++sys) {
             G->forNodes([&](node u) {

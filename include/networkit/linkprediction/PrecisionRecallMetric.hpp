@@ -1,8 +1,8 @@
 /*
- * PrecisionRecallMetric.h
+ * PrecisionRecallMetric.hpp
  *
  *  Created on: 21.03.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_PRECISION_RECALL_METRIC_HPP_
@@ -19,8 +19,7 @@ namespace NetworKit {
  * Provides points that define the Precision-Recall curve for a given set of predictions.
  * Based on the generated points the area under the curve can be calculated with the trapzoidal rule.
  */
-class PrecisionRecallMetric : public EvaluationMetric {
-private:
+class PrecisionRecallMetric final : public EvaluationMetric {
   /**
    * Generates the points for the Precision-Recall curve with respect to the given predictions.
    * The curve assigns every recall-value a corresponding precision as the y-value.
@@ -32,7 +31,7 @@ private:
 
 public:
   using EvaluationMetric::EvaluationMetric;
-  
+
 };
 
 } // namespace NetworKit

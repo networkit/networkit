@@ -2,7 +2,7 @@
  * NeighborhoodUtility.cpp
  *
  *  Created on: 06.04.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #include <networkit/linkprediction/NeighborhoodUtility.hpp>

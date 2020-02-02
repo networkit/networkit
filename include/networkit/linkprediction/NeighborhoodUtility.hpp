@@ -1,8 +1,8 @@
 /*
- * NeighborhoodUtility.h
+ * NeighborhoodUtility.hpp
  *
  *  Created on: 06.04.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_NEIGHBORHOOD_UTILITY_HPP_
@@ -17,8 +17,7 @@ namespace NetworKit {
  *
  * Provides basic operations on neighborhoods in a given graph.
  */
-class NeighborhoodUtility {
-private:
+class NeighborhoodUtility final {
   /**
    * Sorts and returns the neighborhoods of the nodes @a u and @a v in the given graph @a G.
    * @param G Graph to obtain neighborhoods from
@@ -34,7 +33,7 @@ public:
    * @param G Graph to obtain neighbors-union from
    * @param u First node
    * @param v Second node
-   * @return a vector containing all the nodes in the neighboorhood-union of @a u and @a v
+   * @return a vector containing all the nodes in the neighborhood-union of @a u and @a v
    */
   static std::vector<node> getNeighborsUnion(const Graph& G, node u, node v);
 

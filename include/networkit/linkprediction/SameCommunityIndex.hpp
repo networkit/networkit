@@ -1,8 +1,8 @@
 /*
- * SameCommunityIndex.h
+ * SameCommunityIndex.hpp
  *
  *  Created on: 07.04.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_SAME_COMMUNITY_INDEX_HPP_
@@ -18,8 +18,7 @@ namespace NetworKit {
  *
  * Index to determine whether two nodes are in the same community.
  */
-class SameCommunityIndex : public LinkPredictor {
-private:
+class SameCommunityIndex final : public LinkPredictor {
   Partition communities; //!< The communities of the current graph
 
   /**
@@ -38,12 +37,12 @@ public:
    * @param G The graph to work on
    */
   explicit SameCommunityIndex(const Graph& G);
-  
+
   /**
    * Sets the graph to work on.
    * @param newGraph The graph to work on
    */
-  virtual void setGraph(const Graph& newGraph) override;
+  void setGraph(const Graph& newGraph) override;
 
 };
 

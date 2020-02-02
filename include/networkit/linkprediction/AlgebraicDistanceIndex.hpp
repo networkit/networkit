@@ -1,5 +1,5 @@
 /*
- * AlgebraicDistanceIndex.h
+ * AlgebraicDistanceIndex.hpp
  *
  *  Created on: 19.06.2013
  *      Authors: cls, Kolja Esders
@@ -8,10 +8,9 @@
 #ifndef NETWORKIT_LINKPREDICTION_ALGEBRAIC_DISTANCE_INDEX_HPP_
 #define NETWORKIT_LINKPREDICTION_ALGEBRAIC_DISTANCE_INDEX_HPP_
 
-#include <networkit/linkprediction/LinkPredictor.hpp>
-#include <networkit/graph/Graph.hpp>
 #include <networkit/auxiliary/Timer.hpp>
-
+#include <networkit/graph/Graph.hpp>
+#include <networkit/linkprediction/LinkPredictor.hpp>
 
 namespace NetworKit {
 
@@ -19,11 +18,9 @@ namespace NetworKit {
  * @ingroup linkprediction
  *
  * Algebraic distance assigns a distance value to pairs of nodes
- * according to their structural closeness in the graph. 
+ * according to their structural closeness in the graph.
  */
-class AlgebraicDistanceIndex : public LinkPredictor {
-private:
-
+class AlgebraicDistanceIndex final : public LinkPredictor {
     /**
      * Returns the extended algebraic distance between node @a u and node @a v in the norm specified in
      * the constructor.
@@ -33,12 +30,11 @@ private:
      */
     double runImpl(node u, node v) override;
 
-protected:
     count numSystems; //!< number of vectors/systems used for algebraic iteration
     count numIters; //!< number of iterations in each system
-    double omega; //!<
+    double omega;
     index norm;
-    const index MAX_NORM = 0;
+    static constexpr index MAX_NORM{0};
 
     std::vector<std::vector<double> > loads; //!< loads[i]: vector of loads of length n for one system
 
@@ -63,8 +59,8 @@ public:
      *
      * REQ: Needs to be called before algdist delivers meaningful results!
      */
-     virtual void preprocess();
-     
+     void preprocess();
+
 };
 
 } /* namespace NetworKit */

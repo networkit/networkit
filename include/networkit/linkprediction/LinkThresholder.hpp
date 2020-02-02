@@ -1,8 +1,8 @@
 /*
- * LinkThresholder.h
+ * LinkThresholder.hpp
  *
  *  Created on: 01.04.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_LINK_THRESHOLDER_HPP_

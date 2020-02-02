@@ -2,7 +2,7 @@
  * MissingLinksFinder.cpp
  *
  *  Created on: 20.03.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #include <algorithm>
@@ -13,14 +13,13 @@
 
 namespace NetworKit {
 
-MissingLinksFinder::MissingLinksFinder(const Graph& G) : G(G) {
-}
+MissingLinksFinder::MissingLinksFinder(const Graph& G) : G(&G) {}
 
 std::vector<std::pair<node, node>> MissingLinksFinder::findAtDistance(count k) {
   std::vector<std::pair<node, node>> missingLinks;
   std::vector<node> nodes;
-  nodes.reserve(G.numberOfNodes());
-  G.forNodes([&](node u) { nodes.push_back(u); });
+  nodes.reserve(G->numberOfNodes());
+  G->forNodes([&](node u) { nodes.push_back(u); });
   #pragma omp parallel
   {
     std::vector<std::pair<node, node>> missingLinksPrivate;
@@ -43,7 +42,7 @@ std::vector<std::pair<node, node>> MissingLinksFinder::findAtDistance(count k) {
 std::vector<std::pair<node, node>> MissingLinksFinder::findFromNode(node u, count k) {
   std::vector<std::pair<node, node>> missingLinks;
   std::vector<bool> visited;
-  visited.resize(G.upperNodeIdBound(), false);
+  visited.resize(G->upperNodeIdBound(), false);
   std::queue<node> q;
   q.push(u);
   visited[u] = true;
@@ -52,7 +51,7 @@ std::vector<std::pair<node, node>> MissingLinksFinder::findFromNode(node u, coun
     while (!q.empty()) {
       node u = q.front();
       q.pop();
-      G.forNeighborsOf(u, [&](node v) {
+      G->forNeighborsOf(u, [&](node v) {
         if (!visited[v]) {
           newFound.push(v);
           visited[v] = true;

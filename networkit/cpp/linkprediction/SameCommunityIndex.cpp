@@ -2,16 +2,15 @@
  * SameCommunityIndex.cpp
  *
  *  Created on: 07.04.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
-#include <networkit/linkprediction/SameCommunityIndex.hpp>
 #include <networkit/community/PLM.hpp>
+#include <networkit/linkprediction/SameCommunityIndex.hpp>
 
 namespace NetworKit {
 
-SameCommunityIndex::SameCommunityIndex() : LinkPredictor(), communities() {
-}
+SameCommunityIndex::SameCommunityIndex() : LinkPredictor(), communities() {}
 
 SameCommunityIndex::SameCommunityIndex(const Graph& graph) : LinkPredictor(graph) {
   PLM communityDetection(graph);

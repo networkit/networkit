@@ -1,8 +1,8 @@
 /*
- * EvaluationMetric.h
+ * EvaluationMetric.hpp
  *
  *  Created on: 17.03.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_EVALUATION_METRIC_HPP_
@@ -17,12 +17,10 @@ namespace NetworKit {
  * @ingroup linkprediction
  *
  * Abstract base class for evaluation curves.
- * The evualation curves are generated based on the predictions calculated
+ * The evaluation curves are generated based on the predictions calculated
  * by the link predictor and a testGraph to compare against.
  */
 class EvaluationMetric {
-private:
-
   /**
    * Generates the points on the evaluation curve. Each metric will implement
    * it's own way to generate those points.
@@ -42,7 +40,7 @@ private:
   void setPositivesAndNegatives();
 
   void setTrueAndFalsePositives();
-  
+
   void setTrueAndFalseNegatives();
 
   /**
@@ -102,7 +100,7 @@ public:
    * The latest y-value will be used as a tie-breaker in case there are multiple y-values for one x-value.
    * Note that the given number of thresholds (@a numThresholds) is an upper bound for the number of
    * points returned. This is due to the fact that multiple y-values can map to one x-value in which case
-   * the tie-breaking behaviour described above will intervene.
+   * the tie-breaking behavior described above will intervene.
    * @param predictions Predictions to evaluate
    * @param numThresholds The number of thresholds to use the metric on
    * @return a pair of vectors where the first vectors contains all x-values and the second one contains the corresponding
@@ -123,7 +121,7 @@ public:
    * @return area under the most recently calculated curve
    */
   virtual double getAreaUnderCurve() const;
-  
+
 };
 
 } // namespace NetworKit

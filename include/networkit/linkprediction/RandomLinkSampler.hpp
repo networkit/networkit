@@ -1,8 +1,8 @@
 /*
- * RandomLinkSampler.h
+ * RandomLinkSampler.hpp
  *
  *  Created on: 28.02.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_RANDOM_LINK_SAMPLER_HPP_
