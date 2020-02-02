@@ -1,26 +1,26 @@
 /*
- * Quadtree.h
+ * Quadtree.hpp
  *
  *  Created on: 21.05.2014
- *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
+ *      Author: Moritz v. Looz
  */
 
 #ifndef NETWORKIT_GENERATORS_QUADTREE_QUADTREE_HPP_
 #define NETWORKIT_GENERATORS_QUADTREE_QUADTREE_HPP_
 
-#include <vector>
-#include <memory>
 #include <cmath>
+#include <memory>
 #include <omp.h>
-#include <functional>
+#include <vector>
+
+#include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/generators/quadtree/QuadNode.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
-#include <networkit/auxiliary/Parallel.hpp>
 
 namespace NetworKit {
 
 template <class T, bool poincare=true>
-class Quadtree {
+class Quadtree final {
     friend class QuadTreeGTest;
 public:
     Quadtree() {
@@ -88,7 +88,6 @@ public:
     /**
      * Get elements whose hyperbolic distance to the query point is less than the hyperbolic distance
      *
-     *
      * @param circleCenter Cartesian coordinates of the query circle's center
      * @param hyperbolicRadius Radius of the query circle
      */
@@ -108,7 +107,6 @@ public:
         Point2DWithIndex<double> center = HyperbolicSpace::polarToCartesian(cc_phi, r_e);
         double minR = r_e - radius;
         double maxR = r_e + radius;
-        //assert(maxR < 1);//this looks fishy
         if (maxR > 1) maxR = 1;
         if (minR < 0) {
             maxR = std::max(abs(minR), maxR);
@@ -117,8 +115,6 @@ public:
             maxPhi = 2*PI;
         } else {
             double spread = asin(radius / r_e);
-            //double phi_c, r_c;
-            //HyperbolicSpace::cartesianToPolar(center, phi_c, r_c);
             minPhi = cc_phi - spread;
             maxPhi = cc_phi + spread;
             /**
@@ -144,9 +140,8 @@ public:
 
         for (T denizen : circleDenizens) {
             if (denizen >= size()) {
-                DEBUG("Content ", denizen, " found in quadtree of size ", size(), ", as one of ", circleDenizens.size(), " neighbours.");
+                DEBUG("Content ", denizen, " found in quadtree of size ", size(), ", as one of ", circleDenizens.size(), " neighbors.");
             }
-            assert(denizen < size());//TODO: remove this after debugging, in general the quadtree should handle arbitrary contents
         }
 
         //we have sort(deg(v)) here! This is not good, but does not make the asymptotical complexity of O(deg(v) log n) worse.
@@ -162,8 +157,7 @@ public:
         }
 
         for (T denizen : circleDenizens) {
-            if (denizen >= size()) DEBUG("Content ", denizen, " found in quadtree of size ", size(), ", as one of ", circleDenizens.size(), " neighbours, after sorting");
-            assert(denizen < size());//TODO: remove this after debugging, in general the quadtree should handle arbitrary contents
+            if (denizen >= size()) DEBUG("Content ", denizen, " found in quadtree of size ", size(), ", as one of ", circleDenizens.size(), " neighbors, after sorting");
         }
     }
 

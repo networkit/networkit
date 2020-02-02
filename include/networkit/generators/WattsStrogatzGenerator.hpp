@@ -1,5 +1,5 @@
 /*
-* WattsStrogatzGenerator.h
+* WattsStrogatzGenerator.hpp
 *
 *  Created on: 09.07.2014
 *      Author: Simon Bischof
@@ -16,7 +16,7 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class WattsStrogatzGenerator: public StaticGraphGenerator {
+class WattsStrogatzGenerator final : public StaticGraphGenerator {
 
 public:
     /**
@@ -27,18 +27,18 @@ public:
     * First, a regular ring lattice is generated.
     * Then some edges are rewired randomly.
     *
-    * @param nNodes 		number of nodes in target graph
-    * @param nNeighbors		number of neighbors on each side of a node
-    * @param p				rewiring probability
+    * @param nNodes number of nodes in target graph
+    * @param nNeighbors number of neighbors on each side of a node
+    * @param p rewiring probability
     */
     WattsStrogatzGenerator(count nNodes, count nNeighbors, double p);
 
-    virtual Graph generate();
+    Graph generate() override;
 
-protected:
-        count nNodes;
-        count nNeighbors;
-        double p;
+private:
+    count nNodes;
+    count nNeighbors;
+    double p;
 };
 
 } /* namespace NetworKit */

@@ -3,13 +3,13 @@
 
 #include <vector>
 
+#include <networkit/Globals.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
-#include <networkit/Globals.hpp>
 
 namespace NetworKit {
 
-class PowerlawDegreeSequence : public Algorithm {
+class PowerlawDegreeSequence final : public Algorithm {
 public:
     /**
      * Generates a powerlaw degree sequence with the given minimum and maximum degree, the powerlaw exponent gamma.
@@ -112,6 +112,7 @@ public:
      * @return A degree that follows the generated distribution.
      */
     count getDegree() const;
+
 private:
     count minDeg, maxDeg;
     double gamma;

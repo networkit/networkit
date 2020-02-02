@@ -1,5 +1,5 @@
 /*
-* DorogovtsevMendesGenerator.h
+* DorogovtsevMendesGenerator.hpp
 *
 *  Created on: 27.05.2014
 *      Author: Christian Staudt
@@ -15,19 +15,17 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class DorogovtsevMendesGenerator: public StaticGraphGenerator {
+class DorogovtsevMendesGenerator final : public StaticGraphGenerator {
 
 public:
     /**
-    * TODO:
-    *
-    * @param nNodes 	number of nodes in target graph
+    * @param nNodes number of nodes in target graph
     */
     DorogovtsevMendesGenerator(count nNodes);
 
-    virtual Graph generate();
+    Graph generate() override;
 
-protected:
+private:
         count nNodes;
 
 };

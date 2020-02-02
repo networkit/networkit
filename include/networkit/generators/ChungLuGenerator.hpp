@@ -1,5 +1,5 @@
 /*
- * ChungLu.h
+ * ChungLu.hpp
  *
  *  Created on: Dec 23, 2013
  *      Author: Henning
@@ -9,15 +9,14 @@
 #define NETWORKIT_GENERATORS_CHUNG_LU_GENERATOR_HPP_
 
 #include <networkit/generators/StaticDegreeSequenceGenerator.hpp>
-#include <networkit/auxiliary/Random.hpp>
 
 namespace NetworKit {
 
-/** 
+/**
  * @ingroup generators
  * Given an arbitrary degree sequence, the Chung-Lu generative model
- * will produce a random graph with the same expected degree sequence. 
- * 
+ * will produce a random graph with the same expected degree sequence.
+ *
  * see Chung, Lu: The average distances in random graphs with given expected degrees
  * and Chung, Lu: Connected Components in Random Graphs with Given Expected Degree Sequences.
  * Aiello, Chung, Lu: A Random Graph Model for Massive Graphs describes a different generative model
@@ -30,18 +29,18 @@ namespace NetworKit {
  *
  */
 
-class ChungLuGenerator: public StaticDegreeSequenceGenerator {
-protected:
+class ChungLuGenerator final: public StaticDegreeSequenceGenerator {
     count sum_deg;
     count n;
 
 public:
+
     ChungLuGenerator(const std::vector<count>& degreeSequence);
 
     /**
      * Generates graph with expected degree sequence seq.
      */
-    virtual Graph generate();
+    Graph generate() override;
 };
 
 } /* namespace NetworKit */

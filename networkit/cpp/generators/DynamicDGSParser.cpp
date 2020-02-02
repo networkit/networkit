@@ -5,9 +5,11 @@
  *      Author: forigem
  */
 
-#include <networkit/generators/DynamicDGSParser.hpp>
+#include <fstream>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/generators/DynamicDGSParser.hpp>
 
 namespace NetworKit {
 
@@ -57,7 +59,6 @@ void DynamicDGSParser::generate() {
         std::vector<std::string> split = Aux::StringTools::split(line);
         std::string tag = split[0];
 
-        //std::unordered_map<std::string, node> edgeNames;
 
         if (tag.compare("st") == 0 && split.size() == 2) { // clock
             Gproxy->timeStep();
@@ -204,11 +205,6 @@ void DynamicDGSParser::evaluateClusterings(const std::string path, const Partiti
         if (clusterSizes[i] >= 20) {
             fs << "cluster-" << i << '\t';
             fs << "size " << '\t' << clusterSizes[i] << '\t';
-            /* old output
-            for (const auto &pair : clusterMappings[i]) {
-                fs << pair.first << '\t' << pair.second << '\t';
-            }
-            */
             std::vector<count> vals;
             vals.reserve(clusterMappings.size());
 

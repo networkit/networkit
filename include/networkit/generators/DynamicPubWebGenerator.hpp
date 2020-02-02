@@ -1,5 +1,5 @@
 /*
- * DynamicPubWebGenerator.h
+ * DynamicPubWebGenerator.hpp
  *
  *  Created on: 15.01.2014
  *      Author: Henning
@@ -9,7 +9,6 @@
 #ifndef NETWORKIT_GENERATORS_DYNAMIC_PUB_WEB_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_DYNAMIC_PUB_WEB_GENERATOR_HPP_
 
-#include <map>
 #include <vector>
 
 #include <networkit/dynamics/GraphEvent.hpp>
@@ -21,7 +20,7 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class DynamicPubWebGenerator : public DynamicGraphGenerator {
+class DynamicPubWebGenerator final : public DynamicGraphGenerator {
 public:
     DynamicPubWebGenerator(count numNodes, count numberOfDenseAreas, coordinate neighborhoodRadius,
                            count maxNumberOfNeighbors, bool writeInitialGraphToStream = true);
@@ -31,7 +30,7 @@ public:
     /**
      * Generate event stream.
      *
-     * @param[in]	nSteps	number of time steps in the event stream
+     * @param[in]  nSteps  number of time steps in the event stream
      */
     std::vector<GraphEvent> generate(count nSteps) override;
 
@@ -45,7 +44,7 @@ public:
     const std::vector<Point2D> &getCoordinates() const { return coordinates; }
     // no moveCoordinates, as generator needs its own copy for the next run of generate!
 
-protected:
+private:
     PubWebGenerator initGen; // multiple inheritance did not work with different generate functions
     std::vector<std::pair<node, Point2D>> newCoordinates; //<! new and changed coordinates
     std::vector<Point2D> coordinates;                     //<! vector of all coordinates

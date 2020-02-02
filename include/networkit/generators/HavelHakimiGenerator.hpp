@@ -1,5 +1,5 @@
 /*
- * HavelHakimiGenerator.h
+ * HavelHakimiGenerator.hpp
  *
  *  Created on: Dec 10, 2013
  *      Author: Henning
@@ -10,8 +10,8 @@
 
 #include <vector>
 
-#include <networkit/graph/Graph.hpp>
 #include <networkit/generators/StaticDegreeSequenceGenerator.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -23,9 +23,7 @@ namespace NetworKit {
  * Construction runs in linear time O(m). However, the test if a sequence is realizable
  * is quadratic in the sequence length.
  */
-class HavelHakimiGenerator: public StaticDegreeSequenceGenerator  {
-protected:
-
+class HavelHakimiGenerator final : public StaticDegreeSequenceGenerator  {
 public:
     /**
      * @param[in] sequence Degree sequence to realize. Must be non-increasing.

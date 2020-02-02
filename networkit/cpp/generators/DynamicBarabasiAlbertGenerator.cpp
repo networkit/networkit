@@ -6,14 +6,13 @@
  */
 
 #include <networkit/auxiliary/Random.hpp>
-
 #include <networkit/generators/DynamicBarabasiAlbertGenerator.hpp>
 
 namespace NetworKit {
 
 
 DynamicBarabasiAlbertGenerator::DynamicBarabasiAlbertGenerator(count k) : DynamicGraphSource(), k(k), degSum(0) {
-    if (k <= 0) {
+    if (!k) {
         throw std::runtime_error("k must be at least 1");
     }
 }
@@ -25,11 +24,10 @@ void DynamicBarabasiAlbertGenerator::initializeGraph() {
 
     // The network begins with an initial network of m0 nodes. m0 2 and the degree of each node in the initial network should be at least 1,
     // otherwise it will always remain disconnected from the rest of the network.
-    for (count i = 0; i < k; ++i) {
-        node u = Gproxy->addNode(); // assume node ids are assigned consecutively
-        if (i > 0) {
-            Gproxy->addEdge(u, u - 1); // connect to previous node to create a path
-        }
+    node u = Gproxy->addNode(); // assume node ids are assigned consecutively
+    for (count i = 1; i < k; ++i) {
+        u = Gproxy->addNode(); // assume node ids are assigned consecutively
+        Gproxy->addEdge(u, u - 1); // connect to previous node to create a path
     }
 
     degSum = 2 * G->numberOfEdges();
@@ -54,11 +52,6 @@ void DynamicBarabasiAlbertGenerator::generate() {
     while (targets.size() < k) {
         nAttempts++;
 
-//
-//		if (nAttempts > 100) {
-//			throw std::runtime_error("picking target nodes takes too long - something is wrong");
-//		}
-
         // 2) pick a random number that is 0 or greater and is less than the sum of the weights
         uint64_t rand = Aux::Random::integer(degSum);
 
@@ -77,7 +70,7 @@ void DynamicBarabasiAlbertGenerator::generate() {
 
     for (node v : targets) {
         this->Gproxy->addEdge(u, v);
-        degSum += 2; 	// increment degree sum
+        degSum += 2;   // increment degree sum
     }
 
     this->Gproxy->timeStep(); // trigger a time step

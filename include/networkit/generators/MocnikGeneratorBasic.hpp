@@ -1,5 +1,5 @@
 /*
- * MocnikGeneratorBasic.h
+ * MocnikGeneratorBasic.hpp
  *
  * Created on: July 7, 2018
  * Author: Franz-Benjamin Mocnik <mail@mocnik-science.net>
@@ -16,16 +16,14 @@ namespace NetworKit {
  * @ingroup generators
  */
 class MocnikGeneratorBasic: public StaticGraphGenerator {
-private:
     // GENERAL DATA
-    
+
     /**
      * Position of each node in space.  The index of the vector is also the number of
      * the node.
      */
     std::vector<std::vector<double>> nodePositions;
 
-protected:
     count dim;
     count n;
     double k;
@@ -53,7 +51,7 @@ public:
      */
     MocnikGeneratorBasic(count dim, count n, double k);
 
-    virtual Graph generate();
+    Graph generate() override;
 };
 
 } /* namespace NetworKit */

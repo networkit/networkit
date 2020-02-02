@@ -1,5 +1,5 @@
 /*
- * ClusteredRandomGraphGenerator.h
+ * ClusteredRandomGraphGenerator.hpp
  *
  *  Created on: 28.02.2014
  *      Author: cls
@@ -19,7 +19,7 @@ namespace NetworKit {
  * The number of nodes and the number of edges are adjustable as well as the probabilities
  * for intra-cluster and inter-cluster edges.
  */
-class ClusteredRandomGraphGenerator: public StaticGraphGenerator {
+class ClusteredRandomGraphGenerator final : public StaticGraphGenerator {
 public:
     /**
      * Creates a clustered random graph:

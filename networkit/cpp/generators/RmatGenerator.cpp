@@ -5,15 +5,15 @@
  *      Author: Henning, cls
  */
 
-#include <networkit/generators/RmatGenerator.hpp>
 #include <networkit/auxiliary/Random.hpp>
-#include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/NumericTools.hpp>
+#include <networkit/generators/RmatGenerator.hpp>
 
 namespace NetworKit {
 
 RmatGenerator::RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted, count reduceNodes):
-    scale(scale), edgeFactor(edgeFactor), a(a), b(b), c(c), d(d), weighted(weighted), reduceNodes(reduceNodes)
+    scale(scale), edgeFactor(edgeFactor), a(a), b(b), c(c), weighted(weighted), reduceNodes(reduceNodes)
 {
     if (scale > 63) throw std::runtime_error("Cannot generate more than 2^63 nodes");
     double sum = a+b+c+d;
@@ -55,7 +55,6 @@ Graph RmatGenerator::generate() {
         node v = 0;
         for (index i = 0; i < scale; ++i) {
             count q = quadrant();
-//			TRACE("q: ", q);
             u = u << 1;
             v = v << 1;
             u = u | (q >> 1);
@@ -107,13 +106,11 @@ Graph RmatGenerator::generate() {
         if (weighted) {
             for (index e = 0; e < numEdges; ++e) {
                 std::pair<node, node> drawnEdge = drawEdge();
-                //			TRACE("edge drawn: ", drawnEdge.first, " - ", drawnEdge.second);
                 G.increaseWeight(drawnEdge.first, drawnEdge.second, defaultEdgeWeight);
             }
         } else {
             while (G.numberOfEdges() < wantedEdges) {
                 std::pair<node, node> drawnEdge = drawEdge();
-                //			TRACE("edge drawn: ", drawnEdge.first, " - ", drawnEdge.second);
                 if (!G.hasEdge(drawnEdge.first, drawnEdge.second)) {
                     G.addEdge(drawnEdge.first, drawnEdge.second);
                 }

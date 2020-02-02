@@ -1,19 +1,20 @@
 /*
- * QuadNodePolarEuclid.h
+ * QuadNodePolarEuclid.hpp
  *
  *  Created on: 21.05.2014
- *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
+ *      Author: Moritz v. Looz
  *
- *  Note: This is similar enough to QuadNode.h that one could merge these two classes.
+ *  Note: This is similar enough to QuadNode.hpp that one could merge these two classes.
  */
 
 #ifndef NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_CARTESIAN_EUCLID_HPP_
 #define NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_CARTESIAN_EUCLID_HPP_
 
-#include <vector>
 #include <algorithm>
+#include <cassert>
 #include <functional>
-#include <assert.h>
+#include <vector>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
 
@@ -25,9 +26,9 @@ using std::cos;
 namespace NetworKit {
 
 template <class T>
-class QuadNodeCartesianEuclid {
+class QuadNodeCartesianEuclid final {
     friend class QuadTreeGTest;
-private:
+
     Point<double> minPoint;
     Point<double> maxPoint;
     count dimension;
@@ -237,8 +238,6 @@ public:
          */
         double maxDistance = 0;
         double minDistance = std::numeric_limits<double>::max();
-        //Point<double> minCopy(minPoint);
-        //Point<double> maxCopy(minPoint);
 
         if (responsible(query)) minDistance = 0;
 
@@ -351,7 +350,7 @@ public:
                     result.push_back(content[i]);
                 }
             }
-        }	else {
+        }  else {
             for (index i = 0; i < children.size(); i++) {
                 children[i].getElementsInEuclideanCircle(center, radius, result);
             }
@@ -408,7 +407,7 @@ public:
                     result.push_back(content[i]);
                 }
             }
-        }	else {
+        }  else {
             if (expectedNeighbours < 4 || probUB < 1/1000) {//select candidates directly instead of calling recursively
                 TRACE("probUB = ", probUB,  ", switching to direct candidate selection.");
                 assert(probUB < 1);

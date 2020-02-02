@@ -1,5 +1,5 @@
 /*
- * PubWebGenerator.h
+ * PubWebGenerator.hpp
  *
  *  Created on: Apr 10, 2013
  *      Author: Henning
@@ -40,13 +40,13 @@ namespace NetworKit {
  * - neighborhoodRadius: the higher, the better the connectivity [0.1, 0.35]
  * - maxNumberOfNeighbors: maximum degree, a higher value corresponds to better connectivity [4, 40]
  */
-class PubWebGenerator : public StaticGraphGenerator {
+class PubWebGenerator final : public StaticGraphGenerator {
     friend class DynamicPubWebGenerator;
 
 public:
     PubWebGenerator() {
     } // nullary constructor needed for Python Shell - do not use this to construct instance
-    virtual ~PubWebGenerator() = default;
+    ~PubWebGenerator() = default;
 
     PubWebGenerator(count numNodes, count numberOfDenseAreas, coordinate neighborhoodRadius,
                     count maxNumberOfNeighbors);
@@ -56,7 +56,7 @@ public:
     const std::vector<Point2D> &getCoordinates() const { return coordinates; }
     std::vector<Point2D> moveCoordinates() { return std::move(coordinates); }
 
-protected:
+private:
     struct circle {
         coordinate x;
         coordinate y;

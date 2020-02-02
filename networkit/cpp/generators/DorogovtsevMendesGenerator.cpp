@@ -12,11 +12,7 @@
 
 namespace NetworKit {
 
-DorogovtsevMendesGenerator::DorogovtsevMendesGenerator(count nNodes): nNodes(nNodes) {
-
-}
-
-
+DorogovtsevMendesGenerator::DorogovtsevMendesGenerator(count nNodes): nNodes(nNodes) {}
 
 Graph DorogovtsevMendesGenerator::generate() {
     Graph G;

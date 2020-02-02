@@ -5,28 +5,25 @@
 *      Author: Simon Bischof
 */
 
-#include <networkit/generators/WattsStrogatzGenerator.hpp>
-#include <networkit/generators/RegularRingLatticeGenerator.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/generators/RegularRingLatticeGenerator.hpp>
+#include <networkit/generators/WattsStrogatzGenerator.hpp>
 
 namespace NetworKit {
 
 WattsStrogatzGenerator::WattsStrogatzGenerator(count nNodes, count nNeighbors, double p)
-    : nNodes(nNodes), nNeighbors(nNeighbors), p(p) {
-    
-}
-
+    : nNodes(nNodes), nNeighbors(nNeighbors), p(p) {}
 
 Graph WattsStrogatzGenerator::generate() {
     //generate regular ring lattice as initial graph
     RegularRingLatticeGenerator R(nNodes, nNeighbors);
     Graph G = R.generate();
-    
+
     //list all valid end nodes for rewiring an edge
     auto validEndNode = [&](node u, node v) {
         return ! G.hasEdge(u, v) && u != v;
     };
-    
+
     //rewire according to Watts and Strogatz model
     for (node u = 0; u < nNodes; u++) {
         /* save edges before rewiring incident edges for a node
@@ -53,7 +50,7 @@ Graph WattsStrogatzGenerator::generate() {
             }
         }
     }
-            
+
     return G;
 }
 

@@ -5,14 +5,14 @@
  *      Author: Henning, Manuel Penschuck <networkit@manuel.jetzt>
  */
 
-#include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/generators/ErdosRenyiEnumerator.hpp>
+#include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/GraphBuilder.hpp>
 
 namespace NetworKit {
 
 ErdosRenyiGenerator::ErdosRenyiGenerator(count nNodes, double prob, bool directed, bool self_loops) :
-    nNodes{nNodes},	prob{prob}, directed{directed}, self_loops{self_loops}
+    nNodes{nNodes}, prob{prob}, directed{directed}, self_loops{self_loops}
 {
     if (self_loops && !directed)
         throw std::runtime_error("Self-loops are only supported for directed graphs");

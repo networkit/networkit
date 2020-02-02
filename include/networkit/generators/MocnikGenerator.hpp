@@ -1,5 +1,5 @@
 /*
- * MocnikGenerator.h
+ * MocnikGenerator.hpp
  *
  * Created on: July 7, 2018
  * Author: Franz-Benjamin Mocnik <mail@mocnik-science.net>
@@ -15,8 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class MocnikGenerator: public StaticGraphGenerator {
-private:
+class MocnikGenerator final: public StaticGraphGenerator {
     // GENERAL DATA
 
     /**
@@ -52,17 +51,17 @@ private:
      * Initialize the cell array.  The second parameter determines how many grid
      * cells shall be contained in each dimension of the cell array.
      */
-    void initCellArray(LayerState &s, const count &numberOfCellsPerDimension);
+    void initCellArray(LayerState &s, count numberOfCellsPerDimension);
 
     /**
      * Get all nodes that are contained in the i-th grid cell
      */
-    NodeCollection getNodes(LayerState &s, const int &i);
+    NodeCollection getNodes(LayerState &s, int i);
 
     /**
      * Add the node with number j to the corresponing grid cell
      */
-    void addNode(LayerState &s, const int &j);
+    void addNode(LayerState &s, int j);
 
     /**
      * Determine, for a given position, the index of the corresponding grid cell
@@ -78,17 +77,17 @@ private:
     /**
      * Determine, for a given index, the multi-dimensional index of a grid cell
      */
-    const std::vector<int> fromIndex(LayerState &s, const int &i);
+    std::vector<int> fromIndex(LayerState &s, int i);
 
     /**
      * Determine for a grid cell given by index i the grid cells of distance r
      */
-    const std::vector<int> boxSurface(LayerState &s, const int &i, const int &r);
+    std::vector<int> boxSurface(LayerState &s, int i, int r);
 
     /**
      * Determine for a grid cell given by index i the grid cells within distance r
      */
-    const std::vector<int> boxVolume(LayerState &s, const int &j, const double &r);
+    std::vector<int> boxVolume(LayerState &s, int j, double r);
 
     // EDGE GENERATION
 
@@ -97,9 +96,8 @@ private:
      * provided relative weight.  If it is indicated that the edge is part of the
      * base layer, it is not tested whether the edge already exists inside the graph.
      */
-    void addEdgesToGraph(Graph &G, const count &n, const double &k, const double &relativeWeight, const bool &baseLayer);
+    void addEdgesToGraph(Graph &G, count n, double k, double relativeWeight, bool baseLayer);
 
-protected:
     count dim;
     std::vector<count> ns;
     std::vector<double> ks;
@@ -140,7 +138,7 @@ public:
     MocnikGenerator(count dim, std::vector<count> ns, double k, std::vector<double> weighted);
     MocnikGenerator(count dim, std::vector<count> ns, std::vector<double> ks, std::vector<double> weighted);
 
-    virtual Graph generate();
+    Graph generate() override;
 };
 
 } /* namespace NetworKit */

@@ -8,9 +8,10 @@
 
 #include <numeric>
 
+#include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/auxiliary/Random.hpp>
 #include <networkit/generators/ChungLuGenerator.hpp>
 #include <networkit/graph/GraphBuilder.hpp>
-#include <networkit/auxiliary/Parallel.hpp>
 
 namespace NetworKit {
 
@@ -41,8 +42,8 @@ ChungLuGenerator::ChungLuGenerator(const std::vector<count> &degreeSequence) :
                 if ((count) v < n) {
                     double q = std::min(((double) seq[u]) * ((double) seq[v]) / sum_deg, 1.0);
                     double randVal2 = Aux::Random::probability();
-                    /* The potential neighbour was selected with the probability p.
-                     * In order to see if this neighbour should be rejected or accepted
+                    /* The potential neighbor was selected with the probability p.
+                     * In order to see if this neighbor should be rejected or accepted
                      * we correct the probability using q */
                     if (randVal2 < q / p) {
                         gB.addHalfOutEdge(u, v);

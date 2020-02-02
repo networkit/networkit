@@ -1,16 +1,17 @@
 /*
- * ForestFireGenerator.cpp
+ * DynamicForestFireGenerator.cpp
  *
  *  Created on: 17.01.2014
  *      Author: cls
  */
 
-#include <networkit/generators/DynamicForestFireGenerator.hpp>
-#include <networkit/auxiliary/Random.hpp>
-#include <networkit/auxiliary/Log.hpp>
+#include <queue>
 #include <set>
 #include <unordered_map>
-#include <queue>
+
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/generators/DynamicForestFireGenerator.hpp>
 
 namespace NetworKit {
 
@@ -81,7 +82,6 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
             return edges;
         };
 
-
         // select ambassador node
         node a = none;
         do {
@@ -129,7 +129,6 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
         --nSteps;
     }
 
-
     for (index step = 0; step < nSteps; ++step) {
         connectNewNode();
         stream.push_back(GraphEvent(GraphEvent::TIME_STEP));
@@ -137,6 +136,5 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
 
     return stream;
 }
-
 
 } /* namespace NetworKit */

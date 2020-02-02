@@ -1,17 +1,18 @@
 /*
- * QuadNode.h
+ * QuadNode.hpp
  *
  *  Created on: 21.05.2014
- *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
+ *      Author: Moritz v. Looz
  */
 
 #ifndef NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_HPP_
 #define NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_HPP_
 
-#include <vector>
 #include <algorithm>
+#include <cassert>
 #include <functional>
-#include <assert.h>
+#include <vector>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
@@ -24,19 +25,19 @@ using std::cos;
 namespace NetworKit {
 
 template <class T, bool poincare = true>
-class QuadNode {
+class QuadNode final {
     friend class QuadTreeGTest;
-private:
+
     double leftAngle;
     double minR;
     double rightAngle;
     double maxR;
     Point2DWithIndex<double> a,b,c,d;
     unsigned capacity;
-    static const unsigned coarsenLimit = 4;
+    static constexpr unsigned coarsenLimit = 4;
     count subTreeSize;
     std::vector<T> content;
-    std::vector<Point2DWithIndex<double> > positions;
+    std::vector<Point2DWithIndex<double>> positions;
     std::vector<double> angles;
     std::vector<double> radii;
     bool isLeaf;
@@ -67,7 +68,6 @@ public:
 
     /**
      * Construct a QuadNode for polar coordinates.
-     *
      *
      * @param leftAngle Minimal angular coordinate of region, in radians from 0 to 2\pi
      * @param minR Minimal radial coordinate of region, between 0 and 1
@@ -126,8 +126,6 @@ public:
         } else {
             middleR = acosh((1-balance)*cosh(alpha*maxR) + balance*cosh(alpha*minR))/alpha;
         }
-
-        //one could also use the median here. Results in worse asymptotical complexity, but maybe better runtime?
 
         assert(middleR < maxR);
         assert(middleR > minR);
@@ -256,7 +254,6 @@ public:
         }
     }
 
-
     /**
      * Check whether the region managed by this node lies outside of an Euclidean circle.
      *
@@ -322,7 +319,6 @@ public:
         Point2DWithIndex<double> query = HyperbolicSpace::polarToCartesian(angle_c, r_c);
         return outOfReach(query, radius);
     }
-
 
     /**
      * @param phi Angular coordinate of query point
@@ -636,7 +632,6 @@ public:
                 }
             }
         }
-        //DEBUG("Expected at most ", expectedNeighbours, " neighbours, got ", result.size() - offset);
         return candidatesTested;
     }
 

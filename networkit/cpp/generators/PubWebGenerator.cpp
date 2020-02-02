@@ -7,11 +7,9 @@
 // networkit-format
 
 #include <cmath>
-#include <queue>
 #include <set>
 
 #include <networkit/auxiliary/Random.hpp>
-
 #include <networkit/generators/PubWebGenerator.hpp>
 
 namespace NetworKit {
@@ -79,8 +77,6 @@ void PubWebGenerator::determineNeighbors(Graph &g) {
                 // edge is already marked => insert it
                 edgeweight ew = BASE_WEIGHT / -currentBest.first;
                 g.addEdge(currentBest.second.first, currentBest.second.second, ew);
-                //				TRACE("add edge " , currentBest.second.first , "/" ,
-                // currentBest.second.second);
             } else {
                 // mark edge as eligible
                 eligibleEdges.insert(currentBest.second);

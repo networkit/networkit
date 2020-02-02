@@ -1,5 +1,5 @@
 /*
- * DynamicBarabasiAlbertGenerator.h
+ * DynamicBarabasiAlbertGenerator.hpp
  *
  *  Created on: 09.04.2013
  *      Author: cls
@@ -19,22 +19,18 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class DynamicBarabasiAlbertGenerator: public DynamicGraphSource {
+class DynamicBarabasiAlbertGenerator final : public DynamicGraphSource {
 
-protected:
-
-    count k; 						//!< parameter of the BA model: number of edges per new node
-    count degSum; 					//!< degree sum of current graph
-
+    count k;             //!< parameter of the BA model: number of edges per new node
+    count degSum;        //!< degree sum of current graph
 
 public:
 
-
     DynamicBarabasiAlbertGenerator(count k = 2);
 
-    virtual void initializeGraph();
+    void initializeGraph() override;
 
-    virtual void generate();
+    void generate() override;
 
 };
 
