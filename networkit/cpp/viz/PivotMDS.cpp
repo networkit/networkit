@@ -2,21 +2,13 @@
  * PivotMDS.cpp
  *
  *  Created on: Jul 7, 2016
- *      Author: Michael Wegner (michael.wegner@student.kit.edu)
+ *      Author: Michael Wegner
  */
-
-#include <networkit/viz/PivotMDS.hpp>
-
-#include <networkit/algebraic/CSRMatrix.hpp>
-#include <networkit/algebraic/Vector.hpp>
 
 #include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/auxiliary/Random.hpp>
-
-#include <networkit/distance/BFS.hpp>
-#include <networkit/distance/Dijkstra.hpp>
-
 #include <networkit/graph/GraphTools.hpp>
+#include <networkit/viz/PivotMDS.hpp>
 
 namespace NetworKit {
 
@@ -24,7 +16,7 @@ PivotMDS::PivotMDS(const Graph &graph, count dim, count numPivots)
     : GraphLayoutAlgorithm(graph, dim), dim(dim), numPivots(numPivots) {}
 
 void PivotMDS::run() {
-    count n = G.numberOfNodes();
+    count n = G->numberOfNodes();
     std::vector<node> pivots = computePivots();
 
     std::vector<Triplet> triplets;
@@ -38,7 +30,7 @@ void PivotMDS::run() {
         while (PQ.size() > 0) {
             node v = PQ.extractMin().second;
             triplets.push_back({v, j, dist[v]});
-            G.forNeighborsOf(v, [&](node w, edgeweight weight) {
+            G->forNeighborsOf(v, [&](node w, edgeweight weight) {
                 if (dist[v] + weight < dist[w]) {
                     dist[w] = dist[v] + weight;
                     PQ.changeKey(dist[w], w);
@@ -111,13 +103,13 @@ void PivotMDS::run() {
 }
 
 std::vector<node> PivotMDS::computePivots() {
-    count n = G.numberOfNodes();
+    count n = G->numberOfNodes();
     std::vector<bool> pivot(n, false);
     std::vector<node> pivots(numPivots);
 
     index pivotIdx = 0;
     while (pivotIdx < numPivots) {
-        node pivotCandidate = GraphTools::randomNode(G);
+        node pivotCandidate = GraphTools::randomNode(*G);
         if (!pivot[pivotCandidate]) {
             pivots[pivotIdx++] = pivotCandidate;
             pivot[pivotCandidate] = true;
@@ -127,7 +119,7 @@ std::vector<node> PivotMDS::computePivots() {
     return pivots;
 }
 
-void PivotMDS::powerMethod(const CSRMatrix &mat, const count n,
+void PivotMDS::powerMethod(const CSRMatrix &mat, count n,
                            Vector &eigenvector, double &eigenvalue) {
     eigenvector = Vector(n);
     for (index i = 0; i < n; ++i) {

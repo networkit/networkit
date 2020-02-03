@@ -1,5 +1,5 @@
 /*
- * Octree.h
+ * Octree.hpp
  *
  *  Created on: Apr 21, 2016
  *      Author: Michael Wegner
@@ -11,10 +11,9 @@
 #include <cmath>
 #include <vector>
 
-#include <networkit/viz/Point.hpp>
 #include <networkit/algebraic/Vector.hpp>
-
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/viz/Point.hpp>
 
 namespace NetworKit {
 
@@ -36,9 +35,6 @@ public:
      */
     BoundingBox(const Point<T>& center, const T sideLength) : center(center), sideLength(sideLength), halfSideLength(sideLength/2.0), sqSideLength(sideLength*sideLength), dimension(center.getDimensions()) {}
 
-    /**
-     *
-     */
     BoundingBox(const BoundingBox<T>& other) = default;
 
     /**
@@ -150,7 +146,7 @@ struct OctreeNode {
         if (!isLeaf()) {
             centerOfMass.scale(1.0/(double) weight);
 
-            // remove empty childs
+            // remove empty children
             children.erase(std::remove_if(children.begin(), children.end(), [&](OctreeNode<T>& child){return child.isEmpty();}), children.end());
 
             for (auto &child : children) {
@@ -263,7 +259,7 @@ struct OctreeNode {
  * Implementation of a k-dimensional octree for the purpose of Barnes-Hut approximation.
  */
 template<typename T>
-class Octree {
+class Octree final {
 public:
     /**
      * Default constructor. No additional effect.
@@ -282,16 +278,16 @@ public:
      */
     void recomputeTree(const std::vector<Vector> &points);
 
-    inline std::vector<std::pair<count, Point<T>>> approximateDistance(const Point<T>& p, const double theta) const {
+    inline std::vector<std::pair<count, Point<T>>> approximateDistance(const Point<T>& p, double theta) const {
         return approximateDistance(root, p, theta);
     }
 
-    inline void approximateDistance(const Point<T>& p, const double theta, std::vector<std::pair<count, Point<T>>>& result) const {
+    inline void approximateDistance(const Point<T>& p, double theta, std::vector<std::pair<count, Point<T>>>& result) const {
         approximateDistance(root, p, theta, result);
     }
 
     template<typename L>
-    inline void approximateDistance(const Point<T>& p, const double theta, L& handle) const {
+    inline void approximateDistance(const Point<T>& p, double theta, L& handle) const {
         approximateDistance(root, p, theta*theta, handle);
     }
 
@@ -314,11 +310,11 @@ private:
     void batchInsert(const std::vector<Vector>& points);
 
 
-    std::vector<std::pair<count, Point<T>>> approximateDistance(const OctreeNode<T>& node, const Point<T>& p, const double theta) const;
-    void approximateDistance(const OctreeNode<T>& node, const Point<T>& p, const double theta, std::vector<std::pair<count, Point<T>>>& result) const;
+    std::vector<std::pair<count, Point<T>>> approximateDistance(const OctreeNode<T>& node, const Point<T>& p, double theta) const;
+    void approximateDistance(const OctreeNode<T>& node, const Point<T>& p, double theta, std::vector<std::pair<count, Point<T>>>& result) const;
 
     template<typename L>
-    void approximateDistance(const OctreeNode<T>& node, const Point<T>& p, const double sqTheta, L& handle) const;
+    void approximateDistance(const OctreeNode<T>& node, const Point<T>& p, double sqTheta, L& handle) const;
 };
 
 template<typename T>
@@ -326,7 +322,6 @@ Octree<T>::Octree(const std::vector<Vector>& points) {
     dimensions = points.size();
     numChildrenPerNode = pow(2, dimensions);
     batchInsert(points);
-//	root.compress();
 }
 
 template<typename T>
@@ -367,7 +362,7 @@ void Octree<T>::batchInsert(const std::vector<Vector>& points) {
 }
 
 template<typename T>
-std::vector<std::pair<count, Point<T>>> Octree<T>::approximateDistance(const OctreeNode<T>& node, const Point<T>& p, const double theta) const {
+std::vector<std::pair<count, Point<T>>> Octree<T>::approximateDistance(const OctreeNode<T>& node, const Point<T>& p, double theta) const {
     if (node.isEmpty()) return {};
     if (node.isLeaf()) {
         if (node.centerOfMass == p) return {};
@@ -391,7 +386,7 @@ std::vector<std::pair<count, Point<T>>> Octree<T>::approximateDistance(const Oct
 }
 
 template<typename T>
-void Octree<T>::approximateDistance(const OctreeNode<T>& node, const Point<T>& p, const double theta, std::vector<std::pair<count, Point<T>>>& result) const {
+void Octree<T>::approximateDistance(const OctreeNode<T>& node, const Point<T>& p, double theta, std::vector<std::pair<count, Point<T>>>& result) const {
     if (node.isEmpty()) return;
     if (node.isLeaf()) {
         if (node.centerOfMass != p) {
@@ -410,8 +405,7 @@ void Octree<T>::approximateDistance(const OctreeNode<T>& node, const Point<T>& p
 }
 
 template<typename T> template<typename L>
-void Octree<T>::approximateDistance(const OctreeNode<T>& node, const Point<T>& p, const double sqTheta, L& handle) const {
-    //if (node.isEmpty()) return;
+void Octree<T>::approximateDistance(const OctreeNode<T>& node, const Point<T>& p, double sqTheta, L& handle) const {
     if (!node.isLeaf()) {
         double sqDist = p.squaredDistance(node.centerOfMass);
         if (sqDist == 0 || node.bBox.getSqSideLength() <= sqTheta * sqDist) {
@@ -425,7 +419,6 @@ void Octree<T>::approximateDistance(const OctreeNode<T>& node, const Point<T>& p
         handle(node.weight, node.centerOfMass, p.squaredDistance(node.centerOfMass));
     }
 }
-
 
 } /* namespace NetworKit */
 

@@ -1,5 +1,5 @@
 /*
- * PostscriptWriter.h
+ * PostscriptWriter.hpp
  *
  *  Created on: Apr 10, 2013
  *      Author: Henning
