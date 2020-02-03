@@ -1,7 +1,8 @@
 /*
  * NetworkitBinaryReader.cpp
  *
- *@author Charmaine Ndolo <charmaine.ndolo@b-tu.de>
+ * Author: Charmaine Ndolo <charmaine.ndolo@b-tu.de>
+ *
  */
 
 #include <atomic>
@@ -100,7 +101,7 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
 
     if(!directed) {
         assert(adjListSize == transposeListSize);
-    } 
+    }
     G.setEdgeCount(unsafe, adjListSize);
 
     std::atomic<count> selfLoops{0};

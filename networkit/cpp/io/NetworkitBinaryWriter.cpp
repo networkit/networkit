@@ -7,11 +7,12 @@
 #include <cstring>
 #include <fstream>
 
-#include <networkit/auxiliary/Log.hpp>
+#include <tlx/math/clz.hpp>
+
 #include <networkit/auxiliary/Enforce.hpp>
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/io/NetworkitBinaryGraph.hpp>
 #include <networkit/io/NetworkitBinaryWriter.hpp>
-#include <tlx/math/clz.hpp>
 
 namespace NetworKit {
 

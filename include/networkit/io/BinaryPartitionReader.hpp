@@ -5,6 +5,8 @@
  *      Author: Michael Hamann
  */
 
+// networkit-format
+
 #ifndef NETWORKIT_IO_BINARY_PARTITION_READER_HPP_
 #define NETWORKIT_IO_BINARY_PARTITION_READER_HPP_
 
@@ -24,7 +26,6 @@ public:
      * @param[in]  width  The integer width. Supported values: 4 and 8.
      */
     BinaryPartitionReader(uint8_t width = 4);
-    
 
     /**
      * Read a partition from a file. File format:
@@ -32,7 +33,8 @@ public:
      *
      * @param[in]  path  Path to file.
      */
-    Partition read(const std::string& path);
+    Partition read(const std::string &path);
+
 private:
     uint8_t width;
 };

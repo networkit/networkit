@@ -5,6 +5,8 @@
  *      Author: Christian Staudt
  */
 
+// networkit-format
+
 #ifndef NETWORKIT_IO_MATRIX_READER_HPP_
 #define NETWORKIT_IO_MATRIX_READER_HPP_
 
@@ -18,18 +20,16 @@ namespace NetworKit {
  */
 class MatrixReader {
 public:
-  virtual ~MatrixReader() = default;
+    virtual ~MatrixReader() = default;
 
-  /**
-   * Reads the matrix in @a path.
-   */
-  virtual CSRMatrix read(const std::string& path) = 0;
+    /**
+     * Reads the matrix in @a path.
+     */
+    virtual CSRMatrix read(const std::string &path) = 0;
 
-  /** only to be used by cython - this eliminates an unnecessary copy */
-  CSRMatrix* _read(const std::string& path) {
-    return new CSRMatrix{read(path)};
-  };
+    /** only to be used by Cython - this eliminates an unnecessary copy */
+    CSRMatrix *_read(const std::string &path) { return new CSRMatrix{read(path)}; };
 };
 
-}
+} // namespace NetworKit
 #endif // NETWORKIT_IO_MATRIX_READER_HPP_

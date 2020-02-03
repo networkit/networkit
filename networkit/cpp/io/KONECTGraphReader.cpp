@@ -8,11 +8,12 @@
  * http://konect.uni-koblenz.de/downloads/konect-handbook.pdf
  *
  */
+
+#include <tlx/unused.hpp>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/io/KONECTGraphReader.hpp>
 #include <networkit/io/MemoryMappedFile.hpp>
-
-#include <tlx/unused.hpp>
 
 namespace NetworKit{
     KONECTGraphReader::KONECTGraphReader(bool remapNodes, MultipleEdgesHandling handlingmethod):
@@ -35,10 +36,10 @@ namespace NetworKit{
         auto it = mmfile.cbegin();
         auto end = mmfile.cend();
 
-        // Returns 
+        // Returns
         // 0 iff it does not point to a line ending
         // 1 iff it is a single-char ending ('\r' or '\n')
-        // 2 iff it is two-char ending ("\r\n") 
+        // 2 iff it is two-char ending ("\r\n")
         auto detectLineEnding = [&] () -> size_t {
             if (*it == '\r') {
                 if ((it + 1) != end && *(it + 1) == '\n') return 2;
@@ -166,7 +167,7 @@ namespace NetworKit{
             if(it >= end){ // proper error message if file ends unexpected
                 throw std::runtime_error("Unexpected end of file");
             }
-            
+
             skipLineEnding(true);
             DEBUG("Second property line read in. Edges: "+std::to_string(numberOfEdges)+ " / Nodes: "+std::to_string(numberOfNodes));
             tlx::unused(numberOfEdges);

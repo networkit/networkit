@@ -8,7 +8,6 @@
 #ifndef NETWORKIT_IO_MEMORY_MAPPED_FILE_HPP_
 #define NETWORKIT_IO_MEMORY_MAPPED_FILE_HPP_
 
-#include <iterator>
 #include <memory>
 #include <string>
 
@@ -81,6 +80,4 @@ private:
 };
 
 }
-
-
 #endif // NETWORKIT_IO_MEMORY_MAPPED_FILE_HPP_

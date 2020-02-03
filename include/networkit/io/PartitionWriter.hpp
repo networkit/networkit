@@ -5,6 +5,8 @@
  *      Author: Christian Staudt
  */
 
+// networkit-format
+
 #ifndef NETWORKIT_IO_PARTITION_WRITER_HPP_
 #define NETWORKIT_IO_PARTITION_WRITER_HPP_
 
@@ -21,7 +23,10 @@ namespace NetworKit {
 class PartitionWriter final {
 
 public:
-    void write(Partition& zeta, const std::string& path) const;
+    void write(const Partition &zeta, const std::string &path) const {
+        std::ofstream file{path};
+        zeta.forEntries([&](node, const index c) { file << c << '\n'; });
+    }
 };
 
 } /* namespace NetworKit */

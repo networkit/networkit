@@ -5,6 +5,8 @@
  *      Author: Christian Staudt
  */
 
+// networkit-format
+
 #ifndef NETWORKIT_IO_GML_GRAPH_WRITER_HPP_
 #define NETWORKIT_IO_GML_GRAPH_WRITER_HPP_
 
@@ -14,11 +16,8 @@ namespace NetworKit {
 
 /**
  * @ingroup io
- * Writes a graph and its coordinates as a GML file.[1]
- *
- * [1] http://svn.bigcat.unimaas.nl/pvplugins/GML/trunk/docs/gml-technical-report.pdf
  */
-class GMLGraphWriter final: public GraphWriter {
+class GMLGraphWriter final : public GraphWriter {
 public:
     /** Default constructor */
     GMLGraphWriter() = default;

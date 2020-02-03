@@ -1,3 +1,5 @@
+// networkit-format
+
 #ifndef NETWORKIT_IO_EDGE_LIST_PARTITION_READER_HPP_
 #define NETWORKIT_IO_EDGE_LIST_PARTITION_READER_HPP_
 
@@ -7,7 +9,6 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
 
-
 namespace NetworKit {
 
 /**
@@ -16,17 +17,18 @@ namespace NetworKit {
 class EdgeListPartitionReader final {
 
 public:
-
     /**
-     * Constructs the EdgeListPartitionReader class with @a firstNode as the index of the first node in the file.
+     * Constructs the EdgeListPartitionReader class with @a firstNode as the index of the first node
+     * in the file.
      * @param[in]  firstNode  Index of the first node in the file.
      * @param[in]  sepChar    The separator between two elements
      */
-    EdgeListPartitionReader(node firstNode=1, char sepChar='\t');
+    EdgeListPartitionReader(node firstNode = 1, char sepChar = '\t');
 
     /**
      * Read a clustering from a file. File format:
-     *     A list of the nodes and their membership (memberships are labelled by integer numbers >=1).
+     *     A list of the nodes and their membership (memberships are labelled by integer numbers
+     * >=1).
      *
      * @param[in]  path  Path to file.
      * @return The clustering contained in the file at @a path.

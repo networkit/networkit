@@ -5,6 +5,8 @@
  *      Author: Stefan Bertsch
  */
 
+// networkit-format
+
 #include <fstream>
 
 #include <networkit/auxiliary/Enforce.hpp>
@@ -24,14 +26,14 @@ void GMLGraphWriter::write(const Graph &G, const std::string &path) {
     G.forNodes([&](node u) {
         file << "  node [\n";
         file << "    id " << u << "\n";
-                file << "  ]\n";
+        file << "  ]\n";
     });
 
     G.forEdges([&](node u, node v) {
-            file << "  edge [\n";
-            file << "    source "<< u << "\n";
-            file << "    target "<< v << "\n";
-            file << "  ]\n";
+        file << "  edge [\n";
+        file << "    source " << u << "\n";
+        file << "    target " << v << "\n";
+        file << "  ]\n";
     });
     file << "]\n";
 }

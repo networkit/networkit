@@ -5,8 +5,6 @@
  *      Author: Henning
  */
 
-#include <cassert>
-#include <iostream>
 #include <fstream>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -16,12 +14,10 @@
 
 namespace NetworKit {
 
-RasterReader::RasterReader(double normalizationFactor): normalizationFactor(normalizationFactor) {
-}
+RasterReader::RasterReader(double normalizationFactor): normalizationFactor(normalizationFactor) {}
 
-std::pair<std::vector<double>, std::vector<double> >
-RasterReader::read(const std::string& path)
-{
+std::pair<std::vector<double>, std::vector<double>>
+RasterReader::read(const std::string& path) {
     DEBUG("start reading raster file...");
 
     std::ifstream file(path);

@@ -4,10 +4,14 @@
  *  Created on: Jun 20, 2013
  *      Author: forigem
  */
+
 #include <fstream>
+#include <set>
 #include <sstream>
 #include <unordered_map>
+#include <vector>
 
+#include <networkit/auxiliary/StringTools.hpp>
 #include <networkit/io/SNAPEdgeListPartitionReader.hpp>
 #include <networkit/auxiliary/Log.hpp>
 
@@ -19,16 +23,16 @@ Cover SNAPEdgeListPartitionReader::read(std::string path, std::unordered_map<nod
 
     // read file once to get to the last line and figure out the number of nodes
     // unfortunately there is an empty line at the ending of the file, so we need to get the line before that
-    
+
     file.open(path);
     if (! file.good()) {
         throw std::runtime_error("unable to read from file");
     }
-    
+
     node current;
-    
+
     std::string commentPrefix = "#";
-    
+
     std::set<node> uniqueIDs;
     count totalCounter = 0;
 

@@ -5,6 +5,8 @@
  *      Author: Christian Staudt
  */
 
+// networkit-format
+
 #ifndef NETWORKIT_IO_METIS_GRAPH_READER_HPP_
 #define NETWORKIT_IO_METIS_GRAPH_READER_HPP_
 
@@ -20,9 +22,8 @@ namespace NetworKit {
  */
 class METISGraphReader final : public GraphReader {
 public:
-
     METISGraphReader() = default;
-    
+
     /**
      * Takes a file path as parameter and returns a graph file.
      *
@@ -30,7 +31,7 @@ public:
      *
      * @param[out]  the graph read from file
      */
-    Graph read(const std::string& path) override;
+    Graph read(const std::string &path) override;
 };
 
 } /* namespace NetworKit */

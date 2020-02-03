@@ -1,4 +1,5 @@
 // networkit-format
+
 #ifndef NETWORKIT_IO_COVER_WRITER_HPP_
 #define NETWORKIT_IO_COVER_WRITER_HPP_
 

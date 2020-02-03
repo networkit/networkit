@@ -7,8 +7,11 @@
 
 #include <iostream>
 #include <map>
+#include <unordered_map>
 
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/StringTools.hpp>
+#include <networkit/dynamics/GraphEventProxy.hpp>
 #include <networkit/io/DGSReader.hpp>
 
 namespace NetworKit {
@@ -46,8 +49,6 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
         while (std::getline(dgsFile, line)) {
             std::vector<std::string> split = Aux::StringTools::split(line);
             std::string tag = split[0];
-
-            //std::unordered_map<std::string, node> edgeNames;
 
             if (tag.compare("st") == 0 && split.size() == 2) { // clock
                 Gproxy.timeStep();

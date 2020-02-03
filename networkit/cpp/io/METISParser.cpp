@@ -12,7 +12,6 @@
 
 #include <stdexcept>
 
-
 namespace NetworKit {
 
 /**
@@ -180,6 +179,5 @@ std::vector<std::pair<node,double>> METISParser::getNextWithWeights(count ignore
     return fail;
 
 }
-
 
 } /* namespace NetworKit */

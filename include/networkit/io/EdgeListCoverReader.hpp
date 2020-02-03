@@ -1,4 +1,5 @@
 // networkit-format
+
 #ifndef NETWORKIT_IO_EDGE_LIST_COVER_READER_HPP_
 #define NETWORKIT_IO_EDGE_LIST_COVER_READER_HPP_
 
@@ -14,7 +15,7 @@ public:
     /**
      * Constructs the EdgeListCoverReader class with @a firstNode as the index of the first node in
      * the file.
-     * @param[in]  firstNode  Index of the first node in the file.
+     * @param[in] firstNode Index of the first node in the file.
      */
     EdgeListCoverReader(node firstNode = 1);
 

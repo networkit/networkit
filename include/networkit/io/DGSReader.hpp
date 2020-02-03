@@ -5,15 +5,14 @@
  *      Author: cls
  */
 
+// networkit-format
+
 #ifndef NETWORKIT_IO_DGS_READER_HPP_
 #define NETWORKIT_IO_DGS_READER_HPP_
 
 #include <fstream>
 #include <string>
-#include <unordered_map>
 
-#include <networkit/auxiliary/StringTools.hpp>
-#include <networkit/dynamics/GraphEventProxy.hpp>
 #include <networkit/io/DynamicGraphReader.hpp>
 
 namespace NetworKit {
@@ -31,12 +30,11 @@ namespace NetworKit {
 class DGSReader final : public DynamicGraphReader {
 
 public:
-    
     /**
      * @param[in]  path  Path to file in DGS format.
      * @param[in]  Gproxy  Graph event proxy receives the events from the file.
      */
-    void read(std::string path, GraphEventProxy& Gproxy);
+    void read(std::string path, GraphEventProxy &Gproxy);
 };
 
 } /* namespace NetworKit */

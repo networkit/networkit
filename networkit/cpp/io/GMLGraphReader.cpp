@@ -9,11 +9,12 @@
 #include <fstream>
 #include <unordered_map>
 
-#include <networkit/auxiliary/Enforce.hpp>
-#include <networkit/auxiliary/StringTools.hpp>
-#include <networkit/auxiliary/Log.hpp>
-#include <networkit/io/GMLGraphReader.hpp>
 #include <tlx/define/attribute_fallthrough.hpp>
+
+#include <networkit/auxiliary/Enforce.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/StringTools.hpp>
+#include <networkit/io/GMLGraphReader.hpp>
 
 namespace NetworKit {
 

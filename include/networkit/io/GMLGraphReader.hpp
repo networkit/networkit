@@ -5,6 +5,8 @@
  *      Author: Maximilian Vogel (maximilian.vogel@student.kit.edu)
  */
 
+// networkit-format
+
 #ifndef NETWORKIT_IO_GML_GRAPH_READER_HPP_
 #define NETWORKIT_IO_GML_GRAPH_READER_HPP_
 
@@ -14,15 +16,11 @@ namespace NetworKit {
 
 /**
  * @ingroup io
- * Reader for the GML file format documented in [1]
- *
- * [1] http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-technical-report.pdf
  */
 class GMLGraphReader final : public GraphReader {
 public:
-
     GMLGraphReader() = default;
-    
+
     /**
      * Takes a file path as parameter and returns a graph file.
      *
@@ -30,7 +28,7 @@ public:
      *
      * @param[out]  the graph read from file
      */
-    Graph read(const std::string& path) override;
+    Graph read(const std::string &path) override;
 };
 
 } /* namespace NetworKit */

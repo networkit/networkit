@@ -21,7 +21,7 @@ public:
     /*
      * If the input graph has multiple edges, you can specify on how these edges are handled.
      * Keep in mind that NetworKit node id's start with 0 while most KONECT graphs start with 1.
-     * See GraphReader.h for a closer description of the paramters.
+     * See GraphReader.h for a closer description of the parameters.
      *
      * @param[in]  remapNodes  specifies whether node ids should be remapped if non consecutive
      * @param[in]  handlingmethod  specifies how multiple edges should be handled (only relevant if

@@ -5,6 +5,8 @@
  *      Author: Christian Staudt
  */
 
+// networkit-format
+
 #ifndef NETWORKIT_IO_GRAPH_READER_HPP_
 #define NETWORKIT_IO_GRAPH_READER_HPP_
 
@@ -18,13 +20,11 @@ namespace NetworKit {
  */
 class GraphReader {
 public:
-
-    // Enum for defining handling of graph formats with multiple same edges.
-    enum MultipleEdgesHandling
-    {
-         DISCARD_EDGES, //Reads and selects the first edge which occurs and discards all following
-         SUM_WEIGHTS_UP, //If an edge occurs again, the weight of it is added to the existing edge
-         KEEP_MINIMUM_WEIGHT //The edge with the lowest weight is kept
+    // How to deal with multi-edges
+    enum MultipleEdgesHandling {
+        DISCARD_EDGES,  // Reads and selects the first edge which occurs and discards all following
+        SUM_WEIGHTS_UP, // If an edge occurs again, the weight of it is added to the existing edge
+        KEEP_MINIMUM_WEIGHT // The edge with the lowest weight is kept
     };
 
     virtual ~GraphReader() = default;
@@ -34,7 +34,7 @@ public:
      *
      * @param[in]  path  input file path
      */
-    virtual Graph read(const std::string& path) = 0;
+    virtual Graph read(const std::string &path) = 0;
 };
 
 } /* namespace NetworKit */

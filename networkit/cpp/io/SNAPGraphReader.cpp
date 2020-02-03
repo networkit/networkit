@@ -5,8 +5,8 @@
  *      Author: Alexander van der Grinten
  */
 
-#include <networkit/auxiliary/StringTools.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/StringTools.hpp>
 #include <networkit/io/MemoryMappedFile.hpp>
 #include <networkit/io/SNAPGraphReader.hpp>
 

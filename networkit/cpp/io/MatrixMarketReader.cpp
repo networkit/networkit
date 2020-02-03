@@ -5,21 +5,16 @@
  *      Author: dhoske
  */
 
-#include <networkit/io/MatrixMarketReader.hpp>
-
-#include <cctype>
-#include <string>
 #include <fstream>
-#include <sstream>
 #include <stdexcept>
-#include <algorithm>
-#include <iterator>
-#include <unordered_set>
+#include <string>
+
+#include <networkit/io/MatrixMarketReader.hpp>
 
 namespace NetworKit {
 
 namespace {
-    static const char COMMENT_CHAR = '%';
+    static constexpr char COMMENT_CHAR = '%';
     static const std::string MAGIC = "%%matrixmarket";
 
     std::string tolower(const std::string& str) {
@@ -117,10 +112,9 @@ CSRMatrix MatrixMarketReader::read(std::istream& in) {
             }
         }
 
-
     }
 
     return CSRMatrix(nrows, ncols, triplets);
 }
 
-}
+} // namespace NetworKit
