@@ -37,19 +37,17 @@ struct MyEdge {
 };
 
 
-KruskalMSF::KruskalMSF(const Graph& G): SpanningForest(G) {
-
-}
+KruskalMSF::KruskalMSF(const Graph& G): SpanningForest(G) {}
 
 void KruskalMSF::run() {
-    if (true || G.isWeighted()) { // FIXME: remove true when SpanningForest is fixed!
-        count z = G.upperNodeIdBound();
-        forest = GraphTools::copyNodes(G);
+    if (true || G->isWeighted()) { // FIXME: remove true when SpanningForest is fixed!
+        count z = G->upperNodeIdBound();
+        forest = GraphTools::copyNodes(*G);
         UnionFind uf(z);
 
         // sort edges in decreasing weight order
         std::vector<MyEdge> sortedEdges; // (m);
-        G.forEdges([&](node u, node v, edgeweight ew, edgeid) {
+        G->forEdges([&](node u, node v, edgeweight ew, edgeid) {
             MyEdge myEdge(u, v, ew);
             sortedEdges.push_back(myEdge);
         });
@@ -71,8 +69,9 @@ void KruskalMSF::run() {
         }
     }
     else {
-        SpanningForest sf(G);
-        forest = sf.generate();
+        SpanningForest sf(*G);
+        sf.run();
+        forest = sf.getForest();
     }
 }
 

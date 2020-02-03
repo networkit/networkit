@@ -4,7 +4,6 @@ networkit_add_module(graph
     GraphTools.cpp
     KruskalMSF.cpp
     RandomMaximumSpanningForest.cpp
-    Sampling.cpp
     SpanningForest.cpp
     UnionMaximumSpanningForest.cpp
     )

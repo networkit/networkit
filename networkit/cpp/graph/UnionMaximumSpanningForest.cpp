@@ -1,12 +1,12 @@
 
-#include <networkit/graph/UnionMaximumSpanningForest.hpp>
-#include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/graph/GraphTools.hpp>
+#include <networkit/graph/UnionMaximumSpanningForest.hpp>
 
 namespace NetworKit {
 
-UnionMaximumSpanningForest::UnionMaximumSpanningForest(const Graph &G) : G(G), hasWeightedEdges(false), hasUMSF(false), hasAttribute(false) { }
+UnionMaximumSpanningForest::UnionMaximumSpanningForest(const Graph &G) : G(&G), hasWeightedEdges(false), hasUMSF(false), hasAttribute(false) {}
 
 void UnionMaximumSpanningForest::run() {
     hasRun = false;
@@ -15,16 +15,16 @@ void UnionMaximumSpanningForest::run() {
 
     Aux::SignalHandler handler;
 
-    umsf = GraphTools::copyNodes(G);
+    umsf = GraphTools::copyNodes(*G);
 
     handler.assureRunning();
 
     bool useEdgeWeights = false;
 
     if (!hasWeightedEdges) {
-        weightedEdges.reserve(G.numberOfEdges());
+        weightedEdges.reserve(G->numberOfEdges());
 
-        G.forEdges([&](node u, node v, edgeweight weight, edgeid eid) {
+        G->forEdges([&](node u, node v, edgeweight weight, edgeid eid) {
             weightedEdges.emplace_back(u, v, weight, eid);
         });
 
@@ -36,9 +36,9 @@ void UnionMaximumSpanningForest::run() {
 
     bool calculateAttribute = false;
 
-    if (G.hasEdgeIds()) {
+    if (G->hasEdgeIds()) {
         umsfAttribute.clear();
-        umsfAttribute.resize(G.upperEdgeIdBound(), false);
+        umsfAttribute.resize(G->upperEdgeIdBound(), false);
         calculateAttribute = true;
     }
 
@@ -49,7 +49,7 @@ void UnionMaximumSpanningForest::run() {
     edgeweight currentAttribute = std::numeric_limits<edgeweight>::max();
 
     std::vector<std::pair<node, node> > nodesToMerge;
-    UnionFind uf(G.upperNodeIdBound());
+    UnionFind uf(G->upperNodeIdBound());
 
     for (weightedEdge e : weightedEdges) {
         if (e.attribute != currentAttribute) {
@@ -95,7 +95,7 @@ bool UnionMaximumSpanningForest::inUMSF(node u, node v) const {
     if (hasUMSF) {
         return umsf.hasEdge(u, v);
     } else if (hasAttribute) {
-        return umsfAttribute[G.edgeId(u, v)];
+        return umsfAttribute[G->edgeId(u, v)];
     } else {
         throw std::runtime_error("Error: The run() method must be executed first");
     }
@@ -139,5 +139,4 @@ bool UnionMaximumSpanningForest::isParallel() const {
     return false;
 }
 
-
-}
+} // namespace NetworKit

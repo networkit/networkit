@@ -1,5 +1,5 @@
 /*
- * GraphBuilder.h
+ * GraphBuilder.hpp
  *
  *  Created on: 15.07.2014
  *      Author: Marvin Ritter (marvin.ritter@gmail.com)
@@ -43,7 +43,6 @@ namespace NetworKit {
  */
 
 class GraphBuilder {
-private:
     count n;          //!< current number of nodes
     count selfloops;  //!< currently encountered number of self loops
     std::string name; //!< name of the graph, if not set it will be G#ID
@@ -150,9 +149,9 @@ public:
      * Set the weight of an edge. If the edge does not exist,
      * it will be inserted.
      *
-     * @param[in]	u	endpoint of edge
-     * @param[in]	v	endpoint of edge
-     * @param[in]	weight	edge weight
+     * @param[in]  u  endpoint of edge
+     * @param[in]  v  endpoint of edge
+     * @param[in]  weight  edge weight
      */
     void setWeight(node u, node v, edgeweight ew) { setOutWeight(u, v, ew); }
     void setOutWeight(node u, node v, edgeweight ew);
@@ -162,9 +161,9 @@ public:
      * Increase the weight of an edge. If the edge does not exist,
      * it will be inserted.
      *
-     * @param[in]	u	endpoint of edge
-     * @param[in]	v	endpoint of edge
-     * @param[in]	weight	edge weight
+     * @param[in]  u  endpoint of edge
+     * @param[in]  v  endpoint of edge
+     * @param[in]  weight  edge weight
      */
     void increaseWeight(node u, node v, edgeweight ew) {
         increaseOutWeight(u, v, ew);

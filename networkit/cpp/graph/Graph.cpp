@@ -2,8 +2,9 @@
  * Graph.cpp
  *
  *  Created on: 01.06.2014
- *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter
- * (marvin.ritter@gmail.com)
+ *      Author: Christian Staudt
+ *              Klara Reichard <klara.reichard@gmail.com>
+ *              Marvin Ritter <marvin.ritter@gmail.com>
  */
 
 // networkit-format
@@ -30,12 +31,12 @@ Graph::Graph(count n, bool weighted, bool directed)
 
       exists(n, true),
 
-      /* for directed graphs inEdges stores an adjacencylist only considering
+      /* for directed graphs inEdges stores an adjacency list only considering
          incoming edges, for undirected graphs inEdges is not used*/
       inEdges(directed ? n : 0),
 
-      /* for directed graphs outEdges stores an adjacencylist only considering
-      outgoing edges, for undirected graphs outEdges stores the adjacencylist of
+      /* for directed graphs outEdges stores an adjacency list only considering
+      outgoing edges, for undirected graphs outEdges stores the adjacency list of
       undirected edges*/
       outEdges(n), inEdgeWeights(weighted && directed ? n : 0), outEdgeWeights(weighted ? n : 0),
       inEdgeIds(), outEdgeIds() {

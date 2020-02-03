@@ -1,9 +1,10 @@
 /*
- * Graph.h
+ * Graph.hpp
  *
  *  Created on: 01.06.2014
- *      Author: Christian Staudt (christian.staudt@kit.edu), Klara Reichard
- * (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
+ *      Author: Christian Staudt
+ *              Klara Reichard <klara.reichard@gmail.com>
+ *              Marvin Ritter <marvin.ritter@gmail.com>
  */
 
 // networkit-format
@@ -88,7 +89,6 @@ class Graph final {
     friend class GraphBuilder;
     friend class CurveballDetails::CurveballMaterialization;
 
-private:
     // graph attributes
     //!< unique graph id, starts at 0
     count id;

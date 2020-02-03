@@ -1,5 +1,5 @@
 /*
- * SpanningForest.h
+ * SpanningForest.hpp
  *
  *  Created on: 06.09.2015
  *      Author: Henning
@@ -17,25 +17,22 @@ namespace NetworKit {
  */
 class SpanningForest {
 protected:
-    const Graph& G;
+    const Graph* G;
     Graph forest;
 
 public:
-    SpanningForest(const Graph& G);
+    SpanningForest(const Graph& G) : G(&G) {}
     virtual ~SpanningForest() = default;
 
     virtual void run();
 
     /**
-     * Deprecated. Please integrate into run method.
-     */
-    Graph generate();
-
-    /**
      * @return Forest computed by run method.
      * Note: So far no explicit check if run method has been invoked before.
      */
-    Graph getForest();
+    Graph getForest() {
+        return forest;
+    }
 };
 
 } /* namespace NetworKit */

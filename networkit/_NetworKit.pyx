@@ -2216,7 +2216,8 @@ cdef extern from "<networkit/graph/SpanningForest.hpp>":
 
 	cdef cppclass _SpanningForest "NetworKit::SpanningForest":
 		_SpanningForest(_Graph) except +
-		_Graph generate() except +
+		void run() nogil except +
+		_Graph getForest() except +
 
 cdef class SpanningForest:
 	""" Generates a spanning forest for a given graph
@@ -2239,8 +2240,28 @@ cdef class SpanningForest:
 	def __dealloc__(self):
 		del self._this
 
-	def generate(self):
-		return Graph().setThis(self._this.generate())
+	def run(self):
+		"""
+		Executes the algorithm.
+
+		Returns
+		-------
+		Algorithm:
+			self
+		"""
+		self._this.run()
+		return self
+
+	def getForest(self):
+		"""
+		Returns the spanning forest.
+
+		Returns
+		-------
+		networkit.Graph
+			The computed spanning forest
+		"""
+		return Graph().setThis(self._this.getForest())
 
 cdef extern from "<networkit/graph/UnionMaximumSpanningForest.hpp>":
 

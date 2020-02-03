@@ -1,5 +1,5 @@
 /*
- * RandomSpanningForest.h
+ * RandomSpanningForest.hpp
  *
  *  Created on: 06.09.2015
  *      Author: Henning
@@ -21,6 +21,7 @@ namespace NetworKit {
 class RandomSpanningForest final : public SpanningForest {
 public:
     RandomSpanningForest(const Graph& G);
+
     ~RandomSpanningForest() = default;
 
     /**
