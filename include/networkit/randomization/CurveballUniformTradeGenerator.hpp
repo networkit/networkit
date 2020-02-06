@@ -1,5 +1,5 @@
 /*
- * CurveballUniformTradeGenerator.h
+ * CurveballUniformTradeGenerator.hpp
  *
  *  Created on: Jul 11, 2017
  *      Author: Hung Tran <htran@ae.cs.uni-frankfurt.de>
@@ -17,16 +17,16 @@
 
 namespace NetworKit {
 
-class CurveballUniformTradeGenerator {
+class CurveballUniformTradeGenerator final {
 public:
     using value_type = std::vector<std::pair<node, node>>;
 
-protected:
+private:
     const count numTrades;
     const node numNodes;
 
 public:
-    CurveballUniformTradeGenerator(const count trade_num, const node num_nodes)
+    CurveballUniformTradeGenerator(count trade_num, node num_nodes)
         : numTrades(trade_num), numNodes(num_nodes) {
         if (num_nodes <= 1)
             throw std::runtime_error("At least two nodes are required.");

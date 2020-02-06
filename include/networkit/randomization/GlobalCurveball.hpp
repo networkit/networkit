@@ -1,5 +1,5 @@
 /*
- * GlobalCurveball.h
+ * GlobalCurveball.hpp
  *
  *  Created on: 26.05.2018
  *      Author: Manuel Penschuck <networkit@manuel.jetzt>
@@ -22,7 +22,7 @@ namespace CurveballDetails {
 class GlobalCurveballImpl;
 }
 
-class GlobalCurveball : public Algorithm {
+class GlobalCurveball final : public Algorithm {
 public:
     /**
      * Instantiate a GlobalCurveball object
@@ -45,13 +45,13 @@ public:
                              bool allowSelfLoops = false,
                              bool degreePreservingShufflePreprocessing = true);
 
-    virtual ~GlobalCurveball();
+    ~GlobalCurveball();
 
     /**
      * Execute trades as configured in the constructor.
      * @warning This function has to be called exactly one before invoking getGraph()
      */
-    virtual void run() override final;
+    void run() override final;
 
     /**
      * Returns a new graph instance with the same degree sequence as the input
@@ -59,9 +59,9 @@ public:
      */
     Graph getGraph();
 
-    virtual std::string toString() const override final;
+    std::string toString() const override final;
 
-    virtual bool isParallel() const override final { return false; }
+    bool isParallel() const override final { return false; }
 
 private:
     std::unique_ptr<CurveballDetails::GlobalCurveballImpl> impl;

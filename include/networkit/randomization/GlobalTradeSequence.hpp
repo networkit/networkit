@@ -1,5 +1,5 @@
 /*
- * CurveballGlobalTradeSequence.h
+ * GlobalTradeSequence.hpp
  *
  *  Created on: 23.05.2018
  *      Author: Manuel Penschuck <networkit@manuel.jetzt>
@@ -134,7 +134,7 @@ private:
 
     // extended euclidian algorithm with 1 = gcd(a, p) = a*s + t*p mod p = a*s
     // --> s = 1/a
-    signed_tuple gcdExtended(const signed_value_type a, const signed_value_type b) const {
+    signed_tuple gcdExtended(signed_value_type a, signed_value_type b) const {
         if (a == 0)
             return signed_tuple{b, 0, 1};
 
