@@ -87,7 +87,7 @@ void MultiLevelSetup<CSRMatrix>::computeAffinityMatrix(const CSRMatrix& matrix, 
     for (omp_index i = 0; i < static_cast<omp_index>(matrix.numberOfRows()); ++i) {
         double nir = 1.0 / normSquared[i];
         index cIdx = rowIdx[i];
-        matrix.forNonZeroElementsInRow(i, [&](index j, double val) {
+        matrix.forNonZeroElementsInRow(i, [&](index j, double) {
             double ij = 0.0;
             for (index k = 0; k < tVs.size(); ++k) {
                 ij += tVs[k][i] * tVs[k][j];

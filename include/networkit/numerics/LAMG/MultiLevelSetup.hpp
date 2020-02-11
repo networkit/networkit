@@ -1,16 +1,16 @@
 /*
- * MultiLevelSetup.h
+ * MultiLevelSetup.hpp
  *
  *  Created on: 10.01.2015
- *      Author: Michael Wegner (michael.wegner@student.kit.edu)
+ *      Author: Michael Wegner
  */
 
 #ifndef NETWORKIT_NUMERICS_LAMG_MULTI_LEVEL_SETUP_HPP_
 #define NETWORKIT_NUMERICS_LAMG_MULTI_LEVEL_SETUP_HPP_
 
+#include <networkit/algebraic/CSRMatrix.hpp>
 #include <networkit/numerics/LAMG/LevelHierarchy.hpp>
 #include <networkit/numerics/Smoother.hpp>
-#include <networkit/algebraic/CSRMatrix.hpp>
 
 #include <limits>
 #include <cmath>
