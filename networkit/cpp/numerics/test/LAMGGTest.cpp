@@ -28,13 +28,12 @@ protected:
     const std::vector<std::string> GRAPH_INSTANCES = {"input/jazz.graph", "input/power.graph"};
 
     Vector randZeroSum(const Graph& graph, size_t seed) const;
-    Vector randVector(count dimension, double lower, double upper) const;
+    Vector randVector(count dimension) const;
 };
 
 TEST_F(LAMGGTest, testSmallGraphs) {
     METISGraphReader reader;
-    GaussSeidelRelaxation<CSRMatrix> gaussSmoother;
-    Smoother<CSRMatrix> *smoother = new GaussSeidelRelaxation<CSRMatrix>();
+    GaussSeidelRelaxation<CSRMatrix> gaussSmoother, smoother;
     MultiLevelSetup<CSRMatrix> setup(gaussSmoother);
     Aux::Timer timer;
     for (index i = 0; i < GRAPH_INSTANCES.size(); ++i) {
@@ -50,7 +49,7 @@ TEST_F(LAMGGTest, testSmallGraphs) {
         LevelHierarchy<CSRMatrix> hierarchy;
         timer.start();
         setup.setup(G, hierarchy);
-        SolverLamg<CSRMatrix> solver(hierarchy, *smoother);
+        SolverLamg<CSRMatrix> solver(hierarchy, smoother);
         timer.stop();
         DEBUG("setup time\t ", timer.elapsedMilliseconds());
 
@@ -58,7 +57,7 @@ TEST_F(LAMGGTest, testSmallGraphs) {
         Vector x(G.numberOfNodes());
 
         b = randZeroSum(G, 12345);
-        x = randVector(G.numberOfNodes(), -1, 1);
+        x = randVector(G.numberOfNodes());
 
 
         LAMGSolverStatus status;
@@ -78,11 +77,9 @@ TEST_F(LAMGGTest, testSmallGraphs) {
         DEBUG("DONE");
 
     }
-
-    delete smoother;
 }
 
-Vector LAMGGTest::randVector(count dimension, double, double) const {
+Vector LAMGGTest::randVector(count dimension) const {
     Vector randVector(dimension);
     for (index i = 0; i < dimension; ++i) {
         randVector[i] = 2.0 * Aux::Random::probability() - 1.0;

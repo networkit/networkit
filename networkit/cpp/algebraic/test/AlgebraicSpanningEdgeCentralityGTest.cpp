@@ -16,7 +16,7 @@
 
 namespace NetworKit {
 
-class AlgebraicSpanningEdgeCentralityGTest : testing::Test {};
+class AlgebraicSpanningEdgeCentralityGTest : public testing::Test{};
 
 
 TEST(AlgebraicSpanningEdgeCentralityGTest, testOnToyGraph) {
@@ -50,7 +50,7 @@ TEST(AlgebraicSpanningEdgeCentralityGTest, testOnToyGraph) {
     EXPECT_NEAR(0.75, asp.score(5), 1e-5);
 }
 
-TEST(AlgebraicSpanningEdgeCentralityGTest, benchmarkSpanning) {
+TEST_F(AlgebraicSpanningEdgeCentralityGTest, benchmarkSpanning) {
     METISGraphReader reader;
 
     std::string graphFiles[2] = {"input/karate.graph", "input/tiny_01.graph"};

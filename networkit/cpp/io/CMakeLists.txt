@@ -19,7 +19,6 @@ networkit_add_module(io
     GraphToolBinaryReader.cpp
     GraphToolBinaryWriter.cpp
     KONECTGraphReader.cpp
-    LineFileReader.cpp
     MemoryMappedFile.cpp
     METISGraphReader.cpp
     METISGraphWriter.cpp
