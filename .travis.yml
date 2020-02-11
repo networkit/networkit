@@ -258,7 +258,7 @@ jobs:
         - rm -rf htmldocs/{.buildinfo,.doctrees}
       deploy:
         provider: pages
-        cleanup: false
+        skip-cleanup: true
         token: $SECRET_DEPLOY_GITHUB_PAGES
         local_dir: core_build/htmldocs
         repo: networkit/dev-docs
