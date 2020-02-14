@@ -574,6 +574,9 @@ set(NETWORKIT_LIBRARIES networkit)
 install(DIRECTORY include/networkit
 	DESTINATION ${NETWORKIT_INSTALL_INCLUDE_DIR}
 	FILES_MATCHING PATTERN "*.hpp")
+install(DIRECTORY extlibs/ttmath/ttmath
+	DESTINATION ${NETWORKIT_INSTALL_INCLUDE_DIR}
+	FILES_MATCHING PATTERN "*.hpp")
 
 ################################################################################
 # Prepare pkg-config file
