@@ -3569,12 +3569,12 @@ cdef extern from "<networkit/io/GraphReader.hpp>" namespace "NetworKit::GraphRea
 	cdef enum _MultipleEdgesHandling "NetworKit::GraphReader::MultipleEdgesHandling":
 		DISCARD_EDGES,
 		SUM_WEIGHTS_UP,
-		KEEP_MINIUM_WEIGHT
+		KEEP_MINIMUM_WEIGHT
 
 class MultipleEdgesHandling:
 	DiscardEdges = DISCARD_EDGES
 	SumWeightsUp = SUM_WEIGHTS_UP
-	KeepMinimumWeight = KEEP_MINIUM_WEIGHT
+	KeepMinimumWeight = KEEP_MINIMUM_WEIGHT
 
 cdef class GraphReader:
 	""" Abstract base class for graph readers"""

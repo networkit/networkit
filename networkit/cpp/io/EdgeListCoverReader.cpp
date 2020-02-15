@@ -1,4 +1,3 @@
-
 #include <fstream>
 #include <sstream>
 
@@ -6,10 +5,11 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/io/EdgeListCoverReader.hpp>
 
+namespace NetworKit {
 
-NetworKit::EdgeListCoverReader::EdgeListCoverReader(NetworKit::node firstNode) : firstNode(firstNode) {}
+EdgeListCoverReader::EdgeListCoverReader(node firstNode) : firstNode(firstNode) {}
 
-NetworKit::Cover NetworKit::EdgeListCoverReader::read(std::string path, Graph &G) {
+Cover EdgeListCoverReader::read(std::string path, Graph &G) {
     std::ifstream file;
     file.open(path);
     if (!file.good()) {
@@ -44,5 +44,6 @@ NetworKit::Cover NetworKit::EdgeListCoverReader::read(std::string path, Graph &G
 
     file.close();
     return communities;
-
 }
+
+} // namespace NetworKit

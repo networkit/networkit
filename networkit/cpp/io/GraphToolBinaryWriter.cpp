@@ -62,7 +62,6 @@ void GraphToolBinaryWriter::writeComment(std::ofstream &file) {
 void GraphToolBinaryWriter::writeAdjacencies(std::ofstream &file, const Graph &G) {
     // value of numNodes determines the size of the unsigned integer type storing the node ids
     int width = (int)getAdjacencyWidth(G.numberOfNodes());
-    //DEBUG("width is: ", width);
     // if the node ids aren't continuous, a node id map becomes necessary
     if (G.upperNodeIdBound() == G.numberOfNodes()) {
         if (!G.isDirected()) {

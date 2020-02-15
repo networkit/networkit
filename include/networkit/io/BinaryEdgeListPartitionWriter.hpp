@@ -1,14 +1,17 @@
 /**
- * BinaryEdgeListPartitionWriter.h
+ * BinaryEdgeListPartitionWriter.hpp
  *
- * @author Michael Hamann <michael.hamann@kit.edu>
+ * @author Michael Hamann
  */
+
+// networkit-format
 
 #ifndef NETWORKIT_IO_BINARY_EDGE_LIST_PARTITION_WRITER_HPP_
 #define NETWORKIT_IO_BINARY_EDGE_LIST_PARTITION_WRITER_HPP_
 
-#include <networkit/structures/Partition.hpp>
 #include <string>
+
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 
@@ -17,7 +20,7 @@ namespace NetworKit {
  * Writes a partition to a file that contains a binary list of pairs (node, partition(node)).
  * All integers are unsigned integers.
  */
-class BinaryEdgeListPartitionWriter {
+class BinaryEdgeListPartitionWriter final {
 public:
     /**
      * Constructs the BinaryEdgeListPartitionWriter class with @a firstNode as the id of the
@@ -28,14 +31,15 @@ public:
      * @param[in] width The width of the written integers (supported values: 4, 8).
      */
     BinaryEdgeListPartitionWriter(node firstNode = 0, uint8_t width = 4);
-    
+
     /**
      * Write the given partition @a zeta to the given @a path.
-     * 
+     *
      * @param[in] zeta The partition to write.
-         * @param[in] path The path to write to.
+     * @param[in] path The path to write to.
      */
-    virtual void write(Partition& zeta, const std::string& path) const;
+    void write(Partition &zeta, const std::string &path) const;
+
 private:
     node firstNode;
     uint8_t width;

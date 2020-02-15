@@ -1,9 +1,11 @@
 /*
- * BinaryPartitionReader.h
+ * BinaryPartitionReader.hpp
  *
  *  Created on: 12.04.2017
- *      Author: Michael Hamann <michael.hamann@kit.edu>
+ *      Author: Michael Hamann
  */
+
+// networkit-format
 
 #ifndef NETWORKIT_IO_BINARY_PARTITION_READER_HPP_
 #define NETWORKIT_IO_BINARY_PARTITION_READER_HPP_
@@ -15,24 +17,24 @@ namespace NetworKit {
 /**
  * @ingroup io
  */
-class BinaryPartitionReader {
+class BinaryPartitionReader final {
 
 public:
     /**
      * Construct a binary partition reader.
      *
-     * @param[in]	width	The integer width. Supported values: 4 and 8.
+     * @param[in]  width  The integer width. Supported values: 4 and 8.
      */
     BinaryPartitionReader(uint8_t width = 4);
-    
 
     /**
      * Read a partition from a file. File format:
-     * 		list of (unsigned) integer partition ids, one for every node
+     *     list of (unsigned) integer partition ids, one for every node
      *
-     * @param[in]	path	Path to file.
+     * @param[in]  path  Path to file.
      */
-    virtual Partition read(const std::string& path);
+    Partition read(const std::string &path);
+
 private:
     uint8_t width;
 };

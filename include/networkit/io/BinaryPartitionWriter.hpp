@@ -1,23 +1,26 @@
 /**
- * BinaryPartitionWriter.h
+ * BinaryPartitionWriter.hpp
  *
- * @author Michael Hamann <michael.hamann@kit.edu>
+ * @author Michael Hamann
  */
+
+// networkit-format
 
 #ifndef NETWORKIT_IO_BINARY_PARTITION_WRITER_HPP_
 #define NETWORKIT_IO_BINARY_PARTITION_WRITER_HPP_
 
-#include <networkit/structures/Partition.hpp>
 #include <string>
+
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 
 /**
-* @ingroup io
-* Writes a partition to a file to contains a binary list of partition ids.
-* Partition ids are unsigned integers.
-*/
-class BinaryPartitionWriter {
+ * @ingroup io
+ * Writes a partition to a file that contains a binary list of partition ids.
+ * Partition ids are unsigned integers.
+ */
+class BinaryPartitionWriter final {
 public:
     /**
      * Constructs the BinaryPartitionWriter class using unsigned integers
@@ -31,12 +34,13 @@ public:
      * Write the given partition @a zeta to the given @a path.
      *
      * @param[in] zeta The partition to write.
-         * @param[in] path The path to write to.
+     * @param[in] path The path to write to.
      */
-    virtual void write(const Partition& zeta, const std::string& path) const;
+    void write(const Partition &zeta, const std::string &path) const;
+
 private:
     uint8_t width;
 };
-}
+} // namespace NetworKit
 
 #endif // NETWORKIT_IO_BINARY_PARTITION_WRITER_HPP_

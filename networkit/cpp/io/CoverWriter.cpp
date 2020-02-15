@@ -1,13 +1,16 @@
-#include <networkit/io/CoverWriter.hpp>
+// networkit-format
+
 #include <fstream>
+
+#include <networkit/io/CoverWriter.hpp>
 
 namespace NetworKit {
 
-void CoverWriter::write(Cover& zeta, const std::string& path) const {
+void CoverWriter::write(Cover &zeta, const std::string &path) const {
     std::ofstream file{path};
 
-    std::vector<std::vector<index> > sets(zeta.upperBound());
-    zeta.forEntries([&](index v, const std::set<index> &c){
+    std::vector<std::vector<index>> sets(zeta.upperBound());
+    zeta.forEntries([&](index v, const std::set<index> &c) {
         for (auto &s : c) {
             sets[s].push_back(v);
         }
@@ -20,4 +23,5 @@ void CoverWriter::write(Cover& zeta, const std::string& path) const {
         file << std::endl;
     }
 }
-}
+
+} // namespace NetworKit

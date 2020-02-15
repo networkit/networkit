@@ -1,10 +1,13 @@
+// networkit-format
+
 #include <networkit/io/CoverReader.hpp>
 
 #include <fstream>
 #include <sstream>
 
-NetworKit::Cover NetworKit::CoverReader::read(std::string path, NetworKit::Graph &G)
-{
+namespace NetworKit {
+
+Cover CoverReader::read(std::string path, Graph &G) {
     std::ifstream file;
     file.open(path);
     if (!file.good()) {
@@ -17,7 +20,7 @@ NetworKit::Cover NetworKit::CoverReader::read(std::string path, NetworKit::Graph
 
     while (std::getline(file, line)) {
         if (line.substr(0, 1) != "#") {
-            communities.setUpperBound(i+1);
+            communities.setUpperBound(i + 1);
             std::stringstream linestream(line);
             while (linestream >> current) {
                 communities.addToSubset(i, current);
@@ -29,3 +32,5 @@ NetworKit::Cover NetworKit::CoverReader::read(std::string path, NetworKit::Graph
     file.close();
     return communities;
 }
+
+} // namespace NetworKit

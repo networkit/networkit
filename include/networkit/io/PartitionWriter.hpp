@@ -1,9 +1,11 @@
 /*
- * PartitionWriter.h
+ * PartitionWriter.hpp
  *
  *  Created on: 22.01.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
+
+// networkit-format
 
 #ifndef NETWORKIT_IO_PARTITION_WRITER_HPP_
 #define NETWORKIT_IO_PARTITION_WRITER_HPP_
@@ -18,10 +20,13 @@ namespace NetworKit {
  * @ingroup io
  * Write a clustering to a file.
  */
-class PartitionWriter {
+class PartitionWriter final {
 
 public:
-    virtual void write(Partition& zeta, const std::string& path) const;
+    void write(const Partition &zeta, const std::string &path) const {
+        std::ofstream file{path};
+        zeta.forEntries([&](node, const index c) { file << c << '\n'; });
+    }
 };
 
 } /* namespace NetworKit */

@@ -45,7 +45,6 @@ void EdgeListWriter::write(const Graph &G, const std::string &path) {
         }
     }
 
-
     file.close();
 
 }

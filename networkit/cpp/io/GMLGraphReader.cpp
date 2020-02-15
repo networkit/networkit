@@ -5,15 +5,16 @@
  *      Author: Maximilian Vogel (maximilian.vogel@student.kit.edu)
  */
 
-#include <networkit/io/GMLGraphReader.hpp>
-#include <networkit/auxiliary/Enforce.hpp>
-#include <networkit/auxiliary/StringTools.hpp>
-#include <networkit/auxiliary/Log.hpp>
-#include <tlx/define/attribute_fallthrough.hpp>
-
-#include <unordered_map>
 #include <exception>
 #include <fstream>
+#include <unordered_map>
+
+#include <tlx/define/attribute_fallthrough.hpp>
+
+#include <networkit/auxiliary/Enforce.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/StringTools.hpp>
+#include <networkit/io/GMLGraphReader.hpp>
 
 namespace NetworKit {
 
@@ -37,21 +38,17 @@ Graph GMLGraphReader::read(const std::string& path) {
         } else if (s.find("]") < s.size()) {
             throw std::runtime_error("found closing bracket");
         }
-        //DEBUG(s);
         index length = s.size();
         index start = ignoreWhitespaces(s,0);
         index i = start;
         while (s[i] != ' ' && i < length) ++i;
         index end = i;
         std::string key = s.substr(start,end-start);
-        //DEBUG(key, ", ",start, ", ", end);
         i = ignoreWhitespaces(s,i+1);
-        // TODO: get next line if value is not in the current line ? not really necessary.
         start = i;
         while (s[i] != ' ' && i < length) ++i;
         end = i;
         std::string value = s.substr(start, end-start);
-        //DEBUG(value, ", ",start, ", ", end);
         return std::make_pair(key,value);
     };
 
@@ -68,7 +65,7 @@ Graph GMLGraphReader::read(const std::string& path) {
                         node u = G.addNode();
                         nodeMap.insert(std::make_pair(pair.second,u));
                         DEBUG("added node: ",u,", ",pair.second);
-                    }	
+                    }
                 } catch (const std::exception &e) {
                     return false;
                 }
@@ -79,7 +76,6 @@ Graph GMLGraphReader::read(const std::string& path) {
             return false;
         }
         if (closed) {
-            //std::getline(graphFile, line);
             return true;
         } else {
             return false;
@@ -87,7 +83,6 @@ Graph GMLGraphReader::read(const std::string& path) {
     };
 
     auto parseEdge = [&](Graph& G) {
-        //DEBUG("trying to parse an edge");
         if (line.find("edge") < line.size() && line.find("[") < line.size()) {
             std::getline(graphFile, line);
             node u = 0;
@@ -112,7 +107,6 @@ Graph GMLGraphReader::read(const std::string& path) {
             return false;
         }
         if (line.find("]") < line.size()) {
-            //std::getline(graphFile, line);
             return true;
         } else {
             return false;
@@ -148,9 +142,7 @@ Graph GMLGraphReader::read(const std::string& path) {
                                 }
                                 ++key_type;
                             }
-                            //break;
                         case 1: if (parseNode(G)) {
-                                //DEBUG("parsed node successfully");
                                 break;
                             } else {
                                 ++key_type;
@@ -158,7 +150,6 @@ Graph GMLGraphReader::read(const std::string& path) {
                             }
                         TLX_ATTRIBUTE_FALLTHROUGH;
                         case 2: if (parseEdge(G)) {
-                                //DEBUG("parsed edge successfully");
                                 break;
                             } else {
                                 DEBUG("parsing edge went wrong");
@@ -169,7 +160,7 @@ Graph GMLGraphReader::read(const std::string& path) {
                                 DEBUG("expected closing bracket \"]\", got: ",line);
                              }
                     }
-                }	// at the end of the file, make sure the closing bracket is there.
+                }// at the end of the file, make sure the closing bracket is there.
             } else {
                 throw std::runtime_error("GML graph file broken");
             }
@@ -179,14 +170,7 @@ Graph GMLGraphReader::read(const std::string& path) {
         return G;
     };
 
-//	try {
     Graph G = parseGraph();
-//	} catch (std::exception e) {
-//		std::string msg = "reading GML file went wrong: ";
-//		msg+=e.what();
-//		throw std::runtime_error(msg);
-//	}
-
     std::string graphName = Aux::StringTools::split(Aux::StringTools::split(path, '/').back(), '.').front();
     G.setName(graphName);
 

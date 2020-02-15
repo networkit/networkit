@@ -1,14 +1,16 @@
-#include <networkit/io/BinaryPartitionReader.hpp>
 #include <fstream>
 
+#include <networkit/io/BinaryPartitionReader.hpp>
 
-NetworKit::BinaryPartitionReader::BinaryPartitionReader(uint8_t width) : width(width) {
+namespace NetworKit {
+
+BinaryPartitionReader::BinaryPartitionReader(uint8_t width) : width(width) {
     if (width != 4 && width != 8) {
         throw std::runtime_error("Only 4 and 8 are supported widths");
     }
 }
 
-NetworKit::Partition NetworKit::BinaryPartitionReader::read(const std::string& path) {
+Partition BinaryPartitionReader::read(const std::string& path) {
         std::ifstream is(path, std::ios_base::in | std::ios_base::binary);
 
         if (!is) {
@@ -44,3 +46,5 @@ NetworKit::Partition NetworKit::BinaryPartitionReader::read(const std::string& p
 
         return zeta;
 }
+
+} // namespace NetworKit

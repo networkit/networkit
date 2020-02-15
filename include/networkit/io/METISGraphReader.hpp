@@ -1,9 +1,11 @@
 /*
- * METISGraphReader.h
+ * METISGraphReader.hpp
  *
  *  Created on: 17.01.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
+
+// networkit-format
 
 #ifndef NETWORKIT_IO_METIS_GRAPH_READER_HPP_
 #define NETWORKIT_IO_METIS_GRAPH_READER_HPP_
@@ -18,19 +20,18 @@ namespace NetworKit {
  *
  * [1] http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/manual.pdf
  */
-class METISGraphReader: public GraphReader {
+class METISGraphReader final : public GraphReader {
 public:
-
     METISGraphReader() = default;
-    
+
     /**
      * Takes a file path as parameter and returns a graph file.
      *
-     * @param[in]	path	file path
+     * @param[in]  path  file path
      *
-     * @param[out]	the graph read from file
+     * @param[out]  the graph read from file
      */
-    virtual Graph read(const std::string& path) override;
+    Graph read(const std::string &path) override;
 };
 
 } /* namespace NetworKit */

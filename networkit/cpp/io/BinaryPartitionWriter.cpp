@@ -1,13 +1,16 @@
-#include <networkit/io/BinaryPartitionWriter.hpp>
 #include <fstream>
 
-NetworKit::BinaryPartitionWriter::BinaryPartitionWriter(uint8_t width) : width(width) {
+#include <networkit/io/BinaryPartitionWriter.hpp>
+
+namespace NetworKit {
+
+BinaryPartitionWriter::BinaryPartitionWriter(uint8_t width) : width(width) {
     if (width != 4 && width != 8) {
         throw std::runtime_error("Only width 4 and 8 are supported");
     }
 }
 
-void NetworKit::BinaryPartitionWriter::write(const Partition &zeta, const std::string &path) const {
+void BinaryPartitionWriter::write(const Partition &zeta, const std::string &path) const {
     if (width == 4 && zeta.upperBound() > std::numeric_limits<uint32_t>::max()) {
         throw std::runtime_error("Error, the upper bound of the given partition cannot be represented by an unsigned int of width 4. Please use a width of 8.");
     }
@@ -26,4 +29,4 @@ void NetworKit::BinaryPartitionWriter::write(const Partition &zeta, const std::s
     }
 }
 
-
+} // namespace NetworKit

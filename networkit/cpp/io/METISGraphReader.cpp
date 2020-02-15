@@ -2,15 +2,15 @@
  * METISGraphReader.cpp
  *
  *  Created on: 17.01.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
-#include <networkit/io/METISGraphReader.hpp>
-#include <networkit/io/METISParser.hpp>
 #include <networkit/auxiliary/Enforce.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/StringTools.hpp>
 #include <networkit/graph/GraphBuilder.hpp>
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/io/METISParser.hpp>
 
 namespace NetworKit {
 
@@ -41,7 +41,7 @@ Graph METISGraphReader::read(const std::string& path) {
     std::string graphName = Aux::StringTools::split(Aux::StringTools::split(path, '/').back(), '.').front();
     b.setName(graphName);
 
-    INFO("\n[BEGIN] reading graph G(n=", n, ", m=", m, ") from METIS file: ", graphName);	// progress bar follows
+    INFO("\n[BEGIN] reading graph G(n=", n, ", m=", m, ") from METIS file: ", graphName);
 
 #ifndef NETWORKIT_RELEASE_LOGGING
     double p = 0.0; // percentage for progress bar
@@ -58,7 +58,7 @@ Graph METISGraphReader::read(const std::string& path) {
                     continue;
                 }
                 Aux::Checkers::Enforcer::enforce(adjacencies[i] > 0 && adjacencies[i] <= n);
-                node v = adjacencies[i] - 1; 	// METIS-indices are 1-based
+                node v = adjacencies[i] - 1;// METIS-indices are 1-based
                 // correct edgeCounter for selfloops
                 edgeCounter += (u == v);
                 b.addHalfEdge(u, v);

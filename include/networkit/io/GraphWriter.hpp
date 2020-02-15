@@ -1,9 +1,11 @@
 /*
- * GraphWriter.h
+ * GraphWriter.hpp
  *
  *  Created on: 30.01.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
+
+// networkit-format
 
 #ifndef NETWORKIT_IO_GRAPH_WRITER_HPP_
 #define NETWORKIT_IO_GRAPH_WRITER_HPP_

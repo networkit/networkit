@@ -1,7 +1,7 @@
 /*
  * NetworkitBinaryGraph.hpp
  *
- *      Author: Charmaine Ndolo <charmaine.ndolo@b-tu.de>
+ *      Author: Charmaine Ndolo <charmaine.ndolo@hu-berlin.de>
  */
 
 #ifndef NETWORKIT_IO_NETWORKIT_BINARY_GRAPH_HPP_
@@ -58,12 +58,12 @@ static constexpr uint64_t WGHT_SHIFT = 0x1;
  * buffer[2] and so on.
  *
  * Example:
- * x = 0b0GFE'DCBA with G=1 requires 7 bit of storage. Hence it fits
+ * x = 0b0GFE'DCBA with G=1 requires 7 bits of storage. Hence it fits
  * completely into the header which is
  * buffer[0] = 0bGFED'CBA|1 where bit 0 encodes that no
  * data bytes follow while bits 1 to 7 store x.
  *
- * x = 0bHGFE'DCBA with H=1 requires 8 bit of storage. Hence an
+ * x = 0bHGFE'DCBA with H=1 requires 8 bits of storage. Hence an
  * additional data byte is required:
  *
  * buffer[0] = 0bFEDC'BA|10 where bits 0 and 1 encode that one data byte will follow
