@@ -86,7 +86,7 @@ public:
             file << "    [ x " << 50*vertexCoordinates[u][0] << "\n";
             file << "      y " << 50*vertexCoordinates[u][1] << "\n";
             if (dim == 3) {
-                file << "      z " << vertexCoordinates[u][2] << "\n";
+                file << "      z " << 50*vertexCoordinates[u][2] << "\n";
             }
             file << "    ]\n";
             file << "  ]\n";
