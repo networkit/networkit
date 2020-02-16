@@ -569,11 +569,13 @@ endif()
 # Subdirectories
 add_subdirectory(networkit/cpp)
 
-# Install header files
+# Install NetworKit header files
 set(NETWORKIT_LIBRARIES networkit)
 install(DIRECTORY include/networkit
 	DESTINATION ${NETWORKIT_INSTALL_INCLUDE_DIR}
 	FILES_MATCHING PATTERN "*.hpp")
+
+# Install ttmath header files
 install(DIRECTORY extlibs/ttmath/ttmath
 	DESTINATION ${NETWORKIT_INSTALL_INCLUDE_DIR}
 	FILES_MATCHING PATTERN "*.hpp")
