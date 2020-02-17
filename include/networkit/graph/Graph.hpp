@@ -783,6 +783,8 @@ public:
      */
     class NeighborIterator {
 
+        std::vector<node>::const_iterator nIter;
+
     public:
         // The value type of the neighbors (i.e. nodes). Returned by
         // operator*().
@@ -813,9 +815,9 @@ public:
         NeighborIterator() {}
 
         NeighborIterator operator++() {
-            auto prev = *this;
+            const auto tmp = *this;
             ++nIter;
-            return prev;
+            return tmp;
         }
 
         NeighborIterator operator++(int) {
@@ -824,9 +826,9 @@ public:
         }
 
         NeighborIterator operator--() {
-            auto prev = *this;
+            const auto tmp = *this;
             --nIter;
-            return prev;
+            return tmp;
         }
 
         NeighborIterator operator--(int) {
@@ -836,12 +838,9 @@ public:
 
         bool operator==(const NeighborIterator &rhs) const { return nIter == rhs.nIter; }
 
-        bool operator!=(const NeighborIterator &rhs) const { return nIter != rhs.nIter; }
+        bool operator!=(const NeighborIterator &rhs) const { return !(nIter == rhs.nIter); }
 
         node operator*() const { return *nIter; }
-
-    private:
-        std::vector<node>::const_iterator nIter;
     };
 
     /**
@@ -849,6 +848,9 @@ public:
      * weights. Values are std::pair<node, edgeweight>.
      */
     class NeighborWeightIterator {
+
+        std::vector<node>::const_iterator nIter;
+        std::vector<edgeweight>::const_iterator wIter;
 
     public:
         // The value type of the neighbors (i.e. nodes). Returned by
@@ -876,46 +878,38 @@ public:
             : nIter(nodesIter), wIter(weightIter) {}
 
         NeighborWeightIterator operator++() {
-            auto prev = *this;
             ++nIter;
             ++wIter;
-            return prev;
+            return *this;
         }
 
         NeighborWeightIterator operator++(int) {
-            ++nIter;
-            ++wIter;
-            return *this;
+            const auto tmp = *this;
+            ++(*this);
+            return tmp;
         }
 
         NeighborWeightIterator operator--() {
-            auto prev = *this;
-            --nIter;
-            --wIter;
-            return prev;
-        }
-
-        NeighborWeightIterator operator--(int) {
             --nIter;
             --wIter;
             return *this;
+        }
+
+        NeighborWeightIterator operator--(int) {
+            const auto tmp = *this;
+            --(*this);
+            return tmp;
         }
 
         bool operator==(const NeighborWeightIterator &rhs) const {
             return nIter == rhs.nIter && wIter == rhs.wIter;
         }
 
-        bool operator!=(const NeighborWeightIterator &rhs) const {
-            return nIter != rhs.nIter || wIter != rhs.wIter;
-        }
+        bool operator!=(const NeighborWeightIterator &rhs) const { return !(*this == rhs); }
 
         const std::pair<node, edgeweight> operator*() const {
             return std::make_pair(*nIter, *wIter);
         }
-
-    private:
-        std::vector<node>::const_iterator nIter;
-        std::vector<edgeweight>::const_iterator wIter;
     };
 
     /**
@@ -924,28 +918,25 @@ public:
      */
     template <bool InEdges = false>
     class NeighborRange {
+        const Graph *G;
+        node u;
+
     public:
         NeighborRange(const Graph &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
 
         NeighborRange() : G(nullptr){};
 
         NeighborIterator begin() const {
-            assert(G != nullptr);
-            if (InEdges)
-                return NeighborIterator(G->inEdges[u].begin());
-            return NeighborIterator(G->outEdges[u].begin());
+            assert(G);
+            return InEdges ? NeighborIterator(G->inEdges[u].begin())
+                           : NeighborIterator(G->outEdges[u].begin());
         }
 
         NeighborIterator end() const {
-            assert(G != nullptr);
-            if (InEdges)
-                return NeighborIterator(G->inEdges[u].end());
-            return NeighborIterator(G->outEdges[u].end());
+            assert(G);
+            return InEdges ? NeighborIterator(G->inEdges[u].end())
+                           : NeighborIterator(G->outEdges[u].end());
         }
-
-    private:
-        const Graph *G;
-        node u;
     };
 
     using OutNeighborRange = NeighborRange<false>;
@@ -959,24 +950,22 @@ public:
     template <bool InEdges = false>
     class NeighborWeightRange {
 
+        const Graph &G;
+        const node u;
+
     public:
         NeighborWeightRange(const Graph &G, node u) : G(G), u(u){};
 
         NeighborWeightIterator begin() const {
-            if (InEdges)
-                return NeighborWeightIterator(G.inEdges[u].begin(), G.inEdgeWeights[u].begin());
-            return NeighborWeightIterator(G.outEdges[u].begin(), G.outEdgeWeights[u].begin());
+            return InEdges
+                       ? NeighborWeightIterator(G.inEdges[u].begin(), G.inEdgeWeights[u].begin())
+                       : NeighborWeightIterator(G.outEdges[u].begin(), G.outEdgeWeights[u].begin());
         }
 
         NeighborWeightIterator end() const {
-            if (InEdges)
-                return NeighborWeightIterator(G.inEdges[u].end(), G.inEdgeWeights[u].end());
-            return NeighborWeightIterator(G.outEdges[u].end(), G.outEdgeWeights[u].end());
+            return InEdges ? NeighborWeightIterator(G.inEdges[u].end(), G.inEdgeWeights[u].end())
+                           : NeighborWeightIterator(G.outEdges[u].end(), G.outEdgeWeights[u].end());
         }
-
-    private:
-        const Graph &G;
-        const node u;
     };
 
     /**
