@@ -3,7 +3,7 @@
   <a href="https://travis-ci.org/networkit/networkit"><img src="https://travis-ci.org/networkit/networkit.svg?branch=Dev"></a>
   <a href="https://ci.appveyor.com/project/sharkdp/bat"><img src="https://ci.appveyor.com/api/projects/status/github/networkit/networkit?branch=Dev&svg=true"></a>
   <a href="https://badge.fury.io/py/networkit"><img src="https://badge.fury.io/py/networkit.svg"></a>
-  <a href="https://coveralls.io/github/networkit/networkit?branch=Dev"><img src="https://badge.fury.io/py/networkit.svg"></a>
+  <a href="https://coveralls.io/github/networkit/networkit?branch=Dev"><img src="https://coveralls.io/github/networkit/networkit?branch=Dev"></a>
 </p>
 
 ## 
