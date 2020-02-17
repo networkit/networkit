@@ -45,9 +45,6 @@ default, NetworKit will be built with the amount of available cores in
 optimized mode. It is possible the add the option `-jN` the number of threads
 used for compilation.
 
-Once you have installed NetworKit, please make sure to check out our [NetworKit UserGuide]
-and our [notebooks] for an overview of the features provided by NetworKit.
-
 ## Requirements
 
 You will need the following software to install NetworKit as a python
@@ -78,6 +75,8 @@ and we compute its communities with the PLM method:
     avg. community size    22.0459
     modularity              0.987243
     -------------------  -----------
+
+For more interactive examples you can have a look at our [notebooks]-section, especially the [Networkit UserGuide]. Note: To view the computed output from the notebooks, it is recommended to use ![JupyterHub](https://pypi.org/project/jupyterhub/) (installed for example via pip3 or conda). This requires the prior installation of NetworKit.
 
 # Building the C++ Core only
 
