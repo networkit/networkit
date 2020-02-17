@@ -60,8 +60,9 @@ package:
 
 # Usage example
 
-In this example we generate a random hyperbolic graph with 100k nodes
-and we compute its communities with the PLM method:
+To get an overview and learn about NetworKit's different functions/classes, have a look at our interactive [notebooks]-section, especially the [Networkit UserGuide]. Note: To view and edit the computed output from the notebooks, it is recommended to use ![Jupyter Notebook](https://jupyter.readthedocs.io/en/latest/install.html) (installed for example via pip3 or conda). This requires the prior installation of NetworKit. You should really check that out before start working on your network analysis.
+
+If you only want to see in short how NetworKit is used - the following short example provides a climpse at that. Here we generate a random hyperbolic graph with 100k nodes and compute its communities with the PLM method:
 
     >>> import networkit as nk
     >>> g = nk.generators.HyperbolicGenerator(1e5).generate()
@@ -75,8 +76,6 @@ and we compute its communities with the PLM method:
     avg. community size    22.0459
     modularity              0.987243
     -------------------  -----------
-
-For more interactive examples you can have a look at our [notebooks]-section, especially the [Networkit UserGuide]. Note: To view the computed output from the notebooks, it is recommended to use ![JupyterHub](https://pypi.org/project/jupyterhub/) (installed for example via pip3 or conda). This requires the prior installation of NetworKit.
 
 # Building the C++ Core only
 
