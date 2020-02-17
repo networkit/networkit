@@ -29,7 +29,8 @@ There are three ways to install NetworKit as a Python module.
 
 ### Install with conda-forge
 
-    conda install networkit
+    conda config --add channels conda-forge
+    conda install networkit [-c conda-forge]
 
 ### Building the Python module from source
 
