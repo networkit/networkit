@@ -18,8 +18,7 @@ If you encounter any questions regarding NetworKit development open an issue on 
 - We use 4 space indentation.
 - Adapt to the existing naming conventions. NetworKit generally uses lowerCamelCase
   for (global and local) variables and UpperCamelCase for classes.
-- We have a `.clang-format` file in the root directory. We do not require all code to follow the coding style specified
-  in this file. However, it should be taken as a suggestion.
+- We have a `.clang-format` file in the root directory for C++ code styling. To use it, call `clang-format -style=file <code-file>`. Note: We do not require all code to follow the coding style specified. However, it should be taken as a strong suggestion. If you use clang-format, add an extra line with `// networkit-format` before the includes.     
 
 ###  Usage of Git
 
@@ -58,10 +57,10 @@ Features need to be deprecated for two releases before they are removed.
 
 *Breaking API changes* should be kept to a minimum. If breaking API changes are done, they should be
 clearly documented in CHANGES.md (including guidelines on migrating existing code).
-Breaking ABI changes are allowed on every major/minor release. NetworKit does not guarantee a stable ABI
-across major/minor releases
+Breaking ABI changes are allowed on every major release. NetworKit does not guarantee a stable ABI
+across major releases
 (i.e., after upgrading the NetworKit library, you need to recompile programs linking against the library).
-Bugfix releases guarantee ABI stability.
+Minor and patch releases guarantee ABI stability.
 
 ### PR Reviews and Merging
 

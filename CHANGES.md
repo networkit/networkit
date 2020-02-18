@@ -1,6 +1,6 @@
 
 # API Breaking Changes
 
-## NetworKit 5.1
+## NetworKit 7.0
 
 API breaking changes will be documented here.
