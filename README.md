@@ -45,7 +45,7 @@ default, NetworKit will be built with the amount of available cores in
 optimized mode. It is possible the add the option `-jN` the number of threads
 used for compilation.
 
-## Requirements
+# Requirements
 
 You will need the following software to install NetworKit as a python
 package:
@@ -60,9 +60,9 @@ package:
 
 # Usage example
 
-To get an overview and learn about NetworKit's different functions/classes, have a look at our interactive [notebooks]-section, especially the [Networkit UserGuide]. Note: To view and edit the computed output from the notebooks, it is recommended to use ![Jupyter Notebook](https://jupyter.readthedocs.io/en/latest/install.html) (installed for example via pip3 or conda). This requires the prior installation of NetworKit. You should really check that out before start working on your network analysis.
+To get an overview and learn about NetworKit's different functions/classes, have a look at our interactive [notebooks-section][notebooks], especially the [Networkit UserGuide]. Note: To view and edit the computed output from the notebooks, it is recommended to use ![Jupyter Notebook](https://jupyter.readthedocs.io/en/latest/install.html) (installed via pip3 or conda). This requires the prior installation of NetworKit. You should really check that out before start working on your network analysis.
 
-If you only want to see in short how NetworKit is used - the following short example provides a climpse at that. Here we generate a random hyperbolic graph with 100k nodes and compute its communities with the PLM method:
+If you only want to see in short how NetworKit is used - the following example provides a climpse at that. Here we generate a random hyperbolic graph with 100k nodes and compute its communities with the PLM method:
 
     >>> import networkit as nk
     >>> g = nk.generators.HyperbolicGenerator(1e5).generate()
@@ -155,7 +155,7 @@ The most recent version of the [documentation can be found online](https://netwo
 
 # Contact
 
-For questions regarding NetworKit, feel free to open a new issue.
+For questions regarding NetworKit, have a look at our [issues-section][issues] and see if there is already an open discussion. If not feel free to open a new issue.
 To stay updated about this project, subscribe to our [mailing list][list].
 
 # Contributions
@@ -196,3 +196,4 @@ in NetworKit, and simply using NetworKit. We ask you to cite the appropriate one
 [Make]: https://www.gnu.org/software/make/
 [Ninja]: https://ninja-build.org/
 [devguide]: https://networkit.github.io/dev-docs/DevGuide.html#devGuide
+[issues]: https://github.com/networkit/networkit/issues
