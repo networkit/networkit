@@ -132,7 +132,7 @@ if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR
 		set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "Manually set")
 		set(OpenMP_omp_LIBRARY "${LIBOMP_PATH}" CACHE STRING "Manually set")
 	else()
-		message(FATAL_ERROR "libomp was not found, but necessary to run NetworKit with AppleClang")
+		message(FATAL_ERROR "libomp was not found, but necessary to run NetworKit with ${CMAKE_CXX_COMPILER_ID}")
 	endif()
 endif()
 
