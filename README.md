@@ -60,7 +60,7 @@ used for compilation.
 
 ## Usage example
 
-To get an overview and learn about NetworKit's different functions/classes, have a look at our interactive [notebooks-section][notebooks], especially the [Networkit UserGuide]. Note: To view and edit the computed output from the notebooks, it is recommended to use ![Jupyter Notebook](https://jupyter.readthedocs.io/en/latest/install.html) (installed via pip3 or conda). This requires the prior installation of NetworKit. You should really check that out before start working on your network analysis.
+To get an overview and learn about NetworKit's different functions/classes, have a look at our interactive [notebooks-section][notebooks], especially the [Networkit UserGuide]. Note: To view and edit the computed output from the notebooks, it is recommended to use [Jupyter Notebook][jupyter-notebooks]. This requires the prior installation of NetworKit. You should really check that out before start working on your network analysis.
 
 If you only want to see in short how NetworKit is used - the following example provides a climpse at that. Here we generate a random hyperbolic graph with 100k nodes and compute its communities with the PLM method:
 
@@ -197,3 +197,4 @@ in NetworKit, and simply using NetworKit. We ask you to cite the appropriate one
 [Ninja]: https://ninja-build.org/
 [devguide]: https://networkit.github.io/dev-docs/DevGuide.html#devGuide
 [issues]: https://github.com/networkit/networkit/issues
+[jupyter-notebooks]: https://jupyter.org/install.html
