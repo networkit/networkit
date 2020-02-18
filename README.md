@@ -19,7 +19,20 @@ via the Cython toolchain. Python in turn gives us the ability to work interactiv
 rich environment of tools for data analysis and scientific computing.
 Furthermore, NetworKit's core can be built and used as a native library if needed.
 
-# Install
+## Requirements
+
+You will need the following software to install NetworKit as a python
+package:
+
+- A modern C++ compiler, e.g.: [g++] (&gt;= 4.8) or [clang++] (&gt;= 3.7)
+- OpenMP for parallelism (usually ships with the compiler)
+- Python3 (3.4 or higher is recommended, 3.3 supported)
+- [Pip]
+- [CMake] version 3.5 or higher (e.g., `pip3 install cmake`)
+- Build system: [Make] or [Ninja]
+- Cython version 0.21 or higher (e.g., `pip3 install cython`)
+
+## Install
 
 There are three ways to install NetworKit as a Python module.
 
@@ -45,20 +58,7 @@ default, NetworKit will be built with the amount of available cores in
 optimized mode. It is possible the add the option `-jN` the number of threads
 used for compilation.
 
-# Requirements
-
-You will need the following software to install NetworKit as a python
-package:
-
-- A modern C++ compiler, e.g.: [g++] (&gt;= 4.8) or [clang++] (&gt;= 3.7)
-- OpenMP for parallelism (usually ships with the compiler)
-- Python3 (3.4 or higher is recommended, 3.3 supported)
-- [Pip]
-- [CMake] version 3.5 or higher (e.g., `pip3 install cmake`)
-- Build system: [Make] or [Ninja]
-- Cython version 0.21 or higher (e.g., `pip3 install cython`)
-
-# Usage example
+## Usage example
 
 To get an overview and learn about NetworKit's different functions/classes, have a look at our interactive [notebooks-section][notebooks], especially the [Networkit UserGuide]. Note: To view and edit the computed output from the notebooks, it is recommended to use ![Jupyter Notebook](https://jupyter.readthedocs.io/en/latest/install.html) (installed via pip3 or conda). This requires the prior installation of NetworKit. You should really check that out before start working on your network analysis.
 
@@ -77,7 +77,7 @@ If you only want to see in short how NetworKit is used - the following example p
     modularity              0.987243
     -------------------  -----------
 
-# Building the C++ Core only
+## Building the C++ Core only
 
 In case you only want to work with NetworKit's C++ core, this section describes how to build it.
 We recommend [CMake] and your preferred build system for building the C++ part of NetworKit.
@@ -149,24 +149,24 @@ By setting this flag to `address`, your code will be compiled with the `address`
 Setting it to `leak` also adds the `leak` sanitizer.
 
 
-# Documentation
+## Documentation
 
 The most recent version of the [documentation can be found online](https://networkit.github.io/dev-docs/index.html).
 
-# Contact
+## Contact
 
 For questions regarding NetworKit, have a look at our [issues-section][issues] and see if there is already an open discussion. If not feel free to open a new issue.
 To stay updated about this project, subscribe to our [mailing list][list].
 
-# Contributions
+## Contributions
 
 We encourage contributions to the NetworKit source code. See the [development guide][devguide] for instructions. For support please contact the [mailing list][list].
 
-# Credits
+## Credits
 
 List of contributors can be found on the [NetworKit website credits page](https://networkit.github.io/credits.html).
 
-# External Code
+## External Code
 
 The program source includes:
 - the *[TLX][tlx]* library
@@ -176,10 +176,10 @@ The program source includes:
 [ttmath]: http://www.ttmath.org/
 [tlx]: https://github.com/tlx/tlx/
 
-# License
+## License
 The source code of this program is released under the [MIT License][mitlicense].  We ask you to cite us if you use this code in your project (c.f. the publications section below and especially the [technical report](https://arxiv.org/abs/1403.3005)). Feedback is also welcome.
 
-# Publications
+## Publications
 The [NetworKit publications page][nwkpubs] lists the publications on NetworKit as a toolkit, on algorithms available
 in NetworKit, and simply using NetworKit. We ask you to cite the appropriate ones if you found NetworKit useful for your own research.
 
