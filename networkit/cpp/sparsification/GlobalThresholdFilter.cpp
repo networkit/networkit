@@ -5,24 +5,28 @@
  *      Author: Gerd Lindner
  */
 
-#include <networkit/sparsification/GlobalThresholdFilter.hpp>
+// networkit-format
+
 #include <networkit/graph/GraphBuilder.hpp>
+#include <networkit/sparsification/GlobalThresholdFilter.hpp>
 
 namespace NetworKit {
 
-GlobalThresholdFilter::GlobalThresholdFilter(const Graph& graph, const std::vector<double>& attribute, const double threshold, bool above) :
-        graph(graph), attribute(attribute), threshold(threshold), above(above) {}
+GlobalThresholdFilter::GlobalThresholdFilter(const Graph &graph,
+                                             const std::vector<double> &attribute, double threshold,
+                                             bool above)
+    : graph(&graph), attribute(attribute), threshold(threshold), above(above) {}
 
 Graph GlobalThresholdFilter::calculate() {
-    if (!graph.hasEdgeIds()) {
+    if (!graph->hasEdgeIds()) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
     // Create an edge-less graph.
     GraphBuilder builder(graph->upperNodeIdBound(), graph->isWeighted(), graph->isDirected());
 
-    //Re-add the edges of the sparsified graph.
-    graph.balancedParallelForNodes([&](node u) {
+    // Re-add the edges of the sparsified graph.
+    graph->balancedParallelForNodes([&](const node u) {
         // add each edge in both directions
         graph->forEdgesOf(u, [&](const node u, const node v, const edgeweight ew,
                                  const edgeid eid) {
@@ -32,10 +36,11 @@ Graph GlobalThresholdFilter::calculate() {
         });
     });
 
-    Graph sGraph = builder.toGraph(graph.isDirected());
-    // WARNING: removeNode() must not be called in parallel (writes on vector<bool> and does non-atomic decrement of number of nodes)!
-    sGraph.forNodes([&](node u) {
-        if (!graph.hasNode(u)) {
+    auto sGraph = builder.toGraph(graph->isDirected());
+    // WARNING: removeNode() must not be called in parallel (writes on vector<bool> and does
+    // non-atomic decrement of number of nodes)!
+    sGraph.forNodes([&](const node u) {
+        if (!graph->hasNode(u)) {
             sGraph.removeNode(u);
         }
     });
@@ -43,8 +48,8 @@ Graph GlobalThresholdFilter::calculate() {
     return sGraph;
 }
 
-Graph GlobalThresholdFilter::cloneNodes(const Graph& graph, bool weighted) {
-    Graph sparsifiedGraph (graph.upperNodeIdBound(), weighted, false);
+Graph GlobalThresholdFilter::cloneNodes(const Graph &graph, bool weighted) {
+    Graph sparsifiedGraph(graph.upperNodeIdBound(), weighted, false);
 
     for (node i = 0; i < graph.upperNodeIdBound(); i++) {
         if (!graph.hasNode(i))
