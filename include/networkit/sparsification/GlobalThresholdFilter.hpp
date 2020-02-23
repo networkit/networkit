@@ -18,6 +18,10 @@ namespace NetworKit {
  * Calculates a sparsified graph by applying a global threshold to an edge score.
  */
 class GlobalThresholdFilter {
+    const Graph *graph;
+    const std::vector<double> &attribute;
+    const double threshold;
+    const bool above;
 
 public:
     /**
@@ -31,19 +35,6 @@ public:
                           double threshold, bool above);
 
     Graph calculate();
-
-private:
-    const Graph *graph;
-    const std::vector<double> &attribute;
-    double threshold;
-    bool above;
-
-    /**
-     * Creates a new undirected graph that contains only the nodes of the given graph.
-     * @param graph the original graph to copy
-     * @param weighted whether the new graph should be weighted
-     */
-    Graph cloneNodes(const Graph &graph, bool weighted);
 };
 
 } // namespace NetworKit

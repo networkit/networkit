@@ -48,14 +48,4 @@ Graph GlobalThresholdFilter::calculate() {
     return sGraph;
 }
 
-Graph GlobalThresholdFilter::cloneNodes(const Graph &graph, bool weighted) {
-    Graph sparsifiedGraph(graph.upperNodeIdBound(), weighted, false);
-
-    for (node i = 0; i < graph.upperNodeIdBound(); i++) {
-        if (!graph.hasNode(i))
-            sparsifiedGraph.removeNode(i);
-    }
-    return sparsifiedGraph;
-}
-
 } /* namespace NetworKit */
