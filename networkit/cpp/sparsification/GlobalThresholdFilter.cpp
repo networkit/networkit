@@ -18,21 +18,21 @@ Graph GlobalThresholdFilter::calculate() {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
-    //Create an edge-less graph.
-    GraphBuilder builder(graph.upperNodeIdBound(), false);
+    // Create an edge-less graph.
+    GraphBuilder builder(graph->upperNodeIdBound(), graph->isWeighted(), graph->isDirected());
 
     //Re-add the edges of the sparsified graph.
     graph.balancedParallelForNodes([&](node u) {
         // add each edge in both directions
-        graph.forEdgesOf(u, [&](node u, node v, edgeid eid) {
-            if ((above && attribute[eid] >= threshold)
-            || (!above && attribute[eid] <= threshold)) {
-                builder.addHalfEdge(u, v);
+        graph->forEdgesOf(u, [&](const node u, const node v, const edgeweight ew,
+                                 const edgeid eid) {
+            if ((above && attribute[eid] >= threshold) || (!above && attribute[eid] <= threshold)) {
+                builder.addHalfEdge(u, v, ew);
             }
         });
     });
 
-    Graph sGraph = builder.toGraph(false);
+    Graph sGraph = builder.toGraph(graph.isDirected());
     // WARNING: removeNode() must not be called in parallel (writes on vector<bool> and does non-atomic decrement of number of nodes)!
     sGraph.forNodes([&](node u) {
         if (!graph.hasNode(u)) {
