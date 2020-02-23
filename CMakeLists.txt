@@ -14,6 +14,7 @@ option(NETWORKIT_MONOLITH "Build single library (and tests is requested; require
 option(NETWORKIT_NATIVE "Optimize for native architecture (often better performance)" OFF)
 option(NETWORKIT_WARNINGS "Issue more warnings" OFF)
 option(NETWORKIT_WARNINGS_AS_ERRORS "Treat warnings as errors (except deprecated)" OFF)
+option(NETWORKIT_CLANG_TIDY "Check code with clang-tidy" OFF)
 option(NETWORKIT_FLATINSTALL "Install into a flat directory structure (useful when building a Python package)" OFF)
 option(NETWORKIT_COVERAGE "Build with support for coverage" OFF)
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
@@ -230,6 +231,16 @@ if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 	target_link_libraries(networkit PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
 	target_include_directories(networkit BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 	target_include_directories(networkit PUBLIC "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
+endif()
+
+################################################################################
+# ENABLE CLANG-TIDY
+if (NETWORKIT_CLANG_TIDY)
+	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+		set_target_properties(networkit PROPERTIES CXX_CLANG_TIDY clang-tidy)
+	else()
+		message(FATAL_ERROR "clang-tidy is only supported when compiling with clang")
+	endif()
 endif()
 
 if(NETWORKIT_PYTHON)
