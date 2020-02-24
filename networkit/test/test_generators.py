@@ -41,6 +41,13 @@ class TestGraph(unittest.TestCase):
         self.assertGreater(len(newCoords), 0)
         self.assertEqual(newCoords[0][0], n)
 
+    def testWattsStrogatzGenerator(self):
+        n = 12
+        nbrs = 5
+        G = nk.generators.WattsStrogatzGenerator(n, nbrs, 0.5).generate()
+
+        self.assertEqual(G.numberOfNodes(), n)
+        self.assertEqual(G.numberOfEdges(), n*nbrs)
 
 if __name__ == "__main__":
     unittest.main()
