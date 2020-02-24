@@ -1,4 +1,3 @@
-
 # cython: language_level=3
 
 #includes
@@ -10,13 +9,10 @@ import os
 import tempfile
 import warnings
 
-
 try:
 	import pandas
 except:
-	warnings.warn("WARNING: module 'pandas' not found, some functionality will be restricted",
-			ReducedFunctionalityWarning)
-
+	warnings.warn("WARNING: module 'pandas' not found, some functionality will be restricted", ReducedFunctionalityWarning)
 
 # C++ operators
 from cython.operator import dereference, preincrement
@@ -46,6 +42,9 @@ ctypedef index node
 ctypedef index cluster
 ctypedef double edgeweight
 ctypedef double coordinate
+
+from .base cimport _Algorithm
+from .base cimport Algorithm
 
 cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
 
@@ -84,85 +83,6 @@ def stdstring(pystring):
 def pystring(stdstring):
 	""" convert a std::string (= python byte string) to a normal Python string"""
 	return stdstring.decode("utf-8")
-
-
-cdef extern from "<networkit/base/Algorithm.hpp>":
-
-	cdef cppclass _Algorithm "NetworKit::Algorithm":
-		_Algorithm()
-		void run() nogil except +
-		bool_t hasFinished() except +
-		string toString() except +
-		bool_t isParallel() except +
-
-cdef class Algorithm:
-	""" Abstract base class for algorithms """
-	cdef _Algorithm *_this
-
-	def __init__(self, *args, **namedargs):
-		if type(self) == Algorithm:
-			raise RuntimeError("Error, you may not use Algorithm directly, use a sub-class instead")
-
-	def __cinit__(self, *args, **namedargs):
-		self._this = NULL
-
-	def __dealloc__(self):
-		if self._this != NULL:
-			del self._this
-		self._this = NULL
-
-	def run(self):
-		"""
-		Executes the algorithm.
-
-		Returns
-		-------
-		Algorithm:
-			self
-		"""
-		if self._this == NULL:
-			raise RuntimeError("Error, object not properly initialized")
-		with nogil:
-			self._this.run()
-		return self
-
-	def hasFinished(self):
-		"""
-		States whether an algorithm has already run.
-
-		Returns
-		-------
-		Algorithm:
-			self
-		"""
-		if self._this == NULL:
-			raise RuntimeError("Error, object not properly initialized")
-		return self._this.hasFinished()
-
-	def toString(self):
-		""" Get string representation.
-
-		Returns
-		-------
-		string
-			String representation of algorithm and parameters.
-		"""
-		if self._this == NULL:
-			raise RuntimeError("Error, object not properly initialized")
-		return self._this.toString().decode("utf-8")
-
-
-	def isParallel(self):
-		"""
-		Returns
-		-------
-		bool
-			True if algorithm can run multi-threaded
-		"""
-		if self._this == NULL:
-			raise RuntimeError("Error, object not properly initialized")
-		return self._this.isParallel()
-
 
 cdef extern from "<networkit/generators/StaticGraphGenerator.hpp>":
 

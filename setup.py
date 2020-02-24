@@ -120,29 +120,30 @@ def cythonizeFile(filepath):
 	cython_available = shutil.which("cython") is not None
 	if not cython_available:
 		if not os.path.isfile(cpp_file):
-			print("ERROR: Neither cython nor _NetworKit.cpp is provided. Build cancelled", flush=True)
+			print("ERROR: Neither cython nor _{}.cpp is provided. Build cancelled" .format(os.path.splitext(filepath)[0]), flush=True)
 			exit(1)
 
 		else:
-			print("Cython not available, but _NetworKit.cpp provided. Continue build without cythonizing", flush=True)
+			print("Cython not available, but _{}.cpp provided. Continue build without cythonizing" .format(os.path.splitext(filepath)[0]), flush=True)
 
 	elif os.path.isfile(cpp_file) and os.path.getmtime(filepath) < os.path.getmtime(cpp_file):
-		print("Cython available; skip as _NetworKit.cpp was create after last modification of _NetworKit.pyx", flush=True)
+		print("Cython available; skip as _{}.cpp was create after last modification of _{}.pyx" .format(os.path.splitext(filepath)[0], os.path.splitext(filepath)[0]), flush=True)
 
 	else:
-		print("Cythonizing _NetworKit.pyx...", flush=True)
+		print("Cythonizing {}...".format(filepath), flush=True)
 		if not os.path.isfile(filepath):
-			print("_NetworKit.pyx is not available. Build cancelled.")
+			print("{} is not available. Build cancelled..".format(filepath))
 			exit(1)
 		comp_cmd = ["cython","-3","--cplus","-t",filepath]
 		if not subprocess.call(comp_cmd) == 0:
 			print("cython returned an error, exiting setup.py")
 			exit(1)
-		print("_NetworKit.pyx cythonized", flush=True)
+		print("{} cythonized" .format(filepath), flush=True)
 
 def buildNetworKit(install_prefix, externalCore=False, withTests=False, rpath=None):
 	# Cythonize file
 	cythonizeFile("networkit/_NetworKit.pyx")
+	cythonizeFile("networkit/base.pyx")
 	try:
 		os.makedirs(buildDirectory)
 	except FileExistsError:
