@@ -144,7 +144,7 @@ class GEXFReader:
 				endTime = float(endTime)
 			except:
 				pass
-				
+
 		if startTime != "" and endTime != "":
 			if startTime < endTime and not controlList['elementDeleted']:
 				self.createEvent(startTime, "a"+elementType, u, v, w)
@@ -314,7 +314,7 @@ class GEXFWriter:
 		for event in eventStream:
 			if event.type == GraphEvent.NODE_ADDITION:
 				nNodes +=1
-		nNodes += len(graph.nodes())
+		nNodes += graph.numberOfNodes()
 		for i in range(0, nNodes):
 			idArray.append(i)
 		# Optional:Map nodes to a random mapping if user provided one
@@ -334,8 +334,8 @@ class GEXFWriter:
 		#4. Add edges
 		edgesElement = ET.SubElement(graphElement, "edges")
 		#4.1 Put all edges into a queue(inital + dynamic edges)
-		for e in graph.edges():
-			self.q.put((e[0], e[1], graph.weight(e[0], e[1])))
+		for u, v in graph.iterEdges():
+			self.q.put((u, v, graph.weight(u, v)))
 		for event in eventStream:
 			if event.type == GraphEvent.EDGE_ADDITION:
 				self.q.put((event.u, event.v, event.w))

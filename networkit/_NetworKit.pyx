@@ -291,6 +291,15 @@ cdef object toNodePoint2DVector(const vector[pair[node, _Point2D]]& v):
 
 cdef extern from "<networkit/graph/Graph.hpp>":
 
+	cdef struct Edge "NetworKit::Edge":
+		node u
+		node v
+
+	cdef struct WeightedEdge "NetworKit::WeightedEdge":
+		node u
+		node v
+		edgeweight weight
+
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
 		_Graph(count, bool_t, bool_t) except +
@@ -367,6 +376,9 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		void DFSEdgesFrom[Callback](node r, Callback c) except +
 		bool_t checkConsistency() except +
 		_Graph subgraphFromNodes(unordered_set[node] nodes, bool_t includeOutNeighbors, bool_t includeInNeighbors) except +
+		_NodeRange nodeRange() except +
+		_EdgeRange edgeRange() except +
+		_EdgeWeightRange edgeWeightRange() except +
 		_OutNeighborRange neighborRange(node u) except +
 		_InNeighborRange inNeighborRange(node u) except +
 
@@ -429,6 +441,48 @@ cdef cppclass NodePairCallbackWrapper:
 			message = stdstring("An Exception occurred, aborting execution of iterator: {0}".format(e))
 		if (error):
 			throw_runtime_error(message)
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+
+	cdef cppclass _NodeIterator "NetworKit::Graph::NodeIterator":
+		_NodeIterator operator++() except +
+		_NodeIterator operator++(int) except +
+		bool_t operator!=(const _NodeIterator) except +
+		node operator*() except +
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+
+	cdef cppclass _NodeRange "NetworKit::Graph::NodeRange":
+		_NodeIterator begin() except +
+		_NodeIterator end() except +
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+
+	cdef cppclass _EdgeWeightIterator "NetworKit::Graph::EdgeWeightIterator":
+		_EdgeWeightIterator operator++() except +
+		_EdgeWeightIterator operator++(int) except +
+		bool_t operator!=(const _EdgeWeightIterator) except +
+		WeightedEdge operator*() except +
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+
+	cdef cppclass _EdgeWeightRange "NetworKit::Graph::EdgeWeightRange":
+		_EdgeWeightIterator begin() except +
+		_EdgeWeightIterator end() except +
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+
+	cdef cppclass _EdgeIterator "NetworKit::Graph::EdgeIterator":
+		_EdgeIterator operator++() except +
+		_EdgeIterator operator++(int) except +
+		bool_t operator!=(const _EdgeIterator) except +
+		Edge operator*() except +
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+
+	cdef cppclass _EdgeRange "NetworKit::Graph::EdgeRange":
+		_EdgeIterator begin() except +
+		_EdgeIterator end() except +
 
 cdef extern from "<networkit/graph/Graph.hpp>":
 
@@ -1447,17 +1501,40 @@ cdef class Graph:
 			nnodes.insert(node)
 		return Graph().setThis(self._this.subgraphFromNodes(nnodes, includeOutNeighbors, includeInNeighbors))
 
+	def iterNodes(self):
+		"""
+		Iterates over the nodes of the graph.
+		"""
+		it = self._this.nodeRange().begin()
+		while it != self._this.nodeRange().end():
+			yield dereference(it)
+			preincrement(it)
+
+	def iterEdges(self):
+		"""
+		Iterates over the edges of the graph.
+		"""
+		it = self._this.edgeRange().begin()
+		while it != self._this.edgeRange().end():
+			yield dereference(it).u, dereference(it).v
+			preincrement(it)
+
+	def iterEdgesWeights(self):
+		"""
+		Iterates over the edges of the graph and their weights.
+		"""
+		it = self._this.edgeWeightRange().begin()
+		while it != self._this.edgeWeightRange().end():
+			yield dereference(it).u, dereference(it).v, dereference(it).weight
+			preincrement(it)
+
 	def iterNeighbors(self, u):
 		"""
-		Wrapper class to iterate over a range of the neighbors of a node within
-		a for loop.
+		Iterates over a range of the neighbors of a node.
+
 		Parameters
 		----------
 		u : Node
-
-		Returns
-		-------
-		List of a node u's neighbours
 		"""
 		it = self._this.neighborRange(u).begin()
 		while it != self._this.neighborRange(u).end():
@@ -1466,15 +1543,11 @@ cdef class Graph:
 
 	def iterInNeighbors(self, u):
 		"""
-		Wrapper class to iterate over a range of the in neighbours of a node within
-		a for loop.
+		Iterates over a range of the in-neighbors of a node.
+
 		Parameters
 		----------
 		u : Node
-
-		Returns
-		-------
-		List of a node u's in neighbours
 		"""
 		it = self._this.inNeighborRange(u).begin()
 		while it != self._this.inNeighborRange(u).end():

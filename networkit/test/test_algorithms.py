@@ -145,12 +145,12 @@ class Test_SelfLoops(unittest.TestCase):
 		for i in PLMLP.getSubsetIds():
 			for j in PLMLP.getMembers(i):
 				reconstructedSet.append(j)
-		self.assertEqual(set(self.L.nodes()), set(reconstructedSet))
+		self.assertEqual(set(self.L.iterNodes()), set(reconstructedSet))
 		reconstructedSet = []
 		for i in PLMLLP.getSubsetIds():
 			for j in PLMLLP.getMembers(i):
 				reconstructedSet.append(j)
-		self.assertEqual(set(self.LL.nodes()), set(reconstructedSet))
+		self.assertEqual(set(self.LL.iterNodes()), set(reconstructedSet))
 
 	def test_community_PLP(self):
 		PLPL = community.PLP(self.L)
@@ -166,12 +166,12 @@ class Test_SelfLoops(unittest.TestCase):
 		for i in PLPLP.getSubsetIds():
 			for j in PLPLP.getMembers(i):
 				reconstructedSet.append(j)
-		self.assertEqual(set(self.L.nodes()), set(reconstructedSet))
+		self.assertEqual(set(self.L.iterNodes()), set(reconstructedSet))
 		reconstructedSet = []
 		for i in PLPLLP.getSubsetIds():
 			for j in PLPLLP.getMembers(i):
 				reconstructedSet.append(j)
-		self.assertEqual(set(self.LL.nodes()), set(reconstructedSet))
+		self.assertEqual(set(self.LL.iterNodes()), set(reconstructedSet))
 
 
 	def test_community_CutClustering(self):
@@ -188,12 +188,12 @@ class Test_SelfLoops(unittest.TestCase):
 		for i in CLP.getSubsetIds():
 			for j in CLP.getMembers(i):
 				reconstructedSet.append(j)
-		self.assertEqual(set(self.L.nodes()), set(reconstructedSet))
+		self.assertEqual(set(self.L.iterNodes()), set(reconstructedSet))
 		reconstructedSet = []
 		for i in CLLP.getSubsetIds():
 			for j in CLLP.getMembers(i):
 				reconstructedSet.append(j)
-		self.assertEqual(set(self.LL.nodes()), set(reconstructedSet))
+		self.assertEqual(set(self.LL.iterNodes()), set(reconstructedSet))
 
 
 	def test_community_GraphClusteringTools(self):
@@ -255,12 +255,12 @@ class Test_SelfLoops(unittest.TestCase):
 		for i in CLP.getSubsetIds():
 			for j in CLP.getMembers(i):
 				reconstructedSet.append(j)
-		self.assertEqual(set(self.L.nodes()), set(reconstructedSet))
+		self.assertEqual(set(self.L.iterNodes()), set(reconstructedSet))
 		reconstructedSet = []
 		for i in CLLP.getSubsetIds():
 			for j in CLLP.getMembers(i):
 				reconstructedSet.append(j)
-		self.assertEqual(set(self.LL.nodes()), set(reconstructedSet))
+		self.assertEqual(set(self.LL.iterNodes()), set(reconstructedSet))
 
 	def test_community_Modularity(self):
 		PLPLL = community.PLP(self.LL)
@@ -297,7 +297,6 @@ class Test_SelfLoops(unittest.TestCase):
 		PLMLL.run()
 		PLMLLP = PLMLL.getPartition()
 		CG = community.communityGraph(self.LL, PLMLLP)
-		self.assertIsInstance(len(CG.nodes()), int)
 
 
 	def test_community_evaluateCommunityDetection(self):

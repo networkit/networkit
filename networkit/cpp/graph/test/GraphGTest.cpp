@@ -1088,6 +1088,205 @@ TEST_P(GraphGTest, testTotalEdgeWeight) {
 
 /** Collections **/
 
+TEST_P(GraphGTest, testNodeIterator) {
+    Aux::Random::setSeed(42, false);
+
+    auto testForward = [](const Graph &G) {
+        auto preIter = G.nodeRange().begin();
+        auto postIter = G.nodeRange().begin();
+
+        G.forNodes([&](const node u) {
+            ASSERT_EQ(*preIter, u);
+            ASSERT_EQ(*postIter, u);
+            ++preIter;
+            postIter++;
+        });
+
+        ASSERT_EQ(preIter, G.nodeRange().end());
+        ASSERT_EQ(postIter, G.nodeRange().end());
+
+        Graph G1(G);
+
+        for (const auto u : Graph::NodeRange(G)) {
+            ASSERT_TRUE(G1.hasNode(u));
+            G1.removeNode(u);
+        }
+
+        ASSERT_EQ(G1.numberOfNodes(), 0);
+    };
+
+    auto testBackward = [](const Graph &G) {
+        const std::vector<node> nodes(Graph::NodeRange(G).begin(), Graph::NodeRange(G).end());
+        std::vector<node> v;
+        G.forNodes([&](node u) {v.push_back(u);});
+
+        ASSERT_EQ(std::unordered_set<node>(nodes.begin(), nodes.end()).size(), nodes.size());
+        ASSERT_EQ(nodes.size(), G.numberOfNodes());
+
+        auto preIter = G.nodeRange().begin();
+        auto postIter = G.nodeRange().begin();
+        for (count i = 0; i < G.numberOfNodes(); ++i) {
+            ++preIter;
+            postIter++;
+        }
+
+        ASSERT_EQ(preIter, G.nodeRange().end());
+        ASSERT_EQ(postIter, G.nodeRange().end());
+        auto vecIter = nodes.rbegin();
+        while (vecIter != nodes.rend()) {
+            ASSERT_EQ(*vecIter, *(--preIter));
+            if (postIter != G.nodeRange().end()) {
+                ASSERT_NE(*vecIter, *(postIter--));
+            } else {
+                postIter--;
+            }
+            ASSERT_EQ(*vecIter, *postIter);
+            ++vecIter;
+        }
+
+        ASSERT_EQ(preIter, G.nodeRange().begin());
+        ASSERT_EQ(postIter, G.nodeRange().begin());
+    };
+
+    Graph G(this->Ghouse);
+    testForward(G);
+    testBackward(G);
+
+    G.removeNode(GraphTools::randomNode(G));
+    G.removeNode(GraphTools::randomNode(G));
+
+    testForward(G);
+    testBackward(G);
+}
+
+TEST_P(GraphGTest, testEdgeIterator) {
+    Graph G(this->Ghouse);
+
+    auto testForward = [&](const Graph &G) {
+        Graph G1(G);
+        auto preIter = G.edgeRange().begin();
+        auto postIter = G.edgeRange().begin();
+
+        G.forEdges([&](node, node) {
+            ASSERT_EQ(preIter, postIter);
+            const auto edge = *preIter;
+            ASSERT_TRUE(G.hasEdge(edge.u, edge.v));
+            G1.removeEdge(edge.u, edge.v);
+            ++preIter;
+            postIter++;
+        });
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+        ASSERT_EQ(preIter, G.edgeRange().end());
+        ASSERT_EQ(postIter, G.edgeRange().end());
+
+        G1 = G;
+        for (const auto &edge : Graph::EdgeRange(G)) {
+            ASSERT_TRUE(G1.hasEdge(edge.u, edge.v));
+            G1.removeEdge(edge.u, edge.v);
+        }
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+    };
+
+    auto testForwardWeighted = [&](const Graph &G) {
+        Graph G1(G);
+        auto preIter = G.edgeWeightRange().begin();
+        auto postIter = preIter;
+
+        G.forEdges([&](node, node) {
+            ASSERT_EQ(preIter, postIter);
+
+            const auto edge = *preIter;
+            ASSERT_TRUE(G.hasEdge(edge.u, edge.v));
+            ASSERT_DOUBLE_EQ(G.weight(edge.u, edge.v), edge.weight);
+            G1.removeEdge(edge.u, edge.v);
+            ++preIter;
+            postIter++;
+        });
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+        ASSERT_EQ(preIter, G.edgeWeightRange().end());
+        ASSERT_EQ(postIter, G.edgeWeightRange().end());
+
+        G1 = G;
+        for (const auto &edge : Graph::EdgeWeightRange(G)) {
+            ASSERT_TRUE(G1.hasEdge(edge.u, edge.v));
+            ASSERT_DOUBLE_EQ(G1.weight(edge.u, edge.v), edge.weight);
+            G1.removeEdge(edge.u, edge.v);
+        }
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+    };
+
+    auto testBackward = [&](const Graph &G) {
+        Graph G1(G);
+        auto preIter = G.edgeRange().begin();
+        auto postIter = preIter;
+        G.forEdges([&](node, node) {
+            ++preIter;
+            postIter++;
+        });
+
+        ASSERT_EQ(preIter, G.edgeRange().end());
+        ASSERT_EQ(postIter, G.edgeRange().end());
+
+        G.forEdges([&](node, node) {
+            --preIter;
+            postIter--;
+            ASSERT_EQ(preIter, postIter);
+            const auto edge = *preIter;
+            ASSERT_TRUE(G.hasEdge(edge.u, edge.v));
+            G1.removeEdge(edge.u, edge.v);
+        });
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+    };
+
+    auto testBackwardWeighted = [&](const Graph &G) {
+        Graph G1(G);
+        auto preIter = G.edgeWeightRange().begin();
+        auto postIter = preIter;
+        G.forEdges([&](node, node) {
+            ++preIter;
+            postIter++;
+        });
+
+        G.forEdges([&](node, node) {
+            --preIter;
+            postIter--;
+            ASSERT_EQ(preIter, postIter);
+
+            const auto edge = *preIter;
+            ASSERT_TRUE(G.hasEdge(edge.u, edge.v));
+            ASSERT_DOUBLE_EQ(G.weight(edge.u, edge.v), edge.weight);
+            G1.removeEdge(edge.u, edge.v);
+        });
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+    };
+
+    auto doTests = [&](const Graph &G) {
+        testForward(G);
+        testBackward(G);
+        testForwardWeighted(G);
+        testBackwardWeighted(G);
+    };
+
+    doTests(G);
+
+    for (int seed : {1, 2, 3, 4, 5}) {
+        Aux::Random::setSeed(seed, false);
+        Graph G1(G);
+        for (int i = 0; i < 3; ++i) {
+            auto e = GraphTools::randomEdge(G1);
+            G1.removeEdge(e.first, e.second);
+        }
+
+        doTests(G1);
+    }
+}
+
 TEST_P(GraphGTest, testNeighborsIterators) {
     auto iter = this->Ghouse.neighborRange(1).begin();
     this->Ghouse.forNeighborsOf(1, [&](node v) {

@@ -41,7 +41,7 @@ def setRandomWeights(G, mu, sigma):
 	"""
 	Add random weights, normal distribution with mean mu and standard deviation sigma
 	"""
-	for (u, v) in G.edges():
+	for (u, v) in G.iterEdges():
 		w = random.normalvariate(mu, sigma)
 		G.setWeight(u, v, w)
 	return G
@@ -147,8 +147,8 @@ if __name__ == "__main__":
 		size = 2**i
 		G = generators.DorogovtsevMendesGenerator(size).generate()
 		G1 = Graph(G.numberOfNodes(), True, False)
-		for e in G.edges():
-			G1.addEdge(e[0], e[1], 1.0)
+		for u, v in G.iterEdges():
+			G1.addEdge(u, v, 1.0)
 		G1 = setRandomWeights(G1, 1, 0.1)
 		if (isConnected(G1)) :
 			nEdges = batchSize * 5
