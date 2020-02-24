@@ -727,6 +727,20 @@ TEST_F(GeneratorsGTest, testWattsStrogatzGenerator) {
     EXPECT_EQ(n0*neighbors, (int) G.numberOfEdges());
 }
 
+TEST_F(GeneratorsGTest, testWattsStrogatzGeneratorBigKs) {
+	count nodes = 10;
+	count neighbours = 4;
+	double p = 0.5;
+	for (int seed : {1, 2, 3, 4, 5}) {
+		Aux::Random::setSeed(seed, false);
+		const auto G = WattsStrogatzGenerator(nodes, neighbours, p).generate();
+		EXPECT_TRUE(G.checkConsistency());
+		EXPECT_EQ(nodes, G.numberOfNodes());
+		EXPECT_EQ(nodes*neighbours, G.numberOfEdges());
+	}
+
+}
+
 TEST_F(GeneratorsGTest, testDorogovtsevMendesGenerator) {
     int n0 = 20;
     DorogovtsevMendesGenerator dmg = DorogovtsevMendesGenerator(n0);
