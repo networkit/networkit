@@ -728,16 +728,16 @@ TEST_F(GeneratorsGTest, testWattsStrogatzGenerator) {
 }
 
 TEST_F(GeneratorsGTest, testWattsStrogatzGeneratorBigKs) {
-	count nodes = 10;
-	count neighbours = 4;
-	double p = 0.5;
-	for (int seed : {1, 2, 3, 4, 5}) {
-		Aux::Random::setSeed(seed, false);
-		const auto G = WattsStrogatzGenerator(nodes, neighbours, p).generate();
-		EXPECT_TRUE(G.checkConsistency());
-		EXPECT_EQ(nodes, G.numberOfNodes());
-		EXPECT_EQ(nodes*neighbours, G.numberOfEdges());
-	}
+    count nodes = 10;
+    count neighbours = 4;
+    double p = 0.5;
+    for (int seed : {1, 2, 3, 4, 5}) {
+        Aux::Random::setSeed(seed, false);
+        const auto G = WattsStrogatzGenerator(nodes, neighbours, p).generate();
+        EXPECT_TRUE(G.checkConsistency());
+        EXPECT_EQ(nodes, G.numberOfNodes());
+        EXPECT_EQ(nodes*neighbours, G.numberOfEdges());
+    }
 
 }
 
