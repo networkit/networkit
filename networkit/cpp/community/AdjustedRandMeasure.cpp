@@ -38,11 +38,11 @@ double NetworKit::AdjustedRandMeasure::getDissimilarity(const NetworKit::Graph &
         sumEta += s * (s - 1) / 2;
     }
 
-    count n = G.numberOfNodes();
+    const count denominator = (G.numberOfNodes() * (G.numberOfNodes() - 1)) / 2;
 
     double maxIndex = 0.5 * (sumZeta + sumEta);
 
-    double expectedIndex = sumZeta * sumEta / (n * (n-1) / 2);
+    double expectedIndex = static_cast<double>(sumZeta * sumEta) / static_cast<double>(denominator);
 
     if (maxIndex == 0) { // both clusterings are singleton clusterings
         return 0.0;
