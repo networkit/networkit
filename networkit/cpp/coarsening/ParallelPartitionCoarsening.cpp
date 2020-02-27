@@ -87,7 +87,7 @@ void ParallelPartitionCoarsening::run() {
 
         // ensure consistency of data structure
         DEBUG("numEdges: ", numEdges);
-        count twiceM = std::accumulate(numEdges.begin(), numEdges.end(), 0);
+        count twiceM = std::accumulate(numEdges.begin(), numEdges.end(), count{0});
         assert(twiceM % 2 == 0);
         Gcombined.m = (twiceM / 2);
 
