@@ -1,7 +1,7 @@
 <p align="center">
   <img width="60%" src="docs/logo/logo_color.png" alt="NetworKit - Lage-scale Network Analysis"><br>
   <a href="https://travis-ci.org/networkit/networkit"><img src="https://travis-ci.org/networkit/networkit.svg?branch=Dev"></a>
-  <a href="https://ci.appveyor.com/project/sharkdp/bat"><img src="https://ci.appveyor.com/api/projects/status/github/networkit/networkit?branch=Dev&svg=true"></a>
+  <a href="https://ci.appveyor.com/project/networkit/networkit"><img src="https://ci.appveyor.com/api/projects/status/github/networkit/networkit?branch=Dev&svg=true"></a>
   <a href="https://badge.fury.io/py/networkit"><img src="https://badge.fury.io/py/networkit.svg"></a>
   <a href="https://coveralls.io/github/networkit/networkit?branch=Dev"><img src="https://coveralls.io/repos/github/networkit/networkit/badge.svg?branch=Dev"></a>
 </p>
