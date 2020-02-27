@@ -21,6 +21,7 @@ jobs:
         homebrew:
           packages:
             - libomp
+          update: true
 
     - name: macOS 10.14, llvm 8
       env:
@@ -33,6 +34,7 @@ jobs:
           packages:
             - llvm@8
             - libomp
+          update: true
 
     - name: macOS 10.14, GCC 8
       env:
@@ -44,6 +46,7 @@ jobs:
         homebrew:
           packages:
             - gcc@8
+          update: true
       before_install:
         - brew link gcc@8
 
@@ -57,6 +60,7 @@ jobs:
         homebrew:
           packages:
             - libomp
+          update: true
       script:
         - $CXX --version
         - mkdir build_non_monolith && cd "$_"
@@ -87,6 +91,7 @@ jobs:
         homebrew:
           packages:
             - gcc@8
+          update: true
       before_install:
         - brew link gcc@8
 
