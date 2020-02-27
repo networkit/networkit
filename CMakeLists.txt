@@ -117,27 +117,47 @@ if (NETWORKIT_COVERAGE)
   set(NETWORKIT_LINK_FLAGS "${NETWORKIT_LINK_FLAGS} --coverage")
 endif()
 
-# FindOpenMP.cmake does not reliably find a user installed openmp library
-# Following section manually sets the required fields for clang-like compiler
-if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR
-	"${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-	find_library(LIBOMP_PATH NAMES omp HINTS "/usr/local/opt/libomp/include")
-	find_path(LIBOMP_INCLUDE NAMES omp.h HINTS "/usr/local/opt/libomp/include")
-	if(LIBOMP_PATH AND LIBOMP_INCLUDE)
-		if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-			set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I${LIBOMP_INCLUDE}" CACHE STRING "Manually set")
-		elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-			set(OpenMP_CXX_FLAGS "-fopenmp -I${LIBOMP_INCLUDE}" CACHE STRING "Manually set")
+# finding or creating OpenMP target. This is likely to fail for CMake Version < 3.12.
+find_package(OpenMP)
+
+# FindOpenMP.cmake does not reliably find a user installed openmp library for clang/llvm on
+# both Linux- and macOS-systems (even for CMake Version >= 3.12). The following section
+# manually sets the required fields for clang-like compiler.
+if(NOT OpenMP_FOUND)
+	if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+		# This will find default libomp-installations for homebrew/MacPorts 
+		find_library(LIBOMP_PATH NAMES omp PATHS "/usr/local/opt/libomp/lib" "/opt/local/lib/libomp")
+		find_path(LIBOMP_INCLUDE NAMES omp.h PATHS "/usr/local/opt/libomp/include" "/opt/local/include/libomp")
+		if(LIBOMP_PATH AND LIBOMP_INCLUDE)
+			set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I${LIBOMP_INCLUDE}" CACHE STRING "Manually set" FORCE)
 		endif()
-		set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "Manually set")
-		set(OpenMP_omp_LIBRARY "${LIBOMP_PATH}" CACHE STRING "Manually set")
+	elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+		if(DEFINED ENV{CONDA_PREFIX})
+			find_library(LIBOMP_PATH NAMES omp HINTS "$ENV{CONDA_PREFIX}/lib" 
+				PATHS "/usr/lib" "/usr/lib64")
+			find_path(LIBOMP_INCLUDE NAMES omp.h HINTS "$ENV{CONDA_PREFIX}/include" 
+				PATHS "/usr/include")
+		else()
+			find_library(LIBOMP_PATH NAMES omp PATHS "/usr/lib" "/usr/lib64")
+			find_path(LIBOMP_INCLUDE NAMES omp.h PATHS "/usr/include")
+		endif()
+		if(LIBOMP_PATH AND LIBOMP_INCLUDE)
+			set(OpenMP_CXX_FLAGS "-fopenmp -I${LIBOMP_INCLUDE}" CACHE STRING "Manually set" FORCE)
+		endif()
+	endif()
+
+	# Set OpenMP-folders in case they are found with the aid of additional hints
+	if(LIBOMP_PATH AND LIBOMP_INCLUDE)
+		set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "Manually set" FORCE)
+		set(OpenMP_omp_LIBRARY "${LIBOMP_PATH}" CACHE STRING "Manually set" FORCE)
 	else()
 		message(FATAL_ERROR "libomp was not found, but necessary to run NetworKit with ${CMAKE_CXX_COMPILER_ID}")
 	endif()
+
+	# After setting basic OpenMP-folders, run find_package again to set everything. Also acts as a final sanity check.
+	find_package(OpenMP REQUIRED)
 endif()
 
-# finding or creating OpenMP target
-find_package(OpenMP REQUIRED)
 if(NOT TARGET OpenMP::OpenMP_CXX)
 	message("Creating custom OpenMP target for CMake Version < 3.12. Current CMake Version ${CMAKE_VERSION}")
 	find_package(Threads REQUIRED)
