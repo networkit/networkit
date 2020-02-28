@@ -234,8 +234,7 @@ void NetworKit::CutClustering::clusterHierarchyRecursion(const NetworKit::Graph 
         }
     }
 
-    if (result.count(upper) == 0) // FIXME actually this shouldn't happen, this has been copied from another implementation
-        result.insert(std::make_pair(upper, std::move(upperClusters))); // upperClusters won't be used anymore
+    assert(result.count(upper));
 }
 
 
