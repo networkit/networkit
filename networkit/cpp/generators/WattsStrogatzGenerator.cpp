@@ -12,6 +12,7 @@
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/generators/RegularRingLatticeGenerator.hpp>
 #include <networkit/generators/WattsStrogatzGenerator.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
@@ -19,21 +20,21 @@ WattsStrogatzGenerator::WattsStrogatzGenerator(count nNodes, count nNeighbors, d
     : nNodes(nNodes), nNeighbors(nNeighbors), p(p) {
     if (nNeighbors * 2 >= nNodes - 1) {
         throw std::runtime_error("nNeighbors*2 cannot be equal to nNodes-1.");
-    } else if (nNeighbors >= nNodes / 2 - 1) {
+    }
+    if (nNeighbors >= nNodes / 2 - 1) {
         nNeighbors = nNodes / 2 - 1;
     }
 }
 
 Graph WattsStrogatzGenerator::generate() {
     // generate regular ring lattice as initial graph
-    RegularRingLatticeGenerator R(nNodes, nNeighbors);
-    Graph G = R.generate();
+    auto G = RegularRingLatticeGenerator(nNodes, nNeighbors).generate();
     std::uniform_int_distribution<node> dist(0, nNodes - 1);
-    std::mt19937_64 generator(Aux::Random::integer(0, std::numeric_limits<count>::max()));
+    std::mt19937_64 generator(Aux::Random::integer());
     std::uniform_real_distribution<double> prob{0.0, std::nexttoward(1.0, 2.0)};
 
     // list all valid end nodes for rewiring an edge
-    auto validEndNode = [&G](node u, node v) { return u != v && !G.hasEdge(u, v); };
+    auto validEndNode = [&G](const node u, const node v) { return u != v && !G.hasEdge(u, v); };
 
     std::vector<node> prevNeighbors;
     prevNeighbors.reserve(GraphTools::maxDegree(G));
@@ -45,26 +46,23 @@ Graph WattsStrogatzGenerator::generate() {
         /* save edges before rewiring incident edges for a node
          * because they may get changed through rewiring
          */
-        std::vector<node> prevNeighbors;
-        G.forNeighborsOf(u, [&](node v) {
+        count prevNeighborsSize = 0;
+        G.forNeighborsOf(u, [&](const node v) {
             if (u < v) {
-                prevNeighbors.push_back(v);
+                prevNeighbors[prevNeighborsSize++] = v;
             }
         });
-        for (node v : prevNeighbors) {
-            if (prob(generator) < p) {
-                bool found = false;
-                node w = none;
-                while (!found) {
-                    w = dist(generator);
-                    if (validEndNode(u, w)) {
-                        found = true;
-                    }
-                }
-                G.removeEdge(u, v);
-                G.addEdge(u, w);
-            }
-        }
+        std::for_each(prevNeighbors.begin(), prevNeighbors.begin() + prevNeighborsSize,
+                      [&](const node v) {
+                          if (prob(generator) < p) {
+                              node w = none;
+                              do {
+                                  w = dist(generator);
+                              } while (!validEndNode(u, w));
+                              G.removeEdge(u, v);
+                              G.addEdge(u, w);
+                          }
+                      });
     }
 
     return G;
