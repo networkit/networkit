@@ -32,7 +32,7 @@ void EffectiveDiameter::run() {
     // the current distance of the neighborhoods
     count h = 1;
     // number of nodes that need to be connected with all other nodes
-    auto threshold = static_cast<count>(std::ceil(ratio * G->numberOfNodes()) + 0.5);
+    auto threshold = static_cast<count>(std::ceil(ratio * G->numberOfNodes()));
     // nodes that are not connected to enough nodes yet
     std::vector<node> activeNodes;
 
