@@ -1,4 +1,5 @@
-from _NetworKit import KatzIndex, CommonNeighborsIndex, JaccardIndex, PreferentialAttachmentIndex, AdamicAdarIndex, UDegreeIndex, VDegreeIndex, AlgebraicDistanceIndex, NeighborhoodDistanceIndex, TotalNeighborsIndex, NeighborsMeasureIndex, SameCommunityIndex, AdjustedRandIndex, ResourceAllocationIndex, RandomLinkSampler, ROCMetric, PrecisionRecallMetric, MissingLinksFinder, LinkThresholder, PredictionsSorter, Graph
+from _NetworKit import KatzIndex, CommonNeighborsIndex, JaccardIndex, PreferentialAttachmentIndex, AdamicAdarIndex, UDegreeIndex, VDegreeIndex, AlgebraicDistanceIndex, NeighborhoodDistanceIndex, TotalNeighborsIndex, NeighborsMeasureIndex, SameCommunityIndex, AdjustedRandIndex, ResourceAllocationIndex, RandomLinkSampler, ROCMetric, PrecisionRecallMetric, MissingLinksFinder, LinkThresholder, PredictionsSorter
+from .graph import Graph
 
 from .support import MissingDependencyError
 import numpy as np

@@ -7,7 +7,7 @@ import os
 
 class TestExtMETISGraphReader(unittest.TestCase):
 	def setUp(self):
-		from _NetworKit import Graph
+		from networkit.graph import Graph
 		self.g = Graph(5)
 		self.g.addEdge(0,1)
 		self.g.addEdge(0,2)

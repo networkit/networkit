@@ -6,7 +6,7 @@ import networkit as nk
 class TestGEXFIO(unittest.TestCase):
 	def setUp(self):
 		from networkit.GEXFIO import GEXFReader
-		from _NetworKit import Graph
+		from networkit.graph import Graph
 		self.reader = GEXFReader()
 		#celegans.gexf from http://gexf.net/format/datasets.html
 		self.g, self.events = self.reader.read("input/staticTest.gexf")

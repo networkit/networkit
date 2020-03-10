@@ -244,7 +244,7 @@ if (NETWORKIT_CLANG_TIDY)
 endif()
 
 if(NETWORKIT_PYTHON)
-	foreach (EXT _NetworKit base)
+	foreach (EXT _NetworKit base helpers structures matching graph traversal)
 		if(NOT EXISTS "${PROJECT_SOURCE_DIR}/networkit/${EXT}.cpp")
 			message(FATAL_ERROR "networkit/${EXT}.cpp is missing. Invoke Cython manually.")
 		endif()
@@ -274,13 +274,24 @@ if(NETWORKIT_PYTHON)
 			set_target_properties(${EXT} PROPERTIES
 				INSTALL_RPATH "${NETWORKIT_PYTHON_RPATH}")
 		else()
-			# DSOs on Apple OSes use different conventions for RPATH.
-			if(APPLE)
-				set_target_properties(${EXT} PROPERTIES
-					INSTALL_RPATH "@loader_path")
+			if(${EXT} STREQUAL _NetworKit)
+				# DSOs on Apple OSes use different conventions for RPATH.
+				if(APPLE)
+					set_target_properties(${EXT} PROPERTIES
+						INSTALL_RPATH "@loader_path")
+				else()
+					set_target_properties(${EXT} PROPERTIES
+						INSTALL_RPATH "$ORIGIN")
+				endif()
 			else()
-				set_target_properties(${EXT} PROPERTIES
-					INSTALL_RPATH "$ORIGIN")
+				# DSOs on Apple OSes use different conventions for RPATH.
+				if(APPLE)
+					set_target_properties(${EXT} PROPERTIES
+						INSTALL_RPATH "@loader_path/..")
+				else()
+					set_target_properties(${EXT} PROPERTIES
+						INSTALL_RPATH "$ORIGIN/..")
+				endif()
 			endif()
 		endif()
 

@@ -5,7 +5,7 @@ from _NetworKit import (METISGraphReader, METISGraphWriter, DotGraphWriter, Edge
 						SNAPGraphReader, EdgeListReader, CoverReader, CoverWriter, EdgeListCoverReader, \
 						KONECTGraphReader, GMLGraphReader, MultipleEdgesHandling, ThrillGraphBinaryReader, \
 						ThrillGraphBinaryWriter, NetworkitBinaryReader, NetworkitBinaryWriter)
-from _NetworKit import Graph as __Graph
+from .graph import Graph as __Graph
 # local imports
 from .GraphMLIO import GraphMLReader, GraphMLWriter
 from .GEXFIO import GEXFReader, GEXFWriter

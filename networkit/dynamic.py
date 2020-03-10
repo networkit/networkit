@@ -1,6 +1,6 @@
 # extension imports
-from _NetworKit import Graph, GraphEvent, DGSStreamParser, GraphUpdater, APSP, GraphDifference
-
+from _NetworKit import GraphEvent, DGSStreamParser, GraphUpdater, APSP, GraphDifference
+from .graph import Graph
 
 def graphFromStream(stream, weighted, directed):
 	""" Convenience function for creating a new graph from a stream of graph events
