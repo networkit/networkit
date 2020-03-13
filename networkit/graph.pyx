@@ -2,7 +2,7 @@ from cython.operator import dereference, preincrement
 from networkit.helpers import stdstring, pystring
 
 from .traversal import *
-from _NetworKit import SpanningForest, RandomMaximumSpanningForest, UnionMaximumSpanningForest
+from _NetworKit import RandomMaximumSpanningForest, UnionMaximumSpanningForest
 
 cdef class Graph:
 
@@ -1112,4 +1112,48 @@ cdef cppclass NodePairCallbackWrapper:
 			message = stdstring("An Exception occurred, aborting execution of iterator: {0}".format(e))
 		if (error):
 			throw_runtime_error(message)
+
+cdef class SpanningForest:
+	""" Generates a spanning forest for a given graph
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The graph.
+		nodes : list
+			A subset of nodes of `G` which induce the subgraph.
+	"""
+	cdef _SpanningForest* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G not None):
+		self._G = G
+		self._this = new _SpanningForest(G._this)
+
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""
+		Executes the algorithm.
+
+		Returns
+		-------
+		Algorithm:
+			self
+		"""
+		self._this.run()
+		return self
+
+	def getForest(self):
+		"""
+		Returns the spanning forest.
+
+		Returns
+		-------
+		networkit.Graph
+			The computed spanning forest
+		"""
+		return Graph().setThis(self._this.getForest())
 

@@ -914,57 +914,6 @@ cdef class DynAPSP(APSP):
 			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 		(<_DynAPSP*>(self._this)).updateBatch(_batch)
 
-cdef extern from "<networkit/graph/SpanningForest.hpp>":
-
-	cdef cppclass _SpanningForest "NetworKit::SpanningForest":
-		_SpanningForest(_Graph) except +
-		void run() nogil except +
-		_Graph getForest() except +
-
-cdef class SpanningForest:
-	""" Generates a spanning forest for a given graph
-
-		Parameters
-		----------
-		G : networkit.Graph
-			The graph.
-		nodes : list
-			A subset of nodes of `G` which induce the subgraph.
-	"""
-	cdef _SpanningForest* _this
-	cdef Graph _G
-
-	def __cinit__(self, Graph G not None):
-		self._G = G
-		self._this = new _SpanningForest(G._this)
-
-
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		"""
-		Executes the algorithm.
-
-		Returns
-		-------
-		Algorithm:
-			self
-		"""
-		self._this.run()
-		return self
-
-	def getForest(self):
-		"""
-		Returns the spanning forest.
-
-		Returns
-		-------
-		networkit.Graph
-			The computed spanning forest
-		"""
-		return Graph().setThis(self._this.getForest())
-
 cdef extern from "<networkit/graph/UnionMaximumSpanningForest.hpp>":
 
 	cdef cppclass _UnionMaximumSpanningForest "NetworKit::UnionMaximumSpanningForest"(_Algorithm):

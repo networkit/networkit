@@ -166,3 +166,11 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 cdef class Graph:
 	cdef _Graph _this
 	cdef setThis(self, _Graph& other)
+
+cdef extern from "<networkit/graph/SpanningForest.hpp>":
+
+	cdef cppclass _SpanningForest "NetworKit::SpanningForest":
+		_SpanningForest(_Graph) except +
+		void run() nogil except +
+		_Graph getForest() except +
+
