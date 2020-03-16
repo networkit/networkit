@@ -3,7 +3,6 @@ from cython.operator import dereference, preincrement
 from .base import Algorithm
 from .helpers import stdstring, pystring
 from .traversal import Traversal
-from _NetworKit import UnionMaximumSpanningForest
 
 cdef class Graph:
 
@@ -1225,3 +1224,77 @@ cdef class RandomMaximumSpanningForest(Algorithm):
 		else:
 			return (<_RandomMaximumSpanningForest*>(self._this)).inMSF(u, v)
 
+cdef class UnionMaximumSpanningForest(Algorithm):
+	"""
+	Union maximum-weight spanning forest algorithm, computes the union of all maximum-weight spanning forests using Kruskal's algorithm.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	attribute : list
+		If given, this edge attribute is used instead of the edge weights.
+	"""
+
+	def __cinit__(self, Graph G not None, vector[double] attribute = vector[double]()):
+		self._G = G
+
+		if attribute.empty():
+			self._this = new _UnionMaximumSpanningForest(G._this)
+		else:
+			self._this = new _UnionMaximumSpanningForest(G._this, attribute)
+
+	def getUMSF(self, bool_t move = False):
+		"""
+		Gets the union of all maximum-weight spanning forests as graph.
+
+		Parameters
+		----------
+		move : bool
+			If the graph shall be moved out of the algorithm instance.
+
+		Returns
+		-------
+		networkit.Graph
+			The calculated union of all maximum-weight spanning forests.
+		"""
+		return Graph().setThis((<_UnionMaximumSpanningForest*>(self._this)).getUMSF(move))
+
+	def getAttribute(self, bool_t move = False):
+		"""
+		Get a bool attribute that indicates for each edge if it is part of any maximum-weight spanning forest.
+
+		This attribute is only calculated and can thus only be request if the supplied graph has edge ids.
+
+		Parameters
+		----------
+		move : bool
+			If the attribute shall be moved out of the algorithm instance.
+
+		Returns
+		-------
+		list
+			The list with the bool attribute for each edge.
+		"""
+		return (<_UnionMaximumSpanningForest*>(self._this)).getAttribute(move)
+
+	def inUMST(self, node u, node v = _none):
+		"""
+		Checks if the edge (u, v) or the edge with id u is part of any maximum-weight spanning forest.
+
+		Parameters
+		----------
+		u : node or edgeid
+			The first node of the edge to check or the edge id of the edge to check
+		v : node
+			The second node of the edge to check (only if u is not an edge id)
+
+		Returns
+		-------
+		bool
+			If the edge is part of any maximum-weight spanning forest.
+		"""
+		if v == _none:
+			return (<_UnionMaximumSpanningForest*>(self._this)).inUMSF(u)
+		else:
+			return (<_UnionMaximumSpanningForest*>(self._this)).inUMSF(u, v)

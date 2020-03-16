@@ -200,3 +200,18 @@ cdef extern from "<networkit/graph/RandomMaximumSpanningForest.hpp>":
 cdef class RandomMaximumSpanningForest(Algorithm):
 	cdef vector[double] _attribute
 	cdef Graph _G
+
+
+cdef extern from "<networkit/graph/UnionMaximumSpanningForest.hpp>":
+
+	cdef cppclass _UnionMaximumSpanningForest "NetworKit::UnionMaximumSpanningForest"(_Algorithm):
+		_UnionMaximumSpanningForest(_Graph) except +
+		_UnionMaximumSpanningForest(_Graph, vector[double]) except +
+		_Graph getUMSF(bool_t move) except +
+		vector[bool_t] getAttribute(bool_t move) except +
+		bool_t inUMSF(edgeid eid) except +
+		bool_t inUMSF(node u, node v) except +
+
+cdef class UnionMaximumSpanningForest(Algorithm):
+	cdef Graph _G
+
