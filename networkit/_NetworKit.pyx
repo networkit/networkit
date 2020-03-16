@@ -48,14 +48,34 @@ from .base cimport Algorithm
 from .graph cimport _Graph, Graph
 from .structures cimport _Cover, Cover, _Partition, Partition
 from .matching cimport _Matching, Matching
-from networkit.helpers cimport *
-from networkit.helpers import stdstring, pystring
 
 cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
 
 	index _none "NetworKit::none"
 
 none = _none
+
+def stdstring(pystring):
+	""" convert a Python string to a bytes object which is automatically coerced to std::string"""
+	pybytes = pystring.encode("utf-8")
+	return pybytes
+
+def pystring(stdstring):
+	""" convert a std::string (= python byte string) to a normal Python string"""
+	return stdstring.decode("utf-8")
+
+cdef extern from "cython_helper.h":
+	void throw_runtime_error(string message)
+
+cdef extern from "<algorithm>" namespace "std":
+	void swap[T](T &a,  T &b)
+	_Graph move( _Graph t ) nogil # specialized declaration as general declaration disables template argument deduction and doesn't work
+	_Partition move( _Partition t) nogil
+	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]]) nogil
+	vector[pair[pair[node, node], double]] move(vector[pair[pair[node, node], double]]) nogil
+	vector[double] move(vector[double])
+	vector[bool_t] move(vector[bool_t])
+	vector[pair[node, node]] move(vector[pair[node, node]]) nogil
 
 cdef extern from "<networkit/auxiliary/Parallel.hpp>" namespace "Aux::Parallel":
 
@@ -999,93 +1019,6 @@ cdef class UnionMaximumSpanningForest(Algorithm):
 			return (<_UnionMaximumSpanningForest*>(self._this)).inUMSF(u)
 		else:
 			return (<_UnionMaximumSpanningForest*>(self._this)).inUMSF(u, v)
-
-cdef extern from "<networkit/graph/RandomMaximumSpanningForest.hpp>":
-
-	cdef cppclass _RandomMaximumSpanningForest "NetworKit::RandomMaximumSpanningForest"(_Algorithm):
-		_RandomMaximumSpanningForest(_Graph) except +
-		_RandomMaximumSpanningForest(_Graph, vector[double]) except +
-		_Graph getMSF(bool_t move) except +
-		vector[bool_t] getAttribute(bool_t move) except +
-		bool_t inMSF(edgeid eid) except +
-		bool_t inMSF(node u, node v) except +
-
-cdef class RandomMaximumSpanningForest(Algorithm):
-	"""
-	Computes a random maximum-weight spanning forest using Kruskal's algorithm by randomizing the order of edges of the same weight.
-
-	Parameters
-	----------
-	G : networkit.Graph
-		The input graph.
-	attribute : list
-		If given, this edge attribute is used instead of the edge weights.
-	"""
-	cdef vector[double] _attribute
-	cdef Graph _G
-
-	def __cinit__(self, Graph G not None, vector[double] attribute = vector[double]()):
-		self._G = G
-		if attribute.empty():
-			self._this = new _RandomMaximumSpanningForest(G._this)
-		else:
-			self._attribute = move(attribute)
-			self._this = new _RandomMaximumSpanningForest(G._this, self._attribute)
-
-	def getMSF(self, bool_t move = False):
-		"""
-		Gets the calculated maximum-weight spanning forest as graph.
-
-		Parameters
-		----------
-		move : bool
-			If the graph shall be moved out of the algorithm instance.
-
-		Returns
-		-------
-		networkit.Graph
-			The calculated maximum-weight spanning forest.
-		"""
-		return Graph().setThis((<_RandomMaximumSpanningForest*>(self._this)).getMSF(move))
-
-	def getAttribute(self, bool_t move = False):
-		"""
-		Get a bool attribute that indicates for each edge if it is part of the calculated maximum-weight spanning forest.
-
-		This attribute is only calculated and can thus only be request if the supplied graph has edge ids.
-
-		Parameters
-		----------
-		move : bool
-			If the attribute shall be moved out of the algorithm instance.
-
-		Returns
-		-------
-		list
-			The list with the bool attribute for each edge.
-		"""
-		return (<_RandomMaximumSpanningForest*>(self._this)).getAttribute(move)
-
-	def inMSF(self, node u, node v = _none):
-		"""
-		Checks if the edge (u, v) or the edge with id u is part of the calculated maximum-weight spanning forest.
-
-		Parameters
-		----------
-		u : node or edgeid
-			The first node of the edge to check or the edge id of the edge to check
-		v : node
-			The second node of the edge to check (only if u is not an edge id)
-
-		Returns
-		-------
-		bool
-			If the edge is part of the calculated maximum-weight spanning forest.
-		"""
-		if v == _none:
-			return (<_RandomMaximumSpanningForest*>(self._this)).inMSF(u)
-		else:
-			return (<_RandomMaximumSpanningForest*>(self._this)).inMSF(u, v)
 
 cdef extern from "<networkit/independentset/Luby.hpp>":
 

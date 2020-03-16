@@ -1,15 +1,22 @@
 from libc.stdint cimport uint64_t
 from libcpp.vector cimport vector
 from libcpp cimport bool as bool_t
+from libcpp.string cimport string
 
 ctypedef uint64_t count
 ctypedef uint64_t index
 ctypedef index node
 ctypedef double edgeweight
 
-from .helpers cimport *
 from .graph cimport _Graph, Graph
 from .structures cimport _Partition, Partition
+
+cdef extern from "cython_helper.h":
+	void throw_runtime_error(string message)
+
+cdef extern from "<algorithm>" namespace "std":
+	void swap[T](T &a,  T &b)
+	_Matching move(_Matching) nogil
 
 cdef extern from "<networkit/matching/Matching.hpp>":
 

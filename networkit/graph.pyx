@@ -1,8 +1,9 @@
 from cython.operator import dereference, preincrement
-from networkit.helpers import stdstring, pystring
 
-from .traversal import *
-from _NetworKit import RandomMaximumSpanningForest, UnionMaximumSpanningForest
+from .base import Algorithm
+from .helpers import stdstring, pystring
+from .traversal import Traversal
+from _NetworKit import UnionMaximumSpanningForest
 
 cdef class Graph:
 
@@ -16,11 +17,11 @@ cdef class Graph:
 
 	    Parameters
 	    ----------
-	    n : count, optional
+		n : count, optional
 			Number of nodes.
-	    weighted : bool, optional
+		weighted : bool, optional
 			If set to True, the graph can have edge weights other than 1.0.
-	    directed : bool, optional
+		directed : bool, optional
 			If set to True, the graph will be directed.
 	"""
 
@@ -1156,4 +1157,71 @@ cdef class SpanningForest:
 			The computed spanning forest
 		"""
 		return Graph().setThis(self._this.getForest())
+
+cdef class RandomMaximumSpanningForest(Algorithm):
+	"""
+	Computes a random maximum-weight spanning forest using Kruskal's algorithm by randomizing the order of edges of the same weight.
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	attribute : list
+		If given, this edge attribute is used instead of the edge weights.
+	"""
+
+	def __cinit__(self, Graph G not None, vector[double] attribute = vector[double]()):
+		self._G = G
+		if attribute.empty():
+			self._this = new _RandomMaximumSpanningForest(G._this)
+		else:
+			self._attribute = move(attribute)
+			self._this = new _RandomMaximumSpanningForest(G._this, self._attribute)
+
+	def getMSF(self, bool_t move):
+		"""
+		Gets the calculated maximum-weight spanning forest as graph.
+		Parameters
+		----------
+		move : bool
+			If the graph shall be moved out of the algorithm instance.
+		Returns
+		-------
+		networkit.Graph
+			The calculated maximum-weight spanning forest.
+		"""
+		return Graph().setThis((<_RandomMaximumSpanningForest*>(self._this)).getMSF(move))
+
+	def getAttribute(self, bool_t move = False):
+		"""
+		Get a bool attribute that indicates for each edge if it is part of the calculated maximum-weight spanning forest.
+		This attribute is only calculated and can thus only be request if the supplied graph has edge ids.
+		Parameters
+		----------
+		move : bool
+			If the attribute shall be moved out of the algorithm instance.
+		Returns
+		-------
+		list
+			The list with the bool attribute for each edge.
+		"""
+		return (<_RandomMaximumSpanningForest*>(self._this)).getAttribute(move)
+
+	def inMSF(self, node u, node v = _none):
+		"""
+		Checks if the edge (u, v) or the edge with id u is part of the calculated maximum-weight spanning forest.
+		Parameters
+		----------
+		u : node or edgeid
+			The first node of the edge to check or the edge id of the edge to check
+		v : node
+			The second node of the edge to check (only if u is not an edge id)
+		Returns
+		-------
+		bool
+			If the edge is part of the calculated maximum-weight spanning forest.
+		"""
+		if v == _none:
+			return (<_RandomMaximumSpanningForest*>(self._this)).inMSF(u)
+		else:
+			return (<_RandomMaximumSpanningForest*>(self._this)).inMSF(u, v)
 

@@ -12,8 +12,10 @@ ctypedef uint64_t edgeid
 ctypedef double edgeweight
 
 from .graph cimport _Graph, Graph
-from .helpers import *
-from .helpers cimport *
+from .helpers import stdstring
+
+cdef extern from "cython_helper.h":
+	void throw_runtime_error(string message)
 
 cdef cppclass TraversalEdgeCallBackWrapper:
 	void* callback

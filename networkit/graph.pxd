@@ -1,4 +1,3 @@
-""" Definition file for the graph class. """
 from cython.operator import dereference, preincrement
 
 from libc.stdint cimport uint64_t
@@ -15,7 +14,20 @@ ctypedef uint64_t count
 ctypedef index node
 ctypedef double edgeweight
 
-from networkit.helpers cimport *
+from .base cimport _Algorithm
+from .base cimport Algorithm
+
+cdef extern from "<algorithm>" namespace "std":
+	void swap[T](T &a,  T &b)
+	_Graph move( _Graph t ) nogil
+	vector[double] move(vector[double])
+
+cdef extern from "cython_helper.h":
+	void throw_runtime_error(string message)
+
+cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
+
+	index _none "NetworKit::none"
 
 cdef extern from "<networkit/graph/Graph.hpp>":
 
@@ -174,3 +186,17 @@ cdef extern from "<networkit/graph/SpanningForest.hpp>":
 		void run() nogil except +
 		_Graph getForest() except +
 
+
+cdef extern from "<networkit/graph/RandomMaximumSpanningForest.hpp>":
+
+	cdef cppclass _RandomMaximumSpanningForest "NetworKit::RandomMaximumSpanningForest"(_Algorithm):
+		_RandomMaximumSpanningForest(_Graph) except +
+		_RandomMaximumSpanningForest(_Graph, vector[double]) except +
+		_Graph getMSF(bool_t move) except +
+		vector[bool_t] getAttribute(bool_t move) except +
+		bool_t inMSF(edgeid eid) except +
+		bool_t inMSF(node u, node v) except +
+
+cdef class RandomMaximumSpanningForest(Algorithm):
+	cdef vector[double] _attribute
+	cdef Graph _G
