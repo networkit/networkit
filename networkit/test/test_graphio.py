@@ -24,7 +24,7 @@ class TestGEXFIO(unittest.TestCase):
 		self.assertEqual([(u, v) for u, v in graph.iterEdges()], [(u, v) for u, v in graph2.iterEdges()])
 
 	def checkDynamic(self, eventStream, eventStream2):
-		from _NetworKit import GraphEvent
+		from networkit.dynamics import GraphEvent
 		self.assertEqual(len(eventStream), len(eventStream2))
 		#Check if timesteps are occuring at the same indexes
 		index = 0

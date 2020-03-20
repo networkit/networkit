@@ -5,8 +5,9 @@
 __author__ = "Gerd Lindner"
 
 from _NetworKit import ChibaNishizekiTriangleEdgeScore, GlobalThresholdFilter, LocalSimilarityScore, MultiscaleScore, SimmelianOverlapScore, RandomEdgeScore, LocalDegreeScore, ForestFireScore, \
-	EdgeScoreAsWeight, EdgeScoreLinearizer, LocalFilterScore, AdamicAdarDistance, ChanceCorrectedTriangleScore, TriangleEdgeScore, RandomNodeEdgeScore, ChibaNishizekiQuadrangleEdgeScore, GeometricMeanScore, \
-	EdgeScoreNormalizer, EdgeScoreBlender, PrefixJaccardScore, SCANStructuralSimilarityScore, JaccardSimilarityAttributizer
+	EdgeScoreAsWeight, EdgeScoreLinearizer, LocalFilterScore, ChanceCorrectedTriangleScore, TriangleEdgeScore, RandomNodeEdgeScore, ChibaNishizekiQuadrangleEdgeScore, GeometricMeanScore, \
+	EdgeScoreNormalizer, EdgeScoreBlender, PrefixJaccardScore, SCANStructuralSimilarityScore
+from .distance import AdamicAdarDistance, JaccardSimilarityAttributizer
 
 # local imports
 from . import community

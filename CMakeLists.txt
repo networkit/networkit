@@ -244,7 +244,8 @@ if (NETWORKIT_CLANG_TIDY)
 endif()
 
 if(NETWORKIT_PYTHON)
-	 foreach (EXT _NetworKit base helpers structures matching graph traversal graphtools)
+	 foreach (EXT _NetworKit base helpers structures matching graph traversal graphtools
+			 distance dynamics generators centrality community)
 		if(NOT EXISTS "${PROJECT_SOURCE_DIR}/networkit/${EXT}.cpp")
 			message(FATAL_ERROR "networkit/${EXT}.cpp is missing. Invoke Cython manually.")
 		endif()

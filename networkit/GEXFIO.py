@@ -2,7 +2,7 @@ import queue
 import xml.etree.cElementTree as ET
 from xml.dom import minidom
 from .graph import Graph
-from _NetworKit import GraphEvent
+from .dynamics import GraphEvent
 
 # GEXF Reader
 class GEXFReader:
