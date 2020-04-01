@@ -161,8 +161,6 @@ def setup():
 	""" This function is run once on module import to configure initial settings """
 	setLogLevel("ERROR")  # set default loglevel for C++ code
 	setPrintLocation(True)
-	logging.basicConfig(
-		level=logging.INFO)  # set default loglevel for Python code
 
 
 setup()  # here the setup function is called once on import
