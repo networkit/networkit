@@ -29,9 +29,9 @@ def adjacencyMatrix(G, matrixType="sparse"):
 		The adjacency matrix of the graph.
 	"""
 	n = G.upperNodeIdBound()
-	if matrixType is "sparse":
+	if matrixType == "sparse":
 		A = scipy.sparse.lil_matrix((n,n))
-	elif matrixType is "dense":
+	elif matrixType == "dense":
 		A = np.zeros(shape=(n,n))
 	else:
 		raise InputError("unknown matrix type: '{0}'".format(matrixType))
@@ -53,7 +53,7 @@ def adjacencyMatrix(G, matrixType="sparse"):
 				A[u, v] = 1
 				A[v, u] = 1
 	G.forEdges(processEdge)
-	if matrixType is "sparse":
+	if matrixType == "sparse":
 		A = A.tocsr()  # convert to CSR for more efficient arithmetic operations
 	return A
 
