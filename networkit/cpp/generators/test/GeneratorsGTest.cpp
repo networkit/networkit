@@ -790,7 +790,49 @@ TEST_F(GeneratorsGTest, testDynamicDorogovtsevMendesGenerator) {
     });
 }
 
+TEST_F(GeneratorsGTest, testStaticDegreeSequenceGenerator) {
+    auto test_known = [](std::vector<count> seq, bool result) {
+        HavelHakimiGenerator gen(seq, true);
+        ASSERT_EQ(gen.isRealizable(), result);
+    };
 
+    // some contrived sequence
+    test_known({1}, false);
+    test_known({1, 1}, true);
+    test_known({2, 2, 2}, true);
+    test_known({1, 2, 1}, true);
+    test_known({1, 3, 1}, false);
+    test_known({1, 1, 3, 1}, true);
+
+    // some random sequences
+    std::mt19937_64 prng(1);
+    std::uniform_int_distribution<node> distr_num_nodes(1, 50);
+
+    unsigned numRealized = 0;
+    for (int iter = 0; iter < 100; ++iter) {
+        const auto n = distr_num_nodes(prng);
+        std::vector<count> seq(n);
+        std::generate(seq.begin(), seq.end(), [&] {
+            return std::uniform_int_distribution<count>{0, n - 1}(prng);
+        });
+
+        HavelHakimiGenerator gen(seq, true);
+        const auto isRealizable = gen.isRealizable();
+
+        const auto G = gen.generate();
+        const auto nodes = G.nodeRange();
+        ASSERT_EQ(G.numberOfNodes(), n);
+
+        const auto didRealize =
+            std::all_of(nodes.begin(), nodes.end(), [&](node u) { return G.degree(u) == seq[u]; });
+
+        ASSERT_EQ(isRealizable, didRealize);
+        numRealized += didRealize;
+    }
+
+    ASSERT_GT(numRealized, 10);
+    ASSERT_LT(numRealized, 90);
+}
 
 TEST_F(GeneratorsGTest, testStochasticBlockmodel) {
     count n = 10;
