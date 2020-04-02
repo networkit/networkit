@@ -904,7 +904,7 @@ cdef class Graph:
 		"""
 		if not (self._this.hasNode(u) and self._this.hasNode(v)):
 			if not addMissing:
-				raise RuntimeError("Cannot create edge ({0}, {1}) as at least one end point does not exsists".format(u,v))
+				raise RuntimeError("Cannot create edge ({0}, {1}) as at least one end point does not exist.".format(u,v))
 
 			k = max(u, v)
 			if k >= self._this.upperNodeIdBound():
