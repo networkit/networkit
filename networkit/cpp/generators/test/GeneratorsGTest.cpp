@@ -570,16 +570,14 @@ TEST_F(GeneratorsGTest, testChungLuGeneratorVolumeConsistency) {
 
 TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRandomSequence) {
     count n = 400;
-    count maxDegree = n / 10;
     std::vector<count> sequence(n);
-//	std::vector<count> sequence = {5, 4, 4, 3, 2, 2, 2, 2, 2, 2};
     bool realizable = false;
 
+    std::mt19937_64 prng(1);
+    std::uniform_int_distribution<count> deg_distr(0, n / 10 - 1);
     do {
         // fill sequence with random values (this is not power-law, of course!)
-        for (index i = 0; i < n; ++i) {
-            sequence[i] = rand() % maxDegree;
-        }
+        std::generate(sequence.begin(), sequence.end(), [&] {return deg_distr(prng);});
 
         // check if sequence is realizable
         HavelHakimiGenerator hhgen(sequence);
