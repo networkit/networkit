@@ -7,7 +7,7 @@ __credits__ = ["Christian Staudt", "Elisabetta Bergamini", "Henning Meyerhenke",
 
 # extension imports
 
-from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness,\
+from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, ApproxBetweenness,\
 ApproxBetweenness2, EstimateBetweenness, DynApproxBetweenness, Closeness, HarmonicCloseness, KPathCentrality, CoreDecomposition,\
 KatzCentrality, LocalClusteringCoefficient, ApproxCloseness, LocalPartitionCoverage, Sfigality, SpanningEdgeCentrality,\
 PermanenceCentrality, TopCloseness, TopHarmonicCloseness, DynTopHarmonicCloseness, DynBetweenness,\
@@ -19,6 +19,7 @@ from _NetworKit import _PageRankNorm as Norm
 from _NetworKit import _BoundStrategy as BoundStrategy
 from _NetworKit import _GreedyStrategy as GreedyStrategy
 
+from networkit.centrality import DegreeCentrality
 # local imports
 from networkit.algebraic import adjacencyEigenvector, PageRankMatrix, symmetricEigenvectors
 
