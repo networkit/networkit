@@ -40,3 +40,6 @@ class Test_Sparsification(unittest.TestCase):
 			ratio = S.numberOfEdges() / self.G.numberOfEdges()
 			self.assertGreaterEqual(ratio, minExpectedRatio)
 			self.assertLessEqual(ratio, maxExpectedRatio)
+
+if __name__ == "__main__":
+	unittest.main()
