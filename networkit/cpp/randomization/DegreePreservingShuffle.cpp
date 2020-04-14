@@ -174,8 +174,11 @@ void DegreePreservingShuffle::run() {
 Graph DegreePreservingShuffle::getGraph() const {
     const auto n = G->numberOfNodes();
     assert(permutation.size() == n);
+    // localPerm introduced due to a bug in AppleClang 11.03. Direct access to permutation
+    // vector creates a seqfault in the compiler.
+    const std::vector<node> &localPerm = permutation;
 
-    return GraphTools::getRemappedGraph(*G, n, [this](node u) { return permutation[u]; });
+    return GraphTools::getRemappedGraph(*G, n, [&localPerm](node u) { return localPerm[u]; });
 }
 
 } // namespace NetworKit
