@@ -1,6 +1,7 @@
 from libc.stdint cimport uint64_t
 from libcpp cimport bool as bool_t
 from libcpp.string cimport string
+from libcpp.vector cimport vector
 
 ctypedef uint64_t index
 ctypedef index node

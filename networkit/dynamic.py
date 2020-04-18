@@ -1,7 +1,7 @@
 # extension imports
-from _NetworKit import DGSStreamParser, GraphUpdater, GraphDifference
+from _NetworKit import GraphUpdater, GraphDifference
 from .graph import Graph
-from .dynamics import GraphEvent
+from .dynamics import GraphEvent, DGSStreamParser
 from .distance import APSP
 
 def graphFromStream(stream, weighted, directed):
