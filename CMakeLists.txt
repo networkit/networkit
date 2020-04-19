@@ -227,7 +227,7 @@ if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 			LIBRARY DESTINATION ${NETWORKIT_LIB_DEST}
 			ARCHIVE DESTINATION ${NETWORKIT_LIB_DEST})
 
-	target_link_libraries(networkit PRIVATE tlx OpenMP::OpenMP_CXX)
+	target_link_libraries(networkit PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
 	target_include_directories(networkit BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 	target_include_directories(networkit PUBLIC "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
 endif()
@@ -272,7 +272,7 @@ if(NETWORKIT_PYTHON)
 		endif()
 	endif()
 
-	target_link_libraries(_NetworKit PRIVATE tlx OpenMP::OpenMP_CXX)
+	target_link_libraries(_NetworKit PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
 
 	install(TARGETS _NetworKit
 			LIBRARY DESTINATION ${NETWORKIT_LIB_DEST})
@@ -300,7 +300,7 @@ function(networkit_add_module modname)
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
 
-		target_link_libraries(${MODULE_TARGET} PRIVATE tlx OpenMP::OpenMP_CXX)
+		target_link_libraries(${MODULE_TARGET} PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
 		target_include_directories(${MODULE_TARGET} BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 		target_include_directories(${MODULE_TARGET} PUBLIC "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
 
