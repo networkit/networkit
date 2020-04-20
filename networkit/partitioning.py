@@ -1,5 +1,5 @@
 # extension imports
-from _NetworKit import Modularity
+from .community import Modularity
 from .structures import Partition
 
 # local imports
