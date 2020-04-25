@@ -158,6 +158,7 @@ def buildNetworKit(install_prefix, externalCore=False, withTests=False, rpath=No
 	cythonizeFile("networkit/components.pyx")
 	cythonizeFile("networkit/graphio.pyx")
 	cythonizeFile("networkit/randomization.pyx")
+	cythonizeFile("networkit/linkprediction.pyx")
 	try:
 		os.makedirs(buildDirectory)
 	except FileExistsError:
