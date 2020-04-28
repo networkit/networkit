@@ -31,7 +31,7 @@ from .graphio import PartitionReader, PartitionWriter, EdgeListPartitionReader, 
 
 from . import graph
 from .centrality import CoreDecomposition
-from _NetworKit import ParallelPartitionCoarsening
+from .coarsening import ParallelPartitionCoarsening
 from . import stopwatch
 from . import graphio
 from .support import MissingDependencyError

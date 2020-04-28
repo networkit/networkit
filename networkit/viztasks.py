@@ -2,7 +2,7 @@
 from . import nxadapter
 from . import community
 from . import centrality
-from _NetworKit import ParallelPartitionCoarsening
+from .coarsening import ParallelPartitionCoarsening
 from .support import MissingDependencyError
 
 # external imports
