@@ -88,8 +88,7 @@ private:
     std::vector<std::vector<count>> nodesPerLevs, sumLevels;
     std::vector<edgeweight> topkScores;
     std::vector<double> farness;
-    std::vector<count> reachL;
-    std::vector<count> reachU;
+    std::shared_ptr<std::vector<count>> reachLPtr, reachUPtr;
 
     std::unique_ptr<StronglyConnectedComponents> sccsPtr;
 

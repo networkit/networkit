@@ -57,8 +57,8 @@ void TopCloseness::computeReachable() {
 }
 
 void TopCloseness::computeReachableNodesDir() {
-    reachL = std::vector<count>(n);
-    reachU = std::vector<count>(n);
+    reachLPtr = std::make_shared<std::vector<count>>(n);
+    reachUPtr = std::make_shared<std::vector<count>>(n);
     DEBUG("Before running SCCs");
     auto &sccs = *(sccsPtr.get());
     sccs.run();
@@ -142,6 +142,8 @@ void TopCloseness::computeReachableNodesDir() {
         reachU_scc[V] = std::min(reachU_scc[V], n);
     }
 
+    auto &reachL = *(reachLPtr.get());
+    auto &reachU = *(reachUPtr.get());
     for (count v = 0; v < n; v++) {
         reachL[v] = reachL_scc[sccs.componentOfNode(v) - 1];
         reachU[v] = reachU_scc[sccs.componentOfNode(v) - 1];
@@ -159,16 +161,13 @@ void TopCloseness::computeReachableNodesDir() {
 }
 
 void TopCloseness::computeReachableNodesUndir() {
-    reachL = std::vector<count>(n);
+    reachLPtr = std::make_shared<std::vector<count>>(n);
 
     ConnectedComponents comps(G);
     comps.run();
-    std::map<index, count> sizes = comps.getComponentSizes();
-    G.forNodes([&](node v) {
-        index cv = comps.componentOfNode(v);
-        reachL[v] = sizes[cv];
-    });
-    reachU = reachL;
+    auto sizes = comps.getComponentSizes();
+    G.parallelForNodes([&](node v) { (*reachLPtr)[v] = sizes[comps.componentOfNode(v)]; });
+    reachUPtr = reachLPtr;
 }
 
 void TopCloseness::computelBound1(std::vector<double> &S) {
@@ -194,6 +193,7 @@ void TopCloseness::computelBound1(std::vector<double> &S) {
     count level = 2;
     DEBUG("computing first lbound");
 
+    auto &reachU = *(reachUPtr.get()), &reachL = *(reachLPtr.get());
     while (n_finished < n) {
         DEBUG("First bound. Finished: ", n_finished, " of ", n, ".");
         G.forNodes([&](node u) {
@@ -301,6 +301,7 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count &visEdges,
     }
 
     edgeweight level_bound = 2.0 * closeNodes + static_cast<double>(farNodes);
+    const auto &reachU = *(reachUPtr.get()), &reachL = *(reachLPtr.get());
     for (count j = 0; j < levels[1].size(); j++) {
         node w = levels[1][j];
         // we subtract 2 not to count the node itself
@@ -337,7 +338,7 @@ double TopCloseness::BFScut(node v, double x, std::vector<bool> &visited,
                             std::vector<count> &distances, std::vector<node> &pred,
                             count &visEdges) {
     count d = 0, f = 0, nd = 1;
-    double rL = reachL[v], rU = reachU[v];
+    const double rL = (*reachLPtr)[v], rU = (*reachUPtr)[v];
     std::queue<node> Q1;
     std::queue<node> to_reset;
     count sum_dist = 0;
