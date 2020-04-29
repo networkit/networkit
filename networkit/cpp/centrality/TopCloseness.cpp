@@ -70,7 +70,7 @@ void TopCloseness::computeReachableNodesDir() {
     std::vector<count> reachU_without_max_scc(N, 0);
     std::vector<bool> reach_from_max_scc(N, false);
     std::vector<bool> reaches_max_scc(N, false);
-    std::vector<std::vector<count>> sccs_vec(N, std::vector<count>());
+    std::vector<std::vector<count>> sccs_vec(N);
     Graph sccGraph(N, false, true);
     std::vector<bool> found(N, false);
     count maxSizeCC = 0;
@@ -149,13 +149,8 @@ void TopCloseness::computeReachableNodesDir() {
         reachU[v] = reachU_scc[sccs.componentOfNode(v) - 1];
         if (false) { // MICHELE: used to check if the bounds are correct
             count r = 0;
-            Traversal::BFSfrom(G, v, [&](node, count) { r++; });
-
-            if (reachL[v] > r || reachU[v] < r) {
-                DEBUG("BIG MISTAKE! ", reachL[v], " ", r, " ", reachU[v]);
-                while (true) {
-                }
-            }
+            Traversal::BFSfrom(G, v, [&](node, count) { ++r; });
+            assert(reachL[v] <= r && reachU[v] >= r);
         }
     }
 }
@@ -165,8 +160,8 @@ void TopCloseness::computeReachableNodesUndir() {
 
     ConnectedComponents comps(G);
     comps.run();
-    auto sizes = comps.getComponentSizes();
-    G.parallelForNodes([&](node v) { (*reachLPtr)[v] = sizes[comps.componentOfNode(v)]; });
+    const auto sizes = comps.getComponentSizes();
+    G.parallelForNodes([&](node v) { (*reachLPtr)[v] = sizes.at(comps.componentOfNode(v)); });
     reachUPtr = reachLPtr;
 }
 
@@ -236,10 +231,7 @@ void TopCloseness::computelBound1(std::vector<double> &S) {
                         finished[u] = true;
                         n_finished++;
 
-                        if (N[u] < reachL[u] && neighbors_new[u] == 0) {
-                            DEBUG("BIG MISTAKE!!!", reachL[u]);
-                        }
-
+                        assert(N[u] >= reachL[u] || neighbors_new[u] != 0);
                     } else { // reachL < N < reachU
                         // We have to consider the case in which the number of reachable is
                         // N[u].
@@ -260,7 +252,6 @@ void TopCloseness::computelBound1(std::vector<double> &S) {
 
 void TopCloseness::BFSbound(node x, std::vector<double> &S2, count &visEdges,
                             const std::vector<bool> &toAnalyze) {
-    auto &sccs = *(sccsPtr.get());
     count r = 0;
     std::vector<std::vector<node>> levels(n);
     // nodesPerLev[i] contains the number of nodes in level i
@@ -301,18 +292,18 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count &visEdges,
     }
 
     edgeweight level_bound = 2.0 * closeNodes + static_cast<double>(farNodes);
-    const auto &reachU = *(reachUPtr.get()), &reachL = *(reachLPtr.get());
+    const auto &reachU = *(reachUPtr.get());
     for (count j = 0; j < levels[1].size(); j++) {
         node w = levels[1][j];
         // we subtract 2 not to count the node itself
         double bound =
             (level_bound - 2 - G.degree(w)) * (n - 1.0) / (reachU[w] - 1.0) / (reachU[w] - 1.0);
         if (toAnalyze[w] && bound > S2[w]
-            && (!G.isDirected() || sccs.componentOfNode(w) == sccs.componentOfNode(x))) {
+            && (!G.isDirected() || sccsPtr->componentOfNode(w) == sccsPtr->componentOfNode(x))) {
             S2[w] = bound;
         }
     }
-    // DEBUG("level_bound = ", level_bound);
+
     // now we compute it for the other levels
     for (omp_index i = 2; i <= static_cast<omp_index>(nLevs); i++) {
         if (!G.isDirected() && i > 2) {
@@ -326,7 +317,8 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count &visEdges,
             double bound =
                 (level_bound - 2 - G.degree(w)) * (n - 1.0) / (reachU[w] - 1.0) / (reachU[w] - 1.0);
             if (toAnalyze[w] && bound > S2[w]
-                && (!G.isDirected() || sccs.componentOfNode(w) == sccs.componentOfNode(x))) {
+                && (!G.isDirected()
+                    || sccsPtr->componentOfNode(w) == sccsPtr->componentOfNode(x))) {
                 // TODO MICHELE: as before.
                 S2[w] = bound;
             }
@@ -352,7 +344,7 @@ double TopCloseness::BFScut(node v, double x, std::vector<bool> &visited,
     Q1.push(v);
     to_reset.push(v);
 
-    while (!Q1.empty()) {
+    do {
         node u = Q1.front();
         Q1.pop();
 
@@ -398,14 +390,16 @@ double TopCloseness::BFScut(node v, double x, std::vector<bool> &visited,
             farnessV = std::min(ftildeL, ftildeU);
             break;
         }
-    }
-    while (!to_reset.empty()) { // MICHELE: need to reset variable visited.
-                                // Variables pred and distances
+    } while (!Q1.empty());
+
+    do {
+        // MICHELE: need to reset variable visited.
+        // Variables pred and distances
         // do not need to be updated.
         node u = to_reset.front();
         to_reset.pop();
         visited[u] = false;
-    }
+    } while (!to_reset.empty());
     if (farnessV < x) {
         farnessV = sum_dist * (n - 1) / (nd - 1.0) / (nd - 1.0);
     }
@@ -467,11 +461,6 @@ void TopCloseness::run() {
 #ifndef NETWORKIT_RELEASE_LOGGING
         count iters = 0;
 #endif
-        double farnessS;
-
-        if (omp_get_thread_num() == 0) {
-            DEBUG("Number of threads: ", omp_get_num_threads());
-        }
 
         while (!Q.empty()) {
             DEBUG("To be analyzed: ", Q.size());
@@ -526,7 +515,7 @@ void TopCloseness::run() {
                 std::fill(visited.begin(), visited.end(), false);
                 auto &distances = distVec[omp_get_thread_num()];
                 auto &pred = predVec[omp_get_thread_num()];
-                farnessS = BFScut(s, kth, visited, distances, pred, visEdges);
+                const double farnessS = BFScut(s, kth, visited, distances, pred, visEdges);
                 DEBUG("    Visited edges: ", visEdges, ".");
                 omp_set_lock(&lock);
                 farness[s] = farnessS;
