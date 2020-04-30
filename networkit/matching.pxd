@@ -8,6 +8,7 @@ ctypedef uint64_t index
 ctypedef index node
 ctypedef double edgeweight
 
+from .base cimport _Algorithm, Algorithm
 from .graph cimport _Graph, Graph
 from .structures cimport _Partition, Partition
 
