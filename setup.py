@@ -167,6 +167,7 @@ def buildNetworKit(install_prefix, externalCore=False, withTests=False, rpath=No
 	cythonizeFile("networkit/scd.pyx")
 	cythonizeFile("networkit/correlation.pyx")
 	cythonizeFile("networkit/clique.pyx")
+	cythonizeFile("networkit/globals.pyx")
 	try:
 		os.makedirs(buildDirectory)
 	except FileExistsError:
