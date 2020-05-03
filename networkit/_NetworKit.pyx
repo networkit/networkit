@@ -100,30 +100,6 @@ def setPrintLocation(flag):
 	""" Switch locations in log statements on or off"""
 	_setPrintLocation(flag)
 
-cdef extern from "<networkit/auxiliary/Parallelism.hpp>" namespace "Aux":
-
-	void _setNumberOfThreads "Aux::setNumberOfThreads" (int)
-	int _getCurrentNumberOfThreads "Aux::getCurrentNumberOfThreads" ()
-	int _getMaxNumberOfThreads "Aux::getMaxNumberOfThreads" ()
-	void _enableNestedParallelism "Aux::enableNestedParallelism" ()
-
-def setNumberOfThreads(nThreads):
-	""" Set the number of OpenMP threads """
-	_setNumberOfThreads(nThreads)
-
-def getCurrentNumberOfThreads():
-	""" Get the number of currently running threads"""
-	return _getCurrentNumberOfThreads()
-
-def getMaxNumberOfThreads():
-	""" Get the maximum number of available threads"""
-	return _getMaxNumberOfThreads()
-
-def enableNestedParallelism():
-	""" Enable nested parallelism for OpenMP"""
-	from warnings import warn
-	warn("Nested parallelism has been deprecated.")
-
 cdef extern from "<networkit/auxiliary/Random.hpp>" namespace "Aux::Random":
 
 	void _setSeed "Aux::Random::setSeed" (uint64_t, bool_t)
