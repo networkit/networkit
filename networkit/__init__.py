@@ -76,6 +76,7 @@ from . import stats
 from . import sampling
 from . import viz
 from . import randomization
+from . import independentset
 from .support import MissingDependencyError
 from _NetworKit import GraphTools as graphtools
 
