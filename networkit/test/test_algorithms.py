@@ -46,6 +46,47 @@ class Test_SelfLoops(unittest.TestCase):
 		self.assertEqual(CL.ranking(), CLL.ranking())
 
 
+	def test_centrality_TopCloseness(self):
+		CC = centrality.Closeness(self.L, True, centrality.ClosenessVariant.Generalized)
+		CC.run()
+		k = 5
+		TC1 = centrality.TopCloseness(self.L, k, True, True)
+		TC1.run()
+		TC2 = centrality.TopCloseness(self.L, k, True, False)
+		TC2.run()
+		TC3 = centrality.TopCloseness(self.L, k, False, True)
+		TC3.run()
+		TC4 = centrality.TopCloseness(self.L, k, False, False)
+		TC4.run()
+
+		# Test if top nodes and scores lists have the same length
+		def test_topk_lists(with_trail):
+			if not with_trail:
+				self.assertEqual(len(TC1.topkNodesList()), k)
+				self.assertEqual(len(TC2.topkNodesList()), k)
+				self.assertEqual(len(TC3.topkNodesList()), k)
+				self.assertEqual(len(TC4.topkNodesList()), k)
+			self.assertEqual(len(TC1.topkNodesList(with_trail)), len(TC1.topkScoresList(with_trail)))
+			self.assertEqual(len(TC2.topkNodesList(with_trail)), len(TC2.topkScoresList(with_trail)))
+			self.assertEqual(len(TC3.topkNodesList(with_trail)), len(TC3.topkScoresList(with_trail)))
+			self.assertEqual(len(TC4.topkNodesList(with_trail)), len(TC4.topkScoresList(with_trail)))
+
+		# Test if the ranking is correct
+		def test_topk_ranking(with_trail):
+			def zip_ranking(nodes, scores):
+				return [(node, score) for node, score in zip(nodes, scores)]
+			length = len(TC1.topkNodesList(with_trail))
+			self.assertEqual(CC.ranking()[:length], zip_ranking(TC1.topkNodesList(), TC1.topkScoresList()))
+			self.assertEqual(CC.ranking()[:length], zip_ranking(TC2.topkNodesList(), TC2.topkScoresList()))
+			self.assertEqual(CC.ranking()[:length], zip_ranking(TC3.topkNodesList(), TC3.topkScoresList()))
+			self.assertEqual(CC.ranking()[:length], zip_ranking(TC4.topkNodesList(), TC4.topkScoresList()))
+
+		test_topk_lists(False)
+		test_topk_lists(True)
+		test_topk_ranking(False)
+		test_topk_ranking(True)
+
+
 	def test_centrality_CoreDecomposition(self):
 		CL = centrality.CoreDecomposition(self.L)
 		CL.run()
