@@ -20,12 +20,15 @@ void BFS::run() {
     reachedNodes = 1;
     sumDist = 0.;
 
+    const auto infDist = std::numeric_limits<edgeweight>::max();
+    std::fill(distances.begin(), distances.end(), infDist);
+
     if (distances.size() < z) {
-        distances.resize(z, std::numeric_limits<edgeweight>::max());
+        distances.resize(z, infDist);
         visited.resize(z, ts);
     }
 
-    if (ts++ == 255) {
+    if (ts++ == std::numeric_limits<uint8_t>::max()) {
         ts = 1;
         std::fill(visited.begin(), visited.end(), 0);
     }
