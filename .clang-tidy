@@ -1,0 +1,87 @@
+Checks: >
+    -*,
+    bugprone-assert-side-effect,
+    bugprone-branch-clone,
+    bugprone-copy-constructor-init,
+    bugprone-dangling-handle,
+    bugprone-dynamic-static-initializers,
+    bugprone-exception-escape,
+    bugprone-fold-init-type,
+    bugprone-forward-declaration-namespace,
+    bugprone-forwarding-reference-overload,
+    bugprone-inaccurate-erase,
+    bugprone-incorrect-roundings,
+    bugprone-integer-division,
+    bugprone-misplaced-widening-cast,
+    bugprone-move-forwarding-reference,
+    bugprone-multiple-statement-macro,
+    bugprone-parent-virtual-call,
+    bugprone-swapped-arguments,
+    bugprone-unused-return-value,
+    bugprone-use-after-move,
+    bugprone-virtual-near-miss,
+    cppcoreguidelines-narrowing-conversions,
+    performance-for-range-copy,
+    performance-implicit-conversion-in-loop,
+    performance-inefficient-algorithm,
+    performance-inefficient-vector-operation,
+    performance-move-const-arg,
+    performance-noexcept-move-constructor,
+    performance-trivially-destructible,
+    performance-type-promotion-in-math-fn,
+    performance-unnecessary-copy-initialization,
+    performance-unnecessary-value-param,
+
+# Warnings whishlist
+#    modernize-deprecated-headers,
+#    modernize-use-using,
+#    modernize-avoid-c-arrays,
+#    modernize-use-emplace,
+#    modernize-use-override,
+#    readability-avoid-const-params-in-decls,
+#    readability-const-return-type,
+#    readability-container-size-empty
+
+# Turn the warnings from the checks above into errors.
+# To turn all warnings into errors, simply write '*'
+# in the first line after WarningsAsErrors
+WarningsAsErrors:  >
+    -*,
+    bugprone-assert-side-effect,
+    bugprone-copy-constructor-init,
+    bugprone-dangling-handle,
+    bugprone-dynamic-static-initializers,
+    bugprone-exception-escape,
+    bugprone-forward-declaration-namespace,
+    bugprone-forwarding-reference-overload,
+    bugprone-inaccurate-erase,
+    bugprone-misplaced-widening-cast,
+    bugprone-move-forwarding-reference,
+    bugprone-multiple-statement-macro,
+    bugprone-parent-virtual-call,
+    bugprone-swapped-arguments,
+    bugprone-unused-return-value,
+    bugprone-virtual-near-miss,
+    performance-implicit-conversion-in-loop,
+    performance-inefficient-algorithm,
+    performance-move-const-arg,
+    performance-trivially-destructible,
+    performance-unnecessary-copy-initialization
+
+FormatStyle: 'file'
+HeaderFilterRegex: '.*\/include\/networkit\/.*\.hpp'
+CheckOptions:
+  - key:   readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key:   readability-identifier-naming.EnumCase
+    value: CamelCase
+  - key:   readability-identifier-naming.FunctionCase
+    value: camelBack
+  - key:   readability-identifier-naming.MemberCase
+    value: CamelCase
+  - key:   readability-identifier-naming.ParameterCase
+    value: CamelCase
+  - key:   readability-identifier-naming.UnionCase
+    value: CamelCase
+  - key:   readability-identifier-naming.VariableCase
+    value: CamelCase
