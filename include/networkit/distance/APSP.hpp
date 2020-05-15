@@ -30,6 +30,14 @@ class APSP : public Algorithm {
      */
     APSP(const Graph &G);
 
+    /**
+     * Creates the APSP class for @a G with specified source nodes.
+     *
+     * @param G The graph.
+     * @param srcs The source nodes.
+     */
+    APSP(const Graph &G, std::vector<count>& srcs);
+
     virtual ~APSP() = default;
 
     /** Computes the shortest paths from each node to all other nodes. */
@@ -70,6 +78,7 @@ class APSP : public Algorithm {
     const Graph &G;
     std::vector<std::vector<edgeweight>> distances;
     std::vector<std::unique_ptr<SSSP>> sssps;
+    std::vector<count> srcs;
 };
 
 } /* namespace NetworKit */

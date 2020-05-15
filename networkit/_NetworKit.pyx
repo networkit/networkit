@@ -2191,6 +2191,7 @@ cdef extern from "<networkit/distance/APSP.hpp>":
 
 	cdef cppclass _APSP "NetworKit::APSP"(_Algorithm):
 		_APSP(_Graph G) except +
+		_APSP(_Graph G, vector[count] srcs) except +
 		vector[vector[edgeweight]] getDistances() except +
 		edgeweight getDistance(node u, node v) except +
 
@@ -2208,9 +2209,12 @@ cdef class APSP(Algorithm):
     """
 	cdef Graph _G
 
-	def __cinit__(self, Graph G):
+	def __cinit__(self, Graph G, vector[count] srcs = vector[count]()):
 		self._G = G
-		self._this = new _APSP(G._this)
+		if srcs.empty():
+			self._this = new _APSP(G._this)
+		else:
+			self._this = new _APSP(G._this, srcs)
 
 	def __dealloc__(self):
 		self._G = None
