@@ -6,7 +6,6 @@ __author__ = "Christian Staudt"
 __credits__ = ["Christian Staudt", "Elisabetta Bergamini", "Henning Meyerhenke", "Marc Nemes", "Maximilian Vogel"]
 
 # extension imports
-# TODO: (+) ApproxCloseness
 
 from _NetworKit import Betweenness, PageRank, EigenvectorCentrality, DegreeCentrality, ApproxBetweenness,\
 ApproxBetweenness2, EstimateBetweenness, DynApproxBetweenness, Closeness, HarmonicCloseness, KPathCentrality, CoreDecomposition,\
@@ -15,6 +14,7 @@ PermanenceCentrality, TopCloseness, TopHarmonicCloseness, DynTopHarmonicClosenes
 GroupDegree, GroupCloseness, DynBetweennessOneNode, LaplacianCentrality, ApproxGroupBetweenness, DynKatzCentrality,\
 KadabraBetweenness, ApproxSpanningEdge
 from _NetworKit import _ClosenessVariant as ClosenessVariant
+from _NetworKit import _PageRankNorm as Norm
 
 # local imports
 from networkit.algebraic import adjacencyEigenvector, PageRankMatrix, symmetricEigenvectors
