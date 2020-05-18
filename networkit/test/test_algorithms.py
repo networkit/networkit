@@ -139,7 +139,7 @@ class TestSelfLoops(unittest.TestCase):
 		self.assertEqual(CL.norm, CLL.norm)
 		self.assertEqual(CL.maxIterations, CLL.maxIterations)
 
-		norm = centrality.Norm.l2norm
+		norm = nk.centrality.Norm.l2norm
 		maxIters = 2
 		CL.norm = norm
 		CL.maxIterations = maxIters
