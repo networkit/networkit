@@ -1318,17 +1318,17 @@ cdef class Graph:
 		return self._this.randomNode()
 
 	def randomNeighbor(self, u):
-		""" Get a random neighbor of `v` and `none` if degree is zero.
+		""" Get a random neighbor of `u`. Returns `none` if the degree of `u` is zero.
 
 		Parameters
 		----------
-		v : node
+		u : node
 			Node.
 
 		Returns
 		-------
 		node
-			A random neighbor of `v.
+			A random neighbor of `u`, `none` if the degree of `u` is zero.
 		"""
 		from warnings import warn
 		warn("Graph.randomNeighbor is deprecated, use graphtools.randomNeighbor instead.")
@@ -12181,6 +12181,43 @@ cdef class SpanningEdgeCentrality(Algorithm):
 		"""
 		return (<_SpanningEdgeCentrality*>(self._this)).scores()
 
+
+cdef extern from "<networkit/centrality/ApproxSpanningEdge.hpp>":
+	cdef cppclass _ApproxSpanningEdge "NetworKit::ApproxSpanningEdge"(_Algorithm):
+		_ApproxSpanningEdge(_Graph G, double eps) except +
+		vector[edgeweight] scores() except +
+
+cdef class ApproxSpanningEdge(Algorithm):
+	"""
+	Computes an epsilon-approximation of the spanning edge centrality of every edge of the input
+	graph with probability (1 - 1/n), based on "Efficient Algorithms for Spanning Tree
+	Centrality", Hayashi et al., IJCAI, 2016. This implementation also support multi-threading.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph.
+	eps : double
+		Maximum additive error.
+	"""
+
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, double eps = 0.1):
+		self._G = G
+		self._this = new _ApproxSpanningEdge(G._this, eps)
+
+	def scores(self):
+		"""
+		Return the spanning edge approximation for each edge of the graph.
+
+
+		Returns
+		-------
+		list
+			Spanning edge approximation for each edge of the input graph.
+		"""
+		return (<_ApproxSpanningEdge*>(self._this)).scores();
 
 ## Module: viz
 
