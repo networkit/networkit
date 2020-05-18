@@ -79,49 +79,6 @@ cdef extern from "<networkit/auxiliary/Parallel.hpp>" namespace "Aux::Parallel":
 	void sort[Iter](Iter begin, Iter end) nogil
 	void sort[Iter, Comp](Iter begin, Iter end, Comp compare) nogil
 
-# Function definitions
-
-cdef extern from "<networkit/auxiliary/Log.hpp>" namespace "Aux":
-
-	#void _configureLogging "Aux::configureLogging" (string loglevel)
-	string _getLogLevel "Aux::Log::getLogLevel" () except +
-	void _setLogLevel "Aux::Log::setLogLevel" (string loglevel) except +
-	void _setPrintLocation "Aux::Log::Settings::setPrintLocation" (bool_t) except +
-
-def getLogLevel():
-	""" Get the current log level"""
-	return pystring(_getLogLevel())
-
-def setLogLevel(loglevel):
-	""" Set the current loglevel"""
-	_setLogLevel(stdstring(loglevel))
-
-def setPrintLocation(flag):
-	""" Switch locations in log statements on or off"""
-	_setPrintLocation(flag)
-
-cdef extern from "<networkit/auxiliary/Random.hpp>" namespace "Aux::Random":
-
-	void _setSeed "Aux::Random::setSeed" (uint64_t, bool_t)
-
-def setSeed(uint64_t seed, bool_t useThreadId):
-	""" Set the random seed that is used in NetworKit.
-
-	Note that there is a separate random number generator per thread.
-
-	Parameters
-	----------
-	seed : uint64_t
-		The seed
-	useThreadId : bool
-		If the thread id shall be added to the seed
-	"""
-	_setSeed(seed, useThreadId)
-
-# Class definitions
-
-## Module: engineering
-
 # TODO: timer
 
 cdef extern from "<networkit/viz/Point.hpp>" namespace "NetworKit" nogil:
