@@ -28,6 +28,3 @@ cdef extern from "<algorithm>" namespace "std":
 	vector[pair[pair[node, node], double]] move(vector[pair[pair[node, node], double]]) nogil
 	vector[pair[node, node]] move(vector[pair[node, node]]) nogil
 
-#cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
-
-#	index _none "NetworKit::none"
