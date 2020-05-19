@@ -41,21 +41,21 @@ class GephiStreamingClient:
             graph.indexEdges()
             self.directed = graph.isDirected()
 
-            self._exportNodes(graph.iterNodes())
+            self._exportNodes(graph)
 
             for u, v in graph.iterEdges():
                 if self.directed:
                     edgeId = str(u) + '->' + str(v)
                 else:
-                    edgeId = str(min(edge[0],edge[1])) + '-' + str(max(edge[0],edge[1]))
-                self._pygephi.add_edge(edgeId, edge[0], edge[1], self.directed)
+                    edgeId = str(min(u, v)) + '-' + str(max(u, v))
+                self._pygephi.add_edge(edgeId, u, v, self.directed)
 
             self._pygephi.flush()
             self.graphExported = True
         except _urllib.error.URLError as e:
             self._urlError(e)
 
-    def _exportNodes(self, nodes):
+    def _exportNodes(self, graph):
         nAttrs = {'size': 2.0, 'r': 0.6, 'g': 0.6, 'b': 0.6, 'y':1.0}
 
         # the default approximately shows -2000 to 2000, so we want to
@@ -63,15 +63,13 @@ class GephiStreamingClient:
         # may have exactly the same coordinates, thus a deterministic
         # distribution scheme is used.
         NODE_AREA_SIZE = 2000
-        nodesPerSquareSide = 0 if len(nodes) == 0 else math.ceil(math.sqrt(len(nodes)))
+        nodesPerSquareSide = 0 if graph.numberOfNodes() == 0 else math.ceil(math.sqrt(graph.numberOfNodes()))
         stepSize = NODE_AREA_SIZE / nodesPerSquareSide
         offset = NODE_AREA_SIZE / 2
 
-        nodeNumber = 0
-        for node in nodes:
+        for nodeNumber, node in enumerate(graph.iterNodes()):
             nAttrs['x'] = (nodeNumber % nodesPerSquareSide) * stepSize - offset
             nAttrs['y'] = (nodeNumber // nodesPerSquareSide) * stepSize - offset
-            nodeNumber += 1
             self._pygephi.add_node(str(node), **nAttrs)
 
     def exportAdditionalEdge(self, u, v):
@@ -192,17 +190,15 @@ class GephiStreamingClient:
             if len(values) != graph.upperEdgeIdBound():
                 print("Warning: Upper edge id bound (", graph.upperEdgeIdBound(), ") does not match #Values (", len(values), ").")
 
-            idx = 0
-            for edge in graph.iterEdges():
+            for u, v in graph.iterEdges():
                 if self.directed:
                     edgeId = str(u) + '->' + str(v)
                     edgetype = "Directed"
                 else:
-                    edgeId = str(min(edge[0],edge[1])) + '-' + str(max(edge[0],edge[1]))
+                    edgeId = str(min(u, v)) + '-' + str(max(u, v))
                     edgetype = "Undirected"
-                eAttrs = {attribute_name:values[graph.edgeId(edge[0], edge[1])], "Type":edgetype}#still need to use the old edge to access the graph array
-                self._pygephi.change_edge(edgeId, edge[0], edge[1], self.directed, **eAttrs)
-                idx += 1
+                eAttrs = {attribute_name:values[graph.edgeId(u, v)], "Type":edgetype}#still need to use the old edge to access the graph array
+                self._pygephi.change_edge(edgeId, u, v, self.directed, **eAttrs)
 
             self._pygephi.flush()
         except _urllib.error.URLError as e:
