@@ -78,7 +78,7 @@ from . import viz
 from . import randomization
 from . import independentset
 from .support import MissingDependencyError
-from _NetworKit import GraphTools as graphtools
+from .graphtools import GraphTools as graphtools
 
 if have_plt:
 	from . import plot
