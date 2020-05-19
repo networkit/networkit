@@ -84,7 +84,7 @@ public:
      * @return The predecessors of @a t on all shortest paths from source to @a
      * t.
      */
-    std::vector<node> getPredecessors(node t) const;
+    const std::vector<node>& getPredecessors(node t) const;
 
     /**
      * Returns a shortest path from source to @a t and an empty path if source
@@ -201,7 +201,7 @@ inline double SSSP::_numberOfPaths(node t) const {
     return res;
 }
 
-inline std::vector<node> SSSP::getPredecessors(node t) const {
+inline const std::vector<node>& SSSP::getPredecessors(node t) const {
     if (!storePaths) {
         throw std::runtime_error("predecessors have not been stored");
     }
