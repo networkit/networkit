@@ -177,10 +177,13 @@ class GephiStreamingClient:
             if len(values) != graph.upperEdgeIdBound():
                 print("Warning: Upper edge id bound (", graph.upperEdgeIdBound(), ") does not match #Values (", len(values), ").")
 
-            for u, v in graph.iterEdges():
-                edgetype = "Directed" if self.directed else "Undirected"
-                eAttrs = {attribute_name:values[graph.edgeId(u, v)], "Type":edgetype}#still need to use the old edge to access the graph array
+            edgetype = "Directed" if self.directed else "Undirected"
+
+            def exportEdgeV(u, v, _w, eid):
+                eAttrs = {attribute_name:values[eid], "Type":edgetype}
                 self._pygephi.change_edge(self._edgeId(u, v), u, v, self.directed, **eAttrs)
+
+            graph.forEdges(exportEdgeV)
 
             self._pygephi.flush()
         except _urllib.error.URLError as e:
