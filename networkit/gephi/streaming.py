@@ -29,6 +29,13 @@ class GephiStreamingClient:
         print("Did you start the streaming master server in gephi and provide the name of your workspace?")
         print("If the workspace is named 'Workspace 0', the corresponding url is http://localhost:8080/workspace0 (adapt port)")
 
+    def _edgeId(self, u, v):
+        """ Return the edge id that is exported to Gephi
+        """
+        if self.directed:
+            return str(u) + '->' + str(v)
+        return str(min(u,v)) + '-' + str(max(u,v))
+
     def exportGraph(self, graph):
         """ Exports the given graph to gephi. No attributes or weights are exported.
         Please note that only graphs with indexed edges can be exported, so
@@ -44,11 +51,7 @@ class GephiStreamingClient:
             self._exportNodes(graph)
 
             for u, v in graph.iterEdges():
-                if self.directed:
-                    edgeId = str(u) + '->' + str(v)
-                else:
-                    edgeId = str(min(u, v)) + '-' + str(max(u, v))
-                self._pygephi.add_edge(edgeId, u, v, self.directed)
+                self._pygephi.add_edge(self._edgeId(u, v), u, v, self.directed)
 
             self._pygephi.flush()
             self.graphExported = True
@@ -84,11 +87,7 @@ class GephiStreamingClient:
             print("Error: Cannot add edges. Export Graph first!")
             return
         try:
-            if self.directed:
-                edgeId = str(u) + '->' + str(v)
-            else:
-                edgeId = str(min(u,v)) + '-' + str(max(u,v))
-            self._pygephi.add_edge(edgeId, u, v, self.directed)
+            self._pygephi.add_edge(self._edgeId(u, v), u, v, self.directed)
             self._pygephi.flush()
         except _urllib.error.URLError as e:
             self._urlError(e)
@@ -99,11 +98,7 @@ class GephiStreamingClient:
             print("Error: Cannot remove edges. Export Graph first!")
             return
         try:
-            if self.directed:
-                edgeId = str(u) + '->' + str(v)
-            else:
-                edgeId = str(min(u,v)) + '-' + str(max(u,v))
-            self._pygephi.delete_edge(edgeId)
+            self._pygephi.delete_edge(self._edgeId(u, v))
             self._pygephi.flush()
         except _urllib.error.URLError as e:
             self._urlError(e)
@@ -121,17 +116,9 @@ class GephiStreamingClient:
                 elif ev.type == ev.NODE_REMOVAL:
                     self._pygephi.delete_node(str(ev.u))
                 elif ev.type == ev.EDGE_ADDITION:
-                    if self.directed:
-                        edgeId = str(ev.u) + '->' + str(ev.v)
-                    else:
-                        edgeId = str(min(ev.u,ev.v)) + '-' + str(max(ev.u,ev.v))
-                    self._pygephi.add_edge(edgeId, ev.u, ev.v, self.directed)
+                    self._pygephi.add_edge(self._edgeId(ev.u, ev.v), ev.u, ev.v, self.directed)
                 elif ev.type == ev.EDGE_REMOVAL:
-                    if self.directed:
-                        edgeId = str(ev.u) + '->' + str(ev.v)
-                    else:
-                        edgeId = str(min(ev.u,ev.v)) + '-' + str(max(ev.u,ev.v))
-                    self._pygephi.delete_edge(edgeId)
+                    self._pygephi.delete_edge(self._edgeId(ev.u, ev.v))
                 elif ev.type == ev.EDGE_WEIGHT_UPDATE:
                     print("Edge weights not yet supported in gephi streaming!")
                 elif ev.type == ev.EDGE_WEIGHT_INCREMENT:
@@ -191,14 +178,9 @@ class GephiStreamingClient:
                 print("Warning: Upper edge id bound (", graph.upperEdgeIdBound(), ") does not match #Values (", len(values), ").")
 
             for u, v in graph.iterEdges():
-                if self.directed:
-                    edgeId = str(u) + '->' + str(v)
-                    edgetype = "Directed"
-                else:
-                    edgeId = str(min(u, v)) + '-' + str(max(u, v))
-                    edgetype = "Undirected"
+                edgetype = "Directed" if self.directed else "Undirected"
                 eAttrs = {attribute_name:values[graph.edgeId(u, v)], "Type":edgetype}#still need to use the old edge to access the graph array
-                self._pygephi.change_edge(edgeId, u, v, self.directed, **eAttrs)
+                self._pygephi.change_edge(self._edgeId(u, v), u, v, self.directed, **eAttrs)
 
             self._pygephi.flush()
         except _urllib.error.URLError as e:
