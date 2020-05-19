@@ -517,7 +517,7 @@ void MaxentStress::addKNeighborhoodOfVertex(const node u, const count k) {
         }
 
         Aux::PrioQueue<edgeweight, node> PQ(G->numberOfNodes());
-        std::vector<edgeweight> dist(G->numberOfNodes(), none);
+        std::vector<edgeweight> dist(G->numberOfNodes(), std::numeric_limits<edgeweight>::max());
 
         dist[u] = 0;
         PQ.insert(0, u);

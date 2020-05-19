@@ -58,7 +58,7 @@ private:
 
     std::vector<double> loads; //!< loads[u*numSystems..(u+1)*numSystems]: loads for node u
 
-    std::vector<double> edgeScores; //!< distance(u,v) for edge {u,v}
+    std::vector<edgeweight> edgeScores; //!< distance(u,v) for edge {u,v}
 
 };
 

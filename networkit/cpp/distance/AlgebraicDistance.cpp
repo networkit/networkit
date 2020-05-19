@@ -101,7 +101,7 @@ void AlgebraicDistance::preprocess() {
     // calculate edge scores
 
     if (withEdgeScores) {
-        edgeScores.resize(G->upperEdgeIdBound(), none);
+        edgeScores.resize(G->upperEdgeIdBound(), std::numeric_limits<edgeweight>::max());
 
         G->parallelForEdges([&](node u, node v, edgeid eid) {
             edgeScores[eid] = distance(u, v);
