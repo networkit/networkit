@@ -62,6 +62,7 @@ WarningsAsErrors:  >
     bugprone-swapped-arguments,
     bugprone-unused-return-value,
     bugprone-virtual-near-miss,
+    performance-for-range-copy,
     performance-implicit-conversion-in-loop,
     performance-inefficient-algorithm,
     performance-move-const-arg,

@@ -79,7 +79,7 @@ void DynamicDGSParser::generate() {
                 std::vector<std::string> categories = Aux::StringTools::split(categoriesCommaSeparated, ',');
 
                 std::vector<std::string> currentNodeCategories;
-                for (std::string category : categories) {
+                for (const std::string &category : categories) {
                     currentNodeCategories.push_back(category);
                 }
                 nodeCategories.push_back(currentNodeCategories);
@@ -183,7 +183,7 @@ void DynamicDGSParser::evaluateClusterings(const std::string path, const Partiti
         std::vector<std::string> currentNodeCategories = nodeCategories[v];
         clusterMappings[normalizedID].reserve(100000);
 
-        for (std::string category : currentNodeCategories) {
+        for (const std::string &category : currentNodeCategories) {
             clusterMappings[normalizedID].find (category);
 
             std::unordered_map<std::string, index>::const_iterator got = clusterMappings[normalizedID].find (category);
