@@ -68,10 +68,7 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
                     std::string categoriesCommaSeparated = categoriesFullStringSplit[1]; // Example: cond-mat.stat-mech, q-fin.ST
                     std::vector<std::string> categories = Aux::StringTools::split(categoriesCommaSeparated, ',');
 
-                    std::vector<std::string> currentNodeCategories;
-                    for (const std::string &category : categories) {
-                        currentNodeCategories.push_back(category);
-                    }
+                    std::vector<std::string> currentNodeCategories(categories.begin(), categories.end());
                     nodeCategories.push_back(currentNodeCategories);
 
                     std::string dateFullString = split[3]; // Example: date="08-1997"

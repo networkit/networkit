@@ -68,6 +68,7 @@ WarningsAsErrors:  >
     performance-for-range-copy,
     performance-implicit-conversion-in-loop,
     performance-inefficient-algorithm,
+    performance-inefficient-vector-operation,
     performance-move-const-arg,
     performance-trivially-destructible,
     performance-type-promotion-in-math-fn,
