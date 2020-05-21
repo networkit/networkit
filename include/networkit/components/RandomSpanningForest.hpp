@@ -22,7 +22,7 @@ class RandomSpanningForest final : public SpanningForest {
 public:
     RandomSpanningForest(const Graph& G);
 
-    ~RandomSpanningForest() = default;
+    ~RandomSpanningForest() override = default;
 
     /**
      * Computes for each component a random spanning tree.

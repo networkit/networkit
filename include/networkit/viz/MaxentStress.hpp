@@ -61,7 +61,7 @@ class MaxentStress final : public GraphLayoutAlgorithm<double> {
 
 
         /** Default destructor. */
-         ~MaxentStress() = default;
+        ~MaxentStress() override = default;
 
         /** Computes a graph drawing according to the Maxent-Stress model. */
          void run() override;

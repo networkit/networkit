@@ -33,7 +33,7 @@ public:
     ModularityScoring(Graph& G, double gTotalEdgeWeight = 0.0);
 
     /** Default destructor */
-    ~ModularityScoring() = default;
+    ~ModularityScoring() override = default;
 
     void scoreEdges(int attrId) override;
 

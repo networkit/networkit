@@ -39,7 +39,8 @@ public:
      * @param maxIterations
      * @return The (approximate) solution to the system.
      */
-    Vector relax(const Matrix& A, const Vector& b, const Vector& initialGuess, const count maxIterations = std::numeric_limits<count>::max()) const;
+    Vector relax(const Matrix &A, const Vector &b, const Vector &initialGuess,
+                 const count maxIterations = std::numeric_limits<count>::max()) const override;
 
     /**
      * Utilizes Gauss-Seidel relaxations until the given number of @a maxIterations is reached or the relative residual
@@ -49,8 +50,8 @@ public:
      * @param maxIterations
      * @return The (approximate) solution to the system.
      */
-    Vector relax(const Matrix& A, const Vector& b, const count maxIterations = std::numeric_limits<count>::max()) const;
-
+    Vector relax(const Matrix &A, const Vector &b,
+                 const count maxIterations = std::numeric_limits<count>::max()) const override;
 };
 
 template<class Matrix>

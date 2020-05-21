@@ -34,8 +34,7 @@ public:
     /**
      * Destructor.
      */
-    virtual ~CommuteTimeDistance() = default;
-
+    ~CommuteTimeDistance() override = default;
 
     /**
      * Computes ECTD exactly.

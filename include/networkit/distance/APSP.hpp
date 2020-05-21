@@ -30,7 +30,7 @@ class APSP : public Algorithm {
      */
     APSP(const Graph &G);
 
-    virtual ~APSP() = default;
+    ~APSP() override = default;
 
     /** Computes the shortest paths from each node to all other nodes. */
     void run() override;
@@ -38,7 +38,7 @@ class APSP : public Algorithm {
     /**
      * @return string representation of algorithm and parameters.
      */
-    virtual std::string toString() const override;
+    std::string toString() const override;
 
     /**
      * Returns a vector of weighted distances between node pairs.
@@ -64,9 +64,9 @@ class APSP : public Algorithm {
     /**
      * @return True if algorithm can run multi-threaded.
      */
-    virtual bool isParallel() const override { return true; }
+    bool isParallel() const override { return true; }
 
-  protected:
+protected:
     const Graph &G;
     std::vector<std::vector<edgeweight>> distances;
     std::vector<std::unique_ptr<SSSP>> sssps;

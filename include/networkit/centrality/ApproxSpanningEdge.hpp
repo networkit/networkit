@@ -41,7 +41,7 @@ public:
      */
     ApproxSpanningEdge(const Graph &G, double eps = 0.1);
 
-    ~ApproxSpanningEdge() = default;
+    ~ApproxSpanningEdge() override = default;
 
     /**
      * Executes the algorithm.

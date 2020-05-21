@@ -23,26 +23,27 @@ public:
     /**
      * Computes local partition coverage on the graph passed in constructor.
      */
-    virtual void run() override;
+    void run() override;
 
     /**
      * Get the maximum value (1.0)
      *
      * @return 1.0
      */
-    virtual double maximum() override;
+    double maximum() override;
 
     /**
      * This algorithm is parallel.
      * @return true
      */
-    virtual bool isParallel() const override;
+    bool isParallel() const override;
 
     /**
      * The name of this algorithm.
      * @return "Local partition coverage"
      */
-    virtual std::string toString() const override;
+    std::string toString() const override;
+
 protected:
     const Partition& P;
 };

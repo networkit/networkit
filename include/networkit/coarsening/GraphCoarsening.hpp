@@ -26,9 +26,9 @@ public:
 
     GraphCoarsening(const Graph& G);
 
-    virtual ~GraphCoarsening() = default;
+    ~GraphCoarsening() override = default;
 
-    virtual void run() = 0;
+    void run() override = 0;
 
     Graph getCoarseGraph() const;
 

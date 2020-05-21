@@ -17,7 +17,7 @@ public:
     /**
      * Default destructor for the virtual base class
      */
-    virtual ~LocalCommunityEvaluation() = default;
+    ~LocalCommunityEvaluation() override = default;
 
     /**
      * Get the average value weighted by cluster size.

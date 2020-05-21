@@ -34,7 +34,7 @@ public:
     /**
      * Computes eigenvector centrality on the graph passed in constructor.
      */
-    virtual void run();
+    void run() override;
 };
 
 } /* namespace NetworKit */

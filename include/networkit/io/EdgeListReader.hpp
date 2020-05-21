@@ -44,7 +44,7 @@ public:
      *
      * @param[in]  path  input file path
      */
-    Graph read(const std::string &path);
+    Graph read(const std::string &path) override;
 
     /**
      * Return the node map, in case node ids are not continuous

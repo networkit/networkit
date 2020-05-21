@@ -44,13 +44,13 @@ public:
      */
     explicit DegreePreservingShuffle(const Graph &G);
 
-    virtual ~DegreePreservingShuffle();
+    ~DegreePreservingShuffle() override;
 
     /**
      * Execute trades as configured in the constructor.
      * @warning This function has to be called exactly once before invoking getGraph()
      */
-    void run() override final;
+    void run() final;
 
     /**
      * Returns a shuffled copy of the input graph.
@@ -66,9 +66,9 @@ public:
      */
     const std::vector<node> &getPermutation() const noexcept { return permutation; }
 
-    std::string toString() const override final;
+    std::string toString() const final;
 
-    bool isParallel() const override final { return true; }
+    bool isParallel() const final { return true; }
 
 private:
     const Graph *G;

@@ -57,7 +57,7 @@ public:
      */
     SimmelianSparsifierNonParametric(const Graph& graph, double threshold);
 
-    virtual void run() override;
+    void run() override;
 
 private:
     double threshold;
@@ -80,7 +80,7 @@ public:
      */
     SimmelianSparsifierParametric(const Graph& graph, int maxRank, int minOverlap);
 
-    virtual void run() override;
+    void run() override;
 
 private:
     int maxRank;
@@ -101,7 +101,7 @@ public:
      */
     MultiscaleSparsifier(const Graph& graph, double alpha);
 
-    virtual void run() override;
+    void run() override;
 
 private:
     double alpha;
@@ -121,7 +121,7 @@ public:
      */
     LocalSimilaritySparsifier(const Graph& graph, double e);
 
-    virtual void run() override;
+    void run() override;
 
 private:
     double e;
@@ -141,7 +141,7 @@ public:
      */
     SimmelianMultiscaleSparsifier(const Graph& graph, double alpha);
 
-    virtual void run() override;
+    void run() override;
 
 private:
     double alpha;
@@ -162,7 +162,7 @@ public:
     */
     RandomSparsifier(const Graph& graph, double ratio);
 
-    virtual void run() override;
+    void run() override;
 
 private:
     double ratio;

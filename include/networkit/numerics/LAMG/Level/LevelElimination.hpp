@@ -27,9 +27,10 @@ private:
 public:
     LevelElimination(const Matrix& A, const std::vector<EliminationStage<Matrix>>& coarseningStages);
 
-    void coarseType(const Vector& xf, Vector& xc) const;
-    void restrict(const Vector& bf, Vector& bc, std::vector<Vector>& bStages) const;
-    void interpolate(const Vector& xc, Vector& xf, const std::vector<Vector>& bStages) const;
+    void coarseType(const Vector &xf, Vector &xc) const override;
+    void restrict(const Vector &bf, Vector &bc, std::vector<Vector> &bStages) const override;
+    void interpolate(const Vector &xc, Vector &xf,
+                     const std::vector<Vector> &bStages) const override;
 };
 
 template<class Matrix>

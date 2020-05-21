@@ -39,7 +39,7 @@ public:
   DynTopHarmonicCloseness(const Graph &G, count k = 1,
                           bool useBFSbound = false);
 
-  ~DynTopHarmonicCloseness();
+  ~DynTopHarmonicCloseness() override;
 
   /**
    * Computes the k most central nodes on the initial graph.

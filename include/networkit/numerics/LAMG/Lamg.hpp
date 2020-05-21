@@ -54,7 +54,7 @@ public:
      */
     Lamg(const double tolerance = 1e-6) : LinearSolver<Matrix>(tolerance), validSetup(false), lamgSetup(smoother), numComponents(0) {}
     /** Default destructor */
-    ~Lamg() = default;
+    ~Lamg() override = default;
 
     /**
      * Compute the multigrid hierarchy for the given Laplacian matrix @a laplacianMatrix.
@@ -62,14 +62,14 @@ public:
      * @note This method also works for disconnected graphs. If you know that the graph is connected,
      * if is faster to use @ref setupConnected instead.
      */
-    void setup(const Matrix& laplacianMatrix);
+    void setup(const Matrix &laplacianMatrix) override;
 
     /**
      * Compute the multigrid hierarchy for te given Laplacian matrix @a laplacianMatrix.
      * @param laplacianMatrix
      * @note The graph has to be connected for this method to work. Otherwise the output is undefined.
      */
-    void setupConnected(const Matrix& laplacianMatrix);
+    void setupConnected(const Matrix &laplacianMatrix) override;
 
     /**
      * Computes the @a result for the matrix currently setup and the right-hand side @a rhs.
@@ -81,7 +81,8 @@ public:
      * @param maxIterations
      * @return A @ref SolverStatus object which provides some statistics like the final absolute residual.
      */
-    SolverStatus solve(const Vector& rhs, Vector& result, count maxConvergenceTime = 5 * 60 * 1000, count maxIterations = std::numeric_limits<count>::max());
+    SolverStatus solve(const Vector &rhs, Vector &result, count maxConvergenceTime = 5 * 60 * 1000,
+                       count maxIterations = std::numeric_limits<count>::max()) override;
 
     /**
      * Compute the @a results for the matrix currently setup and the right-hand sides @a rhs.
@@ -92,8 +93,9 @@ public:
      * @param maxConvergenceTime
      * @param maxIterations
      */
-    void parallelSolve(const std::vector<Vector>& rhs, std::vector<Vector>& results, count maxConvergenceTime = 5 * 60 * 1000, count maxIterations = std::numeric_limits<count>::max());
-
+    void parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
+                       count maxConvergenceTime = 5 * 60 * 1000,
+                       count maxIterations = std::numeric_limits<count>::max()) override;
 };
 
 template<class Matrix>

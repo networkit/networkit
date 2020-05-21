@@ -45,13 +45,13 @@ public:
                              bool allowSelfLoops = false,
                              bool degreePreservingShufflePreprocessing = true);
 
-    ~GlobalCurveball();
+    ~GlobalCurveball() override;
 
     /**
      * Execute trades as configured in the constructor.
      * @warning This function has to be called exactly one before invoking getGraph()
      */
-    void run() override final;
+    void run() final;
 
     /**
      * Returns a new graph instance with the same degree sequence as the input
@@ -59,9 +59,9 @@ public:
      */
     Graph getGraph();
 
-    std::string toString() const override final;
+    std::string toString() const final;
 
-    bool isParallel() const override final { return false; }
+    bool isParallel() const final { return false; }
 
 private:
     std::unique_ptr<CurveballDetails::GlobalCurveballImpl> impl;

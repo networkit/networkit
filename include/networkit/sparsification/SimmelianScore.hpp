@@ -69,8 +69,8 @@ class SimmelianScore : public EdgeScore<double> {
 public:
 
     SimmelianScore(const Graph& graph, const std::vector<count>& attribute);
-    virtual double score(edgeid eid) override;
-    virtual double score(node u, node v) override;
+    double score(edgeid eid) override;
+    double score(node u, node v) override;
 
     std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, const std::vector<count>& triangles);
 

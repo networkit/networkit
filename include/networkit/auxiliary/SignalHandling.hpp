@@ -24,10 +24,7 @@ namespace SignalHandling {
         class InterruptException : public std::exception {
         public:
             InterruptException() : std::exception() {}
-            virtual const char* what() const noexcept
-            {
-                return "Received CTRL+C/SIGINT";
-            }
+            const char *what() const noexcept override { return "Received CTRL+C/SIGINT"; }
         };
 
         /**

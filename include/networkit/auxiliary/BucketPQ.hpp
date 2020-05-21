@@ -75,34 +75,34 @@ public:
     /**
      * Default destructor
      */
-    virtual ~BucketPQ() = default;
+    ~BucketPQ() override = default;
 
     /**
      * Inserts key-value pair (@key, @value).
      */
-    virtual void insert(int64_t key, index value) override;
+    void insert(int64_t key, index value) override;
 
     /**
      * Removes the element with minimum key and returns the key-value pair.
      */
-    virtual std::pair<int64_t, index> extractMin() override;
+    std::pair<int64_t, index> extractMin() override;
 
     /**
      * Modifies entry with value @a value.
      * The entry is then set to @a newKey with the same value.
      * If the corresponding key is not present, the element will be inserted.
      */
-    virtual void changeKey(int64_t newKey, index value) override;
+    void changeKey(int64_t newKey, index value) override;
 
     /**
      * @return Number of elements in PQ.
      */
-    virtual uint64_t size() const override;
+    uint64_t size() const override;
 
     /**
      * Removes key-value pair given by value @a val.
      */
-    virtual void remove(const index& val) override;
+    void remove(const index &val) override;
 
     /**
      * @return key to given value @val.
