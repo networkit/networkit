@@ -19,17 +19,20 @@ Dijkstra::Dijkstra(const Graph &G, node source, bool storePaths,
 void Dijkstra::run() {
 
     TRACE("initializing Dijkstra data structures");
+
     // init distances
+    auto infDist = std::numeric_limits<edgeweight>::max();
+    std::fill(distances.begin(), distances.end(), infDist);
+
     if (distances.size() < G->upperNodeIdBound()) {
-        distances.resize(G->upperNodeIdBound(),
-                         std::numeric_limits<double>::max());
+        distances.resize(G->upperNodeIdBound(), infDist);
         visited.resize(G->upperNodeIdBound(), ts);
     }
 
     sumDist = 0.;
     reachedNodes = 1;
 
-    if (ts++ == 255) {
+    if (ts++ == std::numeric_limits<uint8_t>::max()) {
         ts = 1;
         std::fill(visited.begin(), visited.end(), 0);
     }

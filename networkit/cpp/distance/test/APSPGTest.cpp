@@ -12,7 +12,10 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/distance/APSP.hpp>
+#include <networkit/distance/BFS.hpp>
+#include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/DynAPSP.hpp>
+#include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 
@@ -60,6 +63,41 @@ TEST_F(APSPGTest, testAPSP) {
     ASSERT_EQ(distances[1][5],3);
     ASSERT_EQ(distances[1][6],3);
     ASSERT_TRUE(apsp.isParallel());
+}
+
+TEST_F(APSPGTest, testAPSPUnweightedER) {
+    Aux::Random::setSeed(42, false);
+    auto G = ErdosRenyiGenerator(100, 0.01, false).generate();
+    G.addNode();
+
+    APSP apsp(G);
+    apsp.run();
+    G.forNodes([&](const node u) {
+        BFS bfs(G, u, false);
+        bfs.run();
+        const auto &dist = bfs.getDistances();
+        G.forNodes([&](const node v) {
+            EXPECT_DOUBLE_EQ(dist[v], apsp.getDistance(u, v));
+        });
+    });
+}
+
+TEST_F(APSPGTest, testAPSPWeightedER) {
+    Aux::Random::setSeed(42, false);
+    auto G = ErdosRenyiGenerator(100, 0.01, false).generate();
+    G.addNode();
+    G = GraphTools::toWeighted(G);
+
+    APSP apsp(G);
+    apsp.run();
+    G.forNodes([&](const node u) {
+        Dijkstra dij(G, u, false);
+        dij.run();
+        const auto &dist = dij.getDistances();
+        G.forNodes([&](const node v) {
+            EXPECT_DOUBLE_EQ(dist[v], apsp.getDistance(u, v));
+        });
+    });
 }
 
 TEST_F(APSPGTest, debugAPSP) {
