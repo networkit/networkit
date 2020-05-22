@@ -62,6 +62,7 @@ WarningsAsErrors:  >
     bugprone-parent-virtual-call,
     bugprone-swapped-arguments,
     bugprone-unused-return-value,
+    bugprone-use-after-move,
     bugprone-virtual-near-miss,
     performance-implicit-conversion-in-loop,
     performance-inefficient-algorithm,
