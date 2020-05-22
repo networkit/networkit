@@ -126,14 +126,14 @@ void ApproxSpanningEdge::sampleUST() {
 void ApproxSpanningEdge::run() {
     const auto m = static_cast<double>(G.numberOfEdges());
     nSamples = static_cast<count>(std::ceil(std::log(2. * m / delta) / (2. * eps * eps)));
+    std::vector<node> sequence;
+    sequence.reserve(G.numberOfNodes());
 
     BiconnectedComponents bcc(G);
     bcc.run();
 
     auto &toVisit = visitedNodes[0];
     std::queue<node> queue;
-    std::vector<node> sequence;
-    sequence.reserve(G.upperNodeIdBound());
 
     for (auto curComponent : bcc.getComponents()) {
         if (curComponent.size() == 2) {
@@ -179,6 +179,7 @@ void ApproxSpanningEdge::run() {
             } while (!queue.empty());
 
             sequences.push_back(std::move(sequence));
+            sequence.clear();
             assert(nVisited == curComponent.size());
         }
     }
