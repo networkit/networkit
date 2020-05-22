@@ -78,14 +78,14 @@ void TopCloseness::computeReachableNodesDir() {
     // We compute the vector sccs_vec, where each component contains the list of
     // its nodes
     for (count v = 0; v < n; v++) {
-        sccs_vec[sccs.componentOfNode(v) - 1].push_back(v);
+        sccs_vec[sccs.componentOfNode(v)].push_back(v);
     }
 
     // We compute the SCC graph and store it in sccGraph
     for (count V = 0; V < N; V++) {
         for (count v : sccs_vec[V]) {
             G.forNeighborsOf(v, [&](node w) {
-                count W = sccs.componentOfNode(w) - 1;
+                count W = sccs.componentOfNode(w);
 
                 if (W != V && !found[W]) {
                     found[W] = true;
@@ -145,13 +145,13 @@ void TopCloseness::computeReachableNodesDir() {
     auto &reachL = *(reachLPtr.get());
     auto &reachU = *(reachUPtr.get());
     for (count v = 0; v < n; v++) {
-        reachL[v] = reachL_scc[sccs.componentOfNode(v) - 1];
-        reachU[v] = reachU_scc[sccs.componentOfNode(v) - 1];
-        if (false) { // MICHELE: used to check if the bounds are correct
-            count r = 0;
-            Traversal::BFSfrom(G, v, [&](node, count) { ++r; });
-            assert(reachL[v] <= r && reachU[v] >= r);
-        }
+        reachL[v] = reachL_scc[sccs.componentOfNode(v)];
+        reachU[v] = reachU_scc[sccs.componentOfNode(v)];
+#ifndef NDEBUG
+        count r = 0;
+        Traversal::BFSfrom(G, v, [&](node, count) { r++; });
+        assert(reachL[v] <= r && reachU[v] >= r);
+#endif
     }
 }
 

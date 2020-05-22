@@ -464,14 +464,14 @@ void TopHarmonicCloseness::computeReachableNodesDirected() {
   // its nodes
   for (count v = 0; v < n; v++) {
     component[v] = sccs.componentOfNode(v);
-    sccs_vec[sccs.componentOfNode(v) - 1].push_back(v);
+    sccs_vec[sccs.componentOfNode(v)].push_back(v);
   }
 
   // We compute the SCC graph and store it in sccGraph
   for (count V = 0; V < N; V++) {
     for (node v : sccs_vec[V]) {
       G.forNeighborsOf(v, [&](node w) {
-        count W = sccs.componentOfNode(w) - 1;
+        count W = sccs.componentOfNode(w);
 
         if (W != V && !found[W]) {
           found[W] = true;
@@ -533,7 +533,7 @@ void TopHarmonicCloseness::computeReachableNodesDirected() {
   }
 
   for (count v = 0; v < n; v++) {
-    r[v] = reachU_scc[sccs.componentOfNode(v) - 1];
+    r[v] = reachU_scc[sccs.componentOfNode(v)];
   }
 }
 } // namespace NetworKit

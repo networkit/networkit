@@ -6782,33 +6782,32 @@ cdef class ParallelConnectedComponents(Algorithm):
 cdef extern from "<networkit/components/StronglyConnectedComponents.hpp>":
 
 	cdef cppclass _StronglyConnectedComponents "NetworKit::StronglyConnectedComponents":
-		_StronglyConnectedComponents(_Graph G, bool_t iterativeAlgo) except +
+		_StronglyConnectedComponents(_Graph G, bool_t) except +
 		void run() nogil except +
-		void runIteratively() nogil except +
-		void runRecursively() nogil except +
 		count numberOfComponents() except +
 		count componentOfNode(node query) except +
 		_Partition getPartition() except +
+		map[node, count] getComponentSizes() except +
+		vector[vector[node]] getComponents() except +
 
 
 cdef class StronglyConnectedComponents:
-	""" Determines the connected components and associated values for
-		a directed graph.
-
-		By default, the iterative implementation is used. If edges on the graph have been removed,
-		you should switch to the recursive implementation.
-
-		Parameters
-		----------
-		G : networkit.Graph
-			The graph.
-		iterativeAlgo : bool
-			Specifies which implementation to use, by default True for the iterative implementation.
-	"""
 	cdef _StronglyConnectedComponents* _this
 	cdef Graph _G
 
 	def __cinit__(self, Graph G, iterativeAlgo = True):
+		""" Computes the strongly connected components of a directed graph.
+
+			Parameters
+			----------
+			G : networkit.Graph
+				The graph.
+			iterativeAlgo : bool
+				Whether to use the iterative algorithm or the recursive one.
+		"""
+		if not iterativeAlgo:
+			from warnings import warn
+			warn("The recursive implementation of StronglyConnectedComponents has been deprecated.")
 		self._G = G
 		self._this = new _StronglyConnectedComponents(G._this, iterativeAlgo)
 
@@ -6816,28 +6815,71 @@ cdef class StronglyConnectedComponents:
 		del self._this
 
 	def run(self):
+		"""
+		Runs the algorithm.
+		"""
 		with nogil:
 			self._this.run()
 		return self
 
-	def runIteratively(self):
-		with nogil:
-			self._this.runIteratively()
-		return self
-
-	def runRecursively(self):
-		with nogil:
-			self._this.runRecursively()
-		return self
-
 	def getPartition(self):
+		"""
+		Returns a Partition object representing the strongly connected components.
+
+		Returns
+		-------
+		Partition
+			The strongly connected components.
+		"""
 		return Partition().setThis(self._this.getPartition())
 
 	def numberOfComponents(self):
+		"""
+		Returns the number of strongly connected components of the graph.
+
+		Returns
+		-------
+		int
+			The number of strongly connected components.
+		"""
 		return self._this.numberOfComponents()
 
-	def componentOfNode(self, v):
-		return self._this.componentOfNode(v)
+	def componentOfNode(self, u):
+		"""
+		Returns the component of node `u`.
+
+		Parameters
+		----------
+		u : node
+			A node in the graph.
+
+		Returns
+		int
+			The component of node `u`.
+		"""
+		return self._this.componentOfNode(u)
+
+	def getComponentSizes(self):
+		"""
+		Returns a map with the component indexes as keys, and their size as values.
+
+		Returns
+		-------
+		map[index, count]
+			Map with component indexes as keys, and their size as values.
+		"""
+		return self._this.getComponentSizes()
+
+	def getComponents(self):
+		"""
+		Returns a list of components.
+
+		Returns
+		-------
+		list[list[node]]
+			A list of components.
+		"""
+		return self._this.getComponents()
 
 
 cdef extern from "<networkit/components/WeaklyConnectedComponents.hpp>":

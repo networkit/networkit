@@ -1,70 +1,145 @@
 /*
- * StronglyConnectedComponents.h
+ * StronglyConnectedComponents.hpp
  *
  *  Created on: 01.06.2014
- *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
+ *      Authors: Klara Reichard <klara.reichard@gmail.com>
+ *               Marvin Ritter <marvin.ritter@gmail.com>
+ *               Obada Mahdi <omahdi@gmail.com>
+ *               Eugenio Angriman <angrimae@hu-berlin.de>
  */
+
+// networkit-format
 
 #ifndef NETWORKIT_COMPONENTS_STRONGLY_CONNECTED_COMPONENTS_HPP_
 #define NETWORKIT_COMPONENTS_STRONGLY_CONNECTED_COMPONENTS_HPP_
 
+#include <map>
+#include <vector>
+
+#include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
+
+#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 
 /**
  * @ingroup components
- * Determines the strongly connected components of an directed graph.
+ *
  */
-class StronglyConnectedComponents {
+class StronglyConnectedComponents final : public Algorithm {
+
 public:
-    StronglyConnectedComponents(const Graph& G, bool iterativeAlgo=true);
+    /**
+     * Determines the strongly connected components of a directed graph using Tarjan's algorithm.
+     *
+     * @param G Graph A directed graph.
+     */
+    StronglyConnectedComponents(const Graph &G);
 
     /**
-     * This method determines the connected components for the graph g
-     * (by default: iteratively).
+     * Determines the strongly connected components of a directed graph using Tarjan's algorithm.
+     *
+     * @param G Graph A directed graph.
+     * @param iterativeAlgo bool Whether to use the iterative algorithm or the recursive one.
+     *
+     * This constructor has been deprecated because the recursive algorithm has been deprecated.
      */
-    void run();
+    TLX_DEPRECATED(StronglyConnectedComponents(const Graph &G, bool iterativeAlgo));
+
+    /**
+     * Runs the algorithm.
+     */
+    void run() override;
 
     /**
      * This method determines the connected components for the graph g
      * (iterative implementation).
+     *
+     * This method is deprecated, run() already uses the iterative implementation.
      */
-    void runIteratively();
+    void TLX_DEPRECATED(runIteratively());
 
     /**
      * This method determines the connected components for the graph g
      * (recursive implementation).
-     */
-    void runRecursively();
-
-    /**
-     * This method returns the number of connected components.
-     */
-    count numberOfComponents();
-
-    /**
-     * This method returns the the component in which node query is situated.
      *
-     * @param[in]	query	the node whose component is asked for
+     * This method is deprecated, use run().
      */
-    count componentOfNode(node u);
-
+    void TLX_DEPRECATED(runRecursively());
 
     /**
-     * Return a Partition that represents the components
+     * Return the number of connected components.
+     *
+     * @return count The number of components of the graph.
      */
-    Partition getPartition();
+    count numberOfComponents() const {
+        assureFinished();
+        return componentIndex;
+    }
 
+    /**
+     * Returns the component of the input node.
+     *
+     * @param[in] u The input node.
+     * @return count The index of the component of the input node.
+     */
+    index componentOfNode(node u) const {
+        assureFinished();
+        assert(G->hasNode(u));
+        return component[u];
+    }
+
+    /**
+     * Return a Partition object that represents the components.
+     *
+     * @return Partition Partitioning of the strongly connected components.
+     */
+    Partition getPartition() const {
+        assureFinished();
+        return Partition(component);
+    }
+
+    /**
+     * Return a map with the component indexes as keys, and their size as values.
+     *
+     * @return std::map<index, count> Map with components indexes as keys, and their size as values.
+     */
+    std::map<node, count> getComponentSizes() const {
+        assureFinished();
+
+        std::vector<count> componentSizes(componentIndex, 0);
+        G->forNodes([&](const node u) { ++componentSizes[component[u]]; });
+
+        std::map<node, count> result;
+        for (index i = 0; i < componentIndex; ++i)
+            result[i] = componentSizes[i];
+
+        return result;
+    }
+
+    /**
+     * Return a list of components.
+     *
+     * @return std::vector<std::vector<node>> List of components.
+     */
+    std::vector<std::vector<node>> getComponents() const {
+        assureFinished();
+        std::vector<std::vector<node>> result(componentIndex);
+
+        G->forNodes([&](const node u) { result[component[u]].push_back(u); });
+
+        return result;
+    }
 
 private:
-    const Graph* G;
+    const Graph *G;
     bool iterativeAlgo;
-    Partition component;
+    std::vector<index> component;
+    index componentIndex;
 };
 
-}
-
+} // namespace NetworKit
 
 #endif // NETWORKIT_COMPONENTS_STRONGLY_CONNECTED_COMPONENTS_HPP_

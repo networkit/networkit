@@ -1220,6 +1220,7 @@ TEST_P(CentralityGTest, testTopCloseness) {
 TEST_F(CentralityGTest, testTopHarmonicClosenessDirected) {
     count size = 400;
     count k = 10;
+    Aux::Random::setSeed(42, false);
     Graph G1 = DorogovtsevMendesGenerator(size).generate();
     Graph G(G1.upperNodeIdBound(), false, true);
     G1.forEdges([&](node u, node v) {
