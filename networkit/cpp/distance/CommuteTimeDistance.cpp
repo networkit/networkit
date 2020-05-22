@@ -11,12 +11,15 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/distance/CommuteTimeDistance.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
 CommuteTimeDistance::CommuteTimeDistance(const Graph& G, double tol): Algorithm(), G(&G), tol(tol), lamg(1e-5) {
     // main purpose of method: preparing LAMG
-
+    if(G.isDirected()) 
+        throw std::runtime_error("Commute time distance is only supported for undirected graphs.");
+    
     // construct matrix from graph
     CSRMatrix matrix = CSRMatrix::laplacianMatrix(G);
 
@@ -150,14 +153,7 @@ void CommuteTimeDistance::runParallelApproximation() {
 double CommuteTimeDistance::distance(node u, node v) {
     assureFinished();
 
-    // compute volume
-    double volG = 0.0;
-    if (! G->isWeighted()) {
-        volG = 2.0 * G->numberOfEdges();
-    }
-    else {
-        volG = 2.0 * G->totalEdgeWeight();
-    }
+    double volG = GraphTools::volume(*G);
 
     if (exactly) {
         return sqrt(distances[u][v] * volG);
@@ -188,13 +184,12 @@ double CommuteTimeDistance::runSinglePair(node u, node v) {
     lamg.solve(rhs, solution);
     double diff = solution[u] - solution[v];
     dist = fabs(diff);
-    return sqrt(dist* G->numberOfEdges());
+    return sqrt(dist * GraphTools::volume(*G));
 }
 
 double CommuteTimeDistance::runSingleSource(node u) {
     count n = G->numberOfNodes();
     double dist = 0.0;
-    double sum = 0.0;
     Vector zeroVector(n, 0.0);
     // set up solution vector and status
     std::vector<Vector> rhs(n, Vector(n));
@@ -216,11 +211,10 @@ double CommuteTimeDistance::runSingleSource(node u) {
     G->forNodes([&](node i){
         if (i != u) {
             double diff = solution[i][u] - solution[i][i];
-            dist = fabs(diff);
-            sum += sqrt(dist);
+            dist += diff * diff;
         }
     });
-    return sum * sqrt(G->numberOfEdges());
+    return sqrt(dist * GraphTools::volume(*G));
 }
 
 }
