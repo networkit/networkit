@@ -13,7 +13,7 @@ namespace NetworKit {
     template<typename T>
     EdgeScore<T>::EdgeScore(const Graph& G) : Algorithm(), G(&G), scoreData() {
         if (G.isDirected()) {
-            WARN("Application to directed graphs is not well tested");
+            WARN("EdgeScore is not well tested on directed graphs");
         }
     }
 

@@ -1,4 +1,6 @@
 networkit_add_test(sparsification LocalDegreeGTest)
+networkit_add_test(sparsification GlobalThresholdFilterGTest
+    generators)
 networkit_add_test(sparsification LocalSimilarityGTest
     edgescores)
 networkit_add_test(sparsification MultiscaleBackboneGTest)
