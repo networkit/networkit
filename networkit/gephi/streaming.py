@@ -29,6 +29,13 @@ class GephiStreamingClient:
         print("Did you start the streaming master server in gephi and provide the name of your workspace?")
         print("If the workspace is named 'Workspace 0', the corresponding url is http://localhost:8080/workspace0 (adapt port)")
 
+    def _edgeId(self, u, v):
+        """ Return the edge id that is exported to Gephi
+        """
+        if self.directed:
+            return str(u) + '->' + str(v)
+        return str(min(u,v)) + '-' + str(max(u,v))
+
     def exportGraph(self, graph):
         """ Exports the given graph to gephi. No attributes or weights are exported.
         Please note that only graphs with indexed edges can be exported, so
@@ -41,21 +48,17 @@ class GephiStreamingClient:
             graph.indexEdges()
             self.directed = graph.isDirected()
 
-            self._exportNodes(graph.iterNodes())
+            self._exportNodes(graph)
 
             for u, v in graph.iterEdges():
-                if self.directed:
-                    edgeId = str(u) + '->' + str(v)
-                else:
-                    edgeId = str(min(edge[0],edge[1])) + '-' + str(max(edge[0],edge[1]))
-                self._pygephi.add_edge(edgeId, edge[0], edge[1], self.directed)
+                self._pygephi.add_edge(self._edgeId(u, v), u, v, self.directed)
 
             self._pygephi.flush()
             self.graphExported = True
         except _urllib.error.URLError as e:
             self._urlError(e)
 
-    def _exportNodes(self, nodes):
+    def _exportNodes(self, graph):
         nAttrs = {'size': 2.0, 'r': 0.6, 'g': 0.6, 'b': 0.6, 'y':1.0}
 
         # the default approximately shows -2000 to 2000, so we want to
@@ -63,15 +66,13 @@ class GephiStreamingClient:
         # may have exactly the same coordinates, thus a deterministic
         # distribution scheme is used.
         NODE_AREA_SIZE = 2000
-        nodesPerSquareSide = 0 if len(nodes) == 0 else math.ceil(math.sqrt(len(nodes)))
+        nodesPerSquareSide = 0 if graph.numberOfNodes() == 0 else math.ceil(math.sqrt(graph.numberOfNodes()))
         stepSize = NODE_AREA_SIZE / nodesPerSquareSide
         offset = NODE_AREA_SIZE / 2
 
-        nodeNumber = 0
-        for node in nodes:
+        for nodeNumber, node in enumerate(graph.iterNodes()):
             nAttrs['x'] = (nodeNumber % nodesPerSquareSide) * stepSize - offset
             nAttrs['y'] = (nodeNumber // nodesPerSquareSide) * stepSize - offset
-            nodeNumber += 1
             self._pygephi.add_node(str(node), **nAttrs)
 
     def exportAdditionalEdge(self, u, v):
@@ -86,11 +87,7 @@ class GephiStreamingClient:
             print("Error: Cannot add edges. Export Graph first!")
             return
         try:
-            if self.directed:
-                edgeId = str(u) + '->' + str(v)
-            else:
-                edgeId = str(min(u,v)) + '-' + str(max(u,v))
-            self._pygephi.add_edge(edgeId, u, v, self.directed)
+            self._pygephi.add_edge(self._edgeId(u, v), u, v, self.directed)
             self._pygephi.flush()
         except _urllib.error.URLError as e:
             self._urlError(e)
@@ -101,11 +98,7 @@ class GephiStreamingClient:
             print("Error: Cannot remove edges. Export Graph first!")
             return
         try:
-            if self.directed:
-                edgeId = str(u) + '->' + str(v)
-            else:
-                edgeId = str(min(u,v)) + '-' + str(max(u,v))
-            self._pygephi.delete_edge(edgeId)
+            self._pygephi.delete_edge(self._edgeId(u, v))
             self._pygephi.flush()
         except _urllib.error.URLError as e:
             self._urlError(e)
@@ -123,17 +116,9 @@ class GephiStreamingClient:
                 elif ev.type == ev.NODE_REMOVAL:
                     self._pygephi.delete_node(str(ev.u))
                 elif ev.type == ev.EDGE_ADDITION:
-                    if self.directed:
-                        edgeId = str(ev.u) + '->' + str(ev.v)
-                    else:
-                        edgeId = str(min(ev.u,ev.v)) + '-' + str(max(ev.u,ev.v))
-                    self._pygephi.add_edge(edgeId, ev.u, ev.v, self.directed)
+                    self._pygephi.add_edge(self._edgeId(ev.u, ev.v), ev.u, ev.v, self.directed)
                 elif ev.type == ev.EDGE_REMOVAL:
-                    if self.directed:
-                        edgeId = str(ev.u) + '->' + str(ev.v)
-                    else:
-                        edgeId = str(min(ev.u,ev.v)) + '-' + str(max(ev.u,ev.v))
-                    self._pygephi.delete_edge(edgeId)
+                    self._pygephi.delete_edge(self._edgeId(ev.u, ev.v))
                 elif ev.type == ev.EDGE_WEIGHT_UPDATE:
                     print("Edge weights not yet supported in gephi streaming!")
                 elif ev.type == ev.EDGE_WEIGHT_INCREMENT:
@@ -192,17 +177,13 @@ class GephiStreamingClient:
             if len(values) != graph.upperEdgeIdBound():
                 print("Warning: Upper edge id bound (", graph.upperEdgeIdBound(), ") does not match #Values (", len(values), ").")
 
-            idx = 0
-            for edge in graph.iterEdges():
-                if self.directed:
-                    edgeId = str(u) + '->' + str(v)
-                    edgetype = "Directed"
-                else:
-                    edgeId = str(min(edge[0],edge[1])) + '-' + str(max(edge[0],edge[1]))
-                    edgetype = "Undirected"
-                eAttrs = {attribute_name:values[graph.edgeId(edge[0], edge[1])], "Type":edgetype}#still need to use the old edge to access the graph array
-                self._pygephi.change_edge(edgeId, edge[0], edge[1], self.directed, **eAttrs)
-                idx += 1
+            edgetype = "Directed" if self.directed else "Undirected"
+
+            def exportEdgeV(u, v, _w, eid):
+                eAttrs = {attribute_name:values[eid], "Type":edgetype}
+                self._pygephi.change_edge(self._edgeId(u, v), u, v, self.directed, **eAttrs)
+
+            graph.forEdges(exportEdgeV)
 
             self._pygephi.flush()
         except _urllib.error.URLError as e:
