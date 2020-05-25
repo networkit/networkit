@@ -137,7 +137,7 @@ GroupCloseness::scoreOfGroup(const std::vector<node> &group) const {
         });
     }
 
-    double dSum = std::accumulate(distance.begin(), distance.end(), 0);
+    double dSum = std::accumulate(distance.begin(), distance.end(), 0.0);
     return dSum == 0
                ? 0.
                : ((double)G.upperNodeIdBound() - (double)group.size()) / dSum;
