@@ -59,7 +59,7 @@ public:
      * @param t Target node.
      * @return The predecessors of @a t on all shortest paths from source to @a t.
      */
-    std::vector<node> getPredecessors(node t) const;
+    const std::vector<node>& getPredecessors(node t) const;
 
 protected:
     bool storePreds = true;
@@ -75,7 +75,7 @@ inline void DynSSSP::setTargetNode(const node t) {
     target = t;
 }
 
-inline std::vector<node> DynSSSP::getPredecessors(node t) const {
+inline const std::vector<node>& DynSSSP::getPredecessors(node t) const {
     if (! storePreds) {
         throw std::runtime_error("predecessors have not been stored");
     }
