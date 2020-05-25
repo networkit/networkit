@@ -2,8 +2,11 @@ import os
 import glob
 import sys
 import tempfile
+import subprocess
 
 READONLY = True
+VERBOSE = False
+SHOW_DIFFS = True
 
 def setup(args = None):
 	"""
@@ -14,11 +17,19 @@ def setup(args = None):
 
 	if "-h" in args or "--help" in args:
 		print("-h | --help    Print this message\n"
+			  "-v | --verbose Report more details\n"
+			  "-q | --nodiff  Do not report diffs of changes\n"
 			  "-w | --write   Apply fixes to source code file\n")
 		sys.exit(0)
 
 	global READONLY
 	READONLY = not ("-w" in args)
+
+	global VERBOSE
+	VERBOSE = ("-v" in args or "--verbose" in args)
+
+	global SHOW_DIFFS
+	SHOW_DIFFS = not ("-q" in args or "--nodiff" in args)
 
 def isReadonly():
 	"""
@@ -26,6 +37,16 @@ def isReadonly():
 	In this case, FileRewriter.commit is silently deactivated.
 	"""
 	return READONLY
+
+def isVerbose():
+	"""
+	Returns whether user requested verbose output (default: False).
+	"""
+	return VERBOSE
+
+def doReportDiff():
+	"Returns whether user requested diffs (default: True)."
+	return SHOW_DIFFS
 
 def reportChange(msg):
 	"""
@@ -77,13 +98,22 @@ def getCXXFiles(includeSources = True, includeHeaders = True):
 
 	return files
 
+def computeAndReportDiff(originalFilename, formatedFilename):
+	"""Compute a colorful diff between the original file and the formatted one"""
+	p = subprocess.Popen(["diff", "-a", "--color=always", originalFilename, formatedFilename],
+						 stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=-1)
+	output, _ = p.communicate()
+
+	print("-" * 20, "Begin of diff", "-" * 20)
+	print("Input file: ", originalFilename)
+	sys.stdout.buffer.write(output)
+	print("-" * 21, "End of diff", "-" * 21)
+
 class FileRewriter:
 	"""
-	The FileRewriter acts as an wrapper to safely
-	read and update a text file provided to the constructor.
-	To read the file iterate for lines().
-	To write a (un)modified line call write(line).
-	Once your done, call commit() to replace the file atomically.
+	The FileRewriter acts as a wrapper to safely read and update a text file provided to the constructor.
+	To read the file iterate for lines(). To write a (un)modified line call write(line).
+	Once you are done, call commit() to replace the file atomically.
 	Observe that commit will do nothing if the nktooling module
 	is in readonly mode (which is the default).
 	"""
@@ -117,22 +147,53 @@ class FileRewriter:
 		"""
 		return "".join( self.in_lines ) == "".join( self.out_lines )
 
-	def commit(self, force = False):
+	def commit(self, force = False, outputDiff = None):
 		"""
-		Writes buffered lines into the specified in the constructor.
+		Writes buffered lines into the file specified in the constructor.
 		Writes are carried out atomically, i.e. we first write into a temporary file
 		and then replace the original.
-		If the module is currently readonly (which is the default, see setup) no change
-		is carried out.
+		If the module is currently readonly (which is the default, see setup),
+		the original file is not replaced.
 		This function may only be called if not reads are taking place currently (e.g.,
 		via lines())
+
+		If outputDiff is None, its value is copied from doReportDiff(). If it is True,
+		Diff is reported to the user
 		"""
 		assert(not self.reading)
-		if isReadonly() and not force:
+
+		doReport = doReportDiff() if outputDiff is None else outputDiff
+		doWrite = isReadonly() and not force
+
+		if not (doWrite or doReport):
 			return
 
 		with tempfile.TemporaryDirectory(dir=getNetworKitRoot()) as dir:
 			filename = os.path.join(dir, "Writer")
 			with open(filename, "w") as out:
 				out.write("".join(self.out_lines))
-			os.replace(filename, self.path)
+
+			if doReport:
+				computeAndReportDiff(self.path, filename)
+
+			if doWrite:
+				os.replace(filename, self.path)
+
+	def reportDiff(self, force = False):
+		"""
+		Prints a diff between the original file and the changes to STDOUT.
+		If the module is configured not to show diffs and force is False (default),
+		no output is generated
+		"""
+		if not doReportDiff() and not force:
+			return
+
+		with tempfile.TemporaryDirectory(dir=getNetworKitRoot()) as dir:
+			filename = os.path.join(dir, "Diff")
+			with open(filename, "w") as out:
+				out.write("".join(self.out_lines))
+			reportDiff(self.path, filename)
+
+	def _writeToFile(self, fileHandle):
+		"""INTERNAL USE ONLY. Writes commited lines into a previously opened file."""
+		fileHandle.write("".join(self.out_lines))

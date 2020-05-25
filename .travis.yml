@@ -310,7 +310,7 @@ jobs:
           packages: ['clang-format-8']
       script:
         - set -e
-        - ./check_code.sh
+        - ./check_code.sh -v
 
 script:
  - $CXX --version
