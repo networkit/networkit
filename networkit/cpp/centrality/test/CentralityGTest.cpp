@@ -24,6 +24,7 @@
 #include <networkit/centrality/DynTopHarmonicCloseness.hpp>
 #include <networkit/centrality/EigenvectorCentrality.hpp>
 #include <networkit/centrality/EstimateBetweenness.hpp>
+#include <networkit/centrality/GedWalk.hpp>
 #include <networkit/centrality/GroupCloseness.hpp>
 #include <networkit/centrality/GroupDegree.hpp>
 #include <networkit/centrality/HarmonicCloseness.hpp>
@@ -1758,6 +1759,48 @@ TEST_F(CentralityGTest, testApproxSpanningEdge) {
     G.forEdges([&](node /*u*/, node /*v*/, edgeweight /*w*/, edgeid eid) {
         EXPECT_NEAR(apxScores[eid], exactScores[eid], 2*eps);
     });
+}
+
+TEST_P(CentralityGTest, testGedWalk) {
+    Aux::Random::setSeed(42, true);
+    constexpr count k = 3;
+    constexpr double epsilon = 0.01;
+    auto g = ErdosRenyiGenerator(20, 0.1, isDirected()).generate();
+
+    for (const auto bs : {GedWalk::BoundStrategy::geometric, GedWalk::BoundStrategy::spectral}) {
+        for (const auto gs : {GedWalk::GreedyStrategy::lazy, GedWalk::GreedyStrategy::stochastic}) {
+            GedWalk gedWalk(g, k, epsilon, -1.0, bs, gs);
+            gedWalk.run();
+
+            const auto apxScore = gedWalk.getApproximateScore();
+            EXPECT_GE(apxScore, 0);
+            const auto apxGroup = gedWalk.groupMaxGedWalk();
+            EXPECT_EQ(std::unordered_set<node>(apxGroup.begin(), apxGroup.end()).size(), k);
+
+            double maxScore = 0.;
+            std::vector<node> group;
+            std::vector<node> max_group;
+            std::vector<bool> reference(g.numberOfNodes(), false);
+            std::fill(reference.end() - k, reference.end(), true);
+
+            do {
+                group.clear();
+                for (count i = 0; i < reference.size(); ++i) {
+                    if (reference[i]) {
+                        group.push_back(i);
+                    }
+                }
+
+                const auto curScore = gedWalk.scoreOfGroup(group.begin(), group.end(), epsilon);
+                if (curScore > maxScore) {
+                    maxScore = curScore;
+                    max_group = group;
+                }
+            } while (std::next_permutation(reference.begin(), reference.end()));
+
+            EXPECT_GE(apxScore, (1. - 1. / std::exp(1)) * maxScore - epsilon);
+        }
+    }
 }
 
 } /* namespace NetworKit */

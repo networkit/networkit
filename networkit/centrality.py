@@ -12,9 +12,12 @@ ApproxBetweenness2, EstimateBetweenness, DynApproxBetweenness, Closeness, Harmon
 KatzCentrality, LocalClusteringCoefficient, ApproxCloseness, LocalPartitionCoverage, Sfigality, SpanningEdgeCentrality,\
 PermanenceCentrality, TopCloseness, TopHarmonicCloseness, DynTopHarmonicCloseness, DynBetweenness,\
 GroupDegree, GroupCloseness, DynBetweennessOneNode, LaplacianCentrality, ApproxGroupBetweenness, DynKatzCentrality,\
-KadabraBetweenness, ApproxSpanningEdge
+KadabraBetweenness, ApproxSpanningEdge, GedWalk
+
 from _NetworKit import _ClosenessVariant as ClosenessVariant
 from _NetworKit import _PageRankNorm as Norm
+from _NetworKit import _BoundStrategy as BoundStrategy
+from _NetworKit import _GreedyStrategy as GreedyStrategy
 
 # local imports
 from networkit.algebraic import adjacencyEigenvector, PageRankMatrix, symmetricEigenvectors
