@@ -23,7 +23,7 @@ def coloringToColorList(G, coloring):
 
 	nColors = len(coloring.keys())
 
-	for v in G.nodes():
+	for v in G.iterNodes():
 		clist.append(float(coloring[v]) / nColors)
 
 	return clist

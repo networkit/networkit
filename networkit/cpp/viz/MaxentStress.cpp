@@ -5,19 +5,19 @@
  *      Author: Henning Meyerhenke and Michael Wegner
  */
 
-#include <networkit/viz/MaxentStress.hpp>
+#include <cmath>
+#include <queue>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/PrioQueue.hpp>
-
 #include <networkit/components/ConnectedComponents.hpp>
-
+#include <networkit/distance/BFS.hpp>
+#include <networkit/distance/Dijkstra.hpp>
 #include <networkit/numerics/LAMG/Lamg.hpp>
 #include <networkit/numerics/ConjugateGradient.hpp>
 #include <networkit/numerics/Preconditioner/DiagonalPreconditioner.hpp>
 #include <networkit/numerics/Preconditioner/IdentityPreconditioner.hpp>
-
-#include <cmath>
-#include <queue>
+#include <networkit/viz/MaxentStress.hpp>
 
 namespace NetworKit {
 
@@ -60,7 +60,7 @@ MaxentStress::ResultStats MaxentStress::runAlgo() {
 
 void MaxentStress::run() {
     // Check if the graph is connected. We currently can't handle unconnected graphs.
-    ConnectedComponents cc(this->G);
+    ConnectedComponents cc(*G);
     cc.run();
     if (cc.numberOfComponents() != 1) {
         throw std::invalid_argument( "ERROR: The supplied graph is not connected. Currently MaxentStress only handles connected graphs.");
@@ -74,11 +74,10 @@ void MaxentStress::run() {
     setupWeightedLaplacianMatrix(); // create weighted Laplacian matrix and setup the solver
     t.stop();
     solveTime += t.elapsedMicroseconds();
-    CoordinateVector oldCoordinates(dim, Vector(this->G.upperNodeIdBound()));
+    CoordinateVector oldCoordinates(dim, Vector(G->upperNodeIdBound()));
 
     if (!coordinatesProvided && !hasRun) {
         randomSphereCoordinates(oldCoordinates);
-//		randomInitCoordinates(oldCoordinates);
     } else {
 #pragma omp parallel for
         for (omp_index i = 0; i < static_cast<omp_index>(vertexCoordinates.size()); ++i) {
@@ -95,7 +94,7 @@ void MaxentStress::run() {
     double currentAlpha = alpha;
     bool converged = false;
 
-    CoordinateVector repulsiveForces(dim, Vector(this->G.numberOfNodes(), 0));
+    CoordinateVector repulsiveForces(dim, Vector(G->numberOfNodes(), 0));
     count currentLowerBound = 0;
     count newLowerBound = 0;
     while (!converged) { // solve up to maxSolvesPerAlpha linear systems
@@ -106,7 +105,7 @@ void MaxentStress::run() {
             t.start();
             newLowerBound = floor(5 * std::log(numSolves));
             if (newLowerBound != currentLowerBound) {
-                repulsiveForces = CoordinateVector(dim, Vector(G.numberOfNodes(), 0));
+                repulsiveForces = CoordinateVector(dim, Vector(G->numberOfNodes(), 0));
                 Octree<double> octree(oldCoordinates);
                 approxRepulsiveForces(oldCoordinates, octree, 0.6, repulsiveForces);
                 currentLowerBound = newLowerBound;
@@ -115,7 +114,7 @@ void MaxentStress::run() {
             approxTime += t.elapsedMicroseconds();
 
             t.start();
-            CoordinateVector rhs(dim, Vector(this->G.numberOfNodes()));
+            CoordinateVector rhs(dim, Vector(G->numberOfNodes()));
             computeCoordinateLaplacianTerm(oldCoordinates, rhs);
             t.stop();
             rhsTime += t.elapsedMicroseconds();
@@ -133,14 +132,14 @@ void MaxentStress::run() {
             // correcting rhs to be zero-sum
             Point<double> sum(oldCoordinates.size());
             for (index d = 0; d < dim; ++d) {
-                for (index i = 0; i < G.numberOfNodes(); ++i) {
+                for (index i = 0; i < G->numberOfNodes(); ++i) {
                     sum[d] += rhs[d][i];
                 }
-                sum[d] /= G.numberOfNodes();
+                sum[d] /= G->numberOfNodes();
             }
 
 #pragma omp parallel for
-            for (omp_index i = 0; i < static_cast<omp_index>(G.numberOfNodes()); ++i) {
+            for (omp_index i = 0; i < static_cast<omp_index>(G->numberOfNodes()); ++i) {
                 for (index d = 0; d < dim; ++d) {
                     rhs[d][i] -= sum[d];
                 }
@@ -169,7 +168,7 @@ void MaxentStress::run() {
 
     // write coordinates to vertexCoordinates vector
 #pragma omp parallel for
-    for (omp_index i = 0; i < static_cast<omp_index>(this->G.upperNodeIdBound()); ++i) {
+    for (omp_index i = 0; i < static_cast<omp_index>(G->upperNodeIdBound()); ++i) {
         for (index d = 0; d < dim; ++d) {
             this->vertexCoordinates[i][d] = newCoordinates[d][i];
         }
@@ -188,7 +187,7 @@ void MaxentStress::run() {
 }
 
 double MaxentStress::computeScalingFactor() {
-    count n = this->G.numberOfNodes();
+    count n = G->numberOfNodes();
     bool weighted = false;
     Graph augmentedGraph(n, true, false);
     for (node u = 0; u < n; ++u) {
@@ -238,7 +237,7 @@ void MaxentStress::scaleLayout() {
 double MaxentStress::fullStressMeasure() {
     double energy = 0.0;
 
-    count n = this->G.numberOfNodes();
+    count n = G->numberOfNodes();
     bool weighted = false;
     Graph augmentedGraph(n, true, false);
     for (node u = 0; u < n; ++u) {
@@ -252,7 +251,7 @@ double MaxentStress::fullStressMeasure() {
     for (omp_index u = 0; u < static_cast<omp_index>(n); ++u) {
         std::unique_ptr<SSSP> sssp = weighted? std::move(std::unique_ptr<SSSP>(new Dijkstra(augmentedGraph, u, false, false))) : std::move(std::unique_ptr<SSSP>(new BFS(augmentedGraph, u, false, false)));
         sssp->run();
-        this->G.forNodes([&](node v) {
+        G->forNodes([&](node v) {
             double geometricDist = this->vertexCoordinates[u].distance(this->vertexCoordinates[v]);
             if (sssp->distance(v) < 1e-5) return;
             energy += (geometricDist - sssp->distance(v))*(geometricDist - sssp->distance(v))/(sssp->distance(v)*sssp->distance(v));
@@ -265,7 +264,7 @@ double MaxentStress::fullStressMeasure() {
 double MaxentStress::maxentMeasure() {
     double energy  = 0;
     double entropy = 0;
-    count n = this->G.numberOfNodes();
+    count n = G->numberOfNodes();
 
     Graph augmentedGraph(n, true, false);
     for (node u = 0; u < n; ++u) {
@@ -341,7 +340,7 @@ bool MaxentStress::isConverged(const CoordinateVector& newCoords, const Coordina
 
 
 void MaxentStress::setupWeightedLaplacianMatrix() {
-    count n = this->G.numberOfNodes();
+    count n = G->numberOfNodes();
     std::vector<index> rowIdx(n+1, 0);
     std::vector<index> columnIdx(n + knownDistancesCardinality, 0); // currently only supports simple graphs
     std::vector<double> nonzeros(columnIdx.size());
@@ -376,7 +375,7 @@ void MaxentStress::setupWeightedLaplacianMatrix() {
 }
 
 void MaxentStress::computeCoordinateLaplacianTerm(const CoordinateVector& coordinates, CoordinateVector& rhs) {
-    count n = G.numberOfNodes();
+    count n = G->numberOfNodes();
 #pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
         double weightedDegree = 0.0;
@@ -396,7 +395,7 @@ void MaxentStress::computeCoordinateLaplacianTerm(const CoordinateVector& coordi
 }
 
 CoordinateVector MaxentStress::computeRepulsiveForces(const CoordinateVector& coordinates, CoordinateVector &b) const {
-    count n = this->G.numberOfNodes();
+    count n = G->numberOfNodes();
     double qSign = sign(this->q);
     double q2 = (q+2)/2;
 
@@ -427,7 +426,7 @@ CoordinateVector MaxentStress::computeRepulsiveForces(const CoordinateVector& co
 }
 
 void MaxentStress::approxRepulsiveForces(const CoordinateVector& coordinates, const Octree<double>& octree, const double theta, CoordinateVector& b) const {
-    count n = this->G.numberOfNodes();
+    count n = G->numberOfNodes();
     double qSign = sign(q);
     double q2 = (q+2)/2;
 
@@ -455,8 +454,8 @@ void MaxentStress::computeKnownDistances(const count k, const GraphDistance grap
     switch (graphDistance) {
     case EDGE_WEIGHT:
         // add edges to known distances
-        G.parallelForNodes([&](node u) {
-            G.forNeighborsOf(u, [&](node v, edgeweight w) {
+        G->parallelForNodes([&](node u) {
+            G->forNeighborsOf(u, [&](node v, edgeweight w) {
                 knownDistances[u].push_back({v, w});
             });
             // add k-neighborhood
@@ -466,7 +465,7 @@ void MaxentStress::computeKnownDistances(const count k, const GraphDistance grap
         });
         break;
     case ALGEBRAIC_DISTANCE:
-        computeAlgebraicDistances(G, k);
+        computeAlgebraicDistances(*G, k);
         break;
     default:
         break;
@@ -484,28 +483,28 @@ void MaxentStress::computeKnownDistances(const count k, const GraphDistance grap
 
     // check if graph has more than 30 percent degree-1 vertices: if yes, set q to 0.8
     count numDegreeOneNodes = 0;
-    G.forNodes([&](node u) {
-        numDegreeOneNodes += G.degree(u) == 1;
+    G->forNodes([&](node u) {
+        numDegreeOneNodes += G->degree(u) == 1;
     });
 
-    if ((double) numDegreeOneNodes / (double) G.numberOfNodes() > 0.3) {
+    if ((double) numDegreeOneNodes / (double) G->numberOfNodes() > 0.3) {
         q = 0.8;
-        INFO("Setting q to 0.8 because we have ", (double) numDegreeOneNodes / (double) G.numberOfNodes() * 100, " % degree-1 nodes");
+        INFO("Setting q to 0.8 because we have ", (double) numDegreeOneNodes / (double) G->numberOfNodes() * 100, " % degree-1 nodes");
     }
 }
 
 void MaxentStress::addKNeighborhoodOfVertex(const node u, const count k) {
-    if (this->G.isWeighted()) {
+    if (G->isWeighted()) {
         // first compute depths with bfs
         std::queue<node> Q;
-        std::vector<count> depth(this->G.numberOfNodes(), none);
+        std::vector<count> depth(G->numberOfNodes(), none);
         count numVerticesToVisit = 0;
 
         Q.push(u);
         depth[u] = 0;
         while (!Q.empty()) {
             node v = Q.front(); Q.pop();
-            this->G.forNeighborsOf(v, [&](node w, edgeweight) {
+            G->forNeighborsOf(v, [&](node w, edgeweight) {
                 if (depth[w] == none) { // node has not been visited yet
                     depth[w] = depth[v]+1;
                     if (depth[w] > 1) numVerticesToVisit++;
@@ -517,8 +516,8 @@ void MaxentStress::addKNeighborhoodOfVertex(const node u, const count k) {
             });
         }
 
-        Aux::PrioQueue<edgeweight, node> PQ(this->G.numberOfNodes());
-        std::vector<edgeweight> dist(this->G.numberOfNodes(), none);
+        Aux::PrioQueue<edgeweight, node> PQ(G->numberOfNodes());
+        std::vector<edgeweight> dist(G->numberOfNodes(), none);
 
         dist[u] = 0;
         PQ.insert(0, u);
@@ -528,7 +527,7 @@ void MaxentStress::addKNeighborhoodOfVertex(const node u, const count k) {
                 knownDistances[u].push_back({v, dist[v]});
                 numVerticesToVisit--;
             }
-            this->G.forNeighborsOf(v, [&](node w, edgeweight weight) {
+            G->forNeighborsOf(v, [&](node w, edgeweight weight) {
                 if (dist[v] + weight < dist[w]) {
                     dist[w] = dist[v] + weight;
                     PQ.changeKey(dist[w], w);
@@ -537,13 +536,13 @@ void MaxentStress::addKNeighborhoodOfVertex(const node u, const count k) {
         }
     } else {
         std::queue<node> Q;
-        std::vector<count> depth(this->G.numberOfNodes(), none);
+        std::vector<count> depth(this->G->numberOfNodes(), none);
 
         Q.push(u);
         depth[u] = 0;
         while (!Q.empty()) {
             node v = Q.front(); Q.pop();
-            this->G.forNeighborsOf(v, [&](node w, edgeweight) {
+            G->forNeighborsOf(v, [&](node w, edgeweight) {
                 if (depth[w] == none) { // node has not been visited yet
                     depth[w] = depth[v]+1;
 
@@ -564,12 +563,12 @@ void MaxentStress::computeAlgebraicDistances(const Graph& graph, const count k) 
     AlgebraicDistance ad(graph);
     ad.preprocess();
 
-    std::vector<double> minDist(this->G.numberOfNodes(), 1.0);
-    std::vector<double> maxDist(this->G.numberOfNodes(), 0.0);
+    std::vector<double> minDist(G->numberOfNodes(), 1.0);
+    std::vector<double> maxDist(G->numberOfNodes(), 0.0);
     std::vector<double> distances;
     graph.parallelForNodes([&](node u) {
         std::queue<node> Q;
-        std::vector<count> depth(this->G.numberOfNodes(), none);
+        std::vector<count> depth(G->numberOfNodes(), none);
 
         Q.push(u);
         depth[u] = 0;
@@ -588,7 +587,7 @@ void MaxentStress::computeAlgebraicDistances(const Graph& graph, const count k) 
                         if (algebraicDist == 0.0) {
                             algebraicDist = 1e-5;
                         }
-                        algebraicDist /= sqrt(G.degree(u) * G.degree(w));
+                        algebraicDist /= sqrt(G->degree(u) * G->degree(w));
                         knownDistances[u].push_back({w, algebraicDist});
                         if (std::isnan(algebraicDist)) INFO("Warning: nan dist");
                         minDist[u] = std::min(minDist[u], algebraicDist);
@@ -601,7 +600,7 @@ void MaxentStress::computeAlgebraicDistances(const Graph& graph, const count k) 
 
     double minimumDist = minDist[0];
     double maximumDist = maxDist[0];
-    for (node u = 1; u < this->G.numberOfNodes(); ++u) {
+    for (node u = 1; u < G->numberOfNodes(); ++u) {
         minimumDist = std::min(minimumDist, minDist[u]);
         maximumDist = std::max(maximumDist, maxDist[u]);
     }
@@ -614,7 +613,7 @@ void MaxentStress::computeAlgebraicDistances(const Graph& graph, const count k) 
         }
     });
 
-    for (node u = 0; u < this->G.numberOfNodes(); ++u) {
+    for (node u = 0; u < G->numberOfNodes(); ++u) {
         for (const ForwardEdge& edge : knownDistances[u]) {
             node v = edge.head;
             if (u < v) {
@@ -645,11 +644,11 @@ void MaxentStress::randomInitCoordinates(CoordinateVector &coordinates) const {
 void MaxentStress::randomSphereCoordinates(CoordinateVector &coordinates) const {
     // find node with highest degree
     node maxDegNode = 0;
-    count maxDeg = G.degree(maxDegNode);
-    G.forNodes([&](node u) {
-        if (G.degree(u) > maxDeg) {
+    count maxDeg = G->degree(maxDegNode);
+    G->forNodes([&](node u) {
+        if (G->degree(u) > maxDeg) {
             maxDegNode = u;
-            maxDeg = G.degree(u);
+            maxDeg = G->degree(u);
         }
     });
 
@@ -659,13 +658,13 @@ void MaxentStress::randomSphereCoordinates(CoordinateVector &coordinates) const 
         coordinates[d][maxDegNode] = 0.0;
     }
 
-    std::vector<bool> coordinateSet(G.upperNodeIdBound(), false);
+    std::vector<bool> coordinateSet(G->upperNodeIdBound(), false);
     coordinateSet[maxDegNode] = true;
     count numSet = 1;
 
-    while (numSet < G.numberOfNodes()) {
+    while (numSet < G->numberOfNodes()) {
         node start = none;
-        G.forNodes([&](node u) {
+        G->forNodes([&](node u) {
             if (coordinateSet[u]) {
                 start = u;
                 return;
@@ -677,7 +676,7 @@ void MaxentStress::randomSphereCoordinates(CoordinateVector &coordinates) const 
         Q.push(start);
         while (!Q.empty()) {
             node u = Q.front(); Q.pop();
-            G.forNeighborsOf(u, [&](node u, node v, edgeweight w, index) {
+            G->forNeighborsOf(u, [&](node u, node v, edgeweight w, index) {
                 if (!coordinateSet[v]) {
                     Vector p(dim);
                     for (index d = 0; d < dim; ++d) {
@@ -723,8 +722,4 @@ double MaxentStress::squaredLength(const CoordinateVector& coordinates, const in
 
     return length;
 }
-
-
-
-
 } /* namespace NetworKit */

@@ -1,40 +1,40 @@
 /*
- * EdgeScoreLinearizer.h
+ * EdgeScoreLinearizer.cpp
  *
  *  Created on: 18.11.2014
  *      Author: Michael Hamann
  */
 
-#include <networkit/edgescores/EdgeScoreLinearizer.hpp>
 #include <numeric>
 #include <tuple>
-#include <networkit/auxiliary/Random.hpp>
+
 #include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/edgescores/EdgeScoreLinearizer.hpp>
 
 namespace NetworKit {
 
-EdgeScoreLinearizer::EdgeScoreLinearizer(const Graph& G, const std::vector<double>& attribute, bool inverse) : EdgeScore<double>(G), attribute(attribute), inverse(inverse) {
+EdgeScoreLinearizer::EdgeScoreLinearizer(const Graph& G, const std::vector<double>& attribute, bool inverse) : EdgeScore<double>(G), attribute(&attribute), inverse(inverse) {
 }
 
-
 void EdgeScoreLinearizer::run() {
-    if (!G.hasEdgeIds()) {
+    if (!G->hasEdgeIds()) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
-    scoreData.resize(G.upperEdgeIdBound());
+    scoreData.resize(G->upperEdgeIdBound());
 
     // Special case for m = 1
-    if (G.numberOfEdges() == 1) {
-        G.forEdges([&](node, node, edgeid eid) {
+    if (G->numberOfEdges() == 1) {
+        G->forEdges([&](node, node, edgeid eid) {
             scoreData[eid] = 0.5;
         });
     } else {
         typedef std::tuple<edgeweight, index, edgeid> edgeTuple;
-        std::vector<edgeTuple> sorted(G.upperEdgeIdBound(), std::make_tuple(std::numeric_limits<edgeweight>::max(), std::numeric_limits<index>::max(), none));
+        std::vector<edgeTuple> sorted(G->upperEdgeIdBound(), std::make_tuple(std::numeric_limits<edgeweight>::max(), std::numeric_limits<index>::max(), none));
 
-        G.parallelForEdges([&](node, node, edgeid eid) {
-            sorted[eid] = std::make_tuple(attribute[eid], Aux::Random::integer(), eid);
+        G->parallelForEdges([&](node, node, edgeid eid) {
+            sorted[eid] = std::make_tuple((*attribute)[eid], Aux::Random::integer(), eid);
         });
 
         if (inverse) {
@@ -44,10 +44,10 @@ void EdgeScoreLinearizer::run() {
         }
 
         #pragma omp parallel for
-        for (omp_index pos = 0; pos < static_cast<omp_index>(G.upperEdgeIdBound()); ++pos) {
+        for (omp_index pos = 0; pos < static_cast<omp_index>(G->upperEdgeIdBound()); ++pos) {
             edgeid eid = std::get<2>(sorted[pos]);
             if (eid != none) {
-                scoreData[eid] = pos * 1.0 / (G.numberOfEdges()-1); // TODO maybe writing back to sorted and then sorting again by eid could be faster (cache efficiency)?
+                scoreData[eid] = pos * 1.0 / (G->numberOfEdges()-1); // TODO maybe writing back to sorted and then sorting again by eid could be faster (cache efficiency)?
             }
         }
     }

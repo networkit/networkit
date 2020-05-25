@@ -1,19 +1,28 @@
 #include <gtest/gtest.h>
 #include <memory>
 
-#include <networkit/scd/SelectiveCommunityDetector.hpp>
-#include <networkit/scd/PageRankNibble.hpp>
-#include <networkit/scd/GCE.hpp>
-#include <networkit/community/Modularity.hpp>
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/community/Conductance.hpp>
+#include <networkit/community/Modularity.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/io/METISGraphReader.hpp>
-#include <networkit/auxiliary/Log.hpp>
-
+#include <networkit/io/SNAPGraphReader.hpp>
+#include <networkit/scd/GCE.hpp>
+#include <networkit/scd/PageRankNibble.hpp>
+#include <networkit/scd/ApproximatePageRank.hpp>
+#include <networkit/scd/SelectiveCommunityDetector.hpp>
 
 namespace NetworKit {
 
 class SCDGTest2: public testing::Test {};
+
+TEST_F(SCDGTest2, testRunApproximatePageRank) {
+    SNAPGraphReader reader;
+    auto G = reader.read("./input/wiki-Vote.txt");
+
+    ApproximatePageRank apr(G, 0.4);
+    const auto prVector= apr.run(0);
+}
 
 TEST_F(SCDGTest2, testSCD) {
     METISGraphReader reader;

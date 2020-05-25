@@ -14,7 +14,7 @@ class Test_CommunityDetection(unittest.TestCase):
 		comms = community.detectCommunities(self.G, community.PLM(self.G))
 
 		# each node must be assigned
-		for v in self.G.nodes():
+		for v in self.G.iterNodes():
 			self.assertTrue(comms.contains(v))
 
 	def test_CutClustering(self):
@@ -28,3 +28,5 @@ class Test_CommunityDetection(unittest.TestCase):
 		hierarchy = community.CutClustering.getClusterHierarchy(jazz)
 		self.assertEqual(3, len(hierarchy))
 
+if __name__ == "__main__":
+	unittest.main()

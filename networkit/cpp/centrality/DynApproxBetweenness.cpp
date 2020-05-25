@@ -8,7 +8,7 @@
 #include <networkit/centrality/DynApproxBetweenness.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/distance/Diameter.hpp>
-#include <networkit/graph/Sampling.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/distance/DynDijkstra.hpp>
 #include <networkit/distance/DynBFS.hpp>
 #include <networkit/auxiliary/Log.hpp>
@@ -53,9 +53,9 @@ void DynApproxBetweenness::run() {
     for (count i = 0; i < r; i++) {
         DEBUG("sample ", i);
         // sample random node pair
-        u[i] = Sampling::randomNode(G);
+        u[i] = GraphTools::randomNode(G);
         do {
-            v[i] = Sampling::randomNode(G);
+            v[i] = GraphTools::randomNode(G);
         } while (v[i] == u[i]);
         if (G.isWeighted()) {
             sssp[i].reset(new DynDijkstra(G, u[i], storePreds));

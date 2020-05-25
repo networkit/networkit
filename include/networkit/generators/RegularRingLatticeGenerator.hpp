@@ -1,5 +1,5 @@
 /*
-* RegularRingLatticeGenerator.h
+* RegularRingLatticeGenerator.hpp
 *
 *  Created on: 09.07.2014
 *      Author: Simon Bischof
@@ -15,20 +15,20 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class RegularRingLatticeGenerator: public StaticGraphGenerator {
+class RegularRingLatticeGenerator final: public StaticGraphGenerator {
 
 public:
     /**
     * Construct a undirected regular ring lattice.
     *
-    * @param nNodes 		number of nodes in target graph
-    * @param nNeighbors		number of neighbors on each side of a node
+    * @param nNodes     number of nodes in target graph
+    * @param nNeighbors number of neighbors on each side of a node
     */
     RegularRingLatticeGenerator(count nNodes, count nNeighbors);
 
-    virtual Graph generate();
+    Graph generate() override;
 
-protected:
+private:
         count nNodes;
         count nNeighbors;
 

@@ -2,28 +2,25 @@
  * METISParser.cpp
  *
  *  Created on: 27.11.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
-
-#include <networkit/io/METISParser.hpp>
 
 #include <networkit/auxiliary/NumberParsing.hpp>
 #include <networkit/auxiliary/Enforce.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/io/METISParser.hpp>
 
 #include <stdexcept>
 
-
 namespace NetworKit {
-
 
 /**
  * Extract a vector of indices from a line in the file.
  *
- * @param[in]	line		line from input file containing node indices
- * @param[in]	ignoreFirst	number of values to ignore [in case the METIS file contains node weightes]
+ * @param[in]  line    line from input file containing node indices
+ * @param[in]  ignoreFirst  number of values to ignore [in case the METIS file contains node weightes]
  *
- * @param[out]	adjacencies	node indices extracted from line
+ * @param[out]  adjacencies  node indices extracted from line
  */
 static std::vector<node> parseLine(const std::string& line, count ignoreFirst = 0) {
     auto it = line.begin();
@@ -49,10 +46,10 @@ static std::vector<node> parseLine(const std::string& line, count ignoreFirst = 
 /**
  * Extract a vector of indices and edge weights from a line in the file.
  *
- * @param[in]	line		line from input file containing node indices
- * @param[in]	ignoreFirst	number of values to ignore [in case the METIS file contains node weightes]
+ * @param[in]  line    line from input file containing node indices
+ * @param[in]  ignoreFirst  number of values to ignore [in case the METIS file contains node weightes]
  *
- * @param[out]	adjacencies	node indices including edge weights extracted from line
+ * @param[out]  adjacencies  node indices including edge weights extracted from line
  */
 static std::vector<std::pair<node,double>> parseWeightedLine(std::string line, count ignoreFirst = 0) {
     auto it = line.begin();
@@ -96,10 +93,10 @@ METISParser::METISParser(std::string path) : graphFile(path) {
 
 std::tuple<count, count, index, count> METISParser::getHeader() {
     // handle header line
-    count n;		// number of nodes
-    count m;		// number of edges
-    index fmt = 0;		// weighted or unweighted graph
-    count ncon = 0;		// number of node weights
+    count n;    // number of nodes
+    count m;    // number of edges
+    index fmt = 0;    // weighted or unweighted graph
+    count ncon = 0;    // number of node weights
 
     std::string line = "";
     Aux::enforceOpened(this->graphFile);
@@ -135,14 +132,10 @@ std::tuple<count, count, index, count> METISParser::getHeader() {
     }
 }
 
-
-
-
 bool METISParser::hasNext() {
     // if graph file has lines left, return true
     return this->graphFile.good();
 }
-
 
 std::vector<node> METISParser::getNext(count ignoreFirst) {
 
@@ -186,6 +179,5 @@ std::vector<std::pair<node,double>> METISParser::getNextWithWeights(count ignore
     return fail;
 
 }
-
 
 } /* namespace NetworKit */

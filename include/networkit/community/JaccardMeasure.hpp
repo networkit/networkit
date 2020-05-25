@@ -1,8 +1,8 @@
 /*
- * JaccardMeasure.h
+ * JaccardMeasure.hpp
  *
  *  Created on: 19.01.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_COMMUNITY_JACCARD_MEASURE_HPP_
@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup community
  */
-class JaccardMeasure: public DissimilarityMeasure {
+class JaccardMeasure final: public DissimilarityMeasure {
 
 public:
 

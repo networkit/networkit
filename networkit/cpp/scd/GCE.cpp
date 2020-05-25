@@ -4,9 +4,9 @@
  * Author: cls
  */
 
+#include <unordered_map>
 
 #include <networkit/scd/GCE.hpp>
-#include <unordered_map>
 
 namespace {
     template <bool> struct ConditionalCount {
@@ -35,7 +35,7 @@ namespace NetworKit {
 
 
 GCE::GCE(const Graph& G, std::string objective) : SelectiveCommunityDetector(G), objective(objective) {
-    if (G.numberOfSelfLoops() > 0) {
+    if (G.numberOfSelfLoops()) {
         throw std::runtime_error("Graphs with self-loops are not supported in GCE");
     }
 }
@@ -250,7 +250,6 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
         // scan shell for node with maximum quality improvement
         dQMax = 0.0; 	// maximum quality improvement
         vMax = none;
-//		for (node v : shell(community)) {
         for (const auto& vs : currentShell) {
             // get values for current node
             assert(intExtDeg(vs.first, community) == std::make_pair(vs.second.degInt, vs.second.degExt));
@@ -265,8 +264,8 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
         TRACE("vMax: ", vMax);
         TRACE("dQMax: ", dQMax);
         if (vMax != none) {
-            addNodeToCommunity(vMax);	// add best node to community
-            currentQ += dQMax;	 // update current community quality
+            addNodeToCommunity(vMax);  // add best node to community
+            currentQ += dQMax;   // update current community quality
             TRACE("community: ", community);
         }
     } while (vMax != none);
@@ -276,9 +275,9 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 
 std::set<node> GCE::expandSeed(node s) {
     if (objective == "M") {
-        return expandseed_internal<true>(G, s);
+        return expandseed_internal<true>(*G, s);
     } else if (objective == "L") {
-        return expandseed_internal<false>(G, s);
+        return expandseed_internal<false>(*G, s);
     } else {
         throw std::runtime_error("unknown objective function");
     }

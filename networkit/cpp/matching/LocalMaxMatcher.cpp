@@ -8,18 +8,16 @@
 
 namespace NetworKit {
 
-LocalMaxMatcher::LocalMaxMatcher(const Graph& G): Matcher(G)
-{
+LocalMaxMatcher::LocalMaxMatcher(const Graph& G): Matcher(G){
     if (G.isDirected()) throw std::runtime_error("Matcher only defined for undirected graphs");
 }
 
 // TODO: update to new edge attribute system
 // TODO: make local max matching parallel
 
-
 void LocalMaxMatcher::run() {
-    int64_t z = G.upperNodeIdBound();
-    count E = G.numberOfEdges();
+    count z = G->upperNodeIdBound();
+    count E = G->numberOfEdges();
 
     // put edges into array of triples
     struct MyEdge {
@@ -30,7 +28,7 @@ void LocalMaxMatcher::run() {
 
     std::vector<MyEdge> edges(E);
     index e = 0;
-    G.forEdges([&](node u, node v, edgeweight w) {
+    G->forEdges([&](node u, node v, edgeweight w) {
         edges[e].s = u;
         edges[e].t = v;
         edges[e].w = w + Aux::Random::real(1e-6);
@@ -39,7 +37,7 @@ void LocalMaxMatcher::run() {
 
     // candidates records mating candidates
     std::vector<MyEdge> candidates(z);
-    G.parallelForNodes([&](node u) {
+    G->parallelForNodes([&](node u) {
         candidates[u].w = (edgeweight) 0;
         candidates[u].t = u; // itself as mating partner => unmatched
     });

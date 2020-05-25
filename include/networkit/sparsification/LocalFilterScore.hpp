@@ -1,5 +1,5 @@
 /*
- * LocalFilterScore.h
+ * LocalFilterScore.hpp
  *
  *  Created on: 20.11.2014
  *      Author: Michael Hamann, Gerd Lindner
@@ -8,10 +8,11 @@
 #ifndef NETWORKIT_SPARSIFICATION_LOCAL_FILTER_SCORE_HPP_
 #define NETWORKIT_SPARSIFICATION_LOCAL_FILTER_SCORE_HPP_
 
-#include <networkit/edgescores/EdgeScore.hpp>
-#include <networkit/auxiliary/Parallel.hpp>
 #include <atomic>
 #include <memory>
+
+#include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/edgescores/EdgeScore.hpp>
 
 namespace NetworKit {
 
@@ -22,24 +23,24 @@ namespace NetworKit {
  * For equal attribute values, neighbors of low degree are preferred.
  */
 template<typename InType>
-class LocalFilterScore : public EdgeScore<double> {
+class LocalFilterScore final : public EdgeScore<double> {
 
 public:
     /**
      * Initialize the local edge filtering score.
      *
      * @param G The graph for which the score shall be.
-     * @param attribute The input attribute according to which the edges shall be fitlered locally.
+     * @param attribute The input attribute according to which the edges shall be filtered locally.
      * @param logarithmic If the score shall be logarithmic in the rank (then d^e edges are kept). Linear otherwise.
      */
     LocalFilterScore(const Graph& G, const std::vector< InType > &attribute, bool logarithmic = true) :
-        EdgeScore<double>(G), attribute(attribute), logarithmic(logarithmic) {}
+        EdgeScore<double>(G), attribute(&attribute), logarithmic(logarithmic) {}
 
     /**
      * Execute the algorithm.
      */
-    virtual void run() {
-        if (!G.hasEdgeIds()) {
+    void run() override {
+        if (!G->hasEdgeIds()) {
             throw std::runtime_error("edges have not been indexed - call indexEdges first");
         }
 
@@ -48,10 +49,10 @@ public:
         * such that the edge is contained in the sparse graph.
         */
 
-        std::unique_ptr<std::atomic<double>[]> sparsificationExp(new std::atomic<double>[G.upperEdgeIdBound()]{});
+        std::unique_ptr<std::atomic<double>[]> sparsificationExp(new std::atomic<double>[G->upperEdgeIdBound()]{});
 
-        G.balancedParallelForNodes([&](node i) {
-            count d = G.degree(i);
+        G->balancedParallelForNodes([&](node i) {
+            count d = G->degree(i);
 
             /*
              * The top d^e edges (sorted by similarity in descending order)
@@ -60,12 +61,12 @@ public:
 
             std::vector<edgeid> neighbors;
             neighbors.reserve(d);
-            G.forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
+            G->forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
                 neighbors.emplace_back(eid);
             });
 
             std::sort(neighbors.begin(), neighbors.end(), [&](const edgeid& e1, const edgeid& e2) {
-                return attribute[e1] > attribute[e2];
+                return (*attribute)[e1] > (*attribute)[e2];
             });
 
             count rank = 0;
@@ -73,7 +74,7 @@ public:
             InType oldValue = std::numeric_limits<InType>::lowest();
 
             for (edgeid eid : neighbors) {
-                if (attribute[eid] != oldValue) {
+                if ((*attribute)[eid] != oldValue) {
                     rank += numSame;
                     numSame = 1;
                 } else {
@@ -96,7 +97,7 @@ public:
         });
 
         scoreData.clear();
-        scoreData.resize(G.upperEdgeIdBound());
+        scoreData.resize(G->upperEdgeIdBound());
 
         #pragma omp parallel for
         for (omp_index i = 0; i < static_cast<omp_index>(scoreData.size()); ++i) {
@@ -106,16 +107,16 @@ public:
         hasRun = true;
     }
 
-    virtual double score(node u, node v) {
+    double score(node u, node v) override {
         throw std::runtime_error("Not implemented: Use scores() instead.");
     }
 
-    virtual double score(edgeid eid) {
+    double score(edgeid eid) override {
         throw std::runtime_error("Not implemented: Use scores() instead.");
     }
 
 private:
-    const std::vector<InType>& attribute;
+    const std::vector<InType>* attribute;
     bool logarithmic;
 
 };

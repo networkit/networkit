@@ -1,9 +1,15 @@
-#include <networkit/distance/EffectiveDiameterApproximation.hpp>
+/*
+*  EffectiveDiameterApproximation.cpp
+*
+*  Created on: 29.03.16
+*      Author: Maximilian Vogel
+*/
 
 #include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/distance/EffectiveDiameterApproximation.hpp>
 
 namespace NetworKit {
-EffectiveDiameterApproximation::EffectiveDiameterApproximation(const Graph& G, const double ratio, const count k, const count r) : Algorithm(), G(G), ratio(ratio), k(k), r(r)  {
+EffectiveDiameterApproximation::EffectiveDiameterApproximation(const Graph& G, const double ratio, const count k, const count r) : Algorithm(), G(&G), ratio(ratio), k(k), r(r)  {
     if (G.isDirected()) throw std::runtime_error("current implementation can only deal with undirected graphs");
     ConnectedComponents cc(G);
     cc.run();
@@ -11,17 +17,17 @@ EffectiveDiameterApproximation::EffectiveDiameterApproximation(const Graph& G, c
 }
 
 void EffectiveDiameterApproximation::run() {
-    count z = G.upperNodeIdBound();
+    count z = G->upperNodeIdBound();
     // the length of the bitmask where the number of connected nodes is saved
-    count lengthOfBitmask = (count) ceil(log2(G.numberOfNodes()));
+    count lengthOfBitmask = (count) ceil(log2(G->numberOfNodes()));
     // saves all k bitmasks for every node of the current iteration
-    std::vector<std::vector<unsigned int> > mCurr(z);
+    std::vector<std::vector<unsigned int>> mCurr(z);
     // saves all k bitmasks for every node of the previous iteration
-    std::vector<std::vector<unsigned int> > mPrev(z);
+    std::vector<std::vector<unsigned int>> mPrev(z);
     // the maximum possible bitmask based on the random initialization of all k bitmasks
     std::vector<count> highestCount;
     // the amount of nodes that need to be connected to all others nodes
-    count threshold = (count) (ceil(ratio * G.numberOfNodes()));
+    count threshold = (count) (ceil(ratio * G->numberOfNodes()));
     // the current distance of the neighborhoods
     count h = 1;
     // sums over the number of edges needed to reach 90% of all other nodes
@@ -37,7 +43,7 @@ void EffectiveDiameterApproximation::run() {
 
     // initialize all vectors
     highestCount.assign(k, 0);
-    G.forNodes([&](node v) {
+    G->forNodes([&](node v) {
         std::vector<unsigned int> bitmasks;
         bitmasks.assign(k, 0);
         mCurr[v] = bitmasks;
@@ -66,7 +72,7 @@ void EffectiveDiameterApproximation::run() {
                 // the node is still connected to all previous neighbors
                 mCurr[v][j] = mPrev[v][j];
                 // and to all previous neighbors of all its neighbors
-                G.forNeighborsOf(v, [&](node u) {
+                G->forNeighborsOf(v, [&](node u) {
                     mCurr[v][j] = mCurr[v][j] | mPrev[u][j];
                 });
             }
@@ -108,7 +114,7 @@ void EffectiveDiameterApproximation::run() {
         mPrev = mCurr;
         h++;
     }
-    effectiveDiameter /= G.numberOfNodes();
+    effectiveDiameter /= G->numberOfNodes();
     hasRun = true;
 }
 

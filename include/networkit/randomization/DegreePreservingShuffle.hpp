@@ -1,5 +1,5 @@
 /*
- * DegreePreservingShuffle.h
+ * DegreePreservingShuffle.hpp
  *
  *  Created on: 21.08.2018
  *      Author: Manuel Penschuck <networkit@manuel.jetzt>
@@ -33,7 +33,7 @@ namespace NetworKit {
  *  @node If you want to use it as a preprocessing step to GlobalCurveball, it's more
  *  efficient to set degreePreservingShufflePreprocessing in GlobalCurveball's constructor.
  */
-class DegreePreservingShuffle : public Algorithm {
+class DegreePreservingShuffle final : public Algorithm {
 public:
     DegreePreservingShuffle() = delete;
 
@@ -71,7 +71,7 @@ public:
     bool isParallel() const override final { return true; }
 
 private:
-    const Graph &G;
+    const Graph *G;
     std::vector<node> permutation;
 };
 

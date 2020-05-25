@@ -1,5 +1,5 @@
 /*
- * NodeDistance.h
+ * NodeDistance.hpp
  *
  *  Created on: 18.06.2013
  *      Author: cls
@@ -20,7 +20,7 @@ class NodeDistance {
 
 protected:
 
-    const Graph& G;
+    const Graph* G;
 
 public:
     /**
@@ -28,7 +28,7 @@ public:
      *
      * @param G The graph.
      */
-    NodeDistance(const Graph& G);
+    NodeDistance(const Graph& G) : G(&G) {}
 
     /** Default destructor */
     virtual ~NodeDistance() = default;

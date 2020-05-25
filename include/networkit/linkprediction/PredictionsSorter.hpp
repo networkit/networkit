@@ -1,8 +1,8 @@
 /*
- * PredictionsSorter.h
+ * PredictionsSorter.hpp
  *
  *  Created on: 26.04.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_PREDICTIONS_SORTER_HPP_
@@ -17,8 +17,7 @@ namespace NetworKit {
  *
  * Allows the sorting of predictions by score or node-pair.
  */
-class PredictionsSorter {
-private:
+class PredictionsSorter final {
   /**
    * Comparator used to sort predictions descendingly by score and on equality
    * ascendingly by node-pairs which means e.g. (0, 1) < (1, 1) and (0, 0) < (0, 1).
@@ -28,6 +27,7 @@ private:
       return (a.second > b.second) || (a.second == b.second && a.first < b.first);
     }
   };
+
   static ScoreComp ConcreteScoreComp; //!< Comparator instance for score-based comparison
 
   /**
@@ -38,6 +38,7 @@ private:
       return a.first < b.first;
     }
   };
+
   static NodePairComp ConcreteNodePairComp; //!< Comparator instance for node-pair-based comparison
 
 public:

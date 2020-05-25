@@ -1,14 +1,16 @@
 /*
  * NetworkitBinaryReader.hpp
  *
- *      Author: Charmaine Ndolo <charmaine.ndolo@b-tu.de>
+ *      Author: Charmaine Ndolo <charmaine.ndolo@hu-berlin.de>
  */
+
+// networkit-format
 
 #ifndef NETWORKIT_IO_NETWORKIT_BINARY_READER_HPP_
 #define NETWORKIT_IO_NETWORKIT_BINARY_READER_HPP_
 
-#include <networkit/io/GraphReader.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/io/GraphReader.hpp>
 
 namespace NetworKit {
 
@@ -18,12 +20,12 @@ namespace NetworKit {
  * Reads a graph written in the custom Networkit format documented in cpp/io/NetworkitGraph.md
  */
 
-class NetworkitBinaryReader : public GraphReader {
+class NetworkitBinaryReader final : public GraphReader {
 
 public:
-    NetworkitBinaryReader() {};
+    NetworkitBinaryReader(){};
 
-    Graph read(const std::string& path) override; 
+    Graph read(const std::string &path) override;
 
 private:
     count nodes;
@@ -31,6 +33,6 @@ private:
     bool directed;
     bool weighted;
 };
-} /* namespace */
+} // namespace NetworKit
 
 #endif // NETWORKIT_IO_NETWORKIT_BINARY_READER_HPP_

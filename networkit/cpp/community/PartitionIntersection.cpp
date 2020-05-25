@@ -1,6 +1,6 @@
-#include <networkit/community/PartitionIntersection.hpp>
-
 #include <algorithm>
+
+#include <networkit/community/PartitionIntersection.hpp>
 
 NetworKit::Partition NetworKit::PartitionIntersection::calculate(const Partition &zeta, const NetworKit::Partition &eta) {
     Partition result(std::max(zeta.numberOfElements(), eta.numberOfElements()));

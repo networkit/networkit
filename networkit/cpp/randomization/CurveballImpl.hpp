@@ -1,5 +1,5 @@
 /*
- * CurveballImpl.h
+ * CurveballImpl.hpp
  *
  * Author: Hung Tran <htran@ae.cs.uni-frankfurt.de>
  */
@@ -38,7 +38,7 @@ public:
     using cneighbour_it = neighbour_vector::const_iterator;
     using nodepair_vector = std::vector<std::pair<node, node>>;
 
-protected:
+private:
     neighbour_vector neighbours;
     degree_vector offsets;
     pos_vector begins;
@@ -49,30 +49,30 @@ public:
 
     // Receives the degree_vector to initialize
     // As trades permute neighbours the degrees don't change
-    CurveballAdjacencyList(const degree_vector &degrees, const edgeid degree_count);
+    CurveballAdjacencyList(const degree_vector &degrees, edgeid degree_count);
 
-    void initialize(const degree_vector &degrees, const edgeid degree_count);
+    void initialize(const degree_vector &degrees, edgeid degree_count);
 
     void restructure();
 
     // No Copy Constructor
     CurveballAdjacencyList(const CurveballAdjacencyList &) = delete;
 
-    neighbour_it begin(const node node_id) { return neighbours.begin() + begins[node_id]; }
+    neighbour_it begin(node node_id) { return neighbours.begin() + begins[node_id]; }
 
     neighbour_it end(const node node_id) {
         return neighbours.begin() + begins[node_id] + offsets[node_id];
     }
 
-    cneighbour_it cbegin(const node node_id) const { return neighbours.cbegin() + begins[node_id]; }
+    cneighbour_it cbegin(node node_id) const { return neighbours.cbegin() + begins[node_id]; }
 
-    cneighbour_it cend(const node node_id) const {
+    cneighbour_it cend(node node_id) const {
         return neighbours.cbegin() + begins[node_id] + offsets[node_id];
     }
 
     nodepair_vector getEdges() const;
 
-    void insertNeighbour(const node node_id, const node neighbour) {
+    void insertNeighbour(node node_id, node neighbour) {
         auto pos = begin(node_id) + offsets[node_id];
 
         assert(*pos != LISTROW_END);
@@ -86,7 +86,7 @@ public:
 
     node numberOfEdges() const { return static_cast<edgeid>(degreeCount); }
 
-    void resetRow(const node node_id) {
+    void resetRow(node node_id) {
         assert(node_id < static_cast<node>(offsets.size()));
 
         offsets[node_id] = 0;
@@ -103,7 +103,7 @@ public:
 
 class CurveballMaterialization {
 
-protected:
+private:
     const CurveballAdjacencyList &adjacencyList;
 
 public:
@@ -111,7 +111,7 @@ public:
 
     Graph toGraph(bool parallel);
 
-protected:
+private:
     void toGraphParallel(Graph &G);
     void toGraphSequential(Graph &G);
 };
@@ -125,7 +125,7 @@ public:
     using trade_vector = std::vector<trade>;
     using tradeid_it = tradeid_vector::const_iterator;
 
-protected:
+private:
     tradeid_vector tradeList;
     offset_vector offsets;
     const node numNodes;
@@ -134,7 +134,7 @@ public:
     TradeList(const node num_nodes);
 
     // Receives the edge_vector to initialize
-    TradeList(const trade_vector &trades, const node num_nodes);
+    TradeList(const trade_vector &trades, node num_nodes);
 
     // Initialize method
     void initialize(const trade_vector &trades);
@@ -142,13 +142,13 @@ public:
     // No Copy Constructor
     TradeList(const TradeList &) = delete;
 
-    tradeid_it getTrades(const node nodeid) const {
+    tradeid_it getTrades(node nodeid) const {
         assert(nodeid < numNodes);
 
         return tradeList.begin() + offsets[nodeid];
     }
 
-    void incrementOffset(const node nodeid) {
+    void incrementOffset(node nodeid) {
         assert(nodeid < numNodes);
         assert(1 <= offsets[nodeid + 1] - offsets[nodeid]);
 
@@ -173,8 +173,8 @@ public:
 
     nodepair_vector getEdges() const;
 
-protected:
-    const Graph &G;
+private:
+    const Graph *G;
     const node numNodes;
 
     bool hasRun;
@@ -187,7 +187,7 @@ protected:
 
     void restructureGraph(const trade_vector &trades);
 
-    inline void update(const node a, const node b) {
+    inline void update(node a, node b) {
         const tradeid ta = *(tradeList.getTrades(a));
         const tradeid tb = *(tradeList.getTrades(b));
         if (ta < tb) {
@@ -199,7 +199,6 @@ protected:
             adjList.insertNeighbour(b, a);
             return;
         }
-        // ta == tb
         { adjList.insertNeighbour(a, b); }
     }
 };

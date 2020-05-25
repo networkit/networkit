@@ -1,5 +1,5 @@
 /*
- * DynamicHyperbolicGenerator.h
+ * DynamicHyperbolicGenerator.hpp
  *
  *  Created on: 29.07.2014
  *      Author: moritzl
@@ -13,10 +13,9 @@
 #include <networkit/generators/DynamicGraphGenerator.hpp>
 #include <networkit/generators/quadtree/Quadtree.hpp>
 
-
 namespace NetworKit {
 
-class DynamicHyperbolicGenerator: public DynamicGraphGenerator  {
+class DynamicHyperbolicGenerator final : public DynamicGraphGenerator  {
     friend class GeneratorsGTest;
 public:
     /**
@@ -31,7 +30,7 @@ public:
      * @param moveDistance base value for the node movements
      */
 
-    DynamicHyperbolicGenerator(count n = 1000, double avgDegree=6, double exp=3, double T=0, double moveEachStep = 0, double moveDistance = 0);
+    DynamicHyperbolicGenerator(count n = 1000, double avgDegree = 6, double exp = 3, double T = 0, double moveEachStep = 0, double moveDistance = 0);
 
     /**
      * Initialize a dynamic hyperbolic generator with given initial node positions in polar coordinates
@@ -45,7 +44,7 @@ public:
      * @param moveEachStep fraction of nodes which are moved at each time step, should be non-negative
      * @param moveDistance base value for the node movements
      */
-    DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii,  double R, double alpha, double T=0, double moveEachStep = 0, double moveDistance = 0);
+    DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii,  double R, double alpha, double T = 0, double moveEachStep = 0, double moveDistance = 0);
 
     /**
      * Default constructor
@@ -90,7 +89,7 @@ private:
      */
     void recomputeBands();
 
-    vector<index> getNeighborsInBands(index i, bool bothDirections=true);
+    vector<index> getNeighborsInBands(index i, bool bothDirections = true);
 
     /**
      * Execute node movement part of time step
@@ -128,7 +127,7 @@ private:
     Quadtree<index, false> quad;
     vector<double> bandRadii;
     vector<vector<Point2DWithIndex<double>>> bands;
-    vector<vector<double> > bandAngles;
+    vector<vector<double>> bandAngles;
 
     bool initialized;
 };

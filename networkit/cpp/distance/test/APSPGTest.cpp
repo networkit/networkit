@@ -12,7 +12,11 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/distance/APSP.hpp>
+#include <networkit/distance/BFS.hpp>
+#include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/DynAPSP.hpp>
+#include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 
 namespace NetworKit {
@@ -61,13 +65,48 @@ TEST_F(APSPGTest, testAPSP) {
     ASSERT_TRUE(apsp.isParallel());
 }
 
+TEST_F(APSPGTest, testAPSPUnweightedER) {
+    Aux::Random::setSeed(42, false);
+    auto G = ErdosRenyiGenerator(100, 0.01, false).generate();
+    G.addNode();
+
+    APSP apsp(G);
+    apsp.run();
+    G.forNodes([&](const node u) {
+        BFS bfs(G, u, false);
+        bfs.run();
+        const auto &dist = bfs.getDistances();
+        G.forNodes([&](const node v) {
+            EXPECT_DOUBLE_EQ(dist[v], apsp.getDistance(u, v));
+        });
+    });
+}
+
+TEST_F(APSPGTest, testAPSPWeightedER) {
+    Aux::Random::setSeed(42, false);
+    auto G = ErdosRenyiGenerator(100, 0.01, false).generate();
+    G.addNode();
+    G = GraphTools::toWeighted(G);
+
+    APSP apsp(G);
+    apsp.run();
+    G.forNodes([&](const node u) {
+        Dijkstra dij(G, u, false);
+        dij.run();
+        const auto &dist = dij.getDistances();
+        G.forNodes([&](const node v) {
+            EXPECT_DOUBLE_EQ(dist[v], apsp.getDistance(u, v));
+        });
+    });
+}
+
 TEST_F(APSPGTest, debugAPSP) {
     count n = 1000;
     count m = int(n * n);
     Graph G(n, true, false);
     for (count i = 0; i < m; i++) {
-        node u = G.randomNode();
-        node v = G.randomNode();
+        node u = GraphTools::randomNode(G);
+        node v = GraphTools::randomNode(G);
         if (u != v && !G.hasEdge(u, v)) {
             G.addEdge(u, v, Aux::Random::integer(10));
         }
@@ -83,11 +122,11 @@ TEST_F(APSPGTest, testDynAPSPRealGraph) {
     DynAPSP apsp(G);
     apsp.run();
     for (count i = 0; i < 10; i++) {
-        count u = G.randomNode();
-        count v = G.randomNode();
+        count u = GraphTools::randomNode(G);
+        count v = GraphTools::randomNode(G);
         while(G.hasEdge(u, v)) {
-            u = G.randomNode();
-            v = G.randomNode();
+            u = GraphTools::randomNode(G);
+            v = GraphTools::randomNode(G);
         }
         DEBUG("u = ", u, ", v = ", v);
         GraphEvent event(GraphEvent::EDGE_ADDITION, u, v, 1);

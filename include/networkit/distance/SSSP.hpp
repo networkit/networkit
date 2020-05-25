@@ -1,5 +1,5 @@
 /*
- * SSSP.h
+ * SSSP.hpp
  *
  *  Created on: 15.04.2014
  *      Author: cls
@@ -11,10 +11,11 @@
 #include <set>
 #include <stack>
 
+#include <tlx/define/deprecated.hpp>
+
+#include <networkit/auxiliary/Multiprecision.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
-#include <networkit/auxiliary/Multiprecision.hpp>
-#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 
@@ -134,7 +135,7 @@ public:
      * Sets a new source.
      */
     void setSource(node newSource) {
-        if (!G.hasNode(newSource))
+        if (!G->hasNode(newSource))
             throw std::runtime_error("Error: node not in the graph.");
         source = newSource;
     }
@@ -143,7 +144,7 @@ public:
      * Sets a new target.
      */
     void setTarget(node newTarget) {
-        if (!G.hasNode(newTarget))
+        if (!G->hasNode(newTarget))
             throw std::runtime_error("Error: node not in the graph.");
         target = newTarget;
     }
@@ -158,7 +159,7 @@ public:
     }
 
 protected:
-    const Graph &G;
+    const Graph *G;
     node source;
     node target;
     double sumDist;

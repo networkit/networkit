@@ -7,7 +7,6 @@ networkit_add_module(generators
     DynamicDGSParser.cpp
     DynamicDorogovtsevMendesGenerator.cpp
     DynamicForestFireGenerator.cpp
-    DynamicGraphGenerator.cpp
     DynamicGraphSource.cpp
     DynamicHyperbolicGenerator.cpp
     DynamicPathGenerator.cpp
@@ -24,7 +23,6 @@ networkit_add_module(generators
     RegularRingLatticeGenerator.cpp
     RmatGenerator.cpp
     StaticDegreeSequenceGenerator.cpp
-    StaticGraphGenerator.cpp
     StochasticBlockmodel.cpp
     WattsStrogatzGenerator.cpp
     )

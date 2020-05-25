@@ -1,17 +1,20 @@
-#include <networkit/io/BinaryEdgeListPartitionReader.hpp>
 #include <fstream>
 
-NetworKit::BinaryEdgeListPartitionReader::BinaryEdgeListPartitionReader(node firstNode, uint8_t width) : firstNode(firstNode), width(width) {
+#include <networkit/io/BinaryEdgeListPartitionReader.hpp>
+
+namespace NetworKit {
+
+BinaryEdgeListPartitionReader::BinaryEdgeListPartitionReader(node firstNode, uint8_t width) : firstNode(firstNode), width(width) {
     if (width != 4 && width != 8) {
         throw std::runtime_error("Error: width must be 4 or 8");
     }
 }
 
-NetworKit::Partition NetworKit::BinaryEdgeListPartitionReader::read(const std::string& path) {
+Partition BinaryEdgeListPartitionReader::read(const std::string& path) {
     return read(std::vector<std::string>(1, path));
 }
 
-NetworKit::Partition NetworKit::BinaryEdgeListPartitionReader::read(const std::vector<std::string>& paths) {
+Partition BinaryEdgeListPartitionReader::read(const std::vector<std::string>& paths) {
     Partition zeta(0);
 
     if (!paths.empty()) {
@@ -81,3 +84,5 @@ NetworKit::Partition NetworKit::BinaryEdgeListPartitionReader::read(const std::v
 
     return zeta;
 }
+
+} // namespace NetworKit

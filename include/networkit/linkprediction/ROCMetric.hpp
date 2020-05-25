@@ -1,8 +1,8 @@
 /*
- * ROCMetric.h
+ * ROCMetric.hpp
  *
  *  Created on: 14.03.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_ROC_METRIC_HPP_
@@ -19,8 +19,7 @@ namespace NetworKit {
  * Provides points that define the Receiver Operating Characteristic curve for a given set of predictions.
  * Based on the generated points the area under the curve can be calculated with the trapzoidal rule.
  */
-class ROCMetric : public EvaluationMetric {
-private:
+class ROCMetric final: public EvaluationMetric {
   /**
    * Generate the points of the Receiver Operating Characteristic curve regarding the previously set predictions.
    * Note that in the case of multiple y-values mapping to the same x-value the highest (=latest) y-value gets picked.
@@ -31,7 +30,7 @@ private:
 
 public:
   using EvaluationMetric::EvaluationMetric;
-  
+
 };
 
 } // namespace NetworKit

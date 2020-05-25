@@ -1,5 +1,5 @@
 /*
- * GraphDistance.h
+ *  GraphDistance.hpp
  *
  *  Created on: Jul 23, 2013
  *      Author: Henning
@@ -8,9 +8,9 @@
 #ifndef NETWORKIT_DISTANCE_GRAPH_DISTANCE_HPP_
 #define NETWORKIT_DISTANCE_GRAPH_DISTANCE_HPP_
 
-#include <networkit/graph/Graph.hpp>
-#include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/BFS.hpp>
+#include <networkit/distance/Dijkstra.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -18,7 +18,7 @@ namespace NetworKit {
 /**
  * @ingroup distance
  */
-class GraphDistance {
+class GraphDistance final {
 public:
 
     /** Default destructor */
@@ -33,7 +33,7 @@ public:
      * @param v Endpoint of edge.
      * @return The distance between @a u and @a v.
      */
-    virtual edgeweight weightedDistance(const Graph& g, node u, node v) const;
+    edgeweight weightedDistance(const Graph& g, node u, node v) const;
 
     /**
      * Returns the number of edges on shortest unweighted path between @a u and @a v in Graph @a g.
@@ -43,7 +43,7 @@ public:
      * @param v Endpoint of edge.
      * @return The number of edges between @a u and @a v.
      */
-    virtual count unweightedDistance(const Graph& g, node u, node v) const;
+    count unweightedDistance(const Graph& g, node u, node v) const;
 };
 
 } /* namespace NetworKit */

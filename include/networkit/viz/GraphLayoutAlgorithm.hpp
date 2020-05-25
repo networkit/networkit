@@ -1,5 +1,5 @@
 /*
- * GraphLayoutAlgorithm.h
+ * GraphLayoutAlgorithm.hpp
  *
  *  Created on: Apr 19, 2016
  *      Author: Michael Wegner
@@ -8,12 +8,12 @@
 #ifndef NETWORKIT_VIZ_GRAPH_LAYOUT_ALGORITHM_HPP_
 #define NETWORKIT_VIZ_GRAPH_LAYOUT_ALGORITHM_HPP_
 
-#include <networkit/viz/Point.hpp>
-#include <networkit/graph/Graph.hpp>
-#include <networkit/auxiliary/Enforce.hpp>
-
-#include <vector>
 #include <fstream>
+#include <vector>
+
+#include <networkit/auxiliary/Enforce.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/viz/Point.hpp>
 
 namespace NetworKit {
 
@@ -25,7 +25,7 @@ namespace NetworKit {
 template<typename T>
 class GraphLayoutAlgorithm {
 public:
-    GraphLayoutAlgorithm(const Graph& G, count dim) : G(G), vertexCoordinates(std::vector<Point<T>>(G.upperNodeIdBound(), Point<T>(dim))) {}
+    GraphLayoutAlgorithm(const Graph& G, count dim) : G(&G), vertexCoordinates(std::vector<Point<T>>(G.upperNodeIdBound(), Point<T>(dim))) {}
     virtual ~GraphLayoutAlgorithm() = default;
 
     virtual void run() = 0;
@@ -37,8 +37,8 @@ public:
     virtual count numEdgeCrossings() const {
         if (vertexCoordinates[0].getDimensions() == 2) {
             count numCrossings = 0;
-            G.forEdges([&](node u, node v, edgeweight) {
-                G.forEdges([&](node p, node q, edgeweight) {
+            G->forEdges([&](node u, node v, edgeweight) {
+                G->forEdges([&](node p, node q, edgeweight) {
                     if ((p == u && q == v) || (p == v && q == u)) return;
                     double m1 = (vertexCoordinates[v][1] - vertexCoordinates[u][1]) / (vertexCoordinates[v][0] - vertexCoordinates[u][0]);
                     double m2 = (vertexCoordinates[q][1] - vertexCoordinates[p][1]) / (vertexCoordinates[q][0] - vertexCoordinates[p][0]);
@@ -75,24 +75,24 @@ public:
         Aux::enforceOpened(file);
 
         file << "graph [\n";
-        if (G.isDirected()) {
+        if (G->isDirected()) {
             file << "  directed 1\n";
         }
 
-        G.forNodes([&](node u) {
+        G->forNodes([&](node u) {
             file << "  node [\n";
             file << "    id " << u << "\n";
             file << "    graphics\n";
             file << "    [ x " << 50*vertexCoordinates[u][0] << "\n";
             file << "      y " << 50*vertexCoordinates[u][1] << "\n";
             if (dim == 3) {
-                file << "      z " << vertexCoordinates[u][2] << "\n";
+                file << "      z " << 50*vertexCoordinates[u][2] << "\n";
             }
             file << "    ]\n";
             file << "  ]\n";
         });
 
-        G.forEdges([&](node u, node v) {
+        G->forEdges([&](node u, node v) {
             file << "  edge [\n";
             file << "    source "<< u << "\n";
             file << "    target "<< v << "\n";
@@ -119,7 +119,7 @@ public:
         file << "@group{" << fileName << "}" << std::endl;
         file << "@balllist {a} color= blue master={points} radius= 0.05" << std::endl;
 
-        G.forNodes([&](node u) {
+        G->forNodes([&](node u) {
             file << "{a}" << vertexCoordinates[u][0] << " " << vertexCoordinates[u][1] << " " << vertexCoordinates[u][2] << std::endl;
         });
 
@@ -127,7 +127,7 @@ public:
         file << std::endl;
         file << "@subgroup {edges} dominant" << std::endl;
         file << "@vectorlist {edges} color= white" << std::endl;
-        G.forEdges([&](node u, node v) {
+        G->forEdges([&](node u, node v) {
             //if (u <= v) { // draw graph undirected
                 file << "P " << vertexCoordinates[u][0] << " " << vertexCoordinates[u][1] << " " << vertexCoordinates[u][2] << std::endl;
                 file << vertexCoordinates[v][0] << " " << vertexCoordinates[v][1] << " " << vertexCoordinates[v][2] << std::endl;
@@ -141,7 +141,7 @@ public:
     }
 
 protected:
-    const Graph& G;
+    const Graph* G;
     std::vector<Point<T>> vertexCoordinates;
 };
 

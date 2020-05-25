@@ -14,9 +14,9 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
-#include <networkit/distance/DynBFS.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphBuilder.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 
@@ -255,108 +255,6 @@ TEST_P(GraphGTest, testCopyConstructor) {
     ASSERT_EQ(m_expected, m);
 }
 
-/** GRAPH INFORMATION **/
-
-TEST_P(GraphGTest, testGetId) {
-    Graph G1 = createGraph();
-    Graph G2 = createGraph(5);
-
-    ASSERT_TRUE(G1.getId() > 0);
-    ASSERT_TRUE(G2.getId() > 0);
-    ASSERT_TRUE(G1.getId() < G2.getId());
-}
-
-TEST_P(GraphGTest, testTyp) {
-    Graph G = createGraph();
-    if (isGraph()) {
-        ASSERT_EQ("Graph", G.typ());
-    } else if (isWeightedGraph()) {
-        ASSERT_EQ("WeightedGraph", G.typ());
-    } else if (isDirectedGraph()) {
-        ASSERT_EQ("DirectedGraph", G.typ());
-    } else if (isWeightedDirectedGraph()) {
-        ASSERT_EQ("WeightedDirectedGraph", G.typ());
-    } else {
-        FAIL();
-    }
-}
-
-TEST_P(GraphGTest, testSetName) {
-    Graph G1 = createGraph(0);
-    Graph G2 = createGraph(0);
-
-    std::string s1 = "Graph 1";
-    std::string s2 = "Graph 2";
-    G1.setName(s1);
-    G2.setName(s2);
-    ASSERT_EQ(s1, G1.getName());
-    ASSERT_EQ(s2, G2.getName());
-}
-
-TEST_P(GraphGTest, testMaxDegreeUndirected) {
-    Aux::Random::setSeed(1, false);
-    Graph G = ErdosRenyiGenerator(20, 0.2, false).generate();
-
-    count maxDegOut = 0, maxDegIn = 0;
-    G.forNodes([&](const node u) {
-        maxDegOut = std::max(maxDegOut, G.degreeOut(u));
-        maxDegIn = std::max(maxDegIn, G.degreeIn(u));
-    });
-
-    ASSERT_EQ(G.maxDegree(), maxDegOut);
-    ASSERT_EQ(G.maxDegreeIn(), maxDegIn);
-}
-
-TEST_P(GraphGTest, testMaxDegreeDirected) {
-    Aux::Random::setSeed(1, false);
-    Graph G = ErdosRenyiGenerator(20, 0.2, true).generate();
-
-    count maxDegOut = 0, maxDegIn = 0;
-    G.forNodes([&](const node u) {
-        maxDegOut = std::max(maxDegOut, G.degreeOut(u));
-        maxDegIn = std::max(maxDegIn, G.degreeIn(u));
-    });
-
-    ASSERT_EQ(G.maxDegree(), maxDegOut);
-    ASSERT_EQ(G.maxDegreeIn(), maxDegIn);
-}
-
-TEST_P(GraphGTest, testMaxWeightedDegreeUndirected) {
-    Aux::Random::setSeed(1, false);
-    Graph G = ErdosRenyiGenerator(20, 0.2, false).generate();
-
-    edgeweight maxDegOut = 0.0, maxDegIn = 0.0;
-    G.forNodes([&](const node u) {
-        maxDegOut = std::max(maxDegOut, G.weightedDegree(u));
-        maxDegIn = std::max(maxDegIn, G.weightedDegreeIn(u));
-    });
-
-    ASSERT_EQ(G.maxWeightedDegree(), maxDegOut);
-    ASSERT_EQ(G.maxWeightedDegreeIn(), maxDegIn);
-}
-
-TEST_P(GraphGTest, testMaxWeightedDegreeDirected) {
-    Aux::Random::setSeed(1, false);
-    Graph G = ErdosRenyiGenerator(20, 0.2, true).generate();
-
-    edgeweight maxDegOut = 0.0, maxDegIn = 0.0;
-    G.forNodes([&](const node u) {
-        maxDegOut = std::max(maxDegOut, G.weightedDegree(u));
-        maxDegIn = std::max(maxDegIn, G.weightedDegreeIn(u));
-    });
-
-    ASSERT_EQ(G.maxWeightedDegree(), maxDegOut);
-    ASSERT_EQ(G.maxWeightedDegreeIn(), maxDegIn);
-}
-
-TEST_P(GraphGTest, testToString) {
-    Graph G1 = createGraph(0);
-    Graph G2 = createGraph(0);
-
-    ASSERT_TRUE(G1.toString() != "");
-    ASSERT_TRUE(G2.toString() != "");
-}
-
 /** NODE MODIFIERS **/
 
 TEST_P(GraphGTest, testAddNode) {
@@ -580,92 +478,75 @@ TEST_P(GraphGTest, testWeightedDegree) {
     }
 }
 
-TEST_P(GraphGTest, testVolume) {
+TEST_P(GraphGTest, testWeightedDegree2) {
     // add self-loop
     this->Ghouse.addEdge(2, 2, 0.75);
 
     if (isGraph()) {
-        ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.volume(0));
-        ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.volume(1));
-        ASSERT_EQ(6 * defaultEdgeWeight, this->Ghouse.volume(2));
-        ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.volume(3));
-        ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.volume(4));
+        ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegree(0, true));
+        ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.weightedDegree(1, true));
+        ASSERT_EQ(6 * defaultEdgeWeight, this->Ghouse.weightedDegree(2, true));
+        ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.weightedDegree(3, true));
+        ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.weightedDegree(4, true));
     }
 
     if (isWeightedGraph()) {
-        ASSERT_EQ(5.0, this->Ghouse.volume(0));
-        ASSERT_EQ(12.0, this->Ghouse.volume(1));
-        ASSERT_EQ(23.5, this->Ghouse.volume(2));
-        ASSERT_EQ(14.0, this->Ghouse.volume(3));
-        ASSERT_EQ(19.0, this->Ghouse.volume(4));
+        ASSERT_EQ(5.0, this->Ghouse.weightedDegree(0, true));
+        ASSERT_EQ(12.0, this->Ghouse.weightedDegree(1, true));
+        ASSERT_EQ(23.5, this->Ghouse.weightedDegree(2, true));
+        ASSERT_EQ(14.0, this->Ghouse.weightedDegree(3, true));
+        ASSERT_EQ(19.0, this->Ghouse.weightedDegree(4, true));
     }
 
     if (isDirectedGraph()) {
         // only count outgoing edges
-        ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.volume(0));
-        ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.volume(1));
-        ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.volume(2));
-        ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.volume(3));
-        ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.volume(4));
+        ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.weightedDegree(0, true));
+        ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegree(1, true));
+        ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.weightedDegree(2, true));
+        ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegree(3, true));
+        ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.weightedDegree(4, true));
     }
 
     if (isWeightedDirectedGraph()) {
         // only sum weight of outgoing edges
-        ASSERT_EQ(3.0, this->Ghouse.volume(0));
-        ASSERT_EQ(7.0, this->Ghouse.volume(1));
-        ASSERT_EQ(13.5, this->Ghouse.volume(2));
-        ASSERT_EQ(8.0, this->Ghouse.volume(3));
-        ASSERT_EQ(6.0, this->Ghouse.volume(4));
+        ASSERT_EQ(3.0, this->Ghouse.weightedDegree(0, true));
+        ASSERT_EQ(7.0, this->Ghouse.weightedDegree(1, true));
+        ASSERT_EQ(13.5, this->Ghouse.weightedDegree(2, true));
+        ASSERT_EQ(8.0, this->Ghouse.weightedDegree(3, true));
+        ASSERT_EQ(6.0, this->Ghouse.weightedDegree(4, true));
     }
 }
 
-TEST_P(GraphGTest, testRandomNode) {
-    count n = 4;
-    count samples = 100000;
-    double maxAbsoluteError = 0.005;
-    Aux::Random::setSeed(42, false);
+TEST_P(GraphGTest, testWeightedDegree3) {
+    constexpr count n = 100;
+    constexpr double p = 0.1;
 
-    Graph G = createGraph(n);
-    std::vector<count> drawCounts(n, 0);
-    for (count i = 0; i < samples; i++) {
-        node x = G.randomNode();
-        drawCounts[x]++;
-    }
-    for (node v = 0; v < n; v++) {
-        double p = drawCounts[v] / (double)samples;
-        ASSERT_NEAR(1.0 / n, p, maxAbsoluteError);
-    }
-}
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto G = ErdosRenyiGenerator(n, p, isDirected()).generate();
+        if (isWeighted()) {
+            G = Graph(G, true, G.isDirected());
+            G.forEdges([&](node u, node v) { G.setWeight(u, v, Aux::Random::probability()); });
+        }
+        G.forNodes([&](node u) {
+            edgeweight wDeg = 0, wDegTwice = 0;
+            G.forNeighborsOf(u, [&](node v, edgeweight w) {
+                wDeg += w;
+                wDegTwice += (u == v) ? 2. * w : w;
+            });
 
-TEST_P(GraphGTest, testRandomNeighbor) {
-    Graph G = createGraph(10);
-    G.addEdge(2, 0);
-    G.addEdge(2, 1);
-    G.addEdge(2, 2);
-    G.addEdge(5, 6);
+            EXPECT_DOUBLE_EQ(G.weightedDegree(u), wDeg);
+            EXPECT_DOUBLE_EQ(G.weightedDegree(u, true), wDegTwice);
 
-    Aux::Random::setSeed(42, false);
+            edgeweight wInDeg = 0, wInDegTwice = 0;
+            G.forInNeighborsOf(u, [&](node v, edgeweight w) {
+                wInDeg += w;
+                wInDegTwice += (u == v) ? 2. * w : w;
+            });
 
-    ASSERT_EQ(none, G.randomNeighbor(3));
-    ASSERT_EQ(6u, G.randomNeighbor(5));
-
-    if (G.isDirected()) {
-        ASSERT_EQ(none, G.randomNeighbor(1));
-    } else {
-        ASSERT_EQ(2u, G.randomNeighbor(1));
-    }
-
-    count nn = 3;
-    count samples = 100000;
-    double maxAbsoluteError = 0.005;
-    std::vector<count> drawCounts(nn, 0);
-    for (count i = 0; i < samples; i++) {
-        node x = G.randomNeighbor(2);
-        drawCounts[x]++;
-    }
-    for (node v = 0; v < nn; v++) {
-        double p = drawCounts[v] / (double)samples;
-        ASSERT_NEAR(1.0 / nn, p, maxAbsoluteError);
+            EXPECT_DOUBLE_EQ(G.weightedDegreeIn(u), wInDeg);
+            EXPECT_DOUBLE_EQ(G.weightedDegreeIn(u, true), wInDegTwice);
+        });
     }
 }
 
@@ -816,7 +697,6 @@ TEST_P(GraphGTest, testRemoveEdge) {
     // remove self-loops
     ewBefore = G.totalEdgeWeight();
 
-    // G.removeSelfLoops();
     G.removeEdge(0, 0);
     G.removeEdge(1, 1);
 
@@ -837,68 +717,113 @@ TEST_P(GraphGTest, testRemoveEdge) {
 }
 
 TEST_P(GraphGTest, testRemoveAllEdges) {
-    Graph g = ErdosRenyiGenerator(20, 0.1, false).generate();
-    g.removeAllEdges();
-    EXPECT_EQ(g.numberOfEdges(), 0);
-    EXPECT_EQ(g.edges().size(), 0);
-    for (node u : g.nodes()) {
-        EXPECT_EQ(g.degree(u), 0);
-        EXPECT_EQ(g.degree(u), 0);
-    }
+    constexpr count n = 100;
+    constexpr double p = 0.2;
 
-    g = ErdosRenyiGenerator(20, 0.1, true).generate();
-    g.removeAllEdges();
-    EXPECT_EQ(g.numberOfEdges(), 0);
-    EXPECT_EQ(g.edges().size(), 0);
-    for (node u : g.nodes()) {
-        EXPECT_EQ(g.degree(u), 0);
-        EXPECT_EQ(g.degree(u), 0);
-        EXPECT_EQ(g.degreeIn(u), 0);
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto g = ErdosRenyiGenerator(n, p, isDirected()).generate();
+        if (isWeighted()) {
+            g = Graph(g, true, isDirected());
+        }
+
+        g.removeAllEdges();
+
+        EXPECT_EQ(g.numberOfEdges(), 0);
+
+        count edgeCount = 0;
+        g.forEdges([&edgeCount](node, node) { ++edgeCount; });
+        EXPECT_EQ(edgeCount, 0);
+
+        g.forNodes([&](node u) {
+            EXPECT_EQ(g.degree(u), 0);
+            EXPECT_EQ(g.degree(u), 0);
+        });
     }
 }
 
 TEST_P(GraphGTest, testRemoveSelfLoops) {
-    double epsilon = 1e-6;
-    Graph G = createGraph(2);
+    constexpr count n = 100;
+    constexpr count nSelfLoops = 100;
+    constexpr double p = 0.2;
 
-    edgeweight ewBefore = G.totalEdgeWeight();
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto g = ErdosRenyiGenerator(n, p, isDirected()).generate();
+        if (isWeighted()) {
+            g = Graph(g, true, isDirected());
+        }
 
-    G.addEdge(0, 1);
-    G.addEdge(0, 0, 3.14);
-    G.addEdge(1, 1);
+        for (count i = 0; i < nSelfLoops; ++i) {
+            const auto u = GraphTools::randomNode(g);
+            g.addEdge(u, u);
+        }
 
-    if (G.isWeighted()) {
-        EXPECT_NEAR(ewBefore + 3.14 + 2 * defaultEdgeWeight, G.totalEdgeWeight(),
-                    epsilon);
-    } else {
-        EXPECT_NEAR(ewBefore + 3 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
+        const auto numberOfSelfLoops = g.numberOfSelfLoops();
+        const auto numberOfEdges = g.numberOfEdges();
+        g.removeSelfLoops();
+
+        EXPECT_EQ(numberOfEdges - numberOfSelfLoops, g.numberOfEdges());
+        EXPECT_EQ(g.numberOfSelfLoops(), 0);
+        g.forNodes([&g](const node u) { EXPECT_FALSE(g.hasEdge(u, u)); });
     }
+}
 
-    EXPECT_EQ(3u, G.numberOfEdges());
-    EXPECT_TRUE(G.hasEdge(0, 0));
-    EXPECT_TRUE(G.hasEdge(0, 1));
-    EXPECT_TRUE(G.hasEdge(1, 1));
-    EXPECT_EQ(G.numberOfSelfLoops(), 2u);
-    EXPECT_EQ(G.numberOfSelfLoops(), 2u);
+TEST_P(GraphGTest, testRemoveMultiEdges) {
+    constexpr count n = 200;
+    constexpr double p = 0.1;
+    constexpr count nMultiEdges = 10;
+    constexpr count nMultiSelfLoops = 10;
 
-    // remove self-loops
-    ewBefore = G.totalEdgeWeight();
-    G.removeSelfLoops();
+    auto getGraphEdges = [](const Graph &G) {
+        std::vector<std::pair<node, node>> edges;
+        edges.reserve(G.numberOfEdges());
 
-    if (G.isWeighted()) {
-        EXPECT_NEAR(ewBefore - defaultEdgeWeight - 3.14, G.totalEdgeWeight(),
-                    epsilon);
-    } else {
-        EXPECT_NEAR(ewBefore - 2 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon)
-            << "Weighted, directed: " << G.isWeighted() << ", " << G.isDirected();
+        G.forEdges([&](const node u, const node v) {
+            edges.push_back({u, v});
+        });
+
+        return edges;
+    };
+
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto g = ErdosRenyiGenerator(n, p, isDirected()).generate();
+        if (isWeighted()) {
+            g = Graph(g, true, isDirected());
+        }
+
+        const auto edgeSet = getGraphEdges(g);
+        const auto m = g.numberOfEdges();
+
+        // Adding multiedges at random
+        for (count i = 0; i < nMultiEdges; ++i) {
+            const auto e = GraphTools::randomEdge(g);
+            g.addEdge(e.first, e.second);
+        }
+
+        std::unordered_set<node> uniqueSelfLoops;
+        // Adding multiple self-loops at random
+        for (count i = 0; i < nMultiSelfLoops; ++i) {
+            const auto u = GraphTools::randomNode(g);
+            g.addEdge(u, u);
+            g.addEdge(u, u);
+            uniqueSelfLoops.insert(u);
+        }
+
+        EXPECT_EQ(g.numberOfEdges(), m + nMultiEdges + 2 * nMultiSelfLoops);
+
+        g.removeMultiEdges();
+
+        EXPECT_EQ(g.numberOfEdges(), m + uniqueSelfLoops.size());
+        g.removeSelfLoops();
+
+        EXPECT_EQ(g.numberOfEdges(), m);
+        auto edgeSet_ = getGraphEdges(g);
+
+        for (count i = 0; i < g.numberOfEdges(); ++i)
+            EXPECT_EQ(edgeSet[i], edgeSet_[i]);
     }
-
-    EXPECT_EQ(1u, G.numberOfEdges());
-    EXPECT_FALSE(G.hasEdge(0, 0));
-    EXPECT_FALSE(G.hasEdge(1, 1));
-    EXPECT_TRUE(G.hasEdge(0, 1));
-    EXPECT_EQ(0u, G.numberOfSelfLoops())
-        << "Weighted, directed: " << G.isWeighted() << ", " << G.isDirected();
 }
 
 TEST_P(GraphGTest, testHasEdge) {
@@ -920,61 +845,6 @@ TEST_P(GraphGTest, testHasEdge) {
                 ASSERT_EQ(hasEdge || hasEdgeReverse, this->Ghouse.hasEdge(u, v));
             }
         }
-    }
-}
-
-TEST_P(GraphGTest, testRandomEdge) {
-    Aux::Random::setSeed(1, false);
-    // we only test the uniform version
-    constexpr count n = 4;
-    constexpr count m = 5;
-    constexpr count samples = 100000;
-    constexpr double maxAbsoluteError = 0.005;
-
-    Graph G = createGraph(n);
-    G.addEdge(0, 1); // 0 * 1 = 0
-    G.addEdge(1, 2); // 1 * 2 = 2
-    G.addEdge(3, 2); // 3 * 2 = 1 (mod 5)
-    G.addEdge(2, 2); // 2 * 2 = 4
-    G.addEdge(3, 1); // 3 * 1 = 3
-    ASSERT_EQ(m, G.numberOfEdges());
-
-    std::vector<count> drawCounts(m, 0);
-    for (count i = 0; i < samples; ++i) {
-        const auto e = G.randomEdge(true);
-        count id = (e.first * e.second) % 5;
-        drawCounts[id]++;
-    }
-    for (node id = 0; id < m; id++) {
-        double p = drawCounts[id] / (double)samples;
-        ASSERT_NEAR(1.0 / m, p, maxAbsoluteError);
-    }
-}
-
-TEST_P(GraphGTest, testRandomEdges) {
-    Aux::Random::setSeed(1, false);
-    // we only test the uniform version
-    constexpr count n = 4;
-    constexpr count m = 5;
-    constexpr count samples = 100000;
-    constexpr double maxAbsoluteError = 0.005;
-
-    Graph G = createGraph(n);
-    G.addEdge(0, 1); // 0 * 1 = 0
-    G.addEdge(1, 2); // 1 * 2 = 2
-    G.addEdge(3, 2); // 3 * 2 = 1 (mod 5)
-    G.addEdge(2, 2); // 2 * 2 = 4
-    G.addEdge(3, 1); // 3 * 1 = 3
-    ASSERT_EQ(m, G.numberOfEdges());
-
-    std::vector<count> drawCounts(m, 0);
-    for (auto e : G.randomEdges(samples)) {
-        count id = (e.first * e.second) % 5;
-        drawCounts[id]++;
-    }
-    for (node id = 0; id < m; id++) {
-        double p = drawCounts[id] / (double)samples;
-        ASSERT_NEAR(1.0 / m, p, maxAbsoluteError);
     }
 }
 
@@ -1002,12 +872,12 @@ TEST_P(GraphGTest, testIsEmpty) {
     ASSERT_FALSE(G2.isEmpty());
 
     node v = G1.addNode();
-    G2.removeNode(G2.randomNode());
+    G2.removeNode(GraphTools::randomNode(G2));
     ASSERT_FALSE(G1.isEmpty());
     ASSERT_FALSE(G2.isEmpty());
 
     G1.removeNode(v);
-    G2.removeNode(G2.randomNode());
+    G2.removeNode(GraphTools::randomNode(G2));
     ASSERT_TRUE(G1.isEmpty());
     ASSERT_TRUE(G2.isEmpty());
 }
@@ -1109,17 +979,6 @@ TEST_P(GraphGTest, testCheckConsistency_MultiEdgeDetection) {
     ASSERT_TRUE(G.checkConsistency());
     G.removeEdge(0, 1);
     ASSERT_TRUE(G.checkConsistency());
-}
-
-/** DYNAMICS **/
-
-TEST_P(GraphGTest, testTime) {
-    ASSERT_EQ(0u, this->Ghouse.time());
-    this->Ghouse.timeStep();
-    ASSERT_EQ(1u, this->Ghouse.time());
-    this->Ghouse.timeStep();
-    this->Ghouse.timeStep();
-    ASSERT_EQ(3u, this->Ghouse.time());
 }
 
 /** EDGE ATTRIBUTES **/
@@ -1229,20 +1088,202 @@ TEST_P(GraphGTest, testTotalEdgeWeight) {
 
 /** Collections **/
 
-TEST_P(GraphGTest, testNodes) {
-    Graph G = createGraph(3);
-    G.addNode();
-    G.removeNode(2);
-    G.addNode();
-    auto nodes = G.nodes();
+TEST_P(GraphGTest, testNodeIterator) {
+    Aux::Random::setSeed(42, false);
 
-    auto containsNode = [&nodes](node v) {
-        return std::find(nodes.begin(), nodes.end(), v) != nodes.end();
+    auto testForward = [](const Graph &G) {
+        auto preIter = G.nodeRange().begin();
+        auto postIter = G.nodeRange().begin();
+
+        G.forNodes([&](const node u) {
+            ASSERT_EQ(*preIter, u);
+            ASSERT_EQ(*postIter, u);
+            ++preIter;
+            postIter++;
+        });
+
+        ASSERT_EQ(preIter, G.nodeRange().end());
+        ASSERT_EQ(postIter, G.nodeRange().end());
+
+        Graph G1(G);
+
+        for (const auto u : Graph::NodeRange(G)) {
+            ASSERT_TRUE(G1.hasNode(u));
+            G1.removeNode(u);
+        }
+
+        ASSERT_EQ(G1.numberOfNodes(), 0);
     };
 
-    ASSERT_EQ(G.numberOfNodes(), nodes.size());
-    for (node v : nodes) {
-        ASSERT_TRUE(containsNode(v));
+    auto testBackward = [](const Graph &G) {
+        const std::vector<node> nodes(Graph::NodeRange(G).begin(), Graph::NodeRange(G).end());
+        std::vector<node> v;
+        G.forNodes([&](node u) {v.push_back(u);});
+
+        ASSERT_EQ(std::unordered_set<node>(nodes.begin(), nodes.end()).size(), nodes.size());
+        ASSERT_EQ(nodes.size(), G.numberOfNodes());
+
+        auto preIter = G.nodeRange().begin();
+        auto postIter = G.nodeRange().begin();
+        for (count i = 0; i < G.numberOfNodes(); ++i) {
+            ++preIter;
+            postIter++;
+        }
+
+        ASSERT_EQ(preIter, G.nodeRange().end());
+        ASSERT_EQ(postIter, G.nodeRange().end());
+        auto vecIter = nodes.rbegin();
+        while (vecIter != nodes.rend()) {
+            ASSERT_EQ(*vecIter, *(--preIter));
+            if (postIter != G.nodeRange().end()) {
+                ASSERT_NE(*vecIter, *(postIter--));
+            } else {
+                postIter--;
+            }
+            ASSERT_EQ(*vecIter, *postIter);
+            ++vecIter;
+        }
+
+        ASSERT_EQ(preIter, G.nodeRange().begin());
+        ASSERT_EQ(postIter, G.nodeRange().begin());
+    };
+
+    Graph G(this->Ghouse);
+    testForward(G);
+    testBackward(G);
+
+    G.removeNode(GraphTools::randomNode(G));
+    G.removeNode(GraphTools::randomNode(G));
+
+    testForward(G);
+    testBackward(G);
+}
+
+TEST_P(GraphGTest, testEdgeIterator) {
+    Graph G(this->Ghouse);
+
+    auto testForward = [&](const Graph &G) {
+        Graph G1(G);
+        auto preIter = G.edgeRange().begin();
+        auto postIter = G.edgeRange().begin();
+
+        G.forEdges([&](node, node) {
+            ASSERT_EQ(preIter, postIter);
+            const auto edge = *preIter;
+            ASSERT_TRUE(G.hasEdge(edge.u, edge.v));
+            G1.removeEdge(edge.u, edge.v);
+            ++preIter;
+            postIter++;
+        });
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+        ASSERT_EQ(preIter, G.edgeRange().end());
+        ASSERT_EQ(postIter, G.edgeRange().end());
+
+        G1 = G;
+        for (const auto &edge : Graph::EdgeRange(G)) {
+            ASSERT_TRUE(G1.hasEdge(edge.u, edge.v));
+            G1.removeEdge(edge.u, edge.v);
+        }
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+    };
+
+    auto testForwardWeighted = [&](const Graph &G) {
+        Graph G1(G);
+        auto preIter = G.edgeWeightRange().begin();
+        auto postIter = preIter;
+
+        G.forEdges([&](node, node) {
+            ASSERT_EQ(preIter, postIter);
+
+            const auto edge = *preIter;
+            ASSERT_TRUE(G.hasEdge(edge.u, edge.v));
+            ASSERT_DOUBLE_EQ(G.weight(edge.u, edge.v), edge.weight);
+            G1.removeEdge(edge.u, edge.v);
+            ++preIter;
+            postIter++;
+        });
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+        ASSERT_EQ(preIter, G.edgeWeightRange().end());
+        ASSERT_EQ(postIter, G.edgeWeightRange().end());
+
+        G1 = G;
+        for (const auto &edge : Graph::EdgeWeightRange(G)) {
+            ASSERT_TRUE(G1.hasEdge(edge.u, edge.v));
+            ASSERT_DOUBLE_EQ(G1.weight(edge.u, edge.v), edge.weight);
+            G1.removeEdge(edge.u, edge.v);
+        }
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+    };
+
+    auto testBackward = [&](const Graph &G) {
+        Graph G1(G);
+        auto preIter = G.edgeRange().begin();
+        auto postIter = preIter;
+        G.forEdges([&](node, node) {
+            ++preIter;
+            postIter++;
+        });
+
+        ASSERT_EQ(preIter, G.edgeRange().end());
+        ASSERT_EQ(postIter, G.edgeRange().end());
+
+        G.forEdges([&](node, node) {
+            --preIter;
+            postIter--;
+            ASSERT_EQ(preIter, postIter);
+            const auto edge = *preIter;
+            ASSERT_TRUE(G.hasEdge(edge.u, edge.v));
+            G1.removeEdge(edge.u, edge.v);
+        });
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+    };
+
+    auto testBackwardWeighted = [&](const Graph &G) {
+        Graph G1(G);
+        auto preIter = G.edgeWeightRange().begin();
+        auto postIter = preIter;
+        G.forEdges([&](node, node) {
+            ++preIter;
+            postIter++;
+        });
+
+        G.forEdges([&](node, node) {
+            --preIter;
+            postIter--;
+            ASSERT_EQ(preIter, postIter);
+
+            const auto edge = *preIter;
+            ASSERT_TRUE(G.hasEdge(edge.u, edge.v));
+            ASSERT_DOUBLE_EQ(G.weight(edge.u, edge.v), edge.weight);
+            G1.removeEdge(edge.u, edge.v);
+        });
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+    };
+
+    auto doTests = [&](const Graph &G) {
+        testForward(G);
+        testBackward(G);
+        testForwardWeighted(G);
+        testBackwardWeighted(G);
+    };
+
+    doTests(G);
+
+    for (int seed : {1, 2, 3, 4, 5}) {
+        Aux::Random::setSeed(seed, false);
+        Graph G1(G);
+        for (int i = 0; i < 3; ++i) {
+            auto e = GraphTools::randomEdge(G1);
+            G1.removeEdge(e.first, e.second);
+        }
+
+        doTests(G1);
     }
 }
 
@@ -1280,89 +1321,6 @@ TEST_P(GraphGTest, testNeighborsIterators) {
                 ++iterW;
             });
             ASSERT_TRUE(iterW == this->Ghouse.weightInNeighborRange(1).end());
-        }
-    }
-}
-
-TEST_P(GraphGTest, testEdges) {
-    // add self-loop
-    this->Ghouse.addEdge(3, 3);
-    auto isCorrectEdge = [&](node u, node v) {
-        if (u == 3 && v == 3) {
-            return true;
-        }
-        auto it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(),
-                            std::make_pair(u, v));
-        if (it != this->houseEdgesOut.end()) {
-            return true;
-        } else if (!this->Ghouse.isDirected()) {
-            it = std::find(this->houseEdgesOut.begin(), this->houseEdgesOut.end(),
-                           std::make_pair(v, u));
-            return it != this->houseEdgesOut.end();
-        }
-        return false;
-    };
-
-    auto edges = this->Ghouse.edges();
-    ASSERT_EQ(this->m_house + 1, edges.size()); // plus self-loop
-    for (auto e : edges) {
-        ASSERT_TRUE(isCorrectEdge(e.first, e.second))
-            << "(" << e.first << ", " << e.second
-            << ") is in edge array, but is not an edge of Ghouse";
-    }
-}
-
-TEST_P(GraphGTest, testTranspose) {
-    Graph G = this->Ghouse;
-
-    G.addNode(); // node 5
-    G.addNode(); // node 6
-    G.removeNode(5);
-
-    if (!G.isWeighted()) {
-        G.addEdge(0, 0);
-        G.addEdge(0, 4);
-        G.removeEdge(0, 4);
-        G.addEdge(0, 6);
-    } else {
-        G.addEdge(0, 0, 3.14);
-        G.addEdge(0, 4, 3.14);
-        G.removeEdge(0, 4);
-        G.addEdge(0, 6, 3.14);
-    }
-    DEBUG("Ghouse: ", G.nodes(), " ", G.edges());
-    // expect throw error when G is undirected
-    if (!G.isDirected()) {
-        EXPECT_ANY_THROW(G.transpose());
-    } else {
-        Graph Gtrans = G.transpose();
-        DEBUG("GhouseTrans: ", Gtrans.nodes(), " ", Gtrans.edges());
-        // check summation statistics
-        EXPECT_EQ(G.numberOfNodes(), Gtrans.numberOfNodes());
-        EXPECT_EQ(G.numberOfEdges(), Gtrans.numberOfEdges());
-        EXPECT_EQ(G.totalEdgeWeight(), Gtrans.totalEdgeWeight());
-        EXPECT_EQ(G.numberOfSelfLoops(), Gtrans.numberOfSelfLoops());
-
-        // check time step
-        EXPECT_EQ(G.time(), Gtrans.time());
-
-        // check graph names
-        EXPECT_EQ(G.getName() + "Transpose", Gtrans.getName());
-
-        // test for regular edges
-        EXPECT_TRUE(G.hasEdge(0, 6));
-        EXPECT_FALSE(G.hasEdge(6, 0));
-        EXPECT_TRUE(Gtrans.hasEdge(6, 0));
-        EXPECT_FALSE(Gtrans.hasEdge(0, 6));
-        // .. and for selfloops
-        EXPECT_TRUE(G.hasEdge(0, 0));
-        EXPECT_TRUE(Gtrans.hasEdge(0, 0));
-
-        // check for edge weights
-        if (G.isWeighted()) {
-            EXPECT_EQ(G.weight(0, 6), 3.14);
-            EXPECT_EQ(Gtrans.weight(6, 0), 3.14);
-            EXPECT_EQ(G.weight(0, 0), Gtrans.weight(0, 0));
         }
     }
 }
@@ -1553,9 +1511,6 @@ TEST_P(GraphGTest, testParallelForEdges) {
 
     ASSERT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in every case";
 }
-
-// template<typename L> void forEdgesWithAttribute_double(int attrId, L handle)
-// const;
 
 /** NEIGHBORHOOD ITERATORS **/
 
@@ -1889,100 +1844,6 @@ TEST_P(GraphGTest, testParallelSumForWeightedEdges) {
 }
 
 /** GRAPH SEARCHES **/
-
-TEST_P(GraphGTest, testBFSfrom) {
-    std::vector<count> visitedOrder(5, none);
-    index i = 0;
-    this->Ghouse.BFSfrom(3, [&](node v, count) {
-        EXPECT_EQ(none, visitedOrder[v]); // visit every node once
-        visitedOrder[v] = i++;
-    });
-    // have we visited all nodes
-    for (count l : visitedOrder) {
-        EXPECT_TRUE(l != none);
-    }
-
-    if (isDirected()) {
-        // root on level 0
-        EXPECT_EQ(0u, visitedOrder[3]);
-
-        // level 1
-        EXPECT_TRUE((visitedOrder[1] == 1) ^ (visitedOrder[1] == 2));
-        EXPECT_TRUE((visitedOrder[2] == 1) ^ (visitedOrder[2] == 2));
-
-        // level 2
-        EXPECT_TRUE((visitedOrder[0] == 3) ^ (visitedOrder[0] == 4));
-        EXPECT_TRUE((visitedOrder[4] == 3) ^ (visitedOrder[4] == 4));
-    } else {
-        EXPECT_EQ(0u, visitedOrder[3]);
-        EXPECT_TRUE((visitedOrder[1] == 1) ^ (visitedOrder[1] == 2) ^
-                    (visitedOrder[1] == 3));
-        EXPECT_TRUE((visitedOrder[2] == 1) ^ (visitedOrder[2] == 2) ^
-                    (visitedOrder[2] == 3));
-        EXPECT_TRUE((visitedOrder[4] == 1) ^ (visitedOrder[4] == 2) ^
-                    (visitedOrder[4] == 3));
-        EXPECT_TRUE((visitedOrder[0] == 4));
-    }
-}
-
-TEST_P(GraphGTest, testDFSfrom) {
-    if (isDirected()) {
-        std::vector<count> visitedOrder(5, none);
-        index i = 0;
-        this->Ghouse.DFSfrom(3, [&](node v) {
-            EXPECT_EQ(none, visitedOrder[v]); // visit every node once
-            visitedOrder[v] = i++;
-        });
-
-        // have we visited all nodes
-        for (count l : visitedOrder) {
-            EXPECT_TRUE(l != none);
-        }
-
-        // root on level 0
-        EXPECT_EQ(0u, visitedOrder[3]);
-
-        // level 1
-        EXPECT_TRUE((visitedOrder[1] == 1) ^ (visitedOrder[2] == 1));
-
-        // level 2
-        EXPECT_TRUE((visitedOrder[0] == 2) ^ (visitedOrder[1] == 2) ^
-                    (visitedOrder[4] == 2));
-
-        // level 3
-        EXPECT_TRUE((visitedOrder[2] == 3) ^ (visitedOrder[0] == 3) ^
-                    (visitedOrder[4] == 3) ^ (visitedOrder[1] == 3));
-
-        // level 4
-        EXPECT_TRUE((visitedOrder[2] == 4) ^ (visitedOrder[4] == 4) ^
-                    (visitedOrder[0] == 4));
-    } else {
-        count n = 5;
-        std::vector<count> visitedOrder(n, none);
-        Graph G = createGraph(n);
-        G.addEdge(0, 1);
-        G.addEdge(0, 2);
-        G.addEdge(2, 3);
-        G.addEdge(3, 4);
-
-        index i = 0;
-        G.DFSfrom(0, [&](node v) { visitedOrder[v] = i++; });
-
-        for (count l : visitedOrder) {
-            EXPECT_TRUE(l != none);
-        }
-
-        EXPECT_EQ(0u, visitedOrder[0]);
-
-        EXPECT_TRUE((visitedOrder[1] == 1) ^ (visitedOrder[2] == 1));
-
-        EXPECT_TRUE((visitedOrder[2] == 2) ^ (visitedOrder[3] == 2));
-
-        EXPECT_TRUE((visitedOrder[3] == 3) ^ (visitedOrder[4] == 3));
-
-        EXPECT_TRUE((visitedOrder[4] == 4) ^ (visitedOrder[1] == 4));
-    }
-}
 
 TEST_P(GraphGTest, testEdgeIndexGenerationDirected) {
     Graph G = Graph(10, false, true);
@@ -2327,150 +2188,6 @@ TEST_P(GraphGTest, testSortEdges) {
     }
 }
 
-TEST_P(GraphGTest, testSubgraphFromNodesUndirected) {
-    auto G = Graph(4, true, false);
-
-    /**
-     *      1
-     *   /  |  \
-     * 0    |    3
-     *   \  |  /
-     *      2
-     */
-
-    G.addEdge(0, 1, 1.0);
-    G.addEdge(0, 2, 2.0);
-    G.addEdge(3, 1, 4.0);
-    G.addEdge(3, 2, 5.0);
-    G.addEdge(1, 2, 3.0);
-
-    {
-        std::unordered_set<node> nodes = {0};
-        auto res = G.subgraphFromNodes(nodes);
-        EXPECT_TRUE(res.isWeighted());
-        EXPECT_FALSE(res.isDirected());
-        EXPECT_EQ(res.numberOfNodes(), 1);
-        EXPECT_EQ(res.numberOfEdges(), 0);
-    }
-
-    {
-        std::unordered_set<node> nodes = {0};
-        auto res = G.subgraphFromNodes(nodes, true);
-
-        EXPECT_EQ(res.numberOfNodes(), 3);
-        EXPECT_EQ(res.numberOfEdges(), 2); // 0-1, 0-2, NOT 1-2
-
-        EXPECT_DOUBLE_EQ(G.weight(0, 1), 1.0);
-        EXPECT_DOUBLE_EQ(G.weight(0, 2), 2.0);
-    }
-
-    {
-        std::unordered_set<node> nodes = {0, 1};
-        auto res = G.subgraphFromNodes(nodes);
-        EXPECT_EQ(res.numberOfNodes(), 2);
-        EXPECT_EQ(res.numberOfEdges(), 1); // 0 - 1
-    }
-
-    {
-        std::unordered_set<node> nodes = {0, 1};
-        auto res = G.subgraphFromNodes(nodes, true);
-        EXPECT_EQ(res.numberOfNodes(), 4);
-        EXPECT_EQ(res.numberOfEdges(), 4); // 0-1, 0-2, 1-2, 1-3
-    }
-}
-
-TEST_P(GraphGTest, testSubgraphFromNodesDirected) {
-    auto G = Graph(4, true, true);
-
-    /**
-     *      1
-     *   /  |  \
-     * 0    |    3
-     *   \  |  /
-     *      2
-     */
-
-    G.addEdge(0, 1, 1.0);
-    G.addEdge(0, 2, 2.0);
-    G.addEdge(3, 1, 4.0);
-    G.addEdge(3, 2, 5.0);
-    G.addEdge(1, 2, 3.0);
-
-    {
-        std::unordered_set<node> nodes = {0};
-        auto res = G.subgraphFromNodes(nodes);
-
-        EXPECT_TRUE(res.isWeighted());
-        EXPECT_TRUE(res.isDirected());
-
-        EXPECT_EQ(res.numberOfNodes(), 1);
-        EXPECT_EQ(res.numberOfEdges(), 0);
-    }
-
-    {
-        std::unordered_set<node> nodes = {0};
-        auto res = G.subgraphFromNodes(nodes, true);
-        EXPECT_EQ(res.numberOfNodes(), 3);
-        EXPECT_EQ(res.numberOfEdges(), 2); // 0->1, 0->2, NOT 1->2
-    }
-
-    {
-        std::unordered_set<node> nodes = {0, 1};
-        auto res = G.subgraphFromNodes(nodes);
-        EXPECT_EQ(res.numberOfNodes(), 2);
-        EXPECT_EQ(res.numberOfEdges(), 1); // 0 -> 1
-    }
-
-    {
-        std::unordered_set<node> nodes = {0, 1};
-        auto res = G.subgraphFromNodes(nodes, true);
-        EXPECT_EQ(res.numberOfNodes(), 3);
-        EXPECT_EQ(res.numberOfEdges(), 3); // 0->1, 0->2, 1->2
-    }
-
-    {
-        std::unordered_set<node> nodes = {0, 1};
-        auto res = G.subgraphFromNodes(nodes, true, true);
-        EXPECT_EQ(res.numberOfNodes(), 4);
-        EXPECT_EQ(res.numberOfEdges(), 4); // 0->1, 0->2, 1->2, 3->1
-    }
-
-}
-
-TEST_P(GraphGTest, testRemoveMultiEdges) {
-    Aux::Random::setSeed(42, false);
-    Graph G(this->Ghouse);
-    const auto edgeSet = G.edges();
-    constexpr count nMultiEdges = 10;
-    constexpr count nMultiSelfLoops = 10;
-    const count m = G.numberOfEdges();
-
-    // Adding multiedges at random
-    for (count i = 0; i < nMultiEdges; ++i) {
-        auto e = G.randomEdge();
-        G.addEdge(e.first, e.second);
-    }
-
-    std::unordered_set<node> uniqueSelfLoops;
-    // Adding multiple self-loops at random
-    for (count i = 0; i < nMultiSelfLoops; ++i) {
-        node u = G.randomNode();
-        G.addEdge(u, u);
-        G.addEdge(u, u);
-        uniqueSelfLoops.insert(u);
-    }
-
-    EXPECT_EQ(G.numberOfEdges(), m + nMultiEdges + 2 * nMultiSelfLoops);
-    G.removeMultiEdges();
-    EXPECT_EQ(G.numberOfEdges(), m + uniqueSelfLoops.size());
-    G.removeSelfLoops();
-    EXPECT_EQ(G.numberOfEdges(), m);
-    auto edgeSet_ = G.edges();
-
-    for (count i = 0; i < G.numberOfEdges(); ++i)
-        EXPECT_EQ(edgeSet[i], edgeSet_[i]);
-}
-
 TEST_P(GraphGTest, testEdgeIdsAfterRemove) {
     constexpr node n = 100;
 
@@ -2483,7 +2200,7 @@ TEST_P(GraphGTest, testEdgeIdsAfterRemove) {
     G.removeNode(5);
     G.removeNode(10);
     while(2*G.numberOfEdges() > original.numberOfEdges()) {
-        auto e = G.randomEdge(false);
+        const auto e = GraphTools::randomEdge(G, false);
         G.removeEdge(e.first, e.second);
     }
     ASSERT_GT(G.numberOfEdges(), original.numberOfEdges() / 3);

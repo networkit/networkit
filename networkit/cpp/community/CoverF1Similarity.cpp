@@ -1,32 +1,32 @@
-#include <networkit/community/CoverF1Similarity.hpp>
 
 #include <networkit/auxiliary/SignalHandling.hpp>
+#include <networkit/community/CoverF1Similarity.hpp>
 
 namespace NetworKit {
 
-CoverF1Similarity::CoverF1Similarity(const Graph &G, const Cover &C, const Cover &reference) : LocalCoverEvaluation(G, C), reference(reference) {}
+CoverF1Similarity::CoverF1Similarity(const Graph &G, const Cover &C, const Cover &reference) : LocalCoverEvaluation(G, C), reference(&reference) {}
 
 void CoverF1Similarity::run() {
     hasRun = false;
     Aux::SignalHandler handler;
 
-    std::vector<std::vector<node>> Csets(C.upperBound());
-    std::vector<count> referenceSizes(reference.upperBound(), 0);
+    std::vector<std::vector<node>> Csets(C->upperBound());
+    std::vector<count> referenceSizes(reference->upperBound(), 0);
     count numMemberships = 0;
 
     handler.assureRunning();
 
     // Calculate cluster sizes and explicitly store all clusters of C
-    G.forNodes([&](node u) {
-        for (index c : C[u]) {
+    G->forNodes([&](node u) {
+        for (index c : (*C)[u]) {
             Csets[c].push_back(u);
         }
 
-        for (index c : reference[u]) {
+        for (index c : (*reference)[u]) {
             ++referenceSizes[c];
         }
 
-        numMemberships += C[u].size();
+        numMemberships += (*C)[u].size();
     });
 
     handler.assureRunning();
@@ -37,21 +37,21 @@ void CoverF1Similarity::run() {
     minimumValue = std::numeric_limits<double>::max();
     maximumValue = std::numeric_limits<double>::lowest();
     values.clear();
-    values.resize(C.upperBound(), 0);
+    values.resize(C->upperBound(), 0);
 
     count numClusters = 0;
 
     // The overlap of the currently considered cluster in C with each reference cluster
-    std::vector<count> overlap(reference.upperBound(), 0);
+    std::vector<count> overlap(reference->upperBound(), 0);
     // The clusters of the reference that have a positive overlap
     std::vector<index> overlappingReference;
 
-    for (index i = 0; i < C.upperBound(); ++i) {
+    for (index i = 0; i < C->upperBound(); ++i) {
         if (Csets[i].size() > 0) {
             ++numClusters;
 
             for (node u : Csets[i]) {
-                for (index s : reference[u]) {
+                for (index s : (*reference)[u]) {
                     if (overlap[s] == 0) {
                         overlappingReference.push_back(s);
                     }

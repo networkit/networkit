@@ -1,5 +1,5 @@
 /*
- * Volume.h
+ * Volume.hpp
  *
  * Created on: July 7, 2018
  * Author: Franz-Benjamin Mocnik <mail@mocnik-science.net>
@@ -8,8 +8,9 @@
 #ifndef NETWORKIT_DISTANCE_VOLUME_HPP_
 #define NETWORKIT_DISTANCE_VOLUME_HPP_
 
-#include <networkit/graph/Graph.hpp>
 #include <unordered_map>
+
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

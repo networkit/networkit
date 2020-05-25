@@ -9,6 +9,7 @@
 
 #include <networkit/distance/CommuteTimeDistance.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/centrality/SpanningEdgeCentrality.hpp>
 
@@ -183,7 +184,7 @@ TEST_F(CommuteTimeDistanceGTest, runECTDSingleSource) {
     for (auto graphFile: graphFiles) {
         Graph G = reader.read(graphFile);
         CommuteTimeDistance ectd(G);
-        node u = G.randomNode();
+        node u = GraphTools::randomNode(G);
         double sum1 = ectd.runSingleSource(u);
         double sum2 = 0.0;
         G.forNodes([&](node v){

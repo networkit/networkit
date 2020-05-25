@@ -1,24 +1,24 @@
 /*
- * Quadtree.h
+ * Quadtree.hpp
  *
  *  Created on: 21.05.2014
- *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
+ *      Author: Moritz v. Looz
  */
 
 #ifndef NETWORKIT_GENERATORS_QUADTREE_QUADTREE_CARTESIAN_EUCLID_HPP_
 #define NETWORKIT_GENERATORS_QUADTREE_QUADTREE_CARTESIAN_EUCLID_HPP_
 
-#include <vector>
-#include <memory>
 #include <cmath>
+#include <memory>
 #include <omp.h>
-#include <functional>
+#include <vector>
+
 #include <networkit/generators/quadtree/QuadNodeCartesianEuclid.hpp>
 
 namespace NetworKit {
 
 template <class T>
-class QuadtreeCartesianEuclid {
+class QuadtreeCartesianEuclid final {
     friend class QuadTreeCartesianEuclidGTest;
 public:
     /**
@@ -35,7 +35,7 @@ public:
         this->upper = upper;
     }
 
-    QuadtreeCartesianEuclid(const vector<Point<double> > &positions, const vector<T> &content, bool theoreticalSplit=false, count capacity=1000) {
+    QuadtreeCartesianEuclid(const vector<Point<double>> &positions, const vector<T> &content, bool theoreticalSplit=false, count capacity=1000) {
         const count n = positions.size();
         assert(content.size() == n);
         assert(n > 0);

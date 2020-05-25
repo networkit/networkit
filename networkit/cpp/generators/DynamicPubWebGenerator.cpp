@@ -5,7 +5,7 @@
  *      Author: Henning
  */
 
-#include <queue>
+#include <map>
 
 #include <networkit/generators/DynamicPubWebGenerator.hpp>
 
@@ -61,7 +61,6 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
                 node neigh = elem.second;
                 G.removeEdge(nodeToDel, neigh);
                 GraphEvent event(GraphEvent::EDGE_REMOVAL, nodeToDel, neigh);
-                //				TRACE("Event: REMOVE edge " , nodeToDel , "-" , neigh);
                 eventStream.push_back(event);
             }
             edgesToDelete.clear();
@@ -69,7 +68,6 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
             // eventually delete vertex
             G.removeNode(nodeToDel);
             GraphEvent event(GraphEvent::NODE_REMOVAL, nodeToDel);
-            //			TRACE("Event: REMOVE node " , nodeToDel);
             eventStream.push_back(event);
         }
 
@@ -102,7 +100,6 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
             coordinates.emplace_back(coord);
             newCoordinates.emplace_back(newNode, coord);
             GraphEvent event(GraphEvent::NODE_ADDITION, newNode);
-            //			TRACE("Event: ADD node " , newNode);
             eventStream.push_back(event);
         }
 
@@ -146,7 +143,6 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
                     / initGen.squaredDistanceInUnitTorus(coordinates[u], coordinates[v]);
                 G.setWeight(u, v, ew);
                 GraphEvent event(GraphEvent::EDGE_WEIGHT_UPDATE, u, v, ew);
-                //				TRACE("Event: UPD edge weight " , u , "-" , v, ", weight: ", ew);
                 eventStream.push_back(event);
             }
             eligibleEdges.erase(e);
@@ -163,10 +159,10 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
         edgesToDelete.clear();
 
         // check if edges have to be inserted
-        for (auto edgePair : eligibleEdges) {
+        for (const auto &edgePair : eligibleEdges) {
             if (edgePair.second >= 2) {
-                node u = edgePair.first.first;
-                node v = edgePair.first.second;
+                node u, v;
+                std::tie(u, v) = edgePair.first;
                 assert(!G.hasEdge(u, v) && G.hasNode(u) && G.hasNode(v));
 
                 edgeweight ew =

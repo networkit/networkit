@@ -75,11 +75,11 @@ double Vector::operator*(const Vector &other) const {
     return innerProduct(*this, other);
 }
 
-Vector Vector::operator*(const double &scalar) const {
+Vector Vector::operator*(double scalar) const {
     return Vector(*this) *= scalar;
 }
 
-Vector& Vector::operator*=(const double &scalar) {
+Vector& Vector::operator*=(double scalar) {
 #pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(getDimension()); i++) {
         values[i] *= scalar;
@@ -88,11 +88,11 @@ Vector& Vector::operator*=(const double &scalar) {
     return *this;
 }
 
-Vector Vector::operator/(const double &divisor) const {
+Vector Vector::operator/(double divisor) const {
     return Vector(*this) /= divisor;
 }
 
-Vector& Vector::operator/=(const double &divisor) {
+Vector& Vector::operator/=(double divisor) {
     return *this *= 1 / divisor;
 }
 
@@ -100,7 +100,7 @@ Vector Vector::operator+(const Vector &other) const {
     return Vector(*this) += other;
 }
 
-Vector Vector::operator+(const double value) const {
+Vector Vector::operator+(double value) const {
     return Vector(*this) += value;
 }
 

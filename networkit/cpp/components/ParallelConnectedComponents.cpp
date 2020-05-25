@@ -12,25 +12,25 @@
 
 namespace NetworKit {
 
-ParallelConnectedComponents::ParallelConnectedComponents(const Graph& G, bool coarsening) : Algorithm(), G(G), coarsening(coarsening) {
+ParallelConnectedComponents::ParallelConnectedComponents(const Graph& G, bool coarsening) : Algorithm(), G(&G), coarsening(coarsening) {
 
 }
 
 
 void ParallelConnectedComponents::run() {
-    if (G.isDirected()) {
+    if (G->isDirected()) {
         throw std::runtime_error("algorithm does not accept directed graphs");
     }
 
     // calculate connected components by label propagation
-    count z = G.upperNodeIdBound();
+    count z = G->upperNodeIdBound();
 
     DEBUG("initializing labels");
     component = Partition(z);
     component.allToSingletons();
     // remove nodes that do not exist from the partition so it doesn't report wrong numbers
     component.parallelForEntries([&](node u, index) {
-        if (!G.hasNode(u)) {
+        if (!G->hasNode(u)) {
             component[u] = none;
         }
     });
@@ -52,19 +52,19 @@ void ParallelConnectedComponents::run() {
         nextActiveNodes.assign(z, INACTIVE);
         change = false;
 //		numActive = 0;
-        G.balancedParallelForNodes([&](node u) {
+        G->balancedParallelForNodes([&](node u) {
             if (activeNodes[u] == ACTIVE) {
 //				++numActive;
                 // get smallest
                 index smallest = component[u];
-                G.forNeighborsOf(u, [&](node v) {
+                G->forNeighborsOf(u, [&](node v) {
                     smallest = std::min(smallest, component[v]);
                 });
 
                 if (component[u] != smallest) {
                     component.moveToSubset(smallest, u);
                     change = true;
-                    G.forNeighborsOf(u, [&](node v) {
+                    G->forNeighborsOf(u, [&](node v) {
                         // only nodes that do not have the smallest component label
                         // will see a new component label because of the change of u,
                         // only they need to be activated
@@ -80,7 +80,7 @@ void ParallelConnectedComponents::run() {
     }
     if (coarsening && numIterations == 8) { // TODO: externalize constant
         // coarsen and make recursive call
-        ParallelPartitionCoarsening con(G, component);
+        ParallelPartitionCoarsening con(*G, component);
         con.run();
         auto Gcon = con.getCoarseGraph();
         ParallelConnectedComponents cc(Gcon);
@@ -88,24 +88,24 @@ void ParallelConnectedComponents::run() {
 
         // apply to current graph
         auto nodeMapping = con.getFineToCoarseNodeMapping();
-        G.parallelForNodes([&](node u) {
+        G->parallelForNodes([&](node u) {
             component[u] = cc.componentOfNode(nodeMapping[u]);
         });
     }
 }
 
 void ParallelConnectedComponents::runSequential() {
-    if (G.isDirected()) {
+    if (G->isDirected()) {
         throw std::runtime_error("algorithm does not accept directed graphs");
     }
     // calculate connected components by label propagation
-    count z = G.upperNodeIdBound();
+    count z = G->upperNodeIdBound();
     DEBUG("initializing labels");
     component = Partition(z);
     component.allToSingletons();
     // remove nodes that do not exist from the partition so it doesn't report wrong numbers
     component.forEntries([&](node u, index) {
-        if (!G.hasNode(u)) {
+        if (!G->hasNode(u)) {
             component[u] = none;
         }
     });
@@ -122,19 +122,19 @@ void ParallelConnectedComponents::runSequential() {
         // TRACE("label propagation iteration");
         change = false;
         // numActive = 0;
-        G.forNodes([&](node u) {
+        G->forNodes([&](node u) {
             if (activeNodes[u]) {
                 // ++numActive;
                 // get smallest
                 index smallest = component[u];
-                G.forNeighborsOf(u, [&](node v) {
+                G->forNeighborsOf(u, [&](node v) {
                     smallest = std::min(smallest, component[v]);
                 });
 
                 if (component[u] != smallest) {
                     component.moveToSubset(smallest, u);
                     change = true;
-                    G.forNeighborsOf(u, [&](node v) {
+                    G->forNeighborsOf(u, [&](node v) {
                         // only nodes that do not have the smallest component label
                         // will see a new component label because of the change of u,
                         // only they need to be activated
@@ -152,7 +152,7 @@ void ParallelConnectedComponents::runSequential() {
     }
     if (coarsening && numIterations == 8) { // TODO: externalize constant
         // coarsen and make recursive call
-        ParallelPartitionCoarsening con(G, component, false);
+        ParallelPartitionCoarsening con(*G, component, false);
         con.run();
         auto Gcon = con.getCoarseGraph();
         ParallelConnectedComponents cc(Gcon);
@@ -160,7 +160,7 @@ void ParallelConnectedComponents::runSequential() {
 
         // apply to current graph
         auto nodeMapping = con.getFineToCoarseNodeMapping();
-        G.forNodes([&](node u) {
+        G->forNodes([&](node u) {
             component[u] = cc.componentOfNode(nodeMapping[u]);
         });
     }

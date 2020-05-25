@@ -1,8 +1,8 @@
 /*
- * Coverage.h
+ * Coverage.hpp
  *
  *  Created on: 02.02.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_COMMUNITY_COVERAGE_HPP_
@@ -16,10 +16,10 @@ namespace NetworKit {
  * @ingroup community
  * Coverage is the fraction of intra-cluster edges.
  */
-class Coverage: public QualityMeasure {
+class Coverage final: public QualityMeasure {
 public:
 
-    virtual double getQuality(const Partition& zeta, const Graph& G);
+    double getQuality(const Partition& zeta, const Graph& G) override;
 };
 
 } /* namespace NetworKit */

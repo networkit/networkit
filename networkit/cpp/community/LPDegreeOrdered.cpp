@@ -7,20 +7,20 @@
 
 #include <unordered_map>
 
-#include <networkit/community/LPDegreeOrdered.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/community/LPDegreeOrdered.hpp>
 
 namespace NetworKit {
 
 LPDegreeOrdered::LPDegreeOrdered(const Graph& G) : CommunityDetectionAlgorithm(G) {}
 
 void LPDegreeOrdered::run() {
-    count n = G.numberOfNodes();
+    count n = G->numberOfNodes();
     count theta = n / 1e5;
     DEBUG("theta: " , theta);
 
-    index z = G.upperNodeIdBound();
+    index z = G->upperNodeIdBound();
     Partition labels(z);
     // initialize all labels to singletons
     labels.allToSingletons();
@@ -33,10 +33,10 @@ void LPDegreeOrdered::run() {
     nIterations = 0; // number of iterations
 
     auto propagateLabels = [&](node v){
-        if ((active[v]) && (G.degree(v) > 0)) {
+        if ((active[v]) && (G->degree(v) > 0)) {
             std::unordered_map<label, count> labelCounts; // neighborLabelCounts maps label -> frequency in the neighbors
             // count the labels in the neighborhood of v
-            G.forNeighborsOf(v, [&](node w) {
+            G->forNeighborsOf(v, [&](node w) {
                 label lw = labels.subsetOf(w);//labels[w];
                 labelCounts[lw] += 1; // add weight of edge {v, w}
             });
@@ -49,7 +49,7 @@ void LPDegreeOrdered::run() {
             if (labels[v] != dominant) { // UPDATE
                 labels.moveToSubset(dominant,v);//labels[v] = dominant;
                 nUpdated += 1; // TODO: atomic update?
-                G.forNeighborsOf(v, [&](node u) {
+                G->forNeighborsOf(v, [&](node u) {
                     active[u] = 1;
                 });
             } else {
@@ -62,12 +62,12 @@ void LPDegreeOrdered::run() {
 
     // sort nodes by degree
     std::vector<node> nodes;
-    G.forNodes([&](node v) {
+    G->forNodes([&](node v) {
         nodes.push_back(v);
     });
 
     Aux::Parallel::sort(nodes.begin(), nodes.end(), [&](node u, node v) {
-        return G.degree(u) < G.degree(v); // lower degree before higher degree
+        return G->degree(u) < G->degree(v); // lower degree before higher degree
     });
 
     // propagate labels

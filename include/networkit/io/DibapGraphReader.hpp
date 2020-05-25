@@ -1,5 +1,5 @@
 /*
- * DibapGraphReader.h
+ * DibapGraphReader.hpp
  *
  *  Created on: Jun 12, 2013
  *      Author: Henning

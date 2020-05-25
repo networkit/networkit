@@ -1,7 +1,7 @@
 /*
  * HyperbolicGenerator.cpp
  *
- *      Authors: Mustafa zdayi and Moritz v. Looz (moritz.looz-corswarem@kit.edu)
+ *      Authors: Mustafa zdayi and Moritz v. Looz
  *
  * This generator contains algorithms described in two publications.
  *
@@ -19,19 +19,15 @@
  *
  */
 
-#include <cmath>
-
-#include <cstdlib>
-#include <random>
-#include <assert.h>
-#include <omp.h>
 #include <algorithm>
+#include <omp.h>
+#include <random>
 
-#include <networkit/graph/GraphBuilder.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/auxiliary/Random.hpp>
 #include <networkit/generators/HyperbolicGenerator.hpp>
 #include <networkit/generators/quadtree/Quadtree.hpp>
-#include <networkit/auxiliary/Random.hpp>
-#include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/graph/GraphBuilder.hpp>
 
 namespace NetworKit {
 
@@ -173,8 +169,6 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
                 if(directSwap || bandRadii[j+1] > radii[i]){
                     double minTheta, maxTheta;
                     std::tie (minTheta, maxTheta) = getMinMaxTheta(angles[i], radii[i], bandRadii[j], R);
-                    //minTheta = 0;
-                    //maxTheta = 2*PI;
                     vector<Point2DWithIndex<double>> neighborCandidates = getPointsWithinAngles(minTheta, maxTheta, bands[j], bandAngles[j]);
 
                     const count sSize = neighborCandidates.size();
@@ -198,7 +192,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
                 result.swapNeighborhood(i, near, empty, false);
             } else {
                 for (index j : near) {
-                    if (j >= n) ERROR("Node ", j, " prospective neighbour of ", i, " does not actually exist. Oops.");
+                    if (j >= n) ERROR("Node ", j, " prospective neighbor of ", i, " does not actually exist. Oops.");
                     if(radii[j] > radii[i] || (radii[j] == radii[i] && angles[j] < angles[i]))
                         result.addHalfEdge(i,j);
                 }
@@ -253,7 +247,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
         vector<index> near;
         totalCandidates += quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), edgeProb, anglesSorted, near);
         for (index j : near) {
-            if (j >= n) ERROR("Node ", j, " prospective neighbour of ", i, " does not actually exist. Oops.");
+            if (j >= n) ERROR("Node ", j, " prospective neighbor of ", i, " does not actually exist. Oops.");
             if (j > i) {
                 result.addHalfEdge(i, j);
             }
@@ -264,4 +258,4 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
     return result.toGraph(true, true);
 
 }
-}
+} // namespace NetworKit

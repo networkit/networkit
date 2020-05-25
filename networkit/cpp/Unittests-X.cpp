@@ -74,8 +74,6 @@ int main(int argc, char *argv[]) {
 
     // Configure parallelism
     {
-        omp_set_nested(1); // enable nested parallelism
-
         if (options.numThreads) {
             Aux::setNumberOfThreads(options.numThreads);
         }

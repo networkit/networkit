@@ -5,9 +5,9 @@
  *      Author: Michael Hamann, Gerd Lindner
  */
 
-#include <networkit/distance/AdamicAdarDistance.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Timer.hpp>
+#include <networkit/distance/AdamicAdarDistance.hpp>
 
 namespace NetworKit {
 
@@ -15,11 +15,11 @@ AdamicAdarDistance::AdamicAdarDistance(const Graph& G) : NodeDistance(G) {
 }
 
 void AdamicAdarDistance::preprocess() {
-    if (!G.hasEdgeIds()) {
+    if (!G->hasEdgeIds()) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
-    Graph g = G;
+    Graph g = *G;
 
     //Node attribute: marker
     std::vector<bool> nodeMarker(g.upperNodeIdBound(), false);
@@ -38,11 +38,11 @@ void AdamicAdarDistance::preprocess() {
             g.forNeighborsOf(v, [&](node, node w, edgeid eid_vw) {
                 if (nodeMarker[w]) {
 
-                    edgeid eid_uw = G.edgeId(u, w);
+                    edgeid eid_uw = G->edgeId(u, w);
 
-                    aaDistance[eid_uv] = aaDistance[eid_uv] + 1.0 / log(G.degree(w));
-                    aaDistance[eid_uw] = aaDistance[eid_uw] + 1.0 / log(G.degree(v));
-                    aaDistance[eid_vw] = aaDistance[eid_vw] + 1.0 / log(G.degree(u));
+                    aaDistance[eid_uv] = aaDistance[eid_uv] + 1.0 / log(G->degree(w));
+                    aaDistance[eid_uw] = aaDistance[eid_uw] + 1.0 / log(G->degree(v));
+                    aaDistance[eid_vw] = aaDistance[eid_vw] + 1.0 / log(G->degree(u));
                 }
             });
 
@@ -52,13 +52,13 @@ void AdamicAdarDistance::preprocess() {
         removeNode(g, u);
     });
 
-    G.parallelForEdges([&](node, node, edgeid eid) {
+    G->parallelForEdges([&](node, node, edgeid eid) {
         aaDistance[eid] = 1 / aaDistance[eid];
     });
 }
 
 double AdamicAdarDistance::distance(node u, node v) {
-    edgeid eid = G.edgeId(u, v);
+    edgeid eid = G->edgeId(u, v);
     return aaDistance[eid];
 }
 

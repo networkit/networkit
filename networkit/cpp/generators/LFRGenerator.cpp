@@ -1,10 +1,6 @@
-/*
- *
- */
-
 #include <algorithm>
-#include <random>
 #include <numeric>
+#include <random>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
@@ -14,6 +10,7 @@
 #include <networkit/generators/PowerlawDegreeSequence.hpp>
 #include <networkit/generators/EdgeSwitchingMarkovChainGenerator.hpp>
 #include <networkit/generators/PubWebGenerator.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 NetworKit::LFRGenerator::LFRGenerator(NetworKit::count n) :
 n(n), hasDegreeSequence(false), hasCommunitySizeSequence(false), hasInternalDegreeSequence(false), hasGraph(false), hasPartition(false) { }
@@ -208,7 +205,7 @@ NetworKit::Graph NetworKit::LFRGenerator::generateInterClusterGraph(const std::v
 
             if (s2 == s1 || s2 == t1) continue;
 
-            node t2 = interG.randomNeighbor(s2);
+            node t2 = GraphTools::randomNeighbor(interG, s2);
 
             if (t2 == none) continue;
 
@@ -554,6 +551,3 @@ std::string NetworKit::LFRGenerator::toString() const {
 bool NetworKit::LFRGenerator::isParallel() const {
     return false;
 }
-
-
-

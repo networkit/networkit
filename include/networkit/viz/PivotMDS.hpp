@@ -1,19 +1,17 @@
 /*
- * PivotMDS.h
+ * PivotMDS.hpp
  *
  *  Created on: Jul 7, 2016
- *      Author: Michael Wegner (michael.wegner@student.kit.edu)
+ *      Author: Michael Wegner
  */
 
 #ifndef NETWORKIT_VIZ_PIVOT_MDS_HPP_
 #define NETWORKIT_VIZ_PIVOT_MDS_HPP_
 
-#include <networkit/viz/GraphLayoutAlgorithm.hpp>
-
 #include <networkit/algebraic/CSRMatrix.hpp>
 #include <networkit/algebraic/Vector.hpp>
-
 #include <networkit/graph/Graph.hpp>
+#include <networkit/viz/GraphLayoutAlgorithm.hpp>
 
 namespace NetworKit {
 
@@ -22,7 +20,7 @@ namespace NetworKit {
  *
  * Implementation of PivotMDS proposed by Brandes and Pich.
  */
-class PivotMDS : public GraphLayoutAlgorithm<double> {
+class PivotMDS final : public GraphLayoutAlgorithm<double> {
   public:
     /**
      * Constructs a PivotMDS object for the given @a graph. The algorithm should
@@ -36,7 +34,7 @@ class PivotMDS : public GraphLayoutAlgorithm<double> {
     /*
      * Default destructor
      */
-    virtual ~PivotMDS() = default;
+    ~PivotMDS() = default;
 
     /**
      * Runs the PivotMDS algorithm.
@@ -57,7 +55,7 @@ class PivotMDS : public GraphLayoutAlgorithm<double> {
      * stored in @a eigenvector and
      * @a eigenvalue.
      */
-    void powerMethod(const CSRMatrix &mat, const count n, Vector &eigenvector,
+    void powerMethod(const CSRMatrix &mat, count n, Vector &eigenvector,
                      double &eigenvalue);
 };
 

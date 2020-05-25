@@ -2,7 +2,7 @@
  * ROCMetric.cpp
  *
  *  Created on: 28.02.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #include <networkit/linkprediction/ROCMetric.hpp>

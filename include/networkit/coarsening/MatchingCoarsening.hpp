@@ -1,15 +1,14 @@
 /*
- * MatchingCoarsening.h
+ * MatchingCoarsening.hpp
  *
  *  Created on: 30.10.2012
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_COARSENING_MATCHING_COARSENING_HPP_
 #define NETWORKIT_COARSENING_MATCHING_COARSENING_HPP_
 
 #include <networkit/coarsening/GraphCoarsening.hpp>
-
 #include <networkit/matching/Matching.hpp>
 
 namespace NetworKit {
@@ -18,7 +17,7 @@ namespace NetworKit {
  * @ingroup coarsening
  * Coarsens graph according to a matching.
  */
-class MatchingCoarsening: public GraphCoarsening {
+class MatchingCoarsening final : public GraphCoarsening {
 
 public:
     MatchingCoarsening(const Graph& G, const Matching& M, bool noSelfLoops = false);
@@ -32,7 +31,7 @@ public:
      *
      * @return		coarse graph
      */
-    virtual void run();
+    void run() override;
 
 private:
     const Matching& M;

@@ -2,23 +2,24 @@
  * Author: Michael Hamann <michael.hamann@kit.edu>
  */
 
-#include <networkit/community/CutClustering.hpp>
-#include <networkit/flow/EdmondsKarp.hpp>
-#include <networkit/components/ConnectedComponents.hpp>
-#include <networkit/auxiliary/Log.hpp>
-
+#include <limits>
 #include <sstream>
 #include <stdexcept>
-#include <limits>
+
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/community/CutClustering.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/flow/EdmondsKarp.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 NetworKit::CutClustering::CutClustering(const Graph& G, NetworKit::edgeweight alpha) : CommunityDetectionAlgorithm(G), alpha(alpha) { }
 
 void NetworKit::CutClustering::run() {
-    Partition result(G.upperNodeIdBound());
-    result.setUpperBound(G.upperNodeIdBound());
+    Partition result(G->upperNodeIdBound());
+    result.setUpperBound(G->upperNodeIdBound());
 
     // Create a weighted copy of G
-    Graph graph(G, true, false);
+    auto graph = GraphTools::toWeighted(*G);
 
     // Augment graph by an additional node t that is connected to all other nodes
     // via an edge of weight alpha
@@ -35,13 +36,13 @@ void NetworKit::CutClustering::run() {
 
     // sort nodes by degree, this (heuristically) reduces the number of needed cut calculations
     // bucket sort
-    count n = G.numberOfNodes();
+    count n = G->numberOfNodes();
     std::vector<node> sortedNodes(n);
     {
         std::vector<index> nodePos(n + 1, 0);
 
-        G.forNodes([&](node u) {
-            ++nodePos[n - G.degree(u)];
+        G->forNodes([&](node u) {
+            ++nodePos[n - G->degree(u)];
         });
 
         // exclusive prefix sum
@@ -55,8 +56,8 @@ void NetworKit::CutClustering::run() {
             sum += tmp;
         }
 
-        G.forNodes([&](node u) {
-            sortedNodes[nodePos[n - G.degree(u)]++] = u;
+        G->forNodes([&](node u) {
+            sortedNodes[nodePos[n - G->degree(u)]++] = u;
         });
     }
 
@@ -119,7 +120,7 @@ std::map< NetworKit::edgeweight, NetworKit::Partition > NetworKit::CutClustering
 
     // If there is more than one connected component, the whole graph is another valid lower bound
     if (connComp.numberOfComponents() > 1) {
-        node rep = G.randomNode();
+        node rep = GraphTools::randomNode(G);
         Partition wholeGraph(G.upperNodeIdBound(), rep);
         wholeGraph.setUpperBound(rep + 1);
 
@@ -233,14 +234,13 @@ void NetworKit::CutClustering::clusterHierarchyRecursion(const NetworKit::Graph 
         }
     }
 
-    if (result.count(upper) == 0) // FIXME actually this shouldn't happen, this has been copied from another implementation
-        result.insert(std::make_pair(upper, std::move(upperClusters))); // upperClusters won't be used anymore
+    assert(result.count(upper));
 }
 
 
 std::string NetworKit::CutClustering::toString() const {
     std::stringstream stream;
-    
+
     stream << "CutClustering(" << alpha << ")";
     return stream.str();
 }

@@ -1,8 +1,8 @@
 /*
- * AdamicAdarIndex.h
+ * AdamicAdarIndex.hpp
  *
  *  Created on: 25.03.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #ifndef NETWORKIT_LINKPREDICTION_ADAMIC_ADAR_INDEX_HPP_
@@ -19,8 +19,7 @@ namespace NetworKit {
  * The index sums up the reciprocals of the logarithm of the degree of all
  * common neighbors of u and v.
  */
-class AdamicAdarIndex : public LinkPredictor {
-private:
+class AdamicAdarIndex final : public LinkPredictor {
   /**
    * Returns the Adamic/Adar Index of the given node-pair (@a u, @a v).
    * @param u First node

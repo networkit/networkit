@@ -1,8 +1,10 @@
 /*
  * NetworkitBinaryWriter.hpp
  *
- *      Author: Charmaine Ndolo <charmaine.ndolo@b-tu.de>
+ *      Author: Charmaine Ndolo <charmaine.ndolo@hu-berlin.de>
  */
+
+// networkit-format
 
 #ifndef NETWORKIT_IO_NETWORKIT_BINARY_WRITER_HPP_
 #define NETWORKIT_IO_NETWORKIT_BINARY_WRITER_HPP_
@@ -29,7 +31,8 @@ enum class NetworkitBinaryWeights {
 class NetworkitBinaryWriter final : public GraphWriter {
 
 public:
-    NetworkitBinaryWriter(uint64_t chunks = 32, NetworkitBinaryWeights weightsType = NetworkitBinaryWeights::autoDetect);
+    NetworkitBinaryWriter(uint64_t chunks = 32,
+                          NetworkitBinaryWeights weightsType = NetworkitBinaryWeights::autoDetect);
 
     void write(const Graph &G, const std::string &path) override;
 

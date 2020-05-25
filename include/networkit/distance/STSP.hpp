@@ -1,7 +1,7 @@
 /*
  * STSP.hpp
  *
- *  Created on: 14.06.2019
+ *  Created on: 15.06.2019
  *      Author: Eugenio Angriman <angrimae@hu-berlin.de>
  */
 
@@ -33,7 +33,7 @@ public:
      * and reconstruct a shortest path from @a source and @a target.
      */
     STSP(const Graph &G, node source, node target, bool storePred = true)
-        : G(G), source(source), target(target), storePred(storePred) {
+        : G(&G), source(source), target(target), storePred(storePred) {
         if (!G.hasNode(source))
             throw std::runtime_error("Error: source node not in the graph!");
         if (!G.hasNode(target))
@@ -75,7 +75,7 @@ public:
     virtual edgeweight getDistance() const = 0;
 
 protected:
-    const Graph &G;
+    const Graph *G;
     node source, target;
     const bool storePred;
     std::vector<node> pred, path;
@@ -91,7 +91,7 @@ protected:
     void init() {
         hasRun = false;
         if (storePred)
-            pred.resize(G.upperNodeIdBound());
+            pred.resize(G->upperNodeIdBound());
     }
 };
 

@@ -1,11 +1,7 @@
-/*
- * DotPartitionWriter.cpp
- */
-
-#include <networkit/io/DotPartitionWriter.hpp>
-
 #include <fstream>
 #include <set>
+
+#include <networkit/io/DotPartitionWriter.hpp>
 
 namespace NetworKit {
 

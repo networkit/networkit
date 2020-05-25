@@ -23,7 +23,7 @@ namespace NetworKit {
     * Determines and updates the weakly connected components of a directed
     * graph.
     */
-    class DynWeaklyConnectedComponents : public Algorithm, public DynAlgorithm {
+    class DynWeaklyConnectedComponents final : public Algorithm, public DynAlgorithm {
 
     public:
         /**
@@ -107,7 +107,7 @@ namespace NetworKit {
         std::pair<node, node> makePair(node u, node v);
 
         // Pointer to the graph
-        const Graph& G;
+        const Graph* G;
 
         // This vector associates each node to a component
         std::vector<index> components;

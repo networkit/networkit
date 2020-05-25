@@ -1,5 +1,5 @@
 /*
- * KruskalMSF.h
+ * KruskalMSF.hpp
  *
  *  Created on: 03.09.2015
  *      Author: Henning
@@ -18,7 +18,7 @@ namespace NetworKit {
  * Creates a minimum spanning tree for each connected component.
  * @ingroup graph
  */
-class KruskalMSF: public SpanningForest {
+class KruskalMSF final: public SpanningForest {
 public:
     KruskalMSF(const Graph& G);
     virtual ~KruskalMSF() = default;
@@ -29,7 +29,7 @@ public:
      * Uses Kruskal's algorithm.
      * Time complexity: sort(n) + n * inverse Ackermann(n, m).
      */
-    virtual void run() override;
+    void run() override;
 };
 
 } /* namespace NetworKit */

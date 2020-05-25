@@ -8,9 +8,7 @@
 
 namespace NetworKit {
 
-
-Matching::Matching(count z) : data(z, none) {
-}
+Matching::Matching(count z) : data(z, none) {}
 
 bool Matching::isMatched(node u) const {
     return (this->data.at(u) != none);
@@ -47,7 +45,6 @@ bool Matching::isProper(const Graph& G) const {
             }
         }
     });
-
 
     return isProper;
 }

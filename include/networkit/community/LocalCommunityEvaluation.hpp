@@ -1,9 +1,10 @@
 #ifndef NETWORKIT_COMMUNITY_LOCAL_COMMUNITY_EVALUATION_HPP_
 #define NETWORKIT_COMMUNITY_LOCAL_COMMUNITY_EVALUATION_HPP_
 
-#include <networkit/base/Algorithm.hpp>
 #include <vector>
+
 #include <networkit/Globals.hpp>
+#include <networkit/base/Algorithm.hpp>
 
 namespace NetworKit {
 

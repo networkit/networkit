@@ -1,18 +1,18 @@
 /*
  * NetworkitBinaryWriter.cpp
  *
- * @author Charmaine Ndolo <charmaine.ndolo@b-tu.de>
+ * @author Charmaine Ndolo <charmaine.ndolo@hu-berlin.de>
  */
 
 #include <cstring>
 #include <fstream>
 
-#include <networkit/auxiliary/Log.hpp>
+#include <tlx/math/clz.hpp>
+
 #include <networkit/auxiliary/Enforce.hpp>
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/io/NetworkitBinaryGraph.hpp>
 #include <networkit/io/NetworkitBinaryWriter.hpp>
-
-#include <tlx/math/clz.hpp>
 
 namespace NetworKit {
 
@@ -24,33 +24,31 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
     Aux::enforceOpened(outfile);
     nkbg::WEIGHT_FORMAT weightFormat;
 
-    auto detectWeightsType = [&] () {
-        weightFormat = nkbg::WEIGHT_FORMAT::VARINT;
+    auto detectWeightsType = [&] () -> nkbg::WEIGHT_FORMAT {
+        if(!G.isWeighted())
+            return nkbg::WEIGHT_FORMAT::NONE;
+
         bool isUnsigned = true;
         bool fitsIntoInt64 = true;
         bool fitsIntoFloat = true;
-        G.forNodes([&](node n) {
-            G.forNeighborsOf(n,[&](node, edgeweight w) {
-                if(w < 0)
-                    isUnsigned = false;
-                if(w != static_cast<int64_t>(w))
-                    fitsIntoInt64 = false;
-                if(w != static_cast<float>(w))
-                    fitsIntoFloat = false;
-            });
+        G.forEdges([&](node, node, edgeweight w) {
+            if(w < 0)
+                isUnsigned = false;
+            if(w != static_cast<int64_t>(w))
+                fitsIntoInt64 = false;
+            if(w != static_cast<float>(w))
+                fitsIntoFloat = false;
         });
         if(fitsIntoInt64) {
             if(isUnsigned) {
-                weightFormat = nkbg::WEIGHT_FORMAT::VARINT;
+                return nkbg::WEIGHT_FORMAT::VARINT;
             } else {
-                weightFormat = nkbg::WEIGHT_FORMAT::SIGNED_VARINT;
+                return nkbg::WEIGHT_FORMAT::SIGNED_VARINT;
             }
+        } else if(fitsIntoFloat) {
+            return nkbg::WEIGHT_FORMAT::FLOAT;
         } else {
-            if(fitsIntoFloat) {
-                weightFormat = nkbg::WEIGHT_FORMAT::FLOAT;
-            } else {
-                weightFormat = nkbg::WEIGHT_FORMAT::DOUBLE;
-            }
+            return nkbg::WEIGHT_FORMAT::DOUBLE;
         }
     };
 
@@ -59,7 +57,7 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
             weightFormat = nkbg::WEIGHT_FORMAT::NONE;
             break;
         case NetworkitBinaryWeights::autoDetect:
-            detectWeightsType();
+            weightFormat = detectWeightsType();
             break;
         case NetworkitBinaryWeights::unsignedFormat:
             weightFormat = nkbg::WEIGHT_FORMAT::VARINT;
@@ -150,10 +148,10 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
     uint64_t transpWeightSize = 0;
     std::vector<uint64_t> nrOutNbrs;
     std::vector<uint64_t> nrInNbrs;
-    std::vector<size_t> adjOffsets;	//Prefix sum of size encoded adj arrays
-    std::vector<size_t> transpOffsets;	//Prefix sum of encoded transposed adj arrays
-    std::vector<size_t> adjWghtOffsets;	//Prefix sum of size encoded adj weights
-    std::vector<size_t> transpWghtOffsets;	//Prefix sum of encoded transposed weights
+    std::vector<size_t> adjOffsets; //Prefix sum of size encoded adj arrays
+    std::vector<size_t> transpOffsets; //Prefix sum of encoded transposed adj arrays
+    std::vector<size_t> adjWghtOffsets; //Prefix sum of size encoded adj weights
+    std::vector<size_t> transpWghtOffsets;//Prefix sum of encoded transposed weights
 
     auto computeWeightsOffsets = [&] (edgeweight w) {
         uint64_t size = 0;

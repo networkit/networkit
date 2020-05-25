@@ -14,6 +14,7 @@
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/centrality/ApproxBetweenness.hpp>
 #include <networkit/centrality/ApproxCloseness.hpp>
+#include <networkit/centrality/ApproxSpanningEdge.hpp>
 #include <networkit/centrality/ApproxGroupBetweenness.hpp>
 #include <networkit/centrality/Betweenness.hpp>
 #include <networkit/centrality/Closeness.hpp>
@@ -39,6 +40,7 @@
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/SNAPGraphReader.hpp>
 #include <networkit/structures/Cover.hpp>
@@ -243,8 +245,8 @@ TEST_F(CentralityGTest, testKatzDynamicAddition) {
     DEBUG("finish kc");
     node u, v;
     do {
-        u = G.randomNode();
-        v = G.randomNode();
+        u = GraphTools::randomNode(G);
+        v = GraphTools::randomNode(G);
     } while (G.hasEdge(u, v));
     GraphEvent e(GraphEvent::EDGE_ADDITION, u, v, 1.0);
     kc.update(e);
@@ -278,7 +280,7 @@ TEST_F(CentralityGTest, testKatzDynamicDeletion) {
     DEBUG("start kc run");
     kc.run();
     DEBUG("finish kc");
-    std::pair<node, node> p = G.randomEdge();
+    std::pair<node, node> p = GraphTools::randomEdge(G);
     node u = p.first;
     node v = p.second;
     INFO("Deleting edge ", u, ", ", v);
@@ -392,8 +394,8 @@ TEST_F(CentralityGTest, testKatzDirectedAddition) {
     node u, v;
     Aux::Random::setSeed(42, false);
     do {
-        u = G.randomNode();
-        v = G.randomNode();
+        u = GraphTools::randomNode(G);
+        v = GraphTools::randomNode(G);
     } while (G.hasEdge(u, v));
     GraphEvent e(GraphEvent::EDGE_ADDITION, u, v, 1.0);
     kc.update(e);
@@ -453,7 +455,7 @@ TEST_F(CentralityGTest, testKatzDirectedDeletion) {
     kc.run();
 
     Aux::Random::setSeed(42, false);
-    std::pair<node, node> p = G.randomEdge();
+    std::pair<node, node> p = GraphTools::randomEdge(G);
     node u = p.first;
     node v = p.second;
     INFO("Removing ", u, " -> ", v);
@@ -479,20 +481,33 @@ TEST_F(CentralityGTest, testKatzDirectedDeletion) {
     INFO("Level reached: ", kc.levelReached, ", ", kc2.levelReached);
 }
 
-// TODO: replace by smaller graph
-TEST_F(CentralityGTest, testPageRankDirected) {
-    SNAPGraphReader reader;
-    Graph G = reader.read("input/wiki-Vote.txt");
-    PageRank pr(G);
+TEST_P(CentralityGTest, testPageRank) {
+    SNAPGraphReader reader(isDirected());
+    auto G = reader.read("input/wiki-Vote.txt");
 
-    DEBUG("start pr run");
-    pr.run();
-    DEBUG("finish pr");
-    std::vector<std::pair<node, double>> pr_ranking = pr.ranking();
+    auto doTest = [&G](PageRank::Norm norm) {
+        PageRank pr(G);
+        pr.norm = norm;
+        pr.run();
 
-    const double tol = 1e-3;
-    EXPECT_EQ(pr_ranking[0].first, 699);
-    EXPECT_NEAR(pr_ranking[0].second, 0.00432, tol);
+        auto pr_ranking = pr.ranking();
+        constexpr double eps = 1e-3;
+        if (G.isDirected()) {
+            EXPECT_EQ(pr_ranking[0].first, 326);
+            EXPECT_NEAR(pr_ranking[0].second, 0.00460, eps);
+        } else {
+            EXPECT_EQ(pr_ranking[0].first, 699);
+            EXPECT_NEAR(pr_ranking[0].second, 0.00432, eps);
+        }
+
+        constexpr count maxIterations = 2;
+        pr.maxIterations = maxIterations;
+        pr.run();
+        EXPECT_LE(pr.numberOfIterations(), maxIterations);
+    };
+
+    doTest(PageRank::Norm::L1Norm);
+    doTest(PageRank::Norm::L2Norm);
 }
 
 TEST_F(CentralityGTest, testEigenvectorCentrality) {
@@ -1205,6 +1220,7 @@ TEST_P(CentralityGTest, testTopCloseness) {
 TEST_F(CentralityGTest, testTopHarmonicClosenessDirected) {
     count size = 400;
     count k = 10;
+    Aux::Random::setSeed(42, false);
     Graph G1 = DorogovtsevMendesGenerator(size).generate();
     Graph G(G1.upperNodeIdBound(), false, true);
     G1.forEdges([&](node u, node v) {
@@ -1653,8 +1669,8 @@ TEST_P(CentralityGTest, testDynTopHarmonicCloseness) {
         node v = G.upperNodeIdBound();
 
         do {
-            u = G.randomNode();
-            v = G.randomNode();
+            u = GraphTools::randomNode(G);
+            v = GraphTools::randomNode(G);
         } while (G.hasEdge(u, v));
 
         GraphEvent edgeAddition(GraphEvent::EDGE_ADDITION, u, v);
@@ -1718,6 +1734,30 @@ TEST_P(CentralityGTest, testDynTopHarmonicCloseness) {
     for (count j = 0; j < k; ++j) {
         EXPECT_FLOAT_EQ(scores[j].second, refScores[j].second);
     }
+}
+
+TEST_F(CentralityGTest, testApproxSpanningEdge) {
+    Aux::Random::setSeed(42, false);
+
+    // Testing a graph that is too small yields approximation errors; however, if the input
+    // graph has > 100 nodes, running the exact algorithm takes too long.
+    // Therefore, in this test we use the approximation algorithm implemented in
+    // SpanningEdgeCentrality as baseline, and check that the values are within a 2-epsilon
+    // approximation.
+    Graph G = ErdosRenyiGenerator(300, 0.1, false).generate();
+    G.indexEdges();
+    constexpr double eps = 0.1;
+
+    ApproxSpanningEdge apx(G, eps);
+    apx.run();
+    SpanningEdgeCentrality se(G, eps);
+    se.runParallelApproximation();
+    auto apxScores = apx.scores();
+    auto exactScores = se.scores();
+
+    G.forEdges([&](node /*u*/, node /*v*/, edgeweight /*w*/, edgeid eid) {
+        EXPECT_NEAR(apxScores[eid], exactScores[eid], 2*eps);
+    });
 }
 
 } /* namespace NetworKit */

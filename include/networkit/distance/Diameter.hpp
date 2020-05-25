@@ -1,5 +1,5 @@
 /*
- * Diameter.h
+ * Diameter.hpp
  *
  *  Created on: 19.02.2014
  *      Author: Daniel Hoske, Christian Staudt
@@ -8,10 +8,9 @@
 #ifndef NETWORKIT_DISTANCE_DIAMETER_HPP_
 #define NETWORKIT_DISTANCE_DIAMETER_HPP_
 
+#include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
-#include <networkit/auxiliary/SignalHandling.hpp>
-
 
 namespace NetworKit {
 enum DiameterAlgo {automatic = 0, exact = 1, estimatedRange = 2, estimatedSamples = 3, estimatedPedantic = 4};
@@ -19,10 +18,9 @@ enum DiameterAlgo {automatic = 0, exact = 1, estimatedRange = 2, estimatedSample
 /**
  * @ingroup distance
  */
-class Diameter : public Algorithm {
+class Diameter final : public Algorithm {
 
 public:
-    
     Diameter(const Graph& G, DiameterAlgo algo = DiameterAlgo::automatic, double error = -1.f, count nSamples = 0);
 
     void run() override;
@@ -33,14 +31,14 @@ public:
 
 
 private:
-    const Graph& G;
+    const Graph* G;
     DiameterAlgo algo;
     double error;
     count nSamples;
     std::pair<count, count> diameterBounds;
 
     /**
-     * Get the an estimation of the diameter of the graph @a G. The algorithm is based on the ExactSumSweep algorithm presented in
+     * Get the estimation of the diameter of the graph @a G. The algorithm is based on the ExactSumSweep algorithm presented in
      * Michele Borassi, Pierluigi Crescenzi, Michel Habib, Walter A. Kosters, Andrea Marino, Frank W. Takes,
      * Fast diameter and radius BFS-based computation in (weakly connected) real-world graphs: With an application to the six degrees of separation games,
      * Theoretical Computer Science, Volume 586, 27 June 2015, Pages 59-80, ISSN 0304-3975,
@@ -61,19 +59,17 @@ private:
      */
     edgeweight exactDiameter(const Graph& G);
 
-
     /**
      * Get a 2-approximation of the node diameter (unweighted diameter) of @a G.
      *
-     * @param[in]	G			The graph.
-     * @param[in]	samples		One sample is enough if the graph is connected. If there
-     *							are multiple connected components, then the number of samples
-     *							must be chosen so that the probability of sampling the component
-     *							with the largest diameter ist high.
+     * @param[in] G        The graph.
+     * @param[in] samples  One sample is enough if the graph is connected. If there
+     *       are multiple connected components, then the number of samples
+     *       must be chosen so that the probability of sampling the component
+     *       with the largest diameter is high.
      * @return A 2-approximation of the vertex diameter (unweighted diameter) of @a G.
      */
     edgeweight estimatedVertexDiameter(const Graph& G, count samples);
-
 
     /** @return a 2-approximation of the vertex diameter (unweighted diameter) of @a G.
             Considers each connected component and returns the maximum diameter.

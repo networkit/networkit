@@ -1,5 +1,5 @@
 /*
- * Cover.h
+ * Cover.hpp
  *
  *  Created on: 03.10.2013
  *      Author: cls
@@ -8,14 +8,13 @@
 #ifndef NETWORKIT_STRUCTURES_COVER_HPP_
 #define NETWORKIT_STRUCTURES_COVER_HPP_
 
-#include <cinttypes>
+#include <iterator>
+#include <map>
 #include <set>
 #include <vector>
-#include <map>
-#include <cassert>
-#include <limits>
-#include <networkit/structures/Partition.hpp>
+
 #include <networkit/Globals.hpp>
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 
@@ -24,23 +23,23 @@ namespace NetworKit {
  * Implements a cover of a set, i.e. an assignment of
  * its elements to possibly overlapping subsets.
  */
-class Cover {
+class Cover final {
 
 public:
     /** Default constructor */
     Cover();
 
     /**
-     * Create a new cover data structure for elements up to a maximum element index.
+    * Create a new cover data structure for elements up to a maximum element index.
      *
-     * @param[in]	z	maximum index
+     * @param[in] z maximum index
      */
     Cover(index z);
 
     /**
      * Creates a new cover data structure which contains the given partition.
      *
-     * @param[in]	p	The partition to construct the cover from
+     * @param[in] p The partition to construct the cover from
      */
     Cover(const Partition &p);
 
@@ -51,7 +50,7 @@ public:
     /**
      *  Index operator.
      *
-     *  @param[in]	e	an element
+     *  @param[in] e an element
      */
     inline std::set<index>& operator [](const index& e) {
         return this->data[e];
@@ -59,7 +58,7 @@ public:
     /**
      * Index operator for const instances of this class.
      *
-     * @param[in]	e	an element
+     * @param[in] e an element
      */
     inline const std::set<index>& operator [](const index& e) const {
         return this->data[e];
@@ -68,7 +67,7 @@ public:
     /**
      * Return the ids of subsets in which the element @a e is contained.
      *
-     * @param[in]	e	an element
+     * @param[in] e an element
      * @return A set of subset ids in which @a e is contained.
      */
     inline std::set<index> subsetsOf(index e) const {
@@ -102,21 +101,21 @@ public:
      *
      * @return The set of members of subset @a s.
      */
-    std::set<index> getMembers(const index s) const;
+    std::set<index> getMembers(index s) const;
 
 
     /**
      * Add the (previously unassigned) element @a e to the set @a s.
-     * @param[in]	s	a subset
-     * @param[in]	e	an element
+     * @param[in] s a subset
+     * @param[in] e an element
      */
     void addToSubset(index s, index e);
 
 
     /**
      * Remove the element @a e from the set @a s.
-     * @param[in]	s	a subset
-     * @param[in]	e	an element
+     * @param[in] s a subset
+     * @param[in] e an element
      */
     void removeFromSubset(index s, index e);
 
@@ -124,15 +123,15 @@ public:
     /**
      * Move the element @a e to subset @a s, i.e. remove it from all
      * other subsets and place it in the subset.
-     * 	@param[in]	s	a subset
-     *  @param[in]	e	an element
+     *  @param[in] s a subset
+     *  @param[in] e an element
      */
     void moveToSubset(index s, index e);
 
 
     /**
      * Creates a singleton set containing the element @a e and returns the index of the new set.
-     * @param[in]	e	an element
+     * @param[in] e an element
      * @return The index of the new set.
      */
     index toSingleton(index e);
@@ -147,8 +146,8 @@ public:
 
     /**
      * Assigns the elements from both sets to a new set.
-     * @param[in]	s	a subset
-     * @param[in]	t	a subset
+     * @param[in] s a subset
+     * @param[in] t a subset
      */
     void mergeSubsets(index s, index t);
 
@@ -213,7 +212,7 @@ public:
     /**
      * Sets an upper bound for the subset ids that CAN be assigned.
      *
-     * @param[in]	upper	highest assigned subset ID + 1
+     * @param[in] upper highest assigned subset ID + 1
      */
     void setUpperBound(index upper);
 
@@ -233,15 +232,11 @@ public:
      */
     template<typename Callback> void parallelForEntries(Callback handle) const;
 
-
-
-
 private:
 
-    index z;	//!< maximum element index that can be mapped
-    index omega;	//!< maximum subset index ever assigned
-    std::vector<std::set<index>> data;	//!< data container, indexed by element id, containing set of subset ids
-
+    index z; //!< maximum element index that can be mapped
+    index omega; //!< maximum subset index ever assigned
+    std::vector<std::set<index>> data; //!< data container, indexed by element id, containing set of subset ids
 
     /**
      * Allocates and returns a new subset id.

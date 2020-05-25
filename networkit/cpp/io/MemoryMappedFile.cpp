@@ -29,9 +29,9 @@ namespace NetworKit {
 }
 
 #ifdef NETWORKIT_WINDOWS
+#include <cassert>
 #include <windows.h>
 #include <fileapi.h>
-#include <cassert>
 
 namespace NetworKit {
     struct MemoryMappedFileState {

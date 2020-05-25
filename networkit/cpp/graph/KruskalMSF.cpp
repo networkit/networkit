@@ -7,7 +7,7 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
-
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/graph/KruskalMSF.hpp>
 #include <networkit/graph/SpanningForest.hpp>
 #include <networkit/structures/UnionFind.hpp>
@@ -37,20 +37,17 @@ struct MyEdge {
 };
 
 
-KruskalMSF::KruskalMSF(const Graph& G): SpanningForest(G) {
-
-}
+KruskalMSF::KruskalMSF(const Graph& G): SpanningForest(G) {}
 
 void KruskalMSF::run() {
-    if (true || G.isWeighted()) { // FIXME: remove true when SpanningForest is fixed!
-        count z = G.upperNodeIdBound();
-        forest = G.copyNodes();
+    if (true || G->isWeighted()) { // FIXME: remove true when SpanningForest is fixed!
+        count z = G->upperNodeIdBound();
+        forest = GraphTools::copyNodes(*G);
         UnionFind uf(z);
 
         // sort edges in decreasing weight order
         std::vector<MyEdge> sortedEdges; // (m);
-        G.forEdges([&](node u, node v, edgeweight ew, edgeid) {
-//			INFO("insert edge (", u, ", ", v, ") with weight ", ew);
+        G->forEdges([&](node u, node v, edgeweight ew, edgeid) {
             MyEdge myEdge(u, v, ew);
             sortedEdges.push_back(myEdge);
         });
@@ -72,8 +69,9 @@ void KruskalMSF::run() {
         }
     }
     else {
-        SpanningForest sf(G);
-        forest = sf.generate();
+        SpanningForest sf(*G);
+        sf.run();
+        forest = sf.getForest();
     }
 }
 

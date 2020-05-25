@@ -29,7 +29,7 @@ __credits__ = ["Eugenio Angriman", "Lukas Barth", "Miriam Beddig", "Elisabetta B
 	"Guido Brückner", "Mark Erb",  "Kolja Esders", "Patrick Flick", "Michael Hamann", "Lukas Hartmann", "Daniel Hoske", "Gerd Lindner", "Moritz v. Looz", "Yassine Marrakchi", "Henning Meyerhenke", \
 	"Manuel Penschuck", "Marcel Radermacher", "Klara Reichard", "Marvin Ritter", "Aleksejs Sazonovs", "Hung Tran", "Florian Weber", "Michael Wegner", "Jörg Weisbarth", "Kolja Esders"]
 __license__ = "MIT"
-__version__ = "5.0"
+__version__ = "6.0"
 
 # standard library modules
 import csv
@@ -76,6 +76,7 @@ from . import sampling
 from . import viz
 from . import randomization
 from .support import MissingDependencyError
+from _NetworKit import GraphTools as graphtools
 
 if have_plt:
 	from . import plot
@@ -137,7 +138,7 @@ def overview(G):
 	print("weighted?\t\t\t{}".format("True" if G.isWeighted() else "False"))
 	print("isolated nodes\t\t\t{}".format(getIsolatedNodes(degrees)))
 	print("self-loops\t\t\t{}".format(numSelfLoops))
-	print("density\t\t\t\t{:.6f}".format(G.density()))
+	print("density\t\t\t\t{:.6f}".format(graphtools.density(G)))
 	if numSelfLoops == 0 and not G.isDirected():
 		print("clustering coefficient\t\t{:.6f}".format(
 			getClusteringCoefficient(G)))
@@ -160,9 +161,6 @@ def setup():
 	""" This function is run once on module import to configure initial settings """
 	setLogLevel("ERROR")  # set default loglevel for C++ code
 	setPrintLocation(True)
-	enableNestedParallelism()  # enable nested parallelism
-	logging.basicConfig(
-		level=logging.INFO)  # set default loglevel for Python code
 
 
 setup()  # here the setup function is called once on import

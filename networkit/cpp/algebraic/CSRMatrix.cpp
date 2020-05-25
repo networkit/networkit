@@ -318,11 +318,11 @@ CSRMatrix& CSRMatrix::operator-=(const CSRMatrix &other) {
     return *this;
 }
 
-CSRMatrix CSRMatrix::operator*(const double &scalar) const {
+CSRMatrix CSRMatrix::operator*(double scalar) const {
     return CSRMatrix(*this) *= scalar;
 }
 
-CSRMatrix& CSRMatrix::operator*=(const double &scalar) {
+CSRMatrix& CSRMatrix::operator*=(double scalar) {
 #pragma omp parallel for
     for (omp_index k = 0; k < static_cast<omp_index>(nonZeros.size()); ++k) {
         nonZeros[k] *= scalar;
@@ -421,11 +421,11 @@ CSRMatrix CSRMatrix::operator*(const CSRMatrix &other) const {
     return result;
 }
 
-CSRMatrix CSRMatrix::operator/(const double &divisor) const {
+CSRMatrix CSRMatrix::operator/(double divisor) const {
     return CSRMatrix(*this) /= divisor;
 }
 
-CSRMatrix& CSRMatrix::operator/=(const double &divisor) {
+CSRMatrix& CSRMatrix::operator/=(double divisor) {
     return *this *= 1.0 / divisor;
 }
 

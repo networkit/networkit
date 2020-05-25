@@ -1,5 +1,5 @@
 /*
-* AllSimplePaths.h
+* AllSimplePaths.hpp
 *
 *  Created on: 23.06.2017
 *      Author: Eugenio Angriman
@@ -8,8 +8,8 @@
 #ifndef NETWORKIT_DISTANCE_ALL_SIMPLE_PATHS_HPP_
 #define NETWORKIT_DISTANCE_ALL_SIMPLE_PATHS_HPP_
 
-#include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
 
 
 namespace NetworKit {
@@ -18,7 +18,7 @@ namespace NetworKit {
      * @ingroup distance
      * Determines all the possible simple paths from a given source node to a target node of a directed unweighted graph. It also accepts a cutoff value i.e. the maximum length of paths.
      */
-    class AllSimplePaths : public Algorithm {
+    class AllSimplePaths final : public Algorithm {
 
     public:
 
@@ -45,7 +45,7 @@ namespace NetworKit {
         count numberOfSimplePaths();
 
         /*
-        * This method returns a vector that contains all the simple paths from a source node to a target node repepresented by vectors. Each path contains the source node as the first element and the target node as the last element.
+        * This method returns a vector that contains all the simple paths from a source node to a target node represented by vectors. Each path contains the source node as the first element and the target node as the last element.
         */
         std::vector<std::vector<node>> getAllSimplePaths();
 
@@ -60,16 +60,16 @@ namespace NetworKit {
         template<typename L> void parallelForAllSimplePaths(L handle);
 
 
-    protected:
+    private:
 
         // This method computes all the paths after a reverse BFS from the target node and a normal BFS from the source node.
         void computePaths();
 
-        // This method returns a queue thatcontains all the nodes that could be part of a path from the source to the target that crosses @s.
+        // This method returns a queue that contains all the nodes that could be part of a path from the source to the target that crosses @s.
         std::vector<node> getAvailableSources(node s, count pathLength = 0);
 
         // The graph
-        const Graph &G;
+        const Graph *G;
         // The source node
         node source;
         // The target node

@@ -1,9 +1,9 @@
-#include <networkit/clique/MaximalCliques.hpp>
-#include <networkit/centrality/CoreDecomposition.hpp>
-#include <networkit/auxiliary/SignalHandling.hpp>
-
-#include <cassert>
 #include <algorithm>
+#include <cassert>
+
+#include <networkit/auxiliary/SignalHandling.hpp>
+#include <networkit/centrality/CoreDecomposition.hpp>
+#include <networkit/clique/MaximalCliques.hpp>
 
 namespace {
     // Private implementation namespace
@@ -13,8 +13,8 @@ namespace {
 
     class MaximalCliquesImpl {
     private:
-        const NetworKit::Graph& G;
-        std::vector<std::vector<node>>& result;
+        const NetworKit::Graph* G;
+        std::vector<std::vector<node>>* result;
         std::function<void(const std::vector<node>&)>& callback;
         bool maximumOnly;
         count maxFound;
@@ -28,25 +28,25 @@ namespace {
     public:
         MaximalCliquesImpl(const NetworKit::Graph& G, std::vector<std::vector<node>>& result,
                 std::function<void(const std::vector<node>&)>& callback, bool maximumOnly) :
-            G(G), result(result), callback(callback), maximumOnly(maximumOnly), maxFound(0),
+            G(&G), result(&result), callback(callback), maximumOnly(maximumOnly), maxFound(0),
             pxvector(G.numberOfNodes()), pxlookup(G.upperNodeIdBound()),
             firstOut(G.upperNodeIdBound() + 1), head(G.numberOfEdges()) {}
-    
+
     private:
         void buildOutGraph() {
             index currentOut = 0;
-            for (node u = 0; u < G.upperNodeIdBound(); ++u) {
+            for (node u = 0; u < G->upperNodeIdBound(); ++u) {
                 firstOut[u] = currentOut;
-                if (G.hasNode(u)) {
+                if (G->hasNode(u)) {
                     index xpboundU = pxlookup[u];
-                    G.forEdgesOf(u, [&](node v) {
+                    G->forEdgesOf(u, [&](node v) {
                         if (xpboundU < pxlookup[v]) {
                             head[currentOut++] = v;
                         }
                     });
                 }
             }
-            firstOut[G.upperNodeIdBound()] = currentOut;
+            firstOut[G->upperNodeIdBound()] = currentOut;
         }
 
         template <typename F>
@@ -78,7 +78,7 @@ namespace {
 
     public:
         void run() {
-            NetworKit::CoreDecomposition cores(G, false, false, true);
+            NetworKit::CoreDecomposition cores(*G, false, false, true);
             cores.run();
 
             Aux::SignalHandler handler;
@@ -132,7 +132,7 @@ namespace {
 
                 count xcount = 0;
                 count pcount = 0;
-                G.forNeighborsOf(u, [&] (node v) {
+                G->forNeighborsOf(u, [&] (node v) {
 
 #ifndef NDEBUG
                     assert(pxlookup[v] < pxvector.size());
@@ -153,10 +153,10 @@ namespace {
 #ifndef NDEBUG
                 { // assert all neighbors of u were stored in one range around xpbound
 
-                    assert(xcount + pcount == G.degree(u));
+                    assert(xcount + pcount == G->degree(u));
 
                     std::vector<index> neighborPositions;
-                    G.forNeighborsOf(u, [&](node v) {
+                    G->forNeighborsOf(u, [&](node v) {
                         neighborPositions.push_back(pxlookup[v]);
                         assert(pxvector[pxlookup[v]] == v);
                     });
@@ -182,10 +182,10 @@ namespace {
                 if (callback) {
                     callback(r);
                 } else if (!maximumOnly) {
-                    result.push_back(r);
+                    result->push_back(r);
                 } else if (r.size() > maxFound) {
-                    result.clear();
-                    result.push_back(r);
+                    result->clear();
+                    result->push_back(r);
                     maxFound = r.size();
                 }
                 return;
@@ -358,7 +358,7 @@ namespace {
             }
 
 #ifndef NDEBUG
-            assert(maxnode < G.upperNodeIdBound() + 1);
+            assert(maxnode < G->upperNodeIdBound() + 1);
 #endif
 
             return maxnode;
@@ -370,10 +370,10 @@ namespace {
 
 namespace NetworKit {
 
-MaximalCliques::MaximalCliques(const Graph& G, bool maximumOnly) : G(G), maximumOnly(maximumOnly) {
+MaximalCliques::MaximalCliques(const Graph& G, bool maximumOnly) : G(&G), maximumOnly(maximumOnly) {
 }
 
-MaximalCliques::MaximalCliques(const Graph& G, std::function<void(const std::vector<node>&)> callback) : G(G), callback(callback), maximumOnly(false) {
+MaximalCliques::MaximalCliques(const Graph& G, std::function<void(const std::vector<node>&)> callback) : G(&G), callback(callback), maximumOnly(false) {
 }
 
 const std::vector<std::vector<node>>& MaximalCliques::getCliques() const {
@@ -387,7 +387,7 @@ void MaximalCliques::run() {
 
     result.clear();
 
-    MaximalCliquesImpl(G, result, callback, maximumOnly).run();
+    MaximalCliquesImpl(*G, result, callback, maximumOnly).run();
 
     hasRun = true;
 }

@@ -8,14 +8,11 @@
 #include <tuple>
 
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
-DorogovtsevMendesGenerator::DorogovtsevMendesGenerator(count nNodes): nNodes(nNodes) {
-
-}
-
-
+DorogovtsevMendesGenerator::DorogovtsevMendesGenerator(count nNodes): nNodes(nNodes) {}
 
 Graph DorogovtsevMendesGenerator::generate() {
     Graph G;
@@ -30,7 +27,7 @@ Graph DorogovtsevMendesGenerator::generate() {
     for (count i = 0; i < (nNodes - 3); ++i) {
         node u;
         node v;
-        std::tie(u, v) = G.randomEdge();
+        std::tie(u, v) = GraphTools::randomEdge(G);
         node w = G.addNode();
         G.addEdge(w, u);
         G.addEdge(w, v);

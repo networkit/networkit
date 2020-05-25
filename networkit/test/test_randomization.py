@@ -86,7 +86,7 @@ class TestRandomization(unittest.TestCase):
             G2 = dps.getGraph()
             check_graphs(G, G2)
             perm = dps.getPermutation()
-            for u in G.nodes():
+            for u in G.iterNodes():
                 self.assertEqual(G.degree(u), G.degree(perm[u]))
                 self.assertEqual(G.degreeIn(u), G.degreeIn(perm[u]))
 

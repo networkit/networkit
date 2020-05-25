@@ -5,6 +5,8 @@
  *      Author: cls
  */
 
+// networkit-format
+
 #ifndef NETWORKIT_COMPONENTS_CONNECTED_COMPONENTS_HPP_
 #define NETWORKIT_COMPONENTS_CONNECTED_COMPONENTS_HPP_
 
@@ -12,9 +14,9 @@
 #include <map>
 #include <vector>
 
+#include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
-#include <networkit/base/Algorithm.hpp>
 
 namespace NetworKit {
 
@@ -22,14 +24,14 @@ namespace NetworKit {
  * @ingroup components
  * Determines the connected components of an undirected graph.
  */
-class ConnectedComponents : public Algorithm {
+class ConnectedComponents final : public Algorithm {
 public:
     /**
      * Create ConnectedComponents class for Graph @a G.
      *
      * @param G The graph.
      */
-    ConnectedComponents(const Graph& G);
+    ConnectedComponents(const Graph &G);
 
     /**
      * This method determines the connected components for the graph given in the constructor.
@@ -50,7 +52,6 @@ public:
      */
     count componentOfNode(node u) const;
 
-
     /**
      * Get a Partition that represents the components.
      *
@@ -66,7 +67,7 @@ public:
     /**
      * @return Vector of components, each stored as (unordered) set of nodes.
      */
-    std::vector<std::vector<node> > getComponents() const;
+    std::vector<std::vector<node>> getComponents() const;
 
     /**
      * Constructs a new graph that contains only the nodes inside the largest
@@ -78,13 +79,13 @@ public:
     static Graph extractLargestConnectedComponent(const Graph &G, bool compactGraph = false);
 
 private:
-    const Graph& G;
+    const Graph *G;
     Partition component;
     count numComponents;
 };
 
 inline count ConnectedComponents::componentOfNode(node u) const {
-    assert (component[u] != none);
+    assert(component[u] != none);
     assureFinished();
     return component[u];
 }
@@ -94,7 +95,6 @@ inline count ConnectedComponents::numberOfComponents() const {
     return this->numComponents;
 }
 
-}
-
+} // namespace NetworKit
 
 #endif // NETWORKIT_COMPONENTS_CONNECTED_COMPONENTS_HPP_

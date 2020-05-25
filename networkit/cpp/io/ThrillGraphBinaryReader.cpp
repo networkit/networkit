@@ -2,10 +2,12 @@
 #include <fstream>
 #include <stdexcept>
 
-#include <networkit/io/ThrillGraphBinaryReader.hpp>
 #include <networkit/graph/GraphBuilder.hpp>
+#include <networkit/io/ThrillGraphBinaryReader.hpp>
 
-NetworKit::ThrillGraphBinaryReader::ThrillGraphBinaryReader(count n) : n(n) {}
+namespace NetworKit {
+
+ThrillGraphBinaryReader::ThrillGraphBinaryReader(count n) : n(n) {}
 
 namespace {
     uint32_t get_uint32(std::ifstream& is) {
@@ -42,11 +44,11 @@ namespace {
 }
 
 
-NetworKit::Graph NetworKit::ThrillGraphBinaryReader::read(const std::string &path) {
+Graph ThrillGraphBinaryReader::read(const std::string &path) {
     return read(std::vector<std::string>(1, path));
 }
 
-NetworKit::Graph NetworKit::ThrillGraphBinaryReader::read(const std::vector<std::string> &paths) {
+Graph ThrillGraphBinaryReader::read(const std::vector<std::string> &paths) {
     GraphBuilder gb(n);
 
     if (!paths.empty()) {
@@ -92,3 +94,5 @@ NetworKit::Graph NetworKit::ThrillGraphBinaryReader::read(const std::vector<std:
 
     return gb.toGraph(true, true);
 }
+
+} // namespace NetworKit

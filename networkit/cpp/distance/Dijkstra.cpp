@@ -7,7 +7,6 @@
 
 #include <algorithm>
 #include <networkit/auxiliary/Log.hpp>
-
 #include <networkit/distance/Dijkstra.hpp>
 
 namespace NetworKit {
@@ -20,32 +19,35 @@ Dijkstra::Dijkstra(const Graph &G, node source, bool storePaths,
 void Dijkstra::run() {
 
     TRACE("initializing Dijkstra data structures");
+
     // init distances
-    if (distances.size() < G.upperNodeIdBound()) {
-        distances.resize(G.upperNodeIdBound(),
-                         std::numeric_limits<double>::max());
-        visited.resize(G.upperNodeIdBound(), ts);
+    auto infDist = std::numeric_limits<edgeweight>::max();
+    std::fill(distances.begin(), distances.end(), infDist);
+
+    if (distances.size() < G->upperNodeIdBound()) {
+        distances.resize(G->upperNodeIdBound(), infDist);
+        visited.resize(G->upperNodeIdBound(), ts);
     }
 
     sumDist = 0.;
     reachedNodes = 1;
 
-    if (ts++ == 255) {
+    if (ts++ == std::numeric_limits<uint8_t>::max()) {
         ts = 1;
         std::fill(visited.begin(), visited.end(), 0);
     }
 
     if (storePaths) {
         previous.clear();
-        previous.resize(G.upperNodeIdBound());
+        previous.resize(G->upperNodeIdBound());
         npaths.clear();
-        npaths.resize(G.upperNodeIdBound(), 0);
+        npaths.resize(G->upperNodeIdBound(), 0);
         npaths[source] = 1;
     }
 
     if (storeNodesSortedByDistance) {
         nodesSortedByDistance.clear();
-        nodesSortedByDistance.reserve(G.upperNodeIdBound());
+        nodesSortedByDistance.reserve(G->upperNodeIdBound());
     }
 
     // priority queue with distance-node pairs
@@ -73,7 +75,7 @@ void Dijkstra::run() {
         if (storeNodesSortedByDistance)
             nodesSortedByDistance.push_back(u);
 
-        G.forNeighborsOf(u, [&](node v, edgeweight w) {
+        G->forNeighborsOf(u, [&](node v, edgeweight w) {
             double newDist = distances[u] + w;
             if (ts != visited[v]) {
                 visited[v] = ts;

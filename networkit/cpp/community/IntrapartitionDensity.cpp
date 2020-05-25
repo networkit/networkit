@@ -1,9 +1,5 @@
-/*
- *
- */
-
-#include <networkit/community/IntrapartitionDensity.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
+#include <networkit/community/IntrapartitionDensity.hpp>
 
 void NetworKit::IntrapartitionDensity::run() {
     hasRun = false;
@@ -16,21 +12,21 @@ void NetworKit::IntrapartitionDensity::run() {
     weightedAverage = 0;
     values.clear();
 
-    std::vector<count> clusterSizes(P.upperBound(), 0);
-    std::vector<count> intraEdges(P.upperBound(), 0);
+    std::vector<count> clusterSizes(P->upperBound(), 0);
+    std::vector<count> intraEdges(P->upperBound(), 0);
 
     handler.assureRunning();
 
-    G.forEdges([&](node u, node v) {
-        if (P[u] == P[v]) {
-            ++intraEdges[P[u]];
+    G->forEdges([&](node u, node v) {
+        if ((*P)[u] == (*P)[v]) {
+            ++intraEdges[(*P)[u]];
         }
     });
 
     handler.assureRunning();
 
-    G.forNodes([&](node u) {
-        ++clusterSizes[P[u]];
+    G->forNodes([&](node u) {
+        ++clusterSizes[(*P)[u]];
     });
 
     handler.assureRunning();
@@ -39,7 +35,7 @@ void NetworKit::IntrapartitionDensity::run() {
     count intraEdgesSum = 0;
     count possibleIntraEdgesSum = 0;
 
-    values.resize(P.upperBound(), 0);
+    values.resize(P->upperBound(), 0);
 
     for (index i = 0; i < clusterSizes.size(); ++i) {
         if (clusterSizes[i] > 0) {
@@ -67,7 +63,7 @@ void NetworKit::IntrapartitionDensity::run() {
     handler.assureRunning();
 
     unweightedAverage /= numClusters;
-    weightedAverage /= G.numberOfNodes();
+    weightedAverage /= G->numberOfNodes();
 
     globalValue = intraEdgesSum * 1.0 / possibleIntraEdgesSum;
     hasRun = true;

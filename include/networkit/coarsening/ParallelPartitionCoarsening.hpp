@@ -1,5 +1,5 @@
 /*
- * ParallelPartitionCoarsening.h
+ * ParallelPartitionCoarsening.hpp
  *
  *  Created on: 03.07.2014
  *      Author: cls
@@ -17,11 +17,11 @@ namespace NetworKit {
 /**
  * @ingroup coarsening
  */
-class ParallelPartitionCoarsening: public GraphCoarsening {
+class ParallelPartitionCoarsening final : public GraphCoarsening {
 public:
     ParallelPartitionCoarsening(const Graph& G, const Partition& zeta, bool useGraphBuilder = true);
 
-    virtual void run();
+    void run() override;
 
 private:
     const Partition& zeta;

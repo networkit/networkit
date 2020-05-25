@@ -5,20 +5,19 @@
  * Author: Franz-Benjamin Mocnik <mail@mocnik-science.net>
  */
 
-#include <networkit/generators/MocnikGeneratorBasic.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/generators/MocnikGeneratorBasic.hpp>
 
 namespace NetworKit {
 
-MocnikGeneratorBasic::MocnikGeneratorBasic(count dim, count n, double k): dim(dim), n(n), k(k) {
-}
+MocnikGeneratorBasic::MocnikGeneratorBasic(count dim, count n, double k): dim(dim), n(n), k(k) {}
 
 // GEOMETRY
 
 /**
  * Norm of a vector.  The shift applies to every coordinate.
  */
-static inline double norm(std::vector<double> &v, const double &shift) {
+static inline double norm(std::vector<double> &v, double shift) {
     double x = 0;
     for (count j = 0; j < v.size(); j++) {
         x += (v[j] + shift) * (v[j] + shift);
@@ -42,8 +41,8 @@ static inline double dist(std::vector<double> &v, std::vector<double> &w) {
 
 Graph MocnikGeneratorBasic::generate() {
     // assertions
-    assert (dim > 0);
-    assert (n > 0);
+    assert (dim);
+    assert (n);
     assert (k > 1);
 
     // create graph
@@ -53,9 +52,9 @@ Graph MocnikGeneratorBasic::generate() {
     nodePositions.resize(n);
     node curr = 0;
     while (curr < n) {
-        std::vector<double> v = {};
+        std::vector<double> v(dim);
         for (count j = 0; j < dim; j++) {
-            v.push_back(Aux::Random::real());
+            v[j] = Aux::Random::real();
         }
         // test whether the new node would be contained in the ball B_{.5}(.5, ..., .5)
         if (norm(v, -.5) < .5) {

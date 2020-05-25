@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-SimmelianScore::SimmelianScore(const Graph& G, const std::vector<count>& triangles) : EdgeScore<double>(G), triangles(triangles) {
+SimmelianScore::SimmelianScore(const Graph& G, const std::vector<count>& triangles) : EdgeScore<double>(G), triangles(&triangles) {
 }
 
 std::vector<RankedNeighbors> SimmelianScore::getRankedNeighborhood(const Graph& g, const std::vector<count>& triangles) {

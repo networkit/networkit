@@ -1,5 +1,5 @@
 /*
-* EffectiveDiameter.h
+*  EffectiveDiameter.hpp
 *
 *  Created on: 16.06.2014
 *      Author: Marc Nemes
@@ -16,7 +16,7 @@ namespace NetworKit {
 /**
  * @ingroup distance
  */
-class EffectiveDiameter : public Algorithm {
+class EffectiveDiameter final : public Algorithm {
 
 public:
     /**
@@ -25,7 +25,7 @@ public:
     * @param G the given graph
     * @param ratio the ratio of nodes that should be connected (0,1], default = 0.9
     */
-    EffectiveDiameter(const Graph& G, const double ratio=0.9);
+    EffectiveDiameter(const Graph& G, double ratio = 0.9);
 
     void run() override;
 
@@ -36,7 +36,7 @@ public:
     double getEffectiveDiameter() const;
 
 private:
-    const Graph& G;
+    const Graph* G;
     const double ratio;
     double effectiveDiameter;
 };

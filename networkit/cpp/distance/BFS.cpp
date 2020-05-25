@@ -16,16 +16,19 @@ BFS::BFS(const Graph &G, node source, bool storePaths,
     : SSSP(G, source, storePaths, storeNodesSortedByDistance, target) {}
 
 void BFS::run() {
-    count z = G.upperNodeIdBound();
+    count z = G->upperNodeIdBound();
     reachedNodes = 1;
     sumDist = 0.;
 
+    const auto infDist = std::numeric_limits<edgeweight>::max();
+    std::fill(distances.begin(), distances.end(), infDist);
+
     if (distances.size() < z) {
-        distances.resize(z, std::numeric_limits<edgeweight>::max());
+        distances.resize(z, infDist);
         visited.resize(z, ts);
     }
 
-    if (ts++ == 255) {
+    if (ts++ == std::numeric_limits<uint8_t>::max()) {
         ts = 1;
         std::fill(visited.begin(), visited.end(), 0);
     }
@@ -60,13 +63,8 @@ void BFS::run() {
             break;
         }
 
-        // TRACE("current node in BFS: " , u);
-        //		TRACE(distances);
-
         // insert untouched neighbors into queue
-        G.forNeighborsOf(u, [&](node v) {
-            // TRACE("scanning neighbor ", v);
-
+        G->forNeighborsOf(u, [&](node v) {
             if (ts != visited[v]) {
                 q.push(v);
                 visited[v] = ts;

@@ -1,5 +1,5 @@
 /*
- * StaticGraphGenerator.h
+ * StaticGraphGenerator.hpp
  *
  *  Created on: 09.04.2013
  *      Author: cls

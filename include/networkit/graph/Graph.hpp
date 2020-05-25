@@ -1,10 +1,13 @@
 /*
- * Graph.h
+ * Graph.hpp
  *
  *  Created on: 01.06.2014
- *      Author: Christian Staudt (christian.staudt@kit.edu), Klara Reichard
- * (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
+ *      Author: Christian Staudt
+ *              Klara Reichard <klara.reichard@gmail.com>
+ *              Marvin Ritter <marvin.ritter@gmail.com>
  */
+
+// networkit-format
 
 #ifndef NETWORKIT_GRAPH_GRAPH_HPP_
 #define NETWORKIT_GRAPH_GRAPH_HPP_
@@ -20,50 +23,53 @@
 
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/FunctionTraits.hpp>
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 
 #include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 
+struct Edge {
+    node u, v;
+
+    Edge() : u(none), v(none) {}
+
+    Edge(node _u, node _v, bool sorted = false) {
+        u = sorted ? std::min(_u, _v) : _u;
+        v = sorted ? std::max(_u, _v) : _v;
+    }
+};
+
 /**
  * A weighted edge used for the graph constructor with
  * initializer list syntax.
  */
-struct WeightedEdge {
-    node u, v;
+struct WeightedEdge : Edge {
     edgeweight weight;
 
-    WeightedEdge(node u, node v, edgeweight w) : u(u), v(v), weight(w) {}
-};
-inline bool operator<(const WeightedEdge &e1, const WeightedEdge &e2) {
-    return e1.weight < e2.weight;
-}
-struct Edge {
-    node u, v;
+    // Needed by cython
+    WeightedEdge() : Edge(), weight(std::numeric_limits<edgeweight>::max()) {}
 
-    Edge(node _u, node _v, bool sorted = false) {
-        if (sorted) {
-            u = std::min(_u, _v);
-            v = std::max(_u, _v);
-        } else {
-            u = _u;
-            v = _v;
-        }
-    }
+    WeightedEdge(node u, node v, edgeweight w) : Edge(u, v), weight(w) {}
 };
+
 inline bool operator==(const Edge &e1, const Edge &e2) {
     return e1.u == e2.u && e1.v == e2.v;
 }
+
+inline bool operator<(const WeightedEdge &e1, const WeightedEdge &e2) {
+    return e1.weight < e2.weight;
+}
+
 struct Unsafe {};
-static constexpr Unsafe unsafe {};
+static constexpr Unsafe unsafe{};
 } // namespace NetworKit
 
 namespace std {
-template <> struct hash<NetworKit::Edge> {
-    size_t operator()(const NetworKit::Edge &e) const {
-        return hash_node(e.u) ^ hash_node(e.v);
-    }
+template <>
+struct hash<NetworKit::Edge> {
+    size_t operator()(const NetworKit::Edge &e) const { return hash_node(e.u) ^ hash_node(e.v); }
 
     hash<NetworKit::node> hash_node;
 };
@@ -86,7 +92,6 @@ class Graph final {
     friend class GraphBuilder;
     friend class CurveballDetails::CurveballMaterialization;
 
-  private:
     // graph attributes
     //!< unique graph id, starts at 0
     count id;
@@ -156,26 +161,16 @@ class Graph final {
     index indexInOutEdgeArray(node u, node v) const;
 
     /**
-     * Computes the weighted in/out degree of a graph.
+     * Computes the weighted in/out degree of node @a u.
      *
+     * @param u Node.
      * @param inDegree whether to compute the in degree or the out degree.
-     */
-    edgeweight computeWeightedDegree(const node &v,
-                                     const bool inDegree = false) const;
-
-    /**
-     * Computes the maximum in/out degree of the graph.
+     * @param countSelfLoopsTwice If set to true, self-loops will be counted twice.
      *
-     * @param inDegree wheter to compute the in degree or the out degree.
+     * @return Weighted in/out degree of node @a u.
      */
-    count computeMaxDegree(const bool inDegree = false) const;
-
-    /**
-     * Computes the maximum in/out weighted degree of the graph
-     *
-     * @param inDegree whether to compute the in degree or the out degree
-     */
-    edgeweight computeMaxWeightedDegree(const bool inDegree = false) const;
+    edgeweight computeWeightedDegree(node u, bool inDegree = false,
+                                     bool countSelfLoopsTwice = false) const;
 
     /**
      * Returns the edge weight of the outgoing edge of index i in the outgoing
@@ -243,8 +238,7 @@ class Graph final {
      * @param handle The handle that shall be executed for each edge
      * @return void
      */
-    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-              typename L>
+    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
     inline void forOutEdgesOfImpl(node u, L handle) const;
 
     /**
@@ -257,8 +251,7 @@ class Graph final {
      * @param handle The handle that shall be executed for each edge
      * @return void
      */
-    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-              typename L>
+    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
     inline void forInEdgesOfImpl(node u, L handle) const;
 
     /**
@@ -267,8 +260,7 @@ class Graph final {
      * @param handle The handle that shall be executed for all edges
      * @return void
      */
-    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-              typename L>
+    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
     inline void forEdgeImpl(L handle) const;
 
     /**
@@ -278,8 +270,7 @@ class Graph final {
      * @param handle The handle that shall be executed for all edges
      * @return void
      */
-    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-              typename L>
+    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
     inline void parallelForEdgesImpl(L handle) const;
 
     /**
@@ -289,8 +280,7 @@ class Graph final {
      * @param handle The handle that shall be executed for all edges
      * @return void
      */
-    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-              typename L>
+    template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
     inline double parallelSumForEdgesImpl(L handle) const;
 
     /*
@@ -319,13 +309,12 @@ class Graph final {
     typename Aux::FunctionTraits<F>::result_type edgeLambda(F &, ...) const {
         // the strange condition is used in order to delay the evaluation of the
         // static assert to the moment when this function is actually used
-        static_assert(
-            !std::is_same<F, F>::value,
-            "Your lambda does not support the required parameters or the "
-            "parameters have the wrong type.");
-        return std::declval<typename Aux::FunctionTraits<
-            F>::result_type>(); // use the correct return type (this won't
-                                // compile)
+        static_assert(!std::is_same<F, F>::value,
+                      "Your lambda does not support the required parameters or the "
+                      "parameters have the wrong type.");
+        return std::declval<typename Aux::FunctionTraits<F>::result_type>(); // use the correct
+                                                                             // return type (this
+                                                                             // won't compile)
     }
 
     /**
@@ -333,14 +322,13 @@ class Graph final {
      * and third of type edgeweight Note that the decltype check is not enough
      * as edgeweight can be casted to node and we want to assure that .
      */
-    template <
-        class F,
-        typename std::enable_if<
-            (Aux::FunctionTraits<F>::arity >= 3) &&
-            std::is_same<edgeweight, typename Aux::FunctionTraits<
-                                         F>::template arg<2>::type>::value &&
-            std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<
-                                     3>::type>::value>::type * = (void *)0>
+    template <class F,
+              typename std::enable_if<
+                  (Aux::FunctionTraits<F>::arity >= 3)
+                  && std::is_same<edgeweight,
+                                  typename Aux::FunctionTraits<F>::template arg<2>::type>::value
+                  && std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<3>::type>::
+                      value>::type * = (void *)0>
     auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid id) const
         -> decltype(f(u, v, ew, id)) {
         return f(u, v, ew, id);
@@ -354,15 +342,13 @@ class Graph final {
     template <
         class F,
         typename std::enable_if<
-            (Aux::FunctionTraits<F>::arity >= 2) &&
-            std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<
-                                     2>::type>::value &&
-            std::is_same<node, typename Aux::FunctionTraits<F>::template arg<
-                                   1>::type>::value /* prevent f(v, weight, eid)
-                                                     */
+            (Aux::FunctionTraits<F>::arity >= 2)
+            && std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<2>::type>::value
+            && std::is_same<node, typename Aux::FunctionTraits<F>::template arg<1>::type>::
+                value /* prevent f(v, weight, eid)
+                       */
             >::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight, edgeid id) const
-        -> decltype(f(u, v, id)) {
+    auto edgeLambda(F &f, node u, node v, edgeweight, edgeid id) const -> decltype(f(u, v, id)) {
         return f(u, v, id);
     }
 
@@ -373,11 +359,11 @@ class Graph final {
      */
     template <class F,
               typename std::enable_if<
-                  (Aux::FunctionTraits<F>::arity >= 2) &&
-                  std::is_same<edgeweight,
-                               typename Aux::FunctionTraits<F>::template arg<
-                                   2>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid /*id*/) const -> decltype(f(u, v, ew)) {
+                  (Aux::FunctionTraits<F>::arity >= 2)
+                  && std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<
+                                                  2>::type>::value>::type * = (void *)0>
+    auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid /*id*/) const
+        -> decltype(f(u, v, ew)) {
         return f(u, v, ew);
     }
 
@@ -386,13 +372,12 @@ class Graph final {
      * argument is of type node, discards edge weight and id Note that the
      * decltype check is not enough as edgeweight can be casted to node.
      */
-    template <
-        class F,
-        typename std::enable_if<
-            (Aux::FunctionTraits<F>::arity >= 1) &&
-            std::is_same<node, typename Aux::FunctionTraits<F>::template arg<
-                                   1>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight /*ew*/, edgeid /*id*/) const -> decltype(f(u, v)) {
+    template <class F, typename std::enable_if<
+                           (Aux::FunctionTraits<F>::arity >= 1)
+                           && std::is_same<node, typename Aux::FunctionTraits<F>::template arg<
+                                                     1>::type>::value>::type * = (void *)0>
+    auto edgeLambda(F &f, node u, node v, edgeweight /*ew*/, edgeid /*id*/) const
+        -> decltype(f(u, v)) {
         return f(u, v);
     }
 
@@ -404,10 +389,9 @@ class Graph final {
      */
     template <class F,
               typename std::enable_if<
-                  (Aux::FunctionTraits<F>::arity >= 1) &&
-                  std::is_same<edgeweight,
-                               typename Aux::FunctionTraits<F>::template arg<
-                                   1>::type>::value>::type * = (void *)0>
+                  (Aux::FunctionTraits<F>::arity >= 1)
+                  && std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<
+                                                  1>::type>::value>::type * = (void *)0>
     auto edgeLambda(F &f, node, node v, edgeweight ew, edgeid /*id*/) const -> decltype(f(v, ew)) {
         return f(v, ew);
     }
@@ -438,13 +422,370 @@ class Graph final {
     }
 
 public:
+    /**
+     * Class to iterate over the nodes of a graph.
+     */
+    class NodeIterator {
+
+        const Graph *G;
+        node u;
+
+    public:
+        // The value type of the nodes (i.e. nodes). Returned by
+        // operator*().
+        using value_type = node;
+
+        // Reference to the value_type, required by STL.
+        using reference = value_type &;
+
+        // Pointer to the value_type, required by STL.
+        using pointer = value_type *;
+
+        // STL iterator category.
+        using iterator_category = std::forward_iterator_tag;
+
+        // Signed integer type of the result of subtracting two pointers,
+        // required by STL.
+        using difference_type = ptrdiff_t;
+
+        // Own type.
+        using self = NodeIterator;
+
+        NodeIterator(const Graph *G, node u) : G(G), u(u) {
+            if (!G->hasNode(u) && u < G->upperNodeIdBound()) {
+                ++(*this);
+            }
+        }
+
+        /**
+         * @brief WARNING: This constructor is required for Python and should not be used as the
+         * iterator is not initialized.
+         */
+        NodeIterator() : G(nullptr) {}
+
+        ~NodeIterator() = default;
+
+        NodeIterator operator++() {
+            assert(u < G->upperNodeIdBound());
+            do {
+                ++u;
+            } while (!(G->hasNode(u) || u >= G->upperNodeIdBound()));
+            return *this;
+        }
+
+        NodeIterator operator++(int) {
+            const auto tmp = *this;
+            ++(*this);
+            return tmp;
+        }
+
+        NodeIterator operator--() {
+            assert(u);
+            do {
+                --u;
+            } while (!G->hasNode(u));
+            return *this;
+        }
+
+        NodeIterator operator--(int) {
+            const auto tmp = *this;
+            --(*this);
+            return tmp;
+        }
+
+        bool operator==(const NodeIterator &rhs) const noexcept { return u == rhs.u; }
+
+        bool operator!=(const NodeIterator &rhs) const noexcept { return !(*this == rhs); }
+
+        node operator*() const noexcept {
+            assert(u < G->upperNodeIdBound());
+            return u;
+        }
+    };
+
+    /**
+     * Wrapper class to iterate over a range of the nodes of a graph.
+     */
+    class NodeRange {
+
+        const Graph *G;
+
+    public:
+        NodeRange(const Graph &G) : G(&G) {}
+
+        NodeRange() : G(nullptr){};
+
+        ~NodeRange() = default;
+
+        NodeIterator begin() const noexcept {
+            assert(G);
+            return NodeIterator(G, node{0});
+        }
+
+        NodeIterator end() const noexcept {
+            assert(G);
+            return NodeIterator(G, G->upperNodeIdBound());
+        }
+    };
+
+    // Necessary for friendship with EdgeIteratorBase.
+    class EdgeIterator;
+    class EdgeWeightIterator;
+
+    class EdgeIteratorBase {
+        friend class EdgeIterator;
+        friend class EdgeWeightIterator;
+
+        const Graph *G;
+        NodeIterator nodeIter;
+        index i;
+
+        bool validEdge() const noexcept {
+            return G->isDirected() || (*nodeIter <= G->outEdges[*nodeIter][i]);
+        }
+
+        void nextEdge() {
+            do {
+                if (++i >= G->degree(*nodeIter)) {
+                    i = 0;
+                    do {
+                        assert(nodeIter != G->nodeRange().end());
+                        ++nodeIter;
+                        if (nodeIter == G->nodeRange().end()) {
+                            return;
+                        }
+                    } while (!G->degree(*nodeIter));
+                }
+            } while (!validEdge());
+        }
+
+        void prevEdge() {
+            do {
+                if (!i) {
+                    do {
+                        assert(nodeIter != G->nodeRange().begin());
+                        --nodeIter;
+                    } while (!G->degree(*nodeIter));
+
+                    i = G->degree(*nodeIter);
+                }
+                --i;
+            } while (!validEdge());
+        }
+
+        EdgeIteratorBase(const Graph *G, NodeIterator nodeIter)
+            : G(G), nodeIter(nodeIter), i(index{0}) {
+            if (nodeIter != G->nodeRange().end() && !G->degree(*nodeIter)) {
+                nextEdge();
+            }
+        }
+
+        /**
+         * @brief WARNING: This constructor is required for Python and should not be used as the
+         * iterator is not initialized.
+         */
+        EdgeIteratorBase() : G(nullptr) {}
+
+        virtual ~EdgeIteratorBase() = default;
+
+        bool operator==(const EdgeIteratorBase &rhs) const noexcept {
+            return nodeIter == rhs.nodeIter && i == rhs.i;
+        }
+
+        bool operator!=(const EdgeIteratorBase &rhs) const noexcept { return !(*this == rhs); }
+    };
+
+    /**
+     * Class to iterate over the edges of the graph. If the graph is undirected, operator*()
+     * returns the edges (u, v) s.t. u <= v.
+     */
+    class EdgeIterator : public EdgeIteratorBase {
+
+    public:
+        // The value type of the edges (i.e. a pair). Returned by operator*().
+        using value_type = Edge;
+
+        // Reference to the value_type, required by STL.
+        using reference = value_type &;
+
+        // Pointer to the value_type, required by STL.
+        using pointer = value_type *;
+
+        // STL iterator category.
+        using iterator_category = std::forward_iterator_tag;
+
+        // Signed integer type of the result of subtracting two pointers,
+        // required by STL.
+        using difference_type = ptrdiff_t;
+
+        // Own type.
+        using self = EdgeIterator;
+
+        EdgeIterator(const Graph *G, NodeIterator nodeIter) : EdgeIteratorBase(G, nodeIter) {}
+
+        EdgeIterator() : EdgeIteratorBase() {}
+
+        bool operator==(const EdgeIterator &rhs) const noexcept {
+            return this->EdgeIteratorBase::operator==(static_cast<EdgeIteratorBase>(rhs));
+        }
+
+        bool operator!=(const EdgeIterator &rhs) const noexcept { return !(*this == rhs); }
+
+        Edge operator*() const noexcept {
+            assert(nodeIter != G->nodeRange().end());
+            return Edge(*nodeIter, G->outEdges[*nodeIter][i]);
+        }
+
+        EdgeIterator operator++() {
+            nextEdge();
+            return *this;
+        }
+
+        EdgeIterator operator++(int) {
+            const auto tmp = *this;
+            ++(*this);
+            return tmp;
+        }
+
+        EdgeIterator operator--() {
+            prevEdge();
+            return *this;
+        }
+
+        EdgeIterator operator--(int) {
+            const auto tmp = *this;
+            --(*this);
+            return tmp;
+        }
+    };
+
+    /**
+     * Class to iterate over the edges of the graph and their weights. If the graph is undirected,
+     * operator*() returns a WeightedEdge struct with u <= v.
+     */
+    class EdgeWeightIterator : public EdgeIteratorBase {
+    public:
+        // The value type of the edges and their weights (i.e. WeightedEdge). Returned by
+        // operator*().
+        using value_type = WeightedEdge;
+
+        // Reference to the value_type, required by STL.
+        using reference = value_type &;
+
+        // Pointer to the value_type, required by STL.
+        using pointer = value_type *;
+
+        // STL iterator category.
+        using iterator_category = std::forward_iterator_tag;
+
+        // Signed integer type of the result of subtracting two pointers,
+        // required by STL.
+        using difference_type = ptrdiff_t;
+
+        // Own type.
+        using self = EdgeWeightIterator;
+
+        EdgeWeightIterator(const Graph *G, NodeIterator nodeIter) : EdgeIteratorBase(G, nodeIter) {}
+
+        /**
+         * @brief WARNING: This constructor is required for Python and should not be used as the
+         * iterator is not initialized.
+         */
+        EdgeWeightIterator() : EdgeIteratorBase() {}
+
+        bool operator==(const EdgeWeightIterator &rhs) const noexcept {
+            return this->EdgeIteratorBase::operator==(static_cast<EdgeIteratorBase>(rhs));
+        }
+
+        bool operator!=(const EdgeWeightIterator &rhs) const noexcept { return !(*this == rhs); }
+
+        EdgeWeightIterator operator++() {
+            nextEdge();
+            return *this;
+        }
+
+        EdgeWeightIterator operator++(int) {
+            const auto tmp = *this;
+            ++(*this);
+            return tmp;
+        }
+
+        EdgeWeightIterator operator--() {
+            prevEdge();
+            return *this;
+        }
+
+        EdgeWeightIterator operator--(int) {
+            const auto tmp = *this;
+            --(*this);
+            return tmp;
+        }
+
+        WeightedEdge operator*() const noexcept {
+            assert(nodeIter != G->nodeRange().end());
+            return WeightedEdge(*nodeIter, G->outEdges[*nodeIter][i],
+                                G->isWeighted() ? G->outEdgeWeights[*nodeIter][i] : 1);
+        }
+    };
+
+    /**
+     * Wrapper class to iterate over a range of the edges of a graph.
+     */
+    class EdgeRange {
+
+        const Graph *G;
+
+    public:
+        EdgeRange(const Graph &G) : G(&G) {}
+
+        EdgeRange() : G(nullptr){};
+
+        ~EdgeRange() = default;
+
+        EdgeIterator begin() const {
+            assert(G);
+            return EdgeIterator(G, G->nodeRange().begin());
+        }
+
+        EdgeIterator end() const {
+            assert(G);
+            return EdgeIterator(G, G->nodeRange().end());
+        }
+    };
+
+    /**
+     * Wrapper class to iterate over a range of the edges of a graph and their weights.
+     */
+    class EdgeWeightRange {
+
+        const Graph *G;
+
+    public:
+        EdgeWeightRange(const Graph &G) : G(&G) {}
+
+        EdgeWeightRange() : G(nullptr){};
+
+        ~EdgeWeightRange() = default;
+
+        EdgeWeightIterator begin() const {
+            assert(G);
+            return EdgeWeightIterator(G, G->nodeRange().begin());
+        }
+
+        EdgeWeightIterator end() const {
+            assert(G);
+            return EdgeWeightIterator(G, G->nodeRange().end());
+        }
+    };
 
     /**
      * Class to iterate over the in/out neighbors of a node.
      */
     class NeighborIterator {
 
-      public:
+        std::vector<node>::const_iterator nIter;
+
+    public:
         // The value type of the neighbors (i.e. nodes). Returned by
         // operator*().
         using value_type = node;
@@ -468,14 +809,15 @@ public:
         NeighborIterator(std::vector<node>::const_iterator nodesIter) : nIter(nodesIter) {}
 
         /**
-         * @brief WARNING: This contructor is required for Python and should not be used as the iterator is not initialised.
+         * @brief WARNING: This contructor is required for Python and should not be used as the
+         * iterator is not initialized.
          */
         NeighborIterator() {}
 
         NeighborIterator operator++() {
-            auto prev = *this;
+            const auto tmp = *this;
             ++nIter;
-            return prev;
+            return tmp;
         }
 
         NeighborIterator operator++(int) {
@@ -484,9 +826,9 @@ public:
         }
 
         NeighborIterator operator--() {
-            auto prev = *this;
+            const auto tmp = *this;
             --nIter;
-            return prev;
+            return tmp;
         }
 
         NeighborIterator operator--(int) {
@@ -494,18 +836,11 @@ public:
             return *this;
         }
 
-        bool operator==(const NeighborIterator &rhs) const {
-            return nIter == rhs.nIter;
-        }
+        bool operator==(const NeighborIterator &rhs) const { return nIter == rhs.nIter; }
 
-        bool operator!=(const NeighborIterator &rhs) const {
-            return nIter != rhs.nIter;
-        }
+        bool operator!=(const NeighborIterator &rhs) const { return !(nIter == rhs.nIter); }
 
         node operator*() const { return *nIter; }
-
-      private:
-        std::vector<node>::const_iterator nIter;
     };
 
     /**
@@ -514,7 +849,10 @@ public:
      */
     class NeighborWeightIterator {
 
-      public:
+        std::vector<node>::const_iterator nIter;
+        std::vector<edgeweight>::const_iterator wIter;
+
+    public:
         // The value type of the neighbors (i.e. nodes). Returned by
         // operator*().
         using value_type = std::pair<node, edgeweight>;
@@ -535,83 +873,70 @@ public:
         // Own type.
         using self = NeighborWeightIterator;
 
-        NeighborWeightIterator(
-            std::vector<node>::const_iterator nodesIter,
-            std::vector<edgeweight>::const_iterator weightIter)
+        NeighborWeightIterator(std::vector<node>::const_iterator nodesIter,
+                               std::vector<edgeweight>::const_iterator weightIter)
             : nIter(nodesIter), wIter(weightIter) {}
 
         NeighborWeightIterator operator++() {
-            auto prev = *this;
             ++nIter;
             ++wIter;
-            return prev;
+            return *this;
         }
 
         NeighborWeightIterator operator++(int) {
-            ++nIter;
-            ++wIter;
-            return *this;
+            const auto tmp = *this;
+            ++(*this);
+            return tmp;
         }
 
         NeighborWeightIterator operator--() {
-            auto prev = *this;
-            --nIter;
-            --wIter;
-            return prev;
-        }
-
-        NeighborWeightIterator operator--(int) {
             --nIter;
             --wIter;
             return *this;
+        }
+
+        NeighborWeightIterator operator--(int) {
+            const auto tmp = *this;
+            --(*this);
+            return tmp;
         }
 
         bool operator==(const NeighborWeightIterator &rhs) const {
             return nIter == rhs.nIter && wIter == rhs.wIter;
         }
 
-        bool operator!=(const NeighborWeightIterator &rhs) const {
-            return nIter != rhs.nIter || wIter != rhs.wIter;
-        }
+        bool operator!=(const NeighborWeightIterator &rhs) const { return !(*this == rhs); }
 
         const std::pair<node, edgeweight> operator*() const {
             return std::make_pair(*nIter, *wIter);
         }
-
-      private:
-        std::vector<node>::const_iterator nIter;
-        std::vector<edgeweight>::const_iterator wIter;
     };
 
     /**
      * Wrapper class to iterate over a range of the neighbors of a node within
      * a for loop.
      */
-    template <bool InEdges = false> class NeighborRange {
-      public:
-        NeighborRange(const Graph &G, node u) : G(&G), u(u){
-            assert(G.hasNode(u));
-        };
+    template <bool InEdges = false>
+    class NeighborRange {
+        const Graph *G;
+        node u;
 
-        NeighborRange() : G(nullptr) {};
+    public:
+        NeighborRange(const Graph &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
+
+        NeighborRange() : G(nullptr){};
 
         NeighborIterator begin() const {
-            assert(G != nullptr);
-            if (InEdges)
-                return NeighborIterator(G->inEdges[u].begin());
-            return NeighborIterator(G->outEdges[u].begin());
+            assert(G);
+            return InEdges ? NeighborIterator(G->inEdges[u].begin())
+                           : NeighborIterator(G->outEdges[u].begin());
         }
 
         NeighborIterator end() const {
-            assert(G != nullptr);
-            if (InEdges)
-                return NeighborIterator(G->inEdges[u].end());
-            return NeighborIterator(G->outEdges[u].end());
+            assert(G);
+            return InEdges ? NeighborIterator(G->inEdges[u].end())
+                           : NeighborIterator(G->outEdges[u].end());
         }
-
-      private:
-        const Graph *G;
-        node u;
     };
 
     using OutNeighborRange = NeighborRange<false>;
@@ -622,30 +947,25 @@ public:
      * including the edge weights within a for loop.
      * Values are std::pair<node, edgeweight>.
      */
-    template <bool InEdges = false> class NeighborWeightRange {
+    template <bool InEdges = false>
+    class NeighborWeightRange {
 
-      public:
+        const Graph &G;
+        const node u;
+
+    public:
         NeighborWeightRange(const Graph &G, node u) : G(G), u(u){};
 
         NeighborWeightIterator begin() const {
-            if (InEdges)
-                return NeighborWeightIterator(G.inEdges[u].begin(),
-                                              G.inEdgeWeights[u].begin());
-            return NeighborWeightIterator(G.outEdges[u].begin(),
-                                          G.outEdgeWeights[u].begin());
+            return InEdges
+                       ? NeighborWeightIterator(G.inEdges[u].begin(), G.inEdgeWeights[u].begin())
+                       : NeighborWeightIterator(G.outEdges[u].begin(), G.outEdgeWeights[u].begin());
         }
 
         NeighborWeightIterator end() const {
-            if (InEdges)
-                return NeighborWeightIterator(G.inEdges[u].end(),
-                                              G.inEdgeWeights[u].end());
-            return NeighborWeightIterator(G.outEdges[u].end(),
-                                          G.outEdgeWeights[u].end());
+            return InEdges ? NeighborWeightIterator(G.inEdges[u].end(), G.inEdgeWeights[u].end())
+                           : NeighborWeightIterator(G.outEdges[u].end(), G.outEdgeWeights[u].end());
         }
-
-      private:
-        const Graph &G;
-        const node u;
     };
 
     /**
@@ -725,7 +1045,7 @@ public:
      *
      * @return bool if edges have been indexed
      */
-    bool hasEdgeIds() const { return edgesIndexed; }
+    bool hasEdgeIds() const noexcept { return edgesIndexed; }
 
     /**
      * Get the id of the given edge.
@@ -736,15 +1056,17 @@ public:
      * Get an upper bound for the edge ids in the graph.
      * @return An upper bound for the edge ids.
      */
-    index upperEdgeIdBound() const { return omega; }
+    index upperEdgeIdBound() const noexcept { return omega; }
 
     /** GRAPH INFORMATION **/
 
     /**
      * Get the ID of this graph. The ID is a unique unsigned integer given to
      * every graph on construction.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
-    count getId() const { return id; }
+    count TLX_DEPRECATED(getId() const) { return id; }
 
     /**
      * Return the type of the graph.
@@ -752,8 +1074,10 @@ public:
      * 		WeightedGraph: weighted, undirected
      * 		DirectedGraph: not weighted, directed
      * 		WeightedDirectedGraph: weighted, directed
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
-    std::string typ() const;
+    std::string TLX_DEPRECATED(typ() const);
 
     /**
      * Try to save some memory by shrinking internal data structures of the
@@ -777,14 +1101,18 @@ public:
     /**
      * Set name of graph to @a name.
      * @param name The name.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
-    void setName(std::string name) { this->name = name; }
+    void TLX_DEPRECATED(setName(std::string name)) { this->name = name; }
 
     /*
      * Returns the name of the graph.
      * @return The name of the graph.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
-    std::string getName() const { return name; }
+    std::string TLX_DEPRECATED(getName() const) { return name; }
 
     /**
      * Set edge count of the graph to edges.
@@ -792,20 +1120,37 @@ public:
      */
     void setEdgeCount(Unsafe, count edges) { m = edges; }
 
+    /**
+     * Set upper bound of edge count.
+     *
+     * @param newBound New upper edge id bound.
+     */
+    void setUpperEdgeIdBound(Unsafe, edgeid newBound) { omega = newBound; }
+
+    /**
+     * Set the number of self-loops.
+     *
+     * @param loops New number of self-loops.
+     */
     void setNumberOfSelfLoops(Unsafe, count loops) { storedNumberOfSelfLoops = loops; }
+
     /**
      * Returns a string representation of the graph.
      * @return A string representation.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
-    std::string toString() const;
+    std::string TLX_DEPRECATED(toString() const);
 
     /* COPYING */
 
     /*
      * Copies all nodes to a new graph
      * @return graph with the same nodes.
+     *
+     * This method is deprecated, use GraphTools::copyNodes instead.
      */
-    Graph copyNodes() const;
+    Graph TLX_DEPRECATED(copyNodes() const);
 
     /* NODE MODIFIERS */
 
@@ -832,13 +1177,47 @@ public:
     void removeNode(node v);
 
     /**
+     * Removes out-going edges from node @u. If the graph is weighted and/or has edge ids, weights
+     * and/or edge ids will also be removed.
+     *
+     * @param node u Node.
+     */
+    void removePartialOutEdges(Unsafe, node u) {
+        assert(hasNode(u));
+        outEdges[u].clear();
+        if (isWeighted()) {
+            outEdgeWeights[u].clear();
+        }
+        if (hasEdgeIds()) {
+            outEdgeIds[u].clear();
+        }
+    }
+
+    /**
+     * Removes in-going edges to node @u. If the graph is weighted and/or has edge ids, weights
+     * and/or edge ids will also be removed.
+     *
+     * @param node u Node.
+     */
+    void removePartialInEdges(Unsafe, node u) {
+        assert(hasNode(u));
+        inEdges[u].clear();
+        if (isWeighted()) {
+            inEdgeWeights[u].clear();
+        }
+        if (hasEdgeIds()) {
+            inEdgeIds[u].clear();
+        }
+    }
+
+    /**
      * Check if node @a v exists in the graph.
      *
      * @param v Node.
      * @return @c true if @a v exists, @c false otherwise.
      */
 
-    bool hasNode(node v) const { return (v < z) && this->exists[v]; }
+    bool hasNode(node v) const noexcept { return (v < z) && this->exists[v]; }
 
     /**
      * Restores a previously deleted node @a v with its previous id in the
@@ -856,15 +1235,19 @@ public:
      * Appends another graph to this graph as a new subgraph. Performs node
      * id remapping.
      * @param G [description]
+     *
+     * This method is deprecated, use GraphTools::append instead.
      */
-    void append(const Graph &G);
+    void TLX_DEPRECATED(append(const Graph &G));
 
     /**
      * Modifies this graph to be the union of it and another graph.
      * Nodes with the same ids are identified with each other.
      * @param G [description]
+     *
+     * This method is deprecated, use GraphTools::merge instead.
      */
-    void merge(const Graph &G);
+    void TLX_DEPRECATED(merge(const Graph &G));
 
     // SUBGRAPHS
 
@@ -875,12 +1258,17 @@ public:
      *  - Nodes are such passed as arguments
      *  - Neighbors are empty by default.
      *      If includeOutNeighbors is set, it includes all out neighbors of Nodes
-     *      If includeInNeighbors is set, it includes all in neighbors of Nodes (relevant only for directed graphs)
+     *      If includeInNeighbors is set, it includes all in neighbors of Nodes (relevant only for
+     * directed graphs)
      *
-     * The subgraph contains all nodes in Nodes + Neighbors and all edge which have one end point in Nodes
-     * and the other in Nodes or Neighbors.
+     * The subgraph contains all nodes in Nodes + Neighbors and all edge which have one end point in
+     * Nodes and the other in Nodes or Neighbors.
+     *
+     * This method is deprecated, use GraphTools::subgraphFromNodes instead.
      */
-    Graph subgraphFromNodes(const std::unordered_set<node> &nodes, bool includeOutNeighbors = false, bool includeInNeighbors = false) const;
+    Graph TLX_DEPRECATED(subgraphFromNodes(const std::unordered_set<node> &nodes,
+                                           bool includeOutNeighbors = false,
+                                           bool includeInNeighbors = false) const);
 
     /** NODE PROPERTIES **/
 
@@ -899,9 +1287,7 @@ public:
      * @return The number of incoming neighbors.
      * @note If the graph is not directed, the outgoing degree is returned.
      */
-    count degreeIn(node v) const {
-        return directed ? inEdges[v].size() : outEdges[v].size();
-    }
+    count degreeIn(node v) const { return directed ? inEdges[v].size() : outEdges[v].size(); }
 
     /**
      * Get the number of outgoing neighbors of @a v.
@@ -915,15 +1301,19 @@ public:
      * Returns the maximum out-degree of the graph.
      *
      * @return The maximum out-degree of the graph.
+     *
+     * This method is deprecated, use GraphTools::maxDegree instead.
      */
-    count maxDegree() const;
+    count TLX_DEPRECATED(maxDegree() const);
 
     /**
      * Returns the maximum in-degree of the graph.
      *
      * @return The maximum in-degree of the graph.
+     *
+     * This method is deprecated, use GraphTools::maxWeightedDegree instead.
      */
-    count maxDegreeIn() const;
+    count TLX_DEPRECATED(maxDegreeIn() const);
 
     /**
      * Check whether @a v is isolated, i.e. degree is 0.
@@ -937,14 +1327,14 @@ public:
     }
 
     /**
-     * Returns the weighted degree of @a v.
+     * Returns the weighted degree of @a u.
      *
-     * @param v Node.
-     * @return Weighted degree of @a v.
-     * @note For directed graphs this is the sum of weights of all outgoing
-     * edges. of @a v.
+     * @param u Node.
+     * @param countSelfLoopsTwice If set to true, self-loops will be counted twice.
+     *
+     * @return Weighted degree of @a u.
      */
-    edgeweight weightedDegree(const node &v) const;
+    edgeweight weightedDegree(node u, bool countSelfLoopsTwice = false) const;
 
     /**
      * Returns the maximum weighted degree of the graph.
@@ -952,8 +1342,10 @@ public:
      * @return Maximum weighted degree of the graph.
      * @note For directed graphs this is the sum of weights of all outgoing
      * edges.
+     *
+     * This method is deprecated, use GraphTools::maxWeightedDegree instead.
      */
-    edgeweight maxWeightedDegree() const;
+    edgeweight TLX_DEPRECATED(maxWeightedDegree() const);
 
     /**
      * Returns the maximum weighted in degree of the graph.
@@ -961,18 +1353,20 @@ public:
      * @return Maximum weighted in degree of the graph.
      * @note For directed graphs this is the sum of weights of all in-going
      * edges.
+     *
+     * This method is deprecated, use GraphTools::maxWeightedDegreeIn instead.
      */
-    edgeweight maxWeightedDegreeIn() const;
+    edgeweight TLX_DEPRECATED(maxWeightedDegreeIn() const);
 
     /**
-     * Returns the weighted in-degree of @a v.
+     * Returns the weighted in-degree of @a u.
      *
-     * @param v Node.
+     * @param u Node.
+     * @param countSelfLoopsTwice If set to true, self-loops will be counted twice.
+     *
      * @return Weighted in-degree of @a v.
-     * @note For directed graphs this is the sum of weights of all ingoing
-     * edges. of @a v.
      */
-    edgeweight weightedDegreeIn(const node &v) const;
+    edgeweight weightedDegreeIn(node u, bool countSelfLoopsTwice = false) const;
 
     /**
      * Returns the volume of the @a v, which is the weighted degree with
@@ -980,22 +1374,28 @@ public:
      *
      * @param v Node.
      * @return The volume of the @a v.
+     *
+     * This method is deprecated, use GraphTools::weightedDegree instead.
      */
-    edgeweight volume(node v) const;
+    edgeweight TLX_DEPRECATED(volume(node v) const);
 
     /**
      * Returns a random node of the graph.
      * @return A random node.
+     *
+     * This method is deprecated, use GraphTools::randomNode instead.
      */
-    node randomNode() const;
+    node TLX_DEPRECATED(randomNode() const);
 
     /**
      * Returns a random neighbor of @a u and @c none if degree is zero.
      *
      * @param u Node.
      * @return A random neighbor of @a u.
+     *
+     * This method is deprecated, use GraphTools::randomNeighbor instead.
      */
-    node randomNeighbor(node u) const;
+    node TLX_DEPRECATED(randomNeighbor(node u) const);
 
     /* EDGE MODIFIERS */
 
@@ -1011,17 +1411,18 @@ public:
     void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
 
     /**
-    * Insert an edge between the nodes @a u and @a v. Unline the addEdge function, this function does not not add any information to v. If the graph is
-    * weighted you can optionally set a weight for this edge. The default
-    * weight is 1.0. Note: Multi-edges are not supported and will NOT be
-    * handled consistently by the graph data structure.
-    * @param u Endpoint of edge.
-    * @param v Endpoint of edge.
-    * @param weight Optional edge weight.
-    * @param ew Optional edge weight.
-    * @param index Optional node index.
-    */
-    void addPartialEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight, uint64_t index = 0);
+     * Insert an edge between the nodes @a u and @a v. Unline the addEdge function, this function
+     * does not not add any information to v. If the graph is weighted you can optionally set a
+     * weight for this edge. The default weight is 1.0. Note: Multi-edges are not supported and will
+     * NOT be handled consistently by the graph data structure.
+     * @param u Endpoint of edge.
+     * @param v Endpoint of edge.
+     * @param weight Optional edge weight.
+     * @param ew Optional edge weight.
+     * @param index Optional node index.
+     */
+    void addPartialEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
+                        uint64_t index = 0);
 
     /**
      * Insert an in edge between the nodes @a u and @a v in a directed graph. If the graph is
@@ -1033,7 +1434,8 @@ public:
      * @param ew Optional edge weight.
      * @param index Optional node index.
      */
-    void addPartialInEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight, uint64_t index = 0);
+    void addPartialInEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
+                          uint64_t index = 0);
 
     /**
      * Insert an out edge between the nodes @a u and @a v in a directed graph. If the graph is
@@ -1045,8 +1447,8 @@ public:
      * @param ew Optional edge weight.
      * @param index Optional node index.
      */
-    void addPartialOutEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight, uint64_t index = 0);
-
+    void addPartialOutEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
+                           uint64_t index = 0);
 
     /**
      * Removes the undirected edge {@a u,@a v}.
@@ -1061,8 +1463,10 @@ public:
      * Kadabra algorithm.
      * @param nodesInSet vector of nodes that form a connected component that
      * is isolated from the rest of the graph.
+     *
+     * This method is deprecated, use GraphTools::removeEdgesFromIsolatedSet instead.
      */
-    void removeEdgesFromIsolatedSet(const std::vector<node> &nodesInSet);
+    void TLX_DEPRECATED(removeEdgesFromIsolatedSet(const std::vector<node> &nodesInSet));
 
     /**
      * Removes all the edges in the graph.
@@ -1115,7 +1519,7 @@ public:
      * @return <code>true</code> if the edge exists, <code>false</code>
      * otherwise.
      */
-    bool hasEdge(node u, node v) const;
+    bool hasEdge(node u, node v) const noexcept;
 
     /**
      * Returns a random edge. By default a random node u is chosen and then
@@ -1123,14 +1527,18 @@ public:
      * depends on the degree of u. Setting uniformDistribution to true, will
      * give you a real uniform distributed edge, but will be slower.
      * Exp. time complexity: O(1) for uniformDistribution = false, O(n) otherwise.
+     *
+     * This method is deprecated, use GraphTools::randomEdge instead.
      */
-    std::pair<node, node> randomEdge(bool uniformDistribution = false) const;
+    std::pair<node, node> TLX_DEPRECATED(randomEdge(bool uniformDistribution = false) const);
 
     /**
      * Returns a vector with nr random edges. The edges are chosen uniform
      * random.
+     *
+     * This method is deprecated, use GraphTools::randomEdges instead.
      */
-    std::vector<std::pair<node, node>> randomEdges(count nr) const;
+    std::vector<std::pair<node, node>> TLX_DEPRECATED(randomEdges(count nr) const);
 
     /* GLOBAL PROPERTIES */
 
@@ -1140,54 +1548,44 @@ public:
      * @return <code>true</code> if this graph supports edge weights other
      * than 1.0.
      */
-    bool isWeighted() const { return weighted; }
+    bool isWeighted() const noexcept { return weighted; }
 
     /**
      * Return @c true if this graph supports directed edges.
      * @return @c true if this graph supports directed edges.
      */
-    bool isDirected() const { return directed; }
+    bool isDirected() const noexcept { return directed; }
 
     /**
      * Return <code>true</code> if graph contains no nodes.
      * @return <code>true</code> if graph contains no nodes.
      */
-    bool isEmpty() const { return n == 0; }
+    bool isEmpty() const noexcept { return !n; }
 
     /**
      * Return the number of nodes in the graph.
      * @return The number of nodes.
      */
-    count numberOfNodes() const { return n; }
+    count numberOfNodes() const noexcept { return n; }
 
     /**
      * Return the number of edges in the graph.
      * @return The number of edges.
      */
-    count numberOfEdges() const { return m; }
+    count numberOfEdges() const noexcept { return m; }
 
     /**
      * @return a pair (n, m) where n is the number of nodes and m is the
      * number of edges
      */
-    std::pair<count, count> const size() const { return {n, m}; };
+    std::pair<count, count> const TLX_DEPRECATED(size() const noexcept);
 
     /**
      * @return the density of the graph
+     *
+     * This method is deprecated, use GraphTools::density instead.
      */
-    double density() const {
-        count n = numberOfNodes();
-        count m = numberOfEdges();
-        count loops = numberOfSelfLoops();
-        m -= loops;
-        double d;
-        if (isDirected()) {
-            d = m / (double)(n * (n - 1));
-        } else {
-            d = (2 * m) / (double)(n * (n - 1));
-        }
-        return d;
-    }
+    double TLX_DEPRECATED(density() const);
 
     /**
      * Return the number of loops {v,v} in the graph.
@@ -1195,13 +1593,13 @@ public:
      * @note This involves calculation, so store result if needed multiple
      * times.
      */
-    count numberOfSelfLoops() const;
+    count numberOfSelfLoops() const noexcept { return storedNumberOfSelfLoops; }
 
     /**
      * Get an upper bound for the node ids in the graph.
      * @return An upper bound for the node ids.
      */
-    index upperNodeIdBound() const { return z; }
+    index upperNodeIdBound() const noexcept { return z; }
 
     /**
      * Check for invalid graph states, such as multi-edges.
@@ -1213,14 +1611,24 @@ public:
 
     /**
      * Trigger a time step - increments counter.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
-    void timeStep() { t++; }
+    void TLX_DEPRECATED(timeStep()) {
+        WARN("Graph::timeStep is deprecated and will not be supported in future releases.");
+        t++;
+    }
 
     /**
      * Get time step counter.
      * @return Time step counter.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
-    count time() { return t; }
+    count TLX_DEPRECATED(time()) {
+        WARN("Graph::time is deprecated and will not be supported in future releases.");
+        return t;
+    }
 
     /**
      * Return edge weight of edge {@a u,@a v}. Returns 0 if edge does not
@@ -1258,29 +1666,56 @@ public:
      * Returns the sum of all edge weights.
      * @return The sum of all edge weights.
      */
-    edgeweight totalEdgeWeight() const;
+    edgeweight totalEdgeWeight() const noexcept;
 
     /* Collections */
 
     /**
      * Get list of all nodes.
      * @return List of all nodes.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
-    std::vector<node> nodes() const;
+    std::vector<node> TLX_DEPRECATED(nodes() const);
 
     /**
      * Get list of edges as node pairs.
      * @return List of edges as node pairs.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
-    std::vector<std::pair<node, node>> edges() const;
+    std::vector<std::pair<node, node>> TLX_DEPRECATED(edges() const);
 
     /**
      * Get list of neighbors of @a u.
      *
      * @param u Node.
      * @return List of neighbors of @a u.
+     *
+     * This method is deprecated and will not be supported in future releases.
      */
-     std::vector<node> TLX_DEPRECATED(neighbors(node u) const);
+    std::vector<node> TLX_DEPRECATED(neighbors(node u) const);
+
+    /**
+     * Get an iterable range over the nodes of the graph.
+     *
+     * @return Iterator range over the nodes of the graph.
+     */
+    NodeRange nodeRange() const noexcept { return NodeRange(*this); }
+
+    /**
+     * Get an iterable range over the edges of the graph.
+     *
+     * @return Iterator range over the edges of the graph.
+     */
+    EdgeRange edgeRange() const noexcept { return EdgeRange(*this); }
+
+    /**
+     * Get an iterable range over the edges of the graph and their weights.
+     *
+     * @return Iterator range over the edges of the graph and their weights.
+     */
+    EdgeWeightRange edgeWeightRange() const noexcept { return EdgeWeightRange(*this); }
 
     /**
      * Get an iterable range over the neighbors of @a.
@@ -1334,20 +1769,32 @@ public:
     }
 
     /**
-     * Get i-th (outgoing) neighbor of @a u.
-     * WARNING: This function is deprecated or only temporary.
+     * Return the i-th (outgoing) neighbor of @a u.
      *
      * @param u Node.
      * @param i index; should be in [0, degreeOut(u))
      * @return @a i -th (outgoing) neighbor of @a u, or @c none if no such
      * neighbor exists.
      */
-    template <bool graphIsDirected> node getIthNeighbor(node u, index i) const {
-        node v = outEdges[u][i];
-        if (useEdgeInIteration<graphIsDirected>(u, v))
-            return v;
-        else
+    node getIthNeighbor(node u, index i) const {
+        if (!hasNode(u) || i >= outEdges[u].size())
             return none;
+        return outEdges[u][i];
+    }
+
+    /**
+     * Get i-th (outgoing) neighbor of @a u and the corresponding edge id.
+     *
+     * @param u Node.
+     * @param i index; should be in [0, degreeOut(u))
+     * @return pair: i-th (outgoing) neighbor of @a u and the corresponding
+     * edge id, or @c none if no such neighbor exists.
+     */
+    std::pair<node, edgeid> getIthNeighborWithId(node u, index i) const {
+        assert(hasEdgeIds());
+        if (!hasNode(u) || i >= outEdges[u].size())
+            return {none, none};
+        return {outEdges[u][i], outEdgeIds[u][i]};
     }
 
     /* Derivative Graphs */
@@ -1356,22 +1803,28 @@ public:
      * Return an undirected version of this graph.
      *
      * @return undirected graph.
+     *
+     * This method is deprecated, use GraphTools::toUndirected instead.
      */
-    Graph toUndirected() const;
+    Graph TLX_DEPRECATED(toUndirected() const);
 
     /**
      * Return an unweighted version of this graph.
      *
      * @return unweighted graph.
+     *
+     * This method is deprecated, use GraphTools::toUnweighted instead.
      */
-    Graph toUnweighted() const;
+    Graph TLX_DEPRECATED(toUnweighted() const);
 
     /**
      * Return the transpose of this graph. The graph must be directed.
      *
      * @return transpose of the graph.
+     *
+     * This method is deprecated, use GraphTools::transpose instead.
      */
-    Graph transpose() const;
+    Graph TLX_DEPRECATED(transpose() const);
 
     /* NODE ITERATORS */
 
@@ -1381,7 +1834,8 @@ public:
      *
      * @param handle Takes parameter <code>(node)</code>.
      */
-    template <typename L> void forNodes(L handle) const;
+    template <typename L>
+    void forNodes(L handle) const;
 
     /**
      * Iterate randomly over all nodes of the graph and call @a handle (lambda
@@ -1389,7 +1843,8 @@ public:
      *
      * @param handle Takes parameter <code>(node)</code>.
      */
-    template <typename L> void parallelForNodes(L handle) const;
+    template <typename L>
+    void parallelForNodes(L handle) const;
 
     /** Iterate over all nodes of the graph and call @a handle (lambda
      * closure) as long as @a condition remains true. This allows for breaking
@@ -1407,7 +1862,8 @@ public:
      *
      * @param handle Takes parameter <code>(node)</code>.
      */
-    template <typename L> void forNodesInRandomOrder(L handle) const;
+    template <typename L>
+    void forNodesInRandomOrder(L handle) const;
 
     /**
      * Iterate in parallel over all nodes of the graph and call handler
@@ -1416,7 +1872,8 @@ public:
      *
      * @param handle Takes parameter <code>(node)</code>.
      */
-    template <typename L> void balancedParallelForNodes(L handle) const;
+    template <typename L>
+    void balancedParallelForNodes(L handle) const;
 
     /**
      * Iterate over all undirected pairs of nodes and call @a handle (lambda
@@ -1424,7 +1881,8 @@ public:
      *
      * @param handle Takes parameters <code>(node, node)</code>.
      */
-    template <typename L> void forNodePairs(L handle) const;
+    template <typename L>
+    void forNodePairs(L handle) const;
 
     /**
      * Iterate over all undirected pairs of nodes in parallel and call @a
@@ -1432,7 +1890,8 @@ public:
      *
      * @param handle Takes parameters <code>(node, node)</code>.
      */
-    template <typename L> void parallelForNodePairs(L handle) const;
+    template <typename L>
+    void parallelForNodePairs(L handle) const;
 
     /* EDGE ITERATORS */
 
@@ -1444,7 +1903,8 @@ public:
      * node, edgweight)</code>, <code>(node, node, edgeid)</code> or
      * <code>(node, node, edgeweight, edgeid)</code>.
      */
-    template <typename L> void forEdges(L handle) const;
+    template <typename L>
+    void forEdges(L handle) const;
 
     /**
      * Iterate in parallel over all edges of the const graph and call @a
@@ -1454,7 +1914,8 @@ public:
      * <code>(node, node, edgweight)</code>, <code>(node, node, edgeid)</code>
      * or <code>(node, node, edgeweight, edgeid)</code>.
      */
-    template <typename L> void parallelForEdges(L handle) const;
+    template <typename L>
+    void parallelForEdges(L handle) const;
 
     /* NEIGHBORHOOD ITERATORS */
 
@@ -1469,7 +1930,8 @@ public:
      * A node is its own neighbor if there is a self-loop.
      *
      */
-    template <typename L> void forNeighborsOf(node u, L handle) const;
+    template <typename L>
+    void forNeighborsOf(node u, L handle) const;
 
     /**
      * Iterate over all incident edges of a node and call @a handle (lamdba
@@ -1483,13 +1945,15 @@ public:
      * @note For undirected graphs all edges incident to @a u are also
      * outgoing edges.
      */
-    template <typename L> void forEdgesOf(node u, L handle) const;
+    template <typename L>
+    void forEdgesOf(node u, L handle) const;
 
     /**
      * Iterate over all neighbors of a node and call handler (lamdba closure).
      * For directed graphs only incoming edges from u are considered.
      */
-    template <typename L> void forInNeighborsOf(node u, L handle) const;
+    template <typename L>
+    void forInNeighborsOf(node u, L handle) const;
 
     /**
      * Iterate over all incoming edges of a node and call handler (lamdba
@@ -1499,7 +1963,8 @@ public:
      *
      * Handle takes parameters (u, v) or (u, v, w) where w is the edge weight.
      */
-    template <typename L> void forInEdgesOf(node u, L handle) const;
+    template <typename L>
+    void forInEdgesOf(node u, L handle) const;
 
     /* REDUCTION ITERATORS */
 
@@ -1507,13 +1972,15 @@ public:
      * Iterate in parallel over all nodes and sum (reduce +) the values
      * returned by the handler
      */
-    template <typename L> double parallelSumForNodes(L handle) const;
+    template <typename L>
+    double parallelSumForNodes(L handle) const;
 
     /**
      * Iterate in parallel over all edges and sum (reduce +) the values
      * returned by the handler
      */
-    template <typename L> double parallelSumForEdges(L handle) const;
+    template <typename L>
+    double parallelSumForEdges(L handle) const;
 
     /* GRAPH SEARCHES */
 
@@ -1523,12 +1990,16 @@ public:
      *
      * @param r Node.
      * @param handle Takes parameter <code>(node)</code>.
+     *
+     * These methods are deprecated, use Traversal::BFSfrom instead.
      */
-    template <typename L> void BFSfrom(node r, L handle) const;
     template <typename L>
-    void BFSfrom(const std::vector<node> &startNodes, L handle) const;
+    void TLX_DEPRECATED(BFSfrom(node r, L handle) const);
+    template <typename L>
+    void TLX_DEPRECATED(BFSfrom(const std::vector<node> &startNodes, L handle) const);
 
-    template <typename L> void BFSEdgesFrom(node r, L handle) const;
+    template <typename L>
+    void TLX_DEPRECATED(BFSEdgesFrom(node r, L handle) const);
 
     /**
      * Iterate over nodes in depth-first search order starting from r until
@@ -1536,15 +2007,20 @@ public:
      *
      * @param r Node.
      * @param handle Takes parameter <code>(node)</code>.
+     *
+     * These methods are deprecated, use Traversal::DFSfrom instead.
      */
-    template <typename L> void DFSfrom(node r, L handle) const;
+    template <typename L>
+    void TLX_DEPRECATED(DFSfrom(node r, L handle) const);
 
-    template <typename L> void DFSEdgesFrom(node r, L handle) const;
+    template <typename L>
+    void TLX_DEPRECATED(DFSEdgesFrom(node r, L handle) const);
 };
 
 /* NODE ITERATORS */
 
-template <typename L> void Graph::forNodes(L handle) const {
+template <typename L>
+void Graph::forNodes(L handle) const {
     for (node v = 0; v < z; ++v) {
         if (exists[v]) {
             handle(v);
@@ -1552,7 +2028,8 @@ template <typename L> void Graph::forNodes(L handle) const {
     }
 }
 
-template <typename L> void Graph::parallelForNodes(L handle) const {
+template <typename L>
+void Graph::parallelForNodes(L handle) const {
 #pragma omp parallel for
     for (omp_index v = 0; v < static_cast<omp_index>(z); ++v) {
         if (exists[v]) {
@@ -1573,15 +2050,19 @@ void Graph::forNodesWhile(C condition, L handle) const {
     }
 }
 
-template <typename L> void Graph::forNodesInRandomOrder(L handle) const {
-    std::vector<node> randVec = nodes();
+template <typename L>
+void Graph::forNodesInRandomOrder(L handle) const {
+    std::vector<node> randVec;
+    randVec.reserve(numberOfNodes());
+    forNodes([&](node u) { randVec.push_back(u); });
     std::shuffle(randVec.begin(), randVec.end(), Aux::Random::getURNG());
     for (node v : randVec) {
         handle(v);
     }
 }
 
-template <typename L> void Graph::balancedParallelForNodes(L handle) const {
+template <typename L>
+void Graph::balancedParallelForNodes(L handle) const {
 // TODO: define min block size (and test it!)
 #pragma omp parallel for schedule(guided)
     for (omp_index v = 0; v < static_cast<omp_index>(z); ++v) {
@@ -1591,7 +2072,8 @@ template <typename L> void Graph::balancedParallelForNodes(L handle) const {
     }
 }
 
-template <typename L> void Graph::forNodePairs(L handle) const {
+template <typename L>
+void Graph::forNodePairs(L handle) const {
     for (node u = 0; u < z; ++u) {
         if (exists[u]) {
             for (node v = u + 1; v < z; ++v) {
@@ -1603,7 +2085,8 @@ template <typename L> void Graph::forNodePairs(L handle) const {
     }
 }
 
-template <typename L> void Graph::parallelForNodePairs(L handle) const {
+template <typename L>
+void Graph::parallelForNodePairs(L handle) const {
 #pragma omp parallel for schedule(guided)
     for (omp_index u = 0; u < static_cast<omp_index>(z); ++u) {
         if (exists[u]) {
@@ -1641,7 +2124,8 @@ inline edgeweight Graph::getInEdgeWeight(node u, index i) const {
 }
 
 // implementation for weighted == false
-template <> inline edgeweight Graph::getInEdgeWeight<false>(node, index) const {
+template <>
+inline edgeweight Graph::getInEdgeWeight<false>(node, index) const {
     return defaultEdgeWeight;
 }
 
@@ -1652,7 +2136,8 @@ inline edgeid Graph::getOutEdgeId(node u, index i) const {
 }
 
 // implementation for hasEdgeIds == false
-template <> inline edgeid Graph::getOutEdgeId<false>(node, index) const {
+template <>
+inline edgeid Graph::getOutEdgeId<false>(node, index) const {
     return 0;
 }
 
@@ -1663,7 +2148,8 @@ inline edgeid Graph::getInEdgeId(node u, index i) const {
 }
 
 // implementation for hasEdgeIds == false
-template <> inline edgeid Graph::getInEdgeId<false>(node, index) const {
+template <>
+inline edgeid Graph::getInEdgeId<false>(node, index) const {
     return 0;
 }
 
@@ -1674,12 +2160,12 @@ inline bool Graph::useEdgeInIteration(node /* u */, node v) const {
 }
 
 // implementation for graphIsDirected == false
-template <> inline bool Graph::useEdgeInIteration<false>(node u, node v) const {
+template <>
+inline bool Graph::useEdgeInIteration<false>(node u, node v) const {
     return u >= v;
 }
 
-template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-          typename L>
+template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void Graph::forOutEdgesOfImpl(node u, L handle) const {
     for (index i = 0; i < outEdges[u].size(); ++i) {
         node v = outEdges[u][i];
@@ -1691,8 +2177,7 @@ inline void Graph::forOutEdgesOfImpl(node u, L handle) const {
     }
 }
 
-template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-          typename L>
+template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void Graph::forInEdgesOfImpl(node u, L handle) const {
     if (graphIsDirected) {
         for (index i = 0; i < inEdges[u].size(); i++) {
@@ -1715,27 +2200,22 @@ inline void Graph::forInEdgesOfImpl(node u, L handle) const {
     }
 }
 
-template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-          typename L>
+template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void Graph::forEdgeImpl(L handle) const {
     for (node u = 0; u < z; ++u) {
-        forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(
-            u, handle);
+        forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(u, handle);
     }
 }
 
-template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-          typename L>
+template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void Graph::parallelForEdgesImpl(L handle) const {
 #pragma omp parallel for schedule(guided)
     for (omp_index u = 0; u < static_cast<omp_index>(z); ++u) {
-        forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(
-            u, handle);
+        forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(u, handle);
     }
 }
 
-template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds,
-          typename L>
+template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline double Graph::parallelSumForEdgesImpl(L handle) const {
     double sum = 0.0;
 
@@ -1747,8 +2227,7 @@ inline double Graph::parallelSumForEdgesImpl(L handle) const {
             // undirected, do not iterate over edges twice
             // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
             if (useEdgeInIteration<graphIsDirected>(u, v)) {
-                sum += edgeLambda<L>(handle, u, v,
-                                     getOutEdgeWeight<hasWeights>(u, i),
+                sum += edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
                                      getOutEdgeId<graphHasEdgeIds>(u, i));
             }
         }
@@ -1757,7 +2236,8 @@ inline double Graph::parallelSumForEdgesImpl(L handle) const {
     return sum;
 }
 
-template <typename L> void Graph::forEdges(L handle) const {
+template <typename L>
+void Graph::forEdges(L handle) const {
     switch (weighted + 2 * directed + 4 * edgesIndexed) {
     case 0: // unweighted, undirected, no edgeIds
         forEdgeImpl<false, false, false, L>(handle);
@@ -1793,7 +2273,8 @@ template <typename L> void Graph::forEdges(L handle) const {
     }
 }
 
-template <typename L> void Graph::parallelForEdges(L handle) const {
+template <typename L>
+void Graph::parallelForEdges(L handle) const {
     switch (weighted + 2 * directed + 4 * edgesIndexed) {
     case 0: // unweighted, undirected, no edgeIds
         parallelForEdgesImpl<false, false, false, L>(handle);
@@ -1831,11 +2312,13 @@ template <typename L> void Graph::parallelForEdges(L handle) const {
 
 /* NEIGHBORHOOD ITERATORS */
 
-template <typename L> void Graph::forNeighborsOf(node u, L handle) const {
+template <typename L>
+void Graph::forNeighborsOf(node u, L handle) const {
     forEdgesOf(u, handle);
 }
 
-template <typename L> void Graph::forEdgesOf(node u, L handle) const {
+template <typename L>
+void Graph::forEdgesOf(node u, L handle) const {
     switch (weighted + 2 * edgesIndexed) {
     case 0: // not weighted, no edge ids
         forOutEdgesOfImpl<true, false, false, L>(u, handle);
@@ -1855,11 +2338,13 @@ template <typename L> void Graph::forEdgesOf(node u, L handle) const {
     }
 }
 
-template <typename L> void Graph::forInNeighborsOf(node u, L handle) const {
+template <typename L>
+void Graph::forInNeighborsOf(node u, L handle) const {
     forInEdgesOf(u, handle);
 }
 
-template <typename L> void Graph::forInEdgesOf(node u, L handle) const {
+template <typename L>
+void Graph::forInEdgesOf(node u, L handle) const {
     switch (weighted + 2 * directed + 4 * edgesIndexed) {
     case 0: // unweighted, undirected, no edge ids
         forInEdgesOfImpl<false, false, false, L>(u, handle);
@@ -1897,7 +2382,8 @@ template <typename L> void Graph::forInEdgesOf(node u, L handle) const {
 
 /* REDUCTION ITERATORS */
 
-template <typename L> double Graph::parallelSumForNodes(L handle) const {
+template <typename L>
+double Graph::parallelSumForNodes(L handle) const {
     double sum = 0.0;
 
 #pragma omp parallel for reduction(+ : sum)
@@ -1910,7 +2396,8 @@ template <typename L> double Graph::parallelSumForNodes(L handle) const {
     return sum;
 }
 
-template <typename L> double Graph::parallelSumForEdges(L handle) const {
+template <typename L>
+double Graph::parallelSumForEdges(L handle) const {
     double sum = 0.0;
 
     switch (weighted + 2 * directed + 4 * edgesIndexed) {
@@ -1952,13 +2439,16 @@ template <typename L> double Graph::parallelSumForEdges(L handle) const {
 
 /* GRAPH SEARCHES */
 
-template <typename L> void Graph::BFSfrom(node r, L handle) const {
+template <typename L>
+void Graph::BFSfrom(node r, L handle) const {
+    WARN("Graph::BFSfrom is deprecated, use Traversal::BFSfrom instead.");
     std::vector<node> startNodes(1, r);
     BFSfrom(startNodes, handle);
 }
 
 template <typename L>
 void Graph::BFSfrom(const std::vector<node> &startNodes, L handle) const {
+    WARN("Graph::BFSfrom is deprecated, use Traversal::BFSfrom instead.");
     std::vector<bool> marked(z);
     std::queue<node> q, qNext;
     count dist = 0;
@@ -1985,7 +2475,9 @@ void Graph::BFSfrom(const std::vector<node> &startNodes, L handle) const {
     } while (!q.empty());
 }
 
-template <typename L> void Graph::BFSEdgesFrom(node r, L handle) const {
+template <typename L>
+void Graph::BFSEdgesFrom(node r, L handle) const {
+    WARN("Graph::BFSEdgesFrom is deprecated, use Traversal::BFSEdgesFrom instead.");
     std::vector<bool> marked(z);
     std::queue<node> q;
     q.push(r); // enqueue root
@@ -2004,7 +2496,9 @@ template <typename L> void Graph::BFSEdgesFrom(node r, L handle) const {
     } while (!q.empty());
 }
 
-template <typename L> void Graph::DFSfrom(node r, L handle) const {
+template <typename L>
+void Graph::DFSfrom(node r, L handle) const {
+    WARN("Graph::DFSfrom is deprecated, use Traversal::DFSfrom instead.");
     std::vector<bool> marked(z);
     std::stack<node> s;
     s.push(r); // enqueue root
@@ -2023,7 +2517,9 @@ template <typename L> void Graph::DFSfrom(node r, L handle) const {
     } while (!s.empty());
 }
 
-template <typename L> void Graph::DFSEdgesFrom(node r, L handle) const {
+template <typename L>
+void Graph::DFSEdgesFrom(node r, L handle) const {
+    WARN("Graph::DFSEdgesFrom is deprecated, use Traversal::DFSEdgesFrom instead.");
     std::vector<bool> marked(z);
     std::stack<node> s;
     s.push(r); // enqueue root
@@ -2076,7 +2572,6 @@ std::pair<count, count> Graph::removeAdjacentEdges(node u, Condition condition, 
 
     return {removedEdges, removedSelfLoops};
 }
-
 
 } /* namespace NetworKit */
 

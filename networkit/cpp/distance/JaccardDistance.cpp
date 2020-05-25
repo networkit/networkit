@@ -5,9 +5,8 @@
  *      Author: Michael Hamann, Gerd Lindner
  */
 
-#include <networkit/auxiliary/Random.hpp>
 #include <networkit/auxiliary/Log.hpp>
-
+#include <networkit/auxiliary/Random.hpp>
 #include <networkit/distance/JaccardDistance.hpp>
 
 namespace NetworKit {
@@ -16,20 +15,20 @@ JaccardDistance::JaccardDistance(const Graph& G, const std::vector<count>& trian
 }
 
 void JaccardDistance::preprocess() {
-    if (!G.hasEdgeIds()) {
+    if (!G->hasEdgeIds()) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
-    jDistance = std::vector< double>(G.upperEdgeIdBound());
+    jDistance = std::vector<double>(G->upperEdgeIdBound());
 
-    G.parallelForEdges([&](node u, node v, edgeid eid) {
-        jDistance[eid] = getJaccardDistance(G.degree(u), G.degree(v), triangles[eid]);
+    G->parallelForEdges([&](node u, node v, edgeid eid) {
+        jDistance[eid] = getJaccardDistance(G->degree(u), G->degree(v), triangles[eid]);
     });
 }
 
 double JaccardDistance::distance(node u, node v) {
-    edgeid eid = G.edgeId(u, v);
-    return getJaccardDistance(G.degree(u), G.degree(v), triangles[eid]);
+    edgeid eid = G->edgeId(u, v);
+    return getJaccardDistance(G->degree(u), G->degree(v), triangles[eid]);
 }
 
 std::vector<double> JaccardDistance::getEdgeScores() {

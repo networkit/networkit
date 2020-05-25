@@ -1,5 +1,5 @@
 /*
- * Dijkstra.h
+ * Dijkstra.hpp
  *
  *  Created on: Jul 23, 2013
  *      Author: Henning, Christian Staudt
@@ -27,9 +27,9 @@ public:
      * @param G The graph.
      * @param source The source node.
      * @param storePaths Paths are reconstructable and the number of paths is
-     *		  stored.
+     *        stored.
      * @param storeNodesSortedByDistance Store a vector of nodes ordered in
-     *		  increasing distance from the source.
+     *        increasing distance from the source.
      * @param target The target node.
      */
     Dijkstra(const Graph &G, node source, bool storePaths = true,

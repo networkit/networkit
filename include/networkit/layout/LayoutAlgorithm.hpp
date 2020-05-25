@@ -1,5 +1,5 @@
 /*
- * LayoutAlgorithm.h
+ * LayoutAlgorithm.hpp
  *
  *  Created on: May 20 2015
  *      Author: Christian Staudt
@@ -29,14 +29,14 @@ public:
 
     virtual void run() = 0;
 
-    virtual std::vector<std::pair<double, double> > getLayout() {
+    virtual std::vector<std::pair<double, double>> getLayout() {
         return layout;
     };
 
 protected:
 
-    const Graph& G;
-    std::vector<std::pair<double, double> > layout;
+    const Graph* G;
+    std::vector<std::pair<double, double>> layout;
 
 };
 

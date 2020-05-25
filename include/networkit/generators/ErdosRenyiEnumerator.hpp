@@ -1,5 +1,5 @@
 /*
- * ErdosRenyiGenerator.h
+ * ErdosRenyiGenerator.hpp
  *
  *  Created on: 07.08.2018
  *      Author: Manuel Penschuck (networkit@manuel.jetzt)
@@ -37,7 +37,7 @@ namespace NetworKit {
  * variant.
  */
 template <bool UseFixedPoint = true>
-class ErdosRenyiEnumerator {
+class ErdosRenyiEnumerator final {
     //! this type is used only internally for fixed-point arithmetic
     using integral_t = unsigned long long;
 
@@ -53,7 +53,7 @@ public:
      * For an @b undirected graph, all node pairs (u, v) with 1 < v < u < n
      * are considered. Hence the expected number of edges is n*(n-1)/2*prob
      *
-     * @param n			Number of nodes to generate
+     * @param n         Number of nodes to generate
      * @param prob      Probability that an edge exists
      * @param directed  Selects an directed graph
      */

@@ -42,13 +42,13 @@ TEST_F(SpanningGTest, testSpanningForest) {
         std::string filename = "input/" + graphname + ".graph";
         Graph G = reader.read(filename);
         SpanningForest msf(G);
-        Graph T = msf.generate();
+        msf.run();
+        Graph T = msf.getForest();
 
         INFO("tree / graph edges: ", T.numberOfEdges(), " / ", G.numberOfEdges());
 
         // check that each node has an edge in the spanning tree (if it had one before)
         T.forNodes([&](node u) {
-//			INFO("tree/graph node degree: ", T.degree(u), " / ", G.degree(u));
             EXPECT_TRUE(T.degree(u) > 0 || G.degree(u) == 0);
         });
     }

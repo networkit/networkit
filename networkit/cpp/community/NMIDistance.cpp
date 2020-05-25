@@ -5,16 +5,14 @@
  *      Author: cls
  */
 
-#include <networkit/community/NMIDistance.hpp>
-
-#include <networkit/community/DynamicNMIDistance.hpp>
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/MissingMath.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
-#include <networkit/auxiliary/Log.hpp>
+#include <networkit/community/DynamicNMIDistance.hpp>
+#include <networkit/community/NMIDistance.hpp>
 #include <networkit/community/PartitionIntersection.hpp>
 
 namespace NetworKit {
-
 
 double NMIDistance::getDissimilarity(const Graph& G, const Partition& zeta, const Partition& eta) {
 
@@ -22,7 +20,6 @@ double NMIDistance::getDissimilarity(const Graph& G, const Partition& zeta, cons
 
     DEBUG("zeta=" , zeta.getVector());
     DEBUG("eta=" , eta.getVector());
-
 
     std::vector<count> size_zeta(zeta.upperBound(), 0), size_eta(eta.upperBound(), 0);
 
@@ -75,7 +72,7 @@ double NMIDistance::getDissimilarity(const Graph& G, const Partition& zeta, cons
 
 
     // calculate mutual information
-    //		 $MI(\zeta,\eta):=\sum_{C\in\zeta}\sum_{D\in\eta}\frac{|C\cap D|}{n}\cdot\log_{2}\left(\frac{|C\cap D|\cdot n}{|C|\cdot|D|}\right)$
+    // $MI(\zeta,\eta):=\sum_{C\in\zeta}\sum_{D\in\eta}\frac{|C\cap D|}{n}\cdot\log_{2}\left(\frac{|C\cap D|\cdot n}{|C|\cdot|D|}\right)$
     double MI = 0.0; // mutual information
     for (index O = 0; O < overlapSizes.size(); ++O) {
         if (overlapSizes[O] > 0) {

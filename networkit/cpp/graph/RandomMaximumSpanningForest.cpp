@@ -5,6 +5,7 @@
 #include <networkit/graph/RandomMaximumSpanningForest.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
@@ -17,7 +18,7 @@ void RandomMaximumSpanningForest::run() {
 
     Aux::SignalHandler handler;
 
-    msf = G.copyNodes();
+    msf = GraphTools::copyNodes(G);
 
     handler.assureRunning();
 

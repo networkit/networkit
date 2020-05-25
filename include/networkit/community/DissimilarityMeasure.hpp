@@ -1,19 +1,18 @@
 /*
- * DissimilarityMeasure.h
+ * DissimilarityMeasure.hpp
  *
  *  Created on: 19.01.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_COMMUNITY_DISSIMILARITY_MEASURE_HPP_
 #define NETWORKIT_COMMUNITY_DISSIMILARITY_MEASURE_HPP_
 
 #include <networkit/graph/Graph.hpp>
-#include <networkit/structures/Partition.hpp>
 #include <networkit/structures/Cover.hpp>
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
-
 
 /**
  * @ingroup community

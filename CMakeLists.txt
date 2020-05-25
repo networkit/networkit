@@ -14,6 +14,7 @@ option(NETWORKIT_MONOLITH "Build single library (and tests is requested; require
 option(NETWORKIT_NATIVE "Optimize for native architecture (often better performance)" OFF)
 option(NETWORKIT_WARNINGS "Issue more warnings" OFF)
 option(NETWORKIT_WARNINGS_AS_ERRORS "Treat warnings as errors (except deprecated)" OFF)
+option(NETWORKIT_CLANG_TIDY "Check code with clang-tidy" OFF)
 option(NETWORKIT_FLATINSTALL "Install into a flat directory structure (useful when building a Python package)" OFF)
 option(NETWORKIT_COVERAGE "Build with support for coverage" OFF)
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
@@ -21,6 +22,7 @@ set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Im
 set(NETWORKIT_WITH_SANITIZERS "" CACHE STRING "Uses sanitizers during the compilation")
 set(NETWORKIT_RELEASE_LOGGING "AUTO" CACHE STRING "Do not compile log messages at levels TRACE or DEBUG (AUTO|ON|OFF)")
 set(NETWORKIT_PYTHON_RPATH "" CACHE STRING "Build specific rpath references.")
+set(NETWORKIT_EXT_TLX "" CACHE STRING "Absolute path for external tlx-library. If not set, extlibs/tlx is used")
 
 set (NETWORKIT_CXX_STANDARD "11" CACHE STRING "CXX Version to compile with. Currently fixed to 11")
 
@@ -116,27 +118,47 @@ if (NETWORKIT_COVERAGE)
   set(NETWORKIT_LINK_FLAGS "${NETWORKIT_LINK_FLAGS} --coverage")
 endif()
 
-# FindOpenMP.cmake does not reliably find a user installed openmp library
-# Following section manually sets the required fields for clang-like compiler
-if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR
-	"${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-	find_library(LIBOMP_PATH NAMES omp HINTS "/usr/local/opt/libomp/include")
-	find_path(LIBOMP_INCLUDE NAMES omp.h HINTS "/usr/local/opt/libomp/include")
-	if(LIBOMP_PATH AND LIBOMP_INCLUDE)
-		if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-			set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I${LIBOMP_INCLUDE}" CACHE STRING "Manually set")
-		elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-			set(OpenMP_CXX_FLAGS "-fopenmp -I${LIBOMP_INCLUDE}" CACHE STRING "Manually set")
+# finding or creating OpenMP target. This is likely to fail for CMake Version < 3.12.
+find_package(OpenMP)
+
+# FindOpenMP.cmake does not reliably find a user installed openmp library for clang/llvm on
+# both Linux- and macOS-systems (even for CMake Version >= 3.12). The following section
+# manually sets the required fields for clang-like compiler.
+if(NOT OpenMP_FOUND)
+	if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+		# This will find default libomp-installations for homebrew/MacPorts 
+		find_library(LIBOMP_PATH NAMES omp PATHS "/usr/local/opt/libomp/lib" "/opt/local/lib/libomp")
+		find_path(LIBOMP_INCLUDE NAMES omp.h PATHS "/usr/local/opt/libomp/include" "/opt/local/include/libomp")
+		if(LIBOMP_PATH AND LIBOMP_INCLUDE)
+			set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I${LIBOMP_INCLUDE}" CACHE STRING "Manually set" FORCE)
 		endif()
-		set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "Manually set")
-		set(OpenMP_omp_LIBRARY "${LIBOMP_PATH}" CACHE STRING "Manually set")
-	else()
-		message(FATAL_ERROR "libomp was not found, but necessary to run NetworKit with AppleClang")
+	elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+		if(DEFINED ENV{CONDA_PREFIX})
+			find_library(LIBOMP_PATH NAMES omp HINTS "$ENV{CONDA_PREFIX}/lib" 
+				PATHS "/usr/lib" "/usr/lib64")
+			find_path(LIBOMP_INCLUDE NAMES omp.h HINTS "$ENV{CONDA_PREFIX}/include" 
+				PATHS "/usr/include")
+		else()
+			find_library(LIBOMP_PATH NAMES omp PATHS "/usr/lib" "/usr/lib64")
+			find_path(LIBOMP_INCLUDE NAMES omp.h PATHS "/usr/include")
+		endif()
+		if(LIBOMP_PATH AND LIBOMP_INCLUDE)
+			set(OpenMP_CXX_FLAGS "-fopenmp -I${LIBOMP_INCLUDE}" CACHE STRING "Manually set" FORCE)
+		endif()
 	endif()
+
+	# Set OpenMP-folders in case they are found with the aid of additional hints
+	if(LIBOMP_PATH AND LIBOMP_INCLUDE)
+		set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "Manually set" FORCE)
+		set(OpenMP_omp_LIBRARY "${LIBOMP_PATH}" CACHE STRING "Manually set" FORCE)
+	else()
+		message(FATAL_ERROR "libomp was not found, but necessary to run NetworKit with ${CMAKE_CXX_COMPILER_ID}")
+	endif()
+
+	# After setting basic OpenMP-folders, run find_package again to set everything. Also acts as a final sanity check.
+	find_package(OpenMP REQUIRED)
 endif()
 
-# finding or creating OpenMP target
-find_package(OpenMP REQUIRED)
 if(NOT TARGET OpenMP::OpenMP_CXX)
 	message("Creating custom OpenMP target for CMake Version < 3.12. Current CMake Version ${CMAKE_VERSION}")
 	find_package(Threads REQUIRED)
@@ -173,12 +195,19 @@ endif()
 
 ################################################################################
 # Use TLX as a CMake submodule
-if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/tlx/CMakeLists.txt")
-	add_subdirectory(extlibs/tlx)
+if(NOT NETWORKIT_EXT_TLX)
+	if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/tlx/CMakeLists.txt")
+		add_subdirectory(extlibs/tlx)
+	else()
+		message(FATAL_ERROR
+				"Missing TLX library in extlibs/tlx "
+				"Please run `git submodule update --init` to fetch the submodule.")
+	endif()
 else()
-	message(FATAL_ERROR
-			"Missing TLX library in extlibs/tlx "
-			"Please run `git submodule update --init` to fetch the submodule.")
+	add_library(tlx STATIC IMPORTED)
+	set_target_properties(tlx PROPERTIES
+			IMPORTED_LOCATION "${NETWORKIT_EXT_TLX}/lib/libtlx.a"
+			INTERFACE_INCLUDE_DIRECTORIES "${NETWORKIT_EXT_TLX}/include/")
 endif()
 
 ################################################################################
@@ -199,9 +228,19 @@ if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 			LIBRARY DESTINATION ${NETWORKIT_LIB_DEST}
 			ARCHIVE DESTINATION ${NETWORKIT_LIB_DEST})
 
-	target_link_libraries(networkit PRIVATE tlx OpenMP::OpenMP_CXX)
+	target_link_libraries(networkit PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
 	target_include_directories(networkit BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 	target_include_directories(networkit PUBLIC "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
+endif()
+
+################################################################################
+# ENABLE CLANG-TIDY
+if (NETWORKIT_CLANG_TIDY)
+	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+		set_target_properties(networkit PROPERTIES CXX_CLANG_TIDY clang-tidy)
+	else()
+		message(FATAL_ERROR "clang-tidy is only supported when compiling with clang")
+	endif()
 endif()
 
 if(NETWORKIT_PYTHON)
@@ -244,7 +283,7 @@ if(NETWORKIT_PYTHON)
 		endif()
 	endif()
 
-	target_link_libraries(_NetworKit PRIVATE tlx OpenMP::OpenMP_CXX)
+	target_link_libraries(_NetworKit PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
 
 	install(TARGETS _NetworKit
 			LIBRARY DESTINATION ${NETWORKIT_LIB_DEST})
@@ -272,7 +311,7 @@ function(networkit_add_module modname)
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
 
-		target_link_libraries(${MODULE_TARGET} PRIVATE tlx OpenMP::OpenMP_CXX)
+		target_link_libraries(${MODULE_TARGET} PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
 		target_include_directories(${MODULE_TARGET} BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 		target_include_directories(${MODULE_TARGET} PUBLIC "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
 
@@ -561,9 +600,14 @@ endif()
 # Subdirectories
 add_subdirectory(networkit/cpp)
 
-# Install header files
+# Install NetworKit header files
 set(NETWORKIT_LIBRARIES networkit)
 install(DIRECTORY include/networkit
+	DESTINATION ${NETWORKIT_INSTALL_INCLUDE_DIR}
+	FILES_MATCHING PATTERN "*.hpp")
+
+# Install ttmath header files
+install(DIRECTORY extlibs/ttmath/ttmath
 	DESTINATION ${NETWORKIT_INSTALL_INCLUDE_DIR}
 	FILES_MATCHING PATTERN "*.hpp")
 

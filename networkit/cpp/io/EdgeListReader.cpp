@@ -5,20 +5,17 @@
  *      Author: cls
  */
 
-#include <networkit/io/EdgeListReader.hpp>
-#include <networkit/auxiliary/Log.hpp>
-
 #include <fstream>
 #include <sstream>
 
 #include <networkit/auxiliary/Enforce.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/io/EdgeListReader.hpp>
 
 namespace NetworKit {
 
 EdgeListReader::EdgeListReader(const char separator, const node firstNode, const std::string commentPrefix, const bool continuous, const bool directed) :
-    separator(separator), commentPrefix(commentPrefix), firstNode(firstNode), continuous(continuous), mapNodeIds(), directed(directed) {
-//	this->mapNodeIds;i
-}
+    separator(separator), commentPrefix(commentPrefix), firstNode(firstNode), continuous(continuous), mapNodeIds(), directed(directed) {}
 
 Graph EdgeListReader::read(const std::string& path) {
     this->mapNodeIds.clear();
@@ -111,9 +108,7 @@ Graph EdgeListReader::readContinuous(const std::string& path) {
         if(*line.rbegin() == '\r') line.pop_back();
         ++i;
         if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
-            // TRACE("ignoring comment: " , line);
         } else {
-            // TRACE("edge line: " , line);
             std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
             if (split.size() == 2) {
                 node u = std::stoul(split[0]) - this->firstNode;
@@ -209,9 +204,7 @@ Graph EdgeListReader::readNonContinuous(const std::string& path) {
         if(*line.rbegin() == '\r') line.pop_back();
         ++i;
         if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
-            // TRACE("ignoring comment: " , line);
         } else {
-            // TRACE("edge line: " , line);
             std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
             if (split.size() == 2) {
                 node u = this->mapNodeIds[split[0]];

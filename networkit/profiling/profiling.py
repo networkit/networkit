@@ -13,12 +13,18 @@ import configparser
 from . import multiprocessing_helper
 from . import stat
 from . import plot
+from ..support import MissingDependencyError
 
-from IPython.core.display import *
 import collections
 import math
 import fnmatch
 import random
+try:
+	from IPython.core.display import *
+except ImportError:
+	have_ipython = False
+else:
+	have_ipython = True
 
 # colors
 colors = {
@@ -429,6 +435,8 @@ class Profile:
 			color: mainly used color of given style (RGB values in [0,1])
 			parallel: run some additional parts of the generation in parallel (experimental)
 		"""
+		if not have_ipython:
+			raise MissingDependencyError("IPython")
 		try:
 			__IPYTHON__
 		except:
@@ -730,7 +738,7 @@ class Profile:
 		self.__properties["Name"] = self.__G.getName()
 		self.__properties["Nodes"] = self.__G.numberOfNodes()
 		self.__properties["Edges"] = self.__G.numberOfEdges()
-		self.__properties["Density"] = self.__G.density()
+		self.__properties["Density"] = kit.graphtools.density(self.__G)
 		self.__properties["Directed"] = self.__G.isDirected()
 		self.__properties["Weighted"] = self.__G.isWeighted()
 		self.__properties["Self Loops"] = self.__G.numberOfSelfLoops()

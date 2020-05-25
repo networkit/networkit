@@ -10,9 +10,7 @@ import os
 import csv
 import fnmatch
 
-
-
-from networkit import graph, generators, components
+import networkit as nk
 
 def extractLargestComponent(G):
 	"""
@@ -28,14 +26,9 @@ def extractLargestComponent(G):
 		Subgraph of largest component, preserving node ids of orignal graph.
 	"""
 
-	cc = components.ConnectedComponents(G)
-	cc.run()
-	cSizes = cc.getComponentSizes()
-	(largestCompo, size) = max(cSizes.items(), key=operator.itemgetter(1))
-	logging.info("extracting component {0} containing {1} nodes".format(largestCompo, size))
-	compoNodes = [v for v in G.nodes() if cc.componentOfNode(v) is largestCompo]
-	C = G.subgraphFromNodes(compoNodes)
-	return C
+	from warnings import warn
+	warn("This function is deprecated, use extractLargestConnectedComponent in the ConnectedComponents module instead.")
+	return nk.components.extractLargestConnectedComponent(G)
 
 
 def batch(graphDir, match, format, function, outPath, header=None):
@@ -58,7 +51,7 @@ def batch(graphDir, match, format, function, outPath, header=None):
 					print("processing {0}".format(filename))
 					graphPath = os.path.join(root, filename)
 					timer = stopwatch.Timer()
-					G = graphio.readGraph(graphPath)
+					G = nk.graphio.readGraph(graphPath)
 					timer.stop()
 					result = function(G)
 					if type(result) is tuple:
@@ -69,16 +62,6 @@ def batch(graphDir, match, format, function, outPath, header=None):
 						row = [result]
 					row = [filename, timer.elapsed] + list(row)
 					writer.writerow(row)
-
-
-# TODO: move this to testing module
-
-class TestWorkflows(unittest.TestCase):
-
-	def testExtractLargestComponent(self):
-		G = generators.DorogovtsevMendesGenerator(100).generate()
-		C = extractLargestComponent(G)
-		self.assertEqual(C.size(), G.size())
 
 if __name__ == '__main__':
     unittest.main()

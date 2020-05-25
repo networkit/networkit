@@ -1,5 +1,5 @@
 /*
- * DynamicGenerator.h
+ * DynamicGraphSpurce.hpp
  *
  *  Created on: 03.04.2013
  *      Author: cls
@@ -21,10 +21,10 @@ class DynamicGraphSource {
 
 protected:
 
-    GraphEventProxy* Gproxy;		//!< receives events produced by the generator and forwards them
+    GraphEventProxy* Gproxy; //!< receives events produced by the generator and forwards them
     Graph* G;
-    bool graphSet;			//!< true if newGraph has been called and graph and proxy instances are properly set
-    bool graphInitialized;	//!< true if initializeGraph has been called and graph has been properly initialized
+    bool graphSet; //!< true if newGraph has been called and graph and proxy instances are properly set
+    bool graphInitialized; //!< true if initializeGraph has been called and graph has been properly initialized
 
 public:
 
@@ -54,20 +54,20 @@ public:
 
     /*
      * Continue generating while function does not return false.
-     * @param[in]	cont	generator continues when this function returns true
+     * @param[in] cont generator continues when this function returns true
      */
     virtual void generateWhile(std::function<bool(void)> cont);
 
     /**
      * Continue generating until the number of nodes reaches this upper limit.
-     * @param[in]	n	number of nodes
+     * @param[in] n  umber of nodes
      */
     virtual void generateNodes(count n);
 
 
     /**
      * Continue generating until the number of edges reaches this upper limit.
-     * @param[in]	m	number of edges
+     * @param[in] m  umber of edges
      */
     virtual void generateEdges(count m);
 

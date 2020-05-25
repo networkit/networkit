@@ -38,6 +38,7 @@ build/
 /build*
 /.build*
 lib/
+lib64/
 include/tlx
 
 ### IDE

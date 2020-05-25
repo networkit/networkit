@@ -10,7 +10,7 @@
 namespace NetworKit {
 
     DynConnectedComponents::DynConnectedComponents(const Graph& G) :
-    G(G) {
+    G(&G) {
         if (G.isDirected()) {
             throw std::runtime_error("Error, connected components of directed graphs cannot be computed, use StronglyConnectedComponents instead.");
         }
@@ -20,8 +20,8 @@ namespace NetworKit {
     void DynConnectedComponents::init() {
         edgesMap.clear();
         compSize.clear();
-        components.assign(G.upperNodeIdBound(), none);
-        tmpDistances.assign(G.upperNodeIdBound(), none);
+        components.assign(G->upperNodeIdBound(), none);
+        tmpDistances.assign(G->upperNodeIdBound(), none);
         indexEdges();
         isTree.assign(edgesMap.size(), false);
         hasRun = false;
@@ -33,7 +33,7 @@ namespace NetworKit {
         std::queue<node> q;
 
         // Perform breadth-first searches
-        G.forNodes([&](node u) {
+        G->forNodes([&](node u) {
             if (components[u] == none) {
                 index c = compSize.size();
                 q.push(u);
@@ -43,7 +43,7 @@ namespace NetworKit {
                 do {
                     node u = q.front();
                     q.pop();
-                    G.forNeighborsOf(u, [&](node v) {
+                    G->forNeighborsOf(u, [&](node v) {
                         if (components[v] == none) {
                             q.push(v);
                             components[v] = c;
@@ -63,7 +63,7 @@ namespace NetworKit {
 
     void DynConnectedComponents::indexEdges() {
         edgeid eid = 0;
-        G.forEdges([&](node u, node v) {
+        G->forEdges([&](node u, node v) {
             if (edgesMap.find(makePair(u, v)) == edgesMap.end()) {
                 insertEdgeIntoMap(u, v, eid);
                 ++eid;
@@ -132,7 +132,7 @@ namespace NetworKit {
 
         // In the other case, we can merge the two components in an undirected
         // graph merge components
-        G.parallelForNodes([&](node w) {
+        G->parallelForNodes([&](node w) {
             if (components[w] == maxComp) {
                 components[w] = minComp;
             }
@@ -182,7 +182,7 @@ namespace NetworKit {
             count d = tmpDistances[s] + 1;
 
             // Enqueue not visited neighbors
-            G.forNeighborsOf(s, [&](node w) {
+            G->forNeighborsOf(s, [&](node w) {
                 if (!connected) {
                     if (tmpDistances[w] == none) {
                         tmpDistances[w] = d;
@@ -229,7 +229,7 @@ namespace NetworKit {
             q.pop();
 
             bool nextEdgeFound = false;
-            G.forNeighborsOf(s, [&](node w) {
+            G->forNeighborsOf(s, [&](node w) {
                 if (!nextEdgeFound) {
 
                     if (w == u) {
@@ -282,7 +282,7 @@ namespace NetworKit {
             }
         }
 
-        G.forNodes([&](node u) {
+        G->forNodes([&](node u) {
             result[compIndex.find(components[u])->second].push_back(u);
         });
 

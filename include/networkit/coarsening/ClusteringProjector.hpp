@@ -1,8 +1,8 @@
 /*
- * ClusteringProjector.h
+ * ClusteringProjector.hpp
  *
  *  Created on: 07.01.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
 
 #ifndef NETWORKIT_COARSENING_CLUSTERING_PROJECTOR_HPP_
@@ -19,22 +19,6 @@ namespace NetworKit {
 class ClusteringProjector {
 
 public:
-
-
-    /**
-     * DEPRECATED
-     *
-     * Given
-     * 		@param[in]	Gcoarse
-     * 		@param[in] 	Gfine
-     * 		@param[in]	fineToCoarse
-     * 		@param[in]	zetaCoarse	a clustering of the coarse graph
-     *
-     * 	, project the clustering back to the fine graph to create a clustering of the fine graph.
-     * 		@param[out] 			a clustering of the fine graph
-     **/
-    //virtual Partition projectBack(Graph& Gcoarse, Graph& Gfine, std::vector<node>& fineToCoarse,	Partition& zetaCoarse);
-
 
     /**
      * Given

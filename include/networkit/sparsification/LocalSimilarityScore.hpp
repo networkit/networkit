@@ -1,5 +1,5 @@
 /*
- * LocalSimilarityScore.h
+ * LocalSimilarityScore.hpp
  *
  *  Created on: 26.07.2014
  *      Author: Gerd Lindner
@@ -47,17 +47,17 @@ struct greater {
 /**
  * Implementation of the Local Sparsification Algorithm by Sataluri et al.
  */
-class LocalSimilarityScore : public EdgeScore<double> {
+class LocalSimilarityScore final : public EdgeScore<double> {
 
 public:
 
     LocalSimilarityScore(const Graph& G, const std::vector<count>& triangles);
-    virtual double score(edgeid eid) override;
-    virtual double score(node u, node v) override;
-    virtual void run() override;
+    double score(edgeid eid) override;
+    double score(node u, node v) override;
+    void run() override;
 
 private:
-    const std::vector<count>& triangles;
+    const std::vector<count>* triangles;
 };
 
 }

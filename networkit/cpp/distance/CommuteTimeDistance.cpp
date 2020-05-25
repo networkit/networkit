@@ -2,24 +2,20 @@
  * CommuteTimeDistance.cpp
  *
  *  Created on: 29.07.2015
- *      Author: henningm
+ *      Author: henning
  */
 
+#include <math.h>
+#include <omp.h>
 
-#include <networkit/distance/CommuteTimeDistance.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Timer.hpp>
-
-#include <fstream>
-#include <sstream>
-#include <math.h>
-
-#include <omp.h>
+#include <networkit/distance/CommuteTimeDistance.hpp>
 
 namespace NetworKit {
 
-CommuteTimeDistance::CommuteTimeDistance(const Graph& G, double tol): Algorithm(), G(G), tol(tol), lamg(1e-5) {
-    // main purpose of methd: preparing LAMG
+CommuteTimeDistance::CommuteTimeDistance(const Graph& G, double tol): Algorithm(), G(&G), tol(tol), lamg(1e-5) {
+    // main purpose of method: preparing LAMG
 
     // construct matrix from graph
     CSRMatrix matrix = CSRMatrix::laplacianMatrix(G);
@@ -36,9 +32,9 @@ CommuteTimeDistance::CommuteTimeDistance(const Graph& G, double tol): Algorithm(
 }
 
 void CommuteTimeDistance::run() {
-    count n = G.numberOfNodes();
+    count n = G->numberOfNodes();
     distances.resize(n);
-    G.forNodes([&](node v){
+    G->forNodes([&](node v){
         distances[v].resize(n, 0.0);
     });
 
@@ -50,7 +46,7 @@ void CommuteTimeDistance::run() {
     Vector rhs = zeroVector;
 
     // solve for each pair of nodes
-    G.forNodePairs([&](node u, node v){
+    G->forNodePairs([&](node u, node v){
         // set up right-hand side
         rhs[u] = +1.0;
         rhs[v] = -1.0;
@@ -74,7 +70,7 @@ uint64_t CommuteTimeDistance::getSetupTime() const {
 }
 
 void CommuteTimeDistance::runApproximation() {
-    count n = G.numberOfNodes();
+    count n = G->numberOfNodes();
 
     // init approximation parameters
     double epsilon2 = tol * tol;
@@ -92,7 +88,7 @@ void CommuteTimeDistance::runApproximation() {
         // matrix vector product of q
         // rhs(v) = \sum_e=1 ^m q(e) * B(e, v)
         //        = +/- q(e)
-        G.forEdges([&](node u, node v) {
+        G->forEdges([&](node u, node v) {
             double r = randTab[Aux::Random::integer(1)];
 
             if (u < v) {
@@ -114,7 +110,7 @@ void CommuteTimeDistance::runApproximation() {
 }
 
 void CommuteTimeDistance::runParallelApproximation() {
-    count n = G.numberOfNodes();
+    count n = G->numberOfNodes();
 
     // init approximation parameters
     double epsilon2 = tol * tol;
@@ -130,9 +126,7 @@ void CommuteTimeDistance::runParallelApproximation() {
     INFO("Number k of iterations: ", k);
 #pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(k); ++i) {
-        // rhs(v) = \sum_e=1 ^m q(e) * B(e, v)
-        //        = +/- q(e)
-        G.forEdges([&](node u, node v) {
+        G->forEdges([&](node u, node v) {
             double r = randTab[Aux::Random::integer(1)];
 
             if (u < v) {
@@ -158,11 +152,11 @@ double CommuteTimeDistance::distance(node u, node v) {
 
     // compute volume
     double volG = 0.0;
-    if (! G.isWeighted()) {
-        volG = 2.0 * G.numberOfEdges();
+    if (! G->isWeighted()) {
+        volG = 2.0 * G->numberOfEdges();
     }
     else {
-        volG = 2.0 * G.totalEdgeWeight();
+        volG = 2.0 * G->totalEdgeWeight();
     }
 
     if (exactly) {
@@ -179,7 +173,7 @@ double CommuteTimeDistance::distance(node u, node v) {
 }
 
 double CommuteTimeDistance::runSinglePair(node u, node v) {
-    count n = G.numberOfNodes();
+    count n = G->numberOfNodes();
     double dist = 0.0;
 
     // set up solution vector and status
@@ -194,18 +188,18 @@ double CommuteTimeDistance::runSinglePair(node u, node v) {
     lamg.solve(rhs, solution);
     double diff = solution[u] - solution[v];
     dist = fabs(diff);
-    return sqrt(dist* G.numberOfEdges());
+    return sqrt(dist* G->numberOfEdges());
 }
 
 double CommuteTimeDistance::runSingleSource(node u) {
-    count n = G.numberOfNodes();
+    count n = G->numberOfNodes();
     double dist = 0.0;
     double sum = 0.0;
     Vector zeroVector(n, 0.0);
     // set up solution vector and status
     std::vector<Vector> rhs(n, Vector(n));
     std::vector<Vector> solution(n, Vector(n));
-    G.forNodes([&](node i){
+    G->forNodes([&](node i){
         rhs[i] = zeroVector;
         solution[i] = zeroVector;
         rhs[i][u] = +1.0;
@@ -219,14 +213,14 @@ double CommuteTimeDistance::runSingleSource(node u) {
     INFO("rhs.size() = ", rhs.size());
     INFO("solutions.size() = ", solution.size());
     lamg.parallelSolve(rhs, solution);
-    G.forNodes([&](node i){
+    G->forNodes([&](node i){
         if (i != u) {
             double diff = solution[i][u] - solution[i][i];
             dist = fabs(diff);
             sum += sqrt(dist);
         }
     });
-    return sum * sqrt(G.numberOfEdges());
+    return sum * sqrt(G->numberOfEdges());
 }
 
 }

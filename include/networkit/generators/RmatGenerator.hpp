@@ -1,5 +1,5 @@
 /*
- * RmatGenerator.h
+ * RmatGenerator.hpp
  *
  *  Created on: 18.03.2014
  *      Author: Henning
@@ -21,11 +21,10 @@ namespace NetworKit {
  * Deepayan Chakrabarti, Yiping Zhan, Christos Faloutsos:
  * R-MAT: A Recursive Model for Graph Mining. SDM 2004: 442-446.
  */
-class RmatGenerator: public StaticGraphGenerator {
-protected:
+class RmatGenerator final: public StaticGraphGenerator {
     count scale; ///< n = 2^scale
     count edgeFactor;
-    double a, b, c, d; ///< probabilities
+    double a, b, c; ///< probabilities
     double defaultEdgeWeight;
     bool weighted;
     count reduceNodes;
@@ -39,10 +38,11 @@ public:
      * @param[in] b Probability for quadrant upper right
      * @param[in] c Probability for quadrant lower left
      * @param[in] d Probability for quadrant lower right
-     * @param[in] weighted	result graph weighted?
-     * @param[in] reduceNodes	number of random nodes to delete to achieve a given node count
+     * @param[in] weighted  result graph weighted?
+     * @param[in] reduceNodes  number of random nodes to delete to achieve a given node count
      */
-    RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted=false, count reduceNodes=0);
+    RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d,
+                  bool weighted = false, count reduceNodes = 0);
 
     /**
      * @return Graph to be generated according to parameters specified in constructor.

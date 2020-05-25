@@ -5,14 +5,13 @@
  *      Author: cls
  */
 
-#include <networkit/dynamics/GraphEvent.hpp>
-
 #include <sstream>
+
+#include <networkit/dynamics/GraphEvent.hpp>
 
 namespace NetworKit {
 
-GraphEvent::GraphEvent(GraphEvent::Type type, node u, node v, edgeweight w) : type(type), u(u), v(v), w(w) {
-}
+GraphEvent::GraphEvent(GraphEvent::Type type, node u, node v, edgeweight w) : type(type), u(u), v(v), w(w) {}
 
 std::string GraphEvent::toString() const {
     std::stringstream ss;
@@ -45,6 +44,5 @@ bool GraphEvent::equal(GraphEvent a, GraphEvent b) {
     if (a.type == GraphEvent::TIME_STEP && b.type == GraphEvent::TIME_STEP) return true;
     return (a.type == b.type && a.u == b.u && a.v == b.v && a.w == b.w);
 }
-
 
 } /* namespace NetworKit */

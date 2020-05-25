@@ -1,19 +1,20 @@
 /*
- * QuadNodePolarEuclid.h
+ * QuadNodePolarEuclid.hpp
  *
  *  Created on: 21.05.2014
- *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
+ *      Author: Moritz v. Looz
  *
- *  Note: This is similar enough to QuadNode.h that one could merge these two classes.
+ *  Note: This is similar enough to QuadNode.hpp that one could merge these two classes.
  */
 
 #ifndef NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_POLAR_EUCLID_HPP_
 #define NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_POLAR_EUCLID_HPP_
 
-#include <vector>
 #include <algorithm>
+#include <cassert>
 #include <functional>
-#include <assert.h>
+#include <vector>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
 
@@ -25,9 +26,9 @@ using std::cos;
 namespace NetworKit {
 
 template <class T>
-class QuadNodePolarEuclid {
+class QuadNodePolarEuclid final {
     friend class QuadTreeGTest;
-private:
+
     double leftAngle;
     double minR;
     double rightAngle;
@@ -371,9 +372,6 @@ public:
         updateMinMax(leftAngle, minR);
         updateMinMax(rightAngle, minR);
 
-        //double shortCutGainMax = maxR + r - maxDistance;
-        //assert(minDistance <= minR + r);
-        //assert(maxDistance <= maxR + r);
         assert(minDistance < maxDistance);
         return std::pair<double, double>(minDistance, maxDistance);
     }
@@ -543,7 +541,6 @@ public:
                 }
             }
         }
-        //DEBUG("Expected at most ", expectedNeighbours, " neighbours, got ", result.size() - offset);
         return candidatesTested;
     }
 

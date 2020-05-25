@@ -1,5 +1,5 @@
 /*
- * MultiscaleScore.h
+ * MultiscaleScore.hpp
  *
  *  Created on: 20.06.2014
  *      Author: Gerd Lindner
@@ -19,18 +19,18 @@ namespace NetworKit {
  *
  * See "Extracting the multiscale backbone of complex weighted networks" by Serrano et al.
  */
-class MultiscaleScore : public EdgeScore<double> {
+class MultiscaleScore final : public EdgeScore<double> {
 
 public:
 
     MultiscaleScore(const Graph& graph, const std::vector<double>& attribute);
-    virtual double score(edgeid eid) override;
-    virtual double score(node u, node v) override;
-    virtual void run() override;
+    double score(edgeid eid) override;
+    double score(node u, node v) override;
+    void run() override;
     double getProbability(count degree, edgeweight normalizedWeight);
 
 private:
-    const std::vector<double>& attribute;
+    const std::vector<double>* attribute;
 };
 
 }

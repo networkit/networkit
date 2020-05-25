@@ -241,7 +241,8 @@ def getMaxNumberOfThreads():
 
 def enableNestedParallelism():
 	""" Enable nested parallelism for OpenMP"""
-	_enableNestedParallelism()
+	from warnings import warn
+	warn("Nested parallelism has been deprecated.")
 
 cdef extern from "<networkit/auxiliary/Random.hpp>" namespace "Aux::Random":
 
@@ -290,6 +291,15 @@ cdef object toNodePoint2DVector(const vector[pair[node, _Point2D]]& v):
 
 cdef extern from "<networkit/graph/Graph.hpp>":
 
+	cdef struct Edge "NetworKit::Edge":
+		node u
+		node v
+
+	cdef struct WeightedEdge "NetworKit::WeightedEdge":
+		node u
+		node v
+		edgeweight weight
+
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
 		_Graph(count, bool_t, bool_t) except +
@@ -307,7 +317,8 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		count degree(node u) except +
 		count degreeIn(node u) except +
 		count degreeOut(node u) except +
-		double weightedDegree(node u) except +
+		double weightedDegree(node u, bool_t) except +
+		double weightedDegreeIn(node u, bool_t) except +
 		count maxDegree() except +
 		count maxDegreeIn() except +
 		double maxWeightedDegree() except +
@@ -365,6 +376,9 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		void DFSEdgesFrom[Callback](node r, Callback c) except +
 		bool_t checkConsistency() except +
 		_Graph subgraphFromNodes(unordered_set[node] nodes, bool_t includeOutNeighbors, bool_t includeInNeighbors) except +
+		_NodeRange nodeRange() except +
+		_EdgeRange edgeRange() except +
+		_EdgeWeightRange edgeWeightRange() except +
 		_OutNeighborRange neighborRange(node u) except +
 		_InNeighborRange inNeighborRange(node u) except +
 
@@ -427,6 +441,48 @@ cdef cppclass NodePairCallbackWrapper:
 			message = stdstring("An Exception occurred, aborting execution of iterator: {0}".format(e))
 		if (error):
 			throw_runtime_error(message)
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+
+	cdef cppclass _NodeIterator "NetworKit::Graph::NodeIterator":
+		_NodeIterator operator++() except +
+		_NodeIterator operator++(int) except +
+		bool_t operator!=(const _NodeIterator) except +
+		node operator*() except +
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+
+	cdef cppclass _NodeRange "NetworKit::Graph::NodeRange":
+		_NodeIterator begin() except +
+		_NodeIterator end() except +
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+
+	cdef cppclass _EdgeWeightIterator "NetworKit::Graph::EdgeWeightIterator":
+		_EdgeWeightIterator operator++() except +
+		_EdgeWeightIterator operator++(int) except +
+		bool_t operator!=(const _EdgeWeightIterator) except +
+		WeightedEdge operator*() except +
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+
+	cdef cppclass _EdgeWeightRange "NetworKit::Graph::EdgeWeightRange":
+		_EdgeWeightIterator begin() except +
+		_EdgeWeightIterator end() except +
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+
+	cdef cppclass _EdgeIterator "NetworKit::Graph::EdgeIterator":
+		_EdgeIterator operator++() except +
+		_EdgeIterator operator++(int) except +
+		bool_t operator!=(const _EdgeIterator) except +
+		Edge operator*() except +
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+
+	cdef cppclass _EdgeRange "NetworKit::Graph::EdgeRange":
+		_EdgeIterator begin() except +
+		_EdgeIterator end() except +
 
 cdef extern from "<networkit/graph/Graph.hpp>":
 
@@ -504,6 +560,8 @@ cdef class Graph:
 		networkit.Graph
 			Graph with the same nodes (without edges)
 		"""
+		from warnings import warn
+		warn("Graph.copyNodes is deprecated, use graphtools.copyNodes instead.")
 		return Graph().setThis(self._this.copyNodes())
 
 	def indexEdges(self, bool_t force = False):
@@ -569,6 +627,8 @@ cdef class Graph:
 	 	tuple
 	 		a pair (n, m) where n is the number of nodes and m is the number of edges
 		"""
+		from warnings import warn
+		warn("Graph.size is deprecated, use graphtools.size instead.")
 		return self._this.size()
 
 
@@ -580,6 +640,8 @@ cdef class Graph:
 	 	-------
 	 	double
 		"""
+		from warnings import warn
+		warn("Graph.density is deprecated, use graphtools.density instead.")
 		return self._this.density()
 
 	def upperNodeIdBound(self):
@@ -626,23 +688,45 @@ cdef class Graph:
 	def degreeOut(self, u):
 		return self._this.degreeOut(u)
 
-	def weightedDegree(self, v):
+	def weightedDegree(self, u, countSelfLoopsTwice=False):
 		"""
-		Returns the weighted degree of v.
+		Returns the weighted out-degree of u.
 
-		For directed graphs this is the sum of weights of all outgoing edges of v.
+		For directed graphs this is the sum of weights of all outgoing edges of u.
 
 		Parameters
 		----------
-		v : node
+		u : node
 			Node.
+		countSelfLoopsTwice : bool
+			If set to true, self-loops will be counted twice
 
 		Returns
 		-------
 		double
-			The weighted degree of v.
+			The weighted out-degree of u.
 		"""
-		return self._this.weightedDegree(v)
+		return self._this.weightedDegree(u, countSelfLoopsTwice)
+
+	def weightedDegreeIn(self, u, countSelfLoopsTwice=False):
+		"""
+		Returns the weighted in-degree of u.
+
+		For directed graphs this is the sum of weights of all ingoing edges of u.
+
+		Parameters
+		----------
+		u : node
+			Node.
+		countSelfLoopsTwice : bool
+			If set to true, self-loops will be counted twice
+
+		Returns
+		-------
+		double
+			The weighted in-degree of u.
+		"""
+		return self._this.weightedDegreeIn(u, countSelfLoopsTwice)
 
 	def maxDegree(self):
 		"""
@@ -653,6 +737,8 @@ cdef class Graph:
 		count
 			Maximum out-degree of the graph.
 		"""
+		from warnings import warn
+		warn("Graph.maxDegree is deprecated, use graphtools.maxDegree instead.")
 		return self._this.maxDegree()
 
 	def maxDegreeIn(self):
@@ -664,6 +750,8 @@ cdef class Graph:
 		count
 			Maximum in-degree of the graph.
 		"""
+		from warnings import warn
+		warn("Graph.maxDegreeIn is deprecated, use graphtools.maxInDegree instead.")
 		return self._this.maxDegreeIn()
 
 	def maxWeightedDegree(self):
@@ -675,6 +763,8 @@ cdef class Graph:
 		double
 			Maximum weighted degree of the graph.
 		"""
+		from warnings import warn
+		warn("Graph.maxWeightedDegree is deprecated, use graphtools.maxWeightedDegree instead.")
 		return self._this.maxWeightedDegree()
 
 	def maxWeightedDegreeIn(self):
@@ -686,6 +776,8 @@ cdef class Graph:
 		double
 			Maximum weighted in degree of the graph.
 		"""
+		from warnings import warn
+		warn("Graph.maxWeightedDegreeIn is deprecated, use graphtools.maxWeightedInDegree instead.")
 		return self._this.maxWeightedDegreeIn()
 
 	def isIsolated(self, u):
@@ -775,6 +867,8 @@ cdef class Graph:
 		----------
 		G : networkit.Graph
 		"""
+		from warnings import warn
+		warn("Graph.append is deprecated, use graphtools.append instead.")
 		self._this.append(G._this)
 		return self
 
@@ -786,6 +880,8 @@ cdef class Graph:
 		----------
 		G : networkit.Graph
 		"""
+		from warnings import warn
+		warn("Graph.merge is deprecated, use graphtools.merge instead.")
 		self._this.merge(G._this)
 		return self
 
@@ -808,7 +904,7 @@ cdef class Graph:
 		"""
 		if not (self._this.hasNode(u) and self._this.hasNode(v)):
 			if not addMissing:
-				raise RuntimeError("Cannot create edge ({0}, {1}) as at least one end point does not exsists".format(u,v))
+				raise RuntimeError("Cannot create edge ({0}, {1}) as at least one end point does not exist.".format(u,v))
 
 			k = max(u, v)
 			if k >= self._this.upperNodeIdBound():
@@ -876,6 +972,8 @@ cdef class Graph:
 			Efficiently removes all the edges adjacent to a set of nodes that is not connected
 			to the rest of the graph. This is meant to optimize the Kadabra algorithm.
 		"""
+		from warnings import warn
+		warn("Graph.removeEdgesFromIsolatedSet is deprecated, use graphtools.removeEdgesFromIsolatedSet instead.")
 		self._this.removeEdgesFromIsolatedSet(nodes)
 		return self
 
@@ -964,6 +1062,8 @@ cdef class Graph:
 	 	list
 	 		List of all nodes.
 		"""
+		from warnings import warn
+		warn("Graph.nodes is deprecated.")
 		return self._this.nodes()
 
 	def edges(self):
@@ -974,6 +1074,8 @@ cdef class Graph:
 	 	list
 	 		List of edges as node pairs.
 		"""
+		from warnings import warn
+		warn("Graph.edges is deprecated.")
 		return self._this.edges()
 
 	def neighbors(self, u):
@@ -1011,7 +1113,7 @@ cdef class Graph:
 			warn("The graph is not directed, returning the neighbors!")
 			return self.neighbors(u)
 		neighborList = []
-		self.forInEdgesOf(u, lambda v : neighborList.append(v))
+		self.forInEdgesOf(u, lambda u, v, w, eid : neighborList.append(v))
 		return neighborList
 
 	def forNodes(self, object callback):
@@ -1116,8 +1218,9 @@ cdef class Graph:
 	 	-------
 			undirected graph.
 		"""
+		from warnings import warn
+		warn("Graph.toUndirected is deprecated, use graphtools.toUndirected instead.")
 		return Graph().setThis(self._this.toUndirected())
-
 
 	def toUnweighted(self):
 		"""
@@ -1127,6 +1230,8 @@ cdef class Graph:
 	 	-------
 		networkit.Graph
 		"""
+		from warnings import warn
+		warn("Graph.toUnweighted is deprecated, use graphtools.toUnweighted instead.")
 		return Graph().setThis(self._this.toUnweighted())
 
 	def transpose(self):
@@ -1138,6 +1243,8 @@ cdef class Graph:
 		networkit.Graph
 			Directed graph.
 		"""
+		from warnings import warn
+		warn("Graph.transpose is deprecated, use graphtools.transpose instead.")
 		return Graph().setThis(self._this.transpose())
 
 	def isWeighted(self):
@@ -1160,6 +1267,8 @@ cdef class Graph:
 		string
 			A string representation of the graph.
 		"""
+		from warnings import warn
+		warn("Graph.toString is deprecated.")
 		return self._this.toString()
 
 	def getName(self):
@@ -1170,6 +1279,8 @@ cdef class Graph:
 		string
 			The name of the graph.
 		"""
+		from warnings import warn
+		warn("Graph.getName is deprecated.")
 		return pystring(self._this.getName())
 
 	def setName(self, name):
@@ -1180,6 +1291,8 @@ cdef class Graph:
 		name : string
 			The name.
 		"""
+		from warnings import warn
+		warn("Graph.setName is deprecated.")
 		self._this.setName(stdstring(name))
 
 	def totalEdgeWeight(self):
@@ -1200,21 +1313,25 @@ cdef class Graph:
 		node
 			A random node.
 		"""
+		from warnings import warn
+		warn("Graph.randomNode is deprecated, use graphtools.randomNode instead.")
 		return self._this.randomNode()
 
 	def randomNeighbor(self, u):
-		""" Get a random neighbor of `v` and `none` if degree is zero.
+		""" Get a random neighbor of `u`. Returns `none` if the degree of `u` is zero.
 
 		Parameters
 		----------
-		v : node
+		u : node
 			Node.
 
 		Returns
 		-------
 		node
-			A random neighbor of `v.
+			A random neighbor of `u`, `none` if the degree of `u` is zero.
 		"""
+		from warnings import warn
+		warn("Graph.randomNeighbor is deprecated, use graphtools.randomNeighbor instead.")
 		return self._this.randomNeighbor(u)
 
 	def randomEdge(self, bool_t uniformDistribution = False):
@@ -1235,6 +1352,8 @@ cdef class Graph:
 		Fast, but not uniformly random if uniformDistribution is not set,
 		slow and uniformly random otherwise.
 		"""
+		from warnings import warn
+		warn("Graph.randomEdge is deprecated, use graphtools.randomEdge instead.")
 		return self._this.randomEdge(uniformDistribution)
 
 	def randomEdges(self, count numEdges):
@@ -1250,6 +1369,8 @@ cdef class Graph:
 		list of pairs
 			The selected edges.
 		"""
+		from warnings import warn
+		warn("Graph.randomEdges is deprecated, use graphtools.randomEdges instead.")
 		return self._this.randomEdges(numEdges)
 
 	def numberOfSelfLoops(self):
@@ -1271,6 +1392,8 @@ cdef class Graph:
 		callback : object
 			Any callable object that takes the parameter (node, count) (the second parameter is the depth)
 		"""
+		from warnings import warn
+		warn("Graph.BFSfrom is deprecated, use graph.Traversal.BFSfrom instead")
 		cdef NodeDistCallbackWrapper *wrapper
 		try:
 			wrapper = new NodeDistCallbackWrapper(callback)
@@ -1291,6 +1414,8 @@ cdef class Graph:
 		callback : object
 			Any callable object that takes the parameter (node, node)
 		"""
+		from warnings import warn
+		warn("Graph.BFSEdgesFrom is deprecated, use graph.Traversal.BFSEdgesFrom instead")
 		cdef EdgeCallBackWrapper *wrapper
 		try:
 			wrapper = new EdgeCallBackWrapper(callback)
@@ -1308,6 +1433,8 @@ cdef class Graph:
 		callback : object
 			Any callable object that takes the parameter node
 		"""
+		from warnings import warn
+		warn("Graph.DFSfrom is deprecated, use graph.Traversal.DFSfrom instead")
 		cdef NodeCallbackWrapper *wrapper
 		try:
 			wrapper = new NodeCallbackWrapper(callback)
@@ -1325,6 +1452,8 @@ cdef class Graph:
 		callback : object
 			Any callable object that takes the parameter (node, node)
 		"""
+		from warnings import warn
+		warn("Graph.DFSEdgesFrom is deprecated, use graph.Traversal.DFSEdgesFrom instead")
 		cdef NodePairCallbackWrapper *wrapper
 		try:
 			wrapper = new NodePairCallbackWrapper(callback)
@@ -1365,22 +1494,47 @@ cdef class Graph:
 		networkit.Graph
 			The subgraph induced by `nodes` (and possibly their neighbors)
 		"""
+		from warnings import warn
+		warn("Graph.subgraphFromNodes is deprecated, use graphtools.subgraphFromNodes instead.")
 		cdef unordered_set[node] nnodes
 		for node in nodes:
 			nnodes.insert(node)
 		return Graph().setThis(self._this.subgraphFromNodes(nnodes, includeOutNeighbors, includeInNeighbors))
 
+	def iterNodes(self):
+		"""
+		Iterates over the nodes of the graph.
+		"""
+		it = self._this.nodeRange().begin()
+		while it != self._this.nodeRange().end():
+			yield dereference(it)
+			preincrement(it)
+
+	def iterEdges(self):
+		"""
+		Iterates over the edges of the graph.
+		"""
+		it = self._this.edgeRange().begin()
+		while it != self._this.edgeRange().end():
+			yield dereference(it).u, dereference(it).v
+			preincrement(it)
+
+	def iterEdgesWeights(self):
+		"""
+		Iterates over the edges of the graph and their weights.
+		"""
+		it = self._this.edgeWeightRange().begin()
+		while it != self._this.edgeWeightRange().end():
+			yield dereference(it).u, dereference(it).v, dereference(it).weight
+			preincrement(it)
+
 	def iterNeighbors(self, u):
 		"""
-		Wrapper class to iterate over a range of the neighbors of a node within
-		a for loop.
+		Iterates over a range of the neighbors of a node.
+
 		Parameters
 		----------
 		u : Node
-
-		Returns
-		-------
-		List of a node u's neighbours
 		"""
 		it = self._this.neighborRange(u).begin()
 		while it != self._this.neighborRange(u).end():
@@ -1389,15 +1543,11 @@ cdef class Graph:
 
 	def iterInNeighbors(self, u):
 		"""
-		Wrapper class to iterate over a range of the in neighbours of a node within
-		a for loop.
+		Iterates over a range of the in-neighbors of a node.
+
 		Parameters
 		----------
 		u : Node
-
-		Returns
-		-------
-		List of a node u's in neighbours
 		"""
 		it = self._this.inNeighborRange(u).begin()
 		while it != self._this.inNeighborRange(u).end():
@@ -2140,7 +2290,8 @@ cdef extern from "<networkit/graph/SpanningForest.hpp>":
 
 	cdef cppclass _SpanningForest "NetworKit::SpanningForest":
 		_SpanningForest(_Graph) except +
-		_Graph generate() except +
+		void run() nogil except +
+		_Graph getForest() except +
 
 cdef class SpanningForest:
 	""" Generates a spanning forest for a given graph
@@ -2163,8 +2314,28 @@ cdef class SpanningForest:
 	def __dealloc__(self):
 		del self._this
 
-	def generate(self):
-		return Graph().setThis(self._this.generate())
+	def run(self):
+		"""
+		Executes the algorithm.
+
+		Returns
+		-------
+		Algorithm:
+			self
+		"""
+		self._this.run()
+		return self
+
+	def getForest(self):
+		"""
+		Returns the spanning forest.
+
+		Returns
+		-------
+		networkit.Graph
+			The computed spanning forest
+		"""
+		return Graph().setThis(self._this.getForest())
 
 cdef extern from "<networkit/graph/UnionMaximumSpanningForest.hpp>":
 
@@ -2415,7 +2586,7 @@ cdef class BarabasiAlbertGenerator(StaticGraphGenerator):
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
-		(n, m) = G.size()
+		(n, m) = GraphTools.size(G)
 		k = math.floor(m / n)
 		return cls(nMax=scale * n, k=k, n0=k)
 
@@ -2497,7 +2668,7 @@ cdef class ErdosRenyiGenerator(StaticGraphGenerator):
 	@classmethod
 	def fit(cls, Graph G, scale=1):
 		""" Fit model to input graph"""
-		(n, m) = G.size()
+		(n, m) = GraphTools.size(G)
 		if G.isDirected():
 			raise Exception("TODO: figure out scaling scheme for directed graphs")
 		else:
@@ -2643,7 +2814,7 @@ cdef class ChungLuGenerator(StaticGraphGenerator):
 	@classmethod
 	def fit(cls, Graph G, scale=1):
 		""" Fit model to input graph"""
-		(n, m) = G.size()
+		(n, m) = GraphTools.size(G)
 		degSeq = DegreeCentrality(G).run().scores()
 		return cls(degSeq * scale)
 
@@ -2791,7 +2962,7 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		""" Fit model to input graph"""
 		degSeq = DegreeCentrality(G).run().scores()
 		gamma = max(-1 * PowerlawDegreeSequence(degSeq).getGamma(), 2.1)
-		(n, m) = G.size()
+		(n, m) = GraphTools.size(G)
 		k = 2 * (m / n)
 		return cls(n * scale, k, gamma)
 
@@ -2976,7 +3147,7 @@ cdef class RmatGenerator(StaticGraphGenerator):
 			(a,b,c,d) = nweights
 		print("using initiator matrix [{0},{1};{2},{3}]".format(a,b,c,d))
 		# other parameters
-		(n,m) = G.size()
+		(n,m) = GraphTools.size(G)
 		scaleParameter = math.ceil(math.log(n * scale, 2))
 		edgeFactor = math.floor(m / n)
 		reduceNodes = (2**scaleParameter) - (scale * n)
@@ -3349,7 +3520,7 @@ cdef class LFRGenerator(Algorithm):
 	@classmethod
 	def fit(cls, Graph G, scale=1, vanilla=False, communityDetectionAlgorithm=PLM, plfit=False):
 		""" Fit model to input graph"""
-		(n, m) = G.size()
+		(n, m) = GraphTools.size(G)
 		# detect communities
 		communities = communityDetectionAlgorithm(G).run().getPartition()
 		# get degree sequence
@@ -3471,12 +3642,12 @@ cdef extern from "<networkit/io/GraphReader.hpp>" namespace "NetworKit::GraphRea
 	cdef enum _MultipleEdgesHandling "NetworKit::GraphReader::MultipleEdgesHandling":
 		DISCARD_EDGES,
 		SUM_WEIGHTS_UP,
-		KEEP_MINIUM_WEIGHT
+		KEEP_MINIMUM_WEIGHT
 
 class MultipleEdgesHandling:
 	DiscardEdges = DISCARD_EDGES
 	SumWeightsUp = SUM_WEIGHTS_UP
-	KeepMinimumWeight = KEEP_MINIUM_WEIGHT
+	KeepMinimumWeight = KEEP_MINIMUM_WEIGHT
 
 cdef class GraphReader:
 	""" Abstract base class for graph readers"""
@@ -4948,13 +5119,474 @@ cdef class GraphClusteringTools:
 	def equalClustering(Partition zeta, Partition eta, Graph G):
 		return equalClusterings(zeta._this, eta._this, G._this)
 
+cdef extern from "<networkit/graph/BFS.hpp>" namespace "NetworKit::Traversal":
+
+	void BFSfrom[InputIt, Callback](_Graph G, InputIt first, InputIt last, Callback c) nogil except +
+	void BFSEdgesFrom[Callback](_Graph G, node source, Callback c) nogil except +
+
+cdef extern from "<networkit/graph/DFS.hpp>" namespace "NetworKit::Traversal":
+	void DFSfrom[Callback](_Graph G, node source, Callback c) nogil except +
+	void DFSEdgesFrom[Callback](_Graph G, node source, Callback c) nogil except +
+
+cdef class Traversal:
+
+	@staticmethod
+	def BFSfrom(Graph graph, start, object callback):
+		"""
+		Iterate over nodes in breadth-first search order starting from the given node(s).
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+		start : node/list
+			Single node or list of nodes from where the BFS will start.
+		callback : Function
+			Takes either one (node) or two (node, distance) input parameters.
+		"""
+
+		cdef NodeDistCallbackWrapper *wrapper
+		cdef vector[node] sources
+
+		try:
+			wrapper = new NodeDistCallbackWrapper(callback)
+			try:
+				sources = <vector[node]?>start
+			except TypeError:
+				sources = [<node?>start]
+			BFSfrom[vector[node].iterator, NodeDistCallbackWrapper](graph._this, sources.begin(),sources.end(), dereference(wrapper))
+		finally:
+			del wrapper
+
+	@staticmethod
+	def BFSEdgesFrom(Graph graph, node start, object callback):
+		"""
+		Iterate over edges in breadth-first search order starting from the given node(s).
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+		start : node/list
+			Single node or list of nodes from where the BFS will start.
+		callback : Function
+			Takes four input parameters: (u, v, edgeweight, edgeid)
+		"""
+
+		cdef EdgeCallBackWrapper *wrapper
+
+		try:
+			wrapper = new EdgeCallBackWrapper(callback)
+			BFSEdgesFrom[EdgeCallBackWrapper](graph._this, start, dereference(wrapper))
+		finally:
+			del wrapper
+
+	@staticmethod
+	def DFSfrom(Graph graph, node start, object callback):
+		"""
+		Iterate over nodes in depth-first search order starting from the given node(s).
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+		start : node
+			Source node from where the DFS will start.
+		callback : Function
+			Takes a node as input parameter.
+		"""
+		cdef NodeCallbackWrapper *wrapper
+		try:
+			wrapper = new NodeCallbackWrapper(callback)
+			DFSfrom[NodeCallbackWrapper](graph._this, start, dereference(wrapper))
+		finally:
+			del wrapper
+
+	@staticmethod
+	def DFSEdgesFrom(Graph graph, node start, object callback):
+		"""
+		Iterate over edges in depth-first search order starting from the given node(s).
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+		start : node
+			Source node from where the DFS will start.
+		callback : Function
+			Takes four input parameters: (u, v, edgeweight, edgeid)
+		"""
+		cdef EdgeCallBackWrapper *wrapper
+		try:
+			wrapper = new EdgeCallBackWrapper(callback)
+			DFSEdgesFrom[EdgeCallBackWrapper](graph._this, start, dereference(wrapper))
+		finally:
+			del wrapper
+
+
 cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphTools":
 
+	count maxDegree(_Graph G) nogil except +
+	count maxInDegree(_Graph G) nogil except +
+	edgeweight maxWeightedDegree(_Graph G) nogil except +
+	edgeweight maxWeightedInDegree(_Graph G) nogil except +
+	node randomNode(_Graph G) nogil except +
+	node randomNeighbor(_Graph G, node u) nogil except +
+	pair[node, node] randomEdge(_Graph G, bool_t uniformDistribution) nogil except +
+	vector[pair[node, node]] randomEdges(_Graph G, count numEdges) nogil except +
+	pair[count, count] size(_Graph G) nogil except +
+	double density(_Graph G) nogil except +
+	_Graph copyNodes(_Graph G) nogil except +
+	_Graph toUndirected(_Graph G) nogil except +
+	_Graph toUnweighted(_Graph G) nogil except +
+	_Graph toWeighted(_Graph G) nogil except +
+	_Graph subgraphFromNodes(_Graph G, unordered_set[node], bool_t, bool_t) nogil except +
+	void append(_Graph G, _Graph G1) nogil except +
+	void merge(_Graph G, _Graph G1) nogil except +
+	void removeEdgesFromIsolatedSet[InputIt](_Graph G, InputIt first, InputIt last) except +
 	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) nogil except +
+	_Graph transpose(_Graph G) nogil except +
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) nogil except +
 	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) nogil except +
 
 cdef class GraphTools:
+
+	@staticmethod
+	def maxDegree(Graph G):
+		"""
+		Returns the maximum out-degree of the graph.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		count
+			The maximum out-degree of the graph.
+		"""
+		return maxDegree(G._this)
+
+	@staticmethod
+	def maxInDegree(Graph G):
+		"""
+		Returns the maximum in-degree of the graph.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		count
+			The maximum in-degree of the graph.
+		"""
+		return maxInDegree(G._this)
+
+	@staticmethod
+	def maxWeightedDegree(Graph G):
+		"""
+		Returns the maximum weighted out-degree of the graph.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		edgeweight
+			The maximum weighted out-degree of the graph.
+		"""
+		return maxWeightedDegree(G._this)
+
+	@staticmethod
+	def maxWeightedInDegree(Graph G):
+		"""
+		Returns the maximum weighted in-degree of the graph.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		edgeweight
+			The maximum weighted in-degree of the graph.
+		"""
+		return maxWeightedInDegree(G._this)
+
+	@staticmethod
+	def randomNode(Graph G):
+		"""
+		Returns a random node of the input graph.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		node
+			A random node.
+		"""
+		return randomNode(G._this)
+
+	@staticmethod
+	def randomNeighbor(Graph G, node u):
+		"""
+		Returns a random neighbor of node `u`.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		u : node
+			A node in `G`.
+
+		Returns
+		-------
+		node
+			A random neighbor of `u`.
+		"""
+		return randomNeighbor(G._this, u)
+
+	@staticmethod
+	def randomEdge(Graph G, uniformDistribution = False):
+		""" Get a random edge of the graph.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		uniformDistribution : bool
+			If the distribution of the edge shall be uniform.
+
+		Returns
+		-------
+		pair
+			Random edge.
+
+		Notes
+		-----
+		Fast, but not uniformly random if uniformDistribution is not set,
+		slow and uniformly random otherwise.
+		"""
+		return randomEdge(G._this, uniformDistribution)
+
+	@staticmethod
+	def randomEdges(Graph G, numEdges):
+		"""
+		Returns a list with numEdges random edges. The edges are chosen uniformly at random.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		numEdges : count
+			The number of edges to choose.
+
+		Returns
+		-------
+		list of pairs
+			List of with `numEdges` random edges.
+		"""
+		return randomEdges(G._this, numEdges)
+
+	@staticmethod
+	def append(Graph G, Graph G1):
+		"""
+		Appends graph `G1` to graph `G` as a new subgraph. Performs node id remapping.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			Graph where `G1` will be appended to.
+		G1 : networkit.Graph
+			Graph that will be appended to `G`.
+		"""
+		append(G._this, G1._this)
+
+	@staticmethod
+	def merge(Graph G, Graph G1):
+		"""
+		Modifies graph `G` to be the union of it and graph `G1`.
+		Nodes with the same ids are identified with each other.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			Result of the merge.
+		G1 : networkit.Graph
+			Graph that will be merged with `G`.
+		"""
+		merge(G._this, G1._this)
+
+	@staticmethod
+	def removeEdgesFromIsolatedSet(Graph graph, nodes):
+		"""
+		Efficiently removes all the edges adjacent to a set of nodes that is
+		not connected to the rest of the graph. This is meant to optimize the
+		Kadabra algorithm.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		nodes : list
+			Isolates set of nodes from where the edges will be removed.
+		"""
+		cdef vector[node] isolatedSet
+
+		try:
+			isolatedSet = <vector[node]?>nodes
+		except TypeError:
+			raise RuntimeError("Error, nodes must be a list of nodes.")
+		removeEdgesFromIsolatedSet[vector[node].iterator](graph._this,
+				isolatedSet.begin(), isolatedSet.end())
+
+	@staticmethod
+	def toUndirected(Graph graph):
+		"""
+		Returns an undirected copy of the input graph.
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		graph : networkit.Graph
+			Undirected copy of the input graph.
+		"""
+		return Graph().setThis(toUndirected(graph._this))
+
+	@staticmethod
+	def toUnweighted(Graph graph):
+		"""
+		Returns an unweighted copy of the input graph.
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		graph : networkit.Graph
+			Unweighted copy of the input graph.
+		"""
+		return Graph().setThis(toUnweighted(graph._this))
+
+	@staticmethod
+	def toWeighted(Graph graph):
+		"""
+		Returns a weighted copy of the input graph.
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		graph : networkit.Graph
+			Weighted copy of the input graph.
+		"""
+		return Graph().setThis(toWeighted(graph._this))
+
+	@staticmethod
+	def size(Graph graph):
+		"""
+		Return the size of the graph.
+
+		Returns
+		-------
+		tuple
+			a pair (n, m) where n is the number of nodes and m is the number of edges.
+		"""
+		return size(graph._this)
+
+	@staticmethod
+	def density(Graph graph):
+		"""
+		Get the density of the input graph.
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		double
+			The density of the input graph.
+		"""
+		return density(graph._this)
+
+	@staticmethod
+	def copyNodes(Graph graph):
+		"""
+		Copies all nodes of the input graph to a new graph (edges are not copied).
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		graph : networkit.Graph
+			Graph with the same nodes as the input graph (and without any edge).
+		"""
+		return Graph().setThis(copyNodes(graph._this))
+
+	@staticmethod
+	def subgraphFromNodes(Graph graph, nodes, includeOutNeighbors=False, includeInNeighbors=False):
+		"""
+		Returns an induced subgraph of the input graph (including potential edge
+		weights/directions).
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+		nodes : set
+			Nodes in the induced subgraph.
+		includeOutNeighbors : bool
+			If set to true, out-neighbors will also be included.
+		includeInNeighbors : bool
+			If set to true, in-neighbors will also be included.
+
+		Returns
+		-------
+		graph : networkit.Graph
+			Induced subgraph.
+		"""
+		return Graph().setThis(subgraphFromNodes(
+			graph._this, nodes, includeOutNeighbors, includeInNeighbors))
+
+	@staticmethod
+	def transpose(Graph graph):
+		"""
+		Returns the transpose of the input graph. The graph must be directed.
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+
+		Returns
+		graph : networkit.Graph
+			Transpose of the input graph.
+		"""
+		return Graph().setThis(transpose(graph._this))
+
 	@staticmethod
 	def getCompactedGraph(Graph graph, nodeIdMap):
 		"""
@@ -6150,33 +6782,32 @@ cdef class ParallelConnectedComponents(Algorithm):
 cdef extern from "<networkit/components/StronglyConnectedComponents.hpp>":
 
 	cdef cppclass _StronglyConnectedComponents "NetworKit::StronglyConnectedComponents":
-		_StronglyConnectedComponents(_Graph G, bool_t iterativeAlgo) except +
+		_StronglyConnectedComponents(_Graph G, bool_t) except +
 		void run() nogil except +
-		void runIteratively() nogil except +
-		void runRecursively() nogil except +
 		count numberOfComponents() except +
 		count componentOfNode(node query) except +
 		_Partition getPartition() except +
+		map[node, count] getComponentSizes() except +
+		vector[vector[node]] getComponents() except +
 
 
 cdef class StronglyConnectedComponents:
-	""" Determines the connected components and associated values for
-		a directed graph.
-
-		By default, the iterative implementation is used. If edges on the graph have been removed,
-		you should switch to the recursive implementation.
-
-		Parameters
-		----------
-		G : networkit.Graph
-			The graph.
-		iterativeAlgo : bool
-			Specifies which implementation to use, by default True for the iterative implementation.
-	"""
 	cdef _StronglyConnectedComponents* _this
 	cdef Graph _G
 
 	def __cinit__(self, Graph G, iterativeAlgo = True):
+		""" Computes the strongly connected components of a directed graph.
+
+			Parameters
+			----------
+			G : networkit.Graph
+				The graph.
+			iterativeAlgo : bool
+				Whether to use the iterative algorithm or the recursive one.
+		"""
+		if not iterativeAlgo:
+			from warnings import warn
+			warn("The recursive implementation of StronglyConnectedComponents has been deprecated.")
 		self._G = G
 		self._this = new _StronglyConnectedComponents(G._this, iterativeAlgo)
 
@@ -6184,28 +6815,71 @@ cdef class StronglyConnectedComponents:
 		del self._this
 
 	def run(self):
+		"""
+		Runs the algorithm.
+		"""
 		with nogil:
 			self._this.run()
 		return self
 
-	def runIteratively(self):
-		with nogil:
-			self._this.runIteratively()
-		return self
-
-	def runRecursively(self):
-		with nogil:
-			self._this.runRecursively()
-		return self
-
 	def getPartition(self):
+		"""
+		Returns a Partition object representing the strongly connected components.
+
+		Returns
+		-------
+		Partition
+			The strongly connected components.
+		"""
 		return Partition().setThis(self._this.getPartition())
 
 	def numberOfComponents(self):
+		"""
+		Returns the number of strongly connected components of the graph.
+
+		Returns
+		-------
+		int
+			The number of strongly connected components.
+		"""
 		return self._this.numberOfComponents()
 
-	def componentOfNode(self, v):
-		return self._this.componentOfNode(v)
+	def componentOfNode(self, u):
+		"""
+		Returns the component of node `u`.
+
+		Parameters
+		----------
+		u : node
+			A node in the graph.
+
+		Returns
+		int
+			The component of node `u`.
+		"""
+		return self._this.componentOfNode(u)
+
+	def getComponentSizes(self):
+		"""
+		Returns a map with the component indexes as keys, and their size as values.
+
+		Returns
+		-------
+		map[index, count]
+			Map with component indexes as keys, and their size as values.
+		"""
+		return self._this.getComponentSizes()
+
+	def getComponents(self):
+		"""
+		Returns a list of components.
+
+		Returns
+		-------
+		list[list[node]]
+			A list of components.
+		"""
+		return self._this.getComponents()
 
 
 cdef extern from "<networkit/components/WeaklyConnectedComponents.hpp>":
@@ -7311,7 +7985,7 @@ cdef class GroupDegree(Algorithm):
 	score, this make the group degree monotone and submodular and the algorithm
 	is guaranteed to return a (1 - 1/e)-approximation of the optimal solution.
 
-	GroupDegree(G, k = 1, countGroupNodes = False)
+	GroupDegree(G, k = 1, countGroupNodes = True)
 
 	Parameters
 	----------
@@ -7322,7 +7996,7 @@ cdef class GroupDegree(Algorithm):
 	"""
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, k = 1, countGroupNodes = False):
+	def __cinit__(self, Graph G, k = 1, countGroupNodes = True):
 		self._G = G
 		self._this = new _GroupDegree(G._this, k, countGroupNodes)
 
@@ -7402,6 +8076,13 @@ cdef class GroupCloseness(Algorithm):
 		The group of k nodes with highest closeness.
 	"""
 	def groupMaxCloseness(self):
+		"""
+		Returns the group with maximum closeness centrality.
+		Returns
+		-------
+		vector
+			The group of k nodes with maximum closeness centrality.
+		"""
 		return (<_GroupCloseness*>(self._this)).groupMaxCloseness()
 
 
@@ -7505,6 +8186,7 @@ cdef extern from "<networkit/centrality/ApproxGroupBetweenness.hpp>":
 	cdef cppclass _ApproxGroupBetweenness "NetworKit::ApproxGroupBetweenness" (_Algorithm):
 		_ApproxGroupBetweenness(_Graph, count, double) except +
 		vector[node] groupMaxBetweenness() except +
+		count scoreOfGroup(vector[node]) except +
 
 cdef class ApproxGroupBetweenness(Algorithm):
 	"""
@@ -7539,6 +8221,22 @@ cdef class ApproxGroupBetweenness(Algorithm):
 				The group of nodes with highest approximated group betweenness.
 		"""
 		return (<_ApproxGroupBetweenness*>(self._this)).groupMaxBetweenness()
+
+	def scoreOfGroup(self, vector[node] group):
+		"""
+		Returns the score of the given group.
+
+		Parameters
+		----------
+		group : list
+			Set of nodes.
+
+		Returns
+		-------
+		count
+			The score of the given group.
+		"""
+		return (<_ApproxGroupBetweenness*>(self._this)).scoreOfGroup(group)
 
 cdef extern from "<networkit/centrality/Closeness.hpp>" namespace "NetworKit":
 
@@ -8105,14 +8803,26 @@ cdef class ApproxCloseness(Centrality):
 		return (<_ApproxCloseness*>(self._this)).getSquareErrorEstimates()
 
 
+cdef extern from "<networkit/centrality/PageRank.hpp>" namespace "NetworKit::PageRank":
+
+	cdef enum Norm:
+		L1Norm = 0
+		L2Norm = 1
+
+class _PageRankNorm(object):
+	l1norm = L1Norm
+	l2norm = L2Norm
 
 cdef extern from "<networkit/centrality/PageRank.hpp>":
 
 	cdef cppclass _PageRank "NetworKit::PageRank" (_Centrality):
 		_PageRank(_Graph, double damp, double tol) except +
+		count numberOfIterations() except +
+		Norm norm
+		count maxIterations
 
 cdef class PageRank(Centrality):
-	"""	Compute PageRank as node centrality measure.
+	""" Compute PageRank as node centrality measure.
 
 	PageRank(G, damp=0.85, tol=1e-9)
 
@@ -8130,6 +8840,34 @@ cdef class PageRank(Centrality):
 		self._G = G
 		self._this = new _PageRank(G._this, damp, tol)
 
+	def numberOfIterations(self):
+		"""
+		Returns the number of iterations performed by the algorithm.
+
+		Returns
+		-------
+		int
+			Number of iterations performed by the algorithm.
+		"""
+		return (<_PageRank*>(self._this)).numberOfIterations()
+
+	property norm:
+		def __get__(self):
+			""" Get the norm used as stopping criterion. """
+			return (<_PageRank*>(self._this)).norm
+		def __set__(self, norm):
+			""" Set the norm used as stopping criterion. """
+			(<_PageRank*>(self._this)).norm = norm
+
+	property maxIterations:
+		def __get__(self):
+			""" Get the maximum number of iterations. """
+			return (<_PageRank*>(self._this)).maxIterations
+		def __set__(self, maxIterations):
+			""" Set the maximum number of iterations. """
+			if maxIterations < 0:
+				raise Exception("Max iterations cannot be a negative number.")
+			(<_PageRank*>(self._this)).maxIterations = maxIterations
 
 
 cdef extern from "<networkit/centrality/EigenvectorCentrality.hpp>":
@@ -10776,6 +11514,8 @@ cdef class SimmelianOverlapScore(EdgeScore):
 		The graph to apply the Simmelian Backbone algorithm to.
 	triangles : vector[count]
 		Previously calculated edge triangle counts on G.
+	maxRank: count
+		maximum rank that is considered for overlap calculation.
 	"""
 	def __cinit__(self, Graph G, vector[count] triangles, count maxRank):
 		self._G = G
@@ -10836,7 +11576,7 @@ cdef extern from "<networkit/sparsification/RandomEdgeScore.hpp>":
 
 cdef class RandomEdgeScore(EdgeScore):
 	"""
-	[todo]
+	Generates a random edge attribute. Each edge is assigned a random value in [0,1].
 
 	Parameters
 	----------
@@ -11142,6 +11882,16 @@ cdef extern from "<networkit/sparsification/SCANStructuralSimilarityScore.hpp>":
 		_SCANStructuralSimilarityScore(_Graph G, const vector[count]& triangles) except +
 
 cdef class SCANStructuralSimilarityScore(EdgeScore):
+	"""
+	An implementation of the SCANStructuralSimilarityScore algorithm.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph to apply the Local Similarity algorithm to.
+	triangles : vector[count]
+		Previously calculated edge triangle counts.
+	"""
 	cdef vector[count] _triangles
 
 	def __cinit__(self, Graph G, vector[count] triangles):
@@ -11513,6 +12263,43 @@ cdef class SpanningEdgeCentrality(Algorithm):
 		"""
 		return (<_SpanningEdgeCentrality*>(self._this)).scores()
 
+
+cdef extern from "<networkit/centrality/ApproxSpanningEdge.hpp>":
+	cdef cppclass _ApproxSpanningEdge "NetworKit::ApproxSpanningEdge"(_Algorithm):
+		_ApproxSpanningEdge(_Graph G, double eps) except +
+		vector[edgeweight] scores() except +
+
+cdef class ApproxSpanningEdge(Algorithm):
+	"""
+	Computes an epsilon-approximation of the spanning edge centrality of every edge of the input
+	graph with probability (1 - 1/n), based on "Efficient Algorithms for Spanning Tree
+	Centrality", Hayashi et al., IJCAI, 2016. This implementation also support multi-threading.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph.
+	eps : double
+		Maximum additive error.
+	"""
+
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, double eps = 0.1):
+		self._G = G
+		self._this = new _ApproxSpanningEdge(G._this, eps)
+
+	def scores(self):
+		"""
+		Return the spanning edge approximation for each edge of the graph.
+
+
+		Returns
+		-------
+		list
+			Spanning edge approximation for each edge of the input graph.
+		"""
+		return (<_ApproxSpanningEdge*>(self._this)).scores();
 
 ## Module: viz
 

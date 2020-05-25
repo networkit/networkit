@@ -16,12 +16,14 @@
 #include <networkit/distance/EffectiveDiameter.hpp>
 #include <networkit/distance/EffectiveDiameterApproximation.hpp>
 #include <networkit/distance/HopPlotApproximation.hpp>
+#include <networkit/distance/IncompleteDijkstra.hpp>
 #include <networkit/distance/NeighborhoodFunction.hpp>
 #include <networkit/distance/NeighborhoodFunctionApproximation.hpp>
 #include <networkit/distance/NeighborhoodFunctionHeuristic.hpp>
 
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 
 namespace NetworKit {
@@ -108,15 +110,51 @@ TEST_F(DistanceGTest, testAStar) {
     testMesh(25, 5);
 }
 
+TEST_F(DistanceGTest, testIncompleteDijkstra) {
+    Aux::Random::setSeed(42, false);
+    for (auto directed : {true, false}) {
+        for (auto weighted : {true, false}) {
+            auto G = ErdosRenyiGenerator(500, 0.05, directed).generate();
+            if (weighted) {
+                G = GraphTools::toWeighted(G);
+                G.forEdges([&G](const node u, const node v) {
+                    G.setWeight(u, v, Aux::Random::probability());
+                });
+            }
+
+            G.forNodes([&](const node source) {
+                Dijkstra dij(G, source, false, false);
+                dij.run();
+                const auto dists = dij.getDistances();
+                const count reachable = std::count_if(dists.begin(), dists.end(),
+                                                      [](const edgeweight dist) {
+                    return dist != std::numeric_limits<edgeweight>::max();
+                });
+
+                const std::vector<node> sources({source});
+                IncompleteDijkstra iDij(&G, sources);
+
+                for (count i = 0; i < reachable; ++i) {
+                    EXPECT_TRUE(iDij.hasNext());
+                    const auto next = iDij.next();
+                    EXPECT_DOUBLE_EQ(next.second, dists[next.first]);
+                }
+
+                EXPECT_FALSE(iDij.hasNext());
+            });
+        }
+    }
+}
+
 TEST_F(DistanceGTest, testBidirectionalBFS) {
     Aux::Random::setSeed(42, false);
     Graph G = ErdosRenyiGenerator(500, 0.02, false).generate();
     Graph G1 = ErdosRenyiGenerator(500, 0.05, true).generate();
     auto testGraph = [&](const Graph &G) {
-        node source = G.randomNode();
-        node target = G.randomNode();
+        node source = GraphTools::randomNode(G);
+        node target = GraphTools::randomNode(G);
         while (source == target)
-            target = G.randomNode();
+            target = GraphTools::randomNode(G);
         BFS bfs(G, source, true, false, target);
         bfs.run();
         BidirectionalBFS bbfs(G, source, target, true);
@@ -156,10 +194,10 @@ TEST_F(DistanceGTest, testBidirectionalDijkstra) {
     });
 
     auto testGraph = [&](const Graph &G) {
-        node source = G.randomNode();
-        node target = G.randomNode();
+        node source = GraphTools::randomNode(G);
+        node target = GraphTools::randomNode(G);
         while (source == target)
-            target = G.randomNode();
+            target = GraphTools::randomNode(G);
         BidirectionalDijkstra bdij(G, source, target, true);
         bdij.run();
         Dijkstra dij(G, source, true, true, target);
@@ -406,7 +444,7 @@ TEST_F(DistanceGTest, testHopPlotApproximation) {
 
 TEST_F(DistanceGTest, testNeighborhoodFunctionApproximation) {
     METISGraphReader reader;
-    Graph G = reader.read("input/lesmis.graph").toUnweighted();
+    Graph G = GraphTools::toUnweighted(reader.read("input/lesmis.graph"));
     NeighborhoodFunction nf(G);
     nf.run();
     auto exact = nf.getNeighborhoodFunction();
@@ -418,7 +456,7 @@ TEST_F(DistanceGTest, testNeighborhoodFunctionApproximation) {
 
 TEST_F(DistanceGTest, testNeighborhoodFunctionHeuristic) {
     METISGraphReader reader;
-    Graph G = reader.read("input/lesmis.graph").toUnweighted();
+    Graph G = GraphTools::toUnweighted(reader.read("input/lesmis.graph"));
     NeighborhoodFunction nf(G);
     nf.run();
     auto exact = nf.getNeighborhoodFunction();

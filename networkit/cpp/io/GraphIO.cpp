@@ -2,40 +2,37 @@
  * GraphIO.cpp
  *
  *  Created on: 09.01.2013
- *      Author: Christian Staudt (christian.staudt@kit.edu)
+ *      Author: Christian Staudt
  */
+
+// networkit-format
 
 #include <fstream>
 #include <networkit/io/GraphIO.hpp>
 
 namespace NetworKit {
 
-void GraphIO::writeEdgeList(Graph& G, std::string path) {
+void GraphIO::writeEdgeList(const Graph &G, const std::string &path) {
 
     std::ofstream file;
     file.open(path.c_str());
 
-    G.forEdges([&](node v, node w) {
-        file << v << " " << w << std::endl;
-    });
+    G.forEdges([&](const node v, const node w) { file << v << " " << w << std::endl; });
 
     file.close();
-    INFO("wrote graph to file: " , path);
-
+    INFO("wrote graph to file: ", path);
 }
 
-void GraphIO::writeAdjacencyList(Graph& G, std::string path) {
+void GraphIO::writeAdjacencyList(const Graph &G, const std::string &path) {
     std::ofstream file;
     file.open(path.c_str());
 
-    G.forNodes([&](node v) {
+    G.forNodes([&](const node v) {
         file << v;
-        G.forNeighborsOf(v, [&](node x) {
-            file << " " << x;
-        });
+        G.forNeighborsOf(v, [&](const node x) { file << " " << x; });
         file << std::endl;
     });
-    INFO("wrote graph to file: " , path);
+    INFO("wrote graph to file: ", path);
 }
 
 } /* namespace NetworKit */

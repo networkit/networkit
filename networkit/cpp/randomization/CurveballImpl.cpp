@@ -9,12 +9,10 @@
 #include <numeric>
 #include <vector>
 
+#include "CurveballImpl.hpp"
 #include <tlx/algorithm/random_bipartition_shuffle.hpp>
-
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/auxiliary/Timer.hpp>
-
-#include "CurveballImpl.hpp"
 
 namespace NetworKit {
 namespace CurveballDetails {
@@ -33,10 +31,6 @@ using neighbour_it = neighbour_vector::iterator;
 using cneighbour_it = neighbour_vector::const_iterator;
 using nodepair_vector = std::vector<std::pair<node, node>>;
 
-///////////////////////////////////////////////////////////////////////////////
-
-// public static constexpr count LISTROW_END =
-// std::numeric_limits<count>::max();
 /**
  * @brief Initialize method (when constructor can't be used)
  *
@@ -346,7 +340,7 @@ TradeList::TradeList(const trade_vector &trades, const node num_nodes)
 ///////////////////////////////////////////////////////////////////////////////
 
 CurveballIM::CurveballIM(const Graph &G)
-    : G(G), numNodes(G.numberOfNodes()), tradeList(G.numberOfNodes()), numAffectedEdges(0) {
+    : G(&G), numNodes(G.numberOfNodes()), tradeList(G.numberOfNodes()), numAffectedEdges(0) {
     hasRun = false;
     assert(G.checkConsistency());
     assert(G.numberOfSelfLoops() == 0);
@@ -358,9 +352,9 @@ void CurveballIM::loadFromGraph(const std::vector<std::pair<node, node>> &trades
     degree_vector degrees;
     degrees.reserve(numNodes);
     edgeid degree_sum = 0;
-    G.forNodes([&](node v) {
-        degrees.push_back(G.degree(v));
-        degree_sum += G.degree(v);
+    G->forNodes([&](node v) {
+        degrees.push_back(G->degree(v));
+        degree_sum += G->degree(v);
     });
 
     maxDegree = *(std::max_element(degrees.cbegin(), degrees.cend()));
@@ -369,7 +363,7 @@ void CurveballIM::loadFromGraph(const std::vector<std::pair<node, node>> &trades
     tradeList.initialize(trades);
 
     // Insert to adjacency list, directed according trades
-    G.forEdges([&](node u, node v) { update(u, v); });
+    G->forEdges([&](node u, node v) { update(u, v); });
     return;
 }
 

@@ -1,5 +1,5 @@
 /*
- * MemoryMappedFile.h
+ * MemoryMappedFile.hpp
  *
  *  Created on: 16.07.2018
  *      Author: Manuel Penschuck (networkit@manuel.jetzt)
@@ -8,7 +8,6 @@
 #ifndef NETWORKIT_IO_MEMORY_MAPPED_FILE_HPP_
 #define NETWORKIT_IO_MEMORY_MAPPED_FILE_HPP_
 
-#include <iterator>
 #include <memory>
 #include <string>
 
@@ -24,7 +23,7 @@ struct MemoryMappedFileState;
  *
  * This wrapper is non-copyable but can be cheaply moved and swapped.
  */
-class MemoryMappedFile {
+class MemoryMappedFile final {
 public:
     using value_type = char;
     using const_iterator = const value_type*;
@@ -81,6 +80,4 @@ private:
 };
 
 }
-
-
 #endif // NETWORKIT_IO_MEMORY_MAPPED_FILE_HPP_

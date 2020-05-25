@@ -23,7 +23,7 @@ namespace NetworKit {
  * (KDD '17). ACM, New York, NY, USA, 145-154. DOI:
  * https://doi.org/10.1145/3097983.3098054
  */
-class CoverF1Similarity : public LocalCoverEvaluation {
+class CoverF1Similarity final : public LocalCoverEvaluation {
 public:
     /**
      * Initialize the cover F1 similarity.
@@ -37,19 +37,19 @@ public:
     /**
      * Execute the algorithm.
      */
-    virtual void run() override;
+    void run() override;
 
     /**
      * @return false - smaller is not better, larger values indicate better matching clusters.
      */
-    virtual bool isSmallBetter() const override { return false; }
+    bool isSmallBetter() const override { return false; }
 
     /**
      * @return false - this algorithm has not been parallelized.
      */
-    virtual bool isParallel() const override { return false; }
+    bool isParallel() const override { return false; }
 private:
-    const Cover &reference;
+    const Cover *reference;
 };
 
 }

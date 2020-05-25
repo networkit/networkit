@@ -5,17 +5,15 @@
  *      Author: cls
  */
 
-#include <networkit/structures/Cover.hpp>
-
 #include <algorithm>
-#include <iterator>
+
+#include <networkit/structures/Cover.hpp>
 
 namespace NetworKit {
 
 Cover::Cover() : z(0), omega(0), data(0) {}
 
-Cover::Cover(index z) : z(z-1), omega(0), data(z) {
-}
+Cover::Cover(index z) : z(z-1), omega(0), data(z) {}
 
 Cover::Cover(const Partition &p) : z(p.numberOfElements()-1), omega(p.upperBound()-1), data(p.numberOfElements()) {
     p.forEntries([&](index e, index s) {
@@ -25,7 +23,7 @@ Cover::Cover(const Partition &p) : z(p.numberOfElements()-1), omega(p.upperBound
 }
 
 bool Cover::contains(index e) const {
-    return (e <= z) && (! data[e].empty());	// e is in the element index range and the entry is not empty
+    return (e <= z) && (! data[e].empty());  // e is in the element index range and the entry is not empty
 }
 
 bool Cover::inSameSubset(index e1, index e2) const {
@@ -38,7 +36,7 @@ bool Cover::inSameSubset(index e1, index e2) const {
     return (!intersect.empty());
 }
 
-std::set<index> Cover::getMembers(const index s) const {
+std::set<index> Cover::getMembers(index s) const {
     assert (s <= omega);
     std::set<index> members;
     for (index e = 0; e <= this->z; ++e) {
@@ -62,7 +60,6 @@ void Cover::removeFromSubset(index s, index e) {
     assert (s <= omega);
     data[e].erase(s);
 }
-
 
 void Cover::moveToSubset(index s, index e) {
     assert (e <= z);
@@ -107,7 +104,7 @@ void Cover::mergeSubsets(index s, index t) {
 }
 
 index Cover::upperBound() const {
-    return omega + 1;	// to enable usual loop test x < upperBound()
+    return omega + 1;  // to enable usual loop test x < upperBound()
 }
 
 index Cover::lowerBound() const {
@@ -186,7 +183,7 @@ void Cover::setUpperBound(index upper) {
 
 std::set<index> Cover::getSubsetIds() const {
     std::set<index> ids;
-    for (std::set<index> subset : data) {
+    for (const auto &subset : data) {
         ids.insert(subset.begin(), subset.end());
     }
     return ids;

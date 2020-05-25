@@ -1,5 +1,5 @@
 /*
- * ApproximatePageRank.h
+ * ApproximatePageRank.hpp
  *
  *  Created on: 26.02.2014
  *      Author: Henning
@@ -8,8 +8,9 @@
 #ifndef NETWORKIT_SCD_APPROXIMATE_PAGE_RANK_HPP_
 #define NETWORKIT_SCD_APPROXIMATE_PAGE_RANK_HPP_
 
-#include <vector>
 #include <unordered_map>
+#include <vector>
+
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
@@ -17,15 +18,12 @@ namespace NetworKit {
 /**
  * Computes an approximate PageRank vector from a given seed.
  */
-class ApproximatePageRank {
-protected:
-    const Graph& G;
+class ApproximatePageRank final {
+    const Graph* G;
     double alpha;
     double eps;
 
     std::unordered_map<node, std::pair<double, double>> pr_res;
-
-    void push(node u, std::queue<node>& activeNodes);
 
 public:
     /**

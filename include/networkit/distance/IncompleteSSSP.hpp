@@ -1,5 +1,5 @@
 /*
- * IncompleteSSSP.h
+ * IncompleteSSSP.hpp
  *
  *  Created on: 15.07.2014
  *      Author: dhoske

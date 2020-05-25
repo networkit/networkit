@@ -1,5 +1,5 @@
 /*
- * MaxentStress.h
+ * MaxentStress.hpp
  *
  *  Created on: 22.01.2014
  *      Author: Henning Meyerhenke and Michael Wegner
@@ -8,19 +8,15 @@
 #ifndef NETWORKIT_VIZ_MAXENT_STRESS_HPP_
 #define NETWORKIT_VIZ_MAXENT_STRESS_HPP_
 
-#include <networkit/viz/GraphLayoutAlgorithm.hpp>
-#include <networkit/numerics/LinearSolver.hpp>
+#include <memory>
+
 #include <networkit/algebraic/CSRMatrix.hpp>
+#include <networkit/auxiliary/StringTools.hpp>
+#include <networkit/distance/AlgebraicDistance.hpp>
+#include <networkit/numerics/LinearSolver.hpp>
+#include <networkit/viz/GraphLayoutAlgorithm.hpp>
 #include <networkit/viz/Octree.hpp>
 
-#include <networkit/distance/BFS.hpp>
-#include <networkit/distance/Dijkstra.hpp>
-#include <networkit/distance/AlgebraicDistance.hpp>
-
-#include <networkit/io/LineFileReader.hpp>
-#include <networkit/auxiliary/StringTools.hpp>
-
-#include <memory>
 
 namespace NetworKit {
 
@@ -40,7 +36,7 @@ namespace NetworKit {
      * @see Ganser, Emden R., Yifan Hu and Steve North. "A maxentstress model for graph layout." Visualisation and Computer Graphics, IEEE Transsactions on 19, no. 6 (2013): 927-940.
      */
 
- class MaxentStress : public GraphLayoutAlgorithm<double> {
+class MaxentStress final : public GraphLayoutAlgorithm<double> {
     public:
         enum GraphDistance {
             EDGE_WEIGHT,
@@ -65,10 +61,10 @@ namespace NetworKit {
 
 
         /** Default destructor. */
-        virtual ~MaxentStress() = default;
+         ~MaxentStress() = default;
 
         /** Computes a graph drawing according to the Maxent-Stress model. */
-        virtual void run();
+         void run() override;
 
         /**
          * Scale the layout computed by @ref run() by a scalar s to minimize \sum_{u,v \in V} w_{uv} (s ||x_u - x_v|| - d_{uv}||)^2
@@ -144,7 +140,7 @@ namespace NetworKit {
             return this->resultStats.solveTime;
         };
 
-    protected:
+    private:
 
      /**
       * Calls run() and returns the corresponding stats.
@@ -152,7 +148,6 @@ namespace NetworKit {
 
      ResultStats runAlgo();
 
-    private:
         /**
          * Reference to the linear solver to use during the maxent-stress algorithm.
          */

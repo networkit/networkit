@@ -2,24 +2,22 @@
  * EvaluationMetric.cpp
  *
  *  Created on: 17.03.2015
- *      Author: Kolja Esders (kolja.esders@student.kit.edu)
+ *      Author: Kolja Esders
  */
 
 #include <algorithm>
 #include <numeric>
 #include <set>
 
+#include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/linkprediction/EvaluationMetric.hpp>
 #include <networkit/linkprediction/PredictionsSorter.hpp>
-#include <networkit/auxiliary/Parallel.hpp>
 
 namespace NetworKit {
 
-EvaluationMetric::EvaluationMetric() : testGraph(nullptr) {
-}
+EvaluationMetric::EvaluationMetric() : testGraph(nullptr) {}
 
-EvaluationMetric::EvaluationMetric(const Graph& testGraph) : testGraph(&testGraph) {
-}
+EvaluationMetric::EvaluationMetric(const Graph& testGraph) : testGraph(&testGraph) {}
 
 void EvaluationMetric::setTestGraph(const Graph& newTestGraph) {
   testGraph = &newTestGraph;

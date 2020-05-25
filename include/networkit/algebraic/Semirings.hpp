@@ -1,5 +1,5 @@
 /*
- * Semirings.h
+ * Semirings.hpp
  *
  *  Created on: May 31, 2016
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
@@ -22,10 +22,10 @@
  * one: 1
  * codomain = (-infty, +infty)
  */
-class ArithmeticSemiring {
+class ArithmeticSemiring final {
 public:
     ArithmeticSemiring() = default;
-    virtual ~ArithmeticSemiring() = default;
+    ~ArithmeticSemiring() = default;
 
     inline static double add(double a, double b) {
         return a + b;
@@ -48,10 +48,10 @@ public:
  * one: 0
  * codomain = (-infty, +infty]
  */
-class MinPlusSemiring {
+class MinPlusSemiring final {
 public:
     MinPlusSemiring() = default;
-    virtual ~MinPlusSemiring() = default;
+    ~MinPlusSemiring() = default;
 
     inline static double add(double a, double b) {
         return std::min(a,b);
@@ -74,10 +74,10 @@ public:
  * one: 0
  * codomain = [-infty, +infty)
  */
-class MaxPlusSemiring {
+class MaxPlusSemiring final {
 public:
     MaxPlusSemiring() = default;
-    virtual ~MaxPlusSemiring() = default;
+    ~MaxPlusSemiring() = default;
 
     inline static double add(double a, double b) {
         return std::max(a,b);
@@ -100,10 +100,10 @@ public:
  * one: -infty
  * codomain = [-infty, +infty]
  */
-class MinMaxSemiring {
+class MinMaxSemiring final {
 public:
     MinMaxSemiring() = default;
-    virtual ~MinMaxSemiring() = default;
+    ~MinMaxSemiring() = default;
 
     inline static double add(double a, double b) {
         return std::min(a,b);
@@ -126,10 +126,10 @@ public:
  * one: +infty
  * codomain = [-infty, +infty]
  */
-class MaxMinSemiring{
+class MaxMinSemiring final {
 public:
     MaxMinSemiring() = default;
-    virtual ~MaxMinSemiring() = default;
+    ~MaxMinSemiring() = default;
 
     inline static double add(double a, double b) {
         return std::max(a,b);
@@ -152,10 +152,10 @@ public:
  * one: 1
  * codomain = [-infty, +infty]
  */
-class IntLogicalSemiring {
+class IntLogicalSemiring final {
 public:
     IntLogicalSemiring() = default;
-    virtual ~IntLogicalSemiring() = default;
+    ~IntLogicalSemiring() = default;
 
     inline static double add(double a, double b) {
         return (int) a || (int) b;
@@ -178,10 +178,10 @@ public:
  * one: 1
  * codomain = [0, 1]
  */
-class GaloisFieldSemiring {
+class GaloisFieldSemiring final {
 public:
     GaloisFieldSemiring() = default;
-    virtual ~GaloisFieldSemiring() = default;
+    ~GaloisFieldSemiring() = default;
 
     inline static double add(double a, double b) {
         return (int) a ^ (int) b;

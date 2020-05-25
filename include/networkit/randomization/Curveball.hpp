@@ -1,5 +1,5 @@
 /*
- * Curveball.h
+ * Curveball.hpp
  *
  *  Created on: 26.05.2018
  *      Author:  Hung Tran <htran@ae.cs.uni-frankfurt.de>, Manuel Penschuck <networkit@manuel.jetzt>
@@ -23,11 +23,11 @@ namespace CurveballDetails {
 class CurveballIM;
 }
 
-class Curveball : public Algorithm {
+class Curveball final : public Algorithm {
 public:
     explicit Curveball(const Graph &G);
 
-    virtual ~Curveball();
+    ~Curveball();
 
     void run() override final {
         throw std::runtime_error("run() is not supported by this algorithm; use run(trades)");
@@ -37,9 +37,9 @@ public:
 
     Graph getGraph(bool parallel = false);
 
-    virtual std::string toString() const override final;
+    std::string toString() const override final;
 
-    virtual bool isParallel() const override final { return false; }
+    bool isParallel() const override final { return false; }
 
     count getNumberOfAffectedEdges() const;
 

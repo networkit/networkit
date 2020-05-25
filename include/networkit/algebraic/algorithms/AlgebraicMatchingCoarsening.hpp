@@ -1,5 +1,5 @@
 /*
- * AlgebraicMatchingCoarsening.h
+ * AlgebraicMatchingCoarsening.hpp
  *
  *  Created on: Jul 12, 2016
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
@@ -20,7 +20,7 @@ namespace NetworKit {
  * coarse.
  */
 template<class Matrix>
-class AlgebraicMatchingCoarsening : public GraphCoarsening {
+class AlgebraicMatchingCoarsening final : public GraphCoarsening {
 public:
     /**
      * Constructs an instance of AlgebraicMatchingCoarsening for the given Graph @a graph and the corresponding
@@ -45,7 +45,7 @@ private:
 
 template<class Matrix>
 AlgebraicMatchingCoarsening<Matrix>::AlgebraicMatchingCoarsening(const Graph& graph, const Matching& matching, bool noSelfLoops) : GraphCoarsening(graph), A(Matrix::adjacencyMatrix(graph)), noSelfLoops(noSelfLoops) {
-    if (G.isDirected()) throw std::runtime_error("Only defined for undirected graphs.");
+    if (G->isDirected()) throw std::runtime_error("Only defined for undirected graphs.");
     nodeMapping.resize(graph.numberOfNodes());
     std::vector<Triplet> triplets(graph.numberOfNodes());
 
@@ -74,7 +74,7 @@ void AlgebraicMatchingCoarsening<Matrix>::run() {
     Matrix coarseAdj = P.transpose() * A * P; // Matrix::mTmMultiply performs worse due to high sparsity of P (nnz = n)
 
     Gcoarsened = Graph(coarseAdj.numberOfRows(), true);
-    coarseAdj.forNonZeroElementsInRowOrder([&](node u, node v, double weight) {
+    coarseAdj.forNonZeroElementsInRowOrder([&](node u, node v, edgeweight weight) {
         if (u == v && !noSelfLoops) {
             Gcoarsened.addEdge(u, v, weight / 2.0);
         } else if (u < v) {

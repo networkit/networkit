@@ -12,13 +12,13 @@
 
 namespace NetworKit {
 
-Assortativity::Assortativity(const Graph& G, const std::vector<double>& attribute) : Algorithm(), G(G), emptyVector(), emptyPartition(), attribute(attribute), partition(emptyPartition), nominal(false) {
+Assortativity::Assortativity(const Graph& G, const std::vector<double>& attribute) : Algorithm(), G(&G), emptyVector(), emptyPartition(), attribute(&attribute), partition(&emptyPartition), nominal(false) {
     if (attribute.size() < G.upperNodeIdBound()) {
         throw std::runtime_error("attribute list has incorrect length: there must be an entry for each node");
     }
 }
 
-Assortativity::Assortativity(const Graph& G, const Partition& partition) : Algorithm(), G(G), emptyVector(), emptyPartition(), attribute(emptyVector), partition(partition), nominal(true) {
+Assortativity::Assortativity(const Graph& G, const Partition& partition) : Algorithm(), G(&G), emptyVector(), emptyPartition(), attribute(&emptyVector), partition(&partition), nominal(true) {
     if (partition.numberOfElements() < G.upperNodeIdBound()) {
         throw std::runtime_error("partition has incorrect length: there must be an entry for each node");
     }
@@ -28,19 +28,19 @@ Assortativity::Assortativity(const Graph& G, const Partition& partition) : Algor
 void Assortativity::run() {
     if (nominal) {
         // compact partition so matrix doesn't get unnecessarily large
-        Partition P = partition;
+        Partition P = *partition;
         P.compact();
         // create kxk matrix with entries $e_{ij}$, the fraction of edges connecting nodes of type i to nodes of type j
         count k = P.upperBound();
         std::vector<std::vector<double>> E(k, std::vector<double>(k, 0.0));
-        G.forEdges([&](node u, node v) {
+        G->forEdges([&](node u, node v) {
             E[P[u]][P[v]] += 1;
         });
         // row and column sums $a_i$ and $b_i$
         std::vector<double> a(k, 0.0);
         std::vector<double> b(k, 0.0);
         // normalize and calculate sums
-        count m = G.numberOfEdges();
+        count m = G->numberOfEdges();
         for (index i = 0; i < k; ++i) {
             for (index j = 0; j < k; ++j) {
                 E[i][j] = E[i][j] / m;
@@ -65,12 +65,12 @@ void Assortativity::run() {
         // where (x_u, y_v) are the attributes of connected pairs of nodes
         // r_{xy} := \frac{\sum_{i=1}^n(x_i-\bar x)(y_i-\bar y)}{\sqrt{\sum_{i=1}^n(x_i-\bar x)^2\cdot \sum_{i=1}^n(y_i-\bar y)^2}}
 
-        count m = G.numberOfEdges();
+        count m = G->numberOfEdges();
         double xSum = 0.0;
         double ySum = 0.0;
-        G.forEdges([&](node u, node v) {
-            xSum += attribute[u];
-            ySum += attribute[v];
+        G->forEdges([&](node u, node v) {
+            xSum += (*attribute)[u];
+            ySum += (*attribute)[v];
         });
         double xMean = xSum / m;
         double yMean = ySum / m;
@@ -78,9 +78,9 @@ void Assortativity::run() {
         double A = 0.0;
         double B = 0.0;
         double C = 0.0;
-        G.forEdges([&](node u, node v) {
-            double x = (attribute[u] - xMean);
-            double y = (attribute[v] - yMean);
+        G->forEdges([&](node u, node v) {
+            double x = ((*attribute)[u] - xMean);
+            double y = ((*attribute)[v] - yMean);
             A +=  x * y;
             B += x * x;
             C += y * y;

@@ -1,38 +1,142 @@
 /*
- * StrongConnectedComponents.cpp
+ * StronglyConnectedComponents.cpp
  *
  *  Created on: 01.06.2014
- *      Author: Klara Reichard (klara.reichard@gmail.com), Marvin Ritter (marvin.ritter@gmail.com)
- *
- *  [2016/07/14] Iterative variant avoiding stack-based recursion
- *  -- Obada Mahdi <omahdi@gmail.com>
+ *      Authors: Klara Reichard <klara.reichard@gmail.com>
+ *               Marvin Ritter <marvin.ritter@gmail.com>
+ *               Obada Mahdi <omahdi@gmail.com>
+ *               Eugenio Angriman <angrimae@hu-berlin.de>
  */
 
-#include <stack>
-#include <functional>
-#include <tuple>
+// networkit-format
 
+#include <stack>
+
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/components/StronglyConnectedComponents.hpp>
 #include <networkit/structures/Partition.hpp>
-#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 
-StronglyConnectedComponents::StronglyConnectedComponents(const Graph& G, bool iterativeAlgo) : G(G), iterativeAlgo(iterativeAlgo) {
+StronglyConnectedComponents::StronglyConnectedComponents(const Graph &G)
+    : G(&G), iterativeAlgo(true) {
+    if (!G.isDirected())
+        WARN("The input graph is undirected, use ConnectedComponents for more efficiency.");
+}
 
+StronglyConnectedComponents::StronglyConnectedComponents(const Graph &G, bool iterativeAlgo)
+    : G(&G), iterativeAlgo(iterativeAlgo) {
+    if (!iterativeAlgo)
+        WARN("Running deprecated recursive algorithm.");
 }
 
 void StronglyConnectedComponents::run() {
-    if (iterativeAlgo) {
-        runIteratively();
-    } else {
+    if (!iterativeAlgo) {
         runRecursively();
+        return;
     }
+
+    const auto n = G->upperNodeIdBound();
+
+    // The component of every node is initially undefined.
+    component.clear();
+    component.resize(n, none);
+
+    // Stack used to determine the strongly connected components from the root nodes.
+    std::vector<node> stack;
+    stack.reserve(n);
+    std::vector<unsigned char> onStack(n, 0);
+
+    // Depth of a node in the dfs
+    std::vector<count> depth(n, none);
+    // At index `u`: smallest id among reachable nodes.
+    std::vector<node> lowLink(n, none);
+    // Last visited child during the dfs.
+    std::vector<node> lastVisited(n, none);
+
+    count curDepth = 0, visitedNodes = 0;
+    componentIndex = 0;
+
+    std::stack<std::pair<node, Graph::NeighborIterator>> dfsStack;
+
+    // Set the depth of node v and push it onto the stacks.
+    auto visit = [&](const node v) -> void {
+        depth[v] = curDepth;
+        lowLink[v] = curDepth;
+        ++curDepth;
+        stack.emplace_back(v);
+        onStack[v] = 1;
+        dfsStack.push({v, G->neighborRange(v).begin()});
+    };
+
+    auto strongConnect = [&](const node u) -> void {
+        visit(u);
+
+        do {
+            const auto v = dfsStack.top().first;
+            if (lastVisited[v] != none) {
+                lowLink[v] = std::min(lowLink[v], lowLink[lastVisited[v]]);
+                lastVisited[v] = none;
+            }
+
+            // Iter points to the first neighbor of v, or to the last visited dfs child of v.
+            auto &iter = dfsStack.top().second;
+
+            // Iterate over the neighbors of v from either the first, or the last visited one.
+            for (; iter != G->neighborRange(v).end(); ++iter) {
+                const auto w = *iter;
+
+                // w not visited yet, visit it and continue the exploration from w.
+                if (depth[w] == none) {
+                    visit(w);
+                    lastVisited[v] = w;
+                    break;
+                }
+                // w already visited, if it is on the stack is part of the same component.
+                if (onStack[w] && depth[w] < lowLink[v]) {
+                    lowLink[v] = depth[w];
+                }
+            }
+
+            // Check if all neighbors of v have been visited.
+            if (iter == G->neighborRange(v).end()) {
+                // All neighbors of v have been visited, pop v.
+                dfsStack.pop();
+
+                // v is a root node, generate new component.
+                if (lowLink[v] == depth[v]) {
+
+                    const auto stackSize = stack.size();
+                    node w = none;
+                    do {
+                        w = stack.back();
+                        stack.pop_back();
+                        onStack[w] = 0;
+                        component[w] = componentIndex;
+                    } while (w != v);
+
+                    ++componentIndex;
+                    visitedNodes += (stackSize - stack.size());
+                }
+            }
+        } while (!dfsStack.empty());
+    };
+
+    for (node u = 0; u < n; ++u) {
+        if (depth[u] != none)
+            continue;
+        strongConnect(u);
+        // Check if all nodes have been assigned to a component.
+        if (visitedNodes == G->numberOfNodes())
+            break;
+    }
+
+    hasRun = true;
 }
 
 void StronglyConnectedComponents::runRecursively() {
-    count z = G.upperNodeIdBound();
-    component = Partition(z);
+    count z = G->upperNodeIdBound();
+    Partition partition(z);
 
     index nextIndex = 0;
     std::vector<index> nodeIndex(z, none);
@@ -46,7 +150,7 @@ void StronglyConnectedComponents::runRecursively() {
         stx.push(v);
         onStack[v] = true;
 
-        G.forNeighborsOf(v, [&](node w) {
+        G->forNeighborsOf(v, [&](node w) {
             if (nodeIndex[w] == none) {
                 strongConnect(w);
                 nodeLowLink[v] = std::min(nodeLowLink[v], nodeLowLink[w]);
@@ -56,7 +160,7 @@ void StronglyConnectedComponents::runRecursively() {
         });
 
         if (nodeLowLink[v] == nodeIndex[v]) {
-            component.toSingleton(v);
+            partition.toSingleton(v);
             while (true) {
                 node w = stx.top();
                 stx.pop();
@@ -64,117 +168,26 @@ void StronglyConnectedComponents::runRecursively() {
                 if (w == v) {
                     break;
                 }
-                component[w] = component[v];
+                partition[w] = partition[v];
             }
         }
     };
 
-    G.forNodes([&](node v) {
+    G->forNodes([&](node v) {
         if (nodeIndex[v] == none) {
             strongConnect(v);
         }
     });
+
+    component.clear();
+    component.resize(z, none);
+    partition.forEntries([&](const node u, const index i) { component[u] = i; });
+
+    hasRun = true;
 }
 
 void StronglyConnectedComponents::runIteratively() {
-    count z = G.upperNodeIdBound();
-    component = Partition(z);
-
-    index nextIndex = 0;
-    struct node_info {
-        index i, lowLink;
-    };
-    std::vector<node_info> nodes(z, node_info {none, none});
-    std::vector<node> stx {};
-    stx.reserve(z);
-    std::vector<bool> onStack(z, false);
-    using state_type = typename std::tuple<node, node, int>;
-    using container_type = typename std::vector<state_type>;
-    //std::stack<state_type, container_type> dfss {};
-    //
-    // For performance tests: reserve enough memory to prevent online resizing
-    // of dfss (memory-intensive operation!). Does not work easily with
-    // std:stack wrapper, hence using std::vector directly.
-    container_type dfss {};
-    dfss.reserve(z);
-    //auto max_stack_size = dfss.size();
-
-    G.forNodes([&](node _v) {
-        if (nodes[_v].i != none)
-            return;
-        DEBUG("DFS init: dfss.emplace(", _v, ", none, -1)");
-        dfss.emplace_back(_v, none, -1L);
-        while (!dfss.empty()) {
-            //if (dfss.size() > max_stack_size)
-            //	max_stack_size = dfss.size();
-            node u, pred;
-            int j;
-            std::tie(u, pred, j) = dfss.back();
-            DEBUG("(u=", u, ", pred=", pred, ", j=", j, ") = dfss.top()");
-            dfss.pop_back();
-            if (j == -1) {
-                DEBUG("* new DFS branch at node u=", u, " (pred=", pred, "), index=", nextIndex);
-                nodes[u].i = nextIndex;
-                nodes[u].lowLink = nextIndex;
-                nextIndex++;
-                stx.push_back(u);
-                onStack[u] = true;
-                j = G.degreeOut(u);
-                DEBUG("j <- ", j, ", nextIndex=", nextIndex);
-            }
-            if (j == 0) {
-                DEBUG("< backtracking at u=", u, " (pred=", pred, ")");
-                if (nodes[u].lowLink == nodes[u].i) {
-                    component.toSingleton(u);
-                    node w = none;
-                    do {
-                        w = stx.back();
-                        stx.pop_back();
-                        DEBUG(" - ", w, " <- stx.pop()");
-                        onStack[w] = false;
-                        component[w] = component[u];
-                    } while (u != w);
-                }
-                if (pred != none) {
-                    DEBUG("  ", pred, " -> ", u, ": testing pred lowlink (lowlink[pred]=", nodes[pred].lowLink, ", lowlink[u]=", nodes[u].lowLink, ")");
-                    nodes[pred].lowLink = std::min(nodes[pred].lowLink, nodes[u].lowLink);
-                }
-            } else {
-                dfss.emplace_back(u, pred, j-1);
-                // getIthNeighbor() is not part of the public API; hacked in
-                // manually to allow constant-time lookup of the i-th neighbor
-                // (see networkit/cpp/graph/Graph.h)
-                // Note: Neighbors in reverse order compared to original impl
-                auto v = G.getIthNeighbor<true>(u, j-1);
-                // Unoptimised version that works with the public API only:
-                //auto v = G.neighbors(u)[G.degreeOut(u)-j];
-                if (v == none) {
-                    throw std::runtime_error("StronglyConnectedComponents::runIteratively(): unexpected value 'none' for neighbor, try the recursive implementation");
-                }
-                if (nodes[v].i == none) {
-                    DEBUG("  ", u, " -> ", v, ": descending (current pred=", pred, ")");
-                    dfss.emplace_back(v, u, -1L);
-                } else if (onStack[v]) {
-                    DEBUG("  ", u, " -> ", v, ": testing lowlink (lowlink=", nodes[u].lowLink, ", index at arc head is ", nodes[v].i, ")");
-                    nodes[u].lowLink = std::min(nodes[u].lowLink, nodes[v].i);
-                }
-            }
-        }
-    });
-    //DEBUG("max_stack_size = ", max_stack_size, ", node count = ", z);
+    run();
 }
 
-Partition StronglyConnectedComponents::getPartition() {
-    return this->component;
-}
-
-count StronglyConnectedComponents::numberOfComponents() {
-    return this->component.numberOfSubsets();
-}
-
-count StronglyConnectedComponents::componentOfNode(node u) {
-    assert (component[u] != none);
-    return component[u];
-}
-
-}
+} // namespace NetworKit

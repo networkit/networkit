@@ -1,5 +1,5 @@
 /*
- * ErdosRenyiGenerator.h
+ * ErdosRenyiGenerator.hpp
  *
  *  Created on: 21.01.2014
  *      Author: Henning
@@ -17,11 +17,11 @@ namespace NetworKit {
  *
  * This class is a wrapper to @ref ErdosRenyiEnumerator.
  */
-class ErdosRenyiGenerator: public StaticGraphGenerator {
+class ErdosRenyiGenerator final : public StaticGraphGenerator {
 public:
     /**
      * Creates random graphs in the G(n,p) model.
-     * The generation follows a parallised version of Vladimir Batagelj
+     * The generation follows a parallelized version of Vladimir Batagelj
      * and Ulrik Brandes: "Efficient generation of large random networks",
      * Phys Rev E 71, 036113 (2005) with a runtime of O((n+m) / P) (WHP),
      * where n, m, and P are the numbers of nodes, edges and parallel threads
@@ -37,13 +37,13 @@ public:
      *
      * @param nNodes Number of nodes n in the graph.
      * @param prob Probability of existence for each edge p.
-     * @param directed	generates a directed graph
+     * @param directed  generates a directed graph
      * @param self_loops Controls whether a directed graph may contain self_loops
      *                   (undirected graphs never have them)
      */
-    ErdosRenyiGenerator(count nNodes, double prob, bool directed=false, bool self_loops=false);
+    ErdosRenyiGenerator(count nNodes, double prob, bool directed = false, bool self_loops = false);
 
-    virtual Graph generate();
+    Graph generate();
 
 private:
     node nNodes;

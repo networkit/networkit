@@ -1,14 +1,13 @@
 /*
- * SampledRandMeasure.cpp
+ * SampledNodeStructuralRandMeasure.cpp
  *
  *  Created on: 01.07.2013
  *      Author: cls
  */
 
-#include <networkit/community/SampledNodeStructuralRandMeasure.hpp>
-
-#include <networkit/auxiliary/Random.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/community/SampledNodeStructuralRandMeasure.hpp>
 
 namespace NetworKit {
 
@@ -21,7 +20,6 @@ double SampledNodeStructuralRandMeasure::getDissimilarity(const Graph& G, const 
 
     count n11 = 0; 	// number of node pairs for which clusterings agree
     count n00 = 0;	// number of node pairs for which clusterings disagree
-
 
     count nSamples = 0;
 

@@ -10,8 +10,8 @@
 #include <map>
 #include <vector>
 
-#include <networkit/generators/MocnikGenerator.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/generators/MocnikGenerator.hpp>
 
 namespace NetworKit {
 
@@ -56,7 +56,7 @@ template<typename KeyType, typename ValueType> std::pair<KeyType,ValueType> getM
 /**
  * Norm of a vector.  The shift applies to every coordinate.
  */
-static inline double norm(std::vector<double> &v, const double &shift) {
+static inline double norm(std::vector<double> &v, double shift) {
     double x = 0;
     for (count j = 0; j < v.size(); j++) {
         x += (v[j] + shift) * (v[j] + shift);
@@ -78,7 +78,7 @@ static inline double dist(std::vector<double> &v, std::vector<double> &w) {
 
 // LAYER STATE
 
-void MocnikGenerator::initCellArray(MocnikGenerator::LayerState &s, const count &numberOfCellsPerDimension) {
+void MocnikGenerator::initCellArray(MocnikGenerator::LayerState &s, count numberOfCellsPerDimension) {
     s.aMax = numberOfCellsPerDimension;
     for (count j = 0; j < std::pow(s.aMax, dim); j++) {
         NodeCollection tmp;
@@ -86,11 +86,11 @@ void MocnikGenerator::initCellArray(MocnikGenerator::LayerState &s, const count 
     }
 }
 
-MocnikGenerator::NodeCollection MocnikGenerator::getNodes(MocnikGenerator::LayerState &s, const int &i) {
+MocnikGenerator::NodeCollection MocnikGenerator::getNodes(MocnikGenerator::LayerState &s, int i) {
     return s.a[i];
 }
 
-void MocnikGenerator::addNode(MocnikGenerator::LayerState &s, const int &j) {
+void MocnikGenerator::addNode(MocnikGenerator::LayerState &s, int j) {
     s.a[toIndex(s, nodePositions[j])].push_back(j);
 }
 
@@ -110,7 +110,7 @@ int MocnikGenerator::toIndex(MocnikGenerator::LayerState &s, const std::vector<i
     return x;
 }
 
-const std::vector<int> MocnikGenerator::fromIndex(MocnikGenerator::LayerState &s, const int &i) {
+std::vector<int> MocnikGenerator::fromIndex(MocnikGenerator::LayerState &s, int i) {
     std::vector<int> v;
     int i2 = i;
     for (count j = 0; j < dim; j++) {
@@ -121,7 +121,7 @@ const std::vector<int> MocnikGenerator::fromIndex(MocnikGenerator::LayerState &s
     return v;
 }
 
-const std::vector<int> MocnikGenerator::boxSurface(MocnikGenerator::LayerState &s, const int &i, const int &r) {
+std::vector<int> MocnikGenerator::boxSurface(MocnikGenerator::LayerState &s, int i, int r) {
     // test for vanishing r
     if (r == 0) {
         std::vector<int> seResult;
@@ -184,7 +184,7 @@ const std::vector<int> MocnikGenerator::boxSurface(MocnikGenerator::LayerState &
     return seResult;
 }
 
-const std::vector<int> MocnikGenerator::boxVolume(MocnikGenerator::LayerState &s, const int &i, const double &r) {
+std::vector<int> MocnikGenerator::boxVolume(MocnikGenerator::LayerState &s, int i, double r) {
     int r2 = ceil(r * s.aMax);
     std::vector<std::vector<int>> se;
     std::vector<int> tmp;
@@ -212,7 +212,7 @@ const std::vector<int> MocnikGenerator::boxVolume(MocnikGenerator::LayerState &s
 
 // EDGE GENERATION
 
-void MocnikGenerator::addEdgesToGraph(Graph &G, const count &n, const double &k, const double &relativeWeight, const bool &baseLayer) {
+void MocnikGenerator::addEdgesToGraph(Graph &G, count n, double k, double relativeWeight, bool baseLayer) {
     // map vector containing the nodes resp. their positions
     MocnikGenerator::LayerState s;
     initCellArray(s, ceil(std::pow(n / 2, 1./dim) / k));
@@ -273,7 +273,7 @@ void MocnikGenerator::addEdgesToGraph(Graph &G, const count &n, const double &k,
             }
         }
     }
-    
+
     // add the edges to the graph
     for (count t = 0; t < cellMax; t++) {
         for (auto &e : edges[t]) {

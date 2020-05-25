@@ -11,6 +11,7 @@
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/components/BiconnectedComponents.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
@@ -44,7 +45,7 @@ TEST_F(BiconnectedComponentsGTest, testBiconnectedComponents) {
 
     for (auto component : bc.getComponents()) {
         std::unordered_set<node> subgraph(component.begin(), component.end());
-        auto G1 = G.subgraphFromNodes(subgraph, false, false);
+        const auto G1 = GraphTools::subgraphFromNodes(G, subgraph, false, false);
 
         G1.forNodes([&](node v) {
             auto G2(G1);

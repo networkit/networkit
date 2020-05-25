@@ -1,5 +1,5 @@
 /*
- * EdgeScoreLinearizer.h
+ * EdgeScoreLinearizer.hpp
  *
  *  Created on: 18.11.2014
  *      Author: Michael Hamann
@@ -12,18 +12,18 @@
 
 namespace NetworKit {
 
-class EdgeScoreLinearizer : public EdgeScore<double> {
+class EdgeScoreLinearizer final : public EdgeScore<double> {
 
 private:
-    const std::vector<double>& attribute;
+    const std::vector<double>* attribute;
     bool inverse;
 
 public:
     EdgeScoreLinearizer(const Graph& graph, const std::vector<double>& attribute, bool inverse = false);
 
-    virtual double score(edgeid eid) override;
-    virtual double score(node u, node v) override;
-    virtual void run() override;
+    double score(edgeid eid) override;
+    double score(node u, node v) override;
+    void run() override;
 
 };
 

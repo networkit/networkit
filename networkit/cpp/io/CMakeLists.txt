@@ -9,7 +9,6 @@ networkit_add_module(io
     DibapGraphReader.cpp
     DotGraphWriter.cpp
     DotPartitionWriter.cpp
-    DynamicGraphReader.cpp
     EdgeListCoverReader.cpp
     EdgeListPartitionReader.cpp
     EdgeListReader.cpp
@@ -20,7 +19,6 @@ networkit_add_module(io
     GraphToolBinaryReader.cpp
     GraphToolBinaryWriter.cpp
     KONECTGraphReader.cpp
-    LineFileReader.cpp
     MemoryMappedFile.cpp
     METISGraphReader.cpp
     METISGraphWriter.cpp
@@ -29,7 +27,6 @@ networkit_add_module(io
     NetworkitBinaryWriter.cpp
     MatrixMarketReader.cpp
     PartitionReader.cpp
-    PartitionWriter.cpp
     RasterReader.cpp
     SNAPEdgeListPartitionReader.cpp
     SNAPGraphReader.cpp
