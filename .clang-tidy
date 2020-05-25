@@ -70,6 +70,7 @@ WarningsAsErrors:  >
     performance-inefficient-algorithm,
     performance-move-const-arg,
     performance-trivially-destructible,
+    performance-type-promotion-in-math-fn,
     performance-unnecessary-copy-initialization
 
 FormatStyle: 'file'

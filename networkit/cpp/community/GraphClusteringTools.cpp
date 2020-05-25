@@ -1,13 +1,15 @@
-#include <networkit/community/GraphClusteringTools.hpp>
+#include <cmath>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/community/GraphClusteringTools.hpp>
 
 namespace NetworKit {
 
 namespace GraphClusteringTools {
 
 float getImbalance(const Partition &zeta) {
-    float avg = ceil(
-            (float) zeta.numberOfElements() / (float) zeta.numberOfSubsets()); //TODO number of nodes and not number of elements
+    float avg = std::ceil(
+        (float)zeta.numberOfElements()
+        / (float)zeta.numberOfSubsets()); // TODO number of nodes and not number of elements
     std::vector<count> clusterSizes = zeta.subsetSizes();
     float maxClusterSize = (float) *std::max_element(clusterSizes.begin(),
             clusterSizes.end());
