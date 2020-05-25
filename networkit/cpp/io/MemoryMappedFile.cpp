@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include <networkit/io/MemoryMappedFile.hpp>
 
 namespace NetworKit {

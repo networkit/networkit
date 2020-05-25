@@ -8,6 +8,7 @@
 #ifndef NETWORKIT_AUXILIARY_SET_INTERSECTOR_HPP_
 #define NETWORKIT_AUXILIARY_SET_INTERSECTOR_HPP_
 
+#include <cstdint>
 #include <vector>
 #include <set>
 
