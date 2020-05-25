@@ -247,63 +247,71 @@ if(NETWORKIT_PYTHON)
 	 foreach (EXT _NetworKit base helpers structures matching graph traversal graphtools
 			 distance dynamics generators centrality community components graphio randomization
 			 linkprediction sparsification viz flow simulation coarsening scd correlation clique
-			 globals independentset engineering)
+			 globals independentset engineering stats profiling/stat)
 		if(NOT EXISTS "${PROJECT_SOURCE_DIR}/networkit/${EXT}.cpp")
 			message(FATAL_ERROR "networkit/${EXT}.cpp is missing. Invoke Cython manually.")
 		endif()
+		if(${EXT} STREQUAL profiling/stat)
+			set(TARGET_LIB "stat")
+		else()
+			set(TARGET_LIB ${EXT})
+		endif()
 
-		add_library(${EXT} MODULE networkit/${EXT}.cpp)
-		target_include_directories(${EXT} BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
-		target_include_directories(${EXT} PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
-		target_include_directories(${EXT} PRIVATE "${NETWORKIT_PYTHON}")
+		add_library(${TARGET_LIB} MODULE networkit/${EXT}.cpp)
+		target_include_directories(${TARGET_LIB} BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
+		target_include_directories(${TARGET_LIB} PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
+		target_include_directories(${TARGET_LIB} PRIVATE "${NETWORKIT_PYTHON}")
 
 		if(NOT NETWORKIT_BUILD_CORE)
 			if(NOT EXTERNAL_NETWORKIT_CORE)
 				message(FATAL_ERROR "Core build is disabled but no external core library was found.")
 			endif()
-			target_link_libraries(${EXT} PRIVATE ${EXTERNAL_NETWORKIT_CORE})
+			target_link_libraries(${TARGET_LIB} PRIVATE ${EXTERNAL_NETWORKIT_CORE})
 		else()
-			target_link_libraries(${EXT} PRIVATE networkit)
+			target_link_libraries(${TARGET_LIB} PRIVATE networkit)
 		endif()
 
-		set_target_properties(${EXT} PROPERTIES
+		set_target_properties(${TARGET_LIB} PROPERTIES
 					CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 					COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 					LINK_FLAGS "${NETWORKIT_LINK_FLAGS}"
 					PREFIX ""
-					OUTPUT_NAME "${EXT}.${NETWORKIT_PYTHON_SOABI}")
+					OUTPUT_NAME "${TARGET_LIB}.${NETWORKIT_PYTHON_SOABI}")
 		# If rpath-content is set explicitly, omit the dynamic binary path
 		if(NETWORKIT_PYTHON_RPATH)
-			set_target_properties(${EXT} PROPERTIES
+			set_target_properties(${TARGET_LIB} PROPERTIES
 				INSTALL_RPATH "${NETWORKIT_PYTHON_RPATH}")
 		else()
-			if(${EXT} STREQUAL _NetworKit)
+			if(${TARGET_LIB} STREQUAL _NetworKit)
 				# DSOs on Apple OSes use different conventions for RPATH.
 				if(APPLE)
-					set_target_properties(${EXT} PROPERTIES
+					set_target_properties(${TARGET_LIB} PROPERTIES
 						INSTALL_RPATH "@loader_path")
 				else()
-					set_target_properties(${EXT} PROPERTIES
+					set_target_properties(${TARGET_LIB} PROPERTIES
 						INSTALL_RPATH "$ORIGIN")
 				endif()
 			else()
 				# DSOs on Apple OSes use different conventions for RPATH.
 				if(APPLE)
-					set_target_properties(${EXT} PROPERTIES
+					set_target_properties(${TARGET_LIB} PROPERTIES
 						INSTALL_RPATH "@loader_path/..")
 				else()
-					set_target_properties(${EXT} PROPERTIES
+					set_target_properties(${TARGET_LIB} PROPERTIES
 						INSTALL_RPATH "$ORIGIN/..")
 				endif()
 			endif()
 		endif()
 
-	target_link_libraries(${EXT} PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
-		if(${EXT} STREQUAL _NetworKit)
-			install(TARGETS ${EXT}
+	target_link_libraries(${TARGET_LIB} PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
+		if(${TARGET_LIB} STREQUAL _NetworKit)
+			install(TARGETS ${TARGET_LIB}
 				LIBRARY DESTINATION ${NETWORKIT_LIB_DEST})
+		elseif(${TARGET_LIB} STREQUAL stat)
+			install(TARGETS ${TARGET_LIB}
+				LIBRARY DESTINATION "${NETWORKIT_LIB_DEST}/networkit/profiling")
 		else()
-			install(TARGETS ${EXT}
+			install(TARGETS ${TARGET_LIB}
 				LIBRARY DESTINATION "${NETWORKIT_LIB_DEST}/networkit")
 		endif()
 	endforeach()
