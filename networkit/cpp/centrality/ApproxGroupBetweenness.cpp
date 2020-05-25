@@ -79,7 +79,7 @@ void ApproxGroupBetweenness::run() {
     // Transfer edges from hyperEdgesPerSample to hyperEdges and prepare building
     // nodeDegrees.
     std::vector<count> tempDegrees(n);
-    for (auto edge : hyperEdgesPerSample) {
+    for (const auto &edge : hyperEdgesPerSample) {
         node hyperEdgeStart = hyperEdges.size();
         hyperEdges.push_back(edge.size());
         for (auto const &n : edge) {

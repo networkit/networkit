@@ -134,7 +134,7 @@ void Lamg<Matrix>::setup(const Matrix& laplacianMatrix) {
 
         // create solver for every component
         index compIdx = 0;
-        for (auto component : con.getPartition().getSubsets()) {
+        for (const auto &component : con.getPartition().getSubsets()) {
             components[compIdx] = std::vector<index>(component.begin(), component.end());
 
             std::vector<Triplet> triplets;

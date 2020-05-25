@@ -65,6 +65,7 @@ WarningsAsErrors:  >
     bugprone-unused-return-value,
     bugprone-use-after-move,
     bugprone-virtual-near-miss,
+    performance-for-range-copy,
     performance-implicit-conversion-in-loop,
     performance-inefficient-algorithm,
     performance-move-const-arg,

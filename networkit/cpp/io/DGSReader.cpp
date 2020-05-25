@@ -69,7 +69,7 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
                     std::vector<std::string> categories = Aux::StringTools::split(categoriesCommaSeparated, ',');
 
                     std::vector<std::string> currentNodeCategories;
-                    for (std::string category : categories) {
+                    for (const std::string &category : categories) {
                         currentNodeCategories.push_back(category);
                     }
                     nodeCategories.push_back(currentNodeCategories);
