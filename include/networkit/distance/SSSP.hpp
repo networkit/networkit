@@ -167,8 +167,6 @@ protected:
     std::vector<edgeweight> distances;
     std::vector<std::vector<node>> previous; // predecessors on shortest path
     std::vector<bigfloat> npaths;
-    std::vector<uint8_t> visited;
-    uint8_t ts;
 
     std::vector<node> nodesSortedByDistance;
 
