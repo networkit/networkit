@@ -4,8 +4,8 @@
 *  Created on: 30.03.2016
 *      Author: Maximilian Vogel
 */
+#include <cmath>
 #include <map>
-#include <math.h>
 #include <omp.h>
 
 #include <networkit/auxiliary/Random.hpp>

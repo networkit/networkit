@@ -6,12 +6,12 @@
  *      based on code by Elisabetta Bergamini
  */
 
-#include <networkit/centrality/DynKatzCentrality.hpp>
-#include <networkit/auxiliary/Timer.hpp>
-#include <networkit/auxiliary/NumericTools.hpp>
-#include <float.h>
-#include <math.h>
+#include <cfloat>
+#include <cmath>
 #include <omp.h>
+#include <networkit/auxiliary/NumericTools.hpp>
+#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/centrality/DynKatzCentrality.hpp>
 
 namespace NetworKit {
 

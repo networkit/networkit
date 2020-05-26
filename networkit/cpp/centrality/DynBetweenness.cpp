@@ -5,11 +5,11 @@
  *      Author: Arie Slobbe, Elisabetta Bergamini
  */
 
-#include <queue>
+#include <algorithm>
+#include <ctime>
 #include <memory>
-#include<unordered_set>
-#include<algorithm>
-#include <time.h>
+#include <queue>
+#include <unordered_set>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>

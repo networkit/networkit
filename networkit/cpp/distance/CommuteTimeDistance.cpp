@@ -5,7 +5,7 @@
  *      Author: henning
  */
 
-#include <math.h>
+#include <cmath>
 #include <omp.h>
 
 #include <networkit/auxiliary/Log.hpp>

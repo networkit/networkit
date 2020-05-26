@@ -4,8 +4,8 @@
 *      Author: Maximilian Vogel
 */
 
+#include <cmath>
 #include <map>
-#include <math.h>
 #include <omp.h>
 
 #include <networkit/auxiliary/Parallel.hpp>

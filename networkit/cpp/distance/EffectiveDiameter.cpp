@@ -5,7 +5,7 @@
 *      Author: Marc Nemes
 */
 
-#include <math.h>
+#include <cmath>
 #include <omp.h>
 
 #include <networkit/auxiliary/Random.hpp>

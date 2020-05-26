@@ -22,6 +22,7 @@ Checks: >
     bugprone-virtual-near-miss,
     cppcoreguidelines-narrowing-conversions,
     modernize-use-override,
+    modernize-deprecated-headers,
     performance-for-range-copy,
     performance-implicit-conversion-in-loop,
     performance-inefficient-algorithm,
@@ -34,7 +35,6 @@ Checks: >
     performance-unnecessary-value-param,
 
 # Warnings whishlist
-#    modernize-deprecated-headers,
 #    modernize-use-using,
 #    modernize-avoid-c-arrays,
 #    modernize-use-emplace,
@@ -66,6 +66,7 @@ WarningsAsErrors:  >
     bugprone-unused-return-value,
     bugprone-use-after-move,
     bugprone-virtual-near-miss,
+    modernize-deprecated-headers,
     modernize-use-override,
     performance-for-range-copy,
     performance-implicit-conversion-in-loop,
