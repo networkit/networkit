@@ -175,6 +175,7 @@ std::vector<int> MocnikGenerator::boxSurface(MocnikGenerator::LayerState &s, int
     }
     // convert the list of grid cells from a multi to a one-dimensional index
     std::vector<int> seResult;
+    seResult.reserve(se.size());
     for (std::vector<int> &v : se) {
         seResult.push_back(toIndex(s, v));
     }
@@ -204,6 +205,7 @@ std::vector<int> MocnikGenerator::boxVolume(MocnikGenerator::LayerState &s, int 
     }
     // convert the list of grid cells from a multi to a one-dimensional index
     std::vector<int> seResult;
+    seResult.reserve(se.size());
     for (std::vector<int> &v : se) {
         seResult.push_back(toIndex(s, v));
     }

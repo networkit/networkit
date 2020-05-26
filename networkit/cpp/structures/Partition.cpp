@@ -99,6 +99,7 @@ void Partition::compact(bool useTurbo) {
 std::vector<count> Partition::subsetSizes() const {
     std::vector<count> sizes;
     std::map<index, count> map = this->subsetSizeMap();
+    sizes.reserve(map.size());
     for (auto kv : map) {
         sizes.push_back(kv.second);
     }

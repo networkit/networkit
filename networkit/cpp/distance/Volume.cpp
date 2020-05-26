@@ -61,6 +61,7 @@ std::vector<double> Volume::volume(const Graph &G, std::vector<double> rs, count
         }
     }
     std::vector<double> ys;
+    ys.reserve(xs.size());
     for (const auto &x : xs) {
         ys.push_back(x / samples);
     }
