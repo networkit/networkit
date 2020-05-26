@@ -66,7 +66,7 @@ void HopPlotApproximation::run() {
         }
     });
     // at zero distance, all nodes can only reach themselves
-    hopPlot[0] = 1/G->numberOfNodes();
+    hopPlot[0] = 1.0 / static_cast<double>(G->numberOfNodes());
     // as long as we need to connect more nodes
     while (!activeNodes.empty() && (maxDistance <= 0 || h < maxDistance)) {
         totalConnectedNodes = 0;

@@ -130,13 +130,11 @@ double Betweenness::maximum(){
     if (normalized) {
         return 1;
     }
-    double score;
+
     count n = G.numberOfNodes();
-    if (G.isDirected()) {
-        score = (n-1)*(n-2);
-    } else {
-        score = (n-1)*(n-2)/2;
-    }
+    double score = (n-1)*(n-2);
+    if (!G.isDirected())
+        score /= 2.;
     return score;
 }
 
