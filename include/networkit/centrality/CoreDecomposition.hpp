@@ -44,7 +44,7 @@ public:
     /**
      * Perform k-core decomposition of graph passed in constructor.
      */
-    void run();
+    void run() override;
 
     /**
      * Get the k-cores as a graph cover object.
@@ -72,7 +72,7 @@ public:
     *
     * @return The theoretical maximum centrality score.
     */
-    double maximum();
+    double maximum() override;
 
     /**
      * Get the node order.
@@ -87,9 +87,7 @@ public:
      * The algorithm ParK can run in parallel under certain conditions,
      * the bucket PQ based one cannot.
      */
-    virtual bool isParallel() const {
-        return canRunInParallel;
-    }
+    bool isParallel() const override { return canRunInParallel; }
 
 private:
 

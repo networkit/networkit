@@ -36,7 +36,7 @@ public:
      */
     DynSSSP(const Graph& G, node source, bool storePredecessors = true, node target = none);
 
-    virtual ~DynSSSP() = default;
+    ~DynSSSP() override = default;
 
     /**
     * Returns true or false depending on whether the node previoulsy specified

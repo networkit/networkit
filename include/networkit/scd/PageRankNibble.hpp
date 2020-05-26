@@ -38,7 +38,7 @@ public:
      */
     PageRankNibble(const Graph& g, double alpha, double epsilon);
 
-    ~PageRankNibble() = default;
+    ~PageRankNibble() override = default;
 
     std::map<node, std::set<node>> run(const std::set<node>& seeds) override;
 

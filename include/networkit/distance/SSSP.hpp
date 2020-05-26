@@ -40,10 +40,10 @@ public:
     SSSP(const Graph &G, node source, bool storePaths = true,
          bool storeNodesSortedByDistance = false, node target = none);
 
-    virtual ~SSSP() = default;
+    ~SSSP() override = default;
 
     /** Computes the shortest paths from the source to all other nodes. */
-    virtual void run() = 0;
+    void run() override = 0;
 
     /**
      * Returns a vector of weighted distances from the source node, i.e. the

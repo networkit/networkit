@@ -38,8 +38,7 @@ public:
     /**
      * Destructor.
      */
-    virtual ~SpanningEdgeCentrality() = default;
-
+    ~SpanningEdgeCentrality() override = default;
 
     /**
     * Compute spanning edge centrality scores exactly for all edges. This solves a linear system for each edge, so the empirical running time is O(m^2),

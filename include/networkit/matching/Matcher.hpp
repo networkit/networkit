@@ -39,14 +39,13 @@ public:
     Matcher(const Graph& G, const std::vector<double>& edgeScores);
 
     /** Default destructor */
-    virtual ~Matcher() = default;
+    ~Matcher() override = default;
 
     /**
      * Run the matching algorithm on the stored graph and return a matching.
      * @return A matching of the stored graph.
      */
-    virtual void run() = 0;
-
+    void run() override = 0;
 
     Matching getMatching() const;
 };

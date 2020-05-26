@@ -36,12 +36,12 @@ public:
     CommunityDetectionAlgorithm(const Graph& G, const Partition baseClustering);
 
     /** Default destructor */
-    virtual ~CommunityDetectionAlgorithm() = default;
+    ~CommunityDetectionAlgorithm() override = default;
 
     /**
      * Apply algorithm to graph
      */
-    virtual void run() = 0;
+    void run() override = 0;
 
     /**
      * Returns the result of the run method or throws an error, if the algorithm hasn't run yet.
@@ -52,7 +52,7 @@ public:
     /**
      * @return string representation of algorithm and parameters.
      */
-    virtual std::string toString() const;
+    std::string toString() const override;
 
 protected:
     const Graph* G;

@@ -26,12 +26,12 @@ class ConjugateGradient : public LinearSolver<Matrix> {
 public:
     ConjugateGradient(double tolerance = 1e-5) : LinearSolver<Matrix>(tolerance), matrix(Matrix()) {}
 
-    void setup(const Matrix& matrix) {
+    void setup(const Matrix &matrix) override {
         this->matrix = matrix;
         precond = Preconditioner(matrix);
     }
 
-    void setupConnected(const Matrix& matrix) {
+    void setupConnected(const Matrix &matrix) override {
         this->matrix = matrix;
         precond = Preconditioner(matrix);
     }
@@ -47,7 +47,8 @@ public:
      * @a status.residual must be nonnegative. You may also request that the algorithm
      * does not run for more than @a status.max_iters iterations.
      */
-    SolverStatus solve(const Vector& rhs, Vector& result, count maxConvergenceTime = 5 * 60 * 1000, count maxIterations = std::numeric_limits<count>::max());
+    SolverStatus solve(const Vector &rhs, Vector &result, count maxConvergenceTime = 5 * 60 * 1000,
+                       count maxIterations = std::numeric_limits<count>::max()) override;
 
     /**
      * Solves the linear systems in parallel.
@@ -56,7 +57,9 @@ public:
      * @param maxConvergenceTime
      * @param maxIterations
      */
-    void parallelSolve(const std::vector<Vector>& rhs, std::vector<Vector>& results, count maxConvergenceTime = 5 * 60 * 1000, count maxIterations = std::numeric_limits<count>::max());
+    void parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
+                       count maxConvergenceTime = 5 * 60 * 1000,
+                       count maxIterations = std::numeric_limits<count>::max()) override;
 
 private:
     Matrix matrix;

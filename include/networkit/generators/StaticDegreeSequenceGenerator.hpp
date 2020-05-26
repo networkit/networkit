@@ -36,8 +36,7 @@ public:
 
     virtual bool getRealizable() const;
 
-
-    virtual Graph generate() = 0;
+    Graph generate() override = 0;
 };
 
 } /* namespace NetworKit */

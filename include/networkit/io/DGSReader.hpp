@@ -34,7 +34,7 @@ public:
      * @param[in]  path  Path to file in DGS format.
      * @param[in]  Gproxy  Graph event proxy receives the events from the file.
      */
-    void read(std::string path, GraphEventProxy &Gproxy);
+    void read(std::string path, GraphEventProxy &Gproxy) override;
 };
 
 } /* namespace NetworKit */

@@ -21,7 +21,7 @@ namespace NetworKit {
 class KruskalMSF final: public SpanningForest {
 public:
     KruskalMSF(const Graph& G);
-    virtual ~KruskalMSF() = default;
+    ~KruskalMSF() override = default;
 
     /**
      * Computes for each component a minimum weight spanning tree

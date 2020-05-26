@@ -27,9 +27,9 @@ class Curveball final : public Algorithm {
 public:
     explicit Curveball(const Graph &G);
 
-    ~Curveball();
+    ~Curveball() override;
 
-    void run() override final {
+    void run() final {
         throw std::runtime_error("run() is not supported by this algorithm; use run(trades)");
     };
 
@@ -37,9 +37,9 @@ public:
 
     Graph getGraph(bool parallel = false);
 
-    std::string toString() const override final;
+    std::string toString() const final;
 
-    bool isParallel() const override final { return false; }
+    bool isParallel() const final { return false; }
 
     count getNumberOfAffectedEdges() const;
 

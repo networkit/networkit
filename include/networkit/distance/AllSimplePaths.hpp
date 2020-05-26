@@ -32,7 +32,7 @@ namespace NetworKit {
         */
         AllSimplePaths(const Graph& G, node source, node target, count cutoff = none);
 
-        ~AllSimplePaths() = default;
+        ~AllSimplePaths() override = default;
 
         /**
         * This method computes all possible paths from a given source node to a target node.

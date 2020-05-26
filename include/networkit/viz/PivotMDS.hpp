@@ -34,7 +34,7 @@ class PivotMDS final : public GraphLayoutAlgorithm<double> {
     /*
      * Default destructor
      */
-    ~PivotMDS() = default;
+    ~PivotMDS() override = default;
 
     /**
      * Runs the PivotMDS algorithm.

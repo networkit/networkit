@@ -36,7 +36,7 @@ public:
     /**
      * Execute the algorithm.
      */
-    virtual void run() override;
+    void run() override;
 
     /**
      * Get a boolean attribute that indicates for each edge if it is part of the calculated maximum-weight spanning forest.
@@ -76,12 +76,12 @@ public:
     /**
      * @return false - this algorithm is not parallelized
      */
-    virtual bool isParallel() const override;
+    bool isParallel() const override;
 
     /**
      * @return The name of this algorithm.
      */
-    virtual std::string toString() const override;
+    std::string toString() const override;
 
 private:
     struct weightedEdge {

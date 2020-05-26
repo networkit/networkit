@@ -24,11 +24,11 @@ private:
 public:
     LevelAggregation(const Matrix& A, const Matrix& P, const Matrix& R) : Level<Matrix>(LevelType::AGGREGATION, A), P(P), R(R) {}
 
-    void coarseType(const Vector& xf, Vector& xc) const;
+    void coarseType(const Vector &xf, Vector &xc) const override;
 
-    void restrict(const Vector& bf, Vector& bc) const;
+    void restrict(const Vector &bf, Vector &bc) const override;
 
-    void interpolate(const Vector& xc, Vector& xf) const;
+    void interpolate(const Vector &xc, Vector &xf) const override;
 };
 
 template<class Matrix>

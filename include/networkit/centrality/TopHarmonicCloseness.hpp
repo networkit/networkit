@@ -43,7 +43,7 @@ public:
   /**
    * Computes top-k harmonic closeness on the graph passed in the constructor.
    */
-  void run();
+  void run() override;
 
   /**
    * Returns a list with the k nodes with highest harmonic closeness.

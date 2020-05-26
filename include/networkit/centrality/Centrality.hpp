@@ -32,12 +32,12 @@ public:
     Centrality(const Graph& G, bool normalized=false, bool computeEdgeCentrality=false);
 
     /** Default destructor */
-    virtual ~Centrality() = default;
+    ~Centrality() override = default;
 
     /**
      * Computes centrality scores on the graph passed in constructor.
      */
-    virtual void run() = 0;
+    void run() override = 0;
 
     /**
      * Get a vector containing the centrality score for each node in the graph.

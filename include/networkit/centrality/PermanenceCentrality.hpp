@@ -10,7 +10,7 @@ namespace NetworKit {
 class PermanenceCentrality : public Algorithm {
 public:
     PermanenceCentrality(const Graph &G, const Partition &P);
-    void run();
+    void run() override;
     double getPermanence(node u);
     double getIntraClustering(node u);
 private:

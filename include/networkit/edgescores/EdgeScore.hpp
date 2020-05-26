@@ -26,7 +26,7 @@ public:
     EdgeScore(const Graph &G);
 
     /** Compute the edge score. */
-    virtual void run();
+    void run() override;
 
     /** Get a vector containing the score for each edge in the graph.
      *

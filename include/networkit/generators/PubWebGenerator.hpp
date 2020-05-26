@@ -46,7 +46,7 @@ class PubWebGenerator final : public StaticGraphGenerator {
 public:
     PubWebGenerator() {
     } // nullary constructor needed for Python Shell - do not use this to construct instance
-    ~PubWebGenerator() = default;
+    ~PubWebGenerator() override = default;
 
     PubWebGenerator(count numNodes, count numberOfDenseAreas, coordinate neighborhoodRadius,
                     count maxNumberOfNeighbors);

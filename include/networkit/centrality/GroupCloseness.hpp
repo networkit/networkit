@@ -41,7 +41,7 @@ public:
      * Computes the group with maximum closeness on the graph passed in the
      * constructor.
      */
-    void run();
+    void run() override;
 
     /**
      * Returns group with maximum closeness.
