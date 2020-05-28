@@ -1,6 +1,6 @@
 name='networkit'
 
-version='6.0'
+version='7.0'
 
 url='https://networkit.github.io/'
 
@@ -41,10 +41,10 @@ classifiers = [
 'License :: OSI Approved :: MIT License',
 'Natural Language :: English',
 'Operating System :: OS Independent', 'Programming Language :: C++',
-'Programming Language :: Python :: 3.3',
-'Programming Language :: Python :: 3.4',
 'Programming Language :: Python :: 3.5',
 'Programming Language :: Python :: 3.6',
+'Programming Language :: Python :: 3.7',
+'Programming Language :: Python :: 3.8',
 'Topic :: Software Development :: Libraries :: Python Modules',
 'Topic :: Scientific/Engineering :: Bio-Informatics',
 'Topic :: Scientific/Engineering :: Chemistry',

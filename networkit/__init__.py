@@ -26,10 +26,11 @@ Usage examples can be found on https://github.com/networkit/networkit/blob/Dev/n
 __author__ = "Christian Staudt"
 __copyright__ = "Copyright (c) 2014 Christan Staudt"
 __credits__ = ["Eugenio Angriman", "Lukas Barth", "Miriam Beddig", "Elisabetta Bergamini", "Stefan Bertsch", "Pratistha Bhattarai", "Andreas Bilke", "Simon Bischof", \
-	"Guido Brückner", "Mark Erb",  "Kolja Esders", "Patrick Flick", "Michael Hamann", "Lukas Hartmann", "Daniel Hoske", "Gerd Lindner", "Moritz v. Looz", "Yassine Marrakchi", "Henning Meyerhenke", \
-	"Manuel Penschuck", "Marcel Radermacher", "Klara Reichard", "Marvin Ritter", "Aleksejs Sazonovs", "Hung Tran", "Florian Weber", "Michael Wegner", "Jörg Weisbarth", "Kolja Esders"]
+	"Fabian Brandt-Tumescheit", "Guido Brückner", "Mark Erb",  "Kolja Esders", "Patrick Flick", "Michael Hamann", "Lukas Hartmann", "Daniel Hoske", "Gerd Lindner", \
+        "Moritz v. Looz", "Yassine Marrakchi", "Henning Meyerhenke", "Manuel Penschuck", "Marcel Radermacher", "Klara Reichard", "Marvin Ritter", \
+        "Aleksejs Sazonovs", "Hung Tran", "Alexander van der Grinten", "Florian Weber", "Michael Wegner", "Jörg Weisbarth"]
 __license__ = "MIT"
-__version__ = "6.0"
+__version__ = "7.0"
 
 # standard library modules
 import csv
