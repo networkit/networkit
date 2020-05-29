@@ -38,7 +38,7 @@
 
 #include <networkit/viz/PivotMDS.hpp>
 
-#include <stdio.h>
+#include <cstdio>
 
 namespace NetworKit {
 

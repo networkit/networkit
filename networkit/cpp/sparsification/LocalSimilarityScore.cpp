@@ -5,9 +5,9 @@
  *      Author: Gerd Lindner
  */
 
-#include <networkit/sparsification/LocalSimilarityScore.hpp>
-#include <math.h> //log
+#include <cmath> //log
 #include <set>
+#include <networkit/sparsification/LocalSimilarityScore.hpp>
 
 namespace NetworKit {
 

@@ -15,8 +15,8 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
 
-#include <math.h>
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <omp.h>
 

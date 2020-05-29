@@ -5,7 +5,7 @@
  *      Author: Marvin Pogoda
  */
 
-#include <math.h>
+#include <cmath>
 #include <omp.h>
 
 #include <networkit/auxiliary/BucketPQ.hpp>

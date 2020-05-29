@@ -9,7 +9,7 @@
 #define NOMINMAX // windows.h by default defines the maros min/max, which prevent the usage of numeric_limits
 #include <windows.h>
 #else
-#include <stdlib.h>
+#include <cstdlib>
 #endif
 
 #include <algorithm>

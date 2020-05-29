@@ -13,8 +13,8 @@
 #include <networkit/dynamics/GraphEvent.hpp>
 #include <networkit/distance/DynSSSP.hpp>
 
-#include <math.h>
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <omp.h>
 

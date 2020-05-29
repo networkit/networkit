@@ -5,11 +5,11 @@
  *      Author: Gerd Lindner
  */
 
+#include <cmath>
 #include <gtest/gtest.h>
 #include <networkit/Globals.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/sparsification/LocalDegreeScore.hpp>
-#include <math.h>
 
 namespace NetworKit {
 

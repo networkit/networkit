@@ -6,8 +6,8 @@
  */
 
 #include <atomic>
+#include <cstring>
 #include <fstream>
-#include <string.h>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/io/NetworkitBinaryReader.hpp>

@@ -1,7 +1,7 @@
-#include <networkit/auxiliary/SignalHandling.hpp>
-#include <exception>
 #include <atomic>
-#include <signal.h>
+#include <csignal>
+#include <exception>
+#include <networkit/auxiliary/SignalHandling.hpp>
 
 namespace Aux {
 
