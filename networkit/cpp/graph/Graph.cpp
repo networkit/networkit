@@ -770,7 +770,7 @@ void Graph::removeEdge(node u, node v) {
     }
 }
 
-std::pair<count, count> const Graph::size() const noexcept {
+std::pair<count, count> Graph::size() const noexcept {
     return GraphTools::size(*this);
 }
 

@@ -907,9 +907,7 @@ public:
 
         bool operator!=(const NeighborWeightIterator &rhs) const { return !(*this == rhs); }
 
-        const std::pair<node, edgeweight> operator*() const {
-            return std::make_pair(*nIter, *wIter);
-        }
+        std::pair<node, edgeweight> operator*() const { return std::make_pair(*nIter, *wIter); }
     };
 
     /**
@@ -1578,7 +1576,7 @@ public:
      * @return a pair (n, m) where n is the number of nodes and m is the
      * number of edges
      */
-    std::pair<count, count> const TLX_DEPRECATED(size() const noexcept);
+    std::pair<count, count> TLX_DEPRECATED(size() const noexcept);
 
     /**
      * @return the density of the graph

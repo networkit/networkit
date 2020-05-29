@@ -32,6 +32,7 @@ Checks: >
     performance-type-promotion-in-math-fn,
     performance-unnecessary-copy-initialization,
     performance-unnecessary-value-param,
+    readability-const-return-type
 
 # Warnings whishlist
 #    modernize-deprecated-headers,
@@ -74,7 +75,8 @@ WarningsAsErrors:  >
     performance-move-const-arg,
     performance-trivially-destructible,
     performance-type-promotion-in-math-fn,
-    performance-unnecessary-copy-initialization
+    performance-unnecessary-copy-initialization,
+    readability-const-return-type
 
 FormatStyle: 'file'
 HeaderFilterRegex: '.*\/include\/networkit\/.*\.hpp'
