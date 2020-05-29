@@ -5236,6 +5236,7 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	vector[pair[node, node]] randomEdges(_Graph G, count numEdges) nogil except +
 	pair[count, count] size(_Graph G) nogil except +
 	double density(_Graph G) nogil except +
+	double volume(_Graph G) nogil except +
 	_Graph copyNodes(_Graph G) nogil except +
 	_Graph toUndirected(_Graph G) nogil except +
 	_Graph toUnweighted(_Graph G) nogil except +
@@ -5528,6 +5529,23 @@ cdef class GraphTools:
 			The density of the input graph.
 		"""
 		return density(graph._this)
+
+	@staticmethod
+	def volume(Graph graph):
+		"""
+		Get the volume of the input graph.
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		double
+			The volume of the input graph.
+		"""
+		return volume(graph._this)
 
 	@staticmethod
 	def copyNodes(Graph graph):

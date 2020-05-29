@@ -129,6 +129,14 @@ std::pair<node, node> size(const Graph &G) noexcept;
 double density(const Graph &G) noexcept;
 
 /**
+ * Returns the volume (sum of the out-degree of all nodes) of the graph.
+ *
+ * @param G The input graph.
+ * @return Volume of the graph.
+ */
+double volume(const Graph &G);
+
+/**
  * Copies all nodes of the input graph to a new graph (edges are not copied).
  *
  * @param G The input graph.

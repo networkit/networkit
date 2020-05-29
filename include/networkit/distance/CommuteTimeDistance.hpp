@@ -56,11 +56,6 @@ public:
      */
     uint64_t getSetupTime() const;
 
-    /**
-     * Returns the commute time distance between node @a u and node @a v.
-     * @return commute time distance between the two nodes. Needs to call run() or runApproximation() first.
-     */
-    double distance(node u, node v);
 
     /**
      * Returns the commute time distance between node @a u and node @a v.
@@ -71,10 +66,11 @@ public:
     double runSinglePair(node u, node v);
 
     /**
-     * Returns the sum of the distances from node @a u.
-     * This method does not need the initial preprocessing.
-     * @return commute sum of the distances from the node.
+     * Returns the commute time distance between node @a u and node @a v.
+     * @return commute time distance between the two nodes. Needs to call run() or runApproximation() first.
      */
+    double distance(node u, node v);
+
     double runSingleSource(node u);
 
 protected:
