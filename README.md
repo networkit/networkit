@@ -28,11 +28,11 @@ package:
 
 - A modern C++ compiler, e.g.: [g++] (&gt;= 4.8) or [clang++] (&gt;= 3.7)
 - OpenMP for parallelism (usually ships with the compiler)
-- Python3 (3.4 or higher is recommended, 3.3 supported)
+- Python3 (3.5 or higher is supported)
 - [Pip]
 - [CMake] version 3.5 or higher (e.g., `pip3 install cmake`)
 - Build system: [Make] or [Ninja]
-- Cython version 0.21 or higher (e.g., `pip3 install cython`)
+- Cython version 0.29 or higher (e.g., `pip3 install cython`)
 
 ## Install
 
