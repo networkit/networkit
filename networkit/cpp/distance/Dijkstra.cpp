@@ -24,18 +24,11 @@ void Dijkstra::run() {
     auto infDist = std::numeric_limits<edgeweight>::max();
     std::fill(distances.begin(), distances.end(), infDist);
 
-    if (distances.size() < G->upperNodeIdBound()) {
+    if (distances.size() < G->upperNodeIdBound()) 
         distances.resize(G->upperNodeIdBound(), infDist);
-        visited.resize(G->upperNodeIdBound(), ts);
-    }
 
     sumDist = 0.;
     reachedNodes = 1;
-
-    if (ts++ == std::numeric_limits<uint8_t>::max()) {
-        ts = 1;
-        std::fill(visited.begin(), visited.end(), 0);
-    }
 
     if (storePaths) {
         previous.clear();
@@ -52,7 +45,6 @@ void Dijkstra::run() {
 
     // priority queue with distance-node pairs
     distances[source] = 0.;
-    visited[source] = ts;
     heap.push(source);
 
     auto initPath = [&](node u, node v) {
@@ -69,7 +61,7 @@ void Dijkstra::run() {
         sumDist += distances[u];
         TRACE("current node in Dijkstra: ", u);
         TRACE("pq size: ", heap.size());
-        if ((breakWhenFound && target == u) || visited[u] != ts)
+        if ((breakWhenFound && target == u) || distances[u] == infDist)
             break;
 
         if (storeNodesSortedByDistance)
@@ -77,8 +69,7 @@ void Dijkstra::run() {
 
         G->forNeighborsOf(u, [&](node v, edgeweight w) {
             double newDist = distances[u] + w;
-            if (ts != visited[v]) {
-                visited[v] = ts;
+            if (distances[v] == infDist) {
                 distances[v] = newDist;
                 heap.push(v);
                 ++reachedNodes;

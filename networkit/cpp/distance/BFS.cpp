@@ -23,15 +23,8 @@ void BFS::run() {
     const auto infDist = std::numeric_limits<edgeweight>::max();
     std::fill(distances.begin(), distances.end(), infDist);
 
-    if (distances.size() < z) {
+    if (distances.size() < z) 
         distances.resize(z, infDist);
-        visited.resize(z, ts);
-    }
-
-    if (ts++ == std::numeric_limits<uint8_t>::max()) {
-        ts = 1;
-        std::fill(visited.begin(), visited.end(), 0);
-    }
 
     if (storePaths) {
         previous.clear();
@@ -49,7 +42,6 @@ void BFS::run() {
     std::queue<node> q;
     q.push(source);
     distances[source] = 0.;
-    visited[source] = ts;
 
     bool breakWhenFound = (target != none);
     while (!q.empty()) {
@@ -65,9 +57,8 @@ void BFS::run() {
 
         // insert untouched neighbors into queue
         G->forNeighborsOf(u, [&](node v) {
-            if (ts != visited[v]) {
+            if (distances[v] == infDist) {
                 q.push(v);
-                visited[v] = ts;
                 distances[v] = distances[u] + 1.;
                 sumDist += distances[v];
                 ++reachedNodes;
