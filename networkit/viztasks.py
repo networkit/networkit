@@ -37,7 +37,7 @@ def drawGraph(G, **kwargs):
 		raise MissingDependencyError("networkx")
 	nxG = nxadapter.nk2nx(G)
 	if not "node_size" in kwargs:
-		kwargs["node_size"] =[30+270*s for s in centrality.DegreeCentrality(G,True).run().scores()],
+		kwargs["node_size"] = [30+270*s for s in centrality.DegreeCentrality(G,True).run().scores()]
 	networkx.draw(nxG, **kwargs)
 
 def drawCommunityGraph(G, zeta, **kwargs):
