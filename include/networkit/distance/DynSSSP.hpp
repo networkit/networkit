@@ -52,7 +52,7 @@ public:
     *
     * @param t Node to be `observed`.
     */
-    void setTargetNode(const node t = 0);
+    void setTargetNode(node t = 0);
 
     /**
      * Returns the predecessor nodes of @a t on all shortest paths from source to @a t.

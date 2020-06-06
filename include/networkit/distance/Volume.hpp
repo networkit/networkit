@@ -41,7 +41,7 @@ public:
     * @param samples	the number of samples
     *
     **/
-    static double volume(const Graph &G, const double r, const count samples);
+    static double volume(const Graph &G, double r, count samples);
 
     /**
     * Number of nodes within different given radii; average for many nodes
@@ -58,7 +58,7 @@ public:
     * @param samples	the number of samples
     *
     **/
-    static std::vector<double> volume(const Graph &G, const std::vector<double> rs, const count samples);
+    static std::vector<double> volume(const Graph &G, std::vector<double> rs, count samples);
 };
 
 } /* namespace NetworKit */

@@ -39,12 +39,12 @@ public:
      * Creates a SortedList of size @a size accepting key values from 0 to
      * @a maxKey.
      */
-    SortedList(const uint64_t size, const uint64_t maxKey);
+    SortedList(uint64_t size, uint64_t maxKey);
 
     /**
      * Insert a key-value element.
      */
-    void insert(const uint64_t newElement, const double newValue);
+    void insert(uint64_t newElement, double newValue);
 
     /**
      * Returns the value at position @a i in the ranking.

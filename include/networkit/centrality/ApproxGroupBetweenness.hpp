@@ -23,8 +23,7 @@ public:
      * @param groupSize Size of the set of nodes.
      * @aram epsilon Determines the accuracy of the approximation.
      */
-    ApproxGroupBetweenness(const Graph &G, const count groupSize,
-                           const double epsilon);
+    ApproxGroupBetweenness(const Graph &G, count groupSize, double epsilon);
 
     /**
      * Approximately computes a set of nodes with maximum groupbetweenness. Based
@@ -41,8 +40,7 @@ public:
     /**
      * Returns the score of the given set.
      */
-    double scoreOfGroup(const std::vector<node> &S,
-                        const bool normalized = false) const;
+    double scoreOfGroup(const std::vector<node> &S, bool normalized = false) const;
 
 protected:
     const Graph &G;

@@ -81,7 +81,7 @@ private:
      * @param numVectors Number of test vectors to create.
      * @return The created test vectors.
      */
-    std::vector<Vector> generateTVs(const Matrix& matrix, Vector& tv, const count numVectors) const;
+    std::vector<Vector> generateTVs(const Matrix &matrix, Vector &tv, count numVectors) const;
 
     /**
      * Adds high degree nodes as seeds to @a status.
@@ -143,8 +143,10 @@ private:
      * @param s[out] The best seed for node @a u.
      * @return @code{True} if a seed has been found for @a u, @code{false} otherwise.
      */
-    bool findBestSeedEnergyCorrected(const Matrix& strongAdjMatrix, const Matrix& affinityMatrix, const std::vector<double>& diag, const std::vector<Vector>& tVs, const std::vector<index>& status, const index u, index& s) const;
-
+    bool findBestSeedEnergyCorrected(const Matrix &strongAdjMatrix, const Matrix &affinityMatrix,
+                                     const std::vector<double> &diag,
+                                     const std::vector<Vector> &tVs,
+                                     const std::vector<index> &status, index u, index &s) const;
 
     /**
      * Determines if the Laplacian matrix @a A can be coarsened further.
