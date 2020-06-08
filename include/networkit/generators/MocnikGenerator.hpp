@@ -29,13 +29,13 @@ class MocnikGenerator final: public StaticGraphGenerator {
     /**
      * Collection of nodes.
      */
-    typedef std::vector<node> NodeCollection;
+    using NodeCollection = std::vector<node>;
 
     /**
      * The cell array reflects how nodes are assigned to a grid. Each element of
      * the vector corresponds to one grid cell.
      */
-    typedef std::vector<NodeCollection> CellArray;
+    using CellArray = std::vector<NodeCollection>;
 
     /**
      * State of a layer

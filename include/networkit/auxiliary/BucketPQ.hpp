@@ -16,9 +16,9 @@
 
 namespace Aux {
 
-typedef NetworKit::index index;
-typedef NetworKit::count count;
-typedef std::list<index> Bucket;
+using index = NetworKit::index;
+using count = NetworKit::count;
+using Bucket = std::list<index>;
 constexpr int64_t none = std::numeric_limits<int64_t>::max();
 
 /**

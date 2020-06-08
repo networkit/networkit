@@ -22,7 +22,7 @@ namespace NetworKit {
 class LinkPredictor {
 public:
   // Declare typedef in advance for use in the protected section
-  typedef std::pair<std::pair<node, node>, double> prediction; //!< Type of predictions
+  using prediction = std::pair<std::pair<node, node>, double>; //!< Type of predictions
 
 private:
   /**

@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-typedef index label; // a label is the same as a cluster id
+using label = index; // a label is the same as a cluster id
 
 /**
  * @ingroup community

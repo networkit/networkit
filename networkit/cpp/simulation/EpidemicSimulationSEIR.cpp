@@ -16,7 +16,7 @@ EpidemicSimulationSEIR::EpidemicSimulationSEIR(const Graph& G, count tMax, doubl
 
 void EpidemicSimulationSEIR::run() {
 
-    typedef EpidemicSimulationSEIR::State State;
+    using State = EpidemicSimulationSEIR::State;
 
     index t = 0;
 

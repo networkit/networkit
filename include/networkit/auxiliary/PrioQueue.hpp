@@ -23,7 +23,7 @@ namespace Aux {
 template<class Key, class Value>
 class PrioQueue {
 private:
-    typedef std::pair<Key, Value> ElemType;
+    using ElemType = std::pair<Key, Value>;
 
     std::set<ElemType> pqset; // TODO: would std::map work and simplify things?
     std::vector<Key> mapValToKey;

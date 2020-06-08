@@ -31,8 +31,8 @@ Graph HavelHakimiGenerator::generate() {
     // this vertex is connected to the following elements
     // when done, the other connected vertices are moved to the next list in reverse order
 
-    typedef std::pair<count, node> DeficitAndNode;
-    typedef std::vector<std::list<DeficitAndNode> > Buckets;
+    using DeficitAndNode = std::pair<count, node>;
+    using Buckets = std::vector<std::list<DeficitAndNode>>;
 
     // put nodes in appropriate lists
     Buckets nodesByDeficit(numDegVals);

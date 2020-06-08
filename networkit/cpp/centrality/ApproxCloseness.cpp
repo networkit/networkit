@@ -14,10 +14,10 @@
 
 namespace NetworKit {
 
-typedef struct ListEntry_struct {
+struct ListEntry {
     node node_val;
     edgeweight dist_val;
-} ListEntry;
+};
 
 ApproxCloseness::ApproxCloseness(const Graph& G, count nSamples, double epsilon, bool normalized, CLOSENESS_TYPE type) : Centrality(G, normalized), nSamples(nSamples), epsilon(epsilon), type(type) {
     assert(nSamples > 0 && nSamples <= G.numberOfNodes() && epsilon >= 0);

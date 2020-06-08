@@ -23,6 +23,7 @@ Checks: >
     cppcoreguidelines-narrowing-conversions,
     modernize-use-override,
     modernize-deprecated-headers,
+    modernize-use-using,
     performance-for-range-copy,
     performance-implicit-conversion-in-loop,
     performance-inefficient-algorithm,
@@ -36,7 +37,6 @@ Checks: >
     readability-const-return-type
 
 # Warnings whishlist
-#    modernize-use-using,
 #    modernize-avoid-c-arrays,
 #    modernize-use-emplace,
 #    readability-avoid-const-params-in-decls,
@@ -69,6 +69,7 @@ WarningsAsErrors:  >
     bugprone-virtual-near-miss,
     modernize-deprecated-headers,
     modernize-use-override,
+    modernize-use-using,
     performance-for-range-copy,
     performance-implicit-conversion-in-loop,
     performance-inefficient-algorithm,
