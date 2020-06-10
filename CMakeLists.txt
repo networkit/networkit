@@ -244,7 +244,7 @@ if (NETWORKIT_CLANG_TIDY)
 endif()
 
 if(NETWORKIT_PYTHON)
-	 foreach (EXT _NetworKit base helpers structures matching graph traversal graphtools
+	 foreach (EXT base helpers structures matching graph traversal graphtools
 			 distance dynamics generators centrality community components graphio randomization
 			 linkprediction sparsification viz flow simulation coarsening scd correlation clique
 			 globals independentset engineering stats profiling/stat)

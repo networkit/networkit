@@ -142,7 +142,6 @@ def cythonizeFile(filepath):
 
 def buildNetworKit(install_prefix, externalCore=False, withTests=False, rpath=None):
 	# Cythonize file
-	cythonizeFile("networkit/_NetworKit.pyx")
 	cythonizeFile("networkit/base.pyx")
 	cythonizeFile("networkit/helpers.pyx")
 	cythonizeFile("networkit/structures.pyx")
