@@ -114,6 +114,39 @@ if cmakeCompiler is None:
 # functions for cythonizing and building networkit
 ################################################
 
+extension_module_names = [
+	"base",
+	"helpers",
+	"structures",
+	"matching",
+	"graph",
+	"traversal",
+	"graphtools",
+	"distance",
+	"dynamics",
+	"generators",
+	"centrality",
+	"community",
+	"components",
+	"graphio",
+	"randomization",
+	"linkprediction",
+	"sparsification",
+	"viz",
+	"flow",
+	"simulation",
+	"coarsening",
+	"scd",
+	"correlation",
+	"clique",
+	"globals",
+	"independentset",
+	"engineering",
+	"stats",
+	"profiling/stat"
+	]
+
+
 def cythonizeFile(filepath):
 	cpp_file = filepath.replace("pyx","cpp")
 
@@ -142,35 +175,8 @@ def cythonizeFile(filepath):
 
 def buildNetworKit(install_prefix, externalCore=False, withTests=False, rpath=None):
 	# Cythonize file
-	cythonizeFile("networkit/base.pyx")
-	cythonizeFile("networkit/helpers.pyx")
-	cythonizeFile("networkit/structures.pyx")
-	cythonizeFile("networkit/matching.pyx")
-	cythonizeFile("networkit/graph.pyx")
-	cythonizeFile("networkit/traversal.pyx")
-	cythonizeFile("networkit/graphtools.pyx")
-	cythonizeFile("networkit/distance.pyx")
-	cythonizeFile("networkit/dynamics.pyx")
-	cythonizeFile("networkit/generators.pyx")
-	cythonizeFile("networkit/centrality.pyx")
-	cythonizeFile("networkit/community.pyx")
-	cythonizeFile("networkit/components.pyx")
-	cythonizeFile("networkit/graphio.pyx")
-	cythonizeFile("networkit/randomization.pyx")
-	cythonizeFile("networkit/linkprediction.pyx")
-	cythonizeFile("networkit/sparsification.pyx")
-	cythonizeFile("networkit/viz.pyx")
-	cythonizeFile("networkit/flow.pyx")
-	cythonizeFile("networkit/simulation.pyx")
-	cythonizeFile("networkit/coarsening.pyx")
-	cythonizeFile("networkit/scd.pyx")
-	cythonizeFile("networkit/correlation.pyx")
-	cythonizeFile("networkit/clique.pyx")
-	cythonizeFile("networkit/globals.pyx")
-	cythonizeFile("networkit/independentset.pyx")
-	cythonizeFile("networkit/engineering.pyx")
-	cythonizeFile("networkit/stats.pyx")
-	cythonizeFile("networkit/profiling/stat.pyx")
+	for m in extension_module_names:
+		cythonizeFile("networkit/{}.pyx".format(m))
 	try:
 		os.makedirs(buildDirectory)
 	except FileExistsError:
@@ -343,7 +349,7 @@ setup(
 	platforms			= version.platforms,
 	classifiers			= version.classifiers,
 	cmdclass			= {'build_ext': build_ext},
-	ext_modules			= [Extension('_NetworKit', sources=[])],
+	ext_modules			= [Extension(m.replace('/', '.'), sources=[]) for m in extension_module_names],
 	test_suite			= 'nose.collector',
 	install_requires	= version.install_requires,
 	zip_safe			= False) # see https://cython.readthedocs.io/en/latest/src/reference/compilation.html
