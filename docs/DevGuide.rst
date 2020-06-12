@@ -24,20 +24,12 @@ Contribution Workflow
 
 The development of the NetworKit project takes place at our `official repository on GitHub <https://github.com/networkit/networkit>`__.
 
-There are two important branches you need to be aware of:
-
-* **master**: Release branch
-* **Dev**: Development (stage) branch used for active development
-
-The ``master`` branch contains all the stable code that is ready for use. There is no active development on this branch, it is just being updated when there is a new release.
-``Dev`` is the actual development branch and thus also contains more recent code that might not be completely stable yet. New features that are under development will be merged into this branch.
-
-In order to successfully contribute to the project and add your feature to the development branch, there are a couple of steps you need to follow:
+In order to successfully contribute to the project and add your feature to the master branch, there are a couple of steps you need to follow:
 
 1. Fork the NetworKit repository
 2. Create a feature branch
 3. Add your code
-4. Send a pull request
+4. Send a pull request (against the master branch)
 5. Participate in the pull request discussion
 
 In the following part we will take a closer look at each step of the workflow outlined above.
@@ -68,10 +60,10 @@ Now you can update your fork on a regular basis with changes from the original r
    git fetch upstream
 
    # Merge changes into your local branch
-   git checkout --track origin/Dev
-   git merge upstream/Dev
+   git checkout --track origin/master
+   git merge upstream/master
 
-This will for example allow you to keep the development branch ``Dev`` up to date. Doing this will prevent an unpleasent surprise once you're ready to submit your pull request since there will be less or no merge conflicts.
+This will for example allow you to keep the ``master`` branch up to date. Doing this will prevent an unpleasent surprise once you're ready to submit your pull request since there will be less or no merge conflicts.
 
 2. Create a Feature Branch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -80,12 +72,12 @@ To make sure that the work on your algorithm does not disrupt the development pr
 In order to have a coherent naming scheme that allows for easier communication, please name your branch in the following way: ``feature/descriptive-name-of-feature``.
 If we're assuming you're creating an implementation of the shortest path algorithm from Dijkstra, this could be ``feature/dijkstra-shortest-path`` for example. Make sure to pick a meaningful and short description that is easy to understand.
 
-New feature branches should be based off the development branch ``Dev`` where they will be merged back into at a later stage.
+New feature branches should be based off the ``master`` branch where they will be merged back into at a later stage.
 
 ::
 
-   # Make sure your branch is based off the development branch Dev
-   git checkout Dev
+   # Make sure your branch is based off the master branch
+   git checkout master
 
    # Create your new branch
    git checkout -b feature/[my-awesome-feature-name]
@@ -104,23 +96,23 @@ In this step you're going to make and commit the changes needed for your new fea
    git commit -m "[descriptive message about the changes you made]"
    git push
 
-Also, from time to time, you should make sure to keep your feature branch up to date with the changes on the development branch ``Dev`` in the main repository. If you followed step 1 from above, this can be easily accomplished:
+Also, from time to time, you should make sure to keep your feature branch up to date with the changes on the ``master`` branch in the main repository. If you followed step 1 from above, this can be easily accomplished:
 
 ::
 
    git checkout feature/[my-awesome-feature-name]
    git fetch upstream
-   git merge upstream/Dev
+   git merge upstream/master
 
 
 4. Send a Pull Request
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Once you finished the development and testing of your new feature, it is time to create a pull request to get your changes merged into the development branch of the NetworKit repository.
+Once you finished the development and testing of your new feature, it is time to create a pull request to get your changes merged into the master branch of the NetworKit repository.
 
 This can be done by visiting the **Pull requests page** (https://github.com/[YOUR-USERNAME]/[FORKED-NETWORKIT]/pulls) of your NetworKit fork on GitHub and clicking on the green **New pull request** button at the top right side of the page.
 
-Here the ``base fork`` at the top should point to ``networkit/networkit`` and the base should be ``Dev``. The ``head fork`` should point to your fork of networkit and the ``compare`` branch to the right should point to the feature branch (``feature/[my-awesome-feature-name]``) you would like to create the pull request for.
+Here the ``base fork`` at the top should point to ``networkit/networkit`` and the base should be ``master``. The ``head fork`` should point to your fork of networkit and the ``compare`` branch to the right should point to the feature branch (``feature/[my-awesome-feature-name]``) you would like to create the pull request for.
 
 Once you've reviewed all changes, click the green **Create pull request** button and your pull request will be created.
 
@@ -142,7 +134,7 @@ In case a developer points out a potential issue that needs to be resolved, plea
    git push
 
 
-The pull request will automatically show your newest changes and developers will know that you resolved the issue. Once all issues have been resolved and your code is accepted, the pull request will be closed and your feature will be merged into the development branch. In the next release, all users of NetworKit will have access to your awesome feature. Hooray!
+The pull request will automatically show your newest changes and developers will know that you resolved the issue. Once all issues have been resolved and your code is accepted, the pull request will be closed and your feature will be merged into the master branch. In the next release, all users of NetworKit will have access to your awesome feature. Hooray!
 
 Style guide
 -----------
