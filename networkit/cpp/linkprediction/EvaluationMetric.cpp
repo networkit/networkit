@@ -26,10 +26,10 @@ void EvaluationMetric::setTestGraph(const Graph& newTestGraph) {
 std::pair<std::vector<double>, std::vector<double>> EvaluationMetric::getCurve(std::vector<LinkPredictor::prediction> predictions, count numThresholds) {
   if (testGraph == nullptr) {
     throw std::logic_error("Set testGraph first.");
-  } else if (predictions.size() == 0) {
-    throw std::logic_error("predictions.size() == 0");
+  } else if (predictions.empty()) {
+      throw std::logic_error("predictions.size() == 0");
   } else if (numThresholds < 2) {
-    throw std::invalid_argument("numThresholds < 2: At least 2 thresholds needed for curve.");
+      throw std::invalid_argument("numThresholds < 2: At least 2 thresholds needed for curve.");
   }
   // Don't overshoot with the number of thresholds being greater than the number of predictions + 1.
   if (predictions.size() + 1 < numThresholds || numThresholds == 0) {
@@ -69,9 +69,9 @@ double EvaluationMetric::getAreaUnderCurve(std::pair<std::vector<double>, std::v
 }
 
 double EvaluationMetric::getAreaUnderCurve() const {
-  if (generatedPoints.first.size() == 0) {
-    throw std::logic_error("Call getCurve first or use getAreaUnderCurve(curve).");
-  }
+    if (generatedPoints.first.empty()) {
+        throw std::logic_error("Call getCurve first or use getAreaUnderCurve(curve).");
+    }
   return getAreaUnderCurve(generatedPoints);
 }
 

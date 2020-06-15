@@ -516,7 +516,7 @@ void MultiLevelSetup<Matrix>::aggregateLooseNodes(const Matrix& strongAdjMatrix,
         }
     }
 
-    if (looseNodes.size() > 0) {
+    if (!looseNodes.empty()) {
         status[looseNodes[0]] = looseNodes[0]; // mark first as seed
         for (index k = 1; k < looseNodes.size(); ++k) {
             status[looseNodes[k]] = looseNodes[0]; // first loose nodes becomes seed
@@ -572,7 +572,7 @@ void MultiLevelSetup<Matrix>::computeStrongAdjacencyMatrix(const Matrix& matrix,
 
 template<class Matrix>
 void MultiLevelSetup<Matrix>::computeAffinityMatrix(const Matrix& matrix, const std::vector<Vector>& tVs, Matrix& affinityMatrix) const {
-    assert(tVs.size() > 0);
+    assert(!tVs.empty());
 
     std::vector<index> rowIdx(matrix.numberOfRows()+1);
     std::vector<Triplet> triplets(matrix.nnz());

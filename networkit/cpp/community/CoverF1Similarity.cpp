@@ -47,7 +47,7 @@ void CoverF1Similarity::run() {
     std::vector<index> overlappingReference;
 
     for (index i = 0; i < C->upperBound(); ++i) {
-        if (Csets[i].size() > 0) {
+        if (!Csets[i].empty()) {
             ++numClusters;
 
             for (node u : Csets[i]) {

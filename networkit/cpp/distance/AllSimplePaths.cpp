@@ -134,7 +134,7 @@ namespace NetworKit {
 
             std::vector<std::vector<node>> currPaths;
 
-            while (stack.size() > 0) {
+            while (!stack.empty()) {
 
                 node curr = stack.back().first.back();
 
@@ -157,7 +157,7 @@ namespace NetworKit {
                 currPair->second[curr] = true;
                 bool toEnqueue = false;
 
-                if (availableSources[curr].size() > 0) {
+                if (!availableSources[curr].empty()) {
                     node s = availableSources[curr][0];
                     if (!currPair->second[s]) {
                         currPair->first.push_back(s);

@@ -105,7 +105,7 @@ typename Container::const_reference choice(const Container& container) {
  */
 template <typename Element>
 const Element& weightedChoice(const std::vector<std::pair<Element, double>>& weightedElements) {
-    if (weightedElements.size() == 0)
+    if (weightedElements.empty())
         throw std::runtime_error("Random::weightedChoice: input size equal to 0");
     double total = 0.0;
     for (const auto& entry : weightedElements) {

@@ -126,7 +126,7 @@ GroupCloseness::scoreOfGroup(const std::vector<node> &group) const {
         });
     }
 
-    while (queue.size() > 0) {
+    while (!queue.empty()) {
         ++d;
         node u = queue.front();
         queue.erase(queue.begin());

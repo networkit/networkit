@@ -69,7 +69,9 @@ public:
     }
 
     virtual bool writeGraphToGML(const std::string& filePath) {
-        if (vertexCoordinates.size() == 0 || vertexCoordinates[0].getDimensions() < 2 || vertexCoordinates[0].getDimensions() > 3) return false;
+        if (vertexCoordinates.empty() || vertexCoordinates[0].getDimensions() < 2
+            || vertexCoordinates[0].getDimensions() > 3)
+            return false;
         count dim = vertexCoordinates[0].getDimensions();
         std::ofstream file(filePath);
         Aux::enforceOpened(file);
@@ -106,7 +108,8 @@ public:
     }
 
     virtual bool writeKinemage(const std::string& filePath) {
-        if (vertexCoordinates.size() == 0 || vertexCoordinates[0].getDimensions() != 3) return false;
+        if (vertexCoordinates.empty() || vertexCoordinates[0].getDimensions() != 3)
+            return false;
         std::string fileName = filePath.substr(filePath.find_last_of("/"));
         std::ofstream file(filePath);
         Aux::enforceOpened(file);

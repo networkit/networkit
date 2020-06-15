@@ -244,7 +244,7 @@ DynamicMatrix DynamicMatrix::extract(const std::vector<index>& rowIndices, const
     for (index i = 0; i < rowIndices.size(); ++i) {
         assert(rowIndices[i] < numberOfRows());
         (*this).forNonZeroElementsInRow(rowIndices[i], [&](index k, double value) {
-            if (columnMapping[k].size() > 0) {
+            if (!columnMapping[k].empty()) {
                 for (index j : columnMapping[k]) {
                     triplets.push_back({i, j, value});
                 }

@@ -178,7 +178,7 @@ std::pair<Key, Value> Aux::PrioQueue<Key, Value>::peekMin(size_t n) {
 
 template<class Key, class Value>
 std::pair<Key, Value> Aux::PrioQueue<Key, Value>::extractMin() {
-    assert(pqset.size() > 0);
+    assert(!pqset.empty());
     ElemType elem = (* pqset.begin());
     remove(elem);
     return elem;

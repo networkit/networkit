@@ -80,7 +80,7 @@ void DynamicDGSParser::generate() {
 
                 std::vector<std::string> currentNodeCategories(categories.begin(), categories.end());
                 nodeCategories.push_back(currentNodeCategories);
-                assert(nodeCategories.size() > 0);
+                assert(!nodeCategories.empty());
 
                 std::string dateFullString = split[3]; // Example: date="08-1997"
                 std::vector<std::string> dateFullStringSplit = Aux::StringTools::split(dateFullString, '"');

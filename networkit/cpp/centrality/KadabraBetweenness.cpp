@@ -607,7 +607,7 @@ void SpSampler::randomPath(StateFrame *curFrame) {
 
     ++globalTS;
 
-    if (spEdges.size() == 0) {
+    if (spEdges.empty()) {
         resetSampler(endQ);
         if (globalTS == 128) {
             globalTS = 1;

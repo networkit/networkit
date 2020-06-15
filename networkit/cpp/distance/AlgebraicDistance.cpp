@@ -114,7 +114,7 @@ void AlgebraicDistance::preprocess() {
 }
 
 double AlgebraicDistance::distance(node u, node v) {
-    if (loads.size() == 0) {
+    if (loads.empty()) {
         throw std::runtime_error("Call preprocess() first.");
     }
     double result = 0.0;

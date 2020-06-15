@@ -143,7 +143,7 @@ std::set<std::set<index> > Partition::getSubsets() const {
 
     std::set<std::set<index> > subsets;
     for (const auto &set : table) {
-        if (set.size() > 0) {
+        if (!set.empty()) {
             subsets.insert(set);
         }
     }
