@@ -564,7 +564,7 @@ void SpSampler::randomPath(StateFrame *curFrame) {
             dist[y] = dist[x] + 1;
         } else if ((timestamp[x] & ballMask) != (timestamp[y] & ballMask)) {
             hasToStop = true;
-            spEdges.push_back(std::make_pair(x, y));
+            spEdges.emplace_back(x, y);
         } else if (dist[y] == dist[x] + 1) {
             nPaths[y] += nPaths[x];
         }

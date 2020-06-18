@@ -91,7 +91,7 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
         DEBUG("selected ambassador: ", a);
 
         node v = G.addNode();
-        stream.push_back(GraphEvent(GraphEvent::NODE_ADDITION, v));
+        stream.emplace_back(GraphEvent::NODE_ADDITION, v);
         DEBUG("created node ", v);
 
         visited[a] = true;
@@ -116,22 +116,22 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
 
         for (node w : burnedNodes) {
             G.addEdge(v, w);
-            stream.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, v, w));
+            stream.emplace_back(GraphEvent::EDGE_ADDITION, v, w);
         }
     };
 
     // initial graph
     if (firstCall && nSteps > 0) {
         node s = G.addNode();
-        stream.push_back(GraphEvent(GraphEvent::NODE_ADDITION, s));
-        stream.push_back(GraphEvent(GraphEvent::TIME_STEP));
+        stream.emplace_back(GraphEvent::NODE_ADDITION, s);
+        stream.emplace_back(GraphEvent::TIME_STEP);
         firstCall = false;
         --nSteps;
     }
 
     for (index step = 0; step < nSteps; ++step) {
         connectNewNode();
-        stream.push_back(GraphEvent(GraphEvent::TIME_STEP));
+        stream.emplace_back(GraphEvent::TIME_STEP);
     }
 
     return stream;

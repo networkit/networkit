@@ -160,7 +160,7 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
         if (moveEachStep > 0 && moveDistance > 0) {
             getEventsFromNodeMovement(result);
         }
-        result.push_back(GraphEvent(GraphEvent::TIME_STEP));
+        result.emplace_back(GraphEvent::TIME_STEP);
     }
     return result;
 }

@@ -130,7 +130,7 @@ namespace NetworKit {
             *v = {source, availableSources[source][i]};
             std::vector<bool> visited(G->upperNodeIdBound(), false);
             visited[source] = true;
-            stack.push_back(std::make_pair(*v, visited));
+            stack.emplace_back(*v, visited);
 
             std::vector<std::vector<node>> currPaths;
 
@@ -181,7 +181,7 @@ namespace NetworKit {
                             toEnqueue = false;
                         }
                         else {
-                            stack.push_back(std::pair<std::vector<node>, std::vector<bool>> (*currPair));
+                            stack.emplace_back(*currPair);
                             std::pair<std::vector<node>, std::vector<bool>>* newPair = &stack.back();
                             newPair->first[newPair->first.size() - 1] = s;
                             ++step;

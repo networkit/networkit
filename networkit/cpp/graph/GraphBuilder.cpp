@@ -50,14 +50,14 @@ index GraphBuilder::indexInInEdgeArray(node u, node v) const {
 }
 
 node GraphBuilder::addNode() {
-    outEdges.push_back(std::vector<node>{});
+    outEdges.emplace_back();
     if (weighted) {
-        outEdgeWeights.push_back(std::vector<edgeweight>{});
+        outEdgeWeights.emplace_back();
     }
     if (directed) {
-        inEdges.push_back(std::vector<node>{});
+        inEdges.emplace_back();
         if (weighted) {
-            inEdgeWeights.push_back(std::vector<edgeweight>{});
+            inEdgeWeights.emplace_back();
         }
     }
     return n++;
