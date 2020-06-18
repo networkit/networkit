@@ -48,7 +48,7 @@ struct RankedEdge {
     }
 };
 
-typedef std::vector<RankedEdge> RankedNeighbors;
+using RankedNeighbors = std::vector<RankedEdge>;
 
 /**
  * Represents the result of the comparison of two ranked neighborhood lists, namely

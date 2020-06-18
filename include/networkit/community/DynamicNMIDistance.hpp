@@ -13,7 +13,7 @@
 
 namespace NetworKit {
 
-typedef std::vector<std::vector<count> > Matrix;
+using Matrix = std::vector<std::vector<count>>;
 
 /**
  * @ingroup community

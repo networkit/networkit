@@ -31,7 +31,7 @@ void PLP::run() {
         result.allToSingletons();
     }
 
-    typedef index label; // a label is the same as a cluster id
+    using label = index; // a label is the same as a cluster id
 
     count n = G->numberOfNodes();
     // update threshold heuristic

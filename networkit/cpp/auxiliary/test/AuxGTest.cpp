@@ -180,7 +180,7 @@ TEST_F(AuxGTest, benchmarkBinomial) {
 }
 
 TEST_F(AuxGTest, testPriorityQueue) {
-    typedef std::pair<double, uint64_t> ElemType;
+    using ElemType = std::pair<double, uint64_t>;
 
     // fill vector with keys
     std::vector<double> vec = {0.5, 3.5, 4.5, 2.5, 0.75, 1.5, 8.5, 3.25, 4.75, 5.0, 11.5, 0.25};

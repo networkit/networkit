@@ -30,7 +30,7 @@ void EdgeScoreLinearizer::run() {
             scoreData[eid] = 0.5;
         });
     } else {
-        typedef std::tuple<edgeweight, index, edgeid> edgeTuple;
+        using edgeTuple = std::tuple<edgeweight, index, edgeid>;
         std::vector<edgeTuple> sorted(G->upperEdgeIdBound(), std::make_tuple(std::numeric_limits<edgeweight>::max(), std::numeric_limits<index>::max(), none));
 
         G->parallelForEdges([&](node, node, edgeid eid) {

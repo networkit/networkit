@@ -20,7 +20,7 @@
 
 namespace NetworKit {
 
-    typedef std::vector<Vector> CoordinateVector; // more meaningful and shorter name for coordinates stored by dimension
+    using CoordinateVector = std::vector<Vector>; // more meaningful and shorter name for coordinates stored by dimension
 
     struct ForwardEdge {
         node head;

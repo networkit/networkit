@@ -15,8 +15,8 @@
 
 namespace Aux {
 
-typedef NetworKit::index index;
-typedef NetworKit::count count;
+using index = NetworKit::index;
+using count = NetworKit::count;
 
 /**
  * Bloom filter for fast set membership queries for type index with one-sided error (false positives).
