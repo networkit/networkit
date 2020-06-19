@@ -31,7 +31,7 @@ public:
     * @param k the number of parallel approximations to get a more robust result; default = 64
     * @param r the amount of bits that are added to the length of the bitmask to improve the accuracy; default = 7
     */
-    EffectiveDiameterApproximation(const Graph& G, const double ratio=0.9, const count k=64, const count r=7);
+    EffectiveDiameterApproximation(const Graph &G, double ratio = 0.9, count k = 64, count r = 7);
 
     void run() override;
 

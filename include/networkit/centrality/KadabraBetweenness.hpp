@@ -37,14 +37,14 @@ class StateFrame {
 
 class Status {
   public:
-    Status(const count k);
-    const count k;
-    std::vector<node> top;
-    std::vector<double> approxTop;
-    std::vector<bool> finished;
-    std::vector<double> bet;
-    std::vector<double> errL;
-    std::vector<double> errU;
+      Status(count k);
+      const count k;
+      std::vector<node> top;
+      std::vector<double> approxTop;
+      std::vector<bool> finished;
+      std::vector<double> bet;
+      std::vector<double> errL;
+      std::vector<double> errU;
 };
 
 class SpSampler {
@@ -70,8 +70,8 @@ class SpSampler {
     std::vector<std::pair<node, node>> spEdges;
 
     inline node randomNode() const;
-    void backtrackPath(const node source, const node target, const node start);
-    void resetSampler(const count endQ);
+    void backtrackPath(node source, node target, node start);
+    void resetSampler(count endQ);
     count getDegree(const Graph &graph, node y, bool useDegreeIn);
 };
 
@@ -113,10 +113,9 @@ class KadabraBetweenness : public Algorithm {
      * @param unionSample, startFactor algorithm parameters that are
      * automatically chosen.
      */
-    KadabraBetweenness(const Graph &G, const double err = 0.01,
-                       const double delta = 0.1,
-                       const bool deterministic = false, const count k = 0,
-                       count unionSample = 0, const count startFactor = 100);
+    KadabraBetweenness(const Graph &G, double err = 0.01, double delta = 0.1,
+                       bool deterministic = false, count k = 0, count unionSample = 0,
+                       count startFactor = 100);
 
     /**
      * Executes the Kadabra algorithm.
@@ -214,12 +213,10 @@ class KadabraBetweenness : public Algorithm {
                        std::vector<double> &errL,
                        std::vector<double> &errU) const;
     bool computeFinished(Status *status) const;
-    void getStatus(Status *status, const bool parallel = false) const;
+    void getStatus(Status *status, bool parallel = false) const;
     void computeApproxParallel(const std::vector<StateFrame> &firstFrames);
-    double computeF(const double btilde, const count iterNum,
-                    const double deltaL) const;
-    double computeG(const double btilde, const count iterNum,
-                    const double deltaU) const;
+    double computeF(double btilde, count iterNum, double deltaL) const;
+    double computeG(double btilde, count iterNum, double deltaU) const;
     void fillResult();
     void checkConvergence(Status &status);
 

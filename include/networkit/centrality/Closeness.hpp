@@ -36,36 +36,33 @@ class Closeness : public Centrality {
      * for unweighted graphs.
      *
      */
-    Closeness(const Graph &G, bool normalized,
-              const ClosenessVariant variant = ClosenessVariant::standard);
+      Closeness(const Graph &G, bool normalized,
+                ClosenessVariant variant = ClosenessVariant::standard);
 
-    /**
-     * Old constructor, we keep it for backward compatibility. It computes the
-     * standard variant of the closenes.
-     *
-     * @param G The graph.
-     * @param normalized Set this parameter to <code>false</code> if scores
-     * should not be normalized into an interval of [0, 1]. Normalization only
-     * for unweighted graphs.
-     * @param checkConnectedness turn this off if you know the graph is
-     * connected.
-     *
-     */
-    Closeness(const Graph &G, bool normalized = true,
-              bool checkConnectedness = true);
+      /**
+       * Old constructor, we keep it for backward compatibility. It computes the
+       * standard variant of the closenes.
+       *
+       * @param G The graph.
+       * @param normalized Set this parameter to <code>false</code> if scores
+       * should not be normalized into an interval of [0, 1]. Normalization only
+       * for unweighted graphs.
+       * @param checkConnectedness turn this off if you know the graph is
+       * connected.
+       *
+       */
+      Closeness(const Graph &G, bool normalized = true, bool checkConnectedness = true);
 
-    /**
-     * Computes closeness cetrality on the graph passed in constructor.
-     */
-    void run() override;
+      /**
+       * Computes closeness cetrality on the graph passed in constructor.
+       */
+      void run() override;
 
-    /*
-     * Returns the maximum possible Closeness a node can have in a graph with
-     * the same amount of nodes (=a star)
-     */
-    double maximum() override {
-        return normalized ? 1. : (1. / (G.upperNodeIdBound() - 1));
-    }
+      /*
+       * Returns the maximum possible Closeness a node can have in a graph with
+       * the same amount of nodes (=a star)
+       */
+      double maximum() override { return normalized ? 1. : (1. / (G.upperNodeIdBound() - 1)); }
 
   private:
     ClosenessVariant variant;

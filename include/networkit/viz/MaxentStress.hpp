@@ -55,10 +55,13 @@ class MaxentStress final : public GraphLayoutAlgorithm<double> {
             double solveTime = 0.0;
         };
 
-        MaxentStress(const Graph& G, const count dim, const count k, double tolerance, LinearSolverType linearSolverType = LAMG, bool fastComputation=false, GraphDistance graphDistance = EDGE_WEIGHT);
+        MaxentStress(const Graph &G, count dim, count k, double tolerance,
+                     LinearSolverType linearSolverType = LAMG, bool fastComputation = false,
+                     GraphDistance graphDistance = EDGE_WEIGHT);
 
-        MaxentStress(const Graph& G, const count dim, const std::vector<Point<double>>& coordinates, const count k, double tolerance, LinearSolverType linearSolverType = LAMG, bool fastComputation=false, GraphDistance graphDistance = EDGE_WEIGHT);
-
+        MaxentStress(const Graph &G, count dim, const std::vector<Point<double>> &coordinates,
+                     count k, double tolerance, LinearSolverType linearSolverType = LAMG,
+                     bool fastComputation = false, GraphDistance graphDistance = EDGE_WEIGHT);
 
         /** Default destructor. */
         ~MaxentStress() override = default;
@@ -221,7 +224,9 @@ class MaxentStress final : public GraphLayoutAlgorithm<double> {
          * @param theta Parameter for Barnes-Hut cell-opening criterion
          * @param b Repulsive force vector to compute
          */
-        void approxRepulsiveForces(const CoordinateVector& coordinates, const Octree<double>& octree, const double theta, CoordinateVector& b) const;
+        void approxRepulsiveForces(const CoordinateVector &coordinates,
+                                   const Octree<double> &octree, double theta,
+                                   CoordinateVector &b) const;
 
         /**
          * Initializes the @a coordinates corresponding to vertices in the Graph to a random point in d-dimensional space 2000^d pixel.
@@ -241,8 +246,7 @@ class MaxentStress final : public GraphLayoutAlgorithm<double> {
          * @param i
          * @param j
          */
-        double squaredDistance(const CoordinateVector& coordinates, const index i, const index j) const;
-
+        double squaredDistance(const CoordinateVector &coordinates, index i, index j) const;
 
         /**
          * Computes the distance ||c_i - c_j|| between @a coordinates @a i and @a j.
@@ -261,7 +265,8 @@ class MaxentStress final : public GraphLayoutAlgorithm<double> {
          * @param i
          * @param j
          */
-        double squaredDistance(const CoordinateVector& coordinates1, const CoordinateVector& coordinates2, const index i, const index j) const;
+        double squaredDistance(const CoordinateVector &coordinates1,
+                               const CoordinateVector &coordinates2, index i, index j) const;
 
         /**
          * Computes the squared distance ||c1_i - c2_j|| between coordinate @a i from @a coordinates1 and coordinate @a j from @a coordinates 2.
@@ -279,7 +284,7 @@ class MaxentStress final : public GraphLayoutAlgorithm<double> {
          * @param coordinates
          * @param i
          */
-        double squaredLength(const CoordinateVector& coordinates, const index i) const;
+        double squaredLength(const CoordinateVector &coordinates, index i) const;
 
         /**
          * Computes the length ||c_i|| of coordinate @a i in @a coordinates.
@@ -330,20 +335,20 @@ class MaxentStress final : public GraphLayoutAlgorithm<double> {
          * @param k
          * @param graphDistance
          */
-        void computeKnownDistances(const count k, const GraphDistance graphDistance);
+        void computeKnownDistances(count k, GraphDistance graphDistance);
 
         /**
          * Add the k-neighborhood (except for the 1-neighbors) of vertex @a u to the knownDistances of @a u
          * @param u
          */
-        void addKNeighborhoodOfVertex(const node u, const count k);
+        void addKNeighborhoodOfVertex(node u, count k);
 
         /**
          * Computes the algebraic distances from each vertex to its k-hop neighborhood.
          * @param graph
          * @param k
          */
-        void computeAlgebraicDistances(const Graph& graph, const count k);
+        void computeAlgebraicDistances(const Graph &graph, count k);
     };
 
 } /* namespace NetworKit */

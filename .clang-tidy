@@ -34,13 +34,12 @@ Checks: >
     performance-type-promotion-in-math-fn,
     performance-unnecessary-copy-initialization,
     performance-unnecessary-value-param,
+    readability-avoid-const-params-in-decls,
     readability-const-return-type
 
 # Warnings whishlist
 #    modernize-avoid-c-arrays,
 #    modernize-use-emplace,
-#    readability-avoid-const-params-in-decls,
-#    readability-const-return-type,
 #    readability-container-size-empty
 
 # Turn the warnings from the checks above into errors.
@@ -78,6 +77,7 @@ WarningsAsErrors:  >
     performance-trivially-destructible,
     performance-type-promotion-in-math-fn,
     performance-unnecessary-copy-initialization,
+    readability-avoid-const-params-in-decls,
     readability-const-return-type
 
 FormatStyle: 'file'

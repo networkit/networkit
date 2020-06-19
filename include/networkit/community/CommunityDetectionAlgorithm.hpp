@@ -33,7 +33,7 @@ public:
      * @param[in] G input graph
      * @param[in] baseClustering optional; the algorithm will start from the given clustering.
      */
-    CommunityDetectionAlgorithm(const Graph& G, const Partition baseClustering);
+    CommunityDetectionAlgorithm(const Graph &G, Partition baseClustering);
 
     /** Default destructor */
     ~CommunityDetectionAlgorithm() override = default;

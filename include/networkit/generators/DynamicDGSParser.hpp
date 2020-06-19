@@ -36,8 +36,7 @@ public:
      */
     void generate() override;
 
-    void evaluateClusterings(const std::string path, const Partition& clustering);
-
+    void evaluateClusterings(std::string path, const Partition &clustering);
 
 private:
     bool graphInitialized;  //!< true if initializeGraph has been called and graph has been properly initialized

@@ -40,7 +40,8 @@ public:
       * computing the sample size. It is 1 by default. Some references suggest
       * using 0.5, but there is no guarantee in this case.
      */
-    DynApproxBetweenness(const Graph& G, const double epsilon=0.01, const double delta=0.1, const bool storePredecessors = true, const double universalConstant = 1.0);
+    DynApproxBetweenness(const Graph &G, double epsilon = 0.01, double delta = 0.1,
+                         bool storePredecessors = true, double universalConstant = 1.0);
 
     /**
      * Runs the static approximated betweenness centrality algorithm on the initial graph.

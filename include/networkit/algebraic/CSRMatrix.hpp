@@ -362,8 +362,8 @@ public:
      * function applied to the zero element of this matrix returns the zero element.
      * @param unaryElementFunction
      */
-    template<typename F>
-    void apply(const F unaryElementFunction);
+    template <typename F>
+    void apply(F unaryElementFunction);
 
     /**
      * Compute the (weighted) adjacency matrix of the (weighted) Graph @a graph.
