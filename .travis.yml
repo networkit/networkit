@@ -299,7 +299,7 @@ jobs:
         repo: networkit/dev-docs
         target_branch: master
         on:
-          branch: Dev
+          branch: master
 
     - name: "Style guide compliance"
       os: linux
