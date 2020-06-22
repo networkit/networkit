@@ -244,7 +244,7 @@ void TradeList::initialize(const trade_vector &trades) {
     offsets.resize(numNodes + 1);
 
     assert(numNodes > 0);
-    assert(trades.size() > 0);
+    assert(!trades.empty());
 
     std::vector<tradeid> trade_count(numNodes);
 
@@ -293,7 +293,7 @@ TradeList::TradeList(const trade_vector &trades, const node num_nodes)
     // Manuel: see above
 
     assert(num_nodes > 0);
-    assert(trades.size() > 0);
+    assert(!trades.empty());
 
     std::vector<tradeid> trade_count(num_nodes);
 

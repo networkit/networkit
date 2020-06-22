@@ -93,7 +93,7 @@ void DynBetweenness::run() {
 void DynBetweenness::increaseScore(std::vector<bool> & affected, node y, std::priority_queue<std::pair<double, node>, std::vector<std::pair<double,node>>, CompareDist> & Q) {
     std::vector<double> dep(G.upperNodeIdBound(), 0);
     std::vector<bool> visited(G.upperNodeIdBound(), false);
-    while(Q.size() > 0) {
+    while (!Q.empty()) {
         affectedDep ++;
     //	TRACE("(Before )Size: ", Q.size());
         node x = Q.top().second; // notice that the keys are diam - distance, so we actually extract in order of decreasing distance
@@ -128,7 +128,7 @@ void DynBetweenness::increaseScore(std::vector<bool> & affected, node y, std::pr
 void DynBetweenness::decreaseScore(std::vector<bool> & affected, node y, std::priority_queue<std::pair<double, node>, std::vector<std::pair<double,node>>, CompareDist> & Q) {
     std::vector<double> dep(G.upperNodeIdBound(), 0);
     std::vector<bool> visited(G.upperNodeIdBound(), false);
-    while(Q.size() > 0) {
+    while (!Q.empty()) {
         affectedDep ++;
     //	TRACE("(Before )Size: ", Q.size());
         node x = Q.top().second; // notice that the keys are diam - distance, so we actually extract in order of decreasing distance

@@ -172,7 +172,7 @@ public:
             }
         }
         else {
-            assert(children.size() > 0);
+            assert(!children.empty());
             for (index i = 0; i < children.size(); i++) {
                 if (children[i].responsible(angle, R)) {
                     children[i].addContent(input, angle, R);
@@ -215,7 +215,7 @@ public:
         else {
             bool removed = false;
             bool allLeaves = true;
-            assert(children.size() > 0);
+            assert(!children.empty());
             for (index i = 0; i < children.size(); i++) {
                 if (!children[i].isLeaf) allLeaves = false;
                 if (children[i].removeContent(input, angle, R)) {
@@ -453,8 +453,8 @@ public:
             return content;
         } else {
             assert(content.size() == 0);
-            assert(angles.size() == 0);
-            assert(radii.size() == 0);
+            assert(angles.empty());
+            assert(radii.empty());
             vector<T> result;
             for (index i = 0; i < children.size(); i++) {
                 std::vector<T> subresult = children[i].getElements();
@@ -472,8 +472,8 @@ public:
         }
         else {
             assert(content.size() == 0);
-            assert(angles.size() == 0);
-            assert(radii.size() == 0);
+            assert(angles.empty());
+            assert(radii.empty());
             for (index i = 0; i < children.size(); i++) {
                 children[i].getCoordinates(anglesContainer, radiiContainer);
             }

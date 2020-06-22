@@ -94,7 +94,7 @@ void BidirectionalBFS::run() {
             expand(sQueue, sQueueNext, 0);
         else
             expand(tQueue, tQueueNext, ballMask);
-    } while (!stop && sQueue.size() && tQueue.size());
+    } while (!stop && !sQueue.empty() && !tQueue.empty());
 
     // Balls did not meet, source cannot reach target
     if (!stop)

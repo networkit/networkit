@@ -35,12 +35,12 @@ Checks: >
     performance-unnecessary-copy-initialization,
     performance-unnecessary-value-param,
     readability-avoid-const-params-in-decls,
-    readability-const-return-type
+    readability-const-return-type,
+    readability-container-size-empty
 
 # Warnings whishlist
 #    modernize-avoid-c-arrays,
 #    modernize-use-emplace,
-#    readability-container-size-empty
 
 # Turn the warnings from the checks above into errors.
 # To turn all warnings into errors, simply write '*'
@@ -78,7 +78,8 @@ WarningsAsErrors:  >
     performance-type-promotion-in-math-fn,
     performance-unnecessary-copy-initialization,
     readability-avoid-const-params-in-decls,
-    readability-const-return-type
+    readability-const-return-type,
+    readability-container-size-empty
 
 FormatStyle: 'file'
 HeaderFilterRegex: '.*\/include\/networkit\/.*\.hpp'

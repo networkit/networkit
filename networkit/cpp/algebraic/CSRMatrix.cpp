@@ -546,9 +546,10 @@ CSRMatrix CSRMatrix::extract(const std::vector<index>& rowIndices, const std::ve
     for (index i = 0; i < rowIndices.size(); ++i) {
         Triplet last = {i, 0, 0.0};
         (*this).forNonZeroElementsInRow(rowIndices[i], [&](index k, double value) {
-            if (columnMapping[k].size() > 0) {
+            if (!columnMapping[k].empty()) {
                 for (index j : columnMapping[k]) {
-                    if (last.row == i && last.column > j) sorted = false;
+                    if (last.row == i && last.column > j)
+                        sorted = false;
                     last = {i,j,value};
                     triplets.push_back(last);
                 }

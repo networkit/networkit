@@ -45,7 +45,7 @@ void AlgebraicDistanceIndex::preprocess() {
 }
 
 double AlgebraicDistanceIndex::runImpl(node u, node v) {
-    if (loads.size() == 0) {
+    if (loads.empty()) {
         throw std::logic_error("Call preprocess() first.");
     }
     double result = 0.0;

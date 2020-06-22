@@ -121,9 +121,7 @@ struct OctreeNode {
     /**
      * @return True if node is leaf, false otherwise.
      */
-    inline bool isLeaf() const {
-        return children.size() == 0;
-    }
+    inline bool isLeaf() const { return children.empty(); }
 
     /**
      * @return True if tree node has weight zero (== is empty), false otherwise.

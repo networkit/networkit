@@ -143,8 +143,8 @@ std::vector<Point2D> DynamicHyperbolicGenerator::getCoordinates() const {
 
 std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
     if (!initialized) {
-        assert(angles.size() == 0);
-        assert(radii.size() == 0);
+        assert(angles.empty());
+        assert(radii.empty());
         initializePoints();
         initializeMovement();
         if (T > 0) {

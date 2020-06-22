@@ -99,7 +99,7 @@ void DynApproxBetweenness::run() {
                 }
                 DEBUG("Node: ", t);
                 DEBUG("Source: ", u[i]);
-                assert (choices.size() > 0);
+                assert(!choices.empty());
                 node z = Aux::Random::weightedChoice(choices);
                 assert (z <= G.upperNodeIdBound());
                 if (z != u[i]) {
@@ -159,7 +159,7 @@ void DynApproxBetweenness::updateBatch(const std::vector<GraphEvent>& batch) {
                         }
                     });
                 }
-                assert (choices.size() > 0); // this should fail only if the graph is not connected
+                assert(!choices.empty()); // this should fail only if the graph is not connected
                 node z = Aux::Random::weightedChoice(choices);
                 assert (z <= G.upperNodeIdBound());
                 if (z != u[i]) {

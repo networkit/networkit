@@ -298,7 +298,7 @@ Graph MocnikGenerator::generate() {
     assert(dim > 0);
     assert(std::all_of(ns.cbegin(), ns.cend(), [] (count n) { return n > 1; }));
     assert(std::all_of(ks.cbegin(), ks.cend(), [] (double k) {return k > 1.0; }));
-    assert(ns.size() > 0);
+    assert(!ns.empty());
     assert(ks.size() == ns.size());
     assert(relativeWeights.size() == ns.size());
 
