@@ -22,7 +22,7 @@ KPathCentrality::KPathCentrality(const Graph& G, double alpha, count k) : Centra
         throw std::runtime_error("alpha must lie in interval [-0.5, 0.5]");
     }
     if (k == 0) {
-        this->k = log(G.numberOfNodes() + G.numberOfEdges());
+        this->k = log(static_cast<double>(G.numberOfNodes() + G.numberOfEdges()));
     } else if (k >0) {
         this->k = k;
     } else {
@@ -32,7 +32,7 @@ KPathCentrality::KPathCentrality(const Graph& G, double alpha, count k) : Centra
 
 void KPathCentrality::run() {
     count z = G.upperNodeIdBound();
-    count n = G.numberOfNodes();
+    double n = G.numberOfNodes();
     scoreData.clear();
     scoreData.resize(z);
 
@@ -42,7 +42,7 @@ void KPathCentrality::run() {
     counter.assign(z, 0);
     explored.assign(z, false);
 
-    count t = 2 * k * k * pow(n, 1 - 2 * alpha) * log(n);
+    count t = 2.0 * k * k * pow(n, 1 - 2 * alpha) * log(n);
     std::stack<node> stack;
     node v;
 
@@ -95,7 +95,7 @@ void KPathCentrality::run() {
     }
 
     G.forNodes([&](node v) {
-        scoreData[v] = k * n * ((double) counter[v] / t);
+        scoreData[v] = k * n * (static_cast<double>(counter[v]) / t);
     });
 
     hasRun = true;

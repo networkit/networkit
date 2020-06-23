@@ -43,13 +43,13 @@ void HarmonicCloseness::run() {
     scoreData[v] = sum;
   });
   if (normalized) {
-    G.forNodes([&](node w) { scoreData[w] /= (G.numberOfNodes() - 1); });
+    G.forNodes([&](node w) { scoreData[w] /= static_cast<double>(G.numberOfNodes() - 1); });
   }
 
   hasRun = true;
 }
 
 double HarmonicCloseness::maximum() {
-  return normalized ? (G.numberOfNodes() - 1) : 1.f;
+  return normalized ? static_cast<double>(G.numberOfNodes() - 1) : 1.f;
 }
 } // namespace NetworKit

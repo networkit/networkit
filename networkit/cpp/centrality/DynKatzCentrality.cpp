@@ -26,7 +26,7 @@ DynKatzCentrality::DynKatzCentrality(const Graph& G, count k, bool groupOnly, do
     });
     assert(maxdeg && "Alpha is chosen based on the max. degree; therefore, that degree must not be zero");
 
-    alpha = double(1)/(maxdeg + 1);
+    alpha = 1.0 / (maxdeg + 1.0);
     DEBUG("alpha: ", alpha);
     DEBUG("1/(1-alpha): ", 1/(1-alpha));
 }

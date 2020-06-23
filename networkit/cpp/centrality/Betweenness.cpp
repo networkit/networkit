@@ -131,7 +131,7 @@ double Betweenness::maximum(){
         return 1;
     }
 
-    count n = G.numberOfNodes();
+    const double n = G.numberOfNodes();
     double score = (n-1)*(n-2);
     if (!G.isDirected())
         score /= 2.;

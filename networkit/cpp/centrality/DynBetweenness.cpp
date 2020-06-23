@@ -116,7 +116,7 @@ void DynBetweenness::increaseScore(std::vector<bool> & affected, node y, std::pr
                 }
                 if (! visited[w] && !affected[w] && w != y) {
                     TRACE("Inserting node ", w, " with new priority ", distances[w][y]);
-                    Q.push(std::make_pair(diameter + 1 - distances[w][y], w));
+                    Q.push(std::make_pair(diameter + 1.0 - distances[w][y], w));
                     visited[w] = true;
                 }
             }
@@ -153,7 +153,7 @@ void DynBetweenness::decreaseScore(std::vector<bool> & affected, node y, std::pr
                 }
                 if (! visited[w] && !affected[w] && w != y) {
                     TRACE("Inserting node ", w, " with old priority ", distancesOld[w][y]);
-                    Q.push(std::make_pair(diameter + 1 - distancesOld[w][y], w));
+                    Q.push(std::make_pair(diameter + 1.0 - distancesOld[w][y], w));
                     visited[w] = true;
                 }
             }
@@ -239,8 +239,8 @@ void DynBetweenness::update(GraphEvent event) {
                 // since u is not in source, we insert it now
                 // Qnew.insert(diameter + 1 - distances[u][y], u);
                 // Qold.insert(diameter + 1 - distancesOld[u][y], u);
-                Qnew.push(std::make_pair(diameter + 1 - distances[u][y], u));
-                Qold.push(std::make_pair(diameter + 1 - distancesOld[u][y], u));
+                Qnew.push(std::make_pair(diameter + 1.0 - distances[u][y], u));
+                Qold.push(std::make_pair(diameter + 1.0 - distancesOld[u][y], u));
                 for (count c = 0; c < n_sources[y]; c++) {
                     node s = source_nodes[c];
                     if (s != u) {
@@ -272,8 +272,8 @@ void DynBetweenness::update(GraphEvent event) {
                             TRACE("Node ", y,", Inserting node ", s, " with old priority ", diameter + 1 - distancesOld[s][y]);
                             // Qnew.insert(diameter + 1 - distances[s][y], s);
                             // Qold.insert(diameter + 1 - distancesOld[s][y], s);
-                            Qnew.push(std::make_pair(diameter + 1 - distances[s][y], s));
-                            Qold.push(std::make_pair(diameter + 1 - distancesOld[s][y], s));
+                            Qnew.push(std::make_pair(diameter + 1.0 - distances[s][y], s));
+                            Qold.push(std::make_pair(diameter + 1.0 - distancesOld[s][y], s));
                     }
                     else if (distances[s][y] < distances[s][u] + weightuv + distances[v][y]) {
                         std::swap(source_nodes[c], source_nodes[n_sources[y] - 1]);

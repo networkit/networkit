@@ -107,7 +107,7 @@ public:
     /**
      * @return key to given value @val.
      */
-    virtual int getKey(const index& val);
+    virtual int64_t getKey(const index& val);
 
 };
 

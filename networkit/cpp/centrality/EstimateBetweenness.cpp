@@ -104,7 +104,7 @@ void EstimateBetweenness::run() {
 
     // extrapolate
     G.parallelForNodes([&](node u) {
-        scoreData[u] = scoreData[u] * (2 * n / double(nSamples));
+        scoreData[u] = scoreData[u] * (2 * static_cast<double>(n) / static_cast<double>(nSamples));
 
         if (normalized) {
             // divide by the number of possible pairs

@@ -56,7 +56,7 @@ void ApproxCloseness::run() {
     } else {
         estimateClosenessForUndirectedGraph();
         G.parallelForNodes([&](node u) {
-            scoreData[u] = normalized? (G.numberOfNodes()-1) / scoreData[u] : 1 / scoreData[u];
+            scoreData[u] = normalized? (static_cast<double>(G.numberOfNodes()-1)) / scoreData[u] : 1 / scoreData[u];
         });
     }
 
@@ -187,9 +187,9 @@ void ApproxCloseness::computeClosenessForDirectedWeightedGraph(bool outbound) {
             scoreData[v] = distSum[v] / (double) count[v];
         }
         if (count[v] < nSamples) {
-            R[v] = count[v];
+            R[v] = static_cast<double>(count[v]);
         } else {
-            R[v] = 1 + ((nSamples - 1) * (G.numberOfNodes() - 2)) / (double) (T[v] - 1);
+            R[v] = 1 + static_cast<double>((nSamples - 1) * (G.numberOfNodes() - 2)) / static_cast<double>(T[v] - 1);
         }
     });
 }
@@ -259,7 +259,7 @@ void ApproxCloseness::computeClosenessForDirectedUnweightedGraph(bool outbound) 
         if (count[v] < nSamples) {
             R[v] = count[v];
         } else {
-            R[v] = 1 + ((nSamples - 1) * (G.numberOfNodes() - 2)) / (double) (T[v] - 1);
+            R[v] = 1 + static_cast<double>((nSamples - 1) * (G.numberOfNodes() - 2)) / static_cast<double>(T[v] - 1);
         }
     });
 }
@@ -410,7 +410,7 @@ void ApproxCloseness::orderNodesByIncreasingDistance(node c, std::vector<node> &
 }
 
 double ApproxCloseness::maximum() {
-    return (double) 1 / (G.numberOfNodes() - 1);
+    return 1. / static_cast<double>(G.numberOfNodes() - 1);
 }
 
 std::vector<double> ApproxCloseness::getSquareErrorEstimates() {

@@ -36,8 +36,8 @@ private:
     const BoundStrategy boundStrategy;
     GreedyStrategy greedyStrategy;
     double spectralDelta;
-    count degOutMax;
-    count degInMax;
+    double degOutMax;
+    double degInMax;
     std::vector<double> alphas;
 
     // Size of pathsIn / pathsOut and related vectors.

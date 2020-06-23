@@ -187,7 +187,7 @@ void KadabraBetweenness::computeBetErr(Status *status, std::vector<double> &bet,
 }
 
 void KadabraBetweenness::computeDeltaGuess() {
-    const count n = G.upperNodeIdBound();
+    const double n = G.upperNodeIdBound();
     const double balancingFactor = 0.001;
     double a = 0,
            b = 1. / err / err * std::log(n * 4 * (1 - balancingFactor) / delta),
@@ -232,18 +232,18 @@ void KadabraBetweenness::computeDeltaGuess() {
 
     deltaLMinGuess = std::exp(-b * errL[unionSample - 1] *
                               errL[unionSample - 1] / bet[unionSample - 1]) +
-                     delta * balancingFactor / 4. / (double)n;
+                     delta * balancingFactor / 4. / n;
     deltaUMinGuess = std::exp(-b * errU[unionSample - 1] *
                               errU[unionSample - 1] / bet[unionSample - 1]) +
-                     delta * balancingFactor / 4. / (double)n;
+                     delta * balancingFactor / 4. / n;
 
 #pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(unionSample); ++i) {
         node v = status.top[i];
         deltaLGuess[v] = std::exp(-b * errL[i] * errL[i] / bet[i]) +
-                         delta * balancingFactor / 4. / (double)n;
+                         delta * balancingFactor / 4. / n;
         deltaUGuess[v] = std::exp(-b * errU[i] * errU[i] / bet[i]) +
-                         delta * balancingFactor / 4. / (double)n;
+                         delta * balancingFactor / 4. / n;
     }
 }
 
