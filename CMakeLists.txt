@@ -282,32 +282,18 @@ if(NETWORKIT_PYTHON)
 			set_target_properties(${TARGET_LIB} PROPERTIES
 				INSTALL_RPATH "${NETWORKIT_PYTHON_RPATH}")
 		else()
-			if(${TARGET_LIB} STREQUAL _NetworKit)
-				# DSOs on Apple OSes use different conventions for RPATH.
-				if(APPLE)
-					set_target_properties(${TARGET_LIB} PROPERTIES
-						INSTALL_RPATH "@loader_path")
-				else()
-					set_target_properties(${TARGET_LIB} PROPERTIES
-						INSTALL_RPATH "$ORIGIN")
-				endif()
+			# DSOs on Apple OSes use different conventions for RPATH.
+			if(APPLE)
+				set_target_properties(${TARGET_LIB} PROPERTIES
+					INSTALL_RPATH "@loader_path/..")
 			else()
-				# DSOs on Apple OSes use different conventions for RPATH.
-				if(APPLE)
-					set_target_properties(${TARGET_LIB} PROPERTIES
-						INSTALL_RPATH "@loader_path/..")
-				else()
-					set_target_properties(${TARGET_LIB} PROPERTIES
-						INSTALL_RPATH "$ORIGIN/..")
-				endif()
+				set_target_properties(${TARGET_LIB} PROPERTIES
+					INSTALL_RPATH "$ORIGIN/..")
 			endif()
 		endif()
 
 	target_link_libraries(${TARGET_LIB} PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
-		if(${TARGET_LIB} STREQUAL _NetworKit)
-			install(TARGETS ${TARGET_LIB}
-				LIBRARY DESTINATION ${NETWORKIT_LIB_DEST})
-		elseif(${TARGET_LIB} STREQUAL stat)
+		if(${TARGET_LIB} STREQUAL stat)
 			install(TARGETS ${TARGET_LIB}
 				LIBRARY DESTINATION "${NETWORKIT_LIB_DEST}/networkit/profiling")
 		else()
