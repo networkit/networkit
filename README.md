@@ -36,16 +36,29 @@ package:
 
 ## Install
 
-There are three ways to install NetworKit as a Python module.
+In order to use NetworKit, you can either install it via package managers
+or build the Python module from source.
 
-### Install with pip
+### Install via package manager
+
+While the most recent version is in general available for all package managers, the number of older downloadable versions differ. 
+
+##### pip
 
     pip3 install [--user] networkit
 
-### Install with conda-forge
+##### conda (channel conda-forge)
 
     conda config --add channels conda-forge
     conda install networkit [-c conda-forge]
+
+##### brew
+
+    brew install networkit
+
+##### spack
+
+    spack install py-networkit
 
 ### Building the Python module from source
 
@@ -79,9 +92,28 @@ If you only want to see in short how NetworKit is used - the following example p
     modularity              0.987243
     -------------------  -----------
 
-## Building the C++ Core only
+## Install the C++ Core only
 
-In case you only want to work with NetworKit's C++ core, this section describes how to build it.
+In case you only want to work with NetworKit's C++ core, you can either install it via package 
+managers or build it from source. 
+
+### Install C++ core via package manager
+
+##### conda (channel conda-forge)
+
+    conda config --add channels conda-forge
+    conda install libnetworkit [-c conda-forge]
+
+##### brew
+
+    brew install libnetworkit
+
+##### spack
+
+    spack install libnetworkit
+
+### Building the C++ core from source 
+
 We recommend [CMake] and your preferred build system for building the C++ part of NetworKit.
 
 The following description shows how to use [CMake] in order to build the C++ Core only:
@@ -100,7 +132,10 @@ To speed up the compilation with make a multi-core machine, you can append `-jX`
 
 ### Use NetworKit as a library
 
-To use the previous compiled networkit library, you need to have it installed, and link
+This paragraph explains how to use the NetworKit core C++ library in case it has been built from source. 
+For how to use it when installed via package managers, best refer to the official documentation ([brew](https://brew.sh), [conda](https://docs.conda.io), [spack](https://spack.readthedocs.io/en/latest)). 
+
+In order to use the previous compiled networkit library, you need to have it installed, and link
 it while compiling your project. Use these instructions to compile and install NetworKit in `/usr/local`:
 
     cmake ..
