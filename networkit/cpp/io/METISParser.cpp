@@ -71,7 +71,7 @@ static std::vector<std::pair<node,double>> parseWeightedLine(std::string line, c
         try {
             std::tie(v, it) = Aux::Parsing::strTo<node>(it,end);
             std::tie(weight, it) = Aux::Parsing::strTo<double,decltype(it),Aux::Checkers::Enforcer>(it,end);
-            adjacencies.push_back(std::make_pair(v,weight));
+            adjacencies.emplace_back(v, weight);
             content << v << " " << weight << "\t";
         } catch (const std::exception &e) {
             ERROR("malformed line; not all edges have been read correctly");

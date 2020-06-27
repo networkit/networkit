@@ -54,7 +54,7 @@ std::vector<LinkPredictor::prediction> LinkPredictor::runAll() {
   G->forNodes([&](node i) {
     G->forNodes([&](node j) {
       if (!G->hasEdge(i, j))
-        nodePairs.push_back(std::make_pair(i, j));
+          nodePairs.emplace_back(i, j);
     });
   });
   return runOn(nodePairs);

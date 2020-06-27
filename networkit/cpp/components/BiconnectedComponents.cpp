@@ -66,11 +66,11 @@ void BiconnectedComponents::run() {
           visitNode(neighbor);
           parent[neighbor] = u;
           stack.push(std::make_pair(neighbor, G->neighborRange(neighbor).begin()));
-          edgeStack.push_back(std::make_pair(u, neighbor));
+          edgeStack.emplace_back(u, neighbor);
           break;
         } else if (neighbor != parent[u] && level[neighbor] < level[u]) {
-          edgeStack.push_back(std::make_pair(u, neighbor));
-          lowpt[u] = std::min(lowpt[u], level[neighbor]);
+            edgeStack.emplace_back(u, neighbor);
+            lowpt[u] = std::min(lowpt[u], level[neighbor]);
         }
       }
 

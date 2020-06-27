@@ -61,8 +61,8 @@ std::vector<std::pair<node, node>> MissingLinksFinder::findFromNode(node u, coun
     q = newFound;
   }
   while (!q.empty()) {
-    missingLinks.push_back(std::make_pair(u, q.front()));
-    q.pop();
+      missingLinks.emplace_back(u, q.front());
+      q.pop();
   }
   return missingLinks;
 }

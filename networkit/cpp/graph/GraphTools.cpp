@@ -174,7 +174,7 @@ std::vector<std::pair<node, node>> randomEdges(const Graph &G, count nr) {
                 v = randomNeighbor(G, u);
             } while (u > v);
         }
-        edges.push_back({u, v});
+        edges.emplace_back(u, v);
     }
 
     return edges;

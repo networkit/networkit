@@ -50,7 +50,7 @@ std::vector<std::pair<node, double>> ApproximatePageRank::run(node seed) {
     pr.reserve(pr_res.size());
 
     for (auto it = pr_res.begin(); it != pr_res.end(); it++) {
-        pr.push_back(std::make_pair(it->first, it->second.first));
+        pr.emplace_back(it->first, it->second.first);
     }
 
     return pr;

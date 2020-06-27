@@ -29,7 +29,7 @@ double Centrality::score(node v) {
 std::vector<std::pair<node, double>> Centrality::ranking() {
   assureFinished();
   std::vector<std::pair<node, double>> ranking;
-  G.forNodes([&](node v) { ranking.push_back({v, scoreData[v]}); });
+  G.forNodes([&](node v) { ranking.emplace_back(v, scoreData[v]); });
   Aux::Parallel::sort(ranking.begin(), ranking.end(),
                       [](std::pair<node, double> x, std::pair<node, double> y) {
                         if (x.second == y.second) {

@@ -30,14 +30,13 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 
     if (writeInitialGraphToStream) {
         // write initial graph to stream
-        G.forNodes(
-            [&](node v) { eventStream.push_back(GraphEvent(GraphEvent::NODE_ADDITION, v)); });
+        G.forNodes([&](node v) { eventStream.emplace_back(GraphEvent::NODE_ADDITION, v); });
 
         G.forEdges([&](node u, node v, edgeweight ew) {
-            eventStream.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, u, v, ew));
+            eventStream.emplace_back(GraphEvent::EDGE_ADDITION, u, v, ew);
         });
 
-        eventStream.push_back(GraphEvent(GraphEvent::TIME_STEP));
+        eventStream.emplace_back(GraphEvent::TIME_STEP);
 
         writeInitialGraphToStream = false;
     }
@@ -54,9 +53,8 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
             } while (!G.hasNode(nodeToDel));
 
             // mark incident edges first for deletion, delete them outside of neighborhood iterator
-            G.forNeighborsOf(nodeToDel, [&](node neigh) {
-                edgesToDelete.push_back(std::make_pair(nodeToDel, neigh));
-            });
+            G.forNeighborsOf(nodeToDel,
+                             [&](node neigh) { edgesToDelete.emplace_back(nodeToDel, neigh); });
             for (auto elem : edgesToDelete) {
                 node neigh = elem.second;
                 G.removeEdge(nodeToDel, neigh);
@@ -135,7 +133,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
         G.forEdges([&](node u, node v) {
             edge e = std::make_pair(std::min(u, v), std::max(u, v));
             if (eligibleEdges[e] < 2) {
-                edgesToDelete.push_back(std::make_pair(u, v));
+                edgesToDelete.emplace_back(u, v);
             } else {
                 assert(G.hasEdge(u, v));
                 edgeweight ew =
@@ -175,7 +173,7 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
             }
         }
 
-        eventStream.push_back(GraphEvent(GraphEvent::TIME_STEP));
+        eventStream.emplace_back(GraphEvent::TIME_STEP);
     }
 
     return eventStream;

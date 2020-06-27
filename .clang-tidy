@@ -21,6 +21,7 @@ Checks: >
     bugprone-use-after-move,
     bugprone-virtual-near-miss,
     cppcoreguidelines-narrowing-conversions,
+    modernize-use-emplace,
     modernize-use-override,
     modernize-deprecated-headers,
     modernize-use-using,
@@ -37,10 +38,6 @@ Checks: >
     readability-avoid-const-params-in-decls,
     readability-const-return-type,
     readability-container-size-empty
-
-# Warnings whishlist
-#    modernize-avoid-c-arrays,
-#    modernize-use-emplace,
 
 # Turn the warnings from the checks above into errors.
 # To turn all warnings into errors, simply write '*'
@@ -67,6 +64,7 @@ WarningsAsErrors:  >
     bugprone-use-after-move,
     bugprone-virtual-near-miss,
     modernize-deprecated-headers,
+    modernize-use-emplace,
     modernize-use-override,
     modernize-use-using,
     performance-for-range-copy,
