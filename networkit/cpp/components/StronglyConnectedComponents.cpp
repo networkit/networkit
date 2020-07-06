@@ -18,7 +18,9 @@
 
 namespace NetworKit {
 
-StronglyConnectedComponents::StronglyConnectedComponents(const Graph &G) : G(&G) {
+StronglyConnectedComponents::StronglyConnectedComponents(const Graph &G)
+    : ComponentDecomposition(G) {
+
     if (!G.isDirected())
         WARN("The input graph is undirected, use ConnectedComponents for more efficiency.");
 }
@@ -43,7 +45,7 @@ void StronglyConnectedComponents::run() {
     std::vector<node> lastVisited(n, none);
 
     count curDepth = 0, visitedNodes = 0;
-    componentIndex = 0;
+    index nComponents = 0;
 
     std::stack<std::pair<node, Graph::NeighborIterator>> dfsStack;
 

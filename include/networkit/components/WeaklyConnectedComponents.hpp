@@ -1,100 +1,60 @@
 /*
-* WeaklyConnectedComponents.h
-*
-*  Created on: June 20, 2017
-*      Author: Eugenio Angriman
-*/
+ * WeaklyConnectedComponents.hpp
+ *
+ *  Created on: June 20, 2017
+ *      Author: Eugenio Angriman
+ */
+
+// networkit-format
 
 #ifndef NETWORKIT_COMPONENTS_WEAKLY_CONNECTED_COMPONENTS_HPP_
 #define NETWORKIT_COMPONENTS_WEAKLY_CONNECTED_COMPONENTS_HPP_
 
-#include <networkit/graph/Graph.hpp>
-#include <networkit/structures/Partition.hpp>
-#include <networkit/base/Algorithm.hpp>
+#include <memory>
+
+#include <networkit/components/ComponentDecomposition.hpp>
 
 namespace NetworKit {
 
+// pImpl
+namespace ConnectedComponentsDetails {
+template <bool>
+class ConnectedComponentsImpl;
+} // namespace ConnectedComponentsDetails
+
+/**
+ * @ingroup components
+ * Determines the weakly connected components of a directed graph.
+ */
+class WeaklyConnectedComponents final : public ComponentDecomposition {
+public:
     /**
-    * @ingroup components
-    * Determines the weakly connected components of a directed graph.
-    */
-    class WeaklyConnectedComponents : public Algorithm {
-    public:
-        /**
-        * Create WeaklyConnectedComponents class for Graph @a G.
-        *
-        * @param G The graph.
-        */
-        WeaklyConnectedComponents(const Graph& G);
+     * Create WeaklyConnectedComponents class for Graph @a G.
+     *
+     * @param G The graph.
+     */
+    WeaklyConnectedComponents(const Graph &G);
 
-        /**
-        * This method determines the weakly connected components for the graph
-        * given in the constructor.
-        */
-        void run() override;
+    ~WeaklyConnectedComponents() override;
 
-        /**
-        * Get the number of weakly connected components.
-        *
-        * @return The number of weakly connected components.
-        */
-        count numberOfComponents();
+    /*
+     * Computes the weakly connected components of the input graph.
+     */
+    void run() override;
 
-        /**
-        * Get the the component in which node @a u is.
-        *
-        * @param[in]	u	The index of the component where @a is located.
-        */
-        count componentOfNode(node u);
+    /**
+     * Constructs a new graph that contains only the nodes inside the largest
+     * weakly connected component.
+     * @param G            The input graph.
+     * @param compactGraph If true, the node ids of the output graph will be compacted
+     * (i.e. re-numbered from 0 to n-1). If false, the node ids will not be changed.
+     * @return The largest weakly connected component of the input graph @a G.
+     */
+    static Graph extractLargestWeaklyConnectedComponent(const Graph &G, bool compactGraph = false);
 
-        /**
-        * Get the map from component to size.
-        *
-        * @return A map that maps each component to its size.
-        */
-        std::map<index, count> getComponentSizes();
-
-        /**
-        * @return Vector of components, each stored as (unordered) set of nodes.
-        */
-        std::vector<std::vector<node>> getComponents();
-
-
-    private:
-        void updateComponent(
-            index c, node w, std::queue<node>& q, bool inNeighbor
-        );
-
-        void init();
-
-        // Pointer to the graph
-        const Graph& G;
-
-        // This vector associates each node to a component
-        std::vector<index> components;
-
-        // This map stores all components
-        // <Key: component ID, Value: component size>
-        std::map<index, count> compSize;
-    };
-
-    inline count WeaklyConnectedComponents::componentOfNode(node u) {
-        assert (components[u] != none);
-        assureFinished();
-        return components[u];
-    }
-
-    inline count WeaklyConnectedComponents::numberOfComponents() {
-        assureFinished();
-        return compSize.size();
-    }
-
-    inline std::map<index, count> WeaklyConnectedComponents::getComponentSizes() {
-        assureFinished(); 
-        return compSize;
-    }
-
-}
-
+private:
+    std::unique_ptr<ConnectedComponentsDetails::ConnectedComponentsImpl<true>> impl;
+};
+} // namespace NetworKit
 
 #endif // NETWORKIT_COMPONENTS_WEAKLY_CONNECTED_COMPONENTS_HPP_

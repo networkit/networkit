@@ -94,7 +94,7 @@ std::map< NetworKit::edgeweight, NetworKit::Partition > NetworKit::CutClustering
     }
 
     // for unconnected networks the lower bound for the computation are the connected components
-    ConnectedComponents connComp = ConnectedComponents(G);
+    ConnectedComponents connComp(G);
     connComp.run();
 
     // construct a partition that uses a node of each cluster as representative

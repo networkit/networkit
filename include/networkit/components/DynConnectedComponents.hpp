@@ -1,5 +1,5 @@
 /*
-* DynConnectedComponents.cpp
+* DynConnectedComponents.hpp
 *
 *  Created on: June 2017
 *      Author: Eugenio Angriman

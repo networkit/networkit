@@ -50,6 +50,13 @@ public:
 
     Partition(const std::vector<index>& data);
 
+    void reset(index newSize, index defaultValue) {
+        data.clear();
+        data.resize(newSize, defaultValue);
+        z = newSize;
+        omega = 0;
+    }
+
     /**
      *  Index operator.
      *

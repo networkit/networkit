@@ -10,7 +10,6 @@
 #include <networkit/components/ParallelConnectedComponents.hpp>
 #include <networkit/components/StronglyConnectedComponents.hpp>
 #include <networkit/components/DynConnectedComponents.hpp>
-#include <networkit/components/WeaklyConnectedComponents.hpp>
 #include <networkit/components/DynWeaklyConnectedComponents.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>
@@ -30,10 +29,8 @@ class ConnectedComponentsGTest: public testing::Test{};
 
 TEST_F(ConnectedComponentsGTest, testConnectedComponentsTiny) {
     // construct graph
-    Graph g;
-    for (count i = 0; i < 20; i++) {
-        g.addNode();
-    }
+    Graph g(20);
+
     g.addEdge(0,1,0);
     g.addEdge(1,2,0);
     g.addEdge(2,4,0);
@@ -445,10 +442,8 @@ TEST_F(ConnectedComponentsGTest, testWeaklyConnectedComponents) {
 
 TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponentsTiny) {
     // construct graph
-    Graph g(0, false, true);
-    for (count i = 0; i < 20; i++) {
-        g.addNode();
-    }
+    Graph g(20, false, true);
+
     g.addEdge(0,1,0);
     g.addEdge(1,2,0);
     g.addEdge(2,4,0);
@@ -474,14 +469,14 @@ TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponentsTiny) {
 
     // check result
     EXPECT_EQ(5, dw.numberOfComponents());
-    EXPECT_TRUE(dw.componentOfNode(0) == dw.componentOfNode(19));
-    EXPECT_TRUE(dw.componentOfNode(3) == dw.componentOfNode(7));
+    EXPECT_EQ(dw.componentOfNode(0), dw.componentOfNode(19));
+    EXPECT_EQ(dw.componentOfNode(3), dw.componentOfNode(7));
 
     g.addEdge(13, 15, 0);
     dw.update(GraphEvent(GraphEvent::EDGE_ADDITION, 13, 15, 0));
     EXPECT_EQ(4, dw.numberOfComponents());
-    EXPECT_TRUE(dw.componentOfNode(14) == dw.componentOfNode(15));
-    EXPECT_TRUE(dw.componentOfNode(15) != dw.componentOfNode(0));
+    EXPECT_EQ(dw.componentOfNode(14), dw.componentOfNode(15));
+    EXPECT_NE(dw.componentOfNode(15), dw.componentOfNode(0));
 
     // Create batch and update
     std::vector<GraphEvent> batch {

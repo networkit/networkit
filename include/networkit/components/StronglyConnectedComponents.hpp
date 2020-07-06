@@ -13,20 +13,14 @@
 #ifndef NETWORKIT_COMPONENTS_STRONGLY_CONNECTED_COMPONENTS_HPP_
 #define NETWORKIT_COMPONENTS_STRONGLY_CONNECTED_COMPONENTS_HPP_
 
-#include <map>
-#include <vector>
-
-#include <networkit/base/Algorithm.hpp>
-#include <networkit/graph/Graph.hpp>
-#include <networkit/structures/Partition.hpp>
+#include <networkit/components/ComponentDecomposition.hpp>
 
 namespace NetworKit {
 
 /**
  * @ingroup components
- *
  */
-class StronglyConnectedComponents final : public Algorithm {
+class StronglyConnectedComponents final : public ComponentDecomposition {
 
 public:
     /**
