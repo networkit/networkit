@@ -1,3 +1,5 @@
+# distutils: language=c++
+
 cdef class Matching:
 	""" Implements a graph matching.
 

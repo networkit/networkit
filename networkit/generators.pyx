@@ -1,3 +1,5 @@
+# distutils: language=c++
+
 import collections
 import math
 import subprocess

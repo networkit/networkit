@@ -1,3 +1,5 @@
+# distutils: language=c++
+
 cdef class Cover:
 	""" Implements a cover of a set, i.e. an assignment of its elements to possibly overlapping subsets. """
 	def __cinit__(self, n=0):

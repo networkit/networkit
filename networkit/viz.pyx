@@ -1,3 +1,5 @@
+# distutils: language=c++
+
 from libc.stdint cimport uint64_t
 from libcpp.string cimport string
 from libcpp cimport bool as bool_t

@@ -1,3 +1,5 @@
+# distutils: language=c++
+
 from libcpp.vector cimport vector
 
 from .base cimport _Algorithm, Algorithm

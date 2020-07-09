@@ -1,3 +1,5 @@
+# distutils: language=c++
+
 """ Abstract base class for algorithms """
 cdef class Algorithm:
 	def __init__(self, *args, **namedargs):

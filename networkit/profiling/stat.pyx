@@ -1,3 +1,5 @@
+# distutils: language=c++
+
 #
 # file: stat.py
 # author: Mark Erb

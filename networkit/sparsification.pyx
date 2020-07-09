@@ -1,3 +1,5 @@
+# distutils: language=c++
+
 from libc.stdint cimport uint64_t
 from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
@@ -1219,7 +1221,7 @@ class LocalSparsifier(Sparsifier):
 		self.sparsifier = sparsifier
 
 	def scores(self, G):
-				""" Returns an edge attribute that holds for each edge 1 - the minimum parameter value
+		""" Returns an edge attribute that holds for each edge 1 - the minimum parameter value
                	such that the edge is contained in the sparsified graph.
 
                	Note that - like for all sparsifiers - edges with the highest score are the most important ones.
@@ -1227,18 +1229,18 @@ class LocalSparsifier(Sparsifier):
                	Keyword arguments:
                	G -- the input graph
                	"""
-				originalScores = self.sparsifier.scores(G)
-				localFilterScore = LocalFilterScore(G, originalScores)
-				localFilterScore.run()
+		originalScores = self.sparsifier.scores(G)
+		localFilterScore = LocalFilterScore(G, originalScores)
+		localFilterScore.run()
 
-				return localFilterScore.scores()
+		return localFilterScore.scores()
 
-				def _getSparsifiedGraph(self, G, parameter, attribute):
-								gf = GlobalThresholdFilter(G, attribute, parameter, True)
-								return gf.calculate()
+	def _getSparsifiedGraph(self, G, parameter, attribute):
+		gf = GlobalThresholdFilter(G, attribute, parameter, True)
+		return gf.calculate()
 
-				def _getParameterizationAlgorithm(self):
-								return BinarySearchParameterization(False, 0.0, 1.0, 20)
+	def _getParameterizationAlgorithm(self):
+		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 
 class ModularityPartitionScore():

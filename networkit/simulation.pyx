@@ -1,3 +1,5 @@
+# distutils: language=c++
+
 from networkit.exceptions import ReducedFunctionalityWarning
 from libc.stdint cimport uint64_t
 from libcpp.vector cimport vector

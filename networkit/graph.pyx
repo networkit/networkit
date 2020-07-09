@@ -1,3 +1,5 @@
+# distutils: language=c++
+
 from cython.operator import dereference, preincrement
 
 from .base import Algorithm

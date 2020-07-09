@@ -1,3 +1,5 @@
+# distutils: language=c++
+
 """
 Tools for algorithm engineering.
 """

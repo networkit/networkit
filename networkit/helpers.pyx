@@ -1,3 +1,5 @@
+# distutils: language=c++
+
 # Cython helper functions
 
 def stdstring(pystring):

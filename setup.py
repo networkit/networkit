@@ -4,6 +4,7 @@ import shutil
 import sys
 import sysconfig
 import os
+from Cython.Build import cythonize
 
 cmakeCompiler = None
 buildDirectory = "build/build_python"
@@ -114,69 +115,7 @@ if cmakeCompiler is None:
 # functions for cythonizing and building networkit
 ################################################
 
-extension_module_names = [
-	"base",
-	"centrality",
-	"clique",
-	"coarsening",
-	"community",
-	"components",
-	"correlation",
-	"distance",
-	"dynamics",
-	"engineering",
-	"flow",
-	"generators",
-	"globals",
-	"graph",
-	"graphio",
-	"graphtools",
-	"helpers",
-	"independentset",
-	"linkprediction",
-	"matching",
-	"profiling/stat",
-	"randomization",
-	"scd",
-	"simulation",
-	"sparsification",
-	"stats",
-	"structures",
-	"traversal",
-	"viz"
-	]
-
-
-def cythonizeFile(filepath):
-	cpp_file = filepath.replace("pyx","cpp")
-
-	cython_available = shutil.which("cython") is not None
-	if not cython_available:
-		if not os.path.isfile(cpp_file):
-			print("ERROR: Neither cython nor _{}.cpp is provided. Build cancelled" .format(os.path.splitext(filepath)[0]), flush=True)
-			exit(1)
-
-		else:
-			print("Cython not available, but _{}.cpp provided. Continue build without cythonizing" .format(os.path.splitext(filepath)[0]), flush=True)
-
-	elif os.path.isfile(cpp_file) and os.path.getmtime(filepath) < os.path.getmtime(cpp_file):
-		print("Cython available; skip as _{}.cpp was create after last modification of _{}.pyx" .format(os.path.splitext(filepath)[0], os.path.splitext(filepath)[0]), flush=True)
-
-	else:
-		print("Cythonizing {}...".format(filepath), flush=True)
-		if not os.path.isfile(filepath):
-			print("{} is not available. Build cancelled..".format(filepath))
-			exit(1)
-		comp_cmd = ["cython","-3","--cplus","-t",filepath]
-		if not subprocess.call(comp_cmd) == 0:
-			print("cython returned an error, exiting setup.py")
-			exit(1)
-		print("{} cythonized" .format(filepath), flush=True)
-
 def buildNetworKit(install_prefix, externalCore=False, withTests=False, rpath=None):
-	# Cythonize file
-	for m in extension_module_names:
-		cythonizeFile("networkit/{}.pyx".format(m))
 	try:
 		os.makedirs(buildDirectory)
 	except FileExistsError:
@@ -333,6 +272,7 @@ class build_ext(Command):
 ################################################
 from setuptools import find_packages # in addition to setup
 import version
+
 setup(
 	name				= version.name,
 	version				= version.version,
@@ -349,7 +289,7 @@ setup(
 	platforms			= version.platforms,
 	classifiers			= version.classifiers,
 	cmdclass			= {'build_ext': build_ext},
-	ext_modules			= [Extension(m.replace('/', '.'), sources=[]) for m in extension_module_names],
+	ext_modules			= cythonize(["networkit/*pyx", "networkit/profiling/*pyx"], language_level=3),
 	test_suite			= 'nose.collector',
 	install_requires	= version.install_requires,
 	zip_safe			= False) # see https://cython.readthedocs.io/en/latest/src/reference/compilation.html

@@ -1,3 +1,5 @@
+# distutils: language=c++
+
 from .base cimport _Algorithm
 from .base cimport Algorithm
 from .graph cimport _Graph, Graph

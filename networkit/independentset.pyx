@@ -1,3 +1,5 @@
+# distutils: language=c++
+
 from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
 from libcpp.string cimport string
