@@ -1181,7 +1181,7 @@ TEST_P(GraphGTest, testEdgeIterator) {
         ASSERT_EQ(postIter, G.edgeRange().end());
 
         G1 = G;
-        for (const auto &edge : Graph::EdgeRange(G)) {
+        for (const auto edge : Graph::EdgeRange(G)) {
             ASSERT_TRUE(G1.hasEdge(edge.u, edge.v));
             G1.removeEdge(edge.u, edge.v);
         }
@@ -1210,7 +1210,7 @@ TEST_P(GraphGTest, testEdgeIterator) {
         ASSERT_EQ(postIter, G.edgeWeightRange().end());
 
         G1 = G;
-        for (const auto &edge : Graph::EdgeWeightRange(G)) {
+        for (const auto edge : Graph::EdgeWeightRange(G)) {
             ASSERT_TRUE(G1.hasEdge(edge.u, edge.v));
             ASSERT_DOUBLE_EQ(G1.weight(edge.u, edge.v), edge.weight);
             G1.removeEdge(edge.u, edge.v);

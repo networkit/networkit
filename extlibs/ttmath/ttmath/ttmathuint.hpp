@@ -1281,7 +1281,7 @@ private:
         }
 
 
-        if( (ss_size & 1) == 1 )
+        if( ss_size & 1 )
         {
             // ss_size is odd
             x0 = ss1;

@@ -316,26 +316,26 @@ public:
 
     /// Access i-th coordintate without boundary check
     T &operator[](index i) noexcept {
-        assert(i >= 0 && i < data.size());
+        assert(i < data.size());
         return data[i];
     }
 
     /// Access i-th coordintate with boundary check
     T &at(index i) {
-        if (!(i >= 0 && i < data.size()))
+        if (!(i < data.size()))
             throw std::out_of_range{""};
         return data[i];
     }
 
     /// Access i-th coordintate without boundary check
     T operator[](index i) const noexcept {
-        assert(i >= 0 && i < data.size());
+        assert(i < data.size());
         return data[i];
     }
 
     /// Access i-th coordintate with boundary check
     T at(index i) const {
-        if (!(i >= 0 && i < data.size()))
+        if (!(i < data.size()))
             throw std::out_of_range{""};
         return data[i];
     }

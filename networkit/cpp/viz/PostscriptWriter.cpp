@@ -39,7 +39,7 @@ PostscriptWriter::PostscriptWriter(bool isTorus) : wrapAround(isTorus), ps_size{
 void PostscriptWriter::computeBoundaryBox(const std::vector<Point2D> &coordinates) {
     ps_min = {std::numeric_limits<coordinate>::max(), std::numeric_limits<coordinate>::max()};
     ps_max = {std::numeric_limits<coordinate>::min(), std::numeric_limits<coordinate>::min()};
-    for (const auto p : coordinates) {
+    for (const auto &p : coordinates) {
         ps_min = ps_min.min(p);
         ps_max = ps_max.max(p);
     }
