@@ -34,6 +34,14 @@ const std::map<std::string,node> &EdgeListReader::getNodeMap() const {
     return this->mapNodeIds;
 }
 
+void EdgeListReader::malformedLineError(count lineNumber, const std::string &line) {
+    std::stringstream message;
+    message << "malformed line ";
+    message << lineNumber << ": ";
+    message << line;
+    throw std::runtime_error(message.str());
+}
+
 Graph EdgeListReader::readContinuous(const std::string& path) {
     std::ifstream file(path);
     Aux::enforceOpened(file);
@@ -45,6 +53,7 @@ Graph EdgeListReader::readContinuous(const std::string& path) {
     node maxNode = 0;
     bool weighted = false;
     bool checkedWeighted = false;
+    bool ignoredParameters = false;
 
     DEBUG("separator: " , this->separator);
     DEBUG("first node: " , this->firstNode);
@@ -63,37 +72,40 @@ Graph EdgeListReader::readContinuous(const std::string& path) {
             } else {
                 std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
                 if (!checkedWeighted) {
-                    if (split.size() == 2) {
+                    if (split.size() == 2 || split.size() > 3) {
                         weighted = false;
+                        ignoredParameters = split.size() > 3;
                     } else if (split.size() == 3) {
                         INFO("Identified graph as weighted.");
                         weighted = true;
                     }
                     checkedWeighted = true;
                 }
-                if (split.size() == 2 || split.size() == 3) {
-                    TRACE("split into : " , split[0] , " and " , split[1]);
-                    node u = std::stoul(split[0]);
-                    if (u > maxNode) {
-                        maxNode = u;
-                    }
-                    node v = std::stoul(split[1]);
-                    if (v > maxNode) {
-                        maxNode = v;
-                    }
-                } else {
-                    std::stringstream message;
-                    message << "malformed line ";
-                    message << i << ": ";
-                    message << line;
-                    throw std::runtime_error(message.str());
+
+                if (split.size() < 2)
+                    malformedLineError(i, line);
+
+                TRACE("split into : " , split[0] , " and " , split[1]);
+                node u = std::stoul(split[0]);
+                if (u > maxNode) {
+                    maxNode = u;
                 }
+                node v = std::stoul(split[1]);
+                if (v > maxNode) {
+                    maxNode = v;
+                }
+                if (split.size() > 3)
+                    ignoredParameters = true;
             }
         } else {
             DEBUG("line ", i, " is empty.");
         }
     }
     file.close();
+
+    if (ignoredParameters)
+        WARN("Parameters after the third position are ignored");
+
     maxNode = maxNode - this->firstNode + 1;
     DEBUG("max. node id found: " , maxNode);
 
@@ -107,29 +119,19 @@ Graph EdgeListReader::readContinuous(const std::string& path) {
         if (line.empty()) continue;
         if(*line.rbegin() == '\r') line.pop_back();
         ++i;
-        if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
-        } else {
+        if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) != 0) {
             std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
-            if (split.size() == 2) {
-                node u = std::stoul(split[0]) - this->firstNode;
-                node v = std::stoul(split[1]) - this->firstNode;
-                if (!G.hasEdge(u,v)) {
-                    G.addEdge(u, v);
-                }
-            } else if (weighted && split.size() == 3) {
-                node u = std::stoul(split[0]) - this->firstNode;
-                node v = std::stoul(split[1]) - this->firstNode;
-                double weight = std::stod(split[2]);
-                if (!G.hasEdge(u,v)) {
-                    G.addEdge(u, v, weight);
-                }
-            } else {
-                std::stringstream message;
-                message << "malformed line ";
-                message << i << ": ";
-                message << line;
-                throw std::runtime_error(message.str());
-            }
+
+            node u = std::stoul(split[0]) - this->firstNode;
+            node v = std::stoul(split[1]) - this->firstNode;
+            if (G.hasEdge(u, v))
+                continue;
+            if (!weighted)
+                G.addEdge(u, v);
+            else if (split.size() < 3)
+                malformedLineError(i, line);
+            else
+                G.addEdge(u, v, std::stod(split[2]));
         }
     }
     file.close();
@@ -148,6 +150,7 @@ Graph EdgeListReader::readNonContinuous(const std::string& path) {
 
     bool weighted = false;
     bool checkedWeighted = false;
+    bool ignoredParameters = false;
 
     // first find out the maximum node id
     DEBUG("first pass: create node ID mapping");
@@ -165,25 +168,23 @@ Graph EdgeListReader::readNonContinuous(const std::string& path) {
             } else {
                 std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
                 if (!checkedWeighted) {
-                    if (split.size() == 2) {
+                    if (split.size() == 2 || split.size() > 3) {
                         weighted = false;
+                        ignoredParameters = split.size() > 3;
                     } else if (split.size() == 3) {
                         INFO("Identified graph as weighted.");
                         weighted = true;
                     }
                     checkedWeighted = true;
                 }
-                if (split.size() == 2 || split.size() == 3) {
-                    TRACE("split into : " , split[0] , " and " , split[1]);
-                    if(this->mapNodeIds.insert(std::make_pair(split[0],consecutiveID)).second) ++consecutiveID;
-                    if(this->mapNodeIds.insert(std::make_pair(split[1],consecutiveID)).second) ++consecutiveID;
-                } else {
-                    std::stringstream message;
-                    message << "malformed line ";
-                    message << i << ": ";
-                    message << line;
-                    throw std::runtime_error(message.str());
-                }
+                if (split.size() < 2)
+                    malformedLineError(i,  line);
+
+                TRACE("split into : " , split[0] , " and " , split[1]);
+                if(this->mapNodeIds.emplace(split[0], consecutiveID).second) ++consecutiveID;
+                if(this->mapNodeIds.emplace(split[1], consecutiveID).second) ++consecutiveID;
+                if (split.size() > 3)
+                    ignoredParameters = true;
             }
         } else {
             DEBUG("line ", i, " is empty.");
@@ -191,6 +192,8 @@ Graph EdgeListReader::readNonContinuous(const std::string& path) {
     }
     file.close();
 
+    if (ignoredParameters)
+        WARN("Parameters after the third position are ignored");
     DEBUG("found ",this->mapNodeIds.size()," unique node ids");
     Graph G(this->mapNodeIds.size(), weighted, directed);
 
@@ -203,29 +206,19 @@ Graph EdgeListReader::readNonContinuous(const std::string& path) {
         if (line.empty()) continue;
         if(*line.rbegin() == '\r') line.pop_back();
         ++i;
-        if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
-        } else {
+        if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) != 0) {
             std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
-            if (split.size() == 2) {
-                node u = this->mapNodeIds[split[0]];
-                node v = this->mapNodeIds[split[1]];
-                if (!G.hasEdge(u,v)) {
-                    G.addEdge(u, v);
-                }
-            } else if (weighted && split.size() == 3) {
-                node u = this->mapNodeIds[split[0]];
-                node v = this->mapNodeIds[split[1]];
-                double weight = std::stod(split[2]);
-                if (!G.hasEdge(u,v)) {
-                    G.addEdge(u, v, weight);
-                }
-            } else {
-                std::stringstream message;
-                message << "malformed line ";
-                message << i << ": ";
-                message << line;
-                throw std::runtime_error(message.str());
-            }
+
+            node u = this->mapNodeIds.at(split[0]);
+            node v = this->mapNodeIds.at(split[1]);
+            if (G.hasEdge(u, v))
+                continue;
+            if (!weighted)
+                G.addEdge(u, v);
+            else if (split.size() < 3)
+                malformedLineError(i, line);
+            else
+                G.addEdge(u, v, std::stod(split[2]));
         }
     }
     DEBUG("read ",i," lines and added ",G.numberOfEdges()," edges");
