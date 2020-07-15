@@ -29,7 +29,7 @@ Graph EdgeListReader::read(const std::string& path) {
     }
 }
 
-std::map<std::string,node> EdgeListReader::getNodeMap() {
+const std::map<std::string,node> &EdgeListReader::getNodeMap() const {
     if (this->continuous) throw std::runtime_error("Input files are assumed to have continuous node ids, therefore no node mapping has been created.");
     return this->mapNodeIds;
 }

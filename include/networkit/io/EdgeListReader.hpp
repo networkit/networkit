@@ -48,7 +48,7 @@ public:
     /**
      * Return the node map, in case node ids are not continuous
      */
-    std::map<std::string, node> getNodeMap();
+    const std::map<std::string, node> &getNodeMap() const;
 
 private:
     char separator; //!< character separating nodes in an edge line
