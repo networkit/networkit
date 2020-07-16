@@ -13,12 +13,6 @@ stages:
   - "Core tests"
   - "Additional tests"
 
-cache:
-  timeout: 600
-  ccache: true
-  directories:
-    - $HOME/Library/Caches/Homebrew
-
 jobs:
   include:
     - name: macOS 10.15, Apple Clang
@@ -33,6 +27,26 @@ jobs:
           packages:
             - libomp
           update: false
+
+    - name: macOS 10.15, Apple Clang, non-monolithic
+      env:
+        - CC=cc
+        - CXX=c++
+        - MONOLITH=off
+      os: osx
+      osx_image: xcode12
+      stage: "Additional tests"
+      addons:
+        homebrew:
+          packages:
+            - libomp
+          update: true
+      script: &script_cpp_only
+        - $CXX --version
+        - mkdir debug_test && cd "$_"
+        - cmake -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_MONOLITH=$MONOLITH -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD -DNETWORKIT_WARNINGS=ON -DCMAKE_BUILD_TYPE=Debug ..
+        - make -j2
+        - ctest -V
 
     - name: macOS 10.15, llvm 10
       env:
@@ -224,12 +238,7 @@ jobs:
             - ubuntu-toolchain-r-test
           packages:
             - g++-10
-      script: &script_cpp_only
-        - $CXX --version
-        - mkdir debug_test && cd "$_"
-        - cmake -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_MONOLITH=$MONOLITH -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD -DNETWORKIT_WARNINGS=ON -DCMAKE_BUILD_TYPE=Debug ..
-        - make -j2
-        - ctest -V
+      script: *script_cpp_only
 
     - name: "Linux, GCC 10: Core build, non-monolithic"
       env:
@@ -388,9 +397,6 @@ script:
 
  # Test Jupyter-notebooks
  - python3 notebooks/test_notebooks.py 'notebooks/'
-
-before_cache:   
- - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew cleanup; fi
 
 notifications:
   email: false
