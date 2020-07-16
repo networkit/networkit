@@ -1,7 +1,6 @@
 Checks: >
     -*,
     bugprone-assert-side-effect,
-    bugprone-branch-clone,
     bugprone-copy-constructor-init,
     bugprone-dangling-handle,
     bugprone-dynamic-static-initializers,
