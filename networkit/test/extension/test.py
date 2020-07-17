@@ -7,7 +7,7 @@ import os
 
 class TestExtMETISGraphReader(unittest.TestCase):
 	def setUp(self):
-		from _NetworKit import Graph
+		from networkit.graph import Graph
 		self.g = Graph(5)
 		self.g.addEdge(0,1)
 		self.g.addEdge(0,2)
@@ -16,8 +16,8 @@ class TestExtMETISGraphReader(unittest.TestCase):
 
 	def test_readAndWrite(self):
 #		from networkit.graphio import METISGraphReader
-		from _NetworKit import METISGraphReader
-		from _NetworKit import METISGraphWriter
+		from networkit.graphio import METISGraphReader
+		from networkit.graphio import METISGraphWriter
 		w = METISGraphWriter()
 		w.write(self.g, "output/metis_test.graph")
 		self.assertTrue(os.path.isfile("output/metis_test.graph"))

@@ -6,7 +6,7 @@ import networkit as nk
 class TestGEXFIO(unittest.TestCase):
 	def setUp(self):
 		from networkit.GEXFIO import GEXFReader
-		from _NetworKit import Graph
+		from networkit.graph import Graph
 		self.reader = GEXFReader()
 		#celegans.gexf from http://gexf.net/format/datasets.html
 		self.g, self.events = self.reader.read("input/staticTest.gexf")
@@ -24,7 +24,7 @@ class TestGEXFIO(unittest.TestCase):
 		self.assertEqual([(u, v) for u, v in graph.iterEdges()], [(u, v) for u, v in graph2.iterEdges()])
 
 	def checkDynamic(self, eventStream, eventStream2):
-		from _NetworKit import GraphEvent
+		from networkit.dynamics import GraphEvent
 		self.assertEqual(len(eventStream), len(eventStream2))
 		#Check if timesteps are occuring at the same indexes
 		index = 0

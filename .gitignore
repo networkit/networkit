@@ -33,7 +33,8 @@ NetworKit-Tests-*
 .buildDbg/
 output
 benchmark/
-_NetworKit.cpp
+/networkit/*.cpp
+/networkit/profiling/*.cpp
 build/
 /build*
 /.build*
@@ -89,6 +90,7 @@ CTestTestfile.cmake
 
 ### Cython
 *.pyc
+/cython_debug/*
 
 ### JupyterNotebook
 .ipynb_checkpoints

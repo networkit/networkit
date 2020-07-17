@@ -76,8 +76,9 @@ from . import stats
 from . import sampling
 from . import viz
 from . import randomization
+from . import independentset
 from .support import MissingDependencyError
-from _NetworKit import GraphTools as graphtools
+from .graphtools import GraphTools as graphtools
 
 if have_plt:
 	from . import plot
@@ -96,8 +97,8 @@ except ImportError:
 # TODO: introduce settings module
 
 # extension imports
-from _NetworKit import getLogLevel, setLogLevel, setPrintLocation, enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads, none, setSeed
-
+from .engineering import getLogLevel, setLogLevel, setPrintLocation, none, setSeed, \
+		enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
 # local imports into the top namespace
 from .graph import Graph
 from .structures import Partition, Cover

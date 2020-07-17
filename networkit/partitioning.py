@@ -1,5 +1,6 @@
 # extension imports
-from _NetworKit import Partition, Modularity
+from .community import Modularity
+from .structures import Partition
 
 # local imports
 from .algebraic import laplacianEigenvectors
