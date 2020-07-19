@@ -41,7 +41,7 @@ std::pair<std::vector<double>, std::vector<double>> EvaluationMetric::getCurve(s
     // Percentile calculation through nearest rank method.
     // This calculation is numerically instable. This is why we use a set to make sure that
     // we obtain pairwise different thresholds.
-    thresholdSet.insert(std::ceil(numPredictions * (1.0 * i / (numThresholds - 1))));
+    thresholdSet.insert(std::ceil(numPredictions * (1.0 * i / static_cast<double>(numThresholds - 1))));
   }
   thresholds.assign(thresholdSet.begin(), thresholdSet.end());
   // The extraction of statistical measures requires sorted predictions

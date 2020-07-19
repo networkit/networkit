@@ -8,7 +8,7 @@ void NetworKit::SCANStructuralSimilarityScore::run() {
     if (!G->hasEdgeIds()) throw std::runtime_error("Error, edges must be indexed");
 
     G->parallelForEdges([&](node u, node v, edgeid eid) {
-        workScores[eid] = ((*triangles)[eid] + 1) * 1.0 / std::sqrt((G->degree(u) + 1)*(G->degree(v) + 1));
+        workScores[eid] = static_cast<double>((*triangles)[eid] + 1) * 1.0 / std::sqrt(static_cast<double>((G->degree(u) + 1)*(G->degree(v) + 1)));
     });
 
     scoreData = std::move(workScores);

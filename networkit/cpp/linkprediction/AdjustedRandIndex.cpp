@@ -33,7 +33,7 @@ double AdjustedRandIndex::runImpl(node u, node v) {
   double a = commonNeighbors.size();
   double b = uDifference.size();
   double c = vDifference.size();
-  double d = G->numberOfNodes() - unionNeighbors.size();
+  double d = static_cast<double>(G->numberOfNodes() - unionNeighbors.size());
   double ad = a*d;
   // Make sure to not divide by zero
   double denominator = (a*b + a*c + 2*ad + b*b + b*d + c*c + c*d);

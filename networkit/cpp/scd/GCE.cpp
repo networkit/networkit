@@ -226,8 +226,8 @@ std::set<node> expandseed_internal(const Graph&G, node s) {
 
     assert(boundary_diff == boundary_diff_debug);
 #endif
-    double numerator = 2.0 * (intWeight + degInt) * (currentBoundary.size() + boundary_diff);
-    double denominator = (C.size() + 1) * (extWeight - degInt + degExt);
+    double numerator = 2.0 * (intWeight + degInt) * static_cast<double>(currentBoundary.size() + boundary_diff);
+    double denominator = static_cast<double>(C.size() + 1) * (extWeight - degInt + degExt);
         return (numerator / denominator) - currentQ;
     };
 

@@ -17,10 +17,10 @@ std::pair<std::vector<double>, std::vector<double>> PrecisionRecallMetric::gener
     double recall = 1;
     double precision = 1;
     if (truePositives.at(i) > 0 || falseNegatives.at(i) > 0) {
-      recall = 1.0 * truePositives.at(i) / (truePositives.at(i) + falseNegatives.at(i));
+      recall = 1.0 * static_cast<double>(truePositives.at(i)) / static_cast<double>(truePositives.at(i) + falseNegatives.at(i));
     }
     if (truePositives.at(i) > 0 || falsePositives.at(i) > 0) {
-      precision = 1.0 * truePositives.at(i) / (truePositives.at(i) + falsePositives.at(i));
+      precision = 1.0 * static_cast<double>(truePositives.at(i)) / static_cast<double>(truePositives.at(i) + falsePositives.at(i));
     }
     if (!points.first.empty() && points.first.back() == recall) {
       points.second.pop_back();

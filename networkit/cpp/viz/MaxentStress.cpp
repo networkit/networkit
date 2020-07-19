@@ -587,7 +587,7 @@ void MaxentStress::computeAlgebraicDistances(const Graph& graph, const count k) 
                         if (algebraicDist == 0.0) {
                             algebraicDist = 1e-5;
                         }
-                        algebraicDist /= sqrt(G->degree(u) * G->degree(w));
+                        algebraicDist /= sqrt(static_cast<double>(G->degree(u) * G->degree(w)));
                         knownDistances[u].push_back({w, algebraicDist});
                         if (std::isnan(algebraicDist)) INFO("Warning: nan dist");
                         minDist[u] = std::min(minDist[u], algebraicDist);

@@ -16,7 +16,7 @@ int uniformRandom(int max) {
   int currentMax = 1;
   int currentValue = 0;
   while(currentMax < max) {
-    currentValue = currentValue * RAND_MAX + Aux::Random::integer();
+    currentValue = currentValue * RAND_MAX + static_cast<int>(Aux::Random::integer());
     currentMax *= RAND_MAX;
   }
   int value = currentValue % max;
@@ -28,7 +28,7 @@ unsigned int findIndex(const std::vector<int>& w, int v,
   if(upperIdx - lowerIdx <= 1) {
     return lowerIdx;
   }
-  int middleIdx = (upperIdx + lowerIdx) / 2;
+  int middleIdx = static_cast<int>((upperIdx + lowerIdx) / 2);
   if(v >= w[middleIdx]) {
     return findIndex(w, v, middleIdx, upperIdx);
   } else {
@@ -43,7 +43,7 @@ double GlobalClusteringCoefficient::approximate(const Graph& G, int k) {
   int sum = 0;
   for(node i = 0; i < n; i++) {
     w[i] = sum;
-    sum += (G.degree(i) * (G.degree(i) - 1)) / 2;
+    sum += static_cast<int>((G.degree(i) * (G.degree(i) - 1)) / 2);
   }
   w[n] = sum;
 

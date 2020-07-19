@@ -33,7 +33,7 @@ public:
         inv_diag = A.diagonal();
 #pragma omp parallel for
         for (omp_index i = 0; i < static_cast<omp_index>(inv_diag.getDimension()); ++i) {
-            if (inv_diag[i]) inv_diag[i] = 1.0 / inv_diag[i];
+            if (inv_diag[i] > 0) inv_diag[i] = 1.0 / inv_diag[i];
         }
     }
 
