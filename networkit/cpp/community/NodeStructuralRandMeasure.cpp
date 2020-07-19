@@ -46,9 +46,9 @@ double NodeStructuralRandMeasure::getDissimilarity(const Graph& G, const Partiti
         sumEta += s * (s - 1) / 2;
     }
 
-    count n = G.numberOfNodes();
+    double n = G.numberOfNodes();
 
-    count A = n * (n-1) / 2 + 2 * sumIntersection - (sumZeta + sumEta);
+    double A = n * (n-1.0) / 2.0 + 2.0 * static_cast<double>(sumIntersection) - static_cast<double>(sumZeta + sumEta);
 
     double rand = 1 - ((2 * A) * 1.0 / (n * (n-1)));
 

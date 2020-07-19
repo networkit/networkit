@@ -36,7 +36,7 @@ std::vector<double> JaccardDistance::getEdgeScores() {
 }
 
 inline double JaccardDistance::getJaccardDistance(count degU, count degV, count t) {
-    return 1 - (t * 1.0 / (degU + degV - t));
+    return 1.0 - (static_cast<double>(t * 1.0) / static_cast<double>(degU + degV - t));
 }
 
 } /* namespace NetworKit */

@@ -16,8 +16,8 @@ double GraphStructuralRandMeasure::getDissimilarity(const Graph& G, const Partit
         throw std::runtime_error("The graph-structural rand measure is not defined for graphs without edges.");
     }
 
-    count e11 = 0; // number of connected node pairs for which clusterings agree
-    count e00 = 0; // number of connected node pairs for which clusterings disagree
+    double e11 = 0.0; // number of connected node pairs for which clusterings agree
+    double e00 = 0.0; // number of connected node pairs for which clusterings disagree
 
     G.forEdges([&](node u, node v){
         if ((first[u] == first[v]) && (second[u] == second[v])) {
@@ -27,7 +27,7 @@ double GraphStructuralRandMeasure::getDissimilarity(const Graph& G, const Partit
         }
     });
 
-    double rand = 1 - (e11 + e00) * (1.0 / m);
+    double rand = 1.0 - (e11 + e00) * (1.0 / m);
 
     // assert range [0, 1]
     assert (rand <= 1.0);

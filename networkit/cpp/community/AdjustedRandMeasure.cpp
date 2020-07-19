@@ -40,7 +40,7 @@ double NetworKit::AdjustedRandMeasure::getDissimilarity(const NetworKit::Graph &
 
     const count denominator = (G.numberOfNodes() * (G.numberOfNodes() - 1)) / 2;
 
-    double maxIndex = 0.5 * (sumZeta + sumEta);
+    double maxIndex = 0.5 * static_cast<double>(sumZeta + sumEta);
 
     double expectedIndex = static_cast<double>(sumZeta * sumEta) / static_cast<double>(denominator);
 

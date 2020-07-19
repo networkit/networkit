@@ -52,8 +52,8 @@ void NetworKit::PowerlawDegreeSequence::setGamma(double gamma) {
 }
 
 void NetworKit::PowerlawDegreeSequence::setMinimumFromAverageDegree(double avgDeg) {
-    count dmin_l = 1;
-    count dmin_r = maxDeg;
+    double dmin_l = 1.0;
+    double dmin_r = maxDeg;
     setMinimumDegree(dmin_l); run();
     double average_l = getExpectedAverageDegree();
     double average_r = maxDeg;
@@ -67,7 +67,7 @@ void NetworKit::PowerlawDegreeSequence::setMinimumFromAverageDegree(double avgDe
     }
 
     while (dmin_l + 1 < dmin_r) {
-        setMinimumDegree((dmin_r + dmin_l) * 0.5); run();
+        setMinimumDegree(static_cast<double>(dmin_r + dmin_l) * 0.5); run();
         double avg = getExpectedAverageDegree();
 
         TRACE("Trying minDeg ", minDeg, ", this gives average ", avg, ", which should be between ", average_r, " and ", average_l);
@@ -159,7 +159,7 @@ double NetworKit::PowerlawDegreeSequence::getExpectedAverageDegree() const {
     assureFinished();
     double average = cumulativeProbability[0] * maxDeg;
     for (count i = 1; i < cumulativeProbability.size(); ++i) {
-        average += (cumulativeProbability[i] - cumulativeProbability[i-1]) * (maxDeg - i);
+        average += (cumulativeProbability[i] - cumulativeProbability[i-1]) * static_cast<double>(maxDeg - i);
     }
 
     return average;

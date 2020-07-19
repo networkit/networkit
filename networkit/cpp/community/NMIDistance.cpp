@@ -16,7 +16,7 @@ namespace NetworKit {
 
 double NMIDistance::getDissimilarity(const Graph& G, const Partition& zeta, const Partition& eta) {
 
-    count n = G.numberOfNodes();
+    double n = G.numberOfNodes();
 
     DEBUG("zeta=" , zeta.getVector());
     DEBUG("eta=" , eta.getVector());
@@ -42,11 +42,11 @@ double NMIDistance::getDissimilarity(const Graph& G, const Partition& zeta, cons
     std::vector<double> P_eta(eta.upperBound(), 0.0);
 
     for (index C = 0; C < size_zeta.size(); ++C) {
-        P_zeta[C] = size_zeta[C] / (double) n;
+        P_zeta[C] = static_cast<double>(size_zeta[C]) / n;
     }
 
     for (index D = 0; D < size_eta.size(); ++D) {
-        P_eta[D] = size_eta[D] / (double) n;
+        P_eta[D] = static_cast<double>(size_eta[D]) / n;
     }
 
     Partition overlap = PartitionIntersection().calculate(zeta, eta);
@@ -81,11 +81,11 @@ double NMIDistance::getDissimilarity(const Graph& G, const Partition& zeta, cons
             count sizeC = size_zeta[C];
             count sizeD = size_eta[D];
             count sizeO = overlapSizes[O];
-            double factor1 =  sizeO / (double) n;
+            double factor1 =  static_cast<double>(sizeO) / n;
             assert ((sizeC * sizeD) != 0);
             TRACE("overlap of " , C , " and " , D , " has size: " , sizeO);
             TRACE("union of " , C , " and " , D , " has size: " , (sizeD + sizeC - sizeO));
-            double frac2 = (sizeO * n) / (double) (sizeC * sizeD);
+            double frac2 = (static_cast<double>(sizeO) * n) / static_cast<double>(sizeC * sizeD);
             assert (frac2 != 0);
             double factor2 = log_b(frac2, 2);
             TRACE("frac2 = " , frac2 , ", factor1 = " , factor1 , ", factor2 = " , factor2);

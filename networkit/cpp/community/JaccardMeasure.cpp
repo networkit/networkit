@@ -48,15 +48,15 @@ double JaccardMeasure::getDissimilarity(const Graph& G, const Partition& zeta,
         sumEta += s * (s - 1) / 2;
     }
 
-    count n = G.numberOfNodes();
+    double n = G.numberOfNodes();
 
     count s11 = sumIntersection; // number of node pairs for which clusterings aggree
-    count s00 = n * (n-1) / 2 + sumIntersection - (sumZeta + sumEta); // number of node pairs for which clusterings disagree
+    double s00 = n * (n-1) / 2 + sumIntersection - static_cast<double>(sumZeta + sumEta); // number of node pairs for which clusterings disagree
 
     double jaccard;
-    double divisor = n * (n - 1) - 2 * s00;
+    double divisor = n * (n - 1) - 2.0 * s00;
     if (divisor > 0) {
-        jaccard = 1 - ((2 * s11) / divisor);
+        jaccard = 1.0 - ((2.0 * s11) / divisor);
     } else {
         jaccard = 0;
     }

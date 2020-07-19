@@ -137,7 +137,7 @@ std::vector<int> MocnikGenerator::boxSurface(MocnikGenerator::LayerState &s, int
         v.push_back(tmp);
         for (count j = 0; j < d; j++) {
             std::vector<std::vector<int>> w;
-            for (int mu = fmax(iV[j] - r + 1, 0); mu <= fmin(iV[j] + r - 1, s.aMax - 1); mu++) {
+            for (int mu = std::max(iV[j] - r + 1, 0); mu <= std::min(iV[j] + r - 1, s.aMax - 1); mu++) {
                 for (std::vector<int> &vElem : v) {
                     std::vector<int> x(vElem);
                     x.push_back(mu);
@@ -162,7 +162,7 @@ std::vector<int> MocnikGenerator::boxSurface(MocnikGenerator::LayerState &s, int
         v = w;
         for (count j = d + 1; j < dim; j++) {
             std::vector<std::vector<int>> w;
-            for (int mu = fmax(iV[j] - r, 0); mu <= fmin(iV[j] + r, s.aMax - 1); mu++) {
+            for (int mu = std::max(iV[j] - r, 0); mu <= std::min(iV[j] + r, s.aMax - 1); mu++) {
                 for (std::vector<int> &vElem : v) {
                     std::vector<int> x(vElem);
                     x.push_back(mu);
@@ -194,7 +194,7 @@ std::vector<int> MocnikGenerator::boxVolume(MocnikGenerator::LayerState &s, int 
     // find all boxes
     for (count d = 0; d < dim; d++) {
         std::vector<std::vector<int>> w;
-        for (int mu = fmax(iV[d] - r2, 0); mu <= fmin(iV[d] + r2, s.aMax - 1); mu++) {
+        for (int mu = std::max(iV[d] - r2, 0); mu <= std::min(iV[d] + r2, s.aMax - 1); mu++) {
             for (std::vector<int> &sElem : se) {
                 std::vector<int> x(sElem);
                 x.push_back(mu);

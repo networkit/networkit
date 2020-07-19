@@ -23,12 +23,12 @@ RmatGenerator::RmatGenerator(count scale, count edgeFactor, double a, double b, 
 }
 
 Graph RmatGenerator::generate() {
-    count n = (1 << scale);
+    double n = (1 << scale);
     if (n <= reduceNodes) {
         throw std::runtime_error("Error, shall delete more nodes than the graph originally has");
     }
     // when nodes are deleted, all nodes have less neighbors
-    count numEdges = n * edgeFactor * n * 1.0 / (n - reduceNodes);
+    count numEdges = n * edgeFactor * n * 1.0 / static_cast<double>(n - reduceNodes);
     count wantedEdges = (n - reduceNodes) * edgeFactor;
     Graph G(n - reduceNodes, weighted);
     double ab = a+b;

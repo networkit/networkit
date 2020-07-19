@@ -108,8 +108,8 @@ public:
                 // cells in adj matrix per thread
                 const node chunk_size = (n * (n-1) / 2 + threads - 1) / threads;
 
-                node first_node;
-                node last_node = 0;
+                double first_node;
+                double last_node = 0.0;
 
                 for(unsigned i = 0; i <= tid; i++) {
                     first_node = last_node;

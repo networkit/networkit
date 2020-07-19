@@ -169,7 +169,7 @@ void NetworKit::CutClustering::clusterHierarchyRecursion(const NetworKit::Graph 
                 continue;
 
             count upperSize = upperSizes[upperClusters[it.first]];
-            count lowerSize = it.second;
+            double lowerSize = static_cast<double>(it.second);
 
             // find the highest possible breakpoint, first candidate: the upper cluster in which the representative of the lower cluster is.
             edgeweight lowerWeight = lowerCut[it.first];
