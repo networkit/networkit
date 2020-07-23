@@ -253,32 +253,51 @@ unit tests should be compiled with:
 
 ::
 
-   scons --optimize=Dbg --target=Tests
+   cd build/
+   cmake -DNETWORKIT_BUILD_TESTS=ON ..
+   make -jX # To speed up the compilation with make a multi-core machine, you can append `-jX` where X denotes the number of threads to compile with.
 
 To verify that the code was built correctly: Run all unit tests with
 
 ::
 
-   ./NetworKit-Tests-Dbg --tests/-t
+   ctest -V
 
-Performance tests will be selected with
-
-::
-
-   ./NetworKit-Tests-Dbg --benchmarks/-b
-
-while experimental tests are called with
+To select only a subset of tests, you can run instead
 
 ::
 
-   ./NetworKit-Tests-Dbg --trials/-e
+   cd .. # Navigate to the project root directory
+   build/networkit_tests [options]
+
+Here's a rundown of the available options: Non-performance tests can be selected with
+
+::
+
+   build/networkit_tests --tests/-t
+
+while performance tests are called with
+
+::
+
+   build/networkit_tests --benchmarks/-b
+
+Further options are:
+
+::
+   -r, --run         Run unit tests which don't use assertions
+   -d, --debug       Run tests to debug some algorithms
+       --threads     set the maximum number of threads; 0 (=default) uses OMP 
+                     default
+       --loglevel    set the log level (TRACE|DEBUG|INFO|WARN|ERROR|FATAL)
+       --srcloc      print source location of log messages
 
 To run only specific unit tests, you can also add a filter expression,
 e. g.:
 
 ::
 
-   ./NetworKit-Tests-Dbg --gtest_filter=*PartitionGTest*/-f*PartitionGTest*
+   build/networkit_tests --gtest_filter=*PartitionGTest*/-f*PartitionGTest*
 
 initiates unit tests only for the Partition data structure.
 
