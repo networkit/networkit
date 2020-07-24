@@ -422,7 +422,7 @@ std::vector<node> invertContinuousNodeIds(const std::unordered_map<node, node> &
     // store upper node id bound
     invertedIdMap[G.numberOfNodes()] = G.upperNodeIdBound();
     // inverted node mapping
-    for (const auto x : nodeIdMap) {
+    for (const auto &x : nodeIdMap) {
         invertedIdMap[x.second] = x.first;
     }
     return invertedIdMap;

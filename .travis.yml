@@ -9,109 +9,122 @@ env:
     - export CXX_STANDARD=11
     - export MONOLITH=ON
 
+stages:
+  - "Core tests"
+  - "Additional tests"
+
 jobs:
   include:
+    - name: macOS 10.15, Apple Clang
+      env:
+        - CC=cc
+        - CXX=c++
+      os: osx
+      osx_image: xcode12
+      stage: "Core tests"
+      addons:
+        homebrew:
+          packages:
+            - libomp
+          update: false
+
+    - name: macOS 10.15, Apple Clang, non-monolithic
+      env:
+        - CC=cc
+        - CXX=c++
+        - MONOLITH=off
+      os: osx
+      osx_image: xcode12
+      stage: "Additional tests"
+      addons:
+        homebrew:
+          packages:
+            - libomp
+          update: true
+      script: &script_cpp_only
+        - $CXX --version
+        - mkdir debug_test && cd "$_"
+        - cmake -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_MONOLITH=$MONOLITH -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD -DNETWORKIT_WARNINGS=ON -DCMAKE_BUILD_TYPE=Debug ..
+        - make -j2
+        - ctest -V
+
+    - name: macOS 10.15, llvm 10
+      env:
+        - CC=/usr/local/opt/llvm@10/bin/clang
+        - CXX=/usr/local/opt/llvm@10/bin/clang++
+      os: osx
+      osx_image: xcode12
+      stage: "Additional tests"
+      addons:
+        homebrew:
+          packages:
+            - llvm
+            - libomp
+          update: true
+
+    - name: macOS 10.15, GCC 10
+      env:
+        - CC=/usr/local/opt/gcc@10/bin/gcc-10
+        - CXX=/usr/local/opt/gcc@10/bin/g++-10
+      os: osx
+      osx_image: xcode12
+      stage: "Additional tests"
+      addons:
+        homebrew:
+          packages:
+            - gcc@10
+          update: true
+      before_install:
+        - brew link gcc
+
     - name: macOS 10.14, Apple Clang
       env:
         - CC=cc
         - CXX=c++
       os: osx
-      osx_image: xcode10.2
+      osx_image: xcode11.3
+      stage: "Core tests"
       addons:
         homebrew:
           packages:
             - libomp
-          update: true
+          update: false
 
-    - name: macOS 10.14, llvm 8
+    - name: macOS 10.14, llvm 10
       env:
-        - CC=/usr/local/opt/llvm@8/bin/clang
-        - CXX=/usr/local/opt/llvm@8/bin/clang++
+        - CC=/usr/local/opt/llvm@10/bin/clang
+        - CXX=/usr/local/opt/llvm@10/bin/clang++
       os: osx
-      osx_image: xcode10.2
+      osx_image: xcode11.3
+      stage: "Additional tests"
       addons:
         homebrew:
           packages:
-            - llvm@8
+            - llvm
             - libomp
           update: true
 
-    - name: macOS 10.14, GCC 8
+    - name: macOS 10.14, GCC 10
       env:
-        - CC=/usr/local/opt/gcc@8/bin/gcc-8
-        - CXX=/usr/local/opt/gcc@8/bin/g++-8
+        - CC=/usr/local/opt/gcc@10/bin/gcc-10
+        - CXX=/usr/local/opt/gcc@10/bin/g++-10
       os: osx
-      osx_image: xcode10.2
+      osx_image: xcode11.3
+      stage: "Additional tests"
       addons:
         homebrew:
           packages:
-            - gcc@8
+            - gcc@10
           update: true
       before_install:
-        - brew link gcc@8
-
-    - name: macOS 10.14, Apple Clang, non-monolith
-      env:
-        - CC=cc
-        - CXX=c++
-      os: osx
-      osx_image: xcode10.2
-      addons:
-        homebrew:
-          packages:
-            - libomp
-          update: true
-      script:
-        - $CXX --version
-        - mkdir build_non_monolith && cd "$_"
-        - cmake -DNETWORKIT_MONOLITH=OFF -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug ..
-        - make -j2
-        - ctest -V
-
-    - name: macOS 10.13, llvm 8
-      env:
-        - CC=/usr/local/opt/llvm@8/bin/clang
-        - CXX=/usr/local/opt/llvm@8/bin/clang++
-      os: osx
-      osx_image: xcode10.1
-      addons:
-        homebrew:
-          packages:
-            - llvm@8
-            - libomp
-          update: true
-
-    - name: macOS 10.13, GCC 8
-      env:
-        - CC=/usr/local/opt/gcc@8/bin/gcc-8
-        - CXX=/usr/local/opt/gcc@8/bin/g++-8
-      os: osx
-      osx_image: xcode10.1
-      addons:
-        homebrew:
-          packages:
-            - gcc@8
-          update: true
-      before_install:
-        - brew link gcc@8
-
-    - name: macOS 10.13, Apple Clang
-      env:
-        - CC=cc
-        - CXX=c++
-      os: osx
-      osx_image: xcode10.1
-      addons:
-        homebrew:
-          packages:
-            - libomp
-          update: true
+        - brew link gcc
 
     - name: Linux, Clang 9 with clang-tidy
       env:
         - CC=clang
         - CXX=clang++
       os: linux
+      stage: "Core tests"
       dist: bionic
       addons:
         apt:
@@ -141,6 +154,7 @@ jobs:
     - name: "Linux, GCC 5: Core build, sanitizers, coverage"
       compiler: gcc
       os: linux
+      stage: "Core tests"
       dist: xenial
       addons: &gcc5
         apt:
@@ -159,26 +173,28 @@ jobs:
         - cd ..
         - coveralls -E ".*test/.*" -E ".*CMakeFiles.*" --exclude extlibs --exclude pyenv --exclude scripts --root .
 
-    - name: Linux, GCC 8
+    - name: Linux, GCC 10
       env:
-        - CC=gcc-8
-        - CXX=g++-8
+        - CC=gcc-10
+        - CXX=g++-10
       os: linux
-      dist: xenial
-      addons: &gcc8
+      stage: "Additional tests"
+      dist: bionic
+      addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-8
+            - g++-10
             - python3-pip
-            - python3.5-venv
+            - python3-venv
 
     - name: Linux, GCC 4.9
       env:
         - CC=gcc-4.9
         - CXX=g++-4.9
       os: linux
+      stage: "Core tests"
       dist: xenial
       addons:
         apt:
@@ -195,6 +211,7 @@ jobs:
         - CC=clang-3.8
         - CXX=clang++-3.8
       os: linux
+      stage: "Core tests"
       dist: xenial
       addons:
         apt:
@@ -208,65 +225,101 @@ jobs:
             - python3.5-venv
 
     # Test more exotic builds only on Linux.
-    - name: "Linux, GCC 8: Core build, debugging"
+    - name: "Linux, GCC 10: Core build, debugging"
       env:
-        - CC=gcc-8
-        - CXX=g++-8
+        - CC=gcc-10
+        - CXX=g++-10
       os: linux
-      dist: xenial
-      addons: *gcc8
-      script: &script_cpp_only
-        - $CXX --version
-        - mkdir debug_test && cd "$_"
-        - cmake -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_MONOLITH=$MONOLITH -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD -DNETWORKIT_WARNINGS=ON -DCMAKE_BUILD_TYPE=Debug ..
-        - make -j2
-        - ctest -V
-
-    - name: "Linux, GCC 8: Core build, non-monolithic"
-      env:
-        - CC=gcc-8
-        - CXX=g++-8
-        - MONOLITH=OFF
-      os: linux
-      dist: xenial
-      addons: *gcc8
-      script: *script_cpp_only
-
-    # Finally, test conformance to newer versions of the C++ standard.
-    - name: "Linux, GCC 8: C++14 conformance"
-      env:
-        - CC=gcc-8
-        - CXX=g++-8
-        - CXX_STANDARD=14
-      os: linux
-      dist: xenial
-      addons: *gcc8
-      script: *script_cpp_only
-
-    - name: "Linux, GCC 8: C++17 conformance"
-      env:
-        - CC=gcc-8
-        - CXX=g++-8
-        - CXX_STANDARD=17
-      os: linux
-      dist: xenial
-      addons: *gcc8
-      script: *script_cpp_only
-
-    - name: Documentation only
-      env:
-        - CC=gcc-8
-        - CXX=g++-8
-      os: linux
-      dist: xenial
+      stage: "Additional tests"
+      dist: bionic
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-8
+            - g++-10
+      script: *script_cpp_only
+
+    - name: "Linux, GCC 10: Core build, non-monolithic"
+      env:
+        - CC=gcc-10
+        - CXX=g++-10
+        - MONOLITH=OFF
+      os: linux
+      stage: "Additional tests"
+      dist: bionic
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-10
+      script: *script_cpp_only
+
+    # Finally, test conformance to newer versions of the C++ standard.
+    - name: "Linux, GCC 10: C++14 conformance"
+      env:
+        - CC=gcc-10
+        - CXX=g++-10
+        - CXX_STANDARD=14
+      os: linux
+      stage: "Additional tests"
+      dist: bionic
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-10
+      script: *script_cpp_only
+
+    - name: "Linux, GCC 10: C++17 conformance"
+      env:
+        - CC=gcc-10
+        - CXX=g++-10
+        - CXX_STANDARD=17
+      os: linux
+      stage: "Additional tests"
+      dist: bionic
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-10
+      script: *script_cpp_only
+
+    - name: "Linux, GCC 10: C++20 conformance"
+      env:
+        - CC=gcc-10
+        - CXX=g++-10
+        - CXX_STANDARD=20
+      os: linux
+      stage: "Additional tests"
+      dist: bionic
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-10
+      script: *script_cpp_only
+
+    - name: Documentation only
+      env:
+        - CC=gcc-10
+        - CXX=g++-10
+      os: linux
+      stage: "Core tests"
+      dist: bionic
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-10
             - python3-pip
-            - python3.5-venv
+            - python3-venv
             - doxygen
       script:
         - set -e
@@ -303,6 +356,7 @@ jobs:
 
     - name: "Style guide compliance"
       os: linux
+      stage: "Core tests"
       dist: bionic
       addons:
         apt:

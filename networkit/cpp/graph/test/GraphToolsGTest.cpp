@@ -259,7 +259,7 @@ TEST_P(GraphToolsGTest, testRandomEdges) {
     ASSERT_EQ(m, G.numberOfEdges());
 
     std::vector<count> drawCounts(m, 0);
-    for (const auto e : GraphTools::randomEdges(G, samples)) {
+    for (const auto &e : GraphTools::randomEdges(G, samples)) {
         const auto id = (e.first * e.second) % 5;
         ++drawCounts[id];
     }

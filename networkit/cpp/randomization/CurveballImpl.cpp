@@ -249,7 +249,7 @@ void TradeList::initialize(const trade_vector &trades) {
     std::vector<tradeid> trade_count(numNodes);
 
     // Push occurrences
-    for (const auto trade : trades) {
+    for (const auto &trade : trades) {
         assert(trade.first < numNodes);
         assert(trade.second < numNodes);
 
@@ -274,7 +274,7 @@ void TradeList::initialize(const trade_vector &trades) {
     std::fill(trade_count.begin(), trade_count.end(), 0);
     {
         tradeid trade_id = 0;
-        for (const auto trade : trades) {
+        for (const auto &trade : trades) {
             auto updateNode = [&](const node u) {
                 const node pos = offsets[u] + trade_count[u];
                 tradeList[pos] = trade_id;
@@ -298,7 +298,7 @@ TradeList::TradeList(const trade_vector &trades, const node num_nodes)
     std::vector<tradeid> trade_count(num_nodes);
 
     // Push occurences
-    for (const auto trade : trades) {
+    for (const auto &trade : trades) {
         assert(trade.first < num_nodes);
         assert(trade.second < num_nodes);
 
@@ -323,7 +323,7 @@ TradeList::TradeList(const trade_vector &trades, const node num_nodes)
     std::fill(trade_count.begin(), trade_count.end(), 0);
     {
         tradeid trade_id = 0;
-        for (const auto trade : trades) {
+        for (const auto &trade : trades) {
             auto updateNode = [&](const node u) {
                 const node pos = offsets[u] + trade_count[u];
                 tradeList[pos] = trade_id;
@@ -373,7 +373,7 @@ void CurveballIM::restructureGraph(const std::vector<std::pair<node, node>> &tra
     adjList.restructure();
     tradeList.initialize(trades);
 
-    for (const auto edge : edges) {
+    for (const auto &edge : edges) {
         update(edge.first, edge.second);
     }
 
