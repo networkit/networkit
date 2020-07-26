@@ -57,12 +57,6 @@ private:
     bool continuous;
     std::map<std::string, node> mapNodeIds;
     bool directed;
-
-    Graph readContinuous(const std::string &path);
-
-    Graph readNonContinuous(const std::string &path);
-
-    static void malformedLineError(count lineNumber, const std::string &line);
 };
 
 } /* namespace NetworKit */
