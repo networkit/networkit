@@ -109,7 +109,7 @@ ApproxGroupBetweenness::scoreOfGroup(const std::vector<node> &S,
             result += curScore;
 
     if (normalized) {
-        double nPairs = (z - S.size()) * (z - S.size() - 1);
+        double nPairs = static_cast<double>((z - S.size()) * (z - S.size() - 1));
         if (nPairs <= 0)
             return 0;
         if (!G.isDirected())

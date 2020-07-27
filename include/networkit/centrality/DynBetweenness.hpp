@@ -81,7 +81,7 @@ private:
     void decreaseScore(std::vector<bool> & affected, node y, std::priority_queue<std::pair<double, node>, std::vector<std::pair<double,node>>, CompareDist> & Q);
     node u;
     node v;
-    count diameter = 0;
+    edgeweight diameter = 0.0;
     const edgeweight infDist = std::numeric_limits<edgeweight>::max();
     count visitedPairs = 0;
     std::vector<std::vector<edgeweight>> distances;

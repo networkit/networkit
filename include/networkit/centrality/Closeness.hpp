@@ -62,7 +62,7 @@ class Closeness : public Centrality {
        * Returns the maximum possible Closeness a node can have in a graph with
        * the same amount of nodes (=a star)
        */
-      double maximum() override { return normalized ? 1. : (1. / (G.upperNodeIdBound() - 1)); }
+      double maximum() override { return normalized ? 1. : (1. / (static_cast<double>(G.upperNodeIdBound() - 1))); }
 
   private:
     ClosenessVariant variant;
@@ -76,11 +76,15 @@ class Closeness : public Centrality {
     void dijkstra();
     void incTS();
     void updateScoreData(node u, count reached, double sum) {
-        scoreData[u] =
-            sum ? variant == ClosenessVariant::standard
-                      ? 1.0 / sum
-                      : (reached - 1) / sum / (G.numberOfNodes() - 1)
-                : 0.;
+        if (sum > 0) {
+            if (variant == ClosenessVariant::standard) {
+                scoreData[u] = 1.0/ sum;
+            } else {
+                scoreData[u] = static_cast<double>(reached - 1) / sum / static_cast<double>(G.numberOfNodes() - 1);
+            }
+        } else {
+            scoreData[u] = 0.;
+        }
         if (normalized)
             scoreData[u] *=
                 (variant == ClosenessVariant::standard ? G.numberOfNodes()

@@ -31,7 +31,7 @@ TopHarmonicCloseness::BFScut(node v, edgeweight x, count n, count r,
                              std::vector<count> &distances,
                              std::vector<node> &pred, count &visitedEdges) {
 
-  count d = 0;
+  double d = 0;
   int64_t gamma = 0, nd = 0;
   distances[v] = 0;
   std::queue<node> Q;
@@ -64,9 +64,9 @@ TopHarmonicCloseness::BFScut(node v, edgeweight x, count n, count r,
     if (distances[u] > d) {
       d = d + 1;
 
-      int64_t d2 = int64_t(r) - nd;
-      ctilde = c + (edgeweight(gamma) / ((d + 2) * (d + 1))) +
-               (edgeweight(d2) / (d + 2));
+      double d2 = static_cast<double>(int64_t(r) - nd);
+      ctilde = c + (static_cast<edgeweight>(gamma) / ((d + 2.0) * (d + 1.0))) +
+               (d2 / (d + 2.0));
 
       if (ctilde < x) {
         exactCutOff[v] = true;

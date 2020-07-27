@@ -87,8 +87,8 @@ void GedWalk::init() {
     groupScore = 0.0;
     groupW = 0.0;
     groupBound = 0.0;
-    degOutMax = GraphTools::maxDegree(*G);
-    degInMax = GraphTools::maxInDegree(*G);
+    degOutMax = static_cast<double>(GraphTools::maxDegree(*G));
+    degInMax = static_cast<double>(GraphTools::maxInDegree(*G));
 
     inGroup.resize(n, 0);
     isExact.resize(n, 0);
@@ -123,7 +123,7 @@ void GedWalk::init() {
             alpha = 1.0 / (1.0 + degInMax);
         } else {
             assert(boundStrategy == BoundStrategy::adaptiveGeometric);
-            alpha = 1.0 / (1.0 + (degOutMax + degInMax));
+            alpha = 1.0 / (1.0 + degOutMax + degInMax);
         }
     }
 
@@ -534,12 +534,12 @@ void GedWalk::fillPQs() {
 
 void GedWalk::run() {
     if (boundStrategy == BoundStrategy::spectral) {
-        assert(alpha < 1 / static_cast<double>(sigmaMax));
+        assert(alpha < 1.0 / static_cast<double>(sigmaMax));
     } else if (boundStrategy == BoundStrategy::geometric) {
-        assert(alpha < 1 / static_cast<double>(degInMax));
+        assert(alpha < 1.0 / degInMax);
     } else {
         assert(boundStrategy == BoundStrategy::adaptiveGeometric);
-        assert(alpha < 1 / static_cast<double>(degOutMax + degInMax));
+        assert(alpha < 1.0 / (degOutMax + degInMax));
     }
 
     // Should we reset nLevels to zero?

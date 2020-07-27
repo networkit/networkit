@@ -116,8 +116,8 @@ uint64_t BucketPQ::size() const {
     return numElems;
 }
 
-int BucketPQ::getKey(const index& val) {
-    int key =myBucket[val]-offset;
+int64_t BucketPQ::getKey(const index& val) {
+    int64_t key =myBucket[val]-offset;
     return key;
 }
 } // namespace

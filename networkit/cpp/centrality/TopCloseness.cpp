@@ -211,14 +211,16 @@ void TopCloseness::computelBound1(std::vector<double> &S) {
 
                 count n_old = N[u];
                 N[u] += neighbors_new[u];
-                sumDist[u] += level * neighbors_new[u];
+                sumDist[u] += static_cast<double>(level * neighbors_new[u]);
 
                 if (N[u] >= reachL[u]) {
                     if (n_old < reachL[u]) {
                         // We have to consider the case in which the number of reachable
                         // vertices is reachL.
-                        S[u] = (sumDist[u] - level * (N[u] - reachL[u])) * (n - 1) / (reachL[u] - 1)
-                               / (reachL[u] - 1);
+                        double s1 = sumDist[u] - static_cast<double>(level * (N[u] - reachL[u]));
+                        double s2 = static_cast<double>(n - 1) / static_cast<double>(reachL[u] - 1)
+                                    / static_cast<double>(reachL[u] - 1);
+                        S[u] = s1 * s2;
                     }
                     if (neighbors_new[u] == 0) {
                         reachU[u] = N[u];
@@ -226,8 +228,11 @@ void TopCloseness::computelBound1(std::vector<double> &S) {
                     if (N[u] >= reachU[u]) {
                         // We have to consider the case in which the number of reachable
                         // vertices is reachU.
-                        S[u] = std::min(S[u], (sumDist[u] - level * (N[u] - reachU[u])) * (n - 1)
-                                                  / (reachU[u] - 1) / (reachU[u] - 1));
+                        S[u] = std::min(
+                            S[u], (sumDist[u] - static_cast<double>(level * (N[u] - reachU[u])))
+                                      * static_cast<double>(n - 1)
+                                      / static_cast<double>(reachU[u] - 1)
+                                      / static_cast<double>(reachU[u] - 1));
                         finished[u] = true;
                         n_finished++;
 
@@ -235,7 +240,9 @@ void TopCloseness::computelBound1(std::vector<double> &S) {
                     } else { // reachL < N < reachU
                         // We have to consider the case in which the number of reachable is
                         // N[u].
-                        S[u] = std::min(S[u], sumDist[u] * (n - 1) / (N[u] - 1) / (N[u] - 1));
+                        S[u] = std::min(S[u], sumDist[u] * static_cast<double>(n - 1)
+                                                  / static_cast<double>(N[u] - 1)
+                                                  / static_cast<double>(N[u] - 1));
                     }
                 }
             }
@@ -310,7 +317,7 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count &visEdges,
             level_bound += sumLevs[i - 3];
         }
         if (i < nLevs) {
-            level_bound -= (sumLevs[nLevs] - sumLevs[i + 1]);
+            level_bound -= static_cast<edgeweight>(sumLevs[nLevs] - sumLevs[i + 1]);
         }
         for (count j = 0; j < levels[i].size(); j++) {
             node w = levels[i][j];
@@ -351,8 +358,12 @@ double TopCloseness::BFScut(node v, double x, std::vector<bool> &visited,
         sum_dist += distances[u];
         if (distances[u] > d) { // Need to update bounds!
             d++;
-            ftildeL = (f + (d + 2) * (rL - nd) - gamma) * (n - 1) / (rL - 1.0) / (rL - 1.0);
-            ftildeU = (f + (d + 2) * (rU - nd) - gamma) * (n - 1) / (rU - 1.0) / (rU - 1.0);
+            double f1 = f + static_cast<double>(d + 2) * static_cast<double>(rL - nd) - gamma;
+            double f2 = static_cast<double>(n - 1) / (rL - 1.0) / (rL - 1.0);
+            ftildeL = f1 * f2;
+            f1 = f + static_cast<double>(d + 2) * static_cast<double>(rU - nd) - gamma;
+            f2 = static_cast<double>(n - 1) / (rU - 1.0) / (rU - 1.0);
+            ftildeU = f1 * f2;
             if (std::min(ftildeL, ftildeU) >= x) {
                 farnessV = std::min(ftildeL, ftildeU);
                 break;
@@ -370,15 +381,16 @@ double TopCloseness::BFScut(node v, double x, std::vector<bool> &visited,
                     visited[w] = true;
                     f += distances[w];
                     if (!G.isDirected())
-                        gamma += (G.degree(w) - 1); // notice: only because it's undirected
+                        gamma += static_cast<double>(G.degree(w)
+                                                     - 1); // notice: only because it's undirected
                     else
                         gamma += G.degreeOut(w);
                     nd++;
                     pred[w] = u;
                 } else {
                     if (G.isDirected() || pred[u] != w) {
-                        ftildeL += (n - 1) / (rL - 1.0) / (rL - 1.0);
-                        ftildeU += (n - 1) / (rU - 1.0) / (rU - 1.0);
+                        ftildeL += static_cast<double>(n - 1) / (rL - 1.0) / (rL - 1.0);
+                        ftildeU += static_cast<double>(n - 1) / (rU - 1.0) / (rU - 1.0);
                         if (std::min(ftildeL, ftildeU) > x) {
                             cont = false;
                         }
@@ -401,7 +413,8 @@ double TopCloseness::BFScut(node v, double x, std::vector<bool> &visited,
         visited[u] = false;
     } while (!to_reset.empty());
     if (farnessV < x) {
-        farnessV = sum_dist * (n - 1) / (nd - 1.0) / (nd - 1.0);
+        farnessV = static_cast<double>(sum_dist * (n - 1)) / static_cast<double>(nd - 1.0)
+                   / static_cast<double>(nd - 1.0);
     }
     return farnessV;
 }

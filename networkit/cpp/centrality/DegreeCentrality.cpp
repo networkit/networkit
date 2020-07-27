@@ -26,7 +26,7 @@ void DegreeCentrality::run() {
     }
 
     if (normalized) {
-        count maxDeg = maximum();
+        const double maxDeg = maximum();
         G.parallelForNodes([&](node u) {
             scoreData[u] = scoreData[u] / maxDeg;
         });
@@ -36,7 +36,13 @@ void DegreeCentrality::run() {
 
 
 double DegreeCentrality::maximum() {
-    return G.numberOfNodes() - ignoreSelfLoops;
+    if (G.isEmpty())
+        return 0.;
+    if (ignoreSelfLoops) {
+        return static_cast<double>(G.numberOfNodes() - 1);
+    } else {
+        return static_cast<double>(G.numberOfNodes());
+    }
 }
 
 

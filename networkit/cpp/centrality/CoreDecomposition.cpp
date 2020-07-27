@@ -335,7 +335,7 @@ index CoreDecomposition::maxCoreNumber() const {
 }
 
 double CoreDecomposition::maximum() {
-    return G.numberOfNodes() - 1;
+    return static_cast<double>(G.numberOfNodes() - 1);
 }
 
 } /* namespace NetworKit */

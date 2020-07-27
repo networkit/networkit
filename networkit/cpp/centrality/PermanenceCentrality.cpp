@@ -136,7 +136,7 @@ double NetworKit::PermanenceCentrality::getIntraClustering(NetworKit::node u) {
 
     if (numNeighbors < 2) return 0;
 
-    return numTriangles * 1.0 / (0.5 * numNeighbors * (numNeighbors - 1)); // triangles are counted only once, so divide by 2 here!
+    return numTriangles * 1.0 / (0.5 * static_cast<double>(numNeighbors * (numNeighbors - 1))); // triangles are counted only once, so divide by 2 here!
 }
 
 double NetworKit::PermanenceCentrality::getPermanence(NetworKit::node u) {
