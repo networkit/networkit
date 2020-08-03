@@ -1,0 +1,5 @@
+# weighted edgelist with non-numerical nodes
+a	b	3
+a	c	2
+c	d	1
+d	e	5

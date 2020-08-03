@@ -381,6 +381,16 @@ TEST_F(IOGTest, testEdgeListReader) {
     EXPECT_EQ(10u, G4.numberOfEdges());
     EXPECT_TRUE(G4.hasEdge(0, 4));
 
+    path = "input/alphabet.edgelist";
+    DEBUG("reading file: " , path);
+    EdgeListReader reader5('\t', 0, "#", false, false);
+    Graph G5 = reader5.read(path);
+    EXPECT_EQ(5u, G5.numberOfNodes());
+    EXPECT_EQ(4u, G5.numberOfEdges());
+    EXPECT_TRUE(G5.hasEdge(0, 1));
+    EXPECT_TRUE(G5.hasEdge(0, 2));
+    EXPECT_EQ(5, G5.weight(3,4));
+    EXPECT_EQ(1, G5.weight(2,3));
 }
 
 TEST_F(IOGTest, testEdgeListPartitionReader) {
