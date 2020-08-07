@@ -129,12 +129,50 @@ std::pair<node, node> size(const Graph &G) noexcept;
 double density(const Graph &G) noexcept;
 
 /**
- * Returns the volume (sum of the out-degree of all nodes) of the graph.
+ * Returns the volume of the input graph.
  *
  * @param G The input graph.
  * @return Volume of the graph.
  */
 double volume(const Graph &G);
+
+/**
+ * Returns the volume (sum of the out-degree of all nodes) of a range
+ * of nodes.
+ *
+ * @param G The input graph.
+ * @param first,last The range of nodes to insert
+ * @return Volume of the graph.
+ */
+template <class InputIt>
+double volume(const Graph &G, InputIt first, InputIt last) {
+    double outVolume = 0.0;
+
+    // Compute volume of subgraph
+    for (; first != last; ++first)
+        outVolume += G.weightedDegree(*first, !G.isDirected());
+
+    return outVolume;
+}
+
+/**
+ * Returns the inVolume (sum of the in-degree of all nodes) of a range
+ * of nodes.
+ *
+ * @param G The input graph.
+ * @param first,last The range of nodes to insert
+ * @return inVolume of the subgraph.
+ */
+template <class InputIt>
+double inVolume(const Graph &G, InputIt first, InputIt last) {
+    double inVolume = 0.0;
+
+    // Compute volume of subgraph
+    for (; first != last; ++first)
+        inVolume += G.weightedDegreeIn(*first, !G.isDirected());
+
+    return inVolume;
+}
 
 /**
  * Copies all nodes of the input graph to a new graph (edges are not copied).

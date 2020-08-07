@@ -101,6 +101,46 @@ TEST_P(GraphToolsGTest, testDensity) {
     }
 }
 
+TEST_P(GraphToolsGTest, testVolume) {
+    constexpr count n = 100;
+    constexpr double p = 0.1;
+
+    auto doTest = [&](const Graph &G) {
+        // Volume for graph G
+        const auto volume = GraphTools::volume(G);
+
+        // Volume for either directed/undirected
+        double mod = directed() ? 1.0 : 2.0;
+        double baseG = weighted() ? G.totalEdgeWeight() : static_cast<double>(G.numberOfEdges());
+        EXPECT_DOUBLE_EQ(volume, mod * baseG);
+
+        // Volume for subgraph G2
+        node seed = Aux::Random::integer(G.upperNodeIdBound());
+
+        const auto first = G.nodeRange().begin();
+        const auto lastOfSet = G.nodeRange().begin().operator++(seed);
+        const auto last = G.nodeRange().end();
+
+        const auto volumeSet = GraphTools::volume(G, first, lastOfSet);
+        const auto inVolumeSet = GraphTools::inVolume(G, first, lastOfSet);
+        const auto volumeComplementSet = GraphTools::volume(G, lastOfSet, last);
+        const auto inVolumeComplementSet = GraphTools::inVolume(G, lastOfSet, last);
+
+        EXPECT_NEAR(volumeSet + volumeComplementSet, volume, 1e-7);
+        EXPECT_NEAR(inVolumeSet + inVolumeComplementSet, volume, 1e-7);
+    };
+
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto G = ErdosRenyiGenerator(n, p, directed()).generate();
+        if (weighted()) {
+            G = generateRandomWeights(G);
+        }
+
+        doTest(G);
+    }
+}
+
 TEST_P(GraphToolsGTest, testMaxDegree) {
     constexpr count n = 100;
     constexpr double p = 0.1;

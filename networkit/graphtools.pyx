@@ -27,6 +27,8 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	pair[count, count] size(_Graph G) nogil except +
 	double density(_Graph G) nogil except +
 	double volume(_Graph G) nogil except +
+	double volume[InputIt](_Graph G, InputIt first, InputIt last) nogil except +
+	double inVolume[InputIt](_Graph G, InputIt first, InputIt last) nogil except +
 	_Graph copyNodes(_Graph G) nogil except +
 	_Graph toUndirected(_Graph G) nogil except +
 	_Graph toUnweighted(_Graph G) nogil except +
@@ -321,21 +323,61 @@ cdef class GraphTools:
 		return density(graph._this)
 
 	@staticmethod
-	def volume(Graph graph):
+	def volume(Graph graph, nodes = None):
 		"""
-		Get the volume of the input graph.
+		Get the volume (for all outgoing edges) of a graph. If a list of nodes of the graph
+		is given, the volume for the corresponding subgraph is computed.
 
 		Parameters:
 		-----------
 		graph : networkit.Graph
 			The input graph.
+		nodes : list
+			(Optional) List of nodes from the graph.
 
 		Returns:
 		--------
 		double
-			The volume of the input graph.
+			The volume of the subgraph.
 		"""
-		return volume(graph._this)
+
+		cdef vector[node] cNodes
+
+		if nodes is not None:
+			try:
+				cNodes = <vector[node]?>nodes
+				return volume[vector[node].iterator](graph._this, cNodes.begin(), cNodes.end())
+			except TypeError:
+				raise RuntimeError("Error, nodes must be a list of nodes.")
+		else:
+			return volume(graph._this)
+
+	@staticmethod
+	def inVolume(Graph graph, nodes):
+		"""
+		Get the inVolume (for all incoming edges) of a subgraph, defined by the 
+		input graph and a corresponding subset of nodes.
+
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+		nodes : vector[node]
+			A vector of nodes from the graph. 
+
+		Returns
+		-------
+		double
+			The inVolume of the input graph.
+		"""
+
+		cdef vector[node] cNodes
+
+		try:
+			cNodes = <vector[node]?>nodes
+			return inVolume[vector[node].iterator](graph._this, cNodes.begin(), cNodes.end())
+		except TypeError:
+			raise RuntimeError("Error, nodes must be a list of nodes.")
 
 	@staticmethod
 	def copyNodes(Graph graph):
