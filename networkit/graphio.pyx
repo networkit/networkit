@@ -112,8 +112,8 @@ cdef class GraphWriter:
 		"""
 		Write the graph to a file.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G     : networkit.Graph
 			The graph to write
 		paths : str
@@ -183,8 +183,8 @@ cdef class ThrillGraphBinaryReader(GraphReader):
 	Otherwise nodes are added to the graph as they are encountered.
 	Edges must be present only in one direction.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	n : count
 		The number of nodes
 	"""
@@ -194,8 +194,8 @@ cdef class ThrillGraphBinaryReader(GraphReader):
 	"""
 	Read the graph from one or multiple files
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	paths : str or list[str]
 		The input path(s)
 	"""
@@ -263,8 +263,8 @@ cdef class EdgeListReader(GraphReader):
 
 	The file may also include line comments which start with the commentPrefix.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	separator : char
 		The separator character. Must have length of exactly one.
 	firstNode : node
@@ -376,8 +376,8 @@ cdef extern from "<networkit/io/EdgeListWriter.hpp>":
 cdef class EdgeListWriter(GraphWriter):
 	""" Writes graphs in various edge list formats.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	separator : string
 		The separator character.
 	firstNode : node
@@ -480,8 +480,8 @@ cdef class BinaryPartitionReader:
 	Reads a partition from a binary file that contains an unsigned integer
 	of the given width for each node.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	width : int
 		the width of the unsigned integer in bytes (4 or 8)
 
@@ -506,8 +506,8 @@ cdef class BinaryPartitionWriter:
 	Writes a partition to a file to contains a binary list of partition ids.
 	Partition ids are unsigned integers.
 
-	Parameters
-	----------
+        Parameters:
+	-----------
 	width : int
 		the width of the unsigned integer in bytes (4 or 8)
 
@@ -521,8 +521,8 @@ cdef class BinaryPartitionWriter:
 		"""
 		Write the partition to the given file.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		path : str
 			The output path
 		"""
@@ -565,8 +565,8 @@ cdef class BinaryEdgeListPartitionReader:
 	Reads a partition file that contains a binary list of pairs (node, partition(node)).
 	It is assumed that all integers are unsigned.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	firstNode : node
 		The id of the first node, this is subtracted from all read node ids
 	width : int
@@ -581,8 +581,8 @@ cdef class BinaryEdgeListPartitionReader:
 		"""
 		Read the partition from one or multiple files
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		paths : str or list[str]
 			The input path(s)
 		"""
@@ -614,8 +614,8 @@ cdef class BinaryEdgeListPartitionWriter:
 	"""
 	Writes a partition file that contains a binary list of pairs (node, partition(node)).
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	firstNode : node
 		The id of the first node, this is added to all writen node ids
 	width : int
@@ -630,8 +630,8 @@ cdef class BinaryEdgeListPartitionWriter:
 		"""
 		Write the partition to the given file.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		path : str
 			The output path
 		"""
@@ -875,6 +875,7 @@ class MatWriter:
 def writeMat(G, path, key="G"):
 	""" Writes a NetworKit::Graph to a Matlab object file.
 		Parameters:
+		-----------
 		- G: The graph
 		- path: Path of the matlab file
 		- key: Dictionary Key
@@ -919,6 +920,7 @@ def writeGraph(G, path, fileformat, *kargs, **kwargs):
 	""" Write graph to various output formats.
 
 	Paramaters:
+	-----------
 	- G:			a graph
 	- path: 		output path
 	- fileformat: 	an element of the Format enumeration

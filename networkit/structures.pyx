@@ -15,13 +15,13 @@ cdef class Cover:
 	def subsetsOf(self, e):
 		""" Get the ids of subsets in which the element `e` is contained.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		e : index
 			An element
 
-		Returns
-		-------
+		Returns:
+		--------
 		set
 			A set of subset ids in which `e` 	is contained.
 		"""
@@ -33,8 +33,8 @@ cdef class Cover:
 	def addToSubset(self, s, e):
 		""" Add the (previously unassigned) element `e` to the set `s`.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		s : index
 			A subset
 		e : index
@@ -45,8 +45,8 @@ cdef class Cover:
 	def removeFromSubset(self, s, e):
 		""" Remove the element `e` from the set `s`.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		s : index
 			A subset
 		e : index
@@ -57,8 +57,8 @@ cdef class Cover:
 	def moveToSubset(self, index s, index e):
 		""" Move the element `e` to subset `s`, i.e. remove it from all other subsets and place it in the subset.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		s : index
 			A subset
 		e : index
@@ -69,13 +69,13 @@ cdef class Cover:
 	def toSingleton(self, index e):
 		""" Creates a singleton set containing the element `e` and returns the index of the new set.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		e : index
 			An element
 
-		Returns
-		-------
+		Returns:
+		--------
 		index
 			The index of the new set.
 		"""
@@ -88,8 +88,8 @@ cdef class Cover:
 	def mergeSubsets(self, index s, index t):
 		""" Assigns the elements from both sets to a new set.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		s : index
 			A subset
 		t : index
@@ -104,8 +104,8 @@ cdef class Cover:
 		""" Get an upper bound for the subset ids that have been assigned.
 		(This is the maximum id + 1.)
 
-		Returns
-		-------
+		Returns:
+		--------
 		index
 			An upper bound.
 		"""
@@ -114,8 +114,8 @@ cdef class Cover:
 	def lowerBound(self):
 		""" Get a lower bound for the subset ids that have been assigned.
 
-		Returns
-		-------
+		Returns:
+		--------
 		index
 			A lower bound.
 		"""
@@ -124,13 +124,13 @@ cdef class Cover:
 	def contains(self, index e):
 		"""  Check if cover assigns a valid subset to the element `e`.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		e : index
 			An element.
 
-		Returns
-		-------
+		Returns:
+		--------
 		bool
 			True, if `e` is assigned to a valid subset, False otherwise.
 
@@ -140,15 +140,15 @@ cdef class Cover:
 	def inSameSubset(self, index e1, index e2):
 		"""  Check if two elements `e1` and `e2` belong to the same subset.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 	 	e1 : index
 			An element.
 		e2 : index
 			An element.
 
-		Returns
-		-------
+		Returns:
+		--------
 		bool
 			True, if `e1` and `e2` belong to the same subset, False otherwise.
 		"""
@@ -157,8 +157,8 @@ cdef class Cover:
 	def subsetSizes(self):
 		""" Get a list of subset sizes.
 
-		Returns
-		-------
+		Returns:
+		--------
 		list
 			A list of subset sizes.
 
@@ -171,8 +171,8 @@ cdef class Cover:
 	def subsetSizeMap(self):
 		""" Get a map from subset id to size of the subset.
 
-		Returns
-		-------
+		Returns:
+		--------
 		dict
 			A map from subset id to size of the subset.
 		"""
@@ -181,8 +181,8 @@ cdef class Cover:
 	def getMembers(self, s):
 		""" Get the members of a specific subset `s`.
 
-		Returns
-		-------
+		Returns:
+		--------
 		set
 			The set of members of subset `s`.
 		"""
@@ -191,8 +191,8 @@ cdef class Cover:
 	def numberOfElements(self):
 		""" Get the current number of elements in this cover.
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			The current number of elements.
 		"""
@@ -201,8 +201,8 @@ cdef class Cover:
 	def numberOfSubsets(self):
 		"""  Get the current number of sets in this cover.
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			The number of sets in this cover.
 		"""
@@ -211,8 +211,8 @@ cdef class Cover:
 	def getSubsetIds(self):
 		""" Get the ids of nonempty subsets.
 
-		Returns
-		-------
+		Returns:
+		--------
 		set
 			A set of ids of nonempty subsets.
 		"""
@@ -226,8 +226,8 @@ cdef class Partition:
 
 		Create a new partition data structure for `z` elements.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		size : index, optional
 			Maximum index of an element. Default is 0.
 	"""
@@ -240,8 +240,8 @@ cdef class Partition:
 
 	def __len__(self):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			Number of elements in the partition.
 		"""
@@ -250,13 +250,13 @@ cdef class Partition:
 	def __getitem__(self, index e):
 		""" Get the set (id) in which the element `e` is contained.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 	 	e : index
 	 		Index of element.
 
-		Returns
-		-------
+		Returns:
+		--------
 		index
 			The index of the set in which `e` is contained.
 		"""
@@ -265,8 +265,8 @@ cdef class Partition:
 	def __setitem__(self, index e, index s):
 		""" Set the set (id) in which the element `e` is contained.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		e : index
 			Index of the element
 		s : index
@@ -293,13 +293,13 @@ cdef class Partition:
 	def subsetOf(self, e):
 		""" Get the set (id) in which the element `e` is contained.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		e : index
 			Index of element.
 
-		Returns
-		-------
+		Returns:
+		--------
 		index
 			The index of the set in which `e` is contained.
 		"""
@@ -310,8 +310,8 @@ cdef class Partition:
 
 		Initializes the entry to `none` and returns the index of the entry.
 
-		Returns
-		-------
+		Returns:
+		--------
 		index
 			The index of the new element.
 		"""
@@ -320,8 +320,8 @@ cdef class Partition:
 	def addToSubset(self, s, e):
 		""" Add a (previously unassigned) element `e` to the set `s`.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		s : index
 			The index of the subset.
 		e : index
@@ -332,8 +332,8 @@ cdef class Partition:
 	def moveToSubset(self, index s, index e):
 		"""  Move the (previously assigned) element `e` to the set `s.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		s : index
 			The index of the subset.
 		e : index
@@ -344,8 +344,8 @@ cdef class Partition:
 	def toSingleton(self, index e):
 		""" Creates a singleton set containing the element `e`.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		e : index
 			The index of the element.
 		"""
@@ -358,15 +358,15 @@ cdef class Partition:
 	def mergeSubsets(self, index s, index t):
 		""" Assigns the elements from both sets to a new set and returns the id of it.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		s : index
 			Set to merge.
 		t : index
 			Set to merge.
 
-		Returns
-		-------
+		Returns:
+		--------
 		index
 			Id of newly created set.
 		"""
@@ -375,8 +375,8 @@ cdef class Partition:
 	def setUpperBound(self, index upper):
 		""" Sets an upper bound for the subset ids that **can** be assigned.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		upper : index
 			Highest assigned subset id + 1
 		"""
@@ -386,8 +386,8 @@ cdef class Partition:
 		""" Return an upper bound for the subset ids that have been assigned.
 		(This is the maximum id + 1.)
 
-		Returns
-		-------
+		Returns:
+		--------
 		index
 			The upper bound.
 		"""
@@ -396,8 +396,8 @@ cdef class Partition:
 	def lowerBound(self):
 		""" Get a lower bound for the subset ids that have been assigned.
 
-		Returns
-		-------
+		Returns:
+		--------
 		index
 			The lower bound.
 		"""
@@ -406,8 +406,8 @@ cdef class Partition:
 	def compact(self, useTurbo = False):
 		""" Change subset IDs to be consecutive, starting at 0.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		useTurbo : bool
 			Default: false. If set to true, a vector instead of a map to assign new ids
 	 		which results in a shorter running time but possibly a large space overhead.
@@ -418,13 +418,13 @@ cdef class Partition:
 	def contains(self, index e):
 		""" Check if partition assigns a valid subset to the element `e`.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		e : index
 			The element.
 
-		Returns
-		-------
+		Returns:
+		--------
 		bool
 			True if the assigned subset is valid, False otherwise.
 		"""
@@ -433,15 +433,15 @@ cdef class Partition:
 	def inSameSubset(self, index e1, index e2):
 		""" Check if two elements `e1` and `e2` belong to the same subset.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		e1 : index
 			An Element.
 		e2 : index
 			An Element.
 
-		Returns
-		-------
+		Returns:
+		--------
 		bool
 			True if `e1` and `e2` belong to same subset, False otherwise.
 		"""
@@ -450,8 +450,8 @@ cdef class Partition:
 	def subsetSizes(self):
 		""" Get a list of subset sizes. Indices do not necessarily correspond to subset ids.
 
-	 	Returns
-	 	-------
+	 	Returns:
+	 	--------
 	 	vector
 	 		A vector of subset sizes.
 		"""
@@ -460,8 +460,8 @@ cdef class Partition:
 	def subsetSizeMap(self):
 		""" Get a map from subset id to size of the subset.
 
-		Returns
-		-------
+		Returns:
+		--------
 		dict
 			A map from subset id to size of the subset.
 		"""
@@ -470,13 +470,13 @@ cdef class Partition:
 	def getMembers(self, s):
 		""" Get the members of the subset `s`.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		s : index
 			The subset.
 
-		Returns
-		-------
+		Returns:
+		--------
 		set
 			A set containing the members of `s.
 		"""
@@ -484,8 +484,8 @@ cdef class Partition:
 
 	def numberOfElements(self):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			Number of elements in the partition.
 		"""
@@ -494,8 +494,8 @@ cdef class Partition:
 	def numberOfSubsets(self):
 		""" Get the current number of sets in this partition.
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			The current number of sets.
 		"""
@@ -504,8 +504,8 @@ cdef class Partition:
 	def getVector(self):
 		""" Get the actual vector representing the partition data structure.
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			Vector containing information about partitions.
 		"""
@@ -514,8 +514,8 @@ cdef class Partition:
 	def setName(self, string name):
 		"""  Set a human-readable identifier `name` for the instance.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		name : string
 			The name.
 		"""
@@ -524,8 +524,8 @@ cdef class Partition:
 	def getName(self):
 		""" Get the human-readable identifier.
 
-		Returns
-		-------
+		Returns:
+		--------
 		string
 			The name of this partition.
 		"""
@@ -534,8 +534,8 @@ cdef class Partition:
 	def getSubsetIds(self):
 		""" Get the ids of nonempty subsets.
 
-		Returns
-		-------
+		Returns:
+		--------
 		set
 			A set of ids of nonempty subsets.
 		"""
@@ -549,13 +549,13 @@ cdef class Partition:
 		partition ids and returns True if such a mapping can
 		be constructed.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		other : Partition
 			The partition to compare to.
 
-		Returns
-		-------
+		Returns:
+		--------
 		bool
 			If the partitions are equal.
 		"""

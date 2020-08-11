@@ -1,5 +1,5 @@
 networkit.components
-==================
+====================
 
 .. automodule:: networkit.components
     :members:

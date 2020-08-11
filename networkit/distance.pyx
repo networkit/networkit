@@ -44,8 +44,8 @@ cdef class STSP(Algorithm):
 		"""
 		Creates the STSP class for a graph G, a source node, and a target node.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The graph.
 		source : node
@@ -65,8 +65,8 @@ cdef class STSP(Algorithm):
 		including them). Note: the shortest path can be constructed only if the
 		algorithm is executed with @a storePred set to true.
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			A shortest path from the source node to the target node.
 		"""
@@ -78,8 +78,8 @@ cdef class STSP(Algorithm):
 		Note: predecessors are stored only if the algorithm is executed with
 		storePred set to true.
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			The list of predecessors from @a target to @a source.
 		"""
@@ -89,8 +89,8 @@ cdef class STSP(Algorithm):
 		"""
 		Returns the distance from the source node to the target node
 
-		Returns
-		-------
+		Returns:
+		--------
 		edgeweight
 			The distance from source to the target node.
 		"""
@@ -124,8 +124,8 @@ cdef class SSSP(Algorithm):
 		Returns a list of weighted distances from the source node, i.e. the
  	 	length of the shortest path from the source node to any other node.
 
- 	 	Returns
- 	 	-------
+ 	 	Returns:
+ 	 	--------
  	 	vector
  	 		The weighted distances from the source node to any other node in the graph.
 		"""
@@ -139,13 +139,13 @@ cdef class SSSP(Algorithm):
 		"""
 		Returns the distance from the source node to @a t.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		t : node
 			Target node.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			Distance from the source node to @a t.
 		"""
@@ -155,13 +155,13 @@ cdef class SSSP(Algorithm):
 		"""
 		Returns the predecessor nodes of @a t on all shortest paths from source
 		to @a t.
-		Parameters
-		----------
+		Parameters:
+		-----------
 		t : node
 			Target node.
 
-		Returns
-		-------
+		Returns:
+		--------
 		list
 			The predecessors of @a t on all shortest paths from source to @a t.
 		"""
@@ -172,16 +172,16 @@ cdef class SSSP(Algorithm):
 		Returns a shortest path from source to @a t and an empty path if source and @a t
 		are not connected.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		t : node
 			Target node.
 		forward : bool
 			If @c true (default) the path is directed from source to @a t, otherwise the path
 			is reversed.
 
-		Returns
-		-------
+		Returns:
+		--------
 		list
 			A shortest path from source to @a t or an empty path.
 		"""
@@ -192,16 +192,16 @@ cdef class SSSP(Algorithm):
 		Returns all shortest paths from source to @a t and an empty set if source
 		and @a t are not connected.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		t : node
 			Target node.
 		forward : bool
 			If @c true (default) the path is directed from source to
 			@a t, otherwise the path is reversed.
 
-		Returns
-		-------
+		Returns:
+		--------
 			All shortest paths from source node to target node @a t.
 		"""
 		cdef set[vector[node]] paths = (<_SSSP*>(self._this)).getPaths(t, forward)
@@ -216,8 +216,8 @@ cdef class SSSP(Algorithm):
 		For this functionality to be available, storeNodesSortedByDistance has to be set to true in the constructor.
 		There are no guarantees regarding the ordering of two nodes with the same distance to the source.
 
-		Returns
-		-------
+		Returns:
+		--------
 		list
 			Nodes ordered in increasing distance from the source.
 		"""
@@ -230,13 +230,13 @@ cdef class SSSP(Algorithm):
 		"""
 		Returns the number of paths from the source node to @a t.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		t : node
 			Target node.
 
-		Returns
-		-------
+		Returns:
+		--------
 		int
 			The number of paths from the source node to @a t.
 		"""
@@ -246,8 +246,8 @@ cdef class SSSP(Algorithm):
 		"""
 		Sets a new source node.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		s : node
 			New source node.
 		"""
@@ -257,8 +257,8 @@ cdef class SSSP(Algorithm):
 		"""
 		Sets a new target node.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		t : node
 			New target node.
 		"""
@@ -282,8 +282,8 @@ cdef class DynSSSP(SSSP):
 	def update(self, ev):
 		""" Updates shortest paths with the edge insertion.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		ev : GraphEvent.
 		"""
 		(<_DynSSSP*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
@@ -291,8 +291,8 @@ cdef class DynSSSP(SSSP):
 	def updateBatch(self, batch):
 		""" Updates shortest paths with the batch `batch` of edge insertions.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		batch : list of GraphEvent.
 		"""
 		cdef vector[_GraphEvent] _batch
@@ -318,8 +318,8 @@ cdef class AdamicAdarDistance:
 	"""
 	Calculate the adamic adar similarity.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The input graph.
 	"""
@@ -338,8 +338,8 @@ cdef class AdamicAdarDistance:
 
 	def getAttribute(self):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		vector[double]
 			The edge attribute that contains the adamic adar similarity.
 
@@ -396,8 +396,8 @@ cdef class Eccentricity:
 	@staticmethod
 	def getValue(Graph G, v):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		pair[node, count]
 			node is the farthest node `v` from `u`, and the count is the length of the shortest path from `u` to `v`.
 		"""
@@ -418,8 +418,8 @@ cdef class EffectiveDiameterApproximation(Algorithm):
 
 	[1] by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	ratio : double
@@ -437,8 +437,8 @@ cdef class EffectiveDiameterApproximation(Algorithm):
 
 	def getEffectiveDiameter(self):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			the approximated effective diameter
 		"""
@@ -455,8 +455,8 @@ cdef class EffectiveDiameter(Algorithm):
 	Calculates the effective diameter of a graph.
 	The effective diameter is defined as the number of edges on average to reach a given ratio of all other nodes.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	ratio : double
@@ -470,8 +470,8 @@ cdef class EffectiveDiameter(Algorithm):
 
 	def getEffectiveDiameter(self):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			the effective diameter
 		"""
@@ -493,8 +493,8 @@ cdef class HopPlotApproximation(Algorithm):
 
 	[1] by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	maxDistance : double
@@ -513,8 +513,8 @@ cdef class HopPlotApproximation(Algorithm):
 
 	def getHopPlot(self):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		map
 			number of connected nodes for each distance
 		"""
@@ -536,8 +536,8 @@ cdef class NeighborhoodFunction(Algorithm):
 	The neighborhood function N of a graph G for a given distance t is defined
 	as the number of node pairs (u,v) that can be reached within distance t.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	"""
@@ -549,8 +549,8 @@ cdef class NeighborhoodFunction(Algorithm):
 
 	def getNeighborhoodFunction(self):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		list
 			the i-th element denotes the number of node pairs that have a distance at most (i+1)
 		"""
@@ -572,8 +572,8 @@ cdef class NeighborhoodFunctionApproximation(Algorithm):
 
 	[1] by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	k : count
@@ -589,8 +589,8 @@ cdef class NeighborhoodFunctionApproximation(Algorithm):
 
 	def getNeighborhoodFunction(self):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		list
 			the i-th element denotes the number of node pairs that have a distance at most (i+1)
 		"""
@@ -615,8 +615,8 @@ cdef class Volume:
 		the Context of Local and Global Optimization", Scientific Reports 8(11274)
 		2018. doi: 10.1038/s41598-018-29131-0
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			the graph
 		r : double
@@ -659,8 +659,8 @@ cdef class JaccardDistance:
 	The Jaccard distance measure assigns to each edge the jaccard coefficient
 	of the neighborhoods of the two adjacent nodes.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph to calculate Jaccard distances for.
 	triangles : vector[count]
@@ -687,8 +687,8 @@ cdef class JaccardSimilarityAttributizer:
 	The Jaccard similarity measure assigns to each edge (1 - the jaccard coefficient
 	of the neighborhoods of the two adjacent nodes).
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph to calculate Jaccard similarities for.
 	triangles : vector[count]
@@ -727,8 +727,8 @@ cdef class AlgebraicDistance:
     according to their structural closeness in the graph.
     Algebraic distances will become small within dense subgraphs.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph to calculate Jaccard distances for.
 	numberSystems : count
@@ -781,8 +781,8 @@ cdef class CommuteTimeDistance(Algorithm):
 
 	Create CommuteTimeDistance for Graph `G`.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	tol: double
@@ -842,8 +842,8 @@ cdef class NeighborhoodFunctionHeuristic(Algorithm):
 	The algorithm runs nSamples breadth-first searches and scales the results up to the actual amount of nodes.
 	Accepted strategies are "split" and "random".
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	nSamples : count
@@ -862,8 +862,8 @@ cdef class NeighborhoodFunctionHeuristic(Algorithm):
 
 	def getNeighborhoodFunction(self):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		list
 			the i-th element denotes the number of node pairs that have a distance at most (i+1)
 		"""
@@ -883,8 +883,8 @@ cdef class APSP(Algorithm):
 
     Computes all pairwise shortest-path distances in G.
 
-    Parameters
-	----------
+    Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
     """
@@ -900,25 +900,25 @@ cdef class APSP(Algorithm):
 	def getDistances(self):
 		""" Returns a vector of vectors of distances between each node pair.
 
- 	 	Returns
- 	 	-------
+ 	 	Returns:
+ 	 	--------
  	 	vector of vectors
  	 		The shortest-path distances from each node to any other node in the graph.
 		"""
 		return (<_APSP*>(self._this)).getDistances()
 
 	def getDistance(self, node u, node v):
-		""" Returns the length of the shortest path from source 'u' to target `v`.
+		""" Returns the length of the shortest path from source 'u' to target 'v'.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node
 			Source node.
 		v : node
 			Target node.
 
-		Returns
-		-------
+		Returns:
+		--------
 		int or float
 			The distance from 'u' to 'v'.
 		"""
@@ -934,12 +934,12 @@ cdef extern from "<networkit/distance/DynAPSP.hpp>":
 cdef class DynAPSP(APSP):
 	""" All-Pairs Shortest-Paths algorithm for dynamic graphs.
 
-		DynAPSP(G)
+	DynAPSP(G)
 
-		Computes all pairwise shortest-path distances in G.
+	Computes all pairwise shortest-path distances in G.
 
-		Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 		"""
@@ -950,8 +950,8 @@ cdef class DynAPSP(APSP):
 	def update(self, ev):
 		""" Updates shortest paths with the edge insertion.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		ev : GraphEvent.
 		"""
 		(<_DynAPSP*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
@@ -959,8 +959,8 @@ cdef class DynAPSP(APSP):
 	def updateBatch(self, batch):
 		""" Updates shortest paths with the batch `batch` of edge insertions.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		batch : list of GraphEvent.
 		"""
 		cdef vector[_GraphEvent] _batch
@@ -980,8 +980,8 @@ cdef class BFS(SSSP):
 
 	Create BFS for `G` and source node `source`.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	source : node
@@ -1011,8 +1011,8 @@ cdef class Dijkstra(SSSP):
 
     Creates Dijkstra for `G` and source node `source`.
 
-    Parameters
-	----------
+    Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	source : node
@@ -1040,8 +1040,8 @@ cdef class DynBFS(DynSSSP):
 
 	Create DynBFS for `G` and source node `source`.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	source : node
@@ -1065,8 +1065,8 @@ cdef class DynDijkstra(DynSSSP):
 
 	Create DynDijkstra for `G` and source node `source`.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	source : node
@@ -1092,6 +1092,104 @@ cdef cppclass PathCallbackWrapper:
 		if (error):
 			throw_runtime_error(message)
 
+cdef extern from "<networkit/distance/BidirectionalBFS.hpp>":
+	cdef cppclass _BidirectionalBFS "NetworKit::BidirectionalBFS"(_STSP):
+		_BidirectionalBFS(_Graph G, node source, node target, bool_t storePred) except +
+		count getHops() except +
+
+cdef class BidirectionalBFS(STSP):
+	"""
+		Implements a bidirectional breadth-first search on a graph from
+		two given source and target nodes.
+		Explores the graph from both the source and target nodes until
+		the two explorations meet.
+
+		Parameters:
+		-----------
+
+		G : networkit.Graph
+			The input graph.
+		source : node
+			The source node.
+		target : node
+			The target node.
+		storePred : bool
+			If true, the algorithm will also store the predecessors
+			and reconstruct a shortest path from @a source and @a target.
+	"""
+
+	def __cinit__(self, Graph G, node source, node target, bool_t storePred=True):
+		self._this = new _BidirectionalBFS(G._this, source, target, storePred)
+
+	def getHops(self):
+		"""
+		Returns the distance (i.e., number of hops) from the source to the
+		target node.
+
+		Returns:
+		--------
+		count
+			Number of hops from the source to the target node.
+		"""
+		return (<_BidirectionalBFS*>(self._this)).getHops()
+
+cdef extern from "<networkit/distance/BidirectionalDijkstra.hpp>":
+	cdef cppclass _BidirectionalDijkstra "NetworKit::BidirectionalDijkstra"(_STSP):
+		_BidirectionalDijkstra(_Graph G, node source, node target, bool_t storePred) except +
+
+cdef class BidirectionalDijkstra(STSP):
+	"""
+		Bidirectional implementation of the Dijkstra algorithm from
+		two given source and target nodes.
+		Explores the graph from both the source and target nodes until
+		the two explorations meet.
+
+		Parameters:
+		-----------
+
+		G : networkit.Graph
+			The input graph.
+		source : node
+			The source node.
+		target : node
+			The target node.
+		storePred : bool
+			If true, the algorithm will also store the predecessors
+			and reconstruct a shortest path from @a source and @a target.
+	"""
+
+	def __cinit__(self, Graph G, node source, node target, bool_t storePred=True):
+		self._this = new _BidirectionalDijkstra(G._this, source, target, storePred)
+
+cdef extern from "<networkit/distance/AStar.hpp>":
+	cdef cppclass _AStar "NetworKit::AStar"(_STSP):
+		_AStar(_Graph G, vector[double] &heu, node source, node target, bool_t storePred) except +
+
+cdef class AStar(STSP):
+	"""
+	A* path-finding algorithm.
+
+	Parameters:
+	-----------
+
+	G : networkit.Graph
+		The input graph.
+	heu : list
+		List of lower bounds of the distance of each node to the target.
+	source : node
+		The source node.
+	target : node
+		The target node.
+	storePred : bool
+		If true, the algorithm will also store the predecessors
+		and reconstruct a shortest path from @a source and @a target.
+	"""
+
+	cdef vector[double] heu
+	def __cinit__(self, Graph G, vector[double] &heu, node source, node target, bool_t storePred=True):
+		self.heu = heu
+		self._this = new _AStar(G._this, self.heu, source, target, storePred)
+
 cdef extern from "<networkit/distance/AllSimplePaths.hpp>":
 
 	cdef cppclass _AllSimplePaths "NetworKit::AllSimplePaths":
@@ -1109,8 +1207,8 @@ cdef class AllSimplePaths:
 
 	Create AllSimplePaths for `G`, source node `source`, target node 'target' and cutoff 'cutoff'.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	source : node
@@ -1140,8 +1238,8 @@ cdef class AllSimplePaths:
 		"""
 		Returns the number of simple paths.
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			The number of simple paths.
 		"""
@@ -1151,8 +1249,8 @@ cdef class AllSimplePaths:
 		"""
 		Returns all the simple paths from source to target.
 
-		Returns
-		-------
+		Returns:
+		--------
 		A vector of vectors.
 			A vector containing vectors which represent all simple paths.
 		"""
@@ -1161,8 +1259,8 @@ cdef class AllSimplePaths:
 	def forAllSimplePaths(self, object callback):
 		""" More efficient path iterator. Iterates over all the simple paths.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		callback : object
 			Any callable object that takes the parameter path
 		"""
@@ -1172,121 +1270,6 @@ cdef class AllSimplePaths:
 			self._this.forAllSimplePaths[PathCallbackWrapper](dereference(wrapper))
 		finally:
 			del wrapper
-
-cdef extern from "<networkit/distance/BidirectionalBFS.hpp>":
-	cdef cppclass _BidirectionalBFS "NetworKit::BidirectionalBFS"(_STSP):
-		_BidirectionalBFS(_Graph G, node source, node target, bool_t storePred) except +
-		count getHops() except +
-
-cdef class BidirectionalBFS(STSP):
-	"""
-		Implements a bidirectional breadth-first search on a graph from
-		two given source and target nodes.
-		Explores the graph from both the source and target nodes until
-		the two explorations meet.
-
-		Parameters
-		----------
-
-		G : networkit.Graph
-			The input graph.
-		source : node
-			The source node.
-		target : node
-			The target node.
-		storePred : bool
-			If true, the algorithm will also store the predecessors
-			and reconstruct a shortest path from @a source and @a target.
-	"""
-
-	def __cinit__(self, Graph G, node source, node target, bool_t storePred=True):
-		self._this = new _BidirectionalBFS(G._this, source, target, storePred)
-
-	def getHops(self):
-		"""
-		Returns the distance (i.e., number of hops) from the source to the
-		target node.
-
-		Returns
-		-------
-		count
-			Number of hops from the source to the target node.
-		"""
-		return (<_BidirectionalBFS*>(self._this)).getHops()
-
-cdef extern from "<networkit/distance/BidirectionalDijkstra.hpp>":
-	cdef cppclass _BidirectionalDijkstra "NetworKit::BidirectionalDijkstra"(_STSP):
-		_BidirectionalDijkstra(_Graph G, node source, node target, bool_t storePred) except +
-
-cdef class BidirectionalDijkstra(STSP):
-	"""
-		Bidirectional implementation of the Dijkstra algorithm from
-		two given source and target nodes.
-		Explores the graph from both the source and target nodes until
-		the two explorations meet.
-
-		Parameters
-		----------
-
-		G : networkit.Graph
-			The input graph.
-		source : node
-			The source node.
-		target : node
-			The target node.
-		storePred : bool
-			If true, the algorithm will also store the predecessors
-			and reconstruct a shortest path from @a source and @a target.
-	"""
-
-	def __cinit__(self, Graph G, node source, node target, bool_t storePred=True):
-		self._this = new _BidirectionalDijkstra(G._this, source, target, storePred)
-
-cdef extern from "<networkit/distance/AStar.hpp>":
-	cdef cppclass _AStar "NetworKit::AStar"(_STSP):
-		_AStar(_Graph G, vector[double] &heu, node source, node target, bool_t storePred) except +
-
-cdef class AStar(STSP):
-	"""
-	A* path-finding algorithm.
-
-	Parameters
-	----------
-
-	G : networkit.Graph
-		The input graph.
-	heu : list
-		List of lower bounds of the distance of each node to the target.
-	source : node
-		The source node.
-	target : node
-		The target node.
-	storePred : bool
-		If true, the algorithm will also store the predecessors
-		and reconstruct a shortest path from @a source and @a target.
-	"""
-
-	cdef vector[double] heu
-	def __cinit__(self, Graph G, vector[double] &heu, node source, node target, bool_t storePred=True):
-		self.heu = heu
-		self._this = new _AStar(G._this, self.heu, source, target, storePred)
-
-	def run(self):
-		(<_AStar*>(self._this)).run()
-		return self
-
-	def getPath(self):
-		"""
-		Returns a shortest path from the source node to the target node (without
-		including them). Note: the shortest path can be constructed only if the
-		algorithm is executed with @a storePred set to true.
-
-		Returns
-		-------
-		vector
-			A shortest path from the source node to the target node.
-		"""
-		return (<_AStar*>(self._this)).getPath()
 
 cdef extern from "<networkit/distance/ReverseBFS.hpp>":
 
@@ -1300,8 +1283,8 @@ cdef class ReverseBFS(SSSP):
 
 	Create ReverseBFS for `G` and source node `source`.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	source : node

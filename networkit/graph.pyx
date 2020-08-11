@@ -16,8 +16,8 @@ cdef class Graph:
 		If `weighted` is set to False each edge has edge weight 1.0 and any other weight assignment will
 		be ignored.
 
-	    Parameters
-	    ----------
+	    Parameters:
+	    -----------
 		n : count, optional
 			Number of nodes.
 		weighted : bool, optional
@@ -56,8 +56,8 @@ cdef class Graph:
 		"""
 		Copies all nodes to a new graph
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Graph
 			Graph with the same nodes (without edges)
 		"""
@@ -69,8 +69,8 @@ cdef class Graph:
 		"""
 		Assign integer ids to edges.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		force : bool
 			Force re-indexing of edges.
 
@@ -81,8 +81,8 @@ cdef class Graph:
 		"""
 		Returns true if edges have been indexed
 
-		Returns
-		-------
+		Returns:
+		--------
 		bool
 			If edges have been indexed
 		"""
@@ -90,8 +90,8 @@ cdef class Graph:
 
 	def edgeId(self, node u, node v):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		edgeid
 			id of the edge
 		"""
@@ -101,8 +101,8 @@ cdef class Graph:
 		"""
 		Get the number of nodes in the graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			The number of nodes.
 		"""
@@ -112,8 +112,8 @@ cdef class Graph:
 		"""
 		Get the number of edges in the graph.
 
-		Returns
-	 	-------
+		Returns:
+	 	--------
 		count
 			The number of edges.
 		"""
@@ -123,8 +123,8 @@ cdef class Graph:
 		"""
 		Get the size of the graph.
 
-		Returns
-	 	-------
+		Returns:
+	 	--------
 		tuple
 			a pair (n, m) where n is the number of nodes and m is the number of edges
 		"""
@@ -137,8 +137,8 @@ cdef class Graph:
 		"""
 		Get the density of the graph.
 
-		Returns
-	 	-------
+		Returns:
+	 	--------
 		double
 		"""
 		from warnings import warn
@@ -149,8 +149,8 @@ cdef class Graph:
 		"""
 		Get an upper bound for the node ids in the graph
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			An upper bound for the node ids in the graph
 		"""
@@ -160,8 +160,8 @@ cdef class Graph:
 		"""
 		Get an upper bound for the edge ids in the graph
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			An upper bound for the edge ids in the graph
 		"""
@@ -171,13 +171,13 @@ cdef class Graph:
 		"""
 		Get the number of neighbors of `v`.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		v : node
 			Node.
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			The number of neighbors.
 		"""
@@ -195,15 +195,15 @@ cdef class Graph:
 
 		For directed graphs this is the sum of weights of all outgoing edges of u.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node
 			Node.
 		countSelfLoopsTwice : bool
 			If set to true, self-loops will be counted twice
 
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			The weighted out-degree of u.
 		"""
@@ -215,15 +215,15 @@ cdef class Graph:
 
 		For directed graphs this is the sum of weights of all ingoing edges of u.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node
 			Node.
 		countSelfLoopsTwice : bool
 			If set to true, self-loops will be counted twice
 
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			The weighted in-degree of u.
 		"""
@@ -233,8 +233,8 @@ cdef class Graph:
 		"""
 		Returns the maximum out-degree of the graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			Maximum out-degree of the graph.
 		"""
@@ -246,8 +246,8 @@ cdef class Graph:
 		"""
 		Returns the maximum in-degree of the graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			Maximum in-degree of the graph.
 		"""
@@ -259,8 +259,8 @@ cdef class Graph:
 		"""
 		Returns the maximum weighted degree of the graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			Maximum weighted degree of the graph.
 		"""
@@ -272,8 +272,8 @@ cdef class Graph:
 		"""
 		Returns the maximum weighted in degree of the graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			Maximum weighted in degree of the graph.
 		"""
@@ -285,13 +285,13 @@ cdef class Graph:
 		"""
 		If the node `u` is isolated
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node
 			Node.
 
-		Returns
-		-------
+		Returns:
+		--------
 		bool
 			If the node is isolated
 		"""
@@ -300,8 +300,8 @@ cdef class Graph:
 	def addNode(self):
 		""" Add a new node to the graph and return it.
 
-		Returns
-		-------
+		Returns:
+		--------
 		node
 			The new node.
 		"""
@@ -311,13 +311,13 @@ cdef class Graph:
 		""" Add numberOfNewNodes many new nodes to the graph and return
 		the id of the last node added.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		numberOfNewNodes : node
 			Number of nodes to be added.
 
-		Returns
-		-------
+		Returns:
+		--------
 		node
 			The id of the last node added.
 		"""
@@ -329,8 +329,8 @@ cdef class Graph:
 
 		Incoming as well as outgoing edges will be removed.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node
 			Id of node to be removed.
 		"""
@@ -339,8 +339,8 @@ cdef class Graph:
 	def restoreNode(self, u):
 		""" Restores a previously deleted node `u` with its previous id in the graph.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node
 			Node.
 		"""
@@ -349,13 +349,13 @@ cdef class Graph:
 	def hasNode(self, u):
 		""" Checks if the Graph has the node `u`, i.e. if `u` hasn't been deleted and is in the range of valid ids.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node
 			Id of node queried.
 
-		Returns
-		-------
+		Returns:
+		--------
 		bool
 			If the Graph has the node `u`
 		"""
@@ -364,8 +364,8 @@ cdef class Graph:
 	def append(self, Graph G):
 		""" Appends another graph to this graph as a new subgraph. Performs node id remapping.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 		"""
 		from warnings import warn
@@ -377,8 +377,8 @@ cdef class Graph:
 		""" Modifies this graph to be the union of it and another graph.
 			Nodes with the same ids are identified with each other.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 		"""
 		from warnings import warn
@@ -392,8 +392,8 @@ cdef class Graph:
 		If one or both end-points do not exists and addMissing is set, they are silently added.
 		Caution: It is not checked whether this edge already exists, thus it is possible to create multi-edges.
 
-	 	Parameters
-	 	----------
+	 	Parameters:
+	 	-----------
 		u : node
 			Endpoint of edge.
 		v : node
@@ -423,8 +423,8 @@ cdef class Graph:
 	def setWeight(self, u, v, w):
 		""" Set the weight of an edge. If the edge does not exist, it will be inserted.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node
 			Endpoint of edge.
 		v : node
@@ -438,8 +438,8 @@ cdef class Graph:
 	def increaseWeight(self, u, v, w):
 		""" Increase the weight of an edge. If the edge does not exist, it will be inserted.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node
 			Endpoint of edge.
 		v : node
@@ -453,8 +453,8 @@ cdef class Graph:
 	def removeEdge(self, u, v):
 		""" Removes the undirected edge {`u`,`v`}.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node
 			Endpoint of edge.
 		v : node
@@ -494,8 +494,8 @@ cdef class Graph:
 
 		If there are edge weights or edge ids, they are preserved. Note that no check is performed if the swap is actually possible, i.e. does not generate duplicate edges.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		s1 : node
 			Source node of the first edge
 		t1 : node
@@ -524,15 +524,15 @@ cdef class Graph:
 	def hasEdge(self, u, v):
 		""" Checks if undirected edge {`u`,`v`} exists in the graph.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node
 			Endpoint of edge.
 		v : node
 			Endpoint of edge.
 
-		Returns
-		-------
+		Returns:
+		--------
 		bool
 			True if the edge exists, False otherwise.
 		"""
@@ -541,15 +541,15 @@ cdef class Graph:
 	def weight(self, u, v):
 		""" Get edge weight of edge {`u` , `v`}. Returns 0 if edge does not exist.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node
 			Endpoint of edge.
 		v : node
 			Endpoint of edge.
 
-		Returns
-		-------
+		Returns:
+		--------
 		edgeweight
 			Edge weight of edge {`u` , `v`} or 0 if edge does not exist.
 		"""
@@ -558,8 +558,8 @@ cdef class Graph:
 	def nodes(self):
 		""" Get list of all nodes.
 
-	 	Returns
-	 	-------
+	 	Returns:
+	 	--------
 	 	list
 	 		List of all nodes.
 		"""
@@ -570,8 +570,8 @@ cdef class Graph:
 	def edges(self):
 		""" Get list of edges as node pairs.
 
-	 	Returns
-	 	-------
+	 	Returns:
+	 	--------
 	 	list
 	 		List of edges as node pairs.
 		"""
@@ -582,13 +582,13 @@ cdef class Graph:
 	def neighbors(self, u):
 		""" Get list of neighbors of `u`.
 
-	 	Parameters
-	 	----------
+	 	Parameters:
+	 	-----------
 	 	u : node
 	 		Node.
 
-	 	Returns
-	 	-------
+	 	Returns:
+	 	--------
 	 	list
 	 		List of neighbors of `u`.
 		"""
@@ -599,13 +599,13 @@ cdef class Graph:
 	def inNeighbors(self, u):
 		""" Get list of in-neighbors of `u`.
 
-	 	Parameters
-	 	----------
+	 	Parameters:
+	 	-----------
 	 	u : node
 	 		Node.
 
-	 	Returns
-	 	-------
+	 	Returns:
+	 	--------
 	 	list
 	 		List of in-neighbors of `u`.
 		"""
@@ -620,8 +620,8 @@ cdef class Graph:
 	def forNodes(self, object callback):
 		""" Experimental node iterator interface
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		callback : object
 			Any callable object that takes the parameter node
 		"""
@@ -635,8 +635,8 @@ cdef class Graph:
 	def forNodesInRandomOrder(self, object callback):
 		""" Experimental node iterator interface
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		callback : object
 			Any callable object that takes the parameter node
 		"""
@@ -650,8 +650,8 @@ cdef class Graph:
 	def forNodePairs(self, object callback):
 		""" Experimental node pair iterator interface
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		callback : object
 			Any callable object that takes the parameters (node, node)
 		"""
@@ -665,8 +665,8 @@ cdef class Graph:
 	def forEdges(self, object callback):
 		""" Experimental edge iterator interface
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		callback : object
 			Any callable object that takes the parameter (node, node, edgeweight, edgeid)
 		"""
@@ -680,8 +680,8 @@ cdef class Graph:
 	def forEdgesOf(self, node u, object callback):
 		""" Experimental incident (outgoing) edge iterator interface
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node
 			The node of which incident edges shall be passed to the callback
 		callback : object
@@ -697,8 +697,8 @@ cdef class Graph:
 	def forInEdgesOf(self, node u, object callback):
 		""" Experimental incident incoming edge iterator interface
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node
 			The node of which incident edges shall be passed to the callback
 		callback : object
@@ -715,8 +715,8 @@ cdef class Graph:
 		"""
 		Return an undirected version of this graph.
 
-	 	Returns
-	 	-------
+	 	Returns:
+	 	--------
 			undirected graph.
 		"""
 		from warnings import warn
@@ -727,8 +727,8 @@ cdef class Graph:
 		"""
 		Return an unweighted version of this graph.
 
-	 	Returns
-	 	-------
+	 	Returns:
+	 	--------
 		networkit.Graph
 		"""
 		from warnings import warn
@@ -739,8 +739,8 @@ cdef class Graph:
 		"""
 		Return the transpose of this (directed) graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Graph
 			Directed graph.
 		"""
@@ -750,8 +750,8 @@ cdef class Graph:
 
 	def isWeighted(self):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		bool
 			True if this graph supports edge weights other than 1.0.
 		"""
@@ -763,8 +763,8 @@ cdef class Graph:
 	def toString(self):
 		""" Get a string representation of the graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		string
 			A string representation of the graph.
 		"""
@@ -775,8 +775,8 @@ cdef class Graph:
 	def getName(self):
 		""" Get the name of the graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		string
 			The name of the graph.
 		"""
@@ -787,8 +787,8 @@ cdef class Graph:
 	def setName(self, name):
 		""" Set name of graph to `name`.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		name : string
 			The name.
 		"""
@@ -799,8 +799,8 @@ cdef class Graph:
 	def totalEdgeWeight(self):
 		""" Get the sum of all edge weights.
 
-		Returns
-		-------
+		Returns:
+		--------
 		edgeweight
 			The sum of all edge weights.
 		"""
@@ -809,8 +809,8 @@ cdef class Graph:
 	def randomNode(self):
 		""" Get a random node of the graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		node
 			A random node.
 		"""
@@ -821,13 +821,13 @@ cdef class Graph:
 	def randomNeighbor(self, u):
 		""" Get a random neighbor of `u`. Returns `none` if the degree of `u` is zero.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		v : node
 			Node.
 
-		Returns
-		-------
+		Returns:
+		--------
 		node
 			A random neighbor of `v.
 		"""
@@ -838,13 +838,13 @@ cdef class Graph:
 	def randomEdge(self, bool_t uniformDistribution = False):
 		""" Get a random edge of the graph.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		uniformDistribution : bool
 			If the distribution of the edge shall be uniform
 
-		Returns
-		-------
+		Returns:
+		--------
 		pair
 			Random random edge.
 
@@ -860,13 +860,13 @@ cdef class Graph:
 	def randomEdges(self, count numEdges):
 		""" Returns a list with numEdges random edges. The edges are chosen uniformly at random.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		numEdges : count
 			The number of edges to choose.
 
-		Returns
-		-------
+		Returns:
+		--------
 		list of pairs
 			The selected edges.
 		"""
@@ -876,8 +876,8 @@ cdef class Graph:
 
 	def numberOfSelfLoops(self):
 		""" Get number of self-loops, i.e. edges {v, v}.
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			number of self-loops.
 		"""
@@ -886,8 +886,8 @@ cdef class Graph:
 	def BFSfrom(self, start, object callback):
 		""" Experimental BFS search interface
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		start: node or list[node]
 			One or more start nodes from which the BFS shall be started
 		callback : object
@@ -908,8 +908,8 @@ cdef class Graph:
 	def BFSEdgesFrom(self, node start, object callback):
 		""" Experimental BFS search interface that passes edges that are part of the BFS tree to the callback
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		start: node
 			The start node from which the BFS shall be started
 		callback : object
@@ -927,8 +927,8 @@ cdef class Graph:
 	def DFSfrom(self, node start, object callback):
 		""" Experimental DFS search interface
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		start: node
 			The start node from which the DFS shall be started
 		callback : object
@@ -946,8 +946,8 @@ cdef class Graph:
 	def DFSEdgesFrom(self, node start, object callback):
 		""" Experimental DFS search interface that passes edges that are part of the DFS tree to the callback
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		start: node
 			The start node from which the DFS shall be started
 		callback : object
@@ -981,8 +981,8 @@ cdef class Graph:
 		The subgraph contains all nodes in Nodes + Neighbors and all edge which have one end point in Nodes
 		and the other in Nodes or Neighbors.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		nodes : list/set
 			A subset of nodes of `G` which induce the subgraph.
 		includeOutNeighbors : bool
@@ -990,8 +990,8 @@ cdef class Graph:
 		includeInNeighbors : bool
 			If true also include nodes pointing to a node in nodes.
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Graph
 			The subgraph induced by `nodes` (and possibly their neighbors)
 		"""
@@ -1033,8 +1033,8 @@ cdef class Graph:
 		"""
 		Iterates over a range of the neighbors of a node.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : Node
 		"""
 		it = self._this.neighborRange(u).begin()
@@ -1046,8 +1046,8 @@ cdef class Graph:
 		"""
 		Iterates over a range of the in-neighbors of a node.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : Node
 		"""
 		it = self._this.inNeighborRange(u).begin()
@@ -1118,8 +1118,8 @@ cdef cppclass NodePairCallbackWrapper:
 cdef class SpanningForest:
 	""" Generates a spanning forest for a given graph
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The graph.
 		nodes : list
@@ -1140,8 +1140,8 @@ cdef class SpanningForest:
 		"""
 		Executes the algorithm.
 
-		Returns
-		-------
+		Returns:
+		--------
 		Algorithm:
 			self
 		"""
@@ -1152,8 +1152,8 @@ cdef class SpanningForest:
 		"""
 		Returns the spanning forest.
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Graph
 			The computed spanning forest
 		"""
@@ -1162,8 +1162,8 @@ cdef class SpanningForest:
 cdef class RandomMaximumSpanningForest(Algorithm):
 	"""
 	Computes a random maximum-weight spanning forest using Kruskal's algorithm by randomizing the order of edges of the same weight.
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The input graph.
 	attribute : list
@@ -1181,12 +1181,13 @@ cdef class RandomMaximumSpanningForest(Algorithm):
 	def getMSF(self, bool_t move):
 		"""
 		Gets the calculated maximum-weight spanning forest as graph.
-		Parameters
-		----------
+		Parameters:
+		-----------
 		move : bool
 			If the graph shall be moved out of the algorithm instance.
-		Returns
-		-------
+
+		Returns:
+		--------
 		networkit.Graph
 			The calculated maximum-weight spanning forest.
 		"""
@@ -1196,12 +1197,13 @@ cdef class RandomMaximumSpanningForest(Algorithm):
 		"""
 		Get a bool attribute that indicates for each edge if it is part of the calculated maximum-weight spanning forest.
 		This attribute is only calculated and can thus only be request if the supplied graph has edge ids.
-		Parameters
-		----------
+		Parameters:
+		-----------
 		move : bool
 			If the attribute shall be moved out of the algorithm instance.
-		Returns
-		-------
+
+		Returns:
+		--------
 		list
 			The list with the bool attribute for each edge.
 		"""
@@ -1210,14 +1212,15 @@ cdef class RandomMaximumSpanningForest(Algorithm):
 	def inMSF(self, node u, node v = _none):
 		"""
 		Checks if the edge (u, v) or the edge with id u is part of the calculated maximum-weight spanning forest.
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node or edgeid
 			The first node of the edge to check or the edge id of the edge to check
 		v : node
 			The second node of the edge to check (only if u is not an edge id)
-		Returns
-		-------
+
+		Returns:
+		--------
 		bool
 			If the edge is part of the calculated maximum-weight spanning forest.
 		"""
@@ -1230,8 +1233,8 @@ cdef class UnionMaximumSpanningForest(Algorithm):
 	"""
 	Union maximum-weight spanning forest algorithm, computes the union of all maximum-weight spanning forests using Kruskal's algorithm.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The input graph.
 	attribute : list
@@ -1250,13 +1253,13 @@ cdef class UnionMaximumSpanningForest(Algorithm):
 		"""
 		Gets the union of all maximum-weight spanning forests as graph.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		move : bool
 			If the graph shall be moved out of the algorithm instance.
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Graph
 			The calculated union of all maximum-weight spanning forests.
 		"""
@@ -1268,13 +1271,13 @@ cdef class UnionMaximumSpanningForest(Algorithm):
 
 		This attribute is only calculated and can thus only be request if the supplied graph has edge ids.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		move : bool
 			If the attribute shall be moved out of the algorithm instance.
 
-		Returns
-		-------
+		Returns:
+		--------
 		list
 			The list with the bool attribute for each edge.
 		"""
@@ -1284,15 +1287,15 @@ cdef class UnionMaximumSpanningForest(Algorithm):
 		"""
 		Checks if the edge (u, v) or the edge with id u is part of any maximum-weight spanning forest.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node or edgeid
 			The first node of the edge to check or the edge id of the edge to check
 		v : node
 			The second node of the edge to check (only if u is not an edge id)
 
-		Returns
-		-------
+		Returns:
+		--------
 		bool
 			If the edge is part of any maximum-weight spanning forest.
 		"""

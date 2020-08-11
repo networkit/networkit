@@ -24,13 +24,13 @@ cdef class ClusteringCoefficient:
 
 		This calculates the average local clustering coefficient of graph `G`. The graph may not contain self-loops.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The graph.
 
-		Notes
-		-----
+		Notes:
+		------
 
 		.. math:: c(G) := \\frac{1}{n} \sum_{u \in V} c(u)
 
@@ -47,13 +47,13 @@ cdef class ClusteringCoefficient:
 	@staticmethod
 	def sequentialAvgLocal(Graph G):
 		""" This calculates the average local clustering coefficient of graph `G` using inherently sequential triangle counting.
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The graph.
 
-		Notes
-		-----
+		Notes:
+		------
 
 		.. math:: c(G) := \\frac{1}{n} \sum_{u \in V} c(u)
 

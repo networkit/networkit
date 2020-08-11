@@ -69,8 +69,8 @@ cdef class CommunityDetector(Algorithm):
 	def getPartition(self):
 		"""  Returns a partition of the clustering.
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Partition:
 			A Partition of the clustering.
 		"""
@@ -99,13 +99,13 @@ cdef class ClusteringGenerator:
 	def makeSingletonClustering(self, Graph G):
 		"""  Generate a clustering where each node has its own cluster
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The graph for which the clustering shall be generated
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Partition
 			The generated partition
 		"""
@@ -113,13 +113,13 @@ cdef class ClusteringGenerator:
 	def makeOneClustering(self, Graph G):
 		"""  Generate a clustering with one cluster consisting of all nodes
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The graph for which the clustering shall be generated
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Partition
 			The generated partition
 		"""
@@ -127,15 +127,15 @@ cdef class ClusteringGenerator:
 	def makeRandomClustering(self, Graph G, count k):
 		"""  Generate a clustering with `k` clusters to which nodes are assigned randomly
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The graph for which the clustering shall be generated
 		k: count
 			The number of clusters that shall be generated
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Partition
 			The generated partition
 		"""
@@ -143,15 +143,15 @@ cdef class ClusteringGenerator:
 	def makeContinuousBalancedClustering(self, Graph G, count k):
 		"""  Generate a clustering with `k` clusters to which nodes are assigned in continuous blocks
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The graph for which the clustering shall be generated
 		k: count
 			The number of clusters that shall be generated
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Partition
 			The generated partition
 		"""
@@ -161,15 +161,15 @@ cdef class ClusteringGenerator:
 		for k**2 nodes, this clustering is complementary to the continuous clustering in the sense that no pair
 		of nodes that is in the same cluster in one of the clusterings is in the same cluster in the other clustering.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The graph for which the clustering shall be generated
 		k: count
 			The number of clusters that shall be generated
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Partition
 			The generated partition
 		"""
@@ -222,15 +222,15 @@ cdef class PartitionIntersection:
 	def calculate(self, Partition zeta, Partition eta):
 		"""  Calculate the intersection of two partitions `zeta` and `eta`
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		zeta: networkit.Partition
 			The first partition
 		eta: networkit.Partition
 			The second partition
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Partition
 			The intersection of zeta and eta
 		"""
@@ -320,15 +320,15 @@ cdef class HubDominance:
 		Calculates the dominance of hubs in the given Partition or Cover of the given
 		Graph.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		zeta : networkit.Partition or networkit.Cover
 			The Partition or Cover for which the hub dominance shall be calculated
 		G : networkit.Graph
 			The Graph to which zeta belongs
 
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			The average hub dominance in the given Partition or Cover
 		"""
@@ -351,8 +351,8 @@ cdef class PLM(CommunityDetector):
 	""" Parallel Louvain Method - the Louvain method, optionally extended to
 		a full multi-level algorithm with refinement
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			A graph.
 		refine : bool, optional
@@ -403,8 +403,8 @@ cdef class PLP(CommunityDetector):
 	""" Parallel label propagation for community detection:
 	Moderate solution quality, very short time to solution.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph on which the algorithm has to run.
 	updateThreshold : int
@@ -439,8 +439,8 @@ cdef class PLP(CommunityDetector):
 	def numberOfIterations(self):
 		""" Get number of iterations in last run.
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			The number of iterations.
 		"""
@@ -449,8 +449,8 @@ cdef class PLP(CommunityDetector):
 	def getTiming(self):
 		""" Get list of running times for each iteration.
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			The list of running times in milliseconds.
 		"""
@@ -472,8 +472,8 @@ cdef class LPDegreeOrdered(CommunityDetector):
 	def numberOfIterations(self):
 		""" Get number of iterations in last run.
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			Number of iterations.
 		"""
@@ -496,8 +496,8 @@ cdef class CutClustering(CommunityDetector):
 	Flake, Gary William; Tarjan, Robert E.; Tsioutsiouliklis, Kostas. Graph Clustering and Minimum Cut Trees.
 	Internet Mathematics 1 (2003), no. 4, 385--408.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 	alpha : double
 		The parameter for the cut clustering algorithm
@@ -516,13 +516,13 @@ cdef class CutClustering(CommunityDetector):
 		Furthermore the completeness of the hierarchy cannot be guaranteed because of these inaccuracies.
 		This implementation hasn't been optimized for performance.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		dict
 			A dictionary with the parameter values as keys and the corresponding Partition instances as values
 		"""
@@ -631,8 +631,8 @@ cdef class AdjustedRandMeasure(DissimilarityMeasure):
 
 		Note that the dissimilarity can be larger than 1 if the partitions are more different than expected in the random model.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The graph on which the partitions shall be compared
 		zeta : networkit.Partition
@@ -640,8 +640,8 @@ cdef class AdjustedRandMeasure(DissimilarityMeasure):
 		eta : networkit.Partition
 			The second partition
 
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			The adjusted rand dissimilarity
 		"""
@@ -673,8 +673,8 @@ cdef class LocalCommunityEvaluation(Algorithm):
 	def getWeightedAverage(self):
 		""" Get the average value weighted by cluster size.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double:
 			The weighted average value.
 		"""
@@ -685,8 +685,8 @@ cdef class LocalCommunityEvaluation(Algorithm):
 	def getUnweightedAverage(self):
 		""" Get the (unweighted) average value of all clusters.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double:
 			The unweighted average value.
 		"""
@@ -697,8 +697,8 @@ cdef class LocalCommunityEvaluation(Algorithm):
 	def getMaximumValue(self):
 		""" Get the maximum value of all clusters.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double:
 			The maximum value.
 		"""
@@ -709,8 +709,8 @@ cdef class LocalCommunityEvaluation(Algorithm):
 	def getMinimumValue(self):
 		""" Get the minimum value of all clusters.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double:
 			The minimum value.
 		"""
@@ -721,13 +721,13 @@ cdef class LocalCommunityEvaluation(Algorithm):
 	def getValue(self, index i):
 		""" Get the value of the specified cluster.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		i : index
 			The cluster to get the value for.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double:
 			The value of cluster i.
 		"""
@@ -738,8 +738,8 @@ cdef class LocalCommunityEvaluation(Algorithm):
 	def getValues(self):
 		""" Get the values of all clusters.
 
-		Returns
-		-------
+		Returns:
+		--------
 		list[double]:
 			The values of all clusters.
 		"""
@@ -750,8 +750,8 @@ cdef class LocalCommunityEvaluation(Algorithm):
 	def isSmallBetter(self):
 		""" If small values are better (otherwise large values are better).
 
-		Returns
-		-------
+		Returns:
+		--------
 		bool:
 			If small values are better.
 		"""
@@ -824,8 +824,8 @@ cdef class IntrapartitionDensity(LocalPartitionEvaluation):
 	The intra-cluster density of a partition is defined as the number of existing edges divided by the number of possible edges.
 	The global value is the sum of all existing intra-cluster edges divided by the sum of all possible intra-cluster edges.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph on which the measure shall be evaluated
 	P : networkit.Partition
@@ -837,8 +837,8 @@ cdef class IntrapartitionDensity(LocalPartitionEvaluation):
 	def getGlobal(self):
 		""" Get the global intra-cluster density.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double:
 			The global intra-cluster density.
 		"""
@@ -868,8 +868,8 @@ cdef class IsolatedInterpartitionConductance(LocalPartitionEvaluation):
 	Robert Grke, Andrea Kappes and  Dorothea Wagner, JEA 2015:
 	http://dx.doi.org/10.1145/2638551
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph on which the measure shall be evaluated
 	P : networkit.Partition
@@ -899,8 +899,8 @@ cdef class IsolatedInterpartitionExpansion(LocalPartitionEvaluation):
 	Robert Grke, Andrea Kappes and Dorothea Wagner, JEA 2015:
 	http://dx.doi.org/10.1145/2638551
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph on which the measure shall be evaluated
 	P : networkit.Partition
@@ -928,8 +928,8 @@ cdef class CoverHubDominance(LocalCoverEvaluation):
 	PLoS ONE 5(8): e11976. doi: 10.1371/journal.pone.0011976
 	http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0011976
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph on which the measure shall be evaluated
 	C : networkit.Cover
@@ -956,8 +956,8 @@ cdef class PartitionHubDominance(LocalPartitionEvaluation):
 	PLoS ONE 5(8): e11976. doi: 10.1371/journal.pone.0011976
 	http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0011976
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph on which the measure shall be evaluated
 	P : networkit.Partition
@@ -976,8 +976,8 @@ cdef class PartitionFragmentation(LocalPartitionEvaluation):
 	This measure evaluates how fragmented a partition is. The fragmentation of a single cluster is defined as one minus the
 	number of nodes in its maximum connected componented divided by its total number of nodes. Smaller values thus indicate a smaller fragmentation.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph on which the measure shall be evaluated
 	P : networkit.Partition
@@ -999,8 +999,8 @@ cdef class StablePartitionNodes(LocalPartitionEvaluation):
 	The value of a cluster is the percentage of stable nodes in the cluster.
 	Larger values indicate that a clustering is more stable and thus better defined.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph on which the measure shall be evaluated
 	P : networkit.Partition
@@ -1014,13 +1014,13 @@ cdef class StablePartitionNodes(LocalPartitionEvaluation):
 		"""
 		Check if a given node is stable, i.e. more connected to its own partition than to other partitions.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node
 			The node to check
 
-		Returns
-		-------
+		Returns:
+		--------
 		bool
 			If the node u is stable.
 		"""
@@ -1052,8 +1052,8 @@ cdef class CoverF1Similarity(LocalCoverEvaluation):
 	(KDD '17). ACM, New York, NY, USA, 145-154. DOI:
 	https://doi.org/10.1145/3097983.3098054
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : Graph
 		The graph on which the evaluation is performed.
 	C : Cover

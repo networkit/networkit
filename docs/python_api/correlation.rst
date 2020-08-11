@@ -1,5 +1,5 @@
 networkit.correlation
-==================
+=====================
 
 .. automodule:: networkit.correlation
     :members:
