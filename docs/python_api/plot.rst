@@ -1,7 +1,7 @@
-networkit.nxadapter
+networkit.plot
 =======================
 
-.. automodule:: networkit.nxadapter
+.. automodule:: networkit.plot
     :members:
     :undoc-members:
     :show-inheritance:

@@ -1,7 +1,7 @@
-networkit.nxadapter
+networkit.traversal
 =======================
 
-.. automodule:: networkit.nxadapter
+.. automodule:: networkit.traversal
     :members:
     :undoc-members:
     :show-inheritance:

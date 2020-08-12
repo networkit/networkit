@@ -121,8 +121,8 @@ cdef class GraphDifference(Algorithm):
 	Note that edge weight differences are not detected but edge
 	addition events set the correct edge weight.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G1 : networkit.Graph
 		The first graph to compare
 	G2 : networkit.Graph
@@ -138,8 +138,8 @@ cdef class GraphDifference(Algorithm):
 	def getEdits(self):
 		""" Get the required edits.
 
-		Returns
-		-------
+		Returns:
+		--------
 		list
 			A list of graph events
 		"""
@@ -149,8 +149,8 @@ cdef class GraphDifference(Algorithm):
 	def getNumberOfEdits(self):
 		""" Get the required number of edits.
 
-		Returns
-		-------
+		Returns:
+		--------
 		int
 			The number of edits.
 		"""
@@ -159,8 +159,8 @@ cdef class GraphDifference(Algorithm):
 	def getNumberOfNodeAdditions(self):
 		""" Get the required number of node additions.
 
-		Returns
-		-------
+		Returns:
+		--------
 		int
 			The number of node additions.
 		"""
@@ -169,8 +169,8 @@ cdef class GraphDifference(Algorithm):
 	def getNumberOfNodeRemovals(self):
 		""" Get the required number of node removals.
 
-		Returns
-		-------
+		Returns:
+		--------
 		int
 			The number of node removals.
 		"""
@@ -179,8 +179,8 @@ cdef class GraphDifference(Algorithm):
 	def getNumberOfNodeRestorations(self):
 		""" Get the required number of node restorations.
 
-		Returns
-		-------
+		Returns:
+		--------
 		int
 			The number of node restorations.
 		"""
@@ -189,8 +189,8 @@ cdef class GraphDifference(Algorithm):
 	def getNumberOfEdgeAdditions(self):
 		""" Get the required number of edge additions.
 
-		Returns
-		-------
+		Returns:
+		--------
 		int
 			The number of edge additions.
 		"""
@@ -199,8 +199,8 @@ cdef class GraphDifference(Algorithm):
 	def getNumberOfEdgeRemovals(self):
 		""" Get the required number of edge removals.
 
-		Returns
-		-------
+		Returns:
+		--------
 		int
 			The number of edge removals.
 		"""
@@ -209,8 +209,8 @@ cdef class GraphDifference(Algorithm):
 	def getNumberOfEdgeWeightUpdates(self):
 		""" Get the required number of edge weight updates.
 
-		Returns
-		-------
+		Returns:
+		--------
 		int
 			The number of edge weight updates.
 		"""
@@ -227,8 +227,8 @@ cdef extern from "<networkit/dynamics/GraphUpdater.hpp>":
 cdef class GraphUpdater:
 	""" Updates a graph according to a stream of graph events.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 	 	initial graph
 	"""

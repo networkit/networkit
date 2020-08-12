@@ -56,8 +56,9 @@ cdef extern from "<networkit/coarsening/MatchingCoarsening.hpp>":
 
 cdef class MatchingCoarsening(GraphCoarsening):
 	"""Coarsens graph according to a matching.
- 	Parameters
- 	----------
+ 	
+ 	Parameters:
+ 	-----------
  	G : networkit.Graph
 	M : Matching
  	noSelfLoops : bool, optional

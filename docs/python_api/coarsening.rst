@@ -1,7 +1,7 @@
-networkit.nxadapter
+networkit.coarsening
 =======================
 
-.. automodule:: networkit.nxadapter
+.. automodule:: networkit.coarsening
     :members:
     :undoc-members:
     :show-inheritance:

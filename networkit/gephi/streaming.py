@@ -80,8 +80,9 @@ class GephiStreamingClient:
             If the graph is directed, the edge goes from u to v
 
             Parameters:
-            - u: first node
-            - v: second node
+            -----------
+            u: first node
+            v: second node
         """
         if self.graphExported != True:
             print("Error: Cannot add edges. Export Graph first!")
@@ -138,8 +139,9 @@ class GephiStreamingClient:
         the graph itself.
 
         Parameters:
-        - values: python list or Partition object that contains the values to be exported.
-        - attribute_name: name of the node attribute in gephi
+        -----------
+        values: python list or Partition object that contains the values to be exported.
+        attribute_name: name of the node attribute in gephi
         """
 
         try:
@@ -170,8 +172,9 @@ class GephiStreamingClient:
         Use exportGraph(Graph) first to export graph itself.
 
         Parameters:
-        - values: python list contains the values to be exported.
-        - attribute_name: name of the edge attribute in gephi
+        -----------
+        values: python list contains the values to be exported.
+        attribute_name: name of the edge attribute in gephi
         """
         try:
             if len(values) != graph.upperEdgeIdBound():

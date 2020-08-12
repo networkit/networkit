@@ -1,7 +1,7 @@
-networkit.nxadapter
+networkit.sampling
 =======================
 
-.. automodule:: networkit.nxadapter
+.. automodule:: networkit.sampling
     :members:
     :undoc-members:
     :show-inheritance:

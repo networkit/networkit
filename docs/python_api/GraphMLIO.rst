@@ -1,7 +1,7 @@
-networkit.nxadapter
+networkit.GraphMLIO
 =======================
 
-.. automodule:: networkit.nxadapter
+.. automodule:: networkit.GraphMLIO
     :members:
     :undoc-members:
     :show-inheritance:

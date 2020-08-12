@@ -1,7 +1,7 @@
-networkit.nxadapter
+networkit.scd
 =======================
 
-.. automodule:: networkit.nxadapter
+.. automodule:: networkit.scd
     :members:
     :undoc-members:
     :show-inheritance:

@@ -1,7 +1,8 @@
-networkit.nxadapter
+networkit.GEXFIO
 =======================
 
-.. automodule:: networkit.nxadapter
+.. automodule:: networkit.GEXFIO
     :members:
+
     :undoc-members:
     :show-inheritance:

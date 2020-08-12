@@ -17,7 +17,6 @@ input/backbones/
 Doc/Website
 Doc/Documentation
 sandbox
-profiling
 EnsembleClustering-D
 EnsembleClustering-DPar
 EnsembleClustering-O

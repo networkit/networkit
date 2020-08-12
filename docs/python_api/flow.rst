@@ -1,7 +1,7 @@
-networkit.nxadapter
+networkit.flow
 =======================
 
-.. automodule:: networkit.nxadapter
+.. automodule:: networkit.flow
     :members:
     :undoc-members:
     :show-inheritance:

@@ -22,12 +22,14 @@ cdef class Luby:
 
 	def run(self, Graph G not None):
 		""" Returns a bool vector of length n where vec[v] is True iff v is in the independent sets.
-		Parameters
-		----------
+		
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The graph.
-		Returns
-		-------
+		
+		Returns:
+		--------
 		vector
 			A bool vector of length n.
 		"""
@@ -36,8 +38,9 @@ cdef class Luby:
 
 	def toString(self):
 		""" Get string representation of the algorithm.
-		Returns
-		-------
+		
+		Returns:
+		--------
 		string
 			The string representation of the algorithm.
 		"""

@@ -1,7 +1,7 @@
-networkit.nxadapter
+networkit.partitioning
 =======================
 
-.. automodule:: networkit.nxadapter
+.. automodule:: networkit.partitioning
     :members:
     :undoc-members:
     :show-inheritance:

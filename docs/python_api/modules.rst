@@ -8,24 +8,42 @@ Python Documentation
 
    networkit
    algebraic
+   base
    centrality
+   clique
+   coarsening
    coloring
+   community
    components
    correlation
-   community
    distance
    dynamic
    engineering
+   flow
    generators
    gephi
+   GEXFIO
    globals
    graph
    graphio
+   GraphMLIO
+   helpers
+   independentset
    linkprediction
-   nxadapter   
+   matching
+   nxadapter
+   partitioning
+   plot   
    profiling
+   randomization
+   sampling
+   scd
+   simulation
    sparsification
+   stats
    stopwatch
    structures
+   traversal
    viz
    viztasks
+   workflows

@@ -1,7 +1,7 @@
-networkit.nxadapter
+networkit.clique
 =======================
 
-.. automodule:: networkit.nxadapter
+.. automodule:: networkit.clique
     :members:
     :undoc-members:
     :show-inheritance:

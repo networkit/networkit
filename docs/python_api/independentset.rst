@@ -1,7 +1,7 @@
-networkit.nxadapter
+networkit.independentset
 =======================
 
-.. automodule:: networkit.nxadapter
+.. automodule:: networkit.independentset
     :members:
     :undoc-members:
     :show-inheritance:

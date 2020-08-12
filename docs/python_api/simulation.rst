@@ -1,7 +1,7 @@
-networkit.nxadapter
+networkit.simulation
 =======================
 
-.. automodule:: networkit.nxadapter
+.. automodule:: networkit.simulation
     :members:
     :undoc-members:
     :show-inheritance:

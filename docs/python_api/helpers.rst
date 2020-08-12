@@ -1,7 +1,7 @@
-networkit.nxadapter
+networkit.helpers
 =======================
 
-.. automodule:: networkit.nxadapter
+.. automodule:: networkit.helpers
     :members:
     :undoc-members:
     :show-inheritance:

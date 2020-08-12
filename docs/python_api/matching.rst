@@ -1,7 +1,7 @@
-networkit.nxadapter
+networkit.matching
 =======================
 
-.. automodule:: networkit.nxadapter
+.. automodule:: networkit.matching
     :members:
     :undoc-members:
     :show-inheritance:

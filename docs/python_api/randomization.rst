@@ -1,7 +1,7 @@
-networkit.nxadapter
+networkit.randomization
 =======================
 
-.. automodule:: networkit.nxadapter
+.. automodule:: networkit.randomization
     :members:
     :undoc-members:
     :show-inheritance:
