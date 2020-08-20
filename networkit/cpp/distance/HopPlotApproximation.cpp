@@ -43,6 +43,7 @@ void HopPlotApproximation::run() {
     count position;
     // nodes that are not connected to enough nodes yet
     std::vector<node> activeNodes;
+    double n = G->numberOfNodes();
 
     // initialize all vectors
     highestCount.assign(k, 0);
@@ -66,7 +67,7 @@ void HopPlotApproximation::run() {
         }
     });
     // at zero distance, all nodes can only reach themselves
-    hopPlot[0] = 1.0 / static_cast<double>(G->numberOfNodes());
+    hopPlot[0] = 1.0 / n;
     // as long as we need to connect more nodes
     while (!activeNodes.empty() && (maxDistance <= 0 || h < maxDistance)) {
         totalConnectedNodes = 0;
@@ -100,8 +101,8 @@ void HopPlotApproximation::run() {
             estimatedConnectedNodes = (pow(2,b) / 0.77351);
 
             // enforce monotonicity
-            if (estimatedConnectedNodes > G->numberOfNodes()) {
-                estimatedConnectedNodes = G->numberOfNodes();
+            if (estimatedConnectedNodes > n) {
+                estimatedConnectedNodes = n;
             }
 
             // check whether all k bitmask for this node have reached the highest possible value
@@ -114,11 +115,11 @@ void HopPlotApproximation::run() {
             }
 
             // if the node wont change or is connected to enough nodes it must no longer be considered
-            if (estimatedConnectedNodes >= G->numberOfNodes() || nodeFinished) {
+            if (estimatedConnectedNodes >= n || nodeFinished) {
                 // remove the current node from future iterations
                 std::swap(activeNodes[x], activeNodes.back());
                 activeNodes.pop_back();
-                totalConnectedNodes += G->numberOfNodes();
+                totalConnectedNodes += n;
                 --x; //don't skip former activeNodes.back() that has been switched to activeNodes[x]
             } else {
                 // add value of the node to all nodes so we can calculate the average
@@ -126,9 +127,9 @@ void HopPlotApproximation::run() {
             }
         }
         // add nodes that are already connected to all nodes
-        totalConnectedNodes += (G->numberOfNodes() - activeNodes.size()) * G->numberOfNodes();
+        totalConnectedNodes += static_cast<double>((n - activeNodes.size()) * n);
         // compute the fraction of connected nodes
-        hopPlot[h] = totalConnectedNodes/(G->numberOfNodes()*G->numberOfNodes());
+        hopPlot[h] = totalConnectedNodes / n;
         if (hopPlot[h] > 1) {
             hopPlot[h] = 1;
         }

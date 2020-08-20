@@ -56,7 +56,7 @@ void NetworKit::CoverHubDominance::run() {
 
             double dominance = 1;
             if (clusterSizes[i] > 1) {
-                dominance = maxInternalDeg[i] * 1.0 / (clusterSizes[i] - 1);
+                dominance = static_cast<double>(maxInternalDeg[i]) * 1.0 / static_cast<double>(clusterSizes[i] - 1);
             }
 
             values[i] = dominance;

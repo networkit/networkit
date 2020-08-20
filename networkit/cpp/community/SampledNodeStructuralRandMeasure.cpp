@@ -18,8 +18,8 @@ double SampledNodeStructuralRandMeasure::getDissimilarity(const Graph& G, const 
     assert (G.numberOfNodes() > 0);
     assert (G.numberOfNodes() > maxSamples);
 
-    count n11 = 0; 	// number of node pairs for which clusterings agree
-    count n00 = 0;	// number of node pairs for which clusterings disagree
+    double n11 = 0; 	// number of node pairs for which clusterings agree
+    double n00 = 0;	// number of node pairs for which clusterings disagree
 
     count nSamples = 0;
 
@@ -42,7 +42,7 @@ double SampledNodeStructuralRandMeasure::getDissimilarity(const Graph& G, const 
 
     DEBUG("n11 = " , n11 , " n00 = " , n00 , " nSamples = " , nSamples);
 
-    double dis = 1 - ((n00 + n11) / (double) nSamples);
+    double dis = 1.0 - ((n00 + n11) / static_cast<double>(nSamples));
     return dis;
 }
 

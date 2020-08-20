@@ -91,9 +91,9 @@ void PrefixJaccardScore<AttributeT>::run() {
         const auto uEndIt = rankedEdges.begin() + rankedEdgeBegin[u+1];
         const auto vEndIt = rankedEdges.begin() + rankedEdgeBegin[v+1];
 
-        count commonNeighbors = 0;
-        count uNeighbors = 0;
-        count vNeighbors = 0;
+        double commonNeighbors = 0.0;
+        double uNeighbors = 0.0;
+        double vNeighbors = 0.0;
 
         while (uIt != uEndIt || vIt != vEndIt) {
             while (uIt != uEndIt && curRank == uIt->rank) {
