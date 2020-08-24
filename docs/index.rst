@@ -7,10 +7,10 @@ This is the NetworKit documentation web page.
 Here you can find the APIs for both Python and C++.
 
 .. toctree::
-   :titlesonly:
+   :maxdepth: 3
    :hidden:
 
    Jupyter Notebook <notebooks>
    Python Documentation <python_api/modules>
-   C++ Documentation <cppdoc>
+   C++ Documentation <cpp_api/library_root>
    Developer Guide <DevGuide>

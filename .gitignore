@@ -14,6 +14,7 @@ scripts/SparsificationEvaluation/input/
 scripts/SparsificationEvaluation/output/
 scripts/SparsificationEvaluation/figures
 input/backbones/
+docs/cpp_api/
 Doc/Website
 Doc/Documentation
 sandbox

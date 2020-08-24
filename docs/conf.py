@@ -28,14 +28,20 @@ import sphinx_bootstrap_theme
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 sys.path.insert(0, os.path.abspath('sphinxext'))
+
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.intersphinx',
               'sphinx.ext.ifconfig',
               'sphinx.ext.mathjax',
               'sphinx.ext.autosummary',
               'sphinx.ext.napoleon',
-              'numpydoc'
+              'numpydoc',
+              'breathe',
+              'exhale'
               ]
+
+breathe_projects = { 'NetworKit': '../build/doxyoutput/xml' }
+breathe_default_project = 'NetworKit'
 
 # Generate the API documentation when building
 #autosummary_generate = True
@@ -125,8 +131,20 @@ html_theme_options = {
     'navbar_links': [ 
 		("Documentation", "index"),
 		("Python API", "python_api/modules"),
-		("C++ API", "cppdoc")
-	]
+		("C++ API", "cpp_api/library_root")
+	   ]
+}
+
+# Setup the exhale extension
+exhale_args = {
+    # These arguments are required
+    "containmentFolder":     "./cpp_api",
+    "rootFileName":          "library_root.rst",
+    "rootFileTitle":         "NetworKit C++ Documentation",
+    "doxygenStripFromPath":  "..",
+    "createTreeView":        True,
+    "exhaleExecutesDoxygen": True,
+    "exhaleDoxygenStdin":    "INPUT = ../include/networkit"
 }
 
 # Add any paths that contain custom themes here, relative to this directory.

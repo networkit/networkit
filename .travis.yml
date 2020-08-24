@@ -328,7 +328,7 @@ jobs:
         # cython is required because git does not contain _NetworKit.
         - pip3 install cython
         # sphinx_bootstrap_theme is required to build the documentation.
-        - pip3 install sphinx sphinx_bootstrap_theme numpydoc
+        - pip3 install sphinx sphinx_bootstrap_theme numpydoc breathe exhale
         # Build the C++ core library (no need for optimizations).
         - mkdir core_build && cd "$_"
         - cmake -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD -DNETWORKIT_WARNINGS=ON ..
