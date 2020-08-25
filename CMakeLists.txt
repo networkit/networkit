@@ -602,12 +602,11 @@ else()
 			COMMAND rm -rf htmldocs
 			COMMAND ${SPHINX_EXECUTABLE} ${CMAKE_SOURCE_DIR}/docs htmldocs)
 
-	add_custom_target(cpp_api_docs DEPENDS general_docs
-			COMMAND sed s:@BUILDDIR@:${CMAKE_CURRENT_BINARY_DIR}:
-					${CMAKE_SOURCE_DIR}/docs/cpp_api/Doxyfile.in | doxygen -
-			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+	add_custom_target(prepare_docs
+			COMMAND cp -r ${CMAKE_SOURCE_DIR}/input/* ${CMAKE_SOURCE_DIR}/docs/input
+            COMMAND cp -r ${CMAKE_SOURCE_DIR}/notebooks/* ${CMAKE_SOURCE_DIR}/docs/notebooks)
 
-	add_custom_target(docs DEPENDS general_docs cpp_api_docs)
+	add_custom_target(docs DEPENDS prepare_docs general_docs)
 endif()
 
 ################################################################################

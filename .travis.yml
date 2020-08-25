@@ -321,14 +321,17 @@ jobs:
             - python3-pip
             - python3-venv
             - doxygen
+            - pandoc
       script:
         - set -e
         - python3 -m venv pyenv && . pyenv/bin/activate
         - pip3 install --upgrade pip
         # cython is required because git does not contain _NetworKit.
         - pip3 install cython
-        # sphinx_bootstrap_theme is required to build the documentation.
-        - pip3 install sphinx sphinx_bootstrap_theme numpydoc breathe exhale
+        # Several modules are required to build the documentation.
+        - pip3 install sphinx sphinx_bootstrap_theme numpydoc breathe exhale nbsphinx
+        - pip3 install sphinx_copybutton sphinxcontrib.bibtex sphinx_gallery sphinx_last_updated_by_git 
+        - pip3 install ipykernel ipython matplotlib nbconvert jupyter-client networkx tabulate
         # Build the C++ core library (no need for optimizations).
         - mkdir core_build && cd "$_"
         - cmake -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD -DNETWORKIT_WARNINGS=ON ..

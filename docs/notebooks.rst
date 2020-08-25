@@ -9,20 +9,18 @@ Tutorial Notebooks
 
 We provide several example notebooks to get started with NetworKit and Jupyter Notebook. Please note that the following links are static renderings of the notebooks illustrating NetworKit's features and their outcome.
 
-|userGuide|
+.. toctree::
+   :maxdepth: 3
 
-|gephiStreaming|
-
-|spectralCentrality|
-
-|spectralCentralityPandas|
-
-|spectralColoring|
-
-|spectralDrawing|
-
-|spectralPartitioning|
-
-.. |userGuide| raw:: html
-
-	<a href="https://github.com/networkit/networkit/blob/Dev/notebooks/User-Guide.ipynb" target="_blank">NetworKit User Guide</a>
+   notebooks/User-Guide
+   notebooks/Centrality
+   notebooks/Community
+   notebooks/Components
+   notebooks/Distance
+   notebooks/Generators
+   notebooks/GraphNotebook
+   notebooks/GroupCentrality
+   notebooks/IONotebook
+   notebooks/LinkPrediction
+   notebooks/Randomization
+   notebooks/Sparsification

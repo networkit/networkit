@@ -12,6 +12,10 @@
 
 import sys, os, inspect
 import sphinx_bootstrap_theme
+
+import warnings
+
+warnings.filterwarnings("ignore", category=UserWarning)
 #import matplotlib as mpl
 #mpl.use("Agg")
 
@@ -37,7 +41,13 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.napoleon',
               'numpydoc',
               'breathe',
-              'exhale'
+              'exhale',
+              'nbsphinx',
+              'sphinx_copybutton',  
+              'sphinx.ext.mathjax', 
+              'sphinxcontrib.bibtex',
+              'sphinx_gallery.load_style',
+              'sphinx_last_updated_by_git'
               ]
 
 breathe_projects = { 'NetworKit': '../build/doxyoutput/xml' }
@@ -110,7 +120,6 @@ pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
-
 
 # -- Options for HTML output ---------------------------------------------------
 
