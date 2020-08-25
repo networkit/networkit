@@ -138,10 +138,13 @@ html_theme_options = {
     'navbar_fixed_top': "false",
     'navbar_pagenav': False,
     'navbar_links': [ 
-		("Documentation", "index"),
-		("Python API", "python_api/modules"),
-		("C++ API", "cpp_api/library_root")
-	   ]
+      ('Get Started', 'https://networkit.github.io/get_started.html', True),
+      ('Documentation', 'index'),
+      ('Features', 'https://networkit.github.io/features.html', True),
+      ('News', 'https://networkit.github.io/news.html', True),
+      ('Publications', 'https://networkit.github.io/publications.html', True),
+      ('Data sets', 'https://networkit.github.io/datasets.html', True),
+      ('Credits', 'https://networkit.github.io/credits.html', True)]
 }
 
 # Setup the exhale extension

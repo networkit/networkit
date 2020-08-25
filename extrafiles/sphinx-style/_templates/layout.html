@@ -22,7 +22,7 @@
 {% if theme_bootstrap_version == "3" %}
   {%- macro bsidebar_nkt() %}
       {%- if render_sidebar %}
-      <div class="{{ bs_span_prefix }}4">
+      <div class="{{ bs_span_prefix }}3">
         <div id="sidebar" class="bs-sidenav" role="complementary">
           {%- for sidebartemplate in sidebars %}
             {%- include sidebartemplate %}
@@ -34,7 +34,7 @@
 {% else %}
   {%- macro bsidebar_nkt() %}
       {%- if render_sidebar %}
-      <div class="{{ bs_span_prefix }}4">
+      <div class="{{ bs_span_prefix }}3">
         <div id="sidebar" class="bs-sidenav well" data-spy="affix">
           {%- for sidebartemplate in sidebars %}
             {%- include sidebartemplate %}
@@ -50,7 +50,7 @@
 <div class="container">
   <div class="row">
     {%- block sidebar1 %}{{ bsidebar_nkt() }}{% endblock %}
-    <div class="col-md-8 content">
+    <div class="col-md-9 content">
       {% block body %}{% endblock %}
     </div>
     {% block sidebar2 %} {# possible location for sidebar #} {% endblock %}
