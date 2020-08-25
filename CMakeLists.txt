@@ -603,10 +603,17 @@ else()
 			COMMAND ${SPHINX_EXECUTABLE} ${CMAKE_SOURCE_DIR}/docs htmldocs)
 
 	add_custom_target(prepare_docs
+			COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/docs/input
 			COMMAND cp -r ${CMAKE_SOURCE_DIR}/input/* ${CMAKE_SOURCE_DIR}/docs/input
+			COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/docs/notebooks
             COMMAND cp -r ${CMAKE_SOURCE_DIR}/notebooks/* ${CMAKE_SOURCE_DIR}/docs/notebooks)
 
 	add_custom_target(docs DEPENDS prepare_docs general_docs)
+
+	add_custom_command(TARGET docs
+		POST_BUILD
+		COMMAND rm -rf ${CMAKE_SOURCE_DIR}/docs/input
+		COMMAND rm -rf ${CMAKE_SOURCE_DIR}/docs/notebooks)
 endif()
 
 ################################################################################
