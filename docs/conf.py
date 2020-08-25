@@ -154,7 +154,13 @@ exhale_args = {
     "rootFileName":          "library_root.rst",
     "rootFileTitle":         "NetworKit C++ Documentation",
     "doxygenStripFromPath":  "..",
+    "kindsWithContentsDirectives": ["file", "namespace", "dir"],
+    "unabridgedOrphanKinds": {"file", "dir"},
     "createTreeView":        True,
+    "treeViewIsBootstrap":   True,
+    "treeViewBootstrapUseBadgeTags": False,
+    "treeViewBootstrapExpandIcon": "glyphicon glyphicon-chevron-right",
+    "treeViewBootstrapLevels": 3,
     "exhaleExecutesDoxygen": True,
     "exhaleDoxygenStdin":    "INPUT = ../include/networkit"
 }
