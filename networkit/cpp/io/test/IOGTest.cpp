@@ -75,6 +75,7 @@ TEST_F(IOGTest, testEdgeListWriter){
     if (file) {
         exists = true;
     }
+    file.close();
     EXPECT_TRUE(exists) << "A file should have been created : " << path;
 
     EdgeListReader reader(' ', 1, "#", true, true);
