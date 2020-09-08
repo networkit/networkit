@@ -10,6 +10,7 @@ This folder contains many smaller graphs. They are used in the testing suite and
 |----------------------------------|-------------------------|-------------------------|--------------------|-----------------|-----------------|----------|----------|---------|
 | airfoil1.gi                      | n/a                     | DibapGraphReader        | 149370             | 4253            | 12289           | FALSE    | FALSE    | n/a     |
 | airfoil1.graph                   | Format.METIS            | METISGraphReader        | 116538             | 4253            | 12289           | n/a      | n/a      | n/a     |
+| alphabet.edgelist                | Format.EdgeListTabOne   | EdgeListReader          | 69                 | 5               | 4               | FALSE    | TRUE     | n/a     |
 | astro-ph.graph                   | Format.METIS            | METISGraphReader        | 1259548            | 16706           | 121251          | FALSE    | FALSE    | n/a     |
 | caidaRouterLevel.graph           | Format.METIS            | METISGraphReader        | 7490360            | 192244          | 609066          | FALSE    | FALSE    | n/a     |
 | celegans_metabolic.graph         | Format.METIS            | METISGraphReader        | 16015              | 453             | 2025            | FALSE    | FALSE    | n/a     |

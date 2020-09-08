@@ -4,235 +4,160 @@
  *  Created on: 18.06.2013
  *      Author: cls
  */
+// networkit-format
 
 #include <fstream>
 #include <sstream>
 
 #include <networkit/auxiliary/Enforce.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/EdgeListReader.hpp>
+#include <networkit/io/MemoryMappedFile.hpp>
 
 namespace NetworKit {
 
-EdgeListReader::EdgeListReader(const char separator, const node firstNode, const std::string commentPrefix, const bool continuous, const bool directed) :
-    separator(separator), commentPrefix(commentPrefix), firstNode(firstNode), continuous(continuous), mapNodeIds(), directed(directed) {}
+EdgeListReader::EdgeListReader(char separator, node firstNode, const std::string &commentPrefix,
+                               bool continuous, bool directed)
+    : separator(separator), commentPrefix(commentPrefix), firstNode(firstNode),
+      continuous(continuous), mapNodeIds(), directed(directed) {}
 
-Graph EdgeListReader::read(const std::string& path) {
-    this->mapNodeIds.clear();
-
-    if (this->continuous) {
-        DEBUG("read graph with continuous ids");
-        return readContinuous(path);
-    } else {
-        DEBUG("read graph with NON continuous ids");
-        return readNonContinuous(path);
-    }
-}
-
-std::map<std::string,node> EdgeListReader::getNodeMap() {
-    if (this->continuous) throw std::runtime_error("Input files are assumed to have continuous node ids, therefore no node mapping has been created.");
+const std::map<std::string, node> &EdgeListReader::getNodeMap() const {
+    if (this->continuous)
+        throw std::runtime_error("Input files are assumed to have continuous node ids, therefore "
+                                 "no node mapping has been created.");
     return this->mapNodeIds;
 }
 
-Graph EdgeListReader::readContinuous(const std::string& path) {
-    std::ifstream file(path);
-    Aux::enforceOpened(file);
-    std::string line; // the current line
-
-    // read file once to get to the last line and figure out the number of nodes
-    // unfortunately there is an empty line at the ending of the file, so we need to get the line before that
-
-    node maxNode = 0;
-    bool weighted = false;
-    bool checkedWeighted = false;
-
-    DEBUG("separator: " , this->separator);
-    DEBUG("first node: " , this->firstNode);
-
-    // first find out the maximum node id
-    DEBUG("first pass");
-    count i = 0;
-    while (file.good()) {
-        ++i;
-        std::getline(file, line);
-        TRACE("read line: " , line);
-        if (!line.empty()) {
-            if (line.back() == '\r') line.pop_back();
-            if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
-                TRACE("ignoring comment: " , line);
-            } else {
-                std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
-                if (!checkedWeighted) {
-                    if (split.size() == 2) {
-                        weighted = false;
-                    } else if (split.size() == 3) {
-                        INFO("Identified graph as weighted.");
-                        weighted = true;
-                    }
-                    checkedWeighted = true;
-                }
-                if (split.size() == 2 || split.size() == 3) {
-                    TRACE("split into : " , split[0] , " and " , split[1]);
-                    node u = std::stoul(split[0]);
-                    if (u > maxNode) {
-                        maxNode = u;
-                    }
-                    node v = std::stoul(split[1]);
-                    if (v > maxNode) {
-                        maxNode = v;
-                    }
-                } else {
-                    std::stringstream message;
-                    message << "malformed line ";
-                    message << i << ": ";
-                    message << line;
-                    throw std::runtime_error(message.str());
-                }
-            }
-        } else {
-            DEBUG("line ", i, " is empty.");
-        }
-    }
-    file.close();
-    maxNode = maxNode - this->firstNode + 1;
-    DEBUG("max. node id found: " , maxNode);
-
-    Graph G(maxNode, weighted, directed);
-
-    DEBUG("second pass");
-    file.open(path);
-    // split the line into start and end node. since the edges are sorted, the start node has the highest id of all nodes
-    i = 0; // count lines
-    while(std::getline(file,line)){
-        if (line.empty()) continue;
-        if(*line.rbegin() == '\r') line.pop_back();
-        ++i;
-        if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
-        } else {
-            std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
-            if (split.size() == 2) {
-                node u = std::stoul(split[0]) - this->firstNode;
-                node v = std::stoul(split[1]) - this->firstNode;
-                if (!G.hasEdge(u,v)) {
-                    G.addEdge(u, v);
-                }
-            } else if (weighted && split.size() == 3) {
-                node u = std::stoul(split[0]) - this->firstNode;
-                node v = std::stoul(split[1]) - this->firstNode;
-                double weight = std::stod(split[2]);
-                if (!G.hasEdge(u,v)) {
-                    G.addEdge(u, v, weight);
-                }
-            } else {
-                std::stringstream message;
-                message << "malformed line ";
-                message << i << ": ";
-                message << line;
-                throw std::runtime_error(message.str());
-            }
-        }
-    }
-    file.close();
-
-    G.shrinkToFit();
-    return G;
-}
-
-
-Graph EdgeListReader::readNonContinuous(const std::string& path) {
-    std::ifstream file(path);
-    Aux::enforceOpened(file);
-    DEBUG("file is opened, proceed");
-    std::string line; // the current line
-    node consecutiveID = 0;
+Graph EdgeListReader::read(const std::string &path) {
+    this->mapNodeIds.clear();
+    MemoryMappedFile mmfile(path);
+    auto it = mmfile.cbegin();
+    auto end = mmfile.cend();
 
     bool weighted = false;
     bool checkedWeighted = false;
+    Graph graph(0, weighted, directed);
 
-    // first find out the maximum node id
-    DEBUG("first pass: create node ID mapping");
-    count i = 0;
-    while (file.good()) {
-        ++i;
-        std::getline(file, line);
-        TRACE("read line: " , line);
-        if (!line.empty()) {
-            if(line.back() == '\r') line.pop_back();
-            if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
-                 TRACE("ignoring comment: " , line);
-            } else if (line.length() == 0) {
-                TRACE("ignoring empty line");
-            } else {
-                std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
-                if (!checkedWeighted) {
-                    if (split.size() == 2) {
-                        weighted = false;
-                    } else if (split.size() == 3) {
-                        INFO("Identified graph as weighted.");
-                        weighted = true;
-                    }
-                    checkedWeighted = true;
-                }
-                if (split.size() == 2 || split.size() == 3) {
-                    TRACE("split into : " , split[0] , " and " , split[1]);
-                    if(this->mapNodeIds.insert(std::make_pair(split[0],consecutiveID)).second) ++consecutiveID;
-                    if(this->mapNodeIds.insert(std::make_pair(split[1],consecutiveID)).second) ++consecutiveID;
-                } else {
-                    std::stringstream message;
-                    message << "malformed line ";
-                    message << i << ": ";
-                    message << line;
-                    throw std::runtime_error(message.str());
+    DEBUG("separator: ", this->separator);
+    DEBUG("first node: ", this->firstNode);
+
+    auto skipWhitespaceAndSeparator = [this, &it, &end]() -> void {
+        while (it != end && (*it == ' ' || *it == separator))
+            ++it;
+    };
+
+    // This function parses in whole words
+    auto scanWord = [this, &it, &end]() -> std::string {
+        std::string word = "";
+        while (it != end && *it != ' ' && *it != separator && *it != '\n' && *it != '\r') {
+            word += *it;
+            ++it;
+        }
+        return word;
+    };
+
+    auto scanId = [&, this]() -> node {
+        if (continuous) {
+            char *past;
+            auto value = strtol(it, &past, 10);
+            if (past <= it)
+                throw std::runtime_error("Scanning node failed. The file may be corrupt.");
+            it = past;
+            return value;
+        } else {
+            auto word = scanWord();
+            auto it = mapNodeIds.find(word);
+            if (it != mapNodeIds.end())
+                return it->second;
+            auto result = mapNodeIds.insert({word, graph.addNode()});
+            if (!result.second)
+                throw std::runtime_error("Error in mapping nodes");
+            return result.first->second;
+        }
+    };
+
+    auto scanWeight = [&it]() -> edgeweight {
+        char *past;
+        auto value = strtod(it, &past);
+        if (past <= it)
+            throw std::runtime_error("Error in parsing file - looking for weight failed");
+        it = past;
+        return value;
+    };
+
+    // Returns
+    // 0 iff it does not point to a line ending
+    // 1 iff it is a single-char ending ('\r' or '\n')
+    // 2 iff it is two-char ending ("\r\n")
+    auto detectLineEnding = [&it, &end]() -> size_t {
+        if (*it == '\r') {
+            if ((it + 1) != end && *(it + 1) == '\n')
+                return 2;
+            return 1;
+        }
+        if (*it == '\n')
+            return 1;
+
+        return 0;
+    };
+
+    // Map nodes and increase graph size
+    auto mapNode = [&](node in) -> node {
+        if (graph.upperNodeIdBound() <= in - firstNode)
+            graph.addNodes(in - firstNode - graph.upperNodeIdBound() + 1);
+
+        return in - firstNode;
+    };
+
+    // This function modifies the graph on input.
+    auto handleEdge = [&graph](node source, node target, edgeweight weight) -> void {
+        if (!graph.hasEdge(source, target)) {
+            graph.addEdge(source, target, weight);
+        }
+    };
+
+    while (it < end) {
+        skipWhitespaceAndSeparator();
+        if (detectLineEnding()) {
+            // Comment line
+        } else if (*it == commentPrefix[0]) {
+            while (it != end && !detectLineEnding())
+                ++it;
+        } else {
+            auto sourceId = scanId();
+            if (it == end)
+                throw std::runtime_error("Unexpected end of file");
+            if (!(*it == ' ' || *it == separator))
+                throw std::runtime_error(
+                    "Error in parsing file - pointer is whitespace or separator");
+            skipWhitespaceAndSeparator();
+
+            auto targetId = scanId();
+            skipWhitespaceAndSeparator();
+
+            if (!checkedWeighted) {
+                checkedWeighted = true;
+                if (!detectLineEnding()) {
+                    weighted = true;
+                    DEBUG("Detected graph as weighted");
+                    graph = GraphTools::toWeighted(graph);
                 }
             }
-        } else {
-            DEBUG("line ", i, " is empty.");
-        }
-    }
-    file.close();
+            if (weighted) {
+                auto edgeWeight = scanWeight();
+                skipWhitespaceAndSeparator();
 
-    DEBUG("found ",this->mapNodeIds.size()," unique node ids");
-    Graph G(this->mapNodeIds.size(), weighted, directed);
-
-    DEBUG("second pass: add edges");
-    file.open(path);
-
-    // split the line into start and end node. since the edges are sorted, the start node has the highest id of all nodes
-    i = 0; // count lines
-    while(std::getline(file,line)){
-        if (line.empty()) continue;
-        if(*line.rbegin() == '\r') line.pop_back();
-        ++i;
-        if (line.compare(0, this->commentPrefix.length(), this->commentPrefix) == 0) {
-        } else {
-            std::vector<std::string> split = Aux::StringTools::split(line, this->separator);
-            if (split.size() == 2) {
-                node u = this->mapNodeIds[split[0]];
-                node v = this->mapNodeIds[split[1]];
-                if (!G.hasEdge(u,v)) {
-                    G.addEdge(u, v);
-                }
-            } else if (weighted && split.size() == 3) {
-                node u = this->mapNodeIds[split[0]];
-                node v = this->mapNodeIds[split[1]];
-                double weight = std::stod(split[2]);
-                if (!G.hasEdge(u,v)) {
-                    G.addEdge(u, v, weight);
-                }
+                handleEdge(mapNode(sourceId), mapNode(targetId), edgeWeight);
             } else {
-                std::stringstream message;
-                message << "malformed line ";
-                message << i << ": ";
-                message << line;
-                throw std::runtime_error(message.str());
+                handleEdge(mapNode(sourceId), mapNode(targetId), defaultEdgeWeight);
             }
         }
+        ++it;
     }
-    DEBUG("read ",i," lines and added ",G.numberOfEdges()," edges");
-    file.close();
 
-    G.shrinkToFit();
-    return G;
+    graph.shrinkToFit();
+    return graph;
 }
 
 } /* namespace NetworKit */

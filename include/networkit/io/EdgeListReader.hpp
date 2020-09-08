@@ -31,11 +31,11 @@ public:
     /**
      * @param[in]  separator  character used to separate nodes in an edge line
      * @param[in]  firstNode  index of the first node in the file
-     * @param[in]  commentChar  character used to mark comment lines
-     * @param[in]  continuous  boolean to specify, if node ids are continuous
-     * @param[in]  directed  treat graph as directed
+     * @param[in]  commentPrefix  prefix of comment lines
+     * @param[in]  continuous  boolean to specify if node ids are continuous
+     * @param[in]  directed  read graph as directed
      */
-    EdgeListReader(char separator, node firstNode, std::string commentPrefix = "#",
+    EdgeListReader(char separator, node firstNode, const std::string &commentPrefix = "#",
                    bool continuous = true, bool directed = false);
 
     /**
@@ -48,7 +48,7 @@ public:
     /**
      * Return the node map, in case node ids are not continuous
      */
-    std::map<std::string, node> getNodeMap();
+    const std::map<std::string, node> &getNodeMap() const;
 
 private:
     char separator; //!< character separating nodes in an edge line
@@ -57,10 +57,6 @@ private:
     bool continuous;
     std::map<std::string, node> mapNodeIds;
     bool directed;
-
-    Graph readContinuous(const std::string &path);
-
-    Graph readNonContinuous(const std::string &path);
 };
 
 } /* namespace NetworKit */
