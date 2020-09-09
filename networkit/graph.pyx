@@ -118,20 +118,6 @@ cdef class Graph:
 		"""
 		return self._this.numberOfEdges()
 
-	def size(self):
-		"""
-		Get the size of the graph.
-
-		Returns:
-	 	--------
-		tuple
-			a pair (n, m) where n is the number of nodes and m is the number of edges
-		"""
-		from warnings import warn
-		warn("Graph.size is deprecated, use graphtools.size instead.")
-		return self._this.size()
-
-
 	def density(self):
 		"""
 		Get the density of the graph.

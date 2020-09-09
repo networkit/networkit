@@ -1379,12 +1379,6 @@ public:
     count numberOfEdges() const noexcept { return m; }
 
     /**
-     * @return a pair (n, m) where n is the number of nodes and m is the
-     * number of edges
-     */
-    std::pair<count, count> TLX_DEPRECATED(size() const noexcept);
-
-    /**
      * @return the density of the graph
      *
      * This method is deprecated, use GraphTools::density instead.

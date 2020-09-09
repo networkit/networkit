@@ -706,10 +706,6 @@ void Graph::removeEdge(node u, node v) {
     }
 }
 
-std::pair<count, count> Graph::size() const noexcept {
-    return GraphTools::size(*this);
-}
-
 double Graph::density() const {
     return GraphTools::density(*this);
 }

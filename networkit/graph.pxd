@@ -52,7 +52,6 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		edgeid edgeId(node, node) except +
 		count numberOfNodes() except +
 		count numberOfEdges() except +
-		pair[count, count] size() except +
 		double density() except +
 		index upperNodeIdBound() except +
 		index upperEdgeIdBound() except +
