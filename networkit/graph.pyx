@@ -51,19 +51,6 @@ cdef class Graph:
 	def __str__(self):
 		return "NetworKit.Graph(n={0}, m={1})".format(self.numberOfNodes(), self.numberOfEdges())
 
-	def copyNodes(self):
-		"""
-		Copies all nodes to a new graph
-
-		Returns:
-		--------
-		networkit.Graph
-			Graph with the same nodes (without edges)
-		"""
-		from warnings import warn
-		warn("Graph.copyNodes is deprecated, use graphtools.copyNodes instead.")
-		return Graph().setThis(self._this.copyNodes())
-
 	def indexEdges(self, bool_t force = False):
 		"""
 		Assign integer ids to edges.

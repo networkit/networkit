@@ -1086,16 +1086,6 @@ public:
      */
     void setNumberOfSelfLoops(Unsafe, count loops) { storedNumberOfSelfLoops = loops; }
 
-    /* COPYING */
-
-    /*
-     * Copies all nodes to a new graph
-     * @return graph with the same nodes.
-     *
-     * This method is deprecated, use GraphTools::copyNodes instead.
-     */
-    Graph TLX_DEPRECATED(copyNodes() const);
-
     /* NODE MODIFIERS */
 
     /**

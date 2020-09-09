@@ -452,13 +452,6 @@ edgeweight Graph::computeWeightedDegree(node u, bool inDegree, bool countSelfLoo
     return static_cast<edgeweight>(sum);
 }
 
-/** COPYING **/
-
-Graph Graph::copyNodes() const {
-    WARN("Graph::copyNodes is deprecated, use GraphTools::copyNodes instead.");
-    return GraphTools::copyNodes(*this);
-}
-
 /** NODE MODIFIERS **/
 
 node Graph::addNode() {

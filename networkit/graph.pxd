@@ -60,7 +60,6 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		double weightedDegree(node u, bool_t) except +
 		double weightedDegreeIn(node u, bool_t) except +
 		bool_t isIsolated(node u) except +
-		_Graph copyNodes() except +
 		node addNode() except +
 		node addNodes(node) except +
 		void removeNode(node u) except +
