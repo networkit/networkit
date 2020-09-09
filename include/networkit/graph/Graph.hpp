@@ -1173,26 +1173,6 @@ public:
 
     void restoreNode(node v);
 
-    // SET OPERATIONS
-
-    /**
-     * Appends another graph to this graph as a new subgraph. Performs node
-     * id remapping.
-     * @param G [description]
-     *
-     * This method is deprecated, use GraphTools::append instead.
-     */
-    void TLX_DEPRECATED(append(const Graph &G));
-
-    /**
-     * Modifies this graph to be the union of it and another graph.
-     * Nodes with the same ids are identified with each other.
-     * @param G [description]
-     *
-     * This method is deprecated, use GraphTools::merge instead.
-     */
-    void TLX_DEPRECATED(merge(const Graph &G));
-
     // SUBGRAPHS
 
     /**

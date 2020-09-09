@@ -981,16 +981,6 @@ bool Graph::checkConsistency() const {
     return noMultiEdges;
 }
 
-void Graph::append(const Graph &G) {
-    WARN("Graph::append is deprecated, use GraphTools::append instead.");
-    GraphTools::append(*this, G);
-}
-
-void Graph::merge(const Graph &G) {
-    WARN("Graph::merge is deprecated, use GraphTools::merge instead.");
-    GraphTools::merge(*this, G);
-}
-
 // SUBGRAPHS
 
 Graph Graph::subgraphFromNodes(const std::unordered_set<node> &nodes, bool includeOutNeighbors,

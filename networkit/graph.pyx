@@ -360,31 +360,6 @@ cdef class Graph:
 		"""
 		return self._this.hasNode(u)
 
-	def append(self, Graph G):
-		""" Appends another graph to this graph as a new subgraph. Performs node id remapping.
-
-		Parameters:
-		-----------
-		G : networkit.Graph
-		"""
-		from warnings import warn
-		warn("Graph.append is deprecated, use graphtools.append instead.")
-		self._this.append(G._this)
-		return self
-
-	def merge(self, Graph G):
-		""" Modifies this graph to be the union of it and another graph.
-			Nodes with the same ids are identified with each other.
-
-		Parameters:
-		-----------
-		G : networkit.Graph
-		"""
-		from warnings import warn
-		warn("Graph.merge is deprecated, use graphtools.merge instead.")
-		self._this.merge(G._this)
-		return self
-
 	def addEdge(self, u, v, w=1.0, addMissing = False):
 		""" Insert an undirected edge between the nodes `u` and `v`. If the graph is weighted you can optionally
 		set a weight for this edge. The default weight is 1.0.
