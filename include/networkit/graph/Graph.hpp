@@ -1231,16 +1231,6 @@ public:
      */
     edgeweight weightedDegreeIn(node u, bool countSelfLoopsTwice = false) const;
 
-    /**
-     * Returns a random neighbor of @a u and @c none if degree is zero.
-     *
-     * @param u Node.
-     * @return A random neighbor of @a u.
-     *
-     * This method is deprecated, use GraphTools::randomNeighbor instead.
-     */
-    node TLX_DEPRECATED(randomNeighbor(node u) const);
-
     /* EDGE MODIFIERS */
 
     /**

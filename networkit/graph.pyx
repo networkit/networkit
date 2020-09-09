@@ -692,23 +692,6 @@ cdef class Graph:
 		"""
 		return self._this.totalEdgeWeight()
 
-	def randomNeighbor(self, u):
-		""" Get a random neighbor of `u`. Returns `none` if the degree of `u` is zero.
-
-		Parameters:
-		-----------
-		v : node
-			Node.
-
-		Returns:
-		--------
-		node
-			A random neighbor of `v.
-		"""
-		from warnings import warn
-		warn("Graph.randomNeighbor is deprecated, use graphtools.randomNeighbor instead.")
-		return self._this.randomNeighbor(u)
-
 	def randomEdge(self, bool_t uniformDistribution = False):
 		""" Get a random edge of the graph.
 

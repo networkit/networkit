@@ -551,10 +551,6 @@ edgeweight Graph::weightedDegreeIn(node u, bool countSelfLoopsTwice) const {
     return computeWeightedDegree(u, true, countSelfLoopsTwice);
 }
 
-node Graph::randomNeighbor(node u) const {
-    return GraphTools::randomNeighbor(*this, u);
-}
-
 /** EDGE MODIFIERS **/
 
 void Graph::addEdge(node u, node v, edgeweight ew) {
