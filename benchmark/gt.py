@@ -107,17 +107,10 @@ class bEigenvector(Algo):
 	def run(self, G):
 		pr = graph_tool.eigenvector(G)
 
-# 	- betweenness,  exact (centrality.Betweenness) and approximated (centrality.ApproxBetweenness, centrality.ApproxBetweenness2)
+# 	- betweenness,  exact (centrality.Betweenness) and approximated (centrality.ApproxBetweenness)
 
 class bBetweenness(Algo):
 	name = "Betweenness"
 
 	def run(self, G):
 		graph_tool.centrality.betweenness(G)
-
-
-#class bApproxBetweenness(Algo):
-#	name = "ApproxBetweenness"
-
-#	def run(self, G):
-#		graph_tool.betweenness(G)

@@ -287,7 +287,7 @@ class Profile:
 			("Centrality.Katz",						"Node Centrality",	"Katz Centrality",
 				True,	funcScores,	"Score",				centrality.KatzCentrality,				(G, )),
 			("Centrality.Betweenness", 				"Node Centrality",	"Betweenness",
-				True,	funcScores,	"Score",				centrality.ApproxBetweenness2,			(G, 10, True)),
+				True,	funcScores,	"Score",				centrality.EstimateBetweenness,			(G, 10, True)),
 			("Centrality.Closeness",				"Node Centrality",	"Closeness",
 				True,	funcScores,	"Score",				centrality.ApproxCloseness,				(G, min(10, G.numberOfNodes()), True)),
 			("Partition.Communities", 				"Partition",		"Communities",

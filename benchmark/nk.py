@@ -176,7 +176,7 @@ class bDegreeAssortativity(Algo):
 		networkit.correlation.Assortativity(G, networkit.centrality.DegreeCentrality(G).run().scores()).run()
 
 
-# 	- betweenness,  exact (centrality.Betweenness) and approximated (centrality.ApproxBetweenness, centrality.ApproxBetweenness2)
+# 	- betweenness,  exact (centrality.Betweenness) and approximated (centrality.ApproxBetweenness)
 
 class bBetweenness(Algo):
 	name = "Betweenness"
@@ -200,7 +200,7 @@ class bApproxBetweenness(Algo):
 	name = "BetweennessApprox"
 
 	def run(self, G):
-		bc = networkit.centrality.ApproxBetweenness2(G, nSamples=42)
+		bc = networkit.centrality.EstimateBetweenness(G, nSamples=42)
 		bc.run()
 
 
@@ -210,6 +210,6 @@ class bApproxBetweennessSeq(Algo):
 	def run(self, G):
 		mt = networkit.getMaxNumberOfThreads()
 		networkit.setNumberOfThreads(1)
-		bc = networkit.centrality.ApproxBetweenness2(G, nSamples=42)
+		bc = networkit.centrality.EstimateBetweenness(G, nSamples=42)
 		bc.run()
 		networkit.setNumberOfThreads(mt)

@@ -112,7 +112,7 @@ class bPageRank(Algo):
 # 	- Eigenvector centrality (centrality.EigenvectorCentrality, centrality.SciPyEVZ)
 
 
-# 	- betweenness,  exact (centrality.Betweenness) and approximated (centrality.ApproxBetweenness, centrality.ApproxBetweenness2)
+# 	- betweenness,  exact (centrality.Betweenness) and approximated (centrality.ApproxBetweenness)
 
 class bBetweenness(Algo):
 	name = "Betweenness" + framework
