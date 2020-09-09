@@ -93,8 +93,6 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		bool_t isWeighted() except +
 		bool_t isDirected() except +
 		edgeweight totalEdgeWeight() except +
-		pair[node, node] randomEdge(bool_t) except +
-		vector[pair[node, node]] randomEdges(count) except +
 		count numberOfSelfLoops() except +
 		_Graph toUndirected() except +
 		_Graph toUnweighted() except +

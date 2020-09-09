@@ -1344,25 +1344,6 @@ public:
      */
     bool hasEdge(node u, node v) const noexcept;
 
-    /**
-     * Returns a random edge. By default a random node u is chosen and then
-     * some random neighbor v. So the probability of choosing (u, v) highly
-     * depends on the degree of u. Setting uniformDistribution to true, will
-     * give you a real uniform distributed edge, but will be slower.
-     * Exp. time complexity: O(1) for uniformDistribution = false, O(n) otherwise.
-     *
-     * This method is deprecated, use GraphTools::randomEdge instead.
-     */
-    std::pair<node, node> TLX_DEPRECATED(randomEdge(bool uniformDistribution = false) const);
-
-    /**
-     * Returns a vector with nr random edges. The edges are chosen uniform
-     * random.
-     *
-     * This method is deprecated, use GraphTools::randomEdges instead.
-     */
-    std::vector<std::pair<node, node>> TLX_DEPRECATED(randomEdges(count nr) const);
-
     /* GLOBAL PROPERTIES */
 
     /**

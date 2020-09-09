@@ -814,14 +814,6 @@ bool Graph::hasEdge(node u, node v) const noexcept {
     }
 }
 
-std::pair<node, node> Graph::randomEdge(bool uniformDistribution) const {
-    return GraphTools::randomEdge(*this, uniformDistribution);
-}
-
-std::vector<std::pair<node, node>> Graph::randomEdges(count nr) const {
-    return GraphTools::randomEdges(*this, nr);
-}
-
 /** EDGE ATTRIBUTES **/
 
 edgeweight Graph::weight(node u, node v) const {

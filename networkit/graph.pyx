@@ -682,45 +682,6 @@ cdef class Graph:
 		"""
 		return self._this.totalEdgeWeight()
 
-	def randomEdge(self, bool_t uniformDistribution = False):
-		""" Get a random edge of the graph.
-
-		Parameters:
-		-----------
-		uniformDistribution : bool
-			If the distribution of the edge shall be uniform
-
-		Returns:
-		--------
-		pair
-			Random random edge.
-
-		Notes
-		-----
-		Fast, but not uniformly random if uniformDistribution is not set,
-		slow and uniformly random otherwise.
-		"""
-		from warnings import warn
-		warn("Graph.randomEdge is deprecated, use graphtools.randomEdge instead.")
-		return self._this.randomEdge(uniformDistribution)
-
-	def randomEdges(self, count numEdges):
-		""" Returns a list with numEdges random edges. The edges are chosen uniformly at random.
-
-		Parameters:
-		-----------
-		numEdges : count
-			The number of edges to choose.
-
-		Returns:
-		--------
-		list of pairs
-			The selected edges.
-		"""
-		from warnings import warn
-		warn("Graph.randomEdges is deprecated, use graphtools.randomEdges instead.")
-		return self._this.randomEdges(numEdges)
-
 	def numberOfSelfLoops(self):
 		""" Get number of self-loops, i.e. edges {v, v}.
 		Returns:
