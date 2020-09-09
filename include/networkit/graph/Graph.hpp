@@ -1452,14 +1452,6 @@ public:
     /* Collections */
 
     /**
-     * Get list of all nodes.
-     * @return List of all nodes.
-     *
-     * This method is deprecated and will not be supported in future releases.
-     */
-    std::vector<node> TLX_DEPRECATED(nodes() const);
-
-    /**
      * Get list of edges as node pairs.
      * @return List of edges as node pairs.
      *

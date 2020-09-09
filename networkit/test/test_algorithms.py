@@ -377,7 +377,6 @@ class TestSelfLoops(unittest.TestCase):
 		PLMLL.run()
 		PLMLLP = PLMLL.getPartition()
 		CG = nk.community.communityGraph(self.LL, PLMLLP)
-		self.assertIsInstance(len(CG.nodes()), int)
 
 
 	def testCommunityEvaluateCommunityDetection(self):
