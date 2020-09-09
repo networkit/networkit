@@ -77,8 +77,6 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		void sortEdges() except +
 		bool_t hasEdge(node u, node v) except +
 		edgeweight weight(node u, node v) except +
-		vector[node] neighbors(node u) except +
-		vector[node] inNeighbors(node u) except +
 		void forEdges[Callback](Callback c) except +
 		void forNodes[Callback](Callback c) except +
 		void forNodePairs[Callback](Callback c) except +

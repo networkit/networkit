@@ -100,15 +100,27 @@ class TestGraph(unittest.TestCase):
 		G.addEdge(3, 2)
 		G.addEdge(1, 2)
 
-		self.assertListEqual(sorted(G.neighbors(0)), [1, 2])
-		self.assertListEqual(sorted(G.neighbors(1)), [2])
-		self.assertListEqual(sorted(G.neighbors(2)), [])
-		self.assertListEqual(sorted(G.neighbors(3)), [1, 2])
+		def getNeighbors(u):
+			neighbors = []
+			for v in G.iterNeighbors(u):
+				neighbors.append(v)
+			return sorted(neighbors)
 
-		self.assertListEqual(sorted(G.inNeighbors(0)), [])
-		self.assertListEqual(sorted(G.inNeighbors(1)), [0, 3])
-		self.assertListEqual(sorted(G.inNeighbors(2)), [0, 1, 3])
-		self.assertListEqual(sorted(G.inNeighbors(3)), [])
+		def getInNeighbors(u):
+			inNeighbors = []
+			for v in G.iterInNeighbors(u):
+				inNeighbors.append(v)
+			return sorted(inNeighbors)
+
+		self.assertListEqual(getNeighbors(0), [1, 2])
+		self.assertListEqual(getNeighbors(1), [2])
+		self.assertListEqual(getNeighbors(2), [])
+		self.assertListEqual(getNeighbors(3), [1, 2])
+
+		self.assertListEqual(getInNeighbors(0), [])
+		self.assertListEqual(getInNeighbors(1), [0, 3])
+		self.assertListEqual(getInNeighbors(2), [0, 1, 3])
+		self.assertListEqual(getInNeighbors(3), [])
 
 		# Undirected
 		G = nk.Graph(4, False, False)
@@ -119,10 +131,10 @@ class TestGraph(unittest.TestCase):
 		G.addEdge(3, 2)
 		G.addEdge(1, 2)
 
-		self.assertEqual(sorted(G.neighbors(0)), [1, 2])
-		self.assertEqual(sorted(G.neighbors(1)), [0, 2, 3])
-		self.assertEqual(sorted(G.neighbors(2)), [0, 1, 3])
-		self.assertEqual(sorted(G.neighbors(3)), [1, 2])
+		self.assertEqual(getNeighbors(0), [1, 2])
+		self.assertEqual(getNeighbors(1), [0, 2, 3])
+		self.assertEqual(getNeighbors(2), [0, 1, 3])
+		self.assertEqual(getNeighbors(3), [1, 2])
 
 	def testRandomEdgesReproducibility(self):
 		numSamples = 10

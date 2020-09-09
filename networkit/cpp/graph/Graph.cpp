@@ -867,15 +867,6 @@ edgeweight Graph::totalEdgeWeight() const noexcept {
     }
 }
 
-/** Collections **/
-
-std::vector<node> Graph::neighbors(node u) const {
-    std::vector<node> neighbors;
-    neighbors.reserve(degree(u));
-    this->forNeighborsOf(u, [&](node v) { neighbors.push_back(v); });
-    return neighbors;
-}
-
 bool Graph::checkConsistency() const {
     // check for multi-edges
     std::vector<node> lastSeen(z, none);

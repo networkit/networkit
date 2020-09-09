@@ -428,44 +428,6 @@ cdef class Graph:
 		"""
 		return self._this.weight(u, v)
 
-	def neighbors(self, u):
-		""" Get list of neighbors of `u`.
-
-	 	Parameters:
-	 	-----------
-	 	u : node
-	 		Node.
-
-	 	Returns:
-	 	--------
-	 	list
-	 		List of neighbors of `u`.
-		"""
-		neighborList = []
-		self.forEdgesOf(u, lambda u, v, w, eid : neighborList.append(v))
-		return neighborList
-
-	def inNeighbors(self, u):
-		""" Get list of in-neighbors of `u`.
-
-	 	Parameters:
-	 	-----------
-	 	u : node
-	 		Node.
-
-	 	Returns:
-	 	--------
-	 	list
-	 		List of in-neighbors of `u`.
-		"""
-		if not self.isDirected():
-			from warnings import warn
-			warn("The graph is not directed, returning the neighbors!")
-			return self.neighbors(u)
-		neighborList = []
-		self.forInEdgesOf(u, lambda u, v, w, eid : neighborList.append(v))
-		return neighborList
-
 	def forNodes(self, object callback):
 		""" Experimental node iterator interface
 

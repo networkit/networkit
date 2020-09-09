@@ -1449,18 +1449,6 @@ public:
      */
     edgeweight totalEdgeWeight() const noexcept;
 
-    /* Collections */
-
-    /**
-     * Get list of neighbors of @a u.
-     *
-     * @param u Node.
-     * @return List of neighbors of @a u.
-     *
-     * This method is deprecated and will not be supported in future releases.
-     */
-    std::vector<node> TLX_DEPRECATED(neighbors(node u) const);
-
     /**
      * Get an iterable range over the nodes of the graph.
      *
