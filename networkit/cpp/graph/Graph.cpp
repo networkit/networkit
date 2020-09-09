@@ -706,10 +706,6 @@ void Graph::removeEdge(node u, node v) {
     }
 }
 
-double Graph::density() const {
-    return GraphTools::density(*this);
-}
-
 void Graph::removeAllEdges() {
     parallelForNodes([&](const node u) {
         removePartialOutEdges(unsafe, u);

@@ -1379,13 +1379,6 @@ public:
     count numberOfEdges() const noexcept { return m; }
 
     /**
-     * @return the density of the graph
-     *
-     * This method is deprecated, use GraphTools::density instead.
-     */
-    double TLX_DEPRECATED(density() const);
-
-    /**
      * Return the number of loops {v,v} in the graph.
      * @return The number of loops.
      * @note This involves calculation, so store result if needed multiple

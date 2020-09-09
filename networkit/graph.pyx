@@ -118,18 +118,6 @@ cdef class Graph:
 		"""
 		return self._this.numberOfEdges()
 
-	def density(self):
-		"""
-		Get the density of the graph.
-
-		Returns:
-	 	--------
-		double
-		"""
-		from warnings import warn
-		warn("Graph.density is deprecated, use graphtools.density instead.")
-		return self._this.density()
-
 	def upperNodeIdBound(self):
 		"""
 		Get an upper bound for the node ids in the graph
