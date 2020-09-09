@@ -49,8 +49,7 @@ cdef class Graph:
 		return Graph().setThis(_Graph(self._this))
 
 	def __str__(self):
-		return "NetworKit.Graph(name={0}, n={1}, m={2})".format(self.getName(), self.numberOfNodes(), self.numberOfEdges())
-
+		return "NetworKit.Graph(n={0}, m={1})".format(self.numberOfNodes(), self.numberOfEdges())
 
 	def copyNodes(self):
 		"""
@@ -771,30 +770,6 @@ cdef class Graph:
 		from warnings import warn
 		warn("Graph.toString is deprecated.")
 		return self._this.toString()
-
-	def getName(self):
-		""" Get the name of the graph.
-
-		Returns:
-		--------
-		string
-			The name of the graph.
-		"""
-		from warnings import warn
-		warn("Graph.getName is deprecated.")
-		return pystring(self._this.getName())
-
-	def setName(self, name):
-		""" Set name of graph to `name`.
-
-		Parameters:
-		-----------
-		name : string
-			The name.
-		"""
-		from warnings import warn
-		warn("Graph.setName is deprecated.")
-		self._this.setName(stdstring(name))
 
 	def totalEdgeWeight(self):
 		""" Get the sum of all edge weights.

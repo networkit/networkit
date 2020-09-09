@@ -100,8 +100,6 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		bool_t isWeighted() except +
 		bool_t isDirected() except +
 		string toString() except +
-		string getName() except +
-		void setName(string name) except +
 		edgeweight totalEdgeWeight() except +
 		node randomNode() except +
 		node randomNeighbor(node) except +

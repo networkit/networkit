@@ -39,11 +39,7 @@ Graph::Graph(count n, bool weighted, bool directed)
       outgoing edges, for undirected graphs outEdges stores the adjacency list of
       undirected edges*/
       outEdges(n), inEdgeWeights(weighted && directed ? n : 0), outEdgeWeights(weighted ? n : 0),
-      inEdgeIds(), outEdgeIds() {
-
-    std::stringstream sstm;
-    name = sstm.str();
-}
+      inEdgeIds(), outEdgeIds() {}
 
 Graph::Graph(std::initializer_list<WeightedEdge> edges) : Graph(0, true) {
     using namespace std;
@@ -70,9 +66,6 @@ Graph::Graph(const Graph &G, bool weighted, bool directed)
 
       // let the following be empty for the start, we fill them later
       inEdges(0), outEdges(0), inEdgeWeights(0), outEdgeWeights(0) {
-
-    std::stringstream sstm;
-    name = sstm.str();
 
     if (G.isDirected() == directed) {
         // G.inEdges might be empty (if G is undirected), but

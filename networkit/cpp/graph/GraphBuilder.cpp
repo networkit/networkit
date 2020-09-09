@@ -146,10 +146,6 @@ void GraphBuilder::increaseInWeight(node u, node v, edgeweight ew) {
 
 Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
     Graph G(n, weighted, directed);
-    if (!name.empty()) {
-        G.setName(name);
-    }
-
     assert(G.outEdges.size() == n);
     assert(G.outEdgeWeights.size() == (weighted ? n : 0));
     assert(G.inEdges.size() == (directed ? n : 0));

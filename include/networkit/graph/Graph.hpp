@@ -93,10 +93,6 @@ class Graph final {
     friend class CurveballDetails::CurveballMaterialization;
 
     // graph attributes
-    //!< name of the graph, initially G#ID
-    std::string name;
-
-    // scalars
     //!< current number of nodes
     count n;
     //!< current number of edges
@@ -1069,22 +1065,6 @@ public:
      * this temporarily duplicates the memory.
      */
     void sortEdges();
-
-    /**
-     * Set name of graph to @a name.
-     * @param name The name.
-     *
-     * This method is deprecated and will not be supported in future releases.
-     */
-    void TLX_DEPRECATED(setName(std::string name)) { this->name = name; }
-
-    /*
-     * Returns the name of the graph.
-     * @return The name of the graph.
-     *
-     * This method is deprecated and will not be supported in future releases.
-     */
-    std::string TLX_DEPRECATED(getName() const) { return name; }
 
     /**
      * Set edge count of the graph to edges.

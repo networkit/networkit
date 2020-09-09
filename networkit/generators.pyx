@@ -1124,8 +1124,8 @@ cdef class RmatGenerator(StaticGraphGenerator):
 					if cls.paths["kronfitPath"] is None:
 						raise RuntimeError("call setPaths class method first to configure")
 					# write graph
-					tmpGraphPath = os.path.join(tmpdir, "{0}.edgelist".format(G.getName()))
-					tmpOutputPath = os.path.join(tmpdir, "{0}.kronfit".format(G.getName()))
+					tmpGraphPath = os.path.join(tmpdir, "tmp.edgelist")
+					tmpOutputPath = os.path.join(tmpdir, "tmp.kronfit")
 					graphio.writeGraph(G, tmpGraphPath, graphio.Format.EdgeList, separator="\t", firstNode=1, bothDirections=True)
 					# call kronfit
 					args = [cls.paths["kronfitPath"], "-i:{0}".format(tmpGraphPath), "-gi:{0}".format(str(iterations)), "-o:{}".format(tmpOutputPath)]
