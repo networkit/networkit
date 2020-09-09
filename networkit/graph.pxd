@@ -73,7 +73,6 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		void increaseWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
 		void removeAllEdges() except +
-		void removeEdgesFromIsolatedSet(vector[node] nodes) except +
 		void removeSelfLoops() except +
 		void removeMultiEdges() except +
 		void swapEdge(node s1, node t1, node s2, node t2) except +

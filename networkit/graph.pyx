@@ -390,16 +390,6 @@ cdef class Graph:
 		"""
 		self._this.removeAllEdges()
 
-	def removeEdgesFromIsolatedSet(self, nodes):
-		"""
-			Efficiently removes all the edges adjacent to a set of nodes that is not connected
-			to the rest of the graph. This is meant to optimize the Kadabra algorithm.
-		"""
-		from warnings import warn
-		warn("Graph.removeEdgesFromIsolatedSet is deprecated, use graphtools.removeEdgesFromIsolatedSet instead.")
-		self._this.removeEdgesFromIsolatedSet(nodes)
-		return self
-
 	def removeSelfLoops(self):
 		""" Removes all self-loops from the graph.
 		"""

@@ -725,10 +725,6 @@ void Graph::removeAllEdges() {
     m = 0;
 }
 
-void Graph::removeEdgesFromIsolatedSet(const std::vector<node> &nodesInSet) {
-    GraphTools::removeEdgesFromIsolatedSet(*this, nodesInSet.begin(), nodesInSet.end());
-}
-
 void Graph::removeSelfLoops() {
     parallelForNodes([&](const node u) {
         auto isSelfLoop = [u](const node v) { return u == v; };
