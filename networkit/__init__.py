@@ -98,7 +98,7 @@ except ImportError:
 
 # extension imports
 from .engineering import getLogLevel, setLogLevel, setPrintLocation, none, setSeed, \
-		enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
+		setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
 # local imports into the top namespace
 from .graph import Graph
 from .structures import Partition, Cover
