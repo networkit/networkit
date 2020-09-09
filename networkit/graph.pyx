@@ -228,58 +228,6 @@ cdef class Graph:
 		"""
 		return self._this.weightedDegreeIn(u, countSelfLoopsTwice)
 
-	def maxDegree(self):
-		"""
-		Returns the maximum out-degree of the graph.
-
-		Returns:
-		--------
-		count
-			Maximum out-degree of the graph.
-		"""
-		from warnings import warn
-		warn("Graph.maxDegree is deprecated, use graphtools.maxDegree instead.")
-		return self._this.maxDegree()
-
-	def maxDegreeIn(self):
-		"""
-		Returns the maximum in-degree of the graph.
-
-		Returns:
-		--------
-		count
-			Maximum in-degree of the graph.
-		"""
-		from warnings import warn
-		warn("Graph.maxDegreeIn is deprecated, use graphtools.maxInDegree instead.")
-		return self._this.maxDegreeIn()
-
-	def maxWeightedDegree(self):
-		"""
-		Returns the maximum weighted degree of the graph.
-
-		Returns:
-		--------
-		double
-			Maximum weighted degree of the graph.
-		"""
-		from warnings import warn
-		warn("Graph.maxWeightedDegree is deprecated, use graphtools.maxWeightedDegree instead.")
-		return self._this.maxWeightedDegree()
-
-	def maxWeightedDegreeIn(self):
-		"""
-		Returns the maximum weighted in degree of the graph.
-
-		Returns:
-		--------
-		double
-			Maximum weighted in degree of the graph.
-		"""
-		from warnings import warn
-		warn("Graph.maxWeightedDegreeIn is deprecated, use graphtools.maxWeightedInDegree instead.")
-		return self._this.maxWeightedDegreeIn()
-
 	def isIsolated(self, u):
 		"""
 		If the node `u` is isolated

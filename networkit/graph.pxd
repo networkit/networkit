@@ -61,10 +61,6 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		count degreeOut(node u) except +
 		double weightedDegree(node u, bool_t) except +
 		double weightedDegreeIn(node u, bool_t) except +
-		count maxDegree() except +
-		count maxDegreeIn() except +
-		double maxWeightedDegree() except +
-		double maxWeightedDegreeIn() except +
 		bool_t isIsolated(node u) except +
 		_Graph copyNodes() except +
 		node addNode() except +

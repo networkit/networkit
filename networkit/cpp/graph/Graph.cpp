@@ -424,22 +424,6 @@ void Graph::sortEdges() {
     }
 }
 
-count Graph::maxDegree() const {
-    return GraphTools::maxDegree(*this);
-}
-
-count Graph::maxDegreeIn() const {
-    return GraphTools::maxInDegree(*this);
-}
-
-edgeweight Graph::maxWeightedDegree() const {
-    return GraphTools::maxWeightedDegree(*this);
-}
-
-edgeweight Graph::maxWeightedDegreeIn() const {
-    return GraphTools::maxWeightedInDegree(*this);
-}
-
 edgeweight Graph::computeWeightedDegree(node u, bool inDegree, bool countSelfLoopsTwice) const {
     if (weighted) {
         edgeweight sum = 0.0;

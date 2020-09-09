@@ -1201,24 +1201,6 @@ public:
     count degreeOut(node v) const { return outEdges[v].size(); }
 
     /**
-     * Returns the maximum out-degree of the graph.
-     *
-     * @return The maximum out-degree of the graph.
-     *
-     * This method is deprecated, use GraphTools::maxDegree instead.
-     */
-    count TLX_DEPRECATED(maxDegree() const);
-
-    /**
-     * Returns the maximum in-degree of the graph.
-     *
-     * @return The maximum in-degree of the graph.
-     *
-     * This method is deprecated, use GraphTools::maxWeightedDegree instead.
-     */
-    count TLX_DEPRECATED(maxDegreeIn() const);
-
-    /**
      * Check whether @a v is isolated, i.e. degree is 0.
      * @param v Node.
      * @return @c true if the node is isolated (= degree is 0)
@@ -1238,28 +1220,6 @@ public:
      * @return Weighted degree of @a u.
      */
     edgeweight weightedDegree(node u, bool countSelfLoopsTwice = false) const;
-
-    /**
-     * Returns the maximum weighted degree of the graph.
-     *
-     * @return Maximum weighted degree of the graph.
-     * @note For directed graphs this is the sum of weights of all outgoing
-     * edges.
-     *
-     * This method is deprecated, use GraphTools::maxWeightedDegree instead.
-     */
-    edgeweight TLX_DEPRECATED(maxWeightedDegree() const);
-
-    /**
-     * Returns the maximum weighted in degree of the graph.
-     *
-     * @return Maximum weighted in degree of the graph.
-     * @note For directed graphs this is the sum of weights of all in-going
-     * edges.
-     *
-     * This method is deprecated, use GraphTools::maxWeightedDegreeIn instead.
-     */
-    edgeweight TLX_DEPRECATED(maxWeightedDegreeIn() const);
 
     /**
      * Returns the weighted in-degree of @a u.
