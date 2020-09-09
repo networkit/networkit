@@ -597,43 +597,6 @@ cdef class Graph:
 		finally:
 			del wrapper
 
-	def toUndirected(self):
-		"""
-		Return an undirected version of this graph.
-
-	 	Returns:
-	 	--------
-			undirected graph.
-		"""
-		from warnings import warn
-		warn("Graph.toUndirected is deprecated, use graphtools.toUndirected instead.")
-		return Graph().setThis(self._this.toUndirected())
-
-	def toUnweighted(self):
-		"""
-		Return an unweighted version of this graph.
-
-	 	Returns:
-	 	--------
-		networkit.Graph
-		"""
-		from warnings import warn
-		warn("Graph.toUnweighted is deprecated, use graphtools.toUnweighted instead.")
-		return Graph().setThis(self._this.toUnweighted())
-
-	def transpose(self):
-		"""
-		Return the transpose of this (directed) graph.
-
-		Returns:
-		--------
-		networkit.Graph
-			Directed graph.
-		"""
-		from warnings import warn
-		warn("Graph.transpose is deprecated, use graphtools.transpose instead.")
-		return Graph().setThis(self._this.transpose())
-
 	def isWeighted(self):
 		"""
 		Returns:

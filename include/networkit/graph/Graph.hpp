@@ -1588,35 +1588,6 @@ public:
         return {outEdges[u][i], outEdgeIds[u][i]};
     }
 
-    /* Derivative Graphs */
-
-    /**
-     * Return an undirected version of this graph.
-     *
-     * @return undirected graph.
-     *
-     * This method is deprecated, use GraphTools::toUndirected instead.
-     */
-    Graph TLX_DEPRECATED(toUndirected() const);
-
-    /**
-     * Return an unweighted version of this graph.
-     *
-     * @return unweighted graph.
-     *
-     * This method is deprecated, use GraphTools::toUnweighted instead.
-     */
-    Graph TLX_DEPRECATED(toUnweighted() const);
-
-    /**
-     * Return the transpose of this graph. The graph must be directed.
-     *
-     * @return transpose of the graph.
-     *
-     * This method is deprecated, use GraphTools::transpose instead.
-     */
-    Graph TLX_DEPRECATED(transpose() const);
-
     /* NODE ITERATORS */
 
     /**

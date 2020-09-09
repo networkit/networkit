@@ -92,9 +92,6 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		bool_t isDirected() except +
 		edgeweight totalEdgeWeight() except +
 		count numberOfSelfLoops() except +
-		_Graph toUndirected() except +
-		_Graph toUnweighted() except +
-		_Graph transpose() except +
 		void BFSfromNode "BFSfrom"[Callback] (node r, Callback c) except +
 		void BFSfrom[Callback](vector[node] startNodes, Callback c) except +
 		void BFSEdgesFrom[Callback](node r, Callback c) except +

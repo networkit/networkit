@@ -899,21 +899,6 @@ std::vector<node> Graph::neighbors(node u) const {
     return neighbors;
 }
 
-Graph Graph::transpose() const {
-    WARN("Graph::transpose is deprecated, use GraphTools::transpose instead.");
-    return GraphTools::transpose(*this);
-}
-
-Graph Graph::toUndirected() const {
-    WARN("Graph::toUndirected is deprecated, use GraphTools::toUndirected instead.");
-    return GraphTools::toUndirected(*this);
-}
-
-Graph Graph::toUnweighted() const {
-    WARN("Graph::toUnweighted is deprecated, use GraphTools::toUnweighted instead.");
-    return GraphTools::toUnweighted(*this);
-}
-
 bool Graph::checkConsistency() const {
     // check for multi-edges
     std::vector<node> lastSeen(z, none);
