@@ -13,8 +13,6 @@
 #include <networkit/Globals.hpp>
 #include <networkit/graph/Graph.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /*
