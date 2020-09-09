@@ -468,12 +468,6 @@ edgeweight Graph::computeWeightedDegree(node u, bool inDegree, bool countSelfLoo
     return static_cast<edgeweight>(sum);
 }
 
-std::string Graph::toString() const {
-    WARN("Graph::toString is deprecated and will not be supported in future releases.");
-    std::stringstream strm;
-    return strm.str();
-}
-
 /** COPYING **/
 
 Graph Graph::copyNodes() const {

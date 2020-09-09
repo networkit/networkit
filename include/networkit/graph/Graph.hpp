@@ -1086,14 +1086,6 @@ public:
      */
     void setNumberOfSelfLoops(Unsafe, count loops) { storedNumberOfSelfLoops = loops; }
 
-    /**
-     * Returns a string representation of the graph.
-     * @return A string representation.
-     *
-     * This method is deprecated and will not be supported in future releases.
-     */
-    std::string TLX_DEPRECATED(toString() const);
-
     /* COPYING */
 
     /*

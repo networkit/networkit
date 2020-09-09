@@ -99,7 +99,6 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		void forInEdgesOf[Callback](node u, Callback c) except +
 		bool_t isWeighted() except +
 		bool_t isDirected() except +
-		string toString() except +
 		edgeweight totalEdgeWeight() except +
 		node randomNode() except +
 		node randomNeighbor(node) except +

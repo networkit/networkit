@@ -759,18 +759,6 @@ cdef class Graph:
 	def isDirected(self):
 		return self._this.isDirected()
 
-	def toString(self):
-		""" Get a string representation of the graph.
-
-		Returns:
-		--------
-		string
-			A string representation of the graph.
-		"""
-		from warnings import warn
-		warn("Graph.toString is deprecated.")
-		return self._this.toString()
-
 	def totalEdgeWeight(self):
 		""" Get the sum of all edge weights.
 
