@@ -1452,14 +1452,6 @@ public:
     /* Collections */
 
     /**
-     * Get list of edges as node pairs.
-     * @return List of edges as node pairs.
-     *
-     * This method is deprecated and will not be supported in future releases.
-     */
-    std::vector<std::pair<node, node>> TLX_DEPRECATED(edges() const);
-
-    /**
      * Get list of neighbors of @a u.
      *
      * @param u Node.

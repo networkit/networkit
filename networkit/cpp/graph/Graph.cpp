@@ -869,14 +869,6 @@ edgeweight Graph::totalEdgeWeight() const noexcept {
 
 /** Collections **/
 
-std::vector<std::pair<node, node>> Graph::edges() const {
-    WARN("Graph::edges is deprecated and will not be supported in future releases.");
-    std::vector<std::pair<node, node>> edges;
-    edges.reserve(numberOfEdges());
-    this->forEdges([&](node u, node v) { edges.emplace_back(u, v); });
-    return edges;
-}
-
 std::vector<node> Graph::neighbors(node u) const {
     std::vector<node> neighbors;
     neighbors.reserve(degree(u));

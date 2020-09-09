@@ -428,18 +428,6 @@ cdef class Graph:
 		"""
 		return self._this.weight(u, v)
 
-	def edges(self):
-		""" Get list of edges as node pairs.
-
-	 	Returns:
-	 	--------
-	 	list
-	 		List of edges as node pairs.
-		"""
-		from warnings import warn
-		warn("Graph.edges is deprecated.")
-		return self._this.edges()
-
 	def neighbors(self, u):
 		""" Get list of neighbors of `u`.
 
