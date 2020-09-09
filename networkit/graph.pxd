@@ -92,11 +92,6 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		bool_t isDirected() except +
 		edgeweight totalEdgeWeight() except +
 		count numberOfSelfLoops() except +
-		void BFSfromNode "BFSfrom"[Callback] (node r, Callback c) except +
-		void BFSfrom[Callback](vector[node] startNodes, Callback c) except +
-		void BFSEdgesFrom[Callback](node r, Callback c) except +
-		void DFSfrom[Callback](node r, Callback c) except +
-		void DFSEdgesFrom[Callback](node r, Callback c) except +
 		bool_t checkConsistency() except +
 		_NodeRange nodeRange() except +
 		_EdgeRange edgeRange() except +
