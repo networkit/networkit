@@ -1173,27 +1173,6 @@ public:
 
     void restoreNode(node v);
 
-    // SUBGRAPHS
-
-    /**
-     * Returns an induced subgraph of this graph (including potential edge weights/directions)
-     *
-     * There a two relevant sets of nodes:
-     *  - Nodes are such passed as arguments
-     *  - Neighbors are empty by default.
-     *      If includeOutNeighbors is set, it includes all out neighbors of Nodes
-     *      If includeInNeighbors is set, it includes all in neighbors of Nodes (relevant only for
-     * directed graphs)
-     *
-     * The subgraph contains all nodes in Nodes + Neighbors and all edge which have one end point in
-     * Nodes and the other in Nodes or Neighbors.
-     *
-     * This method is deprecated, use GraphTools::subgraphFromNodes instead.
-     */
-    Graph TLX_DEPRECATED(subgraphFromNodes(const std::unordered_set<node> &nodes,
-                                           bool includeOutNeighbors = false,
-                                           bool includeInNeighbors = false) const);
-
     /** NODE PROPERTIES **/
 
     /**

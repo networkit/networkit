@@ -112,7 +112,6 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		void DFSfrom[Callback](node r, Callback c) except +
 		void DFSEdgesFrom[Callback](node r, Callback c) except +
 		bool_t checkConsistency() except +
-		_Graph subgraphFromNodes(unordered_set[node] nodes, bool_t includeOutNeighbors, bool_t includeInNeighbors) except +
 		_NodeRange nodeRange() except +
 		_EdgeRange edgeRange() except +
 		_EdgeWeightRange edgeWeightRange() except +

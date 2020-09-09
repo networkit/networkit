@@ -981,12 +981,4 @@ bool Graph::checkConsistency() const {
     return noMultiEdges;
 }
 
-// SUBGRAPHS
-
-Graph Graph::subgraphFromNodes(const std::unordered_set<node> &nodes, bool includeOutNeighbors,
-                               bool includeInNeighbors) const {
-    WARN("Graph::subgraphFromNodes is deprecated, use GraphTools::subgraphFromNodes instead.");
-    return GraphTools::subgraphFromNodes(*this, nodes, includeOutNeighbors, includeInNeighbors);
-}
-
 } /* namespace NetworKit */
