@@ -27,21 +27,21 @@ class TopHarmonicCloseness final : public Algorithm {
 public:
     /**
      * Finds the top k nodes with highest harmonic closeness centrality faster
-     * than computing it for all nodes. The implementation is based on "Computing
-     * Top-k Centrality Faster in Unweighted Graphs", Bergamini et al., ALENEX16.
-     * The algorithms are based on two heuristics. We recommend to use
-     * useNBbound = false for complex networks (or networks with small diameter)
-     * and useNBbound = true for street networks (or networks with large
+     * than computing it for all nodes. The implementation is based on
+     * "Computing Top-k Centrality Faster in Unweighted Graphs", Bergamini et
+     * al., ALENEX16. The algorithm also works with weighted graphs but only
+     * with the NBcut variation. We recommend to use useNBbound = false for
+     * (weighted) complex networks (or networks with small diameter) and
+     * useNBbound = true for street networks (or networks with large
      * diameters). Notice that the worst case running time of the algorithm is
      * O(nm), where n is the number of nodes and m is the number of edges.
-     * However, for most real-world networks the empirical running time is O(m).
+     * However, for most real-world networks the empirical running time is
+     * O(m).
      *
-     * @param G An unweighted graph.
-     * @param k Number of nodes with highest harmonic closeness that have to be
-     * found. For example, k = 10, the top 10 nodes with highest harmonic
-     * closeness will be computed.
-     * @param useNBbound If true, BFSbound is re-computed at each iteration. If
-     * false, BFScut is used
+     * @param G The input graph. If useNBbound is set to true, edge weights will be ignored.
+     * @param k Number of nodes with highest harmonic closeness that have to be found.
+     * For example, k = 10, the top 10 nodes with highest harmonic closeness will be computed.
+     * @param useNBbound If true, the NBbound variation will be used, otherwise NBcut.
      */
     explicit TopHarmonicCloseness(const Graph &G, count k = 1, bool useNBbound = false);
 
@@ -124,10 +124,10 @@ private:
     tlx::d_ary_addressable_int_heap<node, 2, Less<double>> topKNodesPQ;
     std::vector<node> trail;
 
-	// For weighted graphs
-	std::vector<tlx::d_ary_addressable_int_heap<node, 2, Less<edgeweight>>> dijkstraHeaps;
-	std::vector<std::vector<edgeweight>> distanceGlobal;
-	edgeweight minEdgeWeight;
+    // For weighted graphs
+    std::vector<tlx::d_ary_addressable_int_heap<node, 2, Less<edgeweight>>> dijkstraHeaps;
+    std::vector<std::vector<edgeweight>> distanceGlobal;
+    edgeweight minEdgeWeight;
 
     omp_lock_t lock;
 
