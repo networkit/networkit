@@ -87,6 +87,25 @@ class TestSelfLoops(unittest.TestCase):
 		testTopKRanking(False)
 		testTopKRanking(True)
 
+	def testCentralityTopHarmonicCloseness(self):
+		CC = nk.centrality.HarmonicCloseness(self.L, False)
+		CC.run()
+		scores = CC.scores()
+		tol = 1e-6
+		k = 5
+
+		for useNBbound in [True, False]:
+			thc = nk.centrality.TopHarmonicCloseness(self.L, k, useNBbound).run()
+			self.assertEqual(len(thc.topkNodesList()), k)
+			self.assertEqual(len(thc.topkScoresList()), k)
+			self.assertGreaterEqual(len(thc.topkNodesList(True)), k)
+			self.assertGreaterEqual(len(thc.topkScoresList(True)), k)
+
+			for node, score in zip(thc.topkNodesList(True), thc.topkScoresList(True)):
+				self.assertAlmostEqual(score, scores[node], delta=tol)
+
+			for score_thc, score in zip(thc.topkScoresList(True), sorted(scores, reverse=True)):
+				self.assertAlmostEqual(score_thc, score, delta=tol)
 
 	def testCentralityCoreDecomposition(self):
 		CL = nk.centrality.CoreDecomposition(self.L)
