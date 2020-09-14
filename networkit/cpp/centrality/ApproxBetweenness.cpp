@@ -100,7 +100,8 @@ void ApproxBetweenness::run() {
 }
 
 
-count ApproxBetweenness::numberOfSamples() {
+count ApproxBetweenness::numberOfSamples() const {
+    assureFinished();
     INFO("Estimated number of samples", r);
     return r;
 }

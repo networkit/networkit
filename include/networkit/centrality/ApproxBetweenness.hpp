@@ -48,7 +48,7 @@ public:
     /**
      * @return number of samples taken in last run
      */
-    count numberOfSamples();
+    count numberOfSamples() const;
 
 
 private:
