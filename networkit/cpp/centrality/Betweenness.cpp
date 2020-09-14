@@ -109,10 +109,6 @@ void Betweenness::run() {
         count n = G.numberOfNodes();
         count pairs = (n-2) * (n-1);
         count edges =  n    * (n-1);
-        if (!G.isDirected()) {
-            pairs = pairs / 2;
-            edges = edges / 2;
-        }
         G.parallelForNodes([&](node u){
             scoreData[u] = scoreData[u] / pairs;
         });
