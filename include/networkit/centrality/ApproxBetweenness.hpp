@@ -1,5 +1,5 @@
 /*
- * ApproxBetweenness.h
+ * ApproxBetweenness.hpp
  *
  *  Created on: 09.04.2014
  *      Author: cls
