@@ -90,9 +90,11 @@ void Betweenness::run() {
         G.parallelForNodes([&](node u){
             scoreData[u] = scoreData[u] / pairs;
         });
+
         if (computeEdgeCentrality) {
-            for (count edge = 0; edge < edgeScoreData.size(); edge++) {
-                edgeScoreData[edge] =  edgeScoreData[edge] / edges;
+#pragma omp parallel for
+            for (omp_index i = 0; i < static_cast<omp_index>(edgeScoreData.size()); ++i) {
+                edgeScoreData[i] =  edgeScoreData[i] / static_cast<double>(edges);
             }
         }
     }
