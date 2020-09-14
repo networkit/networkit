@@ -32,9 +32,6 @@ void Betweenness::run() {
 
     // thread-local scores for efficient parallelism
     count maxThreads = omp_get_max_threads();
-    std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
-    DEBUG("score per thread: ", scorePerThread.size());
-    DEBUG("G.upperEdgeIdBound(): ", G.upperEdgeIdBound());
     std::vector<std::vector<double> > edgeScorePerThread;
     if (computeEdgeCentrality) {
         edgeScorePerThread.resize(maxThreads, std::vector<double>(G.upperEdgeIdBound()));
@@ -82,21 +79,15 @@ void Betweenness::run() {
 
 
             }
-            if (t != s) {
-                scorePerThread[omp_get_thread_num()][t] += dependency[t];
-            }
+            if (t != s)
+#pragma omp atomic
+                scoreData[t] += dependency[t];
         }
     };
     handler.assureRunning();
     G.balancedParallelForNodes(computeDependencies);
     handler.assureRunning();
-    DEBUG("adding thread-local scores");
-    // add up all thread-local values
-    for (const auto &local : scorePerThread) {
-        G.parallelForNodes([&](node v){
-            scoreData[v] += local[v];
-        });
-    }
+
     if (computeEdgeCentrality) {
         for (const auto &local : edgeScorePerThread) {
             for (count i = 0; i < local.size(); i++) {
