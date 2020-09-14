@@ -85,14 +85,20 @@ TEST_F(CentralityGTest, testBetweennessCentrality) {
     Betweenness centrality(G);
     centrality.run();
     std::vector<double> bc = centrality.scores();
+    std::vector<double> result = {0., 0., 15., 3., 3., 1.};
 
     const double tol = 1e-3;
-    EXPECT_NEAR(0.0, bc[0], tol);
-    EXPECT_NEAR(0.0, bc[1], tol);
-    EXPECT_NEAR(15.0, bc[2], tol);
-    EXPECT_NEAR(3.0, bc[3], tol);
-    EXPECT_NEAR(3.0, bc[4], tol);
-    EXPECT_NEAR(1.0, bc[5], tol);
+    G.forNodes([&](node u) {
+        EXPECT_NEAR(result[u], bc[u], tol);
+    });
+
+    Betweenness centralityNorm(G, true);
+    centralityNorm.run();
+    bc = centralityNorm.scores();
+    const double pairs = (n - 1) * (n - 2);
+    G.forNodes([&](node u) {
+        EXPECT_NEAR(result[u] / pairs, bc[u], tol);
+    });
 }
 
 TEST_F(CentralityGTest, testBetweenness2Centrality) {
