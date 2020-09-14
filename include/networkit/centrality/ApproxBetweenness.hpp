@@ -53,8 +53,8 @@ public:
 
 private:
 
-    double epsilon;
-    double delta;
+    const double epsilon;
+    const double delta;
     count r; // number of samples taken in last run
     double universalConstant;
 };
