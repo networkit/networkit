@@ -113,7 +113,7 @@ void Betweenness::run() {
             pairs = pairs / 2;
             edges = edges / 2;
         }
-        G.forNodes([&](node u){
+        G.parallelForNodes([&](node u){
             scoreData[u] = scoreData[u] / pairs;
         });
         if (computeEdgeCentrality) {
