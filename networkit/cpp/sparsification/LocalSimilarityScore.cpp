@@ -35,7 +35,7 @@ void LocalSimilarityScore::run() {
         std::vector<AttributizedEdge<double>> neighbors;
         neighbors.reserve(G->degree(i));
         G->forNeighborsOf(i, [&](node, node j, edgeid eid) {
-            double sim = (*triangles)[eid] * 1.0 / (G->degree(i) + G->degree(j) - (*triangles)[eid]);
+            double sim = static_cast<double>((*triangles)[eid]) * 1.0 / static_cast<double>(G->degree(i) + G->degree(j) - (*triangles)[eid]);
             neighbors.emplace_back(i, j, eid, sim);
         });
         std::sort(neighbors.begin(), neighbors.end());

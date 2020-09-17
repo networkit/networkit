@@ -96,7 +96,7 @@ double ClusteringCoefficient::sequentialAvgLocal(const Graph &G) {
     G.forNodes([&](node u) {
         count d = G.degree(u);
         if (d > 1) {
-            coefficient += triangleCount[u] * 2.0 / (d * (d - 1));
+            coefficient += static_cast<double>(triangleCount[u]) * 2.0 / static_cast<double>(d * (d - 1));
             size++;
         }
     });

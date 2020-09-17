@@ -61,6 +61,7 @@ WarningsAsErrors:  >
     bugprone-swapped-arguments,
     bugprone-unused-return-value,
     bugprone-use-after-move,
+    cppcoreguidelines-narrowing-conversions,
     bugprone-virtual-near-miss,
     modernize-deprecated-headers,
     modernize-use-emplace,

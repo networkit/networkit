@@ -58,7 +58,7 @@ void MultiscaleScore::run() {
  * edges connected to a node of degree k are uniformly distributed.
  */
 double MultiscaleScore::getProbability(count degree, edgeweight normalizedWeight) {
-    return 1 - pow(1 - normalizedWeight, degree - 1);
+    return 1.0 - pow(1.0 - normalizedWeight, static_cast<double>(degree) - 1.0);
 }
 
 double MultiscaleScore::score(node, node) {

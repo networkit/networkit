@@ -86,7 +86,7 @@ inline size_t varIntEncode(uint64_t value, uint8_t *buffer) noexcept {
 
     } else {
         const auto bits = 64 - tlx::clz(value);
-        dataBytes = (bits - 1) / 7;
+        dataBytes = static_cast<int>((bits - 1) / 7);
 
         // number of bytes is encode by the number of trailing zeros
         buffer[0] = static_cast<uint8_t>(1 << dataBytes);
@@ -111,7 +111,7 @@ inline size_t varIntDecode(const uint8_t *data, uint64_t &value) noexcept {
     uint64_t decoded = 0;
 
     if (data[0]) {
-        n = tlx::ffs(data[0]) - 1;
+        n = static_cast<int>(tlx::ffs(data[0]) - 1);
         decoded = data[0] >> (n + 1);
         bitsRecovered = 7 - n;
     }
