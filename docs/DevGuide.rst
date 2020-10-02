@@ -160,7 +160,7 @@ Report bugs
 -----------
 
 Please report any bugs on the `issues page <https://github.com/networkit/networkit/issues>`__ of the official NetworKit repository on GitHub.
-In very urgent cases it might also make sense to write on the `mailing list <https://lists.uni-koeln.de/mailman/listinfo/networkit>`__.
+In very urgent cases it might also make sense to write on the `mailing list <https://sympa.cms.hu-berlin.de/sympa/subscribe/networkit>`__.
 Please provide a minimal example so that others can reproduce that bug.
 
 Tags
@@ -347,7 +347,7 @@ features or algorithms, make sure to adapt to the existing class
 hierarchies. The least thing to do is to inherit from the ``Algorithm``
 base class. Changes to existing interfaces or suggestions for new
 interfaces should be discussed through the `mailing
-list <https://lists.uni-koeln.de/mailman/listinfo/networkit>`__.
+list <https://sympa.cms.hu-berlin.de/sympa/subscribe/networkit>`__.
 
 Exposing C++ Code to Python
 ---------------------------
@@ -489,8 +489,8 @@ Contact
 -------
 
 To discuss important changes to NetworKit, use the `e-mail
-list <https://lists.uni-koeln.de/mailman/listinfo/networkit>`__
-(``networkit@ira.uka.de``).
+list <https://sympa.cms.hu-berlin.de/sympa/subscribe/networkit>`__
+(``networkit@lists.hu-berlin.de``).
 
 We also appreciate new issues or pull requests on the GitHub repository.
 
