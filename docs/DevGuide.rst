@@ -147,12 +147,42 @@ We want to ensure that code across NetworKit is easy to understand for existing 
 -  Document classes, methods and attributes in Doxygen style.
 -  Use the ``count`` and ``index`` integer types for non-negative
    integer quantities and indices.
+-  All member variables should be pointers and not references.
 -  In most cases, objects are passed by reference. New objects are
-   stack-allocated and returned by value. Avoid pointers and ``new``
+   stack-allocated and returned by value. Avoid ``new``
    where possible.
 -  Use the ``override`` keyword to indicate that a method overrides a
    virtual method in the superclass.
+-  A class should be declared ``final`` unless it is a superclass.
+-  ``virtual`` methods should only be declared in superclasses.
 -  In Python, indent using tabs, not spaces.
+
+In order to maintain the same standard of code across the entire NetworKit code base, some coding standards are enforced. However, there is some automation to help developers with this. Below is a list of these standards and instructions on how to use the available automation tools that ensure your code adheres to them.
+
+-  ``CppClangFormat`` applies clang-format to all files that contain the
+   string ``networkit-format``.
+    After adding a new file to the code base, subscribe the file to ``networkit-format`` by adding the string "networkit-format" to the file after the include guards as is shown below.
+    ::
+
+        /*
+        * GlobalCurveballImpl.hpp
+        ...
+        */
+        // networkit-format
+
+-  ``CppIndentation`` checks that all C++ code is indented with spaces
+   and not tabs.
+-  ``CppIncludeGuards`` ensures that the header files contain an include guard and
+   that it follows the following naming convention: ``NETWORKIT_MODULENAME_HEADERFILE_HPP_``.
+
+The executable file ``check_code.sh`` in NetworKit's root directory carries out all checks in read-only mode and reports if errors are found. Running ``./check_code.sh -w`` will fix these errors. Run this script before commiting your files to make sure your changes are in complaince with the guidelines. The script is executed during CI and will cause your pull request to fail if your code does not conform to the style guide.
+
+On top of the aforementioned mentioned points concerning style, the NetworKit C++ code base also complies to a selection of ``clang-tidy`` static-code analysis checks.
+New code must pass these tests before being merged into the development branch. The list of checks can be found in the ``.clang-tidy`` file.
+In order to run the ``clang-tidy`` checks while building NetworKit, set the ``CMake`` flag ``-NETWORKIT_CLANG_TIDY`` to ``ON`` in addition to the other compile flags, e.g.
+::
+
+    cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_WARNINGS_AS_ERRORS=ON -DNETWORKIT_CLANG_TIDY=ON ..
 
 In a nutshell, new developers should familiarise themselves with the existing code base and adapt the existing style in the C++ as well as Python code base when contributing to NetworKit. Always ensure your code is easy to understand and properly documented.
 
