@@ -29,6 +29,9 @@ package:
 - A modern C++ compiler, e.g.: [g++] (&gt;= 4.8) or [clang++] (&gt;= 3.7)
 - OpenMP for parallelism (usually ships with the compiler)
 - Python3 (3.5 or higher is supported)
+  - Development libraries for Python3. The package name depends on your distribution. Examples: 
+    - Debian/Ubuntu: `apt-get install python3-dev`
+    - RHEL/CentOS: `dnf install python3-devel`
 - [Pip]
 - [CMake] version 3.5 or higher (e.g., `pip3 install cmake`)
 - Build system: [Make] or [Ninja]
