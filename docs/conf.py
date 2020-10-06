@@ -136,6 +136,7 @@ html_theme_options = {
     'navbar_sidebarrel': False,
     'bootstrap_version': "3",
     'navbar_fixed_top': "false",
+    'globaltoc_depth': 2,
     'navbar_pagenav': False,
     'navbar_links': [ 
       ('Get Started', 'https://networkit.github.io/get_started.html', True),
@@ -155,14 +156,14 @@ exhale_args = {
     "rootFileTitle":         "NetworKit C++ Documentation",
     "doxygenStripFromPath":  "..",
     "kindsWithContentsDirectives": ["file", "namespace", "dir"],
-    "unabridgedOrphanKinds": {"file", "dir"},
+    "unabridgedOrphanKinds": {"file"},
     "createTreeView":        True,
     "treeViewIsBootstrap":   True,
     "treeViewBootstrapUseBadgeTags": False,
     "treeViewBootstrapExpandIcon": "glyphicon glyphicon-chevron-right",
     "treeViewBootstrapLevels": 3,
     "exhaleExecutesDoxygen": True,
-    "exhaleDoxygenStdin":    "INPUT = ../include/networkit"
+    "exhaleDoxygenStdin": "INPUT = ../include/networkit"
 }
 
 # Add any paths that contain custom themes here, relative to this directory.

@@ -1,7 +1,11 @@
+====================
 Python Documentation
 ====================
 
 .. automodule:: networkit
+
+Modules
+------------------
 
 .. toctree::
    :maxdepth: 4
