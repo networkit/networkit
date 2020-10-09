@@ -353,23 +353,37 @@ Exposing C++ Code to Python
 ---------------------------
 
 Assuming the unit tests for the new feature you implemented are correct
-and successful, you need to make your features available to Python in
+and successful, you need to make your feature available to Python in
 order to use it. NetworKit uses Cython to bridge C++ and Python. All of
-this bridge code is contained in the Cython code file
-``src/python/_Networkit.pyx``. The content is automatically translated
-into C++ and then compiled to a Python extension module.
+this bridge code is contained in the ``networkit/`` directory. The Cython
+files in this directory correspond to the C++ modules. Files with a ``.pxd``
+extension declare C++ data types, functions and variables that are imported
+by other files. Therefore, if the new code does not introduce new C++ types
+or functions that are needed elsewhere, the code should only be added to the
+correct ``.pyx`` file. The content is automatically translated into C++ and
+then compiled to a Python extension module.
 
 Cython syntax is a superset of Python that knows about static type
 declarations and other things from the C/C++ world. The best way to
 getting used to it is working on examples. Take the most common case of
 exposing a C++ class as a Python class. Care for the following example
-that exposes the class ``NetworKit::Dijkstra``:
+that exposes the class ``NetworKit::Dijkstra`` in ``distance.pyx``:
 
 ::
 
-        cdef extern from "cpp/graph/Dijkstra.h":
+        [...]
+        from .base cimport _Algorithm, Algorithm
+        from .graph cimport _Graph, Graph
+        [...]
+
+In order to inherit from ``Algorithm`` and use the ``Graph`` data structure,
+we must import the C++ and Python types like is done above.
+
+::
+
+        cdef extern from <networkit/distance/Dijkstra.hpp>:
             cdef cppclass _Dijkstra "NetworKit::Dijkstra"(_SSSP):
-                _Dijkstra(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
+                _Dijkstra(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
 
 The code above exposes the C++ class definition to Cython - but not yet
 to Python. First of all, Cython needs to know which C++ declarations to
@@ -386,9 +400,9 @@ declarations match the declarations from the referenced header file.
 
 ::
 
-        cdef extern from "cpp/graph/SSSP.h":
+        cdef extern from <networkit/distance/_SSSP.hpp>:
             cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
-                _SSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
+                _SSSP(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
                 vector[edgeweight] getDistances(bool moveOut) except +
                 [...]
 
@@ -463,8 +477,8 @@ The docstring between the triple quotation marks can be accessed through
 Python's ``help(...)`` function and are the main documentation of
 NetworKit. Always provide at least a short and precise docstring so the
 user can get in idea of the functionality of the class. For C++ types
-available to Python and further examples, see through the
-``_NetworKit.pyx``-file. The whole process has certainly some
+available to Python and further examples, see through the various
+Cython files. The whole process has certainly some
 intricacies, e.g. some tricks are needed to avoid memory waste when
 passing around large objects such as graphs. When in doubt, look at
 examples of similar classes already exposed. Listen to the Cython
