@@ -598,17 +598,19 @@ if (NOT SPHINX_EXECUTABLE)
 
 else()
 	message(STATUS "Found sphinx-build: ${SPHINX_EXECUTABLE}")
-	add_custom_target(general_docs
-			COMMAND rm -rf htmldocs
-			COMMAND ${SPHINX_EXECUTABLE} ${CMAKE_SOURCE_DIR}/docs htmldocs)
 
 	add_custom_target(prepare_docs
 			COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/docs/input
 			COMMAND cp -r ${CMAKE_SOURCE_DIR}/input/* ${CMAKE_SOURCE_DIR}/docs/input
 			COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/docs/notebooks
-            COMMAND cp -r ${CMAKE_SOURCE_DIR}/notebooks/* ${CMAKE_SOURCE_DIR}/docs/notebooks)
+			COMMAND cp -r ${CMAKE_SOURCE_DIR}/notebooks/* ${CMAKE_SOURCE_DIR}/docs/notebooks)
 
-	add_custom_target(docs DEPENDS prepare_docs general_docs)
+	add_custom_target(general_docs
+			COMMAND rm -rf htmldocs
+			COMMAND ${SPHINX_EXECUTABLE} ${CMAKE_SOURCE_DIR}/docs htmldocs
+			DEPENDS prepare_docs)
+
+	add_custom_target(docs DEPENDS general_docs)
 
 	add_custom_command(TARGET docs
 		POST_BUILD
