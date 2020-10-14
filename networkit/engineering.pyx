@@ -84,8 +84,8 @@ def setSeed(uint64_t seed, bool_t useThreadId):
 
 	Note that there is a separate random number generator per thread.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	seed : uint64_t
 		The seed
 	useThreadId : bool

@@ -31,8 +31,8 @@ cdef class EdmondsKarp:
 	"""
 	The EdmondsKarp class implements the maximum flow algorithm by Edmonds and Karp.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	graph : networkit.Graph
 		The graph
 	source : node
@@ -60,10 +60,10 @@ cdef class EdmondsKarp:
 
 	def getMaxFlow(self):
 		"""
-		Returns the value of the maximum flow from source to sink.
+		Returns: the value of the maximum flow from source to sink.
 
-		Returns
-		-------
+		Returns:
+		--------
 		edgeweight
 			The maximum flow value
 		"""
@@ -71,10 +71,10 @@ cdef class EdmondsKarp:
 
 	def getSourceSet(self):
 		"""
-		Returns the set of the nodes on the source side of the flow/minimum cut.
+		Returns: the set of the nodes on the source side of the flow/minimum cut.
 
-		Returns
-		-------
+		Returns:
+		--------
 		list
 			The set of nodes that form the (smallest) source side of the flow/minimum cut.
 		"""
@@ -85,15 +85,15 @@ cdef class EdmondsKarp:
 		Get the flow value between two nodes u and v or an edge identified by the edge id u.
 		Warning: The variant with two edge ids is linear in the degree of u.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		u : node or edgeid
 			The first node incident to the edge or the edge id
 		v : node
 			The second node incident to the edge (optional if edge id is specified)
 
-		Returns
-		-------
+		Returns:
+		--------
 		edgeweight
 			The flow on the specified edge
 		"""
@@ -106,8 +106,8 @@ cdef class EdmondsKarp:
 		"""
 		Return a copy of the flow values of all edges.
 
-		Returns
-		-------
+		Returns:
+		--------
 		list
 			The flow values of all edges indexed by edge id
 		"""

@@ -35,8 +35,8 @@ cdef class GlobalCurveball(Algorithm):
 	GlobalCurveball is typically faster and exhibits a smaller memory
 	footprint.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 
 	G : networkit.Graph
 		The graph to be randomized. For a given degree sequence, e.g.
@@ -59,8 +59,8 @@ cdef class GlobalCurveball(Algorithm):
 		Global Curveball. It's more efficient than manually invoking
 		the algorithm.
 
-	Warning
-	-------
+	Warning:
+	--------
 	For directed graphs at least one of allowSelfLoops or
 	degreePreservingShufflePreprocessing should be set; for more details
 	refer to "Switching edges to randomize networks: what goes wrong
@@ -94,8 +94,8 @@ cdef class CurveballUniformTradeGenerator:
 	Each trade contains two different node indices drawn uniformly at random
 	from the interval [0, num_nodes).
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 
 	num_trades:
 	   Number of trades to generate.
@@ -130,8 +130,8 @@ cdef class CurveballGlobalTradeGenerator:
 	If you are only using this generator, consider using the GlobalCurveball
 	algorithm directly as it has a better performance / memory footprint.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 
 	num_global_trades:
 	   Number of global trades to generate (i.e. the resulting sequence contains
@@ -184,8 +184,8 @@ cdef class Curveball(Algorithm):
    footprint which increases linearly with the number of trades
    performed in a run.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 
 	G : networkit.Graph
 		The graph to be randomized. For a given degree sequence, e.g.
@@ -233,8 +233,8 @@ cdef class DegreePreservingShuffle(Algorithm):
 	leads to a faster mixing time. If you want to use it as a preprocessing step to GlobalCurveball,
 	it's more efficient to set degreePreservingShufflePreprocessing in GlobalCurveball's constructor.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 
 	G : networkit.Graph
 		The graph to be randomized. For a given degree sequence, e.g.

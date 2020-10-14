@@ -31,8 +31,8 @@ cdef extern from "<networkit/simulation/EpidemicSimulationSEIR.hpp>":
 
 cdef class EpidemicSimulationSEIR(Algorithm):
 	"""
- 	Parameters
- 	----------
+ 	Parameters:
+ 	-----------
  	G : networkit.Graph
  		The graph.
  	tMax : count

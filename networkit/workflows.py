@@ -16,12 +16,13 @@ def extractLargestComponent(G):
 	"""
 	Extract the subgraph of the largest connected component.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : Graph
 		Input graph.
-	Returns
-	-------
+
+	Returns:
+	--------
 	Graph
 		Subgraph of largest component, preserving node ids of orignal graph.
 	"""
@@ -34,12 +35,15 @@ def extractLargestComponent(G):
 def batch(graphDir, match, format, function, outPath, header=None):
 	"""
 	Read graphs from a directory, apply a function and store result in CSV format.
-	:param	graphDir	a directory containing graph files
-	:param	match		a pattern that must match the filename so the file is treated as a graph
-	:param 	format		graph file format
-	:param  function	any function from Graph to list/tuple of values
-	:param	outPath		path of output CSV file
-	:param	header		CSV file header
+
+	Parameters:
+	-----------
+	graphDir : a directory containing graph files
+	match : a pattern that must match the filename so the file is treated as a graph
+	format : graph file format
+	function : any function from Graph to list/tuple of values
+	outPath : path of output CSV file
+	header : CSV file header
 	"""
 	with open(outPath, 'w') as outFile:
 		writer = csv.writer(outFile, delimiter='\t')

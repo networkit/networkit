@@ -16,15 +16,15 @@ def column(matrix, i):
 def adjacencyMatrix(G, matrixType="sparse"):
 	""" Get the adjacency matrix of the graph `G`.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	matrixType : string
 		represent"sparse" or "dense"
 
-	Returns
-	-------
+	Returns:
+	--------
 	:py:class:`scipy.sparse.csr_matrix`
 		The adjacency matrix of the graph.
 	"""
@@ -60,13 +60,13 @@ def adjacencyMatrix(G, matrixType="sparse"):
 def laplacianMatrix(G):
 	""" Get the laplacian matrix of the graph `G`.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 
-	Returns
-	-------
+	Returns:
+	--------
 	lap : ndarray
 		The N x N laplacian matrix of graph.
 	diag : ndarray
@@ -82,14 +82,15 @@ def PageRankMatrix(G, damp=0.85):
 	PageRank matrix used in the C++ backend.
 
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	damp:
 		Damping factor of the PageRank algorithm (0.85 by default)
-	Returns
-	-------
+
+	Returns:
+	--------
 	pr : ndarray
 		 The N x N page rank matrix of graph.
 	"""
@@ -117,8 +118,8 @@ def symmetricEigenvectors(matrix, cutoff=-1, reverse=False):
 	"""
 	Computes eigenvectors and -values of symmetric matrices.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	matrix : sparse matrix
 			 The matrix to compute the eigenvectors of
 	cutoff : int
@@ -126,8 +127,8 @@ def symmetricEigenvectors(matrix, cutoff=-1, reverse=False):
 	reverse : boolean
 			  If set to true, the smaller eigenvalues will be computed before the larger ones
 
-	Returns
-	-------
+	Returns:
+	--------
 	pr : ( [ float ], [ ndarray ] )
 		 A tuple of ordered lists, the first containing the eigenvalues in descending (ascending) magnitude, the
 		 second one holding the corresponding eigenvectors
@@ -155,8 +156,8 @@ def eigenvectors(matrix, cutoff=-1, reverse=False):
 	"""
 	Computes eigenvectors and -values of matrices.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	matrix : sparse matrix
 			 The matrix to compute the eigenvectors of
 	cutoff : int
@@ -164,8 +165,8 @@ def eigenvectors(matrix, cutoff=-1, reverse=False):
 	reverse : boolean
 			  If set to true, the smaller eigenvalues will be computed before the larger ones
 
-	Returns
-	-------
+	Returns:
+	--------
 	pr : ( [ float ], [ ndarray ] )
 		 A tuple of ordered lists, the first containing the eigenvalues in descending (ascending) magnitude, the
 		 second one holding the corresponding eigenvectors

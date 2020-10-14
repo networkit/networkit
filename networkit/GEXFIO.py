@@ -116,19 +116,18 @@ class GEXFReader:
 
 	def parseDynamics(self, element, elementType, controlList,  u,  v = "0", w = "0"):
 		"""
-			Determine the operations as follows:
-			1.Element has start and not deleted before: Create add event
-			2.Element has start and deleted before: Create restore event
-			3.Element has end:Create del event
-			4.If an element has end before start(or no start at all), add it to the initial graph
-			5.For dynamic edges, simply go over the attvalues and create
-			weight update events
+		Determine the operations as follows:
+		1.Element has start and not deleted before: Create add event
+		2.Element has start and deleted before: Create restore event
+		3.Element has end:Create del event
+		4.If an element has end before start(or no start at all), add it to the initial graph
+		5.For dynamic edges, simply go over the attvalues and create
+		weight update events
 
-			* A dynamic element must be defined either using only spells
-			or inline attributes. These 2 shouldn't be mixed.
-			(For example, Gephi will treat them differently. It'll ignore the inline declaration
-			if the same element also contains spells)
-
+		* A dynamic element must be defined either using only spells
+		or inline attributes. These 2 shouldn't be mixed.
+		(For example, Gephi will treat them differently. It'll ignore the inline declaration
+		if the same element also contains spells)
 		"""
 		startTime = element.getAttribute("start")
 		if startTime == "":
@@ -197,8 +196,8 @@ class GEXFReader:
 
 	def createEvent(self, eventTime, eventType, u, v, w):
 		"""
-			 Creates a NetworKit::GraphEvent from the supplied parameters
-			 and passes it to eventStream
+		Creates a NetworKit::GraphEvent from the supplied parameters
+		and passes it to eventStream
 		"""
 		event, u = None, self.mapping[u]
 		if eventType[1] == "e":
@@ -219,13 +218,13 @@ class GEXFReader:
 
 	def mapDynamicNodes(self):
 		"""
-			Node ID of a dynamic node must be determined before it's mapped to its GEXF ID.
-			This requires processing the sorted eventStream and figuring out the addition order of the nodes.
-			After that, node addition/deletion/restoration operations of this node must be readded to eventStream
-			with correct mapping.
+		Node ID of a dynamic node must be determined before it's mapped to its GEXF ID.
+		This requires processing the sorted eventStream and figuring out the addition order of the nodes.
+		After that, node addition/deletion/restoration operations of this node must be readded to eventStream
+		with correct mapping.
 
-			!Note: New mapping of a node can be equal to old mapping of a node. In order to prevent collisions,
-			isMapped array must be maintained and controlled.
+		!Note: New mapping of a node can be equal to old mapping of a node. In order to prevent collisions,
+		isMapped array must be maintained and controlled.
 		"""
 		nNodes = self.nInitialNodes
 		nEvent = len(self.eventStream)
@@ -259,7 +258,7 @@ class GEXFReader:
 # GEXFWriter
 class GEXFWriter:
 	""" This class provides a function to write a NetworKit graph to a file in the
-		GEXF format. """
+	GEXF format. """
 
 	def __init__(self):
 		""" Initializes the class. """
@@ -269,12 +268,14 @@ class GEXFWriter:
 
 	def write(self, graph, fname, eventStream = [], mapping = []):
 		"""
-			Writes a NetworKit::Graph to the specified file fname.
-			Parameters:
-				- graph: a NetworKit::Graph python object
-				- fname: the desired file path and name to be written to
-				- eventStream: stream of events
-				- mapping: random node mapping
+		Writes a NetworKit::Graph to the specified file fname.
+		
+		Parameters:
+		-----------
+		graph: a NetworKit::Graph python object
+		fname: the desired file path and name to be written to
+		eventStream: stream of events
+		mapping: random node mapping
 		"""
 		#0. Reset internal vars
 		self.__init__()

@@ -1,5 +1,5 @@
 networkit.nxadapter
-===================
+=======================
 
 .. automodule:: networkit.nxadapter
     :members:

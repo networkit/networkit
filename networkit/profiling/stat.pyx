@@ -29,10 +29,10 @@ cdef extern from "<networkit/auxiliary/Parallel.hpp>" namespace "Aux::Parallel":
 
 def ranked(sample):
 	"""
-		Given a list of numbers, this function computes the rank of each value
-		and returns a list of ranks where result[i] is the rank of
-		the i-th element in the given sample.
-		Currently used in profiling.stat.
+	Given a list of numbers, this function computes the rank of each value
+	and returns a list of ranks where result[i] is the rank of
+	the i-th element in the given sample.
+	Currently used in profiling.stat.
 	"""
 	cdef vector[pair[double, count]] helper = vector[pair[double, count]](len(sample))
 	cdef vector[double] result = vector[double](len(sample), 0)
@@ -60,8 +60,8 @@ def ranked(sample):
 
 def sort2(sample):
 	"""
-		Sorts a given list of numbers.
-		Currently used as profiling.stat.sorted.
+	Sorts a given list of numbers.
+	Currently used as profiling.stat.sorted.
 	"""
 	cdef vector[double] result = <vector[double]?>sample
 	sort(result.begin(),result.end())

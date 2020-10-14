@@ -47,13 +47,13 @@ cdef class GraphTools:
 		"""
 		Returns the maximum out-degree of the graph.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The input graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			The maximum out-degree of the graph.
 		"""
@@ -64,13 +64,13 @@ cdef class GraphTools:
 		"""
 		Returns the maximum in-degree of the graph.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The input graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			The maximum in-degree of the graph.
 		"""
@@ -81,13 +81,13 @@ cdef class GraphTools:
 		"""
 		Returns the maximum weighted out-degree of the graph.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The input graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		edgeweight
 			The maximum weighted out-degree of the graph.
 		"""
@@ -98,13 +98,13 @@ cdef class GraphTools:
 		"""
 		Returns the maximum weighted in-degree of the graph.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The input graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		edgeweight
 			The maximum weighted in-degree of the graph.
 		"""
@@ -115,13 +115,13 @@ cdef class GraphTools:
 		"""
 		Returns a random node of the input graph.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The input graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		node
 			A random node.
 		"""
@@ -132,15 +132,15 @@ cdef class GraphTools:
 		"""
 		Returns a random neighbor of node `u`.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The input graph.
 		u : node
 			A node in `G`.
 
-		Returns
-		-------
+		Returns:
+		--------
 		node
 			A random neighbor of `u`.
 		"""
@@ -150,15 +150,15 @@ cdef class GraphTools:
 	def randomEdge(Graph G, uniformDistribution = False):
 		""" Get a random edge of the graph.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The input graph.
 		uniformDistribution : bool
 			If the distribution of the edge shall be uniform.
 
-		Returns
-		-------
+		Returns:
+		--------
 		pair
 			Random edge.
 
@@ -174,15 +174,15 @@ cdef class GraphTools:
 		"""
 		Returns a list with numEdges random edges. The edges are chosen uniformly at random.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The input graph.
 		numEdges : count
 			The number of edges to choose.
 
-		Returns
-		-------
+		Returns:
+		--------
 		list of pairs
 			List of with `numEdges` random edges.
 		"""
@@ -193,8 +193,8 @@ cdef class GraphTools:
 		"""
 		Appends graph `G1` to graph `G` as a new subgraph. Performs node id remapping.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			Graph where `G1` will be appended to.
 		G1 : networkit.Graph
@@ -208,8 +208,8 @@ cdef class GraphTools:
 		Modifies graph `G` to be the union of it and graph `G1`.
 		Nodes with the same ids are identified with each other.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			Result of the merge.
 		G1 : networkit.Graph
@@ -224,8 +224,8 @@ cdef class GraphTools:
 		not connected to the rest of the graph. This is meant to optimize the
 		Kadabra algorithm.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The input graph.
 		nodes : list
@@ -245,13 +245,13 @@ cdef class GraphTools:
 		"""
 		Returns an undirected copy of the input graph.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		graph : networkit.Graph
 			The input graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		graph : networkit.Graph
 			Undirected copy of the input graph.
 		"""
@@ -262,13 +262,13 @@ cdef class GraphTools:
 		"""
 		Returns an unweighted copy of the input graph.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		graph : networkit.Graph
 			The input graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		graph : networkit.Graph
 			Unweighted copy of the input graph.
 		"""
@@ -279,13 +279,13 @@ cdef class GraphTools:
 		"""
 		Returns a weighted copy of the input graph.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		graph : networkit.Graph
 			The input graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		graph : networkit.Graph
 			Weighted copy of the input graph.
 		"""
@@ -296,8 +296,8 @@ cdef class GraphTools:
 		"""
 		Return the size of the graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		tuple
 			a pair (n, m) where n is the number of nodes and m is the number of edges.
 		"""
@@ -308,13 +308,13 @@ cdef class GraphTools:
 		"""
 		Get the density of the input graph.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		graph : networkit.Graph
 			The input graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			The density of the input graph.
 		"""
@@ -325,13 +325,13 @@ cdef class GraphTools:
 		"""
 		Get the volume of the input graph.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		graph : networkit.Graph
 			The input graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			The volume of the input graph.
 		"""
@@ -342,13 +342,13 @@ cdef class GraphTools:
 		"""
 		Copies all nodes of the input graph to a new graph (edges are not copied).
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		graph : networkit.Graph
 			The input graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		graph : networkit.Graph
 			Graph with the same nodes as the input graph (and without any edge).
 		"""
@@ -360,8 +360,8 @@ cdef class GraphTools:
 		Returns an induced subgraph of the input graph (including potential edge
 		weights/directions).
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		graph : networkit.Graph
 			The input graph.
 		nodes : set
@@ -371,8 +371,8 @@ cdef class GraphTools:
 		includeInNeighbors : bool
 			If set to true, in-neighbors will also be included.
 
-		Returns
-		-------
+		Returns:
+		--------
 		graph : networkit.Graph
 			Induced subgraph.
 		"""
@@ -384,12 +384,12 @@ cdef class GraphTools:
 		"""
 		Returns the transpose of the input graph. The graph must be directed.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		graph : networkit.Graph
 			The input graph.
 
-		Returns
+		Returns:
 		graph : networkit.Graph
 			Transpose of the input graph.
 		"""
@@ -400,15 +400,15 @@ cdef class GraphTools:
 		"""
 		Computes a graph with the same structure but with continuous node ids.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		graph : networkit.Graph
 			The graph to be compacted.
 		nodeIdMap:
 			The map providing the information about the node ids.
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Graph
 			The compacted graph
 		"""
@@ -422,12 +422,12 @@ cdef class GraphTools:
 		"""
 		Computes a map of node ids to continuous node ids.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		graph : networkit.Graph
 			The graph of which the node id map is wanted.
-		Returns
-		-------
+		Returns:
+		--------
 			Returns the node id map
 		"""
 		cdef unordered_map[node,node] cResult
@@ -443,12 +443,12 @@ cdef class GraphTools:
 		"""
 		Computes a map of node ids to continuous, randomly permutated node ids.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		graph : networkit.Graph
 			The graph of which the node id map is wanted.
-		Returns
-		-------
+		Returns:
+		--------
 			Returns the node id map
 		"""
 		cdef unordered_map[node,node] cResult
