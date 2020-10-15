@@ -54,6 +54,7 @@ from . import community
 from . import centrality
 from . import generators
 from . import structures
+from . import embedding
 from . import engineering
 from . import distance
 from . import components

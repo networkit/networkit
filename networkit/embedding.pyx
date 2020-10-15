@@ -58,9 +58,6 @@ cdef class Node2Vec(Algorithm):
         self._G = G
         self._this = new _Node2Vec(G._this, P, Q, L, N, D)
 
-    def __dealloc__(self):
-        del self._this
-
     def run(self):
         self._this.run()
         return self
