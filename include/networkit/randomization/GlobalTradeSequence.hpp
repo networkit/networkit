@@ -198,6 +198,9 @@ public:
 
     //! randomly samples parameters a and b
     void sampleParameters(std::mt19937_64 &prng) {
+        if (n >= p)
+            throw std::runtime_error("Support only up to 2147483646 nodes");
+
         a = std::uniform_int_distribution<value_type>{1, p - 1}(prng);
         ainv = static_cast<value_type>(
             (std::get<1>(LinearCongruentialMap<T>::gcdExtended(a, p)) + p) % p);
@@ -218,8 +221,7 @@ public:
 
 private:
     value_type n; //< number of elements to be mapped
-    static constexpr value_type p =
-        (1 || sizeof(value_type) == 4) ? 2147483647 : 2305843009213693951ll;
+    static constexpr value_type p = 2147483647;
 
     value_type a;    //< multiplicative parameter in hash
     value_type ainv; //< multiplicative invert
