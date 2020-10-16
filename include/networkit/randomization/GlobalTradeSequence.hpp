@@ -272,7 +272,7 @@ public:
         hashFunctors.reserve(num_global_trades);
         hashFunctors.push_back(Hash{num_nodes, prng});
 
-        for (size_t i = 0; i < num_global_trades; i++) {
+        while (hashFunctors.size() < num_global_trades) {
             // we copy the hash function, rather than constructing a new one,
             // to avoid repeated computations, such as the next larger prime
             // number
