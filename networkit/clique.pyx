@@ -63,8 +63,8 @@ cdef class MaximalCliques(Algorithm):
 	particular for complex networks it is usually quite fast, even graphs with
 	millions of edges can usually be processed in less than a minute.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph to list the cliques for
 	maximumOnly : bool
@@ -110,8 +110,8 @@ cdef class MaximalCliques(Algorithm):
 		If only the maximum clique was stored, it will return exactly one clique unless the graph
 		is empty.
 
-		Returns
-		-------
+		Returns:
+		--------
 		A list of cliques, each being represented as a list of nodes.
 		"""
 		return (<_MaximalCliques*>(self._this)).getCliques()

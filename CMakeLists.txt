@@ -598,16 +598,24 @@ if (NOT SPHINX_EXECUTABLE)
 
 else()
 	message(STATUS "Found sphinx-build: ${SPHINX_EXECUTABLE}")
+
+	add_custom_target(prepare_docs
+			COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/docs/input
+			COMMAND cp -r ${CMAKE_SOURCE_DIR}/input/* ${CMAKE_SOURCE_DIR}/docs/input
+			COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/docs/notebooks
+			COMMAND cp -r ${CMAKE_SOURCE_DIR}/notebooks/* ${CMAKE_SOURCE_DIR}/docs/notebooks)
+
 	add_custom_target(general_docs
 			COMMAND rm -rf htmldocs
-			COMMAND ${SPHINX_EXECUTABLE} ${CMAKE_SOURCE_DIR}/docs htmldocs)
+			COMMAND ${SPHINX_EXECUTABLE} ${CMAKE_SOURCE_DIR}/docs htmldocs
+			DEPENDS prepare_docs)
 
-	add_custom_target(cpp_api_docs DEPENDS general_docs
-			COMMAND sed s:@BUILDDIR@:${CMAKE_CURRENT_BINARY_DIR}:
-					${CMAKE_SOURCE_DIR}/docs/cpp_api/Doxyfile.in | doxygen -
-			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+	add_custom_target(docs DEPENDS general_docs)
 
-	add_custom_target(docs DEPENDS general_docs cpp_api_docs)
+	add_custom_command(TARGET docs
+		POST_BUILD
+		COMMAND rm -rf ${CMAKE_SOURCE_DIR}/docs/input
+		COMMAND rm -rf ${CMAKE_SOURCE_DIR}/docs/notebooks)
 endif()
 
 ################################################################################

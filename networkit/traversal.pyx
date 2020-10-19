@@ -95,8 +95,8 @@ cdef class Traversal:
 		"""
 		Iterate over nodes in breadth-first search order starting from the given node(s).
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		graph : networkit.Graph
 			The input graph.
 		start : node/list
@@ -123,8 +123,8 @@ cdef class Traversal:
 		"""
 		Iterate over edges in breadth-first search order starting from the given node(s).
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		graph : networkit.Graph
 			The input graph.
 		start : node/list
@@ -146,8 +146,8 @@ cdef class Traversal:
 		"""
 		Iterate over nodes in depth-first search order starting from the given node(s).
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		graph : networkit.Graph
 			The input graph.
 		start : node
@@ -167,8 +167,8 @@ cdef class Traversal:
 		"""
 		Iterate over edges in depth-first search order starting from the given node(s).
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		graph : networkit.Graph
 			The input graph.
 		start : node

@@ -69,8 +69,8 @@ cdef class StaticGraphGenerator:
 		"""
 		Generates the graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Graph
 		"""
 		if self._this == NULL:
@@ -95,8 +95,8 @@ cdef class BarabasiAlbertGenerator(StaticGraphGenerator):
 
     BarabasiAlbertGenerator(k, nMax, n0=0, batagelj=True)
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	k : count
 		number of edges that come with a new node
 	nMax : count
@@ -144,8 +144,8 @@ cdef class PubWebGenerator(StaticGraphGenerator):
 
 	PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	numNodes : count
 		Up to a few thousand (possibly more if visualization is not desired and quadratic
 		time complexity has been resolved)
@@ -185,8 +185,8 @@ cdef class DynamicPubWebGenerator:
 	def generate(self, nSteps):
 		""" Generate event stream.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		nSteps : count
 			Number of time steps in the event stream.
 		"""
@@ -217,8 +217,8 @@ cdef class ErdosRenyiGenerator(StaticGraphGenerator):
 
 	Creates G(nNodes, prob) graphs.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	nNodes : count
 		Number of nodes n in the graph.
 	prob : double
@@ -254,8 +254,8 @@ cdef class DorogovtsevMendesGenerator(StaticGraphGenerator):
 
  	Constructs the generator class.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	nNodes : count
 		Number of nodes in the target graph.
 	"""
@@ -283,8 +283,8 @@ cdef class ClusteredRandomGraphGenerator(StaticGraphGenerator):
 
 	Creates a clustered random graph.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	n : count
 		number of nodes
 	k : count
@@ -301,8 +301,8 @@ cdef class ClusteredRandomGraphGenerator(StaticGraphGenerator):
 	def getCommunities(self):
 		""" Returns the generated ground truth clustering.
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Partition
 			The generated ground truth clustering.
 		"""
@@ -350,8 +350,8 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 
 		HyperbolicGenerator(n=10000, k=6, gamma=3, T=0)
 
- 		Parameters
-		----------
+ 		Parameters:
+		-----------
 		n : int
 			number of nodes
 		k : double
@@ -423,8 +423,8 @@ cdef class PowerlawDegreeSequence:
 
 	PowerlawDegreeSequence(G)
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	minDeg : count, list or networkit.Graph
 		The minium degree, or a list of degrees to fit or graphs
 	maxDeg : count
@@ -449,8 +449,8 @@ cdef class PowerlawDegreeSequence:
 		"""
 		Tries to set the minimum degree such that the specified average degree is expected.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		avgDeg : double
 			The average degree that shall be approximated
 		"""
@@ -462,8 +462,8 @@ cdef class PowerlawDegreeSequence:
 		"""
 		Tries to set the powerlaw exponent gamma such that the specified average degree is expected.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		avgDeg : double
 			The average degree that shall be approximated
 		minGamma : double
@@ -479,8 +479,8 @@ cdef class PowerlawDegreeSequence:
 		"""
 		Returns the expected average degree. Note: run needs to be called first.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			The expected average degree.
 		"""
@@ -490,8 +490,8 @@ cdef class PowerlawDegreeSequence:
 		"""
 		Returns the minimum degree.
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			The minimum degree
 		"""
@@ -501,8 +501,8 @@ cdef class PowerlawDegreeSequence:
 		"""
 		Set the exponent gamma
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		gamma : double
 			The exponent to set
 		"""
@@ -513,8 +513,8 @@ cdef class PowerlawDegreeSequence:
 		"""
 		Get the exponent gamma.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			The exponent gamma
 		"""
@@ -524,8 +524,8 @@ cdef class PowerlawDegreeSequence:
 		"""
 		Get the maximum degree
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			The maximum degree
 		"""
@@ -543,13 +543,13 @@ cdef class PowerlawDegreeSequence:
 		"""
 		Returns a degree sequence with even degree sum.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		numNodes : count
 			The number of nodes/degrees that shall be returned
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector[count]
 			The generated degree sequence
 		"""
@@ -559,8 +559,8 @@ cdef class PowerlawDegreeSequence:
 		"""
 		Returns a degree drawn at random with a power law distribution
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			The generated random degree
 		"""
@@ -597,8 +597,8 @@ cdef class LFRGenerator(Algorithm):
 
 	You need to set a degree sequence, a community size sequence and a mu using the additionally provided set- or generate-methods.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	n : count
 		The number of nodes
 	"""
@@ -612,8 +612,8 @@ cdef class LFRGenerator(Algorithm):
 		"""
 		Set the given degree sequence.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		degreeSequence : collections.Iterable
 			The degree sequence that shall be used by the generator
 		"""
@@ -626,8 +626,8 @@ cdef class LFRGenerator(Algorithm):
 		Generate and set a power law degree sequence using the given average and maximum degree with the given exponent.
 
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		avgDegree : count
 			The average degree of the created graph
 		maxDegree : count
@@ -643,8 +643,8 @@ cdef class LFRGenerator(Algorithm):
 		"""
 		Set the given community size sequence.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		communitySizeSequence : collections.Iterable
 			The community sizes that shall be used.
 		"""
@@ -656,8 +656,8 @@ cdef class LFRGenerator(Algorithm):
 		"""
 		Set the partition, this replaces the community size sequence and the random assignment of the nodes to communities.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		zeta : networkit.Partition
 			The partition to use
 		"""
@@ -669,8 +669,8 @@ cdef class LFRGenerator(Algorithm):
 		"""
 		Generate a powerlaw community size sequence with the given minimum and maximum size and the given exponent.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		minCommunitySize : count
 			The minimum community size
 		maxCommunitySize : count
@@ -688,8 +688,8 @@ cdef class LFRGenerator(Algorithm):
 
 		This can either be one value for all nodes or an iterable of values for each node.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		mu : double or collections.Iterable
 			The mixing coefficient(s), i.e. the factor of the degree that shall be inter-cluster degree
 		"""
@@ -705,8 +705,8 @@ cdef class LFRGenerator(Algorithm):
 
 		The mixing parameter is for each node the fraction of neighbors that do not belong to the node's own community.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		mu : double
 			The expected mu that shall be used.
 		"""
@@ -718,8 +718,8 @@ cdef class LFRGenerator(Algorithm):
 		"""
 		Return the generated Graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Graph
 			The generated graph.
 		"""
@@ -729,8 +729,8 @@ cdef class LFRGenerator(Algorithm):
 		"""
 		Generates and returns the graph. Wrapper for the StaticGraphGenerator interface.
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Graph
 			The generated graph.
 		"""
@@ -744,8 +744,8 @@ cdef class LFRGenerator(Algorithm):
 		"""
 		Return the generated Partiton.
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Partition
 			The generated partition.
 		"""
@@ -868,8 +868,8 @@ cdef class MocnikGenerator(StaticGraphGenerator):
 
 	MocnikGenerator(dim, n, k, weighted)
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	dim : count
 		Dimension of the space.
 	n : count
@@ -927,8 +927,8 @@ cdef class MocnikGeneratorBasic(StaticGraphGenerator):
 
 	MocnikGeneratorBasic(dim, n, k)
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	dim : count
 	Dimension of the space.
 	n : count
@@ -960,8 +960,8 @@ cdef class HavelHakimiGenerator(StaticGraphGenerator):
 
 		HavelHakimiGenerator(sequence, ignoreIfRealizable=True)
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		sequence : vector
 			Degree sequence to realize. Must be non-increasing.
 		ignoreIfRealizable : bool, optional
@@ -996,8 +996,8 @@ cdef class DynamicHyperbolicGenerator:
 	def __cinit__(self, numNodes, avgDegree = 6, gamma = 3, T = 0, moveEachStep = 1, moveDistance = 0.1):
 		""" Dynamic graph generator according to the hyperbolic unit disk model.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		numNodes : count
 			number of nodes
 		avgDegree : double
@@ -1021,8 +1021,8 @@ cdef class DynamicHyperbolicGenerator:
 	def generate(self, nSteps):
 		""" Generate event stream.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		nSteps : count
 			Number of time steps in the event stream.
 		"""
@@ -1060,8 +1060,8 @@ cdef class DynamicDorogovtsevMendesGenerator:
 	def generate(self, nSteps):
 		""" Generate event stream.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		nSteps : count
 			Number of time steps in the event stream.
 		"""
@@ -1082,8 +1082,8 @@ cdef class RmatGenerator(StaticGraphGenerator):
 
 	RmatGenerator(scale, edgeFactor, a, b, c, d, weighted=False, reduceNodes=0)
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	scale : count
 		Number of nodes = 2^scale
 	edgeFactor : count
@@ -1175,8 +1175,8 @@ cdef class DynamicForestFireGenerator:
 
 	Constructs the generator class.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	p : forward burning probability.
 	directed : decides whether the resulting graph should be directed
 	r : optional, backward burning probability
@@ -1193,8 +1193,8 @@ cdef class DynamicForestFireGenerator:
 		"""
 		Generate event stream.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		nSteps : count
 			Number of time steps in the event stream.
 		"""
@@ -1213,8 +1213,8 @@ cdef class RegularRingLatticeGenerator(StaticGraphGenerator):
 
 	Constructs the generator.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	nNodes : number of nodes in the target graph.
 	nNeighbors : number of neighbors on each side of a node
 	"""
@@ -1238,8 +1238,8 @@ cdef class WattsStrogatzGenerator(StaticGraphGenerator):
 
 	Constructs the generator.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	nNodes : Number of nodes in the target graph.
 	nNeighbors : number of neighbors on each side of a node
 	p : rewiring probability
@@ -1272,8 +1272,8 @@ cdef class EdgeSwitchingMarkovChainGenerator(StaticGraphGenerator):
 	in order to limit the running time, at most 200 times as many attempts to perform an edge swap are made (as certain degree distributions
 	do not allow edge swaps at all).
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	degreeSequence : vector[count]
 		The degree sequence that shall be generated
 	ignoreIfRealizable : bool, optional

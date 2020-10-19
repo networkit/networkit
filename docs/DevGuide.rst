@@ -147,12 +147,42 @@ We want to ensure that code across NetworKit is easy to understand for existing 
 -  Document classes, methods and attributes in Doxygen style.
 -  Use the ``count`` and ``index`` integer types for non-negative
    integer quantities and indices.
+-  All member variables should be pointers and not references.
 -  In most cases, objects are passed by reference. New objects are
-   stack-allocated and returned by value. Avoid pointers and ``new``
+   stack-allocated and returned by value. Avoid ``new``
    where possible.
 -  Use the ``override`` keyword to indicate that a method overrides a
    virtual method in the superclass.
+-  A class should be declared ``final`` unless it is a superclass.
+-  ``virtual`` methods should only be declared in superclasses.
 -  In Python, indent using tabs, not spaces.
+
+In order to maintain the same standard of code across the entire NetworKit code base, some coding standards are enforced. However, there is some automation to help developers with this. Below is a list of these standards and instructions on how to use the available automation tools that ensure your code adheres to them.
+
+-  ``CppClangFormat`` applies clang-format to all files that contain the
+   string ``networkit-format``.
+    After adding a new file to the code base, subscribe the file to ``networkit-format`` by adding the string "networkit-format" to the file after the include guards as is shown below.
+    ::
+
+        /*
+        * GlobalCurveballImpl.hpp
+        ...
+        */
+        // networkit-format
+
+-  ``CppIndentation`` checks that all C++ code is indented with spaces
+   and not tabs.
+-  ``CppIncludeGuards`` ensures that the header files contain an include guard and
+   that it follows the following naming convention: ``NETWORKIT_MODULENAME_HEADERFILE_HPP_``.
+
+The executable file ``check_code.sh`` in NetworKit's root directory carries out all checks in read-only mode and reports if errors are found. Running ``./check_code.sh -w`` will fix these errors. Run this script before commiting your files to make sure your changes are in complaince with the guidelines. The script is executed during CI and will cause your pull request to fail if your code does not conform to the style guide.
+
+On top of the aforementioned mentioned points concerning style, the NetworKit C++ code base also complies to a selection of ``clang-tidy`` static-code analysis checks.
+New code must pass these tests before being merged into the development branch. The list of checks can be found in the ``.clang-tidy`` file.
+In order to run the ``clang-tidy`` checks while building NetworKit, set the ``CMake`` flag ``-NETWORKIT_CLANG_TIDY`` to ``ON`` in addition to the other compile flags, e.g.
+::
+
+    cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_WARNINGS_AS_ERRORS=ON -DNETWORKIT_CLANG_TIDY=ON ..
 
 In a nutshell, new developers should familiarise themselves with the existing code base and adapt the existing style in the C++ as well as Python code base when contributing to NetworKit. Always ensure your code is easy to understand and properly documented.
 
@@ -160,7 +190,7 @@ Report bugs
 -----------
 
 Please report any bugs on the `issues page <https://github.com/networkit/networkit/issues>`__ of the official NetworKit repository on GitHub.
-In very urgent cases it might also make sense to write on the `mailing list <https://lists.uni-koeln.de/mailman/listinfo/networkit>`__.
+In very urgent cases it might also make sense to write on the `mailing list <https://sympa.cms.hu-berlin.de/sympa/subscribe/networkit>`__.
 Please provide a minimal example so that others can reproduce that bug.
 
 Tags
@@ -347,29 +377,43 @@ features or algorithms, make sure to adapt to the existing class
 hierarchies. The least thing to do is to inherit from the ``Algorithm``
 base class. Changes to existing interfaces or suggestions for new
 interfaces should be discussed through the `mailing
-list <https://lists.uni-koeln.de/mailman/listinfo/networkit>`__.
+list <https://sympa.cms.hu-berlin.de/sympa/subscribe/networkit>`__.
 
 Exposing C++ Code to Python
 ---------------------------
 
 Assuming the unit tests for the new feature you implemented are correct
-and successful, you need to make your features available to Python in
+and successful, you need to make your feature available to Python in
 order to use it. NetworKit uses Cython to bridge C++ and Python. All of
-this bridge code is contained in the Cython code file
-``src/python/_Networkit.pyx``. The content is automatically translated
-into C++ and then compiled to a Python extension module.
+this bridge code is contained in the ``networkit/`` directory. The Cython
+files in this directory correspond to the C++ modules. Files with a ``.pxd``
+extension declare C++ data types, functions and variables that are imported
+by other files. Therefore, if the new code does not introduce new C++ types
+or functions that are needed elsewhere, the code should only be added to the
+correct ``.pyx`` file. The content is automatically translated into C++ and
+then compiled to a Python extension module.
 
 Cython syntax is a superset of Python that knows about static type
 declarations and other things from the C/C++ world. The best way to
 getting used to it is working on examples. Take the most common case of
 exposing a C++ class as a Python class. Care for the following example
-that exposes the class ``NetworKit::Dijkstra``:
+that exposes the class ``NetworKit::Dijkstra`` in ``distance.pyx``:
 
 ::
 
-        cdef extern from "cpp/graph/Dijkstra.h":
+        [...]
+        from .base cimport _Algorithm, Algorithm
+        from .graph cimport _Graph, Graph
+        [...]
+
+In order to inherit from ``Algorithm`` and use the ``Graph`` data structure,
+we must import the C++ and Python types like is done above.
+
+::
+
+        cdef extern from <networkit/distance/Dijkstra.hpp>:
             cdef cppclass _Dijkstra "NetworKit::Dijkstra"(_SSSP):
-                _Dijkstra(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
+                _Dijkstra(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
 
 The code above exposes the C++ class definition to Cython - but not yet
 to Python. First of all, Cython needs to know which C++ declarations to
@@ -386,9 +430,9 @@ declarations match the declarations from the referenced header file.
 
 ::
 
-        cdef extern from "cpp/graph/SSSP.h":
+        cdef extern from <networkit/distance/_SSSP.hpp>:
             cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
-                _SSSP(_Graph G, node source, bool storePaths, bool storeStack, node target) except +
+                _SSSP(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
                 vector[edgeweight] getDistances(bool moveOut) except +
                 [...]
 
@@ -463,8 +507,8 @@ The docstring between the triple quotation marks can be accessed through
 Python's ``help(...)`` function and are the main documentation of
 NetworKit. Always provide at least a short and precise docstring so the
 user can get in idea of the functionality of the class. For C++ types
-available to Python and further examples, see through the
-``_NetworKit.pyx``-file. The whole process has certainly some
+available to Python and further examples, see through the various
+Cython files. The whole process has certainly some
 intricacies, e.g. some tricks are needed to avoid memory waste when
 passing around large objects such as graphs. When in doubt, look at
 examples of similar classes already exposed. Listen to the Cython
@@ -489,8 +533,8 @@ Contact
 -------
 
 To discuss important changes to NetworKit, use the `e-mail
-list <https://lists.uni-koeln.de/mailman/listinfo/networkit>`__
-(``networkit@ira.uka.de``).
+list <https://sympa.cms.hu-berlin.de/sympa/subscribe/networkit>`__
+(``networkit@lists.hu-berlin.de``).
 
 We also appreciate new issues or pull requests on the GitHub repository.
 

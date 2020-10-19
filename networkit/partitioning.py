@@ -66,10 +66,11 @@ class SpectralPartitioner:
 		"""
 		Constructs the spectral parititoner.
 
-		Args:
-			graph: The graph to parititon
-			count (int): The number of partitions to create
-			balanced (boolean): Set this to false if you do not want to enforce balance, possibly increasing quality 
+		Parameters:
+		-----------
+		graph: The graph to parititon
+		count (int): The number of partitions to create
+		balanced (boolean): Set this to false if you do not want to enforce balance, possibly increasing quality 
 
 		Remember to call run() afterwards.
 
@@ -224,6 +225,7 @@ class SpectralPartitioner:
 		Retrieves the partitioning after run() was called.
 
 		Returns:
+		--------
 			A partition object
 		"""
 		return self.partition

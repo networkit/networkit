@@ -79,8 +79,8 @@ class GraphMLSAX(xml.sax.ContentHandler):
 
 class GraphMLReader:
 	""" This class serves as wrapper for the GraphMLSAX class
-		which is able to parse a GraphML XML file and construct
-		a graph. """
+	which is able to parse a GraphML XML file and construct
+	a graph. """
 
 	def __init__(self):
 		""" Initializes the GraphMLSAX class """
@@ -88,8 +88,10 @@ class GraphMLReader:
 
 	def read(self, fpath):
 		""" Parses a GraphML XML file and returns the constructed Graph
-			Parameters:
-				- fpath: the path to the file as a string
+		
+		Parameters:
+		-----------
+		fpath: the path to the file as a string
 		"""
 		xml.sax.parse(fpath, self.graphmlsax)
 		return self.graphmlsax.getGraph()
@@ -106,11 +108,13 @@ class GraphMLWriter:
 
 	def write(self, graph, fname, nodeAttributes = {}, edgeAttributes = {}):
 		""" Writes a NetworKit graph to the specified file fname. 
-			Parameters:
-				- graph: a NetworKit::Graph python object 
-				- fname: the desired file path and name to be written to
-				- nodeAttributes: optional dictionary of node attributes in the form attribute name => list of attribute values
-				- edgeAttributes: optional dictionary of edge attributes in the form attribute name => list of attribute values
+		
+		Parameters:
+		-----------
+		graph: a NetworKit::Graph python object 
+		fname: the desired file path and name to be written to
+		nodeAttributes: optional dictionary of node attributes in the form attribute name => list of attribute values
+		edgeAttributes: optional dictionary of edge attributes in the form attribute name => list of attribute values
 		"""
 		# reset some internal variables in case more graphs are written with the same instance
 		self.edgeIdCounter = 0

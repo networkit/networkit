@@ -12,6 +12,10 @@
 
 import sys, os, inspect
 import sphinx_bootstrap_theme
+
+import warnings
+
+warnings.filterwarnings("ignore", category=UserWarning)
 #import matplotlib as mpl
 #mpl.use("Agg")
 
@@ -28,13 +32,26 @@ import sphinx_bootstrap_theme
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 sys.path.insert(0, os.path.abspath('sphinxext'))
+
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.intersphinx',
               'sphinx.ext.ifconfig',
               'sphinx.ext.mathjax',
               'sphinx.ext.autosummary',
               'sphinx.ext.napoleon',
+              'numpydoc',
+              'breathe',
+              'exhale',
+              'nbsphinx',
+              'sphinx_copybutton',  
+              'sphinx.ext.mathjax', 
+              'sphinxcontrib.bibtex',
+              'sphinx_gallery.load_style',
+              'sphinx_last_updated_by_git'
               ]
+
+breathe_projects = { 'NetworKit': '../build/doxyoutput/xml' }
+breathe_default_project = 'NetworKit'
 
 # Generate the API documentation when building
 #autosummary_generate = True
@@ -104,7 +121,6 @@ pygments_style = 'sphinx'
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
 
-
 # -- Options for HTML output ---------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -120,12 +136,34 @@ html_theme_options = {
     'navbar_sidebarrel': False,
     'bootstrap_version': "3",
     'navbar_fixed_top': "false",
+    'globaltoc_depth': 2,
     'navbar_pagenav': False,
     'navbar_links': [ 
-		("Documentation", "index"),
-		("Python API", "python_api/modules"),
-		("C++ API", "cppdoc")
-	]
+      ('Get Started', 'https://networkit.github.io/get_started.html', True),
+      ('Documentation', 'index'),
+      ('Features', 'https://networkit.github.io/features.html', True),
+      ('News', 'https://networkit.github.io/news.html', True),
+      ('Publications', 'https://networkit.github.io/publications.html', True),
+      ('Data sets', 'https://networkit.github.io/datasets.html', True),
+      ('Credits', 'https://networkit.github.io/credits.html', True)]
+}
+
+# Setup the exhale extension
+exhale_args = {
+    # These arguments are required
+    "containmentFolder":     "./cpp_api",
+    "rootFileName":          "library_root.rst",
+    "rootFileTitle":         "NetworKit C++ Documentation",
+    "doxygenStripFromPath":  "..",
+    "kindsWithContentsDirectives": ["file", "namespace", "dir"],
+    "unabridgedOrphanKinds": {"file"},
+    "createTreeView":        True,
+    "treeViewIsBootstrap":   True,
+    "treeViewBootstrapUseBadgeTags": False,
+    "treeViewBootstrapExpandIcon": "glyphicon glyphicon-chevron-right",
+    "treeViewBootstrapLevels": 3,
+    "exhaleExecutesDoxygen": True,
+    "exhaleDoxygenStdin": "INPUT = ../include/networkit"
 }
 
 # Add any paths that contain custom themes here, relative to this directory.

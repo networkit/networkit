@@ -148,6 +148,7 @@ text-decoration: none;
 }
 
 .navbar-default {
+  background: none;
   color:#ffffff;
 }
 
@@ -257,4 +258,23 @@ input[type=checkbox]:checked ~ [for="read_more"] span:last-of-type {
 
 #fancy-particles canvas {
   background-color: #104870;
+}
+
+#fancy-particles-small {
+  position: absolute;
+  top: 0;
+  z-index: -1;
+  height: 60px;
+  width: 100%;
+  background-color: #104870;
+  background-size: cover;
+  background-position: center center;
+}
+
+#fancy-particles-small canvas {
+  background-color: #104870;
+}
+
+#class-hierarchy {
+  display: none;
 }

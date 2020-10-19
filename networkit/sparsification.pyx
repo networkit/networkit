@@ -73,8 +73,8 @@ cdef class ChibaNishizekiTriangleEdgeScore(EdgeScore):
 	"""
 	Calculates for each edge the number of triangles it is embedded in.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph to count triangles on.
 	"""
@@ -99,16 +99,16 @@ cdef class ChibaNishizekiQuadrangleEdgeScore(EdgeScore):
 	"""
 	Calculates for each edge the number of quadrangles (circles of length 4) it is embedded in.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph to count quadrangles on.
 	"""
 
 	def __cinit__(self, Graph G):
 		"""
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The graph to count quadrangles on.
 		"""
@@ -127,16 +127,16 @@ cdef class TriangleEdgeScore(EdgeScore):
 	"""
 	Triangle counting.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph to count triangles on.
 	"""
 
 	def __cinit__(self, Graph G):
 		"""
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			The graph to count triangles on.
 		"""
@@ -155,8 +155,8 @@ cdef class EdgeScoreLinearizer(EdgeScore):
 	"""
 	Linearizes a score such that values are evenly distributed between 0 and 1.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The input graph.
 	a : vector[double]
@@ -182,8 +182,8 @@ cdef class EdgeScoreNormalizer(EdgeScore):
 	"""
 	Normalize an edge score such that it is in a certain range.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph the edge score is defined on.
 	score : vector[double]
@@ -222,8 +222,8 @@ cdef class EdgeScoreBlender(EdgeScore):
 	"""
 	Blends two attribute vectors, the value is chosen depending on the supplied bool vector
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph for which the attribute shall be blended
 	attribute0 : vector[double]
@@ -257,8 +257,8 @@ cdef class GeometricMeanScore(EdgeScore):
 	"""
 	Normalizes the given edge attribute by the geometric average of the sum of the attributes of the incident edges of the incident nodes.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The input graph.
 	a : vector[double]
@@ -284,8 +284,8 @@ cdef class EdgeScoreAsWeight:
 	"""
 	Assigns an edge score as edge weight of a graph.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph to assign edge weights to.
 	score : vector[double]
@@ -314,8 +314,8 @@ cdef class EdgeScoreAsWeight:
 
 	def getWeightedGraph(self):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Graph
 			The weighted result graph.
 		"""
@@ -334,8 +334,8 @@ cdef class SimmelianOverlapScore(EdgeScore):
 	for each edge the minimum parameter value such that the edge is still contained in
 	the sparsified graph.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph to apply the Simmelian Backbone algorithm to.
 	triangles : vector[count]
@@ -377,8 +377,8 @@ cdef class MultiscaleScore(EdgeScore):
 	An implementation of the Multiscale Backbone. Calculates for each edge the minimum
 	parameter value such that the edge is still contained in the sparsified graph.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph to apply the Multiscale algorithm to.
 	attribute : vector[double]
@@ -404,8 +404,8 @@ cdef class RandomEdgeScore(EdgeScore):
 	"""
 	Generates a random edge attribute. Each edge is assigned a random value in [0,1].
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph to calculate the Random Edge attribute for.
 	"""
@@ -428,8 +428,8 @@ cdef class LocalSimilarityScore(EdgeScore):
 	This attributizer calculates for each edge the maximum parameter value
 	such that the edge is still contained in the sparsified graph.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph to apply the Local Similarity algorithm to.
 	triangles : vector[count]
@@ -456,8 +456,8 @@ cdef class ForestFireScore(EdgeScore):
 	This attributizer calculates for each edge the minimum parameter value
 	such that the edge is still contained in the sparsified graph.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph to apply the Forest Fire algorithm to.
 	pf : double
@@ -484,8 +484,8 @@ cdef class LocalDegreeScore(EdgeScore):
 	This attributizer calculates for each edge the maximum parameter value
 	such that the edge is still contained in the sparsified graph.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph to apply the Local Degree  algorithm to.
 	"""
@@ -507,8 +507,8 @@ cdef class RandomNodeEdgeScore(EdgeScore):
 	Random Edge sampling. This attributizer returns edge attributes where
 	each value is selected uniformly at random from [0,1].
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph to calculate the Random Edge attribute for.
 	"""
@@ -539,8 +539,8 @@ cdef class LocalFilterScore(EdgeScore):
 	For equal attribute values, neighbors of low degree are preferred.
 	If bothRequired is set (default: false), both neighbors need to indicate that they want to keep the edge.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The input graph
 	a : list
@@ -567,8 +567,8 @@ cdef class ChanceCorrectedTriangleScore(EdgeScore):
 	"""
 	Divide the number of triangles per edge by the expected number of triangles given a random edge distribution.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The input graph.
 	triangles : vector[count]
@@ -593,8 +593,8 @@ cdef class SCANStructuralSimilarityScore(EdgeScore):
 	"""
 	An implementation of the SCANStructuralSimilarityScore algorithm.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph to apply the Local Similarity algorithm to.
 	triangles : vector[count]
@@ -621,8 +621,8 @@ cdef class GlobalThresholdFilter:
 	Calculates a sparsified graph by filtering globally using a constant threshold value
 	and a given edge attribute.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph to sparsify.
 	attribute : vector[double]

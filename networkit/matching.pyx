@@ -7,8 +7,8 @@ cdef class Matching:
 
 		Create a new matching data structure for `z` elements.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		z : index, optional
 			Maximum number of nodes.
 	"""
@@ -49,8 +49,8 @@ cdef class Matching:
 	def getVector(self):
 		""" Get the vector storing the data
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			Vector indexed by node id to node id of mate or none if unmatched
 		"""
@@ -73,8 +73,8 @@ cdef class Matcher(Algorithm):
 	def getMatching(self):
 		"""  Returns the matching.
 
-		Returns
-		-------
+		Returns:
+		--------
 		Matching
 		"""
 		if self._this == NULL:

@@ -1,7 +1,7 @@
 # distutils: language=c++
 
-""" Abstract base class for algorithms """
 cdef class Algorithm:
+	""" Abstract base class for algorithms """
 	def __init__(self, *args, **namedargs):
 		if type(self) == Algorithm:
 			raise RuntimeError("Error, you may not use Algorithm directly, use a sub-class instead")
@@ -18,9 +18,9 @@ cdef class Algorithm:
 		"""
 		Executes the algorithm.
 
-		Returns
-		-------
-		Algorithm:
+		Returns:
+		--------
+		Algorithm
 			self
 		"""
 		if self._this == NULL:
@@ -33,10 +33,10 @@ cdef class Algorithm:
 		"""
 		States whether an algorithm has already run.
 
-		Returns
-		-------
-		Algorithm:
-			self
+		Returns:
+		--------
+		bool
+			True if Algorithm has finished.
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
@@ -45,8 +45,8 @@ cdef class Algorithm:
 	def toString(self):
 		""" Get string representation.
 
-		Returns
-		-------
+		Returns:
+		--------
 		string
 			String representation of algorithm and parameters.
 		"""
@@ -57,10 +57,10 @@ cdef class Algorithm:
 
 	def isParallel(self):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		bool
-			True if algorithm can run multi-threaded
+			True if algorithm can run multi-threaded.
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")

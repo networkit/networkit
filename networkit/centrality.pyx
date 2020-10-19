@@ -42,8 +42,8 @@ cdef class Centrality(Algorithm):
 
 	def scores(self):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		list
 			the list of all scores
 		"""
@@ -53,8 +53,8 @@ cdef class Centrality(Algorithm):
 
 	def score(self, v):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		the score of node v
 		"""
 		if self._this == NULL:
@@ -63,8 +63,8 @@ cdef class Centrality(Algorithm):
 
 	def ranking(self):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		dictionary
 			a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
 		"""
@@ -74,8 +74,8 @@ cdef class Centrality(Algorithm):
 
 	def maximum(self):
 		"""
-		Returns
-		-------
+		Returns:
+		--------
 		the maximum theoretical centrality score for the given graph
 		"""
 		if self._this == NULL:
@@ -104,20 +104,20 @@ cdef extern from "<networkit/centrality/Betweenness.hpp>":
 
 cdef class Betweenness(Centrality):
 	"""
-		Betweenness(G, normalized=False, computeEdgeCentrality=False)
+	Betweenness(G, normalized=False, computeEdgeCentrality=False)
 
-		Constructs the Betweenness class for the given Graph `G`. If the betweenness scores should be normalized,
-  	then set `normalized` to True. The run() method takes O(nm) time, where n is the number
-	 	of nodes and m is the number of edges of the graph.
+	Constructs the Betweenness class for the given Graph `G`. If the betweenness scores should be normalized,
+	then set `normalized` to True. The run() method takes O(nm) time, where n is the number
+ 	of nodes and m is the number of edges of the graph.
 
-	 	Parameters
-	 	----------
-	 	G : networkit.Graph
-	 		The graph.
-	 	normalized : bool, optional
-	 		Set this parameter to True if scores should be normalized in the interval [0,1].
-		computeEdgeCentrality: bool, optional
-			Set this to true if edge betweenness scores should be computed as well.
+ 	Parameters:
+ 	-----------
+ 	G : networkit.Graph
+ 		The graph.
+ 	normalized : bool, optional
+ 		Set this parameter to True if scores should be normalized in the interval [0,1].
+	computeEdgeCentrality: bool, optional
+		Set this to true if edge betweenness scores should be computed as well.
 	"""
 
 	def __cinit__(self, Graph G, normalized=False, computeEdgeCentrality=False):
@@ -128,8 +128,8 @@ cdef class Betweenness(Centrality):
 	def edgeScores(self):
 		""" Get a vector containing the betweenness score for each edge in the graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			The betweenness scores calculated by run().
 		"""
@@ -154,8 +154,8 @@ cdef class ApproxBetweenness(Centrality):
 	Although this algorithm has a theoretical guarantee, the algorithm implemented in Estimate Betweenness usually performs better in practice
 	Therefore, we recommend to use EstimateBetweenness if no theoretical guarantee is needed.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		the graph
 	epsilon : double, optional
@@ -190,8 +190,8 @@ cdef class ApproxBetweenness2(Centrality):
         was shown to perform well in practice.
         If a guarantee is required, use ApproxBetweenness.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		input graph
 	nSamples : count
@@ -226,8 +226,8 @@ cdef class EstimateBetweenness(Centrality):
         was shown to perform well in practice.
         If a guarantee is required, use ApproxBetweenness.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		input graph
 	nSamples : count
@@ -275,11 +275,11 @@ cdef class KadabraBetweenness(Algorithm):
 	to be previously set with 'useThreadId' set to True. To do this, call the
 	setSeed(<your_seed>, True) fuction within the Random module.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The input graph.
-  err : double
+  	err : double
 		Maximum additive error guaranteed when approximating the
 		betweenness centrality of all nodes.
 	delta : double
@@ -304,8 +304,8 @@ cdef class KadabraBetweenness(Algorithm):
 		Returns the ranking of the nodes according to their approximated
 		betweenness centrality.
 
-		Returns
-		-------
+		Returns:
+		--------
 		list(int, double)
 			A list of pairs (node, betweenness) representing the top-k ranking.
 		"""
@@ -316,8 +316,8 @@ cdef class KadabraBetweenness(Algorithm):
 		Returns Nodes of the graph sorted by their approximated betweenness
 		centrality.
 
-		Returns
-		-------
+		Returns:
+		--------
 		list(int)
 			A list with the top-k nodes with highest approximated betweenness
 			centrality.
@@ -328,8 +328,8 @@ cdef class KadabraBetweenness(Algorithm):
 		"""
 		Returns the sorted list of approximated betweenness centrality scores.
 
-		Returns
-		-------
+		Returns:
+		--------
 		list(double)
 			A list with the top-k scores of the nodes with highest approximated
 			betweenness centrality.
@@ -341,8 +341,8 @@ cdef class KadabraBetweenness(Algorithm):
 		Returns the approximated betweenness centrality score of all the nodes of
 		the graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		list(double)
 			A list with the approximated betweenness centrality score of each node of
 			the graph.
@@ -353,8 +353,8 @@ cdef class KadabraBetweenness(Algorithm):
 		"""
 		Returns the total number of samples.
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			The total number of shortest paths sampled by the algorithm.
 		"""
@@ -364,8 +364,8 @@ cdef class KadabraBetweenness(Algorithm):
 		"""
 		Returns the upper bound of the required number of samples.
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			Upper bound of the number of shortest paths to be sampled.
 		"""
@@ -383,12 +383,12 @@ cdef extern from "<networkit/centrality/DynBetweenness.hpp>":
 
 cdef class DynBetweenness(Algorithm):
 	""" The algorithm computes the betweenness centrality of all nodes
-			and updates them after an edge insertion.
+	and updates them after an edge insertion.
 
 	DynBetweenness(G)
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		the graph
 	"""
@@ -401,8 +401,8 @@ cdef class DynBetweenness(Algorithm):
 	def update(self, ev):
 		""" Updates the betweenness centralities after the edge insertions.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		ev : GraphEvent.
 		"""
 		(<_DynBetweenness*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
@@ -410,8 +410,8 @@ cdef class DynBetweenness(Algorithm):
 	def updateBatch(self, batch):
 		""" Updates the betweenness centralities after the batch `batch` of edge insertions.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		batch : list of GraphEvent.
 		"""
 		cdef vector[_GraphEvent] _batch
@@ -422,8 +422,8 @@ cdef class DynBetweenness(Algorithm):
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			The betweenness scores calculated by run().
 		"""
@@ -432,13 +432,13 @@ cdef class DynBetweenness(Algorithm):
 	def score(self, v):
 		""" Get the betweenness score of node `v` calculated by run().
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		v : node
 			A node.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			The betweenness score of node `v.
 		"""
@@ -448,8 +448,8 @@ cdef class DynBetweenness(Algorithm):
 		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
 		calculated by run().
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			A vector of pairs.
 		"""
@@ -468,8 +468,8 @@ cdef extern from "<networkit/centrality/DynApproxBetweenness.hpp>":
 
 cdef class DynApproxBetweenness(Algorithm):
 	""" The algorithm approximates the betweenness of all vertices so that the scores are
-	  within an additive error @a epsilon with probability at least (1- @a delta).
-	  The values are normalized by default.
+	within an additive error @a epsilon with probability at least (1- @a delta).
+	The values are normalized by default.
 
 	DynApproxBetweenness(G, epsilon=0.01, delta=0.1, storePredecessors=True, universalConstant=1.0)
 
@@ -477,8 +477,8 @@ cdef class DynApproxBetweenness(Algorithm):
 	within an additive error epsilon with probability at least (1- delta).
 	The values are normalized by default.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		the graph
 	epsilon : double, optional
@@ -501,8 +501,8 @@ cdef class DynApproxBetweenness(Algorithm):
 	def update(self, ev):
 		""" Updates the betweenness centralities after the edge insertions.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		ev : GraphEvent.
 		"""
 		(<_DynApproxBetweenness*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
@@ -510,8 +510,8 @@ cdef class DynApproxBetweenness(Algorithm):
 	def updateBatch(self, batch):
 		""" Updates the betweenness centralities after the batch `batch` of edge insertions.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		batch : list of GraphEvent.
 		"""
 		cdef vector[_GraphEvent] _batch
@@ -522,8 +522,8 @@ cdef class DynApproxBetweenness(Algorithm):
 	def scores(self):
 		""" Get a vector containing the betweenness score for each node in the graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			The betweenness scores calculated by run().
 		"""
@@ -532,13 +532,13 @@ cdef class DynApproxBetweenness(Algorithm):
 	def score(self, v):
 		""" Get the betweenness score of node `v` calculated by run().
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		v : node
 			A node.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			The betweenness score of node `v.
 		"""
@@ -548,8 +548,8 @@ cdef class DynApproxBetweenness(Algorithm):
 		""" Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
 		calculated by run().
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			A vector of pairs.
 		"""
@@ -582,8 +582,8 @@ cdef class DynBetweennessOneNode:
 	(faster than updating it for all nodes), based on the algorithm
 	proposed by Bergamini et al. "Improving the betweenness centrality of a node by adding links"
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		the graph
 	x : node
@@ -608,8 +608,8 @@ cdef class DynBetweennessOneNode:
 	def update(self, ev):
 		""" Updates the betweenness centralities after the batch `batch` of edge insertions.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		ev : edge insertion.
 		"""
 		self._this.update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
@@ -617,8 +617,8 @@ cdef class DynBetweennessOneNode:
 	def updateBatch(self, batch):
 		""" Updates the betweenness centrality of node x after the batch `batch` of edge insertions.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		batch : list of GraphEvent.
 		"""
 		cdef vector[_GraphEvent] _batch
@@ -664,31 +664,31 @@ cdef extern from "<networkit/centrality/Closeness.hpp>":
 
 cdef class Closeness(Centrality):
 	"""
-		Closeness(G, normalized, bool checkConnectdedness)
-		Closeness(G, normalized, networkit.centrality.ClosenessVariant variant)
+	Closeness(G, normalized, bool checkConnectdedness)
+	Closeness(G, normalized, networkit.centrality.ClosenessVariant variant)
 
-		Constructs the Closeness class for the given Graph `G`. If the Closeness scores should not be normalized,
-		set `normalized` to False. The run() method takes O(nm) time, where n is the number
-		of nodes and m is the number of edges of the graph.
+	Constructs the Closeness class for the given Graph `G`. If the Closeness scores should not be normalized,
+	set `normalized` to False. The run() method takes O(nm) time, where n is the number
+	of nodes and m is the number of edges of the graph.
 
-		Parameters
-		----------
-		G : networkit.Graph
-			The graph.
-		normalized : bool
-			Set this parameter to False if scores should not be normalized into an interval of [0,1].
-			Normalization only works for unweighted graphs.
-		checkConnectdedness : bool
-			Set this parameter to True to also check if the graph is connected before computing closeness.
-			Set this parameter to False to not check if the graph is connected (note: the standard definition
-			of closeness works for connected graphs, choose this if the input graph is known to be connected).
-		ClosenessVariant : networkit.centrality.ClosenessVariant
-			Set this parameter to networkit.centrality.ClosenessVariant.Standard to use the standard
-			definition of closeness, that is defined for connected graphs only; in this case, checkConnectdedness
-			is automatically set to True.
-			Set this parameter to networkit.centrality.ClosenessVariant.Generalized to use the generalized
-			definition of closeness, that is defined for also non-connected graphs; in this case, checkConnectdedness
-			is automatically set to False.
+	Parameters:
+	-----------
+	G : networkit.Graph
+		The graph.
+	normalized : bool
+		Set this parameter to False if scores should not be normalized into an interval of [0,1].
+		Normalization only works for unweighted graphs.
+	checkConnectdedness : bool
+		Set this parameter to True to also check if the graph is connected before computing closeness.
+		Set this parameter to False to not check if the graph is connected (note: the standard definition
+		of closeness works for connected graphs, choose this if the input graph is known to be connected).
+	ClosenessVariant : networkit.centrality.ClosenessVariant
+		Set this parameter to networkit.centrality.ClosenessVariant.Standard to use the standard
+		definition of closeness, that is defined for connected graphs only; in this case, checkConnectdedness
+		is automatically set to True.
+		Set this parameter to networkit.centrality.ClosenessVariant.Generalized to use the generalized
+		definition of closeness, that is defined for also non-connected graphs; in this case, checkConnectdedness
+		is automatically set to False.
 	"""
 
 	def __cinit__(self, Graph G, normalized, third):
@@ -716,7 +716,7 @@ cdef extern from "<networkit/centrality/ApproxCloseness.hpp>":
 
 cdef class ApproxCloseness(Centrality):
 	""" Approximation of closeness centrality according to algorithm described in
-  Cohen et al., Computing Classic Closeness Centrality, at Scale.
+  	Cohen et al., Computing Classic Closeness Centrality, at Scale.
 
 	ApproxCloseness(G, nSamples, epsilon=0.1, normalized=False, type=OUTBOUND)
 
@@ -725,8 +725,8 @@ cdef class ApproxCloseness(Centrality):
 	remaining nodes is the closest sampled node to it. If a node lies very close to its pivot, a sampling approach is used.
 	Otherwise, a pivoting approach is used. Notice that the input graph has to be connected.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		input graph (undirected)
 	nSamples : count
@@ -751,8 +751,8 @@ cdef class ApproxCloseness(Centrality):
 	def getSquareErrorEstimates(self):
 		""" Return a vector containing the square error estimates for all nodes.
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			A vector of doubles.
 		"""
@@ -773,8 +773,8 @@ cdef class DegreeCentrality(Centrality):
 	Constructs the DegreeCentrality class for the given Graph `G`. If the scores should be normalized,
 	then set `normalized` to True.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	normalized : bool, optional
@@ -796,22 +796,22 @@ cdef extern from "<networkit/centrality/HarmonicCloseness.hpp>":
 
 cdef class HarmonicCloseness(Centrality):
 	"""
-	        HarmonicCloseness(G, normalized=True)
+	HarmonicCloseness(G, normalized=True)
 
-		Constructs the HarmonicCloseness class for the given Graph `G`.
-        If the harmonic closeness scores should not be normalized, set
-        `normalized` to False.
-        The run() method takes O(nm) time, where n is the number
-	 	of nodes and m is the number of edges of the graph.
+	Constructs the HarmonicCloseness class for the given Graph `G`.
+    If the harmonic closeness scores should not be normalized, set
+    `normalized` to False.
+    The run() method takes O(nm) time, where n is the number
+ 	of nodes and m is the number of edges of the graph.
 
-	 	Parameters
-	 	----------
-	 	G : networkit.Graph
-	 		The graph.
-	 	normalized : bool, optional
-	 		Set this parameter to False if scores should not be
-                        normalized into an interval of [0,1].
-                        Normalization only for unweighted graphs.
+ 	Parameters:
+ 	-----------
+ 	G : networkit.Graph
+ 		The graph.
+ 	normalized : bool, optional
+ 		Set this parameter to False if scores should not be
+                    normalized into an interval of [0,1].
+                    Normalization only for unweighted graphs.
 	"""
 
 	def __cinit__(self, Graph G, normalized=True):
@@ -837,8 +837,8 @@ cdef class TopCloseness(Algorithm):
 
 	TopCloseness(G, k=1, first_heu=True, sec_heu=True)
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G: An unweighted graph.
 	k: Number of nodes with highest closeness that have to be found. For example, if k = 10, the top 10 nodes with highest closeness will be computed.
 	first_heu: If true, the neighborhood-based lower bound is computed and nodes are sorted according to it. If false, nodes are simply sorted by degree.
@@ -853,36 +853,36 @@ cdef class TopCloseness(Algorithm):
 		self._this = new _TopCloseness(G._this, k, first_heu, sec_heu)
 
 	def topkNodesList(self, includeTrail=False):
-		""" Returns a list with the k nodes with highest closeness.
-			WARNING: closeness centrality of some nodes below the top-k could be equal
-	  		to the k-th closeness, we call them trail. Set the parameter includeTrail
-	  		to true to also include those nodes but consider that the resulting vector
-	  		could be longer than k.
+		""" Returns: a list with the k nodes with highest closeness.
+		WARNING: closeness centrality of some nodes below the top-k could be equal
+	  	to the k-th closeness, we call them trail. Set the parameter includeTrail
+	  	to true to also include those nodes but consider that the resulting vector
+	  	could be longer than k.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		includeTrail: Whether or not to include trail nodes.
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			The k nodes with highest closeness.
 		"""
 		return (<_TopCloseness*>(self._this)).topkNodesList(includeTrail)
 
 	def topkScoresList(self, includeTrail=False):
-		""" Returns a list with the scores of the k nodes with highest closeness.
-			WARNING: closeness centrality of some nodes below the top-k could be equal
-  			to the k-th closeness, we call them trail. Set the parameter includeTrail
-	  		to true to also include those centrality values but consider that the
-	  		resulting vector could be longer than k.
+		""" Returns: a list with the scores of the k nodes with highest closeness.
+		WARNING: closeness centrality of some nodes below the top-k could be equal
+  		to the k-th closeness, we call them trail. Set the parameter includeTrail
+	  	to true to also include those centrality values but consider that the
+	  	resulting vector could be longer than k.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		includeTrail: Whether or not to include trail centrality value.
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			The k highest closeness scores.
 		"""
@@ -898,20 +898,20 @@ cdef extern from "<networkit/centrality/TopHarmonicCloseness.hpp>":
 
 cdef class TopHarmonicCloseness(Algorithm):
 	""" Finds the top k nodes with highest harmonic closeness centrality faster
-            than computing it for all nodes. The implementation is based on "Computing
-            Top-k Centrality Faster in Unweighted Graphs", Bergamini et al., ALENEX16.
-            The algorithms are based on two heuristics. We reccommend to use
-            useBFSbound = false for complex networks (or networks with small diameter)
-            and useBFSbound = true for street networks (or networks with large
-            diameters). Notice that the worst case running time of the algorithm is
-            O(nm), where n is the number of nodes and m is the number of edges.
-            However, for most real-world networks the empirical running time is O(m).
+		than computing it for all nodes. The implementation is based on "Computing
+		Top-k Centrality Faster in Unweighted Graphs", Bergamini et al., ALENEX16.
+		The algorithms are based on two heuristics. We reccommend to use
+		useBFSbound = false for complex networks (or networks with small diameter)
+		and useBFSbound = true for street networks (or networks with large
+		diameters). Notice that the worst case running time of the algorithm is
+		O(nm), where n is the number of nodes and m is the number of edges.
+		However, for most real-world networks the empirical running time is O(m).
 
 
 	TopCloseness(G, k=1, useBFSbound=True)
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G: An unweighted graph.
 	k: Number of nodes with highest closeness that have to be found. For example, if k = 10, the top 10 nodes with highest closeness will be computed.
 	useBFSbound: If true, the BFSbound is re-computed at each iteration. If false, BFScut is used.
@@ -925,36 +925,36 @@ cdef class TopHarmonicCloseness(Algorithm):
 		self._this = new _TopHarmonicCloseness(G._this, k, useBFSbound)
 
 	def topkNodesList(self, includeTrail=False):
-		""" Returns a list with the k nodes with highest harmonic closeness.
-			WARNING: closeness centrality of some nodes below the top-k could be equal
-			to the k-th closeness, we call them trail. Set the parameter includeTrail
-			to true to also include those nodes but consider that the resulting vector
-			could be longer than k.
+		""" Returns: a list with the k nodes with highest harmonic closeness.
+		WARNING: closeness centrality of some nodes below the top-k could be equal
+		to the k-th closeness, we call them trail. Set the parameter includeTrail
+		to true to also include those nodes but consider that the resulting vector
+		could be longer than k.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		includeTrail: Whether or not to include trail nodes.
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			The k nodes with highest harmonic closeness.
 		"""
 		return (<_TopHarmonicCloseness*>(self._this)).topkNodesList(includeTrail)
 
 	def topkScoresList(self, includeTrail=False):
-		""" Returns a list with the scores of the k nodes with highest harmonic closeness.
-			WARNING: closeness centrality of some nodes below the top-k could
-		  	be equal to the k-th closeness, we call them trail. Set the parameter
-		  	includeTrail to true to also include those centrality values but consider
-		  	that the resulting vector could be longer than k.
+		""" Returns: a list with the scores of the k nodes with highest harmonic closeness.
+		WARNING: closeness centrality of some nodes below the top-k could
+		be equal to the k-th closeness, we call them trail. Set the parameter
+		includeTrail to true to also include those centrality values but consider
+		that the resulting vector could be longer than k.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		includeTrail: Whether or not to include trail centrality value.
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			The k highest closeness harmonic scores.
 		"""
@@ -972,16 +972,16 @@ cdef extern from "<networkit/centrality/DynTopHarmonicCloseness.hpp>":
 
 cdef class DynTopHarmonicCloseness(Algorithm):
 	""" Finds the top k nodes with highest harmonic closeness centrality faster
-        than computing it for all nodes and updates them after a single or multiple
-        edge update. The implementation is based on "Computing Top-k Closeness
-	    Centrality in Fully-dynamic Graphs", Bisenius et al., ALENEX18.
-        The implementation is based on the static algorithms by Borassi et al.
-	    (complex networks) and Bergamini et al. (large-diameter networks).
+	than computing it for all nodes and updates them after a single or multiple
+	edge update. The implementation is based on "Computing Top-k Closeness
+	Centrality in Fully-dynamic Graphs", Bisenius et al., ALENEX18.
+	The implementation is based on the static algorithms by Borassi et al.
+	(complex networks) and Bergamini et al. (large-diameter networks).
 
 	DynTopHarmonicCloseness(G, k=1, useBFSbound=True)
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G: An unweighted graph.
 	k: Number of nodes with highest closeness that have to be found. For example, if k = 10, the top 10 nodes with highest closeness will be computed.
 	useBFSbound: If true, the BFSbound is re-computed at each iteration. If false, BFScut is used.
@@ -995,54 +995,54 @@ cdef class DynTopHarmonicCloseness(Algorithm):
 		self._this = new _DynTopHarmonicCloseness(G._this, k, useBFSbound)
 
 	def ranking(self, includeTrail = False):
-		""" Returns the ranking of the k most central nodes in the graph.
-			WARNING: closeness centrality of some nodes below the top-k could be equal
-		  	to the k-th closeness, we call them trail. Set the parameter includeTrail
-		  	to true to also include those nodes but consider that the resulting vector
-		  	could be longer than k.
+		""" Returns: the ranking of the k most central nodes in the graph.
+		WARNING: closeness centrality of some nodes below the top-k could be equal
+		to the k-th closeness, we call them trail. Set the parameter includeTrail
+		to true to also include those nodes but consider that the resulting vector
+		could be longer than k.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		includeTrail: Whether or not to include trail nodes.
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 				The ranking.
 		"""
 		return (<_DynTopHarmonicCloseness*>(self._this)).ranking(includeTrail)
 
 	def topkNodesList(self, includeTrail = False):
-		""" Returns a list with the k nodes with highest harmonic closeness.
-			WARNING: closeness centrality of some nodes below the top-k could be equal
-			to the k-th closeness, we call them trail. Set the parameter includeTrail
-			to true to also include those nodes but consider that the resulting vector
-			could be longer than k.
+		""" Returns: a list with the k nodes with highest harmonic closeness.
+		WARNING: closeness centrality of some nodes below the top-k could be equal
+		to the k-th closeness, we call them trail. Set the parameter includeTrail
+		to true to also include those nodes but consider that the resulting vector
+		could be longer than k.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		includeTrail: Whether or not to include trail nodes.
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			The k nodes with highest harmonic closeness.
 		"""
 		return (<_DynTopHarmonicCloseness*>(self._this)).topkNodesList(includeTrail)
 
 	def topkScoresList(self, includeTrail = False):
-		""" Returns a list with the scores of the k nodes with highest harmonic closeness.
-			WARNING: closeness centrality of some nodes below the top-k could
-		  	be equal to the k-th closeness, we call them trail. Set the parameter
-		  	includeTrail to true to also include those centrality values but consider
-		  	that the resulting vector could be longer than k.
+		""" Returns: a list with the scores of the k nodes with highest harmonic closeness.
+		WARNING: closeness centrality of some nodes below the top-k could
+		be equal to the k-th closeness, we call them trail. Set the parameter
+		includeTrail to true to also include those centrality values but consider
+		that the resulting vector could be longer than k.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		includeTrail: Whether or not to include trail centrality value.
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			The k highest closeness harmonic scores.
 		"""
@@ -1051,18 +1051,18 @@ cdef class DynTopHarmonicCloseness(Algorithm):
 
 	""" Updates the list of the k nodes with the highest harmonic closeness in G.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	event: A GrapEvent
 	"""
 	def update(self, ev):
 		(<_DynTopHarmonicCloseness*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 
 	""" Updates the list of the k nodes with the highest harmonic closeness in G
-		after a batch of edge updates.
+	after a batch of edge updates.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	batch: A GraphEvent vector
 	"""
 	def updateBatch(self, batch):
@@ -1083,8 +1083,8 @@ cdef class LocalPartitionCoverage(Centrality):
 
 	LocalPartitionCoverage(G, P)
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	P : networkit.Partition
@@ -1119,8 +1119,8 @@ cdef class GroupDegree(Algorithm):
 
 	GroupDegree(G, k = 1, countGroupNodes = True)
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 		G: A graph.
 		k: Size of the group of nodes
 		countGroupNodes: if nodes inside the group should be counted in the
@@ -1135,8 +1135,8 @@ cdef class GroupDegree(Algorithm):
 	def groupMaxDegree(self):
 		"""
 		Returns the group with maximum degree centrality.
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			The group of k nodes with highest degree centrality.
 		"""
@@ -1148,8 +1148,8 @@ cdef class GroupDegree(Algorithm):
 		number of nodes outside the group that can be reached in one hop from at
 		least one node in the group).
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			The number of nodes outside the group that can be reached in one hop
 			from at least one node in the group.
@@ -1160,12 +1160,12 @@ cdef class GroupDegree(Algorithm):
 			"""
 			Returns the score of the given group.
 
-			Parameters
-			----------
+			Parameters:
+			-----------
 			group : set of nodes
 
-			Returns
-			-------
+			Returns:
+			--------
 			count
 					The score of the given group.
 			"""
@@ -1215,8 +1215,8 @@ cdef class GedWalk(Algorithm):
 		independent greedy strategies (lazy and stochastic). Furthermore, it allows to compute the
 		GedWalk score of a given set of nodes.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : networkit.Graph
 			A (weakly) connected graph.
 		k : int
@@ -1244,8 +1244,8 @@ cdef class GedWalk(Algorithm):
 		"""
 		Returns the computed group.
 
-		Returns
-		-------
+		Returns:
+		--------
 		list
 			The computed group.
 		"""
@@ -1255,8 +1255,8 @@ cdef class GedWalk(Algorithm):
 		"""
 		Returns the GedWalk score of the computed group.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			The GedWalk score of the computed group.
 		"""
@@ -1266,15 +1266,15 @@ cdef class GedWalk(Algorithm):
 		"""
 		Returns the GedWalk score of the input group.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		group : list
 			The input group.
 		epsilon : double
 			The precision of the score to be computed.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			An epsilon-approximation of the GedWalk score of the input group.
 		"""
@@ -1296,19 +1296,19 @@ cdef extern from "<networkit/centrality/ApproxGroupBetweenness.hpp>":
 
 cdef class ApproxGroupBetweenness(Algorithm):
 	"""
-		ApproxGroupBetweenness(G, groupSize, epsilon)
+	ApproxGroupBetweenness(G, groupSize, epsilon)
 
-		Constructs the ApproxGroupBetweenness class for a given undirected Graph
-		`G`.
+	Constructs the ApproxGroupBetweenness class for a given undirected Graph
+	`G`.
 
-		Parameters
-		----------
-		G : networkit.Graph
-			The graph.
-		groupSize : count
-			The desired size of the group.
-		epsilon : double
-			Determines the accuracy of the approximation.
+	Parameters:
+	-----------
+	G : networkit.Graph
+		The graph.
+	groupSize : count
+		The desired size of the group.
+	epsilon : double
+		Determines the accuracy of the approximation.
 	"""
 	cdef Graph _G
 
@@ -1318,13 +1318,13 @@ cdef class ApproxGroupBetweenness(Algorithm):
 
 	def groupMaxBetweenness(self):
 		"""
-			Get a vector of nodes containing the set of nodes with apporoximated
-			maximum group betweenness.
+		Get a vector of nodes containing the set of nodes with apporoximated
+		maximum group betweenness.
 
-			Returns
-			_______
-			vector
-				The group of nodes with highest approximated group betweenness.
+		Returns:
+		--------
+		vector
+			The group of nodes with highest approximated group betweenness.
 		"""
 		return (<_ApproxGroupBetweenness*>(self._this)).groupMaxBetweenness()
 
@@ -1332,13 +1332,13 @@ cdef class ApproxGroupBetweenness(Algorithm):
 		"""
 		Returns the score of the given group.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		group : list
 			Set of nodes.
 
-		Returns
-		-------
+		Returns:
+		--------
 		count
 			The score of the given group.
 		"""
@@ -1359,8 +1359,8 @@ cdef class GroupCloseness(Algorithm):
 
 	GroupCloseness(G, k=1, H=0)
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G: An unweighted graph.
 	k: Size of the group.
 	H: If equal 0, simply runs the algorithm proposed in Bergamini et al.. If > 0, interrupts all BFSs after H iterations (suggested for very large networks).
@@ -1372,16 +1372,16 @@ cdef class GroupCloseness(Algorithm):
 		self._this = new _GroupCloseness(G._this, k, H)
 
 	""" Returns group with highest closeness.
-	Returns
-	-------
+	Returns:
+	--------
 	vector
 		The group of k nodes with highest closeness.
 	"""
 	def groupMaxCloseness(self):
 		"""
 		Returns the group with maximum closeness centrality.
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			The group of k nodes with maximum closeness centrality.
 		"""
@@ -1397,12 +1397,12 @@ cdef class GroupCloseness(Algorithm):
 		"""
 			Computes the group closeness score of the given group.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		group: vector of nodes.
 
-		Returns
-		-------
+		Returns:
+		--------
 		double
 			The group closeness score of the given group.
 		"""
@@ -1415,19 +1415,19 @@ cdef extern from "<networkit/centrality/KPathCentrality.hpp>":
 
 cdef class KPathCentrality(Centrality):
 	"""
-		KPathCentrality(G, alpha=0.2, k=0)
+	KPathCentrality(G, alpha=0.2, k=0)
 
-		Constructs the K-Path Centrality class for the given Graph `G`.
+	Constructs the K-Path Centrality class for the given Graph `G`.
 
-	 	Parameters
-	 	----------
-	 	G : networkit.Graph
-	 		The graph.
-	 	alpha : double, in interval [-0.5, 0.5]
-			tradeoff between runtime and precision
-			-0.5: maximum precision, maximum runtime
-	 		 0.5: lowest precision, lowest runtime
-		k: maximum length of paths
+ 	Parameters:
+ 	-----------
+ 	G : networkit.Graph
+ 		The graph.
+ 	alpha : double, in interval [-0.5, 0.5]
+		tradeoff between runtime and precision
+		-0.5: maximum precision, maximum runtime
+ 		 0.5: lowest precision, lowest runtime
+	k: maximum length of paths
 	"""
 
 	def __cinit__(self, Graph G, alpha=0.2, k=0):
@@ -1441,23 +1441,23 @@ cdef extern from "<networkit/centrality/KatzCentrality.hpp>":
 
 cdef class KatzCentrality(Centrality):
 	"""
-		KatzCentrality(G, alpha=5e-4, beta=0.1, tol=1e-8)
+	KatzCentrality(G, alpha=5e-4, beta=0.1, tol=1e-8)
 
-		Constructs a KatzCentrality object for the given Graph `G`.
-		Each iteration of the algorithm requires O(m) time.
-		The number of iterations depends on how long it takes to reach the convergence
-		(and therefore on the desired tolerance `tol`).
+	Constructs a KatzCentrality object for the given Graph `G`.
+	Each iteration of the algorithm requires O(m) time.
+	The number of iterations depends on how long it takes to reach the convergence
+	(and therefore on the desired tolerance `tol`).
 
-	 	Parameters
-	 	----------
-	 	G : networkit.Graph
-	 		The graph.
-	 	alpha : double
-			Damping of the matrix vector product result
-		beta : double
-			Constant value added to the centrality of each vertex
-		tol : double
-			The tolerance for convergence.
+ 	Parameters:
+ 	-----------
+ 	G : networkit.Graph
+ 		The graph.
+ 	alpha : double
+		Damping of the matrix vector product result
+	beta : double
+		Constant value added to the centrality of each vertex
+	tol : double
+		The tolerance for convergence.
 	"""
 
 	def __cinit__(self, Graph G, alpha=0.2, beta=0.1, tol=1e-8):
@@ -1509,27 +1509,27 @@ cdef extern from "<networkit/centrality/LocalClusteringCoefficient.hpp>":
 
 cdef class LocalClusteringCoefficient(Centrality):
 	"""
-		LocalClusteringCoefficient(G, turbo=False)
+	LocalClusteringCoefficient(G, turbo=False)
 
-		Constructs the LocalClusteringCoefficient class for the given Graph `G`. If the local clustering coefficient values should be normalized,
-		then set `normalized` to True. The graph may not contain self-loops.
+	Constructs the LocalClusteringCoefficient class for the given Graph `G`. If the local clustering coefficient values should be normalized,
+	then set `normalized` to True. The graph may not contain self-loops.
 
-		There are two algorithms available. The trivial (parallel) algorithm needs only a small amount of additional memory.
-		The turbo mode adds a (sequential, but fast) pre-processing step using ideas from [0]. This reduces the running time
-		significantly for most graphs. However, the turbo mode needs O(m) additional memory. In practice this should be a bit
-		less than half of the memory that is needed for the graph itself. The turbo mode is particularly effective for graphs
-		with nodes of very high degree and a very skewed degree distribution.
+	There are two algorithms available. The trivial (parallel) algorithm needs only a small amount of additional memory.
+	The turbo mode adds a (sequential, but fast) pre-processing step using ideas from [0]. This reduces the running time
+	significantly for most graphs. However, the turbo mode needs O(m) additional memory. In practice this should be a bit
+	less than half of the memory that is needed for the graph itself. The turbo mode is particularly effective for graphs
+	with nodes of very high degree and a very skewed degree distribution.
 
-		[0] Triangle Listing Algorithms: Back from the Diversion
-		Mark Ortmann and Ulrik Brandes
-		2014 Proceedings of the Sixteenth Workshop on Algorithm Engineering and Experiments (ALENEX). 2014, 1-8
+	[0] Triangle Listing Algorithms: Back from the Diversion
+	Mark Ortmann and Ulrik Brandes
+	2014 Proceedings of the Sixteenth Workshop on Algorithm Engineering and Experiments (ALENEX). 2014, 1-8
 
-	 	Parameters
-	 	----------
-	 	G : networkit.Graph
-	 		The graph.
-		turbo : bool
-			If the turbo mode shall be activated.
+ 	Parameters:
+ 	-----------
+ 	G : networkit.Graph
+ 		The graph.
+	turbo : bool
+		If the turbo mode shall be activated.
 	"""
 
 	def __cinit__(self, Graph G, bool_t turbo = False):
@@ -1548,8 +1548,8 @@ cdef class Sfigality(Centrality):
 
 		$$\sigma(u) = \frac{| \{ v: \{u,v\} \in E, deg(u) < deg(v) \} |}{ deg(u) }$$
 
- 	Parameters
- 	----------
+ 	Parameters:
+ 	-----------
  	G : networkit.Graph
  		The graph.
 	"""
@@ -1609,8 +1609,8 @@ cdef class LaplacianCentrality(Centrality):
 
 	See https://dl.acm.org/citation.cfm?id=2181343.2181780 for details.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	normalized : bool, optional
@@ -1637,8 +1637,8 @@ cdef class CoreDecomposition(Centrality):
 
 	Create CoreDecomposition class for graph `G`. The graph may not contain self-loops.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	normalized : bool
@@ -1657,8 +1657,8 @@ cdef class CoreDecomposition(Centrality):
 	def maxCoreNumber(self):
 		""" Get maximum core number.
 
-		Returns
-		-------
+		Returns:
+		--------
 		index
 			The maximum core number.
 		"""
@@ -1667,8 +1667,8 @@ cdef class CoreDecomposition(Centrality):
 	def getCover(self):
 		""" Get the k-cores as cover.
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			The k-cores as sets of nodes, indexed by k.
 		"""
@@ -1677,8 +1677,8 @@ cdef class CoreDecomposition(Centrality):
 	def getPartition(self):
 		""" Get the k-shells as a partition object.
 
-		Returns
-		-------
+		Returns:
+		--------
 		networkit.Partition
 			The k-shells
 		"""
@@ -1690,8 +1690,8 @@ cdef class CoreDecomposition(Centrality):
 
 		This is only possible when storeNodeOrder was set.
 
-		Returns
-		-------
+		Returns:
+		--------
 		list
 			The nodes sorted by increasing core number.
 		"""
@@ -1710,8 +1710,8 @@ cdef class EigenvectorCentrality(Centrality):
 
 	Constructs the EigenvectorCentrality class for the given Graph `G`. `tol` defines the tolerance for convergence.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	tol : double, optional
@@ -1747,8 +1747,8 @@ cdef class PageRank(Centrality):
 
 	PageRank(G, damp=0.85, tol=1e-9)
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		Graph to be processed.
 	damp : double
@@ -1765,8 +1765,8 @@ cdef class PageRank(Centrality):
 		"""
 		Returns the number of iterations performed by the algorithm.
 
-		Returns
-		-------
+		Returns:
+		--------
 		int
 			Number of iterations performed by the algorithm.
 		"""
@@ -1803,8 +1803,8 @@ cdef class SpanningEdgeCentrality(Algorithm):
 
 	SpanningEdgeCentrality(G, tol = 0.1)
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	tol: double
@@ -1829,8 +1829,8 @@ cdef class SpanningEdgeCentrality(Algorithm):
 	def scores(self):
 		""" Get a vector containing the SEC score for each edge in the graph.
 
-		Returns
-		-------
+		Returns:
+		--------
 		vector
 			The SEC scores.
 		"""
@@ -1847,8 +1847,8 @@ cdef class ApproxSpanningEdge(Algorithm):
 	graph with probability (1 - 1/n), based on "Efficient Algorithms for Spanning Tree
 	Centrality", Hayashi et al., IJCAI, 2016. This implementation also support multi-threading.
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : networkit.Graph
 		The graph.
 	eps : double
@@ -1866,8 +1866,8 @@ cdef class ApproxSpanningEdge(Algorithm):
 		Return the spanning edge approximation for each edge of the graph.
 
 
-		Returns
-		-------
+		Returns:
+		--------
 		list
 			Spanning edge approximation for each edge of the input graph.
 		"""
@@ -1875,7 +1875,7 @@ cdef class ApproxSpanningEdge(Algorithm):
 
 def ranking(G, algorithm=Betweenness, normalized=False):
 	""" Return a ranking of nodes by the specified centrality type"""
-	# FIXME: some centrality algorithms take more parameters
+	# FIXME: some centrality algorithms take more Parameters:
 	centrality = algorithm(G, normalized)
 	centrality.run()
 	return centrality.ranking()
@@ -1888,12 +1888,12 @@ def scores(G, algorithm=Betweenness, normalized=False):
 
 def rankPerNode(ranking):
 	"""
-	Parameters
-	----------
+	Parameters:
+	-----------
  	ranking: ordered list of tuples (node, score)
 
-	Returns
-	_______
+	Returns:
+	--------
 	for each node (sorted by node ID), the ranking of the node
 
 	"""
@@ -1917,16 +1917,16 @@ def relativeRankErrors(rx, ry):
 		$$r_x(u) / r_y(u)$$
 
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	rx : list
 		ranking - ordered list of tuples (node, score)
 
 	ry:  list
 		ranking - ordered list of tuples (node, score)
 
-	Returns
-	_______
+	Returns:
+	--------
 	list of rank errors ordered by node ID
 
 	"""
@@ -1949,8 +1949,8 @@ class SpectralCentrality:
 		"""
 		Constructor.
 
-		Parameters
-		----------
+		Parameters:
+		-----------
 		G : graph
 			The graph of which to compute the centrality
 		normalized : boolean
@@ -2009,8 +2009,8 @@ class SciPyEVZ(SpectralCentrality):
 	"""
 	Compute Eigenvector centrality using algebraic meh
 
-	Parameters
-	----------
+	Parameters:
+	-----------
 	G : graph
 		The graph of which to compute the centrality
 	normalized : boolean
