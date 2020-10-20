@@ -20,7 +20,7 @@
 namespace NetworKit::Embedding {
 
 
-std::mt19937_64 getURNG();
+std::mt19937_64& getURNG();
 
 double uniform_real();
 

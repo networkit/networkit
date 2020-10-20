@@ -64,7 +64,8 @@ void preprocessNode(const Graph &graph, node t, double paramP, double paramQ) {
             }
         }
         // Normalizing table
-        std::for_each(pTable.begin(), pTable.end(), [pSum](float &p) { p /= pSum; });
+	float pfSum = (float)pSum;
+        std::for_each(pTable.begin(), pTable.end(), [pfSum](float &p) { p /= pfSum; });
 
         graphData->data[v][t].unigram(pTable);
     }

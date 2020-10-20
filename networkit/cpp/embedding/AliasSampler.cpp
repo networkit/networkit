@@ -20,20 +20,18 @@
 
 namespace NetworKit::Embedding {
 
-std::mt19937_64 getURNG() {
+std::mt19937_64& getURNG() {
 	static bool seedPerThread = true;
 	static std::once_flag once;
 	std::call_once(once, []{Aux::Random::setSeed(1, seedPerThread);});
-	static std::mt19937_64 gen = Aux::Random::getURNG();
 
-        return gen;
+	return Aux::Random::getURNG();
 }
 
 double uniform_real() {
-	static auto gen  = getURNG();
 	static std::uniform_real_distribution<> dist;
 
-	return dist(gen);
+	return dist(getURNG());
 }
 
 void AliasSampler::unigram(std::vector<float>& probs) {
@@ -49,7 +47,7 @@ void AliasSampler::unigram(std::vector<float>& probs) {
                 overV.push_back(i);
             } 
         }
-        while(underV.size() > 0 && overV.size() > 0) {
+        while( !underV.empty() && !overV.empty() ) {
             auto small = underV.back();
             auto large = overV.back();
             underV.pop_back();
@@ -62,12 +60,12 @@ void AliasSampler::unigram(std::vector<float>& probs) {
                 overV.push_back(large);
             }
         } 
-        while(underV.size() > 0){
+        while( !underV.empty() ){
             auto curr = underV.back();
             underV.pop_back();
             U[curr]=1;
         }
-        while(overV.size() > 0){
+        while( !overV.empty() ){
             auto curr = overV.back();
             overV.pop_back();
             U[curr]=1;

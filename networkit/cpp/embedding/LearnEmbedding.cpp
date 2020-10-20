@@ -98,7 +98,7 @@ void trainModel (ModelData& model, count walkNr)
 
     for (index wordI = 0; wordI < thisWalk.size(); ++wordI) {
         if (wordCntAll%10000 == 0) {
-            alpha = startAlpha * (1 - wordCntAll / (iterations * allWords + 1.0));
+            alpha = startAlpha * (1 - wordCntAll / ((double)(iterations * allWords) + 1.0));
             if ( alpha < minAlpha ) { alpha = minAlpha; }
         }
 
