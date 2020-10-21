@@ -92,7 +92,7 @@ button.btn-link.collapsed:before
 
 /* Adjust Menu colors - Hover */
 .navbar .nav > li > a:hover, .navbar .nav > li > a:hover:first-letter, .navbar-default .navbar-nav>li>a:hover, .navbar-default .navbar-brand:hover {
-color:          white;
+transition: all 0.5s ease;
 text-shadow:    none;
 text-decoration: none;
 }
@@ -277,4 +277,13 @@ input[type=checkbox]:checked ~ [for="read_more"] span:last-of-type {
 
 #class-hierarchy {
   display: none;
+}
+
+.navbar-right {
+  margin-right: -100px;
+}
+
+#main-nav {
+  padding-left: 0;
+  padding-right: 0;
 }
