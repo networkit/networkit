@@ -515,6 +515,41 @@ examples of similar classes already exposed. Listen to the Cython
 compiler - coming from C++, its error messages are in general pleasantly
 human-readable.
 
+Adding new C++ Modules to Python
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+After having added a new C++ module to NetwoKit, you need to do the same
+in Cython before the new code is available in Python.
+According to the NetwoKit naming conventions, the corresponding Cython file
+should have the same name as your C++ module. For illustration purposes,
+assume the new C++ module is called "features". The new the Cython file is,
+therefore, also named ``features.pyx``. In order to expose "features" to Python,
+the following must be done:
+
+    #. Create the ``features.pyx`` file in the ``networkit/networkit`` directory and
+       add the following line:
+
+        ::
+
+                # distutils: language=c++
+    #. Add the string "features" to the CMakeLists file in the root directory where 
+       the other Python extension modules are listed. At this point the new file
+       should be found and compiled.
+    #. Export the C++ code as explained in the previous section to the new ``features.pyx`` file.
+       - Note that you will need to import all the NetworKit and C++ data types
+       needed in your code.
+       - ``graph.pxd`` and ``generators.pyx`` are a good starting point to find various
+       types as they import several data types.
+    #. Build using the usual commands, i.e.
+
+          ::
+
+            python3 setup.py build_ext [-jX]
+            pip3 install -e .
+    #. Once the features shared object is successfully created, import it in the
+       ``networkit/__init__.py`` file as is done with the other modules.
+       The ``features`` module has now been exposed to Python.
+
 Make algorithms interruptable with CTRL+C/SIGINT
 ------------------------------------------------
 
