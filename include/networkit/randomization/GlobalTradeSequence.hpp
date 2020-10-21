@@ -1,6 +1,9 @@
 /*
  * GlobalTradeSequence.hpp
  *
+ * This header file is deprecated and will eventually be removed.
+ * Do not included it directly.
+ *
  *  Created on: 23.05.2018
  *      Author: Manuel Penschuck <networkit@manuel.jetzt>
  */
@@ -8,6 +11,14 @@
 
 #ifndef NETWORKIT_RANDOMIZATION_GLOBAL_TRADE_SEQUENCE_HPP_
 #define NETWORKIT_RANDOMIZATION_GLOBAL_TRADE_SEQUENCE_HPP_
+
+#ifndef NETWORKIT_PRIVATE_RANDOMIZATION_GLOBAL_TRADE_SEQUENCE_HPP_
+#if defined(__clang__) || defined(__GNUG__)
+#warning "This header file is deprecated. Do not included it directly."
+#elif defined(_MSC_VER)
+#pragma message("This header file is deprecated. Do not included it directly.")
+#endif
+#endif // NETWORKIT_PRIVATE_RANDOMIZATION_GLOBAL_TRADE_SEQUENCE_HPP_
 
 #include <cassert>
 #include <cmath>
