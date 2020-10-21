@@ -48,10 +48,10 @@ jobs:
         - make -j2
         - ctest -V
 
-    - name: macOS 10.15, llvm 10
+    - name: macOS 10.15, latest llvm (version 11)
       env:
-        - CC=/usr/local/opt/llvm@10/bin/clang
-        - CXX=/usr/local/opt/llvm@10/bin/clang++
+        - CC=/usr/local/opt/llvm/bin/clang
+        - CXX=/usr/local/opt/llvm/bin/clang++
       os: osx
       osx_image: xcode12
       stage: "Additional tests"
@@ -62,7 +62,7 @@ jobs:
             - libomp
           update: true
 
-    - name: macOS 10.15, GCC 10
+    - name: macOS 10.15, latest GCC (version 10)
       env:
         - CC=/usr/local/opt/gcc@10/bin/gcc-10
         - CXX=/usr/local/opt/gcc@10/bin/g++-10
@@ -89,35 +89,6 @@ jobs:
           packages:
             - libomp
           update: false
-
-    - name: macOS 10.14, llvm 10
-      env:
-        - CC=/usr/local/opt/llvm@10/bin/clang
-        - CXX=/usr/local/opt/llvm@10/bin/clang++
-      os: osx
-      osx_image: xcode11.3
-      stage: "Additional tests"
-      addons:
-        homebrew:
-          packages:
-            - llvm
-            - libomp
-          update: true
-
-    - name: macOS 10.14, GCC 10
-      env:
-        - CC=/usr/local/opt/gcc@10/bin/gcc-10
-        - CXX=/usr/local/opt/gcc@10/bin/g++-10
-      os: osx
-      osx_image: xcode11.3
-      stage: "Additional tests"
-      addons:
-        homebrew:
-          packages:
-            - gcc@10
-          update: true
-      before_install:
-        - brew link gcc
 
     - name: Linux, Clang 9 with clang-tidy
       env:
@@ -173,7 +144,7 @@ jobs:
         - cd ..
         - coveralls -E ".*test/.*" -E ".*CMakeFiles.*" --exclude extlibs --exclude pyenv --exclude scripts --root .
 
-    - name: Linux, GCC 10
+    - name: Linux, latest GCC (version 10)
       env:
         - CC=gcc-10
         - CXX=g++-10
@@ -225,7 +196,7 @@ jobs:
             - python3.5-venv
 
     # Test more exotic builds only on Linux.
-    - name: "Linux, GCC 10: Core build, debugging"
+    - name: "Linux, latest GCC (version 10): Core build, debugging"
       env:
         - CC=gcc-10
         - CXX=g++-10
@@ -240,7 +211,7 @@ jobs:
             - g++-10
       script: *script_cpp_only
 
-    - name: "Linux, GCC 10: Core build, non-monolithic"
+    - name: "Linux, latest GCC (version 10): Core build, non-monolithic"
       env:
         - CC=gcc-10
         - CXX=g++-10
@@ -257,7 +228,7 @@ jobs:
       script: *script_cpp_only
 
     # Finally, test conformance to newer versions of the C++ standard.
-    - name: "Linux, GCC 10: C++14 conformance"
+    - name: "Linux, latest GCC (version 10): C++14 conformance"
       env:
         - CC=gcc-10
         - CXX=g++-10
@@ -273,7 +244,7 @@ jobs:
             - g++-10
       script: *script_cpp_only
 
-    - name: "Linux, GCC 10: C++17 conformance"
+    - name: "Linux, latest GCC (version 10): C++17 conformance"
       env:
         - CC=gcc-10
         - CXX=g++-10
@@ -289,7 +260,7 @@ jobs:
             - g++-10
       script: *script_cpp_only
 
-    - name: "Linux, GCC 10: C++20 conformance"
+    - name: "Linux, latest GCC (version 10): C++20 conformance"
       env:
         - CC=gcc-10
         - CXX=g++-10
