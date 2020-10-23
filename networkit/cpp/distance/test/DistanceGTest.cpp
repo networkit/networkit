@@ -7,6 +7,7 @@
 
 #include <gtest/gtest.h>
 
+#include <networkit/distance/APSP.hpp>
 #include <networkit/distance/AStar.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/BidirectionalBFS.hpp>
@@ -20,6 +21,7 @@
 #include <networkit/distance/NeighborhoodFunction.hpp>
 #include <networkit/distance/NeighborhoodFunctionApproximation.hpp>
 #include <networkit/distance/NeighborhoodFunctionHeuristic.hpp>
+#include <networkit/distance/SPSP.hpp>
 
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
@@ -464,6 +466,47 @@ TEST_F(DistanceGTest, testNeighborhoodFunctionHeuristic) {
     anf.run();
     auto heuristic = anf.getNeighborhoodFunction();
     EXPECT_EQ(exact.size(), heuristic.size());
+}
+
+TEST_F(DistanceGTest, testSPSP) {
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, true);
+        for (bool directed : {false, true}) {
+            for (bool weighted : {false, true}) {
+                auto G = ErdosRenyiGenerator(100, 0.15, directed).generate();
+                if (weighted) {
+                    G = GraphTools::toWeighted(G);
+                    G.forEdges([&](node u, node v) {
+                        G.setWeight(u, v, Aux::Random::probability());
+                    });
+                }
+
+                APSP apsp(G);
+                apsp.run();
+                const auto gt = apsp.getDistances();
+
+                for (count nSources : {1, 10, 50, 100}) {
+                    std::unordered_set<node> sources;
+                    do {
+                        sources.insert(GraphTools::randomNode(G));
+                    } while (sources.size() < nSources);
+
+                    SPSP spsp(G, sources.begin(), sources.end());
+                    spsp.run();
+                    const auto nodemap = spsp.getSourceIndexMap();
+                    const auto distances = spsp.getDistances();
+
+                    for (node source : sources) {
+                        const auto &curDist = distances[nodemap.at(source)];
+                        G.forNodes([&](node target) {
+                            EXPECT_DOUBLE_EQ(gt[source][target], spsp.getDistance(source, target));
+                            EXPECT_DOUBLE_EQ(gt[source][target], curDist[target]);
+                        });
+                    }
+                }
+            }
+        }
+    }
 }
 
 } /* namespace NetworKit */
