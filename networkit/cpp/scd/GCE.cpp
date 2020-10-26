@@ -41,6 +41,11 @@ GCE::GCE(const Graph &G, std::string objective)
     }
 }
 
+std::set<node> GCE::expandSeed(node seed) {
+    WARN("GCE::expandSeed is deprecated, use GCE::expandOneCommunity instead");
+    return expandOneCommunity(seed);
+}
+
 template <bool objectiveIsM>
 std::set<node> expandseed_internal(const Graph&G, const std::set<node>& seeds) {
     /**

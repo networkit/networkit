@@ -17,6 +17,11 @@ namespace NetworKit {
 
 PageRankNibble::PageRankNibble(const Graph& g, double alpha, double epsilon): SelectiveCommunityDetector(g), alpha(alpha), epsilon(epsilon) {}
 
+std::set<node> PageRankNibble::expandSeed(node seed) {
+    WARN("PageRankNibble::expandSeed is deprecated, use PageRankNibble::expandOneCommunity instead");
+    return expandOneCommunity(seed);
+}
+
 std::set<node> PageRankNibble::bestSweepSet(std::vector<std::pair<node, double>>& pr) {
     TRACE("Finding best sweep set. Support size: ",  pr.size());
 

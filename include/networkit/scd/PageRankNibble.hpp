@@ -41,8 +41,19 @@ public:
     ~PageRankNibble() override = default;
 
     /**
-     * @param seed Seed nodes for which a community is to be found.
+     * Expand a node into a community.
+     *
+     * Deprecated, use PageRankNibble::expandOneCommunity instead.
+     *
+     * @param seed Seed node for which a community is to be found.
+     *
+     * @return Set of nodes that makes up the best community found around the @a seed node.
+     */
+    std::set<node> TLX_DEPRECATED(expandSeed(node seed));
 
+    /**
+     * @param seeds Seed nodes for which a community is to be found.
+     *
      * @return Set of nodes that makes up the best community found around the @a seeds nodes.
      */
     std::set<node> expandOneCommunity(const std::set<node>& seeds) override;
