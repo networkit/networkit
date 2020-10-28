@@ -34,11 +34,12 @@ public:
      * Each iteration of the algorithm requires O(m) time. The number of iterations depends on how long it takes to reach the convergence.
      *
      * @param[in] G The graph.
-     * @param[in] alpha Damping of the matrix vector product result
+     * @param[in] alpha Damping of the matrix vector product result, must be non negative.
+     * Leave this parameter to 0 to use the default value 1 / (max_degree + 1).
      * @param[in] beta Constant value added to the centrality of each vertex
      * @param[in] tol The tolerance for convergence.
      */
-    KatzCentrality(const Graph& G, double alpha = 5e-4, double beta = 0.1, double tol = 1e-8);
+    KatzCentrality(const Graph& G, double alpha = 0, double beta = 0.1, double tol = 1e-8);
 
     /**
      * Computes katz centrality on the graph passed in constructor.

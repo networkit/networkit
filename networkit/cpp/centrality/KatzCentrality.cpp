@@ -8,13 +8,17 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/centrality/KatzCentrality.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
 KatzCentrality::KatzCentrality(const Graph& G, double alpha, double beta, double tol):
         Centrality(G, true), alpha(alpha), beta(beta), tol(tol)
 {
-
+    if (alpha < 0)
+        throw std::runtime_error("Alpha must be non negative.");
+    if (alpha == 0)
+        alpha = 1. / (1. + GraphTools::maxDegree(G));
 }
 
 void KatzCentrality::run() {
