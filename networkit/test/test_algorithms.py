@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-import unittest
+import numpy as np
 import os
 import random
+import unittest
 
 import networkit as nk
 
@@ -610,6 +611,25 @@ class TestSelfLoops(unittest.TestCase):
 		testMesh(9, 18)
 		testMesh(7, 1)
 
+	def testApproxElectricalClosenes(self):
+		for seed in [1, 2, 3]:
+			nk.engineering.setSeed(seed, True)
+			g = nk.generators.ErdosRenyiGenerator(50, 0.15, False).generate()
+			g = nk.components.ConnectedComponents(g).extractLargestConnectedComponent(g, True)
+			eps = 0.1
+			apx = nk.centrality.ApproxElectricalCloseness(g, eps).run().getDiagonal()
+
+			# Create laplacian matrix
+			L = np.zeros((g.numberOfNodes(), g.numberOfNodes()))
+			for u in g.iterNodes():
+				L[u, u] = g.degree(u)
+				for v in g.iterNeighbors(u):
+					L[u, v] = -1
+					L[v, u] = -1
+
+			pinv = np.linalg.pinv(L).diagonal()
+			for u in g.iterNodes():
+				self.assertLessEqual(abs(apx[u] - pinv[u]), eps)
 
 	def testDistanceSPSP(self):
 		nk.engineering.setSeed(1, True)
