@@ -45,6 +45,7 @@ void Dijkstra::run() {
 
     // priority queue with distance-node pairs
     distances[source] = 0.;
+    heap.clear();
     heap.push(source);
 
     auto initPath = [&](node u, node v) {

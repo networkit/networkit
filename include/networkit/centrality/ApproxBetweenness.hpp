@@ -1,5 +1,5 @@
 /*
- * ApproxBetweenness.h
+ * ApproxBetweenness.hpp
  *
  *  Created on: 09.04.2014
  *      Author: cls
@@ -18,7 +18,7 @@ namespace NetworKit {
  * Approximation of betweenness centrality according to algorithm described in
  * Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling
  */
-class ApproxBetweenness: public Centrality {
+class ApproxBetweenness final: public Centrality {
 
 public:
 
@@ -48,13 +48,13 @@ public:
     /**
      * @return number of samples taken in last run
      */
-    count numberOfSamples();
+    count numberOfSamples() const;
 
 
 private:
 
-    double epsilon;
-    double delta;
+    const double epsilon;
+    const double delta;
     count r; // number of samples taken in last run
     double universalConstant;
 };
