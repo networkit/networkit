@@ -10,7 +10,8 @@
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Random.hpp>
-#include <networkit/randomization/GlobalTradeSequence.hpp>
+
+#include "../GlobalTradeSequence.hpp"
 
 namespace NetworKit {
 

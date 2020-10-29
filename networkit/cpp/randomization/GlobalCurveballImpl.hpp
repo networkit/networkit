@@ -25,7 +25,8 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphBuilder.hpp>
 #include <networkit/randomization/GlobalCurveball.hpp>
-#include <networkit/randomization/GlobalTradeSequence.hpp>
+
+#include "GlobalTradeSequence.hpp"
 
 namespace NetworKit {
 namespace CurveballDetails {

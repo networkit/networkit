@@ -1,6 +1,9 @@
 /*
  * GlobalTradeSequence.hpp
  *
+ * This header file is deprecated and will eventually be removed.
+ * Do not included it directly.
+ *
  *  Created on: 23.05.2018
  *      Author: Manuel Penschuck <networkit@manuel.jetzt>
  */
@@ -8,6 +11,14 @@
 
 #ifndef NETWORKIT_RANDOMIZATION_GLOBAL_TRADE_SEQUENCE_HPP_
 #define NETWORKIT_RANDOMIZATION_GLOBAL_TRADE_SEQUENCE_HPP_
+
+#ifndef NETWORKIT_PRIVATE_RANDOMIZATION_GLOBAL_TRADE_SEQUENCE_HPP_
+#if defined(__clang__) || defined(__GNUG__)
+#warning "This header file is deprecated. Do not included it directly."
+#elif defined(_MSC_VER)
+#pragma message("This header file is deprecated. Do not included it directly.")
+#endif
+#endif // NETWORKIT_PRIVATE_RANDOMIZATION_GLOBAL_TRADE_SEQUENCE_HPP_
 
 #include <cassert>
 #include <cmath>
@@ -22,6 +33,9 @@
 namespace NetworKit {
 namespace CurveballDetails {
 
+template <typename T>
+class FixedLinearCongruentialMap; // forward declaration (implementation below)
+
 /**
  * Computes a bijection f:[p]->[p], x -> (a*x+b) mod p where p is chosen
  * as the smallest p >= n and p prime. a and b are drawn unif at random.
@@ -34,8 +48,9 @@ class LinearCongruentialMap {
     using signed_value_type = typename std::make_signed<T>::type;
     using signed_tuple = std::tuple<signed_value_type, signed_value_type, signed_value_type>;
 
+    friend FixedLinearCongruentialMap<T>;
+
 public:
-    static constexpr bool has_invert = true;
     using value_type = T;
 
     LinearCongruentialMap() {}
@@ -73,21 +88,15 @@ public:
 
     //! randomly samples parameters a and b
     void sampleParameters(std::mt19937_64 &prng) {
-        {
-            const value_type max_a = std::numeric_limits<value_type>::max() / n - 1;
-            if (max_a < p) {
-                std::cerr << "WARNING: Reduce randomness of hash function to avoid integer "
-                             "precision issues\n";
-            }
+        const value_type max_a = std::numeric_limits<value_type>::max() / n - 1;
+        if (max_a < p) {
+            std::cerr << "WARNING: Reduce randomness of hash function to avoid integer "
+                         "precision issues\n";
+        }
 
-            std::uniform_int_distribution<value_type> distr(1, std::min<value_type>(p, max_a) - 1);
-            a = distr(prng);
-            ainv = static_cast<value_type>((std::get<1>(gcdExtended(a, p)) + p) % p);
-        }
-        {
-            std::uniform_int_distribution<value_type> distr(0, p - 1);
-            b = distr(prng);
-        }
+        a = std::uniform_int_distribution<value_type>{1, std::min<value_type>(p, max_a) - 1}(prng);
+        ainv = static_cast<value_type>((std::get<1>(gcdExtended(a, p)) + p) % p);
+        b = std::uniform_int_distribution<value_type>{0, p - 1}(prng);
     }
 
     //! Sets parameters a = 1 and b = 0
@@ -132,20 +141,19 @@ private:
         return n;
     }
 
-    // extended euclidian algorithm with 1 = gcd(a, p) = a*s + t*p mod p = a*s
+    // extended Euclidean algorithm with 1 = gcd(a, p) = a*s + t*p mod p = a*s
     // --> s = 1/a
-    signed_tuple gcdExtended(signed_value_type a, signed_value_type b) const {
+    static signed_tuple gcdExtended(signed_value_type a, signed_value_type b) noexcept {
         if (a == 0)
             return signed_tuple{b, 0, 1};
 
         const value_type div = b / a;
         const value_type rem = b % a;
 
-        auto tmp = gcdExtended(rem, a);
-        value_type x = std::get<2>(tmp) - div * std::get<1>(tmp);
-        auto result = std::make_tuple(std::get<0>(tmp), x, std::get<1>(tmp));
+        const auto recursion = gcdExtended(rem, a);
+        value_type x = std::get<2>(recursion) - div * std::get<1>(recursion);
 
-        return result;
+        return signed_tuple(std::get<0>(recursion), x, std::get<1>(recursion));
     }
 };
 
@@ -162,7 +170,6 @@ class FixedLinearCongruentialMap {
     using signed_tuple = std::tuple<signed_value_type, signed_value_type, signed_value_type>;
 
 public:
-    static constexpr bool has_invert = true;
     using value_type = T;
 
     FixedLinearCongruentialMap() {}
@@ -177,7 +184,9 @@ public:
     }
 
     FixedLinearCongruentialMap(value_type n, value_type a, value_type b)
-        : n(n), a(a), ainv(static_cast<value_type>((std::get<1>(gcdExtended(a, p)) + p) % p)),
+        : n(n), a(a), //
+          ainv(static_cast<value_type>(
+              (std::get<1>(LinearCongruentialMap<T>::gcdExtended(a, p)) + p) % p)),
           b(b) {}
 
     FixedLinearCongruentialMap(const FixedLinearCongruentialMap &) = default;
@@ -199,16 +208,14 @@ public:
     bool isGap(value_type y) const { return invert(y) >= n; }
 
     //! randomly samples parameters a and b
-    void sampleParameters(std::mt19937_64 &prrg) {
-        {
-            std::uniform_int_distribution<value_type> distr(1, p - 1);
-            a = distr(prrg);
-            ainv = static_cast<value_type>((std::get<1>(gcdExtended(a, p)) + p) % p);
-        }
-        {
-            std::uniform_int_distribution<value_type> distr(0, p - 1);
-            b = distr(prrg);
-        }
+    void sampleParameters(std::mt19937_64 &prng) {
+        if (n >= p)
+            throw std::runtime_error("Support only up to 2147483646 nodes");
+
+        a = std::uniform_int_distribution<value_type>{1, p - 1}(prng);
+        ainv = static_cast<value_type>(
+            (std::get<1>(LinearCongruentialMap<T>::gcdExtended(a, p)) + p) % p);
+        b = std::uniform_int_distribution<value_type>{0, p - 1}(prng);
     }
 
     //! Sets parameters a = 1 and b = 0
@@ -225,29 +232,12 @@ public:
 
 private:
     value_type n; //< number of elements to be mapped
-    static constexpr value_type p =
-        (1 || sizeof(value_type) == 4) ? 2147483647 : 2305843009213693951;
+    static constexpr value_type p = 2147483647;
 
     value_type a;    //< multiplicative parameter in hash
     value_type ainv; //< multiplicative invert
 
     value_type b; //< additive parameter in hash
-
-    // extended euclidian algorithm with 1 = gcd(a, p) = a*s + t*p mod p = a*s
-    // --> s = 1/a
-    signed_tuple gcdExtended(const signed_value_type a, const signed_value_type b) const {
-        if (a == 0)
-            return signed_tuple{b, 0, 1};
-
-        const value_type div = b / a;
-        const value_type rem = b % a;
-
-        auto tmp = gcdExtended(rem, a);
-        value_type x = std::get<2>(tmp) - div * std::get<1>(tmp);
-        auto result = std::make_tuple(std::get<0>(tmp), x, std::get<1>(tmp));
-
-        return result;
-    }
 };
 
 /**
@@ -272,7 +262,7 @@ public:
         hashFunctors.reserve(num_global_trades);
         hashFunctors.push_back(Hash{num_nodes, prng});
 
-        for (size_t i = 0; i < num_global_trades; i++) {
+        while (hashFunctors.size() < num_global_trades) {
             // we copy the hash function, rather than constructing a new one,
             // to avoid repeated computations, such as the next larger prime
             // number
@@ -303,7 +293,7 @@ public:
     size_t numberOfRounds() const { return hashFunctors.size(); }
 
 private:
-    std::vector<Hash> hashFunctors; // Todo: make tlx::simple_vector
+    std::vector<Hash> hashFunctors;
     Hash current;
     Hash next;
 };

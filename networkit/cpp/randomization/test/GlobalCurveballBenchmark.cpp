@@ -8,12 +8,12 @@
 
 #include <gtest/gtest.h>
 
-#include <networkit/randomization/GlobalCurveball.hpp>
-#include <networkit/randomization/GlobalTradeSequence.hpp>
-
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/generators/HyperbolicGenerator.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/randomization/GlobalCurveball.hpp>
+
+#include "../GlobalTradeSequence.hpp"
 
 namespace NetworKit {
 
