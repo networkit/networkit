@@ -92,6 +92,8 @@ void ParallelConnectedComponents::run() {
             component[u] = cc.componentOfNode(nodeMapping[u]);
         });
     }
+
+    hasRun = true;
 }
 
 void ParallelConnectedComponents::runSequential() {
@@ -164,20 +166,32 @@ void ParallelConnectedComponents::runSequential() {
             component[u] = cc.componentOfNode(nodeMapping[u]);
         });
     }
+
+    hasRun = true;
 }
 
 
-Partition ParallelConnectedComponents::getPartition() {
+Partition ParallelConnectedComponents::getPartition() const {
+    assureFinished();
     return this->component;
 }
 
-count ParallelConnectedComponents::numberOfComponents() {
+count ParallelConnectedComponents::numberOfComponents() const {
+    assureFinished();
     return this->component.numberOfSubsets();
 }
 
-count ParallelConnectedComponents::componentOfNode(node u) {
+count ParallelConnectedComponents::componentOfNode(node u) const {
+    assureFinished();
     assert (component[u] != none);
     return component[u];
+}
+
+std::vector<std::vector<node>> ParallelConnectedComponents::getComponents() const {
+
+    std::vector<std::vector<node>> result(this->numberOfComponents());
+    G->forNodes([&](node u) { result[component[u]].push_back(u); });
+    return result;
 }
 
 }

@@ -127,6 +127,7 @@ cdef extern from "<networkit/components/ParallelConnectedComponents.hpp>":
 		count numberOfComponents() except +
 		count componentOfNode(node query) except +
 		_Partition getPartition() except +
+		vector[vector[node]] getComponents() except +
 
 
 cdef class ParallelConnectedComponents(Algorithm):
@@ -140,13 +141,42 @@ cdef class ParallelConnectedComponents(Algorithm):
 		self._this = new _ParallelConnectedComponents(G._this, coarsening)
 
 	def getPartition(self):
+		""" Get a Partition that represents the components.
+
+		Returns:
+		--------
+		networkit.Partition
+			A partition representing the found components.
+		"""
 		return Partition().setThis((<_ParallelConnectedComponents*>(self._this)).getPartition())
 
 	def numberOfComponents(self):
+		""" Get the number of connected components.
+
+		Returns:
+		--------
+		count:
+			The number of connected components.
+		"""
 		return (<_ParallelConnectedComponents*>(self._this)).numberOfComponents()
 
 	def componentOfNode(self, v):
+		"""  Get the the component in which node `v` is situated.
+
+		v : node
+			The node whose component is asked for.
+		"""
 		return (<_ParallelConnectedComponents*>(self._this)).componentOfNode(v)
+
+	def getComponents(self):
+		""" Get the connected components, each as a list of nodes.
+
+		Returns:
+		--------
+		list:
+			The connected components.
+		"""
+		return (<_ParallelConnectedComponents*>(self._this)).getComponents()
 
 
 cdef extern from "<networkit/components/StronglyConnectedComponents.hpp>":

@@ -44,21 +44,25 @@ public:
     /**
      * This method returns the number of connected components.
      */
-    count numberOfComponents();
+    count numberOfComponents() const;
 
     /**
      * This method returns the the component in which node query is situated.
      *
      * @param[in]	query	the node whose component is asked for
      */
-    count componentOfNode(node u);
+    count componentOfNode(node u) const;
 
 
     /**
      * Return a Partition that represents the components
      */
-    Partition getPartition();
+    Partition getPartition() const;
 
+    /**
+     * @return Vector of components, each stored as (unordered) set of nodes.
+     */
+    std::vector<std::vector<node>> getComponents() const;
 
 private:
     const Graph* G;

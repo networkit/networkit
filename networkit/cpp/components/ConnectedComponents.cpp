@@ -67,7 +67,6 @@ Partition ConnectedComponents::getPartition() const {
 std::vector<std::vector<node>> ConnectedComponents::getComponents() const {
     assureFinished();
 
-    // transform partition into vector of unordered_set
     std::vector<std::vector<node>> result(numComponents);
 
     G->forNodes([&](node u) { result[component[u]].push_back(u); });
