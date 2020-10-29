@@ -806,7 +806,6 @@ def readGraph(path, fileformat, *kargs, **kwargs):
 		with open(path, "r") as file:    # catch a wrong path before it crashes the interpreter
 			try:
 				G = reader.read(path)
-				G.setName(os.path.basename(path).split(".")[0])	# set name of graph to name of file
 				return G
 			except Exception as e:
 				raise IOError("{0} is not a valid {1} file: {2}".format(path,fileformat,e))
@@ -824,12 +823,14 @@ def readGraphs(dirPath, pattern, fileformat, some=None, exclude=None, **kwargs):
 		commentPrefix and continuous are optional
 	"""
 	graphs = {}
+	graph_id = 0
 	for root, dirs, files in os.walk(dirPath):
 		for file in files:
 			if fnmatch.fnmatch(file, pattern):
 				if (exclude is None) or (not fnmatch.fnmatch(file, exclude)):
 					G = readGraph(os.path.join(root, file), fileformat, **kwargs)
-					graphs[G.getName()] = G
+					graphs[graph_id] = G
+					graph_id += 1
 					if some:
 						if len(graphs) == some:
 							return graphs

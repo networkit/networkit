@@ -52,8 +52,6 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		edgeid edgeId(node, node) except +
 		count numberOfNodes() except +
 		count numberOfEdges() except +
-		pair[count, count] size() except +
-		double density() except +
 		index upperNodeIdBound() except +
 		index upperEdgeIdBound() except +
 		count degree(node u) except +
@@ -61,25 +59,17 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		count degreeOut(node u) except +
 		double weightedDegree(node u, bool_t) except +
 		double weightedDegreeIn(node u, bool_t) except +
-		count maxDegree() except +
-		count maxDegreeIn() except +
-		double maxWeightedDegree() except +
-		double maxWeightedDegreeIn() except +
 		bool_t isIsolated(node u) except +
-		_Graph copyNodes() except +
 		node addNode() except +
 		node addNodes(node) except +
 		void removeNode(node u) except +
 		bool_t hasNode(node u) except +
 		void restoreNode(node u) except +
-		void append(_Graph) except +
-		void merge(_Graph) except +
 		void addEdge(node u, node v, edgeweight w) except +
 		void setWeight(node u, node v, edgeweight w) except +
 		void increaseWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +
 		void removeAllEdges() except +
-		void removeEdgesFromIsolatedSet(vector[node] nodes) except +
 		void removeSelfLoops() except +
 		void removeMultiEdges() except +
 		void swapEdge(node s1, node t1, node s2, node t2) except +
@@ -87,10 +77,6 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		void sortEdges() except +
 		bool_t hasEdge(node u, node v) except +
 		edgeweight weight(node u, node v) except +
-		vector[node] nodes() except +
-		vector[pair[node, node]] edges() except +
-		vector[node] neighbors(node u) except +
-		vector[node] inNeighbors(node u) except +
 		void forEdges[Callback](Callback c) except +
 		void forNodes[Callback](Callback c) except +
 		void forNodePairs[Callback](Callback c) except +
@@ -99,25 +85,9 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		void forInEdgesOf[Callback](node u, Callback c) except +
 		bool_t isWeighted() except +
 		bool_t isDirected() except +
-		string toString() except +
-		string getName() except +
-		void setName(string name) except +
 		edgeweight totalEdgeWeight() except +
-		node randomNode() except +
-		node randomNeighbor(node) except +
-		pair[node, node] randomEdge(bool_t) except +
-		vector[pair[node, node]] randomEdges(count) except +
 		count numberOfSelfLoops() except +
-		_Graph toUndirected() except +
-		_Graph toUnweighted() except +
-		_Graph transpose() except +
-		void BFSfromNode "BFSfrom"[Callback] (node r, Callback c) except +
-		void BFSfrom[Callback](vector[node] startNodes, Callback c) except +
-		void BFSEdgesFrom[Callback](node r, Callback c) except +
-		void DFSfrom[Callback](node r, Callback c) except +
-		void DFSEdgesFrom[Callback](node r, Callback c) except +
 		bool_t checkConsistency() except +
-		_Graph subgraphFromNodes(unordered_set[node] nodes, bool_t includeOutNeighbors, bool_t includeInNeighbors) except +
 		_NodeRange nodeRange() except +
 		_EdgeRange edgeRange() except +
 		_EdgeWeightRange edgeWeightRange() except +

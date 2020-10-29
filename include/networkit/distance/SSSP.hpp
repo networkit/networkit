@@ -11,8 +11,6 @@
 #include <set>
 #include <stack>
 
-#include <tlx/define/deprecated.hpp>
-
 #include <networkit/auxiliary/Multiprecision.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -52,7 +50,6 @@ public:
      * @return The weighted distances from the source node to any other node in
      * the graph.
      */
-    std::vector<edgeweight> TLX_DEPRECATED(getDistances(bool moveOut));
     const std::vector<edgeweight> &getDistances();
 
     /**
@@ -120,7 +117,6 @@ public:
      *
      * @return vector of nodes ordered in increasing distance from the source
      */
-    std::vector<node> TLX_DEPRECATED(getNodesSortedByDistance(bool moveOut));
     const std::vector<node> &getNodesSortedByDistance() const;
 
     /**

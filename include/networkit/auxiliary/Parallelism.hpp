@@ -10,8 +10,6 @@
 #ifndef NETWORKIT_AUXILIARY_PARALLELISM_HPP_
 #define NETWORKIT_AUXILIARY_PARALLELISM_HPP_
 
-#include <tlx/define/deprecated.hpp>
-
 
 namespace Aux {
 
@@ -33,11 +31,6 @@ int getCurrentNumberOfThreads();
  * @return The maximum number of threads available to the program.
  */
 int getMaxNumberOfThreads();
-
-
-/** Enable OpenMP nested parallelism */
-void TLX_DEPRECATED(enableNestedParallelism());
-
 }
 
 #endif // NETWORKIT_AUXILIARY_PARALLELISM_HPP_

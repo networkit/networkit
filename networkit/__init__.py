@@ -98,7 +98,7 @@ except ImportError:
 
 # extension imports
 from .engineering import getLogLevel, setLogLevel, setPrintLocation, none, setSeed, \
-		enableNestedParallelism, setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
+		setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
 # local imports into the top namespace
 from .graph import Graph
 from .structures import Partition, Cover
@@ -134,7 +134,7 @@ def overview(G):
 			cc = components.ConnectedComponents(G).run()
 		return cc.getPartition()
 
-	print("Network Properties for:\t\t{}".format(G.getName()))
+	print("Network Properties:")
 	print("nodes, edges\t\t\t{}, {}".format(n, G.numberOfEdges()))
 	print("directed?\t\t\t{}".format("True" if G.isDirected() else "False"))
 	print("weighted?\t\t\t{}".format("True" if G.isWeighted() else "False"))

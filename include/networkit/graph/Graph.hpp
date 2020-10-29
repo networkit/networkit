@@ -77,7 +77,7 @@ struct hash<NetworKit::Edge> {
 
 namespace NetworKit {
 
-// forward declaration to randomization/CurveballImpl.h
+// forward declaration to randomization/CurveballImpl.hpp
 namespace CurveballDetails {
 class CurveballMaterialization;
 }
@@ -93,12 +93,6 @@ class Graph final {
     friend class CurveballDetails::CurveballMaterialization;
 
     // graph attributes
-    //!< unique graph id, starts at 0
-    count id;
-    //!< name of the graph, initially G#ID
-    std::string name;
-
-    // scalars
     //!< current number of nodes
     count n;
     //!< current number of edges
@@ -142,11 +136,6 @@ class Graph final {
     std::vector<std::vector<edgeid>> inEdgeIds;
     //!< same schema (and same order!) as outEdges
     std::vector<std::vector<edgeid>> outEdgeIds;
-
-    /**
-     * Returns the next unique graph id.
-     */
-    count getNextGraphId();
 
     /**
      * Returns the index of node u in the array of incoming edges of node v.
@@ -1059,25 +1048,6 @@ public:
     /** GRAPH INFORMATION **/
 
     /**
-     * Get the ID of this graph. The ID is a unique unsigned integer given to
-     * every graph on construction.
-     *
-     * This method is deprecated and will not be supported in future releases.
-     */
-    count TLX_DEPRECATED(getId() const) { return id; }
-
-    /**
-     * Return the type of the graph.
-     * 		Graph: not weighted, undirected
-     * 		WeightedGraph: weighted, undirected
-     * 		DirectedGraph: not weighted, directed
-     * 		WeightedDirectedGraph: weighted, directed
-     *
-     * This method is deprecated and will not be supported in future releases.
-     */
-    std::string TLX_DEPRECATED(typ() const);
-
-    /**
      * Try to save some memory by shrinking internal data structures of the
      * graph. Only run this once you finished editing the graph. Otherwise it
      * will cause unnecessary reallocation of memory.
@@ -1095,22 +1065,6 @@ public:
      * this temporarily duplicates the memory.
      */
     void sortEdges();
-
-    /**
-     * Set name of graph to @a name.
-     * @param name The name.
-     *
-     * This method is deprecated and will not be supported in future releases.
-     */
-    void TLX_DEPRECATED(setName(std::string name)) { this->name = name; }
-
-    /*
-     * Returns the name of the graph.
-     * @return The name of the graph.
-     *
-     * This method is deprecated and will not be supported in future releases.
-     */
-    std::string TLX_DEPRECATED(getName() const) { return name; }
 
     /**
      * Set edge count of the graph to edges.
@@ -1131,24 +1085,6 @@ public:
      * @param loops New number of self-loops.
      */
     void setNumberOfSelfLoops(Unsafe, count loops) { storedNumberOfSelfLoops = loops; }
-
-    /**
-     * Returns a string representation of the graph.
-     * @return A string representation.
-     *
-     * This method is deprecated and will not be supported in future releases.
-     */
-    std::string TLX_DEPRECATED(toString() const);
-
-    /* COPYING */
-
-    /*
-     * Copies all nodes to a new graph
-     * @return graph with the same nodes.
-     *
-     * This method is deprecated, use GraphTools::copyNodes instead.
-     */
-    Graph TLX_DEPRECATED(copyNodes() const);
 
     /* NODE MODIFIERS */
 
@@ -1227,47 +1163,6 @@ public:
 
     void restoreNode(node v);
 
-    // SET OPERATIONS
-
-    /**
-     * Appends another graph to this graph as a new subgraph. Performs node
-     * id remapping.
-     * @param G [description]
-     *
-     * This method is deprecated, use GraphTools::append instead.
-     */
-    void TLX_DEPRECATED(append(const Graph &G));
-
-    /**
-     * Modifies this graph to be the union of it and another graph.
-     * Nodes with the same ids are identified with each other.
-     * @param G [description]
-     *
-     * This method is deprecated, use GraphTools::merge instead.
-     */
-    void TLX_DEPRECATED(merge(const Graph &G));
-
-    // SUBGRAPHS
-
-    /**
-     * Returns an induced subgraph of this graph (including potential edge weights/directions)
-     *
-     * There a two relevant sets of nodes:
-     *  - Nodes are such passed as arguments
-     *  - Neighbors are empty by default.
-     *      If includeOutNeighbors is set, it includes all out neighbors of Nodes
-     *      If includeInNeighbors is set, it includes all in neighbors of Nodes (relevant only for
-     * directed graphs)
-     *
-     * The subgraph contains all nodes in Nodes + Neighbors and all edge which have one end point in
-     * Nodes and the other in Nodes or Neighbors.
-     *
-     * This method is deprecated, use GraphTools::subgraphFromNodes instead.
-     */
-    Graph TLX_DEPRECATED(subgraphFromNodes(const std::unordered_set<node> &nodes,
-                                           bool includeOutNeighbors = false,
-                                           bool includeInNeighbors = false) const);
-
     /** NODE PROPERTIES **/
 
     /**
@@ -1296,24 +1191,6 @@ public:
     count degreeOut(node v) const { return outEdges[v].size(); }
 
     /**
-     * Returns the maximum out-degree of the graph.
-     *
-     * @return The maximum out-degree of the graph.
-     *
-     * This method is deprecated, use GraphTools::maxDegree instead.
-     */
-    count TLX_DEPRECATED(maxDegree() const);
-
-    /**
-     * Returns the maximum in-degree of the graph.
-     *
-     * @return The maximum in-degree of the graph.
-     *
-     * This method is deprecated, use GraphTools::maxWeightedDegree instead.
-     */
-    count TLX_DEPRECATED(maxDegreeIn() const);
-
-    /**
      * Check whether @a v is isolated, i.e. degree is 0.
      * @param v Node.
      * @return @c true if the node is isolated (= degree is 0)
@@ -1335,28 +1212,6 @@ public:
     edgeweight weightedDegree(node u, bool countSelfLoopsTwice = false) const;
 
     /**
-     * Returns the maximum weighted degree of the graph.
-     *
-     * @return Maximum weighted degree of the graph.
-     * @note For directed graphs this is the sum of weights of all outgoing
-     * edges.
-     *
-     * This method is deprecated, use GraphTools::maxWeightedDegree instead.
-     */
-    edgeweight TLX_DEPRECATED(maxWeightedDegree() const);
-
-    /**
-     * Returns the maximum weighted in degree of the graph.
-     *
-     * @return Maximum weighted in degree of the graph.
-     * @note For directed graphs this is the sum of weights of all in-going
-     * edges.
-     *
-     * This method is deprecated, use GraphTools::maxWeightedDegreeIn instead.
-     */
-    edgeweight TLX_DEPRECATED(maxWeightedDegreeIn() const);
-
-    /**
      * Returns the weighted in-degree of @a u.
      *
      * @param u Node.
@@ -1365,35 +1220,6 @@ public:
      * @return Weighted in-degree of @a v.
      */
     edgeweight weightedDegreeIn(node u, bool countSelfLoopsTwice = false) const;
-
-    /**
-     * Returns the volume of the @a v, which is the weighted degree with
-     * self-loops counted twice.
-     *
-     * @param v Node.
-     * @return The volume of the @a v.
-     *
-     * This method is deprecated, use GraphTools::weightedDegree instead.
-     */
-    edgeweight TLX_DEPRECATED(volume(node v) const);
-
-    /**
-     * Returns a random node of the graph.
-     * @return A random node.
-     *
-     * This method is deprecated, use GraphTools::randomNode instead.
-     */
-    node TLX_DEPRECATED(randomNode() const);
-
-    /**
-     * Returns a random neighbor of @a u and @c none if degree is zero.
-     *
-     * @param u Node.
-     * @return A random neighbor of @a u.
-     *
-     * This method is deprecated, use GraphTools::randomNeighbor instead.
-     */
-    node TLX_DEPRECATED(randomNeighbor(node u) const);
 
     /* EDGE MODIFIERS */
 
@@ -1456,17 +1282,6 @@ public:
     void removeEdge(node u, node v);
 
     /**
-     * Efficiently removes all the edges adjacent to a set of nodes that is
-     * not connected to the rest of the graph. This is meant to optimize the
-     * Kadabra algorithm.
-     * @param nodesInSet vector of nodes that form a connected component that
-     * is isolated from the rest of the graph.
-     *
-     * This method is deprecated, use GraphTools::removeEdgesFromIsolatedSet instead.
-     */
-    void TLX_DEPRECATED(removeEdgesFromIsolatedSet(const std::vector<node> &nodesInSet));
-
-    /**
      * Removes all the edges in the graph.
      */
     void removeAllEdges();
@@ -1519,25 +1334,6 @@ public:
      */
     bool hasEdge(node u, node v) const noexcept;
 
-    /**
-     * Returns a random edge. By default a random node u is chosen and then
-     * some random neighbor v. So the probability of choosing (u, v) highly
-     * depends on the degree of u. Setting uniformDistribution to true, will
-     * give you a real uniform distributed edge, but will be slower.
-     * Exp. time complexity: O(1) for uniformDistribution = false, O(n) otherwise.
-     *
-     * This method is deprecated, use GraphTools::randomEdge instead.
-     */
-    std::pair<node, node> TLX_DEPRECATED(randomEdge(bool uniformDistribution = false) const);
-
-    /**
-     * Returns a vector with nr random edges. The edges are chosen uniform
-     * random.
-     *
-     * This method is deprecated, use GraphTools::randomEdges instead.
-     */
-    std::vector<std::pair<node, node>> TLX_DEPRECATED(randomEdges(count nr) const);
-
     /* GLOBAL PROPERTIES */
 
     /**
@@ -1571,19 +1367,6 @@ public:
      * @return The number of edges.
      */
     count numberOfEdges() const noexcept { return m; }
-
-    /**
-     * @return a pair (n, m) where n is the number of nodes and m is the
-     * number of edges
-     */
-    std::pair<count, count> TLX_DEPRECATED(size() const noexcept);
-
-    /**
-     * @return the density of the graph
-     *
-     * This method is deprecated, use GraphTools::density instead.
-     */
-    double TLX_DEPRECATED(density() const);
 
     /**
      * Return the number of loops {v,v} in the graph.
@@ -1665,34 +1448,6 @@ public:
      * @return The sum of all edge weights.
      */
     edgeweight totalEdgeWeight() const noexcept;
-
-    /* Collections */
-
-    /**
-     * Get list of all nodes.
-     * @return List of all nodes.
-     *
-     * This method is deprecated and will not be supported in future releases.
-     */
-    std::vector<node> TLX_DEPRECATED(nodes() const);
-
-    /**
-     * Get list of edges as node pairs.
-     * @return List of edges as node pairs.
-     *
-     * This method is deprecated and will not be supported in future releases.
-     */
-    std::vector<std::pair<node, node>> TLX_DEPRECATED(edges() const);
-
-    /**
-     * Get list of neighbors of @a u.
-     *
-     * @param u Node.
-     * @return List of neighbors of @a u.
-     *
-     * This method is deprecated and will not be supported in future releases.
-     */
-    std::vector<node> TLX_DEPRECATED(neighbors(node u) const);
 
     /**
      * Get an iterable range over the nodes of the graph.
@@ -1794,35 +1549,6 @@ public:
             return {none, none};
         return {outEdges[u][i], outEdgeIds[u][i]};
     }
-
-    /* Derivative Graphs */
-
-    /**
-     * Return an undirected version of this graph.
-     *
-     * @return undirected graph.
-     *
-     * This method is deprecated, use GraphTools::toUndirected instead.
-     */
-    Graph TLX_DEPRECATED(toUndirected() const);
-
-    /**
-     * Return an unweighted version of this graph.
-     *
-     * @return unweighted graph.
-     *
-     * This method is deprecated, use GraphTools::toUnweighted instead.
-     */
-    Graph TLX_DEPRECATED(toUnweighted() const);
-
-    /**
-     * Return the transpose of this graph. The graph must be directed.
-     *
-     * @return transpose of the graph.
-     *
-     * This method is deprecated, use GraphTools::transpose instead.
-     */
-    Graph TLX_DEPRECATED(transpose() const);
 
     /* NODE ITERATORS */
 
@@ -1979,40 +1705,6 @@ public:
      */
     template <typename L>
     double parallelSumForEdges(L handle) const;
-
-    /* GRAPH SEARCHES */
-
-    /**
-     * Iterate over nodes in breadth-first search order starting from r until
-     * connected component of r has been visited.
-     *
-     * @param r Node.
-     * @param handle Takes parameter <code>(node)</code>.
-     *
-     * These methods are deprecated, use Traversal::BFSfrom instead.
-     */
-    template <typename L>
-    void TLX_DEPRECATED(BFSfrom(node r, L handle) const);
-    template <typename L>
-    void TLX_DEPRECATED(BFSfrom(const std::vector<node> &startNodes, L handle) const);
-
-    template <typename L>
-    void TLX_DEPRECATED(BFSEdgesFrom(node r, L handle) const);
-
-    /**
-     * Iterate over nodes in depth-first search order starting from r until
-     * connected component of r has been visited.
-     *
-     * @param r Node.
-     * @param handle Takes parameter <code>(node)</code>.
-     *
-     * These methods are deprecated, use Traversal::DFSfrom instead.
-     */
-    template <typename L>
-    void TLX_DEPRECATED(DFSfrom(node r, L handle) const);
-
-    template <typename L>
-    void TLX_DEPRECATED(DFSEdgesFrom(node r, L handle) const);
 };
 
 /* NODE ITERATORS */
@@ -2433,107 +2125,6 @@ double Graph::parallelSumForEdges(L handle) const {
     }
 
     return sum;
-}
-
-/* GRAPH SEARCHES */
-
-template <typename L>
-void Graph::BFSfrom(node r, L handle) const {
-    WARN("Graph::BFSfrom is deprecated, use Traversal::BFSfrom instead.");
-    std::vector<node> startNodes(1, r);
-    BFSfrom(startNodes, handle);
-}
-
-template <typename L>
-void Graph::BFSfrom(const std::vector<node> &startNodes, L handle) const {
-    WARN("Graph::BFSfrom is deprecated, use Traversal::BFSfrom instead.");
-    std::vector<bool> marked(z);
-    std::queue<node> q, qNext;
-    count dist = 0;
-    // enqueue start nodes
-    for (node u : startNodes) {
-        q.push(u);
-        marked[u] = true;
-    }
-    do {
-        node u = q.front();
-        q.pop();
-        // apply function
-        callBFSHandle(handle, u, dist);
-        forNeighborsOf(u, [&](node v) {
-            if (!marked[v]) {
-                qNext.push(v);
-                marked[v] = true;
-            }
-        });
-        if (q.empty() && !qNext.empty()) {
-            q.swap(qNext);
-            ++dist;
-        }
-    } while (!q.empty());
-}
-
-template <typename L>
-void Graph::BFSEdgesFrom(node r, L handle) const {
-    WARN("Graph::BFSEdgesFrom is deprecated, use Traversal::BFSEdgesFrom instead.");
-    std::vector<bool> marked(z);
-    std::queue<node> q;
-    q.push(r); // enqueue root
-    marked[r] = true;
-    do {
-        node u = q.front();
-        q.pop();
-        // apply function
-        forNeighborsOf(u, [&](node, node v, edgeweight w, edgeid eid) {
-            if (!marked[v]) {
-                handle(u, v, w, eid);
-                q.push(v);
-                marked[v] = true;
-            }
-        });
-    } while (!q.empty());
-}
-
-template <typename L>
-void Graph::DFSfrom(node r, L handle) const {
-    WARN("Graph::DFSfrom is deprecated, use Traversal::DFSfrom instead.");
-    std::vector<bool> marked(z);
-    std::stack<node> s;
-    s.push(r); // enqueue root
-    marked[r] = true;
-    do {
-        node u = s.top();
-        s.pop();
-        // apply function
-        handle(u);
-        forNeighborsOf(u, [&](node v) {
-            if (!marked[v]) {
-                s.push(v);
-                marked[v] = true;
-            }
-        });
-    } while (!s.empty());
-}
-
-template <typename L>
-void Graph::DFSEdgesFrom(node r, L handle) const {
-    WARN("Graph::DFSEdgesFrom is deprecated, use Traversal::DFSEdgesFrom instead.");
-    std::vector<bool> marked(z);
-    std::stack<node> s;
-    s.push(r); // enqueue root
-    marked[r] = true;
-    do {
-        node u = s.top();
-        s.pop();
-        // apply function
-        forNeighborsOf(u, [&](node v) {
-            if (!marked[v]) {
-                handle(u, v);
-                s.push(v);
-                marked[v] = true;
-            }
-        });
-    } while (!s.empty());
 }
 
 /* EDGE MODIFIERS */

@@ -39,7 +39,6 @@ Graph METISGraphReader::read(const std::string& path) {
 
     GraphBuilder b(n, weighted);
     std::string graphName = Aux::StringTools::split(Aux::StringTools::split(path, '/').back(), '.').front();
-    b.setName(graphName);
 
     INFO("\n[BEGIN] reading graph G(n=", n, ", m=", m, ") from METIS file: ", graphName);
 

@@ -15,8 +15,6 @@
 #include <networkit/algebraic/GraphBLAS.hpp>
 #include <networkit/algebraic/Vector.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /**
@@ -59,7 +57,6 @@ public:
      *
      * @return The betweenness scores calculated by @link run().
      */
-    std::vector<double> TLX_DEPRECATED(scores(bool moveOut) override);
     const std::vector<double> &scores() const override;
 
     /**
@@ -119,13 +116,6 @@ void AlgebraicPageRank<Matrix>::run() {
     }
 
     hasRun = true;
-}
-
-template<class Matrix>
-std::vector<double> AlgebraicPageRank<Matrix>::scores(bool moveOut) {
-    assureFinished();
-    hasRun = !moveOut;
-    return moveOut ? std::move(scoreData) : scoreData;
 }
 
 template<class Matrix>

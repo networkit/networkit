@@ -118,9 +118,8 @@ cdef class SSSP(Algorithm):
 		if type(self) == SSSP:
 			raise RuntimeError("Error, you may not use SSSP directly, use a sub-class instead")
 
-	def getDistances(self, moveOut=False):
+	def getDistances(self):
 		"""
-		DEPRECATED
 		Returns a list of weighted distances from the source node, i.e. the
  	 	length of the shortest path from the source node to any other node.
 
@@ -129,10 +128,6 @@ cdef class SSSP(Algorithm):
  	 	vector
  	 		The weighted distances from the source node to any other node in the graph.
 		"""
-		if moveOut:
-			from warnings import warn
-			warn("moveOut parameter is deprecated and not used")
-
 		return (<_SSSP*>(self._this)).getDistances()
 
 	def distance(self, t):
@@ -210,7 +205,7 @@ cdef class SSSP(Algorithm):
 			result.append(list(elem))
 		return result
 
-	def getNodesSortedByDistance(self, moveOut=False):
+	def getNodesSortedByDistance(self):
 		""" Returns a list of nodes ordered in increasing distance from the source.
 
 		For this functionality to be available, storeNodesSortedByDistance has to be set to true in the constructor.
@@ -221,9 +216,6 @@ cdef class SSSP(Algorithm):
 		list
 			Nodes ordered in increasing distance from the source.
 		"""
-		if moveOut:
-			from warnings import warn
-			warn("moveOut parameter is deprecated and not used")
 		return (<_SSSP*>(self._this)).getNodesSortedByDistance()
 
 	def numberOfPaths(self, t):

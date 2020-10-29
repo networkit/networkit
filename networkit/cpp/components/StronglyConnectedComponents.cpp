@@ -18,24 +18,12 @@
 
 namespace NetworKit {
 
-StronglyConnectedComponents::StronglyConnectedComponents(const Graph &G)
-    : G(&G), iterativeAlgo(true) {
+StronglyConnectedComponents::StronglyConnectedComponents(const Graph &G) : G(&G) {
     if (!G.isDirected())
         WARN("The input graph is undirected, use ConnectedComponents for more efficiency.");
 }
 
-StronglyConnectedComponents::StronglyConnectedComponents(const Graph &G, bool iterativeAlgo)
-    : G(&G), iterativeAlgo(iterativeAlgo) {
-    if (!iterativeAlgo)
-        WARN("Running deprecated recursive algorithm.");
-}
-
 void StronglyConnectedComponents::run() {
-    if (!iterativeAlgo) {
-        runRecursively();
-        return;
-    }
-
     const auto n = G->upperNodeIdBound();
 
     // The component of every node is initially undefined.
@@ -132,62 +120,6 @@ void StronglyConnectedComponents::run() {
     }
 
     hasRun = true;
-}
-
-void StronglyConnectedComponents::runRecursively() {
-    count z = G->upperNodeIdBound();
-    Partition partition(z);
-
-    index nextIndex = 0;
-    std::vector<index> nodeIndex(z, none);
-    std::vector<index> nodeLowLink(z, none);
-    std::stack<node> stx;
-    std::vector<bool> onStack(z, false);
-
-    std::function<void(node)> strongConnect = [&](node v) {
-        nodeIndex[v] = nextIndex++;
-        nodeLowLink[v] = nodeIndex[v];
-        stx.push(v);
-        onStack[v] = true;
-
-        G->forNeighborsOf(v, [&](node w) {
-            if (nodeIndex[w] == none) {
-                strongConnect(w);
-                nodeLowLink[v] = std::min(nodeLowLink[v], nodeLowLink[w]);
-            } else if (onStack[w]) {
-                nodeLowLink[v] = std::min(nodeLowLink[v], nodeIndex[w]);
-            }
-        });
-
-        if (nodeLowLink[v] == nodeIndex[v]) {
-            partition.toSingleton(v);
-            while (true) {
-                node w = stx.top();
-                stx.pop();
-                onStack[w] = false;
-                if (w == v) {
-                    break;
-                }
-                partition[w] = partition[v];
-            }
-        }
-    };
-
-    G->forNodes([&](node v) {
-        if (nodeIndex[v] == none) {
-            strongConnect(v);
-        }
-    });
-
-    component.clear();
-    component.resize(z, none);
-    partition.forEntries([&](const node u, const index i) { component[u] = i; });
-
-    hasRun = true;
-}
-
-void StronglyConnectedComponents::runIteratively() {
-    run();
 }
 
 } // namespace NetworKit

@@ -175,38 +175,6 @@ cdef class ApproxBetweenness(Centrality):
 	def numberOfSamples(self):
 		return (<_ApproxBetweenness*>(self._this)).numberOfSamples()
 
-cdef class ApproxBetweenness2(Centrality):
-	""" DEPRECATED: Use EstimateBetweenness instead.
-
-	Estimation of betweenness centrality according to algorithm described in
-	Sanders, Geisberger, Schultes: Better Approximation of Betweenness Centrality
-
-	ApproxBetweenness2(G, nSamples, normalized=False, parallel=False)
-
-	The algorithm estimates the betweenness of all nodes, using weighting
-	of the contributions to avoid biased estimation. The run() method takes O(m)
-	time per sample, where  m is the number of edges of the graph. There is no proven
-	theoretical guarantee on the quality of the approximation. However, the algorithm
-        was shown to perform well in practice.
-        If a guarantee is required, use ApproxBetweenness.
-
-	Parameters:
-	-----------
-	G : networkit.Graph
-		input graph
-	nSamples : count
-		user defined number of samples
-	normalized : bool, optional
-		normalize centrality values in interval [0,1]
-	parallel : bool, optional
-		run in parallel with additional memory cost z + 3z * t
-	"""
-
-	def __cinit__(self, Graph G, nSamples, normalized=False, parallel=False):
-		from warnings import warn
-		warn("ApproxBetweenness2 is deprecated; use EstimateBetweenness instead.", DeprecationWarning)
-		self._G = G
-		self._this = new _EstimateBetweenness(G._this, nSamples, normalized, parallel)
 
 cdef extern from "<networkit/centrality/EstimateBetweenness.hpp>":
 

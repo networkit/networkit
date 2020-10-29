@@ -10,8 +10,6 @@
 
 #include <networkit/base/Algorithm.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /**
@@ -46,12 +44,6 @@ public:
     /**
      * Returns the scores for all nodes of the graph.
      */
-    std::vector<count> TLX_DEPRECATED(getScores(bool moveOut)) {
-        assureFinished();
-        hasRun = !moveOut;
-        return moveOut? std::move(nodeScores) : nodeScores;
-    }
-
     const std::vector<count> &getScores() const {
         assureFinished();
         return nodeScores;

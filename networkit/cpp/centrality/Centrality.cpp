@@ -40,12 +40,6 @@ std::vector<std::pair<node, double>> Centrality::ranking() {
   return ranking;
 }
 
-std::vector<double> Centrality::scores(bool moveOut) {
-  assureFinished();
-  hasRun = !moveOut;
-  return moveOut ? std::move(scoreData) : scoreData;
-}
-
 const std::vector<double> &Centrality::scores() const {
   assureFinished();
   return scoreData;

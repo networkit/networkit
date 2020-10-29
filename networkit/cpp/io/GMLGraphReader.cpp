@@ -171,9 +171,6 @@ Graph GMLGraphReader::read(const std::string& path) {
     };
 
     Graph G = parseGraph();
-    std::string graphName = Aux::StringTools::split(Aux::StringTools::split(path, '/').back(), '.').front();
-    G.setName(graphName);
-
     G.shrinkToFit();
     return G;
 }

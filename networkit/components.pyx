@@ -182,7 +182,7 @@ cdef class ParallelConnectedComponents(Algorithm):
 cdef extern from "<networkit/components/StronglyConnectedComponents.hpp>":
 
 	cdef cppclass _StronglyConnectedComponents "NetworKit::StronglyConnectedComponents":
-		_StronglyConnectedComponents(_Graph G, bool_t) except +
+		_StronglyConnectedComponents(_Graph G) except +
 		void run() nogil except +
 		count numberOfComponents() except +
 		count componentOfNode(node query) except +
@@ -195,21 +195,16 @@ cdef class StronglyConnectedComponents:
 	cdef _StronglyConnectedComponents* _this
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, iterativeAlgo = True):
+	def __cinit__(self, Graph G):
 		""" Computes the strongly connected components of a directed graph.
 
 			Parameters:
 			-----------
 			G : networkit.Graph
 				The graph.
-			iterativeAlgo : bool
-				Whether to use the iterative algorithm or the recursive one.
 		"""
-		if not iterativeAlgo:
-			from warnings import warn
-			warn("The recursive implementation of StronglyConnectedComponents has been deprecated.")
 		self._G = G
-		self._this = new _StronglyConnectedComponents(G._this, iterativeAlgo)
+		self._this = new _StronglyConnectedComponents(G._this)
 
 	def __dealloc__(self):
 		del self._this

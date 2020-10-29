@@ -20,8 +20,6 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /**
@@ -39,35 +37,9 @@ public:
     StronglyConnectedComponents(const Graph &G);
 
     /**
-     * Determines the strongly connected components of a directed graph using Tarjan's algorithm.
-     *
-     * @param G Graph A directed graph.
-     * @param iterativeAlgo bool Whether to use the iterative algorithm or the recursive one.
-     *
-     * This constructor has been deprecated because the recursive algorithm has been deprecated.
-     */
-    TLX_DEPRECATED(StronglyConnectedComponents(const Graph &G, bool iterativeAlgo));
-
-    /**
      * Runs the algorithm.
      */
     void run() override;
-
-    /**
-     * This method determines the connected components for the graph g
-     * (iterative implementation).
-     *
-     * This method is deprecated, run() already uses the iterative implementation.
-     */
-    void TLX_DEPRECATED(runIteratively());
-
-    /**
-     * This method determines the connected components for the graph g
-     * (recursive implementation).
-     *
-     * This method is deprecated, use run().
-     */
-    void TLX_DEPRECATED(runRecursively());
 
     /**
      * Return the number of connected components.
@@ -135,7 +107,6 @@ public:
 
 private:
     const Graph *G;
-    bool iterativeAlgo;
     std::vector<index> component;
     index componentIndex;
 };

@@ -16,10 +16,6 @@ SSSP::SSSP(const Graph &G, node source, bool storePaths,
       storePaths(storePaths),
       storeNodesSortedByDistance(storeNodesSortedByDistance) {}
 
-std::vector<edgeweight> SSSP::getDistances(bool moveOut) {
-    return moveOut ? std::move(distances) : distances;
-}
-
 const std::vector<edgeweight> &SSSP::getDistances() {
     return distances;
 }
@@ -106,26 +102,6 @@ std::set<std::vector<node>> SSSP::getPaths(node t, bool forward) const {
     }
 
     return paths;
-}
-
-std::vector<node> SSSP::getNodesSortedByDistance(bool moveOut) {
-    if (!storeNodesSortedByDistance) {
-        throw std::runtime_error(
-            "Nodes sorted by distance have not been stored. Set "
-            "storeNodesSortedByDistance in the constructor to true to enable "
-            "this behaviour.");
-    } else if (nodesSortedByDistance.empty()) {
-        throw std::runtime_error(
-            "The container has already been moved or run() has not been called "
-            "yet. Please call run() first.");
-    }
-    if (moveOut) {
-        std::vector<node> tmp;
-        std::swap(nodesSortedByDistance, tmp);
-        return tmp;
-    }
-
-    return nodesSortedByDistance;
 }
 
 const std::vector<node> &SSSP::getNodesSortedByDistance() const {

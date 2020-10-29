@@ -39,14 +39,7 @@ Graph::Graph(count n, bool weighted, bool directed)
       outgoing edges, for undirected graphs outEdges stores the adjacency list of
       undirected edges*/
       outEdges(n), inEdgeWeights(weighted && directed ? n : 0), outEdgeWeights(weighted ? n : 0),
-      inEdgeIds(), outEdgeIds() {
-
-    // set name from global id
-    id = getNextGraphId();
-    std::stringstream sstm;
-    sstm << "G#" << id;
-    name = sstm.str();
-}
+      inEdgeIds(), outEdgeIds() {}
 
 Graph::Graph(std::initializer_list<WeightedEdge> edges) : Graph(0, true) {
     using namespace std;
@@ -73,12 +66,6 @@ Graph::Graph(const Graph &G, bool weighted, bool directed)
 
       // let the following be empty for the start, we fill them later
       inEdges(0), outEdges(0), inEdgeWeights(0), outEdgeWeights(0) {
-
-    // set name from global id
-    id = getNextGraphId();
-    std::stringstream sstm;
-    sstm << "G#" << id;
-    name = sstm.str();
 
     if (G.isDirected() == directed) {
         // G.inEdges might be empty (if G is undirected), but
@@ -198,11 +185,6 @@ void Graph::preallocateDirected(node u, size_t outSize, size_t inSize) {
 }
 /** PRIVATE HELPERS **/
 
-count Graph::getNextGraphId() {
-    static count nextGraphId = 1;
-    return nextGraphId++;
-}
-
 index Graph::indexInInEdgeArray(node v, node u) const {
     if (!directed) {
         return indexInOutEdgeArray(v, u);
@@ -298,15 +280,6 @@ edgeid Graph::edgeId(node u, node v) const {
 }
 
 /** GRAPH INFORMATION **/
-
-std::string Graph::typ() const {
-    WARN("Graph::typ is deprecated and will not be supported in future releases.");
-    if (weighted) {
-        return directed ? "WeightedDirectedGraph" : "WeightedGraph";
-    } else {
-        return directed ? "DirectedGraph" : "Graph";
-    }
-}
 
 void Graph::shrinkToFit() {
     exists.shrink_to_fit();
@@ -451,22 +424,6 @@ void Graph::sortEdges() {
     }
 }
 
-count Graph::maxDegree() const {
-    return GraphTools::maxDegree(*this);
-}
-
-count Graph::maxDegreeIn() const {
-    return GraphTools::maxInDegree(*this);
-}
-
-edgeweight Graph::maxWeightedDegree() const {
-    return GraphTools::maxWeightedDegree(*this);
-}
-
-edgeweight Graph::maxWeightedDegreeIn() const {
-    return GraphTools::maxWeightedInDegree(*this);
-}
-
 edgeweight Graph::computeWeightedDegree(node u, bool inDegree, bool countSelfLoopsTwice) const {
     if (weighted) {
         edgeweight sum = 0.0;
@@ -493,21 +450,6 @@ edgeweight Graph::computeWeightedDegree(node u, bool inDegree, bool countSelfLoo
     }
 
     return static_cast<edgeweight>(sum);
-}
-
-std::string Graph::toString() const {
-    WARN("Graph::toString is deprecated and will not be supported in future releases.");
-    std::stringstream strm;
-    strm << typ() << "(name=" << getName() << ", n=" << numberOfNodes() << ", m=" << numberOfEdges()
-         << ")";
-    return strm.str();
-}
-
-/** COPYING **/
-
-Graph Graph::copyNodes() const {
-    WARN("Graph::copyNodes is deprecated, use GraphTools::copyNodes instead.");
-    return GraphTools::copyNodes(*this);
 }
 
 /** NODE MODIFIERS **/
@@ -600,19 +542,6 @@ edgeweight Graph::weightedDegree(node u, bool countSelfLoopsTwice) const {
 
 edgeweight Graph::weightedDegreeIn(node u, bool countSelfLoopsTwice) const {
     return computeWeightedDegree(u, true, countSelfLoopsTwice);
-}
-
-edgeweight Graph::volume(node v) const {
-    WARN("Graph::volume is deprecated, use Graph::weightedDegree instead.");
-    return weightedDegree(v, true);
-}
-
-node Graph::randomNode() const {
-    return GraphTools::randomNode(*this);
-}
-
-node Graph::randomNeighbor(node u) const {
-    return GraphTools::randomNeighbor(*this, u);
 }
 
 /** EDGE MODIFIERS **/
@@ -770,14 +699,6 @@ void Graph::removeEdge(node u, node v) {
     }
 }
 
-std::pair<count, count> Graph::size() const noexcept {
-    return GraphTools::size(*this);
-}
-
-double Graph::density() const {
-    return GraphTools::density(*this);
-}
-
 void Graph::removeAllEdges() {
     parallelForNodes([&](const node u) {
         removePartialOutEdges(unsafe, u);
@@ -787,10 +708,6 @@ void Graph::removeAllEdges() {
     });
 
     m = 0;
-}
-
-void Graph::removeEdgesFromIsolatedSet(const std::vector<node> &nodesInSet) {
-    GraphTools::removeEdgesFromIsolatedSet(*this, nodesInSet.begin(), nodesInSet.end());
 }
 
 void Graph::removeSelfLoops() {
@@ -882,14 +799,6 @@ bool Graph::hasEdge(node u, node v) const noexcept {
     }
 }
 
-std::pair<node, node> Graph::randomEdge(bool uniformDistribution) const {
-    return GraphTools::randomEdge(*this, uniformDistribution);
-}
-
-std::vector<std::pair<node, node>> Graph::randomEdges(count nr) const {
-    return GraphTools::randomEdges(*this, nr);
-}
-
 /** EDGE ATTRIBUTES **/
 
 edgeweight Graph::weight(node u, node v) const {
@@ -958,46 +867,6 @@ edgeweight Graph::totalEdgeWeight() const noexcept {
     }
 }
 
-/** Collections **/
-
-std::vector<node> Graph::nodes() const {
-    WARN("Graph::nodes is deprecated and will not be supported in future releases.");
-    std::vector<node> nodes;
-    nodes.reserve(numberOfNodes());
-    this->forNodes([&](node u) { nodes.push_back(u); });
-    return nodes;
-}
-
-std::vector<std::pair<node, node>> Graph::edges() const {
-    WARN("Graph::edges is deprecated and will not be supported in future releases.");
-    std::vector<std::pair<node, node>> edges;
-    edges.reserve(numberOfEdges());
-    this->forEdges([&](node u, node v) { edges.emplace_back(u, v); });
-    return edges;
-}
-
-std::vector<node> Graph::neighbors(node u) const {
-    std::vector<node> neighbors;
-    neighbors.reserve(degree(u));
-    this->forNeighborsOf(u, [&](node v) { neighbors.push_back(v); });
-    return neighbors;
-}
-
-Graph Graph::transpose() const {
-    WARN("Graph::transpose is deprecated, use GraphTools::transpose instead.");
-    return GraphTools::transpose(*this);
-}
-
-Graph Graph::toUndirected() const {
-    WARN("Graph::toUndirected is deprecated, use GraphTools::toUndirected instead.");
-    return GraphTools::toUndirected(*this);
-}
-
-Graph Graph::toUnweighted() const {
-    WARN("Graph::toUnweighted is deprecated, use GraphTools::toUnweighted instead.");
-    return GraphTools::toUnweighted(*this);
-}
-
 bool Graph::checkConsistency() const {
     // check for multi-edges
     std::vector<node> lastSeen(z, none);
@@ -1014,24 +883,6 @@ bool Graph::checkConsistency() const {
     });
 
     return noMultiEdges;
-}
-
-void Graph::append(const Graph &G) {
-    WARN("Graph::append is deprecated, use GraphTools::append instead.");
-    GraphTools::append(*this, G);
-}
-
-void Graph::merge(const Graph &G) {
-    WARN("Graph::merge is deprecated, use GraphTools::merge instead.");
-    GraphTools::merge(*this, G);
-}
-
-// SUBGRAPHS
-
-Graph Graph::subgraphFromNodes(const std::unordered_set<node> &nodes, bool includeOutNeighbors,
-                               bool includeInNeighbors) const {
-    WARN("Graph::subgraphFromNodes is deprecated, use GraphTools::subgraphFromNodes instead.");
-    return GraphTools::subgraphFromNodes(*this, nodes, includeOutNeighbors, includeInNeighbors);
 }
 
 } /* namespace NetworKit */

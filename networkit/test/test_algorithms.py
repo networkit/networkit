@@ -377,7 +377,6 @@ class TestSelfLoops(unittest.TestCase):
 		PLMLL.run()
 		PLMLLP = PLMLL.getPartition()
 		CG = nk.community.communityGraph(self.LL, PLMLLP)
-		self.assertIsInstance(len(CG.nodes()), int)
 
 
 	def testCommunityEvaluateCommunityDetection(self):
@@ -396,7 +395,7 @@ class TestSelfLoops(unittest.TestCase):
 		r1 = nk.graphtools.randomNode(self.L)
 		r2 = nk.graphtools.randomNode(self.L)
 		while r1 is r2:
-			r2 = self.L.randomNode()
+			r2 = nk.graphtools.randomNode(self.L)
 		EKL = nk.flow.EdmondsKarp(self.L, r1, r2)
 		EKLL = nk.flow.EdmondsKarp(self.LL, r1, r2)
 		EKL.run()

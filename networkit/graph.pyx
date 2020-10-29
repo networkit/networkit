@@ -49,21 +49,7 @@ cdef class Graph:
 		return Graph().setThis(_Graph(self._this))
 
 	def __str__(self):
-		return "NetworKit.Graph(name={0}, n={1}, m={2})".format(self.getName(), self.numberOfNodes(), self.numberOfEdges())
-
-
-	def copyNodes(self):
-		"""
-		Copies all nodes to a new graph
-
-		Returns:
-		--------
-		networkit.Graph
-			Graph with the same nodes (without edges)
-		"""
-		from warnings import warn
-		warn("Graph.copyNodes is deprecated, use graphtools.copyNodes instead.")
-		return Graph().setThis(self._this.copyNodes())
+		return "NetworKit.Graph(n={0}, m={1})".format(self.numberOfNodes(), self.numberOfEdges())
 
 	def indexEdges(self, bool_t force = False):
 		"""
@@ -118,32 +104,6 @@ cdef class Graph:
 			The number of edges.
 		"""
 		return self._this.numberOfEdges()
-
-	def size(self):
-		"""
-		Get the size of the graph.
-
-		Returns:
-	 	--------
-		tuple
-			a pair (n, m) where n is the number of nodes and m is the number of edges
-		"""
-		from warnings import warn
-		warn("Graph.size is deprecated, use graphtools.size instead.")
-		return self._this.size()
-
-
-	def density(self):
-		"""
-		Get the density of the graph.
-
-		Returns:
-	 	--------
-		double
-		"""
-		from warnings import warn
-		warn("Graph.density is deprecated, use graphtools.density instead.")
-		return self._this.density()
 
 	def upperNodeIdBound(self):
 		"""
@@ -229,58 +189,6 @@ cdef class Graph:
 		"""
 		return self._this.weightedDegreeIn(u, countSelfLoopsTwice)
 
-	def maxDegree(self):
-		"""
-		Returns the maximum out-degree of the graph.
-
-		Returns:
-		--------
-		count
-			Maximum out-degree of the graph.
-		"""
-		from warnings import warn
-		warn("Graph.maxDegree is deprecated, use graphtools.maxDegree instead.")
-		return self._this.maxDegree()
-
-	def maxDegreeIn(self):
-		"""
-		Returns the maximum in-degree of the graph.
-
-		Returns:
-		--------
-		count
-			Maximum in-degree of the graph.
-		"""
-		from warnings import warn
-		warn("Graph.maxDegreeIn is deprecated, use graphtools.maxInDegree instead.")
-		return self._this.maxDegreeIn()
-
-	def maxWeightedDegree(self):
-		"""
-		Returns the maximum weighted degree of the graph.
-
-		Returns:
-		--------
-		double
-			Maximum weighted degree of the graph.
-		"""
-		from warnings import warn
-		warn("Graph.maxWeightedDegree is deprecated, use graphtools.maxWeightedDegree instead.")
-		return self._this.maxWeightedDegree()
-
-	def maxWeightedDegreeIn(self):
-		"""
-		Returns the maximum weighted in degree of the graph.
-
-		Returns:
-		--------
-		double
-			Maximum weighted in degree of the graph.
-		"""
-		from warnings import warn
-		warn("Graph.maxWeightedDegreeIn is deprecated, use graphtools.maxWeightedInDegree instead.")
-		return self._this.maxWeightedDegreeIn()
-
 	def isIsolated(self, u):
 		"""
 		If the node `u` is isolated
@@ -360,31 +268,6 @@ cdef class Graph:
 			If the Graph has the node `u`
 		"""
 		return self._this.hasNode(u)
-
-	def append(self, Graph G):
-		""" Appends another graph to this graph as a new subgraph. Performs node id remapping.
-
-		Parameters:
-		-----------
-		G : networkit.Graph
-		"""
-		from warnings import warn
-		warn("Graph.append is deprecated, use graphtools.append instead.")
-		self._this.append(G._this)
-		return self
-
-	def merge(self, Graph G):
-		""" Modifies this graph to be the union of it and another graph.
-			Nodes with the same ids are identified with each other.
-
-		Parameters:
-		-----------
-		G : networkit.Graph
-		"""
-		from warnings import warn
-		warn("Graph.merge is deprecated, use graphtools.merge instead.")
-		self._this.merge(G._this)
-		return self
 
 	def addEdge(self, u, v, w=1.0, addMissing = False):
 		""" Insert an undirected edge between the nodes `u` and `v`. If the graph is weighted you can optionally
@@ -468,16 +351,6 @@ cdef class Graph:
 		"""
 		self._this.removeAllEdges()
 
-	def removeEdgesFromIsolatedSet(self, nodes):
-		"""
-			Efficiently removes all the edges adjacent to a set of nodes that is not connected
-			to the rest of the graph. This is meant to optimize the Kadabra algorithm.
-		"""
-		from warnings import warn
-		warn("Graph.removeEdgesFromIsolatedSet is deprecated, use graphtools.removeEdgesFromIsolatedSet instead.")
-		self._this.removeEdgesFromIsolatedSet(nodes)
-		return self
-
 	def removeSelfLoops(self):
 		""" Removes all self-loops from the graph.
 		"""
@@ -554,68 +427,6 @@ cdef class Graph:
 			Edge weight of edge {`u` , `v`} or 0 if edge does not exist.
 		"""
 		return self._this.weight(u, v)
-
-	def nodes(self):
-		""" Get list of all nodes.
-
-	 	Returns:
-	 	--------
-	 	list
-	 		List of all nodes.
-		"""
-		from warnings import warn
-		warn("Graph.nodes is deprecated.")
-		return self._this.nodes()
-
-	def edges(self):
-		""" Get list of edges as node pairs.
-
-	 	Returns:
-	 	--------
-	 	list
-	 		List of edges as node pairs.
-		"""
-		from warnings import warn
-		warn("Graph.edges is deprecated.")
-		return self._this.edges()
-
-	def neighbors(self, u):
-		""" Get list of neighbors of `u`.
-
-	 	Parameters:
-	 	-----------
-	 	u : node
-	 		Node.
-
-	 	Returns:
-	 	--------
-	 	list
-	 		List of neighbors of `u`.
-		"""
-		neighborList = []
-		self.forEdgesOf(u, lambda u, v, w, eid : neighborList.append(v))
-		return neighborList
-
-	def inNeighbors(self, u):
-		""" Get list of in-neighbors of `u`.
-
-	 	Parameters:
-	 	-----------
-	 	u : node
-	 		Node.
-
-	 	Returns:
-	 	--------
-	 	list
-	 		List of in-neighbors of `u`.
-		"""
-		if not self.isDirected():
-			from warnings import warn
-			warn("The graph is not directed, returning the neighbors!")
-			return self.neighbors(u)
-		neighborList = []
-		self.forInEdgesOf(u, lambda u, v, w, eid : neighborList.append(v))
-		return neighborList
 
 	def forNodes(self, object callback):
 		""" Experimental node iterator interface
@@ -711,43 +522,6 @@ cdef class Graph:
 		finally:
 			del wrapper
 
-	def toUndirected(self):
-		"""
-		Return an undirected version of this graph.
-
-	 	Returns:
-	 	--------
-			undirected graph.
-		"""
-		from warnings import warn
-		warn("Graph.toUndirected is deprecated, use graphtools.toUndirected instead.")
-		return Graph().setThis(self._this.toUndirected())
-
-	def toUnweighted(self):
-		"""
-		Return an unweighted version of this graph.
-
-	 	Returns:
-	 	--------
-		networkit.Graph
-		"""
-		from warnings import warn
-		warn("Graph.toUnweighted is deprecated, use graphtools.toUnweighted instead.")
-		return Graph().setThis(self._this.toUnweighted())
-
-	def transpose(self):
-		"""
-		Return the transpose of this (directed) graph.
-
-		Returns:
-		--------
-		networkit.Graph
-			Directed graph.
-		"""
-		from warnings import warn
-		warn("Graph.transpose is deprecated, use graphtools.transpose instead.")
-		return Graph().setThis(self._this.transpose())
-
 	def isWeighted(self):
 		"""
 		Returns:
@@ -760,42 +534,6 @@ cdef class Graph:
 	def isDirected(self):
 		return self._this.isDirected()
 
-	def toString(self):
-		""" Get a string representation of the graph.
-
-		Returns:
-		--------
-		string
-			A string representation of the graph.
-		"""
-		from warnings import warn
-		warn("Graph.toString is deprecated.")
-		return self._this.toString()
-
-	def getName(self):
-		""" Get the name of the graph.
-
-		Returns:
-		--------
-		string
-			The name of the graph.
-		"""
-		from warnings import warn
-		warn("Graph.getName is deprecated.")
-		return pystring(self._this.getName())
-
-	def setName(self, name):
-		""" Set name of graph to `name`.
-
-		Parameters:
-		-----------
-		name : string
-			The name.
-		"""
-		from warnings import warn
-		warn("Graph.setName is deprecated.")
-		self._this.setName(stdstring(name))
-
 	def totalEdgeWeight(self):
 		""" Get the sum of all edge weights.
 
@@ -806,74 +544,6 @@ cdef class Graph:
 		"""
 		return self._this.totalEdgeWeight()
 
-	def randomNode(self):
-		""" Get a random node of the graph.
-
-		Returns:
-		--------
-		node
-			A random node.
-		"""
-		from warnings import warn
-		warn("Graph.randomNode is deprecated, use graphtools.randomNode instead.")
-		return self._this.randomNode()
-
-	def randomNeighbor(self, u):
-		""" Get a random neighbor of `u`. Returns `none` if the degree of `u` is zero.
-
-		Parameters:
-		-----------
-		v : node
-			Node.
-
-		Returns:
-		--------
-		node
-			A random neighbor of `v.
-		"""
-		from warnings import warn
-		warn("Graph.randomNeighbor is deprecated, use graphtools.randomNeighbor instead.")
-		return self._this.randomNeighbor(u)
-
-	def randomEdge(self, bool_t uniformDistribution = False):
-		""" Get a random edge of the graph.
-
-		Parameters:
-		-----------
-		uniformDistribution : bool
-			If the distribution of the edge shall be uniform
-
-		Returns:
-		--------
-		pair
-			Random random edge.
-
-		Notes
-		-----
-		Fast, but not uniformly random if uniformDistribution is not set,
-		slow and uniformly random otherwise.
-		"""
-		from warnings import warn
-		warn("Graph.randomEdge is deprecated, use graphtools.randomEdge instead.")
-		return self._this.randomEdge(uniformDistribution)
-
-	def randomEdges(self, count numEdges):
-		""" Returns a list with numEdges random edges. The edges are chosen uniformly at random.
-
-		Parameters:
-		-----------
-		numEdges : count
-			The number of edges to choose.
-
-		Returns:
-		--------
-		list of pairs
-			The selected edges.
-		"""
-		from warnings import warn
-		warn("Graph.randomEdges is deprecated, use graphtools.randomEdges instead.")
-		return self._this.randomEdges(numEdges)
-
 	def numberOfSelfLoops(self):
 		""" Get number of self-loops, i.e. edges {v, v}.
 		Returns:
@@ -883,124 +553,11 @@ cdef class Graph:
 		"""
 		return self._this.numberOfSelfLoops()
 
-	def BFSfrom(self, start, object callback):
-		""" Experimental BFS search interface
-
-		Parameters:
-		-----------
-		start: node or list[node]
-			One or more start nodes from which the BFS shall be started
-		callback : object
-			Any callable object that takes the parameter (node, count) (the second parameter is the depth)
-		"""
-		from warnings import warn
-		warn("Graph.BFSfrom is deprecated, use graph.Traversal.BFSfrom instead")
-		cdef NodeDistCallbackWrapper *wrapper
-		try:
-			wrapper = new NodeDistCallbackWrapper(callback)
-			try:
-				self._this.BFSfromNode[NodeDistCallbackWrapper](<node?>start, dereference(wrapper))
-			except TypeError:
-				self._this.BFSfrom[NodeDistCallbackWrapper](<vector[node]?>start, dereference(wrapper))
-		finally:
-			del wrapper
-
-	def BFSEdgesFrom(self, node start, object callback):
-		""" Experimental BFS search interface that passes edges that are part of the BFS tree to the callback
-
-		Parameters:
-		-----------
-		start: node
-			The start node from which the BFS shall be started
-		callback : object
-			Any callable object that takes the parameter (node, node)
-		"""
-		from warnings import warn
-		warn("Graph.BFSEdgesFrom is deprecated, use graph.Traversal.BFSEdgesFrom instead")
-		cdef EdgeCallBackWrapper *wrapper
-		try:
-			wrapper = new EdgeCallBackWrapper(callback)
-			self._this.BFSEdgesFrom[EdgeCallBackWrapper](start, dereference(wrapper))
-		finally:
-			del wrapper
-
-	def DFSfrom(self, node start, object callback):
-		""" Experimental DFS search interface
-
-		Parameters:
-		-----------
-		start: node
-			The start node from which the DFS shall be started
-		callback : object
-			Any callable object that takes the parameter node
-		"""
-		from warnings import warn
-		warn("Graph.DFSfrom is deprecated, use graph.Traversal.DFSfrom instead")
-		cdef NodeCallbackWrapper *wrapper
-		try:
-			wrapper = new NodeCallbackWrapper(callback)
-			self._this.DFSfrom[NodeCallbackWrapper](start, dereference(wrapper))
-		finally:
-			del wrapper
-
-	def DFSEdgesFrom(self, node start, object callback):
-		""" Experimental DFS search interface that passes edges that are part of the DFS tree to the callback
-
-		Parameters:
-		-----------
-		start: node
-			The start node from which the DFS shall be started
-		callback : object
-			Any callable object that takes the parameter (node, node)
-		"""
-		from warnings import warn
-		warn("Graph.DFSEdgesFrom is deprecated, use graph.Traversal.DFSEdgesFrom instead")
-		cdef NodePairCallbackWrapper *wrapper
-		try:
-			wrapper = new NodePairCallbackWrapper(callback)
-			self._this.DFSEdgesFrom(start, dereference(wrapper))
-		finally:
-			del wrapper
-
 	def checkConsistency(self):
 		"""
 		Check for invalid graph states, such as multi-edges.
 		"""
 		return self._this.checkConsistency()
-
-
-	def subgraphFromNodes(self, nodes, includeOutNeighbors = False, includeInNeighbors = False):
-		""" Create a subgraph induced by the set `nodes`.
-
-		There a two relevant sets of nodes:
-		- `nodes` are such passed as arguments
-		- Neighbors are empty by default.
-			If `includeOutNeighbors` is set, it includes all out neighbors of Nodes
-			If `includeInNeighbors` is set, it includes all in neighbors of Nodes (relevant only for directed graphs)
-
-		The subgraph contains all nodes in Nodes + Neighbors and all edge which have one end point in Nodes
-		and the other in Nodes or Neighbors.
-
-		Parameters:
-		-----------
-		nodes : list/set
-			A subset of nodes of `G` which induce the subgraph.
-		includeOutNeighbors : bool
-			If true also include nodes pointed to by a node in nodes.
-		includeInNeighbors : bool
-			If true also include nodes pointing to a node in nodes.
-
-		Returns:
-		--------
-		networkit.Graph
-			The subgraph induced by `nodes` (and possibly their neighbors)
-		"""
-		from warnings import warn
-		warn("Graph.subgraphFromNodes is deprecated, use graphtools.subgraphFromNodes instead.")
-		cdef unordered_set[node] nnodes
-		for node in nodes:
-			nnodes.insert(node)
-		return Graph().setThis(self._this.subgraphFromNodes(nnodes, includeOutNeighbors, includeInNeighbors))
 
 	def iterNodes(self):
 		"""

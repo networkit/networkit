@@ -287,7 +287,7 @@ class Profile:
 			("Centrality.Katz",						"Node Centrality",	"Katz Centrality",
 				True,	funcScores,	"Score",				centrality.KatzCentrality,				(G, )),
 			("Centrality.Betweenness", 				"Node Centrality",	"Betweenness",
-				True,	funcScores,	"Score",				centrality.ApproxBetweenness2,			(G, 10, True)),
+				True,	funcScores,	"Score",				centrality.EstimateBetweenness,			(G, 10, True)),
 			("Centrality.Closeness",				"Node Centrality",	"Closeness",
 				True,	funcScores,	"Score",				centrality.ApproxCloseness,				(G, min(10, G.numberOfNodes()), True)),
 			("Partition.Communities", 				"Partition",		"Communities",
@@ -360,7 +360,7 @@ class Profile:
 		return self.__measures[measure]["time"]
 
 
-	def output(self, outputType, directory, style="light", color=colors["green"], parallel=False):
+	def output(self, outputType, directory, filename='graph', style="light", color=colors["green"], parallel=False):
 		""" outputs a computed profile to disk
 
 		Parameters:
@@ -379,8 +379,6 @@ class Profile:
 				raise ValueError("unknown output type: options are " + str(options_type[0:len(options_type)-1]))
 			if o == outputType:
 				break
-
-		filename  = "{0}.".format(self.__G.getName())
 
 		result = self.__format(
 			outputType = outputType,
@@ -741,7 +739,6 @@ class Profile:
 
 	def __loadProperties(self):
 		""" calculate the network properties """
-		self.__properties["Name"] = self.__G.getName()
 		self.__properties["Nodes"] = self.__G.numberOfNodes()
 		self.__properties["Edges"] = self.__G.numberOfEdges()
 		self.__properties["Density"] = kit.graphtools.density(self.__G)

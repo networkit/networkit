@@ -39,7 +39,7 @@ class TestTraversal(unittest.TestCase):
 			while len(queue) > 0:
 				u = queue.pop(0)
 				sequence.append(u)
-				for v in G.neighbors(u):
+				for v in G.iterNeighbors(u):
 					if visited[v] == False:
 						queue.append(v)
 						visited[v] = True
@@ -85,7 +85,7 @@ class TestTraversal(unittest.TestCase):
 			while len(stack) > 0:
 				u = stack.pop()
 				sequence.append(u)
-				for v in G.neighbors(u):
+				for v in G.iterNeighbors(u):
 					if visited[v] == False:
 						stack.append(v)
 						visited[v] = True
