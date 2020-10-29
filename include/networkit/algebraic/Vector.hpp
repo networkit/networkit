@@ -113,6 +113,13 @@ public:
     }
 
     /**
+     * Assigns the given value to all the elements in the vector.
+     *
+     * @param val The value to be assigned.
+     */
+    void fill(double val) { std::fill(values.begin(), values.end(), val); }
+
+    /**
      * Returns the element at index @a idx without checking the range of this vector.
      * @a idx The index of the element.
      * @return Constant reference to the element at index @a idx.
