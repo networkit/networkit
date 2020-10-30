@@ -17,7 +17,9 @@
 
 #include <networkit/graph/Graph.hpp>
 
-namespace NetworKit::Embedding {
+namespace NetworKit {
+namespace Embedding {
+
 
 using Walk      = std::vector<node>;      // one walk
 using AllWalks  = std::vector<Walk>;      // n walks for all nodes: 2 dimensions in one big chunk
@@ -31,6 +33,7 @@ void preprocessTransitionProbs(const Graph& graph, double paramP,
 AllWalks doWalks(const Graph& graph, count walkLen, count numberOfWalks);
 
 
-} // namespace NetworKit::Embedding
+} // namespace Embedding
+} // namespace NetworKit
 
 #endif // BIASEDRANDOMWALK_HPP

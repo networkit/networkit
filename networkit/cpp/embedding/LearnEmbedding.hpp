@@ -20,7 +20,8 @@
 #include "AliasSampler.hpp"
 #include "BiasedRandomWalk.hpp"
 
-namespace NetworKit::Embedding {
+namespace NetworKit {
+namespace Embedding {
 
 using Feature    = std::vector<float>;
 using Embeddings = std::vector<Feature>;
@@ -72,5 +73,6 @@ Embeddings learnEmbeddings (
 void printEmbeddings(std::ofstream& o, Embeddings& e);
 */
 
-} // namespace NetworKit::Embedding
+} // namespace Embedding
+} // namespace NetworKit
 #endif //LEARN_EMBEDDINGS_HPP

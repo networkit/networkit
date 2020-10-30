@@ -17,7 +17,8 @@
 
 #include <networkit/Globals.hpp>
 
-namespace NetworKit::Embedding {
+namespace NetworKit {
+    namespace Embedding {
 
 
 std::mt19937_64& getURNG();
@@ -35,6 +36,7 @@ public:
     index sample();
 };
 
+}
 }
 
 #endif // ALIASSAMPLER_HPP

@@ -18,7 +18,8 @@
 
 #include "AliasSampler.hpp"
 
-namespace NetworKit::Embedding {
+namespace NetworKit {
+namespace Embedding {
 
 std::mt19937_64& getURNG() {
 	static bool seedPerThread = true;
@@ -80,4 +81,5 @@ index AliasSampler::sample() {
         return y < U[x] ? x : K[x];
 }
  
-} // namespace NetworKit::Embedding
+} // namespace Embedding
+} // namespace NetworKit

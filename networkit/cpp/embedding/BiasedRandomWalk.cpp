@@ -22,7 +22,8 @@
 #include "AliasSampler.hpp"
 #include "BiasedRandomWalk.hpp"
 
-namespace NetworKit::Embedding {
+namespace NetworKit {
+namespace Embedding {
 
 using NeighborSet = std::unordered_set<node>;
 using NeighborMap = std::unordered_map<node, AliasSampler>;
@@ -200,4 +201,5 @@ node nthNeighbor(Graph::NeighborRange<> range,  index nth) {
     return *it;
 }
 
-} // namespace NetworKit::Embedding
+} // namespace Embedding
+} // namespace NetworKit

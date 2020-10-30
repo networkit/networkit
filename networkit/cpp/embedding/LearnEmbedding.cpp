@@ -24,7 +24,8 @@
 //Code from https://github.com/nicholas-leonard/word2vec/blob/master/word2vec.c
 //Customized for SNAP and node2vec
 
-namespace NetworKit::Embedding {
+namespace NetworKit {
+namespace Embedding {
 
 //Number of negative samples. Value taken from original word2vec code.
 const int negSamN = 5;
@@ -210,4 +211,5 @@ Embeddings learnEmbeddings(AllWalks& allWalks, count dimensions,
     return embeddings;
 }
 
-} // namespace NetworKit::Embedding 
+} // namespace Embedding 
+} // namespace NetworKit
