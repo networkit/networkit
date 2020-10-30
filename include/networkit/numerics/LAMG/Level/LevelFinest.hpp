@@ -20,6 +20,7 @@ class LevelFinest : public Level<Matrix> {
 public:
     LevelFinest() : Level<Matrix>(LevelType::FINEST) {}
     LevelFinest(const Matrix& A) : Level<Matrix>(LevelType::FINEST, A) {}
+    ~LevelFinest() override = default;
 };
 
 } /* namespace NetworKit */
