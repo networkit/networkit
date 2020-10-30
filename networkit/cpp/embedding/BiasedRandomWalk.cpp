@@ -103,7 +103,8 @@ void preprocessTransitionProbs(
 
 #pragma omp parallel for schedule(dynamic)
     // is forNodes parallelized for omp ?
-    for (node t = 0; t < nn; ++t) {
+//  for (node t = 0; t < nn; ++t) {
+    for (int t = 0; t < nn; ++t) { // OMP needs signed index var
         preprocessNode(graph, t, paramP, paramQ);
         ++nCnt;
     }
@@ -175,12 +176,15 @@ AllWalks doWalks(
     WalkData walkData(nn, walkLen, walksPerNode);
 
     std::vector<node> shuffled(nn);    
-    std::iota(shuffled.begin(), shuffled.end(), 0);
+//  std::iota(shuffled.begin(), shuffled.end(), 0);
+    int n = 0;
+    std::generate(shuffled.begin(), shuffled.end(), [&n](){return n++; });
 
     for (index c = 0; c < walksPerNode; ++c) {
         std::shuffle(shuffled.begin(), shuffled.end(), getURNG());
 #pragma omp parallel for schedule(dynamic)
-        for (index i = 0; i < nn; ++i) {
+        // for (index i = 0; i < nn; ++i) { OMP needs signed index var
+        for (int i = 0; i < nn; ++i) {
 
             auto v = shuffled[i];
             Walk thisWalk = oneWalk(graph, v, walkLen);            
