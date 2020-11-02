@@ -12,8 +12,8 @@
  *
  */
 
-#ifndef NETWORKIT_EMBEDDING_NODE2VEC_HPP_
-#define NETWORKIT_EMBEDDING_NODE2VEC_HPP_
+#ifndef NETWORKIT_EMBEDDING_NODE2_VEC_HPP_
+#define NETWORKIT_EMBEDDING_NODE2_VEC_HPP_
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -94,5 +94,5 @@ inline std::vector<std::vector<float>> Node2Vec::getFeatures() {
 
 } /* namespace NetworKit */
 
-#endif // NETWORKIT_EMBEDDING_NODE2VEC_HPP_
+#endif // NETWORKIT_EMBEDDING_NODE2_VEC_HPP_
 

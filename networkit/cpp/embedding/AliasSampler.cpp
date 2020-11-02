@@ -22,17 +22,17 @@ namespace NetworKit {
 namespace Embedding {
 
 std::mt19937_64& getURNG() {
-	static bool seedPerThread = true;
-	static std::once_flag once;
-	std::call_once(once, []{Aux::Random::setSeed(1, seedPerThread);});
+    static bool seedPerThread = true;
+    static std::once_flag once;
+    std::call_once(once, []{Aux::Random::setSeed(1, seedPerThread);});
 
-	return Aux::Random::getURNG();
+    return Aux::Random::getURNG();
 }
 
 double uniform_real() {
-	static std::uniform_real_distribution<> dist;
+    static std::uniform_real_distribution<> dist;
 
-	return dist(getURNG());
+    return dist(getURNG());
 }
 
 void AliasSampler::unigram(std::vector<float>& probs) {

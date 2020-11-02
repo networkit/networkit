@@ -198,8 +198,8 @@ Embeddings learnEmbeddings(AllWalks& allWalks, count dimensions,
 //#pragma omp parallel for schedule(dynamic) collapse(2)
     for (index iterCnt = 0; iterCnt < iterations; ++iterCnt) {
 #pragma omp parallel for schedule(dynamic)
-//      for (index run = 0; run < walks; ++run) { // OMP needs signed index var
-        for (int run = 0; run < walks; ++run) {
+//      for (index run = 0; run < walks; ++run) { 
+        for (omp_index run = 0; run < static_cast<omp_index>(walks); ++run) {
             trainModel(model, run);
         }
     }

@@ -34,7 +34,7 @@ Node2Vec::Node2Vec
         count L, count N, count D
     )
     : G(&G), P(P), Q(Q), L(L), N(N), D(D)
-{};
+{}
 
 void Node2Vec::run() {
     using namespace NetworKit::Embedding;

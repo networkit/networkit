@@ -65,7 +65,7 @@ void preprocessNode(const Graph &graph, node t, double paramP, double paramQ) {
             }
         }
         // Normalizing table
-	float pfSum = (float)pSum;
+        float pfSum = (float)pSum;
         std::for_each(pTable.begin(), pTable.end(), [pfSum](float &p) { p /= pfSum; });
 
         graphData->data[v][t].unigram(pTable);
@@ -104,7 +104,7 @@ void preprocessTransitionProbs(
 #pragma omp parallel for schedule(dynamic)
     // is forNodes parallelized for omp ?
 //  for (node t = 0; t < nn; ++t) {
-    for (int t = 0; t < nn; ++t) { // OMP needs signed index var
+    for (omp_index t = 0; t < static_cast<omp_index>(nn); ++t) { 
         preprocessNode(graph, t, paramP, paramQ);
         ++nCnt;
     }
@@ -184,7 +184,7 @@ AllWalks doWalks(
         std::shuffle(shuffled.begin(), shuffled.end(), getURNG());
 #pragma omp parallel for schedule(dynamic)
         // for (index i = 0; i < nn; ++i) { OMP needs signed index var
-        for (int i = 0; i < nn; ++i) {
+        for (omp_index i = 0; i < static_cast<omp_index>(nn); ++i) {
 
             auto v = shuffled[i];
             Walk thisWalk = oneWalk(graph, v, walkLen);            
