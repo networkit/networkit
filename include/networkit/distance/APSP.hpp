@@ -1,5 +1,5 @@
 /*
- * APSP.h
+ * APSP.hpp
  *
  *  Created on: 07.07.2015
  *      Author: Arie Slobbe

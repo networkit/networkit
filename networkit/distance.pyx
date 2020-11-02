@@ -916,6 +916,78 @@ cdef class APSP(Algorithm):
 		"""
 		return (<_APSP*>(self._this)).getDistance(u, v)
 
+cdef extern from "<networkit/distance/SPSP.hpp>":
+
+	cdef cppclass _SPSP "NetworKit::SPSP"(_Algorithm):
+		_SPSP(_Graph G, vector[node].iterator sourcesFirst, vector[node].iterator sourcesLast) except +
+		vector[vector[edgeweight]] getDistances() except +
+		edgeweight getDistance(node u, node v) except +
+		void setSources(vector[node].iterator sourcesFirst, vector[node].iterator sourcesLast)
+
+cdef class SPSP(Algorithm):
+	""" Some-Pairs Shortest-Paths algorithm (implemented running Dijkstra's algorithm from each source
+		node, or BFS if G is unweighted).
+
+    SPSP(G)
+
+    Computes pairwise shortest-path distances from the source nodes to all the nodes in G.
+
+    Parameters:
+	-----------
+	G : networkit.Graph
+		The graph.
+	sources : list.
+		Set of source nodes.
+    """
+	cdef Graph _G
+
+	def __cinit__(self, Graph G not None, vector[node] sources):
+		self._G = G
+		self._this = new _SPSP(G._this, sources.begin(), sources.end())
+
+	def __dealloc__(self):
+		self._G = None
+
+	def getDistances(self):
+		""" Returns a vector of vectors of distances between each source node
+		and all the other nodes pair.
+
+ 	 	Returns:
+ 	 	--------
+ 	 	vector of vectors
+			The shortest-path distances from each source node to any other node
+			in the graph.
+		"""
+		return (<_SPSP*>self._this).getDistances()
+
+	def getDistance(self, node u, node v):
+		""" Returns the length of the shortest path from source 'u' to target 'v'.
+
+		Parameters:
+		-----------
+		u : node
+			Source node.
+		v : node
+			Target node.
+
+		Returns:
+		--------
+		float
+			The distance from 'u' to 'v'.
+		"""
+		return (<_SPSP*>self._this).getDistance(u, v)
+
+	def setSources(self, vector[node] sources):
+		""" Sets the source nodes.
+
+		Parameters
+		----------
+		sources : list
+			List of the new source nodes.
+		"""
+		(<_SPSP*>self._this).setSources(sources.begin(), sources.end())
+
+
 cdef extern from "<networkit/distance/DynAPSP.hpp>":
 
 	cdef cppclass _DynAPSP "NetworKit::DynAPSP"(_APSP):

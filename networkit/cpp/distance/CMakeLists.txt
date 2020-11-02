@@ -21,6 +21,7 @@ networkit_add_module(distance
     NeighborhoodFunctionApproximation.cpp
     NeighborhoodFunctionHeuristic.cpp
     ReverseBFS.cpp
+    SPSP.cpp
     SSSP.cpp
     Volume.cpp
     )
