@@ -12,15 +12,17 @@
  *
  */
 
-#include <vector>
+// networkit-format
+
 #include <iostream>
+#include <vector>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/base/Algorithm.hpp>
-#include <networkit/graph/Graph.hpp>
 #include <networkit/embedding/Node2Vec.hpp>
+#include <networkit/graph/Graph.hpp>
 
 #include "AliasSampler.hpp"
 #include "BiasedRandomWalk.hpp"
@@ -28,28 +30,23 @@
 
 namespace NetworKit {
 
-Node2Vec::Node2Vec
-    (
-        const Graph& G, double P, double Q,
-        count L, count N, count D
-    )
-    : G(&G), P(P), Q(Q), L(L), N(N), D(D)
-{}
+Node2Vec::Node2Vec(const Graph &G, double P, double Q, count L, count N, count D)
+    : G(&G), P(P), Q(Q), L(L), N(N), D(D) {}
 
 void Node2Vec::run() {
     using namespace NetworKit::Embedding;
-    
+
     Aux::SignalHandler handler;
-    
+
     TRACE("preprocess transition probabilities ...");
-    
+
     preprocessTransitionProbs(*G, P, Q);
     handler.assureRunning();
 
     TRACE("do biased walks ...");
     auto walks = doWalks(*G, L, N);
     handler.assureRunning();
-    
+
     TRACE("learn embeddings ...");
     count winSize = 10;
     count iterations = 1;
@@ -68,4 +65,3 @@ bool Node2Vec::isParallel() const {
 }
 
 } /* namespace NetworKit */
-

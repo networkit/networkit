@@ -9,6 +9,8 @@
  *
  */
 
+// networkit-format
+
 #ifndef LEARN_EMBEDDINGS_HPP
 #define LEARN_EMBEDDINGS_HPP
 
@@ -23,50 +25,30 @@
 namespace NetworKit {
 namespace Embedding {
 
-using Feature    = std::vector<float>;
+using Feature = std::vector<float>;
 using Embeddings = std::vector<Feature>;
 
 struct ModelData {
-                    AllWalks& allWalks;
-                    count dimensions;
-                    count winSize; 
-                    count iterations;
-                    count allWords;
-                    AliasSampler& as; 
-                    count& wordCntAll;
-                    double alpha;
-                    Embeddings& synNeg;
-                    Embeddings& synPos; 
-ModelData (
-                    AllWalks& allWalks,
-                    count dimensions,
-                    count winSize, 
-                    count iterations,
-                    AliasSampler& as, 
-                    count& wordCntAll,
-                    double alpha,
-                    Embeddings& synNeg,
-                    Embeddings& synPos 
-)
-:   allWalks(allWalks),
-    dimensions(dimensions),
-    winSize(winSize),  
-    iterations(iterations),
-    allWords(allWalks.size()*allWalks[0].size()),
-    as(as), 
-    wordCntAll(wordCntAll),                
-    alpha(alpha),
-    synNeg(synNeg),
-    synPos(synPos)     {}
+    AllWalks &allWalks;
+    count dimensions;
+    count winSize;
+    count iterations;
+    count allWords;
+    AliasSampler &as;
+    count &wordCntAll;
+    double alpha;
+    Embeddings &synNeg;
+    Embeddings &synPos;
+    ModelData(AllWalks &allWalks, count dimensions, count winSize, count iterations,
+              AliasSampler &as, count &wordCntAll, double alpha, Embeddings &synNeg,
+              Embeddings &synPos)
+        : allWalks(allWalks), dimensions(dimensions), winSize(winSize), iterations(iterations),
+          allWords(allWalks.size() * allWalks[0].size()), as(as), wordCntAll(wordCntAll),
+          alpha(alpha), synNeg(synNeg), synPos(synPos) {}
 };
 
-///Learns embeddings using SGD, Skip-gram with negative sampling.
-Embeddings learnEmbeddings (
-                        AllWalks& walks, 
-                        count dimensions,
-                        count winSize, 
-                        count iterations 
-);
+/// Learns embeddings using SGD, Skip-gram with negative sampling.
+Embeddings learnEmbeddings(AllWalks &walks, count dimensions, count winSize, count iterations);
 
 /*
 ///print embeddings
@@ -75,4 +57,4 @@ void printEmbeddings(std::ofstream& o, Embeddings& e);
 
 } // namespace Embedding
 } // namespace NetworKit
-#endif //LEARN_EMBEDDINGS_HPP
+#endif // LEARN_EMBEDDINGS_HPP

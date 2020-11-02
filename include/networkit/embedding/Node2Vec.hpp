@@ -12,80 +12,75 @@
  *
  */
 
+// networkit-format
+
 #ifndef NETWORKIT_EMBEDDING_NODE2_VEC_HPP_
 #define NETWORKIT_EMBEDDING_NODE2_VEC_HPP_
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
-
 namespace NetworKit {
 
+/**
+ * @ingroup embedding
+ *
+ * Feature extraction by node2vec algorithm
+ */
+class Node2Vec final : public Algorithm {
+
+public:
     /**
-     * @ingroup embedding
+     * Creates the Node2Vec class for @a G
      *
-     * Feature extraction by node2vec algorithm
+     * @param G     The graph.
+     * @param P     Walk Return parameter (stay local).
+     * @param Q     Walk In-Out parameter (drift away).
+     * @param L     Walk length.
+     * @param N     Walk count.
+     * @param D     Dimension of embedding vectors.
      */
-    class Node2Vec final : public Algorithm {
+    Node2Vec(const Graph &G, double P = 1, double Q = 1, count L = 80, count N = 10, count D = 128);
 
-    public:
+    ~Node2Vec() override = default;
 
-        /**
-        * Creates the Node2Vec class for @a G
-        *
-        * @param G     The graph.
-        * @param P     Walk Return parameter (stay local).
-        * @param Q     Walk In-Out parameter (drift away).
-        * @param L     Walk length.
-        * @param N     Walk count.
-        * @param D     Dimension of embedding vectors.
-        */
-        Node2Vec(const Graph& G, double P = 1,
-                 double Q = 1, count L = 80,
-                 count N = 10, count D = 128
-                );
+    /**
+     This method computes all node embeddings.
+    */
+    void run() override;
 
-        ~Node2Vec() override = default;
+    /**
+     * Returns a string with the algorithm's name and its parameters, if there are any.
+     * @return The string representation of the algorithm.
+     */
+    std::string toString() const override;
 
-        /**
-         This method computes all node embeddings.
-        */
-        void run() override;
-        
-        /**
-         * Returns a string with the algorithm's name and its parameters, if there are any.
-         * @return The string representation of the algorithm.
-         */
-        std::string toString() const override;
+    /**
+     * @return True if algorithm can run multi-threaded.
+     */
+    bool isParallel() const override;
 
-        /**
-         * @return True if algorithm can run multi-threaded.
-         */
-        bool isParallel() const override;
+    /**
+     This method returns a vector that contains feature vectors for all nodes
+    */
+    std::vector<std::vector<float>> getFeatures();
 
-        /**
-         This method returns a vector that contains feature vectors for all nodes
-        */
-        std::vector<std::vector<float>> getFeatures();
+private:
+    // The graph
+    const Graph *G;
+    // Walk parameter P
+    double P;
+    // Walk parameter Q
+    double Q;
+    // Walk length L
+    count L;
+    // Walk count N
+    count N;
+    // Feature Dimension D
+    count D;
 
-    private:
-
-        // The graph
-        const Graph *G;
-        // Walk parameter P
-        double P;
-        // Walk parameter Q
-        double Q;
-        // Walk length L
-        count L;
-        // Walk count N
-        count N;
-        // Feature Dimension D
-        count D;
-        
-        std::vector<std::vector<float>> features;
-    
-    };
+    std::vector<std::vector<float>> features;
+};
 
 inline std::vector<std::vector<float>> Node2Vec::getFeatures() {
     assureFinished();
@@ -95,4 +90,3 @@ inline std::vector<std::vector<float>> Node2Vec::getFeatures() {
 } /* namespace NetworKit */
 
 #endif // NETWORKIT_EMBEDDING_NODE2_VEC_HPP_
-

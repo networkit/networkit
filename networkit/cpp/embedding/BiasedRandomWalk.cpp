@@ -9,6 +9,8 @@
  *
  */
 
+// networkit-format
+
 #include <algorithm>
 #include <iostream>
 #include <memory>
@@ -16,8 +18,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include <networkit/graph/Graph.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/graph/Graph.hpp>
 
 #include "AliasSampler.hpp"
 #include "BiasedRandomWalk.hpp"
@@ -33,8 +35,7 @@ struct GraphData {
     using Data = std::vector<NeighborMap>;
     Data data;
 
-    GraphData(size_t nn) : data{nn, NeighborMap()} 
-    {}
+    GraphData(size_t nn) : data{nn, NeighborMap()} {}
 };
 
 std::unique_ptr<GraphData> graphData;
@@ -75,25 +76,21 @@ void preprocessNode(const Graph &graph, node t, double paramP, double paramQ) {
 std::vector<std::vector<node>> index2node;
 
 // Preprocess transition probabilities for each path t->v->x
-void preprocessTransitionProbs(
-    const Graph &graph, 
-    double paramP, 
-    double paramQ 
-    ) {
+void preprocessTransitionProbs(const Graph &graph, double paramP, double paramQ) {
 
     auto nn = graph.numberOfNodes();
-    //graphData = std::make_unique<GraphData>(nn);
+    // graphData = std::make_unique<GraphData>(nn);
     // back to c++11 ;-(
     graphData = std::unique_ptr<GraphData>(new GraphData(nn));
-    
+
     index2node.resize(nn);
 
     // pre-allocate unordered maps:
     for (index v = 0; v < nn; ++v) {
         auto degv = graph.degreeOut(v);
         auto neighbors = Graph::NeighborRange<>(graph, v);
-        for (auto n: neighbors) {
-            // init index2node: 
+        for (auto n : neighbors) {
+            // init index2node:
             index2node[v].push_back(n);
             graphData->data[v][n] = AliasSampler(degv);
         }
@@ -103,15 +100,14 @@ void preprocessTransitionProbs(
 
 #pragma omp parallel for schedule(dynamic)
     // is forNodes parallelized for omp ?
-//  for (node t = 0; t < nn; ++t) {
-    for (omp_index t = 0; t < static_cast<omp_index>(nn); ++t) { 
+    //  for (node t = 0; t < nn; ++t) {
+    for (omp_index t = 0; t < static_cast<omp_index>(nn); ++t) {
         preprocessNode(graph, t, paramP, paramQ);
         ++nCnt;
     }
 }
 
-node nthNeighbor(Graph::NeighborRange<> range,  index nth);
-
+node nthNeighbor(Graph::NeighborRange<> range, index nth);
 
 // Simulates a random walk
 Walk oneWalk(const Graph &graph, node start, count walkLen) {
@@ -121,31 +117,31 @@ Walk oneWalk(const Graph &graph, node start, count walkLen) {
     node src = start;
 
     if (walkLen == 1) {
-        return walk; 
+        return walk;
     }
     if (graph.degreeOut(start) == 0) {
-        walk.resize(1);       // shorten walk to 1
+        walk.resize(1); // shorten walk to 1
         return walk;
     }
     auto neighbors = Graph::NeighborRange<>(graph, start);
     auto nn = std::distance(neighbors.begin(), neighbors.end());
 
-    //node randomNeighbor = nthNeighbor(neighbors, nn * uniform_real()); 
-    node randomNeighbor = index2node[start][nn * uniform_real()]; 
+    // node randomNeighbor = nthNeighbor(neighbors, nn * uniform_real());
+    node randomNeighbor = index2node[start][nn * uniform_real()];
 
     walk[nr++] = randomNeighbor;
-    node dst   = randomNeighbor;
+    node dst = randomNeighbor;
 
     while (nr < walkLen) {
         if (graph.degreeOut(dst) == 0) {
-            walk.resize(nr);  // shorten walk to nr
+            walk.resize(nr); // shorten walk to nr
             return walk;
         }
-        //auto neighbors = Graph::NeighborRange<>(graph, dst);
-        //auto nn = std::distance(neighbors.begin(), neighbors.end());
-        NeighborMap& map = graphData->data[dst];
-        AliasSampler& as = map[src];
-        //node next = nthNeighbor(neighbors, as.sample());
+        // auto neighbors = Graph::NeighborRange<>(graph, dst);
+        // auto nn = std::distance(neighbors.begin(), neighbors.end());
+        NeighborMap &map = graphData->data[dst];
+        AliasSampler &as = map[src];
+        // node next = nthNeighbor(neighbors, as.sample());
         node next = index2node[dst][as.sample()];
         walk[nr++] = next;
         src = dst;
@@ -160,25 +156,21 @@ struct WalkData {
     count walkLength;
     count walksPerNode;
 
-    WalkData(count nn, count wl, count wpn) : data{nn * wpn, Walk(wl)}, walkLength(wl), walksPerNode(wpn)
-    {}
+    WalkData(count nn, count wl, count wpn)
+        : data{nn * wpn, Walk(wl)}, walkLength(wl), walksPerNode(wpn) {}
 };
 
-///Simulates walks from every node and writes it into Walks vector
-AllWalks doWalks(
-    const Graph& graph, 
-    count walkLen, 
-    count walksPerNode
-    ) {
+/// Simulates walks from every node and writes it into Walks vector
+AllWalks doWalks(const Graph &graph, count walkLen, count walksPerNode) {
     auto nn = graph.numberOfNodes();
     auto walksDone = 0;
-    
+
     WalkData walkData(nn, walkLen, walksPerNode);
 
-    std::vector<node> shuffled(nn);    
-//  std::iota(shuffled.begin(), shuffled.end(), 0);
+    std::vector<node> shuffled(nn);
+    //  std::iota(shuffled.begin(), shuffled.end(), 0);
     int n = 0;
-    std::generate(shuffled.begin(), shuffled.end(), [&n](){return n++; });
+    std::generate(shuffled.begin(), shuffled.end(), [&n]() { return n++; });
 
     for (index c = 0; c < walksPerNode; ++c) {
         std::shuffle(shuffled.begin(), shuffled.end(), getURNG());
@@ -187,19 +179,19 @@ AllWalks doWalks(
         for (omp_index i = 0; i < static_cast<omp_index>(nn); ++i) {
 
             auto v = shuffled[i];
-            Walk thisWalk = oneWalk(graph, v, walkLen);            
+            Walk thisWalk = oneWalk(graph, v, walkLen);
             walkData.data[c * nn + i] = std::move(thisWalk);
 
             ++walksDone;
         }
     }
-    
+
     graphData.reset();
 
     return walkData.data;
 }
 
-node nthNeighbor(Graph::NeighborRange<> range,  index nth) {
+node nthNeighbor(Graph::NeighborRange<> range, index nth) {
     auto it = range.begin();
     std::advance(it, nth);
     return *it;
