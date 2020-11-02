@@ -21,7 +21,7 @@ Betweenness::Betweenness(const Graph& G, bool normalized, bool computeEdgeCentra
 
 void Betweenness::run() {
     Aux::SignalHandler handler;
-    count z = G.upperNodeIdBound();
+    const count z = G.upperNodeIdBound();
     scoreData.clear();
     scoreData.resize(z);
     if (computeEdgeCentrality) {
@@ -30,20 +30,9 @@ void Betweenness::run() {
         edgeScoreData.resize(z2);
     }
 
-    // thread-local scores for efficient parallelism
-    count maxThreads = omp_get_max_threads();
-    std::vector<std::vector<double> > scorePerThread(maxThreads, std::vector<double>(G.upperNodeIdBound()));
-    DEBUG("score per thread: ", scorePerThread.size());
-    DEBUG("G.upperEdgeIdBound(): ", G.upperEdgeIdBound());
-    std::vector<std::vector<double> > edgeScorePerThread;
-    if (computeEdgeCentrality) {
-        edgeScorePerThread.resize(maxThreads, std::vector<double>(G.upperEdgeIdBound()));
-    }
-    DEBUG("edge score per thread: ", edgeScorePerThread.size());
-
-    std::vector<std::vector<double>> dependencies(maxThreads, std::vector<double>(z));
+    std::vector<std::vector<double>> dependencies(omp_get_max_threads(), std::vector<double>(z));
     std::vector<std::unique_ptr<SSSP>> sssps;
-    sssps.resize(maxThreads);
+    sssps.resize(omp_get_max_threads());
 #pragma omp parallel
     {
         omp_index i = omp_get_thread_num();
@@ -53,72 +42,59 @@ void Betweenness::run() {
             sssps[i] = std::unique_ptr<SSSP>(new BFS(G, 0, true, true));
     }
 
-    auto computeDependencies = [&](node s) {
+    auto computeDependencies = [&](node s) -> void {
 
         std::vector<double> &dependency = dependencies[omp_get_thread_num()];
         std::fill(dependency.begin(), dependency.end(), 0);
 
         // run SSSP algorithm and keep track of everything
-        auto sssp = sssps[omp_get_thread_num()].get();
-        sssp->setSource(s);
+        auto &sssp = *sssps[omp_get_thread_num()];
+        sssp.setSource(s);
         if (!handler.isRunning()) return;
-        sssp->run();
+        sssp.run();
         if (!handler.isRunning()) return;
         // compute dependencies for nodes in order of decreasing distance from s
-        std::vector<node> stack = sssp->getNodesSortedByDistance();
+        std::vector<node> stack = sssp.getNodesSortedByDistance();
         while (!stack.empty()) {
             node t = stack.back();
             stack.pop_back();
-            for (node p : sssp->getPredecessors(t)) {
+            for (node p : sssp.getPredecessors(t)) {
                 // workaround for integer overflow in large graphs
-                bigfloat tmp = sssp->numberOfPaths(p) / sssp->numberOfPaths(t);
+                bigfloat tmp = sssp.numberOfPaths(p) / sssp.numberOfPaths(t);
                 double weight;
                 tmp.ToDouble(weight);
                 double c= weight * (1 + dependency[t]);
                 dependency[p] += c;
+
                 if (computeEdgeCentrality) {
-                    edgeScorePerThread[omp_get_thread_num()][G.edgeId(p,t)] += c;
+                    const edgeid edgeId = G.edgeId(p, t);
+#pragma omp atomic
+                    edgeScoreData[edgeId] += c;
                 }
-
-
             }
-            if (t != s) {
-                scorePerThread[omp_get_thread_num()][t] += dependency[t];
-            }
+
+            if (t != s)
+#pragma omp atomic
+                scoreData[t] += dependency[t];
         }
     };
     handler.assureRunning();
     G.balancedParallelForNodes(computeDependencies);
     handler.assureRunning();
-    DEBUG("adding thread-local scores");
-    // add up all thread-local values
-    for (const auto &local : scorePerThread) {
-        G.parallelForNodes([&](node v){
-            scoreData[v] += local[v];
-        });
-    }
-    if (computeEdgeCentrality) {
-        for (const auto &local : edgeScorePerThread) {
-            for (count i = 0; i < local.size(); i++) {
-                edgeScoreData[i] += local[i];
-            }
-        }
-    }
+
     if (normalized) {
         // divide by the number of possible pairs
         count n = G.numberOfNodes();
         count pairs = (n-2) * (n-1);
         count edges =  n    * (n-1);
-        if (!G.isDirected()) {
-            pairs = pairs / 2;
-            edges = edges / 2;
-        }
-        G.forNodes([&](node u){
+        G.parallelForNodes([&](node u){
             scoreData[u] = scoreData[u] / pairs;
         });
+
         if (computeEdgeCentrality) {
-            for (count edge = 0; edge < edgeScoreData.size(); edge++) {
-                edgeScoreData[edge] =  edgeScoreData[edge] / edges;
+#pragma omp parallel for
+            for (omp_index i = 0; i < static_cast<omp_index>(edgeScoreData.size()); ++i) {
+                edgeScoreData[i] =  edgeScoreData[i] / static_cast<double>(edges);
             }
         }
     }
