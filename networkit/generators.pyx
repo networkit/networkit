@@ -1,6 +1,5 @@
 # distutils: language=c++
 
-import collections
 import math
 import subprocess
 import os
@@ -437,9 +436,9 @@ cdef class PowerlawDegreeSequence:
 	def __cinit__(self, minDeg, count maxDeg = 0, double gamma = -2):
 		if isinstance(minDeg, Graph):
 			self._this = new _PowerlawDegreeSequence((<Graph>minDeg)._this)
-		elif isinstance(minDeg, collections.Iterable):
+		try:
 			self._this = new _PowerlawDegreeSequence(<vector[double]?>minDeg)
-		else:
+		except TypeError:
 			self._this = new _PowerlawDegreeSequence((<count?>minDeg), maxDeg, gamma)
 
 	def __dealloc__(self):
@@ -614,7 +613,7 @@ cdef class LFRGenerator(Algorithm):
 
 		Parameters:
 		-----------
-		degreeSequence : collections.Iterable
+		degreeSequence : iterable
 			The degree sequence that shall be used by the generator
 		"""
 		with nogil:
@@ -645,7 +644,7 @@ cdef class LFRGenerator(Algorithm):
 
 		Parameters:
 		-----------
-		communitySizeSequence : collections.Iterable
+		communitySizeSequence : iterable
 			The community sizes that shall be used.
 		"""
 		with nogil:
@@ -690,13 +689,13 @@ cdef class LFRGenerator(Algorithm):
 
 		Parameters:
 		-----------
-		mu : double or collections.Iterable
+		mu : double or iterable
 			The mixing coefficient(s), i.e. the factor of the degree that shall be inter-cluster degree
 		"""
-		if isinstance(mu, collections.Iterable):
-			(<_LFRGenerator*>(self._this)).setMu(<vector[double]>mu)
-		else:
-			(<_LFRGenerator*>(self._this)).setMu(<double>mu)
+		try:
+			(<_LFRGenerator*>(self._this)).setMu(<vector[double]?>mu)
+		except TypeError:
+			(<_LFRGenerator*>(self._this)).setMu(<double?>mu)
 		return self
 
 	def setMuWithBinomialDistribution(self, double mu):
