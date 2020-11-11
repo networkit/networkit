@@ -865,43 +865,52 @@ cdef extern from "<networkit/centrality/TopHarmonicCloseness.hpp>":
 
 
 cdef class TopHarmonicCloseness(Algorithm):
-	""" Finds the top k nodes with highest harmonic closeness centrality faster
-		than computing it for all nodes. The implementation is based on "Computing
-		Top-k Centrality Faster in Unweighted Graphs", Bergamini et al., ALENEX16.
-		The algorithms are based on two heuristics. We reccommend to use
-		useBFSbound = false for complex networks (or networks with small diameter)
-		and useBFSbound = true for street networks (or networks with large
-		diameters). Notice that the worst case running time of the algorithm is
-		O(nm), where n is the number of nodes and m is the number of edges.
-		However, for most real-world networks the empirical running time is O(m).
+	""" 
+	Finds the top k nodes with highest harmonic closeness centrality faster
+	than computing it for all nodes. The implementation is based on "Computing
+	Top-k Centrality Faster in Unweighted Graphs", Bergamini et al., ALENEX16.
+	The algorithm also works with weighted graphs but only if with the NBcut
+	variation. We recommend to use useNBbound = False for complex (weighted)
+	networks (or networks with small diameter) and useNBbound = True for
+	unweighted street networks (or networks with large diameters). Notice that
+	the worst case running time of the algorithm is O(nm), where n is the
+	number of nodes and m is the number of edges. However, for most real-world
+	networks the empirical running time is O(m).
 
 
-	TopCloseness(G, k=1, useBFSbound=True)
+	TopHarmonicCloseness(G, k=1, useNBbound=True)
 
-	Parameters:
-	-----------
-	G: An unweighted graph.
-	k: Number of nodes with highest closeness that have to be found. For example, if k = 10, the top 10 nodes with highest closeness will be computed.
-	useBFSbound: If true, the BFSbound is re-computed at each iteration. If false, BFScut is used.
-	The worst case running time of the algorithm is O(nm), where n is the number of nodes and m is the number of edges.
-	However, for most networks the empirical running time is O(m).
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph. If useNBbound is set to 'True', edge weights will be ignored.
+	k : int
+		Number of nodes with highest closeness that have to be found. For example, if k = 10, the
+		top 10 nodes with highest closeness will be computed. useNBbound: If True, the NBbound is
+		re-computed at each iteration. If False, NBcut is used. The worst case running time of the
+		algorithm is O(nm), where n is the number of nodes and m is the number of edges.
+		However, for most networks the empirical running time is O(m).
+	useNBbound : bool
+		If True, the NBbound variation will be used, otherwise NBcut.
 	"""
 	cdef Graph _G
 
-	def __cinit__(self,  Graph G, k=1, useBFSbound=False):
+	def __cinit__(self,  Graph G, k=1, useNBbound=False):
 		self._G = G
-		self._this = new _TopHarmonicCloseness(G._this, k, useBFSbound)
+		self._this = new _TopHarmonicCloseness(G._this, k, useNBbound)
 
 	def topkNodesList(self, includeTrail=False):
-		""" Returns: a list with the k nodes with highest harmonic closeness.
+		"""
+		Returns a list with the k nodes with highest harmonic closeness.
 		WARNING: closeness centrality of some nodes below the top-k could be equal
 		to the k-th closeness, we call them trail. Set the parameter includeTrail
 		to true to also include those nodes but consider that the resulting vector
 		could be longer than k.
 
-		Parameters:
-		-----------
-		includeTrail: Whether or not to include trail nodes.
+		Parameters
+		----------
+		includeTrail : bool
+			Whether or not to include trail nodes.
 
 		Returns:
 		--------
@@ -911,15 +920,17 @@ cdef class TopHarmonicCloseness(Algorithm):
 		return (<_TopHarmonicCloseness*>(self._this)).topkNodesList(includeTrail)
 
 	def topkScoresList(self, includeTrail=False):
-		""" Returns: a list with the scores of the k nodes with highest harmonic closeness.
-		WARNING: closeness centrality of some nodes below the top-k could
-		be equal to the k-th closeness, we call them trail. Set the parameter
-		includeTrail to true to also include those centrality values but consider
-		that the resulting vector could be longer than k.
+		"""
+		Returns a list with the scores of the k nodes with highest harmonic
+		closeness. WARNING: closeness centrality of some nodes below the top-k
+		could be equal to the k-th closeness, we call them trail. Set the
+		parameter includeTrail to true to also include those centrality values
+		but consider that the resulting vector could be longer than k.
 
-		Parameters:
-		-----------
-		includeTrail: Whether or not to include trail centrality value.
+		Parameters
+		----------
+		includeTrail : bool
+			Whether or not to include trail centrality value.
 
 		Returns:
 		--------

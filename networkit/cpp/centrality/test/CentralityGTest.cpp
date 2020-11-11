@@ -1224,47 +1224,39 @@ TEST_P(CentralityGTest, testTopCloseness) {
     }
 }
 
-TEST_F(CentralityGTest, testTopHarmonicClosenessDirected) {
-    count size = 400;
-    count k = 10;
-    Aux::Random::setSeed(42, false);
-    Graph G1 = DorogovtsevMendesGenerator(size).generate();
-    Graph G(G1.upperNodeIdBound(), false, true);
-    G1.forEdges([&](node u, node v) {
-        G.addEdge(u, v);
-        G.addEdge(v, u);
-    });
-    HarmonicCloseness cc(G1, false);
-    cc.run();
-    TopHarmonicCloseness topcc(G, k);
-    topcc.run();
-    const edgeweight tol = 1e-7;
-    for (count i = 0; i < k; i++) {
-        EXPECT_NEAR(cc.ranking()[i].second, topcc.topkScoresList()[i], tol);
-    }
-}
+TEST_P(CentralityGTest, testTopHarmonicCloseness) {
+    const count size = 400;
+    const double tol = 1e-6;
 
-TEST_F(CentralityGTest, testTopHarmonicClosenessUndirected) {
-    count size = 400;
-    count k = 10;
-    Graph G1 = DorogovtsevMendesGenerator(size).generate();
-    Graph G(G1.upperNodeIdBound(), false, false);
-    G1.forEdges([&](node u, node v) {
-        G.addEdge(u, v);
-        G.addEdge(v, u);
-    });
-    HarmonicCloseness cc(G1, false);
-    cc.run();
-    TopHarmonicCloseness topcc(G, k);
-    topcc.run();
-    const edgeweight tol = 1e-7;
-    for (count i = 0; i < k; i++) {
-        EXPECT_NEAR(cc.ranking()[i].second, topcc.topkScoresList()[i], tol);
-    }
-    TopHarmonicCloseness topcc2(G, k);
-    topcc2.run();
-    for (count i = 0; i < k; i++) {
-        EXPECT_NEAR(cc.ranking()[i].second, topcc2.topkScoresList()[i], tol);
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto G = ErdosRenyiGenerator(size, 0.01, isDirected()).generate();
+        if (isWeighted()) {
+            G = GraphTools::toWeighted(G);
+            G.forEdges([&G](node u, node v) { G.setWeight(u, v, Aux::Random::probability()); });
+        }
+        HarmonicCloseness cc(G, false);
+        cc.run();
+        const auto ranking = cc.ranking();
+        for (bool useNBbound : {true, false}) {
+            for (count k : {5, 10, 20}) {
+                if (isWeighted() && useNBbound)
+                    continue;
+                TopHarmonicCloseness topcc(G, k, useNBbound);
+                topcc.run();
+
+                auto topkScores = topcc.topkScoresList();
+                EXPECT_EQ(topcc.topkNodesList().size(), k);
+                EXPECT_EQ(topkScores.size(), k);
+
+                topkScores = topcc.topkScoresList(true);
+
+                for (count i = 0; i < topkScores.size(); ++i)
+                    EXPECT_NEAR(ranking[i].second, topkScores[i], tol);
+                for (count i = k; i < topkScores.size(); ++i)
+                    EXPECT_NEAR(topkScores[i], topkScores[k - 1], tol);
+            }
+        }
     }
 }
 
