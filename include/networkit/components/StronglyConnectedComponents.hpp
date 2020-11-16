@@ -36,73 +36,14 @@ public:
     void run() override;
 
     /**
-     * Return the number of connected components.
-     *
-     * @return count The number of components of the graph.
+     * Constructs a new graph that contains only the nodes inside the largest
+     * strongly connected component.
+     * @param G            The input graph.
+     * @param compactGraph If true, the node ids of the output graph will be compacted
+     * (i.e. re-numbered from 0 to n-1). If false, the node ids will not be changed.
      */
-    count numberOfComponents() const {
-        assureFinished();
-        return componentIndex;
-    }
-
-    /**
-     * Returns the component of the input node.
-     *
-     * @param[in] u The input node.
-     * @return count The index of the component of the input node.
-     */
-    index componentOfNode(node u) const {
-        assureFinished();
-        assert(G->hasNode(u));
-        return component[u];
-    }
-
-    /**
-     * Return a Partition object that represents the components.
-     *
-     * @return Partition Partitioning of the strongly connected components.
-     */
-    Partition getPartition() const {
-        assureFinished();
-        return Partition(component);
-    }
-
-    /**
-     * Return a map with the component indexes as keys, and their size as values.
-     *
-     * @return std::map<index, count> Map with components indexes as keys, and their size as values.
-     */
-    std::map<node, count> getComponentSizes() const {
-        assureFinished();
-
-        std::vector<count> componentSizes(componentIndex, 0);
-        G->forNodes([&](const node u) { ++componentSizes[component[u]]; });
-
-        std::map<node, count> result;
-        for (index i = 0; i < componentIndex; ++i)
-            result[i] = componentSizes[i];
-
-        return result;
-    }
-
-    /**
-     * Return a list of components.
-     *
-     * @return std::vector<std::vector<node>> List of components.
-     */
-    std::vector<std::vector<node>> getComponents() const {
-        assureFinished();
-        std::vector<std::vector<node>> result(componentIndex);
-
-        G->forNodes([&](const node u) { result[component[u]].push_back(u); });
-
-        return result;
-    }
-
-private:
-    const Graph *G;
-    std::vector<index> component;
-    index componentIndex;
+    static Graph extractLargestStronglyConnectedComponent(const Graph &G,
+                                                          bool compactGraph = false);
 };
 
 } // namespace NetworKit

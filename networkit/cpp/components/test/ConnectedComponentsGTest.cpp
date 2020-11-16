@@ -11,6 +11,7 @@
 #include <networkit/components/StronglyConnectedComponents.hpp>
 #include <networkit/components/DynConnectedComponents.hpp>
 #include <networkit/components/DynWeaklyConnectedComponents.hpp>
+#include <networkit/components/WeaklyConnectedComponents.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/graph/BFS.hpp>
@@ -604,5 +605,28 @@ TEST_F(ConnectedComponentsGTest, testExtractLargestConnectedComponent) {
     EXPECT_EQ(G1.numberOfEdges(), 4);
 }
 
+TEST_F(ConnectedComponentsGTest, testExtractLargestStronglyConnectedComponent) {
+    Aux::Random::setSeed(42, true);
+    for (double p : {0.02, 0.025, 0.03}) {
+        const auto G = ErdosRenyiGenerator(100, p, true).generate();
+        auto lSCC = StronglyConnectedComponents::extractLargestStronglyConnectedComponent(G);
+        StronglyConnectedComponents scc(G);
+        scc.run();
+        const auto sizes = scc.getPartition().subsetSizes();
+        const count maxSize = *std::max_element(sizes.begin(), sizes.end());
+
+        EXPECT_EQ(lSCC.numberOfNodes(), maxSize);
+        StronglyConnectedComponents sccCheck(lSCC);
+        sccCheck.run();
+        EXPECT_EQ(sccCheck.numberOfComponents(), 1);
+
+        lSCC = StronglyConnectedComponents::extractLargestStronglyConnectedComponent(G, true);
+        node u = 0;
+        lSCC.forNodes([&u](node v) {
+            EXPECT_EQ(u, v);
+            ++u;
+        });
+    }
+}
 
 } /* namespace NetworKit */
