@@ -7,14 +7,14 @@
 namespace NetworKit {
 
 EdgeSwitchingMarkovChainGenerator::EdgeSwitchingMarkovChainGenerator(
-    const std::vector<count> &sequence, bool ignoreIfRealizable)
-    : StaticDegreeSequenceGenerator(sequence), ignoreIfRealizable(ignoreIfRealizable) {}
+    const std::vector<count> &sequence, bool ignoreIfNotRealizable, count numSwitchesPerEdge)
+    : StaticDegreeSequenceGenerator(sequence), ignoreIfNotRealizable(ignoreIfNotRealizable),
+      numSwitchesPerEdge(numSwitchesPerEdge) {}
 
 Graph EdgeSwitchingMarkovChainGenerator::generate() {
-    Graph result(HavelHakimiGenerator(seq, ignoreIfRealizable).generate());
-    const count neededSwaps = result.numberOfEdges() * 10;
+    Graph result(HavelHakimiGenerator(seq, ignoreIfNotRealizable).generate());
 
-    EdgeSwitchingInPlace edgeSwitching(result, neededSwaps);
+    EdgeSwitchingInPlace edgeSwitching(result, numSwitchesPerEdge);
     edgeSwitching.run();
 
     return result;

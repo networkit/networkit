@@ -36,10 +36,13 @@ public:
      * degree.
      *
      * @param sequence The wanted degree sequence.
-     * @param ignoreIfRealizable Ignore if the sequence is realizable and generate a graph anyway.
+     * @param ignoreIfNotRealizable Ignore if the sequence is not realizable and generate a graph
+     *        anyway.
+     * @param numSwitchesPerEdge Average number of edge switches (Markov chain steps) per edge
      */
     EdgeSwitchingMarkovChainGenerator(const std::vector<count> &sequence,
-                                      bool ignoreIfRealizable = false);
+                                      bool ignoreIfNotRealizable = false,
+                                      count numSwitchesPerEdge = 10);
 
     /**
      * Generate a graph according to the configuration model.
@@ -54,7 +57,8 @@ public:
     Graph generate() override;
 
 private:
-    bool ignoreIfRealizable;
+    bool ignoreIfNotRealizable;
+    count numSwitchesPerEdge;
 };
 
 } // namespace NetworKit
