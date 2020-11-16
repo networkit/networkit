@@ -32,14 +32,14 @@ class TestRandomization(unittest.TestCase):
         self.graphs.append(nk.generators.ErdosRenyiGenerator(1004, 0.005, True).generate())
         self.graphs.append(nk.generators.ErdosRenyiGenerator(1005, 0.05, True).generate())
 
-    def test_global_curveball(self):
+    def testGlobalCurveball(self):
         for G in self.graphs:
             algo = nk.randomization.GlobalCurveball(G, 5)
             algo.run()
             G2 = algo.getGraph()
             check_graphs(G, G2)
 
-    def test_global_curveball_with_selfloops(self):
+    def testGlobalCurveballWithSelfloops(self):
         for G in self.graphs:
             if not G.isDirected(): continue
 
@@ -48,14 +48,14 @@ class TestRandomization(unittest.TestCase):
             G2 = algo.getGraph()
             check_graphs(G, G2)
 
-    def test_global_curveball_with_preprocessing(self):
+    def testGlobalCurveballWithPreprocessing(self):
         for G in self.graphs:
             algo = nk.randomization.GlobalCurveball(G, 5, False, True)
             algo.run()
             G2 = algo.getGraph()
             check_graphs(G, G2)
 
-    def test_curveball_with_global(self):
+    def testCurveballWithGlobal(self):
         for G in self.graphs:
             if G.isDirected(): continue
 
@@ -67,7 +67,7 @@ class TestRandomization(unittest.TestCase):
             G2 = algo.getGraph()
             check_graphs(G, G2)
 
-    def test_curveball_with_uniform(self):
+    def testCurveballWithUniform(self):
         for G in self.graphs:
             if G.isDirected(): continue
 
@@ -79,7 +79,7 @@ class TestRandomization(unittest.TestCase):
             G2 = algo.getGraph()
             check_graphs(G, G2)
 
-    def test_degree_preserving_shuffle(self):
+    def testDegreePreservingShuffle(self):
         for G in self.graphs:
             dps = nk.randomization.DegreePreservingShuffle(G)
             dps.run()
@@ -90,7 +90,7 @@ class TestRandomization(unittest.TestCase):
                 self.assertEqual(G.degree(u), G.degree(perm[u]))
                 self.assertEqual(G.degreeIn(u), G.degreeIn(perm[u]))
 
-    def test_degree_preserving_shuffle_directed_triangle(self):
+    def testDegreePreservingShuffleDirectedTriangle(self):
         """Test whether a directed triangle is reoriented in 50% of cases"""
         G = nk.Graph(3, False, True)
         G.addEdge(0, 1)
