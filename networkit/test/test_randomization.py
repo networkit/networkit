@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import unittest
+import sys
+from copy import copy
 import networkit as nk
 
 def check_graphs(G1, G2):
@@ -117,6 +119,60 @@ class TestRandomization(unittest.TestCase):
         # confidence interval with an error rate of ~ 1e-6
         self.assertGreater(num_clockwise, 400)
         self.assertLess   (num_clockwise, 600)
+
+    def testEdgeSwitching(self):
+        for numSwitchesPerEdge, preShuffle in [(0, False), (0, True), (1, False)]:
+            G = nk.generators.ErdosRenyiGenerator(100, 0.1).generate()
+            algo = nk.randomization.EdgeSwitching(G, numSwitchesPerEdge + 1, preShuffle)
+            self.assertEqual(algo.getNumberOfSwitchesPerEdge(), numSwitchesPerEdge + 1)
+            algo.setNumberOfSwitchesPerEdge(numSwitchesPerEdge)
+            self.assertEqual(algo.getNumberOfSwitchesPerEdge(), numSwitchesPerEdge)
+            numSwitches = numSwitchesPerEdge * G.numberOfEdges()
+
+            algo.run()
+            G1 = algo.getGraph()
+
+            self.assertEqual(G1.numberOfNodes(), G.numberOfNodes())
+            self.assertEqual(G1.numberOfEdges(), G.numberOfEdges())
+            if numSwitches > 0 or preShuffle:
+                self.assertNotEqual(sorted(G.iterEdges()), sorted(G1.iterEdges()))
+            else:
+                self.assertEqual(sorted(G.iterEdges()), sorted(G1.iterEdges()))
+
+            self.assertGreaterEqual(algo.getNumberOfAffectedEdges(), numSwitches // 2)
+
+    def testEdgeSwitchingInplace(self):
+        for numSwitchesPerEdge in [0, 1]:
+            G = nk.generators.ErdosRenyiGenerator(100, 0.1).generate()
+            G_old = copy(G)
+            algo = nk.randomization.EdgeSwitchingInPlace(G, numSwitchesPerEdge + 1)
+            self.assertEqual(algo.getNumberOfSwitchesPerEdge(), numSwitchesPerEdge + 1)
+            algo.setNumberOfSwitchesPerEdge(numSwitchesPerEdge)
+            self.assertEqual(algo.getNumberOfSwitchesPerEdge(), numSwitchesPerEdge)
+            numSwitches = numSwitchesPerEdge * G.numberOfEdges()
+
+            algo.run()
+
+            self.assertEqual(G_old.numberOfNodes(), G.numberOfNodes())
+            self.assertEqual(G_old.numberOfEdges(), G.numberOfEdges())
+
+            if numSwitches > 0:
+                self.assertNotEqual(sorted(G_old.iterEdges()), sorted(G.iterEdges()))
+            else:
+                self.assertEqual(sorted(G_old.iterEdges()), sorted(G.iterEdges()))
+
+            self.assertGreaterEqual(algo.getNumberOfAffectedEdges(), numSwitches // 2)
+
+    def testEdgeSwitchingInplaceRefCount(self):
+        G = nk.generators.ErdosRenyiGenerator(10, 0.1).generate()
+        rc_initial = sys.getrefcount(G)
+        algo = nk.randomization.EdgeSwitchingInPlace(G)
+        self.assertGreater(sys.getrefcount(G), rc_initial)
+        algo.run()
+        self.assertGreater(sys.getrefcount(G), rc_initial)
+        del(algo)
+        self.assertEqual(sys.getrefcount(G), rc_initial)
+
 
 if __name__ == "__main__":
     unittest.main()
