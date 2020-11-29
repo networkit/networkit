@@ -28,7 +28,7 @@ void KatzCentrality::run() {
     double length = 0.0;
     double oldLength = 0.0;
 
-    auto converged  = [&](double val, double other) -> bool {
+    auto converged = [&](double val, double other) -> bool {
         // compute residual
         return Aux::NumericTools::equal(val, other, tol);
     };
