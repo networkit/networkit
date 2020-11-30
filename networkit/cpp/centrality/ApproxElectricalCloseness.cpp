@@ -175,7 +175,7 @@ void ApproxElectricalCloseness::computeNodeSequence() {
     biAnchor.resize(bcc.numberOfComponents(), none);
     biParent.resize(bcc.numberOfComponents(), none);
 
-#ifndef NDEBUG
+#ifdef NETWORKIT_SANITY_CHECKS
     G.forNodes([&](node u) { assert(status[u] == NodeStatus::NOT_VISITED); });
 #endif
 
@@ -218,7 +218,7 @@ void ApproxElectricalCloseness::computeNodeSequence() {
         });
     } while (!q.empty());
 
-#ifndef NDEBUG
+#ifdef NETWORKIT_SANITY_CHECKS
     G.forNodes([&](node u) { assert(status[u] == NodeStatus::VISITED); });
     assert(topOrder.size() == bcc.numberOfComponents());
     assert(std::unordered_set<index>(topOrder.begin(), topOrder.end()).size()
@@ -247,7 +247,7 @@ void ApproxElectricalCloseness::computeBFSTree() {
         });
     } while (!queue.empty());
 
-#ifndef NDEBUG
+#ifdef NETWORKIT_SANITY_CHECKS
     checkBFSTree();
 #endif
 }
@@ -300,7 +300,7 @@ void ApproxElectricalCloseness::sampleUST() {
                 if (parent[curAnchor] == none)
                     updateParentOfAnchor();
             }
-#ifndef NDEBUG
+#ifdef NETWORKIT_SANITY_CHECKS
             checkTwoNodesSequence(sequence);
 #endif
             continue;
@@ -404,7 +404,7 @@ void ApproxElectricalCloseness::sampleUST() {
             break;
     }
 
-#ifndef NDEBUG
+#ifdef NETWORKIT_SANITY_CHECKS
     checkUST();
 #endif
 }
@@ -437,7 +437,7 @@ void ApproxElectricalCloseness::dfsUST() {
 }
 
 void ApproxElectricalCloseness::aggregateUST() {
-#ifndef NDEBUG
+#ifdef NETWORKIT_SANITY_CHECKS
     checkTimeStamps();
 #endif
 
@@ -594,7 +594,7 @@ std::vector<double> ApproxElectricalCloseness::computeExactDiagonal(double tol) 
     return diag;
 }
 
-#ifndef NDEBUG
+#ifdef NETWORKIT_SANITY_CHECKS
 /*
  * Methods for sanity check.
  */
@@ -664,6 +664,6 @@ void ApproxElectricalCloseness::checkTimeStamps() const {
     });
 }
 
-#endif // NDEBUG
+#endif // NETWORKIT_SANITY_CHECKS
 
 } // namespace NetworKit

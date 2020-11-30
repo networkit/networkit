@@ -144,13 +144,13 @@ private:
 
     count computeNumberOfUSTs() const;
 
-#ifndef NDEBUG
+#ifdef NETWORKIT_SANITY_CHECKS
     // Debugging methods
     void checkBFSTree() const;
     void checkUST() const;
     void checkTwoNodesSequence(const std::vector<node> &sequence) const;
     void checkTimeStamps() const;
-#endif // NDEBUG
+#endif // NETWORKIT_SANITY_CHECKS
 };
 
 } // namespace NetworKit
