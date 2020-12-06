@@ -58,7 +58,7 @@ sys.argv = [__file__] + args
 # compiler identification
 ################################################
 
-candidates = ["g++", "g++-8", "g++-7", "g++-6.1", "g++-6", "g++-5.3", "g++-5.2", "g++-5.1", "g++-5", "g++-4.9", "g++-4.8", "clang++", "clang++-3.8", "clang++-3.7"]
+candidates = ["g++", "g++-8", "g++-7", "g++-6.1", "g++-6", "g++-5.5", "g++-5.4", "g++-5.3", "g++-5", "clang++", "clang++-3.8", "clang++3.7"]
 
 def determineCompiler(candidates, std, flags):
 	#TODO: proper c++11 test?
@@ -102,9 +102,9 @@ def determineCompiler(candidates, std, flags):
 
 # only check for a compiler if none is specified
 if cmakeCompiler is None:
-	cmakeCompiler = determineCompiler(candidates, "c++11", ["-fopenmp"])
+	cmakeCompiler = determineCompiler(candidates, "c++14", ["-fopenmp"])
 	if cmakeCompiler is None and sys.platform == "darwin":
-		cmakeCompiler = determineCompiler(["c++"], "c++11", ["-Xpreprocessor", "-fopenmp", "-lomp"])
+		cmakeCompiler = determineCompiler(["c++"], "c++14", ["-Xpreprocessor", "-fopenmp", "-lomp"])
 	if cmakeCompiler is None:
 		print("ERROR: No suitable compiler found. Install any of these: ", candidates)
 		if sys.platform == "darwin":
