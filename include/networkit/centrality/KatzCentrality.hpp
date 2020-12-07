@@ -1,5 +1,5 @@
 /*
- * KatzCentrality.h
+ * KatzCentrality.hpp
  *
  *  Created on: 09.01.2015
  *      Author: Henning
@@ -21,9 +21,9 @@ namespace NetworKit {
  */
 class KatzCentrality: public Centrality {
 protected:
-    double alpha; // damping
-    double beta; // constant centrality amount
-    double tol; // error tolerance
+    const double alpha; // damping
+    const double beta; // constant centrality amount
+    const double tol; // error tolerance
 
 public:
     /**
