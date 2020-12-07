@@ -1,5 +1,5 @@
 /*
- * DynKatzCentrality.h
+ * DynKatzCentrality.cpp
  *
  *  Created on: April 2018
  *      Author: Alexander van der Grinten
