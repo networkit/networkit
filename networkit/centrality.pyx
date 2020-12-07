@@ -1727,7 +1727,6 @@ cdef extern from "<networkit/centrality/PageRank.hpp>" namespace "NetworKit::Pag
 		L1Norm = 0
 		L2Norm = 1
 
-#class _PageRankNorm(object):
 class Norm(object):
 	l1norm = L1Norm
 	l2norm = L2Norm
@@ -1774,7 +1773,7 @@ cdef class PageRank(Centrality):
 		def __get__(self):
 			""" Get the norm used as stopping criterion. """
 			return (<_PageRank*>(self._this)).norm
-		def __set__(self, norm):
+		def __set__(self, _Norm norm):
 			""" Set the norm used as stopping criterion. """
 			(<_PageRank*>(self._this)).norm = norm
 
