@@ -9,22 +9,20 @@
 #include <cfloat>
 #include <cmath>
 #include <omp.h>
+
 #include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/centrality/DynKatzCentrality.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
 DynKatzCentrality::DynKatzCentrality(const Graph& G, count k, bool groupOnly, double tolerance)
 : Centrality(G, false), k(k), groupOnly(groupOnly), rankTolerance(tolerance),
         activeQueue(G.upperNodeIdBound()) {
-    maxdeg = 0;
-    G.forNodes([&](node u){
-        if (G.degree(u) > maxdeg) {
-            maxdeg = G.degree(u);
-        }
-    });
-    assert(maxdeg && "Alpha is chosen based on the max. degree; therefore, that degree must not be zero");
+    maxdeg = static_cast<count>(GraphTools::maxDegree(G));
+    if (maxdeg == 0)
+        throw std::runtime_error("Alpha is chosen based on the max. degree; therefore, that degree must not be zero");
 
     alpha = 1.0 / (maxdeg + 1.0);
     DEBUG("alpha: ", alpha);
