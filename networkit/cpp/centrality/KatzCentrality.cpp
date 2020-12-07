@@ -26,8 +26,12 @@ void KatzCentrality::run() {
 
     auto converged  = [&](double val, double other) -> bool {
         // compute residual
-        return (Aux::NumericTools::equal(val, other, tol));
-    });
+        return Aux::NumericTools::equal(val, other, tol);
+    };
+
+    auto updateScore = [&](node u, node v, edgeweight ew, edgeid) -> void {
+        values[u] += ew * alpha * (1 + scoreData[v]);
+    };
 
     do {
         oldLength = length;
@@ -35,12 +39,14 @@ void KatzCentrality::run() {
         // iterate matrix-vector product
         G.parallelForNodes([&](node u) {
             values[u] = 0.0;
-            // note: inconsistency in definition in Newman's book (Ch. 7) regarding directed graphs
-            // we follow the verbal description, which requires to sum over the incoming edges
-            G.forInEdgesOf(u, [&](node v, edgeweight ew) {
-                values[u] += ew * alpha * (1 + scoreData[v]);
-            });
-//			values[u] *= alpha;
+
+            if (edgeDirection == EdgeDirection::OutEdges)
+                G.forNeighborsOf(u, updateScore);
+            else if (edgeDirection == EdgeDirection::InEdges)
+                G.forInNeighborsOf(u, updateScore);
+            else
+                throw std::runtime_error("Unsupported edge direction");
+
             values[u] += beta;
         });
 
