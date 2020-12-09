@@ -1,7 +1,3 @@
-/*
- *
- */
-
 #include <networkit/graph/RandomMaximumSpanningForest.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/auxiliary/Parallel.hpp>

@@ -37,7 +37,7 @@ public:
 
     Graph getGraph(bool parallel = false);
 
-    std::string toString() const final;
+    std::string TLX_DEPRECATED(toString() const final);
 
     bool isParallel() const final { return false; }
 

@@ -42,7 +42,7 @@ public:
     /**
      * Get the name of the algorithm.
      */
-    std::string toString() const override { return "Isolated inter-partition conductance"; };
+    std::string TLX_DEPRECATED(toString() const override) { return "Isolated inter-partition conductance"; };
 };
 
 }

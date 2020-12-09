@@ -36,7 +36,7 @@ public:
      * Get string representation of the algorithm.
      * @return The string representation of the algorithm.
      */
-    virtual std::string toString() const;
+    virtual std::string TLX_DEPRECATED(toString() const);
 
     /**
      * Checks whether a set is independent.

@@ -137,7 +137,7 @@ public:
     /**
      * The name and parameters of the generator
      */
-    std::string toString() const override;
+    std::string TLX_DEPRECATED(toString() const override);
 
     /**
      * If the algorithm uses parallelism (no)

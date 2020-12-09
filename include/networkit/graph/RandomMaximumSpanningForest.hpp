@@ -81,7 +81,7 @@ public:
     /**
      * @return The name of this algorithm.
      */
-    std::string toString() const override;
+    std::string TLX_DEPRECATED(toString() const override);
 
 private:
     struct weightedEdge {

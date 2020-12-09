@@ -38,7 +38,7 @@ class APSP : public Algorithm {
     /**
      * @return string representation of algorithm and parameters.
      */
-    std::string toString() const override;
+    std::string TLX_DEPRECATED(toString() const override);
 
     /**
      * Returns a vector of weighted distances between node pairs.

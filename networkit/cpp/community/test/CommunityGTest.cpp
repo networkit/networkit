@@ -15,7 +15,6 @@
 #include <networkit/community/ClusteringGenerator.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/overlap/HashingOverlapper.hpp>
-#include <networkit/community/PLM.hpp>
 #include <networkit/community/GraphClusteringTools.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/structures/Partition.hpp>

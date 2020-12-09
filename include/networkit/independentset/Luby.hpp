@@ -25,7 +25,7 @@ public:
     // FIXME: check correctness of implementation
     std::vector<bool> run(const Graph& G) override;
 
-    std::string toString() const override;
+    std::string TLX_DEPRECATED(toString() const override);
 };
 
 } /* namespace NetworKit */

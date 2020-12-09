@@ -58,7 +58,7 @@ public:
      * Returns a string with the algorithm's name and its parameters, if there are any. Subclasses should override it.
      * @return The string representation of the algorithm.
      */
-    std::string toString() const override;
+    std::string TLX_DEPRECATED(toString() const override);
 
     bool isParallel() const override;
 

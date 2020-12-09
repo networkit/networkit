@@ -1,8 +1,10 @@
 #ifndef NETWORKIT_BASE_ALGORITHM_HPP_
 #define NETWORKIT_BASE_ALGORITHM_HPP_
 
-#include <string>
 #include <stdexcept>
+#include <string>
+
+#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 
@@ -47,7 +49,7 @@ public:
      * Returns a string with the algorithm's name and its parameters, if there are any. Subclasses should override it.
      * @return The string representation of the algorithm.
      */
-    virtual std::string toString() const;
+    virtual std::string TLX_DEPRECATED(toString() const);
 
     /**
      * @return True if algorithm can run multi-threaded.

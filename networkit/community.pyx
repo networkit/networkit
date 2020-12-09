@@ -1080,7 +1080,7 @@ def detectCommunities(G, algo=None, inspect=True):
 	algo.run()
 	zeta = algo.getPartition()
 	t.stop()
-	print("{0} detected communities in {1} [s]".format(algo.toString(), t.elapsed))
+	print("Communities detected in {:.5f} [s]".format(t.elapsed))
 	if inspect:
 		print ("solution properties:")
 		inspectCommunities(zeta, G)
