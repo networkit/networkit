@@ -34,7 +34,7 @@ public:
      * Indicates whether an algorithm has completed computation or not.
      * @return The value of @ref hasRun.
      */
-    bool hasFinished() const {
+    bool hasFinished() const noexcept {
         return hasRun;
     };
 
