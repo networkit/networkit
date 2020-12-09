@@ -42,7 +42,7 @@ public:
      * modularity increase which can be gained by merging
      * the clusters of u and v.
      *
-     *     $$\Delta mod(c, d) := \frac{1}{2 \omega(E)} \left ( 2 \omega(E) \omega(c,d) - \omega(c) \omega(d) \right ) $$
+     * $$\\Delta mod(c, d) := \\frac{1}{2 \\omega(E)} \\left ( 2 \\omega(E) \\omega(c,d) - \\omega(c) \\omega(d) \\right ) $$
      *
      * @param[in]  u  source node id
      * @param[out]  v  target node id
