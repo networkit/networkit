@@ -30,7 +30,7 @@ class UnionFind final {
 public:
 
     /**
-     * Create a new set representation with not more the @max_element elements.
+     * Create a new set representation with not more than @p max_element elements.
      * Initially every element is in its own set.
      * @param max_element maximum number of elements
      */
