@@ -40,25 +40,25 @@ public:
     /**
      * Get a vector containing the centrality score for each node in the graph.
      *
-     * @return The centrality scores calculated by @link run().
+     * @return The centrality scores calculated by @ref run().
      */
     virtual const std::vector<double> &scores() const;
 
     /**
      * Get a vector containing the edge centrality score for each edge in the graph (where applicable).
-     * @return The edge betweenness scores calculated by @link run().
+     * @return The edge betweenness scores calculated by @ref run().
      */
     virtual std::vector<double> edgeScores();
 
     /**
      * Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
-     * calculated by @link run().
+     * calculated by @ref run().
      * @return A vector of pairs.
      */
     virtual std::vector<std::pair<node, double> > ranking();
 
     /**
-     * Get the centrality score of node @a v calculated by @link run().
+     * Get the centrality score of node @a v calculated by @ref run().
      *
      * @param v A node.
      * @return The betweenness score of node @a v.
