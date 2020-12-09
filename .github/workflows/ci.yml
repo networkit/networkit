@@ -210,7 +210,7 @@ jobs:
           CXX_STANDARD: ${{ matrix.variant }}
 
   linux-build-clang-tidy:
-    name: "Linux (clang-9, Python 3.8): clang-tidy build"
+    name: "Linux (clang-11): clang-tidy build"
     runs-on: ubuntu-20.04
     env:
       CC: clang
@@ -219,9 +219,9 @@ jobs:
       - name: Install prerequisites
         run: |
           curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-9 main" | sudo tee /etc/apt/sources.list.d/llvm9.list
+          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-11 main" | sudo tee /etc/apt/sources.list.d/llvm11.list
           sudo apt-get update
-          sudo apt-get install libomp-9-dev clang-9 clang-tidy-9 ninja-build
+          sudo apt-get install libomp-11-dev clang-11 clang-tidy-11 ninja-build
       - name: Checkout
         uses: actions/checkout@v2
       - name: Checkout submodules
