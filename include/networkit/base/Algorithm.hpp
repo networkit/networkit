@@ -1,3 +1,5 @@
+// networkit-format
+
 #ifndef NETWORKIT_BASE_ALGORITHM_HPP_
 #define NETWORKIT_BASE_ALGORITHM_HPP_
 
@@ -14,6 +16,7 @@ protected:
      * A boolean variable indicating whether an algorithm has finished its computation or not.
      */
     bool hasRun = false;
+
 public:
     /**
      * Constructor to the algorithm base class.
@@ -21,32 +24,35 @@ public:
     Algorithm() = default;
 
     /**
-     * Virtual default destructor
+     * Virtual default destructor.
      */
     virtual ~Algorithm() = default;
 
     /**
-     * The generic run method which calls runImpl() and takes care of setting @ref hasRun to the appropriate value.
+     * The generic run method which calls runImpl() and takes care of setting @ref hasRun to the
+     * appropriate value.
      */
     virtual void run() = 0;
 
     /**
      * Indicates whether an algorithm has completed computation or not.
+     *
      * @return The value of @ref hasRun.
      */
-    bool hasFinished() const noexcept {
-        return hasRun;
-    };
+    bool hasFinished() const noexcept { return hasRun; }
 
     /**
      * Assure that the algorithm has been run, throws a std::runtime_error otherwise.
      */
     void assureFinished() const {
-        if (!hasRun) throw std::runtime_error("Error, run must be called first");
-    };
+        if (!hasRun)
+            throw std::runtime_error("Error, run must be called first");
+    }
 
     /**
-     * Returns a string with the algorithm's name and its parameters, if there are any. Subclasses should override it.
+     * Returns a string with the algorithm's name and its parameters, if there
+     * are any. Subclasses should override it.
+     *
      * @return The string representation of the algorithm.
      */
     virtual std::string TLX_DEPRECATED(toString() const);
@@ -57,6 +63,6 @@ public:
     virtual bool isParallel() const;
 };
 
-} /* NetworKit */
+} // namespace NetworKit
 
 #endif // NETWORKIT_BASE_ALGORITHM_HPP_
