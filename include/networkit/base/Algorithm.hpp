@@ -11,12 +11,12 @@ protected:
     /**
      * A boolean variable indicating whether an algorithm has finished its computation or not.
      */
-    bool hasRun;
+    bool hasRun = false;
 public:
     /**
      * Constructor to the algorithm base class.
      */
-    Algorithm();
+    Algorithm() = default;
 
     /**
      * Virtual default destructor

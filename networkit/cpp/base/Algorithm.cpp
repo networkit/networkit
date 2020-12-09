@@ -4,10 +4,6 @@
 #include <exception>
 
 namespace NetworKit {
-    Algorithm::Algorithm() : hasRun(false) {
-
-    }
-
     std::string Algorithm::toString() const {
         throw std::runtime_error("TODO: implement in subclass and return string representation");
     }
