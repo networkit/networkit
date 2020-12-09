@@ -1,0 +1,279 @@
+name: build
+
+on: [push, pull_request]
+
+env:
+  OMP_NUM_THREADS: 2
+  CXX_STANDARD: 11
+  MONOLITH: ON
+
+jobs:
+  macos-build-apple-clang:
+    name: "macOS ${{ matrix.os }} (latest apple-clang, Python 3.9): ${{ matrix.variant }}"
+    runs-on: macos-${{ matrix.os }}
+    env:
+      CC: cc
+      CXX: c++
+    strategy:
+      matrix:
+        os: ['11.0', '10.15']
+        variant: ['full build', 'non-monolithic']
+    continue-on-error: ${{ matrix.os == '11.0' }}
+    steps:
+      - name: Install prerequisites 📦
+        run: |
+          brew install libomp
+          brew install ninja
+      - name: Setup Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+      - name: Prepare environment and run checks (full build)
+        if: matrix.variant == 'full build'
+        run:  ${{ github.workspace }}/.github/workflows/scripts/full.sh
+        shell: bash
+      - name: Prepare environment and run checks (non-monolithic)
+        if: matrix.variant == 'non-monolithic'
+        run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
+        shell: bash
+        env:
+          MONOLITH: OFF
+
+  macos-build-misc-compiler:
+    name: "macOS ${{ matrix.os }} (latest ${{ matrix.variant }}, Python 3.9): core build"
+    runs-on: macos-${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ['11.0', '10.15']
+        variant: ['llvm-11', 'gcc-10']
+    continue-on-error: ${{ matrix.os == '11.0' }}
+    steps:
+      - name: Install prerequisites 📦
+        run: |
+          brew install libomp
+          brew install ninja
+      - name: Setup Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install compiler llvm
+        if: matrix.variant == 'llvm-11'
+        run: brew install llvm@11
+      - name: Install compiler gcc
+        if: matrix.variant == 'gcc-10'
+        run: | 
+          brew install gcc@10
+          brew link gcc
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+      - name: Prepare environment and run checks (llvm)
+        if: matrix.variant == 'llvm-11'
+        run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
+        shell: bash
+        env:
+          CC: /usr/local/opt/llvm/bin/clang
+          CXX: /usr/local/opt/llvm/bin/clang++
+      - name: Prepare environment and run checks (gcc)
+        if: matrix.variant == 'gcc-10'
+        run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
+        shell: bash
+        env:
+          CC: gcc-10
+          CXX: g++-10 
+
+  linux-build-latest-gcc:
+    name: "Linux (latest gcc-10, Python 3.8): ${{ matrix.variant }}"
+    runs-on: ubuntu-20.04
+    env:
+      CC: gcc-10
+      CXX: g++-10
+    strategy:
+      matrix:
+        variant: ['full build', 'core build', 'non-monolithic']
+    steps:
+      - name: Install prerequisites 📦
+        run:  |
+          sudo apt-get install ninja-build
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+      - name: Prepare environment and run checks (full build)
+        if: matrix.variant == 'full build'
+        run:  ${{ github.workspace }}/.github/workflows/scripts/full.sh
+        shell: bash
+      - name: Prepare environment and run checks (core build)
+        if: matrix.variant == 'core build'
+        run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
+        shell: bash
+      - name: Prepare environment and run checks (non-monolithic)
+        if: matrix.variant == 'non-monolithic'
+        run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
+        shell: bash
+
+  linux-build-basic-support:
+    name: "Linux (${{ matrix.variant }}, Python 3.6): full build"
+    runs-on: ubuntu-16.04
+    strategy:
+      matrix:
+        variant: ['gcc-4.9', 'clang-3.8']
+    steps:
+      - name: Install prerequisites 📦
+        run:  |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install ninja-build gcc-4.9 g++-4.9 
+          sudo apt-get install libomp5 libomp-dev clang-3.8 clang++-3.8
+      - name: Setup Python 3.6
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+      - name: Prepare environment and run checks (gcc-4.9)
+        if: matrix.variant == 'gcc-4.9'
+        run:  ${{ github.workspace }}/.github/workflows/scripts/full.sh
+        shell: bash
+        env:
+          CC: gcc-4.9
+          CXX: g++-4.9
+      - name: Prepare environment and run checks (clang-3.8)
+        if: matrix.variant == 'clang-3.8'
+        run:  ${{ github.workspace }}/.github/workflows/scripts/full.sh
+        shell: bash
+        env:
+          CC: clang-3.8
+          CXX: clang++-3.8
+
+  linux-build-conformance:
+    name: "Linux (latest gcc-10): C++${{ matrix.variant }} conformance"
+    runs-on: ubuntu-20.04
+    env:
+      CC: gcc-10
+      CXX: g++-10
+    strategy:
+      matrix:
+        variant: ['14', '17', '20']
+    steps:
+      - name: Install prerequisites 📦
+        run:  |
+          sudo apt-get install ninja-build
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+      - name: Prepare environment and run checks (C++)
+        run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
+        shell: bash
+        env:
+          CXX_STANDARD: ${{ matrix.variant }}
+
+  linux-build-clang-tidy:
+    name: "Linux (clang-9, Python 3.8): clang-tidy build"
+    runs-on: ubuntu-20.04
+    env:
+      CC: clang
+      CXX: clang++
+    steps:
+      - name: Install prerequisites
+        run: |
+          curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-9 main" | sudo tee /etc/apt/sources.list.d/llvm9.list
+          sudo apt-get update
+          sudo apt-get install libomp-9-dev clang-9 clang-tidy-9 ninja-build
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+      - name: Prepare environment and run checks
+        run:  ${{ github.workspace }}/.github/workflows/scripts/clang_tidy.sh
+        shell: bash
+
+  linux-build-core-sanitizers-coverage:
+    name: "Linux (gcc-5, Python 3.6): core build, sanitizers, coverage"
+    runs-on: ubuntu-18.04
+    env:
+      CC: gcc-5
+      CXX: g++-5
+    steps:
+      # gcc-5 has to be used with 18.04, because the integrated version from 16.04-image has a bug with linker flags:
+      # "unrecognized option '--push-state--no-as-needed'"
+      - name: Install prerequisites
+        run:  |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install ninja-build gcc-5 g++-5
+      - name: Setup Python 3.6
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+      - name: Prepare environment and run checks
+        run:  ${{ github.workspace }}/.github/workflows/scripts/core_sanitizers_coverage.sh
+        shell: bash
+      - name: Update Coveralls 🚀
+        run: |
+          . pyenv/bin/activate
+          coveralls -E ".*test/.*" -E ".*CMakeFiles.*" --exclude extlibs --exclude pyenv --exclude scripts --root .
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+
+  documentation-build:
+    name: "Documentation build"
+    runs-on: ubuntu-20.04
+    env:
+      CC: gcc-10
+      CXX: g++-10
+    continue-on-error: true
+    steps:
+      - name: Install prerequisites 📦
+        run:  |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install doxygen pandoc
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+      - name: Prepare environment and run checks
+        run:  ${{ github.workspace }}/.github/workflows/scripts/documentation.sh
+        shell: bash
+      - name: Deploy networkit.github.io 🚀
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          ACCESS_TOKEN: ${{ secrets.SECRET_DEPLOY_GITHUB_PAGES }}
+          BRANCH: master
+          BASE_BRANCH: master
+          FOLDER: core_build/htmldocs
+          REPOSITORY_NAME: networkit/dev-docs
+          CLEAN: false
+
+  style-guide-compliance-build:
+    name: "Style guide compliance build"
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Install prerequisites 📦
+        run: |
+          curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          echo "deb http://apt.llvm.org/bionic llvm-toolchain-bionic-8 main" | sudo tee /etc/apt/sources.list.d/llvm8.list
+          sudo apt-get update
+          sudo apt-get install clang-format-8
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+      - name: Prepare environment and run checks
+        run:  |
+          set -e
+          ./check_code.sh -v
