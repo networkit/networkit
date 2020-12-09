@@ -193,7 +193,7 @@ jobs:
       CXX: g++-10
     strategy:
       matrix:
-        variant: ['14', '17', '20']
+        variant: ['17', '20']
     steps:
       - name: Install prerequisites 📦
         run:  |
