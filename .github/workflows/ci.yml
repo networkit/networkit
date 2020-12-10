@@ -88,7 +88,7 @@ jobs:
           CXX: g++-10 
 
   linux-build-latest-gcc:
-    name: "Linux (latest gcc-10, Python 3.8): ${{ matrix.variant }}"
+    name: "Linux (latest gcc-10, Python 3.9): ${{ matrix.variant }}"
     runs-on: ubuntu-20.04
     env:
       CC: gcc-10
@@ -100,6 +100,10 @@ jobs:
       - name: Install prerequisites 📦
         run:  |
           sudo apt-get install ninja-build
+      - name: Setup Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
       - name: Checkout
         uses: actions/checkout@v2
       - name: Checkout submodules
@@ -117,18 +121,46 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
         shell: bash
 
-  linux-build-basic-support:
+  linux-build-misc-compiler:
+    name: "Linux (latest ${{ matrix.variant }}, Python 3.9): full build"
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        variant: ['llvm-11']
+    steps:
+      - name: Install prerequisites 📦
+        run:  |
+          curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-11 main" | sudo tee /etc/apt/sources.list.d/llvm11.list
+          sudo apt-get update
+          sudo apt-get install clang-11 libomp-11-dev ninja-build
+      - name: Setup Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+      - name: Prepare environment and run checks
+        run:  ${{ github.workspace }}/.github/workflows/scripts/full.sh
+        shell: bash
+        env:
+          CC: clang-11
+          CXX: clang++-11
+
+  linux-build-min-support:
     name: "Linux (${{ matrix.variant }}, Python 3.6): full build"
     runs-on: ubuntu-16.04
     strategy:
       matrix:
-        variant: ['gcc-4.9', 'clang-3.8']
+        variant: ['gcc-5.5', 'clang-3.8']
     steps:
       - name: Install prerequisites 📦
         run:  |
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
-          sudo apt-get install ninja-build gcc-4.9 g++-4.9 
+          sudo apt-get install ninja-build
           sudo apt-get install libomp5 libomp-dev clang-3.8 clang++-3.8
       - name: Setup Python 3.6
         uses: actions/setup-python@v2
@@ -138,13 +170,13 @@ jobs:
         uses: actions/checkout@v2
       - name: Checkout submodules
         run: git submodule update --init --recursive
-      - name: Prepare environment and run checks (gcc-4.9)
-        if: matrix.variant == 'gcc-4.9'
+      - name: Prepare environment and run checks (gcc-5.5)
+        if: matrix.variant == 'gcc-5.5'
         run:  ${{ github.workspace }}/.github/workflows/scripts/full.sh
         shell: bash
         env:
-          CC: gcc-4.9
-          CXX: g++-4.9
+          CC: gcc-5
+          CXX: g++-5
       - name: Prepare environment and run checks (clang-3.8)
         if: matrix.variant == 'clang-3.8'
         run:  ${{ github.workspace }}/.github/workflows/scripts/full.sh
@@ -223,11 +255,39 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/core_sanitizers_coverage.sh
         shell: bash
       - name: Update Coveralls 🚀
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           . pyenv/bin/activate
           coveralls -E ".*test/.*" -E ".*CMakeFiles.*" --exclude extlibs --exclude pyenv --exclude scripts --root .
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+
+  windows-build-msvc:
+    name: "Windows Server 2019 (msvc 14.28): ${{ matrix.type }} build, ${{ matrix.variant }}"
+    runs-on: windows-2019
+    env:
+      MSBUILD_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.com
+      SLN_PATH: ${{ github.workspace }}\build\networkit.sln
+      VS_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\
+    strategy:
+      matrix:
+        type: ['Release', 'Debug']
+        variant: ['monolithic', 'non-monolithic']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+      - name: Prepare environment and run checks
+        run: |
+          cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\"
+          ./vcvarsall.bat x64
+          md ${{ github.workspace }}\build && cd ${{ github.workspace }}\build
+          cmake -G "Visual Studio 16 2019" -A x64 -DNETWORKIT_STATIC=ON -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_MONOLITH=${{ matrix.variant }} ..
+          cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\"
+          ./devenv.com $Env:GITHUB_WORKSPACE\build\networkit.sln /build ${{ matrix.type }}
+          cd ${{ github.workspace }}\build
+          ctest -V -C ${{ matrix.type }}
 
   documentation-build:
     name: "Documentation build"
@@ -235,7 +295,6 @@ jobs:
     env:
       CC: gcc-10
       CXX: g++-10
-    continue-on-error: true
     steps:
       - name: Install prerequisites 📦
         run:  |
@@ -250,6 +309,7 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/documentation.sh
         shell: bash
       - name: Deploy networkit.github.io 🚀
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
           ACCESS_TOKEN: ${{ secrets.SECRET_DEPLOY_GITHUB_PAGES }}
