@@ -18,15 +18,15 @@ HarmonicCloseness::HarmonicCloseness(const Graph &G, bool normalized)
     : Centrality(G, normalized) {}
 
 void HarmonicCloseness::run() {
-  scoreData.assign(G.upperNodeIdBound(), 0.f);
+  scoreData.assign(G.upperNodeIdBound(), 0.);
   edgeweight infDist = std::numeric_limits<edgeweight>::max();
 
   G.parallelForNodes([&](node v) {
     std::unique_ptr<SSSP> sssp;
     if (G.isWeighted()) {
-      sssp.reset(new Dijkstra(G, v, true, true));
+      sssp = std::make_unique<Dijkstra>(G, v, true, true);
     } else {
-      sssp.reset(new BFS(G, v, true, true));
+      sssp = std::make_unique<BFS>(G, v, true, true);
     }
 
     sssp->run();

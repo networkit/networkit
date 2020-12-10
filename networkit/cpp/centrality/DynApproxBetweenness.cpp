@@ -58,9 +58,9 @@ void DynApproxBetweenness::run() {
             v[i] = GraphTools::randomNode(G);
         } while (v[i] == u[i]);
         if (G.isWeighted()) {
-            sssp[i].reset(new DynDijkstra(G, u[i], storePreds));
+            sssp[i] = std::make_unique<DynDijkstra>(G, u[i], storePreds);
         } else {
-            sssp[i].reset(new DynBFS(G, u[i], storePreds));
+            sssp[i] = std::make_unique<DynBFS>(G, u[i], storePreds);
         }
         DEBUG("running shortest path algorithm for node ", u[i]);
 

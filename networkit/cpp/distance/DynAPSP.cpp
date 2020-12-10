@@ -32,9 +32,9 @@ void DynAPSP::run() {
     G.parallelForNodes([&](node u){
         std::unique_ptr<SSSP> sssp;
         if (G.isWeighted()) {
-            sssp.reset(new Dijkstra(G, u));
+            sssp = std::make_unique<Dijkstra>(G, u);
         } else {
-            sssp.reset(new BFS(G, u));
+            sssp = std::make_unique<BFS>(G, u);
         }
         sssp->run();
         distances[u] = sssp->getDistances();

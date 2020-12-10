@@ -266,8 +266,7 @@ void KadabraBetweenness::init() {
     deltaLGuess.resize(n, 0);
     deltaUGuess.resize(n, 0);
     if (!G.isDirected()) {
-        this->cc =
-            std::unique_ptr<ConnectedComponents>(new ConnectedComponents(G));
+        this->cc = std::make_unique<ConnectedComponents>(G);
         this->cc->run();
     }
     epochFinished = std::vector<std::atomic<StateFrame *>>(omp_max_threads);
@@ -350,8 +349,7 @@ void KadabraBetweenness::run() {
     }
 
     if (!absolute)
-        this->top = std::unique_ptr<Aux::SortedList>(
-            new Aux::SortedList(unionSample, n));
+        this->top = std::make_unique<Aux::SortedList>(unionSample, n);
 
     std::vector<StateFrame> firstFrames(omp_max_threads, StateFrame(n));
 
@@ -394,8 +392,7 @@ void KadabraBetweenness::run() {
         auto moveToNextEpoch = [&]() {
             ++epochToWrite;
             if (unused.empty()) {
-                additionalFrames.push_back(
-                    std::unique_ptr<StateFrame>(new StateFrame(n)));
+                additionalFrames.push_back(std::make_unique<StateFrame>(n));
                 curFrame = additionalFrames.back().get();
                 ++maxFrames[t];
             } else {

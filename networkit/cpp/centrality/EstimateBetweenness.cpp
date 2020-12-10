@@ -14,7 +14,6 @@
 #include <networkit/auxiliary/Parallelism.hpp>
 #include <networkit/graph/GraphTools.hpp>
 
-
 #include <memory>
 #include <omp.h>
 
@@ -46,9 +45,9 @@ void EstimateBetweenness::run() {
         // run single-source shortest path algorithm
         std::unique_ptr<SSSP> sssp;
         if (G.isWeighted()) {
-            sssp.reset(new Dijkstra(G, s, true, true));
+            sssp = std::make_unique<Dijkstra>(G, s, true, true);
         } else {
-            sssp.reset(new BFS(G, s, true, true));
+            sssp = std::make_unique<BFS>(G, s, true, true);
         }
         if (!handler.isRunning()) return;
         sssp->run();

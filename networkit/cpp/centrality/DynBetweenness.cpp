@@ -21,15 +21,6 @@
 
 namespace NetworKit {
 
-// class CompareDist
-// {
-// public:
-//     bool operator()(std::pair<double,node> n1,std::pair<double,node> n2) {
-//         return n1.second>n2.second;
-//     }
-// };
-
-
 DynBetweenness::DynBetweenness(const Graph &G) : Centrality(G),
 distances(G.upperNodeIdBound(), std::vector<edgeweight>(G.upperNodeIdBound())),
 distancesOld(G.upperNodeIdBound(), std::vector<edgeweight>(G.upperNodeIdBound())),
@@ -48,9 +39,9 @@ void DynBetweenness::run() {
             // run SSSP algorithm and keep track of everything
             std::unique_ptr<SSSP> sssp;
             if (G.isWeighted()) {
-                    sssp.reset(new Dijkstra(G, s, true, true));
+                    sssp = std::make_unique<Dijkstra>(G, s, true, true);
             } else {
-                    sssp.reset(new BFS(G, s, true, true));
+                    sssp = std::make_unique<BFS>(G, s, true, true);
             }
 
             sssp->run();
