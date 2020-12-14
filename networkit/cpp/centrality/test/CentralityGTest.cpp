@@ -31,6 +31,7 @@
 #include <networkit/centrality/GroupClosenessGrowShrink.hpp>
 #include <networkit/centrality/GroupClosenessLocalSwaps.hpp>
 #include <networkit/centrality/GroupDegree.hpp>
+#include <networkit/centrality/GroupHarmonicCloseness.hpp>
 #include <networkit/centrality/HarmonicCloseness.hpp>
 #include <networkit/centrality/KPathCentrality.hpp>
 #include <networkit/centrality/KadabraBetweenness.hpp>
@@ -2112,6 +2113,70 @@ TEST_P(CentralityGTest, testGroupClosenessLocalSwaps) {
             std::for_each(groupMaxCC.begin(), groupMaxCC.end(), [&group](const node u) {
                 EXPECT_NE(group.find(u), group.end());
             });
+
+        }
+    }
+}
+
+TEST_P(CentralityGTest, testGroupHarmonicCloseness) {
+
+    const auto computeOpt = [&](const Graph &G, count k) -> double {
+        std::vector<bool> inGroup(G.upperNodeIdBound());
+        std::fill(inGroup.begin(), inGroup.begin() + k, true);
+        double opt = -std::numeric_limits<double>::max();
+        std::vector<node> group;
+        group.reserve(k);
+        do {
+            group.clear();
+            G.forNodes([&](node u) {
+                if (inGroup[u])
+                    group.push_back(u);
+            });
+            opt = std::max(opt, GroupHarmonicCloseness::scoreOfGroup(G, group.begin(), group.end()));
+        } while (std::prev_permutation(inGroup.begin(), inGroup.end()));
+
+        return opt;
+    };
+
+    const double weightUB = 10;
+    for (const int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, true);
+        auto G = ErdosRenyiGenerator(20, 0.1, isDirected()).generate();
+        double lambda = 1;
+
+        if (isWeighted()) {
+            double maxWeight = 0, minWeight = weightUB;
+            G = GraphTools::toWeighted(G);
+            G.forEdges([&](node u, node v) {
+                const double curWeight = Aux::Random::real(0.001, weightUB);
+                maxWeight = std::max(maxWeight, curWeight);
+                minWeight = std::min(minWeight, curWeight);
+                G.setWeight(u, v, curWeight);
+            });
+            lambda = minWeight / maxWeight;
+        }
+
+        // Guaranted approximation ratio
+        double approxRatio;
+        if (isDirected())
+            approxRatio = lambda * (1. - 1. / (2. * std::exp(1.)));
+        else
+            approxRatio = lambda * (1. - 1. / std::exp(1.)) / 2.;
+
+        for (const count k : {3, 4, 5}) {
+            GroupHarmonicCloseness ghc(G, k);
+            ghc.run();
+            const auto group = ghc.groupMaxHarmonicCloseness();
+
+            // Test group
+            EXPECT_EQ(group.size(), k);
+            EXPECT_EQ(std::unordered_set<node>(group.begin(), group.end()).size(), k);
+
+            // Test quality
+            const double score = GroupHarmonicCloseness::scoreOfGroup(G, group.begin(), group.end());
+            const double opt = computeOpt(G, k);
+            EXPECT_GE(opt, score);
+            EXPECT_GE(score / opt, approxRatio);
         }
     }
 }
