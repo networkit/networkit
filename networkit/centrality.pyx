@@ -1413,10 +1413,21 @@ cdef class KPathCentrality(Centrality):
 		self._G = G
 		self._this = new _KPathCentrality(G._this, alpha, k)
 
+cdef extern from "<networkit/centrality/KatzCentrality.hpp>" namespace "NetworKit":
+
+	cdef enum _EdgeDirection"NetworKit::EdgeDirection":
+		OutEdges = 0
+		InEdges = 1
+
+class EdgeDirection(object):
+	inEdges = InEdges
+	outEdges = OutEdges
+
 cdef extern from "<networkit/centrality/KatzCentrality.hpp>":
 
 	cdef cppclass _KatzCentrality "NetworKit::KatzCentrality" (_Centrality):
 		_KatzCentrality(_Graph, double, double, double) except +
+		_EdgeDirection edgeDirection
 
 cdef class KatzCentrality(Centrality):
 	"""
@@ -1442,6 +1453,14 @@ cdef class KatzCentrality(Centrality):
 	def __cinit__(self, Graph G, alpha=0.2, beta=0.1, tol=1e-8):
 		self._G = G
 		self._this = new _KatzCentrality(G._this, alpha, beta, tol)
+
+	property edgeDirection:
+		def __get__(self):
+			""" Get the used edge direction. """
+			return (<_KatzCentrality*>(self._this)).edgeDirection
+		def __set__(self, _EdgeDirection edgeDirection):
+			""" Use a different edge direction. """
+			(<_KatzCentrality*>(self._this)).edgeDirection = edgeDirection
 
 cdef extern from "<networkit/centrality/DynKatzCentrality.hpp>":
 
@@ -1708,7 +1727,6 @@ cdef extern from "<networkit/centrality/PageRank.hpp>" namespace "NetworKit::Pag
 		L1Norm = 0
 		L2Norm = 1
 
-#class _PageRankNorm(object):
 class Norm(object):
 	l1norm = L1Norm
 	l2norm = L2Norm
@@ -1755,7 +1773,7 @@ cdef class PageRank(Centrality):
 		def __get__(self):
 			""" Get the norm used as stopping criterion. """
 			return (<_PageRank*>(self._this)).norm
-		def __set__(self, norm):
+		def __set__(self, _Norm norm):
 			""" Set the norm used as stopping criterion. """
 			(<_PageRank*>(self._this)).norm = norm
 

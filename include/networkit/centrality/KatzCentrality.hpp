@@ -1,5 +1,5 @@
 /*
- * KatzCentrality.h
+ * KatzCentrality.hpp
  *
  *  Created on: 09.01.2015
  *      Author: Henning
@@ -12,6 +12,8 @@
 
 namespace NetworKit {
 
+enum EdgeDirection : char { InEdges = 0, OutEdges = 1 };
+
 /**
  * @ingroup centrality
  * Computes the Katz centrality of the graph.
@@ -20,10 +22,11 @@ namespace NetworKit {
  * edges (as opposed to outgoing ones).
  */
 class KatzCentrality: public Centrality {
+    std::vector<double> values;
 protected:
-    double alpha; // damping
-    double beta; // constant centrality amount
-    double tol; // error tolerance
+    const double alpha; // damping
+    const double beta; // constant centrality amount
+    const double tol; // error tolerance
 
 public:
     /**
@@ -41,6 +44,9 @@ public:
      * Computes katz centrality on the graph passed in constructor.
      */
     void run() override;
+
+    // Whether to count in-edges or out-edges
+    EdgeDirection edgeDirection = EdgeDirection::InEdges;
 };
 
 } /* namespace NetworKit */
