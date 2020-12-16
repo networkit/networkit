@@ -49,7 +49,8 @@ jobs:
     strategy:
       matrix:
         os: ['11.0', '10.15']
-        variant: ['llvm-11', 'gcc-10']
+        variant: ['llvm-11'] # 'gcc-10' is disabled for now, since the workflow exits randomly during test-phase
+        # Will be resumed once the 11.0 image is final. 
     continue-on-error: ${{ matrix.os == '11.0' }}
     steps:
       - name: Install prerequisites 📦
@@ -257,8 +258,9 @@ jobs:
       - name: Update Coveralls 🚀
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
+          cd ${{ github.workspace }}
           . pyenv/bin/activate
-          coveralls -E ".*test/.*" -E ".*CMakeFiles.*" --exclude extlibs --exclude pyenv --exclude scripts --root .
+          coveralls -E ".*test/.*" -E ".*CMakeFiles.*" --exclude extlibs --exclude pyenv --exclude scripts --root ${{ github.workspace }}
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
@@ -310,14 +312,14 @@ jobs:
         shell: bash
       - name: Deploy networkit.github.io 🚀
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          ACCESS_TOKEN: ${{ secrets.SECRET_DEPLOY_GITHUB_PAGES }}
-          BRANCH: master
-          BASE_BRANCH: master
-          FOLDER: core_build/htmldocs
-          REPOSITORY_NAME: networkit/dev-docs
-          CLEAN: false
+          personal_token: ${{ secrets.SECRET_DEPLOY_GITHUB_PAGES }}
+          external_repository: networkit/dev-docs
+          publish_branch:  master
+          publish_dir: ./core_build/htmldocs
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
 
   style-guide-compliance-build:
     name: "Style guide compliance build"
