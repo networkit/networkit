@@ -61,6 +61,17 @@ public:
    */
   std::vector<std::vector<node>> getComponents();
 
+  /*
+   * Get the components that contain node @a u.
+   *
+   * @param u A node.
+   * @return Components that contain node @a u.
+   */
+  const std::unordered_set<node> &getComponentsOfNode(node u) const {
+      assureFinished();
+      return componentsOfNode[u];
+  }
+
 private:
   void init();
   void newComponent(std::pair<node, node> e);

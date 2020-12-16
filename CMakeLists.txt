@@ -17,6 +17,7 @@ option(NETWORKIT_WARNINGS_AS_ERRORS "Treat warnings as errors (except deprecated
 option(NETWORKIT_CLANG_TIDY "Check code with clang-tidy" OFF)
 option(NETWORKIT_FLATINSTALL "Install into a flat directory structure (useful when building a Python package)" OFF)
 option(NETWORKIT_COVERAGE "Build with support for coverage" OFF)
+option(NETWORKIT_SANITY_CHECKS "Algorithms will perform further (expensive) checks" OFF)
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
 set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Implies MONOLITH=TRUE")
 set(NETWORKIT_WITH_SANITIZERS "" CACHE STRING "Uses sanitizers during the compilation")
@@ -117,6 +118,13 @@ if (NETWORKIT_COVERAGE)
   set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} --coverage")
   set(NETWORKIT_LINK_FLAGS "${NETWORKIT_LINK_FLAGS} --coverage")
 endif()
+
+################################################################################
+# ENABLE ADDITIONAL SANITY CHECKS
+if (NETWORKIT_SANITY_CHECKS)
+    set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} -DNETWORKIT_SANITY_CHECKS")
+endif()
+
 
 # finding or creating OpenMP target. This is likely to fail for CMake Version < 3.12.
 find_package(OpenMP)
