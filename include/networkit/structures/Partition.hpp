@@ -275,7 +275,7 @@ public:
      * @param name The name.
      */
     inline void setName(std::string name) {
-        this->name = name;
+        this->name = std::move(name);
     }
 
     /**
