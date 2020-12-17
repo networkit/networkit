@@ -3,6 +3,7 @@
 #ifndef NETWORKIT_GRAPH_BFS_HPP_
 #define NETWORKIT_GRAPH_BFS_HPP_
 
+#include <array>
 #include <queue>
 #include <vector>
 
@@ -73,7 +74,7 @@ void BFSfrom(const Graph &G, InputIt first, InputIt last, L handle) {
  */
 template <typename L>
 void BFSfrom(const Graph &G, node source, L handle) {
-    std::vector<node> startNodes({source});
+    std::array<node, 1> startNodes{{source}};
     BFSfrom(G, startNodes.begin(), startNodes.end(), handle);
 }
 
