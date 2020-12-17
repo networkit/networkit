@@ -30,7 +30,7 @@ public:
 
     /** Get a vector containing the score for each edge in the graph.
      *
-     * @return the edge scores calculated by @link run().
+     * @return the edge scores calculated by @ref run().
      */
     virtual std::vector<T> scores() const;
 

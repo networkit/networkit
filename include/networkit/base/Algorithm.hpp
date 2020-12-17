@@ -24,13 +24,13 @@ public:
     virtual ~Algorithm() = default;
 
     /**
-     * The generic run method which calls runImpl() and takes care of setting @hasRun to the appropriate value.
+     * The generic run method which calls runImpl() and takes care of setting @ref hasRun to the appropriate value.
      */
     virtual void run() = 0;
 
     /**
      * Indicates whether an algorithm has completed computation or not.
-     * @return The Value of @hasRun.
+     * @return The value of @ref hasRun.
      */
     bool hasFinished() const {
         return hasRun;

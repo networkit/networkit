@@ -55,19 +55,19 @@ public:
     /**
      * Get a vector containing the betweenness score for each node in the graph.
      *
-     * @return The betweenness scores calculated by @link run().
+     * @return The betweenness scores calculated by @ref run().
      */
     const std::vector<double> &scores() const override;
 
     /**
      * Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
-     * calculated by @link run().
+     * calculated by @ref run().
      * @return A vector of pairs.
      */
     std::vector<std::pair<node, double>> ranking() override;
 
     /**
-     * Get the betweenness score of node @a v calculated by @link run().
+     * Get the betweenness score of node @a v calculated by @ref run().
      *
      * @param v A node.
      * @return The betweenness score of node @a v.

@@ -66,7 +66,7 @@ namespace NetworKit {
         /**
          * Runs a complete BFS from @a source while ignoring the edge between 
          * @a source and @a startNeighbor. This is equivalent to running a
-         * BFS in G \setminus (source, startNeighbor).
+         * BFS in G $\\setminus$ (source, startNeighbor).
          * 
          * @param source The source node.
          * @param startNeighbor The neighbor node to be ignored on level 1.
