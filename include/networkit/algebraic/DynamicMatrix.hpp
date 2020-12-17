@@ -70,13 +70,13 @@ public:
     DynamicMatrix(const DynamicMatrix &other) = default;
 
     /** Default move constructor */
-    DynamicMatrix(DynamicMatrix &&other) = default;
+    DynamicMatrix(DynamicMatrix &&other) noexcept = default;
 
     /** Default destructor */
      ~DynamicMatrix() = default;
 
     /** Default move assignment operator */
-    DynamicMatrix& operator=(DynamicMatrix &&other) = default;
+    DynamicMatrix& operator=(DynamicMatrix &&other) noexcept = default;
 
     /** Default copy assignment operator */
     DynamicMatrix& operator=(const DynamicMatrix &other) = default;

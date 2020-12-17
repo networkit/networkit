@@ -69,9 +69,9 @@ public:
           ainv(static_cast<value_type>((std::get<1>(gcdExtended(a, p)) + p) % p)), b(b) {}
 
     LinearCongruentialMap(const LinearCongruentialMap &) = default;
-    LinearCongruentialMap(LinearCongruentialMap &&) = default;
+    LinearCongruentialMap(LinearCongruentialMap &&) noexcept = default;
     LinearCongruentialMap &operator=(const LinearCongruentialMap &) = default;
-    LinearCongruentialMap &operator=(LinearCongruentialMap &&) = default;
+    LinearCongruentialMap &operator=(LinearCongruentialMap &&) noexcept = default;
 
     //! Hashes [n] to [p] with (a*x+b) mod p
     value_type hash(value_type n) const { return (a * n + b) % p; }
@@ -190,9 +190,9 @@ public:
           b(b) {}
 
     FixedLinearCongruentialMap(const FixedLinearCongruentialMap &) = default;
-    FixedLinearCongruentialMap(FixedLinearCongruentialMap &&) = default;
+    FixedLinearCongruentialMap(FixedLinearCongruentialMap &&) noexcept = default;
     FixedLinearCongruentialMap &operator=(const FixedLinearCongruentialMap &) = default;
-    FixedLinearCongruentialMap &operator=(FixedLinearCongruentialMap &&) = default;
+    FixedLinearCongruentialMap &operator=(FixedLinearCongruentialMap &&) noexcept = default;
 
     //! Hashes [n] to [p] with (a*x+b) mod p
     value_type hash(value_type n) const { return (a * n + b) % p; }

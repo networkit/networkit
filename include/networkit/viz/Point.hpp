@@ -27,6 +27,9 @@ namespace PointImpl {
 template <typename T, size_t Dimensions>
 class Storage {
     Storage() { std::fill(data.begin(), data.end(), T{0}); }
+    Storage(const Storage &) = default;
+    Storage(Storage &&) noexcept = default;
+    Storage &operator=(Storage &&) noexcept = default;
 
 protected:
     std::array<T, Dimensions> data;
@@ -37,6 +40,10 @@ class Storage<T, 2> {
 public:
     Storage() : data{{0, 0}} {};
     Storage(T x, T y) : data{{x, y}} {}
+
+    Storage(const Storage &) = default;
+    Storage(Storage &&) noexcept = default;
+    Storage &operator=(Storage &&) noexcept = default;
 
     std::pair<T, T> asPair() const noexcept { return {data[0], data[1]}; }
 
@@ -52,6 +59,9 @@ public:
         data[0] = x;
         data[1] = y;
     }
+
+    Storage(Storage &&) noexcept = default;
+    Storage &operator=(Storage &&) noexcept = default;
 
     explicit Storage(count dimension) : data(dimension) {}
     explicit Storage(const std::vector<T> &values) : data(values.size()) {
@@ -96,8 +106,8 @@ public:
     Point(const Point &) = default;
     Point &operator=(const Point &) = default;
 
-    Point(Point &&) = default;
-    Point &operator=(Point &&) = default;
+    Point(Point &&) noexcept = default;
+    Point &operator=(Point &&) noexcept = default;
 
     /// Type conversion between points of different size
     template <size_t otherDim>

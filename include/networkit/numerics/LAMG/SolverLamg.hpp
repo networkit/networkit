@@ -72,11 +72,11 @@ public:
 
     SolverLamg (const SolverLamg<Matrix>& other) = default;
 
-    SolverLamg (SolverLamg<Matrix>&& other) = default;
+    SolverLamg (SolverLamg<Matrix>&& other) noexcept = default;
 
     virtual ~SolverLamg() = default;
 
-    SolverLamg& operator=(SolverLamg<Matrix>&& other) = default;
+    SolverLamg& operator=(SolverLamg<Matrix>&& other) noexcept = default;
 
     SolverLamg& operator=(const SolverLamg<Matrix>& other) = default;
 

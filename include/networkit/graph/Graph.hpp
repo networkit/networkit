@@ -983,13 +983,13 @@ public:
     Graph(const Graph &other) = default;
 
     /** Default move constructor */
-    Graph(Graph &&other) = default;
+    Graph(Graph &&other) noexcept = default;
 
     /** Default destructor */
     ~Graph() = default;
 
     /** Default move assignment operator */
-    Graph &operator=(Graph &&other) = default;
+    Graph &operator=(Graph &&other) noexcept = default;
 
     /** Default copy assignment operator */
     Graph &operator=(const Graph &other) = default;
