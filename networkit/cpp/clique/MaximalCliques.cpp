@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cassert>
 
+#include <utility>
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/centrality/CoreDecomposition.hpp>
 #include <networkit/clique/MaximalCliques.hpp>
@@ -373,8 +374,9 @@ namespace NetworKit {
 MaximalCliques::MaximalCliques(const Graph& G, bool maximumOnly) : G(&G), maximumOnly(maximumOnly) {
 }
 
-MaximalCliques::MaximalCliques(const Graph& G, std::function<void(const std::vector<node>&)> callback) : G(&G), callback(callback), maximumOnly(false) {
-}
+MaximalCliques::MaximalCliques(const Graph &G,
+                               std::function<void(const std::vector<node> &)> callback)
+    : G(&G), callback(std::move(callback)), maximumOnly(false) {}
 
 const std::vector<std::vector<node>>& MaximalCliques::getCliques() const {
     if (callback) throw std::runtime_error("MaximalCliques used with callback does not store cliques");

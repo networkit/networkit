@@ -20,7 +20,7 @@ public:
      * @param[in]  G     The graph for which the cover shall be read
      * @return The cover instance
      */
-    virtual Cover read(std::string path, Graph &G);
+    virtual Cover read(const std::string &path, Graph &G);
 };
 
 } /* namespace NetworKit */

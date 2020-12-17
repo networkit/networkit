@@ -24,7 +24,7 @@ namespace NetworKit {
  */
 class DynamicDGSParser final : public DynamicGraphSource {
 public:
-    DynamicDGSParser(std::string path);
+    DynamicDGSParser(const std::string &path);
 
     /**
      * The generator may expect the graph to be in a certain initial state. Call this method first.
@@ -36,7 +36,7 @@ public:
      */
     void generate() override;
 
-    void evaluateClusterings(std::string path, const Partition &clustering);
+    void evaluateClusterings(const std::string &path, const Partition &clustering);
 
 private:
     bool graphInitialized;  //!< true if initializeGraph has been called and graph has been properly initialized

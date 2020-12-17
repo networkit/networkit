@@ -80,6 +80,7 @@ WarningsAsErrors:  >
     performance-trivially-destructible,
     performance-type-promotion-in-math-fn,
     performance-unnecessary-copy-initialization,
+    performance-unnecessary-value-param,
     readability-avoid-const-params-in-decls,
     readability-const-return-type,
     readability-container-size-empty
@@ -101,3 +102,5 @@ CheckOptions:
     value: CamelCase
   - key:   readability-identifier-naming.VariableCase
     value: CamelCase
+  - key:   performance-unnecessary-value-param.AllowedTypes
+    value: [Ff]unction$

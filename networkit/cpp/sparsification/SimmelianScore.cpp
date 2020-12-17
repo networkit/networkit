@@ -76,16 +76,12 @@ Redundancy SimmelianScore::getOverlap(	const node& ego,
  * Helper function used in getOverlap. Adds the intersection of
  * egoNeighbors and alterNeighborsUnmatched to overlap.
  */
-void SimmelianScore::matchNeighbors(
-    node,
-    node alter,
-    bool,
-    std::vector<RankedEdge>::const_iterator&,
-    RankedNeighbors egoNeighbors,
-    std::set<node>& egoNeighborsUnmatched,
-    std::set<node>& alterNeighborsUnmatched,
-    count rank,
-    count& overlap) {
+void SimmelianScore::matchNeighbors(node, node alter, bool,
+                                    std::vector<RankedEdge>::const_iterator &,
+                                    const RankedNeighbors &egoNeighbors,
+                                    std::set<node> &egoNeighborsUnmatched,
+                                    std::set<node> &alterNeighborsUnmatched, count rank,
+                                    count &overlap) {
 
     for (auto egoIt : egoNeighbors) {
         node other = egoIt.alter;

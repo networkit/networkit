@@ -29,7 +29,7 @@ public:
      *
      * @param[in]  path  Path to file.
      */
-    Partition read(std::string path);
+    Partition read(const std::string &path);
 };
 
 } /* namespace NetworKit */

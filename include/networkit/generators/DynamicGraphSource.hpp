@@ -46,7 +46,6 @@ public:
      */
     virtual void initializeGraph() = 0;
 
-
     /**
      * Perform one generative step - as defined by the implementation.
      */
@@ -63,7 +62,6 @@ public:
      * @param[in] n  umber of nodes
      */
     virtual void generateNodes(count n);
-
 
     /**
      * Continue generating until the number of edges reaches this upper limit.

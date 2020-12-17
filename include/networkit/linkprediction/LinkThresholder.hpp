@@ -5,6 +5,8 @@
  *      Author: Kolja Esders
  */
 
+// networkit-format
+
 #ifndef NETWORKIT_LINKPREDICTION_LINK_THRESHOLDER_HPP_
 #define NETWORKIT_LINKPREDICTION_LINK_THRESHOLDER_HPP_
 
@@ -28,7 +30,8 @@ namespace LinkThresholder {
  * @param minScore Minimal score that the returned node-pairs should have
  * @return a vector of node-pairs whose scores are at least equal to the given @a minScore
  */
-std::vector<std::pair<node, node>> byScore(std::vector<LinkPredictor::prediction> predictions, double minScore);
+std::vector<std::pair<node, node>>
+byScore(const std::vector<LinkPredictor::prediction> &predictions, double minScore);
 
 /**
  * Returns the first @a numLinks highest scored node-pairs.
@@ -36,7 +39,8 @@ std::vector<std::pair<node, node>> byScore(std::vector<LinkPredictor::prediction
  * @param numLinks Number of top-scored node-pairs to return
  * @return the first @a numLinks highest scored node-pairs
  */
-std::vector<std::pair<node, node>> byCount(std::vector<LinkPredictor::prediction> predictions, count numLinks);
+std::vector<std::pair<node, node>>
+byCount(const std::vector<LinkPredictor::prediction> &predictions, count numLinks);
 
 /**
  * Returns the first @a percentageLinks percent of the highest scores node-pairs.
@@ -44,7 +48,8 @@ std::vector<std::pair<node, node>> byCount(std::vector<LinkPredictor::prediction
  * @param percentageLinks Percentage of highest scored node-pairs to return
  * @return the first @a percentageLinks percent of the highest scores node-pairs
  */
-std::vector<std::pair<node, node>> byPercentage(std::vector<LinkPredictor::prediction> predictions, double percentageLinks);
+std::vector<std::pair<node, node>>
+byPercentage(const std::vector<LinkPredictor::prediction> &predictions, double percentageLinks);
 
 } // namespace LinkThresholder
 

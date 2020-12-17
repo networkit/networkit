@@ -132,10 +132,11 @@ public:
      *     provided.
      */
     MocnikGenerator(count dim, count n, double k, bool weighted=false);
-    MocnikGenerator(count dim, std::vector<count> ns, double k, bool weighted=false);
+    MocnikGenerator(count dim, std::vector<count> ns, double k, bool weighted = false);
     MocnikGenerator(count dim, std::vector<count> ns, std::vector<double> ks, bool weighted=false);
     MocnikGenerator(count dim, count n, double k, std::vector<double> weighted);
-    MocnikGenerator(count dim, std::vector<count> ns, double k, std::vector<double> weighted);
+    MocnikGenerator(count dim, std::vector<count> ns, double k,
+                    std::vector<double> weighted);
     MocnikGenerator(count dim, std::vector<count> ns, std::vector<double> ks, std::vector<double> weighted);
 
     Graph generate() override;

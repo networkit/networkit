@@ -23,8 +23,7 @@ namespace NetworKit {
 class DGSStreamParser final {
 
 public:
-
-    DGSStreamParser(std::string path, bool mapped = true, node baseIndex = 0);
+    DGSStreamParser(const std::string &path, bool mapped = true, node baseIndex = 0);
 
     std::vector<GraphEvent> getStream();
 

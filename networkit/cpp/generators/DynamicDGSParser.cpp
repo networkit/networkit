@@ -15,7 +15,7 @@ namespace NetworKit {
 
 std::vector<std::vector<std::string>> localNodeCategories;
 
-DynamicDGSParser::DynamicDGSParser(std::string path) : graphInitialized(false) {
+DynamicDGSParser::DynamicDGSParser(const std::string &path) : graphInitialized(false) {
     dgsFile.open(path.c_str(), std::ifstream::in);
 }
 
@@ -139,7 +139,7 @@ void DynamicDGSParser::generate() {
 
 }
 
-void DynamicDGSParser::evaluateClusterings(const std::string path, const Partition& clustering) {
+void DynamicDGSParser::evaluateClusterings(const std::string &path, const Partition &clustering) {
     // Stores the category breakdown for each of the clusterings
     std::vector<std::unordered_map<std::string, index>> clusterMappings;
     clusterMappings.reserve(100000000); //should this be clustering.numberOfClusters()?

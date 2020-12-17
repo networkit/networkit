@@ -38,7 +38,7 @@ TEST_F(AllSimplePathsGTest, testAllSimplePaths) {
     std::vector<node> path4 {3, 10, 9, 6, 5, 1};
     std::vector<std::vector<node>> results {path1, path2, path3, path4 };
 
-    allSimplePaths2.parallelForAllSimplePaths([&](std::vector<node> p) {
+    allSimplePaths2.parallelForAllSimplePaths([&](const std::vector<node> &p) {
         ASSERT_TRUE(std::find(results.begin(), results.end(), p) != results.end());
     });
 

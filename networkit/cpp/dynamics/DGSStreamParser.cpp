@@ -11,7 +11,8 @@
 
 namespace NetworKit {
 
-DGSStreamParser::DGSStreamParser(std::string path, bool mapped, node baseIndex) : dgsFile(path), mapped(mapped), baseIndex(baseIndex), nextNode(0) {}
+DGSStreamParser::DGSStreamParser(const std::string &path, bool mapped, node baseIndex)
+    : dgsFile(path), mapped(mapped), baseIndex(baseIndex), nextNode(0) {}
 
 std::vector<GraphEvent> DGSStreamParser::getStream() {
     if (!dgsFile.is_open()) {
