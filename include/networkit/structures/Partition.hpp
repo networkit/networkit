@@ -5,6 +5,8 @@
  *      Author: cls
  */
 
+// networkit-format
+
 #ifndef NETWORKIT_STRUCTURES_PARTITION_HPP_
 #define NETWORKIT_STRUCTURES_PARTITION_HPP_
 
@@ -26,7 +28,6 @@ namespace NetworKit {
 class Partition final {
 
 public:
-
     Partition();
 
     /**
@@ -36,36 +37,32 @@ public:
      */
     Partition(index z);
 
-        /**
-     * Create a new partition data structure for @a z elements.
-     * Initialize each entry to the default value.
-     * WARNING: this circumvents the standard interface and may leave the object
-     * in an inconsistent state. Use only in exceptional cases.
+    /**
+     * Create a new partition data structure for @a z elements. Initialize each
+     * entry to the default value. WARNING: this circumvents the standard
+     * interface and may leave the object in an inconsistent state. Use only in
+     * exceptional cases.
      *
      * @param[in] z maximum index
      * @param[in] defaultValue
      */
     Partition(index z, index defaultValue);
 
-
-    Partition(const std::vector<index>& data);
+    Partition(const std::vector<index> &data);
 
     /**
      *  Index operator.
      *
      *  @param[in] e an element
      */
-    inline index& operator [](index e) {
-        return this->data[e];
-    }
+    inline index &operator[](index e) { return this->data[e]; }
+
     /**
      * Index operator for const instances of this class.
      *
      * @param[in] e an element
      */
-    inline const index& operator [](index e) const {
-        return this->data[e];
-    }
+    inline const index &operator[](index e) const { return this->data[e]; }
 
     /**
      * Get the set (id) in which the element @a e is contained.
@@ -74,20 +71,19 @@ public:
      * @return The index of the set in which @a e is contained.
      */
     inline index subsetOf(index e) const {
-        assert (e < this->numberOfElements());
+        assert(e < this->numberOfElements());
         return this->data[e];
     }
 
     /**
-     * Extend the data structure and create a slot
-     * for one more element. Initializes the entry to none
-     * and returns the index of the entry.
+     * Extend the data structure and create a slot for one more element.
+     * Initializes the entry to none and returns the index of the entry.
      */
     inline index extend() {
         data.push_back(none);
         z++;
-        assert (z == data.size()); //(data.size() - 1)
-        return z-1;
+        assert(z == data.size()); //(data.size() - 1)
+        return z - 1;
     }
 
     /**
@@ -95,7 +91,7 @@ public:
      * by setting it to none.
      */
     inline void remove(index e) {
-        assert (e < z);
+        assert(e < z);
         data[e] = none;
     }
 
@@ -106,11 +102,10 @@ public:
      * @param e The element to add.
      */
     inline void addToSubset(index s, index e) {
-        assert (data[e] == none); // guarantee that element was unassigned
-        assert (s <= omega);  // do not create new subset ids
+        assert(data[e] == none); // guarantee that element was unassigned
+        assert(s <= omega);      // do not create new subset ids
         data[e] = s;
     }
-
 
     /**
      * Move the (previously assigned) element @a e to the set @a s.
@@ -119,8 +114,8 @@ public:
      * @param e The element to move.
      */
     inline void moveToSubset(index s, index e) {
-        assert (this->contains(e));
-        assert (s <= omega);   // do not create new subset ids
+        assert(this->contains(e));
+        assert(s <= omega); // do not create new subset ids
         data[e] = s;
     }
 
@@ -129,9 +124,7 @@ public:
      *
      * @param e The index of the element.
      */
-    inline void toSingleton(index e) {
-        data[e] = newSubsetId();
-    }
+    inline void toSingleton(index e) { data[e] = newSubsetId(); }
 
     /**
      * Assigns every element to a singleton set.
@@ -159,9 +152,7 @@ public:
      *
      * @param[in] upper highest assigned subset ID + 1
      */
-    inline void setUpperBound(index upper) {
-        this->omega = upper-1;
-    }
+    inline void setUpperBound(index upper) { this->omega = upper - 1; }
 
     /**
      * Return an upper bound for the subset ids that have been assigned.
@@ -169,26 +160,22 @@ public:
      *
      * @return The upper bound.
      */
-    inline index upperBound() const {
-        return omega+1;
-    }
+    inline index upperBound() const { return omega + 1; }
 
     /**
      * Get a lower bound for the subset ids that have been assigned.
      *
      * @return The lower bound.
      */
-    inline index lowerBound() const {
-        return 0;
-    }
+    inline index lowerBound() const { return 0; }
 
     /**
      * Change subset IDs to be consecutive, starting at 0.
+     *
      * @param useTurbo Default: false. If set to true, a vector instead of a map to assign new ids
      * which results in a shorter running time but possibly a large space overhead.
      */
     void compact(bool useTurbo = false);
-
 
     /**
      * Check if partition assigns a valid subset to the element @a e.
@@ -197,9 +184,9 @@ public:
      * @return @c true if the assigned subset is valid, @c false otherwise.
      */
     inline bool contains(index e) const {
-        return (e < z) && (data[e] != none); // e is in the element index range and the entry is not empty
+        // e is in the element index range and the entry is not empty
+        return (e < z) && (data[e] != none);
     }
-
 
     /**
      * Check if two elements @a e1 and @a e2 belong to the same subset.
@@ -209,11 +196,10 @@ public:
      * @return @c true if @a e1 and @a e2 belong to same subset, @c false otherwise.
      */
     inline bool inSameSubset(index e1, index e2) const {
-        assert (data[e1] != none);
-        assert (data[e2] != none);
-        return (data[e1] == data[e2]);
+        assert(data[e1] != none);
+        assert(data[e2] != none);
+        return data[e1] == data[e2];
     }
-
 
     /**
      * Get a list of subset sizes. Indices do not necessarily correspond to subset ids.
@@ -253,6 +239,7 @@ public:
 
     /**
      * Get the actual vector representing the partition data structure.
+     *
      * @return vector containing information about partitions.
      */
     std::vector<index> getVector() const;
@@ -260,7 +247,7 @@ public:
     /**
      * @return the subsets of the partition as a set of sets.
      */
-    std::set<std::set<index> > getSubsets() const;
+    std::set<std::set<index>> getSubsets() const;
 
     /**
      * Get the ids of nonempty subsets.
@@ -274,37 +261,36 @@ public:
      *
      * @param name The name.
      */
-    inline void setName(std::string name) {
-        this->name = name;
-    }
+    inline void setName(std::string name) { this->name = std::move(name); }
 
     /**
      * Get the human-readable identifier.
      *
      * @return The name of this partition.
      */
-    inline std::string getName() const {
-        return this->name;
-    }
+    inline std::string getName() const { return this->name; }
 
     /**
-     * Iterate over all entries (node, cluster id) and execute callback function @a func (lambda closure).
+     * Iterate over all entries (node, cluster id) and execute callback function @a func (lambda
+     * closure).
      *
      * @param func Takes parameters <code>(node, index)</code>
      */
-    template<typename Callback> void forEntries(Callback func) const;
+    template <typename Callback>
+    void forEntries(Callback func) const;
 
     /**
-     * Iterate over all entries (node, cluster id) in parallel and execute callback function @a handle (lambda closure).
+     * Iterate over all entries (node, cluster id) in parallel and execute callback function @a
+     * handle (lambda closure).
      *
      * @param handle Takes parameters <code>(node, index)</code>
      */
-    template<typename Callback> void parallelForEntries(Callback handle) const;
-
+    template <typename Callback>
+    void parallelForEntries(Callback handle) const;
 
 private:
-    index z; //!< maximum element index that can be mapped
-    index omega; //!< maximum subset index ever assigned
+    index z;                 //!< maximum element index that can be mapped
+    index omega;             //!< maximum subset index ever assigned
     std::vector<index> data; //!< data container, indexed by element index, containing subset index
     std::string name;
 
@@ -317,16 +303,16 @@ private:
     }
 };
 
-template<typename Callback>
+template <typename Callback>
 inline void Partition::forEntries(Callback handle) const {
     for (index e = 0; e < this->z; e++) {
         handle(e, data[e]);
     }
 }
 
-template<typename Callback>
+template <typename Callback>
 inline void Partition::parallelForEntries(Callback handle) const {
-    #pragma omp parallel for
+#pragma omp parallel for
     for (omp_index e = 0; e < static_cast<omp_index>(this->z); e++) {
         handle(e, this->data[e]);
     }
