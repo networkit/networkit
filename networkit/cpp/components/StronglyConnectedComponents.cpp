@@ -14,11 +14,13 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/components/StronglyConnectedComponents.hpp>
-#include <networkit/structures/Partition.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
-StronglyConnectedComponents::StronglyConnectedComponents(const Graph &G) : G(&G) {
+StronglyConnectedComponents::StronglyConnectedComponents(const Graph &G)
+    : ComponentDecomposition(G) {
+
     if (!G.isDirected())
         WARN("The input graph is undirected, use ConnectedComponents for more efficiency.");
 }
@@ -26,9 +28,7 @@ StronglyConnectedComponents::StronglyConnectedComponents(const Graph &G) : G(&G)
 void StronglyConnectedComponents::run() {
     const auto n = G->upperNodeIdBound();
 
-    // The component of every node is initially undefined.
-    component.clear();
-    component.resize(n, none);
+    component.reset(G->upperNodeIdBound(), none);
 
     // Stack used to determine the strongly connected components from the root nodes.
     std::vector<node> stack;
@@ -43,7 +43,7 @@ void StronglyConnectedComponents::run() {
     std::vector<node> lastVisited(n, none);
 
     count curDepth = 0, visitedNodes = 0;
-    componentIndex = 0;
+    index nComponents = 0;
 
     std::stack<std::pair<node, Graph::NeighborIterator>> dfsStack;
 
@@ -100,17 +100,17 @@ void StronglyConnectedComponents::run() {
                         w = stack.back();
                         stack.pop_back();
                         onStack[w] = 0;
-                        component[w] = componentIndex;
+                        component[w] = nComponents;
                     } while (w != v);
 
-                    ++componentIndex;
+                    ++nComponents;
                     visitedNodes += (stackSize - stack.size());
                 }
             }
         } while (!dfsStack.empty());
     };
 
-    for (node u = 0; u < n; ++u) {
+    for (node u : G->nodeRange()) {
         if (depth[u] != none)
             continue;
         strongConnect(u);
@@ -119,7 +119,41 @@ void StronglyConnectedComponents::run() {
             break;
     }
 
+    component.setUpperBound(nComponents);
+
     hasRun = true;
+}
+
+Graph StronglyConnectedComponents::extractLargestStronglyConnectedComponent(const Graph &G,
+                                                                            bool compactGraph) {
+    if (G.isEmpty())
+        return G;
+
+    StronglyConnectedComponents scc(G);
+    scc.run();
+    auto component = scc.getPartition();
+
+    const auto compSizes = component.subsetSizeMap();
+    if (compSizes.size() == 1) {
+        if (compactGraph)
+            return GraphTools::getCompactedGraph(G, GraphTools::getContinuousNodeIds(G));
+        return G;
+    }
+
+    const auto largestSCCIndex = std::max_element(compSizes.begin(), compSizes.end(),
+                                                  [](const std::pair<index, count> &x,
+                                                     const std::pair<index, count> &y) -> bool {
+                                                      return x.second < y.second;
+                                                  })
+                                     ->first;
+
+    const auto nodesInLSCC = component.getMembers(largestSCCIndex);
+    const auto largestSCC =
+        GraphTools::subgraphFromNodes(G, {nodesInLSCC.begin(), nodesInLSCC.end()});
+    if (compactGraph)
+        return GraphTools::getCompactedGraph(largestSCC,
+                                             GraphTools::getContinuousNodeIds(largestSCC));
+    return largestSCC;
 }
 
 } // namespace NetworKit

@@ -50,6 +50,19 @@ public:
 
     Partition(const std::vector<index> &data);
 
+    /* Updates the maximum index of the partition to @a newZ and sets all its
+     * values to @a defaultValue.
+     *
+     * @param[in] newZ New maximum index of the partition. @param[in]
+     * defaultValue Default value of all the elements in the partition.
+     */
+    void reset(index newZ, index defaultValue) {
+        data.clear();
+        data.resize(newZ, defaultValue);
+        z = newZ;
+        omega = 0;
+    }
+
     /**
      *  Index operator.
      *
