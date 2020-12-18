@@ -1431,7 +1431,7 @@ cdef extern from "<networkit/centrality/KatzCentrality.hpp>":
 
 cdef class KatzCentrality(Centrality):
 	"""
-	KatzCentrality(G, alpha=5e-4, beta=0.1, tol=1e-8)
+	KatzCentrality(G, alpha=0, beta=0.1, tol=1e-8)
 
 	Constructs a KatzCentrality object for the given Graph `G`.
 	Each iteration of the algorithm requires O(m) time.
@@ -1443,14 +1443,15 @@ cdef class KatzCentrality(Centrality):
  	G : networkit.Graph
  		The graph.
  	alpha : double
-		Damping of the matrix vector product result
+		Damping of the matrix vector product result, must be non negative.
+		Leave this parameter to 0 to use the default value 1 / (max_degree + 1).
 	beta : double
 		Constant value added to the centrality of each vertex
 	tol : double
 		The tolerance for convergence.
 	"""
 
-	def __cinit__(self, Graph G, alpha=0.2, beta=0.1, tol=1e-8):
+	def __cinit__(self, Graph G, alpha=0, beta=0.1, tol=1e-8):
 		self._G = G
 		self._this = new _KatzCentrality(G._this, alpha, beta, tol)
 

@@ -205,31 +205,20 @@ TEST_F(CentralityGTest, testBetweennessCentralityWeighted) {
 
 // TODO: replace by smaller graph
 TEST_F(CentralityGTest, testKatzCentralityDirected) {
-    SNAPGraphReader reader;
-    Graph G = reader.read("input/wiki-Vote.txt");
-    KatzCentrality kc(G);
+    const auto G = SNAPGraphReader{}.read("input/wiki-Vote.txt");
+    KatzCentrality kc(G, 5e-4);
 
     DEBUG("start kc run");
     kc.run();
     DEBUG("finish kc");
-    std::vector<std::pair<node, double>> kc_ranking = kc.ranking();
-    // std::vector<double> kc_scores = kc.scores();
 
-    EXPECT_EQ(kc_ranking[0].first, 699);
+    EXPECT_EQ(kc.ranking().front().first, 699);
 }
 
 TEST_F(CentralityGTest, testKatzTopk) {
-    METISGraphReader reader;
-    Graph G = reader.read("input/caidaRouterLevel.graph");
+    const auto G = METISGraphReader{}.read("input/caidaRouterLevel.graph");
 
-    // Compute max. degree to ensure that we use the same alpha for both algos.
-    count maxDegree = 0;
-    G.forNodes([&](node u) {
-        if (G.degree(u) > maxDegree)
-            maxDegree = G.degree(u);
-    });
-
-    KatzCentrality exactAlgo(G, 1.0 / (maxDegree + 1), 1.0);
+    KatzCentrality exactAlgo(G, 0, 1.0);
     DynKatzCentrality topAlgo(G, 100);
     exactAlgo.run();
     topAlgo.run();
@@ -240,18 +229,18 @@ TEST_F(CentralityGTest, testKatzTopk) {
     // node.
     auto exactRanking = exactAlgo.ranking();
     auto topRanking = topAlgo.ranking();
-    for (count i = 0; i < std::min(G.numberOfNodes(), count{100}); i++)
+    for (count i = 0; i < std::min(G.numberOfNodes(), static_cast<count>(100)); i++)
         EXPECT_NEAR(exactAlgo.score(topRanking[i].first),
                     exactRanking[i].second, 1e-6);
 }
 
 TEST_F(CentralityGTest, testKatzDynamicAddition) {
-    METISGraphReader reader;
-    Graph G = reader.read("input/caidaRouterLevel.graph");
+    Graph G = METISGraphReader{}.read("input/caidaRouterLevel.graph");
     DynKatzCentrality kc(G, 100);
     DEBUG("start kc run");
     kc.run();
     DEBUG("finish kc");
+    Aux::Random::setSeed(42, false);
     node u, v;
     do {
         u = GraphTools::randomNode(G);
@@ -266,11 +255,6 @@ TEST_F(CentralityGTest, testKatzDynamicAddition) {
     for (count i = 0; i <= std::min(kc.levelReached, kc2.levelReached); i++) {
         INFO("i = ", i);
         G.forNodes([&](node u) {
-            // if (kc.nPaths[i][u] != kc2.nPaths[i][u]) {
-            //	 INFO("i = ", i, ", node ", u, ", dyn kc paths: ",
-            // kc.nPaths[i][u], ",
-            // stat paths: ", kc2.nPaths[i][u]);
-            // }
             EXPECT_EQ(kc.nPaths[i][u], kc2.nPaths[i][u]);
         });
     }
@@ -283,8 +267,7 @@ TEST_F(CentralityGTest, testKatzDynamicAddition) {
 }
 
 TEST_F(CentralityGTest, testKatzDynamicDeletion) {
-    METISGraphReader reader;
-    Graph G = reader.read("input/caidaRouterLevel.graph");
+    Graph G = METISGraphReader{}.read("input/caidaRouterLevel.graph");
     DynKatzCentrality kc(G, 100);
     DEBUG("start kc run");
     kc.run();
@@ -319,8 +302,7 @@ TEST_F(CentralityGTest, testKatzDynamicDeletion) {
 }
 
 TEST_F(CentralityGTest, testKatzDynamicBuilding) {
-    METISGraphReader reader;
-    Graph GIn = reader.read("input/hep-th.graph");
+    Graph GIn = METISGraphReader{}.read("input/hep-th.graph");
 
     // Find a single max-degree node and add its edges to G.
     // (This guarantees that alpha is correct.)
