@@ -1,6 +1,6 @@
 name='networkit'
 
-version='7.1'
+version='8.0'
 
 url='https://networkit.github.io/'
 
@@ -45,6 +45,7 @@ classifiers = [
 'Programming Language :: Python :: 3.6',
 'Programming Language :: Python :: 3.7',
 'Programming Language :: Python :: 3.8',
+'Programming Language :: Python :: 3.9',
 'Topic :: Software Development :: Libraries :: Python Modules',
 'Topic :: Scientific/Engineering :: Bio-Informatics',
 'Topic :: Scientific/Engineering :: Chemistry',
