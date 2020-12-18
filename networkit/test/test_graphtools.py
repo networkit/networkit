@@ -131,6 +131,24 @@ class TestGraphTools(unittest.TestCase):
 						G.removeEdge(u, v)
 						doTest(G)
 
+	def testVolume(self):
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				G = self.getSmallGraph(weighted, directed)
+
+				# Test total volume
+				v1 = nk.graphtools.volume(G)
+				mod = 1.0 if G.isDirected() else 2.0;
+				baseG = G.totalEdgeWeight() if G.isWeighted() else G.numberOfEdges();
+				self.assertEqual(v1, mod * baseG)
+
+				# Test partial volume
+				nodes = [nk.graphtools.randomNode(G)]
+				v2 = nk.graphtools.inVolume(G, nodes)
+				v3 = nk.graphtools.volume(G, nodes)
+				self.assertLessEqual(v2, v1)
+				self.assertLessEqual(v3, v1)
+
 	def testDensity(self):
 		def doTest(G):
 			d = nk.graphtools.density(G)

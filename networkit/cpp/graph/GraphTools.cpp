@@ -201,14 +201,12 @@ double density(const Graph &G) noexcept {
 }
 
 double volume(const Graph &G) {
-    if (G.isDirected())
-        throw std::runtime_error("Volume computation is only supported for undirected graphs.");
+    double volume = G.totalEdgeWeight();
 
-    if (!G.isWeighted()) {
-        return 2.0 * G.numberOfEdges();
-    } else {
-        return 2.0 * G.totalEdgeWeight();
+    if (!G.isDirected()) {
+        volume *= 2.0;
     }
+    return volume;
 }
 
 Graph copyNodes(const Graph &G) {
