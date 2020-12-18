@@ -1,9 +1,11 @@
 /*
- * AlgebraicTriangleCounting.h
+ * AlgebraicTriangleCounting.hpp
  *
  *  Created on: Jul 12, 2016
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
+
+// networkit-format
 
 #ifndef NETWORKIT_ALGEBRAIC_ALGORITHMS_ALGEBRAIC_TRIANGLE_COUNTING_HPP_
 #define NETWORKIT_ALGEBRAIC_ALGORITHMS_ALGEBRAIC_TRIANGLE_COUNTING_HPP_
@@ -16,18 +18,19 @@ namespace NetworKit {
  * @ingroup algebraic
  * Implements a triangle counting algorithm for nodes based on algebraic methods.
  */
-template<class Matrix>
+template <class Matrix>
 class AlgebraicTriangleCounting : public Algorithm {
 public:
     /**
      * Creates an instance of AlgebraicTriangleCounting for the given Graph @a graph.
      * @param graph
      */
-    AlgebraicTriangleCounting(const Graph& graph) : A(Matrix::adjacencyMatrix(graph)), directed(graph.isDirected()) {}
+    AlgebraicTriangleCounting(const Graph &graph)
+        : A(Matrix::adjacencyMatrix(graph)), directed(graph.isDirected()) {}
 
     /**
-     * Computes the number of triangles each node is part of. A triangle is considered as a set of nodes (i.e. if there
-     * is a triangle (u,v,w) it only counts as one triangle at each node).
+     * Computes the number of triangles each node is part of. A triangle is considered as a set of
+     * nodes (i.e. if there is a triangle (u,v,w) it only counts as one triangle at each node).
      */
     void run() override;
 
@@ -55,7 +58,7 @@ private:
     std::vector<count> nodeScores;
 };
 
-template<class Matrix>
+template <class Matrix>
 void AlgebraicTriangleCounting<Matrix>::run() {
     Matrix powA = A * A * A;
 
@@ -64,7 +67,7 @@ void AlgebraicTriangleCounting<Matrix>::run() {
 
 #pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(powA.numberOfRows()); ++i) {
-        nodeScores[i] = directed? powA(i,i) : powA(i,i) / 2.0;
+        nodeScores[i] = directed ? powA(i, i) : powA(i, i) / 2.0;
     }
 
     hasRun = true;

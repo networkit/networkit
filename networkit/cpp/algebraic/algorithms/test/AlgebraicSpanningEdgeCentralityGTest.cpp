@@ -5,19 +5,19 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
+// networkit-format
 
 #include <gtest/gtest.h>
 
-#include <networkit/algebraic/algorithms/AlgebraicSpanningEdgeCentrality.hpp>
 #include <networkit/algebraic/CSRMatrix.hpp>
+#include <networkit/algebraic/algorithms/AlgebraicSpanningEdgeCentrality.hpp>
 
-#include <networkit/io/METISGraphReader.hpp>
 #include <networkit/centrality/SpanningEdgeCentrality.hpp>
+#include <networkit/io/METISGraphReader.hpp>
 
 namespace NetworKit {
 
 class AlgebraicSpanningEdgeCentralityGTest : testing::Test {};
-
 
 TEST(AlgebraicSpanningEdgeCentralityGTest, testOnToyGraph) {
     /* Graph:
@@ -30,7 +30,6 @@ TEST(AlgebraicSpanningEdgeCentralityGTest, testOnToyGraph) {
     count n = 6;
     Graph G(n, false, false);
     G.indexEdges();
-
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -55,7 +54,7 @@ TEST(AlgebraicSpanningEdgeCentralityGTest, benchmarkSpanning) {
 
     std::string graphFiles[2] = {"input/karate.graph", "input/tiny_01.graph"};
 
-    for (auto graphFile: graphFiles) {
+    for (auto graphFile : graphFiles) {
         Graph G = reader.read(graphFile);
         G.indexEdges();
         Aux::Timer timer;
@@ -76,7 +75,8 @@ TEST(AlgebraicSpanningEdgeCentralityGTest, benchmarkSpanning) {
         double error = 0.0;
         G.forEdges([&](node, node, edgeid e) {
             double relError = fabs(asp.score(e) - exact.score(e));
-            if (fabs(exact.score(e)) > 1e-9) relError /= exact.score(e);
+            if (fabs(exact.score(e)) > 1e-9)
+                relError /= exact.score(e);
             error += relError;
         });
         error /= G.numberOfEdges();
@@ -88,12 +88,11 @@ TEST(AlgebraicSpanningEdgeCentralityGTest, benchmarkSpanning) {
         timer.stop();
         INFO("graph theoretical spanning edge centrality time: ", timer.elapsedTag());
 
-
-
         error = 0.0;
         G.forEdges([&](node, node, edgeid e) {
             double relError = fabs(sp.score(e) - exact.score(e));
-            if (fabs(exact.score(e)) > 1e-9) relError /= exact.score(e);
+            if (fabs(exact.score(e)) > 1e-9)
+                relError /= exact.score(e);
             error += relError;
         });
         error /= G.numberOfEdges();

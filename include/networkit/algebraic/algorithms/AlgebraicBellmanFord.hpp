@@ -1,18 +1,20 @@
 /*
- * AlgebraicBellmanFord.h
+ * AlgebraicBellmanFord.hpp
  *
  *  Created on: Jun 6, 2016
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
+
+// networkit-format
 
 #ifndef NETWORKIT_ALGEBRAIC_ALGORITHMS_ALGEBRAIC_BELLMAN_FORD_HPP_
 #define NETWORKIT_ALGEBRAIC_ALGORITHMS_ALGEBRAIC_BELLMAN_FORD_HPP_
 
 #include <cassert>
 
+#include <networkit/algebraic/GraphBLAS.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
-#include <networkit/algebraic/GraphBLAS.hpp>
 
 namespace NetworKit {
 
@@ -20,15 +22,18 @@ namespace NetworKit {
  * @ingroup algebraic
  * Implementation of the Bellman-Ford algorithm using the GraphBLAS interface.
  */
-template<class Matrix>
+template <class Matrix>
 class AlgebraicBellmanFord : public Algorithm {
 public:
     /**
-     * Construct an instance of the BellmanFord algorithm for the Graph @a graph and the given @a source node.
+     * Construct an instance of the BellmanFord algorithm for the Graph @a graph and the given @a
+     * source node.
      * @param graph
      * @param source
      */
-    AlgebraicBellmanFord(const Graph& graph, node source) : At(Matrix::adjacencyMatrix(graph, MinPlusSemiring::zero()).transpose()), source(source), negCycle(false) {}
+    AlgebraicBellmanFord(const Graph &graph, node source)
+        : At(Matrix::adjacencyMatrix(graph, MinPlusSemiring::zero()).transpose()), source(source),
+          negCycle(false) {}
 
     /** Default destructor */
     ~AlgebraicBellmanFord() = default;
@@ -64,7 +69,7 @@ private:
     bool negCycle;
 };
 
-template<class Matrix>
+template <class Matrix>
 void AlgebraicBellmanFord<Matrix>::run() {
     count n = At.numberOfRows();
     distances = Vector(n, std::numeric_limits<double>::infinity());
@@ -79,7 +84,6 @@ void AlgebraicBellmanFord<Matrix>::run() {
     negCycle = (oldDist != distances);
     hasRun = true;
 }
-
 
 } /* namespace NetworKit */
 

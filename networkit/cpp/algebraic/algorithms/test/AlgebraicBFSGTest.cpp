@@ -5,11 +5,13 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
+// networkit-format
+
 #include <gtest/gtest.h>
 
 #include <networkit/algebraic/CSRMatrix.hpp>
-#include <networkit/distance/BFS.hpp>
 #include <networkit/algebraic/algorithms/AlgebraicBFS.hpp>
+#include <networkit/distance/BFS.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 
 #include <networkit/auxiliary/Timer.hpp>
@@ -41,19 +43,19 @@ TEST(AlgebraicBFSGTest, testOnToyGraph) {
     EXPECT_EQ(2, bfs.distance(4));
 
     G = Graph(7, false, true);
-    G.addEdge(0,1);
-    G.addEdge(0,3);
-    G.addEdge(1,4);
-    G.addEdge(1,6);
-    G.addEdge(2,5);
-    G.addEdge(3,0);
-    G.addEdge(3,2);
-    G.addEdge(4,5);
-    G.addEdge(5,2);
-    G.addEdge(6,2);
-    G.addEdge(6,3);
+    G.addEdge(0, 1);
+    G.addEdge(0, 3);
+    G.addEdge(1, 4);
+    G.addEdge(1, 6);
+    G.addEdge(2, 5);
+    G.addEdge(3, 0);
+    G.addEdge(3, 2);
+    G.addEdge(4, 5);
+    G.addEdge(5, 2);
+    G.addEdge(6, 2);
+    G.addEdge(6, 3);
 
-    bfs = AlgebraicBFS<CSRMatrix>(G,3);
+    bfs = AlgebraicBFS<CSRMatrix>(G, 3);
     bfs.run();
 
     EXPECT_EQ(1, bfs.distance(0));
@@ -90,7 +92,6 @@ TEST(AlgebraicBFSGTest, benchmarkBFS) {
             EXPECT_EQ(bfs.distance(u), algebraicBfs.distance(u));
         }
     });
-
 }
 
 } /* namespace NetworKit */
