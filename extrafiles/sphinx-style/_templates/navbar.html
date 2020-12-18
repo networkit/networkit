@@ -23,7 +23,7 @@
 
 
 
-        <div class="collapse navbar-collapse nav-collapse" style="float:right">
+        <div id="main-nav" class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             {% if theme_navbar_links %}
               {%- for link in theme_navbar_links %}
@@ -46,9 +46,6 @@
               <li class="hidden-sm">{% include "sourcelink.html" %}</li>
             {% endif %}
           </ul>
-          {% block navbarsearch %}
-            {% include "navbarsearchbox.html" %}
-          {% endblock %}
         </div>
     </div>
   </div>

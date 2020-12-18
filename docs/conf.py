@@ -144,8 +144,8 @@ html_theme_options = {
       ('Features', 'https://networkit.github.io/features.html', True),
       ('News', 'https://networkit.github.io/news.html', True),
       ('Publications', 'https://networkit.github.io/publications.html', True),
-      ('Data sets', 'https://networkit.github.io/datasets.html', True),
-      ('Credits', 'https://networkit.github.io/credits.html', True)]
+      ('NetworKit Day', 'https://networkit.github.io/networkit-day.html', True),
+      ('Credits & References', 'https://networkit.github.io/credits.html', True)]
 }
 
 # Setup the exhale extension
