@@ -15,18 +15,39 @@ import shutil
 import subprocess
 import os
 
+def getEnv():
+	"""
+	Returns the current environment variables with 'LANG' set to 'C' to ensure
+	the output to be in English.
+	"""
+	env = dict(os.environ)
+	env['LANG'] = 'C'
+	return env
+
+def isSupported(cmd):
+	""" Checks if the given clang-format command is available and if its version is recent enough. """
+	if shutil.which(cmd) is None:
+		return False
+	# Read major revision number from "clang-format version XX.XX.XX ... "
+	version = str(subprocess.check_output([cmd, "--version"],
+		universal_newlines=True, env=getEnv())).strip().split()[2].split('.')[0]
+	return int(version) >= nkt.MIN_CLANG_FORMAT_VERSION
+
+
 def findClangFormat():
 	"""Tries to find clang-format-XXX variants within the path"""
-	allowed = ["clang-format" + x for x in ["-8"]]
+	cmd = "clang-format"
+	allowed = [cmd] + [cmd + "-" + str(x) for x in range(nkt.MIN_CLANG_FORMAT_VERSION, nkt.MAX_CLANG_FORMAT_VERSION + 1)]
 	for candidate in allowed:
-		if not shutil.which(candidate) is None:
+		if isSupported(candidate):
 			if nkt.isVerbose():
-				version = str(subprocess.check_output([candidate, "--version"], universal_newlines=True)).strip()
+				version = str(subprocess.check_output([candidate, "--version"],
+					universal_newlines=True, env=getEnv())).strip()
 				print("clang-format: %s\n -> Version: %s" % (candidate, version))
 
 			return candidate
 
-	raise "clang-format binary not found. We searched for:\n " + "\n ".join(allowed)
+	raise FileNotFoundError("clang-format binary not found. We searched for:\n " + "\n ".join(allowed))
 
 def subscribedToFormat(filename, pattern = "networkit-format"):
 	"""If pattern is present within the file, this file subscribed to auto formatting."""
