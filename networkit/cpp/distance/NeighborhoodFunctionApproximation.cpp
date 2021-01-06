@@ -78,13 +78,13 @@ void NeighborhoodFunctionApproximation::run() {
     std::vector<count> localSumRemoved(omp_get_max_threads(), 0);
 
     bool queued = true;
-    while (queued) {
+    while(queued) {
         queued = false;
         count tmp = 0;
         for (index i = 0; i < (count)omp_get_max_threads(); ++i) {
             tmp += localSumRemoved[i];
         }
-        #pragma omp parallel for schedule(guided)
+        #pragma omp parallel for schedule(guided) reduction(||: queued)
         for (omp_index v = 0; v < static_cast<omp_index>(activeNodes.size()); ++v) {
             if (!activeNodes[v]) continue;
             index tid = (index)omp_get_thread_num();
@@ -125,7 +125,8 @@ void NeighborhoodFunctionApproximation::run() {
                 localSumRemoved[tid] += estimatedConnectedNodes;
                 activeNodes[v] = 0;
             } else {
-                queued = true;
+                // queued is not set to true directly because msvc does not support atomic write operations. 
+                queued = queued || true;
             }
         }
         for (const auto& elem : localEstimatesSum) {

@@ -76,9 +76,8 @@ Graph GraphGTest::createGraph(count n, count m) const {
 
 count GraphGTest::countSelfLoopsManually(const Graph &G) {
     count c = 0;
-    G.parallelForEdges([&](node u, node v) {
+    G.forEdges([&](node u, node v) {
         if (u == v) {
-#pragma omp atomic
             c += 1;
         }
     });
@@ -1912,10 +1911,10 @@ TEST_P(GraphGTest, testEdgeIndexGenerationUndirected) {
 
 TEST_P(GraphGTest, testForEdgesWithIds) {
     std::vector<Graph> graphs;
-    graphs.push_back(Graph(10, false, false));
-    graphs.push_back(Graph(10, false, true));
-    graphs.push_back(Graph(10, true, false));
-    graphs.push_back(Graph(10, true, true));
+    graphs.emplace_back(10, false, false);
+    graphs.emplace_back(10, false, true);
+    graphs.emplace_back(10, true, false);
+    graphs.emplace_back(10, true, true);
 
     for (auto graph = graphs.begin(); graph != graphs.end(); ++graph) {
         graph->addEdge(0, 0);
@@ -1931,14 +1930,6 @@ TEST_P(GraphGTest, testForEdgesWithIds) {
         });
         ASSERT_EQ(3u, m);
 
-        m = 0;
-        graph->parallelForEdges([&](node, node, edgeid eid) {
-            EXPECT_EQ(0, eid);
-#pragma omp atomic
-            m++;
-        });
-        ASSERT_EQ(3u, m);
-
         // With edge indices
         graph->indexEdges();
 
@@ -1950,24 +1941,15 @@ TEST_P(GraphGTest, testForEdgesWithIds) {
             m++;
         });
         ASSERT_EQ(3u, m);
-
-        m = 0;
-        graph->parallelForEdges([&](node, node, edgeid eid) {
-            EXPECT_NE(none, eid);
-            EXPECT_LT(eid, graph->upperEdgeIdBound());
-#pragma omp atomic
-            m++;
-        });
-        ASSERT_EQ(3u, m);
     }
 }
 
 TEST_P(GraphGTest, testForWeightedEdgesWithIds) {
     std::vector<Graph> graphs;
-    graphs.push_back(Graph(10, false, false));
-    graphs.push_back(Graph(10, false, true));
-    graphs.push_back(Graph(10, true, false));
-    graphs.push_back(Graph(10, true, true));
+    graphs.emplace_back(10, false, false);
+    graphs.emplace_back(10, false, true);
+    graphs.emplace_back(10, true, false);
+    graphs.emplace_back(10, true, true);
 
     for (auto graph = graphs.begin(); graph != graphs.end(); ++graph) {
         graph->addEdge(0, 0, 2);
@@ -1991,23 +1973,6 @@ TEST_P(GraphGTest, testForWeightedEdgesWithIds) {
             ASSERT_EQ(3.0, sum);
         }
 
-        m = 0;
-        sum = .0;
-        graph->parallelForEdges([&](node, node, edgeweight ew, edgeid eid) {
-            EXPECT_EQ(0, eid);
-#pragma omp atomic
-            m++;
-#pragma omp atomic
-            sum += ew;
-        });
-        ASSERT_EQ(3u, m);
-
-        if (graph->isWeighted()) {
-            ASSERT_EQ(6.0, sum);
-        } else {
-            ASSERT_EQ(3.0, sum);
-        }
-
         // With edge indices
         graph->indexEdges();
 
@@ -2027,17 +1992,106 @@ TEST_P(GraphGTest, testForWeightedEdgesWithIds) {
         } else {
             ASSERT_EQ(3.0, sum);
         }
+    }
+}
+
+TEST_P(GraphGTest, testParallelForEdgesWithIds) {
+    std::vector<Graph> graphs;
+    graphs.emplace_back(10, false, false);
+    graphs.emplace_back(10, false, true);
+    graphs.emplace_back(10, true, false);
+    graphs.emplace_back(10, true, true);
+
+    for (auto graph = graphs.begin(); graph != graphs.end(); ++graph) {
+        graph->addEdge(0, 0);
+        graph->addEdge(1, 2);
+        graph->addEdge(4, 5);
+
+        // No edge indices
+        count m = 0;
+        edgeid sumedgeid = 0;
+        graph->parallelForEdges([&](node, node, edgeid eid) {
+#pragma omp atomic
+            m++;
+#pragma omp atomic
+            sumedgeid += eid;
+        });
+        ASSERT_EQ(0, sumedgeid);
+        ASSERT_EQ(3u, m);
+
+        // With edge indices
+        graph->indexEdges();
+
+        m = 0;
+        edgeid expectedId = 0;
+        sumedgeid = 0;
+        graph->parallelForEdges([&](node, node, edgeid eid) {
+#pragma omp atomic
+            expectedId++;
+#pragma omp atomic
+            sumedgeid += eid;
+#pragma omp atomic
+            m++;        
+        });
+        ASSERT_EQ(expectedId, graph->upperEdgeIdBound());
+        ASSERT_EQ(sumedgeid, ((graph->upperEdgeIdBound()-1) * graph->upperEdgeIdBound()) / 2);
+        ASSERT_EQ(3u, m);
+    }
+}
+
+TEST_P(GraphGTest, testParallelForWeightedEdgesWithIds) {
+    std::vector<Graph> graphs;
+    graphs.emplace_back(10, false, false);
+    graphs.emplace_back(10, false, true);
+    graphs.emplace_back(10, true, false);
+    graphs.emplace_back(10, true, true);
+
+    for (auto graph = graphs.begin(); graph != graphs.end(); ++graph) {
+        graph->addEdge(0, 0, 2);
+        graph->addEdge(1, 2, 2);
+        graph->addEdge(4, 5, 2);
+
+        // No edge indices
+
+        count m = 0;
+        edgeweight sum = 0;
+        edgeid sumedgeid = 0;
+        graph->parallelForEdges([&](node, node, edgeweight ew, edgeid eid) {
+#pragma omp atomic
+            m++;
+#pragma omp atomic
+            sum += ew;
+#pragma omp atomic
+            sumedgeid += eid;
+        });
+        ASSERT_EQ(0, sumedgeid);
+        ASSERT_EQ(3u, m);
+
+        if (graph->isWeighted()) {
+            ASSERT_EQ(6.0, sum);
+        } else {
+            ASSERT_EQ(3.0, sum);
+        }
+
+        // With edge indices
+        graph->indexEdges();
 
         m = 0;
         sum = .0;
+        edgeid expectedId = 0;
+        sumedgeid = 0;
         graph->parallelForEdges([&](node, node, edgeweight ew, edgeid eid) {
-            EXPECT_NE(none, eid);
-            EXPECT_LT(eid, graph->upperEdgeIdBound());
+#pragma omp atomic
+            expectedId++;
+#pragma omp atomic
+            sumedgeid += eid;
 #pragma omp atomic
             m++;
 #pragma omp atomic
             sum += ew;
         });
+        ASSERT_EQ(expectedId, graph->upperEdgeIdBound());
+        ASSERT_EQ(sumedgeid, ((graph->upperEdgeIdBound()-1) * graph->upperEdgeIdBound()) / 2);
         ASSERT_EQ(3u, m);
 
         if (graph->isWeighted()) {
