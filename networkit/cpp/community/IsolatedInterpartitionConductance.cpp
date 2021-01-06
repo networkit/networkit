@@ -14,7 +14,7 @@ void NetworKit::IsolatedInterpartitionConductance::run() {
     std::vector<edgeweight> clusterVolume(P->upperBound(), 0);
     edgeweight totalVolume = 0;
     G->forEdges([&](node u, node v, edgeweight w) {
-        if (&P[u] != &P[v]) {
+        if ((*P)[u] != (*P)[v]) {
             values[(*P)[u]] += w;
             values[(*P)[v]] += w;
         }

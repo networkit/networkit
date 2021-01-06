@@ -17,7 +17,7 @@ namespace NetworKit {
  * is used.
  *
  * See also Experiments on Density-Constrained Graph Clustering,
- * Robert Grke, Andrea Kappes and  Dorothea Wagner, JEA 2015:
+ * Robert Gorke, Andrea Kappes and  Dorothea Wagner, JEA 2015:
  * http://dx.doi.org/10.1145/2638551
  */
 class IsolatedInterpartitionConductance final : public LocalPartitionEvaluation {
