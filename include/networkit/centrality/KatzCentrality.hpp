@@ -27,6 +27,7 @@ protected:
     const double alpha; // damping
     const double beta; // constant centrality amount
     const double tol; // error tolerance
+    static double defaultAlpha(const Graph& G);
 
 public:
     /**
