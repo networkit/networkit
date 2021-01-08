@@ -16,7 +16,7 @@ jobs:
       CXX: c++
     strategy:
       matrix:
-        os: ['11.0', '10.15']
+        os: ['10.15'] # 11.0 temp. removed due to errors in preview image / git actions pipelines
         variant: ['full build', 'non-monolithic']
     continue-on-error: ${{ matrix.os == '11.0' }}
     steps:
@@ -48,9 +48,8 @@ jobs:
     runs-on: macos-${{ matrix.os }}
     strategy:
       matrix:
-        os: ['11.0', '10.15']
-        variant: ['llvm-11'] # 'gcc-10' is disabled for now, since the workflow exits randomly during test-phase
-        # Will be resumed once the 11.0 image is final. 
+        os: ['10.15']  # 11.0 temp. removed due to errors in preview image / git actions pipelines
+        variant: ['llvm-11', 'gcc-10']
     continue-on-error: ${{ matrix.os == '11.0' }}
     steps:
       - name: Install prerequisites 📦
