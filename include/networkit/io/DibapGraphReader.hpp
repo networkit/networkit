@@ -29,7 +29,7 @@ public:
 
     Graph read(const std::string &path) override;
 
-    const std::vector<Point<coordinate>> &getCoordinates() const { return coordinates; }
+    const std::vector<Point<coordinate>> &getCoordinates() const noexcept { return coordinates; }
 
     std::vector<Point<coordinate>> moveCoordinates() { return std::move(coordinates); }
 
