@@ -12,13 +12,17 @@
 
 namespace NetworKit {
 
+double KatzCentrality::defaultAlpha(const Graph& G) {
+    return 1. / (1. + GraphTools::maxDegree(G));
+}
+
 KatzCentrality::KatzCentrality(const Graph& G, double alpha, double beta, double tol):
-        Centrality(G, true), alpha(alpha), beta(beta), tol(tol)
+        Centrality(G, true),
+        alpha(alpha == 0 ? KatzCentrality::defaultAlpha(G) : alpha),
+        beta(beta), tol(tol)
 {
     if (alpha < 0)
         throw std::runtime_error("Alpha must be non negative.");
-    if (alpha == 0)
-        alpha = 1. / (1. + GraphTools::maxDegree(G));
 }
 
 void KatzCentrality::run() {
