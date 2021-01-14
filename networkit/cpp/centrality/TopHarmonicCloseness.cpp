@@ -56,7 +56,7 @@ TopHarmonicCloseness::~TopHarmonicCloseness() = default;
 
 void TopHarmonicCloseness::computeReachableNodes() {
     if (G->isDirected()) {
-        wccPtr = std::unique_ptr<WeaklyConnectedComponents>(new WeaklyConnectedComponents(*G));
+        wccPtr = std::make_unique<WeaklyConnectedComponents>(*G);
         wccPtr->run();
         const auto compSizes = wccPtr->getComponentSizes();
         G->parallelForNodes(

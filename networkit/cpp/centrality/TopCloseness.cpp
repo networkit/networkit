@@ -49,7 +49,7 @@ void TopCloseness::init() {
 
 void TopCloseness::computeReachable() {
     if (G.isDirected()) {
-        sccsPtr = std::unique_ptr<StronglyConnectedComponents>(new StronglyConnectedComponents(G));
+        sccsPtr = std::make_unique<StronglyConnectedComponents>(G);
         computeReachableNodesDir();
     } else {
         computeReachableNodesUndir();
