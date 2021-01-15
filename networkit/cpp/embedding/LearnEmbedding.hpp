@@ -4,8 +4,11 @@
  *  Created on: 03.07.2020
  *      Author: Klaus Ahrens  <ahrens@informatik.hu-berlin.de>
  *
- *  adapted and reimplemented in C++17
- *  from node2vec [https://arxiv.org/pdf/1607.00653v1.pdf]
+ *  adapted and reimplemented from node2vec
+ *  part of snap [https://github.com/snap-stanford/snap]
+ *  Copyright (c) 2007-2019, Jure Leskovec (under BSD license)
+ *
+ *  see [https://arxiv.org/pdf/1607.00653v1.pdf]
  *
  */
 
@@ -14,7 +17,6 @@
 #ifndef LEARN_EMBEDDINGS_HPP
 #define LEARN_EMBEDDINGS_HPP
 
-#include <fstream>
 #include <vector>
 
 #include <networkit/Globals.hpp>
@@ -27,6 +29,7 @@ namespace Embedding {
 
 using Feature = std::vector<float>;
 using Embeddings = std::vector<Feature>;
+using AllWalks = BiasedRandomWalk::AllWalks;
 
 struct ModelData {
     AllWalks &allWalks;
@@ -48,12 +51,8 @@ struct ModelData {
 };
 
 /// Learns embeddings using SGD, Skip-gram with negative sampling.
-Embeddings learnEmbeddings(AllWalks &walks, count dimensions, count winSize, count iterations);
-
-/*
-///print embeddings
-void printEmbeddings(std::ofstream& o, Embeddings& e);
-*/
+Embeddings learnEmbeddings(AllWalks &walks, count nn, count dimensions, count winSize,
+                           count iterations);
 
 } // namespace Embedding
 } // namespace NetworKit

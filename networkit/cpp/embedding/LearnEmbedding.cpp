@@ -4,16 +4,17 @@
  *  Created on: 06.07.2020
  *      Author: Klaus Ahrens  <ahrens@informatik.hu-berlin.de>
  *
- *  adapted and reimplemented in C++17
- *  from node2vec [https://arxiv.org/pdf/1607.00653v1.pdf]
+ *  adapted and reimplemented from node2vec
+ *  part of snap [https://github.com/snap-stanford/snap]
+ *  Copyright (c) 2007-2019, Jure Leskovec (under BSD license)
+ *
+ *  see [https://arxiv.org/pdf/1607.00653v1.pdf]
  *
  */
 
 // networkit-format
 
 #include <algorithm>
-#include <fstream>
-#include <unordered_map>
 #include <vector>
 
 #include <networkit/auxiliary/Random.hpp>
@@ -25,21 +26,40 @@
 // Code from https://github.com/nicholas-leonard/word2vec/blob/master/word2vec.c
 // Customized for SNAP and node2vec
 
+/*
+The kernel algorithm in trainModel contains several threading issues:
+
+as in the original code there are concurrent reads and writes on
+alpha, wordCntAll, synPos and synNeg !
+
+Nevertheless, missing some writes should not harm the functionality of the
+algorithm, but add a further (indefinite) source of randomness.
+*/
+
 namespace NetworKit {
 namespace Embedding {
 
 // Number of negative samples. Value taken from original word2vec code.
-const int negSamN = 5;
+constexpr int negSamN = 5;
 
-const int maxExp = 6;
+constexpr int maxExp = 6;
 
-// Learning rate for SGD. Value taken from original word2vec code.
-const double startAlpha = 0.025;
-const double minAlpha = startAlpha * 0.0001;
+// Learning parameters for SGD. Values taken from original word2vec code.
+constexpr double startAlpha = 0.025;
+constexpr int refreshAlphaCount = 10000;
+constexpr double minAlpha = startAlpha * 0.0001;
+constexpr double nsPwr = 0.75;
+/*
+The exponent used to shape the negative sampling distribution.
+A value of 1.0 samples exactly in proportion to the frequencies,
+0.0 samples all words equally, while a negative value samples
+low-frequency words more than high-frequency words.
+The popular default value of 0.75 was chosen by the original Word2Vec paper.
+*/
 
 using Vocab = std::vector<count>;
 
-Vocab learnVocab(AllWalks &allWalks, count nn) {
+Vocab learnVocab(const AllWalks &allWalks, count nn) {
     Vocab vocab(nn);
     for (auto &walk : allWalks) { // for every walk starting from this node
         for (auto &node : walk) { // for every node in this walk
@@ -50,12 +70,12 @@ Vocab learnVocab(AllWalks &allWalks, count nn) {
 }
 
 // Precompute unigram table using alias sampling method
-AliasSampler vocabSampler(Vocab &vocab) {
+AliasSampler vocabSampler(const Vocab &vocab) {
     double trainWordsPow = 0;
     auto sz = vocab.size();
     std::vector<float> probV(sz); // NOT ... {sz}
     for (count i = 0; i < sz; ++i) {
-        double e = std::pow(vocab[i], 0.75);
+        double e = std::pow(vocab[i], nsPwr);
         probV[i] = e;
         trainWordsPow += e;
     }
@@ -68,17 +88,19 @@ AliasSampler vocabSampler(Vocab &vocab) {
 }
 
 // Initialize negative embeddings
-Embeddings initNegEmb(Vocab &vocab, int dimensions) {
+Embeddings initNegEmb(const Vocab &vocab, int dimensions) {
     return Embeddings{vocab.size(), std::vector<float>(dimensions)};
 }
 
 // Initialize positive embeddings
-Embeddings initPosEmb(Vocab &vocab, int dimensions) {
+Embeddings initPosEmb(const Vocab &vocab, int dimensions) {
     Embeddings emb{vocab.size(), std::vector<float>(dimensions)};
-
-    for (index i = 0; i < emb.size(); ++i) {
+#ifndef NETWORKIT_OMP2
+#pragma omp parallel for schedule(dynamic)
+#endif // NETWORKIT_OMP2
+    for (omp_index i = 0; i < static_cast<omp_index>(emb.size()); ++i) {
         std::generate(emb[i].begin(), emb[i].end(),
-                      [&]() { return (uniform_real() - 0.5) / dimensions; });
+                      [&]() { return (Aux::Random::real() - 0.5) / dimensions; });
     }
     return emb;
 }
@@ -91,23 +113,32 @@ void trainModel(ModelData &model, count walkNr) {
     count iterations = model.iterations;
     count dimensions = model.dimensions;
     count winSize = model.winSize;
-    double alpha = model.alpha;
+    double &alpha = model.alpha;
     Embeddings &synPos = model.synPos;
     Embeddings &synNeg = model.synNeg;
+
+    using Walk = BiasedRandomWalk::Walk;
 
     Walk &thisWalk = allWalks[walkNr];
 
     for (index wordI = 0; wordI < thisWalk.size(); ++wordI) {
-        if (wordCntAll % 10000 == 0) {
-            alpha = startAlpha * (1 - wordCntAll / ((double)(iterations * allWords) + 1.0));
-            if (alpha < minAlpha) {
-                alpha = minAlpha;
-            }
+        count localWordCntAll;
+#ifndef NETWORKIT_OMP2
+#pragma omp atomic read
+#endif // NETWORKIT_OMP2
+        localWordCntAll = wordCntAll;
+        if (localWordCntAll % refreshAlphaCount == 0) {
+            double newAlpha =
+                startAlpha * (1 - localWordCntAll / ((double)(iterations * allWords) + 1.0));
+#ifndef NETWORKIT_OMP2
+#pragma omp atomic write
+#endif // NETWORKIT_OMP2
+            alpha = (newAlpha < minAlpha) ? minAlpha : newAlpha;
         }
 
         node word = thisWalk[wordI];
         std::vector<float> eV(dimensions);
-        index offset = uniform_real() * winSize;
+        index offset = Aux::Random::index(winSize);
 
         for (index a = offset; a < winSize * 2 + 1 - offset; ++a) {
             if (a == winSize) {
@@ -150,30 +181,51 @@ void trainModel(ModelData &model, count walkNr) {
                 }
 
                 for (index i = 0; i < dimensions; ++i) {
-                    eV[i] += grad * synNeg[target][i];
-                    synNeg[target][i] += grad * synPos[currWord][i];
+                    float sNti;
+#ifndef NETWORKIT_OMP2
+#pragma omp atomic read
+#endif // NETWORKIT_OMP2
+                    sNti = synNeg[target][i];
+                    eV[i] += grad * sNti;
+#ifndef NETWORKIT_OMP2
+#pragma omp atomic write
+#endif // NETWORKIT_OMP2
+                    synNeg[target][i] = sNti + grad * synPos[currWord][i];
                 }
             }
 
             for (index i = 0; i < dimensions; ++i) {
-                synPos[currWord][i] += eV[i];
+                float sPci;
+#ifndef NETWORKIT_OMP2
+#pragma omp atomic read
+#endif // NETWORKIT_OMP2
+                sPci = synPos[currWord][i];
+
+#ifndef NETWORKIT_OMP2
+#pragma omp atomic write
+#endif // NETWORKIT_OMP2
+                synPos[currWord][i] = sPci + eV[i];
             }
         }
-        ++wordCntAll;
+#ifndef NETWORKIT_OMP2
+#pragma omp atomic write
+#endif // NETWORKIT_OMP2
+        wordCntAll = localWordCntAll + 1;
     }
 }
 
-Embeddings learnEmbeddings(AllWalks &allWalks, count dimensions, count winSize, count iterations) {
+Embeddings learnEmbeddings(AllWalks &allWalks, count nn, count dimensions, count winSize,
+                           count iterations) {
     count walks = allWalks.size();           // number of walks
     count nodesPerWalk = allWalks[0].size(); // number of nodes per walk
 
-    std::unordered_map<node, node> renumbered;
-    std::unordered_map<node, node> original;
+    std::vector<node> renumbered(nn, none);
+    std::vector<node> original(nn, none);
     count nodes = 0;
     for (index i = 0; i < walks; ++i) {
         for (index j = 0; j < nodesPerWalk; ++j) {
             node &nd = allWalks[i][j];
-            if (renumbered.count(nd)) {
+            if (renumbered[nd] != none) {
                 nd = renumbered[nd];
             } else {
                 renumbered[nd] = nodes;
@@ -197,10 +249,10 @@ Embeddings learnEmbeddings(AllWalks &allWalks, count dimensions, count winSize, 
     ModelData model(allWalks, dimensions, winSize, iterations, as, wordCntAll, alpha, synNeg,
                     synPos);
 
-    //#pragma omp parallel for schedule(dynamic) collapse(2)
     for (index iterCnt = 0; iterCnt < iterations; ++iterCnt) {
+#ifndef NETWORKIT_OMP2
 #pragma omp parallel for schedule(dynamic)
-        //      for (index run = 0; run < walks; ++run) {
+#endif // NETWORKIT_OMP2
         for (omp_index run = 0; run < static_cast<omp_index>(walks); ++run) {
             trainModel(model, run);
         }

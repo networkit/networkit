@@ -4,14 +4,16 @@
  *  Created on: 03.07.2020
  *      Author: Klaus Ahrens  <ahrens@informatik.hu-berlin.de>
  *
- *  adapted and reimplemented in C++17
- *  from node2vec [https://arxiv.org/pdf/1607.00653v1.pdf]
+ *  adapted and reimplemented from node2vec
+ *  part of snap [https://github.com/snap-stanford/snap]
+ *  Copyright (c) 2007-2019, Jure Leskovec (under BSD license)
+ *
+ *  see [https://arxiv.org/pdf/1607.00653v1.pdf]
  *
  */
 
 // networkit-format
 
-#include <mutex>
 #include <random>
 #include <vector>
 
@@ -23,21 +25,7 @@
 namespace NetworKit {
 namespace Embedding {
 
-std::mt19937_64 &getURNG() {
-    static bool seedPerThread = true;
-    static std::once_flag once;
-    std::call_once(once, [] { Aux::Random::setSeed(1, seedPerThread); });
-
-    return Aux::Random::getURNG();
-}
-
-double uniform_real() {
-    static std::uniform_real_distribution<> dist;
-
-    return dist(getURNG());
-}
-
-void AliasSampler::unigram(std::vector<float> &probs) {
+void AliasSampler::unigram(const std::vector<float> &probs) {
     auto N = probs.size();
 
     std::vector<index> underV;
@@ -63,24 +51,15 @@ void AliasSampler::unigram(std::vector<float> &probs) {
             overV.push_back(large);
         }
     }
-    while (!underV.empty()) {
-        auto curr = underV.back();
-        underV.pop_back();
-        U[curr] = 1;
-    }
-    while (!overV.empty()) {
-        auto curr = overV.back();
-        overV.pop_back();
-        U[curr] = 1;
-    }
+    for (index i : underV)
+        U[i] = 1;
+    for (index i : overV)
+        U[i] = 1;
 }
 
 index AliasSampler::sample() {
-    double rx = uniform_real();
-    double ry = uniform_real();
-    index x = static_cast<index>(rx * K.size());
-    double y = ry;
-    return y < U[x] ? x : K[x];
+    index x = static_cast<index>(Aux::Random::index(K.size()));
+    return Aux::Random::real() < U[x] ? x : K[x];
 }
 
 } // namespace Embedding

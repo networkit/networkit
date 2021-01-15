@@ -1,6 +1,3 @@
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
 networkit_add_module(embedding
     AliasSampler.cpp
     BiasedRandomWalk.cpp

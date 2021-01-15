@@ -6,10 +6,11 @@
  *      Author: Klaus Ahrens
  *              <ahrens@informatik.hu-berlin.de>
  *
- *  adapted and reimplemented in C++17
- *  from node2vec
- *  [https://arxiv.org/pdf/1607.00653v1.pdf]
+ *  adapted and reimplemented from node2vec
+ *  part of snap [https://github.com/snap-stanford/snap]
+ *  Copyright (c) 2007-2019, Jure Leskovec (under BSD license)
  *
+ *  see [https://arxiv.org/pdf/1607.00653v1.pdf]
  */
 
 // networkit-format
@@ -50,20 +51,9 @@ public:
     void run() override;
 
     /**
-     * Returns a string with the algorithm's name and its parameters, if there are any.
-     * @return The string representation of the algorithm.
-     */
-    std::string toString() const override;
-
-    /**
-     * @return True if algorithm can run multi-threaded.
-     */
-    bool isParallel() const override;
-
-    /**
      This method returns a vector that contains feature vectors for all nodes
     */
-    std::vector<std::vector<float>> getFeatures();
+    const std::vector<std::vector<float>> &getFeatures();
 
 private:
     // The graph
@@ -81,11 +71,6 @@ private:
 
     std::vector<std::vector<float>> features;
 };
-
-inline std::vector<std::vector<float>> Node2Vec::getFeatures() {
-    assureFinished();
-    return features;
-}
 
 } /* namespace NetworKit */
 

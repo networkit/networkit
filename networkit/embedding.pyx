@@ -14,7 +14,6 @@ cdef extern from "<networkit/embedding/Node2Vec.hpp>":
 
     cdef cppclass _Node2Vec "NetworKit::Node2Vec"(_Algorithm):
         _Node2Vec(_Graph G, double P, double Q, count L, count N, count D) except +
-        void run() nogil except +
         vector[vector[float]] getFeatures() except +
 
 cdef class Node2Vec(Algorithm):
@@ -38,7 +37,7 @@ cdef class Node2Vec(Algorithm):
                        the following two steps
         P < min(Q,1) : more likely to sample an already-visited node in
                        the following two steps
-	Q : double
+    Q : double
         The ratio for the direction of the next step
         Q > 1 : the random walk is biased towards nodes close to the
                 previous one.
@@ -57,10 +56,6 @@ cdef class Node2Vec(Algorithm):
     def __cinit__(self, Graph G, P=1, Q=1, L=80, N=10, D=128):
         self._G = G
         self._this = new _Node2Vec(G._this, P, Q, L, N, D)
-
-    def run(self):
-        self._this.run()
-        return self
 
     def getFeatures(self):
         """
