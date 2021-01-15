@@ -140,44 +140,33 @@ bool METISParser::hasNext() {
 std::vector<node> METISParser::getNext(count ignoreFirst) {
 
     std::string line;
-    bool comment = false;
     do {
-        comment = false;
         std::getline(this->graphFile, line);
         // check for comment line starting with '%'
         if (line[0] == '%') {
-            comment = true;
+            continue;
         } else {
             return parseLine(line,ignoreFirst);
         }
-
-    } while (comment);
+    } while (true);
 
     throw std::runtime_error("bad METIS file structure");
-    std::vector<node> fail;
-    return fail;
 }
 
 std::vector<std::pair<node,double>> METISParser::getNextWithWeights(count ignoreFirst) {
 
     std::string line;
-    bool comment = false;
     do {
-        comment = false;
         std::getline(this->graphFile, line);
         // check for comment line starting with '%'
         if (line[0] == '%') {
-            comment = true;
+            continue;
         } else {
             return parseWeightedLine(line,ignoreFirst);
         }
-
-    } while (comment);
+    } while (true);
 
     throw std::runtime_error("bad METIS file structure");
-    std::vector<std::pair<node,double>> fail;
-    return fail;
-
 }
 
 } /* namespace NetworKit */
