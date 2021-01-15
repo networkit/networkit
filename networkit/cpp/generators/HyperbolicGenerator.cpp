@@ -242,7 +242,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
     //get Graph
     GraphBuilder result(n, false, false);//no direct swap with probabilistic graphs
     count totalCandidates = 0;
-    #pragma omp parallel for
+    #pragma omp parallel for reduction(+: totalCandidates)
     for (omp_index i = 0; i < static_cast<omp_index>(n); i++) {
         vector<index> near;
         totalCandidates += quad.getElementsProbabilistically(HyperbolicSpace::polarToCartesian(angles[i], radii[i]), edgeProb, anglesSorted, near);
