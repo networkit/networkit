@@ -320,14 +320,14 @@ jobs:
 
   style-guide-compliance-build:
     name: "Style guide compliance build"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Install prerequisites 📦
         run: |
           curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/bionic llvm-toolchain-bionic-8 main" | sudo tee /etc/apt/sources.list.d/llvm8.list
+          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-11 main" | sudo tee /etc/apt/sources.list.d/llvm11.list
           sudo apt-get update
-          sudo apt-get install clang-format-8
+          sudo apt-get install clang-format-11
       - name: Checkout
         uses: actions/checkout@v2
       - name: Checkout submodules
