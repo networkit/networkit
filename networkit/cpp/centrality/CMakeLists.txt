@@ -47,4 +47,3 @@ networkit_module_link_modules(centrality
     )
 
 add_subdirectory(test)
-

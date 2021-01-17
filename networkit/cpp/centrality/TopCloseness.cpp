@@ -188,7 +188,7 @@ void TopCloseness::computelBound1(std::vector<double> &S) {
     count level = 2;
     DEBUG("computing first lbound");
 
-    auto &reachU = *(reachUPtr.get()), &reachL = *(reachLPtr.get());
+    auto &reachL = *reachLPtr, &reachU = *reachUPtr;
     while (n_finished < n) {
         DEBUG("First bound. Finished: ", n_finished, " of ", n, ".");
         G.forNodes([&](node u) {
