@@ -99,8 +99,6 @@ private:
     void BFSbound(node x, std::vector<double> &S, count &visEdges,
                   const std::vector<bool> &toAnalyze);
     void computeReachable();
-    void computeReachableNodesUndir();
-    void computeReachableNodesDir();
 
     // Returns the node with highest farness
     struct LargerFarness {
