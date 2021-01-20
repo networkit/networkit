@@ -3,7 +3,6 @@ networkit_add_module(distance
     APSP.cpp
     AdamicAdarDistance.cpp
     AlgebraicDistance.cpp
-    AllSimplePaths.cpp
     BFS.cpp
     BidirectionalBFS.cpp
     BidirectionalDijkstra.cpp

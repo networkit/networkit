@@ -1254,7 +1254,7 @@ cdef class AStar(STSP):
 		self.heu = heu
 		self._this = new _AStar(G._this, self.heu, source, target, storePred)
 
-cdef extern from "<networkit/distance/AllSimplePaths.hpp>":
+cdef extern from "<networkit/reachability/AllSimplePaths.hpp>":
 
 	cdef cppclass _AllSimplePaths "NetworKit::AllSimplePaths":
 		_AllSimplePaths(_Graph G, node source, node target, count cutoff) except +
@@ -1290,6 +1290,8 @@ cdef class AllSimplePaths:
 	def __cinit__(self,  Graph G, source, target, cutoff=none):
 		self._G = G
 		self._this = new _AllSimplePaths(G._this, source, target, cutoff)
+		from warnings import warn
+		warn("networkit.distance.AllSimplePaths is deprecated, use networkit.reachability.AllSimplePaths")
 
 	def __dealloc__(self):
 		del self._this

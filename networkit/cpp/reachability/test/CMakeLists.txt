@@ -3,3 +3,10 @@ networkit_add_test(reachability
     generators
     graph
     )
+
+networkit_add_test(reachability
+    AllSimplePathsGTest
+    auxiliary
+    graph
+    io
+    )

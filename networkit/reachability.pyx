@@ -133,8 +133,12 @@ cdef extern from "<networkit/reachability/AllSimplePaths.hpp>":
 		void forAllSimplePaths[Callback](Callback c) except +
 
 cdef class AllSimplePaths(Algorithm):
-	""" Algorithm to compute all existing simple paths from a source node to a target node. The maximum length of the paths can be fixed through 'cutoff'.
-		CAUTION: This algorithm could take a lot of time on large networks (many edges), especially if the cutoff value is high or not specified.
+	"""
+	Algorithm to compute all existing simple paths from a source node to a
+	target node. The maximum length of the paths can be fixed through 'cutoff'.
+
+	CAUTION: This algorithm could take a lot of time on large networks (many
+	edges), especially if the cutoff value is high or not specified.
 
 	AllSimplePaths(G, source, target, cutoff=none)
 
