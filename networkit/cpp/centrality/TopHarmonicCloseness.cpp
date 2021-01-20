@@ -15,8 +15,7 @@
 #include <queue>
 
 #include <networkit/centrality/TopHarmonicCloseness.hpp>
-#include <networkit/components/ConnectedComponents.hpp>
-#include <networkit/components/StronglyConnectedComponents.hpp>
+#include <networkit/reachability/ReachableNodes.hpp>
 
 namespace NetworKit {
 
@@ -62,11 +61,11 @@ void TopHarmonicCloseness::computeReachableNodes() {
         G->parallelForNodes(
             [&](node u) { reachableNodes[u] = compSizes.at(wccPtr->componentOfNode(u)); });
     } else {
-        ConnectedComponents cc(*G);
-        cc.run();
-        const auto compSizes = cc.getComponentSizes();
-        G->parallelForNodes(
-            [&](node u) { reachableNodes[u] = compSizes.at(cc.componentOfNode(u)); });
+        ReachableNodes rn(*G);
+        rn.run();
+        G->parallelForNodes([&reachableNodes = reachableNodes, &rn = rn](node u) {
+            reachableNodes[u] = rn.numberOfReachableNodes(u);
+        });
     }
 }
 
@@ -453,96 +452,16 @@ std::vector<edgeweight> TopHarmonicCloseness::topkScoresList(bool includeTrail) 
 }
 
 void TopHarmonicCloseness::computeReachableNodesBounds() {
-    // As in TopCloseness
-    reachU.resize(G->upperNodeIdBound());
+    ReachableNodes rn(*G, false);
+    rn.run();
+
     reachL.resize(G->upperNodeIdBound());
-    StronglyConnectedComponents sccs(*G);
-    sccs.run();
+    reachU.resize(G->upperNodeIdBound());
 
-    count N = sccs.numberOfComponents();
-    DEBUG("Number of components: ", N);
-    std::vector<count> reachL_scc(N, 0);
-    std::vector<count> reachU_scc(N, 0);
-    std::vector<count> reachU_without_max_scc(N, 0);
-    std::vector<bool> reach_from_max_scc(N, false);
-    std::vector<bool> reaches_max_scc(N, false);
-    std::vector<std::vector<count>> sccs_vec(N);
-    Graph sccGraph(N, false, true);
-    std::vector<bool> found(N, false);
-    count maxSizeCC = 0;
-    const auto n = G->numberOfNodes();
-
-    // We compute the vector sccs_vec, where each component contains the list of
-    // its nodes
-    for (count v = 0; v < n; v++) {
-        sccs_vec[sccs.componentOfNode(v)].push_back(v);
-    }
-
-    // We compute the SCC graph and store it in sccGraph
-    for (count V = 0; V < N; V++) {
-        for (count v : sccs_vec[V]) {
-            G->forNeighborsOf(v, [&](node w) {
-                count W = sccs.componentOfNode(w);
-
-                if (W != V && !found[W]) {
-                    found[W] = true;
-                    sccGraph.addEdge(V, W);
-                }
-            });
-        }
-        sccGraph.forNeighborsOf(V, [&](node W) { found[W] = false; });
-        if (sccGraph.degreeOut(V) > sccGraph.degreeOut(maxSizeCC)) {
-            maxSizeCC = V;
-        }
-    }
-
-    // BFS from the biggest SCC.
-    std::queue<count> Q;
-    Q.push(maxSizeCC);
-    reach_from_max_scc[maxSizeCC] = true;
-    while (!Q.empty()) {
-        count V = Q.front();
-        Q.pop();
-        reachL_scc[maxSizeCC] += sccs_vec[V].size();
-        sccGraph.forNeighborsOf(V, [&](node W) {
-            if (!reach_from_max_scc[W]) {
-                reach_from_max_scc[W] = true;
-                Q.push(W);
-            }
-        });
-    }
-    reachU_scc[maxSizeCC] = reachL_scc[maxSizeCC];
-    reaches_max_scc[maxSizeCC] = true;
-
-    // so far only the largest SCC has reach_U and reach_L > 0
-
-    // Dynamic programming to compute number of reachable vertices
-    for (count V = 0; V < N; V++) {
-        if (V == maxSizeCC) {
-            continue;
-        }
-        sccGraph.forNeighborsOf(V, [&](node W) {
-            reachL_scc[V] = std::max(reachL_scc[V], reachL_scc[W]);
-            if (!reach_from_max_scc[W]) {
-                reachU_without_max_scc[V] += reachU_without_max_scc[W];
-            }
-            reachU_scc[V] += reachU_scc[W];
-            reachU_scc[V] = std::min(reachU_scc[V], n);
-            reaches_max_scc[V] = reaches_max_scc[V] || reaches_max_scc[W];
-        });
-
-        if (reaches_max_scc[V]) {
-            reachU_scc[V] = reachU_without_max_scc[V] + reachU_scc[V];
-        }
-        reachL_scc[V] += sccs_vec[V].size();
-        reachU_scc[V] += sccs_vec[V].size();
-        reachU_scc[V] = std::min(reachU_scc[V], n);
-    }
-
-    for (count v = 0; v < n; v++) {
-        reachL[v] = reachL_scc[sccs.componentOfNode(v)];
-        reachU[v] = reachU_scc[sccs.componentOfNode(v)];
-    }
+    G->parallelForNodes([&rn = rn, &reachL = reachL, &reachU = reachU](node u) {
+        reachL[u] = rn.numberOfReachableNodesLB(u);
+        reachU[u] = rn.numberOfReachableNodesUB(u);
+    });
 }
 
 void TopHarmonicCloseness::computeNeighborhoodBasedBound() {
@@ -555,7 +474,11 @@ void TopHarmonicCloseness::computeNeighborhoodBasedBound() {
     std::vector<double> sumHCloseness(n);
 
     count nFinished = 0;
-    G->forNodes([&](const node u) {
+#pragma omp parallel for reduction(+ : nFinished)
+    for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
+        const node u = static_cast<node>(i);
+        if (!G->hasNode(u))
+            continue;
         const count degOutU = G->degreeOut(u);
         if (degOutU == 0) {
             ++nFinished;
@@ -566,7 +489,7 @@ void TopHarmonicCloseness::computeNeighborhoodBasedBound() {
         sumHCloseness[u] = degOutU;
         visited[u] = degOutU + 1;
         hCloseness[u] = std::numeric_limits<double>::max();
-    });
+    }
 
     count level = 2;
     while (nFinished < G->numberOfNodes()) {
