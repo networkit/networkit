@@ -8,6 +8,7 @@ ctypedef uint64_t edgeid
 ctypedef index node
 ctypedef double edgeweight
 
+from .base cimport _Algorithm, Algorithm
 from .graph cimport _Graph, Graph
 
 cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
@@ -18,9 +19,8 @@ none = _none
 
 cdef extern from "<networkit/flow/EdmondsKarp.hpp>":
 
-	cdef cppclass _EdmondsKarp "NetworKit::EdmondsKarp":
+	cdef cppclass _EdmondsKarp "NetworKit::EdmondsKarp"(_Algorithm):
 		_EdmondsKarp(const _Graph &graph, node source, node sink) except +
-		void run() nogil except +
 		edgeweight getMaxFlow() const
 		vector[node] getSourceSet() except +
 		edgeweight getFlow(node u, node v) except +
@@ -49,14 +49,6 @@ cdef class EdmondsKarp:
 
 	def __dealloc__(self):
 		del self._this
-
-	def run(self):
-		"""
-		Computes the maximum flow, executes the EdmondsKarp algorithm
-		"""
-		with nogil:
-			self._this.run()
-		return self
 
 	def getMaxFlow(self):
 		"""
@@ -112,5 +104,3 @@ cdef class EdmondsKarp:
 			The flow values of all edges indexed by edge id
 		"""
 		return self._this.getFlowVector()
-
-

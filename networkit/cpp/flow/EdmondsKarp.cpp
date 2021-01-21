@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <queue>
 #include <stdexcept>
 
 #include <networkit/flow/EdmondsKarp.hpp>
@@ -85,13 +86,17 @@ void EdmondsKarp::run() {
     graph->parallelForEdges([&](node, node, edgeid eid) {
         flow[eid] = std::max(flow[eid], residFlow[eid]);
     });
+
+    hasRun = true;
 }
 
-edgeweight EdmondsKarp::getMaxFlow() const {
+edgeweight EdmondsKarp::getMaxFlow() const noexcept {
+    assureFinished();
     return flowValue;
 }
 
 std::vector<node> EdmondsKarp::getSourceSet() const {
+    assureFinished();
     // perform bfs from source
     std::vector<bool> visited(graph->upperNodeIdBound(), false);
     std::vector<node> sourceSet;
@@ -99,7 +104,7 @@ std::vector<node> EdmondsKarp::getSourceSet() const {
     std::queue<node> Q;
     Q.push(source);
     visited[source] = true;
-    while (!Q.empty()) {
+    do {
         node u = Q.front();
         Q.pop();
         sourceSet.push_back(u);
@@ -110,16 +115,18 @@ std::vector<node> EdmondsKarp::getSourceSet() const {
                 visited[v] = true;
             }
         });
-    }
+    } while (!Q.empty());
 
     return sourceSet;
 }
 
 edgeweight EdmondsKarp::getFlow(node u, node v) const {
+    assureFinished();
     return flow[graph->edgeId(u, v)];
 }
 
-std::vector<edgeweight> EdmondsKarp::getFlowVector() const {
+const std::vector<edgeweight> &EdmondsKarp::getFlowVector() const {
+    assureFinished();
     return flow;
 }
 
