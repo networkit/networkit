@@ -43,6 +43,7 @@ build/
 lib/
 lib64/
 include/tlx
+include/ttmath
 
 ### IDE
 *.project
