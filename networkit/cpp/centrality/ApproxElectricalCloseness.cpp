@@ -510,10 +510,8 @@ void ApproxElectricalCloseness::run() {
 
             // ensure column sum of entries is 0.
             double columnSum = 0.;
-            for (int i = 0; i < n; i++) {
-                columnSum += sol[i];
-            }
-            sol -= columnSum / n;
+            G.forNodes([&](node u) { columnSum += sol[u]; });
+            sol -= columnSum / static_cast<double>(n);
         }
 
         // All threads sample and aggregate USTs in parallel
