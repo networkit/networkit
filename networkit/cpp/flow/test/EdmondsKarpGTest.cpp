@@ -39,14 +39,14 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpP1) {
 
     std::vector<node> sourceSet(edKa.getSourceSet());
 
-    EXPECT_TRUE(std::find(sourceSet.begin(), sourceSet.end(), 0) != sourceSet.end());
-    EXPECT_TRUE(std::find(sourceSet.begin(), sourceSet.end(), 1) != sourceSet.end());
-    EXPECT_TRUE(std::find(sourceSet.begin(), sourceSet.end(), 2) != sourceSet.end());
-    EXPECT_TRUE(std::find(sourceSet.begin(), sourceSet.end(), 3) != sourceSet.end());
-    EXPECT_TRUE(std::find(sourceSet.begin(), sourceSet.end(), 4) != sourceSet.end());
+    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 0), sourceSet.end());
+    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 1), sourceSet.end());
+    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 2), sourceSet.end());
+    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 3), sourceSet.end());
+    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 4), sourceSet.end());
 
-    EXPECT_TRUE(std::find(sourceSet.begin(), sourceSet.end(), 5) == sourceSet.end());
-    EXPECT_TRUE(std::find(sourceSet.begin(), sourceSet.end(), 6) == sourceSet.end());
+    EXPECT_EQ(std::find(sourceSet.begin(), sourceSet.end(), 5), sourceSet.end());
+    EXPECT_EQ(std::find(sourceSet.begin(), sourceSet.end(), 6), sourceSet.end());
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpTwoPaths) {

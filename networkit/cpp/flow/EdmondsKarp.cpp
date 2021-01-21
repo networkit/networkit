@@ -90,7 +90,7 @@ void EdmondsKarp::run() {
     hasRun = true;
 }
 
-edgeweight EdmondsKarp::getMaxFlow() const noexcept {
+edgeweight EdmondsKarp::getMaxFlow() const {
     assureFinished();
     return flowValue;
 }
@@ -104,7 +104,7 @@ std::vector<node> EdmondsKarp::getSourceSet() const {
     std::queue<node> Q;
     Q.push(source);
     visited[source] = true;
-    do {
+    while (!Q.empty()) {
         node u = Q.front();
         Q.pop();
         sourceSet.push_back(u);
@@ -115,7 +115,7 @@ std::vector<node> EdmondsKarp::getSourceSet() const {
                 visited[v] = true;
             }
         });
-    } while (!Q.empty());
+    }
 
     return sourceSet;
 }
