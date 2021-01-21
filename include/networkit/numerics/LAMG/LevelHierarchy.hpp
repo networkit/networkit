@@ -92,7 +92,7 @@ void LevelHierarchy<Matrix>::setLastAsCoarsest() {
 
 template<class Matrix>
 LevelType LevelHierarchy<Matrix>::getType(index levelIdx) const {
-    assert(levelIdx >= 0 && levelIdx < this->size());
+    assert(levelIdx < this->size());
 
     if (levelIdx == 0) {
         return FINEST;
@@ -103,7 +103,7 @@ LevelType LevelHierarchy<Matrix>::getType(index levelIdx) const {
 
 template<class Matrix>
 Level<Matrix>& LevelHierarchy<Matrix>::at(index levelIdx) {
-    assert(levelIdx >= 0 && levelIdx < this->size());
+    assert(levelIdx < this->size());
 
     if (levelIdx == 0) { // finest level
         return finestLevel;
