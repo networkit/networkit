@@ -3,7 +3,10 @@
  *
  *  Created on: 28.02.2014
  *      Author: cls
+ *              Eugenio Angriman <angrimae@hu-berlin.de>
  */
+
+// networkit-format
 
 #ifndef NETWORKIT_GENERATORS_CLUSTERED_RANDOM_GRAPH_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_CLUSTERED_RANDOM_GRAPH_GENERATOR_HPP_
@@ -26,10 +29,10 @@ public:
      *
      * @param[in]	n	number of nodes
      * @param[in]	k	number of clusters
-     * @param[in]	pin		intra-cluster edge probability
-     * @param[in]	pout	inter-cluster edge probability
+     * @param[in]	pIntra		intra-cluster edge probability
+     * @param[in]	pInter	inter-cluster edge probability
      */
-    ClusteredRandomGraphGenerator(count n, count k, double pin, double pout);
+    ClusteredRandomGraphGenerator(count n, count k, double pIntra, double pInter);
 
     /**
      * Generates a clustered random graph with the properties given in the constructor.
@@ -44,11 +47,8 @@ public:
     Partition getCommunities();
 
 private:
-
-    count n;
-    count k;
-    double pin;
-    double pout;
+    const count n, k;
+    const double pIntra, pInter;
     Partition zeta;
 };
 
