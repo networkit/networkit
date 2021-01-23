@@ -3,6 +3,8 @@
 
 #include <networkit/community/LocalCoverEvaluation.hpp>
 
+#include <tlx/define/deprecated.hpp>
+
 namespace NetworKit {
 
 /**
@@ -23,7 +25,7 @@ public:
     using LocalCoverEvaluation::LocalCoverEvaluation;
 
     /**
-     * Execute the algorithm.
+     * Execute the algorithm. The algorithm is not parallel.
      */
     void run() override;
 
@@ -35,7 +37,7 @@ public:
     /**
      * @return true - this algorithm is partially parallel (but \f$\Omega(n)\f$ sequential work remains)
      */
-    bool isParallel() const override { return true; }
+    bool TLX_DEPRECATED(isParallel() const override) { return true; }
 };
 
 }

@@ -16,6 +16,8 @@
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
+#include <tlx/define/deprecated.hpp>
+
 namespace NetworKit {
 
 // pImpl
@@ -33,13 +35,14 @@ public:
         throw std::runtime_error("run() is not supported by this algorithm; use run(trades)");
     };
 
+    /* The algorithm is not parallel. */
     void run(const std::vector<std::pair<node, node>> &trades);
 
     Graph getGraph(bool parallel = false);
 
     std::string toString() const final;
 
-    bool isParallel() const final { return false; }
+    bool TLX_DEPRECATED(isParallel() const final) { return false; }
 
     count getNumberOfAffectedEdges() const;
 

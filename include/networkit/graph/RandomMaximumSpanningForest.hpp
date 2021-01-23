@@ -1,12 +1,15 @@
 #ifndef NETWORKIT_GRAPH_RANDOM_MAXIMUM_SPANNING_FOREST_HPP_
 #define NETWORKIT_GRAPH_RANDOM_MAXIMUM_SPANNING_FOREST_HPP_
 
-#include <networkit/graph/Graph.hpp>
 #include <limits>
+
+#include <networkit/graph/Graph.hpp>
 #include <networkit/structures/UnionFind.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/base/Algorithm.hpp>
+
+#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 
@@ -34,7 +37,7 @@ public:
     RandomMaximumSpanningForest(const Graph &G, const std::vector<A> &attribute);
 
     /**
-     * Execute the algorithm.
+     * Execute the algorithm. The algorithm is not parallel.
      */
     void run() override;
 
@@ -76,7 +79,7 @@ public:
     /**
      * @return false - this algorithm is not parallelized
      */
-    bool isParallel() const override;
+    bool TLX_DEPRECATED(isParallel() const override);
 
     /**
      * @return The name of this algorithm.

@@ -12,6 +12,8 @@
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
+#include <tlx/define/deprecated.hpp>
+
 namespace NetworKit {
 
 /**
@@ -47,7 +49,7 @@ public:
     ~DegreePreservingShuffle() override;
 
     /**
-     * Execute trades as configured in the constructor.
+     * Execute trades as configured in the constructor. The algorithm is parallel.
      * @warning This function has to be called exactly once before invoking getGraph()
      */
     void run() final;
@@ -68,7 +70,7 @@ public:
 
     std::string toString() const final;
 
-    bool isParallel() const final { return true; }
+    bool TLX_DEPRECATED(isParallel() const final) { return true; }
 
 private:
     const Graph *G;

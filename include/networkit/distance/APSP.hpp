@@ -14,6 +14,8 @@
 #include <networkit/distance/SSSP.hpp>
 #include <networkit/graph/Graph.hpp>
 
+#include <tlx/define/deprecated.hpp>
+
 namespace NetworKit {
 
 /**
@@ -32,7 +34,10 @@ class APSP : public Algorithm {
 
     ~APSP() override = default;
 
-    /** Computes the shortest paths from each node to all other nodes. */
+    /**
+     * Computes the shortest paths from each node to all other nodes.
+     * The algorithm is parallel.
+     */
     void run() override;
 
     /**
@@ -64,7 +69,7 @@ class APSP : public Algorithm {
     /**
      * @return True if algorithm can run multi-threaded.
      */
-    bool isParallel() const override { return true; }
+    bool TLX_DEPRECATED(isParallel() const override) { return true; }
 
 protected:
     const Graph &G;

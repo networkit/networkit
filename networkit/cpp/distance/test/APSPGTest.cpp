@@ -62,7 +62,6 @@ TEST_F(APSPGTest, testAPSP) {
     ASSERT_EQ(distances[1][4],2);
     ASSERT_EQ(distances[1][5],3);
     ASSERT_EQ(distances[1][6],3);
-    ASSERT_TRUE(apsp.isParallel());
 }
 
 TEST_F(APSPGTest, testAPSPUnweightedER) {

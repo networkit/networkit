@@ -3,6 +3,8 @@
 
 #include <networkit/community/LocalPartitionEvaluation.hpp>
 
+#include <tlx/define/deprecated.hpp>
+
 namespace NetworKit {
 
 /**
@@ -14,7 +16,7 @@ public:
     using LocalPartitionEvaluation::LocalPartitionEvaluation;
 
     /**
-     * Execute the algorithm.
+     * Execute the algorithm. The algorithm is not parallel.
      */
     void run() override;
 
@@ -28,7 +30,7 @@ public:
     /**
      * @return false - this algorithm is not parallel.
      */
-    bool isParallel() const override { return false; }
+    bool TLX_DEPRECATED(isParallel() const override) { return false; }
 
     /**
      * This value should be high in a good clustering.

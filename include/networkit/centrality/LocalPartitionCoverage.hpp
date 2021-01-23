@@ -5,6 +5,8 @@
 #include <networkit/centrality/Centrality.hpp>
 #include <networkit/structures/Partition.hpp>
 
+#include <tlx/define/deprecated.hpp>
+
 namespace NetworKit {
 
 /**
@@ -22,6 +24,7 @@ public:
 
     /**
      * Computes local partition coverage on the graph passed in constructor.
+     * This method runs in parallel.
      */
     void run() override;
 
@@ -36,7 +39,7 @@ public:
      * This algorithm is parallel.
      * @return true
      */
-    bool isParallel() const override;
+    bool TLX_DEPRECATED(isParallel() const override);
 
     /**
      * The name of this algorithm.

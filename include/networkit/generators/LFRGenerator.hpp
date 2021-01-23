@@ -6,6 +6,8 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
 
+#include <tlx/define/deprecated.hpp>
+
 namespace NetworKit {
 
 /**
@@ -95,7 +97,7 @@ public:
     void setMuWithBinomialDistribution(double mu);
 
     /**
-     * Generates the graph and the community structure.
+     * Generates the graph and the community structure. The algorithm is not parallel.
      */
     void run() override;
 
@@ -144,7 +146,7 @@ public:
      *
      * @return false, only minor parts are parallelized
      */
-    bool isParallel() const override;
+    bool TLX_DEPRECATED(isParallel() const override);
 
 private:
     /*

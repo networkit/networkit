@@ -12,6 +12,7 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
 
+#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 
@@ -44,7 +45,7 @@ public:
     Assortativity(const Graph& G, const Partition& partition);
 
     /**
-    *
+    * Runs the algorithm. The algorithm is not parallel.
     */
     void run() override;
 
@@ -60,7 +61,7 @@ public:
      */
     std::string toString() const override;
 
-    bool isParallel() const override;
+    bool TLX_DEPRECATED(isParallel() const override);
 
 
 private:

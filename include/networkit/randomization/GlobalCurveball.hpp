@@ -15,6 +15,8 @@
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
+#include <tlx/define/deprecated.hpp>
+
 namespace NetworKit {
 
 // pImpl
@@ -48,7 +50,7 @@ public:
     ~GlobalCurveball() override;
 
     /**
-     * Execute trades as configured in the constructor.
+     * Execute trades as configured in the constructor. The algorithm is not parallel.
      * @warning This function has to be called exactly one before invoking getGraph()
      */
     void run() final;
@@ -61,7 +63,7 @@ public:
 
     std::string toString() const final;
 
-    bool isParallel() const final { return false; }
+    bool TLX_DEPRECATED(isParallel() const final) { return false; }
 
 private:
     std::unique_ptr<CurveballDetails::GlobalCurveballImpl> impl;
