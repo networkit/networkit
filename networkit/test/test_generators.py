@@ -49,5 +49,16 @@ class TestGraph(unittest.TestCase):
         self.assertEqual(G.numberOfNodes(), n)
         self.assertEqual(G.numberOfEdges(), n*nbrs)
 
+    def testClusteredRandomGraphGenerator(self):
+        n, k = 100, 10
+        pIntra, pInter = 0.1, 0.05
+        gen = nk.generators.ClusteredRandomGraphGenerator(n, k, pIntra, pInter)
+        G = gen.generate()
+        self.assertEqual(G.numberOfNodes(), n)
+        nCommunities = len(set(gen.getCommunities().getVector()))
+        self.assertGreater(nCommunities, 0)
+        self.assertLessEqual(nCommunities, k)
+
+
 if __name__ == "__main__":
     unittest.main()
