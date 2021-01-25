@@ -65,7 +65,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnUniformGraph) {
 
 
 TEST_F(CommunityGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClusters) {
-    int64_t n = 100;
+    count n = 100;
     count k = 3; // number of clusters
 
     ClusteredRandomGraphGenerator graphGen(n, k, 1.0, 0.00);
@@ -129,7 +129,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnManySmallClusters) {
     double pout = 0.0;
 
     ClusteredRandomGraphGenerator graphGen(n, k, pin, pout);
-  Aux::Random::setSeed(42, false);
+    Aux::Random::setSeed(42, false);
     Graph G = graphGen.generate();
     Partition reference = graphGen.getCommunities();
 
@@ -145,32 +145,6 @@ TEST_F(CommunityGTest, testLabelPropagationOnManySmallClusters) {
     EXPECT_TRUE(GraphClusteringTools::equalClusterings(zeta, reference, G)) << "Can LabelPropagation detect the reference clustering?";
 
 }
-
-
-
-/*
-TEST_F(CommunityGTest, testLouvainParallel2Naive) {
-    count n = 1000;
-    count k = 100;
-    double pin = 1.0;
-    double pout = 0.005;
-    GraphGenerator graphGen;
-    Graph G = graphGen.makeClusteredRandomGraph(n, k, pin, pout);
-
-    LouvainParallel louvain(G);
-    louvain.run();
-    Partition zeta = louvain.getPartition();
-
-    INFO("number of clusters: " , zeta.numberOfSubsets());
-
-    Modularity modularity;
-    INFO("modularity: " , modularity.getQuality(zeta, G));
-
-}
-*/
-
-
-
 
 TEST_F(CommunityGTest, testPLM) {
     METISGraphReader reader;

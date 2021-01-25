@@ -76,7 +76,8 @@ TEST_F(GeneratorsGTest, testClusteredRandomGraphGenerator) {
     count nCommunities = part.getSubsetIds().size();
     EXPECT_EQ(n, G.numberOfNodes());
     EXPECT_EQ(n, G.upperNodeIdBound());
-    EXPECT_TRUE(nCommunities >= 1 && nCommunities <= c);
+    EXPECT_GE(nCommunities, 1);
+    EXPECT_LE(nCommunities, c);
 }
 
 TEST_F(GeneratorsGTest, testClusteredRandomGraphGeneratorCompleteIsolatedCommunities) {
