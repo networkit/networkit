@@ -115,7 +115,7 @@ if cmakeCompiler is None:
 # functions for cythonizing and building networkit
 ################################################
 
-def buildNetworKit(install_prefix, externalCore=False, withTests=False, rpath=None):
+def buildNetworKit(install_prefix, externalCore=False, externalTlx=None, withTests=False, rpath=None):
 	try:
 		os.makedirs(buildDirectory)
 	except FileExistsError:
@@ -131,6 +131,8 @@ def buildNetworKit(install_prefix, externalCore=False, withTests=False, rpath=No
 	comp_cmd.append("-DNETWORKIT_PYTHON_SOABI="+get_config_var('SOABI')) #provide lib env specification
 	if externalCore:
 		comp_cmd.append("-DNETWORKIT_BUILD_CORE=OFF")
+	if externalTlx:
+		comp_cmd.append("-DNETWORKIT_EXT_TLX="+externalTlx)
 	if ninja_available:
 		comp_cmd.append("-GNinja")
 	comp_cmd.append(os.getcwd()) #call CMakeLists.txt from networkit root
@@ -180,6 +182,8 @@ class build_ext(Command):
 			"directories to search for external C libraries" + sep_by),
 		('networkit-external-core', None,
 			"use external NetworKit core library"),
+		('external-tlx=', None,
+			"use external tlx library"),
 		('rpath=', 'r', "additional custom rpath references")
 	]
 
@@ -191,6 +195,7 @@ class build_ext(Command):
 		self.include_dirs = None
 		self.library_dirs = None
 		self.networkit_external_core = False
+		self.external_tlx = None
 		self.rpath = None
 
 		self.extensions = None
@@ -230,7 +235,7 @@ class build_ext(Command):
 			# The --inplace implementation is less sophisticated than in distutils,
 			# but it should be sufficient for NetworKit.
 			prefix = self.distribution.src_root or os.getcwd()
-		buildNetworKit(prefix, externalCore=self.networkit_external_core, rpath=self.rpath)
+		buildNetworKit(prefix, externalCore=self.networkit_external_core, externalTlx=self.external_tlx, rpath=self.rpath)
 
 	def get_ext_fullpath(self, ext_name):
 		"""Returns the path of the filename for a given extension.
