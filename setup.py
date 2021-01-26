@@ -183,7 +183,7 @@ class build_ext(Command):
 		('networkit-external-core', None,
 			"use external NetworKit core library"),
 		('external-tlx=', None,
-			"use external tlx library"),
+			"absolute path to external tlx library"),
 		('rpath=', 'r', "additional custom rpath references")
 	]
 
