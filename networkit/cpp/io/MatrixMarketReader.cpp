@@ -1,5 +1,5 @@
 /*
- * MatrixMarketReader.cpp
+ *  MatrixMarketReader.cpp
  *
  *  Created on: 25.07.2014
  *      Author: dhoske
@@ -26,7 +26,7 @@ namespace {
 
 CSRMatrix MatrixMarketReader::read(const std::string &path) {
     std::ifstream in(path);
-    if (!in) {
+    if (!in.is_open()) {
         throw std::runtime_error("could not open: " + path);
     }
     return read(in);
