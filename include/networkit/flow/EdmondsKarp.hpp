@@ -10,6 +10,7 @@
 
 #include <vector>
 
+#include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
@@ -18,12 +19,10 @@ namespace NetworKit {
  * @ingroup flow
  * The EdmondsKarp class implements the maximum flow algorithm by Edmonds and Karp.
  */
-class EdmondsKarp final {
-private:
+class EdmondsKarp final : public Algorithm {
     const Graph *graph;
 
-    node source;
-    node sink;
+    node source, sink;
 
     std::vector<edgeweight> flow;
     edgeweight flowValue;
@@ -48,7 +47,7 @@ public:
     /**
      * Computes the maximum flow, executes the EdmondsKarp algorithm.
      */
-    void run();
+    void run() override;
 
     /**
      * Returns the value of the maximum flow from source to sink.
@@ -81,6 +80,7 @@ public:
      * @return The flow on the edge identified by eid
      */
     edgeweight getFlow(edgeid eid) const {
+        assureFinished();
         return flow[eid];
     };
 
@@ -90,7 +90,7 @@ public:
      *
      * @return The flow values of all edges
      */
-    std::vector<edgeweight> getFlowVector() const;
+    const std::vector<edgeweight> &getFlowVector() const;
 };
 
 } /* namespace NetworKit */
