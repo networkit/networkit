@@ -33,7 +33,7 @@ public:
      * @param[in]  path  Path to file.
      * @return The clustering contained in the file at @a path.
      */
-    Partition read(std::string path);
+    Partition read(const std::string &path);
 
 private:
     node firstNode;

@@ -55,7 +55,9 @@ public:
      * @param splitTheoretical Whether to split in a theoretically optimal way or in a way to decrease measured running times
      *
      */
-    QuadNodeCartesianEuclid(Point<double> lower = Point<double>(0.0, 0.0), Point<double> upper = Point<double>(1.0, 1.0), unsigned capacity = 1000, bool splitTheoretical = false) {
+    QuadNodeCartesianEuclid(const Point<double> &lower = Point<double>(0.0, 0.0),
+                            const Point<double> &upper = Point<double>(1.0, 1.0),
+                            unsigned capacity = 1000, bool splitTheoretical = false) {
         this->minPoint = lower;
         this->maxPoint = upper;
         this->dimension = minPoint.getDimensions();
@@ -224,14 +226,14 @@ public:
      *
      * @return True if the region managed by this node lies completely outside of the circle
      */
-    bool outOfReach(Point<double> query, double radius) const {
+    bool outOfReach(const Point<double> &query, double radius) const {
         return EuclideanDistances(query).first > radius;
     }
 
     /**
      * @param query Position of the query point
      */
-    std::pair<double, double> EuclideanDistances(Point<double> query) const {
+    std::pair<double, double> EuclideanDistances(const Point<double> &query) const {
         /**
          * If the query point is not within the quadnode, the distance minimum is on the border.
          * Need to check whether extremum is between corners.
@@ -241,7 +243,7 @@ public:
 
         if (responsible(query)) minDistance = 0;
 
-        auto updateMinMax = [&minDistance, &maxDistance, query](Point<double> pos){
+        auto updateMinMax = [&minDistance, &maxDistance, &query](const Point<double> &pos) -> void {
             double extremalValue = pos.distance(query);
             maxDistance = std::max(extremalValue, maxDistance);
             minDistance = std::min(minDistance, extremalValue);
@@ -267,7 +269,7 @@ public:
 
         assert(minDistance < query.length() + maxPoint.length());
         assert(minDistance < maxDistance);
-        return std::pair<double, double>(minDistance, maxDistance);
+        return {minDistance, maxDistance};
     }
 
 

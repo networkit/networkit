@@ -26,7 +26,7 @@ public:
      * @param[in]  G     The graph for which the cover shall be read
      * @return The cover instance
      */
-    Cover read(std::string path, Graph &G) override;
+    Cover read(const std::string &path, Graph &G) override;
 
 private:
     node firstNode;

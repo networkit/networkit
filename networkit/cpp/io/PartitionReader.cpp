@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-Partition PartitionReader::read(std::string path) {
+Partition PartitionReader::read(const std::string &path) {
 
     std::ifstream file(path);
 

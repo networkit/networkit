@@ -17,7 +17,8 @@ namespace NetworKit {
 
 PLP::PLP(const Graph& G, count theta, count maxIterations) : CommunityDetectionAlgorithm(G), updateThreshold(theta), maxIterations(maxIterations) {}
 
-PLP::PLP(const Graph& G, const Partition baseClustering, count theta) : CommunityDetectionAlgorithm(G, baseClustering), updateThreshold(theta) {}
+PLP::PLP(const Graph &G, const Partition &baseClustering, count theta)
+    : CommunityDetectionAlgorithm(G, baseClustering), updateThreshold(theta) {}
 
 void PLP::run() {
     if (hasRun) {

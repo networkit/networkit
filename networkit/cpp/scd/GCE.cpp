@@ -6,6 +6,7 @@
 
 #include <unordered_map>
 
+#include <utility>
 #include <networkit/scd/GCE.hpp>
 
 namespace {
@@ -33,8 +34,8 @@ namespace {
 
 namespace NetworKit {
 
-
-GCE::GCE(const Graph& G, std::string objective) : SelectiveCommunityDetector(G), objective(objective) {
+GCE::GCE(const Graph &G, std::string objective)
+    : SelectiveCommunityDetector(G), objective(std::move(objective)) {
     if (G.numberOfSelfLoops()) {
         throw std::runtime_error("Graphs with self-loops are not supported in GCE");
     }

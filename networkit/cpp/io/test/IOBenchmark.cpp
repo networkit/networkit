@@ -25,13 +25,17 @@ namespace NetworKit {
 
 class IOBenchmark: public testing::Test {
 public:
-    static void convertToHeatMap(std::vector<bool> &infected, std::vector<double> &xcoords, std::vector<double> &ycoords, std::string filename, double resolution=1);
+    static void convertToHeatMap(std::vector<bool> &infected, std::vector<double> &xcoords,
+                                 std::vector<double> &ycoords, const std::string &filename,
+                                 double resolution = 1);
 };
 
 /**
  * This should actually not be in the benchmark but somewhere else. Can't figure out where yet.
  */
-void IOBenchmark::convertToHeatMap(std::vector<bool> &infected, std::vector<double> &xcoords, std::vector<double> &ycoords, std::string filename, double resolution) {
+void IOBenchmark::convertToHeatMap(std::vector<bool> &infected, std::vector<double> &xcoords,
+                                   std::vector<double> &ycoords, const std::string &filename,
+                                   double resolution) {
 
     auto minmaxx = std::minmax_element (xcoords.begin(),xcoords.end());
     auto  minmaxy = std::minmax_element (ycoords.begin(),ycoords.end());
@@ -83,9 +87,7 @@ void IOBenchmark::convertToHeatMap(std::vector<bool> &infected, std::vector<doub
         file << std::endl;
     }
     file.close();
-
 }
-
 
 TEST_F(IOBenchmark, timeMETISGraphReader) {
     std::string path = "input/caidaRouterLevel.graph";

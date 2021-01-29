@@ -7,6 +7,7 @@
 
 #include <omp.h>
 #include <sstream>
+#include <utility>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
@@ -17,7 +18,10 @@
 
 namespace NetworKit {
 
-PLM::PLM(const Graph& G, bool refine, double gamma, std::string par, count maxIter, bool turbo, bool recurse) : CommunityDetectionAlgorithm(G), parallelism(par), refine(refine), gamma(gamma), maxIter(maxIter), turbo(turbo), recurse(recurse) {}
+PLM::PLM(const Graph &G, bool refine, double gamma, std::string par, count maxIter, bool turbo,
+         bool recurse)
+    : CommunityDetectionAlgorithm(G), parallelism(std::move(par)), refine(refine), gamma(gamma),
+      maxIter(maxIter), turbo(turbo), recurse(recurse) {}
 
 PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), parallelism(other.parallelism), refine(other.refine), gamma(other.gamma), maxIter(other.maxIter), turbo(other.turbo), recurse(other.recurse) {}
 

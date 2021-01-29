@@ -60,7 +60,7 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
         };
 
         // select "edges" of node u
-        auto selectEdges = [&](node u, double prob, neighborFunction getNeighbors) {
+        auto selectEdges = [&](node u, double prob, const neighborFunction &getNeighbors) {
             /* combine all valid edges (edges to non-visited nodes)
              * into a vector that we can randomly select one
              */

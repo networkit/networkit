@@ -80,16 +80,10 @@ public:
             const std::vector<RankedNeighbors>& neighbors,
             const count& maxRank);
 
-    void matchNeighbors(
-            node ego,
-            node alter,
-            bool reciprocityCheck,
-            std::vector<RankedEdge>::const_iterator& egoIt,
-            RankedNeighbors egoNeighbors,
-            std::set<node>& egoNeighborsUnmatched,
-            std::set<node>& alterNeighborsUnmatched,
-            count rank,
-            count& overlap);
+    void matchNeighbors(node ego, node alter, bool reciprocityCheck,
+                        std::vector<RankedEdge>::const_iterator &egoIt,
+                        const RankedNeighbors &egoNeighbors, std::set<node> &egoNeighborsUnmatched,
+                        std::set<node> &alterNeighborsUnmatched, count rank, count &overlap);
 
 protected:
     const std::vector<count>* triangles;

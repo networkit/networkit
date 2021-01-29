@@ -56,14 +56,9 @@ namespace NetworKit {
 
 class GeneratorsGTest: public testing::Test {
 public:
-    vector<double> getAngles(DynamicHyperbolicGenerator dynGen) {
-        return dynGen.angles;
-    }
+    vector<double> getAngles(const DynamicHyperbolicGenerator &dynGen) { return dynGen.angles; }
 
-    vector<double> getRadii(DynamicHyperbolicGenerator dynGen) {
-        return dynGen.radii;
-    }
-
+    vector<double> getRadii(const DynamicHyperbolicGenerator &dynGen) { return dynGen.radii; }
 };
 
 TEST_F(GeneratorsGTest, testClusteredRandomGraphGenerator) {
@@ -789,7 +784,7 @@ TEST_F(GeneratorsGTest, testDynamicDorogovtsevMendesGenerator) {
 }
 
 TEST_F(GeneratorsGTest, testStaticDegreeSequenceGenerator) {
-    auto test_known = [](std::vector<count> seq, bool result) {
+    auto test_known = [](const std::vector<count> &seq, bool result) {
         HavelHakimiGenerator gen(seq, true);
         ASSERT_EQ(gen.isRealizable(), result);
     };

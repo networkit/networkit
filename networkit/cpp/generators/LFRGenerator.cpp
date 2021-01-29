@@ -2,13 +2,14 @@
 #include <numeric>
 #include <random>
 
+#include <utility>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
-#include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/generators/EdgeSwitchingMarkovChainGenerator.hpp>
 #include <networkit/generators/LFRGenerator.hpp>
 #include <networkit/generators/PowerlawDegreeSequence.hpp>
-#include <networkit/generators/EdgeSwitchingMarkovChainGenerator.hpp>
 #include <networkit/generators/PubWebGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>
 
@@ -122,7 +123,7 @@ void NetworKit::LFRGenerator::setMuWithBinomialDistribution(double mu) {
 
 
 void NetworKit::LFRGenerator::setPartition(NetworKit::Partition zeta) {
-    this->zeta = zeta;
+    this->zeta = std::move(zeta);
     this->hasPartition = true;
     this->hasCommunitySizeSequence = false;
 }

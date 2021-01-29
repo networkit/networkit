@@ -23,7 +23,7 @@ namespace NetworKit {
  */
 class SNAPEdgeListPartitionReader final {
 public:
-    Cover read(std::string path, std::unordered_map<node, node> &mapNodeIds, Graph &G);
+    Cover read(const std::string &path, std::unordered_map<node, node> &mapNodeIds, Graph &G);
 };
 
 } /* namespace NetworKit */

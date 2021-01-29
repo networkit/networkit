@@ -44,45 +44,7 @@ Checks: >
 # To turn all warnings into errors, simply write '*'
 # in the first line after WarningsAsErrors
 WarningsAsErrors:  >
-    -*,
-    bugprone-assert-side-effect,
-    bugprone-copy-constructor-init,
-    bugprone-dangling-handle,
-    bugprone-dynamic-static-initializers,
-    bugprone-exception-escape,
-    bugprone-fold-init-type,
-    bugprone-forward-declaration-namespace,
-    bugprone-forwarding-reference-overload,
-    bugprone-inaccurate-erase,
-    bugprone-incorrect-roundings,
-    bugprone-integer-division,
-    bugprone-misplaced-widening-cast,
-    bugprone-move-forwarding-reference,
-    bugprone-multiple-statement-macro,
-    bugprone-parent-virtual-call,
-    bugprone-swapped-arguments,
-    bugprone-unused-return-value,
-    bugprone-use-after-move,
-    cppcoreguidelines-narrowing-conversions,
-    bugprone-virtual-near-miss,
-    modernize-deprecated-headers,
-    modernize-make-shared,
-    modernize-make-unique,
-    modernize-use-emplace,
-    modernize-use-override,
-    modernize-use-using,
-    performance-for-range-copy,
-    performance-implicit-conversion-in-loop,
-    performance-inefficient-algorithm,
-    performance-inefficient-vector-operation,
-    performance-move-const-arg,
-    performance-noexcept-move-constructor,
-    performance-trivially-destructible,
-    performance-type-promotion-in-math-fn,
-    performance-unnecessary-copy-initialization,
-    readability-avoid-const-params-in-decls,
-    readability-const-return-type,
-    readability-container-size-empty
+    *
 
 FormatStyle: 'file'
 HeaderFilterRegex: '.*\/include\/networkit\/.*\.hpp'
@@ -103,3 +65,5 @@ CheckOptions:
     value: camelBack
   - key:   readability-identifier-naming.TemplateParameterCase
     value: CamelCase
+  - key:   performance-unnecessary-value-param.AllowedTypes
+    value: [Ff]unction$

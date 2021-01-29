@@ -9,7 +9,7 @@ namespace NetworKit {
 
 EdgeListCoverReader::EdgeListCoverReader(node firstNode) : firstNode(firstNode) {}
 
-Cover EdgeListCoverReader::read(std::string path, Graph &G) {
+Cover EdgeListCoverReader::read(const std::string &path, Graph &G) {
     std::ifstream file;
     file.open(path);
     if (!file.good()) {

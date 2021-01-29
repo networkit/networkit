@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cmath>
 #include <map>
+#include <utility>
 #include <vector>
 
 #include <networkit/auxiliary/Random.hpp>
@@ -20,24 +21,31 @@ MocnikGenerator::MocnikGenerator(count dim, count n, double k, bool weighted): d
     ks.push_back(k);
 }
 
-MocnikGenerator::MocnikGenerator(count dim, std::vector<count> ns, double k, bool weighted): dim(dim), ns(ns), weighted(weighted) {
-    ks.resize(ns.size(), k);
+MocnikGenerator::MocnikGenerator(count dim, std::vector<count> ns, double k, bool weighted)
+    : dim(dim), ns(std::move(ns)), weighted(weighted) {
+    ks.resize(this->ns.size(), k);
 }
 
-MocnikGenerator::MocnikGenerator(count dim, std::vector<count> ns, std::vector<double> ks, bool weighted): dim(dim), ns(ns), ks(ks), weighted(weighted) {
-}
+MocnikGenerator::MocnikGenerator(count dim, std::vector<count> ns, std::vector<double> ks,
+                                 bool weighted)
+    : dim(dim), ns(std::move(ns)), ks(std::move(ks)), weighted(weighted) {}
 
-MocnikGenerator::MocnikGenerator(count dim, count n, double k, std::vector<double> weighted): dim(dim), weighted(true), relativeWeights(weighted) {
+MocnikGenerator::MocnikGenerator(count dim, count n, double k, std::vector<double> weighted)
+    : dim(dim), weighted(true), relativeWeights(std::move(weighted)) {
     ns.push_back(n);
     ks.push_back(k);
 }
 
-MocnikGenerator::MocnikGenerator(count dim, std::vector<count> ns, double k, std::vector<double> weighted): dim(dim), ns(ns), weighted(true), relativeWeights(weighted) {
-    ks.resize(ns.size(), k);
+MocnikGenerator::MocnikGenerator(count dim, std::vector<count> ns, double k,
+                                 std::vector<double> weighted)
+    : dim(dim), ns(std::move(ns)), weighted(true), relativeWeights(std::move(weighted)) {
+    ks.resize(this->ns.size(), k);
 }
 
-MocnikGenerator::MocnikGenerator(count dim, std::vector<count> ns, std::vector<double> ks, std::vector<double> weighted): dim(dim), ns(ns), ks(ks), weighted(true), relativeWeights(weighted) {
-}
+MocnikGenerator::MocnikGenerator(count dim, std::vector<count> ns, std::vector<double> ks,
+                                 std::vector<double> weighted)
+    : dim(dim), ns(std::move(ns)), ks(std::move(ks)), weighted(true),
+      relativeWeights(std::move(weighted)) {}
 
 // TOOLS
 

@@ -82,14 +82,12 @@ static std::vector<std::pair<node,double>> parseWeightedLine(std::string line, c
     return adjacencies;
 }
 
-
-METISParser::METISParser(std::string path) : graphFile(path) {
+METISParser::METISParser(const std::string &path) : graphFile(path) {
     if (!(this->graphFile)) {
         ERROR("invalid graph file: " , path);
         throw std::runtime_error("invalid graph file");
     }
 }
-
 
 std::tuple<count, count, index, count> METISParser::getHeader() {
     // handle header line
