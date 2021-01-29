@@ -679,7 +679,7 @@ void MultiLevelSetup<Matrix>::computeStrongNeighbors(const Matrix& affinityMatri
                 binIndex--;
             }
 
-            assert(binIndex >= 0 && binIndex < bins.size());
+            assert(binIndex < bins.size());
             bins[binIndex].push_back(i);
         }
     }

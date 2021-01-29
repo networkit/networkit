@@ -123,8 +123,8 @@ Point2DWithIndex<T>& Point2DWithIndex<T>::scale(T factor) {
 
 template<class T>
 inline T& Point2DWithIndex<T>::operator [](index i) {
-    assert(i >= 0 && i < 2);
-    return i ? y : x;
+    assert(i < 2);
+    return i > 0 ? y : x;
 }
 
 template<class T>
