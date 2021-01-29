@@ -21,6 +21,7 @@ namespace NetworKit {
  * The ClusteredRandomGraphGenerator class is used to create a clustered random graph.
  * The number of nodes and the number of edges are adjustable as well as the probabilities
  * for intra-cluster and inter-cluster edges.
+ * In parallel the generated graph is not deterministic. To ensure determinism, use a single thread.
  */
 class ClusteredRandomGraphGenerator final : public StaticGraphGenerator {
 public:
