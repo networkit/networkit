@@ -61,7 +61,6 @@ sys.argv = [__file__] + args
 candidates = ["g++", "g++-8", "g++-7", "g++-6.1", "g++-6", "g++-5.5", "g++-5.4", "g++-5.3", "g++-5", "clang++", "clang++-3.8", "clang++3.7"]
 
 def determineCompiler(candidates, std, flags):
-	#TODO: proper c++11 test?
 	sample = open("sample.cpp", "w")
 	sample.write("""
 	#include <omp.h>
