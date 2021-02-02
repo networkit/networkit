@@ -60,7 +60,7 @@ public:
 
     neighbour_it begin(node node_id) { return neighbours.begin() + begins[node_id]; }
 
-    neighbour_it end(const node node_id) {
+    neighbour_it end(node node_id) {
         return neighbours.begin() + begins[node_id] + offsets[node_id];
     }
 
@@ -131,7 +131,7 @@ private:
     const node numNodes;
 
 public:
-    TradeList(const node num_nodes);
+    TradeList(node num_nodes);
 
     // Receives the edge_vector to initialize
     TradeList(const trade_vector &trades, node num_nodes);

@@ -47,7 +47,7 @@ WarningsAsErrors:  >
     *
 
 FormatStyle: 'file'
-HeaderFilterRegex: '.*\/include\/networkit\/.*\.hpp'
+HeaderFilterRegex: '.*\/(include\/networkit|networkit\/cpp)\/.*\.hpp'
 CheckOptions:
   - key:   readability-identifier-naming.ClassCase
     value: CamelCase
