@@ -147,17 +147,19 @@ void AffectedNodes::addedEdge() {
     std::vector<edgeweight> levelImprovementU(numLevelsU + 1, 0);
     std::vector<edgeweight> levelImprovementV(numLevelsV + 1, 0);
 
-    for (edgeweight i = 1.0; i <= numLevelsV; i++) {
-      for (edgeweight j = 1.0; j <= numLevelsU; j++) {
-        levelImprovementV[i] += (numNodesOnLevelFromU[j] * 1.0 / (i + j)) -
-                                (prevNumNodesOnLevelFromU[j] * 1.0 / (i + j));
+    for (index i = 1.0; i <= numLevelsV; i++) {
+      for (index j = 1.0; j <= numLevelsU; j++) {
+          levelImprovementV[i] +=
+              (numNodesOnLevelFromU[j] * 1.0 / static_cast<double>(i + j))
+              - (prevNumNodesOnLevelFromU[j] * 1.0 / static_cast<double>(i + j));
       }
     }
 
-    for (edgeweight i = 1.0; i <= numLevelsU; i++) {
-      for (edgeweight j = 1.0; j <= numLevelsV; j++) {
-        levelImprovementU[i] += (numNodesOnLevelFromV[j] * 1.0 / (i + j)) -
-                                (prevNumNodesOnLevelFromV[j] * 1.0 / (i + j));
+    for (index i = 1.0; i <= numLevelsU; i++) {
+      for (index j = 1.0; j <= numLevelsV; j++) {
+          levelImprovementU[i] +=
+              (numNodesOnLevelFromV[j] * 1.0 / static_cast<double>(i + j))
+              - (prevNumNodesOnLevelFromV[j] * 1.0 / static_cast<double>(i + j));
       }
     }
 
@@ -236,10 +238,11 @@ void AffectedNodes::addedEdge() {
     // For each level from u, compute the maximum improvement
     std::vector<edgeweight> levelImprovementV(numLevelsV + 1, 0);
 
-    for (edgeweight i = 1.0; i <= numLevelsV; i++) {
-      for (edgeweight j = 1.0; j <= numLevelsU; j++) {
-        levelImprovementV[i] += (numNodesOnLevelFromU[j] * 1.0 / (i + j)) -
-                                (prevNumNodesOnLevelFromU[j] * 1.0 / (i + j));
+    for (index i = 1.0; i <= numLevelsV; i++) {
+      for (index j = 1.0; j <= numLevelsU; j++) {
+          levelImprovementV[i] +=
+              (numNodesOnLevelFromU[j] * 1.0 / static_cast<double>(i + j))
+              - (prevNumNodesOnLevelFromU[j] * 1.0 / static_cast<double>(i + j));
       }
     }
 

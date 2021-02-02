@@ -11,6 +11,7 @@
 #include <networkit/distance/BFS.hpp>
 #include <networkit/centrality/TopCloseness.hpp>
 
+#include <atomic>
 #include <memory>
 #include <omp.h>
 #include <queue>
@@ -154,18 +155,16 @@ void GroupCloseness::run() {
         maxNode = 0;
         d1.resize(G.upperNodeIdBound());
 
-        bool toInterrupt = false;
+        std::atomic<bool> toInterrupt{false};
 #pragma omp parallel // Shared variables:
         // cc: synchronized write, read leads to a positive race condition;
         // Q: fully synchronized;
         {
-            while (Q.size() > 0) {
-                if (toInterrupt) {
-                    break;
-                }
+            while (!toInterrupt.load(std::memory_order_relaxed)) {
                 omp_set_lock(&lock);
-                if (Q.size() == 0) { // The size of Q might have changed.
+                if (Q.size() == 0) {
                     omp_unset_lock(&lock);
+                    toInterrupt.store(true, std::memory_order_relaxed);
                     break;
                 }
 
@@ -177,7 +176,7 @@ void GroupCloseness::run() {
                 if (i > 1 && prevBound[v] <= static_cast<int64_t>(currentImpr)) {
                     INFO("Interrupting! currentImpr = ", currentImpr,
                          ", previous bound = ", prevBound[v]);
-                    toInterrupt = true;
+                    toInterrupt.store(true, std::memory_order_relaxed);
                     break;
                 }
                 if (D[v] > 1 && !(d[v] == 1 && D[v] == 2) && d[v] > 0 &&

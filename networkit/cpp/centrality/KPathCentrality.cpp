@@ -5,10 +5,10 @@
  *      Author: nemes
  */
 
+#include <cassert>
 #include <stack>
 
 #include <networkit/centrality/KPathCentrality.hpp>
-#include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/graph/GraphTools.hpp>
@@ -44,7 +44,7 @@ void KPathCentrality::run() {
 
     count t = 2.0 * k * k * pow(n, 1 - 2 * alpha) * log(n);
     std::stack<node> stack;
-    node v;
+    node v = none;
 
     for (index i = 1; i <= t; i++) { // FIXME: int -> count
         node s = GraphTools::randomNode(G);
@@ -81,6 +81,7 @@ void KPathCentrality::run() {
             } else {
                 v = neighbours[Aux::Random::integer(0,neighbours.size() - 1)];
             }
+            assert(v != none);
             explored[v] = true;
             stack.push(v);
             counter[v]++;

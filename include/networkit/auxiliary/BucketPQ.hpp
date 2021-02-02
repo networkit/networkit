@@ -1,5 +1,5 @@
 /*
- * BucketPQ.h
+ * BucketPQ.hpp
  *
  *  Created on: 02.03.2017
  *      Author: Henning

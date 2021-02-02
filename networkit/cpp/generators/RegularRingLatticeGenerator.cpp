@@ -9,13 +9,8 @@
 
 namespace NetworKit {
 
-RegularRingLatticeGenerator::RegularRingLatticeGenerator(count nNodes, count nNeighbors)
-    : nNodes(nNodes), nNeighbors(nNeighbors) {
-    if (nNeighbors >= nNodes / 2 - 1) {
-        nNeighbors = nNodes / 2 - 1;
-    }
-}
-
+RegularRingLatticeGenerator::RegularRingLatticeGenerator(count nNodes, count numberOfNeighbors)
+    : nNodes(nNodes), nNeighbors(std::min(numberOfNeighbors, nNodes / 2 - 1)) {}
 
 Graph RegularRingLatticeGenerator::generate() {
     Graph G(nNodes);

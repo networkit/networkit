@@ -35,7 +35,7 @@ CSRMatrix MatrixMarketReader::read(const std::string &path) {
 CSRMatrix MatrixMarketReader::read(std::istream& in) {
     enum { FIRST_LINE, HEADER, ENTRIES } state = FIRST_LINE;
 
-    count nrows, ncols, nzeroes;
+    count nrows = 0, ncols = 0, nzeroes;
     std::vector<Triplet> triplets;
     std::string line;
     bool weighted = true;
