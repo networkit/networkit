@@ -8,11 +8,11 @@
 #ifndef NETWORKIT_AUXILIARY_BUCKET_PQ_HPP_
 #define NETWORKIT_AUXILIARY_BUCKET_PQ_HPP_
 
-#include <networkit/auxiliary/Log.hpp>
+#include <limits>
+#include <list>
+
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/PrioQueue.hpp>
-#include <list>
-#include <limits>
 
 namespace Aux {
 
@@ -31,7 +31,22 @@ constexpr int64_t none = std::numeric_limits<int64_t>::max();
 class BucketPQ: public PrioQueue<int64_t, index> {
 private:
     std::vector<Bucket> buckets;			// the actual buckets
-    std::vector<Bucket::iterator> nodePtr;	// keeps track of node positions
+    static Bucket dummyBucket;
+    static const Bucket::iterator invalidPtr;
+
+    struct OptionalIterator {
+        bool valid;
+        Bucket::iterator iter;
+
+        void reset() {
+            valid = false;
+            iter = invalidPtr;
+        }
+        OptionalIterator() { reset(); }
+        OptionalIterator(bool valid, Bucket::iterator iter) : valid(valid), iter(iter) {}
+    };
+
+    std::vector<OptionalIterator> nodePtr; // keeps track of node positions
     std::vector<index> myBucket;			// keeps track of current bucket for each value
     int64_t currentMinKey;					// current min key
     int64_t currentMaxKey;					// current max key
@@ -40,7 +55,6 @@ private:
     count numElems;							// number of elements stored
     int64_t offset;							// offset from minAdmissibleKeys to 0
 
-private:
     /**
      * Constructor. Not to be used, only here for overriding.
      */
@@ -83,6 +97,11 @@ public:
     void insert(int64_t key, index value) override;
 
     /**
+     * Returns the element on top of the PrioQ.
+     */
+    std::pair<int64_t, index> getMin();
+
+    /**
      * Removes the element with minimum key and returns the key-value pair.
      */
     std::pair<int64_t, index> extractMin() override;
@@ -98,6 +117,16 @@ public:
      * @return Number of elements in PQ.
      */
     uint64_t size() const override;
+
+    /**
+     * @return Whether or not the PQ is empty.
+     */
+    bool empty() const noexcept override;
+
+    /**
+     * @return Whether or not the PQ contains the given element.
+     */
+    bool contains(const index &value) const override;
 
     /**
      * Removes key-value pair given by value @a val.

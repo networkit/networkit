@@ -95,6 +95,16 @@ public:
     virtual uint64_t size() const;
 
     /**
+     * @return Whether or not the PQ is empty.
+     */
+    virtual bool empty() const noexcept;
+
+    /**
+     * @return Whether or not the PQ contains the given value.
+     */
+    virtual bool contains(const Value &value) const;
+
+    /**
      * Removes key-value pair given by value @a val.
      */
     virtual void remove(const Value& val);
@@ -146,7 +156,7 @@ Aux::PrioQueue<Key, Value>::PrioQueue(uint64_t capacity) {
 }
 
 template<class Key, class Value>
-inline void Aux::PrioQueue<Key, Value>::insert(Key key, Value value) {
+void Aux::PrioQueue<Key, Value>::insert(Key key, Value value) {
     if (value >= mapValToKey.size()) {
         uint64_t doubledSize = 2 * mapValToKey.size();
         assert(value < doubledSize);
@@ -157,14 +167,13 @@ inline void Aux::PrioQueue<Key, Value>::insert(Key key, Value value) {
 }
 
 template<class Key, class Value>
-inline void Aux::PrioQueue<Key, Value>::remove(const ElemType& elem) {
+void Aux::PrioQueue<Key, Value>::remove(const ElemType& elem) {
     remove(elem.second);
 }
 
 template<class Key, class Value>
-inline void Aux::PrioQueue<Key, Value>::remove(const Value& val) {
+void Aux::PrioQueue<Key, Value>::remove(const Value& val) {
     Key key = mapValToKey.at(val);
-//	DEBUG("key: ", key);
     pqset.erase(std::make_pair(key, val));
     mapValToKey.at(val) = undefined;
 }
@@ -185,7 +194,7 @@ std::pair<Key, Value> Aux::PrioQueue<Key, Value>::extractMin() {
 }
 
 template<class Key, class Value>
-inline void Aux::PrioQueue<Key, Value>::changeKey(Key newKey, Value value) {
+void Aux::PrioQueue<Key, Value>::changeKey(Key newKey, Value value) {
     // find and remove element with given key
     remove(value);
 
@@ -194,17 +203,27 @@ inline void Aux::PrioQueue<Key, Value>::changeKey(Key newKey, Value value) {
 }
 
 template<class Key, class Value>
-inline uint64_t Aux::PrioQueue<Key, Value>::size() const {
+uint64_t Aux::PrioQueue<Key, Value>::size() const {
     return pqset.size();
 }
 
 template<class Key, class Value>
-inline std::set<std::pair<Key, Value>> Aux::PrioQueue<Key, Value>::content() const {
+bool Aux::PrioQueue<Key, Value>::empty() const noexcept {
+    return pqset.empty();
+}
+
+template<class Key, class Value>
+bool Aux::PrioQueue<Key, Value>::contains(const Value &value) const {
+    return value < mapValToKey.size() && mapValToKey.at(value) != undefined;
+}
+
+template<class Key, class Value>
+std::set<std::pair<Key, Value>> Aux::PrioQueue<Key, Value>::content() const {
     return pqset;
 }
 
 template<class Key, class Value>
-inline void Aux::PrioQueue<Key, Value>::clear() {
+void Aux::PrioQueue<Key, Value>::clear() {
     pqset.clear();
     auto capacity = mapValToKey.size();
     mapValToKey.clear();
@@ -213,7 +232,7 @@ inline void Aux::PrioQueue<Key, Value>::clear() {
 
 template<class Key, class Value>
 template<typename L>
-inline void Aux::PrioQueue<Key, Value>::forElements(L handle) const {
+void Aux::PrioQueue<Key, Value>::forElements(L handle) const {
     for (auto it = pqset.begin(); it != pqset.end(); ++it) {
         ElemType elem = *it;
         handle(elem.first, elem.second);
@@ -222,7 +241,7 @@ inline void Aux::PrioQueue<Key, Value>::forElements(L handle) const {
 
 template<class Key, class Value>
 template<typename C, typename L>
-inline void Aux::PrioQueue<Key, Value>::forElementsWhile(C condition,
+void Aux::PrioQueue<Key, Value>::forElementsWhile(C condition,
                                                          L handle) const {
     for (auto it = pqset.begin(); it != pqset.end(); ++it) {
         if (!condition()) {

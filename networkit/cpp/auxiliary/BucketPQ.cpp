@@ -9,6 +9,9 @@
 
 namespace Aux {
 
+Bucket BucketPQ::dummyBucket = {};
+const Bucket::iterator BucketPQ::invalidPtr = BucketPQ::dummyBucket.end();
+
 BucketPQ::BucketPQ(const std::vector<int64_t>& keys, int64_t minAdmissibleKey, int64_t maxAdmissibleKey):
         minAdmissibleKey(minAdmissibleKey), maxAdmissibleKey(maxAdmissibleKey)
 {
@@ -50,7 +53,7 @@ void BucketPQ::insert(int64_t key, index value) {
     assert(value < nodePtr.size());
 
     buckets[key+offset].push_front(value);
-    nodePtr[value] = buckets[key+offset].begin();
+    nodePtr[value] = OptionalIterator{true, buckets[key+offset].begin()};
     myBucket[value] = key+offset;
     ++numElems;
 
@@ -63,13 +66,18 @@ void BucketPQ::insert(int64_t key, index value) {
     }
 }
 
+bool BucketPQ::contains(const index &value) const {
+    return value < nodePtr.size() && nodePtr[value].valid;
+}
+
 void BucketPQ::remove(const index& value) {
     assert(value < nodePtr.size());
 
     if (myBucket[value] != none) {
         // remove from appropriate bucket
         index key = myBucket[value];
-        buckets[key].erase(nodePtr[value]);
+        buckets[key].erase(nodePtr[value].iter);
+        nodePtr[value].reset();
         myBucket[value] = none;
         --numElems;
 
@@ -93,18 +101,22 @@ void BucketPQ::remove(const index& value) {
 }
 
 std::pair<int64_t, index> BucketPQ::extractMin() {
-    if (size() == 0) {
-        return std::make_pair(none, NetworKit::none);
-    }
-    else {
-        assert(! buckets[currentMinKey+offset].empty());
-        index result = buckets[currentMinKey+offset].front();
+    if (empty())
+        return {none, none};
 
-        // store currentMinKey because remove(result) will change it
-        int64_t oldMinKey = currentMinKey;
-        remove(result);
-        return std::make_pair(oldMinKey, result);
-    }
+    index result = buckets[currentMinKey+offset].front();
+
+    // store currentMinKey because remove(result) will change it
+    int64_t oldMinKey = currentMinKey;
+    remove(result);
+    return {oldMinKey, result};
+}
+
+std::pair<int64_t, index> BucketPQ::getMin() {
+    if (empty())
+        return {none, none};
+    else
+        return {currentMinKey, buckets[currentMinKey + offset].front()};
 }
 
 void BucketPQ::changeKey(int64_t newKey, index value) {
@@ -114,6 +126,10 @@ void BucketPQ::changeKey(int64_t newKey, index value) {
 
 uint64_t BucketPQ::size() const {
     return numElems;
+}
+
+bool BucketPQ::empty() const noexcept {
+    return numElems == 0;
 }
 
 int64_t BucketPQ::getKey(const index& val) {
