@@ -27,7 +27,7 @@ void PivotMDS::run() {
 
         dist[pivots[j]] = 0;
         PQ.insert(0, pivots[j]);
-        while (PQ.size() > 0) {
+        while (!PQ.empty()) {
             node v = PQ.extractMin().second;
             triplets.push_back({v, j, dist[v]});
             G->forNeighborsOf(v, [&](node w, edgeweight weight) {
