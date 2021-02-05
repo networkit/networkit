@@ -101,9 +101,10 @@ def determineCompiler(candidates, std, flags):
 
 # only check for a compiler if none is specified
 if cmakeCompiler is None:
-	cmakeCompiler = determineCompiler(candidates, "c++14", ["-fopenmp"])
-	if cmakeCompiler is None and sys.platform == "darwin":
+	if sys.platform == "darwin":
 		cmakeCompiler = determineCompiler(["c++"], "c++14", ["-Xpreprocessor", "-fopenmp", "-lomp"])
+	if cmakeCompiler is None:
+		cmakeCompiler = determineCompiler(candidates, "c++14", ["-fopenmp"])
 	if cmakeCompiler is None:
 		print("ERROR: No suitable compiler found. Install any of these: ", candidates)
 		if sys.platform == "darwin":
