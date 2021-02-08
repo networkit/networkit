@@ -64,7 +64,7 @@ void EigenvectorCentrality::run() {
 
 //		TRACE(values);
 
-        scoreData = values;
+        std::swap(scoreData, values);
     } while (! converged(length, oldLength));
 
     // check sign and correct if necessary
