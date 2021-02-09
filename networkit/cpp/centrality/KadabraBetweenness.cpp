@@ -191,7 +191,7 @@ void KadabraBetweenness::computeDeltaGuess() {
     const double balancingFactor = 0.001;
     double a = 0,
            b = 1. / err / err * std::log(n * 4 * (1 - balancingFactor) / delta),
-           c = (a + b) / 2;
+           c;
     double sum;
 
     Status status(unionSample);

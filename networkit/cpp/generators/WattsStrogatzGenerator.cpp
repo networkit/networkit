@@ -16,12 +16,12 @@
 
 namespace NetworKit {
 
-WattsStrogatzGenerator::WattsStrogatzGenerator(count nNodes, count nNeighbors, double p)
-    : nNodes(nNodes), nNeighbors(nNeighbors), p(p) {
-    if (nNeighbors * 2 >= nNodes - 1) {
+WattsStrogatzGenerator::WattsStrogatzGenerator(count nNodes, count numberOfNeighbors, double p)
+    : nNodes(nNodes), nNeighbors(numberOfNeighbors), p(p) {
+    if (numberOfNeighbors * 2 >= nNodes - 1) {
         throw std::runtime_error("nNeighbors*2 cannot be equal to nNodes-1.");
     }
-    if (nNeighbors >= nNodes / 2 - 1) {
+    if (numberOfNeighbors > nNodes / 2 - 1) {
         nNeighbors = nNodes / 2 - 1;
     }
 }

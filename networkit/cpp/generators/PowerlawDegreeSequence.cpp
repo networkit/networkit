@@ -141,8 +141,8 @@ void NetworKit::PowerlawDegreeSequence::run() {
 
     double sum = 0;
 
-    for (double d = maxDeg; d >= minDeg; --d) {
-        sum += std::pow(d, gamma);
+    for (count d = maxDeg; d >= minDeg; --d) {
+        sum += std::pow(static_cast<double>(d), gamma);
         cumulativeProbability.push_back(sum);
     }
 
