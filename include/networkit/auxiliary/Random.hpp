@@ -66,7 +66,7 @@ uint64_t integer(uint64_t lowerBound, uint64_t upperBound);
  * @param lowerBound default = 0.0
  *
  * @warning Compared to obtaining a reference to a generator using
- * @ref getURNG() and then using a local std::uniform_int_distribution,
+ * @ref getURNG() and then using a local std::uniform_real_distribution,
  * this method incurs a slow-down of up to 30%. Consider avoiding it
  * in hot sections.
  */
