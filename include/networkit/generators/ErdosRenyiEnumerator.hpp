@@ -201,7 +201,7 @@ private:
         Aux::SignalHandler handler;
 
         if (prob < std::pow(n, -3.0)) {
-            // Even with a union bound over all candidates, WHP no edge will be emited
+            // Even with a union bound over all candidates, WHP no edge will be emitted
             return 0;
         }
 

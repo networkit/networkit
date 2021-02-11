@@ -278,6 +278,8 @@ cdef class ClusteredRandomGraphGenerator(StaticGraphGenerator):
 	The number of nodes and the number of edges are adjustable as well as the probabilities
 	for intra-cluster and inter-cluster edges.
 
+	In parallel the generated graph is not deterministic. To ensure determinism, use a single thread.
+
 	ClusteredRandomGraphGenerator(count, count, pin, pout)
 
 	Creates a clustered random graph.
