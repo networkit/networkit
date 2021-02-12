@@ -17,7 +17,7 @@ except ImportError:
 else:
 	have_seaborn = True
 
-def widget_from_graph(G, node_scores = None, node_partition = None, node_colors = None, show_ids = True):
+def widget_from_graph(G, node_scores = None, node_partition = None, node_palette = None, show_ids = True):
 	""" 
 	Creates a ipycytoscape-widget from a given graph. The returned widget already contains
 	all nodes and edges from the graph. The graph is colored using an array of norm. rgb-values
@@ -36,7 +36,7 @@ def widget_from_graph(G, node_scores = None, node_partition = None, node_colors 
 	node_partition : networkit.structures.Partition
 		Partition object. This is used for color-calculation of the nodes (discrete distribution). 
 		Provide either node_scores or node_partition - not both. 	
-	node_colors : list of tuples
+	node_palette : list of tuples
 		Array consisting of normalized rgb-values. If none is given, seaborn.color_palette.colors is used
 	show_ids : 	boolean	
 		Set whether node ids should be visible in plot-widget. Is set to True by default. 
@@ -45,34 +45,41 @@ def widget_from_graph(G, node_scores = None, node_partition = None, node_colors 
 	if not have_cyto:
 		raise MissingDependencyError("ipycytoscape")
 
-	if node_scores is not None and node_partition is not None:
-		raise InputError("Provide either node_scores or node_partition - not both")
+	if node_scores is not None:
+		if node_partition is not None:
+			raise Exception("Provide either node_scores or node_partition - not both.")
+		if len(node_scores) != G.upperNodeIdBound():
+			raise Exception("node_scores should include scores for every node.")
+
+	# Set color palettes (maybe overwritten below)
+	if node_palette is not None:
+		palette = node_palette
+	else:
+		if not have_seaborn:
+			raise MissingDependencyError("seaborn")
+		palette = seaborn.color_palette("rocket_r", as_cmap=True).colors
 
 	# Color calculation: score = continuous distribution, partition = discrete distribution
 	hc_colors = []
 
 	# Partition
 	if node_partition is not None:
-		if node_colors is not None:
-			palette = node_colors
-		else:
-			if not have_seaborn:
-				raise MissingDependencyError("seaborn")
+		if node_palette is None:
 			palette = seaborn.color_palette("hls", node_partition.numberOfSubsets())
+		else:
+			if len(node_palette) < node_partition.numberOfSubsets():
+				raise Exception("Number of partitions higher than number of colors in provided palette. Provide node_palette with enough colors.")
 
 		partitions = node_partition.getVector()
+
+		if len(palette) < node_partition.numberOfSubsets():
+			raise Exception("Number of partitions to high for default coloring. Provide node_palette with enough colors.")
 
 		for i in G.iterNodes():
 			hc_colors.append((palette[partitions[i]][0] * 255, palette[partitions[i]][1] * 255, palette[partitions[i]][2] * 255))
 
 	# Score
-	elif node_scores is not None and len(node_scores) == G.numberOfNodes():
-		if node_colors is not None:
-			palette = node_colors
-		else:
-			if not have_seaborn:
-				raise MissingDependencyError("seaborn")
-			palette = seaborn.color_palette("rocket_r", as_cmap=True).colors
+	elif node_scores is not None:
 
 		minhc = min(node_scores)
 		maxhc = max(node_scores)
@@ -89,14 +96,16 @@ def widget_from_graph(G, node_scores = None, node_partition = None, node_colors 
 		if abs(maxhc - minhc) > 0:
 			for score in node_scores:
 				hc_colors.append(get_rgb(minhc, maxhc, score))
-		else: 
+		else:
+			color = palette[int((len(palette) -1) / 2)];
 			for i in G.iterNodes():
-				hc_colors.append((247, 137, 97))
+				hc_colors.append((color[0] * 255, color[1] * 255, color[2] * 255))
 
 	# No node values
 	else:
+		color = palette[0];
 		for i in G.iterNodes():
-			hc_colors.append((247, 137, 97))
+			hc_colors.append((color[0] * 255, color[1] * 255, color[2] * 255))
 	
 	# Set styling
 	if show_ids:
