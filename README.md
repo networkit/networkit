@@ -3,6 +3,7 @@
   <a href="https://github.com/networkit/networkit/actions"><img src="https://github.com/networkit/networkit/workflows/build/badge.svg"></a>
   <a href="https://badge.fury.io/py/networkit"><img src="https://badge.fury.io/py/networkit.svg"></a>
   <a href="https://coveralls.io/github/networkit/networkit?branch=master"><img src="https://coveralls.io/repos/github/networkit/networkit/badge.svg?branch=master"></a>
+  <a href="https://mybinder.org/v2/gh/networkit/networkit/master?urlpath=lab/tree/notebooks/User-Guide.ipynb"><img src="https://mybinder.org/badge_logo.svg"></a>
 </p>
 
 ## 
@@ -77,7 +78,9 @@ used for compilation.
 
 ## Usage example
 
-To get an overview and learn about NetworKit's different functions/classes, have a look at our interactive [notebooks-section][notebooks], especially the [Networkit UserGuide]. Note: To view and edit the computed output from the notebooks, it is recommended to use [Jupyter Notebook][jupyter-notebooks]. This requires the prior installation of NetworKit. You should really check that out before start working on your network analysis.
+To get an overview and learn about NetworKit's different functions/classes, have a look at our interactive [notebooks-section][notebooks], especially the [Networkit UserGuide]. Note: To view and edit the computed output from the notebooks, it is recommended to use [Jupyter Notebook][jupyter-notebooks]. This requires the prior installation of NetworKit. You should really check that out before start working on your network analysis. 
+
+We also provide a Binder-instance of our notebooks. To access this service, you can either click on the badge at the top or follow this [link][binder]. Disclaimer: Due to rebuilds of the underlying image, it can takes some time until your Binder instance is ready for usage.
 
 If you only want to see in short how NetworKit is used - the following example provides a climpse at that. Here we generate a random hyperbolic graph with 100k nodes and compute its communities with the PLM method:
 
@@ -237,3 +240,4 @@ in NetworKit, and simply using NetworKit. We ask you to cite the appropriate one
 [devguide]: https://networkit.github.io/dev-docs/DevGuide.html#devGuide
 [issues]: https://github.com/networkit/networkit/issues
 [jupyter-notebooks]: https://jupyter.org/install.html
+[binder]: https://mybinder.org/v2/gh/networkit/networkit/master?urlpath=lab/tree/notebooks
