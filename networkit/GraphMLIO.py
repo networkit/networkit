@@ -31,7 +31,6 @@ class GraphMLSAX(xml.sax.ContentHandler):
 			if "id" in  attrs.getNames() and not attrs.getValue("id") == '':
 					self.graphName = attrs.getValue("id")
 			self.g = Graph(0,self.weighted, self.directed)
-			self.g.setName(self.graphName)
 		if name == "node":
 			u = self.g.addNode()
 			val = attrs.getValue("id")
