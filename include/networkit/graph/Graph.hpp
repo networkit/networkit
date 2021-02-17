@@ -1845,8 +1845,8 @@ inline edgeid Graph::getInEdgeId<false>(node, index) const {
 
 // implementation for graphIsDirected == true
 template <bool graphIsDirected>
-inline bool Graph::useEdgeInIteration(node /* u */, node v) const {
-    return v != none;
+inline bool Graph::useEdgeInIteration(node /* u */, node /* v */) const {
+    return true;
 }
 
 // implementation for graphIsDirected == false
