@@ -25,7 +25,7 @@ Furthermore, NetworKit's core can be built and used as a native library if neede
 You will need the following software to install NetworKit as a python
 package:
 
-- A modern C++ compiler, e.g.: [g++] (&gt;= 5.3) or [clang++] (&gt;= 3.7)
+- A modern C++ compiler, e.g.: [g++] (&gt;= 5.3) or [clang++] (&gt;= 3.9)
 - OpenMP for parallelism (usually ships with the compiler)
 - Python3 (3.5 or higher is supported)
   - Development libraries for Python3. The package name depends on your distribution. Examples: 
