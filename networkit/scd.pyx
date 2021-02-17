@@ -2,6 +2,8 @@ from libc.stdint cimport uint64_t
 from libcpp cimport bool as bool_t
 from libcpp.map cimport map
 from libcpp.set cimport set
+from libcpp.utility cimport pair
+from libcpp.vector cimport vector
 from libcpp.string cimport string
 
 ctypedef uint64_t index
@@ -82,6 +84,56 @@ cdef class SelectiveCommunityDetector:
 		except TypeError:
 			return self._this.expandOneCommunity(<node?>seeds)
 
+cdef extern from "<networkit/scd/ApproximatePageRank.hpp>":
+	cdef cppclass _ApproximatePageRank "NetworKit::ApproximatePageRank":
+		_ApproximatePageRank(_Graph g, double alpha, double epsilon) except +
+		vector[pair[node, double]] run(set[node] seeds) except +
+		vector[pair[node, double]] run(node seed) except +
+
+cdef class ApproximatePageRank:
+	"""
+	Computes an approximate PageRank vector from a given seed.
+
+	Parameters:
+	-----------
+	G : Graph
+		Graph in which an APR is computed
+	alpha : float
+		Loop probability of random walk
+	epsilon: float
+		Error tolerance
+	"""
+	cdef _ApproximatePageRank *_this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G not None, double alpha, double epsilon):
+		self._G = G
+		self._this = new _ApproximatePageRank(G._this, alpha, epsilon)
+
+	def __dealloc__(self):
+		if self._this != NULL:
+			del self._this
+		self._this = NULL
+
+	def run(self, seeds):
+		"""
+		Approximate PageRank vector from seeds with parameters
+		specified in the constructor.
+
+		Parameters:
+		-----------
+		seeds : node or iterable of nodes
+			The seed node or list of seed nodes
+
+		Returns:
+		--------
+		list[node, float]
+			List of pairs of nodes and scores with positive PageRank
+		"""
+		try:
+			return self._this.run(<set[node]?>seeds)
+		except TypeError:
+			return self._this.run(<node?>seeds)
 
 cdef extern from "<networkit/scd/PageRankNibble.hpp>":
 
