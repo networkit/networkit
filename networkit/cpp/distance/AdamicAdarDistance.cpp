@@ -49,7 +49,7 @@ void AdamicAdarDistance::preprocess() {
             nodeMarker[v] = false;
         });
 
-        removeNode(g, u);
+        g.removeNode(u);
     });
 
     G->parallelForEdges([&](node, node, edgeid eid) {
@@ -65,15 +65,6 @@ double AdamicAdarDistance::distance(node u, node v) {
 
 std::vector< double > AdamicAdarDistance::getEdgeScores() {
     return aaDistance;
-}
-
-void AdamicAdarDistance::removeNode(Graph& graph, node u) {
-    //isolate the node before removing it.
-    graph.forNeighborsOf(u, [&](node v) {
-        graph.removeEdge(u,v);
-    });
-
-    graph.removeNode(u);
 }
 
 } /* namespace NetworKit */
