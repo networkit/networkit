@@ -154,14 +154,14 @@ jobs:
     runs-on: ubuntu-16.04
     strategy:
       matrix:
-        variant: ['gcc-5', 'clang-3.8']
+        variant: ['gcc-5', 'clang-3.9']
     steps:
       - name: Install prerequisites 📦
         run:  |
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
           sudo apt-get install ninja-build
-          sudo apt-get install libomp5 libomp-dev clang-3.8 clang++-3.8
+          sudo apt-get install libomp5 libomp-dev clang-3.9 clang++-3.9
       - name: Setup Python 3.6
         uses: actions/setup-python@v2
         with:
@@ -177,13 +177,13 @@ jobs:
         env:
           CC: gcc-5
           CXX: g++-5
-      - name: Prepare environment and run checks (clang-3.8)
-        if: matrix.variant == 'clang-3.8'
+      - name: Prepare environment and run checks (clang-3.9)
+        if: matrix.variant == 'clang-3.9'
         run:  ${{ github.workspace }}/.github/workflows/scripts/full.sh
         shell: bash
         env:
-          CC: clang-3.8
-          CXX: clang++-3.8
+          CC: clang-3.9
+          CXX: clang++-3.9
 
   linux-build-conformance:
     name: "Linux (latest gcc-10): C++${{ matrix.variant }} conformance"
