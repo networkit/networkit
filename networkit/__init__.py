@@ -55,6 +55,7 @@ from . import centrality
 from . import generators
 from . import structures
 from . import engineering
+from . import embedding
 from . import distance
 from . import components
 from . import dynamic
