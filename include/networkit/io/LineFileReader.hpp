@@ -10,6 +10,7 @@
 #ifndef NETWORKIT_IO_LINE_FILE_READER_HPP_
 #define NETWORKIT_IO_LINE_FILE_READER_HPP_
 
+#include <fstream>
 #include <string>
 #include <vector>
 

@@ -16,10 +16,10 @@
 
 namespace NetworKit {
 
-class AlgebraicMatchingCoarseningGTest : public testing::Test {};
+class AlgebraicMatchingCoarseningGTest : public testing::Test{};
 
 
-TEST(AlgebraicMatchingCoarseningGTest, testContraction) {
+TEST_F(AlgebraicMatchingCoarseningGTest, testContraction) {
     METISGraphReader reader;
     Graph G = reader.read("input/wing.graph");
 

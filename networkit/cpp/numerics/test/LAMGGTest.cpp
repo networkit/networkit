@@ -8,18 +8,17 @@
 #include <gtest/gtest.h>
 
 #include <networkit/algebraic/Vector.hpp>
+#include <networkit/algebraic/CSRMatrix.hpp>
+#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/generators/BarabasiAlbertGenerator.hpp>
+#include <networkit/structures/Partition.hpp>
+#include <networkit/io/LineFileReader.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/METISGraphWriter.hpp>
-#include <networkit/generators/BarabasiAlbertGenerator.hpp>
-#include <networkit/components/ConnectedComponents.hpp>
-#include <networkit/structures/Partition.hpp>
-
+#include <networkit/graph/Graph.hpp>
 #include <networkit/numerics/LAMG/MultiLevelSetup.hpp>
 #include <networkit/numerics/LAMG/SolverLamg.hpp>
-#include <networkit/io/LineFileReader.hpp>
-#include <networkit/auxiliary/Timer.hpp>
-#include <networkit/algebraic/CSRMatrix.hpp>
-
 #include <networkit/numerics/GaussSeidelRelaxation.hpp>
 
 namespace NetworKit {
@@ -29,17 +28,16 @@ protected:
     const std::vector<std::string> GRAPH_INSTANCES = {"input/jazz.graph", "input/power.graph"};
 
     Vector randZeroSum(const Graph& graph, size_t seed) const;
-    Vector randVector(count dimension, double lower, double upper) const;
+    Vector randVector(count dimension) const;
 };
 
 TEST_F(LAMGGTest, testSmallGraphs) {
     METISGraphReader reader;
-    GaussSeidelRelaxation<CSRMatrix> gaussSmoother;
-    Smoother<CSRMatrix> *smoother = new GaussSeidelRelaxation<CSRMatrix>();
+    GaussSeidelRelaxation<CSRMatrix> gaussSmoother, smoother;
     MultiLevelSetup<CSRMatrix> setup(gaussSmoother);
     Aux::Timer timer;
     for (index i = 0; i < GRAPH_INSTANCES.size(); ++i) {
-        string graph = GRAPH_INSTANCES[i];
+        std::string graph = GRAPH_INSTANCES[i];
         Graph G = reader.read(graph);
         ConnectedComponents con(G);
         con.run();
@@ -51,7 +49,7 @@ TEST_F(LAMGGTest, testSmallGraphs) {
         LevelHierarchy<CSRMatrix> hierarchy;
         timer.start();
         setup.setup(G, hierarchy);
-        SolverLamg<CSRMatrix> solver(hierarchy, *smoother);
+        SolverLamg<CSRMatrix> solver(hierarchy, smoother);
         timer.stop();
         DEBUG("setup time\t ", timer.elapsedMilliseconds());
 
@@ -59,7 +57,7 @@ TEST_F(LAMGGTest, testSmallGraphs) {
         Vector x(G.numberOfNodes());
 
         b = randZeroSum(G, 12345);
-        x = randVector(G.numberOfNodes(), -1, 1);
+        x = randVector(G.numberOfNodes());
 
 
         LAMGSolverStatus status;
@@ -79,13 +77,9 @@ TEST_F(LAMGGTest, testSmallGraphs) {
         DEBUG("DONE");
 
     }
-
-    delete smoother;
 }
 
-
-
-Vector LAMGGTest::randVector(count dimension, double lower, double upper) const {
+Vector LAMGGTest::randVector(count dimension) const {
     Vector randVector(dimension);
     for (index i = 0; i < dimension; ++i) {
         randVector[i] = 2.0 * Aux::Random::probability() - 1.0;
@@ -99,10 +93,9 @@ Vector LAMGGTest::randVector(count dimension, double lower, double upper) const 
     return randVector;
 }
 
-
 Vector LAMGGTest::randZeroSum(const Graph& G, size_t seed) const {
-    mt19937 rand(seed);
-    auto rand_value = uniform_real_distribution<double>(-1.0, 1.0);
+    std::mt19937 rand(seed);
+    auto rand_value = std::uniform_real_distribution<double>(-1.0, 1.0);
     ConnectedComponents con(G);
     count n = G.numberOfNodes();
     con.run();

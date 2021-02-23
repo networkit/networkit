@@ -5,11 +5,4 @@ networkit_add_module(algebraic
     Vector.cpp
     )
 
-
-
-networkit_module_link_modules(algebraic
-    auxiliary graph)
-
-add_subdirectory(algorithms)
 add_subdirectory(test)
-
