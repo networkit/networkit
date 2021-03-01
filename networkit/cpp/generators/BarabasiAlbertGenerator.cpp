@@ -88,16 +88,14 @@ Graph BarabasiAlbertGenerator::generateOriginal() {
 
         while (targets.size() - 1 < k) {
             auto randomIndex = indexDist(gen);
-            bool found = false; // break from node iteration when done
-            auto notFound = [&]() { return !found; };
 
-            G.forNodesWhile(notFound, [&](node v) {
-                if (randomIndex <= G.degree(v)) {
-                    found = true; // found a node to connect to
+            for (node v : G.nodeRange()) {
+                if (randomIndex <= G.degree(v)) { // found a node to connect to
                     targets.insert(v);
+                    break;
                 }
                 randomIndex -= G.degree(v);
-            });
+            }
 
             handler.assureRunning();
         }
