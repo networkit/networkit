@@ -35,6 +35,9 @@ def drawGraph(G, **kwargs):
 	"""
 	if not have_nx:
 		raise MissingDependencyError("networkx")
+	if not G.checkConsistency():
+		print("WARNING: Multi-graph has been converted to simple graph for display")
+		G.removeMultiEdges()
 	nxG = nxadapter.nk2nx(G)
 	if not "node_size" in kwargs:
 		kwargs["node_size"] = [30+270*s for s in centrality.DegreeCentrality(G,True).run().scores()]
