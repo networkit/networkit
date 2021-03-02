@@ -282,9 +282,12 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           . pyenv/bin/activate
-          coveralls -E ".*test/.*" -E ".*CMakeFiles.*" --exclude extlibs --exclude pyenv --exclude scripts --root ${{ github.workspace }}
+          coveralls -E ".*test/.*" -E ".*CMakeFiles.*" --exclude extlibs --exclude pyenv --exclude scripts --root ${{ github.workspace }} --dump $COVERALLS_DUMP_FILE
+          python3 ${{ github.workspace }}/.github/workflows/scripts/upload_coverage.py
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          COVERALLS_DUMP_FILE: coveralls.dump
+          COVERALLS_SVC_NUM: ${{ github.run_number }}
 
   windows-build-msvc:
     name: "Windows Server 2019 (msvc 14.28): ${{ matrix.type }} build, ${{ matrix.variant }}"
