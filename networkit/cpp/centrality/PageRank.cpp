@@ -8,13 +8,14 @@
 // networkit-format
 
 #include <networkit/auxiliary/NumericTools.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/centrality/PageRank.hpp>
 
 namespace NetworKit {
 
-PageRank::PageRank(const Graph &G, double damp, double tol)
-    : Centrality(G, true), damp(damp), tol(tol) {}
+PageRank::PageRank(const Graph &G, double damp, double tol, bool normalized)
+    : Centrality(G, true), damp(damp), tol(tol), normalized(normalized) {}
 
 void PageRank::run() {
     Aux::SignalHandler handler;
@@ -71,17 +72,39 @@ void PageRank::run() {
 
     handler.assureRunning();
 
-    const auto sum = G.parallelSumForNodes([&](const node u) { return scoreData[u]; });
+    if (!normalized) {
+        const auto sum = G.parallelSumForNodes([&](const node u) { return scoreData[u]; });
 
-    // make sure scoreData sums up to 1
-    assert(!Aux::NumericTools::equal(sum, 0.0, 1e-15));
-    G.parallelForNodes([&](const node u) { scoreData[u] /= sum; });
+        // make sure scoreData sums up to 1
+        assert(!Aux::NumericTools::equal(sum, 0.0, 1e-15));
+        G.parallelForNodes([&](const node u) { scoreData[u] /= sum; });
+    } else {
+        // calculate sum of the Pagerank of dangling Nodes for normalization
+        const auto sum = G.parallelSumForNodes([&](const node u) {
+            if (G.degree(u) == 0.0)
+                return scoreData[u];
+            return 0.0;
+        });
 
+        const auto normFactor = (1.0 / n) * ((1 - damp) + (damp * sum));
+
+        G.parallelForNodes([&](const node u) { scoreData[u] /= normFactor; });
+    }
+
+    // calculate the maxium
+    if (!normalized) {
+        max = 1.0; // upper bound, could be tighter by assuming e.g. a star graph with n nodes
+    } else {
+        max = scoreData[0]; // Unlike regular Page Rank there isn't a universal upper bound for
+                            // normalized page rank. So we need to iterate.
+        G.balancedParallelForNodes(
+            [&](const node u) { Aux::Parallel::atomic_max(max, scoreData[u]); });
+    }
     hasRun = true;
 }
 
 double PageRank::maximum() {
-    return 1.0; // upper bound, could be tighter by assuming e.g. a star graph with n nodes
+    return max.load(std::memory_order_relaxed);
 }
 
 } /* namespace NetworKit */
