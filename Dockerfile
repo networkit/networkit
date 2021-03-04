@@ -16,20 +16,31 @@ USER 1000
 RUN pip install --upgrade pip 
 RUN pip install setuptools cython powerlaw sklearn seaborn pandas tabulate matplotlib networkx ipycytoscape
 
-# Create working environment
-# This has to be done as root in order to avoid access denied errors.
-USER root
-RUN mkdir -p ${HOME}/networkit
-COPY . ${HOME}/networkit/
-RUN ln -s ${HOME}/networkit/input ${HOME} && ln -s ${HOME}/networkit/notebooks ${HOME}
-RUN rm -rf ${HOME}/work
-RUN chown -R jovyan:users ${HOME}/*
-
-# Build and install networkit from current branch
-USER 1000
-RUN cd ${HOME}/networkit && python3 setup.py build_ext && pip install -e .
-
 # Configure Jupyter to enable ipycytoscape
+RUN mkdir -p ${HOME}/.jupyter/lab
+RUN mkdir -p ${HOME}/.jupyter/lab/user-settings
+RUN mkdir -p ${HOME}/.jupyter/lab/user-settings/\@jupyterlab
+RUN mkdir -p ${HOME}/.jupyter/lab/user-settings/@jupyterlab/docmanager-extension
+COPY plugin.jupyterlab-settings ${HOME}/.jupyter/lab/user-settings/@jupyterlab/docmanager-extension
 RUN conda install -y nodejs
 RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager --no-build && jupyter labextension install jupyter-cytoscape
 RUN jupyter lab build
+
+# Create working environment
+# This has to be done as root in order to avoid access denied errors.
+USER root
+RUN mkdir -p ${HOME}/.networkit
+COPY . ${HOME}/.networkit/
+RUN ln -s ${HOME}/.networkit/input ${HOME} && ln -s ${HOME}/.networkit/notebooks ${HOME}/base-notebooks
+RUN mv ${HOME}/.networkit/notebooks/session-1 ${HOME}
+RUN mv ${HOME}/.networkit/notebooks/session-2 ${HOME}
+COPY CSE21-introduction.md ${HOME}
+RUN rm -rf ${HOME}/work
+RUN chown -R jovyan:users ${HOME}/*
+RUN chown -R jovyan:users ${HOME}/.networkit
+RUN chown -R jovyan:users ${HOME}/.networkit/*
+
+# Build and install networkit from current branch
+USER 1000
+RUN cd ${HOME}/.networkit && python3 setup.py build_ext && pip install -e .
+
