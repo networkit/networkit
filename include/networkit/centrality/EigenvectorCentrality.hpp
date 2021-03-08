@@ -1,5 +1,5 @@
 /*
- * EigenvectorCentrality.h
+ * EigenvectorCentrality.hpp
  *
  *  Created on: 19.03.2014
  *      Author: Henning
@@ -17,9 +17,8 @@ namespace NetworKit {
  * Computes the leading eigenvector of the graph's adjacency matrix (normalized in 2-norm).
  * Interpreted as eigenvector centrality score.
  */
-class EigenvectorCentrality: public Centrality {
-protected:
-    double tol; // error tolerance
+class EigenvectorCentrality final: public Centrality {
+    const double tol; // error tolerance
 
 public:
     /**

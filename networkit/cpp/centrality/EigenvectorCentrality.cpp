@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#include <cmath>
+
 #include <networkit/centrality/EigenvectorCentrality.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
 
@@ -17,14 +19,13 @@ EigenvectorCentrality::EigenvectorCentrality(const Graph& G, double tol):
 }
 
 void EigenvectorCentrality::run() {
-    count z = G.upperNodeIdBound();
-    std::vector<double> values(z, 1.0);
+    std::vector<double> values(G.upperNodeIdBound(), 1.0);
     scoreData = values;
 
     double length = 0.0;
     double oldLength = 0.0;
 
-    auto converged([&](double val, double other) {
+    auto converged([tol=tol](double val, double other) -> bool {
         // compute residual
         return (Aux::NumericTools::equal(val, other, tol));
     });
@@ -40,37 +41,24 @@ void EigenvectorCentrality::run() {
             });
         });
 
-//		// set everything very small to zero
-//		G.parallelForNodes([&](node u) {
-//			if (values[u] < 1e-16) {
-//				values[u] = 0.0;
-//			}
-//		});
-
         // normalize values
-        length = 0.0;
-        length = G.parallelSumForNodes([&](node u) {
+        length = G.parallelSumForNodes([&values](node u) {
             return (values[u] * values[u]);
         });
-        length = sqrt(length);
-
-//		TRACE("length: ", length);
-//		TRACE(values);
+        length = std::sqrt(length);
 
         assert(! Aux::NumericTools::equal(length, 1e-16));
-        G.parallelForNodes([&](node u) {
+        G.parallelForNodes([&values, length](node u) {
             values[u] /= length;
         });
 
-//		TRACE(values);
-
-        scoreData = values;
+        std::swap(scoreData, values);
     } while (! converged(length, oldLength));
 
     // check sign and correct if necessary
     if (scoreData[0] < 0) {
         G.parallelForNodes([&](node u) {
-            scoreData[u] = fabs(scoreData[u]);
+            scoreData[u] = std::fabs(scoreData[u]);
         });
     }
 
