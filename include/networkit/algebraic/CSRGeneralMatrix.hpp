@@ -85,31 +85,22 @@ class CSRGeneralMatrix {
     }
 
     /**
-     * Binary search the sorted columnIdx vector between [@a left, @a right] for
-     * column @a j.
+     * Binary search the sorted columnIdx vector between [@a left, @a right]
+     * for column @a j.
      * If @a j is not present, the index that is immediately left of the place
-     * where @a j would be
-     * is returned. If
+     * where @a j would be is returned.
      * @param left
      * @param right
      * @param j
      * @return The position of column @a j in columnIdx or the element immediately
-     * to the left of the place where @a j
-     * would be.
+     * to the left of the place where @a j would be.
      */
     index binarySearchColumns(index left, index right, index j) const {
         assert(sorted());
-        if (left > right)
-            return right; // return the index immediately left to j if it would be
-                          // present
-        index mid = (left + right) / 2;
-        if (columnIdx[mid] == j) {
-            return mid;
-        } else if (columnIdx[mid] > j && mid > 0) {
-            return binarySearchColumns(left, mid - 1, j);
-        } else {
-            return binarySearchColumns(mid + 1, right, j);
-        }
+        const auto it = std::lower_bound(columnIdx.begin() + left, columnIdx.begin() + right, j);
+        if (it == columnIdx.end() || *it != j)
+            return none;
+        return it - columnIdx.begin();
     }
 
 public:
