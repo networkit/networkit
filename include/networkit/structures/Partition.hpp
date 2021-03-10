@@ -291,7 +291,7 @@ public:
      * @param func Takes parameters <code>(node, index)</code>
      */
     template <typename Callback>
-    void forEntries(Callback func) const;
+    void forEntries(const Callback &func) const;
 
     /**
      * Iterate over all entries (node, cluster id) in parallel and execute callback function @a
@@ -300,7 +300,7 @@ public:
      * @param handle Takes parameters <code>(node, index)</code>
      */
     template <typename Callback>
-    void parallelForEntries(Callback handle) const;
+    void parallelForEntries(const Callback &handle) const;
 
 private:
     index z;                 //!< maximum element index that can be mapped
@@ -318,14 +318,14 @@ private:
 };
 
 template <typename Callback>
-inline void Partition::forEntries(Callback handle) const {
+inline void Partition::forEntries(const Callback &handle) const {
     for (index e = 0; e < this->z; e++) {
         handle(e, data[e]);
     }
 }
 
 template <typename Callback>
-inline void Partition::parallelForEntries(Callback handle) const {
+inline void Partition::parallelForEntries(const Callback &handle) const {
 #pragma omp parallel for
     for (omp_index e = 0; e < static_cast<omp_index>(this->z); e++) {
         handle(e, this->data[e]);
