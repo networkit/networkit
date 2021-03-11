@@ -177,7 +177,6 @@ class GraphMLWriter:
 		else:
 			graphElement.set('edgedefault', 'undirected')
 			self.dir_str = 'false'
-		graphElement.set('id', graph.getName())
 
 		# Add nodes
 		for n in graph.iterNodes():

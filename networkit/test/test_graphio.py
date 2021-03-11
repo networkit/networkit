@@ -72,8 +72,10 @@ class TestGEXFIO(unittest.TestCase):
 		G = nk.generators.ErdosRenyiGenerator(100, 0.1).generate()
 		someFailed = False
 
+		excluded_formats = set([nk.Format.KONECT, nk.Format.DOT, nk.Format.GraphViz, nk.Format.SNAP])
+
 		for format in nk.Format:
-			if format == nk.Format.KONECT or format == nk.Format.DOT or format == nk.Format.GraphViz:
+			if format in excluded_formats:
 				# format do not support both reading and writing
 				continue
 
@@ -87,7 +89,10 @@ class TestGEXFIO(unittest.TestCase):
 
 				kargs = [' ', 0] if format == nk.Format.EdgeList else []
 				nk.graphio.writeGraph(G, filename, format, *kargs)
-				G1 = nk.graphio.readGraph(filename, format, *kargs)
+				if format == nk.Format.GEXF:
+					G1, _ = nk.graphio.readGraph(filename, format, *kargs)
+				else:
+					G1 = nk.graphio.readGraph(filename, format, *kargs)
 				self.checkStatic(G, G1)
 
 			except Exception as e:
