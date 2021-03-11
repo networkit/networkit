@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+set -o pipefail
 
 sudo rm -rf /usr/local/clang-*
 sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-11 9999

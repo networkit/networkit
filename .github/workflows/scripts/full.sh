@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+set -o pipefail
 
 $CXX --version
 python3 --version
