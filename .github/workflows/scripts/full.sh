@@ -20,7 +20,6 @@ cd ../..
 
 
 # Build libnetworkit
-cd networkit
 mkdir core_build && cd "$_"
 cmake -GNinja -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release -DNETWORKIT_CXX_STANDARD=$CXX_STANDARD -DNETWORKIT_WARNINGS=ON -DNETWORKIT_WARNINGS_AS_ERRORS=ON -DNETWORKIT_EXT_TLX=$TLX_PATH ..
 ninja
