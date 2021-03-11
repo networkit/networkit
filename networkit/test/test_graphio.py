@@ -83,24 +83,17 @@ class TestGEXFIO(unittest.TestCase):
 			if format == nk.Format.MAT:
 				filename += ".mat" # suffix required
 
-			try:
-				if os.path.exists(filename):
-					os.remove(filename)
+			if os.path.exists(filename):
+				os.remove(filename)
 
-				kargs = [' ', 0] if format == nk.Format.EdgeList else []
-				nk.graphio.writeGraph(G, filename, format, *kargs)
-				if format == nk.Format.GEXF:
-					G1, _ = nk.graphio.readGraph(filename, format, *kargs)
-				else:
-					G1 = nk.graphio.readGraph(filename, format, *kargs)
-				self.checkStatic(G, G1)
+			kargs = [' ', 0] if format == nk.Format.EdgeList else []
+			nk.graphio.writeGraph(G, filename, format, *kargs)
+			if format == nk.Format.GEXF:
+				G1, _ = nk.graphio.readGraph(filename, format, *kargs)
+			else:
+				G1 = nk.graphio.readGraph(filename, format, *kargs)
+			self.checkStatic(G, G1)
 
-			except Exception as e:
-				someFailed = True
-				print("Test failed for format {0}".format(format))
-				print(e)
-
-		# assert(not someFailed)
 
 if __name__ == "__main__":
 	unittest.main()
