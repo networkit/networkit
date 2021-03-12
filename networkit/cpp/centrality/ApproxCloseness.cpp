@@ -20,10 +20,11 @@ struct ListEntry {
 };
 
 ApproxCloseness::ApproxCloseness(const Graph& G, count nSamples, double epsilon, bool normalized, CLOSENESS_TYPE type) : Centrality(G, normalized), nSamples(nSamples), epsilon(epsilon), type(type) {
-    assert(nSamples > 0 && nSamples <= G.numberOfNodes() && epsilon >= 0);
+    assert(nSamples > 0 && epsilon >= 0);
 }
 
 void ApproxCloseness::run() {
+    if (nSamples > G.numberOfNodes()) nSamples = G.numberOfNodes();
     if (G.isDirected()) {
         switch (type) {
             case OUTBOUND:

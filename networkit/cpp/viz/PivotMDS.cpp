@@ -17,6 +17,7 @@ PivotMDS::PivotMDS(const Graph &graph, count dim, count numPivots)
 
 void PivotMDS::run() {
     count n = G->numberOfNodes();
+    if (n < numPivots) numPivots = n;
     std::vector<node> pivots = computePivots();
 
     std::vector<Triplet> triplets;
