@@ -12,20 +12,11 @@ namespace NetworKit {
 
 class Algorithm {
 protected:
-    /**
-     * A boolean variable indicating whether an algorithm has finished its computation or not.
-     */
     bool hasRun = false;
 
 public:
-    /**
-     * Constructor to the algorithm base class.
-     */
     Algorithm() = default;
 
-    /**
-     * Virtual default destructor.
-     */
     virtual ~Algorithm() = default;
 
     /**
