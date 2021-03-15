@@ -24,7 +24,10 @@ ApproxCloseness::ApproxCloseness(const Graph& G, count nSamples, double epsilon,
 }
 
 void ApproxCloseness::run() {
-    if (nSamples > G.numberOfNodes()) nSamples = G.numberOfNodes();
+    if (nSamples > G.numberOfNodes()) {
+        WARN("Number of samples higher than the number of nodes. Setting number of samples to number of nodes");
+        nSamples = G.numberOfNodes();
+    }
     if (G.isDirected()) {
         switch (type) {
             case OUTBOUND:
@@ -68,13 +71,39 @@ void ApproxCloseness::estimateClosenessForUndirectedGraph() {
     std::vector<node> sampledNodes;
     // sample nodes
     std::vector<bool> alreadySampled(G.upperNodeIdBound(), false);
-    for (count i = 0; i < nSamples; ++i) { // we have to sample distinct nodes
-        node v = GraphTools::randomNode(G);
-        while (alreadySampled[v]) {
-            v = GraphTools::randomNode(G);
+    
+    if (nSamples >= G.numberOfNodes()){
+        for (const auto sample: G.nodeRange()) {
+            sampledNodes.push_back(sample);
+            alreadySampled[sample] = true;
         }
-        sampledNodes.push_back(v);
-        alreadySampled[v] = true;
+    } else if (nSamples >  G.numberOfNodes()/2) {//in order to minimize the calls to randomNode
+                                                 //we randomize the ones that aren't pivot
+                                                 //if the are more samples than non-samples
+        std::fill(alreadySampled.begin(), alreadySampled.end(), true);
+        
+        for (count i = 0; i < G.numberOfNodes() - nSamples; ++i) { // we have to sample distinct nodes
+            node v = GraphTools::randomNode(G);
+            while (!alreadySampled[v]) {
+                v = GraphTools::randomNode(G);
+            }
+            alreadySampled[v] = false;
+        }
+        
+        for (const auto sample: G.nodeRange()) {
+            if (alreadySampled[sample]) {
+                sampledNodes.push_back(sample);
+            }
+        }
+    } else {
+        for (count i = 0; i < nSamples; ++i) { // we have to sample distinct nodes
+            node v = GraphTools::randomNode(G);
+            while (alreadySampled[v]) {
+                v = GraphTools::randomNode(G);
+            }
+            sampledNodes.push_back(v);
+            alreadySampled[v] = true;
+        }
     }
 
     LCSum = std::vector<double>(G.upperNodeIdBound());

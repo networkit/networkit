@@ -17,7 +17,10 @@ PivotMDS::PivotMDS(const Graph &graph, count dim, count numPivots)
 
 void PivotMDS::run() {
     count n = G->numberOfNodes();
-    if (n < numPivots) numPivots = n;
+    if (n < numPivots) {
+        WARN("Number of Pivots higher than the number of nodes. Setting number of pivots to number of nodes");
+        numPivots = n;
+    }
     std::vector<node> pivots = computePivots();
 
     std::vector<Triplet> triplets;
@@ -109,14 +112,40 @@ std::vector<node> PivotMDS::computePivots() {
     std::vector<node> pivots(numPivots);
 
     index pivotIdx = 0;
-    while (pivotIdx < numPivots) {
-        node pivotCandidate = GraphTools::randomNode(*G);
-        if (!pivot[pivotCandidate]) {
+    if (numPivots == n){
+        for (const auto pivotCandidate: G->nodeRange()) {
             pivots[pivotIdx++] = pivotCandidate;
             pivot[pivotCandidate] = true;
         }
+    } else if (numPivots > n/2) { //in order to minimize the calls to randomNode
+                                  //we randomize the ones that aren't pivot
+                                  //if the are more pivots than non-pivots
+        std::fill(pivot.begin(), pivot.end(), true);
+        
+        auto numNotPivots = n - numPivots;
+        index nonPivotIdx = 0;
+        while (nonPivotIdx < numNotPivots) {
+            node notPivotCandidate = GraphTools::randomNode(*G);
+            if (pivot[notPivotCandidate]) {
+                nonPivotIdx++;
+                pivot[notPivotCandidate] = false;
+            }
+        }
+        
+        for (const auto pivotCandidate: G->nodeRange()) {
+            if (pivot[pivotCandidate]) {
+                pivots[pivotIdx++] = pivotCandidate;
+            }
+        }
+    } else {
+        while (pivotIdx < numPivots) {
+            node pivotCandidate = GraphTools::randomNode(*G);
+            if (!pivot[pivotCandidate]) {
+                pivots[pivotIdx++] = pivotCandidate;
+                pivot[pivotCandidate] = true;
+            }
+        }
     }
-
     return pivots;
 }
 
