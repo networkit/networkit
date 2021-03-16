@@ -72,6 +72,7 @@ from . import linkprediction
 from . import correlation
 from . import matching
 from . import coarsening
+from . import reachability
 from . import simulation
 from . import stats
 from . import sampling

@@ -134,7 +134,7 @@ find_package(OpenMP)
 # manually sets the required fields for clang-like compiler.
 if(NOT OpenMP_FOUND)
 	if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-		# This will find default libomp-installations for homebrew/MacPorts 
+		# This will find default libomp-installations for homebrew/MacPorts
 		find_library(LIBOMP_PATH NAMES omp PATHS "/usr/local/opt/libomp/lib" "/opt/local/lib/libomp")
 		find_path(LIBOMP_INCLUDE NAMES omp.h PATHS "/usr/local/opt/libomp/include" "/opt/local/include/libomp")
 		if(LIBOMP_PATH AND LIBOMP_INCLUDE)
@@ -142,9 +142,9 @@ if(NOT OpenMP_FOUND)
 		endif()
 	elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 		if(DEFINED ENV{CONDA_PREFIX})
-			find_library(LIBOMP_PATH NAMES omp HINTS "$ENV{CONDA_PREFIX}/lib" 
+			find_library(LIBOMP_PATH NAMES omp HINTS "$ENV{CONDA_PREFIX}/lib"
 				PATHS "/usr/lib" "/usr/lib64")
-			find_path(LIBOMP_INCLUDE NAMES omp.h HINTS "$ENV{CONDA_PREFIX}/include" 
+			find_path(LIBOMP_INCLUDE NAMES omp.h HINTS "$ENV{CONDA_PREFIX}/include"
 				PATHS "/usr/include")
 		else()
 			find_library(LIBOMP_PATH NAMES omp PATHS "/usr/lib" "/usr/lib64")
@@ -255,7 +255,9 @@ if(NETWORKIT_PYTHON)
 	 foreach (EXT base centrality clique coarsening community components correlation
 			 distance dynamics embedding engineering flow generators globals graph graphio
 			 graphtools helpers independentset linkprediction matching profiling/stat
-			 randomization scd simulation sparsification stats structures traversal viz)
+			 randomization reachability scd simulation sparsification stats
+			 structures traversal viz)
+
 		if(NOT EXISTS "${PROJECT_SOURCE_DIR}/networkit/${EXT}.cpp")
 			message(FATAL_ERROR "networkit/${EXT}.cpp is missing. Invoke Cython manually.")
 		endif()

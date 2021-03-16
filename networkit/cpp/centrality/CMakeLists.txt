@@ -43,8 +43,8 @@ networkit_module_link_modules(centrality
         dyn_distance
         dynamics
         graph
+        reachability
         structures
     )
 
 add_subdirectory(test)
-
