@@ -104,10 +104,10 @@ private:
     // Index of the parent component of the current component (after the topological order has been
     // determined)
     std::vector<index> biParent;
-    // Node within the bionnected component that points to the node in the parent component
+    // Node within the biconnected component that points to the node in the parent component
     std::vector<node> biAnchor;
 
-    // Topological order of the biconencted components
+    // Topological order of the biconnected components
     std::vector<index> topOrder;
 
     // Non-normalized approx effective resistance, one per thread.
