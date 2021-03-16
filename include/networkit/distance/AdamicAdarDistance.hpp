@@ -22,8 +22,6 @@ class AdamicAdarDistance final : public NodeDistance {
 private:
     std::vector<double> aaDistance; //result vector
 
-    void removeNode(Graph& graph, node u);
-
 public:
 
     /**
