@@ -50,7 +50,10 @@ public:
 
     ~SPSP() override = default;
 
-    /** Computes the shortest paths from the source nodes to all other nodes. */
+    /**
+     * Computes the shortest paths from the source nodes to all other nodes.
+     * The algorithm is parallel.
+     */
     void run() override;
 
     /**
@@ -87,7 +90,7 @@ public:
     /**
      * @return True: the algorithm is parallel.
      */
-    bool isParallel() const override { return true; }
+    bool TLX_DEPRECATED(isParallel() const override) { return true; }
 
 private:
     const Graph *G;

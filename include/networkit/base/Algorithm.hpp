@@ -4,6 +4,8 @@
 #include <string>
 #include <stdexcept>
 
+#include <tlx/define/deprecated.hpp>
+
 namespace NetworKit {
 
 class Algorithm {
@@ -52,7 +54,7 @@ public:
     /**
      * @return True if algorithm can run multi-threaded.
      */
-    virtual bool isParallel() const;
+    virtual TLX_DEPRECATED(bool isParallel() const);
 };
 
 } /* NetworKit */

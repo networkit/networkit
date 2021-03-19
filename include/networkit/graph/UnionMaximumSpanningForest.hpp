@@ -2,10 +2,13 @@
 #define NETWORKIT_GRAPH_UNION_MAXIMUM_SPANNING_FOREST_HPP_
 
 #include <limits>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/UnionFind.hpp>
+
+#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 
@@ -33,7 +36,7 @@ public:
     UnionMaximumSpanningForest(const Graph &G, const std::vector<A> &attribute);
 
     /**
-     * Execute the algorithm.
+     * Execute the algorithm. The algorithm is not parallel.
      */
     void run() override;
 
@@ -75,7 +78,7 @@ public:
     /**
      * @return false - this algorithm is not parallelized.
      */
-    bool isParallel() const override;
+    bool TLX_DEPRECATED(isParallel() const override);
 
     /**
      * @return The name of the algorithm.

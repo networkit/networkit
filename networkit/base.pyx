@@ -62,6 +62,8 @@ cdef class Algorithm:
 		bool
 			True if algorithm can run multi-threaded.
 		"""
+		from warning import warn
+		warn("isParallel() is deprecated and will be removed in upcoming releases.")
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return self._this.isParallel()

@@ -1,5 +1,5 @@
 /*
- * CoreDecomposition.h
+ * CoreDecomposition.hpp
  *
  *  Created on: Oct 28, 2013
  *      Author: Lukas Barth, David Weiss, Christian Staudt
@@ -11,11 +11,13 @@
 #include <vector>
 #include <string>
 #include <list>
+
 #include <networkit/graph/Graph.hpp>
 #include <networkit/centrality/Centrality.hpp>
 #include <networkit/structures/Partition.hpp>
 #include <networkit/structures/Cover.hpp>
 
+#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 
@@ -38,6 +40,9 @@ public:
      * @param normalized If set to @c true the scores are normalized in the interval [0,1].
      * @param enforceBucketQueueAlgorithm If set to @c true, uses a bucket priority queue data structure. This it is generally slower than ParK but may be more flexible. TODO check
      * @param storeNodeOrder If set to @c true, the order of the nodes in ascending order of the cores is stored and can later be returned using getNodeOrder(). Enforces the sequential bucket priority queue algorithm.
+     *
+     * The algorithm runs in parallel if the usage of a bucket priority queue is not enforced and
+     * if the node ids of the input graph are continuous (i.e., numberOfNodes() = upperNodeIdBound()).
      */
     CoreDecomposition(const Graph& G, bool normalized=false, bool enforceBucketQueueAlgorithm = false, bool storeNodeOrder = false);
 
@@ -87,7 +92,7 @@ public:
      * The algorithm ParK can run in parallel under certain conditions,
      * the bucket PQ based one cannot.
      */
-    bool isParallel() const override { return canRunInParallel; }
+    bool TLX_DEPRECATED(isParallel() const override) { return canRunInParallel; }
 
 private:
 
