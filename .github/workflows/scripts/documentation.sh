@@ -1,6 +1,7 @@
 #!/bin/bash
-
 set -e
+set -o pipefail
+
 python3 -m venv pyenv && . pyenv/bin/activate
 pip3 install --upgrade pip
  

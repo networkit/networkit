@@ -27,7 +27,7 @@ cdef extern from "<networkit/flow/EdmondsKarp.hpp>":
 		edgeweight getFlow(edgeid eid) const
 		vector[edgeweight] getFlowVector() except +
 
-cdef class EdmondsKarp:
+cdef class EdmondsKarp(Algorithm):
 	"""
 	The EdmondsKarp class implements the maximum flow algorithm by Edmonds and Karp.
 
@@ -40,15 +40,11 @@ cdef class EdmondsKarp:
 	sink : node
 		The sink node for the flow calculation
 	"""
-	cdef _EdmondsKarp* _this
 	cdef Graph _graph
 
 	def __cinit__(self, Graph graph not None, node source, node sink):
 		self._graph = graph # store reference of graph for memory management, so the graph is not deallocated before this object
 		self._this = new _EdmondsKarp(graph._this, source, sink)
-
-	def __dealloc__(self):
-		del self._this
 
 	def getMaxFlow(self):
 		"""
@@ -59,7 +55,7 @@ cdef class EdmondsKarp:
 		edgeweight
 			The maximum flow value
 		"""
-		return self._this.getMaxFlow()
+		return (<_EdmondsKarp*>(self._this)).getMaxFlow()
 
 	def getSourceSet(self):
 		"""
@@ -70,7 +66,7 @@ cdef class EdmondsKarp:
 		list
 			The set of nodes that form the (smallest) source side of the flow/minimum cut.
 		"""
-		return self._this.getSourceSet()
+		return (<_EdmondsKarp*>(self._this)).getSourceSet()
 
 	def getFlow(self, node u, node v = none):
 		"""
@@ -90,9 +86,9 @@ cdef class EdmondsKarp:
 			The flow on the specified edge
 		"""
 		if v == none: # Assume that node and edge ids are the same type
-			return self._this.getFlow(u)
+			return (<_EdmondsKarp*>(self._this)).getFlow(u)
 		else:
-			return self._this.getFlow(u, v)
+			return (<_EdmondsKarp*>(self._this)).getFlow(u, v)
 
 	def getFlowVector(self):
 		"""
@@ -103,4 +99,4 @@ cdef class EdmondsKarp:
 		list
 			The flow values of all edges indexed by edge id
 		"""
-		return self._this.getFlowVector()
+		return (<_EdmondsKarp*>(self._this)).getFlowVector()
