@@ -53,6 +53,15 @@ edgeweight maxWeightedInDegree(const Graph &G);
 node randomNode(const Graph &G);
 
 /**
+ * Returns n distinct random nodes of the input graph.
+ *
+ * @param G The input graph.
+ * @param n The number of desired nodes.
+ * @return A vector of n disntinct random nodes.
+ */
+std::vector<node> randomNodes(const Graph &G, count n);
+
+/**
  * Returns a random neighbor of node @a u. Returns none if degree is zero.
  *
  * @param G The input graph.

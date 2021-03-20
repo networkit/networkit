@@ -12,8 +12,8 @@
 
 namespace NetworKit {
 
-PivotMDS::PivotMDS(const Graph &graph, count dim, count numPivots)
-    : GraphLayoutAlgorithm(graph, dim), dim(dim), numPivots(numPivots) {}
+PivotMDS::PivotMDS(const Graph &G, count dim, count numPivots)
+    : GraphLayoutAlgorithm(G, dim), dim(dim), numPivots(numPivots) {}
 
 void PivotMDS::run() {
     count n = G->numberOfNodes();
@@ -21,7 +21,7 @@ void PivotMDS::run() {
         WARN("Number of Pivots higher than the number of nodes. Setting number of pivots to number of nodes");
         numPivots = n;
     }
-    std::vector<node> pivots = computePivots();
+    std::vector<node> pivots = GraphTools::randomNodes(*G, numPivots);
 
     std::vector<Triplet> triplets;
     for (index j = 0; j < numPivots;
@@ -104,49 +104,6 @@ void PivotMDS::run() {
         CSRMatrix eigenMat(numPivots, numPivots, triplets, true);
         CC -= eigenMat;
     }
-}
-
-std::vector<node> PivotMDS::computePivots() {
-    count n = G->numberOfNodes();
-    std::vector<bool> pivot(n, false);
-    std::vector<node> pivots(numPivots);
-
-    index pivotIdx = 0;
-    if (numPivots == n){
-        for (const auto pivotCandidate: G->nodeRange()) {
-            pivots[pivotIdx++] = pivotCandidate;
-            pivot[pivotCandidate] = true;
-        }
-    } else if (numPivots > n/2) { //in order to minimize the calls to randomNode
-                                  //we randomize the ones that aren't pivot
-                                  //if the are more pivots than non-pivots
-        std::fill(pivot.begin(), pivot.end(), true);
-        
-        auto numNotPivots = n - numPivots;
-        index nonPivotIdx = 0;
-        while (nonPivotIdx < numNotPivots) {
-            node notPivotCandidate = GraphTools::randomNode(*G);
-            if (pivot[notPivotCandidate]) {
-                nonPivotIdx++;
-                pivot[notPivotCandidate] = false;
-            }
-        }
-        
-        for (const auto pivotCandidate: G->nodeRange()) {
-            if (pivot[pivotCandidate]) {
-                pivots[pivotIdx++] = pivotCandidate;
-            }
-        }
-    } else {
-        while (pivotIdx < numPivots) {
-            node pivotCandidate = GraphTools::randomNode(*G);
-            if (!pivot[pivotCandidate]) {
-                pivots[pivotIdx++] = pivotCandidate;
-                pivot[pivotCandidate] = true;
-            }
-        }
-    }
-    return pivots;
 }
 
 void PivotMDS::powerMethod(const CSRMatrix &mat, count n,

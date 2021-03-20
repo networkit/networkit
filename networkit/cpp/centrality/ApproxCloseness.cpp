@@ -68,43 +68,7 @@ void ApproxCloseness::run() {
 }
 
 void ApproxCloseness::estimateClosenessForUndirectedGraph() {
-    std::vector<node> sampledNodes;
-    // sample nodes
-    std::vector<bool> alreadySampled(G.upperNodeIdBound(), false);
-    
-    if (nSamples >= G.numberOfNodes()){
-        for (const auto sample: G.nodeRange()) {
-            sampledNodes.push_back(sample);
-            alreadySampled[sample] = true;
-        }
-    } else if (nSamples >  G.numberOfNodes()/2) {//in order to minimize the calls to randomNode
-                                                 //we randomize the ones that aren't pivot
-                                                 //if the are more samples than non-samples
-        std::fill(alreadySampled.begin(), alreadySampled.end(), true);
-        
-        for (count i = 0; i < G.numberOfNodes() - nSamples; ++i) { // we have to sample distinct nodes
-            node v = GraphTools::randomNode(G);
-            while (!alreadySampled[v]) {
-                v = GraphTools::randomNode(G);
-            }
-            alreadySampled[v] = false;
-        }
-        
-        for (const auto sample: G.nodeRange()) {
-            if (alreadySampled[sample]) {
-                sampledNodes.push_back(sample);
-            }
-        }
-    } else {
-        for (count i = 0; i < nSamples; ++i) { // we have to sample distinct nodes
-            node v = GraphTools::randomNode(G);
-            while (alreadySampled[v]) {
-                v = GraphTools::randomNode(G);
-            }
-            sampledNodes.push_back(v);
-            alreadySampled[v] = true;
-        }
-    }
+    std::vector<node> sampledNodes = GraphTools::randomNodes(G, nSamples);
 
     LCSum = std::vector<double>(G.upperNodeIdBound());
     LCNum = std::vector<count>(G.upperNodeIdBound());
