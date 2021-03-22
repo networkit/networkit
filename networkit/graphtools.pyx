@@ -399,8 +399,15 @@ cdef class GraphTools:
 	@staticmethod
 	def subgraphFromNodes(Graph graph, nodes, includeOutNeighbors=False, includeInNeighbors=False):
 		"""
-		Returns an induced subgraph of the input graph (including potential edge
-		weights/directions).
+		Returns an induced subgraph of this graph (including potential edge
+        weights/directions)
+
+        There a two relevant sets of nodes:
+           - Nodes are such passed as arguments.
+           - Neighbors are empty by default.
+
+        The subgraph contains all nodes in Nodes + Neighbors and all edges which
+        have one end point in Nodes and the other in Nodes or Neighbors.
 
 		Parameters:
 		-----------

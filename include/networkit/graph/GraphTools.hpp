@@ -193,12 +193,20 @@ double inVolume(const Graph &G, InputIt first, InputIt last) {
 Graph copyNodes(const Graph &G);
 
 /**
- * Returns an induced subgraph of the input graph (including potential edge weights/directions).
+ * Returns an induced subgraph of this graph (including potential edge weights/directions)
+ *
+ * There a two relevant sets of nodes:
+ *  - Nodes are such passed as arguments.
+ *  - Neighbors are empty by default.
+ *
+ * The subgraph contains all nodes in Nodes + Neighbors and all edges which have one end point
+ * in Nodes and the other in Nodes or Neighbors.
  *
  * @param G The input graph.
  * @param nodes Nodes of the induced subgraph.
- * @param includeOutNeighbors If set to true, out-neighbors will also be included.
- * @param includeInNeighbors If set to true, in-neighbors will also be included.
+ * @param includeOutNeighbors If set to true, all out-neighbors will also be included.
+ * @param includeInNeighbors If set to true, all in-neighbors will also be included
+ * (relevant only for directed graphs).
  *
  * @return Induced subgraph.
  */
