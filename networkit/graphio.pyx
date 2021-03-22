@@ -259,7 +259,7 @@ cdef class EdgeListReader(GraphReader):
 	and can be accessed using getNodeMap().
 
 	To shift continuous integer node labels which are not zero-indexed, set firstNode to
-	the smallest id used in the file.
+	the smallest id used in the file. firstNode will be ignored in the non-continuous case.
 
 	The file may also include line comments which start with the commentPrefix.
 
