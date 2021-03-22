@@ -75,13 +75,12 @@ node randomNode(const Graph &G) {
 }
 
 std::vector<node> randomNodes(const Graph &G, count n) {
+    assert(n <= G.numberOfNodes());
     std::vector<node> selectedNodes;
     std::vector<bool> alreadySelected(G.numberOfNodes(), false);
 
-    if (n >= G.numberOfNodes()) {
-        for (const auto sample : G.nodeRange()) {
-            selectedNodes.push_back(sample);
-        }
+    if (n == G.numberOfNodes()) {
+        selectedNodes.insert(selectedNodes.begin(), G.nodeRange().begin(), G.nodeRange().end());
     } else if (n > G.numberOfNodes() / 2) { // in order to minimize the calls to randomNode
                                             // we randomize the ones that aren't pivot
                                             // if the are more to be selected than not-selected
@@ -98,6 +97,8 @@ std::vector<node> randomNodes(const Graph &G, count n) {
         for (const auto sample : G.nodeRange()) {
             if (alreadySelected[sample]) {
                 selectedNodes.push_back(sample);
+                if (selectedNodes.size() == n)
+                    break;
             }
         }
     } else {
