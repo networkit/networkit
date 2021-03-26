@@ -44,5 +44,7 @@ cdef class Luby:
 		string
 			The string representation of the algorithm.
 		"""
+		from warnings import warn
+		warn("toString() is deprecated")
 		return self._this.toString().decode("utf-8")
 

@@ -68,7 +68,7 @@ public:
      */
     const std::vector<node> &getPermutation() const noexcept { return permutation; }
 
-    std::string toString() const final;
+    std::string TLX_DEPRECATED(toString() const final);
 
     bool TLX_DEPRECATED(isParallel() const final) { return true; }
 

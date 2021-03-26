@@ -31,7 +31,7 @@ public:
      */
     void run() override;
 
-    std::string toString() const override;
+    std::string TLX_DEPRECATED(toString() const override);
 };
 
 } /* namespace NetworKit */

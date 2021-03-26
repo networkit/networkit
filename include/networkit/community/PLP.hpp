@@ -59,7 +59,7 @@ public:
     /**
      * @return String representation of algorithm and parameters.
      */
-    std::string toString() const override;
+    std::string TLX_DEPRECATED(toString() const override);
 
     /**
      * The algorithm runs until a number of nodes less than

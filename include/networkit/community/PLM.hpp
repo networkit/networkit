@@ -42,7 +42,7 @@ public:
      *
      * @return String representation of this algorithm.
      */
-    std::string toString() const override;
+    std::string TLX_DEPRECATED(toString() const override);
 
     /**
      * Detect communities.

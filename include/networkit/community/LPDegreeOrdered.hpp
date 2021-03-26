@@ -43,7 +43,7 @@ public:
     */
     count numberOfIterations();
 
-    std::string toString() const override;
+    std::string TLX_DEPRECATED(toString() const override);
 
 };
 

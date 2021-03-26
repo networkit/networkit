@@ -98,18 +98,15 @@ def strongScaling(algorithmClass, threadSequence, inargs, inputTitle=None, repet
 		print("set number of threads to {0}".format(getMaxNumberOfThreads()))
 		for r in range(repetitions):
 			algorithm = algorithmClass(**inargs)
-			print("running {0}".format(algorithm.toString()))
+			print("running algorithm")
 			timer = stopwatch.Timer()
 			result = algorithm.run()
 			timer.stop()
 			print("elapsed time: {0}".format(timer.elapsed))
 			if inputTitle is None:
-				try:
-					inputTitle = input.toString()
-				except:
-					inputTitle = str(input)
+				inputTitle = str(input)
 			# append run data
-			data.append({"algo": algorithm.toString(), "input": inputTitle, "threads": nThreads, "time": timer.elapsed})
+			data.append({"input": inputTitle, "threads": nThreads, "time": timer.elapsed})
 	setNumberOfThreads(threadsAvailable)
 	if outPath:
 		with open(outPath, "w") as outFile:
@@ -133,12 +130,12 @@ def weakScaling(algorithmClass, inargs, threadSequence, inputSequence, inputTitl
 		print("set number of threads to {0}".format(getMaxNumberOfThreads()))
 		for r in range(repetitions):
 			algorithm = algorithmClass(input, **inargs)
-			print("running {0}".format(algorithm.toString()))
+			print("running algorithm")
 			timer = stopwatch.Timer()
 			result = algorithm.run()
 			timer.stop()
 			# append run data
-			data.append({"algo": algorithm.toString(), "input": inputTitles[i], "threads": nThreads, "time": timer.elapsed})
+			data.append({"input": inputTitles[i], "threads": nThreads, "time": timer.elapsed})
 	setNumberOfThreads(threadsAvailable)
 	if outPath:
 		with open(outPath, "w") as outFile:

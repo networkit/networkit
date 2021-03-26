@@ -33,7 +33,7 @@ public:
     /**
      * @return string representation of algorithm and parameters.
      */
-    std::string toString() const override;
+    std::string TLX_DEPRECATED(toString() const override);
 
     /**
      * Get the complete hierarchy with all possible parameter values.
