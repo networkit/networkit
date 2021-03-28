@@ -376,7 +376,7 @@ TEST_F(CommunityGTest, testGraphStructuralRandMeasure) {
     GraphStructuralRandMeasure rand;
     double r = rand.getDissimilarity(G, one1, one2);
 
-    EXPECT_EQ(0.0, r) << "Identical clusterings should compare with a dissimilarity of 0.0";
+    EXPECT_NEAR(0.0, r, 1e-15) << "Identical clusterings should compare with a dissimilarity of 0.0";
 
 }
 
