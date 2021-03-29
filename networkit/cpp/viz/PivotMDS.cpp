@@ -12,12 +12,16 @@
 
 namespace NetworKit {
 
-PivotMDS::PivotMDS(const Graph &graph, count dim, count numPivots)
-    : GraphLayoutAlgorithm(graph, dim), dim(dim), numPivots(numPivots) {}
+PivotMDS::PivotMDS(const Graph &G, count dim, count numPivots)
+    : GraphLayoutAlgorithm(G, dim), dim(dim), numPivots(numPivots) {}
 
 void PivotMDS::run() {
     count n = G->numberOfNodes();
-    std::vector<node> pivots = computePivots();
+    if (n < numPivots) {
+        WARN("Number of Pivots higher than the number of nodes. Setting number of pivots to number of nodes");
+        numPivots = n;
+    }
+    std::vector<node> pivots = GraphTools::randomNodes(*G, numPivots);
 
     std::vector<Triplet> triplets;
     for (index j = 0; j < numPivots;
@@ -100,23 +104,6 @@ void PivotMDS::run() {
         CSRMatrix eigenMat(numPivots, numPivots, triplets, true);
         CC -= eigenMat;
     }
-}
-
-std::vector<node> PivotMDS::computePivots() {
-    count n = G->numberOfNodes();
-    std::vector<bool> pivot(n, false);
-    std::vector<node> pivots(numPivots);
-
-    index pivotIdx = 0;
-    while (pivotIdx < numPivots) {
-        node pivotCandidate = GraphTools::randomNode(*G);
-        if (!pivot[pivotCandidate]) {
-            pivots[pivotIdx++] = pivotCandidate;
-            pivot[pivotCandidate] = true;
-        }
-    }
-
-    return pivots;
 }
 
 void PivotMDS::powerMethod(const CSRMatrix &mat, count n,

@@ -20,10 +20,14 @@ struct ListEntry {
 };
 
 ApproxCloseness::ApproxCloseness(const Graph& G, count nSamples, double epsilon, bool normalized, CLOSENESS_TYPE type) : Centrality(G, normalized), nSamples(nSamples), epsilon(epsilon), type(type) {
-    assert(nSamples > 0 && nSamples <= G.numberOfNodes() && epsilon >= 0);
+    assert(nSamples > 0 && epsilon >= 0);
 }
 
 void ApproxCloseness::run() {
+    if (nSamples > G.numberOfNodes()) {
+        WARN("Number of samples higher than the number of nodes. Setting number of samples to number of nodes");
+        nSamples = G.numberOfNodes();
+    }
     if (G.isDirected()) {
         switch (type) {
             case OUTBOUND:
@@ -64,17 +68,7 @@ void ApproxCloseness::run() {
 }
 
 void ApproxCloseness::estimateClosenessForUndirectedGraph() {
-    std::vector<node> sampledNodes;
-    // sample nodes
-    std::vector<bool> alreadySampled(G.upperNodeIdBound(), false);
-    for (count i = 0; i < nSamples; ++i) { // we have to sample distinct nodes
-        node v = GraphTools::randomNode(G);
-        while (alreadySampled[v]) {
-            v = GraphTools::randomNode(G);
-        }
-        sampledNodes.push_back(v);
-        alreadySampled[v] = true;
-    }
+    std::vector<node> sampledNodes = GraphTools::randomNodes(G, nSamples);
 
     LCSum = std::vector<double>(G.upperNodeIdBound());
     LCNum = std::vector<count>(G.upperNodeIdBound());

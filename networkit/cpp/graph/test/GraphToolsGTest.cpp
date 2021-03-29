@@ -222,6 +222,33 @@ TEST_P(GraphToolsGTest, testRandomNode) {
     }
 }
 
+TEST_P(GraphToolsGTest, testRandomNodes) {
+    const count n = 20;
+    const double p = 0.01;
+
+    Aux::Random::setSeed(42, false);
+
+    auto G = ErdosRenyiGenerator(n, p, directed()).generate();
+    if (weighted()) {
+        G = Graph(G, true, G.isDirected());
+    }
+
+    count sampleAll = G.numberOfNodes();
+    std::vector<node> allSample = GraphTools::randomNodes(G, sampleAll);
+    EXPECT_EQ(allSample.size(), sampleAll);
+    EXPECT_EQ((std::unordered_set<node>{allSample.begin(), allSample.end()}).size(), sampleAll);
+
+    count sampleMost = 15;
+    std::vector<node> mostSample = GraphTools::randomNodes(G, sampleMost);
+    EXPECT_EQ(mostSample.size(), sampleMost);
+    EXPECT_EQ((std::unordered_set<node>{mostSample.begin(), mostSample.end()}).size(), sampleMost);
+
+    count sampleSome = 5;
+    std::vector<node> someSample = GraphTools::randomNodes(G, sampleSome);
+    EXPECT_EQ(someSample.size(), sampleSome);
+    EXPECT_EQ((std::unordered_set<node>{someSample.begin(), someSample.end()}).size(), sampleSome);
+}
+
 TEST_P(GraphToolsGTest, testRandomNeighbor) {
     constexpr count n = 10;
     auto G = Graph(n, weighted(), directed());
