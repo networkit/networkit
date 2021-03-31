@@ -3,7 +3,7 @@
   <a href="https://github.com/networkit/networkit/actions"><img src="https://github.com/networkit/networkit/workflows/build/badge.svg"></a>
   <a href="https://badge.fury.io/py/networkit"><img src="https://badge.fury.io/py/networkit.svg"></a>
   <a href="https://coveralls.io/github/networkit/networkit?branch=master"><img src="https://coveralls.io/repos/github/networkit/networkit/badge.svg?branch=master"></a>
-  <a href="https://mybinder.org/v2/gh/networkit/networkit/master?urlpath=lab/tree/base-notebooks/User-Guide.ipynb"><img src="https://mybinder.org/badge_logo.svg"></a>
+  <a href="https://mybinder.org/v2/gh/networkit/networkit/tut-cse-21?urlpath=lab/tree/base-notebooks/User-Guide.ipynb"><img src="https://mybinder.org/badge_logo.svg"></a>
 </p>
 
 ## 
