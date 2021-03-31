@@ -10,16 +10,21 @@
 
 namespace NetworKit {
 
-PathGrowingMatcher::PathGrowingMatcher(const Graph& G): Matcher(G) {
-    if (G.numberOfSelfLoops() > 0) {
-        throw std::invalid_argument("G has self-loops and cannot be processed");
-    }
+PathGrowingMatcher::PathGrowingMatcher(const Graph& G): Matcher(G) { checkInput(); }
+
+PathGrowingMatcher::PathGrowingMatcher(const Graph &G, const std::vector<double> &edgeScores)
+    : Matcher(G, edgeScores) {
+    checkInput();
 }
 
-PathGrowingMatcher::PathGrowingMatcher(const Graph& G, const std::vector<double>& edgeScores): Matcher(G, edgeScores) {
-    if (G.numberOfSelfLoops() > 0) {
-        throw std::invalid_argument("G has self-loops and cannot be processed");
-    }
+void PathGrowingMatcher::checkInput() const {
+    if (G->isDirected())
+        throw std::invalid_argument(
+            "The input graph is directed, this algorithm only supports undirected graphs.");
+
+    if (G->numberOfSelfLoops() > 0)
+        throw std::invalid_argument("The input graph has self-loops, this algorithm only supports "
+                                    "graphs without self-loops. ");
 }
 
 void PathGrowingMatcher::run() {
