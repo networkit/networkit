@@ -21,6 +21,8 @@ enum class NetworkitBinaryWeights {
     autoDetect
 };
 
+enum class NetworkitBinaryEdgeIDs { noEdgeIDs, writeEdgeIDs, autoDetect };
+
 /**
  * @ingroup io
  *
@@ -30,13 +32,20 @@ class NetworkitBinaryWriter final : public GraphWriter {
 
 public:
     NetworkitBinaryWriter(uint64_t chunks = 32,
-                          NetworkitBinaryWeights weightsType = NetworkitBinaryWeights::autoDetect);
+                          NetworkitBinaryWeights weightsType = NetworkitBinaryWeights::autoDetect,
+                          NetworkitBinaryEdgeIDs edgeIndex = NetworkitBinaryEdgeIDs::autoDetect);
 
     void write(const Graph &G, const std::string &path) override;
+    std::vector<uint8_t> writeToBuffer(const Graph &G);
 
 private:
     count chunks;
     NetworkitBinaryWeights weightsType;
+    NetworkitBinaryEdgeIDs edgeIndex;
+    bool preserveEdgeIndex;
+
+    template <class T>
+    void writeData(T &outStream, const Graph &G);
 };
 
 } // namespace NetworKit

@@ -5,6 +5,7 @@
  * @author Charmaine Ndolo <charmaine.ndolo@hu-berlin.de>
  */
 
+#include <string>
 #include <cstring>
 #include <fstream>
 
@@ -17,12 +18,24 @@
 
 namespace NetworKit {
 
-NetworkitBinaryWriter::NetworkitBinaryWriter(uint64_t chunks, NetworkitBinaryWeights weightsType): chunks(chunks), weightsType(weightsType) {}
+NetworkitBinaryWriter::NetworkitBinaryWriter(uint64_t chunks, NetworkitBinaryWeights weightsType, NetworkitBinaryEdgeIDs edgeIndex): chunks(chunks), weightsType(weightsType), edgeIndex(edgeIndex) {}
 
 void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
-
     std::ofstream outfile(path, std::ios::binary);
     Aux::enforceOpened(outfile);
+    writeData(outfile, G);
+    INFO("Written graph to ", path);
+}
+
+std::vector<uint8_t> NetworkitBinaryWriter::writeToBuffer(const Graph &G) {
+    std::stringstream outdata;
+    writeData(outdata, G);
+    std::string str = outdata.str();
+    return std::vector<uint8_t>(str.begin(), str.end());
+}
+
+template <class T>
+void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G){
     nkbg::WEIGHT_FORMAT weightFormat;
 
     auto detectWeightsType = [&] () -> nkbg::WEIGHT_FORMAT {
@@ -73,6 +86,18 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
             weightFormat = nkbg::WEIGHT_FORMAT::FLOAT;
             break;
     }
+    
+    switch(edgeIndex) {
+        case NetworkitBinaryEdgeIDs::noEdgeIDs:
+            preserveEdgeIndex = false;
+            break;
+        case NetworkitBinaryEdgeIDs::autoDetect:
+            preserveEdgeIndex = G.hasEdgeIds();
+            break;
+        case NetworkitBinaryEdgeIDs::writeEdgeIDs:
+            preserveEdgeIndex = G.hasEdgeIds();
+            break;
+    }
 
     nkbg::Header header;
     uint64_t adjListSize = 0;
@@ -81,20 +106,23 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
     auto setFeatures = [&] () {
         header.features =
             (G.isDirected() & nkbg::DIR_MASK)
-            | ((static_cast<uint64_t>(weightFormat) << nkbg::WGHT_SHIFT) & nkbg::WGHT_MASK);
+            | ((static_cast<uint64_t>(weightFormat) << nkbg::WGHT_SHIFT) & nkbg::WGHT_MASK)
+            | ((preserveEdgeIndex << nkbg::INDEX_SHIFT) & nkbg::INDEX_MASK);
     };
 
     auto writeHeader = [&] () {
-        outfile.write(header.magic, 8);
-        outfile.write(reinterpret_cast<char*>(&header.checksum), sizeof(uint64_t));
-        outfile.write(reinterpret_cast<char*>(&header.features), sizeof(uint64_t));
-        outfile.write(reinterpret_cast<char*>(&header.nodes), sizeof(uint64_t));
-        outfile.write(reinterpret_cast<char*>(&header.chunks), sizeof(uint64_t));
-        outfile.write(reinterpret_cast<char*>(&header.offsetBaseData), sizeof(uint64_t));
-        outfile.write(reinterpret_cast<char*>(&header.offsetAdjLists), sizeof(uint64_t));
-        outfile.write(reinterpret_cast<char*>(&header.offsetAdjTranspose), sizeof(uint64_t));
-        outfile.write(reinterpret_cast<char*>(&header.offsetWeightLists), sizeof(uint64_t));
-        outfile.write(reinterpret_cast<char*>(&header.offsetWeightTranspose), sizeof(uint64_t));
+        outStream.write(header.magic, 8);
+        outStream.write(reinterpret_cast<char*>(&header.checksum), sizeof(uint64_t));
+        outStream.write(reinterpret_cast<char*>(&header.features), sizeof(uint64_t));
+        outStream.write(reinterpret_cast<char*>(&header.nodes), sizeof(uint64_t));
+        outStream.write(reinterpret_cast<char*>(&header.chunks), sizeof(uint64_t));
+        outStream.write(reinterpret_cast<char*>(&header.offsetBaseData), sizeof(uint64_t));
+        outStream.write(reinterpret_cast<char*>(&header.offsetAdjLists), sizeof(uint64_t));
+        outStream.write(reinterpret_cast<char*>(&header.offsetAdjTranspose), sizeof(uint64_t));
+        outStream.write(reinterpret_cast<char*>(&header.offsetWeightLists), sizeof(uint64_t));
+        outStream.write(reinterpret_cast<char*>(&header.offsetWeightTranspose), sizeof(uint64_t));
+        outStream.write(reinterpret_cast<char*>(&header.offsetAdjIdLists), sizeof(uint64_t));
+        outStream.write(reinterpret_cast<char*>(&header.offsetAdjIdTranspose), sizeof(uint64_t));
     };
 
     auto writeWeightsToFile = [&] (edgeweight w) {
@@ -103,22 +131,22 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
         switch(weightFormat) {
             case nkbg::WEIGHT_FORMAT::VARINT:
                 weightSize = nkbg::varIntEncode(w, tmp);
-                outfile.write(reinterpret_cast<char*>(tmp), weightSize);
+                outStream.write(reinterpret_cast<char*>(tmp), weightSize);
                 break;
             case nkbg::WEIGHT_FORMAT::DOUBLE:
-                outfile.write(reinterpret_cast<char*>(&w), sizeof(double));
+                outStream.write(reinterpret_cast<char*>(&w), sizeof(double));
                 break;
             case nkbg::WEIGHT_FORMAT::SIGNED_VARINT:
             {
                 uint64_t weight = nkbg::zigzagEncode(w);
                 weightSize = nkbg::varIntEncode(weight,tmp);
-                outfile.write(reinterpret_cast<char*>(tmp), weightSize);
+                outStream.write(reinterpret_cast<char*>(tmp), weightSize);
             }
                 break;
             case nkbg::WEIGHT_FORMAT::FLOAT:
             {
                 float weight = w;
-                outfile.write(reinterpret_cast<char*>(&weight), sizeof(float));
+                outStream.write(reinterpret_cast<char*>(&weight), sizeof(float));
             }
                 break;
             case nkbg::WEIGHT_FORMAT::NONE:
@@ -147,12 +175,16 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
     uint64_t transpSize = 0;
     uint64_t adjWeightSize = 0;
     uint64_t transpWeightSize = 0;
+    uint64_t adjIndexSize = 0;
+    uint64_t transpIndexSize = 0;
     std::vector<uint64_t> nrOutNbrs;
     std::vector<uint64_t> nrInNbrs;
     std::vector<size_t> adjOffsets; //Prefix sum of size encoded adj arrays
     std::vector<size_t> transpOffsets; //Prefix sum of encoded transposed adj arrays
     std::vector<size_t> adjWghtOffsets; //Prefix sum of size encoded adj weights
     std::vector<size_t> transpWghtOffsets;//Prefix sum of encoded transposed weights
+    std::vector<size_t> adjIndexOffsets; //Prefix sum of size encoded edge indexes
+    std::vector<size_t> transpIndexOffsets;//Prefix sum of encoded transposed edge index
 
     auto computeWeightsOffsets = [&] (edgeweight w) {
         uint64_t size = 0;
@@ -180,6 +212,13 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
         return size;
     };
 
+    auto computeIndexOffsets = [&] (edgeid id) {
+        uint64_t size = 0;
+        uint8_t tmp [10];
+        size = nkbg::varIntEncode(id, tmp);
+        return size;
+    };
+
     for(uint64_t c = 0; c < chunks; c++) {
         for(uint64_t n = firstInChunk[c]; n < firstInChunk[c+1]; n++) {
             uint64_t outNbrs = 0;
@@ -191,11 +230,15 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
                         outNbrs++;
                         adjSize += nkbg::varIntEncode(v, tmp);
                         adjWeightSize += computeWeightsOffsets(w);
+                        if(preserveEdgeIndex)
+                            adjIndexSize += computeIndexOffsets(G.edgeId(n, v));
                     }
                     if (v >= n) {
                         inNbrs++;
                         transpSize += nkbg::varIntEncode(v, tmp);
                         transpWeightSize += computeWeightsOffsets(w);
+                        if(preserveEdgeIndex)
+                            transpIndexSize += computeIndexOffsets(G.edgeId(n, v));
                     }
                 });
             } else {
@@ -203,11 +246,15 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
                     outNbrs++;
                     adjSize += nkbg::varIntEncode(v, tmp);
                     adjWeightSize += computeWeightsOffsets(w);
+                    if(preserveEdgeIndex)
+                        adjIndexSize += computeIndexOffsets(G.edgeId(n, v));
                 });
                 G.forInNeighborsOf(n, [&] (node v, edgeweight w) {
                     inNbrs++;
                     transpSize += nkbg::varIntEncode(v, tmp);
                     transpWeightSize += computeWeightsOffsets(w);
+                    if(preserveEdgeIndex)
+                        transpIndexSize += computeIndexOffsets(G.edgeId(v, n));
                 });
             }
             adjListSize += outNbrs;
@@ -222,32 +269,50 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
         transpOffsets.push_back(transpSize);
         adjWghtOffsets.push_back(adjWeightSize);
         transpWghtOffsets.push_back(transpWeightSize);
+        adjIndexOffsets.push_back(adjIndexSize);
+        transpIndexOffsets.push_back(transpIndexSize);
     }
     // Write header.
-    strncpy(header.magic,"nkbg002",8);
+    strncpy(header.magic,"nkbg003",8);
     header.checksum = 0;
     setFeatures();
     header.nodes = nodes;
     header.chunks = chunks;
     header.offsetBaseData = sizeof(nkbg::Header);
-    header.offsetAdjLists = header.offsetBaseData
-            + nodes * sizeof(uint8_t) // nodeFlags.
+    auto nextOffset = header.offsetBaseData;
+    nextOffset += nodes * sizeof(uint8_t) // nodeFlags.
             + (chunks - 1) * sizeof(uint64_t); // firstVertex.
-    header.offsetAdjTranspose = header.offsetAdjLists
-            + (chunks - 1) * sizeof(uint64_t) // adjOffsets
+    header.offsetAdjLists = nextOffset;
+    nextOffset += (chunks - 1) * sizeof(uint64_t) // adjOffsets
             + sizeof(uint64_t) // adjListSize
             + adjOffsets.back(); // Size of data
-    if(weightFormat != nkbg::WEIGHT_FORMAT::NONE) {
-            header.offsetWeightLists = header.offsetAdjTranspose
-            + (chunks - 1) * sizeof(uint64_t) //transpOffsets
+    header.offsetAdjTranspose = nextOffset;
+    nextOffset += (chunks - 1) * sizeof(uint64_t) //transpOffsets
             + sizeof(uint64_t) //adjTranspSize
             + transpOffsets.back(); //Size of data
-        header.offsetWeightTranspose = header.offsetWeightLists
-            + (chunks - 1) * sizeof(uint64_t)
+   
+    if(weightFormat != nkbg::WEIGHT_FORMAT::NONE) {
+        header.offsetWeightLists = nextOffset;
+        nextOffset += (chunks - 1) * sizeof(uint64_t)
             + adjWghtOffsets.back();
+        header.offsetWeightTranspose = nextOffset;
+        nextOffset += (chunks - 1) * sizeof(uint64_t)//transpWeightOffsets
+            + transpWghtOffsets.back();
     } else {
         header.offsetWeightLists = 0;
         header.offsetWeightTranspose = 0;
+        nextOffset += (chunks - 1) * sizeof(uint64_t) //weightOffsets
+            + (chunks - 1) * sizeof(uint64_t); //transpWeightOffsets
+    }
+
+    if(preserveEdgeIndex) {
+        header.offsetAdjIdLists = nextOffset;
+        nextOffset += (chunks - 1) * sizeof(uint64_t)
+            + adjIndexOffsets.back();
+        header.offsetAdjIdTranspose = nextOffset;
+    } else {
+        header.offsetAdjIdLists = 0;
+        header.offsetAdjIdTranspose = 0;
     }
     writeHeader();
     // Write base data.
@@ -256,67 +321,68 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
         if (G.hasNode(u)) {
             nodeFlag |= nkbg::DELETED_BIT;
         }
-        outfile.write(reinterpret_cast<char*>(&nodeFlag), sizeof(uint8_t));
+        outStream.write(reinterpret_cast<char*>(&nodeFlag), sizeof(uint8_t));
     });
 
     assert(!firstInChunk[0]);
     for (uint64_t c = 1; c < chunks; c++) {
-        outfile.write(reinterpret_cast<char*>(&firstInChunk[c]), sizeof(uint64_t));
+        outStream.write(reinterpret_cast<char*>(&firstInChunk[c]), sizeof(uint64_t));
     }
-
+    
+    
     // Write adjacency data.
     for (uint64_t c = 1; c < chunks; c++) {
-        outfile.write(reinterpret_cast<char*>(&adjOffsets[c-1]), sizeof(uint64_t));
+        outStream.write(reinterpret_cast<char*>(&adjOffsets[c-1]), sizeof(uint64_t));
     }
     // Write size of list
-    outfile.write(reinterpret_cast<char*>(&adjListSize), sizeof(uint64_t));
+    outStream.write(reinterpret_cast<char*>(&adjListSize), sizeof(uint64_t));
     G.forNodes([&](node u) {
         uint8_t tmp [10];
         uint64_t nbrsSize = nkbg::varIntEncode(nrOutNbrs[u], tmp);
-        outfile.write(reinterpret_cast<char*>(tmp), nbrsSize);
+        outStream.write(reinterpret_cast<char*>(tmp), nbrsSize);
         G.forNeighborsOf(u,[&](node v){
             uint64_t nodeSize;
             if(!G.isDirected()) {
                 if(v <= u) {
                     nodeSize = nkbg::varIntEncode(v, tmp);
-                    outfile.write(reinterpret_cast<char*>(tmp), nodeSize);
+                    outStream.write(reinterpret_cast<char*>(tmp), nodeSize);
                 }
             } else {
                 nodeSize = nkbg::varIntEncode(v, tmp);
-                outfile.write(reinterpret_cast<char*>(tmp), nodeSize);
+                outStream.write(reinterpret_cast<char*>(tmp), nodeSize);
             }
         });
     });
 
     // Write transpose data.
     for (uint64_t c = 1; c < chunks; c++) {
-        outfile.write(reinterpret_cast<char*>(&transpOffsets[c-1]), sizeof(uint64_t));
+        outStream.write(reinterpret_cast<char*>(&transpOffsets[c-1]), sizeof(uint64_t));
     }
     // Write size of transpose list.
-    outfile.write(reinterpret_cast<char*>(&adjTransposeSize), sizeof(uint64_t));
+    outStream.write(reinterpret_cast<char*>(&adjTransposeSize), sizeof(uint64_t));
     G.forNodes([&](node u) {
         uint8_t tmp [10];
         uint64_t nbrsSize = nkbg::varIntEncode(nrInNbrs[u], tmp);
-        outfile.write(reinterpret_cast<char*>(tmp), nbrsSize);
+        outStream.write(reinterpret_cast<char*>(tmp), nbrsSize);
         uint64_t nodeSize;
         if(!G.isDirected()) {
             G.forNeighborsOf(u,[&](node v){
                 if(v >= u) {
                     nodeSize = nkbg::varIntEncode(v, tmp);
-                    outfile.write(reinterpret_cast<char*>(tmp), nodeSize);
+                    outStream.write(reinterpret_cast<char*>(tmp), nodeSize);
                 }
             });
         } else {
             G.forInNeighborsOf(u,[&](node v){
                 nodeSize = nkbg::varIntEncode(v, tmp);
-                outfile.write(reinterpret_cast<char*>(tmp), nodeSize);
+                outStream.write(reinterpret_cast<char*>(tmp), nodeSize);
             });
         }
     });
 
     // Write adj weights.
     for (uint64_t c = 1; c < chunks; c++) {
-        outfile.write(reinterpret_cast<char*>(&adjWghtOffsets[c-1]), sizeof(uint64_t));
+        outStream.write(reinterpret_cast<char*>(&adjWghtOffsets[c-1]), sizeof(uint64_t));
     }
     G.forNodes([&](node u) {
         G.forNeighborsOf(u,[&](node v,edgeweight w){
@@ -332,7 +398,7 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
 
     // Write transpose weights.
     for (uint64_t c = 1; c < chunks; c++) {
-        outfile.write(reinterpret_cast<char*>(&transpWghtOffsets[c-1]), sizeof(uint64_t));
+        outStream.write(reinterpret_cast<char*>(&transpWghtOffsets[c-1]), sizeof(uint64_t));
     }
     G.forNodes([&](node u) {
         if(!G.isDirected()) {
@@ -347,7 +413,51 @@ void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
             });
         }
     });
-
-    INFO("Written graph to ", path);
+    
+    // Write adj index.
+    for (uint64_t c = 1; c < chunks; c++) {
+        outStream.write(reinterpret_cast<char*>(&adjIndexOffsets[c-1]), sizeof(uint64_t));
+    }
+    if(preserveEdgeIndex){
+        G.forNodes([&](node u) {
+            G.forNeighborsOf(u,[&](node v){
+                if(!G.isDirected()) {
+                    if(v <= u) {
+                        uint8_t tmp [10];
+                        uint64_t edgeidSize = nkbg::varIntEncode(G.edgeId(u, v), tmp);
+                        outStream.write(reinterpret_cast<char*>(tmp), edgeidSize);
+                    }
+                } else {
+                    uint8_t tmp [10];
+                    uint64_t edgeidSize = nkbg::varIntEncode(G.edgeId(u, v), tmp);
+                    outStream.write(reinterpret_cast<char*>(tmp), edgeidSize);
+                }
+            });
+        });
+    }
+    // Write transpose index.
+    for (uint64_t c = 1; c < chunks; c++) {
+        outStream.write(reinterpret_cast<char*>(&transpIndexOffsets[c-1]), sizeof(uint64_t));
+    }
+    if(preserveEdgeIndex){
+        G.forNodes([&](node u) {
+            if(!G.isDirected()) {
+                G.forNeighborsOf(u,[&](node v){
+                    if(v >= u) {
+                        uint8_t tmp [10];
+                        uint64_t edgeidSize = nkbg::varIntEncode(G.edgeId(u, v), tmp);
+                        outStream.write(reinterpret_cast<char*>(tmp), edgeidSize);
+                    }
+                });
+            } else {
+                G.forInNeighborsOf(u, [&](node v){
+                    uint8_t tmp [10];
+                    uint64_t edgeidSize = nkbg::varIntEncode(G.edgeId(v, u), tmp);
+                    outStream.write(reinterpret_cast<char*>(tmp), edgeidSize);
+                });
+            }
+        });
+    }
 }
+
 } /*namespace */
