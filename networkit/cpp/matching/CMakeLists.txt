@@ -3,6 +3,7 @@ networkit_add_module(matching
     Matcher.cpp
     Matching.cpp
     PathGrowingMatcher.cpp
+    SuitorMatcher.cpp
     )
 
 networkit_module_link_modules(matching

@@ -1561,7 +1561,7 @@ public:
      *
      * @param u Node.
      * @param i index; should be in [0, degreeOut(u))
-     * @return @a i -th (outgoing) neighbor of @a u, or @c none if no such
+     * @return @a i-th (outgoing) neighbor of @a u, or @c none if no such
      * neighbor exists.
      */
     node getIthNeighbor(node u, index i) const {
@@ -1575,7 +1575,7 @@ public:
      *
      * @param u Node.
      * @param i index; should be in [0, degreeOut(u))
-     * @return @a weight of the i-th (outgoing) neighbor of @a u, or @c +inf if no such
+     * @return @a edge weight to the i-th (outgoing) neighbor of @a u, or @c +inf if no such
      * neighbor exists.
      */
     edgeweight getIthNeighborWeight(node u, index i) const {
