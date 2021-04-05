@@ -41,6 +41,7 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	_Graph transpose(_Graph G) nogil except +
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) nogil except +
 	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) nogil except +
+	void sortEdgesByWeight(_Graph G, bool_t) nogil except +
 
 cdef class GraphTools:
 
@@ -500,3 +501,19 @@ cdef class GraphTools:
 		for elem in cResult:
 			result[elem.first] = elem.second
 		return result
+
+	@staticmethod
+	def sortEdgesByWeight(Graph G, decreasing = False):
+		"""
+		Sorts the adjacency arrays by edge weight.
+
+		Parameters:
+		----------
+		G : networkit.Graph
+			The input graph.
+		decreasing : bool
+			If True adjacency arrays are sorted by non-increasing edge weights, if False
+			adjacency arrays are sorted by non-decreasing edge weights. Ties are broken
+			by using node ids.
+		"""
+		sortEdgesByWeight(G._this, decreasing)

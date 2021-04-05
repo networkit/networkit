@@ -13,6 +13,7 @@
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphTools.hpp>
+#include <networkit/io/METISGraphReader.hpp>
 
 namespace NetworKit {
 
@@ -963,4 +964,44 @@ TEST_P(GraphToolsGTest, testMerge) {
     }
 }
 
+TEST_P(GraphToolsGTest, testEdgesSortedByWeight) {
+    const auto hasEdgesSortedByWeight = [](const Graph &G, bool decreasing) -> bool {
+        for (node u : G.nodeRange()) {
+            node prevNode = decreasing ? none : 0;
+            edgeweight prevWeight =
+                (decreasing ? 1. : -1.) * std::numeric_limits<edgeweight>::max();
+            bool sorted = true;
+            G.forNeighborsOf(u, [&](node v, edgeweight ew) {
+                if (ew == prevWeight)
+                    sorted = prevNode <= v;
+                else
+                    sorted = decreasing ? ew < prevWeight : ew > prevWeight;
+                prevNode = v;
+                prevWeight = ew;
+            });
+
+            if (!sorted)
+                return false;
+        }
+
+        return true;
+    };
+
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, true);
+        auto G = METISGraphReader{}.read("input/PGPgiantcompo.graph");
+
+        if (weighted()) {
+            G = GraphTools::toWeighted(G);
+            G.forEdges([&G](node u, node v) { G.setWeight(u, v, Aux::Random::real(10)); });
+        }
+
+        GraphTools::sortEdgesByWeight(G);
+        EXPECT_TRUE(hasEdgesSortedByWeight(G, false));
+        EXPECT_TRUE(G.checkConsistency());
+        GraphTools::sortEdgesByWeight(G, true);
+        EXPECT_TRUE(hasEdgesSortedByWeight(G, true));
+        EXPECT_TRUE(G.checkConsistency());
+    }
+}
 } // namespace NetworKit

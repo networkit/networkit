@@ -2,7 +2,7 @@ networkit_add_test(graph GraphBuilderAutoCompleteGTest auxiliary)
 networkit_add_test(graph GraphBuilderDirectSwapGTest auxiliary)
 networkit_add_test(graph GraphGTest
     auxiliary dyn_distance io generators)
-networkit_add_test(graph GraphToolsGTest generators)
+networkit_add_test(graph GraphToolsGTest generators io)
 networkit_add_test(graph TraversalGTest generators)
 networkit_add_test(graph SpanningGTest io)
 

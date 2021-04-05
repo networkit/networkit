@@ -18,7 +18,8 @@ class TestGraphTools(unittest.TestCase):
 	def generateRandomWeights(self, G):
 		if not G.isWeighted():
 			G = nk.graphtools.toWeighted(G)
-		G.forEdges(lambda u, v, w, eid: G.setWeight(u, v, random.random()))
+		for e in G.iterEdges():
+			G.setWeight(e[0], e[1], random.random())
 
 		return G
 
@@ -453,6 +454,47 @@ class TestGraphTools(unittest.TestCase):
 				self.assertTrue(G.hasEdge(5, 3))
 				nk.graphtools.removeEdgesFromIsolatedSet(G, [3, 4, 5])
 				self.assertEqual(G.numberOfEdges(), 0)
+
+	def testSortEdgesByWeight(self):
+		def checkSortedEdges(g, decreasing):
+			for u in g.iterNodes():
+				prevNode = g.numberOfNodes() if decreasing else -1
+				prevWeight = 2 if decreasing else 0
+
+				for v in g.iterNeighbors(u):
+					w = g.weight(u, v)
+					if decreasing:
+						if w == prevWeight:
+							self.assertLess(prevNode, v)
+						else:
+							self.assertLess(w, prevWeight)
+					else:
+						if w == prevWeight:
+							self.assertLess(prevNode, v)
+						else:
+							self.assertGreater(w, prevWeight)
+
+					prevNode, prevWeight = v, w
+
+		def doTest(g):
+			nk.graphtools.sortEdgesByWeight(g, False)
+			checkSortedEdges(g, False)
+			nk.graphtools.sortEdgesByWeight(g, True)
+			checkSortedEdges(g, True)
+
+		g = nk.readGraph('input/PGPgiantcompo.graph', nk.Format.METIS)
+		g.removeSelfLoops()
+		g.removeMultiEdges()
+
+		# Test unweighted
+		doTest(g)
+
+		random.seed(1)
+		g = self.generateRandomWeights(g)
+		e = nk.graphtools.randomEdge(g)
+
+		# Test weighted
+		doTest(g)
 
 if __name__ == "__main__":
 	unittest.main()

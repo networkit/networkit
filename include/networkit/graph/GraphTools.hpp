@@ -300,6 +300,17 @@ std::vector<node> invertContinuousNodeIds(const std::unordered_map<node, node> &
 Graph restoreGraph(const std::vector<node> &invertedIdMap, const Graph &G);
 
 /**
+ * Sorts the adjacency arrays by increasing or decreasing edge weight. Edge ids are used
+ * to break ties.
+ *
+ * @param G The input graph.
+ * @param decreasing If true the adjacency arrays are sorted by non-increasing edge weights, if
+ * false, the adjacency arrays are sorted by non-decreasing edge weights. Ties are broken by
+ * using node ids.
+ */
+void sortEdgesByWeight(Graph &G, bool decreasing = false);
+
+/**
  * Rename nodes in a graph using a callback which translates each old id to a new one.
  * For each node u in input graph, oldIdToNew(u) < numNodes.
  *
