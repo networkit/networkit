@@ -10,7 +10,9 @@
 #ifndef NETWORKIT_CENTRALITY_PAGE_RANK_HPP_
 #define NETWORKIT_CENTRALITY_PAGE_RANK_HPP_
 
+#include <atomic>
 #include <limits>
+#include <memory>
 
 #include <networkit/centrality/Centrality.hpp>
 
@@ -35,7 +37,7 @@ public:
      * @param[in] damp Damping factor of the PageRank algorithm.
      * @param[in] tol Error tolerance for PageRank iteration.
      */
-    PageRank(const Graph &G, double damp = 0.85, double tol = 1e-8);
+    PageRank(const Graph &G, double damp = 0.85, double tol = 1e-8, bool normalized = false);
 
     /**
      * Computes page rank on the graph passed in constructor.
@@ -68,6 +70,8 @@ private:
     double damp;
     double tol;
     count iterations;
+    bool normalized;
+    std::atomic<double> max;
 };
 
 } /* namespace NetworKit */

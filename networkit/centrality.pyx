@@ -1735,7 +1735,7 @@ class Norm(object):
 cdef extern from "<networkit/centrality/PageRank.hpp>":
 
 	cdef cppclass _PageRank "NetworKit::PageRank" (_Centrality):
-		_PageRank(_Graph, double damp, double tol) except +
+		_PageRank(_Graph, double damp, double tol, bool_t normalized) except +
 		count numberOfIterations() except +
 		_Norm norm
 		count maxIterations
@@ -1753,11 +1753,13 @@ cdef class PageRank(Centrality):
 		Damping factor of the PageRank algorithm.
 	tol : double, optional
 		Error tolerance for PageRank iteration.
+	normalized : bool, optional
+		If the results should be normalized by the lower bound of scores. This llows for better comparasion between different graphs.
 	"""
 
-	def __cinit__(self, Graph G, double damp=0.85, double tol=1e-9):
+	def __cinit__(self, Graph G, double damp=0.85, double tol=1e-8, bool_t normalized=False):
 		self._G = G
-		self._this = new _PageRank(G._this, damp, tol)
+		self._this = new _PageRank(G._this, damp, tol, normalized)
 
 	def numberOfIterations(self):
 		"""
@@ -1787,6 +1789,7 @@ cdef class PageRank(Centrality):
 			if maxIterations < 0:
 				raise Exception("Max iterations cannot be a negative number.")
 			(<_PageRank*>(self._this)).maxIterations = maxIterations
+
 
 cdef extern from "<networkit/centrality/SpanningEdgeCentrality.hpp>":
 

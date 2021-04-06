@@ -501,6 +501,34 @@ TEST_P(CentralityGTest, testPageRank) {
     doTest(PageRank::Norm::L2Norm);
 }
 
+TEST_P(CentralityGTest, testNormalizedPageRank) {
+    SNAPGraphReader reader(isDirected());
+    auto G = reader.read("input/wiki-Vote.txt");
+
+    auto doTest = [&G](PageRank::Norm norm) {
+        PageRank pr(G, 0.85, 1e-8, true);
+        pr.norm = norm;
+        pr.run();
+
+        auto pr_ranking = pr.ranking();
+        const double tol = 1e-4;
+        if (G.isDirected()) {
+            EXPECT_EQ(pr_ranking[0].first, 326);
+            EXPECT_NEAR(pr_ranking[0].second, 57.6657, tol);
+        } else {
+            EXPECT_EQ(pr_ranking[0].first, 699);
+            EXPECT_NEAR(pr_ranking[0].second, 205.7324, tol);
+        }
+        const count maxIterations = 2;
+        pr.maxIterations = maxIterations;
+        pr.run();
+        EXPECT_LE(pr.numberOfIterations(), maxIterations);
+    };
+
+    doTest(PageRank::Norm::L1Norm);
+    doTest(PageRank::Norm::L2Norm);
+}
+
 TEST_F(CentralityGTest, testEigenvectorCentrality) {
     /* Graph:
      0    3   6
@@ -584,6 +612,48 @@ TEST_F(CentralityGTest, testPageRankCentrality) {
     EXPECT_NEAR(0.0565, fabs(cen[7]), tol);
 }
 
+TEST_F(CentralityGTest, testNormalizedPageRankCentrality) {
+    /* Graph:
+     0    3   6
+      \  / \ /
+       2 -- 5
+      /  \ / \
+     1    4   7
+
+     Edges in the upper row have weight 3,
+     the edge in the middle row has weight 1.5,
+     edges in the lower row have weight 2.
+    */
+    count n = 8;
+    Graph G(n, true);
+
+    G.addEdge(0, 2, 3);
+    G.addEdge(1, 2, 2);
+    G.addEdge(2, 3, 3);
+    G.addEdge(2, 4, 2);
+    G.addEdge(2, 5, 1.5);
+    G.addEdge(3, 5, 3);
+    G.addEdge(4, 5, 2);
+    G.addEdge(5, 6, 3);
+    G.addEdge(5, 7, 2);
+
+    double damp = 0.85;
+    PageRank centrality(G, damp, 1e-8, true);
+    centrality.run();
+    std::vector<double> cen = centrality.scores();
+
+    // compare to Matlab results
+    const double tol = 1e-4;
+    EXPECT_NEAR(4.0175, fabs(cen[0]), tol);
+    EXPECT_NEAR(3.0117, fabs(cen[1]), tol);
+    EXPECT_NEAR(13.6083, fabs(cen[2]), tol);
+    EXPECT_NEAR(7.0350, fabs(cen[3]), tol);
+    EXPECT_NEAR(5.0233, fabs(cen[4]), tol);
+    EXPECT_NEAR(13.6083, fabs(cen[5]), tol);
+    EXPECT_NEAR(4.0175, fabs(cen[6]), tol);
+    EXPECT_NEAR(3.0117, fabs(cen[7]), tol);
+}
+
 TEST_F(CentralityGTest, benchSequentialBetweennessCentralityOnRealGraph) {
     METISGraphReader reader;
     Graph G = reader.read("input/celegans_metabolic.graph");
@@ -616,6 +686,16 @@ TEST_F(CentralityGTest, benchPageRankCentralityOnRealGraph) {
     Graph G = reader.read("input/celegans_metabolic.graph");
     double damp = 0.85;
     PageRank cen(G, damp);
+    cen.run();
+    std::vector<std::pair<node, double>> ranking = cen.ranking();
+    INFO("Highest rank: ", ranking[0].first, " with score ", ranking[0].second);
+}
+
+TEST_F(CentralityGTest, benchNormalizedPageRankCentralityOnRealGraph) {
+    METISGraphReader reader;
+    Graph G = reader.read("input/celegans_metabolic.graph");
+    double damp = 0.85;
+    PageRank cen(G, damp, 1e-8, true);
     cen.run();
     std::vector<std::pair<node, double>> ranking = cen.ranking();
     INFO("Highest rank: ", ranking[0].first, " with score ", ranking[0].second);
