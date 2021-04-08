@@ -188,6 +188,7 @@ TEST_F(AuxGTest, testPriorityQueue) {
     // construct pq from vector
     Aux::PrioQueue<double, uint64_t> pq(vec);
     EXPECT_EQ(pq.size(), vec.size());
+    EXPECT_FALSE(pq.empty());
 
     double topKey = pq.peekMin(0).first;
     pq.forElements([&](double curKey, uint64_t){
@@ -195,30 +196,112 @@ TEST_F(AuxGTest, testPriorityQueue) {
         topKey = curKey;
     });
 
+    for (uint64_t elem = 0; elem < vec.size(); ++elem)
+        EXPECT_TRUE(pq.contains(elem));
+    EXPECT_FALSE(pq.contains(vec.size()));
+
     ElemType elem = pq.extractMin();
     EXPECT_EQ(0.25, elem.first);
     EXPECT_EQ(11u, elem.second);
     EXPECT_EQ(pq.size(), vec.size() - 1);
+    EXPECT_FALSE(pq.empty());
+    EXPECT_FALSE(pq.contains(11u));
 
     elem = pq.extractMin();
     EXPECT_EQ(0.5, elem.first);
     EXPECT_EQ(0u, elem.second);
     EXPECT_EQ(pq.size(), vec.size() - 2);
+    EXPECT_FALSE(pq.empty());
+    EXPECT_FALSE(pq.contains(0u));
 
     elem = pq.extractMin();
     EXPECT_EQ(0.75, elem.first);
     EXPECT_EQ(4u, elem.second);
     EXPECT_EQ(pq.size(), vec.size() - 3);
+    EXPECT_FALSE(pq.empty());
+    EXPECT_FALSE(pq.contains(4u));
 
     elem = pq.extractMin();
     EXPECT_EQ(1.5, elem.first);
     EXPECT_EQ(5u, elem.second);
     EXPECT_EQ(pq.size(), vec.size() - 4);
+    EXPECT_FALSE(pq.empty());
+    EXPECT_FALSE(pq.contains(5u));
 
     elem = pq.extractMin();
     EXPECT_EQ(2.5, elem.first);
     EXPECT_EQ(3u, elem.second);
     EXPECT_EQ(pq.size(), vec.size() - 5);
+    EXPECT_FALSE(pq.empty());
+    EXPECT_FALSE(pq.contains(3u));
+
+    do {
+        pq.extractMin();
+    } while (pq.size() > 0);
+    EXPECT_EQ(pq.size(), 0);
+    EXPECT_TRUE(pq.empty());
+    for (uint64_t i = 0; i < vec.size(); ++i)
+        EXPECT_FALSE(pq.contains(i));
+}
+
+TEST_F(AuxGTest, testBucketPQ) {
+    Aux::Random::setSeed(42, false);
+    const int64_t maxKey = 100;
+    const count capacity = 100;
+    Aux::BucketPQ prioQ(capacity, 0, maxKey);
+
+    EXPECT_TRUE(prioQ.empty());
+
+    do {
+        prioQ.insert(Aux::Random::integer(maxKey), prioQ.size());
+        EXPECT_TRUE(prioQ.contains(prioQ.size() - 1));
+        EXPECT_FALSE(prioQ.contains(prioQ.size()));
+    } while (prioQ.size() < capacity);
+
+    EXPECT_FALSE(prioQ.empty());
+    for (index i = 0; i < prioQ.size(); ++i)
+        EXPECT_TRUE(prioQ.contains(i));
+
+    int64_t topKey = prioQ.extractMin().first;
+    do {
+        EXPECT_GE(prioQ.getMin().first, topKey);
+        topKey = prioQ.extractMin().first;
+    } while (!prioQ.empty());
+
+    EXPECT_TRUE(prioQ.empty());
+    for (index i = 0; i < prioQ.size(); ++i)
+        EXPECT_FALSE(prioQ.contains(i));
+}
+
+TEST_F(AuxGTest, testBucketPQUpdateRemove) {
+    Aux::Random::setSeed(42, false);
+    const int64_t maxKey = 100;
+    const count capacity = 100;
+    Aux::BucketPQ prioQ(capacity, 0, maxKey);
+
+    EXPECT_TRUE(prioQ.empty());
+
+    do {
+        prioQ.insert(Aux::Random::integer(maxKey), prioQ.size());
+    } while (prioQ.size() < capacity);
+
+    EXPECT_FALSE(prioQ.empty());
+
+    for (count i = 0; i < capacity; ++i) {
+        EXPECT_TRUE(prioQ.contains(i));
+        const auto newKey = Aux::Random::integer(maxKey);
+        prioQ.changeKey(newKey, i);
+        EXPECT_EQ(prioQ.getKey(i), newKey);
+        EXPECT_TRUE(prioQ.contains(i));
+    }
+
+    for (count i = 0; i < capacity; ++i) {
+        EXPECT_FALSE(prioQ.empty());
+        prioQ.remove(i);
+        EXPECT_FALSE(prioQ.contains(i));
+    }
+
+    EXPECT_TRUE(prioQ.empty());
 }
 
 TEST_F(AuxGTest, testLogging) {

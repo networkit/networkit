@@ -162,7 +162,7 @@ void GroupCloseness::run() {
         {
             while (!toInterrupt.load(std::memory_order_relaxed)) {
                 omp_set_lock(&lock);
-                if (Q.size() == 0) {
+                if (Q.empty()) {
                     omp_unset_lock(&lock);
                     toInterrupt.store(true, std::memory_order_relaxed);
                     break;

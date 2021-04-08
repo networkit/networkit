@@ -13,7 +13,6 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
-#include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/SSSP.hpp>
@@ -218,8 +217,6 @@ void DynBetweenness::update(GraphEvent event) {
         while (! stack.empty()) {
             node y = stack.top();
             if (!visited[y]) {
-                // Aux::PrioQueue<double, node> Qnew(G.upperNodeIdBound()); // TODO use prioqueue for ints?
-                // Aux::PrioQueue<double, node> Qold(G.upperNodeIdBound()); // TODO use prioqueue for ints?
                 std::priority_queue<std::pair<double, node>, std::vector<std::pair<double,node>>, CompareDist> Qnew;
                 std::priority_queue<std::pair<double, node>, std::vector<std::pair<double,node>>, CompareDist> Qold;
                 std::vector<bool> affected(G.upperNodeIdBound(), false);

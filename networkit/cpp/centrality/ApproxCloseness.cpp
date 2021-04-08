@@ -139,7 +139,7 @@ void ApproxCloseness::computeClosenessForDirectedWeightedGraph(bool outbound) {
         dist[u] = 0.0;
         round[u] = t;
         pq.insert(dist[u], u);
-        while (pq.size() > 0) {
+        while (!pq.empty()) {
             node v = pq.extractMin().second;
             if (dist[v] == infDist) break;
             if (count[v] < nSamples) {  // only continue if count[v] < k
@@ -267,7 +267,7 @@ void ApproxCloseness::computeClosestPivot(const std::vector<node> &samples, std:
         pivot[samples[i]] = i; // sample node is its own pivot
         pq.insert(0.0, samples[i]);
     }
-    while (pq.size() > 0) {
+    while (!pq.empty()) {
         node u = pq.extractMin().second;
         G.forNeighborsOf(u, [&](node v, edgeweight w) {
             if (delta[u] + w < delta[v]) {
@@ -369,7 +369,7 @@ void ApproxCloseness::orderNodesByIncreasingDistance(node c, std::vector<node> &
         Aux::PrioQueue<edgeweight, node> pq(pivotDist.size());
         pq.insert(0.0, c);
         index idx = 0;
-        while (pq.size() > 0) {
+        while (!pq.empty()) {
             node u = pq.extractMin().second;
             order[idx++] = u;
             G.forNeighborsOf(u, [&](node v, edgeweight w) {

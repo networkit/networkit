@@ -521,7 +521,7 @@ void MaxentStress::addKNeighborhoodOfVertex(const node u, const count k) {
 
         dist[u] = 0;
         PQ.insert(0, u);
-        while (PQ.size() > 0 && numVerticesToVisit > 0) {
+        while (!PQ.empty() && numVerticesToVisit > 0) {
             node v = PQ.extractMin().second;
             if (1 < depth[v] && depth[v] <= k) {
                 knownDistances[u].push_back({v, dist[v]});

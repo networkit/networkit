@@ -13,7 +13,6 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
-#include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/distance/APSP.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/Dijkstra.hpp>

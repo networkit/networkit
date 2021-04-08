@@ -66,7 +66,7 @@ void DynDijkstra::updateBatch(const std::vector<GraphEvent>& batch) {
         updateQueue(edge.v, edge.u, edge.w);
     }
 
-    while(Q.size() != 0) {
+    while(!Q.empty()) {
         mod = true;
         node current = Q.extractMin().second;
         visited.push(current);
