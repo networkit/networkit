@@ -1387,6 +1387,65 @@ cdef class GroupCloseness(Algorithm):
 		"""
 		return (<_GroupCloseness*>(self._this)).scoreOfGroup(group)
 
+
+cdef extern from "<networkit/centrality/GroupClosenessGrowShrink.hpp>":
+	cdef cppclass _GroupClosenessGrowShrink "NetworKit::GroupClosenessGrowShrink"(_Algorithm):
+		_GroupClosenessGrowShrink(_Graph, const vector[node] &group, bool_t extended, count insertions) except +
+		vector[node] groupMaxCloseness() except +
+		count numberOfIterations() except +
+		count maxIterations
+
+cdef class GroupClosenessGrowShrink(Algorithm):
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, group, extended = False, insertions = 0):
+		"""
+		Finds a group of nodes with high group closeness centrality. This is the Grow-Shrink
+		algorithm presented in Angriman et al. "Local Search for Group Closeness Maximization on Big
+		Graphs" IEEE BigData 2019. The algorithm takes as input a connected, unweighted, undirected
+		graph and an arbitrary group of nodes, and improves the group closeness of the given
+		group by performing vertex exchanges.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			A connected, undirected, unweighted graph.
+		group : list
+			The initial group of nodes.
+		extended : bool
+			Set this parameter to true for the Extended Grow-Shrink algorithm (i.e.,
+			swaps are not restricted to only neighbors of the group).
+		insertions : int
+			Number of consecutive node insertions and removal per iteration. Let this
+			parameter to zero to use Diameter(G)/sqrt(k) nodes (where k is the size of the group).
+		"""
+		self._G = G
+		self._this = new _GroupClosenessGrowShrink(G._this, group, extended, insertions)
+
+	def groupMaxCloseness(self):
+		"""
+		Returns the computed group.
+
+		Returns
+		-------
+		list
+			The computed group.
+		"""
+		return (<_GroupClosenessGrowShrink*>(self._this)).groupMaxCloseness()
+
+	def numberOfIterations(self):
+		"""
+		Return the total number of iterations performed by the algorithm.
+
+		Returns
+		-------
+		int
+			Total number of iterations performed by the algorithm.
+		"""
+		return (<_GroupClosenessGrowShrink*>(self._this)).numberOfIterations()
+
+
+
 cdef extern from "<networkit/centrality/KPathCentrality.hpp>":
 
 	cdef cppclass _KPathCentrality "NetworKit::KPathCentrality" (_Centrality):

@@ -17,7 +17,7 @@ class TestTraversal(unittest.TestCase):
 
 	def generateRandomWeights(self, G):
 		if not G.isWeighted():
-			G = nk.graph.Traversal.toWeighted(G)
+			G = nk.graphtools.toWeighted(G)
 		G.forEdges(lambda u, v, w, eid: G.setWeight(u, v, random.random()))
 
 		return G
@@ -108,6 +108,39 @@ class TestTraversal(unittest.TestCase):
 					nk.graph.Traversal.DFSEdgesFrom(
 						G, source, lambda u, v, w, eid: result.append((u, v)))
 					self.assertListEqual(edgeSequence, result)
+
+	def testDijkstraFrom(self):
+		n = 100
+		p = 0.15
+		randNodes = [i for i in range(n)]
+
+		for weighted in [False, True]:
+			for directed in [False, True]:
+				for seed in range(4):
+					nk.setSeed(seed, False)
+					random.seed(seed)
+					random.shuffle(randNodes)
+					G = nk.generators.ErdosRenyiGenerator(n, p, directed).generate()
+					if weighted:
+						G = self.generateRandomWeights(G)
+
+					explored = set()
+
+					def exploreNode(u, d):
+						self.assertFalse(u in explored)
+						self.assertGreaterEqual(d, 0)
+						explored.add(u)
+
+					def testSingleSource(source):
+						explored.clear()
+						nk.graph.Traversal.DijkstraFrom(G, source, exploreNode)
+
+					G.forNodes(testSingleSource)
+
+					for nSources in range(n):
+						explored.clear()
+						sources = randNodes[:nSources]
+						nk.graph.Traversal.DijkstraFrom(G, sources, exploreNode)
 
 if __name__ == "__main__":
 	unittest.main()

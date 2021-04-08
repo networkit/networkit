@@ -27,6 +27,7 @@
 #include <networkit/centrality/EstimateBetweenness.hpp>
 #include <networkit/centrality/GedWalk.hpp>
 #include <networkit/centrality/GroupCloseness.hpp>
+#include <networkit/centrality/GroupClosenessGrowShrink.hpp>
 #include <networkit/centrality/GroupDegree.hpp>
 #include <networkit/centrality/HarmonicCloseness.hpp>
 #include <networkit/centrality/KPathCentrality.hpp>
@@ -39,11 +40,15 @@
 #include <networkit/centrality/SpanningEdgeCentrality.hpp>
 #include <networkit/centrality/TopCloseness.hpp>
 #include <networkit/centrality/TopHarmonicCloseness.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/generators/HyperbolicGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>
+#include <networkit/graph/BFS.hpp>
+#include <networkit/graph/Dijkstra.hpp>
+#include <networkit/io/EdgeListReader.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/SNAPGraphReader.hpp>
 #include <networkit/structures/Cover.hpp>
@@ -1884,6 +1889,67 @@ TEST_F(CentralityGTest, testApproxElectricalCloseness) {
         const auto gt = apx.computeExactDiagonal(1e-12);
         G.forNodes([&](node u) { EXPECT_NEAR(diag[u], gt[u], eps); });
         EXPECT_EQ(apx.scores().size(), G.numberOfNodes());
+    }
+}
+
+TEST_P(CentralityGTest, testGroupClosenessGrowShrink) {
+    if (isDirected()) // directed graphs are not supported
+        return;
+
+    const count k = 5;
+    EdgeListReader reader('\t', 0, "#", false, false);
+    auto G = reader.read("input/MIT8.edgelist");
+    G = ConnectedComponents::extractLargestConnectedComponent(G);
+
+    if (isWeighted()) {
+        G = GraphTools::toWeighted(G);
+        G.forEdges([&G](const node u, const node v) {
+            G.setWeight(u, v, Aux::Random::probability());
+        });
+    }
+
+    auto farnessOfGroup = [&](const Graph &G, const std::unordered_set<node> &group) -> edgeweight {
+        edgeweight farness = 0;
+        if (G.isWeighted()) {
+            Traversal::DijkstraFrom(
+                G, group.begin(), group.end(),
+                [&farness](node, const edgeweight distance) { farness += distance; });
+        } else {
+            Traversal::BFSfrom(
+                G, group.begin(), group.end(),
+                [&farness](node, const edgeweight distance) { farness += distance; });
+        }
+
+        return farness;
+    };
+
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, true);
+
+        std::unordered_set<node> group;
+
+        do {
+            group.insert(GraphTools::randomNode(G));
+        } while (group.size() < k);
+
+        edgeweight sumDist = farnessOfGroup(G, group);
+        GroupClosenessGrowShrink gc(G, group.begin(), group.end());
+        gc.run();
+        auto groupMaxCC = gc.groupMaxCloseness();
+        count nSwaps = gc.numberOfIterations();
+
+        EXPECT_EQ(groupMaxCC.size(), k);
+
+        edgeweight sumDistGroupMaxCC =
+            farnessOfGroup(G, std::unordered_set<node>(groupMaxCC.begin(), groupMaxCC.end()));
+        if (nSwaps > 0) {
+            EXPECT_GE(sumDist, sumDistGroupMaxCC);
+        } else {
+            EXPECT_EQ(sumDist, sumDistGroupMaxCC);
+            std::for_each(groupMaxCC.begin(), groupMaxCC.end(), [&group](const node u) {
+                EXPECT_NE(group.find(u), group.end());
+            });
+        }
     }
 }
 

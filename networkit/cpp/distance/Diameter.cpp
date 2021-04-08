@@ -82,8 +82,11 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 }
 
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &G, double error) {
-    if (G.isDirected() || G.isWeighted()) {
-        throw std::runtime_error("Error, the diameter of directed or weighted graphs cannot be computed yet.");
+    if (G.isDirected()) {
+        throw std::runtime_error("Error, the diameter of directed graphs cannot be computed yet.");
+    }
+    if (G.isWeighted()) {
+        WARN("The input graph is weighted, but this algorithm ignores weights.");
     }
 
     Aux::SignalHandler handler;

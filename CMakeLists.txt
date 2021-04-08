@@ -98,6 +98,45 @@ else()
 	message(WARNING "Support only GCC, Clang, MSVC and AppleClang. Your compiler may or may not work.")
 endif()
 
+# Add flags for AVX instructions if available on the machine (and NETWORKIT_NATIVE is set to ON)
+if (NETWORKIT_NATIVE)
+
+	# Warning message to throw if AVX instructions are not available on host.
+	set(AVX_WARNING_MESSAGE "AVX instructions are not available on this machine")
+
+	# Check if avx2 is available on host. Store result in AVX2_TRUE
+	function(check_avx2 CPUINFO)
+		STRING(REGEX REPLACE "^.*(avx2).*$" "\\1" AVX_THERE ${CPUINFO})
+		STRING(COMPARE EQUAL "avx2" "${AVX_THERE}" AVX_FOUND)
+		set(AVX2_TRUE ${AVX_FOUND} PARENT_SCOPE)
+	endfunction(check_avx2)
+
+	# Check if AVX instructions are supported on host. If yes, enable the required AVX flags.
+	function(set_avx_flags CPUINFO)
+		check_avx2(${CPUINFO})
+
+		if (AVX2_TRUE)
+			set(NETWORKIT_CXX_FLAGS "-mavx -mavx2 -DAVX2_AVAILABLE ${NETWORKIT_CXX_FLAGS}" PARENT_SCOPE)
+		else()
+			message(WARNING ${AVX_WARNING_MESSAGE})
+		endif()
+	endfunction(set_avx_flags)
+
+	if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+		# Get cpu info
+		EXEC_PROGRAM(cat ARGS "/proc/cpuinfo" OUTPUT_VARIABLE CPUINFO)
+		set_avx_flags(${CPUINFO})
+
+	elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+		# Get cpu info
+		EXEC_PROGRAM("/usr/sbin/sysctl -n machdep.cpu.features" OUTPUT_VARIABLE CPUINFO)
+		set_avx_flags(${CPUINFO})
+	else()
+		# TODO check avx flags on Windows
+		message(WARNING "Compiling NetworKit with AVX instructions is not yet supported on this OS.")
+	endif()
+endif()
+
 # Checking sanitizer options; in both cases we include 'undefined'
 set(NETWORKIT_CXX_SANITIZERS "")
 if ("${NETWORKIT_WITH_SANITIZERS}" STREQUAL "address")
