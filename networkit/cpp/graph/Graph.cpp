@@ -207,6 +207,44 @@ index Graph::indexInOutEdgeArray(node u, node v) const {
     }
     return none;
 }
+//TODO: binary search for the sorted version
+index Graph::indexSortedInInEdgeArray(node v, node u) const {
+    if (!directed) {
+        return indexInOutEdgeArray(v, u);
+    }
+	
+	index l = 0;
+	index r = inEdges[u].size()-1;
+	
+    for (index i = (l + r)/2; l <= r; i = (l + r)/2) {
+        node x = inEdges[v][i];
+        if (x > u) {
+			l = i + 1;
+		} else (x < u) {
+			r = i - 1;
+		} else {
+            return i;
+        }
+    }
+    return none;
+}
+
+index Graph::indexSortedInOutEdgeArray(node u, node v) const {
+	index l = 0;
+	index r = outEdges[u].size()-1;
+	
+    for (index i = (l + r)/2; l <= r; i = (l + r)/2) {
+        node x = outEdges[u][i];
+		if (x > v) {
+			l = i + 1;
+		} else (x < v) {
+			r = i - 1;
+		} else {
+            return i;
+        }
+    }
+    return none;
+}
 
 /** EDGE IDS **/
 
@@ -214,8 +252,58 @@ void Graph::indexEdges(bool force) {
     if (edgesIndexed && !force)
         return;
 
-    omega = 0; // reset edge ids (for re-indexing)
+    
+	
+	//TODO: Sort outedges and inedges
+	
+	std::vector<std::vector<node>> targetAdjacencies(upperNodeIdBound());
+    std::vector<std::vector<edgeweight>> targetWeight;
+	
+	if (isWeighted()) {
+        targetWeight.resize(upperNodeIdBound());
+        forNodes([&](node u) { targetWeight[u].reserve(degree(u)); });
+    }
+	
+	
+	forNodes([&](node u) { targetAdjacencies[u].reserve(degree(u)); });
+	
+	auto assignToTarget = [&](node u, node v, edgeweight w) {
+        targetAdjacencies[v].push_back(u);
+        if (isWeighted()) {
+            targetWeight[v].push_back(w);
+        }
+    };
+	
+	forNodes([&](node u) { forInEdgesOf(u, assignToTarget); });
 
+    outEdges.swap(targetAdjacencies);
+    outEdgeWeights.swap(targetWeight);
+
+    if (isDirected()) {
+        inEdges.swap(targetAdjacencies);
+        inEdgeWeights.swap(targetWeight);
+
+        forNodes([&](node u) {
+            targetAdjacencies[u].resize(degreeIn(u));
+            targetAdjacencies[u].shrink_to_fit();
+            targetAdjacencies[u].clear();
+            if (isWeighted()) {
+                targetWeight[u].resize(degreeIn(u));
+                targetWeight[u].shrink_to_fit();
+                targetWeight[u].clear();
+            }
+        });
+
+        forNodes([&](node u) { forEdgesOf(u, assignToTarget); });
+
+        inEdges.swap(targetAdjacencies);
+        inEdgeWeights.swap(targetWeight);
+    }
+	
+	//end TODO
+	
+	omega = 0; // reset edge ids (for re-indexing)
+	
     outEdgeIds.resize(outEdges.size());
     forNodes([&](node u) { outEdgeIds[u].resize(outEdges[u].size(), none); });
 
@@ -241,23 +329,27 @@ void Graph::indexEdges(bool force) {
     // makes sense.
     if (!directed) {
         balancedParallelForNodes([&](node u) {
+			//TODO: binary search
             for (index i = 0; i < outEdges[u].size(); ++i) {
                 node v = outEdges[u][i];
                 if (v != none && outEdgeIds[u][i] == none) {
-                    index j = indexInOutEdgeArray(v, u);
+                    index j = indexSortedInOutEdgeArray(v, u); //SLOW PART??
                     outEdgeIds[u][i] = outEdgeIds[v][j];
                 }
             }
+			//end TODO
         });
     } else {
         balancedParallelForNodes([&](node u) {
+			//TODO: binary search
             for (index i = 0; i < inEdges[u].size(); ++i) {
                 node v = inEdges[u][i];
                 if (v != none) {
-                    index j = indexInOutEdgeArray(v, u);
+                    index j = indexSortedInOutEdgeArray(v, u); //SLOW PART??
                     inEdgeIds[u][i] = outEdgeIds[v][j];
                 }
             }
+			//end TODO
         });
     }
 
