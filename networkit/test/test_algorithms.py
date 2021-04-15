@@ -231,7 +231,7 @@ class TestSelfLoops(unittest.TestCase):
 		for apxScore, exactScore in zip(apx.scores(), se.scores()):
 			self.assertLessEqual(abs(apxScore - exactScore), 2*eps)
 
-	def test_centrality_groupcloseness_growshrink(self):
+	def testCentralityGroupClosenessGrowShrink(self):
 		g = nk.readGraph('input/MIT8.edgelist', nk.Format.EdgeList, separator='\t', firstNode=0,
 				continuous=False, directed=False)
 		g = nk.components.ConnectedComponents(g).extractLargestConnectedComponent(g, True)
@@ -248,6 +248,27 @@ class TestSelfLoops(unittest.TestCase):
 			groupMaxCC = gc.groupMaxCloseness()
 			self.assertEqual(len(set(groupMaxCC)), k)
 			self.assertGreaterEqual(gc.numberOfIterations(), 0)
+
+			for u in groupMaxCC:
+				self.assertTrue(g.hasNode(u))
+
+	def testCentralityGroupClosenessLocalSwaps(self):
+		g = nk.readGraph('input/MIT8.edgelist', nk.Format.EdgeList, separator='\t', firstNode=0,
+				continuous=False, directed=False)
+		g = nk.components.ConnectedComponents(g).extractLargestConnectedComponent(g, True)
+		k = 5
+
+		nk.engineering.setSeed(42, False)
+		for weighted in [False, True]:
+			group = set()
+			while len(group) < k:
+				group.add(nk.graphtools.randomNode(g))
+
+			gc = nk.centrality.GroupClosenessLocalSwaps(g, group).run()
+
+			groupMaxCC = gc.groupMaxCloseness()
+			self.assertEqual(len(set(groupMaxCC)), k)
+			self.assertGreaterEqual(gc.numberOfSwaps(), 0)
 
 			for u in groupMaxCC:
 				self.assertTrue(g.hasNode(u))
