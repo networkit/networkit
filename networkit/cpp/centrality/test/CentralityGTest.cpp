@@ -30,6 +30,7 @@
 #include <networkit/centrality/GroupCloseness.hpp>
 #include <networkit/centrality/GroupClosenessGrowShrink.hpp>
 #include <networkit/centrality/GroupClosenessLocalSwaps.hpp>
+#include <networkit/centrality/GroupClosenessLocalSearch.hpp>
 #include <networkit/centrality/GroupDegree.hpp>
 #include <networkit/centrality/GroupHarmonicCloseness.hpp>
 #include <networkit/centrality/HarmonicCloseness.hpp>
@@ -2179,6 +2180,49 @@ TEST_P(CentralityGTest, testGroupHarmonicCloseness) {
             EXPECT_GE(score / opt, approxRatio);
         }
     }
+}
+
+TEST_P(CentralityGTest, testGroupClosenessLocalSearch) {
+    { // Empty groups are not allowed
+        std::vector<node> emptyVector;
+        Graph G(10, isWeighted(), isDirected());
+        EXPECT_THROW(GroupClosenessLocalSearch(G, emptyVector.begin(), emptyVector.end()),
+                     std::runtime_error);
+    }
+
+    const auto groupCloseness = [&](const Graph &G, const std::vector<node> &group) -> edgeweight {
+        edgeweight groupFarness = 0;
+        Traversal::DijkstraFrom(G, group.begin(), group.end(),
+                                [&groupFarness](node, edgeweight dist) { groupFarness += dist; });
+        return groupFarness > 0 ? 1. / groupFarness : 0;
+    };
+
+    Aux::Random::setSeed(1, true);
+    auto G = ErdosRenyiGenerator(100, 0.1, isDirected()).generate();
+    if (isWeighted()) {
+        G = GraphTools::toWeighted(G);
+        G.forEdges([&](node u, node v) { G.setWeight(u, v, Aux::Random::real(10)); });
+    }
+
+    std::unordered_set<node> initGroup;
+    const count k = 5;
+    do {
+        initGroup.insert(GraphTools::randomNode(G));
+    } while (initGroup.size() < k);
+
+    const auto initGC = groupCloseness(G, std::vector<node>{initGroup.begin(), initGroup.end()});
+
+    GroupClosenessLocalSearch gcls(G, initGroup.begin(), initGroup.end(), !G.isDirected());
+    gcls.run();
+
+    const auto group = gcls.groupMaxCloseness();
+    EXPECT_EQ(std::unordered_set<node>(group.begin(), group.end()).size(), k);
+    EXPECT_GE(groupCloseness(G, group), initGC);
+
+    GroupClosenessLocalSearch gcls2(G, group, false);
+    gcls2.run();
+
+    EXPECT_EQ(gcls2.numberOfIterations(), 0);
 }
 
 } /* namespace NetworKit */

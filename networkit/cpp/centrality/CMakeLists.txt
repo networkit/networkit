@@ -18,6 +18,7 @@ networkit_add_module(centrality
     EstimateBetweenness.cpp
     GedWalk.cpp
     GroupCloseness.cpp
+    GroupClosenessLocalSearch.cpp
     GroupClosenessGrowShrink.cpp
     GroupClosenessGrowShrinkImpl.cpp
     GroupClosenessLocalSwaps.cpp
