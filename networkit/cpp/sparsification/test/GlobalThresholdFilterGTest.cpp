@@ -17,11 +17,9 @@ protected:
     bool isDirected() const noexcept { return GetParam().second; }
 };
 
-INSTANTIATE_TEST_CASE_P(
-    InstantiationName, GlobalThresholdFilterGTest,
-    testing::Values(std::make_pair(false, false), std::make_pair(true, false),
-                    std::make_pair(false, true),
-                    std::make_pair(true, true)), ); // comma required for variadic macro
+INSTANTIATE_TEST_SUITE_P(InstantiationName, GlobalThresholdFilterGTest,
+                         testing::Values(std::make_pair(false, false), std::make_pair(true, false),
+                                         std::make_pair(false, true), std::make_pair(true, true)));
 
 TEST_P(GlobalThresholdFilterGTest, testGlobalThresholdFilter) {
     static constexpr count n = 100;

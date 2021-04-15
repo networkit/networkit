@@ -17,11 +17,9 @@ protected:
     bool directed() const noexcept;
 };
 
-INSTANTIATE_TEST_CASE_P(
-    InstantiationName, TraversalGTest,
-    testing::Values(std::make_pair(false, false), std::make_pair(true, false),
-                    std::make_pair(false, true),
-                    std::make_pair(true, true)), ); // comma required for variadic macro
+INSTANTIATE_TEST_SUITE_P(InstantiationName, TraversalGTest,
+                         testing::Values(std::make_pair(false, false), std::make_pair(true, false),
+                                         std::make_pair(false, true), std::make_pair(true, true)));
 
 Graph TraversalGTest::generateRandomWeights(const Graph &G) const {
     Graph Gw(G, true, G.isDirected());

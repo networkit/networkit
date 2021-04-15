@@ -16,11 +16,9 @@ protected:
     static void generateRandomWeights(Graph &G);
 };
 
-INSTANTIATE_TEST_CASE_P(
-    InstantiationName, ReachabilityGTest,
-    testing::Values(std::make_pair(false, false), std::make_pair(true, false),
-                    std::make_pair(false, true),
-                    std::make_pair(true, true)), ); // comma required for variadic macro
+INSTANTIATE_TEST_SUITE_P(InstantiationName, ReachabilityGTest,
+                         testing::Values(std::make_pair(false, false), std::make_pair(true, false),
+                                         std::make_pair(false, true), std::make_pair(true, true)));
 
 bool ReachabilityGTest::isWeighted() const noexcept {
     return GetParam().first;

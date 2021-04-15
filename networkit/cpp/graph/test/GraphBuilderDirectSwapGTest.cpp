@@ -42,12 +42,12 @@ protected:
     Graph toGraph(GraphBuilder& b) const;
 };
 
-INSTANTIATE_TEST_CASE_P(InstantiationName, GraphBuilderDirectSwapGTest, testing::Values(
+INSTANTIATE_TEST_SUITE_P(InstantiationName, GraphBuilderDirectSwapGTest, testing::Values(
     std::make_tuple(false, false),
     std::make_tuple(true, false),
     std::make_tuple(false, true),
     std::make_tuple(false, false)
-), ); // comma required for variadic macro
+));
 
 bool GraphBuilderDirectSwapGTest::isWeighted() const {
     return std::get<0>(GetParam());
