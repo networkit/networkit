@@ -10,14 +10,12 @@
 #ifndef NETWORKIT_CENTRALITY_GROUP_CLOSENESS_LOCAL_SWAPS_HPP_
 #define NETWORKIT_CENTRALITY_GROUP_CLOSENESS_LOCAL_SWAPS_HPP_
 
-#ifdef AVX2_AVAILABLE
+#ifdef __AVX2__
 #include <immintrin.h>
 #include <networkit/auxiliary/AlignedAllocator.hpp>
-#endif // AVX2_AVAILABLE
+#endif // __AVX2__
 
-#include <functional>
 #include <limits>
-#include <random>
 #include <stdexcept>
 #include <unordered_map>
 #include <vector>
@@ -79,24 +77,21 @@ private:
     const Graph *G;
     std::vector<node> group, stack;
     std::vector<uint32_t> distance, sumOfMins;
-    std::vector<bool> gamma, canSwap, visited;
+    std::vector<bool> gamma, visited;
     std::unordered_map<node, index> idxMap;
-    std::vector<int64_t> value, valueDecrement;
+    std::vector<int64_t> farness, farnessDecrease;
 
     count maxSwaps, totalSwaps, stackSize;
 
     void init();
     void bfsFromGroup();
     bool findAndSwap();
-    node estimateHighestDecrement();
+    node estimateHighestDecrease();
     void initRandomVector();
-    int64_t computeFarnessDecrement(node u);
+    int64_t computeFarnessDecrease(node u);
     void resetGamma(node x, index idx);
 
-    // Returns true if the vertex at the give index is the only nearest vertex to x
-    bool gammaIsU(node x, index idx) const;
-
-#ifdef AVX2_AVAILABLE
+#ifdef __AVX2__
     union RandItem {
         uint16_t items[K];
         __m256i vec;
@@ -104,10 +99,9 @@ private:
     std::vector<RandItem, AlignedAllocator<RandItem, sizeof(RandItem)>> randVec;
 #else
     std::vector<uint16_t> randVec;
-#endif // AVX2_AVAILABLE
+#endif // __AVX2__
 
     std::vector<std::uniform_int_distribution<uint32_t>> intDistributions;
-    std::vector<std::reference_wrapper<std::mt19937_64>> urngs;
 };
 } // namespace NetworKit
 

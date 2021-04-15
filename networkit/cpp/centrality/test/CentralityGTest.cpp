@@ -29,6 +29,7 @@
 #include <networkit/centrality/GedWalk.hpp>
 #include <networkit/centrality/GroupCloseness.hpp>
 #include <networkit/centrality/GroupClosenessGrowShrink.hpp>
+#include <networkit/centrality/GroupClosenessLocalSwaps.hpp>
 #include <networkit/centrality/GroupDegree.hpp>
 #include <networkit/centrality/HarmonicCloseness.hpp>
 #include <networkit/centrality/KPathCentrality.hpp>

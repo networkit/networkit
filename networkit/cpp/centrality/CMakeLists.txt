@@ -20,6 +20,7 @@ networkit_add_module(centrality
     GroupCloseness.cpp
     GroupClosenessGrowShrink.cpp
     GroupClosenessGrowShrinkImpl.cpp
+    GroupClosenessLocalSwaps.cpp
     GroupDegree.cpp
     HarmonicCloseness.cpp
     KadabraBetweenness.cpp

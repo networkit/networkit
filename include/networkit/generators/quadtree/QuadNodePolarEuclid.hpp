@@ -503,6 +503,7 @@ public:
                     if (i >= lsize) break;
                     TRACE("Jumped with delta ", delta, " arrived at ", i);
                 }
+                assert(i >= 0);
 
                 //see where we've arrived
                 candidatesTested++;

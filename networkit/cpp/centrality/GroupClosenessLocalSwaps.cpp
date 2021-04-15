@@ -19,21 +19,17 @@ void GroupClosenessLocalSwaps::init() {
 
     distance.assign(n, 0);
     gamma.assign(n * group.size(), false);
-    canSwap.assign(group.size(), false);
     visited.assign(n, false);
 
     idxMap.clear();
     idxMap.reserve(group.size());
 
     stack.assign(n, 0);
-    value.assign(group.size(), 0);
-    valueDecrement.assign(group.size(), 0);
+    farness.assign(group.size(), 0);
+    farnessDecrease.assign(group.size(), 0);
     sumOfMins.assign(n, 0);
 
     intDistributions.resize(omp_get_max_threads());
-    urngs.reserve(omp_get_max_threads());
-    for (index i = 0; i < static_cast<index>(omp_get_max_threads()); ++i)
-        urngs.emplace_back(Aux::Random::getURNG());
 
     for (size_t i = 0; i < group.size(); ++i) {
         const auto u = group[i];
@@ -41,11 +37,11 @@ void GroupClosenessLocalSwaps::init() {
         gamma[u * group.size() + i] = 1;
     }
 
-#ifdef AVX2_AVAILABLE
+#ifdef __AVX2__
     randVec.resize(n);
 #else
     randVec.resize(K * n);
-#endif // AVX2_AVAILABLE
+#endif // __AVX2__
 
     totalSwaps = 0;
     hasRun = false;
@@ -54,23 +50,27 @@ void GroupClosenessLocalSwaps::init() {
 void GroupClosenessLocalSwaps::run() {
     init();
 
-    while (findAndSwap() && ++totalSwaps < maxSwaps) {
-    }
+    while (findAndSwap() && ++totalSwaps < maxSwaps)
+        ; // Keep iterating.
 
     hasRun = true;
 }
 
 bool GroupClosenessLocalSwaps::findAndSwap() {
     bfsFromGroup();
-    const auto v = estimateHighestDecrement();
-    const auto farnessDecrement = computeFarnessDecrement(v);
+    // Among the vertices outside the group but neighbors of a vertex in the group, the one that
+    // minimizes the farness of the group.
+    const node v = estimateHighestDecrease();
+    const auto farnessDecreaseV = computeFarnessDecrease(v);
     int64_t improvement = 0;
     node u = none;
 
+    // Find the neighbor u of v s.t., u is in the group and, if swapped with v, maximizes the
+    // decrease of the farness of the group.
     G->forNeighborsOf(v, [&](const node y) {
         if (distance[y] == 0) {
             const auto idx = idxMap.at(y);
-            const auto curImprovement = farnessDecrement - value[idx] + valueDecrement[idx];
+            const auto curImprovement = farnessDecreaseV - farness[idx] + farnessDecrease[idx];
 
             if (curImprovement > improvement) {
                 improvement = curImprovement;
@@ -79,20 +79,10 @@ bool GroupClosenessLocalSwaps::findAndSwap() {
         }
     });
 
-    for (const auto &idx : idxMap) {
-        if (canSwap[idx.second]) {
-            int64_t curImprovement =
-                farnessDecrement - value[idx.second] + valueDecrement[idx.second];
-            if (curImprovement > improvement) {
-                improvement = curImprovement;
-                u = idx.first;
-            }
-        }
-    }
-
     if (improvement <= 0)
         return false;
 
+    // Remove v from the group, add u.
     const auto idxU = idxMap.at(u);
     idxMap.erase(u);
     idxMap[v] = idxU;
@@ -108,7 +98,7 @@ void GroupClosenessLocalSwaps::bfsFromGroup() {
 
     for (const auto &idx : idxMap) {
         q.push(idx.first);
-        value[idx.second] = 1;
+        farness[idx.second] = 1;
         distance[idx.first] = 0;
         visited[idx.first] = true;
     }
@@ -116,10 +106,6 @@ void GroupClosenessLocalSwaps::bfsFromGroup() {
     do {
         const auto u = q.front();
         q.pop();
-
-        // Cannot swap with nodes in the group
-        if (distance[u] == 0)
-            canSwap[idxMap.at(u)] = 0;
 
         bool uIsLeaf = false;
 
@@ -133,7 +119,7 @@ void GroupClosenessLocalSwaps::bfsFromGroup() {
             bool nearestNodeFound = false;
 
             // Index of the node in the group that realizes the shortest distance to v.
-            index groupIdx;
+            index groupIdx = none;
 
             if (!visited[v]) {
                 uIsLeaf = false;
@@ -155,7 +141,7 @@ void GroupClosenessLocalSwaps::bfsFromGroup() {
                 }
 
                 if (inGamma)
-                    ++value[groupIdx];
+                    ++farness[groupIdx];
 
             } else if (distance[u] + 1 == distance[v]) {
                 inGamma = true;
@@ -177,11 +163,8 @@ void GroupClosenessLocalSwaps::bfsFromGroup() {
                     }
                 }
                 if (inGamma && subtract)
-                    --value[groupIdx];
+                    --farness[groupIdx];
             }
-
-            if (!distance[u] && !distance[v])
-                canSwap[idxMap[u]] = true;
         });
 
         if (distance[u] != 0 && (!uIsLeaf || distance[u] == count{1}))
@@ -190,7 +173,7 @@ void GroupClosenessLocalSwaps::bfsFromGroup() {
     } while (!q.empty());
 }
 
-int64_t GroupClosenessLocalSwaps::computeFarnessDecrement(node v) {
+int64_t GroupClosenessLocalSwaps::computeFarnessDecrease(node v) {
     std::fill(visited.begin(), visited.end(), false);
 
     std::queue<node> q;
@@ -198,8 +181,8 @@ int64_t GroupClosenessLocalSwaps::computeFarnessDecrement(node v) {
     distance[v] = 0;
     visited[v] = true;
 
-    int16_t decrement{1};
-    std::fill(valueDecrement.begin(), valueDecrement.end(), int64_t{0});
+    int64_t decrease{1};
+    std::fill(farnessDecrease.begin(), farnessDecrease.end(), int64_t{0});
 
     do {
         const auto u = q.front();
@@ -221,7 +204,7 @@ int64_t GroupClosenessLocalSwaps::computeFarnessDecrement(node v) {
         }
 
         if (inGamma)
-            ++valueDecrement[groupIdx];
+            ++farnessDecrease[groupIdx];
 
         G->forNeighborsOf(u, [&](const node v) {
             if (visited[v])
@@ -230,7 +213,7 @@ int64_t GroupClosenessLocalSwaps::computeFarnessDecrement(node v) {
             if (distance[u] + 1 <= distance[v]) {
                 if (distance[u] + 1 < distance[v]) {
                     distance[v] = distance[u] + 1;
-                    ++decrement;
+                    ++decrease;
                 }
                 q.push(v);
             }
@@ -239,38 +222,46 @@ int64_t GroupClosenessLocalSwaps::computeFarnessDecrement(node v) {
 
     } while (!q.empty());
 
-    return decrement;
+    return decrease;
 }
 
 void GroupClosenessLocalSwaps::initRandomVector() {
-    G->parallelForNodes([&](const node u) {
-        // Avoid to generate numbers for nodes in the group
-        if (distance[u] > 0) {
-            auto tid = omp_get_thread_num();
-            auto &curUrng = urngs[tid].get();
-            auto &distr = intDistributions[tid];
-#ifdef AVX2_AVAILABLE
-            // Generating two 16-bit random integers per time
-            for (index j = 0; j < K; j += 2) {
-                const auto x = distr(curUrng);
-                randVec[u].items[j] = static_cast<uint16_t>(x);
-                randVec[u].items[j + 1] = static_cast<uint16_t>(x >> K);
-            }
+#pragma omp parallel
+    {
 
-            randVec[u].vec = *(__m256i *)(&randVec[u].items[0]);
+        auto &urng = Aux::Random::getURNG();
+#pragma omp for
+        for (omp_index i = 0; i < static_cast<omp_index>(G->upperNodeIdBound()); ++i) {
+            const node u = static_cast<node>(i);
+            if (!G->hasNode(u))
+                continue;
+            // Avoid to generate numbers for nodes in the group
+            if (distance[u] > 0) {
+                auto tid = omp_get_thread_num();
+                auto &distr = intDistributions[tid];
+#ifdef __AVX2__
+                // Generating two 16-bit random integers per time
+                for (index j = 0; j < K; j += 2) {
+                    const auto x = distr(urng);
+                    randVec[u].items[j] = static_cast<uint16_t>(x);
+                    randVec[u].items[j + 1] = static_cast<uint16_t>(x >> K);
+                }
+
+                randVec[u].vec = *(__m256i *)(&randVec[u].items[0]);
 #else
-            // Generating two 16-bit random integers per time
-            for (index j = 0; j < K; j += 2) {
-                const auto x = distr(curUrng);
-                randVec[K * u + j] = static_cast<uint16_t>(x);
-                randVec[K * u + j + 1] = static_cast<uint16_t>(x >> K);
+                // Generating two 16-bit random integers per time
+                for (index j = 0; j < K; j += 2) {
+                    const auto x = distr(urng);
+                    randVec[K * u + j] = static_cast<uint16_t>(x);
+                    randVec[K * u + j + 1] = static_cast<uint16_t>(x >> K);
+                }
+#endif // __AVX2__
             }
-#endif // AVX2_AVAILABLE
         }
-    });
+    }
 }
 
-node GroupClosenessLocalSwaps::estimateHighestDecrement() {
+node GroupClosenessLocalSwaps::estimateHighestDecrease() {
     initRandomVector();
 
     float bestEstimate = -1.f;
@@ -278,7 +269,7 @@ node GroupClosenessLocalSwaps::estimateHighestDecrement() {
 
     for (count i = 0; i < stackSize; ++i) {
         const auto x = stack[stackSize - 1 - i];
-#ifdef AVX2_AVAILABLE
+#ifdef __AVX2__
         // 16 randomly generated integers;
         __m256i &x1 = randVec[x].vec;
         // Pulling leaves
@@ -296,16 +287,16 @@ node GroupClosenessLocalSwaps::estimateHighestDecrement() {
                 for (index i = 0; i < K; ++i)
                     randVec[K * x + i] = std::min(randVec[K * x + i], randVec[K * y + i]);
         });
-#endif // AVX2_AVAILABLE
+#endif // __AVX2__
 
         if (distance[x] == 1) {
             sumOfMins[x] = 0;
             for (index j = 0; j < K; ++j) {
-#ifdef AVX2_AVAILABLE
+#ifdef __AVX2__
                 sumOfMins[x] += randVec[x].items[j];
 #else
                 sumOfMins[x] += randVec[K * x + j];
-#endif // AVX2_AVAILABLE
+#endif // __AVX2__
             }
             if (!sumOfMins[x])
                 sumOfMins[x] = 1;
@@ -346,17 +337,6 @@ count GroupClosenessLocalSwaps::numberOfSwaps() const {
 void GroupClosenessLocalSwaps::resetGamma(node x, index idx) {
     std::fill(gamma.begin() + group.size() * x, gamma.begin() + group.size() * (x + 1), false);
     gamma[group.size() * x + idx] = true;
-}
-
-bool GroupClosenessLocalSwaps::gammaIsU(node x, index idx) const {
-    if (!gamma[group.size() * x + idx])
-        return false;
-
-    for (count i = 0; i < group.size(); ++i)
-        if (i != idx && gamma[group.size() * x + i])
-            return false;
-
-    return true;
 }
 
 } // namespace NetworKit
