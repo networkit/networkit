@@ -66,11 +66,11 @@ void GroupClosenessGrowShrinkImpl<WeightType>::init() {
     for (size_t i = 0; i < group.size(); ++i)
         idxMap.emplace(group[i], i);
 
-#ifdef AVX2_AVAILABLE
+#ifdef __AVX2__
     randVec.resize(n);
 #else
     randVec.resize(K * n);
-#endif // AVX2_AVAILABLE
+#endif // __AVX2__
 
     totalSwaps = 0;
 }
@@ -83,7 +83,7 @@ void GroupClosenessGrowShrinkImpl<WeightType>::initRandomVec() {
             auto tid = omp_get_thread_num();
             auto &curUrng = urngs[tid].get();
             auto &distr = intDistributions[tid];
-#ifdef AVX2_AVAILABLE
+#ifdef __AVX2__
             // Generating two 16-bit random integers per time
             for (index j = 0; j < K; j += 2) {
                 const auto x = distr(curUrng);
@@ -98,7 +98,7 @@ void GroupClosenessGrowShrinkImpl<WeightType>::initRandomVec() {
                 randVec[K * u + j] = static_cast<uint16_t>(x);
                 randVec[K * u + j + 1] = static_cast<uint16_t>(x >> K);
             }
-#endif // AVX2_AVAILABLE
+#endif // __AVX2__
         }
     });
 }
@@ -413,7 +413,7 @@ node GroupClosenessGrowShrinkImpl<WeightType>::estimateHighestDecrement() {
     // Do 16 packed repetitions at once
     for (size_t i = 0; i < stackSize; ++i) {
         const node x = stack[stackSize - 1 - i];
-#ifdef AVX2_AVAILABLE
+#ifdef __AVX2__
         // 16 randomly generated integers;
         __m256i &x1 = randVec[x].vec;
         // Pulling leaves
@@ -430,16 +430,16 @@ node GroupClosenessGrowShrinkImpl<WeightType>::estimateHighestDecrement() {
                 for (index i = 0; i < K; ++i)
                     randVec[K * x + i] = std::min(randVec[K * x + i], randVec[K * y + i]);
         });
-#endif // AVX2_AVAILABLE
+#endif // __AVX2__
 
         if (isCandidate(x)) {
             sumOfMins[x] = 0;
             for (index j = 0; j < K; ++j) {
-#ifdef AVX2_AVAILABLE
+#ifdef __AVX2__
                 sumOfMins[x] += randVec[x].items[j];
 #else
                 sumOfMins[x] = randVec[K * x + j];
-#endif // AVX2_AVAILABLE
+#endif // __AVX2__
             }
 
             if (!sumOfMins[x])
