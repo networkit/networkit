@@ -18,6 +18,9 @@ from .graph cimport _Graph, Graph
 from .structures cimport _Cover, Cover, _Partition, Partition
 from networkit.algebraic import adjacencyEigenvector, PageRankMatrix, symmetricEigenvectors
 
+cdef extern from "limits.h":
+	cdef uint64_t ULONG_MAX
+
 cdef extern from "<networkit/centrality/Centrality.hpp>":
 
 	cdef cppclass _Centrality "NetworKit::Centrality"(_Algorithm):

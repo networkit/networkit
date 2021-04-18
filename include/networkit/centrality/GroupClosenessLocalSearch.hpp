@@ -32,7 +32,6 @@ public:
      * @param maxIterations Maximum number of swaps allowed. Prevents the algorithm from performing
      * too many swaps by giving up the approximation guarantee.
      */
-
     template <class InputIt>
     GroupClosenessLocalSearch(const Graph &G, InputIt first, InputIt last,
                               bool runGrowShrink = true,

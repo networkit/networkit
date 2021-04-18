@@ -269,9 +269,25 @@ class TestSelfLoops(unittest.TestCase):
 				self.assertTrue(g.hasNode(u))
 
 	def testCentralityGroupClosenessLocalSwaps(self):
+		k = 5
 		g = nk.readGraph('input/MIT8.edgelist', nk.Format.EdgeList, separator='\t', firstNode=0,
 				continuous=False, directed=False)
 		g = nk.components.ConnectedComponents(g).extractLargestConnectedComponent(g, True)
+		for weighted in [False, True]:
+			group = set()
+			while len(group) < k:
+				group.add(nk.graphtools.randomNode(g))
+			gc = nk.centrality.GroupClosenessLocalSwaps(g, group).run()
+
+			groupMaxCC = gc.groupMaxCloseness()
+			self.assertEqual(len(set(groupMaxCC)), k)
+			self.assertGreaterEqual(gc.numberOfSwaps(), 0)
+
+			for u in groupMaxCC:
+				self.assertTrue(g.hasNode(u))
+
+	def testCentralityGroupClosenessLocalSearch(self):
+		g = nk.readGraph('input/celegans_metabolic.graph', nk.Format.METIS)
 		k = 5
 
 		nk.engineering.setSeed(42, False)
@@ -280,11 +296,10 @@ class TestSelfLoops(unittest.TestCase):
 			while len(group) < k:
 				group.add(nk.graphtools.randomNode(g))
 
-			gc = nk.centrality.GroupClosenessLocalSwaps(g, group).run()
+			gc = nk.centrality.GroupClosenessLocalSearch(g, group).run()
 
 			groupMaxCC = gc.groupMaxCloseness()
 			self.assertEqual(len(set(groupMaxCC)), k)
-			self.assertGreaterEqual(gc.numberOfSwaps(), 0)
 
 			for u in groupMaxCC:
 				self.assertTrue(g.hasNode(u))
