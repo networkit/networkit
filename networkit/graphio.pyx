@@ -235,7 +235,7 @@ cdef extern from "<networkit/io/EdgeListReader.hpp>":
 
 	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader"(_GraphReader):
 		_EdgeListReader() except +
-		_EdgeListReader(char separator, node firstNode, string commentPrefix, bool_t continuous, bool_t directed)
+		_EdgeListReader(char separator, node firstNode, string commentPrefix, bool_t continuous, bool_t directed, bool_t unique)
 		map[string,node] getNodeMap() except +
 
 cdef class EdgeListReader(GraphReader):
@@ -276,11 +276,11 @@ cdef class EdgeListReader(GraphReader):
 	directed : bool
 		Treat input file as a directed graph.
 	"""
-	def __cinit__(self, separator, firstNode, commentPrefix="#", continuous=True, directed=False):
+	def __cinit__(self, separator, firstNode, commentPrefix="#", continuous=True, directed=False, unique=False):
 		if len(separator) != 1 or ord(separator[0]) > 255:
 			raise RuntimeError("separator has to be exactly one ascii character");
 
-		self._this = new _EdgeListReader(stdstring(separator)[0], firstNode, stdstring(commentPrefix), continuous, directed)
+		self._this = new _EdgeListReader(stdstring(separator)[0], firstNode, stdstring(commentPrefix), continuous, directed, unique)
 
 	def getNodeMap(self):
 		""" Returns mapping of non-continuous files.

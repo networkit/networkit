@@ -18,9 +18,9 @@
 namespace NetworKit {
 
 EdgeListReader::EdgeListReader(char separator, node firstNode, const std::string &commentPrefix,
-                               bool continuous, bool directed)
+                               bool continuous, bool directed, bool unique)
     : separator(separator), commentPrefix(commentPrefix), firstNode(firstNode),
-      continuous(continuous), mapNodeIds(), directed(directed) {}
+      continuous(continuous), mapNodeIds(), directed(directed), unique(unique) {}
 
 const std::map<std::string, node> &EdgeListReader::getNodeMap() const {
     if (this->continuous)
@@ -29,11 +29,20 @@ const std::map<std::string, node> &EdgeListReader::getNodeMap() const {
     return this->mapNodeIds;
 }
 
+struct pairhash {
+public:
+    template <typename T, typename U>
+    std::size_t operator()(const std::pair<T, U> &x) const {
+        return std::hash<T>()(x.first) ^ 13 * std::hash<U>()(x.second);
+    }
+};
+
 Graph EdgeListReader::read(const std::string &path) {
     this->mapNodeIds.clear();
     MemoryMappedFile mmfile(path);
     auto it = mmfile.cbegin();
     auto end = mmfile.cend();
+    std::unordered_map<std::pair<node, node>, edgeweight, pairhash> insertedEdges;
 
     bool weighted = false;
     bool checkedWeighted = false;
@@ -111,9 +120,13 @@ Graph EdgeListReader::read(const std::string &path) {
     };
 
     // This function modifies the graph on input.
-    auto handleEdge = [&graph](node source, node target, edgeweight weight) -> void {
-        if (!graph.hasEdge(source, target)) {
+    auto handleEdge = [&graph, this, &insertedEdges](node source, node target, edgeweight weight) -> void {
+        if (unique) {
             graph.addEdge(source, target, weight);
+        }
+        if (insertedEdges.find(std::pair<node, node>(source, target)) == insertedEdges.end()) {
+            graph.addEdge(source, target, weight);
+            insertedEdges.insert(std::make_pair(std::pair<node, node>(source, target), weight));
         }
     };
 
