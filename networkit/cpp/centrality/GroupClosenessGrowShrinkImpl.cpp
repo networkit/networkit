@@ -8,6 +8,7 @@
 // networkit-format
 
 #include <omp.h>
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 
 #include "GroupClosenessGrowShrinkImpl.hpp"
@@ -27,6 +28,10 @@ GroupClosenessGrowShrinkImpl<WeightType>::GroupClosenessGrowShrinkImpl(const Gra
 
     if (G.isDirected())
         std::runtime_error("Error, this algorithm does not support directed graphs.");
+
+#if __AVX2__
+    INFO("AVX2 is available.");
+#endif
 }
 
 template <class WeightType>

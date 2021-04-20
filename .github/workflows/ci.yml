@@ -76,7 +76,7 @@
 # - Latest version (gcc/Python, clang/Python): core
 #
 # 3. Windows
-# - Latest version (msvc): core, core (release)
+# - Latest version (msvc): core, core (release), core (native)
 #
 #
 # Job naming
@@ -328,7 +328,7 @@ jobs:
       VS_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\
     strategy:
       matrix:
-        build-configuration: ['core', 'core (release)']
+        build-configuration: ['core', 'core (release)', 'core (native)']
     steps:
       - name: Checkout networkit
         uses: actions/checkout@v2
@@ -339,7 +339,7 @@ jobs:
           cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\"
           ./vcvarsall.bat x64
           md ${{ github.workspace }}\build && cd ${{ github.workspace }}\build
-          cmake -G "Visual Studio 16 2019" -A x64 -DNETWORKIT_STATIC=ON -DNETWORKIT_BUILD_TESTS=ON ..
+          cmake -G "Visual Studio 16 2019" -A x64 -DNETWORKIT_STATIC=ON -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_NATIVE=${{ matrix.build-configuration == 'core (native)' }} ..
           cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\"
           ./devenv.com $Env:GITHUB_WORKSPACE\build\networkit.sln /build ${{ matrix.build-configuration == 'core' && 'Debug' || 'Release' }}
           cd ${{ github.workspace }}\build

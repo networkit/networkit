@@ -95,7 +95,12 @@ elseif (MSVC)
 	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DTTMATH_NOASM=1")
 
 	if (NETWORKIT_NATIVE)
-		message(WARNING "Compiling NetworKit with native instructions (like AVX) is not yet supported on this OS.")
+		message(WARNING "Compiling NetworKit with native instructions is not yet supported by MSVC. Activating AVX2-support if possible.")
+		include(CheckCXXCompilerFlag)
+		CHECK_CXX_COMPILER_FLAG("/arch:AVX2" COMPILER_OPT_ARCH_AVX_SUPPORTED)
+		if(COMPILER_OPT_ARCH_AVX_SUPPORTED)
+			set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /arch:AVX2")
+		endif()
 	endif()
 
 else()
