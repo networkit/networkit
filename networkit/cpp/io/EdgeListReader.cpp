@@ -124,10 +124,12 @@ Graph EdgeListReader::read(const std::string &path) {
                                                      edgeweight weight) -> void {
         if (unique) {
             graph.addEdge(source, target, weight);
-        }
-        if (insertedEdges.find(std::pair<node, node>(source, target)) == insertedEdges.end()) {
+        } else if (insertedEdges.find(std::pair<node, node>(source, target))
+                   == insertedEdges.end()) {
             graph.addEdge(source, target, weight);
             insertedEdges.insert(std::pair<node, node>(source, target));
+            if (!directed)
+                insertedEdges.insert(std::pair<node, node>(target, source));
         }
     };
 

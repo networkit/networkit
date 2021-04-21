@@ -329,7 +329,7 @@ void Graph::indexEdges(bool force) {
             for (index i = 0; i < outEdges[u].size(); ++i) {
                 node v = outEdges[u][i];
                 if (v != none && outEdgeIds[u][i] == none) {
-                    index j = indexSortedInOutEdgeArray(v, u); // SLOW PART??
+                    index j = indexSortedInOutEdgeArray(v, u);
                     outEdgeIds[u][i] = outEdgeIds[v][j];
                 }
             }
