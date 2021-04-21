@@ -31,9 +31,9 @@ const std::map<std::string, node> &EdgeListReader::getNodeMap() const {
 
 struct pairhash {
 public:
-    template <typename T, typename U>
-    std::size_t operator()(const std::pair<T, U> &x) const {
-        return std::hash<T>()(x.first) ^ 13 * std::hash<U>()(x.second);
+    template <typename T>
+    std::size_t operator()(const std::pair<T, T> &x) const {
+        return std::hash<T>()(x.first) ^ std::hash<T>()(313 * x.second);
     }
 };
 
@@ -42,7 +42,7 @@ Graph EdgeListReader::read(const std::string &path) {
     MemoryMappedFile mmfile(path);
     auto it = mmfile.cbegin();
     auto end = mmfile.cend();
-    std::unordered_map<std::pair<node, node>, edgeweight, pairhash> insertedEdges;
+    std::unordered_set<std::pair<node, node>, pairhash> insertedEdges;
 
     bool weighted = false;
     bool checkedWeighted = false;
@@ -120,13 +120,14 @@ Graph EdgeListReader::read(const std::string &path) {
     };
 
     // This function modifies the graph on input.
-    auto handleEdge = [&graph, this, &insertedEdges](node source, node target, edgeweight weight) -> void {
+    auto handleEdge = [&graph, this, &insertedEdges](node source, node target,
+                                                     edgeweight weight) -> void {
         if (unique) {
             graph.addEdge(source, target, weight);
         }
         if (insertedEdges.find(std::pair<node, node>(source, target)) == insertedEdges.end()) {
             graph.addEdge(source, target, weight);
-            insertedEdges.insert(std::make_pair(std::pair<node, node>(source, target), weight));
+            insertedEdges.insert(std::pair<node, node>(source, target));
         }
     };
 

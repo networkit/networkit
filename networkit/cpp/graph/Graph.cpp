@@ -207,10 +207,10 @@ index Graph::indexInOutEdgeArray(node u, node v) const {
     }
     return none;
 }
-// TODO: binary search for the sorted version
+
 index Graph::indexSortedInInEdgeArray(node v, node u) const {
     if (!directed) {
-        return indexInOutEdgeArray(v, u);
+        return indexSortedInOutEdgeArray(v, u);
     }
 
     index l = 0;
@@ -218,12 +218,11 @@ index Graph::indexSortedInInEdgeArray(node v, node u) const {
 
     for (index i = (l + r) / 2; l <= r; i = (l + r) / 2) {
         node x = inEdges[v][i];
-        if (x > u) {
+        if (x < u) {
             l = i + 1;
-        } else if (x < u) {
+        } else if (x > u) {
             r = i - 1;
-        }
-        else {
+        } else {
             return i;
         }
     }
@@ -236,12 +235,11 @@ index Graph::indexSortedInOutEdgeArray(node u, node v) const {
 
     for (index i = (l + r) / 2; l <= r; i = (l + r) / 2) {
         node x = outEdges[u][i];
-        if (x > v) {
+        if (x < v) {
             l = i + 1;
-        } else if (x < v) {
+        } else if (x > v) {
             r = i - 1;
-        }
-        else {
+        } else {
             return i;
         }
     }
@@ -254,7 +252,7 @@ void Graph::indexEdges(bool force) {
     if (edgesIndexed && !force)
         return;
 
-    // TODO: Sort outedges and inedges
+    // Sort outedges and inedges so that we can binary search for them
 
     std::vector<std::vector<node>> targetAdjacencies(upperNodeIdBound());
     std::vector<std::vector<edgeweight>> targetWeight;
@@ -278,7 +276,7 @@ void Graph::indexEdges(bool force) {
     outEdges.swap(targetAdjacencies);
     outEdgeWeights.swap(targetWeight);
 
-    if (isDirected()) {
+    if (directed) {
         inEdges.swap(targetAdjacencies);
         inEdgeWeights.swap(targetWeight);
 
@@ -299,7 +297,7 @@ void Graph::indexEdges(bool force) {
         inEdgeWeights.swap(targetWeight);
     }
 
-    // end TODO
+    // end sorting
 
     omega = 0; // reset edge ids (for re-indexing)
 
@@ -324,11 +322,10 @@ void Graph::indexEdges(bool force) {
     });
 
     // copy edge ids for the edges in the other direction. Note that
-    // "indexInOutEdgeArray" is slow which is why this second loop in parallel
+    // "indexInOutSortedEdgeArray" is slow which is why this second loop in parallel
     // makes sense.
     if (!directed) {
         balancedParallelForNodes([&](node u) {
-            // TODO: binary search
             for (index i = 0; i < outEdges[u].size(); ++i) {
                 node v = outEdges[u][i];
                 if (v != none && outEdgeIds[u][i] == none) {
@@ -336,22 +333,18 @@ void Graph::indexEdges(bool force) {
                     outEdgeIds[u][i] = outEdgeIds[v][j];
                 }
             }
-            // end TODO
         });
     } else {
         balancedParallelForNodes([&](node u) {
-            // TODO: binary search
             for (index i = 0; i < inEdges[u].size(); ++i) {
                 node v = inEdges[u][i];
                 if (v != none) {
-                    index j = indexSortedInOutEdgeArray(v, u); // SLOW PART??
+                    index j = indexSortedInOutEdgeArray(v, u);
                     inEdgeIds[u][i] = outEdgeIds[v][j];
                 }
             }
-            // end TODO
         });
     }
-
     edgesIndexed = true; // remember that edges have been indexed so that addEdge
                          // needs to create edge ids
 }
