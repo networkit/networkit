@@ -13,6 +13,7 @@
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/scd/SelectiveCommunityDetector.hpp>
+#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 

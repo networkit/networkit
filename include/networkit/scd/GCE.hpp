@@ -12,6 +12,7 @@
 
 #include <networkit/auxiliary/SetIntersector.hpp>
 #include <networkit/scd/SelectiveCommunityDetector.hpp>
+#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 
