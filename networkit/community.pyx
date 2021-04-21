@@ -1236,8 +1236,8 @@ cdef extern from "<networkit/community/OverlappingNMIDistance.hpp>":
 		_OverlappingNMIDistance() except +
 		_OverlappingNMIDistance(_Normalization normalization) except +
 		void setNormalization(_Normalization normalization) except +
-		double getDissimilarity(_Graph G, _Partition first, _Partition second) except +
-		double getDissimilarity(_Graph G, _Cover first, _Cover second) except +
+		double getDissimilarity(_Graph G, _Partition first, _Partition second) nogil except +
+		double getDissimilarity(_Graph G, _Cover first, _Cover second) nogil except +
 
 cdef class OverlappingNMIDistance(DissimilarityMeasure):
 	"""
@@ -1315,9 +1315,11 @@ cdef class OverlappingNMIDistance(DissimilarityMeasure):
 		"""
 		cdef double ret
 		if isinstance(first, Partition) and isinstance(second, Partition):
-			ret = self._this.getDissimilarity(G._this, (<Partition>(first))._this, (<Partition>(second))._this)
+			with nogil:
+				ret = self._this.getDissimilarity(G._this, (<Partition>(first))._this, (<Partition>(second))._this)
 		elif isinstance(first, Cover) and isinstance(second, Cover):
-			ret = self._this.getDissimilarity(G._this, (<Cover>(first))._this, (<Cover>(second))._this)
+			with nogil:
+				ret = self._this.getDissimilarity(G._this, (<Cover>(first))._this, (<Cover>(second))._this)
 		else:
 			raise TypeError("Error, first and second must both be either a Partition or a Cover")
 		return ret
