@@ -149,6 +149,10 @@ class Graph final {
      */
     index indexInOutEdgeArray(node u, node v) const;
 
+    index indexSortedInInEdgeArray(node v, node u) const;
+
+    index indexSortedInOutEdgeArray(node v, node u) const;
+
     /**
      * Computes the weighted in/out degree of node @a u.
      *

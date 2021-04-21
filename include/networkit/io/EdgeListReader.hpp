@@ -36,7 +36,7 @@ public:
      * @param[in]  directed  read graph as directed
      */
     EdgeListReader(char separator, node firstNode, const std::string &commentPrefix = "#",
-                   bool continuous = true, bool directed = false);
+                   bool continuous = true, bool directed = false, bool unique = false);
 
     /**
      * Given the path of an input file, read the graph contained.
@@ -57,6 +57,7 @@ private:
     bool continuous;
     std::map<std::string, node> mapNodeIds;
     bool directed;
+    bool unique; // confirmation that all edges are unique for faster reading
 };
 
 } /* namespace NetworKit */

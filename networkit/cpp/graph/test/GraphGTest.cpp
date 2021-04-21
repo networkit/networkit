@@ -2151,7 +2151,13 @@ w)) {
 
 TEST_P(GraphGTest, testCompactEdges) {
     Graph G = this->Ghouse;
+    
     G.indexEdges();
+
+    std::vector<std::pair<node, node>> outEdges;
+    outEdges.reserve(G.numberOfEdges());
+
+    G.forEdges([&](node u, node v) { outEdges.emplace_back(u, v); });
 
     G.addEdge(0, 4);
     G.addEdge(0, 3);
@@ -2159,11 +2165,6 @@ TEST_P(GraphGTest, testCompactEdges) {
     G.removeEdge(0, 4);
 
     G.compactEdges();
-
-    std::vector<std::pair<node, node>> outEdges;
-    outEdges.reserve(this->Ghouse.numberOfEdges());
-
-    this->Ghouse.forEdges([&](node u, node v) { outEdges.emplace_back(u, v); });
 
     auto it = outEdges.begin();
 

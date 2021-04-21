@@ -208,11 +208,96 @@ index Graph::indexInOutEdgeArray(node u, node v) const {
     return none;
 }
 
+index Graph::indexSortedInInEdgeArray(node v, node u) const {
+    if (!directed) {
+        return indexSortedInOutEdgeArray(v, u);
+    }
+
+    index l = 0;
+    index r = inEdges[u].size() - 1;
+
+    for (index i = (l + r) / 2; l <= r; i = (l + r) / 2) {
+        node x = inEdges[v][i];
+        if (x < u) {
+            l = i + 1;
+        } else if (x > u) {
+            r = i - 1;
+        } else {
+            return i;
+        }
+    }
+    return none;
+}
+
+index Graph::indexSortedInOutEdgeArray(node u, node v) const {
+    index l = 0;
+    index r = outEdges[u].size() - 1;
+
+    for (index i = (l + r) / 2; l <= r; i = (l + r) / 2) {
+        node x = outEdges[u][i];
+        if (x < v) {
+            l = i + 1;
+        } else if (x > v) {
+            r = i - 1;
+        } else {
+            return i;
+        }
+    }
+    return none;
+}
+
 /** EDGE IDS **/
 
 void Graph::indexEdges(bool force) {
     if (edgesIndexed && !force)
         return;
+
+    // Sort outedges and inedges so that we can binary search for them
+
+    std::vector<std::vector<node>> targetAdjacencies(upperNodeIdBound());
+    std::vector<std::vector<edgeweight>> targetWeight;
+
+    if (isWeighted()) {
+        targetWeight.resize(upperNodeIdBound());
+        forNodes([&](node u) { targetWeight[u].reserve(degree(u)); });
+    }
+
+    forNodes([&](node u) { targetAdjacencies[u].reserve(degree(u)); });
+
+    auto assignToTarget = [&](node u, node v, edgeweight w) {
+        targetAdjacencies[v].push_back(u);
+        if (isWeighted()) {
+            targetWeight[v].push_back(w);
+        }
+    };
+
+    forNodes([&](node u) { forInEdgesOf(u, assignToTarget); });
+
+    outEdges.swap(targetAdjacencies);
+    outEdgeWeights.swap(targetWeight);
+
+    if (directed) {
+        inEdges.swap(targetAdjacencies);
+        inEdgeWeights.swap(targetWeight);
+
+        forNodes([&](node u) {
+            targetAdjacencies[u].resize(degreeIn(u));
+            targetAdjacencies[u].shrink_to_fit();
+            targetAdjacencies[u].clear();
+            if (isWeighted()) {
+                targetWeight[u].resize(degreeIn(u));
+                targetWeight[u].shrink_to_fit();
+                targetWeight[u].clear();
+            }
+        });
+
+        forNodes([&](node u) { forEdgesOf(u, assignToTarget); });
+
+        inEdges.swap(targetAdjacencies);
+        inEdgeWeights.swap(targetWeight);
+    }
+
+    // end sorting
 
     omega = 0; // reset edge ids (for re-indexing)
 
@@ -237,14 +322,14 @@ void Graph::indexEdges(bool force) {
     });
 
     // copy edge ids for the edges in the other direction. Note that
-    // "indexInOutEdgeArray" is slow which is why this second loop in parallel
+    // "indexInOutSortedEdgeArray" is slow which is why this second loop in parallel
     // makes sense.
     if (!directed) {
         balancedParallelForNodes([&](node u) {
             for (index i = 0; i < outEdges[u].size(); ++i) {
                 node v = outEdges[u][i];
                 if (v != none && outEdgeIds[u][i] == none) {
-                    index j = indexInOutEdgeArray(v, u);
+                    index j = indexSortedInOutEdgeArray(v, u);
                     outEdgeIds[u][i] = outEdgeIds[v][j];
                 }
             }
@@ -254,13 +339,12 @@ void Graph::indexEdges(bool force) {
             for (index i = 0; i < inEdges[u].size(); ++i) {
                 node v = inEdges[u][i];
                 if (v != none) {
-                    index j = indexInOutEdgeArray(v, u);
+                    index j = indexSortedInOutEdgeArray(v, u);
                     inEdgeIds[u][i] = outEdgeIds[v][j];
                 }
             }
         });
     }
-
     edgesIndexed = true; // remember that edges have been indexed so that addEdge
                          // needs to create edge ids
 }
