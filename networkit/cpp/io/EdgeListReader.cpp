@@ -20,7 +20,13 @@ namespace NetworKit {
 EdgeListReader::EdgeListReader(char separator, node firstNode, const std::string &commentPrefix,
                                bool continuous, bool directed)
     : separator(separator), commentPrefix(commentPrefix), firstNode(firstNode),
-      continuous(continuous), mapNodeIds(), directed(directed) {}
+      continuous(continuous), mapNodeIds(), directed(directed) {
+    if (!continuous && firstNode != 0) {
+        // firstNode not being 0 in the continuous = false case leads to a segmentation fault
+        WARN("firstNode set to 0 since continuous is false");
+        firstNode = 0;
+    }
+}
 
 const std::map<std::string, node> &EdgeListReader::getNodeMap() const {
     if (this->continuous)
