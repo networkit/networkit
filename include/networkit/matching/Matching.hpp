@@ -56,6 +56,7 @@ public:
      *
      * @param[in] u node.
      * @param[in] v node.
+     * @return @c true if u and v are matched together.
      */
     bool areMatched(node u, node v) const;
 
@@ -63,13 +64,14 @@ public:
      * Check whether this is a proper matching
      * in the graph, i.e. no two matched edges are adjacent.
      *
-     * @paramt[in] G  A graph.
-     * @param[out]    @c true if this is a proper matching.
+     * @param[in] G  A graph.
+     * @return @c true if this is a proper matching.
      */
     bool isProper(const Graph& G) const;
 
     /**
      * Get the number of edges in this matching.
+     * @param[in] G  A graph.
      * @return Number of edges in matching.
      */
     count size(const Graph& G) const;
