@@ -22,7 +22,7 @@ RUN mkdir -p ${HOME}/.jupyter/lab/user-settings
 RUN mkdir -p ${HOME}/.jupyter/lab/user-settings/\@jupyterlab
 RUN mkdir -p ${HOME}/.jupyter/lab/user-settings/@jupyterlab/docmanager-extension
 COPY plugin.jupyterlab-settings ${HOME}/.jupyter/lab/user-settings/@jupyterlab/docmanager-extension
-RUN conda install -c conda-forge --repodata-fn=repodata.json -y nodejs
+RUN conda install --verbose -c conda-forge --repodata-fn=repodata.json -y nodejs
 RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager --no-build && jupyter labextension install jupyter-cytoscape
 RUN jupyter lab build
 
