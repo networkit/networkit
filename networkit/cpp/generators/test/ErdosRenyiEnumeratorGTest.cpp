@@ -4,9 +4,12 @@
  *  Created on: 09. Aug. 2018
  *      Author: Manuel Penschuck
  */
+
 #include <gtest/gtest.h>
-#include <tuple>
+
+#include <algorithm>
 #include <numeric>
+#include <tuple>
 
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/Random.hpp>
@@ -114,7 +117,7 @@ TEST_P(ErdosRenyiEnumeratorGTest, TestFixedPointParallel) {
 }
 
 
-INSTANTIATE_TEST_CASE_P(ErdosRenyiEnumeratorGTest, ErdosRenyiEnumeratorGTest,
+INSTANTIATE_TEST_SUITE_P(ErdosRenyiEnumeratorGTest, ErdosRenyiEnumeratorGTest,
                         ::testing::Values(
                          std::make_tuple(false, 100, 0.0),  std::make_tuple(true, 100, 0.0),
                          std::make_tuple(false, 100, 0.1),  std::make_tuple(true, 100, 0.1),
@@ -122,6 +125,6 @@ INSTANTIATE_TEST_CASE_P(ErdosRenyiEnumeratorGTest, ErdosRenyiEnumeratorGTest,
                          std::make_tuple(false, 100, 0.7),  std::make_tuple(true, 100, 0.7),
                          std::make_tuple(false, 100, 1.0),  std::make_tuple(true, 100, 1.0),
                          std::make_tuple(false, 200, 0.01), std::make_tuple(true, 200, 0.01)
-                        ),);
+                        ));
 
 } // ! namespace NetworKit

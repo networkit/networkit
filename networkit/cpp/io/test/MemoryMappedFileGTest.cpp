@@ -125,13 +125,13 @@ namespace NetworKit {
         tmpFile.verify_mapping(mmf);
     }
 
-    INSTANTIATE_TEST_CASE_P(MemoryMappedFileIOGTest, MemoryMappedFileIOGTest,
+    INSTANTIATE_TEST_SUITE_P(MemoryMappedFileIOGTest, MemoryMappedFileIOGTest,
         ::testing::Values(0, 1,
             (1 <<  2) - 1, (1 <<  2), (1 <<  2) + 1,
             (1 << 10) - 1, (1 << 10), (1 << 10) + 1,
             (1 << 16) - 1, (1 << 16), (1 << 16) + 1,
             (1 << 22) - 1, (1 << 22), (1 << 22) + 1
-        ), ); // comma required for variadic macro
+        ));
 
     TEST_F(MemoryMappedFileGTest, testMove) {
         const size_t bytes = 1000;
