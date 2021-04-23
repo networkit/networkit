@@ -1,4 +1,4 @@
-FROM jupyter/base-notebook:latest
+FROM jupyter/base-notebook:lab-3.0.11
 
 LABEL maintainer="Fabian Brandt-Tumescheit <brandtfa@hu-berlin.de>"
 
