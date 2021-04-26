@@ -19,34 +19,26 @@ bool Matching::isProper(const Graph& G) const {
      * The content of this data structure represents a matching iff
      * 	(for all v in V: M[v] = v or M[M[v]] = v) and
      * 	(for all (u,v) in M): (u,v) in E
-     *
      */
-    bool isProper = true;
-    bool sym = true;
+
     // check if entries are symmetric
-
-    G.forNodes([&](node v) {
-        sym = ((data.at(v) == none) || (data[data.at(v)] == v));
-        if (!sym) {
+    for (node v : G.nodeRange()) {
+        if (data.at(v) != none && data[data.at(v)] != v) {
             DEBUG("node " , v , " is not symmetrically matched");
-            isProper = false;
+            return false;
         }
-    });
+    }
 
-    bool inGraph = true;
     // check if every pair exists as an edge
-    G.forNodes([&](node v){
+    for (node v : G.nodeRange()) {
         node w = data.at(v);
-        if ((v != w) && (w != none)) {
-            inGraph = G.hasEdge(v, w);
-            if (!inGraph) {
-                DEBUG("matched pair (" , v , "," , w , ") is not an edge");
-                isProper = false;
-            }
+        if ((v != w) && (w != none) && !G.hasEdge(v, w)) {
+            DEBUG("matched pair (" , v , "," , w , ") is not an edge");
+            return false;
         }
-    });
+    }
 
-    return isProper;
+    return true;
 }
 
 void Matching::match(node u, node v) {
