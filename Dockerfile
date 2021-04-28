@@ -1,4 +1,5 @@
-FROM jupyter/base-notebook:latest
+# This version pinning of the image is temp. due to errors when using latest (kernel-version error triggered when calling conda)
+FROM jupyter/base-notebook:lab-3.0.11
 
 LABEL maintainer="Fabian Brandt-Tumescheit <brandtfa@hu-berlin.de>"
 
