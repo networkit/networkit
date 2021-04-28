@@ -38,6 +38,7 @@
 #include <networkit/generators/ClusteredRandomGraphGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/community/CoverF1Similarity.hpp>
+#include <networkit/community/OverlappingNMIDistance.hpp>
 
 #include <tlx/unused.hpp>
 
@@ -693,6 +694,119 @@ TEST_F(CommunityGTest, testCoverF1Similarity) {
     EXPECT_DOUBLE_EQ(0.0, sim.getValue(2));
     EXPECT_DOUBLE_EQ((1.0 + f1) / 3.0, sim.getUnweightedAverage());
     EXPECT_DOUBLE_EQ((1.0 * 10.0 + f1 * 10.0) / 29.0, sim.getWeightedAverage());
+}
+
+TEST_F(CommunityGTest, testOverlappingNMIDistance) {
+    auto toCover = [](std::vector<std::vector<node>> X, count n) -> Cover {
+        Cover cover(n);
+        cover.setUpperBound(X.size());
+        for (index i = 0; i < X.size(); ++i)
+            for (auto u : X[i])
+                cover.addToSubset(i, u);
+        return cover;
+    };
+
+    {
+        auto distance = OverlappingNMIDistance();
+        count n = 2;
+        auto A = toCover({{0, 1}, {0}}, n);
+        auto B = toCover({{0}}, n);
+
+        auto value1 = distance.getDissimilarity(Graph(n), A, B);
+        auto value2 = distance.getDissimilarity(Graph(n), B, A);
+        EXPECT_DOUBLE_EQ(value1, 0.0);
+        EXPECT_DOUBLE_EQ(value2, 0.0);
+    }
+
+    {
+        auto distance = OverlappingNMIDistance();
+        count n = 2;
+        auto A = toCover({{0, 1}, {0}}, n);
+        auto B = toCover({{0}, {1}}, n);
+
+        auto value1 = distance.getDissimilarity(Graph(n), A, B);
+        auto value2 = distance.getDissimilarity(Graph(n), B, A);
+        EXPECT_DOUBLE_EQ(value1, 0.5);
+        EXPECT_DOUBLE_EQ(value2, 0.5);
+    }
+
+    {
+        auto distance = OverlappingNMIDistance();
+        count n = 2;
+        auto A = toCover({{0, 1}}, n);
+        auto B = toCover({{0}, {1}}, n);
+
+        auto value1 = distance.getDissimilarity(Graph(n), A, B);
+        auto value2 = distance.getDissimilarity(Graph(n), B, A);
+        EXPECT_DOUBLE_EQ(value1, 1.0);
+        EXPECT_DOUBLE_EQ(value2, 1.0);
+    }
+
+    {
+        auto distance = OverlappingNMIDistance();
+        count n = 2;
+        auto A = toCover({{0, 1}, {0}, {0}, {0}}, n);
+        auto B = toCover({{0}}, n);
+
+        auto value1 = distance.getDissimilarity(Graph(n), A, B);
+        auto value2 = distance.getDissimilarity(Graph(n), B, A);
+        EXPECT_DOUBLE_EQ(value1, 1.0 / 3.0);
+        EXPECT_DOUBLE_EQ(value2, 1.0 / 3.0);
+    }
+
+    {
+        using N = OverlappingNMIDistance::Normalization;
+        auto distanceMin = OverlappingNMIDistance(N::MIN);
+        auto distanceGeometric = OverlappingNMIDistance(N::GEOMETRIC_MEAN);
+        auto distanceArithmetic = OverlappingNMIDistance(N::ARITHMETIC_MEAN);
+        auto distanceMax = OverlappingNMIDistance(N::MAX);
+        auto distanceJointEntropy = OverlappingNMIDistance(N::JOINT_ENTROPY);
+        count n = 100;
+        std::vector<std::vector<node>> full;
+        for (index i = 0; i < 10; ++i) {
+            std::vector<node> cluster;
+            for (node u = i * 10; u < (i + 1) * 10; ++u) {
+                cluster.push_back(u);
+            }
+            full.push_back(cluster);
+        }
+
+        auto fullCover = toCover(full, n);
+        for (index i = 0; i <= 10; ++i) {
+            auto partialCover =
+                toCover(std::vector<std::vector<node>>(full.begin(), full.begin() + i), n);
+
+            auto valueMin = distanceMin.getDissimilarity(Graph(n), partialCover, fullCover);
+            auto valueGeometric =
+                distanceGeometric.getDissimilarity(Graph(n), partialCover, fullCover);
+            auto valueArithmetic =
+                distanceArithmetic.getDissimilarity(Graph(n), partialCover, fullCover);
+            auto valueMax = distanceMax.getDissimilarity(Graph(n), partialCover, fullCover);
+            auto valueJointEntropy =
+                distanceJointEntropy.getDissimilarity(Graph(n), partialCover, fullCover);
+
+            EXPECT_NEAR(valueMin, i == 0 ? 1.0 : 0.0, 1e-10);
+            EXPECT_NEAR(valueMax, 1.0 - i / 10.0, 1e-10);
+
+            EXPECT_LE(valueMin, valueGeometric);
+            EXPECT_LE(valueGeometric, valueArithmetic);
+            EXPECT_LE(valueArithmetic, valueMax);
+            EXPECT_LE(valueMax, valueJointEntropy);
+        }
+    }
+
+    {
+        auto distance = OverlappingNMIDistance();
+        count n1 = 10;
+        count n2 = 20;
+        auto G1 = Graph(n1);
+        auto cover1 = toCover({}, n1);
+        auto cover2 = toCover({}, n2);
+        EXPECT_NO_THROW(distance.getDissimilarity(G1, cover1, cover1));
+        EXPECT_THROW(distance.getDissimilarity(G1, cover1, cover2), std::invalid_argument);
+        EXPECT_THROW(distance.getDissimilarity(G1, cover2, cover1), std::invalid_argument);
+        EXPECT_THROW(distance.getDissimilarity(G1, cover2, cover2), std::invalid_argument);
+    }
 }
 
 } /* namespace NetworKit */

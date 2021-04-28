@@ -5,6 +5,7 @@ networkit_add_module(community
     Conductance.cpp
     CoverHubDominance.cpp
     CoverF1Similarity.cpp
+    OverlappingNMIDistance.cpp
     Coverage.cpp
     CutClustering.cpp
     DissimilarityMeasure.cpp
