@@ -4,6 +4,8 @@
  *  Created on: 05.12.2012
  */
 
+#include <stdexcept>
+
 #include <networkit/matching/LocalMaxMatcher.hpp>
 
 namespace NetworKit {

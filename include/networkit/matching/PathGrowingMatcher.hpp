@@ -21,14 +21,16 @@ namespace NetworKit {
  * (Note that better algorithms in terms of approximation quality exist.)
  */
 class PathGrowingMatcher final: public Matcher {
+    void checkInput() const;
+
 public:
     /**
-     * @param[in] G Graph for which matching is computed.
+     * @param[in] G Undirected graph with no self-loops for which matching is computed.
      */
     PathGrowingMatcher(const Graph& G);
 
     /**
-     * @param[in] G Graph for which matching is computed.
+     * @param[in] G Undirected graph with no self-loops for which matching is computed.
      */
     PathGrowingMatcher(const Graph& G, const std::vector<double>& edgeScores);
 

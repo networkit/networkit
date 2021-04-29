@@ -21,6 +21,11 @@ namespace NetworKit {
 class MatcherGTest: public testing::Test {};
 
 TEST_F(MatcherGTest, testLocalMaxMatching) {
+    {
+        Graph G(10, true, true);
+        EXPECT_THROW(LocalMaxMatcher{G}, std::runtime_error);
+    }
+
     count n = 50;
     Graph G(n);
     G.forNodePairs([&](node u, node v){
