@@ -21,8 +21,9 @@ class DegreeCentrality: public Centrality {
 public:
     /**
      * Constructs the DegreeCentrality class for the given Graph @a G. If the centrality scores should be normalized,
-     * then set @a normalized to <code>true</code>. The run() method runs in O(m) time, where m is the number of
-     * edges in the graph.
+     * then set @a normalized to <code>true</code>. The run() method runs in O(n) time, where n is the number of
+     * nodes in the graph if there are no selfloops or selfloops are not being ignored. If they are being ignored
+     * and there are self loops in the graph then it runs in O(m) where m is the number of edges.
      *
      * @param G The graph.
      * @param normalized Set this parameter to <code>true</code> if scores should be normalized in the interval [0,1].
