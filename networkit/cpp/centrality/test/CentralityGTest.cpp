@@ -20,6 +20,7 @@
 #include <networkit/centrality/Betweenness.hpp>
 #include <networkit/centrality/Closeness.hpp>
 #include <networkit/centrality/CoreDecomposition.hpp>
+#include <networkit/centrality/DegreeCentrality.hpp>
 #include <networkit/centrality/DynApproxBetweenness.hpp>
 #include <networkit/centrality/DynKatzCentrality.hpp>
 #include <networkit/centrality/DynTopHarmonicCloseness.hpp>
@@ -1950,6 +1951,91 @@ TEST_P(CentralityGTest, testGroupClosenessGrowShrink) {
                 EXPECT_NE(group.find(u), group.end());
             });
         }
+    }
+}
+
+
+TEST_P(CentralityGTest, testDegreeCentrality) {
+    Graph g(8, false, isDirected());
+
+    g.addEdge(0, 2);
+    g.addEdge(0, 5);
+    g.addEdge(1, 2);
+    g.addEdge(2, 3);
+    g.addEdge(2, 2);
+    g.addEdge(2, 4);
+    g.addEdge(3, 5);
+    g.addEdge(4, 5);
+    g.addEdge(5, 5);
+    g.addEdge(5, 6);
+    g.addEdge(5, 7);
+    g.addEdge(7, 7);
+
+    DegreeCentrality dc(g, false, true, false);
+    dc.run();
+
+    if (isDirected()){
+        std::array<int ,8> expectedResults{{2, 1, 3, 1, 1, 3, 0, 1}};
+        for(long unsigned int i = 0; i < expectedResults.size(); i++) EXPECT_EQ(expectedResults[i], dc.score(i));
+    } else {
+        std::array<int ,8> expectedResults{{2, 1, 5, 2, 2, 6, 1, 2}};
+        for(long unsigned int i = 0; i < expectedResults.size(); i++) EXPECT_EQ(expectedResults[i], dc.score(i));
+    }
+}
+
+TEST_P(CentralityGTest, testInDegreeCentrality) {
+    Graph g(8, false, isDirected());
+
+    g.addEdge(0, 2);
+    g.addEdge(0, 5);
+    g.addEdge(1, 2);
+    g.addEdge(2, 3);
+    g.addEdge(2, 2);
+    g.addEdge(2, 4);
+    g.addEdge(3, 5);
+    g.addEdge(4, 5);
+    g.addEdge(5, 5);
+    g.addEdge(5, 6);
+    g.addEdge(5, 7);
+    g.addEdge(7, 7);
+
+    DegreeCentrality dc(g, false, false, false);
+    dc.run();
+
+    if (isDirected()){
+        std::array<int ,8> expectedResults{{0, 0, 3, 1, 1, 4, 1, 2}};
+        for(long unsigned int i = 0; i < expectedResults.size(); i++) EXPECT_EQ(expectedResults[i], dc.score(i));
+    } else {
+        std::array<int ,8> expectedResults{{2, 1, 5, 2, 2, 6, 1, 2}};
+        for(long unsigned int i = 0; i < expectedResults.size(); i++) EXPECT_EQ(expectedResults[i], dc.score(i));
+    }
+}
+
+TEST_P(CentralityGTest, testDegreeCentralityIgnoreSelfLoops) {
+    Graph g(8, false, isDirected());
+
+    g.addEdge(0, 2);
+    g.addEdge(0, 5);
+    g.addEdge(1, 2);
+    g.addEdge(2, 3);
+    g.addEdge(2, 2);
+    g.addEdge(2, 4);
+    g.addEdge(3, 5);
+    g.addEdge(4, 5);
+    g.addEdge(5, 5);
+    g.addEdge(5, 6);
+    g.addEdge(5, 7);
+    g.addEdge(7, 7);
+
+    DegreeCentrality dc(g, false, true, true);
+    dc.run();
+
+    if (isDirected()){
+        std::array<int ,8> expectedResults{{2, 1, 2, 1, 1, 2, 0, 0}};
+        for(long unsigned int i = 0; i < expectedResults.size(); i++) EXPECT_EQ(expectedResults[i], dc.score(i));
+    } else {
+        std::array<int ,8> expectedResults{{2, 1, 4, 2, 2, 5, 1, 1}};
+        for(long unsigned int i = 0; i < expectedResults.size(); i++) EXPECT_EQ(expectedResults[i], dc.score(i));
     }
 }
 
