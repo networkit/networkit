@@ -36,7 +36,8 @@ public:
      * nodes, and improves the group closeness of the given group by performing vertex exchanges.
      *
      * @param G A connected undirected graph.
-     * @param first, last A range that contains the initial group of nodes.
+     * @param first Iterator for first node of initial group of nodes.
+     * @param last Iterator for last node of initial group of nodes.
      * @param extended Set this parameter to true for the Extended Grow-Shrink algorithm (i.e.,
      * vertex exchanges are not restricted to only neighbors of the group).
      * @param insertions Number of consecutive node insertions and removal per iteration. Let this

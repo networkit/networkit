@@ -527,10 +527,9 @@ TEST_P(GraphBuilderDirectSwapGTest, testForNodes) {
 }
 
 TEST_P(GraphBuilderDirectSwapGTest, testParallelForNodes) {
-    std::vector<node> visited;
+    std::vector<node> visited(bHouse.upperNodeIdBound());
     this->bHouse.parallelForNodes([&](node u) {
-        #pragma omp critical
-        visited.push_back(u);
+        visited[u] = u;
     });
 
     Aux::Parallel::sort(visited.begin(), visited.end());
