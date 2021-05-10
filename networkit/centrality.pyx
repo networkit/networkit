@@ -733,8 +733,8 @@ cdef extern from "<networkit/centrality/DegreeCentrality.hpp>":
 
 cdef class DegreeCentrality(Centrality):
 	""" Node centrality index which ranks nodes by their degree.
-	Optional normalization by maximum degree. The run() method runs in O(m) time, where m is the number of
-	edges in the graph.
+	Optional normalization by maximum degree.  run() runs in O(n) time if ignoreSelfLoops is false or the graph 
+	has no self-loops; otherwise it runs in O(m).
 
 	DegreeCentrality(G, normalized=False, outDeg=True, ignoreSelfLoops=True)
 

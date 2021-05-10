@@ -14,14 +14,17 @@ DegreeCentrality::DegreeCentrality(const Graph& G, bool normalized, bool outDeg,
 
 void DegreeCentrality::run() {
     scoreData = std::vector<double>(G.upperNodeIdBound(), 0.0);
-
+    ignoreSelfLoops = ignoreSelfLoops && (G.numberOfSelfLoops() > 0); //this way we don't need to check for self loops if there are none
+    
     if (G.isDirected() && !outDeg) {
         G.parallelForNodes([&](node u) {
             scoreData[u] = G.degreeIn(u);
+            if(ignoreSelfLoops && G.hasEdge(u, u)) scoreData[u] -= 1;
         });
     } else {
         G.parallelForNodes([&](node u) {
             scoreData[u] = G.degree(u);
+            if(ignoreSelfLoops && G.hasEdge(u, u)) scoreData[u] -= 1;
         });
     }
 
