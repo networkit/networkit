@@ -5,15 +5,17 @@
  *      Author: cls
  */
 
+// networkit-format
+
 #include <fstream>
 
 #include <networkit/auxiliary/Enforce.hpp>
-#include <networkit/auxiliary/Log.hpp>
 #include <networkit/io/EdgeListWriter.hpp>
 
 namespace NetworKit {
 
-EdgeListWriter::EdgeListWriter(char separator, node firstNode, bool bothDirections) : separator(separator), firstNode(firstNode), bothDirections(bothDirections) {}
+EdgeListWriter::EdgeListWriter(char separator, node firstNode, bool bothDirections)
+    : separator(separator), firstNode(firstNode), bothDirections(bothDirections) {}
 
 void EdgeListWriter::write(const Graph &G, const std::string &path) {
     std::ofstream file(path);
@@ -23,30 +25,25 @@ void EdgeListWriter::write(const Graph &G, const std::string &path) {
         file << (u + firstNode) << separator << (v + firstNode) << separator << weight << std::endl;
     };
 
-    auto writeUnweightedEdge = [&](node u, node v){
+    auto writeUnweightedEdge = [&](node u, node v) {
         file << (u + firstNode) << separator << (v + firstNode) << std::endl;
     };
 
     if (G.isWeighted()) {
         if (bothDirections) {
-            G.forNodes([&](node u) {
-                G.forEdgesOf(u, writeWeightedEdge);
-            });
+            G.forNodes([&](node u) { G.forEdgesOf(u, writeWeightedEdge); });
         } else {
             G.forEdges(writeWeightedEdge);
         }
     } else {
         if (bothDirections) {
-            G.forNodes([&](node u) {
-                G.forEdgesOf(u, writeUnweightedEdge);
-            });
+            G.forNodes([&](node u) { G.forEdgesOf(u, writeUnweightedEdge); });
         } else {
             G.forEdges(writeUnweightedEdge);
         }
     }
 
     file.close();
-
 }
 
 } /* namespace NetworKit */
