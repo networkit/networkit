@@ -20,7 +20,7 @@ void CoverWriter::write(Cover &zeta, const std::string &path) const {
         for (auto &v : nodes) {
             file << v << " ";
         }
-        file << std::endl;
+        file << '\n';
     }
 }
 

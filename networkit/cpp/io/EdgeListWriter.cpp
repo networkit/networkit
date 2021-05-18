@@ -22,11 +22,11 @@ void EdgeListWriter::write(const Graph &G, const std::string &path) {
     Aux::enforceOpened(file);
 
     auto writeWeightedEdge = [&](node u, node v, edgeweight weight) {
-        file << (u + firstNode) << separator << (v + firstNode) << separator << weight << std::endl;
+        file << (u + firstNode) << separator << (v + firstNode) << separator << weight << '\n';
     };
 
     auto writeUnweightedEdge = [&](node u, node v) {
-        file << (u + firstNode) << separator << (v + firstNode) << std::endl;
+        file << (u + firstNode) << separator << (v + firstNode) << '\n';
     };
 
     if (G.isWeighted()) {
