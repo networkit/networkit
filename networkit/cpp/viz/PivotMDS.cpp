@@ -5,6 +5,8 @@
  *      Author: Michael Wegner
  */
 
+#include <limits>
+
 #include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/graph/GraphTools.hpp>
