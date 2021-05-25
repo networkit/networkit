@@ -1342,10 +1342,9 @@ TEST_P(GraphGTest, testForNodes) {
 }
 
 TEST_P(GraphGTest, testParallelForNodes) {
-    std::vector<node> visited;
+    std::vector<node> visited(Ghouse.upperNodeIdBound());
     this->Ghouse.parallelForNodes([&](node u) {
-#pragma omp critical
-        visited.push_back(u);
+        visited[u] = u;
     });
 
     Aux::Parallel::sort(visited.begin(), visited.end());

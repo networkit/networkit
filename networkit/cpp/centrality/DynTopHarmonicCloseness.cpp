@@ -6,6 +6,7 @@
  */
 
 #include <cmath>
+#include <limits>
 #include <omp.h>
 
 #include <networkit/auxiliary/PrioQueue.hpp>

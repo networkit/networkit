@@ -6,6 +6,7 @@
  */
 
 #include <cmath>
+#include <limits>
 #include <queue>
 
 #include <networkit/auxiliary/Log.hpp>

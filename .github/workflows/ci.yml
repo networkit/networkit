@@ -139,7 +139,7 @@ jobs:
     strategy:
       matrix:
         os: ['10.15']  # 11.0 temp. removed due to errors in preview image / git actions pipelines
-        compiler: ['clang-11', 'gcc-10']
+        compiler: ['clang-12', 'gcc-10']
     continue-on-error: ${{ matrix.os == '11.0' }}
     steps:
       - name: Install prerequisites
@@ -147,13 +147,15 @@ jobs:
           brew install libomp
           brew install ninja
       - name: Install compiler llvm
-        if: matrix.compiler == 'clang-11'
-        run: brew install llvm@11
+        if: matrix.compiler == 'clang-12'
+        run: |
+          brew reinstall llvm@12
+          brew link --overwrite llvm@12
       - name: Install compiler gcc
         if: matrix.compiler == 'gcc-10'
         run: |
-          brew install gcc@10
-          brew link gcc
+          brew reinstall gcc@10
+          brew link --overwrite gcc@10
       - name: Checkout networkit
         uses: actions/checkout@v2
         with:
@@ -162,8 +164,8 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
         shell: bash
         env:
-          CC: ${{ matrix.compiler == 'clang-11' && '/usr/local/opt/llvm/bin/clang' || 'gcc-10' }}
-          CXX: ${{ matrix.compiler == 'clang-11' && '/usr/local/opt/llvm/bin/clang++' || 'g++-10' }}
+          CC: ${{ matrix.compiler == 'clang-12' && '/usr/local/opt/llvm@12/bin/clang' || 'gcc-10' }}
+          CXX: ${{ matrix.compiler == 'clang-12' && '/usr/local/opt/llvm@12/bin/clang++' || 'g++-10' }}
 
   linux-build-latest:
     name: "Linux (gcc-10${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.9' || '' }}): ${{ matrix.build-configuration }}"
@@ -206,14 +208,14 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        compiler: ['clang-11']
+        compiler: ['clang-12']
     steps:
       - name: Install prerequisites
         run:  |
           curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-11 main" | sudo tee /etc/apt/sources.list.d/llvm11.list
+          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-12 main" | sudo tee /etc/apt/sources.list.d/llvm12.list
           sudo apt-get update
-          sudo apt-get install clang-11 libomp-11-dev ninja-build
+          sudo apt-get install clang-12 libomp-12-dev ninja-build
       - name: Checkout networkit
         uses: actions/checkout@v2
         with:
@@ -227,8 +229,8 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
         shell: bash
         env:
-          CC: clang-11
-          CXX: clang++-11
+          CC: clang-12
+          CXX: clang++-12
 
   linux-build-min-support:
     name: "Linux (${{ matrix.compiler }}, CPython 3.6): full"
@@ -264,7 +266,7 @@ jobs:
           CXX: ${{ matrix.compiler == 'gcc-5' && 'g++-5' || 'clang++-3.9' }}
 
   linux-build-clang-tidy:
-    name: "Linux (clang-11): clang-tidy"
+    name: "Linux (clang-12): clang-tidy"
     runs-on: ubuntu-20.04
     env:
       CC: clang
@@ -273,9 +275,9 @@ jobs:
       - name: Install prerequisites
         run: |
           curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-11 main" | sudo tee /etc/apt/sources.list.d/llvm11.list
+          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-12 main" | sudo tee /etc/apt/sources.list.d/llvm12.list
           sudo apt-get update
-          sudo apt-get install libomp-11-dev clang-11 clang-tidy-11 ninja-build
+          sudo apt-get install libomp-12-dev clang-12 clang-tidy-12 ninja-build
       - name: Checkout networkit
         uses: actions/checkout@v2
         with:

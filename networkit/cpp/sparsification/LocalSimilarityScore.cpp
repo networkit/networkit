@@ -26,7 +26,12 @@ void LocalSimilarityScore::run() {
 
     std::vector<double> sparsificationExp(G->upperEdgeIdBound(), 0.0);
 
-    G->balancedParallelForNodes([&](node i) {
+    // G->parallelForNodes is replaced here by it's code-logic due to bugs in clang 12.0.0 and 12.0.1
+    #pragma omp parallel for schedule(guided)
+    for (omp_index i = 0; i < static_cast<omp_index>(G->upperNodeIdBound()); ++i) {
+        if(!G->hasNode(i)) {
+            continue;
+        }
         count d = G->degree(i);
 
         /* The top d^e edges (sorted by similarity)
@@ -59,7 +64,7 @@ void LocalSimilarityScore::run() {
             rank++;
         }
 
-    });
+    };
 
     scoreData = std::move(sparsificationExp);
     hasRun = true;
