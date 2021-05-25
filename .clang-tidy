@@ -66,4 +66,4 @@ CheckOptions:
   - key:   readability-identifier-naming.TemplateParameterCase
     value: CamelCase
   - key:   performance-unnecessary-value-param.AllowedTypes
-    value: [Ff]unction$
+    value: '[Ff]unction$'
