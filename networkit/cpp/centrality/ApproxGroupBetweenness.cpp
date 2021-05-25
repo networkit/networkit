@@ -1,5 +1,5 @@
 /*
- * ApproxGroupBetweenness.h
+ * ApproxGroupBetweenness.cpp
  *
  *  Created on: 13.03.2018
  *      Author: Marvin Pogoda
@@ -39,9 +39,10 @@ void ApproxGroupBetweenness::run() {
     std::vector<int64_t> bucketInitializer(n);
     std::vector<std::vector<node>> incidencyList(n);
     std::vector<count> hyperEdges;
-    count samples = groupSize * log(n) / (epsilon * epsilon);
+    const auto samples = static_cast<count>(
+        std::ceil(static_cast<double>(groupSize) * std::log(n) / (epsilon * epsilon)));
     std::vector<std::vector<count>> hyperEdgesPerSample(samples);
-    Aux::BucketPQ nodeDegrees(bucketInitializer, -samples, 1);
+    Aux::BucketPQ nodeDegrees(bucketInitializer, -static_cast<int64_t>(samples), 1);
     std::vector<BFS> bfss(omp_get_max_threads(), BFS(G, 0, true, true));
 
 #pragma omp parallel for
@@ -93,7 +94,7 @@ void ApproxGroupBetweenness::run() {
     }
     // Build nodeDegrees
     for (node i = 0; i < n; i++)
-        nodeDegrees.changeKey(tempDegrees[i], i);
+        nodeDegrees.changeKey(static_cast<int64_t>(tempDegrees[i]), i);
 
     // Extract nodes with highest degrees.
     std::vector<count> degreeDecrease(n);
@@ -112,7 +113,7 @@ void ApproxGroupBetweenness::run() {
             degree += degreeDecrease[v];
             degreeDecrease[v] = 0;
             // Check if v still has max degree
-            nodeDegrees.changeKey(degree, v);
+            nodeDegrees.changeKey(static_cast<int64_t>(degree), v);
             elem = nodeDegrees.extractMin();
             v = elem.second;
             degree = elem.first;

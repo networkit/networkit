@@ -27,8 +27,9 @@ class GroupClosenessGrowShrinkImpl;
 class GroupClosenessGrowShrink final : public Algorithm {
 
 public:
-    GroupClosenessGrowShrink(const Graph &graph, std::vector<node> group, bool extended = false,
-                             count insertions = 0, count maxIterations = 100);
+    GroupClosenessGrowShrink(const Graph &graph, const std::vector<node> &group,
+                             bool extended = false, count insertions = 0,
+                             count maxIterations = 100);
     /**
      * Finds a group of nodes with high group closeness centrality. This is the Grow-Shrink
      * algorithm presented in Angriman et al. "Local Search for Group Closeness Maximization on Big

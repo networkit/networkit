@@ -148,15 +148,15 @@ void CSRMatrix::setValue(const index i, const index j, const double value) {
         }
     } else { // create a new non-zero entry at (i,j)
         if (!sorted()) {
-            columnIdx.emplace(std::next(columnIdx.begin(), rowIdx[i+1]), j);
-            nonZeros.emplace(std::next(nonZeros.begin(), rowIdx[i+1]), value);
+            columnIdx.emplace(columnIdx.begin() + rowIdx[i+1], j);
+            nonZeros.emplace(nonZeros.begin() + rowIdx[i+1], value);
         } else {
             if (colIdx < rowIdx[i] || colIdx == none) { // emplace the value in front of all other values of row i
-                columnIdx.emplace(std::next(columnIdx.begin(), rowIdx[i]), j);
-                nonZeros.emplace(std::next(nonZeros.begin(), rowIdx[i]), value);
+                columnIdx.emplace(columnIdx.begin() + rowIdx[i], j);
+                nonZeros.emplace(nonZeros.begin() + rowIdx[i], value);
             } else {
-                columnIdx.emplace(std::next(columnIdx.begin(), colIdx+1), j);
-                nonZeros.emplace(std::next(nonZeros.begin(), colIdx+1), value);
+                columnIdx.emplace(columnIdx.begin() + colIdx+1, j);
+                nonZeros.emplace(nonZeros.begin() + colIdx+1, value);
             }
         }
 
@@ -370,8 +370,8 @@ CSRMatrix CSRMatrix::operator*(const CSRMatrix &other) const {
                 index k = this->columnIdx[jA];
                 for (index jB = other.rowIdx[k]; jB < other.rowIdx[k+1]; ++jB) {
                     index j = other.columnIdx[jB];
-                    if (marker[j] != (int64_t) i) {
-                        marker[j] = i;
+                    if (marker[j] != static_cast<int64_t>(i)) {
+                        marker[j] = static_cast<int64_t>(i);
                         ++rowIdx[i+1];
                     }
                 }
@@ -403,8 +403,8 @@ CSRMatrix CSRMatrix::operator*(const CSRMatrix &other) const {
                     index j = other.columnIdx[jB];
                     double valB = other.nonZeros[jB];
 
-                    if (marker[j] < (int64_t) rowBegin) {
-                        marker[j] = rowEnd;
+                    if (marker[j] < static_cast<int64_t>(rowBegin)) {
+                        marker[j] = static_cast<int64_t>(rowEnd);
                         columnIdx[rowEnd] = j;
                         nonZeros[rowEnd] = valA * valB;
                         ++rowEnd;
