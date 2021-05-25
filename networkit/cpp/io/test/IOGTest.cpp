@@ -84,6 +84,17 @@ TEST_F(IOGTest, testEdgeListWriter){
     EXPECT_EQ(G.numberOfEdges(),G2.numberOfEdges());
     EXPECT_EQ(G.isDirected(),G2.isDirected());
     EXPECT_EQ(G.isWeighted(),G2.isWeighted());
+
+    // If not continuous, firstNode should be set to 0 automatically
+    reader = EdgeListReader(' ', 1, "#", false, true);
+    Graph G3 = reader.read(path);
+    EXPECT_EQ(G.numberOfNodes(), G3.numberOfNodes());
+    EXPECT_EQ(G.numberOfEdges(), G3.numberOfEdges());
+    EXPECT_EQ(G.isDirected(), G3.isDirected());
+    EXPECT_EQ(G.isWeighted(), G3.isWeighted());
+    std::vector<node> nodes(G.nodeRange().begin(), G.nodeRange().end());
+    index i = 0;
+    G3.forNodes([&](node u) { EXPECT_EQ(u, nodes[i++]); });
 }
 
 TEST_F(IOGTest, testGraphIOEdgeList) {
