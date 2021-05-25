@@ -170,8 +170,6 @@ public:
         double targetAvgDegree = (m/n)*2;
         double xiInv = ((plexp-2)/(plexp-1));
         if (T == 0) {
-            double v = targetAvgDegree * (PI/2)*xiInv*xiInv;
-            result = 2*log(n / v);
             result = searchTargetRadiusForColdGraphs(n, targetAvgDegree, alpha, epsilon);
         } else {
             double beta = 1/T;
