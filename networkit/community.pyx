@@ -390,6 +390,30 @@ cdef class PLM(CommunityDetector):
 	def prolong(Graph Gcoarse, Partition zetaCoarse, Graph Gfine, vector[node] nodeToMetaNode):
 		return Partition().setThis(PLM_prolong(Gcoarse._this, zetaCoarse._this, Gfine._this, nodeToMetaNode))
 
+cdef extern from "<networkit/community/LouvainMapEquation.hpp>":
+	cdef cppclass _LouvainMapEquation "NetworKit::LouvainMapEquation"(_CommunityDetectionAlgorithm):
+		_LouvainMapEquation(_Graph, bool, count, string ) except +
+
+cdef class LouvainMapEquation(CommunityDetector):
+	"""
+	Community detection algorithm based on the Louvain algorithm. Uses the Map Equation to find communities.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph on which the algorithm has to run.
+	hierarchical: bool
+		(optional) Iteratively create a graph of the locally optimal clusters and optimize locally on that graph.
+	maxIterations: count
+		(optional) The maximum number of local move iterations.
+	parallelizationStrategy: string
+		(optional) relaxmap, synchronous, or none. default relaxmap.
+	"""
+
+	def __cinit__(self, Graph G not None, hierarchical = False, maxIterations = 32, parallelizationStrategy = "relaxmap"):
+		self._G = G
+		self._this = new _LouvainMapEquation(G._this, hierarchical, maxIterations, stdstring(parallelizationStrategy))
+
 cdef extern from "<networkit/community/PLP.hpp>":
 
 	cdef cppclass _PLP "NetworKit::PLP"(_CommunityDetectionAlgorithm):
