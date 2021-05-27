@@ -1414,30 +1414,6 @@ public:
     count numberOfNodes() const noexcept { return n; }
 
     /**
-     * Return the number of nodes in the graph.
-     * @return The number of nodes.
-     */
-    count numberOfNodes(Unsafe) const noexcept { return outEdges.size(); }
-
-    /**
-     * Return the number of nodes in the graph.
-     * @return The number of nodes.
-     */
-    count numberOfInNodes(Unsafe) const noexcept { return inEdges.size(); }
-
-    /**
-     * Return the number of nodes in the graph.
-     * @return The number of nodes.
-     */
-    count numberOfWeightedNodes(Unsafe) const noexcept { return outEdgeWeights.size(); }
-
-    /**
-     * Return the number of nodes in the graph.
-     * @return The number of nodes.
-     */
-    count numberOfWeightedInNodes(Unsafe) const noexcept { return inEdgeWeights.size(); }
-
-    /**
      * Return the number of edges in the graph.
      * @return The number of edges.
      */
@@ -1507,6 +1483,15 @@ public:
     void setWeight(node u, node v, edgeweight ew);
 
     /**
+     * Set the weight to the i-th neighbour of u.
+     *
+     * @param[in]	u	endpoint of edge
+     * @param[in]	i	index of the nexight
+     * @param[in]	weight	edge weight
+     */
+    void setWeightAtIthNeighbor(Unsafe, node u, index i, edgeweight ew);
+
+    /**
      * Increase the weight of an edge. If the edge does not exist,
      * it will be inserted.
      *
@@ -1515,15 +1500,6 @@ public:
      * @param[in]	weight	edge weight
      */
     void increaseWeight(node u, node v, edgeweight ew);
-
-    /**
-     * Set the weight of i-th edge in the adjecency array of u.
-     *
-     * @param[in]	u	endpoint of edge
-     * @param[in]	i	index of edge in the adjacency array for u.
-     * @param[in]	weight	edge weight
-     */
-    void setWeightAtIthNeighbor(Unsafe, node u, index i, edgeweight ew);
 
     /* SUMS */
 
@@ -1607,6 +1583,10 @@ public:
 
     /**
      * Returns the index of node v in the array of outgoing edges of node u.
+     *
+     * @param u Node
+     * @param v Node
+     * @return index of node v in the array of outgoing edges of node u.
      */
     index indexOfNeighbor(node u, node v) const { return indexInOutEdgeArray(u, v); }
 
@@ -1644,7 +1624,7 @@ public:
      * @param u Node.
      * @param i index; should be in [0, degreeOut(u))
      * @return pair: i-th (outgoing) neighbor of @a u and the corresponding
-     * edge id, or @c defaultEdgeWeight if unweighted.
+     * edge weight, or @c defaultEdgeWeight if unweighted.
      */
     std::pair<node, edgeweight> getIthNeighborWithWeight(node u, index i) const {
         if (!hasNode(u) || i >= outEdges[u].size())
@@ -1658,7 +1638,7 @@ public:
      * @param u Node.
      * @param i index; should be in [0, degreeOut(u))
      * @return pair: i-th (outgoing) neighbor of @a u and the corresponding
-     * edge id, or @c defaultEdgeWeight if unweighted.
+     * edge weight, or @c defaultEdgeWeight if unweighted.
      */
     std::pair<node, edgeweight> getIthNeighborWithWeight(Unsafe, node u, index i) const {
         if (!isWeighted())

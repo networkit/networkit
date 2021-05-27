@@ -173,7 +173,6 @@ Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
 }
 
 void GraphBuilder::toGraphDirectSwap(Graph &G) {
-    assert(is G.empty());
 
     for (index u = 0; u < outEdges.size(); u++){
         for (index j = 0; j < outEdges[u].size(); j++){

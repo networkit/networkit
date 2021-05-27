@@ -202,16 +202,16 @@ TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnRealGraph) {
     ClusteringGenerator clusteringGen;
     count k = 10; // number of clusters in random clustering
     Partition random = clusteringGen.makeRandomClustering(G, k);
-    FATAL("Coarsen1");
+
     ParallelPartitionCoarsening parCoarsening(G, random);
     parCoarsening.run();
-    FATAL("Coarsen2");
+
     ParallelPartitionCoarsening seqCoarsening(G, random, false);
     seqCoarsening.run();
-    FATAL("Coarsen3");
+
     Graph Gpar = parCoarsening.getCoarseGraph();
     EXPECT_EQ(k, Gpar.numberOfNodes());
-    FATAL("Coarsen4");
+
     Graph Gseq = seqCoarsening.getCoarseGraph();
     EXPECT_EQ(k, Gseq.numberOfNodes());
 

@@ -46,7 +46,6 @@ HyperbolicGenerator::HyperbolicGenerator(count n, double avgDegree, double plexp
     }
 
     R = HyperbolicSpace::getTargetRadius(n, n*avgDegree/2, alpha, T);
-
     temperature=T;
     initialize();
 }
@@ -152,7 +151,6 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
     Aux::Timer timer;
     timer.start();
     vector<double> empty;
-
     GraphBuilder result(n, false, false);
 
     #pragma omp parallel
@@ -202,14 +200,12 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
         }
         threadtimers[id].stop();
     }
-
     timer.stop();
     INFO("Generating Edges took ", timer.elapsedMilliseconds(), " milliseconds.");
     return result.toGraph(!directSwap, true);
 }
 
 Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii, double R, double T) {
-
     if (T < 0) throw std::runtime_error("Temperature cannot be negative.");
     if (T == 0) return generateCold(angles, radii, R);
     assert(T > 0);
@@ -223,7 +219,6 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
     assert(radii.size() == n);
 
     assert(alpha > 0);
-    FATAL("alpha asserted");
     Quadtree<index,false> quad(R, theoreticalSplit, alpha, capacity, balance);
 
     for (index i = 0; i < n; i++) {
@@ -236,6 +231,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
     INFO("Filled Quadtree, took ", timer.elapsedMilliseconds(), " milliseconds.");
 
     assert(quad.size() == n);
+
     bool anglesSorted = std::is_sorted(angles.begin(), angles.end());
 
     //now define lambda
