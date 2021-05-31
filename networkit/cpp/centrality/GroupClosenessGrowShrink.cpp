@@ -13,7 +13,7 @@
 
 namespace NetworKit {
 
-GroupClosenessGrowShrink::GroupClosenessGrowShrink(const Graph &G, std::vector<node> group,
+GroupClosenessGrowShrink::GroupClosenessGrowShrink(const Graph &G, const std::vector<node> &group,
                                                    bool extended, count insertions,
                                                    count maxIterations)
     : G(&G),

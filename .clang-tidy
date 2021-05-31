@@ -19,6 +19,10 @@ Checks: >
     bugprone-unused-return-value,
     bugprone-use-after-move,
     bugprone-virtual-near-miss,
+    clang-analyzer-core.*,
+    clang-analyzer-cplusplus.*,
+    clang-analyzer-deadcode.*,
+    clang-analyzer-nullability.*,
     cppcoreguidelines-narrowing-conversions,
     modernize-deprecated-headers,
     modernize-make-shared,
@@ -44,10 +48,10 @@ Checks: >
 # To turn all warnings into errors, simply write '*'
 # in the first line after WarningsAsErrors
 WarningsAsErrors:  >
-    *
+    *,-cppcoreguidelines-narrowing-conversions
 
 FormatStyle: 'file'
-HeaderFilterRegex: '.*\/(include\/networkit|networkit\/cpp)\/.*\.hpp'
+HeaderFilterRegex: '.*\/(include\/networkit|networkit\/cpp)\/.*\.hpp$'
 CheckOptions:
   - key:   readability-identifier-naming.ClassCase
     value: CamelCase
@@ -66,4 +70,4 @@ CheckOptions:
   - key:   readability-identifier-naming.TemplateParameterCase
     value: CamelCase
   - key:   performance-unnecessary-value-param.AllowedTypes
-    value: [Ff]unction$
+    value: '[Ff]unction$'

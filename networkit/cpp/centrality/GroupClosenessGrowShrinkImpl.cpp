@@ -8,6 +8,8 @@
 // networkit-format
 
 #include <omp.h>
+#include <utility>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 

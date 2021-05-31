@@ -84,17 +84,17 @@ void Betweenness::run() {
 
     if (normalized) {
         // divide by the number of possible pairs
-        count n = G.numberOfNodes();
-        count pairs = (n-2) * (n-1);
-        count edges =  n    * (n-1);
+        const double n = static_cast<double>(G.numberOfNodes());
+        const double pairs = (n-2.) * (n-1.);
+        const double edges =  n    * (n-1.);
         G.parallelForNodes([&](node u){
-            scoreData[u] = scoreData[u] / pairs;
+            scoreData[u] /= pairs;
         });
 
         if (computeEdgeCentrality) {
 #pragma omp parallel for
             for (omp_index i = 0; i < static_cast<omp_index>(edgeScoreData.size()); ++i) {
-                edgeScoreData[i] =  edgeScoreData[i] / static_cast<double>(edges);
+                edgeScoreData[i] =  edgeScoreData[i] / edges;
             }
         }
     }
@@ -107,7 +107,7 @@ double Betweenness::maximum(){
         return 1;
     }
 
-    const double n = G.numberOfNodes();
+    const double n = static_cast<double>(G.numberOfNodes());
     double score = (n-1)*(n-2);
     if (!G.isDirected())
         score /= 2.;

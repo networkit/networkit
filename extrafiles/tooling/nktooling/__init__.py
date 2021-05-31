@@ -72,6 +72,15 @@ def failIfReadonly(prgname):
 	print("Use '%s -w' to apply changes." % prgname)
 	sys.exit(1)
 
+def failIfMalformed(file, err):
+	"""
+	Helper function indented to make CI fail if a NetworKit configuration
+	file is malformed.
+	"""
+
+	print(f"Malformed file: {file}\n\n{err}")
+	sys.exit(1)
+
 def getNetworKitRoot():
 	"""
 	Returns an absolute path to the project root (which is derived from the module's absolute path)

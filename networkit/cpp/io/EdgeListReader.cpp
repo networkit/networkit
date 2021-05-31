@@ -24,7 +24,7 @@ EdgeListReader::EdgeListReader(char separator, node firstNode, const std::string
     if (!continuous && firstNode != 0) {
         // firstNode not being 0 in the continuous = false case leads to a segmentation fault
         WARN("firstNode set to 0 since continuous is false");
-        firstNode = 0;
+        this->firstNode = 0;
     }
 }
 

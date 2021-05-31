@@ -90,19 +90,23 @@ void ApproxCloseness::estimateClosenessForUndirectedGraph() {
 
     G.parallelForNodes([&](node u) {
         if (sampledNodes[pivot[u]] != u) { // exclude sampled nodes
-            count LNum = G.numberOfNodes() - 1 - HNum[u] - nSamples + LCNum[u];
+            const double LNum = static_cast<double>(G.numberOfNodes() - 1 - HNum[u] - nSamples + LCNum[u]);
             count HCNum = nSamples - LCNum[u];
 
             bool includeHCTerm = true;
             if (HCNum == 0) includeHCTerm = false;
 
-            double p = (double) LCNum[u] / (double) LNum;
+            double p = static_cast<double>(LCNum[u]) / LNum;
             scoreData[u] = HSum[u] + HCSum[u] + LCSum[u] / p;
-            double LCSqAvg = (LCSum[u] / (double) LCNum[u]) * (LCSum[u] / (double) LCNum[u]);
+            double LCSqAvg = (LCSum[u] / static_cast<double>(LCNum[u]))
+                             * (LCSum[u] / static_cast<double>(LCNum[u]));
             if (includeHCTerm) {
-                SQErrEst[u] = 1.0 / (double) LCNum[u] *  (LCSumSQ[u] / (double) LCNum[u] - LCSqAvg) * LNum + HCSumSQErr[u] / (double) HCNum * HNum[u];
+                SQErrEst[u] = 1.0 / static_cast<double>(LCNum[u])
+                                  * (LCSumSQ[u] / static_cast<double>(LCNum[u]) - LCSqAvg) * LNum
+                              + HCSumSQErr[u] / static_cast<double>(HCNum * HNum[u]);
             } else {
-                SQErrEst[u] = 1.0 / (double) LCNum[u] *  (LCSumSQ[u] / (double) LCNum[u] - LCSqAvg) * LNum;
+                SQErrEst[u] = 1.0 / static_cast<double>(LCNum[u])
+                              * (LCSumSQ[u] / static_cast<double>(LCNum[u]) - LCSqAvg) * LNum;
             }
 
         } else {
@@ -285,7 +289,7 @@ void ApproxCloseness::runOnPivot(index i, const std::vector<node> &pivot, const 
     orderNodesByIncreasingDistance(samples[i], order, pivotDist);
 
     std::vector<node> last(samples.size(), G.upperNodeIdBound());
-    std::vector<node> dist(samples.size());
+    std::vector<edgeweight> dist(samples.size());
 
     std::vector<std::vector<ListEntry>> list(samples.size());
     std::vector<std::vector<node>> nodes(G.upperNodeIdBound());

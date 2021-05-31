@@ -60,7 +60,7 @@ void MultiLevelSetup<CSRMatrix>::computeStrongAdjacencyMatrix(const CSRMatrix& m
 
 template<>
 void MultiLevelSetup<CSRMatrix>::computeAffinityMatrix(const CSRMatrix& matrix, const std::vector<Vector> &tVs, CSRMatrix& affinityMatrix) const {
-    assert(tVs.size() > 0);
+    assert(!tVs.empty());
 
     std::vector<index> rowIdx(matrix.numberOfRows()+1);
     std::vector<index> columnIdx(matrix.nnz());

@@ -122,14 +122,14 @@ template<class Matrix>
 double LevelHierarchy<Matrix>::cycleIndex(index levelIdx) {
     double gamma = 1.0;
     if (getType(levelIdx+1) != ELIMINATION) {
-        count finestNumEdges = finestLevel.getLaplacian().nnz();
-        count numFineEdges = this->at(levelIdx).getLaplacian().nnz();
+        const double finestNumEdges = finestLevel.getLaplacian().nnz();
+        const double numFineEdges = this->at(levelIdx).getLaplacian().nnz();
 
         if (numFineEdges > 0.1 * finestNumEdges) {
             gamma = SETUP_CYCLE_INDEX;
         } else {
-            count numCoarseEdges = this->at(levelIdx+1).getLaplacian().nnz();
-            gamma = std::max(1.0, std::min(1.5, SETUP_COARSENING_WORK_GUARD / ((double) numCoarseEdges / (double) numFineEdges)));
+            double numCoarseEdges = this->at(levelIdx+1).getLaplacian().nnz();
+            gamma = std::max(1.0, std::min(1.5, SETUP_COARSENING_WORK_GUARD / (numCoarseEdges / numFineEdges)));
         }
     }
 

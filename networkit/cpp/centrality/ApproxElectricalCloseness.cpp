@@ -495,7 +495,7 @@ void ApproxElectricalCloseness::run() {
             Diameter diamAlgo(G, estimatedRange, 0);
             diamAlgo.run();
             // Getting diameter upper bound
-            const double diam = diamAlgo.getDiameter().second;
+            const auto diam = static_cast<double>(diamAlgo.getDiameter().second);
             const double tol =
                 epsilon * kappa
                 / (std::sqrt(static_cast<double>((n * G.numberOfEdges())) * std::log(n)) * diam
@@ -535,7 +535,7 @@ void ApproxElectricalCloseness::run() {
     G.parallelForNodes([&](node u) { diagonal[u] = diagonal[u] - sol[root] + 2. * sol[u]; });
     diagonal[root] = sol[root];
     const double trace = std::accumulate(diagonal.begin(), diagonal.end(), 0.);
-    const double n = G.numberOfNodes();
+    const auto n = static_cast<double>(G.numberOfNodes());
 
     G.parallelForNodes([&](node u) { scoreData[u] = (n - 1.) / (n * diagonal[u] + trace); });
 

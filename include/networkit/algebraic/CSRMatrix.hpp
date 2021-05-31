@@ -502,7 +502,7 @@ template<typename L> inline CSRMatrix CSRMatrix::binaryOperator(const CSRMatrix 
 
         return CSRMatrix(A.nRows, A.nCols, rowIdx, columnIdx, nonZeros, A.zero, true);
     } else { // A or B not sorted
-        std::vector<int64_t> columnPointer(A.nCols, -1);
+        std::vector<count> columnPointer(A.nCols, none);
         std::vector<double> Arow(A.nCols, A.zero);
         std::vector<double> Brow(A.nCols, B.zero);
 
@@ -527,7 +527,7 @@ template<typename L> inline CSRMatrix CSRMatrix::binaryOperator(const CSRMatrix 
                 index j = B.columnIdx[k];
                 Brow[j] = B.nonZeros[k];
 
-                if (columnPointer[j] == -1) { // our own matrix does not have a nonZero entry in column j
+                if (columnPointer[j] == none) { // our own matrix does not have a nonZero entry in column j
                     columnPointer[j] = listHead;
                     listHead = j;
                     nnz++;
@@ -545,7 +545,7 @@ template<typename L> inline CSRMatrix CSRMatrix::binaryOperator(const CSRMatrix 
                 listHead = columnPointer[listHead];
 
                 // reset for next row
-                columnPointer[temp] = -1;
+                columnPointer[temp] = none;
                 Arow[temp] = A.zero;
                 Brow[temp] = B.zero;
             }

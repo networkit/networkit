@@ -149,7 +149,7 @@ public:
      * Returns the sum of distances from the source node node to the reached
      * nodes.
      */
-    count getSumOfDistances() const {
+    double getSumOfDistances() const {
         assureFinished();
         return sumDist;
     }

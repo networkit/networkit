@@ -273,10 +273,10 @@ void DynTopHarmonicCloseness::run() {
 
         std::vector<edgeweight> S(n, std::numeric_limits<edgeweight>::max());
 
-        while (Q1.size() != 0) {
+        while (!Q1.empty()) {
 
             omp_set_lock(&lock);
-            if (Q1.size() == 0) { // The size of Q1 might have changed.
+            if (Q1.empty()) { // The size of Q1 might have changed.
                 omp_unset_lock(&lock);
                 break;
             }
@@ -531,10 +531,10 @@ void DynTopHarmonicCloseness::addEdge(const GraphEvent &event) {
 
         std::vector<edgeweight> S(n, std::numeric_limits<edgeweight>::max());
 
-        while (!(Q1.size() == 0)) {
+        while (!Q1.empty()) {
 
             omp_set_lock(&lock);
-            if (Q1.size() == 0) {
+            if (Q1.empty()) {
                 omp_unset_lock(&lock);
                 break;
             }
@@ -758,10 +758,10 @@ void DynTopHarmonicCloseness::removeEdge(const GraphEvent &event) {
         std::vector<node> pred(n, 0);
 
         std::vector<edgeweight> S(n, std::numeric_limits<edgeweight>::max());
-        while (Q.size() > 0) {
+        while (!Q.empty()) {
 
             omp_set_lock(&lock);
-            if (Q.size() == 0) {
+            if (Q.empty()) {
                 omp_unset_lock(&lock);
                 break;
             }

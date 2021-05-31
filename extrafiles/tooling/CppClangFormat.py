@@ -30,7 +30,7 @@ def isSupported(cmd):
 		return False
 	# Read major revision number from "clang-format version XX.XX.XX ... "
 	version = str(subprocess.check_output([cmd, "--version"],
-		universal_newlines=True, env=getEnv())).strip().split()[2].split('.')[0]
+		universal_newlines=True, env=getEnv())).strip().split()[-1].split('.')[0]
 	return int(version) >= nkt.MIN_CLANG_FORMAT_VERSION
 
 

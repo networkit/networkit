@@ -133,7 +133,7 @@ bool BucketPQ::empty() const noexcept {
 }
 
 int64_t BucketPQ::getKey(const index& val) {
-    int64_t key =myBucket[val]-offset;
+    int64_t key = static_cast<int64_t>(myBucket[val]) - offset;
     return key;
 }
 } // namespace

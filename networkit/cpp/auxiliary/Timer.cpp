@@ -78,7 +78,7 @@ LoggingTimer::~LoggingTimer() {
     if (!label.empty())
         ss << '"' << label << "\" ";
 
-    ss << "ran for " << (elapsedMicroseconds() * 1e-3) << " ms";
+    ss << "ran for " << (static_cast<double>(elapsedMicroseconds()) * 1e-3) << " ms";
 
     LOG_AT(level, ss.str());
 }

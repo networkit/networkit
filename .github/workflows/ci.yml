@@ -387,7 +387,7 @@ jobs:
           curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
           echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-11 main" | sudo tee /etc/apt/sources.list.d/llvm11.list
           sudo apt-get update
-          sudo apt-get install clang-format-11
+          sudo apt-get install clang-format-11 python-yaml
       - name: Checkout networkit
         uses: actions/checkout@v2
         with:
