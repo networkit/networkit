@@ -33,7 +33,8 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	_Graph toUndirected(_Graph G) nogil except +
 	_Graph toUnweighted(_Graph G) nogil except +
 	_Graph toWeighted(_Graph G) nogil except +
-	_Graph subgraphFromNodes(_Graph G, unordered_set[node], bool_t, bool_t) nogil except +
+	_Graph subgraphFromNodes(_Graph G, unordered_set[node]) nogil except +
+	_Graph subgraphAndNeighborsFromNodes(_Graph G, unordered_set[node], bool_t, bool_t) nogil except +
 	void append(_Graph G, _Graph G1) nogil except +
 	void merge(_Graph G, _Graph G1) nogil except +
 	void removeEdgesFromIsolatedSet[InputIt](_Graph G, InputIt first, InputIt last) except +
@@ -397,17 +398,40 @@ cdef class GraphTools:
 		return Graph().setThis(copyNodes(graph._this))
 
 	@staticmethod
-	def subgraphFromNodes(Graph graph, nodes, includeOutNeighbors=False, includeInNeighbors=False):
+	def subgraphFromNodes(Graph graph, nodes):
 		"""
 		Returns an induced subgraph of this graph (including potential edge
-        weights/directions)
+		weights/directions)
 
-        There a two relevant sets of nodes:
-           - Nodes are such passed as arguments.
-           - Neighbors are empty by default.
+		The subgraph contains all nodes in Nodes  and all edges which
+		have one end point in Nodes and the other in Nodes.
 
-        The subgraph contains all nodes in Nodes + Neighbors and all edges which
-        have one end point in Nodes and the other in Nodes or Neighbors.
+		Parameters:
+		-----------
+		graph : networkit.Graph
+			The input graph.
+		nodes : set
+			Nodes in the induced subgraph.
+		Returns:
+		--------
+		graph : networkit.Graph
+			Induced subgraph.
+		"""
+		return Graph().setThis(subgraphFromNodes(
+			graph._this, nodes))
+
+	@staticmethod
+	def subgraphAndNeighborsFromNodes(Graph graph, nodes, includeOutNeighbors=False, includeInNeighbors=False):
+		"""
+		Returns an induced subgraph of this graph (including potential edge
+		weights/directions)
+
+		There a two relevant sets of nodes:
+			- Nodes are such passed as arguments.
+			- Neighbors are empty by default.
+
+		The subgraph contains all nodes in Nodes + Neighbors and all edges which
+		have one end point in Nodes and the other in Nodes or Neighbors.
 
 		Parameters:
 		-----------
@@ -425,7 +449,7 @@ cdef class GraphTools:
 		graph : networkit.Graph
 			Induced subgraph.
 		"""
-		return Graph().setThis(subgraphFromNodes(
+		return Graph().setThis(subgraphAndNeighborsFromNodes(
 			graph._this, nodes, includeOutNeighbors, includeInNeighbors))
 
 	@staticmethod

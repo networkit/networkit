@@ -259,8 +259,30 @@ Graph copyNodes(const Graph &G) {
     return C;
 }
 
-Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
-                        bool includeOutNeighbors, bool includeInNeighbors) {
+Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes) {
+
+    auto isRelevantNode = [&](const node u) { return nodes.find(u) != nodes.end(); };
+
+    Graph S(G.upperNodeIdBound(), G.isWeighted(), G.isDirected());
+    // delete all nodes that are not in the node set
+    S.forNodes([&](node u) {
+        if (!isRelevantNode(u)) {
+            S.removeNode(u);
+        }
+    });
+
+    G.forEdges([&](node u, node v, edgeweight w) {
+        // only include edges if at least one endpoint is in nodes
+        if (isRelevantNode(u) && isRelevantNode(v)) {
+            S.addEdge(u, v, w);
+        }
+    });
+
+    return S;
+}
+
+Graph subgraphAndNeighborsFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
+                                    bool includeOutNeighbors, bool includeInNeighbors) {
     const auto neighbors = [&] {
         std::unordered_set<node> neighbors;
 
