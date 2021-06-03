@@ -683,7 +683,7 @@ TEST_P(GraphToolsGTest, testSubgraphFromNodesUndirected) {
 
     {
         std::unordered_set<node> nodes = {0};
-        auto res = GraphTools::subgraphFromNodes(G, nodes, true);
+        auto res = GraphTools::subgraphAndNeighborsFromNodes(G, nodes, true);
 
         EXPECT_EQ(res.numberOfNodes(), 3);
         EXPECT_EQ(res.numberOfEdges(), 2); // 0-1, 0-2, NOT 1-2
@@ -701,7 +701,7 @@ TEST_P(GraphToolsGTest, testSubgraphFromNodesUndirected) {
 
     {
         std::unordered_set<node> nodes = {0, 1};
-        auto res = GraphTools::subgraphFromNodes(G, nodes, true);
+        auto res = GraphTools::subgraphAndNeighborsFromNodes(G, nodes, true);
         EXPECT_EQ(res.numberOfNodes(), 4);
         EXPECT_EQ(res.numberOfEdges(), 4); // 0-1, 0-2, 1-2, 1-3
     }
@@ -737,7 +737,7 @@ TEST_P(GraphToolsGTest, testSubgraphFromNodesDirected) {
 
     {
         std::unordered_set<node> nodes = {0};
-        auto res = GraphTools::subgraphFromNodes(G, nodes, true);
+        auto res = GraphTools::subgraphAndNeighborsFromNodes(G, nodes, true);
         EXPECT_EQ(res.numberOfNodes(), 3);
         EXPECT_EQ(res.numberOfEdges(), 2); // 0->1, 0->2, NOT 1->2
     }
@@ -751,14 +751,14 @@ TEST_P(GraphToolsGTest, testSubgraphFromNodesDirected) {
 
     {
         std::unordered_set<node> nodes = {0, 1};
-        auto res = GraphTools::subgraphFromNodes(G, nodes, true);
+        auto res = GraphTools::subgraphAndNeighborsFromNodes(G, nodes, true);
         EXPECT_EQ(res.numberOfNodes(), 3);
         EXPECT_EQ(res.numberOfEdges(), 3); // 0->1, 0->2, 1->2
     }
 
     {
         std::unordered_set<node> nodes = {0, 1};
-        auto res = GraphTools::subgraphFromNodes(G, nodes, true, true);
+        auto res = GraphTools::subgraphAndNeighborsFromNodes(G, nodes, true, true);
         EXPECT_EQ(res.numberOfNodes(), 4);
         EXPECT_EQ(res.numberOfEdges(), 4); // 0->1, 0->2, 1->2, 3->1
     }

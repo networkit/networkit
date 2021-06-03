@@ -199,7 +199,7 @@ class TestGraphTools(unittest.TestCase):
 		self.assertEqual(res.numberOfNodes(), 1)
 		self.assertEqual(res.numberOfEdges(), 0)
 
-		res = nk.graphtools.subgraphFromNodes(G, nodes, True)
+		res = nk.graphtools.subgraphAndNeighborsFromNodes(G, nodes, True)
 
 		self.assertEqual(res.numberOfNodes(), 3)
 		self.assertEqual(res.numberOfEdges(), 2) # 0-1, 0-2, NOT 1-2
@@ -212,7 +212,7 @@ class TestGraphTools(unittest.TestCase):
 		self.assertEqual(res.numberOfNodes(), 2)
 		self.assertEqual(res.numberOfEdges(), 1) # 0 - 1
 
-		res = nk.graphtools.subgraphFromNodes(G, nodes, True)
+		res = nk.graphtools.subgraphAndNeighborsFromNodes(G, nodes, True)
 		self.assertEqual(res.numberOfNodes(), 4)
 		self.assertEqual(res.numberOfEdges(), 4) # 0-1, 0-2, 1-2, 1-3
 
@@ -229,7 +229,7 @@ class TestGraphTools(unittest.TestCase):
 		self.assertEqual(res.numberOfEdges(), 0)
 
 		nodes = set([0])
-		res = nk.graphtools.subgraphFromNodes(G, nodes, True)
+		res = nk.graphtools.subgraphAndNeighborsFromNodes(G, nodes, True)
 		self.assertEqual(res.numberOfNodes(), 3)
 		self.assertEqual(res.numberOfEdges(), 2) # 0->1, 0->2, NOT 1->2
 
@@ -239,12 +239,12 @@ class TestGraphTools(unittest.TestCase):
 		self.assertEqual(res.numberOfEdges(), 1) # 0 -> 1
 
 		nodes = set([0, 1])
-		res = nk.graphtools.subgraphFromNodes(G, nodes, True)
+		res = nk.graphtools.subgraphAndNeighborsFromNodes(G, nodes, True)
 		self.assertEqual(res.numberOfNodes(), 3)
 		self.assertEqual(res.numberOfEdges(), 3) # 0->1, 0->2, 1->2
 
 		nodes = set([0, 1])
-		res = nk.graphtools.subgraphFromNodes(G, nodes, True, True)
+		res = nk.graphtools.subgraphAndNeighborsFromNodes(G, nodes, True, True)
 		self.assertEqual(res.numberOfNodes(), 4)
 		self.assertEqual(res.numberOfEdges(), 4) # 0->1, 0->2, 1->2, 3->1
 
