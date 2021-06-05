@@ -25,7 +25,7 @@ public:
     /**
      * @return The farthest node v, and the length of the shortest path to v.
      */
-    static std::pair<node, count> getValue(const Graph& G, node u);
+    static std::pair<node, count> getValue(const Graph& G, node u, bool reverse);
 };
 
 } /* namespace NetworKit */

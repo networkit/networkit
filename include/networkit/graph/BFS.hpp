@@ -38,7 +38,7 @@ auto callBFSHandle(F &f, node u, count) -> decltype(f(u)) {
  * @param handle Takes a node as input parameter.
  */
 template <class InputIt, typename L>
-void BFSfrom(const Graph &G, InputIt first, InputIt last, L handle) {
+void BFSfrom(const Graph &G, InputIt first, InputIt last, L handle, bool reverse = false) {
     std::vector<bool> marked(G.upperNodeIdBound());
     std::queue<node> q, qNext;
     count dist = 0;
@@ -52,12 +52,17 @@ void BFSfrom(const Graph &G, InputIt first, InputIt last, L handle) {
         q.pop();
         // apply function
         callBFSHandle(handle, u, dist);
-        G.forNeighborsOf(u, [&](node v) {
+        auto bfs_routine = [&](node v) {
             if (!marked[v]) {
                 qNext.push(v);
                 marked[v] = true;
             }
-        });
+        };
+        if (reverse) {
+          G.forInNeighborsOf(u, bfs_routine);
+        } else {
+          G.forNeighborsOf(u, bfs_routine);
+        }
         if (q.empty() && !qNext.empty()) {
             q.swap(qNext);
             ++dist;
@@ -73,9 +78,9 @@ void BFSfrom(const Graph &G, InputIt first, InputIt last, L handle) {
  * @param handle Takes a node as input parameter.
  */
 template <typename L>
-void BFSfrom(const Graph &G, node source, L handle) {
+void BFSfrom(const Graph &G, node source, L handle, bool reverse = false) {
     std::array<node, 1> startNodes{{source}};
-    BFSfrom(G, startNodes.begin(), startNodes.end(), handle);
+    BFSfrom(G, startNodes.begin(), startNodes.end(), handle, reverse);
 }
 
 /**
