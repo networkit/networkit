@@ -33,7 +33,7 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	_Graph toUndirected(_Graph G) nogil except +
 	_Graph toUnweighted(_Graph G) nogil except +
 	_Graph toWeighted(_Graph G) nogil except +
-	_Graph subgraphFromNodes(_Graph G, unordered_set[node]) nogil except +
+	_Graph subgraphFromNodes[InputIt](_Graph G, InputIt first, InputIt last, bool_t compact) nogil except +
 	_Graph subgraphAndNeighborsFromNodes(_Graph G, unordered_set[node], bool_t, bool_t) nogil except +
 	void append(_Graph G, _Graph G1) nogil except +
 	void merge(_Graph G, _Graph G1) nogil except +
@@ -356,7 +356,7 @@ cdef class GraphTools:
 	@staticmethod
 	def inVolume(Graph graph, nodes):
 		"""
-		Get the inVolume (for all incoming edges) of a subgraph, defined by the 
+		Get the inVolume (for all incoming edges) of a subgraph, defined by the
 		input graph and a corresponding subset of nodes.
 
 		Parameters
@@ -364,7 +364,7 @@ cdef class GraphTools:
 		graph : networkit.Graph
 			The input graph.
 		nodes : vector[node]
-			A vector of nodes from the graph. 
+			A vector of nodes from the graph.
 
 		Returns
 		-------
@@ -398,7 +398,7 @@ cdef class GraphTools:
 		return Graph().setThis(copyNodes(graph._this))
 
 	@staticmethod
-	def subgraphFromNodes(Graph graph, nodes):
+	def subgraphFromNodes(Graph graph, vector[node] nodes, bool_t compact = False):
 		"""
 		Returns an induced subgraph of this graph (including potential edge
 		weights/directions)
@@ -408,17 +408,19 @@ cdef class GraphTools:
 
 		Parameters:
 		-----------
-		graph : networkit.Graph
+		graph   : networkit.Graph
 			The input graph.
-		nodes : set
+		nodes   : iterable
 			Nodes in the induced subgraph.
+		compact : bool
+			If the resulting graph shall have compact, continuous node ids, alternatively, node ids of the input graph are kept.
 		Returns:
 		--------
 		graph : networkit.Graph
 			Induced subgraph.
 		"""
 		return Graph().setThis(subgraphFromNodes(
-			graph._this, nodes))
+			graph._this, nodes.begin(), nodes.end(), compact))
 
 	@staticmethod
 	def subgraphAndNeighborsFromNodes(Graph graph, nodes, includeOutNeighbors=False, includeInNeighbors=False):

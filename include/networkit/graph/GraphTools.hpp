@@ -193,17 +193,80 @@ double inVolume(const Graph &G, InputIt first, InputIt last) {
 Graph copyNodes(const Graph &G);
 
 /**
- * Returns an induced subgraph of this graph (including potential edge weights/directions)
+ * Returns an induced subgraph of the input graph (including potential edge weights/directions)
  *
- * The subgraph contains all nodes in Nodes and all edges which have one end point
- * in Nodes and the other in Nodes.
+ * The subgraph contains all given nodes and all edges which have both end points in nodes.
  *
  * @param G The input graph.
- * @param nodes Nodes of the induced subgraph.
+ * @param nodes The nodes of the induced subgraph.
  *
  * @return Induced subgraph.
  */
 Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes);
+
+/**
+ * Returns an induced subgraph of the input graph (including potential edge weights/directions)
+ *
+ * The subgraph contains all nodes in the given node range and all edges which have both end points
+ * in nodes.
+ *
+ * @param G The input graph.
+ * @param first,last The range of nodes of the induced subgraph.
+ * @param compact If the resulting graph shall have compact, continuous node ids, alternatively,
+ * node ids of the input graph are kept.
+ *
+ * @return Induced subgraph.
+ */
+template <class InputIt>
+Graph subgraphFromNodes(const Graph &G, InputIt first, InputIt last, bool compact = false) {
+    count subgraphIdBound = 0;
+    std::unordered_map<node, node> reverseMapping;
+
+    if (compact) {
+        for (InputIt it = first; it != last; ++it) {
+            reverseMapping[*it] = subgraphIdBound;
+            ++subgraphIdBound;
+        }
+    } else {
+        subgraphIdBound = G.upperNodeIdBound();
+    }
+
+    Graph S(subgraphIdBound, G.isWeighted(), G.isDirected());
+
+    if (compact) {
+        for (auto nodeIt : reverseMapping) {
+            node u = nodeIt.first;
+            node localU = nodeIt.second;
+            G.forNeighborsOf(u, [&](node v, edgeweight weight) {
+                if (!G.isDirected() && u > v)
+                    return;
+
+                auto vMapping = reverseMapping.find(v);
+                if (vMapping != reverseMapping.end())
+                    S.addEdge(localU, vMapping->second, weight);
+            });
+        }
+    } else {
+        // First, delete all nodes
+        for (node u = 0; u < G.upperNodeIdBound(); ++u) {
+            S.removeNode(u);
+        }
+
+        // Restore all given nodes
+        for (InputIt it = first; it != last; ++it) {
+            S.restoreNode(*it);
+        }
+
+        G.forEdges([&](node u, node v, edgeweight w) {
+            // only include edges if at least one endpoint is in nodes
+            if (S.hasNode(u) && S.hasNode(v)) {
+                S.addEdge(u, v, w);
+            }
+        });
+    }
+
+    return S;
+}
 
 /**
  * Returns an induced subgraph of this graph (including potential edge weights/directions)
