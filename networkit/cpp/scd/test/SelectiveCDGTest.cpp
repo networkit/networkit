@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
 #include <networkit/community/Conductance.hpp>
 #include <networkit/community/Modularity.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -17,6 +18,7 @@
 #include <networkit/scd/LocalTightnessExpansion.hpp>
 #include <networkit/scd/PageRankNibble.hpp>
 #include <networkit/scd/SelectiveCommunityDetector.hpp>
+#include <networkit/scd/SetConductance.hpp>
 #include <networkit/scd/TCE.hpp>
 #include <networkit/scd/TwoPhaseL.hpp>
 
@@ -292,6 +294,44 @@ TEST_F(SelectiveCDGTest, testWeightedCliqueDetect) {
         EXPECT_EQ(result.count(0), 1);
         EXPECT_EQ(result.count(2), 1);
         EXPECT_EQ(result.count(3), 1);
+    }
+}
+
+TEST_F(SelectiveCDGTest, testSetConductance) {
+    Graph G(4, true, false);
+    G.addEdge(0, 1, 2);
+    G.addEdge(1, 2, 1);
+    G.addEdge(2, 3, 3);
+
+    {
+        std::set<node> nodes{0, 1};
+        SetConductance sc(G, nodes);
+        sc.run();
+        EXPECT_EQ(sc.getConductance(), 0.2);
+    }
+
+    {
+        std::set<node> nodes{2, 3};
+        SetConductance sc(G, nodes);
+        sc.run();
+        EXPECT_EQ(sc.getConductance(), 0.2);
+    }
+
+    {
+        Partition P(G.upperNodeIdBound());
+        P.setUpperBound(2);
+        P[0] = 0;
+        P[1] = 0;
+        P[2] = 1;
+        P[3] = 1;
+        ParallelPartitionCoarsening coarsening(G, P);
+        coarsening.run();
+
+        Graph coarseGraph = coarsening.getCoarseGraph();
+        std::set<node> nodes{0};
+        SetConductance sc(coarseGraph, nodes);
+        sc.run();
+        EXPECT_EQ(sc.getConductance(), 0.2);
     }
 }
 
