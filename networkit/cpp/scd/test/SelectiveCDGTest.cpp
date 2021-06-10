@@ -1,5 +1,6 @@
-#include <gtest/gtest.h>
+// networkit-format
 #include <memory>
+#include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/community/Conductance.hpp>
@@ -7,20 +8,20 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/SNAPGraphReader.hpp>
+#include <networkit/scd/ApproximatePageRank.hpp>
 #include <networkit/scd/CliqueDetect.hpp>
 #include <networkit/scd/GCE.hpp>
 #include <networkit/scd/LFMLocal.hpp>
-#include <networkit/scd/PageRankNibble.hpp>
-#include <networkit/scd/ApproximatePageRank.hpp>
 #include <networkit/scd/LocalT.hpp>
 #include <networkit/scd/LocalTightnessExpansion.hpp>
+#include <networkit/scd/PageRankNibble.hpp>
 #include <networkit/scd/SelectiveCommunityDetector.hpp>
 #include <networkit/scd/TCE.hpp>
 #include <networkit/scd/TwoPhaseL.hpp>
 
 namespace NetworKit {
 
-class SelectiveCDGTest: public testing::Test {};
+class SelectiveCDGTest : public testing::Test {};
 
 TEST_F(SelectiveCDGTest, testRunApproximatePageRank) {
     SNAPGraphReader reader;
@@ -37,19 +38,31 @@ TEST_F(SelectiveCDGTest, testSCD) {
     // parameters
     node seed = 50;
     std::set<node> seeds = {seed};
-    double alpha = 0.1; // loop (or teleport) probability, changed due to DGleich from: // phi * phi / (225.0 * log(100.0 * sqrt(m)));
+    double alpha = 0.1; // loop (or teleport) probability, changed due to DGleich from: // phi * phi
+                        // / (225.0 * log(100.0 * sqrt(m)));
     double epsilon = 1e-5; // changed due to DGleich from: pow(2, exponent) / (48.0 * B);
 
     std::vector<std::pair<std::string, std::unique_ptr<SelectiveCommunityDetector>>> algorithms;
-    algorithms.emplace_back(std::make_pair(std::string("PageRankNibble"), std::unique_ptr<SelectiveCommunityDetector>(new PageRankNibble(G, alpha, epsilon))));
-    algorithms.emplace_back(std::make_pair(std::string("GCE L"), std::unique_ptr<SelectiveCommunityDetector>(new GCE(G, "L"))));
-    algorithms.emplace_back(std::make_pair(std::string("GCE M"), std::unique_ptr<SelectiveCommunityDetector>(new GCE(G, "M"))));
-    algorithms.emplace_back(std::make_pair(std::string("LFM"), std::unique_ptr<SelectiveCommunityDetector>(new LFMLocal(G, 0.8))));
-    algorithms.emplace_back(std::make_pair(std::string("TwoPhaseL"), std::unique_ptr<SelectiveCommunityDetector>(new TwoPhaseL(G))));
-    algorithms.emplace_back(std::make_pair(std::string("TCE"), std::unique_ptr<SelectiveCommunityDetector>(new TCE(G))));
-    algorithms.emplace_back(std::make_pair(std::string("LTE"), std::unique_ptr<SelectiveCommunityDetector>(new LocalTightnessExpansion(G))));
-    algorithms.emplace_back(std::make_pair(std::string("LocalT"), std::unique_ptr<SelectiveCommunityDetector>(new LocalT(G))));
-
+    algorithms.emplace_back(std::make_pair(
+        std::string("PageRankNibble"),
+        std::unique_ptr<SelectiveCommunityDetector>(new PageRankNibble(G, alpha, epsilon))));
+    algorithms.emplace_back(std::make_pair(
+        std::string("GCE L"), std::unique_ptr<SelectiveCommunityDetector>(new GCE(G, "L"))));
+    algorithms.emplace_back(std::make_pair(
+        std::string("GCE M"), std::unique_ptr<SelectiveCommunityDetector>(new GCE(G, "M"))));
+    algorithms.emplace_back(std::make_pair(
+        std::string("LFM"), std::unique_ptr<SelectiveCommunityDetector>(new LFMLocal(G, 0.8))));
+    algorithms.emplace_back(std::make_pair(
+        std::string("TwoPhaseL"), std::unique_ptr<SelectiveCommunityDetector>(new TwoPhaseL(G))));
+    algorithms.emplace_back(std::make_pair(
+        std::string("TCE"), std::unique_ptr<SelectiveCommunityDetector>(new TCE(G))));
+    algorithms.emplace_back(std::make_pair(
+        std::string("LTE"),
+        std::unique_ptr<SelectiveCommunityDetector>(new LocalTightnessExpansion(G))));
+    algorithms.emplace_back(std::make_pair(
+        std::string("LocalT"), std::unique_ptr<SelectiveCommunityDetector>(new LocalT(G))));
+    algorithms.emplace_back(std::make_pair(
+        std::string("Clique"), std::unique_ptr<SelectiveCommunityDetector>(new CliqueDetect(G))));
 
     count idBound = G.upperNodeIdBound();
 
@@ -65,7 +78,7 @@ TEST_F(SelectiveCDGTest, testSCD) {
         partition.allToOnePartition();
         partition.toSingleton(seed);
         index id = partition[seed];
-        for (auto entry: cluster) {
+        for (auto entry : cluster) {
             partition.moveToSubset(id, entry);
         }
 
@@ -95,7 +108,7 @@ TEST_F(SelectiveCDGTest, testGCE) {
         partition.allToOnePartition();
         partition.toSingleton(50);
         index id = partition[seed];
-        for (auto entry: cluster) {
+        for (auto entry : cluster) {
             partition.moveToSubset(id, entry);
         }
 
@@ -114,7 +127,7 @@ TEST_F(SelectiveCDGTest, testGCE) {
         partition.allToOnePartition();
         partition.toSingleton(50);
         index id = partition[seed];
-        for (auto entry: cluster2) {
+        for (auto entry : cluster2) {
             partition.moveToSubset(id, entry);
         }
 
@@ -140,15 +153,25 @@ TEST_F(SelectiveCDGTest, testSCDWeighted) {
     node seed = 20;
     std::set<node> seeds;
     G.forNodes([&](node u) { seeds.insert(u); });
-    double alpha = 0.1; // loop (or teleport) probability, changed due to DGleich from: // phi * phi / (225.0 * log(100.0 * sqrt(m)));
+    double alpha = 0.1; // loop (or teleport) probability, changed due to DGleich from: // phi * phi
+                        // / (225.0 * log(100.0 * sqrt(m)));
     double epsilon = 1e-5; // changed due to DGleich from: pow(2, exponent) / (48.0 * B);
 
     std::vector<std::pair<std::string, std::unique_ptr<SelectiveCommunityDetector>>> algorithms;
-    algorithms.emplace_back(std::make_pair(std::string("PageRankNibble"), std::unique_ptr<SelectiveCommunityDetector>(new PageRankNibble(G, alpha, epsilon))));
-    algorithms.emplace_back(std::make_pair(std::string("GCE L"), std::unique_ptr<SelectiveCommunityDetector>(new GCE(G, "L"))));
-    algorithms.emplace_back(std::make_pair(std::string("GCE M"), std::unique_ptr<SelectiveCommunityDetector>(new GCE(G, "M"))));
-    algorithms.emplace_back(std::make_pair(std::string("LTE"), std::unique_ptr<SelectiveCommunityDetector>(new LocalTightnessExpansion(G))));
-    algorithms.emplace_back(std::make_pair(std::string("TCE"), std::unique_ptr<SelectiveCommunityDetector>(new TCE(G))));
+    algorithms.emplace_back(std::make_pair(
+        std::string("PageRankNibble"),
+        std::unique_ptr<SelectiveCommunityDetector>(new PageRankNibble(G, alpha, epsilon))));
+    algorithms.emplace_back(std::make_pair(
+        std::string("GCE L"), std::unique_ptr<SelectiveCommunityDetector>(new GCE(G, "L"))));
+    algorithms.emplace_back(std::make_pair(
+        std::string("GCE M"), std::unique_ptr<SelectiveCommunityDetector>(new GCE(G, "M"))));
+    algorithms.emplace_back(std::make_pair(
+        std::string("LTE"),
+        std::unique_ptr<SelectiveCommunityDetector>(new LocalTightnessExpansion(G))));
+    algorithms.emplace_back(std::make_pair(
+        std::string("TCE"), std::unique_ptr<SelectiveCommunityDetector>(new TCE(G))));
+    algorithms.emplace_back(std::make_pair(
+        std::string("Clique"), std::unique_ptr<SelectiveCommunityDetector>(new CliqueDetect(G))));
 
     count idBound = G.upperNodeIdBound();
 
@@ -164,7 +187,7 @@ TEST_F(SelectiveCDGTest, testSCDWeighted) {
         partition.allToOnePartition();
         partition.toSingleton(seed);
         index id = partition[seed];
-        for (auto entry: cluster) {
+        for (auto entry : cluster) {
             partition.moveToSubset(id, entry);
         }
 
