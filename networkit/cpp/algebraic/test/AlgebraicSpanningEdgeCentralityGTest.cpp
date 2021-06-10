@@ -19,7 +19,7 @@ namespace NetworKit {
 class AlgebraicSpanningEdgeCentralityGTest : public testing::Test{};
 
 
-TEST(AlgebraicSpanningEdgeCentralityGTest, testOnToyGraph) {
+TEST_F(AlgebraicSpanningEdgeCentralityGTest, testOnToyGraph) {
     /* Graph:
             0    3
              \  / \

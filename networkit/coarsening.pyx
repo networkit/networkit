@@ -45,8 +45,8 @@ cdef extern from "<networkit/coarsening/ParallelPartitionCoarsening.hpp>":
 
 
 cdef class ParallelPartitionCoarsening(GraphCoarsening):
-	def __cinit__(self, Graph G not None, Partition zeta not None, useGraphBuilder = True):
-		self._this = new _ParallelPartitionCoarsening(G._this, zeta._this, useGraphBuilder)
+	def __cinit__(self, Graph G not None, Partition zeta not None, parallel = True):
+		self._this = new _ParallelPartitionCoarsening(G._this, zeta._this, parallel)
 
 cdef extern from "<networkit/coarsening/MatchingCoarsening.hpp>":
 

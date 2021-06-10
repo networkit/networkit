@@ -256,7 +256,7 @@ public:
      *
      * @return vector containing information about partitions.
      */
-    std::vector<index> getVector() const;
+    const std::vector<index> &getVector() const;
 
     /**
      * @return the subsets of the partition as a set of sets.
