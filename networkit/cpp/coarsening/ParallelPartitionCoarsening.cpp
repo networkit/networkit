@@ -15,8 +15,6 @@
 #include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
 #include <networkit/graph/GraphBuilder.hpp>
 
-#include <iostream>
-
 namespace NetworKit {
 
 ParallelPartitionCoarsening::ParallelPartitionCoarsening(const Graph &G, const Partition &zeta,
