@@ -1,9 +1,9 @@
+// networkit-format
 /* GCE.hpp
  *
  * Created on: 06.05.2013
  * Author: cls
  */
-
 
 #ifndef NETWORKIT_SCD_GCE_HPP_
 #define NETWORKIT_SCD_GCE_HPP_
@@ -20,11 +20,10 @@ namespace NetworKit {
  *
  * Greedily adds nodes from the shell to improve community quality.
  */
-class GCE: public SelectiveCommunityDetector {
+class GCE : public SelectiveCommunityDetector {
 
 public:
-
-    GCE(const Graph& G, std::string objective);
+    GCE(const Graph &G, std::string objective);
 
     /**
      * Expand a node into a community.
@@ -42,14 +41,13 @@ public:
      *
      * @param[out]        community as a set of nodes
      */
-    std::set<node> expandOneCommunity(const std::set<node>& seeds) override;
+    std::set<node> expandOneCommunity(const std::set<node> &seeds) override;
 
     // inherit method from parent class.
     using SelectiveCommunityDetector::expandOneCommunity;
 
 private:
-    std::string objective;    // name of objective function
-
+    std::string objective; // name of objective function
 };
 
 } /* namespace NetworKit */

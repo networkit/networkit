@@ -1,3 +1,4 @@
+// networkit-format
 /*
  * SelectiveCommunityDetector.cpp
  *

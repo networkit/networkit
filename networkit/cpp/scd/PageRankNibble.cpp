@@ -1,3 +1,4 @@
+// networkit-format
 /*
  * PageRankNibble.cpp
  *
@@ -15,32 +16,34 @@
 
 namespace NetworKit {
 
-PageRankNibble::PageRankNibble(const Graph& g, double alpha, double epsilon): SelectiveCommunityDetector(g), alpha(alpha), epsilon(epsilon) {}
+PageRankNibble::PageRankNibble(const Graph &g, double alpha, double epsilon)
+    : SelectiveCommunityDetector(g), alpha(alpha), epsilon(epsilon) {}
 
 std::set<node> PageRankNibble::expandSeed(node seed) {
-    WARN("PageRankNibble::expandSeed is deprecated, use PageRankNibble::expandOneCommunity instead");
+    WARN(
+        "PageRankNibble::expandSeed is deprecated, use PageRankNibble::expandOneCommunity instead");
     return expandOneCommunity(seed);
 }
 
-std::set<node> PageRankNibble::bestSweepSet(std::vector<std::pair<node, double>>& pr) {
-    TRACE("Finding best sweep set. Support size: ",  pr.size());
+std::set<node> PageRankNibble::bestSweepSet(std::vector<std::pair<node, double>> &pr) {
+    TRACE("Finding best sweep set. Support size: ", pr.size());
 
     // order vertices
     TRACE("Before sorting");
     for (size_t i = 0; i < pr.size(); i++) {
         pr[i].second = pr[i].second / G->weightedDegree(pr[i].first, true);
     }
-    auto comp([&](const std::pair<node, double>& a, const std::pair<node, double>& b) {
+    auto comp([&](const std::pair<node, double> &a, const std::pair<node, double> &b) {
         return a.second > b.second;
     });
     Aux::Parallel::sort(pr.begin(), pr.end(), comp);
     TRACE("After sorting");
 
-    #ifndef NDEBUG
+#ifndef NDEBUG
     for (auto it = pr.begin(); it != pr.end(); it++) {
         TRACE("(", it->first, ", ", it->second, ")");
     }
-    #endif
+#endif
 
     // find best sweep set w.r.t. conductance
     double bestCond = std::numeric_limits<double>::max();
@@ -80,12 +83,12 @@ std::set<node> PageRankNibble::bestSweepSet(std::vector<std::pair<node, double>>
 
     DEBUG("Best conductance: ", bestCond, "\n");
 
-    std::set<node> bestSweepSet(currentSweepSet.begin(), currentSweepSet.begin() + bestSweepSetIndex);
+    std::set<node> bestSweepSet(currentSweepSet.begin(),
+                                currentSweepSet.begin() + bestSweepSetIndex);
     return bestSweepSet;
 }
 
-
-std::set<node> PageRankNibble::expandOneCommunity(const std::set<node>& seeds) {
+std::set<node> PageRankNibble::expandOneCommunity(const std::set<node> &seeds) {
     DEBUG("APR(G, ", alpha, ", ", epsilon, ")");
     ApproximatePageRank apr(*G, alpha, epsilon);
     std::vector<std::pair<node, double>> pr = apr.run(seeds);

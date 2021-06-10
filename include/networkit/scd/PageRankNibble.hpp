@@ -1,3 +1,4 @@
+// networkit-format
 /*
  * PageRankNibble.hpp
  *
@@ -26,7 +27,7 @@ class PageRankNibble final : public SelectiveCommunityDetector {
     double alpha;
     double epsilon;
 
-    std::set<node> bestSweepSet(std::vector<std::pair<node, double>>& pr);
+    std::set<node> bestSweepSet(std::vector<std::pair<node, double>> &pr);
 
 public:
     /**
@@ -36,7 +37,7 @@ public:
      *        communities.
      * @param eps Tolerance threshold for approximation of PageRank vectors.
      */
-    PageRankNibble(const Graph& g, double alpha, double epsilon);
+    PageRankNibble(const Graph &g, double alpha, double epsilon);
 
     ~PageRankNibble() override = default;
 
@@ -56,11 +57,10 @@ public:
      *
      * @return Set of nodes that makes up the best community found around the @a seeds nodes.
      */
-    std::set<node> expandOneCommunity(const std::set<node>& seeds) override;
+    std::set<node> expandOneCommunity(const std::set<node> &seeds) override;
 
     // inherit method from parent class.
     using SelectiveCommunityDetector::expandOneCommunity;
-
 };
 
 } /* namespace NetworKit */

@@ -1,3 +1,4 @@
+// networkit-format
 /*
  * SelectiveCommunityDetector.hpp
  *
@@ -28,7 +29,7 @@ public:
      *
      * @param G The graph for which communities shall be detected.
      */
-    SelectiveCommunityDetector(const Graph& G);
+    SelectiveCommunityDetector(const Graph &G);
 
     /**
      * Virtual default destructor to allow safe destruction of child classes.
@@ -43,7 +44,7 @@ public:
      * @param seeds The list of seeds for which communities shall be detected.
      * @return a mapping from seed node to community (as a set of nodes)
      */
-    virtual std::map<node, std::set<node> >  run(const std::set<node>& seeds);
+    virtual std::map<node, std::set<node>> run(const std::set<node> &seeds);
 
     /**
      * Detect a community for the given seed node.
@@ -66,9 +67,10 @@ public:
      * @param seeds The seeds for the community.
      * @return The found community as set of nodes.
      */
-    virtual std::set<node> expandOneCommunity(const std::set<node>& seeds) = 0;
+    virtual std::set<node> expandOneCommunity(const std::set<node> &seeds) = 0;
+
 protected:
-    const Graph* G;
+    const Graph *G;
 };
 
 } /* namespace NetworKit */

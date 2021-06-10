@@ -1,3 +1,4 @@
+// networkit-format
 /*
  * ApproximatePageRank.cpp
  *
@@ -11,10 +12,10 @@
 
 namespace NetworKit {
 
-ApproximatePageRank::ApproximatePageRank(const Graph& g, double alpha_, double epsilon):
-        G(&g), alpha(alpha_), eps(epsilon) {}
+ApproximatePageRank::ApproximatePageRank(const Graph &g, double alpha_, double epsilon)
+    : G(&g), alpha(alpha_), eps(epsilon) {}
 
-std::vector<std::pair<node, double>> ApproximatePageRank::run(const std::set<node>& seeds) {
+std::vector<std::pair<node, double>> ApproximatePageRank::run(const std::set<node> &seeds) {
     double init_res = 1.0 / seeds.size();
     std::queue<node> activeNodes;
     for (node s : seeds) {
@@ -31,7 +32,7 @@ std::vector<std::pair<node, double>> ApproximatePageRank::run(const std::set<nod
             double vol_v = G->weightedDegree(v, true);
             // the first check is for making sure the node is not added twice.
             // the second check ensures that enough residual is left.
-            if ( pr_res[v].second < vol_v * eps && (pr_res[v].second + mass) >= eps * vol_v ) {
+            if (pr_res[v].second < vol_v * eps && (pr_res[v].second + mass) >= eps * vol_v) {
                 activeNodes.push(v);
             }
             pr_res[v].second += mass;

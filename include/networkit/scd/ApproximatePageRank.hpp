@@ -1,3 +1,4 @@
+// networkit-format
 /*
  * ApproximatePageRank.hpp
  *
@@ -20,7 +21,7 @@ namespace NetworKit {
  * Computes an approximate PageRank vector from a given seed.
  */
 class ApproximatePageRank final {
-    const Graph* G;
+    const Graph *G;
     double alpha;
     double eps;
 
@@ -32,7 +33,7 @@ public:
      * @param alpha Loop probability of random walk.
      * @param epsilon Error tolerance.
      */
-    ApproximatePageRank(const Graph& g, double alpha, double epsilon = 1e-12);
+    ApproximatePageRank(const Graph &g, double alpha, double epsilon = 1e-12);
 
     /**
      * @return Approximate PageRank vector from @a seeds with parameters
