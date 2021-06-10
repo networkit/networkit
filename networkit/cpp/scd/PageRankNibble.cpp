@@ -31,7 +31,7 @@ std::set<node> PageRankNibble::bestSweepSet(std::vector<std::pair<node, double>>
     // order vertices
     TRACE("Before sorting");
     for (size_t i = 0; i < pr.size(); i++) {
-        pr[i].second = pr[i].second / G->weightedDegree(pr[i].first, true);
+        pr[i].second = pr[i].second / g->weightedDegree(pr[i].first, true);
     }
     auto comp([&](const std::pair<node, double> &a, const std::pair<node, double> &b) {
         return a.second > b.second;
@@ -54,13 +54,13 @@ std::set<node> PageRankNibble::bestSweepSet(std::vector<std::pair<node, double>>
     std::vector<node> currentSweepSet;
 
     // generate total volume.
-    double totalVolume = G->totalEdgeWeight() * 2;
+    double totalVolume = g->totalEdgeWeight() * 2;
 
     for (auto it = pr.begin(); it != pr.end(); it++) {
         // update sweep set
         node v = it->first;
         double wDegree = 0.0;
-        G->forNeighborsOf(v, [&](node, node neigh, edgeweight w) {
+        g->forNeighborsOf(v, [&](node, node neigh, edgeweight w) {
             wDegree += w;
             if (withinSweepSet.find(neigh) == withinSweepSet.end()) {
                 cut += w;
@@ -75,7 +75,7 @@ std::set<node> PageRankNibble::bestSweepSet(std::vector<std::pair<node, double>>
         // compute conductance
         double cond = cut / std::min(volume, totalVolume - volume);
 
-        if ((cond < bestCond) && (currentSweepSet.size() < G->numberOfNodes())) {
+        if ((cond < bestCond) && (currentSweepSet.size() < g->numberOfNodes())) {
             bestCond = cond;
             bestSweepSetIndex = currentSweepSet.size();
         }
@@ -89,8 +89,8 @@ std::set<node> PageRankNibble::bestSweepSet(std::vector<std::pair<node, double>>
 }
 
 std::set<node> PageRankNibble::expandOneCommunity(const std::set<node> &seeds) {
-    DEBUG("APR(G, ", alpha, ", ", epsilon, ")");
-    ApproximatePageRank apr(*G, alpha, epsilon);
+    DEBUG("APR(g, ", alpha, ", ", epsilon, ")");
+    ApproximatePageRank apr(*g, alpha, epsilon);
     std::vector<std::pair<node, double>> pr = apr.run(seeds);
     return bestSweepSet(pr);
 }

@@ -14,9 +14,9 @@
 
 namespace NetworKit {
 
-GCE::GCE(const Graph &G, std::string objective)
-    : SelectiveCommunityDetector(G), objective(std::move(objective)) {
-    if (G.numberOfSelfLoops()) {
+GCE::GCE(const Graph &g, std::string objective)
+    : SelectiveCommunityDetector(g), objective(std::move(objective)) {
+    if (g.numberOfSelfLoops()) {
         throw std::runtime_error("Graphs with self-loops are not supported in GCE");
     }
 }
@@ -27,10 +27,10 @@ std::set<node> GCE::expandSeed(node seed) {
 }
 
 template <bool objectiveIsM>
-std::set<node> expandseed_internal(const Graph &G, const std::set<node> &seeds) {
+std::set<node> expandseedInternal(const Graph &g, const std::set<node> &seeds) {
     double currentQ = 0.0; // current community quality
 
-    LocalCommunity<true, !objectiveIsM> com(G);
+    LocalCommunity<true, !objectiveIsM> com(g);
 
     for (node s : seeds) {
         com.addNode(s);
@@ -58,12 +58,12 @@ std::set<node> expandseed_internal(const Graph &G, const std::set<node> &seeds) 
     auto deltaL = [&](const shell_info_t &info) {
         // Compute difference in boundary size: for each neighbor where we are the last
         // external neighbor decrease by 1, if v has an external neighbor increase by 1
-        int64_t boundary_diff = info.boundaryChange();
+        int64_t boundaryDiff = info.boundaryChange();
 
-        TRACE("boundary diff: ", boundary_diff);
+        TRACE("boundary diff: ", boundaryDiff);
 
-        double numerator = 2.0 * (com.internalEdgeWeight() + (*info.intDeg))
-                           * (com.boundarySize() + boundary_diff);
+        double numerator =
+            2.0 * (com.internalEdgeWeight() + (*info.intDeg)) * (com.boundarySize() + boundaryDiff);
         double denominator = (com.size() + 1) * (com.cut() - (*info.intDeg) + (*info.extDeg));
         return (numerator / denominator) - currentQ;
     };
@@ -120,9 +120,9 @@ std::set<node> expandseed_internal(const Graph &G, const std::set<node> &seeds) 
 
 std::set<node> GCE::expandOneCommunity(const std::set<node> &s) {
     if (objective == "M") {
-        return expandseed_internal<true>(*G, s);
+        return expandseedInternal<true>(*g, s);
     } else if (objective == "L") {
-        return expandseed_internal<false>(*G, s);
+        return expandseedInternal<false>(*g, s);
     } else {
         throw std::runtime_error("unknown objective function");
     }

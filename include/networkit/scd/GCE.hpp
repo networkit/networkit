@@ -23,7 +23,7 @@ namespace NetworKit {
 class GCE : public SelectiveCommunityDetector {
 
 public:
-    GCE(const Graph &G, std::string objective);
+    GCE(const Graph &g, std::string objective);
 
     /**
      * Expand a node into a community.

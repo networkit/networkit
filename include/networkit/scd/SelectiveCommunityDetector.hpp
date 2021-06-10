@@ -29,7 +29,7 @@ public:
      *
      * @param G The graph for which communities shall be detected.
      */
-    SelectiveCommunityDetector(const Graph &G);
+    SelectiveCommunityDetector(const Graph &g);
 
     /**
      * Virtual default destructor to allow safe destruction of child classes.
@@ -70,7 +70,7 @@ public:
     virtual std::set<node> expandOneCommunity(const std::set<node> &seeds) = 0;
 
 protected:
-    const Graph *G;
+    const Graph *g;
 };
 
 } /* namespace NetworKit */

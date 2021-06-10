@@ -21,11 +21,11 @@ namespace NetworKit {
  * Computes an approximate PageRank vector from a given seed.
  */
 class ApproximatePageRank final {
-    const Graph *G;
+    const Graph *g;
     double alpha;
     double eps;
 
-    std::unordered_map<node, std::pair<double, double>> pr_res;
+    std::unordered_map<node, std::pair<double, double>> prRes;
 
 public:
     /**

@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-SelectiveCommunityDetector::SelectiveCommunityDetector(const Graph &G) : G(&G) {}
+SelectiveCommunityDetector::SelectiveCommunityDetector(const Graph &g) : g(&g) {}
 
 std::map<node, std::set<node>> SelectiveCommunityDetector::run(const std::set<node> &seeds) {
     std::map<node, std::set<node>> result;
