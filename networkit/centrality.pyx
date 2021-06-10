@@ -1445,6 +1445,58 @@ cdef class GroupClosenessGrowShrink(Algorithm):
 		return (<_GroupClosenessGrowShrink*>(self._this)).numberOfIterations()
 
 
+cdef extern from "<networkit/centrality/GroupClosenessLocalSwaps.hpp>":
+	cdef cppclass _GroupClosenessLocalSwaps "NetworKit::GroupClosenessLocalSwaps"(_Algorithm):
+		_GroupClosenessLocalSwaps(_Graph, const vector[node] &group, count maxSwaps) except +
+		vector[node] groupMaxCloseness() except +
+		count numberOfSwaps() except +
+
+cdef class GroupClosenessLocalSwaps(Algorithm):
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, group, maxSwaps = 0):
+		"""
+		Finds a group of nodes with high group closeness centrality. This is
+		the LS-restrict algorithm presented in Angriman et al. "Local Search
+		for Group Closeness Maximization on Big Graphs" IEEE BigData 2019. The
+		algorithm takes as input a graph and an arbitrary group of nodes, and
+		improves the group closeness of the given
+		group by performing vertex exchanges.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			An undirected, unweighted graph.
+		group : list
+			The initial group of nodes.
+		maxSwaps : int
+			Maximum number of vertex exchanges allowed.
+		"""
+		self._G = G
+		self._this = new _GroupClosenessLocalSwaps(G._this, group, maxSwaps)
+
+	def groupMaxCloseness(self):
+		"""
+		Returns the computed group.
+
+		Returns
+		-------
+		list
+			The computed group.
+		"""
+		return (<_GroupClosenessLocalSwaps*>(self._this)).groupMaxCloseness()
+
+	def numberOfSwaps(self):
+		"""
+		Return the total number of vertex exchanges performed by the algorithm.
+
+		Returns
+		-------
+		int
+			Total number of vertex exchanges performed by the algorithm.
+		"""
+		return (<_GroupClosenessLocalSwaps*>(self._this)).numberOfSwaps()
+
 
 cdef extern from "<networkit/centrality/KPathCentrality.hpp>":
 
