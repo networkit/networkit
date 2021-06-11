@@ -263,6 +263,11 @@ Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes) {
     return subgraphFromNodes(G, nodes.begin(), nodes.end(), false);
 }
 
+Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
+                        bool includeOutNeighbors, bool includeInNeighbors) {
+    return subgraphAndNeighborsFromNodes(G, nodes, includeOutNeighbors, includeInNeighbors);
+}
+
 Graph subgraphAndNeighborsFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
                                     bool includeOutNeighbors, bool includeInNeighbors) {
     const auto neighbors = [&] {

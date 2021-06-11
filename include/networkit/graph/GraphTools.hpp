@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include <tlx/define/deprecated.hpp>
 #include <tlx/unused.hpp>
 #include <networkit/graph/Graph.hpp>
 
@@ -203,6 +204,31 @@ Graph copyNodes(const Graph &G);
  * @return Induced subgraph.
  */
 Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes);
+
+/**
+ * Returns an induced subgraph of the input graph (including potential edge weights/directions)
+ *
+ * @deprecated Use subgraphFromNodesAndEdgesToTheirNeighbors instead.
+ *
+ * There a two relevant sets of nodes:
+ *  - Nodes are such passed as arguments.
+ *  - Neighbors are empty by default.
+ *
+ * The subgraph contains all nodes in Nodes + Neighbors and all edges which have one end point
+ * in Nodes and the other in Nodes or Neighbors.
+ *
+ *
+ * @param G The input graph.
+ * @param nodes The nodes of the induced subgraph.
+ * @param includeOutNeighbors If set to true, all out-neighbors will also be included.
+ * @param includeInNeighbors If set to true, all in-neighbors will also be included
+ * (relevant only for directed graphs).
+ *
+ *
+ * @return Induced subgraph.
+ */
+Graph TLX_DEPRECATED(subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
+                                       bool includeOutNeighbors, bool includeInNeighbors = false));
 
 /**
  * Returns an induced subgraph of the input graph (including potential edge weights/directions)

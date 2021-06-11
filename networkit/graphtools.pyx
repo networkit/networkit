@@ -398,7 +398,7 @@ cdef class GraphTools:
 		return Graph().setThis(copyNodes(graph._this))
 
 	@staticmethod
-	def subgraphFromNodes(Graph graph, vector[node] nodes, bool_t compact = False):
+	def subgraphFromNodes(Graph graph, vector[node] nodes, includeOutNeighbors=False, includeInNeighbors=False, bool_t compact = False):
 		"""
 		Returns an induced subgraph of this graph (including potential edge
 		weights/directions)
@@ -412,6 +412,10 @@ cdef class GraphTools:
 			The input graph.
 		nodes   : iterable
 			Nodes in the induced subgraph.
+		includeOutNeighbors : bool
+			If set to true, out-neighbors will also be included. DEPRECATED. Use subgraphAndNeighborsFromNodes instead.
+		includeInNeighbors : bool
+			If set to true, in-neighbors will also be included. DEPRECATED. Use subgraphAndNeighborsFromNodes instead.
 		compact : bool
 			If the resulting graph shall have compact, continuous node ids, alternatively, node ids of the input graph are kept.
 		Returns:
@@ -419,8 +423,21 @@ cdef class GraphTools:
 		graph : networkit.Graph
 			Induced subgraph.
 		"""
-		return Graph().setThis(subgraphFromNodes(
-			graph._this, nodes.begin(), nodes.end(), compact))
+		# Deprecated compatibility wrapper. We use "vector" to
+		# preserve the sorting of the nodes for compact
+		# subgraphs and only convert to unordered_set when
+		# needed.
+		cdef unordered_set[node] nodeSet
+
+		if includeInNeighbors or includeOutNeighbors:
+			if compact:
+				raise RuntimeError("Compaction is not supported with includeOutNeighbors or includeInNeighbors")
+			nodeSet.insert(nodes.begin(), nodes.end())
+			return Graph().setThis(subgraphAndNeighborsFromNodes(
+			    	graph._this, nodeSet, includeOutNeighbors, includeInNeighbors))
+		else:
+			return Graph().setThis(subgraphFromNodes(
+			    	graph._this, nodes.begin(), nodes.end(), compact))
 
 	@staticmethod
 	def subgraphAndNeighborsFromNodes(Graph graph, nodes, includeOutNeighbors=False, includeInNeighbors=False):
