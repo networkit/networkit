@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import unittest
+import sys
+from copy import copy
 import networkit as nk
 
 def check_graphs(G1, G2):
@@ -32,14 +34,14 @@ class TestRandomization(unittest.TestCase):
         self.graphs.append(nk.generators.ErdosRenyiGenerator(1004, 0.005, True).generate())
         self.graphs.append(nk.generators.ErdosRenyiGenerator(1005, 0.05, True).generate())
 
-    def test_global_curveball(self):
+    def testGlobalCurveball(self):
         for G in self.graphs:
             algo = nk.randomization.GlobalCurveball(G, 5)
             algo.run()
             G2 = algo.getGraph()
             check_graphs(G, G2)
 
-    def test_global_curveball_with_selfloops(self):
+    def testGlobalCurveballWithSelfloops(self):
         for G in self.graphs:
             if not G.isDirected(): continue
 
@@ -48,14 +50,14 @@ class TestRandomization(unittest.TestCase):
             G2 = algo.getGraph()
             check_graphs(G, G2)
 
-    def test_global_curveball_with_preprocessing(self):
+    def testGlobalCurveballWithPreprocessing(self):
         for G in self.graphs:
             algo = nk.randomization.GlobalCurveball(G, 5, False, True)
             algo.run()
             G2 = algo.getGraph()
             check_graphs(G, G2)
 
-    def test_curveball_with_global(self):
+    def testCurveballWithGlobal(self):
         for G in self.graphs:
             if G.isDirected(): continue
 
@@ -67,7 +69,7 @@ class TestRandomization(unittest.TestCase):
             G2 = algo.getGraph()
             check_graphs(G, G2)
 
-    def test_curveball_with_uniform(self):
+    def testCurveballWithUniform(self):
         for G in self.graphs:
             if G.isDirected(): continue
 
@@ -79,7 +81,7 @@ class TestRandomization(unittest.TestCase):
             G2 = algo.getGraph()
             check_graphs(G, G2)
 
-    def test_degree_preserving_shuffle(self):
+    def testDegreePreservingShuffle(self):
         for G in self.graphs:
             dps = nk.randomization.DegreePreservingShuffle(G)
             dps.run()
@@ -90,7 +92,7 @@ class TestRandomization(unittest.TestCase):
                 self.assertEqual(G.degree(u), G.degree(perm[u]))
                 self.assertEqual(G.degreeIn(u), G.degreeIn(perm[u]))
 
-    def test_degree_preserving_shuffle_directed_triangle(self):
+    def testDegreePreservingShuffleDirectedTriangle(self):
         """Test whether a directed triangle is reoriented in 50% of cases"""
         G = nk.Graph(3, False, True)
         G.addEdge(0, 1)
@@ -117,6 +119,60 @@ class TestRandomization(unittest.TestCase):
         # confidence interval with an error rate of ~ 1e-6
         self.assertGreater(num_clockwise, 400)
         self.assertLess   (num_clockwise, 600)
+
+    def testEdgeSwitching(self):
+        for numSwitchesPerEdge, preShuffle in [(0, False), (0, True), (1, False)]:
+            G = nk.generators.ErdosRenyiGenerator(100, 0.1).generate()
+            algo = nk.randomization.EdgeSwitching(G, numSwitchesPerEdge + 1, preShuffle)
+            self.assertEqual(algo.getNumberOfSwitchesPerEdge(), numSwitchesPerEdge + 1)
+            algo.setNumberOfSwitchesPerEdge(numSwitchesPerEdge)
+            self.assertEqual(algo.getNumberOfSwitchesPerEdge(), numSwitchesPerEdge)
+            numSwitches = numSwitchesPerEdge * G.numberOfEdges()
+
+            algo.run()
+            G1 = algo.getGraph()
+
+            self.assertEqual(G1.numberOfNodes(), G.numberOfNodes())
+            self.assertEqual(G1.numberOfEdges(), G.numberOfEdges())
+            if numSwitches > 0 or preShuffle:
+                self.assertNotEqual(sorted(G.iterEdges()), sorted(G1.iterEdges()))
+            else:
+                self.assertEqual(sorted(G.iterEdges()), sorted(G1.iterEdges()))
+
+            self.assertGreaterEqual(algo.getNumberOfAffectedEdges(), numSwitches // 2)
+
+    def testEdgeSwitchingInplace(self):
+        for numSwitchesPerEdge in [0, 1]:
+            G = nk.generators.ErdosRenyiGenerator(100, 0.1).generate()
+            G_old = copy(G)
+            algo = nk.randomization.EdgeSwitchingInPlace(G, numSwitchesPerEdge + 1)
+            self.assertEqual(algo.getNumberOfSwitchesPerEdge(), numSwitchesPerEdge + 1)
+            algo.setNumberOfSwitchesPerEdge(numSwitchesPerEdge)
+            self.assertEqual(algo.getNumberOfSwitchesPerEdge(), numSwitchesPerEdge)
+            numSwitches = numSwitchesPerEdge * G.numberOfEdges()
+
+            algo.run()
+
+            self.assertEqual(G_old.numberOfNodes(), G.numberOfNodes())
+            self.assertEqual(G_old.numberOfEdges(), G.numberOfEdges())
+
+            if numSwitches > 0:
+                self.assertNotEqual(sorted(G_old.iterEdges()), sorted(G.iterEdges()))
+            else:
+                self.assertEqual(sorted(G_old.iterEdges()), sorted(G.iterEdges()))
+
+            self.assertGreaterEqual(algo.getNumberOfAffectedEdges(), numSwitches // 2)
+
+    def testEdgeSwitchingInplaceRefCount(self):
+        G = nk.generators.ErdosRenyiGenerator(10, 0.1).generate()
+        rc_initial = sys.getrefcount(G)
+        algo = nk.randomization.EdgeSwitchingInPlace(G)
+        self.assertGreater(sys.getrefcount(G), rc_initial)
+        algo.run()
+        self.assertGreater(sys.getrefcount(G), rc_initial)
+        del(algo)
+        self.assertEqual(sys.getrefcount(G), rc_initial)
+
 
 if __name__ == "__main__":
     unittest.main()
