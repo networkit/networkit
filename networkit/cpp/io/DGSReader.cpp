@@ -119,7 +119,7 @@ void DGSReader::read(std::string path, GraphEventProxy& Gproxy) {
         std::cout << "nodeNames length " << nodeNames.size();
         std::map<std::string, node> ordered(nodeNames.begin(), nodeNames.end());
         for(auto it = ordered.begin(); it != ordered.end(); ++it)
-            std::cout << " contents " << it->second << std::endl;
+            std::cout << " contents " << it->second << '\n';
     }
 }
 
