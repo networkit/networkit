@@ -454,7 +454,7 @@ public:
 
         ~NodeIterator() = default;
 
-        NodeIterator operator++() {
+        NodeIterator &operator++() {
             assert(u < G->upperNodeIdBound());
             do {
                 ++u;
@@ -625,7 +625,7 @@ public:
             return Edge(*nodeIter, G->outEdges[*nodeIter][i]);
         }
 
-        EdgeIterator operator++() {
+        EdgeIterator &operator++() {
             nextEdge();
             return *this;
         }
@@ -688,7 +688,7 @@ public:
 
         bool operator!=(const EdgeWeightIterator &rhs) const noexcept { return !(*this == rhs); }
 
-        EdgeWeightIterator operator++() {
+        EdgeWeightIterator &operator++() {
             nextEdge();
             return *this;
         }
@@ -803,15 +803,15 @@ public:
          */
         NeighborIterator() {}
 
-        NeighborIterator operator++() {
-            const auto tmp = *this;
+        NeighborIterator &operator++() {
             ++nIter;
-            return tmp;
+            return *this;
         }
 
         NeighborIterator operator++(int) {
+            const auto tmp = *this;
             ++nIter;
-            return *this;
+            return tmp;
         }
 
         NeighborIterator operator--() {
@@ -866,7 +866,13 @@ public:
                                std::vector<edgeweight>::const_iterator weightIter)
             : nIter(nodesIter), wIter(weightIter) {}
 
-        NeighborWeightIterator operator++() {
+        /**
+         * @brief WARNING: This contructor is required for Python and should not be used as the
+         * iterator is not initialized.
+         */
+        NeighborWeightIterator() {}
+
+        NeighborWeightIterator &operator++() {
             ++nIter;
             ++wIter;
             return *this;
@@ -937,23 +943,33 @@ public:
     template <bool InEdges = false>
     class NeighborWeightRange {
 
-        const Graph &G;
-        const node u;
+        const Graph *G;
+        node u;
 
     public:
-        NeighborWeightRange(const Graph &G, node u) : G(G), u(u){};
+        NeighborWeightRange(const Graph &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
+
+        NeighborWeightRange() : G(nullptr){};
 
         NeighborWeightIterator begin() const {
+            assert(G);
             return InEdges
-                       ? NeighborWeightIterator(G.inEdges[u].begin(), G.inEdgeWeights[u].begin())
-                       : NeighborWeightIterator(G.outEdges[u].begin(), G.outEdgeWeights[u].begin());
+                       ? NeighborWeightIterator(G->inEdges[u].begin(), G->inEdgeWeights[u].begin())
+                       : NeighborWeightIterator(G->outEdges[u].begin(),
+                                                G->outEdgeWeights[u].begin());
         }
 
         NeighborWeightIterator end() const {
-            return InEdges ? NeighborWeightIterator(G.inEdges[u].end(), G.inEdgeWeights[u].end())
-                           : NeighborWeightIterator(G.outEdges[u].end(), G.outEdgeWeights[u].end());
+            assert(G);
+            return InEdges
+                       ? NeighborWeightIterator(G->inEdges[u].end(), G->inEdgeWeights[u].end())
+                       : NeighborWeightIterator(G->outEdges[u].end(), G->outEdgeWeights[u].end());
         }
     };
+
+    using OutNeighborWeightRange = NeighborWeightRange<false>;
+
+    using InNeighborWeightRange = NeighborWeightRange<true>;
 
     /**
      * Create a graph of @a n nodes. The graph has assignable edge weights if @a
