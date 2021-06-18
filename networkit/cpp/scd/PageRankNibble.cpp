@@ -39,7 +39,7 @@ std::set<node> PageRankNibble::bestSweepSet(std::vector<std::pair<node, double>>
     Aux::Parallel::sort(pr.begin(), pr.end(), comp);
     TRACE("After sorting");
 
-#ifndef NDEBUG
+#ifndef NETWORKIT_RELEASE_LOGGING
     for (auto it = pr.begin(); it != pr.end(); it++) {
         TRACE("(", it->first, ", ", it->second, ")");
     }
