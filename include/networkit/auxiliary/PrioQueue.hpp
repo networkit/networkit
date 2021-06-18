@@ -10,6 +10,7 @@
 
 #include <set>
 #include <vector>
+#include <limits>
 
 #include <networkit/auxiliary/Log.hpp>
 

@@ -130,7 +130,7 @@ std::set<index> Partition::getMembers(index s) const {
     return subset;
 }
 
-std::vector<index> Partition::getVector() const {
+const std::vector<index> &Partition::getVector() const {
     return data;
 }
 

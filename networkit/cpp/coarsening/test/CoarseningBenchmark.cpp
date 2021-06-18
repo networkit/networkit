@@ -35,16 +35,16 @@ TEST_F(CoarseningBenchmark, benchmarkCoarsening) {
     DEBUG("number of subsets: ", k);
 
     Aux::Timer timer;
-    INFO("parallel coarsening");
+    INFO("sequential coarsening");
     timer.start();
     ParallelPartitionCoarsening coarsening(G, zeta, false);
     coarsening.run();
     timer.stop();
     Graph Gc2 = coarsening.getCoarseGraph();
-    INFO("parallel coarsening: ", timer.elapsedTag());
+    INFO("sequential coarsening: ", timer.elapsedTag());
     EXPECT_EQ(k, Gc2.numberOfNodes());
 
-    INFO("parallel coarsening using GraphBuilder");
+    INFO("parallel coarsening");
     timer.start();
     ParallelPartitionCoarsening gbCoarsening(G, zeta, true);
     gbCoarsening.run();
