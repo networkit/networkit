@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-std::pair<node, count> Eccentricity::getValue(const Graph& G, node u, bool reverse = false) {
+std::pair<node, count> Eccentricity::getValue(const Graph& G, node u, bool reverse) {
     assert(G.hasNode(u));
     count ecc = 0;
     node res = none;
