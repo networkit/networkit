@@ -37,6 +37,8 @@ private:
     count nSamples;
     std::pair<count, count> diameterBounds;
 
+    std::pair<edgeweight, edgeweight> difub(const Graph &G, node u, double error);
+
     /**
      * Get the estimation of the diameter of the graph @a G. The algorithm is based on the ExactSumSweep algorithm presented in
      * Michele Borassi, Pierluigi Crescenzi, Michel Habib, Walter A. Kosters, Andrea Marino, Frank W. Takes,

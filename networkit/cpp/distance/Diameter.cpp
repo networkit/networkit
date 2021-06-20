@@ -81,9 +81,42 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
     return diameter;
 }
 
+std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, node u, double error) {
+    count i = std::max(NetworKit::Eccentricity::getValue(G, u).second, NetworKit::Eccentricity::getValue(G, u, true).second);
+    std::vector<std::vector<count>> distancesF(i);
+    std::vector<std::vector<count>> distancesB(i);
+    count lb = i, ub = 2 * i;
+
+    Traversal::BFSfrom(G, u, [&](node v, count dist) {
+      distancesF[dist].push_back(v);
+    });
+    Traversal::BFSfrom(G, u, [&](node v, count dist) {
+      distancesB[dist].push_back(v);
+    }, true);
+
+    while (ub > (lb + error*lb)) {
+      std::for_each(distancesF[i].begin(), distancesF[i].end(), [&](node v) {
+        lb = std::max(lb, NetworKit::Eccentricity::getValue(G, v, true).second);
+      });
+      std::for_each(distancesB[i].begin(), distancesB[i].end(), [&](node v) {
+        lb = std::max(lb, NetworKit::Eccentricity::getValue(G, v).second);
+      });
+
+      if (lb > 2 * (i - 1)) {
+        return std::make_pair(lb, lb);
+      } else {
+        ub = 2 * (i - 1);
+      }
+      --i;
+    }
+    return std::make_pair(lb, ub);
+}
+
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &G, double error) {
     if (G.isDirected()) {
-        throw std::runtime_error("Error, the diameter of directed graphs cannot be computed yet.");
+        //throw std::runtime_error("Error, the diameter of directed graphs cannot be computed yet.");
+        node u;
+        return difub(G, u, error);
     }
     if (G.isWeighted()) {
         WARN("The input graph is weighted, but this algorithm ignores weights.");
