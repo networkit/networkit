@@ -30,6 +30,7 @@ Modules
    globals
    graph
    graphio
+   graphtools
    GraphMLIO
    helpers
    independentset
