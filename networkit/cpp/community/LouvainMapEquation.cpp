@@ -42,9 +42,6 @@ void LouvainMapEquation::run() {
 
     Aux::SignalHandler handler;
 
-    Aux::Timer timer;
-    timer.start();
-
     result.allToSingletons();
     nextPartition.allToSingletons();
 
@@ -62,8 +59,6 @@ void LouvainMapEquation::run() {
     handler.assureRunning();
 
     calculateInitialClusterCutAndVolume();
-    timer.stop();
-    DEBUG("init ", timer.elapsedMilliseconds(), " ms");
 
 #ifndef NDEBUG
     updatePLogPSums();
@@ -71,31 +66,19 @@ void LouvainMapEquation::run() {
 
     bool clusteringChanged = false;
     std::vector<node> nodes{G->nodeRange().begin(), G->nodeRange().end()};
-
     count numberOfNodesMoved = 1;
     for (count iteration = 0; iteration < maxIterations && numberOfNodesMoved > 0; ++iteration) {
         handler.assureRunning();
-
         DEBUG("Iteration ", iteration);
 #ifndef NDEBUG
         DEBUG("Map equation is ", mapEquation());
 #endif
-
-        timer.start();
         std::shuffle(nodes.begin(), nodes.end(), Aux::Random::getURNG());
-        timer.stop();
-        INFO("shuffle ", timer.elapsedMilliseconds(), " ms");
-
-        timer.start();
         if (parallelizationType == ParallelizationType::Synchronous) {
             numberOfNodesMoved = synchronousLocalMoving(nodes, iteration);
         } else {
             numberOfNodesMoved = localMoving(nodes, iteration);
         }
-        timer.stop();
-        INFO("Move iteration ", iteration, " took ", timer.elapsedMilliseconds(), " ms. Moved ",
-             numberOfNodesMoved, " nodes");
-
         clusteringChanged |= numberOfNodesMoved > 0;
     }
 
