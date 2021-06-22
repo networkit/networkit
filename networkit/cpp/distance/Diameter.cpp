@@ -120,6 +120,15 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &
     if (G.isDirected()) {
         //throw std::runtime_error("Error, the diameter of directed graphs cannot be computed yet.");
         node u;
+        count maxDegree = 0;
+        G.forNodes([&](node v){
+          count d = G.degree(v);
+          if (d > maxDegree) {
+            u = v;
+            maxDegree = d;
+          }
+        });
+
         return difub(G, u, error);
     }
     if (G.isWeighted()) {
