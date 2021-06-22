@@ -286,8 +286,9 @@ bool LouvainMapEquation::tryLocalMove(node u, SparseVector<double> &neighborClus
         double weightToTargetCluster = weightToCurrent;
         double bestChange = fitnessChange(u, vol, loop, currentCluster, currentCluster,
                                           weightToCurrent, weightToCurrent, totalCut);
-        for (index neighborCluster : neighborClusterWeights.insertedIndexes()) {
-            const double neighborClusterWeight = neighborClusterWeights[neighborCluster];
+
+        neighborClusterWeights.forElements([&](index neighborCluster,
+                                               double neighborClusterWeight) {
             const double change = fitnessChange(u, vol, loop, currentCluster, neighborCluster,
                                                 neighborClusterWeight, weightToCurrent, totalCut);
             if (change < bestChange
@@ -297,7 +298,7 @@ bool LouvainMapEquation::tryLocalMove(node u, SparseVector<double> &neighborClus
                 targetCluster = neighborCluster;
                 weightToTargetCluster = neighborClusterWeight;
             }
-        }
+        });
 
         neighborClusterWeights.reset();
 

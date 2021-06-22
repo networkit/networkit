@@ -71,11 +71,6 @@ public:
     const T &operator[](index i) const;
 
     /**
-     * Get all indexes into which elements were inserted.
-     */
-    const std::vector<index> &insertedIndexes() const;
-
-    /**
      * Returns true iff an element was previously inserted at the given index.
      * @param idx
      */
@@ -115,6 +110,18 @@ public:
      * @param emptyValue new emptyValue
      */
     void resize(size_t size, T emptyValue);
+
+    /**
+     * Applies the given lambda to each inserted index and associated value
+     * @tparam ElementHandler
+     * @param lambda
+     */
+    template <typename ElementHandler>
+    void forElements(ElementHandler &&lambda) {
+        for (index i : usedIndexes) {
+            lambda(i, data[i]);
+        }
+    }
 
 private:
     std::vector<T> data;
@@ -171,11 +178,6 @@ index SparseVector<T>::upperBound() const {
 template <typename T>
 count SparseVector<T>::size() const {
     return usedIndexes.size();
-}
-
-template <typename T>
-const std::vector<index> &NetworKit::SparseVector<T>::insertedIndexes() const {
-    return usedIndexes;
 }
 
 template <typename T>
