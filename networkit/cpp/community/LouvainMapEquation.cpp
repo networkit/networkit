@@ -433,7 +433,7 @@ void LouvainMapEquation::runHierarchical() {
     clusterCut.clear();
     clusterCut.shrink_to_fit();
 
-    ParallelPartitionCoarsening coarsening(*G, result, parallel && G->numberOfNodes() > 1e6);
+    ParallelPartitionCoarsening coarsening(*G, result, parallel && G->numberOfNodes() > 1000000);
     coarsening.run();
     const Graph &metaGraph = coarsening.getCoarseGraph();
     const auto &fineToCoarseMapping = coarsening.getFineToCoarseNodeMapping();
@@ -444,7 +444,7 @@ void LouvainMapEquation::runHierarchical() {
          G->numberOfNodes(), " nodes)");
 
     ParallelizationType para =
-        metaGraph.numberOfNodes() > 1e4 ? parallelizationType : ParallelizationType::None;
+        metaGraph.numberOfNodes() > 10000 ? parallelizationType : ParallelizationType::None;
     LouvainMapEquation recursion(metaGraph, true, maxIterations, para);
     recursion.run();
     const Partition &metaPartition = recursion.getPartition();
@@ -457,7 +457,7 @@ void LouvainMapEquation::calculateInitialClusterCutAndVolume() {
     totalVolume = 0.0;
 
     if (parallel) {
-#pragma omp parallel if (G->upperNodeIdBound() > 5e5)
+#pragma omp parallel if (G->upperNodeIdBound() > 50000)
         {
             double tCut = 0, tVol = 0;
 #pragma omp for schedule(guided)
@@ -505,9 +505,9 @@ std::string LouvainMapEquation::toString() const {
 
 #ifndef NDEBUG
 
-double LouvainMapEquation::plogpRel(count w) {
+double LouvainMapEquation::plogpRel(double w) {
     if (w > 0) {
-        double p = static_cast<double>(w) / totalVolume;
+        double p = w / totalVolume;
         return p * log(p);
     }
     return 0;
@@ -524,7 +524,7 @@ void LouvainMapEquation::updatePLogPSums() {
     }
 }
 
-double LouvainMapEquation::mapEquation() {
+long double LouvainMapEquation::mapEquation() {
     return plogpRel(totalCut) - 2 * sumPLogPClusterCut + sumPLogPClusterCutPlusVol - sumPLogPwAlpha;
 }
 

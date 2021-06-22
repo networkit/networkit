@@ -47,7 +47,7 @@ public:
      */
     explicit LouvainMapEquation(const Graph &graph, bool hierarchical = false,
                                 count maxIterations = 32,
-                                const std::string parallelizationStrategy = "relaxmap")
+                                const std::string &parallelizationStrategy = "relaxmap")
         : LouvainMapEquation(graph, hierarchical, maxIterations,
                              convertStringToParallelizationType(parallelizationStrategy)) {}
 
@@ -135,9 +135,9 @@ private:
     long double sumPLogPwAlpha = 0;
     long double sumPLogPClusterCut = 0;
     long double sumPLogPClusterCutPlusVol = 0;
-    double plogpRel(count w);
+    double plogpRel(double w);
     void updatePLogPSums();
-    double mapEquation();
+    long double mapEquation();
     void checkUpdatedCutsAndVolumesAgainstRecomputation();
 #endif // NDEBUG
 };
