@@ -9,6 +9,7 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/components/StronglyConnectedComponents.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/Diameter.hpp>
 #include <networkit/distance/Dijkstra.hpp>
@@ -34,8 +35,18 @@ Diameter::Diameter(const Graph& G, DiameterAlgo algo, double error, count nSampl
 
 void Diameter::run() {
     diameterBounds = {0, 0};
+    bool use_fast_exact_algo = !G->isDirected();
+    if (G->isDirected()) {
+      StronglyConnectedComponents comp(*G);
+      comp.run();
+      use_fast_exact_algo |= comp.numberOfComponents() == 1;
+    }
     if (algo == DiameterAlgo::exact) {
+      if (!G->isWeighted() && use_fast_exact_algo) {
+        diameterBounds = this->estimatedDiameterRange(*G, 0);
+      } else {
         std::get<0>(diameterBounds) = this->exactDiameter(*G);
+      }
     } else if (algo == DiameterAlgo::estimatedRange) {
         diameterBounds = this->estimatedDiameterRange(*G, error);
     } else if (algo == DiameterAlgo::estimatedSamples) {
@@ -63,21 +74,22 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 
     edgeweight diameter = 0.0;
 
-    if (! G.isWeighted()) {
-        std::tie(diameter, std::ignore) = estimatedDiameterRange(G, 0);
-    } else {
-        G.forNodes([&](node v) {
-            handler.assureRunning();
-            Dijkstra dijkstra(G, v);
-            dijkstra.run();
-            auto distances = dijkstra.getDistances();
-            G.forNodes([&](node u) {
-                if (diameter < distances[u]) {
-                    diameter = distances[u];
-                }
-            });
-        });
-    }
+    G.forNodes([&](node v) {
+      handler.assureRunning();
+      std::unique_ptr<SSSP> sssp;
+      if (G.isWeighted()) {
+        sssp = std::make_unique<Dijkstra>(G, v);
+      } else {
+        sssp = std::make_unique<BFS>(G, v);
+      }
+      sssp->run();
+      const auto &distances = sssp->getDistances();
+      G.forNodes([&](node u) {
+        if (diameter < distances[u]) {
+          diameter = distances[u];
+        }
+      });
+    });
 
     if (diameter == std::numeric_limits<edgeweight>::max()) {
         throw std::runtime_error("Graph not connected - diameter is infinite");
