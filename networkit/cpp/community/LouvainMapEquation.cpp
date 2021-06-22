@@ -15,7 +15,6 @@
 
 #include <networkit/auxiliary/Parallelism.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
-#include <networkit/auxiliary/Timer.hpp>
 #include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
 #include <networkit/community/LouvainMapEquation.hpp>
 #include <networkit/graph/Graph.hpp>
