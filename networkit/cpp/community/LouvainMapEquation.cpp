@@ -19,7 +19,6 @@
 #include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
 #include <networkit/community/LouvainMapEquation.hpp>
 #include <networkit/graph/Graph.hpp>
-#include <networkit/graph/GraphTools.hpp>
 #include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {

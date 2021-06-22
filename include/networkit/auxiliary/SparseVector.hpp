@@ -54,7 +54,7 @@ public:
     count size() const;
 
     /**
-     * Insert an value at position a given position.
+     * Insert a value at a given position.
      * @param i index where the value is inserted
      * @param value
      */
@@ -81,6 +81,11 @@ public:
      */
     bool indexIsUsed(index idx);
 
+    /**
+     * Inserts value at position i, or replaces the value if previously inserted
+     * @param i
+     * @param value
+     */
     void insertOrSet(index i, T value);
 
     /**
@@ -110,21 +115,6 @@ public:
      * @param emptyValue new emptyValue
      */
     void resize(size_t size, T emptyValue);
-
-    /**
-     * Expose internal vector
-     */
-    std::vector<T> &getVector();
-
-    void clearIndexes() { usedIndexes.clear(); }
-
-    void resetEntry(index i) { data[i] = emptyValue; }
-
-    bool isClean() {
-        return usedIndexes.empty() && std::all_of(data.begin(), data.end(), [&](const T &x) {
-                   return x == emptyValue;
-               });
-    }
 
 private:
     std::vector<T> data;
@@ -208,11 +198,6 @@ void NetworKit::SparseVector<T>::resize(size_t size, T emptyValue) {
 template <typename T>
 bool NetworKit::SparseVector<T>::indexIsUsed(index idx) {
     return data[idx] != emptyValue;
-}
-
-template <typename T>
-std::vector<T> &NetworKit::SparseVector<T>::getVector() {
-    return data;
 }
 
 template <typename T>
