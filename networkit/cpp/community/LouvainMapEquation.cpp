@@ -71,7 +71,7 @@ void LouvainMapEquation::run() {
 #endif
 
     bool clusteringChanged = false;
-    std::vector<node> nodes = GraphTools::nodeSet(*G);
+    std::vector<node> nodes{G->nodeRange().begin(), G->nodeRange().end()};
 
     count numberOfNodesMoved = 1;
     for (count iteration = 0; iteration < maxIterations && numberOfNodesMoved > 0; ++iteration) {
