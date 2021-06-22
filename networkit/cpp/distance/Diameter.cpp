@@ -52,6 +52,10 @@ std::pair<count, count> Diameter::getDiameter() const {
     return diameterBounds;
 }
 
+count Diameter::getNumBFS() const {
+  return numBFS;
+}
+
 edgeweight Diameter::exactDiameter(const Graph& G) {
     using namespace std;
 

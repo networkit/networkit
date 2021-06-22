@@ -29,6 +29,8 @@ public:
 
     std::pair<count, count> getDiameter() const;
 
+    count getNumBFS() const;
+
 
 private:
     const Graph* G;
@@ -36,6 +38,7 @@ private:
     double error;
     count nSamples;
     std::pair<count, count> diameterBounds;
+    count numBFS;
 
     std::pair<edgeweight, edgeweight> difub(const Graph &G, node u, double error);
 
