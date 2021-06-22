@@ -6,7 +6,9 @@
 #include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
 #include <networkit/community/Conductance.hpp>
 #include <networkit/community/Modularity.hpp>
+#include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/SNAPGraphReader.hpp>
 #include <networkit/scd/ApproximatePageRank.hpp>
@@ -17,10 +19,12 @@
 #include <networkit/scd/LocalT.hpp>
 #include <networkit/scd/LocalTightnessExpansion.hpp>
 #include <networkit/scd/PageRankNibble.hpp>
+#include <networkit/scd/RandomBFS.hpp>
 #include <networkit/scd/SelectiveCommunityDetector.hpp>
 #include <networkit/scd/SetConductance.hpp>
 #include <networkit/scd/TCE.hpp>
 #include <networkit/scd/TwoPhaseL.hpp>
+#include <networkit/structures/Cover.hpp>
 
 namespace NetworKit {
 
@@ -32,6 +36,35 @@ TEST_F(SelectiveCDGTest, testRunApproximatePageRank) {
 
     ApproximatePageRank apr(G, 0.4);
     const auto prVector = apr.run(0);
+}
+
+TEST_F(SelectiveCDGTest, testRandomBFS) {
+    Aux::Random::setSeed(32, false);
+    METISGraphReader reader;
+    Graph g = reader.read("input/hep-th.graph");
+    // parameters
+    node seed = 50;
+    std::set<node> seeds = {seed};
+
+    Cover reference(g.upperNodeIdBound());
+    reference.setUpperBound(1);
+    reference.addToSubset(0, seed);
+    for (node u = 0; u < 20; ++u) {
+        reference.addToSubset(0, u);
+    }
+
+    RandomBFS randomBFS(g, reference);
+    auto community = randomBFS.expandOneCommunity(seeds);
+
+    // The community must have the same number of nodes as the reference
+    EXPECT_EQ(community.size(), 21);
+
+    // The community must be connected
+    Graph subGraph = GraphTools::subgraphFromNodes(
+        g, std::unordered_set<node>{community.begin(), community.end()});
+    ConnectedComponents components(subGraph);
+    components.run();
+    EXPECT_EQ(components.numberOfComponents(), 1);
 }
 
 TEST_F(SelectiveCDGTest, testSCD) {
