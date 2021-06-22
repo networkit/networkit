@@ -136,12 +136,12 @@ count LouvainMapEquation::synchronousLocalMoving(std::vector<node> &nodes, count
     if (nodes.size() >= 5 && nodes.size() / 5 < desiredSubroundSize) {
         desiredSubroundSize = nodes.size() / 5;
     }
-    count numSubrounds = idiv_ceil(nodes.size(), desiredSubroundSize);
+    count numSubrounds = idivCeil(nodes.size(), desiredSubroundSize);
     // but at most 64
     if (numSubrounds > 64) {
         numSubrounds = 64;
     }
-    const count subroundSize = idiv_ceil(nodes.size(), numSubrounds);
+    const count subroundSize = idivCeil(nodes.size(), numSubrounds);
 
     count numberOfNodesMoved = 0;
 
@@ -160,7 +160,7 @@ count LouvainMapEquation::synchronousLocalMoving(std::vector<node> &nodes, count
 
         for (size_t i = 0; i < numSubrounds; ++i) {
             size_t first, last;
-            std::tie(first, last) = chunk_bounds(i, nodes.size(), subroundSize);
+            std::tie(first, last) = chunkBounds(i, nodes.size(), subroundSize);
 
             // find moves but don't apply them yet
 #pragma omp for schedule(guided)

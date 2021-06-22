@@ -49,7 +49,7 @@ public:
                                 count maxIterations = 32,
                                 const std::string parallelizationStrategy = "relaxmap")
         : LouvainMapEquation(graph, hierarchical, maxIterations,
-                             convert_string_to_parallelization_type(parallelizationStrategy)) {}
+                             convertStringToParallelizationType(parallelizationStrategy)) {}
 
     void run() override;
 
@@ -112,23 +112,23 @@ private:
                          node targetCluster, double weightToTarget, double weightToCurrent,
                          double totalCutCurrently);
 
-    count idiv_ceil(count a, count b) const { return (a + b - 1) / b; }
+    count idivCeil(count a, count b) const { return (a + b - 1) / b; }
 
-    std::pair<count, count> chunk_bounds(count i, count n, count chunk_size) const {
-        return std::make_pair(i * chunk_size, std::min(n, (i + 1) * chunk_size));
+    std::pair<count, count> chunkBounds(count i, count n, count chunkSize) const {
+        return std::make_pair(i * chunkSize, std::min(n, (i + 1) * chunkSize));
     }
 
     ParallelizationType
-    convert_string_to_parallelization_type(const std::string &para_strat) const {
-        if (para_strat == "none")
+    convertStringToParallelizationType(const std::string &parallelizationStrategy) const {
+        if (parallelizationStrategy == "none")
             return ParallelizationType::None;
-        else if (para_strat == "relaxmap")
+        else if (parallelizationStrategy == "relaxmap")
             return ParallelizationType::RelaxMap;
-        else if (para_strat == "synchronous")
+        else if (parallelizationStrategy == "synchronous")
             return ParallelizationType::Synchronous;
         else
             throw std::runtime_error("Invalid parallelization type for map equation Louvain: "
-                                     + para_strat);
+                                     + parallelizationStrategy);
     }
 
 #ifndef NDEBUG
