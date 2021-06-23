@@ -36,11 +36,13 @@ Diameter::Diameter(const Graph& G, DiameterAlgo algo, double error, count nSampl
 void Diameter::run() {
     diameterBounds = {0, 0};
     bool use_fast_exact_algo = !G->isDirected();
+/*
     if (G->isDirected()) {
       StronglyConnectedComponents comp(*G);
       comp.run();
       use_fast_exact_algo |= comp.numberOfComponents() == 1;
     }
+*/
     if (algo == DiameterAlgo::exact) {
       if (!G->isWeighted() && use_fast_exact_algo) {
         diameterBounds = this->estimatedDiameterRange(*G, 0);
@@ -97,51 +99,64 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
     return diameter;
 }
 
-std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, node u, double error) {
-    count i = std::max(NetworKit::Eccentricity::getValue(G, u).second, NetworKit::Eccentricity::getValue(G, u, true).second);
-    std::vector<std::vector<count>> distancesF(i);
-    std::vector<std::vector<count>> distancesB(i);
+std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, double error) {
+    StronglyConnectedComponents comp(G);
+    comp.run();
+    Graph scc = comp.extractLargestStronglyConnectedComponent(G, true);
+    node u;
+    count maxDegree = 0;
+    scc.forNodes([&](node v){
+      count d = scc.degree(v);
+      if (d > maxDegree) {
+        u = v;
+        maxDegree = d;
+      }
+    });
+    count i = std::max(Eccentricity::getValue(scc, u).second, Eccentricity::getValue(scc, u, true).second);
+    std::vector<std::vector<count>> distancesF(i+1);
+    std::vector<std::vector<count>> distancesB(i+1);
     count lb = i, ub = 2 * i;
 
-    Traversal::BFSfrom(G, u, [&](node v, count dist) {
+    Traversal::BFSfrom(scc, u, [&](node v, count dist) {
+      assert(dist <= i + 1);
       distancesF[dist].push_back(v);
     });
-    Traversal::BFSfrom(G, u, [&](node v, count dist) {
+    Traversal::BFSfrom(scc, u, [&](node v, count dist) {
+      assert(dist <= i + 1);
       distancesB[dist].push_back(v);
     }, true);
 
-    while (ub > (lb + error*lb)) {
-      std::for_each(distancesF[i].begin(), distancesF[i].end(), [&](node v) {
-        lb = std::max(lb, NetworKit::Eccentricity::getValue(G, v, true).second);
+    numBFS = 4;
+
+    for (; ub > lb + error && i > 0; --i) {
+      std::find_if(distancesF[i].begin(), distancesF[i].end(), [&](node v) {
+        lb = std::max(lb, Eccentricity::getValue(scc, v, true).second);
+        numBFS++;
+        return lb == ub;
       });
-      std::for_each(distancesB[i].begin(), distancesB[i].end(), [&](node v) {
-        lb = std::max(lb, NetworKit::Eccentricity::getValue(G, v).second);
+      std::find_if(distancesB[i].begin(), distancesB[i].end(), [&](node v) {
+        lb = std::max(lb, Eccentricity::getValue(scc, v).second);
+        numBFS++;
+        return lb == ub;
       });
 
       if (lb > 2 * (i - 1)) {
-        return std::make_pair(lb, lb);
+        return std::make_pair(lb, ub);
       } else {
         ub = 2 * (i - 1);
       }
-      --i;
     }
     return std::make_pair(lb, ub);
 }
 
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &G, double error) {
     if (G.isDirected()) {
-        //throw std::runtime_error("Error, the diameter of directed graphs cannot be computed yet.");
-        node u;
-        count maxDegree = 0;
-        G.forNodes([&](node v){
-          count d = G.degree(v);
-          if (d > maxDegree) {
-            u = v;
-            maxDegree = d;
-          }
-        });
-
-        return difub(G, u, error);
+      count lb, ub;
+      std::tie(lb, ub) = difub(G, error);
+      if (error == 0.0f) {
+        ub = lb;
+      }
+      return std::make_pair(lb, ub);
     }
     if (G.isWeighted()) {
         WARN("The input graph is weighted, but this algorithm ignores weights.");
