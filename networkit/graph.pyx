@@ -612,6 +612,42 @@ cdef class Graph:
 			yield dereference(it)
 			preincrement(it)
 
+	def iterNeighborsWeights(self, u):
+		"""
+		Iterates over a range of the neighbors of a node including the edge weights.
+		The iterator is not safe to use with unweighted graphs. To avoid unsafe behavior
+		a runtime error will be thrown.
+
+		Parameters:
+		-----------
+		u : Node
+		"""
+		if not self._this.isWeighted():
+			raise RuntimeError("iterNeighborsWeights: Use this iterator only on weighted graphs.")
+		
+		it = self._this.weightNeighborRange(u).begin()
+		while it != self._this.weightNeighborRange(u).end():
+			yield dereference(it)
+			preincrement(it)		
+
+	def iterInNeighborsWeights(self, u):
+		"""
+		Iterates over a range of the in-neighbors of a node including the edge weights.
+		The iterator is not safe to use with unweighted graphs. To avoid unsafe behavior
+		a runtime error will be thrown.
+
+		Parameters:
+		-----------
+		u : Node
+		"""
+		if not self._this.isWeighted():
+			raise RuntimeError("iterInNeighborsWeights: Use this iterator only on weighted graphs.")
+
+		it = self._this.weightInNeighborRange(u).begin()
+		while it != self._this.weightInNeighborRange(u).end():
+			yield dereference(it)
+			preincrement(it)
+
 cdef cppclass EdgeCallBackWrapper:
 	void* callback
 	__init__(object callback):
