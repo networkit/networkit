@@ -27,6 +27,7 @@
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
+#include <networkit/io/SNAPGraphReader.hpp>
 
 namespace NetworKit {
 class DistanceGTest: public testing::Test {};
@@ -254,6 +255,25 @@ TEST_F(DistanceGTest, testEstimatedDiameterRange) {
         METISGraphReader reader;
         Graph G = reader.read("input/" + testInstance.first + ".graph");
         Diameter diam(G, DiameterAlgo::estimatedRange, 0.1);
+        diam.run();
+        std::pair<count, count> range = diam.getDiameter();
+        EXPECT_GE(testInstance.second, range.first);
+        EXPECT_LE(testInstance.second, range.second);
+    }
+}
+TEST_F(DistanceGTest, testEstimatedDiameterRangeDirected) {
+    using namespace std;
+
+   vector<pair<string, count>> testInstances= {
+                                               pair<string, count>("wiki-Vote", 9),
+                                               pair<string, count>("p2p-Gnutella05", 22),
+                                               pair<string, count>("p2p-Gnutella06", 19),
+                                              };
+
+    for (auto testInstance : testInstances) {
+        SNAPGraphReader reader(true, true, 0);
+        Graph G = reader.read("input/" + testInstance.first + ".txt");
+        Diameter diam(G, DiameterAlgo::estimatedRange, 0.0);
         diam.run();
         std::pair<count, count> range = diam.getDiameter();
         EXPECT_GE(testInstance.second, range.first);

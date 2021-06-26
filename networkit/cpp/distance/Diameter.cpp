@@ -36,13 +36,11 @@ Diameter::Diameter(const Graph& G, DiameterAlgo algo, double error, count nSampl
 void Diameter::run() {
     diameterBounds = {0, 0};
     bool use_fast_exact_algo = !G->isDirected();
-/*
     if (G->isDirected()) {
       StronglyConnectedComponents comp(*G);
       comp.run();
       use_fast_exact_algo |= comp.numberOfComponents() == 1;
     }
-*/
     if (algo == DiameterAlgo::exact) {
       if (!G->isWeighted() && use_fast_exact_algo) {
         diameterBounds = this->estimatedDiameterRange(*G, 0);
@@ -100,6 +98,8 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 }
 
 std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, double error) {
+    Aux::SignalHandler handler;
+
     StronglyConnectedComponents comp(G);
     comp.run();
     Graph scc = comp.extractLargestStronglyConnectedComponent(G, true);
@@ -112,11 +112,14 @@ std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, double error) 
         maxDegree = d;
       }
     });
+
+    handler.assureRunning();
     count i = std::max(Eccentricity::getValue(scc, u).second, Eccentricity::getValue(scc, u, true).second);
     std::vector<std::vector<count>> distancesF(i+1);
     std::vector<std::vector<count>> distancesB(i+1);
     count lb = i, ub = 2 * i;
 
+    handler.assureRunning();
     Traversal::BFSfrom(scc, u, [&](node v, count dist) {
       assert(dist <= i + 1);
       distancesF[dist].push_back(v);
@@ -129,12 +132,14 @@ std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, double error) 
     numBFS = 4;
 
     for (; ub > lb + error && i > 0; --i) {
-      std::find_if(distancesF[i].begin(), distancesF[i].end(), [&](node v) {
+      handler.assureRunning();
+      std::ignore = std::find_if(distancesF[i].begin(), distancesF[i].end(), [&](node v) {
         lb = std::max(lb, Eccentricity::getValue(scc, v, true).second);
         numBFS++;
         return lb == ub;
       });
-      std::find_if(distancesB[i].begin(), distancesB[i].end(), [&](node v) {
+      handler.assureRunning();
+      std::ignore = std::find_if(distancesB[i].begin(), distancesB[i].end(), [&](node v) {
         lb = std::max(lb, Eccentricity::getValue(scc, v).second);
         numBFS++;
         return lb == ub;
