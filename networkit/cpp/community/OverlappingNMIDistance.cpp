@@ -42,7 +42,7 @@ double OverlappingNMIDistance::h(count w, count n) {
 }
 
 double OverlappingNMIDistance::entropy(count size, count n) {
-    assert(0 <= size && size <= n);
+    assert(size <= n);
     auto value = h(size, n) + h(n - size, n);
     assert(value >= 0.0);
     return value;
