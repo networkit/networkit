@@ -11,13 +11,17 @@
 #include <gtest/gtest.h>
 
 #include <iostream>
+#include <array>
 #include <algorithm>
+#include <limits>
 #include <numeric>
 #include <chrono>
 #include <thread>
 #include <fstream>
 #include <set>
+#include <vector>
 
+#include <networkit/auxiliary/ArrayTools.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/auxiliary/Timer.hpp>
@@ -578,4 +582,38 @@ TEST_F(AuxGTest, testBloomFilter) {
     }
 }
 
+template <class Perm>
+void testPermutation(Perm perm) {
+    auto &urng = Aux::Random::getURNG();
+    std::iota(perm.begin(), perm.end(), 0);
+    std::shuffle(perm.begin(), perm.end(), urng);
+
+    std::vector<index> seq;
+    seq.resize(perm.size());
+    std::for_each(seq.begin(), seq.end(), [&seq](auto &elem) { elem = Aux::Random::integer(seq.size()); });
+    auto seqCopy = seq;
+
+    Aux::ArrayTools::applyPermutation(seq.begin(), seq.end(), perm.begin());
+    for (size_t i = 0; i < seq.size(); ++i)
+        EXPECT_EQ(seqCopy[perm[i]], seq[i]);
+}
+
+TEST_F(AuxGTest, testApplyPermutation) {
+    Aux::Random::setSeed(1, true);
+    constexpr int n = 100;
+
+    testPermutation(std::array<int8_t, n>{});
+    testPermutation(std::array<int8_t, 128>{});
+    testPermutation(std::array<uint8_t, n>{});
+    testPermutation(std::array<uint8_t, 256>{});
+    testPermutation(std::array<int16_t, n>{});
+    testPermutation(std::array<int16_t, static_cast<size_t>(std::numeric_limits<int16_t>::max()) + 1>{});
+    testPermutation(std::array<uint16_t, n>{});
+    testPermutation(std::array<uint16_t, static_cast<size_t>(std::numeric_limits<uint16_t>::max()) + 1>{});
+    testPermutation(std::array<uint32_t, n>{});
+    testPermutation(std::array<int, n>{});
+    testPermutation(std::array<int64_t, n>{});
+    testPermutation(std::vector<node>{n});
+    testPermutation(std::vector<int>{n});
+}
 } // ! namespace NetworKit

@@ -481,5 +481,20 @@ Graph restoreGraph(const std::vector<node> &invertedIdMap, const Graph &G) {
     return Goriginal;
 }
 
+void sortEdgesByWeight(Graph &G, bool decreasing) {
+    if (decreasing)
+        G.sortEdges([](auto e1, auto e2) {
+            if (e1.weight == e2.weight)
+                return e1.v < e2.v;
+            return e1.weight > e2.weight;
+        });
+    else
+        G.sortEdges([](auto e1, auto e2) {
+            if (e1.weight == e2.weight)
+                return e1.v < e2.v;
+            return e1.weight < e2.weight;
+        });
+}
+
 } // namespace GraphTools
 } // namespace NetworKit
