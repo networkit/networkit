@@ -1,5 +1,5 @@
 /*
- * Lamg.h
+ * Lamg.hpp
  *
  *  Created on: Oct 20, 2015
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
