@@ -78,6 +78,32 @@ cdef class CommunityDetector(Algorithm):
 			raise RuntimeError("Error, object not properly initialized")
 		return Partition().setThis((<_CommunityDetectionAlgorithm*>(self._this)).getPartition())
 
+cdef extern from "<networkit/community/OverlappingCommunityDetectionAlgorithm.hpp>":
+
+	cdef cppclass _OverlappingCommunityDetectionAlgorithm "NetworKit::OverlappingCommunityDetectionAlgorithm"(_Algorithm):
+		_OverlappingCommunityDetectionAlgorithm(const _Graph &_G)
+		_Cover getCover() except +
+
+cdef class OverlappingCommunityDetector(Algorithm):
+	""" Abstract base class for static overlapping community detection algorithms """
+
+	cdef Graph _G
+	def __init__(self, *args, **namedargs):
+		if type(self) == OverlappingCommunityDetector:
+			raise RuntimeError("Error, you may not use OverlappingCommunityDetector directly, use a sub-class instead")
+
+	def getCover(self):
+		"""  Returns a cover of the clustering.
+
+		Returns:
+		--------
+		networkit.Cover:
+			A Cover of the clustering.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return Cover().setThis((<_OverlappingCommunityDetectionAlgorithm*>(self._this)).getCover())
+
 # Fused type for methods that accept both a partition and a cover
 ctypedef fused PartitionCover:
 	Partition
