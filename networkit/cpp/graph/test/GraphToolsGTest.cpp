@@ -7,6 +7,8 @@
 
 // networkit-format
 
+#include <array>
+
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Random.hpp>
@@ -673,9 +675,11 @@ TEST_P(GraphToolsGTest, testSubgraphFromNodesUndirected) {
     G.addEdge(3, 2, 5.0);
     G.addEdge(1, 2, 3.0);
 
-    {
+    std::array<bool, 2> compactOptions{{true, false}};
+
+    for (bool compact : compactOptions) {
         std::unordered_set<node> nodes = {0};
-        auto res = GraphTools::subgraphFromNodes(G, nodes);
+        auto res = GraphTools::subgraphFromNodes(G, nodes.begin(), nodes.end(), compact);
         EXPECT_EQ(weighted(), res.isWeighted());
         EXPECT_FALSE(res.isDirected());
         EXPECT_EQ(res.numberOfNodes(), 1);
@@ -684,7 +688,7 @@ TEST_P(GraphToolsGTest, testSubgraphFromNodesUndirected) {
 
     {
         std::unordered_set<node> nodes = {0};
-        auto res = GraphTools::subgraphFromNodes(G, nodes, true);
+        auto res = GraphTools::subgraphAndNeighborsFromNodes(G, nodes, true);
 
         EXPECT_EQ(res.numberOfNodes(), 3);
         EXPECT_EQ(res.numberOfEdges(), 2); // 0-1, 0-2, NOT 1-2
@@ -693,18 +697,27 @@ TEST_P(GraphToolsGTest, testSubgraphFromNodesUndirected) {
         EXPECT_DOUBLE_EQ(G.weight(0, 2), weighted() ? 2.0 : defaultEdgeWeight);
     }
 
-    {
+    for (bool compact : compactOptions) {
         std::unordered_set<node> nodes = {0, 1};
-        auto res = GraphTools::subgraphFromNodes(G, nodes);
+        auto res = GraphTools::subgraphFromNodes(G, nodes.begin(), nodes.end(), compact);
         EXPECT_EQ(res.numberOfNodes(), 2);
         EXPECT_EQ(res.numberOfEdges(), 1); // 0 - 1
     }
 
     {
         std::unordered_set<node> nodes = {0, 1};
-        auto res = GraphTools::subgraphFromNodes(G, nodes, true);
+        auto res = GraphTools::subgraphAndNeighborsFromNodes(G, nodes, true);
         EXPECT_EQ(res.numberOfNodes(), 4);
         EXPECT_EQ(res.numberOfEdges(), 4); // 0-1, 0-2, 1-2, 1-3
+    }
+
+    G.addEdge(0, 0);
+
+    for (bool compact : compactOptions) {
+        std::unordered_set<node> nodes = {0, 1};
+        auto res = GraphTools::subgraphFromNodes(G, nodes.begin(), nodes.end(), compact);
+        EXPECT_EQ(res.numberOfNodes(), 2);
+        EXPECT_EQ(res.numberOfEdges(), 2); // 0 - 1, 0 - 0
     }
 }
 
@@ -725,41 +738,49 @@ TEST_P(GraphToolsGTest, testSubgraphFromNodesDirected) {
     G.addEdge(3, 2, 5.0);
     G.addEdge(1, 2, 3.0);
 
-    {
+    std::array<bool, 2> compactOptions{{true, false}};
+
+    for (bool compact : compactOptions) {
         std::unordered_set<node> nodes = {0};
-        auto res = GraphTools::subgraphFromNodes(G, nodes);
+        auto res = GraphTools::subgraphFromNodes(G, nodes.begin(), nodes.end(), compact);
 
         EXPECT_EQ(weighted(), res.isWeighted());
         EXPECT_TRUE(res.isDirected());
 
         EXPECT_EQ(res.numberOfNodes(), 1);
         EXPECT_EQ(res.numberOfEdges(), 0);
+
+        if (compact) {
+            EXPECT_EQ(res.upperNodeIdBound(), 1);
+        } else {
+            EXPECT_EQ(res.upperNodeIdBound(), G.upperNodeIdBound());
+        }
     }
 
     {
         std::unordered_set<node> nodes = {0};
-        auto res = GraphTools::subgraphFromNodes(G, nodes, true);
+        auto res = GraphTools::subgraphAndNeighborsFromNodes(G, nodes, true);
         EXPECT_EQ(res.numberOfNodes(), 3);
         EXPECT_EQ(res.numberOfEdges(), 2); // 0->1, 0->2, NOT 1->2
     }
 
-    {
+    for (bool compact : compactOptions) {
         std::unordered_set<node> nodes = {0, 1};
-        auto res = GraphTools::subgraphFromNodes(G, nodes);
+        auto res = GraphTools::subgraphFromNodes(G, nodes.begin(), nodes.end(), compact);
         EXPECT_EQ(res.numberOfNodes(), 2);
         EXPECT_EQ(res.numberOfEdges(), 1); // 0 -> 1
     }
 
     {
         std::unordered_set<node> nodes = {0, 1};
-        auto res = GraphTools::subgraphFromNodes(G, nodes, true);
+        auto res = GraphTools::subgraphAndNeighborsFromNodes(G, nodes, true);
         EXPECT_EQ(res.numberOfNodes(), 3);
         EXPECT_EQ(res.numberOfEdges(), 3); // 0->1, 0->2, 1->2
     }
 
     {
         std::unordered_set<node> nodes = {0, 1};
-        auto res = GraphTools::subgraphFromNodes(G, nodes, true, true);
+        auto res = GraphTools::subgraphAndNeighborsFromNodes(G, nodes, true, true);
         EXPECT_EQ(res.numberOfNodes(), 4);
         EXPECT_EQ(res.numberOfEdges(), 4); // 0->1, 0->2, 1->2, 3->1
     }

@@ -135,7 +135,7 @@ Graph StronglyConnectedComponents::extractLargestStronglyConnectedComponent(cons
 
     const auto compSizes = component.subsetSizeMap();
     if (compSizes.size() == 1) {
-        if (compactGraph)
+        if (compactGraph && G.upperNodeIdBound() != G.numberOfNodes())
             return GraphTools::getCompactedGraph(G, GraphTools::getContinuousNodeIds(G));
         return G;
     }
@@ -148,12 +148,7 @@ Graph StronglyConnectedComponents::extractLargestStronglyConnectedComponent(cons
                                      ->first;
 
     const auto nodesInLSCC = component.getMembers(largestSCCIndex);
-    const auto largestSCC =
-        GraphTools::subgraphFromNodes(G, {nodesInLSCC.begin(), nodesInLSCC.end()});
-    if (compactGraph)
-        return GraphTools::getCompactedGraph(largestSCC,
-                                             GraphTools::getContinuousNodeIds(largestSCC));
-    return largestSCC;
+    return GraphTools::subgraphFromNodes(G, nodesInLSCC.begin(), nodesInLSCC.end(), compactGraph);
 }
 
 } // namespace NetworKit
