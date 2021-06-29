@@ -3,7 +3,7 @@
 
 #include <networkit/auxiliary/IncrementalUniformRandomSelector.hpp>
 #include <networkit/clique/MaximalCliques.hpp>
-#include <networkit/graph/GraphBuilder.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/scd/CliqueDetect.hpp>
 
 namespace NetworKit {
@@ -97,7 +97,7 @@ std::vector<node>
 CliqueDetect::getMaximumWeightClique(const std::vector<node> &nodes,
                                      const std::vector<edgeweight> &seedToNodeWeight) const {
 
-    Graph s = createSubgraphFromNodes(nodes);
+    Graph s = GraphTools::subgraphFromNodes(*g, nodes.begin(), nodes.end(), true);
     std::vector<node> maxClique;
 
     Aux::IncrementalUniformRandomSelector selector;
@@ -158,26 +158,4 @@ CliqueDetect::getMaximumWeightClique(const std::vector<node> &nodes,
 
     return maxClique;
 }
-
-Graph CliqueDetect::createSubgraphFromNodes(const std::vector<node> &nodes) const {
-    GraphBuilder gbuilder(nodes.size(), g->isWeighted());
-    std::unordered_map<node, node> reverseMapping;
-
-    node i = 0;
-    for (node u : nodes) {
-        reverseMapping[u] = i;
-        i += 1;
-    }
-    for (node u : nodes) {
-        node lu = reverseMapping[u];
-        g->forNeighborsOf(u, [&](node v, edgeweight weight) {
-            auto lv = reverseMapping.find(v);
-            if (lv != reverseMapping.end())
-                gbuilder.addHalfEdge(lu, lv->second, weight);
-        });
-    }
-
-    return gbuilder.toGraph(false);
-}
-
 } /* namespace NetworKit */

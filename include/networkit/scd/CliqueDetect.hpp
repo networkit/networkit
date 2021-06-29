@@ -49,8 +49,6 @@ public:
 protected:
     std::vector<node> getMaximumWeightClique(const std::vector<node> &nodes,
                                              const std::vector<edgeweight> &seedToNodeWeight) const;
-
-    Graph createSubgraphFromNodes(const std::vector<node> &nodes) const;
 };
 
 } // namespace NetworKit
