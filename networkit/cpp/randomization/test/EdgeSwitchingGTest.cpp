@@ -54,7 +54,7 @@ protected:
     }
 };
 
-INSTANTIATE_TEST_CASE_P(EdgeSwitchingDirected, EdgeSwitchingGTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(EdgeSwitchingDirected, EdgeSwitchingGTest, testing::Bool());
 
 TEST_P(EdgeSwitchingGTest, testSatellites) {
     Aux::Random::setSeed(1, true);

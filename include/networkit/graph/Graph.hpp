@@ -26,8 +26,6 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 struct Edge {
@@ -1411,8 +1409,8 @@ public:
      *
      * This method is deprecated and will not be supported in future releases.
      */
-    void TLX_DEPRECATED(timeStep()) {
-        WARN("Graph::timeStep is deprecated and will not be supported in future releases.");
+    void timeStep() {
+        WARN("Graph::timeStep should not be used and will be deprecated in the future.");
         t++;
     }
 
@@ -1422,8 +1420,8 @@ public:
      *
      * This method is deprecated and will not be supported in future releases.
      */
-    count TLX_DEPRECATED(time()) {
-        WARN("Graph::time is deprecated and will not be supported in future releases.");
+    count time() {
+        WARN("Graph::time should not be used and will be deprecated in the future.");
         return t;
     }
 

@@ -10,6 +10,7 @@
 
 #include <unordered_set>
 
+#include <tlx/define/deprecated.hpp>
 #include <networkit/auxiliary/SetIntersector.hpp>
 #include <networkit/scd/SelectiveCommunityDetector.hpp>
 
