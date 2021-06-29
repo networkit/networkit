@@ -157,7 +157,7 @@ void Lamg<Matrix>::setup(const Matrix& laplacianMatrix) {
             rhsVectors[compIdx] = Vector(component.size());
             lamgSetup.setup(compMatrix, compHierarchies[compIdx]);
             compSolvers.push_back(SolverLamg<Matrix>(compHierarchies[compIdx], smoother));
-            LAMGSolverStatus status;
+            LAMGSolverStatus status{};
             status.desiredResidualReduction = this->tolerance * component.size() / G.numberOfNodes();
             compStati[compIdx] = status;
 
