@@ -82,8 +82,9 @@ def determineCompiler(candidates, std, flags):
 		}
 	}""")
 	sample.close()
+	print(candidates)
 	for compiler in candidates:
-		cmd = [compiler,"-o","test_build","-std={}".format(std)]
+		cmd = [compiler,"-o","test_build","-std{}".format(std)]
 		cmd.extend(flags)
 		cmd.append("sample.cpp")
 		try:
@@ -103,6 +104,11 @@ def determineCompiler(candidates, std, flags):
 if cmakeCompiler is None:
 	if sys.platform == "darwin":
 		cmakeCompiler = determineCompiler(["c++"], "c++14", ["-Xpreprocessor", "-fopenmp", "-lomp"])
+	if sys.platform == "win32":
+		# On "win32"-systems compiler detection is not easy, since paths are only set by enabling vcvarsall.bat 
+		# (for default compiler cl.exe). We assume that Visual Studio is installed and activated.
+		cmakeCompiler = "cl"
+		print("The default for Windows is to use cl.exe (MSVC), be sure to install and activate Visual Studio command line tools.")
 	if cmakeCompiler is None:
 		cmakeCompiler = determineCompiler(candidates, "c++14", ["-fopenmp"])
 	if cmakeCompiler is None:
@@ -128,9 +134,19 @@ def buildNetworKit(install_prefix, externalCore=False, externalTlx=None, withTes
 	comp_cmd.append("-DNETWORKIT_FLATINSTALL=ON")
 	from sysconfig import get_paths, get_config_var
 	comp_cmd.append("-DNETWORKIT_PYTHON="+get_paths()['include']) #provide python.h files
-	comp_cmd.append("-DNETWORKIT_PYTHON_SOABI="+get_config_var('SOABI')) #provide lib env specification
+	os_soabi = get_config_var('SOABI')
+	if os_soabi is None:
+		os_soabi =  get_config_var('EXT_SUFFIX').split(".")[1] # get_config_var('SOABI') is None on win32-systems
+	comp_cmd.append("-DNETWORKIT_PYTHON_SOABI="+os_soabi) #provide lib env specification
 	if externalCore:
+		if sys.platform == "win32":
+			# Reasoning: only static builds are supported and libs+dlls must reside in the same folder
+			print("Builds with an external core are not supported on Windows.") 
+			exit(1)
 		comp_cmd.append("-DNETWORKIT_BUILD_CORE=OFF")
+	if sys.platform == "win32":
+		comp_cmd.append("-DNETWORKIT_STATIC=ON") # Windows only supports static core builds
+		comp_cmd.append("-DNETWORKIT_BUILDING_STATELIB=ON") # Adds dllexport
 	if externalTlx:
 		comp_cmd.append("-DNETWORKIT_EXT_TLX="+externalTlx)
 	if ninja_available:
@@ -294,7 +310,7 @@ setup(
 	platforms			= version.platforms,
 	classifiers			= version.classifiers,
 	cmdclass			= {'build_ext': build_ext},
-	ext_modules			= cythonize(["networkit/*pyx", "networkit/profiling/*pyx"], language_level=3),
+	ext_modules			= cythonize(["networkit/*pyx"], language_level=3),
 	test_suite			= 'nose.collector',
 	install_requires	= version.install_requires,
 	zip_safe			= False) # see https://cython.readthedocs.io/en/latest/src/reference/compilation.html

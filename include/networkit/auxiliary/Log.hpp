@@ -6,6 +6,8 @@
 
 #include <networkit/auxiliary/StringBuilder.hpp>
 
+#include <tlx/define/deprecated.hpp>
+
 #ifdef _MSC_VER
     #define NETWORKT_PRETTY_FUNCTION __FUNCSIG__
 #else
@@ -75,26 +77,27 @@ std::string getLogLevel();
 
 namespace Settings {
 
-LogLevel getLogLevel();
-void setLogLevel(LogLevel p = LogLevel::info);
+LogLevel TLX_DEPRECATED(getLogLevel());
 
-void setPrintTime(bool b);
-bool getPrintTime();
+void TLX_DEPRECATED(setLogLevel(LogLevel p = LogLevel::info));
 
-void setPrintLocation(bool b);
-bool getPrintLocation();
+bool TLX_DEPRECATED(getPrintTime());
 
-void setLogfile(const std::string &filename);
-}
+void TLX_DEPRECATED(setPrintTime(bool b));
+
+bool TLX_DEPRECATED(getPrintLocation());
+
+void TLX_DEPRECATED(setPrintLocation(bool b));
+
+void TLX_DEPRECATED(setLogfile(const std::string &filename));
+} // namespace Settings
 
 namespace Impl {
 void log(const Location &loc, LogLevel p, const std::string &msg);
 } //namespace impl
 
 ///! Returns true iff logging at the provided level is currently activated
-inline bool isLogLevelEnabled(LogLevel p) noexcept {
-    return p >= Settings::getLogLevel();
-}
+bool isLogLevelEnabled(LogLevel p) noexcept;
 
 template<typename...T>
 void log(const Location &loc, LogLevel p, const T &...args) {

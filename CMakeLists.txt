@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.6)
 project(networkit CXX)
 
 if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
@@ -18,6 +18,7 @@ option(NETWORKIT_CLANG_TIDY "Check code with clang-tidy" OFF)
 option(NETWORKIT_FLATINSTALL "Install into a flat directory structure (useful when building a Python package)" OFF)
 option(NETWORKIT_COVERAGE "Build with support for coverage" OFF)
 option(NETWORKIT_SANITY_CHECKS "Algorithms will perform further (expensive) checks" OFF)
+option(NETWORKIT_BUILDING_STATELIB "Builds networkit/GlobalState.hpp as seperate library." OFF)
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
 set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Implies MONOLITH=TRUE")
 set(NETWORKIT_WITH_SANITIZERS "" CACHE STRING "Uses sanitizers during the compilation")
@@ -75,6 +76,8 @@ elseif(NOT NETWORKIT_RELEASE_LOGGING STREQUAL "OFF")
 	message(FATAL_ERROR "Unsupported setting ${NETWORKIT_RELEASE_LOGGING} for NETWORKIT_RELEASE_LOGGING")
 endif()
 
+message(STATUS "COMPILER ID: ${CMAKE_CXX_COMPILER_ID}")
+
 if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR
 	("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR
 	("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang"))
@@ -106,6 +109,8 @@ elseif (MSVC)
 else()
 	message(WARNING "Support only GCC, Clang, MSVC and AppleClang. Your compiler may or may not work.")
 endif()
+
+message(STATUS "CXX FLAGS: ${NETWORKIT_CXX_FLAGS}")
 
 # Checking sanitizer options; in both cases we include 'undefined'
 set(NETWORKIT_CXX_SANITIZERS "")
@@ -201,6 +206,9 @@ if (APPLE)
 endif()
 
 if(NOT NETWORKIT_BUILD_CORE)
+	if(WIN32)
+		message(FATAL_ERROR "Make sure to enable NETWORKIT_BUILD_CORE. NetworKit on Windows does not support Python-builds with external core-libs.")
+	endif()
 	find_library(EXTERNAL_NETWORKIT_CORE NAMES networkit DOC "External NetworKit core library")
 endif()
 
@@ -223,31 +231,59 @@ if(NOT NETWORKIT_EXT_TLX)
 else()
 	add_library(tlx STATIC IMPORTED)
 	set_target_properties(tlx PROPERTIES
-			IMPORTED_LOCATION "${NETWORKIT_EXT_TLX}/lib/libtlx.a"
+			IMPORTED_LOCATION "${NETWORKIT_EXT_TLX}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}tlx${CMAKE_STATIC_LIBRARY_SUFFIX}"
 			INTERFACE_INCLUDE_DIRECTORIES "${NETWORKIT_EXT_TLX}/include/")
 endif()
 
 ################################################################################
 # NETWORKIT MODULES
 if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
+
 	if(NETWORKIT_STATIC)
 		add_library(networkit networkit/cpp/networkit.cpp)
 	else()
+		if(WIN32)
+			message(FATAL_ERROR
+					"Windows does only support static builds. Call cmake with '-DNETWORKIT_STATIC=ON'.")
+		endif()
 		add_library(networkit SHARED networkit/cpp/networkit.cpp)
 	endif()
+
+	if(WIN32 AND NETWORKIT_BUILDING_STATELIB)
+		# For Windows all global shared variables have to be exported additionally as dll
+		add_library(networkit_state SHARED networkit/cpp/GlobalState.cpp)
+		set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DNETWORKIT_BUILDING_STATELIB")
+
+		set_target_properties(networkit_state PROPERTIES
+				CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
+				COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
+				LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
+
+		install(TARGETS networkit_state
+				LIBRARY DESTINATION "${NETWORKIT_LIB_DEST}/networkit"
+				ARCHIVE DESTINATION "${NETWORKIT_LIB_DEST}/networkit"
+				RUNTIME DESTINATION "${NETWORKIT_LIB_DEST}/networkit")
+
+		target_link_libraries(networkit PUBLIC networkit_state)
+		target_link_libraries(networkit_state PUBLIC tlx)
+		target_include_directories(networkit_state BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
+	endif()
+
+	target_link_libraries(networkit PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
 
 	set_target_properties(networkit PROPERTIES
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
-
+	
 	install(TARGETS networkit
 			LIBRARY DESTINATION ${NETWORKIT_LIB_DEST}
-			ARCHIVE DESTINATION ${NETWORKIT_LIB_DEST})
+			ARCHIVE DESTINATION ${NETWORKIT_LIB_DEST}
+			RUNTIME DESTINATION ${NETWORKIT_LIB_DEST})
 
-	target_link_libraries(networkit PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
 	target_include_directories(networkit BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 	target_include_directories(networkit PUBLIC "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
+
 endif()
 
 ################################################################################
@@ -261,20 +297,25 @@ if (NETWORKIT_CLANG_TIDY)
 endif()
 
 if(NETWORKIT_PYTHON)
+
+	if(${CMAKE_VERSION} VERSION_LESS "3.12.0") 
+		FIND_PACKAGE(FindPythonInterp REQUIRED)
+		FIND_PACKAGE(FindPythonLibs REQUIRED)
+	else()
+		FIND_PACKAGE(Python3 COMPONENTS Interpreter Development REQUIRED)
+	endif()
+
 	 foreach (EXT base centrality clique coarsening community components correlation
 			 distance dynamics embedding engineering flow generators globals graph graphio
-			 graphtools helpers independentset linkprediction matching profiling/stat
+			 graphtools helpers independentset linkprediction matching
 			 randomization reachability scd simulation sparsification stats
 			 structures traversal viz)
 
 		if(NOT EXISTS "${PROJECT_SOURCE_DIR}/networkit/${EXT}.cpp")
 			message(FATAL_ERROR "networkit/${EXT}.cpp is missing. Invoke Cython manually.")
 		endif()
-		if(${EXT} STREQUAL profiling/stat)
-			set(TARGET_LIB "stat")
-		else()
-			set(TARGET_LIB ${EXT})
-		endif()
+
+		set(TARGET_LIB ${EXT})
 
 		add_library(${TARGET_LIB} MODULE networkit/${EXT}.cpp)
 		target_include_directories(${TARGET_LIB} BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
@@ -296,6 +337,10 @@ if(NETWORKIT_PYTHON)
 					LINK_FLAGS "${NETWORKIT_LINK_FLAGS}"
 					PREFIX ""
 					OUTPUT_NAME "${TARGET_LIB}.${NETWORKIT_PYTHON_SOABI}")
+		if(WIN32)
+			set_target_properties(${TARGET_LIB} PROPERTIES SUFFIX .pyd)
+		endif()
+
 		# If rpath-content is set explicitly, omit the dynamic binary path
 		if(NETWORKIT_PYTHON_RPATH)
 			set_target_properties(${TARGET_LIB} PROPERTIES
@@ -311,14 +356,11 @@ if(NETWORKIT_PYTHON)
 			endif()
 		endif()
 
-	target_link_libraries(${TARGET_LIB} PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
-		if(${TARGET_LIB} STREQUAL stat)
-			install(TARGETS ${TARGET_LIB}
-				LIBRARY DESTINATION "${NETWORKIT_LIB_DEST}/networkit/profiling")
-		else()
-			install(TARGETS ${TARGET_LIB}
-				LIBRARY DESTINATION "${NETWORKIT_LIB_DEST}/networkit")
-		endif()
+		target_link_libraries(${TARGET_LIB} PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
+		target_link_libraries(${TARGET_LIB} PRIVATE ${Python3_LIBRARIES})
+
+		install(TARGETS ${TARGET_LIB}
+			LIBRARY DESTINATION "${NETWORKIT_LIB_DEST}/networkit")
 	endforeach()
 endif()
 
@@ -435,6 +477,13 @@ if (NETWORKIT_BUILD_TESTS)
 				tlx
 				OpenMP::OpenMP_CXX
 		)
+		
+		if(WIN32)
+			target_link_libraries(networkit_tests
+				PRIVATE
+					networkit_state
+			)
+		endif()
 
 		set_target_properties(networkit_tests PROPERTIES
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
@@ -656,7 +705,9 @@ install(DIRECTORY extlibs/ttmath/ttmath
 # Prepare pkg-config file
 
 set(NETWORKIT_LIBNAME networkit)
-execute_process(COMMAND python3 -c "from version import version; print(version, end='')"
+set(NETWORKIT_CMAKE_PYTHON_INTERPRETER ${Python_EXECUTABLE})
+
+execute_process(COMMAND ${NETWORKIT_CMAKE_PYTHON_INTERPRETER} -c "from version import version; print(version, end='')"
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 	OUTPUT_VARIABLE NETWORKIT_VERSION)
 configure_file(networkit.pc

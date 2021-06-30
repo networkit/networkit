@@ -9,4 +9,10 @@ networkit_add_module(auxiliary
     Timer.cpp
     )
 
+if(NOT WIN32)
+    networkit_module_link_modules(auxiliary
+            globalstate
+        )
+endif()
+
 add_subdirectory(test)
