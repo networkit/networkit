@@ -1498,6 +1498,68 @@ cdef class GroupClosenessLocalSwaps(Algorithm):
 		return (<_GroupClosenessLocalSwaps*>(self._this)).numberOfSwaps()
 
 
+cdef extern from "<networkit/centrality/GroupHarmonicCloseness.hpp>":
+	cdef cppclass _GroupHarmonicCloseness "NetworKit::GroupHarmonicCloseness"(_Algorithm):
+		_GroupHarmonicCloseness(_Graph G, count) except +
+		vector[node] groupMaxHarmonicCloseness() except +
+		@staticmethod
+		double scoreOfGroup[InputIt](_Graph G, InputIt first, InputIt last) except +
+
+cdef class GroupHarmonicCloseness(Algorithm):
+	"""
+	Approximation algorithm for the group-harmonic maximization problem. The
+	computed solutions have a guaranteed $\\lambda(1 - \\frac{1}{2e})$
+	(directed graphs) and $\\lambda(1 - \\frac{1}/{e})/2$ (undirected graphs)
+	approximation ratio, where $\\lambda$ is the ratio between the minimal and
+	the maximal edge weight. The algorithm is the one proposed in Angriman et
+	al., ALENEX 2021. The worst-case running time of this approach is
+	quadratic, but usually much faster in practice.
+
+	Parameters:
+	-----------
+	G : networkit.Graph
+		The input graph.
+	k : k
+		Size of the group of nodes.
+	"""
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, k = 1):
+		self._G = G
+		self._this = new _GroupHarmonicCloseness(G._this, k)
+
+	def groupMaxHarmonicCloseness(self):
+		"""
+		Returns the computed group.
+
+		Returns:
+		--------
+		vector
+			The computed group.
+		"""
+		return (<_GroupHarmonicCloseness*>(self._this)).groupMaxHarmonicCloseness()
+
+	@staticmethod
+	def scoreOfGroup(Graph graph, vector[node] inputGroup):
+		"""
+		Computes the group-harmonic score of the input group.
+
+		Parameters:
+		-----------
+		graph : networkit.Graph
+			The input graph.
+		inputGroup : list
+			The input group of nodes.
+
+		Returns:
+		--------
+		double
+			The group-harmonic score of the input group.
+		"""
+		return _GroupHarmonicCloseness.scoreOfGroup[vector[node].iterator](
+				graph._this, inputGroup.begin(), inputGroup.end())
+
+
 cdef extern from "<networkit/centrality/KPathCentrality.hpp>":
 
 	cdef cppclass _KPathCentrality "NetworKit::KPathCentrality" (_Centrality):

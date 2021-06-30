@@ -194,6 +194,22 @@ class TestSelfLoops(unittest.TestCase):
 		self.assertEqual(len(set(group)), k)
 		self.assertAlmostEqual(apxScore, gedw.scoreOfGroup(group), 1)
 
+	def testGroupHarmonicClosenessCentrality(self):
+		n, p, k = 50, 0.2, 5
+		nk.engineering.setSeed(42, True)
+		for directed in [False, True]:
+			for weighted in [False, True]:
+				g = nk.generators.ErdosRenyiGenerator(n, p, directed).generate()
+				if weighted:
+					g = nk.graphtools.toWeighted(g)
+					g.forEdges(lambda u, v, ew, eid: g.setWeight(u, v, random.random()))
+
+				ghc = nk.centrality.GroupHarmonicCloseness(g, k).run()
+				group = ghc.groupMaxHarmonicCloseness()
+				self.assertEqual(len(group), k)
+				self.assertEqual(len(set(group)), k)
+				self.assertGreaterEqual(ghc.scoreOfGroup(g, group), 0)
+
 	def test_centrality_SciPyPageRank(self):
 		CL = nk.centrality.SciPyPageRank(self.L)
 		CL.run()
