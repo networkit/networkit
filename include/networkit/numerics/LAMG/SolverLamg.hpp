@@ -11,9 +11,10 @@
 #include <cmath>
 #include <vector>
 
+#include <networkit/algebraic/DenseMatrix.hpp>
+#include <networkit/auxiliary/Timer.hpp>
 #include <networkit/numerics/LAMG/LevelHierarchy.hpp>
 #include <networkit/numerics/Smoother.hpp>
-#include <networkit/algebraic/DenseMatrix.hpp>
 
 namespace NetworKit {
 

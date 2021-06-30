@@ -11,6 +11,7 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/PrioQueue.hpp>
+#include <networkit/auxiliary/Timer.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/Dijkstra.hpp>
