@@ -1,4 +1,4 @@
-networkit_add_module(numerics LAMG/MultiLevelSetup.cpp)
+networkit_add_module(numerics)
 
 add_subdirectory(test)
 
