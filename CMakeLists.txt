@@ -18,7 +18,6 @@ option(NETWORKIT_CLANG_TIDY "Check code with clang-tidy" OFF)
 option(NETWORKIT_FLATINSTALL "Install into a flat directory structure (useful when building a Python package)" OFF)
 option(NETWORKIT_COVERAGE "Build with support for coverage" OFF)
 option(NETWORKIT_SANITY_CHECKS "Algorithms will perform further (expensive) checks" OFF)
-option(NETWORKIT_BUILDING_STATELIB "Builds networkit/GlobalState.hpp as seperate library." OFF)
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
 set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Implies MONOLITH=TRUE")
 set(NETWORKIT_WITH_SANITIZERS "" CACHE STRING "Uses sanitizers during the compilation")
@@ -76,8 +75,6 @@ elseif(NOT NETWORKIT_RELEASE_LOGGING STREQUAL "OFF")
 	message(FATAL_ERROR "Unsupported setting ${NETWORKIT_RELEASE_LOGGING} for NETWORKIT_RELEASE_LOGGING")
 endif()
 
-message(STATUS "COMPILER ID: ${CMAKE_CXX_COMPILER_ID}")
-
 if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR
 	("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR
 	("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang"))
@@ -109,8 +106,6 @@ elseif (MSVC)
 else()
 	message(WARNING "Support only GCC, Clang, MSVC and AppleClang. Your compiler may or may not work.")
 endif()
-
-message(STATUS "CXX FLAGS: ${NETWORKIT_CXX_FLAGS}")
 
 # Checking sanitizer options; in both cases we include 'undefined'
 set(NETWORKIT_CXX_SANITIZERS "")
@@ -249,14 +244,13 @@ if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 		add_library(networkit SHARED networkit/cpp/networkit.cpp)
 	endif()
 
-	if(WIN32 AND NETWORKIT_BUILDING_STATELIB)
+	if(WIN32)
 		# For Windows all global shared variables have to be exported additionally as dll
 		add_library(networkit_state SHARED networkit/cpp/GlobalState.cpp)
-		set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DNETWORKIT_BUILDING_STATELIB")
 
 		set_target_properties(networkit_state PROPERTIES
 				CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
-				COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
+				COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS} /DNETWORKIT_BUILDING_STATELIB"
 				LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
 
 		install(TARGETS networkit_state
@@ -705,9 +699,8 @@ install(DIRECTORY extlibs/ttmath/ttmath
 # Prepare pkg-config file
 
 set(NETWORKIT_LIBNAME networkit)
-set(NETWORKIT_CMAKE_PYTHON_INTERPRETER ${Python_EXECUTABLE})
 
-execute_process(COMMAND ${NETWORKIT_CMAKE_PYTHON_INTERPRETER} -c "from version import version; print(version, end='')"
+execute_process(COMMAND ${Python_EXECUTABLE} -c "from version import version; print(version, end='')"
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 	OUTPUT_VARIABLE NETWORKIT_VERSION)
 configure_file(networkit.pc
