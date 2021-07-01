@@ -1,5 +1,5 @@
 /*
- * Lamg.h
+ * Lamg.hpp
  *
  *  Created on: Oct 20, 2015
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
@@ -205,7 +205,7 @@ void Lamg<Matrix>::setup(const Matrix& laplacianMatrix) {
             rhsVectors[compIdx] = Vector(component.size());
             lamgSetup.setup(compMatrix, compHierarchies[compIdx]);
             compSolvers.push_back(SolverLamg<Matrix>(compHierarchies[compIdx], smoother));
-            LAMGSolverStatus status;
+            LAMGSolverStatus status{};
             status.desiredResidualReduction = this->tolerance * component.size() / G.numberOfNodes();
             compStati[compIdx] = status;
 
