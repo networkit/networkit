@@ -18,6 +18,9 @@ from .graph cimport _Graph, Graph
 from .structures cimport _Cover, Cover, _Partition, Partition
 from networkit.algebraic import adjacencyEigenvector, PageRankMatrix, symmetricEigenvectors
 
+cdef extern from "limits.h":
+	cdef uint64_t ULONG_MAX
+
 cdef extern from "<networkit/centrality/Centrality.hpp>":
 
 	cdef cppclass _Centrality "NetworKit::Centrality"(_Algorithm):
@@ -1558,6 +1561,76 @@ cdef class GroupHarmonicCloseness(Algorithm):
 		"""
 		return _GroupHarmonicCloseness.scoreOfGroup[vector[node].iterator](
 				graph._this, inputGroup.begin(), inputGroup.end())
+
+cdef extern from "<networkit/centrality/GroupClosenessLocalSearch.hpp>":
+	cdef cppclass _GroupClosenessLocalSearch "NetworKit::GroupClosenessLocalSearch"(_Algorithm):
+		_GroupClosenessLocalSearch(_Graph, const vector[node] &group, bool_t runGrowShrink, count maxIterations) except +
+		_GroupClosenessLocalSearch(_Graph, const vector[node] &group, bool_t runGrowShrink) except +
+		_GroupClosenessLocalSearch(_Graph, const vector[node] &group) except +
+		vector[node] groupMaxCloseness() except +
+		count numberOfIterations() except +
+		count maxIterations
+
+cdef class GroupClosenessLocalSearch(Algorithm):
+	cdef Graph _G
+
+	def __cinit__(self, Graph G not None, group, runGrowShrink, maxIterations):
+		"""
+		Local search approximation algorithm for Group Closeness Maximization presented in
+		"Group-Harmonic and Group-Closeness Maximization – Approximation and Engineering", Angriman
+		et al., ALENEX 2021. The algorithm evaluates all possible swaps between a vertex in the group
+		and the vertices outside, and performs a swap iff the decrement in farness is at least $$(1 -
+		1 / (k \\cdot (n - k)))$$, where $$k$$ is the number of vertices in the group. Thus,
+		even in a best-case scenario the time complexity of this algorithm is $$O(n \\cdot k)$$. To
+		keep the number of swaps low, it is recommended to use this algorithm as a refinement step of
+		an already good solution computed by a faster algorithm e.g., greedy (GroupCloseness), or
+		GrowShrink (GroupClosenessGrowShrink). In undirected graphs the approximation ratio is 1/5,
+		on directed graphs it has not been demonstrated.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			A connected, undirected, unweighted graph.
+		group : list
+			The initial group of nodes.
+		useGrowShrink : bool
+			Whether or not to run the GrowShrink algorithm on the initial group.
+		maxIterations : int
+			Maximum number of swaps allowed. Prevents the algorithm from performing
+			too many swaps by giving up the approximation guarantee.
+		"""
+		self._G = G
+		self._this = new _GroupClosenessLocalSearch(G._this, group, runGrowShrink, maxIterations)
+
+	def __cinit__(self, Graph G not None, group, runGrowShrink):
+		self._G = G
+		self._this = new _GroupClosenessLocalSearch(G._this, group, runGrowShrink)
+
+	def __cinit__(self, Graph G not None, group):
+		self._G = G
+		self._this = new _GroupClosenessLocalSearch(G._this, group)
+
+	def groupMaxCloseness(self):
+		"""
+		Returns the computed group.
+
+		Returns
+		-------
+		list
+			The computed group.
+		"""
+		return (<_GroupClosenessLocalSearch*>(self._this)).groupMaxCloseness()
+
+	def numberOfIterations(self):
+		"""
+		Return the total number of iterations performed by the algorithm.
+
+		Returns
+		-------
+		int
+			Total number of iterations performed by the algorithm.
+		"""
+		return (<_GroupClosenessLocalSearch*>(self._this)).numberOfIterations()
 
 
 cdef extern from "<networkit/centrality/KPathCentrality.hpp>":
