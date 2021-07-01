@@ -14,6 +14,8 @@
 #include <random>
 #include <stdexcept>
 
+#include <tlx/define/deprecated.hpp>
+
 namespace Aux {
 
 /**
@@ -38,7 +40,7 @@ uint64_t getSeed();
 /*
  * @returns whether or not the thread id is added to the random seed. 
  */
-bool getUseThreadId();
+bool TLX_DEPRECATED(getUseThreadId());
 
 /**
  * @returns a reference to a seeded URNG that is thread_local.

@@ -10,28 +10,16 @@
 #include <limits>
 #include <atomic>
 
+#include <networkit/GlobalState.hpp>
 #include <networkit/auxiliary/Random.hpp>
 
 namespace Aux {
 namespace Random {
 
-static std::atomic<uint64_t> seedValue{0};
-static std::atomic<bool> seedUseThreadId{false};
-
-// The global seed generation functions as an epoch counter
-// for each time, the seed was updated. At the same time it
-// releases the changes made to the seed values to other
-// threads which always access it by an aquire.
-// seedValues and seedUseThreadId can hence be accesses
-// relaxed.
-// As long as globalSeedGeneration is zero, the getURNG()
-// ignores these two variables.
-static std::atomic<uint64_t> globalSeedGeneration{0}; //< global seed generation, updated on every setSeed-call
-
 void setSeed(uint64_t seed, bool useThreadId) {
-    seedValue.store(seed, std::memory_order_relaxed);
-    seedUseThreadId.store(useThreadId, std::memory_order_relaxed);
-    globalSeedGeneration.fetch_add(1, std::memory_order_release) ;
+    NetworKit::GlobalState::setSeed(seed);
+    NetworKit::GlobalState::setSeedUseThreadId(useThreadId);
+    NetworKit::GlobalState::incGlobalSeed();
     getURNG(); // update local seed value
 }
 
@@ -41,27 +29,27 @@ static uint64_t getSeed_(uint64_t globSeedGen) {
         std::uniform_int_distribution<uint64_t> dist{};
         return dist(urng);
 
-    } else if (seedUseThreadId.load(std::memory_order_relaxed)) {
-        return seedValue.load(std::memory_order_relaxed) + omp_get_thread_num();
+    } else if (NetworKit::GlobalState::getSeedUseThreadId()) {
+        return NetworKit::GlobalState::getSeed() + omp_get_thread_num();
 
     } else {
-        return seedValue.load(std::memory_order_relaxed);
+        return NetworKit::GlobalState::getSeed();
     }
 }
 
 uint64_t getSeed() {
-    return getSeed_(globalSeedGeneration.load(std::memory_order_acquire));
+    return getSeed_(NetworKit::GlobalState::getGlobalSeed());
 }
 
 bool getUseThreadId() {
-    return seedUseThreadId;
+    return NetworKit::GlobalState::getSeedUseThreadId();
 }
 
 std::mt19937_64& getURNG() {
     thread_local static std::mt19937_64 generator{getSeed()};
     thread_local static uint64_t localSeedGeneration{0};
 
-    auto globSeedGen = globalSeedGeneration.load(std::memory_order_acquire);
+    auto globSeedGen = NetworKit::GlobalState::getGlobalSeed();
 
     if (localSeedGeneration != globSeedGen) {
         generator.seed(getSeed_(globSeedGen));

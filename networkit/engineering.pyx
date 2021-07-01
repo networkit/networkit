@@ -55,7 +55,6 @@ cdef extern from "<networkit/auxiliary/Log.hpp>" namespace "Aux":
 	#void _configureLogging "Aux::configureLogging" (string loglevel)
 	string _getLogLevel "Aux::Log::getLogLevel" () except +
 	void _setLogLevel "Aux::Log::setLogLevel" (string loglevel) except +
-	void _setPrintLocation "Aux::Log::Settings::setPrintLocation" (bool_t) except +
 
 def getLogLevel():
 	""" Get the current log level"""
@@ -64,6 +63,10 @@ def getLogLevel():
 def setLogLevel(loglevel):
 	""" Set the current loglevel"""
 	_setLogLevel(stdstring(loglevel))
+
+cdef extern from "<networkit/GlobalState.hpp>" namespace "NetworKit":
+
+	void _setPrintLocation "NetworKit::GlobalState::setPrintLocation" (bool_t) except +
 
 def setPrintLocation(flag):
 	""" Switch locations in log statements on or off"""

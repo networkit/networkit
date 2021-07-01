@@ -4,16 +4,18 @@
 #
 
 from networkit import *
-import networkit as kit
+import networkit as nk
 
 import os as os
 import sys, traceback
 import configparser
+from pathlib import PurePosixPath, PureWindowsPath
 
 from . import multiprocessing_helper
 from . import stat
 from . import plot
 from ..support import MissingDependencyError
+
 
 import collections
 import math
@@ -33,7 +35,11 @@ colors = {
 }
 
 def getfilepath(filename):
-	return __file__[:__file__.rfind("/")+1] + filename
+	filepath = os.path.abspath(os.path.dirname(__file__)) + "/" + filename
+	if sys.platform == "win32":
+		return PureWindowsPath(filepath)
+	else:
+		return PurePosixPath(filepath)
 
 def readfile(filename, removeWS=False):
 	""" private helper function for file-loading """
@@ -256,7 +262,7 @@ class Profile:
 		# TODO: use copy constructor instead
 		result.__config = config
 
-		kit.setNumberOfThreads(result.__parallel)
+		nk.setNumberOfThreads(result.__parallel)
 
 		def funcScores(instance):
 			""" returns node scores """
@@ -264,7 +270,7 @@ class Profile:
 
 		def funcSizes(instance):
 			""" returns partition subset sizes """
-			return sorted(instance.getPartition().subsetSizes())
+			return helpers.sorted(instance.getPartition().subsetSizes())
 
 		if G.isDirected():
 			classConnectedComponents = components.StronglyConnectedComponents
@@ -741,7 +747,7 @@ class Profile:
 		""" calculate the network properties """
 		self.__properties["Nodes"] = self.__G.numberOfNodes()
 		self.__properties["Edges"] = self.__G.numberOfEdges()
-		self.__properties["Density"] = kit.graphtools.density(self.__G)
+		self.__properties["Density"] = nk.graphtools.density(self.__G)
 		self.__properties["Directed"] = self.__G.isDirected()
 		self.__properties["Weighted"] = self.__G.isWeighted()
 		self.__properties["Self Loops"] = self.__G.numberOfSelfLoops()
@@ -822,20 +828,20 @@ class Profile:
 
 			self.verbosePrint("    Sort: ", end="")
 			timerPostSort = stopwatch.Timer()
-			measure["data"]["sorted"] = stat.sorted(measure["data"]["sample"])
+			measure["data"]["sorted"] = helpers.sorted(measure["data"]["sample"])
 			elapsedPostSort = timerPostSort.elapsed
 			self.verbosePrint("{:.2F} s".format(elapsedPostSort))
 
 			self.verbosePrint("    Rank: ", end="")
 			timerPostRank = stopwatch.Timer()
-			measure["data"]["ranked"] = stat.ranked(measure["data"]["sample"])
+			measure["data"]["ranked"] = helpers.ranked(measure["data"]["sample"])
 			elapsedPostRank = timerPostRank.elapsed
 			self.verbosePrint("{:.2F} s".format(elapsedPostRank))
 
 			if self.__measures[name]["category"] == "Node Centrality":
 				self.verbosePrint("    Assortativity: ", end="")
 				timerPostAssortativity = stopwatch.Timer()
-				assortativity = kit.correlation.Assortativity(self.__G, measure["data"]["sample"])
+				assortativity = nk.correlation.Assortativity(self.__G, measure["data"]["sample"])
 				assortativity.run()
 				measure["assortativity"] = assortativity.getCoefficient()
 				elapsedPostAssortativity = timerPostAssortativity.elapsed
@@ -978,7 +984,7 @@ def walk(inputDir, outputDir, graphFormat, filePattern="*",  preset="default", c
 			if fnmatch.fnmatch(filename, filePattern):
 				Profile.verbosePrint("\n[ " + file + " ]")
 				try:
-					G = kit.readGraph(file, graphFormat)
+					G = nk.readGraph(file, graphFormat)
 					try:
 						pf = Profile.create(
 							G,
