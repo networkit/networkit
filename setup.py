@@ -34,6 +34,10 @@ except ImportError:
 	print("ERROR: Setuptools is required to install networkit python module.\nInstall via pip3 install setuptools.")
 	sys.exit(1)
 
+os_soabi = sysconfig.get_config_var('SOABI')
+if os_soabi is None:
+	os_soabi =  sysconfig.get_config_var('EXT_SUFFIX').split(".")[1] # get_config_var('SOABI') is None on win32-systems
+
 import os
 import subprocess #calling cmake, make and cython
 
@@ -134,9 +138,6 @@ def buildNetworKit(install_prefix, externalCore=False, externalTlx=None, withTes
 	comp_cmd.append("-DNETWORKIT_FLATINSTALL=ON")
 	from sysconfig import get_paths, get_config_var
 	comp_cmd.append("-DNETWORKIT_PYTHON="+get_paths()['include']) #provide python.h files
-	os_soabi = get_config_var('SOABI')
-	if os_soabi is None:
-		os_soabi =  get_config_var('EXT_SUFFIX').split(".")[1] # get_config_var('SOABI') is None on win32-systems
 	comp_cmd.append("-DNETWORKIT_PYTHON_SOABI="+os_soabi) #provide lib env specification
 	if externalCore:
 		if sys.platform == "win32":
@@ -241,7 +242,7 @@ class build_ext(Command):
 
 	# Returns the file name of the DSO implementing a module (see distutils).
 	def get_ext_filename(self, fullname):
-		return fullname + '.' + sysconfig.get_config_var('SOABI') + '.so'
+		return fullname + '.' + os_soabi + '.so'
 
 	def run(self):
 		# A generic build_ext command for cmake would iterate over all self.extensions.
