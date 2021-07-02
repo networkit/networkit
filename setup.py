@@ -88,7 +88,7 @@ def determineCompiler(candidates, std, flags):
 	sample.close()
 	print(candidates)
 	for compiler in candidates:
-		cmd = [compiler,"-o","test_build","-std{}".format(std)]
+		cmd = [compiler,"-o","test_build","-std={}".format(std)]
 		cmd.extend(flags)
 		cmd.append("sample.cpp")
 		try:

@@ -18,8 +18,8 @@
 
 namespace NetworKit {
 
-PLM::PLM(const Graph &G, Partition zeta, bool refine, double gamma, std::string par, count maxIter, bool turbo,
-         bool recurse)
+PLM::PLM(const Graph &G, bool refine, double gamma, std::string par, count maxIter, bool turbo,
+         bool recurse, Partition zeta)
     : CommunityDetectionAlgorithm(G), zeta(zeta), parallelism(std::move(par)), refine(refine), gamma(gamma),
       maxIter(maxIter), turbo(turbo), recurse(recurse) {}
 
@@ -32,8 +32,7 @@ void PLM::run() {
 
     // init communities to singletons if none given as input
     if (zeta.numberOfSubsets() == 0) {
-        Partition zeta(z);
-        zeta = Partition(z)
+        zeta = Partition(z);
         zeta.allToSingletons();
     }
     
