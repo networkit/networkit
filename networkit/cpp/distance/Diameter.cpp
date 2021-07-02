@@ -112,24 +112,30 @@ std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, double error) 
         maxDegree = d;
       }
     });
+    if (maxDegree == 0) {
+      return {0,0};
+    }
 
     handler.assureRunning();
-    count i = std::max(Eccentricity::getValue(scc, u).second, Eccentricity::getValue(scc, u, true).second);
-    std::vector<std::vector<count>> distancesF(i+1);
-    std::vector<std::vector<count>> distancesB(i+1);
     count lb = i, ub = 2 * i;
+    std::vector<std::vector<count>> distancesF(1);
+    std::vector<std::vector<count>> distancesB(1);
 
     handler.assureRunning();
     Traversal::BFSfrom(scc, u, [&](node v, count dist) {
-      assert(dist <= i + 1);
+      if (distancesF.size() <= dist) {
+        distancesF.emplace_back();
+      }
       distancesF[dist].push_back(v);
     });
     Traversal::BFSfrom(scc, u, [&](node v, count dist) {
-      assert(dist <= i + 1);
+      if (distancesB.size() <= dist) {
+        distancesB.emplace_back();
+      }
       distancesB[dist].push_back(v);
     }, true);
 
-    numBFS = 4;
+    numBFS = 2;
 
     for (; ub > lb + error && i > 0; --i) {
       handler.assureRunning();
