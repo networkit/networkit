@@ -8,6 +8,7 @@
 #ifndef NETWORKIT_DISTANCE_DIAMETER_HPP_
 #define NETWORKIT_DISTANCE_DIAMETER_HPP_
 
+#include <atomic>
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -38,7 +39,7 @@ private:
     double error;
     count nSamples;
     std::pair<count, count> diameterBounds;
-    count numBFS = 0;
+    std::atomic<count> numBFS{0};
 
     std::pair<edgeweight, edgeweight> difub(const Graph &G, double error);
 

@@ -6,6 +6,7 @@
  */
 
 #include <numeric>
+#include <atomic>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
@@ -17,6 +18,7 @@
 #include <networkit/graph/BFS.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/structures/Partition.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 
 namespace NetworKit {
 
@@ -100,13 +102,10 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, double error) {
     Aux::SignalHandler handler;
 
-    StronglyConnectedComponents comp(G);
-    comp.run();
-    Graph scc = comp.extractLargestStronglyConnectedComponent(G, true);
     node u;
     count maxDegree = 0;
-    scc.forNodes([&](node v){
-      count d = scc.degree(v);
+    G.forNodes([&](node v){
+      count d = G.degree(v);
       if (d > maxDegree) {
         u = v;
         maxDegree = d;
@@ -117,47 +116,58 @@ std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, double error) 
     }
 
     handler.assureRunning();
-    count lb = i, ub = 2 * i;
     std::vector<std::vector<count>> distancesF(1);
     std::vector<std::vector<count>> distancesB(1);
 
     handler.assureRunning();
-    Traversal::BFSfrom(scc, u, [&](node v, count dist) {
+    Traversal::BFSfrom(G, u, [&](node v, count dist) {
       if (distancesF.size() <= dist) {
         distancesF.emplace_back();
       }
       distancesF[dist].push_back(v);
     });
-    Traversal::BFSfrom(scc, u, [&](node v, count dist) {
+    Traversal::BFSfrom(G, u, [&](node v, count dist) {
       if (distancesB.size() <= dist) {
         distancesB.emplace_back();
       }
       distancesB[dist].push_back(v);
     }, true);
 
+    count i = std::max(distancesF.size(), distancesB.size());
+    std::atomic<count> lb(i);
+    count ub = 2 * i;
+
     numBFS = 2;
 
     for (; ub > lb + error && i > 0; --i) {
-      handler.assureRunning();
-      std::ignore = std::find_if(distancesF[i].begin(), distancesF[i].end(), [&](node v) {
-        lb = std::max(lb, Eccentricity::getValue(scc, v, true).second);
-        numBFS++;
-        return lb == ub;
-      });
-      handler.assureRunning();
-      std::ignore = std::find_if(distancesB[i].begin(), distancesB[i].end(), [&](node v) {
-        lb = std::max(lb, Eccentricity::getValue(scc, v).second);
-        numBFS++;
-        return lb == ub;
-      });
+      if (i < distancesF.size()) {
+        handler.assureRunning();
+#pragma omp parallel for
+        for (node v : distancesF[i]) {
+          if (lb.load(std::memory_order_relaxed) + error < ub) {
+            Aux::Parallel::atomic_max(lb, Eccentricity::getValue(G, v, true).second);
+            numBFS++;
+          }
+        }
+      }
+      if (i < distancesB.size() && lb + error < ub) {
+        handler.assureRunning();
+#pragma omp parallel for
+        for (node v : distancesB[i]) {
+          if (lb.load(std::memory_order_relaxed) + error < ub) {
+            Aux::Parallel::atomic_max(lb, Eccentricity::getValue(G, v).second);
+            numBFS++;
+          }
+        }
+      }
 
-      if (lb > 2 * (i - 1)) {
-        return std::make_pair(lb, ub);
+      if (lb + error >= 2 * (i - 1)) {
+        return std::make_pair(lb.load(std::memory_order_relaxed), ub);
       } else {
         ub = 2 * (i - 1);
       }
     }
-    return std::make_pair(lb, ub);
+    return std::make_pair(lb.load(std::memory_order_relaxed), ub);
 }
 
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &G, double error) {
