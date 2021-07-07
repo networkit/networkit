@@ -28,6 +28,8 @@
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/SNAPGraphReader.hpp>
+#include <networkit/io/KONECTGraphReader.hpp>
+#include <networkit/components/StronglyConnectedComponents.hpp>
 
 namespace NetworKit {
 class DistanceGTest: public testing::Test {};
@@ -265,20 +267,28 @@ TEST_F(DistanceGTest, testEstimatedDiameterRangeDirected) {
     using namespace std;
 
    vector<pair<string, count>> testInstances= {
-                                               pair<string, count>("wiki-Vote", 9),
-                                               pair<string, count>("p2p-Gnutella05", 22),
-                                               pair<string, count>("p2p-Gnutella06", 19),
+                                               pair<string, count>("wiki-Vote.txt", 9),
+                                               pair<string, count>("foodweb-baydry.konect", 5),
                                               };
 
-    for (auto testInstance : testInstances) {
-        SNAPGraphReader reader(true, true, 0);
-        Graph G = reader.read("input/" + testInstance.first + ".txt");
-        Diameter diam(G, DiameterAlgo::estimatedRange, 0.0);
-        diam.run();
-        std::pair<count, count> range = diam.getDiameter();
-        EXPECT_GE(testInstance.second, range.first);
-        EXPECT_LE(testInstance.second, range.second);
-    }
+   for (auto testInstance : testInstances) {
+     Graph G;
+     if (testInstance.first.find("txt") != string::npos) {
+      SNAPGraphReader reader(true, true, 0);
+      G = reader.read("input/wiki-Vote.txt");
+     } else {
+      KONECTGraphReader reader;
+      G = reader.read("input/foodweb-baydry.konect");
+
+     }
+     StronglyConnectedComponents scc = StronglyConnectedComponents(G);
+     G = scc.extractLargestStronglyConnectedComponent(G, true);
+     Diameter diam(G, DiameterAlgo::estimatedRange, 0.0);
+     diam.run();
+     std::pair<count, count> range = diam.getDiameter();
+     EXPECT_EQ(testInstance.second, range.first);
+   }
+
 }
 TEST_F(DistanceGTest, testPedanticDiameterErdos) {
     count n = 5000;

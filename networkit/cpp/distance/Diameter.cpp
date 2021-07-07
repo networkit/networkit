@@ -139,29 +139,32 @@ std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, double error) 
 
     numBFS = 2;
 
-    for (; ub > lb + error && i > 0; --i) {
+    for (; ub > lb + error * lb && i > 0; --i) {
       if (i < distancesF.size()) {
         handler.assureRunning();
 #pragma omp parallel for
         for (node v : distancesF[i]) {
-          if (lb.load(std::memory_order_relaxed) + error < ub) {
+          count lb_ = lb.load(std::memory_order_relaxed);
+          if (lb_ + error * lb_ < ub) {
             Aux::Parallel::atomic_max(lb, Eccentricity::getValue(G, v, true).second);
             numBFS++;
           }
         }
       }
-      if (i < distancesB.size() && lb + error < ub) {
+      if (i < distancesB.size() && lb + error * lb < ub) {
         handler.assureRunning();
 #pragma omp parallel for
         for (node v : distancesB[i]) {
-          if (lb.load(std::memory_order_relaxed) + error < ub) {
+          count lb_ = lb.load(std::memory_order_relaxed);
+          if (lb_ + error * lb_ < ub) {
             Aux::Parallel::atomic_max(lb, Eccentricity::getValue(G, v).second);
             numBFS++;
           }
         }
       }
 
-      if (lb + error >= 2 * (i - 1)) {
+      if (lb + error * lb >= 2 * (i - 1)) {
+        ub = lb;
         return std::make_pair(lb.load(std::memory_order_relaxed), ub);
       } else {
         ub = 2 * (i - 1);
@@ -172,12 +175,7 @@ std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, double error) 
 
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &G, double error) {
     if (G.isDirected()) {
-      count lb, ub;
-      std::tie(lb, ub) = difub(G, error);
-      if (error == 0.0f) {
-        ub = lb;
-      }
-      return std::make_pair(lb, ub);
+      return difub(G, error);
     }
     if (G.isWeighted()) {
         WARN("The input graph is weighted, but this algorithm ignores weights.");
