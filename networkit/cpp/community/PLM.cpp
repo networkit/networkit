@@ -55,6 +55,7 @@ void PLM::run() {
     std::vector<double> volCommunity(o, 0.0);
     zeta.parallelForEntries([&](node u, index C) { // set volume for all communities
         if (C != none)
+            #pragma omp atomic
             volCommunity[C] += volNode[u];
     });
 
