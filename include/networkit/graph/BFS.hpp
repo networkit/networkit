@@ -59,9 +59,9 @@ void BFSfrom(const Graph &G, InputIt first, InputIt last, L handle, bool reverse
             }
         };
         if (reverse) {
-          G.forInNeighborsOf(u, bfs_routine);
+            G.forInNeighborsOf(u, bfs_routine);
         } else {
-          G.forNeighborsOf(u, bfs_routine);
+            G.forNeighborsOf(u, bfs_routine);
         }
         if (q.empty() && !qNext.empty()) {
             q.swap(qNext);

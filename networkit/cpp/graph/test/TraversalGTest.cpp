@@ -142,23 +142,26 @@ TEST_P(TraversalGTest, testDFSfrom) {
 
 TEST_P(TraversalGTest, testBFSfromReverse) {
     for (int seed : {1, 2, 3}) {
-      Aux::Random::setSeed(seed, false);
-      Graph G = ErdosRenyiGenerator(500, 0.15, directed()).generate();
-      node source = GraphTools::randomNode(G);
-      node target = GraphTools::randomNode(G);
-      count d = std::numeric_limits<count>::max();
-      while (source == target)
-        target = GraphTools::randomNode(G);
-      Traversal::BFSfrom(G, source, [&](node v, count dist) {
-        if (v == target) {
-          d = dist;
-        }
-      });
-      Traversal::BFSfrom(G, target, [&](node v, count dist) {
-        if (v == source) {
-          EXPECT_EQ(d, dist);
-        }
-      }, true);
+        Aux::Random::setSeed(seed, false);
+        Graph G = ErdosRenyiGenerator(500, 0.15, directed()).generate();
+        node source = GraphTools::randomNode(G);
+        node target = GraphTools::randomNode(G);
+        count d = std::numeric_limits<count>::max();
+        while (source == target)
+            target = GraphTools::randomNode(G);
+        Traversal::BFSfrom(G, source, [&](node v, count dist) {
+            if (v == target) {
+                d = dist;
+            }
+        });
+        Traversal::BFSfrom(
+            G, target,
+            [&](node v, count dist) {
+                if (v == source) {
+                    EXPECT_EQ(d, dist);
+                }
+            },
+            true);
     }
 }
 

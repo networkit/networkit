@@ -39,16 +39,16 @@ void Diameter::run() {
     diameterBounds = {0, 0};
     bool use_fast_exact_algo = !G->isDirected();
     if (G->isDirected()) {
-      StronglyConnectedComponents comp(*G);
-      comp.run();
-      use_fast_exact_algo |= comp.numberOfComponents() == 1;
+        StronglyConnectedComponents comp(*G);
+        comp.run();
+        use_fast_exact_algo |= comp.numberOfComponents() == 1;
     }
     if (algo == DiameterAlgo::exact) {
-      if (!G->isWeighted() && use_fast_exact_algo) {
-        diameterBounds = this->estimatedDiameterRange(*G, 0);
-      } else {
-        std::get<0>(diameterBounds) = this->exactDiameter(*G);
-      }
+        if (!G->isWeighted() && use_fast_exact_algo) {
+            diameterBounds = this->estimatedDiameterRange(*G, 0);
+        } else {
+            std::get<0>(diameterBounds) = this->exactDiameter(*G);
+        }
     } else if (algo == DiameterAlgo::estimatedRange) {
         diameterBounds = this->estimatedDiameterRange(*G, error);
     } else if (algo == DiameterAlgo::estimatedSamples) {
@@ -77,20 +77,20 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
     edgeweight diameter = 0.0;
 
     G.forNodes([&](node v) {
-      handler.assureRunning();
-      std::unique_ptr<SSSP> sssp;
-      if (G.isWeighted()) {
-        sssp = std::make_unique<Dijkstra>(G, v);
-      } else {
-        sssp = std::make_unique<BFS>(G, v);
-      }
-      sssp->run();
-      const auto &distances = sssp->getDistances();
-      G.forNodes([&](node u) {
-        if (diameter < distances[u]) {
-          diameter = distances[u];
+        handler.assureRunning();
+        std::unique_ptr<SSSP> sssp;
+        if (G.isWeighted()) {
+            sssp = std::make_unique<Dijkstra>(G, v);
+        } else {
+            sssp = std::make_unique<BFS>(G, v);
         }
-      });
+        sssp->run();
+        const auto &distances = sssp->getDistances();
+        G.forNodes([&](node u) {
+            if (diameter < distances[u]) {
+                diameter = distances[u];
+            }
+        });
     });
 
     if (diameter == std::numeric_limits<edgeweight>::max()) {
@@ -102,35 +102,37 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, double error) {
     Aux::SignalHandler handler;
 
+    // use max-degree node as starting node
     node u;
     count maxDegree = 0;
     G.forNodes([&](node v){
-      count d = G.degree(v);
-      if (d > maxDegree) {
-        u = v;
-        maxDegree = d;
-      }
+        count d = G.degree(v);
+        if (d > maxDegree) {
+            u = v;
+            maxDegree = d;
+        }
     });
     if (maxDegree == 0) {
-      return {0,0};
+        return {0,0};
     }
 
     handler.assureRunning();
     std::vector<std::vector<count>> distancesF(1);
     std::vector<std::vector<count>> distancesB(1);
 
+    // calculate all forward and backward distances
     handler.assureRunning();
     Traversal::BFSfrom(G, u, [&](node v, count dist) {
-      if (distancesF.size() <= dist) {
-        distancesF.emplace_back();
-      }
-      distancesF[dist].push_back(v);
+        if (distancesF.size() <= dist) {
+            distancesF.emplace_back();
+        }
+        distancesF[dist].push_back(v);
     });
     Traversal::BFSfrom(G, u, [&](node v, count dist) {
-      if (distancesB.size() <= dist) {
-        distancesB.emplace_back();
-      }
-      distancesB[dist].push_back(v);
+        if (distancesB.size() <= dist) {
+            distancesB.emplace_back();
+        }
+        distancesB[dist].push_back(v);
     }, true);
 
     count i = std::max(distancesF.size(), distancesB.size());
@@ -139,43 +141,44 @@ std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, double error) 
 
     numBFS = 2;
 
+    // difub
     for (; ub > lb + error * lb && i > 0; --i) {
-      if (i < distancesF.size()) {
-        handler.assureRunning();
+        if (i < distancesF.size()) {
+            handler.assureRunning();
 #pragma omp parallel for
-        for (node v : distancesF[i]) {
-          count lb_ = lb.load(std::memory_order_relaxed);
-          if (lb_ + error * lb_ < ub) {
-            Aux::Parallel::atomic_max(lb, Eccentricity::getValue(G, v, true).second);
-            numBFS++;
-          }
+            for (node v : distancesF[i]) {
+                count lb_ = lb.load(std::memory_order_relaxed);
+                if (lb_ + error * lb_ < ub) {
+                    Aux::Parallel::atomic_max(lb, Eccentricity::getValue(G, v, true).second);
+                    numBFS++;
+                }
+            }
         }
-      }
-      if (i < distancesB.size() && lb + error * lb < ub) {
-        handler.assureRunning();
+        if (i < distancesB.size() && lb + error * lb < ub) {
+            handler.assureRunning();
 #pragma omp parallel for
-        for (node v : distancesB[i]) {
-          count lb_ = lb.load(std::memory_order_relaxed);
-          if (lb_ + error * lb_ < ub) {
-            Aux::Parallel::atomic_max(lb, Eccentricity::getValue(G, v).second);
-            numBFS++;
-          }
+            for (node v : distancesB[i]) {
+                count lb_ = lb.load(std::memory_order_relaxed);
+                if (lb_ + error * lb_ < ub) {
+                    Aux::Parallel::atomic_max(lb, Eccentricity::getValue(G, v).second);
+                    numBFS++;
+                }
+            }
         }
-      }
 
-      if (lb + error * lb >= 2 * (i - 1)) {
-        ub = lb;
-        return std::make_pair(lb.load(std::memory_order_relaxed), ub);
-      } else {
-        ub = 2 * (i - 1);
-      }
+        if (lb + error * lb >= 2 * (i - 1)) {
+            ub = lb;
+            return std::make_pair(lb.load(std::memory_order_relaxed), ub);
+        } else {
+            ub = 2 * (i - 1);
+        }
     }
     return std::make_pair(lb.load(std::memory_order_relaxed), ub);
 }
 
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &G, double error) {
     if (G.isDirected()) {
-      return difub(G, error);
+        return difub(G, error);
     }
     if (G.isWeighted()) {
         WARN("The input graph is weighted, but this algorithm ignores weights.");
