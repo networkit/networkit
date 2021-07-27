@@ -298,9 +298,8 @@ jobs:
     steps:
       - name: Install prerequisites
         run:  |
-          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
-          sudo apt-get install ninja-build gcc-10 g++-10
+          sudo apt-get install ninja-build
       - name: Setup Python 3.9
         uses: actions/setup-python@v2
         with:
@@ -400,7 +399,6 @@ jobs:
     steps:
       - name: Install prerequisites
         run:  |
-          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
           sudo apt-get install doxygen pandoc
       - name: Checkout networkit
