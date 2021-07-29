@@ -103,22 +103,8 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
     return diameter;
 }
 
-std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, double error) {
+std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, node u, double error) {
     Aux::SignalHandler handler;
-
-    // use max-degree node as starting node
-    node u;
-    count maxDegree = 0;
-    G.forNodes([&](node v){
-        count d = G.degree(v);
-        if (d > maxDegree) {
-            u = v;
-            maxDegree = d;
-        }
-    });
-    if (maxDegree == 0) {
-        return {0,0};
-    }
 
     handler.assureRunning();
     std::vector<std::vector<count>> distancesF(1);
@@ -177,7 +163,20 @@ std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, double error) 
 
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &G, double error) {
     if (G.isDirected()) {
-        return difub(G, error);
+        // use max-degree node as starting node
+        node u;
+        count maxDegree = 0;
+        G.forNodes([&](node v){
+            count d = G.degree(v);
+            if (d > maxDegree) {
+                u = v;
+                maxDegree = d;
+            }
+        });
+        if (maxDegree == 0) {
+            return {0,0};
+        }
+        return difub(G, u, error);
     }
     if (G.isWeighted()) {
         WARN("The input graph is weighted, but this algorithm ignores weights.");

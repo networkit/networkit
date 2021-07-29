@@ -280,7 +280,7 @@ cdef class StronglyConnectedComponents:
 	def extractLargestStronglyConnectedComponent(self, Graph graph, bool_t compactGraph = False):
 		"""
 			Constructs a new graph that contains only the nodes inside the
-			largest connected component.
+			largest strongly connected component.
 
 			Parameters:
 			-----------
@@ -295,7 +295,7 @@ cdef class StronglyConnectedComponents:
 			--------
 			networkit.Graph
 				A graph that contains only the nodes inside the largest
-				connected component.
+				strongly connected component.
 		"""
 		return Graph().setThis(self._this.extractLargestStronglyConnectedComponent(graph._this, compactGraph))
 

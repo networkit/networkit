@@ -26,7 +26,6 @@ set(NETWORKIT_PYTHON_RPATH "" CACHE STRING "Build specific rpath references.")
 set(NETWORKIT_EXT_TLX "" CACHE STRING "Absolute path for external tlx-library. If not set, extlibs/tlx is used")
 
 set (NETWORKIT_CXX_STANDARD "14" CACHE STRING "CXX Version to compile with. Currently fixed to 14")
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Allow user to set installation paths relative to CMAKE_INSTALL_PREFIX
 
@@ -270,7 +269,7 @@ if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
-	
+
 	install(TARGETS networkit
 			LIBRARY DESTINATION ${NETWORKIT_LIB_DEST}
 			ARCHIVE DESTINATION ${NETWORKIT_LIB_DEST}
@@ -293,7 +292,7 @@ endif()
 
 if(NETWORKIT_PYTHON)
 
-	if(${CMAKE_VERSION} VERSION_LESS "3.12.0") 
+	if(${CMAKE_VERSION} VERSION_LESS "3.12.0")
 		FIND_PACKAGE(FindPythonInterp REQUIRED)
 		FIND_PACKAGE(FindPythonLibs REQUIRED)
 	else()
@@ -472,7 +471,7 @@ if (NETWORKIT_BUILD_TESTS)
 				tlx
 				OpenMP::OpenMP_CXX
 		)
-		
+
 		if(WIN32)
 			target_link_libraries(networkit_tests
 				PRIVATE

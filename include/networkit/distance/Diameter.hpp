@@ -44,7 +44,7 @@ private:
     std::atomic<count> numBFS{0};
     count initialLB = 0;
 
-    std::pair<edgeweight, edgeweight> difub(const Graph &G, double error);
+    std::pair<edgeweight, edgeweight> difub(const Graph &G, node u, double error);
 
     /**
      * Get the estimation of the diameter of the graph @a G. The algorithm is based on the ExactSumSweep algorithm presented in
