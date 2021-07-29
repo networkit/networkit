@@ -311,6 +311,7 @@ jobs:
       - name: Prepare environment and run checks
         run:  ${{ github.workspace }}/.github/workflows/scripts/core_sanitizers_coverage.sh
         shell: bash
+        timeout-minutes: 60
       - name: Update Coveralls
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
