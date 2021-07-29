@@ -5,6 +5,8 @@
  *      Author: cls
  */
 
+// networkit-format
+
 #ifndef NETWORKIT_COARSENING_PARALLEL_PARTITION_COARSENING_HPP_
 #define NETWORKIT_COARSENING_PARALLEL_PARTITION_COARSENING_HPP_
 
@@ -19,13 +21,13 @@ namespace NetworKit {
  */
 class ParallelPartitionCoarsening final : public GraphCoarsening {
 public:
-    ParallelPartitionCoarsening(const Graph& G, const Partition& zeta, bool useGraphBuilder = true);
+    ParallelPartitionCoarsening(const Graph &G, const Partition &zeta, bool parallel = true);
 
     void run() override;
 
 private:
-    const Partition& zeta;
-    bool useGraphBuilder;
+    const Partition &zeta;
+    bool parallel;
 };
 
 } /* namespace NetworKit */

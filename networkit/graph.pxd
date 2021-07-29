@@ -93,10 +93,12 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		_EdgeWeightRange edgeWeightRange() except +
 		_OutNeighborRange neighborRange(node u) except +
 		_InNeighborRange inNeighborRange(node u) except +
+		_OutNeighborWeightRange weightNeighborRange(node u) except +
+		_InNeighborWeightRange weightInNeighborRange(node u) except +
 
 cdef extern from "<networkit/graph/Graph.hpp>":
 	cdef cppclass _NodeIterator "NetworKit::Graph::NodeIterator":
-		_NodeIterator operator++() except +
+		_NodeIterator& operator++() except +
 		_NodeIterator operator++(int) except +
 		bool_t operator!=(const _NodeIterator) except +
 		node operator*() except +
@@ -108,7 +110,7 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 
 cdef extern from "<networkit/graph/Graph.hpp>":
 	cdef cppclass _EdgeWeightIterator "NetworKit::Graph::EdgeWeightIterator":
-		_EdgeWeightIterator operator++() except +
+		_EdgeWeightIterator& operator++() except +
 		_EdgeWeightIterator operator++(int) except +
 		bool_t operator!=(const _EdgeWeightIterator) except +
 		WeightedEdge operator*() except +
@@ -120,7 +122,7 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 
 cdef extern from "<networkit/graph/Graph.hpp>":
 	cdef cppclass _EdgeIterator "NetworKit::Graph::EdgeIterator":
-		_EdgeIterator operator++() except +
+		_EdgeIterator& operator++() except +
 		_EdgeIterator operator++(int) except +
 		bool_t operator!=(const _EdgeIterator) except +
 		Edge operator*() except +
@@ -132,7 +134,7 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 
 cdef extern from "<networkit/graph/Graph.hpp>":
 	cdef cppclass _NeighborIterator "NetworKit::Graph::NeighborIterator":
-		_NeighborIterator operator++() except +
+		_NeighborIterator& operator++() except +
 		_NeighborIterator operator++(int) except +
 		bool_t operator!=(const _NeighborIterator) except +
 		node operator*() except +
@@ -146,6 +148,23 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 	cdef cppclass _InNeighborRange "NetworKit::Graph::InNeighborRange":
 		_NeighborIterator begin() except +
 		_NeighborIterator end() except +
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+	cdef cppclass _NeighborWeightIterator "NetworKit::Graph::NeighborWeightIterator":
+		_NeighborWeightIterator& operator++() except +
+		_NeighborWeightIterator operator++(int) except +
+		bool_t operator!=(const _NeighborWeightIterator) except +
+		pair[node, edgeweight] operator*() except +
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+	cdef cppclass _OutNeighborWeightRange "NetworKit::Graph::OutNeighborWeightRange":
+		_NeighborWeightIterator begin() except +
+		_NeighborWeightIterator end() except +
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+	cdef cppclass _InNeighborWeightRange "NetworKit::Graph::InNeighborWeightRange":
+		_NeighborWeightIterator begin() except +
+		_NeighborWeightIterator end() except +
 
 cdef class Graph:
 	cdef _Graph _this

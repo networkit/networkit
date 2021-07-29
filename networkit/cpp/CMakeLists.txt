@@ -1,3 +1,9 @@
+if(NOT WIN32)
+    networkit_add_module(globalstate
+        GlobalState.cpp
+        )
+endif()
+
 add_subdirectory("algebraic")
 add_subdirectory("auxiliary")
 add_subdirectory("base")

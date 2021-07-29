@@ -29,7 +29,10 @@
 #include <networkit/centrality/GedWalk.hpp>
 #include <networkit/centrality/GroupCloseness.hpp>
 #include <networkit/centrality/GroupClosenessGrowShrink.hpp>
+#include <networkit/centrality/GroupClosenessLocalSwaps.hpp>
+#include <networkit/centrality/GroupClosenessLocalSearch.hpp>
 #include <networkit/centrality/GroupDegree.hpp>
+#include <networkit/centrality/GroupHarmonicCloseness.hpp>
 #include <networkit/centrality/HarmonicCloseness.hpp>
 #include <networkit/centrality/KPathCentrality.hpp>
 #include <networkit/centrality/KadabraBetweenness.hpp>
@@ -1894,12 +1897,22 @@ TEST_F(CentralityGTest, testApproxElectricalCloseness) {
 }
 
 TEST_P(CentralityGTest, testGroupClosenessGrowShrink) {
-    if (isDirected()) // directed graphs are not supported
+    if (isDirected()) { // directed graphs are not supported
+        Graph G(10, isWeighted(), true);
+        std::array<node, 1> group;
+        EXPECT_THROW(GroupClosenessGrowShrink(G, group.begin(), group.end()), std::runtime_error);
         return;
+    }
+
+    { // Empty input groups are not supported
+        Graph G(10, isWeighted(), false);
+        std::vector<node> emptyGroup;
+        EXPECT_THROW(GroupClosenessGrowShrink(G, emptyGroup.begin(), emptyGroup.end()),
+                     std::runtime_error);
+    }
 
     const count k = 5;
-    EdgeListReader reader('\t', 0, "#", false, false);
-    auto G = reader.read("input/MIT8.edgelist");
+    auto G = EdgeListReader{'\t', 0, "#", false, false}.read("input/MIT8.edgelist");
     G = ConnectedComponents::extractLargestConnectedComponent(G);
 
     if (isWeighted()) {
@@ -2037,6 +2050,179 @@ TEST_P(CentralityGTest, testDegreeCentralityIgnoreSelfLoops) {
         std::array<int ,8> expectedResults{{2, 1, 4, 2, 2, 5, 1, 1}};
         for(long unsigned int i = 0; i < expectedResults.size(); i++) EXPECT_EQ(expectedResults[i], dc.score(i));
     }
+}
+
+TEST_P(CentralityGTest, testGroupClosenessLocalSwaps) {
+    if (isDirected()) { // directed graphs are not supported
+        Graph G(10, isWeighted(), true);
+        std::array<node, 1> group;
+        EXPECT_THROW(GroupClosenessLocalSwaps(G, group.begin(), group.end()), std::runtime_error);
+        return;
+    }
+
+    { // Empty input groups are not supported
+        Graph G(10, isWeighted(), false);
+        std::vector<node> emptyGroup;
+        EXPECT_THROW(GroupClosenessLocalSwaps(G, emptyGroup.begin(), emptyGroup.end()), std::runtime_error);
+    }
+
+    const count k = 5;
+    auto G = EdgeListReader{'\t', 0, "#", false, false}.read("input/MIT8.edgelist");
+    G = ConnectedComponents::extractLargestConnectedComponent(G);
+
+    if (isWeighted()) {
+        G = GraphTools::toWeighted(G);
+        G.forEdges([&G](const node u, const node v) {
+            G.setWeight(u, v, Aux::Random::probability());
+        });
+    }
+
+    auto farnessOfGroup = [&](const Graph &G, const std::unordered_set<node> &group) -> count {
+        count farness = 0;
+        Traversal::BFSfrom(G, group.begin(), group.end(),
+                           [&farness](node, count distance) { farness += distance; });
+
+        return farness;
+    };
+
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, true);
+
+        std::unordered_set<node> group;
+
+        do {
+            group.insert(GraphTools::randomNode(G));
+        } while (group.size() < k);
+
+        const count maxSwaps = 100;
+        const count sumDist = farnessOfGroup(G, group);
+        GroupClosenessLocalSwaps gc(G, group.begin(), group.end(), maxSwaps);
+        gc.run();
+        auto groupMaxCC = gc.groupMaxCloseness();
+        const count nSwaps = gc.numberOfSwaps();
+
+        EXPECT_LE(nSwaps, maxSwaps);
+        EXPECT_EQ(groupMaxCC.size(), k);
+
+        count sumDistGroupMaxCC =
+            farnessOfGroup(G, std::unordered_set<node>(groupMaxCC.begin(), groupMaxCC.end()));
+
+        if (nSwaps > 0) {
+            EXPECT_GE(sumDist, sumDistGroupMaxCC);
+        } else {
+            EXPECT_EQ(sumDist, sumDistGroupMaxCC);
+            std::for_each(groupMaxCC.begin(), groupMaxCC.end(), [&group](const node u) {
+                EXPECT_NE(group.find(u), group.end());
+            });
+
+        }
+    }
+}
+
+TEST_P(CentralityGTest, testGroupHarmonicCloseness) {
+
+    const auto computeOpt = [&](const Graph &G, count k) -> double {
+        std::vector<bool> inGroup(G.upperNodeIdBound());
+        std::fill(inGroup.begin(), inGroup.begin() + k, true);
+        double opt = -std::numeric_limits<double>::max();
+        std::vector<node> group;
+        group.reserve(k);
+        do {
+            group.clear();
+            G.forNodes([&](node u) {
+                if (inGroup[u])
+                    group.push_back(u);
+            });
+            opt = std::max(opt, GroupHarmonicCloseness::scoreOfGroup(G, group.begin(), group.end()));
+        } while (std::prev_permutation(inGroup.begin(), inGroup.end()));
+
+        return opt;
+    };
+
+    const double weightUB = 10;
+    for (const int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, true);
+        auto G = ErdosRenyiGenerator(20, 0.1, isDirected()).generate();
+        double lambda = 1;
+
+        if (isWeighted()) {
+            double maxWeight = 0, minWeight = weightUB;
+            G = GraphTools::toWeighted(G);
+            G.forEdges([&](node u, node v) {
+                const double curWeight = Aux::Random::real(0.001, weightUB);
+                maxWeight = std::max(maxWeight, curWeight);
+                minWeight = std::min(minWeight, curWeight);
+                G.setWeight(u, v, curWeight);
+            });
+            lambda = minWeight / maxWeight;
+        }
+
+        // Guaranted approximation ratio
+        double approxRatio;
+        if (isDirected())
+            approxRatio = lambda * (1. - 1. / (2. * std::exp(1.)));
+        else
+            approxRatio = lambda * (1. - 1. / std::exp(1.)) / 2.;
+
+        for (const count k : {3, 4, 5}) {
+            GroupHarmonicCloseness ghc(G, k);
+            ghc.run();
+            const auto group = ghc.groupMaxHarmonicCloseness();
+
+            // Test group
+            EXPECT_EQ(group.size(), k);
+            EXPECT_EQ(std::unordered_set<node>(group.begin(), group.end()).size(), k);
+
+            // Test quality
+            const double score = GroupHarmonicCloseness::scoreOfGroup(G, group.begin(), group.end());
+            const double opt = computeOpt(G, k);
+            EXPECT_GE(opt, score);
+            EXPECT_GE(score / opt, approxRatio);
+        }
+    }
+}
+
+TEST_P(CentralityGTest, testGroupClosenessLocalSearch) {
+    { // Empty groups are not allowed
+        std::vector<node> emptyVector;
+        Graph G(10, isWeighted(), isDirected());
+        EXPECT_THROW(GroupClosenessLocalSearch(G, emptyVector.begin(), emptyVector.end()),
+                     std::runtime_error);
+    }
+
+    const auto groupCloseness = [&](const Graph &G, const std::vector<node> &group) -> edgeweight {
+        edgeweight groupFarness = 0;
+        Traversal::DijkstraFrom(G, group.begin(), group.end(),
+                                [&groupFarness](node, edgeweight dist) { groupFarness += dist; });
+        return groupFarness > 0 ? 1. / groupFarness : 0;
+    };
+
+    Aux::Random::setSeed(1, true);
+    auto G = ErdosRenyiGenerator(100, 0.1, isDirected()).generate();
+    if (isWeighted()) {
+        G = GraphTools::toWeighted(G);
+        G.forEdges([&](node u, node v) { G.setWeight(u, v, Aux::Random::real(10)); });
+    }
+
+    std::unordered_set<node> initGroup;
+    const count k = 5;
+    do {
+        initGroup.insert(GraphTools::randomNode(G));
+    } while (initGroup.size() < k);
+
+    const auto initGC = groupCloseness(G, std::vector<node>{initGroup.begin(), initGroup.end()});
+
+    GroupClosenessLocalSearch gcls(G, initGroup.begin(), initGroup.end(), !G.isDirected());
+    gcls.run();
+
+    const auto group = gcls.groupMaxCloseness();
+    EXPECT_EQ(std::unordered_set<node>(group.begin(), group.end()).size(), k);
+    EXPECT_GE(groupCloseness(G, group), initGC);
+
+    GroupClosenessLocalSearch gcls2(G, group, false);
+    gcls2.run();
+
+    EXPECT_EQ(gcls2.numberOfIterations(), 0);
 }
 
 } /* namespace NetworKit */

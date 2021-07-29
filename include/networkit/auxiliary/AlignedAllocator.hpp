@@ -3,6 +3,8 @@
 #ifndef NETWORKIT_AUXILIARY_ALIGNED_ALLOCATOR_HPP_
 #define NETWORKIT_AUXILIARY_ALIGNED_ALLOCATOR_HPP_
 
+#include <stdexcept>
+
 /**
  * Allocator for aligned data.
  *

@@ -14,6 +14,8 @@
 
 #include <algorithm>
 #include <functional>
+#include <numeric>
+#include <omp.h>
 #include <queue>
 #include <stack>
 #include <stdexcept>
@@ -22,11 +24,10 @@
 #include <vector>
 
 #include <networkit/Globals.hpp>
+#include <networkit/auxiliary/ArrayTools.hpp>
 #include <networkit/auxiliary/FunctionTraits.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
-
-#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 
@@ -52,6 +53,13 @@ struct WeightedEdge : Edge {
     WeightedEdge() : Edge(), weight(std::numeric_limits<edgeweight>::max()) {}
 
     WeightedEdge(node u, node v, edgeweight w) : Edge(u, v), weight(w) {}
+};
+
+struct WeightedEdgeWithId : WeightedEdge {
+    edgeid eid;
+
+    WeightedEdgeWithId(node u, node v, edgeweight w, edgeid eid)
+        : WeightedEdge(u, v, w), eid(eid) {}
 };
 
 inline bool operator==(const Edge &e1, const Edge &e2) {
@@ -454,7 +462,7 @@ public:
 
         ~NodeIterator() = default;
 
-        NodeIterator operator++() {
+        NodeIterator &operator++() {
             assert(u < G->upperNodeIdBound());
             do {
                 ++u;
@@ -625,7 +633,7 @@ public:
             return Edge(*nodeIter, G->outEdges[*nodeIter][i]);
         }
 
-        EdgeIterator operator++() {
+        EdgeIterator &operator++() {
             nextEdge();
             return *this;
         }
@@ -688,7 +696,7 @@ public:
 
         bool operator!=(const EdgeWeightIterator &rhs) const noexcept { return !(*this == rhs); }
 
-        EdgeWeightIterator operator++() {
+        EdgeWeightIterator &operator++() {
             nextEdge();
             return *this;
         }
@@ -803,15 +811,15 @@ public:
          */
         NeighborIterator() {}
 
-        NeighborIterator operator++() {
-            const auto tmp = *this;
+        NeighborIterator &operator++() {
             ++nIter;
-            return tmp;
+            return *this;
         }
 
         NeighborIterator operator++(int) {
+            const auto tmp = *this;
             ++nIter;
-            return *this;
+            return tmp;
         }
 
         NeighborIterator operator--() {
@@ -866,7 +874,13 @@ public:
                                std::vector<edgeweight>::const_iterator weightIter)
             : nIter(nodesIter), wIter(weightIter) {}
 
-        NeighborWeightIterator operator++() {
+        /**
+         * @brief WARNING: This contructor is required for Python and should not be used as the
+         * iterator is not initialized.
+         */
+        NeighborWeightIterator() {}
+
+        NeighborWeightIterator &operator++() {
             ++nIter;
             ++wIter;
             return *this;
@@ -937,23 +951,33 @@ public:
     template <bool InEdges = false>
     class NeighborWeightRange {
 
-        const Graph &G;
-        const node u;
+        const Graph *G;
+        node u;
 
     public:
-        NeighborWeightRange(const Graph &G, node u) : G(G), u(u){};
+        NeighborWeightRange(const Graph &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
+
+        NeighborWeightRange() : G(nullptr){};
 
         NeighborWeightIterator begin() const {
+            assert(G);
             return InEdges
-                       ? NeighborWeightIterator(G.inEdges[u].begin(), G.inEdgeWeights[u].begin())
-                       : NeighborWeightIterator(G.outEdges[u].begin(), G.outEdgeWeights[u].begin());
+                       ? NeighborWeightIterator(G->inEdges[u].begin(), G->inEdgeWeights[u].begin())
+                       : NeighborWeightIterator(G->outEdges[u].begin(),
+                                                G->outEdgeWeights[u].begin());
         }
 
         NeighborWeightIterator end() const {
-            return InEdges ? NeighborWeightIterator(G.inEdges[u].end(), G.inEdgeWeights[u].end())
-                           : NeighborWeightIterator(G.outEdges[u].end(), G.outEdgeWeights[u].end());
+            assert(G);
+            return InEdges
+                       ? NeighborWeightIterator(G->inEdges[u].end(), G->inEdgeWeights[u].end())
+                       : NeighborWeightIterator(G->outEdges[u].end(), G->outEdgeWeights[u].end());
         }
     };
+
+    using OutNeighborWeightRange = NeighborWeightRange<false>;
+
+    using InNeighborWeightRange = NeighborWeightRange<true>;
 
     /**
      * Create a graph of @a n nodes. The graph has assignable edge weights if @a
@@ -1065,6 +1089,15 @@ public:
      * this temporarily duplicates the memory.
      */
     void sortEdges();
+
+    /**
+     * Sorts the adjacency arrays by a custom criterion.
+     *
+     * @param lambda Lambda function used to sort the edges. It takes two WeightedEdge
+     * e1 and e2 as input parameters, returns true if e1 < e2, false otherwise.
+     */
+    template <class Lambda>
+    void sortEdges(Lambda lambda);
 
     /**
      * Set edge count of the graph to edges.
@@ -1395,8 +1428,8 @@ public:
      *
      * This method is deprecated and will not be supported in future releases.
      */
-    void TLX_DEPRECATED(timeStep()) {
-        WARN("Graph::timeStep is deprecated and will not be supported in future releases.");
+    void timeStep() {
+        WARN("Graph::timeStep should not be used and will be deprecated in the future.");
         t++;
     }
 
@@ -1406,8 +1439,8 @@ public:
      *
      * This method is deprecated and will not be supported in future releases.
      */
-    count TLX_DEPRECATED(time()) {
-        WARN("Graph::time is deprecated and will not be supported in future releases.");
+    count time() {
+        WARN("Graph::time should not be used and will be deprecated in the future.");
         return t;
     }
 
@@ -1526,13 +1559,27 @@ public:
      *
      * @param u Node.
      * @param i index; should be in [0, degreeOut(u))
-     * @return @a i -th (outgoing) neighbor of @a u, or @c none if no such
+     * @return @a i-th (outgoing) neighbor of @a u, or @c none if no such
      * neighbor exists.
      */
     node getIthNeighbor(node u, index i) const {
         if (!hasNode(u) || i >= outEdges[u].size())
             return none;
         return outEdges[u][i];
+    }
+
+    /**
+     * Return the weight to the i-th (outgoing) neighbor of @a u.
+     *
+     * @param u Node.
+     * @param i index; should be in [0, degreeOut(u))
+     * @return @a edge weight to the i-th (outgoing) neighbor of @a u, or @c +inf if no such
+     * neighbor exists.
+     */
+    edgeweight getIthNeighborWeight(node u, index i) const {
+        if (!hasNode(u) || i >= outEdges[u].size())
+            return nullWeight;
+        return isWeighted() ? outEdgeWeights[u][i] : defaultEdgeWeight;
     }
 
     /**
@@ -2160,6 +2207,67 @@ std::pair<count, count> Graph::removeAdjacentEdges(node u, Condition condition, 
     }
 
     return {removedEdges, removedSelfLoops};
+}
+
+template <class Lambda>
+void Graph::sortEdges(Lambda lambda) {
+
+    std::vector<std::vector<index>> indicesGlobal(omp_get_max_threads());
+
+    const auto sortAdjacencyArrays = [&](node u, std::vector<node> &adjList,
+                                         std::vector<edgeweight> &weights,
+                                         std::vector<edgeid> &edgeIds) -> void {
+        auto &indices = indicesGlobal[omp_get_thread_num()];
+        if (adjList.size() > indices.size())
+            indices.resize(adjList.size());
+
+        const auto indicesEnd = indices.begin() + adjList.size();
+        std::iota(indices.begin(), indicesEnd, 0);
+
+        if (isWeighted()) {
+            if (hasEdgeIds())
+                std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
+                    return lambda(WeightedEdgeWithId{u, adjList[a], weights[a], edgeIds[a]},
+                                  WeightedEdgeWithId{u, adjList[b], weights[b], edgeIds[b]});
+                });
+            else
+                std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
+                    return lambda(WeightedEdgeWithId{u, adjList[a], weights[a], 0},
+                                  WeightedEdgeWithId{u, adjList[b], weights[b], 0});
+                });
+        } else if (hasEdgeIds())
+            std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
+                return lambda(WeightedEdgeWithId{u, adjList[a], defaultEdgeWeight, edgeIds[a]},
+                              WeightedEdgeWithId{u, adjList[b], defaultEdgeWeight, edgeIds[b]});
+            });
+        else
+            std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
+                return lambda(WeightedEdgeWithId{u, adjList[a], defaultEdgeWeight, 0},
+                              WeightedEdgeWithId{u, adjList[b], defaultEdgeWeight, 0});
+            });
+
+        Aux::ArrayTools::applyPermutation(adjList.begin(), adjList.end(), indices.begin());
+
+        if (isWeighted())
+            Aux::ArrayTools::applyPermutation(weights.begin(), weights.end(), indices.begin());
+
+        if (hasEdgeIds())
+            Aux::ArrayTools::applyPermutation(edgeIds.begin(), edgeIds.end(), indices.begin());
+    };
+
+    balancedParallelForNodes([&](const node u) {
+        if (degree(u) < 2)
+            return;
+
+        std::vector<edgeweight> dummyEdgeWeights;
+        std::vector<edgeid> dummyEdgeIds;
+        sortAdjacencyArrays(u, outEdges[u], isWeighted() ? outEdgeWeights[u] : dummyEdgeWeights,
+                            hasEdgeIds() ? outEdgeIds[u] : dummyEdgeIds);
+
+        if (isDirected())
+            sortAdjacencyArrays(u, inEdges[u], isWeighted() ? inEdgeWeights[u] : dummyEdgeWeights,
+                                hasEdgeIds() ? inEdgeIds[u] : dummyEdgeIds);
+    });
 }
 
 } /* namespace NetworKit */

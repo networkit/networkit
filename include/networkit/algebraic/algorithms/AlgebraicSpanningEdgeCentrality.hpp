@@ -9,6 +9,7 @@
 #define NETWORKIT_ALGEBRAIC_ALGORITHMS_ALGEBRAIC_SPANNING_EDGE_CENTRALITY_HPP_
 
 #include <cmath>
+#include <atomic>
 
 #include <networkit/centrality/Centrality.hpp>
 #include <networkit/numerics/LAMG/Lamg.hpp>
@@ -82,34 +83,36 @@ void AlgebraicSpanningEdgeCentrality<Matrix>::runApproximation() {
     scoreData.resize(m, 0.0);
     double epsilon2 = tol * tol;
     const count k = ceil(log2(n)) / epsilon2;
-    double randTab[3] = {1.0/sqrt(k), -1.0/sqrt(k)};
+    double randTab[2] = {1.0/sqrt(k), -1.0/sqrt(k)};
 
-    std::vector<Vector> yRows(k, Vector(n));
-    std::vector<Vector> zRows(k, Vector(n));
-
-    G.forEdges([&](node u, node v, edgeweight w, index) {
-#pragma omp parallel for
-        for (omp_index i = 0; i < static_cast<omp_index>(k); ++i) {
+    const auto rhsLoader = [&](count, Vector& yRow) -> Vector& {
+        yRow.fill(0);
+        G.forEdges([&](node u, node v, edgeweight w, index) {
             double rand = randTab[Aux::Random::integer(1)];
-            yRows[i][u] += w * rand;
-            yRows[i][v] -= w * rand;
-        }
-    });
+            yRow[u] += w * rand;
+            yRow[v] -= w * rand;
+        });
+        return yRow;
+    };
 
+    std::vector<std::atomic<double>> scoreDataAtom(m);
+    const auto resultProcessor = [&](count, const Vector& zRow) {
+        G.forEdges([&](node u, node v, edgeid e) {
+            double diff = (zRow[u] - zRow[v]);
+            diff *= diff;
+            for (double old = scoreDataAtom[e].load();
+                 !scoreDataAtom[e].compare_exchange_strong(old, old + diff, std::memory_order_relaxed););
+        });
+    };
 
     Lamg<Matrix> lamg(1e-5);
     lamg.setupConnected(Matrix::laplacianMatrix(this->G));
-    lamg.parallelSolve(yRows, zRows);
+    lamg.parallelSolve(rhsLoader, resultProcessor, std::make_pair(k, n));
 
-    this->G.parallelForEdges([&](node u, node v, edgeid e) {
-        double sqSum = 0.0;
-        for (index i = 0; i < k; ++i) {
-            double diff = (zRows[i][u] - zRows[i][v]);
-            sqSum += diff * diff;
-        }
-
-        scoreData[e] = sqSum;
-    });
+#pragma omp parallel for
+    for (omp_index i = 0; i < static_cast<omp_index>(m); ++i) {
+        scoreData[i] = scoreDataAtom[i].load(std::memory_order_relaxed);
+    }
 
     hasRun = true;
 }

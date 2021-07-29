@@ -1252,7 +1252,7 @@ cdef class WattsStrogatzGenerator(StaticGraphGenerator):
 cdef extern from "<networkit/generators/EdgeSwitchingMarkovChainGenerator.hpp>":
 
 	cdef cppclass _EdgeSwitchingMarkovChainGenerator "NetworKit::EdgeSwitchingMarkovChainGenerator"(_StaticGraphGenerator):
-		_EdgeSwitchingMarkovChainGenerator(vector[count] degreeSequence, bool_t ignoreIfRealizable) except +
+		_EdgeSwitchingMarkovChainGenerator(vector[count] degreeSequence, bool_t ignoreIfNotRealizable, count numSwitches) except +
 		bool_t isRealizable() except +
 		bool_t getRealizable() except +
 
@@ -1277,12 +1277,14 @@ cdef class EdgeSwitchingMarkovChainGenerator(StaticGraphGenerator):
 	-----------
 	degreeSequence : vector[count]
 		The degree sequence that shall be generated
-	ignoreIfRealizable : bool, optional
+	ignoreIfNotRealizable : bool, optional
 		If true, generate the graph even if the degree sequence is not realizable. Some nodes may get lower degrees than requested in the sequence.
+	numSwitchesPerEdge : count, optional
+		Average number of edge switches per edge produced (default: 10)
 	"""
 
-	def __cinit__(self, vector[count] degreeSequence, bool_t ignoreIfRealizable = False):
-		self._this = new _EdgeSwitchingMarkovChainGenerator(degreeSequence, ignoreIfRealizable)
+	def __cinit__(self, vector[count] degreeSequence, bool_t ignoreIfNotRealizable = False, count numSwitchesPerEdge = 10):
+		self._this = new _EdgeSwitchingMarkovChainGenerator(degreeSequence, ignoreIfNotRealizable, numSwitchesPerEdge)
 
 	def isRealizable(self):
 		return (<_EdgeSwitchingMarkovChainGenerator*>(self._this)).isRealizable()

@@ -45,7 +45,7 @@ TEST_F(BiconnectedComponentsGTest, testBiconnectedComponents) {
 
     for (auto component : bc.getComponents()) {
         std::unordered_set<node> subgraph(component.begin(), component.end());
-        const auto G1 = GraphTools::subgraphFromNodes(G, subgraph, false, false);
+        const auto G1 = GraphTools::subgraphFromNodes(G, subgraph);
 
         G1.forNodes([&](node v) {
             auto G2(G1);

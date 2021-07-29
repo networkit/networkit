@@ -1,5 +1,5 @@
 /*
- * Lamg.h
+ * Lamg.hpp
  *
  *  Created on: Oct 20, 2015
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
@@ -96,6 +96,54 @@ public:
     void parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
                        count maxConvergenceTime = 5 * 60 * 1000,
                        count maxIterations = std::numeric_limits<count>::max()) override;
+
+    /**
+     * Abstract parallel solve function that computes and processes results using @a resultProcessor for the matrix currently setup and the right-hand sides (size of @a rhsSize) provided by @a rhsLoader.
+     * The maximum spent time for each system can be specified by @a maxConvergenceTime and the maximum number of iterations can be set
+     * by @a maxIterations.
+     * @param rhsLoader
+     * @param resultProcessor
+     * @param rhsSize
+     * @param maxConvergenceTime
+     * @param maxIterations
+     * @note If the solver does not support parallelism during solves, this function falls back to solving the systems sequentially.
+     */
+    template<typename RHSLoader, typename ResultProcessor>
+    void parallelSolve(const RHSLoader& rhsLoader, const ResultProcessor& resultProcessor, std::pair<count, count> rhsSize,
+                       count maxConvergenceTime = 5 * 60 * 1000,
+                       count maxIterations = std::numeric_limits<count>::max()) {
+        if (numComponents == 1) {
+            const index numThreads = omp_get_max_threads();
+            if (compSolvers.size() != numThreads) {
+                compSolvers.clear();
+
+                for (index i = 0; i < (index) numThreads; ++i) {
+                    compSolvers.push_back(SolverLamg<Matrix>(compHierarchies[0], smoother));
+                }
+            }
+
+            count n = rhsSize.first;
+            count m = rhsSize.second;
+            std::vector<Vector> results(numThreads, Vector(m));
+            std::vector<Vector> RHSs(numThreads, Vector(m));
+
+#pragma omp parallel for
+            for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
+                index threadId = omp_get_thread_num();
+
+                const Vector& rhs = rhsLoader(i, RHSs[threadId]);
+                Vector& result = results[threadId];
+
+                LAMGSolverStatus stat;
+                stat.desiredResidualReduction = this->tolerance * rhs.length() / (laplacianMatrix * result - rhs).length();
+                stat.maxIters = maxIterations;
+                stat.maxConvergenceTime = maxConvergenceTime;
+
+                compSolvers[threadId].solve(result, rhs, stat);
+                resultProcessor(i, result);
+            }
+        }
+    }
 };
 
 template<class Matrix>
@@ -157,7 +205,7 @@ void Lamg<Matrix>::setup(const Matrix& laplacianMatrix) {
             rhsVectors[compIdx] = Vector(component.size());
             lamgSetup.setup(compMatrix, compHierarchies[compIdx]);
             compSolvers.push_back(SolverLamg<Matrix>(compHierarchies[compIdx], smoother));
-            LAMGSolverStatus status;
+            LAMGSolverStatus status{};
             status.desiredResidualReduction = this->tolerance * component.size() / G.numberOfNodes();
             compStati[compIdx] = status;
 

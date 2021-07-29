@@ -75,6 +75,7 @@ __pycache__
 *.exe
 *.out
 *.app
+*.pyd
 
 ### CMake
 CMakeCache.txt

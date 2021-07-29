@@ -8,8 +8,6 @@
 #ifndef NETWORKIT_DYNAMICS_GRAPH_EVENT_PROXY_HPP_
 #define NETWORKIT_DYNAMICS_GRAPH_EVENT_PROXY_HPP_
 
-#include <tlx/define/deprecated.hpp>
-
 #include <networkit/dynamics/GraphEventHandler.hpp>
 #include <networkit/graph/Graph.hpp>
 
@@ -51,7 +49,7 @@ public:
 
     void incrementWeight(node u, node v, edgeweight delta);
 
-    void TLX_DEPRECATED(timeStep());
+    void timeStep();
 };
 
 } /* namespace NetworKit */

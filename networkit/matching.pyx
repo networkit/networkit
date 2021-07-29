@@ -212,3 +212,31 @@ cdef class PathGrowingMatcher(Matcher):
 			self._this = new _PathGrowingMatcher(G._this, edgeScores)
 		else:
 			self._this = new _PathGrowingMatcher(G._this)
+
+cdef extern from "<networkit/matching/SuitorMatcher.hpp>":
+	cdef cppclass _SuitorMather "NetworKit::SuitorMatcher"(_Matcher):
+		_SuitorMather(_Graph, bool_t, bool_t) except +
+
+cdef class SuitorMatcher(Matcher):
+	"""
+	Computes a 1/2-approximation of the maximum (weighted) matching of an undirected graph using
+	the Suitor algorithm from Manne and Halappanavar presented in "New Effective Multithreaded
+	Matching Algorithms", IPDPS 2014. The algorithm has two versions: SortSuitor (faster, but
+	only works on graphs with adjacency lists sorted by non-increasing edge weight) and Suitor
+	(works on generic graphs). If using SortSuitor, call nk.graphtools.sortEdgesByWeight(G, True)
+	to sort the adjacency lists by non-increasing edge weight.
+
+	Parameters:
+	-----------
+	G : networkit.Graph
+		The input graph, must be undirected.
+	sortSuitor : bool
+		If True uses the SortSuitor version, otherwise it uses Suitor.
+	checkSortedEdges : bool
+		If True and sortSuitor is True it checks whether the adjacency lists
+		of the input graph are sorted by non-increasing edge weight. If they are not it raises
+		a RuntimeError.
+	"""
+	def __cinit__(self, Graph G not None, sortSuitor = True, checkSortedEdges = False):
+		self.G = G
+		self._this = new _SuitorMather(G._this, sortSuitor, checkSortedEdges)

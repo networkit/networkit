@@ -8,31 +8,32 @@
 #include <mutex>
 
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/GlobalState.hpp>
 
 namespace Aux { namespace Log {
 
 void setLogLevel(const std::string &logLevel) {
     if (logLevel == "TRACE") {
-        Settings::setLogLevel(LogLevel::trace);
+        NetworKit::GlobalState::setLogLevel(LogLevel::trace);
     } else if (logLevel == "DEBUG") {
-        Settings::setLogLevel(LogLevel::debug);
+        NetworKit::GlobalState::setLogLevel(LogLevel::debug);
     } else if (logLevel == "INFO") {
-        Settings::setLogLevel(LogLevel::info);
+        NetworKit::GlobalState::setLogLevel(LogLevel::info);
     } else if (logLevel == "WARN") {
-        Settings::setLogLevel(LogLevel::warn);
+        NetworKit::GlobalState::setLogLevel(LogLevel::warn);
     } else if (logLevel == "ERROR") {
-        Settings::setLogLevel(LogLevel::error);		
+        NetworKit::GlobalState::setLogLevel(LogLevel::error);		
     } else if (logLevel == "FATAL") {
-        Settings::setLogLevel(LogLevel::fatal);
+        NetworKit::GlobalState::setLogLevel(LogLevel::fatal);
     } else if (logLevel == "QUIET") {
-        Settings::setLogLevel(LogLevel::quiet);
+        NetworKit::GlobalState::setLogLevel(LogLevel::quiet);
     } else {
         throw std::runtime_error("unknown loglevel");
     }
 }
 
 std::string getLogLevel() {
-    LogLevel current = Settings::getLogLevel();
+    LogLevel current = NetworKit::GlobalState::getLogLevel();
     switch (current) {
     case LogLevel::trace:
         return "TRACE";
@@ -55,44 +56,34 @@ std::string getLogLevel() {
 
 namespace Settings {
 
-namespace {
-bool printTime = false;
-bool printLocation = false;
-
-#ifdef NETWORKIT_QUIET_LOGGING
-LogLevel loglevel = LogLevel::quiet;
-#else
-LogLevel loglevel = LogLevel::info;
-#endif
-
-std::ofstream logfile;
-
-std::atomic_bool logfileIsOpen{false};
-std::mutex logfileMutex;
+LogLevel getLogLevel() {
+    return NetworKit::GlobalState::getLogLevel();
 }
 
-LogLevel getLogLevel() {return loglevel;}
-void setLogLevel(LogLevel p) {loglevel = p;}
+void setLogLevel(LogLevel p) {
+    NetworKit::GlobalState::setLogLevel(p);    
+}
 
-void setPrintTime(bool b) {printTime = b;}
-bool getPrintTime() {return printTime;}
+bool getPrintTime() {
+    return NetworKit::GlobalState::getPrintTime();  
+}
 
-void setPrintLocation(bool b) {printLocation = b;}
-bool getPrintLocation() {return printLocation;}
+void setPrintTime(bool b) {
+    NetworKit::GlobalState::setPrintTime(b);    
+}
+
+bool getPrintLocation() {
+    return NetworKit::GlobalState::getPrintLocation();
+}
+
+void setPrintLocation(bool b) {
+    NetworKit::GlobalState::setPrintLocation(b);   
+}
 
 void setLogfile(const std::string &filename) {
-    std::lock_guard<std::mutex> guard{logfileMutex};
-    if(logfile.is_open()) {
-        logfile.close();
-    }
-    if(filename.empty()) {
-        logfile.open(filename, std::ios_base::out | std::ios_base::app);
-        logfileIsOpen = logfile.is_open();
-    } else {
-        logfileIsOpen = false;
-    }
+    NetworKit::GlobalState::setLogfile(filename);    
+} 
 }
-} // namespace Settings
 
 void printLogLevel(std::ostream &stream, LogLevel p) {
     switch(p) {
@@ -111,6 +102,10 @@ void printLogLevel(std::ostream &stream, LogLevel p) {
         default:
             break;
     }
+}
+
+bool isLogLevelEnabled(LogLevel p) noexcept {
+    return p >= NetworKit::GlobalState::getLogLevel();
 }
 
 void printTime(std::ostream &stream,
@@ -146,7 +141,7 @@ static void logToTerminal(const Location &loc, LogLevel p,
         const std::string &msg) {
     std::stringstream stream;
     
-    if(Settings::getPrintTime()) {
+    if(NetworKit::GlobalState::getPrintTime()) {
         printTime(stream, timePoint);
     }
     
@@ -157,7 +152,7 @@ static void logToTerminal(const Location &loc, LogLevel p,
     printLogLevel(stream, p);
     stream <<termFormatClose;
     
-    if(Settings::getPrintLocation()) {
+    if(NetworKit::GlobalState::getPrintLocation()) {
         printLocation(stream, loc);
     }
     
@@ -179,7 +174,7 @@ static void logToTerminal(const Location &loc, LogLevel p,
 static void logToFile(const Location &loc, LogLevel p,
         const std::chrono::time_point<std::chrono::system_clock> &timePoint,
         const std::string &msg) {
-    if(!Settings::logfileIsOpen) {
+    if(!NetworKit::GlobalState::getLogFileIsOpen()) {
         return;
     }
     std::stringstream stream;
@@ -187,18 +182,18 @@ static void logToFile(const Location &loc, LogLevel p,
     stream << ' ';
     printLogLevel(stream, p);
     
-    if(Settings::getPrintLocation()) {
+    if(NetworKit::GlobalState::getPrintLocation()) {
         stream << ' ';
         printLocation(stream, loc);
     }
     
     stream << ": " << msg << '\n';
     {
-        std::lock_guard<std::mutex> guard{Settings::logfileMutex};
-        if(!Settings::logfileIsOpen) {
+        std::lock_guard<std::mutex> guard{NetworKit::GlobalState::getLogFileMutex()};
+        if(!NetworKit::GlobalState::getLogFileIsOpen()) {
             return;
         }
-        Settings::logfile << stream.str() << std::flush;
+        NetworKit::GlobalState::getLogFile() << stream.str() << std::flush;
     }
 }
 

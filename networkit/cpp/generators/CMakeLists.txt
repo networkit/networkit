@@ -28,7 +28,7 @@ networkit_add_module(generators
     )
 
 networkit_module_link_modules(generators
-        auxiliary base dynamics geometric graph structures)
+        auxiliary base dynamics geometric graph randomization structures)
 
 add_subdirectory(quadtree)
 add_subdirectory(test)

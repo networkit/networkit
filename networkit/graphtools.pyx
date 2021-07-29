@@ -33,7 +33,8 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	_Graph toUndirected(_Graph G) nogil except +
 	_Graph toUnweighted(_Graph G) nogil except +
 	_Graph toWeighted(_Graph G) nogil except +
-	_Graph subgraphFromNodes(_Graph G, unordered_set[node], bool_t, bool_t) nogil except +
+	_Graph subgraphFromNodes[InputIt](_Graph G, InputIt first, InputIt last, bool_t compact) nogil except +
+	_Graph subgraphAndNeighborsFromNodes(_Graph G, unordered_set[node], bool_t, bool_t) nogil except +
 	void append(_Graph G, _Graph G1) nogil except +
 	void merge(_Graph G, _Graph G1) nogil except +
 	void removeEdgesFromIsolatedSet[InputIt](_Graph G, InputIt first, InputIt last) except +
@@ -41,6 +42,7 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	_Graph transpose(_Graph G) nogil except +
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) nogil except +
 	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) nogil except +
+	void sortEdgesByWeight(_Graph G, bool_t) nogil except +
 
 cdef class GraphTools:
 
@@ -355,7 +357,7 @@ cdef class GraphTools:
 	@staticmethod
 	def inVolume(Graph graph, nodes):
 		"""
-		Get the inVolume (for all incoming edges) of a subgraph, defined by the 
+		Get the inVolume (for all incoming edges) of a subgraph, defined by the
 		input graph and a corresponding subset of nodes.
 
 		Parameters
@@ -363,7 +365,7 @@ cdef class GraphTools:
 		graph : networkit.Graph
 			The input graph.
 		nodes : vector[node]
-			A vector of nodes from the graph. 
+			A vector of nodes from the graph.
 
 		Returns
 		-------
@@ -397,10 +399,59 @@ cdef class GraphTools:
 		return Graph().setThis(copyNodes(graph._this))
 
 	@staticmethod
-	def subgraphFromNodes(Graph graph, nodes, includeOutNeighbors=False, includeInNeighbors=False):
+	def subgraphFromNodes(Graph graph, vector[node] nodes, includeOutNeighbors=False, includeInNeighbors=False, bool_t compact = False):
 		"""
-		Returns an induced subgraph of the input graph (including potential edge
-		weights/directions).
+		Returns an induced subgraph of this graph (including potential edge
+		weights/directions)
+
+		The subgraph contains all nodes in Nodes  and all edges which
+		have one end point in Nodes and the other in Nodes.
+
+		Parameters:
+		-----------
+		graph   : networkit.Graph
+			The input graph.
+		nodes   : iterable
+			Nodes in the induced subgraph.
+		includeOutNeighbors : bool
+			If set to true, out-neighbors will also be included. DEPRECATED. Use subgraphAndNeighborsFromNodes instead.
+		includeInNeighbors : bool
+			If set to true, in-neighbors will also be included. DEPRECATED. Use subgraphAndNeighborsFromNodes instead.
+		compact : bool
+			If the resulting graph shall have compact, continuous node ids, alternatively, node ids of the input graph are kept.
+		Returns:
+		--------
+		graph : networkit.Graph
+			Induced subgraph.
+		"""
+		# Deprecated compatibility wrapper. We use "vector" to
+		# preserve the sorting of the nodes for compact
+		# subgraphs and only convert to unordered_set when
+		# needed.
+		cdef unordered_set[node] nodeSet
+
+		if includeInNeighbors or includeOutNeighbors:
+			if compact:
+				raise RuntimeError("Compaction is not supported with includeOutNeighbors or includeInNeighbors")
+			nodeSet.insert(nodes.begin(), nodes.end())
+			return Graph().setThis(subgraphAndNeighborsFromNodes(
+			    	graph._this, nodeSet, includeOutNeighbors, includeInNeighbors))
+		else:
+			return Graph().setThis(subgraphFromNodes(
+			    	graph._this, nodes.begin(), nodes.end(), compact))
+
+	@staticmethod
+	def subgraphAndNeighborsFromNodes(Graph graph, nodes, includeOutNeighbors=False, includeInNeighbors=False):
+		"""
+		Returns an induced subgraph of this graph (including potential edge
+		weights/directions)
+
+		There a two relevant sets of nodes:
+			- Nodes are such passed as arguments.
+			- Neighbors are empty by default.
+
+		The subgraph contains all nodes in Nodes + Neighbors and all edges which
+		have one end point in Nodes and the other in Nodes or Neighbors.
 
 		Parameters:
 		-----------
@@ -418,7 +469,7 @@ cdef class GraphTools:
 		graph : networkit.Graph
 			Induced subgraph.
 		"""
-		return Graph().setThis(subgraphFromNodes(
+		return Graph().setThis(subgraphAndNeighborsFromNodes(
 			graph._this, nodes, includeOutNeighbors, includeInNeighbors))
 
 	@staticmethod
@@ -500,3 +551,19 @@ cdef class GraphTools:
 		for elem in cResult:
 			result[elem.first] = elem.second
 		return result
+
+	@staticmethod
+	def sortEdgesByWeight(Graph G, decreasing = False):
+		"""
+		Sorts the adjacency arrays by edge weight.
+
+		Parameters:
+		----------
+		G : networkit.Graph
+			The input graph.
+		decreasing : bool
+			If True adjacency arrays are sorted by non-increasing edge weights, if False
+			adjacency arrays are sorted by non-decreasing edge weights. Ties are broken
+			by using node ids.
+		"""
+		sortEdgesByWeight(G._this, decreasing)

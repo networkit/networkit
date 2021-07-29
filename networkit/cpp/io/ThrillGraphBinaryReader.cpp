@@ -58,7 +58,7 @@ Graph ThrillGraphBinaryReader::read(const std::vector<std::string> &paths) {
         auto next_input = [&]() {
             is.close();
             if (file_index < paths.size()) {
-                is.open(paths[file_index++]);
+                is.open(paths[file_index++], std::ios::binary);
                 // Throw an exception when no byte could be read at any point
                 is.exceptions(std::ifstream::failbit | std::ifstream::badbit);
             }

@@ -94,6 +94,7 @@ env:
   CXX_STANDARD: 14
   MONOLITH: ON
   TLX_PATH: /home/runner/work/networkit/networkit/tlx
+  TLX_PATH_WIN: /d/a/networkit/networkit/tlx
   NATIVE: OFF
 
 jobs:
@@ -324,28 +325,69 @@ jobs:
   windows-build-msvc:
     name: "Windows (msvc 14.28): ${{ matrix.build-configuration }}"
     runs-on: windows-2019
-    env:
-      MSBUILD_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.com
-      SLN_PATH: ${{ github.workspace }}\build\networkit.sln
-      VS_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\
     strategy:
       matrix:
-        build-configuration: ['core', 'core (release)', 'core (native)']
+        build-configuration: ['core']
     steps:
       - name: Checkout networkit
         uses: actions/checkout@v2
         with:
           submodules: true
+      - name: Setup devCmd (vstools)
+        uses: ilammy/msvc-dev-cmd@v1
       - name: Prepare environment and run checks
+        shell: bash
         run: |
-          cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\"
-          ./vcvarsall.bat x64
-          md ${{ github.workspace }}\build && cd ${{ github.workspace }}\build
-          cmake -G "Visual Studio 16 2019" -A x64 -DNETWORKIT_STATIC=ON -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_NATIVE=${{ matrix.build-configuration == 'core (native)' }} ..
-          cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\"
-          ./devenv.com $Env:GITHUB_WORKSPACE\build\networkit.sln /build ${{ matrix.build-configuration == 'core' && 'Debug' || 'Release' }}
-          cd ${{ github.workspace }}\build
-          ctest -V -C ${{ matrix.build-configuration == 'core' && 'Debug' || 'Release' }}
+          mkdir build && cd build 
+          cmake -GNinja -DNETWORKIT_STATIC=ON -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_MONOLITH=ON -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DNETWORKIT_WARNINGS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_SANITY_CHECKS=ON ..
+          ninja
+          ctest -V -C Debug
+
+  windows-build-latest:
+    name: "Windows (msvc 14.28, CPython 3.9): ${{ matrix.build-configuration }}"
+    runs-on: windows-2019
+    strategy:
+      matrix:
+        build-configuration: ['full', 'full (native)']
+    steps:
+      - name: Setup Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Checkout networkit
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Checkout tlx
+        uses: actions/checkout@v2
+        with:
+          repository: tlx/tlx
+          path: tlx
+      - name: Setup devCmd (vstools)
+        uses: ilammy/msvc-dev-cmd@v1
+      - name: Prepare environment and run checks
+        shell: bash
+        run: |
+          cd tlx && mkdir build && cd build
+          cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ env.TLX_PATH_WIN }} ..
+          ninja && ninja install
+          cd ../..
+          python -m venv pyenv 
+          . ./pyenv/Scripts/activate
+          pip install cython ipython jupyter
+          mkdir build && cd build 
+          cmake -GNinja -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_STATIC=ON -DCMAKE_BUILD_TYPE=Release -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DNETWORKIT_WARNINGS=ON -DNETWORKIT_WARNINGS_AS_ERRORS=ON -DNETWORKIT_EXT_TLX=${{ env.TLX_PATH_WIN }} -DNETWORKIT_NATIVE=${{ env.NATIVE }} ..
+          ninja
+          ctest -V -C Release
+          cd ..
+          python setup.py build_ext --inplace --external-tlx=${{ env.TLX_PATH_WIN }}
+          pip install -e .
+          python -c 'import networkit'
+          pip install -r requirements.txt
+          python -m unittest discover -v networkit/test/
+          python notebooks/test_notebooks.py "notebooks"
+        env:
+          NATIVE: ${{ matrix.os == 'full (native)' }}
 
   documentation-build:
     name: "Linux (gcc-10, CPython 3.9): documentation"

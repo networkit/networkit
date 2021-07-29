@@ -13,8 +13,6 @@
 
 namespace NetworKit {
 
-std::vector<std::vector<std::string>> localNodeCategories;
-
 DynamicDGSParser::DynamicDGSParser(const std::string &path) : graphInitialized(false) {
     dgsFile.open(path.c_str(), std::ifstream::in);
 }

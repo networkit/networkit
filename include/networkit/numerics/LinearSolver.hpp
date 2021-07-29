@@ -11,6 +11,7 @@
 #include <networkit/algebraic/Vector.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <limits>
+#include <functional>
 
 namespace NetworKit {
 
@@ -84,6 +85,30 @@ public:
      * @note If the solver does not support parallelism during solves, this function falls back to solving the systems sequentially.
      */
     virtual void parallelSolve(const std::vector<Vector>& rhs, std::vector<Vector>& results, count maxConvergenceTime = 5 * 60 * 1000, count maxIterations = std::numeric_limits<count>::max());
+
+    /**
+     * Abstract parallel solve function that computes and processes results using @a resultProcessor for the matrix currently setup and the right-hand sides (size of @a rhsSize) provided by @a rhsLoader.
+     * The maximum spent time for each system can be specified by @a maxConvergenceTime and the maximum number of iterations can be set
+     * by @a maxIterations.
+     * @param rhsLoader
+     * @param resultProcessor
+     * @param rhsSize
+     * @param maxConvergenceTime
+     * @param maxIterations
+     * @note If the solver does not support parallelism during solves, this function falls back to solving the systems sequentially.
+     */
+    template<typename RHSLoader, typename ResultProcessor>
+    void parallelSolve(const RHSLoader& rhsLoader, const ResultProcessor& resultProcessor, std::pair<count, count> rhsSize,
+                       count maxConvergenceTime = 5 * 60 * 1000, count maxIterations = std::numeric_limits<count>::max()) {
+        count n = rhsSize.first;
+        count m = rhsSize.second;
+        Vector rhs(m);
+        Vector result(m);
+        for (index i = 0; i < n; ++i) {
+            solve(rhsLoader(i, rhs), result, maxConvergenceTime, maxIterations);
+            resultProcessor(i, result);
+        }
+    }
 };
 
 template<class Matrix>

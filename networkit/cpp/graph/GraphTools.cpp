@@ -259,8 +259,17 @@ Graph copyNodes(const Graph &G) {
     return C;
 }
 
+Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes) {
+    return subgraphFromNodes(G, nodes.begin(), nodes.end(), false);
+}
+
 Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
                         bool includeOutNeighbors, bool includeInNeighbors) {
+    return subgraphAndNeighborsFromNodes(G, nodes, includeOutNeighbors, includeInNeighbors);
+}
+
+Graph subgraphAndNeighborsFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
+                                    bool includeOutNeighbors, bool includeInNeighbors) {
     const auto neighbors = [&] {
         std::unordered_set<node> neighbors;
 
@@ -479,6 +488,21 @@ Graph restoreGraph(const std::vector<node> &invertedIdMap, const Graph &G) {
         }
     });
     return Goriginal;
+}
+
+void sortEdgesByWeight(Graph &G, bool decreasing) {
+    if (decreasing)
+        G.sortEdges([](auto e1, auto e2) {
+            if (e1.weight == e2.weight)
+                return e1.v < e2.v;
+            return e1.weight > e2.weight;
+        });
+    else
+        G.sortEdges([](auto e1, auto e2) {
+            if (e1.weight == e2.weight)
+                return e1.v < e2.v;
+            return e1.weight < e2.weight;
+        });
 }
 
 } // namespace GraphTools

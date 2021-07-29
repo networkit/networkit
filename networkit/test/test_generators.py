@@ -60,5 +60,20 @@ class TestGraph(unittest.TestCase):
         self.assertLessEqual(nCommunities, k)
 
 
+    def testEdgeSwitchingMarkovChainGenerator(self):
+        n = 100
+        while True:
+            degseq = nk.generators.PowerlawDegreeSequence(2, n).run().getDegreeSequence(n)
+            gen = nk.generators.EdgeSwitchingMarkovChainGenerator(degseq, False, 10)
+            if not gen.isRealizable():
+                continue
+
+            G = gen.generate()
+            self.assertEqual(G.numberOfNodes(), n)
+            for u in range(G.numberOfNodes()):
+                self.assertEqual(G.degree(u), degseq[u])
+
+            break
+
 if __name__ == "__main__":
     unittest.main()

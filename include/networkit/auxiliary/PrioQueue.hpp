@@ -8,8 +8,10 @@
 #ifndef NETWORKIT_AUXILIARY_PRIO_QUEUE_HPP_
 #define NETWORKIT_AUXILIARY_PRIO_QUEUE_HPP_
 
+#include <limits>
 #include <set>
 #include <vector>
+#include <limits>
 
 #include <networkit/auxiliary/Log.hpp>
 

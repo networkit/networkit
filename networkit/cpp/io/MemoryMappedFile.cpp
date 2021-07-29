@@ -34,6 +34,7 @@ namespace NetworKit {
 #include <cassert>
 #include <windows.h>
 #include <fileapi.h>
+#include <system_error>
 
 namespace NetworKit {
     struct MemoryMappedFileState {
@@ -49,9 +50,11 @@ namespace NetworKit {
             close();
         }
 
-        state->hFile = CreateFile(path.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, 0);
-        if (state->hFile == INVALID_HANDLE_VALUE)
-            throw std::runtime_error("Unable to open file");
+        state->hFile = CreateFile(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0);
+        if (state->hFile == INVALID_HANDLE_VALUE) {
+            DWORD dwErrorCode = ::GetLastError();
+            throw std::runtime_error("Unable to open file " + path + " " + std::system_category().message(dwErrorCode));
+        }
 
         size_t size;
         {

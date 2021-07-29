@@ -9,6 +9,7 @@
 #define NETWORKIT_INDEPENDENTSET_INDEPENDENT_SET_FINDER_HPP_
 
 #include <networkit/graph/Graph.hpp>
+#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 

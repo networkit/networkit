@@ -194,6 +194,22 @@ class TestSelfLoops(unittest.TestCase):
 		self.assertEqual(len(set(group)), k)
 		self.assertAlmostEqual(apxScore, gedw.scoreOfGroup(group), 1)
 
+	def testGroupHarmonicClosenessCentrality(self):
+		n, p, k = 50, 0.2, 5
+		nk.engineering.setSeed(42, True)
+		for directed in [False, True]:
+			for weighted in [False, True]:
+				g = nk.generators.ErdosRenyiGenerator(n, p, directed).generate()
+				if weighted:
+					g = nk.graphtools.toWeighted(g)
+					g.forEdges(lambda u, v, ew, eid: g.setWeight(u, v, random.random()))
+
+				ghc = nk.centrality.GroupHarmonicCloseness(g, k).run()
+				group = ghc.groupMaxHarmonicCloseness()
+				self.assertEqual(len(group), k)
+				self.assertEqual(len(set(group)), k)
+				self.assertGreaterEqual(ghc.scoreOfGroup(g, group), 0)
+
 	def test_centrality_SciPyPageRank(self):
 		CL = nk.centrality.SciPyPageRank(self.L)
 		CL.run()
@@ -231,7 +247,7 @@ class TestSelfLoops(unittest.TestCase):
 		for apxScore, exactScore in zip(apx.scores(), se.scores()):
 			self.assertLessEqual(abs(apxScore - exactScore), 2*eps)
 
-	def test_centrality_groupcloseness_growshrink(self):
+	def testCentralityGroupClosenessGrowShrink(self):
 		g = nk.readGraph('input/MIT8.edgelist', nk.Format.EdgeList, separator='\t', firstNode=0,
 				continuous=False, directed=False)
 		g = nk.components.ConnectedComponents(g).extractLargestConnectedComponent(g, True)
@@ -248,6 +264,42 @@ class TestSelfLoops(unittest.TestCase):
 			groupMaxCC = gc.groupMaxCloseness()
 			self.assertEqual(len(set(groupMaxCC)), k)
 			self.assertGreaterEqual(gc.numberOfIterations(), 0)
+
+			for u in groupMaxCC:
+				self.assertTrue(g.hasNode(u))
+
+	def testCentralityGroupClosenessLocalSwaps(self):
+		k = 5
+		g = nk.readGraph('input/MIT8.edgelist', nk.Format.EdgeList, separator='\t', firstNode=0,
+				continuous=False, directed=False)
+		g = nk.components.ConnectedComponents(g).extractLargestConnectedComponent(g, True)
+		for weighted in [False, True]:
+			group = set()
+			while len(group) < k:
+				group.add(nk.graphtools.randomNode(g))
+			gc = nk.centrality.GroupClosenessLocalSwaps(g, group).run()
+
+			groupMaxCC = gc.groupMaxCloseness()
+			self.assertEqual(len(set(groupMaxCC)), k)
+			self.assertGreaterEqual(gc.numberOfSwaps(), 0)
+
+			for u in groupMaxCC:
+				self.assertTrue(g.hasNode(u))
+
+	def testCentralityGroupClosenessLocalSearch(self):
+		g = nk.readGraph('input/celegans_metabolic.graph', nk.Format.METIS)
+		k = 5
+
+		nk.engineering.setSeed(42, False)
+		for weighted in [False, True]:
+			group = set()
+			while len(group) < k:
+				group.add(nk.graphtools.randomNode(g))
+
+			gc = nk.centrality.GroupClosenessLocalSearch(g, group).run()
+
+			groupMaxCC = gc.groupMaxCloseness()
+			self.assertEqual(len(set(groupMaxCC)), k)
 
 			for u in groupMaxCC:
 				self.assertTrue(g.hasNode(u))
