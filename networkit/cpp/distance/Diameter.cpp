@@ -163,6 +163,12 @@ std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, node u, double
 
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &G, double error) {
     if (G.isDirected()) {
+        StronglyConnectedComponents comp(G);
+        comp.run();
+        if (comp.numberOfComponents() > 1) {
+            throw std::runtime_error("More than one strongly connected component - diameter range for directed graphs can only be computed for graphs with one strongly connected component");
+        }
+
         // use max-degree node as starting node
         node u;
         count maxDegree = 0;
