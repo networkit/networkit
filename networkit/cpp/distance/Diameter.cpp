@@ -138,7 +138,7 @@ std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, node u, double
         count size_f = i < distancesF.size() ? distancesF[i].size() : 0;
         count size_b = i < distancesB.size() ? distancesB[i].size() : 0;
 #pragma omp parallel for
-        for (count j = 0; j < size_f + size_b; ++j) {
+        for (omp_index j = 0; j < size_f + size_b; ++j) {
             count lb_ = lb.load(std::memory_order_relaxed);
             if (lb_ * (1.0 + error) >= ub) {
                 continue;
