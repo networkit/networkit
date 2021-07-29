@@ -69,6 +69,10 @@ count Diameter::getNumBFS() const {
   return numBFS;
 }
 
+count Diameter::getInitialLB() const {
+  return initialLB;
+}
+
 edgeweight Diameter::exactDiameter(const Graph& G) {
     using namespace std;
 
@@ -136,6 +140,7 @@ std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, double error) 
     }, true);
 
     count i = std::max(distancesF.size(), distancesB.size());
+    initialLB = i;
     std::atomic<count> lb(i);
     count ub = 2 * i;
 
@@ -146,7 +151,6 @@ std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, double error) 
         handler.assureRunning();
         count size_f = i < distancesF.size() ? distancesF[i].size() : 0;
         count size_b = i < distancesB.size() ? distancesB[i].size() : 0;
-        ub = 2 * (i - 1);
 #pragma omp parallel for
         for (count j = 0; j < size_f + size_b; ++j) {
             count lb_ = lb.load(std::memory_order_relaxed);
@@ -161,6 +165,7 @@ std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, double error) 
             numBFS++;
         }
 
+        ub = 2 * (i - 1);
         count lb_ = lb.load(std::memory_order_relaxed);
         if (lb_ * (1.0 + error) >= ub) {
             ub = lb_;

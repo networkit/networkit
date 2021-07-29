@@ -32,6 +32,8 @@ public:
 
     count getNumBFS() const;
 
+    count getInitialLB() const;
+
 
 private:
     const Graph* G;
@@ -40,6 +42,7 @@ private:
     count nSamples;
     std::pair<count, count> diameterBounds;
     std::atomic<count> numBFS{0};
+    count initialLB = 0;
 
     std::pair<edgeweight, edgeweight> difub(const Graph &G, double error);
 

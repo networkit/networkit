@@ -364,6 +364,7 @@ cdef extern from "<networkit/distance/Diameter.hpp>" namespace "NetworKit::Diame
 		_Diameter(_Graph G, _DiameterAlgo algo, double error, count nSamples) except +
 		pair[count, count] getDiameter() nogil except +
 		count getNumBFS() except +
+		count getInitialLB() except +
 
 cdef class Diameter(Algorithm):
 	cdef Graph _G
@@ -379,6 +380,9 @@ cdef class Diameter(Algorithm):
 
 	def getNumBFS(self):
 		return (<_Diameter*>(self._this)).getNumBFS()
+
+	def getInitialLB(self):
+		return (<_Diameter*>(self._this)).getInitialLB()
 
 cdef extern from "<networkit/distance/Eccentricity.hpp>" namespace "NetworKit::Eccentricity":
 
