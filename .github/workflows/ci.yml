@@ -140,7 +140,7 @@ jobs:
     strategy:
       matrix:
         os: ['10.15']  # 11.0 temp. removed due to errors in preview image / git actions pipelines
-        compiler: ['clang-12', 'gcc-10']
+        compiler: ['clang-12', 'gcc-11']
     continue-on-error: ${{ matrix.os == '11.0' }}
     steps:
       - name: Install prerequisites
@@ -153,10 +153,10 @@ jobs:
           brew reinstall llvm@12
           brew link --overwrite llvm@12
       - name: Install compiler gcc
-        if: matrix.compiler == 'gcc-10'
+        if: matrix.compiler == 'gcc-11'
         run: |
-          brew reinstall gcc@10
-          brew link --overwrite gcc@10
+          brew reinstall gcc@11
+          brew link --overwrite gcc@11
       - name: Checkout networkit
         uses: actions/checkout@v2
         with:
@@ -165,22 +165,24 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
         shell: bash
         env:
-          CC: ${{ matrix.compiler == 'clang-12' && '/usr/local/opt/llvm@12/bin/clang' || 'gcc-10' }}
-          CXX: ${{ matrix.compiler == 'clang-12' && '/usr/local/opt/llvm@12/bin/clang++' || 'g++-10' }}
+          CC: ${{ matrix.compiler == 'clang-12' && '/usr/local/opt/llvm@12/bin/clang' || 'gcc-11' }}
+          CXX: ${{ matrix.compiler == 'clang-12' && '/usr/local/opt/llvm@12/bin/clang++' || 'g++-11' }}
 
   linux-build-latest:
-    name: "Linux (gcc-10${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.9' || '' }}): ${{ matrix.build-configuration }}"
+    name: "Linux (gcc-11${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.9' || '' }}): ${{ matrix.build-configuration }}"
     runs-on: ubuntu-20.04
     env:
-      CC: gcc-10
-      CXX: g++-10
+      CC: gcc-11
+      CXX: g++-11
     strategy:
       matrix:
         build-configuration: ['full', 'full (native)', 'core (non-monolithic)', 'core (C++20)']
     steps:
       - name: Install prerequisites
         run:  |
-          sudo apt-get install ninja-build
+          sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu hirsute main universe'
+          sudo apt-get update
+          sudo apt-get install gcc-11 g++-11 ninja-build
       - name: Setup Python 3.9
         uses: actions/setup-python@v2
         with:
@@ -235,17 +237,17 @@ jobs:
 
   linux-build-min-support:
     name: "Linux (${{ matrix.compiler }}, CPython 3.6): full"
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
-        compiler: ['gcc-5', 'clang-3.9']
+        compiler: ['gcc-6', 'clang-3.9']
     steps:
       - name: Install prerequisites
         run:  |
-          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
           sudo apt-get install ninja-build
           sudo apt-get install libomp5 libomp-dev clang-3.9 clang++-3.9
+          sudo apt-get install gcc-6 g++-6
       - name: Setup Python 3.6
         uses: actions/setup-python@v2
         with:
@@ -263,8 +265,8 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/full.sh
         shell: bash
         env:
-          CC: ${{ matrix.compiler == 'gcc-5' && 'gcc-5' || 'clang-3.9' }}
-          CXX: ${{ matrix.compiler == 'gcc-5' && 'g++-5' || 'clang++-3.9' }}
+          CC: ${{ matrix.compiler == 'gcc-6' && 'gcc-6' || 'clang-3.9' }}
+          CXX: ${{ matrix.compiler == 'gcc-6' && 'g++-6' || 'clang++-3.9' }}
 
   linux-build-clang-tidy:
     name: "Linux (clang-12): clang-tidy"
@@ -296,9 +298,8 @@ jobs:
     steps:
       - name: Install prerequisites
         run:  |
-          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
-          sudo apt-get install ninja-build gcc-10 g++-10
+          sudo apt-get install ninja-build
       - name: Setup Python 3.9
         uses: actions/setup-python@v2
         with:
@@ -310,6 +311,7 @@ jobs:
       - name: Prepare environment and run checks
         run:  ${{ github.workspace }}/.github/workflows/scripts/core_sanitizers_coverage.sh
         shell: bash
+        timeout-minutes: 60
       - name: Update Coveralls
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
@@ -398,7 +400,6 @@ jobs:
     steps:
       - name: Install prerequisites
         run:  |
-          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update
           sudo apt-get install doxygen pandoc
       - name: Checkout networkit
