@@ -167,7 +167,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
             near.reserve(expectedDegree*1.1);
             Point2DWithIndex<double> pointV(angles[i], radii[i], i);
             for(index j = 0; j < bandCount; j++){
-                if(directSwap || bandRadii[j+1] > radii[i]){
+                if(bandRadii[j+1] > radii[i]){
                     double minTheta, maxTheta;
                     std::tie (minTheta, maxTheta) = getMinMaxTheta(angles[i], radii[i], bandRadii[j], R);
                     vector<Point2DWithIndex<double>> neighborCandidates = getPointsWithinAngles(minTheta, maxTheta, bands[j], bandAngles[j]);
@@ -183,27 +183,17 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
                     }
                 }
             }
-            if (directSwap) {
-                auto newend = std::remove(near.begin(), near.end(), i); //no self loops!
-                if (newend != near.end()) {
-                    assert(newend+1 == near.end());
-                    assert(*(newend)==i);
-                    near.pop_back();//std::remove doesn't remove element but swaps it to the end
-                }
-                result.swapNeighborhood(i, near, empty, false);
-            } else {
-                for (index j : near) {
-                    if (j >= n) ERROR("Node ", j, " prospective neighbor of ", i, " does not actually exist. Oops.");
-                    if(radii[j] > radii[i] || (radii[j] == radii[i] && angles[j] < angles[i]))
-                        result.addHalfEdge(i,j);
-                }
+            for (index j : near) {
+                if (j >= n) ERROR("Node ", j, " prospective neighbor of ", i, " does not actually exist. Oops.");
+                if(radii[j] > radii[i] || (radii[j] == radii[i] && angles[j] < angles[i]))
+                    result.addHalfEdge(i,j);
             }
         }
         threadtimers[id].stop();
     }
     timer.stop();
     INFO("Generating Edges took ", timer.elapsedMilliseconds(), " milliseconds.");
-    return result.toGraph(!directSwap, true);
+    return result.completeGraph(true);
 }
 
 Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii, double R, double T) {
@@ -256,7 +246,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
 
     }
     DEBUG("Candidates tested: ", totalCandidates);
-    return result.toGraph(true, true);
+    return result.completeGraph(true);
 
 }
 } // namespace NetworKit

@@ -33,6 +33,7 @@ public:
                           double threshold, bool above);
 
     Graph calculate();
+    Graph calculateUndirected();
 };
 
 } // namespace NetworKit

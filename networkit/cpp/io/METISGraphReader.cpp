@@ -9,7 +9,6 @@
 #include <networkit/auxiliary/Enforce.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/StringTools.hpp>
-#include <networkit/graph/GraphBuilder.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/METISParser.hpp>
 
@@ -38,7 +37,7 @@ Graph METISGraphReader::read(const std::string& path) {
         ignoreFirst = ncon;
     }
 
-    GraphBuilder b(n, weighted);
+    Graph G(n, weighted);
     std::string graphName = Aux::StringTools::split(Aux::StringTools::split(path, '/').back(), '.').front();
 
     INFO("\n[BEGIN] reading graph G(n=", n, ", m=", m, ") from METIS file: ", graphName);
@@ -48,6 +47,7 @@ Graph METISGraphReader::read(const std::string& path) {
 #endif
     node u = 0; // begin with 0
     count edgeCounter = 0;
+    count selfLoops = 0;
     if (weighted == 0) {
         while (parser.hasNext() && u < n) {
             std::vector<node> adjacencies = parser.getNext(ignoreFirst);
@@ -60,8 +60,11 @@ Graph METISGraphReader::read(const std::string& path) {
                 Aux::Checkers::Enforcer::enforce(adjacencies[i] > 0 && adjacencies[i] <= n);
                 node v = adjacencies[i] - 1;// METIS-indices are 1-based
                 // correct edgeCounter for selfloops
-                edgeCounter += (u == v);
-                b.addHalfEdge(u, v);
+                if(u == v) {
+                    edgeCounter++;
+                    selfLoops++;
+                }
+                G.addPartialEdge(unsafe, u, v);
             }
             u++; // next node
 #ifndef NETWORKIT_RELEASE_LOGGING
@@ -84,9 +87,12 @@ Graph METISGraphReader::read(const std::string& path) {
                 Aux::Checkers::Enforcer::enforce(adjacencies[i].first > 0 && adjacencies[i].first <= n);
                 node v = adjacencies[i].first - 1; 	// METIS-indices are 1-based
                 // correct edgeCounter for selfloops
-                edgeCounter += (u == v);
+                if(u == v) {
+                    edgeCounter++;
+                    selfLoops++;
+                }
                 double weight = adjacencies[i].second;
-                b.addHalfEdge(u, v, weight);
+                G.addPartialEdge(unsafe, u, v, weight);
                 TRACE("(",u,",",v,",",adjacencies[i].second,")");
             }
             u += 1; // next node
@@ -98,9 +104,8 @@ Graph METISGraphReader::read(const std::string& path) {
 #endif
         }
     }
-
-    auto G = b.toGraph(false);
-
+    G.setEdgeCount(unsafe, edgeCounter/2);
+    G.setNumberOfSelfLoops(unsafe, selfLoops);
     if (G.numberOfEdges() != m) {
         ERROR("METIS file ", path," is corrupted: actual number of added edges doesn't match the specifed number of edges");
     }

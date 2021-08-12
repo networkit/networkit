@@ -30,7 +30,7 @@ Graph ErdosRenyiGenerator::generate() {
         });
     }
 
-    return builder.toGraph(true, false);
+    return builder.completeGraph(false);
 }
 
 } /* namespace NetworKit */
