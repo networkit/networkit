@@ -165,8 +165,16 @@ public:
 
     /**
      * Generates a Graph instance. The graph builder will be reseted at the end.
+     *
+     * Deprecated, use completeGraph instead.
+     *
      */
-    Graph toGraph(bool autoCompleteEdges, bool parallel = false);
+    Graph TLX_DEPRECATED(toGraph(bool autoCompleteEdges = true, bool parallel = false));
+
+    /**
+     * Generates a Graph instance. The graph builder will be reseted at the end.
+     */
+    Graph completeGraph(bool parallel);
 
     /**
      * Iterate over all nodes of the graph and call @a handle (lambda closure).
@@ -200,7 +208,6 @@ public:
     template <typename L> void parallelForNodePairs(L handle) const;
 
 private:
-    void toGraphDirectSwap(Graph &G);
     void toGraphSequential(Graph &G);
     void toGraphParallel(Graph &G);
 
