@@ -39,6 +39,7 @@ if os_soabi is None:
 	os_soabi =  sysconfig.get_config_var('EXT_SUFFIX').split(".")[1] # get_config_var('SOABI') is None on win32-systems
 
 import os
+import platform
 import subprocess #calling cmake, make and cython
 
 ################################################
@@ -92,7 +93,8 @@ def determineCompiler(candidates, std, flags):
 		cmd.extend(flags)
 		cmd.append("sample.cpp")
 		try:
-			if subprocess.call(cmd,stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0:
+			my_env = os.environ.copy()
+			if subprocess.call(cmd,stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=my_env) == 0:
 				os.remove("sample.cpp")
 				os.remove("test_build")
 				return compiler
@@ -107,7 +109,14 @@ def determineCompiler(candidates, std, flags):
 # only check for a compiler if none is specified
 if cmakeCompiler is None:
 	if sys.platform == "darwin":
-		cmakeCompiler = determineCompiler(["c++"], "c++14", ["-Xpreprocessor", "-fopenmp", "-lomp"])
+		# homebrew's "libomp" is used as a default package for AppleClang.
+		# For arm64 macOS, homebrew is installed in /opt/homebrew by default, therefore it is not on include/lib path.
+		try:
+			proc = subprocess.run(['brew','--prefix'], stdout=subprocess.PIPE)
+			brewPrefix = proc.stdout.decode('utf-8').strip()
+			cmakeCompiler = determineCompiler(["c++"], "c++14", ["-Xpreprocessor", "-fopenmp", "-I" + str(brewPrefix) + "/include", "-L" + str(brewPrefix) + "/lib", "-lomp"])
+		except:
+			pass
 	if sys.platform == "win32":
 		# On "win32"-systems compiler detection is not easy, since paths are only set by enabling vcvarsall.bat 
 		# (for default compiler cl.exe). We assume that Visual Studio is installed and activated.
@@ -117,8 +126,9 @@ if cmakeCompiler is None:
 		cmakeCompiler = determineCompiler(candidates, "c++14", ["-fopenmp"])
 	if cmakeCompiler is None:
 		print("ERROR: No suitable compiler found. Install any of these: ", candidates)
+		print("       If you have a suitable compiler installed, which is not a standard path, you can override detection by setting 'export NETWORKIT_OVERRIDE_CXX=<compiler-path>'")
 		if sys.platform == "darwin":
-			print("If using AppleClang, OpenMP might be needed. Install with: 'brew install libomp'")
+			print("If using AppleClang, OpenMP is needed. Use brew or macports to install libomp.")
 		exit(1)
 
 ################################################
