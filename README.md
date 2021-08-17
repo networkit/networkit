@@ -230,8 +230,8 @@ in NetworKit, and simply using NetworKit. We ask you to cite the appropriate one
 [list]: https://sympa.cms.hu-berlin.de/sympa/subscribe/networkit
 [networkit]: https://networkit.github.io/
 [IPython]: https://ipython.readthedocs.io/en/stable/
-[NetworKit UserGuide]: https://github.com/networkit/networkit/blob/Dev/notebooks/User-Guide.ipynb
-[notebooks]: https://github.com/networkit/networkit/blob/Dev/notebooks/
+[NetworKit UserGuide]: https://github.com/networkit/networkit/blob/master/notebooks/User-Guide.ipynb
+[notebooks]: https://github.com/networkit/networkit/blob/master/notebooks/
 [g++]: https://gcc.gnu.org
 [clang++]: https://clang.llvm.org/
 [Pip]: https://pypi.python.org/pypi/pip

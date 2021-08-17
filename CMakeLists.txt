@@ -333,6 +333,9 @@ if(NETWORKIT_PYTHON)
 					OUTPUT_NAME "${TARGET_LIB}.${NETWORKIT_PYTHON_SOABI}")
 		if(WIN32)
 			set_target_properties(${TARGET_LIB} PROPERTIES SUFFIX .pyd)
+			# Linking against Python3_libs is only neccessary on Windows. On other OSes 
+			# this can lead to segmentation faults when importing NetworKit in Python.
+			target_link_libraries(${TARGET_LIB} PRIVATE ${Python3_LIBRARIES})
 		endif()
 
 		# If rpath-content is set explicitly, omit the dynamic binary path
@@ -351,7 +354,6 @@ if(NETWORKIT_PYTHON)
 		endif()
 
 		target_link_libraries(${TARGET_LIB} PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
-		target_link_libraries(${TARGET_LIB} PRIVATE ${Python3_LIBRARIES})
 
 		install(TARGETS ${TARGET_LIB}
 			LIBRARY DESTINATION "${NETWORKIT_LIB_DEST}/networkit")

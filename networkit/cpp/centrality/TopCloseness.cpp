@@ -5,13 +5,12 @@
  *      Author: ebergamini, michele borassi
  */
 
-// networkit-format
-
 #include <omp.h>
 #include <queue>
 #include <stack>
 
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/VectorComparator.hpp>
 #include <networkit/centrality/TopCloseness.hpp>
 #include <networkit/graph/BFS.hpp>
 #include <networkit/reachability/ReachableNodes.hpp>
@@ -321,7 +320,7 @@ double TopCloseness::BFScut(node v, double x, std::vector<bool> &visited,
 
 void TopCloseness::run() {
     init();
-    tlx::d_ary_heap<node, 2, LargerFarness> top{farness};
+    tlx::d_ary_heap<node, 2, Aux::GreaterInVector<double>> top{farness};
     top.reserve(k);
     std::vector<bool> toAnalyze(n, true);
     omp_lock_t lock;
@@ -344,7 +343,7 @@ void TopCloseness::run() {
             farness[u] = -(static_cast<double>(G.degreeOut(u)));
         }
     });
-    tlx::d_ary_addressable_int_heap<node, 2, SmallerFarness> Q{farness};
+    tlx::d_ary_addressable_int_heap<node, 2, Aux::LessInVector<double>> Q{farness};
 
     std::vector<node> nodes;
     nodes.reserve(G.numberOfNodes());

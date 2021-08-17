@@ -5,8 +5,6 @@
  *      Author: cls
  */
 
-// networkit-format
-
 #include <numeric>
 #include <omp.h>
 
@@ -100,8 +98,8 @@ void ParallelPartitionCoarsening::run() {
         }
     }
 
-    Gcoarsened.storedNumberOfSelfLoops = numSelfLoops;
-    Gcoarsened.m = numEdges / 2 + numSelfLoops;
+    Gcoarsened.setNumberOfSelfLoops(unsafe, numSelfLoops);
+    Gcoarsened.setEdgeCount(unsafe, numEdges / 2 + numSelfLoops);
 
     this->nodeMapping = nodeToSuperNode.getVector();
     hasRun = true;
