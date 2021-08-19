@@ -11,6 +11,7 @@
 
 #include <tlx/container/d_ary_addressable_int_heap.hpp>
 
+#include <networkit/auxiliary/VectorComparator.hpp>
 #include <networkit/distance/SSSP.hpp>
 
 namespace NetworKit {
@@ -43,17 +44,7 @@ public:
     void run() override;
 
 private:
-    struct Compare {
-    public:
-        Compare(const std::vector<double> &dist_) : dist(dist_) {}
-
-        bool operator()(node x, node y) const { return dist[x] < dist[y]; }
-
-    private:
-        const std::vector<double> &dist;
-    };
-
-    tlx::d_ary_addressable_int_heap<node, 2, Compare> heap;
+    tlx::d_ary_addressable_int_heap<node, 2, Aux::LessInVector<double>> heap;
 };
 
 } /* namespace NetworKit */

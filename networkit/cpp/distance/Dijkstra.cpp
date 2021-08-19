@@ -15,7 +15,7 @@ namespace NetworKit {
 Dijkstra::Dijkstra(const Graph &G, node source, bool storePaths,
                    bool storeNodesSortedByDistance, node target)
     : SSSP(G, source, storePaths, storeNodesSortedByDistance, target),
-      heap(Compare(distances)) {}
+      heap(Aux::LessInVector<double>{distances}) {}
 
 void Dijkstra::run() {
 
