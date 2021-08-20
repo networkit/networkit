@@ -7,6 +7,7 @@ __author__ = "Christian Staudt"
 
 # external imports
 import scipy.sparse
+from scipy.sparse import csgraph, linalg
 import numpy as np
 
 def column(matrix, i):
@@ -135,7 +136,7 @@ def symmetricEigenvectors(matrix, cutoff=-1, reverse=False):
 
 	"""
 	if cutoff == -1:
-		cutoff = matrix.shape[0] - 2
+		cutoff = matrix.shape[0] - 3
 
 	if reverse:
 		mode = "SA"
@@ -161,7 +162,7 @@ def eigenvectors(matrix, cutoff=-1, reverse=False):
 	matrix : sparse matrix
 			 The matrix to compute the eigenvectors of
 	cutoff : int
-			 The maximum (or minimum) magnitude of the eigenvectors needed
+			 The maximum (or minimum) number of eigenvectors needed
 	reverse : boolean
 			  If set to true, the smaller eigenvalues will be computed before the larger ones
 
@@ -173,7 +174,7 @@ def eigenvectors(matrix, cutoff=-1, reverse=False):
 
 	"""
 	if cutoff == -1:
-		cutoff = matrix.shape[0] - 2
+		cutoff = matrix.shape[0] - 3
 
 	if reverse:
 		mode = "SR"

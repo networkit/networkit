@@ -16,7 +16,7 @@ class SpectralColoring(object):
 
 	def valid(self, color):
 		for v in self.colors[color]:
-			for u in self.graph.neighbors(v):
+			for u in self.graph.iterNeighbors(v):
 				if u in self.colors[color]:
 					return False
 
