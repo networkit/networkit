@@ -9,7 +9,7 @@ import yaml
 nkt.setup()
 os.chdir(nkt.getNetworKitRoot())
 
-for configFile in [".clang-format", ".clang-tidy"]:
+for configFile in [".clang-format", ".clang-tidy", "CITATION.cff"]:
     try:
         with open(configFile, "r") as f:
             yaml.load(f, yaml.SafeLoader)

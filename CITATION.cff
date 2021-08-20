@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: Please cite this software using the metadata from 'preferred-citation'.
+url: "https://networkit.github.io/"
+authors:
+  - family-names: L. Staudt
+    given-names: Christian
+  - family-names: Sazonovs
+    given-names: Aleksejs
+  - family-names: Meyerhenke
+    given-names: Henning
+title: "NetworKit: A Tool Suite for Large-scale Complex Network Analysis"
+preferred-citation:
+    type: article
+    authors:
+      - family-names: L. Staudt
+        given-names: Christian
+      - family-names: Sazonovs
+        given-names: Aleksejs
+      - family-names: Meyerhenke
+        given-names: Henning
+    title: "NetworKit: A Tool Suite for Large-scale Complex Network Analysis"
+    year: "2016"
+    month: "12"
+    volume: 4
+    number: 4
+    journal: Network Science
+    publisher:
+        name: "Cambridge University Press"
+    pages: "508-530"
+    doi: 10.1017/nws.2016.20
+    abstract: "We introduce NetworKit, an open-source software package for analyzing the structure of large complex networks. Appropriate algorithmic solutions are required to handle increasingly common large graph data sets containing up to billions of connections. We describe the methodology applied to develop scalable solutions to network analysis problems, including techniques like parallelization, heuristics for computationally expensive problems, efficient data structures, and modular software architecture. Our goal for the software is to package results of our algorithm engineering efforts and put them into the hands of domain experts. NetworKit is implemented as a hybrid combining the kernels written in C++ with a Python front end, enabling integration into the Python ecosystem of tested tools for data analysis and scientific computing. The package provides a wide range of functionality (including common and novel analytics algorithms and graph generators) and does so via a convenient interface. In an experimental comparison with related software, NetworKit shows the best performance on a range of typical analysis tasks."
+repository-code: "https://github.com/networkit/networkit"
