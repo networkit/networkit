@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * SparseAccumulator.hpp
  *
@@ -18,8 +17,9 @@
 namespace NetworKit {
 
 /**
- * The SparseAccumulator class represents the sparse accumulator datastructure as described in Kepner, Jeremy, and John Gilbert, eds.
- * Graph algorithms in the language of linear algebra. Vol. 22. SIAM, 2011. It is used as temporal storage for efficient computations on matrices.
+ * The SparseAccumulator class represents the sparse accumulator datastructure as described in
+ * Kepner, Jeremy, and John Gilbert, eds. Graph algorithms in the language of linear algebra.
+ * Vol. 22. SIAM, 2011. It is used as temporal storage for efficient computations on matrices.
  */
 class SparseAccumulator final {
 private:
@@ -29,7 +29,8 @@ private:
     /** dense vector of doubles which stores the computed values */
     std::vector<double> values; // w
 
-    /** dense vector of integers which stores whether a valid value is stored in values at each position */
+    /** dense vector of integers which stores whether a valid value is stored in values at each
+     * position */
     std::vector<count> occupied; // b
 
     /** unordered list to store the position of valid values in values vector */
@@ -43,7 +44,8 @@ public:
     SparseAccumulator(count size) : row(1), values(size), occupied(size, 0) {}
 
     /**
-     * Stores @a value at @a pos. If a valid value is already stored at @a pos then @value is added to that.
+     * Stores @a value at @a pos. If a valid value is already stored at @a pos then @value is added
+     * to that.
      * @param value The value to store or add at @a pos in values.
      * @param pos The position in values.
      */
@@ -58,14 +60,14 @@ public:
     }
 
     /**
-     * Stores @a value at @a pos. If a valid value is already stored at @a pos then we call the binary handle
-     * function with the stored value and the new @a value as arguments.
+     * Stores @a value at @a pos. If a valid value is already stored at @a pos then we call the
+     * binary handle function with the stored value and the new @a value as arguments.
      * @param value The value to store or add at @a pos in values.
      * @param pos The position in values.
      * @param handle (double, double) -> double
      */
-    template<typename L>
-    void scatter(double value, index pos, L& handle) {
+    template <typename L>
+    void scatter(double value, index pos, L &handle) {
         assert(pos < values.size());
 
         if (occupied[pos] < row) {
@@ -83,7 +85,8 @@ public:
      * @return The number of non zero values in the current row.
      *
      */
-    template<typename L> count gather(L handle) {
+    template <typename L>
+    count gather(L handle) {
         count nonZeros = 0;
         std::sort(indices.begin(), indices.end());
         for (index idx : indices) {
