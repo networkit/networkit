@@ -31,12 +31,16 @@ public:
 
     void run() override = 0;
 
-    Graph getCoarseGraph() const;
+    const Graph& getCoarseGraph() const;
+
+    Graph& getCoarseGraph();
 
     /**
      * Get mapping from fine to coarse node.
      */
-    std::vector<node> getFineToCoarseNodeMapping() const;
+    const std::vector<node>& getFineToCoarseNodeMapping() const;
+
+    std::vector<node>& getFineToCoarseNodeMapping();
 
     /**
      * Get mapping from coarse node to collection of fine nodes.
@@ -47,7 +51,6 @@ protected:
     const Graph* G;
     Graph Gcoarsened;
     std::vector<node> nodeMapping;
-
 };
 
 } // namespace
