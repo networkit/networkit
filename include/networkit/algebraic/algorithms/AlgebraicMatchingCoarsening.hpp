@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * AlgebraicMatchingCoarsening.hpp
  *
@@ -17,21 +16,22 @@ namespace NetworKit {
 
 /**
  * @ingroup algebraic
- * Implements an algebraic version of the MatchingCoarsening algorithm by computing a projection matrix from fine to
- * coarse.
+ * Implements an algebraic version of the MatchingCoarsening algorithm by computing a projection
+ * matrix from fine to coarse.
  */
-template<class Matrix>
+template <class Matrix>
 class AlgebraicMatchingCoarsening final : public GraphCoarsening {
 public:
     /**
-     * Constructs an instance of AlgebraicMatchingCoarsening for the given Graph @a graph and the corresponding
-     * Matching @a matching. If @a noSelfLoops is set to true (false by default), no self-loops are created
-     * during the coarsening.
+     * Constructs an instance of AlgebraicMatchingCoarsening for the given Graph @a graph and the
+     * corresponding Matching @a matching. If @a noSelfLoops is set to true (false by default), no
+     * self-loops are created during the coarsening.
      * @param graph
      * @param matching
      * @param noSelfLoops
      */
-    AlgebraicMatchingCoarsening(const Graph& graph, const Matching& matching, bool noSelfLoops = false);
+    AlgebraicMatchingCoarsening(const Graph &graph, const Matching &matching,
+                                bool noSelfLoops = false);
 
     /**
      * Computes the coarsening for the graph using the given matching.
@@ -44,9 +44,13 @@ private:
     bool noSelfLoops;
 };
 
-template<class Matrix>
-AlgebraicMatchingCoarsening<Matrix>::AlgebraicMatchingCoarsening(const Graph& graph, const Matching& matching, bool noSelfLoops) : GraphCoarsening(graph), A(Matrix::adjacencyMatrix(graph)), noSelfLoops(noSelfLoops) {
-    if (G->isDirected()) throw std::runtime_error("Only defined for undirected graphs.");
+template <class Matrix>
+AlgebraicMatchingCoarsening<Matrix>::AlgebraicMatchingCoarsening(const Graph &graph,
+                                                                 const Matching &matching,
+                                                                 bool noSelfLoops)
+    : GraphCoarsening(graph), A(Matrix::adjacencyMatrix(graph)), noSelfLoops(noSelfLoops) {
+    if (G->isDirected())
+        throw std::runtime_error("Only defined for undirected graphs.");
     nodeMapping.resize(graph.numberOfNodes());
     std::vector<Triplet> triplets(graph.numberOfNodes());
 
@@ -58,8 +62,7 @@ AlgebraicMatchingCoarsening<Matrix>::AlgebraicMatchingCoarsening(const Graph& gr
             // vertex u is carried over to the new level
             nodeMapping[u] = idx;
             ++idx;
-        }
-        else {
+        } else {
             // vertex u is not carried over, receives ID of mate
             nodeMapping[u] = nodeMapping[mate];
         }
@@ -70,9 +73,11 @@ AlgebraicMatchingCoarsening<Matrix>::AlgebraicMatchingCoarsening(const Graph& gr
     P = Matrix(graph.numberOfNodes(), numCoarse, triplets); // dimensions: fine x coarse
 }
 
-template<class Matrix>
+template <class Matrix>
 void AlgebraicMatchingCoarsening<Matrix>::run() {
-    Matrix coarseAdj = P.transpose() * A * P; // Matrix::mTmMultiply performs worse due to high sparsity of P (nnz = n)
+    Matrix coarseAdj =
+        P.transpose() * A
+        * P; // Matrix::mTmMultiply performs worse due to high sparsity of P (nnz = n)
 
     Gcoarsened = Graph(coarseAdj.numberOfRows(), true);
     coarseAdj.forNonZeroElementsInRowOrder([&](node u, node v, edgeweight weight) {
