@@ -23,8 +23,7 @@ GroupClosenessGrowShrinkImpl<WeightType>::GroupClosenessGrowShrinkImpl(const Gra
                                                                        count maxIterations)
     : G(&G), group(std::move(initGroup)), extended(extended),
       insertions(insertions == 0 ? computeConsecutiveInsertions(G, group.size()) : insertions),
-      maxIterations(maxIterations), heap(CompareDistance(distance)),
-      heap_(CompareDistance(distance_)) {
+      maxIterations(maxIterations), heap(distance), heap_(distance_) {
 
     if (G.isDirected())
         std::runtime_error("Error, this algorithm does not support directed graphs.");

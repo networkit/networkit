@@ -12,6 +12,7 @@
 
 #include <tlx/container/d_ary_addressable_int_heap.hpp>
 
+#include <networkit/auxiliary/VectorComparator.hpp>
 #include <networkit/centrality/Centrality.hpp>
 
 namespace NetworKit {
@@ -93,17 +94,7 @@ class Closeness : public Centrality {
                 1.;
     }
 
-    struct Compare {
-      public:
-        Compare(const std::vector<double> &dist_) : dist(dist_) {}
-
-        bool operator()(node x, node y) const { return dist[x] < dist[y]; }
-
-      private:
-        const std::vector<double> &dist;
-    };
-
-    std::vector<tlx::d_ary_addressable_int_heap<node, 2, Compare>> heaps;
+    std::vector<tlx::d_ary_addressable_int_heap<node, 2, Aux::LessInVector<double>>> heaps;
 };
 
 } /* namespace NetworKit */

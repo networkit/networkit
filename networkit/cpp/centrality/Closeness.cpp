@@ -63,7 +63,7 @@ void Closeness::run() {
         dDist.resize(omp_get_max_threads(), std::vector<double>(n));
         heaps.reserve(omp_get_max_threads());
         for (int i = 0; i < omp_get_max_threads(); ++i) {
-            heaps.emplace_back((Compare(dDist[i])));
+            heaps.emplace_back(dDist[i]);
             heaps.back().reserve(n);
         }
         dijkstra();

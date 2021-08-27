@@ -21,6 +21,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <networkit/auxiliary/VectorComparator.hpp>
 #include <networkit/distance/Diameter.hpp>
 #include <networkit/graph/Graph.hpp>
 
@@ -86,19 +87,7 @@ private:
     std::vector<std::uniform_int_distribution<uint32_t>> intDistributions;
     void initRandomVec();
 
-    struct CompareDistance {
-        CompareDistance(const std::vector<WeightType> &distance) : distance(&distance) {}
-
-        bool operator()(const node x, const node y) const noexcept {
-            return (*distance)[x] < (*distance)[y];
-        }
-
-    private:
-        const std::vector<WeightType> *distance;
-    };
-
-    tlx::d_ary_addressable_int_heap<node, 2, CompareDistance> heap;
-    tlx::d_ary_addressable_int_heap<node, 2, CompareDistance> heap_;
+    tlx::d_ary_addressable_int_heap<node, 2, Aux::LessInVector<WeightType>> heap, heap_;
 
     void dijkstra();
     bool findAndSwap();
