@@ -23,5 +23,5 @@ def bfsSample(G, source=None, k = 50):
                 closest.add(v)
         G.forEdgesOf(u, enqueue)
     print("found {0} nodes".format(len(closest)))
-    G1 = G.subgraphFromNodes(closest)
+    G1 = nk.graphtools.subgraphFromNodes(G, closest)
     return G1
