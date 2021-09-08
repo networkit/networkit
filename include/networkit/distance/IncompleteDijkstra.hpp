@@ -1,5 +1,5 @@
 /*
- * IncompleteDijkstra.h
+ * IncompleteDijkstra.hpp
  *
  *  Created on: 15.07.2014
  *      Author: dhoske
@@ -14,6 +14,7 @@
 #include <tlx/container/d_ary_addressable_int_heap.hpp>
 
 #include <networkit/auxiliary/PrioQueue.hpp>
+#include <networkit/auxiliary/VectorComparator.hpp>
 #include <networkit/distance/IncompleteSSSP.hpp>
 #include <networkit/graph/Graph.hpp>
 
@@ -57,15 +58,7 @@ private:
 
     std::vector<edgeweight> dists;
 
-    struct CompareDistance {
-        CompareDistance(const std::vector<edgeweight> *distance) : distance(distance) {}
-        bool operator()(node x, node y) const noexcept { return (*distance)[x] < (*distance)[y]; }
-
-    private:
-        const std::vector<edgeweight> *distance;
-    };
-
-    tlx::d_ary_addressable_int_heap<node, 2, CompareDistance> heap;
+    tlx::d_ary_addressable_int_heap<node, 2, Aux::LessInVector<edgeweight>> heap;
 };
 
 } // namespace NetworKit

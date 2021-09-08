@@ -9,6 +9,7 @@
 #ifndef NETWORKIT_DISTANCE_A_STAR_GENERAL_HPP_
 #define NETWORKIT_DISTANCE_A_STAR_GENERAL_HPP_
 
+#include <networkit/auxiliary/VectorComparator.hpp>
 #include <networkit/distance/STSP.hpp>
 
 #include <tlx/container/d_ary_addressable_int_heap.hpp>
@@ -35,7 +36,7 @@ public:
      * and reconstruct a shortest path from @a source and @a target.
      */
     AStarGeneral(const Graph &G, Heuristic heu, node source, node target, bool storePred = true)
-        : STSP(G, source, target, storePred), heu(heu), heap(Compare(prio)) {}
+        : STSP(G, source, target, storePred), heu(heu), heap{prio} {}
 
     /*
      * Executes the AStar algorithm.
@@ -102,16 +103,7 @@ private:
     // Lower bound of the distance to the target node
     Heuristic heu;
 
-    struct Compare {
-    public:
-        Compare(const std::vector<double> &prio) : prio(prio) {}
-        bool operator()(node u, node v) const { return prio[u] < prio[v]; }
-
-    private:
-        const std::vector<double> &prio;
-    };
-
-    tlx::d_ary_addressable_int_heap<node, 2, Compare> heap;
+    tlx::d_ary_addressable_int_heap<node, 2, Aux::LessInVector<double>> heap;
 };
 } // namespace NetworKit
 

@@ -8,6 +8,7 @@
 #ifndef NETWORKIT_CENTRALITY_GED_WALK_HPP_
 #define NETWORKIT_CENTRALITY_GED_WALK_HPP_
 
+#include <networkit/auxiliary/VectorComparator.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
@@ -64,22 +65,13 @@ private:
     std::vector<walks> gainW;      // Number of marginal walks on the last level.
     std::vector<double> gainBound; // Upper bound on the marginal score.
 
-    struct CompareScore {
-    public:
-        CompareScore(const std::vector<double> &score) : score(&score) {}
-        bool operator()(node x, node y) const { return (*score)[x] > (*score)[y]; }
-
-    private:
-        const std::vector<double> *score;
-    };
-
     struct EvaluationResult {
         double score;
         walks w;
     };
 
-    tlx::d_ary_addressable_int_heap<node, 2, CompareScore> scoreQ{CompareScore(gainScore)};
-    tlx::d_ary_addressable_int_heap<node, 2, CompareScore> boundQ{CompareScore(gainBound)};
+    tlx::d_ary_addressable_int_heap<node, 2, Aux::GreaterInVector<double>> scoreQ{gainScore},
+        boundQ{gainBound};
 
     void init();
     double computeGamma();
