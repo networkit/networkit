@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DenseMatrix.hpp
  *
@@ -50,68 +49,64 @@ public:
     DenseMatrix(count nRows, count nCols, double zero = 0.0);
 
     /**
-     * Constructs the @a dimension x @a dimension DenseMatrix from the elements at position @a positions with values @values.
+     * Constructs the @a dimension x @a dimension DenseMatrix from the elements at position @a
+     * positions with values @values.
      * @param dimension Defines how many rows and columns this matrix has.
      * @param triplets The nonzero elements.
      * @param zero The zero element (default is 0.0).
      */
-    DenseMatrix(count dimension, const std::vector<Triplet>& triplets, double zero = 0.0);
+    DenseMatrix(count dimension, const std::vector<Triplet> &triplets, double zero = 0.0);
 
     /**
-     * Constructs the @a nRows x @a nCols DenseMatrix from the elements at position @a positions with values @values.
+     * Constructs the @a nRows x @a nCols DenseMatrix from the elements at position @a positions
+     * with values @values.
      * @param nRows Defines how many rows this matrix has.
      * @param nCols Defines how many columns this matrix has.
      * @param triplets The nonzero elements.
      * @param zero The zero element (default is 0.0).
      */
-    DenseMatrix(count nRows,count nCols, const std::vector<Triplet>& triplets, double zero = 0.0);
+    DenseMatrix(count nRows, count nCols, const std::vector<Triplet> &triplets, double zero = 0.0);
 
     /**
-     * Constructs an instance of DenseMatrix given the number of rows (@a nRows) and the number of columns (@a nCols) and its
-     * values (@a entries).
+     * Constructs an instance of DenseMatrix given the number of rows (@a nRows) and the number of
+     * columns (@a nCols) and its values (@a entries).
      * @param nRows Number of rows.
      * @param nCols Number of columns.
      * @param entries Entries of the matrix.
      * @param zero The zero element (default is 0.0).
      * @note The size of the @a entries vector should be equal to @a nRows * @a nCols.
      */
-    DenseMatrix(count nRows, count nCols, const std::vector<double>& entries, double zero = 0.0);
+    DenseMatrix(count nRows, count nCols, const std::vector<double> &entries, double zero = 0.0);
 
     /** Default destructor */
     ~DenseMatrix() = default;
 
     /** Default copy constructor */
-    DenseMatrix (const DenseMatrix &other) = default;
+    DenseMatrix(const DenseMatrix &other) = default;
 
     /** Default move constructor */
-    DenseMatrix (DenseMatrix &&other) = default;
+    DenseMatrix(DenseMatrix &&other) = default;
 
     /** Default copy assignment operator */
-    DenseMatrix& operator=(DenseMatrix &&other) = default;
+    DenseMatrix &operator=(DenseMatrix &&other) = default;
 
     /** Default move assignment operator */
-    DenseMatrix& operator=(const DenseMatrix &other) = default;
+    DenseMatrix &operator=(const DenseMatrix &other) = default;
 
     /**
      * @return Number of rows.
      */
-    inline count numberOfRows() const {
-        return nRows;
-    }
+    inline count numberOfRows() const { return nRows; }
 
     /**
      * @return Number of columns.
      */
-    inline count numberOfColumns() const {
-        return nCols;
-    }
+    inline count numberOfColumns() const { return nCols; }
 
     /**
      * Returns the zero element of the matrix.
      */
-    inline double getZero() const {
-        return zero;
-    }
+    inline double getZero() const { return zero; }
 
     /**
      * @param i The row index.
@@ -135,7 +130,6 @@ public:
      * Set the matrix at position (@a i, @a j) to @a value.
      */
     void setValue(index i, index j, double value);
-
 
     /**
      * @return Row @a i of this matrix as vector.
@@ -162,7 +156,7 @@ public:
      * Adds @a other to this matrix.
      * @return Reference to this matrix.
      */
-    DenseMatrix& operator+=(const DenseMatrix &other);
+    DenseMatrix &operator+=(const DenseMatrix &other);
 
     /**
      * Subtracts @a other from this matrix and returns the result.
@@ -175,7 +169,7 @@ public:
      * Subtracts @a other from this matrix.
      * @return Reference to this matrix.
      */
-    DenseMatrix& operator-=(const DenseMatrix &other);
+    DenseMatrix &operator-=(const DenseMatrix &other);
 
     /**
      * Multiplies this matrix with a scalar specified in @a scalar and returns the result.
@@ -187,7 +181,7 @@ public:
      * Multiplies this matrix with a scalar specified in @a scalar.
      * @return Reference to this matrix.
      */
-    DenseMatrix& operator*=(double scalar);
+    DenseMatrix &operator*=(double scalar);
 
     /**
      * Multiplies this matrix with @a vector and returns the result.
@@ -202,7 +196,8 @@ public:
     DenseMatrix operator*(const DenseMatrix &other) const;
 
     /**
-     * Divides this matrix by a divisor specified in @a divisor and returns the result in a new matrix.
+     * Divides this matrix by a divisor specified in @a divisor and returns the result in a new
+     * matrix.
      * @return The result of dividing this matrix by @a divisor.
      */
     DenseMatrix operator/(double divisor) const;
@@ -211,7 +206,7 @@ public:
      * Divides this matrix by a divisor specified in @a divisor.
      * @return Reference to this matrix.
      */
-    DenseMatrix& operator/=(double divisor);
+    DenseMatrix &operator/=(double divisor);
 
     /**
      * Transposes this matrix and returns it.
@@ -219,31 +214,36 @@ public:
     DenseMatrix transpose() const;
 
     /**
-     * Extracts a matrix with rows and columns specified by @a rowIndices and @a columnIndices from this matrix.
-     * The order of rows and columns is equal to the order in @a rowIndices and @a columnIndices. It is also
-     * possible to specify a row or column more than once to get duplicates.
+     * Extracts a matrix with rows and columns specified by @a rowIndices and @a columnIndices from
+     * this matrix. The order of rows and columns is equal to the order in @a rowIndices and @a
+     * columnIndices. It is also possible to specify a row or column more than once to get
+     * duplicates.
      * @param rowIndices
      * @param columnIndices
      */
-    DenseMatrix extract(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices) const;
+    DenseMatrix extract(const std::vector<index> &rowIndices,
+                        const std::vector<index> &columnIndices) const;
 
     /**
-     * Assign the contents of the matrix @a source to this matrix at rows and columns specified by @a rowIndices and
-     * @a columnIndices. That is, entry (i,j) of @a source is assigned to entry (rowIndices[i], columnIndices[j]) of
-     * this matrix. Note that the dimensions of @rowIndices and @a columnIndices must coincide with the number of rows
-     * and columns of @a source.
+     * Assign the contents of the matrix @a source to this matrix at rows and columns specified by
+     * @a rowIndices and
+     * @a columnIndices. That is, entry (i,j) of @a source is assigned to entry (rowIndices[i],
+     * columnIndices[j]) of this matrix. Note that the dimensions of @rowIndices and @a
+     * columnIndices must coincide with the number of rows and columns of @a source.
      * @param rowIndices
      * @param columnIndices
      * @param source
      */
-    void assign(const std::vector<index>& rowIndices, const std::vector<index>& columnIndices, const DenseMatrix& source);
+    void assign(const std::vector<index> &rowIndices, const std::vector<index> &columnIndices,
+                const DenseMatrix &source);
 
     /**
-     * Applies the unary function @a unaryElementFunction to each value in the matrix. Note that it must hold that the
-     * function applied to the zero element of this matrix returns the zero element.
+     * Applies the unary function @a unaryElementFunction to each value in the matrix. Note that it
+     * must hold that the function applied to the zero element of this matrix returns the zero
+     * element.
      * @param unaryElementFunction
      */
-    template<typename F>
+    template <typename F>
     void apply(F unaryElementFunction);
 
     /**
@@ -253,7 +253,8 @@ public:
     static void LUDecomposition(DenseMatrix &matrix);
 
     /**
-     * Computes the solution vector x to the system @a LU * x = @a b where @a LU is a matrix decomposed into L and U.
+     * Computes the solution vector x to the system @a LU * x = @a b where @a LU is a matrix
+     * decomposed into L and U.
      * @param LU Matrix decomposed into lower L and upper U matrix.
      * @param b Right-hand side.
      * @return Solution vector x to the linear equation system LU * x = b.
@@ -268,58 +269,75 @@ public:
      * @return @a A @a binaryOp @a B.
      * @note @a A and @a B must have the same dimensions.
      */
-    template<typename L> static DenseMatrix binaryOperator(const DenseMatrix &A, const DenseMatrix &B, L binaryOp);
+    template <typename L>
+    static DenseMatrix binaryOperator(const DenseMatrix &A, const DenseMatrix &B, L binaryOp);
 
     /**
-     * Iterate over all non-zero elements of row @a row in the matrix and call handler(index column, double value)
+     * Iterate over all non-zero elements of row @a row in the matrix and call handler(index column,
+     * double value)
      */
-    template<typename L> void forElementsInRow(index row, L handle) const;
+    template <typename L>
+    void forElementsInRow(index row, L handle) const;
 
     /**
-     * Iterate in parallel over all non-zero elements of row @a row in the matrix and call handler(index column, double value)
+     * Iterate in parallel over all non-zero elements of row @a row in the matrix and call
+     * handler(index column, double value)
      */
-    template<typename L> void parallelForElementsInRow(index row, L handle) const;
+    template <typename L>
+    void parallelForElementsInRow(index row, L handle) const;
 
     /**
-     * Iterate over all non-zero elements of the matrix in row order and call handler (lambda closure).
+     * Iterate over all non-zero elements of the matrix in row order and call handler (lambda
+     * closure).
      */
-    template<typename L> void forElementsInRowOrder(L handle) const;
+    template <typename L>
+    void forElementsInRowOrder(L handle) const;
 
     /**
-     * Iterate in parallel over all rows and call handler (lambda closure) on non-zero elements of the matrix.
+     * Iterate in parallel over all rows and call handler (lambda closure) on non-zero elements of
+     * the matrix.
      */
-    template<typename L> void parallelForElementsInRowOrder(L handle) const;
+    template <typename L>
+    void parallelForElementsInRowOrder(L handle) const;
 
     /**
-     * Iterate over all non-zero elements of row @a row in the matrix and call handler(index column, double value).
-     * @note This is a DenseMatrix! Therefore this operation needs O(numberOfRows()) time regardless of the number of
-     * non-zeros actually present.
+     * Iterate over all non-zero elements of row @a row in the matrix and call handler(index column,
+     * double value).
+     * @note This is a DenseMatrix! Therefore this operation needs O(numberOfRows()) time regardless
+     * of the number of non-zeros actually present.
      */
-    template<typename L> void forNonZeroElementsInRow(index row, L handle) const;
+    template <typename L>
+    void forNonZeroElementsInRow(index row, L handle) const;
 
     /**
-     * Iterate in parallel over all non-zero elements of row @a row in the matrix and call handler(index column, double value)
-     * @note This is a DenseMatrix! Therefore this operation needs O(numberOfRows()) sequential time regardless of the number
-     * of non-zeros actually present.
+     * Iterate in parallel over all non-zero elements of row @a row in the matrix and call
+     * handler(index column, double value)
+     * @note This is a DenseMatrix! Therefore this operation needs O(numberOfRows()) sequential time
+     * regardless of the number of non-zeros actually present.
      */
-    template<typename L> void parallelForNonZeroElementsInRow(index row, L handle) const;
+    template <typename L>
+    void parallelForNonZeroElementsInRow(index row, L handle) const;
 
     /**
-     * Iterate over all non-zero elements of the matrix in row order and call handler (lambda closure).
-     * @note This is a DenseMatrix! Therefore this operation needs O(numberOfRows() * numberOfColumns()) time regardless of the
-     *  number of non-zeros actually present.
+     * Iterate over all non-zero elements of the matrix in row order and call handler (lambda
+     * closure).
+     * @note This is a DenseMatrix! Therefore this operation needs O(numberOfRows() *
+     * numberOfColumns()) time regardless of the number of non-zeros actually present.
      */
-    template<typename L> void forNonZeroElementsInRowOrder(L handle) const;
+    template <typename L>
+    void forNonZeroElementsInRowOrder(L handle) const;
 
     /**
-     * Iterate in parallel over all rows and call handler (lambda closure) on non-zero elements of the matrix.
-     * @note This is a DenseMatrix! Therefore this operation needs O(numberOfRows() * numberOfColumns()) sequential time regardless
-     *  of the number of non-zeros actually present.
+     * Iterate in parallel over all rows and call handler (lambda closure) on non-zero elements of
+     * the matrix.
+     * @note This is a DenseMatrix! Therefore this operation needs O(numberOfRows() *
+     * numberOfColumns()) sequential time regardless of the number of non-zeros actually present.
      */
-    template<typename L> void parallelForNonZeroElementsInRowOrder(L handle) const;
+    template <typename L>
+    void parallelForNonZeroElementsInRowOrder(L handle) const;
 };
 
-template<typename F>
+template <typename F>
 void DenseMatrix::apply(F unaryElementFunction) {
 #pragma omp parallel for
     for (omp_index k = 0; k < static_cast<omp_index>(entries.size()); ++k) {
@@ -327,7 +345,9 @@ void DenseMatrix::apply(F unaryElementFunction) {
     }
 }
 
-template<typename L> inline DenseMatrix DenseMatrix::binaryOperator(const DenseMatrix &A, const DenseMatrix &B, L binaryOp) {
+template <typename L>
+inline DenseMatrix DenseMatrix::binaryOperator(const DenseMatrix &A, const DenseMatrix &B,
+                                               L binaryOp) {
     assert(A.nRows == B.nRows && A.nCols == B.nCols);
 
     std::vector<double> resultEntries(A.numberOfRows() * A.numberOfColumns(), 0.0);
@@ -343,7 +363,7 @@ template<typename L> inline DenseMatrix DenseMatrix::binaryOperator(const DenseM
     return DenseMatrix(A.numberOfRows(), A.numberOfColumns(), resultEntries);
 }
 
-template<typename L>
+template <typename L>
 inline void DenseMatrix::forElementsInRow(index i, L handle) const {
     index offset = i * numberOfColumns();
     for (index k = offset, j = 0; k < offset + numberOfColumns(); ++k, ++j) {
@@ -351,7 +371,7 @@ inline void DenseMatrix::forElementsInRow(index i, L handle) const {
     }
 }
 
-template<typename L>
+template <typename L>
 inline void DenseMatrix::parallelForElementsInRow(index i, L handle) const {
     index offset = i * numberOfColumns();
 #pragma omp parallel for
@@ -360,7 +380,7 @@ inline void DenseMatrix::parallelForElementsInRow(index i, L handle) const {
     }
 }
 
-template<typename L>
+template <typename L>
 inline void DenseMatrix::forElementsInRowOrder(L handle) const {
     for (index i = 0; i < nRows; ++i) {
         index offset = i * numberOfColumns();
@@ -370,7 +390,7 @@ inline void DenseMatrix::forElementsInRowOrder(L handle) const {
     }
 }
 
-template<typename L>
+template <typename L>
 inline void DenseMatrix::parallelForElementsInRowOrder(L handle) const {
 #pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
@@ -381,7 +401,7 @@ inline void DenseMatrix::parallelForElementsInRowOrder(L handle) const {
     }
 }
 
-template<typename L>
+template <typename L>
 inline void DenseMatrix::forNonZeroElementsInRow(index row, L handle) const {
     for (index j = 0, k = row * numberOfColumns(); j < numberOfColumns(); ++j, ++k) {
         if (entries[k] != getZero()) {
@@ -390,7 +410,7 @@ inline void DenseMatrix::forNonZeroElementsInRow(index row, L handle) const {
     }
 }
 
-template<typename L>
+template <typename L>
 inline void DenseMatrix::parallelForNonZeroElementsInRow(index row, L handle) const {
 #pragma omp parallel for
     for (omp_index j = 0; j < static_cast<omp_index>(numberOfColumns()); ++j) {
@@ -401,24 +421,24 @@ inline void DenseMatrix::parallelForNonZeroElementsInRow(index row, L handle) co
     }
 }
 
-template<typename L>
+template <typename L>
 inline void DenseMatrix::forNonZeroElementsInRowOrder(L handle) const {
     for (index i = 0; i < numberOfRows(); ++i) {
         for (index j = 0, k = i * numberOfColumns(); j < numberOfColumns(); ++j, ++k) {
             if (entries[k] != getZero()) {
-                handle(i,j,entries[k]);
+                handle(i, j, entries[k]);
             }
         }
     }
 }
 
-template<typename L>
+template <typename L>
 inline void DenseMatrix::parallelForNonZeroElementsInRowOrder(L handle) const {
 #pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(numberOfRows()); ++i) {
         for (index j = 0, k = i * numberOfColumns(); j < numberOfColumns(); ++j, ++k) {
             if (entries[k] != getZero()) {
-                handle(i,j,entries[k]);
+                handle(i, j, entries[k]);
             }
         }
     }
