@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * Random.h
+ * Random.hpp
  *
  *  Created on: 02.01.2014
  *      Author: FJW
@@ -39,15 +38,14 @@ void setSeed(uint64_t seed, bool useThreadId);
 uint64_t getSeed();
 
 /*
- * @returns whether or not the thread id is added to the random seed. 
+ * @returns whether or not the thread id is added to the random seed.
  */
 bool TLX_DEPRECATED(getUseThreadId());
 
 /**
  * @returns a reference to a seeded URNG that is thread_local.
  */
-std::mt19937_64& getURNG();
-
+std::mt19937_64 &getURNG();
 
 /**
  * @returns an integer distributed uniformly in an inclusive range;
@@ -97,36 +95,35 @@ std::size_t index(std::size_t max);
 /**
  * @returns a uniform random choice from an indexable container of elements.
  */
-template<typename Container>
-typename Container::const_reference choice(const Container& container) {
+template <typename Container>
+typename Container::const_reference choice(const Container &container) {
     return container[index(container.size())];
 }
-
 
 /**
  * @returns a weighted random choice from a vector of elements with given weights.
  */
 template <typename Element>
-const Element& weightedChoice(const std::vector<std::pair<Element, double>>& weightedElements) {
+const Element &weightedChoice(const std::vector<std::pair<Element, double>> &weightedElements) {
     if (weightedElements.empty())
         throw std::runtime_error("Random::weightedChoice: input size equal to 0");
     double total = 0.0;
-    for (const auto& entry : weightedElements) {
+    for (const auto &entry : weightedElements) {
         assert(entry.second >= 0.0 && "This algorithm only works with non-negative weights");
         total += entry.second;
     }
     double r = Aux::Random::real(total);
-    for (const auto& entry : weightedElements) {
+    for (const auto &entry : weightedElements) {
         if (r < entry.second) {
             return entry.first;
         }
         r -= entry.second;
     }
-    throw std::runtime_error("Random::weightedChoice: should never get here"); // should never get here
+    throw std::runtime_error(
+        "Random::weightedChoice: should never get here"); // should never get here
 }
 
 } // namespace Random
 } // namespace Aux
-
 
 #endif // NETWORKIT_AUXILIARY_RANDOM_HPP_

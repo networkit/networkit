@@ -1,4 +1,3 @@
-// no-networkit-format
 #ifndef NETWORKIT_AUXILIARY_TEMPLATE_UTILS_HPP_
 #define NETWORKIT_AUXILIARY_TEMPLATE_UTILS_HPP_
 
@@ -16,7 +15,6 @@
  * an implementation detail and you should never actually pass more than one argument.
  */
 #define AUX_REQUIRE(what, ...) class what = typename ::std::enable_if<__VA_ARGS__>::type
-
 
 /**
  * If two templates only differ in the default-values of their template-arguments
@@ -42,20 +40,23 @@ namespace Aux {
 /**
  * This is a backport of C++14 std::decay_t
  */
-template<typename T> using decay_t = typename std::decay<T>::type;
+template <typename T>
+using decay_t = typename std::decay<T>::type;
 
 /**
  * Returns the corresponding std::integral_constant<bool, B> to a boolean
  * value B.
  */
-template<bool B> using boolToType = std::integral_constant<bool, B>;
+template <bool B>
+using boolToType = std::integral_constant<bool, B>;
 
 /**
  * This is just a wrapper around std::is_same in order to provide a nicer interface.
  *
- * With C++14 this could use template-variables, but with C++11 we are stuck with constexpr-functions.
+ * With C++14 this could use template-variables, but with C++11 we are stuck with
+ * constexpr-functions.
  */
-template<typename T1, typename T2>
+template <typename T1, typename T2>
 constexpr bool isSame() {
     return std::is_same<T1, T2>::value;
 }
@@ -65,7 +66,7 @@ constexpr bool isSame() {
  *
  * This is very usefull for situations in which you work with iterator-traits or the like.
  */
-template<typename Base, typename Derived>
+template <typename Base, typename Derived>
 constexpr bool isBaseOrSame() {
     return isSame<Base, Derived>() || std::is_base_of<Base, Derived>::value;
 }

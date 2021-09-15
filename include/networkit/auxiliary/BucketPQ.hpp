@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * BucketPQ.hpp
  *
@@ -29,9 +28,9 @@ constexpr int64_t none = std::numeric_limits<int64_t>::max();
  * the obvious constraint minPrio <= maxPrio.
  * Amortized constant running time for each operation.
  */
-class BucketPQ: public PrioQueue<int64_t, index> {
+class BucketPQ : public PrioQueue<int64_t, index> {
 private:
-    std::vector<Bucket> buckets;			// the actual buckets
+    std::vector<Bucket> buckets; // the actual buckets
     static Bucket dummyBucket;
     static const Bucket::iterator invalidPtr;
 
@@ -48,18 +47,18 @@ private:
     };
 
     std::vector<OptionalIterator> nodePtr; // keeps track of node positions
-    std::vector<index> myBucket;			// keeps track of current bucket for each value
-    int64_t currentMinKey;					// current min key
-    int64_t currentMaxKey;					// current max key
-    int64_t minAdmissibleKey;				// minimum admissible key
-    int64_t maxAdmissibleKey;				// maximum admissible key
-    count numElems;							// number of elements stored
-    int64_t offset;							// offset from minAdmissibleKeys to 0
+    std::vector<index> myBucket;           // keeps track of current bucket for each value
+    int64_t currentMinKey;                 // current min key
+    int64_t currentMaxKey;                 // current max key
+    int64_t minAdmissibleKey;              // minimum admissible key
+    int64_t maxAdmissibleKey;              // maximum admissible key
+    count numElems;                        // number of elements stored
+    int64_t offset;                        // offset from minAdmissibleKeys to 0
 
     /**
      * Constructor. Not to be used, only here for overriding.
      */
-    BucketPQ(const std::vector<int64_t>&) {}
+    BucketPQ(const std::vector<int64_t> &) {}
 
     /**
      * Constructor. Not to be used, only here for overriding.
@@ -72,7 +71,6 @@ private:
     void construct(uint64_t capacity);
 
 public:
-
     /**
      * Builds priority queue from the vector @a keys, values are indices
      * of @a keys.
@@ -80,11 +78,11 @@ public:
      * @param[in] minAdmissibleKey Minimum admissible key
      * @param[in] maxAdmissibleKey Maximum admissible key
      */
-    BucketPQ(const std::vector<int64_t>& keys, int64_t minAdmissibleKey, int64_t maxAdmissibleKey);
+    BucketPQ(const std::vector<int64_t> &keys, int64_t minAdmissibleKey, int64_t maxAdmissibleKey);
 
     /**
-    * Builds priority queue of the specified capacity @a capacity.
-    */
+     * Builds priority queue of the specified capacity @a capacity.
+     */
     BucketPQ(uint64_t capacity, int64_t minAdmissibleKey, int64_t maxAdmissibleKey);
 
     /**
@@ -137,8 +135,7 @@ public:
     /**
      * @return key to given value @val.
      */
-    virtual int64_t getKey(const index& val);
-
+    virtual int64_t getKey(const index &val);
 };
 
 } /* namespace Aux */

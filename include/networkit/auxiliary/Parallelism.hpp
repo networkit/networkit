@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * Parallelism.h
+ * Parallelism.hpp
  *
  * Control functions related to parallelism.
  *
@@ -11,9 +10,7 @@
 #ifndef NETWORKIT_AUXILIARY_PARALLELISM_HPP_
 #define NETWORKIT_AUXILIARY_PARALLELISM_HPP_
 
-
 namespace Aux {
-
 
 /**
  *  Set the number of threads available to the program.
@@ -26,12 +23,11 @@ void setNumberOfThreads(int nThreads);
  */
 int getCurrentNumberOfThreads();
 
-
 /**
  *
  * @return The maximum number of threads available to the program.
  */
 int getMaxNumberOfThreads();
-}
+} // namespace Aux
 
 #endif // NETWORKIT_AUXILIARY_PARALLELISM_HPP_
