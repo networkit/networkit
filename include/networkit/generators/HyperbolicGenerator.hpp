@@ -223,7 +223,6 @@ private:
     count capacity;
     bool theoreticalSplit;
     double balance = 0.5;
-    static constexpr bool directSwap = false;
 
     /**
      * times

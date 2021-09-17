@@ -55,7 +55,7 @@ ChungLuGenerator::ChungLuGenerator(const std::vector<count> &degreeSequence) :
             }
         }
 
-        return gB.toGraph(true,true);
+        return gB.completeGraph(true);
     }
 
 } /* namespace NetworKit */

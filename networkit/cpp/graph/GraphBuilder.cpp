@@ -145,6 +145,13 @@ void GraphBuilder::increaseInWeight(node u, node v, edgeweight ew) {
 }
 
 Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
+    if(!autoCompleteEdges) {
+        throw "DirectSwap is no longer supported. Please use the Graph class directly for it instead.";
+    }
+    return completeGraph(parallel);
+}
+
+Graph GraphBuilder::completeGraph(bool parallel) {
     Graph G(n, weighted, directed);
     assert(n == G.upperNodeIdBound());
     #ifdef NETWORKIT_SANITY_CHECKS
@@ -152,14 +159,10 @@ Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
     #endif
     
     // copy edges and weights
-    if (autoCompleteEdges) {
-        if (parallel) {
-            toGraphParallel(G);
-        } else {
-            toGraphSequential(G);
-        }
+    if (parallel) {
+        toGraphParallel(G);
     } else {
-        toGraphDirectSwap(G);
+        toGraphSequential(G);
     }
     G.setEdgeCount(unsafe, numberOfEdges(G));
     assert(n == G.upperNodeIdBound());
@@ -171,40 +174,6 @@ Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
     reset();
 
     return G;
-}
-
-void GraphBuilder::toGraphDirectSwap(Graph &G) {
-
-    for (index u = 0; u < outEdges.size(); u++){
-        for (index j = 0; j < outEdges[u].size(); j++){
-            if(weighted){
-                G.addPartialEdge(unsafe, u, outEdges[u][j], outEdgeWeights[u][j]);
-            } else {
-                G.addPartialEdge(unsafe, u, outEdges[u][j]);
-            }
-        }
-    }
-
-    if(directed){
-        for (index u = 0; u < inEdges.size(); u++){
-            for (index j = 0; j < inEdges[u].size(); j++){
-                if(weighted){
-                    G.addPartialInEdge(unsafe, u, inEdges[u][j], inEdgeWeights[u][j]);
-                } else {
-                    G.addPartialInEdge(unsafe, u, inEdges[u][j]);
-                }
-            }
-        }
-    }
-
-    if (!directed) {
-        G.setNumberOfSelfLoops(unsafe, selfloops);
-    } else if (selfloops % 2 == 0) {
-        G.setNumberOfSelfLoops(unsafe, selfloops / 2);
-    } else {
-        throw std::runtime_error("Error, odd number of self loops added but each "
-                                 "self loop must be added twice!");
-    }
 }
 
 void GraphBuilder::toGraphParallel(Graph &G) {

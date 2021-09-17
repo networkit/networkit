@@ -71,7 +71,7 @@ GraphBuilder GraphBuilderAutoCompleteGTest::createGraphBuilder(count n) const {
 }
 
 Graph GraphBuilderAutoCompleteGTest::toGraph(GraphBuilder& b) const {
-    return b.toGraph(true, useParallel());
+    return b.completeGraph(useParallel());
 }
 
 void GraphBuilderAutoCompleteGTest::SetUp() {
