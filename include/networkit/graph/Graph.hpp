@@ -982,9 +982,9 @@ public:
      * @param weighted If set to <code>true</code>, the graph has edge weights.
      * @param directed If set to @c true, the graph will be directed.
      */
-    Graph(count n = 0, bool weighted = false, bool directed = false);
+    Graph(count n = 0, bool weighted = false, bool directed = false, bool edgesIndexed = false);
 
-    Graph(const Graph &G, bool weighted, bool directed);
+    Graph(const Graph &G, bool weighted, bool directed, bool edgesIndexed = false);
 
     /**
      * Generate a weighted graph from a list of edges. (Useful for small

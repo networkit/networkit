@@ -44,9 +44,9 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 
 	cdef cppclass _Graph "NetworKit::Graph":
 		_Graph() except +
-		_Graph(count, bool_t, bool_t) except +
+		_Graph(count, bool_t, bool_t, bool_t) except +
 		_Graph(const _Graph& other) except +
-		_Graph(const _Graph& other, bool_t weighted, bool_t directed) except +
+		_Graph(const _Graph& other, bool_t weighted, bool_t directed, bool_t edgesIndexed) except +
 		void indexEdges(bool_t) except +
 		bool_t hasEdgeIds() except +
 		edgeid edgeId(node, node) except +

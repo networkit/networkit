@@ -262,7 +262,7 @@ class TestGraph(unittest.TestCase):
 		G2 = pickle.loads(pickledGraph)
 		self.assertEqual(G.numberOfNodes(), G2.numberOfNodes())
 		self.assertEqual(G.numberOfEdges(), G2.numberOfEdges())
-		self.assertEqual(G.EdgeId(0,0), G2.EdgeId(0,0))
+		self.assertEqual(G.edgeId(0,1), G2.edgeId(0,1))
 		
 
 if __name__ == "__main__":
