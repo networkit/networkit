@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * SortedList.h
+ * SortedList.hpp
  *
  *  Created on: 21.09.2018
  *      Author: Eugenio Angriman
@@ -91,13 +90,11 @@ inline void SortedList::clear() {
 }
 
 inline void SortedList::insert(const uint64_t newElement, const double newValue) {
-    uint64_t ub =
-        std::upper_bound(
-            elements.begin(), elements.begin() + virtualSize, newValue,
-            [&](const double val, const std::pair<uint64_t, double> pair) {
-                return val > pair.second;
-            }) -
-        elements.begin();
+    uint64_t ub = std::upper_bound(elements.begin(), elements.begin() + virtualSize, newValue,
+                                   [&](const double val, const std::pair<uint64_t, double> pair) {
+                                       return val > pair.second;
+                                   })
+                  - elements.begin();
 
     uint64_t oldPos;
     // We assume that if the same key is inserted again, its value will be
@@ -120,8 +117,7 @@ inline void SortedList::insert(const uint64_t newElement, const double newValue)
             }
 
             elements[ub] = std::make_pair(newElement, newValue);
-            for (auto it = elements.begin() + ub + 1;
-                 it < elements.begin() + oldPos + 1; ++it) {
+            for (auto it = elements.begin() + ub + 1; it < elements.begin() + oldPos + 1; ++it) {
                 ++position[(*it).first];
             }
         } else {

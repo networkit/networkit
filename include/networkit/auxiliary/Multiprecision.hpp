@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * Multiprecision.hpp
  *
@@ -12,7 +11,7 @@
 #include <ttmath/ttmath.hpp>
 
 namespace NetworKit {
-    using bigfloat = ttmath::Big<TTMATH_BITS(64),TTMATH_BITS(64)>;	///< big floating point number
+using bigfloat = ttmath::Big<TTMATH_BITS(64), TTMATH_BITS(64)>; ///< big floating point number
 }
 
 #endif // NETWORKIT_AUXILIARY_MULTIPRECISION_HPP_

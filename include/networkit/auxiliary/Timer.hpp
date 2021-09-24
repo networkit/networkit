@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * Timer.h
+ * Timer.hpp
  *
  *  Created on: 14.01.2013
  *      Author: Christian Staudt (christian.staudt@kit.edu)
@@ -22,11 +21,11 @@ namespace Aux {
  */
 class Timer {
 public:
-    #ifdef __MIC__
-        using my_steady_clock = std::chrono::monotonic_clock;
-    #else
-        using my_steady_clock = std::chrono::steady_clock;
-    #endif // __MIC__
+#ifdef __MIC__
+    using my_steady_clock = std::chrono::monotonic_clock;
+#else
+    using my_steady_clock = std::chrono::steady_clock;
+#endif // __MIC__
 
     Timer() = default;
 
@@ -86,9 +85,9 @@ public:
     std::string elapsedTag() const;
 
 protected:
-    bool running{false};                   //!< true if timer has been started and not stopped after that
-    my_steady_clock::time_point started;   //!< time at which timer has been started
-    my_steady_clock::time_point stopped;   //!< time at which timer has been stopped
+    bool running{false}; //!< true if timer has been started and not stopped after that
+    my_steady_clock::time_point started; //!< time at which timer has been started
+    my_steady_clock::time_point stopped; //!< time at which timer has been stopped
 
     /// If running returns now, otherwise the stop time
     my_steady_clock::time_point stopTimeOrNow() const noexcept;
@@ -100,9 +99,7 @@ protected:
  */
 class StartedTimer : public Timer {
 public:
-    StartedTimer() : Timer() {
-        start();
-    }
+    StartedTimer() : Timer() { start(); }
 };
 
 /**
@@ -113,7 +110,8 @@ public:
  * @code
  * {
  *    Aux::ScopedTimer("Algorithm A"); // WRONG; will directly report without measuring the scope
- *    Aux::ScopedTimer someName("Algorithm B"); // OK: the named instance is valid until the end of the scope
+ *    Aux::ScopedTimer someName("Algorithm B"); // OK: the named instance is valid until the end of
+ * the scope
  *    // some expensive operations
  *
  *
@@ -133,7 +131,8 @@ public:
      *              If logging at the given level is disable the Timer is very cheap to construct.
      *              If logging is disabled during construction or destruction, no message is shown.
      */
-    explicit LoggingTimer(const std::string& label = "", Aux::Log::LogLevel level = Aux::Log::LogLevel::debug);
+    explicit LoggingTimer(const std::string &label = "",
+                          Aux::Log::LogLevel level = Aux::Log::LogLevel::debug);
     ~LoggingTimer();
 
 private:
@@ -144,4 +143,3 @@ private:
 } /* namespace Aux */
 
 #endif // NETWORKIT_AUXILIARY_TIMER_HPP_
-

@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * BloomFilter.h
+ * BloomFilter.hpp
  *
  *  Created on: 08.08.2015
  *      Author: Henning
@@ -11,8 +10,8 @@
 
 #include <vector>
 
-#include <networkit/auxiliary/Log.hpp>
 #include <networkit/Globals.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace Aux {
 
@@ -20,14 +19,14 @@ using index = NetworKit::index;
 using count = NetworKit::count;
 
 /**
- * Bloom filter for fast set membership queries for type index with one-sided error (false positives).
- * Uses one hash function instead of many but different random salts instead.
+ * Bloom filter for fast set membership queries for type index with one-sided error (false
+ * positives). Uses one hash function instead of many but different random salts instead.
  */
 class BloomFilter {
 private:
     count numHashes;
     count size;
-    std::vector<std::vector<char> > membership;
+    std::vector<std::vector<char>> membership;
     std::vector<index> salts;
 
     /**
@@ -66,6 +65,6 @@ public:
     bool isMember(index key) const;
 };
 
-}
+} // namespace Aux
 
 #endif // NETWORKIT_AUXILIARY_BLOOM_FILTER_HPP_
