@@ -512,27 +512,46 @@ TEST_P(CentralityGTest, testPageRank) {
 }
 
 TEST_P(CentralityGTest, testNormalizedPageRank) {
-    SNAPGraphReader reader(isDirected());
-    auto G = reader.read("input/wiki-Vote.txt");
+    /* Graph:
+     0 <---> 1
+     \-> 2 <-/
+     3       4
+    
+     Node 0,1 have directed edges to each other. Both have also an 
+     edge to node 2. Node 3 and 4 are isolated from the rest (sinks). 
+     This example is taken from "Comparing Apples and Oranges: 
+     Normalized PageRank for Evolving Graphs" by Berberich et al.
+    */    
+    count n = 5;
+    Graph G(n, isWeighted(), isDirected());
+    G.addEdge(0,1);
+    G.addEdge(1,0);
+    G.addEdge(0,2);
+    G.addEdge(1,2);
 
     auto doTest = [&G](PageRank::Norm norm) {
-        PageRank pr(G, 0.85, 1e-8, true);
+        PageRank pr(G, 0.85, 1e-8, true, PageRank::SinkHandling::DISTRIBUTE_SINKS);
         pr.norm = norm;
         pr.run();
 
-        auto pr_ranking = pr.ranking();
-        const double tol = 1e-4;
-        if (G.isDirected()) {
-            EXPECT_EQ(pr_ranking[0].first, 326);
-            EXPECT_NEAR(pr_ranking[0].second, 57.6657, tol);
+        auto pr_scores = pr.scores();
+        const double tol = 2e-4;
+
+        // Values should be the same as in the original paper
+        if(G.isDirected()) {
+            EXPECT_NEAR(pr_scores[0], 1.7391, tol);
+            EXPECT_NEAR(pr_scores[1], 1.7391, tol);
+            EXPECT_NEAR(pr_scores[2], 2.4781, tol);
+            EXPECT_NEAR(pr_scores[3], 1.0, tol);
+            EXPECT_NEAR(pr_scores[4], 1.0, tol);
         } else {
-            EXPECT_EQ(pr_ranking[0].first, 699);
-            EXPECT_NEAR(pr_ranking[0].second, 205.7324, tol);
+            EXPECT_NEAR(pr_scores[0], 7.4026, tol);
+            EXPECT_NEAR(pr_scores[1], 7.4026, tol);
+            EXPECT_NEAR(pr_scores[2], 5.1948, tol);
+            EXPECT_NEAR(pr_scores[3], 1.0, tol);
+            EXPECT_NEAR(pr_scores[4], 1.0, tol);
         }
-        const count maxIterations = 2;
-        pr.maxIterations = maxIterations;
-        pr.run();
-        EXPECT_LE(pr.numberOfIterations(), maxIterations);
+
     };
 
     doTest(PageRank::Norm::L1Norm);
@@ -620,48 +639,6 @@ TEST_F(CentralityGTest, testPageRankCentrality) {
     EXPECT_NEAR(0.2552, fabs(cen[5]), tol);
     EXPECT_NEAR(0.0753, fabs(cen[6]), tol);
     EXPECT_NEAR(0.0565, fabs(cen[7]), tol);
-}
-
-TEST_F(CentralityGTest, testNormalizedPageRankCentrality) {
-    /* Graph:
-     0    3   6
-      \  / \ /
-       2 -- 5
-      /  \ / \
-     1    4   7
-
-     Edges in the upper row have weight 3,
-     the edge in the middle row has weight 1.5,
-     edges in the lower row have weight 2.
-    */
-    count n = 8;
-    Graph G(n, true);
-
-    G.addEdge(0, 2, 3);
-    G.addEdge(1, 2, 2);
-    G.addEdge(2, 3, 3);
-    G.addEdge(2, 4, 2);
-    G.addEdge(2, 5, 1.5);
-    G.addEdge(3, 5, 3);
-    G.addEdge(4, 5, 2);
-    G.addEdge(5, 6, 3);
-    G.addEdge(5, 7, 2);
-
-    double damp = 0.85;
-    PageRank centrality(G, damp, 1e-8, true);
-    centrality.run();
-    std::vector<double> cen = centrality.scores();
-
-    // compare to Matlab results
-    const double tol = 1e-4;
-    EXPECT_NEAR(4.0175, fabs(cen[0]), tol);
-    EXPECT_NEAR(3.0117, fabs(cen[1]), tol);
-    EXPECT_NEAR(13.6083, fabs(cen[2]), tol);
-    EXPECT_NEAR(7.0350, fabs(cen[3]), tol);
-    EXPECT_NEAR(5.0233, fabs(cen[4]), tol);
-    EXPECT_NEAR(13.6083, fabs(cen[5]), tol);
-    EXPECT_NEAR(4.0175, fabs(cen[6]), tol);
-    EXPECT_NEAR(3.0117, fabs(cen[7]), tol);
 }
 
 TEST_F(CentralityGTest, benchSequentialBetweennessCentralityOnRealGraph) {

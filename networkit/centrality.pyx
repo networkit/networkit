@@ -1,6 +1,7 @@
 # distutils: language=c++
 
 from libc.stdint cimport uint64_t
+from libc.stdint cimport uint8_t
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from libcpp cimport bool as bool_t
@@ -1980,20 +1981,39 @@ cdef extern from "<networkit/centrality/PageRank.hpp>" namespace "NetworKit::Pag
 		L1Norm = 0
 		L2Norm = 1
 
+	cdef enum _SinkHandling "NetworKit::PageRank::SinkHandling":
+		NO_SINK_HANDLING
+		DISTRIBUTE_SINKS
+
+cpdef enum SinkHandling:
+	NoSinkHandling = NO_SINK_HANDLING
+	DistributeSinks = DISTRIBUTE_SINKS
+
 class Norm(object):
 	l1norm = L1Norm
 	l2norm = L2Norm
 
+
 cdef extern from "<networkit/centrality/PageRank.hpp>":
 
 	cdef cppclass _PageRank "NetworKit::PageRank" (_Centrality):
-		_PageRank(_Graph, double damp, double tol, bool_t normalized) except +
+		_PageRank(_Graph, double damp, double tol, bool_t normalized, _SinkHandling distributeSinks) except +
 		count numberOfIterations() except +
 		_Norm norm
 		count maxIterations
 
 cdef class PageRank(Centrality):
-	""" Compute PageRank as node centrality measure.
+	""" Compute PageRank as node centrality measure. In the default mode this computation is in line
+ 	with the original paper "The PageRank citation ranking: Bringing order to the web." by L. Brin et al (1999).
+ 	In later publications ("PageRank revisited." by M. Brinkmeyer et al. (2005) amongst others) sink-node handling
+ 	was added for directed graphs in order to comply with the theoretical assumptions by the underlying 
+ 	Markov chain model. This can be activated by setting the matching parameter to true. By default 
+ 	this is disabled, since it is an addition to the original definition.
+	
+ 	Page-Rank values can also be normalized by post-processed according to "Comparing Apples and
+ 	Oranges: Normalized PageRank for Evolving Graphs" by Berberich et al. (2007). This decouples
+ 	the PageRank values from the size of the input graph. To enable this, set the matching parameter
+ 	to true. Note that, sink-node handling is automatically activated if normalization is used.
 
 	PageRank(G, damp=0.85, tol=1e-9)
 
@@ -2005,13 +2025,15 @@ cdef class PageRank(Centrality):
 		Damping factor of the PageRank algorithm.
 	tol : double, optional
 		Error tolerance for PageRank iteration.
+	distributeSinks: SinkHandling, optional
+		Set to distribute PageRank values for sink nodes. Default: SinkHandling.NoSinkHandling
 	normalized : bool, optional
-		If the results should be normalized by the lower bound of scores. This llows for better comparasion between different graphs.
+		If the results should be normalized by the lower bound of scores. This decouples the PageRank values from the size of the input graph. Default: False
 	"""
 
-	def __cinit__(self, Graph G, double damp=0.85, double tol=1e-8, bool_t normalized=False):
+	def __cinit__(self, Graph G, double damp=0.85, double tol=1e-8, bool_t normalized=False, distributeSinks=SinkHandling.NoSinkHandling):
 		self._G = G
-		self._this = new _PageRank(G._this, damp, tol, normalized)
+		self._this = new _PageRank(G._this, damp, tol, normalized, distributeSinks)
 
 	def numberOfIterations(self):
 		"""
