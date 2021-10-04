@@ -250,7 +250,7 @@ likely not be accepted.
 
 Unit tests for the C++ part of NetworKit are based on the ``googletest``
 library. For more information read the `googletest
-primer <https://github.com/google/googletest/blob/master/googletest/docs/Primer.md>`__. The Python
+primer <https://google.github.io/googletest/primer.html>`__. The Python
 test framework currently relies on ``nose`` to collect the tests.
 
 -  Each source folder contains a ``test`` folder with ``googletest``
