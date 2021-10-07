@@ -137,8 +137,11 @@ def buildNetworKit(install_prefix, externalCore=False, externalTlx=None, withTes
 	comp_cmd.append("-DCMAKE_CXX_COMPILER="+cmakeCompiler)
 	comp_cmd.append("-DNETWORKIT_FLATINSTALL=ON")
 	from sysconfig import get_paths, get_config_var
-	comp_cmd.append("-DNETWORKIT_PYTHON="+get_paths()['include']) #provide python.h files
-	comp_cmd.append("-DNETWORKIT_PYTHON_SOABI="+os_soabi) #provide lib env specification
+	# The following cmake parameters set Python-variables. This is done to avoid differences between the 
+	# python-toolchain calling setup.py and cmake-based find-mechanisms.
+	comp_cmd.append("-DNETWORKIT_PYTHON="+get_paths()['include']) # provide python.h files
+	comp_cmd.append("-DNETWORKIT_PYTHON_EXECUTABLE="+sys.executable) # provide cmake with Python interpreter
+	comp_cmd.append("-DNETWORKIT_PYTHON_SOABI="+os_soabi) # provide lib env specification
 	comp_cmd.append("-DNETWORKIT_PYTHON_VERSION="+sysconfig.get_python_version())
 	if externalCore:
 		if sys.platform == "win32":

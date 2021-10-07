@@ -292,14 +292,17 @@ endif()
 
 if(NETWORKIT_PYTHON)
 
-	if(${CMAKE_VERSION} VERSION_LESS "3.12.0") 
-		FIND_PACKAGE(FindPythonInterp ${NETWORKIT_PYTHON_VERSION} EXACT REQUIRED)
-		FIND_PACKAGE(FindPythonLibs ${NETWORKIT_PYTHON_VERSION} EXACT REQUIRED)
-	else()
-		FIND_PACKAGE(Python3 ${NETWORKIT_PYTHON_VERSION} EXACT COMPONENTS Interpreter Development REQUIRED)
+	if(WIN32)
+		# Linking against Python3_libs is only neccessary on Windows. On other OSes 
+		# this can lead to segmentation faults when importing NetworKit in Python.
+		if(${CMAKE_VERSION} VERSION_LESS "3.12.0") 
+			FIND_PACKAGE(FindPythonLibs ${NETWORKIT_PYTHON_VERSION} EXACT REQUIRED)
+		else()
+			FIND_PACKAGE(Python3 ${NETWORKIT_PYTHON_VERSION} EXACT COMPONENTS Interpreter Development REQUIRED)
+		endif()
 	endif()
 
-	 foreach (EXT base centrality clique coarsening community components correlation
+	foreach (EXT base centrality clique coarsening community components correlation
 			 distance dynamics embedding engineering flow generators globals graph graphio
 			 graphtools helpers independentset linkprediction matching
 			 randomization reachability scd simulation sparsification stats
@@ -333,8 +336,6 @@ if(NETWORKIT_PYTHON)
 					OUTPUT_NAME "${TARGET_LIB}.${NETWORKIT_PYTHON_SOABI}")
 		if(WIN32)
 			set_target_properties(${TARGET_LIB} PROPERTIES SUFFIX .pyd)
-			# Linking against Python3_libs is only neccessary on Windows. On other OSes 
-			# this can lead to segmentation faults when importing NetworKit in Python.
 			target_link_libraries(${TARGET_LIB} PRIVATE ${Python3_LIBRARIES})
 		endif()
 
@@ -702,7 +703,7 @@ install(DIRECTORY extlibs/ttmath/ttmath
 
 set(NETWORKIT_LIBNAME networkit)
 
-execute_process(COMMAND ${Python_EXECUTABLE} -c "from version import version; print(version, end='')"
+execute_process(COMMAND ${NETWORKIT_PYTHON_EXECUTABLE} -c "from version import version; print(version, end='')"
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 	OUTPUT_VARIABLE NETWORKIT_VERSION)
 configure_file(networkit.pc

@@ -1,0 +1,154 @@
+name: Wheel builder
+
+on: [push, pull_request]
+
+jobs:
+  cpython-linux-x86_64:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+        cibw_archs: ["x86_64"]
+        manylinux_image: ["manylinux2010"]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: '3.9'
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.1.1
+        env:
+          CIBW_BEFORE_BUILD: pip install cython
+          CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
+          CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
+          CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-*"
+          CIBW_SKIP: pp*
+      - uses: actions/upload-artifact@v2
+        with:
+          name: networkit-cp36-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
+          path: ./wheelhouse/*cp36*.whl
+          retention-days: 14
+      - uses: actions/upload-artifact@v2
+        with:
+          name: networkit-cp37-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
+          path: ./wheelhouse/*cp37*.whl
+          retention-days: 14
+      - uses: actions/upload-artifact@v2
+        with:
+          name: networkit-cp38-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
+          path: ./wheelhouse/*cp38*.whl
+          retention-days: 14
+      - uses: actions/upload-artifact@v2
+        with:
+          name: networkit-cp39-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
+          path: ./wheelhouse/*cp39*.whl
+          retention-days: 14
+
+  cpython-linux-aarch64:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+        cibw_archs: ["aarch64"]
+        manylinux_image: ["manylinux2014"]
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: all
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: '3.9'
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.1.1
+        env:
+          CIBW_BEFORE_BUILD: pip install cython
+          CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
+          CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
+          CIBW_BUILD: "cp39-*"
+          CIBW_SKIP: pp*
+      
+      - uses: actions/upload-artifact@v2
+        with:
+          name: networkit-cp39-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
+          path: ./wheelhouse/*cp39*.whl
+          retention-days: 14
+
+  cpython-macos-x86_64:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-10.15]
+        cibw_archs: ["x86_64"]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: '3.9'
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.1.1
+        env:
+          CIBW_BEFORE_BUILD: 
+            pip install cython &&
+            brew install libomp ninja
+          CIBW_ARCHS_MACOS: ${{ matrix.cibw_archs }}
+          CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-*"
+          CIBW_SKIP: pp*
+      - uses: actions/upload-artifact@v2
+        with:
+          name: networkit-cp36-macos-${{ matrix.cibw_archs }}.whl
+          path: ./wheelhouse/*cp36*.whl
+          retention-days: 14
+      - uses: actions/upload-artifact@v2
+        with:
+          name: networkit-cp37-macos-${{ matrix.cibw_archs }}.whl
+          path: ./wheelhouse/*cp37*.whl
+          retention-days: 14
+      - uses: actions/upload-artifact@v2
+        with:
+          name: networkit-cp38-macos-${{ matrix.cibw_archs }}.whl
+          path: ./wheelhouse/*cp38*.whl
+          retention-days: 14
+      - uses: actions/upload-artifact@v2
+        with:
+          name: networkit-cp39-macos-${{ matrix.cibw_archs }}.whl
+          path: ./wheelhouse/*cp39*.whl
+          retention-days: 14
+
+  cpython-windows:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Setup devCmd (vstools)
+        uses: ilammy/msvc-dev-cmd@v1
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: '3.9'
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.1.2
+        env:
+          CIBW_BEFORE_BUILD: pip install cython ipython
+          CIBW_ARCHS: "AMD64"
+          CIBW_BUILD: "cp39-*"
+          CIBW_SKIP: pp*
+      - uses: actions/upload-artifact@v2
+        with:
+          name: networkit-cp39-win-amd64.whl
+          path: ./wheelhouse/*cp39*.whl
+          retention-days: 14
