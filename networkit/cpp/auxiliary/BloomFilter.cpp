@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * BloomFilter.cpp
  *
@@ -11,9 +10,8 @@
 
 namespace Aux {
 
-BloomFilter::BloomFilter(count numHashes, count size): numHashes(numHashes), size(size),
-    membership(numHashes), salts(numHashes)
-{
+BloomFilter::BloomFilter(count numHashes, count size)
+    : numHashes(numHashes), size(size), membership(numHashes), salts(numHashes) {
     for (index i = 0; i < numHashes; ++i) {
         membership[i].resize(size, false);
         salts[i] = Aux::Random::integer();
@@ -46,4 +44,4 @@ index BloomFilter::hash(index key, index hfunc) const {
     return (result % size);
 }
 
-}
+} // namespace Aux

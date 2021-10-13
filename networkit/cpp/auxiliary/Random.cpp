@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * Random.cpp
  *
@@ -6,10 +5,10 @@
  *      Author: FJW
  */
 
-#include <cmath>
-#include <omp.h>
-#include <limits>
 #include <atomic>
+#include <cmath>
+#include <limits>
+#include <omp.h>
 
 #include <networkit/GlobalState.hpp>
 #include <networkit/auxiliary/Random.hpp>
@@ -46,7 +45,7 @@ bool getUseThreadId() {
     return NetworKit::GlobalState::getSeedUseThreadId();
 }
 
-std::mt19937_64& getURNG() {
+std::mt19937_64 &getURNG() {
     thread_local static std::mt19937_64 generator{getSeed()};
     thread_local static uint64_t localSeedGeneration{0};
 

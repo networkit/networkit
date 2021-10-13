@@ -1,17 +1,17 @@
-// no-networkit-format
 #include <atomic>
 #include <chrono>
 #include <ctime>
 #include <fstream>
-#include <iostream>
 #include <iomanip>
 #include <ios>
+#include <iostream>
 #include <mutex>
 
-#include <networkit/auxiliary/Log.hpp>
 #include <networkit/GlobalState.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
-namespace Aux { namespace Log {
+namespace Aux {
+namespace Log {
 
 void setLogLevel(const std::string &logLevel) {
     if (logLevel == "TRACE") {
@@ -23,7 +23,7 @@ void setLogLevel(const std::string &logLevel) {
     } else if (logLevel == "WARN") {
         NetworKit::GlobalState::setLogLevel(LogLevel::warn);
     } else if (logLevel == "ERROR") {
-        NetworKit::GlobalState::setLogLevel(LogLevel::error);		
+        NetworKit::GlobalState::setLogLevel(LogLevel::error);
     } else if (logLevel == "FATAL") {
         NetworKit::GlobalState::setLogLevel(LogLevel::fatal);
     } else if (logLevel == "QUIET") {
@@ -62,15 +62,15 @@ LogLevel getLogLevel() {
 }
 
 void setLogLevel(LogLevel p) {
-    NetworKit::GlobalState::setLogLevel(p);    
+    NetworKit::GlobalState::setLogLevel(p);
 }
 
 bool getPrintTime() {
-    return NetworKit::GlobalState::getPrintTime();  
+    return NetworKit::GlobalState::getPrintTime();
 }
 
 void setPrintTime(bool b) {
-    NetworKit::GlobalState::setPrintTime(b);    
+    NetworKit::GlobalState::setPrintTime(b);
 }
 
 bool getPrintLocation() {
@@ -78,30 +78,36 @@ bool getPrintLocation() {
 }
 
 void setPrintLocation(bool b) {
-    NetworKit::GlobalState::setPrintLocation(b);   
+    NetworKit::GlobalState::setPrintLocation(b);
 }
 
 void setLogfile(const std::string &filename) {
-    NetworKit::GlobalState::setLogfile(filename);    
-} 
+    NetworKit::GlobalState::setLogfile(filename);
 }
+} // namespace Settings
 
 void printLogLevel(std::ostream &stream, LogLevel p) {
-    switch(p) {
-        case LogLevel::fatal:
-            stream << "[FATAL]"; break;
-        case LogLevel::error:
-            stream << "[ERROR]"; break;
-        case LogLevel::warn:
-            stream << "[WARN ]"; break;
-        case LogLevel::info:
-            stream << "[INFO ]"; break;
-        case LogLevel::debug:
-            stream << "[DEBUG]"; break;
-        case LogLevel::trace:
-            stream << "[TRACE]"; break;
-        default:
-            break;
+    switch (p) {
+    case LogLevel::fatal:
+        stream << "[FATAL]";
+        break;
+    case LogLevel::error:
+        stream << "[ERROR]";
+        break;
+    case LogLevel::warn:
+        stream << "[WARN ]";
+        break;
+    case LogLevel::info:
+        stream << "[INFO ]";
+        break;
+    case LogLevel::debug:
+        stream << "[DEBUG]";
+        break;
+    case LogLevel::trace:
+        stream << "[TRACE]";
+        break;
+    default:
+        break;
     }
 }
 
@@ -110,7 +116,7 @@ bool isLogLevelEnabled(LogLevel p) noexcept {
 }
 
 void printTime(std::ostream &stream,
-        const std::chrono::time_point<std::chrono::system_clock> &timePoint) {
+               const std::chrono::time_point<std::chrono::system_clock> &timePoint) {
     stream << "[" << timePoint.time_since_epoch().count() << "]";
 }
 
@@ -120,51 +126,51 @@ void printLocation(std::ostream &stream, const Location &loc) {
 
 std::tuple<std::string, std::string> getTerminalFormat(LogLevel p) {
     switch (p) {
-        case LogLevel::fatal:
-            return std::make_tuple("\033[1;31m", "\033[0m");
-        case LogLevel::error:
-            return std::make_tuple("\033[31m", "\033[0m");
-        case LogLevel::warn:
-            return std::make_tuple("\033[33m", "\033[0m");
-        case LogLevel::info:
-        case LogLevel::debug:
-        case LogLevel::trace:
-            return std::make_tuple("", "");
-        default:
-            // this only exists to silence a warning:
-            // TODO: consider replacing it with __builtin_unreachable();
-            throw std::logic_error{"invalid loglevel. This should NEVER happen"};
+    case LogLevel::fatal:
+        return std::make_tuple("\033[1;31m", "\033[0m");
+    case LogLevel::error:
+        return std::make_tuple("\033[31m", "\033[0m");
+    case LogLevel::warn:
+        return std::make_tuple("\033[33m", "\033[0m");
+    case LogLevel::info:
+    case LogLevel::debug:
+    case LogLevel::trace:
+        return std::make_tuple("", "");
+    default:
+        // this only exists to silence a warning:
+        // TODO: consider replacing it with __builtin_unreachable();
+        throw std::logic_error{"invalid loglevel. This should NEVER happen"};
     }
 }
 
 static void logToTerminal(const Location &loc, LogLevel p,
-        const std::chrono::time_point<std::chrono::system_clock> &timePoint,
-        const std::string &msg) {
+                          const std::chrono::time_point<std::chrono::system_clock> &timePoint,
+                          const std::string &msg) {
     std::stringstream stream;
-    
-    if(NetworKit::GlobalState::getPrintTime()) {
+
+    if (NetworKit::GlobalState::getPrintTime()) {
         printTime(stream, timePoint);
     }
-    
+
     std::string termFormatOpen, termFormatClose;
     std::tie(termFormatOpen, termFormatClose) = getTerminalFormat(p);
-    
+
     stream << termFormatOpen;
     printLogLevel(stream, p);
-    stream <<termFormatClose;
-    
-    if(NetworKit::GlobalState::getPrintLocation()) {
+    stream << termFormatClose;
+
+    if (NetworKit::GlobalState::getPrintLocation()) {
         printLocation(stream, loc);
     }
-    
+
     stream << ": ";
-    
+
     stream << termFormatOpen;
     stream << msg;
     stream << termFormatClose;
-    
+
     stream.put('\n');
-    
+
     static std::mutex cerr_mutex;
     {
         std::lock_guard<std::mutex> guard{cerr_mutex};
@@ -173,25 +179,25 @@ static void logToTerminal(const Location &loc, LogLevel p,
 }
 
 static void logToFile(const Location &loc, LogLevel p,
-        const std::chrono::time_point<std::chrono::system_clock> &timePoint,
-        const std::string &msg) {
-    if(!NetworKit::GlobalState::getLogFileIsOpen()) {
+                      const std::chrono::time_point<std::chrono::system_clock> &timePoint,
+                      const std::string &msg) {
+    if (!NetworKit::GlobalState::getLogFileIsOpen()) {
         return;
     }
     std::stringstream stream;
     printTime(stream, timePoint);
     stream << ' ';
     printLogLevel(stream, p);
-    
-    if(NetworKit::GlobalState::getPrintLocation()) {
+
+    if (NetworKit::GlobalState::getPrintLocation()) {
         stream << ' ';
         printLocation(stream, loc);
     }
-    
+
     stream << ": " << msg << '\n';
     {
         std::lock_guard<std::mutex> guard{NetworKit::GlobalState::getLogFileMutex()};
-        if(!NetworKit::GlobalState::getLogFileIsOpen()) {
+        if (!NetworKit::GlobalState::getLogFileIsOpen()) {
             return;
         }
         NetworKit::GlobalState::getLogFile() << stream.str() << std::flush;
@@ -201,12 +207,13 @@ static void logToFile(const Location &loc, LogLevel p,
 namespace Impl {
 
 void log(const Location &loc, LogLevel p, const std::string &msg) {
-    auto time =std::chrono::system_clock::now();
-    
+    auto time = std::chrono::system_clock::now();
+
     logToTerminal(loc, p, time, msg);
     logToFile(loc, p, time, msg);
 }
 
-} // namespace impl
+} // namespace Impl
 
-}} // namespace Aux::Log
+} // namespace Log
+} // namespace Aux

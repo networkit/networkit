@@ -1,4 +1,3 @@
-// no-networkit-format
 #include <gtest/gtest.h>
 
 #include <tlx/unused.hpp>
@@ -7,14 +6,14 @@
 #include <networkit/auxiliary/Timer.hpp>
 
 #include <atomic>
-#include <random>
 #include <omp.h>
+#include <random>
 
 namespace NetworKit {
 
-class AuxRandomBenchmark: public testing::Test {
+class AuxRandomBenchmark : public testing::Test {
 public:
-    template<typename F>
+    template <typename F>
     static double measure(F f, const size_t iterations = 50000000) {
         Aux::Timer timer;
         timer.start();
@@ -28,13 +27,14 @@ public:
         return (1.0e6 * ms / iterations);
     }
 
-    template<typename F>
+    template <typename F>
     static double measureParallel(F f) {
         // TODO: replace with google benchmark infrastructure
-        std::atomic<uint64_t> atime{0}; // this is a very dirty hack, but atomic float-points are not fully support by standard
+        std::atomic<uint64_t> atime{0}; // this is a very dirty hack, but atomic float-points are
+                                        // not fully support by standard
         std::atomic<int> num_threads;
 
-        #pragma omp parallel
+#pragma omp parallel
         {
             const double local_time = f();
             num_threads.store(omp_get_num_threads());
@@ -45,7 +45,7 @@ public:
     }
 
     template <typename T>
-    static void DoNotOptimize(T&& x) {
+    static void DoNotOptimize(T &&x) {
         // TODO: replace with google benchmark infrastructure
         volatile auto dummy = x;
         tlx::unused(dummy);
@@ -54,9 +54,7 @@ public:
 
 TEST_F(AuxRandomBenchmark, benchmarkInteger) {
     uint64_t tmp = 0;
-    auto atime = measure([&] {
-        tmp += Aux::Random::integer();
-    });
+    auto atime = measure([&] { tmp += Aux::Random::integer(); });
     DoNotOptimize(tmp);
     std::cout << "Average time of operation: " << atime << "ns\n";
 }
@@ -67,9 +65,7 @@ TEST_F(AuxRandomBenchmark, benchmarkLocalDistrInteger) {
     auto &prng = Aux::Random::getURNG();
     std::uniform_int_distribution<uint64_t> distr;
 
-    auto atime = measure([&] {
-        tmp += distr(prng);
-    });
+    auto atime = measure([&] { tmp += distr(prng); });
 
     DoNotOptimize(tmp);
     std::cout << "Average time of operation: " << atime << "ns\n";
@@ -78,9 +74,7 @@ TEST_F(AuxRandomBenchmark, benchmarkLocalDistrInteger) {
 TEST_F(AuxRandomBenchmark, benchmarkIntegerParallel) {
     auto atime = measureParallel([] {
         uint64_t tmp = 0;
-        auto local_time = measure([&] {
-            tmp += Aux::Random::integer();
-        });
+        auto local_time = measure([&] { tmp += Aux::Random::integer(); });
         DoNotOptimize(tmp);
 
         return local_time;
@@ -95,9 +89,7 @@ TEST_F(AuxRandomBenchmark, benchmarkLocalDistrIntegerParallel) {
         std::uniform_int_distribution<uint64_t> distr;
 
         uint64_t tmp = 0;
-        auto local_time = measure([&] {
-            tmp += distr(prng);
-        });
+        auto local_time = measure([&] { tmp += distr(prng); });
         DoNotOptimize(tmp);
 
         return local_time;
@@ -106,12 +98,9 @@ TEST_F(AuxRandomBenchmark, benchmarkLocalDistrIntegerParallel) {
     std::cout << "Average time of operation: " << atime << "ns\n";
 }
 
-
 TEST_F(AuxRandomBenchmark, benchmarkProb) {
     double tmp = 0.0;
-    auto atime = measure([&] {
-        tmp += Aux::Random::probability();
-    });
+    auto atime = measure([&] { tmp += Aux::Random::probability(); });
     DoNotOptimize(tmp);
     std::cout << "Average time of operation: " << atime << "ns\n";
 }
@@ -122,9 +111,7 @@ TEST_F(AuxRandomBenchmark, benchmarkLocalDistrProb) {
     auto &prng = Aux::Random::getURNG();
     std::uniform_real_distribution<double> distr{0.0, 1.0};
 
-    auto atime = measure([&] {
-        tmp += distr(prng);
-    });
+    auto atime = measure([&] { tmp += distr(prng); });
 
     DoNotOptimize(tmp);
     std::cout << "Average time of operation: " << atime << "ns\n";
@@ -133,9 +120,7 @@ TEST_F(AuxRandomBenchmark, benchmarkLocalDistrProb) {
 TEST_F(AuxRandomBenchmark, benchmarkProbParallel) {
     auto atime = measureParallel([] {
         double tmp = 0.0;
-        auto local_time =  measure([&] {
-            tmp += Aux::Random::probability();
-        });
+        auto local_time = measure([&] { tmp += Aux::Random::probability(); });
         DoNotOptimize(tmp);
 
         return local_time;
@@ -150,9 +135,7 @@ TEST_F(AuxRandomBenchmark, benchmarkLocalDistrProbParallel) {
         std::uniform_real_distribution<double> distr{0.0, 1.0};
 
         double tmp = 0.0;
-        auto local_time = measure([&] {
-            tmp += distr(prng);
-        });
+        auto local_time = measure([&] { tmp += distr(prng); });
         DoNotOptimize(tmp);
 
         return local_time;
@@ -161,4 +144,4 @@ TEST_F(AuxRandomBenchmark, benchmarkLocalDistrProbParallel) {
     std::cout << "Average time of operation: " << atime << "ns\n";
 }
 
-} // ! namespace NetworKit
+} // namespace NetworKit
