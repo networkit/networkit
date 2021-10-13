@@ -2008,7 +2008,7 @@ inline void Graph::forEdgeImpl(L handle) const {
 
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void Graph::parallelForEdgesImpl(L handle) const {
-#pragma omp parallel for schedule(guided)
+#pragma omp parallel for schedule(dynamic)
     for (omp_index u = 0; u < static_cast<omp_index>(z); ++u) {
         forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(u, handle);
     }
