@@ -230,6 +230,11 @@ cdef class KadabraBetweenness(Algorithm):
 	nodes with highest betweenness centrality according to the algorithm
 	described in Borassi M. and Natale M. (2016): KADABRA is an ADaptive
 	Algorithm for Betweenness via Random Approximation.
+	Parallel implementation by Van der Grinten A., Angriman E., and
+	Meyerhenke H.: Parallel Adaptive Sampling with almost no
+	Synchronization, Euro-Par 2019.
+	https://link.springer.com/chapter/10.1007/978-3-030-29400-7_31
+	ArXiv pre-print: https://arxiv.org/abs/1903.09422.
 
 	If k = 0 the algorithm approximates the betweenness centrality of all
 	vertices of the graph so that the scores are within an additive error @a
