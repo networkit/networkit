@@ -44,10 +44,6 @@ public:
      */
     Cover(const Partition &p);
 
-    /** Default destructor */
-    virtual ~Cover() = default;
-
-
     /**
      *  Index operator.
      *
