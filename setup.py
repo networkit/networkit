@@ -139,6 +139,7 @@ def buildNetworKit(install_prefix, externalCore=False, externalTlx=None, withTes
 	from sysconfig import get_paths, get_config_var
 	comp_cmd.append("-DNETWORKIT_PYTHON="+get_paths()['include']) #provide python.h files
 	comp_cmd.append("-DNETWORKIT_PYTHON_SOABI="+os_soabi) #provide lib env specification
+	comp_cmd.append("-DNETWORKIT_PYTHON_VERSION="+sysconfig.get_python_version())
 	if externalCore:
 		if sys.platform == "win32":
 			# Reasoning: only static builds are supported and libs+dlls must reside in the same folder
