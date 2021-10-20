@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * AuxGTest.cpp
  *
@@ -6,42 +5,44 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
-// this define is an obscure fix for std::this_thread::sleep_for to work - the issue is described here: http://stackoverflow.com/questions/4438084/stdthis-threadsleep-for-and-gcc
+// this define is an obscure fix for std::this_thread::sleep_for to work - the issue is described
+// here: http://stackoverflow.com/questions/4438084/stdthis-threadsleep-for-and-gcc
 #define _GLIBCXX_USE_NANOSLEEP 1
 
 #include <gtest/gtest.h>
 
-#include <iostream>
-#include <array>
 #include <algorithm>
+#include <array>
+#include <chrono>
+#include <fstream>
+#include <iostream>
 #include <limits>
 #include <numeric>
-#include <chrono>
-#include <thread>
-#include <fstream>
 #include <set>
+#include <thread>
 #include <vector>
 
 #include <networkit/auxiliary/ArrayTools.hpp>
-#include <networkit/auxiliary/Log.hpp>
-#include <networkit/auxiliary/Random.hpp>
-#include <networkit/auxiliary/Timer.hpp>
-#include <networkit/auxiliary/MissingMath.hpp>
-#include <networkit/auxiliary/PrioQueue.hpp>
-#include <networkit/auxiliary/BucketPQ.hpp>
-#include <networkit/auxiliary/StringTools.hpp>
-#include <networkit/auxiliary/SetIntersector.hpp>
-#include <networkit/auxiliary/Enforce.hpp>
-#include <networkit/auxiliary/NumberParsing.hpp>
-#include <networkit/auxiliary/Enforce.hpp>
 #include <networkit/auxiliary/BloomFilter.hpp>
+#include <networkit/auxiliary/BucketPQ.hpp>
+#include <networkit/auxiliary/Enforce.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/MissingMath.hpp>
+#include <networkit/auxiliary/NumberParsing.hpp>
+#include <networkit/auxiliary/PrioQueue.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/auxiliary/SetIntersector.hpp>
+#include <networkit/auxiliary/StringTools.hpp>
+#include <networkit/auxiliary/Timer.hpp>
 
 namespace NetworKit {
 
-class AuxGTest: public testing::Test{};
+class AuxGTest : public testing::Test {};
 
 TEST_F(AuxGTest, testTimer) {
-    Aux::LoggingTimer ltimer("LogginTimer", Aux::Log::LogLevel::trace); // only enabled if test is execut with raised loglevel
+    Aux::LoggingTimer ltimer(
+        "LogginTimer",
+        Aux::Log::LogLevel::trace); // only enabled if test is execut with raised loglevel
 
     Aux::StartedTimer timer;
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -72,8 +73,8 @@ TEST_F(AuxGTest, testTimer) {
 TEST_F(AuxGTest, produceRandomIntegers) {
     Aux::Random::setSeed(1, false);
 #ifndef NETWORKIT_RELEASE_LOGGING
-    int64_t l = 0; 	// lower bound
-    int64_t u = 100;	// upper bound
+    int64_t l = 0;   // lower bound
+    int64_t u = 100; // upper bound
 
     for (int i = 0; i < 100; ++i) {
         TRACE(Aux::Random::integer(l, u));
@@ -87,8 +88,8 @@ TEST_F(AuxGTest, produceRandomIntegers) {
 
 TEST_F(AuxGTest, testRandomInteger) {
     Aux::Random::setSeed(1, false);
-    int64_t l = 0; 	// lower bound
-    int64_t u = 10;	// upper bound
+    int64_t l = 0;  // lower bound
+    int64_t u = 10; // upper bound
     std::vector<int64_t> rVector;
     int n = 1000;
     for (int i = 0; i < n; ++i) {
@@ -106,7 +107,6 @@ TEST_F(AuxGTest, testRandomInteger) {
 
     double sum = std::accumulate(rVector.begin(), rVector.end(), uint64_t{0});
     double avg = sum / n;
-
 
     DEBUG("avg rand integer: ", avg);
     EXPECT_LE(avg, 6.0);
@@ -127,7 +127,6 @@ TEST_F(AuxGTest, testRandomReal) {
     double sum = std::accumulate(rVector.begin(), rVector.end(), 0.0);
     double avg = sum / n;
 
-
     DEBUG("avg rand probability: ", avg);
     EXPECT_LE(avg, 0.6);
     EXPECT_GE(avg, 0.4);
@@ -147,26 +146,21 @@ TEST_F(AuxGTest, testRandomProbability) {
     double sum = std::accumulate(rVector.begin(), rVector.end(), 0.0);
     double avg = sum / n;
 
-
     DEBUG("avg rand probability: ", avg);
     EXPECT_LE(avg, 0.6);
     EXPECT_GE(avg, 0.4);
 }
 
-
 TEST_F(AuxGTest, testBinomial) {
-    EXPECT_EQ(1, Aux::MissingMath::binomial(7,0));
-    EXPECT_EQ(7, Aux::MissingMath::binomial(7,1));
-    EXPECT_EQ(21, Aux::MissingMath::binomial(7,2));
-    EXPECT_EQ(35, Aux::MissingMath::binomial(7,3));
-    EXPECT_EQ(35, Aux::MissingMath::binomial(7,4));
-    EXPECT_EQ(21, Aux::MissingMath::binomial(7,5));
-    EXPECT_EQ(7, Aux::MissingMath::binomial(7,6));
-    EXPECT_EQ(1, Aux::MissingMath::binomial(7,7));
-
-
+    EXPECT_EQ(1, Aux::MissingMath::binomial(7, 0));
+    EXPECT_EQ(7, Aux::MissingMath::binomial(7, 1));
+    EXPECT_EQ(21, Aux::MissingMath::binomial(7, 2));
+    EXPECT_EQ(35, Aux::MissingMath::binomial(7, 3));
+    EXPECT_EQ(35, Aux::MissingMath::binomial(7, 4));
+    EXPECT_EQ(21, Aux::MissingMath::binomial(7, 5));
+    EXPECT_EQ(7, Aux::MissingMath::binomial(7, 6));
+    EXPECT_EQ(1, Aux::MissingMath::binomial(7, 7));
 }
-
 
 TEST_F(AuxGTest, benchmarkBinomial) {
     Aux::Timer timer;
@@ -181,7 +175,6 @@ TEST_F(AuxGTest, benchmarkBinomial) {
     timer.stop();
 
     INFO("calculation finished after ", timer.elapsedTag());
-
 }
 
 TEST_F(AuxGTest, testPriorityQueue) {
@@ -196,7 +189,7 @@ TEST_F(AuxGTest, testPriorityQueue) {
     EXPECT_FALSE(pq.empty());
 
     double topKey = pq.peekMin(0).first;
-    pq.forElements([&](double curKey, uint64_t){
+    pq.forElements([&](double curKey, uint64_t) {
         EXPECT_TRUE(curKey >= topKey);
         topKey = curKey;
     });
@@ -311,47 +304,27 @@ TEST_F(AuxGTest, testBucketPQUpdateRemove) {
 
 TEST_F(AuxGTest, testLogging) {
     std::string cl = Aux::Log::getLogLevel();
-    //FATAL("FATAL ERROR");
-    //ERROR("This may be here");
     Aux::Log::setLogLevel("ERROR");
-    EXPECT_STREQ("ERROR",Aux::Log::getLogLevel().c_str());
-    //FATAL("fatal error",3,2.f);
-    //ERROR("normal error",3,2.f);
-    //WARN("just a warning",3,2.f);
-    //INFO("for the sake of information", 3, 2.f);
-    //DEBUG("important debug outputs", 3, 2.f);
-    //TRACE("trace", 3, 2.f);
+    EXPECT_STREQ("ERROR", Aux::Log::getLogLevel().c_str());
     Aux::Log::setLogLevel("INFO");
-    EXPECT_STREQ("INFO",Aux::Log::getLogLevel().c_str());
-    //FATAL("fatal error", 3, 2.f);
-    //ERROR("normal error", 3, 2.f);
-    //WARN("just a warning", 3, 2.f);
-    //INFO("for the sake of information", 3, 2.f);
-    //DEBUG("important debug outputs", 3, 2.f);
-    //TRACE("trace", 3, 2.f);
+    EXPECT_STREQ("INFO", Aux::Log::getLogLevel().c_str());
     Aux::Log::setLogLevel("TRACE");
-    EXPECT_STREQ("TRACE",Aux::Log::getLogLevel().c_str());
-    //FATAL("fatal error", 3, 2.f);
-    //ERROR("normal error", 3, 2.f);
-    //WARN("just a warning", 3, 2.f);
-    //INFO("for the sake of information", 3, 2.f);
-    //DEBUG("important debug outputs", 3, 2.f);
-    //TRACE("trace", 3, 2.f);
+    EXPECT_STREQ("TRACE", Aux::Log::getLogLevel().c_str());
     Aux::Log::setLogLevel("WARN");
-    EXPECT_STREQ("WARN",Aux::Log::getLogLevel().c_str());
+    EXPECT_STREQ("WARN", Aux::Log::getLogLevel().c_str());
     Aux::Log::setLogLevel("FATAL");
-    EXPECT_STREQ("FATAL",Aux::Log::getLogLevel().c_str());
+    EXPECT_STREQ("FATAL", Aux::Log::getLogLevel().c_str());
     Aux::Log::setLogLevel("DEBUG");
-    EXPECT_STREQ("DEBUG",Aux::Log::getLogLevel().c_str());
+    EXPECT_STREQ("DEBUG", Aux::Log::getLogLevel().c_str());
     Aux::Log::setLogLevel(cl);
 }
 
 TEST_F(AuxGTest, testFormatting) {
     using Aux::toStringF;
-    EXPECT_EQ("",toStringF(""));
-    EXPECT_EQ("",toStringF("%s", ""));
-    EXPECT_EQ("%",toStringF("%%", ""));
-    EXPECT_EQ("aaabbbaaa",toStringF("aaa%saaa", "bbb"));
+    EXPECT_EQ("", toStringF(""));
+    EXPECT_EQ("", toStringF("%s", ""));
+    EXPECT_EQ("%", toStringF("%%", ""));
+    EXPECT_EQ("aaabbbaaa", toStringF("aaa%saaa", "bbb"));
     EXPECT_THROW(toStringF("%"), std::invalid_argument);
     EXPECT_THROW(toStringF("%i"), std::invalid_argument);
     EXPECT_THROW(toStringF("%s"), std::invalid_argument);
@@ -364,9 +337,8 @@ TEST_F(AuxGTest, testRandomChoice) {
     }
 }
 
-
 TEST_F(AuxGTest, testRandomWeightedChoice) {
-    std::vector<std::pair<uint64_t, double> > data = {{0, 1.0}, {1, 0.0}};
+    std::vector<std::pair<uint64_t, double>> data = {{0, 1.0}, {1, 0.0}};
     for (uint64_t i = 0; i < 100; ++i) {
         auto element = Aux::Random::weightedChoice(data);
         EXPECT_EQ(0u, element);
@@ -427,7 +399,6 @@ TEST_F(AuxGTest, testSplit) {
     }
 }
 
-
 TEST_F(AuxGTest, testSetIntersector) {
     uint64_t n = 50;
     std::vector<uint64_t> A = {0, 5, 7, 3, 11, 22, 45, 17, 23, 11, 45};
@@ -471,7 +442,7 @@ TEST_F(AuxGTest, testNumberParsingInteger) {
     auto it = str.begin();
     auto end = str.end();
     std::size_t i = 0;
-    while(it != end) {
+    while (it != end) {
         unsigned result;
         std::tie(result, it) = Aux::Parsing::strTo<unsigned>(it, end);
         EXPECT_EQ(expectedValues[i], result);
@@ -487,7 +458,7 @@ TEST_F(AuxGTest, testNumberParsingSignedInteger) {
     auto it = str.begin();
     auto end = str.end();
     std::size_t i = 0;
-    while(it != end) {
+    while (it != end) {
         int result;
         std::tie(result, it) = Aux::Parsing::strTo<int>(it, end);
         EXPECT_EQ(expectedValues[i], result);
@@ -500,30 +471,22 @@ TEST_F(AuxGTest, testNumberParsingSignedInteger) {
 TEST_F(AuxGTest, testOverflowCatching) {
     const std::string str = "1000";
     EXPECT_THROW(
-            (Aux::Parsing::strTo<uint8_t, std::string::const_iterator, Aux::Checkers::Enforcer>(
-                str.begin(), str.end())),
-            std::runtime_error
-            );
-    EXPECT_THROW(
-            (Aux::Parsing::strTo<int8_t, std::string::const_iterator, Aux::Checkers::Enforcer>(
-                str.begin(), str.end())),
-            std::runtime_error
-            );
+        (Aux::Parsing::strTo<uint8_t, std::string::const_iterator, Aux::Checkers::Enforcer>(
+            str.begin(), str.end())),
+        std::runtime_error);
+    EXPECT_THROW((Aux::Parsing::strTo<int8_t, std::string::const_iterator, Aux::Checkers::Enforcer>(
+                     str.begin(), str.end())),
+                 std::runtime_error);
 }
 
 TEST_F(AuxGTest, testNumberParsingBasicReal) {
-    const std::string str =
-        "0 00 1 123 001 1200 12345678    "
-        "0.00000 -0000.000 -0000.000e-100"
-        ;
-    std::vector<double> expectedValues = {
-        0, 0, 1, 123, 1, 1200, 12345678,
-        0, 0, 0
-    };
+    const std::string str = "0 00 1 123 001 1200 12345678    "
+                            "0.00000 -0000.000 -0000.000e-100";
+    std::vector<double> expectedValues = {0, 0, 1, 123, 1, 1200, 12345678, 0, 0, 0};
     auto it = str.begin();
     auto end = str.end();
     std::size_t i = 0;
-    while(it != end) {
+    while (it != end) {
         double result;
         std::tie(result, it) = Aux::Parsing::strTo<double>(it, end);
         EXPECT_EQ(expectedValues[i], result);
@@ -533,9 +496,8 @@ TEST_F(AuxGTest, testNumberParsingBasicReal) {
     EXPECT_EQ(it, end);
 }
 
-
 TEST_F(AuxGTest, testNumberParsingAdvancedReal) {
-    auto helper = [](const std::string& str, double expected) {
+    auto helper = [](const std::string &str, double expected) {
         auto result = std::get<0>(Aux::Parsing::strTo<double>(str.begin(), str.end()));
         EXPECT_DOUBLE_EQ(result, expected);
     };
@@ -569,7 +531,7 @@ TEST_F(AuxGTest, testBloomFilter) {
         randomKeys.insert(key);
     }
 
-    for (auto key: randomKeys) {
+    for (auto key : randomKeys) {
         EXPECT_TRUE(bf.isMember(key));
     }
 
@@ -591,7 +553,8 @@ void testPermutation(Perm perm) {
 
     std::vector<index> seq;
     seq.resize(perm.size());
-    std::for_each(seq.begin(), seq.end(), [&seq](auto &elem) { elem = Aux::Random::integer(seq.size()); });
+    std::for_each(seq.begin(), seq.end(),
+                  [&seq](auto &elem) { elem = Aux::Random::integer(seq.size()); });
     auto seqCopy = seq;
 
     Aux::ArrayTools::applyPermutation(seq.begin(), seq.end(), perm.begin());
@@ -608,13 +571,15 @@ TEST_F(AuxGTest, testApplyPermutation) {
     testPermutation(std::array<uint8_t, n>{});
     testPermutation(std::array<uint8_t, 256>{});
     testPermutation(std::array<int16_t, n>{});
-    testPermutation(std::array<int16_t, static_cast<size_t>(std::numeric_limits<int16_t>::max()) + 1>{});
+    testPermutation(
+        std::array<int16_t, static_cast<size_t>(std::numeric_limits<int16_t>::max()) + 1>{});
     testPermutation(std::array<uint16_t, n>{});
-    testPermutation(std::array<uint16_t, static_cast<size_t>(std::numeric_limits<uint16_t>::max()) + 1>{});
+    testPermutation(
+        std::array<uint16_t, static_cast<size_t>(std::numeric_limits<uint16_t>::max()) + 1>{});
     testPermutation(std::array<uint32_t, n>{});
     testPermutation(std::array<int, n>{});
     testPermutation(std::array<int64_t, n>{});
     testPermutation(std::vector<node>{n});
     testPermutation(std::vector<int>{n});
 }
-} // ! namespace NetworKit
+} // namespace NetworKit

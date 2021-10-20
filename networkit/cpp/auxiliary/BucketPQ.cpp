@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * BucketPQ.cpp
  *
@@ -13,9 +12,9 @@ namespace Aux {
 Bucket BucketPQ::dummyBucket = {};
 const Bucket::iterator BucketPQ::invalidPtr = BucketPQ::dummyBucket.end();
 
-BucketPQ::BucketPQ(const std::vector<int64_t>& keys, int64_t minAdmissibleKey, int64_t maxAdmissibleKey):
-        minAdmissibleKey(minAdmissibleKey), maxAdmissibleKey(maxAdmissibleKey)
-{
+BucketPQ::BucketPQ(const std::vector<int64_t> &keys, int64_t minAdmissibleKey,
+                   int64_t maxAdmissibleKey)
+    : minAdmissibleKey(minAdmissibleKey), maxAdmissibleKey(maxAdmissibleKey) {
     construct(keys.size());
 
     // insert key-value pairs
@@ -26,9 +25,8 @@ BucketPQ::BucketPQ(const std::vector<int64_t>& keys, int64_t minAdmissibleKey, i
     }
 }
 
-BucketPQ::BucketPQ(uint64_t capacity, int64_t minAdmissibleKey, int64_t maxAdmissibleKey):
-        minAdmissibleKey(minAdmissibleKey), maxAdmissibleKey(maxAdmissibleKey)
-{
+BucketPQ::BucketPQ(uint64_t capacity, int64_t minAdmissibleKey, int64_t maxAdmissibleKey)
+    : minAdmissibleKey(minAdmissibleKey), maxAdmissibleKey(maxAdmissibleKey) {
     construct(capacity);
 }
 
@@ -39,7 +37,7 @@ void BucketPQ::construct(uint64_t capacity) {
     }
 
     // init
-    buckets.resize(maxAdmissibleKey-minAdmissibleKey+1);
+    buckets.resize(maxAdmissibleKey - minAdmissibleKey + 1);
     nodePtr.resize(capacity);
     myBucket.resize(capacity);
     currentMinKey = std::numeric_limits<int64_t>::max();
@@ -53,9 +51,9 @@ void BucketPQ::insert(int64_t key, index value) {
     assert(minAdmissibleKey <= key && key <= maxAdmissibleKey);
     assert(value < nodePtr.size());
 
-    buckets[key+offset].push_front(value);
-    nodePtr[value] = OptionalIterator{true, buckets[key+offset].begin()};
-    myBucket[value] = key+offset;
+    buckets[key + offset].push_front(value);
+    nodePtr[value] = OptionalIterator{true, buckets[key + offset].begin()};
+    myBucket[value] = key + offset;
     ++numElems;
 
     // bookkeeping
@@ -71,7 +69,7 @@ bool BucketPQ::contains(const index &value) const {
     return value < nodePtr.size() && nodePtr[value].valid;
 }
 
-void BucketPQ::remove(const index& value) {
+void BucketPQ::remove(const index &value) {
     assert(value < nodePtr.size());
 
     if (myBucket[value] != none) {
@@ -86,15 +84,14 @@ void BucketPQ::remove(const index& value) {
             // empty pq: reinit the current min/max pointers
             currentMinKey = std::numeric_limits<int64_t>::max();
             currentMaxKey = std::numeric_limits<int64_t>::min();
-        }
-        else {
+        } else {
             // adjust max pointer if necessary
-            while (buckets[currentMaxKey+offset].empty() && currentMaxKey > currentMinKey) {
+            while (buckets[currentMaxKey + offset].empty() && currentMaxKey > currentMinKey) {
                 --currentMaxKey;
             }
 
             // adjust min pointer if necessary
-            while (buckets[currentMinKey+offset].empty() && currentMinKey < currentMaxKey) {
+            while (buckets[currentMinKey + offset].empty() && currentMinKey < currentMaxKey) {
                 ++currentMinKey;
             }
         }
@@ -105,7 +102,7 @@ std::pair<int64_t, index> BucketPQ::extractMin() {
     if (empty())
         return {none, none};
 
-    index result = buckets[currentMinKey+offset].front();
+    index result = buckets[currentMinKey + offset].front();
 
     // store currentMinKey because remove(result) will change it
     int64_t oldMinKey = currentMinKey;
@@ -133,8 +130,8 @@ bool BucketPQ::empty() const noexcept {
     return numElems == 0;
 }
 
-int64_t BucketPQ::getKey(const index& val) {
+int64_t BucketPQ::getKey(const index &val) {
     int64_t key = static_cast<int64_t>(myBucket[val]) - offset;
     return key;
 }
-} // namespace
+} // namespace Aux
