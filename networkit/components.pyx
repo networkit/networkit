@@ -189,6 +189,7 @@ cdef extern from "<networkit/components/StronglyConnectedComponents.hpp>":
 		_Partition getPartition() except +
 		map[node, count] getComponentSizes() except +
 		vector[vector[node]] getComponents() except +
+		_Graph extractLargestStronglyConnectedComponent(_Graph G, bool_t) nogil except +
 
 
 cdef class StronglyConnectedComponents:
@@ -275,6 +276,28 @@ cdef class StronglyConnectedComponents:
 			A list of components.
 		"""
 		return self._this.getComponents()
+
+	def extractLargestStronglyConnectedComponent(self, Graph graph, bool_t compactGraph = False):
+		"""
+			Constructs a new graph that contains only the nodes inside the
+			largest strongly connected component.
+
+			Parameters:
+			-----------
+			graph: networkit.Graph
+				The input graph
+			compactGraph: bool
+				if true, the node ids of the output graph will be compacted
+				(i.e., re-numbered from 0 to n-1). If false, the node ids
+				will not be changed.
+
+			Returns:
+			--------
+			networkit.Graph
+				A graph that contains only the nodes inside the largest
+				strongly connected component.
+		"""
+		return Graph().setThis(self._this.extractLargestStronglyConnectedComponent(graph._this, compactGraph))
 
 
 cdef extern from "<networkit/components/WeaklyConnectedComponents.hpp>":
@@ -580,5 +603,3 @@ cdef class DynWeaklyConnectedComponents(Algorithm):
 		for event in batch:
 			_batch.push_back(_GraphEvent(event.type, event.u, event.v, event.w))
 		(<_DynWeaklyConnectedComponents*>(self._this)).updateBatch(_batch)
-
-

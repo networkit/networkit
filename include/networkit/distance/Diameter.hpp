@@ -9,6 +9,7 @@
 #ifndef NETWORKIT_DISTANCE_DIAMETER_HPP_
 #define NETWORKIT_DISTANCE_DIAMETER_HPP_
 
+#include <atomic>
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -30,6 +31,10 @@ public:
 
     std::pair<count, count> getDiameter() const;
 
+    count getNumBFS() const;
+
+    count getInitialLB() const;
+
 
 private:
     const Graph* G;
@@ -37,6 +42,10 @@ private:
     double error;
     count nSamples;
     std::pair<count, count> diameterBounds;
+    std::atomic<count> numBFS{0};
+    count initialLB = 0;
+
+    std::pair<edgeweight, edgeweight> difub(const Graph &G, node u, double error);
 
     /**
      * Get the estimation of the diameter of the graph @a G. The algorithm is based on the ExactSumSweep algorithm presented in

@@ -7,9 +7,11 @@
  */
 
 #include <numeric>
+#include <atomic>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/components/StronglyConnectedComponents.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/Diameter.hpp>
 #include <networkit/distance/Dijkstra.hpp>
@@ -17,6 +19,7 @@
 #include <networkit/graph/BFS.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/structures/Partition.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 
 namespace NetworKit {
 
@@ -35,8 +38,18 @@ Diameter::Diameter(const Graph& G, DiameterAlgo algo, double error, count nSampl
 
 void Diameter::run() {
     diameterBounds = {0, 0};
+    bool use_fast_exact_algo = !G->isDirected();
+    if (G->isDirected()) {
+        StronglyConnectedComponents comp(*G);
+        comp.run();
+        use_fast_exact_algo |= comp.numberOfComponents() == 1;
+    }
     if (algo == DiameterAlgo::exact) {
-        std::get<0>(diameterBounds) = this->exactDiameter(*G);
+        if (!G->isWeighted() && use_fast_exact_algo) {
+            diameterBounds = this->estimatedDiameterRange(*G, 0);
+        } else {
+            std::get<0>(diameterBounds) = this->exactDiameter(*G);
+        }
     } else if (algo == DiameterAlgo::estimatedRange) {
         diameterBounds = this->estimatedDiameterRange(*G, error);
     } else if (algo == DiameterAlgo::estimatedSamples) {
@@ -53,6 +66,14 @@ std::pair<count, count> Diameter::getDiameter() const {
     return diameterBounds;
 }
 
+count Diameter::getNumBFS() const {
+  return numBFS;
+}
+
+count Diameter::getInitialLB() const {
+  return initialLB;
+}
+
 edgeweight Diameter::exactDiameter(const Graph& G) {
     using namespace std;
 
@@ -60,21 +81,22 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
 
     edgeweight diameter = 0.0;
 
-    if (! G.isWeighted()) {
-        std::tie(diameter, std::ignore) = estimatedDiameterRange(G, 0);
-    } else {
-        G.forNodes([&](node v) {
-            handler.assureRunning();
-            Dijkstra dijkstra(G, v);
-            dijkstra.run();
-            auto distances = dijkstra.getDistances();
-            G.forNodes([&](node u) {
-                if (diameter < distances[u]) {
-                    diameter = distances[u];
-                }
-            });
+    G.forNodes([&](node v) {
+        handler.assureRunning();
+        std::unique_ptr<SSSP> sssp;
+        if (G.isWeighted()) {
+            sssp = std::make_unique<Dijkstra>(G, v);
+        } else {
+            sssp = std::make_unique<BFS>(G, v);
+        }
+        sssp->run();
+        const auto &distances = sssp->getDistances();
+        G.forNodes([&](node u) {
+            if (diameter < distances[u]) {
+                diameter = distances[u];
+            }
         });
-    }
+    });
 
     if (diameter == std::numeric_limits<edgeweight>::max()) {
         throw std::runtime_error("Graph not connected - diameter is infinite");
@@ -82,9 +104,86 @@ edgeweight Diameter::exactDiameter(const Graph& G) {
     return diameter;
 }
 
+std::pair<edgeweight, edgeweight> Diameter::difub(const Graph &G, node u, double error) {
+    Aux::SignalHandler handler;
+
+    handler.assureRunning();
+    std::vector<std::vector<count>> distancesF(1);
+    std::vector<std::vector<count>> distancesB(1);
+
+    // calculate all forward and backward distances
+    handler.assureRunning();
+    Traversal::BFSfrom(G, u, [&](node v, count dist) {
+        if (distancesF.size() <= dist) {
+            distancesF.emplace_back();
+        }
+        distancesF[dist].push_back(v);
+    });
+    Traversal::BFSfrom(G, u, [&](node v, count dist) {
+        if (distancesB.size() <= dist) {
+            distancesB.emplace_back();
+        }
+        distancesB[dist].push_back(v);
+    }, true);
+
+    count i = std::max(distancesF.size(), distancesB.size());
+    initialLB = i;
+    std::atomic<count> lb(i);
+    count ub = 2 * i;
+
+    numBFS = 2;
+
+    // difub
+    for (; i > 0; --i) {
+        handler.assureRunning();
+        count size_f = i < distancesF.size() ? distancesF[i].size() : 0;
+        count size_b = i < distancesB.size() ? distancesB[i].size() : 0;
+#pragma omp parallel for
+        for (omp_index j = 0; j < size_f + size_b; ++j) {
+            count lb_ = lb.load(std::memory_order_relaxed);
+            if (lb_ * (1.0 + error) >= ub) {
+                continue;
+            }
+            if (j < size_f) {
+                Aux::Parallel::atomic_max(lb, Eccentricity::getValue(G, distancesF[i][j], true).second);
+            } else {
+                Aux::Parallel::atomic_max(lb, Eccentricity::getValue(G, distancesB[i][j - size_f]).second);
+            }
+            numBFS++;
+        }
+
+        ub = 2 * (i - 1);
+        count lb_ = lb.load(std::memory_order_relaxed);
+        if (lb_ * (1.0 + error) >= ub) {
+            ub = lb_;
+            return std::make_pair(lb_, ub);
+        }
+    }
+    return std::make_pair(lb.load(std::memory_order_relaxed), ub);
+}
+
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &G, double error) {
     if (G.isDirected()) {
-        throw std::runtime_error("Error, the diameter of directed graphs cannot be computed yet.");
+        StronglyConnectedComponents comp(G);
+        comp.run();
+        if (comp.numberOfComponents() > 1) {
+            throw std::runtime_error("More than one strongly connected component - diameter range for directed graphs can only be computed for graphs with one strongly connected component");
+        }
+
+        // use max-degree node as starting node
+        node u;
+        count maxDegree = 0;
+        G.forNodes([&](node v){
+            count d = G.degree(v);
+            if (d > maxDegree) {
+                u = v;
+                maxDegree = d;
+            }
+        });
+        if (maxDegree == 0) {
+            return {0,0};
+        }
+        return difub(G, u, error);
     }
     if (G.isWeighted()) {
         WARN("The input graph is weighted, but this algorithm ignores weights.");

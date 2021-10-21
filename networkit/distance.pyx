@@ -363,6 +363,8 @@ cdef extern from "<networkit/distance/Diameter.hpp>" namespace "NetworKit::Diame
 	cdef cppclass _Diameter "NetworKit::Diameter"(_Algorithm):
 		_Diameter(_Graph G, _DiameterAlgo algo, double error, count nSamples) except +
 		pair[count, count] getDiameter() nogil except +
+		count getNumBFS() except +
+		count getInitialLB() except +
 
 cdef class Diameter(Algorithm):
 	cdef Graph _G
@@ -375,6 +377,12 @@ cdef class Diameter(Algorithm):
 
 	def getDiameter(self):
 		return (<_Diameter*>(self._this)).getDiameter()
+
+	def getNumBFS(self):
+		return (<_Diameter*>(self._this)).getNumBFS()
+
+	def getInitialLB(self):
+		return (<_Diameter*>(self._this)).getInitialLB()
 
 cdef extern from "<networkit/distance/Eccentricity.hpp>" namespace "NetworKit::Eccentricity":
 
@@ -1364,4 +1372,3 @@ cdef class ReverseBFS(SSSP):
 	def __cinit__(self, Graph G, source, storePaths=True, storeNodesSortedByDistance=False, target=none):
 		self._G = G
 		self._this = new _ReverseBFS(G._this, source, storePaths, storeNodesSortedByDistance, target)
-
