@@ -293,10 +293,10 @@ endif()
 if(NETWORKIT_PYTHON)
 
 	if(${CMAKE_VERSION} VERSION_LESS "3.12.0") 
-		FIND_PACKAGE(FindPythonInterp REQUIRED)
-		FIND_PACKAGE(FindPythonLibs REQUIRED)
+		FIND_PACKAGE(FindPythonInterp ${NETWORKIT_PYTHON_VERSION} EXACT REQUIRED)
+		FIND_PACKAGE(FindPythonLibs ${NETWORKIT_PYTHON_VERSION} EXACT REQUIRED)
 	else()
-		FIND_PACKAGE(Python3 COMPONENTS Interpreter Development REQUIRED)
+		FIND_PACKAGE(Python3 ${NETWORKIT_PYTHON_VERSION} EXACT COMPONENTS Interpreter Development REQUIRED)
 	endif()
 
 	 foreach (EXT base centrality clique coarsening community components correlation
