@@ -159,6 +159,19 @@ TEST_F(IOGTest, testMETISGraphReader) {
     }
 
 
+    path = "input/jazz2double.graph";
+    G = reader.read(path);
+    n = 5;
+    m = 6;
+    EXPECT_FALSE(G.isEmpty());
+    EXPECT_EQ(n, G.numberOfNodes()) << "There are " << n << " nodes in the graph";
+    EXPECT_EQ(m, G.numberOfEdges()) << "There are " << m << " edges in the graph";
+
+    for (index v = 0; v < n; ++v) {
+        EXPECT_TRUE(G.hasNode(v)) << "Node " << v << " should be there";
+    }
+
+
     // graph polblogs (has singletons)
     path = "input/polblogs.graph";
     G = reader.read(path);
