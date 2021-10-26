@@ -1,6 +1,10 @@
-name: Wheel builder
+name: Build wheels
 
 on: [push, pull_request]
+
+# Default parameters for all builds
+env:
+  ARTIFACT_RETENTION: ${{ github.ref == 'refs/heads/master' && '30' || '7' }}
 
 jobs:
   cpython-linux-x86_64:
@@ -30,22 +34,22 @@ jobs:
         with:
           name: networkit-cp36-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp36*.whl
-          retention-days: 14
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v2
         with:
           name: networkit-cp37-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp37*.whl
-          retention-days: 14
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v2
         with:
           name: networkit-cp38-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp38*.whl
-          retention-days: 14
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v2
         with:
           name: networkit-cp39-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp39*.whl
-          retention-days: 14
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-linux-aarch64:
     runs-on: ${{ matrix.os }}
@@ -79,7 +83,7 @@ jobs:
         with:
           name: networkit-cp39-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp39*.whl
-          retention-days: 14
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-macos-x86_64:
     runs-on: ${{ matrix.os }}
@@ -108,22 +112,22 @@ jobs:
         with:
           name: networkit-cp36-macos-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp36*.whl
-          retention-days: 14
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v2
         with:
           name: networkit-cp37-macos-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp37*.whl
-          retention-days: 14
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v2
         with:
           name: networkit-cp38-macos-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp38*.whl
-          retention-days: 14
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v2
         with:
           name: networkit-cp39-macos-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp39*.whl
-          retention-days: 14
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-windows:
     runs-on: ${{ matrix.os }}
@@ -151,4 +155,4 @@ jobs:
         with:
           name: networkit-cp39-win-amd64.whl
           path: ./wheelhouse/*cp39*.whl
-          retention-days: 14
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
