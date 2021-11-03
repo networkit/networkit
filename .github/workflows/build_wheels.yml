@@ -129,6 +129,37 @@ jobs:
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
+  cpython-macos-arm64:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest]
+        cibw_archs: ["arm64"]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: '3.9'
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.1.1
+        env:
+          CIBW_BEFORE_BUILD: 
+            pip install cython &&
+            brew install libomp ninja &&
+            pip install --pre -i https://pypi.anaconda.org/scipy-wheels-nightly/simple scipy
+          CIBW_ENVIRONMENT: CXX=c++ NETWORKIT_OSX_CROSSBUILD=ON
+          CIBW_ARCHS_MACOS: ${{ matrix.cibw_archs }}
+          CIBW_BUILD: "cp39-*"
+          CIBW_SKIP: pp*
+      - uses: actions/upload-artifact@v2
+        with:
+          name: networkit-cp39-macos-${{ matrix.cibw_archs }}.whl
+          path: ./wheelhouse/*cp39*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+
   cpython-windows:
     runs-on: ${{ matrix.os }}
     strategy:
