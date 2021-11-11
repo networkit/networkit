@@ -132,10 +132,8 @@ public:
         file << "@subgroup {edges} dominant" << std::endl;
         file << "@vectorlist {edges} color= white" << std::endl;
         G->forEdges([&](node u, node v) {
-            //if (u <= v) { // draw graph undirected
                 file << "P " << vertexCoordinates[u][0] << " " << vertexCoordinates[u][1] << " " << vertexCoordinates[u][2] << std::endl;
                 file << vertexCoordinates[v][0] << " " << vertexCoordinates[v][1] << " " << vertexCoordinates[v][2] << std::endl;
-            //}
         });
 
         file << std::endl;
