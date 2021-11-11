@@ -64,6 +64,8 @@ While the most recent version is in general available for all package managers, 
 
     spack install py-networkit
 
+More system-specific information on how to install NetworKit on Linux, macOS (both Intel and M1) and Windows-systems can be found [here](https://networkit.github.io/get_started.html).
+
 ### Building the Python module from source
 
     git clone https://github.com/networkit/networkit networkit
