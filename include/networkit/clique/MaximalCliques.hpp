@@ -1,4 +1,3 @@
-// no-networkit-format
 #ifndef NETWORKIT_CLIQUE_MAXIMAL_CLIQUES_HPP_
 #define NETWORKIT_CLIQUE_MAXIMAL_CLIQUES_HPP_
 
@@ -40,7 +39,7 @@ public:
      * @param G The graph to list the cliques for.
      * @param maximumOnly If only a maximum clique shall be found.
      */
-    MaximalCliques(const Graph& G, bool maximumOnly = false);
+    MaximalCliques(const Graph &G, bool maximumOnly = false);
 
     /**
      * Construct the maximal cliques algorithm with the given graph and a callback.
@@ -52,7 +51,7 @@ public:
      * @param G The graph to list cliques for
      * @param callback The callback to call for each clique.
      */
-    MaximalCliques(const Graph& G, std::function<void(const std::vector<node>&)> callback);
+    MaximalCliques(const Graph &G, std::function<void(const std::vector<node> &)> callback);
 
     /**
      * Execute the maximal clique listing algorithm.
@@ -68,17 +67,17 @@ public:
      *
      * @return a vector of cliques, each being represented as a vector of nodes.
      */
-    const std::vector<std::vector<node>>& getCliques() const;
+    const std::vector<std::vector<node>> &getCliques() const;
 
 private:
-    const Graph* G;
+    const Graph *G;
 
     std::vector<std::vector<node>> result;
 
-    std::function<void(const std::vector<node>&)> callback;
+    std::function<void(const std::vector<node> &)> callback;
     bool maximumOnly;
 };
 
-}
+} // namespace NetworKit
 
 #endif // NETWORKIT_CLIQUE_MAXIMAL_CLIQUES_HPP_

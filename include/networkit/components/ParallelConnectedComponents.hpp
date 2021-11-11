@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * ConnectedComponents.cpp
  *
@@ -9,9 +8,9 @@
 #ifndef NETWORKIT_COMPONENTS_PARALLEL_CONNECTED_COMPONENTS_HPP_
 #define NETWORKIT_COMPONENTS_PARALLEL_CONNECTED_COMPONENTS_HPP_
 
+#include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
-#include <networkit/base/Algorithm.hpp>
 
 namespace NetworKit {
 
@@ -21,7 +20,6 @@ namespace NetworKit {
  */
 class ParallelConnectedComponents final : public Algorithm {
 public:
-
     /**
      * @param[in] G Graph for which connected components shall be computed.
      * @param[in] coarsening Specifies whether the main algorithm based on
@@ -30,7 +28,7 @@ public:
      *   since we saw positive effects in terms of running time for many networks.
      *   Beware of possible memory implications.
      */
-    ParallelConnectedComponents(const Graph& G, bool coarsening = true);
+    ParallelConnectedComponents(const Graph &G, bool coarsening = true);
 
     /**
      * This method determines the connected components for the graph g.
@@ -54,7 +52,6 @@ public:
      */
     count componentOfNode(node u) const;
 
-
     /**
      * Return a Partition that represents the components
      */
@@ -66,12 +63,11 @@ public:
     std::vector<std::vector<node>> getComponents() const;
 
 private:
-    const Graph* G;
+    const Graph *G;
     Partition component;
     bool coarsening;
 };
 
-}
-
+} // namespace NetworKit
 
 #endif // NETWORKIT_COMPONENTS_PARALLEL_CONNECTED_COMPONENTS_HPP_
