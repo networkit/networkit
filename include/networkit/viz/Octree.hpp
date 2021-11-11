@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * Octree.hpp
  *
@@ -21,7 +20,7 @@ namespace NetworKit {
 /**
  * Bounding box used by the Octree class.
  */
-template<typename T>
+template <typename T>
 struct BoundingBox {
 public:
     /**
@@ -34,15 +33,17 @@ public:
      * @param[in] center The center of the bounding box.
      * @param[in] sideLength The side length of the bounding box.
      */
-    BoundingBox(const Point<T>& center, const T sideLength) : center(center), sideLength(sideLength), halfSideLength(sideLength/2.0), sqSideLength(sideLength*sideLength), dimension(center.getDimensions()) {}
+    BoundingBox(const Point<T> &center, const T sideLength)
+        : center(center), sideLength(sideLength), halfSideLength(sideLength / 2.0),
+          sqSideLength(sideLength * sideLength), dimension(center.getDimensions()) {}
 
-    BoundingBox(const BoundingBox<T>& other) = default;
+    BoundingBox(const BoundingBox<T> &other) = default;
 
     /**
      * Sets the center of the bounding box.
      * @param[in] center New center.
      */
-    void setCenter(const Point<T>& center) {
+    void setCenter(const Point<T> &center) {
         this->center = center;
         dimension = center.getDimensions();
     }
@@ -50,9 +51,7 @@ public:
     /**
      * @return Center of bounding box.
      */
-    inline Point<T>& getCenter() {
-        return center;
-    }
+    inline Point<T> &getCenter() { return center; }
 
     /**
      * Sets the side length of the bounding box.
@@ -60,35 +59,29 @@ public:
      */
     void setSideLength(T sideLength) {
         this->sideLength = sideLength;
-        this->halfSideLength = sideLength/2.0;
+        this->halfSideLength = sideLength / 2.0;
         this->sqSideLength = sideLength * sideLength;
     }
 
     /**
      * @return Side length of bounding box.
      */
-    inline T getSideLength() const {
-        return sideLength;
-    }
+    inline T getSideLength() const { return sideLength; }
 
     /**
      * @return Half of the side length of bounding box.
      */
-    inline T getHalfSideLength() const {
-        return halfSideLength;
-    }
+    inline T getHalfSideLength() const { return halfSideLength; }
 
     /**
      * @return Square of the side length of bounding box.
      */
-    inline T getSqSideLength() const {
-        return sqSideLength;
-    }
+    inline T getSqSideLength() const { return sqSideLength; }
 
     /**
      * @return True if point @a point is inside the bounding box.
      */
-    bool contains(const Point<T>& point) const {
+    bool contains(const Point<T> &point) const {
         for (index d = 0; d < dimension; ++d) {
             if (center[d] - halfSideLength > point[d] || point[d] > center[d] + halfSideLength) {
                 return false;
@@ -109,7 +102,7 @@ private:
 /**
  * Node in the octree data structure.
  */
-template<typename T>
+template <typename T>
 struct OctreeNode {
     count weight;
     Point<T> centerOfMass;
@@ -117,7 +110,8 @@ struct OctreeNode {
     BoundingBox<T> bBox;
 
     OctreeNode() : weight(0), children({}), bBox() {}
-    OctreeNode(BoundingBox<T>& bBox) : weight(0), centerOfMass(bBox.getCenter().getDimensions()), children({}), bBox(bBox) {}
+    OctreeNode(BoundingBox<T> &bBox)
+        : weight(0), centerOfMass(bBox.getCenter().getDimensions()), children({}), bBox(bBox) {}
 
     /**
      * @return True if node is leaf, false otherwise.
@@ -127,26 +121,24 @@ struct OctreeNode {
     /**
      * @return True if tree node has weight zero (== is empty), false otherwise.
      */
-    inline bool isEmpty() const {
-        return weight == 0;
-    }
+    inline bool isEmpty() const { return weight == 0; }
 
     /**
      * @return True if point @a point is stored in the octree node, false otherwise.
      */
-    inline bool contains(const Point<T>& point) const {
-        return bBox.contains(point);
-    }
+    inline bool contains(const Point<T> &point) const { return bBox.contains(point); }
 
     /**
      * Computes octree node's (possibly weighted) center of mass.
      */
     void computeCenterOfMass() {
         if (!isLeaf()) {
-            centerOfMass.scale(1.0/(double) weight);
+            centerOfMass.scale(1.0 / (double)weight);
 
             // remove empty children
-            children.erase(std::remove_if(children.begin(), children.end(), [&](OctreeNode<T>& child){return child.isEmpty();}), children.end());
+            children.erase(std::remove_if(children.begin(), children.end(),
+                                          [&](OctreeNode<T> &child) { return child.isEmpty(); }),
+                           children.end());
 
             for (auto &child : children) {
                 child.computeCenterOfMass();
@@ -184,7 +176,8 @@ struct OctreeNode {
      */
     std::string toString() {
         std::string str;
-        str += bBox.getCenter().toString() + " sL=" + std::to_string(bBox.getSideLength()) + "w=" + std::to_string(weight);
+        str += bBox.getCenter().toString() + " sL=" + std::to_string(bBox.getSideLength())
+               + "w=" + std::to_string(weight);
         str += "(";
         for (auto &child : children) {
             str += "[ ";
@@ -200,10 +193,12 @@ struct OctreeNode {
      */
     void split(count dimensions, count numChildren) {
         children = std::vector<OctreeNode<T>>(numChildren, OctreeNode<T>(bBox));
-        for (index i = 0; i < numChildren; ++i) { // 0-bit => center - halfSideLength, 1-bit => center + halfSideLength, least-significant bit is lowest dimension
+        for (index i = 0; i < numChildren;
+             ++i) { // 0-bit => center - halfSideLength, 1-bit => center + halfSideLength,
+                    // least-significant bit is lowest dimension
             children[i].bBox.setSideLength(bBox.getHalfSideLength());
             for (index d = 0; d < dimensions; ++d) {
-                if (((i & ~(~static_cast<index>(0) << (d+1))) >> d) == 0) { // 0-bit
+                if (((i & ~(~static_cast<index>(0) << (d + 1))) >> d) == 0) { // 0-bit
                     children[i].bBox.getCenter()[d] -= children[i].bBox.getHalfSideLength();
                 } else {
                     children[i].bBox.getCenter()[d] += children[i].bBox.getHalfSideLength();
@@ -218,9 +213,9 @@ struct OctreeNode {
      * @param[in] dimensions Point's number of dimensions.
      * @param[in] numChildrenPerNode Number of children an octree node has if split.
      */
-    void addPoint(const Point<T>& point, count dimensions, count numChildrenPerNode) {
-        if (weight == 0) { // empty leaf
-            weight++; // we add a point
+    void addPoint(const Point<T> &point, count dimensions, count numChildrenPerNode) {
+        if (weight == 0) {        // empty leaf
+            weight++;             // we add a point
             centerOfMass = point; // center of mass of a single point is the point
         } else {
             if (isLeaf()) { // split the leaf!
@@ -251,13 +246,12 @@ struct OctreeNode {
     }
 };
 
-
 /**
  * @ingroup viz
  *
  * Implementation of a k-dimensional octree for the purpose of Barnes-Hut approximation.
  */
-template<typename T>
+template <typename T>
 class Octree final {
 public:
     /**
@@ -269,7 +263,7 @@ public:
      * Constructor that puts the points in @a points into the octree.
      * @param[in] points Points to be inserted into the octree as initialization.
      */
-    Octree(const std::vector<Vector>& points);
+    Octree(const std::vector<Vector> &points);
 
     /**
      * Clears current content and inserts points in @a points into the octree.
@@ -277,25 +271,25 @@ public:
      */
     void recomputeTree(const std::vector<Vector> &points);
 
-    inline std::vector<std::pair<count, Point<T>>> approximateDistance(const Point<T>& p, double theta) const {
+    inline std::vector<std::pair<count, Point<T>>> approximateDistance(const Point<T> &p,
+                                                                       double theta) const {
         return approximateDistance(root, p, theta);
     }
 
-    inline void approximateDistance(const Point<T>& p, double theta, std::vector<std::pair<count, Point<T>>>& result) const {
+    inline void approximateDistance(const Point<T> &p, double theta,
+                                    std::vector<std::pair<count, Point<T>>> &result) const {
         approximateDistance(root, p, theta, result);
     }
 
-    template<typename L>
-    inline void approximateDistance(const Point<T>& p, double theta, L& handle) const {
-        approximateDistance(root, p, theta*theta, handle);
+    template <typename L>
+    inline void approximateDistance(const Point<T> &p, double theta, L &handle) const {
+        approximateDistance(root, p, theta * theta, handle);
     }
 
     /**
      * @return String label of the octree's root node.
      */
-    std::string toString() {
-        return root.toString();
-    }
+    std::string toString() { return root.toString(); }
 
 private:
     OctreeNode<T> root;
@@ -306,31 +300,33 @@ private:
      * Batch insertion of points in @a points into the octree.
      * @param[in] points Points to be inserted into the octree as initialization.
      */
-    void batchInsert(const std::vector<Vector>& points);
+    void batchInsert(const std::vector<Vector> &points);
 
+    std::vector<std::pair<count, Point<T>>>
+    approximateDistance(const OctreeNode<T> &node, const Point<T> &p, double theta) const;
+    void approximateDistance(const OctreeNode<T> &node, const Point<T> &p, double theta,
+                             std::vector<std::pair<count, Point<T>>> &result) const;
 
-    std::vector<std::pair<count, Point<T>>> approximateDistance(const OctreeNode<T>& node, const Point<T>& p, double theta) const;
-    void approximateDistance(const OctreeNode<T>& node, const Point<T>& p, double theta, std::vector<std::pair<count, Point<T>>>& result) const;
-
-    template<typename L>
-    void approximateDistance(const OctreeNode<T>& node, const Point<T>& p, double sqTheta, L& handle) const;
+    template <typename L>
+    void approximateDistance(const OctreeNode<T> &node, const Point<T> &p, double sqTheta,
+                             L &handle) const;
 };
 
-template<typename T>
-Octree<T>::Octree(const std::vector<Vector>& points) {
+template <typename T>
+Octree<T>::Octree(const std::vector<Vector> &points) {
     dimensions = points.size();
     numChildrenPerNode = pow(2, dimensions);
     batchInsert(points);
 }
 
-template<typename T>
-void Octree<T>::recomputeTree(const std::vector<Vector>& points) {
+template <typename T>
+void Octree<T>::recomputeTree(const std::vector<Vector> &points) {
     root.children.clear();
     batchInsert(points);
 }
 
-template<typename T>
-void Octree<T>::batchInsert(const std::vector<Vector>& points) {
+template <typename T>
+void Octree<T>::batchInsert(const std::vector<Vector> &points) {
     Point<T> center(dimensions);
     T sideLength = 0;
     for (count d = 0; d < dimensions; ++d) {
@@ -342,8 +338,9 @@ void Octree<T>::batchInsert(const std::vector<Vector>& points) {
             maxVal = std::max(maxVal, points[d][i]);
         }
 
-        sideLength = std::max(sideLength, fabs(maxVal - minVal) * 1.005); // add 0.5% to bounding box
-        center[d] = (minVal + maxVal)/2.0;
+        sideLength =
+            std::max(sideLength, fabs(maxVal - minVal) * 1.005); // add 0.5% to bounding box
+        center[d] = (minVal + maxVal) / 2.0;
     }
 
     root.bBox = {center, sideLength};
@@ -360,11 +357,14 @@ void Octree<T>::batchInsert(const std::vector<Vector>& points) {
     root.computeCenterOfMass();
 }
 
-template<typename T>
-std::vector<std::pair<count, Point<T>>> Octree<T>::approximateDistance(const OctreeNode<T>& node, const Point<T>& p, double theta) const {
-    if (node.isEmpty()) return {};
+template <typename T>
+std::vector<std::pair<count, Point<T>>>
+Octree<T>::approximateDistance(const OctreeNode<T> &node, const Point<T> &p, double theta) const {
+    if (node.isEmpty())
+        return {};
     if (node.isLeaf()) {
-        if (node.centerOfMass == p) return {};
+        if (node.centerOfMass == p)
+            return {};
         return {std::make_pair(node.weight, node.centerOfMass)};
     } else {
         double dist = p.distance(node.centerOfMass);
@@ -374,7 +374,8 @@ std::vector<std::pair<count, Point<T>>> Octree<T>::approximateDistance(const Oct
             std::vector<std::pair<count, Point<T>>> points;
             points.reserve(node.weight);
             for (auto &child : node.children) {
-                std::vector<std::pair<count, Point<T>>> childPoints = approximateDistance(child, p, theta);
+                std::vector<std::pair<count, Point<T>>> childPoints =
+                    approximateDistance(child, p, theta);
                 points.insert(points.end(), childPoints.begin(), childPoints.end());
             }
             return points;
@@ -384,9 +385,11 @@ std::vector<std::pair<count, Point<T>>> Octree<T>::approximateDistance(const Oct
     return {};
 }
 
-template<typename T>
-void Octree<T>::approximateDistance(const OctreeNode<T>& node, const Point<T>& p, double theta, std::vector<std::pair<count, Point<T>>>& result) const {
-    if (node.isEmpty()) return;
+template <typename T>
+void Octree<T>::approximateDistance(const OctreeNode<T> &node, const Point<T> &p, double theta,
+                                    std::vector<std::pair<count, Point<T>>> &result) const {
+    if (node.isEmpty())
+        return;
     if (node.isLeaf()) {
         if (node.centerOfMass != p) {
             result.push_back(std::make_pair(node.weight, node.centerOfMass));
@@ -403,8 +406,10 @@ void Octree<T>::approximateDistance(const OctreeNode<T>& node, const Point<T>& p
     }
 }
 
-template<typename T> template<typename L>
-void Octree<T>::approximateDistance(const OctreeNode<T>& node, const Point<T>& p, double sqTheta, L& handle) const {
+template <typename T>
+template <typename L>
+void Octree<T>::approximateDistance(const OctreeNode<T> &node, const Point<T> &p, double sqTheta,
+                                    L &handle) const {
     if (!node.isLeaf()) {
         double sqDist = p.squaredDistance(node.centerOfMass);
         if (sqDist == 0 || node.bBox.getSqSideLength() <= sqTheta * sqDist) {
@@ -414,7 +419,8 @@ void Octree<T>::approximateDistance(const OctreeNode<T>& node, const Point<T>& p
                 approximateDistance(child, p, sqTheta, handle);
             }
         }
-    } else if (node.centerOfMass != p) { // node is leaf and non-empty since octree only stores non-empty nodes
+    } else if (node.centerOfMass
+               != p) { // node is leaf and non-empty since octree only stores non-empty nodes
         handle(node.weight, node.centerOfMass, p.squaredDistance(node.centerOfMass));
     }
 }
