@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * GraphLayoutAlgorithm.hpp
  *
@@ -20,29 +19,31 @@ namespace NetworKit {
 
 /**
  * @ingroup viz
- * Abstract base class for algorithms that compute a layout of the Graph vertices in d-dimensional space.
- * The coordinates are stored in a d-dimensional @ref Point with type @code T \endcode.
+ * Abstract base class for algorithms that compute a layout of the Graph vertices in d-dimensional
+ * space. The coordinates are stored in a d-dimensional @ref Point with type @code T \endcode.
  */
-template<typename T>
+template <typename T>
 class GraphLayoutAlgorithm {
 public:
-    GraphLayoutAlgorithm(const Graph& G, count dim) : G(&G), vertexCoordinates(std::vector<Point<T>>(G.upperNodeIdBound(), Point<T>(dim))) {}
+    GraphLayoutAlgorithm(const Graph &G, count dim)
+        : G(&G), vertexCoordinates(std::vector<Point<T>>(G.upperNodeIdBound(), Point<T>(dim))) {}
     virtual ~GraphLayoutAlgorithm() = default;
 
     virtual void run() = 0;
 
-    virtual std::vector<Point<T>> getCoordinates() const {
-        return vertexCoordinates;
-    }
+    virtual std::vector<Point<T>> getCoordinates() const { return vertexCoordinates; }
 
     virtual count numEdgeCrossings() const {
         if (vertexCoordinates[0].getDimensions() == 2) {
             count numCrossings = 0;
             G->forEdges([&](node u, node v, edgeweight) {
                 G->forEdges([&](node p, node q, edgeweight) {
-                    if ((p == u && q == v) || (p == v && q == u)) return;
-                    double m1 = (vertexCoordinates[v][1] - vertexCoordinates[u][1]) / (vertexCoordinates[v][0] - vertexCoordinates[u][0]);
-                    double m2 = (vertexCoordinates[q][1] - vertexCoordinates[p][1]) / (vertexCoordinates[q][0] - vertexCoordinates[p][0]);
+                    if ((p == u && q == v) || (p == v && q == u))
+                        return;
+                    double m1 = (vertexCoordinates[v][1] - vertexCoordinates[u][1])
+                                / (vertexCoordinates[v][0] - vertexCoordinates[u][0]);
+                    double m2 = (vertexCoordinates[q][1] - vertexCoordinates[p][1])
+                                / (vertexCoordinates[q][0] - vertexCoordinates[p][0]);
 
                     double b1 = vertexCoordinates[u][1] - m1 * vertexCoordinates[u][0];
                     double b2 = vertexCoordinates[p][1] - m1 * vertexCoordinates[p][0];
@@ -53,7 +54,8 @@ public:
                         double maxXE1 = std::max(vertexCoordinates[u][0], vertexCoordinates[v][0]);
                         double maxXE2 = std::max(vertexCoordinates[p][0], vertexCoordinates[q][0]);
 
-                        if (minXE1 <= xIntersect && minXE2 <= xIntersect && xIntersect <= maxXE1 && xIntersect <= maxXE2) {
+                        if (minXE1 <= xIntersect && minXE2 <= xIntersect && xIntersect <= maxXE1
+                            && xIntersect <= maxXE2) {
                             numCrossings++;
                         }
                     } else if (b1 == b2) {
@@ -69,7 +71,7 @@ public:
         return 0;
     }
 
-    virtual bool writeGraphToGML(const std::string& filePath) {
+    virtual bool writeGraphToGML(const std::string &filePath) {
         if (vertexCoordinates.empty() || vertexCoordinates[0].getDimensions() < 2
             || vertexCoordinates[0].getDimensions() > 3)
             return false;
@@ -86,10 +88,10 @@ public:
             file << "  node [\n";
             file << "    id " << u << "\n";
             file << "    graphics\n";
-            file << "    [ x " << 50*vertexCoordinates[u][0] << "\n";
-            file << "      y " << 50*vertexCoordinates[u][1] << "\n";
+            file << "    [ x " << 50 * vertexCoordinates[u][0] << "\n";
+            file << "      y " << 50 * vertexCoordinates[u][1] << "\n";
             if (dim == 3) {
-                file << "      z " << 50*vertexCoordinates[u][2] << "\n";
+                file << "      z " << 50 * vertexCoordinates[u][2] << "\n";
             }
             file << "    ]\n";
             file << "  ]\n";
@@ -97,8 +99,8 @@ public:
 
         G->forEdges([&](node u, node v) {
             file << "  edge [\n";
-            file << "    source "<< u << "\n";
-            file << "    target "<< v << "\n";
+            file << "    source " << u << "\n";
+            file << "    target " << v << "\n";
             file << "  ]\n";
         });
         file << "]\n";
@@ -108,7 +110,7 @@ public:
         return true;
     }
 
-    virtual bool writeKinemage(const std::string& filePath) {
+    virtual bool writeKinemage(const std::string &filePath) {
         if (vertexCoordinates.empty() || vertexCoordinates[0].getDimensions() != 3)
             return false;
         std::string fileName = filePath.substr(filePath.find_last_of("/"));
@@ -124,7 +126,8 @@ public:
         file << "@balllist {a} color= blue master={points} radius= 0.05" << std::endl;
 
         G->forNodes([&](node u) {
-            file << "{a}" << vertexCoordinates[u][0] << " " << vertexCoordinates[u][1] << " " << vertexCoordinates[u][2] << std::endl;
+            file << "{a}" << vertexCoordinates[u][0] << " " << vertexCoordinates[u][1] << " "
+                 << vertexCoordinates[u][2] << std::endl;
         });
 
         // edges
@@ -132,10 +135,10 @@ public:
         file << "@subgroup {edges} dominant" << std::endl;
         file << "@vectorlist {edges} color= white" << std::endl;
         G->forEdges([&](node u, node v) {
-            //if (u <= v) { // draw graph undirected
-                file << "P " << vertexCoordinates[u][0] << " " << vertexCoordinates[u][1] << " " << vertexCoordinates[u][2] << std::endl;
-                file << vertexCoordinates[v][0] << " " << vertexCoordinates[v][1] << " " << vertexCoordinates[v][2] << std::endl;
-            //}
+            file << "P " << vertexCoordinates[u][0] << " " << vertexCoordinates[u][1] << " "
+                 << vertexCoordinates[u][2] << std::endl;
+            file << vertexCoordinates[v][0] << " " << vertexCoordinates[v][1] << " "
+                 << vertexCoordinates[v][2] << std::endl;
         });
 
         file << std::endl;
@@ -145,7 +148,7 @@ public:
     }
 
 protected:
-    const Graph* G;
+    const Graph *G;
     std::vector<Point<T>> vertexCoordinates;
 };
 
