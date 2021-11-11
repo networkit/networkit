@@ -51,13 +51,7 @@ double Vector::mean() const {
 }
 
 bool Vector::operator==(const Vector &other) const {
-    if (getDimension() != other.getDimension() || isTransposed() != other.isTransposed()) return false;
-
-    for (index i = 0; i < getDimension(); i++) {
-        if (values[i] != other[i]) return false;
-    }
-
-    return true;
+    return isTransposed() == other.isTransposed() && values == other.values;
 }
 
 bool Vector::operator!=(const Vector &other) const {
