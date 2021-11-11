@@ -9,6 +9,7 @@ from Cython.Build import cythonize
 cmakeCompiler = None
 buildDirectory = "build/build_python"
 ninja_available = False
+enable_osx_crossbuild = False
 
 if sys.version_info.major < 3:
 	print("ERROR: NetworKit requires Python 3.")
@@ -19,6 +20,9 @@ if "CXX" in os.environ:
 
 if "NETWORKIT_OVERRIDE_CXX" in os.environ:
 	cmakeCompiler = os.environ["NETWORKIT_OVERRIDE_CXX"]
+
+if "NETWORKIT_OSX_CROSSBUILD" in os.environ:
+	enable_osx_crossbuild = True
 
 if shutil.which("cmake") is None:
 	print("ERROR: NetworKit compilation requires cmake.")
@@ -162,6 +166,8 @@ def buildNetworKit(install_prefix, externalCore=False, externalTlx=None, withTes
 	if sys.platform == "win32":
 		comp_cmd.append("-DNETWORKIT_STATIC=ON") # Windows only supports static core builds
 		comp_cmd.append("-DNETWORKIT_BUILDING_STATELIB=ON") # Adds dllexport
+	if enable_osx_crossbuild:
+		comp_cmd.append("-DCMAKE_OSX_ARCHITECTURES='arm64'")
 	if externalTlx:
 		comp_cmd.append("-DNETWORKIT_EXT_TLX="+externalTlx)
 	if ninja_available:
