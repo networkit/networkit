@@ -20,13 +20,13 @@
 namespace NetworKit {
 
 GroupCloseness::GroupCloseness(const Graph &G, count k, count H)
-    : G(G), k(k), H(H) {}
+    : G(&G), k(k), H(H) {}
 
-edgeweight GroupCloseness::computeImprovement(node u, count n, Graph &G,
+edgeweight GroupCloseness::computeImprovement(node u, count n,
                                               count h) {
     // computes the marginal gain due to adding u to S
     std::vector<count> d1(n);
-    G.forNodes([&](node v) { d1[v] = d[v]; });
+    G->forNodes([&](node v) { d1[v] = d[v]; });
 
     d1[u] = 0;
     count improvement = d[u]; // old distance of u
@@ -38,7 +38,7 @@ edgeweight GroupCloseness::computeImprovement(node u, count n, Graph &G,
         node v = Q.front();
         Q.pop();
         level = d1[v];
-        G.forNeighborsOf(v, [&](node w) {
+        G->forNeighborsOf(v, [&](node w) {
             if (d1[w] > d1[v] + 1) {
                 d1[w] = d1[v] + 1;
                 improvement += d[w] - d1[w];
@@ -49,10 +49,10 @@ edgeweight GroupCloseness::computeImprovement(node u, count n, Graph &G,
     return improvement;
 }
 
-std::vector<count> GroupCloseness::newDistances(node u, count n, Graph &G,
+std::vector<count> GroupCloseness::newDistances(node u, count n,
                                                 count h) {
     std::vector<count> d1(n);
-    G.forNodes([&](node v) { d1[v] = d[v]; });
+    G->forNodes([&](node v) { d1[v] = d[v]; });
 
     d1[u] = 0;
     count improvement = d[u]; // old distance of u
@@ -64,7 +64,7 @@ std::vector<count> GroupCloseness::newDistances(node u, count n, Graph &G,
         node v = Q.front();
         Q.pop();
         level = d1[v];
-        G.forNeighborsOf(v, [&](node w) {
+        G->forNeighborsOf(v, [&](node w) {
             if (d1[w] > d1[v] + 1) {
                 d1[w] = d1[v] + 1;
                 improvement += d[w] - d1[w];
@@ -81,7 +81,7 @@ bool pairCompare(const std::pair<node, count> &firstElem,
 }
 
 void GroupCloseness::run() {
-    count n = G.upperNodeIdBound();
+    count n = G->upperNodeIdBound();
     node top = 0;
     iters = 0;
     std::vector<bool> visited(n, false);
@@ -92,8 +92,8 @@ void GroupCloseness::run() {
     std::vector<std::pair<node, count>> degPerNode(n);
 
     // compute degrees per node
-    G.parallelForNodes([&](node v) {
-        D[v] = G.degree(v);
+    G->parallelForNodes([&](node v) {
+        D[v] = G->degree(v);
         degPerNode[v] = std::make_pair(v, D[v]);
     });
     omp_lock_t lock;
@@ -103,7 +103,7 @@ void GroupCloseness::run() {
     node nodeMaxDeg = degPerNode[0].first;
 
     if (H == 0) {
-        TopCloseness topcc(G, 1, true, false);
+        TopCloseness topcc(*G, 1, true, false);
         topcc.run();
         top = topcc.topkNodesList()[0];
     } else {
@@ -113,17 +113,17 @@ void GroupCloseness::run() {
     // first, we store the distances between each node and the top node
     d.clear();
     d.resize(n);
-    BFS bfs(G, top);
+    BFS bfs(*G, top);
     bfs.run();
 
-    G.parallelForNodes([&](node v) { d[v] = bfs.distance(v); });
+    G->parallelForNodes([&](node v) { d[v] = bfs.distance(v); });
 
     // get max distance
     maxD = 0;
     count sumD = 0;
     // TODO: actually, we could have more generic parallel reduction iterators in
     // the Graph class
-    G.forNodes([&](node v) {
+    G->forNodes([&](node v) {
         if (d[v] > maxD) {
             maxD = d[v];
         }
@@ -148,13 +148,13 @@ void GroupCloseness::run() {
     // loop to find k group members
     for (index i = 1; i < k; i++) {
         DEBUG("k = ", i);
-        G.parallelForNodes([&](node v) { prios[v] = -prevBound[v]; });
+        G->parallelForNodes([&](node v) { prios[v] = -prevBound[v]; });
         // Aux::BucketPQ Q(prios, currentImpr + 1);
         Aux::BucketPQ Q(n, -currentImpr - 1, 0);
-        G.forNodes([&](node v) { Q.insert(prios[v], v); });
+        G->forNodes([&](node v) { Q.insert(prios[v], v); });
         currentImpr = 0;
         maxNode = 0;
-        d1.resize(G.upperNodeIdBound());
+        d1.resize(G->upperNodeIdBound());
 
         std::atomic<bool> toInterrupt{false};
 #pragma omp parallel // Shared variables:
@@ -182,7 +182,7 @@ void GroupCloseness::run() {
                 }
                 if (D[v] > 1 && !(d[v] == 1 && D[v] == 2) && d[v] > 0 &&
                     (i == 1 || prevBound[v] > static_cast<int64_t>(currentImpr))) {
-                    count imp = computeImprovement(v, n, G, H);
+                    count imp = computeImprovement(v, n, H);
                     omp_set_lock(&lock);
                     if (imp > currentImpr) {
                         currentImpr = imp;
@@ -198,8 +198,8 @@ void GroupCloseness::run() {
         }
         S[i] = maxNode;
 
-        d1 = newDistances(S[i], n, G, 0);
-        G.parallelForNodes([&](node v) { d[v] = d1[v]; });
+        d1 = newDistances(S[i], n, 0);
+        G->parallelForNodes([&](node v) { d[v] = d1[v]; });
     }
 
     hasRun = true;
@@ -209,8 +209,8 @@ double GroupCloseness::computeFarness(std::vector<node> S, count H) {
     // we run a BFS from S up to distance H (if H > 0) and sum the distances
     double farness = 0;
     count k = S.size();
-    std::vector<double> d1(G.upperNodeIdBound(), 0);
-    std::vector<bool> visited(G.upperNodeIdBound(), false);
+    std::vector<double> d1(G->upperNodeIdBound(), 0);
+    std::vector<bool> visited(G->upperNodeIdBound(), false);
     std::queue<node> Q;
 
     for (node i = 0; i < k; i++) {
@@ -225,7 +225,7 @@ double GroupCloseness::computeFarness(std::vector<node> S, count H) {
             break;
         }
         farness += d1[u];
-        G.forNeighborsOf(u, [&](node w) {
+        G->forNeighborsOf(u, [&](node w) {
             if (!visited[w]) {
                 visited[w] = true;
                 d1[w] = d1[u] + 1;

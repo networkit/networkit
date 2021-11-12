@@ -62,9 +62,9 @@ public:
     double scoreOfGroup(const std::vector<node> &group) const;
 
 protected:
-    edgeweight computeImprovement(node u, count n, Graph &G, count h);
-    std::vector<count> newDistances(node u, count n, Graph &G, count h);
-    Graph G;
+    edgeweight computeImprovement(node u, count n, count h);
+    std::vector<count> newDistances(node u, count n, count h);
+    const Graph *G;
     count k = 1;
     std::vector<count> D;
     count iters;
@@ -83,7 +83,7 @@ inline std::vector<node> GroupCloseness::groupMaxCloseness() {
 }
 
 inline void GroupCloseness::checkGroup(const std::vector<node> &group) const {
-    const count z = G.upperNodeIdBound();
+    const count z = G->upperNodeIdBound();
     std::vector<bool> check(z, false);
 #pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(group.size()); ++i) {
