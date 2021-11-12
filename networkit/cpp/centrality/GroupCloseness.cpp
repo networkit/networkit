@@ -9,7 +9,6 @@
 #include <networkit/centrality/GroupCloseness.hpp>
 #include <networkit/auxiliary/BucketPQ.hpp>
 #include <networkit/auxiliary/Log.hpp>
-#include <networkit/distance/BFS.hpp>
 #include <networkit/centrality/TopCloseness.hpp>
 
 #include <atomic>

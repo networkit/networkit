@@ -14,6 +14,8 @@
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/BFS.hpp>
+#include <networkit/graph/Dijkstra.hpp>
 
 namespace NetworKit {
 
@@ -104,44 +106,17 @@ inline void GroupCloseness::checkGroup(const std::vector<node> &group) const {
 
 inline double
 GroupCloseness::scoreOfGroup(const std::vector<node> &group) const {
-    std::vector<bool> explored(G.upperNodeIdBound(), false);
-    std::vector<count> distance(G.upperNodeIdBound(), 0);
-
-    for (count i = 0; i < group.size(); ++i) {
-        explored[group[i]] = true;
-    }
-
-    std::vector<node> queue;
-    auto exploreNode = [&](node w, count d) {
-        explored[w] = true;
-        queue.push_back(w);
-        distance[w] = d;
-    };
-
-    count d = 1;
-    for (auto u : group) {
-        G.forNeighborsOf(u, [&](node v) {
-            if (!explored[v]) {
-                exploreNode(v, d);
-            }
+    double sumDist = 0.;
+    if (G->isWeighted())
+        Traversal::DijkstraFrom(*G, group.begin(), group.end(), [&](node, edgeweight dist) {
+            sumDist += dist;
         });
-    }
-
-    while (!queue.empty()) {
-        ++d;
-        node u = queue.front();
-        queue.erase(queue.begin());
-        G.forNeighborsOf(u, [&](node v) {
-            if (!explored[v]) {
-                exploreNode(v, d);
-            }
+    else
+        Traversal::BFSfrom(*G, group.begin(), group.end(), [&](node, count dist) {
+            sumDist += static_cast<double>(dist);
         });
-    }
 
-    double dSum = std::accumulate(distance.begin(), distance.end(), 0.0);
-    return dSum == 0
-               ? 0.
-               : ((double)G.upperNodeIdBound() - (double)group.size()) / dSum;
+    return sumDist > 0. ? ((double)G->upperNodeIdBound() - (double)group.size()) / sumDist : 0.;
 }
 } /* namespace NetworKit */
 #endif // NETWORKIT_CENTRALITY_GROUP_CLOSENESS_HPP_
