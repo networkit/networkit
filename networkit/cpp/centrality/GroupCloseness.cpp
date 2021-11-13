@@ -69,10 +69,6 @@ void GroupCloseness::updateDistances(node u) {
 
 void GroupCloseness::run() {
     const count n = G->upperNodeIdBound();
-    iters = 0;
-    std::vector<bool> visited(n, false);
-    std::vector<node> pred(n);
-    std::vector<count> distances(n);
     node top;
 
     omp_lock_t lock;
@@ -104,17 +100,14 @@ void GroupCloseness::run() {
 
     std::vector<count> S2(n, sumD);
     S2[top] = 0;
-    std::vector<int64_t> prios(n);
 
     // loop to find k group members
     for (index i = 1; i < k; i++) {
         DEBUG("k = ", i);
-        G->parallelForNodes([&](node v) { prios[v] = -prevBound[v]; });
-        // Aux::BucketPQ Q(prios, currentImpr + 1);
         Aux::BucketPQ Q(n, -currentImpr - 1, 0);
         G->forNodes([&](node v) {
             if (d[v] > 0)
-                Q.insert(prios[v], v);
+                Q.insert(-prevBound[v], v);
         });
         currentImpr = 0;
         node maxNode = none;
@@ -132,8 +125,7 @@ void GroupCloseness::run() {
                     break;
                 }
 
-                auto topPair = Q.extractMin();
-                node v = topPair.second;
+                const node v = Q.extractMin().second;
 
                 omp_unset_lock(&lock);
                 INFO("Extracted node ", v, " with prio ", prevBound[v]);
