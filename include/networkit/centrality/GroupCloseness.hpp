@@ -70,7 +70,6 @@ protected:
     count k = 1;
     std::vector<count> D;
     count iters;
-    count maxD;
     std::vector<count> d;
     std::vector<count> d1;
     std::vector<node> S;

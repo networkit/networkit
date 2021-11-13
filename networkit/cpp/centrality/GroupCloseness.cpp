@@ -117,18 +117,7 @@ void GroupCloseness::run() {
 
     G->parallelForNodes([&](node v) { d[v] = bfs.distance(v); });
 
-    // get max distance
-    maxD = 0;
-    count sumD = 0;
-    // TODO: actually, we could have more generic parallel reduction iterators in
-    // the Graph class
-    G->forNodes([&](node v) {
-        if (d[v] > maxD) {
-            maxD = d[v];
-        }
-        sumD += d[v];
-    });
-    INFO("maxD = ", maxD);
+    count sumD = G->parallelSumForNodes([&](node v) { return d[v]; });
 
     // init S
     S.clear();
