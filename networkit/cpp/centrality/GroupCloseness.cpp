@@ -113,9 +113,7 @@ void GroupCloseness::run() {
         node maxNode = none;
 
         std::atomic<bool> toInterrupt{false};
-#pragma omp parallel // Shared variables:
-        // cc: synchronized write, read leads to a positive race condition;
-        // Q: fully synchronized;
+#pragma omp parallel
         {
             while (!toInterrupt.load(std::memory_order_relaxed)) {
                 omp_set_lock(&lock);
