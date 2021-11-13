@@ -80,7 +80,7 @@ bool pairCompare(const std::pair<node, count> &firstElem,
 }
 
 void GroupCloseness::run() {
-    count n = G->upperNodeIdBound();
+    const count n = G->upperNodeIdBound();
     node top = 0;
     iters = 0;
     std::vector<bool> visited(n, false);
