@@ -64,11 +64,12 @@ public:
     double scoreOfGroup(const std::vector<node> &group) const;
 
 private:
-    edgeweight computeImprovement(node u, count n, count h);
+    edgeweight computeImprovement(node u, count h);
     void updateDistances(node u);
     const Graph *G;
     count k = 1;
     std::vector<count> d;
+    std::vector<std::vector<count>> d1Global;
     std::vector<node> S;
     count H = 0;
 

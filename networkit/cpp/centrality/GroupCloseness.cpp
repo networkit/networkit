@@ -19,13 +19,14 @@
 namespace NetworKit {
 
 GroupCloseness::GroupCloseness(const Graph &G, count k, count H)
-    : G(&G), k(k), H(H) {}
+    : G(&G), k(k), H(H) {
+    d1Global.resize(omp_get_max_threads(), std::vector<count>(G.upperNodeIdBound()));
+}
 
-edgeweight GroupCloseness::computeImprovement(node u, count n,
-                                              count h) {
+edgeweight GroupCloseness::computeImprovement(node u, count h) {
     // computes the marginal gain due to adding u to S
-    std::vector<count> d1(n);
-    G->forNodes([&](node v) { d1[v] = d[v]; });
+    auto &d1 = d1Global[omp_get_thread_num()];
+    std::copy(d.begin(), d.end(), d1.begin());
 
     d1[u] = 0;
     count improvement = d[u]; // old distance of u
@@ -134,7 +135,7 @@ void GroupCloseness::run() {
                     break;
                 }
                 if (i == 1 || prevBound[v] > static_cast<int64_t>(currentImpr)) {
-                    count imp = computeImprovement(v, n, H);
+                    count imp = computeImprovement(v, H);
                     omp_set_lock(&lock);
                     if (imp > currentImpr) {
                         currentImpr = imp;
