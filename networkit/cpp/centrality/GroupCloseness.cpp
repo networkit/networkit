@@ -112,10 +112,8 @@ void GroupCloseness::run() {
     // first, we store the distances between each node and the top node
     d.clear();
     d.resize(n);
-    BFS bfs(*G, top);
-    bfs.run();
 
-    G->parallelForNodes([&](node v) { d[v] = bfs.distance(v); });
+    Traversal::BFSfrom(*G, top, [&d = d](node u, count distance) { d[u] = distance; });
 
     count sumD = G->parallelSumForNodes([&](node v) { return d[v]; });
 
