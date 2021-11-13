@@ -69,11 +69,11 @@ void GroupCloseness::updateDistances(node u) {
 
 void GroupCloseness::run() {
     const count n = G->upperNodeIdBound();
-    node top = 0;
     iters = 0;
     std::vector<bool> visited(n, false);
     std::vector<node> pred(n);
     std::vector<count> distances(n);
+    node top;
 
     omp_lock_t lock;
     omp_init_lock(&lock);
@@ -101,7 +101,6 @@ void GroupCloseness::run() {
 
     std::vector<int64_t> prevBound(n, 0);
     count currentImpr = sumD + 1; // TODO change
-    count maxNode = 0;
 
     std::vector<count> S2(n, sumD);
     S2[top] = 0;
@@ -118,7 +117,7 @@ void GroupCloseness::run() {
                 Q.insert(prios[v], v);
         });
         currentImpr = 0;
-        maxNode = none;
+        node maxNode = none;
 
         std::atomic<bool> toInterrupt{false};
 #pragma omp parallel // Shared variables:
