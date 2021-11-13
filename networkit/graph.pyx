@@ -571,6 +571,12 @@ cdef class Graph:
 	def iterEdges(self):
 		"""
 		Iterates over the edges of the graph.
+		
+		For each node u in the graph in ascending node ID order,
+		the iterator yields the out-edges of u in directed graphs
+		and the edges (u,v) in which u < v for undirected graphs.
+		
+		It does not follow the order of edge IDs (if present).
 		"""
 		it = self._this.edgeRange().begin()
 		while it != self._this.edgeRange().end():

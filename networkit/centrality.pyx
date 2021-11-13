@@ -129,7 +129,8 @@ cdef class Betweenness(Centrality):
 
 
 	def edgeScores(self):
-		""" Get a vector containing the betweenness score for each edge in the graph.
+		""" Get a vector containing the betweenness score for each edge in the graph
+		in ascending edge ID order.
 
 		Returns:
 		--------
@@ -2079,7 +2080,8 @@ cdef class SpanningEdgeCentrality(Algorithm):
 		return (<_SpanningEdgeCentrality*>(self._this)).runParallelApproximation()
 
 	def scores(self):
-		""" Get a vector containing the SEC score for each edge in the graph.
+		""" Get a vector containing the SEC score for each edge in the graph
+		in ascending edge ID order.
 
 		Returns:
 		--------
@@ -2176,7 +2178,8 @@ cdef class ApproxSpanningEdge(Algorithm):
 
 	def scores(self):
 		"""
-		Return the spanning edge approximation for each edge of the graph.
+		Return the spanning edge approximation for each edge of the graph
+		in ascending edge ID order.
 
 
 		Returns:
