@@ -4,19 +4,19 @@
 #
 # full
 # ----
-# Description: Basic build with all components (TLX, C++, Cython). Has to be tested on every fully 
-#              supported platform. Close to user-experience, except that warnings are also treated 
-#              as errors during build and TLX is provided as externally build library (normal 
+# Description: Basic build with all components (TLX, C++, Cython). Has to be tested on every fully
+#              supported platform. Close to user-experience, except that warnings are also treated
+#              as errors during build and TLX is provided as externally build library (normal
 #              installation builds both NetworKit and TLX in one step).
 # Script:      scripts/full.sh
 # Build-type:  Release
 # Variants:    native = Build for native architecture
-# 
-#         
+#
+#
 # core
 # ----
-# Description: Builds the C++ code into one shared library. Has also sanity checks and debugging. 
-#              Since this only modifies the C++ building-process, Cython + Python-tests are removed in 
+# Description: Builds the C++ code into one shared library. Has also sanity checks and debugging.
+#              Since this only modifies the C++ building-process, Cython + Python-tests are removed in
 #              order to increase speed.
 # Script:      scripts/core.sh
 # Build-type:  Debug
@@ -34,41 +34,41 @@
 # Config:      .clang-tidy
 # Build-type:  Debug
 #
-# 
+#
 # coverage
 # --------
 # Description: Enables code-coverage, address- & leak-sanitizers and tests in order to create cpp-coveralls data.
 # Script:      scripts/core_sanitizers_coverage.sh
 # Build type:  Debug
-# 
+#
 #
 # documentation:
 # --------------
 # Description: Builds documentation of both C++ and Python-code. The result is automatically deployed
 #              when a pull request is merged.
-# Script:      scripts/documentation.sh 
+# Script:      scripts/documentation.sh
 # Build-type:  Debug
 #
 #
 # Jobs:
 # =====
 # 0. Rationale:
-# - Main platform is Linux, which is therefore used for most of the tests. 
-# - Basic user experience (full) should be tested on all supported platforms (Linux, macOS, Windows) 
+# - Main platform is Linux, which is therefore used for most of the tests.
+# - Basic user experience (full) should be tested on all supported platforms (Linux, macOS, Windows)
 #   with the default compiler.
-# - For further user-centric tests, "full (native)" should be tested with default compiler for 
+# - For further user-centric tests, "full (native)" should be tested with default compiler for
 #   vectorization support.
-# - At least one debug build, so either core or one of its variants, should be done on each platform 
-#   to check for problems like possible race conditions. 
+# - At least one debug build, so either core or one of its variants, should be done on each platform
+#   to check for problems like possible race conditions.
 # - At least on one platform: code styling/static-analysis (clang-tidy, code-style), coverage,
 #   documentation and all core-variants, minimum supported version of compilers / Python
 # - Remark: Currently Windows does not support a full/native build, therefore core builds are used.
-# 
+#
 # 1. Linux:
-# - Latest version (gcc/Python): full, full (native) 
+# - Latest version (gcc/Python): full, full (native)
 # - Latest version (clang/Python): core
 # - Minimum version (gcc/Python, clang/Python): full
-# - Additional: core (non-monolithic), core (C++20), clang-tidy, code-style, coverage, 
+# - Additional: core (non-monolithic), core (C++20), clang-tidy, code-style, coverage,
 #               documentation
 #
 # 2. macOS:
@@ -88,7 +88,7 @@ name: build
 
 on: [push, pull_request]
 
-# Default parameters for all builds. 
+# Default parameters for all builds.
 env:
   OMP_NUM_THREADS: 2
   CXX_STANDARD: 14
@@ -340,7 +340,7 @@ jobs:
       - name: Prepare environment and run checks
         shell: bash
         run: |
-          mkdir build && cd build 
+          mkdir build && cd build
           cmake -GNinja -DNETWORKIT_STATIC=ON -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_MONOLITH=ON -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DNETWORKIT_WARNINGS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_SANITY_CHECKS=ON ..
           ninja
           ctest -V -C Debug
@@ -374,10 +374,10 @@ jobs:
           cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ env.TLX_PATH_WIN }} ..
           ninja && ninja install
           cd ../..
-          python -m venv pyenv 
+          python -m venv pyenv
           . ./pyenv/Scripts/activate
           pip install cython ipython jupyter
-          mkdir build && cd build 
+          mkdir build && cd build
           cmake -GNinja -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_STATIC=ON -DCMAKE_BUILD_TYPE=Release -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DNETWORKIT_WARNINGS=ON -DNETWORKIT_WARNINGS_AS_ERRORS=ON -DNETWORKIT_EXT_TLX=${{ env.TLX_PATH_WIN }} -DNETWORKIT_NATIVE=${{ env.NATIVE }} ..
           ninja
           ctest -V -C Release
