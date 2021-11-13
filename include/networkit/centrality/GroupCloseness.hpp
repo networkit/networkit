@@ -65,13 +65,12 @@ public:
 
 protected:
     edgeweight computeImprovement(node u, count n, count h);
-    std::vector<count> newDistances(node u, count n, count h);
+    void updateDistances(node u);
     const Graph *G;
     count k = 1;
     std::vector<count> D;
     count iters;
     std::vector<count> d;
-    std::vector<count> d1;
     std::vector<node> S;
     count H = 0;
 

@@ -48,30 +48,23 @@ edgeweight GroupCloseness::computeImprovement(node u, count n,
     return improvement;
 }
 
-std::vector<count> GroupCloseness::newDistances(node u, count n,
-                                                count h) {
-    std::vector<count> d1(n);
-    G->forNodes([&](node v) { d1[v] = d[v]; });
-
-    d1[u] = 0;
+void GroupCloseness::updateDistances(node u) {
     count improvement = d[u]; // old distance of u
+    d[u] = 0; // now u is in the group
     std::queue<node> Q;
     Q.push(u);
 
-    index level = 0;
-    while (!Q.empty() && (h == 0 || level <= h)) {
+    do {
         node v = Q.front();
         Q.pop();
-        level = d1[v];
         G->forNeighborsOf(v, [&](node w) {
-            if (d1[w] > d1[v] + 1) {
-                d1[w] = d1[v] + 1;
-                improvement += d[w] - d1[w];
+            if (d[w] > d[v] + 1) {
+                improvement += d[w] - (d[v] + 1);
+                d[w] = d[v] + 1;
                 Q.push(w);
             }
         });
-    }
-    return d1;
+    } while (!Q.empty());
 }
 
 void GroupCloseness::run() {
@@ -107,7 +100,6 @@ void GroupCloseness::run() {
     S[0] = top;
 
     std::vector<int64_t> prevBound(n, 0);
-    d1.clear();
     count currentImpr = sumD + 1; // TODO change
     count maxNode = 0;
 
@@ -126,8 +118,7 @@ void GroupCloseness::run() {
                 Q.insert(prios[v], v);
         });
         currentImpr = 0;
-        maxNode = 0;
-        d1.resize(G->upperNodeIdBound());
+        maxNode = none;
 
         std::atomic<bool> toInterrupt{false};
 #pragma omp parallel // Shared variables:
@@ -171,8 +162,7 @@ void GroupCloseness::run() {
         }
         S[i] = maxNode;
 
-        d1 = newDistances(S[i], n, 0);
-        G->parallelForNodes([&](node v) { d[v] = d1[v]; });
+        updateDistances(S[i]);
     }
 
     hasRun = true;
