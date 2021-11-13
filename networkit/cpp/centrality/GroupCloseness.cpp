@@ -144,8 +144,7 @@ void GroupCloseness::run() {
                     toInterrupt.store(true, std::memory_order_relaxed);
                     break;
                 }
-                if (D[v] > 1 && !(d[v] == 1 && D[v] == 2) &&
-                    (i == 1 || prevBound[v] > static_cast<int64_t>(currentImpr))) {
+                if (i == 1 || prevBound[v] > static_cast<int64_t>(currentImpr)) {
                     count imp = computeImprovement(v, n, H);
                     omp_set_lock(&lock);
                     if (imp > currentImpr) {

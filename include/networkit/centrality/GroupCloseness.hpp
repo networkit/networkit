@@ -68,7 +68,6 @@ protected:
     void updateDistances(node u);
     const Graph *G;
     count k = 1;
-    std::vector<count> D;
     count iters;
     std::vector<count> d;
     std::vector<node> S;
