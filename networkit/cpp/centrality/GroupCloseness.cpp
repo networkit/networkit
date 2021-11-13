@@ -74,11 +74,6 @@ std::vector<count> GroupCloseness::newDistances(node u, count n,
     return d1;
 }
 
-bool pairCompare(const std::pair<node, count> &firstElem,
-                 const std::pair<node, count> &secondElem) {
-    return firstElem.second > secondElem.second;
-}
-
 void GroupCloseness::run() {
     const count n = G->upperNodeIdBound();
     node top = 0;
@@ -86,28 +81,17 @@ void GroupCloseness::run() {
     std::vector<bool> visited(n, false);
     std::vector<node> pred(n);
     std::vector<count> distances(n);
-    D.clear();
-    D.resize(n, 0);
-    std::vector<std::pair<node, count>> degPerNode(n);
 
-    // compute degrees per node
-    G->parallelForNodes([&](node v) {
-        D[v] = G->degree(v);
-        degPerNode[v] = std::make_pair(v, D[v]);
-    });
     omp_lock_t lock;
     omp_init_lock(&lock);
-    // sort by degree (in descending order) and retrieve max and argmax
-    std::sort(degPerNode.begin(), degPerNode.end(), pairCompare);
-    node nodeMaxDeg = degPerNode[0].first;
 
     if (H == 0) {
         TopCloseness topcc(*G, 1, true, false);
         topcc.run();
         top = topcc.topkNodesList()[0];
-    } else {
-        top = nodeMaxDeg;
-    }
+    } else
+        top = *std::max_element(G->nodeRange().begin(), G->nodeRange().end(),
+                                [&G = G](node u, node v) { return G->degree(u) > G->degree(v); });
 
     // first, we store the distances between each node and the top node
     d.clear();
