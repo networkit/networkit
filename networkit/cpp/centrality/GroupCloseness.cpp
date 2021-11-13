@@ -156,7 +156,7 @@ void GroupCloseness::run() {
     hasRun = true;
 }
 
-double GroupCloseness::computeFarness(std::vector<node> S, count H) {
+double GroupCloseness::computeFarness(const std::vector<node> &S, count H) const {
     // we run a BFS from S up to distance H (if H > 0) and sum the distances
     double farness = 0;
     count k = S.size();

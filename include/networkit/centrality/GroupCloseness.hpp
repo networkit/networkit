@@ -55,8 +55,8 @@ public:
      * Computes farness (i.e., inverse of the closeness) for a given group
      * (stopping after H iterations if H > 0).
      */
-    double computeFarness(std::vector<node> S,
-                          count H = std::numeric_limits<count>::max());
+    double computeFarness(const std::vector<node> &S,
+                          count H = std::numeric_limits<count>::max()) const;
 
     /**
      * Computes the score of a specific group.
