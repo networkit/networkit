@@ -22,7 +22,7 @@ namespace NetworKit {
 /**
  * @ingroup centrality
  */
-class GroupCloseness : public Algorithm {
+class GroupCloseness final : public Algorithm {
 public:
     /**
      * Finds the group of nodes with highest (group) closeness centrality.
@@ -63,7 +63,7 @@ public:
      */
     double scoreOfGroup(const std::vector<node> &group) const;
 
-protected:
+private:
     edgeweight computeImprovement(node u, count n, count h);
     void updateDistances(node u);
     const Graph *G;
