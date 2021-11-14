@@ -314,7 +314,7 @@ if(NETWORKIT_PYTHON)
 
 		set(TARGET_LIB ${EXT})
 
-		add_library(${TARGET_LIB} MODULE networkit/${EXT}.cpp)
+		add_library(${TARGET_LIB} MODULE networkit/${EXT}.cpp include/networkit/algebraic/algorithms/SpGEMM.cpp include/networkit/algebraic/algorithms/SpGEMM.h)
 		target_include_directories(${TARGET_LIB} BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 		target_include_directories(${TARGET_LIB} PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
 		target_include_directories(${TARGET_LIB} PRIVATE "${NETWORKIT_PYTHON}")

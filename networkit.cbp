@@ -1,0 +1,2815 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="networkit"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\extlibs\;CMake Files\extlibs\tlx\;CMake Files\extlibs\tlx\misc\;CMake Files\extlibs\tlx\misc\cmake\;CMake Files\extlibs\tlx\tlx\;CMake Files\networkit\;CMake Files\networkit\cpp\;CMake Files\networkit\cpp\algebraic\;CMake Files\networkit\cpp\algebraic\test\;CMake Files\networkit\cpp\auxiliary\;CMake Files\networkit\cpp\auxiliary\test\;CMake Files\networkit\cpp\base\;CMake Files\networkit\cpp\centrality\;CMake Files\networkit\cpp\centrality\test\;CMake Files\networkit\cpp\clique\;CMake Files\networkit\cpp\clique\test\;CMake Files\networkit\cpp\coarsening\;CMake Files\networkit\cpp\coarsening\test\;CMake Files\networkit\cpp\community\;CMake Files\networkit\cpp\community\test\;CMake Files\networkit\cpp\components\;CMake Files\networkit\cpp\components\test\;CMake Files\networkit\cpp\correlation\;CMake Files\networkit\cpp\distance\;CMake Files\networkit\cpp\distance\test\;CMake Files\networkit\cpp\dynamics\;CMake Files\networkit\cpp\dynamics\test\;CMake Files\networkit\cpp\edgescores\;CMake Files\networkit\cpp\edgescores\test\;CMake Files\networkit\cpp\embedding\;CMake Files\networkit\cpp\embedding\test\;CMake Files\networkit\cpp\flow\;CMake Files\networkit\cpp\flow\test\;CMake Files\networkit\cpp\generators\;CMake Files\networkit\cpp\generators\quadtree\;CMake Files\networkit\cpp\generators\quadtree\test\;CMake Files\networkit\cpp\generators\test\;CMake Files\networkit\cpp\geometric\;CMake Files\networkit\cpp\geometric\test\;CMake Files\networkit\cpp\global\;CMake Files\networkit\cpp\global\test\;CMake Files\networkit\cpp\graph\;CMake Files\networkit\cpp\graph\test\;CMake Files\networkit\cpp\independentset\;CMake Files\networkit\cpp\independentset\test\;CMake Files\networkit\cpp\io\;CMake Files\networkit\cpp\io\test\;CMake Files\networkit\cpp\layout\;CMake Files\networkit\cpp\linkprediction\;CMake Files\networkit\cpp\linkprediction\test\;CMake Files\networkit\cpp\matching\;CMake Files\networkit\cpp\matching\test\;CMake Files\networkit\cpp\numerics\;CMake Files\networkit\cpp\numerics\test\;CMake Files\networkit\cpp\overlap\;CMake Files\networkit\cpp\overlap\test\;CMake Files\networkit\cpp\randomization\;CMake Files\networkit\cpp\randomization\test\;CMake Files\networkit\cpp\reachability\;CMake Files\networkit\cpp\reachability\test\;CMake Files\networkit\cpp\scd\;CMake Files\networkit\cpp\scd\test\;CMake Files\networkit\cpp\scoring\;CMake Files\networkit\cpp\simulation\;CMake Files\networkit\cpp\sparsification\;CMake Files\networkit\cpp\sparsification\test\;CMake Files\networkit\cpp\structures\;CMake Files\networkit\cpp\structures\test\;CMake Files\networkit\cpp\viz\;CMake Files\networkit\cpp\viz\test\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/strip">
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 install/strip"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="globals">
+				<Option output="/home/valentin/CLionProjects/networkit/globals.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 globals"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="globals/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/globals.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 globals/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="distance">
+				<Option output="/home/valentin/CLionProjects/networkit/distance.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 distance"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="distance/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/distance.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 distance/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="flow">
+				<Option output="/home/valentin/CLionProjects/networkit/flow.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 flow"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="flow/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/flow.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 flow/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="engineering">
+				<Option output="/home/valentin/CLionProjects/networkit/engineering.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 engineering"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="engineering/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/engineering.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 engineering/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="graph">
+				<Option output="/home/valentin/CLionProjects/networkit/graph.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 graph"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="graph/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/graph.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 graph/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="dynamics">
+				<Option output="/home/valentin/CLionProjects/networkit/dynamics.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 dynamics"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="dynamics/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/dynamics.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 dynamics/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="correlation">
+				<Option output="/home/valentin/CLionProjects/networkit/correlation.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 correlation"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="correlation/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/correlation.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 correlation/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="embedding">
+				<Option output="/home/valentin/CLionProjects/networkit/embedding.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 embedding"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="embedding/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/embedding.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 embedding/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="components">
+				<Option output="/home/valentin/CLionProjects/networkit/components.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 components"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="components/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/components.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 components/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/local">
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 install/local"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="base">
+				<Option output="/home/valentin/CLionProjects/networkit/base.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 base"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="base/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/base.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 base/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="networkit">
+				<Option output="/home/valentin/CLionProjects/networkit/libnetworkit.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 networkit"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="networkit/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/libnetworkit.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 networkit/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="generators">
+				<Option output="/home/valentin/CLionProjects/networkit/generators.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 generators"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="generators/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/generators.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 generators/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="stats">
+				<Option output="/home/valentin/CLionProjects/networkit/stats.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 stats"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="stats/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/stats.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 stats/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="helpers">
+				<Option output="/home/valentin/CLionProjects/networkit/helpers.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 helpers"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="helpers/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/helpers.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 helpers/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="clique">
+				<Option output="/home/valentin/CLionProjects/networkit/clique.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clique"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="clique/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/clique.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clique/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="linkprediction">
+				<Option output="/home/valentin/CLionProjects/networkit/linkprediction.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 linkprediction"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="linkprediction/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/linkprediction.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 linkprediction/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="coarsening">
+				<Option output="/home/valentin/CLionProjects/networkit/coarsening.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 coarsening"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="coarsening/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/coarsening.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 coarsening/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="structures">
+				<Option output="/home/valentin/CLionProjects/networkit/structures.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 structures"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="structures/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/structures.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 structures/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="viz">
+				<Option output="/home/valentin/CLionProjects/networkit/viz.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 viz"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="viz/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/viz.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 viz/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="community">
+				<Option output="/home/valentin/CLionProjects/networkit/community.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 community"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="community/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/community.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 community/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="traversal">
+				<Option output="/home/valentin/CLionProjects/networkit/traversal.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 traversal"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="traversal/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/traversal.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 traversal/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="graphio">
+				<Option output="/home/valentin/CLionProjects/networkit/graphio.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 graphio"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="graphio/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/graphio.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 graphio/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="graphtools">
+				<Option output="/home/valentin/CLionProjects/networkit/graphtools.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 graphtools"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="graphtools/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/graphtools.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 graphtools/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="independentset">
+				<Option output="/home/valentin/CLionProjects/networkit/independentset.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 independentset"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="independentset/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/independentset.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 independentset/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="scd">
+				<Option output="/home/valentin/CLionProjects/networkit/scd.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 scd"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="scd/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/scd.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 scd/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="matching">
+				<Option output="/home/valentin/CLionProjects/networkit/matching.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 matching"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="matching/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/matching.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 matching/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="randomization">
+				<Option output="/home/valentin/CLionProjects/networkit/randomization.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 randomization"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="randomization/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/randomization.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 randomization/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="centrality">
+				<Option output="/home/valentin/CLionProjects/networkit/centrality.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 centrality"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="centrality/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/centrality.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 centrality/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="reachability">
+				<Option output="/home/valentin/CLionProjects/networkit/reachability.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 reachability"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="reachability/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/reachability.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 reachability/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sparsification">
+				<Option output="/home/valentin/CLionProjects/networkit/sparsification.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 sparsification"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sparsification/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/sparsification.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 sparsification/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="simulation">
+				<Option output="/home/valentin/CLionProjects/networkit/simulation.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 simulation"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="simulation/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/simulation.cpython-38-x86_64-linux-gnu.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/include"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/ttmath"/>
+					<Add directory="/usr/include/python3.8"/>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 simulation/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="list_install_components">
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 list_install_components"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install">
+				<Option working_dir="/home/valentin/CLionProjects/networkit"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 install"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="tlx">
+				<Option output="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/libtlx.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/Makefile&quot;  VERBOSE=1 tlx"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="tlx/fast">
+				<Option output="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/libtlx.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/valentin/CLionProjects/networkit/extlibs/tlx"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command=" -f &quot;/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/Makefile&quot;  VERBOSE=1 tlx/fast"/>
+					<CompileFile command=" -f &quot;/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command=" -f &quot;/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command=" -f &quot;/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/algorithm/parallel_multiway_merge.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/algorithm/parallel_multiway_merge.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/backtrace.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/backtrace.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/cmdline_parser.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/cmdline_parser.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/die/core.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/die/core.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/digest/md5.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/digest/md5.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/digest/sha1.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/digest/sha1.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/digest/sha256.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/digest/sha256.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/digest/sha512.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/digest/sha512.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/logger/core.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/logger/core.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/multi_timer.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/multi_timer.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/port/setenv.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/port/setenv.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/appendline.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/appendline.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/base64.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/base64.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/bitdump.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/bitdump.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/compare_icase.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/compare_icase.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/contains.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/contains.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/contains_word.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/contains_word.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/ends_with.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/ends_with.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/equal_icase.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/equal_icase.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/erase_all.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/erase_all.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/escape_html.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/escape_html.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/escape_uri.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/escape_uri.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/expand_environment_variables.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/expand_environment_variables.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/extract_between.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/extract_between.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/format_si_iec_units.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/format_si_iec_units.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/hexdump.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/hexdump.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/index_of.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/index_of.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/join.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/join.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/join_quoted.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/join_quoted.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/less_icase.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/less_icase.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/pad.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/pad.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/parse_si_iec_units.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/parse_si_iec_units.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/replace.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/replace.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/split.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/split.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/split_quoted.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/split_quoted.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/split_words.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/split_words.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/ssprintf.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/ssprintf.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/starts_with.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/starts_with.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/to_lower.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/to_lower.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/to_upper.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/to_upper.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/trim.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/trim.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/union_words.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/union_words.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/word_wrap.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/string/word_wrap.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/thread_pool.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/thread_pool.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/timestamp.cpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/timestamp.hpp">
+			<Option target="tlx"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/include/networkit/algebraic/algorithms/SpGEMM.cpp">
+			<Option target="globals"/>
+			<Option target="distance"/>
+			<Option target="flow"/>
+			<Option target="engineering"/>
+			<Option target="graph"/>
+			<Option target="dynamics"/>
+			<Option target="correlation"/>
+			<Option target="embedding"/>
+			<Option target="components"/>
+			<Option target="base"/>
+			<Option target="generators"/>
+			<Option target="stats"/>
+			<Option target="helpers"/>
+			<Option target="clique"/>
+			<Option target="linkprediction"/>
+			<Option target="coarsening"/>
+			<Option target="structures"/>
+			<Option target="viz"/>
+			<Option target="community"/>
+			<Option target="traversal"/>
+			<Option target="graphio"/>
+			<Option target="graphtools"/>
+			<Option target="independentset"/>
+			<Option target="scd"/>
+			<Option target="matching"/>
+			<Option target="randomization"/>
+			<Option target="centrality"/>
+			<Option target="reachability"/>
+			<Option target="sparsification"/>
+			<Option target="simulation"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/include/networkit/algebraic/algorithms/SpGEMM.h">
+			<Option target="globals"/>
+			<Option target="distance"/>
+			<Option target="flow"/>
+			<Option target="engineering"/>
+			<Option target="graph"/>
+			<Option target="dynamics"/>
+			<Option target="correlation"/>
+			<Option target="embedding"/>
+			<Option target="components"/>
+			<Option target="base"/>
+			<Option target="generators"/>
+			<Option target="stats"/>
+			<Option target="helpers"/>
+			<Option target="clique"/>
+			<Option target="linkprediction"/>
+			<Option target="coarsening"/>
+			<Option target="structures"/>
+			<Option target="viz"/>
+			<Option target="community"/>
+			<Option target="traversal"/>
+			<Option target="graphio"/>
+			<Option target="graphtools"/>
+			<Option target="independentset"/>
+			<Option target="scd"/>
+			<Option target="matching"/>
+			<Option target="randomization"/>
+			<Option target="centrality"/>
+			<Option target="reachability"/>
+			<Option target="sparsification"/>
+			<Option target="simulation"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/base.cpp">
+			<Option target="base"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/centrality.cpp">
+			<Option target="centrality"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/clique.cpp">
+			<Option target="clique"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/coarsening.cpp">
+			<Option target="coarsening"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/community.cpp">
+			<Option target="community"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/components.cpp">
+			<Option target="components"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/correlation.cpp">
+			<Option target="correlation"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/GlobalState.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/algebraic/DenseMatrix.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/algebraic/DynamicMatrix.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/algebraic/Vector.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/auxiliary/BloomFilter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/auxiliary/BucketPQ.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/auxiliary/Log.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/auxiliary/NumericTools.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/auxiliary/Parallelism.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/auxiliary/Random.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/auxiliary/SignalHandling.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/auxiliary/Timer.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/base/Algorithm.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/ApproxBetweenness.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/ApproxCloseness.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/ApproxElectricalCloseness.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/ApproxGroupBetweenness.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/ApproxSpanningEdge.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/Betweenness.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/Centrality.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/Closeness.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/CoreDecomposition.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/DegreeCentrality.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/DynApproxBetweenness.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/DynBetweenness.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/DynBetweennessOneNode.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/DynKatzCentrality.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/DynTopHarmonicCloseness.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/EigenvectorCentrality.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/EstimateBetweenness.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/GedWalk.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/GroupCloseness.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/GroupClosenessGrowShrink.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/GroupClosenessGrowShrinkImpl.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/GroupClosenessGrowShrinkImpl.hpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/GroupClosenessLocalSearch.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/GroupClosenessLocalSwaps.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/GroupDegree.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/GroupHarmonicCloseness.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/HarmonicCloseness.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/KPathCentrality.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/KadabraBetweenness.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/KatzCentrality.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/LaplacianCentrality.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/LocalClusteringCoefficient.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/LocalPartitionCoverage.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/PageRank.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/PermanenceCentrality.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/Sfigality.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/SpanningEdgeCentrality.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/TopCloseness.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/TopHarmonicCloseness.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/clique/MaximalCliques.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/coarsening/ClusteringProjector.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/coarsening/GraphCoarsening.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/coarsening/MatchingCoarsening.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/coarsening/ParallelPartitionCoarsening.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/AdjustedRandMeasure.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/ClusteringGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/CommunityDetectionAlgorithm.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/Conductance.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/CoverF1Similarity.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/CoverHubDominance.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/Coverage.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/CutClustering.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/DissimilarityMeasure.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/DynamicNMIDistance.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/EdgeCut.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/GraphClusteringTools.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/GraphStructuralRandMeasure.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/HubDominance.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/IntrapartitionDensity.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/IsolatedInterpartitionConductance.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/IsolatedInterpartitionExpansion.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/JaccardMeasure.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/LFM.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/LPDegreeOrdered.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/LocalCoverEvaluation.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/LocalPartitionEvaluation.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/LouvainMapEquation.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/Modularity.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/NMIDistance.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/NodeStructuralRandMeasure.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/OverlappingCommunityDetectionAlgorithm.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/OverlappingNMIDistance.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/PLM.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/PLP.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/ParallelAgglomerativeClusterer.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/PartitionFragmentation.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/PartitionHubDominance.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/PartitionIntersection.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/SampledGraphStructuralRandMeasure.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/SampledNodeStructuralRandMeasure.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/StablePartitionNodes.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/components/BiconnectedComponents.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/components/ComponentDecomposition.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/components/ConnectedComponents.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/components/ConnectedComponentsImpl.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/components/ConnectedComponentsImpl.hpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/components/DynConnectedComponents.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/components/DynWeaklyConnectedComponents.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/components/ParallelConnectedComponents.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/components/RandomSpanningForest.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/components/StronglyConnectedComponents.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/components/WeaklyConnectedComponents.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/correlation/Assortativity.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/APSP.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/AdamicAdarDistance.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/AffectedNodes.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/AlgebraicDistance.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/BFS.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/BidirectionalBFS.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/BidirectionalDijkstra.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/CommuteTimeDistance.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/Diameter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/Dijkstra.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/DynAPSP.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/DynBFS.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/DynDijkstra.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/DynSSSP.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/Eccentricity.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/EffectiveDiameter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/EffectiveDiameterApproximation.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/GraphDistance.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/HopPlotApproximation.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/IncompleteDijkstra.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/JaccardDistance.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/NeighborhoodFunction.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/NeighborhoodFunctionApproximation.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/NeighborhoodFunctionHeuristic.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/ReverseBFS.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/SPSP.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/SSSP.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/Volume.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/dynamics/DGSStreamParser.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/dynamics/DGSWriter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/dynamics/GraphDifference.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/dynamics/GraphEvent.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/dynamics/GraphEventProxy.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/dynamics/GraphUpdater.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/edgescores/ChibaNishizekiQuadrangleEdgeScore.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/edgescores/ChibaNishizekiTriangleEdgeScore.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/edgescores/EdgeScore.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/edgescores/EdgeScoreAsWeight.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/edgescores/EdgeScoreBlender.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/edgescores/EdgeScoreLinearizer.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/edgescores/EdgeScoreNormalizer.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/edgescores/GeometricMeanScore.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/edgescores/PrefixJaccardScore.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/edgescores/TriangleEdgeScore.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/embedding/AliasSampler.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/embedding/AliasSampler.hpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/embedding/BiasedRandomWalk.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/embedding/BiasedRandomWalk.hpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/embedding/LearnEmbedding.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/embedding/LearnEmbedding.hpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/embedding/Node2Vec.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/flow/EdmondsKarp.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/BarabasiAlbertGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/ChungLuGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/ClusteredRandomGraphGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/DorogovtsevMendesGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/DynamicBarabasiAlbertGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/DynamicDGSParser.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/DynamicDorogovtsevMendesGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/DynamicForestFireGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/DynamicGraphSource.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/DynamicHyperbolicGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/DynamicPathGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/DynamicPubWebGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/EdgeSwitchingMarkovChainGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/ErdosRenyiGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/HavelHakimiGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/HyperbolicGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/LFRGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/MocnikGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/MocnikGeneratorBasic.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/PowerlawDegreeSequence.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/PubWebGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/RegularRingLatticeGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/RmatGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/StaticDegreeSequenceGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/StochasticBlockmodel.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/WattsStrogatzGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/geometric/HyperbolicSpace.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/global/ClusteringCoefficient.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/global/GlobalClusteringCoefficient.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/graph/Graph.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/graph/GraphBuilder.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/graph/GraphTools.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/graph/KruskalMSF.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/graph/RandomMaximumSpanningForest.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/graph/SpanningForest.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/graph/UnionMaximumSpanningForest.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/independentset/IndependentSetFinder.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/independentset/Luby.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/BinaryEdgeListPartitionReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/BinaryEdgeListPartitionWriter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/BinaryPartitionReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/BinaryPartitionWriter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/CoverReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/CoverWriter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/DGSReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/DibapGraphReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/DotGraphWriter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/DotPartitionWriter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/EdgeListCoverReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/EdgeListPartitionReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/EdgeListReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/EdgeListWriter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/GMLGraphReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/GMLGraphWriter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/GraphIO.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/GraphToolBinaryReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/GraphToolBinaryWriter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/KONECTGraphReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/METISGraphReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/METISGraphWriter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/METISParser.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/MatrixMarketReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/MemoryMappedFile.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/NetworkitBinaryReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/NetworkitBinaryWriter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/PartitionReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/RasterReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/SNAPEdgeListPartitionReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/SNAPGraphReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/SNAPGraphWriter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/ThrillGraphBinaryReader.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/ThrillGraphBinaryWriter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/linkprediction/AdamicAdarIndex.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/linkprediction/AdjustedRandIndex.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/linkprediction/AlgebraicDistanceIndex.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/linkprediction/EvaluationMetric.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/linkprediction/KatzIndex.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/linkprediction/LinkPredictor.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/linkprediction/LinkThresholder.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/linkprediction/MissingLinksFinder.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/linkprediction/NeighborhoodUtility.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/linkprediction/PrecisionRecallMetric.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/linkprediction/PredictionsSorter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/linkprediction/ROCMetric.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/linkprediction/RandomLinkSampler.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/linkprediction/ResourceAllocationIndex.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/linkprediction/SameCommunityIndex.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/matching/LocalMaxMatcher.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/matching/Matcher.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/matching/Matching.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/matching/PathGrowingMatcher.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/matching/SuitorMatcher.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/networkit.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/overlap/HashingOverlapper.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/randomization/Curveball.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/randomization/CurveballGlobalTradeGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/randomization/CurveballImpl.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/randomization/CurveballImpl.hpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/randomization/CurveballUniformTradeGenerator.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/randomization/DegreePreservingShuffle.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/randomization/EdgeSwitching.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/randomization/GlobalCurveball.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/reachability/AllSimplePaths.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/reachability/ReachableNodes.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/scd/ApproximatePageRank.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/scd/CliqueDetect.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/scd/CombinedSCD.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/scd/GCE.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/scd/LFMLocal.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/scd/LocalT.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/scd/LocalTightnessExpansion.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/scd/PageRankNibble.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/scd/RandomBFS.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/scd/SCDGroundTruthComparison.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/scd/SelectiveCommunityDetector.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/scd/SetConductance.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/scd/TCE.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/scd/TwoPhaseL.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/simulation/EpidemicSimulationSEIR.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/sparsification/ChanceCorrectedTriangleScore.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/sparsification/ForestFireScore.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/sparsification/GlobalThresholdFilter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/sparsification/LocalDegreeScore.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/sparsification/LocalSimilarityScore.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/sparsification/MultiscaleScore.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/sparsification/RandomEdgeScore.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/sparsification/RandomNodeEdgeScore.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/sparsification/SCANStructuralSimilarityScore.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/sparsification/SimmelianOverlapScore.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/sparsification/SimmelianScore.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/sparsification/Sparsifiers.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/structures/Cover.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/structures/LocalCommunity.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/structures/Partition.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/structures/UnionFind.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/viz/MaxentStress.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/viz/PivotMDS.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/viz/PostscriptWriter.cpp">
+			<Option target="networkit"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/distance.cpp">
+			<Option target="distance"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/dynamics.cpp">
+			<Option target="dynamics"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/embedding.cpp">
+			<Option target="embedding"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/engineering.cpp">
+			<Option target="engineering"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/flow.cpp">
+			<Option target="flow"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/generators.cpp">
+			<Option target="generators"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/globals.cpp">
+			<Option target="globals"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/graph.cpp">
+			<Option target="graph"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/graphio.cpp">
+			<Option target="graphio"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/graphtools.cpp">
+			<Option target="graphtools"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/helpers.cpp">
+			<Option target="helpers"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/independentset.cpp">
+			<Option target="independentset"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/linkprediction.cpp">
+			<Option target="linkprediction"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/matching.cpp">
+			<Option target="matching"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/randomization.cpp">
+			<Option target="randomization"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/reachability.cpp">
+			<Option target="reachability"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/scd.cpp">
+			<Option target="scd"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/simulation.cpp">
+			<Option target="simulation"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/sparsification.cpp">
+			<Option target="sparsification"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/stats.cpp">
+			<Option target="stats"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/structures.cpp">
+			<Option target="structures"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/traversal.cpp">
+			<Option target="traversal"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/viz.cpp">
+			<Option target="viz"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit.pc">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\extlibs\tlx\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/misc/cmake/tlx-config.cmake.in">
+			<Option virtualFolder="CMake Files\extlibs\tlx\misc\cmake\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/misc/cmake/tlx-version.cmake.in">
+			<Option virtualFolder="CMake Files\extlibs\tlx\misc\cmake\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/misc/cmake/tlx.pc">
+			<Option virtualFolder="CMake Files\extlibs\tlx\misc\cmake\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/extlibs/tlx/tlx/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\extlibs\tlx\tlx\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/algebraic/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\algebraic\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/algebraic/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\algebraic\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/auxiliary/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\auxiliary\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/auxiliary/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\auxiliary\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/base/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\base\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\centrality\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/centrality/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\centrality\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/clique/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\clique\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/clique/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\clique\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/coarsening/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\coarsening\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/coarsening/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\coarsening\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\community\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/community/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\community\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/components/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\components\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/components/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\components\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/correlation/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\correlation\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\distance\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/distance/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\distance\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/dynamics/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\dynamics\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/dynamics/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\dynamics\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/edgescores/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\edgescores\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/edgescores/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\edgescores\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/embedding/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\embedding\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/embedding/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\embedding\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/flow/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\flow\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/flow/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\flow\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\generators\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/quadtree/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\generators\quadtree\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/quadtree/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\generators\quadtree\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/generators/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\generators\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/geometric/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\geometric\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/geometric/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\geometric\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/global/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\global\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/global/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\global\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/graph/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\graph\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/graph/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\graph\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/independentset/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\independentset\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/independentset/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\independentset\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\io\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/io/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\io\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/layout/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\layout\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/linkprediction/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\linkprediction\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/linkprediction/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\linkprediction\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/matching/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\matching\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/matching/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\matching\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/numerics/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\numerics\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/numerics/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\numerics\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/overlap/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\overlap\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/overlap/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\overlap\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/randomization/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\randomization\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/randomization/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\randomization\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/reachability/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\reachability\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/reachability/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\reachability\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/scd/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\scd\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/scd/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\scd\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/scoring/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\scoring\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/simulation/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\simulation\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/sparsification/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\sparsification\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/sparsification/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\sparsification\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/structures/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\structures\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/structures/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\structures\test\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/viz/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\viz\"/>
+		</Unit>
+		<Unit filename="/home/valentin/CLionProjects/networkit/networkit/cpp/viz/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\networkit\cpp\viz\test\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

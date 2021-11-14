@@ -1,11 +1,11 @@
-prefix=@CMAKE_INSTALL_PREFIX@
+prefix=/usr/local
 exec_prefix=${prefix}
-includedir=${prefix}/@NETWORKIT_INSTALL_INCLUDE_DIR@
-libdir=${exec_prefix}/@NETWORKIT_INSTALL_LIB_DIR@
+includedir=${prefix}/include
+libdir=${exec_prefix}/lib
 
 Name: networkit
 Description: networkit
 URL: http://networkit.github.io
-Version: @NETWORKIT_VERSION@
-Cflags: -I${includedir} @NETWORKIT_CXX_FLAGS@
-Libs: -L${libdir} -l@NETWORKIT_LIBNAME@
+Version: 
+Cflags: -I${includedir} 
+Libs: -L${libdir} -lnetworkit
