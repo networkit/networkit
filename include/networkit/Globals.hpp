@@ -23,6 +23,14 @@ using omp_index = int64_t;
 using omp_index = index;
 #endif // _MSC_VER
 
+#ifdef NDEBUG
+#define DEBUG_ONLY(x)
+#else
+#define DEBUG_ONLY(x) = x;
+#endif
+
+
+
 using count = uint64_t;    ///< more expressive name for an integer quantity
 using node = index;        ///< node indices are 0-based
 using edgeweight = double; ///< edge weight type
