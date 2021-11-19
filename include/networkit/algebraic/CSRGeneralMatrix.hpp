@@ -395,10 +395,29 @@ public:
      * Sorts the column indices in each row for faster access.
      */
     void sort() {
-#pragma omp parallel for schedule(guided)
-        for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
-            if (rowIdx[i + 1] - rowIdx[i] > 1) {
-                quicksort(rowIdx[i], rowIdx[i + 1] - 1);
+#pragma omp parallel
+        {
+            std::vector<index> permutation(nCols);
+#pragma omp for schedule(guided)
+            for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
+                const index startOfRow = rowIdx[i], endOfRow = rowIdx[i + 1];
+                const count nonZerosInRow = endOfRow - startOfRow;
+                if (nonZerosInRow <= 1
+                    || std::is_sorted(columnIdx.begin() + startOfRow, columnIdx.begin() + endOfRow))
+                    continue;
+
+                permutation.resize(nonZerosInRow);
+                std::iota(permutation.begin(), permutation.end(), index{0});
+                std::sort(permutation.begin(), permutation.end(), [&](index x, index y) {
+                    return columnIdx[startOfRow + x] < columnIdx[startOfRow + y];
+                });
+
+                Aux::ArrayTools::applyPermutation(columnIdx.begin() + startOfRow,
+                                                  columnIdx.begin() + endOfRow,
+                                                  permutation.begin());
+
+                Aux::ArrayTools::applyPermutation(nonZeros.begin() + startOfRow,
+                                                  nonZeros.begin() + endOfRow, permutation.begin());
             }
         }
 
