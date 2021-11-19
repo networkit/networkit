@@ -42,47 +42,6 @@ class CSRGeneralMatrix {
     ValueType zero;
 
     /**
-     * Quicksort algorithm on columnIdx between [@a left, @a right].
-     * @param left
-     * @param right
-     */
-    void quicksort(index left, index right) {
-        if (left >= right)
-            return;
-        index pivotIdx = partition(left, right);
-        if (pivotIdx != 0) {
-            quicksort(left, pivotIdx - 1);
-        }
-        quicksort(pivotIdx + 1, right);
-    }
-
-    /**
-     * Partitions columnIdx between [@a left, @a right] after selecting the pivot
-     * in the middle.
-     * @param left
-     * @param right
-     * @return The pivot.
-     */
-    index partition(index left, index right) {
-        index mid = (left + right) / 2;
-        index pivot = columnIdx[mid];
-        std::swap(columnIdx[mid], columnIdx[right]);
-        std::swap(nonZeros[mid], nonZeros[right]);
-
-        index i = left;
-        for (index j = left; j < right; ++j) {
-            if (columnIdx[j] <= pivot) {
-                std::swap(columnIdx[i], columnIdx[j]);
-                std::swap(nonZeros[i], nonZeros[j]);
-                ++i;
-            }
-        }
-        std::swap(columnIdx[i], columnIdx[right]);
-        std::swap(nonZeros[i], nonZeros[right]);
-        return i;
-    }
-
-    /**
      * Binary search the sorted columnIdx vector between [@a left, @a right]
      * for column @a j.
      * If @a j is not present, the index that is immediately left of the place
