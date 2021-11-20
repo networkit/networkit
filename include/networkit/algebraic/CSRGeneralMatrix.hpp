@@ -379,23 +379,14 @@ public:
                                                   nonZeros.begin() + endOfRow, permutation.begin());
             }
         }
-
-#ifndef NETWORKIT_SANITY_CHECKS
-        bool sorted = true;
-        tlx::unused(sorted);
-#pragma omp parallel for
-        for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
-            for (index j = rowIdx[i] + 1; j < rowIdx[i + 1]; ++j) {
-                if (columnIdx[j - 1] > columnIdx[j]) {
-                    sorted = false;
-                    break;
-                }
-            }
-        }
-        assert(sorted);
-#endif // NETWORKIT_SANITY_CHECKS
-
         isSorted = true;
+
+#ifdef NETWORKIT_SANITY_CHECKS
+#pragma omp parallel for
+        for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i)
+            assert(
+                std::is_sorted(columnIdx.begin() + rowIdx[i], columnIdx.begin() + rowIdx[i + 1]));
+#endif // NETWORKIT_SANITY_CHECKS
     }
 
     /**
