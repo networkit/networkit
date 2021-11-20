@@ -429,25 +429,12 @@ public:
         if (sorted()) {
 #pragma omp parallel for
             for (omp_index i = 0; i < static_cast<omp_index>(diag.getDimension()); ++i) {
-                if (rowIdx[i] == rowIdx[i + 1])
-                    continue; // no entry in row i
-                index left = rowIdx[i];
-                index right = rowIdx[i + 1] - 1;
-                index mid = (left + right) / 2;
-                while (left <= right) {
-                    if (columnIdx[mid] == i) {
-                        diag[i] = nonZeros[mid];
-                        break;
-                    }
 
-                    if (columnIdx[mid] < i) {
-                        left = mid + 1;
-                    } else {
-                        right = mid - 1;
-                    }
+                const auto it = std::lower_bound(columnIdx.begin() + rowIdx[i],
+                                                 columnIdx.begin() + rowIdx[i + 1], i);
 
-                    mid = (left + right) / 2;
-                }
+                if (it != columnIdx.end() && *it == static_cast<index>(i))
+                    diag[i] = nonZeros[it - columnIdx.begin()];
             }
         } else {
 #pragma omp parallel for
