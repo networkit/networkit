@@ -40,10 +40,12 @@
 #include <networkit/generators/ClusteredRandomGraphGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/generators/LFRGenerator.hpp>
-#include <networkit/community/CoverF1Similarity.hpp>
 #include <networkit/community/LFM.hpp>
+#include <networkit/community/CoverF1Similarity.hpp>
 #include <networkit/community/OverlappingNMIDistance.hpp>
+#include <networkit/community/ParallelLeiden.hpp>
 #include <networkit/scd/LocalTightnessExpansion.hpp>
+#include <networkit/community/ParallelLeiden.hpp>
 
 #include <tlx/unused.hpp>
 
@@ -172,6 +174,29 @@ TEST_F(CommunityGTest, testPLM) {
     DEBUG("modularity: " , modularity.getQuality(zeta2, G));
     EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta2));
 
+}
+
+TEST_F(CommunityGTest, testParallelLeiden) {
+    METISGraphReader reader;
+    Modularity modularity;
+    Graph G = reader.read("input/caidaRouterLevel.graph");
+
+    ParallelLeiden pl(G);
+    pl.VECTOR_OVERSIZE = 1;
+    pl.run();
+    Partition zeta = pl.getPartition();
+
+    DEBUG("number of clusters: " , zeta.numberOfSubsets());
+    DEBUG("modularity: " , modularity.getQuality(zeta, G));
+    EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta));
+
+    ParallelLeiden plnr(G,3,false);
+    plnr.run();
+    Partition zeta2 = plnr.getPartition();
+
+    DEBUG("number of clusters: " , zeta2.numberOfSubsets());
+    DEBUG("modularity: " , modularity.getQuality(zeta2, G));
+    EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta2));
 }
 
 TEST_F(CommunityGTest, testDeletedNodesPLM) {
