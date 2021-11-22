@@ -1602,12 +1602,6 @@ TEST_F(CentralityGTest, testGroupCloseness) {
     GroupCloseness gc(g, k);
     gc.run();
     auto apx = gc.groupMaxCloseness();
-    std::sort(apx.begin(), apx.end());
-    std::vector<node> solution = {0, 2, 5};
-    for (count i = 0; i < k; ++i) {
-        EXPECT_EQ(apx[i], solution[i]);
-    }
-
     EXPECT_NEAR(gc.scoreOfGroup(apx), 1.0, 1e-5);
 }
 

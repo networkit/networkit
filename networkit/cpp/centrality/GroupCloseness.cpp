@@ -9,7 +9,6 @@
 #include <networkit/centrality/GroupCloseness.hpp>
 #include <networkit/auxiliary/BucketPQ.hpp>
 #include <networkit/auxiliary/Log.hpp>
-#include <networkit/distance/BFS.hpp>
 #include <networkit/centrality/TopCloseness.hpp>
 
 #include <atomic>
@@ -20,13 +19,14 @@
 namespace NetworKit {
 
 GroupCloseness::GroupCloseness(const Graph &G, count k, count H)
-    : G(G), k(k), H(H) {}
+    : G(&G), k(k), H(H) {
+    d1Global.resize(omp_get_max_threads(), std::vector<count>(G.upperNodeIdBound()));
+}
 
-edgeweight GroupCloseness::computeImprovement(node u, count n, Graph &G,
-                                              count h) {
+edgeweight GroupCloseness::computeImprovement(node u, count h) {
     // computes the marginal gain due to adding u to S
-    std::vector<count> d1(n);
-    G.forNodes([&](node v) { d1[v] = d[v]; });
+    auto &d1 = d1Global[omp_get_thread_num()];
+    std::copy(d.begin(), d.end(), d1.begin());
 
     d1[u] = 0;
     count improvement = d[u]; // old distance of u
@@ -38,7 +38,7 @@ edgeweight GroupCloseness::computeImprovement(node u, count n, Graph &G,
         node v = Q.front();
         Q.pop();
         level = d1[v];
-        G.forNeighborsOf(v, [&](node w) {
+        G->forNeighborsOf(v, [&](node w) {
             if (d1[w] > d1[v] + 1) {
                 d1[w] = d1[v] + 1;
                 improvement += d[w] - d1[w];
@@ -49,87 +49,47 @@ edgeweight GroupCloseness::computeImprovement(node u, count n, Graph &G,
     return improvement;
 }
 
-std::vector<count> GroupCloseness::newDistances(node u, count n, Graph &G,
-                                                count h) {
-    std::vector<count> d1(n);
-    G.forNodes([&](node v) { d1[v] = d[v]; });
-
-    d1[u] = 0;
+void GroupCloseness::updateDistances(node u) {
     count improvement = d[u]; // old distance of u
+    d[u] = 0; // now u is in the group
     std::queue<node> Q;
     Q.push(u);
 
-    index level = 0;
-    while (!Q.empty() && (h == 0 || level <= h)) {
+    do {
         node v = Q.front();
         Q.pop();
-        level = d1[v];
-        G.forNeighborsOf(v, [&](node w) {
-            if (d1[w] > d1[v] + 1) {
-                d1[w] = d1[v] + 1;
-                improvement += d[w] - d1[w];
+        G->forNeighborsOf(v, [&](node w) {
+            if (d[w] > d[v] + 1) {
+                improvement += d[w] - (d[v] + 1);
+                d[w] = d[v] + 1;
                 Q.push(w);
             }
         });
-    }
-    return d1;
-}
-
-bool pairCompare(const std::pair<node, count> &firstElem,
-                 const std::pair<node, count> &secondElem) {
-    return firstElem.second > secondElem.second;
+    } while (!Q.empty());
 }
 
 void GroupCloseness::run() {
-    count n = G.upperNodeIdBound();
-    node top = 0;
-    iters = 0;
-    std::vector<bool> visited(n, false);
-    std::vector<node> pred(n);
-    std::vector<count> distances(n);
-    D.clear();
-    D.resize(n, 0);
-    std::vector<std::pair<node, count>> degPerNode(n);
+    const count n = G->upperNodeIdBound();
+    node top;
 
-    // compute degrees per node
-    G.parallelForNodes([&](node v) {
-        D[v] = G.degree(v);
-        degPerNode[v] = std::make_pair(v, D[v]);
-    });
     omp_lock_t lock;
     omp_init_lock(&lock);
-    // sort by degree (in descending order) and retrieve max and argmax
-    std::sort(degPerNode.begin(), degPerNode.end(), pairCompare);
-    node nodeMaxDeg = degPerNode[0].first;
 
     if (H == 0) {
-        TopCloseness topcc(G, 1, true, false);
+        TopCloseness topcc(*G, 1, true, false);
         topcc.run();
         top = topcc.topkNodesList()[0];
-    } else {
-        top = nodeMaxDeg;
-    }
+    } else
+        top = *std::max_element(G->nodeRange().begin(), G->nodeRange().end(),
+                                [&G = G](node u, node v) { return G->degree(u) > G->degree(v); });
 
     // first, we store the distances between each node and the top node
     d.clear();
     d.resize(n);
-    BFS bfs(G, top);
-    bfs.run();
 
-    G.parallelForNodes([&](node v) { d[v] = bfs.distance(v); });
+    Traversal::BFSfrom(*G, top, [&d = d](node u, count distance) { d[u] = distance; });
 
-    // get max distance
-    maxD = 0;
-    count sumD = 0;
-    // TODO: actually, we could have more generic parallel reduction iterators in
-    // the Graph class
-    G.forNodes([&](node v) {
-        if (d[v] > maxD) {
-            maxD = d[v];
-        }
-        sumD += d[v];
-    });
-    INFO("maxD = ", maxD);
+    count sumD = G->parallelSumForNodes([&](node v) { return d[v]; });
 
     // init S
     S.clear();
@@ -137,29 +97,24 @@ void GroupCloseness::run() {
     S[0] = top;
 
     std::vector<int64_t> prevBound(n, 0);
-    d1.clear();
     count currentImpr = sumD + 1; // TODO change
-    count maxNode = 0;
 
     std::vector<count> S2(n, sumD);
     S2[top] = 0;
-    std::vector<int64_t> prios(n);
 
     // loop to find k group members
     for (index i = 1; i < k; i++) {
         DEBUG("k = ", i);
-        G.parallelForNodes([&](node v) { prios[v] = -prevBound[v]; });
-        // Aux::BucketPQ Q(prios, currentImpr + 1);
         Aux::BucketPQ Q(n, -currentImpr - 1, 0);
-        G.forNodes([&](node v) { Q.insert(prios[v], v); });
+        G->forNodes([&](node v) {
+            if (d[v] > 0)
+                Q.insert(-prevBound[v], v);
+        });
         currentImpr = 0;
-        maxNode = 0;
-        d1.resize(G.upperNodeIdBound());
+        node maxNode = none;
 
         std::atomic<bool> toInterrupt{false};
-#pragma omp parallel // Shared variables:
-        // cc: synchronized write, read leads to a positive race condition;
-        // Q: fully synchronized;
+#pragma omp parallel
         {
             while (!toInterrupt.load(std::memory_order_relaxed)) {
                 omp_set_lock(&lock);
@@ -169,8 +124,7 @@ void GroupCloseness::run() {
                     break;
                 }
 
-                auto topPair = Q.extractMin();
-                node v = topPair.second;
+                const node v = Q.extractMin().second;
 
                 omp_unset_lock(&lock);
                 INFO("Extracted node ", v, " with prio ", prevBound[v]);
@@ -180,9 +134,8 @@ void GroupCloseness::run() {
                     toInterrupt.store(true, std::memory_order_relaxed);
                     break;
                 }
-                if (D[v] > 1 && !(d[v] == 1 && D[v] == 2) && d[v] > 0 &&
-                    (i == 1 || prevBound[v] > static_cast<int64_t>(currentImpr))) {
-                    count imp = computeImprovement(v, n, G, H);
+                if (i == 1 || prevBound[v] > static_cast<int64_t>(currentImpr)) {
+                    count imp = computeImprovement(v, H);
                     omp_set_lock(&lock);
                     if (imp > currentImpr) {
                         currentImpr = imp;
@@ -198,19 +151,18 @@ void GroupCloseness::run() {
         }
         S[i] = maxNode;
 
-        d1 = newDistances(S[i], n, G, 0);
-        G.parallelForNodes([&](node v) { d[v] = d1[v]; });
+        updateDistances(S[i]);
     }
 
     hasRun = true;
 }
 
-double GroupCloseness::computeFarness(std::vector<node> S, count H) {
+double GroupCloseness::computeFarness(const std::vector<node> &S, count H) const {
     // we run a BFS from S up to distance H (if H > 0) and sum the distances
     double farness = 0;
     count k = S.size();
-    std::vector<double> d1(G.upperNodeIdBound(), 0);
-    std::vector<bool> visited(G.upperNodeIdBound(), false);
+    std::vector<double> d1(G->upperNodeIdBound(), 0);
+    std::vector<bool> visited(G->upperNodeIdBound(), false);
     std::queue<node> Q;
 
     for (node i = 0; i < k; i++) {
@@ -225,7 +177,7 @@ double GroupCloseness::computeFarness(std::vector<node> S, count H) {
             break;
         }
         farness += d1[u];
-        G.forNeighborsOf(u, [&](node w) {
+        G->forNeighborsOf(u, [&](node w) {
             if (!visited[w]) {
                 visited[w] = true;
                 d1[w] = d1[u] + 1;
