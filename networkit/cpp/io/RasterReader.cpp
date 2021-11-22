@@ -59,7 +59,9 @@ RasterReader::read(const std::string& path) {
     double ylb = 1.0 - ydelta;            // lower bound in y-direction
     double xub = xdelta;                  // upper bound in x-direction
     double yub = 1.0;                     // upper bound in y-direction
+#ifndef NDEBUG
     double validate = 0.0;                // to validate the sum of the values
+#endif
 
     DEBUG("xdelta: ", xdelta, ", ydelta: ", ydelta);
 
@@ -74,7 +76,9 @@ RasterReader::read(const std::string& path) {
         for (uint64_t col = 0; col < ncols; ++col) {
             // read next number
             std::tie(val, it) = Aux::Parsing::strTo<double>(it, end);
+#ifndef NDEBUG
             validate += val;
+#endif
 
             // divide by "normalizer" and round down
             val *= normalizationFactor;

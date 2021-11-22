@@ -37,8 +37,6 @@ public:
         : center(center), sideLength(sideLength), halfSideLength(sideLength / 2.0),
           sqSideLength(sideLength * sideLength), dimension(center.getDimensions()) {}
 
-    BoundingBox(const BoundingBox<T> &other) = default;
-
     /**
      * Sets the center of the bounding box.
      * @param[in] center New center.
