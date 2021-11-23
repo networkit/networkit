@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * RandomSpanningForest.hpp
  *
@@ -21,7 +20,7 @@ namespace NetworKit {
  */
 class RandomSpanningForest final : public SpanningForest {
 public:
-    RandomSpanningForest(const Graph& G);
+    RandomSpanningForest(const Graph &G);
 
     ~RandomSpanningForest() override = default;
 

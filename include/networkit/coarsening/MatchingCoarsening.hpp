@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * MatchingCoarsening.hpp
  *
@@ -21,7 +20,7 @@ namespace NetworKit {
 class MatchingCoarsening final : public GraphCoarsening {
 
 public:
-    MatchingCoarsening(const Graph& G, const Matching& M, bool noSelfLoops = false);
+    MatchingCoarsening(const Graph &G, const Matching &M, bool noSelfLoops = false);
 
     /**
      * Contracts graph according to a matching.
@@ -35,7 +34,7 @@ public:
     void run() override;
 
 private:
-    const Matching& M;
+    const Matching &M;
     bool noSelfLoops;
 };
 

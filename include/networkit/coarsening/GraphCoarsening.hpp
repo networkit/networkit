@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * GraphCoarsening.h
+ * GraphCoarsening.hpp
  *
  *  Created on: 30.10.2012
  *      Author: Christian Staudt (christian.staudt@kit.edu)
@@ -12,8 +11,8 @@
 #include <map>
 #include <vector>
 
-#include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -24,36 +23,34 @@ namespace NetworKit {
 class GraphCoarsening : public Algorithm {
 
 public:
-
-    GraphCoarsening(const Graph& G);
+    GraphCoarsening(const Graph &G);
 
     ~GraphCoarsening() override = default;
 
     void run() override = 0;
 
-    const Graph& getCoarseGraph() const;
+    const Graph &getCoarseGraph() const;
 
-    Graph& getCoarseGraph();
+    Graph &getCoarseGraph();
 
     /**
      * Get mapping from fine to coarse node.
      */
-    const std::vector<node>& getFineToCoarseNodeMapping() const;
+    const std::vector<node> &getFineToCoarseNodeMapping() const;
 
-    std::vector<node>& getFineToCoarseNodeMapping();
+    std::vector<node> &getFineToCoarseNodeMapping();
 
     /**
      * Get mapping from coarse node to collection of fine nodes.
      */
-    std::map<node, std::vector<node> > getCoarseToFineNodeMapping() const;
+    std::map<node, std::vector<node>> getCoarseToFineNodeMapping() const;
 
 protected:
-    const Graph* G;
+    const Graph *G;
     Graph Gcoarsened;
     std::vector<node> nodeMapping;
 };
 
-} // namespace
-
+} // namespace NetworKit
 
 #endif // NETWORKIT_COARSENING_GRAPH_COARSENING_HPP_
