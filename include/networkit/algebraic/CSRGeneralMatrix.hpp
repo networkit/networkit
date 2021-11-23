@@ -173,11 +173,8 @@ public:
             rowIdx[row]++;
         }
 
-        for (index i = 0, firstIdxOfRow = 0; i <= nRows; ++i) {
-            index newRow = rowIdx[i];
-            rowIdx[i] = firstIdxOfRow;
-            firstIdxOfRow = newRow;
-        }
+        rowIdx.back() = 0;
+        std::rotate(rowIdx.rbegin(), rowIdx.rbegin() + 1, rowIdx.rend());
     }
 
     /**
