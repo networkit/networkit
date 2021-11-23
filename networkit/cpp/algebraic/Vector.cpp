@@ -37,22 +37,21 @@ double Vector::length() const {
 }
 
 double Vector::mean() const {
-    double sum = 0.0;
-    this->forElements([&](double value){
-        sum += value;
-    });
+    double sum = 0.;
+    const auto n = getDimension();
+#ifndef NETWORKIT_OMP2
+#pragma omp parallel for reduction(+ : sum)
+    for (omp_index i = 0; i < static_cast<omp_index>(n); ++i)
+        sum += values[i];
+#else
+    sum = std::accumulate(values.begin(), values.end(), 0.);
+#endif
 
-    return sum / (double) this->getDimension();
+    return sum / (double)n;
 }
 
 bool Vector::operator==(const Vector &other) const {
-    if (getDimension() != other.getDimension() || isTransposed() != other.isTransposed()) return false;
-
-    for (index i = 0; i < getDimension(); i++) {
-        if (values[i] != other[i]) return false;
-    }
-
-    return true;
+    return isTransposed() == other.isTransposed() && values == other.values;
 }
 
 bool Vector::operator!=(const Vector &other) const {
@@ -61,12 +60,15 @@ bool Vector::operator!=(const Vector &other) const {
 
 double Vector::innerProduct(const Vector &v1, const Vector &v2) {
     assert(v1.getDimension() == v2.getDimension());
-    double scalar = 0.0;
-    for (index i = 0; i < v1.getDimension(); ++i) {
-        scalar += v1[i] * v2[i];
-    }
-
-    return scalar;
+    double inner_prod = 0.;
+#ifndef NETWORKIT_OMP2
+#pragma omp parallel for reduction(+ : inner_prod)
+    for (omp_index i = 0; i < static_cast<omp_index>(v1.getDimension()); ++i)
+        inner_prod += v1[i] * v2[i];
+#else
+    inner_prod = std::inner_product(v1.values.begin(), v1.values.end(), v2.values.begin(), 0.0);
+#endif
+    return inner_prod;
 }
 
 double Vector::operator*(const Vector &other) const {

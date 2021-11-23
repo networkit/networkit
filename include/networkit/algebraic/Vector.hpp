@@ -10,6 +10,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <numeric>
 #include <stdexcept>
 #include <vector>
 
