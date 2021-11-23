@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * Volume.hpp
  *
@@ -28,37 +27,37 @@ private:
 
 public:
     /**
-    * Number of nodes within a given radius; average for many nodes
-    *
-    * Please find further information about the volume and its meaning in the
-    * following publication:
-    *
-    * Franz-Benjamin Mocnik: "The Polynomial Volume Law of Complex Networks in
-    * the Context of Local and Global Optimization", Scientific Reports 8(11274)
-    * 2018. doi: 10.1038/s41598-018-29131-0
-    *
-    * @param G  the graph
-    * @param r  the radius
-    * @param samples	the number of samples
-    *
-    **/
+     * Number of nodes within a given radius; average for many nodes
+     *
+     * Please find further information about the volume and its meaning in the
+     * following publication:
+     *
+     * Franz-Benjamin Mocnik: "The Polynomial Volume Law of Complex Networks in
+     * the Context of Local and Global Optimization", Scientific Reports 8(11274)
+     * 2018. doi: 10.1038/s41598-018-29131-0
+     *
+     * @param G  the graph
+     * @param r  the radius
+     * @param samples	the number of samples
+     *
+     **/
     static double volume(const Graph &G, double r, count samples);
 
     /**
-    * Number of nodes within different given radii; average for many nodes
-    *
-    * Please find further information about the volume and its meaning in the
-    * following publication:
-    *
-    * Franz-Benjamin Mocnik: "The Polynomial Volume Law of Complex Networks in
-    * the Context of Local and Global Optimization", Scientific Reports 8(11274)
-    * 2018. doi: 10.1038/s41598-018-29131-0
-    *
-    * @param G  the graph
-    * @param rs  the radii
-    * @param samples	the number of samples
-    *
-    **/
+     * Number of nodes within different given radii; average for many nodes
+     *
+     * Please find further information about the volume and its meaning in the
+     * following publication:
+     *
+     * Franz-Benjamin Mocnik: "The Polynomial Volume Law of Complex Networks in
+     * the Context of Local and Global Optimization", Scientific Reports 8(11274)
+     * 2018. doi: 10.1038/s41598-018-29131-0
+     *
+     * @param G  the graph
+     * @param rs  the radii
+     * @param samples	the number of samples
+     *
+     **/
     static std::vector<double> volume(const Graph &G, std::vector<double> rs, count samples);
 };
 

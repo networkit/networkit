@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * AdamicAdarDistance.hpp
  *
@@ -21,33 +20,31 @@ namespace NetworKit {
 class AdamicAdarDistance final : public NodeDistance {
 
 private:
-    std::vector<double> aaDistance; //result vector
+    std::vector<double> aaDistance; // result vector
 
 public:
-
     /**
      * @param G The graph.
      */
-    AdamicAdarDistance(const Graph& G);
+    AdamicAdarDistance(const Graph &G);
 
     /**
      * Computes the Adamic Adar distances of all connected pairs of nodes.
      * REQ: Needs to be called before distance() and getEdgeScores() deliver meaningful results!
      */
-     void preprocess() override;
+    void preprocess() override;
 
     /**
      * Returns the Adamic Adar distance between node @a u and node @a v.
      * @return Adamic Adar distance between the two nodes.
      */
-     double distance(node u, node v) override;
+    double distance(node u, node v) override;
 
     /**
      * Returns the Adamic Adar distances between all connected nodes.
      * @return Vector containing the Adamic Adar distances between all connected pairs of nodes.
      */
-     std::vector<double> getEdgeScores() override;
-
+    std::vector<double> getEdgeScores() override;
 };
 
 } /* namespace NetworKit */

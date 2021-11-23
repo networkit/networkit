@@ -1,10 +1,9 @@
-// no-networkit-format
 /*
-* NeighborhoodFunction.hpp
-*
-*  Created on: 30.03.2016
-*      Author: Maximilian Vogel
-*/
+ * NeighborhoodFunction.hpp
+ *
+ *  Created on: 30.03.2016
+ *      Author: Maximilian Vogel
+ */
 
 #ifndef NETWORKIT_DISTANCE_NEIGHBORHOOD_FUNCTION_HPP_
 #define NETWORKIT_DISTANCE_NEIGHBORHOOD_FUNCTION_HPP_
@@ -21,14 +20,14 @@ class NeighborhoodFunction final : public Algorithm {
 
 public:
     /**
-    * Computes the neighborhood function exactly.
-    * The neighborhood function N of a graph G for a given distance t is defined
-    * as the number of node pairs (u,v) that can be reached within distance t.
-    *
-    * @param G the given graph
-    * @return the exact effective diameter of the graph
-    */
-    NeighborhoodFunction(const Graph& G);
+     * Computes the neighborhood function exactly.
+     * The neighborhood function N of a graph G for a given distance t is defined
+     * as the number of node pairs (u,v) that can be reached within distance t.
+     *
+     * @param G the given graph
+     * @return the exact effective diameter of the graph
+     */
+    NeighborhoodFunction(const Graph &G);
 
     void run() override;
 
@@ -39,7 +38,7 @@ public:
     std::vector<count> getNeighborhoodFunction() const;
 
 private:
-    const Graph* G;
+    const Graph *G;
     std::vector<count> result;
 };
 

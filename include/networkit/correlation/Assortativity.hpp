@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * Assortativity.hpp
  *
@@ -26,7 +25,6 @@ namespace NetworKit {
 class Assortativity final : public Algorithm {
 
 public:
-
     /**
      * Initialize Assortativity with a graph @a G and an array of numerical
      * node values.
@@ -34,43 +32,41 @@ public:
      * @param G The graph.
      * @param attribute		numerical node value array
      */
-    Assortativity(const Graph& G, const std::vector<double>& attribute);
-
-
-    /**
-    * Initialize Assortativity with a graph @a G and a partition of the node set
-    *
-    * @param G The graph.
-    * @param partition		partition of the node set
-    */
-    Assortativity(const Graph& G, const Partition& partition);
+    Assortativity(const Graph &G, const std::vector<double> &attribute);
 
     /**
-    * Runs the algorithm. The algorithm is not parallel.
-    */
+     * Initialize Assortativity with a graph @a G and a partition of the node set
+     *
+     * @param G The graph.
+     * @param partition		partition of the node set
+     */
+    Assortativity(const Graph &G, const Partition &partition);
+
+    /**
+     * Runs the algorithm. The algorithm is not parallel.
+     */
     void run() override;
 
-
     /**
-    * Return the assortativity coefficient.
-    */
+     * Return the assortativity coefficient.
+     */
     double getCoefficient() const;
 
     /**
-     * Returns a string with the algorithm's name and its parameters, if there are any. Subclasses should override it.
+     * Returns a string with the algorithm's name and its parameters, if there are any. Subclasses
+     * should override it.
      * @return The string representation of the algorithm.
      */
     std::string TLX_DEPRECATED(toString() const override);
 
     bool TLX_DEPRECATED(isParallel() const override);
 
-
 private:
-    const Graph* G;
+    const Graph *G;
     const std::vector<double> emptyVector;
     const Partition emptyPartition;
-    const std::vector<double>* attribute;
-    const Partition* partition;
+    const std::vector<double> *attribute;
+    const Partition *partition;
     bool nominal; // whether we calculate assortativity for a nominal or ordinal attribute
     double coefficient;
 };

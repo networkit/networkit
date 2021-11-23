@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * ReverseBFS.hpp
  *
@@ -22,25 +21,25 @@ namespace NetworKit {
 class ReverseBFS final : public SSSP {
 
 public:
-  /**
-   * Constructs the ReverseBFS class for @a G and source node @a source.
-   *
-   * @param G The graph.
-   * @param source The source node of the breadth-first search.
-   * @param storePaths store paths and number of paths?
-   * @param storeStack maintain a stack of nodes in decreasing order of
-   * distance
-   */
-  ReverseBFS(const Graph &G, node source, bool storePaths = true,
-             bool storeNodesSortedByDistance = false, node target = none);
+    /**
+     * Constructs the ReverseBFS class for @a G and source node @a source.
+     *
+     * @param G The graph.
+     * @param source The source node of the breadth-first search.
+     * @param storePaths store paths and number of paths?
+     * @param storeStack maintain a stack of nodes in decreasing order of
+     * distance
+     */
+    ReverseBFS(const Graph &G, node source, bool storePaths = true,
+               bool storeNodesSortedByDistance = false, node target = none);
 
-  /**
-   * Reverse Breadth-first search from @a source.
-   * @return Vector of unweighted distances from node @a source, i.e. the
-   * length (number of edges) of the shortest path from @a source to any other
-   * node.
-   */
-  void run() override;
+    /**
+     * Reverse Breadth-first search from @a source.
+     * @return Vector of unweighted distances from node @a source, i.e. the
+     * length (number of edges) of the shortest path from @a source to any other
+     * node.
+     */
+    void run() override;
 };
 
 } /* namespace NetworKit */

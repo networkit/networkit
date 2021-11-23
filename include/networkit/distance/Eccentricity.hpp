@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * Eccentricity.hpp
  *
@@ -22,11 +21,10 @@ namespace NetworKit {
 class Eccentricity {
 
 public:
-
     /**
      * @return The farthest node v, and the length of the shortest path to v.
      */
-    static std::pair<node, count> getValue(const Graph& G, node u);
+    static std::pair<node, count> getValue(const Graph &G, node u);
 };
 
 } /* namespace NetworKit */

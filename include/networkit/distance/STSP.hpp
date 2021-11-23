@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * STSP.hpp
  *
@@ -63,7 +62,7 @@ public:
      *
      * @return The list of predecessors from @a target to @a source.
      */
-    const std::vector<node>& getPredecessors() const {
+    const std::vector<node> &getPredecessors() const {
         checkStorePredecessors();
         assureFinished();
         return pred;

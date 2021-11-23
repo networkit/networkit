@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * DynSSSP.h
+ * DynSSSP.hpp
  *
  *  Created on: 17.07.2014
  *      Author: cls, ebergamini
@@ -11,10 +10,10 @@
 
 #include <set>
 
-#include <networkit/graph/Graph.hpp>
-#include <networkit/dynamics/GraphEvent.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
 #include <networkit/distance/SSSP.hpp>
+#include <networkit/dynamics/GraphEvent.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -22,9 +21,9 @@ namespace NetworKit {
  * @ingroup distance
  * Interface for dynamic single-source shortest path algorithms.
  */
-class DynSSSP: public SSSP, public DynAlgorithm {
+class DynSSSP : public SSSP, public DynAlgorithm {
 
-friend class DynApproxBetweenness;
+    friend class DynApproxBetweenness;
 
 public:
     /**
@@ -35,24 +34,24 @@ public:
      * @param	source	    source vertex.
      * @param   storePredecessors   keep track of the lists of predecessors?
      */
-    DynSSSP(const Graph& G, node source, bool storePredecessors = true, node target = none);
+    DynSSSP(const Graph &G, node source, bool storePredecessors = true, node target = none);
 
     ~DynSSSP() override = default;
 
     /**
-    * Returns true or false depending on whether the node previoulsy specified
-    * with setTargetNode has been modified by the udate or not.
-    *
-    * @param batch The batch of edge insertions.
-    */
+     * Returns true or false depending on whether the node previoulsy specified
+     * with setTargetNode has been modified by the udate or not.
+     *
+     * @param batch The batch of edge insertions.
+     */
     bool modified();
     /**
-    * Set a target node to be `observed` during the update. If a node t is set as
-    * target before the update, the function modified() will return true or false
-    * depending on whether node t has been modified by the update.
-    *
-    * @param t Node to be `observed`.
-    */
+     * Set a target node to be `observed` during the update. If a node t is set as
+     * target before the update, the function modified() will return true or false
+     * depending on whether node t has been modified by the update.
+     *
+     * @param t Node to be `observed`.
+     */
     void setTargetNode(node t = 0);
 
     /**
@@ -60,7 +59,7 @@ public:
      * @param t Target node.
      * @return The predecessors of @a t on all shortest paths from source to @a t.
      */
-    const std::vector<node>& getPredecessors(node t) const;
+    const std::vector<node> &getPredecessors(node t) const;
 
 protected:
     bool storePreds = true;
@@ -76,8 +75,8 @@ inline void DynSSSP::setTargetNode(const node t) {
     target = t;
 }
 
-inline const std::vector<node>& DynSSSP::getPredecessors(node t) const {
-    if (! storePreds) {
+inline const std::vector<node> &DynSSSP::getPredecessors(node t) const {
+    if (!storePreds) {
         throw std::runtime_error("predecessors have not been stored");
     }
     return previous[t];
