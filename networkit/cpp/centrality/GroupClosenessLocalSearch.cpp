@@ -989,7 +989,7 @@ bool GroupClosenessLocalSearchImpl<WeightType>::findAndSwap() {
 
         const int thread = threadToSelect.load(std::memory_order_relaxed);
 
-        if (thread != -1) { // There a convenient swap
+        if (thread != -1) { // There is a convenient swap
             node v;
             WeightType farnessDecrease;
             std::tie(v, farnessDecrease) = decreasePerThread[thread];
