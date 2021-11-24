@@ -466,16 +466,14 @@ void GroupClosenessLocalSearchImpl<count>::computeDAG() {
         const node x = q.front();
         q.pop();
 
-        bool isLeaf = true;
         G->forNeighborsOf(x, [&](node y) {
             if (!visited[y]) {
                 visited[y] = true;
-                isLeaf = false;
                 q.push(y);
             }
         });
 
-        if (distance[x] > 0 && (!isLeaf || distance[x] == 1))
+        if (distance[x] > 0)
             dagStack[stackSize++] = x;
 
     } while (!q.empty());
