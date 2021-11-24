@@ -8,10 +8,10 @@ env:
 
 jobs:
   cpython-linux-x86_64:
-    runs-on: ${{ matrix.os }}
+    name: 'Linux CPython (${{ matrix.cibw_archs }}, ${{ matrix.manylinux_image }})'
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        os: [ubuntu-20.04]
         cibw_archs: ["x86_64"]
         manylinux_image: ["manylinux2010"]
     steps:
@@ -21,25 +21,15 @@ jobs:
       - uses: actions/setup-python@v2
         name: Install Python
         with:
-          python-version: '3.9'
+          python-version: '3.10'
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.1.1
         env:
           CIBW_BEFORE_BUILD: pip install cython
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-*"
+          CIBW_BUILD: "cp38-* cp39-* cp10-*"
           CIBW_SKIP: pp*
-      - uses: actions/upload-artifact@v2
-        with:
-          name: networkit-cp36-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
-          path: ./wheelhouse/*cp36*.whl
-          retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v2
-        with:
-          name: networkit-cp37-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
-          path: ./wheelhouse/*cp37*.whl
-          retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v2
         with:
           name: networkit-cp38-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
@@ -50,8 +40,14 @@ jobs:
           name: networkit-cp39-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: networkit-cp310-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
+          path: ./wheelhouse/*cp310*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-linux-aarch64:
+    name: 'Linux CPython (${{ matrix.cibw_archs }}, ${{ matrix.manylinux_image }})'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -76,20 +72,25 @@ jobs:
           CIBW_BEFORE_BUILD: pip install cython
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: "cp39-*"
+          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp39-* cp310-*' || 'cp310-*' }}
           CIBW_SKIP: pp*
-      
       - uses: actions/upload-artifact@v2
+        if: github.ref == 'refs/heads/master'
         with:
           name: networkit-cp39-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: networkit-cp310-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
+          path: ./wheelhouse/*cp310*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-macos-x86_64:
-    runs-on: ${{ matrix.os }}
+    name: 'macOS CPython  (${{ matrix.cibw_archs }})'
+    runs-on: macos-latest
     strategy:
       matrix:
-        os: [macos-10.15]
         cibw_archs: ["x86_64"]
     steps:
       - uses: actions/checkout@v2
@@ -98,7 +99,7 @@ jobs:
       - uses: actions/setup-python@v2
         name: Install Python
         with:
-          python-version: '3.9'
+          python-version: '3.10'
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.1.1
         env:
@@ -106,18 +107,8 @@ jobs:
             pip install cython &&
             brew install libomp ninja
           CIBW_ARCHS_MACOS: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-*"
+          CIBW_BUILD: "cp38-* cp39-* cp310-*"
           CIBW_SKIP: pp*
-      - uses: actions/upload-artifact@v2
-        with:
-          name: networkit-cp36-macos-${{ matrix.cibw_archs }}.whl
-          path: ./wheelhouse/*cp36*.whl
-          retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v2
-        with:
-          name: networkit-cp37-macos-${{ matrix.cibw_archs }}.whl
-          path: ./wheelhouse/*cp37*.whl
-          retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v2
         with:
           name: networkit-cp38-macos-${{ matrix.cibw_archs }}.whl
@@ -128,12 +119,17 @@ jobs:
           name: networkit-cp39-macos-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: networkit-cp310-macos-${{ matrix.cibw_archs }}.whl
+          path: ./wheelhouse/*cp310*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-macos-arm64:
-    runs-on: ${{ matrix.os }}
+    name: 'macOS CPython  (${{ matrix.cibw_archs }})'
+    runs-on: macos-latest
     strategy:
       matrix:
-        os: [macos-latest]
         cibw_archs: ["arm64"]
     steps:
       - uses: actions/checkout@v2
@@ -142,7 +138,7 @@ jobs:
       - uses: actions/setup-python@v2
         name: Install Python
         with:
-          python-version: '3.9'
+          python-version: '3.10'
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.1.1
         env:
@@ -152,19 +148,25 @@ jobs:
             pip install --pre -i https://pypi.anaconda.org/scipy-wheels-nightly/simple scipy
           CIBW_ENVIRONMENT: CXX=c++ NETWORKIT_OSX_CROSSBUILD=ON
           CIBW_ARCHS_MACOS: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: "cp39-*"
+          CIBW_BUILD: "cp39-* cp310-*"
           CIBW_SKIP: pp*
       - uses: actions/upload-artifact@v2
         with:
           name: networkit-cp39-macos-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: networkit-cp310-macos-${{ matrix.cibw_archs }}.whl
+          path: ./wheelhouse/*cp310*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-windows:
-    runs-on: ${{ matrix.os }}
+    name: 'Windows CPython (${{ matrix.cibw_archs }})'
+    runs-on: windows-latest
     strategy:
       matrix:
-        os: [windows-latest]
+        cibw_archs: [amd64]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -174,16 +176,26 @@ jobs:
       - uses: actions/setup-python@v2
         name: Install Python
         with:
-          python-version: '3.9'
+          python-version: '3.10'
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.1.2
         env:
           CIBW_BEFORE_BUILD: pip install cython ipython
           CIBW_ARCHS: "AMD64"
-          CIBW_BUILD: "cp39-*"
+          CIBW_BUILD: "cp38-* cp39-* cp310-*"
           CIBW_SKIP: pp*
       - uses: actions/upload-artifact@v2
         with:
-          name: networkit-cp39-win-amd64.whl
+          name: networkit-cp38-win-${{ matrix.cibw_archs }}.whl
+          path: ./wheelhouse/*cp38*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: networkit-cp39-win-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp39*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: networkit-cp310-win-${{ matrix.cibw_archs }}.whl
+          path: ./wheelhouse/*cp310*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
