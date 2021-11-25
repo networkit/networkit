@@ -401,8 +401,11 @@ node GroupClosenessGrowShrinkImpl<WeightType>::estimateHighestDecrement() {
             }
         });
 
-        if (distance[x] && (G->isWeighted() || (!leaf || distance[x] == WeightType{1})))
-            stack[stackSize++] = x;
+        if (distance[x] == 0)
+            continue; // Ignore vertices in the group
+
+        if (G->isWeighted() || extended || (!leaf || distance[x] == WeightType{1}))
+            stack[stackSize++] = x; // Avoid to consider DAG leaves if running non-extended GS
 
     } while (!(G->isWeighted() ? heap.empty() : q.empty()));
 
