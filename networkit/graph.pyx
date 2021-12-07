@@ -5,6 +5,8 @@ from cython.operator import dereference, preincrement
 from .base import Algorithm
 from .helpers import stdstring, pystring
 from .traversal import Traversal
+from . import graphio
+import os
 
 cdef class Graph:
 
@@ -24,13 +26,15 @@ cdef class Graph:
 			If set to True, the graph can have edge weights other than 1.0.
 		directed : bool, optional
 			If set to True, the graph will be directed.
+		edgesIndexed : bool, optional
+			If set to True, the graph's edges will be indexed.
 	"""
 
-	def __cinit__(self, n=0, bool_t weighted=False, bool_t directed=False):
+	def __cinit__(self, n=0, bool_t weighted=False, bool_t directed=False, bool_t edgesIndexed=False):
 		if isinstance(n, Graph):
-			self._this = move(_Graph((<Graph>n)._this, weighted, directed))
+			self._this = move(_Graph((<Graph>n)._this, weighted, directed, edgesIndexed))
 		else:
-			self._this = move(_Graph(<count>n, weighted, directed))
+			self._this = move(_Graph(<count>n, weighted, directed, edgesIndexed))
 
 	cdef setThis(self, _Graph& other):
 		swap[_Graph](self._this, other)
@@ -50,6 +54,13 @@ cdef class Graph:
 
 	def __str__(self):
 		return "NetworKit.Graph(n={0}, m={1})".format(self.numberOfNodes(), self.numberOfEdges())
+	
+	def __getstate__(self):
+		return graphio.NetworkitBinaryWriter(graphio.Format.NetworkitBinary, chunks = 32, weightsType = 5).writeToBuffer(self)
+	
+	def __setstate__(self, state):
+		newG = graphio.NetworkitBinaryReader().readFromBuffer(state)
+		self._this = move(_Graph((<Graph>newG)._this, <bool_t>(newG.isWeighted()), <bool_t>(newG.isDirected()), <bool_t>(newG.hasEdgeIds())))
 
 	def indexEdges(self, bool_t force = False):
 		"""

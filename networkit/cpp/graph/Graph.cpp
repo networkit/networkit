@@ -20,12 +20,12 @@ namespace NetworKit {
 
 /** CONSTRUCTORS **/
 
-Graph::Graph(count n, bool weighted, bool directed)
+Graph::Graph(count n, bool weighted, bool directed, bool edgesIndexed)
     : n(n), m(0), storedNumberOfSelfLoops(0), z(n), omega(0), t(0),
 
-      weighted(weighted),  // indicates whether the graph is weighted or not
-      directed(directed),  // indicates whether the graph is directed or not
-      edgesIndexed(false), // edges are not indexed by default
+      weighted(weighted),         // indicates whether the graph is weighted or not
+      directed(directed),         // indicates whether the graph is directed or not
+      edgesIndexed(edgesIndexed), // edges are not indexed by default
 
       exists(n, true),
 
@@ -56,14 +56,14 @@ Graph::Graph(std::initializer_list<WeightedEdge> edges) : Graph(0, true) {
     }
 }
 
-Graph::Graph(const Graph &G, bool weighted, bool directed)
-    : n(G.n), m(G.m), storedNumberOfSelfLoops(G.storedNumberOfSelfLoops), z(G.z), omega(0), t(G.t),
-      weighted(weighted), directed(directed),
-      edgesIndexed(false), // edges are not indexed by default
+Graph::Graph(const Graph &G, bool weighted, bool directed, bool edgesIndexed)
+    : n(G.n), m(G.m), storedNumberOfSelfLoops(G.storedNumberOfSelfLoops), z(G.z),
+      omega(edgesIndexed ? G.omega : 0), t(G.t), weighted(weighted), directed(directed),
+      edgesIndexed(edgesIndexed), // edges are not indexed by default
       exists(G.exists),
 
       // let the following be empty for the start, we fill them later
-      inEdges(0), outEdges(0), inEdgeWeights(0), outEdgeWeights(0) {
+      inEdges(0), outEdges(0), inEdgeWeights(0), outEdgeWeights(0), inEdgeIds(0), outEdgeIds(0) {
 
     if (G.isDirected() == directed) {
         // G.inEdges might be empty (if G is undirected), but
@@ -94,6 +94,10 @@ Graph::Graph(const Graph &G, bool weighted, bool directed)
                         std::vector<edgeweight>(outEdges[u].size(), defaultEdgeWeight);
                 }
             }
+        }
+        if (G.hasEdgeIds() && edgesIndexed) {
+            inEdgeIds = G.inEdgeIds;
+            outEdgeIds = G.outEdgeIds;
         }
     } else if (G.isDirected()) {
         // G is directed, but we want an undirected graph
@@ -127,6 +131,17 @@ Graph::Graph(const Graph &G, bool weighted, bool directed)
                 }
             }
         }
+        if (G.hasEdgeIds() && edgesIndexed) {
+            for (node u = 0; u < z; u++) {
+
+                // copy both out and in edges ids into our new outEdgesIds
+                outEdgeIds[u].reserve(G.outEdgeIds[u].size() + G.inEdgeIds[u].size());
+                outEdgeIds[u].insert(outEdgeIds[u].end(), G.outEdgeIds[u].begin(),
+                                     G.outEdgeIds[u].end());
+                outEdgeIds[u].insert(outEdgeIds[u].end(), G.inEdgeIds[u].begin(),
+                                     G.inEdgeIds[u].end());
+            }
+        }
     } else {
         // G is not directed, but this copy should be
         // generally we can can copy G.out stuff into our in stuff
@@ -151,7 +166,14 @@ Graph::Graph(const Graph &G, bool weighted, bool directed)
                 }
             }
         }
+        if (G.hasEdgeIds() && edgesIndexed) {
+            inEdgeIds = G.outEdgeIds;
+            outEdgeIds = G.outEdgeIds;
+        }
     }
+
+    if (!G.edgesIndexed && edgesIndexed)
+        indexEdges();
 }
 
 void Graph::preallocateUndirected(node u, size_t size) {

@@ -7,7 +7,6 @@
  */
 
 #include <atomic>
-#include <cstring>
 #include <fstream>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -15,15 +14,34 @@
 #include <networkit/io/NetworkitBinaryGraph.hpp>
 #include <networkit/io/MemoryMappedFile.hpp>
 
+
+const char *accessData(const NetworKit::MemoryMappedFile &source) {
+    return source.cbegin();
+}
+
+const char *accessData(const std::vector<uint8_t> &source) {
+    return (char*)source.data();
+}
+
 namespace NetworKit {
 
 Graph NetworkitBinaryReader::read(const std::string& path) {
+    MemoryMappedFile mmfile(path);
+    Graph G = readData(mmfile);
+    return G;
+}
+
+Graph NetworkitBinaryReader::readFromBuffer(const std::vector<uint8_t>& data) {
+    return readData(data);
+}
+
+template<class T>
+Graph NetworkitBinaryReader::readData(const T &source) {
     nkbg::Header header;
     nkbg::WEIGHT_FORMAT weightFormat;
-
-    MemoryMappedFile mmfile(path);
-    auto it = mmfile.cbegin();
-
+    
+    const char* startIt = accessData(source);
+    const char* it = startIt;
     auto readHeader = [&] () {
         memcpy(&header.magic, it, sizeof(uint64_t));
         it += sizeof(uint64_t);
@@ -31,6 +49,19 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
         it += sizeof(uint64_t);
         memcpy(&header.features, it, sizeof(uint64_t));
         it += sizeof(uint64_t);
+        if (!memcmp("nkbg002", header.magic, 8)) {
+            version = 2;
+        }else if (!memcmp("nkbg003", header.magic, 8)) {
+            version = 3;
+        }else{
+            throw std::runtime_error("Reader expected another magic value");
+        }
+        directed = (header.features & nkbg::DIR_MASK);
+        weightFormat = static_cast<nkbg::WEIGHT_FORMAT>((header.features & nkbg::WGHT_MASK) >> nkbg::WGHT_SHIFT);
+        indexed = false;
+        if (version >= 3) {
+            indexed = (header.features & nkbg::INDEX_MASK) >> nkbg::INDEX_SHIFT;
+        }
         memcpy(&header.nodes, it, sizeof(uint64_t));
         it += sizeof(uint64_t);
         memcpy(&header.chunks, it, sizeof(uint64_t));
@@ -45,18 +76,15 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
         it += sizeof(uint64_t);
         memcpy(&header.offsetWeightTranspose, it, sizeof(uint64_t));
         it += sizeof(uint64_t);
-    };
-
-    auto checkHeader = [&] () {
-        if(memcmp("nkbg002", header.magic, 8)) {
-            throw std::runtime_error("Reader expected another magic value");
-        } else {
-            directed = (header.features & nkbg::DIR_MASK);
-            weightFormat = static_cast<nkbg::WEIGHT_FORMAT>((header.features & nkbg::WGHT_MASK) >> nkbg::WGHT_SHIFT);
+        if(version > 2){
+            memcpy(&header.offsetAdjIdLists, it, sizeof(uint64_t));
+            it += sizeof(uint64_t);
+            memcpy(&header.offsetAdjIdTranspose, it, sizeof(uint64_t));
+            it += sizeof(uint64_t);
         }
     };
+
     readHeader();
-    checkHeader();
 
     nodes = header.nodes;
     DEBUG("# nodes here = ", nodes);
@@ -68,9 +96,10 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
         weighted = true;
     }
     Graph G(nodes, weighted, directed);
+    if(indexed) G.indexEdges();
     // Read base data.
     std::vector<uint8_t> nodeFlags;
-    const char *baseIt = mmfile.cbegin() + header.offsetBaseData;
+    const char *baseIt = startIt + header.offsetBaseData;
     for(uint64_t i = 0; i < nodes; i++) {
         uint8_t flag;
         memcpy(&flag, baseIt, sizeof(uint8_t));
@@ -89,12 +118,13 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
         firstVert.push_back(first);
     }
     firstVert.push_back(nodes);
-
     // Read adjacency lists.
-    const char *adjIt = mmfile.cbegin() + header.offsetAdjLists;
-    const char *transpIt = mmfile.cbegin() + header.offsetAdjTranspose;
-    const char *adjWghtIt = mmfile.cbegin() + header.offsetWeightLists;
-    const char *transpWghtIt = mmfile.cbegin() + header.offsetWeightTranspose;
+    const char *adjIt = startIt + header.offsetAdjLists;
+    const char *transpIt = startIt + header.offsetAdjTranspose;
+    const char *adjWghtIt = startIt + header.offsetWeightLists;
+    const char *transpWghtIt = startIt + header.offsetWeightTranspose;
+    const char *adjIdIt = (version > 2) ? startIt + header.offsetAdjIdLists : nullptr;
+    const char *transpIdIt = (version > 2) ? startIt + header.offsetAdjIdTranspose : nullptr;
     uint64_t adjListSize;
     memcpy(&adjListSize, adjIt + (chunks -1) * sizeof(uint64_t), sizeof(uint64_t));
     uint64_t transposeListSize;
@@ -106,17 +136,25 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
     G.setEdgeCount(unsafe, adjListSize);
 
     std::atomic<count> selfLoops{0};
+    edgeid omega = 0;
+
     auto constructGraph = [&] (uint64_t c) {
         node vertex = firstVert[c];
         uint64_t off = 0;
         uint64_t transpOff = 0;
         uint64_t wghtOff = 0;
         uint64_t transWghtOff = 0;
+        uint64_t indexOff = 0;
+        uint64_t transIndexOff = 0;
         if(vertex) {
             memcpy(&off, adjIt + (c-1)* sizeof(uint64_t), sizeof(uint64_t));
             memcpy(&transpOff, transpIt + (c-1)* sizeof(uint64_t), sizeof(uint64_t));
             memcpy(&wghtOff, adjWghtIt + (c-1) * sizeof(uint64_t), sizeof(uint64_t));
             memcpy(&transWghtOff, transpWghtIt + (c-1) * sizeof(uint64_t), sizeof(uint64_t));
+            if(indexed){
+                memcpy(&indexOff, adjIdIt + (c-1) * sizeof(uint64_t), sizeof(uint64_t));
+                memcpy(&transIndexOff, transpIdIt + (c-1) * sizeof(uint64_t), sizeof(uint64_t));
+            }
         }
         off += (chunks - 1) * sizeof(uint64_t);
         transpOff += (chunks - 1) * sizeof(uint64_t);
@@ -124,6 +162,8 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
         transpOff += sizeof(uint64_t);
         wghtOff += (chunks - 1) * sizeof(uint64_t);
         transWghtOff += (chunks - 1) * sizeof(uint64_t);
+        indexOff += (chunks - 1) * sizeof(uint64_t);
+        transIndexOff += (chunks - 1) * sizeof(uint64_t);
         uint64_t n = firstVert[c+1] - firstVert[c];
 
         for (uint64_t i = 0; i < n; i++) {
@@ -139,6 +179,7 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
             }
             //Read adjacency lists.
             for (uint64_t j = 0; j < outNbrs; j++) {
+                edgeid id = 0;
                 uint64_t add;
                 double weight = defaultEdgeWeight;
                 off += nkbg::varIntDecode(reinterpret_cast<const uint8_t*>(adjIt + off), add);
@@ -172,10 +213,14 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
                     case nkbg::WEIGHT_FORMAT::NONE:
                         break;
                 }
+                if(indexed){
+                    indexOff += nkbg::varIntDecode(reinterpret_cast<const uint8_t*>(adjIdIt + indexOff), id);
+                    if(id > omega) omega = id;
+                }
                 if(!directed) {
-                    G.addPartialEdge(unsafe, curr, add, weight);
+                    G.addPartialEdge(unsafe, curr, add, weight, id);
                 } else {
-                    G.addPartialOutEdge(unsafe, curr, add, weight);
+                    G.addPartialOutEdge(unsafe, curr, add, weight, id);
                 }
                 if(curr == add) {
                     selfLoops.fetch_add(1, std::memory_order_relaxed);
@@ -184,6 +229,7 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
             //Read transpose lists.
             for (uint64_t j = 0; j < inNbrs; j++) {
                 uint64_t add;
+                edgeid id = 0;
                 double weight = defaultEdgeWeight;
                 transpOff += nkbg::varIntDecode(reinterpret_cast<const uint8_t*>(transpIt + transpOff), add);
                 switch(weightFormat) {
@@ -216,12 +262,16 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
                     case nkbg::WEIGHT_FORMAT::NONE:
                         break;
                 }
+                if(indexed){
+                    transIndexOff += nkbg::varIntDecode(reinterpret_cast<const uint8_t*>(transpIdIt + transIndexOff), id);
+                    if(id > omega) omega = id;
+                }
                 if(!directed) {
                     if(curr != add) {
-                        G.addPartialEdge(unsafe, curr, add, weight);
+                        G.addPartialEdge(unsafe, curr, add, weight, id);
                     }
                 } else {
-                    G.addPartialInEdge(unsafe, curr, add, weight);
+                    G.addPartialInEdge(unsafe, curr, add, weight, id);
                 }
             }
         }
@@ -233,6 +283,7 @@ Graph NetworkitBinaryReader::read(const std::string& path) {
         constructGraph(c);
     }
     G.setNumberOfSelfLoops(unsafe, selfLoops);
+    if(indexed) G.setUpperEdgeIdBound(unsafe, omega);
     return G;
 }
 } /* namespace */
