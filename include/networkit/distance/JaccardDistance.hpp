@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * JaccardDistance.hpp
  *
@@ -18,28 +17,28 @@ namespace NetworKit {
 /**
  * @ingroup distance
  * Jaccard distance assigns a distance value to pairs of nodes
- * according to the similarity of their neighborhoods. Note that we define the JaccardDistance as 1-JaccardSimilarity.
+ * according to the similarity of their neighborhoods. Note that we define the JaccardDistance as
+ * 1-JaccardSimilarity.
  */
 class JaccardDistance final : public NodeDistance {
 
 public:
-
     /**
      * @param G The graph.
      * @param triangles Edge attribute containing the number of triangles each edge is contained in.
      */
-    JaccardDistance(const Graph& G, const std::vector<count>& triangles);
+    JaccardDistance(const Graph &G, const std::vector<count> &triangles);
 
     /**
      * REQ: Needs to be called before getEdgeScores delivers meaningful results.
      */
-     void preprocess() override;
+    void preprocess() override;
 
     /**
      * Returns the Jaccard distance between node @a u and node @a v.
      * @return Jaccard distance between the two nodes.
      */
-     double distance(node u, node v) override;
+    double distance(node u, node v) override;
 
     /**
      * Returns the Jaccard distances between all connected nodes.
@@ -48,11 +47,10 @@ public:
     std::vector<double> getEdgeScores() override;
 
 private:
-    const std::vector<count>& triangles;
-    std::vector<double> jDistance; //result vector
+    const std::vector<count> &triangles;
+    std::vector<double> jDistance; // result vector
 
     inline double getJaccardDistance(count degU, count degV, count t);
-
 };
 
 } /* namespace NetworKit */

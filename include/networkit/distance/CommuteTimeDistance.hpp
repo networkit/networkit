@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * CommuteTimeDistance.hpp
  *
@@ -30,7 +29,7 @@ public:
      * @param G The graph.
      * @param tol The tolerance used for the approximation
      */
-    CommuteTimeDistance(const Graph& G, double tol = 0.1);
+    CommuteTimeDistance(const Graph &G, double tol = 0.1);
 
     /**
      * Destructor.
@@ -57,7 +56,6 @@ public:
      */
     uint64_t getSetupTime() const;
 
-
     /**
      * Returns the commute time distance between node @a u and node @a v.
      * This method does not need the initial preprocessing (no need to call the run() method).
@@ -68,14 +66,15 @@ public:
 
     /**
      * Returns the commute time distance between node @a u and node @a v.
-     * @return commute time distance between the two nodes. Needs to call run() or runApproximation() first.
+     * @return commute time distance between the two nodes. Needs to call run() or
+     * runApproximation() first.
      */
     double distance(node u, node v);
 
     double runSingleSource(node u);
 
 protected:
-    const Graph* G;
+    const Graph *G;
     double tol;
     Lamg<CSRMatrix> lamg;
     uint64_t setupTime;

@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * AStarGeneral.hpp
  *
@@ -20,7 +19,8 @@ namespace NetworKit {
  * @ingroup distance
  * AStar path-finding algoritm with general Heuristic function.
  */
-template <typename Heuristic> class AStarGeneral final : public STSP {
+template <typename Heuristic>
+class AStarGeneral final : public STSP {
 public:
     /**
      * Creates the AStarGeneral class for the graph @a G, the source node @a

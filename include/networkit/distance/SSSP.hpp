@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * SSSP.hpp
  *
@@ -82,7 +81,7 @@ public:
      * @return The predecessors of @a t on all shortest paths from source to @a
      * t.
      */
-    const std::vector<node>& getPredecessors(node t) const;
+    const std::vector<node> &getPredecessors(node t) const;
 
     /**
      * Returns a shortest path from source to @a t and an empty path if source
@@ -167,14 +166,16 @@ protected:
 
     std::vector<node> nodesSortedByDistance;
 
-    bool storePaths; //!< if true, paths are reconstructable and the number of
-                     //!< paths is stored
+    bool storePaths;                 //!< if true, paths are reconstructable and the number of
+                                     //!< paths is stored
     bool storeNodesSortedByDistance; //!< if true, store a vector of nodes
                                      //!< ordered in increasing distance from
                                      //!< the source
 };
 
-inline edgeweight SSSP::distance(node t) const { return distances[t]; }
+inline edgeweight SSSP::distance(node t) const {
+    return distances[t];
+}
 
 inline bigfloat SSSP::numberOfPaths(node t) const {
     if (!storePaths) {
@@ -196,14 +197,16 @@ inline double SSSP::_numberOfPaths(node t) const {
     return res;
 }
 
-inline const std::vector<node>& SSSP::getPredecessors(node t) const {
+inline const std::vector<node> &SSSP::getPredecessors(node t) const {
     if (!storePaths) {
         throw std::runtime_error("predecessors have not been stored");
     }
     return previous[t];
 }
 
-inline bigfloat SSSP::getNumberOfPaths(node t) const { return npaths[t]; }
+inline bigfloat SSSP::getNumberOfPaths(node t) const {
+    return npaths[t];
+}
 
 } /* namespace NetworKit */
 

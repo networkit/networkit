@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * NodeDistance.hpp
  *
@@ -20,8 +19,7 @@ namespace NetworKit {
 class NodeDistance {
 
 protected:
-
-    const Graph* G;
+    const Graph *G;
 
 public:
     /**
@@ -29,7 +27,7 @@ public:
      *
      * @param G The graph.
      */
-    NodeDistance(const Graph& G) : G(&G) {}
+    NodeDistance(const Graph &G) : G(&G) {}
 
     /** Default destructor */
     virtual ~NodeDistance() = default;

@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * APSP.hpp
  *
@@ -25,7 +24,7 @@ namespace NetworKit {
  */
 class APSP : public Algorithm {
 
-  public:
+public:
     /**
      * Creates the APSP class for @a G.
      *
