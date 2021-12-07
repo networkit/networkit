@@ -43,6 +43,7 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) nogil except +
 	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) nogil except +
 	void sortEdgesByWeight(_Graph G, bool_t) nogil except +
+	vector[node] topologicalSort(_Graph G) nogil except +
 
 cdef class GraphTools:
 
@@ -567,3 +568,17 @@ cdef class GraphTools:
 			by using node ids.
 		"""
 		sortEdgesByWeight(G._this, decreasing)
+
+	@staticmethod
+	def topologicalSort(Graph G):
+		"""
+		Given a directed graph G, the topology sort algorithm creates one valid topology order of nodes.
+		Undirected graphs are not accepted as input, since a topology sort is a linear ordering of vertices 
+		such that for every edge u -> v, node u comes before v in the ordering.
+
+		Parameters:
+		----------
+		G : networkit.Graph
+			The directed input graph.
+		"""
+		return topologicalSort(G._this)

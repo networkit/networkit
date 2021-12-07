@@ -5,6 +5,7 @@ networkit_add_module(graph
     KruskalMSF.cpp
     RandomMaximumSpanningForest.cpp
     SpanningForest.cpp
+    TopologicalSort.cpp
     UnionMaximumSpanningForest.cpp
     )
 
