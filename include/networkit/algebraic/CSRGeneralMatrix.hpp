@@ -42,47 +42,6 @@ class CSRGeneralMatrix {
     ValueType zero;
 
     /**
-     * Quicksort algorithm on columnIdx between [@a left, @a right].
-     * @param left
-     * @param right
-     */
-    void quicksort(index left, index right) {
-        if (left >= right)
-            return;
-        index pivotIdx = partition(left, right);
-        if (pivotIdx != 0) {
-            quicksort(left, pivotIdx - 1);
-        }
-        quicksort(pivotIdx + 1, right);
-    }
-
-    /**
-     * Partitions columnIdx between [@a left, @a right] after selecting the pivot
-     * in the middle.
-     * @param left
-     * @param right
-     * @return The pivot.
-     */
-    index partition(index left, index right) {
-        index mid = (left + right) / 2;
-        index pivot = columnIdx[mid];
-        std::swap(columnIdx[mid], columnIdx[right]);
-        std::swap(nonZeros[mid], nonZeros[right]);
-
-        index i = left;
-        for (index j = left; j < right; ++j) {
-            if (columnIdx[j] <= pivot) {
-                std::swap(columnIdx[i], columnIdx[j]);
-                std::swap(nonZeros[i], nonZeros[j]);
-                ++i;
-            }
-        }
-        std::swap(columnIdx[i], columnIdx[right]);
-        std::swap(nonZeros[i], nonZeros[right]);
-        return i;
-    }
-
-    /**
      * Binary search the sorted columnIdx vector between [@a left, @a right]
      * for column @a j.
      * If @a j is not present, the index that is immediately left of the place
@@ -392,29 +351,39 @@ public:
      * Sorts the column indices in each row for faster access.
      */
     void sort() {
-#pragma omp parallel for schedule(guided)
-        for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
-            if (rowIdx[i + 1] - rowIdx[i] > 1) {
-                quicksort(rowIdx[i], rowIdx[i + 1] - 1);
+#pragma omp parallel
+        {
+            std::vector<index> permutation(nCols);
+#pragma omp for schedule(guided)
+            for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
+                const index startOfRow = rowIdx[i], endOfRow = rowIdx[i + 1];
+                const count nonZerosInRow = endOfRow - startOfRow;
+                if (nonZerosInRow <= 1
+                    || std::is_sorted(columnIdx.begin() + startOfRow, columnIdx.begin() + endOfRow))
+                    continue;
+
+                permutation.resize(nonZerosInRow);
+                std::iota(permutation.begin(), permutation.end(), index{0});
+                std::sort(permutation.begin(), permutation.end(), [&](index x, index y) {
+                    return columnIdx[startOfRow + x] < columnIdx[startOfRow + y];
+                });
+
+                Aux::ArrayTools::applyPermutation(columnIdx.begin() + startOfRow,
+                                                  columnIdx.begin() + endOfRow,
+                                                  permutation.begin());
+
+                Aux::ArrayTools::applyPermutation(nonZeros.begin() + startOfRow,
+                                                  nonZeros.begin() + endOfRow, permutation.begin());
             }
         }
-
-#ifndef NETWORKIT_SANITY_CHECKS
-        bool sorted = true;
-        tlx::unused(sorted);
-#pragma omp parallel for
-        for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
-            for (index j = rowIdx[i] + 1; j < rowIdx[i + 1]; ++j) {
-                if (columnIdx[j - 1] > columnIdx[j]) {
-                    sorted = false;
-                    break;
-                }
-            }
-        }
-        assert(sorted);
-#endif // NETWORKIT_SANITY_CHECKS
-
         isSorted = true;
+
+#ifdef NETWORKIT_SANITY_CHECKS
+#pragma omp parallel for
+        for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i)
+            assert(
+                std::is_sorted(columnIdx.begin() + rowIdx[i], columnIdx.begin() + rowIdx[i + 1]));
+#endif // NETWORKIT_SANITY_CHECKS
     }
 
     /**
@@ -457,25 +426,12 @@ public:
         if (sorted()) {
 #pragma omp parallel for
             for (omp_index i = 0; i < static_cast<omp_index>(diag.getDimension()); ++i) {
-                if (rowIdx[i] == rowIdx[i + 1])
-                    continue; // no entry in row i
-                index left = rowIdx[i];
-                index right = rowIdx[i + 1] - 1;
-                index mid = (left + right) / 2;
-                while (left <= right) {
-                    if (columnIdx[mid] == i) {
-                        diag[i] = nonZeros[mid];
-                        break;
-                    }
 
-                    if (columnIdx[mid] < i) {
-                        left = mid + 1;
-                    } else {
-                        right = mid - 1;
-                    }
+                const auto it = std::lower_bound(columnIdx.begin() + rowIdx[i],
+                                                 columnIdx.begin() + rowIdx[i + 1], i);
 
-                    mid = (left + right) / 2;
-                }
+                if (it != columnIdx.end() && *it == static_cast<index>(i))
+                    diag[i] = nonZeros[it - columnIdx.begin()];
             }
         } else {
 #pragma omp parallel for

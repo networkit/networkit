@@ -1167,4 +1167,18 @@ TEST_F(MatricesGTest, testLaplacianMatrixOfGraph) {
     testLaplacianOfGraph<CSRMatrix>();
 }
 
+TEST_F(MatricesGTest, testCSRMatrixSort) {
+    /* 1 0 0 0
+     * 2 3 0 0
+     * 0 4 5 6
+     * 7 8 9 10
+     */
+    std::vector<Triplet> triplets{{0, 0, 1},
+                                  {1, 1, 3}, {1, 0, 2}, // Insert unsorted columns
+                                  {2, 2, 5}, {2, 1, 4}, {2, 3, 6},
+                                  {3, 1, 8}, {3, 3, 10}, {3, 0, 7}, {3, 2, 9}};
+
+    CSRGeneralMatrix<double> csr(4, 4, triplets);
+    csr.sort();
+}
 } /* namespace NetworKit */
