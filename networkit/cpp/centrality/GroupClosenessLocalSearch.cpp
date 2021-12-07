@@ -466,16 +466,14 @@ void GroupClosenessLocalSearchImpl<count>::computeDAG() {
         const node x = q.front();
         q.pop();
 
-        bool isLeaf = true;
         G->forNeighborsOf(x, [&](node y) {
             if (!visited[y]) {
                 visited[y] = true;
-                isLeaf = false;
                 q.push(y);
             }
         });
 
-        if (distance[x] > 0 && (!isLeaf || distance[x] == 1))
+        if (distance[x] > 0)
             dagStack[stackSize++] = x;
 
     } while (!q.empty());
@@ -991,7 +989,7 @@ bool GroupClosenessLocalSearchImpl<WeightType>::findAndSwap() {
 
         const int thread = threadToSelect.load(std::memory_order_relaxed);
 
-        if (thread != -1) { // There a convenient swap
+        if (thread != -1) { // There is a convenient swap
             node v;
             WeightType farnessDecrease;
             std::tie(v, farnessDecrease) = decreasePerThread[thread];
