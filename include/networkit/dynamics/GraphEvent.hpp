@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * GraphEvent.hpp
  *
@@ -19,7 +18,6 @@ namespace NetworKit {
 class GraphEvent final {
 
 public:
-
     enum Type {
         NODE_ADDITION,
         NODE_REMOVAL,
@@ -31,10 +29,10 @@ public:
         TIME_STEP
     };
 
-    Type type;  //!< type of graph event
-    node u;         //!< first node parameter
-    node v;        //!< second node parameter
-    edgeweight w;      //!< edge weight parameter
+    Type type;    //!< type of graph event
+    node u;       //!< first node parameter
+    node v;       //!< second node parameter
+    edgeweight w; //!< edge weight parameter
 
     GraphEvent() = default;
 

@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * KruskalMSF.hpp
  *
@@ -19,9 +18,9 @@ namespace NetworKit {
  * Creates a minimum spanning tree for each connected component.
  * @ingroup graph
  */
-class KruskalMSF final: public SpanningForest {
+class KruskalMSF final : public SpanningForest {
 public:
-    KruskalMSF(const Graph& G);
+    KruskalMSF(const Graph &G);
     ~KruskalMSF() override = default;
 
     /**

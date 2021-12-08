@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * SpanningForest.hpp
  *
@@ -18,11 +17,11 @@ namespace NetworKit {
  */
 class SpanningForest {
 protected:
-    const Graph* G;
+    const Graph *G;
     Graph forest;
 
 public:
-    SpanningForest(const Graph& G) : G(&G) {}
+    SpanningForest(const Graph &G) : G(&G) {}
     virtual ~SpanningForest() = default;
 
     virtual void run();
@@ -31,9 +30,7 @@ public:
      * @return Forest computed by run method.
      * Note: So far no explicit check if run method has been invoked before.
      */
-    Graph getForest() {
-        return forest;
-    }
+    Graph getForest() { return forest; }
 };
 
 } /* namespace NetworKit */

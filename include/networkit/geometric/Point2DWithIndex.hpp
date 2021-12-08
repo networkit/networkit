@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * Point2DWithIndex.h
+ * Point2DWithIndex.hpp
  *
  *  Created on: 24.07.2014
  *      Author: moritzl
@@ -23,7 +22,7 @@ namespace NetworKit {
  * @ingroup viz
  * Points in any dimension of templated type.
  */
-template<class T>
+template <class T>
 class Point2DWithIndex final {
 private:
     T x;
@@ -49,96 +48,95 @@ public:
 
     count getDimensions() { return 2; }
 
-    T distance(const Point2DWithIndex<T>& p) const;
-    T squaredDistance(const Point2DWithIndex<T>& p) const;
+    T distance(const Point2DWithIndex<T> &p) const;
+    T squaredDistance(const Point2DWithIndex<T> &p) const;
 
-    Point2DWithIndex& operator+=(const Point2DWithIndex<T>& p);
-    Point2DWithIndex& operator-=(const Point2DWithIndex<T>& p);
-    Point2DWithIndex& scale(T factor);
+    Point2DWithIndex &operator+=(const Point2DWithIndex<T> &p);
+    Point2DWithIndex &operator-=(const Point2DWithIndex<T> &p);
+    Point2DWithIndex &scale(T factor);
 
-    Point2DWithIndex operator-(const Point2DWithIndex<T>& other);
-    Point2DWithIndex operator+(const Point2DWithIndex<T>& other);
+    Point2DWithIndex operator-(const Point2DWithIndex<T> &other);
+    Point2DWithIndex operator+(const Point2DWithIndex<T> &other);
 
     T length() const;
     T squaredLength() const;
 
-    T& operator[](index i);
+    T &operator[](index i);
     T getX() const;
     T getY() const;
     index getIndex() const;
 };
 
-template<class T>
+template <class T>
 T Point2DWithIndex<T>::length() const {
-    return sqrt(x*x+y*y);
+    return sqrt(x * x + y * y);
 }
 
-template<class T>
+template <class T>
 T Point2DWithIndex<T>::squaredLength() const {
-    return x*x + y*y;
+    return x * x + y * y;
 }
 
-template<class T>
-T Point2DWithIndex<T>::squaredDistance(const Point2DWithIndex<T>& p) const {
+template <class T>
+T Point2DWithIndex<T>::squaredDistance(const Point2DWithIndex<T> &p) const {
     T diffx = p.x - x;
     T diffy = p.y - y;
-    return diffx*diffx + diffy*diffy;
+    return diffx * diffx + diffy * diffy;
 }
 
-template<class T>
-T Point2DWithIndex<T>::distance(const Point2DWithIndex<T>& p) const {
+template <class T>
+T Point2DWithIndex<T>::distance(const Point2DWithIndex<T> &p) const {
     return sqrt(squaredDistance(p));
 }
 
-template<class T>
-Point2DWithIndex<T>& Point2DWithIndex<T>::operator+=(const Point2DWithIndex<T>& p) {
+template <class T>
+Point2DWithIndex<T> &Point2DWithIndex<T>::operator+=(const Point2DWithIndex<T> &p) {
     this->x += p.x;
     this->y += p.y;
     return *this;
 }
 
-template<class T>
-Point2DWithIndex<T>& Point2DWithIndex<T>::operator-=(const Point2DWithIndex<T>& p) {
+template <class T>
+Point2DWithIndex<T> &Point2DWithIndex<T>::operator-=(const Point2DWithIndex<T> &p) {
     this->x -= p.x;
     this->y -= p.y;
     return *this;
 }
 
-template<class T>
-Point2DWithIndex<T> Point2DWithIndex<T>::operator-(const Point2DWithIndex<T>& other) {
+template <class T>
+Point2DWithIndex<T> Point2DWithIndex<T>::operator-(const Point2DWithIndex<T> &other) {
     return Point2DWithIndex(x - other.x, y - other.y);
 }
 
-template<class T>
-Point2DWithIndex<T> Point2DWithIndex<T>::operator+(const Point2DWithIndex<T>& other) {
+template <class T>
+Point2DWithIndex<T> Point2DWithIndex<T>::operator+(const Point2DWithIndex<T> &other) {
     return Point2DWithIndex(x + other.x, y + other.y);
 }
 
-
-template<class T>
-Point2DWithIndex<T>& Point2DWithIndex<T>::scale(T factor) {
+template <class T>
+Point2DWithIndex<T> &Point2DWithIndex<T>::scale(T factor) {
     x *= factor;
     y *= factor;
     return *this;
 }
 
-template<class T>
-inline T& Point2DWithIndex<T>::operator [](index i) {
+template <class T>
+inline T &Point2DWithIndex<T>::operator[](index i) {
     assert(i < 2);
     return i > 0 ? y : x;
 }
 
-template<class T>
+template <class T>
 inline T Point2DWithIndex<T>::getX() const {
     return x;
 }
 
-template<class T>
+template <class T>
 inline T Point2DWithIndex<T>::getY() const {
     return y;
 }
 
-template<class T>
+template <class T>
 inline index Point2DWithIndex<T>::getIndex() const {
     return indice;
 }

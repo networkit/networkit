@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DGSWriter.hpp
  *
@@ -23,7 +22,7 @@ class DGSWriter final {
 public:
     DGSWriter() = default;
 
-    void write(std::vector<GraphEvent>& stream, const std::string& path);
+    void write(std::vector<GraphEvent> &stream, const std::string &path);
 };
 
 } /* namespace NetworKit */

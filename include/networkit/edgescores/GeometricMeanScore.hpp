@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * GeometricMeanScore.hpp
  *
@@ -16,10 +15,10 @@ namespace NetworKit {
 class GeometricMeanScore final : public EdgeScore<double> {
 
 private:
-    const std::vector<double>* attribute;
+    const std::vector<double> *attribute;
 
 public:
-    GeometricMeanScore(const Graph& G, const std::vector<double>& attribute);
+    GeometricMeanScore(const Graph &G, const std::vector<double> &attribute);
     double score(edgeid eid) override;
     double score(node u, node v) override;
     void run() override;

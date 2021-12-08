@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DGSStreamParser.hpp
  *
@@ -29,7 +28,6 @@ public:
     std::vector<GraphEvent> getStream();
 
 private:
-
     std::ifstream dgsFile;
     bool mapped;
     std::map<std::string, node> key2id;
