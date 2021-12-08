@@ -23,6 +23,9 @@ void GraphletsCounter::run() {
         case 3u:
             counts = GraphletsCounterImpl<GraphletsSize::THREE>(G).getCounts();
             break;
+        case 4u:
+            counts = GraphletsCounterImpl<GraphletsSize::FOUR>(G).getCounts();
+            break;
         default:
             throw std::runtime_error(
                 "No algorithm is provided for " + std::to_string(k) +
