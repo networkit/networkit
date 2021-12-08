@@ -119,7 +119,8 @@ std::vector<count> GraphletsCounterImpl<GraphletsSize::THREE>::getCounts() const
         [this, V, &nb_triangle, &nb_2_star, &nb_single_edge](node u, node v) {
             std::vector<short> X(V, 0);
             std::set<node> star_u, star_v, triangles;
-            count nb_neighbours{0};  // number of vertices w adjacent to either u or v
+            // number of vertices w adjacent to either u or v
+            count nb_neighbours{2};  // start at 2 because we need to include u and v
             G->forNeighborsOf(  // l. 5
                 u,
                 [v, &X, &star_u, &nb_neighbours](node w) {
@@ -154,11 +155,13 @@ std::vector<count> GraphletsCounterImpl<GraphletsSize::THREE>::getCounts() const
             nb_single_edge += V - nb_neighbours;
         }
     );
+    nb_triangle /= 3;
+    nb_2_star /= 2;
     nb_empty = binom3(V);
     nb_empty -= nb_triangle + nb_2_star + nb_single_edge;
     return {
-        nb_triangle / 3,
-        nb_2_star / 2,
+        nb_triangle,
+        nb_2_star,
         nb_single_edge,
         nb_empty
     };
