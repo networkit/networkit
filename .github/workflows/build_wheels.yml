@@ -28,21 +28,18 @@ jobs:
           CIBW_BEFORE_BUILD: pip install cython
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: "cp38-* cp39-* cp10-*"
+          CIBW_BUILD: "cp38-* cp39-* cp310-*"
           CIBW_SKIP: pp*
       - uses: actions/upload-artifact@v2
         with:
-          name: networkit-cp38-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp38*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v2
         with:
-          name: networkit-cp39-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v2
         with:
-          name: networkit-cp310-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp310*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
@@ -77,12 +74,10 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: github.ref == 'refs/heads/master'
         with:
-          name: networkit-cp39-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v2
         with:
-          name: networkit-cp310-${{ matrix.manylinux_image}}-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp310*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
@@ -111,55 +106,53 @@ jobs:
           CIBW_SKIP: pp*
       - uses: actions/upload-artifact@v2
         with:
-          name: networkit-cp38-macos-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp38*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v2
         with:
-          name: networkit-cp39-macos-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v2
         with:
-          name: networkit-cp310-macos-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp310*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
-  cpython-macos-arm64:
-    name: 'macOS CPython  (${{ matrix.cibw_archs }})'
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        cibw_archs: ["arm64"]
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      - uses: actions/setup-python@v2
-        name: Install Python
-        with:
-          python-version: '3.10'
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.1.1
-        env:
-          CIBW_BEFORE_BUILD: 
-            pip install cython &&
-            brew install libomp ninja &&
-            pip install --pre -i https://pypi.anaconda.org/scipy-wheels-nightly/simple scipy
-          CIBW_ENVIRONMENT: CXX=c++ NETWORKIT_OSX_CROSSBUILD=ON
-          CIBW_ARCHS_MACOS: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: "cp39-* cp310-*"
-          CIBW_SKIP: pp*
-      - uses: actions/upload-artifact@v2
-        with:
-          name: networkit-cp39-macos-${{ matrix.cibw_archs }}.whl
-          path: ./wheelhouse/*cp39*.whl
-          retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v2
-        with:
-          name: networkit-cp310-macos-${{ matrix.cibw_archs }}.whl
-          path: ./wheelhouse/*cp310*.whl
-          retention-days: ${{ env.ARTIFACT_RETENTION }}
+  # CROSSBUILDING ON MACOS IS CURRENTLY BROKEN BECAUSE OF OPENMP-DEPENDENCIES
+  # cpython-macos-arm64:
+  #   name: 'macOS CPython  (${{ matrix.cibw_archs }})'
+  #   runs-on: macos-latest
+  #   strategy:
+  #     matrix:
+  #       cibw_archs: ["arm64"]
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         submodules: true
+  #     - uses: actions/setup-python@v2
+  #       name: Install Python
+  #       with:
+  #         python-version: '3.10'
+  #     - name: Build wheels
+  #       uses: pypa/cibuildwheel@v2.1.1
+  #       env:
+  #         CIBW_BEFORE_BUILD: 
+  #           pip install cython &&
+  #           brew install libomp ninja &&
+  #           pip install --pre -i https://pypi.anaconda.org/scipy-wheels-nightly/simple scipy
+  #         CIBW_ENVIRONMENT: CXX=c++ NETWORKIT_OSX_CROSSBUILD=ON
+  #         CIBW_ARCHS_MACOS: ${{ matrix.cibw_archs }}
+  #         CIBW_BUILD: "cp39-* cp310-*"
+  #         CIBW_SKIP: pp*
+  #     - uses: actions/upload-artifact@v2
+  #       with:
+  #         name: networkit-cp39-macos-${{ matrix.cibw_archs }}.whl
+  #         path: ./wheelhouse/*cp39*.whl
+  #         retention-days: ${{ env.ARTIFACT_RETENTION }}
+  #     - uses: actions/upload-artifact@v2
+  #       with:
+  #         name: networkit-cp310-macos-${{ matrix.cibw_archs }}.whl
+  #         path: ./wheelhouse/*cp310*.whl
+  #         retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-windows:
     name: 'Windows CPython (${{ matrix.cibw_archs }})'
@@ -186,16 +179,73 @@ jobs:
           CIBW_SKIP: pp*
       - uses: actions/upload-artifact@v2
         with:
-          name: networkit-cp38-win-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp38*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v2
         with:
-          name: networkit-cp39-win-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v2
         with:
-          name: networkit-cp310-win-${{ matrix.cibw_archs }}.whl
           path: ./wheelhouse/*cp310*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
+
+  source-distribution:
+    name: 'Source distribution'
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: '3.9'
+      - name: Create sdist source
+        run: |
+          pip install cython
+          python3 setup.py build_ext
+          python3 setup.py sdist
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ./dist/*networkit*.tar.gz
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+
+  # This job checks whether the current workflow is triggered by a new tag with the following form: INT.INT or INT.INT.INT (for example: 1.0, 1.0.1, ...)
+  # The result is saved in a variable and used as a conditional variable when uploading packages.
+  check-release-tag:
+    name: "Check for new release"
+    runs-on: ubuntu-latest
+    outputs:
+      is-release: ${{ steps.do-check.outputs.is-release }}
+    steps:
+      - name: Check release tag ${{ github.ref }}
+        id: do-check
+        run: |
+          if [[ ${{ github.ref }} =~ ^refs\/tags\/release\/[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+            echo "::set-output name=is-release::true"
+          else
+            echo "::set-output name=is-release::false"
+          fi
+
+  upload-packages:
+    if: needs.check-release-tag.outputs.is-release == 'true' && github.repository == 'networkit/networkit'
+    name: 'PyPi release upload'
+    runs-on: ubuntu-20.04
+    needs: [cpython-macos-x86_64, cpython-linux-aarch64, cpython-linux-x86_64, cpython-windows, source-distribution, check-release-tag]
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          path: ./dist
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: '3.9'
+      - name: Upload to TestPyPI
+        run: |
+          pip install twine 
+          python3 -m twine upload --verbose --skip-existing ./dist/artifact/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TWINE_TOKEN }}
+
