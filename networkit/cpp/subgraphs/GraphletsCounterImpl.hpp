@@ -231,7 +231,7 @@ std::vector<count> GraphletsCounterImpl<GraphletsSize::FOUR>::getCounts() const 
         [&](node u, node v) {
             std::vector<short> X(V, 0);
             std::set<node> star_u, star_v, triangles;  // l. 6
-            count nb_neighbours{0};
+            count nb_neighbours{2};
             G->forNeighborsOf(  // l. 8
                 u,
                 [&](node w) {
@@ -291,6 +291,12 @@ std::vector<count> GraphletsCounterImpl<GraphletsSize::FOUR>::getCounts() const 
             N_II1 += E - G->degree(u) - G->degree(v) + 1;
         }
     );
+    nb_triangle /= 3;
+    nb_2_star /= 2;
+    nb_3_empty = binom3(V);
+    nb_3_empty -= nb_triangle + nb_2_star + nb_3_single_edge;
+    nb_4_clique /= 6;  // each clique is counted 6 times (edge based algorithm)
+    nb_4_cycle /= 4;  // each cycle is counted 4 times
     // l. 35
     nb_4_chordalcycle = N_TT - 6*nb_4_clique;                    // Lemma 1
     nb_4_path = N_SuSv - 4*nb_4_cycle;                           // Lemma 2
@@ -299,23 +305,24 @@ std::vector<count> GraphletsCounterImpl<GraphletsSize::FOUR>::getCounts() const 
     nb_4_single_triangle = (N_TI - nb_4_tailedtriangle) / 3;     // Lemma 5
     nb_4_single_star = N_SuwedgeSvI/2 - nb_4_path;               // Lemma 6
     // l. 37
-    nb_4_single_edge = N_II - 2*nb_4_two_disconnected_edges;     // Lemma 7
     nb_4_two_disconnected_edges = N_II1/2
                                 - 3 * nb_4_clique
                                 - 2 * nb_4_chordalcycle
                                 - nb_4_tailedtriangle
                                 - 2 * nb_4_cycle
                                 - nb_4_path;                     // Eq. 13
+    nb_4_single_edge = N_II - 2*nb_4_two_disconnected_edges;     // Lemma 7
     nb_4_empty = binom4(V)
                - nb_4_clique
-               - nb_4_chordalcycle;
-               - nb_4_tailedtriangle;
+               - nb_4_chordalcycle
+               - nb_4_tailedtriangle
                - nb_4_cycle
                - nb_3_star
                - nb_4_path
                - nb_4_single_triangle
                - nb_4_single_star
-               - nb_4_two_disconnected_edges;                    //  Eq. 14
+               - nb_4_two_disconnected_edges
+               - nb_4_single_edge;                               // Eq. 14
     return {
         nb_triangle,
         nb_2_star,
