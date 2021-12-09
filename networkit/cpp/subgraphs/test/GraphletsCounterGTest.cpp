@@ -1,4 +1,5 @@
 #include <array>
+#include <numeric>
 
 #include <gtest/gtest.h>
 
@@ -39,10 +40,7 @@ static Graph createUndirectedCycle(count V) {
 }
 
 inline static count sum(const std::vector<count>& v) {
-    count ret{0};
-    for(count value : v)
-        ret += value;
-    return ret;
+    return std::accumulate(v.begin(), v.end(), 0);
 }
 
 inline static count binom2(count n) {
@@ -170,7 +168,7 @@ inline static void matchExpected(const std::vector<count>& computed,
                                  const std::vector<count>& expected,
                                  count expected_size, count expected_sum) {
     ASSERT_EQ(expected.size(), expected_size);
-    ASSERT_EQ(sum(expected), expected_sum);
+ASSERT_EQ(sum(expected), expected_sum);
     EXPECT_EQ(computed.size(), expected_size);
     for(index i{0}; i < static_cast<index>(expected_size); ++i)
         EXPECT_EQ(computed.at(i), expected.at(i));

@@ -200,7 +200,7 @@ std::vector<count> GraphletsCounterImpl<GraphletsSize::FOUR>::getCounts() const 
     /* Consul the paper by Ahmed et al. for a graphical representation of these graphs */
     count nb_triangle{0},           // connected 3-graphlets
           nb_2_star{0},
-          nb_3_single_edge{0},        // disconnected 3-graphlets
+          nb_3_single_edge{0},      // disconnected 3-graphlets
           nb_3_empty{0},
           nb_4_clique{0},           // connected 4-graphlets
           nb_4_chordalcycle{0},
