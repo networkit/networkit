@@ -5,6 +5,7 @@
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphTools.hpp>
+#include <networkit/graph/TopologicalSort.hpp>
 
 namespace NetworKit {
 
@@ -502,6 +503,13 @@ void sortEdgesByWeight(Graph &G, bool decreasing) {
                 return e1.v < e2.v;
             return e1.weight < e2.weight;
         });
+}
+
+std::vector<node> topologicalSort(const Graph &G) {
+    TopologicalSort topSort(G);
+    topSort.run();
+
+    return topSort.getResult();
 }
 
 } // namespace GraphTools

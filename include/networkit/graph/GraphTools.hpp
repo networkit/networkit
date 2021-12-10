@@ -421,6 +421,18 @@ Graph restoreGraph(const std::vector<node> &invertedIdMap, const Graph &G);
 void sortEdgesByWeight(Graph &G, bool decreasing = false);
 
 /**
+ * Given a directed graph G, the topology sort algorithm creates one valid topology order of nodes.
+ * Undirected graphs are not accepted as input, since a topology sort is a linear ordering of
+ * vertices such that for every edge u -> v, node u comes before v in the ordering.
+ *
+ * This is a helper function. Instead of calling it via GraphTools, it is also possible to create a
+ * TopologicalSort-object from the base-class.
+ * @param   G           Directed input graph
+ * @return              A vector of node-ids sorted according to their topology.
+ */
+std::vector<node> topologicalSort(const Graph &G);
+
+/**
  * Rename nodes in a graph using a callback which translates each old id to a new one.
  * For each node u in input graph, oldIdToNew(u) < numNodes.
  *

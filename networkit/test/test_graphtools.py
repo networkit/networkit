@@ -496,5 +496,32 @@ class TestGraphTools(unittest.TestCase):
 		# Test weighted
 		doTest(g)
 
+	def testTopologicalSort(self):
+		def generateGraph(directed):
+			G = nk.Graph(5, False, directed)
+			G.addEdge(0, 1)
+			G.addEdge(0, 2)
+			G.addEdge(2, 1)
+			G.addEdge(1, 3)
+			G.addEdge(4, 2)
+			return G
+		
+		for directed in [True, False]:
+			G = generateGraph(directed)
+			if(directed == False):
+				with self.assertRaises(Exception):
+					nk.graphtools.topologicalSort(G)
+			else:
+				res = nk.graphtools.topologicalSort(G)
+				indexNode0 = res.index(0)
+				indexNode1 = res.index(1)
+				indexNode2 = res.index(2)
+				indexNode3 = res.index(3)
+				indexNode4 = res.index(4)
+				self.assertLess(indexNode0, indexNode2)
+				self.assertLess(indexNode4, indexNode2)
+				self.assertLess(indexNode2, indexNode1)
+				self.assertLess(indexNode1, indexNode3)		
+
 if __name__ == "__main__":
 	unittest.main()
