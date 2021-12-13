@@ -20,6 +20,7 @@ Modules
    community
    components
    correlation
+   csbridge
    distance
    dynamic
    engineering
