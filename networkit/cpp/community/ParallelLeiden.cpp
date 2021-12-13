@@ -115,7 +115,7 @@ void ParallelLeiden::flattenPartition() {
 }
 
 void ParallelLeiden::parallelMove(const Graph &graph) {
-    DEBUG("Local Moving : " + std::to_string(graph.numberOfNodes()) + " Nodes ");
+    DEBUG("Local Moving : ", graph.numberOfNodes(), " Nodes ");
     std::vector<count> moved(omp_get_max_threads(), 0);
     std::vector<count> totalNodesPerThread(omp_get_max_threads(), 0);
     std::atomic_int singleton(0);
@@ -334,7 +334,7 @@ void ParallelLeiden::parallelMove(const Graph &graph) {
     if (Aux::Log::isLogLevelEnabled(Aux::Log::LogLevel::debug)) {
         count totalMoved = std::accumulate(moved.begin(), moved.end(), (count)0);
         count totalWorked =
-            accumulate(totalNodesPerThread.begin(), totalNodesPerThread.end(), (count)0);
+            std::accumulate(totalNodesPerThread.begin(), totalNodesPerThread.end(), (count)0);
         tlx::unused(totalMoved); // get around unused variable
         tlx::unused(totalWorked);
         DEBUG("Total worked: ", totalWorked, " Total moved: ", totalMoved,
