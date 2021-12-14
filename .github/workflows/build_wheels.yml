@@ -222,7 +222,7 @@ jobs:
       - name: Check release tag ${{ github.ref }}
         id: do-check
         run: |
-          if [[ ${{ github.ref }} =~ ^refs\/tags\/release\/[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+          if [[ ${{ github.ref }} =~ ^refs\/tags\/[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
             echo "::set-output name=is-release::true"
           else
             echo "::set-output name=is-release::false"
