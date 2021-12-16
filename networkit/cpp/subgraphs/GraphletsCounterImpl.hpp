@@ -296,7 +296,7 @@ std::vector<count> GraphletsCounterImpl<GraphletsSize::FOUR>::getCounts() const 
     nb_3_empty = binom3(V);
     nb_3_empty -= nb_triangle + nb_2_star + nb_3_single_edge;
     nb_4_clique /= 6;  // each clique is counted 6 times (edge based algorithm)
-    nb_4_cycle /= 4;  // each cycle is counted 4 times
+    nb_4_cycle /= 4;   // each cycle is counted 4 times
     // l. 35
     nb_4_chordalcycle = N_TT - 6*nb_4_clique;                    // Lemma 1
     nb_4_path = N_SuSv - 4*nb_4_cycle;                           // Lemma 2
@@ -308,9 +308,9 @@ std::vector<count> GraphletsCounterImpl<GraphletsSize::FOUR>::getCounts() const 
     nb_4_two_disconnected_edges = N_II1/2
                                 - 3 * nb_4_clique
                                 - 2 * nb_4_chordalcycle
-                                - nb_4_tailedtriangle
+                                -     nb_4_tailedtriangle
                                 - 2 * nb_4_cycle
-                                - nb_4_path;                     // Eq. 13
+                                -     nb_4_path;                 // Eq. 13
     nb_4_single_edge = N_II - 2*nb_4_two_disconnected_edges;     // Lemma 7
     nb_4_empty = binom4(V)
                - nb_4_clique

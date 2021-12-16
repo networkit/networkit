@@ -39,8 +39,34 @@ static Graph createUndirectedCycle(count V) {
     return C;
 }
 
+/*
+ * Create a graph G such that G = C_V \boxtimes C_V
+ */
+static Graph createUndirectedStrongProductOfCycles(count V) {
+    Graph G(
+        V*V,
+        false,
+        false
+    );
+    for(node u{0}; u < V; ++u) {
+        node v{(u+1)%V};
+        for(node w{0}; w < V; ++w) {
+            node x{(w+1)%V};
+            node uw{u*V + w},
+                 vw{v*V + w},
+                 ux{u*V + x},
+                 vx{v*V + x};
+            G.addEdge(uw, ux);  // vertical
+            G.addEdge(uw, vw);  // horizontal
+            G.addEdge(ux, vw);  // main diagonal
+            G.addEdge(uw, vx);  // secondary diagonal
+        }
+    }
+    return G;
+}
+
 inline static count sum(const std::vector<count>& v) {
-    return std::accumulate(v.begin(), v.end(), 0);
+    return std::accumulate(v.begin(), v.end(), static_cast<count>(0));
 }
 
 inline static count binom2(count n) {
@@ -90,11 +116,7 @@ inline static std::vector<count> expected3CountsForCycle(count V) {
     // (iii) exactly V choose 3 - V(V-3) empty graphs (the only remaining ones)
     if(V == 3)
         return {1, 0, 0, 0};
-    else if(V == 4)
-        return {0, 4, 0, 0};
-    else if(V == 5)
-        return {0, 5, 5, 0};
-    else  // V >= 6
+    else
         return {0, V, V*(V-4), binom3(V) - V*(V-3)};
 }
 
@@ -164,11 +186,39 @@ inline static std::vector<count> expected4CountsForCycle(count V) {
     return ret;
 }
 
+inline static std::vector<count> expected3CountsForStrongProductOfCycles(count V) {
+    return {
+         4*V*V,
+        16*V*V,
+         4*V*V*(V*V-13),
+        binom3(V*V) - 4*V*V*(V*V-8)
+    };
+}
+
+inline static std::vector<count> expected4CountsForStrongProductOfCycles(count V) {
+    /* Suppose V > 4 */
+    std::vector<count> ret(15, 0);
+    auto size3Graphlets{expected3CountsForStrongProductOfCycles(V)};
+    std::copy(size3Graphlets.begin(), size3Graphlets.end(), ret.begin());
+    ret[4]  =    V*V;
+    ret[5]  =  8*V*V;
+    ret[6]  = 28*V*V;
+    ret[7]  =    V*V;
+    ret[8]  =  8*V*V;
+    ret[9]  = 64*V*V;
+    ret[10] =  4*V*V*(V*V-15);
+    ret[11] =  4*V*V*(4*V*V-69);
+    ret[12] =    V*V*(8*V*V-143);
+    ret[13] =  2*V*V*(V*V*V*V - 35*V*V + 326);
+    ret[14] = binom3(V*V) + binom4(V*V) - sum(ret);
+    return ret;
+}
+
 inline static void matchExpected(const std::vector<count>& computed,
                                  const std::vector<count>& expected,
                                  count expected_size, count expected_sum) {
     ASSERT_EQ(expected.size(), expected_size);
-ASSERT_EQ(sum(expected), expected_sum);
+    ASSERT_EQ(sum(expected), expected_sum);
     EXPECT_EQ(computed.size(), expected_size);
     for(index i{0}; i < static_cast<index>(expected_size); ++i)
         EXPECT_EQ(computed.at(i), expected.at(i));
@@ -191,7 +241,7 @@ TEST_F(GraphletsCounterGTest, testThrowingErrorForWrongK) {
 }
 
 TEST_F(GraphletsCounterGTest, test3GraphletsOnCompleteGraphs) {
-    for(count V{3}; V <= 10; ++V) {
+    for(count V{3}; V <= 20; ++V) {
         Graph K{createUndirectedCompleteGraph(V)};
         GraphletsCounter counter(K, 3);
         counter.run();
@@ -205,7 +255,7 @@ TEST_F(GraphletsCounterGTest, test3GraphletsOnCompleteGraphs) {
 }
 
 TEST_F(GraphletsCounterGTest, test3GraphletsOnCycles) {
-    for(count V{3}; V <= 10; ++V) {
+    for(count V{3}; V <= 20; ++V) {
         Graph C{createUndirectedCycle(V)};
         GraphletsCounter counter(C, 3);
         counter.run();
@@ -219,7 +269,7 @@ TEST_F(GraphletsCounterGTest, test3GraphletsOnCycles) {
 }
 
 TEST_F(GraphletsCounterGTest, test4GraphletsOnCompleteGraphs) {
-    for(count V{4}; V <= 10; ++V) {
+    for(count V{4}; V <= 20; ++V) {
         Graph K{createUndirectedCompleteGraph(V)};
         GraphletsCounter counter(K, 4);
         counter.run();
@@ -233,7 +283,7 @@ TEST_F(GraphletsCounterGTest, test4GraphletsOnCompleteGraphs) {
 }
 
 TEST_F(GraphletsCounterGTest, test4GraphletsOnCycles) {
-    for(count V{4}; V <= 10; ++V) {
+    for(count V{4}; V <= 20; ++V) {
         Graph C{createUndirectedCycle(V)};
         GraphletsCounter counter(C, 4);
         counter.run();
@@ -246,5 +296,32 @@ TEST_F(GraphletsCounterGTest, test4GraphletsOnCycles) {
     }
 }
 
+TEST_F(GraphletsCounterGTest, test3GraphletsOnStrongProductsOfCycles) {
+    for(count V{4}; V <= 20; ++V) {
+        Graph Csquared{createUndirectedStrongProductOfCycles(V)};
+        GraphletsCounter counter(Csquared, 3);
+        counter.run();
+        matchExpected(
+            counter.getGraphletsCounts(),
+            expected3CountsForStrongProductOfCycles(V),
+            nbGraphlets.at(3),
+            binom3(V*V)
+        );
+    }
+}
 
-}  // namespacec NetworKit
+TEST_F(GraphletsCounterGTest, test4GraphletsOnStrongProductsOfCycles) {
+    for(count V{5}; V <= 20; ++V) {
+        Graph Csquared{createUndirectedStrongProductOfCycles(V)};
+        GraphletsCounter counter(Csquared, 4);
+        counter.run();
+        matchExpected(
+            counter.getGraphletsCounts(),
+            expected4CountsForStrongProductOfCycles(V),
+            nbGraphlets.at(3) + nbGraphlets.at(4),
+            binom3(V*V)       + binom4(V*V)
+        );
+    }
+}
+
+}  // namespace NetworKit
