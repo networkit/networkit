@@ -17,20 +17,20 @@ namespace NetworKit {
 
 class GraphletsCounter final : public Algorithm {
 public:
-    GraphletsCounter(const Graph& G, unsigned K);
+    GraphletsCounter(const Graph& G, unsigned K) noexcept;
 
-    ~GraphletsCounter() override = default;
+    ~GraphletsCounter() noexcept override = default;
 
     void run() override;
 
-    inline const std::vector<count>& getGraphletsCounts() const;
+    inline const std::vector<count>& getGraphletsCounts() const noexcept;
 private:
     const Graph* G;  // (style guide: keep pointers, not references)
     unsigned k;
     std::vector<count> counts;
 };
 
-const std::vector<count>& GraphletsCounter::getGraphletsCounts() const {
+const std::vector<count>& GraphletsCounter::getGraphletsCounts() const noexcept {
     return counts;
 }
 

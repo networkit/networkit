@@ -6,7 +6,7 @@ namespace NetworKit {
 
 using namespace NetworKit::SubgraphsDetails;
 
-GraphletsCounter::GraphletsCounter(const Graph& G, unsigned K):
+GraphletsCounter::GraphletsCounter(const Graph& G, unsigned K) noexcept:
         G{&G}, k{K} {
 }
 
