@@ -5,8 +5,8 @@
  *     Author: Bermudes
  */
 
-#ifndef NETWORKIT_GRAPHLETS_COUNTER_HPP_
-#define NETWORKIT_GRAPHLETS_COUNTER_HPP_
+#ifndef NETWORKIT_SUBGRAPHS_GRAPHLETS_COUNTER_HPP_
+#define NETWORKIT_SUBGRAPHS_GRAPHLETS_COUNTER_HPP_
 
 #include <vector>
 
@@ -17,23 +17,24 @@ namespace NetworKit {
 
 class GraphletsCounter final : public Algorithm {
 public:
-    GraphletsCounter(const Graph& G, unsigned K) noexcept;
+    GraphletsCounter(const Graph &G, unsigned K) noexcept;
 
     ~GraphletsCounter() noexcept override = default;
 
     void run() override;
 
-    inline const std::vector<count>& getGraphletsCounts() const noexcept;
+    inline const std::vector<count> &getGraphletsCounts() const noexcept;
+
 private:
-    const Graph* G;  // (style guide: keep pointers, not references)
+    const Graph *G; // (style guide: keep pointers, not references)
     unsigned k;
     std::vector<count> counts;
 };
 
-const std::vector<count>& GraphletsCounter::getGraphletsCounts() const noexcept {
+const std::vector<count> &GraphletsCounter::getGraphletsCounts() const noexcept {
     return counts;
 }
 
-}  // namespace NetworKit
+} // namespace NetworKit
 
-#endif  // NETWORKIT_GRAPHLETS_COUNTER_HPP_
+#endif // NETWORKIT_SUBGRAPHS_GRAPHLETS_COUNTER_HPP_
