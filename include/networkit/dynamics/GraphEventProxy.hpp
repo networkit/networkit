@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * GraphEventProxy.hpp
  *
@@ -16,25 +15,23 @@ namespace NetworKit {
 
 /**
  * @ingroup dynamics
- * This class enables the observer pattern for dynamic graphs: It has the same modifiers as a Graph object.
- * When these modifiers are called, they are also called on the underlying graphs. Also, all registered
- * observers (type GraphEventHandler) are notified.
+ * This class enables the observer pattern for dynamic graphs: It has the same modifiers as a Graph
+ * object. When these modifiers are called, they are also called on the underlying graphs. Also, all
+ * registered observers (type GraphEventHandler) are notified.
  */
 class GraphEventProxy final {
 
 private:
-
-    std::vector<GraphEventHandler*> observers;
+    std::vector<GraphEventHandler *> observers;
 
 public:
-
-    Graph* G;
+    Graph *G;
 
     GraphEventProxy(); // nullary constructor needed for python interface
 
-    GraphEventProxy(Graph& G);
+    GraphEventProxy(Graph &G);
 
-    void registerObserver(GraphEventHandler* observer);
+    void registerObserver(GraphEventHandler *observer);
 
     node addNode();
 

@@ -1,4 +1,3 @@
-// no-networkit-format
 #ifndef NETWORKIT_GRAPH_UNION_MAXIMUM_SPANNING_FOREST_HPP_
 #define NETWORKIT_GRAPH_UNION_MAXIMUM_SPANNING_FOREST_HPP_
 
@@ -14,7 +13,8 @@
 namespace NetworKit {
 
 /**
- * Union maximum-weight spanning forest algorithm, computes the union of all maximum-weight spanning forests using Kruskal's algorithm.
+ * Union maximum-weight spanning forest algorithm, computes the union of all maximum-weight spanning
+ * forests using Kruskal's algorithm.
  */
 class UnionMaximumSpanningForest final : public Algorithm {
 public:
@@ -26,12 +26,14 @@ public:
     UnionMaximumSpanningForest(const Graph &G);
 
     /**
-     * Initialize the union maximum-weight spanning forest algorithm using an attribute as edge weight.
+     * Initialize the union maximum-weight spanning forest algorithm using an attribute as edge
+     * weight.
      *
      * This copies the attribute values, the supplied attribute vector is not stored.
      *
      * @param G The input graph.
-     * @param attribute The attribute to use, can be either of type edgeweight (double) or count (uint64), internally all values are handled as double.
+     * @param attribute The attribute to use, can be either of type edgeweight (double) or count
+     * (uint64), internally all values are handled as double.
      */
     template <typename A>
     UnionMaximumSpanningForest(const Graph &G, const std::vector<A> &attribute);
@@ -42,9 +44,11 @@ public:
     void run() override;
 
     /**
-     * Get a boolean attribute that indicates for each edge if it is part of any maximum-weight spanning forest.
+     * Get a boolean attribute that indicates for each edge if it is part of any maximum-weight
+     * spanning forest.
      *
-     * This attribute is only calculated and can thus only be request if the supplied graph has edge ids.
+     * This attribute is only calculated and can thus only be request if the supplied graph has edge
+     * ids.
      *
      * @param move If the attribute shall be moved out of the algorithm instance.
      * @return The vector with the boolean attribute for each edge.
@@ -94,9 +98,12 @@ private:
         edgeid eid;
 
         bool operator>(const weightedEdge &other) const {
-            return (attribute > other.attribute) || (attribute == other.attribute && (u > other.u || (u == other.u && v > other.v)));
+            return (attribute > other.attribute)
+                   || (attribute == other.attribute
+                       && (u > other.u || (u == other.u && v > other.v)));
         };
-        weightedEdge(node u, node v, edgeweight attribute, edgeid eid = 0) : attribute(attribute), u(u), v(v), eid(eid) {};
+        weightedEdge(node u, node v, edgeweight attribute, edgeid eid = 0)
+            : attribute(attribute), u(u), v(v), eid(eid){};
     };
 
     const Graph *G;
@@ -111,16 +118,17 @@ private:
 };
 
 template <typename A>
-UnionMaximumSpanningForest::UnionMaximumSpanningForest(const Graph &G, const std::vector< A > &attribute) : G(&G), hasWeightedEdges(false), hasUMSF(false), hasAttribute(false) {
+UnionMaximumSpanningForest::UnionMaximumSpanningForest(const Graph &G,
+                                                       const std::vector<A> &attribute)
+    : G(&G), hasWeightedEdges(false), hasUMSF(false), hasAttribute(false) {
     if (!G.hasEdgeIds()) {
         throw std::runtime_error("Error: Edges of G must be indexed for using edge attributes");
     }
 
     weightedEdges.reserve(G.numberOfEdges());
 
-    G.forEdges([&](node u, node v, edgeid eid) {
-        weightedEdges.emplace_back(u, v, attribute[eid], eid);
-    });
+    G.forEdges(
+        [&](node u, node v, edgeid eid) { weightedEdges.emplace_back(u, v, attribute[eid], eid); });
 
     INFO(weightedEdges.size(), " weighted edges saved");
 

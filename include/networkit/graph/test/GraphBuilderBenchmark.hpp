@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * GraphBuilderBenchmark.h
+ * GraphBuilderBenchmark.hpp
  *
  *  Created on: 04.12.2014
  *      Author: Marvin Ritter (marvin.ritter@gmail.com)
@@ -9,8 +8,8 @@
 #ifndef NETWORKIT_GRAPH_TEST_GRAPH_BUILDER_BENCHMARK_HPP_
 #define NETWORKIT_GRAPH_TEST_GRAPH_BUILDER_BENCHMARK_HPP_
 
-#include <gtest/gtest.h>
 #include <functional>
+#include <gtest/gtest.h>
 #include <networkit/auxiliary/Timer.hpp>
 
 namespace NetworKit {
@@ -22,7 +21,7 @@ public:
         std::vector<unsigned long long> runningTimes(iterations);
         for (int i = 0; i < iterations; i++) {
             printf("Iteration %d of %d ...", i + 1, iterations);
-            
+
             timer.start();
             int x = func();
             timer.stop();
@@ -37,11 +36,15 @@ public:
         long long unsigned max = runningTimes[0];
         for (auto t : runningTimes) {
             sum += t;
-            if (t < min) min = t;
-            if (t > max) max = t;
+            if (t < min)
+                min = t;
+            if (t > max)
+                max = t;
         }
 
-        printf("Iterations: %d, average runtime: %1.1f ms, fastest run: %llu ms, slowest run: %llu ms\n", iterations, (double) sum / iterations, min, max);
+        printf("Iterations: %d, average runtime: %1.1f ms, fastest run: %llu ms, slowest run: %llu "
+               "ms\n",
+               iterations, (double)sum / iterations, min, max);
     }
 
     template <typename L>

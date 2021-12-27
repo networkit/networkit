@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * EdgeScoreLinearizer.hpp
  *
@@ -16,16 +15,16 @@ namespace NetworKit {
 class EdgeScoreLinearizer final : public EdgeScore<double> {
 
 private:
-    const std::vector<double>* attribute;
+    const std::vector<double> *attribute;
     bool inverse;
 
 public:
-    EdgeScoreLinearizer(const Graph& graph, const std::vector<double>& attribute, bool inverse = false);
+    EdgeScoreLinearizer(const Graph &graph, const std::vector<double> &attribute,
+                        bool inverse = false);
 
     double score(edgeid eid) override;
     double score(node u, node v) override;
     void run() override;
-
 };
 
 } // namespace NetworKit

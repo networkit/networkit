@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * GraphBuilder.hpp
  *
@@ -42,8 +41,8 @@ namespace NetworKit {
  */
 
 class GraphBuilder {
-    count n;          //!< current number of nodes
-    count selfloops;  //!< currently encountered number of self loops
+    count n;         //!< current number of nodes
+    count selfloops; //!< currently encountered number of self loops
 
     bool weighted; //!< true if the graph will be weighted, false otherwise
     bool directed; //!< true if the graph will be directed, false otherwise
@@ -54,9 +53,8 @@ class GraphBuilder {
     std::vector<std::vector<edgeweight>>
         outEdgeWeights; //!< same schema (and same order!) as outEdges
 
-    std::vector<std::vector<node>>
-        inEdges; //!< only used for directed graphs, inEdges[v] contains all nodes
-                 //!< u that have an edge (u, v)
+    std::vector<std::vector<node>> inEdges; //!< only used for directed graphs, inEdges[v] contains
+                                            //!< all nodes u that have an edge (u, v)
     std::vector<std::vector<edgeweight>>
         inEdgeWeights; //!< only used for directed graphs, same schema as inEdges
 
@@ -134,8 +132,8 @@ public:
     void addHalfOutEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
     void addHalfInEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
 
-    void swapNeighborhood(node u, std::vector<node> &neighbours,
-                          std::vector<edgeweight> &weights, bool selfloop);
+    void swapNeighborhood(node u, std::vector<node> &neighbours, std::vector<edgeweight> &weights,
+                          bool selfloop);
 
     /**
      * Set the weight of an edge. If the edge does not exist,
@@ -157,9 +155,7 @@ public:
      * @param[in]  v  endpoint of edge
      * @param[in]  weight  edge weight
      */
-    void increaseWeight(node u, node v, edgeweight ew) {
-        increaseOutWeight(u, v, ew);
-    }
+    void increaseWeight(node u, node v, edgeweight ew) { increaseOutWeight(u, v, ew); }
     void increaseOutWeight(node u, node v, edgeweight ew);
     void increaseInWeight(node u, node v, edgeweight ew);
 
@@ -181,7 +177,8 @@ public:
      *
      * @param handle Takes parameter <code>(node)</code>.
      */
-    template <typename L> void forNodes(L handle) const;
+    template <typename L>
+    void forNodes(L handle) const;
 
     /**
      * Iterate randomly over all nodes of the graph and call @a handle (lambda
@@ -189,7 +186,8 @@ public:
      *
      * @param handle Takes parameter <code>(node)</code>.
      */
-    template <typename L> void parallelForNodes(L handle) const;
+    template <typename L>
+    void parallelForNodes(L handle) const;
 
     /**
      * Iterate over all undirected pairs of nodes and call @a handle (lambda
@@ -197,7 +195,8 @@ public:
      *
      * @param handle Takes parameters <code>(node, node)</code>.
      */
-    template <typename L> void forNodePairs(L handle) const;
+    template <typename L>
+    void forNodePairs(L handle) const;
 
     /**
      * Iterate over all undirected pairs of nodes in parallel and call @a handle
@@ -205,7 +204,8 @@ public:
      *
      * @param handle Takes parameters <code>(node, node)</code>.
      */
-    template <typename L> void parallelForNodePairs(L handle) const;
+    template <typename L>
+    void parallelForNodePairs(L handle) const;
 
 private:
     void toGraphSequential(Graph &G);
@@ -217,20 +217,23 @@ private:
     count numberOfEdges(const Graph &G);
 };
 
-template <typename L> void GraphBuilder::forNodes(L handle) const {
+template <typename L>
+void GraphBuilder::forNodes(L handle) const {
     for (node v = 0; v < n; v++) {
         handle(v);
     }
 }
 
-template <typename L> void GraphBuilder::parallelForNodes(L handle) const {
+template <typename L>
+void GraphBuilder::parallelForNodes(L handle) const {
 #pragma omp parallel for schedule(dynamic, 100)
     for (omp_index v = 0; v < static_cast<omp_index>(n); v++) {
         handle(v);
     }
 }
 
-template <typename L> void GraphBuilder::forNodePairs(L handle) const {
+template <typename L>
+void GraphBuilder::forNodePairs(L handle) const {
     for (node u = 0; u < n; u++) {
         for (node v = u + 1; v < n; v++) {
             handle(u, v);
@@ -238,7 +241,8 @@ template <typename L> void GraphBuilder::forNodePairs(L handle) const {
     }
 }
 
-template <typename L> void GraphBuilder::parallelForNodePairs(L handle) const {
+template <typename L>
+void GraphBuilder::parallelForNodePairs(L handle) const {
 #pragma omp parallel for schedule(dynamic, 100)
     for (omp_index u = 0; u < static_cast<omp_index>(n); u++) {
         for (node v = u + 1; v < n; v++) {
@@ -248,8 +252,7 @@ template <typename L> void GraphBuilder::parallelForNodePairs(L handle) const {
 }
 
 template <typename T>
-void GraphBuilder::copyAndClear(std::vector<T> &source,
-                                std::vector<T> &target) {
+void GraphBuilder::copyAndClear(std::vector<T> &source, std::vector<T> &target) {
     std::copy(source.begin(), source.end(), std::back_inserter(target));
     source.clear();
 }

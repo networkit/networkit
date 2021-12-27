@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * EdgeScoreBlender.hpp
  *
@@ -17,8 +16,8 @@ namespace NetworKit {
 class EdgeScoreBlender final : public EdgeScore<double> {
 
 public:
-
-    EdgeScoreBlender(const Graph &G, const std::vector<double> &attribute0, const std::vector<double> &attribute1, const std::vector<bool> &selection);
+    EdgeScoreBlender(const Graph &G, const std::vector<double> &attribute0,
+                     const std::vector<double> &attribute1, const std::vector<bool> &selection);
 
     double score(edgeid eid) override;
     double score(node u, node v) override;

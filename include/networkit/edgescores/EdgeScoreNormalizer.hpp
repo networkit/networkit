@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * EdgeScoreNormalizer.hpp
  *
@@ -18,7 +17,8 @@ template <typename A>
 class EdgeScoreNormalizer final : public EdgeScore<double> {
 
 public:
-    EdgeScoreNormalizer(const Graph &G, const std::vector<A> &score, bool invert = false, double lower = 0, double upper = 1.0);
+    EdgeScoreNormalizer(const Graph &G, const std::vector<A> &score, bool invert = false,
+                        double lower = 0, double upper = 1.0);
 
     double score(edgeid eid) override;
     double score(node u, node v) override;
@@ -30,6 +30,6 @@ private:
     double lower, upper;
 };
 
-}
+} // namespace NetworKit
 
 #endif // NETWORKIT_EDGESCORES_EDGE_SCORE_NORMALIZER_HPP_
