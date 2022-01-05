@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * AlgebraicDistanceIndex.hpp
  *
@@ -23,8 +22,8 @@ namespace NetworKit {
  */
 class AlgebraicDistanceIndex final : public LinkPredictor {
     /**
-     * Returns the extended algebraic distance between node @a u and node @a v in the norm specified in
-     * the constructor.
+     * Returns the extended algebraic distance between node @a u and node @a v in the norm specified
+     * in the constructor.
      * @param u The first node
      * @param v The second node
      * @return Extended algebraic distance between the two nodes.
@@ -32,26 +31,30 @@ class AlgebraicDistanceIndex final : public LinkPredictor {
     double runImpl(node u, node v) override;
 
     count numSystems; //!< number of vectors/systems used for algebraic iteration
-    count numIters; //!< number of iterations in each system
+    count numIters;   //!< number of iterations in each system
     double omega;
     index norm;
     static constexpr index MAX_NORM{0};
 
-    std::vector<std::vector<double> > loads; //!< loads[i]: vector of loads of length n for one system
+    std::vector<std::vector<double>>
+        loads; //!< loads[i]: vector of loads of length n for one system
 
     void randomInit();
 
 public:
-    explicit AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega = 0.5, index norm = 2);
+    explicit AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega = 0.5,
+                                    index norm = 2);
 
     /**
      * @param G The graph.
      * @param numberSystems Number of vectors/systems used for algebraic iteration.
      * @param numberIterations Number of iterations in each system.
      * @param omega Overrelaxation parameter.
-     * @param norm The norm factor of the extended algebraic distance. Maximum norm is realized by setting @a norm to 0.
+     * @param norm The norm factor of the extended algebraic distance. Maximum norm is realized by
+     * setting @a norm to 0.
      */
-    explicit AlgebraicDistanceIndex(const Graph& G, count numberSystems, count numberIterations, double omega = 0.5, index norm = 2);
+    explicit AlgebraicDistanceIndex(const Graph &G, count numberSystems, count numberIterations,
+                                    double omega = 0.5, index norm = 2);
 
     /**
      * Starting with random initialization, compute for all @a numberSystems
@@ -60,8 +63,7 @@ public:
      *
      * REQ: Needs to be called before algdist delivers meaningful results!
      */
-     void preprocess();
-
+    void preprocess();
 };
 
 } /* namespace NetworKit */

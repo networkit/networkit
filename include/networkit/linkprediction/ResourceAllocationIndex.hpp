@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * ResourceAllocationIndex.h
+ * ResourceAllocationIndex.hpp
  *
  *  Created on: 11.04.2015
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
@@ -22,17 +21,16 @@ namespace NetworKit {
  */
 class ResourceAllocationIndex : public LinkPredictor {
 private:
-  /**
-   * Returns the Resource Allocation Index of the given node-pair (@a u, @a v).
-   * @param u First node
-   * @param v Second node
-   * @return the Resource Allocation Index of the given node-pair (@a u, @a v)
-   */
-  double runImpl(node u, node v) override;
+    /**
+     * Returns the Resource Allocation Index of the given node-pair (@a u, @a v).
+     * @param u First node
+     * @param v Second node
+     * @return the Resource Allocation Index of the given node-pair (@a u, @a v)
+     */
+    double runImpl(node u, node v) override;
 
 public:
-  using LinkPredictor::LinkPredictor;
-
+    using LinkPredictor::LinkPredictor;
 };
 
 } // namespace NetworKit

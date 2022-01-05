@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * NeighborhoodDistanceIndex.hpp
  *
@@ -22,22 +21,21 @@ namespace NetworKit {
  * overlap of their neighborhoods.
  */
 class NeighborhoodDistanceIndex final : public LinkPredictor {
-  /**
-   * Returns the Neighborhood Distance index for the given node-pair (@a u, @a v).
-   * @param u First node
-   * @param v Second node
-   * @return the Neighborhood Distance index for the given node-pair (@a u, @a v)
-   */
-  double runImpl(node u, node v) override {
-    count uNeighborhood = G->degree(u);
-    count vNeighborhood = G->degree(v);
-    count intersection = NeighborhoodUtility::getCommonNeighbors(*G, u, v).size();
-    return ((double)intersection) / (sqrt(uNeighborhood * vNeighborhood));
-  }
+    /**
+     * Returns the Neighborhood Distance index for the given node-pair (@a u, @a v).
+     * @param u First node
+     * @param v Second node
+     * @return the Neighborhood Distance index for the given node-pair (@a u, @a v)
+     */
+    double runImpl(node u, node v) override {
+        count uNeighborhood = G->degree(u);
+        count vNeighborhood = G->degree(v);
+        count intersection = NeighborhoodUtility::getCommonNeighbors(*G, u, v).size();
+        return ((double)intersection) / (sqrt(uNeighborhood * vNeighborhood));
+    }
 
 public:
-  using LinkPredictor::LinkPredictor;
-
+    using LinkPredictor::LinkPredictor;
 };
 
 } /* namespace NetworKit */
