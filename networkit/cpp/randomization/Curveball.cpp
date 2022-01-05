@@ -25,10 +25,6 @@ Graph Curveball::getGraph(bool parallel) {
     return impl->getGraph(parallel);
 }
 
-std::string Curveball::toString() const {
-    return "Curveball";
-}
-
 count Curveball::getNumberOfAffectedEdges() const {
     return impl->getNumberOfAffectedEdges();
 }

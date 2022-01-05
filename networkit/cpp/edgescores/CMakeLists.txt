@@ -12,7 +12,7 @@ networkit_add_module(edgescores
     )
 
 networkit_module_link_modules(edgescores
-    auxiliary base graph)
+    auxiliary graph)
 
 add_subdirectory(test)
 

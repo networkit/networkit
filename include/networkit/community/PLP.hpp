@@ -58,11 +58,6 @@ public:
     void run() override;
 
     /**
-     * @return String representation of algorithm and parameters.
-     */
-    std::string TLX_DEPRECATED(toString() const override);
-
-    /**
      * The algorithm runs until a number of nodes less than
      * the threshold is updated.
      *

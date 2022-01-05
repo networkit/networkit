@@ -33,7 +33,7 @@ TEST_F(MapEquationBenchmark, benchLarge) {
 
     timer.stop();
     Aux::Log::setLogLevel("INFO");
-    INFO(mapequation.toString(), " took ", timer.elapsedMilliseconds(), "ms");
+    INFO("LouvainMapEquation took ", timer.elapsedMilliseconds(), "ms");
 }
 
 TEST_F(MapEquationBenchmark, benchLargeHierarchical) {
@@ -51,7 +51,7 @@ TEST_F(MapEquationBenchmark, benchLargeHierarchical) {
     auto partition = mapequation.getPartition();
 
     timer.stop();
-    INFO(mapequation.toString(), " took ", timer.elapsedMilliseconds(), "ms");
+    INFO("LouvainMapEquation took ", timer.elapsedMilliseconds(), "ms");
 }
 
 } // namespace NetworKit

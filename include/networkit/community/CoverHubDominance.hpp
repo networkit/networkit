@@ -4,8 +4,6 @@
 
 #include <networkit/community/LocalCoverEvaluation.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /**
@@ -34,11 +32,6 @@ public:
      * @return false - smaller is not better, larger values indicate better cluster cohesion.
      */
     bool isSmallBetter() const override { return false; }
-
-    /**
-     * @return true - this algorithm is partially parallel (but \f$\Omega(n)\f$ sequential work remains)
-     */
-    bool TLX_DEPRECATED(isParallel() const override) { return true; }
 };
 
 }

@@ -32,11 +32,6 @@ public:
     void run() override;
 
     /**
-     * @return string representation of algorithm and parameters.
-     */
-    std::string TLX_DEPRECATED(toString() const override);
-
-    /**
      * Get the complete hierarchy with all possible parameter values.
      *
      * Each reported parameter value is the lower bound for the range in which the corresponding clustering is calculated by the cut clustering algorithm.

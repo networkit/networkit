@@ -324,8 +324,4 @@ edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
     return vd;
 }
 
-std::string Diameter::toString() const {
-    return "Diameter()";
-}
-
 } /* namespace NetworKit */

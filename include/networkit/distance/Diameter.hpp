@@ -32,8 +32,6 @@ public:
 
     void run() override;
 
-    std::string TLX_DEPRECATED(toString() const override);
-
     std::pair<count, count> getDiameter() const;
 
 private:

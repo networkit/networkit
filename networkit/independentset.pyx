@@ -12,7 +12,6 @@ cdef extern from "<networkit/independentset/Luby.hpp>":
 	cdef cppclass _Luby "NetworKit::Luby":
 		_Luby() except +
 		vector[bool_t] run(_Graph G) except +
-		string toString()
 
 
 # FIXME: check correctness
@@ -35,16 +34,3 @@ cdef class Luby:
 		"""
 		return self._this.run(G._this)
 		# TODO: return self
-
-	def toString(self):
-		""" Get string representation of the algorithm.
-		
-		Returns:
-		--------
-		string
-			The string representation of the algorithm.
-		"""
-		from warnings import warn
-		warn("toString() is deprecated")
-		return self._this.toString().decode("utf-8")
-

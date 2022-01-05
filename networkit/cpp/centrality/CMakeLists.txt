@@ -42,7 +42,6 @@ networkit_add_module(centrality
 networkit_module_link_modules(centrality
         algebraic
         auxiliary
-        base
         components
         distance
         dyn_distance

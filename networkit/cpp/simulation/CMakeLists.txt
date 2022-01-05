@@ -3,5 +3,5 @@ networkit_add_module(simulation
     )
 
 networkit_module_link_modules(simulation
-    auxiliary base graph)
+    auxiliary graph)
 

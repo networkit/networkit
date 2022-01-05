@@ -26,7 +26,7 @@ networkit_add_module(distance
     )
 
 networkit_module_link_modules(distance
-        algebraic auxiliary base components graph structures)
+        algebraic auxiliary components graph structures)
 
 networkit_add_module(dyn_distance
     DynAPSP.cpp

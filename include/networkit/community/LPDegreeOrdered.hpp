@@ -43,9 +43,6 @@ public:
     * @return Number of iterations.
     */
     count numberOfIterations();
-
-    std::string TLX_DEPRECATED(toString() const override);
-
 };
 
 } /* namespace NetworKit */

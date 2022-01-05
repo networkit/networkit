@@ -543,13 +543,3 @@ NetworKit::Partition && NetworKit::LFRGenerator::getMovePartition() {
 
     return std::move(zeta);
 }
-
-std::string NetworKit::LFRGenerator::toString() const {
-    std::stringstream stream;
-    stream << "LFRGenerator(" << n << ")";
-    return stream.str();
-}
-
-bool NetworKit::LFRGenerator::isParallel() const {
-    return false;
-}

@@ -39,13 +39,6 @@ public:
     PLM(const Graph& G, const PLM& other);
 
     /**
-     * Get string representation.
-     *
-     * @return String representation of this algorithm.
-     */
-    std::string TLX_DEPRECATED(toString() const override);
-
-    /**
      * Detect communities.
      */
     void run() override;

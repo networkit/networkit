@@ -497,10 +497,6 @@ void LouvainMapEquation::calculateInitialClusterCutAndVolume() {
     }
 }
 
-std::string LouvainMapEquation::toString() const {
-    return "LouvainMapEquation";
-}
-
 #ifndef NDEBUG
 
 double LouvainMapEquation::plogpRel(double w) {

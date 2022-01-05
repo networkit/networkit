@@ -281,25 +281,6 @@ void PLM::run() {
     hasRun = true;
 }
 
-std::string PLM::toString() const {
-    std::stringstream stream;
-    stream << "PLM(";
-    stream << parallelism;
-    if (refine) {
-        stream << "," << "refine";
-    }
-    stream << "," << "pc";
-    if (turbo) {
-        stream << "," << "turbo";
-    }
-    if (!recurse) {
-        stream << "," << "non-recursive";
-    }
-    stream << ")";
-
-    return stream.str();
-}
-
 std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partition& zeta) {
     ParallelPartitionCoarsening parCoarsening(G, zeta);
     parCoarsening.run();

@@ -8,8 +8,6 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/UnionFind.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /**
@@ -79,16 +77,6 @@ public:
      * @return The calculated union of all maximum-weight spanning forests.
      */
     Graph getUMSF(bool move = false);
-
-    /**
-     * @return false - this algorithm is not parallelized.
-     */
-    bool TLX_DEPRECATED(isParallel() const override);
-
-    /**
-     * @return The name of the algorithm.
-     */
-    std::string TLX_DEPRECATED(toString() const override);
 
 private:
     struct weightedEdge {

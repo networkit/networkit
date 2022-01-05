@@ -85,11 +85,6 @@ public:
      */
     const std::unordered_map<node, index> &getSourceIndexMap() const noexcept { return sourceIdx; }
 
-    /**
-     * @return True: the algorithm is parallel.
-     */
-    bool TLX_DEPRECATED(isParallel() const override) { return true; }
-
 private:
     const Graph *G;
     std::vector<node> sources;

@@ -43,8 +43,4 @@ void APSP::run() {
     hasRun = true;
 }
 
-std::string APSP::toString() const {
-    return "All-Pairs Shortest Path Algorithm";
-}
-
 } /* namespace NetworKit */

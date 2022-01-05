@@ -12,8 +12,6 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /**
@@ -51,15 +49,6 @@ public:
      * Return the assortativity coefficient.
      */
     double getCoefficient() const;
-
-    /**
-     * Returns a string with the algorithm's name and its parameters, if there are any. Subclasses
-     * should override it.
-     * @return The string representation of the algorithm.
-     */
-    std::string TLX_DEPRECATED(toString() const override);
-
-    bool TLX_DEPRECATED(isParallel() const override);
 
 private:
     const Graph *G;

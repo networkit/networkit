@@ -4,8 +4,6 @@
 
 #include <networkit/community/LocalCoverEvaluation.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /**
@@ -47,10 +45,6 @@ public:
      */
     bool isSmallBetter() const override { return false; }
 
-    /**
-     * @return false - this algorithm has not been parallelized.
-     */
-    bool TLX_DEPRECATED(isParallel() const override) { return false; }
 private:
     const Cover *reference;
 };

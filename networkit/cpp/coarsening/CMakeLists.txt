@@ -6,7 +6,7 @@ networkit_add_module(coarsening
     )
 
 networkit_module_link_modules(coarsening
-    auxiliary base graph matching structures)
+    auxiliary graph matching structures)
 
 add_subdirectory(test)
 
