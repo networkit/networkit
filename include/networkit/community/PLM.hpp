@@ -50,8 +50,26 @@ public:
      */
     void run() override;
 
+    /**
+     * Coarsens a graph based on a given partition and returns both the coarsened graph and a mapping 
+     * for the nodes from fine to coarse.
+     * 
+     * @param graph The input graph
+     * @param zeta Partition of the graph, which represents the desired state of the coarsened graph
+     * @return pair of coarsened graph and node-mappings from fine to coarse graph
+     */
     static std::pair<Graph, std::vector<node>> coarsen(const Graph& G, const Partition& zeta);
 
+    /**
+     * Calculates a partition containing the mapping of node-id from a fine graph 
+     * to a cluster-id from partition based on a coarse graph.
+     * 
+     * @param Gcoarse Coarsened graph 
+     * @param zetaCoarse Partition, which contains information about clusters in the coarsened graph
+     * @param Gfine Fine graph
+     * @param nodeToMetaNode mapping for node-id from fine to coarse graph
+     * @return Partition, which contains the cluster-id in the coarse graph for every node from the fine graph
+     */
     static Partition prolong(const Graph& Gcoarse, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode);
 
     /**

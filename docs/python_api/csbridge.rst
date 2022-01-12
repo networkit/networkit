@@ -1,7 +1,7 @@
 networkit.csbridge
 =======================
 
-.. automodule:: csbridge
+.. automodule:: networkit.csbridge
     :members:
     :undoc-members:
     :show-inheritance:
