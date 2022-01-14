@@ -11,21 +11,41 @@ from scipy.sparse import csgraph, linalg
 import numpy as np
 
 def column(matrix, i):
+	""" 
+	column(matrix, i)
+
+	Get the ith column of a matrix
+
+	Parameters
+	----------
+	matrix : sparse matrix
+		The matrix to compute the eigenvectors of
+	i : int
+		column index
+
+	Returns
+	-------
+	list
+		column i of matrix
+	"""	
 	return [row[i] for row in matrix]
 
 
 def adjacencyMatrix(G, matrixType="sparse"):
-	""" Get the adjacency matrix of the graph `G`.
+	""" 
+	adjacencyMatrix(G, matrixType="sparse")
 
-	Parameters:
-	-----------
+	Get the adjacency matrix of the graph `G`.
+
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
 	matrixType : string
-		represent"sparse" or "dense"
+		either "sparse" or "dense"
 
-	Returns:
-	--------
+	Returns
+	-------
 	:py:class:`scipy.sparse.csr_matrix`
 		The adjacency matrix of the graph.
 	"""
@@ -59,18 +79,21 @@ def adjacencyMatrix(G, matrixType="sparse"):
 	return A
 
 def laplacianMatrix(G):
-	""" Get the laplacian matrix of the graph `G`.
+	""" 
+	laplacianMatrix(G)
 
-	Parameters:
-	-----------
+	Get the laplacian matrix of the graph `G`.
+
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
 
-	Returns:
-	--------
-	lap : ndarray
+	Returns
+	-------
+	ndarray
 		The N x N laplacian matrix of graph.
-	diag : ndarray
+	ndarray
 		The length-N diagonal of the laplacian matrix.
 		diag is returned only if return_diag is True.
 	"""
@@ -79,21 +102,23 @@ def laplacianMatrix(G):
 
 def PageRankMatrix(G, damp=0.85):
 	"""
+	PageRankMatrix(G, damp=0.85)
+
 	Builds the PageRank matrix of the undirected Graph `G`. This matrix corresponds with the
 	PageRank matrix used in the C++ backend.
 
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
-	damp:
+	damp: float, optional
 		Damping factor of the PageRank algorithm (0.85 by default)
 
-	Returns:
-	--------
-	pr : ndarray
-		 The N x N page rank matrix of graph.
+	Returns
+	-------
+	ndarray
+		The N x N page rank matrix of graph.
 	"""
 	A = adjacencyMatrix(G)
 
@@ -117,22 +142,24 @@ def PageRankMatrix(G, damp=0.85):
 
 def symmetricEigenvectors(matrix, cutoff=-1, reverse=False):
 	"""
+	symmetricEigenvectors(matrix, cutoff=-1, reverse=False)
+
 	Computes eigenvectors and -values of symmetric matrices.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	matrix : sparse matrix
-			 The matrix to compute the eigenvectors of
-	cutoff : int
-			 The maximum (or minimum) magnitude of the eigenvectors needed
-	reverse : boolean
-			  If set to true, the smaller eigenvalues will be computed before the larger ones
+		The matrix to compute the eigenvectors of
+	cutoff : int, optional
+		The maximum (or minimum) magnitude of the eigenvectors needed
+	reverse : boolean, optional
+		If set to true, the smaller eigenvalues will be computed before the larger ones
 
-	Returns:
-	--------
-	pr : ( [ float ], [ ndarray ] )
-		 A tuple of ordered lists, the first containing the eigenvalues in descending (ascending) magnitude, the
-		 second one holding the corresponding eigenvectors
+	Returns
+	-------
+	( [ float ], [ ndarray ] )
+		A tuple of ordered lists, the first containing the eigenvalues in descending (ascending) magnitude, the
+		second one holding the corresponding eigenvectors.
 
 	"""
 	if cutoff == -1:
@@ -155,22 +182,24 @@ def symmetricEigenvectors(matrix, cutoff=-1, reverse=False):
 
 def eigenvectors(matrix, cutoff=-1, reverse=False):
 	"""
+	eigenvectors(matrix, cutoff=-1, reverse=False)
+
 	Computes eigenvectors and -values of matrices.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	matrix : sparse matrix
-			 The matrix to compute the eigenvectors of
-	cutoff : int
-			 The maximum (or minimum) number of eigenvectors needed
-	reverse : boolean
-			  If set to true, the smaller eigenvalues will be computed before the larger ones
+		The matrix to compute the eigenvectors of
+	cutoff : int, optional
+		The maximum (or minimum) number of eigenvectors needed
+	reverse : boolean, optional
+		If set to true, the smaller eigenvalues will be computed before the larger ones
 
-	Returns:
-	--------
-	pr : ( [ float ], [ ndarray ] )
-		 A tuple of ordered lists, the first containing the eigenvalues in descending (ascending) magnitude, the
-		 second one holding the corresponding eigenvectors
+	Returns
+	-------
+	( [ float ], [ ndarray ] )
+		A tuple of ordered lists, the first containing the eigenvalues in descending (ascending) magnitude, the
+		second one holding the corresponding eigenvectors
 
 	"""
 	if cutoff == -1:
@@ -192,29 +221,113 @@ def eigenvectors(matrix, cutoff=-1, reverse=False):
 	return (orderedW, orderedV)
 
 def laplacianEigenvectors(G, cutoff=-1, reverse=False):
+	"""
+	laplacianEigenvectors(G, cutoff=-1, reverse=False)
+
+	Computes eigenvectors and -values of the Laplician matrix of G.
+
+	Parameters
+	----------
+	G : networkit.graph
+		The graph.
+	cutoff : int, optional
+		The maximum (or minimum) number of eigenvectors needed
+	reverse : boolean, optional
+		If set to true, the smaller eigenvalues will be computed before the larger ones
+
+	Returns
+	-------
+	( [ float ], [ ndarray ] )
+		 A tuple of ordered lists, the first containing the eigenvalues in descending (ascending) magnitude, the
+		 second one holding the corresponding eigenvectors
+
+	"""
 	if G.isDirected():
 		return eigenvectors(laplacianMatrix(G), cutoff=cutoff, reverse=reverse)
 	else:
 		return symmetricEigenvectors(laplacianMatrix(G), cutoff=cutoff, reverse=reverse)
 
 def adjacencyEigenvectors(G, cutoff=-1, reverse=False):
+	"""
+	adjacencyEigenvectors(G, cutoff=-1, reverse=False)
+
+	Computes eigenvectors and -values of the Adjacency matrix of G.
+
+	Parameters
+	----------
+	G : networkit.graph
+		The graph.
+	cutoff : int, optional
+		The maximum (or minimum) number of eigenvectors needed
+	reverse : boolean, optional
+		If set to true, the smaller eigenvalues will be computed before the larger ones
+
+	Returns
+	-------
+	( [ float ], [ ndarray ] )
+		A tuple of ordered lists, the first containing the eigenvalues in descending (ascending) magnitude, the
+		second one holding the corresponding eigenvectors
+
+	"""
 	if G.isDirected():
 		return eigenvectors(adjacencyMatrix(G), cutoff=cutoff, reverse=reverse)
 	else:
 		return symmetricEigenvectors(adjacencyMatrix(G), cutoff=cutoff, reverse=reverse)
 
-def laplacianEigenvector(G, order, reverse=False):
+def laplacianEigenvector(G, i, reverse=False):
+	"""
+	laplacianEigenvector(G, i, reverse=False)
+
+	Compute a certain eigenvector and -value of the Laplician matrix of G.
+
+	Parameters
+	----------
+	G : networkit.graph
+		The graph.
+	i : int
+		Computes the eigenvector and value of index i 
+	reverse : boolean, optional
+		If set to true, the smaller eigenvalues will be computed before the larger ones
+
+	Returns
+	-------
+	( float, ndarray )
+		 A pair of values, the first containing the eigenvalue, the
+		 second one holding the corresponding eigenvector
+
+	"""
 	if G.isDirected():
-		spectrum = eigenvectors(laplacianMatrix(G), cutoff=order, reverse=reverse)
+		spectrum = eigenvectors(laplacianMatrix(G), cutoff=i, reverse=reverse)
 	else:
-		spectrum = symmetricEigenvectors(laplacianMatrix(G), cutoff=order, reverse=reverse)
+		spectrum = symmetricEigenvectors(laplacianMatrix(G), cutoff=i, reverse=reverse)
 
-	return (spectrum[0][order], spectrum[1][order])
+	return (spectrum[0][i], spectrum[1][i])
 
-def adjacencyEigenvector(G, order, reverse=False):
+def adjacencyEigenvector(G, i, reverse=False):
+	"""
+	adjacencyEigenvector(G, i, reverse=False)
+
+	Compute a certain eigenvector and eigenvalue of the Adjacency matrix of G.
+
+	Parameters
+	----------
+	G : networkit.graph
+		The graph.
+	i : int
+		Computes the eigenvector and value of index i 
+	reverse : boolean, optional
+		If set to true, the smaller eigenvalues will be computed before the larger ones
+
+	Returns
+	-------
+	( float, ndarray )
+		 A pair of values, the first containing the eigenvalue, the
+		 second one holding the corresponding eigenvector
+
+	"""
 	if G.isDirected():
-		spectrum = eigenvectors(adjacencyMatrix(G), cutoff=order, reverse=reverse)
+		spectrum = eigenvectors(adjacencyMatrix(G), cutoff=i, reverse=reverse)
 	else:
-		spectrum = symmetricEigenvectors(adjacencyMatrix(G), cutoff=order, reverse=reverse)
+		spectrum = symmetricEigenvectors(adjacencyMatrix(G), cutoff=i, reverse=reverse)
 
-	return (spectrum[0][order], spectrum[1][order])
+	return (spectrum[0][i], spectrum[1][i])

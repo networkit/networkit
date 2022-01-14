@@ -113,8 +113,8 @@ class KadabraBetweenness : public Algorithm {
      * are within the error guarantee.
      * @param k the number of top-k nodes to be computed. Set it to zero to
      * approximate the betweenness centrality of all the nodes.
-     * @param unionSample, startFactor algorithm parameters that are
-     * automatically chosen.
+     * @param unionSample algorithm parameter that is automatically chosen.
+     * @param startFactor algorithm parameter that is automatically chosen.
      */
     KadabraBetweenness(const Graph &G, double err = 0.01, double delta = 0.1,
                        bool deterministic = false, count k = 0, count unionSample = 0,
