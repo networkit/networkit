@@ -8,7 +8,7 @@ networkit_add_module(dynamics
     )
 
 networkit_module_link_modules(dynamics
-        auxiliary base graph)
+        auxiliary graph)
 
 add_subdirectory(test)
 

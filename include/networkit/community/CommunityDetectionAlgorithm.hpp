@@ -50,11 +50,6 @@ public:
      */
     virtual Partition getPartition();
 
-    /**
-     * @return string representation of algorithm and parameters.
-     */
-    std::string TLX_DEPRECATED(toString() const override);
-
 protected:
     const Graph* G;
     Partition result;

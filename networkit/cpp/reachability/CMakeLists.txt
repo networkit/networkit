@@ -4,7 +4,6 @@ networkit_add_module(reachability
     )
 
 networkit_module_link_modules(reachability
-    base
     components
     graph
     )

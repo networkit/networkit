@@ -5,10 +5,6 @@
 #include <stdexcept>
 #include <string>
 
-#include <tlx/define/deprecated.hpp>
-
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 class Algorithm {
@@ -40,19 +36,6 @@ public:
         if (!hasRun)
             throw std::runtime_error("Error, run must be called first");
     }
-
-    /**
-     * Returns a string with the algorithm's name and its parameters, if there
-     * are any. Subclasses should override it.
-     *
-     * @return The string representation of the algorithm.
-     */
-    virtual std::string TLX_DEPRECATED(toString() const);
-
-    /**
-     * @return True if algorithm can run multi-threaded.
-     */
-    virtual TLX_DEPRECATED(bool isParallel() const);
 };
 
 } // namespace NetworKit

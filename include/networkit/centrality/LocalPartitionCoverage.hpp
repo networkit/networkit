@@ -6,8 +6,6 @@
 #include <networkit/centrality/Centrality.hpp>
 #include <networkit/structures/Partition.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /**
@@ -35,18 +33,6 @@ public:
      * @return 1.0
      */
     double maximum() override;
-
-    /**
-     * This algorithm is parallel.
-     * @return true
-     */
-    bool TLX_DEPRECATED(isParallel() const override);
-
-    /**
-     * The name of this algorithm.
-     * @return "Local partition coverage"
-     */
-    std::string TLX_DEPRECATED(toString() const override);
 
 protected:
     const Partition& P;

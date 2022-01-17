@@ -115,12 +115,6 @@ void PLP::run() {
     hasRun = true;
 }
 
-std::string PLP::toString() const {
-    std::stringstream strm;
-    strm << "PLP";
-    return strm.str();
-}
-
 void PLP::setUpdateThreshold(count th) {
     this->updateThreshold = th;
 }

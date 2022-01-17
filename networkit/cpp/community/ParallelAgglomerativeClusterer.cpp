@@ -83,10 +83,4 @@ void ParallelAgglomerativeClusterer::run() {
     hasRun = true;
 }
 
-std::string ParallelAgglomerativeClusterer::toString() const {
-    std::stringstream strm;
-    strm << "ParallelAgglomerativeClusterer";
-    return strm.str();
-}
-
 } /* namespace NetworKit */

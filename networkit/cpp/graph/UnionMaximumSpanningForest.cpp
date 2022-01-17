@@ -132,12 +132,4 @@ Graph UnionMaximumSpanningForest::getUMSF(bool move) {
     return result;
 }
 
-std::string UnionMaximumSpanningForest::toString() const {
-    return "Union maximum-weight spanning forest";
-}
-
-bool UnionMaximumSpanningForest::isParallel() const {
-    return false;
-}
-
 } // namespace NetworKit

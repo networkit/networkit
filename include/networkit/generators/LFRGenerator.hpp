@@ -7,8 +7,6 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /**
@@ -136,18 +134,6 @@ public:
      * @return The generated partition.
      */
     Partition&& getMovePartition();
-
-    /**
-     * The name and parameters of the generator
-     */
-    std::string TLX_DEPRECATED(toString() const override);
-
-    /**
-     * If the algorithm uses parallelism (no)
-     *
-     * @return false, only minor parts are parallelized
-     */
-    bool TLX_DEPRECATED(isParallel() const override);
 
 private:
     /*

@@ -6,7 +6,7 @@ networkit_add_module(embedding
     )
 
 networkit_module_link_modules(embedding
-        auxiliary base graph)
+        auxiliary graph)
 
 add_subdirectory(test)
 

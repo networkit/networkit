@@ -4,8 +4,6 @@
 
 #include <networkit/community/LocalPartitionEvaluation.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /**
@@ -25,11 +23,6 @@ public:
      * @return true - smaller values are better than larger values.
      */
     bool isSmallBetter() const override { return true; };
-
-    /**
-     * @return false - only minor parts of this implementation are parallel.
-     */
-    bool TLX_DEPRECATED(isParallel() const override) { return false; };
 };
 
 }

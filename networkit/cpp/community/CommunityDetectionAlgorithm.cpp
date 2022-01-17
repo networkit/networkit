@@ -27,8 +27,4 @@ Partition CommunityDetectionAlgorithm::getPartition() {
     return result;
 }
 
-std::string CommunityDetectionAlgorithm::toString() const {
-    return "TODO: string representation of clusterer";
-}
-
 } /* namespace NetworKit */

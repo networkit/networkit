@@ -4,8 +4,6 @@
 
 #include <networkit/community/LocalPartitionEvaluation.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /**
@@ -27,11 +25,6 @@ public:
      * @return The global intra-cluster density.
      */
     double getGlobal() const { assureFinished(); return globalValue; };
-
-    /**
-     * @return false - this algorithm is not parallel.
-     */
-    bool TLX_DEPRECATED(isParallel() const override) { return false; }
 
     /**
      * This value should be high in a good clustering.

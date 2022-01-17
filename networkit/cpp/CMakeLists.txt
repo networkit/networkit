@@ -6,7 +6,6 @@ endif()
 
 add_subdirectory("algebraic")
 add_subdirectory("auxiliary")
-add_subdirectory("base")
 add_subdirectory("centrality")
 add_subdirectory("clique")
 add_subdirectory("coarsening")

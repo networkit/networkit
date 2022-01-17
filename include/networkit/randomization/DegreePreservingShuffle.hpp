@@ -11,8 +11,6 @@
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /**
@@ -66,10 +64,6 @@ public:
      * @warning Invoke run() before calling this function.
      */
     const std::vector<node> &getPermutation() const noexcept { return permutation; }
-
-    std::string TLX_DEPRECATED(toString() const final);
-
-    bool TLX_DEPRECATED(isParallel() const final) { return true; }
 
     static Graph shuffleGraph(const Graph &input) {
         DegreePreservingShuffle algo(input);

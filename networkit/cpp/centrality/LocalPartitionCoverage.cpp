@@ -32,16 +32,3 @@ void NetworKit::LocalPartitionCoverage::run() {
 double NetworKit::LocalPartitionCoverage::maximum() {
     return 1.0;
 }
-
-bool NetworKit::LocalPartitionCoverage::isParallel() const {
-    return true;
-}
-
-std::string NetworKit::LocalPartitionCoverage::toString() const {
-    return "Local partition coverage";
-}
-
-
-
-
-

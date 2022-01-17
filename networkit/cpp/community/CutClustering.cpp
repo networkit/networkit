@@ -237,12 +237,3 @@ void NetworKit::CutClustering::clusterHierarchyRecursion(const NetworKit::Graph 
 
     assert(result.count(upper));
 }
-
-
-std::string NetworKit::CutClustering::toString() const {
-    std::stringstream stream;
-
-    stream << "CutClustering(" << alpha << ")";
-    return stream.str();
-}
-

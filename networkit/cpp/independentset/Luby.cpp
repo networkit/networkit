@@ -93,8 +93,4 @@ std::vector<bool> Luby::run(const Graph& G) {
     return I;
 }
 
-std::string Luby::toString() const {
-    return "Luby";
-}
-
 } /* namespace NetworKit */

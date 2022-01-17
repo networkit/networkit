@@ -10,7 +10,7 @@ networkit_add_module(graph
     )
 
 networkit_module_link_modules(graph
-    auxiliary base structures)
+    auxiliary structures)
 
 add_subdirectory(test)
 

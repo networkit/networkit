@@ -91,8 +91,4 @@ count LPDegreeOrdered::numberOfIterations() {
     return this->nIterations;
 }
 
-std::string LPDegreeOrdered::toString() const {
-    return "LPDegreeOrdered()";
-}
-
 } /* namespace NetworKit */

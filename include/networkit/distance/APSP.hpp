@@ -14,8 +14,6 @@
 #include <networkit/distance/SSSP.hpp>
 #include <networkit/graph/Graph.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /**
@@ -41,11 +39,6 @@ public:
     void run() override;
 
     /**
-     * @return string representation of algorithm and parameters.
-     */
-    std::string TLX_DEPRECATED(toString() const override);
-
-    /**
      * Returns a vector of weighted distances between node pairs.
      *
      * @return The shortest-path distances from each node to any other node in
@@ -65,11 +58,6 @@ public:
         assureFinished();
         return distances[u][v];
     }
-
-    /**
-     * @return True if algorithm can run multi-threaded.
-     */
-    bool TLX_DEPRECATED(isParallel() const override) { return true; }
 
 protected:
     const Graph &G;

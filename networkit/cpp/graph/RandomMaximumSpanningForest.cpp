@@ -117,13 +117,4 @@ Graph RandomMaximumSpanningForest::getMSF(bool move) {
     return result;
 }
 
-std::string RandomMaximumSpanningForest::toString() const {
-    return "Random maximum weight spanning forest";
-}
-
-bool RandomMaximumSpanningForest::isParallel() const {
-    return false;
-}
-
-
 } // namespace NetworKit

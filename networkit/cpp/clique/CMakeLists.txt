@@ -3,7 +3,7 @@ networkit_add_module(clique
     )
 
 networkit_module_link_modules(clique
-    auxiliary base centrality graph)
+    auxiliary centrality graph)
 
 add_subdirectory(test)
 

@@ -18,8 +18,6 @@
 #include <networkit/structures/Partition.hpp>
 #include <networkit/structures/Cover.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /**
@@ -88,12 +86,6 @@ public:
      * @return The nodes sorted by increasing core number.
      */
     const std::vector<node>& getNodeOrder() const;
-
-    /**
-     * The algorithm ParK can run in parallel under certain conditions,
-     * the bucket PQ based one cannot.
-     */
-    bool TLX_DEPRECATED(isParallel() const override) { return canRunInParallel; }
 
 private:
 

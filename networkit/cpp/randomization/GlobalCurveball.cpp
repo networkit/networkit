@@ -64,8 +64,4 @@ Graph GlobalCurveball::getGraph() {
     return impl->getGraph();
 }
 
-std::string GlobalCurveball::toString() const {
-    return "GlobalCurveball";
-}
-
 } // namespace NetworKit

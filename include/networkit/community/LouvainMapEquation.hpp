@@ -52,8 +52,6 @@ public:
 
     void run() override;
 
-    std::string toString() const override;
-
 private:
     struct Move {
         node movedNode = none;

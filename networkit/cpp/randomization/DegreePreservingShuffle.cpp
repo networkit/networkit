@@ -139,10 +139,6 @@ static std::vector<index> computePermutation(std::vector<NodeDegree<DegreeT>> &n
 DegreePreservingShuffle::DegreePreservingShuffle(const Graph &G) : G(&G) {}
 DegreePreservingShuffle::~DegreePreservingShuffle() = default;
 
-std::string DegreePreservingShuffle::toString() const {
-    return "DegreePreservingShuffle";
-}
-
 void DegreePreservingShuffle::run() {
     const auto n = G->numberOfNodes();
 

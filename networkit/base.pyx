@@ -41,29 +41,3 @@ cdef class Algorithm:
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return self._this.hasFinished()
-
-	def toString(self):
-		""" Get string representation.
-
-		Returns:
-		--------
-		string
-			String representation of algorithm and parameters.
-		"""
-		if self._this == NULL:
-			raise RuntimeError("Error, object not properly initialized")
-		return self._this.toString().decode("utf-8")
-
-
-	def isParallel(self):
-		"""
-		Returns:
-		--------
-		bool
-			True if algorithm can run multi-threaded.
-		"""
-		from warning import warn
-		warn("isParallel() is deprecated and will be removed in upcoming releases.")
-		if self._this == NULL:
-			raise RuntimeError("Error, object not properly initialized")
-		return self._this.isParallel()

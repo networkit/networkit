@@ -15,8 +15,6 @@
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 // pImpl
@@ -38,10 +36,6 @@ public:
     void run(const std::vector<std::pair<node, node>> &trades);
 
     Graph getGraph(bool parallel = false);
-
-    std::string TLX_DEPRECATED(toString() const final);
-
-    bool TLX_DEPRECATED(isParallel() const final) { return false; }
 
     count getNumberOfAffectedEdges() const;
 

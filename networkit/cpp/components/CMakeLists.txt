@@ -12,7 +12,7 @@ networkit_add_module(components
     )
 
 networkit_module_link_modules(components
-    auxiliary base coarsening dynamics graph structures)
+    auxiliary coarsening dynamics graph structures)
 
 add_subdirectory(test)
 

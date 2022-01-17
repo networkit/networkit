@@ -14,8 +14,6 @@
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 // pImpl
@@ -59,10 +57,6 @@ public:
      * graph, but with randomized neighbourhoods.
      */
     Graph getGraph();
-
-    std::string TLX_DEPRECATED(toString() const final);
-
-    bool TLX_DEPRECATED(isParallel() const final) { return false; }
 
 private:
     std::unique_ptr<CurveballDetails::GlobalCurveballImpl> impl;

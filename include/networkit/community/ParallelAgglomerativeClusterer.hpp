@@ -31,8 +31,6 @@ public:
      * Detect communities.
      */
     void run() override;
-
-    std::string TLX_DEPRECATED(toString() const override);
 };
 
 } /* namespace NetworKit */
