@@ -16,10 +16,12 @@ cdef class Algorithm:
 
 	def run(self):
 		"""
+		run()
+
 		Executes the algorithm.
 
-		Returns:
-		--------
+		Returns
+		-------
 		Algorithm
 			self
 		"""
@@ -31,10 +33,12 @@ cdef class Algorithm:
 
 	def hasFinished(self):
 		"""
+		hasFinished()
+
 		States whether an algorithm has already run.
 
-		Returns:
-		--------
+		Returns
+		-------
 		bool
 			True if Algorithm has finished.
 		"""

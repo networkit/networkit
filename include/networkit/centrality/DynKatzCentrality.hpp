@@ -44,6 +44,8 @@ public:
      * @param[in] G The graph.
      * @param[in] k The number k for which we want to find the top-k nodes with
      * highest Katz centrality
+     * @param[in] groupOnly Set whether the update will only update top-k nodes.
+     * @param[in] tolerance The tolerance for convergence.
      */
     DynKatzCentrality(const Graph &G, count k, bool groupOnly = false,
                       double tolerance = 1e-9);
