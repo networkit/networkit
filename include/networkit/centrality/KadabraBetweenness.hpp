@@ -175,11 +175,7 @@ class KadabraBetweenness : public Algorithm {
 
     count maxAllocatedFrames() const {
         assureFinished();
-        count maxNFrames = 0;
-        for (auto nFrames : maxFrames) {
-            maxNFrames = std::max(nFrames, maxNFrames);
-        }
-        return maxNFrames;
+        return *std::max_element(maxFrames.begin(), maxFrames.end());
     }
 
   protected:
