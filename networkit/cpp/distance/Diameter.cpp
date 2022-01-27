@@ -101,11 +101,9 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &
     std::vector<count> eccLowerBound(G.upperNodeIdBound()), eccUpperBound(G.upperNodeIdBound());
     std::vector<bool> finished(G.upperNodeIdBound());
 
-    for (node u = 0; u < G.upperNodeIdBound(); ++u) {
-        if (G.hasNode(u)) {
-            eccUpperBound[u] = G.numberOfNodes();
-        }
-    }
+    G.parallelForNodes([&](node u) {
+        eccUpperBound[u] = G.numberOfNodes();
+    });
 
     ConnectedComponents comp(G);
     comp.run();

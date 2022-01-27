@@ -44,11 +44,10 @@ Partition ClusteringProjector::projectBackToFinest(const Partition& zetaCoarse,
     });
 
     // find coarsest supernode for each node
-    for (auto iter = maps.begin(); iter != maps.end(); ++iter) {
+    for (const auto &map : maps)
         Gfinest.parallelForNodes([&](node v){
-            tempMap[v] = (* iter)[tempMap[v]];
+            tempMap[v] = map[tempMap[v]];
         });
-    }
 
 
     // set clusters for fine nodes
@@ -74,11 +73,10 @@ Partition ClusteringProjector::projectCoarseGraphToFinestClustering(const Graph&
 
 
     // find coarsest supernode for each node
-    for (auto iter = maps.begin(); iter != maps.end(); ++iter) {
+    for (const auto &map : maps)
         Gfinest.parallelForNodes([&](node v){
-            super[v] = (* iter)[super[v]];
+            super[v] = map[super[v]];
         });
-    }
 
     // assign super node id as cluster id
     Gfinest.parallelForNodes([&](node v) {

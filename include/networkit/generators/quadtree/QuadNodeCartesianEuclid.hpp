@@ -311,9 +311,8 @@ public:
         else {
             assert(content.size() == 0);
             assert(positions.size() == 0);
-            for (index i = 0; i < children.size(); i++) {
-                children[i].getCoordinates(pointContainer);
-            }
+            for (auto &child : children)
+                child.getCoordinates(pointContainer);
         }
     }
 
@@ -465,9 +464,8 @@ public:
         content.shrink_to_fit();
         positions.shrink_to_fit();
         if (!isLeaf) {
-            for (index i = 0; i < children.size(); i++) {
-                children[i].trim();
-            }
+            for (auto &child : children)
+                child.trim();
         }
     }
 
@@ -491,7 +489,7 @@ public:
      */
     count height() const {
         count result = 1;//if leaf node, the children loop will not execute
-        for (auto child : children) result = std::max(result, child.height()+1);
+        for (const auto &child : children) result = std::max(result, child.height()+1);
         return result;
     }
 
@@ -514,9 +512,9 @@ public:
     index indexSubtree(index nextID) {
         index result = nextID;
         assert(children.size() == pow(2,dimension) || children.size() == 0);
-        for (int i = 0; i < children.size(); i++) {
-            result = children[i].indexSubtree(result);
-        }
+        for (auto &child : children)
+            result = child.indexSubtree(result);
+
         this->ID = result;
         return result+1;
     }
@@ -525,8 +523,8 @@ public:
         if (!responsible(pos)) return none;
         if (isLeaf) return getID();
         else {
-            for (int i = 0; i < children.size(); i++) {
-                index childresult = children[i].getCellID(pos);
+            for (const auto &child : children) {
+                index childresult = child.getCellID(pos);
                 if (childresult != none) return childresult;
             }
             throw std::runtime_error("No responsible child node found even though this node is responsible.");
@@ -555,9 +553,8 @@ public:
             }
             offset += size();
         } else {
-            for (int i = 0; i < children.size(); i++) {
-                offset = children[i].reindex(offset);
-            }
+            for (auto &child : children)
+                offset = child.reindex(offset);
         }
         return offset;
     }

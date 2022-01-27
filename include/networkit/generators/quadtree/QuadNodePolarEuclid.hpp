@@ -158,12 +158,11 @@ public:
         }
         else {
             assert(children.size() > 0);
-            for (index i = 0; i < children.size(); i++) {
-                if (children[i].responsible(angle, R)) {
-                    children[i].addContent(input, angle, R);
+            for (auto &child : children)
+                if (child.responsible(angle, R)) {
+                    child.addContent(input, angle, R);
                     break;
                 }
-            }
             subTreeSize++;
         }
     }
@@ -398,8 +397,8 @@ public:
             assert(angles.size() == 0);
             assert(radii.size() == 0);
             vector<T> result;
-            for (index i = 0; i < children.size(); i++) {
-                std::vector<T> subresult = children[i].getElements();
+            for (const auto &child : children) {
+                std::vector<T> subresult = child.getElements();
                 result.insert(result.end(), subresult.begin(), subresult.end());
             }
             return result;
@@ -416,9 +415,8 @@ public:
             assert(content.size() == 0);
             assert(angles.size() == 0);
             assert(radii.size() == 0);
-            for (index i = 0; i < children.size(); i++) {
-                children[i].getCoordinates(anglesContainer, radiiContainer);
-            }
+            for (const auto &child : children)
+                child.getCoordinates(anglesContainer, radiiContainer);
         }
     }
 
@@ -458,9 +456,8 @@ public:
                 }
             }
         }	else {
-            for (index i = 0; i < children.size(); i++) {
-                children[i].getElementsInEuclideanCircle(center, radius, result, minAngle, maxAngle, lowR, highR);
-            }
+            for (const auto &child : children)
+                child.getElementsInEuclideanCircle(center, radius, result, minAngle, maxAngle, lowR, highR);
         }
     }
 
@@ -597,8 +594,8 @@ public:
      */
     count height() const {
         count result = 1;//if leaf node, the children loop will not execute
-        for (auto child : children) result = std::max(result, child.height()+1);
-        return result;
+        for (const auto &child : children) result = std::max(result, child.height()+1);
+        return std::max(count{1}, result);
     }
 
     /**
@@ -644,12 +641,12 @@ public:
     }
 
     index getCellID(double phi, double r) const {
-        if (!responsible(phi, r)) return NetworKit::none;
+        if (!responsible(phi, r)) return none;
         if (isLeaf) return getID();
         else {
-            for (int i = 0; i < children.size(); i++) {
-                index childresult = children[i].getCellID(phi, r);
-                if (childresult != NetworKit::none) return childresult;
+            for (const auto &child : children) {
+                index childresult = child.getCellID(phi, r);
+                if (childresult != none) return childresult;
             }
             throw std::runtime_error("No responsible child node found even though this node is responsible.");
         }
