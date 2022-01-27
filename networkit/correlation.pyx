@@ -14,7 +14,19 @@ cdef extern from "<networkit/correlation/Assortativity.hpp>":
 		double getCoefficient() except +
 
 cdef class Assortativity(Algorithm):
-	""" """
+	""" 
+	Assortativity(G, data)
+	
+	Assortativity computes a coefficient that expresses the correlation of a
+	node attribute among connected pairs of nodes.
+	
+	Parameters
+	----------
+	G : networkit.graph
+		The graph.
+	data : list(float)
+			Numerical node value array
+	"""
 	cdef Graph G
 	cdef vector[double] attribute
 	cdef Partition partition
@@ -29,5 +41,15 @@ cdef class Assortativity(Algorithm):
 		self.G = G
 
 	def getCoefficient(self):
+		"""
+		getCoefficient()
+
+		Return the assortativity coefficient.
+
+		Returns
+		-------
+		float
+			The assortativity coefficient.
+		"""
 		return (<_Assortativity*>(self._this)).getCoefficient()
 

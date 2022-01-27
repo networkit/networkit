@@ -27,14 +27,14 @@ cdef extern from "<networkit/components/ConnectedComponents.hpp>":
 		_Graph extractLargestConnectedComponent(_Graph G, bool_t) nogil except +
 
 cdef class ConnectedComponents(Algorithm):
-	""" Determines the connected components and associated values for an undirected graph.
-
+	""" 
 	ConnectedComponents(G)
-
+	
+	Determines the connected components and associated values for an undirected graph. 
 	Create ConnectedComponents for Graph `G`.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
 	"""
@@ -45,49 +45,71 @@ cdef class ConnectedComponents(Algorithm):
 		self._this = new _ConnectedComponents(G._this)
 
 	def getPartition(self):
-		""" Get a Partition that represents the components.
+		""" 
+		getPartition()
 
-		Returns:
-		--------
+		Get a Partition that represents the components.
+
+		Returns
+		-------
 		networkit.Partition
 			A partition representing the found components.
 		"""
 		return Partition().setThis((<_ConnectedComponents*>(self._this)).getPartition())
 
 	def numberOfComponents(self):
-		""" Get the number of connected components.
+		""" 
+		numberOfComponents()
+		
+		Get the number of connected components.
 
-		Returns:
-		--------
-		count:
+		Returns
+		-------
+		int
 			The number of connected components.
 		"""
 		return (<_ConnectedComponents*>(self._this)).numberOfComponents()
 
 	def componentOfNode(self, v):
-		"""  Get the the component in which node `v` is situated.
+		"""  
+		componentOfNode(v)
+		
+		Get the the component in which node `v` is situated.
 
+		Parameters
+		----------
 		v : node
 			The node whose component is asked for.
+
+		Returns
+		-------
+		int
+			Component in which node `v` is situated
 		"""
 		return (<_ConnectedComponents*>(self._this)).componentOfNode(v)
 
 	def getComponentSizes(self):
-		""" Get the component sizes.
+		""" 
+		getComponentSizes()
+		
+		Get the component sizes.
 
-		Returns:
-		--------
-		map:
-			The map from component to size.
+		Returns
+		-------
+		dict(int : int)
+			A dict containing the component ids and their size.
 		"""
 		return (<_ConnectedComponents*>(self._this)).getComponentSizes()
 
 	def getComponents(self):
-		""" Get the connected components, each as a list of nodes.
+		""" 
+		getComponents()
+		
+		Get the connected components, each as a list of nodes.
 
-		Returns:
-		--------
-		list:
+		Returns
+		-------
+		list
 			The connected components.
 		"""
 		return (<_ConnectedComponents*>(self._this)).getComponents()
@@ -95,28 +117,27 @@ cdef class ConnectedComponents(Algorithm):
 	@staticmethod
 	def extractLargestConnectedComponent(Graph graph, bool_t compactGraph = False):
 		"""
-			Constructs a new graph that contains only the nodes inside the
-			largest connected component.
+		Constructs a new graph that contains only the nodes inside the
+		largest connected component.
 
-			Parameters:
-			-----------
-			graph: networkit.Graph
-				The input graph
-			compactGraph: bool
-				if true, the node ids of the output graph will be compacted
-				(i.e., re-numbered from 0 to n-1). If false, the node ids
-				will not be changed.
+		Notes
+		-----
+		Available for undirected graphs only.
 
-			Returns:
-			--------
-			networkit.Graph
-				A graph that contains only the nodes inside the largest
-				connected component.
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph
+		compactGraph : bool, optional
+			if true, the node ids of the output graph will be compacted
+			(i.e., re-numbered from 0 to n-1). If false, the node ids
+			will not be changed.
 
-
-			Note:
-			-----
-			Available for undirected graphs only.
+		Returns
+		-------
+		networkit.Graph
+			A graph that contains only the nodes inside the largest
+			connected component.
 		"""
 		return Graph().setThis(_ConnectedComponents.extractLargestConnectedComponent(graph._this, compactGraph))
 
@@ -131,8 +152,21 @@ cdef extern from "<networkit/components/ParallelConnectedComponents.hpp>":
 
 
 cdef class ParallelConnectedComponents(Algorithm):
-	""" Determines the connected components and associated values for
-		an undirected graph.
+	""" 
+	ParallelConnectedComponents(G, coarsening=True)
+
+	Determines the connected components and associated values for
+	an undirected graph.
+
+	Parameters
+	----------
+	graph : networkit.Graph
+		The input graph
+	coarsening : bool, optional
+		Specifies whether the main algorithm based on label propagation (LP) 
+		shall work recursively (true) or not (false) by coarsening/contracting 
+		an LP-computed clustering. Defaults to true since we saw positive effects 
+		in terms of running time for many networks. Beware of possible memory implications.
 	"""
 	cdef Graph _G
 
@@ -141,39 +175,58 @@ cdef class ParallelConnectedComponents(Algorithm):
 		self._this = new _ParallelConnectedComponents(G._this, coarsening)
 
 	def getPartition(self):
-		""" Get a Partition that represents the components.
+		""" 
+		getPartition()
+		
+		Get a Partition that represents the components.
 
-		Returns:
-		--------
+		Returns
+		-------
 		networkit.Partition
 			A partition representing the found components.
 		"""
 		return Partition().setThis((<_ParallelConnectedComponents*>(self._this)).getPartition())
 
 	def numberOfComponents(self):
-		""" Get the number of connected components.
+		""" 
+		numberOfComponents()
+		
+		Get the number of connected components.
 
-		Returns:
-		--------
-		count:
+		Returns
+		-------
+		int
 			The number of connected components.
 		"""
 		return (<_ParallelConnectedComponents*>(self._this)).numberOfComponents()
 
 	def componentOfNode(self, v):
-		"""  Get the the component in which node `v` is situated.
+		"""  
+		componentOfNode(v)
+		
+		Get the the component in which node `v` is situated.
 
+		Parameters
+		----------
 		v : node
 			The node whose component is asked for.
+
+		Returns
+		-------
+		int
+			Component in which node `v` is situated
 		"""
 		return (<_ParallelConnectedComponents*>(self._this)).componentOfNode(v)
 
 	def getComponents(self):
-		""" Get the connected components, each as a list of nodes.
+		""" 
+		getComponents()
 
-		Returns:
-		--------
-		list:
+		Get the connected components, each as a list of nodes.
+
+		Returns
+		-------
+		list
 			The connected components.
 		"""
 		return (<_ParallelConnectedComponents*>(self._this)).getComponents()
@@ -192,17 +245,21 @@ cdef extern from "<networkit/components/StronglyConnectedComponents.hpp>":
 
 
 cdef class StronglyConnectedComponents:
+	""" 
+	StronglyConnectedComponents(G)
+
+	Computes the strongly connected components of a directed graph.
+
+	Parameters:
+	-----------
+	G : networkit.Graph
+		The graph.
+	"""
 	cdef _StronglyConnectedComponents* _this
 	cdef Graph _G
 
 	def __cinit__(self, Graph G):
-		""" Computes the strongly connected components of a directed graph.
 
-			Parameters:
-			-----------
-			G : networkit.Graph
-				The graph.
-		"""
 		self._G = G
 		self._this = new _StronglyConnectedComponents(G._this)
 
@@ -211,6 +268,8 @@ cdef class StronglyConnectedComponents:
 
 	def run(self):
 		"""
+		run()
+
 		Runs the algorithm.
 		"""
 		with nogil:
@@ -219,21 +278,25 @@ cdef class StronglyConnectedComponents:
 
 	def getPartition(self):
 		"""
+		getPartition()
+
 		Returns a Partition object representing the strongly connected components.
 
-		Returns:
-		--------
-		Partition
+		Returns
+		-------
+		networkit.Partition
 			The strongly connected components.
 		"""
 		return Partition().setThis(self._this.getPartition())
 
 	def numberOfComponents(self):
 		"""
+		numberOfComponents()
+		
 		Returns the number of strongly connected components of the graph.
 
-		Returns:
-		--------
+		Returns
+		-------
 		int
 			The number of strongly connected components.
 		"""
@@ -243,12 +306,13 @@ cdef class StronglyConnectedComponents:
 		"""
 		Returns the component of node `u`.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		u : node
 			A node in the graph.
 
-		Returns:
+		Returns
+		-----------
 		int
 			The component of node `u`.
 		"""
@@ -256,22 +320,26 @@ cdef class StronglyConnectedComponents:
 
 	def getComponentSizes(self):
 		"""
-		Returns a map with the component indexes as keys, and their size as values.
+		getComponentSizes()
+		
+		Returns a map with the component indexes as keys and their size as values.
 
-		Returns:
-		--------
-		map[index, count]
-			Map with component indexes as keys, and their size as values.
+		Returns
+		-------
+		dict(int : int)
+			A dict with component indexes as keys and their size as values.
 		"""
 		return self._this.getComponentSizes()
 
 	def getComponents(self):
 		"""
+		getComponents()
+		
 		Returns a list of components.
 
-		Returns:
-		--------
-		list[list[node]]
+		Returns
+		-------
+		list(list(int))
 			A list of components.
 		"""
 		return self._this.getComponents()
@@ -287,12 +355,15 @@ cdef extern from "<networkit/components/WeaklyConnectedComponents.hpp>":
 		vector[vector[node]] getComponents() except +
 
 cdef class WeaklyConnectedComponents(Algorithm):
-	""" Determines the weakly connected components of a directed graph.
+	""" 
+	WeaklyConnectedComponents(G)
 
-		Parameters:
-		-----------
-		G : networkit.Graph
-			The graph.
+	Determines the weakly connected components of a directed graph.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph.
 	"""
 	cdef Graph _G
 
@@ -301,42 +372,59 @@ cdef class WeaklyConnectedComponents(Algorithm):
 		self._this = new _WeaklyConnectedComponents(G._this)
 
 	def numberOfComponents(self):
-		""" Returns the number of components.
+		""" 
+		numberOfComponents()
 
-			Returns:
-			--------
-			count
-				The number of components.
+		Returns the number of components.
+
+		Returns
+		-------
+		int
+			The number of components.
 		"""
 		return (<_WeaklyConnectedComponents*>(self._this)).numberOfComponents()
 
 	def componentOfNode(self, v):
-		""" Returns the the component in which node @a u is.
+		"""  
+		componentOfNode(v)
+		
+		Get the the component in which node `v` is situated.
 
-			Parameters:
-			-----------
-			v : node
-				The node.
+		Parameters
+		----------
+		v : node
+			The node whose component is asked for.
+
+		Returns
+		-------
+		int
+			Component in which node `v` is situated
 		"""
 		return (<_WeaklyConnectedComponents*>(self._this)).componentOfNode(v)
 
 	def getComponentSizes(self):
-		""" Returns the map from component to size.
+		""" 
+		getComponentSizes()
+		
+		Returns the map from component id to size.
 
-			Returns:
-			--------
-			map[index, count]
-			 	A map that maps each component to its size.
+		Returns
+		-------
+		dict(int : int)
+			A dict that maps each component id to its size.
 		"""
 		return (<_WeaklyConnectedComponents*>(self._this)).getComponentSizes()
 
 	def getComponents(self):
-		""" Returns all the components, each stored as (unordered) set of nodes.
+		""" 
+		getComponents()
+		
+		Returns all the components, each stored as (unordered) set of nodes.
 
-			Returns:
-			--------
-			vector[vector[node]]
-				A vector of vectors. Each inner vector contains all the nodes inside the component.
+		Returns
+		-------
+		vector[vector[node]]
+			A vector of vectors. Each inner vector contains all the nodes inside the component.
 		"""
 		return (<_WeaklyConnectedComponents*>(self._this)).getComponents()
 
@@ -350,15 +438,17 @@ cdef extern from "<networkit/components/BiconnectedComponents.hpp>":
 		vector[vector[node]] getComponents() except +
 
 cdef class BiconnectedComponents(Algorithm):
-	""" Determines the biconnected components of an undirected graph as defined in
-		Tarjan, Robert. Depth-First Search and Linear Graph Algorithms. SIAM J.
-		Comput. Vol 1, No. 2, June 1972.
+	""" 
+	BiconnectedComponents()
+	
+	Determines the biconnected components of an undirected graph as defined in
+	Tarjan, Robert. Depth-First Search and Linear Graph Algorithms. SIAM J.
+	Comput. Vol 1, No. 2, June 1972.
 
-
-		Parameters:
-		-----------
-		G : networkit.Graph
-			The graph.
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph.
 	"""
 	cdef Graph _G
 
@@ -367,32 +457,41 @@ cdef class BiconnectedComponents(Algorithm):
 		self._this = new _BiconnectedComponents(G._this)
 
 	def numberOfComponents(self):
-		""" Returns the number of components.
+		"""
+		numberOfComponents()
+		
+		Returns the number of components.
 
-			Returns:
-			--------
-			count
-				The number of components.
+		Returns
+		-------
+		int
+			The number of components.
 		"""
 		return (<_BiconnectedComponents*>(self._this)).numberOfComponents()
 
 	def getComponentSizes(self):
-		""" Returns the map from component to size.
+		""" 
+		getComponentSizes()
+		
+		Returns the map from component id to size.
 
-			Returns:
-			--------
-			map[count, count]
-			A map that maps each component to its size.
+		Returns
+		-------
+		dict(int : int)
+			A dict that maps each component id to its size.
 		"""
 		return (<_BiconnectedComponents*>(self._this)).getComponentSizes()
 
 	def getComponents(self):
-		""" Returns all the components, each stored as (unordered) set of nodes.
+		""" 
+		getComponents()
+		
+		Returns all the components, each stored as (unordered) set of nodes.
 
-			Returns:
-			--------
-			vector[vector[node]]
-				A vector of vectors. Each inner vector contains all the nodes inside the component.
+		Returns
+		-------
+		vector[vector[node]]
+			A vector of vectors. Each inner vector contains all the nodes inside the component.
 		"""
 		return (<_BiconnectedComponents*>(self._this)).getComponents()
 
@@ -409,12 +508,15 @@ cdef extern from "<networkit/components/DynConnectedComponents.hpp>":
 		vector[vector[node]] getComponents() except +
 
 cdef class DynConnectedComponents(Algorithm):
-	""" Determines and updates the connected components of an undirected graph.
+	""" 
+	DynConnectedComponents(G)
+	
+	Determines and updates the connected components of an undirected graph.
 
-		Parameters:
-		-----------
-		G : networkit.Graph
-			The graph.
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph.
 	"""
 	cdef Graph _G
 
@@ -423,64 +525,87 @@ cdef class DynConnectedComponents(Algorithm):
 		self._this = new _DynConnectedComponents(G._this)
 
 	def numberOfComponents(self):
-		""" Returns the number of components.
+		"""
+		numberOfComponents()
+		
+		Returns the number of components.
 
-			Returns:
-			--------
-			count
-				The number of components.
+		Returns
+		-------
+		int
+			The number of components.
 		"""
 		return (<_DynConnectedComponents*>(self._this)).numberOfComponents()
 
 	def componentOfNode(self, v):
-		""" Returns the the component in which node @a u is.
+		"""  
+		componentOfNode(v)
+		
+		Get the the component in which node `v` is situated.
 
-			Parameters:
-			-----------
-			v : node
-				The node.
+		Parameters
+		----------
+		v : node
+			The node whose component is asked for.
+
+		Returns
+		-------
+		int
+			Component in which node `v` is situated
 		"""
 		return (<_DynConnectedComponents*>(self._this)).componentOfNode(v)
 
 	def getComponentSizes(self):
-		""" Returns the map from component to size.
+		""" 
+		getComponentSizes()
+		
+		Returns the map from component id to size.
 
-			Returns:
-			--------
-			map[index, count]
-			 	A map that maps each component to its size.
+		Returns
+		-------
+		dict(int : int)
+			A dict that maps each component id to its size.
 		"""
 		return (<_DynConnectedComponents*>(self._this)).getComponentSizes()
 
 	def getComponents(self):
-		""" Returns all the components, each stored as (unordered) set of nodes.
+		"""
+		getComponents()
+		
+		Returns all the components, each stored as (unordered) set of nodes.
 
-			Returns:
-			--------
-			vector[vector[node]]
-				A vector of vectors. Each inner vector contains all the nodes inside the component.
+		Returns
+		-------
+		list[list[int]]
+			A list of lists. Each inner list contains all the nodes inside the component.
 		"""
 		return (<_DynConnectedComponents*>(self._this)).getComponents()
 
 	def update(self, event):
-		""" Updates the connected components after an edge insertion or
-			deletion.
+		""" 
+		update(event)
+		
+		Updates the connected components after an edge insertion or
+		deletion.
 
-			Parameters:
-			-----------
-			event : GraphEvent
-				The event that happened (edge deletion or insertion).
+		Parameters
+		----------
+		event : GraphEvent
+			The event that happened (edge deletion or insertion).
 		"""
 		(<_DynConnectedComponents*>(self._this)).update(_GraphEvent(event.type, event.u, event.v, event.w))
 
 	def updateBatch(self, batch):
-		""" Updates the connected components after a batch of edge insertions or
-			deletions.
+		""" 
+		updateBatch(batch)
+		
+		Updates the connected components after a batch of edge insertions or
+		deletions.
 
-			Parameters:
-			-----------
-			batch : vector[GraphEvent]
-				A vector that contains a batch of edge insertions or deletions.
+		Parameters
+		----------
+		batch : vector[GraphEvent]
+			A vector that contains a batch of edge insertions or deletions.
 		"""
 		cdef vector[_GraphEvent] _batch
 		for event in batch:
@@ -501,12 +626,15 @@ cdef extern from "<networkit/components/DynWeaklyConnectedComponents.hpp>":
 		vector[vector[node]] getComponents() except +
 
 cdef class DynWeaklyConnectedComponents(Algorithm):
-	""" Determines and updates the weakly connected components of a directed graph.
+	""" 
+	DynWeaklyConnectedComponents(G)
+	
+	Determines and updates the weakly connected components of a directed graph.
 
-		Parameters:
-		-----------
-		G : networkit.Graph
-			The graph.
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph.
 	"""
 	cdef Graph _G
 
@@ -515,66 +643,88 @@ cdef class DynWeaklyConnectedComponents(Algorithm):
 		self._this = new _DynWeaklyConnectedComponents(G._this)
 
 	def numberOfComponents(self):
-		""" Returns the number of components.
+		""" 
+		numberOfComponents()
+		
+		Returns the number of components.
 
-			Returns:
-			--------
-			count
-				The number of components.
+		Returns
+		-------
+		int
+			The number of components.
 		"""
 		return (<_DynWeaklyConnectedComponents*>(self._this)).numberOfComponents()
 
 	def componentOfNode(self, v):
-		""" Returns the the component in which node @a u is.
+		"""  
+		componentOfNode(v)
+		
+		Get the the component in which node `v` is situated.
 
-			Parameters:
-			-----------
-			v : node
-				The node.
+		Parameters
+		----------
+		v : node
+			The node whose component is asked for.
+
+		Returns
+		-------
+		int
+			Component in which node `v` is situated
 		"""
 		return (<_DynWeaklyConnectedComponents*>(self._this)).componentOfNode(v)
 
 	def getComponentSizes(self):
-		""" Returns the map from component to size.
+		""" 
+		getComponentSizes()
+		
+		Returns the map from component id to size.
 
-			Returns:
-			--------
-			map[index, count]
-			 	A map that maps each component to its size.
+		Returns
+		-------
+		dict(int : int)
+			A dict that maps each component id to its size.
 		"""
 		return (<_DynWeaklyConnectedComponents*>(self._this)).getComponentSizes()
 
 	def getComponents(self):
-		""" Returns all the components, each stored as (unordered) set of nodes.
+		""" 
+		getComponents()
+		
+		Returns all the components, each stored as (unordered) set of nodes.
 
-			Returns:
-			--------
-			vector[vector[node]]
-				A vector of vectors. Each inner vector contains all the nodes
-				inside the component.
-
+		Returns
+		-------
+		vector[vector[node]]
+			A vector of vectors. Each inner vector contains all the nodes
+			inside the component.
 		"""
 		return (<_DynWeaklyConnectedComponents*>(self._this)).getComponents()
 
 	def update(self, event):
-		""" Updates the connected components after an edge insertion or
-			deletion.
+		""" 
+		update(event)
+		
+		Updates the connected components after an edge insertion or
+		deletion.
 
-			Parameters:
-			-----------
-			event : GraphEvent
-				The event that happened (edge deletion or insertion).
+		Parameters
+		----------
+		event : GraphEvent
+			The event that happened (edge deletion or insertion).
 		"""
 		(<_DynWeaklyConnectedComponents*>(self._this)).update(_GraphEvent(event.type, event.u, event.v, event.w))
 
 	def updateBatch(self, batch):
-		""" Updates the connected components after a batch of edge insertions or
-			deletions.
+		"""
+		updateBatch(batch)
+		
+		Updates the connected components after a batch of edge insertions or
+		deletions.
 
-			Parameters:
-			-----------
-			batch : vector[GraphEvent]
-				A vector that contains a batch of edge insertions or deletions.
+		Parameters
+		----------
+		batch : vector[GraphEvent]
+			A vector that contains a batch of edge insertions or deletions.
 		"""
 		cdef vector[_GraphEvent] _batch
 		for event in batch:
