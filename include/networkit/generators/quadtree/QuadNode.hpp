@@ -711,11 +711,9 @@ public:
      */
     count countLeaves() const {
         if (isLeaf) return 1;
-        count result = 0;
-        for (index i = 0; i < children.size(); i++) {
-            result += children[i].countLeaves();
-        }
-        return result;
+        return std::accumulate(
+            children.begin(), children.end(), count{0},
+            [](count result, const auto &child) -> count { return result + child.countLeaves(); });
     }
 
     double getLeftAngle() const {
