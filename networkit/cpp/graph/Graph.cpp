@@ -37,7 +37,7 @@ Graph::Graph(count n, bool weighted, bool directed, bool edgesIndexed)
       outgoing edges, for undirected graphs outEdges stores the adjacency list of
       undirected edges*/
       outEdges(n), inEdgeWeights(weighted && directed ? n : 0), outEdgeWeights(weighted ? n : 0),
-      inEdgeIds(), outEdgeIds() {}
+      inEdgeIds(), outEdgeIds(), nodeAttributeMap(this) {}
 
 Graph::Graph(std::initializer_list<WeightedEdge> edges) : Graph(0, true) {
     using namespace std;
@@ -63,7 +63,10 @@ Graph::Graph(const Graph &G, bool weighted, bool directed, bool edgesIndexed)
       exists(G.exists),
 
       // let the following be empty for the start, we fill them later
-      inEdges(0), outEdges(0), inEdgeWeights(0), outEdgeWeights(0), inEdgeIds(0), outEdgeIds(0) {
+      inEdges(0), outEdges(0), inEdgeWeights(0), outEdgeWeights(0), inEdgeIds(0), outEdgeIds(0),
+
+      // empty node attribute map as last member for this graph
+      nodeAttributeMap(this) {
 
     if (G.isDirected() == directed) {
         // G.inEdges might be empty (if G is undirected), but
@@ -557,6 +560,13 @@ void Graph::removeNode(node v) {
         while (!inEdges[v].empty())
             removeEdge(inEdges[v].front(), v);
 
+    // Make the attributes of this node invalid
+    auto &theMap = nodeAttributeMap.attrMap;
+    for (auto it = theMap.begin(); it != theMap.end(); ++it) {
+        auto attributeStorageBase = it->second.get();
+        attributeStorageBase->invalidate(v);
+    }
+
     exists[v] = false;
     n--;
 }
@@ -981,5 +991,11 @@ bool Graph::checkConsistency() const {
 
     return noMultiEdges && correctNodeUpperbound && correctNumberOfEdges;
 }
+
+/** NODE ATTRIBUTE INSTANTIATION FOR STRINGS **/
+/** (needed for Python Binding)                    **/
+
+template class Graph::NodeAttribute<std::string>;
+template class Graph::NodeAttributeStorage<std::string>;
 
 } /* namespace NetworKit */

@@ -277,5 +277,18 @@ class TestGraph(unittest.TestCase):
 		for u, v in F.iterEdges():
 			self.assertTrue(G.hasEdge(u, v))
 
+	def testNodeAttributes(self):
+		G = nk.Graph(5)
+
+		for attType in [int, float, str]:
+			attVals = [attType(i) for i in G.iterNodes()]
+
+			attrs = G.attachNodeAttribute("attribute", attType)
+			for u in G.iterNodes():
+				attrs[u] = attVals[u]
+				self.assertEqual(attrs[u], attVals[u])
+
+			G.detachNodeAttribute("attribute")
+
 if __name__ == "__main__":
 	unittest.main()

@@ -665,6 +665,220 @@ cdef class Graph:
 			yield dereference(it)
 			preincrement(it)
 
+	def attachNodeAttribute(self, name, ofType):
+		"""
+		attachNodeAttribute(name, ofType)
+
+		Attaches a node attribute to the graph and returns it.
+
+		.. code-block::
+			
+			A = G.attachNodeAttribute("attributeIdentifier", ofType)
+		
+		All values are initially undefined for existing nodes values can be set/get
+		by 
+		
+		.. code-block:: 
+		
+			A[node] = value # set
+			value = A[node] # get
+
+		Getting undefined values raises a ValueError removing a node makes all
+		its attributes undefined
+
+		Parameters
+		----------
+		name   : str
+			Name for this attribute
+		ofType : type
+			Type of the attribute (either int, float, or str)
+
+		Returns
+		-------
+		networkit.graph.NodeAttribute
+			The resulting node attribute container.
+		"""
+		if not isinstance(name, str):
+			raise Exception("Attribute name has to be a string")
+
+		if ofType == int:
+			return NodeAttribute(NodeIntAttribute().setThis(self._this.attachNodeIntAttribute(stdstring(name)), &self._this), int)
+		elif ofType == float:
+			return NodeAttribute(NodeDoubleAttribute().setThis(self._this.attachNodeDoubleAttribute(stdstring(name)), &self._this), float)
+		elif ofType == str:
+			return NodeAttribute(NodeStringAttribute().setThis(self._this.attachNodeStringAttribute(stdstring(name)), &self._this), str)
+
+	def detachNodeAttribute(self, name):
+		"""
+		detachNodeAttribute(name)
+
+		Detaches a node attribute from the graph.
+
+		Parameters
+		----------
+		name : str
+			The distinguished name for the attribute to detach.
+		"""
+		if not isinstance(name, str):
+			raise Exception("Attribute name has to be a string")
+		self._this.detachNodeAttribute(stdstring(name))
+
+# The following 3 classes NodeIntAttribute, NodeDoubleAttribute and 
+# NodeStringAttribute are helper classes which cannot be generalized because
+# they map to different C++ classes even if these are generated from the same
+# C++ template - this results in some unpleasant code duplication.
+# The generic (pure python) wrapper class for the user is NodeAttribute
+
+cdef class NodeIntAttribute:
+
+	cdef setThis(self, _NodeIntAttribute& other, _Graph* G):
+		self._this.swap(other)
+		self._G = G
+		return self
+
+	def __getitem__(self, node):
+		try:
+			value = self._this.get(node)
+		except Exception as e:
+			raise ValueError(str(e))
+		return value
+
+	def __setitem__(self, node, value):
+		try:
+			self._this.set(node, value)
+		except Exception as e:
+			raise ValueError(str(e))
+
+	def __iter__(self):
+		try:
+			self._iter = self._this.begin()
+		except Exception as e:
+			raise ValueError(str(e))
+
+		self._stopiter = self._this.end()
+		return self
+
+	def __next__(self):
+		if self._iter == self._stopiter:
+			raise StopIteration()
+		val = dereference(self._iter)
+		preincrement(self._iter)
+		return val
+
+
+cdef class NodeDoubleAttribute:
+	cdef setThis(self, _NodeDoubleAttribute& other, _Graph* G):
+		self._this.swap(other)
+		self._G = G
+		return self
+
+	def __getitem__(self, node):
+		try:
+			value = self._this.get(node)
+		except Exception as e:
+			raise ValueError(str(e))
+		return value
+
+	def __setitem__(self, node, value):
+		try:
+			self._this.set(node, value)
+		except Exception as e:
+			raise ValueError(str(e))
+
+	def __iter__(self):
+		try:
+			self._iter = self._this.begin()
+		except Exception as e:
+			raise ValueError(str(e))
+		self._stopiter = self._this.end()
+		return self
+
+	def __next__(self):
+		if self._iter == self._stopiter:
+			raise StopIteration()
+		val = dereference(self._iter)
+		preincrement(self._iter)
+		return val
+
+cdef class NodeStringAttribute:
+
+	cdef setThis(self, _NodeStringAttribute& other, _Graph* G):
+		self._this.swap(other)
+		self._G = G
+		return self
+
+	def __getitem__(self, node):
+		try:
+			value = pystring(self._this.get(node))
+		except Exception as e:
+			raise ValueError(str(e))
+		return value
+
+	def __setitem__(self, node, value):
+		try:
+			self._this.set(node, stdstring(value))
+		except Exception as e:
+			raise ValueError(str(e))
+
+	def __iter__(self):
+		try:
+			self._iter = self._this.begin()
+		except Exception as e:
+			raise ValueError(str(e))
+		self._stopiter = self._this.end()
+		return self
+
+	def __next__(self):
+		if self._iter == self._stopiter:
+			raise StopIteration()
+		val = dereference(self._iter)
+		val = (val[0], pystring(val[1]))
+		preincrement(self._iter)
+		return val
+
+class NodeAttribute:
+	"""
+	Generic class for node attributes returned by networkit.graph.attachNodeAttribute().
+	Example of attaching an int attribute to a graph g:
+
+	.. code-block::
+
+		att = g.attachNodeAttribute("name", int)`
+
+	Set/get attributes of a single node 'u' with the [] operator:
+
+	.. code-block::
+
+		att[u] = 0
+		att_val = att[u] # 'att_val' is 0
+
+	Iterate over all the values of an attribute:
+
+	.. code-block::
+
+		for u, val in att:
+			# The attribute value of node `u` is `val`.
+	"""
+
+	def __init__(self, typedNodeAttribute, type):
+		self.attr = typedNodeAttribute
+		self.type = type
+
+	def __getitem__(self, node):
+		return self.attr[node]
+
+	def __setitem__(self, index, value):
+		if not isinstance(value, self.type):
+			raise Exception("Wrong Attribute type")
+		self.attr[index] = value
+
+	def __iter__(self):
+		self._iter = iter(self.attr)
+		return self
+
+	def __next__(self):
+		return next(self._iter)
+
 cdef cppclass EdgeCallBackWrapper:
 	void* callback
 	__init__(object callback):
