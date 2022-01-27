@@ -652,7 +652,7 @@ public:
     index getMaxIDInSubtree() const {
         if (isLeaf) return getID();
         else {
-            index result = -1;
+            index result = 0;
             for (int i = 0; i < 4; i++) {
                 result = std::max(children[i].getMaxIDInSubtree(), result);
             }

@@ -532,10 +532,11 @@ public:
     index getMaxIDInSubtree() const {
         if (isLeaf) return getID();
         else {
-            const index maxID =
-                std::max_element(children.begin(), children.end(),
-                                 [](const auto &child) { return child.getMaxIDInSubtree(); });
-            return std::max(maxID, getID());
+            index result = 0;
+            for (int i = 0; i < children.size(); i++) {
+                result = std::max(children[i].getMaxIDInSubtree(), result);
+            }
+            return std::max(result, getID());
         }
     }
 
