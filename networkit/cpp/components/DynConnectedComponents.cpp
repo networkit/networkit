@@ -121,8 +121,8 @@ namespace NetworKit {
 
         // If u and v are already in the same component, we
         // don't have to do anything
-        index maxComp = std::max(components[u], components[v]);
-        index minComp = std::min(components[u], components[v]);
+        index minComp, maxComp;
+        std::tie(minComp, maxComp) = std::minmax(components[u], components[v]);
 
         if (maxComp == minComp) {
             if (!updateResult.first) {

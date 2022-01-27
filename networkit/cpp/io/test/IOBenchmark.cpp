@@ -7,6 +7,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <cmath>
 #include <vector>
 #include <string>
 #include <utility>
@@ -293,10 +294,10 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
                 double minY = ycoords[newInfections[0]];
                 double maxY = ycoords[newInfections[0]];
                 for (index patient : newInfections) {
-                    minX = min(xcoords[patient], minX);
-                    maxX = max(xcoords[patient], maxX);
-                    minY = min(ycoords[patient], minY);
-                    maxY = max(ycoords[patient], maxY);
+                    minX = std::min(xcoords[patient], minX);
+                    maxX = std::max(xcoords[patient], maxX);
+                    minY = std::min(ycoords[patient], minY);
+                    maxY = std::max(ycoords[patient], maxY);
                 }
                 INFO("X coordinates of new infections range from ", minX, " to ", maxX, ".");
                 INFO("Y coordinates of new infections range from ", minY, " to ", maxY, ".");

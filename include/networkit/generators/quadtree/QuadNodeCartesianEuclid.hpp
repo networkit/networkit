@@ -19,11 +19,6 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
 
-using std::vector;
-using std::min;
-using std::max;
-using std::cos;
-
 namespace NetworKit {
 
 template <class T>

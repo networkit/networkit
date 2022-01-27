@@ -19,11 +19,6 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
 
-using std::vector;
-using std::min;
-using std::max;
-using std::cos;
-
 namespace NetworKit {
 
 template <class T>
@@ -262,13 +257,13 @@ public:
         double topDistance, bottomDistance, leftDistance, rightDistance;
 
         if (phi < leftAngle || phi > rightAngle) {
-            topDistance = min(c.distance(query), d.distance(query));
+            topDistance = std::min(c.distance(query), d.distance(query));
         } else {
             topDistance = abs(r - maxR);
         }
         if (topDistance <= radius) return false;
         if (phi < leftAngle || phi > rightAngle) {
-            bottomDistance = min(a.distance(query), b.distance(query));
+            bottomDistance = std::min(a.distance(query), b.distance(query));
         } else {
             bottomDistance = abs(r - minR);
         }
@@ -278,7 +273,7 @@ public:
         if (minDistanceR > minR && minDistanceR < maxR) {
             leftDistance = query.distance(HyperbolicSpace::polarToCartesian(phi, minDistanceR));
         } else {
-            leftDistance = min(a.distance(query), d.distance(query));
+            leftDistance = std::min(a.distance(query), d.distance(query));
         }
         if (leftDistance <= radius) return false;
 
@@ -286,7 +281,7 @@ public:
         if (minDistanceR > minR && minDistanceR < maxR) {
             rightDistance = query.distance(HyperbolicSpace::polarToCartesian(phi, minDistanceR));
         } else {
-            rightDistance = min(b.distance(query), c.distance(query));
+            rightDistance = std::min(b.distance(query), c.distance(query));
         }
         if (rightDistance <= radius) return false;
         return true;

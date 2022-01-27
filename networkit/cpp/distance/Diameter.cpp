@@ -268,11 +268,7 @@ edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
         edgeweight vd = estimateFrom(u);
         DEBUG("sampled vertex diameter from node ", u, ": ", vd);
         #pragma omp critical
-        {
-            if (vd > vdMax) {
-                vdMax = vd;
-            }
-        }
+        vdMax = std::max(vdMax, vd);
     }
 
     return vdMax;
