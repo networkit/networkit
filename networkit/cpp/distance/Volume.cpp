@@ -51,15 +51,10 @@ std::vector<double> Volume::volume(const Graph &G, std::vector<double> rs, count
     double rmax = *std::max_element(std::begin(rs), std::end(rs));
     for (count j = 0; j < samples; j++) {
         std::unordered_map<node, double> ms = Volume::nodesWithinDistance(G, rmax, GraphTools::randomNode(G));
-        count i = 0;
-        for (const auto &r : rs) {
-            for (const auto &it : ms) {
-                if (it.second <= r) {
-                    xs[i] += 1;
-                }
-            }
-            i++;
-        }
+        for (count i = 0; i < rs.size(); ++i)
+            xs[i] += std::count_if(ms.begin(), ms.end(), [&](const auto &nodeDist) -> bool {
+                return nodeDist.second <= rs[i];
+            });
     }
     std::vector<double> ys;
     ys.reserve(xs.size());
