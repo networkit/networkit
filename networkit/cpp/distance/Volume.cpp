@@ -58,9 +58,8 @@ std::vector<double> Volume::volume(const Graph &G, std::vector<double> rs, count
     }
     std::vector<double> ys;
     ys.reserve(xs.size());
-    for (const auto &x : xs) {
-        ys.push_back(x / samples);
-    }
+    std::transform(xs.cbegin(), xs.cend(), std::back_inserter(ys),
+                   [samples](double x) { return x / static_cast<double>(samples); });
     return ys;
 }
 
