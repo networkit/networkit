@@ -46,9 +46,9 @@ void NeighborhoodFunction::run() {
             }
         }
     }
-    for (index i = 1; i < size-1; ++i) {
-        result[i] += result[i-1];
-    }
+
+    std::partial_sum(result.begin(), result.end(), result.begin());
+
     hasRun = true;
 }
 
