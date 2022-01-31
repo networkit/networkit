@@ -101,7 +101,9 @@ RasterReader::read(const std::string& path) {
         yub = ylb;
         ylb -= ydelta;
     }
+#ifndef NDEBUG
     DEBUG("Created ", xcoords.size(), " 2D points, validation: ", validate, " vs ", xcoords.size() / normalizationFactor);
+#endif
     return std::make_pair(xcoords, ycoords);
 }
 
