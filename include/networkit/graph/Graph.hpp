@@ -2283,7 +2283,11 @@ void Graph::sortEdges(Lambda lambda) {
         if (adjList.size() > indices.size())
             indices.resize(adjList.size());
 
-        const auto indicesEnd = indices.begin() + adjList.size();
+        const auto indicesEnd =
+            indices.begin()
+            + static_cast<
+                std::iterator_traits<std::vector<index>::const_iterator>::difference_type>(
+                adjList.size());
         std::iota(indices.begin(), indicesEnd, 0);
 
         if (isWeighted()) {
