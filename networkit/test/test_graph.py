@@ -263,7 +263,19 @@ class TestGraph(unittest.TestCase):
 		self.assertEqual(G.numberOfNodes(), G2.numberOfNodes())
 		self.assertEqual(G.numberOfEdges(), G2.numberOfEdges())
 		self.assertEqual(G.edgeId(0,1), G2.edgeId(0,1))
-		
+
+	def testSpanningForest(self):
+		G = self.getSmallGraph()
+		sf = nk.graph.SpanningForest(G)
+		sf.run()
+		F = sf.getForest()
+
+		self.assertEqual(G.numberOfNodes(), F.numberOfNodes())
+		for u in F.iterNodes():
+			self.assertTrue(F.degree(u) > 0 or G.degree(u) == 0)
+
+		for u, v in F.iterEdges():
+			self.assertTrue(G.hasEdge(u, v))
 
 if __name__ == "__main__":
 	unittest.main()
