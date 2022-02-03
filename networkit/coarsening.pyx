@@ -22,6 +22,8 @@ cdef extern from "<networkit/coarsening/GraphCoarsening.hpp>":
 		map[node, vector[node]] getCoarseToFineNodeMapping() except +
 
 cdef class GraphCoarsening(Algorithm):
+	""" Abstract base class for coarsening measures"""
+
 	cdef Graph _G
 
 	def __init__(self, *args, **namedargs):
@@ -29,12 +31,42 @@ cdef class GraphCoarsening(Algorithm):
 			raise RuntimeError("Error, you may not use GraphCoarsening directly, use a sub-class instead")
 
 	def getCoarseGraph(self):
+		"""
+		getCoarseGraph()
+
+		Returns the coarse graph
+
+		Returns
+		-------
+		networkit.Graph
+			Coarse graph
+		"""
 		return Graph(0).setThis((<_GraphCoarsening*>(self._this)).getCoarseGraph())
 
 	def getFineToCoarseNodeMapping(self):
+		"""
+		getCoarseGraph()
+
+		Returns the coarse graph
+
+		Returns
+		-------
+		list
+			List containing mapping, whereas index represents node u from fine graph and value represents node v from coarse graph  
+		"""
 		return (<_GraphCoarsening*>(self._this)).getFineToCoarseNodeMapping()
 
 	def getCoarseToFineNodeMapping(self):
+		"""
+		getCoarseGraph()
+
+		Returns the coarse graph
+
+		Returns
+		-------
+		map[node, list]
+			Map containing node from coarse graph and all its mappings from finer graph
+		"""
 		return (<_GraphCoarsening*>(self._this)).getCoarseToFineNodeMapping()
 
 
@@ -45,6 +77,20 @@ cdef extern from "<networkit/coarsening/ParallelPartitionCoarsening.hpp>":
 
 
 cdef class ParallelPartitionCoarsening(GraphCoarsening):
+	"""
+	ParallelPartitionCoarsening(G, zeta, parallel = True)
+	
+	Coarsens graph according to a partition.
+ 	
+ 	Parameters
+ 	----------
+ 	G : networkit.Graph
+		The graph.
+	zeta : networkit.Partition
+		The partition, which is used for coarsening.
+ 	parallel : bool, optional
+		If true, algorithm runs in parallel
+	"""
 	def __cinit__(self, Graph G not None, Partition zeta not None, parallel = True):
 		self._this = new _ParallelPartitionCoarsening(G._this, zeta._this, parallel)
 
@@ -55,14 +101,19 @@ cdef extern from "<networkit/coarsening/MatchingCoarsening.hpp>":
 
 
 cdef class MatchingCoarsening(GraphCoarsening):
-	"""Coarsens graph according to a matching.
+	"""
+	MatchingCoarsening(G, M, noSelfLoops=False)
+	
+	Coarsens graph according to a matching.
  	
- 	Parameters:
- 	-----------
+ 	Parameters
+ 	----------
  	G : networkit.Graph
-	M : Matching
+		The graph.
+	M : networkit.matching.Matching
+		The matching, which is used for coarsening.
  	noSelfLoops : bool, optional
-		if true, self-loops are not produced
+		If true, self-loops are not produced
 	"""
 
 	def __cinit__(self, Graph G not None, Matching M not None, bool_t noSelfLoops=False):

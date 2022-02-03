@@ -16,7 +16,21 @@ cdef extern from "cython_helper.h":
 	void throw_runtime_error(string message)
 
 def stdstring(pystring):
-	""" convert a Python string to a bytes object which is automatically coerced to std::string"""
+	""" 
+	stdstring(pystring)
+
+	Convert a Python string to a bytes object which is automatically coerced to std::string
+	
+	Parameters
+	----------
+	pystring : str
+		Python string
+
+	Returns
+	-------
+	str 
+		Original string in utf-8 encoding
+	"""
 	pybytes = pystring.encode("utf-8")
 	return pybytes
 
@@ -47,6 +61,8 @@ cdef extern from "<networkit/clique/MaximalCliques.hpp>":
 
 cdef class MaximalCliques(Algorithm):
 	"""
+	MaximalCliques(G, maximumOnly = False, callback = None)
+
 	Algorithm for listing all maximal cliques.
 
 	The implementation is based on the "hybrid" algorithm described in
@@ -57,14 +73,14 @@ cdef class MaximalCliques(Algorithm):
 	Experimental Algorithms (pp. 364375). Springer Berlin Heidelberg.
 	Retrieved from http://link.springer.com/chapter/10.1007/978-3-642-20662-7_31
 
-	The running time of this algorithm should be in O(d^2 * n * 3^{d/3})
+	The running time of this algorithm should be in :math:`O(d^2 * n * 3^{d/3})`
 	where f is the degeneracy of the graph, i.e., the maximum core number.
 	The running time in practive depends on the structure of the graph. In
 	particular for complex networks it is usually quite fast, even graphs with
 	millions of edges can usually be processed in less than a minute.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to list the cliques for
 	maximumOnly : bool
@@ -104,15 +120,18 @@ cdef class MaximalCliques(Algorithm):
 
 	def getCliques(self):
 		"""
+		getCliques()
+
 		Return all found cliques unless a callback was given.
 
 		This method will throw if a callback was given and thus the cliques were not stored.
 		If only the maximum clique was stored, it will return exactly one clique unless the graph
 		is empty.
 
-		Returns:
-		--------
-		A list of cliques, each being represented as a list of nodes.
+		Returns
+		-------
+		list
+			A list of cliques, each being represented as a list of nodes.
 		"""
 		return (<_MaximalCliques*>(self._this)).getCliques()
 

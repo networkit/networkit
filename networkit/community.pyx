@@ -1269,7 +1269,7 @@ cdef class LocalCommunityEvaluation(Algorithm):
 
 		Returns
 		-------
-		list[double]:
+		list(double):
 			The values of all clusters.
 		"""
 		if self._this == NULL:
