@@ -9,7 +9,7 @@
 #ifndef NETWORKIT_LINKPREDICTION_NEIGHBORHOOD_DISTANCE_INDEX_HPP_
 #define NETWORKIT_LINKPREDICTION_NEIGHBORHOOD_DISTANCE_INDEX_HPP_
 
-#include <math.h>
+#include <cmath>
 
 #include <networkit/linkprediction/LinkPredictor.hpp>
 
@@ -32,7 +32,7 @@ class NeighborhoodDistanceIndex final : public LinkPredictor {
     count uNeighborhood = G->degree(u);
     count vNeighborhood = G->degree(v);
     count intersection = NeighborhoodUtility::getCommonNeighbors(*G, u, v).size();
-    return ((double)intersection) / (sqrt(uNeighborhood * vNeighborhood));
+    return ((double)intersection) / (std::sqrt(uNeighborhood * vNeighborhood));
   }
 
 public:
