@@ -4,3 +4,6 @@
 [submodule "extlibs/tlx"]
 	path = extlibs/tlx
 	url = https://github.com/tlx/tlx
+[submodule "extlibs/ttmath"]
+	path = extlibs/ttmath
+	url = https://gitea.ttmath.org/tomasz.sowa/ttmath
