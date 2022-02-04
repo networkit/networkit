@@ -19,11 +19,6 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
 
-using std::vector;
-using std::min;
-using std::max;
-using std::cos;
-
 namespace NetworKit {
 
 template <class T>
@@ -163,12 +158,11 @@ public:
         }
         else {
             assert(children.size() > 0);
-            for (index i = 0; i < children.size(); i++) {
-                if (children[i].responsible(angle, R)) {
-                    children[i].addContent(input, angle, R);
+            for (auto &child : children)
+                if (child.responsible(angle, R)) {
+                    child.addContent(input, angle, R);
                     break;
                 }
-            }
             subTreeSize++;
         }
     }
@@ -262,13 +256,13 @@ public:
         double topDistance, bottomDistance, leftDistance, rightDistance;
 
         if (phi < leftAngle || phi > rightAngle) {
-            topDistance = min(c.distance(query), d.distance(query));
+            topDistance = std::min(c.distance(query), d.distance(query));
         } else {
             topDistance = abs(r - maxR);
         }
         if (topDistance <= radius) return false;
         if (phi < leftAngle || phi > rightAngle) {
-            bottomDistance = min(a.distance(query), b.distance(query));
+            bottomDistance = std::min(a.distance(query), b.distance(query));
         } else {
             bottomDistance = abs(r - minR);
         }
@@ -278,7 +272,7 @@ public:
         if (minDistanceR > minR && minDistanceR < maxR) {
             leftDistance = query.distance(HyperbolicSpace::polarToCartesian(phi, minDistanceR));
         } else {
-            leftDistance = min(a.distance(query), d.distance(query));
+            leftDistance = std::min(a.distance(query), d.distance(query));
         }
         if (leftDistance <= radius) return false;
 
@@ -286,7 +280,7 @@ public:
         if (minDistanceR > minR && minDistanceR < maxR) {
             rightDistance = query.distance(HyperbolicSpace::polarToCartesian(phi, minDistanceR));
         } else {
-            rightDistance = min(b.distance(query), c.distance(query));
+            rightDistance = std::min(b.distance(query), c.distance(query));
         }
         if (rightDistance <= radius) return false;
         return true;
@@ -403,8 +397,8 @@ public:
             assert(angles.size() == 0);
             assert(radii.size() == 0);
             vector<T> result;
-            for (index i = 0; i < children.size(); i++) {
-                std::vector<T> subresult = children[i].getElements();
+            for (const auto &child : children) {
+                std::vector<T> subresult = child.getElements();
                 result.insert(result.end(), subresult.begin(), subresult.end());
             }
             return result;
@@ -421,9 +415,8 @@ public:
             assert(content.size() == 0);
             assert(angles.size() == 0);
             assert(radii.size() == 0);
-            for (index i = 0; i < children.size(); i++) {
-                children[i].getCoordinates(anglesContainer, radiiContainer);
-            }
+            for (const auto &child : children)
+                child.getCoordinates(anglesContainer, radiiContainer);
         }
     }
 
@@ -463,9 +456,8 @@ public:
                 }
             }
         }	else {
-            for (index i = 0; i < children.size(); i++) {
-                children[i].getElementsInEuclideanCircle(center, radius, result, minAngle, maxAngle, lowR, highR);
-            }
+            for (const auto &child : children)
+                child.getElementsInEuclideanCircle(center, radius, result, minAngle, maxAngle, lowR, highR);
         }
     }
 
@@ -602,8 +594,8 @@ public:
      */
     count height() const {
         count result = 1;//if leaf node, the children loop will not execute
-        for (auto child : children) result = std::max(result, child.height()+1);
-        return result;
+        for (const auto &child : children) result = std::max(result, child.height()+1);
+        return std::max(count{1}, result);
     }
 
     /**
@@ -611,11 +603,8 @@ public:
      */
     count countLeaves() const {
         if (isLeaf) return 1;
-        count result = 0;
-        for (index i = 0; i < children.size(); i++) {
-            result += children[i].countLeaves();
-        }
-        return result;
+        return std::accumulate(children.begin(), children.end(), count{0},
+                               [](const auto &child) -> count { return child.countLeaves(); });
     }
 
     double getLeftAngle() const {
@@ -649,12 +638,12 @@ public:
     }
 
     index getCellID(double phi, double r) const {
-        if (!responsible(phi, r)) return NetworKit::none;
+        if (!responsible(phi, r)) return none;
         if (isLeaf) return getID();
         else {
-            for (int i = 0; i < children.size(); i++) {
-                index childresult = children[i].getCellID(phi, r);
-                if (childresult != NetworKit::none) return childresult;
+            for (const auto &child : children) {
+                index childresult = child.getCellID(phi, r);
+                if (childresult != none) return childresult;
             }
             throw std::runtime_error("No responsible child node found even though this node is responsible.");
         }
@@ -663,7 +652,7 @@ public:
     index getMaxIDInSubtree() const {
         if (isLeaf) return getID();
         else {
-            index result = -1;
+            index result = 0;
             for (int i = 0; i < 4; i++) {
                 result = std::max(children[i].getMaxIDInSubtree(), result);
             }

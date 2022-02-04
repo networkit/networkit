@@ -601,12 +601,8 @@ void MaxentStress::computeAlgebraicDistances(const Graph& graph, const count k) 
         }
     });
 
-    double minimumDist = minDist[0];
-    double maximumDist = maxDist[0];
-    for (node u = 1; u < G->numberOfNodes(); ++u) {
-        minimumDist = std::min(minimumDist, minDist[u]);
-        maximumDist = std::max(maximumDist, maxDist[u]);
-    }
+    const double minimumDist = *std::min_element(minDist.begin(), minDist.end()),
+                 maximumDist = *std::max_element(maxDist.begin(), maxDist.end());
 
     INFO("[min, max] = [", minimumDist, ",", maximumDist, "]");
 

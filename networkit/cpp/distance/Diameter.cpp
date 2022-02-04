@@ -101,11 +101,9 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &
     std::vector<count> eccLowerBound(G.upperNodeIdBound()), eccUpperBound(G.upperNodeIdBound());
     std::vector<bool> finished(G.upperNodeIdBound());
 
-    for (node u = 0; u < G.upperNodeIdBound(); ++u) {
-        if (G.hasNode(u)) {
-            eccUpperBound[u] = G.numberOfNodes();
-        }
-    }
+    G.parallelForNodes([&](node u) {
+        eccUpperBound[u] = G.numberOfNodes();
+    });
 
     ConnectedComponents comp(G);
     comp.run();
@@ -268,11 +266,7 @@ edgeweight Diameter::estimatedVertexDiameter(const Graph& G, count samples) {
         edgeweight vd = estimateFrom(u);
         DEBUG("sampled vertex diameter from node ", u, ": ", vd);
         #pragma omp critical
-        {
-            if (vd > vdMax) {
-                vdMax = vd;
-            }
-        }
+        vdMax = std::max(vdMax, vd);
     }
 
     return vdMax;
@@ -304,22 +298,21 @@ edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph& G) {
         });
         vd ++; //we need the number of nodes, not the number of edges
     }
-    else {
+    else if (G.isEmpty()) {
+        vd = 0;
+    } else {
         ConnectedComponents cc(G);
         DEBUG("finding connected components");
         cc.run();
         INFO("Number of components ", cc.numberOfComponents());
         DEBUG("Estimating size of the largest component");
-        std::map<count, count> sizes = cc.getComponentSizes();
-        count largest_comp_size = 0;
-        for(auto it = sizes.cbegin(); it != sizes.cend(); ++it) {
-            DEBUG(it->second);
-            if (it->second > largest_comp_size) {
-                largest_comp_size = it->second;
-            }
-        }
-        INFO("Largest component size: ", largest_comp_size);
-        vd = largest_comp_size;
+        const auto compSizes = cc.getComponentSizes();
+        vd = std::max_element(
+                 compSizes.begin(), compSizes.end(),
+                 [](const auto &c1, const auto &c2) -> bool { return c1.second < c2.second; })
+                 ->second;
+
+        INFO("Largest component size: ", vd);
     }
     return vd;
 }
