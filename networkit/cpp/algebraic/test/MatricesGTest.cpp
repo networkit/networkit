@@ -991,16 +991,16 @@ void MatricesGTest::testIncidenceMatrix() {
     ASSERT_EQ(G.numberOfNodes(), mat.numberOfRows());
     ASSERT_EQ(G.numberOfEdges(), mat.numberOfColumns());
 
-    EXPECT_EQ(sqrt(G.weight(0,1)), mat(0,0));
-    EXPECT_EQ(-sqrt(G.weight(0,1)), mat(1,0));
+    EXPECT_EQ(std::sqrt(G.weight(0,1)), mat(0,0));
+    EXPECT_EQ(-std::sqrt(G.weight(0,1)), mat(1,0));
     for (uint64_t i = 2; i < mat.numberOfRows(); ++i) {
         EXPECT_EQ(0.0, mat(i, 0));
     }
 
-    EXPECT_EQ(-sqrt(G.weight(0,2)), mat(2,1));
+    EXPECT_EQ(-std::sqrt(G.weight(0,2)), mat(2,1));
 
-    EXPECT_EQ(-sqrt(G.weight(0,3)), mat(3,2));
-    EXPECT_EQ(-sqrt(G.weight(2,3)), mat(3,3));
+    EXPECT_EQ(-std::sqrt(G.weight(0,3)), mat(3,2));
+    EXPECT_EQ(-std::sqrt(G.weight(2,3)), mat(3,3));
 
     for (uint64_t i = 0; i < mat.numberOfRows(); ++i) {
         EXPECT_EQ(0.0, mat(i, 5));
@@ -1009,9 +1009,9 @@ void MatricesGTest::testIncidenceMatrix() {
     Vector row0 = mat.row(0);
     ASSERT_EQ(row0.getDimension(), mat.numberOfColumns());
 
-    EXPECT_EQ(sqrt(G.weight(0,1)), row0[0]);
-    EXPECT_EQ(sqrt(G.weight(0,2)), row0[1]);
-    EXPECT_EQ(sqrt(G.weight(0,3)), row0[2]);
+    EXPECT_EQ(std::sqrt(G.weight(0,1)), row0[0]);
+    EXPECT_EQ(std::sqrt(G.weight(0,2)), row0[1]);
+    EXPECT_EQ(std::sqrt(G.weight(0,3)), row0[2]);
     for (uint64_t j = 3; j < row0.getDimension(); ++j) {
         EXPECT_EQ(0.0, row0[j]);
     }

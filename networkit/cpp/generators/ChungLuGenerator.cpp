@@ -38,7 +38,7 @@ ChungLuGenerator::ChungLuGenerator(const std::vector<count> &degreeSequence) :
                 if (p != 1.0) {
                     double randVal = Aux::Random::probability();
                     /* Calculate the distance to the next potential neighbour*/
-                    v = v + (node) std::floor(log(randVal)/log(1 - p));
+                    v = v + (node) std::floor(std::log(randVal)/std::log(1 - p));
                 }
                 if ((count) v < n) {
                     double q = std::min(((double) seq[u]) * ((double) seq[v]) / sum_deg, 1.0);

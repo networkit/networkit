@@ -294,7 +294,7 @@ DynamicMatrix DynamicMatrix::incidenceMatrix(const Graph& graph, double zero) {
     if (graph.isDirected()) {
         graph.forEdges([&](node u, node v, edgeweight weight, edgeid edgeId) {
             if (u != v) {
-                edgeweight w = sqrt(weight);
+                edgeweight w = std::sqrt(weight);
                 I.setValue(u, edgeId, w);
                 I.setValue(v, edgeId, -w);
             }
@@ -302,7 +302,7 @@ DynamicMatrix DynamicMatrix::incidenceMatrix(const Graph& graph, double zero) {
     } else {
         graph.forEdges([&](node u, node v, edgeweight weight, edgeid edgeId){
             if (u != v) {
-                edgeweight w = sqrt(weight);
+                edgeweight w = std::sqrt(weight);
                 if (u < v) { // orientation: small node number -> great node number
                     I.setValue(u, edgeId, w);
                     I.setValue(v, edgeId, -w);
@@ -346,7 +346,7 @@ DynamicMatrix DynamicMatrix::normalizedLaplacianMatrix(const Graph& graph, doubl
     graph.forNodes([&](const node i){
         graph.forNeighborsOf(i, [&](const node j, double weight){
             if (i != j) {
-                nL.setValue(i, j, -weight/sqrt(weightedDegrees[i] * weightedDegrees[j]));
+                nL.setValue(i, j, -weight/std::sqrt(weightedDegrees[i] * weightedDegrees[j]));
             }
         });
 

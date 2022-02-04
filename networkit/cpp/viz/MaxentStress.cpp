@@ -106,7 +106,7 @@ void MaxentStress::run() {
             oldCoordinates = newCoordinates;
 
             t.start();
-            newLowerBound = floor(5 * std::log(numSolves));
+            newLowerBound = std::floor(5 * std::log(numSolves));
             if (newLowerBound != currentLowerBound) {
                 repulsiveForces = CoordinateVector(dim, Vector(G->numberOfNodes(), 0));
                 Octree<double> octree(oldCoordinates);
@@ -281,7 +281,7 @@ double MaxentStress::maxentMeasure() {
         augmentedGraph.forNodes([&](node v) {
             if (u == v) return;
             double dist = std::max(this->vertexCoordinates[u].distance(this->vertexCoordinates[v]), 1e-5);
-            entropy += (fabs(q) < 0.001)? log(dist) : pow(dist, -q);
+            entropy += (std::fabs(q) < 0.001)? std::log(dist) : std::pow(dist, -q);
         });
     }
 
@@ -291,11 +291,11 @@ double MaxentStress::maxentMeasure() {
         augmentedGraph.forNeighborsOf(u, [&](node v, edgeweight w) {
             double dist = std::max(this->vertexCoordinates[u].distance(this->vertexCoordinates[v]), 1e-5);
             energy += (dist - w)*(dist - w)/(w*w);
-            entropy -= (fabs(q) < 0.001)? log(dist) : pow(dist, -q);
+            entropy -= (std::fabs(q) < 0.001)? std::log(dist) : std::pow(dist, -q);
         });
     }
 
-    if(fabs(q) > 0.001) {
+    if(std::fabs(q) > 0.001) {
         entropy *= -sign(q);
     }
 
@@ -307,7 +307,7 @@ double MaxentStress::meanDistanceError() {
     double sum = 0.0;
     for (node u = 0; u < knownDistances.size(); ++u) {
         for (const ForwardEdge& edge : knownDistances[u]) {
-            sum += fabs(vertexCoordinates[u].distance(vertexCoordinates[edge.head]) - edge.weight) / edge.weight;
+            sum += std::fabs(vertexCoordinates[u].distance(vertexCoordinates[edge.head]) - edge.weight) / edge.weight;
         }
     }
 
@@ -324,7 +324,7 @@ double MaxentStress::ldme() {
     }
 
     sum /= knownDistancesCardinality;
-    return sqrt(sum);
+    return std::sqrt(sum);
 }
 
 bool MaxentStress::isConverged(const CoordinateVector& newCoords, const CoordinateVector& oldCoords) {
@@ -438,7 +438,7 @@ void MaxentStress::approxRepulsiveForces(const CoordinateVector& coordinates, co
         Point<double> pI = getPoint(coordinates, i);
         auto approximateNeighbor = [&](const count numNodes, const Point<double>& centerOfMass, const double sqDist) {
             if (sqDist < 1e-5) return;
-            double factor = qSign * numNodes * 1.0/pow(sqDist, q2);
+            double factor = qSign * numNodes * 1.0/std::pow(sqDist, q2);
             for (index d = 0; d < dim; ++d) {
                 b[d][i] += factor * (pI[d] - centerOfMass[d]);
             }
@@ -590,7 +590,7 @@ void MaxentStress::computeAlgebraicDistances(const Graph& graph, const count k) 
                         if (algebraicDist == 0.0) {
                             algebraicDist = 1e-5;
                         }
-                        algebraicDist /= sqrt(static_cast<double>(G->degree(u) * G->degree(w)));
+                        algebraicDist /= std::sqrt(static_cast<double>(G->degree(u) * G->degree(w)));
                         knownDistances[u].push_back({w, algebraicDist});
                         if (std::isnan(algebraicDist)) INFO("Warning: nan dist");
                         minDist[u] = std::min(minDist[u], algebraicDist);

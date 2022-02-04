@@ -25,7 +25,7 @@ bool isSymmetric(const Matrix &matrix) {
     bool output = true;
     matrix.forNonZeroElementsInRowOrder(
         [&](NetworKit::index i, NetworKit::index j, NetworKit::edgeweight w) {
-            if (fabs(matrix(j, i) - w) > NetworKit::FLOAT_EPSILON) {
+            if (std::fabs(matrix(j, i) - w) > NetworKit::FLOAT_EPSILON) {
                 output = false;
                 return;
             }
@@ -51,7 +51,7 @@ bool isSDD(const Matrix &matrix) {
             if (i == j) {
                 row_sum[i] += value;
             } else {
-                row_sum[i] -= fabs(value);
+                row_sum[i] -= std::fabs(value);
             }
         });
 
@@ -82,7 +82,7 @@ bool isLaplacian(const Matrix &matrix) {
         });
 
     return right_sign && std::all_of(row_sum.begin(), row_sum.end(), [](double val) {
-               return fabs(val) < NetworKit::FLOAT_EPSILON;
+               return std::fabs(val) < NetworKit::FLOAT_EPSILON;
            });
 }
 

@@ -313,7 +313,7 @@ private:
 template <typename T>
 Octree<T>::Octree(const std::vector<Vector> &points) {
     dimensions = points.size();
-    numChildrenPerNode = pow(2, dimensions);
+    numChildrenPerNode = std::pow(2, dimensions);
     batchInsert(points);
 }
 
@@ -337,7 +337,7 @@ void Octree<T>::batchInsert(const std::vector<Vector> &points) {
         }
 
         sideLength =
-            std::max(sideLength, fabs(maxVal - minVal) * 1.005); // add 0.5% to bounding box
+            std::max(sideLength, std::fabs(maxVal - minVal) * 1.005); // add 0.5% to bounding box
         center[d] = (minVal + maxVal) / 2.0;
     }
 

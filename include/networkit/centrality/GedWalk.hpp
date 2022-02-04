@@ -173,7 +173,8 @@ double GedWalk::scoreOfGroup(InputIt first, InputIt last, double scoreEpsilon) {
         groupScore = result.score;
         groupW = result.w;
         if (boundStrategy == BoundStrategy::spectral) {
-            const double gamma = sqrt(G->numberOfNodes()) * (sigmaMax / (1 - alpha * sigmaMax));
+            const double gamma =
+                std::sqrt(G->numberOfNodes()) * (sigmaMax / (1 - alpha * sigmaMax));
             groupBound = result.score + alphas[nLevels + 1] * gamma * graphW;
         } else if (boundStrategy == BoundStrategy::geometric) {
             const double gamma = (degInMax / (1 - alpha * degInMax));

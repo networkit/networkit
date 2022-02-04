@@ -134,20 +134,22 @@ public:
      * @param area The area of the hyperbolic circle
      * @param return Radius of a hyperbolic circle with the given area
      */
-    static inline double hyperbolicAreaToRadius(double area) { return acosh(area / (2 * PI) + 1); }
+    static inline double hyperbolicAreaToRadius(double area) {
+        return std::acosh(area / (2 * PI) + 1);
+    }
 
     static inline double radiusToHyperbolicArea(double radius) {
-        return 2 * PI * (cosh(radius) - 1);
+        return 2 * PI * (std::cosh(radius) - 1);
     }
 
     static double getExpectedDegree(double n, double alpha, double R) {
         double gamma = 2 * alpha + 1;
         double xi = (gamma - 1) / (gamma - 2);
-        double firstSumTerm = exp(-R / 2);
+        double firstSumTerm = std::exp(-R / 2);
         double secondSumTerm =
-            exp(-alpha * R)
+            std::exp(-alpha * R)
             * (alpha * (R / 2)
-                   * ((PI / 4) * pow((1 / alpha), 2) - (PI - 1) * (1 / alpha) + (PI - 2))
+                   * ((PI / 4) * std::pow((1 / alpha), 2) - (PI - 1) * (1 / alpha) + (PI - 2))
                - 1);
         double expectedDegree = (2 / PI) * xi * xi * n * (firstSumTerm + secondSumTerm);
         return expectedDegree;
@@ -158,7 +160,7 @@ public:
         double gamma = 2 * alpha + 1;
         double xiInv = ((gamma - 2) / (gamma - 1));
         double v = k * (PI / 2) * xiInv * xiInv;
-        double currentR = 2 * log(n / v);
+        double currentR = 2 * std::log(n / v);
         double lowerBound = currentR / 2;
         double upperBound = currentR * 2;
         assert(getExpectedDegree(n, alpha, lowerBound) > k);
@@ -186,12 +188,12 @@ public:
         } else {
             double beta = 1 / T;
             if (T < 1) { // cold regime
-                double Iinv = ((beta / PI) * sin(PI / beta));
+                double Iinv = ((beta / PI) * std::sin(PI / beta));
                 double v = (targetAvgDegree * Iinv) * (PI / 2) * xiInv * xiInv;
-                result = 2 * log(n / v);
+                result = 2 * std::log(n / v);
             } else { // hot regime
-                double v = targetAvgDegree * (1 - beta) * pow((PI / 2), beta) * xiInv * xiInv;
-                result = 2 * log(n / v) / beta;
+                double v = targetAvgDegree * (1 - beta) * std::pow((PI / 2), beta) * xiInv * xiInv;
+                result = 2 * std::log(n / v) / beta;
             }
         }
         return result;

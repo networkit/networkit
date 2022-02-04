@@ -117,15 +117,15 @@ public:
             if (splitTheoretical) {
                 double hyperbolicOuter = HyperbolicSpace::EuclideanRadiusToHyperbolic(maxR);
                 double hyperbolicInner = HyperbolicSpace::EuclideanRadiusToHyperbolic(minR);
-                double hyperbolicMiddle = acosh((1-balance)*cosh(alpha*hyperbolicOuter) + balance*cosh(alpha*hyperbolicInner))/alpha;
+                double hyperbolicMiddle = std::acosh((1-balance)*std::cosh(alpha*hyperbolicOuter) + balance*std::cosh(alpha*hyperbolicInner))/alpha;
                 middleR = HyperbolicSpace::hyperbolicRadiusToEuclidean(hyperbolicMiddle);
             } else {
                 double nom = maxR - minR;
-                double denom = pow((1-maxR*maxR)/(1-minR*minR), 0.5)+1;
+                double denom = std::pow((1-maxR*maxR)/(1-minR*minR), 0.5)+1;
                 middleR = nom/denom + minR;
             }
         } else {
-            middleR = acosh((1-balance)*cosh(alpha*maxR) + balance*cosh(alpha*minR))/alpha;
+            middleR = std::acosh((1-balance)*std::cosh(alpha*maxR) + balance*std::cosh(alpha*minR))/alpha;
         }
 
         assert(middleR < maxR);
@@ -275,31 +275,31 @@ public:
         double topDistance, bottomDistance, leftDistance, rightDistance;
 
         if (phi < leftAngle || phi > rightAngle) {
-            topDistance = min(c.distance(query), d.distance(query));
+            topDistance = std::min(c.distance(query), d.distance(query));
         } else {
-            topDistance = abs(r - maxR);
+            topDistance = std::abs(r - maxR);
         }
         if (topDistance <= radius) return false;
         if (phi < leftAngle || phi > rightAngle) {
-            bottomDistance = min(a.distance(query), b.distance(query));
+            bottomDistance = std::min(a.distance(query), b.distance(query));
         } else {
-            bottomDistance = abs(r - minR);
+            bottomDistance = std::abs(r - minR);
         }
         if (bottomDistance <= radius) return false;
 
-        double minDistanceR = r*cos(abs(phi-leftAngle));
+        double minDistanceR = r*std::cos(std::abs(phi-leftAngle));
         if (minDistanceR > minR && minDistanceR < maxR) {
             leftDistance = query.distance(HyperbolicSpace::polarToCartesian(phi, minDistanceR));
         } else {
-            leftDistance = min(a.distance(query), d.distance(query));
+            leftDistance = std::min(a.distance(query), d.distance(query));
         }
         if (leftDistance <= radius) return false;
 
-        minDistanceR = r*cos(abs(phi-rightAngle));
+        minDistanceR = r*std::cos(std::abs(phi-rightAngle));
         if (minDistanceR > minR && minDistanceR < maxR) {
             rightDistance = query.distance(HyperbolicSpace::polarToCartesian(phi, minDistanceR));
         } else {
-            rightDistance = min(b.distance(query), c.distance(query));
+            rightDistance = std::min(b.distance(query), c.distance(query));
         }
         if (rightDistance <= radius) return false;
         return true;
@@ -337,14 +337,14 @@ public:
             r_h = r;
         }
 
-        double coshr = cosh(r_h);
-        double sinhr = sinh(r_h);
-        double coshMinR = cosh(minRHyper);
-        double coshMaxR = cosh(maxRHyper);
-        double sinhMinR = sinh(minRHyper);
-        double sinhMaxR = sinh(maxRHyper);
-        double cosDiffLeft = cos(phi - leftAngle);
-        double cosDiffRight = cos(phi - rightAngle);
+        double coshr = std::cosh(r_h);
+        double sinhr = std::sinh(r_h);
+        double coshMinR = std::cosh(minRHyper);
+        double coshMaxR = std::cosh(maxRHyper);
+        double sinhMinR = std::sinh(minRHyper);
+        double sinhMaxR = std::sinh(maxRHyper);
+        double cosDiffLeft = std::cos(phi - leftAngle);
+        double cosDiffRight = std::cos(phi - rightAngle);
 
         /**
          * If the query point is not within the quadnode, the distance minimum is on the border.
@@ -357,16 +357,16 @@ public:
         double lowerLeftDistance = coshMinR*coshr-sinhMinR*sinhr*cosDiffLeft;
         double upperLeftDistance = coshMaxR*coshr-sinhMaxR*sinhr*cosDiffLeft;
         if (responsible(phi, r)) coshMinDistance = 1; //strictly speaking, this is wrong
-        else coshMinDistance = min(lowerLeftDistance, upperLeftDistance);
+        else coshMinDistance = std::min(lowerLeftDistance, upperLeftDistance);
 
-        coshMaxDistance = max(lowerLeftDistance, upperLeftDistance);
-        //double a = cosh(r_h);
+        coshMaxDistance = std::max(lowerLeftDistance, upperLeftDistance);
+        //double a = std::cosh(r_h);
         double b = sinhr*cosDiffLeft;
-        double extremum = log((coshr+b)/(coshr-b))/2;
+        double extremum = std::log((coshr+b)/(coshr-b))/2;
         if (extremum < maxRHyper && extremum >= minRHyper) {
-            double extremeDistance = cosh(extremum)*coshr-sinh(extremum)*sinhr*cosDiffLeft;
-            coshMinDistance = min(coshMinDistance, extremeDistance);
-            coshMaxDistance = max(coshMaxDistance, extremeDistance);
+            double extremeDistance = std::cosh(extremum)*coshr-std::sinh(extremum)*sinhr*cosDiffLeft;
+            coshMinDistance = std::min(coshMinDistance, extremeDistance);
+            coshMaxDistance = std::max(coshMaxDistance, extremeDistance);
         }
         /**
          * cosh is a function from [0,\infty) to [1, \infty)
@@ -378,17 +378,17 @@ public:
         //Right border
         double lowerRightDistance = coshMinR*coshr-sinhMinR*sinhr*cosDiffRight;
         double upperRightDistance = coshMaxR*coshr-sinhMaxR*sinhr*cosDiffRight;
-        coshMinDistance = min(coshMinDistance, lowerRightDistance);
-        coshMinDistance = min(coshMinDistance, upperRightDistance);
-        coshMaxDistance = max(coshMaxDistance, lowerRightDistance);
-        coshMaxDistance = max(coshMaxDistance, upperRightDistance);
+        coshMinDistance = std::min(coshMinDistance, lowerRightDistance);
+        coshMinDistance = std::min(coshMinDistance, upperRightDistance);
+        coshMaxDistance = std::max(coshMaxDistance, lowerRightDistance);
+        coshMaxDistance = std::max(coshMaxDistance, upperRightDistance);
 
         b = sinhr*cosDiffRight;
-        extremum = log((coshr+b)/(coshr-b))/2;
+        extremum = std::log((coshr+b)/(coshr-b))/2;
         if (extremum < maxRHyper && extremum >= minRHyper) {
-            double extremeDistance = cosh(extremum)*coshr-sinh(extremum)*sinhr*cosDiffRight;
-            coshMinDistance = min(coshMinDistance, extremeDistance);
-            coshMaxDistance = max(coshMaxDistance, extremeDistance);
+            double extremeDistance = std::cosh(extremum)*coshr-std::sinh(extremum)*sinhr*cosDiffRight;
+            coshMinDistance = std::min(coshMinDistance, extremeDistance);
+            coshMaxDistance = std::max(coshMaxDistance, extremeDistance);
         }
 
         assert(coshMaxDistance >= 1);
@@ -396,12 +396,12 @@ public:
 
         //upper and lower borders
         if (phi >= leftAngle && phi < rightAngle) {
-            double lower = cosh(abs(r_h-minRHyper));
-            double upper = cosh(abs(r_h-maxRHyper));
-            coshMinDistance = min(coshMinDistance, lower);
-            coshMinDistance = min(coshMinDistance, upper);
-            coshMaxDistance = max(coshMaxDistance, upper);
-            coshMaxDistance = max(coshMaxDistance, lower);
+            double lower = std::cosh(std::abs(r_h-minRHyper));
+            double upper = std::cosh(std::abs(r_h-maxRHyper));
+            coshMinDistance = std::min(coshMinDistance, lower);
+            coshMinDistance = std::min(coshMinDistance, upper);
+            coshMaxDistance = std::max(coshMaxDistance, upper);
+            coshMaxDistance = std::max(coshMaxDistance, lower);
         }
 
         assert(coshMaxDistance >= 1);
@@ -414,18 +414,18 @@ public:
         if (mirrorphi >= leftAngle && mirrorphi < rightAngle) {
             double lower = coshMinR*coshr+sinhMinR*sinhr;
             double upper = coshMaxR*coshr+sinhMaxR*sinhr;
-            coshMinDistance = min(coshMinDistance, lower);
-            coshMinDistance = min(coshMinDistance, upper);
-            coshMaxDistance = max(coshMaxDistance, upper);
-            coshMaxDistance = max(coshMaxDistance, lower);
+            coshMinDistance = std::min(coshMinDistance, lower);
+            coshMinDistance = std::min(coshMinDistance, upper);
+            coshMaxDistance = std::max(coshMaxDistance, upper);
+            coshMaxDistance = std::max(coshMaxDistance, lower);
         }
 
         assert(coshMaxDistance >= 1);
         assert(coshMinDistance >= 1);
 
         double minDistance, maxDistance;
-        minDistance = acosh(coshMinDistance);
-        maxDistance = acosh(coshMaxDistance);
+        minDistance = std::acosh(coshMinDistance);
+        maxDistance = std::acosh(coshMaxDistance);
         assert(maxDistance >= 0);
         assert(minDistance >= 0);
         return std::pair<double, double>(minDistance, maxDistance);

@@ -69,7 +69,7 @@ public:
 
 template <class T>
 T Point2DWithIndex<T>::length() const {
-    return sqrt(x * x + y * y);
+    return std::sqrt(x * x + y * y);
 }
 
 template <class T>
@@ -86,7 +86,7 @@ T Point2DWithIndex<T>::squaredDistance(const Point2DWithIndex<T> &p) const {
 
 template <class T>
 T Point2DWithIndex<T>::distance(const Point2DWithIndex<T> &p) const {
-    return sqrt(squaredDistance(p));
+    return std::sqrt(squaredDistance(p));
 }
 
 template <class T>

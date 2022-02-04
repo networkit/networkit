@@ -586,7 +586,7 @@ TEST_F(GeneratorsGTest, testDynamicPathGenerator) {
 
 TEST_F(GeneratorsGTest, testErdosRenyiGenerator) {
     count n = 2000;
-    double p = 1.5 * (log(n) / (double) n);
+    double p = 1.5 * (std::log(n) / (double) n);
 
     ErdosRenyiGenerator generator(n, p);
     Graph G = generator.generate();

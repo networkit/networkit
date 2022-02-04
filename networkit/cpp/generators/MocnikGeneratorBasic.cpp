@@ -23,7 +23,7 @@ static inline double norm(std::vector<double> &v, double shift) {
     for (count j = 0; j < v.size(); j++) {
         x += (v[j] + shift) * (v[j] + shift);
     }
-    return sqrt(x);
+    return std::sqrt(x);
 }
 
 /**
@@ -34,7 +34,7 @@ static inline double dist(std::vector<double> &v, std::vector<double> &w) {
     for (count j = 0; j < v.size(); j++) {
         x += std::pow(v[j] - w[j], 2);
     }
-    x = sqrt(x);
+    x = std::sqrt(x);
     return x;
 }
 

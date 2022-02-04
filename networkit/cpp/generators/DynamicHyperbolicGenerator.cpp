@@ -170,9 +170,9 @@ void DynamicHyperbolicGenerator::moveNode(index toMove) {
     double hyperbolicRadius = radii[toMove];
 
     //angular movement
-    double maxcdf = cosh(alpha*R);
+    double maxcdf = std::cosh(alpha*R);
     double mincdf = 1;
-    double currcdf = cosh(alpha*hyperbolicRadius);
+    double currcdf = std::cosh(alpha*hyperbolicRadius);
 
     double newcosh = currcdf + alpha*radialMovement[toMove];
     double newphi = angles[toMove];
@@ -197,14 +197,14 @@ void DynamicHyperbolicGenerator::moveNode(index toMove) {
             newphi += PI;
         }
     }
-    double newradius = acosh(newcosh)/alpha;
+    double newradius = std::acosh(newcosh)/alpha;
     if (newradius >= R) newradius = std::nextafter(R, std::numeric_limits<double>::lowest());
     assert(newradius < R);
     assert(newradius >= 0);
 
     newphi += angularMovement[toMove]/newradius;
-    if (newphi < 0) newphi += (floor(-newphi/(2*PI))+1)*2*PI;
-    if (newphi > 2*PI) newphi -= floor(newphi/(2*PI))*2*PI;
+    if (newphi < 0) newphi += (std::floor(-newphi/(2*PI))+1)*2*PI;
+    if (newphi > 2*PI) newphi -= std::floor(newphi/(2*PI))*2*PI;
 
     angles[toMove] = newphi;
     radii[toMove] = newradius;
@@ -215,7 +215,7 @@ vector<index> DynamicHyperbolicGenerator::getNeighborsInBands(index i, bool both
     const double phi = angles[i];
     assert(bands.size() == bandAngles.size());
     assert(bands.size() == bandRadii.size() -1);
-    count expectedDegree = (4/PI)*nodeCount*exp(-(radii[i])/2);
+    count expectedDegree = (4/PI)*nodeCount*std::exp(-(radii[i])/2);
     vector<index> near;
     near.reserve(expectedDegree*1.1);
     for(index j = 0; j < bands.size(); j++){
@@ -254,7 +254,7 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
         }
         assert(T == 0 || beta == beta);
 
-        edgeProb = [beta, tresholdDistance](double distance) -> double {return 1 / (exp(beta*(distance-tresholdDistance)/2)+1);};
+        edgeProb = [beta, tresholdDistance](double distance) -> double {return 1 / (std::exp(beta*(distance-tresholdDistance)/2)+1);};
     }
 
     count oldStreamMarker = result.size();

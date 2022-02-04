@@ -29,7 +29,7 @@ std::unordered_map<node, double> Volume::nodesWithinDistance(const Graph &G, dou
                         msToCheckNew.push_back(m2);
                     }
                 } else {
-                    ms[m2] = fmin(ms[m2], r2);
+                    ms[m2] = std::fmin(ms[m2], r2);
                 }
             }
         }

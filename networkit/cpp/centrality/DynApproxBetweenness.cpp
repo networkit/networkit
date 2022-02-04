@@ -43,7 +43,7 @@ void DynApproxBetweenness::run() {
     edgeweight vd = diam.getDiameter().first;
 
     INFO("estimated diameter: ", vd);
-    r = ceil((universalConstant / (epsilon * epsilon)) * (floor(log2(vd - 2)) + 1 - log(delta)));
+    r = std::ceil((universalConstant / (epsilon * epsilon)) * (std::floor(std::log2(vd - 2)) + 1 - std::log(delta)));
     INFO("taking ", r, " path samples");
     sssp.clear();
     sssp.resize(r);

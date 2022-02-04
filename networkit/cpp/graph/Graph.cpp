@@ -44,7 +44,7 @@ Graph::Graph(std::initializer_list<WeightedEdge> edges) : Graph(0, true) {
 
     /* Number of nodes = highest node index + 1 */
     for (const auto &edge : edges) {
-        node x = max(edge.u, edge.v);
+        node x = std::max(edge.u, edge.v);
         while (numberOfNodes() <= x) {
             addNode();
         }

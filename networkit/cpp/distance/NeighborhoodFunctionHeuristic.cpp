@@ -22,7 +22,7 @@ namespace NetworKit {
 NeighborhoodFunctionHeuristic::NeighborhoodFunctionHeuristic(const Graph& G, count nSamples, SelectionStrategy strategy) :
     Algorithm(),
     G(&G),
-    nSamples(!nSamples ? (count)ceil(std::max((double)0.15f * G.numberOfNodes(), sqrt(G.numberOfEdges()))) : nSamples),
+    nSamples(!nSamples ? (count)std::ceil(std::max((double)0.15f * G.numberOfNodes(), std::sqrt(G.numberOfEdges()))) : nSamples),
     strategy(strategy) {
 
     if (G.isDirected())
@@ -91,7 +91,7 @@ void NeighborhoodFunctionHeuristic::run() {
             tmp += nf[tid][dist];
         }
         // accumulate nf
-        result[dist-1] = round(tmp * norm_factor);
+        result[dist-1] = std::round(tmp * norm_factor);
         if (dist > 1) {
             result[dist-1] += result[dist-2];
         }

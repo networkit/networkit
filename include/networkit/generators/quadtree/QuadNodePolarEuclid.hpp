@@ -102,7 +102,7 @@ public:
         if (splitTheoretical) {
             //Euclidean space is distributed equally
             middleAngle = (rightAngle - leftAngle) / 2 + leftAngle;
-            middleR = pow(maxR*maxR*(1-balance)+minR*minR*balance, 0.5);
+            middleR = std::pow(maxR*maxR*(1-balance)+minR*minR*balance, 0.5);
         } else {
             //median of points
             vector<double> sortedAngles = angles;
@@ -258,17 +258,17 @@ public:
         if (phi < leftAngle || phi > rightAngle) {
             topDistance = std::min(c.distance(query), d.distance(query));
         } else {
-            topDistance = abs(r - maxR);
+            topDistance = std::abs(r - maxR);
         }
         if (topDistance <= radius) return false;
         if (phi < leftAngle || phi > rightAngle) {
             bottomDistance = std::min(a.distance(query), b.distance(query));
         } else {
-            bottomDistance = abs(r - minR);
+            bottomDistance = std::abs(r - minR);
         }
         if (bottomDistance <= radius) return false;
 
-        double minDistanceR = r*cos(abs(phi-leftAngle));
+        double minDistanceR = r*std::cos(std::abs(phi-leftAngle));
         if (minDistanceR > minR && minDistanceR < maxR) {
             leftDistance = query.distance(HyperbolicSpace::polarToCartesian(phi, minDistanceR));
         } else {
@@ -276,7 +276,7 @@ public:
         }
         if (leftDistance <= radius) return false;
 
-        minDistanceR = r*cos(abs(phi-rightAngle));
+        minDistanceR = r*std::cos(std::abs(phi-rightAngle));
         if (minDistanceR > minR && minDistanceR < maxR) {
             rightDistance = query.distance(HyperbolicSpace::polarToCartesian(phi, minDistanceR));
         } else {
@@ -317,7 +317,7 @@ public:
         if (responsible(phi, r)) minDistance = 0;
 
         auto euclidDistancePolar = [](double phi_a, double r_a, double phi_b, double r_b){
-            return pow(r_a*r_a+r_b*r_b-2*r_a*r_b*cos(phi_a-phi_b), 0.5);
+            return std::pow(r_a*r_a+r_b*r_b-2*r_a*r_b*std::cos(phi_a-phi_b), 0.5);
         };
 
         auto updateMinMax = [&minDistance, &maxDistance, phi, r, euclidDistancePolar](double phi_b, double r_b){
@@ -331,13 +331,13 @@ public:
          * angular boundaries
          */
         //left
-        double extremum = r*cos(this->leftAngle - phi);
+        double extremum = r*std::cos(this->leftAngle - phi);
         if (extremum < maxR && extremum > minR) {
             updateMinMax(this->leftAngle, extremum);
         }
 
         //right
-        extremum = r*cos(this->rightAngle - phi);
+        extremum = r*std::cos(this->rightAngle - phi);
         if (extremum < maxR && extremum > minR) {
             updateMinMax(this->leftAngle, extremum);
         }

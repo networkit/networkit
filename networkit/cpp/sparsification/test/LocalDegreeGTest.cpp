@@ -70,7 +70,7 @@ double LocalDegreeGTest::getScore(const Graph& g, node x, node y, count rankX, c
     if (g.degree(x) == 1 || g.degree(y) == 1)
         return 1;
 
-    return 1 - log(rankX) / log(g.degree(y));
+    return 1 - std::log(rankX) / std::log(g.degree(y));
 }
 
 }

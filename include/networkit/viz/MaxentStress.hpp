@@ -245,7 +245,7 @@ private:
      */
     inline double distance(const CoordinateVector &coordinates, const index i,
                            const index j) const {
-        return sqrt(squaredDistance(coordinates, i, j));
+        return std::sqrt(squaredDistance(coordinates, i, j));
     }
 
     /**
@@ -270,7 +270,7 @@ private:
     inline double distance(const CoordinateVector &coordinates1,
                            const CoordinateVector &coordinates2, const index i,
                            const index j) const {
-        return sqrt(squaredDistance(coordinates1, coordinates2, i, j));
+        return std::sqrt(squaredDistance(coordinates1, coordinates2, i, j));
     }
 
     /**
@@ -286,7 +286,7 @@ private:
      * @param i
      */
     inline double length(const CoordinateVector &coordinates, const index i) const {
-        return sqrt(squaredLength(coordinates, i));
+        return std::sqrt(squaredLength(coordinates, i));
     }
 
     /**

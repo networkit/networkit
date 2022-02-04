@@ -157,7 +157,7 @@ void DynKatzCentrality::updateBatch(const std::vector<GraphEvent> &events){
             newlySeen.clear();
 
             // Update the Katz centrality from nPaths.
-            auto alpha_pow = pow(alpha, i);
+            auto alpha_pow = std::pow(alpha, i);
             #pragma omp parallel for
             for (omp_index m = 0; m < static_cast<omp_index>(seenNodes.size()); ++m) {
                 node v = seenNodes[m];
@@ -166,7 +166,7 @@ void DynKatzCentrality::updateBatch(const std::vector<GraphEvent> &events){
             }
         }else{
             // In this case, we're basically applying the static algorithm.
-            auto alpha_pow = pow(alpha, i);
+            auto alpha_pow = std::pow(alpha, i);
             G.balancedParallelForNodes([&](node u) {
                 nPaths[i][u] = 0;
                 G.forInEdgesOf(u, [&](node v, edgeweight) {
@@ -198,7 +198,7 @@ void DynKatzCentrality::updateBatch(const std::vector<GraphEvent> &events){
     reactivation_threshold -= rankTolerance;
     DEBUG("DynKatz: Reactivation threshold: ", reactivation_threshold);
 
-    auto alpha_pow = pow(alpha, i); // See doIteration().
+    auto alpha_pow = std::pow(alpha, i); // See doIteration().
     auto next_alpha_pow = alpha * alpha_pow;
     auto bound_factor = next_alpha_pow * (1/(1 - alpha * maxdeg));
     G.forNodes([&](node u){
@@ -252,7 +252,7 @@ void DynKatzCentrality::doIteration() {
 
     // Next, compute the ranking of active nodes for the current iteration.
     // GCC 6 is not smart enough to move the 'pow' out of the loop automatically.
-    auto alpha_pow = pow(alpha, r);
+    auto alpha_pow = std::pow(alpha, r);
     auto next_alpha_pow = alpha * alpha_pow;
     auto bound_factor = next_alpha_pow * (1/(1 - alpha * maxdeg));
     G.balancedParallelForNodes([&](node u){
@@ -331,7 +331,7 @@ bool DynKatzCentrality::checkConvergence() {
 
         assert(!activeRanking.empty());
 /*
-        double length = sqrt(G.parallelSumForNodes([&](node u) {
+        double length = std::sqrt(G.parallelSumForNodes([&](node u) {
             return (scoreData[u] * scoreData[u]);
         }));
         DEBUG("DynKatz: Vector length: ", length);

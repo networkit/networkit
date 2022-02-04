@@ -53,7 +53,7 @@ void SpanningEdgeCentrality::run() {
 
         lamg.solve(rhs, solution);
         double diff = solution[u] - solution[v];
-        scoreData[e] = fabs(diff); // TODO: check unweighted, fix weighted case, fix edge IDs!
+        scoreData[e] = std::fabs(diff); // TODO: check unweighted, fix weighted case, fix edge IDs!
         rhs[u] = 0.0;
         rhs[v] = 0.0;
     });
@@ -69,8 +69,8 @@ void SpanningEdgeCentrality::runApproximation() {
     const count n = G.numberOfNodes();
     const count m = G.numberOfEdges();
     double epsilon2 = tol * tol;
-    const count k = ceil(log2(n)) / epsilon2;
-    double randTab[3] = {1/sqrt(k), -1/sqrt(k)};
+    const count k = std::ceil(std::log2(n)) / epsilon2;
+    double randTab[3] = {1/std::sqrt(k), -1/std::sqrt(k)};
     Vector solution(n);
     scoreData.clear();
     scoreData.resize(m, 0.0);
@@ -108,8 +108,8 @@ void SpanningEdgeCentrality::runParallelApproximation() {
     const count n = G.numberOfNodes();
     const count m = G.numberOfEdges();
     double epsilon2 = tol * tol;
-    const count k = ceil(log2(n)) / epsilon2;
-    double randTab[3] = {1/sqrt(k), -1/sqrt(k)};
+    const count k = std::ceil(std::log2(n)) / epsilon2;
+    double randTab[3] = {1/std::sqrt(k), -1/std::sqrt(k)};
     std::vector<Vector> solutions(k, Vector(n));
     std::vector<Vector> rhs(k, Vector(n));
     scoreData.clear();
@@ -150,8 +150,8 @@ uint64_t SpanningEdgeCentrality::runApproximationAndWriteVectors(const std::stri
     const count n = G.numberOfNodes();
     const count m = G.numberOfEdges();
     const double epsilon2 = tol * tol;
-    const count k = ceil(log(n)) / epsilon2;
-    double randTab[3] = {1/sqrt(k), -1/sqrt(k)};
+    const count k = std::ceil(std::log(n)) / epsilon2;
+    double randTab[3] = {1/std::sqrt(k), -1/std::sqrt(k)};
     Vector solution(n);
     scoreData.clear();
     scoreData.resize(m, 0.0);
@@ -201,7 +201,7 @@ double SpanningEdgeCentrality::runForEdge(node u, node v) {
     TRACE("before solve for ", u, " and ", v);
 
     lamg.solve(rhs, solution);
-    return fabs(solution[u] - solution[v]); // TODO: fix weighted case, fix edge IDs!
+    return std::fabs(solution[u] - solution[v]); // TODO: fix weighted case, fix edge IDs!
 }
 
 

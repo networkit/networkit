@@ -38,8 +38,8 @@ inline double log_b(double x, double b) {
     if (x == 0) {
         throw std::domain_error("log(0) is undefined");
     }
-    assert(log(b) != 0);
-    return log(x) / log(b);
+    assert(std::log(b) != 0);
+    return std::log(x) / std::log(b);
 }
 
 } /* namespace MissingMath */

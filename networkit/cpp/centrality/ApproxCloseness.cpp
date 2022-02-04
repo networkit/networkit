@@ -52,7 +52,7 @@ void ApproxCloseness::run() {
         }
 
         G.parallelForNodes([&](node u) {
-            if (fabs(scoreData[u]) > 1e-9) {
+            if (std::fabs(scoreData[u]) > 1e-9) {
                 scoreData[u] = 1/scoreData[u];
             }
 
@@ -331,7 +331,7 @@ void ApproxCloseness::runOnPivot(index i, const std::vector<node> &pivot, const 
             }
 
             if (pivot[u] == i) {
-                if (epsilon == 0.0 || fabs(thresh[t] - d / epsilon) < 1e-9) {
+                if (epsilon == 0.0 || std::fabs(thresh[t] - d / epsilon) < 1e-9) {
                     nodes[t].push_back(u);
                 } else {
                     t++;

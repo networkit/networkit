@@ -46,8 +46,8 @@ TEST_F(GeometricGTest, testConversion) {
         HyperbolicSpace::cartesianToPolar(point, phi,r);
         EXPECT_GE(phi, 0) << "Point (" << point[0] << "," << point[1] << ") was not converted correctly";
         EXPECT_GE(r, 0);
-        EXPECT_LE(abs(phi - angles[i]), epsilon);
-        EXPECT_LE(abs(r - radii[i]), epsilon);
+        EXPECT_LE(std::abs(phi - angles[i]), epsilon);
+        EXPECT_LE(std::abs(r - radii[i]), epsilon);
     }
 }
 
@@ -73,12 +73,12 @@ TEST_F(GeometricGTest, testEuclideanCircleConsistency) {
         double r_e, euRadius;
         HyperbolicSpace::getEuclideanCircle(radii[i], R, r_e, euRadius);
         double mirrorangle = fmod(angles[i] + PI, 2*PI);
-        double mirrorradiusInside = abs(r_e - euRadius)-epsilon;
+        double mirrorradiusInside = std::abs(r_e - euRadius)-epsilon;
         Point2DWithIndex<double> counterPointInside = HyperbolicSpace::polarToCartesian(mirrorangle, mirrorradiusInside);
         EXPECT_LE(HyperbolicSpace::poincareMetric(cartesianPoint, counterPointInside), R) << "(" << cartesianPoint.getX() << ", " << cartesianPoint.getY() << ")"
                 << " and (" << counterPointInside.getX() << ", " << counterPointInside.getY() << ")" << " are " << HyperbolicSpace::poincareMetric(cartesianPoint, counterPointInside) << " apart from each other, which is more than " << R << ".";
 
-        double mirrorradiusOutside = abs(r_e - euRadius)+epsilon;
+        double mirrorradiusOutside = std::abs(r_e - euRadius)+epsilon;
         Point2DWithIndex<double> counterPointOutside = HyperbolicSpace::polarToCartesian(mirrorangle, mirrorradiusOutside);
         EXPECT_GE(HyperbolicSpace::poincareMetric(cartesianPoint, counterPointOutside), R);
 

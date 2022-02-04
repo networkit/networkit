@@ -95,7 +95,7 @@ static void testEre(const bool directed, const node n, const double prob) {
             auto count = edge_counts[edgeindex(u,v,n)];
             EXPECT_GE(count, 1u) << "edge(" << u << ", " << v << "), rounds=" << rounds;
             if (prob < 1.0) {
-                ASSERT_LE(count, log(rounds) * rounds * prob) << "edge(" << u << ", " << v << "), rounds=" << rounds;
+                ASSERT_LE(count, std::log(rounds) * rounds * prob) << "edge(" << u << ", " << v << "), rounds=" << rounds;
             }
         }
     }

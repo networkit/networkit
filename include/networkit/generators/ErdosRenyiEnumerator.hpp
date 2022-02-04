@@ -280,12 +280,12 @@ private:
          *  = 1 + floor((log2(X) - 64) * inv_log2_cp).
          */
         return 1 + static_cast<count>(
-            floor((log2(random_prob) - 8*sizeof(integral_t)) * inv_log2_cp)
+            std::floor((std::log2(random_prob) - 8*sizeof(integral_t)) * inv_log2_cp)
         );
     }
 
     count skip_distance(double random_prob, double inv_log2_cp) const {
-        return 1 + static_cast<count>(floor((log2(random_prob)) * inv_log2_cp));
+        return 1 + static_cast<count>(std::floor((std::log2(random_prob)) * inv_log2_cp));
     }
 
 // SFINAE to determine and construct the right uniform distribution

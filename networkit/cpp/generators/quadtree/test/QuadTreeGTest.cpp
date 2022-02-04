@@ -288,12 +288,12 @@ TEST_F(QuadTreeGTest, testEuclideanCircle) {
         double maxR = query.length() + radius;
         double minPhi, maxPhi, phi_c, r_c, spread;
         if (minR < 0) {
-            maxR = std::max(abs(minR), maxR);
+            maxR = std::max(std::abs(minR), maxR);
             minR = 0;
             minPhi = 0;
             maxPhi = 2*PI;
         } else {
-            spread = asin(radius / query.length());
+            spread = std::asin(radius / query.length());
             HyperbolicSpace::cartesianToPolar(query, phi_c, r_c);
             minPhi = phi_c - spread;
             maxPhi = phi_c + spread;
@@ -451,7 +451,7 @@ TEST_F(QuadTreeGTest, testProbabilisticQuery) {
     count n = 5000;
     count m = n*3;
     count capacity = 20;
-    double R = 2*log(8*n / (PI*(m/n)*2));
+    double R = 2*std::log(8*n / (PI*(m/n)*2));
     double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
     double alpha = 1;
 
@@ -632,7 +632,7 @@ TEST_F(QuadTreeGTest, debugTreeExport) {
     double T = 0.5;
     double beta = 1/T;
 
-    auto edgeProb = [beta, targetR](double distance) -> double {return 1 / (exp(beta*(distance-targetR)/2)+1);};
+    auto edgeProb = [beta, targetR](double distance) -> double {return 1 / (std::exp(beta*(distance-targetR)/2)+1);};
 
     std::stack<std::tuple<QuadNode<index>, count, double, double, index > > quadnodestack;
     QuadNode<index> root = getRoot(quad);
@@ -668,7 +668,7 @@ TEST_F(QuadTreeGTest, debugTreeExport) {
             }
         }
 
-        double stepsize = pow(4, remainingHeight-1);
+        double stepsize = std::pow(4, remainingHeight-1);
         double newXOffset = xoffset-1.5*stepsize;
         double newYOffset = yoffset + 1;
         for (QuadNode<index> child : current.children) {

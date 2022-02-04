@@ -307,7 +307,7 @@ Matrix Vector::outerProduct(const Vector &v1, const Vector &v2) {
     for (index i = 0; i < v1.getDimension(); ++i) {
         for (index j = 0; j < v2.getDimension(); ++j) {
             double result = v1[i] * v2[j];
-            if (fabs(result) >= FLOAT_EPSILON) {
+            if (std::fabs(result) >= FLOAT_EPSILON) {
                 triplets.push_back({i, j, result});
             }
         }

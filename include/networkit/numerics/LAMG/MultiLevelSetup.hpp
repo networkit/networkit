@@ -672,7 +672,7 @@ void MultiLevelSetup<Matrix>::computeStrongNeighbors(const Matrix& affinityMatri
         }
     }
 
-    double h = fabs(overallMax - overallMin) < 1e-15? 1.0 : (double) bins.size() / (overallMax - overallMin);
+    double h = std::fabs(overallMax - overallMin) < 1e-15? 1.0 : (double) bins.size() / (overallMax - overallMin);
     for (index i = 0; i < affinityMatrix.numberOfRows(); ++i) {
         if (undecided[i]) { // undecided nodes with strong neighbors
             index binIndex = (index) std::floor(h * (maxNeighbor[i] - overallMin));
