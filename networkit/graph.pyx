@@ -725,7 +725,12 @@ cdef cppclass NodePairCallbackWrapper:
 		if (error):
 			throw_runtime_error(message)
 
-cdef class SpanningForest:
+cdef extern from "<networkit/graph/SpanningForest.hpp>" namespace "NetworKit::SpanningForest":
+	cdef cppclass _SpanningForest "NetworKit::SpanningForest"(_Algorithm):
+		_SpanningForest(_Graph G) except +
+		_Graph getForest() nogil except +
+
+cdef class SpanningForest(Algorithm):
 	""" Generates a spanning forest for a given graph
 
 		Parameters:
@@ -735,28 +740,11 @@ cdef class SpanningForest:
 		nodes : list
 			A subset of nodes of `G` which induce the subgraph.
 	"""
-	cdef _SpanningForest* _this
 	cdef Graph _G
 
 	def __cinit__(self, Graph G not None):
 		self._G = G
 		self._this = new _SpanningForest(G._this)
-
-
-	def __dealloc__(self):
-		del self._this
-
-	def run(self):
-		"""
-		Executes the algorithm.
-
-		Returns:
-		--------
-		Algorithm:
-			self
-		"""
-		self._this.run()
-		return self
 
 	def getForest(self):
 		"""
@@ -767,7 +755,7 @@ cdef class SpanningForest:
 		networkit.Graph
 			The computed spanning forest
 		"""
-		return Graph().setThis(self._this.getForest())
+		return Graph().setThis((<_SpanningForest*>(self._this)).getForest())
 
 cdef class RandomMaximumSpanningForest(Algorithm):
 	"""
