@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * PreferentialAttachmentIndex.hpp
  *
@@ -21,19 +20,16 @@ namespace NetworKit {
  * regarding the given nodes.
  */
 class PreferentialAttachmentIndex final : public LinkPredictor {
-  /**
-   * Returns the product of the cardinalities of the neighborhoods regarding @a u and @a v.
-   * @param u First node
-   * @param v Second node
-   * @return the product of the cardinalities of the neighborhoods regarding @a u and @a v
-   */
-  double runImpl(node u, node v) override {
-    return G->degree(u) * G->degree(v);
-  }
+    /**
+     * Returns the product of the cardinalities of the neighborhoods regarding @a u and @a v.
+     * @param u First node
+     * @param v Second node
+     * @return the product of the cardinalities of the neighborhoods regarding @a u and @a v
+     */
+    double runImpl(node u, node v) override { return G->degree(u) * G->degree(v); }
 
 public:
-  using LinkPredictor::LinkPredictor;
-
+    using LinkPredictor::LinkPredictor;
 };
 
 } // namespace NetworKit
