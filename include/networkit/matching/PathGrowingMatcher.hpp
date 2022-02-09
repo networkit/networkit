@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * PathGrowingMatcher.hpp
  *
@@ -21,19 +20,19 @@ namespace NetworKit {
  * Computes an approximate maximum weight matching with guarantee 1/2.
  * (Note that better algorithms in terms of approximation quality exist.)
  */
-class PathGrowingMatcher final: public Matcher {
+class PathGrowingMatcher final : public Matcher {
     void checkInput() const;
 
 public:
     /**
      * @param[in] G Undirected graph with no self-loops for which matching is computed.
      */
-    PathGrowingMatcher(const Graph& G);
+    PathGrowingMatcher(const Graph &G);
 
     /**
      * @param[in] G Undirected graph with no self-loops for which matching is computed.
      */
-    PathGrowingMatcher(const Graph& G, const std::vector<double>& edgeScores);
+    PathGrowingMatcher(const Graph &G, const std::vector<double> &edgeScores);
 
     /**
      * Runs path growing algorithm to compute approximate maximum weight matching

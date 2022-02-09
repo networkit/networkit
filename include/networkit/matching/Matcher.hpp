@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * Matcher.hpp
  *
@@ -20,24 +19,25 @@ namespace NetworKit {
  */
 class Matcher : public Algorithm {
 protected:
-    const Graph* G;
+    const Graph *G;
     Matching M;
-    bool edgeScoresAsWeights;  //<! if true, algorithm should use edge scores instead of edge weights
-    const std::vector<double> edgeScores;   //<! optional edge scores to be used instead of edge weight
+    bool edgeScoresAsWeights; //<! if true, algorithm should use edge scores instead of edge weights
+    const std::vector<double>
+        edgeScores; //<! optional edge scores to be used instead of edge weight
 
 public:
     /**
      * Constructor.
      * @param[in] G Graph for which matching is to be computed.
      */
-    Matcher(const Graph& G);
+    Matcher(const Graph &G);
 
     /**
      * Constructor.
      * @param[in] G Graph for which matching is to be computed.
      * @param edgeScores 	(optional) to be used instead of weights
      */
-    Matcher(const Graph& G, const std::vector<double>& edgeScores);
+    Matcher(const Graph &G, const std::vector<double> &edgeScores);
 
     /** Default destructor */
     ~Matcher() override = default;
