@@ -24,11 +24,11 @@ namespace NetworKit {
 struct LAMGSolverStatus {
     // in
     count maxIters = std::numeric_limits<count>::max(); // maximum number of iterations
-    count maxConvergenceTime =
-        std::numeric_limits<count>::max(); // maximum time in milliseconds spent to solve the system
-    double desiredResidualReduction =
-        1e-8; // desired reduction of the initial residual (finalResidual <= desiredResReduction *
-              // initialResidual)
+    // Maximum time in milliseconds spent to solve the system
+    count maxConvergenceTime = std::numeric_limits<count>::max();
+    // Desired reduction of the initial residual (finalResidual <= desiredResReduction *
+    // initialResidual)
+    double desiredResidualReduction = 1e-8;
     count numPreSmoothIters = 1;  // number of pre smoothing iterations
     count numPostSmoothIters = 2; // number of post smoothing iterations
 
@@ -119,8 +119,8 @@ void SolverLamg<Matrix>::solve(Vector &x, const Vector &b, LAMGSolverStatus &sta
         }
         solveCycle(xc, bc, finest, status);
 
-        if (finest
-            == 1) { // interpolate from finest == ELIMINATION level back to actual finest level
+        // interpolate from finest == ELIMINATION level back to actual finest level
+        if (finest == 1) {
             hierarchy.at(1).interpolate(xc, x, bStages[1]);
         } else {
             x = xc;
@@ -281,9 +281,8 @@ void SolverLamg<Matrix>::cycle(Vector &x, const Vector &b, int finest, int coars
     } // while
 
     // post-cycle finest
-    if ((int64_t)hierarchy.size() > finest + 1
-        && hierarchy.getType(finest + 1)
-               != ELIMINATION) { // do an iterate recombination on calculated solutions
+    if ((int64_t)hierarchy.size() > finest + 1 && hierarchy.getType(finest + 1) != ELIMINATION) {
+        // Do an iterate recombination on calculated solutions
         minRes(finest, X[finest], B[finest] - hierarchy.at(finest).getLaplacian() * X[finest]);
     }
 

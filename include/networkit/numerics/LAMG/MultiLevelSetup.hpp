@@ -343,14 +343,14 @@ count MultiLevelSetup<Matrix>::lowDegreeSweep(const Matrix &matrix, std::vector<
         if ((int)matrix.nnzInRow(i) - degreeOffset <= (int)SETUP_ELIMINATION_MAX_DEGREE
             && fNode[i]) { // node i has degree <= 4 and can be eliminated
             numFNodes++;
-            matrix.forNonZeroElementsInRow(
-                i, [&](index j, edgeweight /*w*/) { // to maintain independence, mark all neighbors
-                                                    // as not eliminated
-                    if (j != i) {                   // all neighbors of this f node are c nodes
-                        fNode[j] = false;
-                    }
-                });
-        } else { // node has high degree, thus it is a c node
+            // To maintain independence, mark all neighbors  as not eliminated all neighbors of this
+            // f node are c nodes
+            matrix.forNonZeroElementsInRow(i, [&](index j, edgeweight /*w*/) {
+                if (j != i) {
+                    fNode[j] = false;
+                }
+            });
+        } else { // Node has high degree, thus it is a c node
             fNode[i] = false;
         }
     }
@@ -525,8 +525,8 @@ void MultiLevelSetup<Matrix>::addHighDegreeSeedNodes(const Matrix &matrix,
             }
         });
 
-        if ((double)deg[i] >= SETUP_AGGREGATION_DEGREE_THRESHOLD
-                                  * (num / denom)) { // high degree node becomes seed
+        // High degree node becomes seed
+        if ((double)deg[i] >= SETUP_AGGREGATION_DEGREE_THRESHOLD * (num / denom)) {
             status[i] = i;
         }
     }
@@ -659,9 +659,8 @@ void MultiLevelSetup<Matrix>::aggregationStage(const Matrix &matrix, count &nc,
     for (omp_index i = 0; i < static_cast<omp_index>(matrix.numberOfRows()); ++i) {
         diag[i] = matrix(i, i);
     }
-
-    for (index k = bins.size(); k-- > 0;) { // iterate over undecided nodes with strong neighbors in
-                                            // decreasing order of strongest neighbor
+    // Iterate over undecided nodes with strong neighbors in decreasing order of strongest neighbor
+    for (index k = bins.size(); k-- > 0;) {
         for (index i : bins[k]) {
             if (status[i] == UNDECIDED) { // node is still undecided
                 index s = 0;
@@ -697,10 +696,8 @@ void MultiLevelSetup<Matrix>::computeStrongNeighbors(const Matrix &affinityMatri
     affinityMatrix.parallelForNonZeroElementsInRowOrder(
         [&](index i, index j,
             double value) { // determine the highest affinity neighbor of each node
-            if (status[i] == UNDECIDED
-                && (status[j] == UNDECIDED
-                    || status[j]
-                           == j)) { // i is UNDECIDED and its neighbor j is also UNDECIDED or SEED
+            if (status[i] == UNDECIDED && (status[j] == UNDECIDED || status[j] == j)) {
+                // 'i' is UNDECIDED and its neighbor 'j' is also UNDECIDED or SEED
                 if (value > maxNeighbor[i]) {
                     maxNeighbor[i] = value;
                 }
