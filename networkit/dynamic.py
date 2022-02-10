@@ -1,21 +1,25 @@
 # extension imports
 from .graph import Graph
-from .dynamics import GraphEvent, DGSStreamParser, GraphUpdater, GraphDifference
-from .distance import APSP
+from .dynamics import graphFromStream as dynamicsGraphFromStream
 
 def graphFromStream(stream, weighted, directed):
-	""" Convenience function for creating a new graph from a stream of graph events
+	""" 
+	graphFromStream(stream, weighted, directed)
+	
+	DEPRECATED. Use networkit.dynamics.graphFromStream instead.
 
-	Parameters:
-	-----------
-	stream : list of GraphEvent
-		event stream
-	weighted : produce a weighted or unweighted graph
-		boolean
-	directed : produce a directed or undirected graph
-		boolean
+	Convenience function for creating a new graph from a stream of graph events
+
+	Parameters
+	----------
+	stream : list(networkit.dynamics.GraphEvent)
+		Event stream
+	weighted : bool
+		Produce a weighted or unweighted graph
+	directed : bool
+		Produce a directed or undirected graph
 	"""
-	G = Graph(0, weighted, directed)
-	gu = GraphUpdater(G)
-	gu.update(stream)
+	from warnings import warn
+	warn("networkit.dynamic.graphFromStream is deprecated, use networkit.dynamics.graphFromStream")
+	G = dynamicsGraphFromStream(stream, weighted, directed)
 	return G

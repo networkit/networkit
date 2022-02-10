@@ -1,5 +1,5 @@
 networkit.embedding
-==================
+===================
 
 .. automodule:: networkit.embedding
     :members:

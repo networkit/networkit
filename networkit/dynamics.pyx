@@ -4,12 +4,72 @@ from .base cimport _Algorithm
 from .base cimport Algorithm
 from .graph cimport _Graph, Graph
 
+def graphFromStream(stream, weighted, directed):
+	""" 
+	graphFromStream(stream, weighted, directed)
+
+	Convenience function for creating a new graph from a stream of graph events
+
+	Parameters
+	----------
+	stream : list(networkit.dynamics.GraphEvent)
+		Event stream
+	weighted : bool
+		Produce a weighted or unweighted graph
+	directed : bool
+		Produce a directed or undirected graph
+	"""
+	G = Graph(0, weighted, directed)
+	gu = GraphUpdater(G)
+	gu.update(stream)
+	return G
+
 def stdstring(pystring):
-	""" convert a Python string to a bytes object which is automatically coerced to std::string"""
+	""" 
+	stdstring(pystring)
+
+	Convert a Python string to a bytes object which is automatically coerced to std::string
+
+	Parameters
+	----------
+	pystring : str
+		Input python string.
+
+	Returns
+	-------
+	stdstring
+		Python bytes string.
+	"""
 	pybytes = pystring.encode("utf-8")
 	return pybytes
 
 cdef class GraphEvent:
+	"""
+	GraphEvent(type, u, v, w)
+
+	Representation of a graph event.
+
+	Parameter :code:`type` is one of the following: 
+	
+	- networkit.dynamics.GraphEvent.NODE_ADDITION
+	- networkit.dynamics.GraphEvent.NODE_REMOVAL
+	- networkit.dynamics.GraphEvent.NODE_RESTORATION
+	- networkit.dynamics.GraphEvent.EDGE_ADDITION
+	- networkit.dynamics.GraphEvent.EDGE_REMOVAL
+	- networkit.dynamics.GraphEvent.EDGE_WEIGHT_UPDATE
+	- networkit.dynamics.GraphEvent.EDGE_WEIGHT_INCREMENT
+
+	Parameters
+	----------
+	type: networkit.dynamics.GraphEvent.type
+		Type of graph event.
+	u : int
+		Node u involved in graph event.
+	v : int
+		Node v involved in graph event.
+	w : int, float
+		Weight of edge between node u and v.
+	"""
 	NODE_ADDITION = 0
 	NODE_REMOVAL = 1
 	NODE_RESTORATION = 2
@@ -19,29 +79,57 @@ cdef class GraphEvent:
 	EDGE_WEIGHT_INCREMENT = 6
 	TIME_STEP = 7
 
-	property type:
-		def __get__(self):
-			return self._this.type
-		def __set__(self, t):
-			self._this.type = t
+	@property
+	def type(self):
+		"""
+		Property of networkit.dynamics.GraphEvent
+		
+		Type of graph event.
+		"""
+		return self._this.type
+	
+	@type.setter
+	def type(self, t):
+		self._this.type = t
 
-	property u:
-		def __get__(self):
-			return self._this.u
-		def __set__(self, u):
-			self._this.u = u
+	@property
+	def u(self):
+		"""
+		Property of networkit.dynamics.GraphEvent
+		
+		Node u involved in graph event.
+		"""
+		return self._this.u
+	
+	@u.setter
+	def u(self, u):
+		self._this.u = u
 
-	property v:
-		def __get__(self):
-			return self._this.v
-		def __set__(self, v):
-			self._this.v = v
+	@property
+	def v(self):
+		"""
+		Property of networkit.dynamics.GraphEvent
+		
+		Node v involved in graph event.
+		"""
+		return self._this.v
+	
+	@v.setter
+	def v(self, v):
+		self._this.v = v
 
-	property w:
-		def __get__(self):
-			return self._this.w
-		def __set__(self, w):
-			self._this.w = w
+	@property
+	def w(self):
+		"""
+		Property of networkit.dynamics.GraphEvent
+		
+		Edgeweight w involved in graph event.
+		"""
+		return self._this.w
+	
+	@w.setter
+	def w(self, w):
+		self._this.w = w
 
 	def __cinit__(self, _GraphEventType type, node u, node v, edgeweight w):
 		self._this = _GraphEvent(type, u, v, w)
@@ -62,6 +150,21 @@ cdef extern from "<networkit/dynamics/DGSStreamParser.hpp>":
 		vector[_GraphEvent] getStream() except +
 
 cdef class DGSStreamParser:
+	"""
+	DGSStreamParser(path, mapped=True, baseIndex=0)
+
+	Create a DGSStreamParser, handling graph streams encoded in DGS-based files.
+	For documentation about DGS, see: https://graphstream-project.org/doc/Advanced-Concepts/The-DGS-File-Format/
+
+	Parameters
+	----------
+	path : str
+		Filename including path for DGS-file.
+	mapped : bool, optional
+		Indicates whether file includes mapping. Default: True
+	baseIndex : int, optional
+		Indicates whether a fixed base index should be set. Default: 0
+	"""
 	cdef _DGSStreamParser* _this
 
 	def __cinit__(self, path, mapped=True, baseIndex=0):
@@ -71,6 +174,17 @@ cdef class DGSStreamParser:
 		del self._this
 
 	def getStream(self):
+		"""
+		getStream()
+
+		Returns a list of graph events (networkit.GraphEvent).
+
+		Returns
+		-------
+		list(networkit.dynamics.GraphEvent)
+			A list of graph events.
+		"""
+
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.getStream()]
 
 cdef extern from "<networkit/dynamics/DGSWriter.hpp>":
@@ -80,6 +194,11 @@ cdef extern from "<networkit/dynamics/DGSWriter.hpp>":
 
 
 cdef class DGSWriter:
+	"""
+	DGSWriter()
+
+	Creates a DGS writer object.
+	"""
 	cdef _DGSWriter* _this
 
 	def __cinit__(self):
@@ -89,6 +208,18 @@ cdef class DGSWriter:
 		del self._this
 
 	def write(self, stream, path):
+		"""
+		write(stream, path)
+
+		Stores a graph event stream in a file (DGS format).
+
+		Parameters
+		----------
+		stream : list(networkit.dynamics.GraphEvent)
+			A list of graph events.
+		path : str
+			File to write the stream to.
+		"""
 		cdef vector[_GraphEvent] _stream
 		for ev in stream:
 			_stream.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
@@ -110,6 +241,8 @@ cdef extern from "<networkit/dynamics/GraphDifference.hpp>":
 
 cdef class GraphDifference(Algorithm):
 	"""
+	GraphDifference(G1, G2)
+
 	Calculate the edge difference between two graphs.
 
 	This calculates which graph edge additions or edge removals are
@@ -121,8 +254,8 @@ cdef class GraphDifference(Algorithm):
 	Note that edge weight differences are not detected but edge
 	addition events set the correct edge weight.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G1 : networkit.Graph
 		The first graph to compare
 	G2 : networkit.Graph
@@ -136,81 +269,105 @@ cdef class GraphDifference(Algorithm):
 		self._G2 = G2
 
 	def getEdits(self):
-		""" Get the required edits.
+		""" 
+		getEdits()
 
-		Returns:
-		--------
-		list
-			A list of graph events
+		Get the required edits.
+
+		Returns
+		-------
+		list(networkit.dynamics.GraphEvent)
+			A list of graph events.
 		"""
 		cdef _GraphEvent ev
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in (<_GraphDifference*>(self._this)).getEdits()]
 
 	def getNumberOfEdits(self):
-		""" Get the required number of edits.
+		""" 
+		getNumberOfEdits()
+		
+		Get the required number of edits.
 
-		Returns:
-		--------
+		Returns
+		-------
 		int
 			The number of edits.
 		"""
 		return (<_GraphDifference*>(self._this)).getNumberOfEdits()
 
 	def getNumberOfNodeAdditions(self):
-		""" Get the required number of node additions.
+		""" 
+		getNumberOfNodeAdditions()
 
-		Returns:
-		--------
+		Get the required number of node additions.
+
+		Returns
+		-------
 		int
 			The number of node additions.
 		"""
 		return (<_GraphDifference*>(self._this)).getNumberOfNodeAdditions()
 
 	def getNumberOfNodeRemovals(self):
-		""" Get the required number of node removals.
+		""" 
+		getNumberOfNodeRemovals()
 
-		Returns:
-		--------
+		Get the required number of node removals.
+
+		Returns
+		-------
 		int
 			The number of node removals.
 		"""
 		return (<_GraphDifference*>(self._this)).getNumberOfNodeRemovals()
 
 	def getNumberOfNodeRestorations(self):
-		""" Get the required number of node restorations.
+		""" 
+		getNumberOfNodeRestorations()
 
-		Returns:
-		--------
+		Get the required number of node restorations.
+
+		Returns
+		-------
 		int
 			The number of node restorations.
 		"""
 		return (<_GraphDifference*>(self._this)).getNumberOfNodeRestorations()
 
 	def getNumberOfEdgeAdditions(self):
-		""" Get the required number of edge additions.
+		""" 
+		getNumberOfEdgeAdditions()
+		
+		Get the required number of edge additions.
 
-		Returns:
-		--------
+		Returns
+		-------
 		int
 			The number of edge additions.
 		"""
 		return (<_GraphDifference*>(self._this)).getNumberOfEdgeAdditions()
 
 	def getNumberOfEdgeRemovals(self):
-		""" Get the required number of edge removals.
+		""" 
+		getNumberOfEdgeRemovals()
+		
+		Get the required number of edge removals.
 
-		Returns:
-		--------
+		Returns
+		-------
 		int
 			The number of edge removals.
 		"""
 		return (<_GraphDifference*>(self._this)).getNumberOfEdgeRemovals()
 
 	def getNumberOfEdgeWeightUpdates(self):
-		""" Get the required number of edge weight updates.
+		""" 
+		getNumberOfEdgeWeightUpdates()
+		
+		Get the required number of edge weight updates.
 
-		Returns:
-		--------
+		Returns
+		-------
 		int
 			The number of edge weight updates.
 		"""
@@ -225,12 +382,15 @@ cdef extern from "<networkit/dynamics/GraphUpdater.hpp>":
 		vector[pair[count, count]] getSizeTimeline() except +
 
 cdef class GraphUpdater:
-	""" Updates a graph according to a stream of graph events.
+	""" 
+	GraphUpdater(G)
+	
+	Updates a graph according to a stream of graph events.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
-	 	initial graph
+		 Initial graph
 	"""
 	cdef _GraphUpdater* _this
 	cdef Graph _G
@@ -243,6 +403,17 @@ cdef class GraphUpdater:
 		del self._this
 
 	def update(self, stream):
+		"""
+		update(stream)
+
+		Update the underlying graph based on an input stream.
+
+		Parameters
+		----------
+		stream : list(networkit.dynamics.GraphEvent)
+			A list of graph events.
+		"""
+
 		cdef vector[_GraphEvent] _stream
 		for ev in stream:
 			_stream.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))

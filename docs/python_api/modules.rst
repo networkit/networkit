@@ -23,6 +23,8 @@ Modules
    csbridge
    distance
    dynamic
+   dynamics
+   embedding
    engineering
    flow
    generators

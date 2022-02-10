@@ -29,15 +29,17 @@ cdef extern from "<networkit/flow/EdmondsKarp.hpp>":
 
 cdef class EdmondsKarp(Algorithm):
 	"""
+	EdmondsKarp(graph, source, sink)
+
 	The EdmondsKarp class implements the maximum flow algorithm by Edmonds and Karp.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	graph : networkit.Graph
 		The graph
-	source : node
+	source : int
 		The source node for the flow calculation
-	sink : node
+	sink : int
 		The sink node for the flow calculation
 	"""
 	cdef Graph _graph
@@ -48,42 +50,48 @@ cdef class EdmondsKarp(Algorithm):
 
 	def getMaxFlow(self):
 		"""
-		Returns: the value of the maximum flow from source to sink.
+		getMaxFlow()
 
-		Returns:
-		--------
-		edgeweight
+		Returns the value of the maximum flow from source to sink.
+
+		Returns
+		-------
+		float
 			The maximum flow value
 		"""
 		return (<_EdmondsKarp*>(self._this)).getMaxFlow()
 
 	def getSourceSet(self):
 		"""
-		Returns: the set of the nodes on the source side of the flow/minimum cut.
+		getSourceSet()
 
-		Returns:
-		--------
-		list
+		Returns the set of the nodes on the source side of the flow/minimum cut.
+
+		Returns
+		-------
+		list(int)
 			The set of nodes that form the (smallest) source side of the flow/minimum cut.
 		"""
 		return (<_EdmondsKarp*>(self._this)).getSourceSet()
 
 	def getFlow(self, node u, node v = none):
 		"""
+		getFlow(u, v = None)
+
 		Get the flow value between two nodes u and v or an edge identified by the edge id u.
 		Warning: The variant with two edge ids is linear in the degree of u.
 
-		Parameters:
-		-----------
-		u : node or edgeid
-			The first node incident to the edge or the edge id
-		v : node
-			The second node incident to the edge (optional if edge id is specified)
+		Parameters
+		----------
+		u : int
+			The first node incident to the edge or the edge id.
+		v : int, optional
+			The second node incident to the edge (optional if edge id is specified). Default: None
 
-		Returns:
-		--------
-		edgeweight
-			The flow on the specified edge
+		Returns
+		-------
+		float
+			The flow on the specified edge.
 		"""
 		if v == none: # Assume that node and edge ids are the same type
 			return (<_EdmondsKarp*>(self._this)).getFlow(u)
@@ -92,11 +100,13 @@ cdef class EdmondsKarp(Algorithm):
 
 	def getFlowVector(self):
 		"""
+		getFlowVector()
+
 		Return a copy of the flow values of all edges.
 
-		Returns:
-		--------
-		list
-			The flow values of all edges indexed by edge id
+		Returns
+		-------
+		list(float)
+			The flow values of all edges indexed by edge id.
 		"""
 		return (<_EdmondsKarp*>(self._this)).getFlowVector()
