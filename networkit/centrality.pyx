@@ -2584,7 +2584,7 @@ cdef class ApproxSpanningEdge(Algorithm):
 
 	Computes an epsilon-approximation of the spanning edge centrality of every edge of the input
 	graph with probability :math:`(1 - 1/n)`, based on "Efficient Algorithms for Spanning Tree
-	Centrality", Hayashi et al., IJCAI, 2016. This implementation also support multi-threading.
+	Centrality", Hayashi et al., IJCAI, 2016. This implementation also supports multi-threading.
 
 	Parameters
 	----------
