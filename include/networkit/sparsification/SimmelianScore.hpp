@@ -9,8 +9,12 @@
 #ifndef NETWORKIT_SPARSIFICATION_SIMMELIAN_SCORE_HPP_
 #define NETWORKIT_SPARSIFICATION_SIMMELIAN_SCORE_HPP_
 
-#include <networkit/edgescores/EdgeScore.hpp>
 #include <set>
+#include <unordered_set>
+
+#include <tlx/define/deprecated.hpp>
+
+#include <networkit/edgescores/EdgeScore.hpp>
 
 namespace NetworKit {
 
@@ -81,13 +85,19 @@ public:
             const std::vector<RankedNeighbors>& neighbors,
             const count& maxRank);
 
-    void matchNeighbors(node ego, node alter, bool reciprocityCheck,
+    void TLX_DEPRECATED(matchNeighbors(node ego, node alter, bool reciprocityCheck,
                         std::vector<RankedEdge>::const_iterator &egoIt,
                         const RankedNeighbors &egoNeighbors, std::set<node> &egoNeighborsUnmatched,
-                        std::set<node> &alterNeighborsUnmatched, count rank, count &overlap);
+                        std::set<node> &alterNeighborsUnmatched, count rank, count &overlap));
 
 protected:
     const std::vector<count>* triangles;
+
+    void matchNeighbors(node ego, node alter, bool reciprocityCheck,
+                        std::vector<RankedEdge>::const_iterator &egoIt,
+                        const RankedNeighbors &egoNeighbors, std::unordered_set<node> &egoNeighborsUnmatched,
+                        std::unordered_set<node> &alterNeighborsUnmatched, count rank, count &overlap);
+
 
 };
 

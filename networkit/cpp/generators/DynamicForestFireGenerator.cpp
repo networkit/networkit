@@ -25,7 +25,6 @@ DynamicForestFireGenerator::DynamicForestFireGenerator(double p, bool directed, 
 std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
 
     std::vector<GraphEvent> stream;
-    std::set<node> empty;
 
     /* this function creates a new node and connects it to
      * other nodes according to the forest fire model

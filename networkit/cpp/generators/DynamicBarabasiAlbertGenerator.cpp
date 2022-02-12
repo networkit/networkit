@@ -6,6 +6,8 @@
  *      Author: cls
  */
 
+#include <unordered_set>
+
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/generators/DynamicBarabasiAlbertGenerator.hpp>
 
@@ -47,7 +49,7 @@ void DynamicBarabasiAlbertGenerator::generate() {
 
     // 3) go through the items one at a time, subtracting their weight from your random number, until you get the item where the random number is less than that item's weight
     node u = this->Gproxy->addNode();
-    std::set<node> targets; // avoid duplicate edges by collecting target nodes in a set
+    std::unordered_set<node> targets; // avoid duplicate edges by collecting target nodes in a set
 
     count nAttempts = 0;
     while (targets.size() < k) {

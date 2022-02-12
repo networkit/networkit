@@ -7,7 +7,7 @@
  */
 
 #include <fstream>
-#include <set>
+#include <unordered_set>
 #include <sstream>
 #include <unordered_map>
 #include <vector>
@@ -35,7 +35,9 @@ Cover SNAPEdgeListPartitionReader::read(const std::string &path,
 
     std::string commentPrefix = "#";
 
-    std::set<node> uniqueIDs;
+#ifndef NDEBUG
+    std::unordered_set<node> uniqueIDs;
+#endif
     count totalCounter = 0;
 
     Cover communities(G.upperNodeIdBound());

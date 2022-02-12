@@ -1,13 +1,13 @@
 // no-networkit-format
 #include <fstream>
-#include <set>
+#include <unordered_set>
 
 #include <networkit/io/DotPartitionWriter.hpp>
 
 namespace NetworKit {
 
 std::map<index, double> DotPartitionWriter::createHueMap(Graph &graph, Partition& zeta) const {
-    std::set<index> uniqueIds;
+    std::unordered_set<index> uniqueIds;
 
     graph.forNodes([&](node u){
         if (graph.degree(u) == 0) {
