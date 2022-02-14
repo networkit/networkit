@@ -22,45 +22,34 @@ void LocalMaxMatcher::run() {
     count z = G->upperNodeIdBound();
     count E = G->numberOfEdges();
 
-    // put edges into array of triples
-    struct MyEdge {
-        node s; // source
-        node t; // target
-        edgeweight w; // weight
-    };
-
-    std::vector<MyEdge> edges(E);
-    index e = 0;
-    G->forEdges([&](node u, node v, edgeweight w) {
-        edges[e].s = u;
-        edges[e].t = v;
-        edges[e].w = w + Aux::Random::real(1e-6);
-        ++e;
-    });
+    std::vector<WeightedEdge> edges;
+    edges.reserve(G->numberOfEdges());
+    for (auto edge : G->edgeWeightRange())
+        edges.emplace_back(edge.u, edge.v, edge.weight + Aux::Random::real(1e-6));
 
     // candidates records mating candidates
-    std::vector<MyEdge> candidates(z);
+    std::vector<WeightedEdge> candidates(z);
     G->parallelForNodes([&](node u) {
-        candidates[u].w = (edgeweight) 0;
-        candidates[u].t = u; // itself as mating partner => unmatched
+        candidates[u].weight = (edgeweight) 0;
+        candidates[u].v = u; // itself as mating partner => unmatched
     });
 
     while (E > 0) {
         // for each edge find out if it is locally maximum
-        for (auto edge: edges) {
-            if (edge.w > candidates[edge.s].w && edge.w > candidates[edge.t].w) {
-                candidates[edge.s].t = edge.t;
-                candidates[edge.s].w = edge.w;
-                candidates[edge.t].t = edge.s;
-                candidates[edge.t].w = edge.w;
+        for (const auto &edge: edges) {
+            if (edge.weight > candidates[edge.u].weight && edge.weight > candidates[edge.v].weight) {
+                candidates[edge.u].v = edge.v;
+                candidates[edge.u].weight = edge.weight;
+                candidates[edge.v].v = edge.u;
+                candidates[edge.v].weight = edge.weight;
             }
         }
 
         // check if candidates agree to match; if so, then match them
-        for (auto edge: edges) {
-            node u = edge.s;
-            node v = edge.t;
-            if (candidates[u].t == v && candidates[v].t == u && u != v) {
+        for (const auto &edge: edges) {
+            node u = edge.u;
+            node v = edge.v;
+            if (candidates[u].v == v && candidates[v].v == u && u != v) {
                 // both nodes agree
                 M.match(u, v);
             }
@@ -68,12 +57,12 @@ void LocalMaxMatcher::run() {
 
         // create remaining "graph" by selecting remaining edges (as triples)
         // adjust candidates
-        std::vector<MyEdge> newEdges;
-        for (auto edge: edges) {
-            if (! M.isMatched(edge.s) && ! M.isMatched(edge.t) && edge.s != edge.t) {
+        std::vector<WeightedEdge> newEdges;
+        for (const auto &edge: edges) {
+            if (! M.isMatched(edge.u) && ! M.isMatched(edge.v) && edge.u != edge.v) {
                 newEdges.push_back(edge);
-                candidates[edge.s].w = (edgeweight) 0;
-                candidates[edge.t].w = (edgeweight) 0;
+                candidates[edge.u].weight = (edgeweight) 0;
+                candidates[edge.v].weight = (edgeweight) 0;
             }
         }
         edges = newEdges;
