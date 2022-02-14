@@ -69,6 +69,7 @@ void LocalMaxMatcher::run() {
         E = edges.size();
     }
 
+    hasRun = true;
 }
 
 } /* namespace NetworKit */
