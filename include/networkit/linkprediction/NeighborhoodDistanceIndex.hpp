@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * NeighborhoodDistanceIndex.hpp
  *
@@ -36,8 +35,7 @@ class NeighborhoodDistanceIndex final : public LinkPredictor {
   }
 
 public:
-  using LinkPredictor::LinkPredictor;
-
+    using LinkPredictor::LinkPredictor;
 };
 
 } /* namespace NetworKit */

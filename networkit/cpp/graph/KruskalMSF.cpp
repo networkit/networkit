@@ -10,29 +10,14 @@
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/graph/KruskalMSF.hpp>
-#include <networkit/graph/SpanningForest.hpp>
 #include <networkit/structures/UnionFind.hpp>
 
 namespace NetworKit {
 
-struct MyEdge {
-    node from;
-    node to;
-    edgeweight weight;
+struct MyEdge : WeightedEdge {
+    using WeightedEdge::WeightedEdge; // Inherit constructors from WeightedEdge
 
-    MyEdge(node u, node v, edgeweight ew) {
-        from = u;
-        to = v;
-        weight = ew;
-    }
-
-    MyEdge() {
-        from = none;
-        to = none;
-        weight = 0;
-    }
-
-    bool operator<(const MyEdge other) const {
+    bool operator<(const MyEdge &other) const noexcept {
         return this->weight > other.weight; // Note the switch in the operator!
     }
 };
@@ -41,31 +26,27 @@ struct MyEdge {
 KruskalMSF::KruskalMSF(const Graph& G): SpanningForest(G) {}
 
 void KruskalMSF::run() {
-    if (true || G->isWeighted()) { // FIXME: remove true when SpanningForest is fixed!
+    if (G->isWeighted()) {
         count z = G->upperNodeIdBound();
         forest = GraphTools::copyNodes(*G);
         UnionFind uf(z);
 
         // sort edges in decreasing weight order
         std::vector<MyEdge> sortedEdges; // (m);
-        G->forEdges([&](node u, node v, edgeweight ew, edgeid) {
-            MyEdge myEdge(u, v, ew);
-            sortedEdges.push_back(myEdge);
-        });
+        std::transform(G->edgeWeightRange().begin(), G->edgeWeightRange().end(),
+                       sortedEdges.begin(), [](const auto &edge) -> MyEdge {
+                           return {edge.u, edge.v, edge.weight};
+                       });
         Aux::Parallel::sort(sortedEdges.begin(), sortedEdges.end());
 
         // process in decreasing weight order
-        for (auto e: sortedEdges) {
-            node u = e.from;
-            node v = e.to;
-            INFO("process edge (", u, ", ", v, ") with weight ", e.weight);
-            assert(u < z);
-            assert(v < z);
+        for (const auto &e: sortedEdges) {
+            DEBUG("process edge (", e.u, ", ", e.v, ") with weight ", e.weight);
 
             // if edge does not close cycle, add it to tree
-            if (uf.find(u) != uf.find(v)) {
-                forest.addEdge(u, v);
-                uf.merge(u, v);
+            if (uf.find(e.u) != uf.find(e.v)) {
+                forest.addEdge(e.u, e.v);
+                uf.merge(e.u, e.v);
             }
         }
     }
@@ -74,6 +55,8 @@ void KruskalMSF::run() {
         sf.run();
         forest = sf.getForest();
     }
+
+    hasRun = true;
 }
 
 } /* namespace NetworKit */

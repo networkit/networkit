@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * VDegreeIndex.hpp
  *
@@ -19,19 +18,16 @@ namespace NetworKit {
  * Index that simply returns the degree of the second given node.
  */
 class VDegreeIndex final : public LinkPredictor {
-  /**
-   * Returns the degree of the second node provided, namely @a v.
-   * @param u First node
-   * @param v Second node
-   * @return the degree of the second node provided, namely @a v
-   */
-  double runImpl(node, node v) override {
-    return G->degree(v);
-  }
+    /**
+     * Returns the degree of the second node provided, namely @a v.
+     * @param u First node
+     * @param v Second node
+     * @return the degree of the second node provided, namely @a v
+     */
+    double runImpl(node, node v) override { return G->degree(v); }
 
 public:
-  using LinkPredictor::LinkPredictor;
-
+    using LinkPredictor::LinkPredictor;
 };
 
 } // namespace NetworKit

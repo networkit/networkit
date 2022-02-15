@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * RandomLinkSampler.hpp
  *
@@ -30,7 +29,7 @@ namespace RandomLinkSampler {
  * given graph that should be in the returned graph
  * @return a graph that contains the given percentage of links from @a G
  */
-Graph byPercentage(const Graph& G, double percentage);
+Graph byPercentage(const Graph &G, double percentage);
 
 /**
  * Returns a graph that contains @a numLinks links from the given graph @a G.
@@ -39,7 +38,7 @@ Graph byPercentage(const Graph& G, double percentage);
  * @param numLinks Number of links the returned graph should consist of
  * @return a graph that contains the given number of links from @a G
  */
-Graph byCount(const Graph& G, count numLinks);
+Graph byCount(const Graph &G, count numLinks);
 
 } // namespace RandomLinkSampler
 

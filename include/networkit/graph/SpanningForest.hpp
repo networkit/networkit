@@ -8,6 +8,7 @@
 #ifndef NETWORKIT_GRAPH_SPANNING_FOREST_HPP_
 #define NETWORKIT_GRAPH_SPANNING_FOREST_HPP_
 
+#include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
@@ -15,22 +16,24 @@ namespace NetworKit {
 /**
  * Base class for spanning forest/tree algorithms.
  */
-class SpanningForest {
+class SpanningForest : public Algorithm {
 protected:
     const Graph *G;
     Graph forest;
 
 public:
     SpanningForest(const Graph &G) : G(&G) {}
-    virtual ~SpanningForest() = default;
 
-    virtual void run();
+    void run() override;
 
     /**
      * @return Forest computed by run method.
      * Note: So far no explicit check if run method has been invoked before.
      */
-    Graph getForest() { return forest; }
+    const Graph &getForest() {
+        assureFinished();
+        return forest;
+    }
 };
 
 } /* namespace NetworKit */

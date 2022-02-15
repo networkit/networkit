@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * SameCommunityIndex.hpp
  *
@@ -20,31 +19,30 @@ namespace NetworKit {
  * Index to determine whether two nodes are in the same community.
  */
 class SameCommunityIndex final : public LinkPredictor {
-  Partition communities; //!< The communities of the current graph
+    Partition communities; //!< The communities of the current graph
 
-  /**
-   * Returns 1 if the given nodes @a u and @a v are in the same community, 0 otherwise.
-   * @param u First node
-   * @param v Second node
-   * @return 1 if the given nodes @a u and @a v are in the same community, 0 otherwise
-   */
-  double runImpl(node u, node v) override;
+    /**
+     * Returns 1 if the given nodes @a u and @a v are in the same community, 0 otherwise.
+     * @param u First node
+     * @param v Second node
+     * @return 1 if the given nodes @a u and @a v are in the same community, 0 otherwise
+     */
+    double runImpl(node u, node v) override;
 
 public:
-  SameCommunityIndex();
+    SameCommunityIndex();
 
-  /**
-   *
-   * @param G The graph to work on
-   */
-  explicit SameCommunityIndex(const Graph& G);
+    /**
+     *
+     * @param G The graph to work on
+     */
+    explicit SameCommunityIndex(const Graph &G);
 
-  /**
-   * Sets the graph to work on.
-   * @param newGraph The graph to work on
-   */
-  void setGraph(const Graph& newGraph) override;
-
+    /**
+     * Sets the graph to work on.
+     * @param newGraph The graph to work on
+     */
+    void setGraph(const Graph &newGraph) override;
 };
 
 } // namespace NetworKit

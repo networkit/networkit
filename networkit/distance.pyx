@@ -37,61 +37,56 @@ cdef extern from "<networkit/distance/STSP.hpp>":
 		edgeweight getDistance() except +
 
 cdef class STSP(Algorithm):
-	""" Abstract base class for source-target shortest path algorithms. """
+	""" 
+	STSP(G, source, target, storePred)
+	
+	Abstract base class for source-target shortest path algorithms. 
+	"""
 	cdef Graph _G
 
 	def __init__(self, *args, **namedargs):
-		"""
-		Creates the STSP class for a graph G, a source node, and a target node.
-
-		Parameters:
-		-----------
-		G : networkit.Graph
-			The graph.
-		source : node
-			The source node.
-		target : node
-			The target node.
-		storePred : bool
-			If true, the algorithm will also store the predecessors
-			and reconstruct a shortest path from @a source and @a target.
-	"""
 		if type(self) == STSP:
 			raise RuntimeError("Error, you may not use STSP directly, use a sub-class instead")
 
 	def getPath(self):
 		"""
+		getPath()
+		
 		Returns a shortest path from the source node to the target node (without
 		including them). Note: the shortest path can be constructed only if the
 		algorithm is executed with @a storePred set to true.
 
-		Returns:
-		--------
-		vector
+		Returns
+		-------
+		list(int)
 			A shortest path from the source node to the target node.
 		"""
 		return (<_STSP*>(self._this)).getPath()
 
 	def getPredecessors(self):
 		"""
+		getPredecessors()
+
 		Returns the predecessor nodes from the target node to the source node,
 		Note: predecessors are stored only if the algorithm is executed with
 		storePred set to true.
 
-		Returns:
-		--------
-		vector
-			The list of predecessors from @a target to @a source.
+		Returns
+		-------
+		list(int)
+			The list of predecessors from a target to a source.
 		"""
 		return (<_STSP*>(self._this)).getPredecessors()
 
 	def getDistance(self):
 		"""
+		getDistance()
+
 		Returns the distance from the source node to the target node
 
-		Returns:
-		--------
-		edgeweight
+		Returns
+		-------
+		float
 			The distance from source to the target node.
 		"""
 		return (<_STSP*>(self._this)).getDistance()
@@ -111,7 +106,11 @@ cdef extern from "<networkit/distance/SSSP.hpp>":
 		void setTarget(node t) except +
 
 cdef class SSSP(Algorithm):
-	""" Base class for single source shortest path algorithms. """
+	""" 
+	SSSP(G, source, storePaths, storeNodesSortedByDistance, target)
+
+	Base class for single source shortest path algorithms. 
+	"""
 	cdef Graph _G
 
 	def __init__(self, *args, **namedargs):
@@ -120,84 +119,95 @@ cdef class SSSP(Algorithm):
 
 	def getDistances(self):
 		"""
+		getDistances()
+
 		Returns a list of weighted distances from the source node, i.e. the
  	 	length of the shortest path from the source node to any other node.
 
- 	 	Returns:
- 	 	--------
- 	 	vector
+ 	 	Returns
+ 	 	-------
+ 	 	list
  	 		The weighted distances from the source node to any other node in the graph.
 		"""
 		return (<_SSSP*>(self._this)).getDistances()
 
 	def distance(self, t):
 		"""
-		Returns the distance from the source node to @a t.
+		distance(t)
 
-		Parameters:
-		-----------
-		t : node
+		Returns the distance from the source node to t.
+
+		Parameters
+		----------
+		t : int
 			Target node.
 
-		Returns:
-		--------
-		double
-			Distance from the source node to @a t.
+		Returns
+		-------
+		float
+			Distance from the source node to t.
 		"""
 		return (<_SSSP*>(self._this)).distance(t)
 
 	def getPredecessors(self, t):
 		"""
-		Returns the predecessor nodes of @a t on all shortest paths from source
-		to @a t.
-		Parameters:
-		-----------
-		t : node
+		getPredecessors(t)
+
+		Returns the predecessor nodes of t on all shortest paths from source
+		to t.
+
+		Parameters
+		----------
+		t : int
 			Target node.
 
-		Returns:
-		--------
+		Returns
+		-------
 		list
-			The predecessors of @a t on all shortest paths from source to @a t.
+			The predecessors of t on all shortest paths from source to t.
 		"""
 		return (<_SSSP*>(self._this)).getPredecessors(t)
 
 	def getPath(self, t, forward=True):
 		"""
-		Returns a shortest path from source to @a t and an empty path if source and @a t
+		getPath(t, forward=True)
+
+		Returns a shortest path from source to t and an empty path if source and t
 		are not connected.
 
-		Parameters:
-		-----------
-		t : node
+		Parameters
+		----------
+		t : int
 			Target node.
-		forward : bool
-			If @c true (default) the path is directed from source to @a t, otherwise the path
+		forward : bool, optional
+			If True (default) the path is directed from source to t, otherwise the path
 			is reversed.
 
-		Returns:
-		--------
+		Returns
+		-------
 		list
-			A shortest path from source to @a t or an empty path.
+			A shortest path from source to t or an empty path.
 		"""
 		return (<_SSSP*>(self._this)).getPath(t, forward)
 
 	def getPaths(self, t, forward=True):
 		"""
-		Returns all shortest paths from source to @a t and an empty set if source
-		and @a t are not connected.
+		getPaths(t, forward=True)
 
-		Parameters:
-		-----------
-		t : node
+		Returns all shortest paths from source to t and an empty set if source
+		and t are not connected.
+
+		Parameters
+		----------
+		t : int
 			Target node.
-		forward : bool
-			If @c true (default) the path is directed from source to
-			@a t, otherwise the path is reversed.
+		forward : bool, optional
+			If True (default) the path is directed from source to
+			t, otherwise the path is reversed.
 
-		Returns:
-		--------
-			All shortest paths from source node to target node @a t.
+		Returns
+		-------
+			All shortest paths from source node to target node t.
 		"""
 		cdef set[vector[node]] paths = (<_SSSP*>(self._this)).getPaths(t, forward)
 		result = []
@@ -206,13 +216,16 @@ cdef class SSSP(Algorithm):
 		return result
 
 	def getNodesSortedByDistance(self):
-		""" Returns a list of nodes ordered in increasing distance from the source.
+		""" 
+		getNodesSortedByDistance()
+		
+		Returns a list of nodes ordered in increasing distance from the source.
 
 		For this functionality to be available, storeNodesSortedByDistance has to be set to true in the constructor.
 		There are no guarantees regarding the ordering of two nodes with the same distance to the source.
 
-		Returns:
-		--------
+		Returns
+		-------
 		list
 			Nodes ordered in increasing distance from the source.
 		"""
@@ -220,38 +233,44 @@ cdef class SSSP(Algorithm):
 
 	def numberOfPaths(self, t):
 		"""
-		Returns the number of paths from the source node to @a t.
+		numberOfPaths(t)
 
-		Parameters:
-		-----------
-		t : node
+		Returns the number of paths from the source node to t.
+
+		Parameters
+		----------
+		t : int
 			Target node.
 
-		Returns:
-		--------
+		Returns
+		-------
 		int
-			The number of paths from the source node to @a t.
+			The number of paths from the source node to t.
 		"""
 		return (<_SSSP*>(self._this))._numberOfPaths(t)
 
 	def setSource(self, s not None):
 		"""
+		setSource(s)
+
 		Sets a new source node.
 
-		Parameters:
-		-----------
-		s : node
+		Parameters
+		----------
+		s : int
 			New source node.
 		"""
 		(<_SSSP*>(self._this)).setSource(s)
 
 	def setTarget(self, t not None):
 		"""
+		setTarget(t)
+
 		Sets a new target node.
 
-		Parameters:
-		-----------
-		t : node
+		Parameters
+		----------
+		t : int
 			New target node.
 		"""
 		(<_SSSP*>(self._this)).setTarget(t)
@@ -266,26 +285,38 @@ cdef extern from "<networkit/distance/DynSSSP.hpp>":
 		void setTargetNode(node t) except +
 
 cdef class DynSSSP(SSSP):
-	""" Base class for single source shortest path algorithms in dynamic graphs. """
+	""" 
+	DynSSSP(G, source, storePredecessors, target)
+
+	Base class for single source shortest path algorithms in dynamic graphs. 
+	"""
 	def __init__(self, *args, **namedargs):
 		if type(self) == SSSP:
 			raise RuntimeError("Error, you may not use DynSSSP directly, use a sub-class instead")
 
 	def update(self, ev):
-		""" Updates shortest paths with the edge insertion.
+		""" 
+		update(ev)
 
-		Parameters:
-		-----------
-		ev : GraphEvent.
+		Updates shortest paths with the edge insertion.
+
+		Parameters
+		----------
+		ev : networkit.dynamics.GraphEvent
+			A graph event.
 		"""
 		(<_DynSSSP*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 
 	def updateBatch(self, batch):
-		""" Updates shortest paths with the batch `batch` of edge insertions.
+		""" 
+		updateBatch(batch)
 
-		Parameters:
-		-----------
-		batch : list of GraphEvent.
+		Updates shortest paths with a batch of edge insertions.
+
+		Parameters
+		----------
+		batch : list(networkit.dynamics.GraphEvent)
+			List of graph events.
 		"""
 		cdef vector[_GraphEvent] _batch
 		for ev in batch:
@@ -293,9 +324,32 @@ cdef class DynSSSP(SSSP):
 		(<_DynSSSP*>(self._this)).updateBatch(_batch)
 
 	def modified(self):
+		""" 
+		modified()
+
+		Returns True or False depending on whether the node previoulsy specified with 
+		setTargetNode(t) has been modified by the update or not.
+
+		Returns
+		-------
+		bool
+			Indicator for whether the target node was modified or not.
+		"""
 		return (<_DynSSSP*>(self._this)).modified()
 
 	def setTargetNode(self, t):
+		""" 
+		setTargetNode(t)
+
+		Set a target node to be observed during the update. If a node t is set as
+		target before the update, the function modified() will return True or False
+		depending on whether node t has been modified by the update.
+
+		Parameters
+		----------
+		t : int
+			Target node to be observed during update.
+		"""
 		(<_DynSSSP*>(self._this)).setTargetNode(t)
 
 cdef extern from "<networkit/distance/AdamicAdarDistance.hpp>":
@@ -308,10 +362,12 @@ cdef extern from "<networkit/distance/AdamicAdarDistance.hpp>":
 
 cdef class AdamicAdarDistance:
 	"""
+	AdamicAdarDistance(G)
+
 	Calculate the adamic adar similarity.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The input graph.
 	"""
@@ -330,16 +386,37 @@ cdef class AdamicAdarDistance:
 
 	def getAttribute(self):
 		"""
-		Returns:
-		--------
-		vector[double]
-			The edge attribute that contains the adamic adar similarity.
+		getAttribute()
+
+		Get the Adamic Adar similiraty score for every edge.
+
+		Returns
+		-------
+		list(float)
+			Adamic Adar similiraty score for every edge.
 
 		"""
 		#### TODO: convert distance to similarity!?! ####
 		return self._this.getEdgeScores()
 
 	def distance(self, node u, node v):
+		"""
+		distance(self, u, v)
+
+		Calculate the distance from node u to node v.
+
+		Parameters
+		----------
+		u : int
+			Source node
+		v : int
+			Target node
+
+		Returns
+		-------
+		float
+			Distance from node u to node v.
+		"""
 		return self._this.distance(u, v)
 
 cdef extern from "<networkit/distance/Diameter.hpp>" namespace "NetworKit":
@@ -365,15 +442,37 @@ cdef extern from "<networkit/distance/Diameter.hpp>" namespace "NetworKit::Diame
 		pair[count, count] getDiameter() nogil except +
 
 cdef class Diameter(Algorithm):
+	"""
+	Diameter(G, algo = networkit.DiameterAlgo.Automatic, error = -1., nSamples = 0)
+
+	Calculate the Diameter of the graph based different possible algorithms.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	algo : networkit.distance.DiameterAlgo, optional
+		Algorithm which should be used for diameter computation.
+	error : float, optional
+		Possible error used for diameter algorithm EstimatedRange.
+	nSamples : int, optional
+		Number of samples (influencing the quality of the output) used for diameter algorithm EstimatedSamples.
+	"""
 	cdef Graph _G
-	"""
-	TODO: docstring
-	"""
+
 	def __cinit__(self, Graph G not None, algo = DiameterAlgo.Automatic, error = -1., nSamples = 0):
 		self._G = G
 		self._this = new _Diameter(G._this, algo, error, nSamples)
 
 	def getDiameter(self):
+		"""
+		getDiameter()
+
+		Returns
+		-------
+		float
+			Diameter of the graph.
+		"""
 		return (<_Diameter*>(self._this)).getDiameter()
 
 cdef extern from "<networkit/distance/Eccentricity.hpp>" namespace "NetworKit::Eccentricity":
@@ -382,16 +481,27 @@ cdef extern from "<networkit/distance/Eccentricity.hpp>" namespace "NetworKit::E
 
 cdef class Eccentricity:
 	"""
-	The eccentricity of a node `u` is defined as the distance to the farthest node from node u. In other words, it is the longest shortest-path starting from node `u`.
+	Eccentricity()
+	
+	The eccentricity of a node u is defined as the distance to the farthest node from node u. In other words, it is the longest shortest-path starting from node u.
 	"""
 
 	@staticmethod
 	def getValue(Graph G, v):
 		"""
-		Returns:
-		--------
-		pair[node, count]
-			node is the farthest node `v` from `u`, and the count is the length of the shortest path from `u` to `v`.
+		getValue(G, v)
+
+		Get eccentricity value of node v from graph G.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.		
+
+		Returns
+		-------
+		tuple(int, float)
+			First index is the farthest node v from u, and the second index is the length of the shortest path from u to v.
 		"""
 		return getValue(G._this, v)
 
@@ -403,6 +513,8 @@ cdef extern from "<networkit/distance/EffectiveDiameterApproximation.hpp>" names
 
 cdef class EffectiveDiameterApproximation(Algorithm):
 	"""
+	EffectiveDiameterApproximation(G, ratio=0.9, k=64, r=7)
+
 	Calculates the effective diameter of a graph.
 	The effective diameter is defined as the number of edges on average to reach a given ratio of all other nodes.
 
@@ -410,16 +522,16 @@ cdef class EffectiveDiameterApproximation(Algorithm):
 
 	[1] by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
-	ratio : double
+	ratio : float, optional
 		The percentage of nodes that shall be within stepwidth, default = 0.9
-	k : count
-		number of parallel approximations, bigger k -> longer runtime, more precise result; default = 64
-	r : count
-		number of additional bits, important in tiny graphs; default = 7
+	k : int, optional
+		Number of parallel approximations, bigger k -> longer runtime, more precise result; default = 64
+	r : int, optional
+		Number of additional bits, important in tiny graphs; default = 7
 	"""
 	cdef Graph _G
 
@@ -429,10 +541,12 @@ cdef class EffectiveDiameterApproximation(Algorithm):
 
 	def getEffectiveDiameter(self):
 		"""
-		Returns:
-		--------
-		double
-			the approximated effective diameter
+		getEffectiveDiameter()
+
+		Returns
+		-------
+		float
+			The approximated effective diameter
 		"""
 		return (<_EffectiveDiameterApproximation*>(self._this)).getEffectiveDiameter()
 
@@ -444,14 +558,16 @@ cdef extern from "<networkit/distance/EffectiveDiameter.hpp>" namespace "NetworK
 
 cdef class EffectiveDiameter(Algorithm):
 	"""
+	EffectiveDiameter(G, ratio=0.9)
+
 	Calculates the effective diameter of a graph.
 	The effective diameter is defined as the number of edges on average to reach a given ratio of all other nodes.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
-	ratio : double
+	ratio : float, optional
 		The percentage of nodes that shall be within stepwidth; default = 0.9
 	"""
 	cdef Graph _G
@@ -462,10 +578,12 @@ cdef class EffectiveDiameter(Algorithm):
 
 	def getEffectiveDiameter(self):
 		"""
-		Returns:
-		--------
-		double
-			the effective diameter
+		getEffectiveDiameter()
+
+		Returns
+		-------
+		float
+			The effective diameter
 		"""
 		return (<_EffectiveDiameter*>(self._this)).getEffectiveDiameter()
 
@@ -477,6 +595,8 @@ cdef extern from "<networkit/distance/HopPlotApproximation.hpp>" namespace "Netw
 
 cdef class HopPlotApproximation(Algorithm):
 	"""
+	HopPlotApproximation(G, maxDistance=0, k=64, r=7)
+
 	Computes an approxmation of the hop-plot of a given graph.
 	The hop-plot is the set of pairs (d, g(g)) for each natural number d
 	and where g(d) is the fraction of connected node pairs whose shortest connecting path has length at most d.
@@ -485,17 +605,17 @@ cdef class HopPlotApproximation(Algorithm):
 
 	[1] by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
-	maxDistance : double
-		maximum distance between considered nodes
-		set to 0 or negative to get the hop-plot for the entire graph so that each node can reach each other node
-	k : count
-		number of parallel approximations, bigger k -> longer runtime, more precise result; default = 64
-	r : count
-		number of additional bits, important in tiny graphs; default = 7
+	maxDistance : float, optional
+		Maximum distance between considered nodes set to 0 or negative to get the hop-plot 
+		for the entire graph so that each node can reach each other node.
+	k : int, optional
+		Number of parallel approximations, bigger k -> longer runtime, more precise result; default = 64
+	r : int, optional
+		Number of additional bits, important in tiny graphs; default = 7
 	"""
 	cdef Graph _G
 
@@ -505,10 +625,14 @@ cdef class HopPlotApproximation(Algorithm):
 
 	def getHopPlot(self):
 		"""
-		Returns:
-		--------
-		map
-			number of connected nodes for each distance
+		getHopPlot()
+
+		Returns the approximated hop-plot of the graph.
+
+		Returns
+		-------
+		dict(int ``:`` float)
+			Number of connected nodes for each distance
 		"""
 		cdef map[count, double] hp = (<_HopPlotApproximation*>(self._this)).getHopPlot()
 		result = dict()
@@ -524,12 +648,14 @@ cdef extern from "<networkit/distance/NeighborhoodFunction.hpp>" namespace "Netw
 
 cdef class NeighborhoodFunction(Algorithm):
 	"""
+	NeighborhoodFunction(G)
+
 	Computes the neighborhood function exactly.
 	The neighborhood function N of a graph G for a given distance t is defined
 	as the number of node pairs (u,v) that can be reached within distance t.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
 	"""
@@ -541,10 +667,14 @@ cdef class NeighborhoodFunction(Algorithm):
 
 	def getNeighborhoodFunction(self):
 		"""
-		Returns:
-		--------
-		list
-			the i-th element denotes the number of node pairs that have a distance at most (i+1)
+		getNeighborhoodFunction()
+
+		Returns the neighborhood function of the graph.
+
+		Returns
+		-------
+		list(int)
+			The i-th element denotes the number of node pairs that have a distance at most (i+1).
 		"""
 		return (<_NeighborhoodFunction*>(self._this)).getNeighborhoodFunction()
 
@@ -556,6 +686,8 @@ cdef extern from "<networkit/distance/NeighborhoodFunctionApproximation.hpp>" na
 
 cdef class NeighborhoodFunctionApproximation(Algorithm):
 	"""
+	NeighborhoodFunctionApproximation(G, k=64, r=7)
+
 	Computes an approximation of the neighborhood function.
 	The neighborhood function N of a graph G for a given distance t is defined
 	as the number of node pairs (u,v) that can be reached within distance t.
@@ -564,14 +696,14 @@ cdef class NeighborhoodFunctionApproximation(Algorithm):
 
 	[1] by Palmer, Gibbons and Faloutsos which can be found here: http://www.cs.cmu.edu/~christos/PUBLICATIONS/kdd02-anf.pdf
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
-	k : count
-		number of approximations, bigger k -> longer runtime, more precise result; default = 64
-	r : count
-		number of additional bits, important in tiny graphs; default = 7
+	k : int, optional
+		Number of approximations, bigger k -> longer runtime, more precise result; default = 64
+	r : int, optional
+		Number of additional bits, important in tiny graphs; default = 7
 	"""
 	cdef Graph _G
 
@@ -581,10 +713,14 @@ cdef class NeighborhoodFunctionApproximation(Algorithm):
 
 	def getNeighborhoodFunction(self):
 		"""
-		Returns:
-		--------
-		list
-			the i-th element denotes the number of node pairs that have a distance at most (i+1)
+		getNeighborhoodFunction()
+
+		Returns the neighborhood function of the graph.
+
+		Returns
+		-------
+		list(int)
+			The i-th element denotes the number of node pairs that have a distance at most (i+1).
 		"""
 		return (<_NeighborhoodFunctionApproximation*>(self._this)).getNeighborhoodFunction()
 
@@ -594,27 +730,39 @@ cdef extern from "<networkit/distance/Volume.hpp>" namespace "NetworKit::Volume"
 	vector[double] volume(const _Graph G, const vector[double] r, const count samples) nogil except +
 
 cdef class Volume:
+	"""
+	Volume()
+	
+	The volume of a graph and its meaning is explained in the following publication:
+
+	Franz-Benjamin Mocnik: "The Polynomial Volume Law of Complex Networks in
+	the Context of Local and Global Optimization", Scientific Reports 8(11274)
+	2018. doi: 10.1038/s41598-018-29131-0
+	"""
 
 	@staticmethod
 	def volume(Graph G, r, count samples=500):
 		"""
-		Number of nodes within a given radius (or radii); average for many nodes
+		volume(G, r, samples=500)
 
-		Please find further information about the volume and its meaning in the
-		following publication:
+		Number of nodes within a given radius. If the radius is a list containing many radii,
+		a list containing the number for every radius is returned.
 
-		Franz-Benjamin Mocnik: "The Polynomial Volume Law of Complex Networks in
-		the Context of Local and Global Optimization", Scientific Reports 8(11274)
-		2018. doi: 10.1038/s41598-018-29131-0
-
-		Parameters:
-		-----------
+		Parameters
+		----------
 		G : networkit.Graph
 			the graph
-		r : double
+		r : float
 			the radius (or radii)
-		samples : count
+		samples : int, optional
 			the number of samples
+
+		Returns
+		-------
+		float
+			Number of nodes within a given radius.
+		list(float)
+			Number of nodes within every given radii.
 		"""
 		cdef double _r
 		cdef vector[double] _rs
@@ -648,6 +796,8 @@ cdef extern from "<networkit/distance/JaccardDistance.hpp>":
 
 cdef class JaccardDistance:
 	"""
+	JaccardDistance(G, triangles)
+
 	The Jaccard distance measure assigns to each edge the jaccard coefficient
 	of the neighborhoods of the two adjacent nodes.
 
@@ -655,7 +805,7 @@ cdef class JaccardDistance:
 	-----------
 	G : networkit.Graph
 		The graph to calculate Jaccard distances for.
-	triangles : vector[count]
+	triangles : list(int)
 		Previously calculated edge triangle counts.
 	"""
 
@@ -672,18 +822,31 @@ cdef class JaccardDistance:
 		del self._this
 
 	def getAttribute(self):
+		"""
+		getAttribute()
+
+		Get the Jaccard distance for every edge.
+
+		Returns
+		-------
+		list(float)
+			Jaccard distance for every edge.
+
+		"""
 		return self._this.getEdgeScores()
 
 cdef class JaccardSimilarityAttributizer:
 	"""
+	JaccardSimilarityAtrributizer(G, triangles)
+
 	The Jaccard similarity measure assigns to each edge (1 - the jaccard coefficient
 	of the neighborhoods of the two adjacent nodes).
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to calculate Jaccard similarities for.
-	triangles : vector[count]
+	triangles : list(int)
 		Previously calculated edge triangle counts.
 	"""
 
@@ -700,6 +863,17 @@ cdef class JaccardSimilarityAttributizer:
 		del self._this
 
 	def getAttribute(self):
+		"""
+		getAttribute()
+
+		Get the Jaccard similiraty score for every edge.
+
+		Returns
+		-------
+		list(float)
+			Jaccard similiraty score for every edge.
+
+		"""
 		#convert distance to similarity
 		self._this.preprocess()
 		return [1 - x for x in self._this.getEdgeScores()]
@@ -715,24 +889,26 @@ cdef extern from "<networkit/distance/AlgebraicDistance.hpp>":
 
 cdef class AlgebraicDistance:
 	"""
-	Algebraic distance assigns a distance value to pairs of nodes
-    according to their structural closeness in the graph.
-    Algebraic distances will become small within dense subgraphs.
+	AlgebraicDistance(G, numberSystems=10, numberIterations=30, omega=0.5, norm=0, withEdgeScores=False)
 
-	Parameters:
-	-----------
+	Algebraic distance assigns a distance value to pairs of nodes
+	according to their structural closeness in the graph.
+	Algebraic distances will become small within dense subgraphs.
+
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to calculate Jaccard distances for.
-	numberSystems : count
+	numberSystems : int, optional
 	 	Number of vectors/systems used for algebraic iteration.
-	numberIterations : count
+	numberIterations : int, optional
 	 	Number of iterations in each system.
-	omega : double
-	 	attenuation factor in [0,1] influencing convergence speed.
-	norm : index
+	omega : float, optional
+	 	Attenuation factor in [0,1] influencing convergence speed.
+	norm : int, optional
 		The norm factor of the extended algebraic distance.
-	withEdgeScores : bool
-		calculate array of scores for edges {u,v} that equal ad(u,v)
+	withEdgeScores : bool, optional
+		Calculate array of scores for edges {u,v} that equal ad(u,v)
 	"""
 
 	cdef _AlgebraicDistance* _this
@@ -767,17 +943,19 @@ cdef extern from "<networkit/distance/CommuteTimeDistance.hpp>":
 
 
 cdef class CommuteTimeDistance(Algorithm):
-	""" Computes the Euclidean Commute Time Distance between each pair of nodes for an undirected unweighted graph.
+	""" 
+	CommuteTimeDistance(G, tol=0.1)
+	
+	Computes the Euclidean Commute Time Distance (ECTD) between each pair of nodes for an undirected unweighted graph.
 
 	CommuteTimeDistance(G)
 
-	Create CommuteTimeDistance for Graph `G`.
-
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
-	tol: double
+	tol: float, optional
+		Tolerance for computation (higher tolerance leads to faster running times).
 	"""
 	cdef Graph _G
 
@@ -786,33 +964,76 @@ cdef class CommuteTimeDistance(Algorithm):
 		self._this = new _CommuteTimeDistance(G._this, tol)
 
 	def runApproximation(self):
-		""" Computes approximation of the ECTD. """
+		""" 
+		runApproximation()
+		
+		Computes approximation of the ECTD. 
+		"""
 		return (<_CommuteTimeDistance*>(self._this)).runApproximation()
 
 	def runParallelApproximation(self):
-		""" Computes approximation (in parallel) of the ECTD. """
+		""" 
+		runParallelApproximation()
+		
+		Computes approximation (in parallel) of the ECTD. 
+		"""
 		return (<_CommuteTimeDistance*>(self._this)).runParallelApproximation()
 
 	def distance(self, u, v):
-		"""  Returns the ECTD between node u and node v.
+		"""
+		distance(u, v)
 
-		u : node
-		v : node
+		Returns the ECTD between node u and node v.
+
+		Parameters
+		----------
+		u : int
+			Index of node u.
+		v : int
+			Index of node v.
+
+		Returns
+		-------
+		float
+			ECTD between node u and v.
 		"""
 		return (<_CommuteTimeDistance*>(self._this)).distance(u, v)
 
 	def runSinglePair(self, u, v):
-		"""  Returns the ECTD between node u and node v, without preprocessing.
+		"""
+		runSinglePair(u, v)
+		
+		Returns the ECTD between node u and node v, without preprocessing.
 
-		u : node
-		v : node
+		Parameters
+		----------
+		u : int
+			Index of node u.
+		v : int
+			Index of node v.
+
+		Returns
+		-------
+		float
+			ECTD (without preprocessing) between node u and v.
 		"""
 		return (<_CommuteTimeDistance*>(self._this)).runSinglePair(u, v)
 
 	def runSingleSource(self, u):
-		"""  Returns the sum of the ECTDs from u, without preprocessing.
+		"""
+		runSingleSource(u)
+		
+		Returns the sum of the ECTDs from u, without preprocessing.
 
-		u : node
+		Parameters
+		----------
+		u : int
+			Index of node u.
+
+		Returns
+		-------
+		float
+			Sum of the ECTDs from u, without preprocessing.
 		"""
 		return (<_CommuteTimeDistance*>(self._this)).runSingleSource(u)
 
@@ -830,18 +1051,20 @@ cdef extern from "<networkit/distance/NeighborhoodFunctionHeuristic.hpp>" namesp
 
 cdef class NeighborhoodFunctionHeuristic(Algorithm):
 	"""
+	NeighborhoodFunctionHeuristic(G, nSamples=0, strategy=1)
+
 	Computes a heuristic of the neighborhood function.
 	The algorithm runs nSamples breadth-first searches and scales the results up to the actual amount of nodes.
 	Accepted strategies are "split" and "random".
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
-	nSamples : count
-		the amount of samples, set to zero for heuristic of max(sqrt(m), 0.15*n)
-	strategy : enum
-		the strategy to select the samples, accepts "random" or "split"
+	nSamples : int, optional
+		The amount of samples, set to zero for heuristic of max(sqrt(m), 0.15*n).
+	strategy : int
+		The strategy to select the samples, accepts 0 (random) or 1 (split).
 	"""
 	cdef Graph _G
 
@@ -854,10 +1077,14 @@ cdef class NeighborhoodFunctionHeuristic(Algorithm):
 
 	def getNeighborhoodFunction(self):
 		"""
-		Returns:
-		--------
-		list
-			the i-th element denotes the number of node pairs that have a distance at most (i+1)
+		getNeighborhoodFunction()
+
+		Returns the neighborhood function of the graph.
+
+		Returns
+		-------
+		list(int)
+			The i-th element denotes the number of node pairs that have a distance at most (i+1).
 		"""
 		return (<_NeighborhoodFunctionHeuristic*>(self._this)).getNeighborhoodFunction()
 
@@ -869,17 +1096,17 @@ cdef extern from "<networkit/distance/APSP.hpp>":
 		edgeweight getDistance(node u, node v) except +
 
 cdef class APSP(Algorithm):
-	""" All-Pairs Shortest-Paths algorithm (implemented running Dijkstra's algorithm from each node, or BFS if G is unweighted).
+	""" 
+	APSP(G)
 
-    APSP(G)
+	All-Pairs Shortest-Paths algorithm (implemented running Dijkstra's algorithm from each node, or BFS if G is unweighted).
+	Computes all pairwise shortest-path distances in G.
 
-    Computes all pairwise shortest-path distances in G.
-
-    Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
-    """
+	"""
 	cdef Graph _G
 
 	def __cinit__(self, Graph G):
@@ -890,29 +1117,36 @@ cdef class APSP(Algorithm):
 		self._G = None
 
 	def getDistances(self):
-		""" Returns a vector of vectors of distances between each node pair.
+		""" 
+		getDistances()
 
- 	 	Returns:
- 	 	--------
- 	 	vector of vectors
+		Returns a vector of vectors of distances between each node pair.
+
+ 	 	Returns
+ 	 	-------
+ 	 	list(list(float))
  	 		The shortest-path distances from each node to any other node in the graph.
 		"""
 		return (<_APSP*>(self._this)).getDistances()
 
 	def getDistance(self, node u, node v):
-		""" Returns the length of the shortest path from source 'u' to target 'v'.
+		""" 
+		getDistance(u, v)
+		
+		Returns the length of the shortest path from source u to target v.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		u : node
-			Source node.
+			Index of source node u.
 		v : node
-			Target node.
+			Index of target node v.
 
-		Returns:
-		--------
+		Returns
+		-------
 		int or float
-			The distance from 'u' to 'v'.
+			The distance from u to v. Returned value is of type int, if the graph is unweighted - otherwise the return
+			type is float.
 		"""
 		return (<_APSP*>(self._this)).getDistance(u, v)
 
@@ -925,20 +1159,20 @@ cdef extern from "<networkit/distance/SPSP.hpp>":
 		void setSources(vector[node].iterator sourcesFirst, vector[node].iterator sourcesLast)
 
 cdef class SPSP(Algorithm):
-	""" Some-Pairs Shortest-Paths algorithm (implemented running Dijkstra's algorithm from each source
-		node, or BFS if G is unweighted).
+	""" 
+	SPSP(G, sources)
+	
+	Some-Pairs Shortest-Paths algorithm (implemented running Dijkstra's algorithm from each source
+	node, or BFS if G is unweighted).
+	Computes pairwise shortest-path distances from the source nodes to all the nodes in G.
 
-    SPSP(G)
-
-    Computes pairwise shortest-path distances from the source nodes to all the nodes in G.
-
-    Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
-	sources : list.
+	sources : list(int)
 		Set of source nodes.
-    """
+	"""
 	cdef Graph _G
 
 	def __cinit__(self, Graph G not None, vector[node] sources):
@@ -949,40 +1183,49 @@ cdef class SPSP(Algorithm):
 		self._G = None
 
 	def getDistances(self):
-		""" Returns a vector of vectors of distances between each source node
+		""" 
+		getDistances()
+		
+		Returns a vector of vectors of distances between each source node
 		and all the other nodes pair.
 
- 	 	Returns:
- 	 	--------
- 	 	vector of vectors
+ 	 	Returns
+ 	 	-------
+ 	 	list(list(float))
 			The shortest-path distances from each source node to any other node
 			in the graph.
 		"""
 		return (<_SPSP*>self._this).getDistances()
 
 	def getDistance(self, node u, node v):
-		""" Returns the length of the shortest path from source 'u' to target 'v'.
+		""" 
+		getDistance(u, v)
 
-		Parameters:
-		-----------
+		Returns the length of the shortest path from source u to target v.
+
+		Parameters
+		----------
 		u : node
-			Source node.
+			Index of source node.
 		v : node
-			Target node.
+			Index of target node.
 
-		Returns:
-		--------
+		Returns
+		-------
 		float
-			The distance from 'u' to 'v'.
+			The distance from u to v.
 		"""
 		return (<_SPSP*>self._this).getDistance(u, v)
 
 	def setSources(self, vector[node] sources):
-		""" Sets the source nodes.
+		""" 
+		setSources(sources)
+		
+		Sets the source nodes.
 
 		Parameters
 		----------
-		sources : list
+		sources : list(int)
 			List of the new source nodes.
 		"""
 		(<_SPSP*>self._this).setSources(sources.begin(), sources.end())
@@ -996,14 +1239,14 @@ cdef extern from "<networkit/distance/DynAPSP.hpp>":
 		void updateBatch(vector[_GraphEvent] batch) except +
 
 cdef class DynAPSP(APSP):
-	""" All-Pairs Shortest-Paths algorithm for dynamic graphs.
-
+	""" 
 	DynAPSP(G)
-
+	
+	All-Pairs Shortest-Paths algorithm for dynamic graphs.
 	Computes all pairwise shortest-path distances in G.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
 		"""
@@ -1012,20 +1255,28 @@ cdef class DynAPSP(APSP):
 		self._this = new _DynAPSP(G._this)
 
 	def update(self, ev):
-		""" Updates shortest paths with the edge insertion.
+		""" 
+		update(ev)
 
-		Parameters:
-		-----------
-		ev : GraphEvent.
+		Updates shortest paths with the edge insertion.
+
+		Parameters
+		----------
+		ev : networkit.dynamics.GraphEvent
+			A graph event.
 		"""
 		(<_DynAPSP*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
 
 	def updateBatch(self, batch):
-		""" Updates shortest paths with the batch `batch` of edge insertions.
+		""" 
+		updateBatch(batch)
 
-		Parameters:
-		-----------
-		batch : list of GraphEvent.
+		Updates shortest paths with a batch of edge insertions.
+
+		Parameters
+		----------
+		batch : list(networkit.dynamics.GraphEvent)
+			List of graph events.
 		"""
 		cdef vector[_GraphEvent] _batch
 		for ev in batch:
@@ -1038,22 +1289,23 @@ cdef extern from "<networkit/distance/BFS.hpp>":
 		_BFS(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
 
 cdef class BFS(SSSP):
-	""" Simple breadth-first search on a Graph from a given source
-
+	""" 
 	BFS(G, source, storePaths=True, storeNodesSortedByDistance=False, target=None)
+	
+	Simple breadth-first search on a Graph from a given source.
 
-	Create BFS for `G` and source node `source`.
-
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
-	source : node
+	source : int
 		The source node of the breadth-first search.
-	storePaths : bool
-		store paths and number of paths?
-	target: node
-		terminate search when the target has been reached
+	storePaths : bool, optional
+		Controls whether to store paths and number of paths.
+	storeNodesSortedByDistance : bool, optional
+		Controls whether to store nodes sorted by distance.
+	target: int or None, optional
+		Terminate search when the target has been reached. In default-mode, this target is set to None.
 	"""
 
 	def __cinit__(self, Graph G, source, storePaths=True, storeNodesSortedByDistance=False, target=none):
@@ -1067,27 +1319,25 @@ cdef extern from "<networkit/distance/Dijkstra.hpp>":
 		_Dijkstra(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
 
 cdef class Dijkstra(SSSP):
-	""" Dijkstra's SSSP algorithm.
-	Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
+	""" 
+	Dijkstra(G, source, storePaths=True, storeNodesSortedByDistance=False, target=None)
+	
+	Dijkstra's SSSP algorithm. Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
 	any other node.
 
-    Dijkstra(G, source, storePaths=True, storeNodesSortedByDistance=False, target=None)
-
-    Creates Dijkstra for `G` and source node `source`.
-
-    Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
-	source : node
-		The source node.
-	storePaths : bool
-		Paths are reconstructable and the number of paths is stored.
-	storeNodesSortedByDistance: bool
-		Store a vector of nodes ordered in increasing distance from the source.
-	target : node
-		target node. Search ends when target node is reached. t is set to None by default.
-    """
+	source : int
+		The source node of the Dijkstra search.
+	storePaths : bool, optional
+		Controls whether to store paths and number of paths.
+	storeNodesSortedByDistance : bool, optional
+		Controls whether to store nodes sorted by distance.
+	target: int or None, optional
+		Terminate search when the target has been reached. In default-mode, this target is set to None.
+	"""
 	def __cinit__(self, Graph G, source, storePaths=True, storeNodesSortedByDistance=False, node target=none):
 		self._G = G
 		self._this = new _Dijkstra(G._this, source, storePaths, storeNodesSortedByDistance, target)
@@ -1098,20 +1348,17 @@ cdef extern from "<networkit/distance/DynBFS.hpp>":
 		_DynBFS(_Graph G, node source) except +
 
 cdef class DynBFS(DynSSSP):
-	""" Dynamic version of BFS.
-
+	""" 
 	DynBFS(G, source)
 
-	Create DynBFS for `G` and source node `source`.
+	Dynamic version of BFS.	
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
-	source : node
+	source : int
 		The source node of the breadth-first search.
-	storeStack : bool
-		maintain a stack of nodes in order of decreasing distance?
 	"""
 	def __cinit__(self, Graph G, source):
 		self._G = G
@@ -1123,18 +1370,17 @@ cdef extern from "<networkit/distance/DynDijkstra.hpp>":
 		_DynDijkstra(_Graph G, node source) except +
 
 cdef class DynDijkstra(DynSSSP):
-	""" Dynamic version of Dijkstra.
+	""" 
+	DynDijkstra(G, source)	
+	
+	Dynamic version of Dijkstra. Create DynDijkstra for G and a source node.
 
-	DynDijkstra(G, source)
-
-	Create DynDijkstra for `G` and source node `source`.
-
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
-	source : node
-		The source node of the breadth-first search.
+	source : int
+		The source node of the Dijkstra search.
 
 	"""
 	def __cinit__(self, Graph G, source):
@@ -1163,23 +1409,23 @@ cdef extern from "<networkit/distance/BidirectionalBFS.hpp>":
 
 cdef class BidirectionalBFS(STSP):
 	"""
-		Implements a bidirectional breadth-first search on a graph from
-		two given source and target nodes.
-		Explores the graph from both the source and target nodes until
-		the two explorations meet.
+	BidirectionalBFS(G, source, target, storePre=True)
 
-		Parameters:
-		-----------
+	Implements a bidirectional breadth-first search on a graph from two given source and target nodes.
+	Explores the graph from both the source and target nodes until the two explorations meet.
 
-		G : networkit.Graph
-			The input graph.
-		source : node
-			The source node.
-		target : node
-			The target node.
-		storePred : bool
-			If true, the algorithm will also store the predecessors
-			and reconstruct a shortest path from @a source and @a target.
+	Parameters
+	----------
+
+	G : networkit.Graph
+		The input graph.
+	source : int
+		The source node.
+	target : int
+		The target node.
+	storePred : bool, optional
+		If True, the algorithm will also store the predecessors
+		and reconstruct a shortest path from source and target.
 	"""
 
 	def __cinit__(self, Graph G, node source, node target, bool_t storePred=True):
@@ -1187,12 +1433,14 @@ cdef class BidirectionalBFS(STSP):
 
 	def getHops(self):
 		"""
+		getHops()
+
 		Returns the distance (i.e., number of hops) from the source to the
 		target node.
 
-		Returns:
-		--------
-		count
+		Returns
+		-------
+		int
 			Number of hops from the source to the target node.
 		"""
 		return (<_BidirectionalBFS*>(self._this)).getHops()
@@ -1203,23 +1451,25 @@ cdef extern from "<networkit/distance/BidirectionalDijkstra.hpp>":
 
 cdef class BidirectionalDijkstra(STSP):
 	"""
-		Bidirectional implementation of the Dijkstra algorithm from
-		two given source and target nodes.
-		Explores the graph from both the source and target nodes until
-		the two explorations meet.
+	BidirectionalDijkstra(G, source, target, storePred=True)
 
-		Parameters:
-		-----------
+	Bidirectional implementation of the Dijkstra algorithm from
+	two given source and target nodes.
+	Explores the graph from both the source and target nodes until
+	the two explorations meet.
 
-		G : networkit.Graph
-			The input graph.
-		source : node
-			The source node.
-		target : node
-			The target node.
-		storePred : bool
-			If true, the algorithm will also store the predecessors
-			and reconstruct a shortest path from @a source and @a target.
+	Parameters:
+	-----------
+
+	G : networkit.Graph
+		The input graph.
+	source : int
+		The source node.
+	target : int
+		The target node.
+	storePred : bool, optional
+		If True, the algorithm will also store the predecessors
+		and reconstruct a shortest path from source and target.
 	"""
 
 	def __cinit__(self, Graph G, node source, node target, bool_t storePred=True):
@@ -1231,22 +1481,23 @@ cdef extern from "<networkit/distance/AStar.hpp>":
 
 cdef class AStar(STSP):
 	"""
+	AStar(G, heu, source, target, storePred=True)
+
 	A* path-finding algorithm.
 
-	Parameters:
-	-----------
-
+	Parameters
+	----------
 	G : networkit.Graph
 		The input graph.
-	heu : list
+	heu : list(float)
 		List of lower bounds of the distance of each node to the target.
-	source : node
+	source : int
 		The source node.
-	target : node
+	target : int
 		The target node.
-	storePred : bool
-		If true, the algorithm will also store the predecessors
-		and reconstruct a shortest path from @a source and @a target.
+	storePred : bool, optional
+		If True, the algorithm will also store the predecessors
+		and reconstruct a shortest path from source and target.
 	"""
 
 	cdef vector[double] heu
@@ -1264,24 +1515,22 @@ cdef extern from "<networkit/reachability/AllSimplePaths.hpp>":
 		void forAllSimplePaths[Callback](Callback c) except +
 
 cdef class AllSimplePaths:
-	""" Algorithm to compute all existing simple paths from a source node to a target node. The maximum length of the paths can be fixed through 'cutoff'.
-		CAUTION: This algorithm could take a lot of time on large networks (many edges), especially if the cutoff value is high or not specified.
+	""" 
+	AllSimplePaths(G, source, target, cutoff=None)
 
-	AllSimplePaths(G, source, target, cutoff=none)
-
-	Create AllSimplePaths for `G`, source node `source`, target node 'target' and cutoff 'cutoff'.
+	Algorithm to compute all existing simple paths from a source node to a target node. The maximum length of the paths can be fixed through 'cutoff'.
+	CAUTION: This algorithm could take a lot of time on large networks (many edges), especially if the cutoff value is high or not specified.
 
 	Parameters:
 	-----------
 	G : networkit.Graph
 		The graph.
-	source : node
+	source : int
 		The source node.
-	target : node
+	target : int
 		The target node.
-	cutoff : count
-		(optional) The maximum length of the simple paths.
-
+	cutoff : int or None, optional
+		The maximum length of the simple paths. In default mode, there is no cutoff set.
 	"""
 
 	cdef _AllSimplePaths* _this
@@ -1302,31 +1551,38 @@ cdef class AllSimplePaths:
 
 	def numberOfSimplePaths(self):
 		"""
+		numberOfSimplePaths()
+
 		Returns the number of simple paths.
 
-		Returns:
-		--------
-		count
+		Returns
+		-------
+		int
 			The number of simple paths.
 		"""
 		return self._this.numberOfSimplePaths()
 
 	def getAllSimplePaths(self):
 		"""
+		getAllSimplePaths()
+
 		Returns all the simple paths from source to target.
 
-		Returns:
-		--------
-		A vector of vectors.
-			A vector containing vectors which represent all simple paths.
+		Returns
+		-------
+		list(list(int))
+			A list containing list of node indexes which represent all simple paths.
 		"""
 		return self._this.getAllSimplePaths()
 
 	def forAllSimplePaths(self, object callback):
-		""" More efficient path iterator. Iterates over all the simple paths.
+		""" 
+		forAllSimplePaths(callback)
+		
+		More efficient path iterator. Iterates over all the simple paths.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		callback : object
 			Any callable object that takes the parameter path
 		"""
@@ -1343,22 +1599,23 @@ cdef extern from "<networkit/distance/ReverseBFS.hpp>":
 		_ReverseBFS(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
 
 cdef class ReverseBFS(SSSP):
-	""" Simple reverse breadth-first search on a Graph from a given source
-
+	""" 
 	ReverseBFS(G, source, storePaths=True, storeNodesSortedByDistance=False, target=None)
 
-	Create ReverseBFS for `G` and source node `source`.
+	Simple reverse breadth-first search on a Graph from a given source.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph.
-	source : node
+	source : int
 		The source node of the breadth-first search.
-	storePaths : bool
-		Paths are reconstructable and the number of paths is stored.
-	target: node
-		terminate search when the target has been reached
+	storePaths : bool, optional
+		Controls whether to store paths and number of paths.
+	storeNodesSortedByDistance : bool, optional
+		Controls whether to store nodes sorted by distance.
+	target: int or None, optional
+		Terminate search when the target has been reached. In default-mode, this target is set to None.
 	"""
 
 	def __cinit__(self, Graph G, source, storePaths=True, storeNodesSortedByDistance=False, target=none):

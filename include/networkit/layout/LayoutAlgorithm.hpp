@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * LayoutAlgorithm.hpp
  *
@@ -21,24 +20,19 @@ namespace NetworKit {
  */
 class LayoutAlgorithm {
 
-
 public:
+    LayoutAlgorithm(const Graph &G)
+        : G(G){
 
-    LayoutAlgorithm(const Graph& G) : G(G) {
-
-    };
+        };
 
     virtual void run() = 0;
 
-    virtual std::vector<std::pair<double, double>> getLayout() {
-        return layout;
-    };
+    virtual std::vector<std::pair<double, double>> getLayout() { return layout; };
 
 protected:
-
-    const Graph* G;
+    const Graph *G;
     std::vector<std::pair<double, double>> layout;
-
 };
 
 } /* namespace NetworKit */

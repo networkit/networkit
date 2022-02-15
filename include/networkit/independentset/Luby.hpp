@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * Luby.hpp
  *
@@ -11,7 +10,6 @@
 
 #include <networkit/independentset/IndependentSetFinder.hpp>
 
-
 namespace NetworKit {
 
 /**
@@ -22,9 +20,8 @@ namespace NetworKit {
 class Luby final : public IndependentSetFinder {
 
 public:
-
     // FIXME: check correctness of implementation
-    std::vector<bool> run(const Graph& G) override;
+    std::vector<bool> run(const Graph &G) override;
 };
 
 } /* namespace NetworKit */

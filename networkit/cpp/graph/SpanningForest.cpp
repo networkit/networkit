@@ -27,6 +27,7 @@ void SpanningForest::run() {
         }
     });
 
+    hasRun = true;
     INFO("tree edges in SpanningForest: ", forest.numberOfEdges());
 }
 
