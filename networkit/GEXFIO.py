@@ -6,6 +6,14 @@ from .dynamics import GraphEvent
 
 # GEXF Reader
 class GEXFReader:
+	"""
+	GEXFReader()
+
+	This class provides a function to read a file in the
+	GEXF (Graph Exchange XML Format) format.
+
+	For more details see: http://gexf.net/
+	"""
 	def __init__(self):
 		""" Initializes the GEXFReader class """
 		self.mapping = dict()
@@ -20,7 +28,16 @@ class GEXFReader:
 		self.timeFormat = ""
 
 	def read(self, fpath):
-		""" Reads and returns the graph object defined in fpath """
+		""" 
+		read(fpath)
+
+		Reads and returns the graph object defined in fpath.
+		
+		Parameters
+		----------
+		fpath : str
+			File path for GEXF-file.
+		"""
 		#0. Reset internal vars and parse the xml
 		self.__init__()
 		doc = minidom.parse(fpath)
@@ -116,18 +133,35 @@ class GEXFReader:
 
 	def parseDynamics(self, element, elementType, controlList,  u,  v = "0", w = "0"):
 		"""
-		Determine the operations as follows:
-		1.Element has start and not deleted before: Create add event
-		2.Element has start and deleted before: Create restore event
-		3.Element has end:Create del event
-		4.If an element has end before start(or no start at all), add it to the initial graph
-		5.For dynamic edges, simply go over the attvalues and create
-		weight update events
+		parseDynamics(element, elementType, controlList,  u,  v = "0", w = "0")
 
-		* A dynamic element must be defined either using only spells
+		Determine the operations as follows:
+
+		1. Element has start and not deleted before: Create add event
+		2. Element has start and deleted before: Create restore event
+		3. Element has end:Create del event
+		4. If an element has end before start(or no start at all), add it to the initial graph
+		5. For dynamic edges, simply go over the attvalues and create weight update events
+
+		A dynamic element must be defined either using only spells
 		or inline attributes. These 2 shouldn't be mixed.
 		(For example, Gephi will treat them differently. It'll ignore the inline declaration
 		if the same element also contains spells)
+
+		Parameters
+		----------
+		element : str
+			Element to add during reading a GEXF-file.
+		elementType : str
+			Element type ("n" for node or "e" for edge).
+		controlList : dict
+			Dict with elements indicate element properties. Example :code:`{'elementAdded': False, 'elementDeleted': False}`
+		u : str
+			Node u involved in element parsing.
+		v : str, optional
+			Node v involved in element parsing. Default: "0"
+		w : str, optional
+			Edgeweight w involved in element parsing. Default: "0"
 		"""
 		startTime = element.getAttribute("start")
 		if startTime == "":
@@ -196,8 +230,24 @@ class GEXFReader:
 
 	def createEvent(self, eventTime, eventType, u, v, w):
 		"""
+		createEvent(eventTime, eventType, u, v, w)
+
 		Creates a NetworKit::GraphEvent from the supplied parameters
-		and passes it to eventStream
+		and passes it to eventStream.
+
+		Parameters
+		----------
+		eventTime : int
+			Timestep indicating when the event happen (creating an order of events).
+		eventType : str
+			Abbreviation string representing a graph event. Should be one of the following:
+			:code:`e, an, dn, rn, ae, re, de, ce`.
+		u : int
+			Id of node u involved in graph event.
+		v : int
+			Id of node v involved in graph event.
+		w : float
+			Edgeweight of edge between u and v.
 		"""
 		event, u = None, self.mapping[u]
 		if eventType[1] == "e":
@@ -218,12 +268,16 @@ class GEXFReader:
 
 	def mapDynamicNodes(self):
 		"""
+		mapDynamicNodes()
+
 		Node ID of a dynamic node must be determined before it's mapped to its GEXF ID.
 		This requires processing the sorted eventStream and figuring out the addition order of the nodes.
 		After that, node addition/deletion/restoration operations of this node must be readded to eventStream
 		with correct mapping.
 
-		!Note: New mapping of a node can be equal to old mapping of a node. In order to prevent collisions,
+		Note
+		----
+		New mapping of a node can be equal to old mapping of a node. In order to prevent collisions,
 		isMapped array must be maintained and controlled.
 		"""
 		nNodes = self.nInitialNodes
@@ -247,7 +301,14 @@ class GEXFReader:
 				isMapped[i] = True
 
 	def getNodeMap(self):
-		""" Returns GEXF ID -> NetworKit::Graph node ID mapping. """
+		""" 
+		getNodeMap()
+		
+		Returns
+		-------
+		dict(int ``:`` int)
+			Dictionary containing mapping from GEXF ID to node ID
+		"""
 		forwardMap = dict()
 		for key in self.mapping:
 			if type(key) == str:
@@ -257,8 +318,11 @@ class GEXFReader:
 
 # GEXFWriter
 class GEXFWriter:
-	""" This class provides a function to write a NetworKit graph to a file in the
-	GEXF format. """
+	""" 
+	GEXFWriter()
+	
+	This class provides a function to write a NetworKit graph to a file in the GEXF format. 
+	"""
 
 	def __init__(self):
 		""" Initializes the class. """
@@ -268,14 +332,20 @@ class GEXFWriter:
 
 	def write(self, graph, fname, eventStream = [], mapping = []):
 		"""
-		Writes a NetworKit::Graph to the specified file fname.
+		write(graph, fname, evenStream = [], mapping = [])
+
+		Writes a graph to the specified file fname.
 		
-		Parameters:
-		-----------
-		graph: a NetworKit::Graph python object
-		fname: the desired file path and name to be written to
-		eventStream: stream of events
-		mapping: random node mapping
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+		fname : str 
+			The desired file path and name to be written to.
+		eventStream : list(networkit.dynamics.GraphEvent)
+			Stream of events, each represented by networkit.dynamics.GraphEvent.
+		mapping : list(int)
+			Random node mapping.
 		"""
 		#0. Reset internal vars
 		self.__init__()
@@ -358,6 +428,20 @@ class GEXFWriter:
 		tree.write(fname,"utf-8",True)
 
 	def writeEvent(self, xmlElement, eventStream, graphElement):
+		"""
+		writeEvent(xmlElement, eventStream, graphElement)
+
+		Write a single event. This is a supporting function and should normally not be called independently.
+
+		Parameters
+		----------
+		xmlElement : xml.etree.cElementTree
+			XML-encoded element, representing one GEXF-element.
+		eventStream : list(networkit.dynamics.GraphEvent)
+			Stream of events, each represented by networkit.dynamics.GraphEvent.
+		graphElement : tuple(int, int, float)
+			Tuple representing one graph element given by (node u, node v, edge weight w). 
+		"""
 		# A var that indicates if the event belongs the graph element we traverse on
 		matched = False
 		startEvents = [GraphEvent.NODE_ADDITION, GraphEvent.EDGE_ADDITION, GraphEvent.NODE_RESTORATION]
