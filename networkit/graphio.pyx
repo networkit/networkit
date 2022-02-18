@@ -35,7 +35,21 @@ cdef extern from "<algorithm>" namespace "std":
 	_Partition move( _Partition t) nogil
 
 def stdstring(pystring):
-	""" convert a Python string to a bytes object which is automatically coerced to std::string"""
+	""" 
+	stdstring(pystring)
+
+	Convert a Python string to a bytes object which is automatically coerced to std::string
+
+	Parameters
+	----------
+	pystring : str
+		Input python string.
+
+	Returns
+	-------
+	stdstring
+		Python bytes string.
+	"""
 	pybytes = pystring.encode("utf-8")
 	return pybytes
 
@@ -63,6 +77,21 @@ cdef class GraphReader:
 		self._this = NULL
 
 	def read(self, path):
+		"""
+		read(path)
+
+		Read graph given by path.
+
+		Parameters
+		----------
+		path : str
+			Path string.
+
+		Returns
+		-------
+		networkit.Graph
+			The resulting graph.
+		"""
 		cdef string cpath = stdstring(path)
 		cdef _Graph result
 
@@ -112,12 +141,12 @@ cdef class GraphWriter:
 		"""
 		Write the graph to a file.
 
-		Parameters:
-		-----------
-		G     : networkit.Graph
-			The graph to write
+		Parameters
+		----------
+		G : networkit.Graph
+			The graph to write.
 		paths : str
-			The output path
+			The output path.
 		"""
 		assert path != None
 		cdef string c_path = stdstring(path)
@@ -131,9 +160,12 @@ cdef extern from "<networkit/io/METISGraphReader.hpp>":
 		_METISGraphReader() nogil except +
 
 cdef class METISGraphReader(GraphReader):
-	""" Reads the METIS adjacency file format [1]. If the Fast reader fails,
-		use readGraph(path, graphio.formats.metis) as an alternative.
-		[1]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
+	"""
+	METISGraphReader()
+	
+	Reads the METIS adjacency file format [1]. If the Fast reader fails,
+	use readGraph(path, graphio.formats.metis) as an alternative.
+	[1]: http://people.sc.fsu.edu/~jburkardt/data/metis_graph/metis_graph.html
 	"""
 	def __cinit__(self):
 		self._this = new _METISGraphReader()
@@ -145,13 +177,26 @@ cdef extern from "<networkit/io/NetworkitBinaryReader.hpp>":
 
 cdef class NetworkitBinaryReader(GraphReader):
 	"""
-	Reads a graph written in the custom Networkit format documented in cpp/io/NetworkitGraph.md
+	NetworkitBinaryReader()
+
+	Reads a graph written in the custom Networkit format. Further information can be found here: 
+	https://github.com/networkit/networkit/blob/master/networkit/cpp/io/NetworkitBinaryGraph.md
 	"""
 
 	def __cinit__(self):
 		self._this = new _NetworkitBinaryReader()
 	
 	def readFromBuffer(self, state):
+		"""
+		readFromBuffer(state)
+
+		Read graph based on input buffer.
+
+		Parameters
+		----------
+		buffer : list(int)
+			Input data buffer.
+		"""
 		cdef _Graph result
 		result = move((<_NetworkitBinaryReader*>(self._this)).readFromBuffer(state))
 		return Graph(0).setThis(result)
@@ -162,10 +207,26 @@ cdef extern from "<networkit/io/NetworkitBinaryWriter.hpp>":
 		vector[uint8_t] writeToBuffer(_Graph G) except +
 
 cdef class NetworkitBinaryWriter(GraphWriter):
+	"""
+	NetworkitBinaryWriter()
+
+	Writes a graph written in the custom Networkit format. Further information can be found here:
+	https://github.com/networkit/networkit/blob/master/networkit/cpp/io/NetworkitBinaryGraph.md
+	"""
 	def __cinit__(self):
 		self._this = new _NetworkitBinaryWriter()
 	
 	def writeToBuffer(self, Graph G not None):
+		"""
+		writeToBuffer(state)
+
+		Write graph to data buffer.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		"""
 		return (<_NetworkitBinaryWriter*>(self._this)).writeToBuffer(G._this)
 
 cdef extern from "<networkit/io/GraphToolBinaryReader.hpp>":
@@ -174,8 +235,10 @@ cdef extern from "<networkit/io/GraphToolBinaryReader.hpp>":
 		_GraphToolBinaryReader() except +
 
 cdef class GraphToolBinaryReader(GraphReader):
-	""" Reads the binary file format defined by graph-tool[1].
-		[1]: http://graph-tool.skewed.de/static/doc/gt_format.html
+	""" 
+	GraphToolsBinaryReader()
+
+	Reads the binary file format defined by graph-tool: http://graph-tool.skewed.de/static/doc/gt_format.html
 	"""
 	def __cinit__(self):
 		self._this = new _GraphToolBinaryReader()
@@ -188,28 +251,37 @@ cdef extern from "<networkit/io/ThrillGraphBinaryReader.hpp>":
 
 cdef class ThrillGraphBinaryReader(GraphReader):
 	"""
+	ThrillGraphBinaryReader(n=0)
+
 	Reads a graph format consisting of a serialized DIA of vector<uint32_t> from thrill.
 	When the number of nodes is given, reading the graph is more efficient.
 	Otherwise nodes are added to the graph as they are encountered.
 	Edges must be present only in one direction.
 
-	Parameters:
-	-----------
-	n : count
-		The number of nodes
+	Parameters
+	----------
+	n : int, optional
+		The number of nodes. Default: 0
 	"""
 	def __cinit__(self, count n = 0):
 		self._this = new _ThrillGraphBinaryReader(n)
 
-	"""
-	Read the graph from one or multiple files
-
-	Parameters:
-	-----------
-	paths : str or list[str]
-		The input path(s)
-	"""
 	def read(self, paths):
+		"""
+		read(paths)
+
+		Read the graph from one or multiple files.
+
+		Parameters
+		----------
+		paths : str or list(str)
+			The input path(s).
+
+		Returns
+		-------
+		networkit.Graph
+			The resulting graph.
+		"""
 		cdef vector[string] c_paths
 
 		if isinstance(paths, str):
@@ -234,6 +306,8 @@ cdef extern from "<networkit/io/ThrillGraphBinaryWriter.hpp>":
 
 cdef class ThrillGraphBinaryWriter(GraphWriter):
 	"""
+	ThrillGraphBinaryWriter()
+
 	Writes a graph format consisting of a serialized DIA of vector<uint32_t> from Thrill.
 	Edges are written only in one direction.
 	"""
@@ -249,9 +323,10 @@ cdef extern from "<networkit/io/EdgeListReader.hpp>":
 		map[string,node] getNodeMap() except +
 
 cdef class EdgeListReader(GraphReader):
-	""" Reads a graph from various text-based edge list formats.
-
+	""" 
 	EdgeListReader(self, separator, firstNode, commentPrefix="#", continuous=True, directed=False)
+
+	Reads a graph from various text-based edge list formats.
 
 	A line has to contain two or three entries separated with the separator symbol (one ASCII character).
 	If at least one line contains three entries, the generated graph will be weighted and
@@ -273,18 +348,18 @@ cdef class EdgeListReader(GraphReader):
 
 	The file may also include line comments which start with the commentPrefix.
 
-	Parameters:
-	-----------
-	separator : char
+	Parameters
+	----------
+	separator : str
 		The separator character. Must have length of exactly one.
-	firstNode : node
-		The id of the first node, this value will be subtracted from all node ids
-	commentPrefix : string
-		Lines starting with this prefix will be ignored
-	continuous : bool
-		File uses continuous node ids.
-	directed : bool
-		Treat input file as a directed graph.
+	firstNode : int
+		The id of the first node, this value will be subtracted from all node ids.
+	commentPrefix : str, optional
+		Lines starting with this prefix will be ignored. Default: `#`
+	continuous : bool, optional
+		File uses continuous node ids. Default: True 
+	directed : bool, optional
+		Treat input file as a directed graph. Default: False
 	"""
 	def __cinit__(self, separator, firstNode, commentPrefix="#", continuous=True, directed=False):
 		if len(separator) != 1 or ord(separator[0]) > 255:
@@ -293,10 +368,18 @@ cdef class EdgeListReader(GraphReader):
 		self._this = new _EdgeListReader(stdstring(separator)[0], firstNode, stdstring(commentPrefix), continuous, directed)
 
 	def getNodeMap(self):
-		""" Returns mapping of non-continuous files.
+		""" 
+		getNodeMap()
+		
+		Returns mapping of non-continuous files.
 
-		The mapping is returned as dict (string -> node) projecting the original
-		labels (as strings) to the reassigned integer node ids.
+		The mapping is returned as dict(str, int) projecting the original
+		labels (as Strings) to the reassigned node ids.
+
+		Returns
+		-------
+		dict(str,int)
+			Mapping from labels to node ids.
 		"""
 		cdef map[string,node] cResult = (<_EdgeListReader*>(self._this)).getNodeMap()
 		result = dict()
@@ -311,9 +394,23 @@ cdef extern from "<networkit/io/KONECTGraphReader.hpp>":
 		_KONECTGraphReader(bool_t remapNodes, _MultipleEdgesHandling handlingmethod)
 
 cdef class KONECTGraphReader(GraphReader):
-	""" Reader for the KONECT graph format, which is described in detail on the KONECT website[1].
+	""" 
+	KONECTGraphReader(remapNodes = False, handlingmethod = networkit.graphio.MultipleEdgesHandling.DiscardEdges)
 
-		[1]: http://konect.uni-koblenz.de/downloads/konect-handbook.pdf
+	Reader for the KONECT graph format, which is described in detail on the KONECT website: http://konect.uni-koblenz.de/downloads/konect-handbook.pdf
+
+	Parameter :code:`handlingmethod` can be one of the following:
+
+	- networkit.graphio.MultipleEdgesHandling.DiscardEdges
+	- networkit.graphio.MultipleEdgesHandling.SumWeightsUp
+	- networkit.graphio.MultipleEdgesHandling.KeepMinimumWeight
+
+	Parameters
+	----------
+	remapNodes : bool, optional
+		Indicates whether nodes are remapped. Default: False
+	handlingmethod : networkit.graphio.MultipleEdgesHandling, optional
+		Sets method of handling multiple edges. Default: networkit.graphio.MultipleEdgesHandling.DiscardEdges
 	"""
 	def __cinit__(self, remapNodes = False, handlingmethod = MultipleEdgesHandling.DiscardEdges):
 		self._this = new _KONECTGraphReader(remapNodes, handlingmethod)
@@ -324,9 +421,10 @@ cdef extern from "<networkit/io/GMLGraphReader.hpp>":
 		_GMLGraphReader() except +
 
 cdef class GMLGraphReader(GraphReader):
-	""" Reader for the GML graph format, which is documented here [1].
+	""" 
+	GMLGraphReader()
 
-		[1]: http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-technical-report.pdf
+	Reader for the GML graph format, which is documented here: http://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-technical-report.pdf
  	"""
 	def __cinit__(self):
 		self._this = new _GMLGraphReader()
@@ -338,7 +436,11 @@ cdef extern from "<networkit/io/METISGraphWriter.hpp>":
 
 
 cdef class METISGraphWriter(GraphWriter):
-	""" Writes graphs in the METIS format"""
+	""" 
+	METISGraphWriter()
+	
+	Writes graphs in the METIS format.
+	"""
 
 	def __cinit__(self):
 		self._this = new _METISGraphWriter()
@@ -348,8 +450,10 @@ cdef extern from "<networkit/io/GraphToolBinaryWriter.hpp>":
 		_GraphToolBinaryWriter() except +
 
 cdef class GraphToolBinaryWriter(GraphWriter):
-	""" Reads the binary file format defined by graph-tool[1].
-		[1]: http://graph-tool.skewed.de/static/doc/gt_format.html
+	"""
+	GraphToolBinaryWriter()
+
+	Reads the binary file format defined by graph-tool: http://graph-tool.skewed.de/static/doc/gt_format.html
 	"""
 	def __cinit__(self):
 		self._this = new _GraphToolBinaryWriter()
@@ -360,7 +464,11 @@ cdef extern from "<networkit/io/DotGraphWriter.hpp>":
 		_DotGraphWriter() except +
 
 cdef class DotGraphWriter(GraphWriter):
-	""" Writes graphs in the .dot/GraphViz format"""
+	""" 
+	DotGraphWriter()
+	
+	Writes graphs in the .dot/GraphViz format.
+	"""
 	def __cinit__(self):
 		self._this = new _DotGraphWriter()
 
@@ -371,8 +479,11 @@ cdef extern from "<networkit/io/GMLGraphWriter.hpp>":
 
 
 cdef class GMLGraphWriter(GraphWriter):
-	""" Writes a graph and its coordinates as a GML file.[1]
-		[1] http://svn.bigcat.unimaas.nl/pvplugins/GML/trunk/docs/gml-technical-report.pdf """
+	""" 
+	GMLGraphWriter()
+
+	Writes a graph and its coordinates as a GML file: http://svn.bigcat.unimaas.nl/pvplugins/GML/trunk/docs/gml-technical-report.pdf
+	"""
 
 	def __cinit__(self):
 		self._this = new _GMLGraphWriter()
@@ -384,16 +495,19 @@ cdef extern from "<networkit/io/EdgeListWriter.hpp>":
 		_EdgeListWriter(char separator, node firstNode, bool_t bothDirections) except +
 
 cdef class EdgeListWriter(GraphWriter):
-	""" Writes graphs in various edge list formats.
+	""" 
+	EdgeListWriter(separator, firstNode, bothDirections = False)
 
-	Parameters:
-	-----------
-	separator : string
+	Writes graphs in various edge list formats.
+
+	Parameters
+	----------
+	separator : str
 		The separator character.
-	firstNode : node
+	firstNode : int
 		The id of the first node, this value will be added to all node ids
 	bothDirections : bool, optional
-		If undirected edges shall be written in both directions, i.e., as symmetric directed graph (default: false)
+		If undirected edges shall be written in both directions, i.e., as symmetric directed graph. Default: False
 	"""
 
 	def __cinit__(self, separator, firstNode, bool_t bothDirections = False):
@@ -408,10 +522,29 @@ cdef extern from "<networkit/io/LineFileReader.hpp>":
 
 
 cdef class LineFileReader:
-	""" Reads a file and puts each line in a list of strings """
+	"""
+	LineFileReader()
+	
+	Reads a file and puts each line in a list of strings.
+	"""
 	cdef _LineFileReader _this
 
 	def read(self, path):
+		"""
+		read(path)
+		
+		Reads a file and returns list of strings.
+		
+		Parameters
+		----------
+		path : str
+			The input path.
+
+		Returns
+		-------
+		list(str)
+			List of strings, each string representing one line of an input file.
+		"""
 		return self._this.read(stdstring(path))
 
 
@@ -420,8 +553,10 @@ cdef extern from "<networkit/io/SNAPGraphWriter.hpp>":
 		_SNAPGraphWriter() except +
 
 cdef class SNAPGraphWriter(GraphWriter):
-	""" Writes graphs in a format suitable for the Georgia Tech SNAP software [1]
-		[1]: http://snap-graph.sourceforge.net/
+	"""
+	SNAPGraphWriter()
+	
+	Writes graphs in a format suitable for the Georgia Tech SNAP software: http://snap-graph.sourceforge.net/
 	"""
 
 	def __cinit__(self):
@@ -434,8 +569,19 @@ cdef extern from "<networkit/io/SNAPGraphReader.hpp>":
 		_SNAPGraphReader(bool_t directed, bool_t remapNodes, count nodeCount)
 
 cdef class SNAPGraphReader(GraphReader):
-	""" Reads a graph from the SNAP graph data collection [1]
-		[1]: http://snap.stanford.edu/data/index.html
+	"""
+	SNAPGraphReader(directed = False, remapNodes = True, nodeCount = 0)
+
+	Reads a graph from the SNAP graph data collection: http://snap.stanford.edu/data/index.html
+
+	Parameters
+	----------
+	directed : bool, optional
+		Indicates whether input represents a directed graph. Default: False
+	remapNodes : bool, optional
+		Indicates whether nodes should be remapped. Default: True
+	nodeCount : int, optional
+		Indicate the first node id. Default: 0 
 	"""
 	def __cinit__(self, directed = False, remapNodes = True, nodeCount = 0):
 		self._this = new _SNAPGraphReader(directed, remapNodes, nodeCount)
@@ -450,12 +596,30 @@ cdef extern from "<networkit/io/PartitionReader.hpp>":
 
 
 cdef class PartitionReader:
-	""" Reads a partition from a file.
-		File format: line i contains subset id of element i.
+	""" 
+	PartitionReader()
+
+	Reads a partition from a file.
+	File format: line i contains subset id of element i.
 	 """
 	cdef _PartitionReader _this
 
 	def read(self, path):
+		"""
+		read(path)
+		
+		Reads a partition from a file.
+		
+		Parameters
+		----------
+		path : str
+			The input path.
+
+		Returns
+		-------
+		networkit.Partition
+			The resulting partition.
+		"""
 		return Partition().setThis(self._this.read(stdstring(path)))
 
 
@@ -467,12 +631,28 @@ cdef extern from "<networkit/io/PartitionWriter.hpp>":
 
 
 cdef class PartitionWriter:
-	""" Writes a partition to a file.
-		File format: line i contains subset id of element i.
-	 """
+	"""
+	PartitionWriter()
+	
+	Writes a partition to a file.
+	File format: line i contains subset id of element i.
+	"""
 	cdef _PartitionWriter _this
 
 	def write(self, Partition zeta, path):
+		"""
+		write(zeta, path)
+		
+		Writes a partition to a file.
+		File format: line i contains subset id of element i.
+
+		Parameters
+		----------
+		zeta : networkit.Partition
+			The input partition.
+		path : str
+			The output path.
+		"""
 		cdef string cpath = stdstring(path)
 		with nogil:
 			self._this.write(zeta._this, cpath)
@@ -487,14 +667,15 @@ cdef extern from "<networkit/io/BinaryPartitionReader.hpp>":
 
 cdef class BinaryPartitionReader:
 	"""
+	BinaryPartitionReader(width=4)
+
 	Reads a partition from a binary file that contains an unsigned integer
 	of the given width for each node.
 
-	Parameters:
-	-----------
-	width : int
-		the width of the unsigned integer in bytes (4 or 8)
-
+	Parameters
+	----------
+	width : int, optional
+		The width of the unsigned integer in bytes (4 or 8). Default: 4
 	"""
 	cdef _BinaryPartitionReader _this
 
@@ -502,6 +683,21 @@ cdef class BinaryPartitionReader:
 		self._this = _BinaryPartitionReader(width)
 
 	def read(self, path):
+		"""
+		read(path)
+		
+		Reads a partition from a binary file.
+		
+		Parameters
+		----------
+		path : str
+			The input path.
+
+		Returns
+		-------
+		networkit.Partition
+			The resulting partition.
+		"""
 		return Partition().setThis(self._this.read(stdstring(path)))
 
 cdef extern from "<networkit/io/BinaryPartitionWriter.hpp>":
@@ -513,13 +709,15 @@ cdef extern from "<networkit/io/BinaryPartitionWriter.hpp>":
 
 cdef class BinaryPartitionWriter:
 	"""
+	BinaryPartitionWriter(width=4)
+
 	Writes a partition to a file to contains a binary list of partition ids.
 	Partition ids are unsigned integers.
 
-        Parameters:
-	-----------
-	width : int
-		the width of the unsigned integer in bytes (4 or 8)
+	Parameters
+	----------
+	width : int, optional
+		The width of the unsigned integer in bytes (4 or 8). Default: 4
 
 	"""
 	cdef _BinaryPartitionWriter _this
@@ -552,14 +750,39 @@ cdef extern from "<networkit/io/EdgeListPartitionReader.hpp>":
 
 
 cdef class EdgeListPartitionReader:
-	""" Reads a partition from an edge list type of file
-	 """
+	""" 
+	EdgeListPartitionReader(firstNode=1, sepChar = '`\`t')
+	
+	Reads a partition from an edge list type of file.
+
+	Parameters
+	----------
+	firstNode : int, optional
+		Id of first node. Default: 1
+	sepChar : str
+		Character which is used for data seperation. Default: '\t'
+	"""
 	cdef _EdgeListPartitionReader _this
 
-	def __cinit__(self, node firstNode=1, sepChar = '\t'):
+	def __cinit__(self, node firstNode=1, sepChar = `'\t'`):
 		self._this = _EdgeListPartitionReader(firstNode, stdstring(sepChar)[0])
 
 	def read(self, path):
+		"""
+		read(path)
+		
+		Reads a partition from ad edge list file.
+		
+		Parameters
+		----------
+		path : str
+			The input path.
+
+		Returns
+		-------
+		networkit.Partition
+			The resulting partition.
+		"""
 		return Partition().setThis(self._this.read(stdstring(path)))
 
 cdef extern from "<networkit/io/BinaryEdgeListPartitionReader.hpp>":
@@ -572,15 +795,17 @@ cdef extern from "<networkit/io/BinaryEdgeListPartitionReader.hpp>":
 
 cdef class BinaryEdgeListPartitionReader:
 	"""
+	BinaryEdgeListPartitionReader(firstNode=0, width=4)
+
 	Reads a partition file that contains a binary list of pairs (node, partition(node)).
 	It is assumed that all integers are unsigned.
 
-	Parameters:
-	-----------
-	firstNode : node
-		The id of the first node, this is subtracted from all read node ids
-	width : int
-		The width of the unsigned integer in bytes (4 or 8)
+	Parameters
+	----------
+	firstNode : int, optional
+		The id of the first node, this is subtracted from all read node ids. Default: 0
+	width : int, optional
+		The width of the unsigned integer in bytes (4 or 8). Default: 4
 	"""
 	cdef _BinaryEdgeListPartitionReader _this
 
@@ -589,12 +814,19 @@ cdef class BinaryEdgeListPartitionReader:
 
 	def read(self, paths):
 		"""
+		read(paths)
+
 		Read the partition from one or multiple files
 
-		Parameters:
-		-----------
-		paths : str or list[str]
+		Parameters
+		----------
+		paths : str or list(str)
 			The input path(s)
+
+		Returns
+		-------
+		networkit.Partition
+			The resulting partition.
 		"""
 		cdef vector[string] c_paths
 
@@ -622,14 +854,16 @@ cdef extern from "<networkit/io/BinaryEdgeListPartitionWriter.hpp>":
 
 cdef class BinaryEdgeListPartitionWriter:
 	"""
+	BinaryEdgeListPartitionWriter(firstNode=0, width=4)
+	
 	Writes a partition file that contains a binary list of pairs (node, partition(node)).
 
-	Parameters:
-	-----------
-	firstNode : node
-		The id of the first node, this is added to all writen node ids
-	width : int
-		The width of the unsigned integer in bytes (4 or 8)
+	Parameters
+	----------
+	firstNode : int, optional
+		The id of the first node, this is added to all writen node ids. Default: 0
+	width : int, optional
+		The width of the unsigned integer in bytes (4 or 8). Default: 4
 	"""
 	cdef _BinaryEdgeListPartitionWriter _this
 
@@ -638,12 +872,16 @@ cdef class BinaryEdgeListPartitionWriter:
 
 	def write(self, Partition P not None, path):
 		"""
+		write(P, path)
+
 		Write the partition to the given file.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
+		P : networkit.Partition
+			The input partition.
 		path : str
-			The output path
+			The output path.
 		"""
 		cdef string c_path = stdstring(path)
 
@@ -660,8 +898,11 @@ cdef extern from "<networkit/io/SNAPEdgeListPartitionReader.hpp>":
 #		_Partition readWithInfo(string path, count nNodes) except +
 
 cdef class SNAPEdgeListPartitionReader:
-	""" Reads a partition from a SNAP 'community with ground truth' file
-	 """
+	""" 
+	SNAPEdgeListPartitionReader(path, nodeMap, G)
+	
+	Reads a partition from a SNAP 'community with ground truth' file
+	"""
 	cdef _SNAPEdgeListPartitionReader _this
 
 	def read(self,path, nodeMap, Graph G):
@@ -677,9 +918,24 @@ cdef extern from "<networkit/io/CoverReader.hpp>":
 		_Cover read(string path,_Graph G) except +
 
 cdef class CoverReader:
-	""" Reads a cover from a file
-		File format: each line contains the space-separated node ids of a community
-	 """
+	""" 
+	CoverReader(path, G)
+
+	Reads a cover from a file
+	File format: each line contains the space-separated node ids of a community
+
+	Parameters
+	----------
+	path : str
+		Input file path.
+	G : networkit.Graph
+		Graph corresponding to the community from path.
+
+	Returns
+	-------
+	networkit.Cover
+		The resulting cover of a graph.
+	"""
 	cdef _CoverReader _this
 
 	def read(self, path, Graph G):
@@ -693,9 +949,19 @@ cdef extern from "<networkit/io/CoverWriter.hpp>":
 
 
 cdef class CoverWriter:
-	""" Writes a partition to a file.
-		File format: each line contains the space-separated node ids of a community
-	 """
+	""" 
+	CoverWriter(zeta, path)
+
+	Writes a partition to a file.
+	File format: each line contains the space-separated node ids of a community
+	
+	Parameters
+	----------
+	zeta : networkit.Partition
+		The input partition.
+	path : str
+		The output path.
+	"""
 	cdef _CoverWriter _this
 
 	def write(self, Cover zeta, path):
@@ -712,15 +978,40 @@ cdef extern from "<networkit/io/EdgeListCoverReader.hpp>":
 
 
 cdef class EdgeListCoverReader:
-	""" Reads a cover from an edge list type of file
-		File format: each line starts with a node id and continues with a list of the communities the node belongs to
-	 """
+	""" 
+	EdgeListCoverReader(firstNode=1)
+
+	Reads a cover from an edge list type of file.
+	File format: each line starts with a node id and continues with a list of the communities the node belongs to.
+	
+	Parameters
+	----------
+	firstNode : int, optional
+		Id of first node. Default: 1
+	"""
 	cdef _EdgeListCoverReader _this
 
 	def __cinit__(self, firstNode=1):
 		self._this = _EdgeListCoverReader(firstNode)
 
 	def read(self, path, Graph G):
+		"""
+		read(path, G)
+		
+		Reads a cover from an edge list file.
+		
+		Parameters
+		----------
+		path : str
+			The input path.
+		G : networkit.Graph
+			Graph corresponding to the community from path.
+
+		Returns
+		-------
+		networkit.Cover
+			Cover of graph.
+		"""
 		return Cover().setThis(self._this.read(stdstring(path), G._this))
 
 class __AutoNumber(Enum):
@@ -732,10 +1023,28 @@ class __AutoNumber(Enum):
 
 
 class Format(__AutoNumber):
-	""" Simple enumeration class to list supported file types. Currently supported
-	file types: SNAP, EdgeListSpaceZero, EdgeListSpaceOne, EdgeListTabZero, EdgeListTabOne,
-	METIS, GraphML, GEXF, GML, EdgeListCommaOne, GraphViz, DOT, EdgeList, LFR, KONEC, GraphToolBinary,
-			NetworkitBinary"""
+	""" 
+	Simple enumeration class to list supported file types. Possible values: 
+
+	- networkit.graphio.Format.DOT
+	- networkit.graphio.Format.EdgeList
+	- networkit.graphio.Format.EdgeListCommaOne
+	- networkit.graphio.Format.EdgeListSpaceZero
+	- networkit.graphio.Format.EdgeListSpaceOne
+	- networkit.graphio.Format.EdgeListTabZero
+	- networkit.graphio.Format.EdgeListTabOne
+	- networkit.graphio.Format.GraphML
+	- networkit.graphio.Format.GraphToolBinary
+	- networkit.graphio.Format.GraphViz
+	- networkit.graphio.Format.GEXF
+	- networkit.graphio.Format.GML
+	- networkit.graphio.Format.KONEC
+	- networkit.graphio.Format.LFR
+	- networkit.graphio.Format.METIS
+	- networkit.graphio.Format.NetworkitBinary
+	- networkit.graphio.Format.SNAP
+	
+	"""
 	SNAP = ()
 	EdgeListSpaceZero = ()
 	EdgeListSpaceOne = ()
@@ -759,6 +1068,20 @@ class Format(__AutoNumber):
 # reading
 
 def getReader(fileformat, *kargs, **kwargs):
+	"""
+	getReader(fileformat, *kargs, **kwargs)
+
+	Returns reader based on input fileformat.
+
+	Parameters
+	----------
+	fileformat : networkit.graphio.Format
+		A supported file format.
+	`*kargs` : tuple()
+		Additional input parameter (depending on the file format).
+	`**kwargs` : dict()
+		Additional input parameter (depending on the file format).
+	"""
 	#define your [edgelist] reader here:
 	readers = {
 		Format.METIS:			METISGraphReader(),
@@ -794,16 +1117,23 @@ def getReader(fileformat, *kargs, **kwargs):
 
 
 def readGraph(path, fileformat, *kargs, **kwargs):
-	""" Read graph file in various formats and return a NetworKit::Graph
-	    Parameters:
-		- fileformat: An element of the Format enumeration. Currently supported file types:
-		SNAP, EdgeListSpaceZero, EdgeListSpaceOne, EdgeListTabZero, EdgeListTabOne, METIS,
-		GraphML, GEXF, GML, EdgeListCommaOne, GraphViz, DOT, EdgeList, LFR, KONECT, GraphToolBinary, ThrillBinary
-		- **kwargs: in case of a custom edge list, pass the genereic Fromat.EdgeList accompanied by
-			the defining paramaters as follows:
-			"separator=CHAR, firstNode=NODE, commentPrefix=STRING, continuous=BOOL, directed=BOOL"
-			commentPrefix='#', continuous=True and directed=False are optional because of their default values;
-			firstNode is not needed when continuous=True.
+	"""
+	readGraph(path, fileformat, *kargs, **kwargs)
+
+ 	Read graph file in various formats and return a graph.
+
+	Parameters
+	----------
+	fileformat : networkit.graphio.Format
+		A supported file format.
+	`*kargs` : tuple()
+		Additional input parameter (depending on the file format).
+	`**kwargs` : dict()
+		Additional input parameter (depending on the file format). In case of a custom edge list, 
+		pass the generic Fromat.EdgeList accompanied by the defining paramaters as follows:
+		:code:`separator, firstNode, commentPrefix, continuous, directed`. :code:`commentPrefix, 
+		continuous=True and directed` are optional because of their default values. 
+		:code:`firstNode` is not needed when :code:`continuous=True`.
 	"""
 	reader = getReader(fileformat, *kargs, **kwargs)
 
@@ -823,14 +1153,29 @@ def readGraph(path, fileformat, *kargs, **kwargs):
 
 def readGraphs(dirPath, pattern, fileformat, some=None, exclude=None, **kwargs):
 	"""
-	Read all graph files contained in a directory whose filename contains the pattern, return a dictionary of name to Graph object.
-    Parameters:
-	- pattern: unix-style string pattern
-	- fileformat: An element of the Format enumeration
-	- some: restrict number of graphs to be read
-	- **kwargs: in case of a custom edge list, provide the defining paramaters as follows:
-		"separator=CHAR, firstNode=NODE, commentPrefix=STRING, continuous=BOOL"
-		commentPrefix and continuous are optional
+	readGraphs(dirPath, pattern, fileformat, some=None, exclude=None, **kwargs)
+
+ 	Read all graph files contained in a directory whose filename contains the pattern, return 
+	a dictionary of name to Graph object.
+
+	Parameters
+	----------
+	dirPath : str
+		Path, which contains input graphs.
+	pattern : str
+		Unix-style string pattern for file selection.
+	fileformat : networkit.graphio.Format
+		A supported file format.
+	some : int, optional
+		Restrict number of graphs to be read. Default: None
+	exclude : str, optional
+		Unix-style string pattern for file exclusion. Default: None
+	`**kwargs` : dict()
+		Additional input parameter (depending on the file format). In case of a custom edge list, 
+		pass the generic Fromat.EdgeList accompanied by the defining paramaters as follows:
+		:code:`separator, firstNode, commentPrefix, continuous, directed`. :code:`commentPrefix, 
+		continuous=True and directed` are optional because of their default values. 
+		:code:`firstNode` is not needed when :code:`continuous=True`.
 	"""
 	graphs = {}
 	graph_id = 0
@@ -848,16 +1193,49 @@ def readGraphs(dirPath, pattern, fileformat, some=None, exclude=None, **kwargs):
 
 
 class MatReader:
+	"""
+	MatReader(key='G')
+
+	Matlab file reader.
+	File format: Adjacency matrix in matlab file format.
+
+	Parameters
+	----------
+	key : str, optional
+		Key to identify graph. Default: 'G'
+	"""
 	def __init__(self, key = "G"):
 		self.key = key
 
 	def read(self, path):
+		"""
+		read(path)
+		
+		Reads a graph from a matlab file.
+		
+		Parameters
+		----------
+		path : str
+			The input path.
+
+		Returns
+		-------
+		networkit.Graph
+			The resulting graph.
+		"""
 		return readMat(path, self.key)
 
 def readMat(path, key="G"):
-	""" Reads a Graph from a matlab object file containing an adjacency matrix and returns a NetworKit::Graph
-		Parameters:
-		- key: The key of the adjacency matrix in the matlab object file (default: A)"""
+	""" 
+	readMat(key='G')
+
+	Reads a Graph from a matlab object file containing an adjacency matrix and returns a graph.
+
+	Parameters
+	----------
+	key : str, optional
+		Key to identify graph. Default: 'G'
+	"""
 	matlabObject = scipy.io.loadmat(path)
 	# result is a dictionary of variable names and objects, representing the matlab object
 	if key in matlabObject:
@@ -877,19 +1255,50 @@ def readMat(path, key="G"):
 	return G
 
 class MatWriter:
+	"""
+	MatWriter(key='G')
+
+	Matlab file writer.
+
+	Parameters
+	----------
+	key : str, optional
+		Key to identify graph. Default: 'G'
+	"""
 	def __init__(self, key="G"):
 		self.key = key
 
 	def write(self, G, path, key="G"):
+		"""
+		write(G, path, key='G')
+		
+		Writes a graph to a file.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		path : str
+			The output path.
+		key : str, optional
+			Key to identify graph. Default: 'G'
+		"""
 		writeMat(G, path, key)
 
 def writeMat(G, path, key="G"):
-	""" Writes a NetworKit::Graph to a Matlab object file.
-		Parameters:
-		-----------
-		- G: The graph
-		- path: Path of the matlab file
-		- key: Dictionary Key
+	"""
+	writeMat(G, path, key='G')
+	
+	Writes a graph to a file.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	path : str
+		The output path.
+	key : str, optional
+		Key to identify graph. Default: 'G'
 	"""
 	matrix = algebraic.adjacencyMatrix(G, matrixType='sparse')
 	scipy.io.savemat(path, {key : matrix})
@@ -897,6 +1306,20 @@ def writeMat(G, path, key="G"):
 
 # writing
 def getWriter(fileformat, *kargs, **kwargs):
+	"""
+	getWriter(fileformat, *kargs, **kwargs)
+
+	Returns reader based on input fileformat.
+
+	Parameters
+	----------
+	fileformat : networkit.graphio.Format
+		A supported file format.
+	`*kargs` : tuple()
+		Additional input parameter (depending on the file format).
+	`**kwargs` : dict()
+		Additional input parameter (depending on the file format).
+	"""	
 	writers =	{
 		Format.METIS:			METISGraphWriter(),
 		Format.GraphML:			GraphMLWriter(),
@@ -928,14 +1351,27 @@ def getWriter(fileformat, *kargs, **kwargs):
 		return writers[fileformat]#(**kwargs)
 
 def writeGraph(G, path, fileformat, *kargs, **kwargs):
-	""" Write graph to various output formats.
+	""" 
+	writeGraph(G, path, fileformat, *kargs, **kwargs)
+	
+	Write graph to various output formats.
 
-	Paramaters:
-	-----------
-	- G:			a graph
-	- path: 		output path
-	- fileformat: 	an element of the Format enumeration
-
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	path : str
+		Output file path.
+	fileformat : networkit.graphio.Format
+		A supported file format.
+	`*kargs` : tuple()
+		Additional input parameter (depending on the file format).
+	`**kwargs` : dict()
+		Additional input parameter (depending on the file format). In case of a custom edge list, 
+		pass the generic Fromat.EdgeList accompanied by the defining paramaters as follows:
+		:code:`separator, firstNode, commentPrefix, continuous, directed`. :code:`commentPrefix, 
+		continuous=True and directed` are optional because of their default values. 
+		:code:`firstNode` is not needed when :code:`continuous=True`.
 	"""
 
 	dirname = os.path.dirname(os.path.realpath(path))
@@ -958,12 +1394,36 @@ def writeGraph(G, path, fileformat, *kargs, **kwargs):
 
 
 class GraphConverter:
+	"""
+	GraphConverter(reader, writer)
 
+	Converts a format input to another or the same file format. The execute the conversion
+	call `convert`.
+
+	Parameters
+	----------
+	reader : networkit.graphio.GraphReader
+		A supported graph reader.
+	writer : networkit.graphio.GraphWriter
+		A supported graph writer.
+	"""
 	def __init__(self, reader, writer):
 		self.reader = reader
 		self.writer = writer
 
 	def convert(self, inPath, outPath):
+		"""
+		convert(inPath, outPath)
+
+		Execute the conversion.
+
+		Parameters
+		----------
+		inPath : str
+			The input path.
+		outPath : str
+			The output path.
+		"""
 		G = self.reader.read(inPath)
 		self.writer.write(G, outPath)
 
@@ -971,12 +1431,45 @@ class GraphConverter:
 		return "GraphConverter: {0} => {0}".format(self.reader, self.writer)
 
 def getConverter(fromFormat, toFormat):
+	"""
+	getConverter(fromFormat, toFormat)
+
+	Returns a converter for a given set of file formats.
+
+	Parameters
+	----------
+	fromFormat : networkit.graphio.Format
+		Source for conversion.
+	toFormat : networkit.graphio.Format
+		Target for conversion.
+
+	Returns
+	-------
+	networkit.graphio.GraphConverter
+		Corresponding GraphConverter object.
+	"""
 	reader = getReader(fromFormat)
 	writer = getWriter(toFormat)
 	return GraphConverter(reader, writer)
 
 
 def convertGraph(fromFormat, toFormat, fromPath, toPath=None):
+	"""
+	convertGraph(fromFormat, toFormat, fromPath, toPath=None)
+
+	Converts a graph given by a set of file formats and path.
+
+	Parameters
+	----------
+	fromFormat : networkit.graphio.Format
+		Source for conversion.
+	toFormat : networkit.graphio.Format
+		Target for conversion.
+	fromPath : str
+		The input path.
+	toPath : str, optional
+		The output path. Default: None
+	"""
 	converter = getConverter(fromFormat, toFormat)
 	if toPath is None:
 		toPath = "{0}.{1}.graph".format(fromPath.split(".")[0], toFormat)
@@ -987,12 +1480,32 @@ def convertGraph(fromFormat, toFormat, fromPath, toPath=None):
 
 def readStream(path, mapped=True, baseIndex=0):
 	"""
-		Read a graph event stream from a file.
+	readStream(path, mapped=True, baseIndex=0)	
+	
+	Read a graph event stream from a file.
+
+	Parameters
+	----------
+	path : str
+		The input path.
+	mapped : bool, optional
+		Indicates whether the ids should be mapped. Default: True
+	baseIndex : int, optional
+		Sets base index of nodes. Default: 0
 	"""
 	return DGSStreamParser(path, mapped, baseIndex).getStream()
 
 def writeStream(stream, path):
 	"""
-		Write a graph event stream to a file.
+	writeStream(stream, path)
+	
+	Write a graph event stream to a file.
+
+	Parameters
+	----------
+	stream : networkit.dynamics.GraphEvent
+		The input event stream.
+	path : str
+		The output path.
 	"""
 	DGSWriter().write(stream, path)

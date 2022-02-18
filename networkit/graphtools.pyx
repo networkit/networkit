@@ -50,16 +50,18 @@ cdef class GraphTools:
 	@staticmethod
 	def maxDegree(Graph G):
 		"""
+		maxDegree(G)
+
 		Returns the maximum out-degree of the graph.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		G : networkit.Graph
 			The input graph.
 
-		Returns:
-		--------
-		count
+		Returns
+		-------
+		int
 			The maximum out-degree of the graph.
 		"""
 		return maxDegree(G._this)
@@ -67,16 +69,18 @@ cdef class GraphTools:
 	@staticmethod
 	def maxInDegree(Graph G):
 		"""
+		maxInDegree(G)
+
 		Returns the maximum in-degree of the graph.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		G : networkit.Graph
 			The input graph.
 
-		Returns:
-		--------
-		count
+		Returns
+		-------
+		int
 			The maximum in-degree of the graph.
 		"""
 		return maxInDegree(G._this)
@@ -84,16 +88,18 @@ cdef class GraphTools:
 	@staticmethod
 	def maxWeightedDegree(Graph G):
 		"""
+		maxWeightedDegree(G)
+
 		Returns the maximum weighted out-degree of the graph.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		G : networkit.Graph
 			The input graph.
 
-		Returns:
-		--------
-		edgeweight
+		Returns
+		-------
+		float
 			The maximum weighted out-degree of the graph.
 		"""
 		return maxWeightedDegree(G._this)
@@ -101,16 +107,18 @@ cdef class GraphTools:
 	@staticmethod
 	def maxWeightedInDegree(Graph G):
 		"""
+		maxWeightedInDegree(G)
+
 		Returns the maximum weighted in-degree of the graph.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		G : networkit.Graph
 			The input graph.
 
-		Returns:
-		--------
-		edgeweight
+		Returns
+		-------
+		float
 			The maximum weighted in-degree of the graph.
 		"""
 		return maxWeightedInDegree(G._this)
@@ -118,16 +126,18 @@ cdef class GraphTools:
 	@staticmethod
 	def randomNode(Graph G):
 		"""
+		randomNode(G)
+
 		Returns a random node of the input graph.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		G : networkit.Graph
 			The input graph.
 
-		Returns:
-		--------
-		node
+		Returns
+		-------
+		int
 			A random node.
 		"""
 		return randomNode(G._this)
@@ -135,60 +145,67 @@ cdef class GraphTools:
 	@staticmethod
 	def randomNeighbor(Graph G, node u):
 		"""
+		randomNeighbor(G, u)
+
 		Returns a random neighbor of node `u`.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		G : networkit.Graph
 			The input graph.
-		u : node
+		u : int
 			A node in `G`.
 
-		Returns:
-		--------
-		node
+		Returns
+		-------
+		int
 			A random neighbor of `u`.
 		"""
 		return randomNeighbor(G._this, u)
 
 	@staticmethod
 	def randomEdge(Graph G, uniformDistribution = False):
-		""" Get a random edge of the graph.
+		""" 
+		randomEdge(G, uniformDistribution=False)
 
-		Parameters:
-		-----------
-		G : networkit.Graph
-			The input graph.
-		uniformDistribution : bool
-			If the distribution of the edge shall be uniform.
-
-		Returns:
-		--------
-		pair
-			Random edge.
+		Get a random edge of the graph.
 
 		Notes
 		-----
 		Fast, but not uniformly random if uniformDistribution is not set,
 		slow and uniformly random otherwise.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		uniformDistribution : bool, optional
+			If the distribution of the edge shall be uniform. Default: False
+
+		Returns
+		-------
+		tuple(int, int)
+			Random edge.
 		"""
 		return randomEdge(G._this, uniformDistribution)
 
 	@staticmethod
 	def randomEdges(Graph G, numEdges):
 		"""
+		randomEdges(G, numEdges)
+
 		Returns a list with numEdges random edges. The edges are chosen uniformly at random.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		G : networkit.Graph
 			The input graph.
-		numEdges : count
+		numEdges : int
 			The number of edges to choose.
 
-		Returns:
-		--------
-		list of pairs
+		Returns
+		-------
+		list(tuple(int, int))
 			List of with `numEdges` random edges.
 		"""
 		return randomEdges(G._this, numEdges)
@@ -196,10 +213,12 @@ cdef class GraphTools:
 	@staticmethod
 	def append(Graph G, Graph G1):
 		"""
+		append(G, G1)
+
 		Appends graph `G1` to graph `G` as a new subgraph. Performs node id remapping.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		G : networkit.Graph
 			Graph where `G1` will be appended to.
 		G1 : networkit.Graph
@@ -210,11 +229,13 @@ cdef class GraphTools:
 	@staticmethod
 	def merge(Graph G, Graph G1):
 		"""
+		merge(G, G1)
+
 		Modifies graph `G` to be the union of it and graph `G1`.
 		Nodes with the same ids are identified with each other.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		G : networkit.Graph
 			Result of the merge.
 		G1 : networkit.Graph
@@ -225,15 +246,17 @@ cdef class GraphTools:
 	@staticmethod
 	def removeEdgesFromIsolatedSet(Graph graph, nodes):
 		"""
+		removeEdgesFromIsolatedSet(graph, nodes)
+
 		Efficiently removes all the edges adjacent to a set of nodes that is
 		not connected to the rest of the graph. This is meant to optimize the
 		Kadabra algorithm.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		G : networkit.Graph
 			The input graph.
-		nodes : list
+		nodes : list(int)
 			Isolates set of nodes from where the edges will be removed.
 		"""
 		cdef vector[node] isolatedSet
@@ -248,15 +271,17 @@ cdef class GraphTools:
 	@staticmethod
 	def toUndirected(Graph graph):
 		"""
+		toUndirected(graph)
+
 		Returns an undirected copy of the input graph.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		graph : networkit.Graph
 			The input graph.
 
-		Returns:
-		--------
+		Returns
+		-------
 		graph : networkit.Graph
 			Undirected copy of the input graph.
 		"""
@@ -265,15 +290,17 @@ cdef class GraphTools:
 	@staticmethod
 	def toUnweighted(Graph graph):
 		"""
+		toUnweighted(graph)
+
 		Returns an unweighted copy of the input graph.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		graph : networkit.Graph
 			The input graph.
 
-		Returns:
-		--------
+		Returns
+		-------
 		graph : networkit.Graph
 			Unweighted copy of the input graph.
 		"""
@@ -282,15 +309,17 @@ cdef class GraphTools:
 	@staticmethod
 	def toWeighted(Graph graph):
 		"""
+		toWeighted(graph)
+
 		Returns a weighted copy of the input graph.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		graph : networkit.Graph
 			The input graph.
 
-		Returns:
-		--------
+		Returns
+		-------
 		graph : networkit.Graph
 			Weighted copy of the input graph.
 		"""
@@ -299,11 +328,13 @@ cdef class GraphTools:
 	@staticmethod
 	def size(Graph graph):
 		"""
+		size(graph)
+		
 		Return the size of the graph.
 
-		Returns:
-		--------
-		tuple
+		Returns
+		-------
+		tuple(int, int)
 			a pair (n, m) where n is the number of nodes and m is the number of edges.
 		"""
 		return size(graph._this)
@@ -311,16 +342,18 @@ cdef class GraphTools:
 	@staticmethod
 	def density(Graph graph):
 		"""
+		density(graph)
+
 		Get the density of the input graph.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		graph : networkit.Graph
 			The input graph.
 
-		Returns:
-		--------
-		double
+		Returns
+		-------
+		float
 			The density of the input graph.
 		"""
 		return density(graph._this)
@@ -328,19 +361,21 @@ cdef class GraphTools:
 	@staticmethod
 	def volume(Graph graph, nodes = None):
 		"""
+		volume(graph, nodes = None)
+		
 		Get the volume (for all outgoing edges) of a graph. If a list of nodes of the graph
 		is given, the volume for the corresponding subgraph is computed.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		graph : networkit.Graph
 			The input graph.
-		nodes : list
-			(Optional) List of nodes from the graph.
+		nodes : list(int), optional
+			List of nodes from the graph.
 
-		Returns:
-		--------
-		double
+		Returns
+		-------
+		float
 			The volume of the subgraph.
 		"""
 
@@ -358,6 +393,8 @@ cdef class GraphTools:
 	@staticmethod
 	def inVolume(Graph graph, nodes):
 		"""
+		inVolume(graph, nodes)
+
 		Get the inVolume (for all incoming edges) of a subgraph, defined by the
 		input graph and a corresponding subset of nodes.
 
@@ -365,12 +402,12 @@ cdef class GraphTools:
 		----------
 		graph : networkit.Graph
 			The input graph.
-		nodes : vector[node]
+		nodes : list(int)
 			A vector of nodes from the graph.
 
 		Returns
 		-------
-		double
+		float
 			The inVolume of the input graph.
 		"""
 
@@ -385,15 +422,17 @@ cdef class GraphTools:
 	@staticmethod
 	def copyNodes(Graph graph):
 		"""
+		copyNodes(graph)
+
 		Copies all nodes of the input graph to a new graph (edges are not copied).
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		graph : networkit.Graph
 			The input graph.
 
-		Returns:
-		--------
+		Returns
+		-------
 		graph : networkit.Graph
 			Graph with the same nodes as the input graph (and without any edge).
 		"""
@@ -402,6 +441,8 @@ cdef class GraphTools:
 	@staticmethod
 	def subgraphFromNodes(Graph graph, vector[node] nodes, includeOutNeighbors=False, includeInNeighbors=False, bool_t compact = False):
 		"""
+		subgraphFromNodes(graph, list(int) nodes, includeOutNeighbors=False, includeInNeighbors=False, compact = False)
+		
 		Returns an induced subgraph of this graph (including potential edge
 		weights/directions)
 
@@ -410,18 +451,22 @@ cdef class GraphTools:
 
 		Parameters:
 		-----------
-		graph   : networkit.Graph
+		graph : networkit.Graph
 			The input graph.
-		nodes   : iterable
+		nodes : list(int)
 			Nodes in the induced subgraph.
-		includeOutNeighbors : bool
-			If set to true, out-neighbors will also be included. DEPRECATED. Use subgraphAndNeighborsFromNodes instead.
-		includeInNeighbors : bool
-			If set to true, in-neighbors will also be included. DEPRECATED. Use subgraphAndNeighborsFromNodes instead.
-		compact : bool
-			If the resulting graph shall have compact, continuous node ids, alternatively, node ids of the input graph are kept.
-		Returns:
-		--------
+		includeOutNeighbors : bool, optional
+			DEPRECATED. Use subgraphAndNeighborsFromNodes instead.
+			If set to true, out-neighbors will also be included. Default: False
+		includeInNeighbors : bool, optional
+			DEPRECATED. Use subgraphAndNeighborsFromNodes instead.
+			If set to true, in-neighbors will also be included. Default: False
+		compact : bool, optional
+			Indicates whether the resulting graph shall have compact, continuous node ids.
+			If False node ids of the input graph are kept. Default: False
+
+		Returns
+		-------
 		graph : networkit.Graph
 			Induced subgraph.
 		"""
@@ -444,29 +489,32 @@ cdef class GraphTools:
 	@staticmethod
 	def subgraphAndNeighborsFromNodes(Graph graph, nodes, includeOutNeighbors=False, includeInNeighbors=False):
 		"""
+		subgraphAndNeighborsFromNodes(graph, nodes, includeOutNeighbors=False, includeInNeighbors=False)
+
 		Returns an induced subgraph of this graph (including potential edge
 		weights/directions)
 
 		There a two relevant sets of nodes:
-			- Nodes are such passed as arguments.
-			- Neighbors are empty by default.
+
+		- Nodes are such passed as arguments.
+		- Neighbors are empty by default.
 
 		The subgraph contains all nodes in Nodes + Neighbors and all edges which
 		have one end point in Nodes and the other in Nodes or Neighbors.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		graph : networkit.Graph
 			The input graph.
-		nodes : set
+		nodes : list(int)
 			Nodes in the induced subgraph.
-		includeOutNeighbors : bool
-			If set to true, out-neighbors will also be included.
-		includeInNeighbors : bool
-			If set to true, in-neighbors will also be included.
+		includeOutNeighbors : bool, optional
+			If set to True, out-neighbors will also be included. Default: False
+		includeInNeighbors : bool, optional
+			If set to True, in-neighbors will also be included. Default: False
 
-		Returns:
-		--------
+		Returns
+		-------
 		graph : networkit.Graph
 			Induced subgraph.
 		"""
@@ -476,14 +524,17 @@ cdef class GraphTools:
 	@staticmethod
 	def transpose(Graph graph):
 		"""
+		transpose(graph)
+
 		Returns the transpose of the input graph. The graph must be directed.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		graph : networkit.Graph
 			The input graph.
 
-		Returns:
+		Returns
+		-------
 		graph : networkit.Graph
 			Transpose of the input graph.
 		"""
@@ -492,17 +543,19 @@ cdef class GraphTools:
 	@staticmethod
 	def getCompactedGraph(Graph graph, nodeIdMap):
 		"""
+		getCompactedGraph(graph, nodeIdMap)
+
 		Computes a graph with the same structure but with continuous node ids.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		graph : networkit.Graph
 			The graph to be compacted.
-		nodeIdMap:
+		nodeIdMap : list(int)
 			The map providing the information about the node ids.
 
-		Returns:
-		--------
+		Returns
+		-------
 		networkit.Graph
 			The compacted graph
 		"""
@@ -514,14 +567,18 @@ cdef class GraphTools:
 	@staticmethod
 	def getContinuousNodeIds(Graph graph):
 		"""
+		getContinuousNodeIds(graph)
+
 		Computes a map of node ids to continuous node ids.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		graph : networkit.Graph
 			The graph of which the node id map is wanted.
-		Returns:
-		--------
+
+		Returns
+		-------
+		list(int)
 			Returns the node id map
 		"""
 		cdef unordered_map[node,node] cResult
@@ -535,14 +592,18 @@ cdef class GraphTools:
 	@staticmethod
 	def getRandomContinuousNodeIds(Graph graph):
 		"""
+		getRandomContinuousNodeIds(graph):
+
 		Computes a map of node ids to continuous, randomly permutated node ids.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		graph : networkit.Graph
 			The graph of which the node id map is wanted.
-		Returns:
-		--------
+
+		Returns
+		-------
+		list(int)
 			Returns the node id map
 		"""
 		cdef unordered_map[node,node] cResult
@@ -556,27 +617,31 @@ cdef class GraphTools:
 	@staticmethod
 	def sortEdgesByWeight(Graph G, decreasing = False):
 		"""
+		sortEdgesByWeight(G, decreasing = False)
+
 		Sorts the adjacency arrays by edge weight.
 
-		Parameters:
+		Parameters
 		----------
 		G : networkit.Graph
 			The input graph.
-		decreasing : bool
+		decreasing : bool, optional
 			If True adjacency arrays are sorted by non-increasing edge weights, if False
 			adjacency arrays are sorted by non-decreasing edge weights. Ties are broken
-			by using node ids.
+			by using node ids. Default: False
 		"""
 		sortEdgesByWeight(G._this, decreasing)
 
 	@staticmethod
 	def topologicalSort(Graph G):
 		"""
+		topologicalSort(G)
+
 		Given a directed graph G, the topology sort algorithm creates one valid topology order of nodes.
 		Undirected graphs are not accepted as input, since a topology sort is a linear ordering of vertices 
 		such that for every edge u -> v, node u comes before v in the ordering.
 
-		Parameters:
+		Parameters
 		----------
 		G : networkit.Graph
 			The directed input graph.
