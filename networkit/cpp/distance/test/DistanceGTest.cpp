@@ -82,7 +82,7 @@ TEST_F(DistanceGTest, testAStar) {
                        (colU > colT ? colU - colT : colT - colU));
                 double rowDiff = std::abs(static_cast<double>(u / cols) - static_cast<double>(rowT));
                 double colDiff = std::abs(static_cast<double>(u % cols) - static_cast<double>(rowT));
-                eucledianDist[u] = sqrt(std::pow(rowDiff, 2) + std::pow(colDiff, 2));
+                eucledianDist[u] = std::sqrt(std::pow(rowDiff, 2) + std::pow(colDiff, 2));
             };
             BFS bfs(G, source, true, false, target);
             bfs.run();

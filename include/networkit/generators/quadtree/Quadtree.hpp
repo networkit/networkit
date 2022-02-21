@@ -110,12 +110,12 @@ public:
         double maxR = r_e + radius;
         if (maxR > 1) maxR = 1;
         if (minR < 0) {
-            maxR = std::max(abs(minR), maxR);
+            maxR = std::max(std::abs(minR), maxR);
             minR = 0;
             minPhi = 0;
             maxPhi = 2*PI;
         } else {
-            double spread = asin(radius / r_e);
+            double spread = std::asin(radius / r_e);
             minPhi = cc_phi - spread;
             maxPhi = cc_phi + spread;
             /**

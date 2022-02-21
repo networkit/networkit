@@ -59,12 +59,12 @@ TEST_F(CommuteTimeDistanceGTest, testOnToyGraph) {
     CommuteTimeDistance ctd(G);
     ctd.run();
     double volG = 2.0 * G.numberOfEdges();
-    EXPECT_NEAR(sqrt(1.0 * volG), ctd.distance(0, 2), 1e-4);
-    EXPECT_NEAR(sqrt(1.0 * volG), ctd.distance(1, 2), 1e-4);
-    EXPECT_NEAR(sqrt(0.75 * volG), ctd.distance(2, 3), 1e-4);
-    EXPECT_NEAR(sqrt(0.75 * volG), ctd.distance(2, 4), 1e-4);
-    EXPECT_NEAR(sqrt(0.75 * volG), ctd.distance(3, 5), 1e-4);
-    EXPECT_NEAR(sqrt(0.75 * volG), ctd.distance(4, 5), 1e-4);
+    EXPECT_NEAR(std::sqrt(1.0 * volG), ctd.distance(0, 2), 1e-4);
+    EXPECT_NEAR(std::sqrt(1.0 * volG), ctd.distance(1, 2), 1e-4);
+    EXPECT_NEAR(std::sqrt(0.75 * volG), ctd.distance(2, 3), 1e-4);
+    EXPECT_NEAR(std::sqrt(0.75 * volG), ctd.distance(2, 4), 1e-4);
+    EXPECT_NEAR(std::sqrt(0.75 * volG), ctd.distance(3, 5), 1e-4);
+    EXPECT_NEAR(std::sqrt(0.75 * volG), ctd.distance(4, 5), 1e-4);
 }
 
 TEST_F(CommuteTimeDistanceGTest, testOnWeightedToyGraph) {
@@ -93,12 +93,12 @@ TEST_F(CommuteTimeDistanceGTest, testOnWeightedToyGraph) {
     ctd.run();
     double volG = 2.0 * G.totalEdgeWeight();
     DEBUG("volume : ", volG);
-    EXPECT_NEAR(sqrt(0.5 * volG), ctd.distance(0, 2), 1e-3);
-    EXPECT_NEAR(sqrt(0.3333 * volG), ctd.distance(1, 2), 1e-3);
-    EXPECT_NEAR(sqrt(0.1336 * volG), ctd.distance(2, 3), 1e-3);
-    EXPECT_NEAR(sqrt(0.1206 * volG), ctd.distance(2, 4), 1e-3);
-    EXPECT_NEAR(sqrt(0.0991 * volG), ctd.distance(3, 5), 1e-3);
-    EXPECT_NEAR(sqrt(0.0906 * volG), ctd.distance(4, 5), 1e-3);
+    EXPECT_NEAR(std::sqrt(0.5 * volG), ctd.distance(0, 2), 1e-3);
+    EXPECT_NEAR(std::sqrt(0.3333 * volG), ctd.distance(1, 2), 1e-3);
+    EXPECT_NEAR(std::sqrt(0.1336 * volG), ctd.distance(2, 3), 1e-3);
+    EXPECT_NEAR(std::sqrt(0.1206 * volG), ctd.distance(2, 4), 1e-3);
+    EXPECT_NEAR(std::sqrt(0.0991 * volG), ctd.distance(3, 5), 1e-3);
+    EXPECT_NEAR(std::sqrt(0.0906 * volG), ctd.distance(4, 5), 1e-3);
 }
 
 TEST_F(CommuteTimeDistanceGTest, runECTDOnSmallGraphs) {
@@ -126,9 +126,9 @@ TEST_F(CommuteTimeDistanceGTest, runECTDOnSmallGraphs) {
         double error = 0.0;
         G.forNodes([&](node u){
             G.forNodes([&](node v) {
-                double relError = fabs(cen.distance(u,v) - exact.distance(u,v));
+                double relError = std::fabs(cen.distance(u,v) - exact.distance(u,v));
             //	INFO("Approximated: ", cen.distance(u,v), ", exact: ", exact.distance(u,v));
-                if (fabs(exact.distance(u,v)) > 1e-9) {
+                if (std::fabs(exact.distance(u,v)) > 1e-9) {
                     relError /= exact.distance(u,v);
                 }
                 error += relError;
@@ -164,9 +164,9 @@ TEST_F(CommuteTimeDistanceGTest, runECTDParallelOnSmallGraphs) {
         double error = 0.0;
         G.forNodes([&](node u){
             G.forNodes([&](node v) {
-                double relError = fabs(cen.distance(u,v) - exact.distance(u,v));
+                double relError = std::fabs(cen.distance(u,v) - exact.distance(u,v));
             //	INFO("Approximated: ", cen.distance(u,v), ", exact: ", exact.distance(u,v));
-                if (fabs(exact.distance(u,v)) > 1e-9) {
+                if (std::fabs(exact.distance(u,v)) > 1e-9) {
                     relError /= exact.distance(u,v);
                 }
                 error += relError;

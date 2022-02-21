@@ -84,7 +84,7 @@ private:
     std::vector<double> R;
 
     std::vector<double> SQErrEst;
-    const edgeweight infDist = floor(std::numeric_limits<edgeweight>::max() / 2.0); // divided by two s.t. infDist + infDist produces no overflow
+    const edgeweight infDist = std::floor(std::numeric_limits<edgeweight>::max() / 2.0); // divided by two s.t. infDist + infDist produces no overflow
 
     CLOSENESS_TYPE type;
 

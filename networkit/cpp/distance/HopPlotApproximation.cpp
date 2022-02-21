@@ -25,7 +25,7 @@ HopPlotApproximation::HopPlotApproximation(const Graph& G, count maxDistance, co
 void HopPlotApproximation::run() {
     count z = G->upperNodeIdBound();
     // the length of the bitmask where the number of connected nodes is saved
-    count lengthOfBitmask = (count) ceil(log2(G->numberOfNodes()));
+    count lengthOfBitmask = (count) std::ceil(std::log2(G->numberOfNodes()));
     // saves all k bitmasks for every node of the current iteration
     std::vector<std::vector<unsigned int>> mCurr(z);
     // saves all k bitmasks for every node of the previous iteration
@@ -58,7 +58,7 @@ void HopPlotApproximation::run() {
         // set one bit in each bitmask with probability P(bit i=1) = 0.5^(i+1), i=0,..
         for (count j = 0; j < k; j++) {
             random = Aux::Random::real(0,1);
-            position = ceil(log(random)/log(0.5) - 1);
+            position = std::ceil(std::log(random)/std::log(0.5) - 1);
             // set the bit in the bitmask
             if (position < lengthOfBitmask+r) {
                 mPrev[v][j] |= 1 << position;
@@ -99,7 +99,7 @@ void HopPlotApproximation::run() {
 
             // calculate the estimated number of neighbors
             // For the origin of the factor 0.77351 see http://www.mathcs.emory.edu/~cheung/papers/StreamDB/Probab/1985-Flajolet-Probabilistic-counting.pdf Theorem 3.A (p. 193)
-            estimatedConnectedNodes = (pow(2,b) / 0.77351);
+            estimatedConnectedNodes = (std::pow(2,b) / 0.77351);
 
             // enforce monotonicity
             if (estimatedConnectedNodes > n) {

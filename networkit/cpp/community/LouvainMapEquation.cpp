@@ -502,7 +502,7 @@ void LouvainMapEquation::calculateInitialClusterCutAndVolume() {
 double LouvainMapEquation::plogpRel(double w) {
     if (w > 0) {
         double p = w / totalVolume;
-        return p * log(p);
+        return p * std::log(p);
     }
     return 0;
 }

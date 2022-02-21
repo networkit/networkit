@@ -41,9 +41,9 @@ void AdamicAdarDistance::preprocess() {
 
                     edgeid eid_uw = G->edgeId(u, w);
 
-                    aaDistance[eid_uv] = aaDistance[eid_uv] + 1.0 / log(G->degree(w));
-                    aaDistance[eid_uw] = aaDistance[eid_uw] + 1.0 / log(G->degree(v));
-                    aaDistance[eid_vw] = aaDistance[eid_vw] + 1.0 / log(G->degree(u));
+                    aaDistance[eid_uv] = aaDistance[eid_uv] + 1.0 / std::log(G->degree(w));
+                    aaDistance[eid_uw] = aaDistance[eid_uw] + 1.0 / std::log(G->degree(v));
+                    aaDistance[eid_vw] = aaDistance[eid_vw] + 1.0 / std::log(G->degree(u));
                 }
             });
 

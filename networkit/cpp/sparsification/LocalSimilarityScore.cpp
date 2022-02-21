@@ -59,7 +59,7 @@ void LocalSimilarityScore::run() {
 
             double e = 1.0; //If the node has only one neighbor, the edge will be kept anyway.
             if (d > 1)
-                e = 1 - (log(rank) / log(d));
+                e = 1 - (std::log(rank) / std::log(d));
 
             sparsificationExp[eid] = std::max(e, sparsificationExp[eid]);
             rank++;

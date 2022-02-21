@@ -70,7 +70,7 @@ static inline double norm(std::vector<double> &v, double shift) {
     for (count j = 0; j < v.size(); j++) {
         x += (v[j] + shift) * (v[j] + shift);
     }
-    return sqrt(x);
+    return std::sqrt(x);
 }
 
 /**
@@ -81,7 +81,7 @@ static inline double dist(std::vector<double> &v, std::vector<double> &w) {
     for (count j = 0; j < v.size(); j++) {
         x += std::pow(v[j] - w[j], 2);
     }
-    x = sqrt(x);
+    x = std::sqrt(x);
     return x;
 }
 
@@ -106,7 +106,7 @@ void MocnikGenerator::addNode(MocnikGenerator::LayerState &s, int j) {
 int MocnikGenerator::toIndex(MocnikGenerator::LayerState &s, const std::vector<double> &v) {
     std::vector<int> w;
     for (count j = 0; j < v.size(); j++) {
-        w.push_back(fmin(floor(v[j] * s.aMax), s.aMax - 1));
+        w.push_back(std::min(static_cast<int>(std::floor(v[j] * s.aMax)), s.aMax - 1));
     }
     return toIndex(s, w);
 }
@@ -195,7 +195,7 @@ std::vector<int> MocnikGenerator::boxSurface(MocnikGenerator::LayerState &s, int
 }
 
 std::vector<int> MocnikGenerator::boxVolume(MocnikGenerator::LayerState &s, int i, double r) {
-    int r2 = ceil(r * s.aMax);
+    int r2 = std::ceil(r * s.aMax);
     std::vector<std::vector<int>> se;
     std::vector<int> tmp;
     se.push_back(tmp);
@@ -226,7 +226,7 @@ std::vector<int> MocnikGenerator::boxVolume(MocnikGenerator::LayerState &s, int 
 void MocnikGenerator::addEdgesToGraph(Graph &G, count n, double k, double relativeWeight, bool baseLayer) {
     // map vector containing the nodes resp. their positions
     MocnikGenerator::LayerState s;
-    initCellArray(s, ceil(std::pow(n / 2, 1./dim) / k));
+    initCellArray(s, std::ceil(std::pow(n / 2, 1./dim) / k));
 
     // add the nodes to the layer state
     for (count i = 0; i < n; i++) {

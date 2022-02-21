@@ -90,7 +90,7 @@ public:
                 assert(middle[d] >= minPoint[d]);
             }
         }
-        count childCount = pow(2,dimension);
+        count childCount = std::pow(2,dimension);
         for (index i = 0; i < childCount; i++) {
             vector<double> lowerValues(dimension);
             vector<double> upperValues(dimension);
@@ -509,7 +509,7 @@ public:
 
     index indexSubtree(index nextID) {
         index result = nextID;
-        assert(children.size() == pow(2,dimension) || children.size() == 0);
+        assert(children.size() == std::pow(2,dimension) || children.size() == 0);
         for (auto &child : children)
             result = child.indexSubtree(result);
 

@@ -37,7 +37,7 @@ DenseMatrix::DenseMatrix(const count nRows, const count nCols, const std::vector
 count DenseMatrix::nnzInRow(const index i) const {
     count nnz = 0;
     for (index offset = i*numberOfColumns(); offset < (i+1)*numberOfColumns(); ++offset) {
-        if (fabs(entries[offset] - zero) > FLOAT_EPSILON) nnz++;
+        if (std::fabs(entries[offset] - zero) > FLOAT_EPSILON) nnz++;
     }
     return nnz;
 }
@@ -45,7 +45,7 @@ count DenseMatrix::nnzInRow(const index i) const {
 count DenseMatrix::nnz() const {
     count nnz = 0;
     for (index k = 0; k < entries.size(); ++k) {
-        if (fabs(entries[k] - zero) > FLOAT_EPSILON) nnz++;
+        if (std::fabs(entries[k] - zero) > FLOAT_EPSILON) nnz++;
     }
     return nnz;
 }
@@ -180,7 +180,7 @@ DenseMatrix DenseMatrix::extract(const std::vector<index>& rowIndices, const std
     for (index i = 0; i < rowIndices.size(); ++i) {
         for (index j = 0; j < columnIndices.size(); ++j) {
             double value = (*this)(rowIndices[i], columnIndices[j]);
-            if (fabs(value - getZero()) > FLOAT_EPSILON) {
+            if (std::fabs(value - getZero()) > FLOAT_EPSILON) {
                 result.setValue(i,j,value);
             }
         }

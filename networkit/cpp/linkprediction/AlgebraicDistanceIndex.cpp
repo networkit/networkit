@@ -53,7 +53,7 @@ double AlgebraicDistanceIndex::runImpl(node u, node v) {
 
     if (norm == MAX_NORM) { // maximum norm
         for (index sys = 0; sys < numSystems; ++sys) {
-            double absDiff = fabs(loads[sys][u] - loads[sys][v]);
+            double absDiff = std::fabs(loads[sys][u] - loads[sys][v]);
             if (absDiff > result) {
                 result = absDiff;
             }
@@ -61,10 +61,10 @@ double AlgebraicDistanceIndex::runImpl(node u, node v) {
     }
     else {
         for (index sys = 0; sys < numSystems; ++sys) {
-            double absDiff = fabs(loads[sys][u] - loads[sys][v]);
-            result += pow(absDiff, norm);
+            double absDiff = std::fabs(loads[sys][u] - loads[sys][v]);
+            result += std::pow(absDiff, norm);
         }
-        result = pow(result, 1.0 / (double) norm);
+        result = std::pow(result, 1.0 / (double) norm);
     }
 
     return std::isnan(result) ? 0 : result;

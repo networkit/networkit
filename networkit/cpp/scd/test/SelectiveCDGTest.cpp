@@ -75,7 +75,7 @@ TEST_F(SelectiveCDGTest, testSCD) {
     std::set<node> seeds = {seed};
     double alpha = 0.1; // loop (or teleport) probability, changed due to DGleich from: // phi * phi
                         // / (225.0 * log(100.0 * sqrt(m)));
-    double epsilon = 1e-5; // changed due to DGleich from: pow(2, exponent) / (48.0 * B);
+    double epsilon = 1e-5; // changed due to DGleich from: std::pow(2, exponent) / (48.0 * B);
 
     std::vector<std::pair<std::string, std::unique_ptr<SelectiveCommunityDetector>>> algorithms;
     algorithms.emplace_back(std::make_pair(
@@ -216,7 +216,7 @@ TEST_F(SelectiveCDGTest, testSCDWeighted) {
     G.forNodes([&](node u) { seeds.insert(u); });
     double alpha = 0.1; // loop (or teleport) probability, changed due to DGleich from: // phi * phi
                         // / (225.0 * log(100.0 * sqrt(m)));
-    double epsilon = 1e-5; // changed due to DGleich from: pow(2, exponent) / (48.0 * B);
+    double epsilon = 1e-5; // changed due to DGleich from: std::pow(2, exponent) / (48.0 * B);
 
     std::vector<std::pair<std::string, std::unique_ptr<SelectiveCommunityDetector>>> algorithms;
     algorithms.emplace_back(std::make_pair(

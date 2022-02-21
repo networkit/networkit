@@ -35,7 +35,7 @@ NeighborhoodFunctionApproximation::NeighborhoodFunctionApproximation(const Graph
 #endif // _MSC_VER
 void NeighborhoodFunctionApproximation::run() {
     // the length of the bitmask where the number of connected nodes is saved
-    const count lengthOfBitmask = (count) ceil(log2(G->numberOfNodes())) + r;
+    const count lengthOfBitmask = (count) std::ceil(std::log2(G->numberOfNodes())) + r;
     // saves all k bitmasks for every node of the current iteration
     std::vector<std::vector<unsigned int>> mCurr(G->upperNodeIdBound());
     // saves all k bitmasks for every node of the previous iteration
@@ -57,7 +57,7 @@ void NeighborhoodFunctionApproximation::run() {
         // set one bit in each bitmask with probability P(bit i=1) = 0.5^(i+1), i=0,..
         for (count j = 0; j < k; j++) {
             double random = Aux::Random::real(0,1);
-            count position = ceil(log(random)/log(0.5) - 1);
+            count position = std::ceil(std::log(random)/std::log(0.5) - 1);
             // set the bit in the bitmask
             if (position < lengthOfBitmask) {
                 mPrev[v][j] = 1 << position;
@@ -109,7 +109,7 @@ void NeighborhoodFunctionApproximation::run() {
             // calculate the average least bit number that has not been set over all parallel approximations
             b = b / k;
             // calculate the estimated number of neighbors where 0.77351 is a correction factor and the result of a complex sum
-            count estimatedConnectedNodes = (count)round(pow(2,b) / 0.77351);
+            count estimatedConnectedNodes = (count)std::round(std::pow(2,b) / 0.77351);
             localEstimatesSum[tid] += estimatedConnectedNodes;
             //std::cout << "(" << v << ", " << estimatedConnectedNodes << ")\t";
 

@@ -147,8 +147,8 @@ TEST_F(IOBenchmark, benchRasterReader) {
 
             INFO("Converted coordinates", runtime.elapsedTag());
             //define query function
-            auto edgeProb = [n](double distance) -> double {return (1/distance)*exp(5)/(double)n ;};
-            //auto edgeProb = [beta, thresholdDistance](double distance) -> double {return 1 / (exp(beta*(distance-thresholdDistance)/2)+1);};
+            auto edgeProb = [n](double distance) -> double {return (1/distance)*std::exp(5)/(double)n ;};
+            //auto edgeProb = [beta, thresholdDistance](double distance) -> double {return 1 / (std::exp(beta*(distance-thresholdDistance)/2)+1);};
 
             // construct quadtree
             runtime.start();
@@ -181,7 +181,7 @@ TEST_F(IOBenchmark, benchRasterReader) {
                 for (index i = 0; i < xcoords.size(); i++) {
                     double xdiff = xcoords[i] - x;
                     double ydiff = ycoords[i] - y;
-                    double prob = edgeProb(pow(xdiff*xdiff+ydiff*ydiff , 0.5));
+                    double prob = edgeProb(std::pow(xdiff*xdiff+ydiff*ydiff , 0.5));
                     double random = Aux::Random::real();
                     if (random < prob) result.push_back(i);
                 }
@@ -233,7 +233,7 @@ TEST_F(IOBenchmark, simulateDiseaseProgression) {
         }
 
         //set neighbor probability
-        auto edgeProb = [](double distance) -> double {return (1/distance)*exp(-11);};
+        auto edgeProb = [](double distance) -> double {return (1/distance)*std::exp(-11);};
 
         //convert coordinates
         runtime.start();

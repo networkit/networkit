@@ -59,7 +59,7 @@ void CommuteTimeDistance::run() {
         solution = zeroVector;
 
         lamg.solve(rhs, solution);
-        double diff = fabs(solution[u] - solution[v]);
+        double diff = std::fabs(solution[u] - solution[v]);
         distances[u][v] = diff;
         distances[v][u] = diff;
         rhs[u] = 0.0;
@@ -78,10 +78,10 @@ void CommuteTimeDistance::runApproximation() {
 
     // init approximation parameters
     double epsilon2 = tol * tol;
-    k = ceil(log2(n)) / epsilon2;
+    k = std::ceil(std::log2(n)) / epsilon2;
 
     // entries of random projection matrix
-    double randTab[2] = {1/sqrt(k), -1/sqrt(k)};
+    double randTab[2] = {1/std::sqrt(k), -1/std::sqrt(k)};
 
     solutions.clear();
     solutions.resize(k, Vector(n));
@@ -118,10 +118,10 @@ void CommuteTimeDistance::runParallelApproximation() {
 
     // init approximation parameters
     double epsilon2 = tol * tol;
-    k = ceil(log2(n)) / epsilon2;
+    k = std::ceil(std::log2(n)) / epsilon2;
 
     // entries of random projection matrix
-    double randTab[3] = {1/sqrt(k), -1/sqrt(k)};
+    double randTab[3] = {1/std::sqrt(k), -1/std::sqrt(k)};
 
     solutions.clear();
     solutions.resize(k, Vector(n));
@@ -157,7 +157,7 @@ double CommuteTimeDistance::distance(node u, node v) {
     double volG = GraphTools::volume(*G);
 
     if (exactly) {
-        return sqrt(distances[u][v] * volG);
+        return std::sqrt(distances[u][v] * volG);
     }
     else {
         double dist = 0.0;
@@ -165,7 +165,7 @@ double CommuteTimeDistance::distance(node u, node v) {
             double diff = solutions[i][u] - solutions[i][v];
             dist += diff * diff;
         }
-        return sqrt(dist * volG);
+        return std::sqrt(dist * volG);
     }
 }
 
@@ -184,8 +184,8 @@ double CommuteTimeDistance::runSinglePair(node u, node v) {
     solution = zeroVector;
     lamg.solve(rhs, solution);
     double diff = solution[u] - solution[v];
-    dist = fabs(diff);
-    return sqrt(dist * GraphTools::volume(*G));
+    dist = std::fabs(diff);
+    return std::sqrt(dist * GraphTools::volume(*G));
 }
 
 double CommuteTimeDistance::runSingleSource(node u) {
@@ -215,7 +215,7 @@ double CommuteTimeDistance::runSingleSource(node u) {
             dist += diff * diff;
         }
     });
-    return sqrt(dist * GraphTools::volume(*G));
+    return std::sqrt(dist * GraphTools::volume(*G));
 }
 
 }

@@ -68,7 +68,7 @@ void AlgebraicSpanningEdgeCentrality<Matrix>::run() {
 
     this->G.parallelForEdges([&](node u, node v, edgeid e) {
         double diff = solutions[e][u] - solutions[e][v];
-        scoreData[e] = fabs(diff);
+        scoreData[e] = std::fabs(diff);
     });
 
     hasRun = true;
@@ -81,8 +81,8 @@ void AlgebraicSpanningEdgeCentrality<Matrix>::runApproximation() {
     scoreData.clear();
     scoreData.resize(m, 0.0);
     double epsilon2 = tol * tol;
-    const count k = ceil(log2(n)) / epsilon2;
-    double randTab[2] = {1.0 / sqrt(k), -1.0 / sqrt(k)};
+    const count k = std::ceil(std::log2(n)) / epsilon2;
+    double randTab[2] = {1.0 / std::sqrt(k), -1.0 / std::sqrt(k)};
 
     const auto rhsLoader = [&](count, Vector &yRow) -> Vector & {
         yRow.fill(0);

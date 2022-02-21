@@ -126,7 +126,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
     }
 
     const count bandCount = bands.size();
-    const double coshR = cosh(R);
+    const double coshR = std::cosh(R);
     assert(radii.size() == n);
 
     Aux::Timer bandTimer;
@@ -160,9 +160,9 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
         threadtimers[id].start();
         #pragma omp for schedule(guided) nowait
         for (omp_index i = 0; i < static_cast<omp_index>(n); i++) {
-            const double coshr = cosh(radii[i]);
-            const double sinhr = sinh(radii[i]);
-            count expectedDegree = (4/PI)*n*exp(-(radii[i])/2);
+            const double coshr = std::cosh(radii[i]);
+            const double sinhr = std::sinh(radii[i]);
+            count expectedDegree = (4/PI)*n*std::exp(-(radii[i])/2);
             vector<index> near;
             near.reserve(expectedDegree*1.1);
             Point2DWithIndex<double> pointV(angles[i], radii[i], i);
@@ -174,8 +174,8 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
 
                     const count sSize = neighborCandidates.size();
                     for(index w = 0; w < sSize; w++){
-                        double deltaPhi = PI - abs(PI-abs(angles[i] - neighborCandidates[w].getX()));
-                        if (coshr*cosh(neighborCandidates[w].getY())-sinhr*sinh(neighborCandidates[w].getY())*cos(deltaPhi) <= coshR) {
+                        double deltaPhi = PI - std::abs(PI-std::abs(angles[i] - neighborCandidates[w].getX()));
+                        if (coshr*std::cosh(neighborCandidates[w].getY())-sinhr*std::sinh(neighborCandidates[w].getY())*std::cos(deltaPhi) <= coshR) {
                             if (neighborCandidates[w].getIndex() != i){
                                 near.push_back(neighborCandidates[w].getIndex());
                             }
@@ -228,7 +228,7 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
     //now define lambda
     double beta = 1/T;
     assert(beta == beta);
-    auto edgeProb = [beta, R](double distance) -> double {return 1 / (exp(beta*(distance-R)/2)+1);};
+    auto edgeProb = [beta, R](double distance) -> double {return 1 / (std::exp(beta*(distance-R)/2)+1);};
 
     //get Graph
     GraphBuilder result(n, false, false);//no direct swap with probabilistic graphs

@@ -44,12 +44,12 @@ bool StaticDegreeSequenceGenerator::isRealizable() {
     /**
      * Second inequality
      * We now check that for all 0 <= j < n the following inequality holds
-     *   sum(d[i] for 0 <= i <= j) <= sum( min(j+1, d[i]) for j < i < n),
+     *   sum(d[i] for 0 <= i <= j) <= sum( std::min(j+1, d[i]) for j < i < n),
      * where d is the sorted degree sequence.
      *
      * To avoid the quadratic runtime of the naive implementation above, we search for each
      * j the smallest index k with d[k] < j+1. Then the RHS becomes:
-     *     (j+1)*min(0, k-j-1)       // all cases where the min-term defaulted to (j+1)
+     *     (j+1)*std::min(0, k-j-1)       // all cases where the min-term defaulted to (j+1)
      *   + sum(d[i] for k <= i < n)  // "true" suffix sum.
      *
      * Observe that the suffix sum only depends on k and not j; so we can precompute it once

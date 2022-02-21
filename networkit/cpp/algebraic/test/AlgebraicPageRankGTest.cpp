@@ -84,14 +84,14 @@ TEST(AlgebraicPageRankGTest, testPageRankCentrality) {
 
     // compare to Matlab results
     const double tol = 1e-4;
-    EXPECT_NEAR(0.0753, fabs(cen[0]), tol);
-    EXPECT_NEAR(0.0565, fabs(cen[1]), tol);
-    EXPECT_NEAR(0.2552, fabs(cen[2]), tol);
-    EXPECT_NEAR(0.1319, fabs(cen[3]), tol);
-    EXPECT_NEAR(0.0942, fabs(cen[4]), tol);
-    EXPECT_NEAR(0.2552, fabs(cen[5]), tol);
-    EXPECT_NEAR(0.0753, fabs(cen[6]), tol);
-    EXPECT_NEAR(0.0565, fabs(cen[7]), tol);
+    EXPECT_NEAR(0.0753, std::fabs(cen[0]), tol);
+    EXPECT_NEAR(0.0565, std::fabs(cen[1]), tol);
+    EXPECT_NEAR(0.2552, std::fabs(cen[2]), tol);
+    EXPECT_NEAR(0.1319, std::fabs(cen[3]), tol);
+    EXPECT_NEAR(0.0942, std::fabs(cen[4]), tol);
+    EXPECT_NEAR(0.2552, std::fabs(cen[5]), tol);
+    EXPECT_NEAR(0.0753, std::fabs(cen[6]), tol);
+    EXPECT_NEAR(0.0565, std::fabs(cen[7]), tol);
 }
 
 } /* namespace NetworKit */

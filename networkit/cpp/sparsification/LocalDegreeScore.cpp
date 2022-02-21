@@ -72,7 +72,7 @@ void LocalDegreeScore::run() {
 
             double e = 1.0; // If the node has only one neighbor, the edge should be kept anyway.
             if (d > 1)
-                e = 1.0 - (log(rank) / log(d));
+                e = 1.0 - (std::log(rank) / std::log(d));
 
             Aux::Parallel::atomic_max(exponents[eid], e);
         }

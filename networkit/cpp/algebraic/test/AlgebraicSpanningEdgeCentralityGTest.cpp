@@ -76,8 +76,8 @@ TEST_F(AlgebraicSpanningEdgeCentralityGTest, benchmarkSpanning) {
 
         double error = 0.0;
         G.forEdges([&](node, node, edgeid e) {
-            double relError = fabs(asp.score(e) - exact.score(e));
-            if (fabs(exact.score(e)) > 1e-9) relError /= exact.score(e);
+            double relError = std::fabs(asp.score(e) - exact.score(e));
+            if (std::fabs(exact.score(e)) > 1e-9) relError /= exact.score(e);
             error += relError;
         });
         error /= G.numberOfEdges();
@@ -93,8 +93,8 @@ TEST_F(AlgebraicSpanningEdgeCentralityGTest, benchmarkSpanning) {
 
         error = 0.0;
         G.forEdges([&](node, node, edgeid e) {
-            double relError = fabs(sp.score(e) - exact.score(e));
-            if (fabs(exact.score(e)) > 1e-9) relError /= exact.score(e);
+            double relError = std::fabs(sp.score(e) - exact.score(e));
+            if (std::fabs(exact.score(e)) > 1e-9) relError /= exact.score(e);
             error += relError;
         });
         error /= G.numberOfEdges();

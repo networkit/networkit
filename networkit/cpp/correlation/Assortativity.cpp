@@ -87,7 +87,7 @@ void Assortativity::run() {
             C += y * y;
         });
 
-        double r = A / sqrt(B * C);
+        double r = A / std::sqrt(B * C);
         coefficient = r;
     }
     hasRun = true;

@@ -122,17 +122,17 @@ double AlgebraicDistance::distance(node u, node v) {
 
     if (norm == MAX_NORM) {
         for (index sys = 0; sys < numSystems; ++sys) {
-            double absDiff = fabs(loads[u*numSystems + sys] - loads[v*numSystems + sys]);
+            double absDiff = std::fabs(loads[u*numSystems + sys] - loads[v*numSystems + sys]);
             if (absDiff > result) {
                 result = absDiff;
             }
         }
     } else {
         for (index sys = 0; sys < numSystems; ++sys) {
-            double absDiff = fabs(loads[u*numSystems + sys] - loads[v*numSystems + sys]);
-            result += pow(absDiff, norm);
+            double absDiff = std::fabs(loads[u*numSystems + sys] - loads[v*numSystems + sys]);
+            result += std::pow(absDiff, norm);
         }
-        result = pow(result, 1.0 / (double) norm);
+        result = std::pow(result, 1.0 / (double) norm);
     }
 
     return std::isnan(result) ? 0 : result;

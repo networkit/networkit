@@ -26,12 +26,12 @@ double HyperbolicSpace::nativeDistance(double firstangle, double firstR, double 
     assert(secondangle < 2*PI);
     double result;
     if (firstangle == secondangle) {
-        result = abs(firstR - secondR);
+        result = std::abs(firstR - secondR);
     }
     else {
-        double deltaPhi = PI - abs(PI-abs(firstangle - secondangle));
-        double coshDist = cosh(firstR)*cosh(secondR)-sinh(firstR)*sinh(secondR)*cos(deltaPhi);
-        if (coshDist >= 1) result = acosh(coshDist);
+        double deltaPhi = PI - std::abs(PI-std::abs(firstangle - secondangle));
+        double coshDist = std::cosh(firstR)*std::cosh(secondR)-std::sinh(firstR)*std::sinh(secondR)*std::cos(deltaPhi);
+        if (coshDist >= 1) result = std::acosh(coshDist);
         else result = 0;
     }
     assert(result >= 0);
@@ -50,7 +50,7 @@ double HyperbolicSpace::poincareMetric(double phi_a, double  r_a, double phi_b, 
 double HyperbolicSpace::poincareMetric(Point2DWithIndex<double> a, Point2DWithIndex<double> b) {
     assert(a.length() < 1);
     assert(b.length() < 1);
-    double result = acosh( 1 + 2*a.squaredDistance(b) / ((1 - a.squaredLength())*(1 - b.squaredLength())));
+    double result = std::acosh( 1 + 2*a.squaredDistance(b) / ((1 - a.squaredLength())*(1 - b.squaredLength())));
     assert(result >= 0);
     return result;
 }
@@ -63,8 +63,8 @@ void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, 
     uint64_t n = radii.size();
     assert(angles.size() == n);
 
-    double mincdf = cosh(alpha*minR);
-    double maxcdf = cosh(alpha*maxR);
+    double mincdf = std::cosh(alpha*minR);
+    double maxcdf = std::cosh(alpha*maxR);
     std::uniform_real_distribution<double> phidist{minPhi, maxPhi};
     std::uniform_real_distribution<double> rdist{mincdf, maxcdf};
 
@@ -76,7 +76,7 @@ void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, 
          * \int sinh = cosh+const
          */
         double random = rdist(Aux::Random::getURNG());
-        radii[i] = (acosh(random)/alpha);
+        radii[i] = (std::acosh(random)/alpha);
         assert(radii[i] <= maxR);
         assert(radii[i] >= minR);
         assert(angles[i] <= maxPhi);
@@ -87,7 +87,7 @@ void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, 
 }
 
 Point2DWithIndex<double> HyperbolicSpace::polarToCartesian(double phi, double r) {
-    return Point2DWithIndex<double>(r*cos(phi), r*sin(phi));
+    return Point2DWithIndex<double>(r*std::cos(phi), r*std::sin(phi));
 }
 
 std::map<index, Point<float> > HyperbolicSpace::polarToCartesian(const vector<double> &angles, const vector<double> &radii) {
@@ -104,9 +104,9 @@ void HyperbolicSpace::cartesianToPolar(Point2DWithIndex<double> a, double &phi, 
     r = a.length();
     if (r == 0) phi = 0;
     else if (a[1] >= 0){
-        phi = acos(a[0]/ r);
+        phi = std::acos(a[0]/ r);
     } else {
-        phi = -acos(a[0] / r);
+        phi = -std::acos(a[0] / r);
     }
     if (phi < 0) phi += 2*PI;
 }
@@ -120,30 +120,30 @@ void HyperbolicSpace::getEuclideanCircle(Point2DWithIndex<double> hyperbolicCent
 }
 
 void HyperbolicSpace::getEuclideanCircle(double r_h, double hyperbolicRadius, double &radialCoordOfEuclideanCenter, double &euclideanRadius) {
-    double a = cosh(hyperbolicRadius)-1;
+    double a = std::cosh(hyperbolicRadius)-1;
     double b = 1-(r_h*r_h);
     radialCoordOfEuclideanCenter = (2*r_h)/(b*a+2);
-    euclideanRadius = sqrt(radialCoordOfEuclideanCenter*radialCoordOfEuclideanCenter - (2*r_h*r_h - b*a)/(b*a+2));
+    euclideanRadius = std::sqrt(radialCoordOfEuclideanCenter*radialCoordOfEuclideanCenter - (2*r_h*r_h - b*a)/(b*a+2));
 }
 
 double HyperbolicSpace::hyperbolicRadiusToEuclidean(double hyperbolicRadius) {
-    double ch = cosh(hyperbolicRadius);
-    return sqrt((ch-1)/(ch+1));
+    double ch = std::cosh(hyperbolicRadius);
+    return std::sqrt((ch-1)/(ch+1));
 }
 
 double HyperbolicSpace::EuclideanRadiusToHyperbolic(double euclideanRadius) {
     double eusq = euclideanRadius*euclideanRadius;
-    double result = acosh( 1 + 2*eusq / ((1 - eusq)));
+    double result = std::acosh( 1 + 2*eusq / ((1 - eusq)));
     return result;
 }
 
 double HyperbolicSpace::maxRinSlice(double minPhi, double maxPhi, double phi_c, double r_c, double euRadius) {
-    double maxCos = max(cos(abs(minPhi - phi_c)), cos(abs(maxPhi - phi_c)));
+    double maxCos = std::max(std::cos(std::abs(minPhi - phi_c)), std::cos(std::abs(maxPhi - phi_c)));
 
     if (minPhi < phi_c && phi_c < maxPhi) maxCos = 1;
     //applying law of cosines here
     double p = r_c*maxCos;
-    double maxR = p + sqrt(p*p - r_c*r_c + euRadius*euRadius);
+    double maxR = p + std::sqrt(p*p - r_c*r_c + euRadius*euRadius);
     return maxR;
 }
 
@@ -161,11 +161,11 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
 
         if (d_c - r_c < r_max) {
             //remaining query circle is smaller than the disk representation
-            result += 2*PI*(cosh(EuclideanRadiusToHyperbolic(d_c-r_c))-1);//adding small circle around origin
+            result += 2*PI*(std::cosh(EuclideanRadiusToHyperbolic(d_c-r_c))-1);//adding small circle around origin
         } else {
-            result += 2*PI*(cosh(EuclideanRadiusToHyperbolic(r_max))-1);//adding small circle around origin
+            result += 2*PI*(std::cosh(EuclideanRadiusToHyperbolic(r_max))-1);//adding small circle around origin
         }
-        assert(result <= 2*PI*(cosh(EuclideanRadiusToHyperbolic(r_max))-1));
+        assert(result <= 2*PI*(std::cosh(EuclideanRadiusToHyperbolic(r_max))-1));
         min = std::nextafter(d_c-r_c, std::numeric_limits<double>::max());//correcting integral start to exclude circle
     }
 
@@ -178,25 +178,25 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
     if (max < min) return result;
 
     auto realpart = [](double r, double d, double c) {
-        double result = acos((c*c-d*d+r*r) / (2*c*r)) / (r*r-1);
+        double result = std::acos((c*c-d*d+r*r) / (2*c*r)) / (r*r-1);
         return result;
     };
 
     auto firstlogpart = [](double r, double d, double c) {
         double s = (c*c-d*d);
         double rsqs = r*r+s;
-        double real = -2*s*sqrt(4*c*c*r*r-rsqs*rsqs);
+        double real = -2*s*std::sqrt(4*c*c*r*r-rsqs*rsqs);
         double imag = -4*c*c*r*r+2*s*r*r+2*s*s;
-        return atan2(imag, real)/2;
+        return std::atan2(imag, real)/2;
     };
 
     auto secondlogpart = [](double r, double d, double c) {
         double s = (c*c-d*d);
         double rsqs = r*r+s;
-        double real = sqrt(4*c*c*r*r-rsqs*rsqs);
+        double real = std::sqrt(4*c*c*r*r-rsqs*rsqs);
         double imag = 2*c*c*(r*r+1)-(s+1)*rsqs;
-        imag = imag / sqrt((s+1)*(s+1)-(4*c*c));
-        return (s-1)*atan2(imag, real)/(2*sqrt((s+1)*(s+1)-(4*c*c)));
+        imag = imag / std::sqrt((s+1)*(s+1)-(4*c*c));
+        return (s-1)*std::atan2(imag, real)/(2*std::sqrt((s+1)*(s+1)-(4*c*c)));
     };
 
     double lower = -realpart(min, d_c, r_c) -firstlogpart(min, d_c, r_c) + secondlogpart(min, d_c, r_c);

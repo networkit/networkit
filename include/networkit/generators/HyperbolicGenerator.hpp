@@ -108,11 +108,11 @@ private:
         */
         vector<double> bandRadius;
         bandRadius.push_back(0);
-        double a = R*(1-seriesRatio)/(1-pow(seriesRatio, log(n)));
-        const double logn = log(n);
+        double a = R*(1-seriesRatio)/(1-std::pow(seriesRatio, std::log(n)));
+        const double logn = std::log(n);
 
         for (int i = 1; i < logn; i++){
-            double c_i = a*((1-pow(seriesRatio, i))/(1-seriesRatio));
+            double c_i = a*((1-std::pow(seriesRatio, i))/(1-seriesRatio));
             bandRadius.push_back(c_i);
         }
         bandRadius.push_back(R);
@@ -136,13 +136,13 @@ private:
       if (cLow == 0)
       return std::make_tuple(0.0, 2* PI);
 
-      double a = (cosh(radius)*cosh(cLow) - cosh(thresholdDistance))/(sinh(radius)*sinh(cLow));
+      double a = (std::cosh(radius)*std::cosh(cLow) - std::cosh(thresholdDistance))/(std::sinh(radius)*std::sinh(cLow));
       //handle floating point error
       if(a < -1)
         a = -1;
       else if(a > 1)
         a = 1;
-      a = acos(a);
+      a = std::acos(a);
       maxTheta = angle + a;
       minTheta = angle - a;
       return std::make_tuple(minTheta, maxTheta);
