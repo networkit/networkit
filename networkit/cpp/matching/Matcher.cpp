@@ -17,6 +17,7 @@ Matcher::Matcher(const Graph& G, const std::vector<double>& edgeScores): G(&G), 
 }
 
 Matching Matcher::getMatching() const {
+    assureFinished();
     return M;
 }
 
