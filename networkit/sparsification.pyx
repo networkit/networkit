@@ -31,7 +31,7 @@ cdef extern from "<networkit/edgescores/EdgeScore.hpp>":
 
 cdef class EdgeScore(Algorithm):
 	"""
-	TODO DOCSTIRNG
+	Abstract base class for an edge score.
 	"""
 	cdef Graph _G
 
@@ -46,6 +46,23 @@ cdef class EdgeScore(Algorithm):
 		self._G = None # just to be sure the graph is deleted
 
 	def score(self, u, v = None):
+		"""
+		score(u, v=None)
+
+		Get a vector containing the score for a certain edge connecting node u and v.
+
+		Parameters
+		----------
+		u : int
+			The first node.
+		v : int, optional
+			The second node. Default: None
+
+		Returns
+		-------
+		list(int) or list(float)
+			List with scores. Scores are either int-values (unweighted) or float-values (weighted).
+		"""
 		if v is None:
 			if self.isDoubleValue():
 				return (<_EdgeScore[double]*>(self._this)).score(u)
@@ -58,6 +75,16 @@ cdef class EdgeScore(Algorithm):
 				return (<_EdgeScore[count]*>(self._this)).score(u, v)
 
 	def scores(self):
+		"""
+		scores()
+
+		Get a vector containing the score for each edge in the graph.
+
+		Returns
+		-------
+		list(int) or list(float)
+			List with scores. Scores are either int-values (unweighted) or float-values (weighted).
+		"""
 		if self.isDoubleValue():
 			return (<_EdgeScore[double]*>(self._this)).scores()
 		else:
@@ -71,19 +98,17 @@ cdef extern from "<networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp>":
 
 cdef class ChibaNishizekiTriangleEdgeScore(EdgeScore):
 	"""
+	ChibaNishizekiTriangleEdgeScore(G)
+
 	Calculates for each edge the number of triangles it is embedded in.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to count triangles on.
 	"""
 
 	def __cinit__(self, Graph G):
-		"""
-		G : networkit.Graph
-			The graph to count triangles on.
-		"""
 		self._G = G
 		self._this = new _ChibaNishizekiTriangleEdgeScore(G._this)
 
@@ -97,21 +122,17 @@ cdef extern from "<networkit/edgescores/ChibaNishizekiQuadrangleEdgeScore.hpp>":
 
 cdef class ChibaNishizekiQuadrangleEdgeScore(EdgeScore):
 	"""
+	ChibaNishizekiQuadrangleEdgeScore(G)
+
 	Calculates for each edge the number of quadrangles (circles of length 4) it is embedded in.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to count quadrangles on.
 	"""
 
 	def __cinit__(self, Graph G):
-		"""
-		Parameters:
-		-----------
-		G : networkit.Graph
-			The graph to count quadrangles on.
-		"""
 		self._G = G
 		self._this = new _ChibaNishizekiQuadrangleEdgeScore(G._this)
 
@@ -125,21 +146,17 @@ cdef extern from "<networkit/edgescores/TriangleEdgeScore.hpp>":
 
 cdef class TriangleEdgeScore(EdgeScore):
 	"""
+	TriangleEdgeScore(G)
+
 	Triangle counting.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to count triangles on.
 	"""
 
 	def __cinit__(self, Graph G):
-		"""
-		Parameters:
-		-----------
-		G : networkit.Graph
-			The graph to count triangles on.
-		"""
 		self._G = G
 		self._this = new _TriangleEdgeScore(G._this)
 
@@ -153,14 +170,18 @@ cdef extern from "<networkit/edgescores/EdgeScoreLinearizer.hpp>":
 
 cdef class EdgeScoreLinearizer(EdgeScore):
 	"""
+	EdgeScoreLinearizer(G, a, inverse=False)
+
 	Linearizes a score such that values are evenly distributed between 0 and 1.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The input graph.
-	a : vector[double]
+	a : list(float)
 		Edge score that shall be linearized.
+	inverse : bool, optional
+		Set to True in order to inverse the resulting score. Default: False
 	"""
 	cdef vector[double] _score
 
@@ -180,20 +201,22 @@ cdef extern from "<networkit/edgescores/EdgeScoreNormalizer.hpp>":
 
 cdef class EdgeScoreNormalizer(EdgeScore):
 	"""
+	EdgeScoreNormalizer(G, score, inverse=False, lower=0.0, uppper=1.0)
+
 	Normalize an edge score such that it is in a certain range.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph the edge score is defined on.
-	score : vector[double]
+	score : list(float)
 		The edge score to normalize.
-	inverse
-		Set to True in order to inverse the resulting score.
-	lower
-		Lower bound of the target range.
-	upper
-		Upper bound of the target range.
+	inverse: bool, optional
+		Set to True in order to inverse the resulting score. Default: False
+	lower : float, optional
+		Lower bound of the target range. Default: 0.0
+	upper : float, optional
+		Upper bound of the target range. Default: 0.0
 	"""
 	cdef vector[double] _inScoreDouble
 	cdef vector[count] _inScoreCount
@@ -220,18 +243,20 @@ cdef extern from "<networkit/edgescores/EdgeScoreBlender.hpp>":
 
 cdef class EdgeScoreBlender(EdgeScore):
 	"""
+	EdgeScoreBlender(G, attribute0, attribute1, selection)
+
 	Blends two attribute vectors, the value is chosen depending on the supplied bool vector
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph for which the attribute shall be blended
-	attribute0 : vector[double]
-		The first attribute (chosen for selection[eid] == false)
-	attribute1 : vector[double]
-		The second attribute (chosen for selection[eid] == true)
-	selection : vector[bool]
-		The selection vector
+	attribute0 : list(float)
+		The first attribute (chosen for selection[eid] == False)
+	attribute1 : list(float)
+		The second attribute (chosen for selection[eid] == True)
+	selection : list(bool)
+		The selection vector.
 	"""
 	cdef vector[double] _attribute0
 	cdef vector[double] _attribute1
@@ -255,13 +280,15 @@ cdef extern from "<networkit/edgescores/GeometricMeanScore.hpp>":
 
 cdef class GeometricMeanScore(EdgeScore):
 	"""
+	GeometricMeanScore(G, a)
+
 	Normalizes the given edge attribute by the geometric average of the sum of the attributes of the incident edges of the incident nodes.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The input graph.
-	a : vector[double]
+	a : list(float)
 		Edge attribute that shall be normalized.
 	"""
 	cdef vector[double] _attribute
@@ -282,19 +309,21 @@ cdef extern from "<networkit/edgescores/EdgeScoreAsWeight.hpp>":
 
 cdef class EdgeScoreAsWeight:
 	"""
+	EdgeScoreAsWeight(G, score, square, offset, factor)
+
 	Assigns an edge score as edge weight of a graph.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to assign edge weights to.
-	score : vector[double]
+	score : list(float)
 		The input edge score.
 	squared : bool
 		Edge weights will be squared if set to True.
-	offset : edgeweight
+	offset : float
 		This offset will be added to each edge weight.
-	factor : edgeweight
+	factor : float
 		Each edge weight will be multiplied by this factor.
 	"""
 
@@ -314,8 +343,10 @@ cdef class EdgeScoreAsWeight:
 
 	def getWeightedGraph(self):
 		"""
-		Returns:
-		--------
+		getWeightedGraph()
+
+		Returns
+		-------
 		networkit.Graph
 			The weighted result graph.
 		"""
@@ -327,22 +358,24 @@ cdef extern from "<networkit/sparsification/SimmelianOverlapScore.hpp>":
 		_SimmelianOverlapScore(const _Graph& G, const vector[count]& triangles, count maxRank) except +
 
 cdef class SimmelianOverlapScore(EdgeScore):
-	cdef vector[count] _triangles
-
 	"""
+	SimmelianOverlapScore(G, triangles, maxRank)
+
 	An implementation of the parametric variant of Simmelian Backbones. Calculates
 	for each edge the minimum parameter value such that the edge is still contained in
 	the sparsified graph.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to apply the Simmelian Backbone algorithm to.
-	triangles : vector[count]
+	triangles : list(int)
 		Previously calculated edge triangle counts on G.
-	maxRank: count
-		maximum rank that is considered for overlap calculation.
+	maxRank: int
+		Maximum rank that is considered for overlap calculation.
 	"""
+	cdef vector[count] _triangles
+
 	def __cinit__(self, Graph G, vector[count] triangles, count maxRank):
 		self._G = G
 		self._triangles = triangles
@@ -374,14 +407,16 @@ cdef extern from "<networkit/sparsification/MultiscaleScore.hpp>":
 
 cdef class MultiscaleScore(EdgeScore):
 	"""
+	MultiscaleScore(G, attribute)
+
 	An implementation of the Multiscale Backbone. Calculates for each edge the minimum
 	parameter value such that the edge is still contained in the sparsified graph.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to apply the Multiscale algorithm to.
-	attribute : vector[double]
+	attribute : list(float)
 		The edge attribute the Multiscale algorithm is to be applied to.
 	"""
 
@@ -402,10 +437,12 @@ cdef extern from "<networkit/sparsification/RandomEdgeScore.hpp>":
 
 cdef class RandomEdgeScore(EdgeScore):
 	"""
+	RandomEdgeScore(G)
+
 	Generates a random edge attribute. Each edge is assigned a random value in [0,1].
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to calculate the Random Edge attribute for.
 	"""
@@ -424,15 +461,17 @@ cdef extern from "<networkit/sparsification/LocalSimilarityScore.hpp>":
 
 cdef class LocalSimilarityScore(EdgeScore):
 	"""
+	LocalSimilarityScore(G, triangles)
+
 	An implementation of the Local Simlarity sparsification approach.
 	This attributizer calculates for each edge the maximum parameter value
 	such that the edge is still contained in the sparsified graph.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to apply the Local Similarity algorithm to.
-	triangles : vector[count]
+	triangles : list(int)
 		Previously calculated edge triangle counts.
 	"""
 	cdef vector[count] _triangles
@@ -452,17 +491,19 @@ cdef extern from "<networkit/sparsification/ForestFireScore.hpp>":
 
 cdef class ForestFireScore(EdgeScore):
 	"""
+	ForestFireScore(G, pf, tebr)
+
 	A variant of the Forest Fire sparsification approach that is based on random walks.
 	This attributizer calculates for each edge the minimum parameter value
 	such that the edge is still contained in the sparsified graph.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to apply the Forest Fire algorithm to.
-	pf : double
+	pf : float
 		The probability for neighbor nodes to get burned aswell.
-	tebr : double
+	tebr : float
 		The Forest Fire will burn until tebr * numberOfEdges edges have been burnt.
 	"""
 
@@ -480,12 +521,14 @@ cdef extern from "<networkit/sparsification/LocalDegreeScore.hpp>":
 
 cdef class LocalDegreeScore(EdgeScore):
 	"""
+	LocalDegreeScore(G)
+
 	The LocalDegree sparsification approach is based on the idea of hub nodes.
 	This attributizer calculates for each edge the maximum parameter value
 	such that the edge is still contained in the sparsified graph.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to apply the Local Degree  algorithm to.
 	"""
@@ -504,11 +547,13 @@ cdef extern from "<networkit/sparsification/RandomNodeEdgeScore.hpp>":
 
 cdef class RandomNodeEdgeScore(EdgeScore):
 	"""
+	RandomNodeEdgeScore(G)
+
 	Random Edge sampling. This attributizer returns edge attributes where
 	each value is selected uniformly at random from [0,1].
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to calculate the Random Edge attribute for.
 	"""
@@ -533,20 +578,22 @@ cdef extern from "<networkit/sparsification/LocalFilterScore.hpp>":
 
 cdef class LocalFilterScore(EdgeScore):
 	"""
+	LocalFilterScore(G, a, logarithmic=True)
+
 	Local filtering edge scoring. Edges with high score are more important.
 
 	Edges are ranked locally, the top d^e (logarithmic, default) or 1+e*(d-1) edges (non-logarithmic) are kept.
 	For equal attribute values, neighbors of low degree are preferred.
 	If bothRequired is set (default: false), both neighbors need to indicate that they want to keep the edge.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The input graph
-	a : list
+	a : list(float)
 		The input attribute according to which the edges shall be fitlered locally.
-	logarithmic : bool
-		If the score shall be logarithmic in the rank (then d^e edges are kept). Linear otherwise.
+	logarithmic : bool, optional
+		If the score shall be logarithmic in the rank (then d^e edges are kept), linear otherwise. Default: True
 	"""
 	cdef vector[double] _a
 
@@ -565,13 +612,15 @@ cdef extern from "<networkit/sparsification/ChanceCorrectedTriangleScore.hpp>":
 
 cdef class ChanceCorrectedTriangleScore(EdgeScore):
 	"""
+	ChanceCorrectedTriangleScore(G, triangles)
+
 	Divide the number of triangles per edge by the expected number of triangles given a random edge distribution.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The input graph.
-	triangles : vector[count]
+	triangles : list(int)
 		Triangle count.
 	"""
 	cdef vector[count] _triangles
@@ -591,13 +640,15 @@ cdef extern from "<networkit/sparsification/SCANStructuralSimilarityScore.hpp>":
 
 cdef class SCANStructuralSimilarityScore(EdgeScore):
 	"""
+	SCANStructuralSimilarityScore(G, triangles)
+
 	An implementation of the SCANStructuralSimilarityScore algorithm.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to apply the Local Similarity algorithm to.
-	triangles : vector[count]
+	triangles : list(int)
 		Previously calculated edge triangle counts.
 	"""
 	cdef vector[count] _triangles
@@ -618,16 +669,18 @@ cdef extern from "<networkit/sparsification/GlobalThresholdFilter.hpp>":
 
 cdef class GlobalThresholdFilter:
 	"""
+	GlobalThresholdFilter(G, attribute, e, above)
+
 	Calculates a sparsified graph by filtering globally using a constant threshold value
 	and a given edge attribute.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to sparsify.
-	attribute : vector[double]
+	attribute : list(float)
 		The edge attribute to consider for filtering.
-	e : double
+	e : float
 		Threshold value.
 	above : bool
 		If set to True (False), all edges with an attribute value equal to or above (below)
@@ -655,10 +708,20 @@ class Sparsifier(object):
 	uses only one parameter to determine the degree of filtering. """
 
 	def scores(self, G):
-		""" Returns an edge attribute. (To be implemented by derived class)
+		"""
+		scores(G)
 
-		Keyword arguments:
-		G -- the input graph
+		Returns an edge attribute.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+
+		Returns
+		-------
+		list(float)
+			Edge scores.
 		"""
 		raise NotImplementedError
 
@@ -680,12 +743,19 @@ class Sparsifier(object):
 		return SimpleParameterization()
 
 	def getSparsifiedGraph(self, G, parameter, attribute=None):
-		"""Returns a sparsified version of the given input graph.
+		"""
+		getSparsifiedGraph(sG, parameter, attribute=None)
+		
+		Returns a sparsified version of the given input graph.
 
-		Keyword arguments:
-		G -- the input graph
-		parameter -- a parameter value that determines the degree of sparsification
-		attribute -- (optional) a previously calculated edge attribute. If none is provided, we will try to calculate it.
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		parameter : float
+			A parameter value that determines the degree of sparsification
+		attribute : list(float), optional
+			A previously calculated edge attribute. If none is provided, we will try to calculate it. Default: None
 		"""
 
 		if attribute is None:
@@ -694,15 +764,26 @@ class Sparsifier(object):
 		return self._getSparsifiedGraph(G, parameter, attribute)
 
 	def getSparsifiedGraphOfSize(self, G, edgeRatio, attribute=None):
-		"""This is a convenience function that applies an appropriate parameterization
+		"""
+		getSparsifiedGraphOfSize(G, edgeRatio, attribute=None)
+		
+		This is a convenience function that applies an appropriate parameterization
 		algorithm (if available) to obtain a parameter value that yields a sparsified
 		graph of the desired size and then calls getSparsifiedGraph(...) with that parameter value.
 
-		Keyword arguments:
-		G -- the input graph
-		edgeRatio -- the target edge ratio
-		attribute -- (optional) a previously calculated edge attribute. If none is provided,
-		we will try to calculate it.
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		edgeRatio : float
+			The target edge ratio.
+		attribute : list(float), optional
+			A previously calculated edge attribute. If none is provided, we will try to calculate it. Default: None
+
+		Returns
+		-------
+		networkit.Graph
+			The sparsified graph.
 		"""
 		if attribute is None:
 			attribute = self.scores(G)
@@ -712,9 +793,22 @@ class Sparsifier(object):
 		return self.getSparsifiedGraph(G, parameter, attribute)
 
 	def getParameter(self, G, edgeRatio, attribute=None):
-		""" This is a convenience function that applies an appropriate parameterization
+		""" 
+		getParameter(G, edgeRatio, attribute=None)
+		
+		This is a convenience function that applies an appropriate parameterization
 		algorithm (if available) to obtain a parameter value that yields a sparsified
-		graph of the desired size. """
+		graph of the desired size.
+		
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		edgeRatio : float
+			The target edge ratio.
+		attribute : list(float), optional
+			A previously calculated edge attribute. If none is provided, we will try to calculate it. Default: None
+		"""
 		if attribute is None:
 			attribute = self.scores(G)
 
@@ -723,41 +817,78 @@ class Sparsifier(object):
 		return parameter
 
 class SimpleParameterization:
-	""" A parameterization algorithm representds an algorithm that, given a graph
+	""" 
+	SimpleParameterization()
+	
+	A parameterization algorithm representds an algorithm that, given a graph
 	and a sparsifier, calculates a parameter value such that a desired edge ratio is met.
 	The SimpleParameterization strategy simply returns the input edgeRatio as parameterization
-	result. """
+	result. 
+	"""
 
 	def parameterize(self, algorithm, G, attribute, edgeRatio):
-		""" Parameterize the given sparsifier for the given input graph with the
+		""" 
+		parameterize(algorithm, G, attribute, edgeRatio)
+		
+		Parameterize the given sparsifier for the given input graph with the
 		given target edge ratio. (To be implemented by derived class.)
 
-		Keyword arguments:
-		algorithm -- the sparsification algorithm
-		G -- the input graph
-		attribute -- precalculated edge attribute
-		edgeRatio -- target edge ratio the resulting parameter value should yield
+		Parameters
+		----------
+		algorithm : networkit.sparsification.Sparsifier
+			The sparsification algorithm.
+		G : networkit.Graph
+			The input graph.
+		attribute : list(float)
+			An input edge attribute.
+		edgeRatio : float
+			The target edge ratio.
 		"""
 		return edgeRatio
 
 class BinarySearchParameterization:
-	""" Parameterizes a sparsification algorithm using binary search. """
+	""" 
+	BinarySearchParameterization(sizeIncreasesWithParameter, lowerParameterBound, upperParameterBound, maxSteps)
+	
+	Parameterizes a sparsification algorithm using binary search.
+
+	Parameters
+	----------
+	sizeIncreasesWithParameter : bool
+		Set to True if the size of the sparsified graph increases with increasing parameter value.
+	lowerParameterBound : float
+		Lower bound of the parameter domain (inclusive).
+	upperParameterBound : float
+		Upper bound of the parameter domain (inclusive).
+	maxSteps : int
+		The maximum number of steps to perform during binary search.
+	"""
 
 	def __init__(self, sizeIncreasesWithParameter, lowerParameterBound, upperParameterBound, maxSteps):
-		""" Creates a new instance of a binary search parameterizer.
 
-		Keyword arguments:
-		sizeIncreasesWithParameter -- set to True if the size of the sparsified graph increases with increasing parameter value
-		lowerParameterBound -- lower bound of the parameter domain (inclusive)
-		upperParameterBound -- upper bound of the parameter domain (inclusive)
-		maxSteps -- the maximum number of steps to perform during binary search
-		"""
 		self.sizeIncreasesWithParameter = sizeIncreasesWithParameter
 		self.lowerParameterBound = lowerParameterBound
 		self.upperParameterBound = upperParameterBound
 		self.maxSteps = maxSteps
 
 	def parameterize(self, algorithm, G, attribute, edgeRatio):
+		""" 
+		parameterize(algorithm, G, attribute, edgeRatio)
+		
+		Parameterize the given sparsifier for the given input graph with the
+		given target edge ratio. (To be implemented by derived class.)
+
+		Parameters
+		----------
+		algorithm : networkit.sparsification.Sparsifier
+			The sparsification algorithm.
+		G : networkit.Graph
+			The input graph.
+		attribute : list(float)
+			An input edge attribute.
+		edgeRatio : float
+			The target edge ratio.
+		"""
 		lowerBound = self.lowerParameterBound
 		upperBound = self.upperParameterBound
 		estimation = self.lowerParameterBound
@@ -791,20 +922,43 @@ class BinarySearchParameterization:
 		return bestParameter
 
 class CompleteSearchParameterization:
-	""" Parameterizes a sparsification algorithm using complete search
+	""" 
+	CompleteSearchParameterization(lowerParameterBound, upperParameterBound)
+	
+	Parameterizes a sparsification algorithm using complete search
 	(applicable only to algorithms which take as input a parameter from a small
-	set of possible values) """
+	set of possible values).
+	
+	Parameters
+	----------
+	lowerParameterBound : int
+		Lower bound of the parameter domain (inclusive).
+	upperParameterBound : int
+		Upper bound of the parameter domain (inclusive).
+	"""
 
 	def __init__(self, lowerParameterBound, upperParameterBound):
-		""" Creates a new instance of a complete search parameterizer.
-
-		Keyword arguments:
-		lowerParameterBound -- lower bound of the parameter domain (inclusive, integer)
-		upperParameterBound -- upper bound of the parameter domain (inclusive, integer) """
 		self.lowerParameterBound = lowerParameterBound
 		self.upperParameterBound = upperParameterBound
 
 	def parameterize(self, algorithm, G, attribute, edgeRatio):
+		""" 
+		parameterize(algorithm, G, attribute, edgeRatio)
+		
+		Parameterize the given sparsifier for the given input graph with the
+		given target edge ratio. (To be implemented by derived class.)
+
+		Parameters
+		----------
+		algorithm : networkit.sparsification.Sparsifier
+			The sparsification algorithm.
+		G : networkit.Graph
+			The input graph.
+		attribute : list(float)
+			An input edge attribute.
+		edgeRatio : float
+			The target edge ratio.
+		"""
 		bestParameter = self.lowerParameterBound
 		bestRatio = 0.0
 		minDistance = 100.0
@@ -822,15 +976,20 @@ class CompleteSearchParameterization:
 		return bestParameter
 
 def getRankAttribute(attribute, reverse = False):
-	""" Takes as input an attribute (node or edge) and returns an attribute where
+	""" 
+	getRankAttribute(attribute, reverse=False)
+	
+	Takes as input an attribute (node or edge) and returns an attribute where
 	each node is assigned its rank among all others according to the attribute values.
 	The node/edge with lowest input value is assigned 0, the one with second-lowest
 	value 1, and so on.
 
-	Keyword arguments:
-	attribute -- the input node/edge attribute
-	reverse -- reverses the ranking, if set to True
-
+	Parameters
+	----------
+	attribute : list(float)
+		The input node/edge attribute
+	reverse : bool, optional
+		Reverses the ranking, if set to True. Default: False
 	"""
 
 	#Example input: [0.1, 0.05, 0.9, 0.2], ascending
@@ -848,19 +1007,27 @@ def getRankAttribute(attribute, reverse = False):
 	return result
 
 class SimmelianSparsifierParametric(Sparsifier):
+	""" 
+	SimmelianSparsifierParametric()
 
-	""" An implementation of the Parametric variant of the Simmelian Sparsifiers
-	 introduced by Nick et al. """
+	An implementation of the Parametric variant of the Simmelian Sparsifiers
+	introduced by Nick et al.
+	"""
 
 	def __init__(self, maxRank):
 		self.maxRank = maxRank
 
 	def scores(self, G):
-		""" Returns an edge attribute that holds for each edge the minimum parameter value
+		""" 
+		scores(G)		
+
+		Returns an edge attribute that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
 
-		Keyword arguments:
-		G -- the input graph
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
 		"""
 		triangles = TriangleEdgeScore(G).run().scores()
 
@@ -876,16 +1043,24 @@ class SimmelianSparsifierParametric(Sparsifier):
 		return CompleteSearchParameterization(0, self.maxRank)
 
 class SimmelianSparsifierNonParametric(Sparsifier):
-
-	""" An implementation of the Non-parametric variant of the Simmelian Sparsifiers
-	introduced by Nick et al. """
+	"""
+	SimmelianSparsifierNonParametric()
+	
+	An implementation of the Non-parametric variant of the Simmelian Sparsifiers
+	introduced by Nick et al. 
+	"""
 
 	def scores(self, G):
-		""" Returns an edge attribute that holds for each edge the minimum jaccard filter value
+		""" 
+		scores(G)		
+
+		Returns an edge attribute that holds for each edge the minimum jaccard filter value
 		such that the edge is contained in the sparsified graph.
 
-		Keyword arguments:
-		G -- the input graph
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
 		"""
 		triangles = TriangleEdgeScore(G).run().scores()
 		a_sj = PrefixJaccardScore(G, triangles).run().scores()
@@ -900,14 +1075,22 @@ class SimmelianSparsifierNonParametric(Sparsifier):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 class QuadrilateralSimmelianSparsifier(Sparsifier):
-	""" An implementation of the Simmelian Sparsifiers based on quadrangles. """
+	""" 
+	QuadrilateralSimmelianSparsifier()	
+
+	An implementation of the Simmelian Sparsifiers based on quadrangles.
+	"""
 
 	def scores(self, G):
 		"""
+		scores(G)
+
 		Returns an edge scoring attribute that can be used for global filtering.
 
-		Keyword arguments:
-		G -- the input graph
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
 		"""
 		quadrangles = ChibaNishizekiQuadrangleEdgeScore(G).run().scores()
 		meanQuadrangles = GeometricMeanScore(G, quadrangles).run().scores()
@@ -922,15 +1105,23 @@ class QuadrilateralSimmelianSparsifier(Sparsifier):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 class SimmelianMultiscaleSparsifier(Sparsifier):
+	"""
+	SimmelianMultiscaleSparsifier()	
 
-	""" Multiscale Sparsifier that uses triangle counts as input edge weight. """
+	Multiscale Sparsifier that uses triangle counts as input edge weight.
+	"""
 
 	def scores(self, G):
-		""" Returns an edge attribute that holds for each edge the maximum parameter value
+		""" 
+		scores(G)		
+
+		Returns an edge attribute that holds for each edge the maximum parameter value
 		such that the edge is contained in the sparsified graph.
 
-		Keyword arguments:
-		G -- the input graph
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
 		"""
 		triangles = TriangleEdgeScore(G).run().scores()
 		ms = MultiscaleScore(G, triangles)
@@ -946,22 +1137,31 @@ class SimmelianMultiscaleSparsifier(Sparsifier):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 class DegreeMultiscaleSparsifier(Sparsifier):
-	""" Multiscale Sparsifier that uses node degrees (mapped to edges) as input edge weight. """
+	""" 
+	DegreeMultiscaleSparsifier(degsToAttrValue)
+
+	Multiscale Sparsifier that uses node degrees (mapped to edges) as input edge weight.
+
+	Parameters
+	----------
+	degsToAttrValue : function
+		Function that maps two node degrees to an edge score.
+	"""
 
 	def __init__(self, degsToAttrValue):
-		"""
-		Creates a new instance of the Degree Multiscale sparsifier.
-		Keyword arguments:
-		degsToAttrValue -- function that maps two node degrees to an edge score.
-		"""
 		self.degsToAttrValue = degsToAttrValue
 
 	def scores(self, G):
-		""" Returns an edge attribute that holds for each edge the maximum parameter value
+		""" 
+		scores(G)		
+
+		Returns an edge attribute that holds for each edge the maximum parameter value
 		such that the edge is contained in the sparsified graph.
 
-		Keyword arguments:
-		G -- the input graph
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
 		"""
 
 		inputAttribute = [0] * G.upperEdgeIdBound()
@@ -981,10 +1181,23 @@ class DegreeMultiscaleSparsifier(Sparsifier):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 class JaccardSimilaritySparsifier(Sparsifier):
-	""" An implementation of the Jaccard Similarity sparsification approach introduced by Satuluri et al. """
+	""" 
+	JaccardSimilaritySparsifier()
+
+	An implementation of the Jaccard Similarity sparsification approach introduced by Satuluri et al.
+	"""
 
 	def scores(self, G):
-		""" Returns the jaccard coefficient of the neighborhoods of the two incident nodes """
+		""" 
+		scores(G)		
+
+		Returns the jaccard coefficient of the neighborhoods of the two incident nodes.
+		
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		"""
 		triangles = TriangleEdgeScore(G).run().scores()
 		return JaccardSimilarityAttributizer(G, triangles).getAttribute()
 
@@ -997,15 +1210,23 @@ class JaccardSimilaritySparsifier(Sparsifier):
 
 
 class LocalSimilaritySparsifier(Sparsifier):
+	"""
+	LocalSimilaritySparsifier()
 
-	""" An implementation of the Local Similarity sparsification approach introduced by Satuluri et al. """
+	An implementation of the Local Similarity sparsification approach introduced by Satuluri et al.
+	"""
 
 	def scores(self, G):
-		""" Returns an edge attribute that holds for each edge the minimum parameter value
+		"""
+		scores(G)
+
+		Returns an edge attribute that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
 
-		Keyword arguments:
-		G -- the input graph
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
 		"""
 		triangles = TriangleEdgeScore(G).run().scores()
 		localSimScore = LocalSimilarityScore(G, triangles)
@@ -1020,15 +1241,23 @@ class LocalSimilaritySparsifier(Sparsifier):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 class MultiscaleSparsifier(Sparsifier):
+	""" 
+	MultiscaleSparsifier()
 
-	""" An implementation of the Multiscale backbone approach introduced by Serrano et al. """
+	An implementation of the Multiscale backbone approach introduced by Serrano et al.
+	"""
 
 	def scores(self, G):
-		""" Returns an edge attribute that holds for each edge the minimum parameter value
+		""" 
+		scores(G)
+
+		Returns an edge attribute that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
 
-		Keyword arguments:
-		G -- the input graph
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
 		"""
 
 		inputAttribute = [0.0] * G.upperEdgeIdBound()
@@ -1049,15 +1278,23 @@ class MultiscaleSparsifier(Sparsifier):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 class RandomEdgeSparsifier(Sparsifier):
+	"""
+	RandomEdgeSparsifier()
 
-	""" Random Edge sampling. Edges to keep in the sparsified graph are selected uniformly at random. """
+	Random Edge sampling. Edges to keep in the sparsified graph are selected uniformly at random.
+	"""
 
 	def scores(self, G):
-		""" Returns an edge attribute that holds for each edge the minimum parameter value
+		""" 
+		scores(G)
+
+		Returns an edge attribute that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
 
-		Keyword arguments:
-		G -- the input graph
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
 		"""
 
 		reScore = RandomEdgeScore(G)
@@ -1072,17 +1309,32 @@ class RandomEdgeSparsifier(Sparsifier):
 		return SimpleParameterization()
 
 class RandomNodeEdgeSparsifier(Sparsifier):
-	""" [TODO not yet documented] """
+	"""
+	RandomNodeEdgeSparsifier()
+
+	Random Edge sampling. Edges and nodes to keep in the sparsified graph are selected uniformly at random.
+
+	Parameters
+	----------
+	above : bool, optional
+		If set to True (False), all nodes and edges with an attribute value equal to or above (below)
+		will be kept in the sparsified graph. Default: True
+	"""
 
 	def __init__(self, above = True):
 		self.above = above
 
 	def scores(self, G):
-		""" Returns an edge attribute that holds for each edge the minimum parameter value
+		""" 
+		scores(G)
+
+		Returns an edge attribute that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
 
-		Keyword arguments:
-		G -- the input graph
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
 		"""
 
 		rneScore = RandomNodeEdgeScore(G)
@@ -1097,25 +1349,34 @@ class RandomNodeEdgeSparsifier(Sparsifier):
 		return BinarySearchParameterization((not self.above), 0.0, 1.0, 20)
 
 class ForestFireSparsifier(Sparsifier):
-
-	""" A variant of the Forest Fire sparsification approach proposed by Leskovec et al. """
+	"""
+	ForestFireSparsifier(burnProbability, targetBurntRatio)
+	
+	A variant of the Forest Fire sparsification approach proposed by Leskovec et al.
+	
+	Parameters
+	----------
+	burnProbability : float
+		The probability that the neighbor of a burnt node gets burnt as well.
+	edgeRatio : float
+		The fires will stop when a edgeRatio * edgeCount edges have been burnt.
+	"""
 
 	def __init__(self, burnProbability, targetBurntRatio):
-		""" Creates a new instance of the Edge Forest Fire sparsification algorithm.
-
-		Keyword arguments:
-		burnProbability -- the probability that the neighbor of a burnt node gets burnt as well.
-		edgeRatio -- the fires will stop when a edgeRatio * edgeCount edges have been burnt.
-		"""
 		self.burnProbability = burnProbability
 		self.targetBurntRatio = targetBurntRatio
 
 	def scores(self, G):
-		""" Returns an edge attribute that holds for each edge the maximum parameter value
+		""" 
+		scores(G)
+		
+		Returns an edge attribute that holds for each edge the maximum parameter value
 		such that the edge is contained in the sparsified graph.
 
-		Keyword arguments:
-		G -- the input graph
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
 		"""
 
 		ffScore = ForestFireScore(G, self.burnProbability, self.targetBurntRatio)
@@ -1130,15 +1391,23 @@ class ForestFireSparsifier(Sparsifier):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 class LocalDegreeSparsifier(Sparsifier):
-
-	""" An implementation of the Local Degree sparsification algorithm. """
+	""" 
+	LocalDegreeSparsifier()
+	
+	An implementation of the Local Degree sparsification algorithm.
+	"""
 
 	def scores(self, G):
-		""" Returns an edge score that holds for each edge the minimum parameter value
+		""" 
+		scores(G)
+		
+		Returns an edge score that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
 
-		Keyword arguments:
-		G -- the input graph
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
 		"""
 
 		localDegree = LocalDegreeScore(G)
@@ -1154,15 +1423,23 @@ class LocalDegreeSparsifier(Sparsifier):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 class SCANSparsifier(Sparsifier):
-
-	""" A sparsifiier dervived from 'SCAN: a structural clustering algorithm for networks' """
+	""" 
+	SCANSparsifier()
+	
+	A sparsifiier dervived from 'SCAN: a structural clustering algorithm for networks'
+	"""
 
 	def scores(self, G):
-		""" Returns an edge attribute that holds for each edge the minimum parameter value
+		"""
+		scores(G)
+
+		Returns an edge attribute that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
 
-		Keyword arguments:
-		G -- the input graph
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
 		"""
 		a_triangles = TriangleEdgeScore(G).run().scores()
 
@@ -1179,10 +1456,23 @@ class SCANSparsifier(Sparsifier):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 class TriangleSparsifier(Sparsifier):
-	"""  Allows for global filtering with respect to triangle counts. """
+	""" 
+	TriangleSparsifier()
+
+	Allows for global filtering with respect to triangle counts.
+	"""
 
 	def scores(self, G):
-		""" Returns the triangle counts of the input graph. """
+		""" 
+		scores(G)
+
+		Returns the triangle counts of the input graph.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		"""
 		triangleScore = TriangleEdgeScore(G)
 		triangleScore.run()
 		return triangleScore.scores()
@@ -1195,7 +1485,22 @@ class TriangleSparsifier(Sparsifier):
 		raise NotImplementedError("parameterization method not yet implemented.")
 
 class AlgebraicDistanceSparsifier(Sparsifier):
-	""" Allows for global filtering with respect to (inverted) algebraic distances. """
+	""" 
+	AlgebraicDistanceSparsifier(numberSystems=10, numberIterations=30, omega=0.5, norm=0)
+	
+	Allows for global filtering with respect to (inverted) algebraic distances.
+	
+	Parameters
+	----------
+	numberSystems : int, optional
+	 	Number of vectors/systems used for algebraic iteration. Default: 10
+	numberIterations : int, optional
+	 	Number of iterations in each system. Default: 30
+	omega : float, optional
+	 	Attenuation factor in [0,1] influencing convergence speed. Default: 0.5
+	norm : int, optional
+		The norm factor of the extended algebraic distance. Default: 0
+	"""
 
 	def __init__(self, numberSystems=10, numberIterations=30, omega=0.5, norm=0):
 		self.numberSystems = numberSystems
@@ -1204,7 +1509,16 @@ class AlgebraicDistanceSparsifier(Sparsifier):
 		self.norm = norm
 
 	def scores(self, G):
-		""" Returns the inverted algebraic distance score of the input graph. """
+		""" 
+		scores(G)
+
+		Returns the inverted algebraic distance score of the input graph.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		"""
 		algDist = distance.AlgebraicDistance(G, self.numberSystems, self.numberIterations, self.omega, self.norm, withEdgeScores=True)
 		algDist.preprocess()
 		return [1.0 - d for d in algDist.getEdgeScores()]
@@ -1217,18 +1531,28 @@ class AlgebraicDistanceSparsifier(Sparsifier):
 		return BinarySearchParameterization(False, 0.0, 1.0, 20)
 
 class LocalSparsifier(Sparsifier):
+	"""
+	LocalSparsifier(sparsifier)
+
+	Sparsification algorithm using an input sparsifier and passing the result of
+	this algorithm to networkit.sparsification.LocalFilterScore for choosing
+	edges, which should be present in the sparsified graph.
+	"""
 	def __init__(self, sparsifier):
 		self.sparsifier = sparsifier
 
 	def scores(self, G):
-		""" Returns an edge attribute that holds for each edge 1 - the minimum parameter value
-               	such that the edge is contained in the sparsified graph.
+		""" 
+		scores(G)		
 
-               	Note that - like for all sparsifiers - edges with the highest score are the most important ones.
+		Returns an edge attribute that holds for each edge 1 - the minimum parameter value
+		such that the edge is contained in the sparsified graph.
 
-               	Keyword arguments:
-               	G -- the input graph
-               	"""
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		"""
 		originalScores = self.sparsifier.scores(G)
 		localFilterScore = LocalFilterScore(G, originalScores)
 		localFilterScore.run()
@@ -1244,17 +1568,26 @@ class LocalSparsifier(Sparsifier):
 
 
 class ModularityPartitionScore():
+	"""
+	ModularityPartitionScore()
 
-	"""  """
+	Sparsification algorithm using networkit.community.PLM algorithm to detect
+	communities and select only edges, where both ends are member of the same
+	community.
+	"""
 
 	def scores(self, G):
-		""" Returns an edge attribute that holds for each edge the minimum parameter value
+		""" 
+		scores(G)
+
+		Returns an edge attribute that holds for each edge the minimum parameter value
 		such that the edge is contained in the sparsified graph.
 
-		Keyword arguments:
-		G -- the input graph
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
 		"""
-
 		cdAlgo = community.PLM(G, par="none randomized", refine=True, turbo=True)
 		cdAlgo.run()
 		partition = cdAlgo.getPartition()
@@ -1270,17 +1603,31 @@ class ModularityPartitionScore():
 		return edgeScores
 
 class ConstantScore():
-	""" Assigns as an attribute the same value to each edge (for sanity checks) """
+	""" 
+	ConstantScore(constValue=1.0)
+
+	Assigns as an attribute the same value to each edge (for sanity checks).
+
+	Parameters
+	----------
+	constValue : float, optional
+		Value to assign to each edge. Default: 1.0
+	"""
 
 	def __init__(self, constValue = 1.0):
-		""" Creates a new instance of an attributizer that always
-		 returns the given value as edge attribute value.
-		"""
 		self.constValue = constValue
 
 	def scores(self, G):
-		""" Returns an edge attribute that holds for each edge the constant value given
+		"""
+		scores(G)
+
+		Returns an edge attribute that holds for each edge the constant value given
 		in the constructor.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
 		"""
 		return self.constValue
 

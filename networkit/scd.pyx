@@ -11,11 +11,27 @@ from .base cimport _Algorithm, Algorithm
 from .structures cimport _Cover, Cover
 
 def stdstring(pystring):
-	""" convert a Python string to a bytes object which is automatically coerced to std::string"""
-	pybytes = pystring.encode("utf-8")
-	return pybytes
+	""" 
+	stdstring(pystring)
+
+	Convert a Python string to a bytes object which is automatically coerced to std::string.
+
+	Parameters
+	----------
+	pystring : str
+		Input python string.
+
+	Returns
+	-------
+	stdstring
+		Python bytes string.
+	"""
+	return pystring.encode("utf-8")
 
 cdef class SelectiveCommunityDetector:
+	"""
+	Abstract base class for a selective community detector.
+	"""
 	def __init__(self, *args, **namedargs):
 		if type(self) == SelectiveCommunityDetector:
 			raise RuntimeError("Error, you may not use SelectiveCommunityDetector directly, use a sub-class instead")
@@ -30,23 +46,28 @@ cdef class SelectiveCommunityDetector:
 
 	def run(self, set[node] seeds):
 		"""
+		run(seeds):
+
 		Detect one community for each of the given seed nodes.
 
 		The default implementation calls expandOneCommunity() for each of the seeds.
 
-		Parameters:
-		-----------
-		seeds : list of nodes
+		Parameters
+		----------
+		seeds : list(int)
 			The list of seeds for which communities shall be detected.
 
 		Returns
 		-------
-		A dict mapping from seed node to community (as a set of nodes).
+		dict(int `:` int)
+			A dict mapping from seed node to community (as a set of nodes).
 		"""
 		return self._this.run(seeds)
 
 	def expandOneCommunity(self, seeds):
 		"""
+		expandOneCommunity(seeds)
+
 		Detect a community for the given seed node(s).
 
 		It expands either a single seed or a whole set of seed nodes into a single community.
@@ -56,12 +77,13 @@ cdef class SelectiveCommunityDetector:
 
 		Parameters
 		----------
-		seed : node or set
+		seed : int or list(int)
 			The seed(s) to find the community for.
 
 		Returns
 		-------
-		The found community as a set of nodes.
+		list(int)
+			The found community as a list of nodes.
 		"""
 		try:
 			return self._this.expandOneCommunity(<set[node]?>seeds)
@@ -76,16 +98,18 @@ cdef extern from "<networkit/scd/ApproximatePageRank.hpp>":
 
 cdef class ApproximatePageRank:
 	"""
+	ApproximatePageRank(G, alpha, epsilon)
+
 	Computes an approximate PageRank vector from a given seed.
 
-	Parameters:
-	-----------
-	G : Graph
-		Graph in which an APR is computed
+	Parameters
+	----------
+	G : networkit.Graph
+		Graph in which an APR is computed.
 	alpha : float
-		Loop probability of random walk
+		Loop probability of random walk.
 	epsilon: float
-		Error tolerance
+		Error tolerance.
 	"""
 	cdef _ApproximatePageRank *_this
 	cdef Graph _G
@@ -101,18 +125,20 @@ cdef class ApproximatePageRank:
 
 	def run(self, seeds):
 		"""
+		run(seeds)
+
 		Approximate PageRank vector from seeds with parameters
 		specified in the constructor.
 
-		Parameters:
-		-----------
-		seeds : node or iterable of nodes
-			The seed node or list of seed nodes
+		Parameters
+		----------
+		seeds : int or list(int)
+			The seed node or list of seed nodes.
 
-		Returns:
-		--------
-		list[node, float]
-			List of pairs of nodes and scores with positive PageRank
+		Returns
+		-------
+		list(tuple(int, float))
+			List of pairs of nodes and scores with positive PageRank.
 		"""
 		try:
 			return self._this.run(<set[node]?>seeds)
@@ -126,14 +152,19 @@ cdef extern from "<networkit/scd/PageRankNibble.hpp>":
 
 cdef class PageRankNibble(SelectiveCommunityDetector):
 	"""
+	PageRankNibble(G, alpha, epsilon)
+
 	Produces a cut around a given seed node using the PageRank-Nibble algorithm.
 	see Andersen, Chung, Lang: Local Graph Partitioning using PageRank Vectors
 
-	Parameters:
-	-----------
-	G : networkit.Graph in which the cut is to be produced, must be unweighted.
-	alpha : Loop probability of random walk; smaller values tend to produce larger communities.
-	epsilon: Tolerance threshold for approximation of PageRank vectors
+	Parameters
+	----------
+	G : networkit.Graph 
+		The input graph, must be unweighted.
+	alpha : float
+		Loop probability of random walk; smaller values tend to produce larger communities.
+	epsilon: float
+		Tolerance threshold for approximation of PageRank vectors.
 	"""
 	def __cinit__(self, Graph G, double alpha, double epsilon):
 		self._G = G
@@ -146,13 +177,16 @@ cdef extern from "<networkit/scd/GCE.hpp>":
 
 cdef class GCE(SelectiveCommunityDetector):
 	"""
+	GCE(G, Q)
+
 	Produces a cut around a given seed node using the GCE algorithm.
 	It greedily adds nodes from the shell to improve community quality.
 
-	Parameters:
-	-----------
-	G : graph in which the cut is to be produced, must be unweighted.
-	Q : string
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph, must be unweighted.
+	Q : str
 		The quality function. Supported values: "M" or "L".
 	"""
 	def __cinit__(self, Graph G, quality):
@@ -165,6 +199,8 @@ cdef extern from "<networkit/scd/CliqueDetect.hpp>":
 
 cdef class CliqueDetect(SelectiveCommunityDetector):
 	"""
+	CliqueDetect(G)
+
 	The CliqueDetect algorithm. It finds the largest clique in the
 	seed node's neighborhood.
 
@@ -182,9 +218,10 @@ cdef class CliqueDetect(SelectiveCommunityDetector):
 	Local Community Detection Based on Small Cliques.
 	Algorithms 2017, 10, 90. https://doi.org/10.3390/a10030090
 
-	Parameters:
-	-----------
-	G : graph in which communities shall be detected.
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
 	"""
 	def __cinit__(self, Graph G):
 		self._G = G
@@ -197,9 +234,9 @@ cdef extern from "<networkit/scd/LFMLocal.hpp>":
 
 cdef class LFMLocal(SelectiveCommunityDetector):
 	"""
-	Local version of the LFM algorithm
+	LFMLocal(G, alpha)
 
-	This is the local community expansion as introduced in:
+	Local version of the LFM algorithm as introduced in:
 
 	Lancichinetti, A., Fortunato, S., & Kertész, J. (2009).
 	Detecting the overlapping and hierarchical community structure in complex networks.
@@ -217,10 +254,10 @@ cdef class LFMLocal(SelectiveCommunityDetector):
 
 	Parameters:
 	-----------
-	G : Graph
-		graph in which the community shall be found.
+	G : networkit.Graph
+		The input graph.
 	alpha : float
-		The resolution parameter
+		The resolution parameter.
 	"""
 	def __cinit__(self, Graph G, double alpha = 1.0):
 		self._G = G
@@ -255,6 +292,8 @@ cdef extern from "<networkit/scd/SCDGroundTruthComparison.hpp>":
 
 cdef class SCDGroundTruthComparison(Algorithm):
 	"""
+	SCDGroundTruthComparison(G, groundTruth, found, ignoreSeeds)
+
 	This class evaluates a set found communities against a ground truth cover. Each found community
 	is compared against the communities of the seed node in the ground truth cover.
 
@@ -277,13 +316,13 @@ cdef class SCDGroundTruthComparison(Algorithm):
 
 	For each score, the range of values is between 0 and 1, where 0 is the worst and 1 the best score.
 
-	Parameters:
-	-----------
-	G : Graph
+	Parameters
+	----------
+	G : networkit.Graph
 		The graph to compare on
-	groundTruth : Cover
+	groundTruth : networkit.Cover
 		The ground truth cover
-	found : dict
+	found : dict(bool `:` int)
 		The found communities, where the keys are the seed nodes and the values are the found nodes.
 	ignoreSeeds : bool
 		If the seed values shall be ignored, i.e. if any ground truth community is a match
@@ -300,58 +339,98 @@ cdef class SCDGroundTruthComparison(Algorithm):
 
 	def getIndividualJaccard(self):
 		"""
+		getIndividualJaccard()
+
 		Get the Jaccard index of every found community.
 
 		Returns
 		-------
-		A dict between seed node and the jaccard index of the seed's community.
+		dict(int `:` float)
+			A dict between seed node and the jaccard index of the seed's community.
 		"""
 		return (<_SCDGroundTruthComparison*>(self._this)).getIndividualJaccard()
 	def getIndividualPrecision(self):
 		"""
+		getIndividualPrecision()
+
 		Get the precision of every found community.
 
 		Returns
 		-------
-		A dict between seed node and the precision of the seed's community.
+		dict(int `:` float)
+			A dict between seed node and the precision of the seed's community.
 		"""
 		return (<_SCDGroundTruthComparison*>(self._this)).getIndividualPrecision()
 	def getIndividualRecall(self):
 		"""
+		getIndividualRecall()
+
 		Get the recall of every found community.
 
 		Returns
 		-------
-		A dict between seed node and the recall of the seed's community.
+		dict(int `:` float)
+			A dict between seed node and the recall of the seed's community.
 		"""
 		return (<_SCDGroundTruthComparison*>(self._this)).getIndividualRecall()
 	def getIndividualF1(self):
 		"""
+		getIndividualF1()
+
 		Get the F1 score of every found community.
 
 		Returns
 		-------
-		A dict between seed node and the F1 score of the seed's community.
+		dict(int `:` float)
+			A dict between seed node and the F1 score of the seed's community.
 		"""
 		return (<_SCDGroundTruthComparison*>(self._this)).getIndividualF1()
 	def getAverageJaccard(self):
 		"""
+		getAverageJaccard()
+
 		Get the (unweighted) average of the jaccard indices of every found community.
+
+		Returns
+		-------
+		dict(int `:` float)
+			A dict between community and the (unweighted) average of the jaccard indices.	
 		"""
 		return (<_SCDGroundTruthComparison*>(self._this)).getAverageJaccard()
 	def getAverageF1(self):
 		"""
+		getAverageF1()
+
 		Get the (unweighted) average of the F1 score of every found community.
+
+		Returns
+		-------
+		dict(int `:` float)
+			A dict between community and the (unweighted) average of the F1 score.
 		"""
 		return (<_SCDGroundTruthComparison*>(self._this)).getAverageF1()
 	def getAveragePrecision(self):
 		"""
+		getAveragePrecision()
+
 		Get the (unweighted) average of the precision of every found community.
+
+		Returns
+		-------
+		dict(int `:` float)
+			A dict between community and the (unweighted) average of the precision.
 		"""
 		return (<_SCDGroundTruthComparison*>(self._this)).getAveragePrecision()
 	def getAverageRecall(self):
 		"""
+		getAverageRecall()
+
 		Get the (unweighted) average of the recall of every found community.
+
+		Returns
+		-------
+		dict(int `:` float)
+			A dict between community and the (unweighted) average of the recall.
 		"""
 		return (<_SCDGroundTruthComparison*>(self._this)).getAverageRecall()
 
@@ -368,12 +447,12 @@ cdef class SetConductance(Algorithm):
 	of the volume (the sum of the weighted degrees) of the community and the rest
 	of the graph.
 
-	Parameters:
-	-----------
-	G : Graph
-		The graph to calculate the conductance on
-	community : set
-		The set of nodes to calculate the conductance of
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph to calculate the conductance on.
+	community : list(int)
+		The list of nodes to calculate the conductance of.
 	"""
 
 	cdef Graph _G
@@ -386,11 +465,14 @@ cdef class SetConductance(Algorithm):
 
 	def getConductance(self):
 		"""
+		getConductance()
+
 		Get the calculated conductance score.
 
 		Returns
 		-------
-		The conductance.
+		float
+			The conductance.
 		"""
 		return (<_SetConductance*>(self._this)).getConductance()
 
@@ -401,16 +483,18 @@ cdef extern from "<networkit/scd/RandomBFS.hpp>":
 
 cdef class RandomBFS(SelectiveCommunityDetector):
 	"""
+	RandomBFS(G, C)
+
 	The random BFS community detection baseline:
 	finds a community around a seed node with a given size using a prefix of a
 	BFS order that is selected at random among all possible prefixes.
 
-	Parameters:
-	-----------
-	G : Graph
-		Graph in which the community shall be found
-	C : Cover
-		Ground truth communities to get size information from
+	Parameters
+	----------
+	G : networkit.Graph
+		Graph in which the community shall be found.
+	C : networkit.Cover
+		Ground truth communities to get size information from.
 	"""
 	cdef Cover _C
 
@@ -426,6 +510,8 @@ cdef extern from "<networkit/scd/TwoPhaseL.hpp>":
 
 cdef class TwoPhaseL(SelectiveCommunityDetector):
 	"""
+	TwoPhaseL(G)
+
 	The two-phase local community detection algorithm optimizing the L-measure.
 
 	This is an implementation of the algorithm proposed in:
@@ -434,6 +520,11 @@ cdef class TwoPhaseL(SelectiveCommunityDetector):
 	Local Community Identification in Social Networks.
 	In 2009 International Conference on Advances in Social Network Analysis and Mining (pp. 237–242).
 	https://doi.org/10.1109/ASONAM.2009.14
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
 	"""
 	def __cinit__(self, Graph G):
 		self._G = G
@@ -446,6 +537,8 @@ cdef extern from "<networkit/scd/LocalTightnessExpansion.hpp>":
 
 cdef class LocalTightnessExpansion(SelectiveCommunityDetector):
 	"""
+	LocalTightnessExpansion(G, alpha=1.0)
+
 	The Local Tightness Expansion (LTE) algorithm.
 
 	The algorithm can handle weighted graphs.
@@ -457,12 +550,12 @@ cdef class LocalTightnessExpansion(SelectiveCommunityDetector):
 	PLOS ONE, 6(8), e23829.
 	https://doi.org/10.1371/journal.pone.0023829
 
-	Parameters:
-	-----------
-	G : Graph
-		graph in which the community shell be found
-	alpha : float
-		Tightness coefficient - smaller values lead to larger communities
+	Parameters
+	----------
+	G : networkit.Graph
+		Graph in which the community shell be found.
+	alpha : float, optional
+		Tightness coefficient - smaller values lead to larger communities. Default: 1.0
 	"""
 	def __cinit__(self, Graph G, double alpha = 1.0):
 		self._G = G
@@ -475,16 +568,18 @@ cdef extern from "<networkit/scd/TCE.hpp>":
 
 cdef class TCE(SelectiveCommunityDetector):
 	"""
+	TCE(G, refine=True, useJaccard=False)
+
 	The Triangle-based community expansion algorithm.
 
-	Parameters:
-	-----------
-	G : Graph
+	Parameters
+	----------
+	G : networkit.Graph
 		graph in which the community shell be found
-	refine : bool
-		If nodes shall be removed again if this improves the quality
-	useJaccard : bool
-		If the jaccard index shall be used for weights
+	refine : bool, optional
+		If nodes shall be removed again if this improves the quality. Default: True
+	useJaccard : bool, optional
+		If the jaccard index shall be used for weights. Default: False
 	"""
 	def __cinit__(self, Graph G, bool_t refine = True, bool_t useJaccard = False):
 		self._G = G
@@ -496,6 +591,8 @@ cdef extern from "<networkit/scd/LocalT.hpp>":
 
 cdef class LocalT(SelectiveCommunityDetector):
 	"""
+	LocalT(G)
+
 	The local community expansion algorithm optimizing the T measure.
 
 	This implements the algorithm published in:
@@ -505,10 +602,10 @@ cdef class LocalT(SelectiveCommunityDetector):
 	In 2014 IEEE/ACM International Conference on Advances in Social Networks Analysis and Mining (ASONAM) (pp. 108–112).
 	https://doi.org/10.1109/ASONAM.2014.6921568
 
-	Parameters:
-	-----------
-	G : Graph
-		graph in which the community shell be found
+	Parameters
+	----------
+	G : networkit.Graph
+		Graph in which the community shell be found.
 	"""
 	def __cinit__(self, Graph G):
 		self._G = G

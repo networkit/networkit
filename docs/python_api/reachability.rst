@@ -1,5 +1,5 @@
 networkit.reachability
-==================
+======================
 
 .. automodule:: networkit.reachability
     :members:

@@ -31,26 +31,41 @@ cdef extern from "<networkit/simulation/EpidemicSimulationSEIR.hpp>":
 
 cdef class EpidemicSimulationSEIR(Algorithm):
 	"""
- 	Parameters:
- 	-----------
+	EpidemicSimulationSEIR(G, tMax, transP, eTime, iTime, zero)
+
+	Simulates an epidemic spread using the Susceptible-Exposed-Infectious-Removed (SEIR) model.
+
+ 	Parameters
+ 	----------
  	G : networkit.Graph
  		The graph.
- 	tMax : count
- 		max. number of timesteps
-	transP : double
-		transmission probability
-	eTime : count
-		exposed time
-	iTime : count
-		infectious time
-	zero : node
-		starting node
+ 	tMax : int
+ 		Maximum number of timesteps.
+	transP : float
+		Transmission probability.
+	eTime : int
+		Exposed time
+	iTime : int
+		Infectious time.
+	zero : int
+		Starting node.
 	"""
 	cdef Graph G
 	def __cinit__(self, Graph G, count tMax, double transP=0.5, count eTime=2, count iTime=7, node zero=none):
 		self.G = G
 		self._this = new _EpidemicSimulationSEIR(G._this, tMax, transP, eTime, iTime, zero)
+
 	def getData(self):
+		"""
+		getData
+
+		Returns a pandas object, containing the simulation data Only valid after run() is called. 
+
+		Returns
+		-------
+		pandas.DataFrame
+			The simulation data.
+		"""
 		return pandas.DataFrame((<_EpidemicSimulationSEIR*>(self._this)).getData(), columns=["zero", "time", "state", "count"])
 
 

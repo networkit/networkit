@@ -1,5 +1,5 @@
 networkit.traversal
-=======================
+===================
 
 .. automodule:: networkit.traversal
     :members:

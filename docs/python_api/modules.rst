@@ -42,6 +42,7 @@ Modules
    plot   
    profiling
    randomization
+   reachability
    sampling
    scd
    simulation

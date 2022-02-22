@@ -1,5 +1,5 @@
 networkit.stats
-=======================
+===============
 
 .. automodule:: networkit.stats
     :members:

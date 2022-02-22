@@ -1,5 +1,5 @@
 networkit.sampling
-=======================
+==================
 
 .. automodule:: networkit.sampling
     :members:

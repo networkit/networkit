@@ -1,5 +1,5 @@
 networkit.simulation
-=======================
+====================
 
 .. automodule:: networkit.simulation
     :members:

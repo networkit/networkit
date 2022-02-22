@@ -1,5 +1,5 @@
 networkit.workflows
-=======================
+===================
 
 .. automodule:: networkit.workflows
     :members:

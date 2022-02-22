@@ -31,6 +31,8 @@ cdef extern from "<networkit/randomization/EdgeSwitching.hpp>":
 
 cdef class EdgeSwitching(Algorithm):
 	"""
+	EdgeSwitching(G, numberOfSwapsPerEdge=10.0, degreePreservingShufflePreprocessing=True)
+
 	The Edge Switching Markov Chain ["The markov chain simulation method for generating connected
 	power law random graphs", Mihail and Zegura] perturbs simple directed or undirected graphs
 	while preserving their degrees. In each step, we select two edges uniformly at random, and
@@ -53,15 +55,13 @@ cdef class EdgeSwitching(Algorithm):
 	----------
 	G : networkit.Graph
 		The graph to be randomized.
-
-	numberOfSwapsPerEdge : double
+	numberOfSwapsPerEdge : float, optional
 		The average number of swaps to be carried out per edge.
-		Has to be non-negative.
-
-	degreePreservingShufflePreprocessing : bool
+		Has to be non-negative. Default: 10.0
+	degreePreservingShufflePreprocessing : bool, optional
 		If true (default), in a preprocessing step jump starts the perturbation process.
 		For undirected graph, this yields faster mixing; for directed graphs, it is
-		necessary in order to obtain an unbiased sampling.
+		necessary in order to obtain an unbiased sampling. Default: True
 	"""
 
 	def __cinit__(self, G, numberOfSwapsPerEdge = 10.0, degreePreservingShufflePreprocessing = True):
@@ -88,6 +88,7 @@ cdef class EdgeSwitching(Algorithm):
 
 cdef class EdgeSwitchingInPlace(Algorithm):
 	"""
+	EdgeSwitchingInPlace(G, numberOfSwitchesPerEdge)
 	The Edge Switching Markov Chain ["The markov chain simulation method for generating connected
 	power law random graphs", Mihail and Zegura] perturbs simple directed or undirected graphs
 	while preserving their degrees. In each step, we select two edges uniformly at random, and
@@ -113,10 +114,9 @@ cdef class EdgeSwitchingInPlace(Algorithm):
 	----------
 	G : networkit.Graph
 		The graph to be randomized.
-
-	numberOfSwitchesPerEdge : count
+	numberOfSwitchesPerEdge : int, optional
 		The average number of switches to be carried out per edge.
-		Has to be non-negative.
+		Has to be non-negative. Default: 10
 	"""
 	cdef Graph _localReference # keep reference counter up to prevent GC of graph
 
@@ -127,17 +127,43 @@ cdef class EdgeSwitchingInPlace(Algorithm):
 		else:
 			raise RuntimeError("Parameter G has to be a graph")
 
-	def run(self):
-		"""Perform edge switching. May be called multiple times."""
-		(<_EdgeSwitchingInPlace*>self._this).run()
-
 	def getGraph(self):
+		"""
+		getGraph()
+
+		Return modified graph.
+
+		Returns
+		-------
+		networkit.Graph
+			The graph after applying edge switches.
+		"""
 		return self._localReference
 
 	def getNumberOfAffectedEdges(self):
+		"""
+		getNumberOfAffectedEdges()
+
+		Return number of affected edges.
+
+		Returns
+		-------
+		int
+			Number of edges affected by edge switches.
+		"""
 		return (<_EdgeSwitchingInPlace*>(self._this)).getNumberOfAffectedEdges()
 
 	def getNumberOfSwitchesPerEdge(self):
+		"""
+		getNumberOfSwitchesPerEdge()
+
+		Return number of switches per edge.
+
+		Returns
+		-------
+		list(int)
+			Number of switches per edges.
+		"""
 		return (<_EdgeSwitchingInPlace*>(self._this)).getNumberOfSwitchesPerEdge()
 
 	def setNumberOfSwitchesPerEdge(self, numberOfSwitchesPerEdge):
@@ -152,6 +178,7 @@ cdef extern from "<networkit/randomization/GlobalCurveball.hpp>":
 
 cdef class GlobalCurveball(Algorithm):
 	"""
+	GlobalCurveball(G, number_of_global_rounds=20, allowSelfLoops=False, degreePreservingShufflePreprocessing=True)
 	Implementation of EM-GCB proposed in "Parallel and I/O-efficient
 	Randomisation of Massive Networks using Global Curveball Trades",
 	Carstens et al., ESA 2018.
@@ -167,32 +194,32 @@ cdef class GlobalCurveball(Algorithm):
 	GlobalCurveball is typically faster and exhibits a smaller memory
 	footprint.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 
 	G : networkit.Graph
 		The graph to be randomized. For a given degree sequence, e.g.
 		generators.HavelHakimi can be used to obtain this graph.
 
-	number_of_global_rounds:
+	number_of_global_rounds : int, optional
 		Number of global rounds to carry out. The runtime scales
 		asymptotically linearly in this parameter. Default: 20,
 		which yields good results experimentally (see Paper).
 
-	allowSelfLoops:
+	allowSelfLoops : bool, optional
 		Has to be False for undirected graphs. For directed graphs
 		the randomization Markov chain is only irreducible if self loops
 		are allows. If they are forbidden, the degreePreservingShuffle
 		preprocessing has to be enabled. Otherwise, not all topologies
-		can be produced.
+		can be produced. Default: False
 
-	degreePreservingShufflePreprocessing:
+	degreePreservingShufflePreprocessing : bool, optional
 		Execute the DegreePreservingShuffle algorithm before executing
 		Global Curveball. It's more efficient than manually invoking
-		the algorithm.
+		the algorithm. Default: True
 
-	Warning:
-	--------
+	Note
+	----
 	For directed graphs at least one of allowSelfLoops or
 	degreePreservingShufflePreprocessing should be set; for more details
 	refer to "Switching edges to randomize networks: what goes wrong
@@ -204,13 +231,17 @@ cdef class GlobalCurveball(Algorithm):
 		else:
 			raise RuntimeError("Parameter G has to be a graph")
 
-	"""
-
-	Get randomized graph after invocation of run().
-
-	"""
-
 	def getGraph(self):
+		"""
+		getGraph()
+
+		Get randomized graph after invocation of run().
+
+		Returns
+		-------
+		networkit.Graph
+			The randomized graph.
+		"""
 		return Graph().setThis((<_GlobalCurveball*>self._this).getGraph())
 
 cdef extern from "<networkit/randomization/CurveballUniformTradeGenerator.hpp>":
@@ -220,21 +251,19 @@ cdef extern from "<networkit/randomization/CurveballUniformTradeGenerator.hpp>":
 		vector[pair[node, node]] generate() nogil except +
 
 cdef class CurveballUniformTradeGenerator:
-
 	"""
+	CurveballUniformTradeGenerator(num_trades, num_nodes)
+
 	Generates a trade sequence consisting of num_trades many single trades.
 	Each trade contains two different node indices drawn uniformly at random
 	from the interval [0, num_nodes).
 
-	Parameters:
-	-----------
-
-	num_trades:
+	Parameters
+	----------
+	num_trades : int
 	   Number of trades to generate.
-
-	num_nodes:
+	num_nodes : int
 	   Number of node indices to draw from
-
 	"""
 	cdef _CurveballUniformTradeGenerator *_this
 
@@ -254,24 +283,22 @@ cdef extern from "<networkit/randomization/CurveballGlobalTradeGenerator.hpp>":
 		vector[pair[node, node]] generate() nogil except +
 
 cdef class CurveballGlobalTradeGenerator:
-
 	"""
+	CurveballGlobalTradeGenerator(num_global_trades, num_nodes)
+
 	Generates a trade sequence consisting of num_global_trades global trades
 	targeting node ids from the range [0, num_nods).
 
 	If you are only using this generator, consider using the GlobalCurveball
 	algorithm directly as it has a better performance / memory footprint.
 
-	Parameters:
-	-----------
-
-	num_global_trades:
+	Parameters
+	----------
+	num_global_trades : int
 	   Number of global trades to generate (i.e. the resulting sequence contains
 	   num_global_trades * floor(num_nodes / 2) trades)
-
-	num_nodes:
+	num_nodes : int
 	   Number of node indices to draw from
-
 	"""
 	cdef _CurveballGlobalTradeGenerator *_this
 
@@ -282,6 +309,16 @@ cdef class CurveballGlobalTradeGenerator:
 		del self._this
 
 	def generate(self):
+		"""
+		generate()
+
+		Generate randomized graph.
+
+		Returns
+		-------
+		networkit.Graph
+			The randomized graph.
+		"""
 		return self._this.generate()
 
 cdef extern from "<networkit/randomization/Curveball.hpp>":
@@ -295,6 +332,8 @@ cdef extern from "<networkit/randomization/Curveball.hpp>":
 
 cdef class Curveball(Algorithm):
 	"""
+	Curveball(G)
+
 	Implementation of IM-CB proposed in "Parallel and I/O-efficient
 	Randomisation of Massive Networks using Global Curveball Trades",
 	Carstens et al., ESA 2018.
@@ -310,19 +349,17 @@ cdef class Curveball(Algorithm):
 	GlobalCurveball is typically faster and exhibits a smaller memory
 	footprint.
 
-   Observe that this algorithm does not support the run() method,
-   since it requires the trade sequence to be passed. It is possible
-   to invoke run(trades) several times, e.g. to reduce the memory
-   footprint which increases linearly with the number of trades
-   performed in a run.
+	Observe that this algorithm does not support the run() method,
+	since it requires the trade sequence to be passed. It is possible
+	to invoke run(trades) several times, e.g. to reduce the memory
+	footprint which increases linearly with the number of trades
+	performed in a run.
 
-	Parameters:
-	-----------
-
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to be randomized. For a given degree sequence, e.g.
 		generators.HavelHakimi can be used to obtain this graph.
-
 	"""
 	def __cinit__(self, G):
 		if isinstance(G, Graph):
@@ -331,14 +368,44 @@ cdef class Curveball(Algorithm):
 			raise RuntimeError("Parameter G has to be a graph")
 
 	def run(self, vector[pair[node, node]] trades):
+		"""
+		run(trades)
+
+		Compute the randomization of the input by given node pairs.
+
+		Parameters
+		----------
+		trades : list(tuple(int, int))
+			List of pairs of nodes used for randomization of the graph.
+		"""
 		with nogil:
 			(<_Curveball*>(self._this)).run(trades)
 		return self
 
 	def getGraph(self):
+		"""
+		getGraph()
+
+		Get randomized graph after invocation of run().
+
+		Returns
+		-------
+		networkit.Graph
+			The randomized graph.
+		"""
 		return Graph().setThis((<_Curveball*>self._this).getGraph())
 
 	def getNumberOfAffectedEdges(self):
+		"""
+		getNumberOfAffectedEdges()
+
+		Return number of affected edges.
+
+		Returns
+		-------
+		int
+			Number of edges affected by randomization.
+		"""
 		return (<_Curveball*>(self._this)).getNumberOfAffectedEdges()
 
 cdef extern from "<networkit/randomization/DegreePreservingShuffle.hpp>":
@@ -349,6 +416,8 @@ cdef extern from "<networkit/randomization/DegreePreservingShuffle.hpp>":
 
 cdef class DegreePreservingShuffle(Algorithm):
 	"""
+	DegreePreservingShuffle(G)
+
 	Implementation of the preprocessing step proposed in
 	"Smaller Universes for Uniform Sampling of 0,1-matrices with fixed row and column sums"
 	by Annabell Berger, Corrie Jacobien Carstens [https://arxiv.org/abs/1803.02624]
@@ -358,16 +427,16 @@ cdef class DegreePreservingShuffle(Algorithm):
 	consider the set X_d of node ids which have this degree. Then shuffle the ids in X_d.
 
 	Hence the algorithm satisfies: For all x in Ginput:
-	 i)  Ginput.degreeIn(x) = Goutput.degreeIn(x)
-	 ii) Ginput.degreeOut(x) = Goutput.degreeOut(x)
+
+	1) Ginput.degreeIn(x) = Goutput.degreeIn(x)
+	2) Ginput.degreeOut(x) = Goutput.degreeOut(x)
 
 	The authors argue that applying this preprocessing step before executing (Global)Curveball
 	leads to a faster mixing time. If you want to use it as a preprocessing step to GlobalCurveball,
 	it's more efficient to set degreePreservingShufflePreprocessing in GlobalCurveball's constructor.
 
-	Parameters:
-	-----------
-
+	Parameters
+	----------
 	G : networkit.Graph
 		The graph to be randomized. For a given degree sequence, e.g.
 		generators.HavelHakimi can be used to obtain this graph.
@@ -380,7 +449,27 @@ cdef class DegreePreservingShuffle(Algorithm):
 			raise RuntimeError("Parameter G has to be a graph")
 
 	def getGraph(self):
+		"""
+		getGraph()
+
+		Get randomized graph after invocation of run().
+
+		Returns
+		-------
+		networkit.Graph
+			The randomized graph.
+		"""
 		return Graph().setThis((<_DegreePreservingShuffle*>self._this).getGraph())
 
 	def getPermutation(self):
+		"""
+		getPermutation()
+
+		Returns the permutation used for shuffling.
+
+		Returns
+		-------
+		list(int)
+			List of nodes.
+		"""
 		return (<_DegreePreservingShuffle*>(self._this)).getPermutation()

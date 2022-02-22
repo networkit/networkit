@@ -16,7 +16,19 @@ cdef extern from "<networkit/auxiliary/Parallel.hpp>" namespace "Aux::Parallel":
 
 def gini(values):
 	"""
+	gini(values)
+
 	Computes the Gini coefficient for the distribution given as a list of values.
+
+	Parameters
+	----------
+	values : list(float)
+		Input list containing values.
+
+	Returns
+	-------
+	float
+		Gini coefficient.
 	"""
 	sorted_list = sorted(values)
 	height, area = 0, 0
