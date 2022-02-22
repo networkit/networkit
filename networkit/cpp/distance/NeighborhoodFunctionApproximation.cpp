@@ -81,10 +81,7 @@ void NeighborhoodFunctionApproximation::run() {
     bool queued = true;
     while(queued) {
         queued = false;
-        count tmp = 0;
-        for (index i = 0; i < (count)omp_get_max_threads(); ++i) {
-            tmp += localSumRemoved[i];
-        }
+        count tmp = std::accumulate(localSumRemoved.begin(), localSumRemoved.end(), count{0});
         #pragma omp parallel for schedule(guided) reduction(||: queued)
         for (omp_index v = 0; v < static_cast<omp_index>(activeNodes.size()); ++v) {
             if (!activeNodes[v]) continue;
@@ -130,9 +127,7 @@ void NeighborhoodFunctionApproximation::run() {
                 queued = queued || true;
             }
         }
-        for (const auto& elem : localEstimatesSum) {
-            tmp += elem;
-        }
+        tmp += std::accumulate(localEstimatesSum.begin(), localEstimatesSum.end(), count{0});
         result.push_back(tmp);
         localEstimatesSum.assign(omp_get_max_threads(), 0);
         mPrev = mCurr;

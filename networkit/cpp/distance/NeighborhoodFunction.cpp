@@ -34,10 +34,10 @@ void NeighborhoodFunction::run() {
             nf[tid][dist] += 1;
         });
     });
-    count size = 0;
-    for (index i = 0; i < max_threads; ++i) {
-        size = std::max(size, (count)nf[i].size());
-    }
+    const count size =
+        std::max_element(nf.begin(), nf.end(), [](const auto &m1, const auto &m2) -> bool {
+            return m1.size() < m2.size();
+        })->size();
     result = std::vector<count>(size-1, 0);
     for (const auto& local_nf : nf) {
         for (const auto& elem : local_nf) {
@@ -46,9 +46,9 @@ void NeighborhoodFunction::run() {
             }
         }
     }
-    for (index i = 1; i < size-1; ++i) {
-        result[i] += result[i-1];
-    }
+
+    std::partial_sum(result.begin(), result.end(), result.begin());
+
     hasRun = true;
 }
 
