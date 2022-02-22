@@ -53,7 +53,22 @@ cdef class GraphEvent:
 		return self.toString()
 
 	def __eq__(self, GraphEvent other not None):
-		return _GraphEvent_equal(self._this, other._this)
+		return self._this == other._this
+
+	def __ne__(self, GraphEvent other not None):
+		return self._this != other._this
+
+	def __lt__(self, GraphEvent other not None):
+		return self._this < other._this
+
+	def __gt__(self, GraphEvent other not None):
+		return self._this > other._this
+
+	def __le__(self, GraphEvent other not None):
+		return self._this <= other._this
+
+	def __ge__(self, GraphEvent other not None):
+		return self._this >= other._this
 
 cdef extern from "<networkit/dynamics/DGSStreamParser.hpp>":
 

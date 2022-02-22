@@ -36,14 +36,39 @@ std::string GraphEvent::toString() const {
     return ss.str();
 }
 
+bool GraphEvent::operator==(const GraphEvent &rhs) const noexcept {
+    if (type == GraphEvent::TIME_STEP && rhs.type == GraphEvent::TIME_STEP) return true;
+    return (type == rhs.type && u == rhs.u && v == rhs.v && w == rhs.w);
+}
+
+bool GraphEvent::operator!=(const GraphEvent &rhs) const noexcept {
+    return !(*this == rhs);
+}
+
+bool operator<(const GraphEvent &a, const GraphEvent &b) noexcept {
+    return (a.type < b.type || (a.type == b.type && a.u < b.u)
+            || (a.type == b.type && a.u == b.u && a.v < b.v)
+            || (a.type == b.type && a.u == b.u && a.v == b.v && a.w < b.w));
+}
+
+bool operator>(const GraphEvent &a, const GraphEvent &b) noexcept {
+    return b < a;
+}
+
+bool GraphEvent::operator<=(const GraphEvent &rhs) const noexcept {
+    return !(*this > rhs);
+}
+
+bool GraphEvent::operator>=(const GraphEvent &rhs) const noexcept {
+    return !(*this < rhs);
+}
+
 bool GraphEvent::compare(GraphEvent a, GraphEvent b) {
-    if (a.type < b.type || (a.type == b.type && a.u < b.u) || (a.type == b.type && a.u == b.u && a.v < b.v) || (a.type == b.type && a.u == b.u && a.v == b.v && a.w < b.w)) return true;
-    else return false;
+    return a <= b;
 }
 
 bool GraphEvent::equal(GraphEvent a, GraphEvent b) {
-    if (a.type == GraphEvent::TIME_STEP && b.type == GraphEvent::TIME_STEP) return true;
-    return (a.type == b.type && a.u == b.u && a.v == b.v && a.w == b.w);
+    return a == b;
 }
 
 } /* namespace NetworKit */

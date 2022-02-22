@@ -338,8 +338,8 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
     for (auto it = result.begin()+oldStreamMarker; it < result.end(); it++) {
         if (it->u > it->v) std::swap(it->u, it->v);
     }
-    Aux::Parallel::sort(result.begin()+oldStreamMarker, result.end(), GraphEvent::compare);
-    auto end = std::unique(result.begin()+oldStreamMarker, result.end(), GraphEvent::equal);
+    Aux::Parallel::sort(result.begin()+oldStreamMarker, result.end());
+    auto end = std::unique(result.begin()+oldStreamMarker, result.end());
     result.erase(end, result.end());
 
 }

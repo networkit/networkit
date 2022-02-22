@@ -30,12 +30,12 @@ cdef extern from "<networkit/dynamics/GraphEvent.hpp>":
 		_GraphEvent() except +
 		_GraphEvent(_GraphEventType type, node u, node v, edgeweight w) except +
 		string toString() except +
+		bool_t operator==(_GraphEvent)
+		bool_t operator!=(_GraphEvent)
+		bool_t operator<(_GraphEvent, _GraphEvent)
+		bool_t operator>(_GraphEvent, _GraphEvent)
+		bool_t operator<=(_GraphEvent)
+		bool_t operator>=(_GraphEvent)
 
 cdef class GraphEvent:
 	cdef _GraphEvent _this
-
-cdef extern from "<networkit/dynamics/GraphEvent.hpp>" namespace "NetworKit::GraphEvent":
-
-	bool_t _GraphEvent_equal "NetworKit::GraphEvent::equal"(_GraphEvent a, _GraphEvent b) except +
-	bool_t _GraphEvent_compare "NetworKit::GraphEvent::compare"(_GraphEvent a, _GraphEvent b) except +
-
