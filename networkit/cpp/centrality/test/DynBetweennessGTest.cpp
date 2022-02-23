@@ -44,7 +44,6 @@ TEST_F(DynBetweennessGTest, runDynApproxBetweennessSmallGraph) {
     G.addEdge(5, 6);
     G.addEdge(5, 7);
 
-    //double epsilon = 0.01; // error
     double epsilon = 0.1; // error
     double delta = 0.1; // confidence
     DynApproxBetweenness dynbc(G, epsilon, delta);
@@ -54,7 +53,7 @@ TEST_F(DynBetweennessGTest, runDynApproxBetweennessSmallGraph) {
     std::vector<double> dynbc_scores = dynbc.scores();
     std::vector<double> bc_scores = bc.scores();
     for(int i=0; i<n; i++) {
-        DEBUG("Difference ", dynbc_scores[i]-bc_scores[i]/double(n*(n-1)));
+        EXPECT_NEAR(dynbc_scores[i], bc_scores[i]/double(n*(n-1)), epsilon);
     }
     std::vector<GraphEvent> batch;
     batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, 0, 6, 1.0));
@@ -64,11 +63,54 @@ TEST_F(DynBetweennessGTest, runDynApproxBetweennessSmallGraph) {
     dynbc_scores = dynbc.scores();
     bc_scores = bc.scores();
     for(int i=0; i<n; i++) {
-        DEBUG("Difference ", dynbc_scores[i]-bc_scores[i]/double(n*(n-1)));
+        EXPECT_NEAR(dynbc_scores[i], bc_scores[i]/double(n*(n-1)), epsilon);
     }
 
 }
 
+TEST_F(DynBetweennessGTest, runDynApproxBetweennessSmallGraphEdgeDeletion) {
+/* Graph:
+   0    3   6
+    \  / \ /
+     2    5
+    /  \ / \
+   1    4   7
+*/
+    int n = 8;
+    Graph G(n);
+
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 5);
+    G.addEdge(4, 5);
+    G.addEdge(5, 6);
+    G.addEdge(5, 7);
+
+    double epsilon = 0.1; // error
+    double delta = 0.1; // confidence
+    DynApproxBetweenness dynbc(G, epsilon, delta);
+    Betweenness bc(G);
+    dynbc.run();
+    bc.run();
+    std::vector<double> dynbc_scores = dynbc.scores();
+    std::vector<double> bc_scores = bc.scores();
+    for(int i=0; i<n; i++) {
+        EXPECT_NEAR(dynbc_scores[i], bc_scores[i]/double(n*(n-1)), epsilon);
+    }
+    std::vector<GraphEvent> batch;
+    batch.push_back(GraphEvent(GraphEvent::EDGE_REMOVAL, 3, 5));
+    G.removeEdge(batch[0].u, batch[0].v);
+    bc.run();
+    dynbc.updateBatch(batch);
+    dynbc_scores = dynbc.scores();
+    bc_scores = bc.scores();
+    for(int i=0; i<n; i++) {
+        EXPECT_NEAR(dynbc_scores[i], bc_scores[i]/double(n*(n-1)), epsilon);
+    }
+
+}
 
 TEST_F(DynBetweennessGTest, runDynVsStatic) {
     METISGraphReader reader;
@@ -77,7 +119,7 @@ TEST_F(DynBetweennessGTest, runDynVsStatic) {
     count n = G.upperNodeIdBound();
 
     double epsilon = 0.1; // error
-    double delta = 0.1; // confidence
+    double delta = 0.01; // confidence
     DEBUG("Initializing DynApproxBetweenness");
     DynApproxBetweenness dynbc(G, epsilon, delta, false);
     DEBUG("Initializing ApproxBetweenness");
@@ -88,11 +130,8 @@ TEST_F(DynBetweennessGTest, runDynVsStatic) {
     bc.run();
     std::vector<double> dynbc_scores = dynbc.scores();
     std::vector<double> bc_scores = bc.scores();
-    double err1=0;
     for(count i=0; i<n; i++) {
-        double x = dynbc_scores[i]-bc_scores[i];
-        if (x > err1)
-            err1 = x;
+        EXPECT_NEAR(dynbc_scores[i], bc_scores[i], epsilon);
     }
     DEBUG("Before the edge insertion: ");
     std::vector<GraphEvent> batch;
@@ -114,15 +153,41 @@ TEST_F(DynBetweennessGTest, runDynVsStatic) {
     dynbc_scores = dynbc.scores();
     DEBUG("Calling ApproxBetweenness Scores");
     bc_scores = bc.scores();
-    err1 = 0;
     for(count i=0; i<n; i++) {
-        double x = dynbc_scores[i]-bc_scores[i];
-        if (x > err1)
-            err1 = x;
+        EXPECT_NEAR(dynbc_scores[i], bc_scores[i], epsilon);
     }
-    DEBUG("After the edge insertion: ");
 }
 
+TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
+    METISGraphReader reader;
+    Graph G = reader.read("input/celegans_metabolic.graph");
+    count n = G.upperNodeIdBound();
+
+    double epsilon = 0.1; // error
+    double delta = 0.1; // confidence
+    DynApproxBetweenness dynbc(G, epsilon, delta, false);
+    ApproxBetweenness bc(G, epsilon, delta);
+    dynbc.run();
+    bc.run();
+    std::vector<double> dynbc_scores = dynbc.scores();
+    std::vector<double> bc_scores = bc.scores();
+    for(count i=0; i<n; i++) {
+        EXPECT_NEAR(dynbc_scores[i], bc_scores[i], epsilon);
+    }
+    std::vector<GraphEvent> batch;
+    for (int i = 0; i < 10; ++i) {
+        auto randomEdge = GraphTools::randomEdge(G);
+        G.removeEdge(randomEdge.first, randomEdge.second);
+        batch.emplace_back(GraphEvent::EDGE_REMOVAL, randomEdge.first, randomEdge.second);
+    }
+    bc.run();
+    dynbc.updateBatch(batch);
+    dynbc_scores = dynbc.scores();
+    bc_scores = bc.scores();
+    for(count i=0; i<n; i++) {
+        EXPECT_NEAR(dynbc_scores[i], bc_scores[i], epsilon);
+    }
+}
 
 TEST_F(DynBetweennessGTest, runApproxBetweenness) {
     //METISGraphReader reader;
