@@ -387,6 +387,7 @@ jobs:
           python -c 'import networkit'
           pip install -r requirements.txt
           python -m unittest discover -v networkit/test/
+          pip install ipycytoscape plotly seaborn
           python notebooks/test_notebooks.py "notebooks"
         env:
           NATIVE: ${{ matrix.os == 'full (native)' }}

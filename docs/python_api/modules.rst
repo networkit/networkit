@@ -53,5 +53,6 @@ Modules
    structures
    traversal
    viz
+   vizbridges
    viztasks
    workflows

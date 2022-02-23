@@ -40,4 +40,6 @@ pip3 install -r requirements.txt
 
 python3 -m unittest discover -v networkit/test/
 
+pip3 install ipycytoscape plotly seaborn
+
 python3 notebooks/test_notebooks.py 'notebooks/'

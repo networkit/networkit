@@ -521,7 +521,7 @@ class TestGraphTools(unittest.TestCase):
 				self.assertLess(indexNode0, indexNode2)
 				self.assertLess(indexNode4, indexNode2)
 				self.assertLess(indexNode2, indexNode1)
-				self.assertLess(indexNode1, indexNode3)		
+				self.assertLess(indexNode1, indexNode3)
 
 if __name__ == "__main__":
 	unittest.main()

@@ -12,6 +12,7 @@ pip3 install cython
 pip3 install 'sphinx<4.1' sphinx_bootstrap_theme numpydoc exhale nbsphinx breathe
 pip3 install sphinx_copybutton sphinxcontrib.bibtex sphinx_gallery sphinx_last_updated_by_git 
 pip3 install ipykernel ipython matplotlib nbconvert jupyter-client networkx tabulate
+pip3 install ipycytoscape plotly seaborn
 
 # Build the C++ core library (no need for optimizations).
 mkdir core_build && cd "$_"
