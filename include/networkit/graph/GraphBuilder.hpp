@@ -10,6 +10,8 @@
 
 #include <vector>
 
+#include <tlx/define/deprecated.hpp>
+
 #include <networkit/Globals.hpp>
 #include <networkit/graph/Graph.hpp>
 
