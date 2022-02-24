@@ -6,8 +6,6 @@
 
 #include <networkit/auxiliary/StringBuilder.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 #ifdef _MSC_VER
 #define NETWORKT_PRETTY_FUNCTION __FUNCSIG__
 #else
@@ -79,23 +77,6 @@ void setLogLevel(const std::string &logLevel);
  * @return current loglevel as string
  */
 std::string getLogLevel();
-
-namespace Settings {
-
-LogLevel TLX_DEPRECATED(getLogLevel());
-
-void TLX_DEPRECATED(setLogLevel(LogLevel p = LogLevel::info));
-
-bool TLX_DEPRECATED(getPrintTime());
-
-void TLX_DEPRECATED(setPrintTime(bool b));
-
-bool TLX_DEPRECATED(getPrintLocation());
-
-void TLX_DEPRECATED(setPrintLocation(bool b));
-
-void TLX_DEPRECATED(setLogfile(const std::string &filename));
-} // namespace Settings
 
 namespace Impl {
 void log(const Location &loc, LogLevel p, const std::string &msg);

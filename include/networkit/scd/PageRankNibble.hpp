@@ -10,7 +10,6 @@
 
 #include <set>
 
-#include <tlx/define/deprecated.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/scd/SelectiveCommunityDetector.hpp>
 
@@ -40,17 +39,6 @@ public:
     PageRankNibble(const Graph &g, double alpha, double epsilon);
 
     ~PageRankNibble() override = default;
-
-    /**
-     * Expand a node into a community.
-     *
-     * Deprecated, use PageRankNibble::expandOneCommunity instead.
-     *
-     * @param seed Seed node for which a community is to be found.
-     *
-     * @return Set of nodes that makes up the best community found around the @a seed node.
-     */
-    std::set<node> TLX_DEPRECATED(expandSeed(node seed));
 
     /**
      * @param seeds Seed nodes for which a community is to be found.

@@ -4,8 +4,6 @@
 #include <cstdint>
 #include <exception>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace Aux {
 
 class SignalHandler {
@@ -28,18 +26,6 @@ public:
     InterruptException() : std::exception() {}
     const char *what() const noexcept override { return "Received CTRL+C/SIGINT"; }
 };
-
-/**
- * Returns true, if CTRL+C/SIGINT has been received, false otherwise.
- * @return A boolean indicating if SIGINT has been received since construction/reset
- */
-bool TLX_DEPRECATED(gotSIGINT());
-
-/**
- * Sets the value of `receivedSIGINT`
- * @param received The new value for `receivedSIGINT`
- */
-void TLX_DEPRECATED(setSIGINT(bool received));
 
 /**
  * Registers the function `setRunning` to be invoked, when CTRL+C/SIGINT is received.

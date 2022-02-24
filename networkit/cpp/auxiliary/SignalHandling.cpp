@@ -19,14 +19,6 @@ void sigHandler(int sig) {
 }
 } // namespace
 
-bool gotSIGINT() {
-    return NetworKit::GlobalState::getReceivedSIGINT();
-}
-
-void setSIGINT(bool received) {
-    NetworKit::GlobalState::setReceivedSIGINT(received);
-}
-
 void init(SignalHandler *caller) {
 #pragma omp critical(SignalHandlerCritical)
     {
