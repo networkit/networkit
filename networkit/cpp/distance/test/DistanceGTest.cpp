@@ -87,9 +87,7 @@ TEST_F(DistanceGTest, testAStar) {
             BFS bfs(G, source, true, false, target);
             bfs.run();
 
-            std::vector<std::vector<double>> heuristics;
-
-            for (auto heu : heuristics) {
+            for (const auto &heu : {zeroDist, exactDist, eucledianDist}) {
                 AStar astar(G, heu, source, target, true);
                 astar.run();
                 EXPECT_EQ(astar.getDistance(), bfs.distance(target));
