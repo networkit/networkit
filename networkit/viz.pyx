@@ -18,6 +18,7 @@ cdef extern from "<networkit/viz/Point.hpp>" namespace "NetworKit" nogil:
 	cdef cppclass Point[T]:
 		Point()
 		Point(T x, T y)
+		count getDimensions()
 		T& operator[](const index i) except +
 		T& at(const index i) except +
 
@@ -69,12 +70,20 @@ cdef class GraphLayoutAlgorithm:
 		""" Computes approximation (in parallel) of the Spanning Edge Centrality. """
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
-		cdef pair[double, double] pr = pair[double, double](0, 0)
+		cdef vector[vector[double]] pairCoord = vector[vector[double]]()
+		cdef vector[double] prXd
 		pointCoord = self._this.getCoordinates()
-		cdef vector[pair[double, double]] pairCoord = vector[pair[double, double]]()
-		for pt in pointCoord:
-			pr = pair[double, double](pt[0], pt[1])
-			pairCoord.push_back(pr)
+		num_dim = pointCoord[0].getDimensions() 
+		if num_dim == 3:
+			for pt in pointCoord:
+				prXd = [pt[0], pt[1], pt[2]]
+				pairCoord.push_back(prXd)
+		elif num_dim == 2:
+			for pt in pointCoord:
+				prXd = [pt[0], pt[1]]
+				pairCoord.push_back(prXd)
+		else:
+			raise RuntimeError("Currently graph layouting only supports 2D or 3D coordinates.")
 		return pairCoord
 
 	def writeGraphToGML(self, path):
