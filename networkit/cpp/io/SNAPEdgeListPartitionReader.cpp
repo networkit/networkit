@@ -7,7 +7,7 @@
  */
 
 #include <fstream>
-#include <set>
+#include <unordered_set>
 #include <sstream>
 #include <unordered_map>
 #include <vector>
@@ -35,7 +35,9 @@ Cover SNAPEdgeListPartitionReader::read(const std::string &path,
 
     std::string commentPrefix = "#";
 
-    std::set<node> uniqueIDs;
+#ifndef NDEBUG
+    std::unordered_set<node> uniqueIDs;
+#endif
     count totalCounter = 0;
 
     Cover communities(G.upperNodeIdBound());
@@ -51,7 +53,9 @@ Cover SNAPEdgeListPartitionReader::read(const std::string &path,
         } else {
             std::stringstream linestream(line);
             while (linestream >> current) {
+#ifndef NDEBUG
                 uniqueIDs.insert(current);
+#endif
                 totalCounter++;
                 if (mapNodeIds.find(current) != mapNodeIds.end()) {
                     communities.addToSubset(i,mapNodeIds[current]);
@@ -61,7 +65,9 @@ Cover SNAPEdgeListPartitionReader::read(const std::string &path,
             }
         }
     }
+#ifndef NDEBUG
     DEBUG("read ", uniqueIDs.size(), " unique node IDs with the total amount of occurrences: ",totalCounter);
+#endif
     count emptyElements = 0;
     count output = 0;
     std::stringstream outputString;

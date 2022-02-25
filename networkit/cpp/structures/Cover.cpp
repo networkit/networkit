@@ -7,6 +7,7 @@
  */
 
 #include <algorithm>
+#include <unordered_set>
 
 #include <networkit/structures/Cover.hpp>
 
@@ -32,7 +33,7 @@ bool Cover::inSameSubset(index e1, index e2) const {
     assert (e2 <= z);
     assert (! data[e1].empty());
     assert (! data[e2].empty()); // elements cannot be unassigned - it may be possible to change this behavior
-    std::set<index> intersect;
+    std::unordered_set<index> intersect;
     std::set_intersection(data[e1].begin(),data[e1].end(),data[e2].begin(), data[e2].end(), std::inserter(intersect,intersect.begin()));
     return (!intersect.empty());
 }

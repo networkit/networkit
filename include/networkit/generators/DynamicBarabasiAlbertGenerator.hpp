@@ -9,8 +9,6 @@
 #ifndef NETWORKIT_GENERATORS_DYNAMIC_BARABASI_ALBERT_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_DYNAMIC_BARABASI_ALBERT_GENERATOR_HPP_
 
-#include <set>
-
 #include <networkit/generators/DynamicGraphSource.hpp>
 
 namespace NetworKit {
