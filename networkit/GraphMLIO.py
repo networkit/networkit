@@ -5,7 +5,11 @@ from .graph import Graph
 
 # GraphML Reader
 class GraphMLSAX(xml.sax.ContentHandler):
-	""" Parser for GraphML XML files, based on Pythons XML.SAX implementation. """
+	""" 
+	GraphMLSAX()
+	
+	Parser for GraphML XML files, based on Pythons XML.SAX implementation.
+	"""
 
 	def __init__(self):
 		""" Initializes several important variables """
@@ -22,7 +26,18 @@ class GraphMLSAX(xml.sax.ContentHandler):
 		self.keepData = False
 
 	def startElement(self, name, attrs):
-		""" Parses all currently relevant XML tags and retrieves data."""
+		""" 
+		startElement(name, attrs)
+
+		Parses all currently relevant XML tags and retrieves data.
+		
+		Parameters
+		----------
+		name : str
+			Name of the element. Possible values: graph, node, edge, key, data
+		attr : dict()
+			Attributes of element.
+		"""
 		if name == "graph":
 			# determine, if graph is directed:
 			if attrs.getValue("edgedefault") == "directed":
@@ -49,7 +64,16 @@ class GraphMLSAX(xml.sax.ContentHandler):
 			self.keepData = True
 
 	def endElement(self, name):
-		""" Finalizes parsing of the started Element and processes retrieved data."""
+		""" 
+		endElement(name)
+
+		Finalizes parsing of the started Element and processes retrieved data.
+
+		Parameters
+		----------
+		name : str
+			Name of the element. Possible values: edge, data
+		"""
 		data = self.getCharacterData()
 		if name == "edge":
 			u = self.edgestack[len(self.edgestack)-1][0]
@@ -66,39 +90,71 @@ class GraphMLSAX(xml.sax.ContentHandler):
 			self.edgeweight = float(data)
 
 	def characters(self, content):
+		""" 
+		characters(content)
+
+		Appends content string to the textbuffer.
+
+		Parameters
+		----------
+		content : str
+			String to be added.
+		"""
 		self.charBuffer.append(content)
 
 	def getCharacterData(self):
+		""" 
+		getCharacterData()
+
+		Returns current textbuffer and clears it afterwards.
+		"""
 		data = ''.join(self.charBuffer).strip()
 		self.charBuffer = []
 		return data
 
 	def getGraph(self):
+		""" 
+		getGraph()
+
+		Return parsed graph.
+		"""
 		return self.g
 
 class GraphMLReader:
-	""" This class serves as wrapper for the GraphMLSAX class
+	""" 
+	GraphMLReader()
+	
+	This class serves as wrapper for the GraphMLSAX class
 	which is able to parse a GraphML XML file and construct
-	a graph. """
+	a graph.
+	"""
 
 	def __init__(self):
 		""" Initializes the GraphMLSAX class """
 		self.graphmlsax = GraphMLSAX()
 
 	def read(self, fpath):
-		""" Parses a GraphML XML file and returns the constructed Graph
+		""" 
+		read(fpath)
 		
-		Parameters:
-		-----------
-		fpath: the path to the file as a string
+		Parses a GraphML XML file and returns the constructed Graph
+		
+		Parameters
+		----------
+		fpath: str
+			The path to the file as a String.
 		"""
 		xml.sax.parse(fpath, self.graphmlsax)
 		return self.graphmlsax.getGraph()
 
 # GraphMLWriter
 class GraphMLWriter:
-	""" This class provides a function to write a NetworKit graph to a file in the 
-		GraphML format. """
+	""" 
+	GraphMLWriter()
+
+	This class provides a function to write a NetworKit graph to a file in the 
+	GraphML format.
+	"""
 	
 	def __init__(self):
 		""" Initializes the class. """
@@ -106,14 +162,21 @@ class GraphMLWriter:
 		self.dir_str = ''
 
 	def write(self, graph, fname, nodeAttributes = {}, edgeAttributes = {}):
-		""" Writes a NetworKit graph to the specified file fname. 
+		""" 
+		write(self, graph, fname, nodeAttributes = {}, edgeAttributes = {})
 		
-		Parameters:
-		-----------
-		graph: a NetworKit::Graph python object 
-		fname: the desired file path and name to be written to
-		nodeAttributes: optional dictionary of node attributes in the form attribute name => list of attribute values
-		edgeAttributes: optional dictionary of edge attributes in the form attribute name => list of attribute values
+		Writes a NetworKit graph to the specified file fname. 
+		
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+		fname: str
+			The desired file path and name to be written to.
+		nodeAttributes: dict(), optional
+			Dictionary of node attributes in the form attribute name => list of attribute values. Default: {}
+		edgeAttributes: dict(), optional
+			Dictionary of edge attributes in the form attribute name => list of attribute values. Default: {}
 		"""
 		# reset some internal variables in case more graphs are written with the same instance
 		self.edgeIdCounter = 0
