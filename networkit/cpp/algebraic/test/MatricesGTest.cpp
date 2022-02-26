@@ -26,6 +26,14 @@ protected:
         graph = reader.read("input/PGPgiantcompo.graph");
     }
 
+    template<class Matrix>
+    Matrix get4x4Matrix() const {
+        std::vector<Triplet> triplets = {{0, 0, 1}, {0, 1, 2},  {0, 2, 3},  {1, 0, 2}, {1, 1, 2},
+                                         {2, 0, 3}, {2, 3, -1}, {3, 2, -1}, {3, 3, 4}};
+
+        return {4, triplets};
+    }
+
     Graph graph;
 
 public:
@@ -89,6 +97,30 @@ public:
     template<class Matrix>
     void testLaplacianOfGraph();
 
+    template<class Matrix>
+    void testForElementsInRow();
+
+    template<class Matrix>
+    void testParallelForElementsInRow();
+
+    template<class Matrix>
+    void testForNonZeroElementsInRow();
+
+    template<class Matrix>
+    void testParallelForNonZeroElementsInRow();
+
+    template<class Matrix>
+    void testForElementsInRowOrder();
+
+    template<class Matrix>
+    void testParallelForElementsInRowOrder();
+
+    template<class Matrix>
+    void testForNonZeroElementsInRowOrder();
+
+    template<class Matrix>
+    void testParallelForNonZeroElementsInRowOrder();
+
     // TODO: Test other matrix classes
 
     // TODO: Test mmT multiplication, etc.!
@@ -108,6 +140,118 @@ void MatricesGTest::testDimension() {
     mat = Matrix(10, 5, 0.0);
     ASSERT_EQ(10u, mat.numberOfRows());
     ASSERT_EQ(5u, mat.numberOfColumns());
+}
+
+template<class Matrix>
+void MatricesGTest::testForElementsInRow() {
+    auto mat = get4x4Matrix<Matrix>();
+    count nnz = 0;
+
+    for (index row = 0; row < 4; ++row)
+        mat.forElementsInRow(row, [&](index col, double value) {
+            ASSERT_EQ(mat(row, col), value);
+            if (value != mat.getZero())
+                ++nnz;
+        });
+
+    ASSERT_EQ(nnz, mat.nnz());
+}
+
+template<class Matrix>
+void MatricesGTest::testParallelForElementsInRow() {
+    auto mat = get4x4Matrix<Matrix>();
+    std::atomic<count> nnz{0};
+
+    for (index row = 0; row < 4; ++row)
+        mat.parallelForElementsInRow(row, [&](index col, double value) {
+            ASSERT_EQ(mat(row, col), value);
+            if (value != mat.getZero())
+                nnz.fetch_add(1, std::memory_order_relaxed);
+        });
+
+    ASSERT_EQ(mat.nnz(), nnz.load(std::memory_order_relaxed));
+}
+
+template<class Matrix>
+void MatricesGTest::testForNonZeroElementsInRow() {
+    auto mat = get4x4Matrix<Matrix>();
+    count nnz = 0;
+
+    for (index row = 0; row < 4; ++row)
+        mat.forNonZeroElementsInRow(row, [&](index col, double value) {
+            ASSERT_EQ(mat(row, col), value);
+            ++nnz;
+        });
+
+    ASSERT_EQ(nnz, mat.nnz());
+}
+
+template<class Matrix>
+void MatricesGTest::testParallelForNonZeroElementsInRow() {
+    auto mat = get4x4Matrix<Matrix>();
+    std::atomic<count> nnz{0};
+
+    for (index row = 0; row < 4; ++row)
+        mat.parallelForNonZeroElementsInRow(row, [&](index col, double value) {
+            ASSERT_EQ(mat(row, col), value);
+            nnz.fetch_add(1, std::memory_order_relaxed);
+        });
+
+    ASSERT_EQ(nnz.load(std::memory_order_relaxed), mat.nnz());
+}
+
+template<class Matrix>
+void MatricesGTest::testForElementsInRowOrder() {
+    auto mat = get4x4Matrix<Matrix>();
+    count nnz = 0;
+
+    mat.forElementsInRowOrder([&](index row, index col, double value) {
+        ASSERT_EQ(mat(row, col), value);
+        if (value != mat.getZero())
+            ++nnz;
+    });
+
+    ASSERT_EQ(nnz, mat.nnz());
+}
+
+template<class Matrix>
+void MatricesGTest::testParallelForElementsInRowOrder() {
+    auto mat = get4x4Matrix<Matrix>();
+    std::atomic<count> nnz{0};
+
+    mat.parallelForElementsInRowOrder([&](index row, index col, double value) {
+        ASSERT_EQ(mat(row, col), value);
+        if (value != mat.getZero())
+            nnz.fetch_add(1, std::memory_order_relaxed);
+    });
+
+    ASSERT_EQ(nnz.load(std::memory_order_relaxed), mat.nnz());
+}
+
+template<class Matrix>
+void MatricesGTest::testForNonZeroElementsInRowOrder() {
+    auto mat = get4x4Matrix<Matrix>();
+    count nnz = 0;
+
+    mat.forNonZeroElementsInRowOrder([&](index row, index col, double value) {
+        ASSERT_EQ(mat(row, col), value);
+        ++nnz;
+    });
+
+    ASSERT_EQ(nnz, mat.nnz());
+}
+
+template<class Matrix>
+void MatricesGTest::testParallelForNonZeroElementsInRowOrder() {
+    auto mat = get4x4Matrix<Matrix>();
+    std::atomic<count> nnz{0};
+
+    mat.parallelForNonZeroElementsInRowOrder([&](index row, index col, double value) {
+        ASSERT_EQ(mat(row, col), value);
+        nnz.fetch_add(1, std::memory_order_relaxed);
+    });
+
+    ASSERT_EQ(nnz.load(std::memory_order_relaxed), mat.nnz());
 }
 
 template<class Matrix>
@@ -1165,6 +1309,47 @@ TEST_F(MatricesGTest, testIncidenceMatrix) {
 TEST_F(MatricesGTest, testLaplacianMatrixOfGraph) {
     testLaplacianOfGraph<DynamicMatrix>();
     testLaplacianOfGraph<CSRMatrix>();
+}
+
+TEST_F(MatricesGTest, testForElementsInRow) {
+    testForElementsInRow<DynamicMatrix>();
+    testForElementsInRow<CSRMatrix>();
+    testForElementsInRow<DenseMatrix>();
+}
+
+TEST_F(MatricesGTest, testParallelForElementsInRow) {
+    testParallelForElementsInRow<DenseMatrix>();
+}
+
+TEST_F(MatricesGTest, testForNonZeroElementsInRow) {
+    testForNonZeroElementsInRow<DynamicMatrix>();
+    testForNonZeroElementsInRow<CSRMatrix>();
+    testForNonZeroElementsInRow<DenseMatrix>();
+}
+
+TEST_F(MatricesGTest, testParallelForNonZeroElementsInRow) {
+    testParallelForNonZeroElementsInRow<CSRMatrix>();
+    testParallelForNonZeroElementsInRow<DenseMatrix>();
+}
+
+TEST_F(MatricesGTest, testForElementsInRowOrder) {
+    testForElementsInRowOrder<DenseMatrix>();
+}
+
+TEST_F(MatricesGTest, testParallelForElementsInRowOrder) {
+    testParallelForElementsInRowOrder<DenseMatrix>();
+}
+
+TEST_F(MatricesGTest, testForNonZeroElementsInRowOrder) {
+    testForNonZeroElementsInRowOrder<DynamicMatrix>();
+    testForNonZeroElementsInRowOrder<CSRMatrix>();
+    testForNonZeroElementsInRowOrder<DenseMatrix>();
+}
+
+TEST_F(MatricesGTest, testParallelForNonZeroElementsInRowOrder) {
+    testParallelForNonZeroElementsInRowOrder<DynamicMatrix>();
+    testParallelForNonZeroElementsInRowOrder<CSRMatrix>();
+    testParallelForNonZeroElementsInRowOrder<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testCSRMatrixSort) {
