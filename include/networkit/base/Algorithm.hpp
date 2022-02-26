@@ -12,8 +12,6 @@ protected:
     bool hasRun = false;
 
 public:
-    Algorithm() = default;
-
     virtual ~Algorithm() = default;
 
     /**

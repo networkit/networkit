@@ -69,21 +69,6 @@ public:
     DynamicMatrix(count nRows, count nCols, const std::vector<Triplet> &triplets,
                   double zero = 0.0);
 
-    /** Default copy constructor */
-    DynamicMatrix(const DynamicMatrix &other) = default;
-
-    /** Default move constructor */
-    DynamicMatrix(DynamicMatrix &&other) noexcept = default;
-
-    /** Default destructor */
-    ~DynamicMatrix() = default;
-
-    /** Default move assignment operator */
-    DynamicMatrix &operator=(DynamicMatrix &&other) noexcept = default;
-
-    /** Default copy assignment operator */
-    DynamicMatrix &operator=(const DynamicMatrix &other) = default;
-
     /**
      * Compares this matrix to @a other and returns true if the shape and zero element are the same
      * as well as all entries, otherwise returns false.
