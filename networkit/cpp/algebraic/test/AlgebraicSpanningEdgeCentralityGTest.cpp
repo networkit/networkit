@@ -51,7 +51,7 @@ TEST_F(AlgebraicSpanningEdgeCentralityGTest, testOnToyGraph) {
     EXPECT_NEAR(0.75, asp.score(5), 1e-5);
 }
 
-TEST_F(AlgebraicSpanningEdgeCentralityGTest, benchmarkSpanning) {
+TEST_F(AlgebraicSpanningEdgeCentralityGTest, testOnRealGraphs) {
     METISGraphReader reader;
 
     std::string graphFiles[2] = {"input/karate.graph", "input/tiny_01.graph"};
