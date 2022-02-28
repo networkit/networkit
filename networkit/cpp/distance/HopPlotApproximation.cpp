@@ -140,10 +140,8 @@ void HopPlotApproximation::run() {
     hasRun = true;
 }
 
-std::map<count, double> HopPlotApproximation::getHopPlot() const {
-    if(!hasRun) {
-        throw std::runtime_error("Call run()-function first.");
-    }
+const std::map<count, double> &HopPlotApproximation::getHopPlot() const {
+    assureFinished();
     return hopPlot;
 }
 

@@ -52,7 +52,7 @@ void NeighborhoodFunction::run() {
     hasRun = true;
 }
 
-std::vector<count> NeighborhoodFunction::getNeighborhoodFunction() const {
+const std::vector<count> &NeighborhoodFunction::getNeighborhoodFunction() const {
     if(!hasRun) {
         throw std::runtime_error("Call run()-function first.");
     }

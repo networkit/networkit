@@ -77,7 +77,7 @@ public:
     *
     * @return The list of running times in milliseconds
     */
-    std::vector<count> getTiming();
+    const std::vector<count> &getTiming() const;
 
 };
 

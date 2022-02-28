@@ -47,7 +47,7 @@ public:
      * Returns the approximated hop-plot of the graph.
      * @return the approximated hop-plot of the graph
      */
-    std::map<count, double> getHopPlot() const;
+    const std::map<count, double> &getHopPlot() const;
 
 private:
     const Graph *G;

@@ -30,7 +30,7 @@ namespace NetworKit {
      * @return the edge scores calculated by @link run().
     */
     template<typename T>
-    std::vector<T> EdgeScore<T>::scores() const {
+    const std::vector<T> &EdgeScore<T>::scores() const {
         assureFinished();
         return scoreData;
     }

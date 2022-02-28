@@ -119,7 +119,7 @@ void GraphDifference::run() {
     hasRun = true;
 }
 
-std::vector< GraphEvent > GraphDifference::getEdits() const {
+const std::vector< GraphEvent > &GraphDifference::getEdits() const {
     assureFinished();
 
     return edits;

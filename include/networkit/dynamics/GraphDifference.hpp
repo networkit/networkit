@@ -39,7 +39,7 @@ public:
      *
      * @return A vector of graph events.
      */
-    std::vector<GraphEvent> getEdits() const;
+    const std::vector<GraphEvent> &getEdits() const;
 
     /**
      * Get the required number of edits.

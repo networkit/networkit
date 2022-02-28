@@ -300,7 +300,8 @@ Partition PLM::prolong(const Graph &, const Partition& zetaCoarse, const Graph& 
     return zetaFine;
 }
 
-std::map<std::string, std::vector<count> > PLM::getTiming() {
+const std::map<std::string, std::vector<count> > &PLM::getTiming() const {
+    assureFinished();
     return timing;
 }
 

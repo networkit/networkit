@@ -48,7 +48,7 @@ public:
      * Returns the result of the run method or throws an error, if the algorithm hasn't run yet.
      * @return partition of the node set
      */
-    virtual Partition getPartition();
+    virtual const Partition &getPartition() const;
 
 protected:
     const Graph* G;

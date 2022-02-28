@@ -32,7 +32,7 @@ double JaccardDistance::distance(node u, node v) {
     return getJaccardDistance(G->degree(u), G->degree(v), triangles[eid]);
 }
 
-std::vector<double> JaccardDistance::getEdgeScores() {
+const std::vector<double> &JaccardDistance::getEdgeScores() const {
     return jDistance;
 }
 

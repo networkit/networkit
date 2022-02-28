@@ -64,7 +64,7 @@ double AdamicAdarDistance::distance(node u, node v) {
 }
 
 
-std::vector< double > AdamicAdarDistance::getEdgeScores() {
+const std::vector< double > &AdamicAdarDistance::getEdgeScores() const {
     return aaDistance;
 }
 

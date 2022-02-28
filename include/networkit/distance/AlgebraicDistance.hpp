@@ -39,7 +39,7 @@ public:
      */
     double distance(node u, node v) override;
 
-    std::vector<double> getEdgeScores() override;
+    const std::vector<double> &getEdgeScores() const override;
 
 private:
     /**
