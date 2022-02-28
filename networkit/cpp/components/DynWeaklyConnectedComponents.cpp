@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-    DynWeaklyConnectedComponents::DynWeaklyConnectedComponents(const Graph& G) : G(&G) {
+    DynWeaklyConnectedComponents::DynWeaklyConnectedComponents(const Graph& G) : ComponentDecomposition(G) {
         if (!G.isDirected()) {
             throw std::runtime_error("Weakly Connected Components can be computeed for directed graphs. Use ConnectedComponents for undirected graphs.");
         }
@@ -20,9 +20,8 @@ namespace NetworKit {
     void DynWeaklyConnectedComponents::init() {
         edgesMap.clear();
         indexEdges();
-        components.assign(G->upperNodeIdBound(), none);
+        component.reset(G->upperNodeIdBound(), none);
         isTree.assign(edgesMap.size(), false);
-        compSize.clear();
         std::queue<index> emptyQueue;
         swap(emptyQueue, componentIds);
         hasRun = false;
@@ -40,12 +39,11 @@ namespace NetworKit {
         G->forNodes([&](node u) {
 
             // Node u has not been visited.
-            if (components[u] == none) {
+            if (component[u] == none) {
 
                 // New component ID.
-                index c = compSize.size();
-                components[u] = c;
-                compSize.insert(std::make_pair(c, 1));
+                index c = numberOfComponents();
+                component[u] = c;
 
                 // Start a new BFS from u.
                 q.push(u);
@@ -77,11 +75,10 @@ namespace NetworKit {
         std::queue<node>& q,
         node v
     ) {
-        if (components[w] == none) {
+        if (component[w] == none) {
             q.push(w);
-            components[w] = c;
+            component[w] = c;
             isTree[edgesMap.find(makePair(v, w))->second] = true;
-            compSize.find(c)->second += 1;
         }
     }
 
@@ -153,7 +150,7 @@ namespace NetworKit {
         // If u and v are already in the same component, we
         // don't have to do anything. Same thing if edge (v, u) already exists.
         index minComp, maxComp;
-        std::tie(minComp, maxComp) = std::minmax(components[u], components[v]);
+        std::tie(minComp, maxComp) = std::minmax(component[u], component[v]);
 
         if (maxComp == minComp || G->hasEdge(v, u)) {
             updateTreeAfterAddition(eid, false);
@@ -164,13 +161,11 @@ namespace NetworKit {
         // graph
         G->parallelForNodes([&](node w) {
             // We update the component with higher index with the lower index
-            if (components[w] == maxComp) {
-                components[w] = minComp;
+            if (component[w] == maxComp) {
+                component[w] = minComp;
             }
         });
 
-        compSize.find(minComp)->second += compSize.find(maxComp)->second;
-        compSize.erase(maxComp);
         componentIds.push(maxComp);
 
         updateTreeAfterAddition(eid, true);
@@ -207,7 +202,7 @@ namespace NetworKit {
 
         index nextId = nextAvailableComponentId(false);
 
-        std::vector<node> newCmp(components);
+        Partition newCmp(component.getVector());
         newCmp[u] = nextId;
         count newCmpSize = 1;
 
@@ -279,9 +274,7 @@ namespace NetworKit {
         if (!connected) {
             // TODO: a more elegant way to assign new ids.
             nextId = nextAvailableComponentId(true);
-            compSize.find(components[v])->second -= newCmpSize;
-            compSize.insert(std::make_pair(nextId, newCmpSize));
-            components = newCmp;
+            std::swap(component, newCmp);
         }
     }
 
@@ -356,7 +349,7 @@ namespace NetworKit {
 
     index DynWeaklyConnectedComponents::nextAvailableComponentId(bool eraseId) {
         if (componentIds.empty()) {
-            return compSize.size();
+            return numberOfComponents();
         }
         index result = componentIds.front();
         if (eraseId) {
@@ -380,28 +373,5 @@ namespace NetworKit {
         }
 
         return std::make_pair(from, to);
-    }
-
-
-    std::vector<std::vector<node>> DynWeaklyConnectedComponents::getComponents() {
-        assureFinished();
-
-        std::vector<std::vector<node>> result(compSize.size());
-        std::map<index, count> compIndex;
-
-        int i = 0;
-        for (auto it=compSize.begin(); it!=compSize.end(); ++it) {
-            auto indexIterator = compIndex.find(it->first);
-            if (indexIterator == compIndex.end()) {
-                compIndex.insert(std::make_pair(it->first, i));
-                ++i;
-            }
-        }
-
-        G->forNodes([&](node u) {
-            result[compIndex.find(components[u])->second].push_back(u);
-        });
-
-        return result;
     }
 }

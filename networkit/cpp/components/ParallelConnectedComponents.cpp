@@ -13,7 +13,7 @@
 
 namespace NetworKit {
 
-ParallelConnectedComponents::ParallelConnectedComponents(const Graph& G, bool coarsening) : Algorithm(), G(&G), coarsening(coarsening) {
+ParallelConnectedComponents::ParallelConnectedComponents(const Graph& G, bool coarsening) : ComponentDecomposition(G), coarsening(coarsening) {
 
 }
 
@@ -170,29 +170,4 @@ void ParallelConnectedComponents::runSequential() {
 
     hasRun = true;
 }
-
-
-Partition ParallelConnectedComponents::getPartition() const {
-    assureFinished();
-    return this->component;
-}
-
-count ParallelConnectedComponents::numberOfComponents() const {
-    assureFinished();
-    return this->component.numberOfSubsets();
-}
-
-count ParallelConnectedComponents::componentOfNode(node u) const {
-    assureFinished();
-    assert (component[u] != none);
-    return component[u];
-}
-
-std::vector<std::vector<node>> ParallelConnectedComponents::getComponents() const {
-
-    std::vector<std::vector<node>> result(this->numberOfComponents());
-    G->forNodes([&](node u) { result[component[u]].push_back(u); });
-    return result;
-}
-
 }

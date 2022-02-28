@@ -8,7 +8,7 @@
 #ifndef NETWORKIT_COMPONENTS_PARALLEL_CONNECTED_COMPONENTS_HPP_
 #define NETWORKIT_COMPONENTS_PARALLEL_CONNECTED_COMPONENTS_HPP_
 
-#include <networkit/base/Algorithm.hpp>
+#include <networkit/components/ComponentDecomposition.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
 
@@ -18,7 +18,7 @@ namespace NetworKit {
  * @ingroup components
  * Determines the connected components of an undirected graph.
  */
-class ParallelConnectedComponents final : public Algorithm {
+class ParallelConnectedComponents final : public ComponentDecomposition {
 public:
     /**
      * @param[in] G Graph for which connected components shall be computed.
@@ -40,31 +40,7 @@ public:
      */
     void run() override;
 
-    /**
-     * This method returns the number of connected components.
-     */
-    count numberOfComponents() const;
-
-    /**
-     * This method returns the the component in which node query is situated.
-     *
-     * @param[in]	query	the node whose component is asked for
-     */
-    count componentOfNode(node u) const;
-
-    /**
-     * Return a Partition that represents the components
-     */
-    Partition getPartition() const;
-
-    /**
-     * @return Vector of components, each stored as (unordered) set of nodes.
-     */
-    std::vector<std::vector<node>> getComponents() const;
-
 private:
-    const Graph *G;
-    Partition component;
     bool coarsening;
 };
 

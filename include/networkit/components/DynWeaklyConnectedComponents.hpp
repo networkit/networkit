@@ -11,8 +11,8 @@
 #include <map>
 #include <vector>
 
-#include <networkit/base/Algorithm.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
+#include <networkit/components/ComponentDecomposition.hpp>
 #include <networkit/dynamics/GraphEvent.hpp>
 #include <networkit/graph/Graph.hpp>
 
@@ -23,7 +23,7 @@ namespace NetworKit {
  * Determines and updates the weakly connected components of a directed
  * graph.
  */
-class DynWeaklyConnectedComponents final : public Algorithm, public DynAlgorithm {
+class DynWeaklyConnectedComponents final : public ComponentDecomposition, public DynAlgorithm {
 
 public:
     /**
@@ -57,30 +57,6 @@ public:
      */
     void updateBatch(const std::vector<GraphEvent> &batch) override;
 
-    /**
-     * Get the number of weakly connected components.
-     *
-     * @return The number of weakly connected components.
-     */
-    count numberOfComponents();
-
-    /**
-     * Get the the component in which node @a u is.
-     *
-     * @param[in]	u	The node.
-     */
-    count componentOfNode(node u);
-
-    /**
-     * @return Map from component to size.
-     */
-    std::map<index, count> getComponentSizes();
-
-    /**
-     * @return Vector of components, each stored as (unordered) set of nodes.
-     */
-    std::vector<std::vector<node>> getComponents();
-
 private:
     void init();
     void addEdge(node u, node v);
@@ -97,12 +73,6 @@ private:
                            bool &nextEdgeFound, count level);
     std::pair<node, node> makePair(node u, node v);
 
-    // Pointer to the graph
-    const Graph *G;
-
-    // This vector associates each node to a component
-    std::vector<index> components;
-
     // Whether each edge is part of a spanning tree. If an edge is removed
     // then a components could split.
     std::vector<bool> isTree;
@@ -113,28 +83,9 @@ private:
     // Temporary distances used for BFSs after edge updates.
     std::vector<count> tmpDistances;
 
-    // Stores all components <Key: component ID, Value: component size>
-    std::map<index, count> compSize;
-
     // Stores available component IDs.
     std::queue<index> componentIds;
 };
-
-inline count DynWeaklyConnectedComponents::componentOfNode(node u) {
-    assert(components[u] != none);
-    assureFinished();
-    return components[u];
-}
-
-inline count DynWeaklyConnectedComponents::numberOfComponents() {
-    assureFinished();
-    return this->compSize.size();
-}
-
-inline std::map<index, count> DynWeaklyConnectedComponents::getComponentSizes() {
-    assureFinished();
-    return compSize;
-}
 
 } // namespace NetworKit
 

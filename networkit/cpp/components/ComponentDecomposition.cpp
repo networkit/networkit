@@ -4,9 +4,7 @@
 namespace NetworKit {
 
 ComponentDecomposition::ComponentDecomposition(const Graph &G)
-    : G(&G), component(G.upperNodeIdBound()) {
-    hasRun = false;
-}
+    : G(&G), component(G.upperNodeIdBound()) {}
 
 count ComponentDecomposition::numberOfComponents() const {
     assureFinished();

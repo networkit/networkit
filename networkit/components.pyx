@@ -4,6 +4,7 @@ from libc.stdint cimport uint64_t
 from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
 from libcpp.map cimport map
+from libcpp.unordered_set cimport unordered_set
 
 ctypedef uint64_t count
 ctypedef uint64_t index
@@ -436,12 +437,13 @@ cdef extern from "<networkit/components/BiconnectedComponents.hpp>":
 	cdef cppclass _BiconnectedComponents "NetworKit::BiconnectedComponents"(_Algorithm):
 		_BiconnectedComponents(_Graph G) except +
 		count numberOfComponents() except +
-		map[count, count] getComponentSizes() except +
-		vector[vector[node]] getComponents() except +
+		map[index, count] getComponentSizes() except +
+		vector[vector[count]] getComponents() except +
+		unordered_set[node] getComponentsOfNode(node u) except +
 
 cdef class BiconnectedComponents(Algorithm):
-	""" 
-	BiconnectedComponents(G)
+	"""
+	BiconnectedComponents()
 	
 	Determines the biconnected components of an undirected graph as defined in
 	Tarjan, Robert. Depth-First Search and Linear Graph Algorithms. SIAM J.
@@ -457,6 +459,63 @@ cdef class BiconnectedComponents(Algorithm):
 	def __cinit__(self, Graph G):
 		self._G = G
 		self._this = new _BiconnectedComponents(G._this)
+	
+	def numberOfComponents(self):
+		"""
+		numberOfComponents()
+		
+		Returns the number of components.
+
+		Returns
+		-------
+		int
+			The number of components.
+		"""
+		return (<_BiconnectedComponents*>(self._this)).numberOfComponents()
+
+	def getComponentSizes(self):
+		"""
+		getComponentSizes()
+		
+		Returns the map from component id to size.
+
+		Returns
+		-------
+		dict(int : int)
+			A dict that maps each component id to its size.
+		"""
+		return (<_BiconnectedComponents*>(self._this)).getComponentSizes()
+
+	def getComponents(self):
+		"""
+		getComponents()
+		
+		Returns all the components, each stored as (unordered) set of nodes.
+
+		Returns
+		-------
+		vector[vector[node]]
+			A vector of vectors. Each inner vector contains all the nodes inside the component.
+		"""
+		return (<_BiconnectedComponents*>(self._this)).getComponents()
+
+	def getComponentsOfNode(self, node u):
+		"""
+		getComponentsOfNode(u)
+
+		Get the components that contain node u.
+
+		Parameters
+		----------
+		u : int
+			The node.
+
+		Returns
+		-------
+		set
+			Components that contain node u.
+		"""
+		return (<_BiconnectedComponents*>(self._this)).getComponentsOfNode(u)
 
 	def numberOfComponents(self):
 		"""

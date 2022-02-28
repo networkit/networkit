@@ -86,7 +86,6 @@ void BiconnectedComponents::run() {
         lowpt[v] = std::min(lowpt[v], lowpt[u]);
         if (lowpt[u] >= level[v]) {
           auto top = edgeStack.back();
-          componentSizes.insert(std::make_pair(nComp, 0));
           while (level[top.first] >= level[u]) {
             edgeStack.pop_back();
             newComponent(top);
@@ -114,10 +113,7 @@ void BiconnectedComponents::run() {
 void BiconnectedComponents::newComponent(std::pair<node, node> e) {
   node u = e.first;
   node v = e.second;
-  count prevSize = componentsOfNode[u].size() + componentsOfNode[v].size();
   componentsOfNode[u].insert(nComp);
   componentsOfNode[v].insert(nComp);
-  componentSizes[nComp] +=
-      componentsOfNode[u].size() + componentsOfNode[v].size() - prevSize;
 }
 } // namespace NetworKit
