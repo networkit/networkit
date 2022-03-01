@@ -254,10 +254,7 @@ TEST_F(ConnectedComponentsGTest, testStronglyConnectedComponents) {
 
 TEST_F(ConnectedComponentsGTest, testDynConnectedComponentsTiny) {
     // construct graph
-    Graph g;
-    for (count i = 0; i < 20; i++) {
-        g.addNode();
-    }
+    Graph g(20);
     g.addEdge(0,1,0);
     g.addEdge(1,2,0);
     g.addEdge(2,4,0);

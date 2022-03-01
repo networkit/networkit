@@ -47,6 +47,13 @@ public:
     count numberOfComponents() const;
 
     /*
+     * Get the size of each component.
+     *
+     * @return Map from component index to size.
+     */
+    std::map<count, count> getComponentSizes() const;
+
+    /*
      * Get the components vector.
      *
      * @return Vector of vectors, each component is stored as an (unordered) set
@@ -66,10 +73,10 @@ public:
     }
 
 private:
-    const Graph *G;
     void init();
     void newComponent(std::pair<node, node> e);
 
+    const Graph *G;
     count n;
     count idx;
     count nComp;
@@ -79,11 +86,17 @@ private:
     std::vector<bool> visited;
     std::vector<bool> isRoot;
     std::vector<std::unordered_set<node>> componentsOfNode;
+    std::map<count, count> componentSizes;
 };
 
 inline count BiconnectedComponents::numberOfComponents() const {
     assureFinished();
     return nComp;
+}
+
+inline std::map<count, count> BiconnectedComponents::getComponentSizes() const {
+    assureFinished();
+    return componentSizes;
 }
 
 inline std::vector<std::vector<node>> BiconnectedComponents::getComponents() const {

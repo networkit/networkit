@@ -22,8 +22,6 @@ namespace NetworKit {
         indexEdges();
         component.reset(G->upperNodeIdBound(), none);
         isTree.assign(edgesMap.size(), false);
-        std::queue<index> emptyQueue;
-        swap(emptyQueue, componentIds);
         hasRun = false;
     }
 
@@ -35,14 +33,17 @@ namespace NetworKit {
         // Queue for BFS.
         std::queue<node> q;
 
+        count nComponents = 0;
+
         // Perform BFSs to assign a component ID to each node.
         G->forNodes([&](node u) {
 
             // Node u has not been visited.
             if (component[u] == none) {
 
-                // New component ID.
-                index c = numberOfComponents();
+                component.setUpperBound(nComponents + 1);
+                index c = nComponents;
+                ++nComponents;
                 component[u] = c;
 
                 // Start a new BFS from u.
@@ -52,15 +53,19 @@ namespace NetworKit {
                     node v = q.front();
                     q.pop();
 
+        
+                    auto updateComponent = [&](node, node u, edgeweight, edgeid) -> void {
+                        if (component[u] == none) {
+                            q.push(u);
+                            component[u] = c;
+                            isTree[edgesMap.at(Edge(u, v, true))] = true;
+                        }
+                    };
+
                     // Enqueue neighbors (both from in and out edges) and set
                     // new component.
-                    G->forNeighborsOf(v, [&](node w) {
-                        updateComponent(c, w, q, v);
-                    });
-
-                    G->forInNeighborsOf(v, [&](node w) {
-                        updateComponent(c, w, q, v);
-                    });
+                    G->forNeighborsOf(v, updateComponent);
+                    G->forInNeighborsOf(v, updateComponent);
                 } while (!q.empty());
             }
         });
@@ -68,54 +73,27 @@ namespace NetworKit {
         hasRun = true;
     }
 
-
-    void DynWeaklyConnectedComponents::updateComponent(
-        index c,
-        node w,
-        std::queue<node>& q,
-        node v
-    ) {
-        if (component[w] == none) {
-            q.push(w);
-            component[w] = c;
-            isTree[edgesMap.find(makePair(v, w))->second] = true;
-        }
-    }
-
-
     void DynWeaklyConnectedComponents::indexEdges() {
         edgeid eid = 0;
         G->forEdges([&] (node u, node v) {
-            if (edgesMap.find(makePair(u, v)) == edgesMap.end()) {
-                insertEdgeIntoMap(u, v, eid);
+            if (edgesMap.find(Edge(u, v, true)) == edgesMap.end()) {
+                edgesMap.emplace(Edge{u, v, true}, eid);
                 ++eid;
             }
         });
     }
 
-
-    void DynWeaklyConnectedComponents::insertEdgeIntoMap(
-        node u,
-        node v,
-        edgeid eid
-    ) {
-        edgesMap.insert(std::make_pair(makePair(u, v), eid));
-    }
-
-
     edgeid DynWeaklyConnectedComponents::updateMapAfterAddition(
         node u, node v
     ) {
 
-        std::map<std::pair<node, node>, edgeid>::iterator it = edgesMap.find(
-            makePair(u, v)
-        );
-
+        Edge newEdge(u, v, true);
+        auto it = edgesMap.find(newEdge);
 
         if (it == edgesMap.end()) {
             // Adding edge never deleted before
-            edgeid newId = edgesMap.size();
-            insertEdgeIntoMap(u, v, newId);
+            index newId = edgesMap.size();
+            edgesMap.emplace(newEdge, newId);
             return newId;
         }
 
@@ -157,17 +135,19 @@ namespace NetworKit {
             return;
         }
 
-        // in the other case, we can merge the two components in an undirected
-        // graph
+        // All nodes in the component with higher index (maxComp) get the smaller component id (minComp).
+        // The component with highest id (lastComp) is updated to maxComp, so that we can shrink
+        // partition by one.
+        const index lastComp = component.upperBound() - 1;
         G->parallelForNodes([&](node w) {
-            // We update the component with higher index with the lower index
-            if (component[w] == maxComp) {
+            if (component[w] == maxComp)
                 component[w] = minComp;
-            }
+            else if (component[w] == lastComp)
+                component[w] = maxComp;
         });
 
-        componentIds.push(maxComp);
-
+        // lastComp is not used anymore
+        component.setUpperBound(lastComp);
         updateTreeAfterAddition(eid, true);
     }
 
@@ -187,7 +167,7 @@ namespace NetworKit {
 
     void DynWeaklyConnectedComponents::removeEdge(node u, node v) {
 
-        edgeid eid = edgesMap.find(makePair(u, v))->second;
+        edgeid eid = edgesMap.at(Edge(u, v, true));
 
         // If (u, v) is not part of the spanning tree or if edge (v, u) already
         // exists we don't have to do nothing.
@@ -200,9 +180,9 @@ namespace NetworKit {
         // the spanning tree.
         isTree[eid] = false;
 
-        index nextId = nextAvailableComponentId(false);
-
         Partition newCmp(component.getVector());
+        const index nextId = newCmp.upperBound();
+        newCmp.setUpperBound(nextId + 1);
         newCmp[u] = nextId;
         count newCmpSize = 1;
 
@@ -213,165 +193,105 @@ namespace NetworKit {
 
         bool connected = false;
 
-
         // Berform BFS from v to check if v reaches u
         do {
-
             node s = q.front();
             q.pop();
 
             count d = tmpDistances[s] + 1;
 
             // Enqueue not visited neighbors reachable through outgoing edges
-            G->forNeighborsOf(s, [&](node w) {
-                if (!connected) {
-                    if (tmpDistances[w] == none) {
-                        tmpDistances[w] = d;
-                        if (w == v) { // Found another path from u to v
-                            // Backtracks the path from v to u and marks all its
-                            // nodes as part of the spanning tree
-                            reverseBFS(u, v);
-                            connected = true;
-                            return;
-                        }
-
-                        newCmp[w] = nextId;
-                        ++newCmpSize;
-                        q.push(w);
-                    }
+            for (node w : G->neighborRange(s)) {
+                if (tmpDistances[w] != none)
+                    continue;
+                tmpDistances[w] = d;
+                if (w == v) { // Found another path from u to v
+                    // Backtracks the path from v to u and marks all its
+                    // nodes as part of the spanning tree
+                    reverseBFS(u, v);
+                    connected = true;
+                    break;
                 }
-            });
+
+                newCmp[w] = nextId;
+                ++newCmpSize;
+                q.push(w);
+            }
 
             // Checking in neighbors (forNeighborsOf gets only the out-degree
             // neighbors).
-            if (!connected) {
-                G->forInNeighborsOf(s, [&](node w) {
-                    if (!connected) {
-                        if (tmpDistances[w] == none) {
-                            tmpDistances[w] = d;
-                            if (w == v) { // Found another path from u to v
-                                // Backtracks the path from v to u and marks all
-                                // its nodes as part of the spanning tree
-                                reverseBFS(u, v);
-                                connected = true;
-                                return;
-                            }
-
-                            newCmp[w] = nextId;
-                            ++newCmpSize;
-                            q.push(w);
-                        }
-                    }
-                });
-            }
-
-            if (connected) {
+            if (connected)
                 break;
+
+            for (node w : G->inNeighborRange(s)) {
+                if (tmpDistances[w] != none)
+                    continue;
+                tmpDistances[w] = d;
+                if (w == v) { // Found another path from u to v
+                    // Backtracks the path from v to u and marks all
+                    // its nodes as part of the spanning tree
+                    reverseBFS(u, v);
+                    connected = true;
+                    break;
+                }
+
+                newCmp[w] = nextId;
+                ++newCmpSize;
+                q.push(w);
             }
+        } while (!q.empty() && !connected);
 
-        } while (!q.empty());
-
-        if (!connected) {
-            // TODO: a more elegant way to assign new ids.
-            nextId = nextAvailableComponentId(true);
+        if (!connected)
             std::swap(component, newCmp);
-        }
     }
 
     void DynWeaklyConnectedComponents::reverseBFS(node u, node v) {
 
-        std::queue<node> q;
-        q.push(v);
+        std::queue<node> q1, q2;
+        q1.push(v);
         count d = tmpDistances[v];
         count level = 1;
 
         do {
-            node s = q.front();
-            q.pop();
+            do {
+                const node s = q1.front();
+                q1.pop();
 
-            bool nextEdgeFound = false;
-            G->forNeighborsOf(s, [&](node w) {
-                if (!nextEdgeFound) {
-                    if (visitNodeReversed(
-                        u, s, w, v, d, q, nextEdgeFound, level)
-                    ) {
-                        return;
-                    }
-                }
-            });
+                bool nextEdgeFound = false;
 
-            if (!nextEdgeFound) {
-                G->forInNeighborsOf(s, [&](node w) {
-                    if (!nextEdgeFound) {
-                        if (visitNodeReversed(
-                            u, s, w, v, d, q, nextEdgeFound, level)
-                        ) {
-                            return;
-                        }
+                auto visitNeighborsReversed = [&](node w) -> bool {
+                    // Reverse BFS finished
+                    if (w == u) {
+                        isTree[edgesMap.at(Edge(w, s, true))] = true;
+                        nextEdgeFound = true;
+                        return true;
                     }
-                });
-            }
+
+                    // Found next node for reverse BFS
+                    if ((tmpDistances[w] != none) && (d == tmpDistances[w] + level)) {
+                        isTree[edgesMap.at(Edge(w, s, true))] = true;
+                        nextEdgeFound = true;
+                        q2.push(w);
+                        return true;
+                    }
+
+                    // Discarding node from reverse path
+                    return false;
+                };
+
+                for (node w : G->neighborRange(s))
+                    if (visitNeighborsReversed(w))
+                        break;
+
+                if (nextEdgeFound)
+                    break;
+
+                for (node w : G->inNeighborRange(s))
+                    if (visitNeighborsReversed(w))
+                        break;
+            } while (!q1.empty());
+            std::swap(q1, q2);
             ++level;
-        } while (!q.empty());
-    }
-
-
-    bool DynWeaklyConnectedComponents::visitNodeReversed(
-        node u,
-        node s,
-        node w,
-        node,
-        count d,
-        std::queue<node>& q,
-        bool& nextEdgeFound,
-        count level
-    ) {
-
-        // Reverse BFS finished
-        if (w == u) {
-            isTree[edgesMap.find(makePair(w, s))->second] = true;
-            nextEdgeFound = true;
-            return true;
-        }
-
-        // Found next node for reverse BFS
-        if ((tmpDistances[w] != none) && (d == tmpDistances[w] + level)) {
-            isTree[edgesMap.find(makePair(w, s))->second] = true;
-            nextEdgeFound = true;
-            q.push(w);
-            return true;
-        }
-
-        // Discarding node from reverse path
-        return false;
-    }
-
-
-    index DynWeaklyConnectedComponents::nextAvailableComponentId(bool eraseId) {
-        if (componentIds.empty()) {
-            return numberOfComponents();
-        }
-        index result = componentIds.front();
-        if (eraseId) {
-            componentIds.pop();
-        }
-        return result;
-    }
-
-
-    std::pair<node, node> DynWeaklyConnectedComponents::makePair(
-        node u, node v
-    ) {
-        node from, to;
-        if (u > v) {
-            from = v;
-            to = u;
-        }
-        else {
-            from = u;
-            to = v;
-        }
-
-        return std::make_pair(from, to);
+        } while (!q1.empty());
     }
 }

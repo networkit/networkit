@@ -8,7 +8,7 @@
 #ifndef NETWORKIT_COMPONENTS_DYN_WEAKLY_CONNECTED_COMPONENTS_HPP_
 #define NETWORKIT_COMPONENTS_DYN_WEAKLY_CONNECTED_COMPONENTS_HPP_
 
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 #include <networkit/base/DynAlgorithm.hpp>
@@ -61,30 +61,20 @@ private:
     void init();
     void addEdge(node u, node v);
     void removeEdge(node u, node v);
-    void updateComponent(index c, node w, std::queue<node> &q, node v);
     void indexEdges();
-    void insertEdgeIntoMap(node u, node v, edgeid eid);
     edgeid updateMapAfterAddition(node u, node v);
     void updateTreeAfterAddition(edgeid eid, bool partOfTree);
     void reverseBFS(node u, node v);
-    index getEdgeId(node u, node v);
-    index nextAvailableComponentId(bool eraseId = true);
-    bool visitNodeReversed(node u, node s, node w, node v, count d, std::queue<node> &q,
-                           bool &nextEdgeFound, count level);
-    std::pair<node, node> makePair(node u, node v);
 
     // Whether each edge is part of a spanning tree. If an edge is removed
     // then a components could split.
     std::vector<bool> isTree;
 
     // Maps the edges to their IDs
-    std::map<std::pair<node, node>, edgeid> edgesMap;
+    std::unordered_map<Edge, edgeid> edgesMap;
 
     // Temporary distances used for BFSs after edge updates.
     std::vector<count> tmpDistances;
-
-    // Stores available component IDs.
-    std::queue<index> componentIds;
 };
 
 } // namespace NetworKit

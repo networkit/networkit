@@ -8,8 +8,8 @@
 #ifndef NETWORKIT_COMPONENTS_DYN_CONNECTED_COMPONENTS_HPP_
 #define NETWORKIT_COMPONENTS_DYN_CONNECTED_COMPONENTS_HPP_
 
-#include <map>
 #include <queue>
+#include <unordered_map>
 #include <vector>
 
 #include <networkit/base/DynAlgorithm.hpp>
@@ -59,23 +59,15 @@ public:
 private:
     void addEdge(node u, node v);
     void removeEdge(node u, node v);
-    void addEdgeDirected(node u, node v);
-    void removeEdgeDirected(node u, node v);
     void reverseBFS(node u, node v);
-    index nextAvailableComponentId(bool eraseId = true);
     void indexEdges();
-    void insertEdgeIntoMap(node u, node v, edgeid eid);
-    index getEdgeId(node u, node v);
     // Returns true and the corresponding edge id if the new edge was not
     // into the original graph.
     std::pair<bool, edgeid> updateMapAfterAddition(node u, node v);
     void init();
-    std::pair<node, node> makePair(node u, node v);
     std::vector<bool> isTree;
-    std::map<std::pair<node, node>, index> edgesMap;
+    std::unordered_map<Edge, index> edgesMap;
     std::vector<count> tmpDistances;
-    std::queue<index> componentIds;
-    bool distancesInit;
 };
 
 } // namespace NetworKit
