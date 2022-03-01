@@ -66,11 +66,14 @@ cdef class StaticGraphGenerator:
 
 	def generate(self):
 		"""
+		generate()
+		
 		Generates the graph.
 
-		Returns:
-		--------
+		Returns
+		-------
 		networkit.Graph
+			The generated graph.
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
@@ -85,6 +88,8 @@ cdef extern from "<networkit/generators/BarabasiAlbertGenerator.hpp>":
 
 cdef class BarabasiAlbertGenerator(StaticGraphGenerator):
 	"""
+	BarabasiAlbertGenerator(k, nMax, n0=0, batagelj=True)
+
 	This generator implements the preferential attachment model as introduced by Barabasi and Albert[1].
 	The original algorithm is very slow and thus, the much faster method from Batagelj and Brandes[2] is
 	implemented and the current default.
@@ -92,16 +97,14 @@ cdef class BarabasiAlbertGenerator(StaticGraphGenerator):
 	[1] Barabasi, Albert: Emergence of Scaling in Random Networks http://arxiv.org/pdf/cond-mat/9910332.pdf
 	[2] ALG 5 of Batagelj, Brandes: Efficient Generation of Large Random Networks https://kops.uni-konstanz.de/bitstream/handle/123456789/5799/random.pdf?sequence=1
 
-    BarabasiAlbertGenerator(k, nMax, n0=0, batagelj=True)
-
-	Parameters:
-	-----------
-	k : count
-		number of edges that come with a new node
-	nMax : count
-		maximum number of nodes produced
-	n0 : count
-		number of starting nodes
+	Parameters
+	----------
+	k : int
+		Number of edges that come with a new node.
+	nMax : int
+		Maximum number of nodes produced.
+	n0 : int
+		Number of starting nodes.
 	batagelj : bool
 		Specifies whether to use batagelj's method or the original one.
 	"""
@@ -114,6 +117,23 @@ cdef class BarabasiAlbertGenerator(StaticGraphGenerator):
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
+		"""
+		fit(G, scale=1)
+
+		Fit model to input graph
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		scale : int, optional
+			Scale the maximum number of nodes by a factor. Default: 1
+
+		Returns
+		-------
+		networkit.Graph
+			A new scaled graph.
+		"""
 		(n, m) = GraphTools.size(G)
 		k = math.floor(m / n)
 		return cls(nMax=scale * n, k=k, n0=k)
@@ -126,7 +146,10 @@ cdef extern from "<networkit/generators/PubWebGenerator.hpp>":
 
 
 cdef class PubWebGenerator(StaticGraphGenerator):
-	""" Generates a static graph that resembles an assumed geometric distribution of nodes in
+	""" 
+	PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
+	
+	Generates a static graph that resembles an assumed geometric distribution of nodes in
 	a P2P network.
 
 	The basic structure is to distribute points randomly in the unit torus
@@ -141,18 +164,16 @@ cdef class PubWebGenerator(StaticGraphGenerator):
 	Grid Computing Workshop (HPGC'10), in conjunction with 24th IEEE Internatl. Parallel and
 	Distributed Processing Symposium (IPDPS'10), IEEE, 2010.
 
-	PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
-
-	Parameters:
-	-----------
-	numNodes : count
+	Parameters
+	----------
+	numNodes : int
 		Up to a few thousand (possibly more if visualization is not desired and quadratic
 		time complexity has been resolved)
-	numberOfDenseAreas : count
+	numberOfDenseAreas : int
 		Depending on number of nodes, e.g. [8, 50]
 	neighborhoodRadius : float
 		The higher, the better the connectivity [0.1, 0.35]
-	maxNumberOfNeighbors : count
+	maxNumberOfNeighbors : int
 		Maximum degree, a higher value corresponds to better connectivity [4, 40]
 	"""
 
@@ -160,7 +181,16 @@ cdef class PubWebGenerator(StaticGraphGenerator):
 		self._this = new _PubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
 
 	def getCoordinates(self):
-		"""Returns a list of coordinates"""
+		"""
+		getCoordinates()
+		
+		Returns a list of coordinates
+		
+		Returns
+		-------
+		list(tuple(float,float))
+			2D coordinates of all nodes in the graph.
+		"""
 		return toPoint2DVector((<_PubWebGenerator*>(self._this)).getCoordinates())
 
 cdef extern from "<networkit/generators/DynamicPubWebGenerator.hpp>":
@@ -173,6 +203,23 @@ cdef extern from "<networkit/generators/DynamicPubWebGenerator.hpp>":
 		vector[pair[node, _Point2D]] getNewCoordinates()
 
 cdef class DynamicPubWebGenerator:
+	"""
+	DynamicPubWebGenerator(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors)
+
+	Dynamic variant of networkit.generators.PubWebGenerator.
+
+	Parameters
+	----------
+	numNodes : int
+		Up to a few thousand (possibly more if visualization is not desired and quadratic
+		time complexity has been resolved)
+	numberOfDenseAreas : int
+		Depending on number of nodes, e.g. [8, 50]
+	neighborhoodRadius : float
+		The higher, the better the connectivity [0.1, 0.35]
+	maxNumberOfNeighbors : int
+		Maximum degree, a higher value corresponds to better connectivity [4, 40]
+	"""
 	cdef _DynamicPubWebGenerator* _this
 
 	def __cinit__(self, numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors):
@@ -182,24 +229,60 @@ cdef class DynamicPubWebGenerator:
 		del self._this
 
 	def generate(self, nSteps):
-		""" Generate event stream.
+		""" 
+		generate(nSteps)
+		
+		Generate event stream.
 
-		Parameters:
-		-----------
-		nSteps : count
+		Parameters
+		----------
+		nSteps : int
 			Number of time steps in the event stream.
+
+		Returns
+		-------
+		list(networkit.dynamics.GraphEvent)
+			List of graph events.
 		"""
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
 
 	def getGraph(self):
+		"""
+		getGraph()
+
+		Returns current graph
+
+		Returns
+		-------
+		networkit.Graph
+			The resulting graph.
+		"""
 		return Graph().setThis(self._this.getGraph())
 
 	def getCoordinates(self):
-		"""The coordinates currently assumed for each node"""
+		"""
+		getCoordinates()
+		
+		Returns a list of coordinates from the current state.
+		
+		Returns
+		-------
+		list(tuple(float,float))
+			2D coordinates of all nodes in the graph.
+		"""
 		return toPoint2DVector((<_DynamicPubWebGenerator*>(self._this)).getCoordinates())
 
 	def getNewCoordinates(self):
-		"""List [(node-id, (coordx, coordy)] of points added during last generate call."""
+		"""
+		getNewCoordinates()
+		
+		Get list of nodes and coordinates of points added during last generate call.
+		
+		Returns
+		-------
+		list(int, tuple(float,float))
+			List of node ids and corresponding coordinates.
+		"""
 		return toNodePoint2DVector((<_DynamicPubWebGenerator*>(self._this)).getNewCoordinates())
 
 cdef extern from "<networkit/generators/ErdosRenyiGenerator.hpp>":
@@ -208,24 +291,25 @@ cdef extern from "<networkit/generators/ErdosRenyiGenerator.hpp>":
 		_ErdosRenyiGenerator(count nNodes, double prob, bool_t directed, bool_t selfLoops) except +
 
 cdef class ErdosRenyiGenerator(StaticGraphGenerator):
-	""" Creates random graphs in the G(n,p) model.
+	"""
+	ErdosRenyiGenerator(count nNodes, double prob, directed = False, selfLoops = False)
+	
+	Creates random graphs in the G(n,p) model.
 	The generation follows Vladimir Batagelj and Ulrik Brandes: "Efficient
 	generation of large random networks", Phys Rev E 71, 036113 (2005).
-
-	ErdosRenyiGenerator(count nNodes, double prob, directed = False, selfLoops = False)
-
+	
 	Creates G(nNodes, prob) graphs.
 
-	Parameters:
-	-----------
-	nNodes : count
+	Parameters
+	----------
+	nNodes : int
 		Number of nodes n in the graph.
-	prob : double
+	prob : float
 		Probability of existence for each edge p.
-	directed : bool
-		Generates a directed
-	selfLoops : bool
-		Allows self-loops to be generated (only for directed graphs)
+	directed : bool, optional
+		Generates a directed graph. Default: False.
+	selfLoops : bool, optional
+		Allows self-loops to be generated (only for directed graphs). Default: False.
 	"""
 
 	def __cinit__(self, nNodes, prob, directed = False, selfLoops = False):
@@ -233,7 +317,23 @@ cdef class ErdosRenyiGenerator(StaticGraphGenerator):
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
-		""" Fit model to input graph"""
+		"""
+		fit(G, scale=1)
+
+		Fit model to input graph
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		scale : int, optional
+			Scale the maximum number of nodes by a factor. Default: 1
+
+		Returns
+		-------
+		networkit.Graph
+			A new scaled graph.
+		"""
 		(n, m) = GraphTools.size(G)
 		if G.isDirected():
 			raise Exception("TODO: figure out scaling scheme for directed graphs")
@@ -247,15 +347,14 @@ cdef extern from "<networkit/generators/DorogovtsevMendesGenerator.hpp>":
 		_DorogovtsevMendesGenerator(count nNodes) except +
 
 cdef class DorogovtsevMendesGenerator(StaticGraphGenerator):
-	""" Generates a graph according to the Dorogovtsev-Mendes model.
+	""" 
+	DorogovtsevMendesGenerator(nNodes)
 
- 	DorogovtsevMendesGenerator(nNodes)
+	Generates a graph according to the Dorogovtsev-Mendes model.
 
- 	Constructs the generator class.
-
-	Parameters:
-	-----------
-	nNodes : count
+	Parameters
+	----------
+	nNodes : int
 		Number of nodes in the target graph.
 	"""
 
@@ -264,6 +363,23 @@ cdef class DorogovtsevMendesGenerator(StaticGraphGenerator):
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
+		"""
+		fit(G, scale=1)
+
+		Fit model to input graph
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		scale : int, optional
+			Scale the maximum number of nodes by a factor. Default: 1
+
+		Returns
+		-------
+		networkit.Graph
+			A new scaled graph.
+		"""
 		return cls(scale * G.numberOfNodes())
 
 cdef extern from "<networkit/generators/ClusteredRandomGraphGenerator.hpp>":
@@ -273,37 +389,39 @@ cdef extern from "<networkit/generators/ClusteredRandomGraphGenerator.hpp>":
 		_Partition getCommunities() except +
 
 cdef class ClusteredRandomGraphGenerator(StaticGraphGenerator):
-	""" The ClusteredRandomGraphGenerator class is used to create a clustered random graph.
+	""" 
+	ClusteredRandomGraphGenerator(count, count, pin, pout)
+	
+	The ClusteredRandomGraphGenerator class is used to create a clustered random graph.
 
 	The number of nodes and the number of edges are adjustable as well as the probabilities
 	for intra-cluster and inter-cluster edges.
 
 	In parallel the generated graph is not deterministic. To ensure determinism, use a single thread.
 
-	ClusteredRandomGraphGenerator(count, count, pin, pout)
-
-	Creates a clustered random graph.
-
-	Parameters:
-	-----------
-	n : count
-		number of nodes
-	k : count
-		number of clusters
-	pin : double
-		intra-cluster edge probability
-	pout : double
-		inter-cluster edge probability
+	Parameters
+	----------
+	n : int
+		Number of nodes.
+	k : int
+		Number of clusters.
+	pin : float
+		Intra-cluster edge probability.
+	pout : float
+		Inter-cluster edge probability.
 	"""
 
 	def __cinit__(self, n, k, pin, pout):
 		self._this = new _ClusteredRandomGraphGenerator(n, k, pin, pout)
 
 	def getCommunities(self):
-		""" Returns the generated ground truth clustering.
+		""" 
+		getCommunities()
+		
+		Returns the generated ground truth clustering.
 
-		Returns:
-		--------
+		Returns
+		-------
 		networkit.Partition
 			The generated ground truth clustering.
 		"""
@@ -316,13 +434,20 @@ cdef extern from "<networkit/generators/ChungLuGenerator.hpp>":
 
 cdef class ChungLuGenerator(StaticGraphGenerator):
 	"""
-		Given an arbitrary degree sequence, the Chung-Lu generative model
-		will produce a random graph with the same expected degree sequence.
+	ChungLuGenerator(degreeSequence)
 
-		see Chung, Lu: The average distances in random graphs with given expected degrees
-		and Chung, Lu: Connected Components in Random Graphs with Given Expected Degree Sequences.
-		Aiello, Chung, Lu: A Random Graph Model for Massive Graphs describes a different generative model
-		which is basically asymptotically equivalent but produces multi-graphs.
+	Given an arbitrary degree sequence, the Chung-Lu generative model
+	will produce a random graph with the same expected degree sequence.
+
+	see Chung, Lu: The average distances in random graphs with given expected degrees
+	and Chung, Lu: Connected Components in Random Graphs with Given Expected Degree Sequences.
+	Aiello, Chung, Lu: A Random Graph Model for Massive Graphs describes a different generative model
+	which is basically asymptotically equivalent but produces multi-graphs.
+
+	Parameters
+	----------
+	degreeSequence : list(float)
+		Input degree sequence used to generate the graph.
 	"""
 
 	def __cinit__(self, vector[count] degreeSequence):
@@ -330,7 +455,23 @@ cdef class ChungLuGenerator(StaticGraphGenerator):
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
-		""" Fit model to input graph"""
+		"""
+		fit(G, scale=1)
+
+		Fit model to input graph
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		scale : int, optional
+			Scale the maximum number of nodes by a factor. Default: 1
+
+		Returns
+		-------
+		networkit.Graph
+			A new scaled graph.
+		"""
 		(n, m) = GraphTools.size(G)
 		degSeq = DegreeCentrality(G).run().scores()
 		return cls(degSeq * scale)
@@ -346,22 +487,24 @@ cdef extern from "<networkit/generators/HyperbolicGenerator.hpp>":
 		_Graph generate(vector[double] angles, vector[double] radii, double R, double T) except +
 
 cdef class HyperbolicGenerator(StaticGraphGenerator):
-	""" The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points with a probability depending on their distance. The resulting graphs have a power-law degree distribution, small diameter and high clustering coefficient.
-For a temperature of 0, the model resembles a unit-disk model in hyperbolic space.
+	"""
+	HyperbolicGenerator(n, k=6, gamma=3, T=0)
+	
+	The Hyperbolic Generator distributes points in hyperbolic space and adds edges between points 
+	with a probability depending on their distance. The resulting graphs have a power-law degree 
+	distribution, small diameter and high clustering coefficient.
+	For a temperature of 0, the model resembles a unit-disk model in hyperbolic space.
 
-		HyperbolicGenerator(n=10000, k=6, gamma=3, T=0)
-
- 		Parameters:
-		-----------
-		n : int
-			number of nodes
-		k : double
-			average degree
-		gamma : double
-			exponent of power-law degree distribution
-		T : double
-			temperature of statistical model
-
+	Parameters
+	----------
+	n : int
+		Number of nodes.
+	k : float, optional
+		Average degree. Default: 6.0
+	gamma : float, optional
+		Exponent of power-law degree distribution. Default: 3.0
+	T : float, optional
+		Temperature of statistical model. Default: 0.0
 	"""
 
 	def __cinit__(self,  n, k=6, gamma=3, T=0):
@@ -370,24 +513,97 @@ For a temperature of 0, the model resembles a unit-disk model in hyperbolic spac
 		self._this = new _HyperbolicGenerator(n, k, gamma, T)
 
 	def setLeafCapacity(self, capacity):
+		"""
+		setLeafCapacity(capacity)
+		
+		Set the capacity of a quadtree leaf.
+
+		Parameters
+		----------
+		capacity : int
+			Tuning parameter.
+		"""
 		(<_HyperbolicGenerator*>(self._this)).setLeafCapacity(capacity)
 
 	def setBalance(self, balance):
+		"""
+		setBalance(balance)
+
+		Set the balance of the quadtree. Value should be between 0.0 and 1.0.
+		Without modification this is set to 0.5.
+
+		Parameters
+		----------
+		balance : float
+			Balance factor between 0.0 and 1.0.
+		"""
 		(<_HyperbolicGenerator*>(self._this)).setBalance(balance)
 
 	def setTheoreticalSplit(self, theoreticalSplit):
+		"""
+		setTheoreticalSplit(theoreticalSplit)
+
+		When using a theoretically optimal split, the quadtree will be flatter, 
+		but running time usually longer.
+
+		Parameters
+		----------
+		theoreticalSplit : bool
+			Whether to use the theoretically optimal split. Default: False.
+		"""
 		(<_HyperbolicGenerator*>(self._this)).setTheoreticalSplit(theoreticalSplit)
 
 	def getElapsedMilliseconds(self):
+		"""
+		getElapsedMilliseconds()
+
+		Get running time of generator for each.
+
+		Returns
+		-------
+		list(float)
+			Running time of the generator for each thread.
+		"""
 		return (<_HyperbolicGenerator*>(self._this)).getElapsedMilliseconds()
 
 	def generate_advanced(self, angles, radii, R, T=0):
-		# TODO: documentation
+		"""
+		generate_advanced(angles, radii, R, T=0)
+
+		Generate a graph with overriding parameters.
+
+		Parameters
+		----------
+		angles : list(float)
+			List with angles of node positions
+		radii : list(float)
+			List with radii of node positions
+		r : float
+			Radius of poincare disk to place nodes in
+		T : float, optional
+			Edges are added for nodes closer to each other than threshold T. Default: 0.0
+		"""
 		return Graph(0).setThis((<_HyperbolicGenerator*>(self._this)).generate(angles, radii, R, T))
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
-		""" Fit model to input graph"""
+		"""
+		fit(G, scale=1)
+
+		Fit model to input graph
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		scale : int, optional
+			Scale the maximum number of nodes by a factor. Default: 1
+
+		Returns
+		-------
+		networkit.Graph
+			A new scaled graph.
+		"""
 		degSeq = DegreeCentrality(G).run().scores()
 		gamma = max(-1 * PowerlawDegreeSequence(degSeq).getGamma(), 2.1)
 		(n, m) = GraphTools.size(G)
@@ -413,25 +629,30 @@ cdef extern from "<networkit/generators/PowerlawDegreeSequence.hpp>":
 
 cdef class PowerlawDegreeSequence:
 	"""
+	PowerlawDegreeSequence(minDeg, maxDeg, gamma)
+
+	Other calling possibilities:
+
+	- PowerlawDegreeSequence(G)
+	- PowerlawDegreeSequence(degreeSequence)
+
 	Generates a powerlaw degree sequence with the given minimum and maximum degree, the powerlaw exponent gamma
 
 	If a list of degrees or a graph is given instead of a minimum degree, the class uses the minimum and maximum
 	value of the sequence and fits the exponent such that the expected average degree is the actual average degree.
 
-	PowerlawDegreeSequence(minDeg, maxDeg, gamma)
-
-	PowerlawDegreeSequence(degreeSequence)
-
-	PowerlawDegreeSequence(G)
-
-	Parameters:
-	-----------
-	minDeg : count, list or networkit.Graph
-		The minium degree, or a list of degrees to fit or graphs
-	maxDeg : count
-		The maximum degree
-	gamma : double
-		The powerlaw exponent, default: -2
+	Parameters
+	----------
+	minDeg : int
+		The minium degree.
+	maxDeg : int, optional
+		The maximum degree.
+	gamma : float, optional
+		The powerlaw exponent. Default: -2.0
+	G : networkit.Graph, alternative
+		The input graph.
+	degreeSequence : list(int), alternative
+		List of degrees to fit.
 	"""
 	cdef _PowerlawDegreeSequence *_this
 
@@ -448,12 +669,14 @@ cdef class PowerlawDegreeSequence:
 
 	def setMinimumFromAverageDegree(self, double avgDeg):
 		"""
+		setMinimumFromAverageDegree(avgDeg)
+		
 		Tries to set the minimum degree such that the specified average degree is expected.
 
-		Parameters:
-		-----------
-		avgDeg : double
-			The average degree that shall be approximated
+		Parameters
+		----------
+		avgDeg : float
+			The average degree that shall be approximated.
 		"""
 		with nogil:
 			self._this.setMinimumFromAverageDegree(avgDeg)
@@ -461,16 +684,18 @@ cdef class PowerlawDegreeSequence:
 
 	def setGammaFromAverageDegree(self, double avgDeg, double minGamma = -1, double maxGamma = -6):
 		"""
+		setGammaFromAverageDegree(avgDeg, minGamma = -1, maxGamma = -6)
+
 		Tries to set the powerlaw exponent gamma such that the specified average degree is expected.
 
-		Parameters:
-		-----------
-		avgDeg : double
-			The average degree that shall be approximated
-		minGamma : double
-			The minimum gamma to use, default: -1
-		maxGamma : double
-			The maximum gamma to use, default: -6
+		Parameters
+		----------
+		avgDeg : float
+			The average degree that shall be approximated.
+		minGamma : float, optional
+			The minimum gamma to use. Default: -1.0
+		maxGamma : float, optional
+			The maximum gamma to use. Default: -6.0
 		"""
 		with nogil:
 			self._this.setGammaFromAverageDegree(avgDeg, minGamma, maxGamma)
@@ -478,62 +703,74 @@ cdef class PowerlawDegreeSequence:
 
 	def getExpectedAverageDegree(self):
 		"""
+		getExpectedAverageDegree()
+
 		Returns the expected average degree. Note: run needs to be called first.
 
-		Returns:
-		--------
-		double
+		Returns
+		-------
+		float
 			The expected average degree.
 		"""
 		return self._this.getExpectedAverageDegree()
 
 	def getMinimumDegree(self):
 		"""
+		getMinimumDegree()
+
 		Returns the minimum degree.
 
-		Returns:
-		--------
-		count
-			The minimum degree
+		Returns
+		-------
+		int
+			The minimum degree.
 		"""
 		return self._this.getMinimumDegree()
 
 	def setGamma(self, double gamma):
 		"""
-		Set the exponent gamma
+		setGamma(gamma)
 
-		Parameters:
-		-----------
-		gamma : double
-			The exponent to set
+		Set the exponent gamma.
+
+		Parameters
+		----------
+		gamma : float
+			The exponent to set.
 		"""
 		self._this.setGamma(gamma)
 		return self
 
 	def getGamma(self):
 		"""
+		getGamma()
+
 		Get the exponent gamma.
 
-		Returns:
-		--------
-		double
-			The exponent gamma
+		Returns
+		-------
+		float
+			The exponent gamma.
 		"""
 		return self._this.getGamma()
 
 	def getMaximumDegree(self):
 		"""
+		getMaximumDegree()
+
 		Get the maximum degree
 
-		Returns:
-		--------
-		count
+		Returns
+		-------
+		int
 			The maximum degree
 		"""
 		return self._this.getMaximumDegree()
 
 	def run(self):
 		"""
+		run()
+
 		Executes the generation of the probability distribution.
 		"""
 		with nogil:
@@ -542,28 +779,32 @@ cdef class PowerlawDegreeSequence:
 
 	def getDegreeSequence(self, count numNodes):
 		"""
+		getDegreeSequence(numNodes)
+
 		Returns a degree sequence with even degree sum.
 
-		Parameters:
-		-----------
-		numNodes : count
-			The number of nodes/degrees that shall be returned
+		Parameters
+		----------
+		numNodes : int
+			The number of nodes/degrees that shall be returned.
 
-		Returns:
-		--------
-		vector[count]
-			The generated degree sequence
+		Returns
+		-------
+		list(int)
+			The generated degree sequence.
 		"""
 		return self._this.getDegreeSequence(numNodes)
 
 	def getDegree(self):
 		"""
-		Returns a degree drawn at random with a power law distribution
+		getDegree()
 
-		Returns:
-		--------
-		count
-			The generated random degree
+		Returns a degree drawn at random with a power law distribution.
+
+		Returns
+		-------
+		int
+			The generated random degree.
 		"""
 		return self._this.getDegree()
 
@@ -585,6 +826,8 @@ cdef extern from "<networkit/generators/LFRGenerator.hpp>":
 
 cdef class LFRGenerator(Algorithm):
 	"""
+	LFRGenerator(n)
+
 	The LFR clustered graph generator as introduced by Andrea Lancichinetti, Santo Fortunato, and Filippo Radicchi.
 
 	The community assignment follows the algorithm described in
@@ -598,10 +841,10 @@ cdef class LFRGenerator(Algorithm):
 
 	You need to set a degree sequence, a community size sequence and a mu using the additionally provided set- or generate-methods.
 
-	Parameters:
-	-----------
-	n : count
-		The number of nodes
+	Parameters
+	----------
+	n : int
+		The number of nodes.
 	"""
 	params = {}
 	paths = {}
@@ -611,12 +854,14 @@ cdef class LFRGenerator(Algorithm):
 
 	def setDegreeSequence(self, vector[count] degreeSequence):
 		"""
+		setDegreeSequence(degreeSequence)
+
 		Set the given degree sequence.
 
-		Parameters:
-		-----------
-		degreeSequence : iterable
-			The degree sequence that shall be used by the generator
+		Parameters
+		----------
+		degreeSequence : list(int)
+			The degree sequence that shall be used by the generator.
 		"""
 		with nogil:
 			(<_LFRGenerator*>(self._this)).setDegreeSequence(degreeSequence)
@@ -624,17 +869,18 @@ cdef class LFRGenerator(Algorithm):
 
 	def generatePowerlawDegreeSequence(self, count avgDegree, count maxDegree, double nodeDegreeExp):
 		"""
+		generatePowerlawDegreeSequence(avgDegree, maxDegree, nodeDegreeExp)
+		
 		Generate and set a power law degree sequence using the given average and maximum degree with the given exponent.
 
-
-		Parameters:
-		-----------
-		avgDegree : count
-			The average degree of the created graph
-		maxDegree : count
-			The maximum degree of the created graph
-		nodeDegreeExp : double
-			The (negative) exponent of the power law degree distribution of the node degrees
+		Parameters
+		----------
+		avgDegree : int
+			The average degree of the created graph.
+		maxDegree : int
+			The maximum degree of the created graph.
+		nodeDegreeExp : float
+			The (negative) exponent of the power law degree distribution of the node degrees.
 		"""
 		with nogil:
 			(<_LFRGenerator*>(self._this)).generatePowerlawDegreeSequence(avgDegree, maxDegree, nodeDegreeExp)
@@ -642,11 +888,13 @@ cdef class LFRGenerator(Algorithm):
 
 	def setCommunitySizeSequence(self, vector[count] communitySizeSequence):
 		"""
+		setCommunitySizeSequence(communitySizeSequence)
+
 		Set the given community size sequence.
 
-		Parameters:
-		-----------
-		communitySizeSequence : iterable
+		Parameters
+		----------
+		communitySizeSequence : list(float)
 			The community sizes that shall be used.
 		"""
 		with nogil:
@@ -655,12 +903,14 @@ cdef class LFRGenerator(Algorithm):
 
 	def setPartition(self, Partition zeta not None):
 		"""
+		setPartition(zeta)
+
 		Set the partition, this replaces the community size sequence and the random assignment of the nodes to communities.
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		zeta : networkit.Partition
-			The partition to use
+			The partition to use.
 		"""
 		with nogil:
 			(<_LFRGenerator*>(self._this)).setPartition(zeta._this)
@@ -668,16 +918,18 @@ cdef class LFRGenerator(Algorithm):
 
 	def generatePowerlawCommunitySizeSequence(self, count minCommunitySize, count maxCommunitySize, double communitySizeExp):
 		"""
+		generatePowerlawCommunitySizeSequence(minCommunitySize, maxCommunitySize, communitySizeExp)
+		
 		Generate a powerlaw community size sequence with the given minimum and maximum size and the given exponent.
 
-		Parameters:
-		-----------
-		minCommunitySize : count
-			The minimum community size
-		maxCommunitySize : count
-			The maximum community size
-		communitySizeExp : double
-			The (negative) community size exponent of the power law degree distribution of the community sizes
+		Parameters
+		----------
+		minCommunitySize : int
+			The minimum community size.
+		maxCommunitySize : int
+			The maximum community size.
+		communitySizeExp : float
+			The (negative) community size exponent of the power law degree distribution of the community sizes.
 		"""
 		with nogil:
 			(<_LFRGenerator*>(self._this)).generatePowerlawCommunitySizeSequence(minCommunitySize, maxCommunitySize, communitySizeExp)
@@ -685,13 +937,15 @@ cdef class LFRGenerator(Algorithm):
 
 	def setMu(self, mu):
 		"""
+		setMu(mu)
+
 		Set the mixing parameter, this is the fraction of neighbors of each node that do not belong to the node's own community.
 
 		This can either be one value for all nodes or an iterable of values for each node.
 
-		Parameters:
-		-----------
-		mu : double or iterable
+		Parameters
+		----------
+		mu : float or list(float)
 			The mixing coefficient(s), i.e. the factor of the degree that shall be inter-cluster degree
 		"""
 		try:
@@ -702,13 +956,15 @@ cdef class LFRGenerator(Algorithm):
 
 	def setMuWithBinomialDistribution(self, double mu):
 		"""
+		setMuWithBinomialDistribution(mu)
+
 		Set the internal degree of each node using a binomial distribution such that the expected mixing parameter is the given @a mu.
 
 		The mixing parameter is for each node the fraction of neighbors that do not belong to the node's own community.
 
-		Parameters:
-		-----------
-		mu : double
+		Parameters
+		----------
+		mu : float
 			The expected mu that shall be used.
 		"""
 		with nogil:
@@ -717,10 +973,12 @@ cdef class LFRGenerator(Algorithm):
 
 	def getGraph(self):
 		"""
+		getGraph()
+
 		Return the generated Graph.
 
-		Returns:
-		--------
+		Returns
+		-------
 		networkit.Graph
 			The generated graph.
 		"""
@@ -728,10 +986,17 @@ cdef class LFRGenerator(Algorithm):
 
 	def generate(self, useReferenceImplementation=False):
 		"""
+		generate(useReferenceImplementation=False)
+
 		Generates and returns the graph. Wrapper for the StaticGraphGenerator interface.
 
-		Returns:
-		--------
+		Parameters
+		----------
+		useReferenceImplementation : bool
+			Sets whether the reference implmentation should be used for generating. 
+
+		Returns
+		-------
 		networkit.Graph
 			The generated graph.
 		"""
@@ -743,10 +1008,12 @@ cdef class LFRGenerator(Algorithm):
 
 	def getPartition(self):
 		"""
+		getPartition()
+
 		Return the generated Partiton.
 
-		Returns:
-		--------
+		Returns
+		-------
 		networkit.Partition
 			The generated partition.
 		"""
@@ -754,12 +1021,43 @@ cdef class LFRGenerator(Algorithm):
 
 	@classmethod
 	def setPathToReferenceImplementationDir(cls, path):
+		"""
+		setPaths(path)
+
+		Helper function for fit. Sets an output folder for writing the result to.
+
+		Parameters
+		----------
+		path : str
+			String containing a path.
+		"""
 		cls.paths["refImplDir"] = path
 
 
 	@classmethod
 	def fit(cls, Graph G, scale=1, vanilla=False, communityDetectionAlgorithm=PLM, plfit=False):
-		""" Fit model to input graph"""
+		""" 
+		fit(G, scale=1, vanilla=False, communityDetectionAlgorithm=PLM, plfit=False)
+
+		Fit model to input graph
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		scale : int, optional
+			Scale the maximum number of nodes by a factor. Default: 1
+		vanilla : bool, optional
+			If set to True, fit power law to degree distribution. Otherwise fit to community sequence.
+		communityDetectionAlgorithm : nk.community.CommunityDetector, optional
+			Community detection algorithm used for fitting. Default: nk.community.PLM
+		plfit : bool, optional
+			If set to True, power law fitting is enabled. Default: False
+		Returns
+		-------
+		networkit.Graph
+			A new scaled graph.
+		"""
 		(n, m) = GraphTools.size(G)
 		# detect communities
 		communities = communityDetectionAlgorithm(G).run().getPartition()
@@ -852,7 +1150,9 @@ cdef extern from "<networkit/generators/MocnikGenerator.hpp>":
 
 cdef class MocnikGenerator(StaticGraphGenerator):
 	"""
-	Creates random spatial graphs according to the Mocnik model.
+	MocnikGenerator(dim, n, k, weighted)
+
+	Creates random spatial graphs according to the Mocnik model (improved algorithm).
 
 	Please cite the following publications, in which you will find a
 	description of the model:
@@ -865,25 +1165,21 @@ cdef class MocnikGenerator(StaticGraphGenerator):
 	Proceedings of the 12th Conference on Spatial Information Theory (COSIT),
 	2015, pages 44-64. doi: 10.1007/978-3-319-23374-1_3
 
-	Improved algorithm.
-
-	MocnikGenerator(dim, n, k, weighted)
-
-	Parameters:
-	-----------
-	dim : count
+	Parameters
+	----------
+	dim : int
 		Dimension of the space.
-	n : count
+	n : int
 		Number of nodes in the graph; or a list containing the numbers
-				of nodes in each layer in case of a hierarchical model.
-	k : double
+		of nodes in each layer in case of a hierarchical model.
+	k : float
 		Density parameter, determining the ratio of edges to nodes; in
-				case of a hierarchical model, also a list of density parameters can be
-				provided.
- 	weighted : bool
+		case of a hierarchical model, also a list of density parameters can be
+		provided.
+ 	weighted : bool, optional
 		Determines whether weights should be added to the edges;
-				in case of a hierarchical model, also a list of relative weights can be
-				provided.
+		in case of a hierarchical model, also a list of relative weights can be
+		provided. Default: False
 	"""
 
 	def __cinit__(self, dim, n, k, weighted=False):
@@ -911,7 +1207,9 @@ cdef extern from "<networkit/generators/MocnikGeneratorBasic.hpp>":
 
 cdef class MocnikGeneratorBasic(StaticGraphGenerator):
 	"""
-	Creates random spatial graphs according to the Mocnik model.
+	MocnikGeneratorBasic(dim, n, k)
+
+	Creates random spatial graphs according to the Mocnik model (non-improved algorithm).
 
 	Please cite the following publications, in which you will find a
 	description of the model:
@@ -924,19 +1222,14 @@ cdef class MocnikGeneratorBasic(StaticGraphGenerator):
 	Proceedings of the 12th Conference on Spatial Information Theory (COSIT),
 	2015, pages 44-64. doi: 10.1007/978-3-319-23374-1_3
 
-	Non-improved algorithm.
-
-	MocnikGeneratorBasic(dim, n, k)
-
-	Parameters:
-	-----------
-	dim : count
-	Dimension of the space.
-	n : count
+	Parameters
+	----------
+	dim : int
+		Dimension of the space.
+	n : int
 		Number of nodes in the graph.
-	k : double
+	k : float
 		Density parameter, determining the ratio of edges to nodes.
-
 	"""
 
 	def __cinit__(self, dim, n, k):
@@ -950,32 +1243,53 @@ cdef extern from "<networkit/generators/HavelHakimiGenerator.hpp>":
 		bool_t getRealizable() except +
 
 cdef class HavelHakimiGenerator(StaticGraphGenerator):
-	""" Havel-Hakimi algorithm for generating a graph according to a given degree sequence.
+	""" 
+	HavelHakimiGenerator(sequence, ignoreIfRealizable=True)
+	
+	Havel-Hakimi algorithm for generating a graph according to a given degree sequence.
 
-		The sequence, if it is realizable, is reconstructed exactly. The resulting graph usually
-		has a high clustering coefficient. Construction runs in linear time O(m).
+	The sequence, if it is realizable, is reconstructed exactly. The resulting graph usually
+	has a high clustering coefficient. Construction runs in linear time O(m).
 
-		If the sequence is not realizable, depending on the parameter ignoreIfRealizable, either
-		an exception is thrown during generation or the graph is generated with a modified degree
-		sequence, i.e. not all nodes might have as many neighbors as requested.
+	If the sequence is not realizable, depending on the parameter ignoreIfRealizable, either
+	an exception is thrown during generation or the graph is generated with a modified degree
+	sequence, i.e. not all nodes might have as many neighbors as requested.
 
-		HavelHakimiGenerator(sequence, ignoreIfRealizable=True)
-
-		Parameters:
-		-----------
-		sequence : vector
-			Degree sequence to realize. Must be non-increasing.
-		ignoreIfRealizable : bool, optional
-			If true, generate the graph even if the degree sequence is not realizable. Some nodes may get lower degrees than requested in the sequence.
+	Parameters
+	----------
+	sequence : list(int)
+		Degree sequence to realize. Must be non-increasing.
+	ignoreIfRealizable : bool, optional
+		If True, generate the graph even if the degree sequence is not realizable. Some nodes may get lower degrees than requested in the sequence.
 	"""
 
 	def __cinit__(self, vector[count] degreeSequence, ignoreIfRealizable=True):
 		self._this = new _HavelHakimiGenerator(degreeSequence, ignoreIfRealizable)
 
 	def isRealizable(self):
+		"""
+		isRealizable()
+
+		Test if degree sequence is realizable.
+
+		Returns
+		-------
+		bool
+			Indicator for realizable degree sequence.
+		"""
 		return (<_HavelHakimiGenerator*>(self._this)).isRealizable()
 
 	def getRealizable(self):
+		"""
+		getRealizable()
+
+		Get realizable state without testing.
+
+		Returns
+		-------
+		bool
+			Indicator for realizable degree sequence.
+		"""
 		return (<_HavelHakimiGenerator*>(self._this)).getRealizable()
 
 	@classmethod
@@ -992,26 +1306,29 @@ cdef extern from "<networkit/generators/DynamicHyperbolicGenerator.hpp>":
 		vector[_Point2D] getCoordinates() except +
 
 cdef class DynamicHyperbolicGenerator:
+	""" 
+	DynamicHyperbolicGenerator(numNodes, avgDegree=6.0, gamma=3.0, T=0.0, moveEachStep=1.0, moveDistance=0.1)
+
+	Dynamic graph generator according to the hyperbolic unit disk model.
+
+	Parameters
+	----------
+	numNodes : int
+		Number of nodes.
+	avgDegree : float
+		Average degree of the resulting graph.
+	gamma : float
+		Power-law exponent of the resulting graph.
+	T : float
+		Temperature, selecting a graph family on the continuum between hyperbolic unit disk graphs and Erdos-Renyi graphs.
+	moveEachStep : float
+		Fraction of nodes to be moved in each time step. The nodes are chosen randomly each step.
+	moveDistance: float
+		Base value for the node movements.
+	"""
 	cdef _DynamicHyperbolicGenerator* _this
 
 	def __cinit__(self, numNodes, avgDegree = 6, gamma = 3, T = 0, moveEachStep = 1, moveDistance = 0.1):
-		""" Dynamic graph generator according to the hyperbolic unit disk model.
-
-		Parameters:
-		-----------
-		numNodes : count
-			number of nodes
-		avgDegree : double
-			average degree of the resulting graph
-		gamma : double
-			power-law exponent of the resulting graph
-		T : double
-			temperature, selecting a graph family on the continuum between hyperbolic unit disk graphs and Erdos-Renyi graphs
-		moveFraction : double
-			fraction of nodes to be moved in each time step. The nodes are chosen randomly each step
-		moveDistance: double
-			base value for the node movements
-		"""
 		if gamma <= 2:
 				raise ValueError("Exponent of power-law degree distribution must be > 2")
 		self._this = new _DynamicHyperbolicGenerator(numNodes, avgDegree = 6, gamma = 3, T = 0, moveEachStep = 1, moveDistance = 0.1)
@@ -1020,20 +1337,47 @@ cdef class DynamicHyperbolicGenerator:
 		del self._this
 
 	def generate(self, nSteps):
-		""" Generate event stream.
+		""" 
+		generate(nSteps)
+		
+		Generate event stream.
 
-		Parameters:
-		-----------
-		nSteps : count
+		Parameters
+		----------
+		nSteps : int
 			Number of time steps in the event stream.
+
+		Returns
+		-------
+		list(networkit.dynamics.GraphEvent)
+			List of graph events.
 		"""
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
 
 	def getGraph(self):
+		"""
+		getGraph()
+
+		Return current graph.
+
+		Returns
+		-------
+		networkit.Graph
+			The current graph.
+		"""
 		return Graph().setThis(self._this.getGraph())
 
 	def getCoordinates(self):
-		""" Get coordinates in the Poincare disk"""
+		""" 
+		getCoordinates()
+		
+		Get coordinates in the Poincare disk.
+		
+		Returns
+		-------
+		list(tuple(float,float))
+			2D coordinates for every node in the graph.
+		"""
 		return toPoint2DVector(self._this.getCoordinates())
 
 cdef extern from "<networkit/generators/DynamicDorogovtsevMendesGenerator.hpp>":
@@ -1044,11 +1388,10 @@ cdef extern from "<networkit/generators/DynamicDorogovtsevMendesGenerator.hpp>":
 
 
 cdef class DynamicDorogovtsevMendesGenerator:
-	""" Generates a graph according to the Dorogovtsev-Mendes model.
+	""" 
+	DynamicDorogovtsevMendesGenerator()
 
- 	DynamicDorogovtsevMendesGenerator()
-
- 	Constructs the generator class.
+	Generates a graph according to the Dorogovtsev-Mendes model.
 	"""
 	cdef _DynamicDorogovtsevMendesGenerator* _this
 
@@ -1059,12 +1402,20 @@ cdef class DynamicDorogovtsevMendesGenerator:
 		del self._this
 
 	def generate(self, nSteps):
-		""" Generate event stream.
+		""" 
+		generate(nSteps)
+		
+		Generate event stream.
 
-		Parameters:
-		-----------
-		nSteps : count
+		Parameters
+		----------
+		nSteps : int
 			Number of time steps in the event stream.
+
+		Returns
+		-------
+		list(networkit.dynamics.GraphEvent)
+			List of graph events.
 		"""
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
 
@@ -1075,30 +1426,32 @@ cdef extern from "<networkit/generators/RmatGenerator.hpp>":
 
 cdef class RmatGenerator(StaticGraphGenerator):
 	"""
+	RmatGenerator(scale, edgeFactor, a, b, c, d, weighted=False, reduceNodes=0)
+
 	Generates static R-MAT graphs. R-MAT (recursive matrix) graphs are
 	random graphs with n=2^scale nodes and m=nedgeFactor edges.
 	More details at http://www.graph500.org or in the original paper:
 	Deepayan Chakrabarti, Yiping Zhan, Christos Faloutsos:
 	R-MAT: A Recursive Model for Graph Mining. SDM 2004: 442-446.
 
-	RmatGenerator(scale, edgeFactor, a, b, c, d, weighted=False, reduceNodes=0)
-
-	Parameters:
-	-----------
-	scale : count
+	Parameters
+	----------
+	scale : int
 		Number of nodes = 2^scale
-	edgeFactor : count
+	edgeFactor : int
 		Number of edges = number of nodes * edgeFactor
-	a : double
+	a : float
 		Probability for quadrant upper left
-	b : double
+	b : float
 		Probability for quadrant upper right
-	c : double
+	c : float
 		Probability for quadrant lower left
-	d : double
+	d : float
 		Probability for quadrant lower right
-	weighted : bool
-		result graph weighted?
+	weighted : bool, optional
+		Indicates whether the resulting graph should be weighted. Default: False
+	reduceNodes : int, optional
+		The number of nodes, which should be deleted from the generated graph.
 	"""
 	paths = {"kronfitPath" : None}
 
@@ -1107,10 +1460,43 @@ cdef class RmatGenerator(StaticGraphGenerator):
 
 	@classmethod
 	def setPaths(cls, kronfitPath):
+		"""
+		setPaths(kronfitPath)
+
+		Helper function for fit. Sets an output folder for writing the result to.
+
+		Parameters
+		----------
+		kronfitPath : str
+			String containing a path.
+		"""
 		cls.paths["kronfitPath"] = kronfitPath
 
 	@classmethod
 	def fit(cls, G, scale=1, initiator=None, kronfit=True, iterations=50):
+		"""
+		fit(G, scale=1, initiator=None, kronfit=True, iterations=50)
+
+		Fit model to input graph
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		scale : int, optional
+			Scale the maximum number of nodes by a factor. Default: 1
+		initiator : tuple(float, float, float, float), optional
+			Initiate quadrants with custom values. Default: None
+		kronfit : bool, optional
+			Indicates whether a slower but more accurate fitting functions is used. Default: True
+		iterations: int, optional
+			Number of iterations. Default: 50
+
+		Returns
+		-------
+		networkit.Graph
+			A new scaled graph.
+		"""
 		import math
 		import re
 		import subprocess
@@ -1162,25 +1548,23 @@ cdef extern from "<networkit/generators/DynamicForestFireGenerator.hpp>":
 
 cdef class DynamicForestFireGenerator:
 	""" 
-	Generates a graph according to the forest fire model.
-	The forest fire generative model produces dynamic graphs with the following properties:
-    heavy tailed degree distribution
-    communities
-    densification power law
-    shrinking diameter
+	DynamicForestFireGenerator(p, directed, r = 1.0)
 
-	see Leskovec, Kleinberg, Faloutsos: Graphs over Tim: Densification Laws,
+	Generates a graph according to the forest fire model. The forest fire generative model produces dynamic 
+	graphs with the properties heavy tailed, degree distribution communities, densification, power law, shrinking diameter.
+
+	See Leskovec, Kleinberg, Faloutsos: Graphs over Tim: Densification Laws,
 	Shringking Diameters and Possible Explanations
 
-	DynamicForestFireGenerator(double p, bool directed, double r = 1.0)
 
-	Constructs the generator class.
-
-	Parameters:
-	-----------
-	p : forward burning probability.
-	directed : decides whether the resulting graph should be directed
-	r : optional, backward burning probability
+	Parameters
+	----------
+	p : float
+		Forward burning probability.
+	directed : bool
+		Decides whether the resulting graph should be directed.
+	r : float, optional
+		Backward burning probability.
 	"""
 	cdef _DynamicForestFireGenerator* _this
 
@@ -1192,12 +1576,19 @@ cdef class DynamicForestFireGenerator:
 
 	def generate(self, nSteps):
 		"""
+		generate(nSteps)
+
 		Generate event stream.
 
-		Parameters:
-		-----------
-		nSteps : count
+		Parameters
+		----------
+		nSteps : int
 			Number of time steps in the event stream.
+		
+		Returns
+		-------
+		list(networkit.dynamics.GraphEvent)
+			List of graph events.
 		"""
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
 
@@ -1208,16 +1599,16 @@ cdef extern from "<networkit/generators/RegularRingLatticeGenerator.hpp>":
 
 cdef class RegularRingLatticeGenerator(StaticGraphGenerator):
 	"""
+	RegularRingLatticeGenerator(nNodes, nNeighbors)
+
 	Constructs a regular ring lattice.
 
-	RegularRingLatticeGenerator(count nNodes, count nNeighbors)
-
-	Constructs the generator.
-
-	Parameters:
-	-----------
-	nNodes : number of nodes in the target graph.
-	nNeighbors : number of neighbors on each side of a node
+	Parameters
+	----------
+	nNodes : int
+		Number of nodes in the target graph.
+	nNeighbors : int
+		Number of neighbors on each side of a node.
 	"""
 
 	def __cinit__(self, nNodes, nNeighbors):
@@ -1230,20 +1621,22 @@ cdef extern from "<networkit/generators/WattsStrogatzGenerator.hpp>":
 		_WattsStrogatzGenerator(count nNodes, count nNeighbors, double p) except +
 
 cdef class WattsStrogatzGenerator(StaticGraphGenerator):
-	""" Generates a graph according to the Watts-Strogatz model.
+	""" 
+	WattsStrogatzGenerator(nNodes, nNeighbors, p)
+
+	Generates a graph according to the Watts-Strogatz model.
 
 	First, a regular ring lattice is generated. Then edges are rewired
-		with a given probability.
+	with a given probability.
 
-	WattsStrogatzGenerator(count nNodes, count nNeighbors, double p)
-
-	Constructs the generator.
-
-	Parameters:
-	-----------
-	nNodes : Number of nodes in the target graph.
-	nNeighbors : number of neighbors on each side of a node
-	p : rewiring probability
+	Parameters
+	----------
+	nNodes : int
+		Number of nodes in the target graph.
+	nNeighbors : int
+		Number of neighbors on each side of a node.
+	p : float
+		Rewiring probability.
 	"""
 
 	def __cinit__(self, nNodes, nNeighbors, p):
@@ -1258,6 +1651,8 @@ cdef extern from "<networkit/generators/EdgeSwitchingMarkovChainGenerator.hpp>":
 
 cdef class EdgeSwitchingMarkovChainGenerator(StaticGraphGenerator):
 	"""
+	EdgeSwitchingMarkovChainGenerator(degreeSequence, ignoreIfNotRealizable=False, numSwitchesPerEdge=10)
+
 	Graph generator for generating a random simple graph with exactly the given degree sequence based on the Edge-Switching Markov-Chain method.
 
 	This implementation is based on the paper
@@ -1273,27 +1668,65 @@ cdef class EdgeSwitchingMarkovChainGenerator(StaticGraphGenerator):
 	in order to limit the running time, at most 200 times as many attempts to perform an edge swap are made (as certain degree distributions
 	do not allow edge swaps at all).
 
-	Parameters:
-	-----------
-	degreeSequence : vector[count]
-		The degree sequence that shall be generated
+	Parameters
+	----------
+	degreeSequence : list(int)
+		The degree sequence that shall be generated.
 	ignoreIfNotRealizable : bool, optional
-		If true, generate the graph even if the degree sequence is not realizable. Some nodes may get lower degrees than requested in the sequence.
-	numSwitchesPerEdge : count, optional
-		Average number of edge switches per edge produced (default: 10)
+		If true, generate the graph even if the degree sequence is not realizable. 
+		Some nodes may get lower degrees than requested in the sequence. Default: False
+	numSwitchesPerEdge : int, optional
+		Average number of edge switches per edge produced. Default: 10
 	"""
 
 	def __cinit__(self, vector[count] degreeSequence, bool_t ignoreIfNotRealizable = False, count numSwitchesPerEdge = 10):
 		self._this = new _EdgeSwitchingMarkovChainGenerator(degreeSequence, ignoreIfNotRealizable, numSwitchesPerEdge)
 
 	def isRealizable(self):
+		"""
+		isRealizable()
+
+		Test if degree sequence is realizable.
+
+		Returns
+		-------
+		bool
+			Indicator for realizable degree sequence.
+		"""
 		return (<_EdgeSwitchingMarkovChainGenerator*>(self._this)).isRealizable()
 
 	def getRealizable(self):
+		"""
+		getRealizable()
+
+		Get realizable state without testing.
+
+		Returns
+		-------
+		bool
+			Indicator for realizable degree sequence.
+		"""
 		return (<_EdgeSwitchingMarkovChainGenerator*>(self._this)).getRealizable()
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
+		"""
+		fit(G, scale=1)
+
+		Fit model to input graph
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		scale : int, optional
+			Scale the maximum number of nodes by a factor. Default: 1
+
+		Returns
+		-------
+		networkit.Graph
+			A new scaled graph.
+		"""
 		degSeq = DegreeCentrality(G).run().scores()
 		return cls(degSeq * scale, ignoreIfRealizable=True)
 
@@ -1306,7 +1739,11 @@ cdef extern from "<networkit/generators/DynamicPathGenerator.hpp>":
 		vector[_GraphEvent] generate(count nSteps) except +
 
 cdef class DynamicPathGenerator:
-	""" Example dynamic graph generator: Generates a dynamically growing path. """
+	""" 
+	DynamicPathGenerator()
+
+	Example dynamic graph generator: Generates a dynamically growing path. 
+	"""
 	cdef _DynamicPathGenerator* _this
 
 	def __cinit__(self):
@@ -1316,10 +1753,27 @@ cdef class DynamicPathGenerator:
 		del self._this
 
 	def generate(self, nSteps):
+		"""
+		generate(nSteps)
+
+		Generate event stream.
+
+		Parameters
+		----------
+		nSteps : int
+			Number of time steps in the event stream.
+		
+		Returns
+		-------
+		list(networkit.dynamics.GraphEvent)
+			List of graph events.
+		"""
 		return [GraphEvent(ev.type, ev.u, ev.v, ev.w) for ev in self._this.generate(nSteps)]
 
 class BTERReplicator:
 	"""
+	BTERReplicator()
+
 	Wrapper class that calls the BTER graph generator implementation in
 	FEASTPACK from http://www.sandia.gov/~tgkolda/feastpack/ using GNU
 	Octave.
@@ -1350,6 +1804,16 @@ class BTERReplicator:
 
 	@classmethod
 	def setPaths(cls, feastpackPath):
+		"""
+		setPaths(feastpackPath)
+
+		Helper function for fit. Sets an output folder for writing the result to.
+
+		Parameters
+		----------
+		feastpackPath : str
+			String containing a path.
+		"""
 		cls.feastpackPath = feastpackPath
 
 	def __init__(self, G, scale=1):
@@ -1357,6 +1821,11 @@ class BTERReplicator:
 		self.scale = scale
 
 	def generate(self):
+		"""
+		generate()
+
+		Generate graph.
+		"""
 		from . import graphio
 		with tempfile.TemporaryDirectory() as tmpdir:
 			scriptPath = os.path.join(tmpdir, "bter_wrapper.m")
@@ -1375,5 +1844,22 @@ class BTERReplicator:
 
 	@classmethod
 	def fit(cls, G, scale=1):
+		"""
+		fit(G, scale=1)
+
+		Fit model to input graph
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		scale : int, optional
+			Scale the maximum number of nodes by a factor. Default: 1
+
+		Returns
+		-------
+		networkit.Graph
+			A new scaled graph.
+		"""
 		return cls(G, scale)
 
