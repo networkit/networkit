@@ -93,19 +93,23 @@ cdef extern from "<networkit/graph/Dijkstra.hpp>" namespace "NetworKit::Traversa
 	void DijkstraFrom[InputIt, Callback](_Graph G, InputIt first, InputIt last, Callback c) nogil except +
 
 cdef class Traversal:
-
+	"""
+	All methods from this module are static. It is not needed to create a Traversal object before calling the functions.
+	"""
 	@staticmethod
 	def BFSfrom(Graph graph, start, object callback):
 		"""
+		BFSfrom(graph, start, callback)
+
 		Iterate over nodes in breadth-first search order starting from the given node(s).
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		graph : networkit.Graph
 			The input graph.
-		start : node/list
+		start : int or list(int)
 			Single node or list of nodes from where the BFS will start.
-		callback : Function
+		callback : function
 			Takes either one (node) or two (node, distance) input parameters.
 		"""
 
@@ -125,16 +129,18 @@ cdef class Traversal:
 	@staticmethod
 	def BFSEdgesFrom(Graph graph, node start, object callback):
 		"""
+		BFSEdgesFrom(graph, start, callback)
+
 		Iterate over edges in breadth-first search order starting from the given node(s).
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		graph : networkit.Graph
 			The input graph.
-		start : node/list
+		start : int or list(int)
 			Single node or list of nodes from where the BFS will start.
-		callback : Function
-			Takes four input parameters: (u, v, edgeweight, edgeid)
+		callback : function
+			Takes four input parameters: (u, v, edgeweight, edgeid).
 		"""
 
 		cdef TraversalEdgeCallBackWrapper *wrapper
@@ -148,15 +154,17 @@ cdef class Traversal:
 	@staticmethod
 	def DFSfrom(Graph graph, node start, object callback):
 		"""
+		DFSfrom(graph, start, callback)
+
 		Iterate over nodes in depth-first search order starting from the given node(s).
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		graph : networkit.Graph
 			The input graph.
-		start : node
+		start : int
 			Source node from where the DFS will start.
-		callback : Function
+		callback : function
 			Takes a node as input parameter.
 		"""
 		cdef TraversalNodeCallbackWrapper *wrapper
@@ -169,16 +177,18 @@ cdef class Traversal:
 	@staticmethod
 	def DFSEdgesFrom(Graph graph, node start, object callback):
 		"""
+		DFSEdgesFrom(graph, start, callback)
+
 		Iterate over edges in depth-first search order starting from the given node(s).
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		graph : networkit.Graph
 			The input graph.
-		start : node
+		start : int
 			Source node from where the DFS will start.
-		callback : Function
-			Takes four input parameters: (u, v, edgeweight, edgeid)
+		callback : function
+			Takes four input parameters: (u, v, edgeweight, edgeid).
 		"""
 		cdef TraversalEdgeCallBackWrapper *wrapper
 		try:
@@ -190,15 +200,17 @@ cdef class Traversal:
 	@staticmethod
 	def DijkstraFrom(Graph graph, start, object callback):
 		"""
+		DijkstraFrom(graph, start, callback)
+
 		Iterate over nodes with Dijkstra search order starting from the given node(s).
 
-		Parameters:
-		-----------
+		Parameters
+		----------
 		graph : networkit.Graph
 			The input graph.
-		start : node/list
+		start : int or list(int)
 			Single node or list of nodes from where Dijkstra will start.
-		callback : Function
+		callback : function
 			Takes either one (node) or two (node, distance) input parameters.
 		"""
 

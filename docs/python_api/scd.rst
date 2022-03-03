@@ -1,5 +1,5 @@
 networkit.scd
-=======================
+=============
 
 .. automodule:: networkit.scd
     :members:

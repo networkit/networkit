@@ -61,13 +61,31 @@ cdef class GraphLayoutAlgorithm:
 		self._G = None # just to be sure the graph is deleted
 
 	def numEdgeCrossings(self):
-		""" Computes approximation (in parallel) of the Spanning Edge Centrality. """
+		""" 
+		numEdgeCrossings()
+		
+		Computes approximation (in parallel) of the Spanning Edge Centrality.
+		
+		Returns
+		-------
+		int
+			Number of edge crossings.
+		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return self._this.numEdgeCrossings()
 
 	def getCoordinates(self):
-		""" Computes approximation (in parallel) of the Spanning Edge Centrality. """
+		""" 
+		getCoordinates()
+		
+		Computes approximation (in parallel) of the Spanning Edge Centrality.
+		
+		Returns
+		-------
+		list(tuple(float, float))
+			List of coordinates for each node.
+		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		cdef vector[vector[double]] pairCoord = vector[vector[double]]()

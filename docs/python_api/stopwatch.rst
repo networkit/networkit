@@ -1,5 +1,5 @@
 networkit.stopwatch
-====================
+===================
 
 .. automodule:: networkit.stopwatch
     :members:

@@ -8,7 +8,8 @@
 
 import time
 
-"""stopwatch is a very simple Python module for measuring time.
+"""
+stopwatch is a very simple Python module for measuring time.
 Great for finding out how long code takes to execute.
 
 >>> import stopwatch
@@ -25,77 +26,127 @@ Great for finding out how long code takes to execute.
 Decorator exists for printing out execution times:
 >>> from stopwatch import clockit
 >>> @clockit
-    def mult(a, b):
-        return a * b
+	def mult(a, b):
+		return a * b
 >>> print mult(2, 6)
 mult in 1.38282775879e-05 sec
 6
-       
+	   
 """
 
 __version__ = '0.3.1'
 __author__ = 'John Paulett <http://blog.7oars.com>'
 
 class Timer(object):
-    def __init__(self):
-        self.__stopped = None
-        self.__start = self.__time()
+	"""
+	Main stopwatch object, providing functionality to measure time.
+	"""
+	def __init__(self):
+		self.__stopped = None
+		self.__start = self.__time()
 
-    def stop(self):
-        """Stops the clock permanently for the instance of the Timer.
-        Returns the time at which the instance was stopped.
-        """
-        self.__stopped = self.__last_time()
-        return self.elapsed
+	def stop(self):
+		"""
+		stop()		
 
-    def elapsed(self):
-        """The number of seconds since the current time that the Timer
-        object was created.  If stop() was called, it is the number
-        of seconds from the instance creation until stop() was called.
-        """
-        return self.__last_time() - self.__start
-    elapsed = property(elapsed)
-    
-    def start_time(self):
-        """The time at which the Timer instance was created.
-        """
-        return self.__start
-    start_time = property(start_time)
-    
-    def stop_time(self):
-        """The time at which stop() was called, or None if stop was 
-        never called.
-        """
-        return self.__stopped 
-    stop_time = property(stop_time)        
-    
-    def __last_time(self):
-        """Return the current time or the time at which stop() was call,
-        if called at all.
-        """
-        if self.__stopped is not None:
-            return self.__stopped
-        return self.__time()
-    
-    def __time(self):
-        """Wrapper for time.time() to allow unit testing.
-        """
-        return time.time()
-    
-    def __str__(self):
-        """Nicely format the elapsed time
-        """
-        return str(self.elapsed) + ' sec'
+		Stops the clock permanently for the instance of the Timer.
+		Returns the time at which the instance was stopped.
+
+		Returns
+		-------
+		float
+			Stop time.
+		"""
+		self.__stopped = self.__last_time()
+		return self.elapsed
+
+	def elapsed(self):
+		"""
+		elapsed()
+
+		The number of seconds since the current time that the Timer
+		object was created.  If stop() was called, it is the number
+		of seconds from the instance creation until stop() was called.
+
+		Returns
+		-------
+		float
+			Elapsed time.
+		"""
+		return self.__last_time() - self.__start
+	elapsed = property(elapsed)
+	
+	def start_time(self):
+		"""
+		start_time()		
+
+		The time at which the Timer instance was created.
+
+		Returns
+		-------
+		float
+			Starting time.
+		"""
+		return self.__start
+	start_time = property(start_time)
+	
+	def stop_time(self):
+		"""
+		stop_time()
+
+		The time at which stop() was called, or None if stop was 
+		never called.
+
+		Returns
+		-------
+		float or None
+			Stop time.
+		"""
+		return self.__stopped 
+	stop_time = property(stop_time)        
+	
+	def __last_time(self):
+		"""Return the current time or the time at which stop() was call,
+		if called at all.
+		"""
+		if self.__stopped is not None:
+			return self.__stopped
+		return self.__time()
+	
+	def __time(self):
+		"""Wrapper for time.time() to allow unit testing.
+		"""
+		return time.time()
+	
+	def __str__(self):
+		"""Nicely format the elapsed time
+		"""
+		return str(self.elapsed) + ' sec'
 
 def clockit(func):
-    """Function decorator that times the evaluation of *func* and prints the
-    execution time.
-    """
-    def new(*args, **kw):
-        t = Timer()
-        retval = func(*args, **kw)
-        t.stop()
-        print('%s in %s') % (func.__name__, t)
-        del t
-        return retval
-    return new
+	"""
+	clockit(func)	
+
+	Function decorator that times the evaluation of *func* and prints the
+	execution time.
+
+	Example
+	-------
+
+	..code
+	
+		>>> from stopwatch import clockit
+		>>> @clockit
+			def mult(a, b):
+				return a * b
+		>>> print mult(2, 6)
+		mult in 1.38282775879e-05 sec
+	"""
+	def new(*args, **kw):
+		t = Timer()
+		retval = func(*args, **kw)
+		t.stop()
+		print('%s in %s') % (func.__name__, t)
+		del t
+		return retval
+	return new

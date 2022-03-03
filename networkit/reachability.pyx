@@ -35,12 +35,14 @@ cdef extern from "<networkit/reachability/ReachableNodes.hpp>":
 
 cdef class ReachableNodes(Algorithm):
 	"""
+	ReachableNodes(G, exact)	
+
 	Determines or estimates the number of reachable nodes from each node in the graph.
 
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
-		The graph.
+		The input graph.
 	exact : bool
 		Whether or not to compute the number of reachable nodes exactly. Only
 		used for directed graphs, on undirected graphs the number of reachable
@@ -55,15 +57,17 @@ cdef class ReachableNodes(Algorithm):
 
 	def numberOfReachableNodes(self, node u):
 		"""
+		numberOfReachableNodes(u)
+
 		Returns the number of reachable nodes from the given node 'u'. Only available if 'exact' is true.
 
-		Parameters:
-		-----------
-		u : node
+		Parameters
+		----------
+		u : int
 			A node.
 
-		Returns:
-		--------
+		Returns
+		-------
 		int
 			The number of nodes reachable from 'u'.
 		"""
@@ -71,15 +75,17 @@ cdef class ReachableNodes(Algorithm):
 
 	def numberOfReachableNodesLB(self, node u):
 		"""
+		numberOfReachableNodesLB(u)
+
 		Returns a lower bound of the number of reachable nodes from the given node 'u'.
 
-		Parameters:
-		-----------
-		u : node
+		Parameters
+		----------
+		u : int
 			A node.
 
-		Returns:
-		--------
+		Returns
+		-------
 		int
 			Lower bound of number of nodes reachable from 'u'.
 		"""
@@ -87,15 +93,17 @@ cdef class ReachableNodes(Algorithm):
 
 	def numberOfReachableNodesUB(self, node u):
 		"""
+		numberOfReachableNodesUB(u)
+
 		Returns an upper bound of the number of reachable nodes from the given node 'u'.
 
-		Parameters:
-		-----------
-		u : node
+		Parameters
+		----------
+		u : int
 			A node.
 
-		Returns:
-		--------
+		Returns
+		-------
 		int
 			Upper bound of number of nodes reachable from 'u'.
 		"""
@@ -134,26 +142,26 @@ cdef extern from "<networkit/reachability/AllSimplePaths.hpp>":
 
 cdef class AllSimplePaths(Algorithm):
 	"""
+	AllSimplePaths(G, source, target, cutoff=None)
+
 	Algorithm to compute all existing simple paths from a source node to a
 	target node. The maximum length of the paths can be fixed through 'cutoff'.
 
+	Note
+	----
 	CAUTION: This algorithm could take a lot of time on large networks (many
 	edges), especially if the cutoff value is high or not specified.
 
-	AllSimplePaths(G, source, target, cutoff=none)
-
-	Create AllSimplePaths for `G`, source node `source`, target node 'target' and cutoff 'cutoff'.
-
-	Parameters:
-	-----------
+	Parameters
+	----------
 	G : networkit.Graph
-		The graph.
-	source : node
+		The input graph.
+	source : int
 		The source node.
-	target : node
+	target : int
 		The target node.
-	cutoff : count
-		(optional) The maximum length of the simple paths.
+	cutoff : int, optional
+		The maximum length of the simple paths. Default: None
 
 	"""
 
@@ -165,30 +173,37 @@ cdef class AllSimplePaths(Algorithm):
 
 	def numberOfSimplePaths(self):
 		"""
+		numberOfSimplePaths()
+
 		Returns the number of simple paths.
 
-		Returns:
-		--------
-		count
+		Returns
+		-------
+		int
 			The number of simple paths.
 		"""
 		return (<_AllSimplePaths*>(self._this)).numberOfSimplePaths()
 
 	def getAllSimplePaths(self):
 		"""
+		getAllSimplePaths()
+
 		Returns all the simple paths from source to target.
 
-		Returns:
-		--------
-		A vector of vectors.
-			A vector containing vectors which represent all simple paths.
+		Returns
+		-------
+		list(list(int))
+			A list containing all simple paths (each represented by a list of nodes).
 		"""
 		return (<_AllSimplePaths*>(self._this)).getAllSimplePaths()
 
 	def forAllSimplePaths(self, object callback):
-		""" More efficient path iterator. Iterates over all the simple paths.
+		""" 
+		forAllSimplePaths(callback)		
 
-		Parameters:
+		More efficient path iterator. Iterates over all the simple paths.
+
+		Parameters
 		-----------
 		callback : object
 			Any callable object that takes the parameter path

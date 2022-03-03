@@ -22,12 +22,22 @@ namespace NetworKit {
 class EpidemicSimulationSEIR final : public Algorithm {
 public:
     /**
+     * Simulates an epidemic spread using the Susceptible-Exposed-Infectious-Removed (SEIR) model.
      * @param G The network.
+     * @param tMax Max. number of timesteps.
+     * @param transP Transmission probability.
+     * @param eTime Exposed time.
+     * @param iTime Infectious time.
+     * @param zero Starting node.
      */
     EpidemicSimulationSEIR(const Graph& G, count tMax, double transP, count eTime, count iTime, node zero);
 
     void run() override;
 
+    /**
+     * Returns the data from the simulation (only valid after run() was called). 
+     * @return Vector of vectors, containing "zero", "time", "state" and "count" values for each node.
+     */
     std::vector<std::vector<count>> getData() const;
 
 private:

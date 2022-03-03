@@ -1,7 +1,16 @@
 # distutils: language=c++
 
 cdef class Cover:
-	""" Implements a cover of a set, i.e. an assignment of its elements to possibly overlapping subsets. """
+	""" 
+	Cover(n=0)
+	
+	Implements a cover of a set, i.e. an assignment of its elements to possibly overlapping subsets.
+	
+	Parameters
+	----------
+	n : int or networkit.Partition, optional
+		Used for initialization of the cover. Either a node or a partition. Default: 0
+	"""
 	def __cinit__(self, n=0):
 		if isinstance(n, Partition):
 			self._this = move(_Cover((<Partition>n)._this))
@@ -13,153 +22,209 @@ cdef class Cover:
 		return self
 
 	def subsetsOf(self, e):
-		""" Get the ids of subsets in which the element `e` is contained.
+		""" 
+		subsetsOf(e)		
 
-		Parameters:
-		-----------
-		e : index
+		Get the ids of subsets in which the element `e` is contained.
+
+		Parameters
+		----------
+		e : int
 			An element
 
-		Returns:
-		--------
-		set
-			A set of subset ids in which `e` 	is contained.
+		Returns
+		-------
+		list(int)
+			A set of subset ids in which `e` is contained.
 		"""
 		return self._this.subsetsOf(e)
 
 	def extend(self):
+		"""
+		extend()
+
+		Add an additional element (node).
+
+		Returns
+		-------
+		int
+			Id of added node.
+		"""
 		return self._this.extend()
 
 	def addToSubset(self, s, e):
-		""" Add the (previously unassigned) element `e` to the set `s`.
+		"""
+		addToSubset(s, e)
 
-		Parameters:
-		-----------
-		s : index
-			A subset
-		e : index
-			An element
+		Add the (previously unassigned) element `e` to the set `s`.
+
+		Parameters
+		----------
+		s : int
+			The input subset.
+		e : int
+			The element to be added.
 		"""
 		self._this.addToSubset(s, e)
 
 	def removeFromSubset(self, s, e):
-		""" Remove the element `e` from the set `s`.
+		""" 
+		removeFromSubset(s, e)
+		
+		Remove the element `e` from the set `s`.
 
-		Parameters:
-		-----------
-		s : index
-			A subset
-		e : index
-			An element
+		Parameters
+		----------
+		s : int
+			The input subset.
+		e : int
+			The element to be removed.
 		"""
 		self._this.removeFromSubset(s, e)
 
 	def moveToSubset(self, index s, index e):
-		""" Move the element `e` to subset `s`, i.e. remove it from all other subsets and place it in the subset.
+		""" 
+		moveToSubset(s, e)
 
-		Parameters:
-		-----------
-		s : index
-			A subset
-		e : index
-			An element
+		Move the element `e` to subset `s`, i.e. remove it from all other subsets and place it in the subset.
+
+		Parameters
+		----------
+		s : int
+			The input subset.
+		e : int
+			The element to be moved.
 		"""
 		self._this.moveToSubset(s, e)
 
 	def toSingleton(self, index e):
-		""" Creates a singleton set containing the element `e` and returns the index of the new set.
+		""" 
+		toSingleton(e)
 
-		Parameters:
-		-----------
-		e : index
-			An element
+		Creates a singleton set containing the element `e` and returns the index of the new set.
 
-		Returns:
-		--------
-		index
-			The index of the new set.
+		Parameters
+		----------
+		e : int
+			The input element.
+
+		Returns
+		-------
+		int
+			The id of the new set.
 		"""
 		self._this.toSingleton(e)
 
 	def allToSingletons(self):
-		""" Assigns every element to a singleton set. Set id is equal to element id. """
+		""" 
+		allToSingletons()		
+
+		Assigns every element to a singleton set. Set id is equal to element id. 
+		"""
 		self._this.allToSingletons()
 
 	def mergeSubsets(self, index s, index t):
-		""" Assigns the elements from both sets to a new set.
+		""" 
+		mergeSubsets(s, t)		
 
-		Parameters:
-		-----------
-		s : index
-			A subset
-		t : index
-			A subset
+		Assigns the elements from both sets to a new set.
+
+		Parameters
+		----------
+		s : int
+			The first subset.
+		t : int
+			The second subset.
 		"""
 		self._this.mergeSubsets(s, t)
 
 	def setUpperBound(self, index upper):
+		"""
+		setUpperBound(upper)
+
+		Sets an upper bound for the subset ids that CAN be assigned.
+
+		Parameters
+		----------
+		upper : int
+			Upper bound.
+		"""
 		self._this.setUpperBound(upper)
 
 	def upperBound(self):
-		""" Get an upper bound for the subset ids that have been assigned.
+		""" 
+		upperBound()		
+
+		Get an upper bound for the subset ids that have been assigned.
 		(This is the maximum id + 1.)
 
-		Returns:
-		--------
-		index
+		Returns
+		-------
+		int
 			An upper bound.
 		"""
 		return self._this.upperBound()
 
 	def lowerBound(self):
-		""" Get a lower bound for the subset ids that have been assigned.
+		""" 
+		lowerBound()		
 
-		Returns:
-		--------
-		index
+		Get a lower bound for the subset ids that have been assigned.
+
+		Returns
+		-------
+		int
 			A lower bound.
 		"""
 		return self._this.lowerBound()
 
 	def contains(self, index e):
-		"""  Check if cover assigns a valid subset to the element `e`.
+		"""
+		contains(e)		
 
-		Parameters:
-		-----------
-		e : index
-			An element.
+		Check if cover assigns a valid subset to the element `e`.
 
-		Returns:
-		--------
+		Parameters
+		----------
+		e : int
+			The input element.
+
+		Returns
+		-------
 		bool
 			True, if `e` is assigned to a valid subset, False otherwise.
-
 		"""
 		return self._this.contains(e)
 
 	def inSameSubset(self, index e1, index e2):
-		"""  Check if two elements `e1` and `e2` belong to the same subset.
+		"""
+		inSameSubset(e1, e2)
+		
+		Check if two elements `e1` and `e2` belong to the same subset.
 
-		Parameters:
-		-----------
-	 	e1 : index
-			An element.
-		e2 : index
-			An element.
+		Parameters
+		----------
+	 	e1 : int
+			The first element.
+		e2 : int
+			The second element.
 
-		Returns:
-		--------
+		Returns
+		-------
 		bool
-			True, if `e1` and `e2` belong to the same subset, False otherwise.
+			True if `e1` and `e2` belong to the same subset; False otherwise.
 		"""
 		return self._this.inSameSubset(e1, e2)
 
 	def subsetSizes(self):
-		""" Get a list of subset sizes.
+		""" 
+		subsetSizes()		
 
-		Returns:
-		--------
-		list
+		Get a list of subset sizes.
+
+		Returns
+		-------
+		list(int)
 			A list of subset sizes.
 
 		Notes
@@ -169,67 +234,83 @@ cdef class Cover:
 		return self._this.subsetSizes()
 
 	def subsetSizeMap(self):
-		""" Get a map from subset id to size of the subset.
+		""" 
+		subsetSizeMap()		
 
-		Returns:
-		--------
-		dict
+		Get a map from subset id to size of the subset.
+
+		Returns
+		-------
+		dict(int `:` int)
 			A map from subset id to size of the subset.
 		"""
 		return self._this.subsetSizeMap()
 
 	def getMembers(self, s):
-		""" Get the members of a specific subset `s`.
+		""" 
+		getMembers(s)		
 
-		Returns:
-		--------
-		set
-			The set of members of subset `s`.
+		Get the members of a specific subset `s`.
+
+		Returns
+		-------
+		list(int)
+			The list of members of subset `s`.
 		"""
 		return self._this.getMembers(s)
 
 	def numberOfElements(self):
-		""" Get the current number of elements in this cover.
+		""" 
+		numberOfElements()		
 
-		Returns:
-		--------
-		count
+		Get the current number of elements in this cover.
+
+		Returns
+		-------
+		int
 			The current number of elements.
 		"""
 		return self._this.numberOfElements()
 
 	def numberOfSubsets(self):
-		"""  Get the current number of sets in this cover.
+		"""  
+		numberOfSubsets()		
 
-		Returns:
-		--------
-		count
+		Get the current number of sets in this cover.
+
+		Returns
+		-------
+		int
 			The number of sets in this cover.
 		"""
 		return self._this.numberOfSubsets()
 
 	def getSubsetIds(self):
-		""" Get the ids of nonempty subsets.
+		""" 
+		getSubsetIds()		
 
-		Returns:
-		--------
-		set
-			A set of ids of nonempty subsets.
+		Get the ids of nonempty subsets.
+
+		Returns
+		-------
+		list(int)
+			A list of ids of nonempty subsets.
 		"""
 		return self._this.getSubsetIds()
 
 cdef class Partition:
-	""" Implements a partition of a set, i.e. a subdivision of the
-		set into disjoint subsets.
+	""" 
+	Partition(z=0)
 
-		Partition(z=0)
+	Implements a partition of a set, i.e. a subdivision of the
+	set into disjoint subsets.
 
-		Create a new partition data structure for `z` elements.
+	Create a new partition data structure for `z` elements.
 
-		Parameters:
-		-----------
-		size : index, optional
-			Maximum index of an element. Default is 0.
+	Parameters
+	----------
+	size : int, optional
+		Maximum index of an element. Default: 0
 	"""
 
 	def __cinit__(self, index size=0, vector[index] data=[]):
@@ -240,36 +321,44 @@ cdef class Partition:
 
 	def __len__(self):
 		"""
-		Returns:
-		--------
-		count
+		__len__()
+
+		Returns
+		-------
+		int
 			Number of elements in the partition.
 		"""
 		return self._this.numberOfElements()
 
 	def __getitem__(self, index e):
-		""" Get the set (id) in which the element `e` is contained.
+		""" 
+		__getitem__(index e)
+		
+		Get the set (id) in which the element `e` is contained.
 
-		Parameters:
-		-----------
-	 	e : index
+		Parameters
+		----------
+	 	e : int
 	 		Index of element.
 
-		Returns:
-		--------
-		index
+		Returns
+		-------
+		int
 			The index of the set in which `e` is contained.
 		"""
 		return self._this.subsetOf(e)
 
 	def __setitem__(self, index e, index s):
-		""" Set the set (id) in which the element `e` is contained.
+		""" 
+		__setitem__(e, s)
 
-		Parameters:
-		-----------
-		e : index
+		Set the set (id) in which the element `e` is contained.
+
+		Parameters
+		----------
+		e : int
 			Index of the element
-		s : index
+		s : int
 			Index of the subset
 		"""
 		self._this.addToSubset(s, e)
@@ -291,271 +380,340 @@ cdef class Partition:
 		return self
 
 	def subsetOf(self, e):
-		""" Get the set (id) in which the element `e` is contained.
+		""" 
+		subsetOf(e)
+		
+		Get the set (id) in which the element `e` is contained.
 
-		Parameters:
-		-----------
-		e : index
+		Parameters
+		----------
+		e : int
 			Index of element.
 
-		Returns:
-		--------
-		index
+		Returns
+		-------
+		int
 			The index of the set in which `e` is contained.
 		"""
 		return self._this.subsetOf(e)
 
 	def extend(self):
-		""" Extend the data structure and create a slot	for one more element.
+		""" 
+		extend()
+
+		Extend the data structure and create a slot	for one more element.
 
 		Initializes the entry to `none` and returns the index of the entry.
 
-		Returns:
-		--------
-		index
+		Returns
+		-------
+		int
 			The index of the new element.
 		"""
 		return self._this.extend()
 
 	def addToSubset(self, s, e):
-		""" Add a (previously unassigned) element `e` to the set `s`.
+		"""
+		addToSubset(s, e)		
 
-		Parameters:
-		-----------
-		s : index
+		Add a (previously unassigned) element `e` to the set `s`.
+
+		Parameters
+		----------
+		s : int
 			The index of the subset.
-		e : index
+		e : int
 			The element to add.
 		"""
 		self._this.addToSubset(s, e)
 
 	def moveToSubset(self, index s, index e):
-		"""  Move the (previously assigned) element `e` to the set `s.
+		"""  
+		moveToSubset(s, e)	
 
-		Parameters:
-		-----------
-		s : index
+		Move the (previously assigned) element `e` to the set `s.
+
+		Parameters
+		----------
+		s : int
 			The index of the subset.
-		e : index
+		e : int
 			The element to move.
 		"""
 		self._this.moveToSubset(s, e)
 
 	def toSingleton(self, index e):
-		""" Creates a singleton set containing the element `e`.
+		""" 
+		toSingleton(e)		
 
-		Parameters:
-		-----------
-		e : index
+		Creates a singleton set containing the element `e`.
+
+		Parameters
+		----------
+		e : int
 			The index of the element.
 		"""
 		self._this.toSingleton(e)
 
 	def allToSingletons(self):
-		""" Assigns every element to a singleton set. Set id is equal to element id. """
+		""" 
+		allToSingletons()		
+
+		Assigns every element to a singleton set. Set id is equal to element id.
+		"""
 		self._this.allToSingletons()
 
 	def mergeSubsets(self, index s, index t):
-		""" Assigns the elements from both sets to a new set and returns the id of it.
+		""" 
+		mergeSubsets(s, t)		
 
-		Parameters:
-		-----------
-		s : index
+		Assigns the elements from both sets to a new set and returns the id of it.
+
+		Parameters
+		----------
+		s : int
 			Set to merge.
-		t : index
+		t : int
 			Set to merge.
 
-		Returns:
-		--------
-		index
+		Returns
+		-------
+		int
 			Id of newly created set.
 		"""
 		return self._this.mergeSubsets(s, t)
 
 	def setUpperBound(self, index upper):
-		""" Sets an upper bound for the subset ids that **can** be assigned.
+		"""
+		setUpperBound(upper)		
 
-		Parameters:
-		-----------
-		upper : index
-			Highest assigned subset id + 1
+		Sets an upper bound for the subset ids that **can** be assigned.
+
+		Parameters
+		----------
+		upper : int
+			Highest assigned subset id + 1.
 		"""
 		self._this.setUpperBound(upper)
 
 	def upperBound(self):
-		""" Return an upper bound for the subset ids that have been assigned.
+		""" 
+		upperBound()	
+
+		Return an upper bound for the subset ids that have been assigned.
 		(This is the maximum id + 1.)
 
-		Returns:
-		--------
-		index
+		Returns
+		-------
+		int
 			The upper bound.
 		"""
 		return self._this.upperBound()
 
 	def lowerBound(self):
-		""" Get a lower bound for the subset ids that have been assigned.
+		""" 
+		lowerBound()		
 
-		Returns:
-		--------
-		index
+		Get a lower bound for the subset ids that have been assigned.
+
+		Returns
+		-------
+		int
 			The lower bound.
 		"""
 		return self._this.lowerBound()
 
 	def compact(self, useTurbo = False):
-		""" Change subset IDs to be consecutive, starting at 0.
+		""" 
+		compact(userTurbo=False)		
 
-		Parameters:
-		-----------
-		useTurbo : bool
-			Default: false. If set to true, a vector instead of a map to assign new ids
-	 		which results in a shorter running time but possibly a large space overhead.
+		Change subset IDs to be consecutive, starting at 0.
 
+		Parameters
+		----------
+		useTurbo : bool, optional
+			If set to True, the C++ core uses a vector instead of a map to assign new ids 
+			which results in a shorter running time but possibly a large space overhead.
+			Default: False
 		"""
 		self._this.compact(useTurbo)
 
 	def contains(self, index e):
-		""" Check if partition assigns a valid subset to the element `e`.
+		""" 
+		contains(e)		
 
-		Parameters:
-		-----------
-		e : index
-			The element.
+		Check if partition assigns a valid subset to the element `e`.
 
-		Returns:
-		--------
+		Parameters
+		----------
+		e : int
+			The input element.
+
+		Returns
+		-------
 		bool
-			True if the assigned subset is valid, False otherwise.
+			True if the assigned subset is valid; False otherwise.
 		"""
 		return self._this.contains(e)
 
 	def inSameSubset(self, index e1, index e2):
-		""" Check if two elements `e1` and `e2` belong to the same subset.
+		""" 
+		inSameSubset(e1, e2)		
 
-		Parameters:
-		-----------
-		e1 : index
-			An Element.
-		e2 : index
-			An Element.
+		Check if two elements `e1` and `e2` belong to the same subset.
 
-		Returns:
-		--------
+		Parameters
+		----------
+		e1 : int
+			The first Element.
+		e2 : int
+			The second Element.
+
+		Returns
+		-------
 		bool
 			True if `e1` and `e2` belong to same subset, False otherwise.
 		"""
 		return self._this.inSameSubset(e1, e2)
 
 	def subsetSizes(self):
-		""" Get a list of subset sizes. Indices do not necessarily correspond to subset ids.
+		""" 
+		subsetSizes()		
 
-	 	Returns:
-	 	--------
-	 	vector
-	 		A vector of subset sizes.
+		Get a list of subset sizes. Indices do not necessarily correspond to subset ids.
+
+	 	Returns
+	 	-------
+	 	list(int)
+	 		A list of subset sizes.
 		"""
 		return self._this.subsetSizes()
 
 	def subsetSizeMap(self):
-		""" Get a map from subset id to size of the subset.
+		""" 
+		subsetSizeMap()		
 
-		Returns:
-		--------
-		dict
+		Get a map from subset id to size of the subset.
+
+		Returns
+		-------
+		dict(int `:` int)
 			A map from subset id to size of the subset.
 		"""
 		return self._this.subsetSizeMap()
 
 	def getMembers(self, s):
-		""" Get the members of the subset `s`.
+		""" 
+		getMembers(s)		
 
-		Parameters:
-		-----------
-		s : index
-			The subset.
+		Get the members of the subset `s`.
 
-		Returns:
-		--------
-		set
-			A set containing the members of `s.
+		Parameters
+		----------
+		s : int
+			The input subset.
+
+		Returns
+		-------
+		list(int)
+			A list containing the members of `s`.
 		"""
 		return self._this.getMembers(s)
 
 	def numberOfElements(self):
 		"""
-		Returns:
-		--------
-		count
+		numberOfElements()
+
+		Returns
+		-------
+		int
 			Number of elements in the partition.
 		"""
 		return self._this.numberOfElements()
 
 	def numberOfSubsets(self):
-		""" Get the current number of sets in this partition.
+		"""
+		numberOfSubsets()
 
-		Returns:
-		--------
-		count
+		Get the current number of sets in this partition.
+
+		Returns
+		-------
+		int
 			The current number of sets.
 		"""
 		return self._this.numberOfSubsets()
 
 	def getVector(self):
-		""" Get the actual vector representing the partition data structure.
+		""" 
+		getVector()		
 
-		Returns:
-		--------
-		vector
-			Vector containing information about partitions.
+		Get the actual vector representing the partition data structure.
+
+		Returns
+		-------
+		list(int)
+			List containing information about partitions.
 		"""
 		return self._this.getVector()
 
 	def setName(self, string name):
-		"""  Set a human-readable identifier `name` for the instance.
+		"""
+		setName(name)
 
-		Parameters:
-		-----------
-		name : string
-			The name.
+		Set a human-readable identifier `name` for the instance.
+
+		Parameters
+		----------
+		name : str
+			The input name.
 		"""
 		self._this.setName(name)
 
 	def getName(self):
-		""" Get the human-readable identifier.
+		"""
+		getName()
 
-		Returns:
-		--------
-		string
+		Get the human-readable identifier.
+
+		Returns
+		-------
+		str
 			The name of this partition.
 		"""
 		return self._this.getName()
 
 	def getSubsetIds(self):
-		""" Get the ids of nonempty subsets.
+		""" 
+		getSubsetIds()
 
-		Returns:
-		--------
-		set
+		Get the ids of nonempty subsets.
+
+		Returns
+		-------
+		list(int)
 			A set of ids of nonempty subsets.
 		"""
 		return self._this.getSubsetIds()
 
 	def __eq__(self, Partition other not None):
-		""" Compare self to other partition.
+		"""
+		__eq__(other)
+
+		Compare self to other partition.
 
 		Equality is independent of the used partition
 		ids. This tries to construct a mapping between the
 		partition ids and returns True if such a mapping can
 		be constructed.
 
-		Parameters:
-		-----------
-		other : Partition
+		Parameters
+		----------
+		other : networkit.Partition
 			The partition to compare to.
 
-		Returns:
-		--------
+		Returns
+		-------
 		bool
 			If the partitions are equal.
 		"""
