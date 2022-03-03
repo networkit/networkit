@@ -55,37 +55,6 @@ std::string getLogLevel() {
     }
 }
 
-namespace Settings {
-
-LogLevel getLogLevel() {
-    return NetworKit::GlobalState::getLogLevel();
-}
-
-void setLogLevel(LogLevel p) {
-    NetworKit::GlobalState::setLogLevel(p);
-}
-
-bool getPrintTime() {
-    return NetworKit::GlobalState::getPrintTime();
-}
-
-void setPrintTime(bool b) {
-    NetworKit::GlobalState::setPrintTime(b);
-}
-
-bool getPrintLocation() {
-    return NetworKit::GlobalState::getPrintLocation();
-}
-
-void setPrintLocation(bool b) {
-    NetworKit::GlobalState::setPrintLocation(b);
-}
-
-void setLogfile(const std::string &filename) {
-    NetworKit::GlobalState::setLogfile(filename);
-}
-} // namespace Settings
-
 void printLogLevel(std::ostream &stream, LogLevel p) {
     switch (p) {
     case LogLevel::fatal:

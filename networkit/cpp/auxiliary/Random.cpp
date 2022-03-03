@@ -41,10 +41,6 @@ uint64_t getSeed() {
     return getSeed_(NetworKit::GlobalState::getGlobalSeed());
 }
 
-bool getUseThreadId() {
-    return NetworKit::GlobalState::getSeedUseThreadId();
-}
-
 std::mt19937_64 &getURNG() {
     thread_local static std::mt19937_64 generator{getSeed()};
     thread_local static uint64_t localSeedGeneration{0};

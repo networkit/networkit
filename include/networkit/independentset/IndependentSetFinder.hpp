@@ -8,7 +8,6 @@
 #ifndef NETWORKIT_INDEPENDENTSET_INDEPENDENT_SET_FINDER_HPP_
 #define NETWORKIT_INDEPENDENTSET_INDEPENDENT_SET_FINDER_HPP_
 
-#include <tlx/define/deprecated.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
@@ -31,12 +30,6 @@ public:
      * @return A boolean vector of length n.
      */
     virtual std::vector<bool> run(const Graph &G) = 0;
-
-    /**
-     * Get string representation of the algorithm.
-     * @return The string representation of the algorithm.
-     */
-    virtual std::string TLX_DEPRECATED(toString() const);
 
     /**
      * Checks whether a set is independent.
