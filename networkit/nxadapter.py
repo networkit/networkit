@@ -19,8 +19,16 @@ else:
 
 def nx2nk(nxG, weightAttr=None):
 	"""
-	Convert a networkx.Graph to a NetworKit.Graph
-		:param weightAttr: the edge attribute which should be treated as the edge weight.
+	nx2nk(nxG, weightAttr=None)
+
+	Convert a networkx.Graph to a networkit.Graph.
+
+	Parameters
+	----------
+	nxG : networkx.Graph
+		The input networkx graph.
+	weightAttr : str, optional
+		The edge attribute which should be treated as the edge weight. Default: None
 	"""
 
 	if not have_nx:
@@ -49,7 +57,16 @@ def nx2nk(nxG, weightAttr=None):
 	return nkG
 
 def nk2nx(nkG):
-	""" Convert a NetworKit.Graph to a networkx.Graph """
+	""" 
+	nk2nx(nkG)
+
+	Convert a networKit.Graph to a networkx.Graph.
+
+	Parameters
+	----------
+	nkG : networkit.Graph
+		The input NetworKit graph.
+	"""
 
 	if not have_nx:
 		raise MissingDependencyError("networkx")

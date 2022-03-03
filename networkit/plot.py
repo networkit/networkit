@@ -24,7 +24,24 @@ else:
 	have_seaborn = True
 
 def nodeProperty(data, label, sorted=True, yscale="linear", xscale="linear"):
-	""" General plotting function for a node property"""
+	""" 
+	nodeProperty(data, label, sorted=True, yscale="linear", xscale="linear")
+	
+	General plotting function for a node property using matplotlib.
+	
+	Parameters
+	----------
+	data : `*kargs`
+		Input data for matplotlib.plot function. Refer to offical documentation for details: https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html
+	label : list(str)
+		Label for data points.
+	sorted : bool, optional
+		Indicates whether the plotted data points should be sorted. Default: True
+	yscale : str, optional
+		Indicates the scaling of y-axis. Default: True
+	xscale : str, optional
+		Indicates the scaling of x-axis. Default: True
+	"""
 	if not have_plt:
 		raise MissingDependencyError("matplotlib")
 	plt.yscale(yscale)
@@ -37,7 +54,18 @@ def nodeProperty(data, label, sorted=True, yscale="linear", xscale="linear"):
 
 
 def degreeDistribution(G, **kwargs):
-	"""Plots the degree distribution of the given network."""
+	"""
+	degreeDistribution(G, **kwargs)
+
+	Plots the degree distribution of the given network using matplotlib.
+	
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	`**kwargs` : `**kwargs`
+		Input data currently not used.
+	"""
 	if not have_plt:
 		raise MissingDependencyError("matplotlib")
 	dd = properties.degreeDistribution(G)
@@ -48,7 +76,18 @@ def degreeDistribution(G, **kwargs):
 	plt.plot(dd)
 
 def connectedComponentsSizes(G, **kwargs):
-	""" Plot the size distribution of connected components as a pie chart """
+	""" 
+	connectedComponentsSizes(G, **kwargs)
+	
+	Plot the size distribution of connected components as a pie chart using matplotlib. 
+	
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	`**kwargs` : `**kwargs`
+		Input parameter currently not used.
+	"""
 	if not have_seaborn:
 		raise MissingDependencyError("seaborn")
 	if not have_plt:
@@ -67,7 +106,18 @@ def connectedComponentsSizes(G, **kwargs):
 # TODO: hop plot
 
 def coreDecompositionSequence(G, **kwargs):
-	""" Plots the core decomposition sequence of G, i.e. the size of the k-shell for the core number k"""
+	""" 
+	coreDecompositionSequence(G, **kwargs)
+	
+	Plots the core decomposition sequence of G, i.e. the size of the k-shell for the core number k using matplotlib.
+	
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	`**kwargs` : `**kwargs`
+		Input parameter currently not used.
+	"""
 	if not have_plt:
 		raise MissingDependencyError("matplotlib")
 	if not have_pandas:
@@ -80,7 +130,18 @@ def coreDecompositionSequence(G, **kwargs):
 
 
 def clusteringPerDegree(G, **kwargs):
-	""" Plots the local clustering coefficient for nodes with specific degree"""
+	""" 
+	clusteringPerDegree(G, **kwargs)
+	
+	Plots the local clustering coefficient for nodes with specific degree.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	`**kwargs` : `**kwargs`
+		Input parameter currently not used.
+	"""
 	if not have_seaborn:
 		raise MissingDependencyError("seaborn")
 	if not have_pandas:
@@ -93,7 +154,18 @@ def clusteringPerDegree(G, **kwargs):
 
 
 def hopPlot(G, **kwargs):
-	""" Prints the hop-plot"""
+	""" 
+	hopPlot(G, **kwargs)
+	
+	Prints the hop-plot using matplotlib.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	`**kwargs` : `**kwargs`
+		Input parameter currently not used.
+	"""
 	#hop-plot
 	if not have_plt:
 		raise MissingDependencyError("matplotlib")

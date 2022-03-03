@@ -18,6 +18,18 @@ else:
 	have_tabulate = True
 
 def computeEdgeCut(partition, graph):
+	"""
+	computeEdgeCut(partition, graph)
+
+	Compute edge cut given by graph and a partition.
+
+	Parameters
+	----------
+	partition : networkit.Partition
+		The input partition.
+	graph : networkit.Graph
+		The input graph.
+	"""
 	cut = 0
 
 	for (n1, n2) in graph.iterEdges():
@@ -30,6 +42,18 @@ def computeEdgeCut(partition, graph):
 	return cut
 
 def computeImbalance(partition, graph):
+	"""
+	computeImbalance(partition, graph)
+	
+	Compute imbalance given by graph and a partition.
+
+	Parameters
+	----------
+	partition : networkit.Partition
+		The input partition.
+	graph : networkit.Graph
+		The input graph.
+	"""	
 	desired = math.ceil(graph.numberOfNodes() / float(partition.numberOfSubsets()))
 
 	maximum = max(partition.subsetSizes())
@@ -37,6 +61,18 @@ def computeImbalance(partition, graph):
 	return maximum / desired
 
 def inspectPartitions(partition, graph):
+	"""
+	inspectPartitions(partition, graph)
+	
+	Compute and visualize properties of a graph partition.
+
+	Parameters
+	----------
+	partition : networkit.Partition
+		The input partition.
+	graph : networkit.Graph
+		The input graph.
+	"""	
 	if not have_tabulate:
 		raise MissingDependencyError("tabulate")
 	partitionSizes = partition.subsetSizes()
@@ -55,26 +91,23 @@ def inspectPartitions(partition, graph):
 
 class SpectralPartitioner:
 	"""
-	Class to do spectral partitioning.
+	SpectralPartitioner(graph, count, balances=True)
 
+	Class to do spectral partitioning.
 
 	Please note that the code in this class assumes the nodes of a graph to be numbered
 	from 0 to n.
 
+	Parameters
+	----------
+	graph : networkit.Graph
+		The input graph.
+	count : int
+		The number of partitions to create.
+	balanced : bool, optional
+		Set this to false if you do not want to enforce balance, possibly increasing quality. Default: True
 	"""
 	def __init__(self, graph, count, balanced=True):
-		"""
-		Constructs the spectral parititoner.
-
-		Parameters:
-		-----------
-		graph: The graph to parititon
-		count (int): The number of partitions to create
-		balanced (boolean): Set this to false if you do not want to enforce balance, possibly increasing quality 
-
-		Remember to call run() afterwards.
-
-		"""
 		self.graph = graph
 		self.count = count
 
@@ -210,6 +243,8 @@ class SpectralPartitioner:
 
 	def run(self):
 		"""
+		run()
+
 		Runs the partitioning.
 		"""
 		self.nextPartition = 0
@@ -222,10 +257,13 @@ class SpectralPartitioner:
 
 	def getPartition(self):
 		"""
+		getPartition()
+
 		Retrieves the partitioning after run() was called.
 
-		Returns:
-		--------
-			A partition object
+		Returns
+		-------
+		networkit.Partition
+			The resulting partition. Only valid if :code:`run()` was called before.
 		"""
 		return self.partition

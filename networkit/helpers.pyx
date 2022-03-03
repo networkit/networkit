@@ -11,10 +11,22 @@ cdef extern from "<networkit/auxiliary/Parallel.hpp>" namespace "Aux::Parallel":
 
 def ranked(sample):
 	"""
+	ranked(sample)
+
 	Given a list of numbers, this function computes the rank of each value
 	and returns a list of ranks where result[i] is the rank of
 	the i-th element in the given sample.
-	Currently used in profiling.stat.
+	Currently used in networkit.profiling.stat.
+
+	Parameters
+	----------
+	sample : list(float)
+		Input list of values.
+
+	Returns
+	-------
+	list(float)
+		Ranking of input values.
 	"""
 	cdef vector[pair[double, count]] helper = vector[pair[double, count]](len(sample))
 	cdef vector[double] result = vector[double](len(sample), 0)
@@ -41,18 +53,63 @@ def ranked(sample):
 	return result
 
 def sorted(sample):
-	"""	Returns a sorted list of given numbers """
+	"""	
+	sorted(sample)	
+
+	Returns a sorted list of given numbers.
+
+	Note
+	----
+	DEPRECATED. Use :code:`sorted()` function provided by Python.
+
+	Parameters
+	----------
+	sample : list(float)
+		(Unsorted) input list of values.
+
+	Returns
+	-------
+	list(float)
+		Sorted list of values.
+	"""
 	cdef vector[double] result = <vector[double]?>sample
 	sort(result.begin(),result.end())
 	return result
 
 # Cython helper functions
 def stdstring(pystring):
-	""" convert a Python string to a bytes object which is automatically coerced to std::string"""
-	pybytes = pystring.encode("utf-8")
-	return pybytes
+	""" 
+	stdstring(pystring)
+
+	Convert a Python string to a bytes object which is automatically coerced to std::string.
+
+	Parameters
+	----------
+	pystring : str
+		Input python string.
+
+	Returns
+	-------
+	stdstring
+		Python bytes string.
+	"""
+	return pystring.encode("utf-8")
 
 def pystring(stdstring):
-	""" convert a std::string (= python byte string) to a normal Python string"""
+	""" 
+	pystring(stdstring)
+
+	Convert a std::string (= python byte string) to a normal Python string.
+
+	Parameters
+	----------
+	stdstring : str
+		Input python byte string.
+
+	Returns
+	-------
+	pystring
+		Python string.
+	"""
 	return stdstring.decode("utf-8")
 

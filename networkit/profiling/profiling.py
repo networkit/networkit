@@ -35,6 +35,16 @@ colors = {
 }
 
 def getfilepath(filename):
+	"""
+	getfilepath(filename)
+
+	Helper function the get complete filepath based on filename. Only used by profiler - no need to be called independently.
+
+	Parameters
+	----------
+	filename : str
+		Name of file.
+	"""
 	filepath = os.path.abspath(os.path.dirname(__file__)) + "/" + filename
 	if sys.platform == "win32":
 		return PureWindowsPath(filepath)
@@ -42,7 +52,18 @@ def getfilepath(filename):
 		return PurePosixPath(filepath)
 
 def readfile(filename, removeWS=False):
-	""" private helper function for file-loading """
+	""" 
+	readfile(filename, removeWS=False)
+
+	Helper function for file-loading. Only used by profiler - no need to be called independently.
+	
+	Parameters
+	----------
+	filename : str
+		Name of file.
+	removeWS : bool, optional
+		Indicates whether whitespace should be removed. Default: False
+	"""
 	with open(getfilepath(filename), "r") as file:
 		result = file.read()
 		if removeWS:
@@ -108,7 +129,10 @@ except NameError as e:
 
 
 class Config:
-	""" object to control profiling.Profile behaviour """
+	""" 
+	Config()
+
+	Object to control profiling.Profile behaviour."""
 
 	def __init__(self):
 		""" constructor: all options off """
@@ -137,7 +161,23 @@ class Config:
 
 	@classmethod
 	def createConfig(cls, preset="default"):
-		""" create a config object by selection a named preset of predefined options (complete/minimal/default) """
+		""" 
+		createConfig(preset="default")
+		
+		Create a config object by selection a named preset of predefined options. 
+		
+		Supported values for preset:
+		
+		- complete
+		- minimal
+		- default
+		
+
+		Parameters
+		----------
+		preset : str, optional
+			Preset to be used for generating the config values. Default: "default"
+		"""
 		result = Config()
 
 		if preset == "complete":
@@ -178,43 +218,157 @@ class Config:
 
 
 	def setProperty(self, id, enabled=True):
-		""" enable/disable given property option """
+		""" 
+		setProperty(id, enabled=True)
+		
+		Enable/disable given property option.
+		
+		Supported values for id:
+
+		- Diameter
+		- EffectiveDiameter
+
+		Parameters
+		----------
+		id : str
+			Property value to set.
+		enabled : bool, optional
+			Indicates whether property id should be enabled or not. Default: True
+		"""
 		if id in self.__options_Properties:
 			self.__options_Properties[id] = enabled
 
 
 	def getProperty(self, id):
-		""" return state of given property option """
+		""" 
+		setProperty(id)
+		
+		return state of given property option
+		
+		Supported values for id:
+
+		- Diameter
+		- EffectiveDiameter
+
+		Returns
+		-------
+		bool
+			State of property id.
+		"""
 		return self.__options_Properties[id]
 
 
 	def setMeasure(self, id, enabled=True):
-		""" enable/disable given measure option """
+		""" 
+		setMeasure(id, enabled=True)
+		
+		Enable/disable given measure option.
+		
+		Supported values for id:
+
+		- Centrality.Degree
+		- Centrality.CoreDecomposition
+		- Centrality.ClusteringCoefficient
+		- Centrality.PageRank
+		- Centrality.KPath
+		- Centrality.Katz
+		- Centrality.Betweenness
+		- Centrality.Closeness
+		- Partition.Communities
+		- Partition.ConnectedComponents
+		- Partition.CoreDecomposition
+
+		Parameters
+		----------
+		id : str
+			Measure value to set.
+		enabled : bool, optional
+			Indicates whether measure id should be enabled or not. Default: True
+		"""
 		if id in self.__options_Measures:
 			self.__options_Measures[id] = enabled
 
 
 	def getMeasure(self, id):
-		""" return state of given measure option """
+		""" 
+		getMeasure(id)
+		
+		Return state of given measure option
+		
+		Supported values for id:
+
+		- Centrality.Degree
+		- Centrality.CoreDecomposition
+		- Centrality.ClusteringCoefficient
+		- Centrality.PageRank
+		- Centrality.KPath
+		- Centrality.Katz
+		- Centrality.Betweenness
+		- Centrality.Closeness
+		- Partition.Communities
+		- Partition.ConnectedComponents
+		- Partition.CoreDecomposition
+
+		Returns
+		-------
+		bool
+			State of measure id.
+		"""
 		return self.__options_Measures[id]
 
 
 	def setMeasureCorrelation(self, id, enabled=True):
-		""" enable/disable given correlation (measure) option """
+		""" 
+		setMeasureCorrelation(id, enabled=True)
+		
+		Enable/disable given measure correlation option.
+		
+		Supported values for id:
+
+		- Pearson
+		- Spearman
+		- Fechner
+
+		Parameters
+		----------
+		id : str
+			Measure correlation value to set.
+		enabled : bool, optional
+			Indicates whether measure correlation id should be enabled or not. Default: True
+		"""
 		if id in self.__options_MeasureCorrelations:
 			self.__options_MeasureCorrelations[id] = enabled
 
 
 	def getMeasureCorrelation(self, id):
-		""" return state of given correlation (measure) option """
+		""" 
+		getMeasureCorrelation(id)
+		
+		Return state of given correlation (measure) option
+		
+		Supported values for id:
+
+		- Pearson
+		- Spearman
+		- Fechner
+
+		Returns
+		-------
+		bool
+			State of measure correlation id.
+		"""
+		"""  """
 		return self.__options_MeasureCorrelations[id]
 
 
 
 class Profile:
-	""" Automated network profiling class.
-
-	Call Profile.create to instantiate a profile. """
+	""" 
+	Profile(G, token=object())
+	
+	Automated network profiling class. Don't call the constructor directly.
+	Use networkit.profile.profile.Profile.create to instantiate a profile.
+	"""
 
 	__TOKEN = object()	# see __init__(): prevent this class from being instanced directly
 	__pageCount = 0
@@ -226,7 +380,6 @@ class Profile:
 
 
 	def __init__(self, G, token=object()):
-		""" constructor: don't call this method directly - use create instead """
 		if token is not self.__TOKEN:
 			raise ValueError("call create(G) to create an instance")
 		self.__G = G
@@ -240,18 +393,24 @@ class Profile:
 
 	@classmethod
 	def create(cls, G, preset="default", config=None):
-		""" creates a profile object
+		""" 
+		create(G, preset="default", config=None)
 
-		Parameters:
-		-----------
-			G: networkit.Graph
-				Graph to profile
-			preset: name of preset configuration: "complete", "minimal", "default"
-			config: object to control some aspects of the generation behaviour (Config)
-		
-		Returns:
-		--------
-			profile object
+		Creates a profile object
+
+		Parameters
+		----------
+		G : networkit.Graph
+			Graph to profile.
+		preset: str
+			Name of preset configuration: "complete", "minimal", "default"
+		Config: networkit.profile.profile.Config
+			Config object to control some aspects of the generation behaviour.
+	
+		Returns
+		-------
+		networkit.profile.profile.Profile
+			Resulting profiling object.
 		"""
 
 		# if no custom config is given, use a preconfigured config according to preset name
@@ -318,13 +477,19 @@ class Profile:
 
 	@classmethod
 	def setVerbose(cls, verbose=False, level=0, filename=""):
-		""" set verbose behaviour of all public methods
+		"""
+		setVerbose(verbose=False, level=0, filename="")
+		
+		Set verbose behaviour of all public methods.
 
-		Parameters:
-		-----------
-			verbose: enable/disable display verbose
-			level: set level of verbose (0, 1)
-			filename: enable/disable additional logfile support to given file
+		Parameters
+		----------
+		verbose: bool, optional
+		Enable/disable display verbose. Default: False
+		level: int, optional
+			Set level of verbose (0, 1). Default: False
+		filename: str, optional
+			Enable/disable additional logfile support to given file. Default: ""
 		"""
 		cls.__verbose = verbose
 		cls.__verboseLevel = level
@@ -333,13 +498,31 @@ class Profile:
 
 	@classmethod
 	def getVerbose(cls):
-		""" returns verbose settings """
+		""" 
+		getVerbose()
+		
+		Returns verbose settings.
+		
+		Returns
+		-------
+		tuple(bool, int, str)
+			Tuple with three entries -> (verbose, verboseLevel, filename).
+		"""
 		return (cls.__verbose, cls.__verboseLevel, cls.__verboseFilename)
 
 
 	@classmethod
 	def setParallel(cls, parallel):
-		""" set the number of parallel threads/processes to use """
+		"""
+		setParallel(parallel)
+
+		Set the number of parallel threads/processes to use.
+		
+		Parameters
+		----------
+		parallel : int
+			Number of threads to use for algorithms used during profiling.
+		"""
 		if (parallel < 1):
 			raise ValueError("parallel < 1");
 		cls.__parallel = parallel
@@ -347,35 +530,136 @@ class Profile:
 
 	@classmethod
 	def getParallel(cls):
-		""" returns the number of parallel threads/processes to use """
+		"""
+		getParallel()
+
+		Returns the number of parallel threads/processes to use
+		
+		Returns
+		-------
+		int
+			Number of threads to use for algorithms used during profiling.
+		"""
 		return cls.__parallel
 
 
 	def getStat(self, measure):
-		""" returns an directory of all computed measure values """
+		""" 
+		getStat(measure)
+
+		Returns an directory of all computed measure values.
+
+		Supported values for measure:
+
+		- Centrality.Degree
+		- Centrality.CoreDecomposition
+		- Centrality.ClusteringCoefficient
+		- Centrality.PageRank
+		- Centrality.KPath
+		- Centrality.Katz
+		- Centrality.Betweenness
+		- Centrality.Closeness
+		- Partition.Communities
+		- Partition.ConnectedComponents
+		- Partition.CoreDecomposition
+
+		Parameters
+		----------
+		measure : str
+			Measure name.
+
+		Returns
+		-------
+		dict(float)
+			Dictionary with computed measure values.
+		"""
 		return self.__measures[measure]["stat"]
 
 
 	def getCategory(self, measure):
-		""" returns the category of an given measure """
+		""" 
+		getCategory(measure)
+
+		Returns the category of an given measure.
+		
+		Supported values for measure:
+
+		- Centrality.Degree
+		- Centrality.CoreDecomposition
+		- Centrality.ClusteringCoefficient
+		- Centrality.PageRank
+		- Centrality.KPath
+		- Centrality.Katz
+		- Centrality.Betweenness
+		- Centrality.Closeness
+		- Partition.Communities
+		- Partition.ConnectedComponents
+		- Partition.CoreDecomposition
+
+		Parameters
+		----------
+		measure : str
+			Measure name.
+
+		Returns
+		-------
+		str
+			Category of measure.
+		"""
 		return self.__measures[measure]["category"]
 
 
 	def getElapsedTime(self, measure):
-		""" returns the elapsed computation times of an given measure """
+		""" 
+		getElapsedTime(measure)
+
+		Returns the elapsed computation times of an given measure.
+		
+		Supported values for measure:
+
+		- Centrality.Degree
+		- Centrality.CoreDecomposition
+		- Centrality.ClusteringCoefficient
+		- Centrality.PageRank
+		- Centrality.KPath
+		- Centrality.Katz
+		- Centrality.Betweenness
+		- Centrality.Closeness
+		- Partition.Communities
+		- Partition.ConnectedComponents
+		- Partition.CoreDecomposition
+
+		Parameters
+		----------
+		measure : str
+			Measure name.
+
+		Returns
+		-------
+		float
+			Elapsed time for computing measure.
+		"""
 		return self.__measures[measure]["time"]
 
 
 	def output(self, outputType, directory, filename='graph', style="light", color=colors["green"], parallel=False):
-		""" outputs a computed profile to disk
+		""" 
+		output(outputType, directory, filename='graph', style="light", color=colors["green"], parallel=False)
+		
+		Outputs a computed profile to disk.
 
-		Parameters:
-		-----------
-			outputType: profile output format ("HTML", "LaTeX")
-			directory: directory to write
-			style: style of generated output ("light")
-			color: mainly used color of given style
-			arallel: run some additional parts of the generation in parallel (experimental)
+		Parameters
+		----------
+		outputType: str
+			Profile output format ("HTML", "LaTeX").
+		directory: str
+			Directory to write.
+		style: str, optional
+			Style of generated output. Default: "light"
+		color: tuple(float, float, float), optional
+			Mainly used color of given style. Given in RGB values between 0.0 and 1.0. Default: "green" -> (0.003, 0.474, 0.435)
+		parallel: bool, optional
+			Run some additional parts of the generation in parallel (experimental). Default: False
 		"""
 
 		# TODO: type -> enum
@@ -437,13 +721,19 @@ class Profile:
 
 
 	def show(self, style="light", color=colors["green"], parallel=False):
-		""" display computed profile
+		""" 
+		show(style="light", color=colors["green"], parallel=False)
 
-		Parameters:
-		-----------
-			style: style of generated output ("light")
-			color: mainly used color of given style (RGB values in [0,1])
-			parallel: run some additional parts of the generation in parallel (experimental)
+		Display computed profile.
+
+		Parameters
+		----------
+		style: str, optional
+			Style of generated output. Default: "light"
+		color: tuple(float, float, float), optional
+			Mainly used color of given style. Given in RGB values between 0.0 and 1.0. Default: "green" -> (0.003, 0.474, 0.435)
+		parallel: bool, optional
+			Run some additional parts of the generation in parallel (experimental). Default: False
 		"""
 		if not have_ipython:
 			raise MissingDependencyError("IPython")
@@ -939,7 +1229,20 @@ class Profile:
 
 	@classmethod
 	def verbosePrint(cls, text="", end="\n", level=0):
-		""" print for verbose output """
+		""" 
+		verbosePrint(text="", end="\\n", level=0)
+
+		Print for verbose output.
+		
+		Parameters
+		----------
+		text : str, optional
+			Text to add to the verbose print. Default: ""
+		end : str, optional
+			Marker for line break. Default: "\\n"
+		level : int, optional
+			Level for verbose printing.
+		"""
 		if cls.__verboseLevel >= level:
 			text = text + end
 		else:
@@ -954,21 +1257,33 @@ class Profile:
 
 
 def walk(inputDir, outputDir, graphFormat, filePattern="*",  preset="default", config=None, outputType="HTML", style="light", color=colors["green"], recursive=False, parallel=False):
-	""" tests all files of a directory for the given conditions and generates a profile when matching
+	""" 
+	walk(inputDir, outputDir, graphFormat, filePattern="`*`",  preset="default", config=None, outputType="HTML", style="light", color=colors["green"], recursive=False, parallel=False)
 
-	Parameters:
-	-----------
-		inputDir: the directory to search
-		filePattern: specify accepted file names, e.g.: *.METIS.graph
-		outputDir: directory to write the generated profiles
-		preset: config preset ("minimal", "default", "full")
-		config: object for fine-grained control over profile content (Config) -- overrides preset
-		outputType: profile output format ("HTML", "LaTeX")
-		style: style of generated output ("light")
-		color: mainly used color of given style (RGB values in [0,1])
-		recursive: also search in subfolders for matching files
-		parallel: run some additional parts of the generation in parallel (experimental)
-		graphFormat: format of matching files (e.g.: Format.METIS)
+	Tests all files of a directory for the given conditions and generates a profile when matching.
+
+	Parameters
+	----------
+	inputDir : str
+		The directory to search.
+	outputDir : str
+		Directory to write the generated profiles.
+	graphFormat : networkit.graphio.Format
+		Format of input graphs.
+	filePattern : str, optional
+		Specify accepted file names, e.g.: `*.METIS.graph`. Default: `*`
+	preset : str, optional
+		Config preset ("minimal", "default", "full"). Default: "default"
+	outputType: str, optional
+		Profile output format ("HTML", "LaTeX"). Default: "HTML"
+	style: str, optional
+		Style of generated output. Default: "light"
+	color: tuple(float, float, float), optional
+		Mainly used color of given style. Given in RGB values between 0.0 and 1.0. Default: "green" -> (0.003, 0.474, 0.435)
+	recursive : bool, optional
+		Also search in subfolders for matching files. Default: False
+	parallel: bool, optional
+		Run some additional parts of the generation in parallel (experimental). Default: False
 	"""
 
 	# if no custom config is given, use a preconfigured config according to preset name
