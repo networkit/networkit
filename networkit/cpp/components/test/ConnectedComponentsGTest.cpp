@@ -83,10 +83,11 @@ TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
 
     for (auto graphName: graphs) {
         Graph G = reader.read("input/" + graphName + ".graph");
-        ParallelConnectedComponents cc(G);
-        cc.runSequential();
-        count seqNum = cc.numberOfComponents();
+        ConnectedComponents cc(G);
         cc.run();
+        count seqNum = cc.numberOfComponents();
+        ParallelConnectedComponents ccPar(G);
+        ccPar.run();
         count parNum = cc.numberOfComponents();
         DEBUG("Number of components: ", seqNum);
         EXPECT_EQ(seqNum, parNum);
@@ -114,11 +115,11 @@ TEST_F(ConnectedComponentsGTest, testParallelConnectedComponentsWithDeletedNodes
     }
 
     {
-        ParallelConnectedComponents cc(G);
+        ParallelConnectedComponents ccPar(G);
+        ccPar.run();
+        ConnectedComponents cc(G);
         cc.run();
-        EXPECT_EQ(1, cc.numberOfComponents()) << "The complete graph with 10 nodes removed has still just one connected component (run())";
-        cc.runSequential();
-        EXPECT_EQ(1, cc.numberOfComponents()) << "The complete graph with 10 nodes removed has still just one connected component (runSequential())";
+        EXPECT_EQ(cc.numberOfComponents(), ccPar.numberOfComponents()) << "The complete graph with 10 nodes removed has still just one connected component (run())";
     }
 
 }
