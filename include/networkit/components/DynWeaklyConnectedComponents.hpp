@@ -8,8 +8,7 @@
 #ifndef NETWORKIT_COMPONENTS_DYN_WEAKLY_CONNECTED_COMPONENTS_HPP_
 #define NETWORKIT_COMPONENTS_DYN_WEAKLY_CONNECTED_COMPONENTS_HPP_
 
-#include <unordered_map>
-#include <vector>
+#include <memory>
 
 #include <networkit/base/DynAlgorithm.hpp>
 #include <networkit/components/ComponentDecomposition.hpp>
@@ -17,6 +16,12 @@
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
+
+// pImpl
+namespace DynConnectedComponentsDetails {
+template <bool>
+class DynConnectedComponentsImpl;
+} // namespace DynConnectedComponentsDetails
 
 /**
  * @ingroup components
@@ -32,6 +37,8 @@ public:
      * @param G The graph.
      */
     DynWeaklyConnectedComponents(const Graph &G);
+
+    ~DynWeaklyConnectedComponents() override;
 
     /**
      * This method determines the weakly connected components for the graph
@@ -58,23 +65,7 @@ public:
     void updateBatch(const std::vector<GraphEvent> &batch) override;
 
 private:
-    void init();
-    void addEdge(node u, node v);
-    void removeEdge(node u, node v);
-    void indexEdges();
-    edgeid updateMapAfterAddition(node u, node v);
-    void updateTreeAfterAddition(edgeid eid, bool partOfTree);
-    void reverseBFS(node u, node v);
-
-    // Whether each edge is part of a spanning tree. If an edge is removed
-    // then a components could split.
-    std::vector<bool> isTree;
-
-    // Maps the edges to their IDs
-    std::unordered_map<Edge, edgeid> edgesMap;
-
-    // Temporary distances used for BFSs after edge updates.
-    std::vector<count> tmpDistances;
+    std::unique_ptr<DynConnectedComponentsDetails::DynConnectedComponentsImpl<true>> impl;
 };
 
 } // namespace NetworKit

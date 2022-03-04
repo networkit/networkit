@@ -8,8 +8,7 @@
 #ifndef NETWORKIT_COMPONENTS_DYN_CONNECTED_COMPONENTS_HPP_
 #define NETWORKIT_COMPONENTS_DYN_CONNECTED_COMPONENTS_HPP_
 
-#include <queue>
-#include <unordered_map>
+#include <memory>
 #include <vector>
 
 #include <networkit/base/DynAlgorithm.hpp>
@@ -18,6 +17,12 @@
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
+
+// pImpl
+namespace DynConnectedComponentsDetails {
+template <bool>
+class DynConnectedComponentsImpl;
+} // namespace DynConnectedComponentsDetails
 
 /**
  * @ingroup components
@@ -33,9 +38,10 @@ public:
      */
     DynConnectedComponents(const Graph &G);
 
+    ~DynConnectedComponents() override;
+
     /**
-     * This method determines the connected components for the graph given in
-     *  the constructor.
+     * Finds the connected components of the input graph.
      */
     void run() override;
 
@@ -57,17 +63,7 @@ public:
     void updateBatch(const std::vector<GraphEvent> &batch) override;
 
 private:
-    void addEdge(node u, node v);
-    void removeEdge(node u, node v);
-    void reverseBFS(node u, node v);
-    void indexEdges();
-    // Returns true and the corresponding edge id if the new edge was not
-    // into the original graph.
-    std::pair<bool, edgeid> updateMapAfterAddition(node u, node v);
-    void init();
-    std::vector<bool> isTree;
-    std::unordered_map<Edge, index> edgesMap;
-    std::vector<count> tmpDistances;
+    std::unique_ptr<DynConnectedComponentsDetails::DynConnectedComponentsImpl<false>> impl;
 };
 
 } // namespace NetworKit

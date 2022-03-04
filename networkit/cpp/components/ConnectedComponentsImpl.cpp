@@ -1,4 +1,3 @@
-
 #include "ConnectedComponentsImpl.hpp"
 
 #include <networkit/graph/GraphTools.hpp>
