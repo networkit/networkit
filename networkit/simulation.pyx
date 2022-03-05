@@ -27,7 +27,7 @@ cdef extern from "<networkit/simulation/EpidemicSimulationSEIR.hpp>":
 
 	cdef cppclass _EpidemicSimulationSEIR "NetworKit::EpidemicSimulationSEIR" (_Algorithm):
 		_EpidemicSimulationSEIR(_Graph, count, double, count, count, node) except +
-		vector[vector[count]] getData() except +
+		vector[vector[count]] &getData() except +
 
 cdef class EpidemicSimulationSEIR(Algorithm):
 	"""

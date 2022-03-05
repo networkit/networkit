@@ -95,7 +95,7 @@ cdef extern from "<networkit/distance/SSSP.hpp>":
 
 	cdef cppclass _SSSP "NetworKit::SSSP"(_Algorithm):
 		_SSSP(_Graph G, node source, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
-		vector[edgeweight] getDistances() except +
+		vector[edgeweight] &getDistances() except +
 		edgeweight distance(node t) except +
 		vector[node] getPredecessors(node t) except +
 		vector[node] getPath(node t, bool_t forward) except +
@@ -358,7 +358,7 @@ cdef extern from "<networkit/distance/AdamicAdarDistance.hpp>":
 		_AdamicAdarDistance(const _Graph& G) except +
 		void preprocess() except +
 		double distance(node u, node v) except +
-		vector[double] getEdgeScores() except +
+		vector[double] &getEdgeScores() except +
 
 cdef class AdamicAdarDistance:
 	"""
@@ -591,7 +591,7 @@ cdef extern from "<networkit/distance/HopPlotApproximation.hpp>" namespace "Netw
 
 	cdef cppclass _HopPlotApproximation "NetworKit::HopPlotApproximation"(_Algorithm):
 		_HopPlotApproximation(_Graph& G, count maxDistance, count k, count r) except +
-		map[count, double] getHopPlot() except +
+		map[count, double] &getHopPlot() except +
 
 cdef class HopPlotApproximation(Algorithm):
 	"""
@@ -644,7 +644,7 @@ cdef extern from "<networkit/distance/NeighborhoodFunction.hpp>" namespace "Netw
 
 	cdef cppclass _NeighborhoodFunction "NetworKit::NeighborhoodFunction"(_Algorithm):
 		_NeighborhoodFunction(_Graph& G) except +
-		vector[count] getNeighborhoodFunction() except +
+		vector[count] &getNeighborhoodFunction() except +
 
 cdef class NeighborhoodFunction(Algorithm):
 	"""
@@ -682,7 +682,7 @@ cdef extern from "<networkit/distance/NeighborhoodFunctionApproximation.hpp>" na
 
 	cdef cppclass _NeighborhoodFunctionApproximation "NetworKit::NeighborhoodFunctionApproximation"(_Algorithm):
 		_NeighborhoodFunctionApproximation(_Graph& G, count k, count r) except +
-		vector[count] getNeighborhoodFunction() except +
+		vector[count] &getNeighborhoodFunction() except +
 
 cdef class NeighborhoodFunctionApproximation(Algorithm):
 	"""
@@ -792,7 +792,7 @@ cdef extern from "<networkit/distance/JaccardDistance.hpp>":
 	cdef cppclass _JaccardDistance "NetworKit::JaccardDistance":
 		_JaccardDistance(const _Graph& G, const vector[count]& triangles) except +
 		void preprocess() except +
-		vector[double] getEdgeScores() except +
+		vector[double] &getEdgeScores() except +
 
 cdef class JaccardDistance:
 	"""
@@ -884,7 +884,7 @@ cdef extern from "<networkit/distance/AlgebraicDistance.hpp>":
 		_AlgebraicDistance(_Graph G, count numberSystems, count numberIterations, double omega, index norm, bool_t withEdgeScores) except +
 		void preprocess() except +
 		double distance(node, node) except +
-		vector[double] getEdgeScores() except +
+		vector[double] &getEdgeScores() except +
 
 
 cdef class AlgebraicDistance:
@@ -1047,7 +1047,7 @@ cdef extern from "<networkit/distance/NeighborhoodFunctionHeuristic.hpp>" namesp
 
 	cdef cppclass _NeighborhoodFunctionHeuristic "NetworKit::NeighborhoodFunctionHeuristic"(_Algorithm):
 		_NeighborhoodFunctionHeuristic(_Graph& G, const count nSamples, const _SelectionStrategy strategy) except +
-		vector[count] getNeighborhoodFunction() except +
+		vector[count] &getNeighborhoodFunction() except +
 
 cdef class NeighborhoodFunctionHeuristic(Algorithm):
 	"""
@@ -1092,7 +1092,7 @@ cdef extern from "<networkit/distance/APSP.hpp>":
 
 	cdef cppclass _APSP "NetworKit::APSP"(_Algorithm):
 		_APSP(_Graph G) except +
-		vector[vector[edgeweight]] getDistances() except +
+		vector[vector[edgeweight]] &getDistances() except +
 		edgeweight getDistance(node u, node v) except +
 
 cdef class APSP(Algorithm):
@@ -1154,7 +1154,7 @@ cdef extern from "<networkit/distance/SPSP.hpp>":
 
 	cdef cppclass _SPSP "NetworKit::SPSP"(_Algorithm):
 		_SPSP(_Graph G, vector[node].iterator sourcesFirst, vector[node].iterator sourcesLast) except +
-		vector[vector[edgeweight]] getDistances() except +
+		vector[vector[edgeweight]] &getDistances() except +
 		edgeweight getDistance(node u, node v) except +
 		void setSources(vector[node].iterator sourcesFirst, vector[node].iterator sourcesLast)
 
