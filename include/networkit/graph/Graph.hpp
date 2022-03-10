@@ -215,7 +215,7 @@ private:
     template <typename T>
     class NodeAttributeStorage : public NodeAttributeStorageBase {
     public:
-        NodeAttributeStorage(const Graph *theGraph, std::string name)
+        NodeAttributeStorage(const Graph *theGraph, const std::string name)
             : NodeAttributeStorageBase{theGraph, std::move(name), typeid(T)} {}
 
         void resize(node i) {
