@@ -5,6 +5,8 @@ from . import centrality
 from .coarsening import ParallelPartitionCoarsening
 from .support import MissingDependencyError
 
+from warnings import warn
+
 # external imports
 try:
 	import networkx
@@ -18,7 +20,9 @@ def save(name, dir="."):
 	save(name, dir=".")
 
 	Save a figure.
-	
+
+	DEPRECATED. This function (and the networkit.viztasks module) will be removed in future updates.
+
 	Parameters
 	----------
 	name : str
@@ -26,6 +30,7 @@ def save(name, dir="."):
 	dir : str
 		Output directory. Default: "."
 	"""
+	warn("networkit.viztasks.save is deprecated, will be removed in future updates.")
 	savefig(os.path.join(dir, "{0}.pdf".format(name)), bbox_inches="tight", transparent=True)
 
 
@@ -34,6 +39,8 @@ def coloringToColorList(G, coloring):
 	coloringToColorList(G, coloring)
 
 	Calculate node colors based on an input graph and color dict.
+
+	DEPRECATED. This function (and the networkit.viztasks module) will be removed in future updates.
 
 	Parameters
 	----------
@@ -47,6 +54,7 @@ def coloringToColorList(G, coloring):
 	list(tuple(float, float, float))
 		List with color values for each node.
 	"""
+	warn("networkit.viztasks.coloringToColorList is deprecated, will be removed in future updates.")
 	clist = []
 
 	nColors = len(coloring.keys())
@@ -64,6 +72,9 @@ def drawGraph(G, **kwargs):
 	Draws a graph via networkX. Passes additional arguments beyond the graph to networkx.draw(...).
 	By default, node sizes are scaled between 30 and 300 by node degree.
 
+	DEPRECATED. This function (and the networkit.viztasks module) will be removed in future updates. Use networkit.vizbridges instead to draw 
+	graphs (needs additional plugins).
+
 	Parameters
 	----------
 	G : networkit.Graph
@@ -71,6 +82,7 @@ def drawGraph(G, **kwargs):
 	`**kwargs` : dict()
 		Additional arguments for networkx.draw function.
 	"""
+	warn("networkit.viztasks.drawGraph is deprecated, will be removed in future updates. Use networkit.vizbridges instead to draw graphs (needs additional plugins).")
 	if not have_nx:
 		raise MissingDependencyError("networkx")
 	if not G.checkConsistency():
@@ -88,6 +100,9 @@ def drawCommunityGraph(G, zeta, **kwargs):
 	Draws the community graph for a given graph and partition. Passes any additional arguments to networkx.draw(...).
 	By default, node sizes are scaled between 30 and 500 by community size.
 
+	DEPRECATED. This function (and the networkit.viztasks module) will be removed in future updates. Use networkit.vizbridges instead to draw 
+	graphs (needs additional plugins).
+
 	Parameters
 	----------
 	G : networkit.Graph
@@ -97,6 +112,7 @@ def drawCommunityGraph(G, zeta, **kwargs):
 	`**kwargs` : dict()
 		Additional arguments for networkx.draw function.	
 	"""
+	warn("networkit.viztasks.drawCommunityGraph is deprecated, will be removed in future updates. Use networkit.vizbridges instead to draw graphs (needs additional plugins).")
 	if not have_nx:
 		raise MissingDependencyError("networkx")
 	cg = ParallelPartitionCoarsening(G,zeta)

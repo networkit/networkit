@@ -2,6 +2,11 @@
 
 __author__ = "Christian Staudt"
 
+# internal imports
+from .graphio import readGraph
+from .components import ConnectedComponents
+from . import stopwatch 
+
 # external imports
 import operator
 import logging
@@ -10,13 +15,15 @@ import os
 import csv
 import fnmatch
 
-import networkit as nk
+from warnings import warn
 
 def extractLargestComponent(G):
 	"""
 	extractLargestComponent(G)
 
 	Extract the subgraph of the largest connected component.
+
+	DEPRECATED. This function (and the networkit.workflows module) will be removed in future updates. 
 
 	Parameters
 	----------
@@ -31,7 +38,7 @@ def extractLargestComponent(G):
 
 	from warnings import warn
 	warn("This function is deprecated, use extractLargestConnectedComponent in the ConnectedComponents module instead.")
-	return nk.components.extractLargestConnectedComponent(G)
+	return ConnectedComponents.extractLargestConnectedComponent(G)
 
 
 def batch(graphDir, match, format, function, outPath, header=None):
@@ -39,6 +46,8 @@ def batch(graphDir, match, format, function, outPath, header=None):
 	batch(graphDir, match, format, function, outPath, header=None)
 
 	Read graphs from a directory, apply a function and store result in CSV format.
+
+	DEPRECATED. This function (and the networkit.workflows module) will be removed in future updates. 
 
 	Parameters
 	----------
@@ -55,6 +64,7 @@ def batch(graphDir, match, format, function, outPath, header=None):
 	header : str, optional
 		CSV file header. Default: None
 	"""
+	warn("networkit.workflows.batch is deprecated, will be removed in future updates.")
 	with open(outPath, 'w') as outFile:
 		writer = csv.writer(outFile, delimiter='\t')
 		if header:
@@ -65,7 +75,7 @@ def batch(graphDir, match, format, function, outPath, header=None):
 					print("processing {0}".format(filename))
 					graphPath = os.path.join(root, filename)
 					timer = stopwatch.Timer()
-					G = nk.graphio.readGraph(graphPath)
+					G = readGraph(graphPath)
 					timer.stop()
 					result = function(G)
 					if type(result) is tuple:

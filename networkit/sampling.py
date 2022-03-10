@@ -1,3 +1,7 @@
+from .graphtools import GraphTools
+
+from warnings import warn
+
 """ Sampling from graphs """
 
 __author__ = "Elisabetta Bergamini"
@@ -7,6 +11,8 @@ def bfsSample(G, source=None, k = 50):
 	bfsSample(G, source=None, k=50)    
 
 	Start a BFS from source node, return node-induced subgraph of the first k nodes discovered.
+
+	DEPRECATED. This function (and the networkit.sampling module) will be removed in future updates. 
 
 	Parameters
 	----------
@@ -22,8 +28,9 @@ def bfsSample(G, source=None, k = 50):
 	networkit.Graph
 		Subgraph based on bfsSample.
 	"""
+	warn("networkit.sampling.bfsSample is deprecated, will be removed in future updates.")
 	if not source:
-		source = nk.graphtools.randomNode(G)
+		source = GraphTools.randomNode(G)
 	n = G.numberOfNodes()
 	visited = [False]*n
 	Q = [source]
@@ -41,5 +48,5 @@ def bfsSample(G, source=None, k = 50):
 				closest.add(v)
 		G.forEdgesOf(u, enqueue)
 	print("found {0} nodes".format(len(closest)))
-	G1 = nk.graphtools.subgraphFromNodes(G, closest)
+	G1 = GraphTools.subgraphFromNodes(G, closest)
 	return G1
