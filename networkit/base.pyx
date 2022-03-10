@@ -22,7 +22,7 @@ cdef class Algorithm:
 
 		Returns
 		-------
-		Algorithm
+		networkit.base.Algorithm
 			self
 		"""
 		if self._this == NULL:

@@ -61,7 +61,7 @@ cdef extern from "<networkit/clique/MaximalCliques.hpp>":
 
 cdef class MaximalCliques(Algorithm):
 	"""
-	MaximalCliques(G, maximumOnly = False, callback = None)
+	MaximalCliques(G, maximumOnly=False, callback=None)
 
 	Algorithm for listing all maximal cliques.
 
@@ -83,14 +83,14 @@ cdef class MaximalCliques(Algorithm):
 	----------
 	G : networkit.Graph
 		The graph to list the cliques for
-	maximumOnly : bool
+	maximumOnly : bool, optional
 		A value of True denotes that only one maximum clique is desired. This enables
 		further optimizations of the algorithm to skip smaller cliques more
-		efficiently. This parameter is only considered when no callback is given.
-	callback : callable
+		efficiently. This parameter is only considered when no callback is given. Default: False
+	callback : callable, optional
 		If a callable Python object is given, it will be called once for each
 		maximal clique. Then no cliques will be stored. The callback must accept
-		one parameter which is a list of nodes.
+		one parameter which is a list of nodes. Default: None
 	"""
 	cdef NodeVectorCallbackWrapper* _callback
 	cdef Graph _G
@@ -130,7 +130,7 @@ cdef class MaximalCliques(Algorithm):
 
 		Returns
 		-------
-		list
+		list(list(int))
 			A list of cliques, each being represented as a list of nodes.
 		"""
 		return (<_MaximalCliques*>(self._this)).getCliques()

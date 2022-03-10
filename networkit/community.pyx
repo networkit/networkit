@@ -62,9 +62,9 @@ cdef extern from "<networkit/community/CommunityDetectionAlgorithm.hpp>":
 
 cdef class CommunityDetector(Algorithm):
 	""" 
-	CommunityDetector(Algorithm)
+	CommunityDetector()
 
-	Abstract base class for static community detection algorithms 
+	Abstract base class for static community detection algorithms.
 	"""
 
 	cdef Graph _G
@@ -80,7 +80,7 @@ cdef class CommunityDetector(Algorithm):
 
 		Returns
 		-------
-		networkit.Partition:
+		networkit.Partition
 			A Partition of the clustering.
 		"""
 		if self._this == NULL:
@@ -95,9 +95,9 @@ cdef extern from "<networkit/community/OverlappingCommunityDetectionAlgorithm.hp
 
 cdef class OverlappingCommunityDetector(Algorithm):
 	""" 
-	OverlappingCommunityDetector(Algorithm)
+	OverlappingCommunityDetector()
 
-	Abstract base class for static overlapping community detection algorithms 
+	Abstract base class for static overlapping community detection algorithms.
 	"""
 
 	cdef Graph _G
@@ -140,79 +140,79 @@ cdef class ClusteringGenerator:
 	cdef _ClusteringGenerator _this
 	def makeSingletonClustering(self, Graph G):
 		"""  
-		makeSingletonClustering(Graph G)
+		makeSingletonClustering(G)
 
 		Generate a clustering where each node has its own cluster
 
 		Parameters
 		----------
 		G : networkit.Graph
-			The graph for which the clustering shall be generated
+			The graph for which the clustering shall be generated.
 
 		Returns
 		-------
 		networkit.Partition
-			The generated partition
+			The generated partition.
 		"""
 		return Partition().setThis(self._this.makeSingletonClustering(G._this))
 	def makeOneClustering(self, Graph G):
 		"""  
-		makeOneClustering(Graph G)
+		makeOneClustering(G)
 
-		Generate a clustering with one cluster consisting of all nodes
+		Generate a clustering with one cluster consisting of all nodes.
 
 		Parameters
 		----------
 		G : networkit.Graph
-			The graph for which the clustering shall be generated
+			The graph for which the clustering shall be generated.
 
 		Returns
 		-------
 		networkit.Partition
-			The generated partition
+			The generated partition.
 		"""
 		return Partition().setThis(self._this.makeOneClustering(G._this))
 	def makeRandomClustering(self, Graph G, count k):
 		"""  
-		makeRandomClustering(Graph G, count k)
+		makeRandomClustering(G, k)
 		
-		Generate a clustering with `k` clusters to which nodes are assigned randomly
+		Generate a clustering with `k` clusters to which nodes are assigned randomly.
 
 		Parameters
 		----------
 		G : networkit.Graph
-			The graph for which the clustering shall be generated
-		k: count
-			The number of clusters that shall be generated
+			The graph for which the clustering shall be generated.
+		k : int
+			The number of clusters that shall be generated.
 
 		Returns
 		-------
 		networkit.Partition
-			The generated partition
+			The generated partition.
 		"""
 		return Partition().setThis(self._this.makeRandomClustering(G._this, k))
 	def makeContinuousBalancedClustering(self, Graph G, count k):
 		"""  
-		makeContinuousBalancedClustering(Graph G, count k)
+		makeContinuousBalancedClustering(G, k)
 		
 		Generate a clustering with `k` clusters to which nodes are assigned in continuous blocks
 
 		Parameters
 		----------
 		G : networkit.Graph
-			The graph for which the clustering shall be generated
-		k: count
-			The number of clusters that shall be generated
+			The graph for which the clustering shall be generated.
+		k : int
+			The number of clusters that shall be generated.
 
 		Returns
 		-------
 		networkit.Partition
-			The generated partition
+			The generated partition.
 		"""
 		return Partition().setThis(self._this.makeContinuousBalancedClustering(G._this, k))
 	def makeNoncontinuousBalancedClustering(self, Graph G, count k):
 		"""  
-		makeNoncontinuousBalancedClustering(Graph G, count k)
+		makeNoncontinuousBalancedClustering(G, k)
 		
 		Generate a clustering with `k` clusters, the ith node is assigned to cluster i % k. This means that
 		for k**2 nodes, this clustering is complementary to the continuous clustering in the sense that no pair
@@ -221,14 +221,14 @@ cdef class ClusteringGenerator:
 		Parameters
 		----------
 		G : networkit.Graph
-			The graph for which the clustering shall be generated
-		k: count
-			The number of clusters that shall be generated
+			The graph for which the clustering shall be generated.
+		k : int
+			The number of clusters that shall be generated.
 
 		Returns
 		-------
 		networkit.Partition
-			The generated partition
+			The generated partition.
 		"""
 		return Partition().setThis(self._this.makeNoncontinuousBalancedClustering(G._this, k))
 
@@ -246,25 +246,25 @@ cdef class GraphClusteringTools:
 	@staticmethod
 	def getImbalance(Partition zeta):
 		"""  
-		getImbalance(Partition zeta)
+		getImbalance(zeta)
 
 		Get the imbalance of clusters in the given partition.
 
 		Parameters
 		----------
-		zeta: networkit.Partition
-			The first partition
+		zeta : networkit.Partition
+			The first partition.
 
 		Returns
 		-------
-		imbalance
-			Imbalance of the partition
+		int
+			Imbalance of the partition.
 		"""
 		return getImbalance(zeta._this)
 	@staticmethod
 	def communicationGraph(Graph graph, Partition zeta):
 		"""  
-		communicationGraph(Graph graph, Partition zeta)
+		communicationGraph(graph, zeta)
 
 		Get the communication graph for a given graph and its partition.
 		A communication graph consists of a number of nodes, which equal
@@ -276,120 +276,121 @@ cdef class GraphClusteringTools:
 
 		Parameters
 		----------
-		graph: networkit.Graph
-			The input graph
-		zeta: networkit.Partition
-			Partition, which contains information about clusters in the graph
+		graph : networkit.Graph
+			The input graph.
+		zeta : networkit.Partition
+			Partition, which contains information about clusters in the graph.
 
 		Returns
 		-------
-		communicationGraph
-			communication graph given by the input graph and its partition
+		networkit.Graph
+			Communication graph given by the input graph and its partition.
 		"""
 		return Graph().setThis(communicationGraph(graph._this, zeta._this))
 	@staticmethod
 	def weightedDegreeWithCluster(Graph graph, Partition zeta, node u, index cid):
 		"""  
-		weightedDegreeWithCluster(Graph graph, Partition zeta, node u, index cid)
+		weightedDegreeWithCluster(graph, zeta, u, cid)
 
 		Get weightedDegree of node u for a cluster (represented by a partition) of index cid.
 
 		Parameters
 		----------
-		graph: networkit.Graph
-			The input graph
-		zeta: networkit.Partition
-			Partition, which contains information about clusters in the graph
-		u : node
-		cid : index 
-			Index of cluster
+		graph : networkit.Graph
+			The input graph.
+		zeta : networkit.Partition
+			Partition, which contains information about clusters in the graph.
+		u : int
+			The input node.
+		cid : int
+			Index of cluster.
 
 		Returns
 		-------
-		weightedDegree
-			weighted degree of node u for cluster index cid
+		float
+			weighted degree of node u for cluster index cid.
 		"""
 		return weightedDegreeWithCluster(graph._this, zeta._this, u, cid)
 	@staticmethod
 	def isProperClustering(Graph G, Partition zeta):
 		"""  
-		isProperClustering(Graph G, Partition zeta)
+		isProperClustering(G, zeta)
 
-		Check whether a partition is a proper clustering for a given graph
+		Check whether a partition is a proper clustering for a given graph.
 
 		Parameters
 		----------
-		G: networkit.Graph
-			The input graph
-		zeta: networkit.Partition
-			The first partition
+		G : networkit.Graph
+			The input graph.
+		zeta : networkit.Partition
+			The first partition.
 
 		Returns
 		-------
 		bool
-			True if the partition is a proper clustering, False if not
+			True if the partition is a proper clustering, False if not.
 		"""
 		return isProperClustering(G._this, zeta._this)
 	@staticmethod
 	def isSingletonClustering(Graph G, Partition zeta):
 		"""  
-		isSingletonClustering(Graph G, Partition zeta)
+		isSingletonClustering(G, zeta)
 
-		Check whether a partition is a singleton clustering for a given graph
+		Check whether a partition is a singleton clustering for a given graph.
 
 		Parameters
 		----------
 		G: networkit.Graph
-			The input graph
+			The input graph.
 		zeta: networkit.Partition
-			The first partition
+			The first partition.
 
 		Returns
 		-------
 		bool
-			True if the partition is a singleton clustering, False if not
+			True if the partition is a singleton clustering, False if not.
 		"""
 		return isSingletonClustering(G._this, zeta._this)
 	@staticmethod
 	def isOneClustering(Graph G, Partition zeta):
 		"""  
-		isOneClusteringClustering(Graph G, Partition zeta)
+		isOneClusteringClustering(G, zeta)
 
-		Check whether a partition is a one clustering for a given graph
+		Check whether a partition is a one clustering for a given graph.
 
 		Parameters
 		----------
-		G: networkit.Graph
-			The input graph
-		zeta: networkit.Partition
-			The first partition
+		G : networkit.Graph
+			The input graph.
+		zeta : networkit.Partition
+			The first partition.
 
 		Returns
 		-------
 		bool
-			True if the partition is a one clustering, False if not
+			True if the partition is a one clustering, False if not.
 		"""
 		return isOneClustering(G._this, zeta._this)
 	@staticmethod
 	def equalClustering(Partition zeta, Partition eta, Graph G):
 		"""  
-		equalClusteringClustering(Partition zeta, Partition eta, Graph G)
+		equalClusteringClustering(zeta, eta, G)
 
-		Check whether two paritions are equal for a given graph
+		Check whether two paritions are equal for a given graph.
 
 		Parameters
 		----------
-		zeta: networkit.Partition
-			The first partition
-		eta: networkit.Partition
-			The second partition
-		G: networkit.Graph
-			The input graph
+		zeta : networkit.Partition
+			The first partition.
+		eta : networkit.Partition
+			The second partition.
+		G : networkit.Graph
+			The input graph.
 
 		Returns
 		-------
 		bool
-			True if both partitions are the same, False if not
+			True if both partitions are the same, False if not.
 		"""
 		return equalClusterings(zeta._this, eta._this, G._this)
 
@@ -412,15 +413,15 @@ cdef class PartitionIntersection:
 
 		Parameters
 		----------
-		zeta: networkit.Partition
-			The first partition
-		eta: networkit.Partition
-			The second partition
+		zeta : networkit.Partition
+			The first partition.
+		eta : networkit.Partition
+			The second partition.
 
 		Returns
 		-------
 		networkit.Partition
-			The intersection of zeta and eta
+			The intersection of zeta and eta.
 		"""
 		return Partition().setThis(self._this.calculate(zeta._this, eta._this))
 
@@ -447,14 +448,14 @@ cdef class Coverage:
 		Parameters
 		----------
 		zeta : networkit.Partition
-			The Partition for which the coverage shall be calculated
+			The Partition for which the coverage shall be calculated.
 		G : networkit.Graph
-			The Graph to which zeta belongs
+			The Graph to which zeta belongs.
 
 		Returns
 		-------
-		double
-			The coverage in the given Partition
+		float
+			The coverage in the given Partition.
 		"""
 		return self._this.getQuality(zeta._this, G._this)
 
@@ -474,7 +475,7 @@ cdef class EdgeCut:
 
 	def getQuality(self, Partition zeta, Graph G):
 		"""
-		getQuality(Partition zeta, Graph G)
+		getQuality(zeta, G)
 
 		Calculates the edgeCut in the given Partition of the given
 		Graph.
@@ -482,14 +483,14 @@ cdef class EdgeCut:
 		Parameters
 		----------
 		zeta : networkit.Partition
-			The Partition for which the edgeCut shall be calculated
+			The Partition for which the edgeCut shall be calculated.
 		G : networkit.Graph
-			The Graph to which zeta belongs
+			The Graph to which zeta belongs.
 
 		Returns
 		-------
-		double
-			The edgeCut in the given Partition
+		float
+			The edgeCut in the given Partition.
 		"""
 		return self._this.getQuality(zeta._this, G._this)
 
@@ -520,7 +521,7 @@ cdef class Modularity:
 
 	def getQuality(self, Partition zeta, Graph G):
 		"""
-		getQuality(Partition zeta, Graph G)
+		getQuality(zeta,  G)
 
 		Calculates the modularity in the given Partition of the given
 		Graph.
@@ -534,7 +535,7 @@ cdef class Modularity:
 
 		Returns
 		-------
-		double
+		float
 			The modularity in the given Partition
 		"""
 		cdef double ret
@@ -570,7 +571,7 @@ cdef class HubDominance:
 
 	def getQuality(self, PartitionCover zeta, Graph G):
 		"""
-		getQuality(PartitionCover zeta, Graph G)
+		getQuality(zeta, G)
 
 		Calculates the dominance of hubs in the given Partition or Cover of the given
 		Graph.
@@ -578,14 +579,14 @@ cdef class HubDominance:
 		Parameters
 		----------
 		zeta : networkit.Partition or networkit.Cover
-			The Partition or Cover for which the hub dominance shall be calculated
+			The Partition or Cover for which the hub dominance shall be calculated.
 		G : networkit.Graph
-			The Graph to which zeta belongs
+			The Graph to which zeta belongs.
 
 		Returns
 		-------
-		double
-			The average hub dominance in the given Partition or Cover
+		float
+			The average hub dominance in the given Partition or Cover.
 		"""
 		return self._this.getQuality(zeta._this, G._this)
 
@@ -604,30 +605,28 @@ cdef extern from "<networkit/community/PLM.hpp>" namespace "NetworKit::PLM":
 
 cdef class PLM(CommunityDetector):
 	""" 
-	PLM(Graph G, refine=False, gamma=1.0, par="balanced", maxIter=32, turbo=True, recurse=True)
+	PLM(G, refine=False, gamma=1.0, par="balanced", maxIter=32, turbo=True, recurse=True)
 
 	Parallel Louvain Method - the Louvain method, optionally extended to
-	a full multi-level algorithm with refinement
+	a full multi-level algorithm with refinement.
 
 	Parameters
 	----------
 	G : networkit.Graph
-		A graph.
+		The input graph.
 	refine : bool, optional
-		Add a second move phase to refine the communities.
-	gamma : double
-		Multi-resolution modularity parameter:
-		1.0 -> standard modularity
-		0.0 -> one community
-		2m 	-> singleton communities
-	par : string
-		parallelization strategy
-	maxIter : count
-		maximum number of iterations for move phase
+		Add a second move phase to refine the communities. Default: False
+	gamma : float, optional
+		Multi-resolution modularity parameter: 1.0 (standard modularity), 0.0 (one community), 2m (singleton communities). Default: 1.0
+	par : str, optional
+		Parallelization strategy, possible values: "none", "simple", "balanced", "none randomized". Default "balanced"
+	maxIter : int, optional
+		Maximum number of iterations for move phase. Default: 32
 	turbo : bool, optional
-		faster but uses O(n) additional memory per thread
+		Faster but uses O(n) additional memory per thread. Default: True
 	recurse: bool, optional
-		use recursive coarsening, see http://journals.aps.org/pre/abstract/10.1103/PhysRevE.89.049902 for some explanations (default: true)
+		Use recursive coarsening, see http://journals.aps.org/pre/abstract/10.1103/PhysRevE.89.049902 for some explanations.
+		Default: True
 	"""
 
 	def __cinit__(self, Graph G not None, refine=False, gamma=1.0, par="balanced", maxIter=32, turbo=True, recurse=True):
@@ -642,15 +641,15 @@ cdef class PLM(CommunityDetector):
 
 		Returns
 		-------
-		double
-			Time for computing PLM
+		float
+			Time for computing PLM.
 		"""
 		return (<_PLM*>(self._this)).getTiming()
 
 	@staticmethod
 	def coarsen(Graph G, Partition zeta, bool_t parallel = False):
 		"""
-		coarsen(Graph G, Partition zeta, bool_t parallel = False)
+		coarsen(G, zeta, parallel=False)
 
 		Coarsens a graph based on a given partition and returns both the coarsened graph and a mapping 
 		for the nodes from fine to coarse.
@@ -660,14 +659,14 @@ cdef class PLM(CommunityDetector):
 		G : networkit.Graph
 			The input graph.
 		zeta : networkit.Partition
-			Partition of the graph, which represents the desired state of the coarsened graph
-		parallel : bool
-			Do the coarsening in parallel
+			Partition of the graph, which represents the desired state of the coarsened graph.
+		parallel : bool, optional
+			Do the coarsening in parallel. Default: False
 
 		Returns
 		-------
 		networkit.Graph
-			Pair of coarsened graph and node-mappings from fine to coarse graph
+			Pair of coarsened graph and node-mappings from fine to coarse graph.
 		"""
 		cdef pair[_Graph, vector[node]] result = move(PLM_coarsen(G._this, zeta._this))
 		return (Graph().setThis(result.first), result.second)
@@ -675,7 +674,7 @@ cdef class PLM(CommunityDetector):
 	@staticmethod
 	def prolong(Graph Gcoarse, Partition zetaCoarse, Graph Gfine, vector[node] nodeToMetaNode):
 		"""
-		prolong(Graph Gcoarse, Partition zetaCoarse, Graph Gfine, vector[node] nodeToMetaNode)
+		prolong(Gcoarse, zetaCoarse, Gfine, nodeToMetaNode)
 
 		Calculates a partition containing the mapping of node-id from a fine graph 
 		to a cluster-id from partition based on a coarse graph.
@@ -685,16 +684,16 @@ cdef class PLM(CommunityDetector):
 		Gcoarse : networkit.Graph
 			A coarse graph.
 		zetaCoarse : networkit.Partition
-			The first partition
+			The first partition.
 		Gfine : networkit.Graph
 			A fine graph.
-		nodeToMetaNode : vector[node]
-			Partition, which contains the cluster-id in the coarse graph for every node from the fine graph
+		nodeToMetaNode : list(int)
+			Partition, which contains the cluster-id in the coarse graph for every node from the fine graph.
 
 		Returns
 		-------
 		networkit.Partition
-			Partition
+			Output partition.
 		"""
 		return Partition().setThis(PLM_prolong(Gcoarse._this, zetaCoarse._this, Gfine._this, nodeToMetaNode))
 
@@ -705,21 +704,21 @@ cdef extern from "<networkit/community/ParallelLeiden.hpp>":
 		_ParallelLeiden(_Graph _G, int iterations, bool_t randomize, double gamma) except +
 
 cdef class ParallelLeiden(CommunityDetector):
-	""" Parallel Leiden Algorithm
+	""" 
+	ParallelLeiden(G, randomize=True, iterations=3, gamma=1)
 
-		Parameters
-		----------
-		G : networkit.Graph
-			A graph.
-		randomize : bool, optional
-			Whether to randomize the node order or not
-		iterations : count
-			Maximum count of Leiden runs
-		gamma : double
-			Multi-resolution modularity parameter:
-			1.0 -> standard modularity
-	 		0.0 -> one community
-	 		2m 	-> singleton communities
+	Parallel Leiden Algorithm.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		A graph.
+	randomize : bool, optional
+		Whether to randomize the node order or not. Default: True
+	iterations : int, optional
+		Maximum count of Leiden runs. Default: 3
+	gamma : float, optional
+		Multi-resolution modularity parameter: 1.0 (standard modularity), 0.0 (one community), 2m (singleton communities). Default: 1.0
 	"""
 
 	def __cinit__(self, Graph G not None, int iterations = 3, bool_t randomize = True, double gamma = 1):
@@ -732,7 +731,7 @@ cdef extern from "<networkit/community/LouvainMapEquation.hpp>":
 
 cdef class LouvainMapEquation(CommunityDetector):
 	"""
-	LouvainMapEquation(Graph G, hierarchical = False, maxIterations = 32, parallelizationStrategy = "relaxmap")
+	LouvainMapEquation(G, hierarchical=False, maxIterations=32, parallelizationStrategy="relaxmap")
 	
 	Community detection algorithm based on the Louvain algorithm. Uses the Map Equation to find communities.
 
@@ -742,10 +741,10 @@ cdef class LouvainMapEquation(CommunityDetector):
 		The graph on which the algorithm has to run.
 	hierarchical: bool, optional
 		Iteratively create a graph of the locally optimal clusters and optimize locally on that graph.
-	maxIterations: count, optional
+	maxIterations: int, optional
 		The maximum number of local move iterations.
-	parallelizationStrategy: string, optional
-		relaxmap, synchronous, or none. default relaxmap.
+	parallelizationStrategy: str, optional
+		Parallelization strategy, possible values: "relaxmap", "synchronous", "none". Default: "relaxmap"
 	"""
 
 	def __cinit__(self, Graph G not None, hierarchical = False, maxIterations = 32, parallelizationStrategy = "relaxmap"):
@@ -763,7 +762,7 @@ cdef extern from "<networkit/community/PLP.hpp>":
 
 cdef class PLP(CommunityDetector):
 	""" 
-	PLP(Graph G, count updateThreshold=none, count maxIterations=none, Partition baseClustering=None)
+	PLP(G, updateThreshold=None, maxIterations=None, baseClustering=None)
 
 	Parallel label propagation for community detection:
 	Moderate solution quality, very short time to solution.
@@ -772,10 +771,11 @@ cdef class PLP(CommunityDetector):
 	----------
 	G : networkit.Graph
 		The graph on which the algorithm has to run.
-	updateThreshold : int
-		number of nodes that have to be changed in each iteration so that a new iteration starts.
-	baseClustering : networkit.Partition
-		PLP needs a base clustering to start from; if none is given the algorithm will run on a singleton clustering.
+	updateThreshold : int, optional
+		number of nodes that have to be changed in each iteration so that a new iteration starts. Default: None
+	baseClustering : networkit.Partition, optional
+		PLP needs a base clustering to start from; if none is given the algorithm will 
+		run on a singleton clustering. Default: None
 
 	Notes
 	-----
@@ -809,7 +809,7 @@ cdef class PLP(CommunityDetector):
 
 		Returns
 		-------
-		count
+		int
 			The number of iterations.
 		"""
 		return (<_PLP*>(self._this)).numberOfIterations()
@@ -822,7 +822,7 @@ cdef class PLP(CommunityDetector):
 
 		Returns
 		-------
-		count
+		int
 			The list of running times in milliseconds.
 		"""
 		return (<_PLP*>(self._this)).getTiming()
@@ -834,7 +834,7 @@ cdef extern from "<networkit/community/LFM.hpp>":
 
 cdef class LFM(OverlappingCommunityDetector):
 	""" 
-	LFM(Graph G , SelectiveCommunityDetector scd)
+	LFM(G, scd)
 	
 	Local community expansion algorithm:
  
@@ -874,7 +874,7 @@ cdef extern from "<networkit/community/LPDegreeOrdered.hpp>":
 
 cdef class LPDegreeOrdered(CommunityDetector):
 	""" 
-	LPDegreeOrdered(Graph G)
+	LPDegreeOrdered(G)
 	
 	Label propagation-based community detection algorithm which processes nodes in increasing order of node degree.	"""
 
@@ -890,7 +890,7 @@ cdef class LPDegreeOrdered(CommunityDetector):
 
 		Returns
 		-------
-		count
+		int
 			Number of iterations.
 		"""
 		return (<_LPDegreeOrdered*>(self._this)).numberOfIterations()
@@ -908,7 +908,7 @@ cdef extern from "<networkit/community/CutClustering.hpp>" namespace "NetworKit:
 
 cdef class CutClustering(CommunityDetector):
 	"""
-	CutClustering(Graph G, edgeweight alpha)
+	CutClustering(G, alpha)
 	
 	Cut clustering algorithm as defined in
 	Flake, Gary William; Tarjan, Robert E.; Tsioutsiouliklis, Kostas. Graph Clustering and Minimum Cut Trees.
@@ -917,8 +917,9 @@ cdef class CutClustering(CommunityDetector):
 	Parameters
 	----------
 	G : networkit.Graph
-	alpha : double
-		The parameter for the cut clustering algorithm
+		The input graph.
+	alpha : float
+		The parameter for the cut clustering algorithm.
 	"""
 	def __cinit__(self, Graph G not None,  edgeweight alpha):
 		self._G = G
@@ -927,7 +928,7 @@ cdef class CutClustering(CommunityDetector):
 	@staticmethod
 	def getClusterHierarchy(Graph G not None):
 		""" 
-		getClusterHierarchy(Graph G)
+		getClusterHierarchy(G)
 		
 		Get the complete hierarchy with all possible parameter values.
 
@@ -940,12 +941,12 @@ cdef class CutClustering(CommunityDetector):
 		Parameters
 		----------
 		G : networkit.Graph
-			The graph.
+			The input graph.
 
 		Returns
 		-------
-		dict
-			A dictionary with the parameter values as keys and the corresponding Partition instances as values
+		dict(str ``:`` networkit.Partition)
+			A dictionary with the parameter values as keys and the corresponding Partition instances as values.
 		"""
 		cdef map[double, _Partition] result
 		# FIXME: this probably copies the whole hierarchy because of exception handling, using move might fix this
@@ -979,23 +980,23 @@ cdef class NodeStructuralRandMeasure(DissimilarityMeasure):
 
 	def getDissimilarity(self, Graph G, Partition first, Partition second):
 		""" 
-		getDissimilarity(Graph G, Partition first, Partition second)
+		getDissimilarity(G, first, second)
 
 		Returns dissimilarity between two partitions.
 
 		Parameters
 		----------
 		G : networkit.Graph
-			The graph.
-		first: networkit.Partition
-			The first partition
-		second: networkit.Partition
-			The second partition
+			The input graph.
+		first : networkit.Partition
+			The first partition.
+		second : networkit.Partition
+			The second partition.
 
 		Returns
 		-------
-		double
-			Dissimilarity between partition first and second
+		float
+			Dissimilarity between partition first and second.
 		"""			
 		cdef double ret
 		with nogil:
@@ -1020,7 +1021,7 @@ cdef class GraphStructuralRandMeasure(DissimilarityMeasure):
 
 	def getDissimilarity(self, Graph G, Partition first, Partition second):
 		""" 
-		getDissimilarity(Graph G, Partition first, Partition second)
+		getDissimilarity(G, first, second)
 
 		Returns dissimilarity between two partitions.
 
@@ -1028,15 +1029,15 @@ cdef class GraphStructuralRandMeasure(DissimilarityMeasure):
 		----------
 		G : networkit.Graph
 			The graph.
-		first: networkit.Partition
-			The first partition
-		second: networkit.Partition
-			The second partition
+		first : networkit.Partition
+			The first partition.
+		second : networkit.Partition
+			The second partition.
 
 		Returns
 		-------
-		double
-			Dissimilarity between partition first and second
+		float
+			Dissimilarity between partition first and second.
 		"""		
 		cdef double ret
 		with nogil:
@@ -1058,23 +1059,23 @@ cdef class JaccardMeasure(DissimilarityMeasure):
 
 	def getDissimilarity(self, Graph G, Partition first, Partition second):
 		""" 
-		getDissimilarity(Graph G, Partition first, Partition second)
+		getDissimilarity(G, first, second)
 
 		Returns dissimilarity between two partitions.
 
 		Parameters
 		----------
 		G : networkit.Graph
-			The graph.
-		first: networkit.Partition
-			The first partition
-		second: networkit.Partition
-			The second partition
+			The input graph.
+		first : networkit.Partition
+			The first partition.
+		second : networkit.Partition
+			The second partition.
 
 		Returns
 		-------
-		double
-			Dissimilarity between partition first and second
+		float
+			Dissimilarity between partition first and second.
 		"""	
 		cdef double ret
 		with nogil:
@@ -1098,7 +1099,7 @@ cdef class NMIDistance(DissimilarityMeasure):
 
 	def getDissimilarity(self, Graph G, Partition first, Partition second):
 		""" 
-		getDissimilarity(Graph G, Partition first, Partition second)
+		getDissimilarity(G, first, second)
 
 		Returns dissimilarity between two partitions.
 
@@ -1106,15 +1107,15 @@ cdef class NMIDistance(DissimilarityMeasure):
 		----------
 		G : networkit.Graph
 			The graph.
-		first: networkit.Partition
-			The first partition
-		second: networkit.Partition
-			The second partition
+		first : networkit.Partition
+			The first partition.
+		second : networkit.Partition
+			The second partition.
 
 		Returns
 		-------
-		double
-			Dissimilarity between partition first and second
+		float
+			Dissimilarity between partition first and second.
 		"""			
 		cdef double ret
 		with nogil:
@@ -1136,23 +1137,23 @@ cdef class AdjustedRandMeasure(DissimilarityMeasure):
 
 	def getDissimilarity(self, Graph G not None, Partition first not None, Partition second not None):
 		""" 
-		getDissimilarity(Graph G, Partition first, Partition second)
+		getDissimilarity(G, first, second)
 
 		Returns dissimilarity between two partitions.
 
 		Parameters
 		----------
 		G : networkit.Graph
-			The graph.
+			The input graph.
 		first: networkit.Partition
-			The first partition
+			The first partition.
 		second: networkit.Partition
-			The second partition
+			The second partition.
 
 		Returns
 		-------
-		double
-			Dissimilarity between partition first and second
+		float
+			Dissimilarity between partition first and second.
 		"""	
 		cdef double ret
 		with nogil:
@@ -1189,7 +1190,7 @@ cdef class LocalCommunityEvaluation(Algorithm):
 
 		Returns
 		-------
-		double:
+		float
 			The weighted average value.
 		"""
 		if self._this == NULL:
@@ -1204,7 +1205,7 @@ cdef class LocalCommunityEvaluation(Algorithm):
 
 		Returns
 		-------
-		double:
+		float
 			The unweighted average value.
 		"""
 		if self._this == NULL:
@@ -1219,7 +1220,7 @@ cdef class LocalCommunityEvaluation(Algorithm):
 
 		Returns
 		-------
-		double:
+		float
 			The maximum value.
 		"""
 		if self._this == NULL:
@@ -1234,7 +1235,7 @@ cdef class LocalCommunityEvaluation(Algorithm):
 
 		Returns
 		-------
-		double:
+		float
 			The minimum value.
 		"""
 		if self._this == NULL:
@@ -1249,12 +1250,12 @@ cdef class LocalCommunityEvaluation(Algorithm):
 
 		Parameters
 		----------
-		i : index
+		i : int
 			The cluster to get the value for.
 
 		Returns
 		-------
-		double:
+		float
 			The value of cluster i.
 		"""
 		if self._this == NULL:
@@ -1269,7 +1270,7 @@ cdef class LocalCommunityEvaluation(Algorithm):
 
 		Returns
 		-------
-		list(double):
+		list(float)
 			The values of all clusters.
 		"""
 		if self._this == NULL:
@@ -1284,7 +1285,7 @@ cdef class LocalCommunityEvaluation(Algorithm):
 
 		Returns
 		-------
-		bool:
+		bool
 			If small values are better.
 		"""
 		if self._this == NULL:
@@ -1298,7 +1299,7 @@ cdef extern from "<networkit/community/LocalPartitionEvaluation.hpp>":
 
 cdef class LocalPartitionEvaluation(LocalCommunityEvaluation):
 	"""
-	LocalPartitionEvaluation(Graph G, Partition P)
+	LocalPartitionEvaluation(G, P)
 	
 	Virtual base class of all evaluation methods for a single clustering which is based on the evaluation of single clusters.
 	This is the base class for Partitions.
@@ -1328,7 +1329,7 @@ cdef extern from "<networkit/community/LocalCoverEvaluation.hpp>":
 
 cdef class LocalCoverEvaluation(LocalCommunityEvaluation):
 	"""
-	LocalCoverEvaluation(Graph G, Partition P)
+	LocalCoverEvaluation(G, P)
 
 	Virtual base class of all evaluation methods for a single clustering which is based on the evaluation of single clusters.
 	This is the base class for Covers.
@@ -1357,7 +1358,7 @@ cdef extern from "<networkit/community/IntrapartitionDensity.hpp>":
 
 cdef class IntrapartitionDensity(LocalPartitionEvaluation):
 	"""
-	IntrapartitionDensity(Graph G, Partition P)
+	IntrapartitionDensity(G, P)
 	
 	The intra-cluster density of a partition is defined as the number of existing edges divided by the number of possible edges.
 	The global value is the sum of all existing intra-cluster edges divided by the sum of all possible intra-cluster edges.
@@ -1365,9 +1366,9 @@ cdef class IntrapartitionDensity(LocalPartitionEvaluation):
 	Parameters
 	----------
 	G : networkit.Graph
-		The graph on which the measure shall be evaluated
+		The graph on which the measure shall be evaluated.
 	P : networkit.Partition
-		The partition that shall be evaluated
+		The partition that shall be evaluated.
 	"""
 	def __cinit__(self):
 		self._this = new _IntrapartitionDensity(self._G._this, self._P._this)
@@ -1380,7 +1381,7 @@ cdef class IntrapartitionDensity(LocalPartitionEvaluation):
 
 		Returns
 		-------
-		double:
+		float
 			The global intra-cluster density.
 		"""
 		if self._this == NULL:
@@ -1395,7 +1396,7 @@ cdef extern from "<networkit/community/IsolatedInterpartitionConductance.hpp>":
 
 cdef class IsolatedInterpartitionConductance(LocalPartitionEvaluation):
 	"""
-	IsolatedInterpartitionConductance(Graph G, Partition P)
+	IsolatedInterpartitionConductance(G, P)
 	
 	Isolated inter-partition conductance is a measure for how well a partition
 	(communtiy/cluster) is separated from the rest of the graph.
@@ -1414,9 +1415,9 @@ cdef class IsolatedInterpartitionConductance(LocalPartitionEvaluation):
 	Parameters
 	----------
 	G : networkit.Graph
-		The graph on which the measure shall be evaluated
+		The graph on which the measure shall be evaluated.
 	P : networkit.Partition
-		The partition that shall be evaluated
+		The partition that shall be evaluated.
 	"""
 	def __cinit__(self):
 		self._this = new _IsolatedInterpartitionConductance(self._G._this, self._P._this)
@@ -1428,7 +1429,7 @@ cdef extern from "<networkit/community/IsolatedInterpartitionExpansion.hpp>":
 
 cdef class IsolatedInterpartitionExpansion(LocalPartitionEvaluation):
 	"""
-	IsolatedInterpartitionExpansion(Graph G, Partition P)
+	IsolatedInterpartitionExpansion(G, P)
 	
 	Isolated inter-partition expansion is a measure for how well a partition
 	(communtiy/cluster) is separated from the rest of the graph.
@@ -1447,9 +1448,9 @@ cdef class IsolatedInterpartitionExpansion(LocalPartitionEvaluation):
 	Parameters
 	----------
 	G : networkit.Graph
-		The graph on which the measure shall be evaluated
+		The graph on which the measure shall be evaluated.
 	P : networkit.Partition
-		The partition that shall be evaluated
+		The partition that shall be evaluated.
 	"""
 	def __cinit__(self):
 		self._this = new _IsolatedInterpartitionExpansion(self._G._this, self._P._this)
@@ -1461,7 +1462,7 @@ cdef extern from "<networkit/community/CoverHubDominance.hpp>":
 
 cdef class CoverHubDominance(LocalCoverEvaluation):
 	"""
-	CoverHubDominance(Graph G, Cover C)
+	CoverHubDominance(G, C)
 	
 	A quality measure that measures the dominance of hubs in clusters. The hub dominance of a single
 	cluster is defined as the maximum cluster-internal degree of a node in that cluster divided by
@@ -1478,9 +1479,9 @@ cdef class CoverHubDominance(LocalCoverEvaluation):
 	Parameters
 	----------
 	G : networkit.Graph
-		The graph on which the measure shall be evaluated
+		The graph on which the measure shall be evaluated.
 	C : networkit.Cover
-		The cover that shall be evaluated
+		The cover that shall be evaluated.
 	"""
 	def __cinit__(self):
 		self._this = new _CoverHubDominance(self._G._this, self._C._this)
@@ -1492,7 +1493,7 @@ cdef extern from "<networkit/community/PartitionHubDominance.hpp>":
 
 cdef class PartitionHubDominance(LocalPartitionEvaluation):
 	"""
-	PartitionHubDominance(Graph G, Partition P)
+	PartitionHubDominance(G, P)
 	
 	A quality measure that measures the dominance of hubs in clusters. The hub dominance of a single
 	cluster is defined as the maximum cluster-internal degree of a node in that cluster divided by
@@ -1508,9 +1509,9 @@ cdef class PartitionHubDominance(LocalPartitionEvaluation):
 	Parameters
 	----------
 	G : networkit.Graph
-		The graph on which the measure shall be evaluated
+		The graph on which the measure shall be evaluated.
 	P : networkit.Partition
-		The partition that shall be evaluated
+		The partition that shall be evaluated.
 	"""
 	def __cinit__(self):
 		self._this = new _PartitionHubDominance(self._G._this, self._P._this)
@@ -1522,7 +1523,7 @@ cdef extern from "<networkit/community/PartitionFragmentation.hpp>":
 
 cdef class PartitionFragmentation(LocalPartitionEvaluation):
 	"""
-	PartitionFragmentation(Graph G, Partition P)
+	PartitionFragmentation(G, P)
 	
 	This measure evaluates how fragmented a partition is. The fragmentation of a single cluster is defined as one minus the
 	number of nodes in its maximum connected componented divided by its total number of nodes. Smaller values thus indicate a smaller fragmentation.
@@ -1530,9 +1531,9 @@ cdef class PartitionFragmentation(LocalPartitionEvaluation):
 	Parameters
 	----------
 	G : networkit.Graph
-		The graph on which the measure shall be evaluated
+		The graph on which the measure shall be evaluated.
 	P : networkit.Partition
-		The partition that shall be evaluated
+		The partition that shall be evaluated.
 	"""
 	def __cinit__(self):
 		self._this = new _PartitionFragmentation(self._G._this, self._P._this)
@@ -1545,7 +1546,7 @@ cdef extern from "<networkit/community/StablePartitionNodes.hpp>":
 
 cdef class StablePartitionNodes(LocalPartitionEvaluation):
 	"""
-	StablePartitionNodes(Graph G, Partition P)
+	StablePartitionNodes(G, P)
 	
 	Evaluates how stable a given partition is. A node is considered to be stable if it has strictly more connections
 	to its own partition than to other partitions. Isolated nodes are considered to be stable.
@@ -1555,9 +1556,9 @@ cdef class StablePartitionNodes(LocalPartitionEvaluation):
 	Parameters
 	----------
 	G : networkit.Graph
-		The graph on which the measure shall be evaluated
+		The graph on which the measure shall be evaluated.
 	P : networkit.Partition
-		The partition that shall be evaluated
+		The partition that shall be evaluated.
 	"""
 	def __cinit__(self):
 		self._this = new _StablePartitionNodes(self._G._this, self._P._this)
@@ -1565,14 +1566,14 @@ cdef class StablePartitionNodes(LocalPartitionEvaluation):
 
 	def isStable(self, node u):
 		"""
-		isStable(node u)
+		isStable(u)
 		
 		Check if a given node is stable, i.e. more connected to its own partition than to other partitions.
 
 		Parameters
 		----------
-		u : node
-			The node to check
+		u : int
+			The node to check.
 
 		Returns
 		-------
@@ -1591,7 +1592,7 @@ cdef extern from "<networkit/community/CoverF1Similarity.hpp>":
 
 cdef class CoverF1Similarity(LocalCoverEvaluation):
 	"""
-	CoverF1Similarity(Graph G, Cover C)
+	CoverF1Similarity(G, C, reference)
 	
 	Compare a given cover to a reference cover using the F1 measure.
 	This is a typical similarity measure used to compare the found
@@ -1611,12 +1612,12 @@ cdef class CoverF1Similarity(LocalCoverEvaluation):
 
 	Parameters
 	----------
-	G : Graph
+	G : networkit.Graph
 		The graph on which the evaluation is performed.
-	C : Cover
-		The cover that shall be evaluated
-        reference : Cover
-		The cover to which the similarity shall be computed
+	C : networkit.Cover
+		The cover that shall be evaluated.
+	reference : networkit.Cover
+		The cover to which the similarity shall be computed.
 	"""
 	cdef Cover _reference
 	def __cinit__(self, Graph G not None, Cover C not None, Cover reference not None):
@@ -1627,7 +1628,7 @@ cdef class CoverF1Similarity(LocalCoverEvaluation):
 
 def detectCommunities(G, algo=None, inspect=True):
 	""" 
-	detectCommunities(Graph G, algo=None, inspect=True)
+	detectCommunities(G, algo=None, inspect=True)
 
 	Perform high-performance community detection on the graph.
 	
@@ -1635,15 +1636,15 @@ def detectCommunities(G, algo=None, inspect=True):
 	----------
 	G : Graph
 		The graph on which the evaluation is performed.
-	algo :
-		Community detection algorithm instance
-	inspect: bool
-		Print properties of the found solution
+	algo : networkit.community.CommunityDetector
+		Community detection algorithm instance. Default: None
+	inspect: bool, optional
+		Print properties of the found solution. Default: True
 
 	Returns
 	-------
 	networkit.Partition
-		Return communities (as type Partition)
+		Return communities (as type Partition).
 	
 	"""
 	if algo is None:
@@ -1660,20 +1661,20 @@ def detectCommunities(G, algo=None, inspect=True):
 
 def inspectCommunities(zeta, G):
 	""" 
-	inspectCommunities(Partition zeta, Graph G)
+	inspectCommunities(zeta, G)
 	
-	Display information about communities
+	Display information about communities.
 
 	Parameters
 	----------
 	zeta : networkit.Partition
-		Partition
+		The input Partition.
 	G : networkit.Graph
 		The graph on which the evaluation is performed.
 
 	Returns
 	-------
-	visual
+	tabulate.tabulate
 		inspection of communities (needs external tabulate-module)
 	"""
 	if not have_tabulate:
@@ -1693,16 +1694,17 @@ def inspectCommunities(zeta, G):
 
 def communityGraph(G, zeta):
 	""" 
-	communityGraph(Graph G, Partition P)
+	communityGraph(G, P)
 	
-	Create a community graph, i.e. a graph in which one node represents a community and an edge represents the edges between communities, from a given graph and a community detection solution
+	Create a community graph, i.e. a graph in which one node represents a community and an edge represents the edges 
+	between communities, from a given graph and a community detection solution.
 	
 	Parameters
 	----------
 	G : networkit.Graph
 		The graph on which the evaluation is performed.	
 	P : networkit.Partition
-		Partition
+		The input Partition.
 	"""
 	cg = ParallelPartitionCoarsening(G, zeta)
 	cg.run()
@@ -1712,18 +1714,19 @@ def communityGraph(G, zeta):
 def evalCommunityDetection(algo, G):
 	""" 
 	evalCommunityDetection(algo, G)
+
 	Evaluate a community detection algorithm 
-	
+
 	Parameters
 	----------
-	algo :
+	algo : networkit.community.CommunityDetector
 		Community detection algorithm instance
-	G : Graph
+	G : networkit.Graph
 		The graph on which the evaluation is performed.
 
 	Returns
 	-------
-	visual
+	tabulate.tabulate
 		inspection of communities (needs external tabulate-module)
 	"""
 
@@ -1749,9 +1752,9 @@ def readCommunities(path, format="default"):
 	Parameters
 	----------
 	path : str
-		Path to file, which contains information about communities
-	format : str
-		Besides default, this can be set to "edgelist-t1", "edgelist-t0", "edgelist-s1", "edgelist-s0"
+		Path to file, which contains information about communities.
+	format : str, optional
+		Format from file, possible values: "default", "edgelist-t1", "edgelist-t0", "edgelist-s1", "edgelist-s0". Default: "default"
 	"""
 	readers =  {"default": PartitionReader(),
 		"edgelist-t1": EdgeListPartitionReader(1, '\t'),
@@ -1789,24 +1792,30 @@ def writeCommunities(communities, path):
 
 	Parameters
 	----------
+	communities : networkit.Partition
+		The input communities.
 	path : str
-		Path to file, which contains information about communities
-	format : str
-		Besides default, this can be set to "edgelist-t1", "edgelist-t0", "edgelist-s1", "edgelist-s0"
+		Path to write the file to.
 	"""
 	PartitionWriter().write(communities, path)
 	print("wrote communities to: {0}".format(path))
 
 
 def compareCommunities(G, zeta1, zeta2):
-	""" 
-	Compare the partitions with respect to several (dis)similarity measures. Note: Currently not implemented
+	"""
+	compareCommunities(G, zeta1, zeta2)
+
+	Compare the partitions with respect to several (dis)similarity measures. 
+	
+	Notes
+	-----
+	Currently not implemented.
 	"""
 	raise NotImplementedError("TODO:")
 
 def kCoreCommunityDetection(G, k, algo=None, inspect=True):
 	""" 
-	kCoreCommunityDetection(Graph G, double k, algo=None, inspect=True)
+	kCoreCommunityDetection(G, k, algo=None, inspect=True)
 	
 	Perform community detection on the k-core of the graph, which possibly
 
@@ -1814,15 +1823,16 @@ def kCoreCommunityDetection(G, k, algo=None, inspect=True):
 	----------
 	G : networkit.Graph
 		The graph on which the evaluation is performed.
-	k : double
-		set k as used in k-core
-	algo : networkit.Algorithm
-		Community detection algorithm instance
-
+	k : float
+		Set k as used in k-core.
+	algo : networkit.community.CommunityDetector, optional
+		Community detection algorithm instance. Default: None
+	inspect: bool, optional
+		Print properties of the found solution. Default: True
 	Returns
 	-------
 	networkit.Partition
-		Return communities (as type Partition)
+		Return communities (as type Partition).
 		"""
 	coreDec = CoreDecomposition(G)
 	coreDec.run()
@@ -1877,6 +1887,13 @@ cdef extern from "<networkit/community/OverlappingNMIDistance.hpp>" namespace "N
 		MAX,
 		JOINT_ENTROPY
 
+class Normalization:
+	Min = MIN
+	GeometricMean = GEOMETRIC_MEAN
+	ArithmeticMean = ARITHMETIC_MEAN
+	Max = MAX
+	JointEntropy = JOINT_ENTROPY
+
 cdef extern from "<networkit/community/OverlappingNMIDistance.hpp>":
 
 	cdef cppclass _OverlappingNMIDistance "NetworKit::OverlappingNMIDistance":
@@ -1888,18 +1905,26 @@ cdef extern from "<networkit/community/OverlappingNMIDistance.hpp>":
 
 cdef class OverlappingNMIDistance(DissimilarityMeasure):
 	"""
-	OverlappingNMIDistance(normalization = OverlappingNMIDistance.Max)
+	OverlappingNMIDistance(normalization = networkit.community.Normalization.Max)
 	
 	Compare two covers using the overlapping normalized mutual information measure. This is a dissimilarity measure with
 	a range of [0, 1]. A value of 0 indicates a perfect agreement while a 1 indicates complete disagreement.
 
-	For the `OverlappingNMIDistance.Max` normalization, this is the measure introduced in [NMI13]. Other normalization
+	For `networkit.community.Normalization.Max` normalization, this is the measure introduced in [NMI13]. Other normalization
 	methods result in similar measures.
+
+	Parameter :code:`normalization` can be one of the following:
+
+	- networkit.community.Normalization.Min
+	- networkit.community.Normalization.GeometricMean
+	- networkit.community.Normalization.ArithmeticMean
+	- networkit.community.Normalization.Max
+	- networkit.community.Normalization.JointEntropy
 
 	Parameters
 	----------
-	normalization : {Min, GeometricMean, ArithmeticMean, Max, JointEntropy}, optional
-		The default is OverlappingNMIDistance.Max.
+	normalization : networkit.community.Normalization, optional
+		Normalization strategy for OverlappingNMIDistance. Default: networkit.community.Normalization.Max
 
 	Raises
 	------
@@ -1930,9 +1955,18 @@ cdef class OverlappingNMIDistance(DissimilarityMeasure):
 		
 		Set the normalization method.
 
+		Parameter :code:`normalization` can be one of the following:
+
+		- networkit.community.Normalization.Min
+		- networkit.community.Normalization.GeometricMean
+		- networkit.community.Normalization.ArithmeticMean
+		- networkit.community.Normalization.Max
+		- networkit.community.Normalization.JointEntropy
+
 		Parameters
 		----------
-		normalization : {Min, GeometricMean, ArithmeticMean, Max, JointEntropy}
+		normalization : networkit.community.Normalization
+			Normalization strategy for OverlappingNMIDistance.
 
 		Raises
 		------
@@ -1944,16 +1978,18 @@ cdef class OverlappingNMIDistance(DissimilarityMeasure):
 
 	def getDissimilarity(self, Graph G, PartitionCover first, PartitionCover second):
 		"""
-		getDissimilarity(Graph G, PartitionCover first, PartitionCover second)
+		getDissimilarity(G, first, second)
 		
 		Calculate the dissimilarity.
 
 		Parameters
 		----------
 		G : networkit.Graph
+			The input graph.
 		first : networkit.Partition or networkit.Cover
+			The first input partition/cover.
 		second : networkit.Partition or networkit.Cover
-			Must be the same type as `first`.
+			The second input partition/cover. Must be the same type as `first`.
 
 		Raises
 		------
@@ -1965,7 +2001,7 @@ cdef class OverlappingNMIDistance(DissimilarityMeasure):
 		Returns
 		-------
 		float
-			distance
+			Resulting overlapping NMI distance.
 		"""
 		cdef double ret
 		if isinstance(first, Partition) and isinstance(second, Partition):

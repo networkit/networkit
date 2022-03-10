@@ -36,7 +36,7 @@ cdef class ConnectedComponents(Algorithm):
 	Parameters
 	----------
 	G : networkit.Graph
-		The graph.
+		The input graph.
 	"""
 	cdef Graph _G
 
@@ -78,13 +78,13 @@ cdef class ConnectedComponents(Algorithm):
 
 		Parameters
 		----------
-		v : node
+		v : int
 			The node whose component is asked for.
 
 		Returns
 		-------
 		int
-			Component in which node `v` is situated
+			Component in which node `v` is situated.
 		"""
 		return (<_ConnectedComponents*>(self._this)).componentOfNode(v)
 
@@ -96,7 +96,7 @@ cdef class ConnectedComponents(Algorithm):
 
 		Returns
 		-------
-		dict(int : int)
+		dict(int ``:`` int)
 			A dict containing the component ids and their size.
 		"""
 		return (<_ConnectedComponents*>(self._this)).getComponentSizes()
@@ -109,7 +109,7 @@ cdef class ConnectedComponents(Algorithm):
 
 		Returns
 		-------
-		list
+		list(int)
 			The connected components.
 		"""
 		return (<_ConnectedComponents*>(self._this)).getComponents()
@@ -117,6 +117,8 @@ cdef class ConnectedComponents(Algorithm):
 	@staticmethod
 	def extractLargestConnectedComponent(Graph graph, bool_t compactGraph = False):
 		"""
+		extractLargestConnectedComponent(graph, compactGraph=False)
+
 		Constructs a new graph that contains only the nodes inside the
 		largest connected component.
 
@@ -127,11 +129,11 @@ cdef class ConnectedComponents(Algorithm):
 		Parameters
 		----------
 		graph : networkit.Graph
-			The input graph
+			The input graph.
 		compactGraph : bool, optional
-			if true, the node ids of the output graph will be compacted
+			If true, the node ids of the output graph will be compacted
 			(i.e., re-numbered from 0 to n-1). If false, the node ids
-			will not be changed.
+			will not be changed. Default: False
 
 		Returns
 		-------
@@ -208,7 +210,7 @@ cdef class ParallelConnectedComponents(Algorithm):
 
 		Parameters
 		----------
-		v : node
+		v : int
 			The node whose component is asked for.
 
 		Returns
@@ -226,7 +228,7 @@ cdef class ParallelConnectedComponents(Algorithm):
 
 		Returns
 		-------
-		list
+		list(int)
 			The connected components.
 		"""
 		return (<_ParallelConnectedComponents*>(self._this)).getComponents()
@@ -253,7 +255,7 @@ cdef class StronglyConnectedComponents:
 	Parameters:
 	-----------
 	G : networkit.Graph
-		The graph.
+		The input graph.
 	"""
 	cdef _StronglyConnectedComponents* _this
 	cdef Graph _G
@@ -308,11 +310,11 @@ cdef class StronglyConnectedComponents:
 
 		Parameters
 		----------
-		u : node
+		u : int
 			A node in the graph.
 
 		Returns
-		-----------
+		-------
 		int
 			The component of node `u`.
 		"""
@@ -326,7 +328,7 @@ cdef class StronglyConnectedComponents:
 
 		Returns
 		-------
-		dict(int : int)
+		dict(int ``:`` int)
 			A dict with component indexes as keys and their size as values.
 		"""
 		return self._this.getComponentSizes()
@@ -392,7 +394,7 @@ cdef class WeaklyConnectedComponents(Algorithm):
 
 		Parameters
 		----------
-		v : node
+		v : int
 			The node whose component is asked for.
 
 		Returns
@@ -410,7 +412,7 @@ cdef class WeaklyConnectedComponents(Algorithm):
 
 		Returns
 		-------
-		dict(int : int)
+		dict(int ``:`` int)
 			A dict that maps each component id to its size.
 		"""
 		return (<_WeaklyConnectedComponents*>(self._this)).getComponentSizes()
@@ -423,8 +425,8 @@ cdef class WeaklyConnectedComponents(Algorithm):
 
 		Returns
 		-------
-		vector[vector[node]]
-			A vector of vectors. Each inner vector contains all the nodes inside the component.
+		list(list(int))
+			A list of lists. Each inner vector contains all the nodes inside the component.
 		"""
 		return (<_WeaklyConnectedComponents*>(self._this)).getComponents()
 
@@ -439,7 +441,7 @@ cdef extern from "<networkit/components/BiconnectedComponents.hpp>":
 
 cdef class BiconnectedComponents(Algorithm):
 	""" 
-	BiconnectedComponents()
+	BiconnectedComponents(G)
 	
 	Determines the biconnected components of an undirected graph as defined in
 	Tarjan, Robert. Depth-First Search and Linear Graph Algorithms. SIAM J.
@@ -448,7 +450,7 @@ cdef class BiconnectedComponents(Algorithm):
 	Parameters
 	----------
 	G : networkit.Graph
-		The graph.
+		The input graph.
 	"""
 	cdef Graph _G
 
@@ -477,7 +479,7 @@ cdef class BiconnectedComponents(Algorithm):
 
 		Returns
 		-------
-		dict(int : int)
+		dict(int ``:`` int)
 			A dict that maps each component id to its size.
 		"""
 		return (<_BiconnectedComponents*>(self._this)).getComponentSizes()
@@ -490,8 +492,8 @@ cdef class BiconnectedComponents(Algorithm):
 
 		Returns
 		-------
-		vector[vector[node]]
-			A vector of vectors. Each inner vector contains all the nodes inside the component.
+		list(list(int))
+			A list of lists. Each inner vector contains all the nodes inside the component.
 		"""
 		return (<_BiconnectedComponents*>(self._this)).getComponents()
 
@@ -516,7 +518,7 @@ cdef class DynConnectedComponents(Algorithm):
 	Parameters
 	----------
 	G : networkit.Graph
-		The graph.
+		The input graph.
 	"""
 	cdef Graph _G
 
@@ -545,13 +547,13 @@ cdef class DynConnectedComponents(Algorithm):
 
 		Parameters
 		----------
-		v : node
+		v : int
 			The node whose component is asked for.
 
 		Returns
 		-------
 		int
-			Component in which node `v` is situated
+			Component in which node `v` is situated.
 		"""
 		return (<_DynConnectedComponents*>(self._this)).componentOfNode(v)
 
@@ -563,7 +565,7 @@ cdef class DynConnectedComponents(Algorithm):
 
 		Returns
 		-------
-		dict(int : int)
+		dict(int ``:`` int)
 			A dict that maps each component id to its size.
 		"""
 		return (<_DynConnectedComponents*>(self._this)).getComponentSizes()
@@ -576,7 +578,7 @@ cdef class DynConnectedComponents(Algorithm):
 
 		Returns
 		-------
-		list[list[int]]
+		list(list(int))
 			A list of lists. Each inner list contains all the nodes inside the component.
 		"""
 		return (<_DynConnectedComponents*>(self._this)).getComponents()
@@ -590,7 +592,7 @@ cdef class DynConnectedComponents(Algorithm):
 
 		Parameters
 		----------
-		event : GraphEvent
+		event : networkit.dynamics.GraphEvent
 			The event that happened (edge deletion or insertion).
 		"""
 		(<_DynConnectedComponents*>(self._this)).update(_GraphEvent(event.type, event.u, event.v, event.w))
@@ -604,8 +606,8 @@ cdef class DynConnectedComponents(Algorithm):
 
 		Parameters
 		----------
-		batch : vector[GraphEvent]
-			A vector that contains a batch of edge insertions or deletions.
+		batch : list(networkit.dynamics.GraphEvent)
+			A list that contains a batch of edge insertions or deletions.
 		"""
 		cdef vector[_GraphEvent] _batch
 		for event in batch:
@@ -634,7 +636,7 @@ cdef class DynWeaklyConnectedComponents(Algorithm):
 	Parameters
 	----------
 	G : networkit.Graph
-		The graph.
+		The input graph.
 	"""
 	cdef Graph _G
 
@@ -663,7 +665,7 @@ cdef class DynWeaklyConnectedComponents(Algorithm):
 
 		Parameters
 		----------
-		v : node
+		v : int
 			The node whose component is asked for.
 
 		Returns
@@ -681,7 +683,7 @@ cdef class DynWeaklyConnectedComponents(Algorithm):
 
 		Returns
 		-------
-		dict(int : int)
+		dict(int ``:`` int)
 			A dict that maps each component id to its size.
 		"""
 		return (<_DynWeaklyConnectedComponents*>(self._this)).getComponentSizes()
@@ -694,8 +696,8 @@ cdef class DynWeaklyConnectedComponents(Algorithm):
 
 		Returns
 		-------
-		vector[vector[node]]
-			A vector of vectors. Each inner vector contains all the nodes
+		list(list(int))
+			A list of lists. Each inner vector contains all the nodes
 			inside the component.
 		"""
 		return (<_DynWeaklyConnectedComponents*>(self._this)).getComponents()
@@ -709,7 +711,7 @@ cdef class DynWeaklyConnectedComponents(Algorithm):
 
 		Parameters
 		----------
-		event : GraphEvent
+		event : networkit.dynamics.GraphEvent
 			The event that happened (edge deletion or insertion).
 		"""
 		(<_DynWeaklyConnectedComponents*>(self._this)).update(_GraphEvent(event.type, event.u, event.v, event.w))
@@ -723,7 +725,7 @@ cdef class DynWeaklyConnectedComponents(Algorithm):
 
 		Parameters
 		----------
-		batch : vector[GraphEvent]
+		batch : list(networkit.dynamics.GraphEvent)
 			A vector that contains a batch of edge insertions or deletions.
 		"""
 		cdef vector[_GraphEvent] _batch
