@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * KPathCentrality.h
+ * KPathCentrality.hpp
  *
  *  Created on: 05.10.2014
  *      Author: nemes
@@ -16,9 +15,8 @@ namespace NetworKit {
 /**
  * @ingroup centrality
  */
-class KPathCentrality: public Centrality {
+class KPathCentrality : public Centrality {
 public:
-
     /*
      * the maximum length of paths
      * default value ln(n+m)
@@ -41,13 +39,12 @@ public:
      * @param k maximum length of paths.
      * TODO running times
      */
-    KPathCentrality(const Graph& G, double alpha=0.2, count k=0);
+    KPathCentrality(const Graph &G, double alpha = 0.2, count k = 0);
 
     /**
      * Computes k-path centrality on the graph passed in constructor.
      */
     void run() override;
-
 };
 
 } /* namespace NetworKit */

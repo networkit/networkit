@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * Centrality.hpp
  *
@@ -9,8 +8,8 @@
 #ifndef NETWORKIT_CENTRALITY_CENTRALITY_HPP_
 #define NETWORKIT_CENTRALITY_CENTRALITY_HPP_
 
-#include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -21,14 +20,15 @@ namespace NetworKit {
 class Centrality : public Algorithm {
 public:
     /**
-     * Constructs the Centrality class for the given Graph @a G. If the centrality scores should be normalized,
-     * then set @a normalized to @c true.
+     * Constructs the Centrality class for the given Graph @a G. If the centrality scores should be
+     * normalized, then set @a normalized to @c true.
      *
      * @param G The graph.
      * @param normalized If set to @c true the scores are normalized in the interval [0,1].
-     * @param computeEdgeCentrality		If true, compute also edge centralities (for algorithms where this is applicable)
+     * @param computeEdgeCentrality		If true, compute also edge centralities (for algorithms
+     * where this is applicable)
      */
-    Centrality(const Graph& G, bool normalized=false, bool computeEdgeCentrality=false);
+    Centrality(const Graph &G, bool normalized = false, bool computeEdgeCentrality = false);
 
     /**
      * Computes centrality scores on the graph passed in constructor.
@@ -43,17 +43,18 @@ public:
     virtual const std::vector<double> &scores() const;
 
     /**
-     * Get a vector containing the edge centrality score for each edge in the graph (where applicable).
+     * Get a vector containing the edge centrality score for each edge in the graph (where
+     * applicable).
      * @return The edge betweenness scores calculated by @ref run().
      */
     virtual std::vector<double> edgeScores();
 
     /**
-     * Get a vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
-     * calculated by @ref run().
+     * Get a vector of pairs sorted into descending order. Each pair contains a node and the
+     * corresponding score calculated by @ref run().
      * @return A vector of pairs.
      */
-    virtual std::vector<std::pair<node, double> > ranking();
+    virtual std::vector<std::pair<node, double>> ranking();
 
     /**
      * Get the centrality score of node @a v calculated by @ref run().
@@ -64,10 +65,10 @@ public:
     virtual double score(node v);
 
     /**
-    * Get the theoretical maximum of centrality score in the given graph.
-    *
-    * @return The maximum centrality score.
-    */
+     * Get the theoretical maximum of centrality score in the given graph.
+     *
+     * @return The maximum centrality score.
+     */
     virtual double maximum();
 
     /**
@@ -85,13 +86,11 @@ public:
     virtual double centralization();
 
 protected:
-
-    const Graph& G;
+    const Graph &G;
     std::vector<double> scoreData;
     std::vector<double> edgeScoreData;
     bool normalized; // true if scores should be normalized in the interval [0,1]
     bool computeEdgeCentrality;
-
 };
 
 } /* namespace NetworKit */

@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * Overlapper.hpp
  *
@@ -21,9 +20,7 @@ namespace NetworKit {
 class Overlapper {
 
 public:
-
-    virtual Partition run(const Graph& G, const  std::vector<Partition>& clusterings) = 0;
-
+    virtual Partition run(const Graph &G, const std::vector<Partition> &clusterings) = 0;
 };
 
 } /* namespace NetworKit */

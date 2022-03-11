@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * ApproxGroupBetweenness.hpp
  *
@@ -56,9 +55,8 @@ inline std::vector<node> ApproxGroupBetweenness::groupMaxBetweenness() const {
     return maxGroup;
 }
 
-inline double
-ApproxGroupBetweenness::scoreOfGroup(const std::vector<node> &S,
-                                     const bool normalized) const {
+inline double ApproxGroupBetweenness::scoreOfGroup(const std::vector<node> &S,
+                                                   const bool normalized) const {
     if (S.empty())
         throw std::runtime_error("Error: input group is empty");
 
@@ -77,7 +75,6 @@ ApproxGroupBetweenness::scoreOfGroup(const std::vector<node> &S,
     std::vector<BFS> bfss(omp_get_max_threads(), BFS(G, 0, true, true));
 
     auto computeDeps = [&](node source) {
-
         auto &dep = deps[omp_get_thread_num()];
         std::fill(dep.begin(), dep.end(), 0);
 
@@ -93,10 +90,10 @@ ApproxGroupBetweenness::scoreOfGroup(const std::vector<node> &S,
                 (bfs.numberOfPaths(pred) / bfs.numberOfPaths(target)).ToDouble(weight);
                 if (inGroup[pred]) {
                     if (pred != source) {
-                        scorePerThread[omp_get_thread_num()] += dep[pred] + weight * (1 + dep[target]);
+                        scorePerThread[omp_get_thread_num()] +=
+                            dep[pred] + weight * (1 + dep[target]);
                     }
-                }
-                else {
+                } else {
                     dep[pred] += weight * (1 + dep[target]);
                 }
             }
@@ -107,7 +104,7 @@ ApproxGroupBetweenness::scoreOfGroup(const std::vector<node> &S,
 
     double result = 0;
     for (double curScore : scorePerThread)
-            result += curScore;
+        result += curScore;
 
     if (normalized) {
         double nPairs = static_cast<double>((z - S.size()) * (z - S.size() - 1));

@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * LaplacianCentrality.h
+ * LaplacianCentrality.hpp
  *
  *  Created on: 08.03.2018
  *      Author: Kolja Esders
@@ -22,7 +21,7 @@ namespace NetworKit {
  *
  * See https://dl.acm.org/citation.cfm?id=2181343.2181780 for details.
  */
-class LaplacianCentrality: public Centrality {
+class LaplacianCentrality : public Centrality {
 public:
     /**
      * Constructs a LaplacianCentrality object for the given Graph @a G.
@@ -30,7 +29,7 @@ public:
      * @param G The graph.
      * @param normalized Whether scores should be normalized by the energy of the full graph.
      */
-    LaplacianCentrality(const Graph& G, bool normalized = false);
+    LaplacianCentrality(const Graph &G, bool normalized = false);
 
     /**
      * Computes the Laplacian centrality on the graph passed in the constructor.

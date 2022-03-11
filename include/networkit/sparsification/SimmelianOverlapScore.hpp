@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * SimmelianOverlapScore.hpp
  *
@@ -9,8 +8,8 @@
 #ifndef NETWORKIT_SPARSIFICATION_SIMMELIAN_OVERLAP_SCORE_HPP_
 #define NETWORKIT_SPARSIFICATION_SIMMELIAN_OVERLAP_SCORE_HPP_
 
-#include <networkit/sparsification/SimmelianScore.hpp>
 #include <set>
+#include <networkit/sparsification/SimmelianScore.hpp>
 
 namespace NetworKit {
 
@@ -20,18 +19,17 @@ namespace NetworKit {
 class SimmelianOverlapScore final : public SimmelianScore {
 
 public:
-
     /**
      * Creates a new instance of the parametric variant of the Simmelian Backbone calculator.
      * @param maxRank     the maximum rank that is considered for overlap calculation
      */
-    SimmelianOverlapScore(const Graph& graph, const std::vector<count>& triangles, count maxRank);
+    SimmelianOverlapScore(const Graph &graph, const std::vector<count> &triangles, count maxRank);
     void run() override;
 
 private:
     count maxRank;
 };
 
-}
+} // namespace NetworKit
 /* namespace NetworKit */
 #endif // NETWORKIT_SPARSIFICATION_SIMMELIAN_OVERLAP_SCORE_HPP_

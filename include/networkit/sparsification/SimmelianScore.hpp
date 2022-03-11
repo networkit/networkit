@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * SimmelianAttributizer.h
+ * SimmelianAttributizer.hpp
  *
  *  Created on: 21.05.2014
  *      Author: Gerd Lindner
@@ -26,30 +25,27 @@ namespace NetworKit {
 struct RankedEdge {
     node ego;
     node alter;
-    count simmelianness; 	//The number of triangles the edge is embedded in.
-    count rank; 			//The rank within the ranked neighborhood.
+    count simmelianness; // The number of triangles the edge is embedded in.
+    count rank;          // The rank within the ranked neighborhood.
 
-    RankedEdge(node ego, node alter, count s) :
-            ego(ego), alter(alter), simmelianness(s), rank(0) {
-    }
+    RankedEdge(node ego, node alter, count s) : ego(ego), alter(alter), simmelianness(s), rank(0) {}
 
-    RankedEdge(node ego, node alter, count s, count r) :
-            ego(ego), alter(alter), simmelianness(s), rank(r) {
-    }
+    RankedEdge(node ego, node alter, count s, count r)
+        : ego(ego), alter(alter), simmelianness(s), rank(r) {}
 
-    bool operator<(const RankedEdge& other) const {
+    bool operator<(const RankedEdge &other) const {
         return (simmelianness > other.simmelianness)
-                || (simmelianness == other.simmelianness && alter > other.alter);
+               || (simmelianness == other.simmelianness && alter > other.alter);
     }
 
-    bool operator>(const RankedEdge& other) const {
+    bool operator>(const RankedEdge &other) const {
         return (simmelianness < other.simmelianness)
-                || (simmelianness == other.simmelianness && alter < other.alter);
+               || (simmelianness == other.simmelianness && alter < other.alter);
     }
 
-    bool operator==(const RankedEdge& other) const {
-        return ego == other.ego && simmelianness == other.simmelianness
-                && alter == other.alter && rank == other.rank;
+    bool operator==(const RankedEdge &other) const {
+        return ego == other.ego && simmelianness == other.simmelianness && alter == other.alter
+               && rank == other.rank;
     }
 };
 
@@ -63,7 +59,7 @@ struct Redundancy {
     count overlap;
     double jaccard;
 
-    Redundancy(count o, double j) : overlap(o), jaccard(j) { }
+    Redundancy(count o, double j) : overlap(o), jaccard(j) {}
 };
 
 /**
@@ -72,33 +68,30 @@ struct Redundancy {
 class SimmelianScore : public EdgeScore<double> {
 
 public:
-
-    SimmelianScore(const Graph& graph, const std::vector<count>& attribute);
+    SimmelianScore(const Graph &graph, const std::vector<count> &attribute);
     double score(edgeid eid) override;
     double score(node u, node v) override;
 
-    std::vector<RankedNeighbors> getRankedNeighborhood(const Graph& g, const std::vector<count>& triangles);
+    std::vector<RankedNeighbors> getRankedNeighborhood(const Graph &g,
+                                                       const std::vector<count> &triangles);
 
-    Redundancy getOverlap(
-            const node& ego,
-            const node& alter,
-            const std::vector<RankedNeighbors>& neighbors,
-            const count& maxRank);
+    Redundancy getOverlap(const node &ego, const node &alter,
+                          const std::vector<RankedNeighbors> &neighbors, const count &maxRank);
 
-    void TLX_DEPRECATED(matchNeighbors(node ego, node alter, bool reciprocityCheck,
-                        std::vector<RankedEdge>::const_iterator &egoIt,
-                        const RankedNeighbors &egoNeighbors, std::set<node> &egoNeighborsUnmatched,
-                        std::set<node> &alterNeighborsUnmatched, count rank, count &overlap));
+    void TLX_DEPRECATED(matchNeighbors(
+        node ego, node alter, bool reciprocityCheck, std::vector<RankedEdge>::const_iterator &egoIt,
+        const RankedNeighbors &egoNeighbors, std::set<node> &egoNeighborsUnmatched,
+        std::set<node> &alterNeighborsUnmatched, count rank, count &overlap));
 
 protected:
-    const std::vector<count>* triangles;
+    const std::vector<count> *triangles;
 
     void matchNeighbors(node ego, node alter, bool reciprocityCheck,
                         std::vector<RankedEdge>::const_iterator &egoIt,
-                        const RankedNeighbors &egoNeighbors, std::unordered_set<node> &egoNeighborsUnmatched,
-                        std::unordered_set<node> &alterNeighborsUnmatched, count rank, count &overlap);
-
-
+                        const RankedNeighbors &egoNeighbors,
+                        std::unordered_set<node> &egoNeighborsUnmatched,
+                        std::unordered_set<node> &alterNeighborsUnmatched, count rank,
+                        count &overlap);
 };
 
 } /* namespace NetworKit */

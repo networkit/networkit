@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * Sparsifiers.h
+ * Sparsifiers.hpp
  *
  *  Created on: 23.07.2014
  *      Author: Gerd Lindner
@@ -24,8 +23,7 @@ namespace NetworKit {
 class Sparsifier {
 
 public:
-
-    Sparsifier(const Graph& inputGraph);
+    Sparsifier(const Graph &inputGraph);
 
     virtual ~Sparsifier() = default;
 
@@ -37,12 +35,10 @@ public:
     Graph getGraph();
 
 protected:
-    const Graph& inputGraph;
+    const Graph &inputGraph;
     Graph outputGraph;
     bool hasOutput;
-
 };
-
 
 /**
  * Imlementation of the non-parametric variant of Simmelian Backbones,
@@ -52,23 +48,23 @@ class SimmelianSparsifierNonParametric : public Sparsifier {
 
 public:
     /**
-     * Creates a new instance of the non-parametric (jaccard) variant of the Simmelian Backbone calculator.
+     * Creates a new instance of the non-parametric (jaccard) variant of the Simmelian Backbone
+     * calculator.
      * @param graph			the input graph
      * @param threshold		the jaccard index threshold.
      */
-    SimmelianSparsifierNonParametric(const Graph& graph, double threshold);
+    SimmelianSparsifierNonParametric(const Graph &graph, double threshold);
 
     void run() override;
 
 private:
     double threshold;
-
 };
 
- /**
-  * Imlementation of the parametric variant (Top-k neighborhood overlap)
-  * of Simmelian Backbones, as introduced by Nick et al.
-  */
+/**
+ * Imlementation of the parametric variant (Top-k neighborhood overlap)
+ * of Simmelian Backbones, as introduced by Nick et al.
+ */
 class SimmelianSparsifierParametric : public Sparsifier {
 
 public:
@@ -79,14 +75,13 @@ public:
      * @param minOverlap	the minimum overlap of the top-k neighbors for an edge to be
                                 contained in the sparsified graph.
      */
-    SimmelianSparsifierParametric(const Graph& graph, int maxRank, int minOverlap);
+    SimmelianSparsifierParametric(const Graph &graph, int maxRank, int minOverlap);
 
     void run() override;
 
 private:
     int maxRank;
     int minOverlap;
-
 };
 
 /**
@@ -100,13 +95,12 @@ public:
      * @param graph			the input graph
      * @param alpha 		the probability threshold
      */
-    MultiscaleSparsifier(const Graph& graph, double alpha);
+    MultiscaleSparsifier(const Graph &graph, double alpha);
 
     void run() override;
 
 private:
     double alpha;
-
 };
 
 /**
@@ -120,13 +114,12 @@ public:
      * @param graph			the input graph
      * @param e				the threshold value
      */
-    LocalSimilaritySparsifier(const Graph& graph, double e);
+    LocalSimilaritySparsifier(const Graph &graph, double e);
 
     void run() override;
 
 private:
     double e;
-
 };
 
 /**
@@ -140,34 +133,32 @@ public:
      * @param graph			the input graph
      * @param alpha			the threshold value for multiscale filtering
      */
-    SimmelianMultiscaleSparsifier(const Graph& graph, double alpha);
+    SimmelianMultiscaleSparsifier(const Graph &graph, double alpha);
 
     void run() override;
 
 private:
     double alpha;
-
 };
 
 /**
-* Produces sparsified graphs that contain approximately a given percentage
-* of edges of the original graph. The edges are selected unformly at random.
-*/
+ * Produces sparsified graphs that contain approximately a given percentage
+ * of edges of the original graph. The edges are selected unformly at random.
+ */
 class RandomSparsifier : public Sparsifier {
 
 public:
     /**
-    * Creates a new instance of the Random Sparsifier.
-    * @param graph			the input graph
-    * @param ratio			edge ratio in [0,1] to be kept in the sparse graph.
-    */
-    RandomSparsifier(const Graph& graph, double ratio);
+     * Creates a new instance of the Random Sparsifier.
+     * @param graph			the input graph
+     * @param ratio			edge ratio in [0,1] to be kept in the sparse graph.
+     */
+    RandomSparsifier(const Graph &graph, double ratio);
 
     void run() override;
 
 private:
     double ratio;
-
 };
 
 } /* namespace NetworKit */

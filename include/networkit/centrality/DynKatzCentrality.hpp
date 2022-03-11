@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DynKatzCentrality.hpp
  *
@@ -12,8 +11,8 @@
 
 #include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
-#include <networkit/dynamics/GraphEvent.hpp>
 #include <networkit/centrality/Centrality.hpp>
+#include <networkit/dynamics/GraphEvent.hpp>
 
 namespace NetworKit {
 
@@ -47,8 +46,7 @@ public:
      * @param[in] groupOnly Set whether the update will only update top-k nodes.
      * @param[in] tolerance The tolerance for convergence.
      */
-    DynKatzCentrality(const Graph &G, count k, bool groupOnly = false,
-                      double tolerance = 1e-9);
+    DynKatzCentrality(const Graph &G, count k, bool groupOnly = false, double tolerance = 1e-9);
 
     void run() override;
 

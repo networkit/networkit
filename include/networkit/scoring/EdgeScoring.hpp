@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * EdgeScoring.hpp
  *
@@ -17,15 +16,14 @@ namespace NetworKit {
  * @ingroup scoring
  * Abstract base class for algorithms associating a score with an edge.
  */
-template<typename T>
+template <typename T>
 class EdgeScoring {
 
 protected:
-    Graph* G;
+    Graph *G;
 
 public:
-
-    EdgeScoring(Graph& G);
+    EdgeScoring(Graph &G);
 
     virtual ~EdgeScoring();
 
@@ -34,13 +32,12 @@ public:
     virtual T edgeScore(node u, node v) const = 0;
 };
 
-
-template<typename T>
-EdgeScoring<T>::EdgeScoring(Graph& G) {
+template <typename T>
+EdgeScoring<T>::EdgeScoring(Graph &G) {
     this->G = &G;
 }
 
-template<typename T>
+template <typename T>
 EdgeScoring<T>::~EdgeScoring() {}
 
 } /* namespace NetworKit */

@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * LocalFilterScore.hpp
  *
@@ -20,10 +19,10 @@ namespace NetworKit {
 /**
  * Local filtering edge scoring. Edges with high score are more important.
  *
- * Edges are ranked locally, the top d^e (logarithmic, default) or 1+e*(d-1) edges (non-logarithmic) are kept.
- * For equal attribute values, neighbors of low degree are preferred.
+ * Edges are ranked locally, the top d^e (logarithmic, default) or 1+e*(d-1) edges (non-logarithmic)
+ * are kept. For equal attribute values, neighbors of low degree are preferred.
  */
-template<typename InType>
+template <typename InType>
 class LocalFilterScore final : public EdgeScore<double> {
 
 public:
@@ -32,10 +31,11 @@ public:
      *
      * @param G The graph for which the score shall be.
      * @param attribute The input attribute according to which the edges shall be filtered locally.
-     * @param logarithmic If the score shall be logarithmic in the rank (then d^e edges are kept). Linear otherwise.
+     * @param logarithmic If the score shall be logarithmic in the rank (then d^e edges are kept).
+     * Linear otherwise.
      */
-    LocalFilterScore(const Graph& G, const std::vector< InType > &attribute, bool logarithmic = true) :
-        EdgeScore<double>(G), attribute(&attribute), logarithmic(logarithmic) {}
+    LocalFilterScore(const Graph &G, const std::vector<InType> &attribute, bool logarithmic = true)
+        : EdgeScore<double>(G), attribute(&attribute), logarithmic(logarithmic) {}
 
     /**
      * Execute the algorithm.
@@ -46,11 +46,12 @@ public:
         }
 
         /*
-        * For each edge, we calculate the minimum required sparsification exponent e
-        * such that the edge is contained in the sparse graph.
-        */
+         * For each edge, we calculate the minimum required sparsification exponent e
+         * such that the edge is contained in the sparse graph.
+         */
 
-        std::unique_ptr<std::atomic<double>[]> sparsificationExp(new std::atomic<double>[G->upperEdgeIdBound()]{});
+        std::unique_ptr<std::atomic<double>[]> sparsificationExp(
+            new std::atomic<double>[G->upperEdgeIdBound()] {});
 
         G->balancedParallelForNodes([&](node i) {
             count d = G->degree(i);
@@ -62,11 +63,9 @@ public:
 
             std::vector<edgeid> neighbors;
             neighbors.reserve(d);
-            G->forNeighborsOf(i, [&](node _i, node j, edgeid eid) {
-                neighbors.emplace_back(eid);
-            });
+            G->forNeighborsOf(i, [&](node _i, node j, edgeid eid) { neighbors.emplace_back(eid); });
 
-            std::sort(neighbors.begin(), neighbors.end(), [&](const edgeid& e1, const edgeid& e2) {
+            std::sort(neighbors.begin(), neighbors.end(), [&](const edgeid &e1, const edgeid &e2) {
                 return (*attribute)[e1] > (*attribute)[e2];
             });
 
@@ -88,19 +87,18 @@ public:
                     if (logarithmic) {
                         e = 1.0 - log(rank) / log(d);
                     } else {
-                        e = 1.0 - (rank-1) * 1.0 / (d - 1); // Keep top 1 + e * (d-1) edges
+                        e = 1.0 - (rank - 1) * 1.0 / (d - 1); // Keep top 1 + e * (d-1) edges
                     }
                 }
 
                 Aux::Parallel::atomic_max(sparsificationExp[eid], e);
             }
-
         });
 
         scoreData.clear();
         scoreData.resize(G->upperEdgeIdBound());
 
-        #pragma omp parallel for
+#pragma omp parallel for
         for (omp_index i = 0; i < static_cast<omp_index>(scoreData.size()); ++i) {
             scoreData[i] = sparsificationExp[i];
         }
@@ -117,9 +115,8 @@ public:
     }
 
 private:
-    const std::vector<InType>* attribute;
+    const std::vector<InType> *attribute;
     bool logarithmic;
-
 };
 
 } // namespace NetworKit

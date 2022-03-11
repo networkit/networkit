@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * Closeness.hpp
  *
@@ -24,7 +23,7 @@ enum ClosenessVariant { standard = 0, generalized = 1 };
  */
 class Closeness : public Centrality {
 
-  public:
+public:
     /**
      * Constructs the Closeness class for the given Graph @a G. If the closeness
      * scores should be normalized, then set @a normalized to <code>true</code>.
@@ -38,35 +37,37 @@ class Closeness : public Centrality {
      * for unweighted graphs.
      *
      */
-      Closeness(const Graph &G, bool normalized,
-                ClosenessVariant variant = ClosenessVariant::standard);
+    Closeness(const Graph &G, bool normalized,
+              ClosenessVariant variant = ClosenessVariant::standard);
 
-      /**
-       * Old constructor, we keep it for backward compatibility. It computes the
-       * standard variant of the closenes.
-       *
-       * @param G The graph.
-       * @param normalized Set this parameter to <code>false</code> if scores
-       * should not be normalized into an interval of [0, 1]. Normalization only
-       * for unweighted graphs.
-       * @param checkConnectedness turn this off if you know the graph is
-       * connected.
-       *
-       */
-      Closeness(const Graph &G, bool normalized = true, bool checkConnectedness = true);
+    /**
+     * Old constructor, we keep it for backward compatibility. It computes the
+     * standard variant of the closenes.
+     *
+     * @param G The graph.
+     * @param normalized Set this parameter to <code>false</code> if scores
+     * should not be normalized into an interval of [0, 1]. Normalization only
+     * for unweighted graphs.
+     * @param checkConnectedness turn this off if you know the graph is
+     * connected.
+     *
+     */
+    Closeness(const Graph &G, bool normalized = true, bool checkConnectedness = true);
 
-      /**
-       * Computes closeness cetrality on the graph passed in constructor.
-       */
-      void run() override;
+    /**
+     * Computes closeness cetrality on the graph passed in constructor.
+     */
+    void run() override;
 
-      /*
-       * Returns the maximum possible Closeness a node can have in a graph with
-       * the same amount of nodes (=a star)
-       */
-      double maximum() override { return normalized ? 1. : (1. / (static_cast<double>(G.upperNodeIdBound() - 1))); }
+    /*
+     * Returns the maximum possible Closeness a node can have in a graph with
+     * the same amount of nodes (=a star)
+     */
+    double maximum() override {
+        return normalized ? 1. : (1. / (static_cast<double>(G.upperNodeIdBound() - 1)));
+    }
 
-  private:
+private:
     ClosenessVariant variant;
     std::vector<std::vector<count>> uDist;
     std::vector<std::vector<double>> dDist;
@@ -80,18 +81,17 @@ class Closeness : public Centrality {
     void updateScoreData(node u, count reached, double sum) {
         if (sum > 0) {
             if (variant == ClosenessVariant::standard) {
-                scoreData[u] = 1.0/ sum;
+                scoreData[u] = 1.0 / sum;
             } else {
-                scoreData[u] = static_cast<double>(reached - 1) / sum / static_cast<double>(G.numberOfNodes() - 1);
+                scoreData[u] = static_cast<double>(reached - 1) / sum
+                               / static_cast<double>(G.numberOfNodes() - 1);
             }
         } else {
             scoreData[u] = 0.;
         }
         if (normalized)
             scoreData[u] *=
-                (variant == ClosenessVariant::standard ? G.numberOfNodes()
-                                                       : reached) -
-                1.;
+                (variant == ClosenessVariant::standard ? G.numberOfNodes() : reached) - 1.;
     }
 
     std::vector<tlx::d_ary_addressable_int_heap<node, 2, Aux::LessInVector<double>>> heaps;

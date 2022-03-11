@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * ModularityScoring.hpp
  *
@@ -19,19 +18,18 @@ namespace NetworKit {
 /**
  * @ingroup scoring
  */
-template<typename T>
+template <typename T>
 class ModularityScoring final : public EdgeScoring<T> {
 
-    double totalEdgeWeight;  //!< total weight of the graph
+    double totalEdgeWeight; //!< total weight of the graph
 
 public:
-
     /**
      * @param[in]  G  a graph instance
      *
      * Do not modify the graph while using this instance of ModularityScoring.
      */
-    ModularityScoring(Graph& G, double gTotalEdgeWeight = 0.0);
+    ModularityScoring(Graph &G, double gTotalEdgeWeight = 0.0);
 
     /** Default destructor */
     ~ModularityScoring() override = default;
@@ -43,7 +41,8 @@ public:
      * modularity increase which can be gained by merging
      * the clusters of u and v.
      *
-     * $$\\Delta mod(c, d) := \\frac{1}{2 \\omega(E)} \\left ( 2 \\omega(E) \\omega(c,d) - \\omega(c) \\omega(d) \\right ) $$
+     * $$\\Delta mod(c, d) := \\frac{1}{2 \\omega(E)} \\left ( 2 \\omega(E) \\omega(c,d) -
+     * \\omega(c) \\omega(d) \\right ) $$
      *
      * @param[in]  u  source node id
      * @param[out]  v  target node id
@@ -52,27 +51,25 @@ public:
     T edgeScore(node u, node v) const override;
 };
 
-template<typename T>
-ModularityScoring<T>::ModularityScoring(Graph& G, double gTotalEdgeWeight) : EdgeScoring<T>(G),
-    totalEdgeWeight(gTotalEdgeWeight)
-{
+template <typename T>
+ModularityScoring<T>::ModularityScoring(Graph &G, double gTotalEdgeWeight)
+    : EdgeScoring<T>(G), totalEdgeWeight(gTotalEdgeWeight) {
     if (gTotalEdgeWeight == 0.0) {
         this->totalEdgeWeight = this->G->totalEdgeWeight();
     }
 }
 
-template<typename T>
+template <typename T>
 inline T ModularityScoring<T>::edgeScore(node u, node v) const {
     assert(totalEdgeWeight != 0.0);
     double volume = 2.0 * totalEdgeWeight;
     double nom1 = (this->G->weightedDegree(u) / volume);
     double nom2 = (this->G->weightedDegree(v) / volume);
-    double deltaMod = (this->G->weight(u, v) / totalEdgeWeight) -
-            (nom1 * nom2);
+    double deltaMod = (this->G->weight(u, v) / totalEdgeWeight) - (nom1 * nom2);
     return deltaMod;
 }
 
-template<typename T>
+template <typename T>
 void ModularityScoring<T>::scoreEdges(int) {
     // TODO: rewrite with new edge attribute system
 }

@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * Cover.hpp
  *
@@ -31,7 +30,7 @@ public:
     Cover();
 
     /**
-    * Create a new cover data structure for elements up to a maximum element index.
+     * Create a new cover data structure for elements up to a maximum element index.
      *
      * @param[in] z maximum index
      */
@@ -49,17 +48,13 @@ public:
      *
      *  @param[in] e an element
      */
-    inline std::set<index>& operator [](const index& e) {
-        return this->data[e];
-    }
+    inline std::set<index> &operator[](const index &e) { return this->data[e]; }
     /**
      * Index operator for const instances of this class.
      *
      * @param[in] e an element
      */
-    inline const std::set<index>& operator [](const index& e) const {
-        return this->data[e];
-    }
+    inline const std::set<index> &operator[](const index &e) const { return this->data[e]; }
 
     /**
      * Return the ids of subsets in which the element @a e is contained.
@@ -72,8 +67,6 @@ public:
         return this->data[e];
     }
 
-
-
     /**
      * Check if cover assigns a valid subset to the element @a e.
      *
@@ -81,7 +74,6 @@ public:
      * @return @c true, if @a e is assigned to a valid subset, @c false otherwise.
      */
     bool contains(index e) const;
-
 
     /**
      * Check if two elements @a e1 and @a e2 belong to the same subset.
@@ -92,14 +84,12 @@ public:
      */
     bool inSameSubset(index e1, index e2) const;
 
-
     /**
      * Get the members of a specific subset @a s.
      *
      * @return The set of members of subset @a s.
      */
     std::set<index> getMembers(index s) const;
-
 
     /**
      * Add the (previously unassigned) element @a e to the set @a s.
@@ -108,14 +98,12 @@ public:
      */
     void addToSubset(index s, index e);
 
-
     /**
      * Remove the element @a e from the set @a s.
      * @param[in] s a subset
      * @param[in] e an element
      */
     void removeFromSubset(index s, index e);
-
 
     /**
      * Move the element @a e to subset @a s, i.e. remove it from all
@@ -125,7 +113,6 @@ public:
      */
     void moveToSubset(index s, index e);
 
-
     /**
      * Creates a singleton set containing the element @a e and returns the index of the new set.
      * @param[in] e an element
@@ -133,13 +120,11 @@ public:
      */
     index toSingleton(index e);
 
-
     /**
      * Assigns every element to a singleton set.
      * Set id is equal to element id.
      */
     void allToSingletons();
-
 
     /**
      * Assigns the elements from both sets to a new set.
@@ -147,7 +132,6 @@ public:
      * @param[in] t a subset
      */
     void mergeSubsets(index s, index t);
-
 
     /**
      * Get an upper bound for the subset ids that have been assigned.
@@ -163,7 +147,6 @@ public:
      */
     index lowerBound() const;
 
-
     /**
      * Get a list of subset sizes. Indices do not necessarily correspond to subset ids.
      *
@@ -171,14 +154,12 @@ public:
      */
     std::vector<count> subsetSizes() const;
 
-
     /**
      * Get a map from subset id to size of the subset.
      *
      * @return A map from subset id to size of the subset.
      */
     std::map<index, count> subsetSizeMap() const;
-
 
     /**
      * Get the current number of sets in this cover.
@@ -213,27 +194,29 @@ public:
      */
     void setUpperBound(index upper);
 
-
     /**
-     * Iterate over all entries (node, subset ID of node) and execute callback function @a func (lambda closure).
+     * Iterate over all entries (node, subset ID of node) and execute callback function @a func
+     * (lambda closure).
      *
      * @param func Takes parameters <code>(node, index)</code>
      */
-    template<typename Callback> void forEntries(Callback func) const;
-
+    template <typename Callback>
+    void forEntries(Callback func) const;
 
     /**
-     * Iterate over all entries (node, subset ID of node) in parallel and execute callback function @a func (lambda closure).
+     * Iterate over all entries (node, subset ID of node) in parallel and execute callback function
+     * @a func (lambda closure).
      *
      * @param func Takes parameters <code>(node, index)</code>
      */
-    template<typename Callback> void parallelForEntries(Callback handle) const;
+    template <typename Callback>
+    void parallelForEntries(Callback handle) const;
 
 private:
-
-    index z; //!< maximum element index that can be mapped
+    index z;     //!< maximum element index that can be mapped
     index omega; //!< maximum subset index ever assigned
-    std::vector<std::set<index>> data; //!< data container, indexed by element id, containing set of subset ids
+    std::vector<std::set<index>>
+        data; //!< data container, indexed by element id, containing set of subset ids
 
     /**
      * Allocates and returns a new subset id.
@@ -243,19 +226,18 @@ private:
         index s = omega;
         return s;
     }
-
 };
 
-template<typename Callback>
+template <typename Callback>
 inline void Cover::forEntries(Callback handle) const {
     for (index e = 0; e <= this->z; e += 1) {
         handle(e, data[e]);
     }
 }
 
-template<typename Callback>
+template <typename Callback>
 inline void Cover::parallelForEntries(Callback handle) const {
-    #pragma omp parallel for
+#pragma omp parallel for
     for (omp_index e = 0; e <= static_cast<omp_index>(this->z); e += 1) {
         handle(e, data[e]);
     }
