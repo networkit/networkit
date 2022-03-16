@@ -8,6 +8,9 @@
 #ifndef NETWORKIT_DISTANCE_DYN_DIJKSTRA_HPP_
 #define NETWORKIT_DISTANCE_DYN_DIJKSTRA_HPP_
 
+#include <tlx/container/d_ary_addressable_int_heap.hpp>
+
+#include <networkit/auxiliary/VectorComparator.hpp>
 #include <networkit/distance/DynSSSP.hpp>
 
 namespace NetworKit {
@@ -39,8 +42,14 @@ public:
     void updateBatch(const std::vector<GraphEvent> &batch) override;
 
 private:
-    enum Color { WHITE, BLACK };
+    enum Color { WHITE, GRAY, BLACK };
     std::vector<Color> color;
+    static constexpr edgeweight infDist = std::numeric_limits<edgeweight>::max();
+    static constexpr edgeweight distEpsilon = 0.000001;
+
+    tlx::d_ary_addressable_int_heap<node, 2, Aux::LessInVector<edgeweight>> heap;
+    std::vector<edgeweight> updateDistances;
+    tlx::d_ary_addressable_int_heap<node, 2, Aux::LessInVector<edgeweight>> updateHeap;
 };
 
 } /* namespace NetworKit */

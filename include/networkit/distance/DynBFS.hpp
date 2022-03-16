@@ -18,6 +18,8 @@ namespace NetworKit {
  */
 class DynBFS final : public DynSSSP {
 
+    static constexpr edgeweight infDist = std::numeric_limits<edgeweight>::max();
+
 public:
     /**
      * Creates the object for @a G and source @a s.

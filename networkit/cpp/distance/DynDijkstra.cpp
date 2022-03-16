@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DynDijkstra.cpp
  *
@@ -10,26 +9,81 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
-#include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/DynDijkstra.hpp>
 
-
 namespace NetworKit {
 
-DynDijkstra::DynDijkstra(const Graph& G, node source, bool storePredecessors) : DynSSSP(G, source, storePredecessors),
-color(G.upperNodeIdBound(), WHITE) {}
+DynDijkstra::DynDijkstra(const Graph &G, node source, bool storePredecessors)
+    : DynSSSP(G, source, storePredecessors), color(G.upperNodeIdBound(), WHITE),
+      heap(Aux::LessInVector<edgeweight>(distances)), updateDistances(G.upperNodeIdBound()),
+      updateHeap(Aux::LessInVector<edgeweight>(updateDistances)) {}
 
 void DynDijkstra::run() {
-    Dijkstra dij(*G, source, true);
-    dij.run();
-    distances = dij.getDistances();
-    npaths.reserve(G->upperNodeIdBound());
-    G->forNodes([&](node u) { npaths.push_back(dij.numberOfPaths(u)); });
+
+    color.clear();
+    count n = G->upperNodeIdBound();
+    color.resize(n, WHITE);
+
+    // init distances
+    distances.clear();
+    std::fill(distances.begin(), distances.end(), infDist);
+
+    if (distances.size() < G->upperNodeIdBound())
+        distances.resize(G->upperNodeIdBound(), infDist);
+
+    sumDist = 0.;
+    reachedNodes = 1;
+
     if (storePreds) {
+        previous.clear();
         previous.resize(G->upperNodeIdBound());
-        G->forNodes([&](node u) {previous[u] = dij.getPredecessors(u); });
     }
+
+    npaths.clear();
+    npaths.resize(G->upperNodeIdBound(), 0);
+    npaths[source] = 1;
+
+    // priority queue with distance-node pairs
+    distances[source] = 0.;
+    heap.clear();
+    heap.reserve(n);
+    heap.push(source);
+
+    auto initPath = [&](node u, node v) {
+        if (storePreds) {
+            previous[v] = {u};
+        }
+        npaths[v] = npaths[u];
+    };
+
+    TRACE("traversing graph");
+    do {
+        TRACE("pq size: ", heap.size());
+        node u = heap.extract_top();
+        sumDist += distances[u];
+        TRACE("current node in Dijkstra: ", u);
+
+        G->forNeighborsOf(u, [&](node v, edgeweight w) {
+            double newDist = distances[u] + w;
+            if (distances[v] == infDist) {
+                distances[v] = newDist;
+                heap.push(v);
+                ++reachedNodes;
+                initPath(u, v);
+            } else if (distances[v] > newDist) {
+                initPath(u, v);
+                distances[v] = newDist;
+                heap.update(v);
+            } else if (Aux::NumericTools::logically_equal(distances[v], newDist)) {
+                if (storePreds)
+                    previous[v].push_back(u);
+                npaths[v] += npaths[u];
+            }
+        });
+    } while (!heap.empty());
+
+    hasRun = true;
 }
 
 void DynDijkstra::update(GraphEvent e) {
@@ -38,65 +92,133 @@ void DynDijkstra::update(GraphEvent e) {
     updateBatch(batch);
 }
 
-void DynDijkstra::updateBatch(const std::vector<GraphEvent>& batch) {
+void DynDijkstra::updateBatch(const std::vector<GraphEvent> &batch) {
     mod = false;
     // priority queue with distance-node pairs
-    Aux::PrioQueue<edgeweight, node> Q(G->upperNodeIdBound());
+    updateHeap.clear();
+    updateHeap.reserve(G->upperNodeIdBound());
+
     // queue with all visited nodes
     std::queue<node> visited;
     // if u has a new shortest path going through v, it updates the distance of u
     // and inserts u in the priority queue (or updates its priority, if already in Q)
-    auto updateQueue = [&](node u, node v, edgeweight w) {
-        if (distances[u] >= distances[v]+w) {
-            distances[u] = distances[v]+w;
-            if (color[u] == WHITE) {
-                Q.insert(distances[u], u);
-                color[u] = BLACK;
-            }	else {
-                Q.changeKey(distances[u], u);
-            }
+    auto updateQueue = [&](node v, edgeweight dist) {
+        if (color[v] == WHITE) {
+            updateDistances[v] = dist;
+            updateHeap.push(v);
+            color[v] = GRAY;
+        } else {
+            updateDistances[v] = dist;
+            updateHeap.update(v);
         }
     };
 
+    // initialization
     for (GraphEvent edge : batch) {
-        if (edge.type!=GraphEvent::EDGE_ADDITION && edge.type!=GraphEvent::EDGE_WEIGHT_UPDATE)
-            throw std::runtime_error("Graph update not allowed");
-        //TODO: discuss with Christian whether you can substitute weight_update with with_increase/weight_decrease
-        // otherwise, it is not possbile to check wether the change in the weight is positive or negative
-        updateQueue(edge.u, edge.v, edge.w);
-        updateQueue(edge.v, edge.u, edge.w);
+
+        if (!G->hasNode(edge.u) || !G->hasNode(edge.v)) {
+            throw std::runtime_error("Graph update not allowed or invalid nodes");
+        }
+        if (distances[edge.u] == infDist && distances[edge.v] == infDist)
+            continue;
+
+        node vUp, vDown;
+
+        if (distances[edge.u] < distances[edge.v]) {
+            vUp = edge.u;
+            vDown = edge.v;
+        } else if (distances[edge.u] >= distances[edge.v]) {
+            vUp = edge.v;
+            vDown = edge.u;
+        } else {
+            continue;
+        }
+
+        if (edge.type == GraphEvent::EDGE_REMOVAL) {
+            if (distances[vDown] == infDist)
+                continue;
+            updateQueue(vDown, distances[vDown]);
+            continue;
+        } else if (distances[vUp] + edge.w < distances[vDown]) {
+            updateQueue(vDown, distances[vUp] + edge.w);
+        } else {
+            updateQueue(vDown, distances[vDown]);
+        }
     }
 
-    while(!Q.empty()) {
+    while (!updateHeap.empty()) {
         mod = true;
-        node current = Q.extractMin().second;
-        visited.push(current);
-        if (storePreds) {
-            previous[current].clear();
-        }
-        npaths[current] = 0;
-        G->forInNeighborsOf(current, [&](node current, node z, edgeweight w){
-            //z is a predecessor of current node
-            if (Aux::NumericTools::equal(distances[current], distances[z]+w, 0.000001)) {
-                if (storePreds) {
-                    previous[current].push_back(z);
+        node current = updateHeap.extract_top();
+        if (color[current] == BLACK) {
+            npaths[current] = 0;
+            G->forInNeighborsOf(current, [&](node current, node z, edgeweight w) {
+                // if z is a predecessor for current update the shortest paths
+                if (Aux::NumericTools::logically_equal(distances[current], distances[z] + w)) {
+                    if (storePreds) {
+                        previous[current].push_back(z);
+                    }
+                    npaths[current] += npaths[z];
                 }
-                npaths[current] += npaths[z];
-            }
-            //check whether curent node is a predecessor of z
-            else {
-                updateQueue(z, current, w);
+            });
+            continue;
+        }
+        edgeweight k = updateDistances[current];
+        edgeweight con = infDist;
+        // check whether there are still predecessors for current node
+        G->forInNeighborsOf(current, [&](node z, edgeweight w) {
+            if (distances[z] != infDist && distances[z] + w < con) {
+                con = distances[z] + w;
             }
         });
+        npaths[current] = 0;
+        if (Aux::NumericTools::logically_equal(con, k)) {
+
+            distances[current] = k;
+            visited.push(current);
+            color[current] = BLACK;
+            G->forInNeighborsOf(current, [&](node current, node z, edgeweight w) {
+                // if z is a predecessor for current update the shortest paths
+                if (Aux::NumericTools::logically_equal(distances[current], distances[z] + w)) {
+                    if (storePreds) {
+                        previous[current].push_back(z);
+                    }
+                    npaths[current] += npaths[z];
+                }
+            });
+
+            G->forNeighborsOf(current, [&](node z, edgeweight w) {
+                // current is a predecessor for z
+                if (distances[current] == infDist
+                    || Aux::NumericTools::ge(distances[z], k + w, distEpsilon)) {
+                    updateQueue(z, k + w);
+                }
+            });
+
+        } else { // con > k
+            if (distances[current] != infDist) {
+                distances[current] = infDist;
+                G->forNeighborsOf(current, [&](node z, edgeweight w) {
+                    // current was a predecessor for z
+                    if (Aux::NumericTools::ge(distances[z], k + w, distEpsilon)) {
+                        updateQueue(z, k + w);
+                    }
+                });
+            }
+            if (con != infDist) {
+                updateQueue(current, con);
+            }
+        }
     }
 
     // reset colors
-    while(!visited.empty()) {
+    while (!visited.empty()) {
         node w = visited.front();
         visited.pop();
         color[w] = WHITE;
     }
-
 }
+
+constexpr edgeweight DynDijkstra::infDist;
+constexpr edgeweight DynDijkstra::distEpsilon;
 
 } /* namespace NetworKit */
