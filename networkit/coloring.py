@@ -12,7 +12,7 @@ class SpectralColoring(object):
 	Parameters
 	----------
 	G : networkit.Graph
-		The graph to compute the spectral coloring for
+		The graph to compute the spectral coloring for.
 	"""
 	def __init__(self, G):
 		super(SpectralColoring, self).__init__()
@@ -40,7 +40,7 @@ class SpectralColoring(object):
 		Parameters
 		----------
 		color : int
-			colorID to check for
+			colorID to check for.
 
 		Returns
 		-------
@@ -64,10 +64,10 @@ class SpectralColoring(object):
 
 		Parameters
 		----------
-		color : colorID
+		color : int
 			colorID to split corresponding nodes into colorID and new color.
 		depth : int, optional
-			Sets index of eigenvector to compare to `depth` 
+			Sets index of eigenvector to compare to `depth`. Default: 0
 		"""
 		otherColor = self.nextColor
 		self.nextColor += 1
@@ -120,7 +120,7 @@ class SpectralColoring(object):
 
 		Returns
 		-------
-		list
+		list(int)
 			A list of nodes containing a valid color mapping. 
 		"""
 		return self.coloring

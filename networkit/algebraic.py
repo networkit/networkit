@@ -18,15 +18,15 @@ def column(matrix, i):
 
 	Parameters
 	----------
-	matrix : sparse matrix
-		The matrix to compute the eigenvectors of
+	matrix : :py:class:`scipy.sparse.csr_matrix`
+		The matrix to compute the eigenvectors of.
 	i : int
-		column index
+		Column index.
 
 	Returns
 	-------
-	list
-		column i of matrix
+	list(float)
+		Column i of matrix.
 	"""	
 	return [row[i] for row in matrix]
 
@@ -41,8 +41,8 @@ def adjacencyMatrix(G, matrixType="sparse"):
 	----------
 	G : networkit.Graph
 		The graph.
-	matrixType : string
-		either "sparse" or "dense"
+	matrixType : str, optional
+		Either "sparse" or "dense". Default: "sparse"
 
 	Returns
 	-------
@@ -87,15 +87,14 @@ def laplacianMatrix(G):
 	Parameters
 	----------
 	G : networkit.Graph
-		The graph.
+		The input graph.
 
 	Returns
 	-------
+	ndarray or :py:class:`scipy.sparse.csr_matrix`
+    	The N x N laplacian matrix of csgraph. It will be a NumPy array (dense) if the input was dense, or a sparse matrix otherwise.
 	ndarray
-		The N x N laplacian matrix of graph.
-	ndarray
-		The length-N diagonal of the laplacian matrix.
-		diag is returned only if return_diag is True.
+    	The length-N diagonal of the Laplacian matrix. For the normalized Laplacian, this is the array of square roots of vertex degrees or 1 if the degree is zero.
 	"""
 	A = adjacencyMatrix(G)
 	return scipy.sparse.csgraph.laplacian(A)
@@ -107,13 +106,12 @@ def PageRankMatrix(G, damp=0.85):
 	Builds the PageRank matrix of the undirected Graph `G`. This matrix corresponds with the
 	PageRank matrix used in the C++ backend.
 
-
 	Parameters
 	----------
 	G : networkit.Graph
 		The graph.
 	damp: float, optional
-		Damping factor of the PageRank algorithm (0.85 by default)
+		Damping factor of the PageRank algorithm. Default: 0.85
 
 	Returns
 	-------
@@ -148,19 +146,18 @@ def symmetricEigenvectors(matrix, cutoff=-1, reverse=False):
 
 	Parameters
 	----------
-	matrix : sparse matrix
-		The matrix to compute the eigenvectors of
+	matrix : :py:class:`scipy.sparse.csr_matrix`
+		The matrix to compute the eigenvectors of.
 	cutoff : int, optional
-		The maximum (or minimum) magnitude of the eigenvectors needed
+		The maximum (or minimum) magnitude of the eigenvectors needed. Default: -1
 	reverse : boolean, optional
-		If set to true, the smaller eigenvalues will be computed before the larger ones
+		If set to true, the smaller eigenvalues will be computed before the larger ones. Default: False
 
 	Returns
 	-------
-	( [ float ], [ ndarray ] )
+	tuple(list(float), list(ndarray))
 		A tuple of ordered lists, the first containing the eigenvalues in descending (ascending) magnitude, the
 		second one holding the corresponding eigenvectors.
-
 	"""
 	if cutoff == -1:
 		cutoff = matrix.shape[0] - 3
@@ -188,16 +185,16 @@ def eigenvectors(matrix, cutoff=-1, reverse=False):
 
 	Parameters
 	----------
-	matrix : sparse matrix
-		The matrix to compute the eigenvectors of
+	matrix : :py:class:`scipy.sparse.csr_matrix`
+		The matrix to compute the eigenvectors of.
 	cutoff : int, optional
-		The maximum (or minimum) number of eigenvectors needed
-	reverse : boolean, optional
-		If set to true, the smaller eigenvalues will be computed before the larger ones
+		The maximum (or minimum) number of eigenvectors needed. Default: -1
+	reverse : bool, optional
+		If set to true, the smaller eigenvalues will be computed before the larger ones. Default: False
 
 	Returns
 	-------
-	( [ float ], [ ndarray ] )
+	tuple(list(float), list(ndarray))
 		A tuple of ordered lists, the first containing the eigenvalues in descending (ascending) magnitude, the
 		second one holding the corresponding eigenvectors
 
@@ -229,15 +226,15 @@ def laplacianEigenvectors(G, cutoff=-1, reverse=False):
 	Parameters
 	----------
 	G : networkit.graph
-		The graph.
+		The input graph.
 	cutoff : int, optional
-		The maximum (or minimum) number of eigenvectors needed
-	reverse : boolean, optional
-		If set to true, the smaller eigenvalues will be computed before the larger ones
+		The maximum (or minimum) number of eigenvectors needed. Default: -1
+	reverse : bool, optional
+		If set to true, the smaller eigenvalues will be computed before the larger ones. Default: False
 
 	Returns
 	-------
-	( [ float ], [ ndarray ] )
+	tuple(list(float), list(ndarray))
 		 A tuple of ordered lists, the first containing the eigenvalues in descending (ascending) magnitude, the
 		 second one holding the corresponding eigenvectors
 
@@ -258,13 +255,13 @@ def adjacencyEigenvectors(G, cutoff=-1, reverse=False):
 	G : networkit.graph
 		The graph.
 	cutoff : int, optional
-		The maximum (or minimum) number of eigenvectors needed
-	reverse : boolean, optional
-		If set to true, the smaller eigenvalues will be computed before the larger ones
+		The maximum (or minimum) number of eigenvectors needed. Default: -1
+	reverse : bool, optional
+		If set to true, the smaller eigenvalues will be computed before the larger ones. Default: False
 
 	Returns
 	-------
-	( [ float ], [ ndarray ] )
+	tuple(list(float), list(ndarray))
 		A tuple of ordered lists, the first containing the eigenvalues in descending (ascending) magnitude, the
 		second one holding the corresponding eigenvectors
 
@@ -283,18 +280,17 @@ def laplacianEigenvector(G, i, reverse=False):
 	Parameters
 	----------
 	G : networkit.graph
-		The graph.
+		The input graph.
 	i : int
-		Computes the eigenvector and value of index i 
-	reverse : boolean, optional
-		If set to true, the smaller eigenvalues will be computed before the larger ones
+		Computes the eigenvector and value of index i.
+	reverse : bool, optional
+		If set to true, the smaller eigenvalues will be computed before the larger ones. Default: False
 
 	Returns
 	-------
-	( float, ndarray )
+	tuple(float, ndarray)
 		 A pair of values, the first containing the eigenvalue, the
 		 second one holding the corresponding eigenvector
-
 	"""
 	if G.isDirected():
 		spectrum = eigenvectors(laplacianMatrix(G), cutoff=i, reverse=reverse)
@@ -312,18 +308,17 @@ def adjacencyEigenvector(G, i, reverse=False):
 	Parameters
 	----------
 	G : networkit.graph
-		The graph.
+		The input graph.
 	i : int
-		Computes the eigenvector and value of index i 
-	reverse : boolean, optional
-		If set to true, the smaller eigenvalues will be computed before the larger ones
+		Computes the eigenvector and value of index i.
+	reverse : bool, optional
+		If set to true, the smaller eigenvalues will be computed before the larger ones. Default: False
 
 	Returns
 	-------
-	( float, ndarray )
+	tuple( float, ndarray )
 		 A pair of values, the first containing the eigenvalue, the
 		 second one holding the corresponding eigenvector
-
 	"""
 	if G.isDirected():
 		spectrum = eigenvectors(adjacencyMatrix(G), cutoff=i, reverse=reverse)

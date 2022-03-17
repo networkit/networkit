@@ -23,9 +23,9 @@ cdef class Assortativity(Algorithm):
 	Parameters
 	----------
 	G : networkit.graph
-		The graph.
+		The input graph.
 	data : list(float)
-			Numerical node value array
+		Numerical node value array.
 	"""
 	cdef Graph G
 	cdef vector[double] attribute
