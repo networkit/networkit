@@ -28,8 +28,8 @@ std::vector<node>
 DynApproxBetweenness::sortComponentsTopologically(Graph &sccDAG, StronglyConnectedComponents &scc) {
     G.forEdges([&](node u, node v) {
         if (scc.componentOfNode(u) != scc.componentOfNode(v)) {
-            if (!sccDAG.hasEdge(scc.componentOfNode(u) - 1, scc.componentOfNode(v) - 1)) {
-                sccDAG.addEdge(scc.componentOfNode(u) - 1, scc.componentOfNode(v) - 1);
+            if (!sccDAG.hasEdge(scc.componentOfNode(u), scc.componentOfNode(v))) {
+                sccDAG.addEdge(scc.componentOfNode(u), scc.componentOfNode(v));
             }
         }
     });
@@ -50,7 +50,7 @@ count DynApproxBetweenness::computeVDdirected() {
     std::vector<bool> marked1(G.upperNodeIdBound()), marked2(G.upperNodeIdBound());
     std::vector<node> sources(sccNum, 0);
     G.forNodes([&](node u) {
-        count x = scc.componentOfNode(u) - 1;
+        count x = scc.componentOfNode(u);
         if (sources[x] == 0) {
             sources[x] = u;
         }
@@ -105,15 +105,15 @@ count DynApproxBetweenness::computeVDdirected() {
     // starting from the bottom, we compute all the cumulative vd approximations
     count vd = vdapproxs[0];
     std::vector<count> vdSuccessors(sccNum, 0);
-    for (count i = 0; i < sccNum; i++) {
-        node c = sorted[sccNum - i];
+    for (count i = sccNum; i > 0; i--) {
+        node c = sorted[i - 1];
         if (sccDAG.degreeOut(c) > 0) {
             vdapproxs[c] += vdSuccessors[c];
         }
         if (vdapproxs[c] > vd) {
             vd = vdapproxs[c];
         }
-        sccDAG.forInEdgesOf(c, [&](node c, node c_pred) {
+        sccDAG.forInEdgesOf(c, [&](node c_pred) {
             if (vdSuccessors[c_pred] < vdapproxs[c])
                 vdSuccessors[c_pred] = vdapproxs[c];
         });
