@@ -74,6 +74,26 @@ public:
      */
     virtual edgeweight getDistance() const = 0;
 
+    /**
+     * Sets the source node.
+     *
+     * @param newSource The new source node.
+     */
+    void setSource(node newSource) {
+        assert(G->hasNode(newSource));
+        source = newSource;
+    }
+
+    /**
+     * Sets the target node.
+     *
+     * @param newTarget The new target node.
+     */
+    void setTarget(node newTarget) {
+        assert(G->hasNode(newTarget));
+        target = newTarget;
+    }
+
 protected:
     const Graph *G;
     node source, target;
