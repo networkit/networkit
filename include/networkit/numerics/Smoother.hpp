@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * Smoother.h
+ * Smoother.hpp
  *
  *  Created on: 31.10.2014
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
@@ -21,11 +20,11 @@ namespace NetworKit {
  * @ingroup numerics
  * Abstract base class of a smoother.
  */
-template<class Matrix>
+template <class Matrix>
 class Smoother {
 public:
     Smoother() {}
-    virtual ~Smoother(){}
+    virtual ~Smoother() {}
 
     virtual Vector relax(const Matrix &A, const Vector &b, const Vector &initialGuess,
                          count maxIterations = std::numeric_limits<count>::max()) const = 0;

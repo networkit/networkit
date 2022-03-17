@@ -11,6 +11,7 @@
 #include <atomic>
 #include <cmath>
 
+#include <networkit/algebraic/AlgebraicGlobals.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace MatrixTools {

@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * EliminationStage.h
+ * EliminationStage.hpp
  *
  *  Created on: 09.01.2015
  *      Author: Michael
@@ -16,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup numerics
  */
-template<class Matrix>
+template <class Matrix>
 class EliminationStage {
 private:
     Matrix P; // interpolation matrix
@@ -26,31 +25,21 @@ private:
     std::vector<index> cSet;
 
 public:
-    EliminationStage(const Matrix& P, const Vector& q, const std::vector<index>& fSet, const std::vector<index>& cSet) : P(P), R(P.transpose()), q(q), fSet(fSet), cSet(cSet) {}
+    EliminationStage(const Matrix &P, const Vector &q, const std::vector<index> &fSet,
+                     const std::vector<index> &cSet)
+        : P(P), R(P.transpose()), q(q), fSet(fSet), cSet(cSet) {}
 
-    inline const Matrix& getP() const {
-        return P;
-    }
+    inline const Matrix &getP() const { return P; }
 
-    inline const Matrix& getR() const {
-        return R;
-    }
+    inline const Matrix &getR() const { return R; }
 
-    inline const Vector& getQ() const {
-        return q;
-    }
+    inline const Vector &getQ() const { return q; }
 
-    inline const std::vector<index>& getFSet() const {
-        return fSet;
-    }
+    inline const std::vector<index> &getFSet() const { return fSet; }
 
-    inline const std::vector<index>& getCSet() const {
-        return cSet;
-    }
+    inline const std::vector<index> &getCSet() const { return cSet; }
 
-    inline count getN() const {
-        return fSet.size() + cSet.size();
-    }
+    inline count getN() const { return fSet.size() + cSet.size(); }
 };
 
 } /* namespace NetworKit */

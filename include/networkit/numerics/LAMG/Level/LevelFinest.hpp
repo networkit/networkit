@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * LevelFinest.h
+ * LevelFinest.hpp
  *
  *  Created on: 10.01.2015
  *      Author: Michael
@@ -16,11 +15,11 @@ namespace NetworKit {
 /**
  * @ingroup numerics
  */
-template<class Matrix>
+template <class Matrix>
 class LevelFinest : public Level<Matrix> {
 public:
     LevelFinest() : Level<Matrix>(LevelType::FINEST) {}
-    LevelFinest(const Matrix& A) : Level<Matrix>(LevelType::FINEST, A) {}
+    LevelFinest(const Matrix &A) : Level<Matrix>(LevelType::FINEST, A) {}
     ~LevelFinest() override = default;
 };
 

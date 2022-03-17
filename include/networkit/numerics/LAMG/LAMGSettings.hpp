@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * LAMGSettings.h
+ * LAMGSettings.hpp
  *
  *  Created on: 09.01.2015
  *      Author: Michael
@@ -44,7 +43,8 @@ constexpr count MAX_COMBINED_ITERATES = 4;
 constexpr count SETUP_ELIMINATION_MAX_DEGREE = 4;
 // maximum number of elimination stages
 constexpr count SETUP_ELIMINATION_MAX_STAGES = 1000;
-// node elimination stops if number of coarse nodes is only this fraction of the initial number of nodes
+// node elimination stops if number of coarse nodes is only this fraction of the initial number of
+// nodes
 constexpr double SETUP_ELIMINATION_MIN_ELIM_FRACTION = 0.01;
 
 /**************************
@@ -65,8 +65,6 @@ constexpr count SETUP_MAX_AGGREGATION_STAGES = 2;
 
 constexpr count SETUP_RELAX_COARSEST_SWEEPS = 400;
 
-}
-
-
+} // namespace NetworKit
 
 #endif // NETWORKIT_NUMERICS_LAMG_LAMG_SETTINGS_HPP_

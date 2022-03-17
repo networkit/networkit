@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * Matching.hpp
  *
@@ -20,7 +19,6 @@ namespace NetworKit {
 class Matching {
 
 public:
-
     /**
      * Construct new Matching.
      *
@@ -68,14 +66,14 @@ public:
      * @param[in] G  A graph.
      * @return @c true if this is a proper matching.
      */
-    bool isProper(const Graph& G) const;
+    bool isProper(const Graph &G) const;
 
     /**
      * Get the number of edges in this matching.
      * @param[in] G  A graph.
      * @return Number of edges in matching.
      */
-    count size(const Graph& G) const;
+    count size(const Graph &G) const;
 
     /**
      * Get the matched neighbor of @a v if it exists, otherwise @c none.
@@ -90,14 +88,14 @@ public:
      * @param[in] g The corresponding graph.
      * @return Total weight of edges in this matching.
      */
-    edgeweight weight(const Graph& G) const;
+    edgeweight weight(const Graph &G) const;
 
     /**
      * Convert matching to a Partition object where matched nodes
      * belong to the same subset and unmatched nodes belong to a singleton subset.
      * @return Partition
      */
-    Partition toPartition(const Graph& G) const;
+    Partition toPartition(const Graph &G) const;
 
     /**
      * Get the actual vector storing the data.
