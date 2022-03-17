@@ -856,6 +856,10 @@ cdef class Graph:
 		Getting undefined values raises a ValueError removing a node makes all
 		its attributes undefined
 
+		Notes
+		-----
+		Using node attributes is in experimental state. The API may change in future updates.
+
 		Parameters
 		----------
 		name   : str
@@ -883,6 +887,10 @@ cdef class Graph:
 		detachNodeAttribute(name)
 
 		Detaches a node attribute from the graph.
+
+		Notes
+		-----
+		Using node attributes is in experimental state. The API may change in future updates.
 
 		Parameters
 		----------
@@ -1028,6 +1036,10 @@ class NodeAttribute:
 
 		for u, val in att:
 			# The attribute value of node `u` is `val`.
+
+	Notes
+	-----
+	Using node attributes is in experimental state. The API may change in future updates.
 	"""
 
 	def __init__(self, typedNodeAttribute, type):
