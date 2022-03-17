@@ -33,11 +33,11 @@ public:
      * nSamples * m, where m is  the number of edges. Notice: the input graph has to be connected.
      * @param	graph		input graph
      * @param	nSamples	user defined number of samples
-     * @param 	epsilon		Value in [0, infty) controlling the switch between sampling and pivoting.
-     * When using 0, only sampling is used. Standard is 0.1.
+     * @param 	epsilon		Value in [0, infty) controlling the switch between sampling and
+     * pivoting. When using 0, only sampling is used. Standard is 0.1.
      * @param	normalized  normalize centrality values in interval [0,1]
-     * @param 	type		use in- or outbound centrality or the sum of both (see paper) for computing
-     * closeness on directed graph. If G is undirected, this can be ignored.
+     * @param 	type		use in- or outbound centrality or the sum of both (see paper) for
+     * computing closeness on directed graph. If G is undirected, this can be ignored.
      */
     ApproxCloseness(const Graph &G, count nSamples, double epsilon = 0.1, bool normalized = false,
                     CLOSENESS_TYPE type = OUTBOUND);
@@ -87,9 +87,9 @@ private:
     std::vector<double> R;
 
     std::vector<double> SQErrEst;
-    const edgeweight infDist =
-        std::floor(std::numeric_limits<edgeweight>::max()
-                   / 2.0); // divided by two s.t. infDist + infDist produces no overflow
+
+    // divided by two s.t. infDist + infDist produces no overflow
+    const edgeweight infDist = std::floor(std::numeric_limits<edgeweight>::max() / 2.0);
 
     CLOSENESS_TYPE type;
 

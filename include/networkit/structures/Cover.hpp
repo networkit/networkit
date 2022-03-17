@@ -215,8 +215,8 @@ public:
 private:
     index z;     //!< maximum element index that can be mapped
     index omega; //!< maximum subset index ever assigned
-    std::vector<std::set<index>>
-        data; //!< data container, indexed by element id, containing set of subset ids
+                 //!< data container, indexed by element id, containing set of subset ids
+    std::vector<std::set<index>> data;
 
     /**
      * Allocates and returns a new subset id.
