@@ -8,6 +8,8 @@
 
 import time
 
+from warnings import warn
+
 """
 stopwatch is a very simple Python module for measuring time.
 Great for finding out how long code takes to execute.
@@ -40,8 +42,11 @@ __author__ = 'John Paulett <http://blog.7oars.com>'
 class Timer(object):
 	"""
 	Main stopwatch object, providing functionality to measure time.
+
+	DEPRECATED. This class (and the networkit.stopwatch module) will be removed in future updates.
 	"""
 	def __init__(self):
+		warn("networkit.Timer is deprecated, will be removed in future updates.")
 		self.__stopped = None
 		self.__start = self.__time()
 
@@ -130,6 +135,8 @@ def clockit(func):
 	Function decorator that times the evaluation of *func* and prints the
 	execution time.
 
+	DEPRECATED. This function (and the networkit.stopwatch module) will be removed in future updates.
+
 	Example
 	-------
 
@@ -142,6 +149,8 @@ def clockit(func):
 		>>> print mult(2, 6)
 		mult in 1.38282775879e-05 sec
 	"""
+	warn("networkit.stopwatch.clockit is deprecated, will be removed in future updates.")
+
 	def new(*args, **kw):
 		t = Timer()
 		retval = func(*args, **kw)
