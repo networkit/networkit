@@ -58,21 +58,6 @@ public:
      */
     Vector(const std::initializer_list<double> &list);
 
-    /** Default copy constructor */
-    Vector(const Vector &other) = default;
-
-    /** Default move constructor */
-    Vector(Vector &&other) = default;
-
-    /** Default destructor */
-    ~Vector() = default;
-
-    /** Default copy assignment operator */
-    Vector &operator=(const Vector &other) = default;
-
-    /** Default move assignment operator */
-    Vector &operator=(Vector &&other) = default;
-
     /**
      * @return dimension of vector
      */

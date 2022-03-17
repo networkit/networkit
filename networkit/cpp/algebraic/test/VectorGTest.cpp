@@ -36,6 +36,17 @@ TEST(VectorGTest, testVectorConstruction) {
     }
 }
 
+TEST(VectorGTest, testFill) {
+    const index n = 10;
+    Vector v(n);
+
+    const double val = 1;
+    v.fill(val);
+
+    for (index i = 0; i < n; ++i)
+        EXPECT_EQ(val, v[i]);
+}
+
 TEST(VectorGTest, testDimension) {
     Vector testVector = {1.0, 2.0, 3.0, 4.0, 5.0};
     ASSERT_EQ(5u, testVector.getDimension());
@@ -132,6 +143,16 @@ TEST(VectorGTest, testVectorScalarMultiplication) {
         EXPECT_EQ((i + 1) * 2.0, vectorScalar[i]);
         EXPECT_EQ((i + 1) * 2.0, scalarVector[i]);
     }
+}
+
+TEST(VectorGTest, testScalarVectorMultiplication) {
+    Vector vec(10, 1);
+    const double scalar = 2.;
+
+    auto vec2 = scalar * vec;
+
+    ASSERT_EQ(vec.getDimension(), vec2.getDimension());
+    vec2.forElements([&](double element) { ASSERT_EQ(element, scalar); });
 }
 
 TEST(VectorGTest, testVectorMatrixMultiplication) {
