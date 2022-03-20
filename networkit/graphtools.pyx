@@ -45,6 +45,8 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) nogil except +
 	void sortEdgesByWeight(_Graph G, bool_t) nogil except +
 	vector[node] topologicalSort(_Graph G) nogil except +
+	node augmentGraph(_Graph G) nogil except +
+	pair[_Graph, node] createAugmentedGraph(_Graph G) nogil except +
 
 cdef class GraphTools:
 
@@ -669,3 +671,42 @@ cdef class GraphTools:
 			The directed input graph.
 		"""
 		return topologicalSort(G._this)
+
+	@staticmethod
+	def augmentGraph(Graph G):
+		"""
+		Augments the input graph in-place as required by ForestCentrality. With respect to the input
+		graph G, the augmented graph has a new root node connected to all the other nodes in the graph.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph (undirected).
+
+		Returns
+		-------
+		int
+			Returns the node id of the new root node.
+		"""
+		return augmentGraph(G._this)
+
+	@staticmethod
+	def createAugmentedGraph(Graph G):
+		"""
+		Constructs an augmented graph as required by ForestCentrality. With respect to the input
+		graph G, the augmented graph has a new root node connected to all the other nodes in the
+		graph.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph (undirected).
+
+		Returns
+		-------
+		tuple(networkit.Graph, int)
+			Returns a tuple (G, root) where G is the augmented graph and root is the id of the root
+			node.
+		"""
+		result = createAugmentedGraph(G._this)
+		return Graph().setThis(result.first), result.second

@@ -523,5 +523,16 @@ class TestGraphTools(unittest.TestCase):
 				self.assertLess(indexNode2, indexNode1)
 				self.assertLess(indexNode1, indexNode3)
 
+	def testAugmentedGraph(self):
+		nk.engineering.setSeed(42, False)
+		n = 20
+		G = nk.generators.ErdosRenyiGenerator(n, 0.3).generate()
+		augG, root = nk.graphtools.createAugmentedGraph(G);
+
+		self.assertTrue(augG.hasNode(root));
+		self.assertEqual(n + 1, augG.numberOfNodes());
+		self.assertEqual(G.numberOfEdges() + n, augG.numberOfEdges());
+		self.assertEqual(n, augG.degree(root));
+
 if __name__ == "__main__":
 	unittest.main()

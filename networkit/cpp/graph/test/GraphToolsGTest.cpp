@@ -548,6 +548,22 @@ TEST_F(GraphToolsGTest, testRestoreGraph) {
     EXPECT_EQ(Goriginal.isWeighted(), Gcompact.isWeighted());
 }
 
+TEST_F(GraphToolsGTest, testAugmentedGraph) {
+    Aux::Random::setSeed(42, false);
+    const count n = 500;
+    auto G = ErdosRenyiGenerator(n, 0.05).generate();
+    node root;
+    Graph augG;
+    std::tie(augG, root) = GraphTools::createAugmentedGraph(G);
+
+    EXPECT_TRUE(augG.hasNode(root));
+    EXPECT_EQ(n + 1, augG.numberOfNodes());
+    EXPECT_EQ(G.numberOfEdges() + n, augG.numberOfEdges());
+    EXPECT_EQ(n, augG.degree(root));
+
+    G.parallelForNodes([&](node u) { EXPECT_TRUE(augG.hasEdge(u, root)); });
+}
+
 TEST_P(GraphToolsGTest, testGetRemappedGraph) {
     const auto n = 4;
     Graph G(n, weighted(), directed());
