@@ -433,7 +433,7 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphUndirectedWeighted1) {
     auto nodeMap = GraphTools::getContinuousNodeIds(G);
     auto Gcompact = GraphTools::getCompactedGraph(G, nodeMap);
 
-    EXPECT_EQ(G.totalEdgeWeight(), Gcompact.totalEdgeWeight());
+    EXPECT_DOUBLE_EQ(G.totalEdgeWeight(), Gcompact.totalEdgeWeight());
     EXPECT_NE(G.upperNodeIdBound(), Gcompact.upperNodeIdBound());
     EXPECT_EQ(G.numberOfNodes(), Gcompact.numberOfNodes());
     EXPECT_EQ(G.numberOfEdges(), Gcompact.numberOfEdges());
@@ -460,7 +460,7 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphDirectedWeighted1) {
     auto nodeMap = GraphTools::getContinuousNodeIds(G);
     auto Gcompact = GraphTools::getCompactedGraph(G, nodeMap);
 
-    EXPECT_EQ(G.totalEdgeWeight(), Gcompact.totalEdgeWeight());
+    EXPECT_DOUBLE_EQ(G.totalEdgeWeight(), Gcompact.totalEdgeWeight());
     EXPECT_NE(G.upperNodeIdBound(), Gcompact.upperNodeIdBound());
     EXPECT_EQ(G.numberOfNodes(), Gcompact.numberOfNodes());
     EXPECT_EQ(G.numberOfEdges(), Gcompact.numberOfEdges());
@@ -486,7 +486,7 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphDirectedUnweighted1) {
     auto nodeMap = GraphTools::getContinuousNodeIds(G);
     auto Gcompact = GraphTools::getCompactedGraph(G, nodeMap);
 
-    EXPECT_EQ(G.totalEdgeWeight(), Gcompact.totalEdgeWeight());
+    EXPECT_DOUBLE_EQ(G.totalEdgeWeight(), Gcompact.totalEdgeWeight());
     EXPECT_NE(G.upperNodeIdBound(), Gcompact.upperNodeIdBound());
     EXPECT_EQ(G.numberOfNodes(), Gcompact.numberOfNodes());
     EXPECT_EQ(G.numberOfEdges(), Gcompact.numberOfEdges());
@@ -540,7 +540,7 @@ TEST_F(GraphToolsGTest, testRestoreGraph) {
     auto Gcompact = GraphTools::getCompactedGraph(G, nodeMap);
     Graph Goriginal = GraphTools::restoreGraph(invertedNodeMap, Gcompact);
 
-    EXPECT_EQ(Goriginal.totalEdgeWeight(), Gcompact.totalEdgeWeight());
+    EXPECT_DOUBLE_EQ(Goriginal.totalEdgeWeight(), Gcompact.totalEdgeWeight());
     EXPECT_NE(Goriginal.upperNodeIdBound(), Gcompact.upperNodeIdBound());
     EXPECT_EQ(Goriginal.numberOfNodes(), Gcompact.numberOfNodes());
     EXPECT_EQ(Goriginal.numberOfEdges(), Gcompact.numberOfEdges());
@@ -815,7 +815,7 @@ TEST_P(GraphToolsGTest, testTranspose) {
         EXPECT_EQ(G.upperNodeIdBound(), Gtrans.upperNodeIdBound());
         EXPECT_EQ(G.numberOfEdges(), Gtrans.numberOfEdges());
         EXPECT_EQ(G.upperEdgeIdBound(), Gtrans.upperEdgeIdBound());
-        EXPECT_EQ(G.totalEdgeWeight(), Gtrans.totalEdgeWeight());
+        EXPECT_DOUBLE_EQ(G.totalEdgeWeight(), Gtrans.totalEdgeWeight());
         EXPECT_EQ(G.numberOfSelfLoops(), Gtrans.numberOfSelfLoops());
 
         // test for regular edges
