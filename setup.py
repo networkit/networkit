@@ -143,7 +143,7 @@ if cmakeCompiler is None:
 # functions for cythonizing and building networkit
 ################################################
 
-def buildNetworKit(install_prefix, externalCore=False, externalTlx=None, withTests=False, rpath=None):
+def buildNetworKit(install_prefix, externalCore=False, externalTlx=None, withTests=False, rpath=None, gpu=False):
 	try:
 		os.makedirs(buildDirectory)
 	except FileExistsError:
@@ -181,6 +181,12 @@ def buildNetworKit(install_prefix, externalCore=False, externalTlx=None, withTes
 	comp_cmd.append(os.getcwd()) #call CMakeLists.txt from networkit root
 	if rpath:
 		comp_cmd.append("-DNETWORKIT_PYTHON_RPATH="+rpath)
+	if gpu:
+		if shutil.which('nvidia-smi') is not None:
+			comp_cmd.append("-DNETWORKIT_CUDA=ON")
+		else:
+			print("Install nvidia driver tools to build NetworKit with GPU-support, exiting setup.py.")
+			exit(1)
 	# Run cmake
 	print("initializing NetworKit compilation with: '{0}'".format(" ".join(comp_cmd)), flush=True)
 	if not subprocess.call(comp_cmd, cwd=buildDirectory) == 0:
@@ -227,7 +233,9 @@ class build_ext(Command):
 			"use external NetworKit core library"),
 		('external-tlx=', None,
 			"absolute path to external tlx library"),
-		('rpath=', 'r', "additional custom rpath references")
+		('rpath=', 'r', "additional custom rpath references"),
+		('enable-gpu', 'g',
+			"build with support for GPU computing (CUDA)")
 	]
 
 	def initialize_options(self):
@@ -240,6 +248,7 @@ class build_ext(Command):
 		self.networkit_external_core = False
 		self.external_tlx = None
 		self.rpath = None
+		self.enable_gpu = False
 
 		self.extensions = None
 		self.package = None
@@ -278,7 +287,7 @@ class build_ext(Command):
 			# The --inplace implementation is less sophisticated than in distutils,
 			# but it should be sufficient for NetworKit.
 			prefix = self.distribution.src_root or os.getcwd()
-		buildNetworKit(prefix, externalCore=self.networkit_external_core, externalTlx=self.external_tlx, rpath=self.rpath)
+		buildNetworKit(prefix, externalCore=self.networkit_external_core, externalTlx=self.external_tlx, rpath=self.rpath, gpu=self.enable_gpu)
 
 	def get_ext_fullpath(self, ext_name):
 		"""Returns the path of the filename for a given extension.

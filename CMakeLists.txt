@@ -18,6 +18,7 @@ option(NETWORKIT_CLANG_TIDY "Check code with clang-tidy" OFF)
 option(NETWORKIT_FLATINSTALL "Install into a flat directory structure (useful when building a Python package)" OFF)
 option(NETWORKIT_COVERAGE "Build with support for coverage" OFF)
 option(NETWORKIT_SANITY_CHECKS "Algorithms will perform further (expensive) checks" OFF)
+option(NETWORKIT_CUDA "Enable CUDA (GPU)" OFF) 
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
 set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Implies MONOLITH=TRUE")
 set(NETWORKIT_WITH_SANITIZERS "" CACHE STRING "Uses sanitizers during the compilation")
@@ -213,6 +214,30 @@ else()
 	set(NETWORKIT_LIB_DEST "lib/")
 endif()
 
+if(NETWORKIT_CUDA)
+	find_package(CUDAToolkit REQUIRED)
+	enable_language(CUDA)
+	if(${CMAKE_VERSION} VERSION_LESS "3.24")
+		include(FindCUDA/select_compute_arch)
+		CUDA_DETECT_INSTALLED_GPUS(INSTALLED_GPU_CCS_1)
+		string(STRIP "${INSTALLED_GPU_CCS_1}" INSTALLED_GPU_CCS_2)
+		string(REPLACE " " ";" INSTALLED_GPU_CCS_3 "${INSTALLED_GPU_CCS_2}")
+		string(REPLACE "." "" CUDA_ARCH_LIST "${INSTALLED_GPU_CCS_3}")
+	else()
+		SET(CUDA_ARCH_LIST "native")
+	endif()
+else()
+	file(GLOB_RECURSE CUDA_SOURCE_LIST "${PROJECT_SOURCE_DIR}/networkit/cpp/*.cu")
+	foreach(CUDA_FILE IN LISTS CUDA_SOURCE_LIST)
+		set_source_files_properties(${CUDA_FILE} PROPERTIES LANGUAGE CXX)
+	endforeach()
+	if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR
+	("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR
+	("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang"))
+		set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} -x c++")
+	endif()
+endif()
+
 ################################################################################
 # Use TLX as a CMake submodule
 if(NOT NETWORKIT_EXT_TLX)
@@ -264,6 +289,12 @@ if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 	endif()
 
 	target_link_libraries(networkit PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
+
+	if(NETWORKIT_CUDA)
+		target_link_libraries(networkit PRIVATE CUDA::cudart_static CUDA::cuda_driver)
+		target_include_directories(networkit BEFORE PUBLIC "${CUDAToolkit_INCLUDE_DIRS}")
+		set_target_properties(networkit PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH_LIST}")
+	endif()
 
 	set_target_properties(networkit PROPERTIES
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
@@ -392,6 +423,12 @@ function(networkit_add_module modname)
 		target_include_directories(${MODULE_TARGET} BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 		target_include_directories(${MODULE_TARGET} PUBLIC "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
 
+		if(NETWORKIT_CUDA)
+			target_link_libraries(${MODULE_TARGET} PRIVATE CUDA::cudart_static CUDA::cuda_driver)
+			target_include_directories(${MODULE_TARGET} BEFORE PUBLIC "${CUDAToolkit_INCLUDE_DIRS}")
+			set_target_properties(${MODULE_TARGET} PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH_LIST}")
+		endif()
+
 		# All tests added to this module will will also become a dependency
 		# of networkit_tests_MODNAME. This target hence allows to build all
 		# tests associated with this module
@@ -406,7 +443,16 @@ function(networkit_add_module modname)
 	foreach(file ${ARGN})
 		target_sources(${MODULE_TARGET}
 			PRIVATE ${CMAKE_CURRENT_LIST_DIR}/${file})
+		set_source_files_properties(${CMAKE_CURRENT_LIST_DIR}/${file} PROPERTIES LANGUAGE CXX)
 	endforeach()
+
+	# Since target_sources doesn't set the language property, it is neccessary to map source-files manually to their compiler
+	if(NETWORKIT_CUDA)
+		file(GLOB_RECURSE CUDA_SOURCE_LIST "${PROJECT_SOURCE_DIR}/networkit/cpp/*.cu")
+		foreach(CUDA_FILE IN LISTS CUDA_SOURCE_LIST)
+			set_source_files_properties(${CUDA_FILE} PROPERTIES LANGUAGE CUDA)
+		endforeach()
+	endif()
 endfunction()
 
 # Analogous to target_link_libraries with KEYWORDS.

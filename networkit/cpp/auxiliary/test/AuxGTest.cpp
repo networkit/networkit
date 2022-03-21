@@ -26,6 +26,7 @@
 #include <networkit/auxiliary/BloomFilter.hpp>
 #include <networkit/auxiliary/BucketPQ.hpp>
 #include <networkit/auxiliary/Enforce.hpp>
+#include <networkit/auxiliary/GPUTools.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/MissingMath.hpp>
 #include <networkit/auxiliary/NumberParsing.hpp>
@@ -581,5 +582,26 @@ TEST_F(AuxGTest, testApplyPermutation) {
     testPermutation(std::array<int64_t, n>{});
     testPermutation(std::vector<node>{n});
     testPermutation(std::vector<int>{n});
+}
+
+TEST_F(AuxGTest, testGPUTools) {
+    bool res = Aux::GPUTools::initAndTestCUDA();
+    // CUDA GPU detected and initialized
+    if (res) {
+        // A second init call should not create problems.
+        EXPECT_NO_THROW(Aux::GPUTools::initAndTestCUDA());
+
+        // The number of CUDA GPUs should be at least 1
+        auto devList = Aux::GPUTools::getCUDADevices();
+        EXPECT_GE(devList.size(), 1);
+
+        // Resetting the GPU session should not create problems.
+        EXPECT_NO_THROW(Aux::GPUTools::resetCUDA());
+        // no CUDA GPU detected
+    } else {
+        // The number of CUDA GPUs should be 0
+        auto devList = Aux::GPUTools::getCUDADevices();
+        EXPECT_EQ(devList.size(), 0);
+    }
 }
 } // namespace NetworKit
