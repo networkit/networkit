@@ -614,8 +614,9 @@ public:
         ((void)(probLB));
 #endif // NDEBUG
         if (probUB > 0.5)
-            probUB = 1; // if we are going to take every second element anyway, no use in
-                        // calculating expensive jumps
+            // if we are going to take every second element anyway, no use in calculating expensive
+            // jumps
+            probUB = 1;
         if (probUB == 0)
             return 0;
         // TODO: return whole if probLB == 1
@@ -656,8 +657,10 @@ public:
                 assert(distance >= distancePair.first);
 
                 double q = prob(distance);
-                q = q / probUB; // since the candidate was selected by the jumping process, we have
-                                // to adjust the probabilities
+                // since the candidate was selected by the jumping process, we have to adjust the
+                // probabilities
+                q = q / probUB;
+
                 assert(q <= 1);
                 assert(q >= 0);
 
@@ -681,10 +684,10 @@ public:
                     TRACE("Jumped with delta ", delta, " arrived at ", i,
                           ". Calling maybeGetKthElement.");
                     if (i < size())
-                        maybeGetKthElement(
-                            probUB, euQuery, prob, i,
-                            result); // this could be optimized. As of now, the offset is subtracted
-                                     // separately for each point
+                        // this could be optimized. As of now, the offset is subtracted  separately
+                        // for each point
+                        maybeGetKthElement(probUB, euQuery, prob, i, result);
+
                     else
                         break;
                     candidatesTested++;

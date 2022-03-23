@@ -242,9 +242,8 @@ private:
         return numEdges;
     }
 
-    // Optimized version of the computation of the skip distance as
-    // proposed Batagelj and Brandes. It basically converts a uniform
-    // variate to a geometric random variable.
+    // Optimized version of the computation of the skip distance as proposed Batagelj and Brandes.
+    // It basically converts a uniform variate to a geometric random variable.
     count skip_distance(integral_t random_prob, double inv_log2_cp) const {
         /*
          * The original idea is to compute

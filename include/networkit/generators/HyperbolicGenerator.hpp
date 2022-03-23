@@ -43,6 +43,7 @@ public:
      */
     Graph generate(const vector<double> &angles, const vector<double> &radii, double R,
                    double T = 0);
+
     Graph generateCold(const vector<double> &angles, const vector<double> &radii, double R);
 
     /**
@@ -117,16 +118,15 @@ private:
 
     static std::tuple<double, double> getMinMaxTheta(double angle, double radius, double cLow,
                                                      double thresholdDistance) {
-        /*
-            Calculates the angles that are enclosing the intersection of the
-            hyperbolic disk that is around point v and the bands.
-            Calculation is as follows:
-            1. For the most inner band, return [0, 2pi]
-            2. For other bands, consider the point P which lies on the tangent from origin to the
-           disk of point v. Its radial coordinates would be(cHigh, point[1]+deltaTheta). We're
-           looking for the deltaTheta. We know the distance from point v to P is R. Thus, we can
-           solve the hyperbolic distance of (v, P) for deltaTheta. Then, thetaMax is simply point[1]
-           + deltaTheta and thetaMin is point[1] - deltaTheta
+        /**
+        Calculates the angles that are enclosing the intersection of the hyperbolic disk that is
+        around point v and the bands. Calculation is as follows:
+         1. For the most inner band, return [0, 2pi]
+         2. For other bands, consider the point P which lies on the tangent from origin to the
+         disk of point v. Its radial coordinates would be(cHigh, point[1]+deltaTheta). We're
+         looking for the deltaTheta. We know the distance from point v to P is R. Thus, we can
+         solve the hyperbolic distance of (v, P) for deltaTheta. Then, thetaMax is simply
+         point[1] + deltaTheta and thetaMin is point[1] - deltaTheta.
         */
 
         // Most innerband is defined by cLow = 0

@@ -72,8 +72,8 @@ private:
     const_iterator beginIt{nullptr};
     const_iterator endIt{nullptr};
 
-    std::unique_ptr<MemoryMappedFileState>
-        state; //!< used only by windows implementation to keep handlers around.
+    //!< used only by Windows implementation to keep handlers around.
+    std::unique_ptr<MemoryMappedFileState> state;
 };
 
 } // namespace NetworKit

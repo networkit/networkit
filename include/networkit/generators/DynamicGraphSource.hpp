@@ -20,12 +20,12 @@ namespace NetworKit {
 class DynamicGraphSource {
 
 protected:
-    GraphEventProxy *Gproxy; //!< receives events produced by the generator and forwards them
+    GraphEventProxy *Gproxy; // receives events produced by the generator and forwards them
     Graph *G;
-    bool graphSet; //!< true if newGraph has been called and graph and proxy instances are properly
-                   //!< set
-    bool graphInitialized; //!< true if initializeGraph has been called and graph has been properly
-                           //!< initialized
+    // true if newGraph has been called and graph and proxy instances are properly set
+    bool graphSet;
+    // true if initializeGraph has been called and graph has been properly initialized
+    bool graphInitialized;
 
 public:
     /** Default constructor */
