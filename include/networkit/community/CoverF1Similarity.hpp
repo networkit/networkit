@@ -1,4 +1,3 @@
-// no-networkit-format
 #ifndef NETWORKIT_COMMUNITY_COVER_F1_SIMILARITY_HPP_
 #define NETWORKIT_COMMUNITY_COVER_F1_SIMILARITY_HPP_
 
@@ -33,7 +32,7 @@ public:
      * @param C The cover that shall be evaluated.
      * @param reference The reference cover to which @a C shall be compared.
      */
-    CoverF1Similarity(const Graph& G, const Cover& C, const Cover& reference);
+    CoverF1Similarity(const Graph &G, const Cover &C, const Cover &reference);
 
     /**
      * Execute the algorithm. The algorithm is not parallel.
@@ -49,6 +48,6 @@ private:
     const Cover *reference;
 };
 
-}
+} // namespace NetworKit
 
 #endif // NETWORKIT_COMMUNITY_COVER_F1_SIMILARITY_HPP_

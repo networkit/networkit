@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DynamicPathGenerator.hpp
  *
@@ -19,9 +18,7 @@ namespace NetworKit {
  */
 class DynamicPathGenerator final : public DynamicGraphGenerator {
 public:
-
     std::vector<GraphEvent> generate(count nSteps) override;
-
 };
 
 } /* namespace NetworKit */

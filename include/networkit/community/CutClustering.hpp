@@ -1,4 +1,3 @@
-// no-networkit-format
 #ifndef NETWORKIT_COMMUNITY_CUT_CLUSTERING_HPP_
 #define NETWORKIT_COMMUNITY_CUT_CLUSTERING_HPP_
 
@@ -8,8 +7,8 @@ namespace NetworKit {
 
 /**
  * Cut clustering algorithm as defined in
- * Flake, Gary William; Tarjan, Robert E.; Tsioutsiouliklis, Kostas. Graph Clustering and Minimum Cut Trees.
- * Internet Mathematics 1 (2003), no. 4, 385--408.
+ * Flake, Gary William; Tarjan, Robert E.; Tsioutsiouliklis, Kostas. Graph Clustering and Minimum
+ * Cut Trees. Internet Mathematics 1 (2003), no. 4, 385--408.
  */
 class CutClustering final : public CommunityDetectionAlgorithm {
 public:
@@ -21,7 +20,7 @@ public:
      *
      * @param alpha The parameter for the cut clustering
      */
-    CutClustering(const Graph& G, edgeweight alpha);
+    CutClustering(const Graph &G, edgeweight alpha);
 
     /**
      * Apply algorithm to graph
@@ -34,24 +33,27 @@ public:
     /**
      * Get the complete hierarchy with all possible parameter values.
      *
-     * Each reported parameter value is the lower bound for the range in which the corresponding clustering is calculated by the cut clustering algorithm.
+     * Each reported parameter value is the lower bound for the range in which the corresponding
+     * clustering is calculated by the cut clustering algorithm.
      *
-     * Warning: all reported parameter values are slightly too high in order to avoid wrong clusterings because of numerical inaccuracies.
-     * Furthermore the completeness of the hierarchy cannot be guaranteed because of these inaccuracies.
-     * This implementation hasn't been optimized for performance.
+     * Warning: all reported parameter values are slightly too high in order to avoid wrong
+     * clusterings because of numerical inaccuracies. Furthermore the completeness of the hierarchy
+     * cannot be guaranteed because of these inaccuracies. This implementation hasn't been optimized
+     * for performance.
      *
      * @param G The Graph instance for which the hierarchy shall be calculated
      *
      * @return The hierarchy as map
      */
-    static std::map<edgeweight, Partition> getClusterHierarchy(const Graph& G);
+    static std::map<edgeweight, Partition> getClusterHierarchy(const Graph &G);
 
 private:
-
     /**
      * Helper function for the recursive clustering hierarchy calculation.
      */
-    static void clusterHierarchyRecursion(const Graph &G, edgeweight lower, Partition lowerClusters, edgeweight upper, Partition upperClusters, std::map< edgeweight, Partition > &result);
+    static void clusterHierarchyRecursion(const Graph &G, edgeweight lower, Partition lowerClusters,
+                                          edgeweight upper, Partition upperClusters,
+                                          std::map<edgeweight, Partition> &result);
     edgeweight alpha;
 };
 

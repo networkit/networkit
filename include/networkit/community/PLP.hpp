@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * PLP.hpp
  *
@@ -27,28 +26,28 @@ namespace NetworKit {
 class PLP final : public CommunityDetectionAlgorithm {
 
 private:
-
     count updateThreshold = 0;
     count maxIterations;
-    count nIterations = 0; //!< number of iterations in last run
+    count nIterations = 0;     //!< number of iterations in last run
     std::vector<count> timing; //!< running times for each iteration
 
 public:
-
     /**
      * Constructor to the label propagation community detection algorithm.
      *
      * @param[in] G input graph
-     * @param[in] theta updateThreshold: number of nodes that have to be changed in each iteration so that a new iteration starts.
+     * @param[in] theta updateThreshold: number of nodes that have to be changed in each iteration
+     * so that a new iteration starts.
      */
-    PLP(const Graph& G, count theta = none, count maxIterations=none);
+    PLP(const Graph &G, count theta = none, count maxIterations = none);
 
     /**
      * Constructor to the label propagation community detection algorithm.
      *
      * @param[in] G input graph
      * @param[in] baseClustering optional; the algorithm will start from the given clustering.
-     * @param[in] theta updateThreshold: number of nodes that have to be changed in each iteration so that a new iteration starts.
+     * @param[in] theta updateThreshold: number of nodes that have to be changed in each iteration
+     * so that a new iteration starts.
      */
     PLP(const Graph &G, const Partition &baseClustering, count theta = none);
 
@@ -62,23 +61,22 @@ public:
      * the threshold is updated.
      *
      * @param th The threshold.
-    */
+     */
     void setUpdateThreshold(count th);
 
     /**
-    * Get number of iterations in last run.
-    *
-    * @return The number of iterations.
-    */
+     * Get number of iterations in last run.
+     *
+     * @return The number of iterations.
+     */
     count numberOfIterations();
 
     /**
-    * Get list of running times for each iteration.
-    *
-    * @return The list of running times in milliseconds
-    */
+     * Get list of running times for each iteration.
+     *
+     * @return The list of running times in milliseconds
+     */
     const std::vector<count> &getTiming() const;
-
 };
 
 } /* namespace NetworKit */

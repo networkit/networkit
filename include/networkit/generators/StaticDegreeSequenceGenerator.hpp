@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * StaticDegreeSequenceGenerator.hpp
  *
@@ -21,14 +20,13 @@ const short UNKNOWN = 2;
 /**
  * @ingroup generators
  */
-class StaticDegreeSequenceGenerator: public StaticGraphGenerator {
+class StaticDegreeSequenceGenerator : public StaticGraphGenerator {
 protected:
     std::vector<count> seq;
     short realizable;
 
-
 public:
-    StaticDegreeSequenceGenerator(const std::vector<count>& sequence);
+    StaticDegreeSequenceGenerator(const std::vector<count> &sequence);
 
     /**
      * Erdoes-Gallai test if degree sequence seq is realizable.

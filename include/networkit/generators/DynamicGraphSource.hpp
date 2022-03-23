@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DynamicGraphSpurce.hpp
  *
@@ -21,16 +20,16 @@ namespace NetworKit {
 class DynamicGraphSource {
 
 protected:
-
-    GraphEventProxy* Gproxy; //!< receives events produced by the generator and forwards them
-    Graph* G;
-    bool graphSet; //!< true if newGraph has been called and graph and proxy instances are properly set
-    bool graphInitialized; //!< true if initializeGraph has been called and graph has been properly initialized
+    GraphEventProxy *Gproxy; //!< receives events produced by the generator and forwards them
+    Graph *G;
+    bool graphSet; //!< true if newGraph has been called and graph and proxy instances are properly
+                   //!< set
+    bool graphInitialized; //!< true if initializeGraph has been called and graph has been properly
+                           //!< initialized
 
 public:
-
     /** Default constructor */
-     DynamicGraphSource();
+    DynamicGraphSource();
 
     // DynamicGraphGenerator(GraphEventProxy& proxy);
 
@@ -40,7 +39,7 @@ public:
      * After constructing a DynamicGraphGenerator, call this to set a new
      * a Graph and GraphEventProxy instance and get access to them.
      */
-    GraphEventProxy* newGraph();
+    GraphEventProxy *newGraph();
 
     /**
      * The generator may expect the graph to be in a certain initial state. Call this method first.

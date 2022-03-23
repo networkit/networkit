@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DynamicDGSParser.hpp
  *
@@ -40,7 +39,8 @@ public:
     void evaluateClusterings(const std::string &path, const Partition &clustering);
 
 private:
-    bool graphInitialized;  //!< true if initializeGraph has been called and graph has been properly initialized
+    bool graphInitialized; //!< true if initializeGraph has been called and graph has been properly
+                           //!< initialized
     std::unordered_map<std::string, node> nodeNames;
     std::vector<std::string> nodeDates;
     std::ifstream dgsFile;

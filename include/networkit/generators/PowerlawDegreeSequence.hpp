@@ -1,4 +1,3 @@
-// no-networkit-format
 #ifndef NETWORKIT_GENERATORS_POWERLAW_DEGREE_SEQUENCE_HPP_
 #define NETWORKIT_GENERATORS_POWERLAW_DEGREE_SEQUENCE_HPP_
 
@@ -13,7 +12,8 @@ namespace NetworKit {
 class PowerlawDegreeSequence final : public Algorithm {
 public:
     /**
-     * Generates a powerlaw degree sequence with the given minimum and maximum degree, the powerlaw exponent gamma.
+     * Generates a powerlaw degree sequence with the given minimum and maximum degree, the powerlaw
+     * exponent gamma.
      *
      * @param minDeg   The minium degree
      * @param maxDeg   The maximum degree
@@ -22,23 +22,26 @@ public:
     PowerlawDegreeSequence(count minDeg, count maxDeg, double gamma);
 
     /**
-     * Generates a powerlaw degree sequence that fits the given degree sequence in terms of minimum, maximum and average degree.
+     * Generates a powerlaw degree sequence that fits the given degree sequence in terms of minimum,
+     * maximum and average degree.
      *
      * @param degreeSequence The degree sequence to fit.
      */
-    PowerlawDegreeSequence(const std::vector<double>& degreeSequence);
+    PowerlawDegreeSequence(const std::vector<double> &degreeSequence);
 
     /**
-     * Generates a powerlaw degree sequence that fits the degree sequence of the given graph in terms of minimum, maximum and average degree.
+     * Generates a powerlaw degree sequence that fits the degree sequence of the given graph in
+     * terms of minimum, maximum and average degree.
      *
      * @param g The input graph to fit
      */
-    PowerlawDegreeSequence(const Graph& g);
+    PowerlawDegreeSequence(const Graph &g);
 
     /**
      * Tries to set the minimum degree such that the specified average degree is expected.
      *
-     * @throws std::runtime_error If it is not possible to find a minimum degree such that the expected average is @a avgDeg.
+     * @throws std::runtime_error If it is not possible to find a minimum degree such that the
+     * expected average is @a avgDeg.
      * @param avgDeg   The average degree
      */
     void setMinimumFromAverageDegree(double avgDeg);
@@ -71,20 +74,20 @@ public:
      *
      * @return The maximum degree.
      */
-     count getMaximumDegree() const { return maxDeg; };
+    count getMaximumDegree() const { return maxDeg; };
 
-     /**
-      * Sets the exponent gamma.
-      *
-      * @param gamma The exponent, must be negative.
-      */
+    /**
+     * Sets the exponent gamma.
+     *
+     * @param gamma The exponent, must be negative.
+     */
     void setGamma(double gamma);
 
-     /**
-      * Gets the exponent gamma.
-      *
-      * @return gamma
-      */
+    /**
+     * Gets the exponent gamma.
+     *
+     * @return gamma
+     */
     double getGamma() const { return gamma; };
 
     /**

@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * ErdosRenyiGenerator.hpp
  *
@@ -58,11 +57,8 @@ public:
      * @param prob      Probability that an edge exists
      * @param directed  Selects an directed graph
      */
-    ErdosRenyiEnumerator(node n, double prob, bool directed) :
-        n{n},
-        prob{prob},
-        directed{directed}
-    {
+    ErdosRenyiEnumerator(node n, double prob, bool directed)
+        : n{n}, prob{prob}, directed{directed} {
         assert(n > 0);
     }
 
@@ -84,45 +80,48 @@ public:
      *
      * Returns number of edges produced.
      */
-    template<typename Handle>
+    template <typename Handle>
     count forEdgesParallel(Handle handle) {
-        std::atomic<count> numEdges {0};
+        std::atomic<count> numEdges{0};
         if (directed) {
-            #pragma omp parallel
+#pragma omp parallel
             {
                 const unsigned threads = omp_get_num_threads();
                 const unsigned tid = omp_get_thread_num();
 
                 const node chunk_size = (n + threads - 1) / threads;
                 const node first_node = std::min<node>(n, tid * chunk_size);
-                const node last_node  = std::min<node>(n, (tid+1) * chunk_size);
+                const node last_node = std::min<node>(n, (tid + 1) * chunk_size);
 
-                const auto localNumEdges = enumerate<true>(handle, tid, prob, first_node, last_node);
+                const auto localNumEdges =
+                    enumerate<true>(handle, tid, prob, first_node, last_node);
                 numEdges.fetch_add(localNumEdges, std::memory_order_relaxed);
             }
         } else {
-            #pragma omp parallel
+#pragma omp parallel
             {
                 const unsigned threads = omp_get_num_threads();
                 const unsigned tid = omp_get_thread_num();
 
                 // cells in adj matrix per thread
-                const node chunk_size = (n * (n-1) / 2 + threads - 1) / threads;
+                const node chunk_size = (n * (n - 1) / 2 + threads - 1) / threads;
 
                 double first_node;
                 double last_node = 0.0;
 
-                for(unsigned i = 0; i <= tid; i++) {
+                for (unsigned i = 0; i <= tid; i++) {
                     first_node = last_node;
-                    node upper_node = std::ceil(std::sqrt(
-                        0.25 + first_node * first_node + first_node + 2*chunk_size));
+                    node upper_node = std::ceil(
+                        std::sqrt(0.25 + first_node * first_node + first_node + 2 * chunk_size));
                     last_node = std::min<node>(n, upper_node);
                 }
 
-                if (tid + 1 == threads) last_node = n;
+                if (tid + 1 == threads)
+                    last_node = n;
 
                 if (first_node < last_node) {
-                    const auto localNumEdges = enumerate<false>(handle, tid, prob, first_node, last_node);
+                    const auto localNumEdges =
+                        enumerate<false>(handle, tid, prob, first_node, last_node);
                     numEdges.fetch_add(localNumEdges, std::memory_order_relaxed);
                 }
             }
@@ -135,7 +134,7 @@ public:
      * Similarly to @ref forEdgesParallel but computed on one thread only.
      * If the callback accepts three arguments tid is always 0.
      */
-    template<typename Handle>
+    template <typename Handle>
     count forEdges(Handle handle) {
         if (directed) {
             return enumerate<true>(handle, 0, prob, 0, n);
@@ -147,20 +146,18 @@ public:
     /**
      * Returns the expected number of edges to be generated.
      */
-    count expectedNumberOfEdges() const {
-        return prob * n * (directed ? n : (n-1) * 0.5);
-    }
-
+    count expectedNumberOfEdges() const { return prob * n * (directed ? n : (n - 1) * 0.5); }
 
 private:
-    const node n; //< number of nodes
-    const double prob; //< probability p
+    const node n;        //< number of nodes
+    const double prob;   //< probability p
     const bool directed; //< true if a directed graph should be generated
 
-// In the undirected case we only traverse the lower triangle (excluding the
-// diagonal) of the adjacency matrix
+    // In the undirected case we only traverse the lower triangle (excluding the
+    // diagonal) of the adjacency matrix
     template <bool Directed, typename Handle>
-    count enumerate(Handle handle, unsigned tid, double prob, const node node_begin, const node node_end) const {
+    count enumerate(Handle handle, unsigned tid, double prob, const node node_begin,
+                    const node node_end) const {
         if (prob > 0.9) {
             // for p > 0.5 we invert the generator and draw the edges NOT in the graph.
             // While this does not change the asymptotical work, it decrease the
@@ -173,8 +170,8 @@ private:
             if (!Directed && cur_u == 0)
                 cur_u = 1; // all edges need to be of form u > v!
 
-            auto complement_graph = [&] (unsigned tid, node u, node v) {
-                while(!(cur_u == u && cur_v == v)) {
+            auto complement_graph = [&](unsigned tid, node u, node v) {
+                while (!(cur_u == u && cur_v == v)) {
                     callHandle(handle, tid, cur_u, cur_v);
                     num_edges++;
 
@@ -185,8 +182,7 @@ private:
                 }
             };
 
-            enumerate_<Directed>(
-                complement_graph, tid, 1.0 - prob, node_begin, node_end);
+            enumerate_<Directed>(complement_graph, tid, 1.0 - prob, node_begin, node_end);
             complement_graph(tid, node_end, 0);
 
             return num_edges;
@@ -195,10 +191,9 @@ private:
         return enumerate_<Directed>(handle, tid, prob, node_begin, node_end);
     }
 
-
-
     template <bool Directed, typename Handle>
-    count enumerate_(Handle handle, unsigned tid, double prob, const node node_begin, const node node_end) const {
+    count enumerate_(Handle handle, unsigned tid, double prob, const node node_begin,
+                     const node node_end) const {
         Aux::SignalHandler handler;
 
         if (prob < std::pow(n, -3.0)) {
@@ -206,15 +201,15 @@ private:
             return 0;
         }
 
-
         const double inv_log2_cp = 1.0 / std::log2(1.0 - prob);
 
         // random source
-        auto& prng = Aux::Random::getURNG(); // this is thread local
+        auto &prng = Aux::Random::getURNG(); // this is thread local
         auto distr = get_distribution<UseFixedPoint>();
 
         count curr = node_begin;
-        if (!Directed && !curr) curr = 1;
+        if (!Directed && !curr)
+            curr = 1;
         node next = -1;
 
         node max_skip = 0;
@@ -225,7 +220,8 @@ private:
             // compute new step length
             auto skip = skip_distance(distr(prng), inv_log2_cp);
             next += skip;
-            if (skip > max_skip) max_skip = skip;
+            if (skip > max_skip)
+                max_skip = skip;
 
             // check if at end of row (assuming an average degree of 1,
             // its typically faster to repeatedly subtract than to
@@ -246,9 +242,9 @@ private:
         return numEdges;
     }
 
-// Optimized version of the computation of the skip distance as
-// proposed Batagelj and Brandes. It basically converts a uniform
-// variate to a geometric random variable.
+    // Optimized version of the computation of the skip distance as
+    // proposed Batagelj and Brandes. It basically converts a uniform
+    // variate to a geometric random variable.
     count skip_distance(integral_t random_prob, double inv_log2_cp) const {
         /*
          * The original idea is to compute
@@ -279,40 +275,45 @@ private:
          *  = 1 + floor(log2(X/2**64) * inv_log2_cp)
          *  = 1 + floor((log2(X) - 64) * inv_log2_cp).
          */
-        return 1 + static_cast<count>(
-            std::floor((std::log2(random_prob) - 8*sizeof(integral_t)) * inv_log2_cp)
-        );
+        return 1
+               + static_cast<count>(
+                   std::floor((std::log2(random_prob) - 8 * sizeof(integral_t)) * inv_log2_cp));
     }
 
     count skip_distance(double random_prob, double inv_log2_cp) const {
         return 1 + static_cast<count>(std::floor((std::log2(random_prob)) * inv_log2_cp));
     }
 
-// SFINAE to determine and construct the right uniform distribution
+    // SFINAE to determine and construct the right uniform distribution
     template <bool FixedPoint>
-    auto get_distribution() const -> typename std::enable_if<FixedPoint, std::uniform_int_distribution<integral_t>>::type {
+    auto get_distribution() const ->
+        typename std::enable_if<FixedPoint, std::uniform_int_distribution<integral_t>>::type {
         return std::uniform_int_distribution<integral_t>{1, std::numeric_limits<integral_t>::max()};
     }
 
     template <bool FixedPoint>
-    auto get_distribution() const -> typename std::enable_if<!FixedPoint, std::uniform_real_distribution<double>>::type {
-        return std::uniform_real_distribution<double>{std::nextafter(0.0, 1.0), std::nextafter(1.0, 0.0)};
+    auto get_distribution() const ->
+        typename std::enable_if<!FixedPoint, std::uniform_real_distribution<double>>::type {
+        return std::uniform_real_distribution<double>{std::nextafter(0.0, 1.0),
+                                                      std::nextafter(1.0, 0.0)};
     }
 
-// SFINAE to allow using functors with and without thread id as parameter
+    // SFINAE to allow using functors with and without thread id as parameter
     template <typename Handle>
-    auto callHandle(Handle h, unsigned tid, node u, node v) const -> decltype(h(0u, node{0}, node{0})) {
+    auto callHandle(Handle h, unsigned tid, node u, node v) const
+        -> decltype(h(0u, node{0}, node{0})) {
         return h(tid, u, v);
     }
 
     template <typename Handle>
-    auto callHandle(Handle h, unsigned /*tid*/, node u, node v) const -> decltype(h(node{0}, node{0})) {
+    auto callHandle(Handle h, unsigned /*tid*/, node u, node v) const
+        -> decltype(h(node{0}, node{0})) {
         return h(u, v);
     }
 };
 
 using ErdosRenyiEnumeratorDefault = ErdosRenyiEnumerator<true>;
 
-}
+} // namespace NetworKit
 
 #endif // NETWORKIT_GENERATORS_ERDOS_RENYI_ENUMERATOR_HPP_

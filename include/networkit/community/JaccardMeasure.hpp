@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * JaccardMeasure.hpp
  *
@@ -16,10 +15,9 @@ namespace NetworKit {
 /**
  * @ingroup community
  */
-class JaccardMeasure final: public DissimilarityMeasure {
+class JaccardMeasure final : public DissimilarityMeasure {
 
 public:
-
     double getDissimilarity(const Graph &G, const Partition &zeta, const Partition &eta) override;
 };
 

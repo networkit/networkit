@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * GraphClusteringTools.hpp
  */
@@ -22,73 +21,73 @@ namespace GraphClusteringTools {
  * @param zeta Input partition
  * @return total imbalance between clusters
  */
-float getImbalance(const Partition& zeta);
+float getImbalance(const Partition &zeta);
 
 /**
  * Get the communication graph for a given graph and its partition.
  * A communication graph consists of a number of nodes, which equal
- * the number of clusters in the partition. The edges between nodes 
- * in the communication graph account for the total edge weight for all 
+ * the number of clusters in the partition. The edges between nodes
+ * in the communication graph account for the total edge weight for all
  * edges between two clusters. For unweighted graphs, the edge weight in
  * the communication graph is equal to the number of edges between two
  * clusters.
- * 
+ *
  * @param graph The input graph
  * @param zeta Partition, which contains information about clusters in the graph
  * @return communication graph
  */
-Graph communicationGraph(const Graph& graph, Partition &zeta);
+Graph communicationGraph(const Graph &graph, Partition &zeta);
 
 /**
  * Get weightedDegree of node u for a cluster (represented by a partition) of index cid.
- * 
+ *
  * @param graph The input graph
  * @param zeta Partition, which contains information about clusters in the graph
  * @param u node
  * @param cid index of cluster
  * @return weighted degree of node u for cluster index cid
  */
-count weightedDegreeWithCluster(const Graph& graph, const Partition& zeta, node u, index cid);
+count weightedDegreeWithCluster(const Graph &graph, const Partition &zeta, node u, index cid);
 
 /**
  * Check whether a partition is a proper clustering for a given graph
- * 
+ *
  * @param graph The input graph
  * @param zeta Partition, which contains information about clusters in the graph
- * @return True if the partition is a proper clustering, False if not 
+ * @return True if the partition is a proper clustering, False if not
  */
-bool isProperClustering(const Graph& G, const Partition& zeta);
+bool isProperClustering(const Graph &G, const Partition &zeta);
 
 /**
  * Check whether a partition is a proper singleton clustering for a given graph
- * 
+ *
  * @param graph The input graph
  * @param zeta Partition, which contains information about clusters in the graph
- * @return True if the partition is a proper singleton clustering, False if not 
+ * @return True if the partition is a proper singleton clustering, False if not
  */
 bool isSingletonClustering(const Graph &G, const Partition &zeta);
 
 /**
  * Check whether a partition is a proper one clustering for a given graph
- * 
+ *
  * @param graph The input graph
  * @param zeta Partition, which contains information about clusters in the graph
- * @return True if the partition is a proper one clustering, False if not 
+ * @return True if the partition is a proper one clustering, False if not
  */
-bool isOneClustering(const Graph& G, const Partition& zeta);
+bool isOneClustering(const Graph &G, const Partition &zeta);
 
 /**
  * Check whether two paritions are equal for a given graph
- * 
+ *
  * @param graph The input graph
  * @param zeta Partition, which contains information about clusters in the graph
  * @param eta Partition, which contains information about clusters in the graph
  * @return True if both partitions are the same, False if not
  */
-bool equalClusterings(const Partition &zeta, const Partition &eta, Graph& G);
+bool equalClusterings(const Partition &zeta, const Partition &eta, Graph &G);
 
-}
+} // namespace GraphClusteringTools
 
-}
+} // namespace NetworKit
 
 #endif // NETWORKIT_COMMUNITY_GRAPH_CLUSTERING_TOOLS_HPP_
