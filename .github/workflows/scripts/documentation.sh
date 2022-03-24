@@ -9,7 +9,7 @@ pip3 install --upgrade pip
 pip3 install cython
 
 # Several modules are required to build the documentation.
-pip3 install 'sphinx<4.1' sphinx_bootstrap_theme numpydoc exhale nbsphinx breathe
+pip3 install 'Jinja2<3.1.0' sphinx sphinx_bootstrap_theme numpydoc exhale nbsphinx breathe
 pip3 install sphinx_copybutton sphinxcontrib.bibtex sphinx_gallery sphinx_last_updated_by_git 
 pip3 install ipykernel ipython matplotlib nbconvert jupyter-client networkx tabulate
 pip3 install ipycytoscape plotly seaborn
