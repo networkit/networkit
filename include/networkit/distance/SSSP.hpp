@@ -121,6 +121,8 @@ public:
 
     /**
      * Returns the number of nodes reached by the source.
+     *
+     * @return Number of nodes reached by the source.
      */
     count getReachableNodes() const {
         assureFinished();
@@ -129,6 +131,8 @@ public:
 
     /**
      * Sets a new source.
+     *
+     * @param newSource The new source node.
      */
     void setSource(node newSource) {
         if (!G->hasNode(newSource))
