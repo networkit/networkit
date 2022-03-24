@@ -9,6 +9,7 @@ from libcpp.map cimport map
 from libcpp cimport bool as bool_t
 from libcpp.string cimport string
 from libcpp.set cimport set
+from libcpp.unordered_map cimport unordered_map
 
 ctypedef uint64_t count
 ctypedef uint64_t index
@@ -32,9 +33,16 @@ cdef extern from "cython_helper.h":
 cdef extern from "<networkit/distance/STSP.hpp>":
 	cdef cppclass _STSP "NetworKit::STSP"(_Algorithm):
 		_STSP(_Graph G, node source, node target, bool_t storePred) except +
+		_STSP(_Graph G, node source, vector[node].iterator targetsFirst,
+			vector[node].iterator targetsLast, bool_t storePred) except +
+		void setSource(node newSource) except +
+		void setTarget(node newTarget) except +
+		void setTargets(vector[node].iterator targetsFirst, vector[node].iterator targetsLast) except +
 		vector[node] getPath() except +
 		vector[node] getPredecessors() except +
 		edgeweight getDistance() except +
+		vector[edgeweight] &getDistances() except +
+		unordered_map[node, index] &getTargetIndexMap() except +
 
 cdef class STSP(Algorithm):
 	""" 
@@ -43,10 +51,51 @@ cdef class STSP(Algorithm):
 	Abstract base class for source-target shortest path algorithms. 
 	"""
 	cdef Graph _G
+	cdef vector[node] targets
 
 	def __init__(self, *args, **namedargs):
 		if type(self) == STSP:
 			raise RuntimeError("Error, you may not use STSP directly, use a sub-class instead")
+
+	def setSource(self, node newSource):
+		"""
+		setSource(newSource)
+
+		Sets the source node.
+
+		Parameters
+		----------
+		newSource : int
+			The new source node.
+		"""
+		(<_STSP*>(self._this)).setSource(newSource)
+
+	def setTarget(self, node newTarget):
+		"""
+		setTarget(newTarget)
+
+		Sets the target node.
+
+		Parameters
+		----------
+		newTarget : int
+			The new target node.
+		"""
+		(<_STSP*>(self._this)).setTarget(newTarget)
+
+	def setTargets(self, vector[node] newTargets):
+		"""
+		setTargets(newTargets)
+
+		Sets multiple target nodes.
+
+		Parameters
+		----------
+		newTargets : list(int)
+			The new target nodes.
+		"""
+		self.targets = newTargets
+		(<_STSP*>(self._this)).setTargets(newTargets.begin(), newTargets.end())
 
 	def getPath(self):
 		"""
@@ -90,6 +139,22 @@ cdef class STSP(Algorithm):
 			The distance from source to the target node.
 		"""
 		return (<_STSP*>(self._this)).getDistance()
+
+	def getDistances(self):
+		"""
+		getDistances()
+
+		In case of multiple target nodes: returns the distance from the source node to the target
+		nodes.
+
+		Returns
+		-------
+		list(float)
+			Distances from the source to the target nodes.
+		"""
+		tmap = (<_STSP*>(self._this)).getTargetIndexMap()
+		distances = (<_STSP*>(self._this)).getDistances()
+		return [distances[tmap[u]] for u in self.targets]
 
 cdef extern from "<networkit/distance/SSSP.hpp>":
 
@@ -1154,12 +1219,15 @@ cdef extern from "<networkit/distance/SPSP.hpp>":
 
 	cdef cppclass _SPSP "NetworKit::SPSP"(_Algorithm):
 		_SPSP(_Graph G, vector[node].iterator sourcesFirst, vector[node].iterator sourcesLast) except +
+		_SPSP(_Graph G, vector[node].iterator sourcesFirst, vector[node].iterator sourcesLast,
+			vector[node].iterator targetsFirst, vector[node].iterator targetsLast) except +
 		vector[vector[edgeweight]] &getDistances() except +
 		edgeweight getDistance(node u, node v) except +
 		void setSources(vector[node].iterator sourcesFirst, vector[node].iterator sourcesLast)
+		void setTargets(vector[node].iterator targetsFirst, vector[node].iterator targetsLast)
 
 cdef class SPSP(Algorithm):
-	""" 
+	"""
 	SPSP(G, sources)
 	
 	Some-Pairs Shortest-Paths algorithm (implemented running Dijkstra's algorithm from each source
@@ -1175,9 +1243,12 @@ cdef class SPSP(Algorithm):
 	"""
 	cdef Graph _G
 
-	def __cinit__(self, Graph G not None, vector[node] sources):
+	def __cinit__(self, Graph G not None, vector[node] sources, vector[node] targets = []):
 		self._G = G
-		self._this = new _SPSP(G._this, sources.begin(), sources.end())
+		if not targets.empty():
+			self._this = new _SPSP(G._this, sources.begin(), sources.end(), targets.begin(), targets.end())
+		else:
+			self._this = new _SPSP(G._this, sources.begin(), sources.end())
 
 	def __dealloc__(self):
 		self._G = None
@@ -1186,14 +1257,14 @@ cdef class SPSP(Algorithm):
 		""" 
 		getDistances()
 		
-		Returns a vector of vectors of distances between each source node
-		and all the other nodes pair.
+		Returns a list of lists of distances between each source node
+		and either all the other nodes (if no targets have been specified) or all target nodes.
 
  	 	Returns
  	 	-------
  	 	list(list(float))
-			The shortest-path distances from each source node to any other node
-			in the graph.
+			The shortest-path distances from each source node to the target nodes (if target nodes
+			have been specified), or any other node in the graph.
 		"""
 		return (<_SPSP*>self._this).getDistances()
 
@@ -1230,6 +1301,18 @@ cdef class SPSP(Algorithm):
 		"""
 		(<_SPSP*>self._this).setSources(sources.begin(), sources.end())
 
+	def setTargets(self, vector[node] targets):
+		"""
+		setTargets(targets)
+		
+		Sets the target nodes.
+
+		Parameters
+		----------
+		targets : list(int)
+			List of the new target nodes.
+		"""
+		(<_SPSP*>self._this).setTargets(targets.begin(), targets.end())
 
 cdef extern from "<networkit/distance/DynAPSP.hpp>":
 
@@ -1312,7 +1395,6 @@ cdef class BFS(SSSP):
 		self._G = G
 		self._this = new _BFS(G._this, source, storePaths, storeNodesSortedByDistance, target)
 
-
 cdef extern from "<networkit/distance/Dijkstra.hpp>":
 
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra"(_SSSP):
@@ -1341,6 +1423,56 @@ cdef class Dijkstra(SSSP):
 	def __cinit__(self, Graph G, source, storePaths=True, storeNodesSortedByDistance=False, node target=none):
 		self._G = G
 		self._this = new _Dijkstra(G._this, source, storePaths, storeNodesSortedByDistance, target)
+
+cdef extern from "<networkit/distance/MultiTargetBFS.hpp>":
+	cdef cppclass _MultiTargetBFS "NetworKit::MultiTargetBFS"(_STSP):
+		_MultiTargetBFS(_Graph G, node source, vector[node].iterator targetsFirst, vector[node].iterator targetsLast) except +
+
+cdef class MultiTargetBFS(STSP):
+	"""
+	MultiTargetBFS(G, source, targets)
+	
+	Simple breadth-first search on a Graph from a given source to multiple targets.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph.
+	source : int
+		The source node of the breadth-first search.
+	targets : list(int)
+		List of target nodes.
+	"""
+
+	def __cinit__(self, Graph G, node source, vector[node] targets):
+		self._G = G
+		self._this = new _MultiTargetBFS(G._this, source, targets.begin(), targets.end())
+		self.targets = targets
+
+cdef extern from "<networkit/distance/MultiTargetDijkstra.hpp>":
+	cdef cppclass _MultiTargetDijkstra "NetworKit::MultiTargetDijkstra"(_STSP):
+		_MultiTargetDijkstra(_Graph G, node source, vector[node].iterator targetsFirst, vector[node].iterator targetsLast) except +
+
+cdef class MultiTargetDijkstra(STSP):
+	"""
+	MultiTargetDijkstra(G, source, targets)
+	
+	Dijkstra's SSSP algorithm from a single source node to multiple target nodes.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph.
+	source : int
+		The source node of the Dijkstra search.
+	targets : list(int)
+		List of target nodes.
+	"""
+
+	def __cinit__(self, Graph G, node source, vector[node] targets):
+		self._G = G
+		self._this = new _MultiTargetDijkstra(G._this, source, targets.begin(), targets.end())
+		self.targets = targets
 
 cdef extern from "<networkit/distance/DynBFS.hpp>":
 
@@ -1443,7 +1575,9 @@ cdef class BidirectionalBFS(STSP):
 		int
 			Number of hops from the source to the target node.
 		"""
-		return (<_BidirectionalBFS*>(self._this)).getHops()
+		from warnings import warn
+		warn("getHops() is deprecated, use 'getDistance' instead")
+		return (<_BidirectionalBFS*>(self._this)).getDistance()
 
 cdef extern from "<networkit/distance/BidirectionalDijkstra.hpp>":
 	cdef cppclass _BidirectionalDijkstra "NetworKit::BidirectionalDijkstra"(_STSP):
