@@ -30,7 +30,33 @@
 #include <networkit/io/METISGraphReader.hpp>
 
 namespace NetworKit {
-class DistanceGTest: public testing::Test {};
+class DistanceGTest: public testing::TestWithParam<std::pair<bool, bool>> {
+
+protected:
+    bool isDirected() const noexcept;
+    bool isWeighted() const noexcept;
+
+    Graph generateERGraph(count n, double p) const {
+        auto G = ErdosRenyiGenerator(n, p, isDirected()).generate();
+        if (isWeighted()) {
+            G = GraphTools::toWeighted(G);
+            G.forEdges([&G](node u, node v) {
+                G.setWeight(u, v, Aux::Random::probability());
+            });
+        }
+
+        return G;
+    }
+};
+
+INSTANTIATE_TEST_SUITE_P(InstantiationName, DistanceGTest,
+        testing::Values(std::make_pair(false, false), std::make_pair(true, false),
+                        std::make_pair(false, true),
+                        std::make_pair(true, true)));
+
+bool DistanceGTest::isWeighted() const noexcept { return GetParam().first; }
+
+bool DistanceGTest::isDirected() const noexcept { return GetParam().second; }
 
 TEST_F(DistanceGTest, testVertexDiameterPedantically) {
     DorogovtsevMendesGenerator generator(1000);
@@ -113,45 +139,35 @@ TEST_F(DistanceGTest, testAStar) {
 
 TEST_F(DistanceGTest, testIncompleteDijkstra) {
     Aux::Random::setSeed(42, false);
-    for (auto directed : {true, false}) {
-        for (auto weighted : {true, false}) {
-            auto G = ErdosRenyiGenerator(500, 0.05, directed).generate();
-            if (weighted) {
-                G = GraphTools::toWeighted(G);
-                G.forEdges([&G](const node u, const node v) {
-                    G.setWeight(u, v, Aux::Random::probability());
-                });
-            }
+    auto G = generateERGraph(500, 0.05);
 
-            G.forNodes([&](const node source) {
-                Dijkstra dij(G, source, false, false);
-                dij.run();
-                const auto dists = dij.getDistances();
-                const count reachable = std::count_if(dists.begin(), dists.end(),
-                                                      [](const edgeweight dist) {
-                    return dist != std::numeric_limits<edgeweight>::max();
-                });
+    G.forNodes([&](const node source) {
+        Dijkstra dij(G, source, false, false);
+        dij.run();
+        const auto dists = dij.getDistances();
+        const count reachable = std::count_if(dists.begin(), dists.end(),
+                                              [](const edgeweight dist) {
+            return dist != std::numeric_limits<edgeweight>::max();
+        });
 
-                const std::vector<node> sources({source});
-                IncompleteDijkstra iDij(&G, sources);
+        const std::vector<node> sources({source});
+        IncompleteDijkstra iDij(&G, sources);
 
-                for (count i = 0; i < reachable; ++i) {
-                    EXPECT_TRUE(iDij.hasNext());
-                    const auto next = iDij.next();
-                    EXPECT_DOUBLE_EQ(next.second, dists[next.first]);
-                }
-
-                EXPECT_FALSE(iDij.hasNext());
-            });
+        for (count i = 0; i < reachable; ++i) {
+            EXPECT_TRUE(iDij.hasNext());
+            const auto next = iDij.next();
+            EXPECT_DOUBLE_EQ(next.second, dists[next.first]);
         }
-    }
+
+        EXPECT_FALSE(iDij.hasNext());
+    });
 }
 
-TEST_F(DistanceGTest, testBidirectionalBFS) {
+TEST_P(DistanceGTest, testBidirectionalBFS) {
     Aux::Random::setSeed(42, false);
-    Graph G = ErdosRenyiGenerator(500, 0.02, false).generate();
-    Graph G1 = ErdosRenyiGenerator(500, 0.05, true).generate();
-    auto testGraph = [&](const Graph &G) {
+    auto G = generateERGraph(500, isDirected() ? 0.05 : 0.02);
+
+    for (int i = 0; i < 10; ++i) {
         node source = GraphTools::randomNode(G);
         node target = GraphTools::randomNode(G);
         while (source == target)
@@ -174,27 +190,13 @@ TEST_F(DistanceGTest, testBidirectionalBFS) {
         } else
             EXPECT_TRUE(G.hasEdge(source, target));
     };
-    for (int i = 0; i < 10; ++i) {
-        testGraph(G);
-        testGraph(G1);
-    }
 }
 
-TEST_F(DistanceGTest, testBidirectionalDijkstra) {
+TEST_P(DistanceGTest, testBidirectionalDijkstra) {
     Aux::Random::setSeed(42, false);
-    count n = 300;
-    Graph G(n, true, false);
-    Graph G1(n, true, true);
-    Graph gen = ErdosRenyiGenerator(n, 0.05, false).generate();
-    Graph gen1 = ErdosRenyiGenerator(n, 0.05, true).generate();
-    gen.forEdges([&](node u, node v) {
-        G.setWeight(u, v, Aux::Random::probability());
-    });
-    gen1.forEdges([&](node u, node v) {
-        G1.setWeight(u, v, Aux::Random::probability());
-    });
+    auto G = generateERGraph(300, 0.05);
 
-    auto testGraph = [&](const Graph &G) {
+    for (int i = 0; i < 10; ++i) {
         node source = GraphTools::randomNode(G);
         node target = GraphTools::randomNode(G);
         while (source == target)
@@ -215,11 +217,6 @@ TEST_F(DistanceGTest, testBidirectionalDijkstra) {
         } else
             EXPECT_TRUE(G.hasEdge(source, target));
     };
-
-    for (int i = 0; i < 10; ++i) {
-        testGraph(G);
-        testGraph(G1);
-    }
 }
 
 TEST_F(DistanceGTest, testExactDiameter) {
@@ -467,42 +464,32 @@ TEST_F(DistanceGTest, testNeighborhoodFunctionHeuristic) {
     EXPECT_EQ(exact.size(), heuristic.size());
 }
 
-TEST_F(DistanceGTest, testSPSP) {
+TEST_P(DistanceGTest, testSPSP) {
     for (int seed : {1, 2, 3}) {
         Aux::Random::setSeed(seed, true);
-        for (bool directed : {false, true}) {
-            for (bool weighted : {false, true}) {
-                auto G = ErdosRenyiGenerator(100, 0.15, directed).generate();
-                if (weighted) {
-                    G = GraphTools::toWeighted(G);
-                    G.forEdges([&](node u, node v) {
-                        G.setWeight(u, v, Aux::Random::probability());
-                    });
-                }
+        auto G = generateERGraph(100, 0.15);
 
-                APSP apsp(G);
-                apsp.run();
-                const auto gt = apsp.getDistances();
+        APSP apsp(G);
+        apsp.run();
+        const auto gt = apsp.getDistances();
 
-                for (count nSources : {1, 10, 50, 100}) {
-                    std::unordered_set<node> sources;
-                    do {
-                        sources.insert(GraphTools::randomNode(G));
-                    } while (sources.size() < nSources);
+        for (count nSources : {1, 10, 50, 100}) {
+            std::unordered_set<node> sources;
+            do {
+                sources.insert(GraphTools::randomNode(G));
+            } while (sources.size() < nSources);
 
-                    SPSP spsp(G, sources.begin(), sources.end());
-                    spsp.run();
-                    const auto nodemap = spsp.getSourceIndexMap();
-                    const auto distances = spsp.getDistances();
+            SPSP spsp(G, sources.begin(), sources.end());
+            spsp.run();
+            const auto nodemap = spsp.getSourceIndexMap();
+            const auto distances = spsp.getDistances();
 
-                    for (node source : sources) {
-                        const auto &curDist = distances[nodemap.at(source)];
-                        G.forNodes([&](node target) {
-                            EXPECT_DOUBLE_EQ(gt[source][target], spsp.getDistance(source, target));
-                            EXPECT_DOUBLE_EQ(gt[source][target], curDist[target]);
-                        });
-                    }
-                }
+            for (node source : sources) {
+                const auto &curDist = distances[nodemap.at(source)];
+                G.forNodes([&](node target) {
+                    EXPECT_DOUBLE_EQ(gt[source][target], spsp.getDistance(source, target));
+                    EXPECT_DOUBLE_EQ(gt[source][target], curDist[target]);
+                });
             }
         }
     }
