@@ -19,6 +19,8 @@
 #include <networkit/distance/EffectiveDiameterApproximation.hpp>
 #include <networkit/distance/HopPlotApproximation.hpp>
 #include <networkit/distance/IncompleteDijkstra.hpp>
+#include <networkit/distance/MultiTargetBFS.hpp>
+#include <networkit/distance/MultiTargetDijkstra.hpp>
 #include <networkit/distance/NeighborhoodFunction.hpp>
 #include <networkit/distance/NeighborhoodFunctionApproximation.hpp>
 #include <networkit/distance/NeighborhoodFunctionHeuristic.hpp>
@@ -474,10 +476,7 @@ TEST_P(DistanceGTest, testSPSP) {
         const auto gt = apsp.getDistances();
 
         for (count nSources : {1, 10, 50, 100}) {
-            std::unordered_set<node> sources;
-            do {
-                sources.insert(GraphTools::randomNode(G));
-            } while (sources.size() < nSources);
+            auto sources = GraphTools::randomNodes(G, nSources);
 
             SPSP spsp(G, sources.begin(), sources.end());
             spsp.run();
@@ -492,6 +491,74 @@ TEST_P(DistanceGTest, testSPSP) {
                 });
             }
         }
+    }
+}
+
+TEST_P(DistanceGTest, testSPSPWithTargets) {
+    Aux::Random::setSeed(42, true);
+    const auto G = generateERGraph(100, 0.15);
+
+    APSP apsp(G);
+    apsp.run();
+
+    for (count nSources : {1, 10, 100}) {
+        const auto sources = GraphTools::randomNodes(G, nSources);
+        for (count nTargets : {1, 50, 100}) {
+            const auto targets = GraphTools::randomNodes(G, nTargets);
+
+            SPSP spsp(G, sources.begin(), sources.end(), targets.begin(), targets.end());
+            spsp.run();
+            const auto sourceMap = spsp.getSourceIndexMap(), targetMap = spsp.getTargetIndexMap();
+            const auto distances = spsp.getDistances();
+            EXPECT_EQ(distances.size(), nSources);
+            EXPECT_EQ(distances.front().size(), nTargets);
+
+            for (node source : sources)
+                for (node target : targets)
+                    EXPECT_EQ(apsp.getDistance(source, target), spsp.getDistance(source, target));
+        }
+    }
+}
+
+TEST_P(DistanceGTest, testMultiTargetBFS) {
+    Aux::Random::setSeed(42, true);
+    const auto G = generateERGraph(100, 0.15);
+    const auto source = GraphTools::randomNode(G);
+
+    BFS bfs(G, source, false);
+    bfs.run();
+    const auto distances = bfs.getDistances();
+
+    for (count nTargets : {1, 10, 20}) {
+        const auto targets = GraphTools::randomNodes(G, nTargets);
+        MultiTargetBFS mtBFS(G, source, targets.begin(), targets.end());
+        mtBFS.run();
+        const auto tgtDists = mtBFS.getDistances();
+        const auto tgtIdx = mtBFS.getTargetIndexMap();
+
+        for (node target : targets)
+            EXPECT_EQ(distances[target], tgtDists[tgtIdx.at(target)]);
+    }
+}
+
+TEST_P(DistanceGTest, testMultiTargetDijkstra) {
+    Aux::Random::setSeed(42, true);
+    const auto G = generateERGraph(100, 0.15);
+    const auto source = GraphTools::randomNode(G);
+
+    Dijkstra dij(G, source, false);
+    dij.run();
+    const auto distances = dij.getDistances();
+
+    for (count nTargets : {1, 10, 20}) {
+        const auto targets = GraphTools::randomNodes(G, nTargets);
+        MultiTargetDijkstra mtDij(G, source, targets.begin(), targets.end());
+        mtDij.run();
+        const auto tgtDists = mtDij.getDistances();
+        const auto tgtIdx = mtDij.getTargetIndexMap();
+
+        for (node target : targets)
+            EXPECT_DOUBLE_EQ(distances[target], tgtDists[tgtIdx.at(target)]);
     }
 }
 
