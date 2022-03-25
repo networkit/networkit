@@ -45,10 +45,9 @@ public:
      */
     void run() override {
         astar.run();
+        distance = astar.getDistance();
         hasRun = true;
     }
-
-    edgeweight getDistance() const override { return astar.getDistance(); }
 
     std::vector<node> getPath() const override { return astar.getPath(); }
 

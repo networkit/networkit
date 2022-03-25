@@ -31,18 +31,7 @@ public:
      */
     void run() override;
 
-    /*
-     * Returns the distance from the source to the target node.
-     *
-     * @return edgeweight Distance from the source to the target node.
-     */
-    edgeweight getDistance() const override {
-        assureFinished();
-        return stDist;
-    }
-
 private:
-    edgeweight stDist;
     std::vector<edgeweight> dist1;
     std::vector<edgeweight> dist2;
     std::vector<node> predT;

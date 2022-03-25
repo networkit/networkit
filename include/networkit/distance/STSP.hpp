@@ -13,6 +13,10 @@
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
+#include <algorithm>
+#include <unordered_map>
+#include <vector>
+
 namespace NetworKit {
 
 /**
@@ -69,10 +73,24 @@ public:
     }
 
     /**
-     * Returns the distance from the source node to the target node
+     * If the target is a single node: returns the distance from the source node to the target
+     * node.
      * @return The distance from source to the target node.
      */
-    virtual edgeweight getDistance() const = 0;
+    edgeweight getDistance() const {
+        assureFinished();
+        return distance;
+    }
+
+    /**
+     * In case of multiple target nodes: returns the distance from the source node to the target
+     * nodes.
+     * @return Distances from the source to the target nodes.
+     */
+    const std::vector<edgeweight> &getDistances() const {
+        assureFinished();
+        return distances;
+    }
 
     /**
      * Sets the source node.
@@ -92,13 +110,36 @@ public:
     void setTarget(node newTarget) {
         assert(G->hasNode(newTarget));
         target = newTarget;
+        targets.clear();
+    }
+
+    /**
+     * Sets the target nodes.
+     *
+     * @param targetsFirst,targetsLast Range of target nodes.
+     */
+    template <class InputIt>
+    void setTarget(InputIt targetsFirst, InputIt targetsLast) {
+        assert(std::all_of(targetsFirst, targetsLast, [&](node u) { return G->hasNode(u); }));
+        targets.clear();
+        targets.insert(targetsFirst, targetsLast);
+    }
+
+    const std::unordered_map<node, index> &getTargetIndexMap() const {
+        assureFinished();
+        return targetIdx;
     }
 
 protected:
     const Graph *G;
-    node source, target;
+    node source = none, target = none;
+    std::vector<node> targets;
     const bool storePred;
     std::vector<node> pred, path;
+
+    edgeweight distance;
+    std::vector<edgeweight> distances;
+    std::unordered_map<node, index> targetIdx;
 
     // Builds a source-target shortest path using the predecessors
     void buildPath();

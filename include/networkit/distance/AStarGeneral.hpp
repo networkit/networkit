@@ -43,6 +43,7 @@ public:
      */
     void run() override {
         if (source == target) {
+            distance = 0.;
             hasRun = true;
             return;
         }
@@ -50,10 +51,11 @@ public:
         init();
         constexpr auto infdist = std::numeric_limits<edgeweight>::max();
         const count n = G->upperNodeIdBound();
+        distance = infdist;
 
-        std::fill(distance.begin(), distance.end(), infdist);
-        distance.resize(n, infdist);
-        distance[source] = 0.;
+        std::fill(distFromSource.begin(), distFromSource.end(), infdist);
+        distFromSource.resize(n, infdist);
+        distFromSource[source] = 0.;
 
         std::fill(prio.begin(), prio.end(), infdist);
         prio.resize(n, infdist);
@@ -67,13 +69,14 @@ public:
         do {
             top = heap.extract_top();
             if (top == target) {
+                distance = distFromSource[target];
                 break;
             }
 
             G->forNeighborsOf(top, [&](node u, edgeweight w) {
-                const double newDist = distance[top] + w;
-                if (newDist < distance[u]) {
-                    distance[u] = newDist;
+                const double newDist = distFromSource[top] + w;
+                if (newDist < distFromSource[u]) {
+                    distFromSource[u] = newDist;
                     prio[u] = newDist + heu(u);
                     heap.update(u);
                     if (storePred) {
@@ -92,14 +95,9 @@ public:
         hasRun = true;
     }
 
-    edgeweight getDistance() const override {
-        assureFinished();
-        return distance[target];
-    }
-
 private:
-    // Distance from the source node, priorities used for the heap
-    std::vector<double> distance, prio;
+    // Priorities used for the heap
+    std::vector<double> distFromSource, prio;
     // Lower bound of the distance to the target node
     Heuristic heu;
 

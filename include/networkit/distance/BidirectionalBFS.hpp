@@ -10,7 +10,10 @@
 
 #include <queue>
 
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/distance/STSP.hpp>
+
+#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 
@@ -35,18 +38,13 @@ public:
      *
      * @return count Number of hops from the source to the target node.
      */
-    count getHops() {
+    count TLX_DEPRECATED(getHops()) {
         assureFinished();
-        return stDist;
-    }
-
-    edgeweight getDistance() const override {
-        assureFinished();
-        return static_cast<edgeweight>(stDist);
+        WARN("BidirectionalBFS::getHops() is deprecated, use getDistance() instead.");
+        return static_cast<count>(distance);
     }
 
 private:
-    count stDist;
     std::vector<uint8_t> visited;
     uint8_t ts = 0;
     static constexpr uint8_t ballMask = uint8_t(1) << 7;
