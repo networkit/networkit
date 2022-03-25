@@ -25,8 +25,18 @@ namespace NetworKit {
 class BidirectionalBFS final : public STSP {
 
 public:
-    // Inherit the constructors of STSP.
-    using STSP::STSP;
+    /**
+     * Creates the BidirectionalBFS class for a graph @a G, source node @a source, and
+     * target node @a target.
+     *
+     * @param G The graph.
+     * @param source The source node.
+     * @param target The target node.
+     * @param storePred If true, the algorithm will also store the predecessors
+     * and reconstruct a shortest path from @a source and @a target.
+     */
+    BidirectionalBFS(const Graph &G, node source, node target, bool storePred = true)
+        : STSP(G, source, target, storePred) {}
 
     /*
      * Perform a bidirectional BFS from the given source and target nodes.

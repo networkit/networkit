@@ -13,6 +13,14 @@ namespace NetworKit {
 class MultiTargetBFS final : public STSP {
 
 public:
+    /**
+     * Creates the MultiTargetBFS class for a graph @a G, source node @a source, and
+     * multiple target nodes.
+     *
+     * @param G The graph.
+     * @param source The source node.
+     * @param targetsFirst,targetsLast Range of target nodes.
+     */
     template <class InputIt>
     MultiTargetBFS(const Graph &G, node source, InputIt targetsFirst, InputIt targetsLast)
         : STSP(G, source, targetsFirst, targetsLast) {}

@@ -43,7 +43,24 @@ public:
         if (!G.hasNode(target))
             throw std::runtime_error("Error: target node not in the graph!");
         if (source == target)
-            INFO("Source and target nodes are equal!");
+            WARN("Source and target nodes are equal!");
+    }
+
+    /**
+     * Creates the STSP class for a graph @a G, source node @a source, and
+     * multiple target nodes.
+     *
+     * @param G The graph.
+     * @param source The source node.
+     * @param targetsFirst,targetsLast Range of target nodes.
+     */
+    template <class InputIt>
+    STSP(const Graph &G, node source, InputIt targetsFirst, InputIt targetsLast)
+        : G(&G), source(source), targets(targetsFirst, targetsLast), storePred(false) {
+        if (!G.hasNode(source))
+            throw std::runtime_error("Error: source node not in the graph!");
+        if (!std::all_of(targetsFirst, targetsLast, [&G](node u) { return G.hasNode(u); }))
+            throw std::runtime_error("Error: target node not in the graph!");
     }
 
     /**
@@ -119,12 +136,17 @@ public:
      * @param targetsFirst,targetsLast Range of target nodes.
      */
     template <class InputIt>
-    void setTarget(InputIt targetsFirst, InputIt targetsLast) {
-        assert(std::all_of(targetsFirst, targetsLast, [&](node u) { return G->hasNode(u); }));
-        targets.clear();
-        targets.insert(targetsFirst, targetsLast);
+    void setTargets(InputIt targetsFirst, InputIt targetsLast) {
+        assert(std::all_of(targetsFirst, targetsLast, [&](auto u) { return G->hasNode(u); }));
+        targets.assign(targetsFirst, targetsLast);
     }
 
+    /**
+     * Returns the <node, index> map from target nodes to their index in the vector
+     * returned by STSP::getDistances().
+     *
+     * @return Map from target nodes to their index in the vector returned by STSP::getDistances().
+     */
     const std::unordered_map<node, index> &getTargetIndexMap() const {
         assureFinished();
         return targetIdx;

@@ -17,6 +17,14 @@ namespace NetworKit {
 class MultiTargetDijkstra final : public STSP {
 
 public:
+    /**
+     * Creates the MultiTargetDijkstra class for a graph @a G, source node @a source, and
+     * multiple target nodes.
+     *
+     * @param G The graph.
+     * @param source The source node.
+     * @param targetsFirst,targetsLast Range of target nodes.
+     */
     template <class InputIt>
     MultiTargetDijkstra(const Graph &G, node source, InputIt targetsFirst, InputIt targetsLast)
         : STSP(G, source, targetsFirst, targetsLast) {}
