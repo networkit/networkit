@@ -35,6 +35,8 @@ namespace NetworKit {
 class DistanceGTest: public testing::TestWithParam<std::pair<bool, bool>> {
 
 protected:
+    static constexpr auto infdist = std::numeric_limits<edgeweight>::max();
+
     bool isDirected() const noexcept;
     bool isWeighted() const noexcept;
 
@@ -50,6 +52,8 @@ protected:
         return G;
     }
 };
+
+constexpr edgeweight DistanceGTest::infdist;
 
 INSTANTIATE_TEST_SUITE_P(InstantiationName, DistanceGTest,
         testing::Values(std::make_pair(false, false), std::make_pair(true, false),
@@ -139,7 +143,7 @@ TEST_F(DistanceGTest, testAStar) {
     testMesh(25, 5);
 }
 
-TEST_F(DistanceGTest, testIncompleteDijkstra) {
+TEST_P(DistanceGTest, testIncompleteDijkstra) {
     Aux::Random::setSeed(42, false);
     auto G = generateERGraph(500, 0.05);
 
@@ -149,7 +153,7 @@ TEST_F(DistanceGTest, testIncompleteDijkstra) {
         const auto dists = dij.getDistances();
         const count reachable = std::count_if(dists.begin(), dists.end(),
                                               [](const edgeweight dist) {
-            return dist != std::numeric_limits<edgeweight>::max();
+            return dist != infdist;
         });
 
         const std::vector<node> sources({source});
@@ -178,25 +182,28 @@ TEST_P(DistanceGTest, testBidirectionalBFS) {
         bfs.run();
         BidirectionalBFS bbfs(G, source, target, true);
         bbfs.run();
-        if (bfs.distance(target) < G.upperNodeIdBound())
+
+        if (bfs.distance(target) < G.upperNodeIdBound()) {
+            // Source reaches target
             EXPECT_EQ(bfs.distance(target), bbfs.getDistance());
-        else
-            EXPECT_EQ(std::numeric_limits<count>::max(), bbfs.getDistance());
-        auto path = bbfs.getPath();
-        EXPECT_EQ(path.size(), bbfs.getDistance() - 1);
-        if (path.size()) {
-            EXPECT_TRUE(G.hasEdge(source, path.front()));
-            EXPECT_TRUE(G.hasEdge(path.back(), target));
-            for (count i = 1; i < path.size()-1; ++i)
-                EXPECT_TRUE(G.hasEdge(path[i], path[i + 1]));
+            const auto path = bbfs.getPath();
+            EXPECT_EQ(path.size(), bbfs.getDistance() - 1);
+
+            if (!path.empty()) { // At least two edges in the path
+                EXPECT_TRUE(G.hasEdge(source, path.front()));
+                EXPECT_TRUE(G.hasEdge(path.back(), target));
+                for (count i = 1; i < path.size()-1; ++i)
+                    EXPECT_TRUE(G.hasEdge(path[i], path[i + 1]));
+            } else
+                EXPECT_TRUE(G.hasEdge(source, target));
         } else
-            EXPECT_TRUE(G.hasEdge(source, target));
+            EXPECT_EQ(infdist, bbfs.getDistance());
     };
 }
 
 TEST_P(DistanceGTest, testBidirectionalDijkstra) {
     Aux::Random::setSeed(42, false);
-    auto G = generateERGraph(300, 0.05);
+    auto G = generateERGraph(500, isDirected() ? 0.05 : 0.02);
 
     for (int i = 0; i < 10; ++i) {
         node source = GraphTools::randomNode(G);
@@ -208,16 +215,22 @@ TEST_P(DistanceGTest, testBidirectionalDijkstra) {
         Dijkstra dij(G, source, true, true, target);
         dij.run();
 
-        EXPECT_NEAR(bdij.getDistance(), dij.distance(target), 1e-6);
-        auto path = bdij.getPath();
+        EXPECT_DOUBLE_EQ(bdij.getDistance(), dij.distance(target));
+        const auto path = bdij.getPath();
 
-        if (path.size()) {
-            EXPECT_TRUE(G.hasEdge(source, path.front()));
-            for (size_t i = 0; i < path.size() - 1; ++i)
-                EXPECT_TRUE(G.hasEdge(path[i], path[i + 1]));
-            EXPECT_TRUE(G.hasEdge(path.back(), target));
+        if (dij.distance(target) != infdist) {
+            // Source reaches target
+            EXPECT_DOUBLE_EQ(dij.distance(target), bdij.getDistance());
+
+            if (!path.empty()) { // At least two edges in the path
+                EXPECT_TRUE(G.hasEdge(source, path.front()));
+                for (size_t i = 0; i < path.size() - 1; ++i)
+                    EXPECT_TRUE(G.hasEdge(path[i], path[i + 1]));
+                EXPECT_TRUE(G.hasEdge(path.back(), target));
+            } else
+                EXPECT_TRUE(G.hasEdge(source, target));
         } else
-            EXPECT_TRUE(G.hasEdge(source, target));
+            EXPECT_EQ(infdist, bdij.getDistance());
     };
 }
 
