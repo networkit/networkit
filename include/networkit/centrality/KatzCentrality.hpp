@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * KatzCentrality.hpp
  *
@@ -22,18 +21,20 @@ enum EdgeDirection : char { InEdges = 0, OutEdges = 1 };
  * directed graphs; we follow the verbal description, which requires to sum over the incoming
  * edges (as opposed to outgoing ones).
  */
-class KatzCentrality: public Centrality {
+class KatzCentrality : public Centrality {
     std::vector<double> values;
+
 protected:
     const double alpha; // damping
-    const double beta; // constant centrality amount
-    const double tol; // error tolerance
-    static double defaultAlpha(const Graph& G);
+    const double beta;  // constant centrality amount
+    const double tol;   // error tolerance
+    static double defaultAlpha(const Graph &G);
 
 public:
     /**
-     * Constructs a KatzCentrality object for the given Graph @a G. @a tol defines the tolerance for convergence.
-     * Each iteration of the algorithm requires O(m) time. The number of iterations depends on how long it takes to reach the convergence.
+     * Constructs a KatzCentrality object for the given Graph @a G. @a tol defines the tolerance for
+     * convergence. Each iteration of the algorithm requires O(m) time. The number of iterations
+     * depends on how long it takes to reach the convergence.
      *
      * @param[in] G The graph.
      * @param[in] alpha Damping of the matrix vector product result, must be non negative.
@@ -41,7 +42,7 @@ public:
      * @param[in] beta Constant value added to the centrality of each vertex
      * @param[in] tol The tolerance for convergence.
      */
-    KatzCentrality(const Graph& G, double alpha = 0, double beta = 0.1, double tol = 1e-8);
+    KatzCentrality(const Graph &G, double alpha = 0, double beta = 0.1, double tol = 1e-8);
 
     /**
      * Computes katz centrality on the graph passed in constructor.

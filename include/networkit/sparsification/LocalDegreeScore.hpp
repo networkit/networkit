@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * LocalDegreeScore.hpp
  *
@@ -20,14 +19,12 @@ namespace NetworKit {
 class LocalDegreeScore final : public EdgeScore<double> {
 
 public:
-
-    LocalDegreeScore(const Graph& G);
+    LocalDegreeScore(const Graph &G);
     void run() override;
     double score(edgeid eid) override;
     double score(node u, node v) override;
-
 };
 
-}
+} // namespace NetworKit
 /* namespace NetworKit */
 #endif // NETWORKIT_SPARSIFICATION_LOCAL_DEGREE_SCORE_HPP_

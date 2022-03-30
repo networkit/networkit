@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * RandomNodeEdgeScore.hpp
  *
@@ -16,14 +15,13 @@ namespace NetworKit {
 class RandomNodeEdgeScore final : public EdgeScore<double> {
 
 public:
-    RandomNodeEdgeScore(const Graph& graph, double rneRatio = 0.8);
+    RandomNodeEdgeScore(const Graph &graph, double rneRatio = 0.8);
     void run() override;
     double score(edgeid eid) override;
     double score(node u, node v) override;
 
 private:
     double rneRatio;
-
 };
 
 } /* namespace NetworKit */

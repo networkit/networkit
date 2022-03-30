@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * GroupDegree.h
+ * GroupDegree.hpp
  *
  *  Created on: 20.04.2018
  *      Author: Eugenio Angriman

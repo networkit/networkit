@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
- * GroupCloseness.h
+ * GroupCloseness.hpp
  *
  *  Created on: 03.10.2016
  *      Author: elisabetta bergamini
@@ -13,9 +12,9 @@
 #include <sstream>
 
 #include <networkit/base/Algorithm.hpp>
-#include <networkit/graph/Graph.hpp>
 #include <networkit/graph/BFS.hpp>
 #include <networkit/graph/Dijkstra.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -101,17 +100,14 @@ inline void GroupCloseness::checkGroup(const std::vector<node> &group) const {
     }
 }
 
-inline double
-GroupCloseness::scoreOfGroup(const std::vector<node> &group) const {
+inline double GroupCloseness::scoreOfGroup(const std::vector<node> &group) const {
     double sumDist = 0.;
     if (G->isWeighted())
-        Traversal::DijkstraFrom(*G, group.begin(), group.end(), [&](node, edgeweight dist) {
-            sumDist += dist;
-        });
+        Traversal::DijkstraFrom(*G, group.begin(), group.end(),
+                                [&](node, edgeweight dist) { sumDist += dist; });
     else
-        Traversal::BFSfrom(*G, group.begin(), group.end(), [&](node, count dist) {
-            sumDist += static_cast<double>(dist);
-        });
+        Traversal::BFSfrom(*G, group.begin(), group.end(),
+                           [&](node, count dist) { sumDist += static_cast<double>(dist); });
 
     return sumDist > 0. ? ((double)G->upperNodeIdBound() - (double)group.size()) / sumDist : 0.;
 }

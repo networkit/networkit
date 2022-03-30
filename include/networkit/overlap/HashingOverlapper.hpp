@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * HashingOverlapper.hpp
  *
@@ -22,9 +21,7 @@ namespace NetworKit {
 class HashingOverlapper final : public Overlapper {
 
 public:
-
-    Partition run(const Graph& G, const std::vector<Partition>& clusterings) override;
-
+    Partition run(const Graph &G, const std::vector<Partition> &clusterings) override;
 };
 
 } /* namespace NetworKit */

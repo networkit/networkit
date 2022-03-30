@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * ApproxBetweenness.hpp
  *
@@ -13,23 +12,23 @@
 
 namespace NetworKit {
 
-
 /**
  * @ingroup centrality
  * Approximation of betweenness centrality according to algorithm described in
- * Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality through Sampling
+ * Matteo Riondato and Evgenios M. Kornaropoulos: Fast Approximation of Betweenness Centrality
+ * through Sampling
  */
-class ApproxBetweenness final: public Centrality {
+class ApproxBetweenness final : public Centrality {
 
 public:
-
     /**
      * The algorithm approximates the betweenness of all vertices so that the scores are
      * within an additive error @a epsilon with probability at least (1- @a delta).
-     * The values are normalized by default. The run() method takes O(m) time per sample, where  m is
-     * the number of edges of the graph. The number of samples is proportional to universalConstant/epsilon^2.
-     * Although this algorithm has a theoretical guarantee, the algorithm implemented in Estimate Betweenness usually performs better in practice
-     * Therefore, we recommend to use EstimateBetweenness if no theoretical guarantee is needed.
+     * The values are normalized by default. The run() method takes O(m) time per sample, where  m
+     * is the number of edges of the graph. The number of samples is proportional to
+     * universalConstant/epsilon^2. Although this algorithm has a theoretical guarantee, the
+     * algorithm implemented in Estimate Betweenness usually performs better in practice Therefore,
+     * we recommend to use EstimateBetweenness if no theoretical guarantee is needed.
      *
      * @param	G			the graph
      * @param	epsilon		maximum additive error
@@ -51,9 +50,7 @@ public:
      */
     count numberOfSamples() const;
 
-
 private:
-
     const double epsilon;
     const double delta;
     count r; // number of samples taken in last run

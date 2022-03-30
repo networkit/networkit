@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * UnionFind.hpp
  *
@@ -29,15 +28,12 @@ class UnionFind final {
     std::vector<unsigned char> rank;
 
 public:
-
     /**
      * Create a new set representation with not more than @p max_element elements.
      * Initially every element is in its own set.
      * @param max_element maximum number of elements
      */
-    UnionFind(index max_element) : parent(max_element), rank(max_element, 0) {
-        allToSingletons();
-    }
+    UnionFind(index max_element) : parent(max_element), rank(max_element, 0) { allToSingletons(); }
 
     /**
      * Assigns every element to a singleton set.
