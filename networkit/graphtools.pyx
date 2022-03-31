@@ -42,6 +42,7 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	vector[node] topologicalSort(_Graph G) nogil except +
 	node augmentGraph(_Graph G) nogil except +
 	pair[_Graph, node] createAugmentedGraph(_Graph G) nogil except +
+	void randomizeWeights(_Graph G) nogil except +
 
 cdef class GraphTools:
 
@@ -705,3 +706,20 @@ cdef class GraphTools:
 		"""
 		result = createAugmentedGraph(G._this)
 		return Graph().setThis(result.first), result.second
+
+	@staticmethod
+	def randomizeWeights(Graph G):
+		"""
+		randomizeWeights(G)
+
+		Randomizes the weights of the given graph. The weights are uniformly distributed in
+		the range [0, 1] by default, unless a different distribution is provided. However it
+		is only strictly in-place for already weighted graphs. For unweighted graphs a copy is
+		created before randomizing weights.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		"""
+		randomizeWeights(G._this)

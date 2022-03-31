@@ -7,6 +7,7 @@
 
 #include <iomanip>
 #include <iostream>
+#include <random>
 
 #include <gtest/gtest.h>
 
@@ -841,7 +842,7 @@ TEST_P(CentralityGTest, testClosenessCentrality) {
 
     if (isWeighted()) {
         Aux::Random::setSeed(42, false);
-        G.forEdges([&](node u, node v) { G.setWeight(u, v, Aux::Random::probability()); });
+        GraphTools::randomizeWeights(G);
     }
 
     auto computeCloseness = [&](node u, ClosenessVariant variant, bool normalized) {
@@ -1265,6 +1266,65 @@ TEST_F(CentralityGTest, testSimplePermanence) {
 
     EXPECT_NEAR(-0.19048, perm.getPermanence(u), 0.0005);
     EXPECT_NEAR(0.167, perm.getPermanence(v), 0.0005);
+}
+
+TEST_P(CentralityGTest, testTopCloseness) {
+    constexpr count size = 400;
+    constexpr count k = 10;
+    Aux::Random::setSeed(42, false);
+    const auto G1 = DorogovtsevMendesGenerator(size).generate();
+    Graph G(G1, false, isDirected());
+
+    Closeness cc(G1, true, ClosenessVariant::GENERALIZED);
+    cc.run();
+    auto exactScores = cc.scores();
+    auto ranking = cc.ranking();
+    for (auto firstHeu : {true, false}) {
+        for (auto secHeu : {true, false}) {
+            TopCloseness topcc(G, k, firstHeu, secHeu);
+            topcc.run();
+            auto scores = topcc.topkScoresList();
+            EXPECT_EQ(topcc.topkNodesList().size(), k);
+            for (count i = 0; i < k; i++) {
+                EXPECT_DOUBLE_EQ(ranking[i].second, scores[i]);
+            }
+        }
+    }
+}
+
+TEST_P(CentralityGTest, testTopHarmonicCloseness) {
+    const count size = 400;
+    const double tol = 1e-6;
+
+    for (int seed : {1, 2, 3}) {
+        Aux::Random::setSeed(seed, false);
+        auto G = ErdosRenyiGenerator(size, 0.01, isDirected()).generate();
+        if (isWeighted()) {
+            GraphTools::randomizeWeights(G);
+        }
+        HarmonicCloseness cc(G, false);
+        cc.run();
+        const auto ranking = cc.ranking();
+        for (bool useNBbound : {true, false}) {
+            for (count k : {5, 10, 20}) {
+                if (isWeighted() && useNBbound)
+                    continue;
+                TopHarmonicCloseness topcc(G, k, useNBbound);
+                topcc.run();
+
+                auto topkScores = topcc.topkScoresList();
+                EXPECT_EQ(topcc.topkNodesList().size(), k);
+                EXPECT_EQ(topkScores.size(), k);
+
+                topkScores = topcc.topkScoresList(true);
+
+                for (count i = 0; i < topkScores.size(); ++i)
+                    EXPECT_NEAR(ranking[i].second, topkScores[i], tol);
+                for (count i = k; i < topkScores.size(); ++i)
+                    EXPECT_NEAR(topkScores[i], topkScores[k - 1], tol);
+            }
+        }
+    }
 }
 
 TEST_F(CentralityGTest, testLaplacianCentrality) {
@@ -1842,9 +1902,8 @@ TEST_P(CentralityGTest, testGroupClosenessGrowShrink) {
     G = ConnectedComponents::extractLargestConnectedComponent(G);
 
     if (isWeighted()) {
-        G = GraphTools::toWeighted(G);
-        G.forEdges(
-            [&G](const node u, const node v) { G.setWeight(u, v, Aux::Random::probability()); });
+        Aux::Random::setSeed(42, false);
+        GraphTools::randomizeWeights(G);
     }
 
     auto farnessOfGroup = [&](const Graph &G, const std::unordered_set<node> &group) -> edgeweight {
@@ -2001,9 +2060,7 @@ TEST_P(CentralityGTest, testGroupClosenessLocalSwaps) {
     G = ConnectedComponents::extractLargestConnectedComponent(G);
 
     if (isWeighted()) {
-        G = GraphTools::toWeighted(G);
-        G.forEdges(
-            [&G](const node u, const node v) { G.setWeight(u, v, Aux::Random::probability()); });
+        GraphTools::randomizeWeights(G);
     }
 
     auto farnessOfGroup = [&](const Graph &G, const std::unordered_set<node> &group) -> count {
@@ -2129,8 +2186,7 @@ TEST_P(CentralityGTest, testGroupClosenessLocalSearch) {
     Aux::Random::setSeed(1, true);
     auto G = ErdosRenyiGenerator(100, 0.1, isDirected()).generate();
     if (isWeighted()) {
-        G = GraphTools::toWeighted(G);
-        G.forEdges([&](node u, node v) { G.setWeight(u, v, Aux::Random::real(10)); });
+        GraphTools::randomizeWeights(G, std::uniform_real_distribution<edgeweight>{0, 10});
     }
 
     std::unordered_set<node> initGroup;

@@ -15,13 +15,6 @@ class TestTraversal(unittest.TestCase):
 
 		return G
 
-	def generateRandomWeights(self, G):
-		if not G.isWeighted():
-			G = nk.graphtools.toWeighted(G)
-		G.forEdges(lambda u, v, w, eid: G.setWeight(u, v, random.random()))
-
-		return G
-
 	def testBFSfrom(self):
 		n = 200
 		p = 0.15
@@ -122,7 +115,7 @@ class TestTraversal(unittest.TestCase):
 					random.shuffle(randNodes)
 					G = nk.generators.ErdosRenyiGenerator(n, p, directed).generate()
 					if weighted:
-						G = self.generateRandomWeights(G)
+						nk.graphtools.randomizeWeights(G)
 
 					explored = set()
 

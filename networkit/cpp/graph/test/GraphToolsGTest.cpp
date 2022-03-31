@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphTools.hpp>
@@ -19,7 +20,6 @@ namespace NetworKit {
 
 class GraphToolsGTest : public testing::TestWithParam<std::pair<bool, bool>> {
 protected:
-    Graph generateRandomWeights(const Graph &G) const;
     bool weighted() const noexcept;
     bool directed() const noexcept;
 };
@@ -27,12 +27,6 @@ protected:
 INSTANTIATE_TEST_SUITE_P(InstantiationName, GraphToolsGTest,
                          testing::Values(std::make_pair(false, false), std::make_pair(true, false),
                                          std::make_pair(false, true), std::make_pair(true, true)));
-
-Graph GraphToolsGTest::generateRandomWeights(const Graph &G) const {
-    Graph Gw(G, true, G.isDirected());
-    Gw.forEdges([&](node u, node v) { Gw.setWeight(u, v, Aux::Random::probability()); });
-    return Gw;
-}
 
 bool GraphToolsGTest::weighted() const noexcept {
     return GetParam().first;
@@ -57,7 +51,7 @@ TEST_P(GraphToolsGTest, testSize) {
         Aux::Random::setSeed(seed, false);
         auto G = ErdosRenyiGenerator(n, p, directed()).generate();
         if (weighted()) {
-            G = generateRandomWeights(G);
+            GraphTools::randomizeWeights(G);
         }
 
         doTest(G);
@@ -88,7 +82,7 @@ TEST_P(GraphToolsGTest, testDensity) {
         Aux::Random::setSeed(seed, false);
         auto G = ErdosRenyiGenerator(n, p, directed()).generate();
         if (weighted()) {
-            G = generateRandomWeights(G);
+            GraphTools::randomizeWeights(G);
         }
 
         doTest(G);
@@ -133,7 +127,7 @@ TEST_P(GraphToolsGTest, testVolume) {
         Aux::Random::setSeed(seed, false);
         auto G = ErdosRenyiGenerator(n, p, directed()).generate();
         if (weighted()) {
-            G = generateRandomWeights(G);
+            GraphTools::randomizeWeights(G);
         }
 
         doTest(G);
@@ -174,7 +168,7 @@ TEST_P(GraphToolsGTest, testMaxDegree) {
         Aux::Random::setSeed(seed, false);
         auto G = ErdosRenyiGenerator(n, p, directed()).generate();
         if (weighted()) {
-            G = generateRandomWeights(G);
+            GraphTools::randomizeWeights(G);
         }
 
         doTest(G);
@@ -881,7 +875,7 @@ TEST_P(GraphToolsGTest, testToUndirected) {
         Aux::Random::setSeed(seed, false);
         auto G = ErdosRenyiGenerator(n, p, true).generate();
         if (weighted()) {
-            G = generateRandomWeights(G);
+            GraphTools::randomizeWeights(G);
         }
         auto G1 = GraphTools::toUndirected(G);
         testGraphs(G, G1);
@@ -914,7 +908,7 @@ TEST_P(GraphToolsGTest, testToUnWeighted) {
         auto G1 = GraphTools::toWeighted(G);
         testGraphs(G, G1);
 
-        G = generateRandomWeights(G);
+        GraphTools::randomizeWeights(G);
         G1 = GraphTools::toUnweighted(G);
         testGraphs(G, G1);
     }
@@ -953,8 +947,8 @@ TEST_P(GraphToolsGTest, testAppend) {
         auto G2 = ErdosRenyiGenerator(n2, p2, directed()).generate();
 
         if (weighted()) {
-            G1 = generateRandomWeights(G1);
-            G2 = generateRandomWeights(G2);
+            GraphTools::randomizeWeights(G1);
+            GraphTools::randomizeWeights(G2);
         }
 
         auto G(G1);
@@ -997,8 +991,8 @@ TEST_P(GraphToolsGTest, testMerge) {
         auto G1 = ErdosRenyiGenerator(n2, p2, directed()).generate();
 
         if (weighted()) {
-            Gorig = generateRandomWeights(Gorig);
-            G1 = generateRandomWeights(G1);
+            GraphTools::randomizeWeights(Gorig);
+            GraphTools::randomizeWeights(G1);
         }
 
         auto Gmerge(Gorig);
@@ -1046,5 +1040,13 @@ TEST_P(GraphToolsGTest, testEdgesSortedByWeight) {
         EXPECT_TRUE(hasEdgesSortedByWeight(G, true));
         EXPECT_TRUE(G.checkConsistency());
     }
+}
+
+TEST_F(GraphToolsGTest, testEdgesRandomizer) {
+    Aux::Random::setSeed(1, true);
+    DorogovtsevMendesGenerator generator(1000);
+    Graph G1 = generator.generate();
+    Graph G(G1, true, false);
+    GraphTools::randomizeWeights(G);
 }
 } // namespace NetworKit

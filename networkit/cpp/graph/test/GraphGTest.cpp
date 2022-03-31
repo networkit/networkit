@@ -540,8 +540,7 @@ TEST_P(GraphGTest, testWeightedDegree3) {
         Aux::Random::setSeed(seed, false);
         auto G = ErdosRenyiGenerator(n, p, isDirected()).generate();
         if (isWeighted()) {
-            G = Graph(G, true, G.isDirected());
-            G.forEdges([&](node u, node v) { G.setWeight(u, v, Aux::Random::probability()); });
+            GraphTools::randomizeWeights(G);
         }
         G.forNodes([&](node u) {
             edgeweight wDeg = 0, wDegTwice = 0;

@@ -4,8 +4,10 @@
 
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 
 #include <tlx/unused.hpp>
+#include <networkit/GlobalState.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
@@ -417,6 +419,66 @@ void sortEdgesByWeight(Graph &G, bool decreasing = false);
  * @return              A vector of node-ids sorted according to their topology.
  */
 std::vector<node> topologicalSort(const Graph &G);
+
+/**
+ * Randomizes the weights of the given graph. The weights are uniformly distributed in
+ * the range [0, 1] by default, unless a different distribution is provided. However it
+ * is only strictly in-place for already weighted graphs. For unweighted graphs a copy is
+ * created before randomizing weights.
+ *
+ * @param   G           Directed input graph
+ * @param   distr       Random distribution
+ */
+template <class Distribution = std::uniform_real_distribution<edgeweight>>
+void randomizeWeights(Graph &G, Distribution distr = std::uniform_real_distribution<edgeweight>{
+                                    0, std::nexttoward(1.0, 2.0)}) {
+    if (!G.isWeighted())
+        G = toWeighted(G);
+#pragma omp parallel
+    {
+        std::mt19937 gen;
+        // each thread is given is own seed
+        const auto baseSeed =
+            (GlobalState::getGlobalSeed() != 0 && !GlobalState::getSeedUseThreadId())
+                ? Aux::Random::integer()
+                : Aux::Random::getSeed();
+
+// static combined with giving each thread its own seed ensures that this process is determinisc
+#pragma omp for schedule(static)
+        for (omp_index u = 0; u < G.upperNodeIdBound(); ++u) {
+            // we use the hash of the origin node so that the weights are independent
+            // of  processing order
+            gen.seed(std::hash<node>()(u) + 0x9e3779b9 + (baseSeed << 6) + (baseSeed >> 2));
+            index j = 0;
+            G.forEdgesOf(u, [&](node v) {
+                if (u > v && !G.isDirected()) { // avoid visiting edges twice in undirected graphs
+                    ++j;
+                    return;
+                }
+                edgeweight ew = distr(gen);
+                G.setWeightAtIthNeighbor(Unsafe{}, u, j, ew);
+                ++j;
+                index k = 0;
+                // we need to set the other direction of the edge to the same weight
+                if (G.isDirected()) {
+                    G.forInEdgesOf(v, [&](node w) {
+                        if (w == u) {
+                            G.setWeightAtIthInNeighbor(Unsafe{}, v, k, ew);
+                        }
+                        ++k;
+                    });
+                } else if (u != v) {
+                    G.forEdgesOf(v, [&](node w) {
+                        if (w == u) {
+                            G.setWeightAtIthNeighbor(Unsafe{}, v, k, ew);
+                        }
+                        ++k;
+                    });
+                }
+            });
+        }
+    }
+}
 
 /**
  * Rename nodes in a graph using a callback which translates each old id to a new one.
