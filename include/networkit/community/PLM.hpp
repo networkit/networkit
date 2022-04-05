@@ -68,7 +68,7 @@ public:
     /**
      * Returns fine-grained running time measurements for algorithm engineering purposes.
      */
-    std::map<std::string, std::vector<count> > getTiming();
+    const std::map<std::string, std::vector<count> > &getTiming() const;
 
 private:
 

@@ -42,7 +42,7 @@ public:
      * Returns the approximated neighborhood function of the graph.
      * @return the approximated neighborhood function of the graph
      */
-    std::vector<count> getNeighborhoodFunction() const;
+    const std::vector<count> &getNeighborhoodFunction() const;
 
 private:
     const Graph *G;

@@ -44,7 +44,7 @@ public:
      * @return The shortest-path distances from each node to any other node in
      * the graph.
      */
-    std::vector<std::vector<edgeweight>> getDistances() const {
+    const std::vector<std::vector<edgeweight>> &getDistances() const {
         assureFinished();
         return distances;
     }

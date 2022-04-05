@@ -44,7 +44,7 @@ public:
      * Returns the Adamic Adar distances between all connected nodes.
      * @return Vector containing the Adamic Adar distances between all connected pairs of nodes.
      */
-    std::vector<double> getEdgeScores() override;
+    const std::vector<double> &getEdgeScores() const override;
 };
 
 } /* namespace NetworKit */

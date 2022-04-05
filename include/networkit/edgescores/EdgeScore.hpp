@@ -30,7 +30,7 @@ public:
      *
      * @return the edge scores calculated by @ref run().
      */
-    virtual std::vector<T> scores() const;
+    virtual const std::vector<T> &scores() const;
 
     /** Get the edge score of the edge with the given edge id.
      */

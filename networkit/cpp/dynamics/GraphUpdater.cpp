@@ -58,7 +58,7 @@ void GraphUpdater::update(const std::vector<GraphEvent>& stream) {
     size.emplace_back(G->numberOfNodes(), G->numberOfEdges());
 }
 
-std::vector<std::pair<count, count>> GraphUpdater::getSizeTimeline() {
+const std::vector<std::pair<count, count>> &GraphUpdater::getSizeTimeline() const {
     return size;
 }
 

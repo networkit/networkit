@@ -23,7 +23,7 @@ public:
 
     void update(const std::vector<GraphEvent> &stream);
 
-    std::vector<std::pair<count, count>> getSizeTimeline();
+    const std::vector<std::pair<count, count>> &getSizeTimeline() const;
 
     static bool compare(GraphEvent a, GraphEvent b);
     static bool equal(GraphEvent a, GraphEvent b);

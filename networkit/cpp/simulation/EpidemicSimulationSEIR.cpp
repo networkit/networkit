@@ -102,7 +102,7 @@ void EpidemicSimulationSEIR::run() {
 }
 
 
-std::vector<std::vector<count>> EpidemicSimulationSEIR::getData() const {
+const std::vector<std::vector<count>> &EpidemicSimulationSEIR::getData() const {
     return stats;
 }
 

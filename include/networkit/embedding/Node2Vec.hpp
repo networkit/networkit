@@ -51,7 +51,7 @@ public:
     /**
      This method returns a vector that contains feature vectors for all nodes
     */
-    const std::vector<std::vector<float>> &getFeatures();
+    const std::vector<std::vector<float>> &getFeatures() const;
 
 private:
     // The graph

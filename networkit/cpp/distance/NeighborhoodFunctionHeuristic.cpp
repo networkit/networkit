@@ -100,10 +100,8 @@ void NeighborhoodFunctionHeuristic::run() {
     hasRun = true;
 }
 
-std::vector<count> NeighborhoodFunctionHeuristic::getNeighborhoodFunction() const {
-    if(!hasRun) {
-        throw std::runtime_error("Call run()-function first.");
-    }
+const std::vector<count> &NeighborhoodFunctionHeuristic::getNeighborhoodFunction() const {
+    assureFinished();
     return result;
 }
 

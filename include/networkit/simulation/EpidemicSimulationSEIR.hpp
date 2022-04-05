@@ -38,7 +38,7 @@ public:
      * Returns the data from the simulation (only valid after run() was called). 
      * @return Vector of vectors, containing "zero", "time", "state" and "count" values for each node.
      */
-    std::vector<std::vector<count>> getData() const;
+    const std::vector<std::vector<count>> &getData() const;
 
 private:
 

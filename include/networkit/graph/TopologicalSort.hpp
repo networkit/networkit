@@ -37,7 +37,7 @@ public:
      *
      * @return One valid topology. Order in topology is from 0 to number of nodes.
      */
-    std::vector<node> getResult() {
+    const std::vector<node> &getResult() const {
         assureFinished();
         return topology;
     }

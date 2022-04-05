@@ -245,7 +245,7 @@ cdef extern from "<networkit/dynamics/GraphDifference.hpp>":
 
 	cdef cppclass _GraphDifference "NetworKit::GraphDifference"(_Algorithm):
 		_GraphDifference(const _Graph &G1, const _Graph &G2) except +
-		vector[_GraphEvent] getEdits() except +
+		vector[_GraphEvent] &getEdits() except +
 		count getNumberOfEdits() except +
 		count getNumberOfNodeAdditions() except +
 		count getNumberOfNodeRemovals() except +
@@ -394,7 +394,7 @@ cdef extern from "<networkit/dynamics/GraphUpdater.hpp>":
 	cdef cppclass _GraphUpdater "NetworKit::GraphUpdater":
 		_GraphUpdater(_Graph G) except +
 		void update(vector[_GraphEvent] stream) nogil except +
-		vector[pair[count, count]] getSizeTimeline() except +
+		vector[pair[count, count]] &getSizeTimeline() except +
 
 cdef class GraphUpdater:
 	""" 

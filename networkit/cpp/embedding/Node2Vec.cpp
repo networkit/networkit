@@ -60,7 +60,7 @@ void Node2Vec::run() {
     hasRun = true;
 }
 
-const std::vector<std::vector<float>> &Node2Vec::getFeatures() {
+const std::vector<std::vector<float>> &Node2Vec::getFeatures() const {
     assureFinished();
     return features;
 }

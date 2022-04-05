@@ -14,7 +14,7 @@ cdef extern from "<networkit/embedding/Node2Vec.hpp>":
 
 	cdef cppclass _Node2Vec "NetworKit::Node2Vec"(_Algorithm):
 		_Node2Vec(_Graph G, double P, double Q, count L, count N, count D) except +
-		vector[vector[float]] getFeatures() except +
+		vector[vector[float]] &getFeatures() except +
 
 cdef class Node2Vec(Algorithm):
 	""" 

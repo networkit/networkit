@@ -138,7 +138,7 @@ double AlgebraicDistance::distance(node u, node v) {
     return std::isnan(result) ? 0 : result;
 }
 
-std::vector<double> AlgebraicDistance::getEdgeScores() {
+const std::vector<double> &AlgebraicDistance::getEdgeScores() const {
     if (!withEdgeScores) throw std::runtime_error("set constructor parameter 'withEdgeScores' to true");
     return edgeScores;
 }

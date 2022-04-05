@@ -123,7 +123,8 @@ count PLP::numberOfIterations() {
     return this->nIterations;
 }
 
-std::vector<count> PLP::getTiming() {
+const std::vector<count> &PLP::getTiming() const {
+    assureFinished();
     return this->timing;
 }
 

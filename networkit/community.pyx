@@ -58,7 +58,7 @@ cdef extern from "<networkit/community/CommunityDetectionAlgorithm.hpp>":
 
 	cdef cppclass _CommunityDetectionAlgorithm "NetworKit::CommunityDetectionAlgorithm"(_Algorithm):
 		_CommunityDetectionAlgorithm(const _Graph &_G)
-		_Partition getPartition() except +
+		_Partition &getPartition() except +
 
 cdef class CommunityDetector(Algorithm):
 	""" 
@@ -595,7 +595,7 @@ cdef extern from "<networkit/community/PLM.hpp>":
 	cdef cppclass _PLM "NetworKit::PLM"(_CommunityDetectionAlgorithm):
 		_PLM(_Graph _G) except +
 		_PLM(_Graph _G, bool_t refine, double gamma, string par, count maxIter, bool_t turbo, bool_t recurse) except +
-		map[string, vector[count]] getTiming() except +
+		map[string, vector[count]] &getTiming() except +
 
 cdef extern from "<networkit/community/PLM.hpp>" namespace "NetworKit::PLM":
 
@@ -757,7 +757,7 @@ cdef extern from "<networkit/community/PLP.hpp>":
 		_PLP(_Graph _G, count updateThreshold, count maxIterations) except +
 		_PLP(_Graph _G, _Partition baseClustering, count updateThreshold) except +
 		count numberOfIterations() except +
-		vector[count] getTiming() except +
+		vector[count] &getTiming() except +
 
 
 cdef class PLP(CommunityDetector):
@@ -1168,7 +1168,7 @@ cdef extern from "<networkit/community/LocalCommunityEvaluation.hpp>":
 		double getMaximumValue() except +
 		double getMinimumValue() except +
 		double getValue(index i) except +
-		vector[double] getValues() except +
+		vector[double] &getValues() except +
 		bool_t isSmallBetter() except +
 
 cdef class LocalCommunityEvaluation(Algorithm):

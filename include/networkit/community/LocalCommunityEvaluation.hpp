@@ -61,7 +61,7 @@ public:
      *
      * @return The values of all clusters.
      */
-    std::vector<double> getValues() const { assureFinished(); return values; };
+    const std::vector<double> &getValues() const { assureFinished(); return values; };
 
     /**
      * If small values are better (otherwise large values are better).

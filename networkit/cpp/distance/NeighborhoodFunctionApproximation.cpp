@@ -138,10 +138,8 @@ void NeighborhoodFunctionApproximation::run() {
 #pragma optimize( "", on)
 #endif // _MSC_VER
 
-std::vector<count> NeighborhoodFunctionApproximation::getNeighborhoodFunction() const {
-    if(!hasRun) {
-        throw std::runtime_error("Call run()-function first.");
-    }
+const std::vector<count> &NeighborhoodFunctionApproximation::getNeighborhoodFunction() const {
+    assureFinished();
     return result;
 }
 
