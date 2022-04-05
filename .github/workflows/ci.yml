@@ -288,17 +288,19 @@ jobs:
         shell: bash
 
   linux-build-core-sanitizers-coverage:
-    name: "Linux (gcc-11, CPython 3.10): coverage"
+    name: "Linux (gcc-10, CPython 3.10): coverage"
     runs-on: ubuntu-20.04
     env:
-      CC: gcc-11
-      CXX: g++-11
+      CC: gcc-10
+      CXX: g++-10
+      COVERALLS_DUMP_FILE: coveralls.dump
+      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      COVERALLS_SVC_NUM: ${{ github.run_number }}
     steps:
       - name: Install prerequisites
         run:  |
-          sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu impish main universe'
           sudo apt-get update
-          sudo apt-get install gcc-11 g++-11 ninja-build
+          sudo apt-get install ninja-build
       - name: Setup Python 3.10
         uses: actions/setup-python@v3
         with:
@@ -311,17 +313,15 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/core_sanitizers_coverage.sh
         shell: bash
         timeout-minutes: 60
-      - name: Update Coveralls
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      - name: Create coverage
         run: |
           cd ${{ github.workspace }}
           . pyenv/bin/activate
           coveralls -E ".*test/.*" -E ".*CMakeFiles.*" --exclude extlibs --exclude pyenv --exclude scripts --root ${{ github.workspace }} --dump $COVERALLS_DUMP_FILE
+      - name: Upload coverage
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
           python3 ${{ github.workspace }}/.github/workflows/scripts/upload_coverage.py
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-          COVERALLS_DUMP_FILE: coveralls.dump
-          COVERALLS_SVC_NUM: ${{ github.run_number }}
 
   windows-build-msvc:
     name: "Windows (msvc 14.31): ${{ matrix.build-configuration }}"
