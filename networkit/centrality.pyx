@@ -2165,6 +2165,28 @@ cdef class LocalClusteringCoefficient(Centrality):
 		self._G = G
 		self._this = new _LocalClusteringCoefficient(G._this, turbo)
 
+cdef extern from "<networkit/centrality/LocalSquareClusteringCoefficient.hpp>":
+
+	cdef cppclass _LocalSquareClusteringCoefficient "NetworKit::LocalSquareClusteringCoefficient" (_Centrality):
+		_LocalSquareClusteringCoefficient(_Graph) except +
+
+
+cdef class LocalSquareClusteringCoefficient(Centrality):
+	"""
+	LocalSquareClusteringCoefficient(G)
+
+	Constructs the LocalSquareClusteringCoefficient class for the given Graph `G`.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	"""
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _LocalSquareClusteringCoefficient(G._this)
+
 
 cdef extern from "<networkit/centrality/Sfigality.hpp>":
 
