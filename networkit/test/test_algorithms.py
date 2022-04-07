@@ -606,5 +606,30 @@ class TestSelfLoops(unittest.TestCase):
 			for u in g.iterNodes():
 				self.assertLessEqual(abs(apx[u] - pinv[u]), eps)
 
+	def testDistanceSPSP(self):
+		nk.engineering.setSeed(1, True)
+		random.seed(1)
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				g = nk.generators.ErdosRenyiGenerator(100, 0.15, directed).generate()
+				if weighted:
+					g = nk.graphtools.toWeighted(g)
+					g.forEdges(lambda u, v, ew, eid: g.setWeight(u, v, random.random()))
+				for nSources in [1, 10, 50]:
+					sources = set()
+					while len(sources) < nSources:
+						sources.add(nk.graphtools.randomNode(g))
+
+					spsp = nk.distance.SPSP(g, list(sources))
+					spsp.run()
+					spsp.getDistances()
+
+	def testDistanceWithNonConsecutiveNodeLabelsAPSP(self):
+		nk.engineering.setSeed(1, True)
+		random.seed(1)
+		g = nk.generators.ErdosRenyiGenerator(100, 0.15).generate()
+		g.removeNode(0)
+		nk.distance.APSP(g).run()
+
 if __name__ == "__main__":
 	unittest.main()

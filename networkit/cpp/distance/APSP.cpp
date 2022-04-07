@@ -32,13 +32,12 @@ void APSP::run() {
             sssps[i] = std::unique_ptr<SSSP>(new BFS(G, 0, false));
     }
 
-#pragma omp parallel for schedule(dynamic)
-    for (omp_index source = 0; source < n; ++source) {
+    G.parallelForNodes([&](node source) {
         auto sssp = sssps[omp_get_thread_num()].get();
         sssp->setSource(source);
         sssp->run();
         distances[source] = sssp->getDistances();
-    }
+    });
 
     hasRun = true;
 }
