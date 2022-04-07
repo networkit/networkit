@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * APSP.cpp
  *
@@ -17,12 +16,10 @@ namespace NetworKit {
 APSP::APSP(const Graph &G) : Algorithm(), G(G) {}
 
 void APSP::run() {
-    count n = G.upperNodeIdBound();
-    std::vector<edgeweight> distanceVector(n, 0.0);
-    distances.resize(n, distanceVector);
+    const count n = G.upperNodeIdBound();
+    distances.assign(n, std::vector<edgeweight>(n));
 
-    count nThreads = omp_get_max_threads();
-    sssps.resize(nThreads);
+    sssps.resize(omp_get_max_threads());
 #pragma omp parallel
     {
         omp_index i = omp_get_thread_num();
