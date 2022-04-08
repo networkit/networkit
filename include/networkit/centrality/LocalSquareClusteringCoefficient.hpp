@@ -35,9 +35,6 @@ public:
      * @return The maximum centrality score.
      */
     double maximum() override;
-
-protected:
-    bool turbo;
 };
 
 } /* namespace NetworKit */
