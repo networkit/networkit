@@ -24,8 +24,7 @@ void LocalSquareClusteringCoefficient::run() {
         // Iterate over all combinations of neighbors.
         for (auto iterV = neighborsU.begin(); iterV != neighborsU.end(); iterV++) {
             const auto neighborsV = G.neighborRange(*iterV);
-            auto iterW = iterV;
-            for (++iterW; iterW != neighborsU.end(); iterW++) {
+            for (auto iterW = std::next(iterV); iterW != neighborsU.end(); ++iterW) {
                 // Find the number of common neighbors (including the node `u`) and count squares.
                 const auto numCommonNeighbors = NeighborhoodUtility::getCommonNeighbors(G, *iterV, *iterW).size();
                 squares += numCommonNeighbors - 1;
