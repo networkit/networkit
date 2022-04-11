@@ -48,6 +48,7 @@ networkit_module_link_modules(centrality
         dyn_distance
         dynamics
         graph
+        linkprediction
         reachability
         structures
     )
