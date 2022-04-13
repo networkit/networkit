@@ -10,7 +10,10 @@
 
 #include <queue>
 
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/distance/STSP.hpp>
+
+#include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
 
@@ -22,8 +25,18 @@ namespace NetworKit {
 class BidirectionalBFS final : public STSP {
 
 public:
-    // Inherit the constructors of STSP.
-    using STSP::STSP;
+    /**
+     * Creates the BidirectionalBFS class for a graph @a G, source node @a source, and
+     * target node @a target.
+     *
+     * @param G The graph.
+     * @param source The source node.
+     * @param target The target node.
+     * @param storePred If true, the algorithm will also store the predecessors
+     * and reconstruct a shortest path from @a source and @a target.
+     */
+    BidirectionalBFS(const Graph &G, node source, node target, bool storePred = true)
+        : STSP(G, source, target, storePred) {}
 
     /*
      * Perform a bidirectional BFS from the given source and target nodes.
@@ -35,18 +48,13 @@ public:
      *
      * @return count Number of hops from the source to the target node.
      */
-    count getHops() {
+    count TLX_DEPRECATED(getHops()) {
         assureFinished();
-        return stDist;
-    }
-
-    edgeweight getDistance() const override {
-        assureFinished();
-        return static_cast<edgeweight>(stDist);
+        WARN("BidirectionalBFS::getHops() is deprecated, use getDistance() instead.");
+        return static_cast<count>(distance);
     }
 
 private:
-    count stDist;
     std::vector<uint8_t> visited;
     uint8_t ts = 0;
     static constexpr uint8_t ballMask = uint8_t(1) << 7;

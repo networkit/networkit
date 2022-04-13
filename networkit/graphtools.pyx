@@ -21,6 +21,7 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	edgeweight maxWeightedDegree(_Graph G) nogil except +
 	edgeweight maxWeightedInDegree(_Graph G) nogil except +
 	node randomNode(_Graph G) nogil except +
+	vector[node] randomNodes(_Graph G, count n) nogil except +
 	node randomNeighbor(_Graph G, node u) nogil except +
 	pair[node, node] randomEdge(_Graph G, bool_t uniformDistribution) nogil except +
 	vector[pair[node, node]] randomEdges(_Graph G, count numEdges) nogil except +
@@ -141,6 +142,27 @@ cdef class GraphTools:
 			A random node.
 		"""
 		return randomNode(G._this)
+
+	@staticmethod
+	def randomNodes(Graph G, count n):
+		"""
+		randomNodes(G, n)
+
+		Returns n distinct random nodes of the input graph.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph.
+		n : int
+			The number of desired nodes.
+
+		Returns
+		-------
+		list(int)
+			A list of distinct random nodes.
+		"""
+		return randomNodes(G._this, n)
 
 	@staticmethod
 	def randomNeighbor(Graph G, node u):

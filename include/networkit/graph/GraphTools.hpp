@@ -56,7 +56,7 @@ node randomNode(const Graph &G);
  *
  * @param G The input graph.
  * @param n The number of desired nodes.
- * @return A vector of n disntinct random nodes.
+ * @return A vector of n distinct random nodes.
  */
 std::vector<node> randomNodes(const Graph &G, count n);
 

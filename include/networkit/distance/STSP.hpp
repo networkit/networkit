@@ -13,6 +13,10 @@
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
+#include <algorithm>
+#include <unordered_map>
+#include <vector>
+
 namespace NetworKit {
 
 /**
@@ -39,7 +43,24 @@ public:
         if (!G.hasNode(target))
             throw std::runtime_error("Error: target node not in the graph!");
         if (source == target)
-            INFO("Source and target nodes are equal!");
+            WARN("Source and target nodes are equal!");
+    }
+
+    /**
+     * Creates the STSP class for a graph @a G, source node @a source, and
+     * multiple target nodes.
+     *
+     * @param G The graph.
+     * @param source The source node.
+     * @param targetsFirst,targetsLast Range of target nodes.
+     */
+    template <class InputIt>
+    STSP(const Graph &G, node source, InputIt targetsFirst, InputIt targetsLast)
+        : G(&G), source(source), targets(targetsFirst, targetsLast), storePred(false) {
+        if (!G.hasNode(source))
+            throw std::runtime_error("Error: source node not in the graph!");
+        if (!std::all_of(targetsFirst, targetsLast, [&G](node u) { return G.hasNode(u); }))
+            throw std::runtime_error("Error: target node not in the graph!");
     }
 
     /**
@@ -69,16 +90,78 @@ public:
     }
 
     /**
-     * Returns the distance from the source node to the target node
+     * If the target is a single node: returns the distance from the source node to the target
+     * node.
      * @return The distance from source to the target node.
      */
-    virtual edgeweight getDistance() const = 0;
+    edgeweight getDistance() const {
+        assureFinished();
+        return distance;
+    }
+
+    /**
+     * In case of multiple target nodes: returns the distance from the source node to the target
+     * nodes.
+     * @return Distances from the source to the target nodes.
+     */
+    const std::vector<edgeweight> &getDistances() const {
+        assureFinished();
+        return distances;
+    }
+
+    /**
+     * Sets the source node.
+     *
+     * @param newSource The new source node.
+     */
+    void setSource(node newSource) {
+        assert(G->hasNode(newSource));
+        source = newSource;
+    }
+
+    /**
+     * Sets the target node.
+     *
+     * @param newTarget The new target node.
+     */
+    void setTarget(node newTarget) {
+        assert(G->hasNode(newTarget));
+        target = newTarget;
+        targets.clear();
+    }
+
+    /**
+     * Sets the target nodes.
+     *
+     * @param targetsFirst,targetsLast Range of target nodes.
+     */
+    template <class InputIt>
+    void setTargets(InputIt targetsFirst, InputIt targetsLast) {
+        assert(std::all_of(targetsFirst, targetsLast, [&](auto u) { return G->hasNode(u); }));
+        targets.assign(targetsFirst, targetsLast);
+    }
+
+    /**
+     * Returns the <node, index> map from target nodes to their index in the vector
+     * returned by STSP::getDistances().
+     *
+     * @return Map from target nodes to their index in the vector returned by STSP::getDistances().
+     */
+    const std::unordered_map<node, index> &getTargetIndexMap() const {
+        assureFinished();
+        return targetIdx;
+    }
 
 protected:
     const Graph *G;
-    node source, target;
+    node source = none, target = none;
+    std::vector<node> targets;
     const bool storePred;
     std::vector<node> pred, path;
+
+    edgeweight distance;
+    std::vector<edgeweight> distances;
+    std::unordered_map<node, index> targetIdx;
 
     // Builds a source-target shortest path using the predecessors
     void buildPath();

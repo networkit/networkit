@@ -15,7 +15,7 @@ void BidirectionalDijkstra::run() {
     if (!G->isWeighted())
         WARN("The graph is unweighted, use BidirectionalBFS for better "
              "efficiency!");
-    stDist = 0.;
+    distance = 0.;
     if (source == target) {
         hasRun = true;
         return;
@@ -101,11 +101,11 @@ void BidirectionalDijkstra::run() {
     } while (u == none && !h1.empty() && !h2.empty());
 
     if (u != none) {
-        stDist = dist1[u] + dist2[u];
+        distance = dist1[u] + dist2[u];
         auto sumDists = [&](node x) { return dist1[x] + dist2[x]; };
 
-        if (!stH.empty() && stDist > sumDists(stH.top())) {
-            stDist = sumDists(stH.top());
+        if (!stH.empty() && distance > sumDists(stH.top())) {
+            distance = sumDists(stH.top());
             u = stH.extract_top();
         }
 
@@ -118,7 +118,7 @@ void BidirectionalDijkstra::run() {
             buildPath();
         }
     } else {
-        stDist = infdist;
+        distance = infdist;
         WARN("Source cannot reach target!");
     }
 
