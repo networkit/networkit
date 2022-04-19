@@ -28,5 +28,16 @@ class Test_Centrality(unittest.TestCase):
 
 		self.assertListEqual(expected_result, dc)
 
+	def test_SquareClusteringCoefficient(self):
+		g = nk.Graph()
+		g.addNodes(7)
+		edges = [(0, 1), (1, 2), (2, 3), (0, 3), (3, 4), (4, 5), (5, 6), (6, 3)]
+		[g.addEdge(*edge) for edge in edges]
+
+		expected_result = [1 / 3, 1.0, 1 / 3, 0.2, 1 / 3, 1.0, 1 / 3]
+		scores = nk.centrality.LocalSquareClusteringCoefficient(g).run().scores()
+		self.assertListEqual(expected_result, scores)
+
+
 if __name__ == "__main__":
 	unittest.main()

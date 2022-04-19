@@ -31,6 +31,7 @@ networkit_add_module(centrality
     LaplacianCentrality.cpp
     LocalClusteringCoefficient.cpp
     LocalPartitionCoverage.cpp
+    LocalSquareClusteringCoefficient.cpp
     PageRank.cpp
     PermanenceCentrality.cpp
     Sfigality.cpp
@@ -47,6 +48,7 @@ networkit_module_link_modules(centrality
         dyn_distance
         dynamics
         graph
+        linkprediction
         reachability
         structures
     )

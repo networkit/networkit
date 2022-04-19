@@ -40,6 +40,7 @@
 #include <networkit/centrality/KatzCentrality.hpp>
 #include <networkit/centrality/LaplacianCentrality.hpp>
 #include <networkit/centrality/LocalClusteringCoefficient.hpp>
+#include <networkit/centrality/LocalSquareClusteringCoefficient.hpp>
 #include <networkit/centrality/PageRank.hpp>
 #include <networkit/centrality/PermanenceCentrality.hpp>
 #include <networkit/centrality/SpanningEdgeCentrality.hpp>
@@ -1185,6 +1186,27 @@ TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected2) {
     std::vector<double> reference = {0.6666666666666666, 0.6666666666666666,
                                      0.6666666666666666, 0.6666666666666666,
                                      0.3333333333333333, 0.3333333333333333};
+
+    EXPECT_EQ(reference, lccScores);
+}
+
+TEST_F(CentralityGTest, testLocalSquareClusteringCoefficientUndirected) {
+    Graph G(7, false, false);
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(3, 0);
+    G.addEdge(3, 4);
+    G.addEdge(4, 5);
+    G.addEdge(5, 6);
+    G.addEdge(6, 3);
+    LocalSquareClusteringCoefficient lscc(G);
+    lscc.run();
+    std::vector<double> lccScores = lscc.scores();
+    std::vector<double> reference = {
+        0.3333333333333333, 1.0, 0.3333333333333333, 0.2,
+        0.3333333333333333, 1.0, 0.3333333333333333
+    };
 
     EXPECT_EQ(reference, lccScores);
 }
