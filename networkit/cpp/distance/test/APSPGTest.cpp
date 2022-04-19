@@ -100,6 +100,25 @@ TEST_F(APSPGTest, testAPSPWeightedER) {
     });
 }
 
+TEST_F(APSPGTest, testAPSPRemovedNodeER) {
+    Aux::Random::setSeed(42, false);
+    auto G = ErdosRenyiGenerator(100, 0.01, false).generate();
+    G.removeNode(0);
+    G.removeNode(1);
+    G.removeNode(3);
+
+    APSP apsp(G);
+    apsp.run();
+    G.forNodes([&](const node u) {
+        BFS bfs(G, u, false);
+        bfs.run();
+        const auto &dist = bfs.getDistances();
+        G.forNodes([&](const node v) {
+            EXPECT_DOUBLE_EQ(dist[v], apsp.getDistance(u, v));
+        });
+    });
+}
+
 TEST_F(APSPGTest, debugAPSP) {
     count n = 1000;
     count m = int(n * n);
