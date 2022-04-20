@@ -1,15 +1,12 @@
 # distutils: language=c++
 
-from libc.stdint cimport uint64_t
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 
-ctypedef uint64_t count
-ctypedef uint64_t index
-ctypedef index node
-
 from .graph cimport _Graph, Graph
 from .support import MissingDependencyError
+from .structures cimport count, index, node
+
 import numpy as np
 import warnings
 try:

@@ -7,8 +7,7 @@ from libc.stdint cimport uint64_t
 from libcpp.string cimport string
 from libcpp cimport bool as bool_t
 
-ctypedef uint64_t index
-ctypedef index node
+from .structures cimport index, node
 
 # local imports
 from . import stopwatch

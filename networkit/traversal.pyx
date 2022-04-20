@@ -1,20 +1,14 @@
 # distutils: language=c++
 
-from libc.stdint cimport uint64_t
 from cython.operator import dereference, preincrement
 
 from libcpp cimport bool as bool_t
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
-ctypedef uint64_t count
-ctypedef uint64_t index
-ctypedef index node
-ctypedef uint64_t edgeid
-ctypedef double edgeweight
-
 from .graph cimport _Graph, Graph
 from .helpers import stdstring
+from .structures cimport count, index, node, edgeid, edgeweight
 
 cdef extern from "cython_helper.h":
 	void throw_runtime_error(string message)

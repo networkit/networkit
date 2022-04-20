@@ -1,13 +1,9 @@
-from libc.stdint cimport uint64_t
 from libcpp cimport bool as bool_t
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 
-ctypedef uint64_t count
-ctypedef uint64_t index
-ctypedef index node
-ctypedef double edgeweight
+from .structures cimport node, index, count, edgeweight
 
 cdef extern from "<networkit/dynamics/GraphEvent.hpp>" namespace "NetworKit::GraphEvent::Type":
 

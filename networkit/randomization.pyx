@@ -1,16 +1,12 @@
 # distutils: language=c++
 
-from libc.stdint cimport uint64_t
 from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 
-ctypedef uint64_t count
-ctypedef uint64_t index
-ctypedef index node
-
 from .base cimport _Algorithm, Algorithm
 from .graph cimport _Graph, Graph
+from .structures cimport count, index, node
 
 cdef extern from "<networkit/randomization/EdgeSwitching.hpp>":
 	cdef cppclass _EdgeSwitching "NetworKit::EdgeSwitching"(_Algorithm):

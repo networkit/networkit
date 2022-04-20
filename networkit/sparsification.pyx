@@ -1,18 +1,12 @@
 # distutils: language=c++
 
-from libc.stdint cimport uint64_t
 from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
-
-ctypedef uint64_t count
-ctypedef uint64_t index
-ctypedef uint64_t edgeid
-ctypedef index node
-ctypedef double edgeweight
 
 from .base cimport _Algorithm, Algorithm
 from .graph cimport _Graph, Graph
 from .distance import AdamicAdarDistance, JaccardSimilarityAttributizer
+from .structures cimport count, node, index, edgeid, edgeweight
 from . import community
 from . import distance
 
@@ -1630,4 +1624,3 @@ class ConstantScore():
 			The input graph.
 		"""
 		return self.constValue
-

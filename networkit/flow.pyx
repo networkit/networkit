@@ -1,15 +1,10 @@
 # distutils: language=c++
 
-from libc.stdint cimport uint64_t
 from libcpp.vector cimport vector
-
-ctypedef uint64_t index
-ctypedef uint64_t edgeid
-ctypedef index node
-ctypedef double edgeweight
 
 from .base cimport _Algorithm, Algorithm
 from .graph cimport _Graph, Graph
+from .structures cimport index, edgeid, node, edgeweight
 
 cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
 

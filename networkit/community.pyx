@@ -1,7 +1,5 @@
 # distutils: language=c++
 
-from libc.stdint cimport uint64_t
-
 from libcpp.string cimport string
 from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
@@ -21,14 +19,9 @@ else:
 import tempfile
 import subprocess
 
-ctypedef uint64_t count
-ctypedef uint64_t index
-ctypedef index node
-ctypedef double edgeweight
-
 from .base cimport _Algorithm, Algorithm
 from .graph cimport _Graph, Graph
-from .structures cimport _Partition, Partition, _Cover, Cover
+from .structures cimport _Partition, Partition, _Cover, Cover, count, index, node, edgeweight
 from .graphio import PartitionReader, PartitionWriter, EdgeListPartitionReader, BinaryPartitionReader, BinaryPartitionWriter, BinaryEdgeListPartitionReader, BinaryEdgeListPartitionWriter
 from .scd cimport _SelectiveCommunityDetector, SelectiveCommunityDetector
 

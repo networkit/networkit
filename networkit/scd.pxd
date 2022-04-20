@@ -1,11 +1,8 @@
-from libc.stdint cimport uint64_t
 from libcpp.map cimport map
 from libcpp.set cimport set
 
-ctypedef uint64_t index
-ctypedef index node
-
 from .graph cimport _Graph, Graph
+from .structures cimport index, node
 
 cdef extern from "<networkit/scd/SelectiveCommunityDetector.hpp>":
 

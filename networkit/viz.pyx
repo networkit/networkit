@@ -1,17 +1,12 @@
 # distutils: language=c++
 
-from libc.stdint cimport uint64_t
 from libcpp.string cimport string
 from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 
-ctypedef uint64_t count
-ctypedef uint64_t index
-ctypedef index node
-ctypedef double coordinate
-
 from .graph cimport _Graph, Graph
+from .structures cimport count, index, node, coordinate
 
 cdef extern from "<networkit/viz/Point.hpp>" namespace "NetworKit" nogil:
 
@@ -301,4 +296,3 @@ cdef class PivotMDS (GraphLayoutAlgorithm):
 		"""Constructs a PivotMDS object for the given @a graph. The algorithm should embed the graph in @a dim dimensions using @a numberOfPivots pivots."""
 		(<_PivotMDS*>(self._this)).run()
 		return self
-

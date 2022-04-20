@@ -7,6 +7,10 @@ from libcpp.string cimport string
 
 ctypedef uint64_t count
 ctypedef uint64_t index
+ctypedef uint64_t edgeid
+ctypedef index node
+ctypedef double coordinate
+ctypedef double edgeweight
 
 cdef extern from "cython_helper.h":
 	void throw_runtime_error(string message)

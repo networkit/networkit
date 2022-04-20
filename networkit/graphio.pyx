@@ -1,6 +1,5 @@
 # distutils: language=c++
 
-from libc.stdint cimport uint64_t
 from libc.stdint cimport uint8_t
 
 from libcpp.vector cimport vector
@@ -16,14 +15,10 @@ import scipy.io
 import fnmatch
 from enum import Enum
 
-ctypedef uint64_t count
-ctypedef uint64_t index
-ctypedef index node
-
 from .dynamics import DGSWriter, DGSStreamParser
 from .graph cimport _Graph, Graph
 from .graph import Graph as __Graph
-from .structures cimport _Cover, Cover, _Partition, Partition
+from .structures cimport _Cover, Cover, _Partition, Partition, count, index, node
 from .GraphMLIO import GraphMLReader, GraphMLWriter
 from .GEXFIO import GEXFReader, GEXFWriter
 from . import algebraic

@@ -1,18 +1,13 @@
 # distutils: language=c++
 
-from libc.stdint cimport uint64_t
 from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
 from libcpp.map cimport map
 
-ctypedef uint64_t count
-ctypedef uint64_t index
-ctypedef index node
-
 from .base cimport _Algorithm, Algorithm
 from .dynamics cimport _GraphEvent, GraphEvent
 from .graph cimport _Graph, Graph
-from .structures cimport _Partition, Partition
+from .structures cimport _Partition, Partition, count, index, node
 
 cdef extern from "<networkit/components/ConnectedComponents.hpp>":
 
@@ -732,5 +727,3 @@ cdef class DynWeaklyConnectedComponents(Algorithm):
 		for event in batch:
 			_batch.push_back(_GraphEvent(event.type, event.u, event.v, event.w))
 		(<_DynWeaklyConnectedComponents*>(self._this)).updateBatch(_batch)
-
-

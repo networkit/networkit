@@ -631,5 +631,22 @@ class TestSelfLoops(unittest.TestCase):
 		g.removeNode(0)
 		nk.distance.APSP(g).run()
 
+	def testDistancesAsArrayAPSP(self):
+		nk.engineering.setSeed(1, True)
+		random.seed(1)
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				g = nk.generators.ErdosRenyiGenerator(100, 0.15, directed).generate()
+				if weighted:
+					g = nk.graphtools.toWeighted(g)
+					g.forEdges(lambda u, v, ew, eid: g.setWeight(u, v, random.random()))
+				apsp = nk.distance.APSP(g)
+				apsp.run()
+				listDistances = apsp.getDistances()
+				arrayDistances = apsp.getDistances(asarray=True)
+				self.assertIsInstance(listDistances, list)
+				self.assertIsInstance(arrayDistances, np.ndarray)
+				np.testing.assert_allclose(listDistances, arrayDistances)
+
 if __name__ == "__main__":
 	unittest.main()

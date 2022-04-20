@@ -1,15 +1,11 @@
 # distutils: language=c++
 
 from networkit.exceptions import ReducedFunctionalityWarning
-from libc.stdint cimport uint64_t
 from libcpp.vector cimport vector
-
-ctypedef uint64_t count
-ctypedef uint64_t index
-ctypedef index node
 
 from .base cimport _Algorithm, Algorithm
 from .graph cimport _Graph, Graph
+from .structures cimport count, index, node
 
 import warnings
 try:
@@ -67,6 +63,3 @@ cdef class EpidemicSimulationSEIR(Algorithm):
 			The simulation data.
 		"""
 		return pandas.DataFrame((<_EpidemicSimulationSEIR*>(self._this)).getData(), columns=["zero", "time", "state", "count"])
-
-
-

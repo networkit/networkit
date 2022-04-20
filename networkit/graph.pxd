@@ -2,22 +2,14 @@
 
 from cython.operator import dereference, preincrement
 
-from libc.stdint cimport uint64_t
-
 from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from libcpp.string cimport string
 from libcpp.unordered_set cimport unordered_set
 
-ctypedef uint64_t edgeid
-ctypedef uint64_t index
-ctypedef uint64_t count
-ctypedef index node
-ctypedef double edgeweight
-
-from .base cimport _Algorithm
-from .base cimport Algorithm
+from .base cimport _Algorithm, Algorithm
+from .structures cimport edgeid, index, count, node, edgeweight
 
 cdef extern from "<algorithm>" namespace "std":
 	void swap[T](T &a,  T &b)
@@ -276,4 +268,3 @@ cdef extern from "<networkit/graph/UnionMaximumSpanningForest.hpp>":
 
 cdef class UnionMaximumSpanningForest(Algorithm):
 	cdef Graph _G
-
