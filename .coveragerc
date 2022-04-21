@@ -1,0 +1,13 @@
+[run]
+plugins = Cython.Coverage
+omit =
+    # omit anything in a .local directory anywhere
+    */.local/*
+    # omit everything in /usr
+    /usr/*
+    # omit test-files
+    *test*
+    # omit init-file
+    *__init__*
+    # omit memoryviews
+    *stringsource*

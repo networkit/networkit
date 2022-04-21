@@ -296,6 +296,7 @@ jobs:
       COVERALLS_DUMP_FILE: coveralls.dump
       COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       COVERALLS_SVC_NUM: ${{ github.run_number }}
+      NETWORKIT_BUILD_TESTS: ON
     steps:
       - name: Install prerequisites
         run:  |
@@ -313,14 +314,25 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/core_sanitizers_coverage.sh
         shell: bash
         timeout-minutes: 60
-      - name: Create coverage
+      - name: Create C++ coverage
         run: |
           cd ${{ github.workspace }}
           . pyenv/bin/activate
-          coveralls -E ".*test/.*" -E ".*CMakeFiles.*" --exclude extlibs --exclude pyenv --exclude scripts --root ${{ github.workspace }} --dump $COVERALLS_DUMP_FILE
+          cd core_build
+          gcovr -e '.*test/.*' -e '.*CMakeFiles.*' -e '.*/extlibs/.*' -e '.*/scripts/.*' -e '.*/pyenv/.*' -e '.*/include/tlx/.*' --coveralls -r .. > networkit_cpp.json
+          gcovr -e '.*test/.*' -e '.*CMakeFiles.*' -e '.*/extlibs/.*' -e '.*/scripts/.*' -e '.*/pyenv/.*' -e '.*/include/tlx/.*' -r ..
+      - name: Create Python coverage and merge files
+        run: |
+          cd ${{ github.workspace }}
+          . pyenv/bin/activate
+          coverage run -m unittest discover -v networkit/test
+          coverage report
+          coveralls --merge=core_build/networkit_cpp.json --output=$COVERALLS_DUMP_FILE
       - name: Upload coverage
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
+          cd ${{ github.workspace }}
+          . pyenv/bin/activate
           python3 ${{ github.workspace }}/.github/workflows/scripts/upload_coverage.py
 
   windows-build-msvc:
