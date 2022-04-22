@@ -39,7 +39,11 @@ void Assortativity::run() {
         // to nodes of type j
         count k = P.upperBound();
         std::vector<std::vector<double>> E(k, std::vector<double>(k, 0.0));
-        G->forEdges([&](node u, node v) { E[P[u]][P[v]] += 1; });
+        G->forEdges([&](node u, node v) {
+            E[P[u]][P[v]] += 1;
+            if (!G->isDirected() && P[u] != P[v])
+                E[P[v]][P[u]] += 1;
+        });
         // row and column sums $a_i$ and $b_i$
         std::vector<double> a(k, 0.0);
         std::vector<double> b(k, 0.0);

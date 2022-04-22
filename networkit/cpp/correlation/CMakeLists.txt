@@ -5,3 +5,4 @@ networkit_add_module(correlation
 networkit_module_link_modules(correlation
     graph structures)
 
+add_subdirectory(test)
