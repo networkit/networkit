@@ -44,74 +44,16 @@ BarabasiAlbertGenerator::BarabasiAlbertGenerator(count k, count nMax, const Grap
     if (initGraph.numberOfNodes() > nMax)
         throw std::runtime_error(
             "initialization graph cannot have more nodes than the target graph (nMax)");
-    if (!batagelj && initGraph.numberOfNodes() < k) {
-        throw std::runtime_error(
-            "initialization graph for the original method needs at least k nodes");
-    }
 }
 
 Graph BarabasiAlbertGenerator::generate() {
     if (!nMax)
         return Graph();
 
-    if (batagelj) {
-        return generateBatagelj();
-    } else {
-        return generateOriginal();
-    }
-}
+    if (!batagelj)
+        WARN("The original implementation is no longer supported and this option will be remove in "
+             "future releases. Using the much faster Brandes' implementation instead");
 
-Graph BarabasiAlbertGenerator::generateOriginal() {
-    Graph G(nMax);
-    if (n0 != 0) {
-        // initialize the graph with n0 connected nodes
-        for (count i = 1; i < n0; i++) {
-            G.addEdge(i - 1, i);
-        }
-    } else {
-        // initialize the graph with the edges from initGraph
-        // and set n0 accordingly
-        initGraph.forEdges([&G](node u, node v) { G.addEdge(u, v); });
-        n0 = initGraph.upperNodeIdBound();
-    }
-    assert(G.numberOfNodes() >= k);
-
-    Aux::SignalHandler handler;
-    auto &gen = Aux::Random::getURNG();
-    for (node u = n0; u < static_cast<node>(nMax); ++u) {
-        std::uniform_int_distribution<uint64_t> indexDist{0, 2 * G.numberOfEdges()};
-
-        std::unordered_set<node> targets;
-        targets.reserve(k + 1);
-        targets.insert(u);
-
-        while (targets.size() - 1 < k) {
-            auto randomIndex = indexDist(gen);
-
-            for (node v : G.nodeRange()) {
-                if (randomIndex <= G.degree(v)) { // found a node to connect to
-                    targets.insert(v);
-                    break;
-                }
-                randomIndex -= G.degree(v);
-            }
-
-            handler.assureRunning();
-        }
-
-        targets.erase(u);
-
-        G.preallocateUndirected(u, k);
-        for (node x : targets) {
-            G.addEdge(u, x);
-        }
-    }
-
-    G.shrinkToFit();
-    return G;
-}
-
-Graph BarabasiAlbertGenerator::generateBatagelj() {
     const node n = nMax;
 
     // Temporarily stored edges in edge list M to allow fast  random access.

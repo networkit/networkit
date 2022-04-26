@@ -479,58 +479,24 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
     }
 }
 
-TEST_F(GeneratorsGTest, testBarabasiAlbertGeneratorOriginal) {
-    count k = 3;
-    count nMax = 100;
-    count n0 = 3;
-
-    BarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0, false);
-    Graph G = BarabasiAlbert.generate();
-    EXPECT_FALSE(G.isEmpty());
-
-    EXPECT_EQ(nMax, G.numberOfNodes());
-    EXPECT_EQ( ((n0-1) + ((nMax - n0) * k)), G.numberOfEdges());
-    EXPECT_TRUE(G.checkConsistency());
-
-    Graph initGraph(4);
-    initGraph.addEdge(0,1);
-    initGraph.addEdge(2,1);
-    initGraph.addEdge(2,3);
-    initGraph.addEdge(0,3);
-    BarabasiAlbert = BarabasiAlbertGenerator(k, nMax, initGraph, false);
-    G = BarabasiAlbert.generate();
-
-    EXPECT_EQ(nMax, G.numberOfNodes());
-    EXPECT_EQ(G.numberOfEdges(), (nMax - initGraph.numberOfNodes()) * k + initGraph.numberOfEdges());
-    EXPECT_TRUE(G.checkConsistency());
-}
-
 TEST_F(GeneratorsGTest, testBarabasiAlbertGeneratorConstructor) {
     // k > nMax
-    EXPECT_THROW(BarabasiAlbertGenerator generator(10, 9, 8, false), std::runtime_error);
     EXPECT_THROW(BarabasiAlbertGenerator generator(10, 9, 8, true), std::runtime_error);
 
     // n0 > nMax
-    EXPECT_THROW(BarabasiAlbertGenerator generator(5, 9, 10, false), std::runtime_error);
     EXPECT_THROW(BarabasiAlbertGenerator generator(5, 9, 10, true), std::runtime_error);
 
     // n0 = initGraph.numberOfNodes() > nMax
     Graph initGraph(10);
-    EXPECT_THROW(BarabasiAlbertGenerator generator(6, 9, initGraph, false), std::runtime_error);
     EXPECT_THROW(BarabasiAlbertGenerator generator(6, 9, initGraph, true), std::runtime_error);
 
     // initGraph, k > nMax
     initGraph = Graph(6);
-    EXPECT_THROW(BarabasiAlbertGenerator generator(10, 9, initGraph, false), std::runtime_error);
     EXPECT_THROW(BarabasiAlbertGenerator generator(10, 9, initGraph, true), std::runtime_error);
-
-    // initGraph, original method, initGraph.numberOfNodes() < k
-    EXPECT_THROW(BarabasiAlbertGenerator generator(8, 9, initGraph, false), std::runtime_error);
 
     // initGraph does not have consecutive node ids
     initGraph.removeNode(0);
-    EXPECT_THROW(BarabasiAlbertGenerator generator(3, 9, initGraph, false), std::runtime_error);
-    EXPECT_THROW(BarabasiAlbertGenerator generator(3, 9, initGraph, false), std::runtime_error);
+    EXPECT_THROW(BarabasiAlbertGenerator generator(3, 9, initGraph, true), std::runtime_error);
 }
 
 TEST_F(GeneratorsGTest, testBarabasiAlbertGeneratorBatagelj) {
