@@ -30,16 +30,12 @@ from .centrality import CoreDecomposition
 from .coarsening import ParallelPartitionCoarsening
 from . import stopwatch
 from . import graphio
+from .helpers import stdstring
 from .support import MissingDependencyError
 from cython.operator import dereference
 
 cdef extern from "<algorithm>" namespace "std":
 	pair[_Graph, vector[node]] move(pair[_Graph, vector[node]]) nogil
-
-def stdstring(pystring):
-	""" convert a Python string to a bytes object which is automatically coerced to std::string"""
-	pybytes = pystring.encode("utf-8")
-	return pybytes
 
 cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
 

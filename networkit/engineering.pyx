@@ -10,48 +10,12 @@ from libcpp cimport bool as bool_t
 from .structures cimport index, node
 
 # local imports
+from .helpers import stdstring, pystring
 from . import stopwatch
 
 # external imports
 import csv
 import warnings
-
-def pystring(stdstring):
-	""" 
-	pystring(stdstring)
-
-	Convert a std::string (= python byte string) to a normal Python string
-
-	Parameters
-	----------
-	stdstring : str
-		Input python byte string.
-
-	Returns
-	-------
-	pystring
-		Python string.
-	"""
-	return stdstring.decode("utf-8")
-
-def stdstring(pystring):
-	""" 
-	stdstring(pystring)
-
-	Convert a Python string to a bytes object which is automatically coerced to std::string
-
-	Parameters
-	----------
-	pystring : str
-		Input python string.
-
-	Returns
-	-------
-	stdstring
-		Python byte string.
-	"""
-	pybytes = pystring.encode("utf-8")
-	return pybytes
 
 cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
 

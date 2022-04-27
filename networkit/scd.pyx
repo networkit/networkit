@@ -9,24 +9,7 @@ from cython.operator import dereference
 
 from .base cimport _Algorithm, Algorithm
 from .structures cimport _Cover, Cover
-
-def stdstring(pystring):
-	""" 
-	stdstring(pystring)
-
-	Convert a Python string to a bytes object which is automatically coerced to std::string.
-
-	Parameters
-	----------
-	pystring : str
-		Input python string.
-
-	Returns
-	-------
-	stdstring
-		Python bytes string.
-	"""
-	return pystring.encode("utf-8")
+from .helpers import stdstring
 
 cdef class SelectiveCommunityDetector:
 	"""

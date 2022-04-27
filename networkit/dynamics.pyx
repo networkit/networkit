@@ -3,6 +3,7 @@
 from .base cimport _Algorithm
 from .base cimport Algorithm
 from .graph cimport _Graph, Graph
+from .helpers import stdstring
 
 def graphFromStream(stream, weighted, directed):
 	""" 
@@ -23,25 +24,6 @@ def graphFromStream(stream, weighted, directed):
 	gu = GraphUpdater(G)
 	gu.update(stream)
 	return G
-
-def stdstring(pystring):
-	""" 
-	stdstring(pystring)
-
-	Convert a Python string to a bytes object which is automatically coerced to std::string
-
-	Parameters
-	----------
-	pystring : str
-		Input python string.
-
-	Returns
-	-------
-	stdstring
-		Python bytes string.
-	"""
-	pybytes = pystring.encode("utf-8")
-	return pybytes
 
 cdef class GraphEvent:
 	"""
