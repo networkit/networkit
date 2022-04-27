@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * AlgebraicSpanningEdgeCentralityGTest.cpp
  *
@@ -6,19 +5,17 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-
 #include <gtest/gtest.h>
 
-#include <networkit/algebraic/algorithms/AlgebraicSpanningEdgeCentrality.hpp>
 #include <networkit/algebraic/CSRMatrix.hpp>
+#include <networkit/algebraic/algorithms/AlgebraicSpanningEdgeCentrality.hpp>
 
-#include <networkit/io/METISGraphReader.hpp>
 #include <networkit/centrality/SpanningEdgeCentrality.hpp>
+#include <networkit/io/METISGraphReader.hpp>
 
 namespace NetworKit {
 
-class AlgebraicSpanningEdgeCentralityGTest : public testing::Test{};
-
+class AlgebraicSpanningEdgeCentralityGTest : public testing::Test {};
 
 TEST_F(AlgebraicSpanningEdgeCentralityGTest, testOnToyGraph) {
     /* Graph:
@@ -31,7 +28,6 @@ TEST_F(AlgebraicSpanningEdgeCentralityGTest, testOnToyGraph) {
     count n = 6;
     Graph G(n, false, false);
     G.indexEdges();
-
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -56,7 +52,7 @@ TEST_F(AlgebraicSpanningEdgeCentralityGTest, testOnRealGraphs) {
 
     std::string graphFiles[2] = {"input/karate.graph", "input/tiny_01.graph"};
 
-    for (auto graphFile: graphFiles) {
+    for (auto graphFile : graphFiles) {
         Graph G = reader.read(graphFile);
         G.indexEdges();
         Aux::Timer timer;
@@ -77,7 +73,8 @@ TEST_F(AlgebraicSpanningEdgeCentralityGTest, testOnRealGraphs) {
         double error = 0.0;
         G.forEdges([&](node, node, edgeid e) {
             double relError = std::fabs(asp.score(e) - exact.score(e));
-            if (std::fabs(exact.score(e)) > 1e-9) relError /= exact.score(e);
+            if (std::fabs(exact.score(e)) > 1e-9)
+                relError /= exact.score(e);
             error += relError;
         });
         error /= G.numberOfEdges();
@@ -89,12 +86,11 @@ TEST_F(AlgebraicSpanningEdgeCentralityGTest, testOnRealGraphs) {
         timer.stop();
         INFO("graph theoretical spanning edge centrality time: ", timer.elapsedTag());
 
-
-
         error = 0.0;
         G.forEdges([&](node, node, edgeid e) {
             double relError = std::fabs(sp.score(e) - exact.score(e));
-            if (std::fabs(exact.score(e)) > 1e-9) relError /= exact.score(e);
+            if (std::fabs(exact.score(e)) > 1e-9)
+                relError /= exact.score(e);
             error += relError;
         });
         error /= G.numberOfEdges();

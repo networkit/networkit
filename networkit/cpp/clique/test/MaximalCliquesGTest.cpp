@@ -1,17 +1,16 @@
-// no-networkit-format
 #include <gtest/gtest.h>
 
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Timer.hpp>
 #include <networkit/clique/MaximalCliques.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphTools.hpp>
-#include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/EdgeListReader.hpp>
-#include <networkit/auxiliary/Log.hpp>
-#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/io/METISGraphReader.hpp>
 
 namespace NetworKit {
 
-class MaximalCliquesGTest: public testing::Test {};
+class MaximalCliquesGTest : public testing::Test {};
 
 TEST_F(MaximalCliquesGTest, testMaximalCliques) {
 
@@ -19,8 +18,7 @@ TEST_F(MaximalCliquesGTest, testMaximalCliques) {
     Graph G = reader.read("input/hep-th.graph");
 
     node seed = 2;
-    std::vector<node> sn(G.neighborRange(seed).begin(),
-                         G.neighborRange(seed).end());
+    std::vector<node> sn(G.neighborRange(seed).begin(), G.neighborRange(seed).end());
     auto sneighbors = std::unordered_set<node>(sn.begin(), sn.end());
     sneighbors.insert(seed);
     const auto subG = GraphTools::subgraphFromNodes(G, sneighbors);
@@ -39,7 +37,8 @@ TEST_F(MaximalCliquesGTest, testMaximalCliques) {
         auto cli = std::unordered_set<node>(cliq.begin(), cliq.end());
         const auto cliqueGraph = GraphTools::subgraphFromNodes(G, cli);
 
-        EXPECT_EQ(cliqueGraph.numberOfEdges(), (cliqueGraph.numberOfNodes() * (cliqueGraph.numberOfNodes() - 1) / 2));
+        EXPECT_EQ(cliqueGraph.numberOfEdges(),
+                  (cliqueGraph.numberOfNodes() * (cliqueGraph.numberOfNodes() - 1) / 2));
         EXPECT_EQ(cli.count(seed), 1u);
     }
 }
@@ -60,7 +59,7 @@ TEST_F(MaximalCliquesGTest, testMaximalCliquesOnWholeGraph) {
 
     // check results (are they cliques?)
     std::vector<bool> inClique(G.upperNodeIdBound());
-    for (const auto& cliq : result) {
+    for (const auto &cliq : result) {
         for (node u : cliq) {
             inClique[u] = true;
         }
@@ -69,9 +68,7 @@ TEST_F(MaximalCliquesGTest, testMaximalCliquesOnWholeGraph) {
 
         for (node u : cliq) {
             count neighborsInClique = 0;
-            G.forNeighborsOf(u, [&](node v) {
-                neighborsInClique += inClique[v];
-            });
+            G.forNeighborsOf(u, [&](node v) { neighborsInClique += inClique[v]; });
 
             EXPECT_EQ(expected_degree, neighborsInClique);
         }
@@ -90,7 +87,7 @@ TEST_F(MaximalCliquesGTest, testMaximalCliquesWithCallback) {
     std::vector<bool> inClique(G.upperNodeIdBound());
 
     count numCliques = 0;
-    MaximalCliques clique(G, [&](const std::vector<node>& cliq) {
+    MaximalCliques clique(G, [&](const std::vector<node> &cliq) {
         ++numCliques;
 
         for (node u : cliq) {
@@ -101,9 +98,7 @@ TEST_F(MaximalCliquesGTest, testMaximalCliquesWithCallback) {
 
         for (node u : cliq) {
             count neighborsInClique = 0;
-            G.forNeighborsOf(u, [&](node v) {
-                neighborsInClique += inClique[v];
-            });
+            G.forNeighborsOf(u, [&](node v) { neighborsInClique += inClique[v]; });
 
             EXPECT_EQ(expected_degree, neighborsInClique);
         }
@@ -126,7 +121,7 @@ TEST_F(MaximalCliquesGTest, benchMaximalCliques) {
     std::cout << "[INPUT] graph file path (edge list tab 0, like SNAP) > " << std::endl;
     std::getline(std::cin, graphPath);
 
-    EdgeListReader r('\t',0,"#", false);
+    EdgeListReader r('\t', 0, "#", false);
     Graph G = r.read(graphPath);
     G.removeSelfLoops();
     INFO(GraphTools::size(G));
@@ -134,7 +129,7 @@ TEST_F(MaximalCliquesGTest, benchMaximalCliques) {
     Aux::Timer timer;
     count numCliques = 0;
     count maxSize = 0;
-    MaximalCliques clique(G, [&](const std::vector<node>& clique) {
+    MaximalCliques clique(G, [&](const std::vector<node> &clique) {
         ++numCliques;
         if (clique.size() > maxSize) {
             maxSize = clique.size();
@@ -154,11 +149,11 @@ TEST_F(MaximalCliquesGTest, benchMaximalCliques) {
         timer.start();
         clique.run();
         timer.stop();
-        const auto& cliques = clique.getCliques();
+        const auto &cliques = clique.getCliques();
         EXPECT_EQ(1u, cliques.size());
         EXPECT_EQ(cliques.front().size(), maxSize);
         INFO("Just finding the maximum clique needed ", timer.elapsedMilliseconds(), "ms");
     }
 }
 
-}
+} // namespace NetworKit

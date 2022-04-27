@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * VectorGTest.cpp
  *
@@ -7,14 +6,13 @@
  */
 #include <gtest/gtest.h>
 
-#include <networkit/algebraic/Vector.hpp>
-#include <networkit/algebraic/DynamicMatrix.hpp>
-#include <networkit/algebraic/AlgebraicGlobals.hpp>
-#include <networkit/auxiliary/Log.hpp>
 #include <cmath>
+#include <networkit/algebraic/AlgebraicGlobals.hpp>
+#include <networkit/algebraic/DynamicMatrix.hpp>
+#include <networkit/algebraic/Vector.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
-
 
 class VectorGTest : public testing::Test {};
 
@@ -69,9 +67,7 @@ TEST(VectorGTest, testTransposition) {
 TEST(VectorGTest, testLength) {
     Vector v = {12, 3, 9, 28, 0, -1};
     double result = 0.0;
-    v.forElements([&](const double &value) {
-        result += value * value;
-    });
+    v.forElements([&](const double &value) { result += value * value; });
 
     EXPECT_EQ(std::sqrt(result), v.length());
 }
@@ -91,23 +87,23 @@ TEST(VectorGTest, testAccessVectorElement) {
 
 TEST(VectorGTest, testOuterProduct) {
     Vector v1 = {1.0, -1.0};
-    Vector v2 = {1.0, 2.0,  3.0};
+    Vector v2 = {1.0, 2.0, 3.0};
 
     DynamicMatrix result = Vector::outerProduct(v1, v2);
     ASSERT_EQ(v1.getDimension(), result.numberOfRows());
     ASSERT_EQ(v2.getDimension(), result.numberOfColumns());
 
-    EXPECT_EQ(1.0, result(0,0));
-    EXPECT_EQ(2.0, result(0,1));
-    EXPECT_EQ(3.0, result(0,2));
-    EXPECT_EQ(-1.0, result(1,0));
-    EXPECT_EQ(-2.0, result(1,1));
-    EXPECT_EQ(-3.0, result(1,2));
+    EXPECT_EQ(1.0, result(0, 0));
+    EXPECT_EQ(2.0, result(0, 1));
+    EXPECT_EQ(3.0, result(0, 2));
+    EXPECT_EQ(-1.0, result(1, 0));
+    EXPECT_EQ(-2.0, result(1, 1));
+    EXPECT_EQ(-3.0, result(1, 2));
 }
 
 TEST(VectorGTest, testInnerProduct) {
     Vector v1 = {1.0, 0.0, -1.0, -5.0, 2.0};
-    Vector v2 = {1.0, 2.0,  3.0,  0.0, 5.0};
+    Vector v2 = {1.0, 2.0, 3.0, 0.0, 5.0};
     Vector v3 = {1.0, 2.0};
 
     double dotProduct = v1.transpose() * v2;
@@ -161,9 +157,10 @@ TEST(VectorGTest, testVectorMatrixMultiplication) {
     // 8 3 4
     // 3 5 9
     // 4 9 2
-    std::vector<Triplet> triplets = {{0,0,8}, {0,1,3}, {0,2,4}, {1,0,3}, {1,1,5}, {1,2,9}, {2,0,4}, {2,1,9}, {2,2,2}};
+    std::vector<Triplet> triplets = {{0, 0, 8}, {0, 1, 3}, {0, 2, 4}, {1, 0, 3}, {1, 1, 5},
+                                     {1, 2, 9}, {2, 0, 4}, {2, 1, 9}, {2, 2, 2}};
 
-    DynamicMatrix mat(3,3,triplets);
+    DynamicMatrix mat(3, 3, triplets);
 
     Vector result = v.transpose() * mat;
     ASSERT_TRUE(result.isTransposed());
@@ -246,18 +243,14 @@ TEST(VectorGTest, testVectorIterators) {
     v.parallelForElements(constantParallelTester);
 
     // non-constant iterators
-    auto nonConstantTester = [&](double &element) {
-        element++;
-    };
+    auto nonConstantTester = [&](double &element) { element++; };
 
     v.forElements(nonConstantTester);
     for (uint64_t i = 0; i < v.getDimension(); i++) {
         EXPECT_EQ((i + 2.0), v[i]);
     }
 
-    auto nonConstantParallelTester = [](const int &, double &element) {
-        element++;
-    };
+    auto nonConstantParallelTester = [](const int &, double &element) { element++; };
 
     v.parallelForElements(nonConstantParallelTester);
     for (uint64_t i = 0; i < v.getDimension(); i++) {
@@ -270,6 +263,5 @@ TEST(VectorGTest, testMean) {
     double mean = v.mean();
     EXPECT_EQ(mean, 3);
 }
-
 
 } /* namespace NetworKit */

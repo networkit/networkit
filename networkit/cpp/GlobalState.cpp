@@ -1,4 +1,3 @@
-
 #include <networkit/GlobalState.hpp>
 
 namespace NetworKit {
