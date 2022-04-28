@@ -488,18 +488,18 @@ cdef class AdamicAdarDistance:
 cdef extern from "<networkit/distance/Diameter.hpp>" namespace "NetworKit":
 
 	cdef enum _DiameterAlgo "NetworKit::DiameterAlgo":
-		automatic = 0
-		exact = 1
-		estimatedRange = 2
-		estimatedSamples = 3
-		estimatedPedantic = 4
+		automatic,
+		exact,
+		estimatedRange,
+		estimatedSamples,
+		estimatedPedantic
 
 class DiameterAlgo(object):
-	Automatic = automatic
-	Exact = exact
-	EstimatedRange = estimatedRange
-	EstimatedSamples = estimatedSamples
-	EstimatedPedantic = estimatedPedantic
+	Automatic = _DiameterAlgo.automatic
+	Exact = _DiameterAlgo.exact
+	EstimatedRange = _DiameterAlgo.estimatedRange
+	EstimatedSamples = _DiameterAlgo.estimatedSamples
+	EstimatedPedantic = _DiameterAlgo.estimatedPedantic
 
 cdef extern from "<networkit/distance/Diameter.hpp>" namespace "NetworKit::Diameter":
 
@@ -1109,6 +1109,10 @@ cdef extern from "<networkit/distance/NeighborhoodFunctionHeuristic.hpp>" namesp
 		RANDOM
 		SPLIT
 
+class SelectionStrategy:
+	Random = RANDOM
+	Split = SPLIT
+
 cdef extern from "<networkit/distance/NeighborhoodFunctionHeuristic.hpp>" namespace "NetworKit::NeighborhoodFunctionHeuristic":
 
 	cdef cppclass _NeighborhoodFunctionHeuristic "NetworKit::NeighborhoodFunctionHeuristic"(_Algorithm):
@@ -1134,10 +1138,7 @@ cdef class NeighborhoodFunctionHeuristic(Algorithm):
 	"""
 	cdef Graph _G
 
-	RANDOM = 0
-	SPLIT = 1
-
-	def __cinit__(self, Graph G not None, count nSamples=0, strategy=SPLIT):
+	def __cinit__(self, Graph G not None, count nSamples=0, strategy=SelectionStrategy.Split):
 		self._G = G
 		self._this = new _NeighborhoodFunctionHeuristic(G._this, nSamples, strategy)
 

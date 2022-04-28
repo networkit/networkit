@@ -87,9 +87,9 @@ cdef extern from "<networkit/io/GraphReader.hpp>" namespace "NetworKit::GraphRea
 		KEEP_MINIMUM_WEIGHT
 
 class MultipleEdgesHandling:
-	DiscardEdges = DISCARD_EDGES
-	SumWeightsUp = SUM_WEIGHTS_UP
-	KeepMinimumWeight = KEEP_MINIMUM_WEIGHT
+	DiscardEdges = _MultipleEdgesHandling.DISCARD_EDGES
+	SumWeightsUp = _MultipleEdgesHandling.SUM_WEIGHTS_UP
+	KeepMinimumWeight = _MultipleEdgesHandling.KEEP_MINIMUM_WEIGHT
 
 cdef extern from "<networkit/io/GraphWriter.hpp>":
 

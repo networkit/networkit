@@ -146,25 +146,25 @@ cdef class GraphLayoutAlgorithm:
 
 cdef extern from "<networkit/viz/MaxentStress.hpp>" namespace "NetworKit::MaxentStress":
 
-	enum _GraphDistance "NetworKit::MaxentStress::GraphDistance":
+	cdef enum _GraphDistance "NetworKit::MaxentStress::GraphDistance":
 		EDGE_WEIGHT,
 		ALGEBRAIC_DISTANCE
 
 class GraphDistance:
-	EdgeWeight = EDGE_WEIGHT
-	AlgebraicDistance = ALGEBRAIC_DISTANCE
+	EdgeWeight = _GraphDistance.EDGE_WEIGHT
+	AlgebraicDistance = _GraphDistance.ALGEBRAIC_DISTANCE
 
 cdef extern from "<networkit/viz/MaxentStress.hpp>" namespace "NetworKit::MaxentStress":
 
-	enum _LinearSolverType "NetworKit::MaxentStress::LinearSolverType":
+	cdef enum _LinearSolverType "NetworKit::MaxentStress::LinearSolverType":
 		LAMG,
 		CONJUGATE_GRADIENT_IDENTITY_PRECONDITIONER,
 		CONJUGATE_GRADIENT_DIAGONAL_PRECONDITIONER
 
 class LinearSolverType:
-	Lamg = LAMG
-	ConjugateGradientIdentityPreconditioner = CONJUGATE_GRADIENT_IDENTITY_PRECONDITIONER
-	ConjugateGradientDiagonalPreconditioner = CONJUGATE_GRADIENT_DIAGONAL_PRECONDITIONER
+	Lamg = _LinearSolverType.LAMG
+	ConjugateGradientIdentityPreconditioner = _LinearSolverType.CONJUGATE_GRADIENT_IDENTITY_PRECONDITIONER
+	ConjugateGradientDiagonalPreconditioner = _LinearSolverType.CONJUGATE_GRADIENT_DIAGONAL_PRECONDITIONER
 
 cdef extern from "<networkit/viz/MaxentStress.hpp>":
 
@@ -190,7 +190,7 @@ cdef extern from "<networkit/viz/MaxentStress.hpp>":
 
 cdef class MaxentStress (GraphLayoutAlgorithm):
 	"""
-	MaxentStress(G, dim, k, coordinates=list(), tolerance=1e-5, linearSolverType=networkit.viz.LinearSolverType.Lamg, fastComputation=False, graphDistance=networkit.community.Normalization.EdgeWeight)
+	MaxentStress(G, dim, k, coordinates=list(), tolerance=1e-5, linearSolverType=networkit.viz.LinearSolverType.Lamg, fastComputation=False, graphDistance=networkit.viz.GraphDistance)
 
 	Implementation of MaxentStress by Gansner et al. using a Laplacian system solver.
   	@see Gansner, Emden R., Yifan Hu, and Steve North. "A maxent-stress model for graph layout."
@@ -227,13 +227,7 @@ cdef class MaxentStress (GraphLayoutAlgorithm):
 		Decides what type of graph distance should be utilised. Default: networkit.community.GraphDistance.EdgeWeight
 	"""
 
-	LAMG = 0
-	CONJUGATE_GRADIENT_IDENTITY_PRECONDITIONER = 1
-	CONJUGATE_GRADIENT_DIAGONAL_PRECONDITIONER = 2
-	EDGE_WEIGHT = 0
-	ALGEBRAIC_DISTANCE = 1
-
-	def __cinit__(self, Graph G, count dim, count k, vector[pair[double, double]] coordinates = [], double tolerance = 1e-5, _LinearSolverType linearSolverType = LAMG, bool_t fastComputation = False, _GraphDistance graphDistance = EDGE_WEIGHT):
+	def __cinit__(self, Graph G, count dim, count k, vector[pair[double, double]] coordinates = [], double tolerance = 1e-5, _LinearSolverType linearSolverType = LinearSolverType.Lamg, bool_t fastComputation = False, _GraphDistance graphDistance = GraphDistance.EdgeWeight):
 		cdef Point[double] p = Point[double](0, 0)
 		cdef vector[Point[double]] pointCoordinates = vector[Point[double]]()
 

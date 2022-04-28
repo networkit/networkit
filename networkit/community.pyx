@@ -1890,11 +1890,11 @@ cdef extern from "<networkit/community/OverlappingNMIDistance.hpp>" namespace "N
 		JOINT_ENTROPY
 
 class Normalization:
-	Min = MIN
-	GeometricMean = GEOMETRIC_MEAN
-	ArithmeticMean = ARITHMETIC_MEAN
-	Max = MAX
-	JointEntropy = JOINT_ENTROPY
+	Min = _Normalization.MIN
+	GeometricMean = _Normalization.GEOMETRIC_MEAN
+	ArithmeticMean = _Normalization.ARITHMETIC_MEAN
+	Max = _Normalization.MAX
+	JointEntropy = _Normalization.JOINT_ENTROPY
 
 cdef extern from "<networkit/community/OverlappingNMIDistance.hpp>":
 
@@ -1941,17 +1941,11 @@ cdef class OverlappingNMIDistance(DissimilarityMeasure):
 	"""
 	cdef _OverlappingNMIDistance _this
 
-	Min = _Normalization.MIN
-	GeometricMean = _Normalization.GEOMETRIC_MEAN
-	ArithmeticMean = _Normalization.ARITHMETIC_MEAN
-	Max = _Normalization.MAX
-	JointEntropy = _Normalization.JOINT_ENTROPY
-
-	def __cinit__(self, _Normalization normalization = _Normalization.MAX):
+	def __cinit__(self, _Normalization normalization = Normalization.Max):
 		self._validateNormalization(normalization)
 		self._this = _OverlappingNMIDistance(normalization)
 
-	def setNormalization(self, _Normalization normalization):
+	def setNormalization(self, normalization):
 		"""
 		setNormalization(self, normalization)
 		

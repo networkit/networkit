@@ -754,15 +754,15 @@ cdef class DynBetweennessOneNode:
 		"""
 		return self._this.getbcx()
 
-cdef extern from "<networkit/centrality/Closeness.hpp>" namespace "NetworKit":
+cdef extern from "<networkit/centrality/Closeness.hpp>" namespace "NetworKit::ClosenessVariant":
 
 	cdef enum _ClosenessVariant  "NetworKit::ClosenessVariant":
-		standard = 0,
-		generalized = 1
+		standard,
+		generalized
 
 class ClosenessVariant:
-	Standard = standard
-	Generalized = generalized
+	Standard = _ClosenessVariant.standard
+	Generalized = _ClosenessVariant.generalized
 
 cdef extern from "<networkit/centrality/Closeness.hpp>":
 
@@ -821,9 +821,9 @@ cdef extern from "<networkit/centrality/ApproxCloseness.hpp>" namespace "NetworK
 		SUM
 
 class ClosenessType(object):
-	Inbound = INBOUND
-	Outbound = OUTBOUND
-	Sum = SUM
+	Inbound = _ClosenessType.INBOUND
+	Outbound = _ClosenessType.OUTBOUND
+	Sum = _ClosenessType.SUM
 
 cdef extern from "<networkit/centrality/ApproxCloseness.hpp>":
 
@@ -865,12 +865,7 @@ cdef class ApproxCloseness(Centrality):
 		If G is undirected, this can be ignored. Default: networkit.centrality.ClosenessType.Outbound
 	"""
 
-	#cdef _ApproxCloseness _this
-	INBOUND = 0
-	OUTBOUND = 1
-	SUM = 2
-
-	def __cinit__(self, Graph G, nSamples, epsilon=0.1, normalized=False, _ClosenessType type=OUTBOUND):
+	def __cinit__(self, Graph G, nSamples, epsilon=0.1, normalized=False, _ClosenessType type=ClosenessType.Outbound):
 		self._G = G
 		self._this = new _ApproxCloseness(G._this, nSamples, epsilon, normalized, type)
 
@@ -1377,26 +1372,24 @@ cdef class GroupDegree(Algorithm):
 cdef extern from "<networkit/centrality/GedWalk.hpp>" namespace "NetworKit::GedWalk":
 
 	cdef enum _BoundStrategy "NetworKit::GedWalk::BoundStrategy":
-		no
-		spectral
-		geometric
+		no,
+		spectral,
+		geometric,
 		adaptiveGeometric
 
 	cdef enum _GreedyStrategy "NetworKit::GedWalk::GreedyStrategy":
-		lazy
+		lazy,
 		stochastic
 
-
 class BoundStrategy(object):
-	No = no
-	Spectral = spectral
-	Geometric = geometric
-	AdaptiveGeometric = adaptiveGeometric
+	No = _BoundStrategy.no
+	Spectral = _BoundStrategy.spectral
+	Geometric = _BoundStrategy.geometric
+	AdaptiveGeometric = _BoundStrategy.adaptiveGeometric
 
 class GreedyStrategy(object):
-	Lazy = lazy
-	Stochastic = stochastic
-
+	Lazy = _GreedyStrategy.lazy
+	Stochastic = _GreedyStrategy.stochastic
 
 cdef extern from "<networkit/centrality/GedWalk.hpp>":
 
@@ -1956,13 +1949,15 @@ cdef class KPathCentrality(Centrality):
 
 cdef extern from "<networkit/centrality/KatzCentrality.hpp>" namespace "NetworKit":
 
-	cdef enum _EdgeDirection"NetworKit::EdgeDirection":
-		OutEdges = 0
-		InEdges = 1
+	cdef enum _EdgeDirection "NetworKit::EdgeDirection":
+		InEdges,
+		OutEdges
 
 class EdgeDirection(object):
-	inEdges = InEdges
-	outEdges = OutEdges
+	inEdges = _EdgeDirection.InEdges #added for backwards compatibility
+	outEdges = _EdgeDirection.OutEdges #added for backwards compatibility
+	InEdges = _EdgeDirection.InEdges
+	OutEdges = _EdgeDirection.OutEdges
 
 cdef extern from "<networkit/centrality/KatzCentrality.hpp>":
 
@@ -2000,10 +1995,10 @@ cdef class KatzCentrality(Centrality):
 		"""
 		Property :code:`edgeDirection` can be one of the following:
 
-		- networkit.centrality.EdgeDirection.inEdges
-		- networkit.centrality.EdgeDirection.outEdges
+		- networkit.centrality.EdgeDirection.InEdges
+		- networkit.centrality.EdgeDirection.OutEdges
 
-		Default: networkit.centrality.EdgeDirection.inEdges
+		Default: networkit.centrality.EdgeDirection.InEdges
 		"""
 		def __get__(self):
 			""" Get the used edge direction. """
@@ -2416,23 +2411,23 @@ cdef class EigenvectorCentrality(Centrality):
 
 cdef extern from "<networkit/centrality/PageRank.hpp>" namespace "NetworKit::PageRank":
 
-	#cdef enum Norm:
 	cdef enum _Norm "NetworKit::PageRank::Norm":
-		L1Norm = 0
-		L2Norm = 1
+		L1Norm,
+		L2Norm
 
 	cdef enum _SinkHandling "NetworKit::PageRank::SinkHandling":
-		NO_SINK_HANDLING
+		NO_SINK_HANDLING,
 		DISTRIBUTE_SINKS
 
 class Norm(object):
-	l1norm = L1Norm
-	l2norm = L2Norm
+	L1Norm = _Norm.L1Norm
+	L2Norm = _Norm.L2Norm
+	l1norm = _Norm.L1Norm #added for backwards compatibility
+	l2norm = _Norm.L2Norm #added for backwards compatibility
 
 class SinkHandling(object):
-	NoSinkHandling = NO_SINK_HANDLING
-	DistributeSinks = DISTRIBUTE_SINKS
-
+	NoSinkHandling = _SinkHandling.NO_SINK_HANDLING
+	DistributeSinks = _SinkHandling.DISTRIBUTE_SINKS
 
 cdef extern from "<networkit/centrality/PageRank.hpp>":
 
@@ -2499,11 +2494,11 @@ cdef class PageRank(Centrality):
 		"""
 		Property :code:`norm` can be one of the following:
 
-		- networkit.centrality.Norm.l1norm
-		- networkit.centrality.Norm.l2norm
+		- networkit.centrality.Norm.L1Norm
+		- networkit.centrality.Norm.L2Norm
 
 		Set this property before calling run() to change norm computation.
-		Default: networkit.centrality.Norm.l2norm
+		Default: networkit.centrality.Norm.L2Norm
 		"""
 		def __get__(self):
 			""" Get the norm used as stopping criterion. """
