@@ -12,6 +12,10 @@ cdef extern from "<networkit/auxiliary/Parallel.hpp>" namespace "Aux::Parallel":
 	void sort[Iter](Iter begin, Iter end) nogil
 	void sort[Iter, Comp](Iter begin, Iter end, Comp compare) nogil
 
+class ReducedFunctionalityWarning(Warning):
+	"Reduced networkit functionality warning"
+	pass
+
 def ranked(sample):
 	"""
 	ranked(sample)
