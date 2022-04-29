@@ -178,17 +178,17 @@ cdef class SSSP(Algorithm):
 		if type(self) == SSSP:
 			raise RuntimeError("Error, you may not use SSSP directly, use a sub-class instead")
 
-	def getDistances(self, bint asarray=False):
+	def getDistances(self, asarray=None):
 		"""
-		getDistances(asarray=False)
+		getDistances(asarray=None)
 
 		Returns a list of weighted distances from the source node, i.e. the
  	 	length of the shortest path from the source node to any other node.
 
 		Parameters
 		----------
-		asarray : bool, optional
-			Return the result as a numpy array.
+		asarray : optional
+			Return the result as a numpy array. Default: Falsy.
 
  	 	Returns
  	 	-------
@@ -1182,16 +1182,16 @@ cdef class APSP(Algorithm):
 	def __dealloc__(self):
 		self._G = None
 
-	def getDistances(self, bint asarray=False):
+	def getDistances(self, asarray=None):
 		"""
-		getDistances(asarray=False)
+		getDistances(asarray=None)
 
 		Returns a vector of vectors of distances between each node pair.
 
 		Parameters
 		----------
-		asarray : bool, optional
-			Return the result as a numpy array.
+		asarray : optional
+			Return the result as a numpy array. Default: Falsy.
 
 		Returns
 		-------
@@ -1259,21 +1259,21 @@ cdef class SPSP(Algorithm):
 	def __dealloc__(self):
 		self._G = None
 
-	def getDistances(self, bint asarray=False):
+	def getDistances(self, asarray=None):
 		"""
-		getDistances(asarray=False)
+		getDistances(asarray=None)
 
 		Returns a list of lists of distances between each source node
 		and either all the other nodes (if no targets have been specified) or all target nodes.
 
 		Parameters
 		----------
-		asarray : bool, optional
-			Return the result as a numpy array.
+		asarray : optional
+			Return the result as a numpy array. Default: Falsy.
 
 		Returns
 		-------
-		list(list(float))
+		list(list(float)) or np.ndarray
 			The shortest-path distances from each source node to the target nodes (if target nodes
 			have been specified), or any other node in the graph.
 

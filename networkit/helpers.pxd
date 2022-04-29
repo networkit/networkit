@@ -34,8 +34,8 @@ ctypedef fused element_t:
 cdef asarray_1d(vector[element_t]* vec)
 cdef asarray_2d(vector[vector[element_t]]* nested)
 
-cdef inline maybe_asarray_1d(vector[element_t]* vec, bint asarray):
+cdef inline maybe_asarray_1d(vector[element_t]* vec, asarray):
 	return asarray_1d[element_t](vec) if asarray else dereference(vec)
 
-cdef inline maybe_asarray_2d(vector[vector[element_t]]* nested, bint asarray):
+cdef inline maybe_asarray_2d(vector[vector[element_t]]* nested, asarray):
 	return asarray_2d[element_t](nested) if asarray else dereference(nested)
