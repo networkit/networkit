@@ -1,18 +1,13 @@
 # distutils: language=c++
 
-from libc.stdint cimport uint64_t
 from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from libcpp.unordered_map cimport unordered_map
 from libcpp.unordered_set cimport unordered_set
 
-ctypedef uint64_t count
-ctypedef uint64_t index
-ctypedef index node
-ctypedef double edgeweight
-
 from .graph cimport _Graph, Graph
+from .structures cimport count, index, node, edgeweight
 
 cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphTools":
 

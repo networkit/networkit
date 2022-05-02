@@ -1,19 +1,14 @@
 # distutils: language=c++
 
-from libc.stdint cimport uint64_t
 from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
 from libcpp.map cimport map
 from libcpp.unordered_set cimport unordered_set
 
-ctypedef uint64_t count
-ctypedef uint64_t index
-ctypedef index node
-
 from .base cimport _Algorithm, Algorithm
 from .dynamics cimport _GraphEvent, GraphEvent
 from .graph cimport _Graph, Graph
-from .structures cimport _Partition, Partition
+from .structures cimport _Partition, Partition, count, index, node
 
 cdef extern from "<networkit/components/ComponentDecomposition.hpp>":
 	cdef cppclass _ComponentDecomposition "NetworKit::ComponentDecomposition"(_Algorithm):

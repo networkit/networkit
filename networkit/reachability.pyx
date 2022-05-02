@@ -2,18 +2,14 @@
 
 from cython.operator import dereference, preincrement
 
-from libc.stdint cimport uint64_t
 from libcpp.vector cimport vector
 from libcpp cimport bool as bool_t
 from libcpp.string cimport string
 
-ctypedef uint64_t count
-ctypedef uint64_t index
-ctypedef index node
-
 from .base cimport _Algorithm, Algorithm
 from .graph cimport _Graph, Graph
 from .helpers import stdstring
+from .structures cimport count, index, node
 
 cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
 

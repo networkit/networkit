@@ -2,7 +2,6 @@
 
 from cython.operator import dereference, preincrement
 
-from libc.stdint cimport uint64_t
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from libcpp.map cimport map
@@ -11,15 +10,12 @@ from libcpp.string cimport string
 from libcpp.set cimport set
 from libcpp.unordered_map cimport unordered_map
 
-ctypedef uint64_t count
-ctypedef uint64_t index
-ctypedef index node
-ctypedef double edgeweight
-
 from .base cimport _Algorithm, Algorithm
 from .dynamics cimport _GraphEvent
 from .graph cimport _Graph, Graph
 from .helpers import stdstring
+from .helpers cimport maybe_asarray_1d, maybe_asarray_2d
+from .structures cimport count, index, node, edgeweight
 
 cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
 
@@ -182,19 +178,24 @@ cdef class SSSP(Algorithm):
 		if type(self) == SSSP:
 			raise RuntimeError("Error, you may not use SSSP directly, use a sub-class instead")
 
-	def getDistances(self):
+	def getDistances(self, asarray=None):
 		"""
-		getDistances()
+		getDistances(asarray=None)
 
 		Returns a list of weighted distances from the source node, i.e. the
  	 	length of the shortest path from the source node to any other node.
 
+		Parameters
+		----------
+		asarray : optional
+			Return the result as a numpy array. Default: Falsy.
+
  	 	Returns
  	 	-------
- 	 	list
+		list or np.ndarray
  	 		The weighted distances from the source node to any other node in the graph.
 		"""
-		return (<_SSSP*>(self._this)).getDistances()
+		return maybe_asarray_1d(&(<_SSSP*>(self._this)).getDistances(), asarray)
 
 	def distance(self, t):
 		"""
@@ -1181,21 +1182,26 @@ cdef class APSP(Algorithm):
 	def __dealloc__(self):
 		self._G = None
 
-	def getDistances(self):
-		""" 
-		getDistances()
+	def getDistances(self, asarray=None):
+		"""
+		getDistances(asarray=None)
 
 		Returns a vector of vectors of distances between each node pair.
 
- 	 	Returns
- 	 	-------
- 	 	list(list(float))
- 	 		The shortest-path distances from each node to any other node in the graph.
+		Parameters
+		----------
+		asarray : optional
+			Return the result as a numpy array. Default: Falsy.
+
+		Returns
+		-------
+		list(list(float)) or np.ndarray
+			The shortest-path distances from each node to any other node in the graph.
 		"""
-		return (<_APSP*>(self._this)).getDistances()
+		return maybe_asarray_2d(&(<_APSP*>(self._this)).getDistances(), asarray)
 
 	def getDistance(self, node u, node v):
-		""" 
+		"""
 		getDistance(u, v)
 		
 		Returns the length of the shortest path from source u to target v.
@@ -1253,23 +1259,34 @@ cdef class SPSP(Algorithm):
 	def __dealloc__(self):
 		self._G = None
 
-	def getDistances(self):
-		""" 
-		getDistances()
-		
+	def getDistances(self, asarray=None):
+		"""
+		getDistances(asarray=None)
+
 		Returns a list of lists of distances between each source node
 		and either all the other nodes (if no targets have been specified) or all target nodes.
 
- 	 	Returns
- 	 	-------
- 	 	list(list(float))
+		Parameters
+		----------
+		asarray : optional
+			Return the result as a numpy array. Default: Falsy.
+
+		Returns
+		-------
+		list(list(float)) or np.ndarray
 			The shortest-path distances from each source node to the target nodes (if target nodes
 			have been specified), or any other node in the graph.
+
+		Returns
+		-------
+		list(list(float)) or np.ndarray
+			The shortest-path distances from each source node to any other node
+			in the graph.
 		"""
-		return (<_SPSP*>self._this).getDistances()
+		return maybe_asarray_2d(&(<_SPSP*>self._this).getDistances(), asarray)
 
 	def getDistance(self, node u, node v):
-		""" 
+		"""
 		getDistance(u, v)
 
 		Returns the length of the shortest path from source u to target v.
@@ -1755,4 +1772,3 @@ cdef class ReverseBFS(SSSP):
 	def __cinit__(self, Graph G, source, storePaths=True, storeNodesSortedByDistance=False, target=none):
 		self._G = G
 		self._this = new _ReverseBFS(G._this, source, storePaths, storeNodesSortedByDistance, target)
-

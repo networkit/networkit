@@ -1,17 +1,13 @@
 # distutils: language=c++
 
-from libc.stdint cimport uint64_t
 from libcpp cimport bool as bool_t
 from libcpp.map cimport map
 from libcpp.vector cimport vector
 
-ctypedef uint64_t index
-ctypedef index node
-
 from .base cimport _Algorithm, Algorithm
 from .graph cimport _Graph, Graph
 from .matching cimport _Matching, Matching
-from .structures cimport _Cover, Cover, _Partition, Partition
+from .structures cimport _Cover, Cover, _Partition, Partition, index, node
 
 cdef extern from "<networkit/coarsening/GraphCoarsening.hpp>":
 
@@ -118,4 +114,3 @@ cdef class MatchingCoarsening(GraphCoarsening):
 
 	def __cinit__(self, Graph G not None, Matching M not None, bool_t noSelfLoops=False):
 		self._this = new _MatchingCoarsening(G._this, M._this, noSelfLoops)
-

@@ -1,11 +1,9 @@
 # distutils: language=c++
 
-from libc.stdint cimport uint64_t
 from libcpp cimport bool as bool_t
 
-ctypedef uint64_t count
-
 from .graph cimport _Graph, Graph
+from .structures cimport count
 
 
 cdef extern from "<networkit/global/ClusteringCoefficient.hpp>" namespace "NetworKit::ClusteringCoefficient":

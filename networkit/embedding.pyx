@@ -1,14 +1,11 @@
 # distutils: language=c++
 
-from libc.stdint cimport uint64_t
-
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 
 from .base cimport _Algorithm, Algorithm
 from .graph cimport _Graph, Graph
-
-ctypedef uint64_t count
+from .structures cimport count
 
 cdef extern from "<networkit/embedding/Node2Vec.hpp>":
 
@@ -65,4 +62,3 @@ cdef class Node2Vec(Algorithm):
 			A vector containing feature vectors of all nodes
 		"""
 		return (<_Node2Vec*>(self._this)).getFeatures()
-

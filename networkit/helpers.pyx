@@ -1,8 +1,11 @@
 # distutils: language=c++
 
-from libc.stdint cimport uint64_t
+from cython.operator cimport preincrement, dereference
+
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
+
+import numpy as np
 
 cdef extern from "<networkit/auxiliary/Parallel.hpp>" namespace "Aux::Parallel":
 
@@ -113,3 +116,87 @@ def pystring(stdstring):
 	"""
 	return stdstring.decode("utf-8")
 
+
+cdef get_dtype(element_t* _=NULL):
+	"""
+	Infer the numpy dtype from a fused cython type.
+	"""
+	if element_t is float:
+		return np.float32
+	elif element_t is double:
+		return np.float64
+	elif element_t is int:
+		return np.int32
+	elif element_t is long:
+		return np.int64
+	else:
+		raise TypeError
+
+
+cdef asarray_1d(vector[element_t]* vec):
+	"""
+	Convert a vector to a one-dimensional array.
+
+	Parameters
+	----------
+	vec : vector[element_t]
+		Vector representing a one-dimensional array.
+
+	Returns
+	-------
+	np.ndarray
+	"""
+	cdef:
+		element_t[:] values
+		element_t* target
+
+	values = np.empty(vec.size(), get_dtype[element_t]())
+	target = &values[0]
+	iterator = vec.begin()
+	while iterator != vec.end():
+		target[0] = dereference(iterator)
+		preincrement(iterator)
+		preincrement(target)
+
+	return values
+
+
+cdef asarray_2d(vector[vector[element_t]]* nested):
+	"""
+	Convert nested vectors to a two-dimensional array.
+
+	Parameters
+	----------
+	nested : vector[vector[element_t]]
+		Nested vectors representing a two-dimensional array.
+
+	Returns
+	-------
+	np.ndarray
+	"""
+	cdef:
+		element_t[:] values
+		element_t* target
+		int num_rows, num_cols
+
+	# Return an empty matrix if there are no rows.
+	num_rows = nested.size()
+	if num_rows == 0:
+		return np.empty((num_rows, num_rows), get_dtype[element_t]())
+
+	# Allocate memory.
+	row_iterator = nested.begin()
+	num_cols = dereference(row_iterator).size()
+	values = np.empty(num_rows * num_cols, get_dtype[element_t]())
+
+	# Populate the memory.
+	target = &values[0]
+	while row_iterator != nested.end():
+		row = dereference(row_iterator)
+		iterator = row.begin()
+		while iterator != row.end():
+			target[0] = dereference(iterator)
+			preincrement(iterator)
+			preincrement(target)
+		preincrement(row_iterator)
+	return np.reshape(values, (num_rows, num_cols))

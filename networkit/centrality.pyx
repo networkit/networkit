@@ -6,18 +6,13 @@ from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from libcpp cimport bool as bool_t
 
-ctypedef uint64_t count
-ctypedef uint64_t index
-ctypedef index node
-ctypedef double edgeweight
-
 import math
 from enum import Enum
 
 from .base cimport _Algorithm, Algorithm
 from .dynamics cimport _GraphEvent, GraphEvent
 from .graph cimport _Graph, Graph
-from .structures cimport _Cover, Cover, _Partition, Partition
+from .structures cimport _Cover, Cover, _Partition, Partition, count, index, node, edgeweight
 from networkit.algebraic import adjacencyEigenvector, PageRankMatrix, symmetricEigenvectors
 
 cdef extern from "limits.h":

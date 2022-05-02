@@ -1,16 +1,13 @@
 # distutils: language=c++
 
 from cython.operator import dereference, preincrement
-from libc.stdint cimport uint64_t
 from libcpp.vector cimport vector
 from libcpp cimport bool as bool_t
 from libcpp.string cimport string
 
-ctypedef uint64_t index
-ctypedef index node
-
 from .base cimport _Algorithm, Algorithm
 from .graph cimport _Graph, Graph
+from .structures cimport index, node
 
 cdef extern from "cython_helper.h":
 	void throw_runtime_error(string message)
@@ -134,5 +131,3 @@ cdef class MaximalCliques(Algorithm):
 			A list of cliques, each being represented as a list of nodes.
 		"""
 		return (<_MaximalCliques*>(self._this)).getCliques()
-
-

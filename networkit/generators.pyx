@@ -6,15 +6,9 @@ import os
 import tempfile
 import scipy
 
-from libc.stdint cimport uint64_t
 from libcpp.vector cimport vector
 from libcpp cimport bool as bool_t
 from libcpp.utility cimport pair
-
-ctypedef uint64_t count
-ctypedef uint64_t index
-ctypedef index node
-ctypedef double coordinate
 
 from .base cimport _Algorithm, Algorithm
 from .centrality import DegreeCentrality, LocalPartitionCoverage
@@ -22,7 +16,7 @@ from .community import PLM
 from .dynamics cimport _GraphEvent, GraphEvent
 from .graph cimport _Graph, Graph
 from .graphtools import GraphTools
-from .structures cimport _Partition, Partition
+from .structures cimport _Partition, Partition, count, index, node, coordinate
 
 cdef extern from "<networkit/viz/Point.hpp>" namespace "NetworKit" nogil:
 
@@ -1862,4 +1856,3 @@ class BTERReplicator:
 			A new scaled graph.
 		"""
 		return cls(G, scale)
-

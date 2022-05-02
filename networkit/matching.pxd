@@ -1,16 +1,10 @@
-from libc.stdint cimport uint64_t
 from libcpp.vector cimport vector
 from libcpp cimport bool as bool_t
 from libcpp.string cimport string
 
-ctypedef uint64_t count
-ctypedef uint64_t index
-ctypedef index node
-ctypedef double edgeweight
-
 from .base cimport _Algorithm, Algorithm
 from .graph cimport _Graph, Graph
-from .structures cimport _Partition, Partition
+from .structures cimport _Partition, Partition, count, index, node, edgeweight
 
 cdef extern from "cython_helper.h":
 	void throw_runtime_error(string message)
