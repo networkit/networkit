@@ -288,17 +288,20 @@ jobs:
         shell: bash
 
   linux-build-core-sanitizers-coverage:
-    name: "Linux (gcc-11, CPython 3.10): coverage"
+    name: "Linux (gcc-10, CPython 3.10): coverage"
     runs-on: ubuntu-20.04
     env:
-      CC: gcc-11
-      CXX: g++-11
+      CC: gcc-10
+      CXX: g++-10
+      COVERALLS_DUMP_FILE: coveralls.dump
+      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      COVERALLS_SVC_NUM: ${{ github.run_number }}
+      NETWORKIT_BUILD_TESTS: ON
     steps:
       - name: Install prerequisites
         run:  |
-          sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu impish main universe'
           sudo apt-get update
-          sudo apt-get install gcc-11 g++-11 ninja-build
+          sudo apt-get install ninja-build
       - name: Setup Python 3.10
         uses: actions/setup-python@v3
         with:
@@ -311,17 +314,26 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/core_sanitizers_coverage.sh
         shell: bash
         timeout-minutes: 60
-      - name: Update Coveralls
+      - name: Create C++ coverage
+        run: |
+          cd ${{ github.workspace }}
+          . pyenv/bin/activate
+          cd core_build
+          gcovr -e '.*test/.*' -e '.*CMakeFiles.*' -e '.*/extlibs/.*' -e '.*/scripts/.*' -e '.*/pyenv/.*' -e '.*/include/tlx/.*' --coveralls -r .. > networkit_cpp.json
+          gcovr -e '.*test/.*' -e '.*CMakeFiles.*' -e '.*/extlibs/.*' -e '.*/scripts/.*' -e '.*/pyenv/.*' -e '.*/include/tlx/.*' -r ..
+      - name: Create Python coverage and merge files
+        run: |
+          cd ${{ github.workspace }}
+          . pyenv/bin/activate
+          coverage run -m unittest discover -v networkit/test
+          coverage report
+          coveralls --merge=core_build/networkit_cpp.json --output=$COVERALLS_DUMP_FILE
+      - name: Upload coverage
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           cd ${{ github.workspace }}
           . pyenv/bin/activate
-          coveralls -E ".*test/.*" -E ".*CMakeFiles.*" --exclude extlibs --exclude pyenv --exclude scripts --root ${{ github.workspace }} --dump $COVERALLS_DUMP_FILE
           python3 ${{ github.workspace }}/.github/workflows/scripts/upload_coverage.py
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-          COVERALLS_DUMP_FILE: coveralls.dump
-          COVERALLS_SVC_NUM: ${{ github.run_number }}
 
   windows-build-msvc:
     name: "Windows (msvc 14.31): ${{ matrix.build-configuration }}"

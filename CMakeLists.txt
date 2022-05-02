@@ -334,6 +334,11 @@ if(NETWORKIT_PYTHON)
 					LINK_FLAGS "${NETWORKIT_LINK_FLAGS}"
 					PREFIX ""
 					OUTPUT_NAME "${TARGET_LIB}.${NETWORKIT_PYTHON_SOABI}")
+
+		if (NETWORKIT_BUILD_TESTS)
+			target_compile_definitions(${TARGET_LIB} PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1)
+		endif()
+
 		if(WIN32)
 			set_target_properties(${TARGET_LIB} PROPERTIES SUFFIX .pyd)
 			target_link_libraries(${TARGET_LIB} PRIVATE ${Python3_LIBRARIES})

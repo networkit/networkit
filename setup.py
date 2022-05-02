@@ -10,6 +10,7 @@ cmakeCompiler = None
 buildDirectory = "build/build_python"
 ninja_available = False
 enable_osx_crossbuild = False
+build_tests = False
 
 if sys.version_info.major < 3:
 	print("ERROR: NetworKit requires Python 3.")
@@ -23,6 +24,9 @@ if "NETWORKIT_OVERRIDE_CXX" in os.environ:
 
 if "NETWORKIT_OSX_CROSSBUILD" in os.environ:
 	enable_osx_crossbuild = True
+
+if "NETWORKIT_BUILD_TESTS" in os.environ:
+	build_tests = True
 
 if shutil.which("cmake") is None:
 	print("ERROR: NetworKit compilation requires cmake.")
@@ -163,6 +167,8 @@ def buildNetworKit(install_prefix, externalCore=False, externalTlx=None, withTes
 			print("Builds with an external core are not supported on Windows.") 
 			exit(1)
 		comp_cmd.append("-DNETWORKIT_BUILD_CORE=OFF")
+	if build_tests:
+		comp_cmd.append("-DNETWORKIT_BUILD_TESTS=ON")
 	if sys.platform == "win32":
 		comp_cmd.append("-DNETWORKIT_STATIC=ON") # Windows only supports static core builds
 		comp_cmd.append("-DNETWORKIT_BUILDING_STATELIB=ON") # Adds dllexport
@@ -315,6 +321,11 @@ class build_ext(Command):
 from setuptools import find_packages # in addition to setup
 import version
 
+compiler_directives = {}
+if build_tests:
+	compiler_directives['linetrace'] = True
+compiler_directives['language_level'] = 3
+
 setup(
 	name				= version.name,
 	version				= version.version,
@@ -331,7 +342,7 @@ setup(
 	platforms			= version.platforms,
 	classifiers			= version.classifiers,
 	cmdclass			= {'build_ext': build_ext},
-	ext_modules			= cythonize(["networkit/*pyx"], language_level=3),
+	ext_modules			= cythonize(["networkit/*pyx"], compiler_directives=compiler_directives),
 	test_suite			= 'nose.collector',
 	install_requires	= version.install_requires,
 	zip_safe			= False) # see https://cython.readthedocs.io/en/latest/src/reference/compilation.html
