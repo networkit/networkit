@@ -13,28 +13,18 @@
 
 namespace NetworKit {
 
-ParallelConnectedComponents::ParallelConnectedComponents(const Graph& G, bool coarsening) : Algorithm(), G(&G), coarsening(coarsening) {
-
+ParallelConnectedComponents::ParallelConnectedComponents(const Graph& G, bool coarsening) : ComponentDecomposition(G), coarsening(coarsening) {
+    if (G.isDirected())
+        throw std::runtime_error("algorithm does not accept directed graphs");
 }
 
 
 void ParallelConnectedComponents::run() {
-    if (G->isDirected()) {
-        throw std::runtime_error("algorithm does not accept directed graphs");
-    }
-
     // calculate connected components by label propagation
     count z = G->upperNodeIdBound();
 
     DEBUG("initializing labels");
-    component = Partition(z);
-    component.allToSingletons();
-    // remove nodes that do not exist from the partition so it doesn't report wrong numbers
-    component.parallelForEntries([&](node u, index) {
-        if (!G->hasNode(u)) {
-            component[u] = none;
-        }
-    });
+    component.reset(z, none);
 
     DEBUG("initializing active nodes");
     const char INACTIVE = 0;
@@ -43,19 +33,15 @@ void ParallelConnectedComponents::run() {
     std::vector<char> nextActiveNodes(z, ACTIVE); // for next iteration
 
     DEBUG("main loop");
-//	count numActive = 0; // for debugging purposes only
     count numIterations = 0;
     bool change = true;
     // only 8 iterations when coarsening is on, otherwise till no more changes happened
     while (change && (!coarsening || numIterations < 8)) {
-//		TRACE("label propagation iteration");
         activeNodes.swap(nextActiveNodes);
         nextActiveNodes.assign(z, INACTIVE);
         change = false;
-//		numActive = 0;
         G->balancedParallelForNodes([&](node u) {
             if (activeNodes[u] == ACTIVE) {
-//				++numActive;
                 // get smallest
                 index smallest = component[u];
                 G->forNeighborsOf(u, [&](node v) {
@@ -76,7 +62,6 @@ void ParallelConnectedComponents::run() {
                 }
             }
         });
-//		TRACE("num active: ", numActive);
         ++numIterations;
     }
     if (coarsening && numIterations == 8) { // TODO: externalize constant
@@ -98,20 +83,10 @@ void ParallelConnectedComponents::run() {
 }
 
 void ParallelConnectedComponents::runSequential() {
-    if (G->isDirected()) {
-        throw std::runtime_error("algorithm does not accept directed graphs");
-    }
     // calculate connected components by label propagation
     count z = G->upperNodeIdBound();
     DEBUG("initializing labels");
-    component = Partition(z);
-    component.allToSingletons();
-    // remove nodes that do not exist from the partition so it doesn't report wrong numbers
-    component.forEntries([&](node u, index) {
-        if (!G->hasNode(u)) {
-            component[u] = none;
-        }
-    });
+    component.reset(z, none);
 
     DEBUG("initializing active nodes");
     std::vector<bool> activeNodes(z, true); // record if node must be processed
@@ -124,10 +99,8 @@ void ParallelConnectedComponents::runSequential() {
     while (change && (!coarsening || numIterations < 8)) {
         // TRACE("label propagation iteration");
         change = false;
-        // numActive = 0;
         G->forNodes([&](node u) {
             if (activeNodes[u]) {
-                // ++numActive;
                 // get smallest
                 index smallest = component[u];
                 G->forNeighborsOf(u, [&](node v) {
@@ -150,7 +123,6 @@ void ParallelConnectedComponents::runSequential() {
                 }
             }
         });
-        // TRACE("num active: ", numActive);
         ++numIterations;
     }
     if (coarsening && numIterations == 8) { // TODO: externalize constant
@@ -170,29 +142,4 @@ void ParallelConnectedComponents::runSequential() {
 
     hasRun = true;
 }
-
-
-Partition ParallelConnectedComponents::getPartition() const {
-    assureFinished();
-    return this->component;
-}
-
-count ParallelConnectedComponents::numberOfComponents() const {
-    assureFinished();
-    return this->component.numberOfSubsets();
-}
-
-count ParallelConnectedComponents::componentOfNode(node u) const {
-    assureFinished();
-    assert (component[u] != none);
-    return component[u];
-}
-
-std::vector<std::vector<node>> ParallelConnectedComponents::getComponents() const {
-
-    std::vector<std::vector<node>> result(this->numberOfComponents());
-    G->forNodes([&](node u) { result[component[u]].push_back(u); });
-    return result;
-}
-
 }

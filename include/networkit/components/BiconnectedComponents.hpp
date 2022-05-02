@@ -44,14 +44,14 @@ public:
      *
      *	@return The number of biconnected components.
      */
-    count numberOfComponents();
+    count numberOfComponents() const;
 
     /*
      * Get the size of each component.
      *
      * @return Map from component index to size.
      */
-    std::map<count, count> getComponentSizes();
+    std::map<count, count> getComponentSizes() const;
 
     /*
      * Get the components vector.
@@ -59,7 +59,7 @@ public:
      * @return Vector of vectors, each component is stored as an (unordered) set
      * of nodes.
      */
-    std::vector<std::vector<node>> getComponents();
+    std::vector<std::vector<node>> getComponents() const;
 
     /*
      * Get the components that contain node @a u.
@@ -89,17 +89,17 @@ private:
     std::map<count, count> componentSizes;
 };
 
-inline count BiconnectedComponents::numberOfComponents() {
+inline count BiconnectedComponents::numberOfComponents() const {
     assureFinished();
     return nComp;
 }
 
-inline std::map<count, count> BiconnectedComponents::getComponentSizes() {
+inline std::map<count, count> BiconnectedComponents::getComponentSizes() const {
     assureFinished();
     return componentSizes;
 }
 
-inline std::vector<std::vector<node>> BiconnectedComponents::getComponents() {
+inline std::vector<std::vector<node>> BiconnectedComponents::getComponents() const {
     assureFinished();
     std::vector<std::vector<node>> result(nComp);
 
