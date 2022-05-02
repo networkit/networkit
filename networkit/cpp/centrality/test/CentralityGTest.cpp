@@ -27,6 +27,7 @@
 #include <networkit/centrality/DynTopHarmonicCloseness.hpp>
 #include <networkit/centrality/EigenvectorCentrality.hpp>
 #include <networkit/centrality/EstimateBetweenness.hpp>
+#include <networkit/centrality/ForestCentrality.hpp>
 #include <networkit/centrality/GedWalk.hpp>
 #include <networkit/centrality/GroupCloseness.hpp>
 #include <networkit/centrality/GroupClosenessGrowShrink.hpp>
@@ -2217,6 +2218,42 @@ TEST_P(CentralityGTest, testGroupClosenessLocalSearch) {
     gcls2.run();
 
     EXPECT_EQ(gcls2.numberOfIterations(), 0);
+}
+
+TEST_F(CentralityGTest, testForestCentrality) {
+    {
+        // Directed graphs are not supported
+        Graph G(10, true, true);
+        G.addEdge(0, 1);
+        EXPECT_THROW(ForestCentrality(G, 0), std::runtime_error);
+
+        // Non-augmented graph
+        G = GraphTools::toUndirected(G);
+        G = GraphTools::toUnweighted(G);
+        EXPECT_THROW(ForestCentrality(G, 0), std::runtime_error);
+
+        // Augmented but non-compact graph
+        node root = GraphTools::augmentGraph(G);
+        G.removeNode(5);
+        EXPECT_THROW(ForestCentrality(G, root), std::runtime_error);
+    }
+
+    Aux::Random::setSeed(42, true);
+    auto G = HyperbolicGenerator(200).generate();
+    const node root = GraphTools::augmentGraph(G);
+
+    const double eps = 0.05;
+
+    ForestCentrality fc(G, root, eps);
+    fc.run();
+    EXPECT_GT(fc.getNumberOfSamples(), 0);
+    const auto apxDiag = fc.getDiagonal();
+
+    ApproxElectricalCloseness ele(G);
+    const auto diag = ele.computeExactDiagonal();
+    G.forNodes([&](node u) { EXPECT_NEAR(apxDiag[u], diag[u], eps); });
+
+    EXPECT_EQ(fc.scores().size(), G.upperNodeIdBound());
 }
 
 } /* namespace NetworKit */

@@ -384,6 +384,18 @@ std::vector<node> invertContinuousNodeIds(const std::unordered_map<node, node> &
 Graph restoreGraph(const std::vector<node> &invertedIdMap, const Graph &G);
 
 /**
+ * Augments the input graph in-place as required by ForestCentrality. With respect to the input
+ * graph G, the augmented graph has a new root node connected to all the other nodes in the graph.
+ */
+node augmentGraph(Graph &G);
+
+/**
+ * Constructs an augmented graph as required by ForestCentrality. With respect to the input graph G,
+ * the augmented graph has a new root node connected to all the other nodes in the graph.
+ */
+std::pair<Graph, node> createAugmentedGraph(const Graph &G);
+
+/**
  * Sorts the adjacency arrays by increasing or decreasing edge weight. Edge ids are used
  * to break ties.
  *

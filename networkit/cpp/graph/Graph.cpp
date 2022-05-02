@@ -907,13 +907,10 @@ void Graph::setWeightAtIthNeighbor(Unsafe, node u, index i, edgeweight ew) {
 /** SUMS **/
 
 edgeweight Graph::totalEdgeWeight() const noexcept {
-    if (weighted) {
-        edgeweight sum = 0.0;
-        forEdges([&](node, node, edgeweight ew) { sum += ew; });
-        return sum;
-    } else {
+    if (weighted)
+        return parallelSumForEdges([](node, node, edgeweight ew) { return ew; });
+    else
         return numberOfEdges() * defaultEdgeWeight;
-    }
 }
 
 bool Graph::checkConsistency() const {

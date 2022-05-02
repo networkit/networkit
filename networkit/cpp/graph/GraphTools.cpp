@@ -485,6 +485,21 @@ Graph restoreGraph(const std::vector<node> &invertedIdMap, const Graph &G) {
     return Goriginal;
 }
 
+node augmentGraph(Graph &G) {
+    const node root = G.addNode();
+    G.forNodes([&](node u) {
+        if (u != root)
+            G.addEdge(u, root);
+    });
+    return root;
+}
+
+std::pair<Graph, node> createAugmentedGraph(const Graph &G) {
+    Graph augmented(G);
+    node root = augmentGraph(augmented);
+    return {augmented, root};
+}
+
 void sortEdgesByWeight(Graph &G, bool decreasing) {
     if (decreasing)
         G.sortEdges([](auto e1, auto e2) {

@@ -2662,6 +2662,58 @@ cdef class ApproxElectricalCloseness(Centrality):
 		return (<_ApproxElectricalCloseness*>self._this).computeExactDiagonal(tol)
 
 
+cdef extern from "<networkit/centrality/ForestCentrality.hpp>":
+	cdef cppclass _ForestCentrality "NetworKit::ForestCentrality"(_Centrality):
+		_ForestCentrality(_Graph G, node root, double eps, double kappa) except +
+		vector[double] &getDiagonal() except +
+
+cdef class ForestCentrality(Centrality):
+	"""
+	ForestCentrality(G, root, eps=0.1, kappa=0.3)
+	
+	Approximates the forest closeness centrality of all the vertices of a graph by approximating
+	the diagonal of the forest matrix of @a G. Every element of the diagonal is guaranteed to
+	have a maximum absolute error of @a epsilon. Based on "New Approximation Algorithms for
+	Forest Closeness Centrality - for Individual Vertices and Vertex Groups", van der Grinten et
+	al, SDM 2021.
+	The algorithm runs in two steps: (i) solving a linear system and (ii) sampling uniform
+	spanning trees (USTs). The parameter @a kappa balances the tolerance of the linear sytem
+	solver and the number of USTs to be sampled. A high value of @a kappa raises the tolerance
+	(solver converges faster) but more USTs need to be sampled, vice versa for a low value of @a
+	kappa. Note: the algorithm requires an augmented graph as input (see the reference paper for
+	details). An augmented graphs can be generated with graphtools.createAugmentedGraph.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph. Must be an augmented graph; an augmented graph can be crated with
+		graphtools.createAugmentedGraph.
+	root : int
+		Root node of the augmented graph.
+	epsilon : float, optional
+		Maximum absolute error of the elements in the diagonal. Default: 0.1
+	kappa : float, optional
+		Balances the tolerance of the linear system solver and the number of USTs to be
+		sampled. Default: 0.3
+	"""
+
+	def __cinit__(self, Graph G, node root, double eps = 0.1, double kappa = 0.3):
+		self._G = G
+		self._this = new _ForestCentrality(G._this, root, eps, kappa)
+
+	def getDiagonal(self):
+		"""
+		getDiagonal()
+
+		Return an epsilon-approximation of the diagonal of the forest matrix.
+
+		Returns
+		-------
+		list(float)
+			Approximation of the diagonal of the laplacian's pseudoinverse.
+		"""
+		return (<_ForestCentrality*>self._this).getDiagonal()
+
 cdef extern from "<networkit/centrality/ApproxSpanningEdge.hpp>":
 	cdef cppclass _ApproxSpanningEdge "NetworKit::ApproxSpanningEdge"(_Algorithm):
 		_ApproxSpanningEdge(_Graph G, double eps) except +
