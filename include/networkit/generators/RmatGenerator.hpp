@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * RmatGenerator.hpp
  *
@@ -22,7 +21,7 @@ namespace NetworKit {
  * Deepayan Chakrabarti, Yiping Zhan, Christos Faloutsos:
  * R-MAT: A Recursive Model for Graph Mining. SDM 2004: 442-446.
  */
-class RmatGenerator final: public StaticGraphGenerator {
+class RmatGenerator final : public StaticGraphGenerator {
     count scale; ///< n = 2^scale
     count edgeFactor;
     double a, b, c; ///< probabilities
@@ -31,7 +30,6 @@ class RmatGenerator final: public StaticGraphGenerator {
     count reduceNodes;
 
 public:
-
     /**
      * @param[in] scale Number of nodes = 2^scale
      * @param[in] edgeFactor Number of edges = number of nodes * edgeFactor

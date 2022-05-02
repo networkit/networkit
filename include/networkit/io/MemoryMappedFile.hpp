@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * MemoryMappedFile.hpp
  *
@@ -27,33 +26,33 @@ struct MemoryMappedFileState;
 class MemoryMappedFile final {
 public:
     using value_type = char;
-    using const_iterator = const value_type*;
+    using const_iterator = const value_type *;
 
     //! Creates a MemoryMappedFile instance in an unmapped state.
     //! A call to open() is required.
     MemoryMappedFile();
 
     //! Invokes open(path) automatically
-    explicit MemoryMappedFile(const std::string& path);
+    explicit MemoryMappedFile(const std::string &path);
 
     //! Invokes close
     ~MemoryMappedFile();
 
     //! It's non copy-able
-    MemoryMappedFile(const MemoryMappedFile&) = delete;
-    MemoryMappedFile& operator=(const MemoryMappedFile&) = delete;
+    MemoryMappedFile(const MemoryMappedFile &) = delete;
+    MemoryMappedFile &operator=(const MemoryMappedFile &) = delete;
 
     //! Takes over the mapping (if any) from o, leaves o in a "closed"
     //! state ready to be opened again.
-    MemoryMappedFile(MemoryMappedFile&& o) noexcept;
+    MemoryMappedFile(MemoryMappedFile &&o) noexcept;
 
     //! If *this currently holds a mapping, it is closed and replaced
     //! the other's state which in turn is left closed.
-    MemoryMappedFile& operator=(MemoryMappedFile&& o) noexcept;
+    MemoryMappedFile &operator=(MemoryMappedFile &&o) noexcept;
 
     //! Opens the file and maps it to cbegin() ... cend()
     //! Opening an empty file is considered an error.
-    void open(const std::string& file);
+    void open(const std::string &file);
 
     //! If a file is mapped, it is closed. Otherwise, operation is carried out.
     //! @note This function is automatically called by the destructor.
@@ -61,24 +60,21 @@ public:
 
     //! If a file is opened, a random-access iterator to the first byte mapped is returned.
     //! If no file is opened, nullptr is returned.
-    const_iterator cbegin() const {
-        return beginIt;
-    }
+    const_iterator cbegin() const { return beginIt; }
 
     //! Analogously to cbegin()
-    const_iterator cend() const {return endIt;}
+    const_iterator cend() const { return endIt; }
 
     //! Number of bytes mapped
-    size_t size() const {
-        return std::distance(beginIt, endIt);
-    }
+    size_t size() const { return std::distance(beginIt, endIt); }
 
 private:
-    const_iterator beginIt {nullptr};
-    const_iterator endIt {nullptr};
+    const_iterator beginIt{nullptr};
+    const_iterator endIt{nullptr};
 
-    std::unique_ptr<MemoryMappedFileState> state; //!< used only by windows implementation to keep handlers around.
+    //!< used only by Windows implementation to keep handlers around.
+    std::unique_ptr<MemoryMappedFileState> state;
 };
 
-}
+} // namespace NetworKit
 #endif // NETWORKIT_IO_MEMORY_MAPPED_FILE_HPP_

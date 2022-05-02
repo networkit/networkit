@@ -1,4 +1,3 @@
-// no-networkit-format
 #ifndef NETWORKIT_COMMUNITY_ISOLATED_INTERPARTITION_CONDUCTANCE_HPP_
 #define NETWORKIT_COMMUNITY_ISOLATED_INTERPARTITION_CONDUCTANCE_HPP_
 
@@ -36,6 +35,6 @@ public:
     bool isSmallBetter() const override { return true; };
 };
 
-}
+} // namespace NetworKit
 
 #endif // NETWORKIT_COMMUNITY_ISOLATED_INTERPARTITION_CONDUCTANCE_HPP_

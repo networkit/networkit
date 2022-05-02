@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * QuadNodePolarEuclid.hpp
  *
@@ -32,7 +31,7 @@ class QuadNodeCartesianEuclid final {
     static const unsigned coarsenLimit = 4;
     count subTreeSize;
     std::vector<T> content;
-    std::vector<Point<double> > positions;
+    std::vector<Point<double>> positions;
     bool isLeaf;
     bool splitTheoretical;
     index ID;
@@ -48,7 +47,8 @@ public:
      * @param lower Minimal coordinates of region
      * @param upper Maximal coordinates of region (excluded)
      * @param capacity Number of points a leaf cell can store before splitting
-     * @param splitTheoretical Whether to split in a theoretically optimal way or in a way to decrease measured running times
+     * @param splitTheoretical Whether to split in a theoretically optimal way or in a way to
+     * decrease measured running times
      *
      */
     QuadNodeCartesianEuclid(const Point<double> &lower = Point<double>(0.0, 0.0),
@@ -70,27 +70,27 @@ public:
         assert(children.size() == 0);
         vector<double> middle(dimension);
         if (splitTheoretical) {
-            //Euclidean space is distributed equally
+            // Euclidean space is distributed equally
             for (index d = 0; d < dimension; d++) {
                 middle[d] = (minPoint[d] + maxPoint[d]) / 2;
             }
         } else {
-            //median of points
+            // median of points
             const count numPoints = positions.size();
-            assert(numPoints > 0);//otherwise, why split?
-            vector<vector<double> > sorted(dimension);
+            assert(numPoints > 0); // otherwise, why split?
+            vector<vector<double>> sorted(dimension);
             for (index d = 0; d < dimension; d++) {
                 sorted[d].resize(numPoints);
                 for (index i = 0; i < numPoints; i++) {
                     sorted[d][i] = positions[i][d];
                 }
                 std::sort(sorted[d].begin(), sorted[d].end());
-                middle[d] = sorted[d][numPoints/2];//this will crash if no points are there!
+                middle[d] = sorted[d][numPoints / 2]; // this will crash if no points are there!
                 assert(middle[d] <= maxPoint[d]);
                 assert(middle[d] >= minPoint[d]);
             }
         }
-        count childCount = std::pow(2,dimension);
+        count childCount = std::pow(2, dimension);
         for (index i = 0; i < childCount; i++) {
             vector<double> lowerValues(dimension);
             vector<double> upperValues(dimension);
@@ -105,7 +105,8 @@ public:
                 }
                 bitCopy = bitCopy >> 1;
             }
-            QuadNodeCartesianEuclid child(Point<double>(lowerValues), Point<double>(upperValues), capacity, splitTheoretical);
+            QuadNodeCartesianEuclid child(Point<double>(lowerValues), Point<double>(upperValues),
+                                          capacity, splitTheoretical);
             assert(child.isLeaf);
             children.push_back(child);
         }
@@ -113,7 +114,8 @@ public:
     }
 
     /**
-     * Add a point at polar coordinates (angle, R) with content input. May split node if capacity is full
+     * Add a point at polar coordinates (angle, R) with content input. May split node if capacity is
+     * full
      *
      * @param input arbitrary content, in our case an index
      * @param angle angular coordinate of point, between 0 and 2 pi.
@@ -132,14 +134,13 @@ public:
                 for (index i = 0; i < content.size(); i++) {
                     this->addContent(content[i], positions[i]);
                 }
-                assert(subTreeSize == content.size());//we have added everything twice
+                assert(subTreeSize == content.size()); // we have added everything twice
                 subTreeSize = content.size();
                 content.clear();
                 positions.clear();
                 this->addContent(input, pos);
             }
-        }
-        else {
+        } else {
             assert(children.size() > 0);
             bool foundResponsibleChild = false;
             for (index i = 0; i < children.size(); i++) {
@@ -164,43 +165,48 @@ public:
      * @return True if content was found and removed, false otherwise
      */
     bool removeContent(T input, Point<double> pos) {
-        if (!responsible(pos)) return false;
+        if (!responsible(pos))
+            return false;
         if (isLeaf) {
             index i = 0;
             for (; i < content.size(); i++) {
-                if (content[i] == input) break;
+                if (content[i] == input)
+                    break;
             }
             if (i < content.size()) {
                 assert(positions[i].distance(pos) == 0);
-                //remove element
-                content.erase(content.begin()+i);
-                positions.erase(positions.begin()+i);
+                // remove element
+                content.erase(content.begin() + i);
+                positions.erase(positions.begin() + i);
                 return true;
             } else {
                 return false;
             }
-        }
-        else {
+        } else {
             bool removed = false;
             bool allLeaves = true;
             assert(children.size() > 0);
             for (index i = 0; i < children.size(); i++) {
-                if (!children[i].isLeaf) allLeaves = false;
+                if (!children[i].isLeaf)
+                    allLeaves = false;
                 if (children[i].removeContent(input, pos)) {
                     assert(!removed);
                     removed = true;
                 }
             }
-            if (removed) subTreeSize--;
-            //coarsen?
+            if (removed)
+                subTreeSize--;
+            // coarsen?
             if (removed && allLeaves && size() < coarsenLimit) {
-                //coarsen!!
-                //why not assert empty containers and then insert directly?
+                // coarsen!!
+                // why not assert empty containers and then insert directly?
                 vector<T> allContent;
-                vector<Point<double> > allPositions;
+                vector<Point<double>> allPositions;
                 for (index i = 0; i < children.size(); i++) {
-                    allContent.insert(allContent.end(), children[i].content.begin(), children[i].content.end());
-                    allPositions.insert(allPositions.end(), children[i].positions.begin(), children[i].positions.end());
+                    allContent.insert(allContent.end(), children[i].content.begin(),
+                                      children[i].content.end());
+                    allPositions.insert(allPositions.end(), children[i].positions.begin(),
+                                        children[i].positions.end());
                 }
                 assert(allContent.size() == allPositions.size());
                 children.clear();
@@ -212,7 +218,6 @@ public:
             return removed;
         }
     }
-
 
     /**
      * Check whether the region managed by this node lies outside of an Euclidean circle.
@@ -237,7 +242,8 @@ public:
         double maxDistance = 0;
         double minDistance = std::numeric_limits<double>::max();
 
-        if (responsible(query)) minDistance = 0;
+        if (responsible(query))
+            minDistance = 0;
 
         auto updateMinMax = [&minDistance, &maxDistance, &query](const Point<double> &pos) -> void {
             double extremalValue = pos.distance(query);
@@ -268,7 +274,6 @@ public:
         return {minDistance, maxDistance};
     }
 
-
     /**
      * Does the point at (angle, r) fall inside the region managed by this QuadNode?
      *
@@ -279,7 +284,8 @@ public:
      */
     bool responsible(Point<double> pos) const {
         for (index d = 0; d < dimension; d++) {
-            if (pos[d] < minPoint.at(d) || pos[d] >= maxPoint.at(d)) return false;
+            if (pos[d] < minPoint.at(d) || pos[d] >= maxPoint.at(d))
+                return false;
         }
         return true;
     }
@@ -304,11 +310,10 @@ public:
         }
     }
 
-    void getCoordinates(vector<Point<double> > &pointContainer) const {
+    void getCoordinates(vector<Point<double>> &pointContainer) const {
         if (isLeaf) {
             pointContainer.insert(pointContainer.end(), positions.begin(), positions.end());
-        }
-        else {
+        } else {
             assert(content.size() == 0);
             assert(positions.size() == 0);
             for (auto &child : children)
@@ -320,8 +325,8 @@ public:
      * Main query method, get points lying in a Euclidean circle around the center point.
      * Optional limits can be given to get a different result or to reduce unnecessary comparisons
      *
-     * Elements are pushed onto a vector which is a required argument. This is done to reduce copying.
-     * (Maybe not necessary due to copy elisison)
+     * Elements are pushed onto a vector which is a required argument. This is done to reduce
+     * copying. (Maybe not necessary due to copy elisison)
      *
      * Safe to call in parallel.
      *
@@ -333,99 +338,113 @@ public:
      * @param lowR Optional value for the minimum radial coordinate of the query region
      * @param highR Optional value for the maximum radial coordinate of the query region
      */
-    void getElementsInEuclideanCircle(Point<double> center, double radius, vector<T> &result) const {
+    void getElementsInEuclideanCircle(Point<double> center, double radius,
+                                      vector<T> &result) const {
         if (outOfReach(center, radius)) {
             return;
         }
 
         if (isLeaf) {
-            const double rsq = radius*radius;
+            const double rsq = radius * radius;
             const count cSize = content.size();
 
-            for (index i=0; i < cSize; i++) {
+            for (index i = 0; i < cSize; i++) {
                 if (positions[i].squaredDistance(center) < rsq) {
                     result.push_back(content[i]);
                 }
             }
-        }  else {
+        } else {
             for (index i = 0; i < children.size(); i++) {
                 children[i].getElementsInEuclideanCircle(center, radius, result);
             }
         }
     }
 
-    count getElementsProbabilistically(Point<double> euQuery, std::function<double(double)> prob, vector<T> &result) const {
+    count getElementsProbabilistically(Point<double> euQuery, std::function<double(double)> prob,
+                                       vector<T> &result) const {
         TRACE("Getting Euclidean distances");
         auto distancePair = EuclideanDistances(euQuery);
         double probUB = prob(distancePair.first);
         double probLB = prob(distancePair.second);
         assert(probLB <= probUB);
-        if (probUB > 0.5) probUB = 1;
-        if (probUB == 0) return 0;
-        //TODO: return whole if probLB == 1
-        double probdenom = std::log(1-probUB);
-        if (probdenom == 0) return 0;//there is a very small probability, but we cannot process it.
+        if (probUB > 0.5)
+            probUB = 1;
+        if (probUB == 0)
+            return 0;
+        // TODO: return whole if probLB == 1
+        double probdenom = std::log(1 - probUB);
+        if (probdenom == 0)
+            return 0; // there is a very small probability, but we cannot process it.
         TRACE("probUB: ", probUB, ", probdenom: ", probdenom);
 
-        count expectedNeighbours = probUB*size();
+        count expectedNeighbours = probUB * size();
         count candidatesTested = 0;
         count incomingNeighbours = result.size();
         count ownsize = size();
-
 
         if (isLeaf) {
             const count lsize = content.size();
             TRACE("Leaf of size ", lsize);
             for (index i = 0; i < lsize; i++) {
-                //jump!
+                // jump!
                 if (probUB < 1) {
                     double random = Aux::Random::real();
                     double delta = std::log(random) / probdenom;
                     assert(delta >= 0);
                     i += delta;
-                    if (i >= lsize) break;
+                    if (i >= lsize)
+                        break;
                     TRACE("Jumped with delta ", delta, " arrived at ", i);
                 }
 
-                //see where we've arrived
+                // see where we've arrived
                 candidatesTested++;
                 double distance = positions[i].distance(euQuery);
-                assert(distance >= distancePair.first);//TODO: These should not fail!
+                assert(distance >= distancePair.first); // TODO: These should not fail!
                 assert(distance <= distancePair.second);
                 double q = prob(distance);
-                q = q / probUB; //since the candidate was selected by the jumping process, we have to adjust the probabilities
+                q = q / probUB; // since the candidate was selected by the jumping process, we have
+                                // to adjust the probabilities
                 assert(q <= 1);
 
-                //accept?
+                // accept?
                 double acc = Aux::Random::real();
                 if (acc < q) {
                     TRACE("Accepted node ", i, " with probability ", q, ".");
                     result.push_back(content[i]);
                 }
             }
-        }  else {
-            if (expectedNeighbours < 4 || probUB < 1/1000) {//select candidates directly instead of calling recursively
-                TRACE("probUB = ", probUB,  ", switching to direct candidate selection.");
+        } else {
+            if (expectedNeighbours < 4
+                || probUB < 1 / 1000) { // select candidates directly instead of calling recursively
+                TRACE("probUB = ", probUB, ", switching to direct candidate selection.");
                 assert(probUB < 1);
                 const count stsize = size();
                 for (index i = 0; i < stsize; i++) {
                     double delta = std::log(Aux::Random::real()) / probdenom;
                     assert(delta >= 0);
                     i += delta;
-                    TRACE("Jumped with delta ", delta, " arrived at ", i, ". Calling maybeGetKthElement.");
-                    if (i < size()) maybeGetKthElement(probUB, euQuery, prob, i, result);//this could be optimized. As of now, the offset is subtracted separately for each point
-                    else break;
+                    TRACE("Jumped with delta ", delta, " arrived at ", i,
+                          ". Calling maybeGetKthElement.");
+                    if (i < size())
+                        maybeGetKthElement(
+                            probUB, euQuery, prob, i,
+                            result); // this could be optimized. As of now, the offset is subtracted
+                                     // separately for each point
+                    else
+                        break;
                     candidatesTested++;
                 }
-            } else {//carry on as normal
+            } else { // carry on as normal
                 for (index i = 0; i < children.size(); i++) {
                     TRACE("Recursively calling child ", i);
-                    candidatesTested += children[i].getElementsProbabilistically(euQuery, prob, result);
+                    candidatesTested +=
+                        children[i].getElementsProbabilistically(euQuery, prob, result);
                 }
             }
         }
         count finalNeighbours = result.size();
-        if (probLB == 1){
+        if (probLB == 1) {
             assert(finalNeighbours == incomingNeighbours + ownsize);
             (void)finalNeighbours;
             (void)incomingNeighbours;
@@ -434,21 +453,24 @@ public:
         return candidatesTested;
     }
 
-
-    void maybeGetKthElement(double upperBound, Point<double> euQuery, std::function<double(double)> prob, index k, vector<T> &circleDenizens) const {
+    void maybeGetKthElement(double upperBound, Point<double> euQuery,
+                            std::function<double(double)> prob, index k,
+                            vector<T> &circleDenizens) const {
         TRACE("Maybe get element ", k, " with upper Bound ", upperBound);
         assert(k < size());
         if (isLeaf) {
-            double acceptance = prob(euQuery.distance(positions[k]))/upperBound;
+            double acceptance = prob(euQuery.distance(positions[k])) / upperBound;
             TRACE("Is leaf, accept with ", acceptance);
-            if (Aux::Random::real() < acceptance) circleDenizens.push_back(content[k]);
+            if (Aux::Random::real() < acceptance)
+                circleDenizens.push_back(content[k]);
         } else {
             TRACE("Call recursively.");
             index offset = 0;
             for (index i = 0; i < children.size(); i++) {
                 count childsize = children[i].size();
                 if (k - offset < childsize) {
-                    children[i].maybeGetKthElement(upperBound, euQuery, prob, k - offset, circleDenizens);
+                    children[i].maybeGetKthElement(upperBound, euQuery, prob, k - offset,
+                                                   circleDenizens);
                     break;
                 }
                 offset += childsize;
@@ -472,9 +494,7 @@ public:
     /**
      * Number of points lying in the region managed by this QuadNode
      */
-    count size() const {
-        return isLeaf ? content.size() : subTreeSize;
-    }
+    count size() const { return isLeaf ? content.size() : subTreeSize; }
 
     void recount() {
         subTreeSize = 0;
@@ -488,8 +508,9 @@ public:
      * Height of subtree hanging from this QuadNode
      */
     count height() const {
-        count result = 1;//if leaf node, the children loop will not execute
-        for (const auto &child : children) result = std::max(result, child.height()+1);
+        count result = 1; // if leaf node, the children loop will not execute
+        for (const auto &child : children)
+            result = std::max(result, child.height() + 1);
         return result;
     }
 
@@ -497,40 +518,44 @@ public:
      * Leaf cells in the subtree hanging from this QuadNode
      */
     count countLeaves() const {
-        if (isLeaf) return 1;
+        if (isLeaf)
+            return 1;
         return std::accumulate(
             children.begin(), children.end(), count{0},
             [](count result, const auto &child) { return result + child.countLeaves(); });
     }
 
-    index getID() const {
-        return ID;
-    }
+    index getID() const { return ID; }
 
     index indexSubtree(index nextID) {
         index result = nextID;
-        assert(children.size() == std::pow(2,dimension) || children.size() == 0);
+        assert(children.size() == std::pow(2, dimension) || children.size() == 0);
         for (auto &child : children)
             result = child.indexSubtree(result);
 
         this->ID = result;
-        return result+1;
+        return result + 1;
     }
 
     index getCellID(Point<double> pos) const {
-        if (!responsible(pos)) return none;
-        if (isLeaf) return getID();
+        if (!responsible(pos))
+            return none;
+        if (isLeaf)
+            return getID();
         else {
             for (const auto &child : children) {
                 index childresult = child.getCellID(pos);
-                if (childresult != none) return childresult;
+                if (childresult != none)
+                    return childresult;
             }
-            throw std::runtime_error("No responsible child node found even though this node is responsible.");
+            throw std::runtime_error(
+                "No responsible child node found even though this node is responsible.");
         }
     }
 
     index getMaxIDInSubtree() const {
-        if (isLeaf) return getID();
+        if (isLeaf)
+            return getID();
         else {
             index result = 0;
             for (int i = 0; i < children.size(); i++) {
@@ -541,14 +566,13 @@ public:
     }
 
     count reindex(count offset) {
-        if (isLeaf)
-        {
+        if (isLeaf) {
 #ifndef NETWORKIT_OMP2
-            #pragma omp task
+#pragma omp task
 #endif // NETWORKIT_OMP2
             {
                 index p = offset;
-                std::generate(content.begin(), content.end(), [&p](){return p++;});
+                std::generate(content.begin(), content.end(), [&p]() { return p++; });
             }
             offset += size();
         } else {
@@ -558,6 +582,6 @@ public:
         return offset;
     }
 };
-}
+} // namespace NetworKit
 
 #endif // NETWORKIT_GENERATORS_QUADTREE_QUAD_NODE_CARTESIAN_EUCLID_HPP_

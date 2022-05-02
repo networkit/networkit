@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * LPDegreeOrdered.hpp
  *
@@ -30,7 +29,7 @@ public:
      *
      * @param[in] G input graph
      */
-    LPDegreeOrdered(const Graph& G);
+    LPDegreeOrdered(const Graph &G);
 
     /**
      * Detect communities.
@@ -38,10 +37,10 @@ public:
     void run() override;
 
     /**
-    * Get number of iterations in last run.
-    *
-    * @return Number of iterations.
-    */
+     * Get number of iterations in last run.
+     *
+     * @return Number of iterations.
+     */
     count numberOfIterations();
 };
 

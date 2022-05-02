@@ -1,4 +1,3 @@
-// no-networkit-format
 #ifndef NETWORKIT_COMMUNITY_HUB_DOMINANCE_HPP_
 #define NETWORKIT_COMMUNITY_HUB_DOMINANCE_HPP_
 
@@ -30,7 +29,7 @@ public:
      * @param G The graph that is partitioned in @a zeta
      * @return The average hub dominance of @a zeta
      */
-    double getQuality(const Partition& zeta, const Graph& G) override;
+    double getQuality(const Partition &zeta, const Graph &G) override;
     /**
      * Calculates the dominance of hubs in the given Cover @a zeta of the given
      * Graph @a G.
@@ -39,7 +38,7 @@ public:
      * @param G The graph that is partitioned in @a zeta
      * @return The average hub dominance of @a zeta
      */
-    double getQuality(const Cover& zeta, const Graph& G);
+    double getQuality(const Cover &zeta, const Graph &G);
 };
 
 } // namespace NetworKit

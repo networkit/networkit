@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * SampledNodeStructuralRandMeasure.hpp
  *
@@ -22,20 +21,19 @@ namespace NetworKit {
 class SampledNodeStructuralRandMeasure final : public DissimilarityMeasure {
 
 public:
-
     /**
-     * Constructs the SampledNodeStructuralRandMeasure. A maximum of @a maxSamples samples are drawn.
+     * Constructs the SampledNodeStructuralRandMeasure. A maximum of @a maxSamples samples are
+     * drawn.
      *
      * @param maxSamples The amount of samples to draw.
      */
     SampledNodeStructuralRandMeasure(count maxSamples);
 
-    double getDissimilarity(const Graph& G, const Partition& first, const Partition& second) override;
+    double getDissimilarity(const Graph &G, const Partition &first,
+                            const Partition &second) override;
 
 private:
-
     count maxSamples;
-
 };
 
 } /* namespace NetworKit */

@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * NetworkitBinaryGraph.hpp
  *
@@ -8,12 +7,12 @@
 #ifndef NETWORKIT_IO_NETWORKIT_BINARY_GRAPH_HPP_
 #define NETWORKIT_IO_NETWORKIT_BINARY_GRAPH_HPP_
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
+#include <tlx/define/likely.hpp>
 #include <tlx/math/clz.hpp>
 #include <tlx/math/ffs.hpp>
-#include <tlx/define/likely.hpp>
 
 namespace NetworKit {
 namespace nkbg {
@@ -33,19 +32,13 @@ struct Header {
     uint64_t offsetAdjIdTranspose;
 };
 
-enum WEIGHT_FORMAT {
-    NONE = 0,
-    VARINT = 1,
-    SIGNED_VARINT = 2,
-    DOUBLE = 3,
-    FLOAT = 4
-};
+enum WEIGHT_FORMAT { NONE = 0, VARINT = 1, SIGNED_VARINT = 2, DOUBLE = 3, FLOAT = 4 };
 
 static constexpr uint8_t DELETED_BIT = 0x1; // bit 0
-static constexpr uint64_t DIR_MASK = 0x1; // bit 0
-static constexpr uint64_t WGHT_MASK = 0xE; //bit 1-3
+static constexpr uint64_t DIR_MASK = 0x1;   // bit 0
+static constexpr uint64_t WGHT_MASK = 0xE;  // bit 1-3
 static constexpr uint64_t WGHT_SHIFT = 0x1;
-static constexpr uint64_t INDEX_MASK = 0x10; //bit 4
+static constexpr uint64_t INDEX_MASK = 0x10; // bit 4
 static constexpr uint64_t INDEX_SHIFT = 0x4;
 
 /**

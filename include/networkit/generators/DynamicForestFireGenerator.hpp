@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DynamicForestFireGenerator.hpp
  *
@@ -27,11 +26,12 @@ namespace NetworKit {
 class DynamicForestFireGenerator final : public DynamicGraphGenerator {
 
 public:
-
     /**
-     * @param  p        "forward burning probability", controls the amount of forward connections burned by each new node
+     * @param  p        "forward burning probability", controls the amount of forward connections
+     * burned by each new node
      * @param   directed  whether the generated graph is directed or undirected
-     * @param   r         scales down the burning probability for backward connections (ignored for undirected graphs)
+     * @param   r         scales down the burning probability for backward connections (ignored for
+     * undirected graphs)
      */
     DynamicForestFireGenerator(double p, bool directed, double r = 1.0);
 
@@ -40,16 +40,14 @@ public:
      *
      * @param[in]	nSteps	number of time steps in the event stream
      */
-     std::vector<GraphEvent> generate(count nSteps) override;
+    std::vector<GraphEvent> generate(count nSteps) override;
 
 private:
-
-     double p;
-     bool directed;
-     double r;
-     bool firstCall;
-     Graph G;
-
+    double p;
+    bool directed;
+    double r;
+    bool firstCall;
+    Graph G;
 };
 
 } /* namespace NetworKit */

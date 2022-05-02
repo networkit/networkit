@@ -1,4 +1,3 @@
-// no-networkit-format
 #ifndef NETWORKIT_COMMUNITY_LOCAL_COVER_EVALUATION_HPP_
 #define NETWORKIT_COMMUNITY_LOCAL_COVER_EVALUATION_HPP_
 
@@ -9,8 +8,8 @@
 namespace NetworKit {
 
 /**
- * Virtual base class of all evaluation methods for a single Cover which is based on the evaluation of single clusters.
- * This is the base class for Covers.
+ * Virtual base class of all evaluation methods for a single Cover which is based on the evaluation
+ * of single clusters. This is the base class for Covers.
  */
 class LocalCoverEvaluation : public LocalCommunityEvaluation {
 public:
@@ -21,11 +20,12 @@ public:
      * @param C The cover that shall be evaluated.
      */
     LocalCoverEvaluation(const Graph &G, const Cover &C);
+
 protected:
     const Graph *G;
     const Cover *C;
 };
 
-}
+} // namespace NetworKit
 
 #endif // NETWORKIT_COMMUNITY_LOCAL_COVER_EVALUATION_HPP_

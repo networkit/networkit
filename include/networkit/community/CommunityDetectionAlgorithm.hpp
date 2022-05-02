@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * CommunityDetectionAlgorithm.hpp
  *
@@ -26,7 +25,7 @@ public:
      *
      * @param[in] G input graph
      */
-    CommunityDetectionAlgorithm(const Graph& G);
+    CommunityDetectionAlgorithm(const Graph &G);
 
     /**
      * A community detection algorithm operates on a graph, so the constructor expects a graph.
@@ -51,7 +50,7 @@ public:
     virtual const Partition &getPartition() const;
 
 protected:
-    const Graph* G;
+    const Graph *G;
     Partition result;
 };
 

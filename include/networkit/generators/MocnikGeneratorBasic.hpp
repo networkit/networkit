@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * MocnikGeneratorBasic.hpp
  *
@@ -16,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class MocnikGeneratorBasic: public StaticGraphGenerator {
+class MocnikGeneratorBasic : public StaticGraphGenerator {
     // GENERAL DATA
 
     /**

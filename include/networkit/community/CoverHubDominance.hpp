@@ -1,4 +1,3 @@
-// no-networkit-format
 #ifndef NETWORKIT_COMMUNITY_COVER_HUB_DOMINANCE_HPP_
 #define NETWORKIT_COMMUNITY_COVER_HUB_DOMINANCE_HPP_
 
@@ -34,6 +33,6 @@ public:
     bool isSmallBetter() const override { return false; }
 };
 
-}
+} // namespace NetworKit
 
 #endif // NETWORKIT_COMMUNITY_COVER_HUB_DOMINANCE_HPP_

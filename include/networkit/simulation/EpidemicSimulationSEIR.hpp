@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * EpidemicSimulationSEIR.hpp
  *
@@ -30,25 +29,26 @@ public:
      * @param iTime Infectious time.
      * @param zero Starting node.
      */
-    EpidemicSimulationSEIR(const Graph& G, count tMax, double transP, count eTime, count iTime, node zero);
+    EpidemicSimulationSEIR(const Graph &G, count tMax, double transP, count eTime, count iTime,
+                           node zero);
 
     void run() override;
 
     /**
-     * Returns the data from the simulation (only valid after run() was called). 
-     * @return Vector of vectors, containing "zero", "time", "state" and "count" values for each node.
+     * Returns the data from the simulation (only valid after run() was called).
+     * @return Vector of vectors, containing "zero", "time", "state" and "count" values for each
+     * node.
      */
     const std::vector<std::vector<count>> &getData() const;
 
 private:
-
-    const Graph* G;
+    const Graph *G;
     count tMax;
     double transP;
     count eTime;
     count iTime;
     node zero;
-    enum class State {S, E, I, R, U}; // Susceptible, Exposed, Infectious, Removed, Undefined
+    enum class State { S, E, I, R, U }; // Susceptible, Exposed, Infectious, Removed, Undefined
     std::vector<State> state;
     std::vector<index> timestamp;
     std::vector<std::vector<count>> stats;

@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * MocnikGenerator.hpp
  *
@@ -16,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class MocnikGenerator final: public StaticGraphGenerator {
+class MocnikGenerator final : public StaticGraphGenerator {
     // GENERAL DATA
 
     /**
@@ -132,13 +131,14 @@ public:
      *     in case of a hierarchical model, also a list of relative weights can be
      *     provided.
      */
-    MocnikGenerator(count dim, count n, double k, bool weighted=false);
+    MocnikGenerator(count dim, count n, double k, bool weighted = false);
     MocnikGenerator(count dim, std::vector<count> ns, double k, bool weighted = false);
-    MocnikGenerator(count dim, std::vector<count> ns, std::vector<double> ks, bool weighted=false);
+    MocnikGenerator(count dim, std::vector<count> ns, std::vector<double> ks,
+                    bool weighted = false);
     MocnikGenerator(count dim, count n, double k, std::vector<double> weighted);
-    MocnikGenerator(count dim, std::vector<count> ns, double k,
+    MocnikGenerator(count dim, std::vector<count> ns, double k, std::vector<double> weighted);
+    MocnikGenerator(count dim, std::vector<count> ns, std::vector<double> ks,
                     std::vector<double> weighted);
-    MocnikGenerator(count dim, std::vector<count> ns, std::vector<double> ks, std::vector<double> weighted);
 
     Graph generate() override;
 };

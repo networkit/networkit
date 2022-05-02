@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * NMIDistance.hpp
  *
@@ -19,12 +18,10 @@ namespace NetworKit {
  * Normalized Mutual Information.
  *
  */
-class NMIDistance final: public DissimilarityMeasure {
+class NMIDistance final : public DissimilarityMeasure {
 
 public:
-
-    double getDissimilarity(const Graph& G, const Partition& zeta, const Partition& eta) override;
-
+    double getDissimilarity(const Graph &G, const Partition &zeta, const Partition &eta) override;
 };
 
 } /* namespace NetworKit */

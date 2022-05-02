@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * EdgeCut.hpp
  *
@@ -18,7 +17,7 @@ namespace NetworKit {
  */
 class EdgeCut final : public QualityMeasure {
 public:
-    double getQuality(const Partition& zeta, const Graph& G) override;
+    double getQuality(const Partition &zeta, const Graph &G) override;
 };
 
 } /* namespace NetworKit */

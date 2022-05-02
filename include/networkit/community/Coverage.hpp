@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * Coverage.hpp
  *
@@ -17,10 +16,9 @@ namespace NetworKit {
  * @ingroup community
  * Coverage is the fraction of intra-cluster edges.
  */
-class Coverage final: public QualityMeasure {
+class Coverage final : public QualityMeasure {
 public:
-
-    double getQuality(const Partition& zeta, const Graph& G) override;
+    double getQuality(const Partition &zeta, const Graph &G) override;
 };
 
 } /* namespace NetworKit */

@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * ClusteringGenerator.hpp
  *
@@ -28,7 +27,7 @@ public:
      * @param G The graph.
      * @return A Partition in which every node belongs to its own cluster.
      */
-    Partition makeSingletonClustering(const Graph& G);
+    Partition makeSingletonClustering(const Graph &G);
 
     /**
      * Make a 1-clustering of Graph @a G, i.e. a clustering in which all nodes belong to the same
@@ -37,8 +36,7 @@ public:
      * @param G The graph.
      * @return A Partition in which all nodes belong to the same cluster.
      */
-    Partition makeOneClustering(const Graph& G);
-
+    Partition makeOneClustering(const Graph &G);
 
     /**
      * Make a clustering of Graph @a G with @a k clusters to which the nodes are randomly assigned.
@@ -47,8 +45,7 @@ public:
      * @param k The amount of clusters.
      * @return A Partition with @a k clusters and each node randomly assigned to one of them.
      */
-    Partition makeRandomClustering(const Graph& G, count k);
-
+    Partition makeRandomClustering(const Graph &G, count k);
 
     /**
      * Make a clustering of Graph @a G with @a k clusters. The first n/k nodes are assigned to the
@@ -58,13 +55,14 @@ public:
      * @param k The amount of clusters.
      * @return A Partition with @a k clusters and each node assigned like described above.
      */
-    Partition makeContinuousBalancedClustering(const Graph& G, count k);
+    Partition makeContinuousBalancedClustering(const Graph &G, count k);
 
     /**
-     * Make a clustering of a Graph @a G with @a k clusters. Each node u is assigned to cluster u % k.
-     * When the number of nodes n is quadratic and k is the square root of n, this clustering is complementary
-     * to the continuous balanced clustering in the sense that no pair of nodes that is in the same cluster
-     * in one of the clusterings is in the same cluster in the other clustering.
+     * Make a clustering of a Graph @a G with @a k clusters. Each node u is assigned to cluster u %
+     * k. When the number of nodes n is quadratic and k is the square root of n, this clustering is
+     * complementary to the continuous balanced clustering in the sense that no pair of nodes that
+     * is in the same cluster in one of the clusterings is in the same cluster in the other
+     * clustering.
      *
      * @param G The graph.
      * @param k The amount of clusters.

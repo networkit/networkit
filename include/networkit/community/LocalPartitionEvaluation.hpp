@@ -1,4 +1,3 @@
-// no-networkit-format
 #ifndef NETWORKIT_COMMUNITY_LOCAL_PARTITION_EVALUATION_HPP_
 #define NETWORKIT_COMMUNITY_LOCAL_PARTITION_EVALUATION_HPP_
 
@@ -9,8 +8,8 @@
 namespace NetworKit {
 
 /**
- * Virtual base class of all evaluation methods for a single Partition which is based on the evaluation of single clusters.
- * This is the base class for Partitions.
+ * Virtual base class of all evaluation methods for a single Partition which is based on the
+ * evaluation of single clusters. This is the base class for Partitions.
  */
 class LocalPartitionEvaluation : public LocalCommunityEvaluation {
 public:
@@ -21,11 +20,12 @@ public:
      * @param P The partition that shall be evaluated.
      */
     LocalPartitionEvaluation(const Graph &G, const Partition &P);
+
 protected:
     const Graph *G;
     const Partition *P;
 };
 
-}
+} // namespace NetworKit
 
 #endif // NETWORKIT_COMMUNITY_LOCAL_PARTITION_EVALUATION_HPP_
