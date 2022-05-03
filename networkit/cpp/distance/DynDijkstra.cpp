@@ -149,7 +149,9 @@ void DynDijkstra::updateBatch(const std::vector<GraphEvent> &batch) {
     while (!updateHeap.empty()) {
         mod = true;
         node current = updateHeap.extract_top();
-        if (color[current] == BLACK) {
+        if (color[current] == BLACK
+            && Aux::NumericTools::logically_equal(updateDistances[current], distances[current])) {
+            auto tmp = npaths[current];
             npaths[current] = 0;
             G->forInNeighborsOf(current, [&](node current, node z, edgeweight w) {
                 // if z is a predecessor for current update the shortest paths
@@ -160,6 +162,13 @@ void DynDijkstra::updateBatch(const std::vector<GraphEvent> &batch) {
                     npaths[current] += npaths[z];
                 }
             });
+            if (tmp != npaths[current]) {
+                G->forNeighborsOf(current, [&](node z, edgeweight w) {
+                    // current was a predecessor for z
+                    if (Aux::NumericTools::ge(distances[current] + w, distances[z], distEpsilon))
+                        updateQueue(z, distances[current] + w);
+                });
+            }
             continue;
         }
         edgeweight k = updateDistances[current];
