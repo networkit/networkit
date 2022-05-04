@@ -122,7 +122,7 @@ if cmakeCompiler is None:
 		try:
 			proc = subprocess.run(['brew','--prefix'], stdout=subprocess.PIPE)
 			brewPrefix = proc.stdout.decode('utf-8').strip()
-			cmakeCompiler = determineCompiler(["c++"], "c++14", ["-Xpreprocessor", "-fopenmp", "-I" + str(brewPrefix) + "/include", "-L" + str(brewPrefix) + "/lib", "-lomp"])
+			cmakeCompiler = determineCompiler(["c++"], "c++17", ["-Xpreprocessor", "-fopenmp", "-I" + str(brewPrefix) + "/include", "-L" + str(brewPrefix) + "/lib", "-lomp"])
 		except:
 			pass
 	if sys.platform == "win32":
@@ -131,7 +131,7 @@ if cmakeCompiler is None:
 		cmakeCompiler = "cl"
 		print("The default for Windows is to use cl.exe (MSVC), be sure to install and activate Visual Studio command line tools.")
 	if cmakeCompiler is None:
-		cmakeCompiler = determineCompiler(candidates, "c++14", ["-fopenmp"])
+		cmakeCompiler = determineCompiler(candidates, "c++17", ["-fopenmp"])
 	if cmakeCompiler is None:
 		print("ERROR: No suitable compiler found. Install any of these: ", candidates)
 		print("       If you have a suitable compiler installed, which is not a standard path, you can override detection by setting 'export NETWORKIT_OVERRIDE_CXX=<compiler-path>'")

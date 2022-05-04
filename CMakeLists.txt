@@ -25,7 +25,7 @@ set(NETWORKIT_RELEASE_LOGGING "AUTO" CACHE STRING "Do not compile log messages a
 set(NETWORKIT_PYTHON_RPATH "" CACHE STRING "Build specific rpath references.")
 set(NETWORKIT_EXT_TLX "" CACHE STRING "Absolute path for external tlx-library. If not set, extlibs/tlx is used")
 
-set (NETWORKIT_CXX_STANDARD "14" CACHE STRING "CXX Version to compile with. Currently fixed to 14")
+set (NETWORKIT_CXX_STANDARD "17" CACHE STRING "CXX Version to compile with. Currently fixed to 17")
 
 # Allow user to set installation paths relative to CMAKE_INSTALL_PREFIX
 
