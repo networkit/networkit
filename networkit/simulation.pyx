@@ -1,10 +1,10 @@
 # distutils: language=c++
 
-from networkit.exceptions import ReducedFunctionalityWarning
 from libcpp.vector cimport vector
 
 from .base cimport _Algorithm, Algorithm
 from .graph cimport _Graph, Graph
+from .helpers import ReducedFunctionalityWarning
 from .structures cimport count, index, node
 
 import warnings
