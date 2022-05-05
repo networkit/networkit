@@ -24,6 +24,15 @@ namespace GraphClusteringTools {
 float getImbalance(const Partition &zeta);
 
 /**
+ * Get the imbalance of clusters in the given partition compared to a given graph.
+ *
+ * @param zeta Input partition
+ * @param graph Input graph
+ * @return total imbalance between clusters
+ */
+float getImbalance(const Partition &zeta, const Graph &graph);
+
+/**
  * Get the communication graph for a given graph and its partition.
  * A communication graph consists of a number of nodes, which equal
  * the number of clusters in the partition. The edges between nodes
