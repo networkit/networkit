@@ -244,21 +244,20 @@ TEST_F(DynBetweennessGTest, runDynVsStatic) {
 }
 
 TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
-    METISGraphReader reader;
-    Graph G = reader.read("input/celegans_metabolic.graph");
-    count n = G.upperNodeIdBound();
+    Aux::Random::setSeed(1, true);
+    Graph G = METISGraphReader{}.read("input/celegans_metabolic.graph");
+    G.indexEdges();
 
     double epsilon = 0.1; // error
     double delta = 0.1; // confidence
     DynApproxBetweenness dynbc(G, epsilon, delta, false);
-    ApproxBetweenness bc(G, epsilon, delta);
     dynbc.run();
+    Betweenness bc(G, epsilon, delta);
     bc.run();
     std::vector<double> dynbc_scores = dynbc.scores();
     std::vector<double> bc_scores = bc.scores();
-    for(count i=0; i<n; i++) {
-        EXPECT_NEAR(dynbc_scores[i], bc_scores[i], epsilon);
-    }
+    G.forNodes([&](node i) { EXPECT_NEAR(dynbc_scores[i], bc_scores[i], epsilon); });
+
     std::vector<GraphEvent> batch;
     for (int i = 0; i < 10; ++i) {
         auto randomEdge = GraphTools::randomEdge(G);
@@ -269,9 +268,7 @@ TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
     dynbc.updateBatch(batch);
     dynbc_scores = dynbc.scores();
     bc_scores = bc.scores();
-    for(count i=0; i<n; i++) {
-        EXPECT_NEAR(dynbc_scores[i], bc_scores[i], epsilon);
-    }
+    G.forNodes([&](node i) { EXPECT_NEAR(dynbc_scores[i], bc_scores[i], epsilon); });
 }
 
 TEST_F(DynBetweennessGTest, runApproxBetweenness) {
