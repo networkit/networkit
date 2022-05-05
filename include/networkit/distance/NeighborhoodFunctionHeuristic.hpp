@@ -47,7 +47,6 @@ private:
     std::vector<count> result;
 
     /* selection schemes implemented as private functions */
-    std::vector<node> random(const Graph &G, count nSamples);
     std::vector<node> split(const Graph &G, count nSamples);
 };
 

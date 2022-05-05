@@ -1,4 +1,3 @@
-
 #include <algorithm>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -75,43 +74,10 @@ node randomNode(const Graph &G) {
 }
 
 std::vector<node> randomNodes(const Graph &G, count n) {
-    assert(n <= G.numberOfNodes());
-    std::vector<node> selectedNodes;
-    std::vector<bool> alreadySelected(G.numberOfNodes(), false);
-
-    if (n == G.numberOfNodes()) {
-        selectedNodes.insert(selectedNodes.begin(), G.nodeRange().begin(), G.nodeRange().end());
-    } else if (n > G.numberOfNodes() / 2) { // in order to minimize the calls to randomNode
-                                            // we randomize the ones that aren't pivot
-                                            // if the are more to be selected than not-selected
-        std::fill(alreadySelected.begin(), alreadySelected.end(), true);
-
-        for (count i = 0; i < G.numberOfNodes() - n; ++i) { // we have to sample distinct nodes
-            node v = GraphTools::randomNode(G);
-            while (!alreadySelected[v]) {
-                v = GraphTools::randomNode(G);
-            }
-            alreadySelected[v] = false;
-        }
-
-        for (const auto sample : G.nodeRange()) {
-            if (alreadySelected[sample]) {
-                selectedNodes.push_back(sample);
-                if (selectedNodes.size() == n)
-                    break;
-            }
-        }
-    } else {
-        for (count i = 0; i < n; ++i) { // we have to selected distinct nodes
-            node v = GraphTools::randomNode(G);
-            while (alreadySelected[v]) {
-                v = GraphTools::randomNode(G);
-            }
-            selectedNodes.push_back(v);
-            alreadySelected[v] = true;
-        }
-    }
-    return selectedNodes;
+    std::vector<node> result(n);
+    std::sample(G.nodeRange().begin(), G.nodeRange().end(), result.begin(), n,
+                Aux::Random::getURNG());
+    return result;
 }
 
 std::pair<node, node> randomEdge(const Graph &G, bool uniformDistribution) {

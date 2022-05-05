@@ -5,6 +5,7 @@
 *      Author: Maximilian Vogel
 */
 
+#include <algorithm>
 #include <cmath>
 #include <map>
 #include <omp.h>
@@ -55,7 +56,7 @@ void NeighborhoodFunctionHeuristic::run() {
     if (strategy == SPLIT) {
         start_nodes = split(*G, nSamples);
     } else if (strategy == RANDOM) {
-        start_nodes = random(*G, nSamples);
+        std::sample(G->nodeRange().begin(), G->nodeRange().end(), start_nodes.begin(), nSamples, Aux::Random::getURNG());
     }
 
     // run nSamples BFS and count the distances.
@@ -103,15 +104,6 @@ void NeighborhoodFunctionHeuristic::run() {
 const std::vector<count> &NeighborhoodFunctionHeuristic::getNeighborhoodFunction() const {
     assureFinished();
     return result;
-}
-
-std::vector<node> NeighborhoodFunctionHeuristic::random(const Graph& G, count nSamples) {
-    std::vector<node> start_nodes(nSamples, 0);
-    // the vector of start nodes is chosen completely at random with the graphs "randomNode()" function.
-    for (index i = 0; i < nSamples; ++i) {
-        start_nodes[i] = GraphTools::randomNode(G);
-    }
-    return start_nodes;
 }
 
 std::vector<node> NeighborhoodFunctionHeuristic::split(const Graph& G, count nSamples) {
