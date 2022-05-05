@@ -7,6 +7,7 @@ from libcpp.string cimport string
 from libcpp cimport bool as bool_t
 from libcpp.map cimport map
 from libcpp.unordered_map cimport unordered_map
+from .helpers import stdstring
 
 import os
 import logging
@@ -28,25 +29,6 @@ cdef extern from "<algorithm>" namespace "std":
 	void swap[T](T &a,  T &b)
 	_Graph move( _Graph t ) nogil # specialized declaration as general declaration disables template argument deduction and doesn't work
 	_Partition move( _Partition t) nogil
-
-def stdstring(pystring):
-	""" 
-	stdstring(pystring)
-
-	Convert a Python string to a bytes object which is automatically coerced to std::string
-
-	Parameters
-	----------
-	pystring : str
-		Input python string.
-
-	Returns
-	-------
-	stdstring
-		Python bytes string.
-	"""
-	pybytes = pystring.encode("utf-8")
-	return pybytes
 
 cdef extern from "<networkit/io/GraphReader.hpp>":
 

@@ -4,6 +4,7 @@ from libcpp.string cimport string
 from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
+from .helpers import stdstring
 
 from .graph cimport _Graph, Graph
 from .structures cimport count, index, node, coordinate
@@ -26,11 +27,6 @@ cdef object toPoint2DVector(const vector[_Point2D]& v):
 
 cdef object toNodePoint2DVector(const vector[pair[node, _Point2D]]& v):
 	return [(v[i].first, v[i].second.asPair()) for i in range(v.size())]
-
-def stdstring(pystring):
-	""" convert a Python string to a bytes object which is automatically coerced to std::string"""
-	pybytes = pystring.encode("utf-8")
-	return pybytes
 
 cdef extern from "<networkit/viz/GraphLayoutAlgorithm.hpp>":
 

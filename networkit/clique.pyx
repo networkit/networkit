@@ -8,28 +8,10 @@ from libcpp.string cimport string
 from .base cimport _Algorithm, Algorithm
 from .graph cimport _Graph, Graph
 from .structures cimport index, node
+from .helpers import stdstring
 
 cdef extern from "cython_helper.h":
 	void throw_runtime_error(string message)
-
-def stdstring(pystring):
-	""" 
-	stdstring(pystring)
-
-	Convert a Python string to a bytes object which is automatically coerced to std::string
-	
-	Parameters
-	----------
-	pystring : str
-		Python string
-
-	Returns
-	-------
-	str 
-		Original string in utf-8 encoding
-	"""
-	pybytes = pystring.encode("utf-8")
-	return pybytes
 
 cdef cppclass NodeVectorCallbackWrapper:
 	void* callback
