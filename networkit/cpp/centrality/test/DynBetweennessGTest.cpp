@@ -81,7 +81,7 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraph) {
         EXPECT_NEAR(dynbc_scores[i], bc_scores[i]/double(n*(n-1)), epsilon);
     });
 
-    GraphEvent event(GraphEvent::EDGE_ADDITION, 0, 6, 1.0);
+    GraphEvent event(GraphEvent::EDGE_ADDITION, 0, 6);
     G.addEdge(event.u, event.v);
     bc.run();
     dynbc.update(event);
@@ -208,7 +208,7 @@ TEST_F(DynBetweennessGTest, runDynVsStatic) {
         node v2 = GraphTools::randomNode(G);
         if (v1 != v2 && !G.hasEdge(v1, v2)) {
             G.addEdge(v1, v2);
-            batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0));
+            batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2));
             i++;
         }
     }
