@@ -54,7 +54,7 @@ Graph DynBetweennessGTest::generateSmallGraph() const {
     G.addEdge(4, 5);
     G.addEdge(5, 6);
     G.addEdge(5, 7);
-    
+
     if (isDirected()) {
         G.addEdge(4, 1);
         G.addEdge(3, 0);
@@ -182,10 +182,7 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweenessGeneratedGraphEdgeDeletion) {
 }
 
 TEST_F(DynBetweennessGTest, runDynVsStatic) {
-    METISGraphReader reader;
-    //Graph G = reader.read("input/PGPgiantcompo.graph");
-    Graph G = reader.read("input/celegans_metabolic.graph");
-    count n = G.upperNodeIdBound();
+    Graph G = METISGraphReader{}.read("input/celegans_metabolic.graph");
 
     DEBUG("Initializing DynApproxBetweenness");
     DynApproxBetweenness dynbc(G, epsilon, delta, false);
@@ -226,9 +223,7 @@ TEST_F(DynBetweennessGTest, runDynVsStatic) {
 }
 
 TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
-    METISGraphReader reader;
-    Graph G = reader.read("input/celegans_metabolic.graph");
-    count n = G.upperNodeIdBound();
+    Graph G = METISGraphReader{}.read("input/celegans_metabolic.graph");
 
     DynApproxBetweenness dynbc(G, epsilon, delta, false);
     ApproxBetweenness bc(G, epsilon, delta);
@@ -255,7 +250,6 @@ TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
 }
 
 TEST_F(DynBetweennessGTest, runApproxBetweenness) {
-    //METISGraphReader reader;
     DorogovtsevMendesGenerator generator(100);
     Graph G1 = generator.generate();
     Graph G(G1, true, false);
@@ -339,6 +333,5 @@ TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertUndirected){
             });
         }
 }
-
 
 } /* namespace NetworKit */
