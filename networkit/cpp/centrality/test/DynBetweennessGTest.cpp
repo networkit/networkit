@@ -80,11 +80,11 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraph) {
     G.forNodes([&](const node i) {
         EXPECT_NEAR(dynbc_scores[i], bc_scores[i]/double(n*(n-1)), epsilon);
     });
-    std::vector<GraphEvent> batch;
-    batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, 0, 6, 1.0));
-    G.addEdge(batch[0].u, batch[0].v);
+
+    GraphEvent event(GraphEvent::EDGE_ADDITION, 0, 6, 1.0);
+    G.addEdge(event.u, event.v);
     bc.run();
-    dynbc.updateBatch(batch);
+    dynbc.update(event);
     dynbc_scores = dynbc.scores();
     bc_scores = bc.scores();
     G.forNodes([&](const node i) {
@@ -105,11 +105,11 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraphEdgeDeletion) {
     G.forNodes([&](const node i) {
         EXPECT_NEAR(dynbc_scores[i], bc_scores[i]/double(n*(n-1)), epsilon);
     });
-    std::vector<GraphEvent> batch;
-    batch.push_back(GraphEvent(GraphEvent::EDGE_REMOVAL, 3, 5));
-    G.removeEdge(batch[0].u, batch[0].v);
+
+    GraphEvent event(GraphEvent::EDGE_REMOVAL, 3, 5);
+    G.removeEdge(event.u, event.v);
     bc.run();
-    dynbc.updateBatch(batch);
+    dynbc.update(event);
     dynbc_scores = dynbc.scores();
     bc_scores = bc.scores();
     G.forNodes([&](const node i) {
@@ -142,9 +142,9 @@ TEST_P(DynBetweennessGTest, testDynApproxBetweenessGeneratedGraph) {
             i++;
             DEBUG("Adding edge number ", i);
             G.addEdge(v1, v2);
-            std::vector<GraphEvent> batch;
-            batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0));
-            dynbc.updateBatch(batch);
+
+            GraphEvent event(GraphEvent::EDGE_ADDITION, v1, v2);
+            dynbc.update(event);
             bc.run();
             std::vector<double> dynbc_scores = dynbc.scores();
             std::vector<double> bc_scores = bc.scores();
@@ -175,9 +175,8 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweenessGeneratedGraphEdgeDeletion) {
         auto randomEdge = GraphTools::randomEdge(G);
         DEBUG("Deleting edge number ", i);
         G.removeEdge(randomEdge.first, randomEdge.second);
-        std::vector<GraphEvent> batch;
-        batch.emplace_back(GraphEvent::EDGE_REMOVAL, randomEdge.first, randomEdge.second);
-        dynbc.updateBatch(batch);
+        GraphEvent event(GraphEvent::EDGE_REMOVAL, randomEdge.first, randomEdge.second);
+        dynbc.update(event);
         bc.run();
         std::vector<double> dynbc_scores = dynbc.scores();
         std::vector<double> bc_scores = bc.scores();
