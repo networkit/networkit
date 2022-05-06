@@ -38,7 +38,7 @@ public:
 
     GraphEvent() = default;
 
-    GraphEvent(Type type, node u = none, node v = none, edgeweight w = 1.0);
+    GraphEvent(Type type, node u = none, node v = none, edgeweight w = defaultEdgeWeight);
 
     static bool TLX_DEPRECATED(compare(GraphEvent a, GraphEvent b));
     static bool TLX_DEPRECATED(equal(GraphEvent a, GraphEvent b));
