@@ -90,17 +90,13 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraph) {
     Betweenness bc(G);
     dynbc.run();
     bc.run();
-    std::vector<double> dynbc_scores = dynbc.scores();
-    std::vector<double> bc_scores = bc.scores();
-    compareAgainstBaseline(G, dynbc_scores, bc_scores, true);
+    compareAgainstBaseline(G, dynbc.scores(), bc.scores(), true);
 
     GraphEvent event(GraphEvent::EDGE_ADDITION, 0, 6);
     G.addEdge(event.u, event.v);
     bc.run();
     dynbc.update(event);
-    dynbc_scores = dynbc.scores();
-    bc_scores = bc.scores();
-    compareAgainstBaseline(G, dynbc_scores, bc_scores, true);
+    compareAgainstBaseline(G, dynbc.scores(), bc.scores(), true);
 }
 
 TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraphEdgeDeletion) {
@@ -109,17 +105,13 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraphEdgeDeletion) {
     Betweenness bc(G);
     dynbc.run();
     bc.run();
-    std::vector<double> dynbc_scores = dynbc.scores();
-    std::vector<double> bc_scores = bc.scores();
-    compareAgainstBaseline(G, dynbc_scores, bc_scores, true);
+    compareAgainstBaseline(G, dynbc.scores(), bc.scores(), true);
 
     GraphEvent event(GraphEvent::EDGE_REMOVAL, 3, 5);
     G.removeEdge(event.u, event.v);
     bc.run();
     dynbc.update(event);
-    dynbc_scores = dynbc.scores();
-    bc_scores = bc.scores();
-    compareAgainstBaseline(G, dynbc_scores, bc_scores, true);
+    compareAgainstBaseline(G, dynbc.scores(), bc.scores(), true);
 }
 
 TEST_P(DynBetweennessGTest, testDynApproxBetweenessGeneratedGraph) {
@@ -141,9 +133,7 @@ TEST_P(DynBetweennessGTest, testDynApproxBetweenessGeneratedGraph) {
         GraphEvent event(GraphEvent::EDGE_ADDITION, v1, v2);
         dynbc.update(event);
         bc.run();
-        std::vector<double> dynbc_scores = dynbc.scores();
-        std::vector<double> bc_scores = bc.scores();
-        compareAgainstBaseline(G, dynbc_scores, bc_scores, true);
+        compareAgainstBaseline(G, dynbc.scores(), bc.scores(), true);
     }
 }
 
@@ -160,9 +150,7 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweenessGeneratedGraphEdgeDeletion) {
         GraphEvent event(GraphEvent::EDGE_REMOVAL, randomEdge.first, randomEdge.second);
         dynbc.update(event);
         bc.run();
-        std::vector<double> dynbc_scores = dynbc.scores();
-        std::vector<double> bc_scores = bc.scores();
-        compareAgainstBaseline(G, dynbc_scores, bc_scores, true);
+        compareAgainstBaseline(G, dynbc.scores(), bc.scores(), true);
     }
 }
 
@@ -173,9 +161,7 @@ TEST_F(DynBetweennessGTest, runDynVsStatic) {
     ApproxBetweenness bc(G, epsilon, delta);
     dynbc.run();
     bc.run();
-    std::vector<double> dynbc_scores = dynbc.scores();
-    std::vector<double> bc_scores = bc.scores();
-    compareAgainstBaseline(G, dynbc_scores, bc_scores);
+    compareAgainstBaseline(G, dynbc.scores(), bc.scores());
 
     std::vector<GraphEvent> batch;
     for (int i = 0; i < 10; ++i) {
@@ -185,9 +171,7 @@ TEST_F(DynBetweennessGTest, runDynVsStatic) {
     }
     bc.run();
     dynbc.updateBatch(batch);
-    dynbc_scores = dynbc.scores();
-    bc_scores = bc.scores();
-    compareAgainstBaseline(G, dynbc_scores, bc_scores);
+    compareAgainstBaseline(G, dynbc.scores(), bc.scores());
 }
 
 TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
@@ -197,9 +181,7 @@ TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
     ApproxBetweenness bc(G, epsilon, delta);
     dynbc.run();
     bc.run();
-    std::vector<double> dynbc_scores = dynbc.scores();
-    std::vector<double> bc_scores = bc.scores();
-    compareAgainstBaseline(G, dynbc_scores, bc_scores);
+    compareAgainstBaseline(G, dynbc.scores(), bc.scores());
 
     std::vector<GraphEvent> batch;
     for (int i = 0; i < 10; ++i) {
@@ -209,9 +191,7 @@ TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
     }
     bc.run();
     dynbc.updateBatch(batch);
-    dynbc_scores = dynbc.scores();
-    bc_scores = bc.scores();
-    compareAgainstBaseline(G, dynbc_scores, bc_scores);
+    compareAgainstBaseline(G, dynbc.scores(), bc.scores());
 }
 
 TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertDirected){
