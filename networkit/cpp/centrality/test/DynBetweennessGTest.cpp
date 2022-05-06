@@ -131,11 +131,9 @@ TEST_P(DynBetweennessGTest, testDynApproxBetweenessGeneratedGraph) {
         G.forEdges([&](node u, node v) { G.setWeight(u, v, Aux::Random::probability()); });
     }
 
-    DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
     DynApproxBetweenness dynbc(G, epsilon, delta);
     Betweenness bc(G);
     dynbc.run();
-    DEBUG("Before the edge insertion: ");
     for (int i = 0; i < 10; ++i) {
         auto [v1, v2] = getNonAdjacentNodes(G);
         G.addEdge(v1, v2);
@@ -153,15 +151,11 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweenessGeneratedGraphEdgeDeletion) {
     ErdosRenyiGenerator generator(100, 0.25, isDirected());
     Graph G = generator.generate();
 
-    DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
     DynApproxBetweenness dynbc(G, epsilon, delta);
     Betweenness bc(G);
     dynbc.run();
-    DEBUG("Before the edge deletion: ");
     for(count i = 0; i < 10; i++) {
-        DEBUG("Selecting a random edge");
         auto randomEdge = GraphTools::randomEdge(G);
-        DEBUG("Deleting edge number ", i);
         G.removeEdge(randomEdge.first, randomEdge.second);
         GraphEvent event(GraphEvent::EDGE_REMOVAL, randomEdge.first, randomEdge.second);
         dynbc.update(event);
@@ -175,32 +169,23 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweenessGeneratedGraphEdgeDeletion) {
 TEST_F(DynBetweennessGTest, runDynVsStatic) {
     Graph G = METISGraphReader{}.read("input/celegans_metabolic.graph");
 
-    DEBUG("Initializing DynApproxBetweenness");
     DynApproxBetweenness dynbc(G, epsilon, delta, false);
-    DEBUG("Initializing ApproxBetweenness");
     ApproxBetweenness bc(G, epsilon, delta);
-    DEBUG("Running DynApproxBetweenness");
     dynbc.run();
-    DEBUG("Running ApproxBetweenness");
     bc.run();
     std::vector<double> dynbc_scores = dynbc.scores();
     std::vector<double> bc_scores = bc.scores();
     compareAgainstBaseline(G, dynbc_scores, bc_scores);
 
-    DEBUG("Before the edge insertion: ");
     std::vector<GraphEvent> batch;
     for (int i = 0; i < 10; ++i) {
         auto [u, v] = getNonAdjacentNodes(G);
         G.addEdge(u, v);
         batch.emplace_back(GraphEvent::EDGE_ADDITION, u, v);
     }
-    DEBUG("Running ApproxBetweenness (again)");
     bc.run();
-    DEBUG("Updating DynApproxBetweenness");
     dynbc.updateBatch(batch);
-    DEBUG("Calling DynApproxBetweenness Scores");
     dynbc_scores = dynbc.scores();
-    DEBUG("Calling ApproxBetweenness Scores");
     bc_scores = bc.scores();
     compareAgainstBaseline(G, dynbc_scores, bc_scores);
 }
