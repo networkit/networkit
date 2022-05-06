@@ -27,6 +27,8 @@ protected:
     bool isDirected() const noexcept { return GetParam().first; };
     bool isWeighted() const noexcept { return GetParam().second; };
     Graph generateSmallGraph() const;
+
+    static constexpr double epsilon = 0.1, delta = 0.1;
 };
 
 INSTANTIATE_TEST_SUITE_P(InstantiationName, DynBetweennessGTest,
@@ -69,8 +71,6 @@ Graph DynBetweennessGTest::generateSmallGraph() const {
 TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraph) {
     Graph G = generateSmallGraph();
     const auto n = G.numberOfNodes();
-    double epsilon = 0.1; // error
-    double delta = 0.1; // confidence
     DynApproxBetweenness dynbc(G, epsilon, delta);
     Betweenness bc(G);
     dynbc.run();
@@ -96,8 +96,6 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraph) {
 TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraphEdgeDeletion) {
     Graph G = generateSmallGraph();
     const auto n = G.numberOfNodes();
-    double epsilon = 0.1; // error
-    double delta = 0.1; // confidence
     DynApproxBetweenness dynbc(G, epsilon, delta);
     Betweenness bc(G);
     dynbc.run();
@@ -131,8 +129,6 @@ TEST_P(DynBetweennessGTest, testDynApproxBetweenessGeneratedGraph) {
     }
 
     DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
-    double epsilon = 0.1; // error
-    double delta = 0.1; // confidence
     DynApproxBetweenness dynbc(G, epsilon, delta);
     Betweenness bc(G);
     dynbc.run();
@@ -170,8 +166,6 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweenessGeneratedGraphEdgeDeletion) {
     }
 
     DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
-    double epsilon = 0.1; // error
-    double delta = 0.1; // confidence
     DynApproxBetweenness dynbc(G, epsilon, delta);
     Betweenness bc(G);
     dynbc.run();
@@ -199,8 +193,6 @@ TEST_F(DynBetweennessGTest, runDynVsStatic) {
     Graph G = reader.read("input/celegans_metabolic.graph");
     count n = G.upperNodeIdBound();
 
-    double epsilon = 0.1; // error
-    double delta = 0.01; // confidence
     DEBUG("Initializing DynApproxBetweenness");
     DynApproxBetweenness dynbc(G, epsilon, delta, false);
     DEBUG("Initializing ApproxBetweenness");
@@ -244,8 +236,6 @@ TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
     Graph G = reader.read("input/celegans_metabolic.graph");
     count n = G.upperNodeIdBound();
 
-    double epsilon = 0.1; // error
-    double delta = 0.1; // confidence
     DynApproxBetweenness dynbc(G, epsilon, delta, false);
     ApproxBetweenness bc(G, epsilon, delta);
     dynbc.run();
