@@ -214,18 +214,6 @@ TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
     compareAgainstBaseline(G, dynbc_scores, bc_scores);
 }
 
-TEST_F(DynBetweennessGTest, runApproxBetweenness) {
-    DorogovtsevMendesGenerator generator(100);
-    Graph G1 = generator.generate();
-    Graph G(G1, true, false);
-    ApproxBetweenness bc(G, 0.1, 0.1);
-    bc.run();
-    DEBUG("Number of samples: ", bc.numberOfSamples());
-    ApproxBetweenness bc1(G1, 0.1, 0.1);
-    bc1.run();
-    DEBUG("Number of samples: ", bc1.numberOfSamples());
-}
-
 TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertDirected){
     Aux::Random::setSeed(0, false);
 

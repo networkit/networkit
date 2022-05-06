@@ -175,6 +175,16 @@ TEST_F(CentralityGTest, runApproxBetweennessSmallGraph) {
     DEBUG("scores: ", bc);
 }
 
+TEST_F(CentralityGTest, runApproxBetweenness) {
+    DorogovtsevMendesGenerator generator(100);
+    Graph G1 = generator.generate();
+    Graph G(G1, true, false);
+    ApproxBetweenness bc(G, 0.1, 0.1);
+    bc.run();
+    ApproxBetweenness bc1(G1, 0.1, 0.1);
+    bc1.run();
+}
+
 TEST_F(CentralityGTest, testBetweennessCentralityWeighted) {
     /* Graph:
      0    3   6
