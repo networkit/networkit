@@ -29,6 +29,14 @@ protected:
     Graph generateSmallGraph() const;
 
     static constexpr double epsilon = 0.1, delta = 0.1;
+
+    void compareAgainstBaseline(const Graph &G, const std::vector<double> &apxScores,
+                                const std::vector<double> &exactScores, double normalized = false,
+                                double err = epsilon) const {
+        const auto n = static_cast<double>(G.numberOfNodes());
+        const auto normFactor = normalized ? n * (n - 1) : 1.;
+        G.forNodes([&](node u) { EXPECT_NEAR(apxScores[u], exactScores[u] / normFactor, err); });
+    }
 };
 
 INSTANTIATE_TEST_SUITE_P(InstantiationName, DynBetweennessGTest,
@@ -70,16 +78,13 @@ Graph DynBetweennessGTest::generateSmallGraph() const {
 
 TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraph) {
     Graph G = generateSmallGraph();
-    const auto n = G.numberOfNodes();
     DynApproxBetweenness dynbc(G, epsilon, delta);
     Betweenness bc(G);
     dynbc.run();
     bc.run();
     std::vector<double> dynbc_scores = dynbc.scores();
     std::vector<double> bc_scores = bc.scores();
-    G.forNodes([&](const node i) {
-        EXPECT_NEAR(dynbc_scores[i], bc_scores[i]/double(n*(n-1)), epsilon);
-    });
+    compareAgainstBaseline(G, dynbc_scores, bc_scores, true);
 
     GraphEvent event(GraphEvent::EDGE_ADDITION, 0, 6);
     G.addEdge(event.u, event.v);
@@ -87,24 +92,18 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraph) {
     dynbc.update(event);
     dynbc_scores = dynbc.scores();
     bc_scores = bc.scores();
-    G.forNodes([&](const node i) {
-        EXPECT_NEAR(dynbc_scores[i], bc_scores[i]/double(n*(n-1)), epsilon);
-    });
-
+    compareAgainstBaseline(G, dynbc_scores, bc_scores, true);
 }
 
 TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraphEdgeDeletion) {
     Graph G = generateSmallGraph();
-    const auto n = G.numberOfNodes();
     DynApproxBetweenness dynbc(G, epsilon, delta);
     Betweenness bc(G);
     dynbc.run();
     bc.run();
     std::vector<double> dynbc_scores = dynbc.scores();
     std::vector<double> bc_scores = bc.scores();
-    G.forNodes([&](const node i) {
-        EXPECT_NEAR(dynbc_scores[i], bc_scores[i]/double(n*(n-1)), epsilon);
-    });
+    compareAgainstBaseline(G, dynbc_scores, bc_scores, true);
 
     GraphEvent event(GraphEvent::EDGE_REMOVAL, 3, 5);
     G.removeEdge(event.u, event.v);
@@ -112,16 +111,12 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraphEdgeDeletion) {
     dynbc.update(event);
     dynbc_scores = dynbc.scores();
     bc_scores = bc.scores();
-    G.forNodes([&](const node i) {
-        EXPECT_NEAR(dynbc_scores[i], bc_scores[i]/double(n*(n-1)), epsilon);
-    });
-
+    compareAgainstBaseline(G, dynbc_scores, bc_scores, true);
 }
 
 TEST_P(DynBetweennessGTest, testDynApproxBetweenessGeneratedGraph) {
     ErdosRenyiGenerator generator(100, 0.25, isDirected());
     Graph G = generator.generate();
-    count n = G.numberOfNodes();
     if (isWeighted()) {
         G = GraphTools::toWeighted(G);
         Aux::Random::setSeed(42, false);
@@ -148,9 +143,7 @@ TEST_P(DynBetweennessGTest, testDynApproxBetweenessGeneratedGraph) {
             bc.run();
             std::vector<double> dynbc_scores = dynbc.scores();
             std::vector<double> bc_scores = bc.scores();
-            G.forNodes([&] (node i) {
-                EXPECT_NEAR(dynbc_scores[i], bc_scores[i]/double(n*(n-1)), epsilon);
-            });
+            compareAgainstBaseline(G, dynbc_scores, bc_scores, true);
         }
     }
 }
@@ -158,7 +151,6 @@ TEST_P(DynBetweennessGTest, testDynApproxBetweenessGeneratedGraph) {
 TEST_P(DynBetweennessGTest, runDynApproxBetweenessGeneratedGraphEdgeDeletion) {
     ErdosRenyiGenerator generator(100, 0.25, isDirected());
     Graph G = generator.generate();
-    count n = G.numberOfNodes();
 
     DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
     DynApproxBetweenness dynbc(G, epsilon, delta);
@@ -175,9 +167,7 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweenessGeneratedGraphEdgeDeletion) {
         bc.run();
         std::vector<double> dynbc_scores = dynbc.scores();
         std::vector<double> bc_scores = bc.scores();
-        G.forNodes([&] (node i) {
-            EXPECT_NEAR(dynbc_scores[i], bc_scores[i]/double(n*(n-1)), epsilon);
-        });
+        compareAgainstBaseline(G, dynbc_scores, bc_scores, true);
     }
 }
 
@@ -194,9 +184,8 @@ TEST_F(DynBetweennessGTest, runDynVsStatic) {
     bc.run();
     std::vector<double> dynbc_scores = dynbc.scores();
     std::vector<double> bc_scores = bc.scores();
-    for(count i=0; i<n; i++) {
-        EXPECT_NEAR(dynbc_scores[i], bc_scores[i], epsilon);
-    }
+    compareAgainstBaseline(G, dynbc_scores, bc_scores);
+
     DEBUG("Before the edge insertion: ");
     std::vector<GraphEvent> batch;
     count nInsertions = 10, i = 0;
@@ -217,9 +206,7 @@ TEST_F(DynBetweennessGTest, runDynVsStatic) {
     dynbc_scores = dynbc.scores();
     DEBUG("Calling ApproxBetweenness Scores");
     bc_scores = bc.scores();
-    for(count i=0; i<n; i++) {
-        EXPECT_NEAR(dynbc_scores[i], bc_scores[i], epsilon);
-    }
+    compareAgainstBaseline(G, dynbc_scores, bc_scores);
 }
 
 TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
@@ -231,9 +218,8 @@ TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
     bc.run();
     std::vector<double> dynbc_scores = dynbc.scores();
     std::vector<double> bc_scores = bc.scores();
-    for(count i=0; i<n; i++) {
-        EXPECT_NEAR(dynbc_scores[i], bc_scores[i], epsilon);
-    }
+    compareAgainstBaseline(G, dynbc_scores, bc_scores);
+
     std::vector<GraphEvent> batch;
     for (int i = 0; i < 10; ++i) {
         auto randomEdge = GraphTools::randomEdge(G);
@@ -244,9 +230,7 @@ TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
     dynbc.updateBatch(batch);
     dynbc_scores = dynbc.scores();
     bc_scores = bc.scores();
-    for(count i=0; i<n; i++) {
-        EXPECT_NEAR(dynbc_scores[i], bc_scores[i], epsilon);
-    }
+    compareAgainstBaseline(G, dynbc_scores, bc_scores);
 }
 
 TEST_F(DynBetweennessGTest, runApproxBetweenness) {
