@@ -159,11 +159,6 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweenessGeneratedGraphEdgeDeletion) {
     ErdosRenyiGenerator generator(100, 0.25, isDirected());
     Graph G = generator.generate();
     count n = G.numberOfNodes();
-    if (isWeighted()) {
-        G = GraphTools::toWeighted(G);
-        Aux::Random::setSeed(42, false);
-        G.forEdges([&](node u, node v) { G.setWeight(u, v, Aux::Random::probability()); });
-    }
 
     DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
     DynApproxBetweenness dynbc(G, epsilon, delta);
