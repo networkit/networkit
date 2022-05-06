@@ -24,8 +24,8 @@ namespace NetworKit {
 
 class DynBetweennessGTest: public testing::TestWithParam<std::pair<bool, bool>> {
 protected:
-    bool isDirected() const noexcept;
-    bool isWeighted() const noexcept;
+    bool isDirected() const noexcept { return GetParam().first; };
+    bool isWeighted() const noexcept { return GetParam().second; };
     Graph generateSmallGraph() const;
 };
 
@@ -33,10 +33,6 @@ INSTANTIATE_TEST_SUITE_P(InstantiationName, DynBetweennessGTest,
         testing::Values(std::make_pair(false, false), std::make_pair(true, false),
                         std::make_pair(false, true),
                         std::make_pair(true, true)));
-
-bool DynBetweennessGTest::isWeighted() const noexcept { return GetParam().first; }
-
-bool DynBetweennessGTest::isDirected() const noexcept { return GetParam().second; }
 
 Graph DynBetweennessGTest::generateSmallGraph() const {
 /* Graph:
