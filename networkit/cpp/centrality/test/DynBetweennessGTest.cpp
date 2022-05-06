@@ -37,6 +37,14 @@ protected:
         const auto normFactor = normalized ? n * (n - 1) : 1.;
         G.forNodes([&](node u) { EXPECT_NEAR(apxScores[u], exactScores[u] / normFactor, err); });
     }
+
+    std::pair<node, node> getNonAdjacentNodes(const Graph &G) const {
+        node u, v;
+        do {
+            u = GraphTools::randomNode(G), v = GraphTools::randomNode(G);
+        } while (u == v || G.hasEdge(u, v));
+        return {u, v};
+    }
 };
 
 INSTANTIATE_TEST_SUITE_P(InstantiationName, DynBetweennessGTest,
@@ -128,23 +136,16 @@ TEST_P(DynBetweennessGTest, testDynApproxBetweenessGeneratedGraph) {
     Betweenness bc(G);
     dynbc.run();
     DEBUG("Before the edge insertion: ");
-    count nInsertions = 10, i = 0;
-    while (i < nInsertions) {
-        DEBUG("Sampling a new edge");
-        node v1 = GraphTools::randomNode(G);
-        node v2 = GraphTools::randomNode(G);
-        if (v1 != v2 && !G.hasEdge(v1, v2)) {
-            i++;
-            DEBUG("Adding edge number ", i);
-            G.addEdge(v1, v2);
+    for (int i = 0; i < 10; ++i) {
+        auto [v1, v2] = getNonAdjacentNodes(G);
+        G.addEdge(v1, v2);
 
-            GraphEvent event(GraphEvent::EDGE_ADDITION, v1, v2);
-            dynbc.update(event);
-            bc.run();
-            std::vector<double> dynbc_scores = dynbc.scores();
-            std::vector<double> bc_scores = bc.scores();
-            compareAgainstBaseline(G, dynbc_scores, bc_scores, true);
-        }
+        GraphEvent event(GraphEvent::EDGE_ADDITION, v1, v2);
+        dynbc.update(event);
+        bc.run();
+        std::vector<double> dynbc_scores = dynbc.scores();
+        std::vector<double> bc_scores = bc.scores();
+        compareAgainstBaseline(G, dynbc_scores, bc_scores, true);
     }
 }
 
@@ -188,15 +189,10 @@ TEST_F(DynBetweennessGTest, runDynVsStatic) {
 
     DEBUG("Before the edge insertion: ");
     std::vector<GraphEvent> batch;
-    count nInsertions = 10, i = 0;
-    while (i < nInsertions) {
-        node v1 = GraphTools::randomNode(G);
-        node v2 = GraphTools::randomNode(G);
-        if (v1 != v2 && !G.hasEdge(v1, v2)) {
-            G.addEdge(v1, v2);
-            batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2));
-            i++;
-        }
+    for (int i = 0; i < 10; ++i) {
+        auto [u, v] = getNonAdjacentNodes(G);
+        G.addEdge(u, v);
+        batch.emplace_back(GraphEvent::EDGE_ADDITION, u, v);
     }
     DEBUG("Running ApproxBetweenness (again)");
     bc.run();
@@ -248,36 +244,26 @@ TEST_F(DynBetweennessGTest, runApproxBetweenness) {
 TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertDirected){
     Aux::Random::setSeed(0, false);
 
-    auto genEdgeInsert = [](const Graph& g){
-        node u = GraphTools::randomNode(g);
-        node v = GraphTools::randomNode(g);
-        while (u == v || g.hasEdge(u, v)){
-            u = GraphTools::randomNode(g);
-            v = GraphTools::randomNode(g);
-        }
-        return std::make_pair(u, v);
-    };
-
     for(count n = 2; n <= 25; n++)
         for(count t = 0; t < 100; t++){
             auto g = ErdosRenyiGenerator(n, 0.3, true).generate();
 
             if(g.numberOfEdges() == g.numberOfNodes() * (g.numberOfNodes() - 1))continue;
 
-            auto e = genEdgeInsert(g);
+            auto [u, v] = getNonAdjacentNodes(g);
             auto ibet = DynBetweenness(g);
 
             ibet.run();
 
-            auto ne = GraphEvent(GraphEvent::EDGE_ADDITION, e.first, e.second);
-            g.addEdge(e.first, e.second);
+            auto ne = GraphEvent(GraphEvent::EDGE_ADDITION, u, v);
+            g.addEdge(u, v);
             ibet.update(ne);
 
-            EXPECT_TRUE(g.hasEdge(e.first, e.second));
+            EXPECT_TRUE(g.hasEdge(u, v));
             auto brandes = Betweenness(g);
             brandes.run();
-            g.forNodes([&](node & v){
-                EXPECT_NEAR(brandes.score(v), ibet.score(v), 1e-8);
+            g.forNodes([&](node w){
+                EXPECT_NEAR(brandes.score(w), ibet.score(w), 1e-8);
             });
         }
 }
@@ -285,35 +271,25 @@ TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertDirected){
 TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertUndirected){
     Aux::Random::setSeed(0, false);
 
-    auto genEdgeInsert = [](const Graph& g){
-        node u = GraphTools::randomNode(g);
-        node v = GraphTools::randomNode(g);
-        while (u == v || g.hasEdge(u, v)){
-            u = GraphTools::randomNode(g);
-            v = GraphTools::randomNode(g);
-        }
-        return std::make_pair(u, v);
-    };
-
     for(count n = 2; n <= 25; n++)
         for(count t = 0; t < 100; t++){
             auto g = ErdosRenyiGenerator(n, 0.3, false).generate();
             if(g.numberOfEdges() == g.numberOfNodes() * (g.numberOfNodes() - 1) / 2)continue;
 
-            auto e = genEdgeInsert(g);
+            auto [u, v] = getNonAdjacentNodes(g);
             auto ibet = DynBetweenness(g);
 
             ibet.run();
 
-            auto ne = GraphEvent(GraphEvent::EDGE_ADDITION, e.first, e.second);
-            g.addEdge(e.first, e.second);
+            auto ne = GraphEvent(GraphEvent::EDGE_ADDITION, u, v);
+            g.addEdge(u, v);
             ibet.update(ne);
-            EXPECT_TRUE(g.hasEdge(e.first, e.second));
+            EXPECT_TRUE(g.hasEdge(u, v));
 
             auto brandes = Betweenness(g);
             brandes.run();
-            g.forNodes([&](node & v){
-                EXPECT_NEAR(brandes.score(v), ibet.score(v), 1e-8);
+            g.forNodes([&](node w){
+                EXPECT_NEAR(brandes.score(w), ibet.score(w), 1e-8);
             });
         }
 }
