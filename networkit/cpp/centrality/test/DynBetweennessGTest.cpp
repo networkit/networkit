@@ -89,6 +89,7 @@ Graph DynBetweennessGTest::generateSmallGraph() const {
 }
 
 TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraph) {
+    Aux::Random::setSeed(42, false);
     Graph G = generateSmallGraph();
     DynApproxBetweenness dynbc(G, epsilon, delta);
     Betweenness bc(G);
@@ -104,6 +105,7 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraph) {
 }
 
 TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraphEdgeDeletion) {
+    Aux::Random::setSeed(42, false);
     Graph G = generateSmallGraph();
     DynApproxBetweenness dynbc(G, epsilon, delta);
     Betweenness bc(G);
@@ -140,6 +142,7 @@ TEST_P(DynBetweennessGTest, testDynApproxBetweenessGeneratedGraph) {
 }
 
 TEST_P(DynBetweennessGTest, runDynApproxBetweenessGeneratedGraphEdgeDeletion) {
+    Aux::Random::setSeed(42, false);
     ErdosRenyiGenerator generator(100, 0.25, isDirected());
     Graph G = generator.generate();
 
