@@ -5,7 +5,7 @@ from libc.stdint cimport uint8_t
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 from libcpp cimport bool as bool_t
-from libcpp.map cimport map
+from libcpp.map cimport map as cmap
 from libcpp.unordered_map cimport unordered_map
 from .helpers import stdstring
 
@@ -14,14 +14,17 @@ import logging
 import numpy
 import scipy.io
 import fnmatch
+import queue
+import xml.etree.cElementTree as ET
+import xml.sax
 from enum import Enum
+from warnings import warn
+from xml.dom import minidom
 
-from .dynamics import DGSWriter, DGSStreamParser
+from .dynamics import DGSWriter, DGSStreamParser, GraphEvent
 from .graph cimport _Graph, Graph
 from .graph import Graph as __Graph
 from .structures cimport _Cover, Cover, _Partition, Partition, count, index, node
-from .GraphMLIO import GraphMLReader, GraphMLWriter
-from .GEXFIO import GEXFReader, GEXFWriter
 from . import algebraic
 from .support import MissingDependencyError
 
@@ -297,7 +300,7 @@ cdef extern from "<networkit/io/EdgeListReader.hpp>":
 	cdef cppclass _EdgeListReader "NetworKit::EdgeListReader"(_GraphReader):
 		_EdgeListReader() except +
 		_EdgeListReader(char separator, node firstNode, string commentPrefix, bool_t continuous, bool_t directed)
-		map[string,node] getNodeMap() except +
+		cmap[string,node] getNodeMap() except +
 
 cdef class EdgeListReader(GraphReader):
 	""" 
@@ -358,7 +361,7 @@ cdef class EdgeListReader(GraphReader):
 		dict(str,int)
 			Mapping from labels to node ids.
 		"""
-		cdef map[string,node] cResult = (<_EdgeListReader*>(self._this)).getNodeMap()
+		cdef cmap[string,node] cResult = (<_EdgeListReader*>(self._this)).getNodeMap()
 		result = dict()
 		for elem in cResult:
 			result[(elem.first).decode("utf-8")] = elem.second
@@ -1486,3 +1489,745 @@ def writeStream(stream, path):
 		The output path.
 	"""
 	DGSWriter().write(stream, path)
+
+class GEXFReader:
+	"""
+	GEXFReader()
+	This class provides a function to read a file in the
+	GEXF (Graph Exchange XML Format) format.
+	For more details see: http://gexf.net/
+	"""
+	def __init__(self):
+		""" Initializes the GEXFReader class """
+		self.mapping = dict()
+		self.g = Graph(0)
+		self.weighted = False
+		self.directed = False
+		self.dynamic = False
+		self.hasDynamicWeights = False
+		self.q = queue.Queue()
+		self.eventStream = []
+		self.nInitialNodes = 0
+		self.timeFormat = ""
+
+	def read(self, fpath):
+		""" 
+		read(fpath)
+		Reads and returns the graph object defined in fpath.
+		
+		Parameters
+		----------
+		fpath : str
+			File path for GEXF-file.
+		"""
+		#0. Reset internal vars and parse the xml
+		self.__init__()
+		doc = minidom.parse(fpath)
+
+		#1. Determine if graph is dynamic, directed and has dynamically changing weights
+		graph = doc.getElementsByTagName("graph")[0]
+		if (graph.getAttribute("defaultedgetype") == "directed"):
+			self.directed = True
+		if (graph.getAttribute("mode") == "dynamic"):
+			self.dynamic = True
+		if self.dynamic:
+			self.timeFormat = graph.getAttribute("timeformat")
+		attributes = graph.getElementsByTagName("attribute")
+		for att in attributes:
+			if att.getAttribute("id") == "weight":
+				self.hasDynamicWeights = True
+				self.weighted = True
+
+		#2. Read nodes and map them to IDs defined in GEXF file
+		nodes = doc.getElementsByTagName("node")
+		for n in nodes:
+			u = n.getAttribute("id")
+			if self.dynamic:
+				"""
+				A GEXF ID can be a string. However, this version of parser accepts ids
+				in only 2 formats:
+				1. id = "0,1,2," etc.
+				2. id = "n0, n1, n2" etc.
+				So either an integer or an integer that has n prefix.
+				Gephi generates its random graphs in 2nd format for example.
+				"""
+				_id = ""
+				try:
+					_id = int(u)
+				except:
+					_id = int(u[1:])
+				# 2-way mapping to refer nodes back in mapDynamicNodes() method
+				self.mapping[u] = _id
+				self.mapping[_id] = u
+				controlList = {'elementAdded': False, 'elementDeleted': False}
+				spells = n.getElementsByTagName("spell")
+				if len(spells) > 0:
+					for s in spells:
+						self.parseDynamics(s, "n", controlList, u)
+				else:
+					self.parseDynamics(n, "n", controlList, u)
+			else:
+				self.mapping[u] = self.nInitialNodes
+				self.nInitialNodes +=1
+		if self.dynamic:
+			self.mapDynamicNodes()
+
+		#3. Read edges and determine if graph is weighted
+		edges = doc.getElementsByTagName("edge")
+		for e in edges:
+			u = e.getAttribute("source")
+			v = e.getAttribute("target")
+			w = "1.0"
+			if e.hasAttribute("weight"):
+				self.weighted = True
+				w = e.getAttribute("weight")
+			if self.dynamic:
+				controlList = {'elementAdded': False, 'elementDeleted': False}
+				spells = e.getElementsByTagName("spell")
+				if len(spells) > 0:
+					for s in spells:
+						self.parseDynamics(s, "e", controlList, u, v, w)
+				else:
+					self.parseDynamics(e, "e", controlList, u, v, w)
+			else:
+				self.q.put((u, v, w))
+
+		#4. Create graph object
+		self.g = Graph(self.nInitialNodes, self.weighted, self.directed)
+
+		#5. Add initial edges to the graph and sort the eventStream by time
+		#5.1 Adding initial edges
+		while not self.q.empty():
+			edge = self.q.get()
+			(u, v, w) = (edge[0], edge[1], float(edge[2]))
+			self.g.addEdge(self.mapping[u], self.mapping[v], w)
+
+		#5.2 Sorting the eventStream by time and adding timeStep between events that happen in different times
+		self.eventStream.sort(key=lambda x:x[1])
+		for i in range(1, len(self.eventStream)):
+			if self.eventStream[i][1] != self.eventStream[i-1][1]:
+				self.eventStream.append((GraphEvent(GraphEvent.TIME_STEP, 0, 0, 0), self.eventStream[i-1][1]))
+		self.eventStream.sort(key=lambda x:x[1])
+		self.eventStream = [event[0] for event in self.eventStream]
+		return (self.g, self.eventStream)
+
+
+
+	def parseDynamics(self, element, elementType, controlList,  u,  v = "0", w = "0"):
+		"""
+		parseDynamics(element, elementType, controlList,  u,  v = "0", w = "0")
+		Determine the operations as follows:
+		1. Element has start and not deleted before: Create add event
+		2. Element has start and deleted before: Create restore event
+		3. Element has end:Create del event
+		4. If an element has end before start(or no start at all), add it to the initial graph
+		5. For dynamic edges, simply go over the attvalues and create weight update events
+		A dynamic element must be defined either using only spells
+		or inline attributes. These 2 shouldn't be mixed.
+		(For example, Gephi will treat them differently. It'll ignore the inline declaration
+		if the same element also contains spells)
+		Parameters
+		----------
+		element : str
+			Element to add during reading a GEXF-file.
+		elementType : str
+			Element type ("n" for node or "e" for edge).
+		controlList : dict
+			Dict with elements indicate element properties. Example :code:`{'elementAdded': False, 'elementDeleted': False}`
+		u : str
+			Node u involved in element parsing.
+		v : str, optional
+			Node v involved in element parsing. Default: "0"
+		w : str, optional
+			Edgeweight w involved in element parsing. Default: "0"
+		"""
+		startTime = element.getAttribute("start")
+		if startTime == "":
+			startTime = element.getAttribute("startopen")
+		endTime	= element.getAttribute("end")
+		if endTime == "":
+			endTime	= element.getAttribute("endopen")
+		if self.timeFormat != "date":
+			try:
+				startTime = float(startTime)
+			except:
+				pass
+			try:
+				endTime = float(endTime)
+			except:
+				pass
+
+		if startTime != "" and endTime != "":
+			if startTime < endTime and not controlList['elementDeleted']:
+				self.createEvent(startTime, "a"+elementType, u, v, w)
+				controlList['elementAdded'] = True
+			else:
+				self.createEvent(startTime, "r"+elementType, u, v, w)
+			self.createEvent(endTime, "d"+elementType, u, v, w)
+			controlList['elementDeleted'] = True
+
+		if startTime != "" and endTime == "":
+			if controlList['elementDeleted']:
+				self.createEvent(startTime, "r"+elementType, u, v, w)
+			else:
+				self.createEvent(startTime, "a"+elementType, u, v, w)
+				controlList['elementAdded'] = True
+
+	 	# Handle dynamic edge weights here
+		if elementType == "e" and self.hasDynamicWeights:
+			attvalues = element.getElementsByTagName("attvalue")
+			# If a spell is traversed, attvalues are siblings
+			if len(attvalues) == 0:
+				attvalues = element.parentNode.parentNode.getElementsByTagName("attvalue")
+			for att in attvalues:
+				if att.getAttribute("for") == "weight":
+					w = att.getAttribute("value")
+					startTime = att.getAttribute("start")
+					if startTime == "":
+						startTime = att.getAttribute("startopen")
+					if self.timeFormat != "date":
+						startTime = float(startTime)
+					# If this edge is not added, first weight update indicates edge addition
+					if not controlList['elementAdded']:
+						self.createEvent(startTime, "a"+elementType, u, v, w)
+						controlList['elementAdded'] = True
+					else:
+						self.createEvent(startTime, "c"+elementType, u, v, w)
+
+		if startTime == "":
+			if not controlList['elementAdded']:
+				if elementType == "n":
+					self.mapping[u] = self.nInitialNodes
+					self.nInitialNodes += 1
+				else:
+					self.q.put((u,v,w))
+				controlList['elementAdded'] = True
+			if endTime != "":
+				self.createEvent(endTime, "d"+elementType, u, v, w)
+				controlList['elementDeleted'] = True
+
+	def createEvent(self, eventTime, eventType, u, v, w):
+		"""
+		createEvent(eventTime, eventType, u, v, w)
+		Creates a NetworKit::GraphEvent from the supplied parameters
+		and passes it to eventStream.
+		Parameters
+		----------
+		eventTime : int
+			Timestep indicating when the event happen (creating an order of events).
+		eventType : str
+			Abbreviation string representing a graph event. Should be one of the following:
+			:code:`e, an, dn, rn, ae, re, de, ce`.
+		u : int
+			Id of node u involved in graph event.
+		v : int
+			Id of node v involved in graph event.
+		w : float
+			Edgeweight of edge between u and v.
+		"""
+		event, u = None, self.mapping[u]
+		if eventType[1] == "e":
+			v, w = self.mapping[v], float(w)
+		if eventType == "an":
+			event = GraphEvent(GraphEvent.NODE_ADDITION, u, 0, 0)
+		elif eventType == "dn":
+			event = GraphEvent(GraphEvent.NODE_REMOVAL, u, 0, 0)
+		elif eventType == "rn":
+			event = GraphEvent(GraphEvent.NODE_RESTORATION, u, 0, 0)
+		elif eventType == "ae" or eventType == "re":
+			event = GraphEvent(GraphEvent.EDGE_ADDITION, u, v, w)
+		elif eventType == "de":
+			event = GraphEvent(GraphEvent.EDGE_REMOVAL, u, v, w)
+		elif eventType == "ce":
+			event = GraphEvent(GraphEvent.EDGE_WEIGHT_UPDATE, u, v, w)
+		self.eventStream.append((event, eventTime))
+
+	def mapDynamicNodes(self):
+		"""
+		mapDynamicNodes()
+		Node ID of a dynamic node must be determined before it's mapped to its GEXF ID.
+		This requires processing the sorted eventStream and figuring out the addition order of the nodes.
+		After that, node addition/deletion/restoration operations of this node must be readded to eventStream
+		with correct mapping.
+		Note
+		----
+		New mapping of a node can be equal to old mapping of a node. In order to prevent collisions,
+		isMapped array must be maintained and controlled.
+		"""
+		nNodes = self.nInitialNodes
+		nEvent = len(self.eventStream)
+		isMapped = [False] * nEvent
+		self.eventStream.sort(key=lambda x:x[1])
+		for i in range(0, nEvent):
+			event = self.eventStream[i]
+			# Only the nodes with addition event will get remapped.
+			if not isMapped[i] and event[0].type == GraphEvent.NODE_ADDITION:
+				u = event[0].u
+				self.mapping[self.mapping[u]] = nNodes
+				# All the other events of that node comes after it's addition event
+				for j in range(i, len(self.eventStream)):
+					event = self.eventStream[j]
+					if not isMapped[j] and event[0].u == u:
+						mappedEvent = GraphEvent(event[0].type, self.mapping[self.mapping[u]], 0, 0)
+						self.eventStream[j] = (mappedEvent, event[1])
+						isMapped[j] = True
+				nNodes +=1
+				isMapped[i] = True
+
+	def getNodeMap(self):
+		""" 
+		getNodeMap()
+		
+		Returns
+		-------
+		dict(int ``:`` int)
+			Dictionary containing mapping from GEXF ID to node ID
+		"""
+		forwardMap = dict()
+		for key in self.mapping:
+			if type(key) == str:
+				forwardMap[key] = self.mapping[key]
+		return forwardMap
+
+
+# GEXFWriter
+class GEXFWriter:
+	""" 
+	GEXFWriter()
+	
+	This class provides a function to write a NetworKit graph to a file in the GEXF format. 
+	"""
+
+	def __init__(self):
+		""" Initializes the class. """
+		self.edgeIdctr = 0
+		self.q = queue.Queue()
+		self.hasDynamicWeight = False
+
+	def write(self, graph, fname, eventStream = [], mapping = []):
+		"""
+		write(graph, fname, evenStream = [], mapping = [])
+		Writes a graph to the specified file fname.
+		
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+		fname : str 
+			The desired file path and name to be written to.
+		eventStream : list(networkit.dynamics.GraphEvent)
+			Stream of events, each represented by networkit.dynamics.GraphEvent.
+		mapping : list(int)
+			Random node mapping.
+		"""
+		#0. Reset internal vars
+		self.__init__()
+
+		#1. Start with the root element and the right header information
+		root = ET.Element('gexf')
+		root.set("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance")
+		root.set("xsi:schemaLocation","http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd")
+		root.set('version', '1.2')
+
+		#2. Create graph element with appropriate information
+		graphElement = ET.SubElement(root,"graph")
+		if graph.isDirected():
+			graphElement.set('defaultedgetype', 'directed')
+		else:
+			graphElement.set('defaultedgetype', 'undirected')
+		if len(eventStream) > 0:
+			graphElement.set('mode', 'dynamic')
+			graphElement.set('timeformat', 'double')
+			for event in eventStream:
+				if event.type == GraphEvent.EDGE_WEIGHT_UPDATE:
+					dynamicAtt = ET.SubElement(graphElement, "attributes")
+					dynamicAtt.set('class', 'edge')
+					dynamicAtt.set('mode', 'dynamic')
+					dynamicWeight = ET.SubElement(dynamicAtt, "attribute")
+					dynamicWeight.set('id', 'weight')
+					dynamicWeight.set('title', 'Weight')
+					dynamicWeight.set('type', 'float')
+					self.hasDynamicWeight = True
+					break
+		else:
+			graphElement.set('mode', 'static')
+
+		#3. Add nodes
+		nodesElement = ET.SubElement(graphElement, "nodes")
+		nNodes, idArray = 0, []
+		#3.1 Count the # of nodes (inital + dynamic nodes)
+		for event in eventStream:
+			if event.type == GraphEvent.NODE_ADDITION:
+				nNodes +=1
+		nNodes += graph.numberOfNodes()
+		for i in range(0, nNodes):
+			idArray.append(i)
+		# Optional:Map nodes to a random mapping if user provided one
+		if (len(mapping) > 0):
+			if(nNodes != len(mapping)):
+				raise Exception('Size of nodes and mapping must match')
+			else:
+				for i in range(0, nNodes):
+					idArray[i] = mapping[i]
+
+		#3.2 Write nodes to the gexf file
+		for n in range(nNodes):
+			nodeElement = ET.SubElement(nodesElement,'node')
+			nodeElement.set('id', str(idArray[n]))
+			self.writeEvent(nodeElement, eventStream, n)
+
+		#4. Add edges
+		edgesElement = ET.SubElement(graphElement, "edges")
+		#4.1 Put all edges into a queue(inital + dynamic edges)
+		for u, v in graph.iterEdges():
+			self.q.put((u, v, graph.weight(u, v)))
+		for event in eventStream:
+			if event.type == GraphEvent.EDGE_ADDITION:
+				self.q.put((event.u, event.v, event.w))
+		#4.2 Write edges to the gexf file
+		while not self.q.empty():
+			edgeElement = ET.SubElement(edgesElement,'edge')
+			e = self.q.get()
+			edgeElement.set('source', str(idArray[e[0]]))
+			edgeElement.set('target', str(idArray[e[1]]))
+			edgeElement.set('id', "{0}".format(self.edgeIdctr))
+			self.edgeIdctr += 1
+			if graph.isWeighted():
+				edgeElement.set('weight', str(e[2]))
+			self.writeEvent(edgeElement, eventStream, e)
+
+		#5. Write the generated tree to the file
+		tree = ET.ElementTree(root)
+		tree.write(fname,"utf-8",True)
+
+	def writeEvent(self, xmlElement, eventStream, graphElement):
+		"""
+		writeEvent(xmlElement, eventStream, graphElement)
+		Write a single event. This is a supporting function and should normally not be called independently.
+		Parameters
+		----------
+		xmlElement : xml.etree.cElementTree
+			XML-encoded element, representing one GEXF-element.
+		eventStream : list(networkit.dynamics.GraphEvent)
+			Stream of events, each represented by networkit.dynamics.GraphEvent.
+		graphElement : tuple(int, int, float)
+			Tuple representing one graph element given by (node u, node v, edge weight w). 
+		"""
+		# A var that indicates if the event belongs the graph element we traverse on
+		matched = False
+		startEvents = [GraphEvent.NODE_ADDITION, GraphEvent.EDGE_ADDITION, GraphEvent.NODE_RESTORATION]
+		endEvents = [GraphEvent.NODE_REMOVAL, GraphEvent.EDGE_REMOVAL]
+		nodeEvents = [GraphEvent.NODE_ADDITION, GraphEvent.NODE_REMOVAL, GraphEvent.NODE_RESTORATION]
+		edgeEvents = [GraphEvent.EDGE_ADDITION, GraphEvent.EDGE_REMOVAL, GraphEvent.EDGE_WEIGHT_UPDATE]
+		spellTag, weightTag, operation = False, False, ""
+		timeStep = 0
+		spellsElement, attValuesElement = None, None
+
+		for event in eventStream:
+			if event.type == GraphEvent.TIME_STEP:
+				timeStep += 1
+			if type(graphElement) == type(0): #a node is an integer
+				matched = (event.type in nodeEvents and event.u == graphElement)
+			else:
+				matched = (event.type in edgeEvents and (event.u == graphElement[0] and event.v == graphElement[1]))
+			if matched:
+				# Handle weight update seperately
+				if event.type == GraphEvent.EDGE_WEIGHT_UPDATE:
+					if not weightTag:
+						attvaluesElement = ET.SubElement(xmlElement, "attvalues")
+						weightTag = True
+					attvalue = ET.SubElement(attvaluesElement, "attvalue")
+					attvalue.set('for', 'weight')
+					attvalue.set('value', str(event.w))
+					attvalue.set('start', str(timeStep))
+					attvalue.set('endopen', str(timeStep + 1))
+				else:
+					if event.type in startEvents:
+						operation = "start"
+					else:
+						operation = "end"
+					if not spellTag:
+						spellsElement = ET.SubElement(xmlElement, "spells")
+						spellTag = True
+					spellElement = ET.SubElement(spellsElement, "spell")
+					spellElement.set(operation, str(timeStep))
+
+class GraphMLSAX(xml.sax.ContentHandler):
+	""" 
+	GraphMLSAX()
+
+	Parser for GraphML XML files, based on Pythons XML.SAX implementation.
+	"""
+
+	def __init__(self):
+		""" Initializes several important variables """
+		xml.sax.ContentHandler.__init__(self)
+		self.charBuffer = []
+		self.mapping = dict()
+		self.g = Graph(0)
+		self.graphName = 'unnamed'
+		self.weightedID = ''
+		self.weighted = False
+		self.directed = False
+		self.edgestack = []
+		self.edgeweight = 0.0
+		self.keepData = False
+
+	def startElement(self, name, attrs):
+		""" 
+		startElement(name, attrs)
+
+		Parses all currently relevant XML tags and retrieves data.
+		
+		Parameters
+		----------
+		name : str
+			Name of the element. Possible values: graph, node, edge, key, data
+		attr : dict()
+			Attributes of element.
+		"""
+		if name == "graph":
+			# determine, if graph is directed:
+			if attrs.getValue("edgedefault") == "directed":
+				print("identified graph as directed")
+				self.directed = True
+			if "id" in  attrs.getNames() and not attrs.getValue("id") == '':
+					self.graphName = attrs.getValue("id")
+			self.g = Graph(0,self.weighted, self.directed)
+		if name == "node":
+			u = self.g.addNode()
+			val = attrs.getValue("id")
+			self.mapping[val] = u
+		elif name == "edge":
+			u = attrs.getValue("source")
+			v = attrs.getValue("target")
+			self.edgestack.append((u,v))
+		elif name == "key":
+			#print("found element with tag KEY")
+			if (attrs.getValue("for") == 'edge' and attrs.getValue("attr.name") == 'weight' and attrs.getValue("attr.type") == 'double'):
+				self.weighted = True
+				self.weightedID = attrs.getValue("id")
+				print("identified graph as weighted")
+		elif name == "data" and attrs.getValue("key") == self.weightedID:
+			self.keepData = True
+
+	def endElement(self, name):
+		""" 
+		endElement(name)
+
+		Finalizes parsing of the started Element and processes retrieved data.
+
+		Parameters
+		----------
+		name : str
+			Name of the element. Possible values: edge, data
+		"""
+		data = self.getCharacterData()
+		if name == "edge":
+			u = self.edgestack[len(self.edgestack)-1][0]
+			v = self.edgestack[len(self.edgestack)-1][1]
+			self.edgestack.pop()
+			if self.weighted:
+				#print ("identified edge as weighted with weight: {0}".format(edgeweight))
+				self.g.addEdge(self.mapping[u], self.mapping[v], self.edgeweight)
+				self.edgeweight = 0.0
+			else:
+				self.g.addEdge(self.mapping[u], self.mapping[v])
+		elif name == "data" and self.keepData:
+			self.keepData = False
+			self.edgeweight = float(data)
+
+	def characters(self, content):
+		""" 
+		characters(content)
+
+		Appends content string to the textbuffer.
+
+		Parameters
+		----------
+		content : str
+			String to be added.
+		"""
+		self.charBuffer.append(content)
+
+	def getCharacterData(self):
+		""" 
+		getCharacterData()
+
+		Returns current textbuffer and clears it afterwards.
+		"""
+		data = ''.join(self.charBuffer).strip()
+		self.charBuffer = []
+		return data
+
+	def getGraph(self):
+		""" 
+		getGraph()
+
+		Return parsed graph.
+		"""
+		return self.g
+
+class GraphMLReader:
+	""" 
+	GraphMLReader()
+
+	This class serves as wrapper for the GraphMLSAX class
+	which is able to parse a GraphML XML file and construct
+	a graph.
+	"""
+
+	def __init__(self):
+		""" Initializes the GraphMLSAX class """
+		self.graphmlsax = GraphMLSAX()
+
+	def read(self, fpath):
+		""" 
+		read(fpath)
+		
+		Parses a GraphML XML file and returns the constructed Graph
+		
+		Parameters
+		----------
+		fpath: str
+			The path to the file as a String.
+		"""
+		xml.sax.parse(fpath, self.graphmlsax)
+		return self.graphmlsax.getGraph()
+
+# GraphMLWriter
+class GraphMLWriter:
+	""" 
+	GraphMLWriter()
+
+	This class provides a function to write a NetworKit graph to a file in the 
+	GraphML format.
+	"""
+	
+	def __init__(self):
+		""" Initializes the class. """
+		self.edgeIdCounter = 0
+		self.dir_str = ''
+
+	def write(self, graph, fname, nodeAttributes = {}, edgeAttributes = {}):
+		""" 
+		write(self, graph, fname, nodeAttributes = {}, edgeAttributes = {})
+		
+		Writes a NetworKit graph to the specified file fname. 
+		
+		Parameters
+		----------
+		graph : networkit.Graph
+			The input graph.
+		fname: str
+			The desired file path and name to be written to.
+		nodeAttributes: dict(), optional
+			Dictionary of node attributes in the form attribute name => list of attribute values. Default: {}
+		edgeAttributes: dict(), optional
+			Dictionary of edge attributes in the form attribute name => list of attribute values. Default: {}
+		"""
+		# reset some internal variables in case more graphs are written with the same instance
+		self.edgeIdCounter = 0
+		self.dir_str = ''
+
+		if len(edgeAttributes) > 0 and not graph.hasEdgeIds():
+			raise RuntimeError("Error, graph must have edge ids if edge attributes are given")
+
+		# start with the root element and the right header information
+		root = ET.Element('graphml')
+		root.set("xmlnsi","http://graphml.graphdrawing.org/xmlns")
+		root.set("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance")
+		root.set("xsi:schemaLocation","http://graphml.graphdrawing.org/xmlns \
+			http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd")
+
+		maxAttrKey = 1
+		# if the graph is weighted, add the attribute
+		if graph.isWeighted():
+			attrElement = ET.SubElement(root,'key')
+			attrElement.set('for','edge')
+			attrElement.set('id', 'd1')
+			attrElement.set('attr.name','weight')
+			attrElement.set('attr.type','double')
+			maxAttrKey += 1
+
+		attrKeys = {}
+		import numbers
+		import itertools
+		for attType, attName, attData in itertools.chain(
+			map(lambda d : ('node', d[0], d[1]), nodeAttributes.items()),
+			map(lambda d : ('edge', d[0], d[1]), edgeAttributes.items())):
+
+			attrElement = ET.SubElement(root, 'key')
+			attrElement.set('for', attType)
+			attrElement.set('id', 'd{0}'.format(maxAttrKey))
+			attrKeys[(attType, attName)] = 'd{0}'.format(maxAttrKey)
+			maxAttrKey += 1
+			attrElement.set('attr.name', attName)
+			if len(attData) == 0:
+				attrElement.set('attr.type', 'int')
+			elif isinstance(attData[0], bool):
+				attrElement.set('attr.type', 'boolean')
+				# special handling for boolean attributes: convert boolean into lowercase string
+				if attType == 'edge':
+					edgeAttributes[attName] = [ str(d).lower() for d in attData ]
+				else:
+					nodeAttributes[attName] = [ str(d).lower() for d in attData ]
+			elif isinstance(attData[0], numbers.Integral):
+				attrElement.set('attr.type', 'int')
+			elif isinstance(attData[0], numbers.Real):
+				attrElement.set('attr.type', 'double')
+			else:
+				attrElement.set('attr.type', 'string')
+
+
+		# create graph element with appropriate information
+		graphElement = ET.SubElement(root,"graph")
+		if graph.isDirected():
+			graphElement.set('edgedefault', 'directed')
+			self.dir_str = 'true'
+		else:
+			graphElement.set('edgedefault', 'undirected')
+			self.dir_str = 'false'
+
+		# Add nodes
+		for n in graph.iterNodes():
+			nodeElement = ET.SubElement(graphElement,'node')
+			nodeElement.set('id', str(n))
+			for attName, attData in nodeAttributes.items():
+				dataElement = ET.SubElement(nodeElement, 'data')
+				dataElement.set('key', attrKeys[('node', attName)])
+				dataElement.text = str(attData[n])
+
+		# in the future: more attributes
+	        #for a in n.attributes():
+        	#    if a != 'label':
+	        #        data = doc.createElement('data')
+        	#        data.setAttribute('key', a)
+	        #        data.appendChild(doc.createTextNode(str(n[a])))
+        	#        node.appendChild(data)
+
+		# Add edges
+		def addEdge(u, v, w, eid):
+			edgeElement = ET.SubElement(graphElement,'edge')
+			edgeElement.set('directed', self.dir_str)
+			edgeElement.set('target', str(v))
+			edgeElement.set('source', str(u))
+			if graph.hasEdgeIds():
+				edgeElement.set('id', "e{0}".format(eid))
+			else:
+				edgeElement.set('id', "e{0}".format(self.edgeIdCounter))
+				self.edgeIdCounter += 1
+			if graph.isWeighted():
+				# add edge weight
+				dataElement = ET.SubElement(edgeElement,'data')
+				dataElement.set('key','d1')
+				dataElement.text = str(w)
+			for attName, attData in edgeAttributes.items():
+				dataElement = ET.SubElement(edgeElement, 'data')
+				dataElement.set('key', attrKeys[('edge', attName)])
+				dataElement.text = str(attData[eid])
+		graph.forEdges(addEdge)
+
+	#TODO: optional prettify function for formatted output of xml files
+		tree = ET.ElementTree(root)
+		tree.write(fname,"utf-8",True)
