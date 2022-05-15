@@ -30,7 +30,6 @@ TEST_F(CoarseningBenchmark, benchmarkCoarsening) {
     ClusteringGenerator clusteringGen;
     Partition zeta = clusteringGen.makeRandomClustering(G, k);
 
-    // count k = zeta.numberOfSubsets();
     DEBUG("number of subsets: ", k);
 
     Aux::Timer timer;
