@@ -12,7 +12,6 @@
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/DynDijkstra.hpp>
 #include <networkit/distance/Dijkstra.hpp>
-#include <networkit/io/METISGraphReader.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
@@ -286,7 +285,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraDeletion) {
 }
 
 TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraph) {
-    METISGraphReader reader;
+    Aux::Random::setSeed(1, true);
     DorogovtsevMendesGenerator generator(500);
     Graph G = generator.generate();
     DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
@@ -322,6 +321,7 @@ TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraph) {
 }
 
 TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraphEdgeDeletion) {
+    Aux::Random::setSeed(1, true);
     DorogovtsevMendesGenerator generator(500);
     Graph G = generator.generate();
     DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
@@ -348,43 +348,37 @@ TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraphEdgeDeletion) {
 }
 
 TEST_F(DynSSSPGTest, testDynamicDijkstraGeneratedGraph) {
-    METISGraphReader reader;
-    DorogovtsevMendesGenerator generator(1000);
-    Graph G1 = generator.generate();
-    Graph G(G1, true, false);
+    Aux::Random::setSeed(1, true);
+    auto G = DorogovtsevMendesGenerator{1000}.generate();
+    G = GraphTools::toWeighted(G);
     DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
+
     DynDijkstra dyn_dij(G, 0);
-    Dijkstra dij(G, 0);
     dyn_dij.run();
-    dij.run();
-    DEBUG("Before the edge insertion: ");
-    count nInsertions = 10, i = 0;
-    while (i < nInsertions) {
+
+    Dijkstra dij(G, 0); // Baseline
+
+    for (int i = 0; i < 10; ++i) {
         DEBUG("Sampling a new edge");
-        node v1 = GraphTools::randomNode(G);
-        node v2 = GraphTools::randomNode(G);
-        if (v1 != v2 && !G.hasEdge(v1, v2)) {
-            i++;
-            DEBUG("Adding edge number ", i);
-            G.addEdge(v1, v2);
-            std::vector<GraphEvent> batch;
-            batch.push_back(GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, 1.0));
-            DEBUG("Running update with dynamic dijkstra");
-            dyn_dij.updateBatch(batch);
-            DEBUG("Running from scratch with dijkstra");
-            dij.run();
-            G.forNodes([&] (node i) {
-            //	std::cout<<"Node "<<i<<":"<<std::endl;
-            //	std::cout<<"Actual distance: "<<dij.distance(i)<<", computed distance: "<<ddij.distance(i)<<std::endl;
-            //	std::cout<<"Actual number of paths: "<<dij.numberOfPaths(i)<<", computed one: "<<ddij.numberOfPaths(i)<<std::endl;
-                EXPECT_EQ(dyn_dij.distance(i), dij.distance(i));
-                EXPECT_EQ(dyn_dij.numberOfPaths(i), dij.numberOfPaths(i));
-            });
-        }
+        node v1 = GraphTools::randomNode(G), v2 = GraphTools::randomNode(G);
+        while (v1 == v2 || G.hasEdge(v1, v2))
+             v1 = GraphTools::randomNode(G), v2 = GraphTools::randomNode(G);
+
+        DEBUG("Adding edge number ", i);
+        G.addEdge(v1, v2);
+        DEBUG("Running update with dynamic dijkstra");
+        dyn_dij.update(GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, defaultEdgeWeight));
+        DEBUG("Running from scratch with dijkstra");
+        dij.run();
+        G.forNodes([&] (node i) {
+            EXPECT_DOUBLE_EQ(dyn_dij.distance(i), dij.distance(i));
+            EXPECT_EQ(dyn_dij.numberOfPaths(i), dij.numberOfPaths(i));
+        });
     }
 }
 
 TEST_F(DynSSSPGTest, testDynamicDijkstraGeneratedGraphEdgeDeletion) {
+    Aux::Random::setSeed(1, true);
     DorogovtsevMendesGenerator generator(1000);
     Graph G1 = generator.generate();
     Graph G(G1, true, false);
@@ -412,7 +406,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraGeneratedGraphEdgeDeletion) {
 }
 
 TEST_F(DynSSSPGTest, testDynamicDijkstraBatches) {
-    METISGraphReader reader;
+    Aux::Random::setSeed(1, true);
     std::default_random_engine random_generator;
     std::normal_distribution<double> distribution(100,10);
     DorogovtsevMendesGenerator generator(100);
@@ -463,6 +457,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraBatches) {
 }
 
 TEST_F(DynSSSPGTest, testDynamicDijkstraBatchesEdgeDeletions) {
+    Aux::Random::setSeed(1, true);
     ErdosRenyiGenerator generator(100, 0.25, false, false);
     Graph G1 = generator.generate();
     Graph G(G1, true, false);
