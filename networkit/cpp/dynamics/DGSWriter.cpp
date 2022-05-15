@@ -48,8 +48,7 @@ void DGSWriter::write(std::vector<GraphEvent> &stream, const std::string &path) 
             break;
         }
         case GraphEvent::TIME_STEP: {
-            out << "st"
-                << "\n";
+            out << "st\n";
             break;
         }
         default: {

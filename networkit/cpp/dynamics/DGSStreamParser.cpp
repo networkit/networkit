@@ -82,8 +82,8 @@ std::vector<GraphEvent> DGSStreamParser::getStream() {
                 edgeweight w = std::stod(Aux::StringTools::split(split[2], '=')[1]); // weight=<w>
                 auto ev = GraphEvent(GraphEvent::EDGE_WEIGHT_UPDATE, u, v, w);
                 stream.push_back(ev);
-            } else if (tag.compare("ie")
-                       == 0) { // update edge. Only the "weight" attribute is supported so far
+            } else if (tag.compare("ie") == 0) {
+                // update edge. Only the "weight" attribute is supported so far
                 std::vector<std::string> uvs = Aux::StringTools::split(split[1], '-');
                 node u = map(uvs[0]);
                 node v = map(uvs[1]);

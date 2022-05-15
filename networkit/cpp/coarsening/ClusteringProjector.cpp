@@ -33,9 +33,9 @@ Partition ClusteringProjector::projectBackToFinest(const Partition &zetaCoarse,
     }
 
     Partition zetaFine(Gfinest.upperNodeIdBound());
-    zetaFine.setUpperBound(
-        zetaCoarse.upperBound()); // upper bound for ids in zetaFine must be set to upper bound of
-                                  // zetaCoarse, or modularity assertions fail
+    // upper bound for ids in zetaFine must be set to upper bound of zetaCoarse, or modularity
+    // assertions fail
+    zetaFine.setUpperBound(zetaCoarse.upperBound());
 
     // store temporarily coarsest supernode here
     std::vector<node> tempMap(Gfinest.upperNodeIdBound());
