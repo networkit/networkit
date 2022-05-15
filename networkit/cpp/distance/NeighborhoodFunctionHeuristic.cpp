@@ -115,17 +115,8 @@ std::vector<node> NeighborhoodFunctionHeuristic::random(const Graph& G, count nS
 }
 
 std::vector<node> NeighborhoodFunctionHeuristic::split(const Graph& G, count nSamples) {
-    // sort the nodes by node degree or sum of degrees of its neighbors
-    std::vector<count> nodeDeg(G.upperNodeIdBound(), none);
-    G.parallelForNodes([&](node u) {
-            nodeDeg[u] = G.degree(u);
-    });
-    std::vector<node> nodes;
-    nodes.reserve(G.numberOfNodes());
-    G.forNodes([&](node u) { nodes.push_back(u); });
-    nodes.erase(std::remove_if(nodes.begin(), nodes.end(), [](node u){return u == none;}), nodes.end());
-    //std::random_shuffle(nodes.begin(), nodes.end());
-    Aux::Parallel::sort(nodes.begin(), nodes.end(), [&nodeDeg](const node& a, const node& b) {return nodeDeg[a] < nodeDeg[b];});
+    std::vector<node> nodes(G.nodeRange().begin(), G.nodeRange().end());
+    Aux::Parallel::sort(nodes.begin(), nodes.end(), [&G](const node& a, const node& b) {return G.degree(a) < G.degree(b);});
     std::vector<node> start_nodes(nSamples, 0);
     // every (n/nSamples)-th node is selected as start node
     auto stepwidth = G.numberOfNodes()/nSamples;
