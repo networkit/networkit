@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * BellmanFordGTest.cpp
  *
@@ -8,15 +7,15 @@
 
 #include <gtest/gtest.h>
 
-#include <networkit/io/METISGraphReader.hpp>
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/io/METISGraphReader.hpp>
 
 #include <networkit/algebraic/CSRMatrix.hpp>
 
-#include <networkit/distance/Dijkstra.hpp>
 #include <networkit/algebraic/DynamicMatrix.hpp>
 #include <networkit/algebraic/algorithms/AlgebraicBellmanFord.hpp>
+#include <networkit/distance/Dijkstra.hpp>
 
 namespace NetworKit {
 
@@ -26,7 +25,7 @@ public:
     virtual ~AlgebraicBellmanFordGTest() = default;
 
 protected:
-    std::vector<double> classicBF(const Graph& graph, node s) const;
+    std::vector<double> classicBF(const Graph &graph, node s) const;
 };
 
 TEST_F(AlgebraicBellmanFordGTest, testOnToyGraph) {
@@ -88,16 +87,15 @@ TEST_F(AlgebraicBellmanFordGTest, benchmark) {
     }
 }
 
-std::vector<double> AlgebraicBellmanFordGTest::classicBF(const Graph& graph, node s) const {
+std::vector<double> AlgebraicBellmanFordGTest::classicBF(const Graph &graph, node s) const {
     std::vector<double> dist(graph.numberOfNodes(), std::numeric_limits<double>::infinity());
     dist[s] = 0;
 
     for (index i = 1; i < graph.numberOfNodes(); ++i) {
         graph.forNodes([&](node u) {
             if (dist[u] != std::numeric_limits<double>::infinity()) {
-                graph.forNeighborsOf(u, [&](node v, edgeweight w) {
-                    dist[v] = std::min(dist[v], dist[u]+w);
-                });
+                graph.forNeighborsOf(
+                    u, [&](node v, edgeweight w) { dist[v] = std::min(dist[v], dist[u] + w); });
             }
         });
     }
