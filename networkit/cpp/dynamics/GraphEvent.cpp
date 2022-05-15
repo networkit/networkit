@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * GraphEvent.cpp
  *
@@ -12,7 +11,8 @@
 
 namespace NetworKit {
 
-GraphEvent::GraphEvent(GraphEvent::Type type, node u, node v, edgeweight w) : type(type), u(u), v(v), w(w) {}
+GraphEvent::GraphEvent(GraphEvent::Type type, node u, node v, edgeweight w)
+    : type(type), u(u), v(v), w(w) {}
 
 std::string GraphEvent::toString() const {
     std::stringstream ss;
@@ -37,7 +37,8 @@ std::string GraphEvent::toString() const {
 }
 
 bool GraphEvent::operator==(const GraphEvent &rhs) const noexcept {
-    if (type == GraphEvent::TIME_STEP && rhs.type == GraphEvent::TIME_STEP) return true;
+    if (type == GraphEvent::TIME_STEP && rhs.type == GraphEvent::TIME_STEP)
+        return true;
     return (type == rhs.type && u == rhs.u && v == rhs.v && w == rhs.w);
 }
 

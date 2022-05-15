@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * BiconnectedComponentsGTest.cpp
  *
@@ -9,9 +8,9 @@
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Log.hpp>
-#include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/components/BiconnectedComponents.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {

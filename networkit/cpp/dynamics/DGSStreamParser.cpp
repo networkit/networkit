@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DGSStreamParser.cpp
  *
@@ -29,7 +28,7 @@ std::vector<GraphEvent> DGSStreamParser::getStream() {
     std::getline(dgsFile, line); // get DGS version
     ++lineCount;
     if (line.compare(0, cookie.size(), cookie)) {
-        ERROR("found " , line , " instead of " , cookie , " in first line");
+        ERROR("found ", line, " instead of ", cookie, " in first line");
         throw std::runtime_error("expected cookie in first line");
     }
 
@@ -83,7 +82,8 @@ std::vector<GraphEvent> DGSStreamParser::getStream() {
                 edgeweight w = std::stod(Aux::StringTools::split(split[2], '=')[1]); // weight=<w>
                 auto ev = GraphEvent(GraphEvent::EDGE_WEIGHT_UPDATE, u, v, w);
                 stream.push_back(ev);
-            } else if (tag.compare("ie") == 0) { // update edge. Only the "weight" attribute is supported so far
+            } else if (tag.compare("ie")
+                       == 0) { // update edge. Only the "weight" attribute is supported so far
                 std::vector<std::string> uvs = Aux::StringTools::split(split[1], '-');
                 node u = map(uvs[0]);
                 node v = map(uvs[1]);
@@ -105,16 +105,14 @@ std::vector<GraphEvent> DGSStreamParser::getStream() {
                 auto ev = GraphEvent(GraphEvent::NODE_RESTORATION, u);
                 stream.push_back(ev);
             } else {
-                ERROR("malformed line (" , lineCount , ") : " , line);
+                ERROR("malformed line (", lineCount, ") : ", line);
                 throw std::runtime_error("malformed line in .DGS file");
             }
         }
 
     } else {
         // direct format
-        auto offset = [&](node u) {
-            return (u - baseIndex);
-        };
+        auto offset = [&](node u) { return (u - baseIndex); };
 
         while (std::getline(dgsFile, line)) {
             ++lineCount;
@@ -158,7 +156,7 @@ std::vector<GraphEvent> DGSStreamParser::getStream() {
                 node u = offset(std::stoul(split[1]));
                 stream.emplace_back(GraphEvent::NODE_RESTORATION, u);
             } else {
-                ERROR("malformed line (" , lineCount , ") : " , line);
+                ERROR("malformed line (", lineCount, ") : ", line);
                 throw std::runtime_error("malformed line in .DGS file");
             }
         }

@@ -1,4 +1,3 @@
-// no-networkit-format
 #include <string>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -63,54 +62,55 @@ void GraphDifference::run() {
         // mark neighbors of current node in G1
         if (G1->hasNode(u)) {
             G1->forNeighborsOf(u, [&](node v, edgeweight w) {
-                    if (G1->isDirected() || u <= v) {
-                        TRACE("Marking neighbor of ", u, " in G1 ", v);
-                        marker[v] = true;
-                        neighborWeights[v] = w;
-                    }
-                });
+                if (G1->isDirected() || u <= v) {
+                    TRACE("Marking neighbor of ", u, " in G1 ", v);
+                    marker[v] = true;
+                    neighborWeights[v] = w;
+                }
+            });
         }
 
         // unmark common neighbors, detect edge additions
         if (G2->hasNode(u)) {
             G2->forNeighborsOf(u, [&](node v, edgeweight w) {
-                    // for undirected graphs, edges are only added in one direction unless
-                    // the other node does not exist in G1 (edges where both nodes do not
-                    // exist in G1 have been added above).
-                    if (G1->isDirected() || u <= v) {
-                        if (v < G1->upperNodeIdBound() && marker[v]) {
-                            if (neighborWeights[v] != w) {
-                                edgeAdditions.emplace_back(GraphEvent::EDGE_WEIGHT_UPDATE, u, v, w);
-                                ++numWeightUpdates;
-                            }
-                            TRACE("Unmarking neighbor of ", u, " in G2 ", v);
-                            marker[v] = false;
-                        } else {
-                            edgeAdditions.emplace_back(GraphEvent::EDGE_ADDITION, u, v, w);
-                            ++numEdgeAdditions;
+                // for undirected graphs, edges are only added in one direction unless
+                // the other node does not exist in G1 (edges where both nodes do not
+                // exist in G1 have been added above).
+                if (G1->isDirected() || u <= v) {
+                    if (v < G1->upperNodeIdBound() && marker[v]) {
+                        if (neighborWeights[v] != w) {
+                            edgeAdditions.emplace_back(GraphEvent::EDGE_WEIGHT_UPDATE, u, v, w);
+                            ++numWeightUpdates;
                         }
+                        TRACE("Unmarking neighbor of ", u, " in G2 ", v);
+                        marker[v] = false;
+                    } else {
+                        edgeAdditions.emplace_back(GraphEvent::EDGE_ADDITION, u, v, w);
+                        ++numEdgeAdditions;
                     }
-                });
+                }
+            });
         }
 
         if (G1->hasNode(u)) {
             // detect edge removals, unset the remaining neighbor markers
             G1->forNeighborsOf(u, [&](node v) {
-                    TRACE("Checking again (", u, ",", v, ")");
-                    if (G1->isDirected() || u <= v) {
-                        TRACE("Edge (", u, ",", v, ") is considered");
-                        if (marker[v]) {
-                            TRACE("Deleting (", u, ",", v, ")");
-                            edgeRemovals.emplace_back(GraphEvent::EDGE_REMOVAL, u, v);
-                            ++numEdgeRemovals;
-                            marker[v] = false;
-                        }
+                TRACE("Checking again (", u, ",", v, ")");
+                if (G1->isDirected() || u <= v) {
+                    TRACE("Edge (", u, ",", v, ") is considered");
+                    if (marker[v]) {
+                        TRACE("Deleting (", u, ",", v, ")");
+                        edgeRemovals.emplace_back(GraphEvent::EDGE_REMOVAL, u, v);
+                        ++numEdgeRemovals;
+                        marker[v] = false;
                     }
-                });
+                }
+            });
         }
     }
 
-    numEdits = numNodeRemovals + numNodeAdditions + numNodeRestorations + numEdgeRemovals + numEdgeAdditions + numWeightUpdates;
+    numEdits = numNodeRemovals + numNodeAdditions + numNodeRestorations + numEdgeRemovals
+               + numEdgeAdditions + numWeightUpdates;
 
     edits.swap(edgeRemovals);
     edits.reserve(nodeEvents.size() + edgeAdditions.size());
@@ -119,7 +119,7 @@ void GraphDifference::run() {
     hasRun = true;
 }
 
-const std::vector< GraphEvent > &GraphDifference::getEdits() const {
+const std::vector<GraphEvent> &GraphDifference::getEdits() const {
     assureFinished();
 
     return edits;
