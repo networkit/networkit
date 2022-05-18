@@ -7,15 +7,25 @@ namespace NetworKit {
 
 namespace GraphClusteringTools {
 
+namespace {
+float computeMaxClusterSize(const Partition &zeta) {
+    std::vector<count> clusterSizes = zeta.subsetSizes();
+    return (float)*std::max_element(clusterSizes.begin(), clusterSizes.end());
+}
+} // namespace
+
 float getImbalance(const Partition &zeta) {
     float avg = std::ceil(
         (float)zeta.numberOfElements()
         / (float)zeta.numberOfSubsets()); // TODO number of nodes and not number of elements
-    std::vector<count> clusterSizes = zeta.subsetSizes();
-    float maxClusterSize = (float) *std::max_element(clusterSizes.begin(),
-            clusterSizes.end());
-    float imbalance = maxClusterSize / avg;
-    return imbalance;
+    return computeMaxClusterSize(zeta) / avg;
+}
+
+float getImbalance(const Partition &zeta, const Graph &graph) {
+    float avg = std::ceil(
+        (float)graph.numberOfNodes()
+        / (float)zeta.numberOfSubsets());
+    return computeMaxClusterSize(zeta) / avg;
 }
 
 Graph communicationGraph(const Graph& graph, Partition &zeta) {

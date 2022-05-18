@@ -8,6 +8,7 @@ from libcpp.map cimport map
 
 import os
 import math
+import numpy as np
 import random
 import warnings
 try:
@@ -26,6 +27,7 @@ from .graphio import PartitionReader, PartitionWriter, EdgeListPartitionReader, 
 from .scd cimport _SelectiveCommunityDetector, SelectiveCommunityDetector
 
 from . import graph
+from .algebraic import laplacianEigenvectors
 from .centrality import CoreDecomposition
 from .coarsening import ParallelPartitionCoarsening
 from . import stopwatch
@@ -224,6 +226,7 @@ cdef class ClusteringGenerator:
 cdef extern from "<networkit/community/GraphClusteringTools.hpp>" namespace "NetworKit::GraphClusteringTools":
 
 	float getImbalance(_Partition zeta) except +
+	float getImbalance(_Partition zeta, _Graph graph) except +
 	_Graph communicationGraph(_Graph graph, _Partition zeta) except +
 	count weightedDegreeWithCluster(_Graph graph, _Partition zeta, node u, index cid)
 	bool_t isProperClustering(_Graph G, _Partition zeta)
@@ -233,7 +236,7 @@ cdef extern from "<networkit/community/GraphClusteringTools.hpp>" namespace "Net
 
 cdef class GraphClusteringTools:
 	@staticmethod
-	def getImbalance(Partition zeta):
+	def getImbalance(Partition zeta, Graph graph = None):
 		"""  
 		getImbalance(zeta)
 
@@ -243,13 +246,19 @@ cdef class GraphClusteringTools:
 		----------
 		zeta : networkit.Partition
 			The first partition.
+		graph : networkit.Graph, optional
+			The input graph to compare the imbalance to. Default: None
 
 		Returns
 		-------
 		int
 			Imbalance of the partition.
 		"""
-		return getImbalance(zeta._this)
+		if graph is not None:
+			return getImbalance(zeta._this, graph._this)
+		else:
+			return getImbalance(zeta._this)
+
 	@staticmethod
 	def communicationGraph(Graph graph, Partition zeta):
 		"""  
@@ -1670,12 +1679,16 @@ def inspectCommunities(zeta, G):
 		raise MissingDependencyError("tabulate")
 	communitySizes = zeta.subsetSizes()
 	mod = Modularity().getQuality(zeta, G)
+	eCut = EdgeCut().getQuality(zeta, G)
+	imbalance = GraphClusteringTools.getImbalance(zeta, G)
 	commProps = [
 		["# communities", zeta.numberOfSubsets()],
 		["min community size", min(communitySizes)],
 		["max community size", max(communitySizes)],
 		["avg. community size", sum(communitySizes) / len(communitySizes)],
-		#["imbalance", zeta.getImbalance()],
+		["imbalance", imbalance],
+		["edge cut", eCut],
+		["edge cut (portion)", eCut / G.numberOfEdges() ],
 		["modularity", mod],
 	]
 	print(tabulate.tabulate(commProps))
@@ -2007,3 +2020,182 @@ cdef class OverlappingNMIDistance(DissimilarityMeasure):
 		if normalization not in {OverlappingNMIDistance.Min, OverlappingNMIDistance.GeometricMean,
 				OverlappingNMIDistance.ArithmeticMean, OverlappingNMIDistance.Max, OverlappingNMIDistance.JointEntropy}:
 			raise ValueError("Error, invalid normalization method")
+
+class SpectralPartitioner:
+	"""
+	SpectralPartitioner(graph, count, balances=True)
+
+	Class to do spectral partitioning.
+
+	Please note that the code in this class assumes the nodes of a graph to be numbered
+	from 0 to n.
+
+	Parameters
+	----------
+	graph : networkit.Graph
+		The input graph.
+	count : int
+		The number of partitions to create.
+	balanced : bool, optional
+		Set this to false if you do not want to enforce balance, possibly increasing quality. Default: True
+	"""
+	def __init__(self, graph, count, balanced=True):
+		self.graph = graph
+		self.count = count
+
+		self.balanced = balanced
+
+	def _prepareSpectrum(self):
+		spectrum = laplacianEigenvectors(self.graph, cutoff = (math.ceil(math.log(self.count, 2)) + 1), reverse=True)
+		self.eigenvectors = spectrum[1]
+		self.eigenvalues = spectrum[0]
+
+	def _getQuantiles(self, eigv, vertices, count = 1):
+		values = [eigv[i] for i in vertices]
+		values.sort()
+
+		sections = count + 1
+		quantiles = []
+
+		for i in range(1, sections):
+			quantile = values[math.floor(len(values) * i / sections)]
+			quantiles.append(quantile)
+
+		return quantiles
+
+	def _getMean(self, eigv, vertices):
+		values = [eigv[i] for i in vertices]
+		mean = np.mean(values)
+
+		return mean
+
+	def _trisect(self, partition=None, iteration=1):
+		if partition is None:
+			vertices = self.graph.iterNodes()
+		else:
+			vertices = self.partitions[partition]
+
+
+		eigv = self.eigenvectors[iteration]
+
+		quantiles = self._getQuantiles(eigv, vertices, count = 2)
+
+
+		partA = self.nextPartition
+		partB = self.nextPartition + 1
+		partC = self.nextPartition + 2
+		self.nextPartition += 3		# TODO this is not thread-safe
+
+
+		self.partitions[partA] = []
+		self.partitions[partB] = []
+		self.partitions[partC] = []
+
+		for vertex in vertices:
+			if (eigv[vertex] < quantiles[0]):
+				self.partitions[partA].append(vertex)
+			elif (eigv[vertex] < quantiles[1]):
+				self.partitions[partB].append(vertex)
+			else: 
+				self.partitions[partC].append(vertex)
+
+		if (not (partition is None)):
+			del self.partitions[partition]
+
+	def _bisect(self, count, partition=None, iteration=1):
+		if count == 1:
+			return
+
+		if count == 3:
+			self._trisect(partition=partition)
+			return
+
+		if partition is None:
+			vertices = self.graph.iterNodes()
+		else:
+			vertices = self.partitions[partition]
+
+
+		eigv = self.eigenvectors[iteration]
+
+		if (self.balanced):
+			split = self._getQuantiles(eigv, vertices)[0]
+		else:
+			split = self._getMean(eigv, vertices)
+
+		partA = self.nextPartition
+		partB = self.nextPartition + 1
+		self.nextPartition += 2		# TODO this is not thread-safe
+
+
+		self.partitions[partA] = []
+		self.partitions[partB] = []
+
+		for vertex in vertices:
+			if (eigv[vertex] < split):
+				self.partitions[partA].append(vertex)
+			else:
+				self.partitions[partB].append(vertex)
+
+		if (not (partition is None)):
+			del self.partitions[partition]
+
+		if count > 2:
+			if (count % 2 == 0):
+				self._bisect(count / 2, partition = partA, iteration = iteration + 1)
+				self._bisect(count / 2, partition = partB, iteration = iteration + 1)
+			else:
+				nextCount = (count - 1) / 2
+				if nextCount > 2:
+					self._bisect(nextCount, partition = partA, iteration = iteration + 1)
+					self._bisect(nextCount + 1, partition = partB, iteration = iteration + 1)
+				else:
+					self._bisect(nextCount, partition = partA, iteration = iteration + 1)
+					self._trisect(partition = partB, iteration = iteration + 1)
+
+
+	def _generatePartition(self):
+		partition = Partition(size=self.graph.numberOfNodes())
+
+		for partIndex in self.partitions:
+			vertices = self.partitions[partIndex]
+
+			if (len(vertices) < 1):
+				continue
+
+			firstItem = vertices[0] # TODO come on.. there has to be an easier way of doing this...
+			partition.toSingleton(firstItem)
+			subsetID = partition[firstItem]
+
+			for vertex in vertices[1:]:
+				partition.addToSubset(subsetID, vertex)
+
+		self.partition = partition
+		return partition
+
+	def run(self):
+		"""
+		run()
+
+		Runs the partitioning.
+		"""
+		self.nextPartition = 0
+		self.partitions = {}
+		self._prepareSpectrum()
+
+		self._bisect(self.count)
+
+		self._generatePartition()
+
+	def getPartition(self):
+		"""
+		getPartition()
+
+		Retrieves the partitioning after run() was called.
+
+		Returns
+		-------
+		networkit.Partition
+			The resulting partition. Only valid if :code:`run()` was called before.
+		"""
+		return self.partition
