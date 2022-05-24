@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * ChibaNishizekiTriangleEdgeScore.cpp
  *
@@ -12,7 +11,8 @@
 
 namespace NetworKit {
 
-ChibaNishizekiTriangleEdgeScore::ChibaNishizekiTriangleEdgeScore(const Graph& G) : EdgeScore<count>(G) {}
+ChibaNishizekiTriangleEdgeScore::ChibaNishizekiTriangleEdgeScore(const Graph &G)
+    : EdgeScore<count>(G) {}
 
 void ChibaNishizekiTriangleEdgeScore::run() {
     if (!G->hasEdgeIds()) {
@@ -24,15 +24,13 @@ void ChibaNishizekiTriangleEdgeScore::run() {
     // copy edges with edge ids
     G->parallelForNodes([&](node u) {
         edges[u].reserve(G->degree(u));
-        G->forEdgesOf(u, [&](node, node v, edgeid eid) {
-            edges[u].emplace_back(v, eid);
-        });
+        G->forEdgesOf(u, [&](node, node v, edgeid eid) { edges[u].emplace_back(v, eid); });
     });
 
-    //Node attribute: marker
+    // Node attribute: marker
     std::vector<edgeid> nodeMarker(G->upperNodeIdBound(), none);
 
-    //Edge attribute: triangle count
+    // Edge attribute: triangle count
     scoreData.resize(G->upperEdgeIdBound(), 0);
 
     // bucket sort
@@ -41,9 +39,7 @@ void ChibaNishizekiTriangleEdgeScore::run() {
     {
         std::vector<index> nodePos(n + 1, 0);
 
-        G->forNodes([&](node u) {
-            ++nodePos[n - G->degree(u)];
-        });
+        G->forNodes([&](node u) { ++nodePos[n - G->degree(u)]; });
 
         // exclusive prefix sum
         index tmp = nodePos[0];
@@ -56,20 +52,18 @@ void ChibaNishizekiTriangleEdgeScore::run() {
             sum += tmp;
         }
 
-        G->forNodes([&](node u) {
-            sortedNodes[nodePos[n - G->degree(u)]++] = u;
-        });
+        G->forNodes([&](node u) { sortedNodes[nodePos[n - G->degree(u)]++] = u; });
     }
 
     for (node u : sortedNodes) {
-        //Mark all neighbors
+        // Mark all neighbors
         for (auto uv : edges[u]) {
             nodeMarker[uv.first] = uv.second;
         }
 
-        //For all neighbors: check for already marked neighbors.
+        // For all neighbors: check for already marked neighbors.
         for (auto uv : edges[u]) {
-            auto& uedges = edges[uv.first];
+            auto &uedges = edges[uv.first];
             for (auto vw = uedges.begin(); vw != uedges.end(); ++vw) {
                 // delete the edge to u as we do not need to consider it again.
                 // the opposite edge doesn't need to be deleted as we will never again consider

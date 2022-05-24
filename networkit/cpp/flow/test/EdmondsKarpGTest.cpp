@@ -1,6 +1,5 @@
-// no-networkit-format
 /*
-* EdmondsKarpGTest.cpp
+ * EdmondsKarpGTest.cpp
  *
  *  Created on: 13.06.2014
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
@@ -13,21 +12,21 @@
 
 namespace NetworKit {
 
-class EdmondsKarpGTest : public testing::Test{};
+class EdmondsKarpGTest : public testing::Test {};
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpP1) {
     Graph G(7, false);
-    G.addEdge(0,1);
-    G.addEdge(0,2);
-    G.addEdge(0,3);
-    G.addEdge(1,2);
-    G.addEdge(1,4);
-    G.addEdge(2,3);
-    G.addEdge(2,4);
-    G.addEdge(3,4);
-    G.addEdge(3,5);
-    G.addEdge(4,6);
-    G.addEdge(5,6);
+    G.addEdge(0, 1);
+    G.addEdge(0, 2);
+    G.addEdge(0, 3);
+    G.addEdge(1, 2);
+    G.addEdge(1, 4);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 4);
+    G.addEdge(3, 5);
+    G.addEdge(4, 6);
+    G.addEdge(5, 6);
 
     G.indexEdges();
 
@@ -77,14 +76,14 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpTwoPaths) {
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpP2) {
     Graph G(6, true);
-    G.addEdge(0,1, 5);
-    G.addEdge(0,2, 15);
-    G.addEdge(1,3, 5);
-    G.addEdge(1,4, 5);
-    G.addEdge(2,3, 5);
+    G.addEdge(0, 1, 5);
+    G.addEdge(0, 2, 15);
+    G.addEdge(1, 3, 5);
+    G.addEdge(1, 4, 5);
+    G.addEdge(2, 3, 5);
     G.addEdge(2, 4, 5);
-    G.addEdge(3,5, 15);
-    G.addEdge(4,5, 5);
+    G.addEdge(3, 5, 15);
+    G.addEdge(4, 5, 5);
 
     G.indexEdges();
 
@@ -96,12 +95,12 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpP2) {
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpUnconnected) {
     Graph G(6, true);
-    G.addEdge(0,1, 5);
-    G.addEdge(0,2, 15);
-    G.addEdge(1,2, 5);
+    G.addEdge(0, 1, 5);
+    G.addEdge(0, 2, 15);
+    G.addEdge(1, 2, 5);
     G.addEdge(3, 4, 5);
-    G.addEdge(3,5, 15);
-    G.addEdge(4,5, 5);
+    G.addEdge(3, 5, 15);
+    G.addEdge(4, 5, 5);
 
     G.indexEdges();
 
