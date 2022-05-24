@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * MatchingCoarsening.cpp
  *
@@ -10,8 +9,10 @@
 
 namespace NetworKit {
 
-MatchingCoarsening::MatchingCoarsening(const Graph& G, const Matching& M, bool noSelfLoops) : GraphCoarsening(G), M(M), noSelfLoops(noSelfLoops) {
-    if (G.isDirected()) throw std::runtime_error("Only defined for undirected graphs.");
+MatchingCoarsening::MatchingCoarsening(const Graph &G, const Matching &M, bool noSelfLoops)
+    : GraphCoarsening(G), M(M), noSelfLoops(noSelfLoops) {
+    if (G.isDirected())
+        throw std::runtime_error("Only defined for undirected graphs.");
 }
 
 void MatchingCoarsening::run() {
@@ -25,14 +26,14 @@ void MatchingCoarsening::run() {
     std::vector<node> mapFineToCoarse(z, none);
     G->forNodes([&](node v) { // TODO: difficult in parallel
         index mate = M.mate(v);
-        if (mate == v) DEBUG("Node ", v, " is its own matching!");
+        if (mate == v)
+            DEBUG("Node ", v, " is its own matching!");
         assert(mate != v);
         if ((mate == none) || (v < mate)) {
             // vertex v is carried over to the new level
             mapFineToCoarse[v] = idx;
             ++idx;
-        }
-        else {
+        } else {
             // vertex v is not carried over, receives ID of mate
             mapFineToCoarse[v] = mapFineToCoarse[mate];
         }
@@ -44,7 +45,7 @@ void MatchingCoarsening::run() {
         G->forNeighborsOf(v, [&](node u, edgeweight ew) {
             node cv = mapFineToCoarse[v];
             node cu = mapFineToCoarse[u];
-            if ((v <= u) && (! noSelfLoops || (cv != cu))) {
+            if ((v <= u) && (!noSelfLoops || (cv != cu))) {
                 cG.increaseWeight(cv, cu, ew);
             }
         });

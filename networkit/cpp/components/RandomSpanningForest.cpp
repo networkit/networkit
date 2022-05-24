@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * RandomSpanningForest.cpp
  *
@@ -14,8 +13,7 @@
 
 namespace NetworKit {
 
-RandomSpanningForest::RandomSpanningForest(const Graph& G):
-        SpanningForest(G) {}
+RandomSpanningForest::RandomSpanningForest(const Graph &G) : SpanningForest(G) {}
 
 void RandomSpanningForest::run() {
     // handle disconnected graphs:
@@ -26,7 +24,7 @@ void RandomSpanningForest::run() {
     const auto comps = cc.getComponents();
 
     forest = GraphTools::copyNodes(*G);
-    for (const auto &comp: comps) {
+    for (const auto &comp : comps) {
         std::unordered_set<node> visited;
 
         // find and process random root

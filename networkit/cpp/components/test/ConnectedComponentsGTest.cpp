@@ -1,56 +1,55 @@
-// no-networkit-format
 /*
-* ConnectedComponentsGTest.cpp
-*
-*  Created on: Sep 16, 2013
-*      Author: Maximilian Vogel
-*/
+ * ConnectedComponentsGTest.cpp
+ *
+ *  Created on: Sep 16, 2013
+ *      Author: Maximilian Vogel
+ */
 #include <gtest/gtest.h>
 
 #include <networkit/components/ConnectedComponents.hpp>
-#include <networkit/components/ParallelConnectedComponents.hpp>
-#include <networkit/components/StronglyConnectedComponents.hpp>
 #include <networkit/components/DynConnectedComponents.hpp>
 #include <networkit/components/DynWeaklyConnectedComponents.hpp>
+#include <networkit/components/ParallelConnectedComponents.hpp>
+#include <networkit/components/StronglyConnectedComponents.hpp>
 #include <networkit/components/WeaklyConnectedComponents.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
-#include <networkit/graph/GraphTools.hpp>
 #include <networkit/graph/BFS.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/distance/Diameter.hpp>
-#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/generators/DorogovtsevMendesGenerator.hpp>
+#include <networkit/generators/HavelHakimiGenerator.hpp>
 #include <networkit/io/EdgeListReader.hpp>
 #include <networkit/io/KONECTGraphReader.hpp>
-#include <networkit/generators/HavelHakimiGenerator.hpp>
-#include <networkit/auxiliary/Log.hpp>
-#include <networkit/generators/DorogovtsevMendesGenerator.hpp>
+#include <networkit/io/METISGraphReader.hpp>
 
 namespace NetworKit {
 
-class ConnectedComponentsGTest: public testing::Test{};
+class ConnectedComponentsGTest : public testing::Test {};
 
 TEST_F(ConnectedComponentsGTest, testConnectedComponentsTiny) {
     // construct graph
     Graph g(20);
 
-    g.addEdge(0,1,0);
-    g.addEdge(1,2,0);
-    g.addEdge(2,4,0);
-    g.addEdge(4,8,0);
-    g.addEdge(8,16,0);
-    g.addEdge(16,19,0);
+    g.addEdge(0, 1, 0);
+    g.addEdge(1, 2, 0);
+    g.addEdge(2, 4, 0);
+    g.addEdge(4, 8, 0);
+    g.addEdge(8, 16, 0);
+    g.addEdge(16, 19, 0);
 
-    g.addEdge(3,5,0);
-    g.addEdge(5,6,0);
-    g.addEdge(6,7,0);
-    g.addEdge(7,9,0);
+    g.addEdge(3, 5, 0);
+    g.addEdge(5, 6, 0);
+    g.addEdge(6, 7, 0);
+    g.addEdge(7, 9, 0);
 
-    g.addEdge(10,11,0);
-    g.addEdge(10,18,0);
-    g.addEdge(10,12,0);
-    g.addEdge(18,17,0);
+    g.addEdge(10, 11, 0);
+    g.addEdge(10, 18, 0);
+    g.addEdge(10, 12, 0);
+    g.addEdge(18, 17, 0);
 
-    g.addEdge(13,14,0);
+    g.addEdge(13, 14, 0);
 
     // initialize ConnectedComponents
     ConnectedComponents ccs(g);
@@ -81,7 +80,7 @@ TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
     METISGraphReader reader;
     std::vector<std::string> graphs = {"PGPgiantcompo", "celegans_metabolic", "hep-th", "jazz"};
 
-    for (auto graphName: graphs) {
+    for (auto graphName : graphs) {
         Graph G = reader.read("input/" + graphName + ".graph");
         ConnectedComponents cc(G);
         cc.run();
@@ -96,21 +95,17 @@ TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
 
 TEST_F(ConnectedComponentsGTest, testParallelConnectedComponentsWithDeletedNodes) {
     Graph G(100);
-    G.forNodePairs([&](node u, node v){
-        G.addEdge(u,v);
-    });
-
+    G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
 
     {
         ParallelConnectedComponents cc(G);
         cc.run();
-        EXPECT_EQ(1, cc.numberOfComponents()) << "The complete graph has just one connected component";
+        EXPECT_EQ(1, cc.numberOfComponents())
+            << "The complete graph has just one connected component";
     }
 
     for (node u = 0; u < 10; ++u) {
-        G.forNeighborsOf(u, [&](node v) {
-            G.removeEdge(u, v);
-        });
+        G.forNeighborsOf(u, [&](node v) { G.removeEdge(u, v); });
         G.removeNode(u);
     }
 
@@ -119,9 +114,10 @@ TEST_F(ConnectedComponentsGTest, testParallelConnectedComponentsWithDeletedNodes
         ccPar.run();
         ConnectedComponents cc(G);
         cc.run();
-        EXPECT_EQ(cc.numberOfComponents(), ccPar.numberOfComponents()) << "The complete graph with 10 nodes removed has still just one connected component (run())";
+        EXPECT_EQ(cc.numberOfComponents(), ccPar.numberOfComponents())
+            << "The complete graph with 10 nodes removed has still just one connected component "
+               "(run())";
     }
-
 }
 
 TEST_F(ConnectedComponentsGTest, benchConnectedComponents) {
@@ -134,10 +130,9 @@ TEST_F(ConnectedComponentsGTest, benchConnectedComponents) {
     EXPECT_EQ(1u, cc.numberOfComponents());
 }
 
-
 TEST_F(ConnectedComponentsGTest, testStronglyConnectedComponentsTiny) {
 
-    auto comparePartitions = [](const Partition& p1, const Partition& p2) {
+    auto comparePartitions = [](const Partition &p1, const Partition &p2) {
         std::vector<index> partitionIdMap(p1.upperBound(), none);
         ASSERT_EQ(p1.numberOfElements(), p2.numberOfElements());
         ASSERT_EQ(p1.numberOfSubsets(), p2.numberOfSubsets());
@@ -150,7 +145,6 @@ TEST_F(ConnectedComponentsGTest, testStronglyConnectedComponentsTiny) {
             ASSERT_EQ(p_mapped, p);
         });
     };
-
 
     count n = 8;
     count m = 14;
@@ -215,13 +209,10 @@ TEST_F(ConnectedComponentsGTest, testStronglyConnectedComponents) {
         }
 
         G.forNodes([&](const node u) {
-
             if (inComponent[u] || !reachableFromComponent[u])
                 return;
 
-            Traversal::BFSfrom(G, u, [&](const node v) {
-                EXPECT_FALSE(inComponent[v]);
-            });
+            Traversal::BFSfrom(G, u, [&](const node v) { EXPECT_FALSE(inComponent[v]); });
         });
     };
 
@@ -260,24 +251,24 @@ TEST_F(ConnectedComponentsGTest, testStronglyConnectedComponents) {
 TEST_F(ConnectedComponentsGTest, testDynConnectedComponentsTiny) {
     // construct graph
     Graph g(20);
-    g.addEdge(0,1,0);
-    g.addEdge(1,2,0);
-    g.addEdge(2,4,0);
-    g.addEdge(4,8,0);
-    g.addEdge(8,16,0);
-    g.addEdge(16,19,0);
+    g.addEdge(0, 1, 0);
+    g.addEdge(1, 2, 0);
+    g.addEdge(2, 4, 0);
+    g.addEdge(4, 8, 0);
+    g.addEdge(8, 16, 0);
+    g.addEdge(16, 19, 0);
 
-    g.addEdge(3,5,0);
-    g.addEdge(5,6,0);
-    g.addEdge(6,7,0);
-    g.addEdge(7,9,0);
+    g.addEdge(3, 5, 0);
+    g.addEdge(5, 6, 0);
+    g.addEdge(6, 7, 0);
+    g.addEdge(7, 9, 0);
 
-    g.addEdge(10,11,0);
-    g.addEdge(10,18,0);
-    g.addEdge(10,12,0);
-    g.addEdge(18,17,0);
+    g.addEdge(10, 11, 0);
+    g.addEdge(10, 18, 0);
+    g.addEdge(10, 12, 0);
+    g.addEdge(18, 17, 0);
 
-    g.addEdge(13,14,0);
+    g.addEdge(13, 14, 0);
 
     // initialize DynConnectedComponents
     DynConnectedComponents dccs(g);
@@ -295,15 +286,13 @@ TEST_F(ConnectedComponentsGTest, testDynConnectedComponentsTiny) {
     EXPECT_TRUE(dccs.componentOfNode(15) != dccs.componentOfNode(0));
 
     // Create batch and update
-    std::vector<GraphEvent> batch {
-        GraphEvent(GraphEvent::EDGE_ADDITION, 15, 19, 0),
-        GraphEvent(GraphEvent::EDGE_REMOVAL, 6, 7, 0),
-        GraphEvent(GraphEvent::EDGE_ADDITION, 7, 17, 0),
-        GraphEvent(GraphEvent::EDGE_REMOVAL, 2, 4, 0)
-    };
+    std::vector<GraphEvent> batch{GraphEvent(GraphEvent::EDGE_ADDITION, 15, 19, 0),
+                                  GraphEvent(GraphEvent::EDGE_REMOVAL, 6, 7, 0),
+                                  GraphEvent(GraphEvent::EDGE_ADDITION, 7, 17, 0),
+                                  GraphEvent(GraphEvent::EDGE_REMOVAL, 2, 4, 0)};
 
     for (auto e : batch) {
-        if (e.type == GraphEvent::EDGE_ADDITION){
+        if (e.type == GraphEvent::EDGE_ADDITION) {
             g.addEdge(e.u, e.v);
         }
         if (e.type == GraphEvent::EDGE_REMOVAL) {
@@ -317,7 +306,6 @@ TEST_F(ConnectedComponentsGTest, testDynConnectedComponentsTiny) {
     EXPECT_TRUE(dccs.componentOfNode(9) == dccs.componentOfNode(11));
     EXPECT_TRUE(dccs.componentOfNode(3) != dccs.componentOfNode(9));
 }
-
 
 TEST_F(ConnectedComponentsGTest, testDynConnectedComponents) {
     auto G = METISGraphReader{}.read("input/karate.graph");
@@ -375,25 +363,25 @@ TEST_F(ConnectedComponentsGTest, testWeaklyConnectedComponentsTiny) {
     for (count i = 0; i < 20; ++i) {
         g.addNode();
     }
-    g.addEdge(0,1,0);
-    g.addEdge(1,2,0);
-    g.addEdge(2,4,0);
-    g.addEdge(4,8,0);
-    g.addEdge(8,16,0);
-    g.addEdge(16,19,0);
+    g.addEdge(0, 1, 0);
+    g.addEdge(1, 2, 0);
+    g.addEdge(2, 4, 0);
+    g.addEdge(4, 8, 0);
+    g.addEdge(8, 16, 0);
+    g.addEdge(16, 19, 0);
 
-    g.addEdge(3,5,0);
-    g.addEdge(5,6,0);
-    g.addEdge(6,7,0);
-    g.addEdge(7,9,0);
+    g.addEdge(3, 5, 0);
+    g.addEdge(5, 6, 0);
+    g.addEdge(6, 7, 0);
+    g.addEdge(7, 9, 0);
 
-    g.addEdge(10,11,0);
-    g.addEdge(10,18,0);
-    g.addEdge(10,12,0);
-    g.addEdge(18,17,0);
-    g.addEdge(17,10,0);
+    g.addEdge(10, 11, 0);
+    g.addEdge(10, 18, 0);
+    g.addEdge(10, 12, 0);
+    g.addEdge(18, 17, 0);
+    g.addEdge(17, 10, 0);
 
-    g.addEdge(13,14,0);
+    g.addEdge(13, 14, 0);
 
     // initialize WeaklyConnectedComponents
     WeaklyConnectedComponents wcc(g);
@@ -424,29 +412,28 @@ TEST_F(ConnectedComponentsGTest, testWeaklyConnectedComponents) {
     EXPECT_EQ(wc.numberOfComponents(), cc.numberOfComponents());
 }
 
-
 TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponentsTiny) {
     // construct graph
     Graph g(20, false, true);
 
-    g.addEdge(0,1,0);
-    g.addEdge(1,2,0);
-    g.addEdge(2,4,0);
-    g.addEdge(4,8,0);
-    g.addEdge(8,16,0);
-    g.addEdge(16,19,0);
+    g.addEdge(0, 1, 0);
+    g.addEdge(1, 2, 0);
+    g.addEdge(2, 4, 0);
+    g.addEdge(4, 8, 0);
+    g.addEdge(8, 16, 0);
+    g.addEdge(16, 19, 0);
 
-    g.addEdge(3,5,0);
-    g.addEdge(5,6,0);
-    g.addEdge(6,7,0);
-    g.addEdge(7,9,0);
+    g.addEdge(3, 5, 0);
+    g.addEdge(5, 6, 0);
+    g.addEdge(6, 7, 0);
+    g.addEdge(7, 9, 0);
 
-    g.addEdge(10,11,0);
-    g.addEdge(10,18,0);
-    g.addEdge(10,12,0);
-    g.addEdge(18,17,0);
+    g.addEdge(10, 11, 0);
+    g.addEdge(10, 18, 0);
+    g.addEdge(10, 12, 0);
+    g.addEdge(18, 17, 0);
 
-    g.addEdge(13,14,0);
+    g.addEdge(13, 14, 0);
 
     // initialize DynWeaklyConnectedComponents
     DynWeaklyConnectedComponents dw(g);
@@ -464,15 +451,13 @@ TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponentsTiny) {
     EXPECT_NE(dw.componentOfNode(15), dw.componentOfNode(0));
 
     // Create batch and update
-    std::vector<GraphEvent> batch {
-        GraphEvent(GraphEvent::EDGE_ADDITION, 15, 19, 0),
-        GraphEvent(GraphEvent::EDGE_REMOVAL, 6, 7, 0),
-        GraphEvent(GraphEvent::EDGE_ADDITION, 7, 17, 0),
-        GraphEvent(GraphEvent::EDGE_REMOVAL, 2, 4, 0)
-    };
+    std::vector<GraphEvent> batch{GraphEvent(GraphEvent::EDGE_ADDITION, 15, 19, 0),
+                                  GraphEvent(GraphEvent::EDGE_REMOVAL, 6, 7, 0),
+                                  GraphEvent(GraphEvent::EDGE_ADDITION, 7, 17, 0),
+                                  GraphEvent(GraphEvent::EDGE_REMOVAL, 2, 4, 0)};
 
     for (auto e : batch) {
-        if (e.type == GraphEvent::EDGE_ADDITION){
+        if (e.type == GraphEvent::EDGE_ADDITION) {
             g.addEdge(e.u, e.v);
         }
         if (e.type == GraphEvent::EDGE_REMOVAL) {
@@ -489,7 +474,6 @@ TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponentsTiny) {
     EXPECT_NE(dw.componentOfNode(3), dw.componentOfNode(9));
     EXPECT_NE(dw.componentOfNode(3), dw.componentOfNode(0));
 }
-
 
 TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponents) {
     auto G = KONECTGraphReader{}.read("input/foodweb-baydry.konect");
@@ -540,7 +524,6 @@ TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponentsUndirected) {
     Graph g(0);
     EXPECT_THROW(DynWeaklyConnectedComponents{g}, std::runtime_error);
 }
-
 
 TEST_F(ConnectedComponentsGTest, testExtractLargestConnectedComponent) {
     Graph G(8);

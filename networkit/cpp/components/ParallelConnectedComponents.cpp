@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * ConnectedComponents.cpp
  *
@@ -6,18 +5,18 @@
  *      Author: cls
  */
 
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
 #include <networkit/components/ParallelConnectedComponents.hpp>
 #include <networkit/structures/Partition.hpp>
-#include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
-#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 
-ParallelConnectedComponents::ParallelConnectedComponents(const Graph& G, bool coarsening) : ComponentDecomposition(G), coarsening(coarsening) {
+ParallelConnectedComponents::ParallelConnectedComponents(const Graph &G, bool coarsening)
+    : ComponentDecomposition(G), coarsening(coarsening) {
     if (G.isDirected())
         throw std::runtime_error("algorithm does not accept directed graphs");
 }
-
 
 void ParallelConnectedComponents::run() {
     // calculate connected components by label propagation
@@ -29,7 +28,7 @@ void ParallelConnectedComponents::run() {
     DEBUG("initializing active nodes");
     const char INACTIVE = 0;
     const char ACTIVE = 1;
-    std::vector<char> activeNodes(z); // record if node must be processed
+    std::vector<char> activeNodes(z);             // record if node must be processed
     std::vector<char> nextActiveNodes(z, ACTIVE); // for next iteration
 
     DEBUG("main loop");
@@ -44,9 +43,7 @@ void ParallelConnectedComponents::run() {
             if (activeNodes[u] == ACTIVE) {
                 // get smallest
                 index smallest = component[u];
-                G->forNeighborsOf(u, [&](node v) {
-                    smallest = std::min(smallest, component[v]);
-                });
+                G->forNeighborsOf(u, [&](node v) { smallest = std::min(smallest, component[v]); });
 
                 if (component[u] != smallest) {
                     component.moveToSubset(smallest, u);
@@ -74,9 +71,7 @@ void ParallelConnectedComponents::run() {
 
         // apply to current graph
         auto nodeMapping = con.getFineToCoarseNodeMapping();
-        G->parallelForNodes([&](node u) {
-            component[u] = cc.componentOfNode(nodeMapping[u]);
-        });
+        G->parallelForNodes([&](node u) { component[u] = cc.componentOfNode(nodeMapping[u]); });
     }
 
     hasRun = true;
@@ -103,9 +98,7 @@ void ParallelConnectedComponents::runSequential() {
             if (activeNodes[u]) {
                 // get smallest
                 index smallest = component[u];
-                G->forNeighborsOf(u, [&](node v) {
-                    smallest = std::min(smallest, component[v]);
-                });
+                G->forNeighborsOf(u, [&](node v) { smallest = std::min(smallest, component[v]); });
 
                 if (component[u] != smallest) {
                     component.moveToSubset(smallest, u);
@@ -135,11 +128,9 @@ void ParallelConnectedComponents::runSequential() {
 
         // apply to current graph
         auto nodeMapping = con.getFineToCoarseNodeMapping();
-        G->forNodes([&](node u) {
-            component[u] = cc.componentOfNode(nodeMapping[u]);
-        });
+        G->forNodes([&](node u) { component[u] = cc.componentOfNode(nodeMapping[u]); });
     }
 
     hasRun = true;
 }
-}
+} // namespace NetworKit
