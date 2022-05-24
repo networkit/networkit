@@ -48,11 +48,10 @@ void EdgeScoreLinearizer::run() {
         for (omp_index pos = 0; pos < static_cast<omp_index>(G->upperEdgeIdBound()); ++pos) {
             edgeid eid = std::get<2>(sorted[pos]);
             if (eid != none) {
-                scoreData[eid] = static_cast<double>(pos) * 1.0
-                                 / static_cast<double>(
-                                     G->numberOfEdges()
-                                     - 1); // TODO maybe writing back to sorted and then sorting
-                                           // again by eid could be faster (cache efficiency)?
+                // TODO maybe writing back to sorted and then sorting again by eid could be faster
+                // (cache efficiency)?
+                scoreData[eid] =
+                    static_cast<double>(pos) * 1.0 / static_cast<double>(G->numberOfEdges() - 1);
             }
         }
     }

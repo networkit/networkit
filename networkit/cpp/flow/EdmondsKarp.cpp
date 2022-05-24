@@ -34,8 +34,8 @@ edgeweight EdmondsKarp::BFS(std::vector<edgeweight> &residFlow, std::vector<node
         bool sinkReached = false;
         graph->forNeighborsOf(u, [&](node, node v, edgeweight weight, edgeid eid) {
             if (((u >= v && flow[eid] < weight) || (u < v && residFlow[eid] < weight))
-                && pred[v] == none) { // only add those neighbors with rest capacity and which were
-                                      // not discovered yet
+                && pred[v] == none) {
+                // only add those neighbors with rest capacity and which were not discovered yet
                 pred[v] = u;
                 gain[v] = std::min(gain[u], weight - (u >= v ? flow[eid] : residFlow[eid]));
 
