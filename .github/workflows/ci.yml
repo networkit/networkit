@@ -313,7 +313,7 @@ jobs:
       - name: Prepare environment and run checks
         run:  ${{ github.workspace }}/.github/workflows/scripts/core_sanitizers_coverage.sh
         shell: bash
-        timeout-minutes: 60
+        timeout-minutes: 120
       - name: Create C++ coverage
         run: |
           cd ${{ github.workspace }}
