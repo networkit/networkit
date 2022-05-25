@@ -1029,8 +1029,7 @@ TEST_P(GraphToolsGTest, testEdgesSortedByWeight) {
         auto G = METISGraphReader{}.read("input/PGPgiantcompo.graph");
 
         if (weighted()) {
-            G = GraphTools::toWeighted(G);
-            G.forEdges([&G](node u, node v) { G.setWeight(u, v, Aux::Random::real(10)); });
+            GraphTools::randomizeWeights(G, std::uniform_real_distribution<edgeweight>{0, 10});
         }
 
         GraphTools::sortEdgesByWeight(G);
@@ -1042,11 +1041,40 @@ TEST_P(GraphToolsGTest, testEdgesSortedByWeight) {
     }
 }
 
-TEST_F(GraphToolsGTest, testEdgesRandomizer) {
+TEST_P(GraphToolsGTest, testEdgesRandomizer) {
+    if (!weighted())
+        return;
     Aux::Random::setSeed(1, true);
-    DorogovtsevMendesGenerator generator(1000);
-    Graph G1 = generator.generate();
-    Graph G(G1, true, false);
+    Graph G1 = ErdosRenyiGenerator{2000, 0.3, directed()}.generate();
+    Graph G(G1, true, directed());
     GraphTools::randomizeWeights(G);
+    edgeweight sum = G.parallelSumForEdges([&](node, node, edgeweight ew) { return ew; });
+    edgeweight average = sum / G.numberOfEdges();
+    edgeweight squareDiffSum = G.parallelSumForEdges(
+        [&](node, node, edgeweight ew) { return (ew - average) * (ew - average); });
+    // since we have a uniform distribution  between 0 and 1 the variance is 1/12
+    EXPECT_NEAR(1.0 / 12.0, squareDiffSum / G.numberOfEdges(), 1e-2);
+    EXPECT_NEAR(0.5, average, 1e-3);
+    if (!directed())
+        G.forEdges([&G](node u, node v) { EXPECT_EQ(G.weight(u, v), G.weight(v, u)); });
+    else
+        G.forNodes([&G](node u) {
+            G.forInEdgesOf(u,
+                           [&](node u, node v, edgeweight ew) { EXPECT_EQ(G.weight(v, u), ew); });
+        });
+}
+
+TEST_P(GraphToolsGTest, testEdgesRandomizerDeterminism) {
+    if (!weighted())
+        return;
+    Aux::Random::setSeed(1, true);
+    Graph G1 = ErdosRenyiGenerator{2000, 0.3, directed()}.generate();
+    Graph Ga(G1, true, directed());
+    Graph Gb(G1, true, directed());
+    Aux::Random::setSeed(1, true);
+    GraphTools::randomizeWeights(Ga);
+    Aux::Random::setSeed(1, true);
+    GraphTools::randomizeWeights(Gb);
+    Ga.forEdges([&Ga, &Gb](node u, node v) { EXPECT_EQ(Ga.weight(u, v), Gb.weight(u, v)); });
 }
 } // namespace NetworKit
