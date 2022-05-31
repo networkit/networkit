@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * ErdosRenyiGenerator.cpp
  *
@@ -12,9 +11,8 @@
 
 namespace NetworKit {
 
-ErdosRenyiGenerator::ErdosRenyiGenerator(count nNodes, double prob, bool directed, bool self_loops) :
-    nNodes{nNodes}, prob{prob}, directed{directed}, self_loops{self_loops}
-{
+ErdosRenyiGenerator::ErdosRenyiGenerator(count nNodes, double prob, bool directed, bool self_loops)
+    : nNodes{nNodes}, prob{prob}, directed{directed}, self_loops{self_loops} {
     if (self_loops && !directed)
         throw std::runtime_error("Self-loops are only supported for directed graphs");
 }
@@ -25,7 +23,8 @@ Graph ErdosRenyiGenerator::generate() {
     {
         ErdosRenyiEnumeratorDefault impl(nNodes, prob, directed);
         impl.forEdgesParallel([&](int /*tid*/, node u, node v) {
-            if (!self_loops && u == v) return;
+            if (!self_loops && u == v)
+                return;
             builder.addHalfEdge(u, v);
         });
     }

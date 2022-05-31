@@ -1,10 +1,9 @@
-// no-networkit-format
 /*
-* DorogovtsevMendesGenerator.cpp
-*
-*  Created on: 27.05.2014
-*      Author: Christian Staudt
-*/
+ * DorogovtsevMendesGenerator.cpp
+ *
+ *  Created on: 27.05.2014
+ *      Author: Christian Staudt
+ */
 
 #include <tuple>
 
@@ -13,7 +12,7 @@
 
 namespace NetworKit {
 
-DorogovtsevMendesGenerator::DorogovtsevMendesGenerator(count nNodes): nNodes(nNodes) {}
+DorogovtsevMendesGenerator::DorogovtsevMendesGenerator(count nNodes) : nNodes(nNodes) {}
 
 Graph DorogovtsevMendesGenerator::generate() {
     Graph G;

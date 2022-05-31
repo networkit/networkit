@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DynamicPubWebGenerator.cpp
  *
@@ -13,7 +12,8 @@
 namespace NetworKit {
 
 DynamicPubWebGenerator::DynamicPubWebGenerator(count numNodes, count numberOfDenseAreas,
-                                               coordinate neighborhoodRadius, count maxNumberOfNeighbors,
+                                               coordinate neighborhoodRadius,
+                                               count maxNumberOfNeighbors,
                                                bool writeInitialGraphToStream)
     : initGen(numNodes, numberOfDenseAreas, neighborhoodRadius, maxNumberOfNeighbors),
       writeInitialGraphToStream(writeInitialGraphToStream) {
@@ -114,7 +114,8 @@ std::vector<GraphEvent> DynamicPubWebGenerator::generate(count nSteps) {
 
             // fill PQ with neighbors in range
             G.forNodes([&](node v) {
-                coordinate sqrDist = initGen.squaredDistanceInUnitTorus(coordinates[u], coordinates[v]);
+                coordinate sqrDist =
+                    initGen.squaredDistanceInUnitTorus(coordinates[u], coordinates[v]);
 
                 if (sqrDist <= sqrNeighRad) {
                     edge e{std::min(u, v), std::max(u, v)};

@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DynamicDorogovtsevMendesGenerator.cpp
  *

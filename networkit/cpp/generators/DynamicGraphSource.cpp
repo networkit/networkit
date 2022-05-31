@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DynamicGenerator.cpp
  *
@@ -10,7 +9,8 @@
 
 namespace NetworKit {
 
-DynamicGraphSource::DynamicGraphSource() : Gproxy(NULL), G(NULL), graphSet(false), graphInitialized(false) {
+DynamicGraphSource::DynamicGraphSource()
+    : Gproxy(NULL), G(NULL), graphSet(false), graphInitialized(false) {
     // Graph and GraphEventProxy are set by calling newGraph
 }
 
@@ -32,7 +32,7 @@ void DynamicGraphSource::generateEdges(count m) {
     }
 }
 
-GraphEventProxy* DynamicGraphSource::newGraph() {
+GraphEventProxy *DynamicGraphSource::newGraph() {
     this->G = new Graph(0);
     this->Gproxy = new GraphEventProxy(*(this->G));
     // not returning proxy because only generator needs write access to graph
