@@ -63,8 +63,6 @@ TEST_F(GeneratorsBenchmark, benchBarabasiAlbertGeneratorBatagelj) {
         count k = n / Aux::Random::integer(5, 20);
         BarabasiAlbertGenerator gen(k, n, 0);
         auto G = gen.generate();
-        // EXPECT_TRUE(G.checkConsistency());
-        // INFO(G.toString());
     }
 }
 
@@ -75,8 +73,6 @@ TEST_F(GeneratorsBenchmark, benchBarabasiAlbertGenerator2) {
         count k = n / Aux::Random::integer(5, 20);
         BarabasiAlbertGenerator gen(k, n, k, false);
         auto G = gen.generate();
-        // EXPECT_TRUE(G.checkConsistency());
-        // INFO(G.toString());
     }
 }
 

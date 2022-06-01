@@ -629,7 +629,6 @@ TEST_F(QuadTreeGTest, testLeftSuppression) {
         index aIndex, bIndex;
         for (aIndex = 0, bIndex = 0;
              aIndex < rightNeighbours.size() && bIndex < allNeighbours.size(); aIndex++, bIndex++) {
-            // EXPECT_GE(angles[rightNeighbours[aIndex]], angles[i]);//all elements returned by
             // partial query are right
             // iterate over suppressed elements until next match
             while (rightNeighbours[aIndex] != allNeighbours[bIndex]) {

@@ -1052,7 +1052,6 @@ TEST_F(GeneratorsGTest, debugGiganticCollectionOfHyperbolicTemperatureGraphs) {
         HyperbolicGenerator gen(n, k, 3, T);
         Graph G = gen.generate();
         EXPECT_NEAR(G.numberOfEdges(), m, m / 10);
-        // EXPECT_TRUE(G.checkConsistency());
     }
 }
 
