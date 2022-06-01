@@ -315,10 +315,9 @@ TEST_F(QuadTreeGTest, testEuclideanCircle) {
     for (index i = 0; i < 100; i++) {
         index comparison = Aux::Random::integer(n);
 
-        Point2DWithIndex<double> query =
-            HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
-        double radius = Aux::Random::real(1); // this may overshoot the poincar disc, this is
-                                              // intentional. I want to know what happens
+        auto query = HyperbolicSpace::polarToCartesian(angles[comparison], radii[comparison]);
+        // this may overshoot the poincar disc, this is  intentional. I want to know what happens
+        double radius = Aux::Random::real(1);
         double minR = query.length() - radius;
         double maxR = query.length() + radius;
         double minPhi, maxPhi, phi_c, r_c, spread;
@@ -632,15 +631,15 @@ TEST_F(QuadTreeGTest, testLeftSuppression) {
              aIndex < rightNeighbours.size() && bIndex < allNeighbours.size(); aIndex++, bIndex++) {
             // EXPECT_GE(angles[rightNeighbours[aIndex]], angles[i]);//all elements returned by
             // partial query are right
-            while (rightNeighbours[aIndex]
-                   != allNeighbours[bIndex]) { // iterate over suppressed elements until next match
-                EXPECT_LT(angles[allNeighbours[bIndex]],
-                          angles[i]); // all elements suppressed are left
+            // iterate over suppressed elements until next match
+            while (rightNeighbours[aIndex] != allNeighbours[bIndex]) {
+                // all elements suppressed are left
+                EXPECT_LT(angles[allNeighbours[bIndex]], angles[i]);
                 bIndex++;
             }
         }
-        EXPECT_EQ(aIndex, rightNeighbours.size()); // all elements in partial query are also
-                                                   // contained in complete query
+        // all elements in partial query are also contained in complete query
+        EXPECT_EQ(aIndex, rightNeighbours.size());
     }
 }
 

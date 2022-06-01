@@ -277,8 +277,8 @@ NetworKit::Graph NetworKit::LFRGenerator::generateInterClusterGraph(
                  maxIntraRemovelAttempts, " attempts. They will be simply dropped now.");
 
             for (auto e : edgesToRemove) {
-                if (interG.hasEdge(
-                        e.first, e.second)) { // these edges might be duplicates/in both directions
+                if (interG.hasEdge(e.first, e.second)) {
+                    // these edges might be duplicates/in both directions
                     interG.removeEdge(e.first, e.second);
                 }
             }
@@ -412,8 +412,8 @@ void NetworKit::LFRGenerator::run() {
 
     handler.assureRunning();
 
-    if (hasCommunitySizeSequence
-        && !hasPartition) { // check if community size sequence is realizable
+    if (hasCommunitySizeSequence && !hasPartition) {
+        // check if community size sequence is realizable
         auto minMaxCommunitySizeIt =
             std::minmax_element(communitySizeSequence.begin(), communitySizeSequence.end());
         count minCommunitySize = *minMaxCommunitySizeIt.first,
@@ -495,8 +495,8 @@ void NetworKit::LFRGenerator::run() {
     }
 
 // generate intra-cluster edges
-#pragma omp \
-    parallel for // note: parallelization only works because the communities are non-overlapping
+// note: parallelization only works because the communities are non-overlapping
+#pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(communityNodeList.size()); ++i) {
         const auto &communityNodes = communityNodeList[i];
         if (communityNodes.empty())

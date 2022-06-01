@@ -537,8 +537,7 @@ TEST_F(GeneratorsGTest, generatetBarabasiAlbertGeneratorGraph) {
 
     Graph G = BarabasiAlbert.generate();
     GraphIO io;
-    io.writeAdjacencyList(G, "output/"
-                             "BarabasiGraph.txt");
+    io.writeAdjacencyList(G, "output/BarabasiGraph.txt");
 }
 
 TEST_F(GeneratorsGTest, testDynamicPathGenerator) {
@@ -700,9 +699,7 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRandomSequence) {
 
 TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnRealSequence) {
     METISGraphReader reader;
-    std::vector<std::string> graphs = {
-        "input/jazz.graph",
-        "input/lesmis.graph"}; //, "input/PGPgiantcompo.graph", "input/coAuthorsDBLP.graph"};
+    auto graphs = {"input/jazz.graph", "input/lesmis.graph"};
 
     for (auto path : graphs) {
         Graph G = reader.read(path);
@@ -1004,9 +1001,7 @@ TEST_F(GeneratorsGTest, testHyperbolicGeneratorMechanicGraphs) {
 
 TEST_F(GeneratorsGTest, testConfigurationModelGeneratorOnRealSequence) {
     METISGraphReader reader;
-    std::vector<std::string> graphs = {
-        "input/jazz.graph",
-        "input/lesmis.graph"}; //, "input/PGPgiantcompo.graph", "input/coAuthorsDBLP.graph"};
+    auto graphs = {"input/jazz.graph", "input/lesmis.graph"};
 
     for (auto path : graphs) {
         Graph G = reader.read(path);

@@ -178,18 +178,15 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
 
         if (d_c - r_c < r_max) {
             // remaining query circle is smaller than the disk representation
-            result += 2 * PI
-                      * (std::cosh(EuclideanRadiusToHyperbolic(d_c - r_c))
-                         - 1); // adding small circle around origin
+            // adding small circle around origin
+            result += 2 * PI * (std::cosh(EuclideanRadiusToHyperbolic(d_c - r_c)) - 1);
         } else {
-            result += 2 * PI
-                      * (std::cosh(EuclideanRadiusToHyperbolic(r_max))
-                         - 1); // adding small circle around origin
+            // adding small circle around origin
+            result += 2 * PI * (std::cosh(EuclideanRadiusToHyperbolic(r_max)) - 1);
         }
         assert(result <= 2 * PI * (std::cosh(EuclideanRadiusToHyperbolic(r_max)) - 1));
-        min = std::nextafter(
-            d_c - r_c,
-            std::numeric_limits<double>::max()); // correcting integral start to exclude circle
+        // correcting integral start to exclude circle
+        min = std::nextafter(d_c - r_c, std::numeric_limits<double>::max());
     }
 
     /**

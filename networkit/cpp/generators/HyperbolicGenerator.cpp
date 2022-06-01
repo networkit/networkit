@@ -39,10 +39,8 @@ HyperbolicGenerator::HyperbolicGenerator(count n, double avgDegree, double plexp
     if (plexp <= 2)
         throw std::runtime_error("Exponent of power-law degree distribution must be > 2");
     if (T < 0 || T == 1)
-        throw std::runtime_error(
-            "Temperature must be non-negative and not 1."); // Really necessary? Graphs with T=1 can
-                                                            // be generated, only their degree is
-                                                            // not controllable
+        // Really necessary? Graphs with T=1 can be generated, only their degree is not controllable
+        throw std::runtime_error("Temperature must be non-negative and not 1.");
     if (avgDegree >= n)
         throw std::runtime_error("Average Degree must be at most n-1");
     if (T < 1) {

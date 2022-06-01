@@ -103,7 +103,6 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
             node w = activeNodes.front();
             activeNodes.pop();
             std::set<node> edges = selectEdges(w, p, forwardNeighbors);
-            ;
             if (directed) {
                 std::set<node> backwardEdges = selectEdges(w, p * r, backwardNeighbors);
                 edges.insert(backwardEdges.begin(), backwardEdges.end());

@@ -107,8 +107,8 @@ double ClusteringCoefficient::avgLocal(Graph &G, bool turbo) {
     WARN("DEPRECATED: use centrality.LocalClusteringCoefficient and take average");
     LocalClusteringCoefficient lcc(G, turbo);
     lcc.run();
-    auto coefficients =
-        lcc.scores(); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
+    // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
+    auto coefficients = lcc.scores();
 
     double sum = 0.0;
     count size = 0;
@@ -163,8 +163,8 @@ double ClusteringCoefficient::approxAvgLocal(Graph &G, const count trials) {
 
 double ClusteringCoefficient::exactGlobal(Graph &G) {
     count z = G.upperNodeIdBound();
-    std::vector<count> triangles(
-        z); // triangles including node u (every triangle is counted six times)
+    // triangles including node u (every triangle is counted six times)
+    std::vector<count> triangles(z);
 
     std::vector<std::vector<bool>> nodeMarker(omp_get_max_threads());
     for (auto &nm : nodeMarker) {

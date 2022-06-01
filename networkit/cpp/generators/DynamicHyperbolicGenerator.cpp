@@ -14,7 +14,6 @@
 #include <networkit/generators/HyperbolicGenerator.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
 
-using std::vector;
 namespace NetworKit {
 
 DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(count n, double avgDegree, double exp,
@@ -107,7 +106,7 @@ void DynamicHyperbolicGenerator::recomputeBands() {
     assert(radii.size() == nodeCount);
 
     // ensure points are sorted
-    vector<index> permutation(nodeCount);
+    std::vector<index> permutation(nodeCount);
 
     index p = 0;
     std::generate(permutation.begin(), permutation.end(), [&p]() { return p++; });
@@ -162,7 +161,7 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
             recomputeBands();
         }
     }
-    vector<GraphEvent> result;
+    std::vector<GraphEvent> result;
 
     for (index step = 0; step < nSteps; step++) {
 
@@ -221,13 +220,13 @@ void DynamicHyperbolicGenerator::moveNode(index toMove) {
     radii[toMove] = newradius;
 }
 
-vector<index> DynamicHyperbolicGenerator::getNeighborsInBands(index i, bool bothDirections) {
+std::vector<index> DynamicHyperbolicGenerator::getNeighborsInBands(index i, bool bothDirections) {
     const double r = radii[i];
     const double phi = angles[i];
     assert(bands.size() == bandAngles.size());
     assert(bands.size() == bandRadii.size() - 1);
     count expectedDegree = (4 / PI) * nodeCount * std::exp(-(radii[i]) / 2);
-    vector<index> near;
+    std::vector<index> near;
     near.reserve(expectedDegree * 1.1);
     for (index j = 0; j < bands.size(); j++) {
         if (bothDirections || bandRadii[j + 1] > radii[i]) {
@@ -235,9 +234,8 @@ vector<index> DynamicHyperbolicGenerator::getNeighborsInBands(index i, bool both
             std::tie(minTheta, maxTheta) =
                 HyperbolicGenerator::getMinMaxTheta(phi, r, bandRadii[j], R);
 
-            vector<Point2DWithIndex<double>> neighborCandidates =
-                HyperbolicGenerator::getPointsWithinAngles(minTheta, maxTheta, bands[j],
-                                                           bandAngles[j]);
+            auto neighborCandidates = HyperbolicGenerator::getPointsWithinAngles(
+                minTheta, maxTheta, bands[j], bandAngles[j]);
 
             const count sSize = neighborCandidates.size();
             for (index w = 0; w < sSize; w++) {
@@ -255,7 +253,7 @@ vector<index> DynamicHyperbolicGenerator::getNeighborsInBands(index i, bool both
     return near;
 }
 
-void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &result) {
+void DynamicHyperbolicGenerator::getEventsFromNodeMovement(std::vector<GraphEvent> &result) {
     bool suppressLeft = false;
 
     // now define lambda
@@ -278,12 +276,12 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
     }
 
     count oldStreamMarker = result.size();
-    vector<index> toWiggle;
-    vector<vector<index>> oldNeighbours;
+    std::vector<index> toWiggle;
+    std::vector<std::vector<index>> oldNeighbours;
     // TODO: One could parallelize this.
     for (index i = 0; i < nodeCount; i++) {
         if (Aux::Random::real(1) < moveEachStep) {
-            vector<index> localOldNeighbors;
+            std::vector<index> localOldNeighbors;
             toWiggle.push_back(i);
             if (T == 0) {
                 localOldNeighbors = getNeighborsInBands(i, true);
@@ -321,7 +319,7 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 // now get the new edges and see what changed
 #pragma omp parallel for
     for (omp_index j = 0; j < static_cast<omp_index>(toWiggle.size()); j++) {
-        vector<index> newNeighbours;
+        std::vector<index> newNeighbours;
         if (T == 0) {
             newNeighbours = getNeighborsInBands(toWiggle[j], true);
         } else {
@@ -332,16 +330,15 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
 
         std::sort(oldNeighbours[j].begin(), oldNeighbours[j].end());
         std::sort(newNeighbours.begin(), newNeighbours.end());
-        vector<index> newEdges(newNeighbours.size());
+        std::vector<index> newEdges(newNeighbours.size());
         auto it =
             std::set_difference(newNeighbours.begin(), newNeighbours.end(),
                                 oldNeighbours[j].begin(), oldNeighbours[j].end(), newEdges.begin());
         newEdges.erase(it, newEdges.end()); // trim empty space
 
-        vector<index> brokenEdges(
-            oldNeighbours[j].size()
-            - (newNeighbours.size()
-               - newEdges.size())); // this should be the number of broken edges
+        // this should be the number of broken edges
+        std::vector<index> brokenEdges(oldNeighbours[j].size()
+                                       - (newNeighbours.size() - newEdges.size()));
         it = std::set_difference(oldNeighbours[j].begin(), oldNeighbours[j].end(),
                                  newNeighbours.begin(), newNeighbours.end(), brokenEdges.begin());
         assert(it == brokenEdges.end());

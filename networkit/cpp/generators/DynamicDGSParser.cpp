@@ -69,15 +69,13 @@ void DynamicDGSParser::generate() {
             nodeNames[nodeName] = Gproxy->addNode();
             if (split.size() >= 4) { // DGS with ground truth
 
-                std::string categoriesFullString =
-                    split[2]; /// Example: category="cond-mat.stat-mech, q-fin.ST"
-                std::vector<std::string> categoriesFullStringSplit =
-                    Aux::StringTools::split(categoriesFullString, '"');
+                // Example: category="cond-mat.stat-mech, q-fin.ST"
+                std::string categoriesFullString = split[2];
+                auto categoriesFullStringSplit = Aux::StringTools::split(categoriesFullString, '"');
 
-                std::string categoriesCommaSeparated =
-                    categoriesFullStringSplit[1]; // Example: cond-mat.stat-mech, q-fin.ST
-                std::vector<std::string> categories =
-                    Aux::StringTools::split(categoriesCommaSeparated, ',');
+                // Example: cond-mat.stat-mech, q-fin.ST
+                std::string categoriesCommaSeparated = categoriesFullStringSplit[1];
+                auto categories = Aux::StringTools::split(categoriesCommaSeparated, ',');
 
                 std::vector<std::string> currentNodeCategories(categories.begin(),
                                                                categories.end());
@@ -85,8 +83,7 @@ void DynamicDGSParser::generate() {
                 assert(!nodeCategories.empty());
 
                 std::string dateFullString = split[3]; // Example: date="08-1997"
-                std::vector<std::string> dateFullStringSplit =
-                    Aux::StringTools::split(dateFullString, '"');
+                auto dateFullStringSplit = Aux::StringTools::split(dateFullString, '"');
                 std::string date = dateFullStringSplit[1];
                 nodeDates.push_back(date);
             }
@@ -97,17 +94,15 @@ void DynamicDGSParser::generate() {
             std::string edge_name = split[1];
             Gproxy->addEdge(nodeNames[edge_from], nodeNames[edge_to], 1.0);
 
-        } else if (tag.compare("ce") == 0
-                   && split.size()
-                          == 3) { // update edge. Only the "weight" attribute is supported so far
-
+        } else if (tag.compare("ce") == 0 && split.size() == 3) {
+            // update edge. Only the "weight" attribute is supported so far
             std::string from_to_edges = split[1];
-            std::vector<std::string> edgesSplit = Aux::StringTools::split(from_to_edges, '-');
+            auto edgesSplit = Aux::StringTools::split(from_to_edges, '-');
             std::string edge_from = edgesSplit[0];
             std::string edge_to = edgesSplit[1];
 
             std::string weight = split[2];
-            std::vector<std::string> weightSplit = Aux::StringTools::split(weight, '=');
+            auto weightSplit = Aux::StringTools::split(weight, '=');
             double weightValue = atoi(weightSplit[1].c_str());
 
             Gproxy->setWeight(nodeNames[edge_from], nodeNames[edge_to], weightValue);
@@ -125,7 +120,7 @@ void DynamicDGSParser::generate() {
 
         } else if (tag.compare("de") == 0 && split.size() == 2) {
             std::string from_to_edges = split[1];
-            std::vector<std::string> edgesSplit = Aux::StringTools::split(from_to_edges, '-');
+            auto edgesSplit = Aux::StringTools::split(from_to_edges, '-');
             std::string edge_from = edgesSplit[0];
             std::string edge_to = edgesSplit[1];
             node u = nodeNames[edge_from];
@@ -184,8 +179,7 @@ void DynamicDGSParser::evaluateClusterings(const std::string &path, const Partit
         for (const std::string &category : currentNodeCategories) {
             clusterMappings[normalizedID].find(category);
 
-            std::unordered_map<std::string, index>::const_iterator got =
-                clusterMappings[normalizedID].find(category);
+            const auto got = clusterMappings[normalizedID].find(category);
 
             if (got == clusterMappings[normalizedID].end()) {
                 clusterMappings[normalizedID][category] = 1;
