@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * TriangleEdgeScore.cpp
  *
@@ -14,8 +13,7 @@
 
 namespace NetworKit {
 
-TriangleEdgeScore::TriangleEdgeScore(const Graph& G) : EdgeScore<count>(G) {
-}
+TriangleEdgeScore::TriangleEdgeScore(const Graph &G) : EdgeScore<count>(G) {}
 
 void TriangleEdgeScore::run() {
     if (!G->hasEdgeIds()) {
@@ -51,11 +49,12 @@ void TriangleEdgeScore::run() {
     filterEdgesTimer.stop();
     INFO("Needed ", filterEdgesTimer.elapsedMilliseconds(), "ms for filtering edges");
 
-    //Edge attribute: triangle count
+    // Edge attribute: triangle count
     std::vector<count> triangleCount(G->upperEdgeIdBound(), 0);
     // Store triangle counts of edges incident to the current node indexed by the adjacent node
     // none indicates that the edge to that node does not exist
-    std::vector<std::vector<count> > incidentTriangleCount(omp_get_max_threads(), std::vector<count>(G->upperNodeIdBound(), none));
+    std::vector<std::vector<count>> incidentTriangleCount(
+        omp_get_max_threads(), std::vector<count>(G->upperNodeIdBound(), none));
 
     Aux::Timer triangleTimer;
     triangleTimer.start();
@@ -64,9 +63,7 @@ void TriangleEdgeScore::run() {
         auto tid = omp_get_thread_num();
 
         // mark nodes as neighbors
-        G->forEdgesOf(u, [&](node, node v) {
-            incidentTriangleCount[tid][v] = 0;
-        });
+        G->forEdgesOf(u, [&](node, node v) { incidentTriangleCount[tid][v] = 0; });
 
         // Find all triangles of the form u-v-w-u where (v, w) is an in-edge.
         // Note that we find each triangle u is part of once.
@@ -78,9 +75,10 @@ void TriangleEdgeScore::run() {
                 if (incidentTriangleCount[tid][w] != none) {
                     // we have found a triangle u-v-w-u
 
-                    // Record triangle count only for edges outgoing edges from u that should have consecutive edge ids
-                    // This should be the same condition as in Graph::useEdgeInIteration and in Graph::indexEdges
-                    // The count on (v, w) is updated when v or w is the central node
+                    // Record triangle count only for edges outgoing edges from u that should have
+                    // consecutive edge ids This should be the same condition as in
+                    // Graph::useEdgeInIteration and in Graph::indexEdges The count on (v, w) is
+                    // updated when v or w is the central node
 
                     // Possibly record triangle for (u, v)
                     if (u >= v) {

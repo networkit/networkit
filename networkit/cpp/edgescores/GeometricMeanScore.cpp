@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * GeometricMeanScore.cpp
  *
@@ -13,8 +12,8 @@
 
 namespace NetworKit {
 
-GeometricMeanScore::GeometricMeanScore(const Graph& G, const std::vector<double>& attribute): EdgeScore<double>(G), attribute(&attribute) {
-}
+GeometricMeanScore::GeometricMeanScore(const Graph &G, const std::vector<double> &attribute)
+    : EdgeScore<double>(G), attribute(&attribute) {}
 
 void GeometricMeanScore::run() {
     if (!G->hasEdgeIds()) {
@@ -26,16 +25,15 @@ void GeometricMeanScore::run() {
     std::vector<double> nodeSum(G->upperNodeIdBound());
 
     G->parallelForNodes([&](node u) {
-        G->forEdgesOf(u, [&](node, node, edgeid eid) {
-            nodeSum[u] += (*attribute)[eid];
-        });
+        G->forEdgesOf(u, [&](node, node, edgeid eid) { nodeSum[u] += (*attribute)[eid]; });
     });
 
     G->parallelForEdges([&](node u, node v, edgeid eid) {
         if ((*attribute)[eid] > 0) {
             scoreData[eid] = (*attribute)[eid] * 1.0 / std::sqrt(nodeSum[u] * nodeSum[v]);
             if (std::isnan(scoreData[eid])) {
-                ERROR("Attribute ", (*attribute)[eid], " couldn't be normalized with sum ", nodeSum[u], " and sum ", nodeSum[v]);
+                ERROR("Attribute ", (*attribute)[eid], " couldn't be normalized with sum ",
+                      nodeSum[u], " and sum ", nodeSum[v]);
             }
         }
     });

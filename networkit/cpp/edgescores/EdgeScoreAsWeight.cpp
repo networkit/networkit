@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * EdgeScoreAsWeight.cpp
  *
@@ -10,9 +9,9 @@
 
 namespace NetworKit {
 
-EdgeScoreAsWeight::EdgeScoreAsWeight(const Graph& G, const std::vector<double>& score, bool squared, edgeweight offset, edgeweight factor) :
-        G(&G), score(&score), squared(squared), offset(offset), factor(factor) {
-}
+EdgeScoreAsWeight::EdgeScoreAsWeight(const Graph &G, const std::vector<double> &score, bool squared,
+                                     edgeweight offset, edgeweight factor)
+    : G(&G), score(&score), squared(squared), offset(offset), factor(factor) {}
 
 Graph EdgeScoreAsWeight::calculate() {
     if (!G->hasEdgeIds()) {

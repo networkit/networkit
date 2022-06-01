@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * EdmondsKarp.cpp
  *
@@ -16,7 +15,8 @@
 
 namespace NetworKit {
 
-EdmondsKarp::EdmondsKarp(const Graph &graph, node source, node sink) : graph(&graph), source(source), sink(sink) {}
+EdmondsKarp::EdmondsKarp(const Graph &graph, node source, node sink)
+    : graph(&graph), source(source), sink(sink) {}
 
 edgeweight EdmondsKarp::BFS(std::vector<edgeweight> &residFlow, std::vector<node> &pred) const {
     std::fill(pred.begin(), pred.end(), none);
@@ -32,10 +32,10 @@ edgeweight EdmondsKarp::BFS(std::vector<edgeweight> &residFlow, std::vector<node
         Q.pop();
 
         bool sinkReached = false;
-        graph->forNeighborsOf(u, [&](node, node v, edgeweight weight, edgeid eid){
-            if ((
-            (u >= v && flow[eid] < weight) || (u < v && residFlow[eid] < weight)
-            )&& pred[v] == none) { // only add those neighbors with rest capacity and which were not discovered yet
+        graph->forNeighborsOf(u, [&](node, node v, edgeweight weight, edgeid eid) {
+            if (((u >= v && flow[eid] < weight) || (u < v && residFlow[eid] < weight))
+                && pred[v] == none) {
+                // only add those neighbors with rest capacity and which were not discovered yet
                 pred[v] = u;
                 gain[v] = std::min(gain[u], weight - (u >= v ? flow[eid] : residFlow[eid]));
 
@@ -56,7 +56,9 @@ edgeweight EdmondsKarp::BFS(std::vector<edgeweight> &residFlow, std::vector<node
 }
 
 void EdmondsKarp::run() {
-    if (!graph->hasEdgeIds()) { throw std::runtime_error("edges have not been indexed - call indexEdges first"); }
+    if (!graph->hasEdgeIds()) {
+        throw std::runtime_error("edges have not been indexed - call indexEdges first");
+    }
     flow.clear();
     flow.resize(graph->upperEdgeIdBound(), 0.0);
 
@@ -66,7 +68,8 @@ void EdmondsKarp::run() {
     do {
         std::vector<node> pred;
         edgeweight gain = BFS(residFlow, pred);
-        if (gain == 0) break;
+        if (gain == 0)
+            break;
 
         flowValue += gain;
         node v = sink;
@@ -84,9 +87,8 @@ void EdmondsKarp::run() {
         }
     } while (true);
 
-    graph->parallelForEdges([&](node, node, edgeid eid) {
-        flow[eid] = std::max(flow[eid], residFlow[eid]);
-    });
+    graph->parallelForEdges(
+        [&](node, node, edgeid eid) { flow[eid] = std::max(flow[eid], residFlow[eid]); });
 
     hasRun = true;
 }
