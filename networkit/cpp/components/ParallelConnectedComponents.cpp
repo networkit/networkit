@@ -24,6 +24,7 @@ void ParallelConnectedComponents::run() {
 
     DEBUG("initializing labels");
     component.reset(z, none);
+    component.allToSingletons();
 
     DEBUG("initializing active nodes");
     const char INACTIVE = 0;
@@ -73,6 +74,11 @@ void ParallelConnectedComponents::run() {
         auto nodeMapping = con.getFineToCoarseNodeMapping();
         G->parallelForNodes([&](node u) { component[u] = cc.componentOfNode(nodeMapping[u]); });
     }
+    component.parallelForEntries([&](node u, index) {
+        if (!G->hasNode(u))
+            component.remove(u);
+    });
+    component.compact(true);
 
     hasRun = true;
 }
@@ -82,6 +88,7 @@ void ParallelConnectedComponents::runSequential() {
     count z = G->upperNodeIdBound();
     DEBUG("initializing labels");
     component.reset(z, none);
+    component.allToSingletons();
 
     DEBUG("initializing active nodes");
     std::vector<bool> activeNodes(z, true); // record if node must be processed
@@ -130,6 +137,11 @@ void ParallelConnectedComponents::runSequential() {
         auto nodeMapping = con.getFineToCoarseNodeMapping();
         G->forNodes([&](node u) { component[u] = cc.componentOfNode(nodeMapping[u]); });
     }
+    component.forEntries([&](node u, index) {
+        if (!G->hasNode(u))
+            component.remove(u);
+    });
+    component.compact(true);
 
     hasRun = true;
 }
