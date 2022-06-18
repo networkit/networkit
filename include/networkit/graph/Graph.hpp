@@ -2316,7 +2316,7 @@ inline edgeid Graph::getOutEdgeId(node u, index i) const {
 // implementation for hasEdgeIds == false
 template <>
 inline edgeid Graph::getOutEdgeId<false>(node, index) const {
-    return 0;
+    return none;
 }
 
 // implementation for hasEdgeIds == true
@@ -2328,7 +2328,7 @@ inline edgeid Graph::getInEdgeId(node u, index i) const {
 // implementation for hasEdgeIds == false
 template <>
 inline edgeid Graph::getInEdgeId<false>(node, index) const {
-    return 0;
+    return none;
 }
 
 // implementation for graphIsDirected == true
