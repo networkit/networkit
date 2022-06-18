@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DynamicHyperbolicGenerator.cpp
  *
@@ -15,17 +14,18 @@
 #include <networkit/generators/HyperbolicGenerator.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
 
-using std::vector;
 namespace NetworKit {
 
-DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(count n, double avgDegree, double exp, double T, double moveEachStep, double moveDistance) {
+DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(count n, double avgDegree, double exp,
+                                                       double T, double moveEachStep,
+                                                       double moveDistance) {
     nodeCount = n;
-    this->alpha = (exp-1)/2;
+    this->alpha = (exp - 1) / 2;
     this->T = T;
     this->moveEachStep = moveEachStep;
     this->moveDistance = moveDistance;
     this->initialized = false;
-    R = HyperbolicSpace::getTargetRadius(n, n*avgDegree/2, alpha, T);
+    R = HyperbolicSpace::getTargetRadius(n, n * avgDegree / 2, alpha, T);
     initializePoints();
     initializeMovement();
     if (T > 0) {
@@ -34,7 +34,10 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(count n, double avgDegree
         recomputeBands();
     }
 }
-DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(std::vector<double> &angles, std::vector<double> &radii, double R, double alpha, double T, double moveEachStep, double moveDistance) {
+DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(std::vector<double> &angles,
+                                                       std::vector<double> &radii, double R,
+                                                       double alpha, double T, double moveEachStep,
+                                                       double moveDistance) {
     this->angles = angles;
     this->radii = radii;
     this->nodeCount = angles.size();
@@ -60,8 +63,10 @@ DynamicHyperbolicGenerator::DynamicHyperbolicGenerator(std::vector<double> &angl
 
 void DynamicHyperbolicGenerator::initializePoints() {
     assert(nodeCount > 0);
-    if (initialized) return;
-    else initialized = true;
+    if (initialized)
+        return;
+    else
+        initialized = true;
     angles.resize(nodeCount);
     radii.resize(nodeCount);
     HyperbolicSpace::fillPoints(angles, radii, R, alpha);
@@ -75,7 +80,7 @@ void DynamicHyperbolicGenerator::initializeMovement() {
     int scale = 10;
     for (index i = 0; i < nodeCount; i++) {
         angularMovement[i] = Aux::Random::real(-moveDistance, moveDistance);
-        radialMovement[i] = Aux::Random::real(-scale*moveDistance, scale*moveDistance);
+        radialMovement[i] = Aux::Random::real(-scale * moveDistance, scale * moveDistance);
     }
 }
 
@@ -88,11 +93,11 @@ void DynamicHyperbolicGenerator::initializeQuadTree() {
 }
 
 void DynamicHyperbolicGenerator::recomputeBands() {
-    //1.Generate bandRadius'
+    // 1.Generate bandRadius'
     bandRadii = HyperbolicGenerator::getBandRadii(nodeCount, R);
     INFO("Got Band Radii");
     assert(bandRadii.size() > 1);
-    //2. Initialize empty bands
+    // 2. Initialize empty bands
     bands.clear();
     bands.resize(bandRadii.size() - 1);
     bandAngles.clear();
@@ -100,21 +105,23 @@ void DynamicHyperbolicGenerator::recomputeBands() {
     assert(angles.size() == nodeCount);
     assert(radii.size() == nodeCount);
 
-    //ensure points are sorted
-    vector<index> permutation(nodeCount);
+    // ensure points are sorted
+    std::vector<index> permutation(nodeCount);
 
     index p = 0;
-    std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
+    std::generate(permutation.begin(), permutation.end(), [&p]() { return p++; });
 
-    Aux::Parallel::sort(permutation.begin(), permutation.end(), [&](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
+    Aux::Parallel::sort(permutation.begin(), permutation.end(), [&](index i, index j) {
+        return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);
+    });
 
-    //3. Put points to bands
+    // 3. Put points to bands
     INFO("Starting Point distribution");
-    #pragma omp parallel for
-    for (omp_index j = 0; j < static_cast<omp_index>(bands.size()); j++){
-        for (index i = 0; i < nodeCount; i++){
+#pragma omp parallel for
+    for (omp_index j = 0; j < static_cast<omp_index>(bands.size()); j++) {
+        for (index i = 0; i < nodeCount; i++) {
             double alias = permutation[i];
-            if (radii[alias] >= bandRadii[j] && radii[alias] <= bandRadii[j+1]){
+            if (radii[alias] >= bandRadii[j] && radii[alias] <= bandRadii[j + 1]) {
                 bands[j].push_back(Point2DWithIndex<double>(angles[alias], radii[alias], alias));
                 bandAngles[j].push_back(angles[alias]);
             }
@@ -154,7 +161,7 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
             recomputeBands();
         }
     }
-    vector<GraphEvent> result;
+    std::vector<GraphEvent> result;
 
     for (index step = 0; step < nSteps; step++) {
 
@@ -169,21 +176,22 @@ std::vector<GraphEvent> DynamicHyperbolicGenerator::generate(count nSteps) {
 void DynamicHyperbolicGenerator::moveNode(index toMove) {
     double hyperbolicRadius = radii[toMove];
 
-    //angular movement
-    double maxcdf = std::cosh(alpha*R);
+    // angular movement
+    double maxcdf = std::cosh(alpha * R);
     double mincdf = 1;
-    double currcdf = std::cosh(alpha*hyperbolicRadius);
+    double currcdf = std::cosh(alpha * hyperbolicRadius);
 
-    double newcosh = currcdf + alpha*radialMovement[toMove];
+    double newcosh = currcdf + alpha * radialMovement[toMove];
     double newphi = angles[toMove];
-    //bounce off the boundary
+    // bounce off the boundary
     if (newcosh > maxcdf) {
-        newcosh -= 2*(newcosh - maxcdf);
+        newcosh -= 2 * (newcosh - maxcdf);
         radialMovement[toMove] *= -1;
-        DEBUG("Node ", toMove, " bounced off upper boundary, radial movement set to ", radialMovement[toMove]);
+        DEBUG("Node ", toMove, " bounced off upper boundary, radial movement set to ",
+              radialMovement[toMove]);
     }
     if (newcosh < mincdf) {
-        newcosh += 2*(mincdf - newcosh);
+        newcosh += 2 * (mincdf - newcosh);
         radialMovement[toMove] *= -1;
         DEBUG("Node ", toMove, " crossed center, radial movement set to ", radialMovement[toMove]);
 
@@ -192,44 +200,50 @@ void DynamicHyperbolicGenerator::moveNode(index toMove) {
          */
         if (newphi > PI) {
             newphi -= PI;
-        }
-        else {
+        } else {
             newphi += PI;
         }
     }
-    double newradius = std::acosh(newcosh)/alpha;
-    if (newradius >= R) newradius = std::nextafter(R, std::numeric_limits<double>::lowest());
+    double newradius = std::acosh(newcosh) / alpha;
+    if (newradius >= R)
+        newradius = std::nextafter(R, std::numeric_limits<double>::lowest());
     assert(newradius < R);
     assert(newradius >= 0);
 
-    newphi += angularMovement[toMove]/newradius;
-    if (newphi < 0) newphi += (std::floor(-newphi/(2*PI))+1)*2*PI;
-    if (newphi > 2*PI) newphi -= std::floor(newphi/(2*PI))*2*PI;
+    newphi += angularMovement[toMove] / newradius;
+    if (newphi < 0)
+        newphi += (std::floor(-newphi / (2 * PI)) + 1) * 2 * PI;
+    if (newphi > 2 * PI)
+        newphi -= std::floor(newphi / (2 * PI)) * 2 * PI;
 
     angles[toMove] = newphi;
     radii[toMove] = newradius;
 }
 
-vector<index> DynamicHyperbolicGenerator::getNeighborsInBands(index i, bool bothDirections) {
+std::vector<index> DynamicHyperbolicGenerator::getNeighborsInBands(index i, bool bothDirections) {
     const double r = radii[i];
     const double phi = angles[i];
     assert(bands.size() == bandAngles.size());
-    assert(bands.size() == bandRadii.size() -1);
-    count expectedDegree = (4/PI)*nodeCount*std::exp(-(radii[i])/2);
-    vector<index> near;
-    near.reserve(expectedDegree*1.1);
-    for(index j = 0; j < bands.size(); j++){
-        if(bothDirections || bandRadii[j+1] > radii[i]){
+    assert(bands.size() == bandRadii.size() - 1);
+    count expectedDegree = (4 / PI) * nodeCount * std::exp(-(radii[i]) / 2);
+    std::vector<index> near;
+    near.reserve(expectedDegree * 1.1);
+    for (index j = 0; j < bands.size(); j++) {
+        if (bothDirections || bandRadii[j + 1] > radii[i]) {
             double minTheta, maxTheta;
-            std::tie (minTheta, maxTheta) = HyperbolicGenerator::getMinMaxTheta(phi, r, bandRadii[j], R);
+            std::tie(minTheta, maxTheta) =
+                HyperbolicGenerator::getMinMaxTheta(phi, r, bandRadii[j], R);
 
-            vector<Point2DWithIndex<double>> neighborCandidates = HyperbolicGenerator::getPointsWithinAngles(minTheta, maxTheta, bands[j], bandAngles[j]);
+            auto neighborCandidates = HyperbolicGenerator::getPointsWithinAngles(
+                minTheta, maxTheta, bands[j], bandAngles[j]);
 
             const count sSize = neighborCandidates.size();
-            for(index w = 0; w < sSize; w++){
-                if (HyperbolicSpace::nativeDistance(phi, r, neighborCandidates[w].getX(), neighborCandidates[w].getY()) <= R) {
+            for (index w = 0; w < sSize; w++) {
+                if (HyperbolicSpace::nativeDistance(phi, r, neighborCandidates[w].getX(),
+                                                    neighborCandidates[w].getY())
+                    <= R) {
                     const index possibleNeighbor = neighborCandidates[w].getIndex();
-                    if(possibleNeighbor != i){
+                    if (possibleNeighbor != i) {
                         near.push_back(possibleNeighbor);
                     }
                 }
@@ -239,14 +253,16 @@ vector<index> DynamicHyperbolicGenerator::getNeighborsInBands(index i, bool both
     return near;
 }
 
-void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &result) {
+void DynamicHyperbolicGenerator::getEventsFromNodeMovement(std::vector<GraphEvent> &result) {
     bool suppressLeft = false;
 
-    //now define lambda
+    // now define lambda
     double tresholdDistance = R;
-    double beta = 1/T;
-    //dummy lambda:
-    std::function<double(double)> edgeProb = [tresholdDistance](double distance) -> double {return distance <= tresholdDistance ? 1 : 0;};
+    double beta = 1 / T;
+    // dummy lambda:
+    std::function<double(double)> edgeProb = [tresholdDistance](double distance) -> double {
+        return distance <= tresholdDistance ? 1 : 0;
+    };
 
     if (T > 0) {
         if (!(beta == beta)) {
@@ -254,16 +270,18 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
         }
         assert(T == 0 || beta == beta);
 
-        edgeProb = [beta, tresholdDistance](double distance) -> double {return 1 / (std::exp(beta*(distance-tresholdDistance)/2)+1);};
+        edgeProb = [beta, tresholdDistance](double distance) -> double {
+            return 1 / (std::exp(beta * (distance - tresholdDistance) / 2) + 1);
+        };
     }
 
     count oldStreamMarker = result.size();
-    vector<index> toWiggle;
-    vector<vector<index> > oldNeighbours;
-    //TODO: One could parallelize this.
+    std::vector<index> toWiggle;
+    std::vector<std::vector<index>> oldNeighbours;
+    // TODO: One could parallelize this.
     for (index i = 0; i < nodeCount; i++) {
         if (Aux::Random::real(1) < moveEachStep) {
-            vector<index> localOldNeighbors;
+            std::vector<index> localOldNeighbors;
             toWiggle.push_back(i);
             if (T == 0) {
                 localOldNeighbors = getNeighborsInBands(i, true);
@@ -275,16 +293,16 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
         }
     }
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (omp_index j = 0; j < static_cast<omp_index>(toWiggle.size()); j++) {
-        //wiggle this node!
+        // wiggle this node!
 
         double oldphi = angles[toWiggle[j]];
         double oldr = radii[toWiggle[j]];
         moveNode(toWiggle[j]);
         if (T > 0) {
-            //updating Quadtree
-            #pragma omp critical
+// updating Quadtree
+#pragma omp critical
             {
                 bool removed = quad.removeContent(toWiggle[j], oldphi, oldr);
                 tlx::unused(removed);
@@ -295,31 +313,37 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
     }
 
     if (T == 0) {
-        recomputeBands();//update bands
+        recomputeBands(); // update bands
     }
 
-    //now get the new edges and see what changed
-    #pragma omp parallel for
+// now get the new edges and see what changed
+#pragma omp parallel for
     for (omp_index j = 0; j < static_cast<omp_index>(toWiggle.size()); j++) {
-        vector<index> newNeighbours;
+        std::vector<index> newNeighbours;
         if (T == 0) {
             newNeighbours = getNeighborsInBands(toWiggle[j], true);
         } else {
-            Point2DWithIndex<double> q = HyperbolicSpace::polarToCartesian(angles[toWiggle[j]], radii[toWiggle[j]]);
+            Point2DWithIndex<double> q =
+                HyperbolicSpace::polarToCartesian(angles[toWiggle[j]], radii[toWiggle[j]]);
             quad.getElementsProbabilistically(q, edgeProb, suppressLeft, newNeighbours);
         }
 
         std::sort(oldNeighbours[j].begin(), oldNeighbours[j].end());
         std::sort(newNeighbours.begin(), newNeighbours.end());
-        vector<index> newEdges(newNeighbours.size());
-        auto it = std::set_difference(newNeighbours.begin(), newNeighbours.end(), oldNeighbours[j].begin(), oldNeighbours[j].end(), newEdges.begin());
-        newEdges.erase(it, newEdges.end());//trim empty space
+        std::vector<index> newEdges(newNeighbours.size());
+        auto it =
+            std::set_difference(newNeighbours.begin(), newNeighbours.end(),
+                                oldNeighbours[j].begin(), oldNeighbours[j].end(), newEdges.begin());
+        newEdges.erase(it, newEdges.end()); // trim empty space
 
-        vector<index> brokenEdges(oldNeighbours[j].size() - (newNeighbours.size() - newEdges.size()));//this should be the number of broken edges
-        it = std::set_difference(oldNeighbours[j].begin(), oldNeighbours[j].end(), newNeighbours.begin(), newNeighbours.end(), brokenEdges.begin());
+        // this should be the number of broken edges
+        std::vector<index> brokenEdges(oldNeighbours[j].size()
+                                       - (newNeighbours.size() - newEdges.size()));
+        it = std::set_difference(oldNeighbours[j].begin(), oldNeighbours[j].end(),
+                                 newNeighbours.begin(), newNeighbours.end(), brokenEdges.begin());
         assert(it == brokenEdges.end());
 
-        #pragma omp critical
+#pragma omp critical
         {
             for (index edge : newEdges) {
                 result.emplace_back(GraphEvent::EDGE_ADDITION, toWiggle[j], edge);
@@ -335,13 +359,13 @@ void DynamicHyperbolicGenerator::getEventsFromNodeMovement(vector<GraphEvent> &r
      * have added some of them twice.
      * Remove the doubles:
      */
-    for (auto it = result.begin()+oldStreamMarker; it < result.end(); it++) {
-        if (it->u > it->v) std::swap(it->u, it->v);
+    for (auto it = result.begin() + oldStreamMarker; it < result.end(); it++) {
+        if (it->u > it->v)
+            std::swap(it->u, it->v);
     }
-    Aux::Parallel::sort(result.begin()+oldStreamMarker, result.end());
-    auto end = std::unique(result.begin()+oldStreamMarker, result.end());
+    Aux::Parallel::sort(result.begin() + oldStreamMarker, result.end());
+    auto end = std::unique(result.begin() + oldStreamMarker, result.end());
     result.erase(end, result.end());
-
 }
 
 } /* namespace NetworKit */

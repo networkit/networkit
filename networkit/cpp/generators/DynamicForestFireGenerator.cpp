@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DynamicForestFireGenerator.cpp
  *
@@ -10,15 +9,16 @@
 #include <set>
 #include <unordered_map>
 
-#include <networkit/auxiliary/Random.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/auxiliary/Random.hpp>
 #include <networkit/generators/DynamicForestFireGenerator.hpp>
 
 namespace NetworKit {
 
 using neighborFunction = std::function<std::vector<node>(node)>;
 
-DynamicForestFireGenerator::DynamicForestFireGenerator(double p, bool directed, double r) :p(p), directed(directed), r(r), firstCall(true) {
+DynamicForestFireGenerator::DynamicForestFireGenerator(double p, bool directed, double r)
+    : p(p), directed(directed), r(r), firstCall(true) {
     G = Graph(0, false, directed);
 }
 
@@ -30,7 +30,7 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
      * other nodes according to the forest fire model
      */
     auto connectNewNode = [&]() {
-        //list of nodes that were visited
+        // list of nodes that were visited
         std::unordered_map<node, bool> visited;
         // nodes which were found but not processed
         std::queue<node> activeNodes;
@@ -41,8 +41,8 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
 
         auto forwardNeighbors = [&](node u) {
             std::vector<node> validEdges;
-            G.forNeighborsOf(u, [&](node x){
-                if (! visited[x]) {
+            G.forNeighborsOf(u, [&](node x) {
+                if (!visited[x]) {
                     validEdges.push_back(x);
                 }
             });
@@ -51,8 +51,8 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
 
         auto backwardNeighbors = [&](node u) {
             std::vector<node> validEdges;
-            G.forInNeighborsOf(u, [&](node, node x){
-                if (! visited[x]) {
+            G.forInNeighborsOf(u, [&](node, node x) {
+                if (!visited[x]) {
                     validEdges.push_back(x);
                 }
             });
@@ -86,8 +86,8 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
         node a = none;
         do {
             a = Aux::Random::integer(G.upperNodeIdBound());
-        } while (! G.hasNode(a));
-        assert (a != none);
+        } while (!G.hasNode(a));
+        assert(a != none);
         DEBUG("selected ambassador: ", a);
 
         node v = G.addNode();
@@ -99,12 +99,12 @@ std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
         burnedNodes.push_back(a);
 
         // burn through the graph in a BFS-like fashion
-        while (! activeNodes.empty()) {
+        while (!activeNodes.empty()) {
             node w = activeNodes.front();
             activeNodes.pop();
-            std::set<node> edges = selectEdges(w, p, forwardNeighbors);;
+            std::set<node> edges = selectEdges(w, p, forwardNeighbors);
             if (directed) {
-                std::set<node> backwardEdges = selectEdges(w, p*r, backwardNeighbors);
+                std::set<node> backwardEdges = selectEdges(w, p * r, backwardNeighbors);
                 edges.insert(backwardEdges.begin(), backwardEdges.end());
             }
             for (node x : edges) {

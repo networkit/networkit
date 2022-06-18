@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * MocnikGeneratorBasic.cpp
  *
@@ -11,7 +10,7 @@
 
 namespace NetworKit {
 
-MocnikGeneratorBasic::MocnikGeneratorBasic(count dim, count n, double k): dim(dim), n(n), k(k) {}
+MocnikGeneratorBasic::MocnikGeneratorBasic(count dim, count n, double k) : dim(dim), n(n), k(k) {}
 
 // GEOMETRY
 
@@ -42,9 +41,9 @@ static inline double dist(std::vector<double> &v, std::vector<double> &w) {
 
 Graph MocnikGeneratorBasic::generate() {
     // assertions
-    assert (dim);
-    assert (n);
-    assert (k > 1);
+    assert(dim);
+    assert(n);
+    assert(k > 1);
 
     // create graph
     Graph G(0, false, true);

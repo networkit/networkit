@@ -1,10 +1,9 @@
-// no-networkit-format
 /*
-* RegularRingLatticeGenerator.cpp
-*
-*  Created on: 09.07.2014
-*      Author: Simon Bischof
-*/
+ * RegularRingLatticeGenerator.cpp
+ *
+ *  Created on: 09.07.2014
+ *      Author: Simon Bischof
+ */
 
 #include <networkit/generators/RegularRingLatticeGenerator.hpp>
 

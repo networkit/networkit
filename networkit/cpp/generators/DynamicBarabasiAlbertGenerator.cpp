@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DynamicBarabasiAlbertGenerator.cpp
  *
@@ -13,41 +12,43 @@
 
 namespace NetworKit {
 
-
-DynamicBarabasiAlbertGenerator::DynamicBarabasiAlbertGenerator(count k) : DynamicGraphSource(), k(k), degSum(0) {
+DynamicBarabasiAlbertGenerator::DynamicBarabasiAlbertGenerator(count k)
+    : DynamicGraphSource(), k(k), degSum(0) {
     if (!k) {
         throw std::runtime_error("k must be at least 1");
     }
 }
 
 void DynamicBarabasiAlbertGenerator::initializeGraph() {
-    if (! this->graphSet) {
+    if (!this->graphSet) {
         throw std::runtime_error("Graph instance has not been set - call newGraph first");
     }
 
-    // The network begins with an initial network of m0 nodes. m0 2 and the degree of each node in the initial network should be at least 1,
-    // otherwise it will always remain disconnected from the rest of the network.
+    // The network begins with an initial network of m0 nodes. m0 2 and the degree of each node in
+    // the initial network should be at least 1, otherwise it will always remain disconnected from
+    // the rest of the network.
     Gproxy->addNode(); // assume node ids are assigned consecutively
     for (count i = 1; i < k; ++i) {
         node u = Gproxy->addNode(); // assume node ids are assigned consecutively
-        Gproxy->addEdge(u, u - 1); // connect to previous node to create a path
+        Gproxy->addEdge(u, u - 1);  // connect to previous node to create a path
     }
 
     degSum = 2 * G->numberOfEdges();
 
     this->graphInitialized = true; // graph has been properly initialized
 
-    assert (G->numberOfNodes() == k);
-    assert (G->numberOfEdges() == (k - 1));
+    assert(G->numberOfNodes() == k);
+    assert(G->numberOfEdges() == (k - 1));
 }
 
-
 void DynamicBarabasiAlbertGenerator::generate() {
-    if (! this->graphInitialized) {
-        throw std::runtime_error("Graph instance has not been initialized - call initializeGraph first");
+    if (!this->graphInitialized) {
+        throw std::runtime_error(
+            "Graph instance has not been initialized - call initializeGraph first");
     }
 
-    // 3) go through the items one at a time, subtracting their weight from your random number, until you get the item where the random number is less than that item's weight
+    // 3) go through the items one at a time, subtracting their weight from your random number,
+    // until you get the item where the random number is less than that item's weight
     node u = this->Gproxy->addNode();
     std::unordered_set<node> targets; // avoid duplicate edges by collecting target nodes in a set
 
@@ -59,8 +60,8 @@ void DynamicBarabasiAlbertGenerator::generate() {
         uint64_t rand = Aux::Random::integer(degSum);
 
         bool found = false; // break from node iteration when done
-        auto notFound = [&](){ return ! found; };
-        this->G->forNodesWhile(notFound, [&](node v){
+        auto notFound = [&]() { return !found; };
+        this->G->forNodesWhile(notFound, [&](node v) {
             if (v != u) { // skip u, which has degree 0 anyway, to avoid self-loops
                 if (rand <= this->G->degree(v)) {
                     found = true; // found a node to connect to
@@ -73,7 +74,7 @@ void DynamicBarabasiAlbertGenerator::generate() {
 
     for (node v : targets) {
         this->Gproxy->addEdge(u, v);
-        degSum += 2;   // increment degree sum
+        degSum += 2; // increment degree sum
     }
 
     this->Gproxy->timeStep(); // trigger a time step

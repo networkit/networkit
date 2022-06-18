@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * GeometricGTest.cpp
  *
@@ -6,8 +5,8 @@
  *      Author: moritzl
  */
 
-#include <gtest/gtest.h>
 #include <cmath>
+#include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
@@ -23,13 +22,13 @@
 
 namespace NetworKit {
 
-class GeometricGTest: public testing::Test {};
+class GeometricGTest : public testing::Test {};
 
 /**
  * test conversion of polar coordinates to cartesian coordinates and back
  */
 TEST_F(GeometricGTest, testConversion) {
-    Point2DWithIndex<double> a(6,7);
+    Point2DWithIndex<double> a(6, 7);
     double epsilon = 10E-6;
     double angle, radius;
     HyperbolicSpace::cartesianToPolar(a, angle, radius);
@@ -43,8 +42,9 @@ TEST_F(GeometricGTest, testConversion) {
     for (index i = 0; i < n; i++) {
         Point2DWithIndex<double> point = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
         double phi, r;
-        HyperbolicSpace::cartesianToPolar(point, phi,r);
-        EXPECT_GE(phi, 0) << "Point (" << point[0] << "," << point[1] << ") was not converted correctly";
+        HyperbolicSpace::cartesianToPolar(point, phi, r);
+        EXPECT_GE(phi, 0) << "Point (" << point[0] << "," << point[1]
+                          << ") was not converted correctly";
         EXPECT_GE(r, 0);
         EXPECT_LE(std::abs(phi - angles[i]), epsilon);
         EXPECT_LE(std::abs(r - radii[i]), epsilon);
@@ -61,7 +61,7 @@ TEST_F(GeometricGTest, testEuclideanCircleConsistency) {
     double stretch = 2;
     double alpha = 3;
     double epsilon = 10E-6;
-    double R = stretch*HyperbolicSpace::hyperbolicAreaToRadius(n);
+    double R = stretch * HyperbolicSpace::hyperbolicAreaToRadius(n);
     HyperbolicSpace::fillPoints(angles, radii, R, alpha);
 
     for (index i = 0; i < n; i++) {
@@ -69,19 +69,24 @@ TEST_F(GeometricGTest, testEuclideanCircleConsistency) {
     }
 
     for (index i = 0; i < n; i++) {
-        Point2DWithIndex<double> cartesianPoint = HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
+        Point2DWithIndex<double> cartesianPoint =
+            HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
         double r_e, euRadius;
         HyperbolicSpace::getEuclideanCircle(radii[i], R, r_e, euRadius);
-        double mirrorangle = fmod(angles[i] + PI, 2*PI);
-        double mirrorradiusInside = std::abs(r_e - euRadius)-epsilon;
-        Point2DWithIndex<double> counterPointInside = HyperbolicSpace::polarToCartesian(mirrorangle, mirrorradiusInside);
-        EXPECT_LE(HyperbolicSpace::poincareMetric(cartesianPoint, counterPointInside), R) << "(" << cartesianPoint.getX() << ", " << cartesianPoint.getY() << ")"
-                << " and (" << counterPointInside.getX() << ", " << counterPointInside.getY() << ")" << " are " << HyperbolicSpace::poincareMetric(cartesianPoint, counterPointInside) << " apart from each other, which is more than " << R << ".";
+        double mirrorangle = fmod(angles[i] + PI, 2 * PI);
+        double mirrorradiusInside = std::abs(r_e - euRadius) - epsilon;
+        Point2DWithIndex<double> counterPointInside =
+            HyperbolicSpace::polarToCartesian(mirrorangle, mirrorradiusInside);
+        EXPECT_LE(HyperbolicSpace::poincareMetric(cartesianPoint, counterPointInside), R)
+            << "(" << cartesianPoint.getX() << ", " << cartesianPoint.getY() << ")"
+            << " and (" << counterPointInside.getX() << ", " << counterPointInside.getY() << ")"
+            << " are " << HyperbolicSpace::poincareMetric(cartesianPoint, counterPointInside)
+            << " apart from each other, which is more than " << R << ".";
 
-        double mirrorradiusOutside = std::abs(r_e - euRadius)+epsilon;
-        Point2DWithIndex<double> counterPointOutside = HyperbolicSpace::polarToCartesian(mirrorangle, mirrorradiusOutside);
+        double mirrorradiusOutside = std::abs(r_e - euRadius) + epsilon;
+        Point2DWithIndex<double> counterPointOutside =
+            HyperbolicSpace::polarToCartesian(mirrorangle, mirrorradiusOutside);
         EXPECT_GE(HyperbolicSpace::poincareMetric(cartesianPoint, counterPointOutside), R);
-
     }
 }
 
@@ -90,8 +95,8 @@ TEST_F(GeometricGTest, testHyperbolicTargetRadius) {
     const double T = 10;
     const double k = 5;
     const double alpha = 1;
-    double R = HyperbolicSpace::getTargetRadius(n, (n*k)/2, alpha, T);
-    EXPECT_NEAR(R,167.08503,1e-4);
+    double R = HyperbolicSpace::getTargetRadius(n, (n * k) / 2, alpha, T);
+    EXPECT_NEAR(R, 167.08503, 1e-4);
 }
 
 } /* namespace NetworKit */

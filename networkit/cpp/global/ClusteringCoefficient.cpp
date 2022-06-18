@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * ClusteringCoefficient.cpp
  *
@@ -19,20 +18,18 @@ namespace NetworKit {
 
 double ClusteringCoefficient::sequentialAvgLocal(const Graph &G) {
     WARN("DEPRECATED: use centrality.LocalClusteringCoefficient and take average");
-    std::vector<std::vector<node> > edges(G.upperNodeIdBound());
+    std::vector<std::vector<node>> edges(G.upperNodeIdBound());
 
     // copy edges with edge ids
     G.parallelForNodes([&](node u) {
         edges[u].reserve(G.degree(u));
-        G.forEdgesOf(u, [&](node, node v, edgeid) {
-            edges[u].emplace_back(v);
-        });
+        G.forEdgesOf(u, [&](node, node v, edgeid) { edges[u].emplace_back(v); });
     });
 
-    //Node attribute: marker
+    // Node attribute: marker
     std::vector<bool> nodeMarker(G.upperNodeIdBound(), false);
 
-    //Edge attribute: triangle count
+    // Edge attribute: triangle count
     std::vector<count> triangleCount(G.upperNodeIdBound(), 0);
 
     // bucket sort
@@ -41,9 +38,7 @@ double ClusteringCoefficient::sequentialAvgLocal(const Graph &G) {
     {
         std::vector<index> nodePos(n + 1, 0);
 
-        G.forNodes([&](node u) {
-            ++nodePos[n - G.degree(u)];
-        });
+        G.forNodes([&](node u) { ++nodePos[n - G.degree(u)]; });
 
         // exclusive prefix sum
         index tmp = nodePos[0];
@@ -56,18 +51,16 @@ double ClusteringCoefficient::sequentialAvgLocal(const Graph &G) {
             sum += tmp;
         }
 
-        G.forNodes([&](node u) {
-            sortedNodes[nodePos[n - G.degree(u)]++] = u;
-        });
+        G.forNodes([&](node u) { sortedNodes[nodePos[n - G.degree(u)]++] = u; });
     }
 
     for (node u : sortedNodes) {
-        //Mark all neighbors
+        // Mark all neighbors
         for (auto v : edges[u]) {
             nodeMarker[v] = true;
         }
 
-        //For all neighbors: check for already marked neighbors.
+        // For all neighbors: check for already marked neighbors.
         for (auto v : edges[u]) {
             for (auto w = edges[v].begin(); w != edges[v].end(); ++w) {
                 // delete the edge to u as we do not need to consider it again.
@@ -97,7 +90,8 @@ double ClusteringCoefficient::sequentialAvgLocal(const Graph &G) {
     G.forNodes([&](node u) {
         count d = G.degree(u);
         if (d > 1) {
-            coefficient += static_cast<double>(triangleCount[u]) * 2.0 / static_cast<double>(d * (d - 1));
+            coefficient +=
+                static_cast<double>(triangleCount[u]) * 2.0 / static_cast<double>(d * (d - 1));
             size++;
         }
     });
@@ -109,11 +103,12 @@ double ClusteringCoefficient::sequentialAvgLocal(const Graph &G) {
     return coefficient / size;
 }
 
-double ClusteringCoefficient::avgLocal(Graph& G, bool turbo) {
+double ClusteringCoefficient::avgLocal(Graph &G, bool turbo) {
     WARN("DEPRECATED: use centrality.LocalClusteringCoefficient and take average");
     LocalClusteringCoefficient lcc(G, turbo);
     lcc.run();
-    auto coefficients = lcc.scores(); // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
+    // $c(u) := \frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}$
+    auto coefficients = lcc.scores();
 
     double sum = 0.0;
     count size = 0;
@@ -129,10 +124,10 @@ double ClusteringCoefficient::avgLocal(Graph& G, bool turbo) {
         return 0; // no triangle exists
     }
 
-    return sum / (double) size;
+    return sum / (double)size;
 }
 
-double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
+double ClusteringCoefficient::approxAvgLocal(Graph &G, const count trials) {
 
     double triangles = 0;
     for (count k = 0; k < trials; ++k) {
@@ -142,7 +137,7 @@ double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
         if (G.degree(v) < 2) {
             // this vertex can never be part of a triangle,
             // nor middle point of a path of length 3
-            --k;  // do not count trial
+            --k; // do not count trial
             continue;
         }
 
@@ -158,33 +153,30 @@ double ClusteringCoefficient::approxAvgLocal(Graph& G, const count trials) {
             TRACE("w=", w);
         }
 
-        if (G.hasEdge(u,w)) {
+        if (G.hasEdge(u, w)) {
             triangles++;
         }
     }
 
-    return triangles / (double) trials;
+    return triangles / (double)trials;
 }
 
-
-double ClusteringCoefficient::exactGlobal(Graph& G) {
+double ClusteringCoefficient::exactGlobal(Graph &G) {
     count z = G.upperNodeIdBound();
-    std::vector<count> triangles(z); // triangles including node u (every triangle is counted six times)
+    // triangles including node u (every triangle is counted six times)
+    std::vector<count> triangles(z);
 
-    std::vector<std::vector<bool> > nodeMarker(omp_get_max_threads());
+    std::vector<std::vector<bool>> nodeMarker(omp_get_max_threads());
     for (auto &nm : nodeMarker) {
         nm.resize(z, false);
     }
 
-    G.balancedParallelForNodes([&](node u){
-
+    G.balancedParallelForNodes([&](node u) {
         size_t tid = omp_get_thread_num();
         count tr = 0;
 
         if (G.degree(u) > 1) {
-            G.forEdgesOf(u, [&](node, node v) {
-                nodeMarker[tid][v] = true;
-            });
+            G.forEdgesOf(u, [&](node, node v) { nodeMarker[tid][v] = true; });
 
             G.forEdgesOf(u, [&](node, node v) {
                 G.forEdgesOf(v, [&](node, node w) {
@@ -194,21 +186,16 @@ double ClusteringCoefficient::exactGlobal(Graph& G) {
                 });
             });
 
-            G.forEdgesOf(u, [&](node, node v) {
-                nodeMarker[tid][v] = false;
-            });
+            G.forEdgesOf(u, [&](node, node v) { nodeMarker[tid][v] = false; });
         }
 
         triangles[u] = tr;
     });
 
-  double denominator = G.parallelSumForNodes([&](node u){
-        return G.degree(u) * (G.degree(u) - 1);
-    });
+    double denominator =
+        G.parallelSumForNodes([&](node u) { return G.degree(u) * (G.degree(u) - 1); });
 
-    double cc = G.parallelSumForNodes([&](node u){
-        return triangles[u];
-    });
+    double cc = G.parallelSumForNodes([&](node u) { return triangles[u]; });
 
     if (denominator == 0) {
         return 0; // no triangle exists
@@ -219,11 +206,10 @@ double ClusteringCoefficient::exactGlobal(Graph& G) {
     return cc;
 }
 
-
-double ClusteringCoefficient::approxGlobal(Graph& G, const count trials) {
+double ClusteringCoefficient::approxGlobal(Graph &G, const count trials) {
     count z = G.upperNodeIdBound();
 
-  // Calculate prefix sum over the nodes where each node v counts deg(v)*(deg(v)-1) times
+    // Calculate prefix sum over the nodes where each node v counts deg(v)*(deg(v)-1) times
     std::vector<count> weight(z);
     count psum = 0;
     G.forNodes([&](node v) {
@@ -231,7 +217,8 @@ double ClusteringCoefficient::approxGlobal(Graph& G, const count trials) {
         weight[v] = psum;
     });
 
-    if (psum == 0) return 0; // no node has degree > 1 - no triangle exists!
+    if (psum == 0)
+        return 0; // no node has degree > 1 - no triangle exists!
 
     // WARNING: I assume RAND_MAX to be larger than PSUM. If this should not hold for an application
     // or implementation of the standard library, a more sophisticated version of determining a
@@ -274,7 +261,7 @@ double ClusteringCoefficient::approxGlobal(Graph& G, const count trials) {
             w = GraphTools::randomNeighbor(G, v);
         }
 
-        if (G.hasEdge(u,w)) {
+        if (G.hasEdge(u, w)) {
             triangles++;
         }
     }

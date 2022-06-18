@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * MocnikGenerator.cpp
  *
@@ -17,7 +16,8 @@
 
 namespace NetworKit {
 
-MocnikGenerator::MocnikGenerator(count dim, count n, double k, bool weighted): dim(dim), weighted(weighted) {
+MocnikGenerator::MocnikGenerator(count dim, count n, double k, bool weighted)
+    : dim(dim), weighted(weighted) {
     ns.push_back(n);
     ks.push_back(k);
 }
@@ -53,8 +53,9 @@ MocnikGenerator::MocnikGenerator(count dim, std::vector<count> ns, std::vector<d
 /**
  * For a vector of pairs, get the pair with the maximal second component
  */
-template<typename KeyType, typename ValueType> std::pair<KeyType,ValueType> getMax(const std::map<KeyType,ValueType> &x) {
-    using pairtype=std::pair<KeyType,ValueType>;
+template <typename KeyType, typename ValueType>
+std::pair<KeyType, ValueType> getMax(const std::map<KeyType, ValueType> &x) {
+    using pairtype = std::pair<KeyType, ValueType>;
     return *std::max_element(x.begin(), x.end(), [](const pairtype &p1, const pairtype &p2) {
         return p1.second < p2.second;
     });
@@ -87,7 +88,8 @@ static inline double dist(std::vector<double> &v, std::vector<double> &w) {
 
 // LAYER STATE
 
-void MocnikGenerator::initCellArray(MocnikGenerator::LayerState &s, count numberOfCellsPerDimension) {
+void MocnikGenerator::initCellArray(MocnikGenerator::LayerState &s,
+                                    count numberOfCellsPerDimension) {
     s.aMax = numberOfCellsPerDimension;
     for (count j = 0; j < std::pow(s.aMax, dim); j++) {
         NodeCollection tmp;
@@ -146,7 +148,8 @@ std::vector<int> MocnikGenerator::boxSurface(MocnikGenerator::LayerState &s, int
         v.push_back(tmp);
         for (count j = 0; j < d; j++) {
             std::vector<std::vector<int>> w;
-            for (int mu = std::max(iV[j] - r + 1, 0); mu <= std::min(iV[j] + r - 1, s.aMax - 1); mu++) {
+            for (int mu = std::max(iV[j] - r + 1, 0); mu <= std::min(iV[j] + r - 1, s.aMax - 1);
+                 mu++) {
                 for (std::vector<int> &vElem : v) {
                     std::vector<int> x(vElem);
                     x.push_back(mu);
@@ -223,10 +226,11 @@ std::vector<int> MocnikGenerator::boxVolume(MocnikGenerator::LayerState &s, int 
 
 // EDGE GENERATION
 
-void MocnikGenerator::addEdgesToGraph(Graph &G, count n, double k, double relativeWeight, bool baseLayer) {
+void MocnikGenerator::addEdgesToGraph(Graph &G, count n, double k, double relativeWeight,
+                                      bool baseLayer) {
     // map vector containing the nodes resp. their positions
     MocnikGenerator::LayerState s;
-    initCellArray(s, std::ceil(std::pow(n / 2, 1./dim) / k));
+    initCellArray(s, std::ceil(std::pow(n / 2, 1. / dim) / k));
 
     // add the nodes to the layer state
     for (count i = 0; i < n; i++) {
@@ -236,7 +240,7 @@ void MocnikGenerator::addEdgesToGraph(Graph &G, count n, double k, double relati
     // create the edges
     count cellMax = std::pow(s.aMax, dim);
     std::vector<std::vector<std::tuple<node, node, double>>> edges(cellMax);
-    #pragma omp parallel for
+#pragma omp parallel for
     for (omp_index cell = 0; cell < static_cast<omp_index>(cellMax); cell++) {
         double dmNew, dm;
         edges[cell] = {};
@@ -305,8 +309,8 @@ Graph MocnikGenerator::generate() {
 
     // assertions
     assert(dim > 0);
-    assert(std::all_of(ns.cbegin(), ns.cend(), [] (count n) { return n > 1; }));
-    assert(std::all_of(ks.cbegin(), ks.cend(), [] (double k) {return k > 1.0; }));
+    assert(std::all_of(ns.cbegin(), ns.cend(), [](count n) { return n > 1; }));
+    assert(std::all_of(ks.cbegin(), ks.cend(), [](double k) { return k > 1.0; }));
     assert(!ns.empty());
     assert(ks.size() == ns.size());
     assert(relativeWeights.size() == ns.size());

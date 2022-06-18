@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * HavelHakimiGenerator.cpp
  *
@@ -15,15 +14,15 @@
 
 namespace NetworKit {
 
-HavelHakimiGenerator::HavelHakimiGenerator(const std::vector<count> &sequence, bool ignoreIfRealizable) :
-        StaticDegreeSequenceGenerator(sequence), ignoreIfRealizable(ignoreIfRealizable) {}
-
+HavelHakimiGenerator::HavelHakimiGenerator(const std::vector<count> &sequence,
+                                           bool ignoreIfRealizable)
+    : StaticDegreeSequenceGenerator(sequence), ignoreIfRealizable(ignoreIfRealizable) {}
 
 Graph HavelHakimiGenerator::generate() {
     count n = seq.size();
 
     Graph G(n);
-    count numDegVals = (* std::max_element(seq.begin(), seq.end())) + 1;
+    count numDegVals = (*std::max_element(seq.begin(), seq.end())) + 1;
 
     // Havel-Hakimi algorithm, adapted with appropriate data structure for linear time
     // bucket data structure: vector of lists
@@ -37,14 +36,14 @@ Graph HavelHakimiGenerator::generate() {
 
     // put nodes in appropriate lists
     Buckets nodesByDeficit(numDegVals);
-    for(node v = 0; v < n; v++) {
+    for (node v = 0; v < n; v++) {
         nodesByDeficit[seq[v]].push_front(std::make_pair(seq[v], v));
     }
 
     index maxDeficit = numDegVals - 1;
     while (maxDeficit) {
         // process node in largest bucket
-        while(! nodesByDeficit[maxDeficit].empty()) {
+        while (!nodesByDeficit[maxDeficit].empty()) {
             // get element
             std::list<DeficitAndNode>::iterator listIter = nodesByDeficit[maxDeficit].begin();
             count deficit = listIter->first;
@@ -77,18 +76,24 @@ Graph HavelHakimiGenerator::generate() {
                 numToMove.push(numDeleteFromCurrentList);
 
                 if (currentNeighborList == 1) {
-                    // We are at the end of the list of nodes that have degree 1 left, i.e. the current node has already all possible neighbors
-                    // This means that the Havel-Hakimi algorithm cannot generate a graph with the given degree sequence which means that
-                    // the degree sequence is not realizable.
-                    WARN("Degree sequence not realizable, node ", currentVertex, " should have got ", seq[currentVertex], " neighbors but actually only got ", seq[currentVertex] - deficit, " neighbors.");
-                    if (!ignoreIfRealizable) throw std::runtime_error("Degree sequence is not realizable");
-                    break; // if we break here, we will continue as if currentVertex had already got all the neighbors it needed.
+                    // We are at the end of the list of nodes that have degree 1 left, i.e. the
+                    // current node has already all possible neighbors This means that the
+                    // Havel-Hakimi algorithm cannot generate a graph with the given degree sequence
+                    // which means that the degree sequence is not realizable.
+                    WARN("Degree sequence not realizable, node ", currentVertex,
+                         " should have got ", seq[currentVertex],
+                         " neighbors but actually only got ", seq[currentVertex] - deficit,
+                         " neighbors.");
+                    if (!ignoreIfRealizable)
+                        throw std::runtime_error("Degree sequence is not realizable");
+                    break; // if we break here, we will continue as if currentVertex had already got
+                           // all the neighbors it needed.
                 }
 
                 --currentNeighborList;
             }
 
-            while (! numToMove.empty()) {
+            while (!numToMove.empty()) {
                 // get head element
                 count num = numToMove.top();
                 numToMove.pop();

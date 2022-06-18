@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * GeneratorsBenchmark.cpp
  *
@@ -8,19 +7,19 @@
 
 #include <gtest/gtest.h>
 
+#include <functional>
 #include <omp.h>
 #include <random>
-#include <functional>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/auxiliary/Parallelism.hpp>
 
-#include <networkit/generators/ErdosRenyiEnumerator.hpp>
-#include <networkit/generators/HyperbolicGenerator.hpp>
-#include <networkit/generators/DynamicHyperbolicGenerator.hpp>
 #include <networkit/generators/BarabasiAlbertGenerator.hpp>
 #include <networkit/generators/ChungLuGenerator.hpp>
+#include <networkit/generators/DynamicHyperbolicGenerator.hpp>
+#include <networkit/generators/ErdosRenyiEnumerator.hpp>
+#include <networkit/generators/HyperbolicGenerator.hpp>
 #include <networkit/generators/MocnikGenerator.hpp>
 #include <networkit/generators/MocnikGeneratorBasic.hpp>
 
@@ -29,7 +28,7 @@
 namespace NetworKit {
 
 // TODO: This is a temporary fix; there's already a GBenchmark solution on its way
-class GeneratorsBenchmark: public testing::Test {
+class GeneratorsBenchmark : public testing::Test {
 protected:
     template <typename L>
     uint64_t timeOnce(L f) {
@@ -54,7 +53,7 @@ TEST_F(GeneratorsBenchmark, benchmarkBarabasiAlbertGenerator) {
     EXPECT_FALSE(G.isEmpty());
 
     EXPECT_EQ(nMax, G.numberOfNodes());
-    EXPECT_EQ( ((n0-1) + ((nMax - n0) * k)), G.numberOfEdges());
+    EXPECT_EQ(((n0 - 1) + ((nMax - n0) * k)), G.numberOfEdges());
 }
 
 TEST_F(GeneratorsBenchmark, benchBarabasiAlbertGeneratorBatagelj) {
@@ -64,8 +63,6 @@ TEST_F(GeneratorsBenchmark, benchBarabasiAlbertGeneratorBatagelj) {
         count k = n / Aux::Random::integer(5, 20);
         BarabasiAlbertGenerator gen(k, n, 0);
         auto G = gen.generate();
-        //EXPECT_TRUE(G.checkConsistency());
-        //INFO(G.toString());
     }
 }
 
@@ -76,8 +73,6 @@ TEST_F(GeneratorsBenchmark, benchBarabasiAlbertGenerator2) {
         count k = n / Aux::Random::integer(5, 20);
         BarabasiAlbertGenerator gen(k, n, k, false);
         auto G = gen.generate();
-        //EXPECT_TRUE(G.checkConsistency());
-        //INFO(G.toString());
     }
 }
 
@@ -95,18 +90,21 @@ TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithSortedNodes) {
     double t = 1.0;
     vector<double> angles(n);
     vector<double> radii(n);
-    double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
+    double R = s * HyperbolicSpace::hyperbolicAreaToRadius(n);
     double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
-    //sample points randomly
+    // sample points randomly
 
     HyperbolicSpace::fillPoints(angles, radii, s, alpha);
     vector<index> permutation(n);
 
     index p = 0;
-    std::generate(permutation.begin(), permutation.end(), [&p](){return p++;});
+    std::generate(permutation.begin(), permutation.end(), [&p]() { return p++; });
 
-    //can probably be parallelized easily, but doesn't bring much benefit
-    Aux::Parallel::sort(permutation.begin(), permutation.end(), [&angles,&radii](index i, index j){return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);});
+    // can probably be parallelized easily, but doesn't bring much benefit
+    Aux::Parallel::sort(
+        permutation.begin(), permutation.end(), [&angles, &radii](index i, index j) {
+            return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);
+        });
 
     vector<double> anglecopy(n);
     vector<double> radiicopy(n);
@@ -117,7 +115,7 @@ TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorWithSortedNodes) {
         radiicopy[j] = radii[permutation[j]];
     }
 
-    Graph G = HyperbolicGenerator().generate(anglecopy, radiicopy, r, R*t);
+    Graph G = HyperbolicGenerator().generate(anglecopy, radiicopy, r, R * t);
     EXPECT_EQ(G.numberOfNodes(), n);
 }
 
@@ -141,21 +139,21 @@ TEST_F(GeneratorsBenchmark, benchmarkDynamicHyperbolicGeneratorOnNodeMovement) {
 
 TEST_F(GeneratorsBenchmark, benchmarkParallelQuadtreeConstruction) {
     count n = 33554432;
-    Quadtree<index> quad(n,1.0);
+    Quadtree<index> quad(n, 1.0);
     EXPECT_EQ(quad.size(), n);
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkSequentialQuadtreeConstruction) {
     count n = 33554432;
     count capacity = 1000;
-    double s =1;
+    double s = 1;
     double alpha = 1;
-    double R = s*HyperbolicSpace::hyperbolicAreaToRadius(n);
+    double R = s * HyperbolicSpace::hyperbolicAreaToRadius(n);
     vector<double> angles(n);
     vector<double> radii(n);
     HyperbolicSpace::fillPoints(angles, radii, s, alpha);
 
-    Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R),false,alpha,capacity);
+    Quadtree<index> quad(HyperbolicSpace::hyperbolicRadiusToEuclidean(R), false, alpha, capacity);
 
     for (index i = 0; i < n; i++) {
         quad.addContent(i, angles[i], radii[i]);
@@ -166,11 +164,11 @@ TEST_F(GeneratorsBenchmark, benchmarkSequentialQuadtreeConstruction) {
 TEST_F(GeneratorsBenchmark, benchmarkHyperbolicGeneratorMechanicGraphs) {
     count n = 1000000;
     double k = 6;
-    count m = n*k/2;
+    count m = n * k / 2;
     HyperbolicGenerator gen(n, k, 3, 0.14);
     gen.setLeafCapacity(10);
     Graph G = gen.generate();
-    EXPECT_NEAR(G.numberOfEdges(), m, m/10);
+    EXPECT_NEAR(G.numberOfEdges(), m, m / 10);
 }
 
 TEST_F(GeneratorsBenchmark, benchmarkChungLuGenerator) {
@@ -178,7 +176,7 @@ TEST_F(GeneratorsBenchmark, benchmarkChungLuGenerator) {
     int maxDegree = 100;
     std::vector<count> vec;
     /* Creates a random weight list */
-    for (index i = 0; i < n; i++){
+    for (index i = 0; i < n; i++) {
         int grad = Aux::Random::integer(1, maxDegree);
         vec.push_back(grad);
     }

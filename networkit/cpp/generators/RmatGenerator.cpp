@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * RmatGenerator.cpp
  *
@@ -6,20 +5,23 @@
  *      Author: Henning, cls
  */
 
-#include <networkit/auxiliary/Random.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
+#include <networkit/auxiliary/Random.hpp>
 #include <networkit/generators/RmatGenerator.hpp>
 
 namespace NetworKit {
 
-RmatGenerator::RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d, bool weighted, count reduceNodes):
-    scale(scale), edgeFactor(edgeFactor), a(a), b(b), c(c), weighted(weighted), reduceNodes(reduceNodes)
-{
-    if (scale > 63) throw std::runtime_error("Cannot generate more than 2^63 nodes");
-    double sum = a+b+c+d;
+RmatGenerator::RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d,
+                             bool weighted, count reduceNodes)
+    : scale(scale), edgeFactor(edgeFactor), a(a), b(b), c(c), weighted(weighted),
+      reduceNodes(reduceNodes) {
+    if (scale > 63)
+        throw std::runtime_error("Cannot generate more than 2^63 nodes");
+    double sum = a + b + c + d;
     INFO("sum of probabilities: ", sum);
-    if (!Aux::NumericTools::equal(sum, 1.0, 0.0001)) throw std::runtime_error("Probabilities in Rmat have to sum to 1.");
+    if (!Aux::NumericTools::equal(sum, 1.0, 0.0001))
+        throw std::runtime_error("Probabilities in Rmat have to sum to 1.");
     defaultEdgeWeight = 1.0;
 }
 
@@ -32,8 +34,8 @@ Graph RmatGenerator::generate() {
     count numEdges = n * edgeFactor * n * 1.0 / static_cast<double>(n - reduceNodes);
     count wantedEdges = (n - reduceNodes) * edgeFactor;
     Graph G(n - reduceNodes, weighted);
-    double ab = a+b;
-    double abc = ab+c;
+    double ab = a + b;
+    double abc = ab + c;
 
     auto quadrant([&]() {
         double r = Aux::Random::probability();
@@ -41,14 +43,12 @@ Graph RmatGenerator::generate() {
 
         if (r <= a) {
             return 0;
-        }
-        else if (r <= ab) {
+        } else if (r <= ab) {
             return 1;
-        }
-        else if (r <= abc) {
+        } else if (r <= abc) {
             return 2;
-        }
-        else return 3;
+        } else
+            return 3;
     });
 
     auto drawEdge([&]() {
