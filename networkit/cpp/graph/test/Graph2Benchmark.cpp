@@ -17,7 +17,6 @@ class Graph2Benchmark : public testing::Test {};
 
 TEST_F(Graph2Benchmark, graphConstruction) {
     count n = 1e+7;
-    ;
 
     Aux::Timer run;
     INFO("[BEGIN] (n=", n, ")");
@@ -31,7 +30,6 @@ TEST_F(Graph2Benchmark, graphConstruction) {
 
 TEST_F(Graph2Benchmark, nodeIteration) {
     count n = 1e+7;
-    ;
     Graph G(n);
 
     std::vector<node> nodes(n, 0);
@@ -48,7 +46,6 @@ TEST_F(Graph2Benchmark, nodeIteration) {
 
 TEST_F(Graph2Benchmark, parallelNodeIteration) {
     count n = 1e+7;
-    ;
     Graph G(n);
 
     std::vector<node> nodes(n, 0);
@@ -65,7 +62,6 @@ TEST_F(Graph2Benchmark, parallelNodeIteration) {
 
 TEST_F(Graph2Benchmark, nodePairIteration) {
     count n = 1e+4;
-    ;
     Graph G(n);
 
     Aux::Timer run;
@@ -167,7 +163,6 @@ TEST_F(Graph2Benchmark, nodeInsertion) {
     Graph G(0); // empty graph
 
     for (count i = 0; i < n; ++i) {
-        // node v = G.addNode();
         G.addNode();
     }
 
