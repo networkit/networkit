@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * GraphBuilder.cpp
  *
@@ -14,8 +13,8 @@
 namespace NetworKit {
 
 GraphBuilder::GraphBuilder(count n, bool weighted, bool directed)
-    : n(n), selfloops(0), weighted(weighted), directed(directed),
-      outEdges(n), outEdgeWeights(weighted ? n : 0), inEdges(directed ? n : 0),
+    : n(n), selfloops(0), weighted(weighted), directed(directed), outEdges(n),
+      outEdgeWeights(weighted ? n : 0), inEdges(directed ? n : 0),
       inEdgeWeights((directed && weighted) ? n : 0) {}
 
 void GraphBuilder::reset(count n) {
@@ -24,8 +23,7 @@ void GraphBuilder::reset(count n) {
     outEdges.assign(n, std::vector<node>{});
     outEdgeWeights.assign(isWeighted() ? n : 0, std::vector<edgeweight>{}),
         inEdges.assign(isDirected() ? n : 0, std::vector<node>{}),
-        inEdgeWeights.assign((isDirected() && isWeighted()) ? n : 0,
-                             std::vector<edgeweight>{});
+        inEdgeWeights.assign((isDirected() && isWeighted()) ? n : 0, std::vector<edgeweight>{});
 }
 
 index GraphBuilder::indexInOutEdgeArray(node u, node v) const {
@@ -88,8 +86,7 @@ void GraphBuilder::addHalfInEdge(node u, node v, edgeweight ew) {
 }
 
 void GraphBuilder::swapNeighborhood(node u, std::vector<node> &neighbours,
-                                    std::vector<edgeweight> &weights,
-                                    bool selfloop) {
+                                    std::vector<edgeweight> &weights, bool selfloop) {
     if (weighted)
         assert(neighbours.size() == weights.size());
     outEdges[u].swap(neighbours);
@@ -145,8 +142,9 @@ void GraphBuilder::increaseInWeight(node u, node v, edgeweight ew) {
 }
 
 Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
-    if(!autoCompleteEdges) {
-        throw "DirectSwap is no longer supported. Please use the Graph class directly for it instead.";
+    if (!autoCompleteEdges) {
+        throw "DirectSwap is no longer supported. Please use the Graph class directly for it "
+              "instead.";
     }
     return completeGraph(parallel);
 }
@@ -154,10 +152,10 @@ Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
 Graph GraphBuilder::completeGraph(bool parallel) {
     Graph G(n, weighted, directed);
     assert(n == G.upperNodeIdBound());
-    #ifdef NETWORKIT_SANITY_CHECKS
+#ifdef NETWORKIT_SANITY_CHECKS
     assert(G.checkConsistency());
-    #endif
-    
+#endif
+
     // copy edges and weights
     if (parallel) {
         toGraphParallel(G);
@@ -166,9 +164,9 @@ Graph GraphBuilder::completeGraph(bool parallel) {
     }
     G.setEdgeCount(unsafe, numberOfEdges(G));
     assert(n == G.upperNodeIdBound());
-    #ifdef NETWORKIT_SANITY_CHECKS
+#ifdef NETWORKIT_SANITY_CHECKS
     assert(G.checkConsistency());
-    #endif
+#endif
     G.shrinkToFit();
 
     reset();
@@ -187,8 +185,7 @@ void GraphBuilder::toGraphParallel(Graph &G) {
     using Weightlists = std::vector<std::vector<edgeweight>>;
 
     std::vector<Adjacencylists> inEdgesPerThread(maxThreads, Adjacencylists(n));
-    std::vector<Weightlists> inWeightsPerThread(weighted ? maxThreads : 0,
-                                                Weightlists(n));
+    std::vector<Weightlists> inWeightsPerThread(weighted ? maxThreads : 0, Weightlists(n));
     std::vector<count> numberOfSelfLoopsPerThread(maxThreads, 0);
 
     // step 1
@@ -197,7 +194,7 @@ void GraphBuilder::toGraphParallel(Graph &G) {
         for (index i = 0; i < outEdges[v].size(); i++) {
             node u = outEdges[v][i];
             if (directed || u != v) { // self loops don't need to be added twice in
-                                        // undirected graphs
+                                      // undirected graphs
                 inEdgesPerThread[tid][u].push_back(v);
                 if (weighted) {
                     G.addPartialEdge(unsafe, v, u, outEdgeWeights[v][i]);
@@ -238,13 +235,14 @@ void GraphBuilder::toGraphParallel(Graph &G) {
         if (directed) {
             if (weighted) {
                 for (int tid = 0; tid < maxThreads; tid++) {
-                    for (index j = 0; j < inEdgesPerThread[tid][v].size(); j++){
-                        G.addPartialInEdge(unsafe, v, inEdgesPerThread[tid][v][j], inWeightsPerThread[tid][v][j]);
+                    for (index j = 0; j < inEdgesPerThread[tid][v].size(); j++) {
+                        G.addPartialInEdge(unsafe, v, inEdgesPerThread[tid][v][j],
+                                           inWeightsPerThread[tid][v][j]);
                     }
                 }
             } else {
                 for (int tid = 0; tid < maxThreads; tid++) {
-                    for (index j = 0; j < inEdgesPerThread[tid][v].size(); j++){
+                    for (index j = 0; j < inEdgesPerThread[tid][v].size(); j++) {
                         G.addPartialInEdge(unsafe, v, inEdgesPerThread[tid][v][j]);
                     }
                 }
@@ -252,13 +250,14 @@ void GraphBuilder::toGraphParallel(Graph &G) {
         } else {
             if (weighted) {
                 for (int tid = 0; tid < maxThreads; tid++) {
-                    for (index j = 0; j < inEdgesPerThread[tid][v].size(); j++){
-                        G.addPartialEdge(unsafe, v, inEdgesPerThread[tid][v][j], inWeightsPerThread[tid][v][j]);
+                    for (index j = 0; j < inEdgesPerThread[tid][v].size(); j++) {
+                        G.addPartialEdge(unsafe, v, inEdgesPerThread[tid][v][j],
+                                         inWeightsPerThread[tid][v][j]);
                     }
                 }
             } else {
                 for (int tid = 0; tid < maxThreads; tid++) {
-                    for (index j = 0; j < inEdgesPerThread[tid][v].size(); j++){
+                    for (index j = 0; j < inEdgesPerThread[tid][v].size(); j++) {
                         G.addPartialEdge(unsafe, v, inEdgesPerThread[tid][v][j]);
                     }
                 }
@@ -271,33 +270,32 @@ void GraphBuilder::toGraphParallel(Graph &G) {
     for (omp_index i = 0; i < static_cast<omp_index>(maxThreads); ++i)
         numSelfLoops += numberOfSelfLoopsPerThread[i];
     G.setNumberOfSelfLoops(unsafe, numSelfLoops);
-
 }
 
 void GraphBuilder::toGraphSequential(Graph &G) {
     G.removeAllEdges();
-    
+
     std::vector<count> missingEdgesCounts(n, 0);
     count numberOfSelfLoops = 0;
 
     // 'first' half of the edges
-    for (index u = 0; u < outEdges.size(); u++){
-        for (index j = 0; j < outEdges[u].size(); j++){
-            if(weighted) {
+    for (index u = 0; u < outEdges.size(); u++) {
+        for (index j = 0; j < outEdges[u].size(); j++) {
+            if (weighted) {
                 G.addPartialEdge(unsafe, u, outEdges[u][j], outEdgeWeights[u][j]);
             } else {
                 G.addPartialEdge(unsafe, u, outEdges[u][j]);
             }
         }
     }
-    
+
     std::vector<count> outDeg(G.upperNodeIdBound());
     parallelForNodes([&](node v) { outDeg[v] = G.degreeOut(v); });
 
     // count missing edges for each node
     G.forNodes([&](node v) {
         // increase count of incoming edges for all neighbors
-        G.forNeighborsOf(v , [&](node u) {
+        G.forNeighborsOf(v, [&](node u) {
             if (directed || u != v) {
                 ++missingEdgesCounts[u];
             }
@@ -316,9 +314,7 @@ void GraphBuilder::toGraphSequential(Graph &G) {
         std::vector<count> inDeg = missingEdgesCounts;
 
         // reserve the exact amount of space needed
-        G.forNodes([&](node v) {
-            G.preallocateDirectedInEdges(v, inDeg[v]);
-        });
+        G.forNodes([&](node v) { G.preallocateDirectedInEdges(v, inDeg[v]); });
 
         // copy values
         G.forNodes([&](node v) {
@@ -338,9 +334,7 @@ void GraphBuilder::toGraphSequential(Graph &G) {
         // add it to the other node as well
 
         // reserve the exact amount of space needed
-        G.forNodes([&](node v) {
-            G.preallocateUndirected(v, outDeg[v] + missingEdgesCounts[v]);
-        });
+        G.forNodes([&](node v) { G.preallocateUndirected(v, outDeg[v] + missingEdgesCounts[v]); });
 
         // copy values
         G.forNodes([&](node v) {

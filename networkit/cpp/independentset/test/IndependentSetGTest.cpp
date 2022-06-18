@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * IndependentSetTest.cpp
  *
@@ -15,7 +14,7 @@
 
 namespace NetworKit {
 
-class IndependentSetGTest: public testing::Test {};
+class IndependentSetGTest : public testing::Test {};
 
 TEST_F(IndependentSetGTest, debugLuby) {
     count n = 500;
@@ -33,7 +32,7 @@ TEST_F(IndependentSetGTest, debugLuby) {
             size += 1;
         }
     }
-    INFO("independent set size: " , size , "/" , n);
+    INFO("independent set size: ", size, "/", n);
 }
 
 TEST_F(IndependentSetGTest, debugLubyWithSelfLoops) {
@@ -41,9 +40,7 @@ TEST_F(IndependentSetGTest, debugLubyWithSelfLoops) {
     ErdosRenyiGenerator generator(n, 0.001);
     Graph G = generator.generate();
 
-    G.forNodes([&](node u){
-        G.addEdge(u,u);
-    });
+    G.forNodes([&](node u) { G.addEdge(u, u); });
 
     Luby luby;
     std::vector<bool> I = luby.run(G);
@@ -56,7 +53,7 @@ TEST_F(IndependentSetGTest, debugLubyWithSelfLoops) {
             size += 1;
         }
     }
-    INFO("independent set size: " , size , "/" , n);
+    INFO("independent set size: ", size, "/", n);
 }
 
 } /* namespace NetworKit */
