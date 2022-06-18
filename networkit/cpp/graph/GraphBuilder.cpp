@@ -193,8 +193,8 @@ void GraphBuilder::toGraphParallel(Graph &G) {
         int tid = omp_get_thread_num();
         for (index i = 0; i < outEdges[v].size(); i++) {
             node u = outEdges[v][i];
-            if (directed || u != v) { // self loops don't need to be added twice in
-                                      // undirected graphs
+            // self loops don't need to be added twice in undirected graphs
+            if (directed || u != v) {
                 inEdgesPerThread[tid][u].push_back(v);
                 if (weighted) {
                     G.addPartialEdge(unsafe, v, u, outEdgeWeights[v][i]);
