@@ -84,18 +84,16 @@ std::vector<node> randomNodes(const Graph &G, count n) {
     } else if (n > G.numberOfNodes() / 2) { // in order to minimize the calls to randomNode
                                             // we randomize the ones that aren't pivot
                                             // if the are more to be selected than not-selected
-        std::fill(alreadySelected.begin(), alreadySelected.end(), true);
-
         for (count i = 0; i < G.numberOfNodes() - n; ++i) { // we have to sample distinct nodes
             node v = GraphTools::randomNode(G);
-            while (!alreadySelected[v]) {
+            while (alreadySelected[v]) {
                 v = GraphTools::randomNode(G);
             }
-            alreadySelected[v] = false;
+            alreadySelected[v] = true;
         }
 
         for (const auto sample : G.nodeRange()) {
-            if (alreadySelected[sample]) {
+            if (!alreadySelected[sample]) { // recall that we selected the non-pivot nodes
                 selectedNodes.push_back(sample);
                 if (selectedNodes.size() == n)
                     break;
