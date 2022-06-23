@@ -855,9 +855,16 @@ TEST_P(GraphToolsGTest, testToUndirected) {
     constexpr double p = 0.2;
 
     auto testGraphs = [&](const Graph &G, const Graph &G1) {
+        // we need this because we lose edges due to some nodes having both an in edge and an out
+        // edge to the same node.
+        count edgesLost = 0;
+        if (G.isDirected())
+            edgesLost = G.parallelSumForEdges(
+                [&](node u, node v) { return (u != v && G.hasEdge(v, u)) ? 1 : 0; });
+
         EXPECT_EQ(G.numberOfNodes(), G1.numberOfNodes());
         EXPECT_EQ(G.upperNodeIdBound(), G1.upperNodeIdBound());
-        EXPECT_EQ(G.numberOfEdges(), G1.numberOfEdges());
+        EXPECT_EQ(G.numberOfEdges() - edgesLost, G1.numberOfEdges());
         EXPECT_EQ(G.upperEdgeIdBound(), G1.upperEdgeIdBound());
         EXPECT_EQ(G.isWeighted(), G1.isWeighted());
         EXPECT_NE(G.isDirected(), G1.isDirected());
@@ -865,7 +872,8 @@ TEST_P(GraphToolsGTest, testToUndirected) {
 
         G.forEdges([&](node u, node v, edgeweight w) {
             EXPECT_TRUE(G1.hasEdge(u, v));
-            EXPECT_DOUBLE_EQ(G1.weight(u, v), w);
+            EXPECT_DOUBLE_EQ(G1.weight(u, v),
+                             !G.isDirected() || !weighted() ? w : w + G.weight(v, u));
         });
     };
 

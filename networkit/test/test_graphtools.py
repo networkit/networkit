@@ -297,7 +297,11 @@ class TestGraphTools(unittest.TestCase):
 		def testGraphs(G, G1):
 			self.assertEqual(G.numberOfNodes(), G1.numberOfNodes())
 			self.assertEqual(G.upperNodeIdBound(), G1.upperNodeIdBound())
-			self.assertEqual(G.numberOfEdges(), G1.numberOfEdges())
+			edgesLost = 0;
+			for e in G.iterEdges():
+				if G.hasEdge(e[1], e[0]) and e[1] != e[0]:
+					edgesLost += 1
+			self.assertEqual(G.numberOfEdges() - edgesLost, G1.numberOfEdges())
 			self.assertEqual(G.upperEdgeIdBound(), G1.upperEdgeIdBound())
 			self.assertEqual(G.isWeighted(), G1.isWeighted())
 			self.assertNotEqual(G.isDirected(), G1.isDirected())
@@ -305,7 +309,7 @@ class TestGraphTools(unittest.TestCase):
 
 			def testEdges(u, v, w, eid):
 				self.assertTrue(G1.hasEdge(u, v))
-				self.assertEqual(G1.weight(u, v), w)
+				self.assertEqual(G1.weight(u, v), w if not G.hasEdge(v, u) else w + G.weight(v, u))
 			G.forEdges(testEdges)
 
 		for seed in range(1, 4):
