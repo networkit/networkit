@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * KruskalMSF.cpp
  *
@@ -22,8 +21,7 @@ struct MyEdge : WeightedEdge {
     }
 };
 
-
-KruskalMSF::KruskalMSF(const Graph& G): SpanningForest(G) {}
+KruskalMSF::KruskalMSF(const Graph &G) : SpanningForest(G) {}
 
 void KruskalMSF::run() {
     if (G->isWeighted()) {
@@ -40,7 +38,7 @@ void KruskalMSF::run() {
         Aux::Parallel::sort(sortedEdges.begin(), sortedEdges.end());
 
         // process in decreasing weight order
-        for (const auto &e: sortedEdges) {
+        for (const auto &e : sortedEdges) {
             DEBUG("process edge (", e.u, ", ", e.v, ") with weight ", e.weight);
 
             // if edge does not close cycle, add it to tree
@@ -49,8 +47,7 @@ void KruskalMSF::run() {
                 uf.merge(e.u, e.v);
             }
         }
-    }
-    else {
+    } else {
         SpanningForest sf(*G);
         sf.run();
         forest = sf.getForest();

@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * SpanningGTest.cpp
  *
@@ -15,13 +14,13 @@
 
 namespace NetworKit {
 
-class SpanningGTest: public testing::Test {};
+class SpanningGTest : public testing::Test {};
 
 TEST_F(SpanningGTest, testKruskalMinSpanningForest) {
     METISGraphReader reader;
     std::vector<std::string> graphs = {"karate", "jazz", "celegans_metabolic"};
 
-    for (auto graphname: graphs) {
+    for (auto graphname : graphs) {
         std::string filename = "input/" + graphname + ".graph";
         Graph G = reader.read(filename);
         KruskalMSF msf(G);
@@ -29,9 +28,7 @@ TEST_F(SpanningGTest, testKruskalMinSpanningForest) {
         Graph T = msf.getForest();
 
         // check that each node has an edge in the spanning tree (if it had one before)
-        T.forNodes([&](node u) {
-            EXPECT_TRUE(T.degree(u) > 0 || G.degree(u) == 0);
-        });
+        T.forNodes([&](node u) { EXPECT_TRUE(T.degree(u) > 0 || G.degree(u) == 0); });
     }
 }
 
@@ -39,7 +36,7 @@ TEST_F(SpanningGTest, testSpanningForest) {
     METISGraphReader reader;
     std::vector<std::string> graphs = {"karate", "jazz", "celegans_metabolic"};
 
-    for (auto graphname: graphs) {
+    for (auto graphname : graphs) {
         std::string filename = "input/" + graphname + ".graph";
         Graph G = reader.read(filename);
         SpanningForest msf(G);
@@ -49,9 +46,7 @@ TEST_F(SpanningGTest, testSpanningForest) {
         INFO("tree / graph edges: ", T.numberOfEdges(), " / ", G.numberOfEdges());
 
         // check that each node has an edge in the spanning tree (if it had one before)
-        T.forNodes([&](node u) {
-            EXPECT_TRUE(T.degree(u) > 0 || G.degree(u) == 0);
-        });
+        T.forNodes([&](node u) { EXPECT_TRUE(T.degree(u) > 0 || G.degree(u) == 0); });
     }
 }
 
