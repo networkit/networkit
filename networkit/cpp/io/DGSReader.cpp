@@ -61,13 +61,13 @@ void DGSReader::read(std::string path, GraphEventProxy &Gproxy) {
 
                 if (split.size() == 4) { // DGS with ground truth
 
-                    std::string categoriesFullString =
-                        split[2]; /// Example: category="cond-mat.stat-mech, q-fin.ST"
+                    // Example: category="cond-mat.stat-mech, q-fin.ST"
+                    std::string categoriesFullString = split[2];
                     std::vector<std::string> categoriesFullStringSplit =
                         Aux::StringTools::split(categoriesFullString, '"');
 
-                    std::string categoriesCommaSeparated =
-                        categoriesFullStringSplit[1]; // Example: cond-mat.stat-mech, q-fin.ST
+                    // Example: cond-mat.stat-mech, q-fin.ST
+                    std::string categoriesCommaSeparated = categoriesFullStringSplit[1];
                     std::vector<std::string> categories =
                         Aux::StringTools::split(categoriesCommaSeparated, ',');
 
@@ -87,10 +87,8 @@ void DGSReader::read(std::string path, GraphEventProxy &Gproxy) {
                 std::string edge_name = split[1];
                 Gproxy.addEdge(nodeNames[edge_from], nodeNames[edge_to], 1.0);
 
-            } else if (tag.compare("ce") == 0
-                       && split.size() == 3) { // update edge. Only the "weight" attribute is
-                                               // supported so far
-
+            } else if (tag.compare("ce") == 0 && split.size() == 3) {
+                // update edge. Only the "weight" attribute is supported so far
                 std::string from_to_edges = split[1];
                 std::vector<std::string> edgesSplit = Aux::StringTools::split(from_to_edges, '-');
                 std::string edge_from = edgesSplit[0];
