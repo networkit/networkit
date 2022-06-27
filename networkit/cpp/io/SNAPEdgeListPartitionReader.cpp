@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * SNAPEdgeListPartitionReader.cpp
  *
@@ -7,14 +6,14 @@
  */
 
 #include <fstream>
-#include <unordered_set>
 #include <sstream>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/StringTools.hpp>
 #include <networkit/io/SNAPEdgeListPartitionReader.hpp>
-#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 
@@ -24,10 +23,11 @@ Cover SNAPEdgeListPartitionReader::read(const std::string &path,
     std::string line; // the current line
 
     // read file once to get to the last line and figure out the number of nodes
-    // unfortunately there is an empty line at the ending of the file, so we need to get the line before that
+    // unfortunately there is an empty line at the ending of the file, so we need to get the line
+    // before that
 
     file.open(path);
-    if (! file.good()) {
+    if (!file.good()) {
         throw std::runtime_error("unable to read from file");
     }
 
@@ -42,14 +42,13 @@ Cover SNAPEdgeListPartitionReader::read(const std::string &path,
 
     Cover communities(G.upperNodeIdBound());
 
-
     // first find out the maximum node id
     count i = 0;
     while (file.good()) {
         ++i;
         std::getline(file, line);
         if (line.compare(0, commentPrefix.length(), commentPrefix) == 0) {
-            } else if (line.length() == 0) {
+        } else if (line.length() == 0) {
         } else {
             std::stringstream linestream(line);
             while (linestream >> current) {
@@ -58,15 +57,16 @@ Cover SNAPEdgeListPartitionReader::read(const std::string &path,
 #endif
                 totalCounter++;
                 if (mapNodeIds.find(current) != mapNodeIds.end()) {
-                    communities.addToSubset(i,mapNodeIds[current]);
+                    communities.addToSubset(i, mapNodeIds[current]);
                 } else {
-                    WARN("unknown node ID found (",current,") and ignored");
+                    WARN("unknown node ID found (", current, ") and ignored");
                 }
             }
         }
     }
 #ifndef NDEBUG
-    DEBUG("read ", uniqueIDs.size(), " unique node IDs with the total amount of occurrences: ",totalCounter);
+    DEBUG("read ", uniqueIDs.size(),
+          " unique node IDs with the total amount of occurrences: ", totalCounter);
 #endif
     count emptyElements = 0;
     count output = 0;
@@ -87,12 +87,12 @@ Cover SNAPEdgeListPartitionReader::read(const std::string &path,
     for (index i = 0, end = outputIDs.size(); i < end; ++i) {
         bool found = false;
         auto it = mapNodeIds.begin();
-        //DEBUG("find key to nodeID: ",outputIDs[i]);
+        // DEBUG("find key to nodeID: ",outputIDs[i]);
         while (!found && it != endIt) {
             if (it->second == outputIDs[i]) {
                 found = true;
-                //DEBUG("key is: ",it->first);
-                outputString << "("<<it->first<<","<<it->second<<"),\t";
+                // DEBUG("key is: ",it->first);
+                outputString << "(" << it->first << "," << it->second << "),\t";
             }
             ++it;
         }

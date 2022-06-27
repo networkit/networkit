@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * PartitionReader.cpp
  *
@@ -19,13 +18,13 @@ Partition PartitionReader::read(const std::string &path) {
         throw std::runtime_error("invalid clustering file");
     }
 
-
     Partition zeta(0);
 
     std::string line;
     index omega = 0;
-    while(std::getline(file, line)) {
-        if (line.substr(0, 1) == "*" || line.substr(0, 1) == "#") continue;
+    while (std::getline(file, line)) {
+        if (line.substr(0, 1) == "*" || line.substr(0, 1) == "#")
+            continue;
 
         index c = std::atoi(line.c_str());
         // extend the partition by one entry and store the cluster id
@@ -35,7 +34,7 @@ Partition PartitionReader::read(const std::string &path) {
         }
     }
 
-    zeta.setUpperBound(omega+1);
+    zeta.setUpperBound(omega + 1);
 
     return zeta;
 }
