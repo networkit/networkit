@@ -154,8 +154,6 @@ TEST_F(IOBenchmark, benchRasterReader) {
             auto edgeProb = [n](double distance) -> double {
                 return (1 / distance) * std::exp(5) / (double)n;
             };
-            // auto edgeProb = [beta, thresholdDistance](double distance) -> double {return 1 /
-            // (std::exp(beta*(distance-thresholdDistance)/2)+1);};
 
             // construct quadtree
             runtime.start();
