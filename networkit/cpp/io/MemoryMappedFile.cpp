@@ -36,10 +36,11 @@ MemoryMappedFile &MemoryMappedFile::operator=(MemoryMappedFile &&o) noexcept {
 } // namespace NetworKit
 
 #ifdef NETWORKIT_WINDOWS
+#include <windows.h>
+
 #include <cassert>
 #include <fileapi.h>
 #include <system_error>
-#include <windows.h>
 
 namespace NetworKit {
 struct MemoryMappedFileState {
