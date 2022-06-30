@@ -21,9 +21,23 @@ class GedWalk final : public Algorithm {
     using walks = double;
 
 public:
-    enum GreedyStrategy { lazy, stochastic };
+    enum GreedyStrategy {
+        LAZY,
+        STOCHASTIC,
+        lazy = LAZY, // this + following added for backwards compatibility
+        stochastic = STOCHASTIC
+    };
 
-    enum BoundStrategy { no, spectral, geometric, adaptiveGeometric };
+    enum BoundStrategy {
+        NO,
+        SPECTRAL,
+        GEOMETRIC,
+        ADAPTIVE_GEOMETRIC,
+        no = NO, // this + following added for backwards compatibility
+        spectral = SPECTRAL,
+        geometric = GEOMETRIC,
+        adaptiveGeometric = ADAPTIVE_GEOMETRIC
+    };
 
     double stocEpsilon = 0.1;
 
@@ -97,14 +111,14 @@ public:
      * @param k The desired group size.
      * @param epsilon Precision of the algorithm.
      * @param alpha Exponent to compute the GedWalk score.
-     * @param bs Bound strategy to compute the GedWalk bounds, default: BoundStrategy::geometric.
-     * @param gs Greedy strategy to be used (lazy or stochastic), default: GreedyStrategy::lazy.
+     * @param bs Bound strategy to compute the GedWalk bounds, default: BoundStrategy::GEOMETRIC.
+     * @param gs Greedy strategy to be used (lazy or stochastic), default: GreedyStrategy::LAZY.
      * @param spectralDelta Delta to be used for the spectral bound.
      *
      * Note: if the graph is weighted, all weights should be in (0, 1].
      */
     GedWalk(const Graph &G, count k = 1, double initEpsilon = 0.1, double alpha = -1.,
-            BoundStrategy bs = BoundStrategy::geometric, GreedyStrategy gs = GreedyStrategy::lazy,
+            BoundStrategy bs = BoundStrategy::GEOMETRIC, GreedyStrategy gs = GreedyStrategy::LAZY,
             double spectralDelta = 0.5);
 
     /**
@@ -146,12 +160,12 @@ public:
 
 template <class InputIt>
 double GedWalk::scoreOfGroup(InputIt first, InputIt last, double scoreEpsilon) {
-    if (boundStrategy == BoundStrategy::spectral) {
+    if (boundStrategy == BoundStrategy::SPECTRAL) {
         assert(alpha * static_cast<double>(sigmaMax) < 1.);
-    } else if (boundStrategy == BoundStrategy::geometric) {
+    } else if (boundStrategy == BoundStrategy::GEOMETRIC) {
         assert(alpha * static_cast<double>(degInMax) < 1.);
     } else {
-        assert(boundStrategy == BoundStrategy::adaptiveGeometric);
+        assert(boundStrategy == BoundStrategy::ADAPTIVE_GEOMETRIC);
         assert(alpha * static_cast<double>(degOutMax + degInMax) < 1.);
     }
 
@@ -172,15 +186,15 @@ double GedWalk::scoreOfGroup(InputIt first, InputIt last, double scoreEpsilon) {
         const auto result = evaluateGroup();
         groupScore = result.score;
         groupW = result.w;
-        if (boundStrategy == BoundStrategy::spectral) {
+        if (boundStrategy == BoundStrategy::SPECTRAL) {
             const double gamma =
                 std::sqrt(G->numberOfNodes()) * (sigmaMax / (1 - alpha * sigmaMax));
             groupBound = result.score + alphas[nLevels + 1] * gamma * graphW;
-        } else if (boundStrategy == BoundStrategy::geometric) {
+        } else if (boundStrategy == BoundStrategy::GEOMETRIC) {
             const double gamma = (degInMax / (1 - alpha * degInMax));
             groupBound = result.score + alphas[nLevels + 1] * gamma * graphW;
         } else {
-            assert(boundStrategy == BoundStrategy::adaptiveGeometric);
+            assert(boundStrategy == BoundStrategy::ADAPTIVE_GEOMETRIC);
             groupBound = result.score + alphas[nLevels + 1] * computeGamma() * result.w;
         }
 

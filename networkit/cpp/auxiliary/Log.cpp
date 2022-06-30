@@ -15,19 +15,19 @@ namespace Log {
 
 void setLogLevel(const std::string &logLevel) {
     if (logLevel == "TRACE") {
-        NetworKit::GlobalState::setLogLevel(LogLevel::trace);
+        NetworKit::GlobalState::setLogLevel(LogLevel::TRACE);
     } else if (logLevel == "DEBUG") {
-        NetworKit::GlobalState::setLogLevel(LogLevel::debug);
+        NetworKit::GlobalState::setLogLevel(LogLevel::DEBUG);
     } else if (logLevel == "INFO") {
-        NetworKit::GlobalState::setLogLevel(LogLevel::info);
+        NetworKit::GlobalState::setLogLevel(LogLevel::INFO);
     } else if (logLevel == "WARN") {
-        NetworKit::GlobalState::setLogLevel(LogLevel::warn);
+        NetworKit::GlobalState::setLogLevel(LogLevel::WARN);
     } else if (logLevel == "ERROR") {
-        NetworKit::GlobalState::setLogLevel(LogLevel::error);
+        NetworKit::GlobalState::setLogLevel(LogLevel::ERROR);
     } else if (logLevel == "FATAL") {
-        NetworKit::GlobalState::setLogLevel(LogLevel::fatal);
+        NetworKit::GlobalState::setLogLevel(LogLevel::FATAL);
     } else if (logLevel == "QUIET") {
-        NetworKit::GlobalState::setLogLevel(LogLevel::quiet);
+        NetworKit::GlobalState::setLogLevel(LogLevel::QUIET);
     } else {
         throw std::runtime_error("unknown loglevel");
     }
@@ -36,19 +36,19 @@ void setLogLevel(const std::string &logLevel) {
 std::string getLogLevel() {
     LogLevel current = NetworKit::GlobalState::getLogLevel();
     switch (current) {
-    case LogLevel::trace:
+    case LogLevel::TRACE:
         return "TRACE";
-    case LogLevel::debug:
+    case LogLevel::DEBUG:
         return "DEBUG";
-    case LogLevel::info:
+    case LogLevel::INFO:
         return "INFO";
-    case LogLevel::warn:
+    case LogLevel::WARN:
         return "WARN";
-    case LogLevel::error:
+    case LogLevel::ERROR:
         return "ERROR";
-    case LogLevel::fatal:
+    case LogLevel::FATAL:
         return "FATAL";
-    case LogLevel::quiet:
+    case LogLevel::QUIET:
         return "QUIET";
     default:
         throw std::logic_error{"invalid loglevel in getLogLevel()"};
@@ -57,22 +57,22 @@ std::string getLogLevel() {
 
 void printLogLevel(std::ostream &stream, LogLevel p) {
     switch (p) {
-    case LogLevel::fatal:
+    case LogLevel::FATAL:
         stream << "[FATAL]";
         break;
-    case LogLevel::error:
+    case LogLevel::ERROR:
         stream << "[ERROR]";
         break;
-    case LogLevel::warn:
+    case LogLevel::WARN:
         stream << "[WARN ]";
         break;
-    case LogLevel::info:
+    case LogLevel::INFO:
         stream << "[INFO ]";
         break;
-    case LogLevel::debug:
+    case LogLevel::DEBUG:
         stream << "[DEBUG]";
         break;
-    case LogLevel::trace:
+    case LogLevel::TRACE:
         stream << "[TRACE]";
         break;
     default:
@@ -95,15 +95,15 @@ void printLocation(std::ostream &stream, const Location &loc) {
 
 std::tuple<std::string, std::string> getTerminalFormat(LogLevel p) {
     switch (p) {
-    case LogLevel::fatal:
+    case LogLevel::FATAL:
         return std::make_tuple("\033[1;31m", "\033[0m");
-    case LogLevel::error:
+    case LogLevel::ERROR:
         return std::make_tuple("\033[31m", "\033[0m");
-    case LogLevel::warn:
+    case LogLevel::WARN:
         return std::make_tuple("\033[33m", "\033[0m");
-    case LogLevel::info:
-    case LogLevel::debug:
-    case LogLevel::trace:
+    case LogLevel::INFO:
+    case LogLevel::DEBUG:
+    case LogLevel::TRACE:
         return std::make_tuple("", "");
     default:
         // this only exists to silence a warning:

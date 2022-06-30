@@ -21,13 +21,13 @@
 namespace NetworKit {
 
 Diameter::Diameter(const Graph& G, DiameterAlgo algo, double error, count nSamples) : Algorithm(), G(&G), error(error), nSamples(nSamples) {
-    if (algo == DiameterAlgo::automatic) {
+    if (algo == DiameterAlgo::AUTOMATIC) {
         this->algo = DiameterAlgo::exact;
     } else {
         this->algo = algo;
-        if (this->algo == DiameterAlgo::estimatedRange) {
+        if (this->algo == DiameterAlgo::ESTIMATED_RANGE) {
             if (error == -1.f) throw std::invalid_argument("For Diameter::estimatedRange the parameter error(>=0) has to be supplied");
-        } else if (this->algo == DiameterAlgo::estimatedSamples) {
+        } else if (this->algo == DiameterAlgo::ESTIMATED_SAMPLES) {
             if (nSamples == 0) throw std::invalid_argument("For Diameter::estimatedSamples the parameter nSamples(>0) has to be supplied");
         }
     }
@@ -35,13 +35,13 @@ Diameter::Diameter(const Graph& G, DiameterAlgo algo, double error, count nSampl
 
 void Diameter::run() {
     diameterBounds = {0, 0};
-    if (algo == DiameterAlgo::exact) {
+    if (algo == DiameterAlgo::EXACT) {
         std::get<0>(diameterBounds) = this->exactDiameter(*G);
-    } else if (algo == DiameterAlgo::estimatedRange) {
+    } else if (algo == DiameterAlgo::ESTIMATED_RANGE) {
         diameterBounds = this->estimatedDiameterRange(*G, error);
-    } else if (algo == DiameterAlgo::estimatedSamples) {
+    } else if (algo == DiameterAlgo::ESTIMATED_SAMPLES) {
         std::get<0>(diameterBounds) = this->estimatedVertexDiameter(*G, nSamples);
-    } else if (algo == DiameterAlgo::estimatedPedantic) {
+    } else if (algo == DiameterAlgo::ESTIMATED_PEDANTIC) {
         std::get<0>(diameterBounds) = this->estimatedVertexDiameterPedantic(*G);
     } else {
         throw std::runtime_error("should never reach this code as the algorithm should be set correctly in the constructor or fail there");

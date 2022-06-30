@@ -326,7 +326,7 @@ void KadabraBetweenness::run() {
     // TODO: setting the maximum relateve error to 0 gives the exact diameter
     // but may be inefficient for large graphs. What is the maximum relative
     // error that we can tolerate?
-    Diameter diam(G, estimatedRange, 0.f);
+    Diameter diam(G, DiameterAlgo::ESTIMATED_RANGE, 0.f);
     diam.run();
     // Getting diameter upper bound
     int32_t diameter = diam.getDiameter().second;

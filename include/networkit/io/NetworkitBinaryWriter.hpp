@@ -12,16 +12,29 @@
 
 namespace NetworKit {
 
-enum class NetworkitBinaryWeights {
-    none,
-    unsignedFormat,
-    signedFormat,
-    doubleFormat,
-    floatFormat,
-    autoDetect
+enum class NetworkitBinaryWeights : int {
+    NONE,
+    UNSIGNED_FORMAT,
+    SIGNED_FORMAT,
+    DOUBLE_FORMAT,
+    FLOAT_FORMAT,
+    AUTO_DETECT,
+    none = NONE, // this + following added for backwards compatibility
+    unsignedFormat = UNSIGNED_FORMAT,
+    signedFormat = SIGNED_FORMAT,
+    doubleFormat = DOUBLE_FORMAT,
+    floatFormat = FLOAT_FORMAT,
+    autoDetect = AUTO_DETECT
 };
 
-enum class NetworkitBinaryEdgeIDs { noEdgeIDs, writeEdgeIDs, autoDetect };
+enum class NetworkitBinaryEdgeIDs : int {
+    NO_EDGE_IDS,
+    WIRTE_EDGE_IDS,
+    AUTO_DETECT,
+    noEdgeIDs = NO_EDGE_IDS, // this + following added for backwards compatibility
+    writeEdgeIDs = WIRTE_EDGE_IDS,
+    autoDetect = AUTO_DETECT
+};
 
 /**
  * @ingroup io
@@ -32,8 +45,8 @@ class NetworkitBinaryWriter final : public GraphWriter {
 
 public:
     NetworkitBinaryWriter(uint64_t chunks = 32,
-                          NetworkitBinaryWeights weightsType = NetworkitBinaryWeights::autoDetect,
-                          NetworkitBinaryEdgeIDs edgeIndex = NetworkitBinaryEdgeIDs::autoDetect);
+                          NetworkitBinaryWeights weightsType = NetworkitBinaryWeights::AUTO_DETECT,
+                          NetworkitBinaryEdgeIDs edgeIndex = NetworkitBinaryEdgeIDs::AUTO_DETECT);
 
     void write(const Graph &G, const std::string &path) override;
     std::vector<uint8_t> writeToBuffer(const Graph &G);

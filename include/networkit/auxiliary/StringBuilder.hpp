@@ -34,11 +34,16 @@ namespace Impl {
 
 // Categories of how a type might be printable
 enum class PrintableCategory {
-    Unprintable,
-    Iteratable,
-    Pair,
-    Tuple,
-    Streamable,
+    UNPRINTABLE,
+    ITERATABLE,
+    PAIR,
+    TUPLE,
+    STREAMABLE,
+    Unprintable = UNPRINTABLE, // this + following added for backwards compatibility
+    Iteratable = ITERATABLE,
+    Pair = PAIR,
+    Tuple = TUPLE,
+    Streamable = STREAMABLE
 };
 
 template <typename T>
@@ -52,20 +57,20 @@ constexpr bool isIteratable();
 
 template <typename T>
 constexpr PrintableCategory getPrintableCategory() {
-    return isStreamable<T>()   ? PrintableCategory::Streamable
-           : isPair<T>()       ? PrintableCategory::Pair
-           : isTuple<T>()      ? PrintableCategory::Tuple
-           : isIteratable<T>() ? PrintableCategory::Iteratable
+    return isStreamable<T>()   ? PrintableCategory::STREAMABLE
+           : isPair<T>()       ? PrintableCategory::PAIR
+           : isTuple<T>()      ? PrintableCategory::TUPLE
+           : isIteratable<T>() ? PrintableCategory::ITERATABLE
                                :
-                               /* else: */ PrintableCategory::Unprintable;
+                               /* else: */ PrintableCategory::UNPRINTABLE;
 }
 template <PrintableCategory Tag>
 struct PrintableCategoryTag {};
-using IteratableTag = PrintableCategoryTag<PrintableCategory::Iteratable>;
-using PairTag = PrintableCategoryTag<PrintableCategory::Pair>;
-using TupleTag = PrintableCategoryTag<PrintableCategory::Tuple>;
-using StreamableTag = PrintableCategoryTag<PrintableCategory::Streamable>;
-using UnprintableTag = PrintableCategoryTag<PrintableCategory::Unprintable>;
+using IteratableTag = PrintableCategoryTag<PrintableCategory::ITERATABLE>;
+using PairTag = PrintableCategoryTag<PrintableCategory::PAIR>;
+using TupleTag = PrintableCategoryTag<PrintableCategory::TUPLE>;
+using StreamableTag = PrintableCategoryTag<PrintableCategory::STREAMABLE>;
+using UnprintableTag = PrintableCategoryTag<PrintableCategory::UNPRINTABLE>;
 
 template <typename T, typename... Args>
 void printToStream(std::ostream &stream, const T &, const Args &...);
@@ -88,7 +93,7 @@ extern void printToStreamTagged(std::ostream &, const T &, UnprintableTag);
 
 template <typename T, typename... Args>
 void printToStream(std::ostream &stream, const T &arg, const Args &...args) {
-    static_assert(getPrintableCategory<T>() != PrintableCategory::Unprintable,
+    static_assert(getPrintableCategory<T>() != PrintableCategory::UNPRINTABLE,
                   "printToStream must not be called with an unprintable argument");
     printToStreamTagged(stream, arg, PrintableCategoryTag<getPrintableCategory<T>()>{});
     printToStream(stream, args...);

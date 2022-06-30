@@ -36,9 +36,9 @@ bool printTime = false;
 bool printLocation = false;
 
 #ifdef NETWORKIT_QUIET_LOGGING
-::Aux::Log::LogLevel loglevel = ::Aux::Log::LogLevel::quiet;
+::Aux::Log::LogLevel loglevel = ::Aux::Log::LogLevel::QUIET;
 #else
-::Aux::Log::LogLevel loglevel = ::Aux::Log::LogLevel::info;
+::Aux::Log::LogLevel loglevel = ::Aux::Log::LogLevel::INFO;
 #endif
 
 std::ofstream logfile;

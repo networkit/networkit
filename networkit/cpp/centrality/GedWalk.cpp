@@ -105,22 +105,22 @@ void GedWalk::init() {
     scoreQ.reserve(n);
     boundQ.reserve(n);
 
-    if (greedyStrategy == GreedyStrategy::stochastic) {
+    if (greedyStrategy == GreedyStrategy::STOCHASTIC) {
         nodesToPick.resize(n);
     }
 
     // For spectral bound: Compute largest singular value.
-    if (boundStrategy == BoundStrategy::spectral) {
+    if (boundStrategy == BoundStrategy::SPECTRAL) {
         sigmaMax = computeSigmaMax();
     }
 
     if (alpha <= 0) {
-        if (boundStrategy == BoundStrategy::spectral) {
+        if (boundStrategy == BoundStrategy::SPECTRAL) {
             alpha = spectralDelta / sigmaMax;
-        } else if (boundStrategy == BoundStrategy::geometric) {
+        } else if (boundStrategy == BoundStrategy::GEOMETRIC) {
             alpha = 1.0 / (1.0 + degInMax);
         } else {
-            assert(boundStrategy == BoundStrategy::adaptiveGeometric);
+            assert(boundStrategy == BoundStrategy::ADAPTIVE_GEOMETRIC);
             alpha = 1.0 / (1.0 + degOutMax + degInMax);
         }
     }
@@ -214,15 +214,15 @@ void GedWalk::estimateGains() {
 
         const double score = firstLevelsScore + alphas[nLevels] * w;
         double bound;
-        if (boundStrategy == BoundStrategy::spectral) {
+        if (boundStrategy == BoundStrategy::SPECTRAL) {
             const double gamma =
                 std::sqrt(G->numberOfNodes()) * (sigmaMax / (1 - alpha * sigmaMax));
             bound = firstLevelsScore + alphas[nLevels] * w + alphas[nLevels + 1] * gamma * graphW;
-        } else if (boundStrategy == BoundStrategy::geometric) {
+        } else if (boundStrategy == BoundStrategy::GEOMETRIC) {
             const double gamma = (degInMax / (1 - alpha * degInMax));
             bound = firstLevelsScore + alphas[nLevels] * w + alphas[nLevels + 1] * gamma * graphW;
         } else {
-            assert(boundStrategy == BoundStrategy::adaptiveGeometric);
+            assert(boundStrategy == BoundStrategy::ADAPTIVE_GEOMETRIC);
             bound =
                 firstLevelsScore + alphas[nLevels] * w + alphas[nLevels + 1] * computeGamma() * w;
         }
@@ -372,14 +372,14 @@ void GedWalk::computeMarginalGain(node z) {
     const auto newGainScore = newGroupScore - groupScore;
     const auto newGainW = newGroupW - groupW;
     double newGainBound;
-    if (boundStrategy == BoundStrategy::geometric) {
+    if (boundStrategy == BoundStrategy::GEOMETRIC) {
         const double gamma = (degInMax / (1 - alpha * degInMax));
         newGainBound = newGainScore + alphas[nLevels + 1] * gamma * graphW;
-    } else if (boundStrategy == BoundStrategy::spectral) {
+    } else if (boundStrategy == BoundStrategy::SPECTRAL) {
         const double gamma = std::sqrt(G->numberOfNodes()) * (sigmaMax / (1 - alpha * sigmaMax));
         newGainBound = newGainScore + alphas[nLevels + 1] * gamma * graphW;
     } else {
-        assert(boundStrategy == BoundStrategy::adaptiveGeometric);
+        assert(boundStrategy == BoundStrategy::ADAPTIVE_GEOMETRIC);
         newGainBound = newGainScore + alphas[nLevels + 1] * computeGamma() * newGainW;
     }
 
@@ -459,12 +459,12 @@ bool GedWalk::separateNodes() {
 }
 
 void GedWalk::fillPQs() {
-    if (greedyStrategy == GreedyStrategy::lazy) {
+    if (greedyStrategy == GreedyStrategy::LAZY) {
         G->forNodes([&](const node u) {
             scoreQ.update(u);
             boundQ.update(u);
         });
-    } else if (greedyStrategy == GreedyStrategy::stochastic) {
+    } else if (greedyStrategy == GreedyStrategy::STOCHASTIC) {
         count nSamples =
             std::max(1.0, std::log(1.0 / stocEpsilon) * static_cast<double>(G->upperNodeIdBound())
                               / static_cast<double>(k));
@@ -472,7 +472,7 @@ void GedWalk::fillPQs() {
 
         if (nSamples >= G->upperNodeIdBound() - group.size()) {
             WARN("Number of samples is too high, reverting to lazy greedy.");
-            greedyStrategy = GreedyStrategy::lazy;
+            greedyStrategy = GreedyStrategy::LAZY;
             fillPQs();
             return;
         }
@@ -531,12 +531,12 @@ void GedWalk::fillPQs() {
 }
 
 void GedWalk::run() {
-    if (boundStrategy == BoundStrategy::spectral) {
+    if (boundStrategy == BoundStrategy::SPECTRAL) {
         assert(alpha < 1.0 / static_cast<double>(sigmaMax));
-    } else if (boundStrategy == BoundStrategy::geometric) {
+    } else if (boundStrategy == BoundStrategy::GEOMETRIC) {
         assert(alpha < 1.0 / degInMax);
     } else {
-        assert(boundStrategy == BoundStrategy::adaptiveGeometric);
+        assert(boundStrategy == BoundStrategy::ADAPTIVE_GEOMETRIC);
         assert(alpha < 1.0 / (degOutMax + degInMax));
     }
 
@@ -592,19 +592,19 @@ void GedWalk::run() {
             groupScore += gainScore[z];
             groupW += gainW[z];
 
-            if (boundStrategy == BoundStrategy::spectral) {
+            if (boundStrategy == BoundStrategy::SPECTRAL) {
                 const double gamma =
                     std::sqrt(G->numberOfNodes()) * (sigmaMax / (1 - alpha * sigmaMax));
                 groupBound = groupScore + alphas[nLevels + 1] * gamma * graphW;
-            } else if (boundStrategy == BoundStrategy::geometric) {
+            } else if (boundStrategy == BoundStrategy::GEOMETRIC) {
                 const double gamma = (degInMax / (1 - alpha * degInMax));
                 groupBound = groupScore + alphas[nLevels + 1] * gamma * graphW;
             } else {
-                assert(boundStrategy == BoundStrategy::adaptiveGeometric);
+                assert(boundStrategy == BoundStrategy::ADAPTIVE_GEOMETRIC);
                 groupBound = groupScore + alphas[nLevels + 1] * computeGamma() * groupW;
             }
 
-            if (greedyStrategy == GreedyStrategy::stochastic && group.size() < k) {
+            if (greedyStrategy == GreedyStrategy::STOCHASTIC && group.size() < k) {
                 fillPQs();
             }
 
@@ -644,15 +644,15 @@ void GedWalk::run() {
         groupScore = result.score;
         groupW = result.w;
 
-        if (boundStrategy == BoundStrategy::spectral) {
+        if (boundStrategy == BoundStrategy::SPECTRAL) {
             const double gamma =
                 std::sqrt(G->numberOfNodes()) * (sigmaMax / (1 - alpha * sigmaMax));
             groupBound = result.score + alphas[nLevels + 1] * gamma * graphW;
-        } else if (boundStrategy == BoundStrategy::geometric) {
+        } else if (boundStrategy == BoundStrategy::GEOMETRIC) {
             const double gamma = (degInMax / (1 - alpha * degInMax));
             groupBound = result.score + alphas[nLevels + 1] * gamma * graphW;
         } else {
-            assert(boundStrategy == BoundStrategy::adaptiveGeometric);
+            assert(boundStrategy == BoundStrategy::ADAPTIVE_GEOMETRIC);
             groupBound = result.score + alphas[nLevels + 1] * computeGamma() * result.w;
         }
     } while (true);

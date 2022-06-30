@@ -5,16 +5,6 @@ from .base cimport Algorithm
 from .graph cimport _Graph, Graph
 from .helpers import stdstring
 
-class GraphEventType(object):
-	NodeAddition = _GraphEventType.NODE_ADDITION
-	NodeRemoval = _GraphEventType.NODE_REMOVAL
-	NodeRestoration = _GraphEventType.NODE_RESTORATION
-	EdgeAddition = _GraphEventType.EDGE_ADDITION
-	EdgeRemoval = _GraphEventType.EDGE_REMOVAL
-	EdgeWeightUpdate = _GraphEventType.EDGE_WEIGHT_UPDATE
-	EdgeWeightIncrement = _GraphEventType.EDGE_WEIGHT_INCREMENT
-	TimeStep = _GraphEventType.TIME_STEP
-
 def graphFromStream(stream, weighted, directed):
 	""" 
 	graphFromStream(stream, weighted, directed)
@@ -35,6 +25,16 @@ def graphFromStream(stream, weighted, directed):
 	gu.update(stream)
 	return G
 
+class GraphEventType(object):
+	NODE_ADDITION = _GraphEventType.NODE_ADDITION
+	NODE_REMOVAL = _GraphEventType.NODE_REMOVAL
+	NODE_RESTORATION = _GraphEventType.NODE_RESTORATION
+	EDGE_ADDITION = _GraphEventType.EDGE_ADDITION
+	EDGE_REMOVAL = _GraphEventType.EDGE_REMOVAL
+	EDGE_WEIGHT_UPDATE = _GraphEventType.EDGE_WEIGHT_UPDATE
+	EDGE_WEIGHT_INCREMENT = _GraphEventType.EDGE_WEIGHT_INCREMENT
+	TIME_STEP = _GraphEventType.TIME_STEP
+
 cdef class GraphEvent:
 	"""
 	GraphEvent(type, u, v, w)
@@ -43,13 +43,14 @@ cdef class GraphEvent:
 
 	Parameter :code:`type` is one of the following: 
 	
-	- networkit.dynamics.GraphEventType.NodeAddition
-	- networkit.dynamics.GraphEventType.NodeRemoval
-	- networkit.dynamics.GraphEventType.NodeRestoration
-	- networkit.dynamics.GraphEventType.EdgeAddition
-	- networkit.dynamics.GraphEventType.EdgeRemoval
-	- networkit.dynamics.GraphEventType.EdgeWeightUpdate
-	- networkit.dynamics.GraphEventType.EdgeWeightIncrement
+	- networkit.dynamics.GraphEventType.NODE_ADDITION
+	- networkit.dynamics.GraphEventType.NODE_REMOVAL
+	- networkit.dynamics.GraphEventType.NODE_RESTORATION
+	- networkit.dynamics.GraphEventType.EDGE_ADDITION
+	- networkit.dynamics.GraphEventType.EDGE_REMOVAL
+	- networkit.dynamics.GraphEventType.EDGE_WEIGHT_UPDATE
+	- networkit.dynamics.GraphEventType.EDGE_WEIGHT_INCREMENT
+ 	- networkit.dynamics.GraphEventType.TIME_STEP
 
 	Parameters
 	----------
@@ -62,15 +63,15 @@ cdef class GraphEvent:
 	w : int, float
 		Weight of edge between node u and v.
 	"""
-	# Constants are added for backwards compatibility
-	NODE_ADDITION = 0
-	NODE_REMOVAL = 1
-	NODE_RESTORATION = 2
-	EDGE_ADDITION = 3
-	EDGE_REMOVAL = 4
-	EDGE_WEIGHT_UPDATE = 5
-	EDGE_WEIGHT_INCREMENT = 6
-	TIME_STEP = 7
+	# Added for backwards compatibility
+	NODE_ADDITION = GraphEventType.NODE_ADDITION
+	NODE_REMOVAL = GraphEventType.NODE_REMOVAL
+	NODE_RESTORATION = GraphEventType.NODE_RESTORATION
+	EDGE_ADDITION = GraphEventType.EDGE_ADDITION
+	EDGE_REMOVAL = GraphEventType.EDGE_REMOVAL
+	EDGE_WEIGHT_UPDATE = GraphEventType.EDGE_WEIGHT_UPDATE
+	EDGE_WEIGHT_INCREMENT = GraphEventType.EDGE_WEIGHT_INCREMENT
+	TIME_STEP = GraphEventType.TIME_STEP
 
 	@property
 	def type(self):

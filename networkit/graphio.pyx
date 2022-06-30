@@ -21,7 +21,7 @@ from enum import Enum
 from warnings import warn
 from xml.dom import minidom
 
-from .dynamics import DGSWriter, DGSStreamParser, GraphEvent
+from .dynamics import DGSWriter, DGSStreamParser, GraphEvent, GraphEventType
 from .graph cimport _Graph, Graph
 from .graph import Graph as __Graph
 from .structures cimport _Cover, Cover, _Partition, Partition, count, index, node
@@ -87,9 +87,12 @@ cdef extern from "<networkit/io/GraphReader.hpp>" namespace "NetworKit::GraphRea
 		KEEP_MINIMUM_WEIGHT
 
 class MultipleEdgesHandling:
-	DiscardEdges = _MultipleEdgesHandling.DISCARD_EDGES
-	SumWeightsUp = _MultipleEdgesHandling.SUM_WEIGHTS_UP
-	KeepMinimumWeight = _MultipleEdgesHandling.KEEP_MINIMUM_WEIGHT
+	DISCARD_EDGES = _MultipleEdgesHandling.DISCARD_EDGES
+	SUM_WEIGHTS_UP = _MultipleEdgesHandling.SUM_WEIGHTS_UP
+	KEEP_MINIMUM_WEIGHT = _MultipleEdgesHandling.KEEP_MINIMUM_WEIGHT
+	DiscardEdges = DISCARD_EDGES # this + following added for backwards compatibility
+	SumWeightsUp = SUM_WEIGHTS_UP
+	KeepMinimumWeight = KEEP_MINIMUM_WEIGHT
 
 cdef extern from "<networkit/io/GraphWriter.hpp>":
 
@@ -375,24 +378,24 @@ cdef extern from "<networkit/io/KONECTGraphReader.hpp>":
 
 cdef class KONECTGraphReader(GraphReader):
 	""" 
-	KONECTGraphReader(remapNodes = False, handlingmethod = networkit.graphio.MultipleEdgesHandling.DiscardEdges)
+	KONECTGraphReader(remapNodes = False, handlingmethod = networkit.graphio.MultipleEdgesHandling.DISCARD_EDGES)
 
 	Reader for the KONECT graph format, which is described in detail on the KONECT website: http://konect.uni-koblenz.de/downloads/konect-handbook.pdf
 
 	Parameter :code:`handlingmethod` can be one of the following:
 
-	- networkit.graphio.MultipleEdgesHandling.DiscardEdges
-	- networkit.graphio.MultipleEdgesHandling.SumWeightsUp
-	- networkit.graphio.MultipleEdgesHandling.KeepMinimumWeight
+	- networkit.graphio.MultipleEdgesHandling.DISCARD_EDGES
+	- networkit.graphio.MultipleEdgesHandling.SUM_WEIGHTS_UP
+	- networkit.graphio.MultipleEdgesHandling.KEEP_MINIMUM_WEIGHT
 
 	Parameters
 	----------
 	remapNodes : bool, optional
 		Indicates whether nodes are remapped. Default: False
 	handlingmethod : networkit.graphio.MultipleEdgesHandling, optional
-		Sets method of handling multiple edges. Default: networkit.graphio.MultipleEdgesHandling.DiscardEdges
+		Sets method of handling multiple edges. Default: networkit.graphio.MultipleEdgesHandling.DISCARD_EDGES
 	"""
-	def __cinit__(self, remapNodes = False, handlingmethod = MultipleEdgesHandling.DiscardEdges):
+	def __cinit__(self, remapNodes = False, handlingmethod = MultipleEdgesHandling.DISCARD_EDGES):
 		self._this = new _KONECTGraphReader(remapNodes, handlingmethod)
 
 cdef extern from "<networkit/io/GMLGraphReader.hpp>":
@@ -1606,7 +1609,7 @@ class GEXFReader:
 		self.eventStream.sort(key=lambda x:x[1])
 		for i in range(1, len(self.eventStream)):
 			if self.eventStream[i][1] != self.eventStream[i-1][1]:
-				self.eventStream.append((GraphEvent(GraphEvent.TIME_STEP, 0, 0, 0), self.eventStream[i-1][1]))
+				self.eventStream.append((GraphEvent(GraphEventType.TIME_STEP, 0, 0, 0), self.eventStream[i-1][1]))
 		self.eventStream.sort(key=lambda x:x[1])
 		self.eventStream = [event[0] for event in self.eventStream]
 		return (self.g, self.eventStream)
@@ -1729,17 +1732,17 @@ class GEXFReader:
 		if eventType[1] == "e":
 			v, w = self.mapping[v], float(w)
 		if eventType == "an":
-			event = GraphEvent(GraphEvent.NODE_ADDITION, u, 0, 0)
+			event = GraphEvent(GraphEventType.NODE_ADDITION, u, 0, 0)
 		elif eventType == "dn":
-			event = GraphEvent(GraphEvent.NODE_REMOVAL, u, 0, 0)
+			event = GraphEvent(GraphEventType.NODE_REMOVAL, u, 0, 0)
 		elif eventType == "rn":
-			event = GraphEvent(GraphEvent.NODE_RESTORATION, u, 0, 0)
+			event = GraphEvent(GraphEventType.NODE_RESTORATION, u, 0, 0)
 		elif eventType == "ae" or eventType == "re":
-			event = GraphEvent(GraphEvent.EDGE_ADDITION, u, v, w)
+			event = GraphEvent(GraphEventType.EDGE_ADDITION, u, v, w)
 		elif eventType == "de":
-			event = GraphEvent(GraphEvent.EDGE_REMOVAL, u, v, w)
+			event = GraphEvent(GraphEventType.EDGE_REMOVAL, u, v, w)
 		elif eventType == "ce":
-			event = GraphEvent(GraphEvent.EDGE_WEIGHT_UPDATE, u, v, w)
+			event = GraphEvent(GraphEventType.EDGE_WEIGHT_UPDATE, u, v, w)
 		self.eventStream.append((event, eventTime))
 
 	def mapDynamicNodes(self):
@@ -1761,7 +1764,7 @@ class GEXFReader:
 		for i in range(0, nEvent):
 			event = self.eventStream[i]
 			# Only the nodes with addition event will get remapped.
-			if not isMapped[i] and event[0].type == GraphEvent.NODE_ADDITION:
+			if not isMapped[i] and event[0].type == GraphEventType.NODE_ADDITION:
 				u = event[0].u
 				self.mapping[self.mapping[u]] = nNodes
 				# All the other events of that node comes after it's addition event
@@ -1839,7 +1842,7 @@ class GEXFWriter:
 			graphElement.set('mode', 'dynamic')
 			graphElement.set('timeformat', 'double')
 			for event in eventStream:
-				if event.type == GraphEvent.EDGE_WEIGHT_UPDATE:
+				if event.type == GraphEventType.EDGE_WEIGHT_UPDATE:
 					dynamicAtt = ET.SubElement(graphElement, "attributes")
 					dynamicAtt.set('class', 'edge')
 					dynamicAtt.set('mode', 'dynamic')
@@ -1857,7 +1860,7 @@ class GEXFWriter:
 		nNodes, idArray = 0, []
 		#3.1 Count the # of nodes (inital + dynamic nodes)
 		for event in eventStream:
-			if event.type == GraphEvent.NODE_ADDITION:
+			if event.type == GraphEventType.NODE_ADDITION:
 				nNodes +=1
 		nNodes += graph.numberOfNodes()
 		for i in range(0, nNodes):
@@ -1882,7 +1885,7 @@ class GEXFWriter:
 		for u, v in graph.iterEdges():
 			self.q.put((u, v, graph.weight(u, v)))
 		for event in eventStream:
-			if event.type == GraphEvent.EDGE_ADDITION:
+			if event.type == GraphEventType.EDGE_ADDITION:
 				self.q.put((event.u, event.v, event.w))
 		#4.2 Write edges to the gexf file
 		while not self.q.empty():
@@ -1915,16 +1918,16 @@ class GEXFWriter:
 		"""
 		# A var that indicates if the event belongs the graph element we traverse on
 		matched = False
-		startEvents = [GraphEvent.NODE_ADDITION, GraphEvent.EDGE_ADDITION, GraphEvent.NODE_RESTORATION]
-		endEvents = [GraphEvent.NODE_REMOVAL, GraphEvent.EDGE_REMOVAL]
-		nodeEvents = [GraphEvent.NODE_ADDITION, GraphEvent.NODE_REMOVAL, GraphEvent.NODE_RESTORATION]
-		edgeEvents = [GraphEvent.EDGE_ADDITION, GraphEvent.EDGE_REMOVAL, GraphEvent.EDGE_WEIGHT_UPDATE]
+		startEvents = [GraphEventType.NODE_ADDITION, GraphEventType.EDGE_ADDITION, GraphEventType.NODE_RESTORATION]
+		endEvents = [GraphEventType.NODE_REMOVAL, GraphEventType.EDGE_REMOVAL]
+		nodeEvents = [GraphEventType.NODE_ADDITION, GraphEventType.NODE_REMOVAL, GraphEventType.NODE_RESTORATION]
+		edgeEvents = [GraphEventType.EDGE_ADDITION, GraphEventType.EDGE_REMOVAL, GraphEventType.EDGE_WEIGHT_UPDATE]
 		spellTag, weightTag, operation = False, False, ""
 		timeStep = 0
 		spellsElement, attValuesElement = None, None
 
 		for event in eventStream:
-			if event.type == GraphEvent.TIME_STEP:
+			if event.type == GraphEventType.TIME_STEP:
 				timeStep += 1
 			if type(graphElement) == type(0): #a node is an integer
 				matched = (event.type in nodeEvents and event.u == graphElement)
@@ -1932,7 +1935,7 @@ class GEXFWriter:
 				matched = (event.type in edgeEvents and (event.u == graphElement[0] and event.v == graphElement[1]))
 			if matched:
 				# Handle weight update seperately
-				if event.type == GraphEvent.EDGE_WEIGHT_UPDATE:
+				if event.type == GraphEventType.EDGE_WEIGHT_UPDATE:
 					if not weightTag:
 						attvaluesElement = ET.SubElement(xmlElement, "attvalues")
 						weightTag = True

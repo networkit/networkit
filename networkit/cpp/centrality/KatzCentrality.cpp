@@ -49,9 +49,9 @@ void KatzCentrality::run() {
         G.parallelForNodes([&](node u) {
             values[u] = 0.0;
 
-            if (edgeDirection == EdgeDirection::OutEdges)
+            if (edgeDirection == EdgeDirection::OUT_EDGES)
                 G.forNeighborsOf(u, updateScore);
-            else if (edgeDirection == EdgeDirection::InEdges)
+            else if (edgeDirection == EdgeDirection::IN_EDGES)
                 G.forInNeighborsOf(u, updateScore);
             else
                 throw std::runtime_error("Unsupported edge direction");

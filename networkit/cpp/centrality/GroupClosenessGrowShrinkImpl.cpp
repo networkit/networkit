@@ -39,7 +39,7 @@ count GroupClosenessGrowShrinkImpl<WeightType>::computeConsecutiveInsertions(con
     if (groupSize == 0)
         throw std::runtime_error("Error, empty group.");
 
-    Diameter diam(G, DiameterAlgo::estimatedRange, 0.1);
+    Diameter diam(G, DiameterAlgo::ESTIMATED_RANGE, 0.1);
     diam.run();
     const auto diamOverK =
         static_cast<double>(diam.getDiameter().second) / std::sqrt(static_cast<double>(groupSize));

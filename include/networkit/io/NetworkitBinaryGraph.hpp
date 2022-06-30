@@ -32,7 +32,9 @@ struct Header {
     uint64_t offsetAdjIdTranspose;
 };
 
-enum WEIGHT_FORMAT { NONE = 0, VARINT = 1, SIGNED_VARINT = 2, DOUBLE = 3, FLOAT = 4 };
+enum class WeightFormat : int { NONE = 0, VARINT = 1, SIGNED_VARINT = 2, DOUBLE = 3, FLOAT = 4 };
+
+using WEIGHT_FORMAT = WeightFormat; // enum alias for backwards compatibility
 
 static constexpr uint8_t DELETED_BIT = 0x1; // bit 0
 static constexpr uint64_t DIR_MASK = 0x1;   // bit 0

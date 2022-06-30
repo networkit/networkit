@@ -14,11 +14,16 @@
 
 namespace NetworKit {
 enum DiameterAlgo {
-    automatic = 0,
-    exact = 1,
-    estimatedRange = 2,
-    estimatedSamples = 3,
-    estimatedPedantic = 4
+    AUTOMATIC,
+    EXACT,
+    ESTIMATED_RANGE,
+    ESTIMATED_SAMPLES,
+    ESTIMATED_PEDANTIC,
+    automatic = AUTOMATIC, // this + following added for backwards compatibility
+    exact = EXACT,
+    estimatedRange = ESTIMATED_RANGE,
+    estimatedSamples = ESTIMATED_SAMPLES,
+    estimatedPedantic = ESTIMATED_PEDANTIC
 };
 
 /**
@@ -27,7 +32,7 @@ enum DiameterAlgo {
 class Diameter final : public Algorithm {
 
 public:
-    Diameter(const Graph &G, DiameterAlgo algo = DiameterAlgo::automatic, double error = -1.f,
+    Diameter(const Graph &G, DiameterAlgo algo = DiameterAlgo::AUTOMATIC, double error = -1.f,
              count nSamples = 0);
 
     void run() override;

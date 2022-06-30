@@ -19,13 +19,13 @@ namespace NetworKit {
 Closeness::Closeness(const Graph &G, bool normalized,
                      const ClosenessVariant variant)
     : Centrality(G, normalized), variant(variant) {
-    if (variant == ClosenessVariant::standard) {
+    if (variant == ClosenessVariant::STANDARD) {
         checkConnectedComponents();
     }
 }
 
 Closeness::Closeness(const Graph &G, bool normalized, bool checkConnectedness)
-    : Centrality(G, normalized), variant(ClosenessVariant::standard) {
+    : Centrality(G, normalized), variant(ClosenessVariant::STANDARD) {
     if (checkConnectedness)
         checkConnectedComponents();
 }
@@ -83,7 +83,7 @@ void Closeness::bfs() {
         auto &dist_ = uDist[omp_get_thread_num()];
         auto &visited_ = visited[omp_get_thread_num()];
 
-        if (ts_++ == 255 && variant != ClosenessVariant::standard) {
+        if (ts_++ == 255 && variant != ClosenessVariant::STANDARD) {
             ts_ = 1;
             std::fill(visited_.begin(), visited_.end(), 0);
         }
@@ -123,7 +123,7 @@ void Closeness::dijkstra() {
         auto &visited_ = visited[omp_get_thread_num()];
         auto &heap = heaps[omp_get_thread_num()];
 
-        if (ts_++ == 255 && variant != ClosenessVariant::standard) {
+        if (ts_++ == 255 && variant != ClosenessVariant::STANDARD) {
             ts_ = 1;
             std::fill(visited_.begin(), visited_.end(), 0);
         }

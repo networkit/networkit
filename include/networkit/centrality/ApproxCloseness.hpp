@@ -22,7 +22,9 @@ namespace NetworKit {
 class ApproxCloseness : public Centrality {
 
 public:
-    enum CLOSENESS_TYPE { INBOUND, OUTBOUND, SUM };
+    enum ClosenessType { INBOUND, OUTBOUND, SUM };
+
+    using CLOSENESS_TYPE = ClosenessType; // enum alias for backwards compatibility
 
     /**
      * Constructs an instance of the ApproxCloseness class for @a graph using @a nSamples during the
@@ -91,7 +93,7 @@ private:
     // divided by two s.t. infDist + infDist produces no overflow
     const edgeweight infDist = std::floor(std::numeric_limits<edgeweight>::max() / 2.0);
 
-    CLOSENESS_TYPE type;
+    ClosenessType type = ApproxCloseness::ClosenessType::OUTBOUND;
 
     void estimateClosenessForUndirectedGraph();
     void estimateClosenessForDirectedGraph(bool outbound);

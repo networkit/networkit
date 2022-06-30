@@ -490,7 +490,7 @@ void ApproxElectricalCloseness::run() {
             const count n = G.numberOfNodes();
 
             const auto L = CSRMatrix::laplacianMatrix(G);
-            Diameter diamAlgo(G, estimatedRange, 0);
+            Diameter diamAlgo(G, DiameterAlgo::ESTIMATED_RANGE, 0);
             diamAlgo.run();
             // Getting diameter upper bound
             const auto diam = static_cast<double>(diamAlgo.getDiameter().second);

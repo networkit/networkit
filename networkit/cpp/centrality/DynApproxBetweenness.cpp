@@ -135,7 +135,7 @@ void DynApproxBetweenness::run() {
     if (G.isDirected()) {
         vd = computeVDdirected();
     } else {
-        Diameter diam(G, DiameterAlgo::estimatedPedantic);
+        Diameter diam(G, DiameterAlgo::ESTIMATED_PEDANTIC);
         diam.run();
         vd = diam.getDiameter().first;
     }
@@ -193,7 +193,7 @@ void DynApproxBetweenness::updateBatch(const std::vector<GraphEvent> &batch) {
     if (G.isDirected()) {
         new_vd = computeVDdirected();
     } else { // case for undirected already present
-        Diameter diam(G, DiameterAlgo::estimatedPedantic);
+        Diameter diam(G, DiameterAlgo::ESTIMATED_PEDANTIC);
         diam.run();
         new_vd = diam.getDiameter().first;
     }

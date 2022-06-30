@@ -42,7 +42,7 @@ class AuxGTest : public testing::Test {};
 TEST_F(AuxGTest, testTimer) {
     Aux::LoggingTimer ltimer(
         "LogginTimer",
-        Aux::Log::LogLevel::trace); // only enabled if test is execut with raised loglevel
+        Aux::Log::LogLevel::TRACE); // only enabled if test is execut with raised loglevel
 
     Aux::StartedTimer timer;
     std::this_thread::sleep_for(std::chrono::milliseconds(10));

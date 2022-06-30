@@ -68,7 +68,7 @@ TEST_F(DistanceGTest, testVertexDiameterPedantically) {
     DorogovtsevMendesGenerator generator(1000);
     Graph G1 = generator.generate();
     Graph G = Graph(G1, true, false);
-    Diameter diam(G, DiameterAlgo::estimatedPedantic);
+    Diameter diam(G, DiameterAlgo::ESTIMATED_PEDANTIC);
     diam.run();
     count vd = diam.getDiameter().first;
     EXPECT_EQ(1000, vd);
@@ -245,7 +245,7 @@ TEST_F(DistanceGTest, testExactDiameter) {
     for (auto testInstance : testInstances) {
         METISGraphReader reader;
         Graph G = reader.read("input/" + testInstance.first + ".graph");
-        Diameter diam(G, DiameterAlgo::exact);
+        Diameter diam(G, DiameterAlgo::EXACT);
         diam.run();
         count diameter = diam.getDiameter().first;
         EXPECT_EQ(diameter, testInstance.second);
@@ -264,7 +264,7 @@ TEST_F(DistanceGTest, testEstimatedDiameterRange) {
     for (auto testInstance : testInstances) {
         METISGraphReader reader;
         Graph G = reader.read("input/" + testInstance.first + ".graph");
-        Diameter diam(G, DiameterAlgo::estimatedRange, 0.1);
+        Diameter diam(G, DiameterAlgo::ESTIMATED_RANGE, 0.1);
         diam.run();
         std::pair<count, count> range = diam.getDiameter();
         EXPECT_GE(testInstance.second, range.first);
@@ -275,7 +275,7 @@ TEST_F(DistanceGTest, testPedanticDiameterErdos) {
     count n = 5000;
     ErdosRenyiGenerator gen(n,0.001);
     Graph G1 = gen.generate();
-    Diameter diam(G1, DiameterAlgo::estimatedPedantic);
+    Diameter diam(G1, DiameterAlgo::ESTIMATED_PEDANTIC);
     diam.run();
     count diameter = diam.getDiameter().first;
     ASSERT_LE(diameter, n);
@@ -293,7 +293,7 @@ TEST_F(DistanceGTest, testEffectiveDiameterMinimal) {
     EffectiveDiameterApproximation aef(G);
     aef.run();
     double effective = aef.getEffectiveDiameter();
-    Diameter diam(G, DiameterAlgo::exact);
+    Diameter diam(G, DiameterAlgo::EXACT);
     diam.run();
     count exact = diam.getDiameter().first;
     EXPECT_LE(effective, exact);
@@ -311,7 +311,7 @@ for (auto testInstance : testInstances) {
     EffectiveDiameterApproximation aef(G);
     aef.run();
     double effective = aef.getEffectiveDiameter();
-    Diameter diam(G, DiameterAlgo::exact);
+    Diameter diam(G, DiameterAlgo::EXACT);
     diam.run();
     count exact = diam.getDiameter().first;
     EXPECT_LE(effective, exact);
@@ -330,7 +330,7 @@ TEST_F(DistanceGTest, testEffectiveDiameterExact) {
         EffectiveDiameter ed(G);
         ed.run();
         double effective = ed.getEffectiveDiameter();
-        Diameter diam(G, DiameterAlgo::exact);
+        Diameter diam(G, DiameterAlgo::EXACT);
         diam.run();
         count exact = diam.getDiameter().first;
         EXPECT_LE(effective, exact);
