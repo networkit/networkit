@@ -1909,7 +1909,7 @@ TEST_P(GraphGTest, testForEdgesWithIds) {
 
         count m = 0;
         graph->forEdges([&](node, node, edgeid eid) {
-            EXPECT_EQ(0, eid);
+            EXPECT_EQ(none, eid);
             m++;
         });
         ASSERT_EQ(3u, m);
@@ -1945,7 +1945,7 @@ TEST_P(GraphGTest, testForWeightedEdgesWithIds) {
         count m = 0;
         edgeweight sum = 0;
         graph->forEdges([&](node, node, edgeweight ew, edgeid eid) {
-            EXPECT_EQ(0, eid);
+            EXPECT_EQ(none, eid);
             m++;
             sum += ew;
         });
@@ -1997,10 +1997,8 @@ TEST_P(GraphGTest, testParallelForEdgesWithIds) {
         graph->parallelForEdges([&](node, node, edgeid eid) {
 #pragma omp atomic
             m++;
-#pragma omp atomic
-            sumedgeid += eid;
+            ASSERT_EQ(none, eid);
         });
-        ASSERT_EQ(0, sumedgeid);
         ASSERT_EQ(3u, m);
 
         // With edge indices
@@ -2045,10 +2043,8 @@ TEST_P(GraphGTest, testParallelForWeightedEdgesWithIds) {
             m++;
 #pragma omp atomic
             sum += ew;
-#pragma omp atomic
-            sumedgeid += eid;
+            ASSERT_EQ(none, eid);
         });
-        ASSERT_EQ(0, sumedgeid);
         ASSERT_EQ(3u, m);
 
         if (graph->isWeighted()) {
