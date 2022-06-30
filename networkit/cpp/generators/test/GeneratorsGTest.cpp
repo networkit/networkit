@@ -1132,7 +1132,7 @@ TEST_F(GeneratorsGTest, testMocnikGeneratorBasic) {
     count n = 5000;
     double k = 2.6;
 
-    MocnikGenerator Mocnik(dim, n, k);
+    MocnikGeneratorBasic Mocnik(dim, n, k);
     Graph G(0);
     EXPECT_TRUE(G.isEmpty());
     G = Mocnik.generate();
