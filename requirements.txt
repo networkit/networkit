@@ -5,3 +5,4 @@ pandas
 networkx
 tabulate
 ipython
+numpy
