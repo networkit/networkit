@@ -5,6 +5,7 @@ import sys
 import sysconfig
 import os
 from Cython.Build import cythonize
+import numpy as np
 
 cmakeCompiler = None
 buildDirectory = "build/build_python"
@@ -160,6 +161,8 @@ def buildNetworKit(install_prefix, externalCore=False, externalTlx=None, withTes
 	comp_cmd.append("-DNETWORKIT_PYTHON="+get_paths()['include']) # provide python.h files
 	comp_cmd.append("-DNETWORKIT_PYTHON_EXECUTABLE="+sys.executable) # provide cmake with Python interpreter
 	comp_cmd.append("-DNETWORKIT_PYTHON_SOABI="+os_soabi) # provide lib env specification
+	comp_cmd.append("-DNETWORKIT_PYTHON_VERSION="+sysconfig.get_python_version())
+	comp_cmd.append("-DNETWORKIT_NUMPY="+np.get_include()) # provide numpy.h files
 	if externalCore:
 		if sys.platform == "win32":
 			# Reasoning: only static builds are supported and libs+dlls must reside in the same folder
