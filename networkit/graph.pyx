@@ -1,6 +1,13 @@
 # distutils: language=c++
 
 from cython.operator import dereference, preincrement
+import numpy as np
+from scipy.sparse import coo_matrix
+cimport numpy as np
+np.import_array()
+
+ctypedef np.uint64_t DINT_t
+ctypedef np.double_t DDOUBLE_t
 
 from .base import Algorithm
 from .helpers import stdstring, pystring
