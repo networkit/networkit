@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * LocalMaxMatcher.cpp
  *
@@ -11,8 +10,9 @@
 
 namespace NetworKit {
 
-LocalMaxMatcher::LocalMaxMatcher(const Graph& G): Matcher(G){
-    if (G.isDirected()) throw std::runtime_error("Matcher only defined for undirected graphs");
+LocalMaxMatcher::LocalMaxMatcher(const Graph &G) : Matcher(G) {
+    if (G.isDirected())
+        throw std::runtime_error("Matcher only defined for undirected graphs");
 }
 
 // TODO: update to new edge attribute system
@@ -30,14 +30,15 @@ void LocalMaxMatcher::run() {
     // candidates records mating candidates
     std::vector<WeightedEdge> candidates(z);
     G->parallelForNodes([&](node u) {
-        candidates[u].weight = (edgeweight) 0;
+        candidates[u].weight = (edgeweight)0;
         candidates[u].v = u; // itself as mating partner => unmatched
     });
 
     while (E > 0) {
         // for each edge find out if it is locally maximum
-        for (const auto &edge: edges) {
-            if (edge.weight > candidates[edge.u].weight && edge.weight > candidates[edge.v].weight) {
+        for (const auto &edge : edges) {
+            if (edge.weight > candidates[edge.u].weight
+                && edge.weight > candidates[edge.v].weight) {
                 candidates[edge.u].v = edge.v;
                 candidates[edge.u].weight = edge.weight;
                 candidates[edge.v].v = edge.u;
@@ -46,7 +47,7 @@ void LocalMaxMatcher::run() {
         }
 
         // check if candidates agree to match; if so, then match them
-        for (const auto &edge: edges) {
+        for (const auto &edge : edges) {
             node u = edge.u;
             node v = edge.v;
             if (candidates[u].v == v && candidates[v].v == u && u != v) {
@@ -58,11 +59,11 @@ void LocalMaxMatcher::run() {
         // create remaining "graph" by selecting remaining edges (as triples)
         // adjust candidates
         std::vector<WeightedEdge> newEdges;
-        for (const auto &edge: edges) {
-            if (! M.isMatched(edge.u) && ! M.isMatched(edge.v) && edge.u != edge.v) {
+        for (const auto &edge : edges) {
+            if (!M.isMatched(edge.u) && !M.isMatched(edge.v) && edge.u != edge.v) {
                 newEdges.push_back(edge);
-                candidates[edge.u].weight = (edgeweight) 0;
-                candidates[edge.v].weight = (edgeweight) 0;
+                candidates[edge.u].weight = (edgeweight)0;
+                candidates[edge.v].weight = (edgeweight)0;
             }
         }
         edges = newEdges;
