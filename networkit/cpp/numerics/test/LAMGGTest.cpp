@@ -60,10 +60,9 @@ TEST_F(LAMGGTest, testSmallGraphs) {
         x = randVector(G.numberOfNodes());
 
         LAMGSolverStatus status;
+        // needed for getting a relative residual <= 1e-6
         status.desiredResidualReduction =
-            1e-6 * b.length()
-            / (hierarchy.at(0).getLaplacian() * x - b)
-                  .length(); // needed for getting a relative residual <= 1e-6
+            1e-6 * b.length() / (hierarchy.at(0).getLaplacian() * x - b).length();
 
         Vector result = x;
         DEBUG("Solving equation system - Gauss-Seidel");
