@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  *  MatrixMarketReader.cpp
  *
@@ -15,15 +14,15 @@
 namespace NetworKit {
 
 namespace {
-    static constexpr char COMMENT_CHAR = '%';
-    static const std::string MAGIC = "%%matrixmarket";
+static constexpr char COMMENT_CHAR = '%';
+static const std::string MAGIC = "%%matrixmarket";
 
-    std::string tolower(const std::string& str) {
-        std::string out;
-        std::transform(str.begin(), str.end(), std::back_inserter(out), ::tolower);
-        return out;
-    }
+std::string tolower(const std::string &str) {
+    std::string out;
+    std::transform(str.begin(), str.end(), std::back_inserter(out), ::tolower);
+    return out;
 }
+} // namespace
 
 CSRMatrix MatrixMarketReader::read(const std::string &path) {
     std::ifstream in(path);
@@ -33,7 +32,7 @@ CSRMatrix MatrixMarketReader::read(const std::string &path) {
     return read(in);
 }
 
-CSRMatrix MatrixMarketReader::read(std::istream& in) {
+CSRMatrix MatrixMarketReader::read(std::istream &in) {
     enum { FIRST_LINE, HEADER, ENTRIES } state = FIRST_LINE;
 
     count nrows = 0, ncols = 0, nzeroes;
@@ -79,7 +78,8 @@ CSRMatrix MatrixMarketReader::read(std::istream& in) {
             // Header: nrows, ncols, nzeroes
             in_line >> nrows >> ncols >> nzeroes;
             if (in_line.fail()) {
-                throw std::runtime_error("expected three non-negative integers in header line:" + line);
+                throw std::runtime_error("expected three non-negative integers in header line:"
+                                         + line);
             }
 
             state = ENTRIES;
@@ -106,13 +106,12 @@ CSRMatrix MatrixMarketReader::read(std::istream& in) {
                 throw std::runtime_error("invalid index: " + std::to_string(j));
             }
 
-            triplets.push_back({i,j,val});
+            triplets.push_back({i, j, val});
 
             if (i != j && symmetric) {
-                triplets.push_back({j,i,val});
+                triplets.push_back({j, i, val});
             }
         }
-
     }
 
     return CSRMatrix(nrows, ncols, triplets);

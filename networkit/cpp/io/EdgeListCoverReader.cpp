@@ -1,4 +1,3 @@
-// no-networkit-format
 #include <fstream>
 #include <sstream>
 
@@ -21,7 +20,7 @@ Cover EdgeListCoverReader::read(const std::string &path, Graph &G) {
     std::string line;
     index omega = 0;
 
-    while(std::getline(file, line)) {
+    while (std::getline(file, line)) {
         if (line.substr(0, 1) != "#") {
             std::stringstream linestream(line);
             index c, v;
@@ -34,7 +33,7 @@ Cover EdgeListCoverReader::read(const std::string &path, Graph &G) {
 
             while (linestream >> c) {
                 if (c > omega) {
-                    communities.setUpperBound(c+1);
+                    communities.setUpperBound(c + 1);
                     omega = c;
                 }
 
