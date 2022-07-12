@@ -18,7 +18,7 @@
 
 namespace NetworKit {
 
-SpanningEdgeCentrality::SpanningEdgeCentrality(const Graph& G, double tol): Centrality(G), tol(tol), lamg(1e-5) {
+SpanningEdgeCentrality::SpanningEdgeCentrality(const Graph& G, double tol): Centrality(G, false, true), tol(tol), lamg(1e-5) {
     // prepare LAMG
     CSRMatrix matrix = CSRMatrix::laplacianMatrix(G);
     Aux::Timer t;
