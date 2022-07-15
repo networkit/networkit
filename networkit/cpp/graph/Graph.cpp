@@ -591,11 +591,15 @@ edgeweight Graph::weightedDegreeIn(node u, bool countSelfLoopsTwice) const {
 
 /** EDGE MODIFIERS **/
 
-void Graph::addEdge(node u, node v, edgeweight ew) {
+bool Graph::addEdge(node u, node v, edgeweight ew, bool checkForMultiEdges) {
     assert(u < z);
     assert(exists[u]);
     assert(v < z);
     assert(exists[v]);
+
+    if (checkForMultiEdges && hasEdge(u, v)) {
+        return false;
+    }
 
     // increase number of edges
     ++m;
@@ -639,12 +643,20 @@ void Graph::addEdge(node u, node v, edgeweight ew) {
     if (u == v) { // count self loop
         ++storedNumberOfSelfLoops;
     }
+
+    return true;
 }
-void Graph::addPartialEdge(Unsafe, node u, node v, edgeweight ew, uint64_t index) {
+bool Graph::addPartialEdge(Unsafe, node u, node v, edgeweight ew, uint64_t index,
+                           bool checkForMultiEdges) {
     assert(u < z);
     assert(exists[u]);
     assert(v < z);
     assert(exists[v]);
+
+    if (checkForMultiEdges
+        && (std::find(outEdges[u].begin(), outEdges[u].end(), v) != outEdges[u].end())) {
+        return false;
+    }
 
     outEdges[u].push_back(v);
 
@@ -655,12 +667,20 @@ void Graph::addPartialEdge(Unsafe, node u, node v, edgeweight ew, uint64_t index
     if (weighted) {
         outEdgeWeights[u].push_back(ew);
     }
+
+    return true;
 }
-void Graph::addPartialOutEdge(Unsafe, node u, node v, edgeweight ew, uint64_t index) {
+bool Graph::addPartialOutEdge(Unsafe, node u, node v, edgeweight ew, uint64_t index,
+                              bool checkForMultiEdges) {
     assert(u < z);
     assert(exists[u]);
     assert(v < z);
     assert(exists[v]);
+
+    if (checkForMultiEdges
+        && (std::find(outEdges[u].begin(), outEdges[u].end(), v) != outEdges[u].end())) {
+        return false;
+    }
 
     outEdges[u].push_back(v);
 
@@ -671,12 +691,20 @@ void Graph::addPartialOutEdge(Unsafe, node u, node v, edgeweight ew, uint64_t in
     if (weighted) {
         outEdgeWeights[u].push_back(ew);
     }
+
+    return true;
 }
-void Graph::addPartialInEdge(Unsafe, node u, node v, edgeweight ew, uint64_t index) {
+bool Graph::addPartialInEdge(Unsafe, node u, node v, edgeweight ew, uint64_t index,
+                             bool checkForMultiEdges) {
     assert(u < z);
     assert(exists[u]);
     assert(v < z);
     assert(exists[v]);
+
+    if (checkForMultiEdges
+        && (std::find(inEdges[u].begin(), inEdges[u].end(), v) != inEdges[u].end())) {
+        return false;
+    }
 
     inEdges[u].push_back(v);
 
@@ -686,6 +714,8 @@ void Graph::addPartialInEdge(Unsafe, node u, node v, edgeweight ew, uint64_t ind
     if (weighted) {
         inEdgeWeights[u].push_back(ew);
     }
+
+    return true;
 }
 
 template <typename T>

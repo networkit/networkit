@@ -124,7 +124,8 @@ void GraphToolBinaryReader::addOutNeighbours(std::ifstream &file, uint64_t numNo
         for (uint64_t v = 0; v < numOutNeighbours; ++v) {
             // read current adjacency and add edge
             uint64_t node = readType<uint64_t>(file, width);
-            G.addEdge(u, node);
+            if (!G.addEdge(u, node, defaultEdgeWeight, true))
+                WARN("Not adding edge ", u, "-", node, " since it is already present.");
         }
     }
 }

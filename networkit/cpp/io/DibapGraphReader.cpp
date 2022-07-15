@@ -161,7 +161,8 @@ Graph DibapGraphReader::read(const std::string &path) {
         for (index v = 0; v < (count)V; ++v) {
             for (index e = of[v]; e < (index)of[v + 1]; ++e) {
                 if (v <= (index)to[e]) {
-                    graph.addEdge(v, to[e], ew[e]);
+                    if (!graph.addEdge(v, to[e], ew[e], true))
+                        WARN("Not adding edge ", v, "-", to[e], " since it is already present.");
                 }
             }
         }
@@ -169,7 +170,8 @@ Graph DibapGraphReader::read(const std::string &path) {
         for (index v = 0; v < (count)V; ++v) {
             for (index e = of[v]; e < (index)of[v + 1]; ++e) {
                 if (v <= (index)to[e]) {
-                    graph.addEdge(v, to[e]);
+                    if (!graph.addEdge(v, to[e], defaultEdgeWeight, true))
+                        WARN("Not adding edge ", v, "-", to[e], " since it is already present.");
                 }
             }
         }

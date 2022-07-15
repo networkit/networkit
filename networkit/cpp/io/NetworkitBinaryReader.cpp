@@ -217,9 +217,11 @@ Graph NetworkitBinaryReader::readData(const T &source) {
                         omega = id;
                 }
                 if (!directed) {
-                    G.addPartialEdge(unsafe, curr, add, weight, id);
+                    if (!G.addPartialEdge(unsafe, curr, add, weight, id, true))
+                        WARN("Not adding edge ", curr, "-", add, " since it is already present.");
                 } else {
-                    G.addPartialOutEdge(unsafe, curr, add, weight, id);
+                    if (!G.addPartialOutEdge(unsafe, curr, add, weight, id, true))
+                        WARN("Not adding edge ", curr, "-", add, " since it is already present.");
                 }
                 if (curr == add) {
                     selfLoops.fetch_add(1, std::memory_order_relaxed);
@@ -268,10 +270,13 @@ Graph NetworkitBinaryReader::readData(const T &source) {
                 }
                 if (!directed) {
                     if (curr != add) {
-                        G.addPartialEdge(unsafe, curr, add, weight, id);
+                        if (G.addPartialEdge(unsafe, curr, add, weight, id, true))
+                            WARN("Not adding edge ", curr, "-", add,
+                                 " since it is already present.");
                     }
                 } else {
-                    G.addPartialInEdge(unsafe, curr, add, weight, id);
+                    if (!G.addPartialInEdge(unsafe, curr, add, weight, id, true))
+                        WARN("Not adding edge ", curr, "-", add, " since it is already present.");
                 }
             }
         }

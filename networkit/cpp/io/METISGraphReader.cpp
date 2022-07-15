@@ -64,7 +64,8 @@ Graph METISGraphReader::read(const std::string &path) {
                     edgeCounter++;
                     selfLoops++;
                 }
-                G.addPartialEdge(unsafe, u, v);
+                if (!G.addPartialEdge(unsafe, u, v, defaultEdgeWeight, 0, true))
+                    WARN("Not adding edge ", u, "-", v, " since it is already present.");
             }
             u++; // next node
 #ifndef NETWORKIT_RELEASE_LOGGING
@@ -94,8 +95,10 @@ Graph METISGraphReader::read(const std::string &path) {
                     selfLoops++;
                 }
                 double weight = adjacencies[i].second;
-                G.addPartialEdge(unsafe, u, v, weight);
-                TRACE("(", u, ",", v, ",", adjacencies[i].second, ")");
+                if (!G.addPartialEdge(unsafe, u, v, weight, 0, true))
+                    WARN("Not adding edge ", u, "-", v, " since it is already present.");
+                else
+                    TRACE("(", u, ",", v, ",", adjacencies[i].second, ")");
             }
             u += 1; // next node
 #ifndef NETWORKIT_RELEASE_LOGGING
