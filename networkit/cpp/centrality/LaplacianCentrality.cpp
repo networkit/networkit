@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * LaplacianCentrality.cpp
  *
@@ -10,8 +9,8 @@
 
 namespace NetworKit {
 
-LaplacianCentrality::LaplacianCentrality(const Graph& G, bool normalized): Centrality(G, normalized) {
-}
+LaplacianCentrality::LaplacianCentrality(const Graph &G, bool normalized)
+    : Centrality(G, normalized) {}
 
 void LaplacianCentrality::run() {
     scoreData = std::vector<double>(G.upperNodeIdBound(), 0.0);
@@ -37,9 +36,7 @@ void LaplacianCentrality::run() {
         return;
     }
 
-    G.parallelForNodes([&](node u) {
-        scoreData[u] /= totalLaplacianEnergy;
-    });
+    G.parallelForNodes([&](node u) { scoreData[u] /= totalLaplacianEnergy; });
 
     hasRun = true;
 }

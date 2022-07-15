@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * KatzCentrality.cpp
  *
@@ -13,15 +12,13 @@
 
 namespace NetworKit {
 
-double KatzCentrality::defaultAlpha(const Graph& G) {
+double KatzCentrality::defaultAlpha(const Graph &G) {
     return 1. / (1. + GraphTools::maxDegree(G));
 }
 
-KatzCentrality::KatzCentrality(const Graph& G, double alpha, double beta, double tol):
-        Centrality(G, true),
-        alpha(alpha == 0 ? KatzCentrality::defaultAlpha(G) : alpha),
-        beta(beta), tol(tol)
-{
+KatzCentrality::KatzCentrality(const Graph &G, double alpha, double beta, double tol)
+    : Centrality(G, true), alpha(alpha == 0 ? KatzCentrality::defaultAlpha(G) : alpha), beta(beta),
+      tol(tol) {
     if (alpha < 0)
         throw std::runtime_error("Alpha must be non negative.");
 }
@@ -60,18 +57,14 @@ void KatzCentrality::run() {
         });
 
         // normalize values
-        length = G.parallelSumForNodes([&](node u) {
-            return values[u] * values[u];
-        });
+        length = G.parallelSumForNodes([&](node u) { return values[u] * values[u]; });
         length = std::sqrt(length);
 
         scoreData = values;
         INFO("oldLength: ", oldLength, ", length: ", length);
-    } while (! converged(length, oldLength));
+    } while (!converged(length, oldLength));
 
-    G.parallelForNodes([&](node u) {
-        scoreData[u] /= length;
-    });
+    G.parallelForNodes([&](node u) { scoreData[u] /= length; });
 
     hasRun = true;
 }

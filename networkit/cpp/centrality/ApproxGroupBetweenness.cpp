@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * ApproxGroupBetweenness.cpp
  *
@@ -18,16 +17,14 @@
 
 namespace NetworKit {
 
-ApproxGroupBetweenness::ApproxGroupBetweenness(const Graph &G,
-                                               const count groupSize,
+ApproxGroupBetweenness::ApproxGroupBetweenness(const Graph &G, const count groupSize,
                                                const double epsilon)
     : G(G), n(G.upperNodeIdBound()), groupSize(groupSize), epsilon(epsilon) {
     if (G.isDirected()) {
         throw std::runtime_error("Error: the graph must be undirected.");
     }
     if (groupSize == 0 || groupSize >= G.upperNodeIdBound()) {
-        throw std::runtime_error(
-            "Error: the group size must be between 1 and n-1.");
+        throw std::runtime_error("Error: the group size must be between 1 and n-1.");
     }
     if (epsilon <= 0) {
         throw std::runtime_error("Error: epsilon must be greater than 0.");

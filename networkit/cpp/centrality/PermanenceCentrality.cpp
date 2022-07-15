@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  *
  */
@@ -9,8 +8,9 @@
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/centrality/PermanenceCentrality.hpp>
 
-NetworKit::PermanenceCentrality::PermanenceCentrality(const NetworKit::Graph &G, const NetworKit::Partition &P): Algorithm(), G(G), P(P) {
-}
+NetworKit::PermanenceCentrality::PermanenceCentrality(const NetworKit::Graph &G,
+                                                      const NetworKit::Partition &P)
+    : Algorithm(), G(G), P(P) {}
 
 void NetworKit::PermanenceCentrality::run() {
     Aux::SignalHandler handler;
@@ -27,9 +27,7 @@ void NetworKit::PermanenceCentrality::run() {
         {
             std::vector<index> nodePos(n, 0);
 
-            G.forNodes([&](node u) {
-                ++nodePos[G.degree(u)];
-            });
+            G.forNodes([&](node u) { ++nodePos[G.degree(u)]; });
 
             // exclusive prefix sum
             index tmp = nodePos[0];
@@ -42,9 +40,7 @@ void NetworKit::PermanenceCentrality::run() {
                 sum += tmp;
             }
 
-            G.forNodes([&](node u) {
-                sortedNodes[nodePos[G.degree(u)]++] = u;
-            });
+            G.forNodes([&](node u) { sortedNodes[nodePos[G.degree(u)]++] = u; });
         }
 
         INFO("Sorted nodes");
@@ -131,21 +127,22 @@ double NetworKit::PermanenceCentrality::getIntraClustering(NetworKit::node u) {
         }
     });
 
-    G.forNeighborsOf(u, [&](node y) {
-        marker[y] = false;
-    });
+    G.forNeighborsOf(u, [&](node y) { marker[y] = false; });
 
-    if (numNeighbors < 2) return 0;
+    if (numNeighbors < 2)
+        return 0;
 
-    return numTriangles * 1.0 / (0.5 * static_cast<double>(numNeighbors * (numNeighbors - 1))); // triangles are counted only once, so divide by 2 here!
+    return numTriangles * 1.0
+           / (0.5
+              * static_cast<double>(
+                  numNeighbors
+                  * (numNeighbors - 1))); // triangles are counted only once, so divide by 2 here!
 }
 
 double NetworKit::PermanenceCentrality::getPermanence(NetworKit::node u) {
     std::map<index, count> strength;
     index C = P[u];
-    G.forNeighborsOf(u, [&](node y) {
-        ++strength[P[y]];
-    });
+    G.forNeighborsOf(u, [&](node y) { ++strength[P[y]]; });
 
     count maxNeighborStrength = 0;
     for (auto n_s : strength) {
@@ -154,8 +151,11 @@ double NetworKit::PermanenceCentrality::getPermanence(NetworKit::node u) {
         }
     }
 
-    //  http://dl.acm.org/citation.cfm?doid=2623330.2623707: If the vertex has no external connections, F1 is just the value of the inter- nal connections.
-    if (maxNeighborStrength == 0) maxNeighborStrength = 1;
+    //  http://dl.acm.org/citation.cfm?doid=2623330.2623707: If the vertex has no external
+    //  connections, F1 is just the value of the inter- nal connections.
+    if (maxNeighborStrength == 0)
+        maxNeighborStrength = 1;
 
-    return strength[C] * 1.0 / maxNeighborStrength * 1.0 /G.degree(u) - (1.0 - getIntraClustering(u));
+    return strength[C] * 1.0 / maxNeighborStrength * 1.0 / G.degree(u)
+           - (1.0 - getIntraClustering(u));
 }

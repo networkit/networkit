@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * Betweenness.cpp
  *
@@ -9,16 +8,16 @@
 #include <memory>
 #include <omp.h>
 
-#include <networkit/centrality/Betweenness.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
-#include <networkit/distance/Dijkstra.hpp>
+#include <networkit/centrality/Betweenness.hpp>
 #include <networkit/distance/BFS.hpp>
+#include <networkit/distance/Dijkstra.hpp>
 
 namespace NetworKit {
 
-Betweenness::Betweenness(const Graph& G, bool normalized, bool computeEdgeCentrality) :
-    Centrality(G, normalized, computeEdgeCentrality) {}
+Betweenness::Betweenness(const Graph &G, bool normalized, bool computeEdgeCentrality)
+    : Centrality(G, normalized, computeEdgeCentrality) {}
 
 void Betweenness::run() {
     Aux::SignalHandler handler;
@@ -44,16 +43,17 @@ void Betweenness::run() {
     }
 
     auto computeDependencies = [&](node s) -> void {
-
         std::vector<double> &dependency = dependencies[omp_get_thread_num()];
         std::fill(dependency.begin(), dependency.end(), 0);
 
         // run SSSP algorithm and keep track of everything
         auto &sssp = *sssps[omp_get_thread_num()];
         sssp.setSource(s);
-        if (!handler.isRunning()) return;
+        if (!handler.isRunning())
+            return;
         sssp.run();
-        if (!handler.isRunning()) return;
+        if (!handler.isRunning())
+            return;
         // compute dependencies for nodes in order of decreasing distance from s
         std::vector<node> stack = sssp.getNodesSortedByDistance();
         while (!stack.empty()) {
@@ -64,7 +64,7 @@ void Betweenness::run() {
                 bigfloat tmp = sssp.numberOfPaths(p) / sssp.numberOfPaths(t);
                 double weight;
                 tmp.ToDouble(weight);
-                double c= weight * (1 + dependency[t]);
+                double c = weight * (1 + dependency[t]);
                 dependency[p] += c;
 
                 if (computeEdgeCentrality) {
@@ -86,16 +86,14 @@ void Betweenness::run() {
     if (normalized) {
         // divide by the number of possible pairs
         const double n = static_cast<double>(G.numberOfNodes());
-        const double pairs = (n-2.) * (n-1.);
-        const double edges =  n    * (n-1.);
-        G.parallelForNodes([&](node u){
-            scoreData[u] /= pairs;
-        });
+        const double pairs = (n - 2.) * (n - 1.);
+        const double edges = n * (n - 1.);
+        G.parallelForNodes([&](node u) { scoreData[u] /= pairs; });
 
         if (computeEdgeCentrality) {
 #pragma omp parallel for
             for (omp_index i = 0; i < static_cast<omp_index>(edgeScoreData.size()); ++i) {
-                edgeScoreData[i] =  edgeScoreData[i] / edges;
+                edgeScoreData[i] = edgeScoreData[i] / edges;
             }
         }
     }
@@ -103,13 +101,13 @@ void Betweenness::run() {
     hasRun = true;
 }
 
-double Betweenness::maximum(){
+double Betweenness::maximum() {
     if (normalized) {
         return 1;
     }
 
     const double n = static_cast<double>(G.numberOfNodes());
-    double score = (n-1)*(n-2);
+    double score = (n - 1) * (n - 2);
     if (!G.isDirected())
         score /= 2.;
     return score;

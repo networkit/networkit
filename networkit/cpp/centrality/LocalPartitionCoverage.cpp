@@ -1,13 +1,12 @@
-// no-networkit-format
 /*
  *
  */
 
 #include <networkit/centrality/LocalPartitionCoverage.hpp>
 
-NetworKit::LocalPartitionCoverage::LocalPartitionCoverage(const NetworKit::Graph &G, const NetworKit::Partition &P): Centrality(G, true, false), P(P) {
-
-}
+NetworKit::LocalPartitionCoverage::LocalPartitionCoverage(const NetworKit::Graph &G,
+                                                          const NetworKit::Partition &P)
+    : Centrality(G, true, false), P(P) {}
 
 void NetworKit::LocalPartitionCoverage::run() {
     hasRun = false;
@@ -17,7 +16,8 @@ void NetworKit::LocalPartitionCoverage::run() {
 
     G.balancedParallelForNodes([&](node u) {
         G.forNeighborsOf(u, [&](node, node v, edgeweight ew) {
-            if (P[u] == P[v]) scoreData[u] += ew;
+            if (P[u] == P[v])
+                scoreData[u] += ew;
         });
 
         // Avoid division by 0 if u has no neighbors (then also scoreData[u] == 0).

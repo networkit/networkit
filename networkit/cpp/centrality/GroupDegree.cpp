@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * GroupDegree.cpp
  *
@@ -17,9 +16,8 @@ GroupDegree::GroupDegree(const Graph &G, count k, bool countGroupNodes)
         throw std::runtime_error("k must be between 1 and n");
     }
     if (G.numberOfSelfLoops() > 0) {
-        throw std::runtime_error(
-            "Group degree does not support graphs with self loops. Call "
-            "removeSelfLoops() to remove self loops from the graph.");
+        throw std::runtime_error("Group degree does not support graphs with self loops. Call "
+                                 "removeSelfLoops() to remove self loops from the graph.");
     }
 }
 
