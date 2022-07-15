@@ -160,7 +160,6 @@ def buildNetworKit(install_prefix, externalCore=False, externalTlx=None, withTes
 	comp_cmd.append("-DNETWORKIT_PYTHON="+get_paths()['include']) # provide python.h files
 	comp_cmd.append("-DNETWORKIT_PYTHON_EXECUTABLE="+sys.executable) # provide cmake with Python interpreter
 	comp_cmd.append("-DNETWORKIT_PYTHON_SOABI="+os_soabi) # provide lib env specification
-	comp_cmd.append("-DNETWORKIT_PYTHON_VERSION="+sysconfig.get_python_version())
 	if externalCore:
 		if sys.platform == "win32":
 			# Reasoning: only static builds are supported and libs+dlls must reside in the same folder
@@ -172,6 +171,7 @@ def buildNetworKit(install_prefix, externalCore=False, externalTlx=None, withTes
 	if sys.platform == "win32":
 		comp_cmd.append("-DNETWORKIT_STATIC=ON") # Windows only supports static core builds
 		comp_cmd.append("-DNETWORKIT_BUILDING_STATELIB=ON") # Adds dllexport
+		comp_cmd.append("-DNETWORKIT_PYTHON_VERSION="+sysconfig.get_python_version())
 	if enable_osx_crossbuild:
 		comp_cmd.append("-DCMAKE_OSX_ARCHITECTURES='arm64'")
 	if externalTlx:
