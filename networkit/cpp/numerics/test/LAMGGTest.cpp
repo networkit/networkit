@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * LAMGGTest.cpp
  *
@@ -8,19 +7,19 @@
 
 #include <gtest/gtest.h>
 
-#include <networkit/algebraic/Vector.hpp>
 #include <networkit/algebraic/CSRMatrix.hpp>
+#include <networkit/algebraic/Vector.hpp>
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/generators/BarabasiAlbertGenerator.hpp>
-#include <networkit/structures/Partition.hpp>
+#include <networkit/graph/Graph.hpp>
 #include <networkit/io/LineFileReader.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/METISGraphWriter.hpp>
-#include <networkit/graph/Graph.hpp>
+#include <networkit/numerics/GaussSeidelRelaxation.hpp>
 #include <networkit/numerics/LAMG/MultiLevelSetup.hpp>
 #include <networkit/numerics/LAMG/SolverLamg.hpp>
-#include <networkit/numerics/GaussSeidelRelaxation.hpp>
+#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 
@@ -28,7 +27,7 @@ class LAMGGTest : public testing::Test {
 protected:
     const std::vector<std::string> GRAPH_INSTANCES = {"input/jazz.graph", "input/power.graph"};
 
-    Vector randZeroSum(const Graph& graph, size_t seed) const;
+    Vector randZeroSum(const Graph &graph, size_t seed) const;
     Vector randVector(count dimension) const;
 };
 
@@ -60,9 +59,10 @@ TEST_F(LAMGGTest, testSmallGraphs) {
         b = randZeroSum(G, 12345);
         x = randVector(G.numberOfNodes());
 
-
         LAMGSolverStatus status;
-        status.desiredResidualReduction = 1e-6 * b.length() / (hierarchy.at(0).getLaplacian() * x - b).length(); // needed for getting a relative residual <= 1e-6
+        // needed for getting a relative residual <= 1e-6
+        status.desiredResidualReduction =
+            1e-6 * b.length() / (hierarchy.at(0).getLaplacian() * x - b).length();
 
         Vector result = x;
         DEBUG("Solving equation system - Gauss-Seidel");
@@ -76,7 +76,6 @@ TEST_F(LAMGGTest, testSmallGraphs) {
         DEBUG("final residual = ", status.residual);
         DEBUG("numIters = ", status.numIters);
         DEBUG("DONE");
-
     }
 }
 
@@ -94,7 +93,7 @@ Vector LAMGGTest::randVector(count dimension) const {
     return randVector;
 }
 
-Vector LAMGGTest::randZeroSum(const Graph& G, size_t seed) const {
+Vector LAMGGTest::randZeroSum(const Graph &G, size_t seed) const {
     std::mt19937 rand(seed);
     auto rand_value = std::uniform_real_distribution<double>(-1.0, 1.0);
     ConnectedComponents con(G);

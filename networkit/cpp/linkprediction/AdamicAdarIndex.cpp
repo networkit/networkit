@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * AdamicAdarIndex.cpp
  *
@@ -14,12 +13,12 @@
 namespace NetworKit {
 
 double AdamicAdarIndex::runImpl(node u, node v) {
-  std::vector<node> commonNeighbors = NeighborhoodUtility::getCommonNeighbors(*G, u, v);
-  double sum = 0;
-  for (node w : commonNeighbors) {
-    sum += 1.0 / std::log(static_cast<double>(G->degree(w)));
-  }
-  return sum;
+    std::vector<node> commonNeighbors = NeighborhoodUtility::getCommonNeighbors(*G, u, v);
+    double sum = 0;
+    for (node w : commonNeighbors) {
+        sum += 1.0 / std::log(static_cast<double>(G->degree(w)));
+    }
+    return sum;
 }
 
 } // namespace NetworKit

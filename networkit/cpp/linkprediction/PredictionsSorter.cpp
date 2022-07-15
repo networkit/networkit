@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * PredictionsSorter.cpp
  *
@@ -11,12 +10,12 @@
 
 namespace NetworKit {
 
-void PredictionsSorter::sortByScore(std::vector<LinkPredictor::prediction>& predictions) {
-  Aux::Parallel::sort(predictions.begin(), predictions.end(), ConcreteScoreComp);
+void PredictionsSorter::sortByScore(std::vector<LinkPredictor::prediction> &predictions) {
+    Aux::Parallel::sort(predictions.begin(), predictions.end(), ConcreteScoreComp);
 }
 
-void PredictionsSorter::sortByNodePair(std::vector<LinkPredictor::prediction>& predictions) {
-  Aux::Parallel::sort(predictions.begin(), predictions.end(), ConcreteNodePairComp);
+void PredictionsSorter::sortByNodePair(std::vector<LinkPredictor::prediction> &predictions) {
+    Aux::Parallel::sort(predictions.begin(), predictions.end(), ConcreteNodePairComp);
 }
 
 PredictionsSorter::ScoreComp PredictionsSorter::ConcreteScoreComp{};

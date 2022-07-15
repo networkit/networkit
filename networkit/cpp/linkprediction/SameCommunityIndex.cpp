@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * SameCommunityIndex.cpp
  *
@@ -13,21 +12,21 @@ namespace NetworKit {
 
 SameCommunityIndex::SameCommunityIndex() : LinkPredictor(), communities() {}
 
-SameCommunityIndex::SameCommunityIndex(const Graph& graph) : LinkPredictor(graph) {
-  PLM communityDetection(graph);
-  communityDetection.run();
-  communities = communityDetection.getPartition();
+SameCommunityIndex::SameCommunityIndex(const Graph &graph) : LinkPredictor(graph) {
+    PLM communityDetection(graph);
+    communityDetection.run();
+    communities = communityDetection.getPartition();
 }
 
-void SameCommunityIndex::setGraph(const Graph& newGraph) {
-  LinkPredictor::setGraph(newGraph);
-  PLM communityDetection(newGraph);
-  communityDetection.run();
-  communities = communityDetection.getPartition();
+void SameCommunityIndex::setGraph(const Graph &newGraph) {
+    LinkPredictor::setGraph(newGraph);
+    PLM communityDetection(newGraph);
+    communityDetection.run();
+    communities = communityDetection.getPartition();
 }
 
 double SameCommunityIndex::runImpl(node u, node v) {
-  return communities[u] == communities[v] ? 1 : 0;
+    return communities[u] == communities[v] ? 1 : 0;
 }
 
 } // namespace NetworKit

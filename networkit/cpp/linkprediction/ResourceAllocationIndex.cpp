@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * ResourceAllocationIndex.cpp
  *
@@ -6,18 +5,18 @@
  *      Author: Kolja Esders (kolja.esders@student.kit.edu)
  */
 
-#include <networkit/linkprediction/ResourceAllocationIndex.hpp>
 #include <networkit/linkprediction/NeighborhoodUtility.hpp>
+#include <networkit/linkprediction/ResourceAllocationIndex.hpp>
 
 namespace NetworKit {
 
 double ResourceAllocationIndex::runImpl(node u, node v) {
-  std::vector<node> commonNeighbors = NeighborhoodUtility::getCommonNeighbors(*G, u, v);
-  double sum = 0;
-  for (node w : commonNeighbors) {
-    sum += 1.0 / G->degree(w);
-  }
-  return sum;
+    std::vector<node> commonNeighbors = NeighborhoodUtility::getCommonNeighbors(*G, u, v);
+    double sum = 0;
+    for (node w : commonNeighbors) {
+        sum += 1.0 / G->degree(w);
+    }
+    return sum;
 }
 
 } // namespace NetworKit

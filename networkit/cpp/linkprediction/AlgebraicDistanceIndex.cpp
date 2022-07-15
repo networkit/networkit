@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * AlgebraicDistanceIndex.cpp
  *
@@ -12,9 +11,14 @@
 
 namespace NetworKit {
 
-AlgebraicDistanceIndex::AlgebraicDistanceIndex(count numberSystems, count numberIterations, double omega, index norm) : numSystems(numberSystems), numIters(numberIterations), omega(omega), norm(norm) {}
+AlgebraicDistanceIndex::AlgebraicDistanceIndex(count numberSystems, count numberIterations,
+                                               double omega, index norm)
+    : numSystems(numberSystems), numIters(numberIterations), omega(omega), norm(norm) {}
 
-AlgebraicDistanceIndex::AlgebraicDistanceIndex(const Graph& G, count numberSystems, count numberIterations, double omega, index norm) : LinkPredictor(G), numSystems(numberSystems), numIters(numberIterations), omega(omega), norm(norm) {}
+AlgebraicDistanceIndex::AlgebraicDistanceIndex(const Graph &G, count numberSystems,
+                                               count numberIterations, double omega, index norm)
+    : LinkPredictor(G), numSystems(numberSystems), numIters(numberIterations), omega(omega),
+      norm(norm) {}
 
 void AlgebraicDistanceIndex::preprocess() {
     Aux::Timer running1;
@@ -31,9 +35,8 @@ void AlgebraicDistanceIndex::preprocess() {
                 double val = 0.0;
 
                 // step 1
-                G->forNeighborsOf(u, [&](node v, edgeweight weight) {
-                    val += weight * oldLoads[sys][v];
-                });
+                G->forNeighborsOf(
+                    u, [&](node v, edgeweight weight) { val += weight * oldLoads[sys][v]; });
                 val /= G->weightedDegree(u);
 
                 // step 2
@@ -58,13 +61,12 @@ double AlgebraicDistanceIndex::runImpl(node u, node v) {
                 result = absDiff;
             }
         }
-    }
-    else {
+    } else {
         for (index sys = 0; sys < numSystems; ++sys) {
             double absDiff = std::fabs(loads[sys][u] - loads[sys][v]);
             result += std::pow(absDiff, norm);
         }
-        result = std::pow(result, 1.0 / (double) norm);
+        result = std::pow(result, 1.0 / (double)norm);
     }
 
     return std::isnan(result) ? 0 : result;
@@ -80,9 +82,7 @@ void AlgebraicDistanceIndex::randomInit() {
     }
 
     for (index i = 0; i < numSystems; ++i) {
-        G->forNodes([&](node v) {
-            loads[i][v] = Aux::Random::real();
-        });
+        G->forNodes([&](node v) { loads[i][v] = Aux::Random::real(); });
     }
 }
 
