@@ -309,9 +309,8 @@ void DynTopHarmonicCloseness::run() {
                 G.forNodes([&](node u) {
                     if (allScores[u] > S[u] && toAnalyze[u]) { // This part must be syncrhonized.
                         omp_set_lock(&lock);
-                        if (allScores[u] > S[u]
-                            && toAnalyze[u]) { // Have to check again, because the variables
-                            // might have changed
+                        // Have to check again, because the variables  might have changed
+                        if (allScores[u] > S[u] && toAnalyze[u]) {
                             allScores[u] = S[u];
                             isValid[u] = true;
                             Q1.remove(-u);
@@ -588,12 +587,11 @@ void DynTopHarmonicCloseness::addEdge(const GraphEvent &event) {
                     omp_unset_lock(&statsLock);
 
                     G.forNodes([&](node u) {
-                        if ((allScores[u] > S[u]
-                             && !isExact[u])) { // This part must be synchronized.
+                        // This part must be synchronized.
+                        if ((allScores[u] > S[u] && !isExact[u])) {
                             omp_set_lock(&lock);
-                            if ((allScores[u] > S[u]
-                                 && !isExact[u])) { // Have to check again, because the variables
-                                // might have changed
+                            // Have to check again, because the variables might have changed
+                            if ((allScores[u] > S[u] && !isExact[u])) {
 
                                 allScores[u] = S[u];
                                 isValid[u] = true;

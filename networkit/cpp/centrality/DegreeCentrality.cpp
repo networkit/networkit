@@ -15,9 +15,8 @@ DegreeCentrality::DegreeCentrality(const Graph &G, bool normalized, bool outDeg,
 
 void DegreeCentrality::run() {
     scoreData = std::vector<double>(G.upperNodeIdBound(), 0.0);
-    ignoreSelfLoops = ignoreSelfLoops
-                      && (G.numberOfSelfLoops()
-                          > 0); // this way we don't need to check for self loops if there are none
+    // this way we don't need to check for self loops if there are none
+    ignoreSelfLoops = ignoreSelfLoops && (G.numberOfSelfLoops() > 0);
 
     if (G.isDirected() && !outDeg) {
         G.parallelForNodes([&](node u) {

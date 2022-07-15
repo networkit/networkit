@@ -79,20 +79,16 @@ void DynBetweenness::run() {
     hasRun = true;
 }
 
-void DynBetweenness::increaseScore(
-    std::vector<bool> &affected, node y,
-    std::priority_queue<std::pair<double, node>, std::vector<std::pair<double, node>>, CompareDist>
-        &Q) {
+void DynBetweenness::increaseScore(std::vector<bool> &affected, node y, PrioQ &Q) {
     std::vector<double> dep(G.upperNodeIdBound(), 0);
     std::vector<bool> visited(G.upperNodeIdBound(), false);
     while (!Q.empty()) {
         affectedDep++;
-        //	TRACE("(Before )Size: ", Q.size());
-        node x = Q.top().second; // notice that the keys are diam - distance, so we actually extract
-                                 // in order of decreasing distance
+        // notice that the keys are diam - distance, so we actually extract in order of decreasing
+        // distance
+        node x = Q.top().second;
         Q.pop();
         TRACE("Extracted node ", x);
-        //	TRACE("(After )Size: ", Q.size());
         scoreData[x] += dep[x];
         TRACE("Dependency of ", y, " on ", x, ": ", dep[x]);
         if (!G.isDirected()) {
@@ -119,22 +115,17 @@ void DynBetweenness::increaseScore(
     }
 }
 
-void DynBetweenness::decreaseScore(
-    std::vector<bool> &affected, node y,
-    std::priority_queue<std::pair<double, node>, std::vector<std::pair<double, node>>, CompareDist>
-        &Q) {
+void DynBetweenness::decreaseScore(std::vector<bool> &affected, node y, PrioQ &Q) {
     std::vector<double> dep(G.upperNodeIdBound(), 0);
     std::vector<bool> visited(G.upperNodeIdBound(), false);
     while (!Q.empty()) {
         affectedDep++;
-        //	TRACE("(Before )Size: ", Q.size());
-        node x = Q.top().second; // notice that the keys are diam - distance, so we actually extract
-                                 // in order of decreasing distance
+        // notice that the keys are diam - distance, so we actually extract in order of decreasing
+        // distance
+        node x = Q.top().second;
         Q.pop();
         TRACE("Extracted node ", x);
-        //	TRACE("(After )Size: ", Q.size());
         scoreData[x] -= dep[x];
-        // TRACE("Dependency of ",y, " on ",x,": ", dep[x]);
         if (!G.isDirected()) {
             scoreData[x] -= dep[x];
         }
@@ -143,12 +134,8 @@ void DynBetweenness::decreaseScore(
                 && distancesOld[x][y] == distancesOld[w][y] + weightxw) {
                 if (sigmaOld[x][y] > 0) {
                     if (affected[x]) {
-                        // TRACE("Affected node ", x, ". Subtracting from dep of ", w, ": ",
-                        // sigmaOld[w][y]/sigmaOld[x][y]*(1+dep[x]));
                         dep[w] += sigmaOld[w][y] / sigmaOld[x][y] * (1 + dep[x]);
                     } else {
-                        // TRACE("Non affected node ", x, ". Subtracting from dep of ", w, ": ",
-                        // sigmaOld[w][y]/sigmaOld[x][y]*(dep[x]));
                         dep[w] += sigmaOld[w][y] / sigmaOld[x][y] * (dep[x]);
                     }
                 }
@@ -230,12 +217,7 @@ void DynBetweenness::update(GraphEvent event) {
         while (!stack.empty()) {
             node y = stack.top();
             if (!visited[y]) {
-                std::priority_queue<std::pair<double, node>, std::vector<std::pair<double, node>>,
-                                    CompareDist>
-                    Qnew;
-                std::priority_queue<std::pair<double, node>, std::vector<std::pair<double, node>>,
-                                    CompareDist>
-                    Qold;
+                PrioQ Qnew, Qold;
                 std::vector<bool> affected(G.upperNodeIdBound(), false);
                 affected[u] = true;
                 // we leave y in the stack (so that we know when we're done visiting the subtree
@@ -243,8 +225,6 @@ void DynBetweenness::update(GraphEvent event) {
                 n_sources[y] = n_sources[Pred[y]];
                 visited[y] = true;
                 // since u is not in source, we insert it now
-                // Qnew.insert(diameter + 1 - distances[u][y], u);
-                // Qold.insert(diameter + 1 - distancesOld[u][y], u);
                 Qnew.push(std::make_pair(diameter + 1.0 - distances[u][y], u));
                 Qold.push(std::make_pair(diameter + 1.0 - distancesOld[u][y], u));
                 for (count c = 0; c < n_sources[y]; c++) {
@@ -265,8 +245,6 @@ void DynBetweenness::update(GraphEvent event) {
                               diameter + 1 - distances[s][y]);
                         TRACE("Node ", y, ", Inserting node ", s, " with old priority ",
                               diameter + 1 - distancesOld[s][y]);
-                        // Qnew.insert(diameter + 1 - distances[s][y], s);
-                        // Qold.insert(diameter + 1 - distancesOld[s][y], s);
                         Qnew.push(std::make_pair(diameter + 1 - distances[s][y], s));
                         Qold.push(std::make_pair(diameter + 1 - distancesOld[s][y], s));
                     } else if (distances[s][y] == distances[s][u] + weightuv + distances[v][y]) {
@@ -280,8 +258,6 @@ void DynBetweenness::update(GraphEvent event) {
                               diameter + 1 - distances[s][y]);
                         TRACE("Node ", y, ", Inserting node ", s, " with old priority ",
                               diameter + 1 - distancesOld[s][y]);
-                        // Qnew.insert(diameter + 1 - distances[s][y], s);
-                        // Qold.insert(diameter + 1 - distancesOld[s][y], s);
                         Qnew.push(std::make_pair(diameter + 1.0 - distances[s][y], s));
                         Qold.push(std::make_pair(diameter + 1.0 - distancesOld[s][y], s));
                     } else if (distances[s][y] < distances[s][u] + weightuv + distances[v][y]) {
@@ -344,8 +320,6 @@ void DynBetweenness::update(GraphEvent event) {
                 sigmaOld[v][u] = sigma[u][v];
             }
         }
-        // distancesOld = distances;
-        // sigmaOld = sigma;
     }
 }
 

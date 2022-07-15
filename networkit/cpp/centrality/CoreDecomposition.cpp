@@ -234,9 +234,8 @@ void CoreDecomposition::runWithBucketQueues() {
 
         /* Remove a neighbor by decreasing its degree and changing its position in the queue */
         auto removeNeighbor = [&](node v) {
-            if (nodePtr[v]
-                > i) { // only nodes that are after the current node need to be considered
-                // adjust the degree
+            // only nodes that are after the current node need to be considered  adjust the degree
+            if (nodePtr[v] > i) {
                 count oldDeg = degree[v];
                 --degree[v];
                 count newDeg = oldDeg - 1;

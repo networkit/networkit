@@ -53,9 +53,8 @@ void DynBetweennessOneNode::run() {
                     distances[source][v] = distances[source][u] + 1;
                 }
                 if (distances[source][v] == distances[source][u] + 1) {
-                    sigma[source][v] +=
-                        sigma[source]
-                             [u]; // all the shortest paths to u are also shortest paths to v now
+                    // all the shortest paths to u are also shortest paths to v now
+                    sigma[source][v] += sigma[source][u];
                     if (u == x) {
                         sigmax[source][v] = sigma[source][u];
                     } else {
@@ -76,7 +75,6 @@ void DynBetweennessOneNode::run() {
 }
 
 void DynBetweennessOneNode::update(GraphEvent event) {
-    // DEBUG("Entering update");
     node u = event.u;
     node v = event.v;
     edgeweight weightuv = G.weight(u, v);
@@ -111,10 +109,6 @@ void DynBetweennessOneNode::update(GraphEvent event) {
         std::vector<bool> visited(z, false);
         INFO("Phase 1. distances[", u, "][", v, "] = ", distances[u][v], ", and G.weight", u, ", ",
              v, " = ", G.weight(u, v));
-        //	distances[u][v] = weightuv;
-        // if(!G.isDirected()) {
-        // 	distances[v][u] = distances[u][v];
-        // }
         bfsQ.push(u);
         source_nodes[u].push_back(u);
         visited[u] = true;
@@ -153,8 +147,8 @@ void DynBetweennessOneNode::update(GraphEvent event) {
                     if (s == u && y == v) {
                         sigma[u][v] = 1;
                         if (s == x || y == x) {
-                            sigmax[u][v] = 1; // TODO fix for weighted graphs, the new edge might be
-                                              // of equal length
+                            // TODO fix for weighted graphs, the new edge might be of equal length
+                            sigmax[u][v] = 1;
                         } else {
                             sigmax[u][v] = 0;
                         }
@@ -188,10 +182,9 @@ void DynBetweennessOneNode::update(GraphEvent event) {
             }
             // loop over all neighbors
             G.forNeighborsOf(y, [&](node w, edgeweight weightyw) {
+                // I also check that y was a predecessor for w in the s.p. from v
                 if (distances[u][w] >= weightuv + distances[v][y] + weightyw
-                    && distances[v][w]
-                           == distances[v][y] + weightyw) { // I also check that y was a predecessor
-                                                            // for w in the s.p. from v
+                    && distances[v][w] == distances[v][y] + weightyw) {
                     Pred[w] = y;
                     updateQueue(w);
                 }

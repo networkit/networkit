@@ -321,12 +321,6 @@ bool DynKatzCentrality::checkConvergence() {
         }
 
         assert(!activeRanking.empty());
-        /*
-                double length = std::sqrt(G.parallelSumForNodes([&](node u) {
-                    return (scoreData[u] * scoreData[u]);
-                }));
-                DEBUG("DynKatz: Vector length: ", length);
-        */
         DEBUG("DynKatz: In iteration ", levelReached, ": ", activeRanking.size(), " nodes remain.");
 
         if (activeRanking.size() > k)
