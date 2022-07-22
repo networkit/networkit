@@ -3,6 +3,7 @@ import unittest
 import random
 import networkit as nk
 import pickle
+import numpy as np
 
 class TestGraph(unittest.TestCase):
 	
@@ -319,6 +320,17 @@ class TestGraph(unittest.TestCase):
 					self.assertFalse(G.hasEdge(u, v))
 				self.assertEqual(G.numberOfEdges(), 0)				
 	
+	def testCoordinateInput(self):
+		G = nk.Graph(10, True, True)
+		row = np.array([0, 0, 1, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 5, 6, 6, 7, 8, 8, 9], dtype=np.uint64)
+		col = np.array([1, 3, 2, 3, 5, 3, 4, 5, 7, 8, 5, 7, 9, 6, 3, 4, 6, 2, 9, 4], dtype=np.uint64)
+		data = np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0,
+						1.1, 1.2,1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0], dtype=np.double)
+		G.from_coordinates(row, col, data)
+		self.assertEqual(G.numberOfEdges(), 20)
+		for i in range(np.shape(data)[0]):
+			self.assertEqual(G.weight(row[i], col[i]), data[i])
+
 	def testSpanningForest(self):
 		G = self.getSmallGraph()
 		sf = nk.graph.SpanningForest(G)
