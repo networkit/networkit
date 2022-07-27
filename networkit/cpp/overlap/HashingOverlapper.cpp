@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * HashingOverlapper.cpp
  *
@@ -11,13 +10,12 @@
 
 namespace NetworKit {
 
-
-Partition HashingOverlapper::run(const Graph& G, const std::vector<Partition>& clusterings) {
+Partition HashingOverlapper::run(const Graph &G, const std::vector<Partition> &clusterings) {
 
     DEBUG("Starting hashing overlapper");
 
     auto djb2 = [](int64_t cid) {
-        unsigned char* str = (unsigned char*) &cid;
+        unsigned char *str = (unsigned char *)&cid;
         unsigned long hash = 5381;
         int c;
         while ((c = *str++)) {
@@ -32,7 +30,7 @@ Partition HashingOverlapper::run(const Graph& G, const std::vector<Partition>& c
     auto hash = djb2;
 
     const count numC = clusterings.size();
-    switch(numC) {
+    switch (numC) {
     case 0: {
         ERROR("No clustering provided! Will return 1-clustering!");
         core.allToOnePartition();
@@ -43,19 +41,17 @@ Partition HashingOverlapper::run(const Graph& G, const std::vector<Partition>& c
         break;
     }
     case 2: {
-        const Partition& first = clusterings[0];
-        const Partition& second = clusterings[1];
+        const Partition &first = clusterings[0];
+        const Partition &second = clusterings[1];
 
         // Assumption: second has at least as many nodes as first
         G.parallelForNodes([&](node v) {
             if (v >= first.numberOfElements()) {
                 core[v] = none;
-            }
-            else {
+            } else {
                 if (first[v] == none || second[v] == none) {
                     core[v] = none;
-                }
-                else {
+                } else {
                     count key = ((first[v] ^ 0xffff) << 16) | (second[v] ^ 0xffff);
                     core[v] = hash(key);
                 }
@@ -68,10 +64,9 @@ Partition HashingOverlapper::run(const Graph& G, const std::vector<Partition>& c
         core.allToOnePartition();
 
         for (index c = 0; c < numC; ++c) {
-            const Partition& zeta = clusterings[c];
-            zeta.parallelForEntries([&](node v, index clv) {
-                core[v] += (hash((c+2) * clv) & 0xffff);
-            });
+            const Partition &zeta = clusterings[c];
+            zeta.parallelForEntries(
+                [&](node v, index clv) { core[v] += (hash((c + 2) * clv) & 0xffff); });
         }
     }
     }

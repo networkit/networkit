@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * MultiscaleBackboneGTest.cpp
  *
@@ -8,13 +7,12 @@
 
 #include <gtest/gtest.h>
 
-#include <networkit/sparsification/Sparsifiers.hpp>
 #include <networkit/sparsification/MultiscaleScore.hpp>
-
+#include <networkit/sparsification/Sparsifiers.hpp>
 
 namespace NetworKit {
 
-class MultiscaleBackboneGTest: public testing::Test {};
+class MultiscaleBackboneGTest : public testing::Test {};
 
 TEST_F(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone) {
     Graph g(6, true, false);
@@ -28,7 +26,8 @@ TEST_F(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone) {
     g.indexEdges();
 
     MultiscaleScore scorer(g, std::vector<double>());
-    EXPECT_NEAR(0.9121756, scorer.getProbability(4, 0.5555), 1e-5) << "faulty probability calculation";
+    EXPECT_NEAR(0.9121756, scorer.getProbability(4, 0.5555), 1e-5)
+        << "faulty probability calculation";
     /**
      * a01 = 0.91896
      * a02 = 0.639212
@@ -42,7 +41,7 @@ TEST_F(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone) {
      * a53 = 0.66666666
      */
 
-    //Compare the backbone graph to the expected backbone.
+    // Compare the backbone graph to the expected backbone.
 
     MultiscaleSparsifier sparsifier(g, 0.5);
     sparsifier.run();
@@ -61,5 +60,5 @@ TEST_F(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone) {
     EXPECT_TRUE(b.hasEdge(0, 3));
 }
 
-}
+} // namespace NetworKit
 /* namespace NetworKit */

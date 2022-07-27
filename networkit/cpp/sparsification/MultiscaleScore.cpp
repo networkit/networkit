@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * MultiscaleScore.cpp
  *
@@ -10,15 +9,16 @@
 
 namespace NetworKit {
 
-MultiscaleScore::MultiscaleScore(const Graph& G, const std::vector<double>& attribute) : EdgeScore<double>(G), attribute(&attribute) {}
+MultiscaleScore::MultiscaleScore(const Graph &G, const std::vector<double> &attribute)
+    : EdgeScore<double>(G), attribute(&attribute) {}
 
 void MultiscaleScore::run() {
     if (!G->hasEdgeIds()) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
-    //The following vector is used for the _local_ normalization of edgeweights.
-    //We use a global vector for performance reasons.
+    // The following vector is used for the _local_ normalization of edgeweights.
+    // We use a global vector for performance reasons.
     std::vector<edgeweight> normalizedWeights(G->upperNodeIdBound());
 
     std::vector<double> multiscaleAttribute(G->upperEdgeIdBound(), 0.0);
@@ -26,23 +26,20 @@ void MultiscaleScore::run() {
     G->forNodes([&](node u) {
         count k = G->degree(u);
 
-        //Normalize edgeweights of N(u)
+        // Normalize edgeweights of N(u)
         edgeweight sum = 0.0;
-        G->forNeighborsOf(u, [&](node, node, edgeid eid) {
-            sum += (*attribute)[eid];
-        });
-        G->forNeighborsOf(u, [&](node, node v, edgeid eid) {
-            normalizedWeights[v] = (*attribute)[eid] / sum;
-        });
+        G->forNeighborsOf(u, [&](node, node, edgeid eid) { sum += (*attribute)[eid]; });
+        G->forNeighborsOf(
+            u, [&](node, node v, edgeid eid) { normalizedWeights[v] = (*attribute)[eid] / sum; });
 
-        //Filter edges by probability
+        // Filter edges by probability
         G->forNeighborsOf(u, [&](node, node v, edgeid eid) {
-            //In case d(u) == 1 and d(v) > 1: ignore u
-            //if (k > 1 || G.degree(v) == 1) {
-                edgeweight p = normalizedWeights[v];
-                double probability = getProbability(k, p);
+            // In case d(u) == 1 and d(v) > 1: ignore u
+            // if (k > 1 || G.degree(v) == 1) {
+            edgeweight p = normalizedWeights[v];
+            double probability = getProbability(k, p);
 
-                multiscaleAttribute[eid] = std::max(multiscaleAttribute[eid], probability);
+            multiscaleAttribute[eid] = std::max(multiscaleAttribute[eid], probability);
             //}
         });
     });

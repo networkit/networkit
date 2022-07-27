@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * EpidemicSimulationSEIR.cpp
  *
@@ -13,7 +12,9 @@
 
 namespace NetworKit {
 
-EpidemicSimulationSEIR::EpidemicSimulationSEIR(const Graph& G, count tMax, double transP, count eTime, count iTime, node zero) : Algorithm(), G(&G), tMax(tMax), transP(transP), eTime(eTime), iTime(iTime), zero(zero)  {}
+EpidemicSimulationSEIR::EpidemicSimulationSEIR(const Graph &G, count tMax, double transP,
+                                               count eTime, count iTime, node zero)
+    : Algorithm(), G(&G), tMax(tMax), transP(transP), eTime(eTime), iTime(iTime), zero(zero) {}
 
 void EpidemicSimulationSEIR::run() {
 
@@ -21,19 +22,17 @@ void EpidemicSimulationSEIR::run() {
 
     index t = 0;
 
-    //initialize state and timestamp arrays
+    // initialize state and timestamp arrays
     state.resize(G->upperNodeIdBound(), State::U);
     timestamp.resize(G->upperNodeIdBound(), none);
 
-    auto setState = [&](node v, State X){
+    auto setState = [&](node v, State X) {
         state[v] = X;
         timestamp[v] = t;
     };
 
     // initialize nodes to Susceptible
-    G->parallelForNodes([&](node v) {
-        setState(v, State::S);
-    });
+    G->parallelForNodes([&](node v) { setState(v, State::S); });
 
     // contact may expose susceptible node to infection
     auto contact = [&](node v) {
@@ -53,9 +52,7 @@ void EpidemicSimulationSEIR::run() {
             }
         } else if (state[u] == State::I) {
             // contact neighbors of infectious node
-            G->forNeighborsOf(u, [&](node v){
-                contact(v);
-            });
+            G->forNeighborsOf(u, [&](node v) { contact(v); });
             // infectious nodes become removed after time
             if ((t - timestamp[u]) >= iTime) {
                 setState(u, State::R);
@@ -69,28 +66,24 @@ void EpidemicSimulationSEIR::run() {
         }
     };
 
-
     auto census = [&]() {
         std::vector<count> data(5);
-        G->forNodes([&](node v) {
-            data[(index) state[v]] += 1;
-        });
+        G->forNodes([&](node v) { data[(index)state[v]] += 1; });
         return data;
     };
-
 
     // if starting node node provided, start with random node
     if (zero == none) {
         zero = GraphTools::randomNode(*G);
     }
     INFO("zero node: ", zero);
-    setState(zero, State::I);	// infect node zero
+    setState(zero, State::I); // infect node zero
 
     while (t < tMax) {
         G->parallelForNodes(sweep);
         auto populations = census();
 
-        for (int s = (int) State::S; s != (int) State::U; ++s) {
+        for (int s = (int)State::S; s != (int)State::U; ++s) {
             std::vector<count> data = {zero, t, (count)s, populations[s]};
             stats.push_back(data);
         }
@@ -100,7 +93,6 @@ void EpidemicSimulationSEIR::run() {
 
     hasRun = true;
 }
-
 
 const std::vector<std::vector<count>> &EpidemicSimulationSEIR::getData() const {
     return stats;

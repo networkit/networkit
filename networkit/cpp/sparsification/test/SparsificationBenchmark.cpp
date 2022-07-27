@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * SparsificationBenchmark.cpp
  *
@@ -8,31 +7,29 @@
 
 #include <gtest/gtest.h>
 
-#include <networkit/graph/Graph.hpp>
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp>
-#include <networkit/edgescores/TriangleEdgeScore.hpp>
 #include <networkit/edgescores/PrefixJaccardScore.hpp>
-#include <networkit/sparsification/SimmelianOverlapScore.hpp>
-#include <networkit/sparsification/MultiscaleScore.hpp>
-#include <networkit/sparsification/LocalSimilarityScore.hpp>
-#include <networkit/sparsification/RandomEdgeScore.hpp>
-#include <networkit/sparsification/GlobalThresholdFilter.hpp>
+#include <networkit/edgescores/TriangleEdgeScore.hpp>
+#include <networkit/graph/Graph.hpp>
 #include <networkit/io/METISGraphReader.hpp>
-#include <networkit/auxiliary/Log.hpp>
+#include <networkit/sparsification/GlobalThresholdFilter.hpp>
+#include <networkit/sparsification/LocalSimilarityScore.hpp>
+#include <networkit/sparsification/MultiscaleScore.hpp>
+#include <networkit/sparsification/RandomEdgeScore.hpp>
+#include <networkit/sparsification/SimmelianOverlapScore.hpp>
 
 namespace NetworKit {
 
-class SparsificationBenchmark: public testing::Test {
+class SparsificationBenchmark : public testing::Test {
 protected:
-    const int64_t n {250};
+    const int64_t n{250};
 
 public:
     Graph makeCompleteGraph(count n) {
         Graph G(n);
-        G.forNodePairs([&](node u, node v){
-            G.addEdge(u,v);
-        });
+        G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
         G.shrinkToFit();
         return G;
     }
@@ -56,7 +53,8 @@ TEST_F(SparsificationBenchmark, completeGraphSimmelianSparsificationParametric) 
     auto scores = overlapScore.scores();
 
     runtime.stop();
-    INFO("[DONE] completeGraphSimmelianSparsificationParametric (" , runtime.elapsed().count() , " ms)");
+    INFO("[DONE] completeGraphSimmelianSparsificationParametric (", runtime.elapsed().count(),
+         " ms)");
 }
 
 TEST_F(SparsificationBenchmark, completeGraphSimmelianSparsificationNonParametric) {
@@ -77,7 +75,7 @@ TEST_F(SparsificationBenchmark, completeGraphSimmelianSparsificationNonParametri
     auto attribute = jaccard.scores();
 
     runtime.stop();
-    INFO("[DONE] SimmelianSparsificationNonParametric (" , runtime.elapsed().count() , " ms)");
+    INFO("[DONE] SimmelianSparsificationNonParametric (", runtime.elapsed().count(), " ms)");
 }
 
 TEST_F(SparsificationBenchmark, completeGraphMultiscaleSparsification) {
@@ -90,16 +88,14 @@ TEST_F(SparsificationBenchmark, completeGraphMultiscaleSparsification) {
     runtime.start();
 
     std::vector<double> weight(G.upperEdgeIdBound());
-    G.forEdges([&](node u, node v, edgeid eid) {
-        weight[eid] = G.weight(u, v);
-    });
+    G.forEdges([&](node u, node v, edgeid eid) { weight[eid] = G.weight(u, v); });
 
     MultiscaleScore scorer(G, weight);
     scorer.run();
     auto scores = scorer.scores();
 
     runtime.stop();
-    INFO("[DONE] MultiscaleSparsification (" , runtime.elapsed().count() , " ms)");
+    INFO("[DONE] MultiscaleSparsification (", runtime.elapsed().count(), " ms)");
 }
 
 TEST_F(SparsificationBenchmark, completeGraphLocalSimilaritySparsification) {
@@ -120,7 +116,7 @@ TEST_F(SparsificationBenchmark, completeGraphLocalSimilaritySparsification) {
     auto attribute = localSimScore.scores();
 
     runtime.stop();
-    INFO("[DONE] LocalSimilaritySparsification (" , runtime.elapsed().count() , " ms)");
+    INFO("[DONE] LocalSimilaritySparsification (", runtime.elapsed().count(), " ms)");
 }
 
 TEST_F(SparsificationBenchmark, SparsificationBenchmarkGraphFile) {
@@ -177,7 +173,8 @@ TEST_F(SparsificationBenchmark, SparsificationBenchmarkGraphFile) {
     GlobalThresholdFilter filter(g, multiscale, 0.5, false);
     Graph b = filter.calculate();
     runtime.stop();
-    std::cout << "[DONE] global filter (multiscale attribute) " << runtime.elapsedTag() << std::endl;
+    std::cout << "[DONE] global filter (multiscale attribute) " << runtime.elapsedTag()
+              << std::endl;
 
     // --------- Simmelian Sparsification (Jaccard)
     std::cout << "[BEGIN] Simmelian Jaccard attribute: " << std::endl;
@@ -193,7 +190,8 @@ TEST_F(SparsificationBenchmark, SparsificationBenchmarkGraphFile) {
     GlobalThresholdFilter filter2(g, jaccard, 0.5, true);
     b = filter2.calculate();
     runtime.stop();
-    std::cout << "[DONE] global filter (simmelian jaccard attribute) " << runtime.elapsedTag() << std::endl;
+    std::cout << "[DONE] global filter (simmelian jaccard attribute) " << runtime.elapsedTag()
+              << std::endl;
 
     // --------- Simmelian Sparsification (Overlap)
     std::cout << "[BEGIN] Simmelian Overlap attribute: " << std::endl;
@@ -208,7 +206,8 @@ TEST_F(SparsificationBenchmark, SparsificationBenchmarkGraphFile) {
     GlobalThresholdFilter filter3(g, overlap, 5, true);
     b = filter3.calculate();
     runtime.stop();
-    std::cout << "[DONE] global filter (simmelian overlap attribute) " << runtime.elapsedTag() << std::endl;
+    std::cout << "[DONE] global filter (simmelian overlap attribute) " << runtime.elapsedTag()
+              << std::endl;
 
     // --------- Local similarity Sparsification
     std::cout << "[BEGIN] Local Similarity attribute: " << std::endl;
@@ -221,10 +220,11 @@ TEST_F(SparsificationBenchmark, SparsificationBenchmarkGraphFile) {
 
     std::cout << "[BEGIN] global filter (local similarity attribute): " << std::endl;
     runtime.start();
-    GlobalThresholdFilter filter4 (g, minExponent, 0.37, true);
+    GlobalThresholdFilter filter4(g, minExponent, 0.37, true);
     b = filter4.calculate();
     runtime.stop();
-    std::cout << "[DONE] global filter (local similarity attribute) " << runtime.elapsedTag() << std::endl;
+    std::cout << "[DONE] global filter (local similarity attribute) " << runtime.elapsedTag()
+              << std::endl;
 }
 
 } /* namespace NetworKit */
