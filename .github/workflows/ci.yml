@@ -178,7 +178,7 @@ jobs:
     steps:
       - name: Install prerequisites
         run:  |
-          sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu impish main universe'
+          sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu jammy main universe'
           sudo apt-get update
           sudo apt-get install gcc-11 g++-11 ninja-build
       - name: Setup Python 3.10
@@ -412,7 +412,7 @@ jobs:
     steps:
       - name: Install prerequisites
         run:  |
-          sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu impish main universe'
+          sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu jammy main universe'
           sudo apt-get update
           sudo apt-get install gcc-11 g++-11 ninja-build
           sudo apt-get install doxygen pandoc
