@@ -38,7 +38,13 @@ namespace NetworKit {
 class PageRank final : public Centrality {
 
 public:
-    enum Norm { L1Norm, L2Norm };
+    enum Norm {
+        L1_NORM,
+        L2_NORM,
+        L1Norm = L1_NORM, // this + following added for backwards compatibility
+        L2Norm = L2_NORM
+    };
+
     enum SinkHandling { NO_SINK_HANDLING, DISTRIBUTE_SINKS };
 
     /**
@@ -79,7 +85,7 @@ public:
     count maxIterations = std::numeric_limits<count>::max();
 
     // Norm used as stopping criterion
-    Norm norm = Norm::L2Norm;
+    Norm norm = Norm::L2_NORM;
 
 private:
     double damp;

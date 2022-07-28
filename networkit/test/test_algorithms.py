@@ -41,15 +41,15 @@ class TestSelfLoops(unittest.TestCase):
 
 
 	def testCentralityCloseness(self):
-		CL = nk.centrality.Closeness(self.L, True, nk.centrality.ClosenessVariant.Generalized)
+		CL = nk.centrality.Closeness(self.L, True, nk.centrality.ClosenessVariant.GENERALIZED)
 		CL.run()
-		CLL = nk.centrality.Closeness(self.LL, True, nk.centrality.ClosenessVariant.Generalized)
+		CLL = nk.centrality.Closeness(self.LL, True, nk.centrality.ClosenessVariant.GENERALIZED)
 		CLL.run()
 		self.assertEqual(CL.ranking(), CLL.ranking())
 
 
 	def testCentralityTopCloseness(self):
-		CC = nk.centrality.Closeness(self.L, True, nk.centrality.ClosenessVariant.Generalized)
+		CC = nk.centrality.Closeness(self.L, True, nk.centrality.ClosenessVariant.GENERALIZED)
 		CC.run()
 		k = 5
 		TC1 = nk.centrality.TopCloseness(self.L, k, True, True)
@@ -160,7 +160,7 @@ class TestSelfLoops(unittest.TestCase):
 		self.assertEqual(CL.norm, CLL.norm)
 		self.assertEqual(CL.maxIterations, CLL.maxIterations)
 
-		norm = nk.centrality.Norm.l2norm
+		norm = nk.centrality.Norm.L2_NORM
 		maxIters = 2
 		CL.norm = norm
 		CL.maxIterations = maxIters

@@ -55,7 +55,7 @@ void PageRank::run() {
             return true;
         }
 
-        if (norm == Norm::L2Norm) {
+        if (norm == Norm::L2_NORM) {
             return std::sqrt(G.parallelSumForNodes(sumL2Norm)) <= tol;
         }
 

@@ -25,6 +25,16 @@ def graphFromStream(stream, weighted, directed):
 	gu.update(stream)
 	return G
 
+class GraphEventType(object):
+	NODE_ADDITION = _GraphEventType.NODE_ADDITION
+	NODE_REMOVAL = _GraphEventType.NODE_REMOVAL
+	NODE_RESTORATION = _GraphEventType.NODE_RESTORATION
+	EDGE_ADDITION = _GraphEventType.EDGE_ADDITION
+	EDGE_REMOVAL = _GraphEventType.EDGE_REMOVAL
+	EDGE_WEIGHT_UPDATE = _GraphEventType.EDGE_WEIGHT_UPDATE
+	EDGE_WEIGHT_INCREMENT = _GraphEventType.EDGE_WEIGHT_INCREMENT
+	TIME_STEP = _GraphEventType.TIME_STEP
+
 cdef class GraphEvent:
 	"""
 	GraphEvent(type, u, v, w)
@@ -33,17 +43,18 @@ cdef class GraphEvent:
 
 	Parameter :code:`type` is one of the following: 
 	
-	- networkit.dynamics.GraphEvent.NODE_ADDITION
-	- networkit.dynamics.GraphEvent.NODE_REMOVAL
-	- networkit.dynamics.GraphEvent.NODE_RESTORATION
-	- networkit.dynamics.GraphEvent.EDGE_ADDITION
-	- networkit.dynamics.GraphEvent.EDGE_REMOVAL
-	- networkit.dynamics.GraphEvent.EDGE_WEIGHT_UPDATE
-	- networkit.dynamics.GraphEvent.EDGE_WEIGHT_INCREMENT
+	- networkit.dynamics.GraphEventType.NODE_ADDITION
+	- networkit.dynamics.GraphEventType.NODE_REMOVAL
+	- networkit.dynamics.GraphEventType.NODE_RESTORATION
+	- networkit.dynamics.GraphEventType.EDGE_ADDITION
+	- networkit.dynamics.GraphEventType.EDGE_REMOVAL
+	- networkit.dynamics.GraphEventType.EDGE_WEIGHT_UPDATE
+	- networkit.dynamics.GraphEventType.EDGE_WEIGHT_INCREMENT
+ 	- networkit.dynamics.GraphEventType.TIME_STEP
 
 	Parameters
 	----------
-	type: networkit.dynamics.GraphEvent.type
+	type: networkit.dynamics.GraphEvent
 		Type of graph event.
 	u : int
 		Node u involved in graph event.
@@ -52,14 +63,15 @@ cdef class GraphEvent:
 	w : int, float
 		Weight of edge between node u and v.
 	"""
-	NODE_ADDITION = 0
-	NODE_REMOVAL = 1
-	NODE_RESTORATION = 2
-	EDGE_ADDITION = 3
-	EDGE_REMOVAL = 4
-	EDGE_WEIGHT_UPDATE = 5
-	EDGE_WEIGHT_INCREMENT = 6
-	TIME_STEP = 7
+	# Added for backwards compatibility
+	NODE_ADDITION = GraphEventType.NODE_ADDITION
+	NODE_REMOVAL = GraphEventType.NODE_REMOVAL
+	NODE_RESTORATION = GraphEventType.NODE_RESTORATION
+	EDGE_ADDITION = GraphEventType.EDGE_ADDITION
+	EDGE_REMOVAL = GraphEventType.EDGE_REMOVAL
+	EDGE_WEIGHT_UPDATE = GraphEventType.EDGE_WEIGHT_UPDATE
+	EDGE_WEIGHT_INCREMENT = GraphEventType.EDGE_WEIGHT_INCREMENT
+	TIME_STEP = GraphEventType.TIME_STEP
 
 	@property
 	def type(self):

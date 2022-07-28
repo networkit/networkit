@@ -51,7 +51,7 @@ NETWORKIT_EXPORT bool getSeedUseThreadId();
 
 // Global states used for auxiliary/Log
 NETWORKIT_EXPORT Aux::Log::LogLevel getLogLevel();
-NETWORKIT_EXPORT void setLogLevel(Aux::Log::LogLevel p = Aux::Log::LogLevel::info);
+NETWORKIT_EXPORT void setLogLevel(Aux::Log::LogLevel p = Aux::Log::LogLevel::INFO);
 
 NETWORKIT_EXPORT bool getPrintTime();
 NETWORKIT_EXPORT void setPrintTime(bool b);

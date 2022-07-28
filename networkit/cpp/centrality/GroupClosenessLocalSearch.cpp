@@ -247,7 +247,7 @@ void GroupClosenessLocalSearchImpl<WeightType>::init() {
     if (G->isDirected()) {
         diam = estimateDiamDirected();
     } else {
-        Diameter diamAlgo(*G, DiameterAlgo::estimatedRange, 0.1);
+        Diameter diamAlgo(*G, DiameterAlgo::ESTIMATED_RANGE, 0.1);
         diamAlgo.run();
         diam = diamAlgo.getDiameter().second;
     }

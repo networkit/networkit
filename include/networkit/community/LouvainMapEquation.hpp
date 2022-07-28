@@ -18,7 +18,14 @@ namespace NetworKit {
 
 class LouvainMapEquation : public CommunityDetectionAlgorithm {
 private:
-    enum class ParallelizationType : uint8_t { None, RelaxMap, Synchronous };
+    enum class ParallelizationType : uint8_t {
+        NONE,
+        RELAX_MAP,
+        SYNCHRONOUS,
+        None = NONE, // this + following added for backwards compatibility
+        RelaxMap = RELAX_MAP,
+        Synchronous = SYNCHRONOUS
+    };
 
     /**
      * @param[in] G input graph
@@ -118,11 +125,11 @@ private:
     ParallelizationType
     convertStringToParallelizationType(const std::string &parallelizationStrategy) const {
         if (parallelizationStrategy == "none")
-            return ParallelizationType::None;
+            return ParallelizationType::NONE;
         else if (parallelizationStrategy == "relaxmap")
-            return ParallelizationType::RelaxMap;
+            return ParallelizationType::RELAX_MAP;
         else if (parallelizationStrategy == "synchronous")
-            return ParallelizationType::Synchronous;
+            return ParallelizationType::SYNCHRONOUS;
         else
             throw std::runtime_error("Invalid parallelization type for map equation Louvain: "
                                      + parallelizationStrategy);

@@ -331,7 +331,7 @@ void ParallelLeiden::parallelMove(const Graph &graph) {
     result.setUpperBound(upperBound);
     assert(queue.empty());
     assert(waitingForNodes == tcount);
-    if (Aux::Log::isLogLevelEnabled(Aux::Log::LogLevel::debug)) {
+    if (Aux::Log::isLogLevelEnabled(Aux::Log::LogLevel::DEBUG)) {
         count totalMoved = std::accumulate(moved.begin(), moved.end(), (count)0);
         count totalWorked =
             std::accumulate(totalNodesPerThread.begin(), totalNodesPerThread.end(), (count)0);

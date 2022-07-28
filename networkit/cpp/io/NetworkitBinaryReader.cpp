@@ -36,7 +36,7 @@ Graph NetworkitBinaryReader::readFromBuffer(const std::vector<uint8_t> &data) {
 template <class T>
 Graph NetworkitBinaryReader::readData(const T &source) {
     nkbg::Header header;
-    nkbg::WEIGHT_FORMAT weightFormat;
+    nkbg::WeightFormat weightFormat;
 
     const char *startIt = accessData(source);
     const char *it = startIt;
@@ -55,8 +55,8 @@ Graph NetworkitBinaryReader::readData(const T &source) {
             throw std::runtime_error("Reader expected another magic value");
         }
         directed = (header.features & nkbg::DIR_MASK);
-        weightFormat = static_cast<nkbg::WEIGHT_FORMAT>((header.features & nkbg::WGHT_MASK)
-                                                        >> nkbg::WGHT_SHIFT);
+        weightFormat = static_cast<nkbg::WeightFormat>((header.features & nkbg::WGHT_MASK)
+                                                       >> nkbg::WGHT_SHIFT);
         indexed = false;
         if (version >= 3) {
             indexed = (header.features & nkbg::INDEX_MASK) >> nkbg::INDEX_SHIFT;
@@ -89,7 +89,7 @@ Graph NetworkitBinaryReader::readData(const T &source) {
     DEBUG("# nodes here = ", nodes);
     chunks = header.chunks;
     DEBUG("# chunks here = ", chunks);
-    if (weightFormat == nkbg::WEIGHT_FORMAT::NONE) {
+    if (weightFormat == nkbg::WeightFormat::NONE) {
         weighted = false;
     } else {
         weighted = true;
@@ -185,29 +185,29 @@ Graph NetworkitBinaryReader::readData(const T &source) {
                 double weight = defaultEdgeWeight;
                 off += nkbg::varIntDecode(reinterpret_cast<const uint8_t *>(adjIt + off), add);
                 switch (weightFormat) {
-                case nkbg::WEIGHT_FORMAT::VARINT: {
+                case nkbg::WeightFormat::VARINT: {
                     uint64_t unsignedWeight;
                     wghtOff += nkbg::varIntDecode(
                         reinterpret_cast<const uint8_t *>(adjWghtIt + wghtOff), unsignedWeight);
                     weight = unsignedWeight;
                 } break;
-                case nkbg::WEIGHT_FORMAT::DOUBLE:
+                case nkbg::WeightFormat::DOUBLE:
                     memcpy(&weight, adjWghtIt + wghtOff, sizeof(double));
                     wghtOff += sizeof(double);
                     break;
-                case nkbg::WEIGHT_FORMAT::SIGNED_VARINT: {
+                case nkbg::WeightFormat::SIGNED_VARINT: {
                     uint64_t unsignedWeight;
                     wghtOff += nkbg::varIntDecode(
                         reinterpret_cast<const uint8_t *>(adjWghtIt + wghtOff), unsignedWeight);
                     weight = nkbg::zigzagDecode(unsignedWeight);
                 } break;
-                case nkbg::WEIGHT_FORMAT::FLOAT: {
+                case nkbg::WeightFormat::FLOAT: {
                     float floatWeight;
                     memcpy(&floatWeight, adjWghtIt + wghtOff, sizeof(float));
                     wghtOff += sizeof(float);
                     weight = floatWeight;
                 } break;
-                case nkbg::WEIGHT_FORMAT::NONE:
+                case nkbg::WeightFormat::NONE:
                     break;
                 }
                 if (indexed) {
@@ -233,31 +233,31 @@ Graph NetworkitBinaryReader::readData(const T &source) {
                 transpOff += nkbg::varIntDecode(
                     reinterpret_cast<const uint8_t *>(transpIt + transpOff), add);
                 switch (weightFormat) {
-                case nkbg::WEIGHT_FORMAT::VARINT: {
+                case nkbg::WeightFormat::VARINT: {
                     uint64_t unsignedWeight;
                     transWghtOff += nkbg::varIntDecode(
                         reinterpret_cast<const uint8_t *>(transpWghtIt + transWghtOff),
                         unsignedWeight);
                     weight = unsignedWeight;
                 } break;
-                case nkbg::WEIGHT_FORMAT::DOUBLE:
+                case nkbg::WeightFormat::DOUBLE:
                     memcpy(&weight, transpWghtIt + transWghtOff, sizeof(double));
                     transWghtOff += sizeof(double);
                     break;
-                case nkbg::WEIGHT_FORMAT::SIGNED_VARINT: {
+                case nkbg::WeightFormat::SIGNED_VARINT: {
                     uint64_t unsignedWeight;
                     transWghtOff += nkbg::varIntDecode(
                         reinterpret_cast<const uint8_t *>(transpWghtIt + transWghtOff),
                         unsignedWeight);
                     weight = nkbg::zigzagDecode(unsignedWeight);
                 } break;
-                case nkbg::WEIGHT_FORMAT::FLOAT: {
+                case nkbg::WeightFormat::FLOAT: {
                     float floatWeight;
                     memcpy(&floatWeight, transpWghtIt + transWghtOff, sizeof(float));
                     transWghtOff += sizeof(float);
                     weight = floatWeight;
                 } break;
-                case nkbg::WEIGHT_FORMAT::NONE:
+                case nkbg::WeightFormat::NONE:
                     break;
                 }
                 if (indexed) {

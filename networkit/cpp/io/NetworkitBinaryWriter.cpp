@@ -68,34 +68,34 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
     };
 
     switch (weightsType) {
-    case NetworkitBinaryWeights::none:
+    case NetworkitBinaryWeights::NONE:
         weightFormat = nkbg::WEIGHT_FORMAT::NONE;
         break;
-    case NetworkitBinaryWeights::autoDetect:
+    case NetworkitBinaryWeights::AUTO_DETECT:
         weightFormat = detectWeightsType();
         break;
-    case NetworkitBinaryWeights::unsignedFormat:
+    case NetworkitBinaryWeights::UNSIGNED_FORMAT:
         weightFormat = nkbg::WEIGHT_FORMAT::VARINT;
         break;
-    case NetworkitBinaryWeights::signedFormat:
+    case NetworkitBinaryWeights::SIGNED_FORMAT:
         weightFormat = nkbg::WEIGHT_FORMAT::SIGNED_VARINT;
         break;
-    case NetworkitBinaryWeights::doubleFormat:
+    case NetworkitBinaryWeights::DOUBLE_FORMAT:
         weightFormat = nkbg::WEIGHT_FORMAT::DOUBLE;
         break;
-    case NetworkitBinaryWeights::floatFormat:
+    case NetworkitBinaryWeights::FLOAT_FORMAT:
         weightFormat = nkbg::WEIGHT_FORMAT::FLOAT;
         break;
     }
 
     switch (edgeIndex) {
-    case NetworkitBinaryEdgeIDs::noEdgeIDs:
+    case NetworkitBinaryEdgeIDs::NO_EDGE_IDS:
         preserveEdgeIndex = false;
         break;
-    case NetworkitBinaryEdgeIDs::autoDetect:
+    case NetworkitBinaryEdgeIDs::AUTO_DETECT:
         preserveEdgeIndex = G.hasEdgeIds();
         break;
-    case NetworkitBinaryEdgeIDs::writeEdgeIDs:
+    case NetworkitBinaryEdgeIDs::WIRTE_EDGE_IDS:
         preserveEdgeIndex = G.hasEdgeIds();
         break;
     }

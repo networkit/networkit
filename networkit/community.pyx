@@ -1890,7 +1890,12 @@ cdef extern from "<networkit/community/OverlappingNMIDistance.hpp>" namespace "N
 		JOINT_ENTROPY
 
 class Normalization:
-	Min = MIN
+	MIN = _Normalization.MIN
+	GEOMETRIC_MEAN = _Normalization.GEOMETRIC_MEAN
+	ARITHMETIC_MEAN = _Normalization.ARITHMETIC_MEAN
+	MAX = _Normalization.MAX
+	JOINT_ENTROPY = _Normalization.JOINT_ENTROPY
+	Min = MIN # this + following added for backwards compatibility
 	GeometricMean = GEOMETRIC_MEAN
 	ArithmeticMean = ARITHMETIC_MEAN
 	Max = MAX
@@ -1907,7 +1912,7 @@ cdef extern from "<networkit/community/OverlappingNMIDistance.hpp>":
 
 cdef class OverlappingNMIDistance(DissimilarityMeasure):
 	"""
-	OverlappingNMIDistance(normalization = networkit.community.Normalization.Max)
+	OverlappingNMIDistance(normalization = networkit.community.Normalization.MAX)
 	
 	Compare two covers using the overlapping normalized mutual information measure. This is a dissimilarity measure with
 	a range of [0, 1]. A value of 0 indicates a perfect agreement while a 1 indicates complete disagreement.
@@ -1917,16 +1922,16 @@ cdef class OverlappingNMIDistance(DissimilarityMeasure):
 
 	Parameter :code:`normalization` can be one of the following:
 
-	- networkit.community.Normalization.Min
-	- networkit.community.Normalization.GeometricMean
-	- networkit.community.Normalization.ArithmeticMean
-	- networkit.community.Normalization.Max
-	- networkit.community.Normalization.JointEntropy
+	- networkit.community.Normalization.MIN
+	- networkit.community.Normalization.GEOMETRIC_MEAN
+	- networkit.community.Normalization.ARITHMETIC_MEAN
+	- networkit.community.Normalization.MAX
+	- networkit.community.Normalization.JOINT_ENTROPY
 
 	Parameters
 	----------
 	normalization : networkit.community.Normalization, optional
-		Normalization strategy for OverlappingNMIDistance. Default: networkit.community.Normalization.Max
+		Normalization strategy for OverlappingNMIDistance. Default: networkit.community.Normalization.MAX
 
 	Raises
 	------
@@ -1941,17 +1946,11 @@ cdef class OverlappingNMIDistance(DissimilarityMeasure):
 	"""
 	cdef _OverlappingNMIDistance _this
 
-	Min = _Normalization.MIN
-	GeometricMean = _Normalization.GEOMETRIC_MEAN
-	ArithmeticMean = _Normalization.ARITHMETIC_MEAN
-	Max = _Normalization.MAX
-	JointEntropy = _Normalization.JOINT_ENTROPY
-
-	def __cinit__(self, _Normalization normalization = _Normalization.MAX):
+	def __cinit__(self, normalization = Normalization.MAX):
 		self._validateNormalization(normalization)
 		self._this = _OverlappingNMIDistance(normalization)
 
-	def setNormalization(self, _Normalization normalization):
+	def setNormalization(self, normalization):
 		"""
 		setNormalization(self, normalization)
 		
@@ -1959,11 +1958,11 @@ cdef class OverlappingNMIDistance(DissimilarityMeasure):
 
 		Parameter :code:`normalization` can be one of the following:
 
-		- networkit.community.Normalization.Min
-		- networkit.community.Normalization.GeometricMean
-		- networkit.community.Normalization.ArithmeticMean
-		- networkit.community.Normalization.Max
-		- networkit.community.Normalization.JointEntropy
+		- networkit.community.Normalization.MIN
+		- networkit.community.Normalization.GEOMETRIC_MEAN
+		- networkit.community.Normalization.ARITHMETIC_MEAN
+		- networkit.community.Normalization.MAX
+		- networkit.community.Normalization.JOINT_ENTROPY
 
 		Parameters
 		----------

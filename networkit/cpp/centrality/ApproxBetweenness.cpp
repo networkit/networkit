@@ -35,7 +35,7 @@ void ApproxBetweenness::run() {
 
     edgeweight vd = 0;
 
-    Diameter diam(G, DiameterAlgo::estimatedPedantic);
+    Diameter diam(G, DiameterAlgo::ESTIMATED_PEDANTIC);
     diam.run();
     vd = static_cast<edgeweight>(diam.getDiameter().first);
 

@@ -9,14 +9,19 @@
 #ifndef NETWORKIT_CENTRALITY_CLOSENESS_HPP_
 #define NETWORKIT_CENTRALITY_CLOSENESS_HPP_
 
-#include <tlx/container/d_ary_addressable_int_heap.hpp>
-
 #include <networkit/auxiliary/VectorComparator.hpp>
 #include <networkit/centrality/Centrality.hpp>
 
+#include <tlx/container/d_ary_addressable_int_heap.hpp>
+
 namespace NetworKit {
 
-enum ClosenessVariant { standard = 0, generalized = 1 };
+enum ClosenessVariant {
+    STANDARD = 0,
+    GENERALIZED = 1,
+    standard = STANDARD, // this + following added for backwards compatibility
+    generalized = GENERALIZED
+};
 
 /**
  * @ingroup centrality
@@ -38,7 +43,7 @@ public:
      *
      */
     Closeness(const Graph &G, bool normalized,
-              ClosenessVariant variant = ClosenessVariant::standard);
+              ClosenessVariant variant = ClosenessVariant::STANDARD);
 
     /**
      * Old constructor, we keep it for backward compatibility. It computes the
@@ -80,7 +85,7 @@ private:
     void incTS();
     void updateScoreData(node u, count reached, double sum) {
         if (sum > 0) {
-            if (variant == ClosenessVariant::standard) {
+            if (variant == ClosenessVariant::STANDARD) {
                 scoreData[u] = 1.0 / sum;
             } else {
                 scoreData[u] = static_cast<double>(reached - 1) / sum
@@ -91,7 +96,7 @@ private:
         }
         if (normalized)
             scoreData[u] *=
-                (variant == ClosenessVariant::standard ? G.numberOfNodes() : reached) - 1.;
+                (variant == ClosenessVariant::STANDARD ? G.numberOfNodes() : reached) - 1.;
     }
 
     std::vector<tlx::d_ary_addressable_int_heap<node, 2, Aux::LessInVector<double>>> heaps;

@@ -12,7 +12,12 @@
 
 namespace NetworKit {
 
-enum EdgeDirection : char { InEdges = 0, OutEdges = 1 };
+enum EdgeDirection : char {
+    IN_EDGES = 0,
+    OUT_EDGES = 1,
+    InEdges = IN_EDGES, // this + following added for backwards compatibility
+    OutEdges = OUT_EDGES
+};
 
 /**
  * @ingroup centrality
@@ -50,7 +55,7 @@ public:
     void run() override;
 
     // Whether to count in-edges or out-edges
-    EdgeDirection edgeDirection = EdgeDirection::InEdges;
+    EdgeDirection edgeDirection = EdgeDirection::IN_EDGES;
 };
 
 } /* namespace NetworKit */

@@ -519,8 +519,8 @@ TEST_P(CentralityGTest, testPageRank) {
         EXPECT_LE(pr.numberOfIterations(), maxIterations);
     };
 
-    doTest(PageRank::Norm::L1Norm);
-    doTest(PageRank::Norm::L2Norm);
+    doTest(PageRank::Norm::L1_NORM);
+    doTest(PageRank::Norm::L2_NORM);
 }
 
 TEST_P(CentralityGTest, testNormalizedPageRank) {
@@ -566,8 +566,8 @@ TEST_P(CentralityGTest, testNormalizedPageRank) {
 
     };
 
-    doTest(PageRank::Norm::L1Norm);
-    doTest(PageRank::Norm::L2Norm);
+    doTest(PageRank::Norm::L1_NORM);
+    doTest(PageRank::Norm::L2_NORM);
 }
 
 TEST_F(CentralityGTest, testEigenvectorCentrality) {
@@ -864,7 +864,7 @@ TEST_P(CentralityGTest, testClosenessCentrality) {
         double reached = 0.;
 
         G.forNodes([&](node v) {
-            if (variant == ClosenessVariant::standard) {
+            if (variant == ClosenessVariant::STANDARD) {
                 sumDist += dists[v];
             } else if (dists[v] != std::numeric_limits<double>::max()) {
                 ++reached;
@@ -874,18 +874,18 @@ TEST_P(CentralityGTest, testClosenessCentrality) {
 
         double score = sumDist;
         if (score) {
-            score = (variant == ClosenessVariant::standard) ?
-                1.0 / score : (reached - 1.0) / sumDist / (G.numberOfNodes() - 1.0);
+            score = (variant == ClosenessVariant::STANDARD) ?
+                1.0 / score : (reached - 1.0) / sumDist / (G.numberOfNodes() - 1.0); 
         }
 
         if (normalized) {
-            score *= (variant == ClosenessVariant::standard ? G.numberOfNodes() : reached) - 1.0;
+            score *= (variant == ClosenessVariant::STANDARD ? G.numberOfNodes() : reached) - 1.0;
         }
 
         return score;
     };
 
-    for (auto variant : {ClosenessVariant::standard, ClosenessVariant::generalized}) {
+    for (auto variant : {ClosenessVariant::STANDARD, ClosenessVariant::GENERALIZED}) {
         for (auto normalized : {true, false}) {
             Closeness centrality(G, normalized, variant);
             centrality.run();
@@ -1291,7 +1291,7 @@ TEST_P(CentralityGTest, testTopCloseness) {
     const auto G1 = DorogovtsevMendesGenerator(size).generate();
     Graph G(G1, false, isDirected());
 
-    Closeness cc(G1, true, ClosenessVariant::generalized);
+    Closeness cc(G1, true, ClosenessVariant::GENERALIZED);
     cc.run();
     auto exactScores = cc.scores();
     auto ranking = cc.ranking();
@@ -1843,8 +1843,8 @@ TEST_P(CentralityGTest, testGedWalk) {
     constexpr double epsilon = 0.01;
     auto g = ErdosRenyiGenerator(20, 0.1, isDirected()).generate();
 
-    for (const auto bs : {GedWalk::BoundStrategy::geometric, GedWalk::BoundStrategy::spectral}) {
-        for (const auto gs : {GedWalk::GreedyStrategy::lazy, GedWalk::GreedyStrategy::stochastic}) {
+    for (const auto bs : {GedWalk::BoundStrategy::GEOMETRIC, GedWalk::BoundStrategy::SPECTRAL}) {
+        for (const auto gs : {GedWalk::GreedyStrategy::LAZY, GedWalk::GreedyStrategy::STOCHASTIC}) {
             GedWalk gedWalk(g, k, epsilon, -1.0, bs, gs);
             gedWalk.run();
 

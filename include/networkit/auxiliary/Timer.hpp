@@ -132,7 +132,7 @@ public:
      *              If logging is disabled during construction or destruction, no message is shown.
      */
     explicit LoggingTimer(const std::string &label = "",
-                          Aux::Log::LogLevel level = Aux::Log::LogLevel::debug);
+                          Aux::Log::LogLevel level = Aux::Log::LogLevel::DEBUG);
     ~LoggingTimer();
 
 private:

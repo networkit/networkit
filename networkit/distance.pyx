@@ -488,18 +488,24 @@ cdef class AdamicAdarDistance:
 cdef extern from "<networkit/distance/Diameter.hpp>" namespace "NetworKit":
 
 	cdef enum _DiameterAlgo "NetworKit::DiameterAlgo":
-		automatic = 0
-		exact = 1
-		estimatedRange = 2
-		estimatedSamples = 3
-		estimatedPedantic = 4
+		AUTOMATIC,
+		EXACT,
+		ESTIMATED_RANGE,
+		ESTIMATED_SAMPLES,
+		ESTIMATED_PEDANTIC,
 
 class DiameterAlgo(object):
-	Automatic = automatic
-	Exact = exact
-	EstimatedRange = estimatedRange
-	EstimatedSamples = estimatedSamples
-	EstimatedPedantic = estimatedPedantic
+	AUTOMATIC = _DiameterAlgo.AUTOMATIC
+	EXACT = _DiameterAlgo.EXACT
+	ESTIMATED_RANGE = _DiameterAlgo.ESTIMATED_RANGE
+	ESTIMATED_SAMPLES = _DiameterAlgo.ESTIMATED_SAMPLES
+	ESTIMATED_PEDANTIC = _DiameterAlgo.ESTIMATED_PEDANTIC
+	Automatic = AUTOMATIC # this + following added for backwards compatibility
+	Exact = EXACT
+	EstimatedRange = ESTIMATED_RANGE
+	EstimatedSamples = ESTIMATED_SAMPLES
+	EstimatedPedantic = ESTIMATED_PEDANTIC
+
 
 cdef extern from "<networkit/distance/Diameter.hpp>" namespace "NetworKit::Diameter":
 
@@ -509,16 +515,24 @@ cdef extern from "<networkit/distance/Diameter.hpp>" namespace "NetworKit::Diame
 
 cdef class Diameter(Algorithm):
 	"""
-	Diameter(G, algo = networkit.DiameterAlgo.Automatic, error = -1., nSamples = 0)
+	Diameter(G, algo = networkit.DiameterAlgo.AUTOMATIC, error = -1., nSamples = 0)
 
 	Calculate the Diameter of the graph based different possible algorithms.
+
+	Parameter :code:`algo` can be one of the following:
+
+	- networkit.distance.DiameterAlgo.AUTOMATIC
+	- networkit.distance.DiameterAlgo.EXACT
+	- networkit.distance.DiameterAlgo.ESTIMATED_RANGE
+	- networkit.distance.DiameterAlgo.ESTIMATED_SAMPLES
+	- networkit.distance.DiameterAlgo.ESTIMATED_PEDANTIC
 
 	Parameters
 	----------
 	G : networkit.Graph
 		The input graph.
 	algo : networkit.distance.DiameterAlgo, optional
-		Algorithm which should be used for diameter computation.
+		Algorithm which should be used for diameter computation. Default: networkit.distance.DiameterAlgo.AUTOMATIC
 	error : float, optional
 		Possible error used for diameter algorithm EstimatedRange.
 	nSamples : int, optional
@@ -526,7 +540,7 @@ cdef class Diameter(Algorithm):
 	"""
 	cdef Graph _G
 
-	def __cinit__(self, Graph G not None, algo = DiameterAlgo.Automatic, error = -1., nSamples = 0):
+	def __cinit__(self, Graph G not None, algo = DiameterAlgo.AUTOMATIC, error = -1., nSamples = 0):
 		self._G = G
 		self._this = new _Diameter(G._this, algo, error, nSamples)
 
@@ -1106,8 +1120,12 @@ cdef class CommuteTimeDistance(Algorithm):
 cdef extern from "<networkit/distance/NeighborhoodFunctionHeuristic.hpp>" namespace "NetworKit::NeighborhoodFunctionHeuristic::SelectionStrategy":
 
 	enum _SelectionStrategy "NetworKit::NeighborhoodFunctionHeuristic::SelectionStrategy":
-		RANDOM
-		SPLIT
+		RANDOM = 0
+		SPLIT = 1
+
+class SelectionStrategy(object):
+	RANDOM = _SelectionStrategy.RANDOM
+	SPLIT = _SelectionStrategy.SPLIT
 
 cdef extern from "<networkit/distance/NeighborhoodFunctionHeuristic.hpp>" namespace "NetworKit::NeighborhoodFunctionHeuristic":
 
@@ -1117,11 +1135,15 @@ cdef extern from "<networkit/distance/NeighborhoodFunctionHeuristic.hpp>" namesp
 
 cdef class NeighborhoodFunctionHeuristic(Algorithm):
 	"""
-	NeighborhoodFunctionHeuristic(G, nSamples=0, strategy=1)
+	NeighborhoodFunctionHeuristic(G, nSamples=0, strategy=SelectionStrategy.SPLIT)
 
 	Computes a heuristic of the neighborhood function.
 	The algorithm runs nSamples breadth-first searches and scales the results up to the actual amount of nodes.
-	Accepted strategies are "split" and "random".
+
+	Parameter :code:`strategy` can be one of the following:
+
+	- networkit.distance.SelectionStrategy.RANDOM
+	- networkit.distance.SelectionStrategy.SPLIT
 
 	Parameters
 	----------
@@ -1129,15 +1151,12 @@ cdef class NeighborhoodFunctionHeuristic(Algorithm):
 		The graph.
 	nSamples : int, optional
 		The amount of samples, set to zero for heuristic of max(sqrt(m), 0.15*n).
-	strategy : int
-		The strategy to select the samples, accepts 0 (random) or 1 (split).
+	strategy : networkit.distance.SelectionStrategy, optional
+		The strategy to select the samples, accepts RANDOM (0) or SPLIT (1). Default: networkit.distance.SelectionStrategy.SPLIT
 	"""
 	cdef Graph _G
 
-	RANDOM = 0
-	SPLIT = 1
-
-	def __cinit__(self, Graph G not None, count nSamples=0, strategy=SPLIT):
+	def __cinit__(self, Graph G not None, count nSamples=0, strategy=SelectionStrategy.SPLIT):
 		self._G = G
 		self._this = new _NeighborhoodFunctionHeuristic(G._this, nSamples, strategy)
 

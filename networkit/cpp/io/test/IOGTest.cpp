@@ -859,7 +859,7 @@ TEST_F(IOGTest, testNetworkitBinaryTiny01InMemory) {
 TEST_F(IOGTest, testNetworkitBinaryTiny01Indexed) {
     METISGraphReader reader2;
     Graph G = reader2.read("input/tiny_01.graph");
-    NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::autoDetect);
+    NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::AUTO_DETECT);
 
     G.indexEdges();
     writer.write(G, "output/binary_tiny01");
@@ -928,7 +928,7 @@ TEST_F(IOGTest, testNetworkitBinaryKonectIndexed) {
     KONECTGraphReader reader2;
     Graph G = reader2.read("input/foodweb-baydry.konect");
     G.indexEdges();
-    NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::autoDetect);
+    NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::AUTO_DETECT);
     writer.write(G, "output/binary_konect");
     ASSERT_TRUE(!G.isEmpty());
 
@@ -969,7 +969,7 @@ TEST_F(IOGTest, testNetworkitBinaryJazzIndexed) {
     Graph G = reader2.read("input/jazz.graph");
     G.indexEdges();
 
-    NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::autoDetect);
+    NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::AUTO_DETECT);
     writer.write(G, "output/binary_jazz");
     ASSERT_TRUE(!G.isEmpty());
 
@@ -1003,7 +1003,7 @@ TEST_F(IOGTest, testNetworkitBinaryWikiIndexed) {
     SNAPGraphReader reader2(true);
     Graph G = reader2.read("input/wiki-Vote.txt");
     G.indexEdges();
-    NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::autoDetect);
+    NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::AUTO_DETECT);
 
     writer.write(G, "output/binary_wiki");
     ASSERT_TRUE(!G.isEmpty());
@@ -1025,7 +1025,7 @@ TEST_F(IOGTest, testNetworkitBinarySignedWeights) {
         if (n != G.numberOfNodes() - 1)
             G.addEdge(n, n + 1, weight++);
     }
-    NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::autoDetect);
+    NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::AUTO_DETECT);
     writer.write(G, "output/binarySigned");
 
     NetworkitBinaryReader reader;
@@ -1049,7 +1049,7 @@ TEST_F(IOGTest, testNetworkitBinarySignedWeightsIndexed) {
         if (n != G.numberOfNodes() - 1)
             G.addEdge(n, n + 1, weight++);
     }
-    NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::autoDetect);
+    NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::AUTO_DETECT);
     writer.write(G, "output/binarySigned");
 
     NetworkitBinaryReader reader;
@@ -1073,7 +1073,7 @@ TEST_F(IOGTest, testNetworkitBinaryFloatWeights) {
         if (n != G.numberOfNodes() - 1)
             G.addEdge(n, n + 1, weight++);
     }
-    NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::autoDetect);
+    NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::AUTO_DETECT);
     writer.write(G, "output/binaryFloats");
 
     NetworkitBinaryReader reader;
@@ -1097,7 +1097,7 @@ TEST_F(IOGTest, testNetworkitBinaryFloatWeightsIndexed) {
         if (n != G.numberOfNodes() - 1)
             G.addEdge(n, n + 1, weight++);
     }
-    NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::autoDetect);
+    NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::AUTO_DETECT);
     writer.write(G, "output/binaryFloats");
 
     NetworkitBinaryReader reader;

@@ -13,11 +13,11 @@ class TestDistanceAlgorithms(unittest.TestCase):
 		self.LL = nk.readGraph("input/looptest2.gml", nk.Format.GML) #with self-loops sprinkled in
 
 	def testDistanceDiameter(self):
-		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.EstimatedRange, error = 0.1)
+		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.ESTIMATED_RANGE, error = 0.1)
 		D.run()
-		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.EstimatedSamples, nSamples = 5)
+		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.ESTIMATED_SAMPLES, nSamples = 5)
 		D.run()
-		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.Exact)
+		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.EXACT)
 		D.run()
 
 

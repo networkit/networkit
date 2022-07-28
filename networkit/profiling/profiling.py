@@ -1046,7 +1046,7 @@ class Profile:
 			try:
 				timerInstance = stopwatch.Timer()
 				self.verbosePrint("Diameter: ", end="")
-				diam = distance.Diameter(self.__G, distance.DiameterAlgo.EstimatedRange, error = 0.1)
+				diam = distance.Diameter(self.__G, distance.DiameterAlgo.ESTIMATED_RANGE, error = 0.1)
 				diameter = diam.run().getDiameter()
 				elapsedMain = timerInstance.elapsed
 				self.verbosePrint("{:.2F} s".format(elapsedMain))
