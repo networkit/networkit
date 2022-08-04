@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * Closeness.cpp
  *
@@ -16,8 +15,7 @@
 
 namespace NetworKit {
 
-Closeness::Closeness(const Graph &G, bool normalized,
-                     const ClosenessVariant variant)
+Closeness::Closeness(const Graph &G, bool normalized, const ClosenessVariant variant)
     : Centrality(G, normalized), variant(variant) {
     if (variant == ClosenessVariant::STANDARD) {
         checkConnectedComponents();
@@ -42,10 +40,9 @@ void Closeness::checkConnectedComponents() const {
         multipleComponents = cc.numberOfComponents() > 1;
     }
     if (multipleComponents) {
-        throw std::runtime_error(
-            "Error: the standard definition of closeness is not defined on "
-            "disconnected graphs. On disconnected graphs, use the generalized "
-            "definition instead.");
+        throw std::runtime_error("Error: the standard definition of closeness is not defined on "
+                                 "disconnected graphs. On disconnected graphs, use the generalized "
+                                 "definition instead.");
     }
 }
 
@@ -77,8 +74,7 @@ void Closeness::run() {
 
 void Closeness::bfs() {
 #pragma omp parallel for schedule(dynamic)
-    for (omp_index u = 0; u < static_cast<omp_index>(G.upperNodeIdBound());
-         ++u) {
+    for (omp_index u = 0; u < static_cast<omp_index>(G.upperNodeIdBound()); ++u) {
         uint8_t &ts_ = ts[omp_get_thread_num()];
         auto &dist_ = uDist[omp_get_thread_num()];
         auto &visited_ = visited[omp_get_thread_num()];
@@ -116,8 +112,7 @@ void Closeness::bfs() {
 
 void Closeness::dijkstra() {
 #pragma omp parallel for schedule(dynamic)
-    for (omp_index u = 0; u < static_cast<omp_index>(G.upperNodeIdBound());
-         ++u) {
+    for (omp_index u = 0; u < static_cast<omp_index>(G.upperNodeIdBound()); ++u) {
         uint8_t &ts_ = ts[omp_get_thread_num()];
         auto &dist_ = dDist[omp_get_thread_num()];
         auto &visited_ = visited[omp_get_thread_num()];

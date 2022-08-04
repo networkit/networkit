@@ -3,7 +3,7 @@
  *
  *  Created on: Dec 8, 2015
  *      Author: Sarah Lutteropp (uwcwa@student.kit.edu) and Michael Wegner
- * (michael.wegner@student.kit.edu)
+ *      (michael.wegner@student.kit.edu)
  */
 
 #ifndef NETWORKIT_CENTRALITY_APPROX_CLOSENESS_HPP_

@@ -25,6 +25,9 @@ public:
     }
 };
 
+using PrioQ =
+    std::priority_queue<std::pair<double, node>, std::vector<std::pair<double, node>>, CompareDist>;
+
 /**
  * @ingroup centrality
  * Dynamic APSP.
@@ -73,12 +76,8 @@ public:
     double getTimeDep();
 
 private:
-    void increaseScore(std::vector<bool> &affected, node y,
-                       std::priority_queue<std::pair<double, node>,
-                                           std::vector<std::pair<double, node>>, CompareDist> &Q);
-    void decreaseScore(std::vector<bool> &affected, node y,
-                       std::priority_queue<std::pair<double, node>,
-                                           std::vector<std::pair<double, node>>, CompareDist> &Q);
+    void increaseScore(std::vector<bool> &affected, node y, PrioQ &Q);
+    void decreaseScore(std::vector<bool> &affected, node y, PrioQ &Q);
     node u;
     node v;
     edgeweight diameter = 0.0;

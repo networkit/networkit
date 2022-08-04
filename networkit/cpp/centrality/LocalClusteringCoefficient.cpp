@@ -1,12 +1,16 @@
-// no-networkit-format
-#include <networkit/centrality/LocalClusteringCoefficient.hpp>
 #include <omp.h>
+#include <networkit/centrality/LocalClusteringCoefficient.hpp>
 
 namespace NetworKit {
 
-LocalClusteringCoefficient::LocalClusteringCoefficient(const Graph& G, bool turbo) : Centrality(G, false, false), turbo(turbo) {
-    if (G.isDirected()) throw std::runtime_error("Not implemented: Local clustering coefficient is currently not implemented for directed graphs");
-    if (G.numberOfSelfLoops()) throw std::runtime_error("Local Clustering Coefficient implementation does not support graphs with self-loops. Call Graph.removeSelfLoops() first.");
+LocalClusteringCoefficient::LocalClusteringCoefficient(const Graph &G, bool turbo)
+    : Centrality(G, false, false), turbo(turbo) {
+    if (G.isDirected())
+        throw std::runtime_error("Not implemented: Local clustering coefficient is currently not "
+                                 "implemented for directed graphs");
+    if (G.numberOfSelfLoops())
+        throw std::runtime_error("Local Clustering Coefficient implementation does not support "
+                                 "graphs with self-loops. Call Graph.removeSelfLoops() first.");
 }
 
 void LocalClusteringCoefficient::run() {
@@ -38,12 +42,11 @@ void LocalClusteringCoefficient::run() {
         inBegin[G.upperNodeIdBound()] = pos;
     }
 
-    std::vector<std::vector<bool> > nodeMarker(omp_get_max_threads());
+    std::vector<std::vector<bool>> nodeMarker(omp_get_max_threads());
 
-    for (auto & nm : nodeMarker) {
+    for (auto &nm : nodeMarker) {
         nm.resize(z, false);
     }
-
 
     G.balancedParallelForNodes([&](node u) {
         count d = G.degree(u);
@@ -54,13 +57,11 @@ void LocalClusteringCoefficient::run() {
             size_t tid = omp_get_thread_num();
             count triangles = 0;
 
-            G.forEdgesOf(u, [&](node v) {
-                nodeMarker[tid][v] = true;
-            });
+            G.forEdgesOf(u, [&](node v) { nodeMarker[tid][v] = true; });
 
             G.forEdgesOf(u, [&](node, node v) {
                 if (turbo) {
-                    for (index i = inBegin[v]; i < inBegin[v+1]; ++i) {
+                    for (index i = inBegin[v]; i < inBegin[v + 1]; ++i) {
                         node w = inEdges[i];
                         if (nodeMarker[tid][w]) {
                             triangles += 1;
@@ -75,20 +76,19 @@ void LocalClusteringCoefficient::run() {
                 }
             });
 
-            G.forEdgesOf(u, [&](node, node v) {
-                nodeMarker[tid][v] = false;
-            });
+            G.forEdgesOf(u, [&](node, node v) { nodeMarker[tid][v] = false; });
 
-            scoreData[u] = (double) triangles / (double)(d * (d - 1)); // No division by 2 since triangles are counted twice as well!
-            if (turbo) scoreData[u] *= 2; // in turbo mode, we count each triangle only once
+            // No division by 2 since triangles are counted twice as well!
+            scoreData[u] = (double)triangles / (double)(d * (d - 1));
+            if (turbo)
+                scoreData[u] *= 2; // in turbo mode, we count each triangle only once
         }
     });
     hasRun = true;
 }
 
-
 double LocalClusteringCoefficient::maximum() {
     return 1.0;
 }
 
-}
+} // namespace NetworKit

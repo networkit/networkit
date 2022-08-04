@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DynBetweennessGTest.cpp
  *
@@ -8,21 +7,21 @@
 
 #include <gtest/gtest.h>
 
-#include <networkit/centrality/Betweenness.hpp>
-#include <networkit/centrality/DynApproxBetweenness.hpp>
-#include <networkit/centrality/ApproxBetweenness.hpp>
-#include <networkit/io/METISGraphReader.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/centrality/ApproxBetweenness.hpp>
+#include <networkit/centrality/Betweenness.hpp>
+#include <networkit/centrality/DynApproxBetweenness.hpp>
+#include <networkit/centrality/DynBetweenness.hpp>
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
-#include <networkit/centrality/DynBetweenness.hpp>
-#include <networkit/auxiliary/Random.hpp>
 #include <networkit/graph/GraphTools.hpp>
+#include <networkit/io/METISGraphReader.hpp>
 
 namespace NetworKit {
 
-class DynBetweennessGTest: public testing::TestWithParam<std::pair<bool, bool>> {
+class DynBetweennessGTest : public testing::TestWithParam<std::pair<bool, bool>> {
 protected:
     bool isDirected() const noexcept { return GetParam().first; };
     bool isWeighted() const noexcept { return GetParam().second; };
@@ -54,18 +53,17 @@ protected:
 };
 
 INSTANTIATE_TEST_SUITE_P(InstantiationName, DynBetweennessGTest,
-        testing::Values(std::make_pair(false, false), std::make_pair(true, false),
-                        std::make_pair(false, true),
-                        std::make_pair(true, true)));
+                         testing::Values(std::make_pair(false, false), std::make_pair(true, false),
+                                         std::make_pair(false, true), std::make_pair(true, true)));
 
 Graph DynBetweennessGTest::generateSmallGraph() const {
-/* Graph:
-   0    3   6
-    \  / \ /
-     2    5
-    /  \ / \
-   1    4   7
-*/
+    /* Graph:
+       0    3   6
+        \  / \ /
+         2    5
+        /  \ / \
+       1    4   7
+    */
     Graph G(8, isWeighted(), isDirected());
 
     G.addEdge(0, 2);
@@ -149,7 +147,7 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweenessGeneratedGraphEdgeDeletion) {
     DynApproxBetweenness dynbc(G, epsilon, delta);
     Betweenness bc(G);
     dynbc.run();
-    for(count i = 0; i < 10; i++) {
+    for (count i = 0; i < 10; i++) {
         auto randomEdge = GraphTools::randomEdge(G);
         G.removeEdge(randomEdge.first, randomEdge.second);
         GraphEvent event(GraphEvent::EDGE_REMOVAL, randomEdge.first, randomEdge.second);
@@ -199,14 +197,15 @@ TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
     compareAgainstBaseline(G, dynbc.scores(), bc.scores());
 }
 
-TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertDirected){
+TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertDirected) {
     Aux::Random::setSeed(0, false);
 
-    for(count n = 2; n <= 25; n++)
-        for(count t = 0; t < 100; t++){
+    for (count n = 2; n <= 25; n++)
+        for (count t = 0; t < 100; t++) {
             auto g = ErdosRenyiGenerator(n, 0.3, true).generate();
 
-            if(g.numberOfEdges() == g.numberOfNodes() * (g.numberOfNodes() - 1))continue;
+            if (g.numberOfEdges() == g.numberOfNodes() * (g.numberOfNodes() - 1))
+                continue;
 
             auto [u, v] = getNonAdjacentNodes(g);
             auto ibet = DynBetweenness(g);
@@ -220,19 +219,18 @@ TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertDirected){
             EXPECT_TRUE(g.hasEdge(u, v));
             auto brandes = Betweenness(g);
             brandes.run();
-            g.forNodes([&](node w){
-                EXPECT_NEAR(brandes.score(w), ibet.score(w), 1e-8);
-            });
+            g.forNodes([&](node w) { EXPECT_NEAR(brandes.score(w), ibet.score(w), 1e-8); });
         }
 }
 
-TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertUndirected){
+TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertUndirected) {
     Aux::Random::setSeed(0, false);
 
-    for(count n = 2; n <= 25; n++)
-        for(count t = 0; t < 100; t++){
+    for (count n = 2; n <= 25; n++)
+        for (count t = 0; t < 100; t++) {
             auto g = ErdosRenyiGenerator(n, 0.3, false).generate();
-            if(g.numberOfEdges() == g.numberOfNodes() * (g.numberOfNodes() - 1) / 2)continue;
+            if (g.numberOfEdges() == g.numberOfNodes() * (g.numberOfNodes() - 1) / 2)
+                continue;
 
             auto [u, v] = getNonAdjacentNodes(g);
             auto ibet = DynBetweenness(g);
@@ -246,9 +244,7 @@ TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertUndirected){
 
             auto brandes = Betweenness(g);
             brandes.run();
-            g.forNodes([&](node w){
-                EXPECT_NEAR(brandes.score(w), ibet.score(w), 1e-8);
-            });
+            g.forNodes([&](node w) { EXPECT_NEAR(brandes.score(w), ibet.score(w), 1e-8); });
         }
 }
 

@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * TopCloseness.cpp
  *
@@ -11,23 +10,21 @@
 #include <omp.h>
 
 #include <networkit/auxiliary/PrioQueue.hpp>
+#include <networkit/centrality/DynTopHarmonicCloseness.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/components/StronglyConnectedComponents.hpp>
 #include <networkit/distance/AffectedNodes.hpp>
-#include <networkit/centrality/DynTopHarmonicCloseness.hpp>
 #include <networkit/graph/BFS.hpp>
 
 namespace NetworKit {
 
-DynTopHarmonicCloseness::DynTopHarmonicCloseness(const Graph &G, count k,
-                                                 bool useBFSbound)
+DynTopHarmonicCloseness::DynTopHarmonicCloseness(const Graph &G, count k, bool useBFSbound)
     : G(G), k(k), useBFSbound(useBFSbound),
       allScores(G.upperNodeIdBound(), std::numeric_limits<edgeweight>::max()),
-      isExact(G.upperNodeIdBound(), false),
-      isValid(G.upperNodeIdBound(), false),
+      isExact(G.upperNodeIdBound(), false), isValid(G.upperNodeIdBound(), false),
       cutOff(G.upperNodeIdBound(), std::numeric_limits<edgeweight>::max()),
-      exactCutOff(G.upperNodeIdBound(), 0), hasComps(false),
-      component(G.upperNodeIdBound()), rOld(G.upperNodeIdBound()) {}
+      exactCutOff(G.upperNodeIdBound(), 0), hasComps(false), component(G.upperNodeIdBound()),
+      rOld(G.upperNodeIdBound()) {}
 
 DynTopHarmonicCloseness::~DynTopHarmonicCloseness() {
     if (hasComps) {
@@ -38,11 +35,11 @@ DynTopHarmonicCloseness::~DynTopHarmonicCloseness() {
     }
 }
 
-std::pair<edgeweight, bool>
-DynTopHarmonicCloseness::BFScut(node v, edgeweight x, count n, count r,
-                                std::vector<uint8_t> &visited,
-                                std::vector<count> &distances,
-                                std::vector<node> &pred, count &visitedEdges) {
+std::pair<edgeweight, bool> DynTopHarmonicCloseness::BFScut(node v, edgeweight x, count n, count r,
+                                                            std::vector<uint8_t> &visited,
+                                                            std::vector<count> &distances,
+                                                            std::vector<node> &pred,
+                                                            count &visitedEdges) {
 
     double d = 0;
     int64_t gamma = 0, nd = 0;
@@ -79,8 +76,8 @@ DynTopHarmonicCloseness::BFScut(node v, edgeweight x, count n, count r,
             d = d + 1;
 
             double d2 = static_cast<double>(int64_t(r) - nd);
-            ctilde = c + (static_cast<edgeweight>(gamma) / ((d + 2.0) * (d + 1.0))) +
-                     (d2 / (d + 2.0));
+            ctilde =
+                c + (static_cast<edgeweight>(gamma) / ((d + 2.0) * (d + 1.0))) + (d2 / (d + 2.0));
 
             if (ctilde < x) {
                 exactCutOff[v] = true;
@@ -137,8 +134,7 @@ DynTopHarmonicCloseness::BFScut(node v, edgeweight x, count n, count r,
     return std::make_pair(c, true);
 }
 
-void DynTopHarmonicCloseness::BFSbound(node source, std::vector<double> &S2,
-                                       count *visEdges) {
+void DynTopHarmonicCloseness::BFSbound(node source, std::vector<double> &S2, count *visEdges) {
     count r = 0;
     n = G.upperNodeIdBound();
     std::vector<std::vector<node>> levels(n);
@@ -179,8 +175,7 @@ void DynTopHarmonicCloseness::BFSbound(node source, std::vector<double> &S2,
         if (j <= 2) {
             closeNodes += nodesPerLev[j];
         } else {
-            farNodes +=
-                nodesPerLev[j] * inverseDistance(double(std::abs((double)j - 1.)));
+            farNodes += nodesPerLev[j] * inverseDistance(double(std::abs((double)j - 1.)));
         }
     }
 
@@ -189,11 +184,10 @@ void DynTopHarmonicCloseness::BFSbound(node source, std::vector<double> &S2,
     for (count j = 0; j < levels[1].size(); j++) {
         node w = levels[1][j];
         // we subtract 2 not to count the node itself
-        double bound = (level_bound - inverseDistance(2.) +
-                        (inverseDistance(1.) - inverseDistance(2.)) * G.degree(w));
+        double bound = (level_bound - inverseDistance(2.)
+                        + (inverseDistance(1.) - inverseDistance(2.)) * G.degree(w));
 
-        if (bound < S2[w] &&
-            (!G.isDirected() || component[w] == component[source])) {
+        if (bound < S2[w] && (!G.isDirected() || component[w] == component[source])) {
             S2[w] = bound;
         }
     }
@@ -205,25 +199,23 @@ void DynTopHarmonicCloseness::BFSbound(node source, std::vector<double> &S2,
         // TODO: OPTIMIZE?
         if (!G.isDirected()) {
             for (count j = 0; j <= nLevs; j++) {
-                level_bound += inverseDistance(std::max(
-                                   2., double(std::abs((double)j - (double)i)))) *
-                               nodesPerLev[j];
+                level_bound +=
+                    inverseDistance(std::max(2., double(std::abs((double)j - (double)i))))
+                    * nodesPerLev[j];
             }
         } else {
             for (count j = 0; j <= nLevs; j++) {
-                level_bound += inverseDistance(std::max(2., (double)j - (double)i)) *
-                               nodesPerLev[j];
+                level_bound +=
+                    inverseDistance(std::max(2., (double)j - (double)i)) * nodesPerLev[j];
             }
         }
 
         for (count j = 0; j < levels[i].size(); ++j) {
             node w = levels[i][j];
-            double bound =
-                (level_bound - inverseDistance(2.) +
-                 (inverseDistance(1.) - inverseDistance(2.)) * G.degree(w));
+            double bound = (level_bound - inverseDistance(2.)
+                            + (inverseDistance(1.) - inverseDistance(2.)) * G.degree(w));
 
-            if (bound < S2[w] &&
-                (!G.isDirected() || component[w] == component[source])) {
+            if (bound < S2[w] && (!G.isDirected() || component[w] == component[source])) {
                 S2[w] = bound;
             }
         }
@@ -315,12 +307,10 @@ void DynTopHarmonicCloseness::run() {
                 // Update the scores of all nodes with the bounds obtained
                 // by the complete BFS
                 G.forNodes([&](node u) {
-                    if (allScores[u] > S[u] &&
-                        toAnalyze[u]) { // This part must be syncrhonized.
+                    if (allScores[u] > S[u] && toAnalyze[u]) { // This part must be syncrhonized.
                         omp_set_lock(&lock);
-                        if (allScores[u] > S[u] &&
-                            toAnalyze[u]) { // Have to check again, because the variables
-                            // might have changed
+                        // Have to check again, because the variables  might have changed
+                        if (allScores[u] > S[u] && toAnalyze[u]) {
                             allScores[u] = S[u];
                             isValid[u] = true;
                             Q1.remove(-u);
@@ -409,8 +399,7 @@ void DynTopHarmonicCloseness::run() {
 
     for (count i = 0; i < topk.size() - 1; ++i) {
         count toSort = 1;
-        while ((i + toSort) < topk.size() &&
-               topkScores[i] == topkScores[i + toSort]) {
+        while ((i + toSort) < topk.size() && topkScores[i] == topkScores[i + toSort]) {
             ++toSort;
         }
 
@@ -448,8 +437,7 @@ void DynTopHarmonicCloseness::addEdge(const GraphEvent &event) {
 
     std::vector<node> uniqueAffectedNodes = affectedNodes.getNodes();
     std::vector<edgeweight> distancesFromInsertion = affectedNodes.getDistances();
-    std::vector<edgeweight> improvementUpperBounds =
-        affectedNodes.getImprovements();
+    std::vector<edgeweight> improvementUpperBounds = affectedNodes.getImprovements();
 
     Aux::PrioQueue<edgeweight, node> Q1(n);
 
@@ -552,25 +540,23 @@ void DynTopHarmonicCloseness::addEdge(const GraphEvent &event) {
             edgeweight boundaryUpdateScore =
                 allScores[v] - 1.0 / (cutOff[v] + 2.0) + 1.0 / (cutOff[v] + 1.0);
 
-            if ((distanceFromInsertedEdge > cutOff[v] && !isExact[v]) &&
-                (!useBFSbound && r[v] <= rOld[v])) {
+            if ((distanceFromInsertedEdge > cutOff[v] && !isExact[v])
+                && (!useBFSbound && r[v] <= rOld[v])) {
                 // our estimate is still valid if the distance of the inserted edge is
                 // larger than the previous cut-off
                 isValid[v] = true;
                 omp_set_lock(&statsLock);
                 omp_unset_lock(&statsLock);
-            } else if (distanceFromInsertedEdge == cutOff[v] && !isExact[v] &&
-                       boundaryUpdateScore < kth &&
-                       (!useBFSbound && r[v] <= rOld[v])) {
+            } else if (distanceFromInsertedEdge == cutOff[v] && !isExact[v]
+                       && boundaryUpdateScore < kth && (!useBFSbound && r[v] <= rOld[v])) {
                 // both nodes are affected but not on the same level => cheap update for
                 // the upper bound
                 allScores[v] = boundaryUpdateScore;
                 isValid[v] = true;
                 omp_set_lock(&statsLock);
                 omp_unset_lock(&statsLock);
-            } else if (((!useBFSbound &&
-                         allScores[v] + improvementUpperBounds[v] < kth) ||
-                        (useBFSbound && allScores[v] < kth))) {
+            } else if (((!useBFSbound && allScores[v] + improvementUpperBounds[v] < kth)
+                        || (useBFSbound && allScores[v] < kth))) {
                 // Adding the improvement bound does not yield a higher upper bound than
                 // the k-th largest value => add it
                 if (!useBFSbound) {
@@ -601,12 +587,11 @@ void DynTopHarmonicCloseness::addEdge(const GraphEvent &event) {
                     omp_unset_lock(&statsLock);
 
                     G.forNodes([&](node u) {
-                        if ((allScores[u] > S[u] &&
-                             !isExact[u])) { // This part must be synchronized.
+                        // This part must be synchronized.
+                        if ((allScores[u] > S[u] && !isExact[u])) {
                             omp_set_lock(&lock);
-                            if ((allScores[u] > S[u] &&
-                                 !isExact[u])) { // Have to check again, because the variables
-                                // might have changed
+                            // Have to check again, because the variables might have changed
+                            if ((allScores[u] > S[u] && !isExact[u])) {
 
                                 allScores[u] = S[u];
                                 isValid[u] = true;
@@ -692,8 +677,7 @@ void DynTopHarmonicCloseness::addEdge(const GraphEvent &event) {
 
     for (count i = 0; i < topk.size() - 1; ++i) {
         count toSort = 1;
-        while ((i + toSort) < topk.size() &&
-               topkScores[i] == topkScores[i + toSort]) {
+        while ((i + toSort) < topk.size() && topkScores[i] == topkScores[i + toSort]) {
             ++toSort;
         }
         if (toSort > 1) {
@@ -856,8 +840,7 @@ void DynTopHarmonicCloseness::removeEdge(const GraphEvent &event) {
 
     for (count i = 0; i < topk.size() - 1; ++i) {
         count toSort = 1;
-        while ((i + toSort) < topk.size() &&
-               topkScores[i] == topkScores[i + toSort]) {
+        while ((i + toSort) < topk.size() && topkScores[i] == topkScores[i + toSort]) {
             ++toSort;
         }
         if (toSort > 1) {
@@ -868,8 +851,7 @@ void DynTopHarmonicCloseness::removeEdge(const GraphEvent &event) {
     }
 }
 
-void DynTopHarmonicCloseness::updateBatch(
-    const std::vector<GraphEvent> &batch) {
+void DynTopHarmonicCloseness::updateBatch(const std::vector<GraphEvent> &batch) {
     for (auto event : batch) {
         update(event);
     }
@@ -878,12 +860,10 @@ void DynTopHarmonicCloseness::updateBatch(
 void DynTopHarmonicCloseness::reset() {
     std::fill(isValid.begin(), isValid.end(), false);
     std::fill(isExact.begin(), isExact.end(), false);
-    std::fill(cutOff.begin(), cutOff.end(),
-              std::numeric_limits<edgeweight>::max());
+    std::fill(cutOff.begin(), cutOff.end(), std::numeric_limits<edgeweight>::max());
 }
 
-std::vector<std::pair<node, edgeweight>>
-DynTopHarmonicCloseness::ranking(bool includeTrail) {
+std::vector<std::pair<node, edgeweight>> DynTopHarmonicCloseness::ranking(bool includeTrail) {
     count nTop = includeTrail ? k + trail : k;
     std::vector<std::pair<node, edgeweight>> ranking(nTop);
 
@@ -934,8 +914,7 @@ void DynTopHarmonicCloseness::computeReachableNodesDirected() {
 }
 
 // TODO: merge in a single method
-void DynTopHarmonicCloseness::updateReachableNodesAfterInsertion(node u,
-                                                                 node v) {
+void DynTopHarmonicCloseness::updateReachableNodesAfterInsertion(node u, node v) {
 
     GraphEvent e(GraphEvent::EDGE_ADDITION, u, v);
     if (!G.isDirected()) {
@@ -961,8 +940,7 @@ void DynTopHarmonicCloseness::updateReachableNodesAfterInsertion(node u,
     }
 }
 
-void DynTopHarmonicCloseness::updateReachableNodesAfterDeletion(
-    const GraphEvent &event) {
+void DynTopHarmonicCloseness::updateReachableNodesAfterDeletion(const GraphEvent &event) {
 
     if (!G.isDirected()) {
         comps->update(event);

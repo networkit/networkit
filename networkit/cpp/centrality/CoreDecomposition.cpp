@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * CoreDecomposition.cpp
  *
@@ -10,25 +9,28 @@
 #include <omp.h>
 #include <set>
 
-#include <networkit/centrality/DegreeCentrality.hpp>
 #include <networkit/centrality/CoreDecomposition.hpp>
+#include <networkit/centrality/DegreeCentrality.hpp>
 
 namespace NetworKit {
 
-CoreDecomposition::CoreDecomposition(const Graph& G, bool normalized, bool enforceBucketQueueAlgorithm, bool storeNodeOrder) :
-        Centrality(G, normalized), maxCore(0), enforceBucketQueueAlgorithm(enforceBucketQueueAlgorithm),
-        storeNodeOrder(storeNodeOrder)
-{
-    if (G.numberOfSelfLoops()) throw std::runtime_error("Core Decomposition implementation does not support graphs with self-loops. Call Graph.removeSelfLoops() first.");
-    if (storeNodeOrder) this->enforceBucketQueueAlgorithm = true;
-    canRunInParallel = (! enforceBucketQueueAlgorithm && (G.numberOfNodes() == G.upperNodeIdBound()));
+CoreDecomposition::CoreDecomposition(const Graph &G, bool normalized,
+                                     bool enforceBucketQueueAlgorithm, bool storeNodeOrder)
+    : Centrality(G, normalized), maxCore(0),
+      enforceBucketQueueAlgorithm(enforceBucketQueueAlgorithm), storeNodeOrder(storeNodeOrder) {
+    if (G.numberOfSelfLoops())
+        throw std::runtime_error("Core Decomposition implementation does not support graphs with "
+                                 "self-loops. Call Graph.removeSelfLoops() first.");
+    if (storeNodeOrder)
+        this->enforceBucketQueueAlgorithm = true;
+    canRunInParallel =
+        (!enforceBucketQueueAlgorithm && (G.numberOfNodes() == G.upperNodeIdBound()));
 }
 
 void CoreDecomposition::run() {
     if (G.isDirected() || enforceBucketQueueAlgorithm) {
         runWithBucketQueues();
-    }
-    else {
+    } else {
         runWithParK();
     }
 
@@ -37,9 +39,7 @@ void CoreDecomposition::run() {
         deg.run();
         auto degrees = deg.scores();
         count maxDeg = *std::max_element(degrees.begin(), degrees.end());
-        G.parallelForNodes([&](node u) {
-            scoreData[u] = scoreData[u] / maxDeg;
-        });
+        G.parallelForNodes([&](node u) { scoreData[u] = scoreData[u] / maxDeg; });
     }
 }
 
@@ -50,7 +50,7 @@ void CoreDecomposition::runWithParK() {
     count nUnprocessed = G.numberOfNodes();
     std::vector<node> curr; // currently processed nodes
     std::vector<node> next; // nodes to be processed next
-    std::vector<char> active(z,0);
+    std::vector<char> active(z, 0);
     index level = 0; // current level
     count size = 0;  // number of nodes currently processed
 
@@ -64,10 +64,9 @@ void CoreDecomposition::runWithParK() {
     // main loop
     while (nUnprocessed > 0) {
         // find nodes with degree == current level
-        if (! canRunInParallel || z <= 256) {
+        if (!canRunInParallel || z <= 256) {
             scan(level, degrees, curr);
-        }
-        else {
+        } else {
             scanParallel(level, degrees, curr, active);
         }
 
@@ -76,10 +75,9 @@ void CoreDecomposition::runWithParK() {
         while (size > 0) {
             nUnprocessed -= size;
 #ifndef NETWORKIT_OMP2
-            if (! canRunInParallel || size <= 256) {
+            if (!canRunInParallel || size <= 256) {
                 processSublevel(level, degrees, curr, next);
-            }
-            else {
+            } else {
                 processSublevelParallel(level, degrees, curr, next, active);
             }
 #else
@@ -92,13 +90,12 @@ void CoreDecomposition::runWithParK() {
         ++level;
     }
 
-    maxCore = level-1;
+    maxCore = level - 1;
     hasRun = true;
 }
 
-void CoreDecomposition::scan(index level, const std::vector<count>& degrees,
-        std::vector<node>& curr)
-{
+void CoreDecomposition::scan(index level, const std::vector<count> &degrees,
+                             std::vector<node> &curr) {
     G.forNodes([&](node u) {
         if (degrees[u] == level) {
             curr.push_back(u);
@@ -106,9 +103,8 @@ void CoreDecomposition::scan(index level, const std::vector<count>& degrees,
     });
 }
 
-void CoreDecomposition::scanParallel(index level, const std::vector<count>& degrees,
-        std::vector<node>& curr, std::vector<char>& active)
-{
+void CoreDecomposition::scanParallel(index level, const std::vector<count> &degrees,
+                                     std::vector<node> &curr, std::vector<char> &active) {
     const count z = G.upperNodeIdBound();
     std::vector<std::vector<node>> next(omp_get_max_threads());
     curr.clear();
@@ -120,18 +116,16 @@ void CoreDecomposition::scanParallel(index level, const std::vector<count>& degr
             next[tid].push_back(u);
         }
     }
-    for (auto& n : next) {
-        curr.insert(curr.end(),n.begin(),n.end());
+    for (auto &n : next) {
+        curr.insert(curr.end(), n.begin(), n.end());
     }
 }
 
-void CoreDecomposition::processSublevel(index level,
-        std::vector<count>& degrees, const std::vector<node>& curr,
-        std::vector<node>& next)
-{
+void CoreDecomposition::processSublevel(index level, std::vector<count> &degrees,
+                                        const std::vector<node> &curr, std::vector<node> &next) {
     // check for each neighbor of vertices in curr if their updated degree reaches level;
     // if so, process them next
-    for (auto u: curr) {
+    for (auto u : curr) {
         scoreData[u] = level;
         G.forNeighborsOf(u, [&](node v) {
             if (degrees[v] > level) {
@@ -145,10 +139,10 @@ void CoreDecomposition::processSublevel(index level,
 }
 
 #ifndef NETWORKIT_OMP2
-void CoreDecomposition::processSublevelParallel(index level,
-        std::vector<count>& degrees, const std::vector<node>& curr,
-        std::vector<node>& next, std::vector<char>& active)
-{
+void CoreDecomposition::processSublevelParallel(index level, std::vector<count> &degrees,
+                                                const std::vector<node> &curr,
+                                                std::vector<node> &next,
+                                                std::vector<char> &active) {
     // check for each neighbor of vertices in curr if their updated degree reaches level;
     // if so, process them next
 
@@ -175,7 +169,7 @@ void CoreDecomposition::processSublevelParallel(index level,
             }
         });
     }
-    for (auto& n : localNext) {
+    for (auto &n : localNext) {
         next.insert(next.end(), n.begin(), n.end());
     }
 }
@@ -187,7 +181,7 @@ void CoreDecomposition::runWithBucketQueues() {
     std::vector<node> queue(G.numberOfNodes());
     std::vector<index> nodePtr(z);
     std::vector<index> degreeBegin(G.numberOfNodes());
-    std::vector<count> degree(z);       // tracks degree during algo
+    std::vector<count> degree(z); // tracks degree during algo
 
     bool directed = G.isDirected();
 
@@ -240,8 +234,8 @@ void CoreDecomposition::runWithBucketQueues() {
 
         /* Remove a neighbor by decreasing its degree and changing its position in the queue */
         auto removeNeighbor = [&](node v) {
-            if (nodePtr[v] > i) { // only nodes that are after the current node need to be considered
-                // adjust the degree
+            // only nodes that are after the current node need to be considered  adjust the degree
+            if (nodePtr[v] > i) {
                 count oldDeg = degree[v];
                 --degree[v];
                 count newDeg = oldDeg - 1;
@@ -264,7 +258,8 @@ void CoreDecomposition::runWithBucketQueues() {
                 std::swap(queue[oldPos], queue[newPos]);
                 std::swap(nodePtr[nodeToSwap], nodePtr[v]);
 
-                // Move bucket border, v is now in the previous bucket, i.e. the bucket of its new degree
+                // Move bucket border, v is now in the previous bucket, i.e. the bucket of its new
+                // degree
                 ++degreeBegin[oldDeg];
             }
         };
@@ -286,9 +281,9 @@ void CoreDecomposition::runWithBucketQueues() {
     hasRun = true;
 }
 
-
 Cover CoreDecomposition::getCover() const {
-    if (! hasRun) throw std::runtime_error("call run method first");
+    if (!hasRun)
+        throw std::runtime_error("call run method first");
     // initialize Cover
     index z = G.upperNodeIdBound();
     Cover coverData;
@@ -300,7 +295,7 @@ Cover CoreDecomposition::getCover() const {
     G.forNodes([&](node u) {
         index k = 0;
         while (scoreData[u] >= k) {
-            coverData.addToSubset((index) k, (index) u);
+            coverData.addToSubset((index)k, (index)u);
             ++k;
         }
     });
@@ -308,7 +303,8 @@ Cover CoreDecomposition::getCover() const {
 }
 
 Partition CoreDecomposition::getPartition() const {
-    if (! hasRun) throw std::runtime_error("call run method first");
+    if (!hasRun)
+        throw std::runtime_error("call run method first");
     // initialize Partition
     index z = G.upperNodeIdBound();
     Partition shellData;
@@ -317,21 +313,22 @@ Partition CoreDecomposition::getPartition() const {
         shellData.allToSingletons();
     }
     // enter values from scoreData into shellData
-    G.forNodes([&](node u){
-        shellData.moveToSubset((index) scoreData[u], (index) u);
-    });
+    G.forNodes([&](node u) { shellData.moveToSubset((index)scoreData[u], (index)u); });
     return shellData;
 }
 
-const std::vector<node>& CoreDecomposition::getNodeOrder() const {
-    if (!storeNodeOrder) throw std::runtime_error("The node order was not stored. Make sure you set storeNodeOrder to true");
+const std::vector<node> &CoreDecomposition::getNodeOrder() const {
+    if (!storeNodeOrder)
+        throw std::runtime_error(
+            "The node order was not stored. Make sure you set storeNodeOrder to true");
     assureFinished();
 
     return nodeOrder;
 }
 
 index CoreDecomposition::maxCoreNumber() const {
-    if (! hasRun) throw std::runtime_error("call run method first");
+    if (!hasRun)
+        throw std::runtime_error("call run method first");
     return maxCore;
 }
 

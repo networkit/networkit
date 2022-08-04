@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * GroupCloseness.cpp
  *
@@ -6,9 +5,9 @@
  *      Author: elisabetta bergamini
  */
 
-#include <networkit/centrality/GroupCloseness.hpp>
 #include <networkit/auxiliary/BucketPQ.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/centrality/GroupCloseness.hpp>
 #include <networkit/centrality/TopCloseness.hpp>
 
 #include <atomic>
@@ -18,8 +17,7 @@
 
 namespace NetworKit {
 
-GroupCloseness::GroupCloseness(const Graph &G, count k, count H)
-    : G(&G), k(k), H(H) {
+GroupCloseness::GroupCloseness(const Graph &G, count k, count H) : G(&G), k(k), H(H) {
     d1Global.resize(omp_get_max_threads(), std::vector<count>(G.upperNodeIdBound()));
 }
 
@@ -51,7 +49,7 @@ edgeweight GroupCloseness::computeImprovement(node u, count h) {
 
 void GroupCloseness::updateDistances(node u) {
     count improvement = d[u]; // old distance of u
-    d[u] = 0; // now u is in the group
+    d[u] = 0;                 // now u is in the group
     std::queue<node> Q;
     Q.push(u);
 

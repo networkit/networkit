@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * SpanningEdgeCentralityGTest.cpp
  *
@@ -28,7 +27,6 @@ TEST_F(SpanningEdgeCentralityGTest, testOnToyGraph) {
     count n = 6;
     Graph G(n, false, false);
     G.indexEdges();
-
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);

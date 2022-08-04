@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DynBetweennessOneNode.cpp
  *
@@ -17,7 +16,7 @@
 
 namespace NetworKit {
 
-DynBetweennessOneNode::DynBetweennessOneNode(Graph& G, node x) : G(G), x(x) {}
+DynBetweennessOneNode::DynBetweennessOneNode(Graph &G, node x) : G(G), x(x) {}
 
 /**
  * Run method that stores a One shortest path for each node pair and stores shortest distances
@@ -28,8 +27,9 @@ void DynBetweennessOneNode::run() {
     sigma.resize(G.upperNodeIdBound());
     sigmax.resize(G.upperNodeIdBound());
     Pred.resize(G.upperNodeIdBound());
-  // for each node, we execute a BFS and compute number of SPs between node pairs and number of SPs between node pairs that go through x
-    G.forNodes([&](node source){
+    // for each node, we execute a BFS and compute number of SPs between node pairs and number of
+    // SPs between node pairs that go through x
+    G.forNodes([&](node source) {
         distances[source].resize(G.upperNodeIdBound(), infDist);
         sigma[source].resize(G.upperNodeIdBound(), 0);
         sigmax[source].resize(G.upperNodeIdBound(), 0);
@@ -39,7 +39,7 @@ void DynBetweennessOneNode::run() {
         visited[source] = true;
         sigma[source][source] = 1;
         distances[source][source] = 0;
-        while (! q.empty()) {
+        while (!q.empty()) {
             node u = q.front();
             q.pop();
             if (u == x) {
@@ -53,7 +53,8 @@ void DynBetweennessOneNode::run() {
                     distances[source][v] = distances[source][u] + 1;
                 }
                 if (distances[source][v] == distances[source][u] + 1) {
-                    sigma[source][v] += sigma[source][u]; 	// all the shortest paths to u are also shortest paths to v now
+                    // all the shortest paths to u are also shortest paths to v now
+                    sigma[source][v] += sigma[source][u];
                     if (u == x) {
                         sigmax[source][v] = sigma[source][u];
                     } else {
@@ -64,24 +65,23 @@ void DynBetweennessOneNode::run() {
         }
     });
 
-    G.forNodes([&](node s){
-        G.forNodes([&](node t){
+    G.forNodes([&](node s) {
+        G.forNodes([&](node t) {
             if (t != x && s != x && sigma[s][t] != 0) {
-                bcx += double(sigmax[s][t])/sigma[s][t];
+                bcx += double(sigmax[s][t]) / sigma[s][t];
             }
         });
     });
 }
 
-
-
 void DynBetweennessOneNode::update(GraphEvent event) {
-    // DEBUG("Entering update");
     node u = event.u;
     node v = event.v;
-    edgeweight weightuv = G.weight(u,v);
-    if (!(event.type==GraphEvent::EDGE_ADDITION || (event.type==GraphEvent::EDGE_WEIGHT_INCREMENT && event.w < 0))) {
-        throw std::runtime_error("event type not allowed. Edge insertions and edge weight decreases only.");
+    edgeweight weightuv = G.weight(u, v);
+    if (!(event.type == GraphEvent::EDGE_ADDITION
+          || (event.type == GraphEvent::EDGE_WEIGHT_INCREMENT && event.w < 0))) {
+        throw std::runtime_error(
+            "event type not allowed. Edge insertions and edge weight decreases only.");
     }
     if (weightuv <= distances[u][v]) {
         // initializations
@@ -107,16 +107,13 @@ void DynBetweennessOneNode::update(GraphEvent event) {
         // phase 1: find affected source nodes using bfs
         std::queue<node> bfsQ;
         std::vector<bool> visited(z, false);
-        INFO("Phase 1. distances[", u,"][", v,"] = ", distances[u][v], ", and G.weight", u,", ", v," = ",G.weight(u,v));
-    //	distances[u][v] = weightuv;
-        // if(!G.isDirected()) {
-        // 	distances[v][u] = distances[u][v];
-        // }
+        INFO("Phase 1. distances[", u, "][", v, "] = ", distances[u][v], ", and G.weight", u, ", ",
+             v, " = ", G.weight(u, v));
         bfsQ.push(u);
         source_nodes[u].push_back(u);
         visited[u] = true;
         INFO("Entering bfs");
-        while (! bfsQ.empty()) {
+        while (!bfsQ.empty()) {
             node s = bfsQ.front();
             bfsQ.pop();
             DEBUG("Dequeueing node ", s);
@@ -134,46 +131,48 @@ void DynBetweennessOneNode::update(GraphEvent event) {
         Pred[v] = u;
         visited[u] = true; // what's this?
         updateQueue(v);
-        INFO("Entering phase 2. source_nodes[", u,"] = ", source_nodes[u]);
-        while(!Q.empty()) {
+        INFO("Entering phase 2. source_nodes[", u, "] = ", source_nodes[u]);
+        while (!Q.empty()) {
             node y = getMin();
             enqueued[y] = false;
             // update for all source nodes
-            for (node s: source_nodes[Pred[y]]) {
+            for (node s : source_nodes[Pred[y]]) {
                 if (distances[s][y] >= distances[s][u] + weightuv + distances[v][y]) {
-                    if (s != x && y!= x && sigma[s][y]) {
-                        bcx -= double(sigmax[s][y])/sigma[s][y];
-                        if(!G.isDirected()) {
-                            bcx -= double(sigmax[s][y])/sigma[s][y];
+                    if (s != x && y != x && sigma[s][y]) {
+                        bcx -= double(sigmax[s][y]) / sigma[s][y];
+                        if (!G.isDirected()) {
+                            bcx -= double(sigmax[s][y]) / sigma[s][y];
                         }
                     }
                     if (s == u && y == v) {
                         sigma[u][v] = 1;
                         if (s == x || y == x) {
-                            sigmax[u][v] = 1; // TODO fix for weighted graphs, the new edge might be of equal length
+                            // TODO fix for weighted graphs, the new edge might be of equal length
+                            sigmax[u][v] = 1;
                         } else {
                             sigmax[u][v] = 0;
                         }
-                    }
-                    else {
+                    } else {
                         if (distances[s][y] > distances[s][u] + weightuv + distances[v][y]) {
-                            if (s ==1 && y ==2 ) INFO(" GREATER s = ", s, ", y = ", y);
-                            sigma[s][y] = sigma[s][u]*sigma[v][y];
-                            sigmax[s][y] = sigmax[s][u]*sigma[v][y] + sigma[s][u]*sigmax[v][y];
+                            if (s == 1 && y == 2)
+                                INFO(" GREATER s = ", s, ", y = ", y);
+                            sigma[s][y] = sigma[s][u] * sigma[v][y];
+                            sigmax[s][y] = sigmax[s][u] * sigma[v][y] + sigma[s][u] * sigmax[v][y];
                         } else {
-                            if (s ==1 && y ==2 ) INFO(" EQUAL s = ", s, ", y = ", y);
-                            sigma[s][y] += sigma[s][u]*sigma[v][y];
-                            sigmax[s][y] += sigmax[s][u]*sigma[v][y] + sigma[s][u]*sigmax[v][y];
+                            if (s == 1 && y == 2)
+                                INFO(" EQUAL s = ", s, ", y = ", y);
+                            sigma[s][y] += sigma[s][u] * sigma[v][y];
+                            sigmax[s][y] += sigmax[s][u] * sigma[v][y] + sigma[s][u] * sigmax[v][y];
                         }
                     }
-                    if (s != x && y!= x && sigma[s][y]) {
-                        bcx += double(sigmax[s][y])/sigma[s][y];
-                        if(!G.isDirected()) {
-                            bcx += double(sigmax[s][y])/sigma[s][y];
+                    if (s != x && y != x && sigma[s][y]) {
+                        bcx += double(sigmax[s][y]) / sigma[s][y];
+                        if (!G.isDirected()) {
+                            bcx += double(sigmax[s][y]) / sigma[s][y];
                         }
                     }
                     distances[s][y] = distances[s][u] + weightuv + distances[v][y];
-                    if(!G.isDirected()) {
+                    if (!G.isDirected()) {
                         distances[y][s] = distances[s][y];
                         sigma[y][s] = sigma[s][y];
                         sigmax[y][s] = sigmax[s][y];
@@ -182,8 +181,10 @@ void DynBetweennessOneNode::update(GraphEvent event) {
                 }
             }
             // loop over all neighbors
-            G.forNeighborsOf(y, [&](node w, edgeweight weightyw){
-                if (distances[u][w] >= weightuv + distances[v][y] + weightyw && distances[v][w] == distances[v][y] + weightyw) { // I also check that y was a predecessor for w in the s.p. from v
+            G.forNeighborsOf(y, [&](node w, edgeweight weightyw) {
+                // I also check that y was a predecessor for w in the s.p. from v
+                if (distances[u][w] >= weightuv + distances[v][y] + weightyw
+                    && distances[v][w] == distances[v][y] + weightyw) {
                     Pred[w] = y;
                     updateQueue(w);
                 }
@@ -192,10 +193,10 @@ void DynBetweennessOneNode::update(GraphEvent event) {
     }
 }
 
-void DynBetweennessOneNode::updateBatch(const std::vector<GraphEvent>& batch) {
-  for(auto e : batch){
-    update(e);
-  }
+void DynBetweennessOneNode::updateBatch(const std::vector<GraphEvent> &batch) {
+    for (auto e : batch) {
+        update(e);
+    }
 }
 
 edgeweight DynBetweennessOneNode::getDistance(node u, node v) {
