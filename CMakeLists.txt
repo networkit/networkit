@@ -486,7 +486,12 @@ if (NETWORKIT_BUILD_TESTS)
 					networkit_state
 			)
 		endif()
-
+		
+		if(WIN32)
+			set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /wd4996")
+		else()
+			set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} -Wno-deprecated-declarations")
+		endif()
 		set_target_properties(networkit_tests PROPERTIES
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"

@@ -87,9 +87,14 @@ TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
         count seqNum = cc.numberOfComponents();
         ParallelConnectedComponents ccPar(G);
         ccPar.run();
-        count parNum = cc.numberOfComponents();
+        count parNum = ccPar.numberOfComponents();
         DEBUG("Number of components: ", seqNum);
         EXPECT_EQ(seqNum, parNum);
+        G.forNodes([&](node u) { EXPECT_EQ(cc.componentOfNode(u), ccPar.componentOfNode(u)); });
+        ccPar.runSequential();
+        parNum = ccPar.numberOfComponents();
+        EXPECT_EQ(seqNum, parNum);
+        G.forNodes([&](node u) { EXPECT_EQ(cc.componentOfNode(u), ccPar.componentOfNode(u)); });
     }
 }
 
