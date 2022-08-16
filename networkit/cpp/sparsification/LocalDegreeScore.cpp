@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * LocalDegreeScore.cpp
  *
@@ -13,29 +12,25 @@
 
 namespace NetworKit {
 
-template<typename T>
+template <typename T>
 struct AttributizedEdge {
     edgeid eid;
     T value;
 
-    AttributizedEdge(edgeid eid, T v) :
-            eid(eid), value(v) {
-    }
+    AttributizedEdge(edgeid eid, T v) : eid(eid), value(v) {}
 
-    bool operator<(const AttributizedEdge<T>& other) const {
-        return (value > other.value);
-    }
+    bool operator<(const AttributizedEdge<T> &other) const { return (value > other.value); }
 };
 
-LocalDegreeScore::LocalDegreeScore(const Graph& G) : EdgeScore<double>(G) {
-}
+LocalDegreeScore::LocalDegreeScore(const Graph &G) : EdgeScore<double>(G) {}
 
 void LocalDegreeScore::run() {
-   if (!G->hasEdgeIds()) {
+    if (!G->hasEdgeIds()) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
-    std::unique_ptr<std::atomic<double>[]> exponents(new std::atomic<double>[G->upperEdgeIdBound()]{});
+    std::unique_ptr<std::atomic<double>[]> exponents(
+        new std::atomic<double>[G->upperEdgeIdBound()] {});
 
     G->balancedParallelForNodes([&](node i) {
         count d = G->degree(i);
@@ -46,14 +41,13 @@ void LocalDegreeScore::run() {
 
         std::vector<AttributizedEdge<count>> neighbors;
         neighbors.reserve(G->degree(i));
-        G->forNeighborsOf(i, [&](node, node j, edgeid eid) {
-            neighbors.emplace_back(eid, G->degree(j));
-        });
+        G->forNeighborsOf(
+            i, [&](node, node j, edgeid eid) { neighbors.emplace_back(eid, G->degree(j)); });
         std::sort(neighbors.begin(), neighbors.end());
 
         /**
-         * By convention, we want to the edges with highest "similarity" or "cohesion" to have values close to 1,
-         * so we invert the range.
+         * By convention, we want to the edges with highest "similarity" or "cohesion" to have
+         * values close to 1, so we invert the range.
          */
 
         count rank = 0;
@@ -76,13 +70,12 @@ void LocalDegreeScore::run() {
 
             Aux::Parallel::atomic_max(exponents[eid], e);
         }
-
     });
 
     scoreData.clear();
     scoreData.resize(G->upperEdgeIdBound());
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(scoreData.size()); ++i) {
         scoreData[i] = exponents[i];
     }

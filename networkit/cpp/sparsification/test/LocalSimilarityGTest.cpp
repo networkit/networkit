@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * LocalSimilarityGTest.cpp
  *
@@ -8,12 +7,12 @@
 
 #include <gtest/gtest.h>
 
-#include <networkit/sparsification/LocalSimilarityScore.hpp>
 #include <networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp>
+#include <networkit/sparsification/LocalSimilarityScore.hpp>
 
 namespace NetworKit {
 
-class LocalSimilarityGTest: public testing::Test {};
+class LocalSimilarityGTest : public testing::Test {};
 
 TEST_F(LocalSimilarityGTest, testAttributeSimple) {
     Graph g(4);
@@ -38,5 +37,5 @@ TEST_F(LocalSimilarityGTest, testAttributeSimple) {
     EXPECT_DOUBLE_EQ(1.0, exp[g.edgeId(1, 2)]);
 }
 
-}
+} // namespace NetworKit
 /* namespace NetworKit */

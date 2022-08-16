@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * RandomEdgeScore.cpp
  *
@@ -10,7 +9,7 @@
 
 namespace NetworKit {
 
-RandomEdgeScore::RandomEdgeScore(const Graph& G) : EdgeScore<double>(G) {}
+RandomEdgeScore::RandomEdgeScore(const Graph &G) : EdgeScore<double>(G) {}
 
 void RandomEdgeScore::run() {
     if (!G->hasEdgeIds()) {
@@ -18,9 +17,8 @@ void RandomEdgeScore::run() {
     }
     scoreData.resize(G->upperEdgeIdBound(), 0.0);
 
-    G->parallelForEdges([&](node, node, edgeid eid) {
-        scoreData[eid] = Aux::Random::probability();
-    });
+    G->parallelForEdges(
+        [&](node, node, edgeid eid) { scoreData[eid] = Aux::Random::probability(); });
     hasRun = true;
 }
 

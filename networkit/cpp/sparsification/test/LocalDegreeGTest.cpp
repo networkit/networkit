@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * LocalDegreeGTest.cpp
  *
@@ -14,9 +13,9 @@
 
 namespace NetworKit {
 
-class LocalDegreeGTest: public testing::Test {
+class LocalDegreeGTest : public testing::Test {
 protected:
-    static double getScore(const Graph& g, node x, node y, count rankX, count rankY);
+    static double getScore(const Graph &g, node x, node y, count rankX, count rankY);
 };
 
 TEST_F(LocalDegreeGTest, testAttributeSimple) {
@@ -65,13 +64,13 @@ directed edges.
 @param rankX rank of x in the neighborhood of y (1-based)
 @param rankY rank of y in the neighborhood of x (1-based)
 **/
-double LocalDegreeGTest::getScore(const Graph& g, node x, node y, count rankX, count) {
-    //Special case: degree one
+double LocalDegreeGTest::getScore(const Graph &g, node x, node y, count rankX, count) {
+    // Special case: degree one
     if (g.degree(x) == 1 || g.degree(y) == 1)
         return 1;
 
     return 1 - std::log(rankX) / std::log(g.degree(y));
 }
 
-}
+} // namespace NetworKit
 /* namespace NetworKit */

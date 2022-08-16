@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * LocalSimilarityScore.cpp
  *
@@ -12,8 +11,8 @@
 
 namespace NetworKit {
 
-LocalSimilarityScore::LocalSimilarityScore(const Graph& G, const std::vector<count>& triangles) :
-    EdgeScore<double>(G), triangles(&triangles) {}
+LocalSimilarityScore::LocalSimilarityScore(const Graph &G, const std::vector<count> &triangles)
+    : EdgeScore<double>(G), triangles(&triangles) {}
 
 void LocalSimilarityScore::run() {
     if (!G->hasEdgeIds()) {
@@ -27,10 +26,10 @@ void LocalSimilarityScore::run() {
 
     std::vector<double> sparsificationExp(G->upperEdgeIdBound(), 0.0);
 
-    // G->parallelForNodes is replaced here by it's code-logic due to bugs in clang 12.0.0 and 12.0.1
-    #pragma omp parallel for schedule(guided)
+// G->parallelForNodes is replaced here by it's code-logic due to bugs in clang 12.0.0 and 12.0.1
+#pragma omp parallel for schedule(guided)
     for (omp_index i = 0; i < static_cast<omp_index>(G->upperNodeIdBound()); ++i) {
-        if(!G->hasNode(i)) {
+        if (!G->hasNode(i)) {
             continue;
         }
         count d = G->degree(i);
@@ -41,7 +40,8 @@ void LocalSimilarityScore::run() {
         std::vector<AttributizedEdge<double>> neighbors;
         neighbors.reserve(G->degree(i));
         G->forNeighborsOf(i, [&](node, node j, edgeid eid) {
-            double sim = static_cast<double>((*triangles)[eid]) * 1.0 / static_cast<double>(G->degree(i) + G->degree(j) - (*triangles)[eid]);
+            double sim = static_cast<double>((*triangles)[eid]) * 1.0
+                         / static_cast<double>(G->degree(i) + G->degree(j) - (*triangles)[eid]);
             neighbors.emplace_back(i, j, eid, sim);
         });
         std::sort(neighbors.begin(), neighbors.end());
@@ -49,22 +49,22 @@ void LocalSimilarityScore::run() {
         count rank = 1;
 
         /**
-         * By convention, we want to the edges with highest "similarity" or "cohesion" to have values close to 1,
-         * so we invert the range.
+         * By convention, we want to the edges with highest "similarity" or "cohesion" to have
+         * values close to 1, so we invert the range.
          */
 
-        #pragma omp critical
-        for(std::vector<AttributizedEdge<double>>::iterator it = neighbors.begin(); it != neighbors.end(); ++it) {
+#pragma omp critical
+        for (std::vector<AttributizedEdge<double>>::iterator it = neighbors.begin();
+             it != neighbors.end(); ++it) {
             edgeid eid = it->eid;
 
-            double e = 1.0; //If the node has only one neighbor, the edge will be kept anyway.
+            double e = 1.0; // If the node has only one neighbor, the edge will be kept anyway.
             if (d > 1)
                 e = 1 - (std::log(rank) / std::log(d));
 
             sparsificationExp[eid] = std::max(e, sparsificationExp[eid]);
             rank++;
         }
-
     };
 
     scoreData = std::move(sparsificationExp);

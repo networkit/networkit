@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * SimmelianOverlapScore.cpp
  *
@@ -6,13 +5,14 @@
  *      Author: Gerd Lindner
  */
 
-#include <networkit/sparsification/SimmelianOverlapScore.hpp>
 #include <limits>
+#include <networkit/sparsification/SimmelianOverlapScore.hpp>
 
 namespace NetworKit {
 
-SimmelianOverlapScore::SimmelianOverlapScore(const Graph& G, const std::vector<count>& triangles, count maxRank) :
-        SimmelianScore(G, triangles), maxRank(maxRank) {}
+SimmelianOverlapScore::SimmelianOverlapScore(const Graph &G, const std::vector<count> &triangles,
+                                             count maxRank)
+    : SimmelianScore(G, triangles), maxRank(maxRank) {}
 
 void SimmelianOverlapScore::run() {
     if (!G->hasEdgeIds()) {
@@ -25,7 +25,7 @@ void SimmelianOverlapScore::run() {
     G->parallelForEdges([&](node u, node v, edgeid eid) {
         Redundancy redundancy = getOverlap(u, v, neighbors, maxRank);
 
-        scoreData[eid] = (double) redundancy.overlap;
+        scoreData[eid] = (double)redundancy.overlap;
     });
 
     hasRun = true;
