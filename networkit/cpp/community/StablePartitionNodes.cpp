@@ -1,4 +1,3 @@
-// no-networkit-format
 #include <limits>
 #include <map>
 
@@ -20,9 +19,7 @@ void NetworKit::StablePartitionNodes::run() {
     G->balancedParallelForNodes([&](node u) {
         if (G->degree(u) > 0) { // we consider isolated nodes to be stable.
             std::map<index, count> labelWeights;
-            G->forNeighborsOf(u, [&](node v, edgeweight ew) {
-                labelWeights[(*P)[v]] += ew;
-            });
+            G->forNeighborsOf(u, [&](node v, edgeweight ew) { labelWeights[(*P)[v]] += ew; });
 
             index ownLabel = (*P)[u];
             double ownWeight = labelWeights[ownLabel];

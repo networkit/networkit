@@ -1,4 +1,3 @@
-// no-networkit-format
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/community/IsolatedInterpartitionExpansion.hpp>
 
@@ -22,9 +21,7 @@ void NetworKit::IsolatedInterpartitionExpansion::run() {
     handler.assureRunning();
 
     std::vector<count> clusterSize(P->upperBound(), 0);
-    G->forNodes([&](node u) {
-        ++clusterSize[(*P)[u]];
-    });
+    G->forNodes([&](node u) { ++clusterSize[(*P)[u]]; });
 
     handler.assureRunning();
 

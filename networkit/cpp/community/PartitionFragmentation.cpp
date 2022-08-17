@@ -1,4 +1,3 @@
-// no-networkit-format
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/community/PartitionFragmentation.hpp>
 #include <networkit/community/PartitionIntersection.hpp>
@@ -35,12 +34,13 @@ void NetworKit::PartitionFragmentation::run() {
     handler.assureRunning();
 
     values.clear();
-    values.resize(P->upperBound(), std::numeric_limits< double >::max());
+    values.resize(P->upperBound(), std::numeric_limits<double>::max());
 
     handler.assureRunning();
 
     G->forNodes([&](node u) {
-        values[(*P)[u]] = std::min(values[(*P)[u]], 1.0 - intsSizes[ints[u]] * 1.0 / PSizes[(*P)[u]]);
+        values[(*P)[u]] =
+            std::min(values[(*P)[u]], 1.0 - intsSizes[ints[u]] * 1.0 / PSizes[(*P)[u]]);
     });
 
     handler.assureRunning();
@@ -53,7 +53,7 @@ void NetworKit::PartitionFragmentation::run() {
     count numSubsets = 0;
 
     for (index i = 0; i < P->upperBound(); ++i) {
-        if (values[i] < std::numeric_limits< double >::max()) {
+        if (values[i] < std::numeric_limits<double>::max()) {
             maximumValue = std::max(values[i], maximumValue);
             minimumValue = std::min(values[i], minimumValue);
             unweightedAverage += values[i];
@@ -70,4 +70,3 @@ void NetworKit::PartitionFragmentation::run() {
 
     hasRun = true;
 }
-

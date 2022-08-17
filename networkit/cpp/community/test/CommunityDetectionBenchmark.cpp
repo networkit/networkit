@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * CommunityDetectionBenchmark.h
  *
@@ -8,15 +7,15 @@
 
 #include <gtest/gtest.h>
 
-#include <map>
 #include <functional>
+#include <map>
 
-#include <networkit/community/PLP.hpp>
-#include <networkit/community/PLM.hpp>
-#include <networkit/community/Modularity.hpp>
+#include <networkit/auxiliary/Timer.hpp>
 #include <networkit/centrality/Betweenness.hpp>
 #include <networkit/centrality/PageRank.hpp>
-#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/community/Modularity.hpp>
+#include <networkit/community/PLM.hpp>
+#include <networkit/community/PLP.hpp>
 #include <networkit/structures/Partition.hpp>
 
 #include <networkit/graph/Graph.hpp>
@@ -24,13 +23,12 @@
 
 namespace NetworKit {
 
-class CommunityDetectionBenchmark: public testing::Test {
+class CommunityDetectionBenchmark : public testing::Test {
 public:
     virtual ~CommunityDetectionBenchmark() = default;
 
 protected:
     METISGraphReader metisReader;
-
 };
 
 constexpr int runs = 12;
@@ -61,11 +59,9 @@ TEST_F(CommunityDetectionBenchmark, benchClusteringAlgos) {
 
         auto communitySizes = zeta.subsetSizes();
 
-
         INFO("Parallel Label Propagation on ", graph.c_str(), ": ",
-                (timer.elapsedMilliseconds() / 1000.0),
-                "s,\t#communities: ", zeta.numberOfSubsets(),
-                ",\tmodularity: ", mod.getQuality(zeta, G));
+             (timer.elapsedMilliseconds() / 1000.0), "s,\t#communities: ", zeta.numberOfSubsets(),
+             ",\tmodularity: ", mod.getQuality(zeta, G));
     }
 
     for (int r = 0; r < runs; r++) {
@@ -79,10 +75,9 @@ TEST_F(CommunityDetectionBenchmark, benchClusteringAlgos) {
 
         auto communitySizes = zeta.subsetSizes();
 
-        INFO("Parallel Louvain on ", graph.c_str(), ": ",
-                (timer.elapsedMilliseconds() / 1000.0),
-                "s,\t#communities: ", zeta.numberOfSubsets(),
-                ",\tmodularity: ", mod.getQuality(zeta, G));
+        INFO("Parallel Louvain on ", graph.c_str(), ": ", (timer.elapsedMilliseconds() / 1000.0),
+             "s,\t#communities: ", zeta.numberOfSubsets(),
+             ",\tmodularity: ", mod.getQuality(zeta, G));
     }
 }
 
@@ -92,7 +87,7 @@ TEST_F(CommunityDetectionBenchmark, benchPageRankCentrality) {
     // std::string graph = "../graphs/uk-2002.graph";
     std::string graph = "input/polblogs.graph";
 
-const Graph G = this->metisReader.read(graph);
+    const Graph G = this->metisReader.read(graph);
 
     for (int r = 0; r < runs; r++) {
         PageRank cen(G, 1e-6);
@@ -103,10 +98,8 @@ const Graph G = this->metisReader.read(graph);
         auto ranking = cen.ranking();
 
         INFO("Page Rank Centrality on ", graph.c_str(), ": ",
-                (timer.elapsedMilliseconds() / 1000.0),
-                "s,\t ranking: [(",
-                ranking[0].first, ": ", ranking[0].second, "), (",
-                ranking[1].first, ": ", ranking[1].second, ") ...]");
+             (timer.elapsedMilliseconds() / 1000.0), "s,\t ranking: [(", ranking[0].first, ": ",
+             ranking[0].second, "), (", ranking[1].first, ": ", ranking[1].second, ") ...]");
     }
 }
 
@@ -116,7 +109,7 @@ TEST_F(CommunityDetectionBenchmark, benchBetweennessCentrality) {
     // std::string graph = "../graphs/cond-mat-2005.graph";
     std::string graph = "input/polblogs.graph";
 
-const Graph G = this->metisReader.read(graph);
+    const Graph G = this->metisReader.read(graph);
 
     for (int r = 0; r < runs; r++) {
         Betweenness cen(G);
@@ -127,14 +120,9 @@ const Graph G = this->metisReader.read(graph);
         auto ranking = cen.ranking();
 
         INFO("Betweenness Centrality on ", graph.c_str(), ": ",
-                (timer.elapsedMilliseconds() / 1000.0),
-                "s,\t ranking: [(",
-                ranking[0].first, ": ", ranking[0].second, "), (",
-                ranking[1].first, ": ", ranking[1].second, ") ...]");
-
+             (timer.elapsedMilliseconds() / 1000.0), "s,\t ranking: [(", ranking[0].first, ": ",
+             ranking[0].second, "), (", ranking[1].first, ": ", ranking[1].second, ") ...]");
     }
 }
 
-
 } /* namespace NetworKit */
-

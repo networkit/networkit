@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * EdgeCut.cpp
  *
@@ -10,7 +9,7 @@
 
 namespace NetworKit {
 
-double EdgeCut::getQuality(const Partition& zeta, const Graph& G) {
+double EdgeCut::getQuality(const Partition &zeta, const Graph &G) {
     double cutWeight = 0.0;
     G.forEdges([&](node u, node v, edgeweight w) {
         if (zeta[u] != zeta[v]) {

@@ -1,4 +1,3 @@
-// no-networkit-format
 #include <atomic>
 #include <memory>
 
@@ -10,7 +9,8 @@ void NetworKit::CoverHubDominance::run() {
     hasRun = false;
     Aux::SignalHandler handler;
 
-    std::unique_ptr<std::atomic<count>[]> maxInternalDeg(new std::atomic<count>[C->upperBound()]{});
+    std::unique_ptr<std::atomic<count>[]> maxInternalDeg(
+        new std::atomic<count>[C->upperBound()] {});
 
     handler.assureRunning();
 
@@ -57,7 +57,8 @@ void NetworKit::CoverHubDominance::run() {
 
             double dominance = 1;
             if (clusterSizes[i] > 1) {
-                dominance = static_cast<double>(maxInternalDeg[i]) * 1.0 / static_cast<double>(clusterSizes[i] - 1);
+                dominance = static_cast<double>(maxInternalDeg[i]) * 1.0
+                            / static_cast<double>(clusterSizes[i] - 1);
             }
 
             values[i] = dominance;

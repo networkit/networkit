@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * ClusteringGenerator.cpp
  *
@@ -13,39 +12,39 @@
 
 namespace NetworKit {
 
-Partition ClusteringGenerator::makeSingletonClustering(const Graph& G) {
+Partition ClusteringGenerator::makeSingletonClustering(const Graph &G) {
     count n = G.upperNodeIdBound();
     Partition zeta(n);
     zeta.allToSingletons();
     return zeta;
 }
 
-Partition ClusteringGenerator::makeOneClustering(const Graph& G) {
+Partition ClusteringGenerator::makeOneClustering(const Graph &G) {
     count n = G.upperNodeIdBound();
     Partition zeta(n);
     zeta.allToOnePartition();
     return zeta;
 }
 
-Partition ClusteringGenerator::makeRandomClustering(const Graph& G, count k) {
+Partition ClusteringGenerator::makeRandomClustering(const Graph &G, count k) {
     count n = G.upperNodeIdBound();
     Partition zeta(n);
 
     zeta.setUpperBound(k);
 
     G.parallelForNodes([&](node v) {
-        index c = Aux::Random::integer(k-1);
+        index c = Aux::Random::integer(k - 1);
         zeta.addToSubset(c, v);
     });
 
     if (zeta.numberOfSubsets() != k) {
-        WARN("random clustering does not contain k=",k," cluster: ",zeta.numberOfSubsets());
+        WARN("random clustering does not contain k=", k, " cluster: ", zeta.numberOfSubsets());
     }
-    assert (GraphClusteringTools::isProperClustering(G, zeta));
+    assert(GraphClusteringTools::isProperClustering(G, zeta));
     return zeta;
 }
 
-Partition ClusteringGenerator::makeContinuousBalancedClustering(const Graph& G, count k) {
+Partition ClusteringGenerator::makeContinuousBalancedClustering(const Graph &G, count k) {
     count n = G.upperNodeIdBound();
     Partition clustering(n);
     clustering.setUpperBound(k);
@@ -59,14 +58,14 @@ Partition ClusteringGenerator::makeContinuousBalancedClustering(const Graph& G, 
 
     // compute prefix sums of block sizes
     for (index block = 1; block < k; ++block) {
-        blockSize[block] += blockSize[block-1];
+        blockSize[block] += blockSize[block - 1];
     }
 
     // fill clustering according to blocks
     node v = 0;
     for (index block = 0; block < k; ++block) {
         while (v < blockSize[block]) {
-            clustering.addToSubset(block,v);
+            clustering.addToSubset(block, v);
             ++v;
         }
     }
