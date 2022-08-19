@@ -36,6 +36,7 @@ def run_notebook(path):
         return 0
     else:
         print(" " + path + " test exited with errors.")
+        print(errors)
         return 1
 
 if __name__ == '__main__':
