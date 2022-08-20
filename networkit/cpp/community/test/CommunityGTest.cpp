@@ -114,8 +114,8 @@ TEST_F(CommunityGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
 
     EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta));
     EXPECT_TRUE(GraphClusteringTools::isSingletonClustering(G, zeta));
-    EXPECT_TRUE(GraphClusteringTools::isOneClustering(
-        G, zeta)); // FIXME does this make sense? singleton and one partition at the same time.
+    // FIXME does this make sense? singleton and one partition at the same time.
+    EXPECT_TRUE(GraphClusteringTools::isOneClustering(G, zeta));
 
     Modularity modularity;
     DEBUG("modularity produced by LabelPropagation: ", modularity.getQuality(zeta, G));

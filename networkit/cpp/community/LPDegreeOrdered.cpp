@@ -26,8 +26,8 @@ void LPDegreeOrdered::run() {
     labels.allToSingletons();
 
     // initialize all nodes as active
-    std::vector<int> active(
-        z + 1, 1); // not a boolean vector because there might be problems with parallel access
+    // not a boolean vector because there might be problems with parallel access
+    std::vector<int> active(z + 1, 1);
 
     count nUpdated;  // number of nodes which have been updated in last iteration
     nUpdated = n;    // all nodes have new labels -> first loop iteration runs
@@ -35,8 +35,8 @@ void LPDegreeOrdered::run() {
 
     auto propagateLabels = [&](node v) {
         if ((active[v]) && (G->degree(v) > 0)) {
-            std::unordered_map<label, count>
-                labelCounts; // neighborLabelCounts maps label -> frequency in the neighbors
+            // neighborLabelCounts maps label -> frequency in the neighbors
+            std::unordered_map<label, count> labelCounts;
             // count the labels in the neighborhood of v
             G->forNeighborsOf(v, [&](node w) {
                 label lw = labels.subsetOf(w); // labels[w];

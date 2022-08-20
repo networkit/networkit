@@ -49,10 +49,10 @@ double JaccardMeasure::getDissimilarity(const Graph &G, const Partition &zeta,
 
     double n = G.numberOfNodes();
 
-    count s11 = sumIntersection; // number of node pairs for which clusterings aggree
-    double s00 = n * (n - 1) / 2 + sumIntersection
-                 - static_cast<double>(
-                     sumZeta + sumEta); // number of node pairs for which clusterings disagree
+    // number of node pairs for which clusterings aggree
+    count s11 = sumIntersection;
+    // number of node pairs for which clusterings disagree
+    double s00 = n * (n - 1) / 2 + sumIntersection - static_cast<double>(sumZeta + sumEta);
 
     double jaccard;
     double divisor = n * (n - 1) - 2.0 * s00;

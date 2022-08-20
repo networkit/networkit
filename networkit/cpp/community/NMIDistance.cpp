@@ -52,11 +52,12 @@ double NMIDistance::getDissimilarity(const Graph &G, const Partition &zeta, cons
     Partition overlap = PartitionIntersection().calculate(zeta, eta);
     DEBUG("overlap=", overlap.getVector());
 
+    // map from the overlap to zeta and eta
     std::vector<index> overlap_zeta(overlap.upperBound(), none),
-        overlap_eta(overlap.upperBound(), none); // map from the overlap to zeta and eta
+        overlap_eta(overlap.upperBound(), none);
 
-    std::vector<count> overlapSizes(overlap.upperBound(),
-                                    0); // overlapSizes[O] returns the size of the overlap cluster
+    // overlapSizes[O] returns the size of the overlap cluster
+    std::vector<count> overlapSizes(overlap.upperBound(), 0);
 
     G.forNodes([&](node u) {
         index O = overlap[u];

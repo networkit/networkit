@@ -12,8 +12,8 @@ namespace NetworKit {
 
 double Coverage::getQuality(const Partition &zeta, const Graph &G) {
 
-    double cov = 0.0; // term $\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in
-                      // E} \omega(e)}$
+    // term $\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)}$
+    double cov = 0.0;
     double totalEdgeWeight = G.totalEdgeWeight(); // add edge weight
     TRACE("total edge weight = ", totalEdgeWeight);
 
@@ -22,8 +22,8 @@ double Coverage::getQuality(const Partition &zeta, const Graph &G) {
             "Coverage is undefined for graphs without edges (including self-loops).");
     }
 
-    std::vector<double> intraEdgeWeight(zeta.upperBound(),
-                                        0.0); // cluster -> weight of its internal edges
+    // cluster -> weight of its internal edges
+    std::vector<double> intraEdgeWeight(zeta.upperBound(), 0.0);
 
     // compute intra-cluster edge weights per cluster
     // TODO: Make parallel, protect intraEdgeWeight[c]

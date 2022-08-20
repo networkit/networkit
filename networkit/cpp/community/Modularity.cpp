@@ -24,9 +24,11 @@ double Modularity::getQuality(const Partition &zeta, const Graph &G) {
     assert(G.numberOfNodes() <= zeta.numberOfElements());
 
     Coverage coverage;
-    double cov = coverage.getQuality(zeta, G); // deprecated: intraEdgeWeightSum / gTotalEdgeWeight;
-    double expCov; // term $\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in
-                   // E} \omega(e) )^2 }$
+    // deprecated: intraEdgeWeightSum / gTotalEdgeWeight;
+    double cov = coverage.getQuality(zeta, G);
+    //// term $\frac{ \sum_{C \in \zeta}( \sum_{v \in C}
+    ///\omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }$
+    double expCov;
     double modularity; // mod = coverage - expected coverage
     if (gTotalEdgeWeight == 0.0) {
         gTotalEdgeWeight = G.totalEdgeWeight(); // compute total edge weight in G
@@ -39,8 +41,8 @@ double Modularity::getQuality(const Partition &zeta, const Graph &G) {
             "Modularity is undefined for graphs without edges (including self-loops).");
     }
 
-    std::vector<double> incidentWeightSum(
-        zeta.upperBound(), 0.0); //!< cluster -> sum of the weights of incident edges for all nodes
+    //!< cluster -> sum of the weights of incident edges for all nodes
+    std::vector<double> incidentWeightSum(zeta.upperBound(), 0.0);
 
     // compute volume of each cluster
     G.parallelForNodes([&](node v) {
@@ -48,24 +50,21 @@ double Modularity::getQuality(const Partition &zeta, const Graph &G) {
         index c = zeta[v];
         assert(zeta.lowerBound() <= c);
         assert(c < zeta.upperBound());
+        // account for self-loops a second time
 #pragma omp atomic
-        incidentWeightSum[c] +=
-            G.weightedDegree(v) + G.weight(v, v); // account for self-loops a second time
+        incidentWeightSum[c] += G.weightedDegree(v) + G.weight(v, v);
     });
 
     // compute sum of squared cluster volumes and divide by squared graph volume
-    // double totalIncidentWeight = 0.0; //!< term $\sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2
-    // $
     expCov = 0.0;
-    // double divisor = 4 * totalEdgeWeight * totalEdgeWeight;
-    // assert (divisor != 0); // do not divide by 0
 
 #pragma omp parallel for reduction(+ : expCov)
     for (omp_index c = static_cast<omp_index>(zeta.lowerBound());
          c < static_cast<omp_index>(zeta.upperBound()); ++c) {
+        // squared
         expCov +=
             ((incidentWeightSum[c] / gTotalEdgeWeight) * (incidentWeightSum[c] / gTotalEdgeWeight))
-            / 4; // squared
+            / 4;
     }
 
     DEBUG("expected coverage: ", expCov);

@@ -66,10 +66,8 @@ void PLP::run() {
     Aux::Timer runtime;
 
     // propagate labels
-    while (
-        (nUpdated > this->updateThreshold)
-        && (nIterations
-            < maxIterations)) { // as long as a label has changed... or maximum iterations reached
+    // as long as a label has changed... or maximum iterations reached
+    while ((nUpdated > this->updateThreshold) && (nIterations < maxIterations)) {
         runtime.start();
         nIterations += 1;
         DEBUG("[BEGIN] LabelPropagation: iteration #", nIterations);
@@ -80,8 +78,8 @@ void PLP::run() {
         G->balancedParallelForNodes([&](node v) {
             if ((activeNodes[v]) && (G->degree(v) > 0)) {
 
-                std::map<label, double>
-                    labelWeights; // neighborLabelCounts maps label -> frequency in the neighbors
+                // neighborLabelCounts maps label -> frequency in the neighbors
+                std::map<label, double> labelWeights;
 
                 // weigh the labels in the neighborhood of v
                 G->forNeighborsOf(v, [&](node w, edgeweight weight) {

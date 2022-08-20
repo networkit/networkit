@@ -28,13 +28,9 @@ double DynamicNMIDistance::getDissimilarity(const Graph &newGraph, const Partiti
                                             const Partition &newClustering) {
 
     INFO("compressing clusterings");
-    //	oldClustering.compact();
-    //	newClustering.compact();
     INFO("calculating dissimilarity");
 
     auto log_b = Aux::MissingMath::log_b; // import convenient logarithm function
-
-    //	count n = newGraph.numberOfNodes();
 
     DEBUG("oldClustering=", oldClustering.getVector());
     DEBUG("newClustering=", newClustering.getVector());
@@ -79,10 +75,8 @@ double DynamicNMIDistance::getDissimilarity(const Graph &newGraph, const Partiti
             if (currOverlap > 0) {
                 double factor1 = (double)currOverlap / (double)numDouble;
                 double nominator = (double)(currOverlap * numDouble);
-                double aggregate1 =
-                    (double)size_old[C]; //  compAggregate1(confMatrix, oldClustering, D);
-                double aggregate2 =
-                    (double)size_new[D]; // compAggregate2(confMatrix, C, newClustering);
+                double aggregate1 = (double)size_old[C];
+                double aggregate2 = (double)size_new[D];
                 double denom = aggregate1 * aggregate2;
                 DEBUG("frac: ", nominator, " / ", denom, " = ", nominator / denom);
                 double factor2 = log_b(nominator / denom, 2);

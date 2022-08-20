@@ -66,9 +66,8 @@ void PLM::run() {
     std::vector<std::vector<index>> neigh_comm;
 
     if (turbo) {
-        if (this->parallelism != "none"
-            && this->parallelism != "none randomized") { // initialize arrays for all threads only
-                                                         // when actually needed
+        // initialize arrays for all threads only when actually needed
+        if (this->parallelism != "none" && this->parallelism != "none randomized") {
             turboAffinity.resize(omp_get_max_threads());
             neigh_comm.resize(omp_get_max_threads());
             for (auto &it : turboAffinity) {
@@ -91,10 +90,8 @@ void PLM::run() {
 
         if (turbo) {
             neigh_comm[tid].clear();
-            G->forNeighborsOf(u, [&](node v) {
-                turboAffinity[tid][zeta[v]] =
-                    -1; // set all to -1 so we can see when we get to it the first time
-            });
+            // set all to -1 so we can see when we get to it the first time
+            G->forNeighborsOf(u, [&](node v) { turboAffinity[tid][zeta[v]] = -1; });
             turboAffinity[tid][zeta[u]] = 0;
             G->forNeighborsOf(u, [&](node v, edgeweight weight) {
                 if (u != v) {
@@ -152,8 +149,9 @@ void PLM::run() {
             edgeweight affinityC = turboAffinity[tid][C];
 
             for (index D : neigh_comm[tid]) {
-                if (D != C) { // consider only nodes in other clusters (and implicitly only nodes
-                              // other than u)
+
+                // consider only nodes in other clusters (and implicitly only nodes other than u)
+                if (D != C) {
                     double delta = modGain(u, C, D, affinityC, turboAffinity[tid][D]);
 
                     if (delta > deltaBest) {
@@ -167,8 +165,8 @@ void PLM::run() {
 
             for (auto it : affinity) {
                 index D = it.first;
-                if (D != C) { // consider only nodes in other clusters (and implicitly only nodes
-                              // other than u)
+                // consider only nodes in other clusters (and implicitly only nodes other than u)
+                if (D != C) {
                     double delta = modGain(u, C, D, affinityC, it.second);
                     if (delta > deltaBest) {
                         deltaBest = delta;
@@ -240,8 +238,8 @@ void PLM::run() {
 
         timer.start();
 
-        std::pair<Graph, std::vector<node>> coarsened =
-            coarsen(*G, zeta); // coarsen graph according to communities
+        // coarsen graph according to communities
+        std::pair<Graph, std::vector<node>> coarsened = coarsen(*G, zeta);
 
         timer.stop();
         timing["coarsen"].push_back(timer.elapsedMilliseconds());
@@ -265,8 +263,8 @@ void PLM::run() {
 
         DEBUG("coarse graph has ", coarsened.first.numberOfNodes(), " nodes and ",
               coarsened.first.numberOfEdges(), " edges");
-        zeta = prolong(coarsened.first, zetaCoarse, *G,
-                       coarsened.second); // unpack communities in coarse graph onto fine graph
+        // unpack communities in coarse graph onto fine graph
+        zeta = prolong(coarsened.first, zetaCoarse, *G, coarsened.second);
         // refinement phase
         if (refine) {
             DEBUG("refinement phase");

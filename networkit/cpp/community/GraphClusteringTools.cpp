@@ -14,9 +14,8 @@ float computeMaxClusterSize(const Partition &zeta) {
 } // namespace
 
 float getImbalance(const Partition &zeta) {
-    float avg = std::ceil(
-        (float)zeta.numberOfElements()
-        / (float)zeta.numberOfSubsets()); // TODO number of nodes and not number of elements
+    // TODO number of nodes and not number of elements
+    float avg = std::ceil((float)zeta.numberOfElements() / (float)zeta.numberOfSubsets());
     return computeMaxClusterSize(zeta) / avg;
 }
 
@@ -53,9 +52,7 @@ Graph communicationGraph(const Graph &graph, Partition &zeta) {
     return commGraph;
 }
 
-count weightedDegreeWithCluster(const Graph &graph, const Partition &zeta, node u,
-                                index cid) { // const
-    //	TRACE("start wdeg with cluster...");
+count weightedDegreeWithCluster(const Graph &graph, const Partition &zeta, node u, index cid) {
     count wdeg = 0;
 
     if (graph.isWeighted()) {

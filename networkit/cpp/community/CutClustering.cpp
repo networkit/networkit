@@ -132,8 +132,9 @@ NetworKit::CutClustering::getClusterHierarchy(const NetworKit::Graph &G) {
     Partition upperClusters(G.upperNodeIdBound());
     upperClusters.allToSingletons();
 
+    // moved values won't be used anymore
     clusterHierarchyRecursion(G, lower, std::move(lowerClusters), upper, std::move(upperClusters),
-                              result); // moved values won't be used anymore
+                              result);
 
     return result;
 }
@@ -168,8 +169,9 @@ void NetworKit::CutClustering::clusterHierarchyRecursion(
             ++lowerSizes[lowerClusters[u]];
         });
 
-        for (auto it : lowerSizes) { // between each lower cluster and its nested upper cluster that
-                                     // is not itself there might be another clustering
+        // between each lower cluster and its nested upper cluster that is not itself there might be
+        // another clustering
+        for (auto it : lowerSizes) {
             if (it.second == upperSizes[upperClusters[it.first]])
                 continue;
 
@@ -185,8 +187,8 @@ void NetworKit::CutClustering::clusterHierarchyRecursion(
 
             // Check for all nodes in the lower cluster if they are representative of an upper
             // cluster and check if they give a better breakpoint
-            G.forNodes([&](node u) { // FIXME this is inefficient, a better way to list all nodes of
-                                     // a cluster would be nice
+            // FIXME this is inefficient, a better way to list all nodes of a cluster would be nice
+            G.forNodes([&](node u) {
                 if (lowerClusters[u] == it.first && upperClusters[u] == u && u != it.first) {
                     edgeweight tmpBreakPoint =
                         (upperCut[u] - lowerWeight) / (lowerSize - upperSizes[u]);
@@ -215,11 +217,12 @@ void NetworKit::CutClustering::clusterHierarchyRecursion(
             }
         }
 
-        if (middle == -1) { // no breakpoints have been found, this means that the upper bound is a
-                            // tight lower bound for the upper clusters
+        // no breakpoints have been found, this means that the upper bound is a tight lower bound
+        // for the upper clusters
+        if (middle == -1) {
             if (result.count(upper) == 0)
-                result.insert(std::make_pair(
-                    upper, std::move(upperClusters))); // upperClusters won't be used anymore
+                // upperClusters won't be used anymore
+                result.insert(std::make_pair(upper, std::move(upperClusters)));
 
             break;
         }
@@ -227,9 +230,9 @@ void NetworKit::CutClustering::clusterHierarchyRecursion(
         // calculate the clustering at the calculated breakpoint
         CutClustering middleClusterer(G, middle);
         middleClusterer.run();
-        Partition middleClusters(
-            middleClusterer.getPartition()); // FIXME using a single cut clustering instance such
-                                             // that G is not always copied is probably faster
+        // FIXME using a single cut clustering instance such that G is not always copied is probably
+        // faster
+        Partition middleClusters(middleClusterer.getPartition());
 
         INFO("Calculated clustering for alpha value ", middle);
 
@@ -238,22 +241,23 @@ void NetworKit::CutClustering::clusterHierarchyRecursion(
         bool lowerIsMiddle = (lowerSizes.size() == numMiddleClusters),
              middleIsUpper = (numMiddleClusters == upperSizes.size());
 
-        if (lowerIsMiddle) { // by definition the new clustering can never be the lower clustering.
-                             // However this can happen because of numerical inaccuracies.
+        // by definition the new clustering can never be the lower clustering. However this can
+        // happen because of numerical inaccuracies.
+        if (lowerIsMiddle) {
             throw std::logic_error("Error: Lower clustering is middle clustering, probably "
                                    "numerical inaccuracies caused this");
-        } else if (middleIsUpper) { // We found the upper clustering again, this means that middle
-                                    // is the lowest value for which the upper clustering is
-                                    // returned.
+        } else if (middleIsUpper) {
+            // We found the upper clustering again, this means that middle is the lowest value for
+            // which the upper clustering is returned.
             upper = middle;
             // insert the upper clustering with the determined lower bound of the parameter range
             result.insert(std::make_pair(upper, upperClusters));
-        } else { // We found a new clustering between the lower and the upper clustering. Use
-                 // recursion for the lower part of the interval and the loop for the upper part.
+        } else {
+            // We found a new clustering between the lower and the upper clustering. Use
+            // recursion for the lower part of the interval and the loop for the upper part.
             clusterHierarchyRecursion(
                 G, lower, std::move(lowerClusters) /* lowerClusters is overriden afterwards */,
                 middle, middleClusters, result);
-            lower = middle;
             lowerClusters = std::move(middleClusters); // middleClusters won't be used anymore
         }
     }

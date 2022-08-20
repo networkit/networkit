@@ -20,8 +20,9 @@ ParallelAgglomerativeClusterer::ParallelAgglomerativeClusterer(const Graph &G)
 void ParallelAgglomerativeClusterer::run() {
 
     count MIN_NUM_COMMUNITIES = 2;
-    double REL_REPEAT_THRSH = 5e-3; ///< threshold for minimum number of matching edges relative to
-                                    ///< number of vertices to proceed agglomeration
+    // threshold for minimum number of matching edges relative to number of vertices to proceed
+    // agglomeration
+    double REL_REPEAT_THRSH = 5e-3;
 
     // copy graph because we make changes due to merges
     Graph Gcopy(G->numberOfNodes(), true); // make weighted copy
@@ -56,9 +57,9 @@ void ParallelAgglomerativeClusterer::run() {
         count n = Gcopy.numberOfNodes();
         count cn = Gcombined.numberOfNodes();
         count diff = n - cn;
+        // TODO: last condition: no community becomes too big
         repeat = ((diff > 0) && (cn >= MIN_NUM_COMMUNITIES)
-                  && ((double)diff / (double)n
-                      > REL_REPEAT_THRSH)); // TODO: last condition: no community becomes too big
+                  && ((double)diff / (double)n > REL_REPEAT_THRSH));
 
         // prepare next iteration if there is one
         if (repeat) {
