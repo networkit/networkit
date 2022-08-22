@@ -40,6 +40,8 @@ pip3 install -r requirements.txt
 
 python3 -m unittest discover -v networkit/test/
 
-pip3 install ipycytoscape plotly seaborn
+# Installing ipywidgets and jupyterlab-widgets (+ pinned versions) is temp. necessary due to incompatibility with Jupyterlab/plotly and ipywidgets>8.X
+# See: https://github.com/plotly/plotly.py/issues/3686
+pip3 install ipycytoscape plotly seaborn ipywidgets==7.7.1 jupyterlab-widgets==1.1.1
 
 python3 notebooks/test_notebooks.py 'notebooks/'
