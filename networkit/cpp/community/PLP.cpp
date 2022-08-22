@@ -76,16 +76,30 @@ void PLP::run() {
         nUpdated = 0;
 
         G->balancedParallelForNodes([&](node v) {
-            if ((activeNodes[v]) && (G->degree(v) > 0)) {
+            if (!activeNodes[v] || G->degree(v) == 0)
+                return; // node is isolated
 
-                // neighborLabelCounts maps label -> frequency in the neighbors
-                std::map<label, double> labelWeights;
+            // neighborLabelCounts maps label -> frequency in the neighbors
+            std::map<label, double> labelWeights;
 
-                // weigh the labels in the neighborhood of v
-                G->forNeighborsOf(v, [&](node w, edgeweight weight) {
-                    label lw = result.subsetOf(w);
-                    labelWeights[lw] += weight; // add weight of edge {v, w}
-                });
+            // weigh the labels in the neighborhood of v
+            G->forNeighborsOf(v, [&](node w, edgeweight weight) {
+                label lw = result.subsetOf(w);
+                labelWeights[lw] += weight; // add weight of edge {v, w}
+            });
+
+            // get heaviest label
+            label heaviest = std::max_element(labelWeights.begin(), labelWeights.end(),
+                                              [](const std::pair<label, edgeweight> &p1,
+                                                 const std::pair<label, edgeweight> &p2) {
+                                                  return p1.second < p2.second;
+                                              })
+                                 ->first;
+
+            if (result.subsetOf(v) != heaviest) { // UPDATE
+                result.moveToSubset(heaviest, v); // result[v] = heaviest;
+                nUpdated += 1;                    // TODO: atomic update?
+                G->forNeighborsOf(v, [&](node u) { activeNodes[u] = true; });
 
                 // get heaviest label
                 label heaviest = std::max_element(labelWeights.begin(), labelWeights.end(),
@@ -104,7 +118,7 @@ void PLP::run() {
                 }
 
             } else {
-                // node is isolated
+                activeNodes[v] = false;
             }
         });
 
