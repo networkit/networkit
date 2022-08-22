@@ -42,8 +42,8 @@ void PLP::run() {
         updateThreshold = (count)(n / 1e5);
     }
 
-    count nUpdated; // number of nodes which have been updated in last iteration
-    nUpdated = n;   // all nodes have new labels -> first loop iteration runs
+    // number of nodes which have been updated in last iteration
+    count nUpdated = n; // all nodes have new labels -> first loop iteration runs
 
     nIterations = 0; // number of iterations
 
@@ -104,25 +104,9 @@ void PLP::run() {
 
             if (result.subsetOf(v) != heaviest) { // UPDATE
                 result.moveToSubset(heaviest, v); // result[v] = heaviest;
-                nUpdated += 1;                    // TODO: atomic update?
+#pragma omp atomic
+                ++nUpdated;
                 G->forNeighborsOf(v, [&](node u) { activeNodes[u] = true; });
-
-                // get heaviest label
-                label heaviest = std::max_element(labelWeights.begin(), labelWeights.end(),
-                                                  [](const std::pair<label, edgeweight> &p1,
-                                                     const std::pair<label, edgeweight> &p2) {
-                                                      return p1.second < p2.second;
-                                                  })
-                                     ->first;
-
-                if (result.subsetOf(v) != heaviest) { // UPDATE
-                    result.moveToSubset(heaviest, v); // result[v] = heaviest;
-                    nUpdated += 1;                    // TODO: atomic update?
-                    G->forNeighborsOf(v, [&](node u) { activeNodes[u] = true; });
-                } else {
-                    activeNodes[v] = false;
-                }
-
             } else {
                 activeNodes[v] = false;
             }
