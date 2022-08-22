@@ -533,6 +533,23 @@ TEST_P(DistanceGTest, testSPSPWithTargets) {
     }
 }
 
+TEST_P(DistanceGTest, testSPSPWithUnreachableTarget) {
+    Aux::Random::setSeed(42, true);
+    auto G = generateERGraph(100, 0.15);
+    const node unreachable = G.addNode();
+
+    APSP apsp(G);
+    apsp.run();
+
+    const std::vector<node> sources = {0}, targets = {unreachable};
+    SPSP spsp(G, sources.begin(), sources.end(), targets.begin(), targets.end());
+    spsp.run();
+
+    for (node source : sources)
+        for (node target : targets)
+            EXPECT_DOUBLE_EQ(apsp.getDistance(source, target), spsp.getDistance(source, target));
+}
+
 TEST_P(DistanceGTest, testMultiTargetBFS) {
     Aux::Random::setSeed(42, true);
     const auto G = generateERGraph(100, 0.15);

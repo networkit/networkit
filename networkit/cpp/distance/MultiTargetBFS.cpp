@@ -1,6 +1,7 @@
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/MultiTargetBFS.hpp>
 
+#include <limits>
 #include <queue>
 #include <unordered_set>
 
@@ -59,6 +60,12 @@ void MultiTargetBFS::run() {
         } while (!frontier.empty());
 
         toNextLevel();
+    }
+
+    // Mark targets not reached as unreachable
+    for (const node target : targetsSet) {
+        targetIdx.emplace(target, distances.size());
+        distances.emplace_back(std::numeric_limits<edgeweight>::max());
     }
 
     hasRun = true;
