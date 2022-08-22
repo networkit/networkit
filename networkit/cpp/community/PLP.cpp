@@ -61,8 +61,7 @@ void PLP::run() {
      * iteration.
      */
 
-    std::vector<bool> activeNodes(z); // record if node must be processed
-    activeNodes.assign(z, true);
+    std::vector<bool> activeNodes(z, true); // record if node must be processed
 
     Aux::Timer runtime;
 
