@@ -6,6 +6,7 @@
  */
 
 #include <omp.h>
+#include <unordered_map>
 
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/Log.hpp>
@@ -80,12 +81,17 @@ void PLP::run() {
                 return; // node is isolated
 
             // neighborLabelCounts maps label -> frequency in the neighbors
-            std::map<label, double> labelWeights;
+            std::unordered_map<label, edgeweight> labelWeights;
 
             // weigh the labels in the neighborhood of v
             G->forNeighborsOf(v, [&](node w, edgeweight weight) {
                 label lw = result.subsetOf(w);
-                labelWeights[lw] += weight; // add weight of edge {v, w}
+                auto it = labelWeights.find(lw);
+                // add weight of edge {v, w}
+                if (it == labelWeights.end())
+                    labelWeights.emplace(lw, weight);
+                else
+                    it->second += weight;
             });
 
             // get heaviest label
