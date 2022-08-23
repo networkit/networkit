@@ -63,9 +63,10 @@ void ReverseBFS::run() {
                     npaths[v] = npaths[u];
                 }
             } else if (storePaths && (distances[v] == distances[u] + 1)) {
-                previous[v].push_back(u); // additional predecessor
-                npaths[v] += npaths[u];   // all the shortest paths to u are also shortest
-                                          // paths to v now
+                // additional predecessor
+                previous[v].push_back(u);
+                // all the shortest paths to u are also shortest paths to v now
+                npaths[v] += npaths[u];
             }
         });
     }

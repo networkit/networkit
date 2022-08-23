@@ -113,7 +113,6 @@ void NeighborhoodFunctionApproximation::run() {
             // the result of a complex sum
             count estimatedConnectedNodes = (count)std::round(std::pow(2, b) / 0.77351);
             localEstimatesSum[tid] += estimatedConnectedNodes;
-            // std::cout << "(" << v << ", " << estimatedConnectedNodes << ")\t";
 
             // check whether all k bitmask for this node have reached their highest possible value
             bool nodeFinished = true;

@@ -24,12 +24,12 @@ class APSPGTest : public testing::Test {};
 
 TEST_F(APSPGTest, testAPSP) {
     /* Graph:
-         ______
-            /      \
+           ______
+          /      \
          0    3   6
-            \  / \ /
-             2    5
-            /  \ / \
+          \  / \ /
+           2    5
+          /  \ / \
          1    4   7
     */
     int n = 8;
@@ -330,7 +330,6 @@ TEST_F(APSPGTest, testAPSPDirectedWeighted1) {
     std::vector<std::vector<edgeweight>> distances = apsp.getDistances();
 
     // apply graph update edge insertion update with ID 2
-    // INFO("entering update 2");
     G.addEdge(3, 1, 1);
     GraphEvent event2(GraphEvent::EDGE_ADDITION, 3, 1, 1);
     apsp.update(event2);
@@ -362,7 +361,6 @@ TEST_F(APSPGTest, testAPSPDirectedWeighted2) {
     std::vector<std::vector<edgeweight>> distances = apsp.getDistances();
 
     // apply graph update edge insertion update with ID 2
-    // INFO("entering update 2");
     G.addEdge(1, 3, 1);
     GraphEvent event2(GraphEvent::EDGE_ADDITION, 1, 3, 1);
     apsp.update(event2);
@@ -388,7 +386,6 @@ TEST_F(APSPGTest, testAPSPIsolatedNode) {
     std::vector<std::vector<edgeweight>> distances = apsp.getDistances();
 
     // apply graph update edge insertion update with ID 2
-    // INFO("entering update 2");
     G.addEdge(0, 1);
     GraphEvent event2(GraphEvent::EDGE_ADDITION, 0, 1, 1);
     apsp.update(event2);
@@ -419,8 +416,6 @@ TEST_F(APSPGTest, testAPSPEventTypeError) {
     DynAPSP apsp(G);
     apsp.run();
     std::vector<std::vector<edgeweight>> distances = apsp.getDistances();
-    // INFO("distances[0]: ", distances[0][0], distances[0][1], distances[0][2], distances[0][3],
-    // distances[0][4], distances[0][5], distances[0][6]);
 
     // test throw 1. Edge deletions are not allowed.
     G.removeEdge(0, 1);

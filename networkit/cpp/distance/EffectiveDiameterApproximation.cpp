@@ -115,8 +115,8 @@ void EffectiveDiameterApproximation::run() {
                 // remove the current node from future iterations
                 std::swap(activeNodes[x], activeNodes.back());
                 activeNodes.pop_back();
-                --x; // don't skip former activeNodes.back() that has been switched to
-                     // activeNodes[x]
+                // don't skip former activeNodes.back() that has been switched to activeNodes[x]
+                --x;
             }
         }
         mPrev = mCurr;

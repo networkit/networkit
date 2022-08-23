@@ -127,8 +127,8 @@ void HopPlotApproximation::run() {
                 std::swap(activeNodes[x], activeNodes.back());
                 activeNodes.pop_back();
                 totalConnectedNodes += n;
-                --x; // don't skip former activeNodes.back() that has been switched to
-                     // activeNodes[x]
+                // don't skip former activeNodes.back() that has been switched to activeNodes[x]
+                --x;
             } else {
                 // add value of the node to all nodes so we can calculate the average
                 totalConnectedNodes += estimatedConnectedNodes;

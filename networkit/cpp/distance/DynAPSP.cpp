@@ -151,33 +151,6 @@ void DynAPSP::update(GraphEvent event) {
                 stack.pop();
             }
         }
-        // while(!Q.empty()) {
-        // 	node y = getMin();
-        // 	enqueued[y] = false;
-        // 	// update for all source nodes
-        // 	for (node x: source_nodes[Pred[y]]) {
-        // 		visitedPairs ++;
-        // 		if (distances[x][y] > distances[x][u] + distances[u][y]) {
-        // 			distances[x][y] = distances[x][u] + distances[u][y];
-        // 			if(!G.isDirected()) {
-        // 				distances[y][x] = distances[x][y];
-        // 			}
-        // 			source_nodes[y].push_back(x);
-        // 		}
-        // 	}
-        //
-        // 	G.forNeighborsOf(y, [&](node w, edgeweight weightyw){
-        // 		if (distances[u][w] > distances[u][y] + weightyw && distances[v][w] == distances[v][y]
-        // + weightyw) { // I also check that y was a predecessor for w in the s.p. from v
-        // 			distances[u][w] = distances[u][y] + weightyw;
-        // 			Pred[w] = y;
-        // 			if(!G.isDirected()) {
-        // 				distances[w][u] = distances[u][w];
-        // 			}
-        // 			updateQueue(w, distances[u][w]);
-        // 		}
-        // 	});
-        // }
     }
 }
 

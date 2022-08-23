@@ -303,10 +303,6 @@ TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraph) {
             DEBUG("Running from scratch with bfs");
             bfs.run();
             G.forNodes([&](node i) {
-                //	std::cout<<"Node "<<i<<":"<<std::endl;
-                //	std::cout<<"Actual distance: "<<dij.distance(i)<<", computed distance:
-                //"<<ddij.distance(i)<<std::endl; 	std::cout<<"Actual number of paths:
-                //"<<dij.numberOfPaths(i)<<", computed one: "<<ddij.numberOfPaths(i)<<std::endl;
                 EXPECT_EQ(dyn_bfs.distance(i), bfs.distance(i));
                 EXPECT_EQ(dyn_bfs.numberOfPaths(i), bfs.numberOfPaths(i));
             });
@@ -437,15 +433,11 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraBatches) {
             DEBUG("Running from scratch with dijkstra");
             dij.run();
             G.forNodes([&](node i) {
-                //	std::cout<<"Node "<<i<<":"<<std::endl;
-                //	std::cout<<"Actual distance: "<<dij.distance(i)<<", computed distance:
-                //"<<ddij.distance(i)<<std::endl; 	std::cout<<"Actual number of paths:
-                //"<<dij.numberOfPaths(i)<<", computed one: "<<ddij.numberOfPaths(i)<<std::endl;
                 EXPECT_EQ(dyn_dij.distance(i), dij.distance(i));
                 EXPECT_EQ(dyn_dij.numberOfPaths(i), dij.numberOfPaths(i));
-                if (i != source)
-                    assert(dyn_dij.distance(i) != 0);
-                //	EXPECT_EQ(dyn_dij.getPredecessors(i).size(), dij.getPredecessors(i).size());
+                if (i != source) {
+                    ASSERT_NE(dyn_dij.distance(i), 0);
+                }
             });
         }
     });

@@ -123,7 +123,6 @@ TEST_F(CommuteTimeDistanceGTest, runECTDOnSmallGraphs) {
         G.forNodes([&](node u) {
             G.forNodes([&](node v) {
                 double relError = std::fabs(cen.distance(u, v) - exact.distance(u, v));
-                //	INFO("Approximated: ", cen.distance(u,v), ", exact: ", exact.distance(u,v));
                 if (std::fabs(exact.distance(u, v)) > 1e-9) {
                     relError /= exact.distance(u, v);
                 }
@@ -161,7 +160,6 @@ TEST_F(CommuteTimeDistanceGTest, runECTDParallelOnSmallGraphs) {
         G.forNodes([&](node u) {
             G.forNodes([&](node v) {
                 double relError = std::fabs(cen.distance(u, v) - exact.distance(u, v));
-                //	INFO("Approximated: ", cen.distance(u,v), ", exact: ", exact.distance(u,v));
                 if (std::fabs(exact.distance(u, v)) > 1e-9) {
                     relError /= exact.distance(u, v);
                 }
@@ -192,7 +190,6 @@ TEST_F(CommuteTimeDistanceGTest, runECTDSingleSource) {
         DEBUG("sum1 = ", sum1);
         DEBUG("sum2 = ", sum2);
         tlx::unused(sum1, sum2);
-        //	INFO("Avg. relative error: ", error);
     }
 }
 

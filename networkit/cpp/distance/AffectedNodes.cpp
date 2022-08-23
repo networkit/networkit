@@ -294,8 +294,6 @@ void AffectedNodes::removedEdge() {
         bfsV.run();
         auto distancesV = bfsV.getDistances();
 
-        // G.addEdge(u, v);
-
         uniqueAffectedNodes = getAffectedNodesBackwards(v, distancesV, u).first;
 
         for (node w : uniqueAffectedNodes) {
