@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * SSSPGTest.cpp
  *
@@ -8,18 +7,18 @@
 
 #include <gtest/gtest.h>
 
-#include <networkit/distance/DynBFS.hpp>
-#include <networkit/distance/BFS.hpp>
-#include <networkit/distance/DynDijkstra.hpp>
-#include <networkit/distance/Dijkstra.hpp>
-#include <networkit/io/METISGraphReader.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/distance/BFS.hpp>
+#include <networkit/distance/Dijkstra.hpp>
+#include <networkit/distance/DynBFS.hpp>
+#include <networkit/distance/DynDijkstra.hpp>
+#include <networkit/io/METISGraphReader.hpp>
 
 #include <stack>
 
 namespace NetworKit {
 
-class SSSPGTest: public testing::Test{};
+class SSSPGTest : public testing::Test {};
 
 TEST_F(SSSPGTest, testDijkstra) {
     /* Graph:
@@ -60,8 +59,8 @@ TEST_F(SSSPGTest, testShortestPaths) {
     bfs.run();
     bigfloat max = 0;
     node x;
-    G.forNodes([&](node n){
-        if(bfs.numberOfPaths(n) > max) {
+    G.forNodes([&](node n) {
+        if (bfs.numberOfPaths(n) > max) {
             max = bfs.numberOfPaths(n);
             x = n;
         }
@@ -71,7 +70,7 @@ TEST_F(SSSPGTest, testShortestPaths) {
     count i = 0;
     for (auto path : paths) {
         DEBUG("Path number ", i);
-        i ++;
+        i++;
         DEBUG(path);
         EXPECT_EQ(path[0], source);
         EXPECT_EQ(path[dist], x);
@@ -81,14 +80,14 @@ TEST_F(SSSPGTest, testShortestPaths) {
 }
 
 TEST_F(SSSPGTest, testGetAllShortestPaths) {
-/* Graph:
+    /* Graph:
 
-       0    3   6   9
-        \  / \ / \ /
-         2    5   8
-        /  \ / \ / \
-       1    4   7   10
-*/
+           0    3   6   9
+            \  / \ / \ /
+             2    5   8
+            /  \ / \ / \
+           1    4   7   10
+    */
     int n = 11;
     Graph G(n, false);
     G.addEdge(0, 2);
@@ -106,31 +105,30 @@ TEST_F(SSSPGTest, testGetAllShortestPaths) {
     Dijkstra sssp(G, 0);
     EXPECT_NO_THROW(sssp.run());
 
-
     std::set<std::vector<node>> paths = sssp.getPaths(9);
-    ASSERT_EQ(paths.size(),4);
-    std::vector<node> path1 {0,2,3,5,6,8,9};
-    std::vector<node> path2 {0,2,3,5,7,8,9};
-    std::vector<node> path3 {0,2,4,5,6,8,9};
-    std::vector<node> path4 {0,2,4,5,7,8,9};
-    std::vector<std::vector<node>> results {path1, path2, path3, path4};
+    ASSERT_EQ(paths.size(), 4);
+    std::vector<node> path1{0, 2, 3, 5, 6, 8, 9};
+    std::vector<node> path2{0, 2, 3, 5, 7, 8, 9};
+    std::vector<node> path3{0, 2, 4, 5, 6, 8, 9};
+    std::vector<node> path4{0, 2, 4, 5, 7, 8, 9};
+    std::vector<std::vector<node>> results{path1, path2, path3, path4};
     count i = 0;
     for (auto path : paths) {
-        ASSERT_EQ(path,results[i]);
+        ASSERT_EQ(path, results[i]);
         i++;
     }
 }
 
 TEST_F(SSSPGTest, testDirectedBFS) {
-/* Graph:
-         ________
-        /        \.
-       0     3.    6
-        \. ./  \ ./
-          2     .5
-        ./  \. / \.
-       1     4    7
-*/
+    /* Graph:
+             ________
+            /        \.
+           0     3.    6
+            \. ./  \ ./
+              2     .5
+            ./  \. / \.
+           1     4    7
+    */
     int n = 8;
     // G directed unweighted
     Graph G(n, false, true);
@@ -145,7 +143,6 @@ TEST_F(SSSPGTest, testDirectedBFS) {
     G.addEdge(2, 4);
     G.addEdge(2, 1);
 
-
     BFS sssp(G, 0);
     sssp.run();
     EXPECT_EQ(sssp.distance(0), 0);
@@ -159,15 +156,15 @@ TEST_F(SSSPGTest, testDirectedBFS) {
 }
 
 TEST_F(SSSPGTest, testDirectedDijkstra) {
-/* Graph:
-         ________
-        /        \.
-       0     3.    6
-        \. ./  \ ./
-          2     .5
-        ./  \. / \.
-       1     4    7
-*/
+    /* Graph:
+             ________
+            /        \.
+           0     3.    6
+            \. ./  \ ./
+              2     .5
+            ./  \. / \.
+           1     4    7
+    */
     int n = 8;
     // G directed unweighted
     Graph G(n, false, true);
@@ -182,7 +179,6 @@ TEST_F(SSSPGTest, testDirectedDijkstra) {
     G.addEdge(2, 4, 1);
     G.addEdge(2, 1, 1);
 
-
     Dijkstra sssp(G, 0);
     sssp.run();
     EXPECT_EQ(sssp.distance(0), 0);
@@ -194,4 +190,4 @@ TEST_F(SSSPGTest, testDirectedDijkstra) {
     EXPECT_EQ(sssp.distance(6), 1);
     EXPECT_EQ(sssp.distance(7), 3);
 }
-}
+} // namespace NetworKit

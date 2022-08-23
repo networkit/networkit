@@ -1,9 +1,8 @@
-// no-networkit-format
 /*
-* NeighborhoodFunctionHeuristic.cpp
-*
-*      Author: Maximilian Vogel
-*/
+ * NeighborhoodFunctionHeuristic.cpp
+ *
+ *      Author: Maximilian Vogel
+ */
 
 #include <cmath>
 #include <map>
@@ -19,18 +18,21 @@
 
 namespace NetworKit {
 
-NeighborhoodFunctionHeuristic::NeighborhoodFunctionHeuristic(const Graph& G, count nSamples, SelectionStrategy strategy) :
-    Algorithm(),
-    G(&G),
-    nSamples(!nSamples ? (count)std::ceil(std::max((double)0.15f * G.numberOfNodes(), std::sqrt(G.numberOfEdges()))) : nSamples),
-    strategy(strategy) {
+NeighborhoodFunctionHeuristic::NeighborhoodFunctionHeuristic(const Graph &G, count nSamples,
+                                                             SelectionStrategy strategy)
+    : Algorithm(), G(&G),
+      nSamples(!nSamples ? (count)std::ceil(
+                   std::max((double)0.15f * G.numberOfNodes(), std::sqrt(G.numberOfEdges())))
+                         : nSamples),
+      strategy(strategy) {
 
     if (G.isDirected())
         throw std::runtime_error("current implementation can only deal with undirected graphs");
     ConnectedComponents cc(G);
     cc.run();
     if (cc.numberOfComponents() > 1)
-        throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
+        throw std::runtime_error(
+            "current implementation only runs on graphs with 1 connected component");
 
     if (strategy != SPLIT && strategy != RANDOM) {
         throw std::runtime_error("unknown strategy, choose either split or random");
@@ -59,14 +61,12 @@ void NeighborhoodFunctionHeuristic::run() {
     }
 
     // run nSamples BFS and count the distances.
-    std::vector<std::vector<count>> nf(maxThreads, std::vector<count>(dia+1,0));
-    #pragma omp parallel for schedule(guided)
+    std::vector<std::vector<count>> nf(maxThreads, std::vector<count>(dia + 1, 0));
+#pragma omp parallel for schedule(guided)
     for (omp_index i = 0; i < static_cast<omp_index>(nSamples); ++i) {
         count tid = omp_get_thread_num();
         node u = start_nodes[i];
-        Traversal::BFSfrom(*G, u, [&](node, count dist) {
-            nf[tid][dist] += 1;
-        });
+        Traversal::BFSfrom(*G, u, [&](node, count dist) { nf[tid][dist] += 1; });
     }
 
     count n = G->numberOfNodes();
@@ -77,7 +77,7 @@ void NeighborhoodFunctionHeuristic::run() {
     if (true) {
         count m = G->numberOfEdges();
         result[0] = 2 * m;
-        result.back() = n * (n-1);
+        result.back() = n * (n - 1);
         start += 1;
         end -= 1;
     }
@@ -86,14 +86,14 @@ void NeighborhoodFunctionHeuristic::run() {
     for (index dist = start; dist <= end; ++dist) {
         // accumulate thread local results for each distance
         count tmp = 0;
-        #pragma omp parallel for reduction(+:tmp)
+#pragma omp parallel for reduction(+ : tmp)
         for (omp_index tid = 0; tid < static_cast<omp_index>(nf.size()); ++tid) {
             tmp += nf[tid][dist];
         }
         // accumulate nf
-        result[dist-1] = std::round(tmp * norm_factor);
+        result[dist - 1] = std::round(tmp * norm_factor);
         if (dist > 1) {
-            result[dist-1] += result[dist-2];
+            result[dist - 1] += result[dist - 2];
         }
     }
 
@@ -105,21 +105,23 @@ const std::vector<count> &NeighborhoodFunctionHeuristic::getNeighborhoodFunction
     return result;
 }
 
-std::vector<node> NeighborhoodFunctionHeuristic::random(const Graph& G, count nSamples) {
+std::vector<node> NeighborhoodFunctionHeuristic::random(const Graph &G, count nSamples) {
     std::vector<node> start_nodes(nSamples, 0);
-    // the vector of start nodes is chosen completely at random with the graphs "randomNode()" function.
+    // the vector of start nodes is chosen completely at random with the graphs "randomNode()"
+    // function.
     for (index i = 0; i < nSamples; ++i) {
         start_nodes[i] = GraphTools::randomNode(G);
     }
     return start_nodes;
 }
 
-std::vector<node> NeighborhoodFunctionHeuristic::split(const Graph& G, count nSamples) {
+std::vector<node> NeighborhoodFunctionHeuristic::split(const Graph &G, count nSamples) {
     std::vector<node> nodes(G.nodeRange().begin(), G.nodeRange().end());
-    Aux::Parallel::sort(nodes.begin(), nodes.end(), [&G](const node& a, const node& b) {return G.degree(a) < G.degree(b);});
+    Aux::Parallel::sort(nodes.begin(), nodes.end(),
+                        [&G](const node &a, const node &b) { return G.degree(a) < G.degree(b); });
     std::vector<node> start_nodes(nSamples, 0);
     // every (n/nSamples)-th node is selected as start node
-    auto stepwidth = G.numberOfNodes()/nSamples;
+    auto stepwidth = G.numberOfNodes() / nSamples;
     for (index i = 0; i < nSamples; ++i) {
         start_nodes[i] = nodes[i * stepwidth];
     }

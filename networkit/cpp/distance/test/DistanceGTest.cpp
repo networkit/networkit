@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * DistanceGTest.cpp
  *
@@ -32,7 +31,7 @@
 #include <networkit/io/METISGraphReader.hpp>
 
 namespace NetworKit {
-class DistanceGTest: public testing::TestWithParam<std::pair<bool, bool>> {
+class DistanceGTest : public testing::TestWithParam<std::pair<bool, bool>> {
 
 protected:
     static constexpr auto infdist = std::numeric_limits<edgeweight>::max();
@@ -44,9 +43,7 @@ protected:
         auto G = ErdosRenyiGenerator(n, p, isDirected()).generate();
         if (isWeighted()) {
             G = GraphTools::toWeighted(G);
-            G.forEdges([&G](node u, node v) {
-                G.setWeight(u, v, Aux::Random::probability());
-            });
+            G.forEdges([&G](node u, node v) { G.setWeight(u, v, Aux::Random::probability()); });
         }
 
         return G;
@@ -56,13 +53,16 @@ protected:
 constexpr edgeweight DistanceGTest::infdist;
 
 INSTANTIATE_TEST_SUITE_P(InstantiationName, DistanceGTest,
-        testing::Values(std::make_pair(false, false), std::make_pair(true, false),
-                        std::make_pair(false, true),
-                        std::make_pair(true, true)));
+                         testing::Values(std::make_pair(false, false), std::make_pair(true, false),
+                                         std::make_pair(false, true), std::make_pair(true, true)));
 
-bool DistanceGTest::isWeighted() const noexcept { return GetParam().first; }
+bool DistanceGTest::isWeighted() const noexcept {
+    return GetParam().first;
+}
 
-bool DistanceGTest::isDirected() const noexcept { return GetParam().second; }
+bool DistanceGTest::isDirected() const noexcept {
+    return GetParam().second;
+}
 
 TEST_F(DistanceGTest, testVertexDiameterPedantically) {
     DorogovtsevMendesGenerator generator(1000);
@@ -100,20 +100,21 @@ TEST_F(DistanceGTest, testAStar) {
 
         // Test AStar for every pair.
         G.forNodePairs([&](node source, node target) {
-
             // Three distance heuristics
-            std::vector<double> zeroDist(rows*cols, 0);
-            std::vector<double> exactDist(rows*cols);
-            std::vector<double> eucledianDist(rows*cols);
-            for (node u = 0; u < rows*cols; ++u) {
+            std::vector<double> zeroDist(rows * cols, 0);
+            std::vector<double> exactDist(rows * cols);
+            std::vector<double> eucledianDist(rows * cols);
+            for (node u = 0; u < rows * cols; ++u) {
                 count rowU = u / cols;
                 count colU = u % cols;
                 count rowT = target / cols;
                 count colT = target % cols;
-                exactDist[u] = static_cast<double>((rowU > rowT ? rowU - rowT : rowT - rowU) +
-                       (colU > colT ? colU - colT : colT - colU));
-                double rowDiff = std::abs(static_cast<double>(u / cols) - static_cast<double>(rowT));
-                double colDiff = std::abs(static_cast<double>(u % cols) - static_cast<double>(rowT));
+                exactDist[u] = static_cast<double>((rowU > rowT ? rowU - rowT : rowT - rowU)
+                                                   + (colU > colT ? colU - colT : colT - colU));
+                double rowDiff =
+                    std::abs(static_cast<double>(u / cols) - static_cast<double>(rowT));
+                double colDiff =
+                    std::abs(static_cast<double>(u % cols) - static_cast<double>(rowT));
                 eucledianDist[u] = std::sqrt(std::pow(rowDiff, 2) + std::pow(colDiff, 2));
             };
             BFS bfs(G, source, true, false, target);
@@ -151,10 +152,8 @@ TEST_P(DistanceGTest, testIncompleteDijkstra) {
         Dijkstra dij(G, source, false, false);
         dij.run();
         const auto dists = dij.getDistances();
-        const count reachable = std::count_if(dists.begin(), dists.end(),
-                                              [](const edgeweight dist) {
-            return dist != infdist;
-        });
+        const count reachable = std::count_if(
+            dists.begin(), dists.end(), [](const edgeweight dist) { return dist != infdist; });
 
         const std::vector<node> sources({source});
         IncompleteDijkstra iDij(&G, sources);
@@ -192,7 +191,7 @@ TEST_P(DistanceGTest, testBidirectionalBFS) {
             if (!path.empty()) { // At least two edges in the path
                 EXPECT_TRUE(G.hasEdge(source, path.front()));
                 EXPECT_TRUE(G.hasEdge(path.back(), target));
-                for (count i = 1; i < path.size()-1; ++i)
+                for (count i = 1; i < path.size() - 1; ++i)
                     EXPECT_TRUE(G.hasEdge(path[i], path[i + 1]));
             } else
                 EXPECT_TRUE(G.hasEdge(source, target));
@@ -237,10 +236,9 @@ TEST_P(DistanceGTest, testBidirectionalDijkstra) {
 TEST_F(DistanceGTest, testExactDiameter) {
     using namespace std;
 
-    vector<pair<string, count>> testInstances= {pair<string, count>("lesmis", 14),
-                                               pair<string, count>("jazz", 6),
-                                               pair<string, count>("celegans_metabolic", 7)
-                                              };
+    vector<pair<string, count>> testInstances = {pair<string, count>("lesmis", 14),
+                                                 pair<string, count>("jazz", 6),
+                                                 pair<string, count>("celegans_metabolic", 7)};
 
     for (auto testInstance : testInstances) {
         METISGraphReader reader;
@@ -252,14 +250,11 @@ TEST_F(DistanceGTest, testExactDiameter) {
     }
 }
 
-
 TEST_F(DistanceGTest, testEstimatedDiameterRange) {
     using namespace std;
 
-   vector<pair<string, count>> testInstances= {
-                                               pair<string, count>("celegans_metabolic", 7),
-                                               pair<string, count>("jazz", 6)
-                                              };
+    vector<pair<string, count>> testInstances = {pair<string, count>("celegans_metabolic", 7),
+                                                 pair<string, count>("jazz", 6)};
 
     for (auto testInstance : testInstances) {
         METISGraphReader reader;
@@ -273,7 +268,7 @@ TEST_F(DistanceGTest, testEstimatedDiameterRange) {
 }
 TEST_F(DistanceGTest, testPedanticDiameterErdos) {
     count n = 5000;
-    ErdosRenyiGenerator gen(n,0.001);
+    ErdosRenyiGenerator gen(n, 0.001);
     Graph G1 = gen.generate();
     Diameter diam(G1, DiameterAlgo::ESTIMATED_PEDANTIC);
     diam.run();
@@ -281,15 +276,14 @@ TEST_F(DistanceGTest, testPedanticDiameterErdos) {
     ASSERT_LE(diameter, n);
 }
 
-
 TEST_F(DistanceGTest, testEffectiveDiameterMinimal) {
     // Minimal example from the paper
     Graph G(5);
-    G.addEdge(0,1);
-    G.addEdge(1,2);
-    G.addEdge(2,3);
-    G.addEdge(3,4);
-    G.addEdge(4,0);
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(3, 4);
+    G.addEdge(4, 0);
     EffectiveDiameterApproximation aef(G);
     aef.run();
     double effective = aef.getEffectiveDiameter();
@@ -301,28 +295,28 @@ TEST_F(DistanceGTest, testEffectiveDiameterMinimal) {
 
 TEST_F(DistanceGTest, testEffectiveDiameter) {
 
-using namespace std;
+    using namespace std;
 
-vector<string> testInstances= {"celegans_metabolic", "jazz", "lesmis"};
+    vector<string> testInstances = {"celegans_metabolic", "jazz", "lesmis"};
 
-for (auto testInstance : testInstances) {
-    METISGraphReader reader;
-    Graph G = reader.read("input/" + testInstance + ".graph");
-    EffectiveDiameterApproximation aef(G);
-    aef.run();
-    double effective = aef.getEffectiveDiameter();
-    Diameter diam(G, DiameterAlgo::EXACT);
-    diam.run();
-    count exact = diam.getDiameter().first;
-    EXPECT_LE(effective, exact);
-}
+    for (auto testInstance : testInstances) {
+        METISGraphReader reader;
+        Graph G = reader.read("input/" + testInstance + ".graph");
+        EffectiveDiameterApproximation aef(G);
+        aef.run();
+        double effective = aef.getEffectiveDiameter();
+        Diameter diam(G, DiameterAlgo::EXACT);
+        diam.run();
+        count exact = diam.getDiameter().first;
+        EXPECT_LE(effective, exact);
+    }
 }
 
 TEST_F(DistanceGTest, testEffectiveDiameterExact) {
 
     using namespace std;
 
-    vector<string> testInstances= {"celegans_metabolic", "jazz", "lesmis"};
+    vector<string> testInstances = {"celegans_metabolic", "jazz", "lesmis"};
 
     for (auto testInstance : testInstances) {
         METISGraphReader reader;
@@ -353,104 +347,104 @@ TEST_F(DistanceGTest, testEffectiveDiameterExact) {
     Number of steps needed per node: (1-20)
     (7+6+6+5+6+5+5+4+6+5+4+4+5+4+5+5+6+6+7+7) / 20 = 5.4
     */
-        count n1 = 20;
-        Graph G1(n1);
+    count n1 = 20;
+    Graph G1(n1);
 
-        G1.addEdge(0,1);
-        G1.addEdge(0,2);
-        G1.addEdge(1,3);
-        G1.addEdge(2,3);
-        G1.addEdge(2,4);
-        G1.addEdge(3,5);
-        G1.addEdge(3,10);
-        G1.addEdge(4,5);
-        G1.addEdge(4,6);
-        G1.addEdge(5,7);
-        G1.addEdge(6,8);
-        G1.addEdge(6,7);
-        G1.addEdge(7,9);
-        G1.addEdge(7,11);
-        G1.addEdge(8,9);
-        G1.addEdge(10,11);
-        G1.addEdge(11,13);
-        G1.addEdge(12,13);
-        G1.addEdge(13,14);
-        G1.addEdge(13,15);
-        G1.addEdge(15,16);
-        G1.addEdge(15,17);
-        G1.addEdge(16,18);
-        G1.addEdge(16,19);
+    G1.addEdge(0, 1);
+    G1.addEdge(0, 2);
+    G1.addEdge(1, 3);
+    G1.addEdge(2, 3);
+    G1.addEdge(2, 4);
+    G1.addEdge(3, 5);
+    G1.addEdge(3, 10);
+    G1.addEdge(4, 5);
+    G1.addEdge(4, 6);
+    G1.addEdge(5, 7);
+    G1.addEdge(6, 8);
+    G1.addEdge(6, 7);
+    G1.addEdge(7, 9);
+    G1.addEdge(7, 11);
+    G1.addEdge(8, 9);
+    G1.addEdge(10, 11);
+    G1.addEdge(11, 13);
+    G1.addEdge(12, 13);
+    G1.addEdge(13, 14);
+    G1.addEdge(13, 15);
+    G1.addEdge(15, 16);
+    G1.addEdge(15, 17);
+    G1.addEdge(16, 18);
+    G1.addEdge(16, 19);
 
-        EffectiveDiameter ed(G1);
-        ed.run();
-        double effective1 = ed.getEffectiveDiameter();
-        EXPECT_NEAR(5.4, effective1, tol);
+    EffectiveDiameter ed(G1);
+    ed.run();
+    double effective1 = ed.getEffectiveDiameter();
+    EXPECT_NEAR(5.4, effective1, tol);
 
-        /* Graph: n=21, threshold: 21*0.9 = 18.9 => 19 nodes
-                    13---------------3
-                        |               |
-                    ---14--12--|        |
-                    |   |   |  |        |
-        1--21--18--16--15   |  |        |
-                    |       |  |        |
-            20--17------10--8        |
-                    |       |  |        |
-                19       9--7--5--6--4--11
-                                        |
-                                        2
-    Number of steps needed per node: (1-21)
-    (8+7+5+6+6+6+5+5+5+5+7+5+4+4+5+5+5+6+6+6+7) / 21 = 5.619047
-    */
-        count n2 = 21;
-        Graph G2(n2);
+    /* Graph: n=21, threshold: 21*0.9 = 18.9 => 19 nodes
+                13---------------3
+                    |               |
+                ---14--12--|        |
+                |   |   |  |        |
+    1--21--18--16--15   |  |        |
+                |       |  |        |
+        20--17------10--8        |
+                |       |  |        |
+            19       9--7--5--6--4--11
+                                    |
+                                    2
+Number of steps needed per node: (1-21)
+(8+7+5+6+6+6+5+5+5+5+7+5+4+4+5+5+5+6+6+6+7) / 21 = 5.619047
+*/
+    count n2 = 21;
+    Graph G2(n2);
 
-        G2.addEdge(0,20);
-        G2.addEdge(1,3);
-        G2.addEdge(2,3);
-        G2.addEdge(2,12);
-        G2.addEdge(3,5);
-        G2.addEdge(3,10);
-        G2.addEdge(4,5);
-        G2.addEdge(4,6);
-        G2.addEdge(6,7);
-        G2.addEdge(6,8);
-        G2.addEdge(7,9);
-        G2.addEdge(7,11);
-        G2.addEdge(8,9);
-        G2.addEdge(9,11);
-        G2.addEdge(9,16);
-        G2.addEdge(11,13);
-        G2.addEdge(12,13);
-        G2.addEdge(13,14);
-        G2.addEdge(13,15);
-        G2.addEdge(14,15);
-        G2.addEdge(15,16);
-        G2.addEdge(15,17);
-        G2.addEdge(16,18);
-        G2.addEdge(16,19);
-        G2.addEdge(17,20);
+    G2.addEdge(0, 20);
+    G2.addEdge(1, 3);
+    G2.addEdge(2, 3);
+    G2.addEdge(2, 12);
+    G2.addEdge(3, 5);
+    G2.addEdge(3, 10);
+    G2.addEdge(4, 5);
+    G2.addEdge(4, 6);
+    G2.addEdge(6, 7);
+    G2.addEdge(6, 8);
+    G2.addEdge(7, 9);
+    G2.addEdge(7, 11);
+    G2.addEdge(8, 9);
+    G2.addEdge(9, 11);
+    G2.addEdge(9, 16);
+    G2.addEdge(11, 13);
+    G2.addEdge(12, 13);
+    G2.addEdge(13, 14);
+    G2.addEdge(13, 15);
+    G2.addEdge(14, 15);
+    G2.addEdge(15, 16);
+    G2.addEdge(15, 17);
+    G2.addEdge(16, 18);
+    G2.addEdge(16, 19);
+    G2.addEdge(17, 20);
 
-        EffectiveDiameter ed2(G2);
-        ed2.run();
-        double effective2 = ed2.getEffectiveDiameter();
-        EXPECT_NEAR(5.619047, effective2, tol);
+    EffectiveDiameter ed2(G2);
+    ed2.run();
+    double effective2 = ed2.getEffectiveDiameter();
+    EXPECT_NEAR(5.619047, effective2, tol);
 }
 
 TEST_F(DistanceGTest, testHopPlotApproximation) {
     using namespace std;
 
-    vector<string> testInstances= {"celegans_metabolic", "lesmis"};
+    vector<string> testInstances = {"celegans_metabolic", "lesmis"};
 
     const double tol = 1e-2;
 
-    for (auto& testInstance : testInstances) {
+    for (auto &testInstance : testInstances) {
         METISGraphReader reader;
         Graph G = reader.read("input/" + testInstance + ".graph");
         HopPlotApproximation hp(G);
         hp.run();
         map<count, double> hopPlot = hp.getHopPlot();
-        for (count i=1; i < hopPlot.size(); i++) {
-            EXPECT_LE(hopPlot[i-1], hopPlot[i]+tol);
+        for (count i = 1; i < hopPlot.size(); i++) {
+            EXPECT_LE(hopPlot[i - 1], hopPlot[i] + tol);
         }
     }
 }

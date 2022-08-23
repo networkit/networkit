@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * Volume.cpp
  *
@@ -50,7 +49,8 @@ std::vector<double> Volume::volume(const Graph &G, std::vector<double> rs, count
     std::vector<double> xs(rs.size(), 0);
     double rmax = *std::max_element(std::begin(rs), std::end(rs));
     for (count j = 0; j < samples; j++) {
-        std::unordered_map<node, double> ms = Volume::nodesWithinDistance(G, rmax, GraphTools::randomNode(G));
+        std::unordered_map<node, double> ms =
+            Volume::nodesWithinDistance(G, rmax, GraphTools::randomNode(G));
         for (count i = 0; i < rs.size(); ++i)
             xs[i] += std::count_if(ms.begin(), ms.end(), [&](const auto &nodeDist) -> bool {
                 return nodeDist.second <= rs[i];

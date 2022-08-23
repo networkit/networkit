@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * JaccardDistance.cpp
  *
@@ -12,8 +11,8 @@
 
 namespace NetworKit {
 
-JaccardDistance::JaccardDistance(const Graph& G, const std::vector<count>& triangles) : NodeDistance(G), triangles(triangles) {
-}
+JaccardDistance::JaccardDistance(const Graph &G, const std::vector<count> &triangles)
+    : NodeDistance(G), triangles(triangles) {}
 
 void JaccardDistance::preprocess() {
     if (!G->hasEdgeIds()) {

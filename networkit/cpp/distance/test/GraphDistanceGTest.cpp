@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * GraphDistanceGTest.cpp
  *
@@ -14,7 +13,7 @@
 
 namespace NetworKit {
 
-class GraphDistanceGTest: public testing::Test{};
+class GraphDistanceGTest : public testing::Test {};
 
 // TODO: fix graph
 TEST_F(GraphDistanceGTest, testGraphWeightedDistance) {
@@ -58,6 +57,5 @@ TEST_F(GraphDistanceGTest, testGraphUnweightedDistance) {
     EXPECT_EQ(dist_1_23, 6);
     EXPECT_EQ(dist_5_19, 6);
 }
-
 
 } /* namespace NetworKit */
