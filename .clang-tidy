@@ -52,48 +52,49 @@ WarningsAsErrors:  >
     *,-cppcoreguidelines-narrowing-conversions
 
 # Clang Tidy >= 12.0.0 is required to use regexp-options.
+# ToDo: Enable each check one by one
 FormatStyle: 'file'
 HeaderFilterRegex: '.*\/(include\/networkit|networkit\/cpp)\/.*\.hpp$'
 CheckOptions:
   - key:   readability-identifier-naming.ClassCase
     value: CamelCase
-  - key:   readability-identifier-naming.ConstexprVariableCase
-    value: UPPER_CASE
-  - key:   readability-identifier-naming.EnumCase
-    value: CamelCase
+#  - key:   readability-identifier-naming.ConstexprVariableCase
+#    value: UPPER_CASE
+#  - key:   readability-identifier-naming.EnumCase
+#    value: CamelCase
 # Disabled due to backwards compatibility. New enum constant should 
 # comply to the naming rules though.
 #  - key:   readability-identifier-naming.EnumConstantCase
 #    value: UPPER_CASE
-  - key:   readability-identifier-naming.FunctionCase
-    value: camelBack
+#  - key:   readability-identifier-naming.FunctionCase
+#    value: camelBack
 # Leading underscore is used for Cython workaround functions.
 # Example (from SSSP.hpp): 
 #   normal fct.     -> bigfloat numberOfPaths(node t)  
 #   workaround fct. -> double _numberOfPaths(node t)
-  - key:   readability-identifier-naming.FunctionIgnoredRegexp
-    value: "^.*_$"
-  - key:   readability-identifier-naming.MemberCase
-    value: camelBack
+#  - key:   readability-identifier-naming.FunctionIgnoredRegexp
+#    value: "^.*_$"
+#  - key:   readability-identifier-naming.MemberCase
+#    value: camelBack
 # Parameters and member variables for certain NetworKit 
 # datastructures (e.g. graph, ...) or mathematical symbols 
 # (e.g. radius, ...) allowed to be written in capitals.
 # Example: G, Gnew, G1, R, ...
-  - key:   readability-identifier-naming.MemberIgnoredRegexp
-    value: "^[A-Z][a-z0-9]*$"
-  - key:   readability-identifier-naming.ParameterCase
-    value: camelBack
+#  - key:   readability-identifier-naming.MemberIgnoredRegexp
+#    value: "^[A-Z][a-z0-9]*$"
+#  - key:   readability-identifier-naming.ParameterCase
+#    value: camelBack
 # See above for explanation.
-  - key:   readability-identifier-naming.ParameterIgnoredRegexp
-    value: "^[A-Z][a-z0-9]*$"
-  - key:   readability-identifier-naming.UnionCase
-    value: CamelCase
-  - key:   readability-identifier-naming.VariableCase
-    value: camelBack
+#  - key:   readability-identifier-naming.ParameterIgnoredRegexp
+#    value: "^[A-Z][a-z0-9]*$"
+#  - key:   readability-identifier-naming.UnionCase
+#    value: CamelCase
+#  - key:   readability-identifier-naming.VariableCase
+#    value: camelBack
 # See above for explanation.
-  - key:   readability-identifier-naming.VariableIgnoredRegexp
-    value: "^[A-Z][a-z0-9]*$"
-  - key:   readability-identifier-naming.TemplateParameterCase
-    value: CamelCase
-  - key:   performance-unnecessary-value-param.AllowedTypes
-    value: '[Ff]unction$'
+#  - key:   readability-identifier-naming.VariableIgnoredRegexp
+#    value: "^[A-Z][a-z0-9]*$"
+#  - key:   readability-identifier-naming.TemplateParameterCase
+#    value: CamelCase
+#  - key:   performance-unnecessary-value-param.AllowedTypes
+#    value: '[Ff]unction$'

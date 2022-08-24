@@ -56,7 +56,7 @@ public:
     std::vector<Point2D> moveCoordinates() { return std::move(coordinates); }
 
 private:
-    struct circle {
+    struct Circle {
         coordinate x;
         coordinate y;
         coordinate rad;
@@ -70,7 +70,7 @@ private:
     count numDenseAreas;              //!< number of areas with more nodes (denser)
     coordinate neighRad;              //!< neighborhood radius
     count maxNeigh;                   //!< maximum number of neighbors
-    std::vector<circle> denseAreaXYR; //!< position of each circular dense area
+    std::vector<Circle> denseAreaXYR; //!< position of each circular dense area
     std::vector<count> numPerArea;    //!< number of points in each circular area
     std::vector<Point2D> coordinates; //!< storage for point coordinates
 

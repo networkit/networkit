@@ -245,15 +245,15 @@ void printToStreamTagged(std::ostream &stream, const T &arg, PairTag) {
 
 // Tuple
 template <typename Tuple, int I, int TupleSize>
-struct printTupleHelper {
+struct PrintTupleHelper {
     static void print(std::ostream &stream, const Tuple &arg) {
         printToStream(stream, std::get<I - 1>(arg));
         stream << ", ";
-        printTupleHelper<Tuple, I + 1, TupleSize>::print(stream, arg);
+        PrintTupleHelper<Tuple, I + 1, TupleSize>::print(stream, arg);
     }
 };
 template <typename Tuple, int I>
-struct printTupleHelper<Tuple, I, I> {
+struct PrintTupleHelper<Tuple, I, I> {
     static void print(std::ostream &stream, const Tuple &arg) {
         printToStream(stream, std::get<I - 1>(arg));
     }
@@ -261,7 +261,7 @@ struct printTupleHelper<Tuple, I, I> {
 template <typename T>
 void printToStreamTagged(std::ostream &stream, const T &arg, TupleTag) {
     stream << '(';
-    printTupleHelper<T, 1, std::tuple_size<T>::value>::print(stream, arg);
+    PrintTupleHelper<T, 1, std::tuple_size<T>::value>::print(stream, arg);
     stream << ')';
 }
 

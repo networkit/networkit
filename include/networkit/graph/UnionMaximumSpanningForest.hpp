@@ -79,23 +79,23 @@ public:
     Graph getUMSF(bool move = false);
 
 private:
-    struct weightedEdge {
+    struct WeightedEdge {
         edgeweight attribute;
         node u;
         node v;
         edgeid eid;
 
-        bool operator>(const weightedEdge &other) const {
+        bool operator>(const WeightedEdge &other) const {
             return (attribute > other.attribute)
                    || (attribute == other.attribute
                        && (u > other.u || (u == other.u && v > other.v)));
         };
-        weightedEdge(node u, node v, edgeweight attribute, edgeid eid = 0)
+        WeightedEdge(node u, node v, edgeweight attribute, edgeid eid = 0)
             : attribute(attribute), u(u), v(v), eid(eid){};
     };
 
     const Graph *G;
-    std::vector<weightedEdge> weightedEdges;
+    std::vector<WeightedEdge> weightedEdges;
 
     Graph umsf;
     std::vector<bool> umsfAttribute;

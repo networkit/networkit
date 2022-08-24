@@ -114,13 +114,13 @@ void PubWebGenerator::chooseDenseAreaSizes() {
 // compute number of nodes per cluster, each cluster has approx. same density
 void PubWebGenerator::chooseClusterSizes() {
     auto f = std::accumulate(denseAreaXYR.begin(), denseAreaXYR.end(), 0.0,
-                             [](coordinate sum, circle c) { return sum + std::pow(c.rad, 1.5); });
+                             [](coordinate sum, Circle c) { return sum + std::pow(c.rad, 1.5); });
 
     f = (n * (numDenseAreas / (numDenseAreas + 2.0))) / f;
 
     numPerArea.reserve(numDenseAreas);
-    for (auto circle : denseAreaXYR) {
-        numPerArea.emplace_back(std::round(f * std::pow(circle.rad, 1.5)));
+    for (auto Circle : denseAreaXYR) {
+        numPerArea.emplace_back(std::round(f * std::pow(Circle.rad, 1.5)));
     }
 }
 
