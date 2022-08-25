@@ -106,8 +106,10 @@ Graph GMLGraphReader::read(const std::string &path) {
                 }
                 std::getline(graphFile, line);
             }
-            G.addEdge(u, v);
-            DEBUG("added edge ", u, ", ", v);
+            if (!G.addEdge(u, v, defaultEdgeWeight, true))
+                WARN("Not adding edge ", u, "-", v, " since it is already present.");
+            else
+                DEBUG("added edge ", u, ", ", v);
         } else {
             return false;
         }

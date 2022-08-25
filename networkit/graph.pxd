@@ -57,7 +57,7 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		void removeNode(node u) except +
 		bool_t hasNode(node u) except +
 		void restoreNode(node u) except +
-		void addEdge(node u, node v, edgeweight w) except +
+		bool_t addEdge(node u, node v, edgeweight w, bool_t checkMultiEdge) except +
 		void setWeight(node u, node v, edgeweight w) except +
 		void increaseWeight(node u, node v, edgeweight w) except +
 		void removeEdge(node u, node v) except +

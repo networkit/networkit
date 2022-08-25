@@ -346,16 +346,17 @@ cdef class Graph:
 		"""
 		return self._this.hasNode(u)
 
-	def addEdge(self, u, v, w=1.0, addMissing = False):
+	def addEdge(self, u, v, w=1.0, addMissing = False, checkMultiEdge = False):
 		""" 
-		addEdge(u, v, w=1.0, addMissing=False)
+		addEdge(u, v, w=1.0, addMissing=False, checkMultiEdge=False)
 		
 		Insert an undirected edge between the nodes `u` and `v`. If the graph is weighted you can optionally set a weight for this edge. 
 		The default weight is 1.0. If one or both end-points do not exists and addMissing is set, they are silently added.
 		
 		Note
 		----
-		It is not checked whether this edge already exists, thus it is possible to create multi-edges.
+		By default it is not checked whether this edge already exists, thus it is possible to create multi-edges. Multi-edges are not supported and will NOT be
+		handled consistently by the graph data structure. To enable set :code:`checkMultiEdge` to True. Note that this increases the runtime of the function by O(max(deg(u), deg(v))).
 
 	 	Parameters
 	 	----------
@@ -367,6 +368,13 @@ cdef class Graph:
 			Edge weight.
 		addMissing : bool, optional
 			Add missing endpoints if necessary (i.e., increase numberOfNodes). Default: False
+		checkMultiEdge : bool, optional
+			Check if edge is already present in the graph. If detected, do not insert the edge. Default: False
+
+		Returns
+		-------
+		bool
+			Indicates whether the edge has been added. Is `False` in case :code:`checkMultiEdge` is set to `True` and the new edge would have been a multi-edge.
 		"""
 		if not (self._this.hasNode(u) and self._this.hasNode(v)):
 			if not addMissing:
@@ -382,8 +390,7 @@ cdef class Graph:
 			if not self._this.hasNode(v):
 				self._this.restoreNode(v)
 
-		self._this.addEdge(u, v, w)
-		return self
+		return self._this.addEdge(u, v, w, checkMultiEdge)
 
 	def setWeight(self, u, v, w):
 		""" 

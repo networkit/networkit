@@ -1655,52 +1655,76 @@ public:
      * Insert an edge between the nodes @a u and @a v. If the graph is
      * weighted you can optionally set a weight for this edge. The default
      * weight is 1.0. Note: Multi-edges are not supported and will NOT be
-     * handled consistently by the graph data structure.
+     * handled consistently by the graph data structure. It is possible to check
+     * for multi-edges by enabling parameter "checkForMultiEdges". If already present,
+     * the new edge is not inserted. Enabling this check increases the complexity of the function
+     * to O(max(deg(u), deg(v))).
      * @param u Endpoint of edge.
      * @param v Endpoint of edge.
      * @param weight Optional edge weight.
+     * @param checkMultiEdge If true, this enables a check for a possible multi-edge.
+     * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
+     * true and the new edge would have been a multi-edge.)
      */
-    void addEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
+    bool addEdge(node u, node v, edgeweight ew = defaultEdgeWeight, bool checkMultiEdge = false);
 
     /**
      * Insert an edge between the nodes @a u and @a v. Unline the addEdge function, this function
      * does not not add any information to v. If the graph is weighted you can optionally set a
      * weight for this edge. The default weight is 1.0. Note: Multi-edges are not supported and will
-     * NOT be handled consistently by the graph data structure.
+     * NOT be handled consistently by the graph data structure. It is possible to check
+     * for multi-edges by enabling parameter "checkForMultiEdges". If already present,
+     * the new edge is not inserted. Enabling this check increases the complexity of the function
+     * to O(max(deg(u), deg(v))).
      * @param u Endpoint of edge.
      * @param v Endpoint of edge.
      * @param weight Optional edge weight.
      * @param ew Optional edge weight.
      * @param index Optional edge index.
+     * @param checkMultiEdge If true, this enables a check for a possible multi-edge.
+     * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
+     * true and the new edge would have been a multi-edge.)
      */
-    void addPartialEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
-                        uint64_t index = 0);
+    bool addPartialEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
+                        uint64_t index = 0, bool checkForMultiEdges = false);
 
     /**
      * Insert an in edge between the nodes @a u and @a v in a directed graph. If the graph is
      * weighted you can optionally set a weight for this edge. The default
      * weight is 1.0. Note: Multi-edges are not supported and will NOT be
-     * handled consistently by the graph data structure.
+     * handled consistently by the graph data structure. It is possible to check
+     * for multi-edges by enabling parameter "checkForMultiEdges". If already present,
+     * the new edge is not inserted. Enabling this check increases the complexity of the function
+     * to O(max(deg(u), deg(v))).
      * @param u Endpoint of edge.
      * @param v Endpoint of edge.
      * @param ew Optional edge weight.
      * @param index Optional edge index.
+     * @param checkMultiEdge If true, this enables a check for a possible multi-edge.
+     * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
+     * true and the new edge would have been a multi-edge.)
      */
-    void addPartialInEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
-                          uint64_t index = 0);
+    bool addPartialInEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
+                          uint64_t index = 0, bool checkForMultiEdges = false);
 
     /**
      * Insert an out edge between the nodes @a u and @a v in a directed graph. If the graph is
      * weighted you can optionally set a weight for this edge. The default
      * weight is 1.0. Note: Multi-edges are not supported and will NOT be
-     * handled consistently by the graph data structure.
+     * handled consistently by the graph data structure. It is possible to check
+     * for multi-edges by enabling parameter "checkForMultiEdges". If already present,
+     * the new edge is not inserted. Enabling this check increases the complexity of the function
+     * to O(max(deg(u), deg(v))).
      * @param u Endpoint of edge.
      * @param v Endpoint of edge.
      * @param ew Optional edge weight.
      * @param index Optional edge index.
+     * @param checkMultiEdge If true, this enables a check for a possible multi-edge.
+     * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
+     * true and the new edge would have been a multi-edge.)
      */
-    void addPartialOutEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
-                           uint64_t index = 0);
+    bool addPartialOutEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
+                           uint64_t index = 0, bool checkForMultiEdges = false);
 
     /**
      * Removes the undirected edge {@a u,@a v}.

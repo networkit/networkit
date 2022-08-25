@@ -215,7 +215,8 @@ Graph KONECTGraphReader::read(const std::string &path) {
     // Helper function for handling edges
     auto handleEdge = [&](node source, node target, edgeweight weight) {
         if (!graph.hasEdge(source, target)) {
-            graph.addEdge(source, target, weight);
+            if (!graph.addEdge(source, target, weight, true))
+                WARN("Not adding edge ", source, "-", target, " since it is already present.");
         } else if (multiple) {
             switch (multipleEdgesHandlingMethod) {
             case DISCARD_EDGES:
