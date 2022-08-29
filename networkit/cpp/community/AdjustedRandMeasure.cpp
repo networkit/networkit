@@ -1,9 +1,9 @@
-// no-networkit-format
 #include <networkit/community/AdjustedRandMeasure.hpp>
 #include <networkit/community/PartitionIntersection.hpp>
 
-
-double NetworKit::AdjustedRandMeasure::getDissimilarity(const NetworKit::Graph &G, const NetworKit::Partition &zeta, const NetworKit::Partition &eta) {
+double NetworKit::AdjustedRandMeasure::getDissimilarity(const NetworKit::Graph &G,
+                                                        const NetworKit::Partition &zeta,
+                                                        const NetworKit::Partition &eta) {
     Partition intersection = PartitionIntersection().calculate(zeta, eta);
 
     std::vector<count> size_zeta(zeta.upperBound(), 0);
@@ -11,18 +11,17 @@ double NetworKit::AdjustedRandMeasure::getDissimilarity(const NetworKit::Graph &
     std::vector<count> size_intersection(intersection.upperBound(), 0);
 
     // precompute sizes for each cluster
-    G.forNodes([&](node u){
+    G.forNodes([&](node u) {
         index C = zeta[u];
         index D = eta[u];
         index I = intersection[u];
-        assert (C != none);
-        assert (D != none);
-        assert (I != none);
+        assert(C != none);
+        assert(D != none);
+        assert(I != none);
         size_zeta[C] += 1;
         size_eta[D] += 1;
         size_intersection[I] += 1;
     });
-
 
     count randIndex = 0;
     for (count s : size_intersection) {

@@ -1,4 +1,3 @@
-// no-networkit-format
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/community/IntrapartitionDensity.hpp>
 
@@ -7,8 +6,8 @@ void NetworKit::IntrapartitionDensity::run() {
 
     Aux::SignalHandler handler;
 
-    minimumValue = std::numeric_limits< double >::max();
-    maximumValue  = std::numeric_limits< double >::lowest();
+    minimumValue = std::numeric_limits<double>::max();
+    maximumValue = std::numeric_limits<double>::lowest();
     unweightedAverage = 0;
     weightedAverage = 0;
     values.clear();
@@ -26,9 +25,7 @@ void NetworKit::IntrapartitionDensity::run() {
 
     handler.assureRunning();
 
-    G->forNodes([&](node u) {
-        ++clusterSizes[(*P)[u]];
-    });
+    G->forNodes([&](node u) { ++clusterSizes[(*P)[u]]; });
 
     handler.assureRunning();
 
@@ -41,7 +38,7 @@ void NetworKit::IntrapartitionDensity::run() {
     for (index i = 0; i < clusterSizes.size(); ++i) {
         if (clusterSizes[i] > 0) {
             double id = 1;
-            count possibleEdges = clusterSizes[i] * (clusterSizes[i]-1) / 2;
+            count possibleEdges = clusterSizes[i] * (clusterSizes[i] - 1) / 2;
             if (possibleEdges > 0) {
                 id = intraEdges[i] * 1.0 / possibleEdges;
             }

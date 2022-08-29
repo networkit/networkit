@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * MLPLM.cpp
  *
@@ -24,7 +23,9 @@ PLM::PLM(const Graph &G, bool refine, double gamma, std::string par, count maxIt
     : CommunityDetectionAlgorithm(G), parallelism(std::move(par)), refine(refine), gamma(gamma),
       maxIter(maxIter), turbo(turbo), recurse(recurse) {}
 
-PLM::PLM(const Graph& G, const PLM& other) : CommunityDetectionAlgorithm(G), parallelism(other.parallelism), refine(other.refine), gamma(other.gamma), maxIter(other.maxIter), turbo(other.turbo), recurse(other.recurse) {}
+PLM::PLM(const Graph &G, const PLM &other)
+    : CommunityDetectionAlgorithm(G), parallelism(other.parallelism), refine(other.refine),
+      gamma(other.gamma), maxIter(other.maxIter), turbo(other.turbo), recurse(other.recurse) {}
 
 void PLM::run() {
     Aux::SignalHandler handler;
@@ -40,7 +41,7 @@ void PLM::run() {
     std::vector<double> volNode(z, 0.0);
     // $\omega(E)$
     edgeweight total = G->totalEdgeWeight();
-    DEBUG("total edge weight: " , total);
+    DEBUG("total edge weight: ", total);
     edgeweight divisor = (2 * total * total); // needed in modularity calculation
 
     G->parallelForNodes([&](node u) { // calculate and store volume of each node
@@ -56,17 +57,17 @@ void PLM::run() {
     });
 
     // first move phase
-    bool moved = false; // indicates whether any node has been moved in the last pass
+    bool moved = false;  // indicates whether any node has been moved in the last pass
     bool change = false; // indicates whether the communities have changed at all
 
     // stores the affinity for each neighboring community (index), one vector per thread
-    std::vector<std::vector<edgeweight> > turboAffinity;
+    std::vector<std::vector<edgeweight>> turboAffinity;
     // stores the list of neighboring communities, one vector per thread
-    std::vector<std::vector<index> > neigh_comm;
-
+    std::vector<std::vector<index>> neigh_comm;
 
     if (turbo) {
-        if (this->parallelism != "none" && this->parallelism != "none randomized") { // initialize arrays for all threads only when actually needed
+        // initialize arrays for all threads only when actually needed
+        if (this->parallelism != "none" && this->parallelism != "none randomized") {
             turboAffinity.resize(omp_get_max_threads());
             neigh_comm.resize(omp_get_max_threads());
             for (auto &it : turboAffinity) {
@@ -89,15 +90,15 @@ void PLM::run() {
 
         if (turbo) {
             neigh_comm[tid].clear();
-            G->forNeighborsOf(u, [&](node v) {
-                turboAffinity[tid][zeta[v]] = -1; // set all to -1 so we can see when we get to it the first time
-            });
+            // set all to -1 so we can see when we get to it the first time
+            G->forNeighborsOf(u, [&](node v) { turboAffinity[tid][zeta[v]] = -1; });
             turboAffinity[tid][zeta[u]] = 0;
             G->forNeighborsOf(u, [&](node v, edgeweight weight) {
                 if (u != v) {
                     index C = zeta[v];
                     if (turboAffinity[tid][C] == -1) {
-                        // found the neighbor for the first time, initialize to 0 and add to list of neighboring communities
+                        // found the neighbor for the first time, initialize to 0 and add to list of
+                        // neighboring communities
                         turboAffinity[tid][C] = 0;
                         neigh_comm[tid].push_back(C);
                     }
@@ -131,7 +132,10 @@ void PLM::run() {
         auto modGain = [&](node u, index C, index D, edgeweight affinityC, edgeweight affinityD) {
             double volN = 0.0;
             volN = volNode[u];
-            double delta = (affinityD - affinityC) / total + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN) / divisor;
+            double delta =
+                (affinityD - affinityC) / total
+                + this->gamma * ((volCommunityMinusNode(C, u) - volCommunityMinusNode(D, u)) * volN)
+                      / divisor;
             return delta;
         };
 
@@ -145,7 +149,9 @@ void PLM::run() {
             edgeweight affinityC = turboAffinity[tid][C];
 
             for (index D : neigh_comm[tid]) {
-                if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
+
+                // consider only nodes in other clusters (and implicitly only nodes other than u)
+                if (D != C) {
                     double delta = modGain(u, C, D, affinityC, turboAffinity[tid][D]);
 
                     if (delta > deltaBest) {
@@ -159,7 +165,8 @@ void PLM::run() {
 
             for (auto it : affinity) {
                 index D = it.first;
-                if (D != C) { // consider only nodes in other clusters (and implicitly only nodes other than u)
+                // consider only nodes in other clusters (and implicitly only nodes other than u)
+                if (D != C) {
                     double delta = modGain(u, C, D, affinityC, it.second);
                     if (delta > deltaBest) {
                         deltaBest = delta;
@@ -169,8 +176,8 @@ void PLM::run() {
             }
         }
 
-        if (deltaBest > 0) { // if modularity improvement possible
-            assert (best != C && best != none);// do not "move" to original cluster
+        if (deltaBest > 0) {                   // if modularity improvement possible
+            assert(best != C && best != none); // do not "move" to original cluster
 
             zeta[u] = best; // move to best cluster
             // node u moved
@@ -178,10 +185,10 @@ void PLM::run() {
             // mod update
             double volN = 0.0;
             volN = volNode[u];
-            // update the volume of the two clusters
-            #pragma omp atomic
+// update the volume of the two clusters
+#pragma omp atomic
             volCommunity[C] -= volN;
-            #pragma omp atomic
+#pragma omp atomic
             volCommunity[best] += volN;
 
             moved = true; // change to clustering has been made
@@ -189,7 +196,7 @@ void PLM::run() {
     };
 
     // performs node moves
-    auto movePhase = [&](){
+    auto movePhase = [&]() {
         count iter = 0;
         do {
             moved = false;
@@ -203,10 +210,11 @@ void PLM::run() {
             } else if (this->parallelism == "none randomized") {
                 G->forNodesInRandomOrder(tryMove);
             } else {
-                ERROR("unknown parallelization strategy: " , this->parallelism);
+                ERROR("unknown parallelization strategy: ", this->parallelism);
                 throw std::runtime_error("unknown parallelization strategy");
             }
-            if (moved) change = true;
+            if (moved)
+                change = true;
 
             if (iter == maxIter) {
                 WARN("move phase aborted after ", maxIter, " iterations");
@@ -230,12 +238,14 @@ void PLM::run() {
 
         timer.start();
 
-        std::pair<Graph, std::vector<node>> coarsened = coarsen(*G, zeta); // coarsen graph according to communities
+        // coarsen graph according to communities
+        std::pair<Graph, std::vector<node>> coarsened = coarsen(*G, zeta);
 
         timer.stop();
         timing["coarsen"].push_back(timer.elapsedMilliseconds());
 
-        PLM onCoarsened(coarsened.first, this->refine, this->gamma, this->parallelism, this->maxIter, this->turbo);
+        PLM onCoarsened(coarsened.first, this->refine, this->gamma, this->parallelism,
+                        this->maxIter, this->turbo);
         onCoarsened.run();
         Partition zetaCoarse = onCoarsened.getPartition();
 
@@ -251,8 +261,10 @@ void PLM::run() {
             timing["refine"].push_back(t);
         }
 
-        DEBUG("coarse graph has ", coarsened.first.numberOfNodes(), " nodes and ", coarsened.first.numberOfEdges(), " edges");
-        zeta = prolong(coarsened.first, zetaCoarse, *G, coarsened.second); // unpack communities in coarse graph onto fine graph
+        DEBUG("coarse graph has ", coarsened.first.numberOfNodes(), " nodes and ",
+              coarsened.first.numberOfEdges(), " edges");
+        // unpack communities in coarse graph onto fine graph
+        zeta = prolong(coarsened.first, zetaCoarse, *G, coarsened.second);
         // refinement phase
         if (refine) {
             DEBUG("refinement phase");
@@ -263,7 +275,7 @@ void PLM::run() {
             zeta.parallelForEntries([&](node u, index C) { // set volume for all communities
                 if (C != none) {
                     edgeweight volN = volNode[u];
-                    #pragma omp atomic
+#pragma omp atomic
                     volCommunity[C] += volN;
                 }
             });
@@ -274,20 +286,20 @@ void PLM::run() {
 
             timer.stop();
             timing["refine"].push_back(timer.elapsedMilliseconds());
-
         }
     }
     result = std::move(zeta);
     hasRun = true;
 }
 
-std::pair<Graph, std::vector<node> > PLM::coarsen(const Graph& G, const Partition& zeta) {
+std::pair<Graph, std::vector<node>> PLM::coarsen(const Graph &G, const Partition &zeta) {
     ParallelPartitionCoarsening parCoarsening(G, zeta);
     parCoarsening.run();
-    return {parCoarsening.getCoarseGraph(),parCoarsening.getFineToCoarseNodeMapping()};
+    return {parCoarsening.getCoarseGraph(), parCoarsening.getFineToCoarseNodeMapping()};
 }
 
-Partition PLM::prolong(const Graph &, const Partition& zetaCoarse, const Graph& Gfine, std::vector<node> nodeToMetaNode) {
+Partition PLM::prolong(const Graph &, const Partition &zetaCoarse, const Graph &Gfine,
+                       std::vector<node> nodeToMetaNode) {
     Partition zetaFine(Gfine.upperNodeIdBound());
     zetaFine.setUpperBound(zetaCoarse.upperBound());
 
@@ -300,7 +312,7 @@ Partition PLM::prolong(const Graph &, const Partition& zetaCoarse, const Graph& 
     return zetaFine;
 }
 
-const std::map<std::string, std::vector<count> > &PLM::getTiming() const {
+const std::map<std::string, std::vector<count>> &PLM::getTiming() const {
     assureFinished();
     return timing;
 }

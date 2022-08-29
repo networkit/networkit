@@ -1,4 +1,3 @@
-// no-networkit-format
 #include <atomic>
 #include <memory>
 
@@ -11,7 +10,8 @@ void NetworKit::PartitionHubDominance::run() {
 
     Aux::SignalHandler handler;
 
-    std::unique_ptr<std::atomic<count>[]> maxInternalDeg(new std::atomic<count>[P->upperBound()]{});
+    std::unique_ptr<std::atomic<count>[]> maxInternalDeg(
+        new std::atomic<count>[P->upperBound()] {});
     std::vector<count> clusterSizes(P->upperBound(), 0);
 
     handler.assureRunning();
@@ -29,7 +29,7 @@ void NetworKit::PartitionHubDominance::run() {
 
             Aux::Parallel::atomic_max(maxInternalDeg[c], internalDeg);
 
-            #pragma omp atomic
+#pragma omp atomic
             ++clusterSizes[c];
         }
     });
@@ -50,7 +50,8 @@ void NetworKit::PartitionHubDominance::run() {
 
             double dominance = 1;
             if (clusterSizes[i] > 1) {
-                dominance = static_cast<double>(maxInternalDeg[i]) * 1.0 / static_cast<double>(clusterSizes[i] - 1);
+                dominance = static_cast<double>(maxInternalDeg[i]) * 1.0
+                            / static_cast<double>(clusterSizes[i] - 1);
             }
 
             values[i] = dominance;

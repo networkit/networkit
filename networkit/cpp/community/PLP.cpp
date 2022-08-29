@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * PLP.cpp
  *
@@ -16,7 +15,8 @@
 
 namespace NetworKit {
 
-PLP::PLP(const Graph& G, count theta, count maxIterations) : CommunityDetectionAlgorithm(G), updateThreshold(theta), maxIterations(maxIterations) {}
+PLP::PLP(const Graph &G, count theta, count maxIterations)
+    : CommunityDetectionAlgorithm(G), updateThreshold(theta), maxIterations(maxIterations) {}
 
 PLP::PLP(const Graph &G, const Partition &baseClustering, count theta)
     : CommunityDetectionAlgorithm(G, baseClustering), updateThreshold(theta) {}
@@ -38,25 +38,26 @@ void PLP::run() {
     count n = G->numberOfNodes();
     // update threshold heuristic
     if (updateThreshold == none) {
-        updateThreshold = (count) (n / 1e5);
+        updateThreshold = (count)(n / 1e5);
     }
 
     count nUpdated; // number of nodes which have been updated in last iteration
-    nUpdated = n; // all nodes have new labels -> first loop iteration runs
+    nUpdated = n;   // all nodes have new labels -> first loop iteration runs
 
     nIterations = 0; // number of iterations
 
     /**
      * == Dealing with isolated nodes ==
      *
-     * The pseudocode published does not deal with isolated nodes (and therefore does not terminate if they are present).
-     * Isolated nodes stay singletons. They can be ignored in the while loop, but the loop condition must
-     * compare to the number of non-isolated nodes instead of n.
+     * The pseudocode published does not deal with isolated nodes (and therefore does not terminate
+     * if they are present). Isolated nodes stay singletons. They can be ignored in the while loop,
+     * but the loop condition must compare to the number of non-isolated nodes instead of n.
      *
      * == Termination criterion ==
      *
-     * The published termination criterion is: All nodes have got the label of the majority of their neighbors.
-     * In general this does not work. It was changed to: No label was changed in last iteration.
+     * The published termination criterion is: All nodes have got the label of the majority of their
+     * neighbors. In general this does not work. It was changed to: No label was changed in last
+     * iteration.
      */
 
     std::vector<bool> activeNodes(z); // record if node must be processed
@@ -65,18 +66,20 @@ void PLP::run() {
     Aux::Timer runtime;
 
     // propagate labels
-    while ((nUpdated > this->updateThreshold)  && (nIterations < maxIterations)) { // as long as a label has changed... or maximum iterations reached
+    // as long as a label has changed... or maximum iterations reached
+    while ((nUpdated > this->updateThreshold) && (nIterations < maxIterations)) {
         runtime.start();
         nIterations += 1;
-        DEBUG("[BEGIN] LabelPropagation: iteration #" , nIterations);
+        DEBUG("[BEGIN] LabelPropagation: iteration #", nIterations);
 
         // reset updated
         nUpdated = 0;
 
-        G->balancedParallelForNodes([&](node v){
+        G->balancedParallelForNodes([&](node v) {
             if ((activeNodes[v]) && (G->degree(v) > 0)) {
 
-                std::map<label, double> labelWeights; // neighborLabelCounts maps label -> frequency in the neighbors
+                // neighborLabelCounts maps label -> frequency in the neighbors
+                std::map<label, double> labelWeights;
 
                 // weigh the labels in the neighborhood of v
                 G->forNeighborsOf(v, [&](node w, edgeweight weight) {
@@ -85,17 +88,17 @@ void PLP::run() {
                 });
 
                 // get heaviest label
-                label heaviest = std::max_element(labelWeights.begin(),
-                                labelWeights.end(),
-                                [](const std::pair<label, edgeweight>& p1, const std::pair<label, edgeweight>& p2) {
-                                    return p1.second < p2.second;})->first;
+                label heaviest = std::max_element(labelWeights.begin(), labelWeights.end(),
+                                                  [](const std::pair<label, edgeweight> &p1,
+                                                     const std::pair<label, edgeweight> &p2) {
+                                                      return p1.second < p2.second;
+                                                  })
+                                     ->first;
 
                 if (result.subsetOf(v) != heaviest) { // UPDATE
-                    result.moveToSubset(heaviest,v); //result[v] = heaviest;
-                    nUpdated += 1; // TODO: atomic update?
-                    G->forNeighborsOf(v, [&](node u) {
-                        activeNodes[u] = true;
-                    });
+                    result.moveToSubset(heaviest, v); // result[v] = heaviest;
+                    nUpdated += 1;                    // TODO: atomic update?
+                    G->forNeighborsOf(v, [&](node u) { activeNodes[u] = true; });
                 } else {
                     activeNodes[v] = false;
                 }
@@ -109,7 +112,8 @@ void PLP::run() {
 
         runtime.stop();
         this->timing.push_back(runtime.elapsedMilliseconds());
-        DEBUG("[DONE] LabelPropagation: iteration #" , nIterations , " - updated " , nUpdated , " labels, time spent: " , runtime.elapsedTag());
+        DEBUG("[DONE] LabelPropagation: iteration #", nIterations, " - updated ", nUpdated,
+              " labels, time spent: ", runtime.elapsedTag());
 
     } // end while
     hasRun = true;

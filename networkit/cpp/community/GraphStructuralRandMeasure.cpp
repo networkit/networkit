@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * GraphStructuralRandMeasure.cpp
  *
@@ -10,17 +9,18 @@
 
 namespace NetworKit {
 
-double GraphStructuralRandMeasure::getDissimilarity(const Graph& G, const Partition& first,
-        const Partition& second) {
+double GraphStructuralRandMeasure::getDissimilarity(const Graph &G, const Partition &first,
+                                                    const Partition &second) {
     count m = G.numberOfEdges();
     if (m == 0) {
-        throw std::runtime_error("The graph-structural rand measure is not defined for graphs without edges.");
+        throw std::runtime_error(
+            "The graph-structural rand measure is not defined for graphs without edges.");
     }
 
     double e11 = 0.0; // number of connected node pairs for which clusterings agree
     double e00 = 0.0; // number of connected node pairs for which clusterings disagree
 
-    G.forEdges([&](node u, node v){
+    G.forEdges([&](node u, node v) {
         if ((first[u] == first[v]) && (second[u] == second[v])) {
             e11 += 1;
         } else if ((first[u] != first[v]) && (second[u] != second[v])) {
@@ -31,8 +31,8 @@ double GraphStructuralRandMeasure::getDissimilarity(const Graph& G, const Partit
     double rand = 1.0 - (e11 + e00) * (1.0 / m);
 
     // assert range [0, 1]
-    assert (rand <= 1.0);
-    assert (rand >= 0.0);
+    assert(rand <= 1.0);
+    assert(rand >= 0.0);
     return rand;
 }
 

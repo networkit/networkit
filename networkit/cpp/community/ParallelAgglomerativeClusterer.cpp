@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * ParallelAgglomerativeClusterer.cpp
  *
@@ -15,30 +14,31 @@
 
 namespace NetworKit {
 
-ParallelAgglomerativeClusterer::ParallelAgglomerativeClusterer(const Graph& G) : CommunityDetectionAlgorithm(G) {}
+ParallelAgglomerativeClusterer::ParallelAgglomerativeClusterer(const Graph &G)
+    : CommunityDetectionAlgorithm(G) {}
 
 void ParallelAgglomerativeClusterer::run() {
 
     count MIN_NUM_COMMUNITIES = 2;
-    double REL_REPEAT_THRSH = 5e-3; ///< threshold for minimum number of matching edges relative to number of vertices to proceed agglomeration
+    // threshold for minimum number of matching edges relative to number of vertices to proceed
+    // agglomeration
+    double REL_REPEAT_THRSH = 5e-3;
 
     // copy graph because we make changes due to merges
     Graph Gcopy(G->numberOfNodes(), true); // make weighted copy
-    G->forEdges([&](node u, node v, edgeweight w){
-        Gcopy.addEdge(u, v, w);
-    });
+    G->forEdges([&](node u, node v, edgeweight w) { Gcopy.addEdge(u, v, w); });
 
-    std::vector<std::vector<node> > mapHierarchy;
+    std::vector<std::vector<node>> mapHierarchy;
 
     bool repeat = true;
     do {
         // prepare attributes for scoring
         // FIXME: update to new edge attribute system
-        //int attrId = Gcopy.addEdgeAttribute_double(0.0);
+        // int attrId = Gcopy.addEdgeAttribute_double(0.0);
         int attrId = 0;
 
         // perform scoring
-        TRACE("before scoring graph of size " , Gcopy.numberOfNodes());
+        TRACE("before scoring graph of size ", Gcopy.numberOfNodes());
         ModularityScoring<double> modScoring(Gcopy);
         modScoring.scoreEdges(attrId);
 
@@ -57,16 +57,15 @@ void ParallelAgglomerativeClusterer::run() {
         count n = Gcopy.numberOfNodes();
         count cn = Gcombined.numberOfNodes();
         count diff = n - cn;
-        repeat = ((diff > 0) &&
-                (cn >= MIN_NUM_COMMUNITIES) &&
-                ((double) diff / (double) n > REL_REPEAT_THRSH)
-                ); // TODO: last condition: no community becomes too big
+        // TODO: last condition: no community becomes too big
+        repeat = ((diff > 0) && (cn >= MIN_NUM_COMMUNITIES)
+                  && ((double)diff / (double)n > REL_REPEAT_THRSH));
 
         // prepare next iteration if there is one
         if (repeat) {
             Gcopy = Gcombined;
             mapHierarchy.push_back(matchingContracter.getFineToCoarseNodeMapping());
-            TRACE("Repeat agglomeration with graph of size " , Gcopy.numberOfNodes());
+            TRACE("Repeat agglomeration with graph of size ", Gcopy.numberOfNodes());
         }
     } while (repeat);
 
@@ -77,8 +76,7 @@ void ParallelAgglomerativeClusterer::run() {
 
     // project clustering back to finest graph
     ClusteringProjector projector;
-    Partition zeta = projector.projectBackToFinest(zetaCoarse, mapHierarchy,
-           *G);
+    Partition zeta = projector.projectBackToFinest(zetaCoarse, mapHierarchy, *G);
     result = std::move(zeta);
     hasRun = true;
 }

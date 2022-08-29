@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * JaccardMeasure.cpp
  *
@@ -11,8 +10,8 @@
 
 namespace NetworKit {
 
-double JaccardMeasure::getDissimilarity(const Graph& G, const Partition& zeta,
-        const Partition& eta) {
+double JaccardMeasure::getDissimilarity(const Graph &G, const Partition &zeta,
+                                        const Partition &eta) {
 
     Partition intersection = PartitionIntersection().calculate(zeta, eta);
 
@@ -21,18 +20,17 @@ double JaccardMeasure::getDissimilarity(const Graph& G, const Partition& zeta,
     std::vector<count> size_intersection(intersection.upperBound(), 0);
 
     // precompute sizes for each cluster
-    G.forNodes([&](node u){
+    G.forNodes([&](node u) {
         index C = zeta[u];
         index D = eta[u];
         index I = intersection[u];
-        assert (C != none);
-        assert (D != none);
-        assert (I != none);
+        assert(C != none);
+        assert(D != none);
+        assert(I != none);
         size_zeta[C] += 1;
         size_eta[D] += 1;
         size_intersection[I] += 1;
     });
-
 
     count sumIntersection = 0;
     for (count s : size_intersection) {
@@ -51,8 +49,10 @@ double JaccardMeasure::getDissimilarity(const Graph& G, const Partition& zeta,
 
     double n = G.numberOfNodes();
 
-    count s11 = sumIntersection; // number of node pairs for which clusterings aggree
-    double s00 = n * (n-1) / 2 + sumIntersection - static_cast<double>(sumZeta + sumEta); // number of node pairs for which clusterings disagree
+    // number of node pairs for which clusterings aggree
+    count s11 = sumIntersection;
+    // number of node pairs for which clusterings disagree
+    double s00 = n * (n - 1) / 2 + sumIntersection - static_cast<double>(sumZeta + sumEta);
 
     double jaccard;
     double divisor = n * (n - 1) - 2.0 * s00;
@@ -63,10 +63,9 @@ double JaccardMeasure::getDissimilarity(const Graph& G, const Partition& zeta,
     }
 
     // assert range [0, 1]
-    assert (jaccard <= 1.0);
-    assert (jaccard >= 0.0);
+    assert(jaccard <= 1.0);
+    assert(jaccard >= 0.0);
     return jaccard;
-
 }
 
 } /* namespace NetworKit */
