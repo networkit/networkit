@@ -41,6 +41,12 @@ void MultiTargetDijkstra::run() {
         });
     } while (!heap.empty());
 
+    // Mark targets not reached as unreachable
+    for (const node target : targetsSet) {
+        targetIdx.emplace(target, distances.size());
+        distances.emplace_back(std::numeric_limits<edgeweight>::max());
+    }
+
     hasRun = true;
 }
 
