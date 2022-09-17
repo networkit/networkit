@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * CommuteTimeDistanceGTest.cpp
  *
@@ -8,23 +7,22 @@
 
 #include <gtest/gtest.h>
 
+#include <networkit/centrality/SpanningEdgeCentrality.hpp>
 #include <networkit/distance/CommuteTimeDistance.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
-#include <networkit/centrality/SpanningEdgeCentrality.hpp>
 
 #include <tlx/unused.hpp>
 
-#include <vector>
-#include <string>
 #include <cmath>
 #include <fstream>
 #include <iomanip>
-
+#include <string>
+#include <vector>
 
 namespace NetworKit {
-class CommuteTimeDistanceGTest : public testing::Test{};
+class CommuteTimeDistanceGTest : public testing::Test {};
 
 TEST_F(CommuteTimeDistanceGTest, testOnToyGraph) {
     /* Graph:
@@ -37,7 +35,6 @@ TEST_F(CommuteTimeDistanceGTest, testOnToyGraph) {
     count n = 6;
     Graph G(n, false, false);
     G.indexEdges();
-
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -81,7 +78,6 @@ TEST_F(CommuteTimeDistanceGTest, testOnWeightedToyGraph) {
     Graph G(n, true, false);
     G.indexEdges();
 
-
     G.addEdge(0, 2, 2);
     G.addEdge(1, 2, 3);
     G.addEdge(2, 3, 5);
@@ -104,9 +100,9 @@ TEST_F(CommuteTimeDistanceGTest, testOnWeightedToyGraph) {
 TEST_F(CommuteTimeDistanceGTest, runECTDOnSmallGraphs) {
     METISGraphReader reader;
 
-    std::string graphFiles[1] = { "input/tiny_01.graph"};
+    std::string graphFiles[1] = {"input/tiny_01.graph"};
 
-    for (auto graphFile: graphFiles) {
+    for (auto graphFile : graphFiles) {
         Graph G = reader.read(graphFile);
         G.indexEdges();
         Aux::Timer timer;
@@ -124,17 +120,16 @@ TEST_F(CommuteTimeDistanceGTest, runECTDOnSmallGraphs) {
         DEBUG("approx ECTD time: ", timer.elapsedTag());
 
         double error = 0.0;
-        G.forNodes([&](node u){
+        G.forNodes([&](node u) {
             G.forNodes([&](node v) {
-                double relError = std::fabs(cen.distance(u,v) - exact.distance(u,v));
-            //	INFO("Approximated: ", cen.distance(u,v), ", exact: ", exact.distance(u,v));
-                if (std::fabs(exact.distance(u,v)) > 1e-9) {
-                    relError /= exact.distance(u,v);
+                double relError = std::fabs(cen.distance(u, v) - exact.distance(u, v));
+                if (std::fabs(exact.distance(u, v)) > 1e-9) {
+                    relError /= exact.distance(u, v);
                 }
                 error += relError;
             });
         });
-        error /= G.numberOfNodes()*G.numberOfNodes();
+        error /= G.numberOfNodes() * G.numberOfNodes();
         DEBUG("Avg. relative error: ", error);
     }
 }
@@ -142,9 +137,9 @@ TEST_F(CommuteTimeDistanceGTest, runECTDOnSmallGraphs) {
 TEST_F(CommuteTimeDistanceGTest, runECTDParallelOnSmallGraphs) {
     METISGraphReader reader;
 
-    std::string graphFiles[1] = { "input/tiny_01.graph"};
+    std::string graphFiles[1] = {"input/tiny_01.graph"};
 
-    for (auto graphFile: graphFiles) {
+    for (auto graphFile : graphFiles) {
         Graph G = reader.read(graphFile);
         G.indexEdges();
         Aux::Timer timer;
@@ -162,17 +157,16 @@ TEST_F(CommuteTimeDistanceGTest, runECTDParallelOnSmallGraphs) {
         DEBUG("approx ECTD time: ", timer.elapsedTag());
 
         double error = 0.0;
-        G.forNodes([&](node u){
+        G.forNodes([&](node u) {
             G.forNodes([&](node v) {
-                double relError = std::fabs(cen.distance(u,v) - exact.distance(u,v));
-            //	INFO("Approximated: ", cen.distance(u,v), ", exact: ", exact.distance(u,v));
-                if (std::fabs(exact.distance(u,v)) > 1e-9) {
-                    relError /= exact.distance(u,v);
+                double relError = std::fabs(cen.distance(u, v) - exact.distance(u, v));
+                if (std::fabs(exact.distance(u, v)) > 1e-9) {
+                    relError /= exact.distance(u, v);
                 }
                 error += relError;
             });
         });
-        error /= G.numberOfNodes()*G.numberOfNodes();
+        error /= G.numberOfNodes() * G.numberOfNodes();
         DEBUG("Avg. relative error: ", error);
     }
 }
@@ -182,21 +176,20 @@ TEST_F(CommuteTimeDistanceGTest, runECTDSingleSource) {
 
     std::string graphFiles[2] = {"input/karate.graph", "input/tiny_01.graph"};
 
-    for (auto graphFile: graphFiles) {
+    for (auto graphFile : graphFiles) {
         Graph G = reader.read(graphFile);
         CommuteTimeDistance ectd(G);
         node u = GraphTools::randomNode(G);
         double sum1 = ectd.runSingleSource(u);
         double sum2 = 0.0;
-        G.forNodes([&](node v){
+        G.forNodes([&](node v) {
             if (u != v) {
-                sum2 += ectd.runSinglePair(u,v);
+                sum2 += ectd.runSinglePair(u, v);
             }
         });
         DEBUG("sum1 = ", sum1);
         DEBUG("sum2 = ", sum2);
         tlx::unused(sum1, sum2);
-    //	INFO("Avg. relative error: ", error);
     }
 }
 

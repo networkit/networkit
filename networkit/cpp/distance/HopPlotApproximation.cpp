@@ -1,10 +1,9 @@
-// no-networkit-format
 /*
-*  HopPlotApproximation.cpp
-*
-*  Created on: 16.06.2014
-*      Author: Marc Nemes
-*/
+ *  HopPlotApproximation.cpp
+ *
+ *  Created on: 16.06.2014
+ *      Author: Marc Nemes
+ */
 
 #include <cmath>
 #include <omp.h>
@@ -15,17 +14,21 @@
 
 namespace NetworKit {
 
-HopPlotApproximation::HopPlotApproximation(const Graph& G, count maxDistance, count k, count r): Algorithm(), G(&G), maxDistance(maxDistance), k(k), r(r) {
-    if (G.isDirected()) throw std::runtime_error("current implementation can only deal with undirected graphs");
+HopPlotApproximation::HopPlotApproximation(const Graph &G, count maxDistance, count k, count r)
+    : Algorithm(), G(&G), maxDistance(maxDistance), k(k), r(r) {
+    if (G.isDirected())
+        throw std::runtime_error("current implementation can only deal with undirected graphs");
     ConnectedComponents cc(G);
     cc.run();
-    if (cc.getPartition().numberOfSubsets() > 1) throw std::runtime_error("current implementation only runs on graphs with 1 connected component");
+    if (cc.getPartition().numberOfSubsets() > 1)
+        throw std::runtime_error(
+            "current implementation only runs on graphs with 1 connected component");
 }
 
 void HopPlotApproximation::run() {
     count z = G->upperNodeIdBound();
     // the length of the bitmask where the number of connected nodes is saved
-    count lengthOfBitmask = (count) std::ceil(std::log2(G->numberOfNodes()));
+    count lengthOfBitmask = (count)std::ceil(std::log2(G->numberOfNodes()));
     // saves all k bitmasks for every node of the current iteration
     std::vector<std::vector<unsigned int>> mCurr(z);
     // saves all k bitmasks for every node of the previous iteration
@@ -57,10 +60,10 @@ void HopPlotApproximation::run() {
 
         // set one bit in each bitmask with probability P(bit i=1) = 0.5^(i+1), i=0,..
         for (count j = 0; j < k; j++) {
-            random = Aux::Random::real(0,1);
-            position = std::ceil(std::log(random)/std::log(0.5) - 1);
+            random = Aux::Random::real(0, 1);
+            position = std::ceil(std::log(random) / std::log(0.5) - 1);
             // set the bit in the bitmask
-            if (position < lengthOfBitmask+r) {
+            if (position < lengthOfBitmask + r) {
                 mPrev[v][j] |= 1 << position;
             }
             // add the current bit to the maximum-bitmask
@@ -79,27 +82,29 @@ void HopPlotApproximation::run() {
                 // the node is still connected to all previous neighbors
                 mCurr[v][j] = mPrev[v][j];
                 // and to all previous neighbors of all its neighbors
-                G->forNeighborsOf(v, [&](node u) {
-                    mCurr[v][j] = mCurr[v][j] | mPrev[u][j];
-                });
+                G->forNeighborsOf(v, [&](node u) { mCurr[v][j] = mCurr[v][j] | mPrev[u][j]; });
             }
-            // the least bit number in the bitmask of the current node/distance that has not been set
+            // the least bit number in the bitmask of the current node/distance that has not been
+            // set
             double b = 0;
 
             for (count j = 0; j < k; j++) {
-                for (count i = 0; i < sizeof(i)*8; i++) {
+                for (count i = 0; i < sizeof(i) * 8; i++) {
                     if (((mCurr[v][j] >> i) & 1) == 0) {
                         b += i;
                         break;
                     }
                 }
             }
-            // calculate the average least bit number that has not been set over all parallel approximations
+            // calculate the average least bit number that has not been set over all parallel
+            // approximations
             b = b / k;
 
             // calculate the estimated number of neighbors
-            // For the origin of the factor 0.77351 see http://www.mathcs.emory.edu/~cheung/papers/StreamDB/Probab/1985-Flajolet-Probabilistic-counting.pdf Theorem 3.A (p. 193)
-            estimatedConnectedNodes = (std::pow(2,b) / 0.77351);
+            // For the origin of the factor 0.77351 see
+            // http://www.mathcs.emory.edu/~cheung/papers/StreamDB/Probab/1985-Flajolet-Probabilistic-counting.pdf
+            // Theorem 3.A (p. 193)
+            estimatedConnectedNodes = (std::pow(2, b) / 0.77351);
 
             // enforce monotonicity
             if (estimatedConnectedNodes > n) {
@@ -115,13 +120,15 @@ void HopPlotApproximation::run() {
                 }
             }
 
-            // if the node wont change or is connected to enough nodes it must no longer be considered
+            // if the node wont change or is connected to enough nodes it must no longer be
+            // considered
             if (estimatedConnectedNodes >= n || nodeFinished) {
                 // remove the current node from future iterations
                 std::swap(activeNodes[x], activeNodes.back());
                 activeNodes.pop_back();
                 totalConnectedNodes += n;
-                --x; //don't skip former activeNodes.back() that has been switched to activeNodes[x]
+                // don't skip former activeNodes.back() that has been switched to activeNodes[x]
+                --x;
             } else {
                 // add value of the node to all nodes so we can calculate the average
                 totalConnectedNodes += estimatedConnectedNodes;
@@ -145,4 +152,4 @@ const std::map<count, double> &HopPlotApproximation::getHopPlot() const {
     return hopPlot;
 }
 
-}
+} // namespace NetworKit

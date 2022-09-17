@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * dynSSSPGTest.cpp
  *
@@ -8,29 +7,28 @@
 
 #include <gtest/gtest.h>
 
-#include <networkit/distance/DynBFS.hpp>
-#include <networkit/distance/BFS.hpp>
-#include <networkit/distance/DynDijkstra.hpp>
-#include <networkit/distance/Dijkstra.hpp>
+#include <random>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/distance/BFS.hpp>
+#include <networkit/distance/Dijkstra.hpp>
+#include <networkit/distance/DynBFS.hpp>
+#include <networkit/distance/DynDijkstra.hpp>
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>
-#include <random>
-
 
 namespace NetworKit {
 
-class DynSSSPGTest: public testing::Test{};
+class DynSSSPGTest : public testing::Test {};
 
 TEST_F(DynSSSPGTest, testDynamicBFS_1edge) {
-/* Graph:
-    0    3   6
-     \  / \ /
-      2    5
-     /  \ / \
-    1    4   7
- */
+    /* Graph:
+        0    3   6
+         \  / \ /
+          2    5
+         /  \ / \
+        1    4   7
+     */
     count n = 8;
     Graph G(n);
 
@@ -57,20 +55,20 @@ TEST_F(DynSSSPGTest, testDynamicBFS_1edge) {
     }
     dbfs.updateBatch(batch);
     bfs.run();
-    G.forNodes([&] (node i) {
+    G.forNodes([&](node i) {
         EXPECT_EQ(bfs.distance(i), dbfs.distance(i));
         EXPECT_EQ(bfs.numberOfPaths(i), dbfs.numberOfPaths(i));
     });
 }
 
 TEST_F(DynSSSPGTest, testDynamicBFSEdgeDeletion) {
-/* Graph:
-    0    3   6
-     \  / \ /
-      2    5
-     /  \ / \
-    1    4   7
- */
+    /* Graph:
+        0    3   6
+         \  / \ /
+          2    5
+         /  \ / \
+        1    4   7
+     */
     Graph G(8);
 
     G.addEdge(0, 2);
@@ -92,20 +90,20 @@ TEST_F(DynSSSPGTest, testDynamicBFSEdgeDeletion) {
     }
     dbfs.updateBatch(deletionBatch);
     bfs.run();
-    G.forNodes([&] (node i) {
+    G.forNodes([&](node i) {
         EXPECT_EQ(bfs.distance(i), dbfs.distance(i));
         EXPECT_EQ(bfs.numberOfPaths(i), dbfs.numberOfPaths(i));
     });
 }
 
 TEST_F(DynSSSPGTest, testDynamicBFS_batch) {
-/* Graph:
-        0    3   6
-        \  / \ /
-            2    5
-        /  \ / \
-        1    4   7
-*/
+    /* Graph:
+            0    3   6
+            \  / \ /
+                2    5
+            /  \ / \
+            1    4   7
+    */
     count n = 8;
     Graph G(n);
 
@@ -140,21 +138,20 @@ TEST_F(DynSSSPGTest, testDynamicBFS_batch) {
     }
     dbfs.updateBatch(batch);
     bfs.run();
-    G.forNodes([&] (node i) {
+    G.forNodes([&](node i) {
         EXPECT_EQ(bfs.distance(i), dbfs.distance(i));
         EXPECT_EQ(bfs.numberOfPaths(i), dbfs.numberOfPaths(i));
     });
-
 }
 
 TEST_F(DynSSSPGTest, testDynamicBFS_batchDeletion) {
-/* Graph:
-        0    3   6
-        \  / \ /
-          2 - 5
-        /  \ / \
-        1    4   7
-*/
+    /* Graph:
+            0    3   6
+            \  / \ /
+              2 - 5
+            /  \ / \
+            1    4   7
+    */
     Graph G(8);
 
     G.addEdge(0, 2);
@@ -179,26 +176,24 @@ TEST_F(DynSSSPGTest, testDynamicBFS_batchDeletion) {
     }
     dbfs.updateBatch(batch);
     bfs.run();
-    G.forNodes([&] (node i) {
+    G.forNodes([&](node i) {
         EXPECT_EQ(bfs.distance(i), dbfs.distance(i));
         EXPECT_EQ(bfs.numberOfPaths(i), dbfs.numberOfPaths(i));
     });
-
 }
 
-
 TEST_F(DynSSSPGTest, testDynamicDijkstra) {
- /* Graph:
-    0    3   6
-     \  / \ /
-      2 -- 5
-     /  \ / \
-    1    4   7
+    /* Graph:
+       0    3   6
+        \  / \ /
+         2 -- 5
+        /  \ / \
+       1    4   7
 
-    Edges in the upper row have weight 3,
-    the edge in the middle row has weight 1.5,
-    edges in the lower row have weight 2.
- */
+       Edges in the upper row have weight 3,
+       the edge in the middle row has weight 1.5,
+       edges in the lower row have weight 2.
+    */
     count n = 8;
     Graph G(n, true);
 
@@ -234,25 +229,24 @@ TEST_F(DynSSSPGTest, testDynamicDijkstra) {
     }
     ddij.updateBatch(batch);
     dij.run();
-    G.forNodes([&] (node i) {
+    G.forNodes([&](node i) {
         EXPECT_EQ(dij.distance(i), ddij.distance(i));
         EXPECT_EQ(dij.numberOfPaths(i), ddij.numberOfPaths(i));
     });
-
 }
 
 TEST_F(DynSSSPGTest, testDynamicDijkstraDeletion) {
- /* Graph:
-    0    3   6
-     \  / \ /
-      2 -- 5
-     /  \ / \
-    1    4   7
+    /* Graph:
+       0    3   6
+        \  / \ /
+         2 -- 5
+        /  \ / \
+       1    4   7
 
-    Edges in the upper row have weight 3,
-    the edge in the middle row has weight 1.5,
-    edges in the lower row have weight 2.
- */
+       Edges in the upper row have weight 3,
+       the edge in the middle row has weight 1.5,
+       edges in the lower row have weight 2.
+    */
     Graph G(8, true);
 
     G.addEdge(0, 2, 3);
@@ -277,11 +271,10 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraDeletion) {
     }
     ddij.updateBatch(batch);
     dij.run();
-    G.forNodes([&] (node i) {
+    G.forNodes([&](node i) {
         EXPECT_EQ(dij.distance(i), ddij.distance(i));
         EXPECT_EQ(dij.numberOfPaths(i), ddij.numberOfPaths(i));
     });
-
 }
 
 TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraph) {
@@ -309,10 +302,7 @@ TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraph) {
             dyn_bfs.updateBatch(batch);
             DEBUG("Running from scratch with bfs");
             bfs.run();
-            G.forNodes([&] (node i) {
-            //	std::cout<<"Node "<<i<<":"<<std::endl;
-            //	std::cout<<"Actual distance: "<<dij.distance(i)<<", computed distance: "<<ddij.distance(i)<<std::endl;
-            //	std::cout<<"Actual number of paths: "<<dij.numberOfPaths(i)<<", computed one: "<<ddij.numberOfPaths(i)<<std::endl;
+            G.forNodes([&](node i) {
                 EXPECT_EQ(dyn_bfs.distance(i), bfs.distance(i));
                 EXPECT_EQ(dyn_bfs.numberOfPaths(i), bfs.numberOfPaths(i));
             });
@@ -340,7 +330,7 @@ TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraphEdgeDeletion) {
         dyn_bfs.updateBatch(batch);
         DEBUG("Running from scratch with bfs");
         bfs.run();
-        G.forNodes([&] (node i) {
+        G.forNodes([&](node i) {
             EXPECT_EQ(dyn_bfs.distance(i), bfs.distance(i));
             EXPECT_EQ(dyn_bfs.numberOfPaths(i), bfs.numberOfPaths(i));
         });
@@ -362,7 +352,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraGeneratedGraph) {
         DEBUG("Sampling a new edge");
         node v1 = GraphTools::randomNode(G), v2 = GraphTools::randomNode(G);
         while (v1 == v2 || G.hasEdge(v1, v2))
-             v1 = GraphTools::randomNode(G), v2 = GraphTools::randomNode(G);
+            v1 = GraphTools::randomNode(G), v2 = GraphTools::randomNode(G);
 
         DEBUG("Adding edge number ", i);
         G.addEdge(v1, v2);
@@ -370,7 +360,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraGeneratedGraph) {
         dyn_dij.update(GraphEvent(GraphEvent::EDGE_ADDITION, v1, v2, defaultEdgeWeight));
         DEBUG("Running from scratch with dijkstra");
         dij.run();
-        G.forNodes([&] (node i) {
+        G.forNodes([&](node i) {
             EXPECT_DOUBLE_EQ(dyn_dij.distance(i), dij.distance(i));
             EXPECT_EQ(dyn_dij.numberOfPaths(i), dij.numberOfPaths(i));
         });
@@ -387,7 +377,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraGeneratedGraphEdgeDeletion) {
     Dijkstra dij(G, 0);
     dyn_dij.run();
     DEBUG("Before the edge deletion: ");
-    for(count i = 0; i < 10; i++) {
+    for (count i = 0; i < 10; i++) {
         DEBUG("Selecting a random edge");
         auto randomEdge = GraphTools::randomEdge(G);
         DEBUG("Deleting edge number ", i);
@@ -398,7 +388,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraGeneratedGraphEdgeDeletion) {
         dyn_dij.updateBatch(batch);
         DEBUG("Running from scratch with dijkstra");
         dij.run();
-        G.forNodes([&] (node i) {
+        G.forNodes([&](node i) {
             EXPECT_EQ(dyn_dij.distance(i), dij.distance(i));
             EXPECT_EQ(dyn_dij.numberOfPaths(i), dij.numberOfPaths(i));
         });
@@ -408,14 +398,14 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraGeneratedGraphEdgeDeletion) {
 TEST_F(DynSSSPGTest, testDynamicDijkstraBatches) {
     Aux::Random::setSeed(1, true);
     std::default_random_engine random_generator;
-    std::normal_distribution<double> distribution(100,10);
+    std::normal_distribution<double> distribution(100, 10);
     DorogovtsevMendesGenerator generator(100);
     Graph G1 = generator.generate();
     Graph G(G1, true, false);
     DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
     // add random normal weights to G
 
-    G.forNodes([&] (node source) {
+    G.forNodes([&](node source) {
         DynDijkstra dyn_dij(G, source, true);
         Dijkstra dij(G, source);
         dyn_dij.run();
@@ -423,7 +413,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraBatches) {
         DEBUG("Before the edge insertion: ");
         count batchSize = 8;
         count nBatches = 1, i = 0;
-        for (count j=0; j<nBatches; j++) {
+        for (count j = 0; j < nBatches; j++) {
             std::vector<GraphEvent> batch;
             i = 0;
             while (i < batchSize) {
@@ -442,15 +432,12 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraBatches) {
             dyn_dij.updateBatch(batch);
             DEBUG("Running from scratch with dijkstra");
             dij.run();
-            G.forNodes([&] (node i) {
-            //	std::cout<<"Node "<<i<<":"<<std::endl;
-            //	std::cout<<"Actual distance: "<<dij.distance(i)<<", computed distance: "<<ddij.distance(i)<<std::endl;
-            //	std::cout<<"Actual number of paths: "<<dij.numberOfPaths(i)<<", computed one: "<<ddij.numberOfPaths(i)<<std::endl;
+            G.forNodes([&](node i) {
                 EXPECT_EQ(dyn_dij.distance(i), dij.distance(i));
                 EXPECT_EQ(dyn_dij.numberOfPaths(i), dij.numberOfPaths(i));
-                if (i != source)
-                    assert(dyn_dij.distance(i) != 0);
-            //	EXPECT_EQ(dyn_dij.getPredecessors(i).size(), dij.getPredecessors(i).size());
+                if (i != source) {
+                    ASSERT_NE(dyn_dij.distance(i), 0);
+                }
             });
         }
     });
@@ -464,7 +451,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraBatchesEdgeDeletions) {
     DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
     // delete random edges from G
 
-    G.forNodes([&] (node source) {
+    G.forNodes([&](node source) {
         DynDijkstra dyn_dij(G, source, true);
         Dijkstra dij(G, source);
         dyn_dij.run();
@@ -481,12 +468,13 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraBatchesEdgeDeletions) {
         dyn_dij.updateBatch(batch);
         DEBUG("Running from scratch with dijkstra");
         dij.run();
-        G.forNodes([&] (node i) {
+        G.forNodes([&](node i) {
             EXPECT_EQ(dyn_dij.distance(i), dij.distance(i));
             EXPECT_EQ(dyn_dij.numberOfPaths(i), dij.numberOfPaths(i));
-            if (i != source) { EXPECT_NE(dyn_dij.distance(i), 0); }
+            if (i != source) {
+                EXPECT_NE(dyn_dij.distance(i), 0);
+            }
         });
-        
     });
 }
 

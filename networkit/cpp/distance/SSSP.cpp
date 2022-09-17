@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * SSSP.cpp
  *
@@ -11,10 +10,9 @@
 
 namespace NetworKit {
 
-SSSP::SSSP(const Graph &G, node source, bool storePaths,
-           bool storeNodesSortedByDistance, node target)
-    : Algorithm(), G(&G), source(source), target(target),
-      storePaths(storePaths),
+SSSP::SSSP(const Graph &G, node source, bool storePaths, bool storeNodesSortedByDistance,
+           node target)
+    : Algorithm(), G(&G), source(source), target(target), storePaths(storePaths),
       storeNodesSortedByDistance(storeNodesSortedByDistance) {}
 
 const std::vector<edgeweight> &SSSP::getDistances() {
@@ -54,8 +52,7 @@ std::set<std::vector<node>> SSSP::getPaths(node t, bool forward) const {
     std::vector<node> targetPredecessors = previous[t];
 
 #pragma omp parallel for schedule(dynamic)
-    for (omp_index i = 0; i < static_cast<omp_index>(targetPredecessors.size());
-         ++i) {
+    for (omp_index i = 0; i < static_cast<omp_index>(targetPredecessors.size()); ++i) {
 
         std::stack<std::vector<node>> stack;
         std::vector<std::vector<node>> currPaths;
@@ -107,10 +104,9 @@ std::set<std::vector<node>> SSSP::getPaths(node t, bool forward) const {
 
 const std::vector<node> &SSSP::getNodesSortedByDistance() const {
     if (!storeNodesSortedByDistance) {
-        throw std::runtime_error(
-            "Nodes sorted by distance have not been stored. Set "
-            "storeNodesSortedByDistance in the constructor to true to enable "
-            "this behaviour.");
+        throw std::runtime_error("Nodes sorted by distance have not been stored. Set "
+                                 "storeNodesSortedByDistance in the constructor to true to enable "
+                                 "this behaviour.");
     }
 
     assert(!nodesSortedByDistance.empty());

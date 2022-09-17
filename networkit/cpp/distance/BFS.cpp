@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * BFS.cpp
  *
@@ -12,8 +11,7 @@
 
 namespace NetworKit {
 
-BFS::BFS(const Graph &G, node source, bool storePaths,
-         bool storeNodesSortedByDistance, node target)
+BFS::BFS(const Graph &G, node source, bool storePaths, bool storeNodesSortedByDistance, node target)
     : SSSP(G, source, storePaths, storeNodesSortedByDistance, target) {}
 
 void BFS::run() {
@@ -24,7 +22,7 @@ void BFS::run() {
     const auto infDist = std::numeric_limits<edgeweight>::max();
     std::fill(distances.begin(), distances.end(), infDist);
 
-    if (distances.size() < z) 
+    if (distances.size() < z)
         distances.resize(z, infDist);
 
     if (storePaths) {
@@ -68,9 +66,10 @@ void BFS::run() {
                     npaths[v] = npaths[u];
                 }
             } else if (storePaths && (distances[v] == distances[u] + 1.)) {
-                previous[v].push_back(u); // additional predecessor
-                npaths[v] += npaths[u]; // all the shortest paths to u are also
-                                        // shortest paths to v now
+                // additional predecessor
+                previous[v].push_back(u);
+                // all the shortest paths to u are also shortest paths to v now
+                npaths[v] += npaths[u];
             }
         });
     }
