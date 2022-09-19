@@ -420,9 +420,9 @@ void MaxentStress::computeCoordinateLaplacianTerm(const CoordinateVector &coordi
         double weightedDegree = 0.0;
         for (const ForwardEdge &edge : knownDistances[i]) {
             double dist = std::max(distance(coordinates, i, edge.head), 1e-5);
-            double w = weightingFactor(edge.weight) * edge.weight
-                       / dist; // w_{ij} * d_{i,j} / ||x_i - x_j|| NOTE: The last term is multiplied
-                               // in the Gansner et al. paper which is wrong!
+            // w_{ij} * d_{i,j} / ||x_i - x_j|| NOTE: The last term is multiplied in the Gansner et
+            // al. paper which is wrong!
+            double w = weightingFactor(edge.weight) * edge.weight / dist;
             for (index d = 0; d < dim; ++d) {
                 rhs[d][i] += -w * coordinates[d][edge.head];
             }
@@ -600,9 +600,8 @@ void MaxentStress::addKNeighborhoodOfVertex(const node u, const count k) {
                     if (depth[w] < k) { // only push neighbors that are less than k steps away
                         Q.push(w);
                     }
-
-                    if (1 < depth[w] && depth[w] <= k) { // add neighbors that are more than 1 and
-                                                         // less than or equal to k steps away
+                    // add neighbors that are more than 1 and less than or equal to k steps away
+                    if (1 < depth[w] && depth[w] <= k) {
                         knownDistances[u].push_back({w, (double)depth[w]});
                     }
                 }

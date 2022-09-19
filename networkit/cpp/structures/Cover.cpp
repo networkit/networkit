@@ -25,16 +25,16 @@ Cover::Cover(const Partition &p)
 }
 
 bool Cover::contains(index e) const {
-    return (e <= z)
-           && (!data[e].empty()); // e is in the element index range and the entry is not empty
+    // e is in the element index range and the entry is not empty
+    return (e <= z) && (!data[e].empty());
 }
 
 bool Cover::inSameSubset(index e1, index e2) const {
     assert(e1 <= z);
     assert(e2 <= z);
     assert(!data[e1].empty());
-    assert(!data[e2].empty()); // elements cannot be unassigned - it may be possible to change this
-                               // behavior
+    // elements cannot be unassigned - it may be possible to change this behavior
+    assert(!data[e2].empty());
     std::unordered_set<index> intersect;
     std::set_intersection(data[e1].begin(), data[e1].end(), data[e2].begin(), data[e2].end(),
                           std::inserter(intersect, intersect.begin()));
