@@ -159,9 +159,7 @@ We want to ensure that code across NetworKit is easy to understand for existing 
 
 In order to maintain the same standard of code across the entire NetworKit code base, some coding standards are enforced. However, there is some automation to help developers with this. Below is a list of these standards and instructions on how to use the available automation tools that ensure your code adheres to them.
 
--  ``CppClangFormat`` applies clang-format to all C++ files unless they contain the
-   string ``no-networkit-format``. New code files, however, should not use
-   ``no-networkit-format``.
+-  ``CppClangFormat`` applies clang-format to all C++ files.
 -  ``CppIndentation`` checks that all C++ code is indented with spaces
    and not tabs.
 -  ``CppIncludeGuards`` ensures that the header files contain an include guard and
