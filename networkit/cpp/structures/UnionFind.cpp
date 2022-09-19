@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * UnionFind.cpp
  *
@@ -21,8 +20,7 @@ void UnionFind::allToSingletons() {
 index UnionFind::find(index u) {
     if (parent[u] == u) {
         return u;
-    }
-    else {
+    } else {
         // recursion and path compression
         parent[u] = find(parent[u]);
         return parent[u];
@@ -32,12 +30,12 @@ index UnionFind::find(index u) {
 void UnionFind::merge(index u, index v) {
     index set_u = find(u);
     index set_v = find(v);
-    if (set_u == set_v) return;
+    if (set_u == set_v)
+        return;
 
     if (rank[set_u] < rank[set_v]) {
         parent[set_u] = set_v;
-    }
-    else {
+    } else {
         parent[set_v] = set_u;
         if (rank[set_u] == rank[set_v]) {
             rank[set_u]++;

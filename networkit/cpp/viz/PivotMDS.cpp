@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * PivotMDS.cpp
  *
@@ -21,14 +20,14 @@ PivotMDS::PivotMDS(const Graph &G, count dim, count numPivots)
 void PivotMDS::run() {
     count n = G->numberOfNodes();
     if (n < numPivots) {
-        WARN("Number of Pivots higher than the number of nodes. Setting number of pivots to number of nodes");
+        WARN("Number of Pivots higher than the number of nodes. Setting number of pivots to number "
+             "of nodes");
         numPivots = n;
     }
     std::vector<node> pivots = GraphTools::randomNodes(*G, numPivots);
 
     std::vector<Triplet> triplets;
-    for (index j = 0; j < numPivots;
-         ++j) { // compute distances from pivots to other nodes
+    for (index j = 0; j < numPivots; ++j) { // compute distances from pivots to other nodes
         Aux::PrioQueue<edgeweight, node> PQ(n);
         std::vector<edgeweight> dist(n, std::numeric_limits<edgeweight>::max());
 
@@ -67,8 +66,7 @@ void PivotMDS::run() {
     }
 
     for (Triplet &triplet : triplets) {
-        triplet.value = triplet.value - rowMean[triplet.row] -
-                        colMean[triplet.column] + grandMean;
+        triplet.value = triplet.value - rowMean[triplet.row] - colMean[triplet.column] + grandMean;
     }
 
     CSRMatrix C(n, numPivots, triplets);
@@ -99,8 +97,7 @@ void PivotMDS::run() {
         std::vector<Triplet> triplets;
         for (index i = 0; i < numPivots; ++i) {
             for (index j = 0; j < numPivots; ++j) {
-                triplets.push_back(
-                    {i, j, factor * eigenvector[i] * eigenvector[j]});
+                triplets.push_back({i, j, factor * eigenvector[i] * eigenvector[j]});
             }
         }
 
@@ -109,8 +106,7 @@ void PivotMDS::run() {
     }
 }
 
-void PivotMDS::powerMethod(const CSRMatrix &mat, count n,
-                           Vector &eigenvector, double &eigenvalue) {
+void PivotMDS::powerMethod(const CSRMatrix &mat, count n, Vector &eigenvector, double &eigenvalue) {
     eigenvector = Vector(n);
     for (index i = 0; i < n; ++i) {
         eigenvector[i] = 2.0 * Aux::Random::real() - 1.0;
@@ -126,8 +122,8 @@ void PivotMDS::powerMethod(const CSRMatrix &mat, count n,
         numIterations++;
     } while ((eigenvector - old).length() > 1e-6 && numIterations < 1500);
 
-    eigenvalue = Vector::innerProduct(mat * eigenvector, eigenvector) /
-                 Vector::innerProduct(eigenvector, eigenvector);
+    eigenvalue = Vector::innerProduct(mat * eigenvector, eigenvector)
+                 / Vector::innerProduct(eigenvector, eigenvector);
 }
 
 } /* namespace NetworKit */

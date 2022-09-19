@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * OctreeGTest.cpp
  *
@@ -10,9 +9,9 @@
 
 #include <gtest/gtest.h>
 
+#include <networkit/algebraic/Vector.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
-#include <networkit/algebraic/Vector.hpp>
 #include <networkit/viz/Octree.hpp>
 
 namespace NetworKit {
@@ -54,10 +53,10 @@ TEST(OctreeGTest, testOctreeWithExample) {
     coordinates[0][10] = 21.0;
     coordinates[1][10] = 22.0;
 
-
     Octree<double> ocTree(coordinates);
     DEBUG(ocTree.toString());
-    std::vector<std::pair<count, Point<double>>> fiveApprox = ocTree.approximateDistance(Point<double>(2.0, 22.0), 0.5);
+    std::vector<std::pair<count, Point<double>>> fiveApprox =
+        ocTree.approximateDistance(Point<double>(2.0, 22.0), 0.5);
 
     EXPECT_EQ(fiveApprox[0].first, 2u);
     EXPECT_EQ(fiveApprox[1].first, 3u);
@@ -66,8 +65,10 @@ TEST(OctreeGTest, testOctreeWithExample) {
     EXPECT_EQ(fiveApprox[4].first, 1u);
 
     for (count i = 0; i < 50; ++i) {
-        Point<double> queryPoint = {(double)Aux::Random::integer(0, 24), (double)Aux::Random::integer(0, 24)};
-        std::vector<std::pair<count, Point<double>>> result = ocTree.approximateDistance(queryPoint, 0.5);
+        Point<double> queryPoint = {(double)Aux::Random::integer(0, 24),
+                                    (double)Aux::Random::integer(0, 24)};
+        std::vector<std::pair<count, Point<double>>> result =
+            ocTree.approximateDistance(queryPoint, 0.5);
         count sum = 0;
         for (auto &point : result) {
             sum += point.first;
@@ -76,7 +77,8 @@ TEST(OctreeGTest, testOctreeWithExample) {
         EXPECT_NEAR(sum, 10.5, 0.5);
     }
 
-    std::vector<std::pair<count, Point<double>>> exactApprox = ocTree.approximateDistance(Point<double>(2.0, 22.0), 0.0);
+    std::vector<std::pair<count, Point<double>>> exactApprox =
+        ocTree.approximateDistance(Point<double>(2.0, 22.0), 0.0);
     EXPECT_EQ(exactApprox.size(), 10u);
 }
 } /* namespace NetworKit */
