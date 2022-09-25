@@ -127,6 +127,7 @@ void PLP::setUpdateThreshold(count th) {
 }
 
 count PLP::numberOfIterations() {
+    assureFinished();
     return this->nIterations;
 }
 
