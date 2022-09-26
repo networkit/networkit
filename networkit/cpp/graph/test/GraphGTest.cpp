@@ -132,6 +132,21 @@ void GraphGTest::SetUp() {
 
 /** CONSTRUCTORS **/
 
+TEST(GraphGTest, testDefConstructorWithUndirIndex) {
+    // Test indexed + undirected graph
+    Graph GUndir(3, false, false, true);
+    GUndir.addEdge(0, 1);
+    EXPECT_EQ(GUndir.edgeId(0, 1), 0);
+    EXPECT_EQ(GUndir.edgeId(1, 0), 0);
+}
+
+TEST(GraphGTest, testDefConstructorWithDirIndex) {
+    // Test indexed + directed graph
+    Graph GDir(3, false, true, true);
+    GDir.addEdge(0, 1);
+    EXPECT_EQ(GDir.edgeId(0, 1), 0);
+}
+
 TEST_P(GraphGTest, testCopyConstructor) {
     Graph G = Graph(this->Ghouse, false, false);
     Graph GW = Graph(this->Ghouse, true, false);

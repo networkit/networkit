@@ -37,7 +37,8 @@ Graph::Graph(count n, bool weighted, bool directed, bool edgesIndexed)
       outgoing edges, for undirected graphs outEdges stores the adjacency list of
       undirected edges*/
       outEdges(n), inEdgeWeights(weighted && directed ? n : 0), outEdgeWeights(weighted ? n : 0),
-      inEdgeIds(), outEdgeIds(), nodeAttributeMap(this) {}
+      inEdgeIds(edgesIndexed && directed ? n : 0), outEdgeIds(edgesIndexed ? n : 0),
+      nodeAttributeMap(this) {}
 
 Graph::Graph(std::initializer_list<WeightedEdge> edges) : Graph(0, true) {
     using namespace std;
