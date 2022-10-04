@@ -15,6 +15,7 @@ This folder contains many smaller graphs. They are used in the testing suite and
 | caidaRouterLevel.graph           | Format.METIS            | METISGraphReader        | 7490360            | 192244          | 609066          | FALSE    | FALSE    | n/a     |
 | celegans_metabolic.graph         | Format.METIS            | METISGraphReader        | 16015              | 453             | 2025            | FALSE    | FALSE    | n/a     |
 | celegans_metabolic.thrill        | Format.THRILL           | ThrillGraphReader       | 8554               | 453             | 2025            | FALSE    | FALSE    | n/a     |
+| chesapeake.mtx                   | n/a                     | MatrixMarketReader      | 1053               | 39              | 170             | FALSE    | FALSE    | n/a     |
 | comments.edgelist                | Format.EdgeListTabOne   | EdgeListReader          | 127                | 10              | 10              | FALSE    | FALSE    | n/a     |
 | community_overlapping.cover      | n/a                     | CoverReader             | 61                 | n/a             | n/a             | n/a      | n/a      | n/a     |
 | community_overlapping.dat        | n/a                     | EdgeListCoverReader     | 83                 | n/a             | n/a             | n/a      | n/a      | n/a     |
@@ -27,8 +28,10 @@ This folder contains many smaller graphs. They are used in the testing suite and
 | example2.dgs                     | n/a                     | DGSReader               | 161                | n/a             | n/a             | n/a      | n/a      | n/a     |
 | foodweb-baydry.konect            | Format.KONECT           | KONECTGraphReader       | 42847              | 128             | 2137            | TRUE     | TRUE     | n/a     |
 | foodweb-baydry.networkit         | Format.NETWORKITBINARY  | NetworkitBinaryReader   | 42491              | 128             | 2137            | TRUE     | TRUE     | n/a     |
+| GD01_b.mtx                       | n/a                     | MatrixMarketReader      | 244                | 18              | 37              | TRUE     | FALSE    | n/a     |
 | grid-5x5-dist-arch.graph         | Format.METIS            | METISGraphReader        | 218                | 25              | 40              | FALSE    | FALSE    | n/a     |
 | hamming6-4.edgelist              | Format.EdgeListSpaceOne | EdgeListReader          | 4088               | 64              | 704             | FALSE    | FALSE    | n/a     |
+| Hamrle1.mtx                      | n/a                     | MatrixMarketReader      | 1571               | 32              | 98              | TRUE     | TRUE     | n/a     |
 | hep-th.graph                     | Format.METIS            | METISGraphReader        | 157814             | 8361            | 15751           | FALSE    | FALSE    | n/a     |
 | jazz.graph                       | Format.METIS            | METISGraphReader        | 19445              | 198             | 2742            | FALSE    | FALSE    | n/a     |
 | jazz2_directed.gml               | Format.GML              | GMLGraphReader          | 289                | 5               | 4               | TRUE     | FALSE    | n/a     |
@@ -37,6 +40,7 @@ This folder contains many smaller graphs. They are used in the testing suite and
 | johnson8-4-4.edgelist            | Format.EdgeListSpaceOne | EdgeListReader          | 10716              | 70              | 1855            | FALSE    | FALSE    | n/a     |
 | karate.graph                     | Format.METIS            | METISGraphReader        | 450                | 34              | 78              | FALSE    | FALSE    | n/a     |
 | lesmis.graph                     | Format.METIS            | METISGraphReader        | 2630               | 77              | 254             | FALSE    | TRUE     | n/a     |
+| LFAT5.mtx                        | n/a                     | MatrixMarketReader      | 553                | 14              | 30              | FALSE    | TRUE     | n/a     |
 | looptest1.gml                    | Format.GML              | GMLGraphReader          | 676                | 9               | 12              | FALSE    | FALSE    | n/a     |
 | looptest2.gml                    | Format.GML              | GMLGraphReader          | 754                | 9               | 14              | FALSE    | FALSE    | n/a     |
 | MIT8.edgelist                    | Format.EdgeListTabZero  | EdgeListReader          | 2425755            | 6440            | 251252          | FALSE    | FALSE    | n/a     |
@@ -46,6 +50,7 @@ This folder contains many smaller graphs. They are used in the testing suite and
 | polblogs.graph                   | Format.METIS            | METISGraphReader        | 143808             | 1490            | 16715           | FALSE    | FALSE    | n/a     |
 | power.graph                      | Format.METIS            | METISGraphReader        | 67968              | 4941            | 6594            | FALSE    | FALSE    | n/a     |
 | power.gt                         | Format.GraphToolBinary  | GraphToolBinaryReader   | 172599             | 4941            | 6594            | FALSE    | FALSE    | n/a     |
+| Ragusa16.mtx                     | n/a                     | MatrixMarketReader      | 664                | 24              | 81              | TRUE     | TRUE     | n/a     |
 | spaceseparated_weighted.edgelist | Format.EdgeListSpaceOne | EdgeListReader          | 17                 | 3               | 3               | FALSE    | TRUE     | n/a     |
 | spaceseparated.edgelist          | Format.EdgeListSpaceOne | EdgeListReader          | 86                 | 10              | 10              | FALSE    | FALSE    | n/a     |
 | staticTest.gexf                  | GEXFReader              | n/a                     | 141043             | n/a             | n/a             | n/a      | n/a      | n/a     |
