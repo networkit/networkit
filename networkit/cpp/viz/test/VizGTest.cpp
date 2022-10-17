@@ -1,4 +1,3 @@
-// no-networkit-format
 /*
  * PostscriptWriterGTest.cpp
  *
@@ -10,18 +9,17 @@
 
 #include <vector>
 
-#include <networkit/viz/PostscriptWriter.hpp>
-#include <networkit/graph/Graph.hpp>
-#include <networkit/generators/ClusteredRandomGraphGenerator.hpp>
-#include <networkit/io/PartitionWriter.hpp>
-#include <networkit/io/DibapGraphReader.hpp>
-#include <networkit/generators/PubWebGenerator.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/generators/ClusteredRandomGraphGenerator.hpp>
+#include <networkit/generators/PubWebGenerator.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/io/DibapGraphReader.hpp>
+#include <networkit/io/PartitionWriter.hpp>
+#include <networkit/viz/PostscriptWriter.hpp>
 
 namespace NetworKit {
 
 class VizGTest : public testing::Test {};
-
 
 TEST_F(VizGTest, testPostscriptWriterOnRandomGraph) {
     // create graph
@@ -38,7 +36,6 @@ TEST_F(VizGTest, testPostscriptWriterOnRandomGraph) {
     G.forNodes([&](node u) {
         coordinates[u] = {Aux::Random::probability(), Aux::Random::probability()};
     });
-
 
     // write graph to file
     std::string path = "output/testGraph.eps";
@@ -59,7 +56,6 @@ TEST_F(VizGTest, testPostscriptWriterOnRealGraph) {
     DibapGraphReader reader;
     Graph G = reader.read("input/airfoil1.gi");
     const auto coordinates = reader.moveCoordinates();
-
 
     // write graph to file
     std::string path = "output/airfoil1.eps";
