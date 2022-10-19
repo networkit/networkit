@@ -1363,7 +1363,151 @@ public:
      */
     Graph(count n = 0, bool weighted = false, bool directed = false, bool edgesIndexed = false);
 
-    Graph(const Graph &G, bool weighted, bool directed, bool edgesIndexed = false);
+    template <class EdgeMerger = std::plus<edgeweight>>
+    Graph(const Graph &G, bool weighted, bool directed, bool edgesIndexed = false,
+          EdgeMerger edgeMerger = std::plus<edgeweight>())
+        : n(G.n), m(G.m), storedNumberOfSelfLoops(G.storedNumberOfSelfLoops), z(G.z),
+          omega(edgesIndexed ? G.omega : 0), t(G.t), weighted(weighted), directed(directed),
+          edgesIndexed(edgesIndexed), // edges are not indexed by default
+          exists(G.exists),
+
+          // let the following be empty for the start, we fill them later
+          inEdges(0), outEdges(0), inEdgeWeights(0), outEdgeWeights(0), inEdgeIds(0), outEdgeIds(0),
+
+          // empty node attribute map as last member for this graph
+          nodeAttributeMap(this) {
+
+        if (G.isDirected() == directed) {
+            // G.inEdges might be empty (if G is undirected), but
+            // that's fine
+            inEdges = G.inEdges;
+            outEdges = G.outEdges;
+
+            // copy weights if needed
+            if (weighted) {
+                if (G.isWeighted()) {
+                    // just copy from G, again either both graphs are directed or both are
+                    // undirected
+                    inEdgeWeights = G.inEdgeWeights;
+                    outEdgeWeights = G.outEdgeWeights;
+                } else {
+                    // G has no weights, set defaultEdgeWeight for all edges
+                    if (directed) {
+                        inEdgeWeights.resize(z);
+                        for (node u = 0; u < z; u++) {
+                            inEdgeWeights[u].resize(G.inEdges[u].size(), defaultEdgeWeight);
+                        }
+                    }
+
+                    outEdgeWeights.resize(z);
+                    for (node u = 0; u < z; u++) {
+                        outEdgeWeights[u].resize(outEdges[u].size(), defaultEdgeWeight);
+                    }
+                }
+            }
+            if (G.hasEdgeIds() && edgesIndexed) {
+                inEdgeIds = G.inEdgeIds;
+                outEdgeIds = G.outEdgeIds;
+            }
+        } else if (G.isDirected()) {
+            // G is directed, but we want an undirected graph
+            // so we need to combine the out and in stuff for every node
+            outEdges.resize(z);
+            if (weighted)
+                outEdgeWeights.resize(z);
+            if (G.hasEdgeIds() && edgesIndexed)
+                outEdgeIds.resize(z);
+            G.balancedParallelForNodes([&](node u) {
+                // copy both out and in edges into our new outEdges
+                outEdges[u].reserve(G.outEdges[u].size() + G.inEdges[u].size());
+                outEdges[u].insert(outEdges[u].end(), G.outEdges[u].begin(), G.outEdges[u].end());
+                if (weighted) {
+                    if (G.isWeighted()) {
+                        // same for weights
+                        outEdgeWeights[u].reserve(G.outEdgeWeights[u].size()
+                                                  + G.inEdgeWeights[u].size());
+                        outEdgeWeights[u].insert(outEdgeWeights[u].end(),
+                                                 G.outEdgeWeights[u].begin(),
+                                                 G.outEdgeWeights[u].end());
+                    } else {
+                        // we are undirected, so no need to write anything into inEdgeWeights
+                        outEdgeWeights[u].resize(outEdges[u].size(), defaultEdgeWeight);
+                    }
+                }
+                if (G.hasEdgeIds() && edgesIndexed) {
+                    // copy both out and in edges ids into our new outEdgesIds
+                    outEdgeIds[u].reserve(G.outEdgeIds[u].size() + G.inEdgeIds[u].size());
+                    outEdgeIds[u].insert(outEdgeIds[u].end(), G.outEdgeIds[u].begin(),
+                                         G.outEdgeIds[u].end());
+                }
+            });
+            G.balancedParallelForNodes([&](node u) {
+                // this is necessary to avoid multi edges, because both u -> v and v -> u can exist
+                // in G
+                count edgeSurplus = 0;
+                for (count i = 0; i < G.inEdges[u].size(); ++i) {
+                    node v = G.inEdges[u][i];
+                    bool alreadyPresent = false;
+                    for (count j = 0; j < G.outEdges[u].size(); ++j) {
+                        if (v != G.outEdges[u][j])
+                            continue; // the edge already exists as an out edge
+                        alreadyPresent = true;
+                        if (u != v) {
+                            ++edgeSurplus;
+                            if (weighted) // we need combine those edges weights when making it a
+                                          // single edge
+                                outEdgeWeights[u][j] =
+                                    G.isWeighted()
+                                        ? edgeMerger(G.inEdgeWeights[u][i], G.outEdgeWeights[u][j])
+                                        : edgeMerger(defaultEdgeWeight, defaultEdgeWeight);
+                            if (G.hasEdgeIds() && edgesIndexed)
+                                outEdgeIds[u][j] = std::min(G.inEdgeIds[u][i], G.outEdgeIds[u][j]);
+                        }
+                        break;
+                    }
+                    if (!alreadyPresent) { // an equivalent out edge wasn't present so we add it
+                        outEdges[u].push_back(v);
+                        if (weighted)
+                            outEdgeWeights[u].push_back(G.isWeighted() ? G.inEdgeWeights[u][i]
+                                                                       : defaultEdgeWeight);
+                        if (G.hasEdgeIds() && edgesIndexed)
+                            outEdgeIds[u].push_back(G.inEdgeIds[u][i]);
+                    }
+                }
+#pragma omp atomic
+                m -= edgeSurplus;
+            });
+        } else {
+            // G is not directed, but this copy should be
+            // generally we can can copy G.out stuff into our in stuff
+            inEdges = G.outEdges;
+            outEdges = G.outEdges;
+            if (weighted) {
+                if (G.isWeighted()) {
+                    inEdgeWeights = G.outEdgeWeights;
+                    outEdgeWeights = G.outEdgeWeights;
+                } else {
+                    // initialize both inEdgeWeights and outEdgeWeights with the
+                    // defaultEdgeWeight
+                    inEdgeWeights.resize(z);
+                    for (node u = 0; u < z; ++u) {
+                        inEdgeWeights[u].resize(inEdges[u].size(), defaultEdgeWeight);
+                    }
+                    outEdgeWeights.resize(z);
+                    for (node u = 0; u < z; ++u) {
+                        outEdgeWeights[u].resize(outEdges[u].size(), defaultEdgeWeight);
+                    }
+                }
+            }
+            if (G.hasEdgeIds() && edgesIndexed) {
+                inEdgeIds = G.outEdgeIds;
+                outEdgeIds = G.outEdgeIds;
+            }
+        }
+
+        if (!G.edgesIndexed && edgesIndexed)
+            indexEdges();
+    }
 
     /**
      * Generate a weighted graph from a list of edges. (Useful for small
