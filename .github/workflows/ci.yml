@@ -113,10 +113,10 @@ jobs:
         run: |
           brew install libomp
           brew install ninja
-      - name: Setup Python 3.10
+      - name: Setup Python 3.11
         uses: actions/setup-python@v3
         with:
-          python-version: '3.10'
+          python-version: '3.11'
       - name: Checkout networkit
         uses: actions/checkout@v2
         with:
@@ -167,7 +167,7 @@ jobs:
           CXX: ${{ matrix.compiler == 'clang-13' && '/usr/local/opt/llvm@13/bin/clang++' || 'g++-11' }}
 
   linux-build-latest:
-    name: "Linux (gcc-11${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.10' || '' }}): ${{ matrix.build-configuration }}"
+    name: "Linux (gcc-11${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.11' || '' }}): ${{ matrix.build-configuration }}"
     runs-on: ubuntu-20.04
     env:
       CC: gcc-11
@@ -181,10 +181,10 @@ jobs:
           sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu jammy main universe'
           sudo apt-get update
           sudo apt-get install gcc-11 g++-11 ninja-build
-      - name: Setup Python 3.10
+      - name: Setup Python 3.11
         uses: actions/setup-python@v3
         with:
-          python-version: '3.10'
+          python-version: '3.11'
       - name: Checkout networkit
         uses: actions/checkout@v2
         with:
@@ -288,7 +288,7 @@ jobs:
         shell: bash
 
   linux-build-core-sanitizers-coverage:
-    name: "Linux (gcc-10, CPython 3.10): coverage"
+    name: "Linux (gcc-10, CPython 3.11): coverage"
     runs-on: ubuntu-20.04
     env:
       CC: gcc-10
@@ -302,10 +302,10 @@ jobs:
         run:  |
           sudo apt-get update
           sudo apt-get install ninja-build
-      - name: Setup Python 3.10
+      - name: Setup Python 3.11
         uses: actions/setup-python@v3
         with:
-          python-version: '3.10'
+          python-version: '3.11'
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -357,16 +357,16 @@ jobs:
           ctest -V -C Debug
 
   windows-build-latest:
-    name: "Windows (msvc 14.31, CPython 3.10): ${{ matrix.build-configuration }}"
+    name: "Windows (msvc 14.31, CPython 3.11): ${{ matrix.build-configuration }}"
     runs-on: windows-2022
     strategy:
       matrix:
         build-configuration: ['full', 'full (native)']
     steps:
-      - name: Setup Python 3.10
+      - name: Setup Python 3.11
         uses: actions/setup-python@v3
         with:
-          python-version: '3.10'
+          python-version: '3.11'
       - name: Checkout networkit
         uses: actions/checkout@v2
         with:
@@ -404,7 +404,7 @@ jobs:
           NATIVE: ${{ matrix.os == 'full (native)' }}
 
   documentation-build:
-    name: "Linux (gcc-11, CPython 3.10): documentation"
+    name: "Linux (gcc-11, CPython 3.11): documentation"
     runs-on: ubuntu-20.04
     env:
       CC: gcc-11
@@ -416,10 +416,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install gcc-11 g++-11 ninja-build
           sudo apt-get install doxygen pandoc
-      - name: Setup Python 3.10
+      - name: Setup Python 3.11
         uses: actions/setup-python@v3
         with:
-          python-version: '3.10'
+          python-version: '3.11'
       - name: Checkout networkit
         uses: actions/checkout@v2
         with:
