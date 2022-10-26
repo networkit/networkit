@@ -116,7 +116,7 @@ jobs:
       - name: Setup Python 3.11
         uses: actions/setup-python@v3
         with:
-          python-version: '3.11'
+          python-version: '3.11.0'
       - name: Checkout networkit
         uses: actions/checkout@v2
         with:
@@ -181,10 +181,10 @@ jobs:
           sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu jammy main universe'
           sudo apt-get update
           sudo apt-get install gcc-11 g++-11 ninja-build
-      - name: Setup Python 3.11
+      - name: Setup Python 3.11.0
         uses: actions/setup-python@v3
         with:
-          python-version: '3.11'
+          python-version: '3.11.0'
       - name: Checkout networkit
         uses: actions/checkout@v2
         with:
@@ -302,10 +302,10 @@ jobs:
         run:  |
           sudo apt-get update
           sudo apt-get install ninja-build
-      - name: Setup Python 3.11
+      - name: Setup Python 3.11.0
         uses: actions/setup-python@v3
         with:
-          python-version: '3.11'
+          python-version: '3.11.0'
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -363,10 +363,10 @@ jobs:
       matrix:
         build-configuration: ['full', 'full (native)']
     steps:
-      - name: Setup Python 3.11
+      - name: Setup Python 3.11.0
         uses: actions/setup-python@v3
         with:
-          python-version: '3.11'
+          python-version: '3.11.0'
       - name: Checkout networkit
         uses: actions/checkout@v2
         with:
@@ -416,10 +416,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install gcc-11 g++-11 ninja-build
           sudo apt-get install doxygen pandoc
-      - name: Setup Python 3.11
+      - name: Setup Python 3.11.0
         uses: actions/setup-python@v3
         with:
-          python-version: '3.11'
+          python-version: '3.11.0'
       - name: Checkout networkit
         uses: actions/checkout@v2
         with:

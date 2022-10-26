@@ -188,7 +188,7 @@ jobs:
       - uses: actions/setup-python@v2
         name: Install Python
         with:
-          python-version: '3.11'
+          python-version: '3.11.0'
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.1.2
         env:
@@ -223,7 +223,7 @@ jobs:
       - uses: actions/setup-python@v2
         name: Install Python
         with:
-          python-version: '3.11'
+          python-version: '3.11.0'
       - name: Create sdist source
         run: |
           pip install cython
@@ -263,7 +263,7 @@ jobs:
       - uses: actions/setup-python@v2
         name: Install Python
         with:
-          python-version: '3.11'
+          python-version: '3.11.0'
       - name: Upload to TestPyPI
         run: |
           pip install twine 
