@@ -32,7 +32,7 @@ void KruskalMSF::run() {
         // sort edges in decreasing weight order
         std::vector<MyEdge> sortedEdges; // (m);
         std::transform(G->edgeWeightRange().begin(), G->edgeWeightRange().end(),
-                       sortedEdges.begin(), [](const auto &edge) -> MyEdge {
+                       std::back_inserter(sortedEdges), [](const auto &edge) -> MyEdge {
                            return {edge.u, edge.v, edge.weight};
                        });
         Aux::Parallel::sort(sortedEdges.begin(), sortedEdges.end());
