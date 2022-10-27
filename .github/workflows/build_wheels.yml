@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-python@v2
         name: Install Python
         with:
-          python-version: '3.11'
+          python-version: '3.10'
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.1.1
         env:
@@ -74,7 +74,7 @@ jobs:
           CIBW_BEFORE_BUILD: pip install cython
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp39-* cp310-* cp311-*' || 'cp311-*' }}
+          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp310-* cp311-*' || 'cp311-*' }}
           CIBW_SKIP: pp*
       - uses: actions/upload-artifact@v2
         if: github.ref == 'refs/heads/master'
@@ -104,7 +104,7 @@ jobs:
       - uses: actions/setup-python@v2
         name: Install Python
         with:
-          python-version: '3.11'
+          python-version: '3.10'
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.1.1
         env:
@@ -188,7 +188,7 @@ jobs:
       - uses: actions/setup-python@v2
         name: Install Python
         with:
-          python-version: '3.11.0'
+          python-version: '3.10'
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.1.2
         env:
@@ -223,7 +223,7 @@ jobs:
       - uses: actions/setup-python@v2
         name: Install Python
         with:
-          python-version: '3.11.0'
+          python-version: '3.10'
       - name: Create sdist source
         run: |
           pip install cython
@@ -263,7 +263,7 @@ jobs:
       - uses: actions/setup-python@v2
         name: Install Python
         with:
-          python-version: '3.11.0'
+          python-version: '3.10'
       - name: Upload to TestPyPI
         run: |
           pip install twine 
