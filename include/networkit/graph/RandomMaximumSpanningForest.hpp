@@ -81,26 +81,26 @@ public:
     Graph getMSF(bool move = false);
 
 private:
-    struct weightedEdge {
+    struct WeightedEdge {
         double attribute;
         node u;
         node v;
         edgeid eid;
         index rand;
 
-        bool operator>(const weightedEdge &other) const {
+        bool operator>(const WeightedEdge &other) const {
             return (attribute > other.attribute)
                    || (attribute == other.attribute
                        && (rand > other.rand
                            || (rand == other.rand
                                && (u > other.u || (u == other.u && v > other.v)))));
         };
-        weightedEdge(node u, node v, double attribute, edgeid eid = 0)
+        WeightedEdge(node u, node v, double attribute, edgeid eid = 0)
             : attribute(attribute), u(u), v(v), eid(eid), rand(Aux::Random::integer()){};
     };
 
     const Graph &G;
-    std::vector<weightedEdge> weightedEdges;
+    std::vector<WeightedEdge> weightedEdges;
 
     Graph msf;
     std::vector<bool> msfAttribute;

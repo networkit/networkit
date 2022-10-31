@@ -14,7 +14,7 @@ DynamicGraphSource::DynamicGraphSource()
     // Graph and GraphEventProxy are set by calling newGraph
 }
 
-void DynamicGraphSource::generateWhile(std::function<bool(void)> cont) {
+void DynamicGraphSource::generateWhile(const std::function<bool(void)> &cont) {
     while (cont()) {
         this->generate();
     }

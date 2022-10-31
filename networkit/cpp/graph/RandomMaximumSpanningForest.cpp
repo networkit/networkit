@@ -42,13 +42,13 @@ void RandomMaximumSpanningForest::run() {
         calculateAttribute = true;
     }
 
-    Aux::Parallel::sort(weightedEdges.begin(), weightedEdges.end(), std::greater<weightedEdge>());
+    Aux::Parallel::sort(weightedEdges.begin(), weightedEdges.end(), std::greater<WeightedEdge>());
 
     handler.assureRunning();
 
     UnionFind uf(G.upperNodeIdBound());
 
-    for (weightedEdge e : weightedEdges) {
+    for (WeightedEdge e : weightedEdges) {
         if (uf.find(e.u) != uf.find(e.v)) {
             if (useEdgeWeights) {
                 msf.addEdge(e.u, e.v, e.attribute);

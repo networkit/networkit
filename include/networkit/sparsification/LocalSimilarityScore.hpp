@@ -35,7 +35,7 @@ struct AttributizedEdge {
     }
 };
 
-struct greater {
+struct Greater {
     template <class T>
     bool operator()(T const &a, T const &b) const {
         return a > b;

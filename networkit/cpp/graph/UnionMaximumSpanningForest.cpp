@@ -43,7 +43,7 @@ void UnionMaximumSpanningForest::run() {
         calculateAttribute = true;
     }
 
-    Aux::Parallel::sort(weightedEdges.begin(), weightedEdges.end(), std::greater<weightedEdge>());
+    Aux::Parallel::sort(weightedEdges.begin(), weightedEdges.end(), std::greater<WeightedEdge>());
 
     handler.assureRunning();
 
@@ -52,7 +52,7 @@ void UnionMaximumSpanningForest::run() {
     std::vector<std::pair<node, node>> nodesToMerge;
     UnionFind uf(G->upperNodeIdBound());
 
-    for (weightedEdge e : weightedEdges) {
+    for (WeightedEdge e : weightedEdges) {
         if (e.attribute != currentAttribute) {
             for (auto candidate : nodesToMerge) {
                 uf.merge(candidate.first, candidate.second);
