@@ -4,7 +4,6 @@ Checks: >
     bugprone-copy-constructor-init,
     bugprone-dangling-handle,
     bugprone-dynamic-static-initializers,
-    bugprone-exception-escape,
     bugprone-fold-init-type,
     bugprone-forward-declaration-namespace,
     bugprone-forwarding-reference-overload,
@@ -43,6 +42,7 @@ Checks: >
     readability-avoid-const-params-in-decls,
     readability-const-return-type,
     readability-container-size-empty
+# temp. disabled: bugprone-exception-escape
 
 # Turn the warnings from the checks above into errors.
 # To turn all warnings into errors, simply write '*'
