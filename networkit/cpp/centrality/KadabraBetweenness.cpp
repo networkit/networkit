@@ -250,7 +250,7 @@ void KadabraBetweenness::init() {
     epochFinished = std::vector<std::atomic<StateFrame *>>(omp_max_threads);
     samplerVec.reserve(omp_max_threads);
     for (count i = 0; i < omp_max_threads; ++i) {
-        samplerVec.emplace_back(SpSampler(G, *cc));
+        samplerVec.emplace_back(G, *cc);
         epochFinished[i].store(nullptr, std::memory_order_relaxed);
     }
 

@@ -3,9 +3,9 @@ set -e
 set -o pipefail
 
 sudo rm -rf /usr/local/clang-*
-sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-13 9999
-sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-13 9999
-sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-13 9999
+sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-15 9999
+sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-15 9999
+sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-15 9999
 $CXX --version
 clang-tidy --version
 mkdir debug_test && cd "$_"

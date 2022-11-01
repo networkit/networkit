@@ -106,7 +106,7 @@ void DynBFS::updateBatch(const std::vector<GraphEvent> &batch) {
     for (count m = 1; m < maxDistance; m++) {
         if (m >= maxDistance - 1 && (!queues[m].empty() || !queues[m + 1].empty())) {
             maxDistance++;
-            queues.emplace_back(std::queue<node>());
+            queues.emplace_back();
         }
         mod = mod || (!queues[m].empty());
         while (!queues[m].empty()) {
@@ -155,7 +155,7 @@ void DynBFS::updateBatch(const std::vector<GraphEvent> &batch) {
                 if (con != infDist) {
                     if (con > maxDistance) {
                         for (count i = maxDistance; i < con; i++)
-                            queues.emplace_back(std::queue<node>());
+                            queues.emplace_back();
                         maxDistance = con;
                     }
                     queues[con].push(w);

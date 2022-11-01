@@ -113,6 +113,7 @@ jobs:
             brew install libomp ninja
           CIBW_ARCHS_MACOS: ${{ matrix.cibw_archs }}
           CIBW_BUILD: "cp38-* cp39-* cp310-* cp311-*"
+          CIBW_ENVIRONMENT: CXX='c++'
           CIBW_SKIP: pp*
       - uses: actions/upload-artifact@v2
         with:
