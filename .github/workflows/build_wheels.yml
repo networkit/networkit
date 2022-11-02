@@ -85,11 +85,6 @@ jobs:
         with:
           path: ./wheelhouse/*cp310*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v2
-        with:
-          path: ./wheelhouse/*cp311*.whl
-          retention-days: ${{ env.ARTIFACT_RETENTION }}
-
 
   cpython-macos-x86_64:
     name: 'macOS CPython  (${{ matrix.cibw_archs }})'
