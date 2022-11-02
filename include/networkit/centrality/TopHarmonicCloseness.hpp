@@ -41,8 +41,11 @@ public:
      * @param k Number of nodes with highest harmonic closeness that have to be found.
      * For example, k = 10, the top 10 nodes with highest harmonic closeness will be computed.
      * @param useNBbound If true, the NBbound variation will be used, otherwise NBcut.
+     * @param nodeList Restrict closeness computation to a grou of nodes from the graph. In order to
+     * work, these nodes have to be present.
      */
-    explicit TopHarmonicCloseness(const Graph &G, count k = 1, bool useNBbound = false);
+    explicit TopHarmonicCloseness(const Graph &G, count k = 1, bool useNBbound = false,
+                                  const std::vector<node> &nodeList = std::vector<node>());
 
     ~TopHarmonicCloseness() override;
 
@@ -88,6 +91,7 @@ private:
 
     std::vector<node> topKNodes;
     std::vector<double> topKScores;
+    std::vector<node> nodeList;
 
     // For NBbound
     std::vector<count> reachU, reachL;

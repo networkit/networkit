@@ -17,8 +17,10 @@
 
 namespace NetworKit {
 
-TopHarmonicCloseness::TopHarmonicCloseness(const Graph &G, count k, bool useNBbound)
-    : G(&G), k(k), useNBbound(useNBbound), prioQ(Aux::GreaterInVector<double>{hCloseness}),
+TopHarmonicCloseness::TopHarmonicCloseness(const Graph &G, count k, bool useNBbound,
+                                           const std::vector<node> &nodeList)
+    : G(&G), k(k), useNBbound(useNBbound), nodeList(nodeList),
+      prioQ(Aux::GreaterInVector<double>{hCloseness}),
       topKNodesPQ(Aux::LessInVector<double>{hCloseness}) {
 
     if (k == 0 || k > G.numberOfNodes())
@@ -45,7 +47,12 @@ TopHarmonicCloseness::TopHarmonicCloseness(const Graph &G, count k, bool useNBbo
     }
 
     topKNodesPQ.reserve(k);
-    prioQ.reserve(n);
+    if (nodeList.empty()) {
+        prioQ.reserve(n);
+    } else {
+        prioQ.reserve(nodeList.size());
+    }
+
     omp_init_lock(&lock);
 }
 
@@ -98,7 +105,11 @@ void TopHarmonicCloseness::runNBcut() {
     else
         G->parallelForNodes([&](node u) { hCloseness[u] = initialBoundNBcutUnweighted(u); });
 
-    prioQ.build_heap(G->nodeRange().begin(), G->nodeRange().end());
+    if (nodeList.empty()) {
+        prioQ.build_heap(G->nodeRange().begin(), G->nodeRange().end());
+    } else {
+        prioQ.build_heap(nodeList.begin(), nodeList.end());
+    }
 
     std::atomic_bool stop{false};
     std::atomic<double> kthCloseness{-1};
@@ -152,7 +163,11 @@ void TopHarmonicCloseness::runNBbound() {
         computeReachableNodesBounds();
     computeNeighborhoodBasedBound();
 
-    prioQ.build_heap(G->nodeRange().begin(), G->nodeRange().end());
+    if (nodeList.empty()) {
+        prioQ.build_heap(G->nodeRange().begin(), G->nodeRange().end());
+    } else {
+        prioQ.build_heap(nodeList.begin(), nodeList.end());
+    }
 
     std::atomic_bool stop{false};
 

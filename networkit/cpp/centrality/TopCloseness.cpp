@@ -20,8 +20,9 @@
 
 namespace NetworKit {
 
-TopCloseness::TopCloseness(const Graph &G, count k, bool first_heu, bool sec_heu)
-    : G(G), k(k), first_heu(first_heu), sec_heu(sec_heu) {}
+TopCloseness::TopCloseness(const Graph &G, count k, bool first_heu, bool sec_heu,
+                           const std::vector<node> &nodeList)
+    : G(G), k(k), first_heu(first_heu), sec_heu(sec_heu), nodeList(nodeList) {}
 
 void TopCloseness::init() {
     n = G.upperNodeIdBound();
@@ -322,7 +323,7 @@ void TopCloseness::run() {
     init();
     tlx::d_ary_heap<node, 2, Aux::GreaterInVector<double>> top{farness};
     top.reserve(k);
-    std::vector<bool> toAnalyze(n, true);
+    std::vector<bool> toAnalyze(n, false);
     omp_lock_t lock;
     omp_init_lock(&lock);
 
@@ -345,10 +346,14 @@ void TopCloseness::run() {
     });
     tlx::d_ary_addressable_int_heap<node, 2, Aux::LessInVector<double>> Q{farness};
 
-    std::vector<node> nodes;
-    nodes.reserve(G.numberOfNodes());
-    G.forNodes([&](const node u) { nodes.emplace_back(u); });
-    Q.build_heap(std::move(nodes));
+    if (nodeList.empty()) {
+        std::vector<node> nodes;
+        nodes.reserve(G.numberOfNodes());
+        G.forNodes([&](const node u) { nodes.emplace_back(u); });
+        Q.build_heap(std::move(nodes));
+    } else {
+        Q.build_heap(nodeList);
+    }
     DEBUG("Done filling the queue");
 
     std::vector<std::vector<bool>> visitedVec;
@@ -359,6 +364,17 @@ void TopCloseness::run() {
         visitedVec.resize(omp_get_max_threads(), std::vector<bool>(n));
         distVec.resize(omp_get_max_threads(), std::vector<count>(n));
         predVec.resize(omp_get_max_threads(), std::vector<node>(n));
+    }
+
+    // Disable analyzing nodes, which are not part of the nodeList (if given).
+    // Otherwise all nodes need to be checked.
+    if (nodeList.empty()) {
+        std::fill(toAnalyze.begin(), toAnalyze.end(), true);
+    } else {
+#pragma omp parallel
+        for (omp_index u = 0; u < static_cast<omp_index>(nodeList.size()); ++u) {
+            toAnalyze[nodeList[u]] = true;
+        }
     }
 
     double kth = std::numeric_limits<double>::max(); // like in Crescenzi
