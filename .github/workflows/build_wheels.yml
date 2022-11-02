@@ -74,7 +74,7 @@ jobs:
           CIBW_BEFORE_BUILD: pip install cython
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp310-* cp311-*' || 'cp311-*' }}
+          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp39-* cp310-*' || 'cp310-*' }}
           CIBW_SKIP: pp*
       - uses: actions/upload-artifact@v2
         if: github.ref == 'refs/heads/master'
