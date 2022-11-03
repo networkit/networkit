@@ -985,6 +985,10 @@ cdef class TopCloseness(Algorithm):
 		If false, nodes are simply sorted by degree. Default: True
 	sec_heu : bool, optional
 		If true, the BFSbound is re-computed at each iteration. If false, BFScut is used. Default: True
+	nodeList : list(), optional
+	    Restrict closeness computation to a group of nodes from the graph. If the list is empty, all 
+		nodes from the graph are used for computation. Note: Actual existence of included nodes 
+		in the graph is not checked. Default: list()
 	"""
 	cdef Graph _G
 
@@ -1046,7 +1050,7 @@ cdef extern from "<networkit/centrality/TopHarmonicCloseness.hpp>":
 
 cdef class TopHarmonicCloseness(Algorithm):
 	""" 
-	TopHarmonicCloseness(G, k=1, useNBbound=False)
+	TopHarmonicCloseness(G, k=1, useNBbound=False, nodeList=list())
 
 	Finds the top k nodes with highest harmonic closeness centrality faster
 	than computing it for all nodes. The implementation is based on "Computing
@@ -1073,6 +1077,10 @@ cdef class TopHarmonicCloseness(Algorithm):
 		If True, the NBbound is re-computed at each iteration. If False, NBcut is used. The worst case 
 		running time of the algorithm is :math:`O(nm)`, where n is the number of nodes and m is the number of edges.
 		However, for most networks the empirical running time is :math:`O(m)`. Default: False
+	nodeList : list(), optional
+	    Restrict closeness computation to a group of nodes from the graph. If the list is empty, all 
+		nodes from the graph are used for computation. Note: Actual existence of included nodes 
+		in the graph is not checked. Default: list()
 	"""
 	cdef Graph _G
 

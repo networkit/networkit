@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <iostream>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -1293,6 +1294,35 @@ TEST_P(CentralityGTest, testTopCloseness) {
     }
 }
 
+TEST_F(CentralityGTest, testTopClosenessWithNodeList) {
+    METISGraphReader reader;
+    Graph G = reader.read("input/lesmis.graph");
+    constexpr count k = 10;
+    const std::vector<node> nodeList{0, 1, 2, 3, 4, 5, 11, 26, 48, 64};
+
+    // We expect complete TopCloseness to not contain nodes 0-5, while
+    // restricted should. The first element for both complete and
+    // restricted TopCC should be 11. {26, 48, 64} should also be present
+    // in both results (but position might differ).
+    for (auto firstHeu : {true, false}) {
+        for (auto secHeu : {true, false}) {
+            TopCloseness topC(G, k, firstHeu, secHeu);
+            topC.run();
+            auto topCNodes = topC.topkNodesList();
+            topC.restrictTopKComputationToNodes(nodeList);
+            topC.run();
+            auto topCRNodes = topC.topkNodesList();
+            auto topCRScores = topC.topkScoresList();
+            EXPECT_EQ(topCNodes[0], topCRNodes[0]);
+            EXPECT_THAT(topCRNodes, testing::IsSupersetOf({0, 1, 2, 3, 4, 5, 26, 48, 64}));
+            EXPECT_THAT(topCNodes, testing::IsSupersetOf({26, 48, 64}));
+            EXPECT_THAT(topCNodes, testing::Not(testing::IsSupersetOf({0, 1, 2, 3, 4, 5})));
+            EXPECT_TRUE(
+                std::is_sorted(topCRScores.begin(), topCRScores.end(), std::greater<node>()));
+        }
+    }
+}
+
 TEST_P(CentralityGTest, testTopHarmonicCloseness) {
     const count size = 400;
     const double tol = 1e-6;
@@ -1313,7 +1343,6 @@ TEST_P(CentralityGTest, testTopHarmonicCloseness) {
                     continue;
                 TopHarmonicCloseness topcc(G, k, useNBbound);
                 topcc.run();
-
                 auto topkScores = topcc.topkScoresList();
                 EXPECT_EQ(topcc.topkNodesList().size(), k);
                 EXPECT_EQ(topkScores.size(), k);
@@ -1326,6 +1355,30 @@ TEST_P(CentralityGTest, testTopHarmonicCloseness) {
                     EXPECT_NEAR(topkScores[i], topkScores[k - 1], tol);
             }
         }
+    }
+}
+
+TEST_F(CentralityGTest, testTopHarmonicClosenessWithNodeList) {
+    METISGraphReader reader;
+    Graph G = reader.read("input/lesmis.graph");
+    constexpr count k = 10;
+    const std::vector<node> nodeList{0, 1, 2, 3, 4, 5, 6, 11, 27, 48};
+
+    // We expect complete TopHarmonicCloseness to not contain nodes 0-6,
+    // while restricted should. {11, 27, 48} should be present in both
+    // results (but position might differ).
+    for (bool useNBbound : {true, false}) {
+        TopHarmonicCloseness topHC(G, k, useNBbound);
+        topHC.run();
+        auto topHCNodes = topHC.topkNodesList();
+        topHC.restrictTopKComputationToNodes(nodeList);
+        topHC.run();
+        auto topHCRNodes = topHC.topkNodesList();
+        auto topHCRScores = topHC.topkScoresList();
+        EXPECT_THAT(topHCRNodes, testing::IsSupersetOf({0, 1, 2, 3, 4, 5, 6, 11, 27, 48}));
+        EXPECT_THAT(topHCNodes, testing::IsSupersetOf({11, 27, 48}));
+        EXPECT_THAT(topHCNodes, testing::Not(testing::IsSupersetOf({0, 1, 2, 3, 4, 5, 6})));
+        EXPECT_TRUE(std::is_sorted(topHCRScores.begin(), topHCRScores.end(), std::greater<node>()));
     }
 }
 

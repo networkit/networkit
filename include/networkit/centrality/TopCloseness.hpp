@@ -41,8 +41,9 @@ public:
      * degree.
      * @param sec_heu If true, the BFSbound is re-computed at each iteration. If
      * false, BFScut is used.
-     * @param nodeList Restrict closeness computation to a grou of nodes from the graph. In order to
-     * work, these nodes have to be present.
+     * @param nodeList Restrict closeness computation to a group of nodes from the graph.
+     * If the list is empty (default), all nodes from the graph are used for computation.
+     * Note: Actual existence of included nodes in the graph is not checked.
      */
     TopCloseness(const Graph &G, count k = 1, bool first_heu = true, bool sec_heu = true,
                  const std::vector<node> &nodeList = std::vector<node>());
