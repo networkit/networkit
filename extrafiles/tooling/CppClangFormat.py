@@ -49,11 +49,6 @@ def findClangFormat():
 
 	raise FileNotFoundError("clang-format binary not found. We searched for:\n " + "\n ".join(allowed))
 
-def unsubscribedToFormat(filename, pattern = "no-networkit-format"):
-	"""If pattern is present within the file, this file unsubscribed to auto formatting."""
-	with open(filename, 'r') as file:
-		return any( ((pattern in line) for line in file) )
-
 def runClangFormat(inputFilename, outputFilename, clangFormatBinary = 'clang-format-8'):
 	"""Execute clang-format onto inputFilename and stores the result in outputFilename"""
 	with open(outputFilename, "w") as outfile:
@@ -66,15 +61,11 @@ nkt.setup()
 os.chdir(nkt.getNetworKitRoot())
 
 numberNonCompliant = 0
-numberFileSkipped = 0
 
 clangFormatCommand = findClangFormat()
 with tempfile.TemporaryDirectory(dir=nkt.getNetworKitRoot()) as tempDir:
 	files = nkt.getCXXFiles()
 	for file in files:
-		if unsubscribedToFormat(file):
-			numberFileSkipped += 1
-			continue
 
 		tempFile = os.path.join(tempDir, 'cfOutput')
 		runClangFormat(file, tempFile, clangFormatCommand)
@@ -89,8 +80,7 @@ with tempfile.TemporaryDirectory(dir=nkt.getNetworKitRoot()) as tempDir:
 			if not nkt.isReadonly():
 				os.replace(tempFile, file)
 
-print("Scanned %d files (skipped %d files without subscription). Non-compliant files: %d." %
-	  (len(files), numberFileSkipped, numberNonCompliant))
+print(f"Scanned {len(files)} files. Non-compliant files: {numberNonCompliant}.")
 
 if numberNonCompliant > 0:
 	nkt.failIfReadonly(__file__)
