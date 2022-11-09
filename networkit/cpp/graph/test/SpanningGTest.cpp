@@ -20,7 +20,7 @@ TEST_F(SpanningGTest, testKruskalMinSpanningForest) {
     METISGraphReader reader;
     std::vector<std::string> graphs = {"karate", "jazz", "celegans_metabolic"};
 
-    for (auto graphname : graphs) {
+    for (const auto &graphname : graphs) {
         std::string filename = "input/" + graphname + ".graph";
         Graph G = reader.read(filename);
         KruskalMSF msf(G);
@@ -32,11 +32,28 @@ TEST_F(SpanningGTest, testKruskalMinSpanningForest) {
     }
 }
 
+TEST_F(SpanningGTest, testKruskalMinSpanningForestSimple) {
+    Graph g(5, true);
+    g.addEdge(0, 1, 1);
+    g.addEdge(1, 2, 1);
+    g.addEdge(1, 3, 1);
+    g.addEdge(3, 4, 1);
+    g.addEdge(1, 4, 1);
+    g.indexEdges();
+
+    KruskalMSF msf(g);
+    msf.run();
+    Graph T = msf.getForest();
+
+    // check that each node has an edge in the spanning tree (if it had one before)
+    T.forNodes([&](node u) { EXPECT_TRUE(T.degree(u) > 0 || g.degree(u) == 0); });
+}
+
 TEST_F(SpanningGTest, testSpanningForest) {
     METISGraphReader reader;
     std::vector<std::string> graphs = {"karate", "jazz", "celegans_metabolic"};
 
-    for (auto graphname : graphs) {
+    for (const auto &graphname : graphs) {
         std::string filename = "input/" + graphname + ".graph";
         Graph G = reader.read(filename);
         SpanningForest msf(G);
