@@ -7,6 +7,7 @@
 #include <cstring>
 #include <fstream>
 #include <string>
+#include <unordered_map>
 
 #include <tlx/math/clz.hpp>
 
@@ -174,8 +175,8 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
     uint64_t transpWeightSize = 0;
     uint64_t adjIndexSize = 0;
     uint64_t transpIndexSize = 0;
-    std::vector<uint64_t> nrOutNbrs;
-    std::vector<uint64_t> nrInNbrs;
+    std::unordered_map<node, uint64_t> nrOutNbrs;
+    std::unordered_map<node, uint64_t> nrInNbrs;
     std::vector<size_t> adjOffsets;         // Prefix sum of size encoded adj arrays
     std::vector<size_t> transpOffsets;      // Prefix sum of encoded transposed adj arrays
     std::vector<size_t> adjWghtOffsets;     // Prefix sum of size encoded adj weights
@@ -254,11 +255,11 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
             }
             adjListSize += outNbrs;
             adjSize += nkbg::varIntEncode(outNbrs, tmp);
-            nrOutNbrs.push_back(outNbrs);
+            nrOutNbrs[n] = outNbrs;
 
             adjTransposeSize += inNbrs;
             transpSize += nkbg::varIntEncode(inNbrs, tmp);
-            nrInNbrs.push_back(inNbrs);
+            nrInNbrs[n] = inNbrs;
         }
         adjOffsets.push_back(adjSize);
         transpOffsets.push_back(transpSize);
