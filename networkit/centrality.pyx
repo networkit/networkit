@@ -949,18 +949,19 @@ cdef class HarmonicCloseness(Centrality):
 cdef extern from "<networkit/centrality/TopCloseness.hpp>":
 
 	cdef cppclass _TopCloseness "NetworKit::TopCloseness"(_Algorithm):
-		_TopCloseness(_Graph G, count, bool_t, bool_t, vector[node]) except +
+		_TopCloseness(_Graph G, count, bool_t, bool_t) except +
 		node maximum() except +
 		edgeweight maxSum() except +
 		count iterations() except +
 		count operations() except +
 		vector[node] topkNodesList(bool_t) except +
 		vector[edgeweight] topkScoresList(bool_t) except +
+		void restrictTopKComputationToNodes(const vector[node] &nodeList) except +
 
 
 cdef class TopCloseness(Algorithm):
 	"""
-	TopCloseness(G, k=1, first_heu=True, sec_heu=True, nodeList=list())
+	TopCloseness(G, k=1, first_heu=True, sec_heu=True)
 	
 	Finds the top k nodes with highest closeness centrality faster than computing it for all nodes, 
 	based on "Computing Top-k Closeness Centrality Faster in Unweighted Graphs", Bergamini et al., ALENEX16.
@@ -985,16 +986,12 @@ cdef class TopCloseness(Algorithm):
 		If false, nodes are simply sorted by degree. Default: True
 	sec_heu : bool, optional
 		If true, the BFSbound is re-computed at each iteration. If false, BFScut is used. Default: True
-	nodeList : list(), optional
-	    Restrict closeness computation to a group of nodes from the graph. If the list is empty, all 
-		nodes from the graph are used for computation. Note: Actual existence of included nodes 
-		in the graph is not checked. Default: list()
 	"""
 	cdef Graph _G
 
-	def __cinit__(self,  Graph G, k=1, first_heu=True, sec_heu=True, nodeList=list()):
+	def __cinit__(self,  Graph G, k=1, first_heu=True, sec_heu=True):
 		self._G = G
-		self._this = new _TopCloseness(G._this, k, first_heu, sec_heu, nodeList)
+		self._this = new _TopCloseness(G._this, k, first_heu, sec_heu)
 
 	def topkNodesList(self, includeTrail=False):
 		""" 
@@ -1040,17 +1037,33 @@ cdef class TopCloseness(Algorithm):
 		"""
 		return (<_TopCloseness*>(self._this)).topkScoresList(includeTrail)
 
+	def restrictTopKComputationToNodes(self, nodeList):
+		"""
+		restrictTopKComputationToNodes(nodeList)
+
+		Restricts the top-k closeness computation to a subset of nodes.
+		If the given list is empty, all nodes in the graph will be considered.
+		Note: Actual existence of included nodes in the graph is not checked.
+
+		Parameters
+		----------
+		nodeList : list()
+			List containing a subset of nodes from the graph.
+		"""
+		return (<_TopCloseness*>(self._this)).restrictTopKComputationToNodes(nodeList)
+
 cdef extern from "<networkit/centrality/TopHarmonicCloseness.hpp>":
 
 	cdef cppclass _TopHarmonicCloseness "NetworKit::TopHarmonicCloseness"(_Algorithm):
-		_TopHarmonicCloseness(_Graph G, count, bool_t, vector[node]) except +
+		_TopHarmonicCloseness(_Graph G, count, bool_t) except +
 		vector[node] topkNodesList(bool_t) except +
 		vector[edgeweight] topkScoresList(bool_t) except +
+		void restrictTopKComputationToNodes(const vector[node] &nodeList) except +
 
 
 cdef class TopHarmonicCloseness(Algorithm):
 	""" 
-	TopHarmonicCloseness(G, k=1, useNBbound=False, nodeList=list())
+	TopHarmonicCloseness(G, k=1, useNBbound=False)
 
 	Finds the top k nodes with highest harmonic closeness centrality faster
 	than computing it for all nodes. The implementation is based on "Computing
@@ -1077,16 +1090,12 @@ cdef class TopHarmonicCloseness(Algorithm):
 		If True, the NBbound is re-computed at each iteration. If False, NBcut is used. The worst case 
 		running time of the algorithm is :math:`O(nm)`, where n is the number of nodes and m is the number of edges.
 		However, for most networks the empirical running time is :math:`O(m)`. Default: False
-	nodeList : list(), optional
-	    Restrict closeness computation to a group of nodes from the graph. If the list is empty, all 
-		nodes from the graph are used for computation. Note: Actual existence of included nodes 
-		in the graph is not checked. Default: list()
 	"""
 	cdef Graph _G
 
-	def __cinit__(self,  Graph G, k=1, useNBbound=False, nodeList=list()):
+	def __cinit__(self,  Graph G, k=1, useNBbound=False):
 		self._G = G
-		self._this = new _TopHarmonicCloseness(G._this, k, useNBbound, nodeList)
+		self._this = new _TopHarmonicCloseness(G._this, k, useNBbound)
 
 	def topkNodesList(self, includeTrail=False):
 		"""
@@ -1131,6 +1140,23 @@ cdef class TopHarmonicCloseness(Algorithm):
 			The k highest closeness harmonic scores.
 		"""
 		return (<_TopHarmonicCloseness*>(self._this)).topkScoresList(includeTrail)
+
+	def restrictTopKComputationToNodes(self, nodeList):
+		"""
+		topkScoresList(nodeList)
+
+		Restricts the top-k closeness computation to a subset of nodes.
+		If the given list is empty, all nodes in the graph will be considered.
+		Note: Actual existence of included nodes in the graph is not checked.
+
+		Parameters
+		----------
+		nodeList : list()
+			List containing a subset of nodes from the graph.
+		"""
+		return (<_TopHarmonicCloseness*>(self._this)).restrictTopKComputationToNodes(nodeList)
+
+
 
 cdef extern from "<networkit/centrality/DynTopHarmonicCloseness.hpp>":
 
