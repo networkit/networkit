@@ -17,6 +17,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include <networkit/algebraic/CSRMatrix.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/io/BinaryEdgeListPartitionReader.hpp>
 #include <networkit/io/BinaryEdgeListPartitionWriter.hpp>
@@ -38,6 +39,7 @@
 #include <networkit/io/KONECTGraphReader.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/METISGraphWriter.hpp>
+#include <networkit/io/MatrixMarketReader.hpp>
 #include <networkit/io/NetworkitBinaryGraph.hpp>
 #include <networkit/io/NetworkitBinaryReader.hpp>
 #include <networkit/io/NetworkitBinaryWriter.hpp>
@@ -1223,6 +1225,71 @@ TEST_F(IOGTest, testNetworkitBinaryZigzag) {
         check(x);
         check(-1 * x);
     }
+}
+
+TEST_F(IOGTest, testMatrixMarketReaderUnweightedUndirected) {
+    CSRMatrix csr = MatrixMarketReader{}.read("input/chesapeake.mtx");
+    EXPECT_EQ(csr.numberOfRows(), 39);
+    EXPECT_EQ(csr.nnz(), 170 * 2); // double due to being undirected
+    EXPECT_EQ(csr(7, 0), 1.0);
+    EXPECT_EQ(csr(21, 1), 1.0);
+    EXPECT_EQ(csr(5, 4), 1.0);
+    EXPECT_EQ(csr(10, 6), 1.0);
+    EXPECT_EQ(csr(35, 10), 1.0);
+    EXPECT_EQ(csr(26, 13), 1.0);
+    csr.forNonZeroElementsInRowOrder(
+        [&](index i, index j, double) { EXPECT_EQ(csr(i, j), csr(j, i)); });
+}
+
+TEST_F(IOGTest, testMatrixMarketReaderUnweightedDirected) {
+    CSRMatrix csr = MatrixMarketReader{}.read("input/GD01_b.mtx");
+    EXPECT_EQ(csr.numberOfRows(), 18);
+    EXPECT_EQ(csr.nnz(), 37);
+    EXPECT_EQ(csr(7, 1), 1.0);
+    EXPECT_EQ(csr(2, 3), 1.0);
+    EXPECT_EQ(csr(15, 3), 1.0);
+    EXPECT_EQ(csr(3, 9), 1.0);
+    EXPECT_EQ(csr(11, 12), 1.0);
+    EXPECT_EQ(csr(17, 13), 1.0);
+}
+
+TEST_F(IOGTest, testMatrixMarketReaderWeightedUndirected) {
+    CSRMatrix csr = MatrixMarketReader{}.read("input/LFAT5.mtx");
+    EXPECT_EQ(csr.numberOfRows(), 14);
+    // double due to being undirected but we don't double count self loops
+    EXPECT_EQ(csr.nnz(), 30 * 2 - 14);
+    EXPECT_EQ(csr(5, 1), -6.2832e6);
+    EXPECT_EQ(csr(3, 3), 15080.447999999997);
+    EXPECT_EQ(csr(8, 3), 94.2528);
+    EXPECT_EQ(csr(5, 5), 1.25664e7);
+    EXPECT_EQ(csr(11, 8), -94.2528);
+    EXPECT_EQ(csr(13, 11), 94.2528);
+    csr.forNonZeroElementsInRowOrder(
+        [&](index i, index j, double) { EXPECT_EQ(csr(i, j), csr(j, i)); });
+}
+
+TEST_F(IOGTest, testMatrixMarketReaderWeightedDirected) {
+    CSRMatrix csr = MatrixMarketReader{}.read("input/Hamrle1.mtx");
+    EXPECT_EQ(csr.numberOfRows(), 32);
+    EXPECT_EQ(csr.nnz(), 98);
+    EXPECT_EQ(csr(0, 0), 0.8499999999999999);
+    EXPECT_EQ(csr(2, 2), 1.0);
+    EXPECT_EQ(csr(3, 4), 0.2213493690543944);
+    EXPECT_EQ(csr(5, 9), -0.2039265503510711);
+    EXPECT_EQ(csr(9, 16), 0.2213493690543944);
+    EXPECT_EQ(csr(11, 23), 0.04492168652740657);
+}
+
+TEST_F(IOGTest, testMatrixMarketReaderIntegerWeights) {
+    CSRMatrix csr = MatrixMarketReader{}.read("input/Ragusa16.mtx");
+    EXPECT_EQ(csr.numberOfRows(), 24);
+    EXPECT_EQ(csr.nnz(), 81);
+    EXPECT_EQ(csr(0, 4), 1.0);
+    EXPECT_EQ(csr(23, 4), 3.0);
+    EXPECT_EQ(csr(10, 6), 1.0);
+    EXPECT_EQ(csr(23, 9), 2.0);
+    EXPECT_EQ(csr(4, 10), 4.0);
+    EXPECT_EQ(csr(21, 21), 6.0);
 }
 
 } /* namespace NetworKit */
