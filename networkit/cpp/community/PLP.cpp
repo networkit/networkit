@@ -6,6 +6,7 @@
  */
 
 #include <omp.h>
+#include <unordered_map>
 
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/Log.hpp>
@@ -41,8 +42,8 @@ void PLP::run() {
         updateThreshold = (count)(n / 1e5);
     }
 
-    count nUpdated; // number of nodes which have been updated in last iteration
-    nUpdated = n;   // all nodes have new labels -> first loop iteration runs
+    // number of nodes which have been updated in last iteration
+    count nUpdated = n; // all nodes have new labels -> first loop iteration runs
 
     nIterations = 0; // number of iterations
 
@@ -60,8 +61,7 @@ void PLP::run() {
      * iteration.
      */
 
-    std::vector<bool> activeNodes(z); // record if node must be processed
-    activeNodes.assign(z, true);
+    std::vector<bool> activeNodes(z, true); // record if node must be processed
 
     Aux::Timer runtime;
 
@@ -76,35 +76,38 @@ void PLP::run() {
         nUpdated = 0;
 
         G->balancedParallelForNodes([&](node v) {
-            if ((activeNodes[v]) && (G->degree(v) > 0)) {
+            if (!activeNodes[v] || G->degree(v) == 0)
+                return; // node is isolated
 
-                // neighborLabelCounts maps label -> frequency in the neighbors
-                std::map<label, double> labelWeights;
+            // neighborLabelCounts maps label -> frequency in the neighbors
+            std::unordered_map<label, edgeweight> labelWeights;
 
-                // weigh the labels in the neighborhood of v
-                G->forNeighborsOf(v, [&](node w, edgeweight weight) {
-                    label lw = result.subsetOf(w);
-                    labelWeights[lw] += weight; // add weight of edge {v, w}
-                });
+            // weigh the labels in the neighborhood of v
+            G->forNeighborsOf(v, [&](node w, edgeweight weight) {
+                label lw = result.subsetOf(w);
+                auto it = labelWeights.find(lw);
+                // add weight of edge {v, w}
+                if (it == labelWeights.end())
+                    labelWeights.emplace(lw, weight);
+                else
+                    it->second += weight;
+            });
 
-                // get heaviest label
-                label heaviest = std::max_element(labelWeights.begin(), labelWeights.end(),
-                                                  [](const std::pair<label, edgeweight> &p1,
-                                                     const std::pair<label, edgeweight> &p2) {
-                                                      return p1.second < p2.second;
-                                                  })
-                                     ->first;
+            // get heaviest label
+            label heaviest = std::max_element(labelWeights.begin(), labelWeights.end(),
+                                              [](const std::pair<label, edgeweight> &p1,
+                                                 const std::pair<label, edgeweight> &p2) {
+                                                  return p1.second < p2.second;
+                                              })
+                                 ->first;
 
-                if (result.subsetOf(v) != heaviest) { // UPDATE
-                    result.moveToSubset(heaviest, v); // result[v] = heaviest;
-                    nUpdated += 1;                    // TODO: atomic update?
-                    G->forNeighborsOf(v, [&](node u) { activeNodes[u] = true; });
-                } else {
-                    activeNodes[v] = false;
-                }
-
+            if (result.subsetOf(v) != heaviest) { // UPDATE
+                result.moveToSubset(heaviest, v); // result[v] = heaviest;
+#pragma omp atomic
+                ++nUpdated;
+                G->forNeighborsOf(v, [&](node u) { activeNodes[u] = true; });
             } else {
-                // node is isolated
+                activeNodes[v] = false;
             }
         });
 
@@ -124,6 +127,7 @@ void PLP::setUpdateThreshold(count th) {
 }
 
 count PLP::numberOfIterations() {
+    assureFinished();
     return this->nIterations;
 }
 
