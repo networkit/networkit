@@ -5,6 +5,7 @@
  *      Author: Maximilian Vogel
  */
 
+#include <limits>
 #include <gtest/gtest.h>
 
 #include <networkit/distance/APSP.hpp>
@@ -23,6 +24,7 @@
 #include <networkit/distance/NeighborhoodFunction.hpp>
 #include <networkit/distance/NeighborhoodFunctionApproximation.hpp>
 #include <networkit/distance/NeighborhoodFunctionHeuristic.hpp>
+#include <networkit/distance/PrunedLandmarkLabeling.hpp>
 #include <networkit/distance/SPSP.hpp>
 
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
@@ -584,6 +586,29 @@ TEST_P(DistanceGTest, testMultiTargetDijkstra) {
         for (node target : targets)
             EXPECT_DOUBLE_EQ(distances[target], tgtDists[tgtIdx.at(target)]);
     }
+}
+
+TEST_P(DistanceGTest, testPrunedLandmarkLabeling) {
+    Aux::Random::setSeed(42, false);
+    Graph G = ErdosRenyiGenerator{500, 0.01, isDirected()}.generate();
+    PrunedLandmarkLabeling pll(G);
+    pll.run();
+
+    ASSERT_TRUE(pll.hasFinished());
+
+    APSP apsp(G);
+    apsp.run();
+
+    const count infDistInt = std::numeric_limits<count>::max();
+    const double infDistDouble = std::numeric_limits<double>::max();
+
+    G.forNodePairs([&](node u, node v) {
+        double distUV = apsp.getDistance(u, v);
+        if (distUV == infDistDouble)
+            EXPECT_EQ(pll.query(u, v), infDistInt);
+        else
+            EXPECT_EQ(pll.query(u, v), distUV);
+    });
 }
 
 } /* namespace NetworKit */
