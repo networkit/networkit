@@ -175,5 +175,22 @@ class TestDistanceAlgorithms(unittest.TestCase):
 				algo.run()
 				self.assertEqual(len(algo.getDistances()), len(targets))
 
+	def testPrunedLandmarkLabeling(self):
+		for g in self.genERGraphs():
+			pll = nk.distance.PrunedLandmarkLabeling(g)
+			pll.run()
+
+			if g.isWeighted():
+				g = nk.graphtools.toUnweighted(g)
+			apsp = nk.distance.APSP(g)
+			apsp.run()
+
+			for u in g.iterNodes():
+				for v in g.iterNodes():
+					if apsp.getDistance(u, v) > g.numberOfNodes():
+						self.assertEqual(pll.query(u, v), nk.none)
+					else:
+						self.assertEqual(pll.query(u, v), int(apsp.getDistance(u, v)))
+
 if __name__ == "__main__":
 	unittest.main()
