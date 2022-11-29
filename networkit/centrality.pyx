@@ -956,6 +956,7 @@ cdef extern from "<networkit/centrality/TopCloseness.hpp>":
 		count operations() except +
 		vector[node] topkNodesList(bool_t) except +
 		vector[edgeweight] topkScoresList(bool_t) except +
+		void restrictTopKComputationToNodes(const vector[node] &nodeList) except +
 
 
 cdef class TopCloseness(Algorithm):
@@ -1036,17 +1037,33 @@ cdef class TopCloseness(Algorithm):
 		"""
 		return (<_TopCloseness*>(self._this)).topkScoresList(includeTrail)
 
+	def restrictTopKComputationToNodes(self, nodeList):
+		"""
+		restrictTopKComputationToNodes(nodeList)
+
+		Restricts the top-k closeness computation to a subset of nodes.
+		If the given list is empty, all nodes in the graph will be considered.
+		Note: Actual existence of included nodes in the graph is not checked.
+
+		Parameters
+		----------
+		nodeList : list()
+			List containing a subset of nodes from the graph.
+		"""
+		return (<_TopCloseness*>(self._this)).restrictTopKComputationToNodes(nodeList)
+
 cdef extern from "<networkit/centrality/TopHarmonicCloseness.hpp>":
 
 	cdef cppclass _TopHarmonicCloseness "NetworKit::TopHarmonicCloseness"(_Algorithm):
 		_TopHarmonicCloseness(_Graph G, count, bool_t) except +
 		vector[node] topkNodesList(bool_t) except +
 		vector[edgeweight] topkScoresList(bool_t) except +
+		void restrictTopKComputationToNodes(const vector[node] &nodeList) except +
 
 
 cdef class TopHarmonicCloseness(Algorithm):
 	""" 
-	TopHarmonicCloseness(G, k=1, useNBbound=True)
+	TopHarmonicCloseness(G, k=1, useNBbound=False)
 
 	Finds the top k nodes with highest harmonic closeness centrality faster
 	than computing it for all nodes. The implementation is based on "Computing
@@ -1072,7 +1089,7 @@ cdef class TopHarmonicCloseness(Algorithm):
 	useNBbound : bool, optional
 		If True, the NBbound is re-computed at each iteration. If False, NBcut is used. The worst case 
 		running time of the algorithm is :math:`O(nm)`, where n is the number of nodes and m is the number of edges.
-		However, for most networks the empirical running time is :math:`O(m)`. Default: True
+		However, for most networks the empirical running time is :math:`O(m)`. Default: False
 	"""
 	cdef Graph _G
 
@@ -1123,6 +1140,23 @@ cdef class TopHarmonicCloseness(Algorithm):
 			The k highest closeness harmonic scores.
 		"""
 		return (<_TopHarmonicCloseness*>(self._this)).topkScoresList(includeTrail)
+
+	def restrictTopKComputationToNodes(self, nodeList):
+		"""
+		topkScoresList(nodeList)
+
+		Restricts the top-k closeness computation to a subset of nodes.
+		If the given list is empty, all nodes in the graph will be considered.
+		Note: Actual existence of included nodes in the graph is not checked.
+
+		Parameters
+		----------
+		nodeList : list()
+			List containing a subset of nodes from the graph.
+		"""
+		return (<_TopHarmonicCloseness*>(self._this)).restrictTopKComputationToNodes(nodeList)
+
+
 
 cdef extern from "<networkit/centrality/DynTopHarmonicCloseness.hpp>":
 

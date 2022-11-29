@@ -44,8 +44,6 @@
 #include <networkit/centrality/PageRank.hpp>
 #include <networkit/centrality/PermanenceCentrality.hpp>
 #include <networkit/centrality/SpanningEdgeCentrality.hpp>
-#include <networkit/centrality/TopCloseness.hpp>
-#include <networkit/centrality/TopHarmonicCloseness.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
@@ -1267,66 +1265,6 @@ TEST_F(CentralityGTest, testSimplePermanence) {
 
     EXPECT_NEAR(-0.19048, perm.getPermanence(u), 0.0005);
     EXPECT_NEAR(0.167, perm.getPermanence(v), 0.0005);
-}
-
-TEST_P(CentralityGTest, testTopCloseness) {
-    constexpr count size = 400;
-    constexpr count k = 10;
-    Aux::Random::setSeed(42, false);
-    const auto G1 = DorogovtsevMendesGenerator(size).generate();
-    Graph G(G1, false, isDirected());
-
-    Closeness cc(G1, true, ClosenessVariant::GENERALIZED);
-    cc.run();
-    auto exactScores = cc.scores();
-    auto ranking = cc.ranking();
-    for (auto firstHeu : {true, false}) {
-        for (auto secHeu : {true, false}) {
-            TopCloseness topcc(G, k, firstHeu, secHeu);
-            topcc.run();
-            auto scores = topcc.topkScoresList();
-            EXPECT_EQ(topcc.topkNodesList().size(), k);
-            for (count i = 0; i < k; i++) {
-                EXPECT_DOUBLE_EQ(ranking[i].second, scores[i]);
-            }
-        }
-    }
-}
-
-TEST_P(CentralityGTest, testTopHarmonicCloseness) {
-    const count size = 400;
-    const double tol = 1e-6;
-
-    for (int seed : {1, 2, 3}) {
-        Aux::Random::setSeed(seed, false);
-        auto G = ErdosRenyiGenerator(size, 0.01, isDirected()).generate();
-        if (isWeighted()) {
-            G = GraphTools::toWeighted(G);
-            G.forEdges([&G](node u, node v) { G.setWeight(u, v, Aux::Random::probability()); });
-        }
-        HarmonicCloseness cc(G, false);
-        cc.run();
-        const auto ranking = cc.ranking();
-        for (bool useNBbound : {true, false}) {
-            for (count k : {5, 10, 20}) {
-                if (isWeighted() && useNBbound)
-                    continue;
-                TopHarmonicCloseness topcc(G, k, useNBbound);
-                topcc.run();
-
-                auto topkScores = topcc.topkScoresList();
-                EXPECT_EQ(topcc.topkNodesList().size(), k);
-                EXPECT_EQ(topkScores.size(), k);
-
-                topkScores = topcc.topkScoresList(true);
-
-                for (count i = 0; i < topkScores.size(); ++i)
-                    EXPECT_NEAR(ranking[i].second, topkScores[i], tol);
-                for (count i = k; i < topkScores.size(); ++i)
-                    EXPECT_NEAR(topkScores[i], topkScores[k - 1], tol);
-            }
-        }
-    }
 }
 
 TEST_F(CentralityGTest, testLaplacianCentrality) {

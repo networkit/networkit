@@ -21,7 +21,7 @@
 namespace NetworKit {
 
 TopCloseness::TopCloseness(const Graph &G, count k, bool first_heu, bool sec_heu)
-    : G(G), k(k), first_heu(first_heu), sec_heu(sec_heu) {}
+    : G(G), k(k), first_heu(first_heu), sec_heu(sec_heu), nodeListPtr(nullptr) {}
 
 void TopCloseness::init() {
     n = G.upperNodeIdBound();
@@ -322,7 +322,7 @@ void TopCloseness::run() {
     init();
     tlx::d_ary_heap<node, 2, Aux::GreaterInVector<double>> top{farness};
     top.reserve(k);
-    std::vector<bool> toAnalyze(n, true);
+    std::vector<bool> toAnalyze(n, false);
     omp_lock_t lock;
     omp_init_lock(&lock);
 
@@ -345,10 +345,11 @@ void TopCloseness::run() {
     });
     tlx::d_ary_addressable_int_heap<node, 2, Aux::LessInVector<double>> Q{farness};
 
-    std::vector<node> nodes;
-    nodes.reserve(G.numberOfNodes());
-    G.forNodes([&](const node u) { nodes.emplace_back(u); });
-    Q.build_heap(std::move(nodes));
+    if (!nodeListPtr || nodeListPtr->empty()) {
+        Q.build_heap(G.nodeRange().begin(), G.nodeRange().end());
+    } else {
+        Q.build_heap(nodeListPtr->begin(), nodeListPtr->end());
+    }
     DEBUG("Done filling the queue");
 
     std::vector<std::vector<bool>> visitedVec;
@@ -359,6 +360,17 @@ void TopCloseness::run() {
         visitedVec.resize(omp_get_max_threads(), std::vector<bool>(n));
         distVec.resize(omp_get_max_threads(), std::vector<count>(n));
         predVec.resize(omp_get_max_threads(), std::vector<node>(n));
+    }
+
+    // Disable analyzing nodes, which are not part of the nodeList (if given).
+    // Otherwise all nodes need to be checked.
+    if (!nodeListPtr || nodeListPtr->empty()) {
+        std::fill(toAnalyze.begin(), toAnalyze.end(), true);
+    } else {
+#pragma omp parallel
+        for (omp_index u = 0; u < static_cast<omp_index>(nodeListPtr->size()); ++u) {
+            toAnalyze[(*nodeListPtr)[u]] = true;
+        }
     }
 
     double kth = std::numeric_limits<double>::max(); // like in Crescenzi

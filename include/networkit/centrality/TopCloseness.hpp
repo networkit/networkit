@@ -41,7 +41,6 @@ public:
      * degree.
      * @param sec_heu If true, the BFSbound is re-computed at each iteration. If
      * false, BFScut is used.
-     * @
      */
     TopCloseness(const Graph &G, count k = 1, bool first_heu = true, bool sec_heu = true);
 
@@ -72,12 +71,24 @@ public:
      */
     std::vector<edgeweight> topkScoresList(bool includeTrail = false);
 
+    /**
+     * @brief Restricts the top-k closeness computation to a subset of nodes.
+     * If the given list is empty, all nodes in the graph will be considered.
+     * Note: Actual existence of included nodes in the graph is not checked.
+     *
+     * @param nodeList Subset of nodes.
+     */
+    void restrictTopKComputationToNodes(const std::vector<node> &nodeList) {
+        nodeListPtr = &nodeList;
+    };
+
 private:
     const Graph &G;
     count n;
     count k;
     bool first_heu, sec_heu;
     std::vector<node> topk;
+    const std::vector<node> *nodeListPtr;
     count visEdges;
     count n_op;
     count trail;

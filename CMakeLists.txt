@@ -461,7 +461,7 @@ if (NETWORKIT_BUILD_TESTS)
 			set( gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll" FORCE)
 		endif()
 		option(BUILD_GTEST "Builds the googletest subproject" ON)
-		option(BUILD_GMOCK "Builds the googlemock subproject" OFF)
+		option(BUILD_GMOCK "Builds the googlemock subproject" ON)
 		add_subdirectory(extlibs/googletest)
 	else()
 		message(FATAL_ERROR
@@ -475,18 +475,19 @@ if (NETWORKIT_BUILD_TESTS)
 		target_link_libraries(networkit_tests
 			PRIVATE
 				gtest
+				gmock
 				networkit
 				tlx
 				OpenMP::OpenMP_CXX
 		)
-		
+
 		if(WIN32)
 			target_link_libraries(networkit_tests
 				PRIVATE
 					networkit_state
 			)
 		endif()
-		
+
 		if(WIN32)
 			set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /wd4996")
 		else()
@@ -520,6 +521,7 @@ if (NETWORKIT_BUILD_TESTS)
 		target_link_libraries(networkit_gtest_main
 				PUBLIC
 					gtest
+					gmock
 				PRIVATE
 					tlx
 					networkit_auxiliary

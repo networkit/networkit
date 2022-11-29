@@ -76,6 +76,17 @@ public:
      */
     std::vector<edgeweight> topkScoresList(bool includeTrail = false);
 
+    /**
+     * @brief Restricts the top-k harmonic closeness computation to a subset of nodes.
+     * If the given list is empty, all nodes in the graph will be considered.
+     * Note: Actual existence of included nodes in the graph is not checked.
+     *
+     * @param nodeList Subset of nodes.
+     */
+    void restrictTopKComputationToNodes(const std::vector<node> &nodeList) {
+        nodeListPtr = &nodeList;
+    };
+
 private:
     const Graph *G;
     const count k;
@@ -88,6 +99,7 @@ private:
 
     std::vector<node> topKNodes;
     std::vector<double> topKScores;
+    const std::vector<node> *nodeListPtr;
 
     // For NBbound
     std::vector<count> reachU, reachL;
@@ -105,8 +117,8 @@ private:
         }
     }
 
-    tlx::d_ary_addressable_int_heap<node, 2, Aux::GreaterInVector<double>> prioQ;
     tlx::d_ary_addressable_int_heap<node, 2, Aux::LessInVector<double>> topKNodesPQ;
+    tlx::d_ary_addressable_int_heap<node, 2, Aux::GreaterInVector<double>> prioQ;
     std::vector<node> trail;
 
     // For weighted graphs
@@ -117,6 +129,7 @@ private:
 
     omp_lock_t lock;
 
+    void init();
     void runNBcut();
     void runNBbound();
     bool bfscutUnweighted(node source, double kthCloseness);
