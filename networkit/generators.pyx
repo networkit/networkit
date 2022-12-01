@@ -98,7 +98,7 @@ cdef class BarabasiAlbertGenerator(StaticGraphGenerator):
 	nMax : int
 		Maximum number of nodes produced.
 	n0 : int or networkit.Graph
-		Number of starting nodes or the initial seed graph.
+		Number of starting nodes or the initial starting graph.
 	batagelj : bool
 		Specifies whether to use batagelj's method or the original one.
 	"""
