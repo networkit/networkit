@@ -15,7 +15,7 @@ RUN mkdir /var/lib/apt/lists/partial && \
 # Also see: https://jupyter.readthedocs.io/en/latest/community/content-community.html#what-is-a-jovyan
 USER 1000
 RUN pip install --upgrade pip 
-RUN pip install setuptools cython powerlaw sklearn seaborn pandas tabulate matplotlib networkx ipycytoscape
+RUN pip install setuptools cython powerlaw scikit-learn seaborn pandas tabulate matplotlib networkx ipycytoscape
 
 # Create working environment
 # This has to be done as root in order to avoid access denied errors.
