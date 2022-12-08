@@ -184,6 +184,12 @@ if(NOT OpenMP_FOUND)
 	find_package(OpenMP REQUIRED)
 endif()
 
+message("OPENMP_FLAGS: ${OpenMP_CXX_FLAGS}")
+
+if(NETWORKIT_CUDA)
+	set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler ${OpenMP_CXX_FLAGS}")
+endif()
+
 if(NOT TARGET OpenMP::OpenMP_CXX)
 	message("Creating custom OpenMP target for CMake Version < 3.12. Current CMake Version ${CMAKE_VERSION}")
 	find_package(Threads REQUIRED)
