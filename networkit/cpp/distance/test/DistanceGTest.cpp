@@ -15,6 +15,7 @@
 #include <networkit/distance/BidirectionalDijkstra.hpp>
 #include <networkit/distance/Diameter.hpp>
 #include <networkit/distance/Dijkstra.hpp>
+#include <networkit/distance/DynPrunedLandmarkLabeling.hpp>
 #include <networkit/distance/EffectiveDiameter.hpp>
 #include <networkit/distance/EffectiveDiameterApproximation.hpp>
 #include <networkit/distance/HopPlotApproximation.hpp>
@@ -609,6 +610,91 @@ TEST_P(DistanceGTest, testPrunedLandmarkLabeling) {
         else
             EXPECT_EQ(pll.query(u, v), distUV);
     });
+}
+
+TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingThrowsWithEdgeRemoval) {
+    Graph G(2, isWeighted(), isDirected());
+    G.addEdge(0, 1);
+
+    DynPrunedLandmarkLabeling pll(G);
+    pll.run();
+
+    G.removeEdge(0, 1);
+    EXPECT_THROW(pll.update(GraphEvent(GraphEvent::EDGE_REMOVAL, 0, 1, 1)), std::runtime_error);
+}
+
+TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingAddEdge) {
+    /**	 0       3
+     *	  \     / \
+     *	   1---2   4
+     */
+
+    Graph G(5, isWeighted(), isDirected());
+
+    G.addEdge(0, 1);
+    G.addEdge(2, 3);
+    G.addEdge(3, 4);
+
+    DynPrunedLandmarkLabeling pll(G);
+    pll.run();
+
+    EXPECT_EQ(pll.query(0, 1), 1);
+    EXPECT_EQ(pll.query(2, 3), 1);
+    EXPECT_EQ(pll.query(2, 4), 2);
+
+    EXPECT_EQ(pll.query(0, 2), none);
+    EXPECT_EQ(pll.query(1, 2), none);
+
+    G.addEdge(1, 2);
+    pll.update(GraphEvent(GraphEvent::EDGE_ADDITION, 1, 2, 1));
+
+    EXPECT_EQ(pll.query(0, 1), 1);
+    EXPECT_EQ(pll.query(2, 3), 1);
+    EXPECT_EQ(pll.query(2, 4), 2);
+
+    EXPECT_EQ(pll.query(0, 2), 2);
+    EXPECT_EQ(pll.query(1, 2), 1);
+
+    EXPECT_EQ(pll.query(0, 3), 3);
+    EXPECT_EQ(pll.query(1, 3), 2);
+
+    EXPECT_EQ(pll.query(0, 4), 4);
+    EXPECT_EQ(pll.query(1, 4), 3);
+}
+
+TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingBuildClique) {
+    const count n = 50;
+    Graph G(n, isWeighted(), isDirected());
+    DynPrunedLandmarkLabeling pll(G);
+    pll.run();
+
+    APSP apsp(G);
+
+    auto checkDistances = [&apsp, &G, &pll]() -> void {
+        G.parallelForNodePairs([&apsp, &pll](node u, node v) {
+            double distUV = apsp.getDistance(u, v);
+            if (distUV == std::numeric_limits<double>::max())
+                EXPECT_EQ(pll.query(u, v), std::numeric_limits<count>::max());
+            else
+                EXPECT_EQ(pll.query(u, v), distUV);
+        });
+    };
+
+    auto testAddEdge = [&](node s, node t) -> void {
+        G.addEdge(s, t);
+        pll.update(GraphEvent(GraphEvent::EDGE_ADDITION, s, t));
+
+        apsp.run();
+        checkDistances();
+    };
+
+    for (node s = 0; s < n - 1; ++s) {
+        for (node t = s + 1; t < n; ++t) {
+            testAddEdge(s, t);
+            if (isDirected())
+                testAddEdge(t, s);
+        }
+    }
 }
 
 } /* namespace NetworKit */
