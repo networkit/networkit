@@ -21,6 +21,7 @@ networkit_add_module(distance
     NeighborhoodFunction.cpp
     NeighborhoodFunctionApproximation.cpp
     NeighborhoodFunctionHeuristic.cpp
+    PrunedLandmarkLabeling.cpp
     ReverseBFS.cpp
     SPSP.cpp
     SSSP.cpp

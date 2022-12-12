@@ -1791,3 +1791,53 @@ cdef class ReverseBFS(SSSP):
 	def __cinit__(self, Graph G, source, storePaths=True, storeNodesSortedByDistance=False, target=none):
 		self._G = G
 		self._this = new _ReverseBFS(G._this, source, storePaths, storeNodesSortedByDistance, target)
+
+cdef extern from "<networkit/distance/PrunedLandmarkLabeling.hpp>":
+
+	cdef cppclass _PrunedLandmarkLabeling "NetworKit::PrunedLandmarkLabeling"(_Algorithm):
+		_PrunedLandmarkLabeling(_Graph G) except +
+		count query(node u, node v) except +
+
+cdef class PrunedLandmarkLabeling(Algorithm):
+	""" 
+	PrunedLandmarkLabeling(G)
+
+	Pruned Landmark Labeling algorithm based on the paper "Fast exact shortest-path distance
+	queries on large networks by pruned landmark labeling" from Akiba et al., ACM SIGMOD 2013.
+	The algorithm computes distance labels by performing pruned breadth-first searches from each
+	vertex. Labels are used to quickly retrieve shortest-path distances between node pairs.
+	Note: this algorithm only works for unweighted graphs.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	"""
+	cdef Graph _G
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _PrunedLandmarkLabeling(G._this)
+
+	def __dealloc__(self):
+		self._G = None
+
+	def query(self, node u, node v):
+		"""
+		query(u, v)
+
+		Returns the shortest-path distance between the two nodes.
+
+		Parameters
+		----------
+		u : node
+			Source node.
+		v : node
+			Target node.
+
+		Returns
+		-------
+		int
+			The shortest-path distances from the source node to the target node.
+		"""
+		return (<_PrunedLandmarkLabeling*>(self._this)).query(u, v)
