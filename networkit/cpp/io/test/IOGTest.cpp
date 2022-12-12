@@ -1227,6 +1227,24 @@ TEST_F(IOGTest, testNetworkitBinaryZigzag) {
     }
 }
 
+TEST_F(IOGTest, testNetworkitWriterNonContinuousNodesIds) {
+    Graph G(20, true);
+    G.removeNode(10);
+    std::string path = "output/test.gt";
+    NetworkitBinaryWriter{}.write(G, path);
+    Graph GRead = NetworkitBinaryReader{}.read(path);
+    EXPECT_EQ(G.numberOfNodes(), GRead.numberOfNodes());
+    EXPECT_EQ(G.numberOfEdges(), GRead.numberOfEdges());
+    EXPECT_EQ(G.isDirected(), GRead.isDirected());
+    EXPECT_EQ(G.isWeighted(), GRead.isWeighted());
+    G.forNodes([&](node u) {
+        G.forEdgesOf(u, [&](node v) {
+            EXPECT_TRUE(GRead.hasEdge(u, v));
+            EXPECT_DOUBLE_EQ(G.weight(u, v), GRead.weight(u, v));
+        });
+    });
+}
+
 TEST_F(IOGTest, testMatrixMarketReaderUnweightedUndirected) {
     CSRMatrix csr = MatrixMarketReader{}.read("input/chesapeake.mtx");
     EXPECT_EQ(csr.numberOfRows(), 39);
