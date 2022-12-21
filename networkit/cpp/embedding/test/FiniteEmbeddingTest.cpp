@@ -30,6 +30,29 @@ bool allFinite(const Embeddings &e) {
     return true;
 }
 
+TEST_F(FiniteEmbeddingTest, testNode2VecOnDirectedGraph) {
+    // Directed graph with two nodes.
+    Graph G(2, false, true);
+    G.addEdge(0, 1);
+    EXPECT_THROW(NetworKit::Node2Vec{G}, std::runtime_error);
+}
+
+TEST_F(FiniteEmbeddingTest, testNode2VecOnGraphWithIsolatedNodes) {
+    // Undirected graph with three nodes; node with id 2 is isolated.
+    Graph G(3);
+    G.addEdge(0, 1);
+    EXPECT_THROW(NetworKit::Node2Vec{G}, std::runtime_error);
+}
+
+TEST_F(FiniteEmbeddingTest, testNode2VecOnGraphWithNonContinuousIds) {
+    // Undirected graph with two nodes; only id 0 and id 2 are present.
+    Graph G(3);
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+    G.removeNode(1);
+    EXPECT_THROW(NetworKit::Node2Vec{G}, std::runtime_error);
+}
+
 TEST_F(FiniteEmbeddingTest, testFiniteEmbeddingOnSmallGraph) {
 
     NetworKit::METISGraphReader reader;
