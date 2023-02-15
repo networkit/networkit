@@ -120,7 +120,7 @@ std::vector<node> EdmondsKarp::getSourceSet() const {
         });
         if (graph->isDirected()) {
             // Follow backwards edges in residual network
-            graph->forInNeighborsOf(u, [&](node, node v, edgeweight weight, edgeid eid) {
+            graph->forInNeighborsOf(u, [&](node, node v, edgeid eid) {
                 if (!visited[v] && flow[eid] > 0) {
                     Q.push(v);
                     visited[v] = true;
