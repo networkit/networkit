@@ -97,7 +97,6 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected2) {
     G.addEdge(0, 2);
     G.addEdge(1, 3);
     G.addEdge(2, 3);
-    G.addEdge(2, 3);
     G.addEdge(3, 4);
     G.indexEdges();
 
