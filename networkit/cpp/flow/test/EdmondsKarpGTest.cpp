@@ -71,6 +71,28 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpP2) {
     EXPECT_EQ(15, edKa.getMaxFlow()) << "max flow is not correct";
 }
 
+TEST_F(EdmondsKarpGTest, testEdmondsKarpP3) {
+    Graph G(5, false, false);
+    G.addEdge(0, 1);
+    G.addEdge(0, 2);
+    G.addEdge(1, 3);
+    G.addEdge(2, 3);
+    G.addEdge(3, 4);
+    G.indexEdges();
+
+    EdmondsKarp edKa(G, 0, 4);
+    edKa.run();
+    EXPECT_EQ(1, edKa.getMaxFlow()) << "max flow is not correct";
+
+    std::vector<node> sourceSet(edKa.getSourceSet());
+    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 0), sourceSet.end());
+    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 1), sourceSet.end());
+    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 2), sourceSet.end());
+    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 3), sourceSet.end());
+
+    EXPECT_EQ(std::find(sourceSet.begin(), sourceSet.end(), 4), sourceSet.end());
+}
+
 TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected1) {
     Graph G(4, true, true);
     G.addEdge(0, 1, 10);
