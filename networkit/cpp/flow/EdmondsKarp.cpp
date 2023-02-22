@@ -172,12 +172,9 @@ void EdmondsKarp::runDirected() {
 void EdmondsKarp::runUndirected() {
     std::vector<edgeweight> residFlow(graph->upperEdgeIdBound(), 0.0);
 
-    do {
-        std::vector<node> pred;
-        edgeweight gain = BFS(residFlow, pred);
-        if (gain == 0)
-            break;
-
+    std::vector<node> pred;
+    edgeweight gain = BFS(residFlow, pred);
+    while (gain > 0) {
         flowValue += gain;
         node v = sink;
         while (v != source) {
@@ -192,10 +189,8 @@ void EdmondsKarp::runUndirected() {
             }
             v = u;
         }
-    } while (true);
-
-    graph->parallelForEdges(
-        [&](node, node, edgeid eid) { flow[eid] = std::max(flow[eid], residFlow[eid]); });
+        gain = BFS(residFlow, pred);
+    }
 }
 
 edgeweight EdmondsKarp::getMaxFlow() const {
