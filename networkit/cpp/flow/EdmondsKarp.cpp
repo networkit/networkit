@@ -6,7 +6,6 @@
  *              Michael Hamann <michael.hamann@kit.edu>
  */
 
-#include <algorithm>
 #include <limits>
 #include <queue>
 #include <stdexcept>
