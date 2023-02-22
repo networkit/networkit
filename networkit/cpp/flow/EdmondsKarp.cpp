@@ -28,7 +28,7 @@ edgeweight EdmondsKarp::BFS(const std::vector<edgeweight> &residFlow,
     Q.push(source);
     pred[source] = source;
     gain[source] = std::numeric_limits<edgeweight>::max();
-    do {
+    while (!Q.empty()) {
         node u = Q.front();
         Q.pop();
 
@@ -51,7 +51,7 @@ edgeweight EdmondsKarp::BFS(const std::vector<edgeweight> &residFlow,
         if (sinkReached) {
             return gain[sink];
         }
-    } while (!Q.empty());
+    }
 
     return 0.0;
 }
