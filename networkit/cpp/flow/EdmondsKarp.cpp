@@ -253,8 +253,11 @@ edgeweight EdmondsKarp::getFlow(node u, node v) const {
     if (graph->isDirected()) {
         return flow[graph->edgeId(u, v)];
     } else {
-        return flow[graph->edgeId(u, v)] > 0 ? flow[graph->edgeId(u, v)]
-                                             : -flow[graph->edgeId(v, u)];
+        if (u >= v) {
+            return flow[graph->edgeId(u, v)] > 0 ? flow[graph->edgeId(u, v)] : 0;
+        } else {
+            return flow[graph->edgeId(u, v)] < 0 ? -flow[graph->edgeId(u, v)] : 0;
+        }
     }
 }
 
