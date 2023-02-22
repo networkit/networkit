@@ -146,7 +146,7 @@ void EdmondsKarp::runDirected() {
 
             if (graph->hasEdge(u, v)) {
                 edgeid eid = graph->edgeId(u, v);
-                unsigned long reverseId = reverseEdges[eid];
+                auto reverseId = reverseEdges[eid];
                 if (reverseId != none) {
                     auto reverseFlow = flow[reverseId];
                     assert(!((reverseFlow > 0) && (flow[eid] > 0)));
