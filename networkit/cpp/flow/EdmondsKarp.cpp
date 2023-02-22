@@ -187,10 +187,14 @@ void EdmondsKarp::runUndirected() {
                 flow[eid] -= gain;
                 residFlow[eid] += gain;
             }
+            assert(!((flow[eid] > 0) && (residFlow[eid] > 0)));
             v = u;
         }
         gain = BFS(residFlow, pred);
     }
+
+    graph->parallelForEdges(
+        [&](node, node, edgeid eid) { flow[eid] = flow[eid] > 0 ? flow[eid] : -residFlow[eid]; });
 }
 
 edgeweight EdmondsKarp::getMaxFlow() const {
@@ -212,16 +216,28 @@ std::vector<node> EdmondsKarp::getSourceSet() const {
         Q.pop();
         sourceSet.push_back(u);
 
-        graph->forNeighborsOf(u, [&](node, node v, edgeweight weight, edgeid eid) {
-            if (!visited[v] && flow[eid] < weight) {
-                Q.push(v);
-                visited[v] = true;
-            }
-        });
         if (graph->isDirected()) {
+            graph->forNeighborsOf(u, [&](node, node v, edgeweight weight, edgeid eid) {
+                if (!visited[v] && flow[eid] < weight) {
+                    Q.push(v);
+                    visited[v] = true;
+                }
+            });
             // Follow backwards edges in residual network
             graph->forInNeighborsOf(u, [&](node, node v, edgeid eid) {
                 if (!visited[v] && flow[eid] > 0) {
+                    Q.push(v);
+                    visited[v] = true;
+                }
+            });
+        } else {
+            graph->forNeighborsOf(u, [&](node, node v, edgeweight weight, edgeid eid) {
+                if (!visited[v]
+                    && (
+                        // follow all edges that have remaining capacity
+                        ((u >= v && flow[eid] < weight) || (u < v && -flow[eid] < weight))
+                        // follow all edges that have flow in the opposite direction
+                        || ((u >= v && flow[eid] < 0) || (u < v && flow[eid] > 0)))) {
                     Q.push(v);
                     visited[v] = true;
                 }
@@ -234,7 +250,12 @@ std::vector<node> EdmondsKarp::getSourceSet() const {
 
 edgeweight EdmondsKarp::getFlow(node u, node v) const {
     assureFinished();
-    return flow[graph->edgeId(u, v)];
+    if (graph->isDirected()) {
+        return flow[graph->edgeId(u, v)];
+    } else {
+        return flow[graph->edgeId(u, v)] > 0 ? flow[graph->edgeId(u, v)]
+                                             : -flow[graph->edgeId(v, u)];
+    }
 }
 
 const std::vector<edgeweight> &EdmondsKarp::getFlowVector() const {
