@@ -92,7 +92,7 @@ edgeweight EdmondsKarp::directedBFS(const std::vector<count> &reverseEdges,
             return gain[sink];
         }
 
-        graph->forInNeighborsOf(u, [&](node, node v, edgeweight weight, edgeid eid) {
+        graph->forInNeighborsOf(u, [&](node, node v, edgeid eid) {
             if (!sinkReached && (reverseEdges[eid] == none) && (flow[eid] > 0)
                 && (pred[v] == none)) {
                 pred[v] = u;
