@@ -168,7 +168,7 @@ jobs:
 
   linux-build-latest:
     name: "Linux (gcc-12${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.11' || '' }}): ${{ matrix.build-configuration }}"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     env:
       CC: gcc-12
       CXX: g++-12
@@ -180,7 +180,7 @@ jobs:
         run:  |
           sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu jammy main universe'
           sudo apt-get update
-          sudo apt-get install gcc-12 g++-12 ninja-build
+          sudo apt-get install ninja-build
       - name: Setup Python 3.11.0
         uses: actions/setup-python@v3
         with:
