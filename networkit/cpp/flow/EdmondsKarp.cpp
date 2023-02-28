@@ -184,7 +184,6 @@ void EdmondsKarp::runUndirected() {
             } else {
                 flow[eid] -= gain;
             }
-            assert(!(flow[eid] > 0));
             v = u;
         }
         gain = BFS(pred);
