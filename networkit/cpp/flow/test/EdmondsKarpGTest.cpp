@@ -5,6 +5,7 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
+#include <gmock/gmock-matchers.h>
 #include <gtest/gtest.h>
 
 #include <networkit/flow/EdmondsKarp.hpp>
@@ -38,15 +39,8 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpP1) {
     EXPECT_DOUBLE_EQ(1, edKa.getFlow(5, 6));
 
     std::vector<node> sourceSet(edKa.getSourceSet());
-
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 0), sourceSet.end());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 1), sourceSet.end());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 2), sourceSet.end());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 3), sourceSet.end());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 4), sourceSet.end());
-
-    EXPECT_EQ(std::find(sourceSet.begin(), sourceSet.end(), 5), sourceSet.end());
-    EXPECT_EQ(std::find(sourceSet.begin(), sourceSet.end(), 6), sourceSet.end());
+    EXPECT_THAT(sourceSet, testing::UnorderedElementsAre(0, 1, 2, 3, 4));
+    EXPECT_THAT(sourceSet, testing::Not(testing::Contains(testing::AnyOf(5, 6))));
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpP2) {
@@ -82,12 +76,8 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpP3) {
     EXPECT_DOUBLE_EQ(1, edKa.getMaxFlow()) << "max flow is not correct";
 
     std::vector<node> sourceSet(edKa.getSourceSet());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 0), sourceSet.end());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 1), sourceSet.end());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 2), sourceSet.end());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 3), sourceSet.end());
-
-    EXPECT_EQ(std::find(sourceSet.begin(), sourceSet.end(), 4), sourceSet.end());
+    EXPECT_THAT(sourceSet, testing::UnorderedElementsAre(0, 1, 2, 3));
+    EXPECT_THAT(sourceSet, testing::Not(::testing::Contains(4)));
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected1) {
@@ -104,10 +94,11 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected1) {
     EXPECT_DOUBLE_EQ(15, edKa.getMaxFlow()) << "max flow is not correct";
 
     std::vector<node> sourceSet(edKa.getSourceSet());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 0), sourceSet.end());
+    EXPECT_THAT(sourceSet, testing::Contains(0));
+    // either 1 and 2 are in the set or none
     EXPECT_EQ(std::find(sourceSet.begin(), sourceSet.end(), 1),
               std::find(sourceSet.begin(), sourceSet.end(), 2));
-    EXPECT_EQ(std::find(sourceSet.begin(), sourceSet.end(), 3), sourceSet.end());
+    EXPECT_THAT(sourceSet, testing::Not(::testing::Contains(3)));
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected2) {
@@ -124,12 +115,8 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected2) {
     EXPECT_DOUBLE_EQ(1, edKa.getMaxFlow()) << "max flow is not correct";
 
     std::vector<node> sourceSet(edKa.getSourceSet());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 0), sourceSet.end());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 1), sourceSet.end());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 2), sourceSet.end());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 3), sourceSet.end());
-
-    EXPECT_EQ(std::find(sourceSet.begin(), sourceSet.end(), 4), sourceSet.end());
+    EXPECT_THAT(sourceSet, testing::UnorderedElementsAre(0, 1, 2, 3));
+    EXPECT_THAT(sourceSet, testing::Not(testing::Contains(4)));
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected3) {
@@ -152,13 +139,8 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected3) {
     EXPECT_DOUBLE_EQ(4, edKa.getMaxFlow()) << "max flow is not correct";
 
     std::vector<node> sourceSet(edKa.getSourceSet());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 0), sourceSet.end());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 1), sourceSet.end());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 2), sourceSet.end());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 3), sourceSet.end());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 4), sourceSet.end());
-
-    EXPECT_EQ(std::find(sourceSet.begin(), sourceSet.end(), 8), sourceSet.end());
+    EXPECT_THAT(sourceSet, testing::UnorderedElementsAre(0, 1, 2, 3, 4));
+    EXPECT_THAT(sourceSet, testing::Not(testing::Contains(8)));
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected4) {
@@ -181,8 +163,8 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected4) {
     EXPECT_DOUBLE_EQ(4, edKa.getMaxFlow()) << "max flow is not correct";
 
     std::vector<node> sourceSet(edKa.getSourceSet());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 8), sourceSet.end());
-    EXPECT_EQ(std::find(sourceSet.begin(), sourceSet.end(), 0), sourceSet.end());
+    EXPECT_THAT(sourceSet, testing::Contains(8));
+    EXPECT_THAT(sourceSet, testing::Not(testing::Contains(0)));
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected5) {
@@ -197,8 +179,8 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected5) {
     EXPECT_DOUBLE_EQ(2.4, edKa.getMaxFlow()) << "max flow is not correct";
 
     std::vector<node> sourceSet(edKa.getSourceSet());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 3), sourceSet.end());
-    EXPECT_EQ(std::find(sourceSet.begin(), sourceSet.end(), 0), sourceSet.end());
+    EXPECT_THAT(sourceSet, testing::Contains(3));
+    EXPECT_THAT(sourceSet, testing::Not(testing::Contains(0)));
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected6) {
@@ -213,8 +195,8 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected6) {
     EXPECT_DOUBLE_EQ(0, edKa.getMaxFlow()) << "max flow is not correct";
 
     std::vector<node> sourceSet(edKa.getSourceSet());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 3), sourceSet.end());
-    EXPECT_EQ(std::find(sourceSet.begin(), sourceSet.end(), 0), sourceSet.end());
+    EXPECT_THAT(sourceSet, testing::Contains(3));
+    EXPECT_THAT(sourceSet, testing::Not(testing::Contains(0)));
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected7) {
@@ -239,8 +221,8 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected7) {
     EXPECT_DOUBLE_EQ(5, edKa.getMaxFlow()) << "max flow is not correct";
 
     std::vector<node> sourceSet(edKa.getSourceSet());
-    EXPECT_NE(std::find(sourceSet.begin(), sourceSet.end(), 0), sourceSet.end());
-    EXPECT_EQ(std::find(sourceSet.begin(), sourceSet.end(), 6), sourceSet.end());
+    EXPECT_THAT(sourceSet, testing::Contains(0));
+    EXPECT_THAT(sourceSet, testing::Not(testing::Contains(6)));
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpTwoPaths) {
