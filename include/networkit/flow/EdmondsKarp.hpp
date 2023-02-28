@@ -91,14 +91,19 @@ private:
     void runDirected();
 
     /**
-     * Performs a breadth-first search on the graph from the source node to find an augmenting path
-     * to the sink node respecting the flow values
-     * @param residFlow The residual flow in the network.
+     * Performs an undirected breadth-first search on the graph from the source node to find
+     * an augmenting path to the sink node respecting the flow values
      * @param pred Used to store the path from the source to the sink.
      * @return The gain in terms of flow.
      */
-    edgeweight BFS(const std::vector<edgeweight> &residFlow, std::vector<node> &pred) const;
+    edgeweight BFS(std::vector<node> &pred) const;
 
+    /**
+     * Performs a directed breadth-first search on the graph from the source node to find
+     * an augmenting path to the sink node respecting the flow values
+     * @param pred Used to store the path from the source to the sink.
+     * @return The gain in terms of flow.
+     */
     edgeweight directedBFS(const std::vector<count> &reverseEdges, std::vector<node> &pred) const;
 };
 
