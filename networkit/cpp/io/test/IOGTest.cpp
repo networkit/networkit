@@ -36,6 +36,7 @@
 #include <networkit/io/GraphIO.hpp>
 #include <networkit/io/GraphToolBinaryReader.hpp>
 #include <networkit/io/GraphToolBinaryWriter.hpp>
+#include <networkit/io/GXLGraphReader.hpp>
 #include <networkit/io/KONECTGraphReader.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/METISGraphWriter.hpp>
@@ -812,6 +813,14 @@ TEST_F(IOGTest, testBinaryEdgeListPartitionWriterAndReader) {
     EXPECT_EQ(P[3], Q[3]);
     EXPECT_EQ(P[4], Q[4]);
     EXPECT_EQ(Q.upperBound(), P[4] + 1);
+}
+
+TEST_F(IOGTest, testGXLGraphReader){
+    GXLGraphReader reader;
+    Graph G = reader.read("input/dummy_test.gxl");
+    ASSERT_TRUE(!G.isDirected());
+    ASSERT_EQ(G.numberOfNodes(), 2);
+    ASSERT_EQ(G.numberOfEdges(), 1);
 }
 
 TEST_F(IOGTest, testKONECTGraphReader) {
