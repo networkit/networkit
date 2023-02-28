@@ -7,7 +7,6 @@
  */
 
 #include <limits>
-#include <math.h>
 #include <queue>
 #include <stdexcept>
 
