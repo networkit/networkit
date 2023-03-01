@@ -8,8 +8,8 @@ namespace NetworKit {
 /**
  * @ingroup io
  */
-  class GXLGraphReader final : public GraphReader {
-  public:
+class GXLGraphReader final : public GraphReader {
+public:
     GXLGraphReader() = default;
 
     /**
@@ -20,7 +20,7 @@ namespace NetworKit {
      * @param[out]  the graph read from file
      */
     Graph read(const std::string &path) override;
-  };
+};
 
 } /* namespace NetworKit */
 #endif // NETWORKIT_IO_GXL_GRAPH_READER_HPP_
