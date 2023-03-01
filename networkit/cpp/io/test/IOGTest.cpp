@@ -820,9 +820,11 @@ TEST_F(IOGTest, testGXLGraphReader){
     GXLGraphReader reader;
     Graph G = reader.read("input/dummy_test.gxl");
     ASSERT_TRUE(!G.isDirected());
-    ASSERT_EQ(G.numberOfNodes(), 2);
-    ASSERT_EQ(G.numberOfEdges(), 1);
+    ASSERT_EQ(G.numberOfNodes(), 3);
+    ASSERT_EQ(G.numberOfEdges(), 2);
     ASSERT_TRUE(G.hasEdge(1, 0));
+    ASSERT_TRUE(G.hasEdge(2, 0));
+    ASSERT_FALSE(G.hasEdge(1, 2));
 }
 
 TEST_F(IOGTest, testKONECTGraphReader) {

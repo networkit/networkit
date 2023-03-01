@@ -88,37 +88,13 @@ namespace NetworKit {
      */
     auto parseNode = [&](Graph &G, std::vector<std::string> tokens) {
       std::string nodeID;
-      std::string attrName;
-      std::string attrType = tokens[2];
-      std::string nodeAttr;
-
-      if (tokens[1].find("attr") == std::string::npos) {
-        throw std::runtime_error("line containing node element does not have attr element");
-      }
 
       auto startID = tokens[0].find('"', 0);
       auto endID = tokens[0].find('"', startID + 1);
       nodeID = tokens[0].substr(startID + 1, endID - startID - 1);
 
-      auto startName = tokens[1].find('"', 0);
-      auto endName = tokens[1].find('"', startName + 1);
-      attrName = tokens[1].substr(startName + 1, endName - startName - 1);
-
       auto node = G.addNode();
       nodeMap.insert(std::make_pair(nodeID, node));
-
-      if (attrType == "int" || attrType == "Int" || attrType == "integer" || attrType == "Integer") {
-        auto intAttr = G.attachNodeIntAttribute(attrName);
-        intAttr.set(node, std::stoi(tokens[3]));
-      } else if (attrType == "string" || attrType == "String" || attrType == "str" || attrType == "Str") {
-        auto strAttr = G.attachNodeStringAttribute(attrName);
-        strAttr[node] = std::string(tokens[3]);
-      } else if (attrType == "float" || attrType == "Float" || attrType == "double" || attrType == "Double") {
-        auto doubleAttr = G.attachNodeDoubleAttribute(attrName);
-        doubleAttr[node] = std::stod(tokens[3]);
-      } else {
-        throw std::runtime_error("Node attribute not int, float, double or string ");
-      }
     };
 
     auto parseEdge = [&](Graph &G, std::vector<std::string> tokens) {
@@ -138,7 +114,11 @@ namespace NetworKit {
 
       if (attrType == "int" || attrType == "Int" || attrType == "integer" || attrType == "Integer" ||
           attrType == "float" || attrType == "Float" || attrType == "double" || attrType == "Double") {
-        G.addEdge(u, v, attrValue, true);
+          if (!G.addEdge(u, v, defaultEdgeWeight, true)) {
+              WARN("Not adding edge ", u, "-", v, " since it is already present.");
+          } else {
+              DEBUG("added edge ", u, ", ", v);
+          }
       } else {
         throw std::runtime_error("Edge attribute not int, float or double");
       }
