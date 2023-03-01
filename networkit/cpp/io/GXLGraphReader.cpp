@@ -127,7 +127,7 @@ namespace NetworKit {
 
       if (attrType == "int" || attrType == "Int" || attrType == "integer" || attrType == "Integer" ||
           attrType == "float" || attrType == "Float" || attrType == "double" || attrType == "Double") {
-        G.addEdge(u, v, attrValue);
+        G.addEdge(u, v, attrValue, true);
       } else {
         throw std::runtime_error("Edge attribute not int, float or double");
       }
