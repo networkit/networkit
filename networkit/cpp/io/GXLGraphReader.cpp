@@ -1,3 +1,5 @@
+#include <unordered_map>
+
 #include "networkit/auxiliary/Enforce.hpp"
 #include "networkit/auxiliary/StringTools.hpp"
 #include "networkit/io/GXLGraphReader.hpp"
@@ -13,6 +15,8 @@ namespace NetworKit {
       throw std::runtime_error("could not open file " + path);
     }
     std::string line;
+
+    std::unordered_map<std::string, node> nodeMap;
 
     auto syntaxCheck = [](const std::vector<std::string>& tokens) {
       std::stack<std::string> openTags;
@@ -82,8 +86,8 @@ namespace NetworKit {
      *
      *
      */
-    auto parseNode = [](Graph &G, std::vector<std::string> tokens) {
-      NetworKit::index i = 0;
+    auto parseNode = [&](Graph &G, std::vector<std::string> tokens) {
+      std::string nodeID;
       std::string attrName;
       std::string attrType = tokens[2];
       std::string nodeAttr;
@@ -92,11 +96,16 @@ namespace NetworKit {
         throw std::runtime_error("line containing node element does not have attr element");
       }
 
+      auto startID = tokens[0].find('"', 0);
+      auto endID = tokens[0].find('"', startID + 1);
+      nodeID = tokens[0].substr(startID + 1, endID - startID - 1);
+
       auto startName = tokens[1].find('"', 0);
       auto endName = tokens[1].find('"', startName + 1);
       attrName = tokens[1].substr(startName + 1, endName - startName - 1);
 
       auto node = G.addNode();
+      nodeMap.insert(std::make_pair(nodeID, node));
 
       if (attrType == "int" || attrType == "Int" || attrType == "integer" || attrType == "Integer") {
         auto intAttr = G.attachNodeIntAttribute(attrName);
@@ -112,9 +121,9 @@ namespace NetworKit {
       }
     };
 
-    auto parseEdge = [](Graph &G, std::vector<std::string> tokens) {
-      int u;
-      int v;
+    auto parseEdge = [&](Graph &G, std::vector<std::string> tokens) {
+      std::string origin_u;
+      std::string origin_v;
       std::string attrType = tokens[2];
       double attrValue = std::stod(tokens[3]);
 
@@ -122,8 +131,10 @@ namespace NetworKit {
       auto endNode1 = tokens[0].find('"', startNode1 + 1);
       auto startNode2 = tokens[0].find('"', endNode1 + 1);
       auto endNode2 = tokens[0].find('"', startNode2 + 1);
-      u = std::stoi(tokens[0].substr(startNode1 + 1, endNode1 - startNode1 - 1));
-      v = std::stoi(tokens[0].substr(startNode2 + 1, endNode2 - startNode2 - 1));
+      origin_u = tokens[0].substr(startNode1 + 1, endNode1 - startNode1 - 1);
+      origin_v = tokens[0].substr(startNode2 + 1, endNode2 - startNode2 - 1);
+      auto u = nodeMap[origin_u];
+      auto v = nodeMap[origin_v];
 
       if (attrType == "int" || attrType == "Int" || attrType == "integer" || attrType == "Integer" ||
           attrType == "float" || attrType == "Float" || attrType == "double" || attrType == "Double") {
@@ -150,7 +161,7 @@ namespace NetworKit {
         throw std::runtime_error("expected graph tag, file format not .gxl");
       }
       if (line.find("edgemode") != std::string::npos) {
-        if (line.find("directed") != std::string::npos) {
+        if (line.find("undirected") == std::string::npos) {
           directed = true;
         }
       }

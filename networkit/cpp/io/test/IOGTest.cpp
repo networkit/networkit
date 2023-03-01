@@ -816,11 +816,13 @@ TEST_F(IOGTest, testBinaryEdgeListPartitionWriterAndReader) {
 }
 
 TEST_F(IOGTest, testGXLGraphReader){
+    std::cout << std::filesystem::current_path() << std::endl;
     GXLGraphReader reader;
     Graph G = reader.read("input/dummy_test.gxl");
     ASSERT_TRUE(!G.isDirected());
     ASSERT_EQ(G.numberOfNodes(), 2);
     ASSERT_EQ(G.numberOfEdges(), 1);
+    ASSERT_TRUE(G.hasEdge(1, 0));
 }
 
 TEST_F(IOGTest, testKONECTGraphReader) {
