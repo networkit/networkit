@@ -816,7 +816,6 @@ TEST_F(IOGTest, testBinaryEdgeListPartitionWriterAndReader) {
 }
 
 TEST_F(IOGTest, testGXLGraphReader){
-    std::cout << std::filesystem::current_path() << std::endl;
     GXLGraphReader reader;
     Graph G = reader.read("input/dummy_test.gxl");
     ASSERT_TRUE(!G.isDirected());
