@@ -6,6 +6,9 @@
 
 namespace NetworKit {
 
+  /**
+  * build to read files like Mutagenicity dataset
+  */
   Graph GXLGraphReader::read(const std::string &path) {
 
     std::ifstream graphFile(path);
