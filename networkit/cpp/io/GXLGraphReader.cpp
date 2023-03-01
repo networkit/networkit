@@ -118,7 +118,7 @@ Graph GXLGraphReader::read(const std::string &path) {
         if (attrType == "int" || attrType == "Int" || attrType == "integer" || attrType == "Integer"
             || attrType == "float" || attrType == "Float" || attrType == "double"
             || attrType == "Double") {
-            if (!G.addEdge(u, v, defaultEdgeWeight, true)) {
+            if (!G.addEdge(u, v, attrValue, true)) {
                 WARN("Not adding edge ", u, "-", v, " since it is already present.");
             } else {
                 DEBUG("added edge ", u, ", ", v);
