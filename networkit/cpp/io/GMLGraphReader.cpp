@@ -18,9 +18,6 @@
 
 namespace NetworKit {
 
-/**
- * build to read files like Mutagenicity dataset
- */
 Graph GMLGraphReader::read(const std::string &path) {
     std::ifstream graphFile(path);
     Aux::enforceOpened(graphFile);
