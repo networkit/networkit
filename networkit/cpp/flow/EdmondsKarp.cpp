@@ -65,7 +65,6 @@ edgeweight EdmondsKarp::directedBFS(const std::vector<count> &reverseEdges,
     Q.push(source);
     pred[source] = source;
     gain[source] = std::numeric_limits<edgeweight>::max();
-    ;
 
     while (!Q.empty()) {
         node u = Q.front();
