@@ -96,8 +96,8 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected1) {
     std::vector<node> sourceSet(edKa.getSourceSet());
     EXPECT_THAT(sourceSet, testing::Contains(0));
     // either 1 and 2 are in the set or none
-    EXPECT_EQ(std::find(sourceSet.begin(), sourceSet.end(), 1),
-              std::find(sourceSet.begin(), sourceSet.end(), 2));
+    EXPECT_EQ(std::count(sourceSet.begin(), sourceSet.end(), 1),
+              std::count(sourceSet.begin(), sourceSet.end(), 2));
     EXPECT_THAT(sourceSet, testing::Not(::testing::Contains(3)));
 }
 
