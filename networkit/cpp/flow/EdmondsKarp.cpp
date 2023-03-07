@@ -6,7 +6,6 @@
  *              Michael Hamann <michael.hamann@kit.edu>
  */
 
-#include <algorithm>
 #include <limits>
 #include <queue>
 #include <stdexcept>
@@ -27,6 +26,7 @@ edgeweight EdmondsKarp::BFS(std::vector<node> &pred) const {
     Q.push(source);
     pred[source] = source;
     gain[source] = std::numeric_limits<edgeweight>::max();
+
     do {
         node u = Q.front();
         Q.pop();
