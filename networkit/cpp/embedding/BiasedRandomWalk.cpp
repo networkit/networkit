@@ -34,10 +34,29 @@ BiasedRandomWalk::BiasedRandomWalk(const Graph *graph)
     // pre-allocate unordered maps:
     graph->forNodes([&](node v) {
         auto degv = graph->degreeOut(v);
-        for (auto n : graph->neighborRange(v)) {
-            // init index2node:
-            index2node[v].push_back(n);
-            graphData->data[v][n] = AliasSampler(degv);
+        if (graph->isDirected()) {
+            // local numbering of neighbors by index in index2node[v]:
+            index2node[v].reserve(graph->degree(v));
+            index2node[v].insert(index2node[v].begin(), graph->neighborRange(v).begin(),
+                                 graph->neighborRange(v).end());
+
+            if (graph->degreeIn(v) == 0) {
+                graphData->data[v][none] = AliasSampler(degv);
+                return;
+            }
+
+            for (auto t : graph->inNeighborRange(v)) {
+                // one AliasSampler with entries for all v-neighbors
+                // per every node t leading to v
+                graphData->data[v][t] = AliasSampler(degv);
+            }
+        } else {
+            index2node[v].reserve(graph->degree(v));
+            for (auto n : graph->neighborRange(v)) {
+                // local numbering of neighbors by index in index2node[v]:
+                index2node[v].push_back(n);
+                graphData->data[v][n] = AliasSampler(degv);
+            }
         }
     });
 }
@@ -51,9 +70,13 @@ void BiasedRandomWalk::preprocessNode(node t, double paramP, double paramQ) {
     }
     // for each t-neighbor v:
     for (auto v : graph->neighborRange(t)) {
+        if (graph->degreeOut(v) == 0) // no outgoing neighbors in directed graph
+            continue;
+
         double pSum = 0;
         std::vector<float> pTable; // Probability distribution table
         // for each v-neighbor
+
         graph->forNeighborsOf(v, [&](node x, edgeweight weight) {
             if (x == t) {
                 pTable.push_back(weight / paramP);
@@ -66,11 +89,12 @@ void BiasedRandomWalk::preprocessNode(node t, double paramP, double paramQ) {
                 pSum += weight / paramQ;
             }
         });
+
         // Normalizing table
         float pfSum = (float)pSum;
         std::for_each(pTable.begin(), pTable.end(), [pfSum](float &p) { p /= pfSum; });
 
-        graphData->data[v].find(t)->second.unigram(pTable);
+        graphData->data[v][t].unigram(pTable);
     }
 }
 

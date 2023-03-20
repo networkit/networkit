@@ -24,13 +24,21 @@ namespace NetworKit {
 /**
  * @ingroup embedding
  *
- * Feature extraction by node2vec algorithm
+ * Feature extraction by node2vec algorithm.
  */
 class Node2Vec final : public Algorithm {
 
 public:
     /**
-     * Creates the Node2Vec class for @a G
+     * Node2Vec learns embeddings for nodes in a graph by optimizing a neighborhood preserving
+     * objective. In order to achieve this, biased random walks are initiated for every node and the
+     * result is of probabilistic nature. Several input parameters control the specific behavior of
+     * the random walks. Amongst others Node2Vec is able to produce embeddings for visualization
+     * (D=2 or D=3) and machine learning (D=128 [default]). Both directed and undirected graphs
+     * withouth isolated nodes are supported.
+     *
+     * This implementation is an adaption of the original code from snap:
+     * https://github.com/snap-stanford/snap
      *
      * @param G     The graph.
      * @param P     Walk Return parameter (stay local).

@@ -214,19 +214,18 @@ void trainModel(ModelData &model, count walkNr) {
 
 Embeddings learnEmbeddings(AllWalks &allWalks, count nn, count dimensions, count winSize,
                            count iterations) {
-    count walks = allWalks.size();           // number of walks
-    count nodesPerWalk = allWalks[0].size(); // number of nodes per walk
+    count walks = allWalks.size(); // number of walks
 
     std::vector<node> renumbered(nn, none);
     std::vector<node> original(nn, none);
     count nodes = 0;
     for (index i = 0; i < walks; ++i) {
-        for (index j = 0; j < nodesPerWalk; ++j) {
+        for (index j = 0; j < allWalks[i].size(); ++j) {
             node &nd = allWalks[i][j];
-            if (renumbered[nd] != none) {
+            if (renumbered[nd] != none) { // already renumbered
                 nd = renumbered[nd];
             } else {
-                renumbered[nd] = nodes;
+                renumbered[nd] = nodes; // renumber
                 original[nodes] = nd;
                 nd = nodes++;
             }
