@@ -32,16 +32,23 @@ bool allFinite(const Embeddings &e) {
 
 TEST_F(FiniteEmbeddingTest, testNode2VecOnDirectedGraph) {
     // Directed graph with two nodes.
-    Graph G(2, false, true);
+    Graph G(4, false, true);
     G.addEdge(0, 1);
-    EXPECT_THROW(NetworKit::Node2Vec{G}, std::runtime_error);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+
+    auto algo = Node2Vec{G};
+    algo.run();
+    auto features = algo.getFeatures();
+
+    EXPECT_TRUE(allFinite(features));
 }
 
 TEST_F(FiniteEmbeddingTest, testNode2VecOnGraphWithIsolatedNodes) {
     // Undirected graph with three nodes; node with id 2 is isolated.
     Graph G(3);
     G.addEdge(0, 1);
-    EXPECT_THROW(NetworKit::Node2Vec{G}, std::runtime_error);
+    EXPECT_THROW(Node2Vec{G}, std::runtime_error);
 }
 
 TEST_F(FiniteEmbeddingTest, testNode2VecOnGraphWithNonContinuousIds) {
@@ -50,19 +57,15 @@ TEST_F(FiniteEmbeddingTest, testNode2VecOnGraphWithNonContinuousIds) {
     G.addEdge(0, 1);
     G.addEdge(1, 2);
     G.removeNode(1);
-    EXPECT_THROW(NetworKit::Node2Vec{G}, std::runtime_error);
+    EXPECT_THROW(Node2Vec{G}, std::runtime_error);
 }
 
 TEST_F(FiniteEmbeddingTest, testFiniteEmbeddingOnSmallGraph) {
 
-    NetworKit::METISGraphReader reader;
+    Graph graph = METISGraphReader{}.read("input/karate.graph");
 
-    NetworKit::Graph graph = reader.read("input/karate.graph");
-
-    auto algo = NetworKit::Node2Vec(graph, .3, 1.3);
-
+    Node2Vec algo(graph, .3, 1.3);
     algo.run();
-
     auto features = algo.getFeatures();
 
     EXPECT_TRUE(allFinite(features));

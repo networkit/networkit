@@ -31,15 +31,12 @@ namespace NetworKit {
 
 Node2Vec::Node2Vec(const Graph &G, double P, double Q, count L, count N, count D)
     : G(&G), P(P), Q(Q), L(L), N(N), D(D) {
-    if (G.isDirected()) {
-        throw std::runtime_error("Current implementation can only deal with undirected graphs");
-    }
     if (G.numberOfNodes() != G.upperNodeIdBound()) {
         throw std::runtime_error("The node ids of the graph must be continuous.");
     }
     bool hasIsolatedNodes = false;
     for (node u : G.nodeRange()) {
-        if (G.degree(u) == 0) {
+        if (G.isIsolated(u)) {
             hasIsolatedNodes = true;
             break;
         }

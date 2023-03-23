@@ -20,6 +20,13 @@ cdef class Node2Vec(Algorithm):
 	Algorithm to extract features from the graph with the node2vec(word2vec)
 	algorithm according to [https://arxiv.org/pdf/1607.00653v1.pdf].
 
+	Node2Vec learns embeddings for nodes in a graph by optimizing a neighborhood preserving
+	objective. In order to achieve this, biased random walks are initiated for every node and the
+	result is of probabilistic nature. Several input parameters control the specific behavior of
+	the random walks. Amongst others Node2Vec is able to produce embeddings for visualization
+	(D=2 or D=3) and machine learning (D=128 [default]). Both directed and undirected graphs
+	withouth isolated nodes are supported.
+
 	Note
 	---- 
 	This algorithm could take a lot of time on large networks (many nodes).
