@@ -5,7 +5,9 @@
  *      Author: cls, ebergamini
  */
 
+#include <cmath>
 #include <queue>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/DynBFS.hpp>
@@ -36,12 +38,10 @@ void DynBFS::run() {
     q.push(source);
     visited[source] = true;
     distances[source] = 0.0;
-    maxDistance = 0;
-    while (!q.empty()) {
+    maxDistance = G->numberOfNodes() - 1;
+    do {
         node u = q.front();
         q.pop();
-        if (distances[u] > maxDistance)
-            maxDistance = distances[u];
         // insert untouched neighbors into queue
         G->forNeighborsOf(u, [&](node v) {
             if (distances[v] == infDist) {
@@ -53,6 +53,7 @@ void DynBFS::run() {
                     previous[v] = {u};
                 }
                 npaths[v] = npaths[u];
+                maxDistance = static_cast<count>(distances[v]);
             } else if (distances[v] == distances[u] + 1.) {
                 if (storePreds)
                     previous[v].push_back(u); // additional predecessor
@@ -63,7 +64,8 @@ void DynBFS::run() {
                 visited[v] = true;
             }
         });
-    }
+    } while (!q.empty());
+
     hasRun = true;
 }
 
@@ -74,7 +76,7 @@ void DynBFS::update(GraphEvent e) {
 }
 
 void DynBFS::updateBatch(const std::vector<GraphEvent> &batch) {
-    std::vector<std::queue<node>> queues(maxDistance + 1);
+    std::vector<std::queue<node>> queues(maxDistance + 2);
     mod = false;
     // insert nodes from the batch whose distance has changed (affected nodes) into the queues
     for (GraphEvent edge : batch) {
@@ -108,6 +110,7 @@ void DynBFS::updateBatch(const std::vector<GraphEvent> &batch) {
             maxDistance++;
             queues.emplace_back();
         }
+        assert(queues.size() > m);
         mod = mod || (!queues[m].empty());
         while (!queues[m].empty()) {
             node w = queues[m].front();
