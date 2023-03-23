@@ -78,8 +78,9 @@ void DynBFS::update(GraphEvent e) {
 void DynBFS::updateBatch(const std::vector<GraphEvent> &batch) {
     std::vector<std::queue<node>> queues(maxDistance + 2);
     mod = false;
+
     // insert nodes from the batch whose distance has changed (affected nodes) into the queues
-    for (GraphEvent edge : batch) {
+    for (const GraphEvent &edge : batch) {
         if (edge.type == GraphEvent::EDGE_ADDITION) {
             if (distances[edge.u] == infDist && (G->isDirected() || distances[edge.v] == infDist))
                 continue;
@@ -105,12 +106,11 @@ void DynBFS::updateBatch(const std::vector<GraphEvent> &batch) {
     // extract nodes from the queues and scan incident edges
     std::queue<node> visited;
 
-    for (count m = 1; m < maxDistance; m++) {
+    for (count m = 1; m < maxDistance; ++m) {
         if (m >= maxDistance - 1 && (!queues[m].empty() || !queues[m + 1].empty())) {
-            maxDistance++;
+            ++maxDistance;
             queues.emplace_back();
         }
-        assert(queues.size() > m);
         mod = mod || (!queues[m].empty());
         while (!queues[m].empty()) {
             node w = queues[m].front();
@@ -157,8 +157,7 @@ void DynBFS::updateBatch(const std::vector<GraphEvent> &batch) {
                 }
                 if (con != infDist) {
                     if (con > maxDistance) {
-                        for (count i = maxDistance; i < con; i++)
-                            queues.emplace_back();
+                        queues.resize(con + 1);
                         maxDistance = con;
                     }
                     queues[con].push(w);
