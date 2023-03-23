@@ -12,7 +12,6 @@ class ReachabilityGTest : public testing::TestWithParam<std::pair<bool, bool>> {
 protected:
     bool isDirected() const noexcept;
     bool isWeighted() const noexcept;
-    static void generateRandomWeights(Graph &G);
 };
 
 INSTANTIATE_TEST_SUITE_P(InstantiationName, ReachabilityGTest,
@@ -27,18 +26,12 @@ bool ReachabilityGTest::isDirected() const noexcept {
     return GetParam().second;
 }
 
-void ReachabilityGTest::generateRandomWeights(Graph &G) {
-    if (!G.isWeighted())
-        G = GraphTools::toWeighted(G);
-    G.forEdges([&G = G](node u, node v) { G.setWeight(u, v, Aux::Random::real(1, 10)); });
-}
-
 TEST_P(ReachabilityGTest, testReachableNodesExact) {
     for (int seed : {1, 2, 3}) {
         Aux::Random::setSeed(seed, false);
         auto G = ErdosRenyiGenerator(100, 0.05, isDirected()).generate();
         if (isWeighted())
-            generateRandomWeights(G);
+            GraphTools::randomizeWeights(G);
 
         ReachableNodes rb(G);
         rb.run();
@@ -56,7 +49,7 @@ TEST_P(ReachabilityGTest, testReachableNodesApprox) {
         Aux::Random::setSeed(seed, false);
         auto G = ErdosRenyiGenerator(100, 0.05, isDirected()).generate();
         if (isWeighted())
-            generateRandomWeights(G);
+            GraphTools::randomizeWeights(G);
 
         ReachableNodes rb(G, false);
         rb.run();

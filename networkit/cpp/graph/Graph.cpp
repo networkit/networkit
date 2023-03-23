@@ -812,6 +812,10 @@ void Graph::setWeightAtIthNeighbor(Unsafe, node u, index i, edgeweight ew) {
     outEdgeWeights[u][i] = ew;
 }
 
+void Graph::setWeightAtIthInNeighbor(Unsafe, node u, index i, edgeweight ew) {
+    inEdgeWeights[u][i] = ew;
+}
+
 /** SUMS **/
 
 edgeweight Graph::totalEdgeWeight() const noexcept {

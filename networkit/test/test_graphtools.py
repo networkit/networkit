@@ -15,14 +15,6 @@ class TestGraphTools(unittest.TestCase):
 
 		return G
 
-	def generateRandomWeights(self, G):
-		if not G.isWeighted():
-			G = nk.graphtools.toWeighted(G)
-		for e in G.iterEdges():
-			G.setWeight(e[0], e[1], random.random())
-
-		return G
-
 	def testMaxDegree(self):
 		n = 100
 		p = 0.2
@@ -266,7 +258,8 @@ class TestGraphTools(unittest.TestCase):
 			self.assertGreater(G.numberOfSelfLoops(), 0)
 
 			# Assign random weights
-			GWeighted = self.generateRandomWeights(G)
+			GWeighted = copy(G)
+			nk.graphtools.randomizeWeights(GWeighted)
 
 			GWeighted.indexEdges()
 			GTrans = nk.graphtools.transpose(GWeighted)
@@ -318,7 +311,7 @@ class TestGraphTools(unittest.TestCase):
 			G = nk.generators.ErdosRenyiGenerator(n, p, True).generate()
 			for weighted in [True, False]:
 				if weighted:
-					G = self.generateRandomWeights(G)
+					nk.graphtools.randomizeWeights(G)
 				G1 = nk.graphtools.toUndirected(G)
 				testGraphs(G, G1)
 
@@ -349,7 +342,7 @@ class TestGraphTools(unittest.TestCase):
 				G1 = nk.graphtools.toWeighted(G)
 				testGraphs(G, G1)
 
-				G = self.generateRandomWeights(G)
+				nk.graphtools.randomizeWeights(G)
 
 				G1 = nk.graphtools.toUnweighted(G)
 				testGraphs(G, G1)
@@ -387,8 +380,8 @@ class TestGraphTools(unittest.TestCase):
 					G1 = nk.generators.ErdosRenyiGenerator(n1, p1, directed).generate()
 					G2 = nk.generators.ErdosRenyiGenerator(n2, p2, directed).generate()
 					if weighted:
-						G1 = self.generateRandomWeights(G1)
-						G2 = self.generateRandomWeights(G2)
+						nk.graphtools.randomizeWeights(G1)
+						nk.graphtools.randomizeWeights(G2)
 
 					G = copy(G1)
 					nk.graphtools.append(G, G2)
@@ -427,8 +420,8 @@ class TestGraphTools(unittest.TestCase):
 					Gorig = nk.generators.ErdosRenyiGenerator(n1, p1, directed).generate()
 					G1 = nk.generators.ErdosRenyiGenerator(n2, p2, directed).generate()
 					if weighted:
-						Gorig = self.generateRandomWeights(Gorig)
-						G1 = self.generateRandomWeights(G1)
+						nk.graphtools.randomizeWeights(Gorig)
+						nk.graphtools.randomizeWeights(G1)
 					Gmerge = copy(Gorig)
 					nk.graphtools.merge(Gmerge, G1)
 					testGraphs(Gorig, Gmerge, G1)
@@ -494,7 +487,7 @@ class TestGraphTools(unittest.TestCase):
 		doTest(g)
 
 		random.seed(1)
-		g = self.generateRandomWeights(g)
+		nk.graphtools.randomizeWeights(g)
 		e = nk.graphtools.randomEdge(g)
 
 		# Test weighted

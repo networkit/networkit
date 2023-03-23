@@ -2,21 +2,16 @@
 
 import random
 import unittest
+from copy import copy
 
 import networkit as nk
 
 class TestMatchingAlgorithms(unittest.TestCase):
 
-	def generateRandomWeights(self, g):
-		if not g.isWeighted():
-			g = nk.graphtools.toWeighted(g)
-		for e in g.iterEdges():
-			g.setWeight(e[0], e[1], random.random())
-		return g
-
 	def setUp(self):
 		self.g = nk.readGraph("input/PGPgiantcompo.graph", nk.Format.METIS)
-		self.gw = self.generateRandomWeights(self.g)
+		self.gw = copy(self.g)
+		nk.graphtools.randomizeWeights(self.gw)
 
 	def hasUnmatchedNeighbors(self, g, m):
 		for e in g.iterEdges():

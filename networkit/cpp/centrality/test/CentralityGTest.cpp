@@ -7,6 +7,7 @@
 
 #include <iomanip>
 #include <iostream>
+#include <random>
 
 #include <gtest/gtest.h>
 
@@ -841,7 +842,7 @@ TEST_P(CentralityGTest, testClosenessCentrality) {
 
     if (isWeighted()) {
         Aux::Random::setSeed(42, false);
-        G.forEdges([&](node u, node v) { G.setWeight(u, v, Aux::Random::probability()); });
+        GraphTools::randomizeWeights(G);
     }
 
     auto computeCloseness = [&](node u, ClosenessVariant variant, bool normalized) {
@@ -1842,9 +1843,8 @@ TEST_P(CentralityGTest, testGroupClosenessGrowShrink) {
     G = ConnectedComponents::extractLargestConnectedComponent(G);
 
     if (isWeighted()) {
-        G = GraphTools::toWeighted(G);
-        G.forEdges(
-            [&G](const node u, const node v) { G.setWeight(u, v, Aux::Random::probability()); });
+        Aux::Random::setSeed(42, false);
+        GraphTools::randomizeWeights(G);
     }
 
     auto farnessOfGroup = [&](const Graph &G, const std::unordered_set<node> &group) -> edgeweight {
@@ -2001,9 +2001,7 @@ TEST_P(CentralityGTest, testGroupClosenessLocalSwaps) {
     G = ConnectedComponents::extractLargestConnectedComponent(G);
 
     if (isWeighted()) {
-        G = GraphTools::toWeighted(G);
-        G.forEdges(
-            [&G](const node u, const node v) { G.setWeight(u, v, Aux::Random::probability()); });
+        GraphTools::randomizeWeights(G);
     }
 
     auto farnessOfGroup = [&](const Graph &G, const std::unordered_set<node> &group) -> count {
@@ -2129,8 +2127,7 @@ TEST_P(CentralityGTest, testGroupClosenessLocalSearch) {
     Aux::Random::setSeed(1, true);
     auto G = ErdosRenyiGenerator(100, 0.1, isDirected()).generate();
     if (isWeighted()) {
-        G = GraphTools::toWeighted(G);
-        G.forEdges([&](node u, node v) { G.setWeight(u, v, Aux::Random::real(10)); });
+        GraphTools::randomizeWeights(G, std::uniform_real_distribution<edgeweight>{0, 10});
     }
 
     std::unordered_set<node> initGroup;
