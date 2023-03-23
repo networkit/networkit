@@ -69,7 +69,14 @@ MultiscaleSparsifier::MultiscaleSparsifier(const Graph &graph, double alpha)
 
 void MultiscaleSparsifier::run() {
     std::vector<double> weight(inputGraph.upperEdgeIdBound());
+#if defined(__GNUC__) && (__GNUC__ >= 12)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
     inputGraph.forEdges([&](node, node, edgeweight w, edgeid eid) { weight[eid] = w; });
+#if defined(__GNUC__) && (__GNUC__ >= 12)
+#pragma GCC diagnostic pop
+#endif
 
     MultiscaleScore multiscaleScorer(inputGraph, weight);
     multiscaleScorer.run();

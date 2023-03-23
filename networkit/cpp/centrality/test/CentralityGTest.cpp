@@ -1826,7 +1826,7 @@ TEST_F(CentralityGTest, testApproxElectricalCloseness) {
 TEST_P(CentralityGTest, testGroupClosenessGrowShrink) {
     if (isDirected()) { // directed graphs are not supported
         Graph G(10, isWeighted(), true);
-        std::array<node, 1> group;
+        std::array<node, 1> group = {{0}};
         EXPECT_THROW(GroupClosenessGrowShrink(G, group.begin(), group.end()), std::runtime_error);
         return;
     }
@@ -1984,7 +1984,7 @@ TEST_P(CentralityGTest, testDegreeCentralityIgnoreSelfLoops) {
 TEST_P(CentralityGTest, testGroupClosenessLocalSwaps) {
     if (isDirected()) { // directed graphs are not supported
         Graph G(10, isWeighted(), true);
-        std::array<node, 1> group;
+        std::array<node, 1> group = {{0}};
         EXPECT_THROW(GroupClosenessLocalSwaps(G, group.begin(), group.end()), std::runtime_error);
         return;
     }

@@ -139,7 +139,7 @@ jobs:
     strategy:
       matrix:
         os: ['11']
-        compiler: ['clang-15', 'gcc-11']
+        compiler: ['clang-15', 'gcc-12']
     steps:
       - name: Install prerequisites
         run: |
@@ -151,10 +151,10 @@ jobs:
           brew reinstall llvm@15
           brew link --overwrite llvm@15
       - name: Install compiler gcc
-        if: matrix.compiler == 'gcc-11'
+        if: matrix.compiler == 'gcc-12'
         run: |
-          brew reinstall gcc@11
-          brew link --overwrite gcc@11
+          brew reinstall gcc@12
+          brew link --overwrite gcc@12
       - name: Checkout networkit
         uses: actions/checkout@v2
         with:
@@ -163,15 +163,15 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
         shell: bash
         env:
-          CC: ${{ matrix.compiler == 'clang-15' && '/usr/local/opt/llvm@15/bin/clang' || 'gcc-11' }}
-          CXX: ${{ matrix.compiler == 'clang-15' && '/usr/local/opt/llvm@15/bin/clang++' || 'g++-11' }}
+          CC: ${{ matrix.compiler == 'clang-15' && '/usr/local/opt/llvm@15/bin/clang' || 'gcc-12' }}
+          CXX: ${{ matrix.compiler == 'clang-15' && '/usr/local/opt/llvm@15/bin/clang++' || 'g++-12' }}
 
   linux-build-latest:
-    name: "Linux (gcc-11${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.11' || '' }}): ${{ matrix.build-configuration }}"
-    runs-on: ubuntu-20.04
+    name: "Linux (gcc-12${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.11' || '' }}): ${{ matrix.build-configuration }}"
+    runs-on: ubuntu-22.04
     env:
-      CC: gcc-11
-      CXX: g++-11
+      CC: gcc-12
+      CXX: g++-12
     strategy:
       matrix:
         build-configuration: ['full', 'full (native)', 'core (non-monolithic)', 'core (C++20)']
@@ -180,7 +180,7 @@ jobs:
         run:  |
           sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu jammy main universe'
           sudo apt-get update
-          sudo apt-get install gcc-11 g++-11 ninja-build
+          sudo apt-get install ninja-build
       - name: Setup Python 3.11.0
         uses: actions/setup-python@v3
         with:

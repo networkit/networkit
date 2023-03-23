@@ -71,7 +71,7 @@ sys.argv = [__file__] + args
 # compiler identification
 ################################################
 
-candidates = ["g++", "g++-8", "g++-7", "g++-6.1", "g++-6", "g++-5.5", "g++-5.4", "g++-5.3", "g++-5", "clang++", "clang++-3.9"]
+candidates = ["g++", "g++-12", "g++-11", "g++-10", "g++-9", "g++-8", "g++-7", "g++-6.1", "clang++", "clang++-3.9"]
 
 def determineCompiler(candidates, std, flags):
 	sample = open("sample.cpp", "w")
