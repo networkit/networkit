@@ -99,7 +99,7 @@ env:
 
 jobs:
   macos-build-latest-version-apple-clang:
-    name: "macOS ${{ matrix.os }} (apple-clang, CPython 3.10): ${{ matrix.build-configuration }}"
+    name: "macOS ${{ matrix.os }} (apple-clang, CPython 3.11): ${{ matrix.build-configuration }}"
     runs-on: macos-${{ matrix.os }}
     env:
       CC: cc
