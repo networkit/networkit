@@ -99,7 +99,7 @@ env:
 
 jobs:
   macos-build-latest-version-apple-clang:
-    name: "macOS ${{ matrix.os }} (apple-clang, CPython 3.10): ${{ matrix.build-configuration }}"
+    name: "macOS ${{ matrix.os }} (apple-clang, CPython 3.11): ${{ matrix.build-configuration }}"
     runs-on: macos-${{ matrix.os }}
     env:
       CC: cc
@@ -118,11 +118,11 @@ jobs:
         with:
           python-version: '3.11.0'
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Checkout tlx
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: tlx/tlx
           path: tlx
@@ -156,7 +156,7 @@ jobs:
           brew reinstall gcc@12
           brew link --overwrite gcc@12
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Prepare environment and run checks
@@ -186,12 +186,12 @@ jobs:
         with:
           python-version: '3.11.0'
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Checkout tlx
         if: ${{ startsWith(matrix.build-configuration, 'full') }}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: tlx/tlx
           path: tlx
@@ -218,11 +218,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install clang-15 libomp-15-dev ninja-build
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Checkout tlx
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: tlx/tlx
           path: tlx
@@ -247,15 +247,15 @@ jobs:
           sudo apt-get install libomp5 libomp-dev clang-5.0 clang++-5.0
           sudo apt-get install gcc-7 g++-7
       - name: Setup Python 3.7
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: '3.7'
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Checkout tlx
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: tlx/tlx
           path: tlx
@@ -280,7 +280,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install libomp-15-dev clang-15 clang-tidy-15 ninja-build
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Prepare environment and run checks
@@ -307,13 +307,13 @@ jobs:
         with:
           python-version: '3.11.0'
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Prepare environment and run checks
         run:  ${{ github.workspace }}/.github/workflows/scripts/core_sanitizers_coverage.sh
         shell: bash
-        timeout-minutes: 120
+        timeout-minutes: 180
       - name: Create C++ coverage
         run: |
           cd ${{ github.workspace }}
@@ -343,7 +343,7 @@ jobs:
         build-configuration: ['core']
     steps:
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Setup devCmd (vstools)
@@ -368,11 +368,11 @@ jobs:
         with:
           python-version: '3.11.0'
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Checkout tlx
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: tlx/tlx
           path: tlx
@@ -421,7 +421,7 @@ jobs:
         with:
           python-version: '3.11.0'
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Prepare environment and run checks
@@ -450,7 +450,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install clang-format-15 python-yaml
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Prepare environment and run checks
