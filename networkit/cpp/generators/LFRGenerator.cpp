@@ -1,8 +1,8 @@
 #include <algorithm>
 #include <numeric>
 #include <random>
-
 #include <utility>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/auxiliary/Random.hpp>
@@ -12,6 +12,8 @@
 #include <networkit/generators/PowerlawDegreeSequence.hpp>
 #include <networkit/generators/PubWebGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>
+
+#include <tlx/unused.hpp>
 
 NetworKit::LFRGenerator::LFRGenerator(NetworKit::count n)
     : n(n), hasDegreeSequence(false), hasCommunitySizeSequence(false),
