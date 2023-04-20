@@ -82,7 +82,7 @@ TEST_F(ApproxElectricalClosenessGTest, testDynApproxElectricalCloseness_batchEdg
 
         std::random_device dev;
         std::mt19937 rng(dev());
-        std::uniform_int_distribution<std::mt19937::result_type> distN(1, n + 2);
+        std::uniform_int_distribution<std::mt19937::result_type> distN(0, n + 1);
 
         node a, b;
 
@@ -94,13 +94,11 @@ TEST_F(ApproxElectricalClosenessGTest, testDynApproxElectricalCloseness_batchEdg
                 b = distN(rng);
             } while (G.hasEdge(a, b) || a == b);
 
+            G.addEdge(a, b);
+
             batch[i].type = GraphEvent::EDGE_ADDITION;
             batch[i].u = a;
             batch[i].v = b;
-        }
-
-        for (GraphEvent edge : batch) {
-            G.addEdge(edge.u, edge.v);
         }
 
         dapx.updateBatch(batch);

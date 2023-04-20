@@ -25,16 +25,6 @@
 
 namespace NetworKit {
 
-struct Tree {
-    std::vector<node> parent;
-    std::vector<node> sibling;
-    std::vector<node> child;
-
-    std::vector<count> tVisit;
-    std::vector<count> tFinish;
-    bool timesComputed = false;
-};
-
 /**
  * @ingroup centrality
  */
@@ -69,9 +59,8 @@ public:
           biAnchor(other.biAnchor), topOrder(other.topOrder),
           approxEffResistanceGlobal(other.approxEffResistanceGlobal), diagonal(other.diagonal),
           resistanceToRoot(other.resistanceToRoot), rootCol(other.rootCol),
-          lpinvColA(other.lpinvColA), lpinvColB(other.lpinvColB), lcaGlobal(other.lcaGlobal),
-          generators(other.generators), degDist(other.degDist), round(other.round),
-          roundWeight(other.roundWeight) {}
+          lcaGlobal(other.lcaGlobal), generators(other.generators), degDist(other.degDist),
+          round(other.round), roundWeight(other.roundWeight) {}
 
     ~DynApproxElectricalCloseness() override = default;
 
@@ -114,41 +103,10 @@ public:
     std::vector<double> computeExactDiagonal(double tol = 1e-9) const;
 
     /**
-     * Compute and return the nearly-exact values of the column of the laplacian's pseudoinverse.
-     * The values are computed by solving Lx = e_u - 1 / n with a
-     * CG solver.
-     *
-     * @param tol Tolerance for the LAMG solver.
-     *
-     * @return Nearly-exact values of the diagonal of the laplacian's pseudoinverse.
-     */
-    std::vector<double> computeExactColumn(node u, double tol = 1e-9) const;
-
-    /**
-     * Compute an approximation of the @a i -th column of the laplacian's pseudoinverse.
-     *
-     * @return Approximation of the column vector.
-     */
-    std::vector<double> approxColumn(node i);
-
-    // TODO remove this
-    // void testSampleUSTWithEdge(node a, node b);
-
-    /**
      * To be called when an edge is added to the graph. Samples more trees, approximate the diagonal
      * again.
      */
     void edgeAdded(node a, node b);
-
-    /**
-     * After an edge is added, the lpinv columns of the vertices can be obtained here
-     */
-    std::pair<Vector, Vector> getEdgeLpinvVectors();
-
-    /**
-     * Laplacian matrix of G
-     */
-    inline NetworKit::CSRMatrix getLaplacianMatrix() { return laplacian; }
 
     inline NetworKit::count getUstCount() { return numberOfUSTs; }
 
@@ -168,6 +126,16 @@ private:
         IN_SPANNING_TREE,
         NOT_VISITED,
         VISITED
+    };
+
+    struct Tree {
+        std::vector<node> parent;
+        std::vector<node> sibling;
+        std::vector<node> child;
+
+        std::vector<count> tVisit;
+        std::vector<count> tFinish;
+        bool timesComputed = false;
     };
 
     // Used to mark the status of each node, one vector per thread
@@ -204,8 +172,8 @@ private:
 
     // lpinv column of root
     Vector rootCol;
-    Vector lpinvColA;
-    Vector lpinvColB;
+    // Vector lpinvColA;
+    // Vector lpinvColB;
 
     // Least common ancestor vectors, per thread
     std::vector<std::vector<node>> lcaGlobal;
@@ -221,14 +189,13 @@ private:
     // specific sequence of nodes. In this function we compute those sequences.
     void computeNodeSequence();
 
-    void setDFSTimes(Tree &tree, node r = none);
+    void setDFSTimes(Tree &tree);
 
     void computeBFSTree();
     void sampleUST(Tree &result);
     void sampleUSTWithEdge(Tree &result, node a, node b);
 
     void aggregateUST(Tree &tree, double weight);
-    void aggregateUSTNonRoot(Tree &tree, node column_index, double weight);
 
     node approxMinEccNode();
 

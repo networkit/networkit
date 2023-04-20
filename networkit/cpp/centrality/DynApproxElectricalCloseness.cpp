@@ -275,7 +275,6 @@ void DynApproxElectricalCloseness::sampleUST(Tree &result) {
     auto &siblingPtr = result.sibling;
 
     auto n = G.numberOfNodes();
-    status.resize(n);
     parent.resize(n);
     childPtr.resize(n);
     siblingPtr.resize(n);
@@ -439,7 +438,6 @@ void DynApproxElectricalCloseness::sampleUSTWithEdge(Tree &result, node a, node 
     auto &childPtr = result.child;
     auto &siblingPtr = result.sibling;
 
-    status.resize(n);
     parent.resize(n, none);
     childPtr.resize(n, none);
     siblingPtr.resize(n, none);
@@ -528,19 +526,15 @@ void DynApproxElectricalCloseness::sampleUSTWithEdge(Tree &result, node a, node 
 #endif
 }
 
-void DynApproxElectricalCloseness::setDFSTimes(Tree &tree, node r) {
+void DynApproxElectricalCloseness::setDFSTimes(Tree &tree) {
     if (tree.timesComputed) {
         return;
     }
     tree.tVisit.resize(G.numberOfNodes());
     tree.tFinish.resize(G.numberOfNodes());
 
-    if (r == none) {
-        r = root;
-    }
-
     std::stack<std::pair<node, node>> stack;
-    stack.push({r, tree.child[r]});
+    stack.push({root, tree.child[root]});
     count timestamp = 0;
 
     do {
@@ -602,108 +596,6 @@ void DynApproxElectricalCloseness::aggregateUST(Tree &tree, double weight) {
     });
 }
 
-void DynApproxElectricalCloseness::aggregateUSTNonRoot(Tree &tree, node i, double weight) {
-    auto &approxEffResistance = approxEffResistanceGlobal[omp_get_thread_num()];
-
-    if (!tree.timesComputed) {
-        setDFSTimes(tree);
-    }
-    if (i == root) {
-        aggregateUST(tree, weight);
-        return;
-    }
-
-    const auto &tVisit = tree.tVisit;
-    const auto &tFinish = tree.tFinish;
-    const auto &parent = tree.parent;
-
-    // Determine lca of all nodes with i in bfstree, via dfs search in B_u
-    // auto &lca_i = lcaGlobal[omp_get_thread_num()];
-    // lca_i.resize(G.numberOfNodes());
-    // std::fill(lca_i.begin(), lca_i.end(), none);
-
-    /*
-    std::stack<std::pair<node,node>> stack;
-    stack.push({root, bfsTree.child[root]});
-    lca_i[root] = root;
-    do {
-        // v is a child of u that has not been visited yet.
-        const node u = stack.top().first;
-        const node v = stack.top().second;
-
-        if (v == none) {
-            stack.pop();
-        } else {
-            // If i is below v, the lca of v and i is v, otherwise it is the same as the parent's
-            if (bfsTree.tVisit[v] <= bfsTree.tVisit[i] && bfsTree.tFinish[i] <= bfsTree.tFinish[v])
-    { lca_i[v] = v; } else { lca_i[v] = lca_i[u];
-            }
-
-            stack.top().second = bfsTree.sibling[v];
-            stack.push({v, bfsTree.child[v]});
-        }
-    } while (!stack.empty());
-    */
-
-    auto isEdgeOnPathFromRoot = [&](node a, node b, node to) -> bool {
-        return tVisit[b] <= tVisit[to] && tFinish[to] <= tFinish[b];
-    };
-    /*auto isEdgeOnPath = [&] (node a, node b, node from, node to) -> bool {
-        return (isEdgeOnPathFromRoot(b, a, from)
-                && !(isEdgeOnPathFromRoot(b, a, to)))
-            || (isEdgeOnPathFromRoot(a, b, from)
-                && !isEdgeOnPathFromRoot(a, b, to));
-    };*/
-
-    G.forNodes([&](const node u) {
-        // find the contribution of a single edge
-        auto eval_edge = [&](node a, node b) {
-            // edge (a, b) downwards facing in T
-            if (a == parent[b]) {
-                bool rpi = isEdgeOnPathFromRoot(a, b, i);
-                bool rpu = isEdgeOnPathFromRoot(a, b, u);
-                if (!rpi && rpu) {
-                    approxEffResistance[u] += weight;
-                }
-                if (rpi && !rpu) {
-                    approxEffResistance[u] -= weight;
-                }
-                // else (a, b) is not on the path from i to u or u to i, skip.
-            }
-            // edge (a, b) upwards facing in T
-            if (b == parent[a]) {
-                bool ipr = isEdgeOnPathFromRoot(b, a, i);
-                bool upr = isEdgeOnPathFromRoot(b, a, u);
-                if (ipr && !upr) {
-                    approxEffResistance[u] += weight;
-                } else if (!ipr && upr) {
-                    approxEffResistance[u] -= weight;
-                }
-                // else (b, a) is not on the path from i to u or u to i, skip.
-            }
-            // else (a,b) and (b,a) are not in T in either orientation, skip.
-        };
-
-        // go from i to u
-        node p = bfsTree.parent[i];
-        node c = i;
-        while (p != none /* && c != lca_i[u]*/) {
-            eval_edge(c, p);
-            c = p;
-            p = bfsTree.parent[p];
-        }
-
-        // from u to lca(i, u)
-        p = bfsTree.parent[u];
-        c = u;
-        while (p != none /*&& c != lca_i[u]*/) {
-            eval_edge(p, c);
-            c = p;
-            p = bfsTree.parent[p];
-        }
-    });
-}
-
 void DynApproxElectricalCloseness::edgeAdded(node a, node b) {
     assert(G.hasEdge(a, b));
     assert(hasRun);
@@ -723,9 +615,7 @@ void DynApproxElectricalCloseness::edgeAdded(node a, node b) {
     ConjugateGradient<CSRMatrix, DiagonalPreconditioner> cg(tol);
     cg.setupConnected(laplacian);
 
-    Vector rhs_a(n), rhs_b(n);
-    lpinvColA = Vector(n);
-    lpinvColB = Vector(n);
+    Vector rhs_a(n), rhs_b(n), lpinvColA(n), lpinvColB(n);
     G.forNodes([&](node u) {
         rhs_a[u] = -1.0 / n_double;
         rhs_b[u] = -1.0 / n_double;
@@ -755,8 +645,6 @@ void DynApproxElectricalCloseness::edgeAdded(node a, node b) {
         ustRepository[i].resize(std::ceil(roundWeight[i] * numberOfUSTs));
     }
     roundWeight.push_back(w);
-
-    // rootCol -= 1. / (1.-w) * (lpinvColA[root] - lpinvColB[root]) * (lpinvColA - lpinvColB);
 
     Vector rhs(n);
     G.forNodes([&](node u) { rhs[u] = -1.0 / n_double; });
@@ -802,7 +690,6 @@ void DynApproxElectricalCloseness::edgeAdded(node a, node b) {
         resistanceToRoot[u] = (1. - w) * resistanceToRoot[u] + w * currentRoundResistanceApprox[u];
         diagonal[u] = resistanceToRoot[u] - rootCol[root] + 2. * rootCol[u];
     });
-    // diagonal = computeExactDiagonal();
 
     diagonal[root] = rootCol[root];
     diagonal[a] = lpinvColA[a];
@@ -811,31 +698,6 @@ void DynApproxElectricalCloseness::edgeAdded(node a, node b) {
 
     G.parallelForNodes(
         [&](node u) { scoreData[u] = (n_double - 1.) / (n_double * diagonal[u] + trace); });
-
-    auto countTrees = [&]() {
-        std::map<count, count> treeCount;
-        for (auto &treesInRound : ustRepository) {
-            for (auto &tree : treesInRound) {
-                count key = 0;
-                for (count i = 0; i < n; i++) {
-                    count p = tree.parent[i] == none ? 0 : tree.parent[i];
-                    key += static_cast<count>(std::pow(n, i)) * p;
-                }
-                if (treeCount.find(key) == treeCount.end()) {
-                    treeCount[key] = 0;
-                }
-                treeCount[key] += 1;
-            }
-        }
-        for (const auto &kv : treeCount) {
-            INFO(kv.first, ": ", kv.second);
-        }
-    };
-    // countTrees();
-}
-
-std::pair<Vector, Vector> DynApproxElectricalCloseness::getEdgeLpinvVectors() {
-    return std::pair<Vector, Vector>(lpinvColA, lpinvColB);
 }
 
 void DynApproxElectricalCloseness::run() {
@@ -847,7 +709,6 @@ void DynApproxElectricalCloseness::run() {
     rootCol = Vector(G.numberOfNodes());
     roundWeight.push_back(1.);
 
-    auto n_int = G.numberOfNodes();
     ustRepository.push_back(std::vector<Tree>(numberOfUSTs));
     double weight = 1. / static_cast<double>(numberOfUSTs);
 
@@ -858,10 +719,10 @@ void DynApproxElectricalCloseness::run() {
             const count n = G.numberOfNodes();
 
             laplacian = CSRMatrix::laplacianMatrix(G);
-            Diameter diamAlgo(G, estimatedRange, 0);
+            Diameter diamAlgo(G, DiameterAlgo::ESTIMATED_RANGE, 0);
             diamAlgo.run();
             // Getting diameter upper bound
-            const double diam = diamAlgo.getDiameter().second;
+            const auto diam = static_cast<double>(diamAlgo.getDiameter().second);
             tol = epsilon * kappa
                   / (std::sqrt(static_cast<double>((n * G.numberOfEdges())) * std::log(n)) * diam
                      * 3.);
@@ -904,63 +765,6 @@ void DynApproxElectricalCloseness::run() {
     G.parallelForNodes([&](node u) { scoreData[u] = (n - 1.) / (n * diagonal[u] + trace); });
 
     hasRun = true;
-}
-
-std::vector<double> DynApproxElectricalCloseness::approxColumn(node v) {
-    assureFinished();
-    int threads = approxEffResistanceGlobal.size();
-    for (int i = 0; i < threads; i++) {
-        std::fill(approxEffResistanceGlobal[i].begin(), approxEffResistanceGlobal[i].end(), 0.);
-    }
-    count n = G.numberOfNodes();
-
-    if (!bfsTree.timesComputed) {
-        setDFSTimes(bfsTree);
-    }
-
-    /*for (count rnd = 0; rnd < round + 1; rnd++) {
-        for (count i = 0; i < ustRepository[rnd].size(); i++) {
-            auto& tree = ustRepository[rnd][i];
-            tree.parent.resize(n, none);
-            tree.child.resize(n, none);
-            tree.sibling.resize(n, none);
-            std::fill(tree.parent.begin(), tree.parent.end(), none);
-            std::fill(tree.child.begin(), tree.child.end(), none);
-            std::fill(tree.sibling.begin(), tree.sibling.end(), none);
-        }
-    }
-    */
-
-    // if trees in each round are too few, run the rounds in parallel, otherwise run the rounds
-    // sequentially
-    if (numberOfUSTs < 2 * round * threads) {
-#pragma omp parallel for
-        for (count rnd = 0; rnd < round + 1; rnd++) {
-            for (auto &tree : ustRepository[rnd]) {
-                double weight = roundWeight[rnd] / static_cast<double>(ustRepository[rnd].size());
-                aggregateUSTNonRoot(tree, v, weight);
-            }
-        }
-    } else {
-        for (count rnd = 0; rnd < round + 1; rnd++) {
-#pragma omp parallel for
-            for (count i = 0; i < ustRepository[rnd].size(); i++) {
-                double weight = roundWeight[rnd] / static_cast<double>(ustRepository[rnd].size());
-                auto &tree = ustRepository[rnd][i];
-                aggregateUSTNonRoot(tree, v, weight);
-            }
-        }
-    }
-
-    std::vector<double> column(G.numberOfNodes());
-
-    G.parallelForNodes([&](const node u) {
-        // Accumulate all results on thread 0 vector
-        for (count i = 1; i < approxEffResistanceGlobal.size(); ++i)
-            approxEffResistanceGlobal[0][u] += approxEffResistanceGlobal[i][u];
-        column[u] = (diagonal[u] + diagonal[v] - approxEffResistanceGlobal[0][u]) / 2.;
-    });
-    return column;
 }
 
 std::vector<double> DynApproxElectricalCloseness::computeExactDiagonal(double tol) const {
@@ -1023,34 +827,6 @@ std::vector<double> DynApproxElectricalCloseness::computeExactDiagonal(double to
     }
 
     return diag;
-}
-
-std::vector<double> DynApproxElectricalCloseness::computeExactColumn(node u, double tol) const {
-    NetworKit::ConjugateGradient<CSRMatrix, DiagonalPreconditioner> cg(tol);
-
-    if (!hasRun) {
-        auto L = CSRMatrix::laplacianMatrix(G);
-        cg.setupConnected(L);
-    } else {
-        cg.setupConnected(laplacian);
-    }
-
-    const count n = G.numberOfNodes();
-    Vector rhs(n), sol(n);
-
-    G.forNodes([&](node i) { rhs[i] = -1.0 / static_cast<double>(n); });
-    rhs[u] += 1.;
-
-    cg.solve(rhs, sol);
-
-    double sum = 0.;
-    G.forNodes([&](node i) { sum += sol[i]; });
-    sol -= sum / static_cast<double>(n);
-
-    std::vector<double> result(n);
-
-    G.forNodes([&](node i) { result[i] = sol[i]; });
-    return result;
 }
 
 #ifdef NETWORKIT_SANITY_CHECKS
