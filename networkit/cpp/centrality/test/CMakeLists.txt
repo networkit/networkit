@@ -3,7 +3,7 @@ networkit_add_test(centrality ApproxBetweennessGTest
 networkit_add_test(centrality CentralityGTest
     auxiliary generators io structures)
 networkit_add_test(centrality ApproxElectricalClosenessGTest
-    generators)
+    auxiliary generators io structures algebraic)
 networkit_add_test(centrality DynBetweennessGTest
     auxiliary generators graph io)
 networkit_add_test(centrality SpanningEdgeCentralityGTest
