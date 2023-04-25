@@ -25,7 +25,7 @@ namespace NetworKit {
 DynApproxElectricalCloseness::DynApproxElectricalCloseness(const Graph &G, double epsilon,
                                                            double kappa)
     : Centrality(G), epsilon(epsilon), delta(1.0 / static_cast<double>(G.numberOfNodes())),
-      kappa(kappa), bccPtr(new BiconnectedComponents(G)) {
+      kappa(kappa), bcc(BiconnectedComponents(G)) {
 
     if (G.isDirected())
         throw std::runtime_error("Error: the input graph must be undirected.");
@@ -123,7 +123,6 @@ void DynApproxElectricalCloseness::computeNodeSequence() {
     auto &status = statusGlobal[0];
 
     // Compute the biconnected components
-    auto &bcc = *bccPtr;
     bcc.run();
     auto components = bcc.getComponents();
 
@@ -295,7 +294,7 @@ void DynApproxElectricalCloseness::sampleUST(Tree &result) {
         // parent component.
         auto updateParentOfAnchor = [&]() -> void {
             for (const node v : G.neighborRange(curAnchor)) {
-                const auto &vComps = bccPtr->getComponentsOfNode(v);
+                const auto &vComps = bcc.getComponentsOfNode(v);
                 if (vComps.find(biParent[componentIndex]) != vComps.end()) {
                     parent[curAnchor] = v;
                     break;

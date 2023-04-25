@@ -50,17 +50,7 @@ public:
 
     /** copy constructor that copies internal data structures, but still references the same graph
      * as @a other */
-    DynApproxElectricalCloseness(const DynApproxElectricalCloseness &other)
-        : Centrality(other), epsilon(other.epsilon), delta(other.delta), kappa(other.kappa),
-          tol(other.tol), numberOfUSTs(other.numberOfUSTs), root(other.root),
-          rootEcc(other.rootEcc), laplacian(other.laplacian), statusGlobal(other.statusGlobal),
-          bccPtr(new BiconnectedComponents(*other.bccPtr)), sequences(other.sequences),
-          ustRepository(other.ustRepository), bfsTree(other.bfsTree), biParent(other.biParent),
-          biAnchor(other.biAnchor), topOrder(other.topOrder),
-          approxEffResistanceGlobal(other.approxEffResistanceGlobal), diagonal(other.diagonal),
-          resistanceToRoot(other.resistanceToRoot), rootCol(other.rootCol),
-          lcaGlobal(other.lcaGlobal), generators(other.generators), degDist(other.degDist),
-          round(other.round), roundWeight(other.roundWeight) {}
+    DynApproxElectricalCloseness(const DynApproxElectricalCloseness &other) = default;
 
     ~DynApproxElectricalCloseness() override = default;
 
@@ -141,7 +131,7 @@ private:
     // Used to mark the status of each node, one vector per thread
     std::vector<std::vector<NodeStatus>> statusGlobal;
 
-    std::unique_ptr<BiconnectedComponents> bccPtr;
+    BiconnectedComponents bcc;
 
     // Nodes in each biconnected components sorted by their degree.
     std::vector<std::vector<node>> sequences;
@@ -172,8 +162,6 @@ private:
 
     // lpinv column of root
     Vector rootCol;
-    // Vector lpinvColA;
-    // Vector lpinvColB;
 
     // Least common ancestor vectors, per thread
     std::vector<std::vector<node>> lcaGlobal;
