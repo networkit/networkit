@@ -9,7 +9,7 @@ cdef class Matching:
 		Parameters
 		----------
 		z : int, optional
-			Maximum number of nodes.
+			Maximum number of nodes. Default: 0
 	"""
 	def __cinit__(self, index z=0):
 		self._this = move(_Matching(z))

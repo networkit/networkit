@@ -144,7 +144,7 @@ def clustering(G, error=0.01):
 	G : networkit.Graph
 		The input graph.
 	error : float
-		Maximum allowed error.
+		Maximum allowed error. Default: 0.01
 	"""
 	if G.numberOfNodes() < 100:
 		return ClusteringCoefficient().avgLocal(G)

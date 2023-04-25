@@ -188,7 +188,7 @@ cdef class SSSP(Algorithm):
 		Parameters
 		----------
 		asarray : optional
-			Return the result as a numpy array. Default: Falsy.
+			Return the result as a numpy array. Default: None
 
  	 	Returns
  	 	-------
@@ -534,9 +534,9 @@ cdef class Diameter(Algorithm):
 	algo : networkit.distance.DiameterAlgo, optional
 		Algorithm which should be used for diameter computation. Default: networkit.distance.DiameterAlgo.AUTOMATIC
 	error : float, optional
-		Possible error used for diameter algorithm EstimatedRange.
+		Possible error used for diameter algorithm EstimatedRange. Default: -1
 	nSamples : int, optional
-		Number of samples (influencing the quality of the output) used for diameter algorithm EstimatedSamples.
+		Number of samples (influencing the quality of the output) used for diameter algorithm EstimatedSamples. Default: 0
 	"""
 	cdef Graph _G
 
@@ -835,7 +835,7 @@ cdef class Volume:
 		r : float
 			the radius (or radii)
 		samples : int, optional
-			the number of samples
+			The number of samples. Default: 500
 
 		Returns
 		-------
@@ -980,15 +980,15 @@ cdef class AlgebraicDistance:
 	G : networkit.Graph
 		The graph to calculate Jaccard distances for.
 	numberSystems : int, optional
-	 	Number of vectors/systems used for algebraic iteration.
+	 	Number of vectors/systems used for algebraic iteration. Default: 10
 	numberIterations : int, optional
-	 	Number of iterations in each system.
+	 	Number of iterations in each system. Default: 30
 	omega : float, optional
-	 	Attenuation factor in [0,1] influencing convergence speed.
+	 	Attenuation factor in [0,1] influencing convergence speed. Default: 0.5
 	norm : int, optional
-		The norm factor of the extended algebraic distance.
+		The norm factor of the extended algebraic distance. Default: 0
 	withEdgeScores : bool, optional
-		Calculate array of scores for edges {u,v} that equal ad(u,v)
+		Calculate array of scores for edges {u,v} that equal ad(u,v). Default: False
 	"""
 
 	cdef _AlgebraicDistance* _this
@@ -1035,7 +1035,7 @@ cdef class CommuteTimeDistance(Algorithm):
 	G : networkit.Graph
 		The graph.
 	tol: float, optional
-		Tolerance for computation (higher tolerance leads to faster running times).
+		Tolerance for computation (higher tolerance leads to faster running times). Default: 0.1
 	"""
 	cdef Graph _G
 
@@ -1150,7 +1150,7 @@ cdef class NeighborhoodFunctionHeuristic(Algorithm):
 	G : networkit.Graph
 		The graph.
 	nSamples : int, optional
-		The amount of samples, set to zero for heuristic of max(sqrt(m), 0.15*n).
+		The amount of samples, set to zero for heuristic of max(sqrt(m), 0.15*n). Default: 0
 	strategy : networkit.distance.SelectionStrategy, optional
 		The strategy to select the samples, accepts RANDOM (0) or SPLIT (1). Default: networkit.distance.SelectionStrategy.SPLIT
 	"""
@@ -1420,9 +1420,9 @@ cdef class BFS(SSSP):
 	source : int
 		The source node of the breadth-first search.
 	storePaths : bool, optional
-		Controls whether to store paths and number of paths.
+		Controls whether to store paths and number of paths. Default: True
 	storeNodesSortedByDistance : bool, optional
-		Controls whether to store nodes sorted by distance.
+		Controls whether to store nodes sorted by distance. Default: False
 	target: int or None, optional
 		Terminate search when the target has been reached. In default-mode, this target is set to None.
 	"""
@@ -1450,9 +1450,9 @@ cdef class Dijkstra(SSSP):
 	source : int
 		The source node of the Dijkstra search.
 	storePaths : bool, optional
-		Controls whether to store paths and number of paths.
+		Controls whether to store paths and number of paths. Default: True
 	storeNodesSortedByDistance : bool, optional
-		Controls whether to store nodes sorted by distance.
+		Controls whether to store nodes sorted by distance. Default: False
 	target: int or None, optional
 		Terminate search when the target has been reached. In default-mode, this target is set to None.
 	"""
@@ -1593,7 +1593,7 @@ cdef class BidirectionalBFS(STSP):
 		The target node.
 	storePred : bool, optional
 		If True, the algorithm will also store the predecessors
-		and reconstruct a shortest path from source and target.
+		and reconstruct a shortest path from source and target. Default: True
 	"""
 
 	def __cinit__(self, Graph G, node source, node target, bool_t storePred=True):
@@ -1667,7 +1667,7 @@ cdef class AStar(STSP):
 		The target node.
 	storePred : bool, optional
 		If True, the algorithm will also store the predecessors
-		and reconstruct a shortest path from source and target.
+		and reconstruct a shortest path from source and target. Default: True
 	"""
 
 	cdef vector[double] heu
@@ -1781,9 +1781,9 @@ cdef class ReverseBFS(SSSP):
 	source : int
 		The source node of the breadth-first search.
 	storePaths : bool, optional
-		Controls whether to store paths and number of paths.
+		Controls whether to store paths and number of paths. Default: True
 	storeNodesSortedByDistance : bool, optional
-		Controls whether to store nodes sorted by distance.
+		Controls whether to store nodes sorted by distance. Default: False
 	target: int or None, optional
 		Terminate search when the target has been reached. In default-mode, this target is set to None.
 	"""

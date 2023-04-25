@@ -87,14 +87,12 @@ def laplacianMatrix(G):
 	Parameters
 	----------
 	G : networkit.Graph
-		The input graph.
+		The graph.
 
 	Returns
 	-------
-	ndarray or :py:class:`scipy.sparse.csr_matrix`
-    	The N x N laplacian matrix of csgraph. It will be a NumPy array (dense) if the input was dense, or a sparse matrix otherwise.
-	ndarray
-    	The length-N diagonal of the Laplacian matrix. For the normalized Laplacian, this is the array of square roots of vertex degrees or 1 if the degree is zero.
+	:py:class:`scipy.sparse.csr_matrix`
+    	The N x N laplacian matrix of csgraph. It will be a scipy.sparse.csr_matrix.
 	"""
 	A = adjacencyMatrix(G)
 	return scipy.sparse.csgraph.laplacian(A)
@@ -225,7 +223,7 @@ def laplacianEigenvectors(G, cutoff=-1, reverse=False):
 
 	Parameters
 	----------
-	G : networkit.graph
+	G : networkit.Graph
 		The input graph.
 	cutoff : int, optional
 		The maximum (or minimum) number of eigenvectors needed. Default: -1
@@ -252,7 +250,7 @@ def adjacencyEigenvectors(G, cutoff=-1, reverse=False):
 
 	Parameters
 	----------
-	G : networkit.graph
+	G : networkit.Graph
 		The graph.
 	cutoff : int, optional
 		The maximum (or minimum) number of eigenvectors needed. Default: -1
@@ -279,7 +277,7 @@ def laplacianEigenvector(G, i, reverse=False):
 
 	Parameters
 	----------
-	G : networkit.graph
+	G : networkit.Graph
 		The input graph.
 	i : int
 		Computes the eigenvector and value of index i.
@@ -307,7 +305,7 @@ def adjacencyEigenvector(G, i, reverse=False):
 
 	Parameters
 	----------
-	G : networkit.graph
+	G : networkit.Graph
 		The input graph.
 	i : int
 		Computes the eigenvector and value of index i.
