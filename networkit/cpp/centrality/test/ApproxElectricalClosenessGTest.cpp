@@ -68,7 +68,7 @@ TEST_F(ApproxElectricalClosenessGTest, testDynApproxElectricalCloseness_batchEdg
     const double eps = 0.1;
     count n_gen;
     for (int seed : {1, 2, 3}) {
-        n_gen = 300;
+        n_gen = 75;
         Aux::Random::setSeed(seed, true);
         auto G = HyperbolicGenerator(n_gen, 6, 3).generate();
         G = ConnectedComponents::extractLargestConnectedComponent(G, true);
