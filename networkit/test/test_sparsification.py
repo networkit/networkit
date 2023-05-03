@@ -4,7 +4,7 @@ import os
 
 from networkit import *
 
-class Test_Sparsification(unittest.TestCase):
+class TestSparsification(unittest.TestCase):
 
 	def setUp(self):
 		self.G = readGraph("input/jazz.graph", Format.METIS)
@@ -24,7 +24,7 @@ class Test_Sparsification(unittest.TestCase):
 			sparsification.SCANSparsifier()
 		]
 
-	def test_getSparsifiedGraphOfSize(self):
+	def testGetSparsifiedGraphOfSize(self):
 		"""
 		Checks whether the sizes of the sparsified graphs are approximately
 		of the expected size. This test is supposed to verify that all
