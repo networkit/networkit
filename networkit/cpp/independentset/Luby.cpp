@@ -51,7 +51,7 @@ std::vector<bool> Luby::run(const Graph &G) {
         });
         // remove non-independent nodes from S to get S'
         G.parallelForEdges([&](node u, node v) {
-            if (u != v) {          // exclude self-loops
+            if (u != v) {           // exclude self-loops
                 if (S[u] && S[v]) { // u and v are not independent (note: S is subset of V')
                     // remove node with smaller degree
                     edgeweight wu = weightedDegree(u);

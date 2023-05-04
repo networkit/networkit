@@ -51,7 +51,7 @@ def findClangFormat():
 
 	raise FileNotFoundError("clang-format binary not found. We searched for:\n " + "\n ".join(allowed))
 
-def runClangFormat(inputFilename, outputFilename, clangFormatBinary = 'clang-format-8'):
+def runClangFormat(inputFilename, outputFilename, clangFormatBinary = 'clang-format-16'):
 	"""Execute clang-format onto inputFilename and stores the result in outputFilename"""
 	with open(outputFilename, "w") as outfile:
 		subprocess.call([clangFormatBinary, '-style=file', inputFilename], stdout=outfile)

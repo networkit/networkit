@@ -508,7 +508,6 @@ void CurveballIM::run(const trade_vector &trades) {
         // Do not forget edge between u and v
         if (shared)
             update(u, v);
-
     }
 
     hasRun = true;

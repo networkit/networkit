@@ -446,9 +446,9 @@ jobs:
       - name: Install prerequisites
         run: |
           curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-15 main" | sudo tee /etc/apt/sources.list.d/llvm11.list
+          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-16 main" | sudo tee /etc/apt/sources.list.d/llvm16.list
           sudo apt-get update
-          sudo apt-get install clang-format-15 python-yaml
+          sudo apt-get install clang-format-16 python-yaml
       - name: Checkout networkit
         uses: actions/checkout@v3
         with:
@@ -457,3 +457,5 @@ jobs:
         run:  |
           set -e
           ./check_code.sh -v
+        env:
+          NETWORKIT_OVERRIDE_CLANG_FORMAT: "clang-format-16"
