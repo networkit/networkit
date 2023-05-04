@@ -14,6 +14,8 @@
 #include <networkit/distance/DynDijkstra.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 
+#include <tlx/unused.hpp>
+
 #include <stack>
 
 namespace NetworKit {
@@ -68,7 +70,8 @@ TEST_F(SSSPGTest, testShortestPaths) {
     count dist = bfs.distance(x);
     std::set<std::vector<node>> paths = bfs.getPaths(x, true);
     count i = 0;
-    for (auto path : paths) {
+    tlx::unused(i);
+    for (const auto &path : paths) {
         DEBUG("Path number ", i);
         i++;
         DEBUG(path);

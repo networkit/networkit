@@ -370,6 +370,7 @@ std::vector<std::vector<NetworKit::node>> NetworKit::LFRGenerator::assignNodesTo
                 WARN("Changing the community sizes by merging the two smallest communities");
                 DEBUG(attempts, " nodes were assigned to full communities, in total, ",
                       totalAttempts, " were made");
+                tlx::unused(totalAttempts);
                 auto minIt =
                     std::min_element(communitySizeSequence.begin(), communitySizeSequence.end());
                 count minVal = *minIt;

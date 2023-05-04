@@ -13,6 +13,7 @@
 #include <utility>
 
 namespace NetworKit {
+
 using index = uint64_t; ///< more expressive name for an index into an array
 
 /// Should be used in OpenMP parallel for-loops and is associated with unsigned semantics.

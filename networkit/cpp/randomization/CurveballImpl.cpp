@@ -385,7 +385,6 @@ void CurveballIM::run(const trade_vector &trades) {
     else
         restructureGraph(trades);
 
-    count trade_count = 0;
     neighbour_vector common_neighbours;
     neighbour_vector disjoint_neighbours;
 
@@ -510,7 +509,6 @@ void CurveballIM::run(const trade_vector &trades) {
         if (shared)
             update(u, v);
 
-        trade_count++;
     }
 
     hasRun = true;

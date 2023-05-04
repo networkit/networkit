@@ -52,9 +52,7 @@ void DynamicBarabasiAlbertGenerator::generate() {
     node u = this->Gproxy->addNode();
     std::unordered_set<node> targets; // avoid duplicate edges by collecting target nodes in a set
 
-    count nAttempts = 0;
     while (targets.size() < k) {
-        nAttempts++;
 
         // 2) pick a random number that is 0 or greater and is less than the sum of the weights
         uint64_t rand = Aux::Random::integer(degSum);

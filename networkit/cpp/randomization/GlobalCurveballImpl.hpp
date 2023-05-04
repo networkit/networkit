@@ -127,10 +127,8 @@ public:
             assert(current_pq.size() == inputGraph.numberOfEdges());
             trade_sequence.switchToRound(round);
 
-            count trade = 0;
             while (!current_pq.empty()) {
                 handler.assureRunning();
-                trade++;
 
                 // fetch and prepare information received via TFP
                 // fetch all messages addressed to next node pair

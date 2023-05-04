@@ -144,6 +144,7 @@ TEST_F(QuadTreeGTest, testQuadTreeHyperbolicCircle) {
         }
         if (notfound > 0) {
             DEBUG("Found only ", didfind, " of ", didfind + notfound, " neighbours");
+            tlx::unused(didfind);
         }
     }
 }
@@ -718,6 +719,7 @@ TEST_F(QuadTreeGTest, debugTreeExport) {
 
         if (current.height() == 1) {
             index i = 0;
+            tlx::unused(i);
             for (index elem : current.getElements()) {
                 i++;
                 double p = edgeProb(HyperbolicSpace::poincareMetric(angles[elem], radii[elem],

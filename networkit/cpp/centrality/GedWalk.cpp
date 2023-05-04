@@ -417,6 +417,7 @@ void GedWalk::maximizeGain() {
         ++gainIters;
     }
     DEBUG(gainIters, " iterations to find maximal gain");
+    tlx::unused(gainIters);
 }
 
 bool GedWalk::separateNodes() {
@@ -448,6 +449,7 @@ bool GedWalk::separateNodes() {
     } while (isSeparated(z, s));
 
     DEBUG(separationIters, " iterations for separation");
+    tlx::unused(separationIters);
 
     // Restore the bound queue.
     boundQ.push(z);
