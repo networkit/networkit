@@ -235,17 +235,17 @@ jobs:
 
   linux-build-min-support:
     name: "Linux (${{ matrix.compiler }}, CPython 3.7): full"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        compiler: ['gcc-7', 'clang-5']
+        compiler: ['gcc-8', 'clang-7']
     steps:
       - name: Install prerequisites
         run:  |
           sudo apt-get update
           sudo apt-get install ninja-build
-          sudo apt-get install libomp5 libomp-dev clang-5.0 clang++-5.0
-          sudo apt-get install gcc-7 g++-7
+          sudo apt-get install clang-7 clang++-7
+          sudo apt-get install gcc-8 g++-8
       - name: Setup Python 3.7
         uses: actions/setup-python@v3
         with:
@@ -263,8 +263,8 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/full.sh
         shell: bash
         env:
-          CC: ${{ matrix.compiler == 'gcc-7' && 'gcc-7' || 'clang-5.0' }}
-          CXX: ${{ matrix.compiler == 'gcc-7' && 'g++-7' || 'clang++-5.0' }}
+          CC: ${{ matrix.compiler == 'gcc-8' && 'gcc-8' || 'clang-7' }}
+          CXX: ${{ matrix.compiler == 'gcc-8' && 'g++-8' || 'clang++-7' }}
 
   linux-build-clang-tidy:
     name: "Linux (clang-15): clang-tidy"
