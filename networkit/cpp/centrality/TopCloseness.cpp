@@ -17,6 +17,7 @@
 
 #include <tlx/container/d_ary_addressable_int_heap.hpp>
 #include <tlx/container/d_ary_heap.hpp>
+#include <tlx/unused.hpp>
 
 namespace NetworKit {
 
@@ -432,6 +433,7 @@ void TopCloseness::run() {
                     }
                 }
                 DEBUG("    We have improved ", imp, " bounds.");
+                tlx::unused(imp);
             } else {
                 // MICHELE: we use BFScut to bound the centrality of s.
                 DEBUG("    Running BFScut with x=", kth, " (degree:", G.degreeOut(s), ").");

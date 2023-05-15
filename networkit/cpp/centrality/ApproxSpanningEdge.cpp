@@ -13,6 +13,8 @@
 #include <networkit/centrality/ApproxSpanningEdge.hpp>
 #include <networkit/components/BiconnectedComponents.hpp>
 
+#include <tlx/unused.hpp>
+
 namespace NetworKit {
 
 ApproxSpanningEdge::ApproxSpanningEdge(const Graph &G, double eps) : G(G), eps(eps) {
@@ -179,6 +181,7 @@ void ApproxSpanningEdge::run() {
             sequences.push_back(std::move(sequence));
             sequence.clear();
             assert(nVisited == curComponent.size());
+            tlx::unused(nVisited);
         }
     }
 

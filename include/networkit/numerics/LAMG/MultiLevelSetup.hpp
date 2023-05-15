@@ -296,12 +296,10 @@ bool MultiLevelSetup<Matrix>::coarseningElimination(Matrix &matrix,
         std::vector<index> cSet(nc);
 
         std::vector<index> coarseIndex(matrix.numberOfRows());
-        count numFNodes = 0;
         for (index i = 0, fIndex = 0, cIndex = 0; i < matrix.numberOfRows(); ++i) {
             if (fNode[i] && fIndex < nf) {
                 coarseIndex[i] = fIndex;
                 fSet[fIndex++] = i;
-                numFNodes++;
             } else {
                 coarseIndex[i] = cIndex;
                 cSet[cIndex++] = i;

@@ -1,0 +1,51 @@
+[project]
+name = "networkit"
+version = "10.1"
+description = "NetworKit is a toolbox for high-performance network analysis"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {file = "License.txt"}
+keywords =["graph algorithm", "network analysis", "social network"]
+authors = [
+  {name = "Christian L. Staudt"},
+  {name = "Henning Meyerhenke"}
+]
+
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Environment :: Web Environment",
+  "Environment :: Other Environment",
+  "Framework :: IPython",
+  "Intended Audience :: Developers",
+  "Intended Audience :: End Users/Desktop",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Operating System :: OS Independent', 'Programming Language :: C++",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+  "Topic :: Scientific/Engineering :: Chemistry",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Scientific/Engineering :: Mathematics",
+  "Topic :: Scientific/Engineering :: Visualization"
+]
+
+dependencies = [
+  "scipy",
+  "numpy"
+]
+
+[project.urls]
+homepage = "https://networkit.github.io/"
+documentation = "https://networkit.github.io/dev-docs/index.html"
+repository = "https://github.com/networkit/networkit"
+changelog = "https://github.com/networkit/networkit/blob/master/CHANGES.md"
+
+
+[build-system]
+requires = [
+  "cython",
+  "setuptools"
+]
