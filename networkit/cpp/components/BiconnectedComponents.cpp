@@ -45,13 +45,13 @@ void BiconnectedComponents::run() {
 
     std::stack<std::pair<node, Graph::NeighborIterator>> stack;
     std::vector<std::pair<node, node>> edgeStack;
-    G->forNodes([&](node v) {
-        if (visited[v]) {
+    G->forNodes([&](node currentNode) {
+        if (visited[currentNode]) {
             return;
         }
 
-        isRoot[v] = true;
-        stack.push(std::make_pair(v, G->neighborRange(v).begin()));
+        isRoot[currentNode] = true;
+        stack.emplace(currentNode, G->neighborRange(currentNode).begin());
 
         do {
             node u = stack.top().first;
@@ -65,7 +65,7 @@ void BiconnectedComponents::run() {
                 if (!visited[neighbor]) {
                     visitNode(neighbor);
                     parent[neighbor] = u;
-                    stack.push(std::make_pair(neighbor, G->neighborRange(neighbor).begin()));
+                    stack.emplace(neighbor, G->neighborRange(neighbor).begin());
                     edgeStack.emplace_back(u, neighbor);
                     break;
                 } else if (neighbor != parent[u] && level[neighbor] < level[u]) {
