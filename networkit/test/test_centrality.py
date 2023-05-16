@@ -6,6 +6,7 @@ import numpy as np
 import scipy
 
 
+
 class Test_Centrality(unittest.TestCase):
 
 	def test_DegreeCentrality(self):
@@ -56,6 +57,28 @@ class Test_Centrality(unittest.TestCase):
 
 		for apx, exact in zip(apxDiag, diag):
 			self.assertLessEqual(abs(apx - exact), eps)
+
+	def test_Matrices(self):
+		G = nk.readGraph("input/jazz2_directed.gml",nk.Format.GML)
+		A = nk.algebraic.adjacencyMatrix(G, "dense")
+		self.assertEqual(A[0][0], 1.0)
+		self.assertEqual(A[1][1], 1.0)
+		self.assertEqual(A[2][2], 0.0)
+		self.assertEqual(A[3][3], 0.0)
+		self.assertEqual(A[4][4], 0.0)
+
+		B = nk.algebraic.laplacianMatrix(G)
+		#B noch asserten
+
+		eigenB = nk.algebraic.laplacianEigenvectors(G)
+		self.assertAlmostEqual(eigenB[0][0], -2.2979478724907566e-18-9.534970958477811e-18j, 5)		
+
+	def test_eigenvectorValues(self):
+		A_val = np.array([ [-1.3, 2.7, 0.2], [0.8, 4.1, 2.2], [2.1, 4.4, -1.9] ])
+		A_mat = scipy.sparse.csr_matrix(A_val)
+		eigen = nk.algebraic.eigenvectors(A_mat)
+		self.assertAlmostEqual(eigen[0][0], 5.891378730028431+0j, 3)
+
 
 if __name__ == "__main__":
 	unittest.main()
