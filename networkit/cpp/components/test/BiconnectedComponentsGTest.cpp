@@ -57,7 +57,7 @@ TEST_F(BiconnectedComponentsGTest, testBiconnectedComponentsTinyDelete) {
     BiconnectedComponents bc2(G);
     bc2.run();
 
-    EXPECT_EQ(bc1.numberOfComponents(), 2);
+    EXPECT_EQ(bc2.numberOfComponents(), 2);
 }
 
 TEST_F(BiconnectedComponentsGTest, testBiconnectedComponents) {

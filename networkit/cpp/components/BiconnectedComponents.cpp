@@ -20,7 +20,7 @@ BiconnectedComponents::BiconnectedComponents(const Graph &G) : G(&G) {
 }
 
 void BiconnectedComponents::init() {
-    n = G->numberOfNodes();
+    n = G->upperNodeIdBound();
     idx = 0;
     nComp = 0;
     level.assign(n, 0);
