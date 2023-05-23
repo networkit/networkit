@@ -9,6 +9,8 @@ from libcpp cimport bool as bool_t
 import math
 
 from .base cimport _Algorithm, Algorithm
+from .dynbase cimport _DynAlgorithm
+from .dynbase import DynAlgorithm
 from .dynamics cimport _GraphEvent, GraphEvent
 from .graph cimport _Graph, Graph
 from .structures cimport _Cover, Cover, _Partition, Partition, count, index, node, edgeweight
@@ -396,7 +398,7 @@ cdef class KadabraBetweenness(Algorithm):
 
 cdef extern from "<networkit/centrality/DynBetweenness.hpp>":
 
-	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness"(_Algorithm):
+	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness"(_Algorithm, _DynAlgorithm):
 		_DynBetweenness(_Graph) except +
 		void update(_GraphEvent) except +
 		void updateBatch(vector[_GraphEvent]) except +
@@ -404,7 +406,7 @@ cdef extern from "<networkit/centrality/DynBetweenness.hpp>":
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
 
-cdef class DynBetweenness(Algorithm):
+cdef class DynBetweenness(Algorithm, DynAlgorithm):
 	""" 
 	DynBetweenness(G)
 	
@@ -421,35 +423,6 @@ cdef class DynBetweenness(Algorithm):
 	def __cinit__(self, Graph G):
 		self._G = G
 		self._this = new _DynBetweenness(G._this)
-
-	def update(self, ev):
-		"""
-		update(ev)
-		
-		Updates the betweenness centralities after the edge insertions.
-
-		Parameters
-		----------
-		ev : networkit.dynamics.GraphEvent
-			Update the Betweenness based on a given graph event.
-		"""
-		(<_DynBetweenness*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-
-	def updateBatch(self, batch):
-		"""
-		updateBatch(batch)
-
-		Updates the betweenness centralities after the batch `batch` of edge insertions.
-
-		Parameters
-		----------
-		batch : list(networkit.dynamics.GraphEvent)
-			Update the Betweenness based on a given list of graph events.
-		"""
-		cdef vector[_GraphEvent] _batch
-		for ev in batch:
-			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-		(<_DynBetweenness*>(self._this)).updateBatch(_batch)
 
 	def scores(self):
 		""" 
@@ -498,7 +471,7 @@ cdef class DynBetweenness(Algorithm):
 
 cdef extern from "<networkit/centrality/DynApproxBetweenness.hpp>":
 
-	cdef cppclass _DynApproxBetweenness "NetworKit::DynApproxBetweenness"(_Algorithm):
+	cdef cppclass _DynApproxBetweenness "NetworKit::DynApproxBetweenness"(_Algorithm, _DynAlgorithm):
 		_DynApproxBetweenness(_Graph, double, double, bool_t, double) except +
 		void update(_GraphEvent) except +
 		void updateBatch(vector[_GraphEvent]) except +
@@ -507,7 +480,7 @@ cdef extern from "<networkit/centrality/DynApproxBetweenness.hpp>":
 		double score(node) except +
 		count getNumberOfSamples() except +
 
-cdef class DynApproxBetweenness(Algorithm):
+cdef class DynApproxBetweenness(Algorithm, DynAlgorithm):
 	""" 
 	DynApproxBetweenness(G, epsilon=0.01, delta=0.1, storePredecessors=True, universalConstant=1.0)
 	
@@ -539,35 +512,6 @@ cdef class DynApproxBetweenness(Algorithm):
 	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, storePredecessors = True, universalConstant=1.0):
 		self._G = G
 		self._this = new _DynApproxBetweenness(G._this, epsilon, delta, storePredecessors, universalConstant)
-
-	def update(self, ev):
-		""" 
-		update(ev)
-		
-		Updates the betweenness centralities after the edge insertions.
-
-		Parameters
-		----------
-		ev : networkit.dynamics.GraphEvent
-			Update the Betweenness based on a given graph event.
-		"""
-		(<_DynApproxBetweenness*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-
-	def updateBatch(self, batch):
-		""" 
-		updateBatch(batch)
-		
-		Updates the betweenness centralities after the batch `batch` of edge insertions.
-
-		Parameters
-		----------
-		batch : list(networkit.dynamics.GraphEvent)
-			Update the Betweenness based on a given list of graph events.
-		"""
-		cdef vector[_GraphEvent] _batch
-		for ev in batch:
-			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-		(<_DynApproxBetweenness*>(self._this)).updateBatch(_batch)
 
 	def scores(self):
 		""" 
@@ -1160,7 +1104,7 @@ cdef class TopHarmonicCloseness(Algorithm):
 
 cdef extern from "<networkit/centrality/DynTopHarmonicCloseness.hpp>":
 
-	cdef cppclass _DynTopHarmonicCloseness "NetworKit::DynTopHarmonicCloseness"(_Algorithm):
+	cdef cppclass _DynTopHarmonicCloseness "NetworKit::DynTopHarmonicCloseness"(_Algorithm, _DynAlgorithm):
 		_DynTopHarmonicCloseness(_Graph G, count, bool_t) except +
 		vector[pair[node, edgeweight]] ranking(bool_t) except +
 		vector[node] topkNodesList(bool_t) except +
@@ -1168,7 +1112,7 @@ cdef extern from "<networkit/centrality/DynTopHarmonicCloseness.hpp>":
 		void update(_GraphEvent) except +
 		void updateBatch(vector[_GraphEvent]) except +
 
-cdef class DynTopHarmonicCloseness(Algorithm):
+cdef class DynTopHarmonicCloseness(Algorithm, DynAlgorithm):
 	""" 
 	DynTopHarmonicCloseness(G, k=1, useBFSbound=True)
 	
@@ -1267,35 +1211,6 @@ cdef class DynTopHarmonicCloseness(Algorithm):
 		return (<_DynTopHarmonicCloseness*>(self._this)).topkScoresList(includeTrail)
 
 
-
-	def update(self, ev):
-		""" 
-		update(ev)
-		
-		Updates the betweenness centralities after the edge insertions.
-
-		Parameters
-		----------
-		ev : networkit.dynamics.GraphEvent
-			Update the Betweenness based on a given graph event.
-		"""
-		(<_DynTopHarmonicCloseness*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-
-	def updateBatch(self, batch):
-		""" 
-		updateBatch(batch)
-		
-		Updates the betweenness centralities after the batch `batch` of edge insertions.
-
-		Parameters
-		----------
-		batch : list(networkit.dynamics.GraphEvent)
-			Update the Betweenness based on a given list of graph events.
-		"""
-		cdef vector[_GraphEvent] _batch
-		for ev in batch:
-			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-		(<_DynTopHarmonicCloseness*>(self._this)).updateBatch(_batch)
 
 cdef extern from "<networkit/centrality/LocalPartitionCoverage.hpp>":
 
@@ -2053,7 +1968,7 @@ cdef class KatzCentrality(Centrality):
 
 cdef extern from "<networkit/centrality/DynKatzCentrality.hpp>":
 
-	cdef cppclass _DynKatzCentrality "NetworKit::DynKatzCentrality" (_Centrality):
+	cdef cppclass _DynKatzCentrality "NetworKit::DynKatzCentrality" (_Centrality, _DynAlgorithm):
 		_DynKatzCentrality(_Graph G, count, bool_t, double) except +
 		void update(_GraphEvent) except +
 		void updateBatch(vector[_GraphEvent]) except +
@@ -2082,35 +1997,6 @@ cdef class DynKatzCentrality(Centrality):
 	def __cinit__(self, Graph G, k, groupOnly=False, tolerance=1e-9):
 		self._G = G
 		self._this = new _DynKatzCentrality(G._this, k, groupOnly, tolerance)
-
-	def update(self, ev):
-		""" 
-		update(ev)
-		
-		Updates the centralities after the edge insertions.
-
-		Parameters
-		----------
-		ev : networkit.dynamics.GraphEvent
-			Update the Betweenness based on a given graph event.
-		"""
-		(<_DynKatzCentrality*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-
-	def updateBatch(self, batch):
-		""" 
-		updateBatch(batch)
-		
-		Updates the centralities after the batch `batch` of edge insertions.
-
-		Parameters
-		----------
-		batch : list(networkit.dynamics.GraphEvent)
-			Update the Betweenness based on a given list of graph events.
-		"""
-		cdef vector[_GraphEvent] _batch
-		for ev in batch:
-			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-		(<_DynKatzCentrality*>(self._this)).updateBatch(_batch)
 
 	def top(self, n=0):
 		""" 
