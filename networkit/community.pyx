@@ -1166,7 +1166,7 @@ cdef extern from "<networkit/community/LocalCommunityEvaluation.hpp>":
 		double getMaximumValue() except +
 		double getMinimumValue() except +
 		double getValue(index i) except +
-		vector[double] &getValues() except +
+		vector[double] getValues() except +
 		bool_t isSmallBetter() except +
 
 cdef class LocalCommunityEvaluation(Algorithm):
