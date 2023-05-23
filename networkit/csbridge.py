@@ -46,7 +46,7 @@ def widget_from_graph(G, node_scores = None, node_partition = None, node_palette
 	node_palette : list of tuples, optional
 		Array consisting of normalized rgb-values. If none is given, seaborn.color_palette.colors is used.  Default: None
 	show_ids : 	boolean, optional
-		Set whether node ids should be visible in plot-widget. Is set to True by default. Default: None
+		Set whether node ids should be visible in plot-widget. Is set to True by default. Default: True
 	"""
 	print("WARNING: Module csbridge is deprecated and will be removed in future updates. Use networkit.vizbridges.widgetFromGraph() instead.")
 	return widgetFromGraph(G, nodeScores = node_scores, nodePartition = node_partition, nodePalette = node_palette, showIds = show_ids)

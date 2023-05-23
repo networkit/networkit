@@ -462,15 +462,9 @@ cdef class GraphTools:
 	def subgraphFromNodes(Graph graph, vector[node] nodes, includeOutNeighbors=False, includeInNeighbors=False, bool_t compact = False):
 		"""
 		subgraphFromNodes(graph, list(int) nodes, includeOutNeighbors=False, includeInNeighbors=False, compact = False)
-		
-		Returns an induced subgraph of this graph (including potential edge
-		weights/directions)
 
-		The subgraph contains all nodes in Nodes  and all edges which
-		have one end point in Nodes and the other in Nodes.
-
-		Parameters:
-		-----------
+		Parameters
+		----------
 		graph : networkit.Graph
 			The input graph.
 		nodes : list(int)
@@ -488,7 +482,7 @@ cdef class GraphTools:
 		Returns
 		-------
 		graph : networkit.Graph
-			Induced subgraph.
+			Induced subgraph of the input graph (including potential edge/weight directions).
 		"""
 		# Deprecated compatibility wrapper. We use "vector" to
 		# preserve the sorting of the nodes for compact
@@ -671,6 +665,8 @@ cdef class GraphTools:
 	@staticmethod
 	def augmentGraph(Graph G):
 		"""
+		augmentGraph(G)
+
 		Augments the input graph in-place as required by ForestCentrality. With respect to the input
 		graph G, the augmented graph has a new root node connected to all the other nodes in the graph.
 
@@ -689,6 +685,8 @@ cdef class GraphTools:
 	@staticmethod
 	def createAugmentedGraph(Graph G):
 		"""
+		createAugmentedGraph(G)
+
 		Constructs an augmented graph as required by ForestCentrality. With respect to the input
 		graph G, the augmented graph has a new root node connected to all the other nodes in the
 		graph.

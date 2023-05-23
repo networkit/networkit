@@ -134,7 +134,7 @@ cdef class ConnectedComponents(ComponentDecomposition):
 
 		Parameters
 		----------
-		graph : networkit.Graph
+		G : networkit.Graph
 			The input graph.
 		compactGraph : bool, optional
 			If true, the node ids of the output graph will be compacted
@@ -163,13 +163,13 @@ cdef class ParallelConnectedComponents(ComponentDecomposition):
 
 	Parameters
 	----------
-	graph : networkit.Graph
+	G : networkit.Graph
 		The input graph
 	coarsening : bool, optional
 		Specifies whether the main algorithm based on label propagation (LP)
 		shall work recursively (true) or not (false) by coarsening/contracting
 		an LP-computed clustering. Defaults to true since we saw positive effects
-		in terms of running time for many networks. Beware of possible memory implications.
+		in terms of running time for many networks. Beware of possible memory implications. Default: True
 	"""
 
 	def __cinit__(self,  Graph G, coarsening=True	):

@@ -22,7 +22,7 @@ cdef class Graph:
 	Parameters
 	----------
 	n : int, optional
-		Number of nodes.
+		Number of nodes. Default: 0
 	weighted : bool, optional
 		If set to True, the graph can have edge weights other than 1.0. Default: False
 	directed : bool, optional
@@ -72,7 +72,7 @@ cdef class Graph:
 		Parameters
 		----------
 		force : bool, optional
-			Force re-indexing of edges.
+			Force re-indexing of edges. Default: False
 		"""
 		self._this.indexEdges(force)
 
@@ -93,6 +93,13 @@ cdef class Graph:
 		"""
 		edgeId(u, v)
 
+		Parameters
+		----------
+		u: node
+			Node Id from u.
+		v: node
+			Node Id from v.
+			
 		Returns
 		-------
 		int
@@ -365,7 +372,7 @@ cdef class Graph:
 		v : int
 			Endpoint of edge.
 		w : float, optional
-			Edge weight.
+			Edge weight. Default: 1.0
 		addMissing : bool, optional
 			Add missing endpoints if necessary (i.e., increase numberOfNodes). Default: False
 		checkMultiEdge : bool, optional

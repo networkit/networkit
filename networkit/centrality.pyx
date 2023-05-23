@@ -82,8 +82,8 @@ cdef class Centrality(Algorithm):
 
 		Returns
 		-------
-		dict(tuple(int, float))
-			A vector of pairs sorted into descending order. Each pair contains a node and the corresponding score
+		list(tuple(int, float))
+			A list of pairs sorted into descending order. Each pair contains a node and the corresponding score
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
@@ -193,13 +193,13 @@ cdef class ApproxBetweenness(Centrality):
 	G : networkit.Graph
 		The input graph
 	epsilon : double, optional
-		Maximum additive error
+		Maximum additive error. Default: 0.01
 	delta : double, optional
-		Probability that the values are within the error guarantee
+		Probability that the values are within the error guarantee. Default: 0.1
 	universalConstant: double, optional
 		The universal constant to be used in computing the sample size.
 		It is 1 by default. Some references suggest using 0.5, but there
-		is no guarantee in this case.
+		is no guarantee in this case. Default: 1.0
 	"""
 
 	def __cinit__(self, Graph G, epsilon=0.01, delta=0.1, universalConstant=1.0):
@@ -257,7 +257,7 @@ cdef extern from "<networkit/centrality/KadabraBetweenness.hpp>":
 
 cdef class KadabraBetweenness(Algorithm):
 	"""
-	KadabraBetweenness(Graph G, err = 0.01, delta = 0.1, k = 0, unionSample = 0, startFactor = 100
+	KadabraBetweenness(Graph G, err = 0.01, delta = 0.1, k = 0, unionSample = 0, startFactor = 100)
 
 	Approximation of the betweenness centrality and computation of the top-k
 	nodes with highest betweenness centrality according to the algorithm
@@ -773,7 +773,7 @@ cdef extern from "<networkit/centrality/Closeness.hpp>":
 
 cdef class Closeness(Centrality):
 	"""
-	Closeness(G, normalized, checkConnectdedness)
+	Closeness(G, normalized, checkConnectedness)
 	Closeness(G, normalized, variant)
 
 	Constructs the Closeness class for the given Graph `G`. If the Closeness scores should not be normalized,
@@ -792,16 +792,16 @@ cdef class Closeness(Centrality):
 	normalized : bool
 		Set this parameter to False if scores should not be normalized into an interval of [0,1].
 		Normalization only works for unweighted graphs.
-	checkConnectdedness : bool
+	checkConnectedness : bool
 		Set this parameter to True to also check if the graph is connected before computing closeness.
 		Set this parameter to False to not check if the graph is connected (note: the standard definition
 		of closeness works for connected graphs, choose this if the input graph is known to be connected).
 	ClosenessVariant : networkit.centrality.ClosenessVariant
 		Set this parameter to networkit.centrality.ClosenessVariant.Standard to use the standard
-		definition of closeness, that is defined for connected graphs only; in this case, checkConnectdedness
+		definition of closeness, that is defined for connected graphs only; in this case, checkConnectedness
 		is automatically set to True.
 		Set this parameter to networkit.centrality.ClosenessVariant.Generalized to use the generalized
-		definition of closeness, that is defined for also non-connected graphs; in this case, checkConnectdedness
+		definition of closeness, that is defined for also non-connected graphs; in this case, checkConnectedness
 		is automatically set to False.
 	"""
 
@@ -2654,10 +2654,10 @@ cdef class ApproxElectricalCloseness(Centrality):
 	G : networkit.Graph
 		The input graph.
 	eps : float, optional
-		Maximum absolute error of the elements in the diagonal.
+		Maximum absolute error of the elements in the diagonal. Default: 0.1
 	kappa : float, optional
 		Balances the tolerance of the solver for the linear system and the
-		number of USTs to be sampled.
+		number of USTs to be sampled. Default: 0.3
 	"""
 
 	def __cinit__(self, Graph G, double eps = 0.1, double kappa = 0.3):
@@ -2688,7 +2688,7 @@ cdef class ApproxElectricalCloseness(Centrality):
 		Parameters
 		----------
 		tol : float
-			Tolerance for the LAMG solver.
+			Tolerance for the LAMG solver. Default: 1e-9
 
 		Returns
 		-------
