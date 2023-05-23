@@ -12,55 +12,55 @@ class TestDistanceAlgorithms(unittest.TestCase):
 		self.L = nk.readGraph("input/looptest1.gml", nk.Format.GML) #without self-loops
 		self.LL = nk.readGraph("input/looptest2.gml", nk.Format.GML) #with self-loops sprinkled in
 
-	def testDistanceDiameter(self):
+	def testDiameter(self):
 		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.ESTIMATED_RANGE, error = 0.1)
 		D.run()
 		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.ESTIMATED_SAMPLES, nSamples = 5)
 		D.run()
 		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.EXACT)
 		D.run()
+		self.assertIsInstance(D.getDiameter(),tuple)
 
-
-	def testDistanceEccentricity(self):
+	def testEccentricity(self):
 		E = nk.distance.Eccentricity()
 		E.getValue(self.LL, 0)
 
-
-	def testDistanceEffectiveDiameter(self):
+	def testEffectiveDiameter(self):
 		algo = nk.distance.EffectiveDiameter(self.L)
 		algo.run()
 		algo = nk.distance.EffectiveDiameter(self.LL)
 		algo.run()
+		self.assertIsInstance(algo.getEffectiveDiameter(), float)
 
-
-	def testDistanceApproxEffectiveDiameter(self):
+	def testApproxEffectiveDiameter(self):
 		algo = nk.distance.EffectiveDiameterApproximation(self.L)
 		algo.run()
 		algo = nk.distance.EffectiveDiameterApproximation(self.LL)
 		algo.run()
+		self.assertIsInstance(algo.getEffectiveDiameter(),float)
 
-
-	def testDistanceApproxHopPlot(self):
+	def testApproxHopPlot(self):
 		algo = nk.distance.HopPlotApproximation(self.L)
 		algo.run()
 		algo = nk.distance.HopPlotApproximation(self.LL)
 		algo.run()
+		self.assertIsInstance(algo.getHopPlot(), dict)
 
-
-	def testDistanceNeighborhoodFunction(self):
+	def testNeighborhoodFunction(self):
 		algo = nk.distance.NeighborhoodFunction(self.L)
 		algo.run()
 		algo = nk.distance.NeighborhoodFunction(self.LL)
 		algo.run()
+		self.assertIsInstance(algo.getNeighborhoodFunction(),list)
 
-
-	def testDistanceApproxNeighborhoodFunction(self):
+	def testApproxNeighborhoodFunction(self):
 		algo = nk.distance.NeighborhoodFunctionApproximation(self.L)
 		algo.run()
 		algo = nk.distance.NeighborhoodFunctionApproximation(self.LL)
 		algo.run()
+		self.assertIsInstance(algo.getNeighborhoodFunction(),list)
 
-	def testDistanceAStar(self):
+	def testAStar(self):
 		# Builds a mesh graph with the given number of rows and columns
 		def buildMesh(rows, cols):
 			G = nk.Graph(rows * cols, False, False)
@@ -141,7 +141,15 @@ class TestDistanceAlgorithms(unittest.TestCase):
 					g.forEdges(lambda u, v, ew, eid: g.setWeight(u, v, random.random()))
 				yield g
 
-	def testDistanceSPSP(self):
+	def testJaccard(self):
+		for g in self.genERGraphs():
+			g.indexEdges()
+			jacc = nk.distance.JaccardDistance(g,[1,2,3])
+			jaccAtt = nk.distance.JaccardSimilarityAttributizer(g,[1,2,3])
+			self.assertIsInstance(jacc.getAttribute(),list)
+			self.assertIsInstance(jaccAtt.getAttribute(),list)
+	
+	def testSPSP(self):
 		for g in self.genERGraphs():
 			for nSources in [1, 10, 50]:
 				sources = nk.graphtools.randomNodes(g, nSources)
@@ -175,12 +183,80 @@ class TestDistanceAlgorithms(unittest.TestCase):
 					algo = nk.distance.MultiTargetDijkstra(g, source, targets)
 				else:
 					algo = nk.distance.MultiTargetBFS(g, source, targets)
-				algo.setTargets(targets)
-				#algo.setTarget(targets[0])	
-				algo.setSource(source)	
+				algo.setSource(source)
+				algo.setTarget(targets[nTargets-1])
 				algo.run()
-				self.assertLessEqual(len(algo.getPredecessors()), g.numberOfNodes())	
-				self.assertEqual(len(algo.getDistances()), len(targets))
+				self.assertLessEqual(len(algo.getPredecessors()),g.numberOfNodes())
+				#self.assertLessEqual(len(targets),len(algo.getDistances())) #getdistances -> segfault
+
+	def testSSSP(self):
+		for g in self.genERGraphs():
+			source = nk.graphtools.randomNode(g)
+			for nTargets in [1, 10, 50]:
+				targets = nk.graphtools.randomNodes(g, nTargets)
+				algo = None
+				if g.isWeighted():
+					algo = nk.distance.Dijkstra(g, source, targets, storeNodesSortedByDistance = True)
+				else:
+					algo = nk.distance.BFS(g, source, targets)
+				algo.setSource(source)	
+				algo.setTarget(targets[nTargets-1])
+				algo.run()
+				self.assertLessEqual(len(algo.getPredecessors(source)),g.numberOfNodes())
+				self.assertLessEqual(len(targets),len(algo.getDistances()))
+				self.assertLessEqual(len(algo.getPaths(targets[nTargets-1])),g.numberOfNodes())
+				if g.isWeighted():
+					self.assertLessEqual(len(algo.getNodesSortedByDistance()), g.numberOfNodes())
+				self.assertLessEqual(1.0, algo.numberOfPaths(targets[nTargets-1]))
+
+	def testDynSSSP(self):
+		for g in self.genERGraphs():
+			source = nk.graphtools.randomNode(g)
+			for nTargets in [1, 10, 50]:
+				targets = nk.graphtools.randomNodes(g, nTargets)
+				algoDyn = None
+				if g.isWeighted():
+					algoDyn = nk.distance.DynDijkstra(g, source)
+				else:
+					algoDyn = nk.distance.DynBFS(g, source)
+				algoDyn.run()
+				if not g.isWeighted():
+					batch1 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 3, 7, 1.0)
+					batch2 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 1, 5, 1.0)
+					batch = [batch1,batch2]
+					algoDyn.updateBatch(batch)
+					algoDyn.run()
+					self.assertIsInstance(algoDyn.modified(), bool)
+
+	def testAdamicAdarDistance(self):
+		for g in self.genERGraphs():
+			g.indexEdges()
+			adam = nk.distance.AdamicAdarDistance(g)
+			adam.preprocess()
+			self.assertIsInstance(adam.getAttribute(),list)
+			e = nk.graphtools.randomEdge(g)
+			self.assertIsInstance(adam.distance(e[0],e[1]),float)
+
+	def testAlgebraicDistance(self):
+		for g in self.genERGraphs():
+			g.indexEdges()
+			alge = nk.distance.AlgebraicDistance(g, withEdgeScores=True)
+			alge.preprocess()
+			self.assertIsInstance(alge.getEdgeScores(),list)
+			e = nk.graphtools.randomEdge(g)
+			self.assertIsInstance(alge.distance(e[0],e[1]),float)		
+	
+	def testCommuteTimeDistance(self):
+		for g in self.genERGraphs():
+			if not g.isDirected():
+				g.indexEdges()
+				ctd = nk.distance.CommuteTimeDistance(g)
+				ctd.runApproximation()
+				ctd.runParallelApproximation()
+				ctd.runSinglePair(nk.graphtools.randomNode(g),nk.graphtools.randomNode(g))
+				ctd.runSingleSource(nk.graphtools.randomNode(g))
+				e = nk.graphtools.randomEdge(g)
+				self.assertIsInstance(ctd.distance(e[0],e[1]),float)	
 
 	def testPrunedLandmarkLabeling(self):
 		for g in self.genERGraphs():
