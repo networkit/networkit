@@ -1,6 +1,23 @@
 # distutils: language=c++
 
-cdef class Algorithm:
+
+cdef class _CythonParentClass:
+	""" Abstract base class for Cython 
+	The purpose of this class is to provide a single combined base cdef class for all classes that we use in this project.
+	Cython cannot handle multiple inheritance without this single common base class."""
+	def __init__(self, *args, **namedargs):
+		if type(self) == _CythonParentClass:
+			raise RuntimeError("Error, you may not use _CythonParentClass directly, use a sub-class instead")
+
+	def __cinit__(self, *args, **namedargs):
+		self._this = NULL
+
+	def __dealloc__(self):
+		if self._this != NULL:
+			del self._this
+		self._this = NULL
+
+cdef class Algorithm(_CythonParentClass):
 	""" Abstract base class for algorithms """
 	def __init__(self, *args, **namedargs):
 		if type(self) == Algorithm:

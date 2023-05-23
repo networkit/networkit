@@ -6,14 +6,8 @@ cdef extern from "<networkit/base/Algorithm.hpp>" namespace "NetworKit":
 		void run() nogil except +
 		bool_t hasFinished() except +
 
-cdef class Algorithm:
+cdef class _CythonParentClass:
 	cdef _Algorithm *_this
 
-# This creates a cyclic import and is currently unused
-#from .dynamics cimport _GraphEvent, GraphEvent
-
-#cdef extern from "<networkit/base/DynAlgorithm.hpp>":
-#
-#	cdef cppclass _DynAlgorithm "NetworKit::DynAlgorithm":
-#		void update(_GraphEvent) except +
-#		void updateBatch(vector[_GraphEvent]) except +
+cdef class Algorithm(_CythonParentClass):
+	pass
