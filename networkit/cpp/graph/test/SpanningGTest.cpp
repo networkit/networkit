@@ -34,7 +34,7 @@ TEST_F(SpanningGTest, testKruskalMinSpanningForest) {
     }
 }
 
-TEST_F(SpanningGTest, testKruskalMinSpanningForestSimple) {
+TEST_F(SpanningGTest, testKruskalMinSpanningForestSimple1) {
     Graph g(5, true);
     g.addEdge(0, 1, 1);
     g.addEdge(1, 2, 1);
@@ -46,6 +46,25 @@ TEST_F(SpanningGTest, testKruskalMinSpanningForestSimple) {
     KruskalMSF msf(g);
     msf.run();
     Graph T = msf.getForest();
+
+    // check that each node has an edge in the spanning tree (if it had one before)
+    T.forNodes([&](node u) { EXPECT_TRUE(T.degree(u) > 0 || g.degree(u) == 0); });
+}
+
+TEST_F(SpanningGTest, testKruskalMinSpanningForestSimple2) {
+    Graph g(4, true);
+    g.addEdge(0, 1, 1);
+    g.addEdge(0, 2, 1);
+    g.addEdge(0, 3, 1);
+    g.addEdge(1, 2, 2);
+    g.addEdge(2, 3, 2);
+    g.indexEdges();
+
+    KruskalMSF msf(g);
+    msf.run();
+    Graph T = msf.getForest();
+
+    EXPECT_EQ(msf.getTotalWeight(), 3);
 
     // check that each node has an edge in the spanning tree (if it had one before)
     T.forNodes([&](node u) { EXPECT_TRUE(T.degree(u) > 0 || g.degree(u) == 0); });
