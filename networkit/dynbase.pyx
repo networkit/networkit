@@ -34,6 +34,11 @@ cdef class _CythonSubclassDynAlgorithm(_CythonParentClass):
 		----------
 		ev : networkit.dynamics.GraphEvent
 			A graph event.
+
+        Returns
+		-------
+		networkit.dynbase.DynAlgorithm
+			self
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
@@ -52,6 +57,11 @@ cdef class _CythonSubclassDynAlgorithm(_CythonParentClass):
 		----------
 		batch : list(networkit.dynamics.GraphEvent)
 			List of graph events.
+
+        Returns
+		-------
+		networkit.dynbase.DynAlgorithm
+			self
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
