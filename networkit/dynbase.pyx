@@ -10,8 +10,9 @@ ctypedef _DynAlgorithm* _DynAlgorithmPtr
 
 cdef class _CythonSubclassDynAlgorithm(_CythonParentClass):
 	""" Abstract base class for dynamic algorithms
-    Cython does not allow direct inheritance from two extension types (cdef classes).
-    Instead, inherit from the DynAlgorithm class! """
+	Cython does not allow direct inheritance from two extension types (cdef classes).
+	Instead, inherit from the DynAlgorithm class! 
+	"""
 	def __init__(self, *args, **namedargs):
 		if type(self) == _CythonSubclassDynAlgorithm:
 			raise RuntimeError("Error, you may not use _CythonSubclassDynAlgorithm directly, use a sub-class instead")
@@ -35,7 +36,7 @@ cdef class _CythonSubclassDynAlgorithm(_CythonParentClass):
 		ev : networkit.dynamics.GraphEvent
 			A graph event.
 
-        Returns
+		Returns
 		-------
 		networkit.dynbase.DynAlgorithm
 			self
@@ -58,7 +59,7 @@ cdef class _CythonSubclassDynAlgorithm(_CythonParentClass):
 		batch : list(networkit.dynamics.GraphEvent)
 			List of graph events.
 
-        Returns
+		Returns
 		-------
 		networkit.dynbase.DynAlgorithm
 			self

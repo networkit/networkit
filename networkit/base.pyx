@@ -4,7 +4,8 @@
 cdef class _CythonParentClass:
 	""" Abstract base class for Cython 
 	The purpose of this class is to provide a single combined base cdef class for all classes that we use in this project.
-	Cython cannot handle multiple inheritance without this single common base class."""
+	Cython cannot handle multiple inheritance without this single common base class.
+	"""
 	def __init__(self, *args, **namedargs):
 		if type(self) == _CythonParentClass:
 			raise RuntimeError("Error, you may not use _CythonParentClass directly, use a sub-class instead")
