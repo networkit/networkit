@@ -734,7 +734,7 @@ cdef extern from "<networkit/io/EdgeListPartitionReader.hpp>":
 
 cdef class EdgeListPartitionReader:
 	""" 
-	EdgeListPartitionReader(firstNode=1, sepChar = '`\`t')
+	EdgeListPartitionReader(firstNode=1, sepChar = "\\t")
 	
 	Reads a partition from an edge list type of file.
 
@@ -743,7 +743,7 @@ cdef class EdgeListPartitionReader:
 	firstNode : int, optional
 		Id of first node. Default: 1
 	sepChar : str
-		Character which is used for data seperation. Default: '\t'
+		Character which is used for data seperation. Default: '\t' (tab)
 	"""
 	cdef _EdgeListPartitionReader _this
 
@@ -1516,12 +1516,18 @@ class GEXFReader:
 	def read(self, fpath):
 		""" 
 		read(fpath)
+
 		Reads and returns the graph object defined in fpath.
 		
 		Parameters
 		----------
 		fpath : str
 			File path for GEXF-file.
+
+		Returns
+		-------
+		tuple(networkit.Graph, list(str))
+			Tuple with the graph parsed from the given fpath and the list of graph events sorted by timestamp.
 		"""
 		#0. Reset internal vars and parse the xml
 		self.__init__()
@@ -1619,6 +1625,7 @@ class GEXFReader:
 	def parseDynamics(self, element, elementType, controlList,  u,  v = "0", w = "0"):
 		"""
 		parseDynamics(element, elementType, controlList,  u,  v = "0", w = "0")
+
 		Determine the operations as follows:
 		1. Element has start and not deleted before: Create add event
 		2. Element has start and deleted before: Create restore event
@@ -1629,6 +1636,7 @@ class GEXFReader:
 		or inline attributes. These 2 shouldn't be mixed.
 		(For example, Gephi will treat them differently. It'll ignore the inline declaration
 		if the same element also contains spells)
+
 		Parameters
 		----------
 		element : str
@@ -1712,15 +1720,16 @@ class GEXFReader:
 	def createEvent(self, eventTime, eventType, u, v, w):
 		"""
 		createEvent(eventTime, eventType, u, v, w)
+
 		Creates a NetworKit::GraphEvent from the supplied parameters
 		and passes it to eventStream.
+
 		Parameters
 		----------
 		eventTime : int
 			Timestep indicating when the event happen (creating an order of events).
 		eventType : str
-			Abbreviation string representing a graph event. Should be one of the following:
-			:code:`e, an, dn, rn, ae, re, de, ce`.
+			Abbreviation string representing a graph event. Should be one of the following: {`e, an, dn, rn, ae, re, de, ce`.}
 		u : int
 			Id of node u involved in graph event.
 		v : int
@@ -1819,9 +1828,9 @@ class GEXFWriter:
 		fname : str 
 			The desired file path and name to be written to.
 		eventStream : list(networkit.dynamics.GraphEvent)
-			Stream of events, each represented by networkit.dynamics.GraphEvent.
+			Stream of events, each represented by networkit.dynamics.GraphEvent. Default: list()
 		mapping : list(int)
-			Random node mapping.
+			Random node mapping. Default: list()
 		"""
 		#0. Reset internal vars
 		self.__init__()
@@ -2094,6 +2103,10 @@ class GraphMLReader:
 		----------
 		fpath: str
 			The path to the file as a String.
+		Returns
+		-------
+		networkit.Graph
+			The constructed graph.
 		"""
 		xml.sax.parse(fpath, self.graphmlsax)
 		return self.graphmlsax.getGraph()

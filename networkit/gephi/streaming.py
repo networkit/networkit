@@ -206,6 +206,19 @@ class GephiStreamingClient:
 			self._urlError(e)
 
 	def exportCoordinates(self, graph, scale=1):
+		"""
+		exportCoordinates(graph, scale=1)
+
+		Exports the x and y coordinates for each node in given graph.
+
+		Parameters
+		----------
+		graph: networkit.Graph
+			The input graph.
+		scale: int
+			Determines the exported x and y coordinates. Using default scale=1, all node coordinates are being exported, increasing the scale decreases the number of node coordinates being exported.
+		
+		"""
 		try:
 			xcoords = [scale*graph.getCoordinate(v)[0] for v in graph.iterNodes()]
 			ycoords = [scale*graph.getCoordinate(v)[1] for v in graph.iterNodes()]

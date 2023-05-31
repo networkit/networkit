@@ -2088,7 +2088,7 @@ public:
      * Get an iterable range over the neighbors of @a.
      *
      * @param u Node.
-     * @return Iterator range over the neighbors of @a.
+     * @return Iterator range over the neighbors of @a u.
      */
     NeighborRange<false> neighborRange(node u) const {
         assert(exists[u]);
@@ -2100,7 +2100,7 @@ public:
      * weights.
      *
      * @param u Node.
-     * @return Iterator range over pairs of neighbors of @a and corresponding
+     * @return Iterator range over pairs of neighbors of @a u and corresponding
      * edge weights.
      */
     NeighborWeightRange<false> weightNeighborRange(node u) const {
@@ -2113,7 +2113,7 @@ public:
      * Get an iterable range over the in-neighbors of @a.
      *
      * @param u Node.
-     * @return Iterator range over pairs of in-neighbors of @a.
+     * @return Iterator range over pairs of in-neighbors of @a u.
      */
     NeighborRange<true> inNeighborRange(node u) const {
         assert(isDirected());
@@ -2126,7 +2126,7 @@ public:
      * edge weights.
      *
      * @param u Node.
-     * @return Iterator range over pairs of in-neighbors of @a and corresponding
+     * @return Iterator range over pairs of in-neighbors of @a u and corresponding
      * edge weights.
      */
     NeighborWeightRange<true> weightInNeighborRange(node u) const {

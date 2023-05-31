@@ -38,7 +38,7 @@ protected:
 public:
     MatricesGTest() = default;
     virtual ~MatricesGTest() = default;
-    
+
     template <class Matrix>
     void testDimension();
 
@@ -129,16 +129,13 @@ public:
 };
 
 template <class Matrix>
-void MatricesGTest::testMatrixToGraph() { 
-    
-    METISGraphReader graphReader;
-    Matrix mat = Matrix::adjacencyMatrix(graphReader.read("input/power.graph"));
-    Graph G =MatrixTools::matrixToGraph(mat);
+void MatricesGTest::testMatrixToGraph() {
 
-    ASSERT_EQ(G.numberOfEdges(),6594);
+    Matrix mat = Matrix::adjacencyMatrix(METISGraphReader{}.read("input/power.graph"));
+    Graph G = MatrixTools::matrixToGraph(mat);
 
+    EXPECT_EQ(G.numberOfEdges(), 6594);
 }
-
 
 template <class Matrix>
 void MatricesGTest::testDimension() {
@@ -1218,7 +1215,6 @@ TEST_F(MatricesGTest, testDimension) {
 TEST_F(MatricesGTest, testMatrixToGraph) {
     testMatrixToGraph<DynamicMatrix>();
     testMatrixToGraph<CSRMatrix>();
-   // testMatrixToGraph<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testNNZInRow) {
@@ -1376,6 +1372,5 @@ TEST_F(MatricesGTest, testCSRMatrixSort) {
     CSRGeneralMatrix<double> csr(4, 4, triplets);
     csr.sort();
 }
-
 
 } /* namespace NetworKit */

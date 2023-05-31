@@ -236,9 +236,9 @@ cdef extern from "<networkit/community/GraphClusteringTools.hpp>" namespace "Net
 
 cdef class GraphClusteringTools:
 	@staticmethod
-	def getImbalance(Partition zeta, Graph graph = None):
+	def getImbalance(Partition zeta, Graph G = None):
 		"""  
-		getImbalance(zeta)
+		getImbalance(zeta, G)
 
 		Get the imbalance of clusters in the given partition.
 
@@ -246,7 +246,7 @@ cdef class GraphClusteringTools:
 		----------
 		zeta : networkit.Partition
 			The first partition.
-		graph : networkit.Graph, optional
+		G : networkit.Graph, optional
 			The input graph to compare the imbalance to. Default: None
 
 		Returns
@@ -255,7 +255,7 @@ cdef class GraphClusteringTools:
 			Imbalance of the partition.
 		"""
 		if graph is not None:
-			return getImbalance(zeta._this, graph._this)
+			return getImbalance(zeta._this, G._this)
 		else:
 			return getImbalance(zeta._this)
 
@@ -407,7 +407,10 @@ cdef class PartitionIntersection:
 	"""
 	cdef _PartitionIntersection _this
 	def calculate(self, Partition zeta, Partition eta):
-		"""  Calculate the intersection of two partitions `zeta` and `eta`
+		"""  
+		calculate(zeta, eta)
+		
+		Calculate the intersection of two partitions `zeta` and `eta`.
 
 		Parameters
 		----------
@@ -740,7 +743,7 @@ cdef class LouvainMapEquation(CommunityDetector):
 	hierarchical: bool, optional
 		Iteratively create a graph of the locally optimal clusters and optimize locally on that graph.
 	maxIterations: int, optional
-		The maximum number of local move iterations.
+		The maximum number of local move iterations. Default: 32
 	parallelizationStrategy: str, optional
 		Parallelization strategy, possible values: "relaxmap", "synchronous", "none". Default: "relaxmap"
 	"""
@@ -771,6 +774,8 @@ cdef class PLP(CommunityDetector):
 		The graph on which the algorithm has to run.
 	updateThreshold : int, optional
 		number of nodes that have to be changed in each iteration so that a new iteration starts. Default: None
+	maxIterations: int, optional
+		The maximum number of local move iterations. Default: None	
 	baseClustering : networkit.Partition, optional
 		PLP needs a base clustering to start from; if none is given the algorithm will 
 		run on a singleton clustering. Default: None
@@ -1166,7 +1171,7 @@ cdef extern from "<networkit/community/LocalCommunityEvaluation.hpp>":
 		double getMaximumValue() except +
 		double getMinimumValue() except +
 		double getValue(index i) except +
-		vector[double] &getValues() except +
+		vector[double] getValues() except +
 		bool_t isSmallBetter() except +
 
 cdef class LocalCommunityEvaluation(Algorithm):

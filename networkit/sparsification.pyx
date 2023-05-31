@@ -210,7 +210,7 @@ cdef class EdgeScoreNormalizer(EdgeScore):
 	lower : float, optional
 		Lower bound of the target range. Default: 0.0
 	upper : float, optional
-		Upper bound of the target range. Default: 0.0
+		Upper bound of the target range. Default: 1.0
 	"""
 	cdef vector[double] _inScoreDouble
 	cdef vector[count] _inScoreCount
