@@ -34,29 +34,6 @@ class TestRandomization(unittest.TestCase):
         self.graphs.append(nk.generators.ErdosRenyiGenerator(1004, 0.005, True).generate())
         self.graphs.append(nk.generators.ErdosRenyiGenerator(1005, 0.05, True).generate())
 
-    def testGlobalCurveball(self):
-        for G in self.graphs:
-            algo = nk.randomization.GlobalCurveball(G, 5)
-            algo.run()
-            G2 = algo.getGraph()
-            check_graphs(G, G2)
-
-    def testGlobalCurveballWithSelfloops(self):
-        for G in self.graphs:
-            if not G.isDirected(): continue
-
-            algo = nk.randomization.GlobalCurveball(G, 5, True, True)
-            algo.run()
-            G2 = algo.getGraph()
-            check_graphs(G, G2)
-
-    def testGlobalCurveballWithPreprocessing(self):
-        for G in self.graphs:
-            algo = nk.randomization.GlobalCurveball(G, 5, False, True)
-            algo.run()
-            G2 = algo.getGraph()
-            check_graphs(G, G2)
-
     def testCurveballWithGlobal(self):
         for G in self.graphs:
             if G.isDirected(): continue
@@ -173,6 +150,28 @@ class TestRandomization(unittest.TestCase):
         del(algo)
         self.assertEqual(sys.getrefcount(G), rc_initial)
 
+    def testGlobalCurveball(self):
+        for G in self.graphs:
+            algo = nk.randomization.GlobalCurveball(G, 5)
+            algo.run()
+            G2 = algo.getGraph()
+            check_graphs(G, G2)
+
+    def testGlobalCurveballWithSelfloops(self):
+        for G in self.graphs:
+            if not G.isDirected(): continue
+
+            algo = nk.randomization.GlobalCurveball(G, 5, True, True)
+            algo.run()
+            G2 = algo.getGraph()
+            check_graphs(G, G2)
+
+    def testGlobalCurveballWithPreprocessing(self):
+        for G in self.graphs:
+            algo = nk.randomization.GlobalCurveball(G, 5, False, True)
+            algo.run()
+            G2 = algo.getGraph()
+            check_graphs(G, G2)
 
 if __name__ == "__main__":
     unittest.main()
