@@ -1736,12 +1736,13 @@ public:
     void restoreNode(node v);
 
     /** NODE PROPERTIES **/
-
     /**
      * Returns the number of outgoing neighbors of @a v.
      *
      * @param v Node.
      * @return The number of outgoing neighbors.
+     * @note The existence of the node is not checked. Calling this function with a non-existing
+     * node results in a segmentation fault. Node existence can be checked by calling hasNode(u).
      */
     count degree(node v) const { return outEdges[v].size(); }
 
@@ -1751,6 +1752,8 @@ public:
      * @param v Node.
      * @return The number of incoming neighbors.
      * @note If the graph is not directed, the outgoing degree is returned.
+     * @note The existence of the node is not checked. Calling this function with a non-existing
+     * node results in a segmentation fault. Node existence can be checked by calling hasNode(u).
      */
     count degreeIn(node v) const { return directed ? inEdges[v].size() : outEdges[v].size(); }
 
@@ -1759,6 +1762,8 @@ public:
      *
      * @param v Node.
      * @return The number of outgoing neighbors.
+     * @note The existence of the node is not checked. Calling this function with a non-existing
+     * node results in a segmentation fault. Node existence can be checked by calling hasNode(u).
      */
     count degreeOut(node v) const { return outEdges[v].size(); }
 
