@@ -7,6 +7,8 @@
 
 #include <gtest/gtest.h>
 
+#include <stack>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/Dijkstra.hpp>
@@ -15,8 +17,6 @@
 #include <networkit/io/METISGraphReader.hpp>
 
 #include <tlx/unused.hpp>
-
-#include <stack>
 
 namespace NetworKit {
 
@@ -73,7 +73,8 @@ TEST_F(SSSPGTest, testShortestPaths) {
     tlx::unused(i);
     for (const auto &path : paths) {
         DEBUG("Path number ", i);
-        i++;
+        ++i;
+        tlx::unused(i);
         DEBUG(path);
         EXPECT_EQ(path[0], source);
         EXPECT_EQ(path[dist], x);
