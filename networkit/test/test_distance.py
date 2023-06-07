@@ -174,14 +174,10 @@ class TestDistance(unittest.TestCase):
 					spsp = nk.distance.SPSP(g, sources, targets)
 					spsp.run()
 					dists = spsp.getDistances()
-					#if len(targets) > 0:
-					#	dist = spsp.getDistance(nSources,targets[0])
-					#print(dist)
-					#self.assertEqual(dist, dist)
 					self.assertEqual(len(dists), nSources)
 					for distList in dists:
 						self.assertEqual(len(distList), nTargets)
-	
+
 	def testMultiTargetSTSP(self):
 		for g in self.genERGraphs():
 			source = nk.graphtools.randomNode(g)
@@ -193,7 +189,6 @@ class TestDistance(unittest.TestCase):
 				else:
 					algo = nk.distance.MultiTargetBFS(g, source, targets)
 				algo.setTargets(targets)
-				#algo.setTarget(targets[0])	
 				algo.setSource(source)	
 				algo.run()
 				self.assertLessEqual(len(algo.getPredecessors()), g.numberOfNodes())	
