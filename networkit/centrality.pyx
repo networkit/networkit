@@ -400,8 +400,6 @@ cdef extern from "<networkit/centrality/DynBetweenness.hpp>":
 
 	cdef cppclass _DynBetweenness "NetworKit::DynBetweenness"(_Algorithm, _DynAlgorithm):
 		_DynBetweenness(_Graph) except +
-		void update(_GraphEvent) except +
-		void updateBatch(vector[_GraphEvent]) except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
@@ -473,8 +471,6 @@ cdef extern from "<networkit/centrality/DynApproxBetweenness.hpp>":
 
 	cdef cppclass _DynApproxBetweenness "NetworKit::DynApproxBetweenness"(_Algorithm, _DynAlgorithm):
 		_DynApproxBetweenness(_Graph, double, double, bool_t, double) except +
-		void update(_GraphEvent) except +
-		void updateBatch(vector[_GraphEvent]) except +
 		vector[double] scores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
@@ -575,9 +571,6 @@ cdef extern from "<networkit/centrality/DynBetweennessOneNode.hpp>":
 
 	cdef cppclass _DynBetweennessOneNode "NetworKit::DynBetweennessOneNode"(_Algorithm, _DynAlgorithm):
 		_DynBetweennessOneNode(_Graph, node) except +
-		void run() nogil except +
-		void update(_GraphEvent) except +
-		void updateBatch(vector[_GraphEvent]) except +
 		double getDistance(node, node) except +
 		double getSigma(node, node) except +
 		double getSigmax(node, node) except +
@@ -1074,8 +1067,6 @@ cdef extern from "<networkit/centrality/DynTopHarmonicCloseness.hpp>":
 		vector[pair[node, edgeweight]] ranking(bool_t) except +
 		vector[node] topkNodesList(bool_t) except +
 		vector[edgeweight] topkScoresList(bool_t) except +
-		void update(_GraphEvent) except +
-		void updateBatch(vector[_GraphEvent]) except +
 
 cdef class DynTopHarmonicCloseness(Algorithm, DynAlgorithm):
 	""" 
@@ -1935,8 +1926,6 @@ cdef extern from "<networkit/centrality/DynKatzCentrality.hpp>":
 
 	cdef cppclass _DynKatzCentrality "NetworKit::DynKatzCentrality" (_Centrality, _DynAlgorithm):
 		_DynKatzCentrality(_Graph G, count, bool_t, double) except +
-		void update(_GraphEvent) except +
-		void updateBatch(vector[_GraphEvent]) except +
 		node top(count) except +
 		double bound(node) except +
 		bool_t areDistinguished(node, node) except +

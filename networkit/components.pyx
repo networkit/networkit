@@ -304,8 +304,6 @@ cdef extern from "<networkit/components/DynConnectedComponents.hpp>":
 
 	cdef cppclass _DynConnectedComponents "NetworKit::DynConnectedComponents"(_ComponentDecomposition, _DynAlgorithm):
 		_DynConnectedComponents(_Graph G) except +
-		void update(_GraphEvent) except +
-		void updateBatch(vector[_GraphEvent]) except +
 		count numberOfComponents() except +
 		count componentOfNode(node query) except +
 		map[index, count] getComponentSizes() except +
@@ -332,8 +330,6 @@ cdef extern from "<networkit/components/DynWeaklyConnectedComponents.hpp>":
 
 	cdef cppclass _DynWeaklyConnectedComponents "NetworKit::DynWeaklyConnectedComponents"(_ComponentDecomposition, _DynAlgorithm):
 		_DynWeaklyConnectedComponents(_Graph G) except +
-		void update(_GraphEvent) except +
-		void updateBatch(vector[_GraphEvent]) except +
 
 cdef class DynWeaklyConnectedComponents(ComponentDecomposition, DynAlgorithm):
 	"""

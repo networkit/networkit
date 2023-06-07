@@ -347,8 +347,6 @@ cdef extern from "<networkit/distance/DynSSSP.hpp>":
 
 	cdef cppclass _DynSSSP "NetworKit::DynSSSP"(_SSSP, _DynAlgorithm):
 		_DynSSSP(_Graph G, node source, bool_t storePaths, bool_t storeStack, node target) except +
-		void update(_GraphEvent ev) except +
-		void updateBatch(vector[_GraphEvent] batch) except +
 		bool_t modified() except +
 		void setTargetNode(node t) except +
 
@@ -1327,8 +1325,6 @@ cdef extern from "<networkit/distance/DynAPSP.hpp>":
 
 	cdef cppclass _DynAPSP "NetworKit::DynAPSP"(_APSP, _DynAlgorithm):
 		_DynAPSP(_Graph G) except +
-		void update(_GraphEvent ev) except +
-		void updateBatch(vector[_GraphEvent] batch) except +
 
 cdef class DynAPSP(APSP, DynAlgorithm):
 	""" 
