@@ -24,6 +24,7 @@ Modules
    distance
    dynamic
    dynamics
+   dynbase
    embedding
    engineering
    flow

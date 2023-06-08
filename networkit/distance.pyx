@@ -11,6 +11,8 @@ from libcpp.set cimport set
 from libcpp.unordered_map cimport unordered_map
 
 from .base cimport _Algorithm, Algorithm
+from .dynbase cimport _DynAlgorithm
+from .dynbase import DynAlgorithm
 from .dynamics cimport _GraphEvent
 from .graph cimport _Graph, Graph
 from .helpers import stdstring
@@ -343,14 +345,12 @@ cdef class SSSP(Algorithm):
 
 cdef extern from "<networkit/distance/DynSSSP.hpp>":
 
-	cdef cppclass _DynSSSP "NetworKit::DynSSSP"(_SSSP):
+	cdef cppclass _DynSSSP "NetworKit::DynSSSP"(_SSSP, _DynAlgorithm):
 		_DynSSSP(_Graph G, node source, bool_t storePaths, bool_t storeStack, node target) except +
-		void update(_GraphEvent ev) except +
-		void updateBatch(vector[_GraphEvent] batch) except +
 		bool_t modified() except +
 		void setTargetNode(node t) except +
 
-cdef class DynSSSP(SSSP):
+cdef class DynSSSP(SSSP, DynAlgorithm):
 	""" 
 	DynSSSP(G, source, storePredecessors, target)
 
@@ -359,35 +359,6 @@ cdef class DynSSSP(SSSP):
 	def __init__(self, *args, **namedargs):
 		if type(self) == SSSP:
 			raise RuntimeError("Error, you may not use DynSSSP directly, use a sub-class instead")
-
-	def update(self, ev):
-		""" 
-		update(ev)
-
-		Updates shortest paths with the edge insertion.
-
-		Parameters
-		----------
-		ev : networkit.dynamics.GraphEvent
-			A graph event.
-		"""
-		(<_DynSSSP*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-
-	def updateBatch(self, batch):
-		""" 
-		updateBatch(batch)
-
-		Updates shortest paths with a batch of edge insertions.
-
-		Parameters
-		----------
-		batch : list(networkit.dynamics.GraphEvent)
-			List of graph events.
-		"""
-		cdef vector[_GraphEvent] _batch
-		for ev in batch:
-			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-		(<_DynSSSP*>(self._this)).updateBatch(_batch)
 
 	def modified(self):
 		""" 
@@ -1352,12 +1323,10 @@ cdef class SPSP(Algorithm):
 
 cdef extern from "<networkit/distance/DynAPSP.hpp>":
 
-	cdef cppclass _DynAPSP "NetworKit::DynAPSP"(_APSP):
+	cdef cppclass _DynAPSP "NetworKit::DynAPSP"(_APSP, _DynAlgorithm):
 		_DynAPSP(_Graph G) except +
-		void update(_GraphEvent ev) except +
-		void updateBatch(vector[_GraphEvent] batch) except +
 
-cdef class DynAPSP(APSP):
+cdef class DynAPSP(APSP, DynAlgorithm):
 	""" 
 	DynAPSP(G)
 	
@@ -1373,34 +1342,7 @@ cdef class DynAPSP(APSP):
 		self._G = G
 		self._this = new _DynAPSP(G._this)
 
-	def update(self, ev):
-		""" 
-		update(ev)
 
-		Updates shortest paths with the edge insertion.
-
-		Parameters
-		----------
-		ev : networkit.dynamics.GraphEvent
-			A graph event.
-		"""
-		(<_DynAPSP*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-
-	def updateBatch(self, batch):
-		""" 
-		updateBatch(batch)
-
-		Updates shortest paths with a batch of edge insertions.
-
-		Parameters
-		----------
-		batch : list(networkit.dynamics.GraphEvent)
-			List of graph events.
-		"""
-		cdef vector[_GraphEvent] _batch
-		for ev in batch:
-			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-		(<_DynAPSP*>(self._this)).updateBatch(_batch)
 
 cdef extern from "<networkit/distance/BFS.hpp>":
 

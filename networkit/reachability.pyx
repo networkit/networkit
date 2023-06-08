@@ -131,7 +131,6 @@ cdef extern from "<networkit/reachability/AllSimplePaths.hpp>":
 
 	cdef cppclass _AllSimplePaths "NetworKit::AllSimplePaths"(_Algorithm):
 		_AllSimplePaths(_Graph G, node source, node target, count cutoff) except +
-		void run() nogil except +
 		count numberOfSimplePaths() except +
 		vector[vector[node]] getAllSimplePaths() except +
 		void forAllSimplePaths[Callback](Callback c) except +
