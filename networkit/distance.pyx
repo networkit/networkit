@@ -841,7 +841,7 @@ cdef class Volume:
 cdef extern from "<networkit/distance/JaccardDistance.hpp>":
 
 	cdef cppclass _JaccardDistance "NetworKit::JaccardDistance":
-		_JaccardDistance(const _Graph& G, const vector[count]& triangles) except +
+		_JaccardDistance(const _Graph& G, const vector[count]& _triangles) except +
 		void preprocess() except +
 		vector[double] &getEdgeScores() except +
 
@@ -862,7 +862,7 @@ cdef class JaccardDistance:
 
 	cdef _JaccardDistance* _this
 	cdef Graph _G
-	cdef vector[count] triangles
+	cdef vector[count] _triangles
 
 	def __cinit__(self, Graph G, vector[count] triangles):
 		self._G = G
