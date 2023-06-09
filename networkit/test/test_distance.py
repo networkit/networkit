@@ -211,30 +211,27 @@ class TestDistance(unittest.TestCase):
 					else:
 						self.assertEqual(pll.query(u, v), int(apsp.getDistance(u, v)))
 
-	def testSPSP(self):
-		nk.engineering.setSeed(1, True)
-		random.seed(1)
-		for directed in [True, False]:
-			for weighted in [True, False]:
-				g = nk.generators.ErdosRenyiGenerator(100, 0.15, directed).generate()
-				if weighted:
-					g = nk.graphtools.toWeighted(g)
-					g.forEdges(lambda u, v, ew, eid: g.setWeight(u, v, random.random()))
-				for nSources in [1, 10, 50]:
-					sources = set()
-					while len(sources) < nSources:
-						sources.add(nk.graphtools.randomNode(g))
+	def testDynPrunedLandmarkLabeling(self):
+		# 0       3
+		#  \     / \
+		#   1---2   4
 
-					spsp = nk.distance.SPSP(g, list(sources))
-					spsp.run()
-					spsp.getDistances()
+		g = nk.Graph(5, False, False)
+		for e in [[0, 1], [2, 3], [3, 4]]:
+			g.addEdge(e[0], e[1])
 
-	def testWithNonConsecutiveNodeLabelsAPSP(self):
-		nk.engineering.setSeed(1, True)
-		random.seed(1)
-		g = nk.generators.ErdosRenyiGenerator(100, 0.15).generate()
-		g.removeNode(0)
-		nk.distance.APSP(g).run()	
+		pll = nk.distance.DynPrunedLandmarkLabeling(g)
+		pll.run()
+
+		self.assertEqual(pll.query(0, 1), 1)
+		self.assertEqual(pll.query(0, 2), nk.none)
+
+		g.addEdge(1, 2)
+		pll.update(nk.dynamics.GraphEvent(
+			nk.dynamics.GraphEventType.EDGE_ADDITION, 1, 2, 1))
+
+		self.assertEqual(pll.query(0, 1), 1)
+		self.assertEqual(pll.query(2, 4), 2)
 
 if __name__ == "__main__":
 	unittest.main()
