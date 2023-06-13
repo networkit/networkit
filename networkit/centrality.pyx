@@ -249,7 +249,7 @@ cdef class EstimateBetweenness(Centrality):
 cdef extern from "<networkit/centrality/KadabraBetweenness.hpp>":
 
 	cdef cppclass _KadabraBetweenness "NetworKit::KadabraBetweenness" (_Algorithm):
-		_KadabraBetweenness(_Graph, double, double, count, count, count) except +
+		_KadabraBetweenness(_Graph, double, double, bool_t, count, count, count) except +
 		vector[pair[node, double]] ranking() except +
 		vector[node] topkNodesList() except +
 		vector[double] topkScoresList() except +
@@ -259,7 +259,7 @@ cdef extern from "<networkit/centrality/KadabraBetweenness.hpp>":
 
 cdef class KadabraBetweenness(Algorithm):
 	"""
-	KadabraBetweenness(Graph G, err = 0.01, delta = 0.1, k = 0, unionSample = 0, startFactor = 100)
+	KadabraBetweenness(Graph G, err = 0.01, delta = 0.1, deterministic = False, k = 0, unionSample = 0, startFactor = 100
 
 	Approximation of the betweenness centrality and computation of the top-k
 	nodes with highest betweenness centrality according to the algorithm
@@ -298,6 +298,10 @@ cdef class KadabraBetweenness(Algorithm):
 	delta : float, optional
 		Probability that the values of the betweenness centrality are
 		within the error guarantee. Default: 0.1
+	deterministic : bool, optional
+		If True, the algorithm guarantees that the results of two different executions is the 
+		same for a fixed random seed, regardless of the number of threads. Note that this 
+		guarantee leads to increased computational and memory complexity. Default: False
 	k : int, optional
 		The number of top-k nodes to be computed. Set it to zero to
 		approximate the betweenness centrality of all the nodes. Default: 0
@@ -307,9 +311,9 @@ cdef class KadabraBetweenness(Algorithm):
 		Algorithm parameter. Default: 100
 	"""
 
-	def __cinit__(self, Graph G, err = 0.01, delta = 0.1, k = 0,
+	def __cinit__(self, Graph G, err = 0.01, delta = 0.1, deterministic = False, k = 0,
 				  unionSample = 0, startFactor = 100):
-		self._this = new _KadabraBetweenness(G._this, err, delta, k, unionSample,
+		self._this = new _KadabraBetweenness(G._this, err, delta, deterministic, k, unionSample,
 										   startFactor)
 
 	def ranking(self):
