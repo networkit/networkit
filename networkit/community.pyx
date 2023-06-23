@@ -27,7 +27,7 @@ from .graphio import PartitionReader, PartitionWriter, EdgeListPartitionReader, 
 from .scd cimport _SelectiveCommunityDetector, SelectiveCommunityDetector
 
 from . import graph
-from . import graphtools
+from .graphtools import GraphTools
 from .algebraic import laplacianEigenvectors
 from .centrality import CoreDecomposition
 from .coarsening import ParallelPartitionCoarsening
@@ -1851,7 +1851,7 @@ def kCoreCommunityDetection(G, k, algo=None, inspect=True):
 	if len(kCore) == 0:
 		raise RuntimeError("There is no core for the specified k")
 
-	C = graphtools.subgraphFromNodes(G, kCore)
+	C = GraphTools.subgraphFromNodes(G, kCore)
 
 	#properties.overview(C)
 
