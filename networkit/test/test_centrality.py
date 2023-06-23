@@ -82,8 +82,6 @@ class TestCentrality(unittest.TestCase):
 		g.addEdge(n, n+1)
 		g.addEdge(n - 1, n)
 
-		nk.overview(g)
-
 		dapx = nk.centrality.DynApproxElectricalCloseness(g, eps)
 		dapx.run()
 
