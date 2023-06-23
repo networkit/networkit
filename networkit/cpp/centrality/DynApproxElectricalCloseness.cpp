@@ -23,9 +23,9 @@
 namespace NetworKit {
 
 DynApproxElectricalCloseness::DynApproxElectricalCloseness(const Graph &G, double epsilon,
-                                                           double kappa)
-    : Centrality(G), epsilon(epsilon), delta(1.0 / static_cast<double>(G.numberOfNodes())),
-      kappa(kappa), bcc(BiconnectedComponents(G)) {
+                                                           double kappa, node pivot, double delta)
+    : Centrality(G), epsilon(epsilon), delta(delta), kappa(kappa), bcc(BiconnectedComponents(G)),
+      pivot(pivot) {
 
     if (G.isDirected())
         throw std::runtime_error("Error: the input graph must be undirected.");
@@ -55,6 +55,11 @@ DynApproxElectricalCloseness::DynApproxElectricalCloseness(const Graph &G, doubl
 
     lcaGlobal.resize(threads, std::vector<node>(n, none));
 }
+
+DynApproxElectricalCloseness::DynApproxElectricalCloseness(const Graph &G, double epsilon,
+                                                           double kappa, node pivot)
+    : DynApproxElectricalCloseness(G, epsilon, kappa, pivot,
+                                   1.0 / static_cast<double>(G.numberOfNodes())) {}
 
 count DynApproxElectricalCloseness::computeNumberOfUSTs() const {
     return rootEcc * rootEcc
@@ -167,7 +172,10 @@ void DynApproxElectricalCloseness::computeNodeSequence() {
     }
 
     // Set the root to the highest degree node within the largest biconnected component
-    root = approxMinEccNode();
+    if (pivot == none)
+        root = approxMinEccNode();
+    else
+        root = pivot;
 
     biAnchor.resize(bcc.numberOfComponents(), none);
     biParent.resize(bcc.numberOfComponents(), none);
@@ -598,7 +606,6 @@ void DynApproxElectricalCloseness::aggregateUST(Tree &tree, double weight) {
 void DynApproxElectricalCloseness::edgeAdded(node a, node b) {
     assert(G.hasEdge(a, b));
     assert(hasRun);
-    round += 1;
 
     // Compute lpinv columns for a and b exactly.
     const count n = G.numberOfNodes();
@@ -634,16 +641,9 @@ void DynApproxElectricalCloseness::edgeAdded(node a, node b) {
     lpinvColA -= sum_a / n_double;
     lpinvColB -= sum_b / n_double;
 
-    // update weights and delete unneeded trees
+    // update weights
     double w = lpinvColA[a] + lpinvColB[b] - 2. * lpinvColA[b];
     assert(0 <= w && w <= 1.);
-    // w = (1. - w) / w;
-
-    for (count i = 0; i < round; i++) {
-        roundWeight[i] *= (1. - w);
-        ustRepository[i].resize(std::ceil(roundWeight[i] * numberOfUSTs));
-    }
-    roundWeight.push_back(w);
 
     Vector rhs(n);
     G.forNodes([&](node u) { rhs[u] = -1.0 / n_double; });
@@ -659,8 +659,6 @@ void DynApproxElectricalCloseness::edgeAdded(node a, node b) {
     count ustsCurrentRound = std::ceil(w * numberOfUSTs);
     INFO("USTS: ", ustsCurrentRound);
 
-    ustRepository.push_back(std::vector<Tree>(ustsCurrentRound));
-
     auto threads = approxEffResistanceGlobal.size();
     for (int i = 0; i < threads; i++) {
         std::fill(approxEffResistanceGlobal[i].begin(), approxEffResistanceGlobal[i].end(), 0.);
@@ -672,7 +670,7 @@ void DynApproxElectricalCloseness::edgeAdded(node a, node b) {
 
 #pragma omp parallel for
     for (omp_index i = 0; i < ustsCurrentRound; ++i) {
-        auto &tree = ustRepository[round][i];
+        Tree tree;
         sampleUSTWithEdge(tree, a, b);
         setDFSTimes(tree);
         aggregateUST(tree, 1. / static_cast<double>(ustsCurrentRound));
@@ -699,6 +697,132 @@ void DynApproxElectricalCloseness::edgeAdded(node a, node b) {
         [&](node u) { scoreData[u] = (n_double - 1.) / (n_double * diagonal[u] + trace); });
 }
 
+void DynApproxElectricalCloseness::edgeRemoved(node a, node b) {
+    assert(!G.hasEdge(a, b));
+    assert(hasRun);
+    assert(bfsTree.parent[a] != b && bfsTree.parent[b] != a);
+
+    // precond: this->laplacian is the laplacian of G' = G with edge (a,b)
+    //          this->G is the graph without edge (a,b)
+
+    // we need the following values:
+    //   r_G'(u,v) for all v, u=pivot - stored in this->resistanceToRoot
+    //   r_G'(a,b) - computed via columns/solver. requires old laplacian
+    //   E[F | e in t'] - computed via USTs with edge (a,b)
+    //   we need the u'th column of the pseudoinverse of L(G) for the diag formula
+
+    // Compute lpinv columns for a and b exactly. (for G', old laplacian)
+    const count n = G.numberOfNodes();
+    const double n_double = static_cast<double>(n);
+
+    ConjugateGradient<CSRMatrix, DiagonalPreconditioner> cg_old(tol);
+    cg_old.setupConnected(laplacian);
+
+    Vector rhs_a(n), rhs_b(n), lpinvColA(n), lpinvColB(n);
+    G.forNodes([&](node u) {
+        rhs_a[u] = -1.0 / n_double;
+        rhs_b[u] = -1.0 / n_double;
+    });
+    rhs_a[a] += 1.;
+    rhs_b[b] += 1.;
+    auto status = cg_old.solve(rhs_a, lpinvColA);
+    assert(status.converged);
+    status = cg_old.solve(rhs_b, lpinvColB);
+    assert(status.converged);
+
+    double sum_a = 0., sum_b = 0.;
+    G.forNodes([&](node u) {
+        sum_a += lpinvColA[u];
+        sum_b += lpinvColB[u];
+    });
+    lpinvColA -= sum_a / n_double;
+    lpinvColB -= sum_b / n_double;
+
+    // update weights
+    double w = lpinvColA[a] + lpinvColB[b] - 2. * lpinvColA[b];
+    assert(0 <= w && w <= 1.);
+
+    // compute u'th column of laplacian pseudoinverse for G
+
+    // update laplacian to G (remove edge (a,b))
+    laplacian.setValue(a, a, laplacian(a, a) - 1.);
+    laplacian.setValue(b, b, laplacian(b, b) - 1.);
+    laplacian.setValue(a, b, laplacian(a, b) + 1.);
+    laplacian.setValue(b, a, laplacian(b, a) + 1.);
+
+    ConjugateGradient<CSRMatrix, DiagonalPreconditioner> cg(tol);
+    cg.setupConnected(laplacian);
+
+    Vector rhs(n);
+    G.forNodes([&](node u) { rhs[u] = -1.0 / n_double; });
+    rhs[root] += 1.;
+    Vector exactRootCol(n);
+    cg.solve(rhs, exactRootCol);
+    double sum = 0.;
+    G.forNodes([&](node u) { sum += exactRootCol[u]; });
+    exactRootCol -= sum / n_double;
+    rootCol = exactRootCol;
+
+    // Sample and aggregate USTs
+    count ustsCurrentRound = std::ceil(w * numberOfUSTs);
+    INFO("USTS: ", ustsCurrentRound);
+
+    auto threads = approxEffResistanceGlobal.size();
+    for (int i = 0; i < threads; i++) {
+        std::fill(approxEffResistanceGlobal[i].begin(), approxEffResistanceGlobal[i].end(), 0.);
+    }
+
+    // update degDist
+    degDist[a] = std::uniform_int_distribution<index>(0, G.degree(a) - 1);
+    degDist[b] = std::uniform_int_distribution<index>(0, G.degree(b) - 1);
+
+#pragma omp parallel for
+    for (omp_index i = 0; i < ustsCurrentRound; ++i) {
+        Tree tree;
+        sampleUSTWithEdge(tree, a, b);
+        setDFSTimes(tree);
+        aggregateUST(tree, 1. / static_cast<double>(ustsCurrentRound));
+    }
+
+    // Aggregate results
+    Vector currentRoundResistanceApprox(n);
+
+    G.parallelForNodes([&](const node u) {
+        // Accumulate all results on first thread vector
+        for (count i = 1; i < approxEffResistanceGlobal.size(); ++i)
+            approxEffResistanceGlobal[0][u] += approxEffResistanceGlobal[i][u];
+        currentRoundResistanceApprox[u] = approxEffResistanceGlobal[0][u]; // E[F | e in t']
+        resistanceToRoot[u] =
+            (resistanceToRoot[u] - w * currentRoundResistanceApprox[u]) / (1. - w);
+        diagonal[u] = resistanceToRoot[u] - rootCol[root] + 2. * rootCol[u];
+    });
+
+    diagonal[root] = rootCol[root];
+    const double trace = std::accumulate(diagonal.begin(), diagonal.end(), 0.);
+
+    G.parallelForNodes(
+        [&](node u) { scoreData[u] = (n_double - 1.) / (n_double * diagonal[u] + trace); });
+}
+
+void DynApproxElectricalCloseness::update(GraphEvent e) {
+    if (e.type == GraphEvent::EDGE_ADDITION)
+        edgeAdded(e.u, e.v);
+    else if (e.type == GraphEvent::EDGE_REMOVAL) {
+        // the deleted edge may be part of the bfsTree. If this is the case, we need a new one.
+        // Since all our computations depend on this exact tree (via aggregateUST), we need to
+        // re-compute some results from previous iterations.
+        // for now, we throw an error in this case - current planned use cases do not delete
+        // edges from the bfs tree.
+        if (bfsTree.parent[e.u] == e.v || bfsTree.parent[e.v] == e.u)
+            throw std::runtime_error("Error: Edge removal where the edge removed is in the "
+                                     "bfsTree is not supported.");
+        else
+            edgeRemoved(e.u, e.v);
+    } else
+        throw std::runtime_error(
+            "Error: Events other than EDGE_ADDITION and EDGE_REMOVAL are not supported.");
+}
+
 void DynApproxElectricalCloseness::run() {
     // Preprocessing
     computeNodeSequence();
@@ -706,9 +830,7 @@ void DynApproxElectricalCloseness::run() {
 
     numberOfUSTs = computeNumberOfUSTs();
     rootCol = Vector(G.numberOfNodes());
-    roundWeight.push_back(1.);
 
-    ustRepository.push_back(std::vector<Tree>(numberOfUSTs));
     double weight = 1. / static_cast<double>(numberOfUSTs);
 
 #pragma omp parallel
@@ -741,7 +863,7 @@ void DynApproxElectricalCloseness::run() {
         // All threads sample and aggregate USTs in parallel
 #pragma omp for
         for (omp_index i = 0; i < numberOfUSTs; ++i) {
-            Tree &tree = ustRepository[0][i];
+            Tree tree;
             sampleUST(tree);
             setDFSTimes(tree);
             aggregateUST(tree, weight);
@@ -764,68 +886,6 @@ void DynApproxElectricalCloseness::run() {
     G.parallelForNodes([&](node u) { scoreData[u] = (n - 1.) / (n * diagonal[u] + trace); });
 
     hasRun = true;
-}
-
-std::vector<double> DynApproxElectricalCloseness::computeExactDiagonal(double tol) const {
-    Lamg<CSRMatrix> lamg(tol);
-    if (!hasRun) {
-        auto L = CSRMatrix::laplacianMatrix(G);
-        lamg.setupConnected(L);
-    } else {
-        lamg.setupConnected(laplacian);
-    }
-
-    const count n = G.numberOfNodes();
-    const count maxThreads = static_cast<count>(omp_get_max_threads());
-
-    // Solution vectors: one per thread
-    std::vector<Vector> solutions(maxThreads, Vector(n));
-
-    // Right hand side vectors: one per thread
-    std::vector<Vector> rhss(maxThreads, Vector(n));
-
-    std::vector<double> diag(n);
-
-    const count iters = (n % maxThreads == 0) ? n / maxThreads : n / maxThreads + 1;
-    for (count i = 0; i < iters; ++i) {
-        // Index of the next vertex to process
-        const index base = i * maxThreads;
-
-#pragma omp parallel
-        {
-            // Each thread solves a linear system from `base` to `base + #threads - 1`
-            const index thread = omp_get_thread_num();
-            const node v = base + thread;
-            if (v < n) {
-                // Reset solution and rhs vector of the current thread
-                solutions[thread].fill(0.0);
-
-                // Set up system to compute the diagonal entry L^+[v, v]
-                rhss[thread].fill(-1. / static_cast<double>(n));
-                rhss[thread][v] += 1.;
-            }
-        }
-
-        if (base + maxThreads >= n) {
-            // Last iteration: some threads cannot be used.
-            // Resize rhss and solutions to the number of vertices left to be processed.
-            rhss.resize(n - base);
-            solutions.resize(rhss.size());
-        }
-
-        lamg.parallelSolve(rhss, solutions);
-
-        // Store the results
-        for (index idx = 0; idx < solutions.size(); ++idx) {
-            const node v = base + idx;
-            if (v < n)
-                diag[v] = solutions[idx][v];
-            else
-                break;
-        }
-    }
-
-    return diag;
 }
 
 #ifdef NETWORKIT_SANITY_CHECKS

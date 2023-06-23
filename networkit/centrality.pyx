@@ -19,6 +19,12 @@ from networkit.algebraic import adjacencyEigenvector, PageRankMatrix, symmetricE
 cdef extern from "limits.h":
 	cdef uint64_t ULONG_MAX
 
+cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
+
+	index _none "NetworKit::none"
+
+none = _none
+
 cdef extern from "<networkit/centrality/Centrality.hpp>":
 
 	cdef cppclass _Centrality "NetworKit::Centrality"(_Algorithm):
@@ -2541,6 +2547,57 @@ cdef class ApproxElectricalCloseness(Centrality):
 		"""
 		return (<_ApproxElectricalCloseness*>self._this).computeExactDiagonal(tol)
 
+cdef extern from "<networkit/centrality/DynApproxElectricalCloseness.hpp>":
+	cdef cppclass _DynApproxElectricalCloseness "NetworKit::DynApproxElectricalCloseness"(_Centrality, _DynAlgorithm):
+		_DynApproxElectricalCloseness(_Graph G, double eps, double kappa, node pivot) except +
+		_DynApproxElectricalCloseness(_Graph G, double eps, double kappa, node pivot, double delta) except +
+		vector[double] getDiagonal() except +
+
+cdef class DynApproxElectricalCloseness(Centrality, DynAlgorithm):
+	"""
+	DynApproxElectricalCloseness(G, eps = 0.1, kappa = 0.3, pivot = None, delta = 1/n)
+	
+	Approximates the electrical closeness of all the vertices of the graph by approximating the
+	diagonal of the laplacian's pseudoinverse of G. Every element of the diagonal has a maximum absolute error of eps with probability 1-delta. Based on "Approximation of the
+	Diagonal of a Laplacian’s Pseudoinverse for Complex Network Analysis", Angriman et al., ESA
+	2020. The algorithm does two steps: solves a linear system and samples uniform spanning trees
+	(USTs). The parameter kappa balances the tolerance of solver for the linear system and the
+	number of USTs to be sampled. A high value of kappa raises the tolerance (solver converges
+	faster) but more USTs need to be sampled, vice versa for a low value of kappa.
+
+	This dynamic algorithm supports addition of arbitrary edges and deletion of edges which are
+	not in the bfs tree sourced from the pivot node. The algorithm depends on G having a single
+	connected component - edge deletions which disconnect the graph are not supported.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	eps : float, optional
+		Maximum absolute error of the elements in the diagonal.
+	kappa : float, optional
+		Balances the tolerance of the solver for the linear system and the
+		number of USTs to be sampled.
+	"""
+	def __cinit__(self, Graph G, double eps = 0.1, double kappa = 0.3, node pivot = none, delta = None):
+		self._G = G
+		if delta:
+			self._this = new _DynApproxElectricalCloseness(G._this, eps, kappa, pivot, delta)
+		else:
+			self._this = new _DynApproxElectricalCloseness(G._this, eps, kappa, pivot)
+
+	def getDiagonal(self):
+		"""
+		getDiagonal()
+
+		Return an epsilon-approximation of the diagonal of the laplacian's pseudoinverse.
+
+		Returns
+		-------
+		list(float)
+			Approximation of the diagonal of the laplacian's pseudoinverse.
+		"""
+		return (<_DynApproxElectricalCloseness*>self._this).getDiagonal()
 
 cdef extern from "<networkit/centrality/ForestCentrality.hpp>":
 	cdef cppclass _ForestCentrality "NetworKit::ForestCentrality"(_Centrality):

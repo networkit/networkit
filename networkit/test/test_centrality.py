@@ -48,6 +48,94 @@ class TestCentrality(unittest.TestCase):
 			pinv = np.linalg.pinv(L).diagonal()
 			for u in g.iterNodes():
 				self.assertLessEqual(abs(apx[u] - pinv[u]), eps)
+
+	def testDynApproxElectricalCloseness_run(self):
+		eps = 0.1
+		nk.engineering.setSeed(1, True)
+		g = nk.generators.ErdosRenyiGenerator(50, 0.15, False).generate()
+		g = nk.components.ConnectedComponents(g).extractLargestConnectedComponent(g, True)
+		n = g.numberOfNodes()
+		
+		# create a biconnected component with size 2
+		g.addNodes(2)
+		g.addEdge(n, n+1)
+		g.addEdge(n - 1, n)
+
+		dapx = nk.centrality.DynApproxElectricalCloseness(g, eps)
+		apx = nk.centrality.ApproxElectricalCloseness(g, eps)
+		dapx.run()
+		apx.run()
+		diag = apx.getDiagonal()
+		ddiag = dapx.getDiagonal()
+		for u in g.iterNodes():
+			self.assertLessEqual(abs(diag[u] - ddiag[u]), 2 * eps)
+
+	def testDynApproxElectricalCloseness_EdgeAddition(self):
+		eps = 0.1
+		nk.engineering.setSeed(1, True)
+		g = nk.generators.ErdosRenyiGenerator(50, 0.15, False).generate()
+		g = nk.components.ConnectedComponents(g).extractLargestConnectedComponent(g, True)
+		n = g.numberOfNodes()
+		
+		# create a biconnected component with size 2
+		g.addNodes(2)
+		g.addEdge(n, n+1)
+		g.addEdge(n - 1, n)
+
+		nk.overview(g)
+
+		dapx = nk.centrality.DynApproxElectricalCloseness(g, eps)
+		dapx.run()
+
+		for _ in range(10):
+			found = False
+			while not found:
+				[a, b] = nk.graphtools.randomNodes(g, 2)
+				if not g.hasEdge(a,b): found = True
+			g.addEdge(a,b, 1, True)
+			event = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, a, b, 1)
+			dapx.update(event)
+		
+		ddiag = dapx.getDiagonal()
+		diag = nk.centrality.ApproxElectricalCloseness(g).run().getDiagonal()
+		for u in g.iterNodes():
+			self.assertLessEqual(abs(diag[u] - ddiag[u]), 2 * eps)
+		self.assertEqual(g.numberOfNodes(), len(dapx.scores()))
+
+	def testDynApproxElectricalCloseness_EdgeDeletion(self):
+		eps = 0.1
+		nk.engineering.setSeed(1, True)
+		g = nk.generators.ErdosRenyiGenerator(75, 0.15, False).generate()
+		g = nk.components.ConnectedComponents(g).extractLargestConnectedComponent(g, True)
+		n = g.numberOfNodes()
+		
+		# create a biconnected component with size 2
+		g.addNodes(2)
+		g.addEdge(n, n+1)
+		g.addEdge(n - 1, n)
+
+		# create star pivot node
+		star_node = g.addNode()
+		for node in g.iterNodes():
+			if node != star_node:
+				g.addEdge(star_node, node)
+		
+		dapx = nk.centrality.DynApproxElectricalCloseness(g, eps, pivot=star_node)
+		dapx.run()
+
+		found = False
+		while not found:
+			[a, b] = nk.graphtools.randomNodes(g, 2)
+			if g.hasEdge(a,b) and a != star_node and b != star_node: found = True
+		g.removeEdge(a,b)
+		event = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_REMOVAL, a, b, 1)
+
+		dapx.update(event)
+		ddiag = dapx.getDiagonal()
+		diag = nk.centrality.ApproxElectricalCloseness(g).run().getDiagonal()
+		for u in g.iterNodes():
+			self.assertLessEqual(abs(diag[u] - ddiag[u]), 2 * eps)
+		self.assertEqual(g.numberOfNodes(), len(dapx.scores()))
 	
 	def testApproxSpanningEdge(self):
 		nk.setSeed(42, False)

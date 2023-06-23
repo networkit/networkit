@@ -10,154 +10,170 @@
 #include <networkit/centrality/ApproxElectricalCloseness.hpp>
 #include <networkit/centrality/DynApproxElectricalCloseness.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/generators/HyperbolicGenerator.hpp>
+#include <networkit/generators/StaticGraphGenerator.hpp>
 
 namespace NetworKit {
 
-class ApproxElectricalClosenessGTest : public testing::Test {};
-
-TEST_F(ApproxElectricalClosenessGTest, testApproxElectricalCloseness) {
-    const double eps = 0.1;
+class ApproxElectricalClosenessGTest
+    : public testing::TestWithParam<std::tuple<int, std::string, double>> {
+protected:
     const count n_gen = 75;
-    for (int seed : {1, 2, 3}) {
-        Aux::Random::setSeed(seed, true);
-        auto G = HyperbolicGenerator(n_gen, 10, 3).generate();
+    const double er_prob = 0.15;
+
+    Graph generate(std::string generator) {
+        Graph G;
+        if (generator == "ER")
+            G = ErdosRenyiGenerator(n_gen, er_prob).generate();
+        else if (generator == "Hyperbolic")
+            G = HyperbolicGenerator(n_gen).generate();
+        else
+            throw std::logic_error("unkown generator");
         G = ConnectedComponents::extractLargestConnectedComponent(G, true);
-        count n = G.numberOfNodes();
+        const count n = G.numberOfNodes();
 
         // Create a biconnected component with size 2.
         G.addNodes(2);
         G.addEdge(n - 1, n);
         G.addEdge(n, n + 1);
 
-        ApproxElectricalCloseness apx(G);
-        apx.run();
-        const auto diag = apx.getDiagonal();
-        const auto gt = apx.computeExactDiagonal(1e-12);
-        G.forNodes([&](node u) { EXPECT_NEAR(diag[u], gt[u], eps); });
-        EXPECT_EQ(apx.scores().size(), G.numberOfNodes());
-    }
-}
+        return G;
+    };
 
-TEST_F(ApproxElectricalClosenessGTest, testDynApproxElectricalCloseness_run) {
-    const double eps = 0.1;
-    const count n_gen = 75;
-    for (int seed : {1, 2, 3}) {
-        Aux::Random::setSeed(seed, true);
-        auto G = HyperbolicGenerator(n_gen, 10, 3).generate();
-        G = ConnectedComponents::extractLargestConnectedComponent(G, true);
-        count n = G.numberOfNodes();
-
-        // Create a biconnected component with size 2.
-        G.addNodes(2);
-        G.addEdge(n - 1, n);
-        G.addEdge(n, n + 1);
-
-        ApproxElectricalCloseness apx(G);
-        DynApproxElectricalCloseness dapx(G);
-        apx.run();
-        dapx.run();
-        const auto diag = apx.getDiagonal();
-        const auto ddiag = dapx.getDiagonal();
-        G.forNodes([&](node u) { EXPECT_NEAR(diag[u], ddiag[u], eps); });
-        EXPECT_EQ(dapx.scores().size(), G.numberOfNodes());
-    }
-}
-
-TEST_F(ApproxElectricalClosenessGTest, testDynApproxElectricalCloseness_batchEdgeAddition) {
-    const double eps = 0.1;
-    count n_gen;
-    for (int seed : {1, 2, 3}) {
-        n_gen = 75;
-        Aux::Random::setSeed(seed, true);
-        auto G = HyperbolicGenerator(n_gen, 6, 3).generate();
-        G = ConnectedComponents::extractLargestConnectedComponent(G, true);
-        count n = G.numberOfNodes();
-
-        // Create a biconnected component with size 2.
-        G.addNodes(2);
-        G.addEdge(n - 1, n);
-        G.addEdge(n, n + 1);
-
-        DynApproxElectricalCloseness dapx(G);
-        dapx.run();
-
-        std::random_device dev;
-        std::mt19937 rng(dev());
-        std::uniform_int_distribution<std::mt19937::result_type> distN(0, n + 1);
-
+    GraphEvent add_random_edge(Graph &G) {
         node a, b;
 
-        // add 10 random edges
-        std::vector<GraphEvent> batch(10);
-        for (count i = 0; i < 10; i++) {
-            do {
-                a = distN(rng);
-                b = distN(rng);
-            } while (G.hasEdge(a, b) || a == b);
-
-            G.addEdge(a, b);
-
-            batch[i].type = GraphEvent::EDGE_ADDITION;
-            batch[i].u = a;
-            batch[i].v = b;
-        }
-
-        dapx.updateBatch(batch);
-        ApproxElectricalCloseness apx(G);
-        apx.run();
-
-        const auto diag = apx.getDiagonal();
-        const auto ddiag = dapx.getDiagonal();
-        G.forNodes([&](node u) { EXPECT_NEAR(diag[u], ddiag[u], eps); });
-        EXPECT_EQ(dapx.scores().size(), G.numberOfNodes());
-    }
-}
-
-TEST_F(ApproxElectricalClosenessGTest, testDynApproxElectricalCloseness_copy) {
-    const double eps = 0.1;
-    const count n_gen = 75;
-    auto G = HyperbolicGenerator(n_gen, 10, 3).generate();
-    G = ConnectedComponents::extractLargestConnectedComponent(G, true);
-    count n = G.numberOfNodes();
-
-    // Create a biconnected component with size 2.
-    G.addNodes(2);
-    G.addEdge(n - 1, n);
-    G.addEdge(n, n + 1);
-
-    DynApproxElectricalCloseness dapx(G);
-    dapx.run();
-    std::random_device dev;
-    std::mt19937 rng(dev());
-    std::uniform_int_distribution<std::mt19937::result_type> distN(0, n + 1);
-
-    node a, b;
-
-    // add 10 random edges
-    std::vector<GraphEvent> batch(10);
-    for (count i = 0; i < 10; i++) {
         do {
-            a = distN(rng);
-            b = distN(rng);
+            a = Aux::Random::integer(0, G.numberOfNodes() - 1);
+            b = Aux::Random::integer(0, G.numberOfNodes() - 1);
         } while (G.hasEdge(a, b) || a == b);
 
         G.addEdge(a, b);
+        return GraphEvent(GraphEvent::EDGE_ADDITION, a, b);
+    };
 
-        batch[i].type = GraphEvent::EDGE_ADDITION;
-        batch[i].u = a;
-        batch[i].v = b;
+    GraphEvent remove_random_edge(Graph &G, const node pivot = none) {
+        node a, b;
+
+        do {
+            a = Aux::Random::integer(0, G.numberOfNodes() - 1);
+            b = Aux::Random::integer(0, G.numberOfNodes() - 1);
+            if (a > b)
+                std::swap(a, b);
+        } while (!G.hasEdge(a, b) || a == pivot || b == pivot);
+
+        G.removeEdge(a, b);
+        return GraphEvent(GraphEvent::EDGE_REMOVAL, a, b);
+    };
+};
+
+INSTANTIATE_TEST_SUITE_P(InstantiationName, ApproxElectricalClosenessGTest,
+                         testing::Combine(testing::Values(1, 2, 3),            // seed
+                                          testing::Values("ER", "Hyperbolic"), // generator
+                                          testing::Values(0.1, 0.3, 0.5)       // eps
+                                          ));
+
+TEST_P(ApproxElectricalClosenessGTest, testApproxElectricalCloseness) {
+    auto [seed, generator, eps] = GetParam();
+    Aux::Random::setSeed(seed, true);
+    auto G = generate(generator);
+
+    ApproxElectricalCloseness apx(G, eps);
+    apx.run();
+    const auto diag = apx.getDiagonal();
+    const auto gt = apx.computeExactDiagonal(1e-12);
+    G.forNodes([&](node u) { EXPECT_NEAR(diag[u], gt[u], eps); });
+    EXPECT_EQ(apx.scores().size(), G.numberOfNodes());
+}
+
+TEST_P(ApproxElectricalClosenessGTest, testDynApproxElectricalCloseness_run) {
+    auto [seed, generator, eps] = GetParam();
+    Aux::Random::setSeed(seed, true);
+    auto G = generate(generator);
+
+    ApproxElectricalCloseness apx(G, eps);
+    DynApproxElectricalCloseness dapx(G, eps);
+    apx.run();
+    dapx.run();
+    const auto diag = apx.getDiagonal();
+    const auto ddiag = dapx.getDiagonal();
+    G.forNodes([&](node u) {
+        EXPECT_NEAR(diag[u], ddiag[u], 2 * eps);
+    }); // 2 * eps because both have max abs error of eps
+    EXPECT_EQ(dapx.scores().size(), G.numberOfNodes());
+}
+
+TEST_P(ApproxElectricalClosenessGTest, testDynApproxElectricalCloseness_EdgeAddition) {
+    auto [seed, generator, eps] = GetParam();
+    Aux::Random::setSeed(seed, true);
+    auto G = generate(generator);
+
+    DynApproxElectricalCloseness dapx(G, eps);
+    dapx.run();
+
+    for (int i = 0; i < 10; i++) {
+        auto event = add_random_edge(G);
+        dapx.update(event);
     }
 
+    ApproxElectricalCloseness apx(G, eps);
+    apx.run();
+
+    const auto diag = apx.getDiagonal();
+    const auto ddiag = dapx.getDiagonal();
+    G.forNodes([&](node u) { EXPECT_NEAR(diag[u], ddiag[u], 2 * eps); });
+    EXPECT_EQ(dapx.scores().size(), G.numberOfNodes());
+}
+
+TEST_P(ApproxElectricalClosenessGTest, testDynApproxElectricalCloseness_EdgeDeletion) {
+    omp_set_num_threads(1);
+    auto [seed, generator, eps] = GetParam();
+    Aux::Random::setSeed(seed, true);
+    auto G = generate(generator);
+
+    // make sure that removing an edge does not disconnect the graph
+    auto star_node = G.addNode();
+    G.forNodes([&](node u) {
+        if (u != star_node)
+            G.addEdge(star_node, u);
+    });
+
+    DynApproxElectricalCloseness dapx(G, eps, 0.3, star_node);
+    dapx.run();
+
+    auto event = remove_random_edge(G, star_node);
+    dapx.update(event);
+
+    ApproxElectricalCloseness apx(G, eps);
+    apx.run();
+
+    const auto diag = apx.getDiagonal();
+    const auto ddiag = dapx.getDiagonal();
+    G.forNodes([&](node u) { EXPECT_NEAR(diag[u], ddiag[u], 2 * eps); });
+    EXPECT_EQ(dapx.scores().size(), G.numberOfNodes());
+}
+
+TEST_P(ApproxElectricalClosenessGTest, testDynApproxElectricalCloseness_copy) {
+    auto [seed, generator, eps] = GetParam();
+    Aux::Random::setSeed(seed, true);
+    auto G = generate(generator);
+
+    DynApproxElectricalCloseness dapx(G, eps);
+    dapx.run();
+
+    auto event = add_random_edge(G);
+
+    // make copy
     DynApproxElectricalCloseness dapx2 = dapx;
 
-    dapx2.updateBatch(batch);
-    ApproxElectricalCloseness apx(G);
+    dapx2.update(event);
+    ApproxElectricalCloseness apx(G, eps);
     apx.run();
 
     const auto diag = apx.getDiagonal();
     const auto ddiag2 = dapx2.getDiagonal();
-    G.forNodes([&](node u) { EXPECT_NEAR(diag[u], ddiag2[u], eps); });
+    G.forNodes([&](node u) { EXPECT_NEAR(diag[u], ddiag2[u], 2 * eps); });
     EXPECT_EQ(dapx2.scores().size(), G.numberOfNodes());
 }
 

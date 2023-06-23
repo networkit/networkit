@@ -33,20 +33,32 @@ class DynApproxElectricalCloseness final : public Centrality, public DynAlgorith
 public:
     /**
      * Approximates the electrical closeness of all the vertices of the graph by approximating the
-     * diagonal of the laplacian's pseudoinverse of @a G. Every element of the diagonal is
-     * guaranteed to have a maximum absolute error of @a epsilon. Based on "Approximation of the
-     * Diagonal of a Laplacian’s Pseudoinverse for Complex Network Analysis", Angriman et al., ESA
-     * 2020. The algorithm does two steps: solves a linear system and samples uniform spanning trees
-     * (USTs). The parameter @a kappa balances the tolerance of solver for the linear system and the
-     * number of USTs to be sampled. A high value of @a kappa raises the tolerance (solver converges
-     * faster) but more USTs need to be sampled, vice versa for a low value of @a kappa.
+     * diagonal of the laplacian's pseudoinverse of @a G. Every element of the diagonal has
+     * a maximum absolute error of @a epsilon with probability (1-(1/n)). Based on "Approximation of
+     * the Diagonal of a Laplacian’s Pseudoinverse for Complex Network Analysis", Angriman et al.,
+     * ESA 2020. The algorithm does two steps: solves a linear system and samples uniform spanning
+     * trees (USTs). The parameter @a kappa balances the tolerance of solver for the linear system
+     * and the number of USTs to be sampled. A high value of @a kappa raises the tolerance (solver
+     * converges faster) but more USTs need to be sampled, vice versa for a low value of @a kappa.
+     *
+     * This dynamic algorithm supports addition of arbitrary edges and deletion of edges which are
+     * not in the bfs tree sourced from the pivot node. The algorithm depends on G having a single
+     * connected component - edge deletions which disconnect the graph are not supported.
      *
      * @param G The input graph.
      * @param epsilon Maximum absolute error of the elements in the diagonal.
      * @param kappa Balances the tolerance of the solver for the linear system and the number of
-     * USTs to be sampled.
+     * @param pivot The pivot node. If none, a node with small approximate
+     * eccentricity will be chosen. USTs to be sampled.
      */
-    DynApproxElectricalCloseness(const Graph &G, double epsilon = 0.1, double kappa = 0.3);
+    DynApproxElectricalCloseness(const Graph &G, double epsilon = 0.1, double kappa = 0.3,
+                                 node pivot = none);
+
+    /**
+     * Constructor to set @a delta (the approximation probability) manually.
+     */
+    DynApproxElectricalCloseness(const Graph &G, double epsilon, double kappa, node pivot,
+                                 double delta);
 
     /** copy constructor that copies internal data structures, but still references the same graph
      * as @a other */
@@ -59,16 +71,16 @@ public:
      */
     void run() override;
 
-    void update(GraphEvent e) override {
-        if (e.type == GraphEvent::EDGE_ADDITION)
-            edgeAdded(e.u, e.v);
-        else
-            throw std::runtime_error("Error: Events other than EDGE_ADDITION are not supported.");
-    }
+    /**
+     * update - to be called after the graph has been updated.
+     * Supports arbitrary edge additions.
+     * Supports edge deletions for edges which are not on the bfs tree of the pivot node. Removing
+     * the edge may not disconnect the graph.
+     */
+    void update(GraphEvent e) override;
 
     void updateBatch(const std::vector<GraphEvent> &batch) override {
-        for (GraphEvent e : batch)
-            update(e);
+        throw std::runtime_error("Error: batch updates are not supported.");
     }
 
     /**
@@ -81,23 +93,6 @@ public:
         return diagonal;
     }
 
-    /**
-     * Compute and return the nearly-exact values of the diagonal of the laplacian's pseudoinverse.
-     * The values are computed by solving Lx = e_u - 1 / n for every vertex u of the graph with a
-     * LAMG solver.
-     *
-     * @param tol Tolerance for the LAMG solver.
-     *
-     * @return Nearly-exact values of the diagonal of the laplacian's pseudoinverse.
-     */
-    std::vector<double> computeExactDiagonal(double tol = 1e-9) const;
-
-    /**
-     * To be called when an edge is added to the graph. Samples more trees, approximate the diagonal
-     * again.
-     */
-    void edgeAdded(node a, node b);
-
     inline NetworKit::count getUstCount() { return numberOfUSTs; }
 
 private:
@@ -105,6 +100,7 @@ private:
     double tol;
     count numberOfUSTs;
     node root = 0;
+    const node pivot;
     count rootEcc;
     NetworKit::CSRMatrix laplacian;
 
@@ -135,9 +131,6 @@ private:
 
     // Nodes in each biconnected components sorted by their degree.
     std::vector<std::vector<node>> sequences;
-
-    // Repository of USTs, organized as buckets per round.
-    std::vector<std::vector<Tree>> ustRepository;
 
     // Shortest path tree
     Tree bfsTree;
@@ -170,9 +163,6 @@ private:
     std::vector<std::mt19937_64> generators;
     std::vector<std::uniform_int_distribution<index>> degDist;
 
-    count round = 0;
-    std::vector<double> roundWeight;
-
     // Nodes sequences: Wilson's algorithm runs faster if we start the random walks following a
     // specific sequence of nodes. In this function we compute those sequences.
     void computeNodeSequence();
@@ -184,6 +174,10 @@ private:
     void sampleUSTWithEdge(Tree &result, node a, node b);
 
     void aggregateUST(Tree &tree, double weight);
+
+    void edgeAdded(node a, node b);
+
+    void edgeRemoved(node a, node b);
 
     node approxMinEccNode();
 
