@@ -2491,10 +2491,10 @@ cdef class ApproxElectricalCloseness(Centrality):
 	ApproxElectricalCloseness(G, eps = 0.1, kappa = 0.3)
 	
 	Approximates the electrical closeness of all the vertices of the graph by approximating the
-	diagonal of the laplacian's pseudoinverse of G. Every element of the diagonal is
-	guaranteed to have a maximum absolute error of eps. Based on "Approximation of the
-	Diagonal of a Laplacian’s Pseudoinverse for Complex Network Analysis", Angriman et al., ESA
-	2020. The algorithm does two steps: solves a linear system and samples uniform spanning trees
+	diagonal of the laplacian's pseudoinverse of G. Every element of the diagonal has a maximum 
+	absolute error of eps with probability 1-(1/n). Based on "Approximation of the Diagonal of a 
+	Laplacian’s Pseudoinverse for Complex Network Analysis", Angriman et al., ESA 2020. 
+	The algorithm does two steps: solves a linear system and samples uniform spanning trees
 	(USTs). The parameter kappa balances the tolerance of solver for the linear system and the
 	number of USTs to be sampled. A high value of kappa raises the tolerance (solver converges
 	faster) but more USTs need to be sampled, vice versa for a low value of kappa.
