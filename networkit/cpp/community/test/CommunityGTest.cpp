@@ -5,13 +5,14 @@
  *      Author: cls
  */
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
-
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/auxiliary/Parallelism.hpp>
 #include <networkit/community/ClusteringGenerator.hpp>
 #include <networkit/community/CoverF1Similarity.hpp>
+#include <networkit/community/CoverHubDominance.hpp>
 #include <networkit/community/Coverage.hpp>
 #include <networkit/community/DynamicNMIDistance.hpp>
 #include <networkit/community/EdgeCut.hpp>
@@ -650,6 +651,16 @@ TEST_F(CommunityGTest, testPartitionFragmentation) {
     EXPECT_DOUBLE_EQ(0.9, frag3.getWeightedAverage());
 }
 
+TEST_F(CommunityGTest, testCoverHubDominanceConstructor) {
+    // constructors and run() are being tested in testHubDominance
+    Graph G(100);
+    G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
+    Partition con = ClusteringGenerator{}.makeContinuousBalancedClustering(G, 10);
+    Cover cov(con);
+    CoverHubDominance chd(G, cov);
+    EXPECT_FALSE(chd.isSmallBetter());
+}
+
 TEST_F(CommunityGTest, testCoverF1Similarity) {
     count n = 20;
     Graph G(n);
@@ -678,16 +689,15 @@ TEST_F(CommunityGTest, testCoverF1Similarity) {
     for (node u = 11; u < 20; ++u) {
         C.addToSubset(2, u);
     }
-
     CoverF1Similarity sim(G, C, ref);
     sim.run();
-
     EXPECT_DOUBLE_EQ(1.0, sim.getMaximumValue());
     EXPECT_DOUBLE_EQ(0.0, sim.getMinimumValue());
     EXPECT_DOUBLE_EQ(1.0, sim.getValue(0));
     const double pre = 2.0 / 11.0;
     const double re = 2.0 / 10.0;
     const double f1 = 2.0 * (pre * re) / (pre + re);
+    EXPECT_THAT(sim.getValues(), ::testing::ElementsAre(1.0, f1, 0.0));
     EXPECT_DOUBLE_EQ(f1, sim.getValue(1));
     EXPECT_DOUBLE_EQ(0.0, sim.getValue(2));
     EXPECT_DOUBLE_EQ((1.0 + f1) / 3.0, sim.getUnweightedAverage());

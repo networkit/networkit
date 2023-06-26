@@ -93,7 +93,7 @@ void PrunedLandmarkLabeling::run() {
     hasRun = true;
 }
 
-count PrunedLandmarkLabeling::queryImpl(node u, node v) const {
+count PrunedLandmarkLabeling::queryImpl(node u, node v, node upperBound) const {
     if (u == v)
         return 0;
 
@@ -103,6 +103,8 @@ count PrunedLandmarkLabeling::queryImpl(node u, node v) const {
     count result = infDist;
 
     while (iterLabelsU != iterLabelsUEnd && iterLabelsV != iterLabelsVEnd) {
+        if (std::max(iterLabelsU->node_, iterLabelsV->node_) > upperBound)
+            break;
         if (iterLabelsU->node_ < iterLabelsV->node_)
             ++iterLabelsU;
         else if (iterLabelsV->node_ < iterLabelsU->node_)

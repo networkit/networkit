@@ -425,7 +425,7 @@ void TopCloseness::run() {
                         omp_set_lock(&lock);
                         if (farness[v] < S[v] && toAnalyze[v]) { // Have to check again, because the
                                                                  // variables might have changed
-                            imp++;
+                            ++imp;
                             farness[v] = S[v];
                             Q.update(v);
                         }

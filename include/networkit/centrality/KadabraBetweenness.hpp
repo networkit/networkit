@@ -110,6 +110,9 @@ public:
      * betweenness centrality of all nodes.
      * @param delta probability that the values of the betweenness centrality
      * are within the error guarantee.
+     * @param deterministic If true, the algorithm guarantees that the results of two different
+     * executions is the same for a fixed random seed, regardless of the number of threads. Note
+     * that this guarantee leads to increased computational and memory complexity. Default: false.
      * @param k the number of top-k nodes to be computed. Set it to zero to
      * approximate the betweenness centrality of all the nodes.
      * @param unionSample algorithm parameter that is automatically chosen.

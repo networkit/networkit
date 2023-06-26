@@ -34,6 +34,12 @@ def setNumberOfThreads(nThreads):
 	setNumberOfThreads(nThreads)
 
 	Set the number of OpenMP threads
+
+	Parameters
+	----------
+	nThreads : int
+		Number of threads.
+
 	"""
 	_setNumberOfThreads(nThreads)
 

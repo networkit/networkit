@@ -14,7 +14,147 @@ class TestGraphTools(unittest.TestCase):
 		G.addEdge(1, 2, 3.0)
 
 		return G
+	
+	def testAppend(self):
+		n1, n2 = 100, 50
+		p1, p2 = 0.01, 0.05
+		nodesToDelete = 20
 
+		def testGraphs(G, G1, G2):
+			self.assertEqual(G.numberOfNodes(), G1.numberOfNodes() + G2.numberOfNodes())
+			self.assertEqual(G.numberOfEdges(), G1.numberOfEdges() + G2.numberOfEdges())
+			self.assertEqual(G.isDirected(), G1.isDirected())
+			self.assertEqual(G.isDirected(), G2.isDirected())
+			self.assertEqual(G.isWeighted(), G1.isWeighted())
+			self.assertEqual(G.isWeighted(), G2.isWeighted())
+
+			nodeMap = {}
+			v = G1.upperNodeIdBound()
+			for u in range(G2.upperNodeIdBound()):
+				if G2.hasNode(u):
+					nodeMap[u] = v
+					v += 1
+
+			G1.forNodes(lambda u: self.assertTrue(G.hasNode(u)))
+			G1.forEdges(lambda u, v, w, eid: self.assertTrue(G.hasEdge(u, v)))
+			G2.forNodes(lambda u: self.assertTrue(G.hasNode(nodeMap[u])))
+			G2.forEdges(lambda u, v, w, eid: self.assertTrue(G.hasEdge(nodeMap[u], nodeMap[v])))
+
+		for seed in range(1, 4):
+			nk.setSeed(seed, False)
+			random.seed(seed)
+			for directed in [True, False]:
+				for weighted in [True, False]:
+					G1 = nk.generators.ErdosRenyiGenerator(n1, p1, directed).generate()
+					G2 = nk.generators.ErdosRenyiGenerator(n2, p2, directed).generate()
+					if weighted:
+						nk.graphtools.randomizeWeights(G1)
+						nk.graphtools.randomizeWeights(G2)
+
+					G = copy(G1)
+					nk.graphtools.append(G, G2)
+					testGraphs(G, G1, G2)
+
+					for _ in range(nodesToDelete):
+						G1.removeNode(nk.graphtools.randomNode(G1))
+						G2.removeNode(nk.graphtools.randomNode(G2))
+						G3 = copy(G1)
+						nk.graphtools.append(G3, G2)
+						testGraphs(G3, G1, G2)
+	
+	def testAugmentedGraph(self):
+		nk.engineering.setSeed(42, False)
+		n = 20
+		G = nk.generators.ErdosRenyiGenerator(n, 0.3).generate()
+		augG, root = nk.graphtools.createAugmentedGraph(G);
+
+		self.assertTrue(augG.hasNode(root));
+		self.assertEqual(n + 1, augG.numberOfNodes());
+		self.assertEqual(G.numberOfEdges() + n, augG.numberOfEdges());
+		self.assertEqual(n, augG.degree(root));
+	
+	def testCopyNodes(self):
+		def checkNodes(G, GCopy):
+			self.assertEqual(G.isDirected(), GCopy.isDirected())
+			self.assertEqual(G.isWeighted(), GCopy.isWeighted())
+			self.assertEqual(GCopy.numberOfEdges(), 0)
+			for u in range(G.upperNodeIdBound()):
+				self.assertEqual(G.hasNode(u), GCopy.hasNode(u))
+
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				G = self.getSmallGraph(weighted, directed)
+				GCopy = nk.graphtools.copyNodes(G)
+				checkNodes(G, GCopy)
+
+				for _ in range(1, G.numberOfNodes()):
+					G.removeNode(nk.graphtools.randomNode(G))
+					GCopy = nk.graphtools.copyNodes(G)
+					checkNodes(G, GCopy)
+
+	def testDensity(self):
+		def doTest(G):
+			d = nk.graphtools.density(G)
+			self.assertGreaterEqual(d, 0)
+			self.assertEqual(
+					d > 0,
+					G.numberOfNodes() >= 1 and G.numberOfEdges() - G.numberOfSelfLoops() > 0)
+
+		n, p = 100, 0.1
+		for seed in range(1, 4):
+			for directed in [True, False]:
+				for weighted in [True, False]:
+					G = nk.generators.ErdosRenyiGenerator(n, p, directed).generate()
+					if weighted:
+						G = nk.graphtools.toWeighted(G)
+					doTest(G)
+
+					for _ in range(n):
+						G.removeNode(nk.graphtools.randomNode(G))
+						doTest(G)
+				
+	def testGraphTranspose(self):
+		for seed in range(1, 4):
+			nk.setSeed(seed, True)
+			random.seed(seed)
+			G = nk.generators.ErdosRenyiGenerator(100, 0.2, True).generate()
+
+			for _ in range(20):
+				u = nk.graphtools.randomNode(G)
+				if not G.hasEdge(u, u):
+					G.addEdge(u, u)
+
+			# Delete a few nodes
+			for _ in range(10):
+				G.removeNode(nk.graphtools.randomNode(G))
+			self.assertGreater(G.numberOfSelfLoops(), 0)
+
+			# Assign random weights
+			GWeighted = copy(G)
+			nk.graphtools.randomizeWeights(GWeighted)
+
+			GWeighted.indexEdges()
+			GTrans = nk.graphtools.transpose(GWeighted)
+
+			def checkGWeightedEdges(u, v, w, eid):
+				self.assertEqual(GWeighted.edgeId(u, v), GTrans.edgeId(v, u))
+				self.assertEqual(GWeighted.weight(u, v), GTrans.weight(v, u))
+			GWeighted.forEdges(checkGWeightedEdges)
+
+			def checkGTransEdges(v, u, w, eid):
+				self.assertEqual(GWeighted.edgeId(u, v), GTrans.edgeId(v, u))
+				self.assertEqual(GWeighted.weight(u, v), GTrans.weight(v, u))
+			GTrans.forEdges(checkGTransEdges)
+
+			for u in range(GWeighted.upperNodeIdBound()):
+				self.assertEqual(GWeighted.hasNode(u), GTrans.hasNode(u))
+
+			self.assertEqual(GWeighted.numberOfNodes(), GTrans.numberOfNodes())
+			self.assertEqual(GWeighted.upperNodeIdBound(), GTrans.upperNodeIdBound())
+			self.assertEqual(GWeighted.numberOfEdges(), GTrans.numberOfEdges())
+			self.assertEqual(GWeighted.upperEdgeIdBound(), GTrans.upperEdgeIdBound())
+			self.assertEqual(GWeighted.numberOfSelfLoops(), GTrans.numberOfSelfLoops())
+	
 	def testMaxDegree(self):
 		n = 100
 		p = 0.2
@@ -61,6 +201,38 @@ class TestGraphTools(unittest.TestCase):
 						G.addEdge(e[0], e[1])
 						doTest(G)
 
+	def testMerge(self):
+		n1, n2 = 100, 150
+		p1, p2 = 0.01, 0.05
+
+		def testGraphs (Gorig, Gmerge, G1):
+			for u in range(max(Gorig.upperNodeIdBound(), G1.upperNodeIdBound())):
+				self.assertEqual(Gmerge.hasNode(u), Gorig.hasNode(u) or G1.hasNode(u))
+
+			Gorig.forEdges(lambda u, v, w, eid: self.assertTrue(Gmerge.hasEdge(u, v)))
+			G1.forEdges(lambda u, v, w, eid: self.assertTrue(Gmerge.hasEdge(u, v)))
+
+			def checkEdges(u, v, w, eid):
+				if Gorig.hasNode(u) and Gorig.hasNode(v) and Gorig.hasEdge(u, v):
+					self.assertEqual(Gorig.weight(u, v), w)
+				else:
+					self.assertEqual(G1.weight(u, v), w)
+			Gmerge.forEdges(checkEdges)
+
+		for seed in range(1, 4):
+			nk.setSeed(seed, False)
+			random.seed(seed)
+			for directed in [True, False]:
+				for weighted in [True, False]:
+					Gorig = nk.generators.ErdosRenyiGenerator(n1, p1, directed).generate()
+					G1 = nk.generators.ErdosRenyiGenerator(n2, p2, directed).generate()
+					if weighted:
+						nk.graphtools.randomizeWeights(Gorig)
+						nk.graphtools.randomizeWeights(G1)
+					Gmerge = copy(Gorig)
+					nk.graphtools.merge(Gmerge, G1)
+					testGraphs(Gorig, Gmerge, G1)					
+
 	def testRandomNode(self):
 		for directed in [True, False]:
 			for weighted in [True, False]:
@@ -98,6 +270,32 @@ class TestGraphTools(unittest.TestCase):
 					for u, v in randomEdges:
 						self.assertTrue(G.hasEdge(u, v))
 
+	def testRemoveEdgesFromIsolatedSet(self):
+		n = 6
+
+		def generateTwoComponents(directed, weighted):
+			G = nk.Graph(n, directed, weighted)
+			G.addEdge(0, 1)
+			G.addEdge(1, 2)
+			G.addEdge(2, 0)
+
+			G.addEdge(3, 4)
+			G.addEdge(4, 5)
+			G.addEdge(5, 3)
+
+			return G
+
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				G = generateTwoComponents(directed, weighted)
+				nk.graphtools.removeEdgesFromIsolatedSet(G, [0, 1, 2])
+				self.assertEqual(G.numberOfEdges(), 3)
+				self.assertTrue(G.hasEdge(3, 4))
+				self.assertTrue(G.hasEdge(4, 5))
+				self.assertTrue(G.hasEdge(5, 3))
+				nk.graphtools.removeEdgesFromIsolatedSet(G, [3, 4, 5])
+				self.assertEqual(G.numberOfEdges(), 0)					
+
 	def testSize(self):
 		def doTest(G):
 			(n, m) = nk.graphtools.size(G)
@@ -124,64 +322,47 @@ class TestGraphTools(unittest.TestCase):
 						G.removeEdge(u, v)
 						doTest(G)
 
-	def testVolume(self):
-		for directed in [True, False]:
-			for weighted in [True, False]:
-				G = self.getSmallGraph(weighted, directed)
+	def testSortEdgesByWeight(self):
+		def checkSortedEdges(g, decreasing):
+			for u in g.iterNodes():
+				prevNode = g.numberOfNodes() if decreasing else -1
+				prevWeight = 2 if decreasing else 0
 
-				# Test total volume
-				v1 = nk.graphtools.volume(G)
-				mod = 1.0 if G.isDirected() else 2.0;
-				baseG = G.totalEdgeWeight() if G.isWeighted() else G.numberOfEdges();
-				self.assertEqual(v1, mod * baseG)
+				for v in g.iterNeighbors(u):
+					w = g.weight(u, v)
+					if decreasing:
+						if w == prevWeight:
+							self.assertLess(prevNode, v)
+						else:
+							self.assertLess(w, prevWeight)
+					else:
+						if w == prevWeight:
+							self.assertLess(prevNode, v)
+						else:
+							self.assertGreater(w, prevWeight)
 
-				# Test partial volume
-				nodes = [nk.graphtools.randomNode(G)]
-				v2 = nk.graphtools.inVolume(G, nodes)
-				v3 = nk.graphtools.volume(G, nodes)
-				self.assertLessEqual(v2, v1)
-				self.assertLessEqual(v3, v1)
+					prevNode, prevWeight = v, w
 
-	def testDensity(self):
-		def doTest(G):
-			d = nk.graphtools.density(G)
-			self.assertGreaterEqual(d, 0)
-			self.assertEqual(
-					d > 0,
-					G.numberOfNodes() >= 1 and G.numberOfEdges() - G.numberOfSelfLoops() > 0)
+		def doTest(g):
+			nk.graphtools.sortEdgesByWeight(g, False)
+			checkSortedEdges(g, False)
+			nk.graphtools.sortEdgesByWeight(g, True)
+			checkSortedEdges(g, True)
 
-		n, p = 100, 0.1
-		for seed in range(1, 4):
-			for directed in [True, False]:
-				for weighted in [True, False]:
-					G = nk.generators.ErdosRenyiGenerator(n, p, directed).generate()
-					if weighted:
-						G = nk.graphtools.toWeighted(G)
-					doTest(G)
+		g = nk.readGraph('input/PGPgiantcompo.graph', nk.Format.METIS)
+		g.removeSelfLoops()
+		g.removeMultiEdges()
 
-					for _ in range(n):
-						G.removeNode(nk.graphtools.randomNode(G))
-						doTest(G)
+		# Test unweighted
+		doTest(g)
 
-	def testCopyNodes(self):
-		def checkNodes(G, GCopy):
-			self.assertEqual(G.isDirected(), GCopy.isDirected())
-			self.assertEqual(G.isWeighted(), GCopy.isWeighted())
-			self.assertEqual(GCopy.numberOfEdges(), 0)
-			for u in range(G.upperNodeIdBound()):
-				self.assertEqual(G.hasNode(u), GCopy.hasNode(u))
+		random.seed(1)
+		nk.graphtools.randomizeWeights(g)
+		e = nk.graphtools.randomEdge(g)
 
-		for directed in [True, False]:
-			for weighted in [True, False]:
-				G = self.getSmallGraph(weighted, directed)
-				GCopy = nk.graphtools.copyNodes(G)
-				checkNodes(G, GCopy)
-
-				for _ in range(1, G.numberOfNodes()):
-					G.removeNode(nk.graphtools.randomNode(G))
-					GCopy = nk.graphtools.copyNodes(G)
-					checkNodes(G, GCopy)
-
+		# Test weighted
+		doTest(g)
+	
 	def testSubgraphFromNodesUndirected(self):
 		G = self.getSmallGraph(True, False)
 
@@ -240,48 +421,6 @@ class TestGraphTools(unittest.TestCase):
 		res = nk.graphtools.subgraphAndNeighborsFromNodes(G, nodes, True, True)
 		self.assertEqual(res.numberOfNodes(), 4)
 		self.assertEqual(res.numberOfEdges(), 4) # 0->1, 0->2, 1->2, 3->1
-
-	def testGraphTranspose(self):
-		for seed in range(1, 4):
-			nk.setSeed(seed, True)
-			random.seed(seed)
-			G = nk.generators.ErdosRenyiGenerator(100, 0.2, True).generate()
-
-			for _ in range(20):
-				u = nk.graphtools.randomNode(G)
-				if not G.hasEdge(u, u):
-					G.addEdge(u, u)
-
-			# Delete a few nodes
-			for _ in range(10):
-				G.removeNode(nk.graphtools.randomNode(G))
-			self.assertGreater(G.numberOfSelfLoops(), 0)
-
-			# Assign random weights
-			GWeighted = copy(G)
-			nk.graphtools.randomizeWeights(GWeighted)
-
-			GWeighted.indexEdges()
-			GTrans = nk.graphtools.transpose(GWeighted)
-
-			def checkGWeightedEdges(u, v, w, eid):
-				self.assertEqual(GWeighted.edgeId(u, v), GTrans.edgeId(v, u))
-				self.assertEqual(GWeighted.weight(u, v), GTrans.weight(v, u))
-			GWeighted.forEdges(checkGWeightedEdges)
-
-			def checkGTransEdges(v, u, w, eid):
-				self.assertEqual(GWeighted.edgeId(u, v), GTrans.edgeId(v, u))
-				self.assertEqual(GWeighted.weight(u, v), GTrans.weight(v, u))
-			GTrans.forEdges(checkGTransEdges)
-
-			for u in range(GWeighted.upperNodeIdBound()):
-				self.assertEqual(GWeighted.hasNode(u), GTrans.hasNode(u))
-
-			self.assertEqual(GWeighted.numberOfNodes(), GTrans.numberOfNodes())
-			self.assertEqual(GWeighted.upperNodeIdBound(), GTrans.upperNodeIdBound())
-			self.assertEqual(GWeighted.numberOfEdges(), GTrans.numberOfEdges())
-			self.assertEqual(GWeighted.upperEdgeIdBound(), GTrans.upperEdgeIdBound())
-			self.assertEqual(GWeighted.numberOfSelfLoops(), GTrans.numberOfSelfLoops())
 
 	def testToUndirected(self):
 		n = 200
@@ -347,152 +486,6 @@ class TestGraphTools(unittest.TestCase):
 				G1 = nk.graphtools.toUnweighted(G)
 				testGraphs(G, G1)
 
-	def testAppend(self):
-		n1, n2 = 100, 50
-		p1, p2 = 0.01, 0.05
-		nodesToDelete = 20
-
-		def testGraphs(G, G1, G2):
-			self.assertEqual(G.numberOfNodes(), G1.numberOfNodes() + G2.numberOfNodes())
-			self.assertEqual(G.numberOfEdges(), G1.numberOfEdges() + G2.numberOfEdges())
-			self.assertEqual(G.isDirected(), G1.isDirected())
-			self.assertEqual(G.isDirected(), G2.isDirected())
-			self.assertEqual(G.isWeighted(), G1.isWeighted())
-			self.assertEqual(G.isWeighted(), G2.isWeighted())
-
-			nodeMap = {}
-			v = G1.upperNodeIdBound()
-			for u in range(G2.upperNodeIdBound()):
-				if G2.hasNode(u):
-					nodeMap[u] = v
-					v += 1
-
-			G1.forNodes(lambda u: self.assertTrue(G.hasNode(u)))
-			G1.forEdges(lambda u, v, w, eid: self.assertTrue(G.hasEdge(u, v)))
-			G2.forNodes(lambda u: self.assertTrue(G.hasNode(nodeMap[u])))
-			G2.forEdges(lambda u, v, w, eid: self.assertTrue(G.hasEdge(nodeMap[u], nodeMap[v])))
-
-		for seed in range(1, 4):
-			nk.setSeed(seed, False)
-			random.seed(seed)
-			for directed in [True, False]:
-				for weighted in [True, False]:
-					G1 = nk.generators.ErdosRenyiGenerator(n1, p1, directed).generate()
-					G2 = nk.generators.ErdosRenyiGenerator(n2, p2, directed).generate()
-					if weighted:
-						nk.graphtools.randomizeWeights(G1)
-						nk.graphtools.randomizeWeights(G2)
-
-					G = copy(G1)
-					nk.graphtools.append(G, G2)
-					testGraphs(G, G1, G2)
-
-					for _ in range(nodesToDelete):
-						G1.removeNode(nk.graphtools.randomNode(G1))
-						G2.removeNode(nk.graphtools.randomNode(G2))
-						G3 = copy(G1)
-						nk.graphtools.append(G3, G2)
-						testGraphs(G3, G1, G2)
-
-	def testMerge(self):
-		n1, n2 = 100, 150
-		p1, p2 = 0.01, 0.05
-
-		def testGraphs (Gorig, Gmerge, G1):
-			for u in range(max(Gorig.upperNodeIdBound(), G1.upperNodeIdBound())):
-				self.assertEqual(Gmerge.hasNode(u), Gorig.hasNode(u) or G1.hasNode(u))
-
-			Gorig.forEdges(lambda u, v, w, eid: self.assertTrue(Gmerge.hasEdge(u, v)))
-			G1.forEdges(lambda u, v, w, eid: self.assertTrue(Gmerge.hasEdge(u, v)))
-
-			def checkEdges(u, v, w, eid):
-				if Gorig.hasNode(u) and Gorig.hasNode(v) and Gorig.hasEdge(u, v):
-					self.assertEqual(Gorig.weight(u, v), w)
-				else:
-					self.assertEqual(G1.weight(u, v), w)
-			Gmerge.forEdges(checkEdges)
-
-		for seed in range(1, 4):
-			nk.setSeed(seed, False)
-			random.seed(seed)
-			for directed in [True, False]:
-				for weighted in [True, False]:
-					Gorig = nk.generators.ErdosRenyiGenerator(n1, p1, directed).generate()
-					G1 = nk.generators.ErdosRenyiGenerator(n2, p2, directed).generate()
-					if weighted:
-						nk.graphtools.randomizeWeights(Gorig)
-						nk.graphtools.randomizeWeights(G1)
-					Gmerge = copy(Gorig)
-					nk.graphtools.merge(Gmerge, G1)
-					testGraphs(Gorig, Gmerge, G1)
-
-	def testRemoveEdgesFromIsolatedSet(self):
-		n = 6
-
-		def generateTwoComponents(directed, weighted):
-			G = nk.Graph(n, directed, weighted)
-			G.addEdge(0, 1)
-			G.addEdge(1, 2)
-			G.addEdge(2, 0)
-
-			G.addEdge(3, 4)
-			G.addEdge(4, 5)
-			G.addEdge(5, 3)
-
-			return G
-
-		for directed in [True, False]:
-			for weighted in [True, False]:
-				G = generateTwoComponents(directed, weighted)
-				nk.graphtools.removeEdgesFromIsolatedSet(G, [0, 1, 2])
-				self.assertEqual(G.numberOfEdges(), 3)
-				self.assertTrue(G.hasEdge(3, 4))
-				self.assertTrue(G.hasEdge(4, 5))
-				self.assertTrue(G.hasEdge(5, 3))
-				nk.graphtools.removeEdgesFromIsolatedSet(G, [3, 4, 5])
-				self.assertEqual(G.numberOfEdges(), 0)
-
-	def testSortEdgesByWeight(self):
-		def checkSortedEdges(g, decreasing):
-			for u in g.iterNodes():
-				prevNode = g.numberOfNodes() if decreasing else -1
-				prevWeight = 2 if decreasing else 0
-
-				for v in g.iterNeighbors(u):
-					w = g.weight(u, v)
-					if decreasing:
-						if w == prevWeight:
-							self.assertLess(prevNode, v)
-						else:
-							self.assertLess(w, prevWeight)
-					else:
-						if w == prevWeight:
-							self.assertLess(prevNode, v)
-						else:
-							self.assertGreater(w, prevWeight)
-
-					prevNode, prevWeight = v, w
-
-		def doTest(g):
-			nk.graphtools.sortEdgesByWeight(g, False)
-			checkSortedEdges(g, False)
-			nk.graphtools.sortEdgesByWeight(g, True)
-			checkSortedEdges(g, True)
-
-		g = nk.readGraph('input/PGPgiantcompo.graph', nk.Format.METIS)
-		g.removeSelfLoops()
-		g.removeMultiEdges()
-
-		# Test unweighted
-		doTest(g)
-
-		random.seed(1)
-		nk.graphtools.randomizeWeights(g)
-		e = nk.graphtools.randomEdge(g)
-
-		# Test weighted
-		doTest(g)
-
 	def testTopologicalSort(self):
 		def generateGraph(directed):
 			G = nk.Graph(5, False, directed)
@@ -520,16 +513,25 @@ class TestGraphTools(unittest.TestCase):
 				self.assertLess(indexNode2, indexNode1)
 				self.assertLess(indexNode1, indexNode3)
 
-	def testAugmentedGraph(self):
-		nk.engineering.setSeed(42, False)
-		n = 20
-		G = nk.generators.ErdosRenyiGenerator(n, 0.3).generate()
-		augG, root = nk.graphtools.createAugmentedGraph(G);
+	def testVolume(self):
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				G = self.getSmallGraph(weighted, directed)
 
-		self.assertTrue(augG.hasNode(root));
-		self.assertEqual(n + 1, augG.numberOfNodes());
-		self.assertEqual(G.numberOfEdges() + n, augG.numberOfEdges());
-		self.assertEqual(n, augG.degree(root));
+				# Test total volume
+				v1 = nk.graphtools.volume(G)
+				mod = 1.0 if G.isDirected() else 2.0;
+				baseG = G.totalEdgeWeight() if G.isWeighted() else G.numberOfEdges();
+				self.assertEqual(v1, mod * baseG)
+
+				# Test partial volume
+				nodes = [nk.graphtools.randomNode(G)]
+				v2 = nk.graphtools.inVolume(G, nodes)
+				v3 = nk.graphtools.volume(G, nodes)
+				self.assertLessEqual(v2, v1)
+				self.assertLessEqual(v3, v1)			
+
+	
 
 if __name__ == "__main__":
 	unittest.main()

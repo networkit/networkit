@@ -22,7 +22,7 @@ cdef class Graph:
 	Parameters
 	----------
 	n : int, optional
-		Number of nodes.
+		Number of nodes. Default: 0
 	weighted : bool, optional
 		If set to True, the graph can have edge weights other than 1.0. Default: False
 	directed : bool, optional
@@ -72,7 +72,7 @@ cdef class Graph:
 		Parameters
 		----------
 		force : bool, optional
-			Force re-indexing of edges.
+			Force re-indexing of edges. Default: False
 		"""
 		self._this.indexEdges(force)
 
@@ -93,6 +93,13 @@ cdef class Graph:
 		"""
 		edgeId(u, v)
 
+		Parameters
+		----------
+		u: node
+			Node Id from u.
+		v: node
+			Node Id from v.
+			
 		Returns
 		-------
 		int
@@ -156,11 +163,16 @@ cdef class Graph:
 		"""
 		degree(u)
 
-		Get the number of neighbors of `v`.
+		Get the number of neighbors of `u`.
 
+		Note
+		----
+		The existence of the node is not checked. Calling this function with a non-existing node results in a segmentation fault. 
+		Node existence can be checked by calling hasNode(u).
+		
 		Parameters
 		----------
-		v : int
+		u : int
 			The input Node.
 
 		Returns
@@ -174,11 +186,16 @@ cdef class Graph:
 		"""
 		degreeIn(u)
 
-		Get the number of in-neighbors of `v`.
+		Get the number of in-neighbors of `u`.
+
+		Note
+		----
+		The existence of the node is not checked. Calling this function with a non-existing node results in a segmentation fault. 
+		Node existence can be checked by calling hasNode(u).
 
 		Parameters
 		----------
-		v : int
+		u : int
 			The input Node.
 
 		Returns
@@ -192,11 +209,16 @@ cdef class Graph:
 		"""
 		degreeOut(u)
 
-		Get the number of out-neighbors of `v`.
+		Get the number of out-neighbors of `u`.
+
+		Note
+		----
+		The existence of the node is not checked. Calling this function with a non-existing node results in a segmentation fault. 
+		Node existence can be checked by calling hasNode(u).
 
 		Parameters
 		----------
-		v : int
+		u : int
 			The Input Node.i
 		Returns
 		-------
@@ -365,7 +387,7 @@ cdef class Graph:
 		v : int
 			Endpoint of edge.
 		w : float, optional
-			Edge weight.
+			Edge weight. Default: 1.0
 		addMissing : bool, optional
 			Add missing endpoints if necessary (i.e., increase numberOfNodes). Default: False
 		checkMultiEdge : bool, optional

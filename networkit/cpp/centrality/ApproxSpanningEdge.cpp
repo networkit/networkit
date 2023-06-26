@@ -10,6 +10,8 @@
 #include <omp.h>
 #include <queue>
 
+#include <tlx/unused.hpp>
+
 #include <networkit/centrality/ApproxSpanningEdge.hpp>
 #include <networkit/components/BiconnectedComponents.hpp>
 

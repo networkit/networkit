@@ -303,7 +303,7 @@ if(NETWORKIT_PYTHON)
 	endif()
 
 	foreach (EXT base centrality clique coarsening community components correlation
-			 distance dynamics embedding engineering flow generators globals graph graphio
+			 distance dynamics dynbase embedding engineering flow generators globals graph graphio
 			 graphtools helpers independentset linkprediction matching
 			 randomization reachability scd simulation sparsification stats
 			 structures traversal viz)

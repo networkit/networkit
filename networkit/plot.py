@@ -38,9 +38,9 @@ def nodeProperty(data, label, sorted=True, yscale="linear", xscale="linear"):
 	sorted : bool, optional
 		Indicates whether the plotted data points should be sorted. Default: True
 	yscale : str, optional
-		Indicates the scaling of y-axis. Default: True
+		Indicates the scaling of y-axis. Default: "linear"
 	xscale : str, optional
-		Indicates the scaling of x-axis. Default: True
+		Indicates the scaling of x-axis. Default: "linear"
 	"""
 	if not have_plt:
 		raise MissingDependencyError("matplotlib")

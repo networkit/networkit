@@ -6,6 +6,8 @@ from libcpp.map cimport map
 from libcpp.unordered_set cimport unordered_set
 
 from .base cimport _Algorithm, Algorithm
+from .dynbase cimport _DynAlgorithm
+from .dynbase import DynAlgorithm
 from .dynamics cimport _GraphEvent, GraphEvent
 from .graph cimport _Graph, Graph
 from .structures cimport _Partition, Partition, count, index, node
@@ -134,7 +136,7 @@ cdef class ConnectedComponents(ComponentDecomposition):
 
 		Parameters
 		----------
-		graph : networkit.Graph
+		G : networkit.Graph
 			The input graph.
 		compactGraph : bool, optional
 			If true, the node ids of the output graph will be compacted
@@ -163,13 +165,13 @@ cdef class ParallelConnectedComponents(ComponentDecomposition):
 
 	Parameters
 	----------
-	graph : networkit.Graph
+	G : networkit.Graph
 		The input graph
 	coarsening : bool, optional
 		Specifies whether the main algorithm based on label propagation (LP)
 		shall work recursively (true) or not (false) by coarsening/contracting
 		an LP-computed clustering. Defaults to true since we saw positive effects
-		in terms of running time for many networks. Beware of possible memory implications.
+		in terms of running time for many networks. Beware of possible memory implications. Default: True
 	"""
 
 	def __cinit__(self,  Graph G, coarsening=True	):
@@ -300,16 +302,14 @@ cdef class BiconnectedComponents(Algorithm):
 
 cdef extern from "<networkit/components/DynConnectedComponents.hpp>":
 
-	cdef cppclass _DynConnectedComponents "NetworKit::DynConnectedComponents"(_ComponentDecomposition):
+	cdef cppclass _DynConnectedComponents "NetworKit::DynConnectedComponents"(_ComponentDecomposition, _DynAlgorithm):
 		_DynConnectedComponents(_Graph G) except +
-		void update(_GraphEvent) except +
-		void updateBatch(vector[_GraphEvent]) except +
 		count numberOfComponents() except +
 		count componentOfNode(node query) except +
 		map[index, count] getComponentSizes() except +
 		vector[vector[node]] getComponents() except +
 
-cdef class DynConnectedComponents(ComponentDecomposition):
+cdef class DynConnectedComponents(ComponentDecomposition, DynAlgorithm):
 	"""
 	DynConnectedComponents(G)
 
@@ -324,46 +324,14 @@ cdef class DynConnectedComponents(ComponentDecomposition):
 	def __cinit__(self, Graph G):
 		self._this = new _DynConnectedComponents(G._this)
 
-	def update(self, event):
-		"""
-		update(event)
-
-		Updates the connected components after an edge insertion or
-		deletion.
-
-		Parameters
-		----------
-		event : networkit.dynamics.GraphEvent
-			The event that happened (edge deletion or insertion).
-		"""
-		(<_DynConnectedComponents*>(self._this)).update(_GraphEvent(event.type, event.u, event.v, event.w))
-
-	def updateBatch(self, batch):
-		"""
-		updateBatch(batch)
-
-		Updates the connected components after a batch of edge insertions or
-		deletions.
-
-		Parameters
-		----------
-		batch : list(networkit.dynamics.GraphEvent)
-			A list that contains a batch of edge insertions or deletions.
-		"""
-		cdef vector[_GraphEvent] _batch
-		for event in batch:
-			_batch.push_back(_GraphEvent(event.type, event.u, event.v, event.w))
-		(<_DynConnectedComponents*>(self._this)).updateBatch(_batch)
 
 
 cdef extern from "<networkit/components/DynWeaklyConnectedComponents.hpp>":
 
-	cdef cppclass _DynWeaklyConnectedComponents "NetworKit::DynWeaklyConnectedComponents"(_ComponentDecomposition):
+	cdef cppclass _DynWeaklyConnectedComponents "NetworKit::DynWeaklyConnectedComponents"(_ComponentDecomposition, _DynAlgorithm):
 		_DynWeaklyConnectedComponents(_Graph G) except +
-		void update(_GraphEvent) except +
-		void updateBatch(vector[_GraphEvent]) except +
 
-cdef class DynWeaklyConnectedComponents(ComponentDecomposition):
+cdef class DynWeaklyConnectedComponents(ComponentDecomposition, DynAlgorithm):
 	"""
 	DynWeaklyConnectedComponents(G)
 
@@ -378,33 +346,3 @@ cdef class DynWeaklyConnectedComponents(ComponentDecomposition):
 	def __cinit__(self, Graph G):
 		self._this = new _DynWeaklyConnectedComponents(G._this)
 
-	def update(self, event):
-		"""
-		update(event)
-
-		Updates the connected components after an edge insertion or
-		deletion.
-
-		Parameters
-		----------
-		event : networkit.dynamics.GraphEvent
-			The event that happened (edge deletion or insertion).
-		"""
-		(<_DynWeaklyConnectedComponents*>(self._this)).update(_GraphEvent(event.type, event.u, event.v, event.w))
-
-	def updateBatch(self, batch):
-		"""
-		updateBatch(batch)
-
-		Updates the connected components after a batch of edge insertions or
-		deletions.
-
-		Parameters
-		----------
-		batch : list(networkit.dynamics.GraphEvent)
-			A vector that contains a batch of edge insertions or deletions.
-		"""
-		cdef vector[_GraphEvent] _batch
-		for event in batch:
-			_batch.push_back(_GraphEvent(event.type, event.u, event.v, event.w))
-		(<_DynWeaklyConnectedComponents*>(self._this)).updateBatch(_batch)

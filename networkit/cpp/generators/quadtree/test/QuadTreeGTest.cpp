@@ -5,21 +5,19 @@
  *      Author: Moritz v. Looz (moritz.looz-corswarem@kit.edu)
  */
 
+#include <gtest/gtest.h>
+
 #include <algorithm>
 #include <cmath>
 #include <stack>
-
-#include <cmath>
 #include <vector>
-#include <gtest/gtest.h>
-#include <networkit/generators/quadtree/Quadtree.hpp>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
-#include <networkit/geometric/HyperbolicSpace.hpp>
-
+#include <networkit/generators/quadtree/Quadtree.hpp>
 #include <networkit/generators/quadtree/QuadtreeCartesianEuclid.hpp>
 #include <networkit/generators/quadtree/QuadtreePolarEuclid.hpp>
+#include <networkit/geometric/HyperbolicSpace.hpp>
 
 #include <tlx/unused.hpp>
 
@@ -138,7 +136,7 @@ TEST_F(QuadTreeGTest, testQuadTreeHyperbolicCircle) {
                                                           responsibleNode.getRightAngle(),
                                                           responsibleNode.getMaxR()));
                 } else {
-                    didfind++;
+                    ++didfind;
                 }
             }
         }
@@ -146,6 +144,8 @@ TEST_F(QuadTreeGTest, testQuadTreeHyperbolicCircle) {
             DEBUG("Found only ", didfind, " of ", didfind + notfound, " neighbours");
             tlx::unused(didfind);
         }
+
+        tlx::unused(didfind);
     }
 }
 
@@ -721,7 +721,7 @@ TEST_F(QuadTreeGTest, debugTreeExport) {
             index i = 0;
             tlx::unused(i);
             for (index elem : current.getElements()) {
-                i++;
+                ++i;
                 double p = edgeProb(HyperbolicSpace::poincareMetric(angles[elem], radii[elem],
                                                                     angles[query], radii[query]));
                 DEBUG("\\drawPoint{", deg(angles[elem]), "}{",
@@ -729,6 +729,7 @@ TEST_F(QuadTreeGTest, debugTreeExport) {
                       current.getID(), "}{", i, "}");
                 DEBUG("Leaf contains: ", angles[elem], ", ", radii[elem], " p: ", p);
                 tlx::unused(p);
+                tlx::unused(i);
             }
         }
 
