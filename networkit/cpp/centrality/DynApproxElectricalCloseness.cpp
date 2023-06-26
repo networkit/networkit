@@ -438,7 +438,7 @@ void DynApproxElectricalCloseness::sampleUST(Tree &result) {
 
 void DynApproxElectricalCloseness::sampleUSTWithEdge(Tree &result, node a, node b) {
     auto n = G.numberOfNodes();
-    assert(0 <= a && a < n && 0 <= b && b < n);
+    assert(a < n && b < n);
 
     auto &parent = result.parent;
     auto &status = statusGlobal[omp_get_thread_num()];
@@ -459,7 +459,7 @@ void DynApproxElectricalCloseness::sampleUSTWithEdge(Tree &result, node a, node 
     parent[a] = b;
     status[a] = NodeStatus::IN_SPANNING_TREE;
     status[b] = NodeStatus::IN_SPANNING_TREE;
-    int nodesInSpanningTree = 2;
+    unsigned int nodesInSpanningTree = 2;
 
     // The tree is generated using Wilson's algorithm, rooted in b.
     // Afterwards reroot it to this->root.
@@ -659,7 +659,7 @@ void DynApproxElectricalCloseness::edgeAdded(node a, node b) {
     count ustsCurrentRound = std::ceil(w * numberOfUSTs);
     INFO("USTS: ", ustsCurrentRound);
 
-    for (auto approxEffResistanceLocal : approxEffResistanceGlobal) {
+    for (auto &approxEffResistanceLocal : approxEffResistanceGlobal) {
         std::fill(approxEffResistanceLocal.begin(), approxEffResistanceLocal.end(), 0.);
     }
 
@@ -766,7 +766,7 @@ void DynApproxElectricalCloseness::edgeRemoved(node a, node b) {
     count ustsCurrentRound = std::ceil(w * numberOfUSTs);
     INFO("USTS: ", ustsCurrentRound);
 
-    for (auto approxEffResistanceLocal : approxEffResistanceGlobal) {
+    for (auto &approxEffResistanceLocal : approxEffResistanceGlobal) {
         std::fill(approxEffResistanceLocal.begin(), approxEffResistanceLocal.end(), 0.);
     }
 
