@@ -24,8 +24,8 @@ namespace NetworKit {
 
 DynApproxElectricalCloseness::DynApproxElectricalCloseness(const Graph &G, double epsilon,
                                                            double kappa, node pivot, double delta)
-    : Centrality(G), epsilon(epsilon), delta(delta), kappa(kappa), bcc(BiconnectedComponents(G)),
-      pivot(pivot) {
+    : Centrality(G), epsilon(epsilon), delta(delta), kappa(kappa), pivot(pivot),
+      bcc(BiconnectedComponents(G)) {
 
     if (G.isDirected())
         throw std::runtime_error("Error: the input graph must be undirected.");
@@ -659,9 +659,8 @@ void DynApproxElectricalCloseness::edgeAdded(node a, node b) {
     count ustsCurrentRound = std::ceil(w * numberOfUSTs);
     INFO("USTS: ", ustsCurrentRound);
 
-    auto threads = approxEffResistanceGlobal.size();
-    for (int i = 0; i < threads; i++) {
-        std::fill(approxEffResistanceGlobal[i].begin(), approxEffResistanceGlobal[i].end(), 0.);
+    for (auto approxEffResistanceLocal : approxEffResistanceGlobal) {
+        std::fill(approxEffResistanceLocal.begin(), approxEffResistanceLocal.end(), 0.);
     }
 
     // update degDist
@@ -767,9 +766,8 @@ void DynApproxElectricalCloseness::edgeRemoved(node a, node b) {
     count ustsCurrentRound = std::ceil(w * numberOfUSTs);
     INFO("USTS: ", ustsCurrentRound);
 
-    auto threads = approxEffResistanceGlobal.size();
-    for (int i = 0; i < threads; i++) {
-        std::fill(approxEffResistanceGlobal[i].begin(), approxEffResistanceGlobal[i].end(), 0.);
+    for (auto approxEffResistanceLocal : approxEffResistanceGlobal) {
+        std::fill(approxEffResistanceLocal.begin(), approxEffResistanceLocal.end(), 0.);
     }
 
     // update degDist

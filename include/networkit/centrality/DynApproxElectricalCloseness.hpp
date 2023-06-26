@@ -79,7 +79,7 @@ public:
      */
     void update(GraphEvent e) override;
 
-    void updateBatch(const std::vector<GraphEvent> &batch) override {
+    void updateBatch([[maybe_unused]] const std::vector<GraphEvent> &batch) override {
         throw std::runtime_error("Error: batch updates are not supported.");
     }
 

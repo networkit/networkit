@@ -83,7 +83,7 @@ TEST_P(ApproxElectricalClosenessGTest, testApproxElectricalCloseness) {
     apx.run();
     const auto diag = apx.getDiagonal();
     const auto gt = apx.computeExactDiagonal(1e-12);
-    G.forNodes([&](node u) { EXPECT_NEAR(diag[u], gt[u], eps); });
+    G.forNodes([&eps = eps, &gt, &diag](node u) { EXPECT_NEAR(diag[u], gt[u], eps); });
     EXPECT_EQ(apx.scores().size(), G.numberOfNodes());
 }
 
@@ -98,7 +98,7 @@ TEST_P(ApproxElectricalClosenessGTest, testDynApproxElectricalCloseness_run) {
     dapx.run();
     const auto diag = apx.getDiagonal();
     const auto ddiag = dapx.getDiagonal();
-    G.forNodes([&](node u) {
+    G.forNodes([&eps = eps, &ddiag, &diag](node u) {
         EXPECT_NEAR(diag[u], ddiag[u], 2 * eps);
     }); // 2 * eps because both have max abs error of eps
     EXPECT_EQ(dapx.scores().size(), G.numberOfNodes());
@@ -122,7 +122,7 @@ TEST_P(ApproxElectricalClosenessGTest, testDynApproxElectricalCloseness_EdgeAddi
 
     const auto diag = apx.getDiagonal();
     const auto ddiag = dapx.getDiagonal();
-    G.forNodes([&](node u) { EXPECT_NEAR(diag[u], ddiag[u], 2 * eps); });
+    G.forNodes([&eps = eps, &ddiag, &diag](node u) { EXPECT_NEAR(diag[u], ddiag[u], 2 * eps); });
     EXPECT_EQ(dapx.scores().size(), G.numberOfNodes());
 }
 
@@ -150,7 +150,7 @@ TEST_P(ApproxElectricalClosenessGTest, testDynApproxElectricalCloseness_EdgeDele
 
     const auto diag = apx.getDiagonal();
     const auto ddiag = dapx.getDiagonal();
-    G.forNodes([&](node u) { EXPECT_NEAR(diag[u], ddiag[u], 2 * eps); });
+    G.forNodes([&eps = eps, &ddiag, &diag](node u) { EXPECT_NEAR(diag[u], ddiag[u], 2 * eps); });
     EXPECT_EQ(dapx.scores().size(), G.numberOfNodes());
 }
 
@@ -173,7 +173,7 @@ TEST_P(ApproxElectricalClosenessGTest, testDynApproxElectricalCloseness_copy) {
 
     const auto diag = apx.getDiagonal();
     const auto ddiag2 = dapx2.getDiagonal();
-    G.forNodes([&](node u) { EXPECT_NEAR(diag[u], ddiag2[u], 2 * eps); });
+    G.forNodes([&eps = eps, &ddiag2, &diag](node u) { EXPECT_NEAR(diag[u], ddiag2[u], 2 * eps); });
     EXPECT_EQ(dapx2.scores().size(), G.numberOfNodes());
 }
 
