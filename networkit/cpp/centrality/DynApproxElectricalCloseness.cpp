@@ -1,9 +1,10 @@
 /*
  * DynApproxElectricalCloseness.cpp
  *
- *  Created on: 17.10.2019
- *     Authors: Eugenio Angriman <angrimae@hu-berlin.de>
- *              Alexander van der Grinten <avdgrinten@hu-berlin.de>
+ *  Created on: 19.04.2023
+ *     Authors: Matthias Görg <goergmat@informatik.hu-berlin.de>
+ *              Maria Predari <predarimaria@gmail.com>
+ *              Lukas Berner <Lukas.Berner@hu-berlin.de>
  */
 
 #include <algorithm>
@@ -777,7 +778,9 @@ void DynApproxElectricalCloseness::edgeRemoved(node a, node b) {
 #pragma omp parallel for
     for (omp_index i = 0; i < ustsCurrentRound; ++i) {
         Tree tree;
-        sampleUSTWithEdge(tree, a, b);
+        sampleUSTWithEdge(tree, a,
+                          b); // edge (a,b) is not in G, but the sample function does not check this
+                              // -> the UST is a UST in G' which is what we need here.
         setDFSTimes(tree);
         aggregateUST(tree, 1. / static_cast<double>(ustsCurrentRound));
     }
@@ -790,7 +793,7 @@ void DynApproxElectricalCloseness::edgeRemoved(node a, node b) {
         for (count i = 1; i < approxEffResistanceGlobal.size(); ++i)
             approxEffResistanceGlobal[0][u] += approxEffResistanceGlobal[i][u];
         currentRoundResistanceApprox[u] = approxEffResistanceGlobal[0][u]; // E[F | e in t']
-        resistanceToRoot[u] =
+        resistanceToRoot[u] = // flipped formula compared to edgeAdded
             (resistanceToRoot[u] - w * currentRoundResistanceApprox[u]) / (1. - w);
         diagonal[u] = resistanceToRoot[u] - rootCol[root] + 2. * rootCol[u];
     });
@@ -808,9 +811,9 @@ void DynApproxElectricalCloseness::update(GraphEvent e) {
     else if (e.type == GraphEvent::EDGE_REMOVAL) {
         // the deleted edge may be part of the bfsTree. If this is the case, we need a new one.
         // Since all our computations depend on this exact tree (via aggregateUST), we need to
-        // re-compute some results from previous iterations.
-        // for now, we throw an error in this case - current planned use cases do not delete
-        // edges from the bfs tree.
+        // re-compute some results from previous iterations (either reset the state and run() again,
+        // or store all USTs and aggregate them again). for now, we throw an error in this case -
+        // current planned use cases do not delete edges from the bfs tree.
         if (bfsTree.parent[e.u] == e.v || bfsTree.parent[e.v] == e.u)
             throw std::runtime_error("Error: Edge removal where the edge removed is in the "
                                      "bfsTree is not supported.");

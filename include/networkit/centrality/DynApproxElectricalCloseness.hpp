@@ -41,9 +41,10 @@ public:
      * and the number of USTs to be sampled. A high value of @a kappa raises the tolerance (solver
      * converges faster) but more USTs need to be sampled, vice versa for a low value of @a kappa.
      *
-     * This dynamic algorithm supports addition of arbitrary edges and deletion of edges which are
-     * not in the bfs tree sourced from the pivot node. The algorithm depends on G having a single
-     * connected component - edge deletions which disconnect the graph are not supported.
+     * @note This dynamic algorithm supports addition of arbitrary edges and deletion of edges which
+     * are not in the bfs tree sourced from the pivot node. The algorithm depends on G having a
+     * single connected component - edge deletions which disconnect the graph are not supported.
+     * @note Batch updates are not supported.
      *
      * @param G The input graph.
      * @param epsilon Maximum absolute error of the elements in the diagonal.
@@ -79,6 +80,9 @@ public:
      */
     void update(GraphEvent e) override;
 
+    /**
+     * @note batch updates are not supported.
+     */
     void updateBatch([[maybe_unused]] const std::vector<GraphEvent> &batch) override {
         throw std::runtime_error("Error: batch updates are not supported.");
     }
