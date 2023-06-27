@@ -363,7 +363,7 @@ class TestGraph(unittest.TestCase):
 
 	def testNodesInRandomOrder(self):
 		G = nk.Graph(5)
-		G.forNodesInRandomOrder(lambda u: self.assertIn(u, [0,1,2,3,4]))
+		G.forNodesInRandomOrder(lambda u: self.assertTrue(G.hasNode(u)))
 
 	def testNeighborsWeight(self):
 		G = nk.Graph(4, directed=True, weighted=True)
