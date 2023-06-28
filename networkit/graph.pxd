@@ -176,6 +176,7 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		int get(node) except +
 		int get(node, int) except +
 		void swap(_NodeIntAttribute& other)
+		string getName() except +	
 
 cdef extern from "<networkit/graph/Graph.hpp>":
 	cdef cppclass _NodeDoubleAttribute "NetworKit::Graph::NodeDoubleAttribute":
@@ -191,6 +192,7 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		double get(node) except +
 		double get(node, double) except +
 		void swap(_NodeDoubleAttribute& other)
+		string getName() except +
 
 cdef extern from "<networkit/graph/Graph.hpp>":
 	cdef cppclass _NodeStringAttribute "NetworKit::Graph::NodeStringAttribute":
@@ -206,6 +208,7 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		string get(node) except +
 		string get(node, string) except +
 		void swap(_NodeStringAttribute& other)
+		string getName() except +
 
 
 cdef class Graph:

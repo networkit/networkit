@@ -950,6 +950,9 @@ cdef class NodeIntAttribute:
 			raise ValueError(str(e))
 		return value
 
+	def getName(self):
+		return self._this.getName()	
+
 	def __setitem__(self, node, value):
 		try:
 			self._this.set(node, value)
@@ -985,7 +988,10 @@ cdef class NodeDoubleAttribute:
 		except Exception as e:
 			raise ValueError(str(e))
 		return value
-
+	
+	def getName(self):
+		return self._this.getName()	
+	
 	def __setitem__(self, node, value):
 		try:
 			self._this.set(node, value)
@@ -1013,6 +1019,9 @@ cdef class NodeStringAttribute:
 		self._this.swap(other)
 		self._G = G
 		return self
+
+	def getName(self):
+		return self._this.getName()	
 
 	def __getitem__(self, node):
 		try:
@@ -1074,6 +1083,9 @@ class NodeAttribute:
 	def __init__(self, typedNodeAttribute, type):
 		self.attr = typedNodeAttribute
 		self.type = type
+
+	def getName(self):
+		return self.attr.getName()	
 
 	def __getitem__(self, node):
 		return self.attr[node]

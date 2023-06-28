@@ -22,5 +22,6 @@ We provide several example notebooks to get started with NetworKit and Jupyter N
    notebooks/GroupCentrality
    notebooks/IONotebook
    notebooks/LinkPrediction
+   notebooks/Plot
    notebooks/Randomization
    notebooks/Sparsification
