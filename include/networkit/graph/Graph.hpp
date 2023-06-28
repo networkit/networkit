@@ -405,6 +405,11 @@ private:
                 throw std::runtime_error("Invalid attribute");
         }
 
+        auto getName() const {
+            checkAttribute();
+            return ownedStorage->getName();
+        }
+
         void write(std::string const &filename) const {
             std::ofstream out(filename);
             if (!out)
