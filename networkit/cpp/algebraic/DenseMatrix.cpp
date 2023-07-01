@@ -6,7 +6,9 @@
  */
 
 #include <algorithm>
+
 #include <networkit/algebraic/DenseMatrix.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -210,6 +212,76 @@ void DenseMatrix::assign(const std::vector<index> &rowIndices,
         source.forElementsInRow(
             i, [&](index j, double value) { setValue(rowIndices[i], columnIndices[j], value); });
     }
+}
+
+DenseMatrix DenseMatrix::adjacencyMatrix(const Graph &graph, double zero) {
+    DenseMatrix A(graph.upperNodeIdBound(), zero);
+    graph.forEdges([&](node u, node v, edgeweight w) {
+        A.setValue(u, v, w);
+        if (!graph.isDirected()) { // add symmetric value at (v, u)
+            A.setValue(v, u, w);
+        }
+    });
+
+    return A;
+}
+
+DenseMatrix DenseMatrix::diagonalMatrix(const Vector &diagonalElements, double zero) {
+    DenseMatrix D(diagonalElements.getDimension(), zero);
+    for (index i = 0; i < diagonalElements.getDimension(); ++i) {
+        D.setValue(i, i, diagonalElements[i]);
+    }
+
+    return D;
+}
+
+DenseMatrix DenseMatrix::incidenceMatrix(const Graph &graph, double zero) {
+    if (!graph.hasEdgeIds())
+        throw std::runtime_error(
+            "Graph has no edge Ids. Index edges first by calling graph.indexEdges()");
+    DenseMatrix I(graph.upperNodeIdBound(), graph.upperEdgeIdBound(), zero);
+    if (graph.isDirected()) {
+        graph.forEdges([&](node u, node v, edgeweight weight, edgeid edgeId) {
+            if (u != v) {
+                edgeweight w = std::sqrt(weight);
+                I.setValue(u, edgeId, w);
+                I.setValue(v, edgeId, -w);
+            }
+        });
+    } else {
+        graph.forEdges([&](node u, node v, edgeweight weight, edgeid edgeId) {
+            if (u != v) {
+                edgeweight w = std::sqrt(weight);
+                if (u < v) { // orientation: small node number -> great node number
+                    I.setValue(u, edgeId, w);
+                    I.setValue(v, edgeId, -w);
+                } else {
+                    I.setValue(u, edgeId, -w);
+                    I.setValue(v, edgeId, w);
+                }
+            }
+        });
+    }
+
+    return I;
+}
+
+DenseMatrix DenseMatrix::laplacianMatrix(const Graph &graph, double zero) {
+    DenseMatrix L(graph.upperNodeIdBound(), zero);
+    graph.forNodes([&](const index i) {
+        double weightedDegree = 0.0;
+
+        graph.forNeighborsOf(i, [&](const index j, double weight) { // - adjacency matrix
+            L.setValue(i, j, -weight);
+            if (i != j) { // exclude weight of diagonal since it would be subtracted later
+                weightedDegree += weight;
+            }
+        });
+
+        L.setValue(i, i, weightedDegree); // degree matrix
+    });
+
+    return L;
 }
 
 void DenseMatrix::LUDecomposition(DenseMatrix &matrix) {

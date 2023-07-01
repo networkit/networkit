@@ -1302,21 +1302,25 @@ TEST_F(MatricesGTest, testBigMatrixMultiplcation) {
 TEST_F(MatricesGTest, testAdjacencyMatrixOfGraph) {
     testAdjacencyMatrix<DynamicMatrix>();
     testAdjacencyMatrix<CSRMatrix>();
+    testAdjacencyMatrix<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testDiagonalMatrix) {
     testDiagonalMatrix<DynamicMatrix>();
+    testDiagonalMatrix<CSRMatrix>();
     testDiagonalMatrix<CSRMatrix>();
 }
 
 TEST_F(MatricesGTest, testIncidenceMatrix) {
     testIncidenceMatrix<DynamicMatrix>();
     testIncidenceMatrix<CSRMatrix>();
+    testIncidenceMatrix<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testLaplacianMatrixOfGraph) {
     testLaplacianOfGraph<DynamicMatrix>();
     testLaplacianOfGraph<CSRMatrix>();
+    testLaplacianOfGraph<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testForElementsInRow) {
@@ -1337,15 +1341,20 @@ TEST_F(MatricesGTest, testForNonZeroElementsInRow) {
 
 TEST_F(MatricesGTest, testParallelForNonZeroElementsInRow) {
     testParallelForNonZeroElementsInRow<CSRMatrix>();
+    testParallelForNonZeroElementsInRow<DynamicMatrix>();
     testParallelForNonZeroElementsInRow<DenseMatrix>();
 }
 
 TEST_F(MatricesGTest, testForElementsInRowOrder) {
     testForElementsInRowOrder<DenseMatrix>();
+    testForElementsInRowOrder<DynamicMatrix>();
+    testForElementsInRowOrder<CSRMatrix>();
 }
 
 TEST_F(MatricesGTest, testParallelForElementsInRowOrder) {
     testParallelForElementsInRowOrder<DenseMatrix>();
+    testParallelForElementsInRowOrder<CSRMatrix>();
+    testParallelForElementsInRowOrder<DynamicMatrix>();
 }
 
 TEST_F(MatricesGTest, testForNonZeroElementsInRowOrder) {

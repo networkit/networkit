@@ -308,11 +308,39 @@ public:
     void forNonZeroElementsInRow(index row, L handle) const;
 
     /**
+     * Iterate in parallel over all non-zero elements of row @a row in the matrix and call
+     * handler(index column, double value)
+     */
+    template <typename L>
+    void parallelForNonZeroElementsInRow(index i, L handle) const;
+
+    /**
      * Iterate over all elements in row @a i in the matrix and call handle(index column, double
      * value)
      */
     template <typename L>
     void forElementsInRow(index i, L handle) const;
+
+    /**
+     * Iterate in parallel over all elements (including zeros) of row @a row in the matrix and call
+     * handler(index column, double value)
+     */
+    template <typename L>
+    void parallelForElementsInRow(index row, L handle) const;
+
+    /**
+     * Iterate over all elements (including zeros) of the matrix in row order and call handler
+     * (lambda closure).
+     */
+    template <typename L>
+    void forElementsInRowOrder(L handle) const;
+
+    /**
+     * Iterate in parallel over all elements (including zeros) in row order and call handle
+     * (lambda closure) on elements of the matrix.
+     */
+    template <typename L>
+    void parallelForElementsInRowOrder(L handle) const;
 
     /**
      * Iterate over all non-zero elements of the matrix in row order and call handle(index row,
@@ -343,10 +371,70 @@ inline void NetworKit::DynamicMatrix::forNonZeroElementsInRow(index row, L handl
 }
 
 template <typename L>
+inline void NetworKit::DynamicMatrix::parallelForNonZeroElementsInRow(index i, L handle) const {
+    std::vector<std::pair<index, edgeweight>> elements(graph.weightNeighborRange(i).begin(),
+                                                       graph.weightNeighborRange(i).end());
+#pragma omp parallel for
+    for (omp_index j = 0; j < static_cast<omp_index>(elements.size()); ++j) {
+        handle(elements[j].first, elements[j].second);
+    }
+}
+
+template <typename L>
 inline void NetworKit::DynamicMatrix::forElementsInRow(index i, L handle) const {
     Vector rowVector = row(i);
     index j = 0;
     rowVector.forElements([&](double value) { handle(j++, value); });
+}
+
+template <typename L>
+inline void NetworKit::DynamicMatrix::parallelForElementsInRow(index i, L handle) const {
+    Vector rowVector = row(i);
+#pragma omp parallel for
+    for (omp_index j = 0; j < static_cast<omp_index>(rowVector.getDimension()); ++j) {
+        handle(j, rowVector[j]);
+    }
+}
+
+template <typename L>
+inline void NetworKit::DynamicMatrix::forElementsInRowOrder(L handle) const {
+    for (index i = 0; i < nRows; ++i) {
+        index col = 0;
+        graph.forEdgesOf(i, [&](index j, edgeweight weight) {
+            while (col < j) {
+                handle(i, col, getZero());
+                ++col;
+            }
+            handle(i, col, weight);
+            ++col;
+        });
+
+        while (col < i) {
+            handle(i, col, getZero());
+            ++col;
+        }
+    }
+}
+
+template <typename L>
+inline void NetworKit::DynamicMatrix::parallelForElementsInRowOrder(L handle) const {
+#pragma omp parallel for
+    for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
+        index col = 0;
+        graph.forEdgesOf(i, [&](index j, edgeweight weight) {
+            while (col < j) {
+                handle(i, col, getZero());
+                ++col;
+            }
+            handle(i, col, weight);
+            ++col;
+        });
+
+        while (col < i) {
+            handle(i, col, getZero());
+            ++col;
+        }
+    }
 }
 
 template <typename L>
