@@ -3,9 +3,9 @@ import unittest
 import os
 import networkit as nk
 
-class Test_Coloring(unittest.TestCase):
+class TestColoring(unittest.TestCase):
 
-	def test_SpectralColoring(self):
+	def testSpectralColoring(self):
 		G = nk.readGraph("input/karate.graph", nk.Format.METIS)
 		spCol = nk.coloring.SpectralColoring(G)
 

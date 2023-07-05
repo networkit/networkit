@@ -1735,11 +1735,14 @@ public:
 
     void restoreNode(node v);
 
+    /** NODE PROPERTIES **/
     /**
      * Returns the number of outgoing neighbors of @a v.
      *
      * @param v Node.
      * @return The number of outgoing neighbors.
+     * @note The existence of the node is not checked. Calling this function with a non-existing
+     * node results in a segmentation fault. Node existence can be checked by calling hasNode(u).
      */
     count degree(node v) const {
         assert(hasNode(v));
@@ -1752,6 +1755,8 @@ public:
      * @param v Node.
      * @return The number of incoming neighbors.
      * @note If the graph is not directed, the outgoing degree is returned.
+     * @note The existence of the node is not checked. Calling this function with a non-existing
+     * node results in a segmentation fault. Node existence can be checked by calling hasNode(u).
      */
     count degreeIn(node v) const {
         assert(hasNode(v));
@@ -1763,6 +1768,8 @@ public:
      *
      * @param v Node.
      * @return The number of outgoing neighbors.
+     * @note The existence of the node is not checked. Calling this function with a non-existing
+     * node results in a segmentation fault. Node existence can be checked by calling hasNode(u).
      */
     count degreeOut(node v) const { return degree(v); }
 
@@ -2092,7 +2099,7 @@ public:
      * Get an iterable range over the neighbors of @a.
      *
      * @param u Node.
-     * @return Iterator range over the neighbors of @a.
+     * @return Iterator range over the neighbors of @a u.
      */
     NeighborRange<false> neighborRange(node u) const {
         assert(exists[u]);
@@ -2104,7 +2111,7 @@ public:
      * weights.
      *
      * @param u Node.
-     * @return Iterator range over pairs of neighbors of @a and corresponding
+     * @return Iterator range over pairs of neighbors of @a u and corresponding
      * edge weights.
      */
     NeighborWeightRange<false> weightNeighborRange(node u) const {
@@ -2117,7 +2124,7 @@ public:
      * Get an iterable range over the in-neighbors of @a.
      *
      * @param u Node.
-     * @return Iterator range over pairs of in-neighbors of @a.
+     * @return Iterator range over pairs of in-neighbors of @a u.
      */
     NeighborRange<true> inNeighborRange(node u) const {
         assert(isDirected());
@@ -2130,7 +2137,7 @@ public:
      * edge weights.
      *
      * @param u Node.
-     * @return Iterator range over pairs of in-neighbors of @a and corresponding
+     * @return Iterator range over pairs of in-neighbors of @a u and corresponding
      * edge weights.
      */
     NeighborWeightRange<true> weightInNeighborRange(node u) const {

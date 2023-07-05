@@ -6,61 +6,30 @@ import unittest
 
 import networkit as nk
 
-class TestDistanceAlgorithms(unittest.TestCase):
+class TestDistance(unittest.TestCase):
 
 	def setUp(self):
 		self.L = nk.readGraph("input/looptest1.gml", nk.Format.GML) #without self-loops
 		self.LL = nk.readGraph("input/looptest2.gml", nk.Format.GML) #with self-loops sprinkled in
 
-	def testDistanceDiameter(self):
-		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.ESTIMATED_RANGE, error = 0.1)
-		D.run()
-		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.ESTIMATED_SAMPLES, nSamples = 5)
-		D.run()
-		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.EXACT)
-		D.run()
-
-
-	def testDistanceEccentricity(self):
-		E = nk.distance.Eccentricity()
-		E.getValue(self.LL, 0)
-
-
-	def testDistanceEffectiveDiameter(self):
-		algo = nk.distance.EffectiveDiameter(self.L)
-		algo.run()
-		algo = nk.distance.EffectiveDiameter(self.LL)
-		algo.run()
-
-
-	def testDistanceApproxEffectiveDiameter(self):
-		algo = nk.distance.EffectiveDiameterApproximation(self.L)
-		algo.run()
-		algo = nk.distance.EffectiveDiameterApproximation(self.LL)
-		algo.run()
-
-
-	def testDistanceApproxHopPlot(self):
-		algo = nk.distance.HopPlotApproximation(self.L)
-		algo.run()
-		algo = nk.distance.HopPlotApproximation(self.LL)
-		algo.run()
-
-
-	def testDistanceNeighborhoodFunction(self):
-		algo = nk.distance.NeighborhoodFunction(self.L)
-		algo.run()
-		algo = nk.distance.NeighborhoodFunction(self.LL)
-		algo.run()
-
-
-	def testDistanceApproxNeighborhoodFunction(self):
-		algo = nk.distance.NeighborhoodFunctionApproximation(self.L)
-		algo.run()
-		algo = nk.distance.NeighborhoodFunctionApproximation(self.LL)
-		algo.run()
-
-	def testDistanceAStar(self):
+	def testAsArrayAPSP(self):
+		nk.engineering.setSeed(1, True)
+		random.seed(1)
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				g = nk.generators.ErdosRenyiGenerator(100, 0.15, directed).generate()
+				if weighted:
+					g = nk.graphtools.toWeighted(g)
+					g.forEdges(lambda u, v, ew, eid: g.setWeight(u, v, random.random()))
+				apsp = nk.distance.APSP(g)
+				apsp.run()
+				listDistances = apsp.getDistances()
+				arrayDistances = apsp.getDistances(asarray=True)
+				self.assertIsInstance(listDistances, list)
+				self.assertIsInstance(arrayDistances, np.ndarray)
+				np.testing.assert_allclose(listDistances, arrayDistances)
+	
+	def testAStar(self):
 		# Builds a mesh graph with the given number of rows and columns
 		def buildMesh(rows, cols):
 			G = nk.Graph(rows * cols, False, False)
@@ -129,6 +98,54 @@ class TestDistanceAlgorithms(unittest.TestCase):
 		testMesh(21, 5)
 		testMesh(9, 18)
 		testMesh(7, 1)
+	
+	def testDiameter(self):
+		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.ESTIMATED_RANGE, error = 0.1)
+		D.run()
+		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.ESTIMATED_SAMPLES, nSamples = 5)
+		D.run()
+		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.EXACT)
+		D.run()
+
+
+	def testEccentricity(self):
+		E = nk.distance.Eccentricity()
+		E.getValue(self.LL, 0)
+
+
+	def testEffectiveDiameter(self):
+		algo = nk.distance.EffectiveDiameter(self.L)
+		algo.run()
+		algo = nk.distance.EffectiveDiameter(self.LL)
+		algo.run()
+
+
+	def testApproxEffectiveDiameter(self):
+		algo = nk.distance.EffectiveDiameterApproximation(self.L)
+		algo.run()
+		algo = nk.distance.EffectiveDiameterApproximation(self.LL)
+		algo.run()
+
+
+	def testApproxHopPlot(self):
+		algo = nk.distance.HopPlotApproximation(self.L)
+		algo.run()
+		algo = nk.distance.HopPlotApproximation(self.LL)
+		algo.run()
+
+
+	def testNeighborhoodFunction(self):
+		algo = nk.distance.NeighborhoodFunction(self.L)
+		algo.run()
+		algo = nk.distance.NeighborhoodFunction(self.LL)
+		algo.run()
+
+
+	def testApproxNeighborhoodFunction(self):
+		algo = nk.distance.NeighborhoodFunctionApproximation(self.L)
+		algo.run()
+		algo = nk.distance.NeighborhoodFunctionApproximation(self.LL)
+		algo.run()
 
 	def genERGraphs(self, n = 100, p = 0.15, seed = 42):
 		nk.engineering.setSeed(seed, True)
@@ -141,7 +158,7 @@ class TestDistanceAlgorithms(unittest.TestCase):
 					g.forEdges(lambda u, v, ew, eid: g.setWeight(u, v, random.random()))
 				yield g
 
-	def testDistanceSPSP(self):
+	def testSPSP(self):
 		for g in self.genERGraphs():
 			for nSources in [1, 10, 50]:
 				sources = nk.graphtools.randomNodes(g, nSources)
@@ -156,7 +173,6 @@ class TestDistanceAlgorithms(unittest.TestCase):
 					targets = nk.graphtools.randomNodes(g, nTargets)
 					spsp = nk.distance.SPSP(g, sources, targets)
 					spsp.run()
-
 					dists = spsp.getDistances()
 					self.assertEqual(len(dists), nSources)
 					for distList in dists:
@@ -172,7 +188,10 @@ class TestDistanceAlgorithms(unittest.TestCase):
 					algo = nk.distance.MultiTargetDijkstra(g, source, targets)
 				else:
 					algo = nk.distance.MultiTargetBFS(g, source, targets)
+				algo.setTargets(targets)
+				algo.setSource(source)	
 				algo.run()
+				self.assertLessEqual(len(algo.getPredecessors()), g.numberOfNodes())	
 				self.assertEqual(len(algo.getDistances()), len(targets))
 
 	def testPrunedLandmarkLabeling(self):
@@ -191,6 +210,28 @@ class TestDistanceAlgorithms(unittest.TestCase):
 						self.assertEqual(pll.query(u, v), nk.none)
 					else:
 						self.assertEqual(pll.query(u, v), int(apsp.getDistance(u, v)))
+
+	def testDynPrunedLandmarkLabeling(self):
+		# 0       3
+		#  \     / \
+		#   1---2   4
+
+		g = nk.Graph(5, False, False)
+		for e in [[0, 1], [2, 3], [3, 4]]:
+			g.addEdge(e[0], e[1])
+
+		pll = nk.distance.DynPrunedLandmarkLabeling(g)
+		pll.run()
+
+		self.assertEqual(pll.query(0, 1), 1)
+		self.assertEqual(pll.query(0, 2), nk.none)
+
+		g.addEdge(1, 2)
+		pll.update(nk.dynamics.GraphEvent(
+			nk.dynamics.GraphEventType.EDGE_ADDITION, 1, 2, 1))
+
+		self.assertEqual(pll.query(0, 1), 1)
+		self.assertEqual(pll.query(2, 4), 2)
 
 if __name__ == "__main__":
 	unittest.main()

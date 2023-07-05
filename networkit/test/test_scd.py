@@ -4,7 +4,7 @@ import unittest
 import networkit as nk
 
 
-class Test_SCD(unittest.TestCase):
+class TestSCD(unittest.TestCase):
 
 	def setUp(self):
 		self.G = nk.readGraph("input/PGPgiantcompo.graph", nk.Format.METIS)
