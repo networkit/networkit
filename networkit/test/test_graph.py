@@ -290,6 +290,108 @@ class TestGraph(unittest.TestCase):
 		G.addEdge(1, 2, 3.0)
 
 		return G
+	
+	def testEdgeSwap(self):
+		G = nk.Graph(4, directed=True, weighted=True)
+		G.addEdge(0,1, 1.0)
+		G.addEdge(2,3, 2.0)
+		G.indexEdges()
+		G.swapEdge(0,1, 2,3) # now edges are:(0,3, 1,0) and (2,1, 2.0)
+		self.assertTrue(G.hasEdge(0,3))
+		self.assertTrue(G.hasEdge(2,1))
+		# Test that the total edge weight remained the same.
+		self.assertEqual(G.totalEdgeWeight(), 3.0)	
+
+	def testIterNeighborsWeight(self):
+		g = self.getSmallGraph(weighted=True, directed=True)
+		for u in g.iterNodes():
+			self.assertTrue(g.hasNode(u))
+			for w in g.iterNeighborsWeights(u):
+				self.assertEqual(w[1], g.weight(u, w[0]))
+			for w in g.iterInNeighborsWeights(u):
+				self.assertEqual(w[1], g.weight(w[0], u))		
+	
+	def testIncreaseEdgeWeight(self):
+		G = nk.Graph(4, directed=True, weighted=True)
+		G.addEdge(0,1, 1.0)
+		G.increaseWeight(0,1, 2.0)
+		self.assertEqual(G.weight(0,1), 3.0)
+		G.sortEdges()
+		G.compactEdges()
+		self.assertTrue(G.checkConsistency())
+	
+	def testGraphEventOperators(self):
+		up1 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.NODE_ADDITION, 0, 0, 0)	
+		up2 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.NODE_ADDITION, 1, 1, 1)
+		self.assertNotEqual(up1,up2)
+		self.assertLess(up1,up2)
+		self.assertLessEqual(up1,up2)
+		self.assertGreater(up2,up1)
+		self.assertGreaterEqual(up2,up1)	
+
+	def testGraphFromGraphEventStream(self):
+		up1 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.NODE_ADDITION, 0, 0, 0)	
+		up2 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.NODE_ADDITION, 1, 1, 1)	
+		up3 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.NODE_ADDITION, 2, 2, 2)		
+		up4 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.NODE_ADDITION, 3, 3, 3)	
+		upE1 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 1, 2, 2.0)	
+		upE2 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 2, 3, 3.0)	
+		upE3 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 1, 3, 1.0)	
+		allUpdates=[up1,up2,up3,up4,upE1,upE2,upE3]
+		G = nk.dynamics.graphFromStream(allUpdates, weighted=True,directed=True)
+		self.assertEqual(G.numberOfNodes(), 4)
+		self.assertEqual(G.numberOfEdges(), 3)		
+	
+	def testGraphDifference(self):
+		G1 = self.getSmallGraph(weighted=True,directed=True)
+		G2 = self.getSmallGraph(weighted=True,directed=True)
+		update1 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 0, 3, 2.0)	
+		update2 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 2, 3, 1.0)	
+		updateG2 = nk.dynamics.GraphUpdater(G2)
+		updateG2.update([update1,update2])
+		GraphDiff = nk.dynamics.GraphDifference(G1,G2)
+		GraphDiff.run()
+		#testing graphDifference functions
+		self.assertEqual(len(GraphDiff.getEdits()), 2)
+		self.assertEqual(GraphDiff.getNumberOfEdits(), 2)
+		self.assertEqual(GraphDiff.getNumberOfNodeAdditions(), 0)
+		self.assertEqual(GraphDiff.getNumberOfNodeRestorations(), 0)
+		self.assertEqual(GraphDiff.getNumberOfNodeRemovals(), 0)
+		self.assertEqual(GraphDiff.getNumberOfEdgeAdditions(), 2)					
+		self.assertEqual(GraphDiff.getNumberOfEdgeRemovals(), 0)
+		self.assertEqual(GraphDiff.getNumberOfEdgeWeightUpdates(), 0)
+
+	def testNodesInRandomOrder(self):
+		G = nk.Graph(5)
+		G.forNodesInRandomOrder(lambda u: self.assertTrue(G.hasNode(u)))
+
+	def testNeighborsWeight(self):
+		G = nk.Graph(4, directed=True, weighted=True)
+		G.addEdge(0,2, 3.0)
+		G.addEdge(1,0, 2.5)
+		self.assertEqual(G.weightedDegree(0), 3.0)
+		self.assertEqual(G.weightedDegreeIn(0), 2.5)
+	
+	def testRestoreNode(self):
+		G=nk.Graph(2)
+		G.removeNode(1)
+		G.restoreNode(1)
+		self.assertEqual(G.numberOfNodes(), 2)
+		self.assertTrue(G.hasNode(1))	
+
+	def testRandomMaximumSpanningForest(self):
+		G = self.getSmallGraph()
+		rmsf = nk.graph.RandomMaximumSpanningForest(G)
+		rmsf.run()
+		self.assertEqual(G.numberOfNodes(), rmsf.getMSF(True).numberOfNodes()) 
+
+	def testUnionMaximumSpanningForest(self):
+		G = self.getSmallGraph()
+		un = nk.graph.UnionMaximumSpanningForest(G)
+		un.run()
+		self.assertEqual(un.getUMSF().numberOfNodes(),4)
+		self.assertEqual(un.getUMSF().numberOfEdges(),5)
+		self.assertTrue(un.inUMST(0,1))	
 
 if __name__ == "__main__":
 	unittest.main()
