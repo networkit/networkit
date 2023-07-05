@@ -509,7 +509,7 @@ cdef class Modularity:
 
 	Modularity is a quality index for community detection.
 	It assigns a quality value in [-0.5, 1.0] to a partition of a graph which is higher for more modular networks and
-	partitions which better capture the modular structure. See also http://en.wikipedia.org/wiki/Modularity_(networks).
+	partitions which better capture the modular structure. See also http://en.wikipedia.org/wiki/Modularity_(networks) .
 
  	Notes
 	-----
