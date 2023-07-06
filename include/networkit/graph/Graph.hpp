@@ -1744,7 +1744,10 @@ public:
      * @note The existence of the node is not checked. Calling this function with a non-existing
      * node results in a segmentation fault. Node existence can be checked by calling hasNode(u).
      */
-    count degree(node v) const { return outEdges[v].size(); }
+    count degree(node v) const {
+        assert(hasNode(v));
+        return outEdges[v].size();
+    }
 
     /**
      * Get the number of incoming neighbors of @a v.
@@ -1755,7 +1758,10 @@ public:
      * @note The existence of the node is not checked. Calling this function with a non-existing
      * node results in a segmentation fault. Node existence can be checked by calling hasNode(u).
      */
-    count degreeIn(node v) const { return directed ? inEdges[v].size() : outEdges[v].size(); }
+    count degreeIn(node v) const {
+        assert(hasNode(v));
+        return directed ? inEdges[v].size() : outEdges[v].size();
+    }
 
     /**
      * Get the number of outgoing neighbors of @a v.
@@ -1765,7 +1771,7 @@ public:
      * @note The existence of the node is not checked. Calling this function with a non-existing
      * node results in a segmentation fault. Node existence can be checked by calling hasNode(u).
      */
-    count degreeOut(node v) const { return outEdges[v].size(); }
+    count degreeOut(node v) const { return degree(v); }
 
     /**
      * Check whether @a v is isolated, i.e. degree is 0.
