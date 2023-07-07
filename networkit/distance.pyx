@@ -1741,7 +1741,7 @@ cdef extern from "<networkit/distance/PrunedLandmarkLabeling.hpp>":
 		count query(node u, node v) except +
 
 cdef class PrunedLandmarkLabeling(Algorithm):
-	""" 
+	"""
 	PrunedLandmarkLabeling(G)
 
 	Pruned Landmark Labeling algorithm based on the paper "Fast exact shortest-path distance
@@ -1783,3 +1783,56 @@ cdef class PrunedLandmarkLabeling(Algorithm):
 			The shortest-path distances from the source node to the target node.
 		"""
 		return (<_PrunedLandmarkLabeling*>(self._this)).query(u, v)
+
+
+cdef extern from "<networkit/distance/DynPrunedLandmarkLabeling.hpp>":
+
+	cdef cppclass _DynPrunedLandmarkLabeling "NetworKit::DynPrunedLandmarkLabeling"(_Algorithm, _DynAlgorithm):
+		_DynPrunedLandmarkLabeling(_Graph G) except +
+		count query(node u, node v) except +
+
+cdef class DynPrunedLandmarkLabeling(Algorithm, DynAlgorithm):
+	"""
+	DynPrunedLandmarkLabeling(G)
+
+	Dynamic Pruned Landmark Labeling algorithm based on the paper "Fully
+	Dynamic 2-Hop Cover Labeling " from D'Angelo et al., ACM JEA 2019. The
+	algorithm computes distance labels by performing pruned breadth-first
+	searches from each vertex. Distance labels can be updated efficiently
+	after edge insertions.
+	Note: this algorithm only works for unweighted graphs and only supports
+	edge insertions.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	"""
+	cdef Graph _G
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _DynPrunedLandmarkLabeling(G._this)
+
+	def __dealloc__(self):
+		self._G = None
+
+	def query(self, node u, node v):
+		"""
+		query(u, v)
+
+		Returns the shortest-path distance between the two nodes.
+
+		Parameters
+		----------
+		u : node
+			Source node.
+		v : node
+			Target node.
+
+		Returns
+		-------
+		int
+			The shortest-path distances from the source node to the target node.
+		"""
+		return (<_DynPrunedLandmarkLabeling*>(self._this)).query(u, v)

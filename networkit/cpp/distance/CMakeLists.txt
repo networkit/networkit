@@ -35,6 +35,7 @@ networkit_add_module(dyn_distance
     DynAPSP.cpp
     DynBFS.cpp
     DynDijkstra.cpp
+    DynPrunedLandmarkLabeling.cpp
     DynSSSP.cpp
     )
 

@@ -163,11 +163,16 @@ cdef class Graph:
 		"""
 		degree(u)
 
-		Get the number of neighbors of `v`.
+		Get the number of neighbors of `u`.
 
+		Note
+		----
+		The existence of the node is not checked. Calling this function with a non-existing node results in a segmentation fault. 
+		Node existence can be checked by calling hasNode(u).
+		
 		Parameters
 		----------
-		v : int
+		u : int
 			The input Node.
 
 		Returns
@@ -181,11 +186,16 @@ cdef class Graph:
 		"""
 		degreeIn(u)
 
-		Get the number of in-neighbors of `v`.
+		Get the number of in-neighbors of `u`.
+
+		Note
+		----
+		The existence of the node is not checked. Calling this function with a non-existing node results in a segmentation fault. 
+		Node existence can be checked by calling hasNode(u).
 
 		Parameters
 		----------
-		v : int
+		u : int
 			The input Node.
 
 		Returns
@@ -199,11 +209,16 @@ cdef class Graph:
 		"""
 		degreeOut(u)
 
-		Get the number of out-neighbors of `v`.
+		Get the number of out-neighbors of `u`.
+
+		Note
+		----
+		The existence of the node is not checked. Calling this function with a non-existing node results in a segmentation fault. 
+		Node existence can be checked by calling hasNode(u).
 
 		Parameters
 		----------
-		v : int
+		u : int
 			The Input Node.i
 		Returns
 		-------
