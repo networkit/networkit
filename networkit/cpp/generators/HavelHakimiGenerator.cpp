@@ -37,7 +37,7 @@ Graph HavelHakimiGenerator::generate() {
     // put nodes in appropriate lists
     Buckets nodesByDeficit(numDegVals);
     for (node v = 0; v < n; v++) {
-        nodesByDeficit[seq[v]].push_front(std::make_pair(seq[v], v));
+        nodesByDeficit[seq[v]].emplace_front(seq[v], v);
     }
 
     index maxDeficit = numDegVals - 1;

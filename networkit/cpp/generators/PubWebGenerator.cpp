@@ -62,7 +62,7 @@ void PubWebGenerator::determineNeighbors(Graph &g) {
 
             if (isInRange(sqrDist)) {
                 edge e = std::make_pair(std::min(u, v), std::max(u, v));
-                pq.push(std::make_pair(-sqrDist, e));
+                pq.emplace(-sqrDist, e);
             }
         });
 

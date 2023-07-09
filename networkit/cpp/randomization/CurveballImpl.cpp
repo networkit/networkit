@@ -105,7 +105,7 @@ nodepair_vector CurveballAdjacencyList::getEdges() const {
     edges.reserve(degreeCount);
     for (node nodeid = 0; nodeid < static_cast<node>(offsets.size()); nodeid++) {
         for (auto it = cbegin(nodeid); it != cend(nodeid); it++) {
-            edges.push_back(std::make_pair(nodeid, *it));
+            edges.emplace_back(nodeid, *it);
         }
     }
 

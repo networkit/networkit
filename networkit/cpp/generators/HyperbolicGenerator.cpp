@@ -130,7 +130,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
         for (index i = 0; i < n; i++) {
             double alias = permutation[i];
             if (radii[alias] >= bandRadii[j] && radii[alias] <= bandRadii[j + 1]) {
-                bands[j].push_back(Point2DWithIndex<double>(angles[alias], radii[alias], alias));
+                bands[j].emplace_back(angles[alias], radii[alias], alias);
             }
         }
     }
