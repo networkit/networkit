@@ -120,10 +120,23 @@ public:
     template <class Matrix>
     void testParallelForNonZeroElementsInRowOrder();
 
+    template <class Matrix>
+    void testMatrixToGraph();
+
     // TODO: Test other matrix classes
 
     // TODO: Test mmT multiplication, etc.!
 };
+
+template <class Matrix>
+void MatricesGTest::testMatrixToGraph() {
+
+    Matrix mat = Matrix::adjacencyMatrix(METISGraphReader{}.read("input/power.graph"));
+    Graph G = MatrixTools::matrixToGraph(mat);
+
+    EXPECT_EQ(G.numberOfNodes(), 4941);
+    EXPECT_EQ(G.numberOfEdges(), 6594);
+}
 
 template <class Matrix>
 void MatricesGTest::testDimension() {
@@ -1198,6 +1211,11 @@ TEST_F(MatricesGTest, testDimension) {
     testDimension<DynamicMatrix>();
     testDimension<CSRMatrix>();
     testDimension<DenseMatrix>();
+}
+
+TEST_F(MatricesGTest, testMatrixToGraph) {
+    testMatrixToGraph<DynamicMatrix>();
+    testMatrixToGraph<CSRMatrix>();
 }
 
 TEST_F(MatricesGTest, testNNZInRow) {
