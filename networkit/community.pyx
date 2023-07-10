@@ -1847,7 +1847,11 @@ def kCoreCommunityDetection(G, k, algo=None, inspect=True):
 
 	cores = coreDec.scores()
 
-	kCore = [index for index, score in enumerate(cores) if score >= k]
+	kCore = []
+	partition = coreDec.getPartition()
+	for i in range(k, partition.numberOfSubsets() + 1):
+		kCore.extend(partition.getMembers(i))
+
 	if len(kCore) == 0:
 		raise RuntimeError("There is no core for the specified k")
 
