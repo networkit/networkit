@@ -267,18 +267,18 @@ jobs:
           CXX: ${{ matrix.compiler == 'gcc-8' && 'g++-8' || 'clang++-7' }}
 
   linux-build-clang-tidy:
-    name: "Linux (clang-15): clang-tidy"
+    name: "Linux (clang-16): clang-tidy"
     runs-on: ubuntu-20.04
     env:
-      CC: clang
-      CXX: clang++
+      CC: clang-16
+      CXX: clang++-16
     steps:
       - name: Install prerequisites
         run: |
           curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-15 main" | sudo tee /etc/apt/sources.list.d/llvm13.list
+          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-16 main" | sudo tee /etc/apt/sources.list.d/llvm13.list
           sudo apt-get update
-          sudo apt-get install libomp-15-dev clang-15 clang-tidy-15 ninja-build
+          sudo apt-get install libomp-16-dev clang-16 clang-tidy-16 ninja-build
       - name: Checkout networkit
         uses: actions/checkout@v3
         with:
