@@ -25,7 +25,7 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.12.1
         env:
-          CIBW_BEFORE_BUILD: pip install cython
+          CIBW_BEFORE_BUILD: pip install "cython==0.29.*"
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
           CIBW_BUILD: "cp38-* cp39-* cp310-* cp311-*"
@@ -71,7 +71,7 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.12.1
         env:
-          CIBW_BEFORE_BUILD: pip install cython
+          CIBW_BEFORE_BUILD: pip install "cython==0.29.*"
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
           CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp39-* cp310-*' || 'cp310-*' }}
@@ -104,7 +104,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.12.1
         env:
           CIBW_BEFORE_BUILD: 
-            pip install cython &&
+            pip install "cython==0.29.*" &&
             brew install libomp ninja
           CIBW_ARCHS_MACOS: ${{ matrix.cibw_archs }}
           CIBW_BUILD: "cp38-* cp39-* cp310-* cp311-*"
@@ -146,7 +146,7 @@ jobs:
   #       uses: pypa/cibuildwheel@v2.1.1
   #       env:
   #         CIBW_BEFORE_BUILD: 
-  #           pip install cython &&
+  #           pip install "cython==0.29.*" &&
   #           brew install libomp ninja &&
   #           pip install --pre -i https://pypi.anaconda.org/scipy-wheels-nightly/simple scipy
   #         CIBW_ENVIRONMENT: CXX=c++ NETWORKIT_OSX_CROSSBUILD=ON
@@ -188,7 +188,7 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.12.1
         env:
-          CIBW_BEFORE_BUILD: pip install cython ipython
+          CIBW_BEFORE_BUILD: pip install "cython==0.29.*" ipython
           CIBW_ARCHS: "AMD64"
           CIBW_BUILD: "cp38-* cp39-* cp310-* cp311-*"
           CIBW_SKIP: pp*
@@ -222,7 +222,7 @@ jobs:
           python-version: '3.10'
       - name: Create sdist source
         run: |
-          pip install cython
+          pip install "cython==0.29.*"
           python3 setup.py build_ext
           python3 setup.py sdist
       - uses: actions/upload-artifact@v3
