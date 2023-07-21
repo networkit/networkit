@@ -99,54 +99,114 @@ class TestDistance(unittest.TestCase):
 		testMesh(9, 18)
 		testMesh(7, 1)
 	
-	def testDiameter(self):
-		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.ESTIMATED_RANGE, error = 0.1)
+	def testAlgebraicDistance(self):
+		nk.setSeed(42, True)
+		g=nk.Graph(5, directed=False, weighted=False)
+		g.addEdge(0,1)
+		g.addEdge(2,3)
+		g.addEdge(3,4)
+		g.indexEdges()
+		alge = nk.distance.AlgebraicDistance(g, withEdgeScores=True)
+		alge.preprocess()
+		res = [0.0, 2.053536340973494e-09, 2.0535364519957966e-09]
+		for i in range(len(res)):
+			self.assertAlmostEqual(alge.getEdgeScores()[i], res[i], delta=0.01)
+		self.assertAlmostEqual(alge.distance(2,4), 4.107072792969291e-09, delta=0.01)			
+		
+	def testCommuteTimeDistanceApprox(self):
+		g=nk.Graph(5, directed=False, weighted=False)
+		g.addEdge(0,1)
+		g.addEdge(4,1)
+		g.addEdge(2,3)
+		g.addEdge(3,4)
+		g.indexEdges()
+		ctd = nk.distance.CommuteTimeDistance(g)
+		ctd.runApproximation()
+		self.assertAlmostEqual(ctd.distance(2,4), 4.0990815830507925, delta=0.5)
+
+	def testCommuteTimeDistanceParallelApprox(self):
+		g=nk.Graph(5, directed=False, weighted=False)
+		g.addEdge(0,1)
+		g.addEdge(4,1)
+		g.addEdge(2,3)
+		g.addEdge(3,4)
+		g.indexEdges()
+		ctd = nk.distance.CommuteTimeDistance(g)
+		ctd.runParallelApproximation()
+		self.assertAlmostEqual(ctd.distance(1,4), 2.8284089376767025, delta=0.5)
+
+	def testCommuteTimeDistanceSinglePair(self):
+		g=nk.Graph(5, directed=False, weighted=False)
+		g.addEdge(0,1)
+		g.addEdge(4,1)
+		g.addEdge(2,3)
+		g.addEdge(3,4)
+		g.indexEdges()
+		ctd = nk.distance.CommuteTimeDistance(g).run()
+		ctd.runSinglePair(2,4)
+		self.assertAlmostEqual(ctd.distance(2,4), 4.0, delta=0.5)
+
+	def testCommuteTimeDistanceSingleSource(self):
+		g=nk.Graph(5, directed=False, weighted=False)
+		g.addEdge(0,1)
+		g.addEdge(4,1)
+		g.addEdge(2,3)
+		g.addEdge(3,4)
+		g.indexEdges()
+		ctd = nk.distance.CommuteTimeDistance(g).run()
+		ctd.runSingleSource(3)
+		self.assertAlmostEqual(ctd.distance(1,3), 4.0, delta=0.5)
+
+	def testDiameterRange(self):
+		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.ESTIMATED_RANGE, error = 0.01)
 		D.run()
-		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.ESTIMATED_SAMPLES, nSamples = 5)
+		self.assertTupleEqual(D.getDiameter(), (5,5))
+
+	def testDiameterSamples(self):		
+		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.ESTIMATED_SAMPLES, nSamples = 100)
 		D.run()
+		self.assertTupleEqual(D.getDiameter(), (10,0))
+
+
+	def testDiameterRangeExact(self):		
 		D = nk.distance.Diameter(self.LL, nk.distance.DiameterAlgo.EXACT)
 		D.run()
-
+		self.assertTupleEqual(D.getDiameter(), (5,0))
 
 	def testEccentricity(self):
 		E = nk.distance.Eccentricity()
 		E.getValue(self.LL, 0)
 
-
 	def testEffectiveDiameter(self):
 		algo = nk.distance.EffectiveDiameter(self.L)
 		algo.run()
-		algo = nk.distance.EffectiveDiameter(self.LL)
-		algo.run()
-
+		self.assertEqual(algo.getEffectiveDiameter(), 4.0)
 
 	def testApproxEffectiveDiameter(self):
 		algo = nk.distance.EffectiveDiameterApproximation(self.L)
 		algo.run()
-		algo = nk.distance.EffectiveDiameterApproximation(self.LL)
-		algo.run()
-
+		self.assertAlmostEqual(algo.getEffectiveDiameter(), 3.55, delta=1)
 
 	def testApproxHopPlot(self):
 		algo = nk.distance.HopPlotApproximation(self.L)
 		algo.run()
-		algo = nk.distance.HopPlotApproximation(self.LL)
-		algo.run()
-
+		self.assertAlmostEqual(len(algo.getHopPlot()), 6, delta=2)
 
 	def testNeighborhoodFunction(self):
 		algo = nk.distance.NeighborhoodFunction(self.L)
 		algo.run()
-		algo = nk.distance.NeighborhoodFunction(self.LL)
-		algo.run()
-
+		self.assertListEqual(algo.getNeighborhoodFunction(), [24, 44, 60, 70, 72])
 
 	def testApproxNeighborhoodFunction(self):
 		algo = nk.distance.NeighborhoodFunctionApproximation(self.L)
 		algo.run()
-		algo = nk.distance.NeighborhoodFunctionApproximation(self.LL)
-		algo.run()
+		self.assertEqual(len(algo.getNeighborhoodFunction()), 5)
 
+	def testApproxNeighborhoodFunctionHeuristic(self):
+		algo = nk.distance.NeighborhoodFunctionHeuristic(self.L)
+		algo.run()
+		self.assertEqual(algo.getNeighborhoodFunction(), [24, 42, 62, 73, 72])
+	
 	def genERGraphs(self, n = 100, p = 0.15, seed = 42):
 		nk.engineering.setSeed(seed, True)
 		random.seed(seed)
@@ -158,6 +218,23 @@ class TestDistance(unittest.TestCase):
 					g.forEdges(lambda u, v, ew, eid: g.setWeight(u, v, random.random()))
 				yield g
 
+	def testAsArraySPSP(self):
+		nk.engineering.setSeed(1, True)
+		random.seed(1)
+		for directed in [True, False]:
+			for weighted in [True, False]:
+				g = nk.generators.ErdosRenyiGenerator(100, 0.15, directed).generate()
+				if weighted:
+					g = nk.graphtools.toWeighted(g)
+					g.forEdges(lambda u, v, ew, eid: g.setWeight(u, v, random.random()))
+				spsp = nk.distance.SPSP(g, [0,1,2,3,4])
+				spsp.run()
+				listDistances = spsp.getDistances()
+				arrayDistances = spsp.getDistances(asarray=True)
+				self.assertIsInstance(listDistances, list)
+				self.assertIsInstance(arrayDistances, np.ndarray)
+				np.testing.assert_allclose(listDistances, arrayDistances)
+	
 	def testSPSP(self):
 		for g in self.genERGraphs():
 			for nSources in [1, 10, 50]:
@@ -188,11 +265,46 @@ class TestDistance(unittest.TestCase):
 					algo = nk.distance.MultiTargetDijkstra(g, source, targets)
 				else:
 					algo = nk.distance.MultiTargetBFS(g, source, targets)
-				algo.setTargets(targets)
-				algo.setSource(source)	
+				algo.setSource(source)
+				algo.setTarget(targets[nTargets-1])
 				algo.run()
-				self.assertLessEqual(len(algo.getPredecessors()), g.numberOfNodes())	
-				self.assertEqual(len(algo.getDistances()), len(targets))
+				self.assertLessEqual(len(algo.getPredecessors()),g.numberOfNodes())
+
+	def testSSSP(self):
+		for g in self.genERGraphs():
+			source = nk.graphtools.randomNode(g)
+			for nTargets in [1, 10, 50]:
+				targets = nk.graphtools.randomNodes(g, nTargets)
+				algo = None
+				if g.isWeighted():
+					algo = nk.distance.Dijkstra(g, source, targets, storeNodesSortedByDistance = True)
+				else:
+					algo = nk.distance.BFS(g, source, targets)
+				algo.setSource(source)	
+				algo.setTarget(targets[nTargets-1])
+				algo.run()
+				self.assertLessEqual(len(algo.getPredecessors(source)),g.numberOfNodes())
+				self.assertLessEqual(len(targets),len(algo.getDistances()))
+				self.assertLessEqual(len(algo.getPaths(targets[nTargets-1])),g.numberOfNodes())
+				if g.isWeighted():
+					self.assertLessEqual(len(algo.getNodesSortedByDistance()), g.numberOfNodes())
+				self.assertLessEqual(1.0, algo.numberOfPaths(targets[nTargets-1]))
+
+	def testDynSSSP(self):
+		for g in self.genERGraphs():
+			source = nk.graphtools.randomNode(g)
+			for nTargets in [1, 10, 50]:
+				targets = nk.graphtools.randomNodes(g, nTargets)
+				if g.isWeighted():
+					algoDyn = nk.distance.DynDijkstra(g, source)
+				else:
+					algoDyn = nk.distance.DynBFS(g, source)
+				algoDyn.run()
+				if not g.isWeighted():
+					batch = [nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 3, 7, 1.0)]
+					batch.append(nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 1, 5, 1.0))
+					algoDyn.updateBatch(batch)
+					self.assertIsInstance(algoDyn.modified(), bool)
 
 	def testPrunedLandmarkLabeling(self):
 		for g in self.genERGraphs():
@@ -232,6 +344,40 @@ class TestDistance(unittest.TestCase):
 
 		self.assertEqual(pll.query(0, 1), 1)
 		self.assertEqual(pll.query(2, 4), 2)
+
+	def testAdamicAdarDistance(self):
+		self.L.indexEdges()
+		adam = nk.distance.AdamicAdarDistance(self.L)
+		adam.preprocess()
+		self.assertEqual(len(adam.getAttribute()), 12)
+		self.assertAlmostEqual(adam.distance(2,3), 0.6931471805599453, delta=0.1)	
+	
+	def testJaccardDistance(self):	
+		jaccDis = nk.distance.JaccardDistance(self.L,[1,2,3])
+		self.assertIsInstance(jaccDis.getAttribute(), list)	
+	
+	def testJaccardSimilarity(self):	
+		G=nk.Graph(5)
+		G.addEdge(0,1)
+		G.addEdge(2,1)
+		G.addEdge(3,4)
+		G.indexEdges()
+		jaccSim = nk.distance.JaccardSimilarityAttributizer(G,[1,2,3])
+		self.assertListEqual(jaccSim.getAttribute(), [0.5, 2.0, 0.0])	
+	
+	def testReverseBFS(self):
+		rBFS = nk.distance.ReverseBFS(self.L, 0)
+		rBFS.run()
+		self.assertEqual(rBFS.numberOfPaths(8), 1.0)
+	
+	def testVolume(self):
+		vol = nk.distance.Volume()
+		#single instance
+		self.assertEqual(vol.volume(self.L, 0.5), 1.0)
+		#list test
+		self.assertListEqual(vol.volume(self.L, [0.1, 0.2, 0.8]), [1.0, 1.0, 1.0])
+		#assert correct types
+		self.assertRaises(Exception, vol.volume(self.L, [0.1, 0.2, "wrongType"]))
 
 if __name__ == "__main__":
 	unittest.main()
