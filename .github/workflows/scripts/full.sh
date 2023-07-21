@@ -8,7 +8,7 @@ cmake --version
 
 python3 -m venv pyenv && . pyenv/bin/activate
 pip3 install --upgrade pip
-pip3 install cython ipython jupyter
+pip3 install 'cython==0.29.*' ipython jupyter
 
 # Build tlx
 cd tlx

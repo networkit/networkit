@@ -6,7 +6,7 @@ python3 -m venv pyenv && . pyenv/bin/activate
 pip3 install --upgrade pip
  
 # cython is required because git does not contain _NetworKit.
-pip3 install cython
+pip3 install 'cython==0.29.*'
 
 # Several modules are required to build the documentation.
 pip3 install 'Jinja2<3.1.0' sphinx sphinx_bootstrap_theme numpydoc exhale nbsphinx breathe
