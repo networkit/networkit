@@ -12,6 +12,9 @@
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/DibapGraphReader.hpp>
 #include <networkit/io/METISGraphReader.hpp>
+#include <networkit/matching/BMatcher.hpp>
+#include <networkit/matching/BMatching.hpp>
+#include <networkit/matching/BSuitorMatcher.hpp>
 #include <networkit/matching/LocalMaxMatcher.hpp>
 #include <networkit/matching/Matcher.hpp>
 #include <networkit/matching/Matching.hpp>
@@ -183,6 +186,41 @@ TEST_F(MatcherGTest, testSuitorMatcher) {
             [&G, maxWeight](node u, node v) { G.setWeight(u, v, Aux::Random::real(maxWeight)); });
         doTest(G);
     }
+}
+
+TEST_F(MatcherGTest, testBSuitorMatcher) {
+    const auto hasUnmatchedNeighbors = [](const Graph &G, const BMatching &M) -> bool {
+        for (const auto e : G.edgeRange())
+            if (M.isUnmatched(e.u) && M.isUnmatched(e.v))
+                return true;
+        return false;
+    };
+
+    const auto doTest = [&hasUnmatchedNeighbors](const Graph &G, const count b) -> void {
+        BSuitorMatcher bsm(G, b);
+        bsm.run();
+        const auto M = bsm.getBMatching();
+        EXPECT_TRUE(M.isProper(G));
+        EXPECT_FALSE(hasUnmatchedNeighbors(G, M));
+    };
+
+    // Test 2,3,4,5-matching
+    for (int b : {2, 3, 4, 5}) {
+        auto G1 = METISGraphReader{}.read("input/lesmis.graph");
+        G1.removeSelfLoops();
+        G1.removeMultiEdges();
+        doTest(G1, b);
+    }
+
+    // Test tie breaking
+    auto G2 = METISGraphReader{}.read("input/tie.graph");
+    G2.removeSelfLoops();
+    G2.removeMultiEdges();
+    doTest(G2, 4);
+
+    // TODO Test matching of 1-suitor matcher equals suitor matcher
+    // fix SuitorMatcher as the matching of the lesmis graph computed by the suitor matcher not a
+    // proper matching
 }
 
 } // namespace NetworKit
