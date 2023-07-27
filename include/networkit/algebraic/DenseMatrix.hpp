@@ -14,6 +14,7 @@
 #include <networkit/Globals.hpp>
 #include <networkit/algebraic/AlgebraicGlobals.hpp>
 #include <networkit/algebraic/Vector.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -247,6 +248,32 @@ public:
     void apply(F unaryElementFunction);
 
     /**
+     * Returns the (weighted) adjacency matrix of the (weighted) Graph @a graph.
+     * @param graph
+     */
+    static DenseMatrix adjacencyMatrix(const Graph &graph, double zero = 0.0);
+
+    /**
+     * Creates a diagonal matrix with dimension equal to the dimension of the Vector @a
+     * diagonalElements. The values on the diagonal are the ones stored in @a diagonalElements (i.e.
+     * D(i,i) = diagonalElements[i]).
+     * @param diagonalElements
+     */
+    static DenseMatrix diagonalMatrix(const Vector &diagonalElements, double zero = 0.0);
+
+    /**
+     * Returns the (weighted) incidence matrix of the (weighted) Graph @a graph.
+     * @param graph
+     */
+    static DenseMatrix incidenceMatrix(const Graph &graph, double zero = 0.0);
+
+    /**
+     * Returns the (weighted) Laplacian matrix of the (weighteD) Graph @a graph.
+     * @param graph
+     */
+    static DenseMatrix laplacianMatrix(const Graph &graph, double zero = 0.0);
+
+    /**
      * Decomposes the given @a matrix into lower L and upper U matrix (in-place).
      * @param matrix The matrix to decompose into LU.
      */
@@ -273,28 +300,28 @@ public:
     static DenseMatrix binaryOperator(const DenseMatrix &A, const DenseMatrix &B, L binaryOp);
 
     /**
-     * Iterate over all non-zero elements of row @a row in the matrix and call handler(index column,
+     * Iterate over all elements of row @a row in the matrix and call handler(index column,
      * double value)
      */
     template <typename L>
     void forElementsInRow(index row, L handle) const;
 
     /**
-     * Iterate in parallel over all non-zero elements of row @a row in the matrix and call
+     * Iterate in parallel over all elements of row @a row in the matrix and call
      * handler(index column, double value)
      */
     template <typename L>
     void parallelForElementsInRow(index row, L handle) const;
 
     /**
-     * Iterate over all non-zero elements of the matrix in row order and call handler (lambda
+     * Iterate over all elements of the matrix in row order and call handler (lambda
      * closure).
      */
     template <typename L>
     void forElementsInRowOrder(L handle) const;
 
     /**
-     * Iterate in parallel over all rows and call handler (lambda closure) on non-zero elements of
+     * Iterate in parallel over all rows and call handler (lambda closure) on elements of
      * the matrix.
      */
     template <typename L>

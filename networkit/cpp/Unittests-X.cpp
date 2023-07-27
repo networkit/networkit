@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
         auto setFilter = [&](const char *filter) { ::testing::GTEST_FLAG(filter) = filter; };
 
         if (options.modeTests) {
-            setFilter("*Test.test*");
+            setFilter("*Test.test*:*Test/*:test*");
         } else if (options.modeDebug) {
             setFilter("*Test.debug*");
         } else if (options.modeBenchmarks) {
