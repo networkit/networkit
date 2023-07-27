@@ -122,7 +122,7 @@ void DynamicHyperbolicGenerator::recomputeBands() {
         for (index i = 0; i < nodeCount; i++) {
             double alias = permutation[i];
             if (radii[alias] >= bandRadii[j] && radii[alias] <= bandRadii[j + 1]) {
-                bands[j].push_back(Point2DWithIndex<double>(angles[alias], radii[alias], alias));
+                bands[j].emplace_back(angles[alias], radii[alias], alias);
                 bandAngles[j].push_back(angles[alias]);
             }
         }

@@ -282,7 +282,7 @@ void MocnikGenerator::addEdgesToGraph(Graph &G, count n, double k, double relati
                 for (node &j : getNodes(s, x)) {
                     d = dist(nodePositions[i], nodePositions[j]);
                     if (d <= kdMin && i != j) {
-                        edges[cell].push_back(std::make_tuple(i, j, d));
+                        edges[cell].emplace_back(i, j, d);
                     }
                 }
             }

@@ -52,7 +52,7 @@ void StronglyConnectedComponents::run() {
         ++curDepth;
         stack.emplace_back(v);
         onStack[v] = 1;
-        dfsStack.push({v, G->neighborRange(v).begin()});
+        dfsStack.emplace(v, G->neighborRange(v).begin());
     };
 
     auto strongConnect = [&](const node u) -> void {
