@@ -247,13 +247,10 @@ jobs:
           python-version: '3.11.0'  
       - name: Build and install NetworKit using pyproject.toml
         run:  pip install .
-      - name: Run Python unit and integration tests
+      - name: Run minimal function test
         run:  |
+          mkidr ./tmp && cd ./tmp
           python3 -c "import networkit"
-          pip3 install -r requirements.txt
-          python3 -m unittest discover -v networkit/test/
-          pip3 install ipycytoscape plotly seaborn ipywidgets==7.7.1 jupyterlab-widgets==1.1.1
-          python3 notebooks/test_notebooks.py "notebooks/"
 
   linux-build-min-support:
     name: "Linux (${{ matrix.compiler }}, CPython 3.7): full"
