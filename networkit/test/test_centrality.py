@@ -29,6 +29,11 @@ class TestCentrality(unittest.TestCase):
 		for i in range(len(CL.ranking())):
 			self.assertAlmostEqual(CL.ranking()[i][1], CLL.ranking()[i][1], delta=0.2*CL.ranking()[i][1])
 
+	def testApproxBetweennessNumberOfSamples(self):
+		CL = nk.centrality.ApproxBetweenness(self.L, epsilon=0.01, delta=0.1)
+		CL.run()
+		self.assertEqual(CL.numberOfSamples(), 63026)
+
 	def testApproxElectricalCloseness(self):
 		for seed in [1, 2, 3]:
 			nk.engineering.setSeed(seed, True)
@@ -68,6 +73,9 @@ class TestCentrality(unittest.TestCase):
 		CLL = nk.centrality.Betweenness(self.LL)
 		CLL.run()
 		self.assertEqual(CL.ranking(), CLL.ranking())
+		self.assertEqual(len(CLL.edgeScores()), 0)
+		self.assertAlmostEqual(CLL.centralization(), 1.22, 2)
+		self.assertEqual(CLL.maximum(), 28.0)
 
 	def testCloseness(self):
 		CL = nk.centrality.Closeness(self.L, True, nk.centrality.ClosenessVariant.GENERALIZED)
@@ -75,6 +83,15 @@ class TestCentrality(unittest.TestCase):
 		CLL = nk.centrality.Closeness(self.LL, True, nk.centrality.ClosenessVariant.GENERALIZED)
 		CLL.run()
 		self.assertEqual(CL.ranking(), CLL.ranking())
+
+	def testClosenessApprox(self):
+		#expecting same results from exact algorithm and approx with 50 samples
+		apr = nk.centrality.ApproxCloseness(self.L, 50, True, nk.centrality.ClosenessVariant.GENERALIZED)
+		apr.run()
+		ex=nk.centrality.Closeness(self.L, True, nk.centrality.ClosenessVariant.GENERALIZED)
+		ex.run()
+		self.assertListEqual(apr.ranking(), ex.ranking())	
+		self.assertListEqual(apr.getSquareErrorEstimates(), [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])	
 	
 	def testCoreDecomposition(self):
 		CL = nk.centrality.CoreDecomposition(self.L)
@@ -111,6 +128,114 @@ class TestCentrality(unittest.TestCase):
 
 		self.assertListEqual(expected_result, dc)
 
+	def testDynBetweennessRun(self):
+		#results of dynBetweenness against Betweenness should be equal
+		dyn = nk.centrality.DynBetweenness(self.L)
+		ex = nk.centrality.Betweenness(self.L)
+		dyn.run()
+		ex.run()
+		self.assertListEqual(dyn.ranking(), ex.ranking())
+		self.assertListEqual(dyn.scores(), ex.scores())
+		self.assertEqual(dyn.score(0), ex.score(0))
+
+	def testDynBetweennessUpdate(self):
+		G = nk.Graph(4)
+		G.addEdge(0,1)
+		dyn = nk.centrality.DynBetweenness(G)
+		dyn.run()
+		up1 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 0, 3, 4.0)	
+		dyn.update(up1)
+		self.assertListEqual(dyn.ranking(), [(0, 2.0), (1, 0.0), (2, 0.0), (3, 0.0)])
+
+	def testDynBetweennessUpdateBatch(self):
+		G = nk.Graph(4)
+		G.addEdge(0,1)
+		dyn = nk.centrality.DynBetweenness(G)
+		dyn.run()	
+		up2 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 2, 3, 1.0)	
+		up3 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 1, 3, 1.0)	
+		dyn.updateBatch([up2,up3])
+		self.assertListEqual(dyn.ranking(), [(1, 2.0), (0, 0.0), (2, 0.0), (3, 0.0)])
+
+	def testDynBetweennessApproxRun(self):
+		dyn = nk.centrality.DynApproxBetweenness(self.L)
+		dyn.run()
+		#due to float inaccuracies we only compare the length of results instead of values
+		self.assertEqual(len(dyn.ranking()), 9)
+		self.assertEqual(len(dyn.scores()), 9)
+		self.assertEqual(dyn.score(0), 0.0)
+		self.assertEqual(dyn.getNumberOfSamples(), 63026)
+
+	"""def testDynBetweennessApproxUpdate(self):
+		G = nk.Graph(4)
+		G.addEdge(0,1)
+		dyn = nk.centrality.DynApproxBetweenness(G).run()
+		up1 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 0, 3, 4.0)	
+		dyn.update(up1)
+		self.assertListEqual(dyn.ranking(), [(0, 0.0), (1, 0.0), (2, 0.0), (3, 0.0)])		
+
+	def testDynBetweennessApproxUpdateBatch(self):
+		G = nk.Graph(4)
+		G.addEdge(0,1)
+		dyn = nk.centrality.DynApproxBetweenness(G).run()		
+		up2 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 2, 3, 1.0)	
+		up3 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 1, 3, 1.0)	
+		dyn.updateBatch([up2,up3])
+		self.assertListEqual(dyn.ranking(), [(0, 0.0), (1, 0.0), (2, 0.0), (3, 0.0)])"""		
+
+	#calling run currently results in segfault
+	"""def testDynBetweennessOneNodeUpdate(self):
+		G = nk.Graph(5)
+		G.addEdge(0,1)
+		dynOne = nk.centrality.DynBetweennessOneNode(G, 4)
+		#dynOne.run()
+		up1 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 0, 2, 1.0)	
+		dynOne.update(up1)
+		self.assertEqual(dynOne.getDistance(0,3), 1.0)
+		self.assertEqual(dynOne.getSigma(0,3), 1.0)
+		self.assertEqual(dynOne.getSigmax(0,3), 1.0)
+		self.assertEqual(dynOne.getbcx(), 4.0)
+		
+	def testDynBetweennessOneNodeUpdates(self):
+		G = nk.Graph(4)
+		G.addEdge(0,1)
+		G.addEdge(2,3)
+		dynOne = nk.centrality.DynBetweennessOneNode(G, 0)
+		dynOne.run()		
+		up2 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 0, 2, 1.0)	
+		up3 = nk.dynamics.GraphEvent(nk.dynamics.GraphEventType.EDGE_ADDITION, 0, 3, 1.0)	
+		dynOne.updateBatch([up2,up3])
+		self.assertEqual(dynOne.getDistance(0,3), 0.0)
+		self.assertEqual(dynOne.getSigma(0,3), 1.0)
+		self.assertEqual(dynOne.getSigmax(0,3), 1.0)
+		self.assertEqual(dynOne.getbcx(), 4.0)	"""
+	
+	def testDynKatzCentrality(self):
+		CL = nk.centrality.DynKatzCentrality(self.L, 9)
+		CL.run()
+		#due to float inaccuracies we only compare the length of results instead of values
+		self.assertEqual(len(CL.ranking()), 9)	
+		self.assertEqual(CL.top(), 4)
+		self.assertAlmostEqual(CL.bound(0), 0.62, 2)
+		self.assertTrue(CL.areDistinguished(0,8))
+
+	def testDynTopHarmonicCloseness(self):
+		k = 5
+		
+		thc = nk.centrality.DynTopHarmonicCloseness(self.L, k, False).run()
+		hc = nk.centrality.HarmonicCloseness(self.L, False).run()
+		score = thc.ranking()
+		refScore = hc.ranking()
+		
+		#asserting equal first k values, respecing float inaccuracies
+		for i in range(k):
+			self.assertAlmostEqual(score[i][1], refScore[i][1], delta = 0.5)
+		self.assertListEqual(thc.topkNodesList(), [4, 1, 6, 2, 3])
+
+		topK = [5.833, 5.416, 5.333, 4.916, 4.916]
+		for i in range(k):
+			self.assertAlmostEqual(thc.topkScoresList()[i], topK[i], delta=0.5)
+
 	def testEigenvectorCentrality(self):
 		CL = nk.centrality.EigenvectorCentrality(self.L)
 		CL.run()
@@ -118,6 +243,11 @@ class TestCentrality(unittest.TestCase):
 		CLL.run()
 		#test if lists have the same length
 		self.assertEqual(len(CL.ranking()),len(CLL.ranking()))
+
+	def testEstimateBetweeness(self):
+		CL = nk.centrality.EstimateBetweenness(self.L, 50)
+		CL.run()
+		self.assertEqual(len(CL.ranking()), 9)		
 	
 	def testForest(self):
 		nk.engineering.setSeed(42, False)
@@ -165,7 +295,39 @@ class TestCentrality(unittest.TestCase):
 
 			for u in groupMaxCC:
 				self.assertTrue(g.hasNode(u))
+	
+	def testGroupBetweennessApprox(self):
+		gc = nk.centrality.ApproxGroupBetweenness(self.L, 3, 0.5)
+		gc.run()
+		self.assertEqual(len(gc.groupMaxBetweenness()), 3)
 
+	def testGroupBetweennessApproxScoreOfGroup(self):
+		gc = nk.centrality.ApproxGroupBetweenness(self.L, 3, 0.5)	
+		self.assertEqual(gc.scoreOfGroup([0,1,2]), 14.0)
+	
+	def testGroupCloseness(self):
+		gc = nk.centrality.GroupCloseness(self.L)
+		gc.run()
+		self.assertListEqual(gc.groupMaxCloseness(), [4])
+
+	def testGroupClosenessFarness(self):
+		gc = nk.centrality.GroupCloseness(self.L)
+		self.assertEqual(gc.computeFarness([0,1,2]), 14.0)
+
+	def testGroupClosenessScoreOfGroup(self):	
+		gc = nk.centrality.GroupCloseness(self.L)
+		self.assertAlmostEqual(gc.scoreOfGroup([0,1,2]), 0.43, 2)
+	
+	def testGroupDegree(self):
+		gd = nk.centrality.GroupDegree(self.L)
+		gd.run()
+		self.assertEqual(gd.getScore(), 5)
+		self.assertListEqual(gd.groupMaxDegree(), [4])
+
+	def testGroupDegreeScoreOfGroup(self):	
+		gd = nk.centrality.GroupDegree(self.L)
+		self.assertEqual(gd.scoreOfGroup([0,1,2]), 5)
+	
 	def testGroupClosenessLocalSearch(self):
 		g = nk.readGraph('input/celegans_metabolic.graph', nk.Format.METIS)
 		k = 5
@@ -183,6 +345,7 @@ class TestCentrality(unittest.TestCase):
 
 			for u in groupMaxCC:
 				self.assertTrue(g.hasNode(u))
+			self.assertGreaterEqual(gc.numberOfIterations(), 1)
 	
 	def testGroupClosenessLocalSwaps(self):
 		k = 5
@@ -218,6 +381,23 @@ class TestCentrality(unittest.TestCase):
 				self.assertEqual(len(set(group)), k)
 				self.assertGreaterEqual(ghc.scoreOfGroup(g, group), 0)	
 
+	def testKadabraBetweenness(self):
+		KB = nk.centrality.KadabraBetweenness(self.L, err=0.01, delta=0.1, k=3)
+		KB.run()
+		#check ranking() returns correct rankings
+		for i in range(len(KB.ranking())):
+			self.assertEqual(KB.ranking()[i][0], KB.topkNodesList()[i])
+			self.assertAlmostEqual(KB.ranking()[i][1], KB.topkScoresList()[i], delta=0.1)
+		
+		#check scores() returns correct scores
+		scores = [0.0, 0.397, 0.0, 0.0, 0.896, 0.0, 0.844, 0.395, 0.0]
+		for i in range(self.L.numberOfNodes()):
+			self.assertAlmostEqual(KB.scores()[i], scores[i], delta=0.1)
+
+		#check helper functions, which are non deterministic
+		self.assertGreaterEqual(KB.getNumberOfIterations(), 10000)
+		self.assertGreaterEqual(KB.getOmega(), 10000)
+		
 	def testKPathCentrality(self):
 		CL = nk.centrality.KPathCentrality(self.L)
 		CL.run()
@@ -226,15 +406,39 @@ class TestCentrality(unittest.TestCase):
 		#test if lists have the same length
 		self.assertEqual(len(CL.ranking()),len(CLL.ranking()))
 
-
 	def testKatzCentrality(self):
 		CL = nk.centrality.KatzCentrality(self.L)
 		CL.run()
 		CLL = nk.centrality.KatzCentrality(self.LL)
 		CLL.run()
 		#test if lists have the same length
-		self.assertEqual(len(CL.ranking()),len(CLL.ranking()))	
+		self.assertEqual(len(CL.ranking()),len(CLL.ranking()))
 
+	def testLaplacianCentrality(self):
+		LC = nk.centrality.LaplacianCentrality(self.L)
+		LC.run()
+		LCC = nk.centrality.LaplacianCentrality(self.LL)
+		LCC.run()
+		self.assertEqual(len(LC.ranking()),len(LCC.ranking()))
+
+	
+	def testLocalClustetingCoefficient(self):
+		LCC = nk.centrality.LocalClusteringCoefficient(self.L)
+		LCC.run()
+		LCCC = nk.centrality.LaplacianCentrality(self.LL)
+		LCCC.run()
+		self.assertEqual(len(LCC.ranking()),len(LCCC.ranking()))		
+
+	def testLocalPartitionCoverage(self):
+		part=nk.structures.Partition(9)
+		part.addToSubset(0, 1)
+		part.addToSubset(0, 2)
+		part.addToSubset(0, 3)
+		part.addToSubset(1, 4)
+		part.addToSubset(1, 5)
+		CL = nk.centrality.LocalPartitionCoverage(self.L, part)
+		CL.run()
+	
 	def testPageRank(self):
 		CL = nk.centrality.PageRank(self.L)
 		CL.run()
@@ -261,6 +465,18 @@ class TestCentrality(unittest.TestCase):
 
 		self.assertLessEqual(CL.numberOfIterations(), maxIters)
 		self.assertLessEqual(CLL.numberOfIterations(), maxIters)
+	
+	def testPermanenceCentrality(self):
+		part=nk.structures.Partition(9)
+		part.addToSubset(0, 1)
+		part.addToSubset(0, 2)
+		part.addToSubset(0, 3)
+		part.addToSubset(1, 4)
+		part.addToSubset(1, 5)
+		PC = nk.centrality.PermanenceCentrality(self.L, part)
+		PC.run()
+		self.assertEqual(PC.getIntraClustering(0), 0.0)
+		self.assertEqual(PC.getPermanence(0), -1.0)
 	
 	def testRankPerNode(self):
 		CL = nk.centrality.PageRank(self.L)
@@ -363,7 +579,6 @@ class TestCentrality(unittest.TestCase):
 
 			for score_thc, score in zip(thc.topkScoresList(True), sorted(scores, reverse=True)):
 				self.assertAlmostEqual(score_thc, score, delta=tol)
-
 
 if __name__ == "__main__":
 	unittest.main()
