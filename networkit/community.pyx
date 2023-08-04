@@ -2080,7 +2080,7 @@ class SpectralPartitioner:
 
 	def _trisect(self, partition=None, iteration=1):
 		if partition is None:
-			vertices = self.graph.iterNodes()
+			vertices = list(self.graph.iterNodes())
 		else:
 			vertices = self.partitions[partition]
 
@@ -2120,7 +2120,7 @@ class SpectralPartitioner:
 			return
 
 		if partition is None:
-			vertices = self.graph.iterNodes()
+			vertices = list(self.graph.iterNodes())
 		else:
 			vertices = self.partitions[partition]
 
