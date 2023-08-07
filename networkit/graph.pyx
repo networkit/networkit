@@ -4,11 +4,11 @@ from cython.operator import dereference, preincrement
 
 import numpy as np
 from scipy.sparse import coo_matrix
-cimport numpy as np
-np.import_array()
+cimport numpy as cnp
+cnp.import_array()
 
-ctypedef np.uint64_t DINT_t
-ctypedef np.double_t DDOUBLE_t
+ctypedef cnp.uint64_t DINT_t
+ctypedef cnp.double_t DDOUBLE_t
 
 from .base import Algorithm
 from .helpers import stdstring, pystring
@@ -450,38 +450,45 @@ cdef class Graph:
 			Check if edge is already present in the graph. If detected, do not insert the edge. Default: False
 		"""
 
-		cdef np.ndarray[DINT_t, ndim=1] row, col
-		cdef np.ndarray[DDOUBLE_t, ndim=1] data
+		cdef cnp.ndarray[DINT_t, ndim = 1, mode = 'c'] row, col
+		cdef cnp.ndarray[DDOUBLE_t, ndim = 1, mode = 'c'] data
 
 		if isinstance(inputData, coo_matrix):
 			try:
-				row = inputData.row.astype(np.uint)
-				col = inputData.col.astype(np.uint)
-				data = inputData.data.astype(np.double)
+				row = inputData.row.view(np.uint)
+				col = inputData.col.view(np.uint)
+				data = inputData.data.view(np.double)
 			except (TypeError, ValueError) as e:
 				raise TypeError('invalid input format') from e
 		elif isinstance(inputData, tuple) and len(inputData) == 2:
 			if isinstance(inputData[1], tuple):
 				try:
-					row = inputData[1][0].astype(np.uint)
-					col = inputData[1][1].astype(np.uint)
-					data = inputData[0].astype(np.double)
+					row = inputData[1][0].view(dtype = np.uint)
+					col = inputData[1][1].view(dtype = np.uint)
+					data = inputData[0].view(dtype = np.double)
 				except (TypeError, ValueError) as e:
 					raise TypeError('invalid input format') from e
 			else:
 				try:
-					row = inputData[0].astype(np.uint)
-					col = inputData[1].astype(np.uint)
+					row = inputData[1][0].view(dtype = np.uint)
+					col = inputData[1][1].view(dtype = np.uint)
 					data = np.ones(len(row), dtype = np.double)
 				except (TypeError, ValueError) as e:
 					raise TypeError('invalid input format') from e				
 		else:
 			raise TypeError('invalid input format')
 
-		for i in range(np.shape(data)[0]):
-			# Calling Python interface of addEdge due to checkMultiEdge support. 
-			self.addEdge(row[i], col[i], data[i], addMissing, checkMultiEdge)
-	
+		cdef int numEdges = np.shape(row)[0]
+
+		if addMissing:	
+			for i in range(numEdges):
+				# Calling Python interface of addEdge due to addMissing support. 
+				self.addEdge(row[i], col[i], data[i], addMissing, checkMultiEdge)
+		else:	
+			for i in range(numEdges):
+				# Calling Cython interface of addEdge directly for higher performance. 
+				self._this.addEdge(row[i], col[i], data[i], checkMultiEdge)
+
 		return self
 
 	def setWeight(self, u, v, w):
