@@ -102,7 +102,7 @@ except ImportError:
 from .engineering import getLogLevel, setLogLevel, setPrintLocation, none, setSeed, \
 		setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
 # local imports into the top namespace
-from .graph import Graph
+from .graph import Graph, GraphFromCoo
 from .structures import Partition, Cover
 from .graphio import readGraph, writeGraph, readGraphs, Format
 
