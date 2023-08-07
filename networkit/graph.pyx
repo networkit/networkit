@@ -7,7 +7,7 @@ from scipy.sparse import coo_matrix
 cimport numpy as cnp
 cnp.import_array()
 
-ctypedef cnp.uint64_t DUINT_t
+ctypedef cnp.uint_t DUINT_t
 ctypedef cnp.int32_t DINT32_t
 ctypedef cnp.double_t DDOUBLE_t
 
