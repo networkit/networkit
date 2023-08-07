@@ -4,9 +4,49 @@ import random
 import networkit as nk
 import pickle
 import numpy as np
+import scipy as sc
 
 class TestGraph(unittest.TestCase):
-	
+
+	def testConstructorWithCooAndNumNodes(self):
+		row = np.array([0, 1, 2])
+		col = np.array([1, 2, 0])
+		data = np.array([1.0, 2.0, 3.0])
+
+		for weighted in [True, False]:
+			for directed in [True, False]:
+				G = nk.GraphFromCoo((data, (row, col)), n = 3, directed = directed, weighted = weighted)
+				self.assertEqual(G.isDirected(), directed)
+				self.assertEqual(G.isWeighted(), weighted)
+				self.assertEqual(G.numberOfNodes(), 3)
+				self.assertEqual(G.numberOfEdges(), 3)
+
+	def testConstructorWithCoo(self):
+		row = np.array([0, 1, 2])
+		col = np.array([1, 2, 0])
+
+		for weighted in [True, False]:
+			for directed in [True, False]:
+				G = nk.GraphFromCoo((row, col), directed = directed, weighted = weighted)
+				self.assertEqual(G.isDirected(), directed)
+				self.assertEqual(G.isWeighted(), weighted)
+				self.assertEqual(G.numberOfNodes(), 3)
+				self.assertEqual(G.numberOfEdges(), 3)
+
+	def testConstructorWithMatrix(self):
+		row = np.array([0, 1, 2])
+		col = np.array([1, 2, 0])
+		data = np.array([1.0, 2.0, 3.0])
+		S = sc.sparse.coo_matrix((data, (row, col)), dtype = np.double)
+
+		for weighted in [True, False]:
+			for directed in [True, False]:
+				G = nk.GraphFromCoo(S, n = 3, directed = directed, weighted = weighted)
+				self.assertEqual(G.isDirected(), directed)
+				self.assertEqual(G.isWeighted(), weighted)
+				self.assertEqual(G.numberOfNodes(), 3)
+				self.assertEqual(G.numberOfEdges(), 3)
+
 	def testAddNodes(self):
 		G = nk.Graph(0)
 		G.addNodes(10)
@@ -55,6 +95,68 @@ class TestGraph(unittest.TestCase):
 				for u, v, w in g.iterEdgesWeights():
 					self.assertTrue(g.hasEdge(u, v))
 					self.assertEqual(g.weight(u, v), w)
+
+	def testAddEdgesCooArrayWithArrayUndirected(self):
+		# Using syntax similar to: https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_array.html
+		row = np.array([0, 1, 2])
+		col = np.array([1, 2, 0])
+		data = np.array([1.0, 2.0, 3.0])
+
+		G = nk.Graph(4)
+		G.addEdges((data, (row, col)))
+
+		self.assertEqual(G.numberOfEdges(), len(row))
+		for i in range(len(row)):
+			self.assertTrue(G.hasEdge(row[i], col[i]))
+			self.assertTrue(G.hasEdge(col[i],row[i]))
+
+	def testAddEdgesCooArrayWithArrayDirected(self):
+		# Using syntax similar to: https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_array.html
+		row = np.array([0, 1, 2])
+		col = np.array([1, 2, 0])
+		data = np.array([1.0, 2.0, 3.0])
+
+		G = nk.Graph(4, directed = True)
+		G.addEdges((data, (row, col)))
+
+		self.assertEqual(G.numberOfEdges(), len(row))
+		for i in range(len(row)):
+			self.assertTrue(G.hasEdge(row[i], col[i]))
+			self.assertFalse(G.hasEdge(col[i],row[i]))
+
+	def testAddEdgesCooArrayWithArrayWeighted(self):
+		# Using syntax similar to: https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_array.html
+		row = np.array([0, 1, 2])
+		col = np.array([1, 2, 0])
+		data = np.array([1.0, 2.0, 3.0])
+
+		G = nk.Graph(4, weighted = True)
+		G.addEdges((data, (row, col)))
+
+		for i in range(len(row)):
+			self.assertEqual(G.weight(row[i], col[i]), data[i])
+
+	def testAddEdgesCooArrayWithCoordsOnly(self):
+		row = np.array([0, 1, 2])
+		col = np.array([1, 2, 0])
+
+		G = nk.Graph(4, weighted = True)
+		G.addEdges((row, col))
+
+		for i in range(len(row)):
+			self.assertEqual(G.weight(row[i], col[i]), 1.0)
+
+	def testAddEdgesCooArrayWithMatrix(self):
+
+		S = sc.sparse.coo_matrix([[0, 1, 0],[1, 0, 0],[0.0, 0.0, 1.0]], dtype = np.double)
+
+		G = nk.Graph(4)
+		G.addEdges(S)
+
+		self.assertEqual(G.numberOfEdges(), S.nnz)
+
+		for i in range(len(S.row)):
+			self.assertTrue(G.hasEdge(S.row[i], S.col[i]))
 
 	def testGraphPickling(self):
 		G = nk.Graph(2)
@@ -319,17 +421,6 @@ class TestGraph(unittest.TestCase):
 					G.removeEdge(u, v)
 					self.assertFalse(G.hasEdge(u, v))
 				self.assertEqual(G.numberOfEdges(), 0)				
-	
-	def testCoordinateInput(self):
-		G = nk.Graph(10, True, True)
-		row = np.array([0, 0, 1, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 5, 6, 6, 7, 8, 8, 9], dtype=np.uint64)
-		col = np.array([1, 3, 2, 3, 5, 3, 4, 5, 7, 8, 5, 7, 9, 6, 3, 4, 6, 2, 9, 4], dtype=np.uint64)
-		data = np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0,
-						1.1, 1.2,1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0], dtype=np.double)
-		G.from_coordinates(row, col, data)
-		self.assertEqual(G.numberOfEdges(), 20)
-		for i in range(np.shape(data)[0]):
-			self.assertEqual(G.weight(row[i], col[i]), data[i])
 
 	def testSpanningForest(self):
 		G = self.getSmallGraph()
