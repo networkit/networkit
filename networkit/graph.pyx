@@ -1,6 +1,7 @@
 # distutils: language=c++
 
 from cython.operator import dereference, preincrement
+
 import numpy as np
 from scipy.sparse import coo_matrix
 cimport numpy as np
@@ -420,6 +421,68 @@ cdef class Graph:
 				self._this.restoreNode(v)
 
 		return self._this.addEdge(u, v, w, checkMultiEdge)
+
+	def addEdges(self, inputData, addMissing = False, checkMultiEdge = False):
+		"""
+		addEdges(inputData)
+
+		Inserts edges from several sources based on the type of :code:`inputData`.
+
+		If the graph is undirected, each pair (i,j) in :code:`inputData` is inserted twice twice: once as (i,j) and once as (j,i).
+
+		Parameter :code:`inputData` can be one of the following:
+
+		- scipy.sparse.coo_matrix
+		- (data, (i,j)) where data, i and j are of type np.ndarray
+		- (i,j) where i and j are of type np.ndarray
+
+		Note
+		----
+		If only pairs of row and column indices (i,j) are given, each edge is given weight 1.0 (even in case of a weighted graph).
+
+		Parameters
+		----------
+		inputData : several
+			Input data encoded as one of the supported formats.
+		addMissing : bool, optional
+			Add missing endpoints if necessary (i.e., increase numberOfNodes). Default: False
+		checkMultiEdge : bool, optional
+			Check if edge is already present in the graph. If detected, do not insert the edge. Default: False
+		"""
+
+		cdef np.ndarray[DINT_t, ndim=1] row, col
+		cdef np.ndarray[DDOUBLE_t, ndim=1] data
+
+		if isinstance(inputData, coo_matrix):
+			try:
+				row = inputData.row.astype(np.uint)
+				col = inputData.col.astype(np.uint)
+				data = inputData.data.astype(np.double)
+			except (TypeError, ValueError) as e:
+				raise TypeError('invalid input format') from e
+		elif isinstance(inputData, tuple) and len(inputData) == 2:
+			if isinstance(inputData[1], tuple):
+				try:
+					row = inputData[1][0].astype(np.uint)
+					col = inputData[1][1].astype(np.uint)
+					data = inputData[0].astype(np.double)
+				except (TypeError, ValueError) as e:
+					raise TypeError('invalid input format') from e
+			else:
+				try:
+					row = inputData[0].astype(np.uint)
+					col = inputData[1].astype(np.uint)
+					data = np.ones(len(row), dtype = np.double)
+				except (TypeError, ValueError) as e:
+					raise TypeError('invalid input format') from e				
+		else:
+			raise TypeError('invalid input format')
+
+		for i in range(np.shape(data)[0]):
+			# Calling Python interface of addEdge due to checkMultiEdge support. 
+			self.addEdge(row[i], col[i], data[i], addMissing, checkMultiEdge)
+	
+		return self
 
 	def setWeight(self, u, v, w):
 		""" 
@@ -1001,6 +1064,50 @@ cdef class Graph:
 		if not isinstance(name, str):
 			raise Exception("Attribute name has to be a string")
 		self._this.detachEdgeAttribute(stdstring(name))
+
+def GraphFromCoo(inputData, n=0, bool_t weighted=False, bool_t directed=False, bool_t edgesIndexed=False):
+	"""
+	graphFromInputData(inputData, n):
+
+	Creates a graph based on :code:`inputData` (edge data). Input data is given in triplet format (also known
+	as ijk or coo format). See here for more details: https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_array.html
+
+	If the resulting graph is undirected (default case), each pair (i,j) in :code:`inputData` is 
+	inserted twice twice: once as (i,j) and once as (j,i).
+
+	Parameter :code:`inputData` can be one of the following:
+
+	- scipy.sparse.coo_matrix
+	- (data, (i,j)) where data, i and j are of type np.ndarray
+	- (i,j) where i and j are of type np.ndarray
+
+	Note
+	----
+	If only pairs of row and column indices (i,j) are given, each edge is given weight 1.0 (even in case of a weighted graph).
+
+	Parameters
+	----------
+	inputData : several
+		Input data encoded as one of the supported formats.
+	n : int, optional
+		Number of nodes for the created graph. If n is not given, the nodes are added on the fly during building
+		of the graph. For better performance, it is advised to correctly set the number of nodes. Default: 0
+	weighted : bool, optional
+		If set to True, the graph can have edge weights other than 1.0. Default: False
+	directed : bool, optional
+		If set to True, the graph will be directed. Default: False
+	edgesIndexed : bool, optional
+		If set to True, the graph's edges will be indexed. Default: False
+	"""
+	cdef Graph result
+	result = Graph(n, weighted, directed, edgesIndexed)
+
+	if n > 0:
+		result.addEdges(inputData, addMissing = False, checkMultiEdge = False)
+	else:
+		result.addEdges(inputData, addMissing = True, checkMultiEdge = False)
+
+	return result
 
 # The following 3 classes NodeIntAttribute, NodeDoubleAttribute and 
 # NodeStringAttribute are helper classes which cannot be generalized because
