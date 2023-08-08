@@ -233,7 +233,7 @@ jobs:
           CC: clang-16
           CXX: clang++-16
 
-  linux-modern-pip-install:
+  linux-pep-518-install:
     name: "Linux: Release build using pyproject.toml"
     runs-on: ubuntu-22.04
     steps:
@@ -249,7 +249,7 @@ jobs:
         run:  pip install .
       - name: Run minimal function test
         run:  |
-          mkidr ./tmp && cd ./tmp
+          mkdir ./tmp && cd ./tmp
           python3 -c "import networkit"
 
   linux-build-min-support:
