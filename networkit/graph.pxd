@@ -91,6 +91,10 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		_NodeDoubleAttribute attachNodeDoubleAttribute(string) except +
 		_NodeStringAttribute attachNodeStringAttribute(string) except +
 		void detachNodeAttribute(string) except +
+		_EdgeIntAttribute attachEdgeIntAttribute(string) except +
+		_EdgeDoubleAttribute attachEdgeDoubleAttribute(string) except +
+		_EdgeStringAttribute attachEdgeStringAttribute(string) except +
+		void detachEdgeAttribute(string) except +
 
 cdef extern from "<networkit/graph/Graph.hpp>":
 	cdef cppclass _NodeIterator "NetworKit::Graph::NodeIterator":
@@ -210,6 +214,59 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		void swap(_NodeStringAttribute& other)
 		string getName() except +
 
+cdef extern from "<networkit/graph/Graph.hpp>":
+	cdef cppclass _EdgeIntAttribute "NetworKit::Graph::EdgeIntAttribute":
+		cppclass _AttributeIterator "Iterator":
+			_AttributeIterator operator++()
+			pair[edgeid, int] operator*()
+			bool_t operator==(const _AttributeIterator)
+			bool_t operator!=(const _AttributeIterator)
+		_AttributeIterator begin() except +
+		_AttributeIterator end()
+		index size()
+		void set(edgeid, int) except +
+		void set(u, v, int) except +
+		int get(edgeid) except +
+		int get(u, v) except +
+		int get(edgeid, int) except +
+		int get(u, v, int) except +
+		void swap(_EdgeIntAttribute& other)
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+	cdef cppclass _EdgeDoubleAttribute "NetworKit::Graph::EdgeDoubleAttribute":
+		cppclass _AttributeIterator "Iterator":
+			_AttributeIterator operator++()
+			pair[edgeid, double] operator*()
+			bool_t operator==(const _AttributeIterator)
+			bool_t operator!=(const _AttributeIterator)
+		_AttributeIterator begin() except +
+		_AttributeIterator end()
+		index size()
+		void set(edgeid, double) except +
+		void set(u, v, double) except +
+		double get(edgeid) except +
+		double get(u, v) except +
+		double get(edgeid, double) except +
+		double get(u, v, double) except +
+		void swap(_EdgeDoubleAttribute& other)
+
+cdef extern from "<networkit/graph/Graph.hpp>":
+	cdef cppclass _EdgeStringAttribute "NetworKit::Graph::EdgeStringAttribute":
+		cppclass _AttributeIterator "Iterator":
+			_AttributeIterator operator++()
+			pair[edgeid, string] operator*()
+			bool_t operator==(const _AttributeIterator)
+			bool_t operator!=(const _AttributeIterator)
+		_AttributeIterator begin() except +
+		_AttributeIterator end()
+		index size()
+		void set(edgeid, string) except +
+		void set(u, v, string) except +
+		string get(edgeid) except +
+		string get(u, v) except +
+		string get(edgeid, string) except +
+		string get(u, v, string) except +
+		void swap(_EdgeStringAttribute& other)
 
 cdef class Graph:
 	cdef _Graph _this
@@ -235,6 +292,27 @@ cdef class NodeStringAttribute:
 	cdef _NodeStringAttribute._AttributeIterator _stopiter
 	cdef _Graph* _G
 	cdef setThis(self, _NodeStringAttribute& other, _Graph* graph)
+
+cdef class EdgeIntAttribute:
+	cdef _EdgeIntAttribute _this
+	cdef _EdgeIntAttribute._AttributeIterator _iter
+	cdef _EdgeIntAttribute._AttributeIterator _stopiter
+	cdef _Graph* _G
+	cdef setThis(self, _EdgeIntAttribute& other, _Graph* graph)
+
+cdef class EdgeDoubleAttribute:
+	cdef _EdgeDoubleAttribute _this
+	cdef _EdgeDoubleAttribute._AttributeIterator _iter
+	cdef _EdgeDoubleAttribute._AttributeIterator _stopiter
+	cdef _Graph* _G
+	cdef setThis(self, _EdgeDoubleAttribute& other, _Graph* graph)
+
+cdef class EdgeStringAttribute:
+	cdef _EdgeStringAttribute _this
+	cdef _EdgeStringAttribute._AttributeIterator _iter
+	cdef _EdgeStringAttribute._AttributeIterator _stopiter
+	cdef _Graph* _G
+	cdef setThis(self, _EdgeStringAttribute& other, _Graph* graph)
 
 cdef extern from "<networkit/graph/SpanningForest.hpp>":
 
