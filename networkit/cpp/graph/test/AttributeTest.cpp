@@ -128,4 +128,27 @@ TEST_F(AttributeTest, testDoubleAttach) {
     EXPECT_THROW(graph.nodeAttributes().attach<int>("some int attribute"), std::runtime_error);
 }
 
+TEST_F(AttributeTest, testInvalidate) {
+
+    Graph graph(10);
+
+    auto intAttr = graph.nodeAttributes().attach<int>("some int attribute");
+    intAttr.set(0, 1);
+    EXPECT_EQ(intAttr.size(), 1);
+    // deleting the node with the attached attribute
+    graph.removeNode(0);
+    // the invalidate method should have reset the intAttr
+    EXPECT_EQ(intAttr.size(), 0);
+}
+
+TEST_F(AttributeTest, testDefaultGet) {
+
+    Graph graph(10);
+
+    auto intAttr = graph.nodeAttributes().attach<int>("some int attribute");
+    intAttr.set(0, 1);
+    // trying to get attribute at invalid index (2), leads to default return
+    EXPECT_EQ(intAttr.get(2, 0), 0);
+}
+
 } // namespace NetworKit

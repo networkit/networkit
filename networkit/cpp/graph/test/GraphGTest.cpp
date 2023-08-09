@@ -147,6 +147,18 @@ TEST(GraphGTest, testDefConstructorWithDirIndex) {
     EXPECT_EQ(GDir.edgeId(0, 1), 0);
 }
 
+TEST_P(GraphGTest, testCopyConstructorWithIndexedEdgeIds) {
+    Graph G(3, false, false, true);
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+    G.indexEdges(true);
+
+    Graph GCopy(G, isWeighted(), isDirected(), true);
+    EXPECT_TRUE(GCopy.hasEdgeIds());
+    EXPECT_TRUE(GCopy.hasEdge(0, 1));
+    EXPECT_TRUE(GCopy.hasEdge(1, 2));
+}
+
 TEST_P(GraphGTest, testCopyConstructor) {
     Graph G = Graph(this->Ghouse, false, false);
     Graph GW = Graph(this->Ghouse, true, false);
