@@ -1182,16 +1182,33 @@ cdef class EdgeIntAttribute:
 		self._G = G
 		return self
 
-	def __getitem__(self, edgeId):
+	def __getitem__(self, edgeIdORnodePair):
 		try:
-			value = self._this.get(edgeId)
+			u, v = edgeIdORnodePair
+			try:
+				return self._this.get2(u, v)
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			return self._this.get(edgeIdORnodePair)
 		except Exception as e:
 			raise ValueError(str(e))
-		return value
 
-	def __setitem__(self, edgeId, value):
+	def __setitem__(self, edgeIdORnodePair, value):
 		try:
-			self._this.set(edgeId, value)
+			u, v = edgeIdORnodePair
+			try:
+				self._this.set2(u,v,value)
+				return
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			self._this.set(edgeIdORnodePair, value)
+			return
 		except Exception as e:
 			raise ValueError(str(e))
 
@@ -1218,16 +1235,33 @@ cdef class EdgeDoubleAttribute:
 		self._G = G
 		return self
 
-	def __getitem__(self, edgeId):
+	def __getitem__(self, edgeIdORnodePair):
 		try:
-			value = self._this.get(edgeId)
+			u, v = edgeIdORnodePair
+			try:
+				return self._this.get2(u, v)
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			return self._this.get(edgeIdORnodePair)
 		except Exception as e:
 			raise ValueError(str(e))
-		return value
 
-	def __setitem__(self, edgeId, value):
+	def __setitem__(self, edgeIdORnodePair, value):
 		try:
-			self._this.set(edgeId, value)
+			u, v = edgeIdORnodePair
+			try:
+				self._this.set2(u,v,value)
+				return
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			self._this.set(edgeIdORnodePair, value)
+			return
 		except Exception as e:
 			raise ValueError(str(e))
 
@@ -1253,16 +1287,33 @@ cdef class EdgeStringAttribute:
 		self._G = G
 		return self
 
-	def __getitem__(self, edgeId):
+	def __getitem__(self, edgeIdORnodePair):
 		try:
-			value = pystring(self._this.get(edgeId))
+			u, v = edgeIdORnodePair
+			try:
+				return self._this.get2(u, v)
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			return self._this.get(edgeIdORnodePair)
 		except Exception as e:
 			raise ValueError(str(e))
-		return value
 
-	def __setitem__(self, edgeId, value):
+	def __setitem__(self, edgeIdORnodePair, value):
 		try:
-			self._this.set(edgeId, stdstring(value))
+			u, v = edgeIdORnodePair
+			try:
+				self._this.set2(u,v,value)
+				return
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			self._this.set(edgeIdORnodePair, value)
+			return
 		except Exception as e:
 			raise ValueError(str(e))
 
@@ -1312,23 +1363,14 @@ class EdgeAttribute:
 
 	def __init__(self, typedEdgeAttribute, type):
 		self.attr = typedEdgeAttribute
+		self.type = type
 
 	def __getitem__(self, edgeIdORnodePair):
-		try:
-			u, v = edgeIdORnodePair
-			return self.attr.get(u, v)
-		except TypeError:
-			pass
 		return self.attr[edgeIdORnodePair]
 
 	def __setitem__(self, edgeIdORnodePair, value):
 		if not isinstance(value, self.type):
 			raise Exception("Wrong Attribute type")
-		try:
-			u, v = edgeIdORnodePair
-			self.attr.set(u,v,value)
-		except TypeError:
-			pass
 		self.attr[edgeIdORnodePair] = value
 
 	def __iter__(self):
