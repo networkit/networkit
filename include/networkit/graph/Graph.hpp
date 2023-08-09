@@ -405,16 +405,31 @@ private:
             ownedStorage->set(i, std::move(v));
         }
 
+        void set2(node u, node v, T t) {
+            static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
+	    set(ownedStorage->theGraph->edgeId(u,v), t);
+	}
+
         auto get(index i) const {
             checkAttribute();
             return ownedStorage->get(i);
         }
+
+        auto get2(node u, node v) const {
+            static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
+	    return get(ownedStorage->theGraph->edgeId(u,v));
+	} 
 
         auto get(index i, T defaultT) const {
             checkAttribute();
             return ownedStorage->get(i, defaultT);
         }
 
+        auto get2(node u, node v, T defaultT) const {
+            static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
+	    return get(ownedStorage->theGraph->edgeId(u,v), defaultT);
+	}
+ 
         IndexProxy operator[](index i) const {
             checkAttribute();
             return IndexProxy(ownedStorage.get(), i);

@@ -225,11 +225,11 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		_AttributeIterator end()
 		index size()
 		void set(edgeid, int) except +
-		void set(u, v, int) except +
+		void set2(node, node, int) except +
 		int get(edgeid) except +
-		int get(u, v) except +
+		int get2(node, node) except +
 		int get(edgeid, int) except +
-		int get(u, v, int) except +
+		int get2(node, node, int) except +
 		void swap(_EdgeIntAttribute& other)
 
 cdef extern from "<networkit/graph/Graph.hpp>":
@@ -243,11 +243,11 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		_AttributeIterator end()
 		index size()
 		void set(edgeid, double) except +
-		void set(u, v, double) except +
+		void set2(node, node, double) except +
 		double get(edgeid) except +
-		double get(u, v) except +
+		double get2(node, node) except +
 		double get(edgeid, double) except +
-		double get(u, v, double) except +
+		double get2(node, node, double) except +
 		void swap(_EdgeDoubleAttribute& other)
 
 cdef extern from "<networkit/graph/Graph.hpp>":
@@ -261,11 +261,11 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		_AttributeIterator end()
 		index size()
 		void set(edgeid, string) except +
-		void set(u, v, string) except +
+		void set2(node, node, string) except +
 		string get(edgeid) except +
-		string get(u, v) except +
+		string get2(node, node) except +
 		string get(edgeid, string) except +
-		string get(u, v, string) except +
+		string get2(node, node, string) except +
 		void swap(_EdgeStringAttribute& other)
 
 cdef class Graph:
