@@ -86,10 +86,10 @@ index BSuitorMatcher::findIndexOf(const std::vector<node> &nodes, node x) const 
 
 void BSuitorMatcher::checkSymmetry() const {
     auto areMatchedSymmetrical = [&](node u, node v) -> void {
-        auto i_1 = std::find(this->suitors[u].begin(), this->suitors[u].end(), v)
-                   != this->suitors[u].end();
-        auto i_2 = std::find(this->suitors[v].begin(), this->suitors[v].end(), u)
-                   != this->suitors[v].end();
+        [[maybe_unused]] auto i_1 = std::find(this->suitors[u].begin(), this->suitors[u].end(), v)
+                                    != this->suitors[u].end();
+        [[maybe_unused]] auto i_2 = std::find(this->suitors[v].begin(), this->suitors[v].end(), u)
+                                    != this->suitors[v].end();
         assert(i_1 == i_2);
     };
 
