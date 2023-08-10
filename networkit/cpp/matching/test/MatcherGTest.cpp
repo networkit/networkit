@@ -23,7 +23,23 @@
 
 namespace NetworKit {
 
-class MatcherGTest : public testing::Test {};
+class MatcherGTest : public testing::Test {
+protected:
+    // TODO use template instead of an overload when Matching base class is done
+    bool hasUnmatchedNeighbors(const Graph &G, const BMatching &M) {
+        for (const auto e : G.edgeRange())
+            if (M.isUnmatched(e.u) && M.isUnmatched(e.v))
+                return true;
+        return false;
+    }
+
+    bool hasUnmatchedNeighbors(const Graph &G, const Matching &M) {
+        for (const auto e : G.edgeRange())
+            if (!M.isMatched(e.u) && !M.isMatched(e.v))
+                return true;
+        return false;
+    }
+};
 
 TEST_F(MatcherGTest, testLocalMaxMatching) {
     {
@@ -137,14 +153,7 @@ TEST_F(MatcherGTest, testSuitorMatcher) {
 
     const edgeweight maxWeight = 10;
 
-    const auto hasUnmatchedNeighbors = [](const Graph &G, const Matching &M) -> bool {
-        for (const auto e : G.edgeRange())
-            if (!M.isMatched(e.u) && !M.isMatched(e.v))
-                return true;
-        return false;
-    };
-
-    const auto doTest = [maxWeight, &hasUnmatchedNeighbors](Graph &G) -> void {
+    const auto doTest = [&, maxWeight](Graph &G) -> void {
         // Test suitor matcher
         SuitorMatcher sm(G, false, true);
         sm.run();
@@ -188,39 +197,61 @@ TEST_F(MatcherGTest, testSuitorMatcher) {
     }
 }
 
-TEST_F(MatcherGTest, testBSuitorMatcher) {
-    const auto hasUnmatchedNeighbors = [](const Graph &G, const BMatching &M) -> bool {
-        for (const auto e : G.edgeRange())
-            if (M.isUnmatched(e.u) && M.isUnmatched(e.v))
-                return true;
-        return false;
-    };
+TEST_F(MatcherGTest, testBSuitorMatcherInvalidGraphDirected) {
+    Graph G(10, true, true);
+    EXPECT_THROW(BSuitorMatcher(G, 2), std::runtime_error);
+}
 
-    const auto doTest = [&hasUnmatchedNeighbors](const Graph &G, const count b) -> void {
+TEST_F(MatcherGTest, testBSuitorMatcherInvalidGraphSelfLoops) {
+    Graph G(10);
+    G.addEdge(0, 0);
+    G.addEdge(0, 0);
+    EXPECT_THROW(BSuitorMatcher(G, 2), std::runtime_error);
+}
+
+TEST_F(MatcherGTest, testBSuitorMatcherTieBreaking) {
+    auto G = METISGraphReader{}.read("input/tie.graph");
+    G.removeSelfLoops();
+    G.removeMultiEdges();
+
+    BSuitorMatcher bsm(G, 4);
+    bsm.run();
+    const auto M = bsm.getBMatching();
+
+    EXPECT_TRUE(M.isProper(G));
+    EXPECT_FALSE(hasUnmatchedNeighbors(G, M));
+}
+
+TEST_F(MatcherGTest, testBSuitorMatcherEqualsSuitorMatcher) {
+    auto G = METISGraphReader{}.read("input/lesmis.graph");
+    G.removeSelfLoops();
+    G.removeMultiEdges();
+
+    SuitorMatcher sm(G, false, false);
+    sm.run();
+    const auto M = sm.getMatching();
+
+    BSuitorMatcher bsm(G, 1);
+    bsm.run();
+    const auto bM = bsm.getBMatching();
+
+    EXPECT_TRUE(bM.isProper(G));
+    EXPECT_TRUE(M.isProper(G));
+    EXPECT_FALSE(hasUnmatchedNeighbors(G, M));
+    EXPECT_FALSE(hasUnmatchedNeighbors(G, bM));
+}
+
+TEST_F(MatcherGTest, testBSuitorMatcher) {
+    for (int b : {2, 3, 4, 5}) {
+        auto G = METISGraphReader{}.read("input/lesmis.graph");
+        G.removeSelfLoops();
+        G.removeMultiEdges();
         BSuitorMatcher bsm(G, b);
         bsm.run();
         const auto M = bsm.getBMatching();
         EXPECT_TRUE(M.isProper(G));
         EXPECT_FALSE(hasUnmatchedNeighbors(G, M));
-    };
-
-    // Test 2,3,4,5-matching
-    for (int b : {2, 3, 4, 5}) {
-        auto G1 = METISGraphReader{}.read("input/lesmis.graph");
-        G1.removeSelfLoops();
-        G1.removeMultiEdges();
-        doTest(G1, b);
     }
-
-    // Test tie breaking
-    auto G2 = METISGraphReader{}.read("input/tie.graph");
-    G2.removeSelfLoops();
-    G2.removeMultiEdges();
-    doTest(G2, 4);
-
-    // TODO Test matching of 1-suitor matcher equals suitor matcher
-    // fix SuitorMatcher as the matching of the lesmis graph computed by the suitor matcher not a
-    // proper matching
 }
 
 } // namespace NetworKit
