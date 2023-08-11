@@ -19,6 +19,10 @@ from networkit.algebraic import adjacencyEigenvector, PageRankMatrix, symmetricE
 cdef extern from "limits.h":
 	cdef uint64_t ULONG_MAX
 
+cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
+
+	index _none "NetworKit::none"
+
 cdef extern from "<networkit/centrality/Centrality.hpp>":
 
 	cdef cppclass _Centrality "NetworKit::Centrality"(_Algorithm):
@@ -2928,3 +2932,116 @@ class SciPyPageRank(SpectralCentrality):
 
 		self.eigenvector = spectrum[1][0]
 		self.eigenvalue = spectrum[0][0]
+
+##### from branch ComplexPaths (K. Ahrens)
+
+cdef extern from "<networkit/centrality/ComplexPaths.hpp>" namespace "NetworKit::ComplexPathAlgorithm":
+
+	cpdef enum _Mode  "NetworKit::ComplexPathAlgorithm::Mode":
+		singleNode,
+		allNodes
+
+cdef class ComplexPathMode(object):
+	singleNode = _Mode.singleNode
+	allNodes   = _Mode.allNodes
+
+cdef extern from "<networkit/centrality/ComplexPaths.hpp>":
+	cdef cppclass _ComplexPaths "NetworKit::ComplexPathAlgorithm"(_Algorithm):
+		_ComplexPaths(_Graph G, count threshold, _Mode mode, node start) except +
+		vector[double] getPLci() except +
+		void normalize() except +
+		vector[node] getAdopters() except +
+		_Graph &getComplexGraph() except +
+
+cdef class ComplexPaths(Algorithm):
+	""" 
+	ComplexPaths(G, threshold, mode, start)
+
+	according to:
+	[ Guilbeault, D., Centola, D. Topological measures for 
+	  identifying and predicting the spread of complex contagions. 
+	  Nat Commun 12, 4430 (2021). 
+	  https://doi.org/10.1038/s41467-021-24704-6 ]
+ 
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph.
+
+	threshold : int
+		The complex path width: minimal numer of neighbors
+
+	mode : ComplexPathMode
+		ComplexPathMode.allNodes: calculate complex path lengths
+					  from every start node
+		ComplexPathMode.singleNode: calculate complex path graph
+					  from node start
+	start : node
+		start node for ComplexPathMode.singleNode
+	"""
+
+	cdef Graph _G
+
+	def __cinit__(self, Graph G, threshold=3, _Mode mode=ComplexPathMode.allNodes, start=_none):
+		self._G = G
+		self._this = new _ComplexPaths(G._this, threshold, mode, start)
+
+	def getPLci(self):
+		""" 
+		getPLci()
+
+		Returns complex path lengths for every node in G
+		absolute or scaled to [0,1] when normalize() was called before run
+		in mode ComplexPathMode.allNodes only
+
+		Returns
+		-------
+		list(double)
+			A vector containing complex path lengths for all nodes
+		"""
+		return (<_ComplexPaths*>(self._this)).getPLci()
+
+	def getComplexGraph(self):
+		""" 
+		getComplexGraph()
+
+		Returns complex path (sub)graph of G starting in start
+		in mode ComplexPathMode.singleNode only
+
+		Returns
+		-------
+		Graph	
+		"""
+		return Graph().setThis((<_ComplexPaths*>(self._this)).getComplexGraph())
+
+	def getAdopters(self):
+		"""
+		getAdopters()
+
+		Returns all nodes in the complex subgraph with at least
+		threshold neighbors (those who are adopted/infected when 
+		starting in start
+
+		Returns
+		-------
+		list(node) 
+			A vector all adopted/infected nodes
+		"""
+		return (<_ComplexPaths*>(self._this)).getAdopters()
+
+	def normalize(self):
+		"""
+		normalize()
+
+		when called before run() all complex path lengths 
+		returned by getPLci are scaled to [0,1]
+
+		in mode ComplexPathMode.allNodes only
+
+		Returns
+		-------
+		nothing
+		"""
+
+		return (<_ComplexPaths*>(self._this)).normalize()
+

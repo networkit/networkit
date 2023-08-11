@@ -7,6 +7,7 @@ networkit_add_module(centrality
     Betweenness.cpp
     Centrality.cpp
     Closeness.cpp
+    ComplexPaths.cpp
     CoreDecomposition.cpp
     DegreeCentrality.cpp
     DynApproxBetweenness.cpp
