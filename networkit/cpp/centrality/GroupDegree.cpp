@@ -9,8 +9,9 @@
 
 namespace NetworKit {
 GroupDegree::GroupDegree(const Graph &G, count k, bool countGroupNodes)
-    : G(G), k(k), countGroupNodes(countGroupNodes), n(G.upperNodeIdBound()),
-      queue{n, -static_cast<int64_t>(n) + (countGroupNodes ? 0 : 1), countGroupNodes ? 0 : 1} {
+    : G(G), k(k), countGroupNodes(countGroupNodes),
+      n(G.upperNodeIdBound()), queue{n, -static_cast<int64_t>(n) + (countGroupNodes ? 0 : 1),
+                                     countGroupNodes ? 0 : 1} {
     if (k > G.upperNodeIdBound() || k <= 0) {
         throw std::runtime_error("k must be between 1 and n");
     }

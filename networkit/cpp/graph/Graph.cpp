@@ -936,7 +936,6 @@ void Graph::ASB<Graph::PerEdge>::indexOK(index n) const {
     }
 }
 
-
 /** NODE ATTRIBUTE INSTANTIATION FOR STRINGS **/
 /** (needed for Python Binding)                    **/
 
