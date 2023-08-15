@@ -146,7 +146,7 @@ class Graph final {
     std::vector<std::vector<edgeid>> outEdgeIds;
 
 private:
-    // base class for all node (and edge) attribute 
+    // base class for all node (and edge) attribute
     // storages with attribute type info
     // independent of the attribute type, holds bookkeeping info only:
     // - attribute name
@@ -157,11 +157,17 @@ private:
     // - the validity of the whole storage (initially true, false after detach)
     // all indexed accesses by NetworKit::index: synonym both for node and edgeid
 
-    class PerNode{public: static constexpr bool edges = false;};
-    class PerEdge{public: static constexpr bool edges = true;};
+    class PerNode {
+    public:
+        static constexpr bool edges = false;
+    };
+    class PerEdge {
+    public:
+        static constexpr bool edges = true;
+    };
 
     template <typename NodeOrEdge>
-    class AttributeStorageBase { //alias ASB
+    class AttributeStorageBase { // alias ASB
     public:
         AttributeStorageBase(const Graph *graph, std::string name, std::type_index type)
             : name{std::move(name)}, type{type}, theGraph{graph}, validStorage{true} {
@@ -208,8 +214,8 @@ private:
         std::vector<bool> valid; // For each node/edgeid: whether attribute is set or not.
 
     protected:
-        void indexOK(index n) const; 
-        void checkPremise() const; 
+        void indexOK(index n) const;
+        void checkPremise() const;
         index validElements = 0;
         const Graph *theGraph;
         bool validStorage; // Validity of the whole storage
@@ -222,9 +228,7 @@ private:
     template <typename NodeOrEdge, typename T>
     class Attribute;
 
-    template <typename NodeOrEdge, 
-              template <typename> class Base,
-              typename T>
+    template <typename NodeOrEdge, template <typename> class Base, typename T>
     class AttributeStorage : public Base<NodeOrEdge> {
     public:
         AttributeStorage(const Graph *theGraph, std::string name)
@@ -263,7 +267,7 @@ private:
     private:
         using Base<NodeOrEdge>::theGraph;
         std::vector<T> values; // the real attribute storage
-    };  // class AttributeStorage<NodeOrEdge, Base, T>
+    };                         // class AttributeStorage<NodeOrEdge, Base, T>
 
     template <typename T>
     using NodeAttributeStorage = AttributeStorage<PerNode, ASB, T>;
@@ -294,8 +298,7 @@ private:
             using difference_type = ptrdiff_t;
 
             Iterator() : storage{nullptr}, idx{0} {}
-            Iterator(AttributeStorage<NodeOrEdge, ASB, T> *storage) 
-            : storage{storage}, idx{0} {
+            Iterator(AttributeStorage<NodeOrEdge, ASB, T> *storage) : storage{storage}, idx{0} {
                 if (storage) {
                     nextValid();
                 }
@@ -334,8 +337,7 @@ private:
                 return storage == iter.storage && idx == iter.idx;
             }
 
-            bool operator!=(Iterator const &iter) const noexcept 
-            { return !(*this == iter); }
+            bool operator!=(Iterator const &iter) const noexcept { return !(*this == iter); }
 
         private:
             AttributeStorage<NodeOrEdge, ASB, T> *storage;
@@ -351,7 +353,8 @@ private:
             //    - casting an IndexProxy to the attribute type reads the value
             //    - assigning to it (operator=) writes the value
         public:
-            IndexProxy(AttributeStorage<NodeOrEdge, ASB, T> *storage, index idx) : storage{storage}, idx{idx} {}
+            IndexProxy(AttributeStorage<NodeOrEdge, ASB, T> *storage, index idx)
+                : storage{storage}, idx{idx} {}
 
             // reading at idx
             operator T() const {
@@ -370,11 +373,11 @@ private:
             index idx;
         }; // class IndexProxy
     public:
-        explicit Attribute(std::shared_ptr<AttributeStorage<NodeOrEdge, ASB, T>> ownedStorage = nullptr)
+        explicit Attribute(
+            std::shared_ptr<AttributeStorage<NodeOrEdge, ASB, T>> ownedStorage = nullptr)
             : ownedStorage{ownedStorage}, valid{ownedStorage != nullptr} {}
 
-        Attribute(Attribute const &other)
-            : ownedStorage{other.ownedStorage}, valid{other.valid} {}
+        Attribute(Attribute const &other) : ownedStorage{other.ownedStorage}, valid{other.valid} {}
 
         Attribute &operator=(Attribute other) {
             this->swap(other);
@@ -407,8 +410,8 @@ private:
 
         void set2(node u, node v, T t) {
             static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
-	    set(ownedStorage->theGraph->edgeId(u,v), t);
-	}
+            set(ownedStorage->theGraph->edgeId(u, v), t);
+        }
 
         auto get(index i) const {
             checkAttribute();
@@ -417,8 +420,8 @@ private:
 
         auto get2(node u, node v) const {
             static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
-	    return get(ownedStorage->theGraph->edgeId(u,v));
-	} 
+            return get(ownedStorage->theGraph->edgeId(u, v));
+        }
 
         auto get(index i, T defaultT) const {
             checkAttribute();
@@ -427,9 +430,9 @@ private:
 
         auto get2(node u, node v, T defaultT) const {
             static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
-	    return get(ownedStorage->theGraph->edgeId(u,v), defaultT);
-	}
- 
+            return get(ownedStorage->theGraph->edgeId(u, v), defaultT);
+        }
+
         IndexProxy operator[](index i) const {
             checkAttribute();
             return IndexProxy(ownedStorage.get(), i);
@@ -438,7 +441,7 @@ private:
         IndexProxy operator()(node u, node v) const {
             static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
             checkAttribute();
-            return IndexProxy(ownedStorage.get(), ownedStorage->theGraph->edgeId(u,v));
+            return IndexProxy(ownedStorage.get(), ownedStorage->theGraph->edgeId(u, v));
         }
 
         void checkAttribute() const {
@@ -470,8 +473,8 @@ private:
             if (!in) {
                 ERROR("cannot open ", filename, " for reading");
             }
-            index n;// node/edgeid
-            T v;    // value
+            index n; // node/edgeid
+            T v;     // value
             std::string line;
             while (std::getline(in, line)) {
                 std::istringstream istring(line);
@@ -505,7 +508,8 @@ private:
 
         template <typename T>
         auto attach(const std::string &name) {
-            auto ownedPtr = std::make_shared<AttributeStorage<NodeOrEdge, ASB, T>>(theGraph, std::string{name});
+            auto ownedPtr =
+                std::make_shared<AttributeStorage<NodeOrEdge, ASB, T>>(theGraph, std::string{name});
             auto insertResult = attrMap.emplace(ownedPtr->getName(), ownedPtr);
             auto success = insertResult.second;
             if (!success) {
@@ -527,7 +531,8 @@ private:
             auto it = find(name);
             if (it->second.get()->getType() != typeid(T))
                 throw std::runtime_error("Type mismatch in Attributes().get()");
-            return Attribute<NodeOrEdge, T>{std::static_pointer_cast<AttributeStorage<NodeOrEdge, ASB, T>>(it->second)};
+            return Attribute<NodeOrEdge, T>{
+                std::static_pointer_cast<AttributeStorage<NodeOrEdge, ASB, T>>(it->second)};
         }
 
     }; // class AttributeMap
@@ -589,6 +594,7 @@ public:
     using EdgeIntAttribute = Attribute<PerEdge, int>;
     using EdgeDoubleAttribute = Attribute<PerEdge, double>;
     using EdgeStringAttribute = Attribute<PerEdge, std::string>;
+
 private:
     /**
      * Returns the index of node u in the array of incoming edges of node v.
@@ -1683,17 +1689,19 @@ public:
         std::pair<node, node> result{none, none};
         bool found = false;
 
-        forNodesWhile([&]{return !found;}, [&](node u){
-            forNeighborsOf(u, [&](node v){
-                if(v < u) return;
-                    auto uvid = edgeId(u,v);
-                    auto vuid = edgeId(v,u);
-                    if(uvid == id || vuid == id) {
-                        found = true;
-                        result = std::make_pair(u, v);
-                    }
-            });
-        });
+        forNodesWhile([&] { return !found; },
+                      [&](node u) {
+                          forNeighborsOf(u, [&](node v) {
+                              if (v < u)
+                                  return;
+                              auto uvid = edgeId(u, v);
+                              auto vuid = edgeId(v, u);
+                              if (uvid == id || vuid == id) {
+                                  found = true;
+                                  result = std::make_pair(u, v);
+                              }
+                          });
+                      });
 
         return result;
     }
