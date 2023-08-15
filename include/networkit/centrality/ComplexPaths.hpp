@@ -6,42 +6,42 @@
  *      Author: Klaus Ahrens
  *              <ahrens@informatik.hu-berlin.de>
  *
- *  adapted and reimplemented from 
+ *  adapted and reimplemented from
  *
  *            https://github.com/drguilbe/complexpaths.git
  *
- *  see [ Guilbeault, D., Centola, D. Topological measures for 
- *        identifying and predicting the spread of complex contagions. 
- *        Nat Commun 12, 4430 (2021). 
+ *  see [ Guilbeault, D., Centola, D. Topological measures for
+ *        identifying and predicting the spread of complex contagions.
+ *        Nat Commun 12, 4430 (2021).
  *        https://doi.org/10.1038/s41467-021-24704-6 ]
  *
  */
 
-#ifndef NETWORKIT_COMPLEX_PATHS_HPP_
-#define NETWORKIT_COMPLEX_PATHS_HPP_
+#ifndef NETWORKIT_CENTRALITY_COMPLEX_PATHS_HPP_
+#define NETWORKIT_CENTRALITY_COMPLEX_PATHS_HPP_
 
 #include <random>
 #include <vector>
 
-#include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
 
-using std::vector;
 using std::sample;
+using std::vector;
 
 namespace NetworKit {
 
 /**
  * @ingroup centrality
  * computes
- *      in Mode::singleNode : 
+ *      in Mode::singleNode :
  *	complex path graphs (with inner connection degree above threshold)
  *	from a start node in Mode::singleNode
  *	OR
- *      in Mode::allNodes : 
- *	complex path lengths (maximal distance in complex path graphs for 
+ *      in Mode::allNodes :
+ *	complex path lengths (maximal distance in complex path graphs for
  *	starting nodes u) for all nodes u
- * 
+ *
  */
 
 class ComplexPathAlgorithm : public Algorithm {
@@ -49,13 +49,13 @@ public:
     /**
      * operation modes
      */
-    enum Mode {singleNode, allNodes};
+    enum Mode { singleNode, allNodes };
 
     /**
      * Constructs the ComplexPathAlgorithm class for the given Graph @a G.
      * depending on the @a mode the algorithm the algorithm
      *   in @a mode <code>Mode::singleNode</code> starting from @a start
-     *      constructs a subgraph of @a G in which all inner nodes have 
+     *      constructs a subgraph of @a G in which all inner nodes have
      *      more than @a threshold neighbors
      *      call <code>getComplexGraph</code> after run to get it
      *   in @a mode <code>Mode::allNodes</code> constructs these subgraphs for all nodes
@@ -67,38 +67,36 @@ public:
      * @param G The graph.
      * @param threshold number of neighbors needed
      * @param mode as explained above
-     * @param start start node for Mode::singleNode 
+     * @param start start node for Mode::singleNode
      */
-    ComplexPathAlgorithm(const Graph& G, 
-                         count threshold = 3, 
-                         Mode mode = Mode::allNodes, 
+    ComplexPathAlgorithm(const Graph &G, count threshold = 3, Mode mode = Mode::allNodes,
                          node start = none);
 
     /**
      * normalize path lengths
      */
     void normalize();
-		 
+
     void run() override;
 
-    /** 
+    /**
      * [normalized] results after running in <code>Mode::allNodes</code>
      */
     vector<double> getPLci();
 
-    /** 
+    /**
      * resulting graph after running in <code>Mode::singleNode</code>
      */
     Graph getComplexGraph();
 
-    /** 
-     * nodes in the resulting graph after running in <code>Mode::singleNode</code> 
+    /**
+     * nodes in the resulting graph after running in <code>Mode::singleNode</code>
      * which are connected to start by at least threshold paths
      */
     vector<node> getAdopters();
 
 private:
-    const Graph& inputGraph;
+    const Graph &inputGraph;
     Graph complexPathGraph;
     vector<double> complexPathsLengths;
     vector<node> adopters;
@@ -107,10 +105,10 @@ private:
     const count threshold;
     bool normPaths;
 
-    Graph complexPathsGraph(node seed, count threshold, vector<node>* adopters);
+    Graph complexPathsGraph(node seed, count threshold, vector<node> *adopters);
     vector<double> complexPathLength(count t);
-}; 
+};
 
 } /* namespace NetworKit */
 
-#endif // NETWORKIT_COMPLEX_PATHS_HPP_
+#endif // NETWORKIT_CENTRALITY_COMPLEX_PATHS_HPP_
