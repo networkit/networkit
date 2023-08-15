@@ -38,10 +38,6 @@ protected:
     }
 
     Graph graph;
-
-    // TODO: Test other matrix classes
-
-    // TODO: Test mmT multiplication, etc.!
 };
 
 using Matrices = testing::Types<DynamicMatrix, CSRMatrix, DenseMatrix>;
@@ -508,6 +504,66 @@ TYPED_TEST(MatricesGTest, testMatrixAddition) {
     EXPECT_EQ(result(4, 1), 0);
 }
 
+TYPED_TEST(MatricesGTest, testMatrixAdditionEqual) {
+    const int num_triplets = 100;
+    std::vector<Triplet> triplets1(num_triplets);
+    std::vector<Triplet> triplets2(num_triplets);
+
+    for (index i = 0; i < num_triplets; ++i) {
+        triplets1[i] = {i, i, 1};
+        triplets2[i] = {i, i, static_cast<double>(i)};
+    }
+
+    triplets1.push_back({2, 71, 1.8});
+    triplets2.push_back({42, 43, 3.14});
+
+    using Matrix = typename TestFixture::Matrix;
+    Matrix mat1(num_triplets, triplets1);
+    Matrix mat2(num_triplets, triplets2);
+
+    Matrix result = mat1 + mat2;
+    ASSERT_EQ(mat1.numberOfRows(), result.numberOfRows());
+    ASSERT_EQ(mat1.numberOfColumns(), result.numberOfColumns());
+
+    EXPECT_EQ(result(10, 13), 0.0);
+
+    for (index i = 0; i < result.numberOfRows(); ++i) {
+        EXPECT_EQ((i + 1), result(i, i));
+    }
+    EXPECT_EQ(result(2, 71), 1.8);
+    EXPECT_EQ(result(42, 43), 3.14);
+
+    EXPECT_EQ(result(3, 14), 0.0);
+
+    // rectangular matrix
+    // n x m (n < m)
+    //
+    // 1 0 0 0 0
+    // 0 0 3 0 0
+    std::vector<Triplet> triplets = {{0, 0, 1.0}, {1, 2, 3.0}};
+
+    mat1 = Matrix(2, 5, triplets);
+
+    // 0 0 1 0 0
+    // 0 0 1 0 0
+    triplets.clear();
+    triplets = {{0, 2, 1.0}, {1, 2, 1.0}};
+
+    mat2 = Matrix(2, 5, triplets);
+
+    mat1 += mat2;
+
+    ASSERT_EQ(mat1.numberOfRows(), 2);
+    ASSERT_EQ(mat1.numberOfColumns(), 5);
+
+    EXPECT_EQ(mat1(0, 0), 1);
+    EXPECT_EQ(mat1(0, 2), 1);
+    EXPECT_EQ(mat1(1, 2), 4);
+
+    EXPECT_EQ(mat1(0, 1), 0);
+    EXPECT_EQ(mat1(1, 4), 0);
+}
+
 TYPED_TEST(MatricesGTest, testMatrixSubtraction) {
     const int num_triplets = 100;
     std::vector<Triplet> triplets1(num_triplets);
@@ -604,6 +660,27 @@ TYPED_TEST(MatricesGTest, testMatrixSubtraction) {
     EXPECT_EQ(result(4, 1), 0);
 }
 
+TYPED_TEST(MatricesGTest, testMatrixSubtractionEqual) {
+    std::vector<Triplet> triplets1 = {{0, 0, 1.0}, {2, 1, 3.0}};
+    std::vector<Triplet> triplets2 = {{2, 0, 1.0}, {2, 1, 1.0}};
+
+    using Matrix = typename TestFixture::Matrix;
+    Matrix mat1(5, 2, triplets1);
+    Matrix mat2(5, 2, triplets2);
+
+    mat1 -= mat2;
+
+    ASSERT_EQ(5u, mat1.numberOfRows());
+    ASSERT_EQ(2u, mat1.numberOfColumns());
+
+    EXPECT_EQ(mat1(0, 0), 1);
+    EXPECT_EQ(mat1(2, 0), -1);
+    EXPECT_EQ(mat1(2, 1), 2);
+
+    EXPECT_EQ(mat1(0, 1), 0);
+    EXPECT_EQ(mat1(4, 1), 0);
+}
+
 TYPED_TEST(MatricesGTest, testScalarMultiplication) {
     const int num_triplets = 100;
     std::vector<Triplet> triplets(num_triplets);
@@ -645,6 +722,28 @@ TYPED_TEST(MatricesGTest, testScalarMultiplication) {
 
     EXPECT_EQ(mat(0, 0), 2);
     EXPECT_EQ(mat(1, 2), 6);
+}
+
+TYPED_TEST(MatricesGTest, testMatrixScalar) {
+    std::vector<Triplet> triplets = {{0, 0, 1.0}, {2, 1, 3.0}};
+
+    using Matrix = typename TestFixture::Matrix;
+    Matrix mat1(5, 2, triplets);
+    // 1 0
+    // 0 0
+    // 0 3
+    // 0 0
+    // 0 0
+
+    Matrix res = mat1 * 2;
+
+    ASSERT_EQ(5u, res.numberOfRows());
+    ASSERT_EQ(2u, res.numberOfColumns());
+
+    EXPECT_EQ(res(0, 0), 2);
+    EXPECT_EQ(res(2, 1), 6);
+    EXPECT_EQ(res(0, 1), 0);
+    EXPECT_EQ(res(4, 1), 0);
 }
 
 TYPED_TEST(MatricesGTest, testMatrixDivisionOperator) {
@@ -828,6 +927,65 @@ TYPED_TEST(MatricesGTest, testMatrixMultiplication) {
     EXPECT_EQ(result(2, 1), 4);
 }
 
+TYPED_TEST(MatricesGTest, testMatricesTransposedMultiplication) {
+    using Matrix = typename TestFixture::Matrix;
+    if (std::is_same<Matrix, DenseMatrix>::value) {
+        GTEST_SKIP() << "Skipping mmT/mTm test for DenseMatrix";
+    }
+    std::vector<Triplet> triplets1 = {{0, 0, 1}, {0, 1, 2}, {0, 2, 3}, {1, 0, 2}, {1, 1, 2}};
+    //           1  2  3
+    // mat =     2  2  0
+    //
+    DynamicMatrix mat(2, 3, triplets1);
+    ASSERT_EQ(mat.numberOfRows(), 2);
+    ASSERT_EQ(mat.numberOfColumns(), 3);
+    //           1  2
+    // mat^T =   2  2
+    //           3  0
+    DynamicMatrix result = DynamicMatrix::mmTMultiply(mat, mat);
+    // (mat*mat^T)
+    //          14  6
+    // result = 6   8
+    EXPECT_EQ(result(0, 0), 14);
+    EXPECT_EQ(result(0, 1), 6);
+    EXPECT_EQ(result(1, 0), 6);
+    EXPECT_EQ(result(1, 1), 8);
+
+    result = DynamicMatrix::mTmMultiply(mat, mat);
+    // (mat^T*mat)
+    //          5  6  3
+    // result = 6  8  6
+    //          3  6  9
+    EXPECT_EQ(result(0, 0), 5);
+    EXPECT_EQ(result(0, 1), 6);
+    EXPECT_EQ(result(0, 2), 3);
+    EXPECT_EQ(result(1, 0), 6);
+    EXPECT_EQ(result(1, 1), 8);
+    EXPECT_EQ(result(1, 2), 6);
+    EXPECT_EQ(result(2, 0), 3);
+    EXPECT_EQ(result(2, 1), 6);
+    EXPECT_EQ(result(2, 2), 9);
+}
+
+TYPED_TEST(MatricesGTest, testMatrixTransposedVectorMultiplication) {
+    using Matrix = typename TestFixture::Matrix;
+    if (std::is_same<Matrix, DenseMatrix>::value) {
+        GTEST_SKIP() << "Skipping mmT/mTm test for DenseMatrix";
+    }
+    std::vector<Triplet> triplets1 = {{0, 0, 1}, {1, 0, 2}, {2, 0, 3}, {0, 1, 2}, {1, 1, 2}};
+    DynamicMatrix mat(3, 2, triplets1);
+    Vector vec({1, 2, 3});
+    //
+    //  mat^T    *    vec  = result
+    //  1  2  3       1
+    //  2  2  0  *    2    =  14
+    //                3        6
+    //
+    Vector result = DynamicMatrix::mTvMultiply(mat, vec);
+    EXPECT_EQ(result[0], 14);
+    EXPECT_EQ(result[1], 6);
+}
+
 TYPED_TEST(MatricesGTest, testAdjacencyMatrix) {
     Graph G(6);
     G.addEdge(0, 0);
@@ -996,6 +1154,38 @@ TYPED_TEST(MatricesGTest, testIncidenceMatrix) {
     EXPECT_EQ(result[4], 0);
 }
 
+TYPED_TEST(MatricesGTest, testIncidenceMatrixDirected) {
+    Graph G = Graph(5, true, true);
+    G.addEdge(0, 1, 4.0);
+    G.addEdge(0, 2, 9.0);
+    G.addEdge(0, 3, 16.0);
+    G.addEdge(2, 3, 1.0);
+    G.addEdge(4, 1, 25.0);
+    G.addEdge(4, 4, 1.0);
+
+    G.indexEdges();
+
+    using Matrix = typename TestFixture::Matrix;
+    Matrix mat = Matrix::incidenceMatrix(G);
+    ASSERT_EQ(G.numberOfNodes(), mat.numberOfRows());
+    ASSERT_EQ(G.numberOfEdges(), mat.numberOfColumns());
+
+    EXPECT_EQ(mat(0, 0), std::sqrt(G.weight(0, 1)));
+    EXPECT_EQ(mat(1, 0), -std::sqrt(G.weight(0, 1)));
+    for (uint64_t i = 2; i < mat.numberOfRows(); ++i) {
+        EXPECT_EQ(mat(i, 0), 0.0);
+    }
+
+    EXPECT_EQ(mat(2, 1), -std::sqrt(G.weight(0, 2)));
+
+    EXPECT_EQ(mat(3, 2), -std::sqrt(G.weight(0, 3)));
+    EXPECT_EQ(mat(3, 3), -std::sqrt(G.weight(2, 3)));
+
+    for (uint64_t i = 0; i < mat.numberOfRows(); ++i) {
+        EXPECT_EQ(mat(i, 5), 0.0);
+    }
+}
+
 TYPED_TEST(MatricesGTest, testLaplacianOfGraph) {
     using Matrix = typename TestFixture::Matrix;
     Matrix mat = Matrix::laplacianMatrix(this->graph);
@@ -1004,6 +1194,22 @@ TYPED_TEST(MatricesGTest, testLaplacianOfGraph) {
 
     mat = Matrix::laplacianMatrix(METISGraphReader{}.read("input/power.graph"));
     EXPECT_TRUE(MatrixTools::isLaplacian(mat));
+}
+
+TYPED_TEST(MatricesGTest, testNormalizedLaplacianOfGraph) {
+    using Matrix = typename TestFixture::Matrix;
+    if (std::is_same<Matrix, DenseMatrix>::value) {
+        GTEST_SKIP() << "Skipping normalizedLaplacian test for DenseMatrix";
+    }
+
+    Graph G = METISGraphReader{}.read("input/power.graph");
+    DynamicMatrix DynMat = DynamicMatrix::normalizedLaplacianMatrix(G);
+
+    // check properties of normalizedLaplacian
+    EXPECT_TRUE(MatrixTools::isSymmetric(DynMat));
+    for (node u = 0; u < G.numberOfNodes(); ++u) {
+        EXPECT_EQ(DynMat(u, u), 1);
+    }
 }
 
 TYPED_TEST(MatricesGTest, testForElementsInRow) {

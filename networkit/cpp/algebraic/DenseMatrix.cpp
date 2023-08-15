@@ -118,7 +118,7 @@ DenseMatrix DenseMatrix::operator-(const DenseMatrix &other) const {
 DenseMatrix &DenseMatrix::operator-=(const DenseMatrix &other) {
     assert(numberOfRows() == other.numberOfRows() && numberOfColumns() == other.numberOfColumns());
     *this = DenseMatrix::binaryOperator(*this, other,
-                                        [](double val1, double val2) { return val1 + val2; });
+                                        [](double val1, double val2) { return val1 - val2; });
     return *this;
 }
 
