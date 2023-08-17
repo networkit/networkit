@@ -197,7 +197,58 @@ class TestGraph(unittest.TestCase):
 				attrs[u] = attVals[u]
 				self.assertEqual(attrs[u], attVals[u])
 
-			G.detachNodeAttribute("attribute")		
+			G.detachNodeAttribute("attribute")
+
+	def testEdgeAttributesMandatoryIndexing(self):
+		G = nk.Graph(5)
+		with self.assertRaises(Exception):
+			G.attachEdgeAttribute("my Attr", int)
+
+	def testEdgeAttributesNonExisting(self):
+		G = nk.Graph(5)
+		G.indexEdges()
+		myAttr = G.attachEdgeAttribute("my Attr", int)
+
+		with self.assertRaises(Exception):
+			myAttr[0] = 1
+
+	def testEdgeAttributesByIndex(self):
+		G = nk.Graph(5)
+		G.indexEdges()
+
+		G.addEdge(0, 1)
+		G.addEdge(0, 2)
+		G.addEdge(1, 3)
+		G.addEdge(2, 4)
+
+		for attType in [int, float, str]:
+			attVals = [attType(u) for u in range(G.numberOfEdges())]
+
+			attrs = G.attachEdgeAttribute("attribute", attType)
+			for u in range(G.numberOfEdges()):
+				attrs[u] = attVals[u]
+				self.assertEqual(attrs[u], attVals[u])
+
+			G.detachEdgeAttribute("attribute")
+
+	def testEdgeAttributesByNodePair(self):
+		G = nk.Graph(5)
+		G.indexEdges()
+
+		G.addEdge(0, 1)
+		G.addEdge(0, 2)
+		G.addEdge(1, 3)
+		G.addEdge(2, 4)
+
+		for attType in [int, float, str]:
+			attVals = [attType(u+v) for u,v in G.iterEdges()]
+
+			attrs = G.attachEdgeAttribute("attribute", attType)
+			for u,v in G.iterEdges():
+				attrs[u,v] = attVals[u]
+				self.assertEqual(attrs[u,v], attVals[u])
+
+			G.detachEdgeAttribute("attribute")
 
 	def testRandomEdgesReproducibility(self):
 		numSamples = 10
