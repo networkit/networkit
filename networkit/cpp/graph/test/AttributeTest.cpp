@@ -17,7 +17,9 @@ namespace NetworKit {
 
 class AttributeTest : public testing::Test {};
 
-TEST_F(AttributeTest, testSetGetOnExistingNodes) {
+/// NODE ATTRIBUTE TESTS ///
+
+TEST_F(AttributeTest, testNodeAttributeSetGetOnExistingNodes) {
 
     Graph graph(15);
 
@@ -31,14 +33,35 @@ TEST_F(AttributeTest, testSetGetOnExistingNodes) {
     EXPECT_EQ(intAttr.size(), graph.numberOfNodes());
 
     graph.forNodes([&](node n) { EXPECT_EQ(intAttr.get(n), int(n)); });
-    EXPECT_EQ(intAttr.size(), graph.numberOfNodes());
+}
+
+TEST_F(AttributeTest, testNodeAttributeSetGetOnExistingNodesByIndexProxy) {
+
+    Graph graph(15);
+
+    const std::string name = "some int attribute";
+    auto intAttr = graph.nodeAttributes().attach<int>(name);
+    EXPECT_EQ(intAttr.size(), 0u);
+    EXPECT_EQ(graph.nodeAttributes().find(name)->second->getName(), name);
 
     // by index proxy
     graph.forNodes([&](node n) { intAttr[n] = int(n); });
     EXPECT_EQ(intAttr.size(), graph.numberOfNodes());
 
     graph.forNodes([&](node n) { EXPECT_EQ(intAttr[n], int(n)); });
-    EXPECT_EQ(intAttr.size(), graph.numberOfNodes());
+}
+
+TEST_F(AttributeTest, testNodeAttributeIteratorOnExistingNodes) {
+
+    Graph graph(15);
+
+    const std::string name = "some int attribute";
+    auto intAttr = graph.nodeAttributes().attach<int>(name);
+    EXPECT_EQ(intAttr.size(), 0u);
+    EXPECT_EQ(graph.nodeAttributes().find(name)->second->getName(), name);
+
+    // by index proxy
+    graph.forNodes([&](node n) { intAttr[n] = int(n); });
 
     // Test iterator
     node u = 0;
@@ -50,7 +73,7 @@ TEST_F(AttributeTest, testSetGetOnExistingNodes) {
     }
 }
 
-TEST_F(AttributeTest, testReadWrite) {
+TEST_F(AttributeTest, testNodeAttributeReadWrite) {
     const int n = 10;
     const std::string path = "output/attribute.txt";
     const std::string name = "attribute";
@@ -75,57 +98,204 @@ TEST_F(AttributeTest, testReadWrite) {
     std::remove(path.c_str());
 }
 
-TEST_F(AttributeTest, testSetGetOnNonExistingNodes) {
+/// EDGE ATTRIBUTE TESTS ///
 
-    Graph graph(5);
+TEST_F(AttributeTest, testEdgeAttributeSetGetOnExistingEdges) {
 
+    Graph graph(15, false, false, true);
+    graph.addEdge(0, 1);
+    graph.addEdge(1, 2);
+    graph.addEdge(2, 3);
+
+    const std::string name = "some int attribute";
+    auto intAttr = graph.edgeAttributes().attach<int>(name);
+    EXPECT_EQ(intAttr.size(), 0u);
+    EXPECT_EQ(graph.edgeAttributes().find(name)->second->getName(), name);
+
+    // set / get
+    graph.forEdges([&](node u, node v) { intAttr.set2(u, v, int(u) + int(v)); });
+    EXPECT_EQ(intAttr.size(), graph.numberOfEdges());
+
+    graph.forEdges([&](node u, node v) { EXPECT_EQ(intAttr.get2(u, v), int(u) + int(v)); });
+}
+
+TEST_F(AttributeTest, testEdgeAttributeSetGetOnExistingEdgesByIndexProxy) {
+
+    Graph graph(15, false, false, true);
+    graph.addEdge(0, 1);
+    graph.addEdge(1, 2);
+    graph.addEdge(2, 3);
+
+    const std::string name = "some int attribute";
+    auto intAttr = graph.edgeAttributes().attach<int>(name);
+    EXPECT_EQ(intAttr.size(), 0u);
+    EXPECT_EQ(graph.edgeAttributes().find(name)->second->getName(), name);
+
+    // by index proxy
+    graph.forEdges([&](node u, node v) { intAttr(u, v) = int(u) + int(v); });
+    EXPECT_EQ(intAttr.size(), graph.numberOfEdges());
+
+    graph.forEdges([&](node u, node v) { EXPECT_EQ(intAttr(u, v), int(u) + int(v)); });
+}
+
+TEST_F(AttributeTest, testEdgeAttributeSetGetOnExistingEdgesByIndexedEdge) {
+
+    Graph graph(15, false, false, true);
+    graph.addEdge(0, 1);
+    graph.addEdge(1, 2);
+    graph.addEdge(2, 3);
+
+    const std::string name = "some int attribute";
+    auto intAttr = graph.edgeAttributes().attach<int>(name);
+    EXPECT_EQ(intAttr.size(), 0u);
+    EXPECT_EQ(graph.edgeAttributes().find(name)->second->getName(), name);
+
+    // by index proxy
+    graph.forEdges([&](node u, node v) {
+        auto edgeIndex = graph.edgeId(u, v);
+        intAttr[edgeIndex] = int(u) + int(v);
+    });
+    EXPECT_EQ(intAttr.size(), graph.numberOfEdges());
+
+    graph.forEdges([&](node u, node v) {
+        auto edgeIndex = graph.edgeId(u, v);
+        EXPECT_EQ(intAttr[edgeIndex], int(u) + int(v));
+    });
+}
+
+TEST_F(AttributeTest, testEdgeAttributeIteratorOnExistingEdges) {
+
+    Graph graph(15, false, false, true);
+    graph.addEdge(0, 1);
+    graph.addEdge(1, 2);
+    graph.addEdge(2, 3);
+
+    const std::string name = "some int attribute";
+    auto intAttr = graph.edgeAttributes().attach<int>(name);
+    EXPECT_EQ(intAttr.size(), 0u);
+    EXPECT_EQ(graph.edgeAttributes().find(name)->second->getName(), name);
+
+    // by index proxy
+    graph.forEdges([&](node u, node v) { intAttr(u, v) = u + v; });
+
+    // Test iterator
+    node u = 0;
+    int att = 0;
+    for (auto pair : intAttr) {
+        EXPECT_EQ(pair.first, u);
+        auto edge = graph.edgeWithId(u);
+        EXPECT_EQ(pair.second, edge.first + edge.second);
+        ++u, ++att;
+    }
+}
+
+TEST_F(AttributeTest, testEdgeAttributeReadWrite) {
+    const int n = 10;
+    const std::string path = "output/attribute.txt";
+    const std::string name = "attribute";
+
+    {
+        Graph graph(n, false, false, true);
+        graph.addEdge(0, 1);
+        graph.addEdge(1, 2);
+        graph.addEdge(2, 3);
+        auto attr = graph.edgeAttributes().attach<double>(name);
+        graph.forEdges([&](node u, node v) { attr.set2(u, v, u + v); });
+        attr.write(path);
+    }
+
+    {
+        Graph graph(n, false, false, true);
+        graph.addEdge(0, 1);
+        graph.addEdge(1, 2);
+        graph.addEdge(2, 3);
+        auto attr = graph.edgeAttributes().attach<double>(name);
+        attr.read(path);
+        graph.forEdges([&](node u, node v) { EXPECT_EQ(u + v, attr.get2(u, v)); });
+    }
+
+    std::remove(path.c_str());
+}
+
+/// COMBINED ATTRIBUTE TESTS ///
+
+TEST_F(AttributeTest, testAttributeSetGetOnNonExistingNodes) {
+
+    auto tester = [&](auto &attributeMap) {
+        auto intAttr = attributeMap.template attach<int>("some int attribute");
+
+        auto readAtIndex = [&intAttr](node n) -> int { return intAttr[n]; };
+
+        EXPECT_THROW(intAttr.set(5, 5), std::runtime_error);
+        EXPECT_THROW(intAttr.get(5), std::runtime_error);
+        EXPECT_THROW(intAttr[5] = 5, std::runtime_error);
+        // trigger read access by int conversion
+        EXPECT_THROW(readAtIndex(5), std::runtime_error);
+
+        EXPECT_THROW(intAttr.set(3, 3), std::runtime_error);
+        EXPECT_THROW(intAttr.get(3), std::runtime_error);
+        EXPECT_THROW(intAttr[3] = 3, std::runtime_error);
+        // trigger read access by int conversion
+        EXPECT_THROW(readAtIndex(3), std::runtime_error);
+
+        attributeMap.detach("some int attribute");
+    };
+
+    Graph graph(5, false, false, true);
     graph.removeNode(3);
 
-    auto intAttr = graph.nodeAttributes().attach<int>("some int attribute");
-
-    auto readAtIndex = [&intAttr](node n) -> int { return intAttr[n]; };
-
-    EXPECT_FALSE(graph.hasNode(5));
-    EXPECT_THROW(intAttr.set(5, 5), std::runtime_error);
-    EXPECT_THROW(intAttr.get(5), std::runtime_error);
-    EXPECT_THROW(intAttr[5] = 5, std::runtime_error);
-    // trigger read access by int conversion
-    EXPECT_THROW(readAtIndex(5), std::runtime_error);
-
-    EXPECT_FALSE(graph.hasNode(3));
-    EXPECT_THROW(intAttr.set(3, 3), std::runtime_error);
-    EXPECT_THROW(intAttr.get(3), std::runtime_error);
-    EXPECT_THROW(intAttr[3] = 3, std::runtime_error);
-    // trigger read access by int conversion
-    EXPECT_THROW(readAtIndex(3), std::runtime_error);
+    tester(graph.nodeAttributes());
+    tester(graph.edgeAttributes());
 }
 
-TEST_F(AttributeTest, testAttachDetachAttach) {
+TEST_F(AttributeTest, testAttributeAttachDetachAttach) {
 
-    Graph graph(15);
+    auto tester = [&](auto &attributeMap) {
+        auto intAttr = attributeMap.template attach<int>("some int attribute");
+        intAttr[3] = 33;
+        EXPECT_EQ(33, intAttr[3]);
 
-    auto intAttr = graph.nodeAttributes().attach<int>("some int attribute");
+        attributeMap.detach("some int attribute");
+        EXPECT_THROW(intAttr.get(3), std::runtime_error);
 
-    intAttr[3] = 33;
-    EXPECT_EQ(33, intAttr[3]);
+        intAttr = attributeMap.template attach<int>("some new int attribute");
 
-    graph.nodeAttributes().detach("some int attribute");
-    EXPECT_THROW(intAttr.get(3), std::runtime_error);
+        intAttr[3] = 33;
+        EXPECT_EQ(intAttr[3], 33);
 
-    intAttr = graph.nodeAttributes().attach<int>("some new int attribute");
+        attributeMap.detach("some new int attribute");
+    };
 
-    intAttr[3] = 33;
-    EXPECT_EQ(intAttr[3], 33);
+    Graph graph(15, false, false, true);
+    graph.addEdge(0, 1);
+    graph.addEdge(1, 2);
+    graph.addEdge(2, 3);
+    graph.addEdge(3, 4);
+
+    tester(graph.nodeAttributes());
+    tester(graph.edgeAttributes());
 }
 
-TEST_F(AttributeTest, testDoubleAttach) {
+TEST_F(AttributeTest, testAttributeDoubleAttach) {
 
-    Graph graph(15);
+    auto tester = [&](auto &attributeMap) {
+        auto intAttr = attributeMap.template attach<int>("some int attribute");
+        auto dblAttr = attributeMap.template attach<double>("some double attribute");
 
-    auto intAttr = graph.nodeAttributes().attach<int>("some int attribute");
-    auto dblAttr = graph.nodeAttributes().attach<double>("some double attribute");
+        EXPECT_THROW(attributeMap.template attach<int>("some int attribute"), std::runtime_error);
 
-    EXPECT_THROW(graph.nodeAttributes().attach<int>("some int attribute"), std::runtime_error);
+        attributeMap.detach("some int attribute");
+        attributeMap.detach("some double attribute");
+    };
+
+    Graph graph(15, false, false, true);
+    graph.addEdge(0, 1);
+    graph.addEdge(1, 2);
+    graph.addEdge(2, 3);
+    graph.addEdge(3, 4);
+
+    tester(graph.nodeAttributes());
+    tester(graph.edgeAttributes());
 }
 
 TEST_F(AttributeTest, testInvalidate) {
