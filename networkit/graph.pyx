@@ -1291,13 +1291,13 @@ cdef class EdgeStringAttribute:
 		try:
 			u, v = edgeIdORnodePair
 			try:
-				return self._this.get2(u, v)
+				return pystring(self._this.get2(u, v))
 			except Exception as e:
 				raise ValueError(str(e))
 		except TypeError:
 			pass
 		try:
-			return self._this.get(edgeIdORnodePair)
+			return pystring(self._this.get(edgeIdORnodePair))
 		except Exception as e:
 			raise ValueError(str(e))
 
@@ -1305,14 +1305,14 @@ cdef class EdgeStringAttribute:
 		try:
 			u, v = edgeIdORnodePair
 			try:
-				self._this.set2(u,v,value)
+				self._this.set2(u, v, stdstring(value))
 				return
 			except Exception as e:
 				raise ValueError(str(e))
 		except TypeError:
 			pass
 		try:
-			self._this.set(edgeIdORnodePair, value)
+			self._this.set(edgeIdORnodePair, stdstring(value))
 			return
 		except Exception as e:
 			raise ValueError(str(e))

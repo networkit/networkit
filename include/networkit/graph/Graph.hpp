@@ -222,8 +222,8 @@ private:
 
     }; // class AttributeStorageBase
 
-    template <typename T>
-    using ASB = AttributeStorageBase<T>;
+    template <typename NodeOrEdge>
+    using ASB = AttributeStorageBase<NodeOrEdge>;
 
     template <typename NodeOrEdge, typename T>
     class Attribute;
@@ -268,12 +268,6 @@ private:
         using Base<NodeOrEdge>::theGraph;
         std::vector<T> values; // the real attribute storage
     };                         // class AttributeStorage<NodeOrEdge, Base, T>
-
-    template <typename T>
-    using NodeAttributeStorage = AttributeStorage<PerNode, ASB, T>;
-
-    template <typename T>
-    using EdgeAttributeStorage = AttributeStorage<PerEdge, ASB, T>;
 
     template <typename NodeOrEdge, typename T>
     class Attribute {

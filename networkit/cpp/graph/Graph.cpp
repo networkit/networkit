@@ -936,13 +936,4 @@ void Graph::ASB<Graph::PerEdge>::indexOK(index n) const {
     }
 }
 
-/** NODE ATTRIBUTE INSTANTIATION FOR STRINGS **/
-/** (needed for Python Binding)                    **/
-
-template <typename T>
-using NodeAttribute = Graph::Attribute<Graph::PerNode, T>;
-
-template <typename T>
-using NodeAttributeStorage = Graph::AttributeStorage<Graph::PerNode, Graph::ASB, T>;
-
 } /* namespace NetworKit */
