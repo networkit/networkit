@@ -183,7 +183,7 @@ TEST_F(AttributeTest, testEdgeAttributeIteratorOnExistingEdges) {
     int att = 0;
     for (auto pair : intAttr) {
         EXPECT_EQ(pair.first, u);
-        auto edge = graph.edgeWithId(u);
+        auto edge = graph.edgeById(u);
         EXPECT_EQ(pair.second, edge.first + edge.second);
         ++u, ++att;
     }

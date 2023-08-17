@@ -930,7 +930,7 @@ void Graph::ASB<Graph::PerNode>::indexOK(index n) const {
 
 template <>
 void Graph::ASB<Graph::PerEdge>::indexOK(index n) const {
-    auto uv = theGraph->edgeWithId(n);
+    auto uv = theGraph->edgeById(n);
     if (!theGraph->hasEdge(uv.first, uv.second)) {
         throw std::runtime_error("This edgeId does not exist");
     }

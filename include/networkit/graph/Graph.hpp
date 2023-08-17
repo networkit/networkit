@@ -1676,10 +1676,9 @@ public:
 
     /**
      * Get the Edge (u,v) of the given id. (inverse to edgeId)
-     * so far for undirected graphs only: first found (u,v) is returned
-     * means edgeId(v,u) == id also
+     * Note that the time complexity of this function is O(n).
      */
-    std::pair<node, node> edgeWithId(index id) const {
+    std::pair<node, node> edgeById(index id) const {
         std::pair<node, node> result{none, none};
         bool found = false;
 
@@ -1688,9 +1687,8 @@ public:
                           forNeighborsOf(u, [&](node v) {
                               if (v < u)
                                   return;
-                              auto uvid = edgeId(u, v);
-                              auto vuid = edgeId(v, u);
-                              if (uvid == id || vuid == id) {
+                              auto uvId = edgeId(u, v);
+                              if (uvId == id) {
                                   found = true;
                                   result = std::make_pair(u, v);
                               }

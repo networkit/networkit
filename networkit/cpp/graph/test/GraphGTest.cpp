@@ -1919,6 +1919,25 @@ TEST_P(GraphGTest, testEdgeIndexGenerationUndirected) {
     });
 }
 
+TEST_P(GraphGTest, testEdgeIndexResolver) {
+    Graph G = createGraph(10);
+    G.indexEdges();
+
+    G.addEdge(0, 0);
+    G.addEdge(5, 6);
+    G.addEdge(2, 2);
+
+    std::map<std::pair<node, node>, edgeid> expectedEdges;
+    expectedEdges[std::make_pair(0, 0)] = 0;
+    expectedEdges[std::make_pair(5, 6)] = 1;
+    expectedEdges[std::make_pair(2, 2)] = 2;
+
+    G.forEdges([&](node, node, edgeid eid) {
+        auto edge = G.edgeById(eid);
+        EXPECT_EQ(expectedEdges[edge], eid);
+    });
+}
+
 TEST_P(GraphGTest, testForEdgesWithIds) {
     std::vector<Graph> graphs;
     graphs.emplace_back(10, false, false);
