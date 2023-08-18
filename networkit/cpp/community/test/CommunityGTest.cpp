@@ -10,18 +10,23 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/auxiliary/Parallelism.hpp>
+#include <networkit/community/AdjustedRandMeasure.hpp>
 #include <networkit/community/ClusteringGenerator.hpp>
 #include <networkit/community/CoverF1Similarity.hpp>
 #include <networkit/community/CoverHubDominance.hpp>
 #include <networkit/community/Coverage.hpp>
+#include <networkit/community/CutClustering.hpp>
 #include <networkit/community/DynamicNMIDistance.hpp>
 #include <networkit/community/EdgeCut.hpp>
 #include <networkit/community/GraphClusteringTools.hpp>
 #include <networkit/community/GraphStructuralRandMeasure.hpp>
 #include <networkit/community/HubDominance.hpp>
 #include <networkit/community/IntrapartitionDensity.hpp>
+#include <networkit/community/IsolatedInterpartitionConductance.hpp>
+#include <networkit/community/IsolatedInterpartitionExpansion.hpp>
 #include <networkit/community/JaccardMeasure.hpp>
 #include <networkit/community/LFM.hpp>
+#include <networkit/community/LPDegreeOrdered.hpp>
 #include <networkit/community/Modularity.hpp>
 #include <networkit/community/NMIDistance.hpp>
 #include <networkit/community/NodeStructuralRandMeasure.hpp>
@@ -34,10 +39,12 @@
 #include <networkit/community/PartitionIntersection.hpp>
 #include <networkit/community/SampledGraphStructuralRandMeasure.hpp>
 #include <networkit/community/SampledNodeStructuralRandMeasure.hpp>
+#include <networkit/community/StablePartitionNodes.hpp>
 #include <networkit/generators/ClusteredRandomGraphGenerator.hpp>
 #include <networkit/generators/DynamicBarabasiAlbertGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/generators/LFRGenerator.hpp>
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/overlap/HashingOverlapper.hpp>
 #include <networkit/scd/LocalTightnessExpansion.hpp>
@@ -65,6 +72,133 @@ TEST_F(CommunityGTest, testLabelPropagationOnUniformGraph) {
     DEBUG("modularity produced by LabelPropagation: ", mod);
     EXPECT_GE(1.0, mod) << "valid modularity values are in [-0.5, 1]";
     EXPECT_LE(-0.5, mod) << "valid modularity values are in [-0.5, 1]";
+}
+
+TEST_F(CommunityGTest, testAdjustedRandMeasure) {
+    int64_t n = 1000;
+    int k = 100; // number of clusters
+    double pin = 1.0;
+    double pout = 0.0;
+
+    ClusteredRandomGraphGenerator graphGen(n, k, pin, pout);
+    Aux::Random::setSeed(42, false);
+    Graph G = graphGen.generate();
+
+    ClusteringGenerator clusteringGenerator;
+    Partition twelve = clusteringGenerator.makeContinuousBalancedClustering(G, 12);
+    Partition eight = clusteringGenerator.makeContinuousBalancedClustering(G, 8);
+
+    AdjustedRandMeasure rand;
+    double r = rand.getDissimilarity(G, eight, twelve);
+    EXPECT_NEAR(r, 0.38, 0.01);
+}
+
+TEST_F(CommunityGTest, testCutClustering) {
+    METISGraphReader reader;
+    Graph G = reader.read("input/jazz.graph");
+
+    ClusteringGenerator clusteringGenerator;
+    Partition halves = clusteringGenerator.makeContinuousBalancedClustering(G, 2);
+
+    CutClustering cc(G, 0.5);
+    cc.run();
+    Partition res = cc.getPartition();
+    EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, res))
+        << "the resulting partition should be a proper clustering";
+    EXPECT_EQ(res.numberOfElements(), G.numberOfNodes());
+
+    auto chMap = cc.getClusterHierarchy(G);
+    for (const auto &it : chMap) {
+        it.second.forEntries([&](index e, index s) {
+            EXPECT_TRUE(res.contains(e));
+            EXPECT_TRUE(G.hasNode(s));
+        });
+    }
+}
+
+TEST_F(CommunityGTest, testCommunicationGraph) {
+    Graph G(4, true);
+    G.addEdge(0, 1, 0.5);
+    G.addEdge(0, 3, 2.5);
+    G.addEdge(1, 2, 3.0);
+    G.addEdge(2, 3, 1.5);
+
+    int parts = 2; // partitons: {0,1} , {2,3}
+    ClusteringGenerator clusteringGenerator;
+    Partition halves = clusteringGenerator.makeContinuousBalancedClustering(G, parts);
+
+    Graph cg = GraphClusteringTools::communicationGraph(G, halves);
+    // only intra partition edges are (0,3, 2.5) and (1,2, 3.0) -> commGraph edgeweight=5.5
+    EXPECT_EQ(cg.numberOfNodes(), parts);
+    EXPECT_EQ(cg.totalEdgeWeight(), 5.5);
+}
+
+TEST_F(CommunityGTest, testWeightedDegreeWithCluster) {
+    Graph G(4, true);
+    G.addEdge(0, 1, 0.5);
+    G.addEdge(0, 3, 2.5);
+    G.addEdge(1, 2, 3.0);
+    G.addEdge(2, 3, 1.5);
+
+    ClusteringGenerator clusteringGenerator;
+    Partition halves = clusteringGenerator.makeContinuousBalancedClustering(G, 2);
+    // partitons: {0,1} , {2,3}
+    auto weightedDeg = GraphClusteringTools::weightedDegreeWithCluster(G, halves, 3, 0);
+    EXPECT_EQ(weightedDeg, 2.5);
+}
+
+TEST_F(CommunityGTest, testIsolatedInterpartitionConductance) {
+    Graph G(4, true);
+    G.addEdge(0, 1, 0.5);
+    G.addEdge(0, 3, 2.5);
+    G.addEdge(1, 2, 3.0);
+    G.addEdge(2, 3, 1.5);
+
+    ClusteringGenerator clusteringGenerator;
+    Partition quarters = clusteringGenerator.makeContinuousBalancedClustering(G, 4);
+    IsolatedInterpartitionConductance iic(G, quarters);
+    iic.run();
+    // each partition corresponds to one node, therefore, its totally seperated from the rest
+    EXPECT_EQ(iic.getMaximumValue(), 1);
+    EXPECT_EQ(iic.getMinimumValue(), 1);
+}
+
+TEST_F(CommunityGTest, testIsolatedInterpartitionExpansion) {
+    Graph G(4, true);
+    G.addEdge(0, 1, 0.5);
+    G.addEdge(0, 3, 2.5);
+    G.addEdge(1, 2, 3.0);
+    G.addEdge(2, 3, 1.5);
+
+    ClusteringGenerator clusteringGenerator;
+    Partition halves = clusteringGenerator.makeContinuousBalancedClustering(G, 2);
+    IsolatedInterpartitionExpansion iie(G, halves);
+    iie.run();
+    // partitions {0,1} and {2,3} are connected by the edges (0,3, 2.5) and (1,2, 3.0) -> avg = 2.75
+    EXPECT_EQ(iie.getWeightedAverage(), 2.75);
+}
+
+TEST_F(CommunityGTest, testStablePartitionNodes) {
+    METISGraphReader reader;
+    Graph G = reader.read("input/PGPgiantcompo.graph");
+
+    ClusteringGenerator clusteringGenerator;
+    Partition halves = clusteringGenerator.makeContinuousBalancedClustering(G, 2);
+    StablePartitionNodes SPN(G, halves);
+    SPN.run();
+    EXPECT_NEAR(SPN.getMaximumValue(), 0.36, 0.01);
+    EXPECT_NEAR(SPN.getWeightedAverage(), 0.31, 0.01);
+}
+
+TEST_F(CommunityGTest, testLPdegreeOrdered) {
+    METISGraphReader reader;
+    Graph G = reader.read("input/PGPgiantcompo.graph");
+
+    LPDegreeOrdered LP(G);
+    LP.run();
+    Partition res = LP.getPartition();
+    EXPECT_EQ(res.numberOfElements(), G.numberOfNodes());
+    EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, res));
 }
 
 TEST_F(CommunityGTest, testLabelPropagationOnClusteredGraph_ForNumberOfClusters) {
