@@ -1234,7 +1234,7 @@ def guessFileFormat(filepath: str) -> Format:
 		guess = Format.SNAP
 	
 	if metisFound and guess: # file could be both metis and edge list
-		raise IOError("guessing failed: file could be METIS or edge list!")
+		raise IOError("Format guessing failed: file could be METIS or edge list!")
 	
 	if guess:
 		return guess
@@ -1242,7 +1242,7 @@ def guessFileFormat(filepath: str) -> Format:
 		return Format.METIS
 	
 	# if none match, raise error
-	raise IOError("format guessing failed: no type found")
+	raise IOError("Format guessing failed: no type found")
 	
 
 def readGraph(path, fileformat=None, *kargs, **kwargs):
