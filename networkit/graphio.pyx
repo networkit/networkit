@@ -1027,6 +1027,7 @@ class Format(__AutoNumber):
 	- networkit.graphio.Format.METIS
 	- networkit.graphio.Format.NetworkitBinary
 	- networkit.graphio.Format.SNAP
+	- networkit.graphio.Format.MatrixMarket
 	
 	"""
 	SNAP = ()
@@ -1048,6 +1049,7 @@ class Format(__AutoNumber):
 	MAT = ()
 	ThrillBinary = ()
 	NetworkitBinary = ()
+	MatrixMarket = ()
 
 # reading
 
@@ -1143,6 +1145,10 @@ def guessFileFormat(filepath: str) -> Format:
 		# KONECT - has comments with % sign, starts with % FORMAT WEIGHTS
 		if re.match(r'^%\s((asym)|(sym)|(bip))\s((unweighted)|(positive)|(posweighted)|(signed)|(multisigned)|(weighted)|(multiweighted)|(dynamic)|(multiposweighted))$', firstline.lower()):
 			return Format.KONECT
+		
+		# MatrixMarket - has specific first line. Specification defines the first line as "%%MatrixMarket [...]", but some files use a single % instead. We accept both.
+		if re.match(r'%+MatrixMarket', firstline):
+			return Format.MatrixMarket
 
 	# if none match, read all lines of the file and guess the format out of METIS, SNAP, EdgeList variants
 	# types:
@@ -1210,7 +1216,7 @@ def guessFileFormat(filepath: str) -> Format:
 
 	# finally, guess type
 	guess = None
-	if commentPrefix:	# for edge list, expect a comment prefix
+	if commentPrefix == '#':	# for edge list, expect comment prefix '#' (otherwise, custom handling is required)
 		if minId == 0:	# could extend this to set the correct minId, but for now just pick one of the nk.Format enums
 			if separator == '\t':
 				guess = Format.EdgeListTabZero
