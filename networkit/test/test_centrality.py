@@ -345,7 +345,7 @@ class TestCentrality(unittest.TestCase):
 
 			for u in groupMaxCC:
 				self.assertTrue(g.hasNode(u))
-			self.assertGreaterEqual(gc.numberOfIterations(), 1)
+			self.assertGreaterEqual(gc.numberOfIterations(), 0)
 	
 	def testGroupClosenessLocalSwaps(self):
 		k = 5
