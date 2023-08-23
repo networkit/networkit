@@ -5,17 +5,26 @@
 
 namespace NetworKit {
 
-BSuitorMatcher::BSuitorMatcher(const Graph &G, count b) : BMatcher(G, b), b(b) {
-
+BSuitorMatcher::BSuitorMatcher(const Graph &G, const std::vector<count> &b) : BMatcher(G, b), b(b) {
     if (G.numberOfSelfLoops() > 0)
         throw std::runtime_error("This algorithm does not support graphs with self-loops.");
 
     if (G.isDirected())
         throw std::runtime_error("This algorithm does not support directed graphs.");
+
+    if (b.size() != G.numberOfNodes())
+        throw std::runtime_error(
+            "The number of b values does not match the number of nodes in this graph.");
 }
 
+BSuitorMatcher::BSuitorMatcher(const Graph &G, count b)
+    : BSuitorMatcher(G, std::vector<count>(G.numberOfNodes(), b)) {}
+
+BSuitorMatcher::BSuitorMatcher(const Graph &G, const std::string &path)
+    : BSuitorMatcher(G, readBValuesFromFile(G.numberOfNodes(), path)) {}
+
 void BSuitorMatcher::findSuitors(node u) {
-    for (int i = 0; i < b; i++) {
+    for (count i = 0; i < b.at(u); i++) {
         auto x = findPreffered(u);
         if (x != none)
             makeSuitor(u, x);
@@ -55,10 +64,37 @@ void BSuitorMatcher::makeSuitor(node u, node x) {
     if (y != none) {
         sortRemove(proposed[y], x);
         auto z = findPreffered(y);
+
         if (z != none) {
             makeSuitor(y, z);
         }
     }
+}
+
+std::vector<count> BSuitorMatcher::readBValuesFromFile(count size, const std::string &path) const {
+    std::vector<count> b;
+    b.reserve(size);
+
+    std::ifstream file(path);
+    std::string line;
+    int val;
+
+    while (std::getline(file, line)) {
+        std::istringstream istring(line);
+
+        if (!(istring >> val) || val < 0) {
+            throw std::runtime_error("Invalid value (" + std::to_string(val) + ") found in file "
+                                     + path + ".");
+        }
+        b.push_back(val);
+    }
+
+    if (b.size() != size) {
+        throw std::runtime_error("The number of values in file " + path
+                                 + " does not match the number of nodes in this graph.");
+    }
+
+    return b;
 }
 
 void BSuitorMatcher::sortInsert(std::vector<node> &nodes, node u, node v) {
@@ -98,9 +134,11 @@ void BSuitorMatcher::checkSymmetry() const {
 
 void BSuitorMatcher::run() {
     const auto n = G->upperNodeIdBound();
-
-    suitors.assign(n, std::vector<node>(b, none));
-    proposed.assign(n, std::vector<node>(b, none));
+    for (index i = 0; i < n; i++) {
+        auto v = std::vector<node>(b.at(i), none);
+        suitors.emplace_back(v);
+        proposed.emplace_back(v);
+    }
 
     G->forNodes([&](node u) { findSuitors(u); });
     checkSymmetry();

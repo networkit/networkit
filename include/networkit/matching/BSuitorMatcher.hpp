@@ -19,10 +19,24 @@ public:
      * (2016).
      *
      * @param G An undirected graph.
+     * @param b A vector of @a b values that represents the max number of edges per vertex @a v in
+     * the b-Matching (b.at(v)).
+     */
+    BSuitorMatcher(const Graph &G, const std::vector<count> &b);
+
+    /**
+     * @param G An undirected graph.
      * @param b A value @a b that represents the max number of edges per vertex in the b-Matching.
      * Defaults to the ordinary 1-Matching.
      */
-    BSuitorMatcher(const Graph &G, count b = 1); // TODO std::vector<count> &b
+    BSuitorMatcher(const Graph &G, count b = 1);
+
+    /**
+     * @param G  An undirected graph.
+     * @param path  A path to a file containing @a b values that represents the max number of edges
+     * per vertex in the b-Matching.
+     */
+    BSuitorMatcher(const Graph &G, const std::string &path);
 
     ~BSuitorMatcher() override = default;
 
@@ -82,7 +96,16 @@ public:
 private:
     std::vector<std::vector<node>> suitors;
     std::vector<std::vector<node>> proposed;
-    const int b;
+    const std::vector<count> b;
+
+    /**
+     * Reads values from a file at @a path into the vector of b-values.
+     *
+     * @param size
+     * @param path
+     * @return std::vector<count>
+     */
+    std::vector<count> readBValuesFromFile(count size, const std::string &path) const;
 
     /**
      * Finds the index of the first @c none value in the list of @a nodes if present, otherwise @c

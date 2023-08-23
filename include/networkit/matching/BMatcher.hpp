@@ -20,8 +20,9 @@ public:
      * Constructs a new BMatcher.
      *
      * @param G
+     * @param b
      */
-    BMatcher(const Graph &G, int b);
+    BMatcher(const Graph &G, const std::vector<count> &b);
 
     ~BMatcher() override = default;
 
