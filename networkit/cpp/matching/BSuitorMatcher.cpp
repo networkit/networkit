@@ -74,26 +74,32 @@ void BSuitorMatcher::makeSuitor(node u, node x) {
 std::vector<count> BSuitorMatcher::readBValuesFromFile(count size, const std::string &path) const {
     std::vector<count> b;
     b.reserve(size);
-
     std::ifstream file(path);
     std::string line;
-    int val;
+    int line_number = 1;
 
     while (std::getline(file, line)) {
         std::istringstream istring(line);
-
-        if (!(istring >> val) || val < 0) {
-            throw std::runtime_error("Invalid value (" + std::to_string(val) + ") found in file "
-                                     + path + ".");
+        int val;
+        if (!(istring >> val)) {
+            throw std::runtime_error("File " + path + " contains an invalid value in line "
+                                     + std::to_string(line_number) + ".");
+        }
+        if (istring >> val) {
+            throw std::runtime_error("File " + path + " contains multiple values in line "
+                                     + std::to_string(line_number) + ".");
+        }
+        if (val < 0) {
+            throw std::runtime_error("File " + path + " contains a negative value in line "
+                                     + std::to_string(line_number) + ".");
         }
         b.push_back(val);
+        line_number++;
     }
-
     if (b.size() != size) {
         throw std::runtime_error("The number of values in file " + path
                                  + " does not match the number of nodes in this graph.");
     }
-
     return b;
 }
 
