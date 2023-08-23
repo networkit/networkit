@@ -261,7 +261,7 @@ TEST_F(MatcherGTest, testBSuitorMatcherDifferentB) {
     G.removeSelfLoops();
     G.removeMultiEdges();
     std::vector<count> b;
-    for (auto i = 0; i < G.numberOfNodes(); i++) {
+    for (count i = 0; i < G.numberOfNodes(); i++) {
         b.emplace_back(Aux::Random::integer(1, (G.numberOfNodes() - 1)));
     }
 
