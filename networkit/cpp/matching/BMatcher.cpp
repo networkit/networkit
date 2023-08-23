@@ -2,7 +2,8 @@
 
 namespace NetworKit {
 
-BMatcher::BMatcher(const Graph &G, int b) : G(&G), M(G.upperNodeIdBound(), b) {}
+BMatcher::BMatcher(const Graph &G, const std::vector<count> &b)
+    : G(&G), M(b, G.upperNodeIdBound()) {}
 
 BMatching BMatcher::getBMatching() const {
     assureFinished();

@@ -241,7 +241,7 @@ TEST_F(MatcherGTest, testBSuitorMatcherEqualsSuitorMatcher) {
     EXPECT_FALSE(hasUnmatchedNeighbors(G, bM));
 }
 
-TEST_F(MatcherGTest, testBSuitorMatcher) {
+TEST_F(MatcherGTest, testBSuitorMatcherConstantB) {
     for (int b : {2, 3, 4, 5}) {
         auto G = METISGraphReader{}.read("input/lesmis.graph");
         G.removeSelfLoops();
@@ -254,4 +254,21 @@ TEST_F(MatcherGTest, testBSuitorMatcher) {
     }
 }
 
+TEST_F(MatcherGTest, testBSuitorMatcherDifferentB) {
+    Aux::Random::setSeed(1, true);
+
+    auto G = METISGraphReader{}.read("input/lesmis.graph");
+    G.removeSelfLoops();
+    G.removeMultiEdges();
+    std::vector<count> b;
+    for (auto i = 0; i < G.numberOfNodes(); i++) {
+        b.emplace_back(Aux::Random::integer(1, (G.numberOfNodes() - 1)));
+    }
+
+    BSuitorMatcher bsm(G, b);
+    bsm.run();
+    const auto M = bsm.getBMatching();
+    EXPECT_TRUE(M.isProper(G));
+    EXPECT_FALSE(hasUnmatchedNeighbors(G, M));
+}
 } // namespace NetworKit

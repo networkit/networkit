@@ -16,9 +16,9 @@ public:
      * Constructs a new BMatching.
      *
      * @param z Maximum number of nodes.
-     * @param b b value
+     * @param b b values
      */
-    BMatching(count z = 0, count b = 1);
+    BMatching(const std::vector<count> &b, count z = 0);
 
     /**
      * Checks whether this is a proper b-matching.
@@ -87,11 +87,11 @@ public:
     edgeweight weight(const Graph &G) const;
 
     std::vector<std::vector<node>> getMatrix() const;
-    count getB() const;
+    std::vector<count> getB() const;
 
 protected:
-    std::vector<std::vector<node>> data; //!< storage of b-matching nodes
-    const count b;                       //!< b value
+    std::vector<std::vector<node>> data;
+    const std::vector<count> b;
 
     /**
      * Finds the index of the first @c none value if present, otherwise @c none.
