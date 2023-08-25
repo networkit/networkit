@@ -10,16 +10,20 @@
 
 #include <networkit/distance/APSP.hpp>
 #include <networkit/distance/AStar.hpp>
+#include <networkit/distance/AdamicAdarDistance.hpp>
+#include <networkit/distance/AlgebraicDistance.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/BidirectionalBFS.hpp>
 #include <networkit/distance/BidirectionalDijkstra.hpp>
 #include <networkit/distance/Diameter.hpp>
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/DynPrunedLandmarkLabeling.hpp>
+#include <networkit/distance/Eccentricity.hpp>
 #include <networkit/distance/EffectiveDiameter.hpp>
 #include <networkit/distance/EffectiveDiameterApproximation.hpp>
 #include <networkit/distance/HopPlotApproximation.hpp>
 #include <networkit/distance/IncompleteDijkstra.hpp>
+#include <networkit/distance/JaccardDistance.hpp>
 #include <networkit/distance/MultiTargetBFS.hpp>
 #include <networkit/distance/MultiTargetDijkstra.hpp>
 #include <networkit/distance/NeighborhoodFunction.hpp>
@@ -27,6 +31,7 @@
 #include <networkit/distance/NeighborhoodFunctionHeuristic.hpp>
 #include <networkit/distance/PrunedLandmarkLabeling.hpp>
 #include <networkit/distance/SPSP.hpp>
+#include <networkit/distance/Volume.hpp>
 
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
@@ -145,6 +150,92 @@ TEST_F(DistanceGTest, testAStar) {
     testMesh(10, 10);
     testMesh(1, 15);
     testMesh(25, 5);
+}
+
+TEST_P(DistanceGTest, testAdamicAdar) {
+    auto G = generateERGraph(500, 0.03);
+    // arbitrary nodes
+    node source = 0;
+    node target = 42;
+    if (!G.hasEdge(source, target)) {
+        G.addEdge(source, target);
+        if (G.isDirected())
+            G.addEdge(target, source);
+    }
+    G.indexEdges();
+
+    AdamicAdarDistance AAD(G);
+    AAD.preprocess();
+    EXPECT_GT(AAD.distance(source, target), 1);
+    auto res = AAD.getEdgeScores();
+    EXPECT_EQ(G.numberOfEdges(), res.size());
+}
+
+TEST_P(DistanceGTest, testAlgebraicDistance) {
+    auto G = generateERGraph(500, 0.03);
+    G.indexEdges();
+
+    AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true);
+    AGD.preprocess();
+    // arbitrary nodes
+    node source = 0;
+    node target = 42;
+    EXPECT_GT(AGD.distance(source, target), 0.2);
+    auto res = AGD.getEdgeScores();
+    for (auto dist : res) {
+        EXPECT_LE(dist, 1);
+    }
+}
+
+TEST_F(DistanceGTest, testEccentricity) {
+    auto G = ErdosRenyiGenerator(500, 0.03).generate();
+
+    Diameter diam(G);
+    diam.run();
+    auto dia = diam.getDiameter();
+
+    Eccentricity ecc;
+    // expecting all longest distances(eccentricities) to be smaller than graph diameter
+    G.forNodes([&](node v) {
+        auto res = ecc.getValue(G, v);
+        EXPECT_LE(res.second, dia.first);
+    });
+}
+
+TEST_F(DistanceGTest, testJaccardDistance) {
+    Graph G(5);
+    G.addEdge(0, 1); // G:  0 - 1
+    G.addEdge(0, 2); //     | \ |
+    G.addEdge(0, 4); //     4   2
+    G.addEdge(1, 2); //     |
+    G.addEdge(3, 4); //     3
+    G.indexEdges();
+    // nodes 0,1,2 are part of one triangle, nodes 3 and 4 are not
+    std::vector<count> tri = {1, 1, 1, 0, 0};
+    JaccardDistance JD(G, tri);
+    JD.preprocess();
+
+    auto res = JD.getEdgeScores();
+    std::vector<double> expectedRes = {0.75, 0.75, 0.66, 1, 1};
+
+    EXPECT_EQ(G.numberOfEdges(), res.size());
+    for (index i = 0; i < res.size(); ++i) {
+        EXPECT_NEAR(res[i], expectedRes[i], 0.01);
+    }
+}
+
+TEST_P(DistanceGTest, testVolume) {
+    Aux::Random::setSeed(42, false);
+    auto G = generateERGraph(500, 0.03);
+    G.indexEdges();
+    Volume vol;
+
+    for (double radius = 1.0; radius <= 2.0; radius += 0.05) {
+        for (int samples = 1; samples <= 10; ++samples) {
+            auto res = vol.volume(G, radius, samples);
+            EXPECT_GT(res, 1.0);
+        }
+    }
 }
 
 TEST_P(DistanceGTest, testIncompleteDijkstra) {
