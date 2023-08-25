@@ -34,8 +34,8 @@ public:
     void run() override;
 
     /**
-     * Not implemented.
-     * The maximum sfigality is 1, when all neighbors of a node have a higher degree.
+     * Returns the node that has the most neighbours with a higher degree than itself (max
+     * Sfigality).
      */
     double maximum() override;
 };

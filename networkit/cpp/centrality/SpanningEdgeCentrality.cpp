@@ -143,43 +143,12 @@ void SpanningEdgeCentrality::runParallelApproximation() {
 }
 
 uint64_t SpanningEdgeCentrality::runApproximationAndWriteVectors(const std::string &) {
+    WARN("SpanningEdgeCentrality::runApproximationAndWriteVectors should not be used and will be "
+         "deprecated in the future.");
     Aux::Timer t;
-    const count n = G.numberOfNodes();
-    const count m = G.numberOfEdges();
-    const double epsilon2 = tol * tol;
-    const count k = std::ceil(std::log(n)) / epsilon2;
-    double randTab[3] = {1 / std::sqrt(k), -1 / std::sqrt(k)};
-    Vector solution(n);
-    scoreData.clear();
-    scoreData.resize(m, 0.0);
-
     t.start();
-    for (index i = 0; i < k; ++i) {
-        Vector rhs(n, 0.0);
-
-        // rhs(v) = \sum_e=1 ^m q(e) * B(e, v)
-        //        = +/- q(e)
-        G.forEdges([&](node u, node v) {
-            double r = randTab[Aux::Random::integer(1)];
-            if (u < v) {
-                rhs[u] += r;
-                rhs[v] -= r;
-            } else {
-                rhs[u] -= r;
-                rhs[v] += r;
-            }
-        });
-
-        lamg.solve(rhs, solution);
-
-        G.forEdges([&](node u, node v, edgeid e) {
-            double diff = solution[u] - solution[v];
-            scoreData[e] += diff * diff; // TODO: fix weighted case!
-        });
-    }
+    runApproximation();
     t.stop();
-    hasRun = true;
-
     return t.elapsedMilliseconds();
 }
 
