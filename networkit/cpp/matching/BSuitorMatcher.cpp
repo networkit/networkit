@@ -25,13 +25,13 @@ BSuitorMatcher::BSuitorMatcher(const Graph &G, const std::string &path)
 
 void BSuitorMatcher::findSuitors(node u) {
     for (count i = 0; i < b.at(u); i++) {
-        auto x = findPreffered(u);
+        auto x = findPreferred(u);
         if (x != none)
             makeSuitor(u, x);
     }
 }
 
-node BSuitorMatcher::findPreffered(node y) {
+node BSuitorMatcher::findPreferred(node y) {
     node x = none;
     edgeweight heaviest = 0;
 
@@ -63,7 +63,7 @@ void BSuitorMatcher::makeSuitor(node u, node x) {
 
     if (y != none) {
         sortRemove(proposed[y], x);
-        auto z = findPreffered(y);
+        auto z = findPreferred(y);
 
         if (z != none) {
             makeSuitor(y, z);
@@ -128,10 +128,10 @@ index BSuitorMatcher::findIndexOf(const std::vector<node> &nodes, node x) const 
 
 void BSuitorMatcher::checkSymmetry() const {
     auto areMatchedSymmetrical = [&](node u, node v) -> void {
-        [[maybe_unused]] auto i_1 = std::find(this->suitors[u].begin(), this->suitors[u].end(), v)
-                                    != this->suitors[u].end();
-        [[maybe_unused]] auto i_2 = std::find(this->suitors[v].begin(), this->suitors[v].end(), u)
-                                    != this->suitors[v].end();
+        [[maybe_unused]] auto i_1 =
+            std::find(suitors[u].begin(), suitors[u].end(), v) != suitors[u].end();
+        [[maybe_unused]] auto i_2 =
+            std::find(suitors[v].begin(), suitors[v].end(), u) != suitors[v].end();
         assert(i_1 == i_2);
     };
 
