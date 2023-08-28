@@ -61,7 +61,7 @@ public:
      * @param y
      * @return node
      */
-    node findPreffered(node y);
+    node findPreferred(node y);
 
     /**
      * Makes @a x a suitor of @a u and recursively calls itself for previous worse

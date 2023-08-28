@@ -86,7 +86,7 @@ public:
      */
     edgeweight weight(const Graph &G) const;
 
-    std::vector<std::vector<node>> getMatrix() const;
+    const std::vector<std::vector<node>> &getMatrix() const;
     std::vector<count> getB() const;
 
 protected:

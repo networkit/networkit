@@ -58,7 +58,7 @@ void BMatching::unmatch(node u, node v) {
 }
 
 bool BMatching::isUnmatched(node u) const {
-    return (this->data[u].front() == none);
+    return (data[u].front() == none);
 }
 
 bool BMatching::areMatched(node u, node v) const {
@@ -94,8 +94,8 @@ edgeweight BMatching::weight(const Graph &G) const {
     return weight;
 }
 
-std::vector<std::vector<node>> BMatching::getMatrix() const {
-    return this->data;
+const std::vector<std::vector<node>> &BMatching::getMatrix() const {
+    return data;
 }
 
 std::vector<count> BMatching::getB() const {
