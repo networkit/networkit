@@ -132,6 +132,7 @@ void Graph::indexEdges(bool force) {
 
     omega = 0; // reset edge ids (for re-indexing)
 
+    outEdgeIds.clear(); // reset ids vector (for re-indexing)
     outEdgeIds.resize(outEdges.size());
     forNodes([&](node u) { outEdgeIds[u].resize(outEdges[u].size(), none); });
 
@@ -223,34 +224,31 @@ void Graph::shrinkToFit() {
 
 void Graph::compactEdges() {
     this->parallelForNodes([&](node u) {
-        if (degreeOut(u) != outEdges[u].size()) {
-            if (degreeOut(u) == 0) {
-                outEdges[u].clear();
-                if (weighted)
-                    outEdgeWeights[u].clear();
-                if (edgesIndexed)
-                    outEdgeIds[u].clear();
-            } else {
-                for (index i = 0; i < outEdges[u].size(); ++i) {
-                    while (i < outEdges[u].size() && outEdges[u][i] == none) {
-                        outEdges[u][i] = outEdges[u].back();
-                        outEdges[u].pop_back();
+        if (degreeOut(u) == 0) {
+            outEdges[u].clear();
+            if (weighted)
+                outEdgeWeights[u].clear();
+            if (edgesIndexed)
+                outEdgeIds[u].clear();
+        } else {
+            for (index i = 0; i < outEdges[u].size(); ++i) {
+                while (i < outEdges[u].size() && outEdges[u][i] == none) {
+                    outEdges[u][i] = outEdges[u].back();
+                    outEdges[u].pop_back();
 
-                        if (weighted) {
-                            outEdgeWeights[u][i] = outEdgeWeights[u].back();
-                            outEdgeWeights[u].pop_back();
-                        }
+                    if (weighted) {
+                        outEdgeWeights[u][i] = outEdgeWeights[u].back();
+                        outEdgeWeights[u].pop_back();
+                    }
 
-                        if (edgesIndexed) {
-                            outEdgeIds[u][i] = outEdgeIds[u].back();
-                            outEdgeIds[u].pop_back();
-                        }
+                    if (edgesIndexed) {
+                        outEdgeIds[u][i] = outEdgeIds[u].back();
+                        outEdgeIds[u].pop_back();
                     }
                 }
             }
         }
-
-        if (directed && degreeIn(u) != inEdges[u].size()) {
+        if (directed) {
             if (degreeIn(u) == 0) {
                 inEdges[u].clear();
                 if (weighted)
@@ -602,14 +600,24 @@ void erase(node u, index idx, std::vector<std::vector<T>> &vec) {
     vec[u].pop_back();
 }
 
-void Graph::removeEdge(node u, node v) {
+void Graph::removeEdge(node u, node v, bool maintainSortedEdges, bool maintainCompactEdgeIDs) {
     assert(u < z);
     assert(exists[u]);
     assert(v < z);
     assert(exists[v]);
 
+    if (maintainCompactEdgeIDs && !edgesIndexed) {
+        throw std::runtime_error(
+            "Edges have to be indexed if maintainCompactEdgeIDs is set to true");
+    }
+
     index vi = indexInOutEdgeArray(u, v);
     index ui = indexInInEdgeArray(v, u);
+
+    node deletedID;
+    if (maintainCompactEdgeIDs) {
+        deletedID = outEdgeIds[u][vi];
+    }
 
     if (vi == none) {
         std::stringstream strm;
@@ -622,6 +630,7 @@ void Graph::removeEdge(node u, node v) {
     if (isLoop)
         storedNumberOfSelfLoops--;
 
+    // remove edge for source node
     erase<node>(u, vi, outEdges);
     if (weighted) {
         erase<edgeweight>(u, vi, outEdgeWeights);
@@ -635,7 +644,53 @@ void Graph::removeEdge(node u, node v) {
             attributeStorageBase->invalidate(vi);
         }
     }
+    if (!directed && !isLoop) {
+        // also remove edge for target node
+        erase<node>(v, ui, outEdges);
+        if (weighted) {
+            erase<edgeweight>(v, ui, outEdgeWeights);
+        }
+        if (edgesIndexed) {
+            erase<edgeid>(v, ui, outEdgeIds);
+        }
+    }
+    if (maintainSortedEdges) {
+        // initial index of deleted edge, also represents current index
+        index cur = vi;
 
+        // sort edges of source node from deleted index upwards
+        while (cur < outEdges[u].size() && outEdges[u][cur] > outEdges[u][cur + 1]) {
+            std::swap(outEdges[u][cur], outEdges[u][cur + 1]);
+            if (edgesIndexed) {
+                std::swap(outEdgeIds[u][cur], outEdgeIds[u][cur + 1]);
+            }
+            ++cur;
+        }
+
+        if (!directed) {
+            cur = ui;
+
+            // sort edges of target node from deleted index upwards
+            while (cur < outEdges[v].size() && outEdges[v][cur] > outEdges[v][cur + 1]) {
+                std::swap(outEdges[v][cur], outEdges[v][cur + 1]);
+                if (edgesIndexed) {
+                    std::swap(outEdgeIds[v][cur], outEdgeIds[v][cur + 1]);
+                }
+                ++cur;
+            }
+        }
+    }
+    if (maintainCompactEdgeIDs) {
+        // re-index edge IDs from deleted edge upwards
+        balancedParallelForNodes([&](node u) {
+            for (index i = 0; i < outEdges[u].size(); ++i) {
+                auto curID = outEdgeIds[u][i];
+                if (curID > deletedID) {
+                    outEdgeIds[u][i]--;
+                }
+            }
+        });
+    }
     if (directed) {
         assert(ui != none);
 
@@ -646,15 +701,35 @@ void Graph::removeEdge(node u, node v) {
         if (edgesIndexed) {
             erase<edgeid>(v, ui, inEdgeIds);
         }
-    } else if (!isLoop) {
-        // undirected, not self-loop
-        erase<node>(v, ui, outEdges);
-        if (weighted) {
-            erase<edgeweight>(v, ui, outEdgeWeights);
+        if (maintainSortedEdges) {
+            // initial index of deleted edge, also represents current index
+            index cur = ui;
+
+            // sort edges of target node from deleted index upwards
+            while (inEdges[v][cur] > inEdges[v][cur + 1] && cur < inEdges[v].size()) {
+                std::swap(inEdges[v][cur], inEdges[v][cur + 1]);
+                if (edgesIndexed) {
+                    std::swap(inEdgeIds[v][cur], inEdgeIds[v][cur + 1]);
+                }
+                ++cur;
+            }
         }
-        if (edgesIndexed) {
-            erase<edgeid>(v, ui, outEdgeIds);
+
+        if (maintainCompactEdgeIDs) {
+            // re-index edge ids from target node
+            balancedParallelForNodes([&](node u) {
+                for (index i = 0; i < inEdges[u].size(); ++i) {
+                    node v = inEdges[u][i];
+                    if (v != none) {
+                        index j = indexInOutEdgeArray(v, u);
+                        inEdgeIds[u][i] = outEdgeIds[v][j];
+                    }
+                }
+            });
         }
+    }
+    if (maintainCompactEdgeIDs) {
+        omega--; // decrease upperBound of edges
     }
 }
 
