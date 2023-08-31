@@ -1595,7 +1595,9 @@ public:
      *
      * @return bool if edges have been indexed
      */
-    bool hasEdgeIds() const noexcept { return edgesIndexed; }
+    bool hasEdgeIds() const noexcept {
+        return edgesIndexed;
+    }
 
     /**
      * Get the id of the given edge.
@@ -1606,7 +1608,9 @@ public:
      * Get an upper bound for the edge ids in the graph.
      * @return An upper bound for the edge ids.
      */
-    index upperEdgeIdBound() const noexcept { return omega; }
+    index upperEdgeIdBound() const noexcept {
+        return omega;
+    }
 
     /** GRAPH INFORMATION **/
 
@@ -1618,6 +1622,7 @@ public:
     void shrinkToFit();
 
     /**
+     * DEPRECATED: this function will no longer be supported in later releases.
      * Compacts the adjacency arrays by re-using no longer needed slots from
      * deleted edges.
      */
@@ -1642,21 +1647,27 @@ public:
      * Set edge count of the graph to edges.
      * @param edges the edge count of a graph
      */
-    void setEdgeCount(Unsafe, count edges) { m = edges; }
+    void setEdgeCount(Unsafe, count edges) {
+        m = edges;
+    }
 
     /**
      * Set upper bound of edge count.
      *
      * @param newBound New upper edge id bound.
      */
-    void setUpperEdgeIdBound(Unsafe, edgeid newBound) { omega = newBound; }
+    void setUpperEdgeIdBound(Unsafe, edgeid newBound) {
+        omega = newBound;
+    }
 
     /**
      * Set the number of self-loops.
      *
      * @param loops New number of self-loops.
      */
-    void setNumberOfSelfLoops(Unsafe, count loops) { storedNumberOfSelfLoops = loops; }
+    void setNumberOfSelfLoops(Unsafe, count loops) {
+        storedNumberOfSelfLoops = loops;
+    }
 
     /* NODE MODIFIERS */
 
@@ -1723,7 +1734,9 @@ public:
      * @return @c true if @a v exists, @c false otherwise.
      */
 
-    bool hasNode(node v) const noexcept { return (v < z) && this->exists[v]; }
+    bool hasNode(node v) const noexcept {
+        return (v < z) && this->exists[v];
+    }
 
     /**
      * Restores a previously deleted node @a v with its previous id in the
@@ -1771,7 +1784,9 @@ public:
      * @note The existence of the node is not checked. Calling this function with a non-existing
      * node results in a segmentation fault. Node existence can be checked by calling hasNode(u).
      */
-    count degreeOut(node v) const { return degree(v); }
+    count degreeOut(node v) const {
+        return degree(v);
+    }
 
     /**
      * Check whether @a v is isolated, i.e. degree is 0.
@@ -1885,8 +1900,17 @@ public:
      * Removes the undirected edge {@a u,@a v}.
      * @param u Endpoint of edge.
      * @param v Endpoint of edge.
+     * @param maintainSortedEdges If set to true, the ingoing and outgoing adjacency vectors will
+     * automatically be updated to maintain a sorting (if it existed before) by performing up to n-1
+     * swaps. If the user plans to remove multiple edges, better set it to false and call
+     * sortEdges() afterwards to avoid redundant swaps. Default = false.
+     * @param maintainCompactEdgeIDs If set to true, the EdgeIDs will automatically be adjusted,
+     * so that no gaps in between IDs exist. If the user plans to remove multiple edges, better set
+     * it to false and call indexEdges(force=true) afterwards to avoid redundant re-indexing.
+     * Default = false.
      */
-    void removeEdge(node u, node v);
+    void removeEdge(node u, node v, bool maintainSortedEdges = false,
+                    bool maintainCompactEdgeIDs = false);
 
     /**
      * Removes all the edges in the graph.
@@ -1949,31 +1973,41 @@ public:
      * @return <code>true</code> if this graph supports edge weights other
      * than 1.0.
      */
-    bool isWeighted() const noexcept { return weighted; }
+    bool isWeighted() const noexcept {
+        return weighted;
+    }
 
     /**
      * Return @c true if this graph supports directed edges.
      * @return @c true if this graph supports directed edges.
      */
-    bool isDirected() const noexcept { return directed; }
+    bool isDirected() const noexcept {
+        return directed;
+    }
 
     /**
      * Return <code>true</code> if graph contains no nodes.
      * @return <code>true</code> if graph contains no nodes.
      */
-    bool isEmpty() const noexcept { return !n; }
+    bool isEmpty() const noexcept {
+        return !n;
+    }
 
     /**
      * Return the number of nodes in the graph.
      * @return The number of nodes.
      */
-    count numberOfNodes() const noexcept { return n; }
+    count numberOfNodes() const noexcept {
+        return n;
+    }
 
     /**
      * Return the number of edges in the graph.
      * @return The number of edges.
      */
-    count numberOfEdges() const noexcept { return m; }
+    count numberOfEdges() const noexcept {
+        return m;
+    }
 
     /**
      * Return the number of loops {v,v} in the graph.
@@ -1981,13 +2015,17 @@ public:
      * @note This involves calculation, so store result if needed multiple
      * times.
      */
-    count numberOfSelfLoops() const noexcept { return storedNumberOfSelfLoops; }
+    count numberOfSelfLoops() const noexcept {
+        return storedNumberOfSelfLoops;
+    }
 
     /**
      * Get an upper bound for the node ids in the graph.
      * @return An upper bound for the node ids.
      */
-    index upperNodeIdBound() const noexcept { return z; }
+    index upperNodeIdBound() const noexcept {
+        return z;
+    }
 
     /**
      * Check for invalid graph states, such as multi-edges.
@@ -2079,21 +2117,27 @@ public:
      *
      * @return Iterator range over the nodes of the graph.
      */
-    NodeRange nodeRange() const noexcept { return NodeRange(*this); }
+    NodeRange nodeRange() const noexcept {
+        return NodeRange(*this);
+    }
 
     /**
      * Get an iterable range over the edges of the graph.
      *
      * @return Iterator range over the edges of the graph.
      */
-    EdgeRange edgeRange() const noexcept { return EdgeRange(*this); }
+    EdgeRange edgeRange() const noexcept {
+        return EdgeRange(*this);
+    }
 
     /**
      * Get an iterable range over the edges of the graph and their weights.
      *
      * @return Iterator range over the edges of the graph and their weights.
      */
-    EdgeWeightRange edgeWeightRange() const noexcept { return EdgeWeightRange(*this); }
+    EdgeWeightRange edgeWeightRange() const noexcept {
+        return EdgeWeightRange(*this);
+    }
 
     /**
      * Get an iterable range over the neighbors of @a.
@@ -2153,7 +2197,9 @@ public:
      * @param v Node
      * @return index of node v in the array of outgoing edges of node u.
      */
-    index indexOfNeighbor(node u, node v) const { return indexInOutEdgeArray(u, v); }
+    index indexOfNeighbor(node u, node v) const {
+        return indexInOutEdgeArray(u, v);
+    }
 
     /**
      * Return the i-th (outgoing) neighbor of @a u.
