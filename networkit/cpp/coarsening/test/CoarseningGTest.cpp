@@ -9,6 +9,7 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/coarsening/ClusteringProjector.hpp>
+#include <networkit/coarsening/GraphCoarsening.hpp>
 #include <networkit/coarsening/MatchingCoarsening.hpp>
 #include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
 #include <networkit/community/ClusteringGenerator.hpp>
@@ -330,4 +331,33 @@ TEST_F(CoarseningGTest, testMatchingContractorWithSelfLoop) {
     EXPECT_EQ(G.totalEdgeWeight(), coarseG.totalEdgeWeight());
 }
 
+TEST_F(CoarseningGTest, testClusteringProjectorWithNClusterings) {
+    ErdosRenyiGenerator gen(100, 0.5);
+    Graph Gfine = gen.generate();
+
+    for (int n = 1; n < 10; ++n) {
+        // get n-clustering of Gfine
+        ClusteringGenerator clusteringGen;
+        Partition zetafine = clusteringGen.makeContinuousBalancedClustering(Gfine, n);
+
+        // contract Gfine according to n-clusterings
+        ParallelPartitionCoarsening contract(Gfine, zetafine);
+        contract.run();
+        Graph Gcoarse = contract.getCoarseGraph();
+
+        // revert changes by projecting back into single partition
+        Partition zetacoarse = clusteringGen.makeOneClustering(Gcoarse);
+        ParallelPartitionCoarsening contractBack(Gcoarse, zetacoarse);
+        contractBack.run();
+        auto res = contractBack.getCoarseToFineNodeMapping();
+        ClusteringProjector CP;
+        for (auto const &it : res) {
+            for (index i = 0; i < it.second.size(); ++i) {
+                auto part = CP.projectBack(Gfine, Gcoarse, it.second, zetacoarse);
+                EXPECT_EQ(part.numberOfSubsets(), 1);
+                EXPECT_EQ(part.numberOfElements(), n);
+            }
+        }
+    }
+}
 } /* namespace NetworKit */
