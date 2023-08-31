@@ -12,7 +12,9 @@
 namespace NetworKit {
 
 std::vector<bool> Luby::run(const Graph &G) {
-
+    if (G.isDirected()) {
+        throw std::runtime_error("current implementation can only deal with undirected graphs");
+    }
     std::vector<bool> I(G.numberOfNodes(), false); // independent set $I = \emptyset$
     // instead of pruning the graph, store here whether a node in G is still in G'
     std::vector<bool> V(G.numberOfNodes(), true);
@@ -42,6 +44,7 @@ std::vector<bool> Luby::run(const Graph &G) {
     while (!empty()) {
         // choose set S - weighted choice of active nodes with probability $1 / 2 \omega(v)$
         std::vector<bool> S(G.numberOfNodes(), false);
+
         G.parallelForNodes([&](node u) {
             if (V[u]) {
                 if (Aux::Random::probability() < nodeProbability(u)) {
@@ -49,21 +52,25 @@ std::vector<bool> Luby::run(const Graph &G) {
                 }
             }
         });
+
         // remove non-independent nodes from S to get S'
-        G.parallelForEdges([&](node u, node v) {
-            if (u != v) {           // exclude self-loops
-                if (S[u] && S[v]) { // u and v are not independent (note: S is subset of V')
-                    // remove node with smaller degree
-                    edgeweight wu = weightedDegree(u);
-                    edgeweight wv = weightedDegree(v);
-                    if (wu > wv) {
-                        S[v] = false;
-                    } else if (wv > wu) {
-                        S[u] = false;
-                    } else {          // tie
-                        S[v] = false; // arbitrary decision
+        G.parallelForNodes([&](node u) {
+            if (S[u]) {
+                G.forNeighborsOf(u, [&](node v) {
+                    if (u < v) { // exclude self-loops and enforce strict order
+#pragma omp critical
+                        {
+                            // remove node with smaller degree from S
+                            if (S[u] && S[v]) {
+                                if (weightedDegree(u) > weightedDegree(v)) {
+                                    S[v] = false;
+                                } else {
+                                    S[u] = false;
+                                }
+                            }
+                        }
                     }
-                }
+                });
             }
         });
 
@@ -76,6 +83,7 @@ std::vector<bool> Luby::run(const Graph &G) {
 
         // remove S' and all neighboring nodes from V'
         G.parallelForNodes([&](node u) {
+#pragma omp critical
             if (S[u]) {
                 V[u] = false;
                 G.forNeighborsOf(u, [&](node v) { V[v] = false; });

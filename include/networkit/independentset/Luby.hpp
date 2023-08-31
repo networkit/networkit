@@ -15,12 +15,11 @@ namespace NetworKit {
 /**
  * @ingroup independentset
  *
- * Luby's parallel independent set algorithm.
+ * Luby's parallel independent set algorithm for undirected graphs.
  */
 class Luby final : public IndependentSetFinder {
 
 public:
-    // FIXME: check correctness of implementation
     std::vector<bool> run(const Graph &G) override;
 };
 
