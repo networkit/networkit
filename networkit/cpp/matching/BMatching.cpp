@@ -80,18 +80,15 @@ std::vector<node> BMatching::mates(node v) const {
 }
 
 edgeweight BMatching::weight(const Graph &G) const {
-    edgeweight weight = 0;
-
-    G.forNodes([&](node v) {
-        if (!isUnmatched(v)) {
-            for (auto u : mates(v)) {
-                if (v < u)
-                    weight += G.weight(v, u);
+    return G.parallelSumForNodes([&](node v) {
+        edgeweight weight_per_node = 0.0;
+        for (auto u : mates(v)) {
+            if (v < u) {
+                weight_per_node += G.weight(v, u);
             }
         }
+        return weight_per_node;
     });
-
-    return weight;
 }
 
 const std::vector<std::vector<node>> &BMatching::getMatrix() const {
