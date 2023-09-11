@@ -29,6 +29,7 @@
 #include <networkit/generators/LFRGenerator.hpp>
 #include <networkit/generators/MocnikGenerator.hpp>
 #include <networkit/generators/MocnikGeneratorBasic.hpp>
+#include <networkit/generators/PowerlawDegreeSequence.hpp>
 #include <networkit/generators/PubWebGenerator.hpp>
 #include <networkit/generators/RegularRingLatticeGenerator.hpp>
 #include <networkit/generators/RmatGenerator.hpp>
@@ -612,6 +613,36 @@ TEST_F(GeneratorsGTest, testRmatGenerator) {
     EXPECT_TRUE(G.checkConsistency());
 }
 
+TEST_F(GeneratorsGTest, testRmatGeneratorReduceNodes) {
+    count scale = 9;
+    count n = (1 << scale);
+    count edgeFactor = 12;
+    double a = 0.51;
+    double b = 0.12;
+    double c = 0.12;
+    double d = 0.25;
+    int reducedNodes = 4;
+
+    RmatGenerator rmat(scale, edgeFactor, a, b, c, d, false, reducedNodes);
+    Graph G = rmat.generate();
+
+    EXPECT_EQ(G.numberOfNodes(), n - reducedNodes);
+    EXPECT_LE(G.numberOfEdges(), n * edgeFactor);
+
+    ClusteringCoefficient cc;
+    double ccex = cc.exactGlobal(G);
+    EXPECT_LE(ccex, 0.4);
+
+    PLM clusterer(G, true);
+    clusterer.run();
+    Partition zeta = clusterer.getPartition();
+    Modularity mod;
+    double modVal = mod.getQuality(zeta, G);
+    INFO("Modularity of R-MAT graph clustering: ", modVal);
+    EXPECT_GE(modVal, 0.0);
+    EXPECT_TRUE(G.checkConsistency());
+}
+
 TEST_F(GeneratorsGTest, testChungLuGenerator) {
     count n = 400;
     count maxDegree = n / 8;
@@ -1113,6 +1144,22 @@ TEST_F(GeneratorsGTest, testLFRGeneratorWithRealData) {
     EXPECT_EQ(C.numberOfSubsets(), gen.getPartition().numberOfSubsets());
 }
 
+TEST_F(GeneratorsGTest, testLFRGeneratorWithBinomialDistribution) {
+    Aux::Random::setSeed(42, false);
+    count n = 500;
+    LFRGenerator gen(n);
+    gen.generatePowerlawDegreeSequence(20, 50, -2);
+    gen.generatePowerlawCommunitySizeSequence(10, 50, -1);
+    gen.setMuWithBinomialDistribution(0.5);
+    gen.run();
+    Graph G1 = gen.getMoveGraph();
+    gen.run(); // should rewire the edges but nothing else
+    Graph G2 = gen.getMoveGraph();
+    EXPECT_EQ(n, G1.numberOfNodes());
+    EXPECT_EQ(n, G2.numberOfNodes());
+    EXPECT_EQ(G1.numberOfEdges(), G2.numberOfEdges());
+}
+
 TEST_F(GeneratorsGTest, testMocnikGenerator) {
     count dim = 3;
     count n = 10000;
@@ -1139,6 +1186,34 @@ TEST_F(GeneratorsGTest, testMocnikGeneratorBasic) {
     EXPECT_FALSE(G.isEmpty());
     EXPECT_EQ(G.numberOfNodes(), n);
     EXPECT_NEAR(G.numberOfEdges() * 1. / G.numberOfNodes(), std::pow(k, dim), 10000);
+}
+
+TEST_F(GeneratorsGTest, testPowerLawDegreeSequenceFromDegreeSequence) {
+    std::vector<double> inputVector = {2, 4, 3, 2, 1, 6};
+    double sum = 0.0;
+    for (auto it = inputVector.begin(); it != inputVector.end(); ++it) {
+        sum += *it;
+    }
+    auto avg = sum / inputVector.size();
+
+    PowerlawDegreeSequence PLDS(inputVector);
+    PLDS.setGammaFromAverageDegree(avg);
+    PLDS.run();
+    EXPECT_NEAR(PLDS.getExpectedAverageDegree(), avg, 1.0);
+    EXPECT_EQ(PLDS.getMinimumDegree(), 1);
+    EXPECT_EQ(PLDS.getMaximumDegree(), 6);
+}
+
+TEST_F(GeneratorsGTest, testPowerLawDegreeSequenceFromGraph) {
+    METISGraphReader reader;
+    auto graphpath = "input/jazz.graph";
+    Graph G = reader.read(graphpath);
+
+    PowerlawDegreeSequence PLDS(G);
+    PLDS.run();
+    EXPECT_NEAR(PLDS.getExpectedAverageDegree(), 19, 1);
+    EXPECT_EQ(PLDS.getMinimumDegree(), 1);
+    EXPECT_EQ(PLDS.getMaximumDegree(), 100);
 }
 
 } /* namespace NetworKit */
