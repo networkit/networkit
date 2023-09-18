@@ -39,12 +39,12 @@ bool isBipartitPartition(const Graph &G, const Partition &partition) {
 bool isOddCircle(const Graph &G, const std::vector<node> &path) {
     if (path.size() % 2 == 0)
         return false;
-    for (count i = 0; i < path.size(); i++)
-        for (count j = i+1; j < path.size(); j++)
+    for (index i = 0; i < path.size(); i++)
+        for (index j = i+1; j < path.size(); j++)
             if (path[i] == path[j])
                 throw std::runtime_error("Not a path");
 
-    for (count i = 0; i < path.size(); i++)
+    for (index i = 0; i < path.size(); i++)
         if (not G.hasEdge(path[i], path[(i + 1) % path.size()]))
             return false;
 
@@ -121,15 +121,15 @@ TEST_F(BipartitGTest, testBipartitLargeRandomBipartit) {
     std::uniform_int_distribution<node> dis(1000000);
 
     std::vector<node> nodes(n);
-    for (count i = 0; i < n; i++)
+    for (index i = 0; i < n; i++)
         nodes[i] = i;
 
-    for (count i = 0; i < n; i++)
+    for (index i = 0; i < n; i++)
         std::swap(nodes[i], nodes[i + (dis(rng) % (n - i))]);
 
     Graph G(n);
 
-    for (count i = 0; i < 5*n; i++) {
+    for (index i = 0; i < 5*n; i++) {
         node v = nodes[dis(rng) % (n/2)], w = nodes[(n/2) + (dis(rng) % (n/2))];
 
         if (not G.hasEdge(v, w))
