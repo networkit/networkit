@@ -1,5 +1,5 @@
 /*
-* Bipartit.cpp
+* BipartitGTest.cpp
 *
 * Created on: 18.09.2023
 *     Author: Michael Kaibel
