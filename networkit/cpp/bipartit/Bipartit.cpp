@@ -29,7 +29,7 @@ const Partition &Bipartit::getPartition() {
     return partition;
 }
 
-const std::vector<node> &Bipartit::getOddCircle() {
+const std::vector<node> &Bipartit::getOddCycle() {
     assureFinished();
 
     if (bipartit)
