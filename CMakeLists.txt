@@ -302,8 +302,8 @@ if(NETWORKIT_PYTHON)
 			FIND_PACKAGE(Python3 ${NETWORKIT_PYTHON_VERSION} EXACT COMPONENTS Interpreter Development REQUIRED)
 		endif()
 	endif()
-	
-	foreach (EXT base centrality clique coarsening community components correlation
+
+	foreach (EXT base bipartit centrality clique coarsening community components correlation
 			 distance dynamics dynbase embedding engineering flow generators globals graph graphio
 			 graphtools helpers independentset linkprediction matching
 			 randomization reachability scd simulation sparsification stats
