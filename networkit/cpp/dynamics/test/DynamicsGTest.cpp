@@ -9,13 +9,33 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/dynamics/DGSStreamParser.hpp>
+#include <networkit/dynamics/DGSWriter.hpp>
 #include <networkit/dynamics/GraphDifference.hpp>
 #include <networkit/dynamics/GraphEvent.hpp>
+#include <networkit/dynamics/GraphEventProxy.hpp>
 #include <networkit/dynamics/GraphUpdater.hpp>
 
 namespace NetworKit {
 
 class DynamicsGTest : public testing::Test {};
+
+TEST_F(DynamicsGTest, testDGSStreamWriter) {
+    // writing each possible GraphEvent
+    std::vector<NetworKit::GraphEvent> stream = {
+        GraphEvent::NODE_ADDITION,     GraphEvent::NODE_REMOVAL, GraphEvent::NODE_RESTORATION,
+        GraphEvent::EDGE_ADDITION,     GraphEvent::EDGE_REMOVAL, GraphEvent::EDGE_WEIGHT_INCREMENT,
+        GraphEvent::EDGE_WEIGHT_UPDATE};
+
+    DGSWriter writer;
+    writer.write(stream, "input/example_write.dgs");
+
+    // expecting to read the same stream
+    DGSStreamParser parser("input/example_write.dgs");
+    auto stream_parsed = parser.getStream();
+    for (index i = 0; i < stream.size(); ++i) {
+        EXPECT_EQ(stream[i].type, stream_parsed[i].type);
+    }
+}
 
 TEST_F(DynamicsGTest, testDGSStreamParser) {
     DGSStreamParser parser("input/example2.dgs");
@@ -68,6 +88,41 @@ TEST_F(DynamicsGTest, testGraphEventIncrement) {
     Hupdater.update(eventstream);
     EXPECT_EQ(G.weight(0, 1), 5.24);
     EXPECT_EQ(H.weight(0, 1), 5.24);
+}
+
+TEST_F(DynamicsGTest, testGraphEventOperators) {
+    // checking comparison operators
+    GraphEvent add1(GraphEvent::NODE_ADDITION, 1);
+    GraphEvent add2(GraphEvent::NODE_ADDITION, 2);
+    EXPECT_LT(add1, add2);
+    EXPECT_LE(add1, add2);
+
+    EXPECT_GT(add2, add1);
+    EXPECT_GE(add2, add1);
+
+    EXPECT_NE(add1, add2);
+    EXPECT_EQ(add1, add1);
+}
+
+TEST_F(DynamicsGTest, testGraphEventProxy) {
+    Graph G(3, true);
+    G.addEdge(1, 2);
+
+    GraphEventProxy GEP(G);
+    GEP.addNode();
+    GEP.addEdge(2, 3);
+    EXPECT_EQ(G.numberOfNodes(), 4);
+    EXPECT_EQ(G.numberOfEdges(), 2);
+
+    GEP.setWeight(2, 3, 1.5);
+    EXPECT_DOUBLE_EQ(G.weight(2, 3), 1.5);
+    GEP.incrementWeight(2, 3, 1.5);
+    EXPECT_DOUBLE_EQ(G.weight(2, 3), 3.0);
+
+    GEP.removeEdge(2, 3);
+    EXPECT_EQ(G.numberOfEdges(), 1);
+    GEP.removeNode(3);
+    EXPECT_EQ(G.numberOfNodes(), 3);
 }
 
 namespace {
