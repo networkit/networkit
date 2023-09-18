@@ -15,6 +15,7 @@
 namespace NetworKit {
 
 class Bipartit : public Algorithm {
+public:
     Bipartit(const Graph &G);
 
     void run() override;
