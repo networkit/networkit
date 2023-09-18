@@ -5,8 +5,8 @@
  *     Author: Michael Kaibel
  */
 
-#ifndef NETWORKIT_BIPARTIT_BIPARTIT_HPP
-#define NETWORKIT_BIPARTIT_BIPARTIT_HPP
+#ifndef NETWORKIT_BIPARTIT_BIPARTIT_HPP_
+#define NETWORKIT_BIPARTIT_BIPARTIT_HPP_
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
@@ -14,7 +14,7 @@
 
 namespace NetworKit {
 
-class Bipartit : public Algorithm {
+class Bipartit final : public Algorithm {
 public:
     /**
      * Creates Bipartit class for graph @G
@@ -47,7 +47,7 @@ public:
      *
      * @return on odd cycle iff the graph has one, throws error otherwise
      */
-    const std::vector<node> &getOddCircle();
+    const std::vector<node> &getOddCycle();
 
 protected:
     const Graph *G;
@@ -63,4 +63,4 @@ protected:
 
 } // NetworKit
 
-#endif // NETWORKIT_BIPARTIT_BIPARTIT_HPP
+#endif // NETWORKIT_BIPARTIT_BIPARTIT_HPP_

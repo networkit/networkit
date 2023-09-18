@@ -70,7 +70,7 @@ TEST_F(BipartitGTest, testBipartitTinyBipartit) {
 
     EXPECT_TRUE(isBipartitPartition(G, bipartit.getPartition()));
 
-    EXPECT_ANY_THROW(bipartit.getOddCircle());
+    EXPECT_ANY_THROW(bipartit.getOddCycle());
 }
 
 TEST_F(BipartitGTest, testBipartitTinyOddCircle) {
@@ -91,7 +91,7 @@ TEST_F(BipartitGTest, testBipartitTinyOddCircle) {
 
     EXPECT_ANY_THROW(bipartit.getPartition());
 
-    EXPECT_TRUE(isOddCircle(G, bipartit.getOddCircle()));
+    EXPECT_TRUE(isOddCircle(G, bipartit.getOddCycle()));
 }
 
 TEST_F(BipartitGTest, testBipartitLargeRandom) {
@@ -104,12 +104,12 @@ TEST_F(BipartitGTest, testBipartitLargeRandom) {
     if (bipartit.isBipartit()) {
         EXPECT_TRUE(isBipartitPartition(G, bipartit.getPartition()));
 
-        EXPECT_ANY_THROW(bipartit.getOddCircle());
+        EXPECT_ANY_THROW(bipartit.getOddCycle());
     }
     else {
         EXPECT_ANY_THROW(bipartit.getPartition());
 
-        EXPECT_TRUE(isOddCircle(G, bipartit.getOddCircle()));
+        EXPECT_TRUE(isOddCircle(G, bipartit.getOddCycle()));
     }
 }
 
@@ -143,7 +143,7 @@ TEST_F(BipartitGTest, testBipartitLargeRandomBipartit) {
 
     EXPECT_TRUE(isBipartitPartition(G, bipartit.getPartition()));
 
-    EXPECT_ANY_THROW(bipartit.getOddCircle());
+    EXPECT_ANY_THROW(bipartit.getOddCycle());
 }
 
 } // NetworKit
