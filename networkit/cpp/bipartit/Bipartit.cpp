@@ -15,10 +15,17 @@ Bipartit::Bipartit(const Graph &G) : G(&G) {
 }
 
 bool Bipartit::isBipartit() {
+    assureFinished();
+
     return bipartit;
 }
 
 const Partition &Bipartit::getPartition() {
+    assureFinished();
+
+    if (not bipartit)
+        throw std::runtime_error("Can't provide bipartition on non-bipartite graph");
+
     return partition;
 }
 
@@ -45,7 +52,7 @@ void Bipartit::run() {
                     return;
                 }
 
-                if (partition[x] != none) {
+                if (partition[x] == none) {
                     queue.emplace_back(x);
                     partition[x] = 1 - partition[w];
                 }
