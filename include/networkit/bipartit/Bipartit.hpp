@@ -24,12 +24,18 @@ public:
 
     const Partition &getPartition();
 
+    const std::vector<node> &getOddCircle();
+
 protected:
     const Graph *G;
 
     Partition partition;
 
+    std::vector<node> oddCircle;
+
     bool bipartit = false;
+
+    void findOddCircle(std::vector<node> &parent, node v, node w);
 };
 
 } // NetworKit
