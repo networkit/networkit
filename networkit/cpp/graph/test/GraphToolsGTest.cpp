@@ -1041,6 +1041,17 @@ TEST_P(GraphToolsGTest, testEdgesSortedByWeight) {
     }
 }
 
+TEST_P(GraphToolsGTest, testParallelSumEdgesIndexed) {
+    Aux::Random::setSeed(1, true);
+    NetworKit::count n = 20;
+    int maxWeight = n * n;
+
+    Graph G = ErdosRenyiGenerator{n, 0.01, directed()}.generate();
+    G.indexEdges(true);
+    auto sum = G.parallelSumForEdges([&](node, node, edgeweight ew) { return ew; });
+    EXPECT_LE(sum, maxWeight);
+}
+
 TEST_P(GraphToolsGTest, testEdgesRandomizer) {
     if (!weighted())
         return;
