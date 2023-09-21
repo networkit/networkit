@@ -56,7 +56,7 @@ Graph communicationGraph(const Graph &graph, Partition &zeta);
  * @param cid index of cluster
  * @return weighted degree of node u for cluster index cid
  */
-count weightedDegreeWithCluster(const Graph &graph, const Partition &zeta, node u, index cid);
+edgeweight weightedDegreeWithCluster(const Graph &graph, const Partition &zeta, node u, index cid);
 
 /**
  * Check whether a partition is a proper clustering for a given graph

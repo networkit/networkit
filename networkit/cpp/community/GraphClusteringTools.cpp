@@ -27,7 +27,7 @@ float getImbalance(const Partition &zeta, const Graph &graph) {
 Graph communicationGraph(const Graph &graph, Partition &zeta) {
     zeta.compact();
     count n = zeta.numberOfSubsets();
-    Graph commGraph(n);
+    Graph commGraph(n, true);
 
     if (graph.isWeighted()) {
         DEBUG("weighted");
@@ -52,8 +52,8 @@ Graph communicationGraph(const Graph &graph, Partition &zeta) {
     return commGraph;
 }
 
-count weightedDegreeWithCluster(const Graph &graph, const Partition &zeta, node u, index cid) {
-    count wdeg = 0;
+edgeweight weightedDegreeWithCluster(const Graph &graph, const Partition &zeta, node u, index cid) {
+    edgeweight wdeg = 0;
 
     if (graph.isWeighted()) {
         graph.forEdgesOf(u, [&](node, node v, edgeweight w) {
