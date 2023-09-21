@@ -10,6 +10,7 @@
 #include <networkit/components/DynConnectedComponents.hpp>
 #include <networkit/components/DynWeaklyConnectedComponents.hpp>
 #include <networkit/components/ParallelConnectedComponents.hpp>
+#include <networkit/components/RandomSpanningForest.hpp>
 #include <networkit/components/StronglyConnectedComponents.hpp>
 #include <networkit/components/WeaklyConnectedComponents.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
@@ -583,6 +584,23 @@ TEST_F(ConnectedComponentsGTest, testExtractLargestStronglyConnectedComponent) {
             ++u;
         });
     }
+}
+
+TEST_F(ConnectedComponentsGTest, testRandomSpanningForest) {
+    Graph G(5);
+    G.addEdge(0, 1);
+    G.addEdge(2, 1);
+    G.addEdge(3, 1);
+    G.addEdge(4, 1);
+    G.addEdge(2, 4);
+    G.addEdge(0, 3);
+
+    RandomSpanningForest RSF(G);
+    RSF.run();
+    auto forest = RSF.getForest();
+    auto n = G.numberOfNodes();
+    EXPECT_EQ(forest.numberOfNodes(), n);
+    EXPECT_EQ(forest.numberOfEdges(), n - 1);
 }
 
 } /* namespace NetworKit */
