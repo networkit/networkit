@@ -47,6 +47,30 @@ public:
                            double maxPhi, double minR, double maxR, double alpha);
 
     /**
+     * @param angles empty vector to hold angular coordinates of generated points
+     * @param radii empty vector to hold radial coordinates of generated points
+     * @param R radius of the hyperbolic disk
+     * @param alpha dispersion parameter for the node positions
+     *
+     * Fill preallocated vectors with randomly sampled points in native coordinates
+     * The points are sorted by angle
+     */
+    static void fillPointsSorted(vector<double> &angles, vector<double> &radii, double R,
+                                 double alpha);
+
+    /**
+     * @param angles empty vector to hold angular coordinates of generated points
+     * @param radii empty vector to hold radial coordinates of generated points
+     * @param stretch multiplier for the radius of the hyperbolic disk
+     * @param alpha dispersion parameter for the node positions
+     *
+     * Fill preallocated vectors with randomly sampled points in native coordinates
+     * The points are sorted by angle
+     */
+    static void fillPointsSorted(vector<double> &angles, vector<double> &radii, double minPhi,
+                                 double maxPhi, double minR, double maxR, double alpha);
+
+    /**
      * @param firstangle angular coordinate of the first point
      * @param firstR radial coordinate of the first point
      * @param secondangle angular coordinate of the second point
