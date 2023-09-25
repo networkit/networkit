@@ -91,6 +91,50 @@ void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, 
         assert(radii[i] < maxR);
     }
 }
+void HyperbolicSpace::fillPointsSorted(vector<double> &angles, vector<double> &radii, double R,
+                                       double alpha) {
+    fillPointsSorted(angles, radii, 0, 2 * PI, 0, R, alpha);
+}
+
+void HyperbolicSpace::fillPointsSorted(vector<double> &angles, vector<double> &radii, double minPhi,
+                                       double maxPhi, double minR, double maxR, double alpha) {
+    uint64_t n = radii.size();
+    assert(angles.size() == n);
+
+    double mincdf = std::cosh(alpha * minR);
+    double maxcdf = std::cosh(alpha * maxR);
+    std::uniform_real_distribution<double> uniformDist{0, 1};
+    std::uniform_real_distribution<double> rdist{mincdf, maxcdf};
+    double sum = 0;
+
+    for (uint64_t i = 0; i < n; i++) {
+        double value = -std::log(uniformDist(Aux::Random::getURNG()));
+        sum += value;
+        angles[i] = sum;
+        /**
+         * for the radial coordinate distribution, I took the probability density from Greedy
+         * Forwarding in Dynamic Scale-Free Networks Embedded in Hyperbolic Metric Spaces f (r) =
+         * sinh r/(cosh R  1) \int sinh = cosh+const
+         */
+        double random = rdist(Aux::Random::getURNG());
+        radii[i] = (std::acosh(random) / alpha);
+        assert(radii[i] <= maxR);
+        assert(radii[i] >= minR);
+        if (radii[i] == maxR)
+            radii[i] = std::nextafter(radii[i], 0);
+        assert(radii[i] < maxR);
+    }
+
+    sum += -std::log(uniformDist(Aux::Random::getURNG()));
+    double inverseSum = (maxPhi - minPhi) / sum;
+
+    for (uint64_t i = 0; i < n; i++) {
+        angles[i] = minPhi + angles[i] * inverseSum;
+        assert(angles[i] <= maxPhi);
+        assert(angles[i] >= minPhi);
+    }
+}
+
 
 Point2DWithIndex<double> HyperbolicSpace::polarToCartesian(double phi, double r) {
     return Point2DWithIndex<double>(r * std::cos(phi), r * std::sin(phi));
