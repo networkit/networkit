@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace Aux {
@@ -51,14 +52,14 @@ std::vector<std::string> split(Iterator begin, Iterator end, Character delim = C
 /**
  * Split a string at delimiter and return vector of parts.
  */
-inline std::vector<std::string> split(const std::string &s, char delim = ' ') {
+inline std::vector<std::string> split(std::string_view s, char delim = ' ') {
     return split(s.begin(), s.end(), delim);
 }
 
 /**
  * Determines whether @a str ends with @a suffix.
  */
-inline bool ends_with(const std::string &str, const std::string &suffix) {
+inline bool ends_with(std::string_view str, std::string_view suffix) {
     return str.size() >= suffix.size()
            && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
@@ -66,7 +67,7 @@ inline bool ends_with(const std::string &str, const std::string &suffix) {
 /**
  * Determines whether @a str starts with @a prefix.
  */
-inline bool starts_with(const std::string &str, const std::string &prefix) {
+inline bool starts_with(std::string_view str, std::string_view prefix) {
     return str.size() >= prefix.size() && str.compare(0, prefix.size(), prefix) == 0;
 }
 
