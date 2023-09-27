@@ -1808,6 +1808,7 @@ TEST_F(CentralityGTest, testApproxElectricalCloseness) {
         Aux::Random::setSeed(seed, true);
         auto G = HyperbolicGenerator(n, 10, 3).generate();
         G = ConnectedComponents::extractLargestConnectedComponent(G, true);
+        auto n = G.numberOfNodes();
 
         // Create a biconnected component with size 2.
         G.addNodes(2);
