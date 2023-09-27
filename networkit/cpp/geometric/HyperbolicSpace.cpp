@@ -135,7 +135,6 @@ void HyperbolicSpace::fillPointsSorted(vector<double> &angles, vector<double> &r
     }
 }
 
-
 Point2DWithIndex<double> HyperbolicSpace::polarToCartesian(double phi, double r) {
     return Point2DWithIndex<double>(r * std::cos(phi), r * std::sin(phi));
 }
