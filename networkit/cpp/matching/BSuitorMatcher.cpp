@@ -125,12 +125,6 @@ bool BSuitorMatcher::isSymmetrical() const {
 }
 
 edgeweight BSuitorMatcher::getWeight() const {
-    edgeweight w = 0.0;
-
-#pragma omp parallel for reduction(+ : w)
-    for (omp_index i = 0; i < static_cast<omp_index>(S.size()); i++) {
-        w += S.at(i)->weight;
-    }
     return w;
 }
 
@@ -139,12 +133,18 @@ void BSuitorMatcher::run() {
     S.reserve(n);
     T.reserve(n);
     for (index i = 0; i < n; i++) {
-        Suitors *s = new Suitors(b.at(i));
-        Proposed *p = new Proposed(b.at(i));
+        Suitors *s = new Suitors(i, b.at(i));
+        Proposed *p = new Proposed(i, b.at(i));
         S.emplace_back(s);
         T.emplace_back(p);
     }
+
     G->forNodes([&](node u) { findSuitors(u); });
+
+#pragma omp parallel for reduction(+ : w)
+    for (omp_index i = 0; i < static_cast<omp_index>(S.size()); i++) {
+        w += S.at(i)->weight;
+    }
 
     // TODO make parallel
     G->forNodes([&S = S, &M = M](node u) {
@@ -154,11 +154,6 @@ void BSuitorMatcher::run() {
             }
         }
     });
-
-    // for (auto s : S) {
-    //     s->sort();
-    // }
-    // assert(isSymmetrical());
 
     for (auto s : S)
         delete s;

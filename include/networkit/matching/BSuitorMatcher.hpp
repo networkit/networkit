@@ -20,6 +20,7 @@ struct Node {
 
 struct Data {
     std::vector<Node> list;
+    node self;
     Node min; // (none, 0) if list still has free capacity
     edgeweight weight;
     count size;
@@ -27,8 +28,9 @@ struct Data {
 
     Data() = default;
 
-    Data(count b) {
+    Data(index i, count b) {
         list.reserve(b);
+        self = i;
         min = Node(none, 0);
         weight = 0;
         size = 0;
@@ -50,7 +52,8 @@ struct Data {
 
         list.emplace_back(v);
         size += 1;
-        weight += v.weight;
+        if (self < v.id)
+            weight += v.weight;
         if (size == max_size && !list.empty()) {
             min = *std::min_element(list.begin(), list.end(), [](const Node &a, const Node &b) {
                 if (a.weight == b.weight) {
@@ -65,11 +68,12 @@ struct Data {
         list.erase(
             std::remove_if(list.begin(), list.end(), [u](const Node &p) { return p.id == u.id; }),
             list.end());
+        size -= 1;
+        if (self < u.id)
+            weight -= u.weight;
         if (u.id == min.id) {
             min = Node(none, 0);
         }
-        size -= 1;
-        weight -= u.weight;
     }
 
     void sort() {
@@ -80,7 +84,7 @@ struct Data {
 };
 
 struct Suitors : public Data {
-    Suitors(count b) : Data(b) {}
+    Suitors(index i, count b) : Data(i, b) {}
 
     edgeweight getWeight() {
         edgeweight w = 0.0;
@@ -94,7 +98,7 @@ struct Suitors : public Data {
 };
 
 struct Proposed : public Data {
-    Proposed(count b) : Data(b) {}
+    Proposed(index i, count b) : Data(i, b) {}
 };
 
 /**
@@ -177,6 +181,7 @@ private:
     std::vector<Suitors *> S;
     std::vector<Proposed *> T;
     const std::vector<count> b;
+    edgeweight w = 0.0;
 
     /**
      * Reads values from a file at @a path into the vector of b-values.
