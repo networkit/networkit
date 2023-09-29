@@ -23,6 +23,38 @@ BSuitorMatcher::BSuitorMatcher(const Graph &G, count b)
 BSuitorMatcher::BSuitorMatcher(const Graph &G, const std::string &path)
     : BSuitorMatcher(G, readBValuesFromFile(G.numberOfNodes(), path)) {}
 
+std::vector<count> BSuitorMatcher::readBValuesFromFile(count size, const std::string &path) const {
+    std::vector<count> b;
+    b.reserve(size);
+    std::ifstream file(path);
+    std::string line;
+    int line_number = 1;
+
+    while (std::getline(file, line)) {
+        std::istringstream istring(line);
+        int val;
+        if (!(istring >> val)) {
+            throw std::runtime_error("File " + path + " contains an invalid value in line "
+                                     + std::to_string(line_number) + ".");
+        }
+        if (istring >> val) {
+            throw std::runtime_error("File " + path + " contains multiple values in line "
+                                     + std::to_string(line_number) + ".");
+        }
+        if (val < 0) {
+            throw std::runtime_error("File " + path + " contains a negative value in line "
+                                     + std::to_string(line_number) + ".");
+        }
+        b.emplace_back(val);
+        line_number++;
+    }
+    if (b.size() != size) {
+        throw std::runtime_error("The number of values in file " + path
+                                 + " does not match the number of nodes in this graph.");
+    }
+    return b;
+}
+
 void BSuitorMatcher::findSuitors(node u) {
     for (index i = 0; i < b.at(u); i++) {
         auto [x, w] = findPreferred(u);
@@ -70,38 +102,6 @@ void BSuitorMatcher::makeSuitor(node u, edgeweight w, node x) {
     }
 }
 
-std::vector<count> BSuitorMatcher::readBValuesFromFile(count size, const std::string &path) const {
-    std::vector<count> b;
-    b.reserve(size);
-    std::ifstream file(path);
-    std::string line;
-    int line_number = 1;
-
-    while (std::getline(file, line)) {
-        std::istringstream istring(line);
-        int val;
-        if (!(istring >> val)) {
-            throw std::runtime_error("File " + path + " contains an invalid value in line "
-                                     + std::to_string(line_number) + ".");
-        }
-        if (istring >> val) {
-            throw std::runtime_error("File " + path + " contains multiple values in line "
-                                     + std::to_string(line_number) + ".");
-        }
-        if (val < 0) {
-            throw std::runtime_error("File " + path + " contains a negative value in line "
-                                     + std::to_string(line_number) + ".");
-        }
-        b.emplace_back(val);
-        line_number++;
-    }
-    if (b.size() != size) {
-        throw std::runtime_error("The number of values in file " + path
-                                 + " does not match the number of nodes in this graph.");
-    }
-    return b;
-}
-
 bool BSuitorMatcher::isSymmetrical() const {
     bool sym = true;
     auto areMatchedSymmetrical = [&](node u, node v) -> bool {
@@ -128,6 +128,17 @@ edgeweight BSuitorMatcher::getWeight() const {
     return w;
 }
 
+void BSuitorMatcher::buildBMatching() {
+    // TODO make parallel
+    G->forNodes([&S = S, &M = M](node u) {
+        for (auto v : S.at(u)->list) {
+            if (v.id != none && u < v.id) { // Ensure we match a pair of nodes only once
+                M.match(u, v.id);
+            }
+        }
+    });
+}
+
 void BSuitorMatcher::run() {
     const auto n = G->upperNodeIdBound();
     S.reserve(n);
@@ -145,16 +156,6 @@ void BSuitorMatcher::run() {
         sum += S.at(i)->weight;
     }
     w += sum;
-
-    // TODO make parallel
-    G->forNodes([&S = S, &M = M](node u) {
-        for (auto v : S.at(u)->list) {
-            if (v.id != none && u < v.id) { // Ensure we match a pair of nodes only once
-                M.match(u, v.id);
-            }
-        }
-    });
-
     hasRun = true;
 }
 } // namespace NetworKit

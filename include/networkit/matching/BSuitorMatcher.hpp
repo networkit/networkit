@@ -140,6 +140,25 @@ public:
      */
     void run() override;
 
+    edgeweight getWeight() const;
+
+    void buildBMatching();
+
+private:
+    std::vector<std::unique_ptr<Suitors>> S;
+    std::vector<std::unique_ptr<Proposed>> T;
+    const std::vector<count> b;
+    edgeweight w = 0.0;
+
+    /**
+     * Reads values from a file at @a path into the vector of b-values.
+     *
+     * @param size
+     * @param path
+     * @return std::vector<count>
+     */
+    std::vector<count> readBValuesFromFile(count size, const std::string &path) const;
+
     /**
      * Iterates up to @a b times over the heaviest neighbors of node @a u and makes
      * them to suitors if eligible.
@@ -174,23 +193,6 @@ public:
      *
      */
     bool isSymmetrical() const;
-
-    edgeweight getWeight() const;
-
-private:
-    std::vector<std::unique_ptr<Suitors>> S;
-    std::vector<std::unique_ptr<Proposed>> T;
-    const std::vector<count> b;
-    edgeweight w = 0.0;
-
-    /**
-     * Reads values from a file at @a path into the vector of b-values.
-     *
-     * @param size
-     * @param path
-     * @return std::vector<count>
-     */
-    std::vector<count> readBValuesFromFile(count size, const std::string &path) const;
 };
 } // namespace NetworKit
 
