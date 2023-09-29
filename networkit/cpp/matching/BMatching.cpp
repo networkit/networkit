@@ -2,13 +2,16 @@
 
 namespace NetworKit {
 
-BMatching::BMatching(const std::vector<count> &b, count z)
-    : data(z, std::vector<node>(b.size(), none)), b(b) {}
+BMatching::BMatching(const std::vector<count> &b, count z) : b(b) {
+    data.reserve(z);
+    for (count i = 0; i < z; ++i)
+        data.emplace_back(b.at(i), none);
+}
 
 bool BMatching::isProper(const Graph &G) const {
     // check if entries are symmetric
     for (node v : G.nodeRange()) {
-        for (index i = 0; i < b.at(i); i++) {
+        for (index i = 0; i < b.at(v); i++) {
             node w = data[v][i];
             if (w != none && std::find(data[w].begin(), data[w].end(), v) == data[w].end()) {
                 DEBUG("node ", v, " is not symmetrically matched");
@@ -19,7 +22,7 @@ bool BMatching::isProper(const Graph &G) const {
 
     // check if every pair exists as an edge
     for (node v : G.nodeRange()) {
-        for (index i = 0; i < b.at(i); i++) {
+        for (index i = 0; i < b.at(v); i++) {
             node w = data[v][i];
             if ((v != w) && (w != none) && !G.hasEdge(v, w)) {
                 DEBUG("matched pair (", v, ",", w, ") is not an edge");
