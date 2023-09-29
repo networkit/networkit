@@ -216,6 +216,7 @@ TEST_F(MatcherGTest, testBSuitorMatcherTieBreaking) {
 
     BSuitorMatcher bsm(G, 4);
     bsm.run();
+    bsm.buildBMatching();
     const auto M = bsm.getBMatching();
 
     EXPECT_TRUE(M.isProper(G));
@@ -233,6 +234,7 @@ TEST_F(MatcherGTest, testBSuitorMatcherEqualsSuitorMatcher) {
 
     BSuitorMatcher bsm(G, 1);
     bsm.run();
+    bsm.buildBMatching();
     const auto bM = bsm.getBMatching();
 
     EXPECT_TRUE(bM.isProper(G));
@@ -248,6 +250,7 @@ TEST_F(MatcherGTest, testBSuitorMatcherConstantB) {
         G.removeMultiEdges();
         BSuitorMatcher bsm(G, b);
         bsm.run();
+        bsm.buildBMatching();
         const auto M = bsm.getBMatching();
         EXPECT_TRUE(M.isProper(G));
         EXPECT_FALSE(hasUnmatchedNeighbors(G, M));
@@ -267,6 +270,7 @@ TEST_F(MatcherGTest, testBSuitorMatcherDifferentB) {
 
     BSuitorMatcher bsm(G, b);
     bsm.run();
+    bsm.buildBMatching();
     const auto M = bsm.getBMatching();
     EXPECT_TRUE(M.isProper(G));
     EXPECT_FALSE(hasUnmatchedNeighbors(G, M));
