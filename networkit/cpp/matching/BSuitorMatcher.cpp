@@ -92,7 +92,7 @@ std::vector<count> BSuitorMatcher::readBValuesFromFile(count size, const std::st
             throw std::runtime_error("File " + path + " contains a negative value in line "
                                      + std::to_string(line_number) + ".");
         }
-        b.push_back(val);
+        b.emplace_back(val);
         line_number++;
     }
     if (b.size() != size) {
@@ -133,18 +133,18 @@ void BSuitorMatcher::run() {
     S.reserve(n);
     T.reserve(n);
     for (index i = 0; i < n; i++) {
-        Suitors *s = new Suitors(i, b.at(i));
-        Proposed *p = new Proposed(i, b.at(i));
-        S.emplace_back(s);
-        T.emplace_back(p);
+        S.emplace_back(std::make_unique<Suitors>(i, b.at(i)));
+        T.emplace_back(std::make_unique<Proposed>(i, b.at(i)));
     }
 
     G->forNodes([&](node u) { findSuitors(u); });
 
-#pragma omp parallel for reduction(+ : w)
+    edgeweight sum = 0.0;
+#pragma omp parallel for reduction(+ : sum)
     for (omp_index i = 0; i < static_cast<omp_index>(S.size()); i++) {
-        w += S.at(i)->weight;
+        sum += S.at(i)->weight;
     }
+    w += sum;
 
     // TODO make parallel
     G->forNodes([&S = S, &M = M](node u) {
@@ -154,11 +154,6 @@ void BSuitorMatcher::run() {
             }
         }
     });
-
-    for (auto s : S)
-        delete s;
-    for (auto t : T)
-        delete t;
 
     hasRun = true;
 }

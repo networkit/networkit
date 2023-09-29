@@ -178,8 +178,8 @@ public:
     edgeweight getWeight() const;
 
 private:
-    std::vector<Suitors *> S;
-    std::vector<Proposed *> T;
+    std::vector<std::unique_ptr<Suitors>> S;
+    std::vector<std::unique_ptr<Proposed>> T;
     const std::vector<count> b;
     edgeweight w = 0.0;
 
