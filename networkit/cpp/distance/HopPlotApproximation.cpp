@@ -136,8 +136,8 @@ void HopPlotApproximation::run() {
         }
         // add nodes that are already connected to all nodes
         totalConnectedNodes += static_cast<double>((n - activeNodes.size()) * n);
-        // compute the fraction of connected nodes
-        hopPlot[h] = totalConnectedNodes / n;
+        // compute the fraction of connected nodes in relation to all possible node pairs
+        hopPlot[h] = totalConnectedNodes / (pow(n, 2) - n);
         if (hopPlot[h] > 1) {
             hopPlot[h] = 1;
         }
