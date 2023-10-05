@@ -1,5 +1,5 @@
 /*
- * AttributeTest.cpp
+ * AttributeGTest.cpp
  *
  *  Created on: 26.02.2022
  *      Author: Klaus Ahrens
@@ -15,11 +15,11 @@
 
 namespace NetworKit {
 
-class AttributeTest : public testing::Test {};
+class AttributeGTest : public testing::Test {};
 
 /// NODE ATTRIBUTE TESTS ///
 
-TEST_F(AttributeTest, testNodeAttributeSetGetOnExistingNodes) {
+TEST_F(AttributeGTest, testNodeAttributeSetGetOnExistingNodes) {
 
     Graph graph(15);
 
@@ -35,7 +35,7 @@ TEST_F(AttributeTest, testNodeAttributeSetGetOnExistingNodes) {
     graph.forNodes([&](node n) { EXPECT_EQ(intAttr.get(n), int(n)); });
 }
 
-TEST_F(AttributeTest, testNodeAttributeSetGetOnExistingNodesByIndexProxy) {
+TEST_F(AttributeGTest, testNodeAttributeSetGetOnExistingNodesByIndexProxy) {
 
     Graph graph(15);
 
@@ -51,7 +51,7 @@ TEST_F(AttributeTest, testNodeAttributeSetGetOnExistingNodesByIndexProxy) {
     graph.forNodes([&](node n) { EXPECT_EQ(intAttr[n], int(n)); });
 }
 
-TEST_F(AttributeTest, testNodeAttributeIteratorOnExistingNodes) {
+TEST_F(AttributeGTest, testNodeAttributeIteratorOnExistingNodes) {
 
     Graph graph(15);
 
@@ -73,7 +73,7 @@ TEST_F(AttributeTest, testNodeAttributeIteratorOnExistingNodes) {
     }
 }
 
-TEST_F(AttributeTest, testNodeAttributeReadWrite) {
+TEST_F(AttributeGTest, testNodeAttributeReadWrite) {
     const int n = 10;
     const std::string path = "output/attribute.txt";
     const std::string name = "attribute";
@@ -100,7 +100,7 @@ TEST_F(AttributeTest, testNodeAttributeReadWrite) {
 
 /// EDGE ATTRIBUTE TESTS ///
 
-TEST_F(AttributeTest, testEdgeAttributeSetGetOnExistingEdges) {
+TEST_F(AttributeGTest, testEdgeAttributeSetGetOnExistingEdges) {
 
     Graph graph(15, false, false, true);
     graph.addEdge(0, 1);
@@ -119,7 +119,7 @@ TEST_F(AttributeTest, testEdgeAttributeSetGetOnExistingEdges) {
     graph.forEdges([&](node u, node v) { EXPECT_EQ(intAttr.get2(u, v), int(u) + int(v)); });
 }
 
-TEST_F(AttributeTest, testEdgeAttributeSetGetOnExistingEdgesByIndexProxy) {
+TEST_F(AttributeGTest, testEdgeAttributeSetGetOnExistingEdgesByIndexProxy) {
 
     Graph graph(15, false, false, true);
     graph.addEdge(0, 1);
@@ -138,7 +138,7 @@ TEST_F(AttributeTest, testEdgeAttributeSetGetOnExistingEdgesByIndexProxy) {
     graph.forEdges([&](node u, node v) { EXPECT_EQ(intAttr(u, v), int(u) + int(v)); });
 }
 
-TEST_F(AttributeTest, testEdgeAttributeSetGetOnExistingEdgesByIndexedEdge) {
+TEST_F(AttributeGTest, testEdgeAttributeSetGetOnExistingEdgesByIndexedEdge) {
 
     Graph graph(15, false, false, true);
     graph.addEdge(0, 1);
@@ -163,7 +163,7 @@ TEST_F(AttributeTest, testEdgeAttributeSetGetOnExistingEdgesByIndexedEdge) {
     });
 }
 
-TEST_F(AttributeTest, testEdgeAttributeIteratorOnExistingEdges) {
+TEST_F(AttributeGTest, testEdgeAttributeIteratorOnExistingEdges) {
 
     Graph graph(15, false, false, true);
     graph.addEdge(0, 1);
@@ -189,7 +189,7 @@ TEST_F(AttributeTest, testEdgeAttributeIteratorOnExistingEdges) {
     }
 }
 
-TEST_F(AttributeTest, testEdgeAttributeReadWrite) {
+TEST_F(AttributeGTest, testEdgeAttributeReadWrite) {
     const int n = 10;
     const std::string path = "output/attribute.txt";
     const std::string name = "attribute";
@@ -219,7 +219,7 @@ TEST_F(AttributeTest, testEdgeAttributeReadWrite) {
 
 /// COMBINED ATTRIBUTE TESTS ///
 
-TEST_F(AttributeTest, testAttributeSetGetOnNonExistingNodes) {
+TEST_F(AttributeGTest, testAttributeSetGetOnNonExistingNodes) {
 
     auto tester = [&](auto &attributeMap) {
         auto intAttr = attributeMap.template attach<int>("some int attribute");
@@ -248,7 +248,7 @@ TEST_F(AttributeTest, testAttributeSetGetOnNonExistingNodes) {
     tester(graph.edgeAttributes());
 }
 
-TEST_F(AttributeTest, testAttributeAttachDetachAttach) {
+TEST_F(AttributeGTest, testAttributeAttachDetachAttach) {
 
     auto tester = [&](auto &attributeMap) {
         auto intAttr = attributeMap.template attach<int>("some int attribute");
@@ -276,7 +276,7 @@ TEST_F(AttributeTest, testAttributeAttachDetachAttach) {
     tester(graph.edgeAttributes());
 }
 
-TEST_F(AttributeTest, testAttributeDoubleAttach) {
+TEST_F(AttributeGTest, testAttributeDoubleAttach) {
 
     auto tester = [&](auto &attributeMap) {
         auto intAttr = attributeMap.template attach<int>("some int attribute");
@@ -298,7 +298,7 @@ TEST_F(AttributeTest, testAttributeDoubleAttach) {
     tester(graph.edgeAttributes());
 }
 
-TEST_F(AttributeTest, testInvalidate) {
+TEST_F(AttributeGTest, testInvalidate) {
 
     Graph graph(10);
 
@@ -311,7 +311,7 @@ TEST_F(AttributeTest, testInvalidate) {
     EXPECT_EQ(intAttr.size(), 0);
 }
 
-TEST_F(AttributeTest, testDefaultGet) {
+TEST_F(AttributeGTest, testDefaultGet) {
 
     Graph graph(10);
 
