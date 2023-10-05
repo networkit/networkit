@@ -425,10 +425,12 @@ jobs:
         with:
           submodules: true
       - name: Prepare environment and run checks
+        id: build
+        continue-on-error: true
         run:  ${{ github.workspace }}/.github/workflows/scripts/documentation.sh
         shell: bash
       - name: Deploy networkit.github.io
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: steps.build.outcome == 'success' && github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.SECRET_DEPLOY_GITHUB_PAGES }}
