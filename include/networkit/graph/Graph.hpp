@@ -1676,7 +1676,7 @@ public:
 
     /**
      * Get the Edge (u,v) of the given id. (inverse to edgeId)
-     * Note that the time complexity of this function is O(n).
+     * @note Time complexity of this function is O(n).
      */
     std::pair<node, node> edgeById(index id) const {
         std::pair<node, node> result{none, none};

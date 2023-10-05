@@ -937,14 +937,13 @@ cdef class Graph:
 		Attaches an edge attribute to the graph and returns it.
 
 		.. code-block::
-			
+	
 			A = G.attachEdgeAttribute("attributeIdentifier", ofType)
-		
-		All values are initially undefined for existing edges values can be set/get
-		by 
-		
+
+		All values are initially undefined for existing edges values can be set/get by 
+
 		.. code-block:: 
-		
+
 			A[edgeId] = value # set
 			value = A[edgeId] # get
 
@@ -981,7 +980,7 @@ cdef class Graph:
 		"""
 		detachEdgeAttribute(name)
 
-		Detaches a edge attribute from the graph.
+		Detaches an edge attribute from the graph.
 
 		Notes
 		-----
