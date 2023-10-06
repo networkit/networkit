@@ -60,7 +60,6 @@ ForEachMacros:
     - BOOST_FOREACH
 IncludeBlocks: Preserve
 IncludeCategories:
-IncludeCategories:
   - Regex: '^<networkit/'
     Priority: 4
   - Regex: '^<(tlx|googletest|ttmath)/'
