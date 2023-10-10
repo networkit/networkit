@@ -1106,12 +1106,17 @@ def guessFileFormat(filepath: str) -> Format:
 	guessFileFormat(filepath)
 
 	Guesses the graph file format using heuristics. May fail and throw an IOException.
+	
+	The running time of this function depends on the file format: 
+	Guessing Binary formats and structured text (GEXF, GraphML, GraphViz, GML, KONECT, MatrixMarket) takes constant time.
+	If the format is EdgeList, METIS or SNAP, running time is linear in the file size.
+
 	Returns networkit.graphio.Format
 
 	Parameters
 	----------
-	filepath : string
-		graph file
+	filepath : str
+		Input file path.
 	"""
 	# first, check for binary formats: look at magic bytes
 
@@ -1184,7 +1189,7 @@ def guessFileFormat(filepath: str) -> Format:
 			# snap check: keep verifying line format while the file could be a snap file
 			# check that all lines have format \d+ \d+ (or are empty lines)
 			if snapFound:
-					match = re.match(r'(^\d+\s\d+$)|(^\s*$)', line)
+					match = re.match(r'(^\d+\s\d+\s*$)|(^\s*$)', line)
 					if not match:
 						snapFound = False
 			
