@@ -166,7 +166,9 @@ static auto min_max_norm(vector<double> data) {
     auto [min, max] = std::minmax_element(data.begin(), data.end());
     auto diff = *max - *min;
     vector<double> norm(data);
-    auto scale = [&](auto e) { return (e - *min) / diff; };
+    // Hint: Use structured bind "min" as init-capture in order to avoid compiler errors
+    // for C++17 and Clang (at least up until C++20).
+    auto scale = [diff, &min = min](auto e) { return (e - *min) / diff; };
     for (auto &e : norm)
         e = scale(e);
 
