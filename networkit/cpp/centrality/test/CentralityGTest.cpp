@@ -41,10 +41,13 @@
 #include <networkit/centrality/KatzCentrality.hpp>
 #include <networkit/centrality/LaplacianCentrality.hpp>
 #include <networkit/centrality/LocalClusteringCoefficient.hpp>
+#include <networkit/centrality/LocalPartitionCoverage.hpp>
 #include <networkit/centrality/LocalSquareClusteringCoefficient.hpp>
 #include <networkit/centrality/PageRank.hpp>
 #include <networkit/centrality/PermanenceCentrality.hpp>
+#include <networkit/centrality/Sfigality.hpp>
 #include <networkit/centrality/SpanningEdgeCentrality.hpp>
+#include <networkit/community/ClusteringGenerator.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
@@ -772,6 +775,139 @@ TEST_F(CentralityGTest, testApproxClosenessCentralityOnToyGraph) {
     EXPECT_NEAR(0.625, cc2[4], tol);
     EXPECT_NEAR(0.5, cc2[5], tol);
     EXPECT_NEAR(0.2, maximum2, tol);
+}
+
+TEST_F(CentralityGTest, testApproxClosenessCentralityOnDirectedToyGraph) {
+    /* Graph:
+     0 -> 3
+     ^   /
+      \ /
+       2    5
+      /  \ /
+     1    4
+    */
+    Graph G(6, false, true);
+
+    G.addEdge(0, 3);
+    G.addEdge(2, 0);
+    G.addEdge(1, 2);
+    G.addEdge(2, 1);
+    G.addEdge(3, 2);
+    G.addEdge(2, 3);
+    G.addEdge(4, 2);
+    G.addEdge(2, 4);
+    G.addEdge(4, 5);
+    G.addEdge(5, 4);
+
+    ApproxCloseness acc(G, 6, 0.1, true);
+    acc.run();
+    std::vector<double> cc = acc.scores();
+    double tol = 0.01;
+
+    EXPECT_NEAR(acc.maximum(), 0.2, tol);
+    EXPECT_NEAR(cc[0], 0.38, tol);
+    EXPECT_NEAR(cc[1], 0.50, tol);
+    EXPECT_NEAR(cc[2], 0.83, tol);
+    EXPECT_NEAR(cc[3], 0.50, tol);
+    EXPECT_NEAR(cc[4], 0.62, tol);
+    EXPECT_NEAR(cc[5], 0.41, tol);
+}
+
+TEST_F(CentralityGTest, testBetweennessMaximum) {
+    /* Graph:
+     0    3
+      \  / \
+       2    5
+      /  \ /
+     1    4
+    */
+    Graph G(6);
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 5);
+    G.addEdge(4, 5);
+    G.indexEdges();
+
+    Betweenness bet(G, false, false);
+    bet.run();
+    EXPECT_EQ(bet.maximum(), 10);
+    EXPECT_NEAR(bet.centralization(), 1.79, 0.01);
+}
+
+TEST_F(CentralityGTest, testBetweennessMaximumNormalized) {
+    /* Graph:
+     0    3
+      \  / \
+       2    5
+      /  \ /
+     1    4
+    */
+    Graph G(6);
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 5);
+    G.addEdge(4, 5);
+    G.indexEdges();
+
+    Betweenness betNormalized(G, true, true);
+    betNormalized.run();
+    EXPECT_EQ(betNormalized.maximum(), 1);
+    EXPECT_NEAR(betNormalized.centralization(), 0.69, 0.01);
+}
+
+TEST_F(CentralityGTest, testLocalPartitionCoverage) {
+    /* Graph:
+     0    3
+      \  / \
+       2    5
+      /  \ /
+     1    4
+    */
+    Graph G(6);
+
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 5);
+    G.addEdge(4, 5);
+
+    ClusteringGenerator clustGen;
+    Partition P = clustGen.makeContinuousBalancedClustering(G, 3);
+
+    LocalPartitionCoverage LPC(G, P);
+    LPC.run();
+    EXPECT_EQ(LPC.maximum(), 1);
+    EXPECT_NEAR(LPC.centralization(), 0.29, 0.01);
+}
+
+TEST_F(CentralityGTest, testSfigality) {
+    /* Graph:
+     0    3
+      \  / \
+       2    5
+      /  \ /
+     1    4
+    */
+    Graph G(6);
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 5);
+    G.addEdge(4, 5);
+
+    Sfigality sf(G);
+    sf.run();
+    auto res = sf.scores();
+    vector<double> expectedRes = {1, 1, 0, 0.5, 0.5, 0};
+    for (index i = 0; i < res.size(); ++i)
+        EXPECT_EQ(res[i], expectedRes[i]);
+    EXPECT_EQ(sf.maximum(), 1);
 }
 
 TEST_F(CentralityGTest, testEdgeBetweennessCentrality) {
@@ -1909,6 +2045,7 @@ TEST_P(CentralityGTest, testDegreeCentrality) {
 
     DegreeCentrality dc(g, false, true, false);
     dc.run();
+    EXPECT_EQ(dc.maximum(), 8);
 
     if (isDirected()) {
         std::array<int, 8> expectedResults{{2, 1, 3, 1, 1, 3, 0, 1}};

@@ -61,13 +61,12 @@ public:
     void runParallelApproximation();
 
     /**
-     * Only used by benchmarking. Computes an approximation by projection and solving Laplacian
-     * systems. Measures the time needed to compute the approximation and writes the problem vectors
-     * to the directory of the graph specified by @a graphPath.
+     * This method is deprecated and will not be supported in future releases.
+     * Use runApproximation() instead.
      * @param directory
      * @return Elapsed time in milliseconds.
      */
-    uint64_t runApproximationAndWriteVectors(const std::string &graphPath);
+    uint64_t TLX_DEPRECATED(runApproximationAndWriteVectors(const std::string &graphPath));
 
     /**
      * @return The elapsed time to setup the solver in milliseconds.

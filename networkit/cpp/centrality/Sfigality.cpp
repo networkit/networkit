@@ -29,8 +29,8 @@ void Sfigality::run() {
 }
 
 double Sfigality::maximum() {
-    throw std::runtime_error("Not Implemented");
-    return G.isEmpty() ? 0. : static_cast<double>(G.numberOfNodes() - 1);
+    assureFinished();
+    return *std::max_element(scoreData.begin(), scoreData.end());
 }
 
 } /* namespace NetworKit */
