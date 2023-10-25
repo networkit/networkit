@@ -38,7 +38,7 @@ Graph::Graph(count n, bool weighted, bool directed, bool edgesIndexed)
       undirected edges*/
       outEdges(n), inEdgeWeights(weighted && directed ? n : 0), outEdgeWeights(weighted ? n : 0),
       inEdgeIds(edgesIndexed && directed ? n : 0), outEdgeIds(edgesIndexed ? n : 0),
-      nodeAttributeMap(this) {}
+      nodeAttributeMap(this), edgeAttributeMap(this) {}
 
 Graph::Graph(std::initializer_list<WeightedEdge> edges) : Graph(0, true) {
     using namespace std;
@@ -628,6 +628,12 @@ void Graph::removeEdge(node u, node v) {
     }
     if (edgesIndexed) {
         erase<edgeid>(u, vi, outEdgeIds);
+        // Make the attributes of this node invalid
+        auto &theMap = nodeAttributeMap.attrMap;
+        for (auto it = theMap.begin(); it != theMap.end(); ++it) {
+            auto attributeStorageBase = it->second.get();
+            attributeStorageBase->invalidate(vi);
+        }
     }
 
     if (directed) {
@@ -901,10 +907,33 @@ bool Graph::checkConsistency() const {
     return noMultiEdges && correctNodeUpperbound && correctNumberOfEdges;
 }
 
-/** NODE ATTRIBUTE INSTANTIATION FOR STRINGS **/
-/** (needed for Python Binding)                    **/
+/* ATTRIBUTE PREMISE AND INDEX CHECKS */
 
-template class Graph::NodeAttribute<std::string>;
-template class Graph::NodeAttributeStorage<std::string>;
+template <>
+void Graph::ASB<Graph::PerNode>::checkPremise() const {
+    // nothing
+}
+
+template <>
+void Graph::ASB<Graph::PerEdge>::checkPremise() const {
+    if (!theGraph->hasEdgeIds()) {
+        throw std::runtime_error("Edges must be indexed");
+    }
+}
+
+template <>
+void Graph::ASB<Graph::PerNode>::indexOK(index n) const {
+    if (!theGraph->hasNode(n)) {
+        throw std::runtime_error("This node does not exist");
+    }
+}
+
+template <>
+void Graph::ASB<Graph::PerEdge>::indexOK(index n) const {
+    auto uv = theGraph->edgeById(n);
+    if (!theGraph->hasEdge(uv.first, uv.second)) {
+        throw std::runtime_error("This edgeId does not exist");
+    }
+}
 
 } /* namespace NetworKit */

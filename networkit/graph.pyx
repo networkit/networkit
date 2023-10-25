@@ -930,6 +930,71 @@ cdef class Graph:
 			raise Exception("Attribute name has to be a string")
 		self._this.detachNodeAttribute(stdstring(name))
 
+	def attachEdgeAttribute(self, name, ofType):
+		"""
+		attachEdgeAttribute(name, ofType)
+
+		Attaches an edge attribute to the graph and returns it.
+
+		.. code-block::
+	
+			A = G.attachEdgeAttribute("attributeIdentifier", ofType)
+
+		All values are initially undefined for existing edges values can be set/get by 
+
+		.. code-block:: 
+
+			A[edgeId] = value # set
+			value = A[edgeId] # get
+
+		Getting undefined values raises a ValueError removing an edge makes all
+		its attributes undefined
+
+		Notes
+		-----
+		Using edge attributes is in experimental state. The API may change in future updates.
+
+		Parameters
+		----------
+		name   : str
+			Name for this attribute
+		ofType : type
+			Type of the attribute (either int, float, or str)
+
+		Returns
+		-------
+		networkit.graph.EdgeAttribute
+			The resulting edge attribute container.
+		"""
+		if not isinstance(name, str):
+			raise Exception("Attribute name has to be a string")
+
+		if ofType == int:
+			return EdgeAttribute(EdgeIntAttribute().setThis(self._this.attachEdgeIntAttribute(stdstring(name)), &self._this), int)
+		elif ofType == float:
+			return EdgeAttribute(EdgeDoubleAttribute().setThis(self._this.attachEdgeDoubleAttribute(stdstring(name)), &self._this), float)
+		elif ofType == str:
+			return EdgeAttribute(EdgeStringAttribute().setThis(self._this.attachEdgeStringAttribute(stdstring(name)), &self._this), str)
+
+	def detachEdgeAttribute(self, name):
+		"""
+		detachEdgeAttribute(name)
+
+		Detaches an edge attribute from the graph.
+
+		Notes
+		-----
+		Using edge attributes is in experimental state. The API may change in future updates.
+
+		Parameters
+		----------
+		name : str
+			The distinguished name for the attribute to detach.
+		"""
+		if not isinstance(name, str):
+			raise Exception("Attribute name has to be a string")
+		self._this.detachEdgeAttribute(stdstring(name))
+
 # The following 3 classes NodeIntAttribute, NodeDoubleAttribute and 
 # NodeStringAttribute are helper classes which cannot be generalized because
 # they map to different C++ classes even if these are generated from the same
@@ -1090,10 +1155,10 @@ class NodeAttribute:
 	def __getitem__(self, node):
 		return self.attr[node]
 
-	def __setitem__(self, index, value):
+	def __setitem__(self, node, value):
 		if not isinstance(value, self.type):
 			raise Exception("Wrong Attribute type")
-		self.attr[index] = value
+		self.attr[node] = value
 
 	def __iter__(self):
 		self._iter = iter(self.attr)
@@ -1101,6 +1166,219 @@ class NodeAttribute:
 
 	def __next__(self):
 		return next(self._iter)
+
+
+# The following 3 classes EdgeIntAttribute, EdgeDoubleAttribute and 
+# EdgeStringAttribute are helper classes which cannot be generalized because
+# they map to different C++ classes even if these are generated from the same
+# C++ template - this results in some unpleasant code duplication.
+# The generic (pure python) wrapper class for the user is EdgeAttribute
+
+cdef class EdgeIntAttribute:
+
+	cdef setThis(self, _EdgeIntAttribute& other, _Graph* G):
+		self._this.swap(other)
+		self._G = G
+		return self
+
+	def __getitem__(self, edgeIdORnodePair):
+		try:
+			u, v = edgeIdORnodePair
+			try:
+				return self._this.get2(u, v)
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			return self._this.get(edgeIdORnodePair)
+		except Exception as e:
+			raise ValueError(str(e))
+
+	def __setitem__(self, edgeIdORnodePair, value):
+		try:
+			u, v = edgeIdORnodePair
+			try:
+				self._this.set2(u,v,value)
+				return
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			self._this.set(edgeIdORnodePair, value)
+			return
+		except Exception as e:
+			raise ValueError(str(e))
+
+	def __iter__(self):
+		try:
+			self._iter = self._this.begin()
+		except Exception as e:
+			raise ValueError(str(e))
+
+		self._stopiter = self._this.end()
+		return self
+
+	def __next__(self):
+		if self._iter == self._stopiter:
+			raise StopIteration()
+		val = dereference(self._iter)
+		preincrement(self._iter)
+		return val
+
+
+cdef class EdgeDoubleAttribute:
+	cdef setThis(self, _EdgeDoubleAttribute& other, _Graph* G):
+		self._this.swap(other)
+		self._G = G
+		return self
+
+	def __getitem__(self, edgeIdORnodePair):
+		try:
+			u, v = edgeIdORnodePair
+			try:
+				return self._this.get2(u, v)
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			return self._this.get(edgeIdORnodePair)
+		except Exception as e:
+			raise ValueError(str(e))
+
+	def __setitem__(self, edgeIdORnodePair, value):
+		try:
+			u, v = edgeIdORnodePair
+			try:
+				self._this.set2(u,v,value)
+				return
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			self._this.set(edgeIdORnodePair, value)
+			return
+		except Exception as e:
+			raise ValueError(str(e))
+
+	def __iter__(self):
+		try:
+			self._iter = self._this.begin()
+		except Exception as e:
+			raise ValueError(str(e))
+		self._stopiter = self._this.end()
+		return self
+
+	def __next__(self):
+		if self._iter == self._stopiter:
+			raise StopIteration()
+		val = dereference(self._iter)
+		preincrement(self._iter)
+		return val
+
+cdef class EdgeStringAttribute:
+
+	cdef setThis(self, _EdgeStringAttribute& other, _Graph* G):
+		self._this.swap(other)
+		self._G = G
+		return self
+
+	def __getitem__(self, edgeIdORnodePair):
+		try:
+			u, v = edgeIdORnodePair
+			try:
+				return pystring(self._this.get2(u, v))
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			return pystring(self._this.get(edgeIdORnodePair))
+		except Exception as e:
+			raise ValueError(str(e))
+
+	def __setitem__(self, edgeIdORnodePair, value):
+		try:
+			u, v = edgeIdORnodePair
+			try:
+				self._this.set2(u, v, stdstring(value))
+				return
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			self._this.set(edgeIdORnodePair, stdstring(value))
+			return
+		except Exception as e:
+			raise ValueError(str(e))
+
+	def __iter__(self):
+		try:
+			self._iter = self._this.begin()
+		except Exception as e:
+			raise ValueError(str(e))
+		self._stopiter = self._this.end()
+		return self
+
+	def __next__(self):
+		if self._iter == self._stopiter:
+			raise StopIteration()
+		val = dereference(self._iter)
+		val = (val[0], pystring(val[1]))
+		preincrement(self._iter)
+		return val
+
+class EdgeAttribute:
+	"""
+	Generic class for edge attributes returned by networkit.graph.attachEdgeAttribute().
+	Example of attaching an int attribute to a graph g:
+
+	.. code-block::
+
+		att = g.attachEdgeAttribute("name", int)`
+
+	Set/get attributes of a single edgeId 'eid' with the [] operator:
+
+	.. code-block::
+
+		att[eid] = 0
+		att_val = att[eid] # 'att_val' is 0
+
+	Iterate over all the values of an attribute:
+
+	.. code-block::
+
+		for eid, val in att:
+			# The attribute value of edge `eid` is `val`.
+
+	Notes
+	-----
+	Using edge attributes is in experimental state. The API may change in future updates.
+	"""
+
+	def __init__(self, typedEdgeAttribute, type):
+		self.attr = typedEdgeAttribute
+		self.type = type
+
+	def __getitem__(self, edgeIdORnodePair):
+		return self.attr[edgeIdORnodePair]
+
+	def __setitem__(self, edgeIdORnodePair, value):
+		if not isinstance(value, self.type):
+			raise Exception("Wrong Attribute type")
+		self.attr[edgeIdORnodePair] = value
+
+	def __iter__(self):
+		self._iter = iter(self.attr)
+		return self
+
+	def __next__(self):
+		return next(self._iter)
+
 
 cdef cppclass EdgeCallBackWrapper:
 	void* callback
