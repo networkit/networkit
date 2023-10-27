@@ -105,7 +105,32 @@ class TestCentrality(unittest.TestCase):
 			CLL = nk.centrality.CoreDecomposition(tmp)
 			CLL.run()
 			self.assertTrue(self.checkCovers(CL.getCover(),CLL.getCover()))
-	
+   
+	def testComplexPathsAllNodes(self):
+		CP = nk.centrality.ComplexPaths(self.L, 3)
+		CP.run()
+
+		res = CP.getPLci() 
+		self.assertEqual(len(res), self.L.numberOfNodes())     
+  
+	def testComplexPathsSingleNode(self):
+		G = nk.Graph(8)
+		G.addEdge(0, 2)
+		G.addEdge(1, 2)
+		G.addEdge(2, 3)
+		G.addEdge(2, 4)
+		G.addEdge(3, 5)
+		G.addEdge(4, 5)
+		G.addEdge(4, 7)
+		G.addEdge(5, 6)
+		G.addEdge(6, 7)
+  
+		CP = nk.centrality.ComplexPaths(G, 2, "singleNode", 0)
+		CP.run()
+
+		res = CP.getAdopters()
+		self.assertListEqual(res, [0, 2])
+       
 	def testDegreeCentrality(self):
 		g = nk.Graph(8, False, False)
 

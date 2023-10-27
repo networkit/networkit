@@ -2969,7 +2969,7 @@ cdef class ComplexPaths(Algorithm):
 		The graph.
 
 	threshold : int
-		The complex path width: minimal numer of neighbors
+		The complex path width: minimal number of neighbors
 
 	mode : ComplexPathMode
 		ComplexPathMode.allNodes: calculate complex path lengths
@@ -2982,7 +2982,11 @@ cdef class ComplexPaths(Algorithm):
 
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, threshold=3, _Mode mode=ComplexPathMode.allNodes, start=_none):
+	def __cinit__(self, Graph G, threshold=3, mode="allNodes", start=_none):
+		if mode=="allNodes":
+			mode=ComplexPathMode.allNodes
+		if mode=="singleNode":
+			mode=ComplexPathMode.singleNode
 		self._G = G
 		self._this = new _ComplexPaths(G._this, threshold, mode, start)
 
@@ -3020,7 +3024,7 @@ cdef class ComplexPaths(Algorithm):
 
 		Returns all nodes in the complex subgraph with at least
 		threshold neighbors (those who are adopted/infected when 
-		starting in start
+		starting in start)
 
 		Returns
 		-------
