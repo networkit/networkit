@@ -1752,14 +1752,16 @@ TEST_P(GraphGTest, testForWeightedInNeighborsOf) {
     }
 }
 
-TEST_P(GraphGTest, forInEdgesOf) {
+TEST_P(GraphGTest, testForInEdgesOf) {
     std::vector<bool> visited(this->n_house, false);
     this->Ghouse.forInEdgesOf(3, [&](node u, node v) {
-        ASSERT_EQ(3u, v);
-        ASSERT_TRUE(this->Ahouse[u][v] > 0.0);
-        ASSERT_TRUE(this->Ghouse.hasEdge(u, v));
-        ASSERT_FALSE(visited[u]);
-        visited[u] = true;
+        ASSERT_EQ(3u, u);
+        if (isDirected()) {
+            ASSERT_TRUE(this->Ahouse[v][u] > 0.0);
+            ASSERT_TRUE(this->Ghouse.hasEdge(v, u));
+        }
+        ASSERT_FALSE(visited[v]);
+        visited[v] = true;
     });
 
     if (isDirected()) {
@@ -2238,9 +2240,9 @@ TEST_P(GraphGTest, testEdgeIdsSortingAfterRemove) {
             u, [&](node, node v, edgeweight, edgeid) { allNeighborsOfOriginal.push_back(v); });
 
         // check that both neighbor vectors are equivalent
-        ASSERT_EQ(allNeighborsOfG.size(), allNeighborsOfOriginal.size());
-        for (index i = 0; i < allNeighborsOfG.size() && i < allNeighborsOfOriginal.size(); ++i) {
-            ASSERT_EQ(allNeighborsOfG[i], allNeighborsOfOriginal[i]);
+        EXPECT_EQ(allNeighborsOfG.size(), allNeighborsOfOriginal.size());
+        for (index i = 0; i < allNeighborsOfG.size(); ++i) {
+            EXPECT_EQ(allNeighborsOfG[i], allNeighborsOfOriginal[i]);
         }
 
         if (!isDirected())
@@ -2258,10 +2260,9 @@ TEST_P(GraphGTest, testEdgeIdsSortingAfterRemove) {
             u, [&](node, node v, edgeweight, edgeid) { allInNeighborsOfOriginal.push_back(v); });
 
         // check that both in-neighbor vectors are equivalent
-        ASSERT_EQ(allInNeighborsOfG.size(), allInNeighborsOfOriginal.size());
-        for (index i = 0; i < allInNeighborsOfG.size() && i < allInNeighborsOfOriginal.size();
-             ++i) {
-            ASSERT_EQ(allInNeighborsOfG[i], allInNeighborsOfOriginal[i]);
+        EXPECT_EQ(allInNeighborsOfG.size(), allInNeighborsOfOriginal.size());
+        for (index i = 0; i < allInNeighborsOfG.size(); ++i) {
+            EXPECT_EQ(allInNeighborsOfG[i], allInNeighborsOfOriginal[i]);
         }
     });
 }
