@@ -659,7 +659,7 @@ void Graph::removeEdge(node u, node v, bool maintainSortedEdges, bool maintainCo
         index cur = vi;
 
         // sort edges of source node from deleted index upwards
-        while (cur < outEdges[u].size() && outEdges[u][cur] > outEdges[u][cur + 1]) {
+        while (cur + 1 < outEdges[u].size() && outEdges[u][cur] > outEdges[u][cur + 1]) {
             std::swap(outEdges[u][cur], outEdges[u][cur + 1]);
             if (edgesIndexed) {
                 std::swap(outEdgeIds[u][cur], outEdgeIds[u][cur + 1]);
@@ -671,7 +671,7 @@ void Graph::removeEdge(node u, node v, bool maintainSortedEdges, bool maintainCo
             cur = ui;
 
             // sort edges of target node from deleted index upwards
-            while (cur < outEdges[v].size() && outEdges[v][cur] > outEdges[v][cur + 1]) {
+            while (cur + 1 < outEdges[v].size() && outEdges[v][cur] > outEdges[v][cur + 1]) {
                 std::swap(outEdges[v][cur], outEdges[v][cur + 1]);
                 if (edgesIndexed) {
                     std::swap(outEdgeIds[v][cur], outEdgeIds[v][cur + 1]);
@@ -706,7 +706,7 @@ void Graph::removeEdge(node u, node v, bool maintainSortedEdges, bool maintainCo
             index cur = ui;
 
             // sort edges of target node from deleted index upwards
-            while (inEdges[v][cur] > inEdges[v][cur + 1] && cur < inEdges[v].size()) {
+            while (cur + 1 < inEdges[v].size() && inEdges[v][cur] > inEdges[v][cur + 1]) {
                 std::swap(inEdges[v][cur], inEdges[v][cur + 1]);
                 if (edgesIndexed) {
                     std::swap(inEdgeIds[v][cur], inEdgeIds[v][cur + 1]);
