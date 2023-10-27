@@ -20,6 +20,7 @@
 #include <networkit/centrality/ApproxSpanningEdge.hpp>
 #include <networkit/centrality/Betweenness.hpp>
 #include <networkit/centrality/Closeness.hpp>
+#include <networkit/centrality/ComplexPaths.hpp>
 #include <networkit/centrality/CoreDecomposition.hpp>
 #include <networkit/centrality/DegreeCentrality.hpp>
 #include <networkit/centrality/DynApproxBetweenness.hpp>
@@ -2323,6 +2324,74 @@ TEST_F(CentralityGTest, testForestCentrality) {
     G.forNodes([&](node u) { EXPECT_NEAR(apxDiag[u], diag[u], eps); });
 
     EXPECT_EQ(fc.scores().size(), G.upperNodeIdBound());
+}
+
+TEST_F(CentralityGTest, testComplexPathsSingleNode) {
+    /* Graph:
+     0    3
+      \  / \
+       2   5 - 6
+      / \ /     \
+     1   4 - - - 7 */
+    Graph G(8);
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 5);
+    G.addEdge(4, 5);
+    G.addEdge(4, 7);
+    G.addEdge(5, 6);
+    G.addEdge(6, 7);
+    Aux::Random::setSeed(42, false);
+
+    count threshold = 2;
+    ComplexPathAlgorithm CP(G, threshold, NetworKit::ComplexPathAlgorithm::singleNode, 0);
+    CP.run();
+
+    auto adopters = CP.getAdopters();
+    // only the neighbour(2) of startnode(0) will adopt
+    for (auto adoptee : adopters)
+        EXPECT_TRUE(adoptee == 0 || adoptee == 2);
+
+    auto resG = CP.getComplexGraph();
+    EXPECT_EQ(resG.numberOfNodes(), G.numberOfNodes());
+    EXPECT_EQ(resG.numberOfEdges(), 4);
+
+    // the remaining subgraph only contains the edges that are connected to node 2, because the
+    // adoption does not spread further
+    resG.forEdges([&](node u, node v) { EXPECT_TRUE(u == 2 || v == 2); });
+}
+
+TEST_F(CentralityGTest, testComplexPathsAllNodes) {
+    /* Graph:
+     0    3
+      \  / \
+       2   5 - 6
+      / \ /     \
+     1   4 - - - 7 */
+    Graph G(8);
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 5);
+    G.addEdge(4, 5);
+    G.addEdge(4, 7);
+    G.addEdge(5, 6);
+    G.addEdge(6, 7);
+    Aux::Random::setSeed(42, false);
+
+    count numberOfPaths = 2;
+    ComplexPathAlgorithm CP(G, numberOfPaths, NetworKit::ComplexPathAlgorithm::allNodes);
+    CP.run();
+
+    auto normalizedProbability = CP.getPLci();
+    // cannot ensure same values, therefore, checking size and type of result
+    EXPECT_EQ(normalizedProbability.size(), G.numberOfNodes());
+    for (index i = 0; i < normalizedProbability.size(); ++i) {
+        EXPECT_EQ(typeid(normalizedProbability[i]), typeid(double));
+    }
 }
 
 } /* namespace NetworKit */
