@@ -1,5 +1,6 @@
 *.trace
 *.mk
+*.swp
 lamg-2.2-2
 CMG_101014
 instances

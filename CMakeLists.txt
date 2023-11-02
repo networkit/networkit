@@ -269,7 +269,7 @@ if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
-	
+
 	install(TARGETS networkit
 			LIBRARY DESTINATION ${NETWORKIT_LIB_DEST}
 			ARCHIVE DESTINATION ${NETWORKIT_LIB_DEST}
@@ -293,9 +293,9 @@ endif()
 if(NETWORKIT_PYTHON)
 
 	if(WIN32)
-		# Linking against Python3_libs is only neccessary on Windows. On other OSes 
+		# Linking against Python3_libs is only neccessary on Windows. On other OSes
 		# this can lead to segmentation faults when importing NetworKit in Python.
-		if(${CMAKE_VERSION} VERSION_LESS "3.12.0") 
+		if(${CMAKE_VERSION} VERSION_LESS "3.12.0")
 			FIND_PACKAGE(FindPythonLibs ${NETWORKIT_PYTHON_VERSION} EXACT REQUIRED)
 		else()
 			FIND_PACKAGE(Python3 ${NETWORKIT_PYTHON_VERSION} EXACT COMPONENTS Interpreter Development REQUIRED)
@@ -306,7 +306,7 @@ if(NETWORKIT_PYTHON)
 			 distance dynamics dynbase embedding engineering flow generators globals graph graphio
 			 graphtools helpers independentset linkprediction matching
 			 randomization reachability scd simulation sparsification stats
-			 structures traversal viz)
+			 structures subgraphs traversal viz)
 
 		if(NOT EXISTS "${PROJECT_SOURCE_DIR}/networkit/${EXT}.cpp")
 			message(FATAL_ERROR "networkit/${EXT}.cpp is missing. Invoke Cython manually.")
