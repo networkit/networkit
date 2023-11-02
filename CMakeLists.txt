@@ -231,6 +231,18 @@ else()
 endif()
 
 ################################################################################
+# Use girgs as a CMake submodule
+if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/girgs/CMakeLists.txt")
+	option(BUILD_SHARED_LIBS	""	OFF)
+	option(OPTION_BUILD_CLI		""	OFF)
+	add_subdirectory(extlibs/girgs EXCLUDE_FROM_ALL)
+else()
+	message(FATAL_ERROR
+			"Missing GIRGs library in extlibs/girgs "
+			"Please run `git submodule update --init` to fetch the submodule.")
+endif()
+
+################################################################################
 # NETWORKIT MODULES
 if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 
@@ -263,7 +275,7 @@ if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 		target_include_directories(networkit_state BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 	endif()
 
-	target_link_libraries(networkit PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
+	target_link_libraries(networkit PRIVATE OpenMP::OpenMP_CXX girgs::girgs PUBLIC tlx)
 
 	set_target_properties(networkit PROPERTIES
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
@@ -388,7 +400,7 @@ function(networkit_add_module modname)
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
 
-		target_link_libraries(${MODULE_TARGET} PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
+		target_link_libraries(${MODULE_TARGET} PRIVATE OpenMP::OpenMP_CXX girgs::girgs PUBLIC tlx)
 		target_include_directories(${MODULE_TARGET} BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 		target_include_directories(${MODULE_TARGET} PUBLIC "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
 
