@@ -12,6 +12,8 @@
 #include <networkit/graph/Graph.hpp>
 
 #include <networkit/io/METISGraphReader.hpp>
+#include <networkit/linkprediction/AdamicAdarIndex.hpp>
+#include <networkit/linkprediction/AdjustedRandIndex.hpp>
 #include <networkit/linkprediction/CommonNeighborsIndex.hpp>
 #include <networkit/linkprediction/JaccardIndex.hpp>
 #include <networkit/linkprediction/KatzIndex.hpp>
@@ -23,6 +25,7 @@
 #include <networkit/linkprediction/PredictionsSorter.hpp>
 #include <networkit/linkprediction/ROCMetric.hpp>
 #include <networkit/linkprediction/RandomLinkSampler.hpp>
+#include <networkit/linkprediction/ResourceAllocationIndex.hpp>
 #include <networkit/linkprediction/SameCommunityIndex.hpp>
 #include <networkit/linkprediction/TotalNeighborsIndex.hpp>
 #include <networkit/linkprediction/UDegreeIndex.hpp>
@@ -239,6 +242,71 @@ TEST_F(LinkPredictionGTest, testKatzRunOnOrdering) {
     for (index i = 0; i < preds.size() - 1; ++i) {
         EXPECT_TRUE(preds[i].first.first < preds[i + 1].first.first
                     || preds[i].first.second < preds[i + 1].first.second);
+    }
+}
+
+TEST_F(LinkPredictionGTest, testAdamicAdarIndex) {
+    METISGraphReader graphReader;
+    Graph G = graphReader.read("input/jazz.graph");
+
+    AdamicAdarIndex AAI(G);
+    std::vector<NetworKit::LinkPredictor::prediction> preds = AAI.runAll();
+    for (auto const &pred : preds) {
+        // check for each pair of nodes that no edge exists
+        EXPECT_FALSE(G.hasEdge(pred.first.first, pred.first.second));
+        // expect each value to be smaller than the number of common neighbors
+        auto commonNeighbors =
+            NeighborhoodUtility::getCommonNeighbors(G, pred.first.first, pred.first.second);
+        EXPECT_LE(pred.second, commonNeighbors.size());
+    }
+}
+
+TEST_F(LinkPredictionGTest, testAdjustedRandIndex) {
+    METISGraphReader graphReader;
+    Graph G = graphReader.read("input/tiny_01.graph");
+
+    AdjustedRandIndex ARI(G);
+    std::vector<NetworKit::LinkPredictor::prediction> preds = ARI.runAll();
+    std::vector<double> expectedRes = {0,     -0.42, -0.54, -0.71, 0,     -0.23, -0.54,
+                                       -0.37, 0,     -0.42, -0.54, -0.42, 0,     -0.42,
+                                       -0.23, -0.42, 0,     -0.37, -0.54, -0.54, -0.42,
+                                       0,     -0.71, -0.37, -0.54, -0.37, 0};
+    index i = 0;
+    for (auto const &pred : preds) {
+        // check for each pair of nodes that no edge exists
+        EXPECT_FALSE(G.hasEdge(pred.first.first, pred.first.second));
+        // expect correct result for tiny example
+        EXPECT_NEAR(pred.second, expectedRes[i++], 0.01);
+    }
+}
+
+TEST_F(LinkPredictionGTest, testResourceAllocationIndex) {
+    METISGraphReader graphReader;
+    Graph G = graphReader.read("input/jazz.graph");
+
+    ResourceAllocationIndex RAI(G);
+    std::vector<NetworKit::LinkPredictor::prediction> preds = RAI.runAll();
+    for (auto const &pred : preds) {
+        // check for each pair of nodes that no edge exists
+        EXPECT_FALSE(G.hasEdge(pred.first.first, pred.first.second));
+        // expect each value to be smaller than the number of common neighbors
+        auto commonNeighbors =
+            NeighborhoodUtility::getCommonNeighbors(G, pred.first.first, pred.first.second);
+        EXPECT_LE(pred.second, commonNeighbors.size());
+    }
+}
+
+TEST_F(LinkPredictionGTest, testSameCommunityIndex) {
+    METISGraphReader graphReader;
+    Graph G = graphReader.read("input/jazz.graph");
+
+    SameCommunityIndex SCI(G);
+    std::vector<NetworKit::LinkPredictor::prediction> preds = SCI.runAll();
+    for (auto const &pred : preds) {
+        // check for each pair of nodes that no edge exists
+        EXPECT_FALSE(G.hasEdge(pred.first.first, pred.first.second));
+        // expect each pair of nodes to either share a community (1) or not(0)
+        EXPECT_TRUE(pred.second == 1 || pred.second == 0);
     }
 }
 
