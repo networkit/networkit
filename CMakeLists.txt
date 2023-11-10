@@ -19,6 +19,7 @@ option(NETWORKIT_FLATINSTALL "Install into a flat directory structure (useful wh
 option(NETWORKIT_COVERAGE "Build with support for coverage" OFF)
 option(NETWORKIT_SANITY_CHECKS "Algorithms will perform further (expensive) checks" OFF)
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
+set(NETWORKIT_NUMPY "" CACHE STRING "Directory containing Numpy.h.")
 set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Implies MONOLITH=TRUE")
 set(NETWORKIT_WITH_SANITIZERS "" CACHE STRING "Uses sanitizers during the compilation")
 set(NETWORKIT_RELEASE_LOGGING "AUTO" CACHE STRING "Do not compile log messages at levels TRACE or DEBUG (AUTO|ON|OFF)")
@@ -298,10 +299,10 @@ if(NETWORKIT_PYTHON)
 		if(${CMAKE_VERSION} VERSION_LESS "3.12.0") 
 			FIND_PACKAGE(FindPythonLibs ${NETWORKIT_PYTHON_VERSION} EXACT REQUIRED)
 		else()
-			FIND_PACKAGE(Python3 ${NETWORKIT_PYTHON_VERSION} EXACT COMPONENTS Interpreter Development REQUIRED)
+			FIND_PACKAGE(Python3 ${NETWORKIT_PYTHON_VERSION} EXACT COMPONENTS Interpreter Development NumPy REQUIRED)
 		endif()
 	endif()
-
+	
 	foreach (EXT base centrality clique coarsening community components correlation
 			 distance dynamics dynbase embedding engineering flow generators globals graph graphio
 			 graphtools helpers independentset linkprediction matching
@@ -318,6 +319,7 @@ if(NETWORKIT_PYTHON)
 		target_include_directories(${TARGET_LIB} BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 		target_include_directories(${TARGET_LIB} PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
 		target_include_directories(${TARGET_LIB} PRIVATE "${NETWORKIT_PYTHON}")
+		target_include_directories(${TARGET_LIB} PUBLIC "${NETWORKIT_NUMPY}")
 
 		if(NOT NETWORKIT_BUILD_CORE)
 			if(NOT EXTERNAL_NETWORKIT_CORE)

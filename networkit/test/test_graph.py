@@ -3,9 +3,50 @@ import unittest
 import random
 import networkit as nk
 import pickle
+import numpy as np
+import scipy as sc
 
 class TestGraph(unittest.TestCase):
-	
+
+	def testConstructorWithCooAndNumNodes(self):
+		row = np.array([0, 1, 2])
+		col = np.array([1, 2, 0])
+		data = np.array([1.0, 2.0, 3.0])
+
+		for weighted in [True, False]:
+			for directed in [True, False]:
+				G = nk.GraphFromCoo((data, (row, col)), n = 3, directed = directed, weighted = weighted)
+				self.assertEqual(G.isDirected(), directed)
+				self.assertEqual(G.isWeighted(), weighted)
+				self.assertEqual(G.numberOfNodes(), 3)
+				self.assertEqual(G.numberOfEdges(), 3)
+
+	def testConstructorWithCoo(self):
+		row = np.array([0, 1, 2])
+		col = np.array([1, 2, 0])
+
+		for weighted in [True, False]:
+			for directed in [True, False]:
+				G = nk.GraphFromCoo((row, col), directed = directed, weighted = weighted)
+				self.assertEqual(G.isDirected(), directed)
+				self.assertEqual(G.isWeighted(), weighted)
+				self.assertEqual(G.numberOfNodes(), 3)
+				self.assertEqual(G.numberOfEdges(), 3)
+
+	def testConstructorWithMatrix(self):
+		row = np.array([0, 1, 2])
+		col = np.array([1, 2, 0])
+		data = np.array([1.0, 2.0, 3.0])
+		S = sc.sparse.coo_matrix((data, (row, col)), dtype = np.double)
+
+		for weighted in [True, False]:
+			for directed in [True, False]:
+				G = nk.GraphFromCoo(S, n = 3, directed = directed, weighted = weighted)
+				self.assertEqual(G.isDirected(), directed)
+				self.assertEqual(G.isWeighted(), weighted)
+				self.assertEqual(G.numberOfNodes(), 3)
+				self.assertEqual(G.numberOfEdges(), 3)
+
 	def testAddNodes(self):
 		G = nk.Graph(0)
 		G.addNodes(10)
@@ -54,6 +95,68 @@ class TestGraph(unittest.TestCase):
 				for u, v, w in g.iterEdgesWeights():
 					self.assertTrue(g.hasEdge(u, v))
 					self.assertEqual(g.weight(u, v), w)
+
+	def testAddEdgesCooArrayWithArrayUndirected(self):
+		# Using syntax similar to: https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_array.html
+		row = np.array([0, 1, 2])
+		col = np.array([1, 2, 0])
+		data = np.array([1.0, 2.0, 3.0])
+
+		G = nk.Graph(4)
+		G.addEdges((data, (row, col)))
+
+		self.assertEqual(G.numberOfEdges(), len(row))
+		for i in range(len(row)):
+			self.assertTrue(G.hasEdge(row[i], col[i]))
+			self.assertTrue(G.hasEdge(col[i],row[i]))
+
+	def testAddEdgesCooArrayWithArrayDirected(self):
+		# Using syntax similar to: https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_array.html
+		row = np.array([0, 1, 2])
+		col = np.array([1, 2, 0])
+		data = np.array([1.0, 2.0, 3.0])
+
+		G = nk.Graph(4, directed = True)
+		G.addEdges((data, (row, col)))
+
+		self.assertEqual(G.numberOfEdges(), len(row))
+		for i in range(len(row)):
+			self.assertTrue(G.hasEdge(row[i], col[i]))
+			self.assertFalse(G.hasEdge(col[i],row[i]))
+
+	def testAddEdgesCooArrayWithArrayWeighted(self):
+		# Using syntax similar to: https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_array.html
+		row = np.array([0, 1, 2])
+		col = np.array([1, 2, 0])
+		data = np.array([1.0, 2.0, 3.0])
+
+		G = nk.Graph(4, weighted = True)
+		G.addEdges((data, (row, col)))
+
+		for i in range(len(row)):
+			self.assertEqual(G.weight(row[i], col[i]), data[i])
+
+	def testAddEdgesCooArrayWithCoordsOnly(self):
+		row = np.array([0, 1, 2])
+		col = np.array([1, 2, 0])
+
+		G = nk.Graph(4, weighted = True)
+		G.addEdges((row, col))
+
+		for i in range(len(row)):
+			self.assertEqual(G.weight(row[i], col[i]), 1.0)
+
+	def testAddEdgesCooArrayWithMatrix(self):
+
+		S = sc.sparse.coo_matrix([[0, 1, 0],[1, 0, 0],[0.0, 0.0, 1.0]], dtype = np.double)
+
+		G = nk.Graph(4)
+		G.addEdges(S)
+
+		self.assertEqual(G.numberOfEdges(), S.nnz)
+
+		for i in range(len(S.row)):
+			self.assertTrue(G.hasEdge(S.row[i], S.col[i]))
 
 	def testGraphPickling(self):
 		G = nk.Graph(2)
@@ -318,7 +421,7 @@ class TestGraph(unittest.TestCase):
 					G.removeEdge(u, v)
 					self.assertFalse(G.hasEdge(u, v))
 				self.assertEqual(G.numberOfEdges(), 0)				
-	
+
 	def testSpanningForest(self):
 		G = self.getSmallGraph()
 		sf = nk.graph.SpanningForest(G)
