@@ -33,6 +33,8 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 
+#include <tlx/define/deprecated.hpp>
+
 namespace NetworKit {
 
 struct Edge {
@@ -1714,10 +1716,11 @@ public:
     void shrinkToFit();
 
     /**
+     * DEPRECATED: this function will no longer be supported in later releases.
      * Compacts the adjacency arrays by re-using no longer needed slots from
      * deleted edges.
      */
-    void compactEdges();
+    void TLX_DEPRECATED(compactEdges());
 
     /**
      * Sorts the adjacency arrays by node id. While the running time is linear
@@ -1981,8 +1984,17 @@ public:
      * Removes the undirected edge {@a u,@a v}.
      * @param u Endpoint of edge.
      * @param v Endpoint of edge.
+     * @param maintainSortedEdges If set to true, the ingoing and outgoing adjacency vectors will
+     * automatically be updated to maintain a sorting (if it existed before) by performing up to n-1
+     * swaps. If the user plans to remove multiple edges, better set it to false and call
+     * sortEdges() afterwards to avoid redundant swaps. Default = false.
+     * @param maintainCompactEdgeIDs If set to true, the EdgeIDs will automatically be adjusted,
+     * so that no gaps in between IDs exist. If the user plans to remove multiple edges, better set
+     * it to false and call indexEdges(force=true) afterwards to avoid redundant re-indexing.
+     * Default = false.
      */
-    void removeEdge(node u, node v);
+    void removeEdge(node u, node v, bool maintainSortedEdges = false,
+                    bool maintainCompactEdgeIDs = false);
 
     /**
      * Removes all the edges in the graph.

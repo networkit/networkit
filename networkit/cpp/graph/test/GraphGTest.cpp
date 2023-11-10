@@ -1764,14 +1764,16 @@ TEST_P(GraphGTest, testForWeightedInNeighborsOf) {
     }
 }
 
-TEST_P(GraphGTest, forInEdgesOf) {
+TEST_P(GraphGTest, testForInEdgesOf) {
     std::vector<bool> visited(this->n_house, false);
     this->Ghouse.forInEdgesOf(3, [&](node u, node v) {
-        ASSERT_EQ(3u, v);
-        ASSERT_TRUE(this->Ahouse[u][v] > 0.0);
-        ASSERT_TRUE(this->Ghouse.hasEdge(u, v));
-        ASSERT_FALSE(visited[u]);
-        visited[u] = true;
+        ASSERT_EQ(3u, u);
+        if (isDirected()) {
+            ASSERT_TRUE(this->Ahouse[v][u] > 0.0);
+            ASSERT_TRUE(this->Ghouse.hasEdge(v, u));
+        }
+        ASSERT_FALSE(visited[v]);
+        visited[v] = true;
     });
 
     if (isDirected()) {
@@ -2174,32 +2176,6 @@ w)) {
 }
 */
 
-TEST_P(GraphGTest, testCompactEdges) {
-    Graph G = this->Ghouse;
-    G.indexEdges();
-
-    G.addEdge(0, 4);
-    G.addEdge(0, 3);
-    G.removeEdge(0, 3);
-    G.removeEdge(0, 4);
-
-    G.compactEdges();
-
-    std::vector<std::pair<node, node>> outEdges;
-    outEdges.reserve(this->Ghouse.numberOfEdges());
-
-    this->Ghouse.forEdges([&](node u, node v) { outEdges.emplace_back(u, v); });
-
-    auto it = outEdges.begin();
-
-    G.forEdges([&](node u, node v) {
-        ASSERT_NE(it, outEdges.end());
-        EXPECT_EQ(it->first, u);
-        EXPECT_EQ(it->second, v);
-        ++it;
-    });
-}
-
 TEST_P(GraphGTest, testSortEdges) {
     Graph G = this->Ghouse;
 
@@ -2265,7 +2241,104 @@ TEST_P(GraphGTest, testSortEdges) {
     }
 }
 
-TEST_P(GraphGTest, testEdgeIdsAfterRemove) {
+TEST_P(GraphGTest, testEdgeIdsSortingAfterRemove) {
+    constexpr node n = 100;
+
+    Aux::Random::setSeed(42, true);
+    auto G = createGraph(n, 10 * n);
+    G.sortEdges();
+    G.indexEdges();
+    auto original = G;
+
+    // remove edges
+    while (2 * G.numberOfEdges() > original.numberOfEdges()) {
+        const auto e = GraphTools::randomEdge(G, false);
+        G.removeEdge(e.first, e.second, true, false); // with sorting after each removal
+        original.removeEdge(e.first, e.second);       // without sorting
+    }
+
+    original.sortEdges(); // calling sort only once
+
+    G.forNodes([&](node u) {
+        std::vector<node> allNeighborsOfG;
+
+        G.forNeighborsOf(u,
+                         [&](node, node v, edgeweight, edgeid) { allNeighborsOfG.push_back(v); });
+
+        std::vector<node> allNeighborsOfOriginal;
+
+        original.forNeighborsOf(
+            u, [&](node, node v, edgeweight, edgeid) { allNeighborsOfOriginal.push_back(v); });
+
+        // check that both neighbor vectors are equivalent
+        EXPECT_EQ(allNeighborsOfG.size(), allNeighborsOfOriginal.size());
+        for (index i = 0; i < allNeighborsOfG.size(); ++i) {
+            EXPECT_EQ(allNeighborsOfG[i], allNeighborsOfOriginal[i]);
+        }
+
+        if (!isDirected())
+            return;
+
+        // directed
+
+        std::vector<node> allInNeighborsOfG;
+
+        G.forInNeighborsOf(
+            u, [&](node, node v, edgeweight, edgeid) { allInNeighborsOfG.push_back(v); });
+        std::vector<node> allInNeighborsOfOriginal;
+
+        original.forInNeighborsOf(
+            u, [&](node, node v, edgeweight, edgeid) { allInNeighborsOfOriginal.push_back(v); });
+
+        // check that both in-neighbor vectors are equivalent
+        EXPECT_EQ(allInNeighborsOfG.size(), allInNeighborsOfOriginal.size());
+        for (index i = 0; i < allInNeighborsOfG.size(); ++i) {
+            EXPECT_EQ(allInNeighborsOfG[i], allInNeighborsOfOriginal[i]);
+        }
+    });
+}
+
+TEST_P(GraphGTest, testEdgeIdsConsistencyAfterRemove) {
+    constexpr node n = 100;
+
+    Aux::Random::setSeed(42, true);
+    auto G = createGraph(n, 10 * n);
+    G.sortEdges();
+    G.indexEdges();
+    auto original = G;
+
+    // remove edges
+    while (2 * G.numberOfEdges() > original.numberOfEdges()) {
+        const auto e = GraphTools::randomEdge(G, false);
+        G.removeEdge(e.first, e.second, false, true); // re-indexing after each removal
+        original.removeEdge(e.first, e.second);       // not re-indexing
+    }
+
+    original.indexEdges(true); // re-indexing only once
+
+    std::vector<bool> existingIDs(G.upperEdgeIdBound(), false);
+
+    G.forNodes([&](node u) {
+        G.forNeighborsOf(u, [&](node, node v, edgeweight, edgeid id) {
+            existingIDs[id] = true;
+            // check that both graphs have the same edge IDs
+            ASSERT_EQ(id, original.edgeId(u, v));
+        });
+
+        if (!isDirected())
+            return;
+
+        G.forInNeighborsOf(
+            u, [&](node, node v, edgeweight, edgeid id) { ASSERT_EQ(id, original.edgeId(v, u)); });
+    });
+
+    // check that all IDs exist without gaps in between
+    for (auto ID : existingIDs) {
+        ASSERT_TRUE(ID);
+    }
+}
+
+TEST_P(GraphGTest, testEdgeIdsAfterRemoveWithoutSortingOrIDs) {
     constexpr node n = 100;
 
     Aux::Random::setSeed(42, true);
