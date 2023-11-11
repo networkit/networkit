@@ -30,13 +30,13 @@ class ApproxElectricalCloseness final : public Centrality {
 public:
     /**
      * Approximates the electrical closeness of all the vertices of the graph by approximating the
-     * diagonal of the laplacian's pseudoinverse of @a G. Every element of the diagonal is
-     * guaranteed to have a maximum absolute error of @a epsilon. Based on "Approximation of the
-     * Diagonal of a Laplacian’s Pseudoinverse for Complex Network Analysis", Angriman et al., ESA
-     * 2020. The algorithm does two steps: solves a linear system and samples uniform spanning trees
-     * (USTs). The parameter @a kappa balances the tolerance of solver for the linear system and the
-     * number of USTs to be sampled. A high value of @a kappa raises the tolerance (solver converges
-     * faster) but more USTs need to be sampled, vice versa for a low value of @a kappa.
+     * diagonal of the laplacian's pseudoinverse of @a G. Every element of the diagonal has
+     * a maximum absolute error of @a epsilon with probability (1-(1/n)). Based on "Approximation of
+     * the Diagonal of a Laplacian’s Pseudoinverse for Complex Network Analysis", Angriman et al.,
+     * ESA 2020. The algorithm does two steps: solves a linear system and samples uniform spanning
+     * trees (USTs). The parameter @a kappa balances the tolerance of solver for the linear system
+     * and the number of USTs to be sampled. A high value of @a kappa raises the tolerance (solver
+     * converges faster) but more USTs need to be sampled, vice versa for a low value of @a kappa.
      *
      * @param G The input graph.
      * @param epsilon Maximum absolute error of the elements in the diagonal.
