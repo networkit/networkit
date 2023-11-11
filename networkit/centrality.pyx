@@ -2933,8 +2933,6 @@ class SciPyPageRank(SpectralCentrality):
 		self.eigenvector = spectrum[1][0]
 		self.eigenvalue = spectrum[0][0]
 
-##### from branch ComplexPaths (K. Ahrens)
-
 cdef extern from "<networkit/centrality/ComplexPaths.hpp>" namespace "NetworKit::ComplexPathAlgorithm":
 
 	cpdef enum _Mode  "NetworKit::ComplexPathAlgorithm::Mode":
@@ -2942,8 +2940,8 @@ cdef extern from "<networkit/centrality/ComplexPaths.hpp>" namespace "NetworKit:
 		allNodes
 
 cdef class ComplexPathMode(object):
-	singleNode = _Mode.singleNode
-	allNodes   = _Mode.allNodes
+	SINGLE_NODE = _Mode.singleNode
+	ALL_NODES   = _Mode.allNodes
 
 cdef extern from "<networkit/centrality/ComplexPaths.hpp>":
 	cdef cppclass _ComplexPaths "NetworKit::ComplexPathAlgorithm"(_Algorithm):
@@ -2957,7 +2955,9 @@ cdef class ComplexPaths(Algorithm):
 	""" 
 	ComplexPaths(G, threshold, mode, start)
 
-	according to:
+	The ComplexPathAlgorithm analysis the spread of complex contagions in a given graph. 
+	Returns the complex contagion paths of a given phenomenon (determined by the threshold) 
+	for single nodes or the entire graph, according to:
 	[ Guilbeault, D., Centola, D. Topological measures for 
 	  identifying and predicting the spread of complex contagions. 
 	  Nat Commun 12, 4430 (2021). 
@@ -2984,9 +2984,9 @@ cdef class ComplexPaths(Algorithm):
 
 	def __cinit__(self, Graph G, threshold=3, mode="allNodes", start=_none):
 		if mode=="allNodes":
-			mode=ComplexPathMode.allNodes
+			mode=ComplexPathMode.ALL_NODES
 		if mode=="singleNode":
-			mode=ComplexPathMode.singleNode
+			mode=ComplexPathMode.SINGLE_NODE
 		self._G = G
 		self._this = new _ComplexPaths(G._this, threshold, mode, start)
 
@@ -2994,13 +2994,13 @@ cdef class ComplexPaths(Algorithm):
 		""" 
 		getPLci()
 
-		Returns complex path lengths for every node in G
-		absolute or scaled to [0,1] when normalize() was called before run
-		in mode ComplexPathMode.allNodes only
+		Returns complex path lengths for every node in G either with 
+		absolute length, or scaled to [0,1] when normalize() was called before run().
+		Only available when called in mode ComplexPathMode.ALL_NODES.
 
 		Returns
 		-------
-		list(double)
+		list(float)
 			A vector containing complex path lengths for all nodes
 		"""
 		return (<_ComplexPaths*>(self._this)).getPLci()
@@ -3009,8 +3009,8 @@ cdef class ComplexPaths(Algorithm):
 		""" 
 		getComplexGraph()
 
-		Returns complex path (sub)graph of G starting in start
-		in mode ComplexPathMode.singleNode only
+		Returns complex path (sub)graph of G starting in the node start.
+		Only available when called in mode ComplexPathMode.SINGLE_NODE.
 
 		Returns
 		-------
@@ -3029,7 +3029,7 @@ cdef class ComplexPaths(Algorithm):
 		Returns
 		-------
 		list(node) 
-			A vector all adopted/infected nodes
+			A vector of all adopted/infected nodes
 		"""
 		return (<_ComplexPaths*>(self._this)).getAdopters()
 
@@ -3037,15 +3037,10 @@ cdef class ComplexPaths(Algorithm):
 		"""
 		normalize()
 
-		when called before run() all complex path lengths 
-		returned by getPLci are scaled to [0,1]
+		When called before run() all complex path lengths returned by getPLci() are scaled to [0,1].
+		Only available when called in mode ComplexPathMode.ALL_NODES.
 
-		in mode ComplexPathMode.allNodes only
-
-		Returns
-		-------
-		nothing
 		"""
-
 		return (<_ComplexPaths*>(self._this)).normalize()
+
 
