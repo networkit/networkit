@@ -1979,22 +1979,12 @@ public:
      */
     bool addPartialOutEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
                            uint64_t index = 0, bool checkForMultiEdges = false);
-
     /**
      * Removes the undirected edge {@a u,@a v}.
      * @param u Endpoint of edge.
      * @param v Endpoint of edge.
-     * @param maintainSortedEdges If set to true, the ingoing and outgoing adjacency vectors will
-     * automatically be updated to maintain a sorting (if it existed before) by performing up to n-1
-     * swaps. If the user plans to remove multiple edges, better set it to false and call
-     * sortEdges() afterwards to avoid redundant swaps. Default = false.
-     * @param maintainCompactEdgeIDs If set to true, the EdgeIDs will automatically be adjusted,
-     * so that no gaps in between IDs exist. If the user plans to remove multiple edges, better set
-     * it to false and call indexEdges(force=true) afterwards to avoid redundant re-indexing.
-     * Default = false.
      */
-    void removeEdge(node u, node v, bool maintainSortedEdges = false,
-                    bool maintainCompactEdgeIDs = false);
+    void removeEdge(node u, node v);
 
     /**
      * Removes all the edges in the graph.
@@ -2503,6 +2493,18 @@ public:
      */
     template <typename L>
     double parallelSumForEdges(L handle) const;
+
+    // If set to true, the ingoing and outgoing adjacency vectors will
+    // automatically be updated to maintain a sorting (if it existed before) by
+    // performing up to n-1 swaps. If the user plans to remove multiple edges,
+    // better set it to false and call sortEdges() afterwards to avoid
+    // redundant swaps. Default = false.
+    bool maintainEdgesSorted = false;
+    // If set to true, the EdgeIDs will automatically be adjusted, so that no
+    // gaps in between IDs exist. If the user plans to remove multiple edges,
+    // better set it to false and call indexEdges(force=true) afterwards to
+    // avoid redundant re-indexing.
+    bool maintainCompactEdgeIDs = false;
 };
 
 /* NODE ITERATORS */

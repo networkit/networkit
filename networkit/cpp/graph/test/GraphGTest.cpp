@@ -2242,19 +2242,21 @@ TEST_P(GraphGTest, testSortEdges) {
 }
 
 TEST_P(GraphGTest, testEdgeIdsSortingAfterRemove) {
-    constexpr node n = 100;
+    const node n = 100;
 
     Aux::Random::setSeed(42, true);
-    auto G = createGraph(n, 10 * n);
+    Graph G = createGraph(n, 10 * n);
     G.sortEdges();
     G.indexEdges();
-    auto original = G;
+    Graph original = G;
+
+    G.maintainEdgesSorted = true;
 
     // remove edges
     while (2 * G.numberOfEdges() > original.numberOfEdges()) {
         const auto e = GraphTools::randomEdge(G, false);
-        G.removeEdge(e.first, e.second, true, false); // with sorting after each removal
-        original.removeEdge(e.first, e.second);       // without sorting
+        G.removeEdge(e.first, e.second);        // with sorting after each removal
+        original.removeEdge(e.first, e.second); // without sorting
     }
 
     original.sortEdges(); // calling sort only once
@@ -2299,19 +2301,21 @@ TEST_P(GraphGTest, testEdgeIdsSortingAfterRemove) {
 }
 
 TEST_P(GraphGTest, testEdgeIdsConsistencyAfterRemove) {
-    constexpr node n = 100;
+    const node n = 100;
 
     Aux::Random::setSeed(42, true);
-    auto G = createGraph(n, 10 * n);
+    Graph G = createGraph(n, 10 * n);
     G.sortEdges();
     G.indexEdges();
-    auto original = G;
+    Graph original = G;
+
+    G.maintainCompactEdgeIDs = true;
 
     // remove edges
     while (2 * G.numberOfEdges() > original.numberOfEdges()) {
         const auto e = GraphTools::randomEdge(G, false);
-        G.removeEdge(e.first, e.second, false, true); // re-indexing after each removal
-        original.removeEdge(e.first, e.second);       // not re-indexing
+        G.removeEdge(e.first, e.second);        // re-indexing after each removal
+        original.removeEdge(e.first, e.second); // not re-indexing
     }
 
     original.indexEdges(true); // re-indexing only once

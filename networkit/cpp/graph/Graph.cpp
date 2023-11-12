@@ -600,7 +600,7 @@ void erase(node u, index idx, std::vector<std::vector<T>> &vec) {
     vec[u].pop_back();
 }
 
-void Graph::removeEdge(node u, node v, bool maintainSortedEdges, bool maintainCompactEdgeIDs) {
+void Graph::removeEdge(node u, node v) {
     assert(u < z);
     assert(exists[u]);
     assert(v < z);
@@ -611,13 +611,8 @@ void Graph::removeEdge(node u, node v, bool maintainSortedEdges, bool maintainCo
             "Edges have to be indexed if maintainCompactEdgeIDs is set to true");
     }
 
-    index vi = indexInOutEdgeArray(u, v);
-    index ui = indexInInEdgeArray(v, u);
-
-    node deletedID;
-    if (maintainCompactEdgeIDs) {
-        deletedID = outEdgeIds[u][vi];
-    }
+    const index vi = indexInOutEdgeArray(u, v);
+    const index ui = indexInInEdgeArray(v, u);
 
     if (vi == none) {
         std::stringstream strm;
@@ -625,7 +620,12 @@ void Graph::removeEdge(node u, node v, bool maintainSortedEdges, bool maintainCo
         throw std::runtime_error(strm.str());
     }
 
-    const auto isLoop = (u == v);
+    node deletedID = none;
+    if (maintainCompactEdgeIDs) {
+        deletedID = outEdgeIds[u][vi];
+    }
+
+    const bool isLoop = (u == v);
     m--; // decrease number of edges
     if (isLoop)
         storedNumberOfSelfLoops--;
@@ -638,8 +638,8 @@ void Graph::removeEdge(node u, node v, bool maintainSortedEdges, bool maintainCo
     if (edgesIndexed) {
         erase<edgeid>(u, vi, outEdgeIds);
         // Make the attributes of this node invalid
-        auto &theMap = nodeAttributeMap.attrMap;
-        for (auto it = theMap.begin(); it != theMap.end(); ++it) {
+        auto &attMap = nodeAttributeMap.attrMap;
+        for (auto it = attMap.begin(); it != attMap.end(); ++it) {
             auto attributeStorageBase = it->second.get();
             attributeStorageBase->invalidate(vi);
         }
@@ -654,7 +654,20 @@ void Graph::removeEdge(node u, node v, bool maintainSortedEdges, bool maintainCo
             erase<edgeid>(v, ui, outEdgeIds);
         }
     }
-    if (maintainSortedEdges) {
+    if (directed) {
+        assert(ui != none);
+
+        erase<node>(v, ui, inEdges);
+        if (weighted) {
+            erase<edgeweight>(v, ui, inEdgeWeights);
+        }
+        if (edgesIndexed) {
+            erase<edgeid>(v, ui, inEdgeIds);
+        }
+    }
+
+    // Update edges order and edge IDs if requested.
+    if (maintainEdgesSorted) {
         // initial index of deleted edge, also represents current index
         index cur = vi;
 
@@ -692,16 +705,7 @@ void Graph::removeEdge(node u, node v, bool maintainSortedEdges, bool maintainCo
         });
     }
     if (directed) {
-        assert(ui != none);
-
-        erase<node>(v, ui, inEdges);
-        if (weighted) {
-            erase<edgeweight>(v, ui, inEdgeWeights);
-        }
-        if (edgesIndexed) {
-            erase<edgeid>(v, ui, inEdgeIds);
-        }
-        if (maintainSortedEdges) {
+        if (maintainEdgesSorted) {
             // initial index of deleted edge, also represents current index
             index cur = ui;
 
