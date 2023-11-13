@@ -18,10 +18,6 @@ struct Node {
     bool operator!=(const Node &other) const { return id != other.id || weight != other.weight; }
 };
 
-/**
- *
- *
- */
 struct NodeMatchesInfo {
     std::vector<Node> partners;
     Node min; // (none, 0) if partners still has free capacity
@@ -29,7 +25,7 @@ struct NodeMatchesInfo {
 
     NodeMatchesInfo() = default;
 
-    NodeMatchesInfo(index i, count b) {
+    NodeMatchesInfo(count b) {
         partners.reserve(b);
         min = Node(none, 0);
         max_size = b;
@@ -116,12 +112,12 @@ public:
      */
     BSuitorMatcher(const Graph &G, const std::string &path);
 
-    ~BSuitorMatcher() = default;
+    ~BSuitorMatcher() override = default;
 
     /**
      * Runs the algorithm.
      */
-    void run();
+    void run() override;
 
     void buildBMatching();
 
