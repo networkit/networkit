@@ -2935,9 +2935,9 @@ class SciPyPageRank(SpectralCentrality):
 
 cdef extern from "<networkit/centrality/ComplexPaths.hpp>" namespace "NetworKit::ComplexPathAlgorithm":
 
-	cpdef enum _Mode  "NetworKit::ComplexPathAlgorithm::Mode":
+	cdef enum _Mode  "NetworKit::ComplexPathAlgorithm::Mode":
 		singleNode,
-		allNodes
+		allNodes,
 
 cdef class ComplexPathMode(object):
 	SINGLE_NODE = _Mode.singleNode
@@ -2969,15 +2969,17 @@ cdef class ComplexPaths(Algorithm):
 		The graph.
 
 	threshold : int
-		The complex path width: minimal number of neighbors
+		The complex path width: minimal number of neighbors.
 
-	mode : ComplexPathMode
-		ComplexPathMode.allNodes: calculate complex path lengths
-					  from every start node
-		ComplexPathMode.singleNode: calculate complex path graph
-					  from node start
+	Parameter :code:`mode` can be one of the following:
+
+	- ComplexPathMode.allNodes: Calculate complex path lengths
+					  from every start node(default).
+	- ComplexPathMode.singleNode: Calculate complex path graph
+					  from node start.
+	
 	start : node
-		start node for ComplexPathMode.singleNode
+		Start node for ComplexPathMode.singleNode.
 	"""
 
 	cdef Graph _G
@@ -3001,7 +3003,7 @@ cdef class ComplexPaths(Algorithm):
 		Returns
 		-------
 		list(float)
-			A vector containing complex path lengths for all nodes
+			A vector containing complex path lengths for all nodes.
 		"""
 		return (<_ComplexPaths*>(self._this)).getPLci()
 
@@ -3024,12 +3026,12 @@ cdef class ComplexPaths(Algorithm):
 
 		Returns all nodes in the complex subgraph with at least
 		threshold neighbors (those who are adopted/infected when 
-		starting in start)
+		starting in start).
 
 		Returns
 		-------
-		list(node) 
-			A vector of all adopted/infected nodes
+		list(int) 
+			A vector of all adopted/infected nodes.
 		"""
 		return (<_ComplexPaths*>(self._this)).getAdopters()
 

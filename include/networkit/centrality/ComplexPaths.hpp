@@ -26,9 +26,6 @@
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
-using std::sample;
-using std::vector;
-
 namespace NetworKit {
 
 /**
@@ -82,7 +79,7 @@ public:
     /**
      * [normalized] results after running in <code>Mode::allNodes</code>
      */
-    vector<double> getPLci();
+    std::vector<double> getPLci();
 
     /**
      * resulting graph after running in <code>Mode::singleNode</code>
@@ -93,20 +90,21 @@ public:
      * nodes in the resulting graph after running in <code>Mode::singleNode</code>
      * which are connected to start by at least threshold paths
      */
-    vector<node> getAdopters();
+    std::vector<node> getAdopters();
 
 private:
-    const Graph &inputGraph;
+    const Graph *inputGraph;
     Graph complexPathGraph;
-    vector<double> complexPathsLengths;
-    vector<node> adopters;
+    std::vector<double> complexPathsLengths;
+    std::vector<node> adopters;
     const Mode mode;
     const node start;
     const count threshold;
     bool normPaths;
 
-    Graph complexPathsGraph(node seed, count threshold, vector<node> *adopters);
-    vector<double> complexPathLength(count t);
+    Graph complexPathsGraph(node seed, count threshold, std::vector<node> *adopters);
+    std::vector<double> complexPathLength(count t);
+    std::vector<node> generateSeeds(node seed, const Graph &g, count threshold);
 };
 
 } /* namespace NetworKit */
