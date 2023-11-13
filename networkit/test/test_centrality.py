@@ -129,7 +129,7 @@ class TestCentrality(unittest.TestCase):
 		CP.run()
 
 		res = CP.getAdopters()
-		self.assertListEqual(res, [0, 2])
+		self.assertListEqual(res, [0,2])
        
 	def testDegreeCentrality(self):
 		g = nk.Graph(8, False, False)
