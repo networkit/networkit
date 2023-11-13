@@ -1,6 +1,7 @@
 #ifndef NETWORKIT_MATCHING_B_MATCHING_HPP_
 #define NETWORKIT_MATCHING_B_MATCHING_HPP_
 
+#include <set>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/graph/Graph.hpp>
 
@@ -29,7 +30,7 @@ public:
     bool isProper(const Graph &G) const;
 
     /**
-     * Sets two nodes @a u and @a v as each others matching partners.
+     * Sets two nodes @a u and @a v as each others matching NodeMatches.
      *
      * @param u
      * @param v
@@ -70,15 +71,6 @@ public:
     count size(const Graph &G) const;
 
     /**
-     * Get a vector of matched neighbors of @a v.
-     * Elements with value @c none represent non existing nodes.
-     *
-     * @param v
-     * @return std::vector<node>
-     */
-    std::vector<node> mates(node v) const;
-
-    /**
      * Get total weight of edges in this b-matching.
      *
      * @param G
@@ -86,29 +78,12 @@ public:
      */
     edgeweight weight(const Graph &G) const;
 
-    const std::vector<std::vector<node>> &getMatrix() const;
+    const std::vector<std::set<node>> &getMatches() const;
     std::vector<count> getB() const;
 
 protected:
-    std::vector<std::vector<node>> data;
+    std::vector<std::set<node>> matches;
     const std::vector<count> b;
-
-    /**
-     * Finds the index of the first @c none value if present, otherwise @c none.
-     *
-     * @return index
-     */
-    index findFirstFreeIndex(node u) const;
-
-    /**
-     * Finds the index of node @a v in a list of matched nodes of @a u if present, otherwise @c
-     * none.
-     *
-     * @param u
-     * @param v
-     * @return index
-     */
-    index findIndexOf(node u, node v) const;
 };
 
 } /* namespace NetworKit */
