@@ -15,6 +15,14 @@ BSuitorMatcher::BSuitorMatcher(const Graph &G, const std::vector<count> &b) : BM
     if (b.size() != G.numberOfNodes())
         throw std::runtime_error(
             "The number of b values does not match the number of nodes in this graph.");
+
+    const auto n = G.upperNodeIdBound();
+    Suitors.reserve(n);
+    Proposed.reserve(n);
+    for (index i = 0; i < n; i++) {
+        Suitors.emplace_back(std::make_unique<NodeMatchesInfo>(i, b.at(i)));
+        Proposed.emplace_back(std::make_unique<NodeMatchesInfo>(i, b.at(i)));
+    }
 }
 
 BSuitorMatcher::BSuitorMatcher(const Graph &G, count b)
@@ -55,32 +63,32 @@ std::vector<count> BSuitorMatcher::readBValuesFromFile(count size, const std::st
     return b;
 }
 
-void BSuitorMatcher::findSuitors(node u) {
-    for (index i = 0; i < b.at(u); i++) {
-        auto [x, w] = findPreferred(u);
-        if (x != none) {
-            makeSuitor(u, w, x);
+void BSuitorMatcher::findSuitors(node cur) {
+    for (index i = 0; i < b.at(cur); i++) {
+        auto [pref, heaviest] = findPreferred(cur);
+        if (pref != none) {
+            makeSuitor(cur, heaviest, pref);
         }
     }
 }
 
-Node BSuitorMatcher::findPreferred(node y) {
+Node BSuitorMatcher::findPreferred(node u) {
     Node best = Node{none, 0};
 
-    auto hasProposedTo = [&](node n) -> bool {
-        return std::any_of(T.at(y)->list.begin(), T.at(y)->list.end(),
-                           [n](const Node &p) { return p.id == n; });
+    auto hasProposedTo = [&](node x) -> bool {
+        return std::any_of(Proposed.at(u)->partners.begin(), Proposed.at(u)->partners.end(),
+                           [x](const Node &y) { return y.id == x; });
     };
 
-    for (auto v : G->weightNeighborRange(y)) {
-        const Node n = Node(v.first, v.second);
-        if (!hasProposedTo(n.id)) {
-            if (n.weight > best.weight || (n.weight == best.weight && n.id < best.id)) {
-                const auto n_suitor_weight = S.at(n.id)->min.weight;
+    for (auto n : G->weightNeighborRange(u)) {
+        const Node v = Node(n.first, n.second);
+        if (!hasProposedTo(v.id)) {
+            if (v.weight > best.weight || (v.weight == best.weight && v.id < best.id)) {
+                const auto n_suitor_weight = Suitors.at(v.id)->min.weight;
 
-                if (n.weight > n_suitor_weight
-                    || (n.weight == n_suitor_weight && y < S.at(n.id)->min.id)) {
-                    best = n;
+                if (v.weight > n_suitor_weight
+                    || (v.weight == n_suitor_weight && u < Suitors.at(v.id)->min.id)) {
+                    best = v;
                 }
             }
         }
@@ -88,35 +96,29 @@ Node BSuitorMatcher::findPreferred(node y) {
     return best;
 }
 
-void BSuitorMatcher::makeSuitor(node u, edgeweight w, node x) {
-    auto y = S.at(x)->popMinIfFull();
-    S.at(x)->insert(Node(u, w));
-    T.at(u)->insert(Node(x, w));
+void BSuitorMatcher::makeSuitor(node u, edgeweight w, node v) {
+    auto smallest = Suitors.at(v)->popMinIfFull();
+    Suitors.at(v)->insert(Node(u, w));
+    Proposed.at(u)->insert(Node(v, w));
 
-    if (y != none) {
-        T.at(y)->remove(Node(x, w));
-        auto [z, w] = findPreferred(y);
-        if (z != none) {
-            makeSuitor(y, w, z);
+    if (smallest.id != none) {
+        Proposed.at(smallest.id)->remove(v);
+        auto [pref, heaviest] = findPreferred(smallest.id);
+        if (pref != none) {
+            makeSuitor(smallest.id, heaviest, pref);
         }
     }
 }
 
 bool BSuitorMatcher::isSymmetrical() const {
     bool sym = true;
-    auto areMatchedSymmetrical = [&](node u, node v) -> bool {
-        auto i_1 = std::find_if(S.at(u)->list.begin(), S.at(u)->list.end(),
-                                [v](const Node &p) { return p.id == v; })
-                   != S.at(u)->list.end();
-        auto i_2 = std::find_if(S.at(v)->list.begin(), S.at(v)->list.end(),
-                                [u](const Node &p) { return p.id == u; })
-                   != S.at(v)->list.end();
-        return (i_1 == i_2);
+    auto matchedSymmetrical = [&](node x, node y) -> bool {
+        return Suitors.at(x)->hasPartner(y) == Suitors.at(y)->hasPartner(x);
     };
 
     G->forNodes([&](node u) {
         G->forNodes([&](node v) {
-            if (!areMatchedSymmetrical(u, v)) {
+            if (u > v && !matchedSymmetrical(u, v)) {
                 sym = false;
             }
         });
@@ -124,38 +126,20 @@ bool BSuitorMatcher::isSymmetrical() const {
     return sym;
 }
 
-edgeweight BSuitorMatcher::getWeight() const {
-    return w;
-}
-
 void BSuitorMatcher::buildBMatching() {
     // TODO make parallel
-    G->forNodes([&S = S, &M = M](node u) {
-        for (auto v : S.at(u)->list) {
-            if (v.id != none && u < v.id) { // Ensure we match a pair of nodes only once
-                M.match(u, v.id);
+    G->forNodes([&](node x) {
+        assert(Suitors.at(x)->partners.size() <= b.at(x));
+        for (auto y : Suitors.at(x)->partners) {
+            if (y.id != none && x < y.id) {
+                M.match(x, y.id);
             }
         }
     });
 }
 
 void BSuitorMatcher::run() {
-    const auto n = G->upperNodeIdBound();
-    S.reserve(n);
-    T.reserve(n);
-    for (index i = 0; i < n; i++) {
-        S.emplace_back(std::make_unique<Suitors>(i, b.at(i)));
-        T.emplace_back(std::make_unique<Proposed>(i, b.at(i)));
-    }
-
     G->forNodes([&](node u) { findSuitors(u); });
-
-    edgeweight sum = 0.0;
-#pragma omp parallel for reduction(+ : sum)
-    for (omp_index i = 0; i < static_cast<omp_index>(S.size()); i++) {
-        sum += S.at(i)->weight;
-    }
-    w += sum;
     hasRun = true;
 }
 } // namespace NetworKit

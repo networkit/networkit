@@ -18,94 +18,77 @@ struct Node {
     bool operator!=(const Node &other) const { return id != other.id || weight != other.weight; }
 };
 
-struct Data {
-    std::vector<Node> list;
-    node self;
-    Node min; // (none, 0) if list still has free capacity
-    edgeweight weight;
-    count size;
+/**
+ *
+ *
+ */
+struct NodeMatchesInfo {
+    std::vector<Node> partners;
+    Node min; // (none, 0) if partners still has free capacity
     count max_size;
 
-    Data() = default;
+    NodeMatchesInfo() = default;
 
-    Data(index i, count b) {
-        list.reserve(b);
-        self = i;
+    NodeMatchesInfo(index i, count b) {
+        partners.reserve(b);
         min = Node(none, 0);
-        weight = 0;
-        size = 0;
         max_size = b;
     }
 
-    node popMinIfFull() {
-        if (size < max_size) {
-            return none;
+    bool hasPartner(node u) {
+        return std::find_if(partners.begin(), partners.end(),
+                            [u](const Node &v) { return v.id == u; })
+               != partners.end();
+    }
+
+    Node popMinIfFull() {
+        if (partners.size() < max_size) {
+            return {none, 0};
         } else {
-            auto ret = min.id;
-            remove(min);
+            auto ret = min;
+            remove(min.id);
             return ret;
         }
     }
 
-    void insert(const Node &v) {
-        assert(size < max_size);
-
-        list.emplace_back(v);
-        size += 1;
-        if (self < v.id)
-            weight += v.weight;
-        if (size == max_size && !list.empty()) {
-            min = *std::min_element(list.begin(), list.end(), [](const Node &a, const Node &b) {
-                if (a.weight == b.weight) {
-                    return a.id > b.id;
-                }
-                return a.weight < b.weight;
-            });
+    void insert(const Node &u) {
+        assert(partners.size() < max_size);
+        partners.emplace_back(u);
+        if (partners.size() == max_size && !partners.empty()) {
+            min = *std::min_element(partners.begin(), partners.end(),
+                                    [](const Node &x, const Node &y) {
+                                        if (x.weight == y.weight) {
+                                            return x.id > y.id;
+                                        }
+                                        return x.weight < y.weight;
+                                    });
         }
     }
 
-    void remove(const Node &u) {
-        list.erase(
-            std::remove_if(list.begin(), list.end(), [u](const Node &p) { return p.id == u.id; }),
-            list.end());
-        size -= 1;
-        if (self < u.id)
-            weight -= u.weight;
-        if (u.id == min.id) {
-            min = Node(none, 0);
-        }
+    void remove(node u) {
+        partners.erase(std::remove_if(partners.begin(), partners.end(),
+                                      [u](const Node &v) {
+                                          if (v.id == u) {
+                                              return true;
+                                          }
+                                          return false;
+                                      }),
+                       partners.end());
+        min = Node(none, 0);
     }
 
     void sort() {
-        std::sort(list.begin(), list.end(), [](const Node &u, const Node &v) {
+        std::sort(partners.begin(), partners.end(), [](const Node &u, const Node &v) {
             return (u.weight > v.weight || (u.weight == v.weight && u.id < v.id));
         });
     }
-};
-
-struct Suitors : public Data {
-    Suitors(index i, count b) : Data(i, b) {}
-
-    edgeweight getWeight() {
-        edgeweight w = 0.0;
-
-#pragma omp parallel for reduction(+ : w)
-        for (omp_index i = 0; i < static_cast<omp_index>(list.size()); i++) {
-            w += list.at(i).weight;
-        }
-        return w;
-    }
-};
-
-struct Proposed : public Data {
-    Proposed(index i, count b) : Data(i, b) {}
 };
 
 /**
  * @ingroup matching
  * B-Suitor matching finding algorithm.
  */
-class BSuitorMatcher final : public BMatcher {
+class BSuitorMatcher : public BMatcher {
 public:
     /**
      * Computes a 1/2-approximate maximum weight b-matching of an undirected weighted Graph @c G
@@ -133,22 +116,19 @@ public:
      */
     BSuitorMatcher(const Graph &G, const std::string &path);
 
-    ~BSuitorMatcher() override = default;
+    ~BSuitorMatcher() = default;
 
     /**
      * Runs the algorithm.
      */
-    void run() override;
-
-    edgeweight getWeight() const;
+    void run();
 
     void buildBMatching();
 
-private:
-    std::vector<std::unique_ptr<Suitors>> S;
-    std::vector<std::unique_ptr<Proposed>> T;
+protected:
+    std::vector<std::unique_ptr<NodeMatchesInfo>> Suitors;
+    std::vector<std::unique_ptr<NodeMatchesInfo>> Proposed;
     const std::vector<count> b;
-    edgeweight w = 0.0;
 
     /**
      * Reads values from a file at @a path into the vector of b-values.
@@ -168,24 +148,24 @@ private:
     void findSuitors(node u);
 
     /**
-     * Finds the heaviest unmatched neighbor that @a y has not yet proposed to
+     * Finds the heaviest unmatched neighbor that @a u has not yet proposed to
      * if it exists. For equally weighted edges w(u, t), w(u, v) and t < v, w(u, t) is considered
      * smaller than w(u, v) to break ties.
      *
      * @param y
      * @return Node
      */
-    Node findPreferred(node y);
+    Node findPreferred(node u);
 
     /**
-     * Makes @a x a suitor of @a u and recursively calls itself for previous worse
+     * Makes @a v a suitor of @a u and recursively calls itself for previous worse
      * suitors of @a u that got replaced with their new best match.
      *
      * @param u
      * @param w
-     * @param x
+     * @param v
      */
-    void makeSuitor(node u, edgeweight w, node x);
+    void makeSuitor(node u, edgeweight w, node v);
 
     /**
      * Checks the symmetry of pairs of nodes. It must hold that v is in suitors(u) iff u is
