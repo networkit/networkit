@@ -8,7 +8,7 @@ namespace NetworKit {
 
 /**
  * @ingroup matching
- * Abstract base class for b-matching algorithms.
+ * Base class for b-matching algorithms.
  */
 class BMatcher : public Algorithm {
 protected:
