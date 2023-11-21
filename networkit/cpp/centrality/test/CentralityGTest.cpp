@@ -1944,11 +1944,12 @@ TEST_F(CentralityGTest, testApproxElectricalCloseness) {
         Aux::Random::setSeed(seed, true);
         auto G = HyperbolicGenerator(n, 10, 3).generate();
         G = ConnectedComponents::extractLargestConnectedComponent(G, true);
+        auto new_n = G.numberOfNodes();
 
         // Create a biconnected component with size 2.
         G.addNodes(2);
-        G.addEdge(n - 1, n);
-        G.addEdge(n, n + 1);
+        G.addEdge(new_n - 1, new_n);
+        G.addEdge(new_n, new_n + 1);
 
         ApproxElectricalCloseness apx(G);
         apx.run();
