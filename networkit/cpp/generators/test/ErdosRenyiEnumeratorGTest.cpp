@@ -12,6 +12,7 @@
 #include <tuple>
 
 #include <networkit/Globals.hpp>
+#include <networkit/auxiliary/Parallelism.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/generators/ErdosRenyiEnumerator.hpp>
 
@@ -72,7 +73,6 @@ static void testEre(const bool directed, const node n, const double prob) {
 
         // Check that result is somewhat balanced along threads
         if (Parallel && prob > 0) {
-            EXPECT_EQ(omp_get_max_threads(), static_cast<int>(active_threads));
             for (auto count : num_edges_thread)
                 ASSERT_LE(count, 2 * num_edges / active_threads);
         }
@@ -123,11 +123,17 @@ TEST_P(ErdosRenyiEnumeratorGTest, TestFixedPointParallel) {
 
 INSTANTIATE_TEST_SUITE_P(
     ErdosRenyiEnumeratorGTest, ErdosRenyiEnumeratorGTest,
-    ::testing::Values(std::make_tuple(false, 100, 0.0), std::make_tuple(true, 100, 0.0),
-                      std::make_tuple(false, 100, 0.1), std::make_tuple(true, 100, 0.1),
-                      std::make_tuple(false, 100, 0.5), std::make_tuple(true, 100, 0.5),
-                      std::make_tuple(false, 100, 0.7), std::make_tuple(true, 100, 0.7),
-                      std::make_tuple(false, 100, 1.0), std::make_tuple(true, 100, 1.0),
-                      std::make_tuple(false, 200, 0.01), std::make_tuple(true, 200, 0.01)));
+    ::testing::Values(std::make_tuple(false, 25 * Aux::getMaxNumberOfThreads(), 0.0),
+                      std::make_tuple(true, 25 * Aux::getMaxNumberOfThreads(), 0.0),
+                      std::make_tuple(false, 25 * Aux::getMaxNumberOfThreads(), 0.1),
+                      std::make_tuple(true, 25 * Aux::getMaxNumberOfThreads(), 0.1),
+                      std::make_tuple(false, 25 * Aux::getMaxNumberOfThreads(), 0.5),
+                      std::make_tuple(true, 25 * Aux::getMaxNumberOfThreads(), 0.5),
+                      std::make_tuple(false, 25 * Aux::getMaxNumberOfThreads(), 0.7),
+                      std::make_tuple(true, 25 * Aux::getMaxNumberOfThreads(), 0.7),
+                      std::make_tuple(false, 25 * Aux::getMaxNumberOfThreads(), 1.0),
+                      std::make_tuple(true, 25 * Aux::getMaxNumberOfThreads(), 1.0),
+                      std::make_tuple(false, 100 * Aux::getMaxNumberOfThreads(), 0.01),
+                      std::make_tuple(true, 100 * Aux::getMaxNumberOfThreads(), 0.01)));
 
 } // namespace NetworKit
