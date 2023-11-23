@@ -23,12 +23,12 @@ jobs:
         with:
           python-version: '3.10'
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.12.1
+        uses: pypa/cibuildwheel@v2.16.2
         env:
-          CIBW_BEFORE_BUILD: pip install "cython==0.29.*"
+          CIBW_BEFORE_BUILD: pip install cython
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: "cp38-* cp39-* cp310-* cp311-*"
+          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp38-* cp39-* cp310-* cp311-* cp312-*' || 'cp311-* cp312-*' }}
           CIBW_SKIP: "pp* *-musllinux_*"
       - uses: actions/upload-artifact@v3
         with:
@@ -46,7 +46,10 @@ jobs:
         with:
           path: ./wheelhouse/*cp311*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*cp312*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-linux-aarch64:
     name: 'Linux CPython (${{ matrix.cibw_archs }}, ${{ matrix.manylinux_image }})'
@@ -69,21 +72,21 @@ jobs:
         with:
           python-version: '3.9'
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.12.1
+        uses: pypa/cibuildwheel@v2.16.2
         env:
-          CIBW_BEFORE_BUILD: pip install "cython==0.29.*"
+          CIBW_BEFORE_BUILD: pip install cython
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp39-* cp310-*' || 'cp310-*' }}
+          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp311-* cp312-*' || 'cp312-*' }}
           CIBW_SKIP: "pp* *-musllinux_*"
       - uses: actions/upload-artifact@v3
         if: github.ref == 'refs/heads/master'
         with:
-          path: ./wheelhouse/*cp39*.whl
+          path: ./wheelhouse/*cp311*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v3
         with:
-          path: ./wheelhouse/*cp310*.whl
+          path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-macos-x86_64:
@@ -101,13 +104,13 @@ jobs:
         with:
           python-version: '3.10'
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.12.1
+        uses: pypa/cibuildwheel@v2.16.2
         env:
           CIBW_BEFORE_BUILD: 
-            pip install "cython==0.29.*" &&
+            pip install cython &&
             brew install libomp ninja
           CIBW_ARCHS_MACOS: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: "cp38-* cp39-* cp310-* cp311-*"
+          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp38-* cp39-* cp310-* cp311-* cp312-*' || 'cp311-* cp312-*' }}
           CIBW_ENVIRONMENT: CXX='c++'
           CIBW_SKIP: "pp* *-musllinux_*"
       - uses: actions/upload-artifact@v3
@@ -125,6 +128,10 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*cp311*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   # CROSSBUILDING ON MACOS IS CURRENTLY BROKEN BECAUSE OF OPENMP-DEPENDENCIES
@@ -186,11 +193,11 @@ jobs:
         with:
           python-version: '3.10'
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.12.1
+        uses: pypa/cibuildwheel@v2.16.2
         env:
-          CIBW_BEFORE_BUILD: pip install "cython==0.29.*" ipython
+          CIBW_BEFORE_BUILD: pip install cython ipython
           CIBW_ARCHS: "AMD64"
-          CIBW_BUILD: "cp38-* cp39-* cp310-* cp311-*"
+          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp38-* cp39-* cp310-* cp311-* cp312-*' || 'cp311-* cp312-*' }}
           CIBW_SKIP: pp*
       - uses: actions/upload-artifact@v3
         with:
@@ -208,6 +215,11 @@ jobs:
         with:
           path: ./wheelhouse/*cp311*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*cp312*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+  
 
   source-distribution:
     name: 'Source distribution'
@@ -222,7 +234,7 @@ jobs:
           python-version: '3.10'
       - name: Create sdist source
         run: |
-          pip install "cython==0.29.*" numpy
+          pip install cython numpy
           python3 setup.py build_ext
           python3 setup.py sdist
       - uses: actions/upload-artifact@v3
