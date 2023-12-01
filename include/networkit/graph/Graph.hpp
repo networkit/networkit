@@ -510,6 +510,14 @@ private:
             return it;
         }
 
+        auto find(std::string const &name) const {
+            auto it = attrMap.find(name);
+            if (it == attrMap.end()) {
+                throw std::runtime_error("No such attribute");
+            }
+            return it;
+        }
+
         template <typename T>
         auto attach(const std::string &name) {
             auto ownedPtr =
@@ -539,6 +547,15 @@ private:
                 std::static_pointer_cast<AttributeStorage<NodeOrEdge, ASB, T>>(it->second)};
         }
 
+        template <typename T>
+        auto get(const std::string &name) const {
+            auto it = find(name);
+            if (it->second.get()->getType() != typeid(T))
+                throw std::runtime_error("Type mismatch in Attributes().get()");
+            return Attribute<NodeOrEdge, T>{
+                std::static_pointer_cast<AttributeStorage<NodeOrEdge, ASB, T>>(it->second)};
+        }
+
     }; // class AttributeMap
 
     AttributeMap<PerNode> nodeAttributeMap;
@@ -546,7 +563,9 @@ private:
 
 public:
     auto &nodeAttributes() noexcept { return nodeAttributeMap; }
+    auto &nodeAttributes() const noexcept { return nodeAttributeMap; }
     auto &edgeAttributes() noexcept { return edgeAttributeMap; }
+    auto &edgeAttributes() const noexcept { return edgeAttributeMap; }
 
     // wrap up some typed attributes for the cython interface:
     //
