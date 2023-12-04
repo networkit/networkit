@@ -9,17 +9,19 @@
 
 #include <girgs/Generator.h>
 
-#include <networkit/generators/GeometricInhomogeneousGenerator.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/generators/GeometricInhomogeneousGenerator.hpp>
 
 namespace NetworKit {
 
-GeometricInhomogeneousGenerator::GeometricInhomogeneousGenerator(count n, double avgDegree, double exp, double temperature, unsigned dim)
+GeometricInhomogeneousGenerator::GeometricInhomogeneousGenerator(count n, double avgDegree,
+                                                                 double exp, double temperature,
+                                                                 unsigned dim)
     : n(n), avgDegree(avgDegree), powerlawExp(exp), dim(dim) {
     if (n >= static_cast<count>(std::numeric_limits<int>::max()))
         throw std::runtime_error("Support only INT_MAX nodes");
 
-    if (avgDegree > n-1)
+    if (avgDegree > n - 1)
         throw std::runtime_error("Average degree is at most n-1");
 
     if (exp <= 2.0)
@@ -27,14 +29,14 @@ GeometricInhomogeneousGenerator::GeometricInhomogeneousGenerator(count n, double
 
     if (temperature < 0 || temperature > 1)
         throw std::runtime_error("Temperature T has to satiesfy 0 <= T <= 1");
-    alpha = temperature <= 0.0 ? std::numeric_limits<double>::infinity() : 1/temperature;
+    alpha = temperature <= 0.0 ? std::numeric_limits<double>::infinity() : 1 / temperature;
 
     if (!(1 <= dim && dim <= 5))
         throw std::runtime_error("Support only 1 to 5 dimensions");
 }
 
 Graph GeometricInhomogeneousGenerator::generate() {
-    auto& gen = Aux::Random::getURNG();
+    auto &gen = Aux::Random::getURNG();
 
     // generate inputs
     auto positions = girgs::generatePositions(static_cast<int>(n), dim, gen());
@@ -46,10 +48,10 @@ Graph GeometricInhomogeneousGenerator::generate() {
 
     // convert to networkit Graph
     Graph G(n);
-    for(auto [u,v] : edges) 
-        G.addEdge(u,v);
+    for (auto [u, v] : edges)
+        G.addEdge(u, v);
 
     return G;
 }
 
-} // NetworKit
+} // namespace NetworKit

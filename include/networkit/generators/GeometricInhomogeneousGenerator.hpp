@@ -5,14 +5,14 @@
  *      Author: Christopher Weyand, Manuel Penschuck <networkit@manuel.jetzt>
  */
 
-#ifndef GEOMETRICINHOMOGENEOUS_H_
-#define GEOMETRICINHOMOGENEOUS_H_
+#ifndef NETWORKIT_GENERATORS_GEOMETRIC_INHOMOGENEOUS_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_GEOMETRIC_INHOMOGENEOUS_GENERATOR_HPP_
 
 #include <networkit/generators/StaticGraphGenerator.hpp>
 
 namespace NetworKit {
 
-class GeometricInhomogeneousGenerator: public StaticGraphGenerator {
+class GeometricInhomogeneousGenerator : public StaticGraphGenerator {
 public:
     /**
      * @param[in] n Number of nodes
@@ -21,10 +21,8 @@ public:
      * @param[in] temperature Temperature adds noise to the instance with 0 <= T <= 1
      * @param[in] dimension Dimension of the underlying geometry with 1 <= dimension <= 5
      */
-    GeometricInhomogeneousGenerator(count n, double avgDegree, double powerlawExp=3, double temperature=0.0, unsigned dim=1);
-
-    // Add virtual destructor
-    virtual ~GeometricInhomogeneousGenerator() = default;
+    GeometricInhomogeneousGenerator(count n, double avgDegree, double powerlawExp = 3,
+                                    double temperature = 0.0, unsigned dim = 1);
 
     /// @return Graph to be generated according to parameters specified in constructor
     Graph generate() override;
@@ -37,6 +35,6 @@ private:
     unsigned dim;
 };
 
-} // NetworKit
+} // namespace NetworKit
 
-#endif // GEOMETRICINHOMOGENEOUS_H_
+#endif // NETWORKIT_GENERATORS_GEOMETRIC_INHOMOGENEOUS_GENERATOR_HPP_
