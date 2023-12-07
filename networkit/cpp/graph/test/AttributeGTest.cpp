@@ -98,6 +98,20 @@ TEST_F(AttributeGTest, testNodeAttributeReadWrite) {
     std::remove(path.c_str());
 }
 
+TEST_F(AttributeGTest, testConstGetNodeAttribute) {
+    const Graph graph = []() {
+        Graph graph(10);
+
+        auto intAttr = graph.nodeAttributes().attach<int>("some int attribute");
+        intAttr.set(0, 1);
+
+        return graph;
+    }();
+
+    auto constAttr = graph.nodeAttributes().get<int>("some int attribute");
+    EXPECT_EQ(constAttr[0], 1);
+}
+
 /// EDGE ATTRIBUTE TESTS ///
 
 TEST_F(AttributeGTest, testEdgeAttributeSetGetOnExistingEdges) {
@@ -217,6 +231,22 @@ TEST_F(AttributeGTest, testEdgeAttributeReadWrite) {
     std::remove(path.c_str());
 }
 
+TEST_F(AttributeGTest, testConstGetEdgeAttribute) {
+    const Graph graph = []() {
+        Graph graph(10);
+        graph.addEdge(0, 1);
+        graph.indexEdges();
+
+        auto edgeAttr = graph.edgeAttributes().attach<double>("some edge attribute");
+        edgeAttr(0, 1) = 3;
+
+        return graph;
+    }();
+
+    auto constEdgeAttr = graph.edgeAttributes().get<double>("some edge attribute");
+    EXPECT_EQ(constEdgeAttr(0, 1), 3);
+}
+
 /// COMBINED ATTRIBUTE TESTS ///
 
 TEST_F(AttributeGTest, testAttributeSetGetOnNonExistingNodes) {
@@ -319,28 +349,6 @@ TEST_F(AttributeGTest, testDefaultGet) {
     intAttr.set(0, 1);
     // trying to get attribute at invalid index (2), leads to default return
     EXPECT_EQ(intAttr.get(2, 0), 0);
-}
-
-TEST_F(AttributeGTest, testConstGet) {
-    const Graph graph = []() {
-        Graph graph(10);
-        graph.addEdge(0, 1);
-        graph.indexEdges();
-
-        auto intAttr = graph.nodeAttributes().attach<int>("some int attribute");
-        intAttr.set(0, 1);
-
-        auto edgeAttr = graph.edgeAttributes().attach<double>("some edge attribute");
-        edgeAttr(0, 1) = 3;
-
-        return graph;
-    }();
-
-    auto constAttr = graph.nodeAttributes().get<int>("some int attribute");
-    EXPECT_EQ(constAttr[0], 1);
-
-    auto constEdgeAttr = graph.edgeAttributes().get<double>("some edge attribute");
-    EXPECT_EQ(constEdgeAttr(0, 1), 3);
 }
 
 } // namespace NetworKit
