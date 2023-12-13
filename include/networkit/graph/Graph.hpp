@@ -238,6 +238,9 @@ private:
     template <typename NodeOrEdge, typename T>
     class Attribute;
 
+    template <typename NodeOrEdge, typename T>
+    class ConstAttribute;
+
     template <typename NodeOrEdge, template <typename> class Base, typename T>
     class AttributeStorage : public Base<NodeOrEdge> {
     public:
@@ -273,6 +276,7 @@ private:
         }
 
         friend Attribute<NodeOrEdge, T>;
+        friend ConstAttribute<NodeOrEdge, T>;
 
     private:
         using Base<NodeOrEdge>::theGraph;
@@ -487,10 +491,198 @@ private:
             }
         }
 
+        friend ConstAttribute<NodeOrEdge, T>;
+
     private:
         std::shared_ptr<AttributeStorage<NodeOrEdge, ASB, T>> ownedStorage;
         bool valid;
     }; // class Attribute
+
+    template <typename NodeOrEdge, typename T>
+    class ConstAttribute {
+    public:
+        class Iterator {
+        public:
+            // The value type of the attribute. Returned by
+            // operator*().
+            using value_type = const T;
+
+            // Reference to the value_type, required by STL.
+            using reference = value_type &;
+
+            // Pointer to the value_type, required by STL.
+            using pointer = value_type *;
+
+            // STL iterator category.
+            using iterator_category = std::forward_iterator_tag;
+
+            // Signed integer type of the result of subtracting two pointers,
+            // required by STL.
+            using difference_type = ptrdiff_t;
+
+            Iterator() : storage{nullptr}, idx{0} {}
+            Iterator(const AttributeStorage<NodeOrEdge, ASB, T> *storage)
+                : storage{storage}, idx{0} {
+                if (storage) {
+                    nextValid();
+                }
+            }
+
+            Iterator &nextValid() {
+                while (storage && !storage->isValid(idx)) {
+                    if (idx >= storage->values.size()) {
+                        storage = nullptr;
+                        return *this;
+                    }
+                    ++idx;
+                }
+                return *this;
+            }
+
+            Iterator &operator++() {
+                if (!storage) {
+                    throw std::runtime_error("Invalid attribute iterator");
+                }
+                ++idx;
+                return nextValid();
+            }
+
+            auto operator*() const {
+                if (!storage) {
+                    throw std::runtime_error("Invalid attribute iterator");
+                }
+                return std::make_pair(idx, storage->values[idx]);
+            }
+
+            bool operator==(Iterator const &iter) const noexcept {
+                if (storage == nullptr && iter.storage == nullptr) {
+                    return true;
+                }
+                return storage == iter.storage && idx == iter.idx;
+            }
+
+            bool operator!=(Iterator const &iter) const noexcept { return !(*this == iter); }
+
+        private:
+            const AttributeStorage<NodeOrEdge, ASB, T> *storage;
+            index idx;
+        }; // class Iterator
+
+    private:
+        class IndexProxy {
+            // a helper class for distinguished read and write on an indexed
+            // attribute
+            // operator[] on an attribute yields an IndexProxy holding
+            // location and index of access
+            //    - casting an IndexProxy to the attribute type reads the value
+            //    - assigning to it (operator=) writes the value
+        public:
+            IndexProxy(const AttributeStorage<NodeOrEdge, ASB, T> *storage, index idx)
+                : storage{storage}, idx{idx} {}
+
+            // reading at idx
+            operator T() const {
+                storage->checkIndex(idx);
+                return storage->values[idx];
+            }
+
+        private:
+            const AttributeStorage<NodeOrEdge, ASB, T> *storage;
+            index idx;
+        }; // class IndexProxy
+    public:
+        explicit ConstAttribute(
+            std::shared_ptr<const AttributeStorage<NodeOrEdge, ASB, T>> ownedStorage = nullptr)
+            : ownedStorage{ownedStorage}, valid{ownedStorage != nullptr} {}
+
+        ConstAttribute(ConstAttribute const &other)
+            : ownedStorage{other.ownedStorage}, valid{other.valid} {}
+        ConstAttribute(Attribute<NodeOrEdge, T> const &other)
+            : ownedStorage{other.ownedStorage}, valid{other.valid} {}
+
+        ConstAttribute &operator=(ConstAttribute other) {
+            this->swap(other);
+            return *this;
+        }
+
+        void swap(ConstAttribute &other) {
+            std::swap(ownedStorage, other.ownedStorage);
+            std::swap(valid, other.valid);
+        }
+
+        ConstAttribute(ConstAttribute &&other) noexcept
+            : ownedStorage{std::move(other.ownedStorage)}, valid{other.valid} {
+            other.valid = false;
+        }
+
+        auto begin() const {
+            checkAttribute();
+            return Iterator(ownedStorage.get()).nextValid();
+        }
+
+        auto end() const { return Iterator(nullptr); }
+
+        auto size() const noexcept { return ownedStorage->size(); }
+
+        auto get(index i) const {
+            checkAttribute();
+            return ownedStorage->get(i);
+        }
+
+        auto get2(node u, node v) const {
+            static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
+            return get(ownedStorage->theGraph->edgeId(u, v));
+        }
+
+        auto get(index i, T defaultT) const {
+            checkAttribute();
+            return ownedStorage->get(i, defaultT);
+        }
+
+        auto get2(node u, node v, T defaultT) const {
+            static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
+            return get(ownedStorage->theGraph->edgeId(u, v), defaultT);
+        }
+
+        IndexProxy operator[](index i) const {
+            checkAttribute();
+            return IndexProxy(ownedStorage.get(), i);
+        }
+
+        IndexProxy operator()(node u, node v) const {
+            static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
+            checkAttribute();
+            return IndexProxy(ownedStorage.get(), ownedStorage->theGraph->edgeId(u, v));
+        }
+
+        void checkAttribute() const {
+            if (!ownedStorage->validStorage)
+                throw std::runtime_error("Invalid attribute");
+        }
+
+        auto getName() const {
+            checkAttribute();
+            return ownedStorage->getName();
+        }
+
+        void write(std::string const &filename) const {
+            std::ofstream out(filename);
+            if (!out)
+                ERROR("cannot open ", filename, " for writing");
+
+            for (auto it = begin(); it != end(); ++it) {
+                auto pair = *it;
+                auto n = pair.first;  // node/edgeid
+                auto v = pair.second; // value
+                out << n << "\t" << v << "\n";
+            }
+            out.close();
+        }
+
+    private:
+        std::shared_ptr<const AttributeStorage<NodeOrEdge, ASB, T>> ownedStorage;
+        bool valid;
+    }; // class ConstAttribute
 
     template <typename NodeOrEdge>
     class AttributeMap {
@@ -552,8 +744,8 @@ private:
             auto it = find(name);
             if (it->second.get()->getType() != typeid(T))
                 throw std::runtime_error("Type mismatch in Attributes().get()");
-            return Attribute<NodeOrEdge, T>{
-                std::static_pointer_cast<AttributeStorage<NodeOrEdge, ASB, T>>(it->second)};
+            return ConstAttribute<NodeOrEdge, T>{
+                std::static_pointer_cast<const AttributeStorage<NodeOrEdge, ASB, T>>(it->second)};
         }
 
     }; // class AttributeMap
@@ -563,9 +755,9 @@ private:
 
 public:
     auto &nodeAttributes() noexcept { return nodeAttributeMap; }
-    auto &nodeAttributes() const noexcept { return nodeAttributeMap; }
+    const auto &nodeAttributes() const noexcept { return nodeAttributeMap; }
     auto &edgeAttributes() noexcept { return edgeAttributeMap; }
-    auto &edgeAttributes() const noexcept { return edgeAttributeMap; }
+    const auto &edgeAttributes() const noexcept { return edgeAttributeMap; }
 
     // wrap up some typed attributes for the cython interface:
     //
