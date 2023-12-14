@@ -99,30 +99,6 @@ void SimmelianScore::matchNeighbors(node, node alter, bool,
     }
 }
 
-/**
- * Helper function used in getOverlap. Adds the intersection of
- * egoNeighbors and alterNeighborsUnmatched to overlap.
- */
-void SimmelianScore::matchNeighbors(node, node alter, bool,
-                                    std::vector<RankedEdge>::const_iterator &,
-                                    const RankedNeighbors &egoNeighbors,
-                                    std::set<node> &egoNeighborsUnmatched,
-                                    std::set<node> &alterNeighborsUnmatched, count rank,
-                                    count &overlap) {
-
-    for (auto egoIt : egoNeighbors) {
-        node other = egoIt.alter;
-
-        if (other == alter || egoIt.rank != rank)
-            continue;
-
-        if (alterNeighborsUnmatched.erase(other))
-            overlap++;
-        else
-            egoNeighborsUnmatched.insert(other);
-    }
-}
-
 double SimmelianScore::score(node, node) {
     throw std::runtime_error("Not implemented: Use scores() instead.");
 }

@@ -20,32 +20,6 @@ cdef class ClusteringCoefficient:
 	A :code:`ClusteringCoefficient` object itself doesn't have to be created.
 	"""
 	@staticmethod
-	def avgLocal(Graph G, bool_t turbo = False):
-		"""
-		DEPRECATED: Use centrality.LocalClusteringCoefficient and take average.
-
-		This calculates the average local clustering coefficient of graph `G`. The graph may not contain self-loops.
-
-		Notes
-		-----
-
-		.. math:: c(G) := \\frac{1}{n} \sum_{u \in V} c(u)
-
-		where
-
-		.. math:: c(u) := \\frac{2 \cdot |E(N(u))| }{\deg(u) \cdot ( \deg(u) - 1)}
-
-		Parameters
-		----------
-		G : networkit.Graph
-			The input graph.
-		"""
-		cdef double ret
-		with nogil:
-			ret = avgLocal(G._this, turbo)
-		return ret
-
-	@staticmethod
 	def sequentialAvgLocal(Graph G):
 		""" 
 		sequentialAvgLocal(G)

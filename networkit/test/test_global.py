@@ -20,9 +20,6 @@ class TestGlobal(unittest.TestCase):
 		CL.approxGlobal(self.LL, 5)
 		CL.approxAvgLocal(self.L, 5)
 		CL.approxAvgLocal(self.LL, 5)
-		CL.avgLocal(self.L)
-		with self.assertRaises(RuntimeError) as cm:
-			CL.avgLocal(self.LL)
 		CL.sequentialAvgLocal(self.L)
 		CL.sequentialAvgLocal(self.LL)
 

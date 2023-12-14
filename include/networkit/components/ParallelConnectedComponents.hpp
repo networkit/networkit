@@ -12,8 +12,6 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /**
@@ -31,11 +29,6 @@ public:
      *   Beware of possible memory implications.
      */
     ParallelConnectedComponents(const Graph &G, bool coarsening = true);
-
-    /**
-     * This method determines the connected components for the graph g.
-     */
-    void TLX_DEPRECATED(runSequential());
 
     /**
      * This method determines the connected components for the graph g.

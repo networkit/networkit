@@ -10,6 +10,7 @@ import os
 import math
 import numpy as np
 import random
+import timeit
 import warnings
 try:
 	import tabulate
@@ -31,7 +32,6 @@ from .graphtools import GraphTools
 from .algebraic import laplacianEigenvectors
 from .centrality import CoreDecomposition
 from .coarsening import ParallelPartitionCoarsening
-from . import stopwatch
 from . import graphio
 from .helpers import stdstring
 from .support import MissingDependencyError
@@ -1653,11 +1653,11 @@ def detectCommunities(G, algo=None, inspect=True):
 	"""
 	if algo is None:
 		algo = PLM(G, refine=False)
-	t = stopwatch.Timer()
+	start = timeit.default_timer()
 	algo.run()
 	zeta = algo.getPartition()
-	t.stop()
-	print("Communities detected in {:.5f} [s]".format(t.elapsed))
+	end = timeit.default_timer()
+	print("Communities detected in {:.5f} [s]".format(end - start))
 	if inspect:
 		print ("solution properties:")
 		inspectCommunities(zeta, G)
@@ -1740,12 +1740,12 @@ def evalCommunityDetection(algo, G):
 
 	if not have_tabulate:
 		raise MissingDependencyError("tabulate")
-	t = stopwatch.Timer()
+	start = timeit.default_timer()
 	algo.run()
 	zeta = algo.getPartition()
-	t.stop()
+	end = timeit.default_timer()
 	results = [
-		["time [s]", t.elapsed],
+		["time [s]", (end - start)],
 		["# communities", zeta.numberOfSubsets()],
 		["modularity", Modularity().getQuality(zeta, G)]
 	]

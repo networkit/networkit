@@ -459,7 +459,7 @@ cdef class GraphTools:
 		return Graph().setThis(copyNodes(graph._this))
 
 	@staticmethod
-	def subgraphFromNodes(Graph graph, vector[node] nodes, includeOutNeighbors=False, includeInNeighbors=False, bool_t compact = False):
+	def subgraphFromNodes(Graph graph, vector[node] nodes, bool_t compact = False):
 		"""
 		subgraphFromNodes(graph, list(int) nodes, includeOutNeighbors=False, includeInNeighbors=False, compact = False)
 
@@ -469,12 +469,6 @@ cdef class GraphTools:
 			The input graph.
 		nodes : list(int)
 			Nodes in the induced subgraph.
-		includeOutNeighbors : bool, optional
-			DEPRECATED. Use subgraphAndNeighborsFromNodes instead.
-			If set to true, out-neighbors will also be included. Default: False
-		includeInNeighbors : bool, optional
-			DEPRECATED. Use subgraphAndNeighborsFromNodes instead.
-			If set to true, in-neighbors will also be included. Default: False
 		compact : bool, optional
 			Indicates whether the resulting graph shall have compact, continuous node ids.
 			If False node ids of the input graph are kept. Default: False
@@ -484,21 +478,9 @@ cdef class GraphTools:
 		graph : networkit.Graph
 			Induced subgraph of the input graph (including potential edge/weight directions).
 		"""
-		# Deprecated compatibility wrapper. We use "vector" to
-		# preserve the sorting of the nodes for compact
-		# subgraphs and only convert to unordered_set when
-		# needed.
-		cdef unordered_set[node] nodeSet
 
-		if includeInNeighbors or includeOutNeighbors:
-			if compact:
-				raise RuntimeError("Compaction is not supported with includeOutNeighbors or includeInNeighbors")
-			nodeSet.insert(nodes.begin(), nodes.end())
-			return Graph().setThis(subgraphAndNeighborsFromNodes(
-			    	graph._this, nodeSet, includeOutNeighbors, includeInNeighbors))
-		else:
-			return Graph().setThis(subgraphFromNodes(
-			    	graph._this, nodes.begin(), nodes.end(), compact))
+		return Graph().setThis(subgraphFromNodes(
+				graph._this, nodes.begin(), nodes.end(), compact))
 
 	@staticmethod
 	def subgraphAndNeighborsFromNodes(Graph graph, nodes, includeOutNeighbors=False, includeInNeighbors=False):

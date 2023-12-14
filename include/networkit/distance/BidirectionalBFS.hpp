@@ -13,8 +13,6 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/distance/STSP.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /*
@@ -42,17 +40,6 @@ public:
      * Perform a bidirectional BFS from the given source and target nodes.
      */
     void run() override;
-
-    /*
-     * Returns the distance (i.e., number of hops) from the source to the target node.
-     *
-     * @return count Number of hops from the source to the target node.
-     */
-    count TLX_DEPRECATED(getHops()) {
-        assureFinished();
-        WARN("BidirectionalBFS::getHops() is deprecated, use getDistance() instead.");
-        return static_cast<count>(distance);
-    }
 
 private:
     std::vector<uint8_t> visited;

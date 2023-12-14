@@ -11,8 +11,6 @@
 #include <set>
 #include <unordered_set>
 
-#include <tlx/define/deprecated.hpp>
-
 #include <networkit/edgescores/EdgeScore.hpp>
 
 namespace NetworKit {
@@ -77,11 +75,6 @@ public:
 
     Redundancy getOverlap(const node &ego, const node &alter,
                           const std::vector<RankedNeighbors> &neighbors, const count &maxRank);
-
-    void TLX_DEPRECATED(matchNeighbors(
-        node ego, node alter, bool reciprocityCheck, std::vector<RankedEdge>::const_iterator &egoIt,
-        const RankedNeighbors &egoNeighbors, std::set<node> &egoNeighborsUnmatched,
-        std::set<node> &alterNeighborsUnmatched, count rank, count &overlap));
 
 protected:
     const std::vector<count> *triangles;

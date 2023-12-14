@@ -92,7 +92,7 @@ TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
         DEBUG("Number of components: ", seqNum);
         EXPECT_EQ(seqNum, parNum);
         G.forNodes([&](node u) { EXPECT_EQ(cc.componentOfNode(u), ccPar.componentOfNode(u)); });
-        ccPar.runSequential();
+        ccPar.run();
         parNum = ccPar.numberOfComponents();
         EXPECT_EQ(seqNum, parNum);
         G.forNodes([&](node u) { EXPECT_EQ(cc.componentOfNode(u), ccPar.componentOfNode(u)); });
