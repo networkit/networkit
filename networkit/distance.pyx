@@ -1515,7 +1515,6 @@ cdef cppclass PathCallbackWrapper:
 cdef extern from "<networkit/distance/BidirectionalBFS.hpp>":
 	cdef cppclass _BidirectionalBFS "NetworKit::BidirectionalBFS"(_STSP):
 		_BidirectionalBFS(_Graph G, node source, node target, bool_t storePred) except +
-		count getHops() except +
 
 cdef class BidirectionalBFS(STSP):
 	"""
@@ -1540,22 +1539,6 @@ cdef class BidirectionalBFS(STSP):
 
 	def __cinit__(self, Graph G, node source, node target, bool_t storePred=True):
 		self._this = new _BidirectionalBFS(G._this, source, target, storePred)
-
-	def getHops(self):
-		"""
-		getHops()
-
-		Returns the distance (i.e., number of hops) from the source to the
-		target node.
-
-		Returns
-		-------
-		int
-			Number of hops from the source to the target node.
-		"""
-		from warnings import warn
-		warn("getHops() is deprecated, use 'getDistance' instead")
-		return (<_BidirectionalBFS*>(self._this)).getDistance()
 
 cdef extern from "<networkit/distance/BidirectionalDijkstra.hpp>":
 	cdef cppclass _BidirectionalDijkstra "NetworKit::BidirectionalDijkstra"(_STSP):

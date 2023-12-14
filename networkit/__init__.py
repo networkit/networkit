@@ -46,8 +46,14 @@ except ImportError:
 else:
 	have_plt = True
 
+try:
+	import networkx as nx
+except ImportError:
+	have_nx = False
+else:
+	have_nx = True
+
 # local imports
-from . import stopwatch
 from . import graph
 from . import graphio
 from . import community
@@ -58,11 +64,8 @@ from . import engineering
 from . import embedding
 from . import distance
 from . import components
-from . import dynamic
 from . import gephi
-from . import partitioning
 from . import coloring
-from . import workflows
 from . import flow
 from . import sparsification
 from . import scd
@@ -75,21 +78,19 @@ from . import coarsening
 from . import reachability
 from . import simulation
 from . import stats
-from . import sampling
 from . import viz
 from . import randomization
 from . import independentset
 from .support import MissingDependencyError
 from .graphtools import GraphTools as graphtools
 
+
 if have_plt:
 	from . import plot
 	from .profiling import profiling
 
-try:
-	from . import viztasks
-except ImportError:
-	raise MissingDependencyError("viztasks")
+if have_nx:
+	from . import nxadapter
 
 #--------- Top Level Classes and Functions ----------------#
 #

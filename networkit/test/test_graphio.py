@@ -5,7 +5,7 @@ import networkit as nk
 
 class TestGEXFIO(unittest.TestCase):
 	def setUp(self):
-		from networkit.GEXFIO import GEXFReader
+		from networkit.graphio import GEXFReader
 		from networkit.graph import Graph
 		self.reader = GEXFReader()
 		#celegans.gexf from http://gexf.net/format/datasets.html
@@ -41,7 +41,7 @@ class TestGEXFIO(unittest.TestCase):
 
 	def test_read_and_write(self):
 		#write and read files again to check
-		from networkit.GEXFIO import GEXFWriter
+		from networkit.graphio import GEXFWriter
 		writer = GEXFWriter()
 		writer.write(self.g, "output/staticTestResult.gexf", self.events)
 		self.assertTrue(os.path.isfile("output/staticTestResult.gexf"))

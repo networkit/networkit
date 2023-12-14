@@ -141,14 +141,6 @@ void GraphBuilder::increaseInWeight(node u, node v, edgeweight ew) {
     }
 }
 
-Graph GraphBuilder::toGraph(bool autoCompleteEdges, bool parallel) {
-    if (!autoCompleteEdges) {
-        throw "DirectSwap is no longer supported. Please use the Graph class directly for it "
-              "instead.";
-    }
-    return completeGraph(parallel);
-}
-
 Graph GraphBuilder::completeGraph(bool parallel) {
     Graph G(n, weighted, directed);
     assert(n == G.upperNodeIdBound());

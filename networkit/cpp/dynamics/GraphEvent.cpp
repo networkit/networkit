@@ -64,12 +64,4 @@ bool GraphEvent::operator>=(const GraphEvent &rhs) const noexcept {
     return !(*this < rhs);
 }
 
-bool GraphEvent::compare(GraphEvent a, GraphEvent b) {
-    return a <= b;
-}
-
-bool GraphEvent::equal(GraphEvent a, GraphEvent b) {
-    return a == b;
-}
-
 } /* namespace NetworKit */

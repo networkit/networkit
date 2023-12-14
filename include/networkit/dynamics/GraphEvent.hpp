@@ -10,8 +10,6 @@
 
 #include <networkit/graph/Graph.hpp>
 
-#include <tlx/define/deprecated.hpp>
-
 namespace NetworKit {
 
 /**
@@ -39,9 +37,6 @@ public:
     GraphEvent() = default;
 
     GraphEvent(Type type, node u = none, node v = none, edgeweight w = defaultEdgeWeight);
-
-    static bool TLX_DEPRECATED(compare(GraphEvent a, GraphEvent b));
-    static bool TLX_DEPRECATED(equal(GraphEvent a, GraphEvent b));
 
     bool operator==(const GraphEvent &rhs) const noexcept;
     bool operator!=(const GraphEvent &rhs) const noexcept;
