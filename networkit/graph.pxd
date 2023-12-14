@@ -179,6 +179,8 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		void set(node, int) except +
 		int get(node) except +
 		int get(node, int) except +
+		void write(string) except +
+		void read(string) except +
 		void swap(_NodeIntAttribute& other)
 		string getName() except +	
 
@@ -195,6 +197,8 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		void set(node, double) except +
 		double get(node) except +
 		double get(node, double) except +
+		void write(string) except +
+		void read(string) except +
 		void swap(_NodeDoubleAttribute& other)
 		string getName() except +
 
@@ -211,6 +215,8 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		void set(node, string) except +
 		string get(node) except +
 		string get(node, string) except +
+		void write(string) except +
+		void read(string) except +
 		void swap(_NodeStringAttribute& other)
 		string getName() except +
 
@@ -230,6 +236,8 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		int get2(node, node) except +
 		int get(edgeid, int) except +
 		int get2(node, node, int) except +
+		void write(string) except +
+		void read(string) except +
 		void swap(_EdgeIntAttribute& other)
 
 cdef extern from "<networkit/graph/Graph.hpp>":
@@ -248,6 +256,8 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		double get2(node, node) except +
 		double get(edgeid, double) except +
 		double get2(node, node, double) except +
+		void write(string) except +
+		void read(string) except +
 		void swap(_EdgeDoubleAttribute& other)
 
 cdef extern from "<networkit/graph/Graph.hpp>":
@@ -266,6 +276,8 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		string get2(node, node) except +
 		string get(edgeid, string) except +
 		string get2(node, node, string) except +
+		void write(string) except +
+		void read(string) except +
 		void swap(_EdgeStringAttribute& other)
 
 cdef class Graph:

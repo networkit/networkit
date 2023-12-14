@@ -1,4 +1,5 @@
 # distutils: language=c++
+# cython: c_string_type=unicode, c_string_encoding=utf8
 
 from cython.operator import dereference, preincrement
 
@@ -1164,6 +1165,12 @@ cdef class NodeIntAttribute:
 		preincrement(self._iter)
 		return val
 
+	def write(self, path: str):
+		return self._this.write(path)
+
+	def read(self, path: str):
+		return self._this.read(path)
+
 
 cdef class NodeDoubleAttribute:
 	cdef setThis(self, _NodeDoubleAttribute& other, _Graph* G):
@@ -1201,6 +1208,12 @@ cdef class NodeDoubleAttribute:
 		val = dereference(self._iter)
 		preincrement(self._iter)
 		return val
+
+	def write(self, path: str):
+		return self._this.write(path)
+	
+	def read(self, path: str):
+		return self._this.read(path)
 
 cdef class NodeStringAttribute:
 
@@ -1240,6 +1253,12 @@ cdef class NodeStringAttribute:
 		val = (val[0], pystring(val[1]))
 		preincrement(self._iter)
 		return val
+
+	def write(self, path: str):
+		return self._this.write(path)
+
+	def read(self, path: str):
+		return self._this.read(path)
 
 class NodeAttribute:
 	"""
@@ -1290,6 +1309,12 @@ class NodeAttribute:
 
 	def __next__(self):
 		return next(self._iter)
+	
+	def write(self, path: str):
+		return self.attr.write(path)
+
+	def read(self, path: str):
+		return self.attr.read(path)
 
 
 # The following 3 classes EdgeIntAttribute, EdgeDoubleAttribute and 
@@ -1351,6 +1376,11 @@ cdef class EdgeIntAttribute:
 		preincrement(self._iter)
 		return val
 
+	def write(self, path: str):
+		return self._this.write(path)
+	
+	def read(self, path: str):
+		return self._this.read(path)
 
 cdef class EdgeDoubleAttribute:
 	cdef setThis(self, _EdgeDoubleAttribute& other, _Graph* G):
@@ -1402,6 +1432,12 @@ cdef class EdgeDoubleAttribute:
 		val = dereference(self._iter)
 		preincrement(self._iter)
 		return val
+	
+	def write(self, path: str):
+		return self._this.write(path)
+
+	def read(self, path: str):
+		return self._this.read(path)
 
 cdef class EdgeStringAttribute:
 
@@ -1455,6 +1491,12 @@ cdef class EdgeStringAttribute:
 		val = (val[0], pystring(val[1]))
 		preincrement(self._iter)
 		return val
+	
+	def write(self, path: str):
+		return self._this.write(path)
+
+	def read(self, path: str):
+		return self._this.read(path)
 
 class EdgeAttribute:
 	"""
@@ -1502,6 +1544,12 @@ class EdgeAttribute:
 
 	def __next__(self):
 		return next(self._iter)
+
+	def write(self, path: str):
+		return self.attr.write(path)
+
+	def read(self, path: str):
+		return self.attr.read(path)
 
 
 cdef cppclass EdgeCallBackWrapper:
