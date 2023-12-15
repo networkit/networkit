@@ -836,6 +836,7 @@ TEST_F(IOGTest, testKONECTGraphReader) {
     ASSERT_EQ(G.weight(0, 1), 1.261404);
     ASSERT_EQ(G.weight(127, 48), 0.03050447);
 }
+
 TEST_F(IOGTest, testNetworkitBinaryTiny01) {
     METISGraphReader reader2;
     Graph G = reader2.read("input/tiny_01.graph");
