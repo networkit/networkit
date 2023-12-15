@@ -65,12 +65,18 @@ void RandomNodeEdgeScore::run() {
     hasRun = true;
 }
 
-double RandomNodeEdgeScore::score(node, node) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
+double RandomNodeEdgeScore::score(node u, node v) {
+    if (hasRun) {
+        return scoreData[G->edgeId(u, v)];
+    }
+    throw std::runtime_error("Call run() prior to using score().");
 }
 
-double RandomNodeEdgeScore::score(edgeid) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
+double RandomNodeEdgeScore::score(edgeid eid) {
+    if (hasRun) {
+        return scoreData[eid];
+    }
+    throw std::runtime_error("Call run() prior to using score().");
 }
 
 } /* namespace NetworKit */

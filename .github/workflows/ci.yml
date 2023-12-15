@@ -99,7 +99,7 @@ env:
 
 jobs:
   macos-build-latest-version-apple-clang:
-    name: "macOS ${{ matrix.os }} (apple-clang, CPython 3.10): ${{ matrix.build-configuration }}"
+    name: "macOS ${{ matrix.os }} (apple-clang, CPython 3.11): ${{ matrix.build-configuration }}"
     runs-on: macos-${{ matrix.os }}
     env:
       CC: cc
@@ -118,11 +118,11 @@ jobs:
         with:
           python-version: '3.11.0'
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Checkout tlx
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: tlx/tlx
           path: tlx
@@ -138,40 +138,40 @@ jobs:
     runs-on: macos-${{ matrix.os }}
     strategy:
       matrix:
-        os: ['11']
-        compiler: ['clang-15', 'gcc-11']
+        os: ['12']
+        compiler: ['clang-16', 'gcc-12']
     steps:
       - name: Install prerequisites
         run: |
           brew install libomp
           brew install ninja
       - name: Install compiler llvm
-        if: matrix.compiler == 'clang-15'
+        if: matrix.compiler == 'clang-16'
         run: |
-          brew reinstall llvm@15
-          brew link --overwrite llvm@15
+          brew reinstall llvm@16
+          brew link --overwrite llvm@16
       - name: Install compiler gcc
-        if: matrix.compiler == 'gcc-11'
+        if: matrix.compiler == 'gcc-12'
         run: |
-          brew reinstall gcc@11
-          brew link --overwrite gcc@11
+          brew reinstall gcc@12
+          brew link --overwrite gcc@12
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Prepare environment and run checks
         run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
         shell: bash
         env:
-          CC: ${{ matrix.compiler == 'clang-15' && '/usr/local/opt/llvm@15/bin/clang' || 'gcc-11' }}
-          CXX: ${{ matrix.compiler == 'clang-15' && '/usr/local/opt/llvm@15/bin/clang++' || 'g++-11' }}
+          CC: ${{ matrix.compiler == 'clang-16' && '/usr/local/opt/llvm@16/bin/clang' || 'gcc-12' }}
+          CXX: ${{ matrix.compiler == 'clang-16' && '/usr/local/opt/llvm@16/bin/clang++' || 'g++-12' }}
 
   linux-build-latest:
-    name: "Linux (gcc-11${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.11' || '' }}): ${{ matrix.build-configuration }}"
-    runs-on: ubuntu-20.04
+    name: "Linux (gcc-12${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.11' || '' }}): ${{ matrix.build-configuration }}"
+    runs-on: ubuntu-22.04
     env:
-      CC: gcc-11
-      CXX: g++-11
+      CC: gcc-12
+      CXX: g++-12
     strategy:
       matrix:
         build-configuration: ['full', 'full (native)', 'core (non-monolithic)', 'core (C++20)']
@@ -180,18 +180,18 @@ jobs:
         run:  |
           sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu jammy main universe'
           sudo apt-get update
-          sudo apt-get install gcc-11 g++-11 ninja-build
+          sudo apt-get install ninja-build
       - name: Setup Python 3.11.0
         uses: actions/setup-python@v3
         with:
           python-version: '3.11.0'
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Checkout tlx
         if: ${{ startsWith(matrix.build-configuration, 'full') }}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: tlx/tlx
           path: tlx
@@ -209,20 +209,20 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        compiler: ['clang-15']
+        compiler: ['clang-16']
     steps:
       - name: Install prerequisites
         run:  |
           curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-15 main" | sudo tee /etc/apt/sources.list.d/llvm13.list
+          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-16 main" | sudo tee /etc/apt/sources.list.d/llvm13.list
           sudo apt-get update
-          sudo apt-get install clang-15 libomp-15-dev ninja-build
+          sudo apt-get install clang-16 libomp-16-dev ninja-build
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Checkout tlx
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: tlx/tlx
           path: tlx
@@ -230,32 +230,51 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
         shell: bash
         env:
-          CC: clang-15
-          CXX: clang++-15
+          CC: clang-16
+          CXX: clang++-16
+
+  linux-pep-518-install:
+    name: "Linux: Release build using pyproject.toml"
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout networkit
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Setup Python 3.11.0
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.11.0'  
+      - name: Build and install NetworKit using pyproject.toml
+        run:  pip install .
+      - name: Run minimal function test
+        run:  |
+          mkdir ./tmp && cd ./tmp
+          python3 -c "import networkit"
 
   linux-build-min-support:
     name: "Linux (${{ matrix.compiler }}, CPython 3.7): full"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        compiler: ['gcc-7', 'clang-5']
+        compiler: ['gcc-8', 'clang-7']
     steps:
       - name: Install prerequisites
         run:  |
           sudo apt-get update
           sudo apt-get install ninja-build
-          sudo apt-get install libomp5 libomp-dev clang-5.0 clang++-5.0
-          sudo apt-get install gcc-7 g++-7
+          sudo apt-get install clang-7 clang++-7
+          sudo apt-get install gcc-8 g++-8
       - name: Setup Python 3.7
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: '3.7'
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Checkout tlx
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: tlx/tlx
           path: tlx
@@ -263,24 +282,24 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/full.sh
         shell: bash
         env:
-          CC: ${{ matrix.compiler == 'gcc-7' && 'gcc-7' || 'clang-5.0' }}
-          CXX: ${{ matrix.compiler == 'gcc-7' && 'g++-7' || 'clang++-5.0' }}
+          CC: ${{ matrix.compiler == 'gcc-8' && 'gcc-8' || 'clang-7' }}
+          CXX: ${{ matrix.compiler == 'gcc-8' && 'g++-8' || 'clang++-7' }}
 
   linux-build-clang-tidy:
-    name: "Linux (clang-15): clang-tidy"
+    name: "Linux (clang-16): clang-tidy"
     runs-on: ubuntu-20.04
     env:
-      CC: clang
-      CXX: clang++
+      CC: clang-16
+      CXX: clang++-16
     steps:
       - name: Install prerequisites
         run: |
           curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-15 main" | sudo tee /etc/apt/sources.list.d/llvm13.list
+          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-16 main" | sudo tee /etc/apt/sources.list.d/llvm13.list
           sudo apt-get update
-          sudo apt-get install libomp-15-dev clang-15 clang-tidy-15 ninja-build
+          sudo apt-get install libomp-16-dev clang-16 clang-tidy-16 ninja-build
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Prepare environment and run checks
@@ -307,13 +326,13 @@ jobs:
         with:
           python-version: '3.11.0'
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Prepare environment and run checks
         run:  ${{ github.workspace }}/.github/workflows/scripts/core_sanitizers_coverage.sh
         shell: bash
-        timeout-minutes: 120
+        timeout-minutes: 180
       - name: Create C++ coverage
         run: |
           cd ${{ github.workspace }}
@@ -343,7 +362,7 @@ jobs:
         build-configuration: ['core']
     steps:
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Setup devCmd (vstools)
@@ -368,11 +387,11 @@ jobs:
         with:
           python-version: '3.11.0'
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Checkout tlx
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: tlx/tlx
           path: tlx
@@ -387,7 +406,7 @@ jobs:
           cd ../..
           python -m venv pyenv
           . ./pyenv/Scripts/activate
-          pip install cython ipython jupyter ipywidgets==7.7.1 jupyterlab-widgets==1.1.1
+          pip install "cython==0.29.*" ipython ipywidgets==7.7.1 jupyter jupyterlab-widgets==1.1.1 numpy
           mkdir build && cd build
           cmake -GNinja -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_STATIC=ON -DCMAKE_BUILD_TYPE=Release -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DNETWORKIT_WARNINGS=ON -DNETWORKIT_WARNINGS_AS_ERRORS=ON -DNETWORKIT_EXT_TLX=${{ env.TLX_PATH_WIN }} -DNETWORKIT_NATIVE=${{ env.NATIVE }} ..
           ninja
@@ -421,14 +440,16 @@ jobs:
         with:
           python-version: '3.11.0'
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Prepare environment and run checks
+        id: build
+        continue-on-error: true
         run:  ${{ github.workspace }}/.github/workflows/scripts/documentation.sh
         shell: bash
       - name: Deploy networkit.github.io
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: steps.build.outcome == 'success' && github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.SECRET_DEPLOY_GITHUB_PAGES }}
@@ -446,14 +467,16 @@ jobs:
       - name: Install prerequisites
         run: |
           curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-15 main" | sudo tee /etc/apt/sources.list.d/llvm11.list
+          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-16 main" | sudo tee /etc/apt/sources.list.d/llvm16.list
           sudo apt-get update
-          sudo apt-get install clang-format-15 python-yaml
+          sudo apt-get install clang-format-16 python-yaml
       - name: Checkout networkit
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Prepare environment and run checks
         run:  |
           set -e
           ./check_code.sh -v
+        env:
+          NETWORKIT_OVERRIDE_CLANG_FORMAT: "clang-format-16"

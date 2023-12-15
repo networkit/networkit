@@ -30,7 +30,7 @@ __credits__ = ["Eugenio Angriman", "Lukas Barth", "Miriam Beddig", "Elisabetta B
     "Moritz v. Looz", "Yassine Marrakchi", "Henning Meyerhenke", "Manuel Penschuck", "Lucas Archimedes Gregorio Henr Petersen", "Marcel Radermacher", "Klara Reichard", \
 	"Marvin Ritter", "Aleksejs Sazonovs", "Hung Tran", "Alexander van der Grinten", "Florian Weber", "Michael Wegner", "Jörg Weisbarth"]
 __license__ = "MIT"
-__version__ = "10.0"
+__version__ = "10.1"
 
 # standard library modules
 import csv
@@ -102,7 +102,7 @@ except ImportError:
 from .engineering import getLogLevel, setLogLevel, setPrintLocation, none, setSeed, \
 		setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
 # local imports into the top namespace
-from .graph import Graph
+from .graph import Graph, GraphFromCoo
 from .structures import Partition, Cover
 from .graphio import readGraph, writeGraph, readGraphs, Format
 

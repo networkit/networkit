@@ -15,6 +15,8 @@
 #include <networkit/auxiliary/StringTools.hpp>
 #include <networkit/io/SNAPEdgeListPartitionReader.hpp>
 
+#include <tlx/unused.hpp>
+
 namespace NetworKit {
 
 Cover SNAPEdgeListPartitionReader::read(const std::string &path,
@@ -39,7 +41,7 @@ Cover SNAPEdgeListPartitionReader::read(const std::string &path,
     std::unordered_set<node> uniqueIDs;
 #endif
     count totalCounter = 0;
-
+    tlx::unused(totalCounter);
     Cover communities(G.upperNodeIdBound());
 
     // first find out the maximum node id
@@ -55,7 +57,7 @@ Cover SNAPEdgeListPartitionReader::read(const std::string &path,
 #ifndef NDEBUG
                 uniqueIDs.insert(current);
 #endif
-                totalCounter++;
+                ++totalCounter;
                 if (mapNodeIds.find(current) != mapNodeIds.end()) {
                     communities.addToSubset(i, mapNodeIds[current]);
                 } else {
@@ -68,6 +70,7 @@ Cover SNAPEdgeListPartitionReader::read(const std::string &path,
     DEBUG("read ", uniqueIDs.size(),
           " unique node IDs with the total amount of occurrences: ", totalCounter);
 #endif
+    tlx::unused(totalCounter);
     count emptyElements = 0;
     count output = 0;
     std::stringstream outputString;
@@ -75,7 +78,7 @@ Cover SNAPEdgeListPartitionReader::read(const std::string &path,
     outputString << "first 10 unassigned IDs: ";
     for (index i = 0, end = communities.numberOfElements(); i < end; ++i) {
         if (communities[i].empty()) {
-            emptyElements++;
+            ++emptyElements;
             if (output < 10) {
                 outputIDs.push_back(i);
                 output++;
@@ -83,6 +86,7 @@ Cover SNAPEdgeListPartitionReader::read(const std::string &path,
         }
     }
     DEBUG(emptyElements, " nodes have not been assigned to any community");
+    tlx::unused(emptyElements);
     auto endIt = mapNodeIds.end();
     for (index i = 0, end = outputIDs.size(); i < end; ++i) {
         bool found = false;

@@ -2,6 +2,15 @@
 
 from cython.operator import dereference, preincrement
 
+import numpy as np
+from scipy.sparse import coo_matrix
+cimport numpy as cnp
+cnp.import_array()
+
+ctypedef cnp.uint_t DUINT_t
+ctypedef cnp.int32_t DINT32_t
+ctypedef cnp.double_t DDOUBLE_t
+
 from .base import Algorithm
 from .helpers import stdstring, pystring
 from .traversal import Traversal
@@ -22,7 +31,7 @@ cdef class Graph:
 	Parameters
 	----------
 	n : int, optional
-		Number of nodes.
+		Number of nodes. Default: 0
 	weighted : bool, optional
 		If set to True, the graph can have edge weights other than 1.0. Default: False
 	directed : bool, optional
@@ -72,7 +81,7 @@ cdef class Graph:
 		Parameters
 		----------
 		force : bool, optional
-			Force re-indexing of edges.
+			Force re-indexing of edges. Default: False
 		"""
 		self._this.indexEdges(force)
 
@@ -93,6 +102,13 @@ cdef class Graph:
 		"""
 		edgeId(u, v)
 
+		Parameters
+		----------
+		u: node
+			Node Id from u.
+		v: node
+			Node Id from v.
+			
 		Returns
 		-------
 		int
@@ -156,11 +172,16 @@ cdef class Graph:
 		"""
 		degree(u)
 
-		Get the number of neighbors of `v`.
+		Get the number of neighbors of `u`.
 
+		Note
+		----
+		The existence of the node is not checked. Calling this function with a non-existing node results in a segmentation fault. 
+		Node existence can be checked by calling hasNode(u).
+		
 		Parameters
 		----------
-		v : int
+		u : int
 			The input Node.
 
 		Returns
@@ -174,11 +195,16 @@ cdef class Graph:
 		"""
 		degreeIn(u)
 
-		Get the number of in-neighbors of `v`.
+		Get the number of in-neighbors of `u`.
+
+		Note
+		----
+		The existence of the node is not checked. Calling this function with a non-existing node results in a segmentation fault. 
+		Node existence can be checked by calling hasNode(u).
 
 		Parameters
 		----------
-		v : int
+		u : int
 			The input Node.
 
 		Returns
@@ -192,11 +218,16 @@ cdef class Graph:
 		"""
 		degreeOut(u)
 
-		Get the number of out-neighbors of `v`.
+		Get the number of out-neighbors of `u`.
+
+		Note
+		----
+		The existence of the node is not checked. Calling this function with a non-existing node results in a segmentation fault. 
+		Node existence can be checked by calling hasNode(u).
 
 		Parameters
 		----------
-		v : int
+		u : int
 			The Input Node.i
 		Returns
 		-------
@@ -365,7 +396,7 @@ cdef class Graph:
 		v : int
 			Endpoint of edge.
 		w : float, optional
-			Edge weight.
+			Edge weight. Default: 1.0
 		addMissing : bool, optional
 			Add missing endpoints if necessary (i.e., increase numberOfNodes). Default: False
 		checkMultiEdge : bool, optional
@@ -391,6 +422,75 @@ cdef class Graph:
 				self._this.restoreNode(v)
 
 		return self._this.addEdge(u, v, w, checkMultiEdge)
+
+	def addEdges(self, inputData, addMissing = False, checkMultiEdge = False):
+		"""
+		addEdges(inputData)
+
+		Inserts edges from several sources based on the type of :code:`inputData`.
+
+		If the graph is undirected, each pair (i,j) in :code:`inputData` is inserted twice twice: once as (i,j) and once as (j,i).
+
+		Parameter :code:`inputData` can be one of the following:
+
+		- scipy.sparse.coo_matrix
+		- (data, (i,j)) where data, i and j are of type np.ndarray
+		- (i,j) where i and j are of type np.ndarray
+
+		Note
+		----
+		If only pairs of row and column indices (i,j) are given, each edge is given weight 1.0 (even in case of a weighted graph).
+
+		Parameters
+		----------
+		inputData : several
+			Input data encoded as one of the supported formats.
+		addMissing : bool, optional
+			Add missing endpoints if necessary (i.e., increase numberOfNodes). Default: False
+		checkMultiEdge : bool, optional
+			Check if edge is already present in the graph. If detected, do not insert the edge. Default: False
+		"""
+
+		cdef cnp.ndarray[DUINT_t, ndim = 1, mode = 'c'] row, col
+		cdef cnp.ndarray[DDOUBLE_t, ndim = 1, mode = 'c'] data
+
+		if isinstance(inputData, coo_matrix):
+			try:
+				row = inputData.row.astype(np.uint).view(np.uint)
+				col = inputData.col.astype(np.uint).view(np.uint)
+				data = inputData.data.view(np.double)
+			except (TypeError, ValueError) as e:
+				raise TypeError('invalid input format') from e
+		elif isinstance(inputData, tuple) and len(inputData) == 2:
+			if isinstance(inputData[1], tuple):
+				try:
+					row = inputData[1][0].view(dtype = np.uint)
+					col = inputData[1][1].view(dtype = np.uint)
+					data = inputData[0].view(dtype = np.double)
+				except (TypeError, ValueError) as e:
+					raise TypeError('invalid input format') from e
+			else:
+				try:
+					row = inputData[0].view(dtype = np.uint)
+					col = inputData[1].view(dtype = np.uint)
+					data = np.ones(len(row), dtype = np.double)
+				except (TypeError, ValueError) as e:
+					raise TypeError('invalid input format') from e				
+		else:
+			raise TypeError('invalid input format')
+
+		cdef int numEdges = np.shape(row)[0]
+
+		if addMissing:	
+			for i in range(numEdges):
+				# Calling Python interface of addEdge due to addMissing support. 
+				self.addEdge(row[i], col[i], data[i], addMissing, checkMultiEdge)
+		else:	
+			for i in range(numEdges):
+				# Calling Cython interface of addEdge directly for higher performance. 
+				self._this.addEdge(row[i], col[i], data[i], checkMultiEdge)
+
+		return self
 
 	def setWeight(self, u, v, w):
 		""" 
@@ -908,6 +1008,117 @@ cdef class Graph:
 			raise Exception("Attribute name has to be a string")
 		self._this.detachNodeAttribute(stdstring(name))
 
+	def attachEdgeAttribute(self, name, ofType):
+		"""
+		attachEdgeAttribute(name, ofType)
+
+		Attaches an edge attribute to the graph and returns it.
+
+		.. code-block::
+	
+			A = G.attachEdgeAttribute("attributeIdentifier", ofType)
+
+		All values are initially undefined for existing edges values can be set/get by 
+
+		.. code-block:: 
+
+			A[edgeId] = value # set
+			value = A[edgeId] # get
+
+		Getting undefined values raises a ValueError removing an edge makes all
+		its attributes undefined
+
+		Notes
+		-----
+		Using edge attributes is in experimental state. The API may change in future updates.
+
+		Parameters
+		----------
+		name   : str
+			Name for this attribute
+		ofType : type
+			Type of the attribute (either int, float, or str)
+
+		Returns
+		-------
+		networkit.graph.EdgeAttribute
+			The resulting edge attribute container.
+		"""
+		if not isinstance(name, str):
+			raise Exception("Attribute name has to be a string")
+
+		if ofType == int:
+			return EdgeAttribute(EdgeIntAttribute().setThis(self._this.attachEdgeIntAttribute(stdstring(name)), &self._this), int)
+		elif ofType == float:
+			return EdgeAttribute(EdgeDoubleAttribute().setThis(self._this.attachEdgeDoubleAttribute(stdstring(name)), &self._this), float)
+		elif ofType == str:
+			return EdgeAttribute(EdgeStringAttribute().setThis(self._this.attachEdgeStringAttribute(stdstring(name)), &self._this), str)
+
+	def detachEdgeAttribute(self, name):
+		"""
+		detachEdgeAttribute(name)
+
+		Detaches an edge attribute from the graph.
+
+		Notes
+		-----
+		Using edge attributes is in experimental state. The API may change in future updates.
+
+		Parameters
+		----------
+		name : str
+			The distinguished name for the attribute to detach.
+		"""
+		if not isinstance(name, str):
+			raise Exception("Attribute name has to be a string")
+		self._this.detachEdgeAttribute(stdstring(name))
+
+def GraphFromCoo(inputData, n=0, bool_t weighted=False, bool_t directed=False, bool_t edgesIndexed=False):
+	"""
+	graphFromInputData(inputData, n=0, bool_t weighted=False, bool_t directed=False, bool_t edgesIndexed=False):
+
+	Creates a graph based on :code:`inputData` (edge data). Input data is given in triplet format (also known
+	as ijk or coo format). See here for more details: https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.coo_array.html
+
+	If the resulting graph is undirected (default case), each pair (i,j) in :code:`inputData` is 
+	inserted twice twice: once as (i,j) and once as (j,i).
+
+	Parameter :code:`inputData` can be one of the following:
+
+	- scipy.sparse.coo_matrix
+	- (data, (i,j)) where data, i and j are of type np.ndarray
+	- (i,j) where i and j are of type np.ndarray
+
+	Note
+	----
+	- If only pairs of row and column indices (i,j) are given, each edge is given weight 1.0 (even in case of a weighted graph).
+	- There is no check if :code:`n` is the correct size. If the parameter is used, make sure that it is at least the
+	maximum index from the coordinate data.
+
+	Parameters
+	----------
+	inputData : several
+		Input data encoded as one of the supported formats.
+	n : int, optional
+		Number of nodes for the created graph. If n is not given, the nodes are added on the fly during building
+		of the graph. For better performance, it is advised to correctly set the number of nodes. Default: 0
+	weighted : bool, optional
+		If set to True, the graph can have edge weights other than 1.0. Default: False
+	directed : bool, optional
+		If set to True, the graph will be directed. Default: False
+	edgesIndexed : bool, optional
+		If set to True, the graph's edges will be indexed. Default: False
+	"""
+	cdef Graph result
+	result = Graph(n, weighted, directed, edgesIndexed)
+
+	if n > 0:
+		result.addEdges(inputData, addMissing = False, checkMultiEdge = False)
+	else:
+		result.addEdges(inputData, addMissing = True, checkMultiEdge = False)
+
+	return result
+
 # The following 3 classes NodeIntAttribute, NodeDoubleAttribute and 
 # NodeStringAttribute are helper classes which cannot be generalized because
 # they map to different C++ classes even if these are generated from the same
@@ -927,6 +1138,9 @@ cdef class NodeIntAttribute:
 		except Exception as e:
 			raise ValueError(str(e))
 		return value
+
+	def getName(self):
+		return self._this.getName()	
 
 	def __setitem__(self, node, value):
 		try:
@@ -963,7 +1177,10 @@ cdef class NodeDoubleAttribute:
 		except Exception as e:
 			raise ValueError(str(e))
 		return value
-
+	
+	def getName(self):
+		return self._this.getName()	
+	
 	def __setitem__(self, node, value):
 		try:
 			self._this.set(node, value)
@@ -991,6 +1208,9 @@ cdef class NodeStringAttribute:
 		self._this.swap(other)
 		self._G = G
 		return self
+
+	def getName(self):
+		return self._this.getName()	
 
 	def __getitem__(self, node):
 		try:
@@ -1053,13 +1273,16 @@ class NodeAttribute:
 		self.attr = typedNodeAttribute
 		self.type = type
 
+	def getName(self):
+		return self.attr.getName()	
+
 	def __getitem__(self, node):
 		return self.attr[node]
 
-	def __setitem__(self, index, value):
+	def __setitem__(self, node, value):
 		if not isinstance(value, self.type):
 			raise Exception("Wrong Attribute type")
-		self.attr[index] = value
+		self.attr[node] = value
 
 	def __iter__(self):
 		self._iter = iter(self.attr)
@@ -1067,6 +1290,219 @@ class NodeAttribute:
 
 	def __next__(self):
 		return next(self._iter)
+
+
+# The following 3 classes EdgeIntAttribute, EdgeDoubleAttribute and 
+# EdgeStringAttribute are helper classes which cannot be generalized because
+# they map to different C++ classes even if these are generated from the same
+# C++ template - this results in some unpleasant code duplication.
+# The generic (pure python) wrapper class for the user is EdgeAttribute
+
+cdef class EdgeIntAttribute:
+
+	cdef setThis(self, _EdgeIntAttribute& other, _Graph* G):
+		self._this.swap(other)
+		self._G = G
+		return self
+
+	def __getitem__(self, edgeIdORnodePair):
+		try:
+			u, v = edgeIdORnodePair
+			try:
+				return self._this.get2(u, v)
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			return self._this.get(edgeIdORnodePair)
+		except Exception as e:
+			raise ValueError(str(e))
+
+	def __setitem__(self, edgeIdORnodePair, value):
+		try:
+			u, v = edgeIdORnodePair
+			try:
+				self._this.set2(u,v,value)
+				return
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			self._this.set(edgeIdORnodePair, value)
+			return
+		except Exception as e:
+			raise ValueError(str(e))
+
+	def __iter__(self):
+		try:
+			self._iter = self._this.begin()
+		except Exception as e:
+			raise ValueError(str(e))
+
+		self._stopiter = self._this.end()
+		return self
+
+	def __next__(self):
+		if self._iter == self._stopiter:
+			raise StopIteration()
+		val = dereference(self._iter)
+		preincrement(self._iter)
+		return val
+
+
+cdef class EdgeDoubleAttribute:
+	cdef setThis(self, _EdgeDoubleAttribute& other, _Graph* G):
+		self._this.swap(other)
+		self._G = G
+		return self
+
+	def __getitem__(self, edgeIdORnodePair):
+		try:
+			u, v = edgeIdORnodePair
+			try:
+				return self._this.get2(u, v)
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			return self._this.get(edgeIdORnodePair)
+		except Exception as e:
+			raise ValueError(str(e))
+
+	def __setitem__(self, edgeIdORnodePair, value):
+		try:
+			u, v = edgeIdORnodePair
+			try:
+				self._this.set2(u,v,value)
+				return
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			self._this.set(edgeIdORnodePair, value)
+			return
+		except Exception as e:
+			raise ValueError(str(e))
+
+	def __iter__(self):
+		try:
+			self._iter = self._this.begin()
+		except Exception as e:
+			raise ValueError(str(e))
+		self._stopiter = self._this.end()
+		return self
+
+	def __next__(self):
+		if self._iter == self._stopiter:
+			raise StopIteration()
+		val = dereference(self._iter)
+		preincrement(self._iter)
+		return val
+
+cdef class EdgeStringAttribute:
+
+	cdef setThis(self, _EdgeStringAttribute& other, _Graph* G):
+		self._this.swap(other)
+		self._G = G
+		return self
+
+	def __getitem__(self, edgeIdORnodePair):
+		try:
+			u, v = edgeIdORnodePair
+			try:
+				return pystring(self._this.get2(u, v))
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			return pystring(self._this.get(edgeIdORnodePair))
+		except Exception as e:
+			raise ValueError(str(e))
+
+	def __setitem__(self, edgeIdORnodePair, value):
+		try:
+			u, v = edgeIdORnodePair
+			try:
+				self._this.set2(u, v, stdstring(value))
+				return
+			except Exception as e:
+				raise ValueError(str(e))
+		except TypeError:
+			pass
+		try:
+			self._this.set(edgeIdORnodePair, stdstring(value))
+			return
+		except Exception as e:
+			raise ValueError(str(e))
+
+	def __iter__(self):
+		try:
+			self._iter = self._this.begin()
+		except Exception as e:
+			raise ValueError(str(e))
+		self._stopiter = self._this.end()
+		return self
+
+	def __next__(self):
+		if self._iter == self._stopiter:
+			raise StopIteration()
+		val = dereference(self._iter)
+		val = (val[0], pystring(val[1]))
+		preincrement(self._iter)
+		return val
+
+class EdgeAttribute:
+	"""
+	Generic class for edge attributes returned by networkit.graph.attachEdgeAttribute().
+	Example of attaching an int attribute to a graph g:
+
+	.. code-block::
+
+		att = g.attachEdgeAttribute("name", int)`
+
+	Set/get attributes of a single edgeId 'eid' with the [] operator:
+
+	.. code-block::
+
+		att[eid] = 0
+		att_val = att[eid] # 'att_val' is 0
+
+	Iterate over all the values of an attribute:
+
+	.. code-block::
+
+		for eid, val in att:
+			# The attribute value of edge `eid` is `val`.
+
+	Notes
+	-----
+	Using edge attributes is in experimental state. The API may change in future updates.
+	"""
+
+	def __init__(self, typedEdgeAttribute, type):
+		self.attr = typedEdgeAttribute
+		self.type = type
+
+	def __getitem__(self, edgeIdORnodePair):
+		return self.attr[edgeIdORnodePair]
+
+	def __setitem__(self, edgeIdORnodePair, value):
+		if not isinstance(value, self.type):
+			raise Exception("Wrong Attribute type")
+		self.attr[edgeIdORnodePair] = value
+
+	def __iter__(self):
+		self._iter = iter(self.attr)
+		return self
+
+	def __next__(self):
+		return next(self._iter)
+
 
 cdef cppclass EdgeCallBackWrapper:
 	void* callback

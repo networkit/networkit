@@ -7,6 +7,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -22,10 +23,10 @@ template <typename... T>
 std::ostream &printToStream(std::ostream &stream, const T &...args);
 
 template <typename... T>
-std::string toStringF(const std::string &format, const T &...args);
+std::string toStringF(std::string_view format, const T &...args);
 
 template <typename... T>
-std::ostream &printToStreamF(std::ostream &stream, const std::string &format, const T &...args);
+std::ostream &printToStreamF(std::ostream &stream, std::string_view format, const T &...args);
 
 // Implementation
 /////////////////
@@ -99,14 +100,14 @@ void printToStream(std::ostream &stream, const T &arg, const Args &...args) {
     printToStream(stream, args...);
 }
 
-inline std::tuple<std::string::const_iterator, bool>
-printFormatPartToStream(std::ostream &stream, std::string::const_iterator begin,
-                        std::string::const_iterator end);
+inline std::tuple<std::string_view::const_iterator, bool>
+printFormatPartToStream(std::ostream &stream, std::string_view::const_iterator begin,
+                        std::string_view::const_iterator end);
 
-inline void printToStreamF(std::ostream &stream, std::string::const_iterator format_begin,
-                           std::string::const_iterator format_end) {
+inline void printToStreamF(std::ostream &stream, std::string_view::const_iterator format_begin,
+                           std::string_view::const_iterator format_end) {
     bool printArgument;
-    using iterator = std::string::const_iterator;
+    using iterator = std::string_view::const_iterator;
     iterator it;
     std::tie(it, printArgument) = printFormatPartToStream(stream, format_begin, format_end);
     if (printArgument) {
@@ -114,10 +115,11 @@ inline void printToStreamF(std::ostream &stream, std::string::const_iterator for
     }
 }
 template <typename T, typename... Args>
-void printToStreamF(std::ostream &stream, std::string::const_iterator format_begin,
-                    std::string::const_iterator format_end, const T &arg, const Args &...args) {
+void printToStreamF(std::ostream &stream, std::string_view::const_iterator format_begin,
+                    std::string_view::const_iterator format_end, const T &arg,
+                    const Args &...args) {
     bool printArgument;
-    using iterator = std::string::const_iterator;
+    using iterator = std::string_view::const_iterator;
     iterator it;
     std::tie(it, printArgument) = printFormatPartToStream(stream, format_begin, format_end);
     if (printArgument) {
@@ -136,9 +138,9 @@ void printToStreamF(std::ostream &stream, std::string::const_iterator format_beg
  * @returns The iterator that points one after the last consumed
  * character and whether a further argument should be printed.
  */
-inline auto printFormatPartToStream(std::ostream &stream, std::string::const_iterator begin,
-                                    std::string::const_iterator end)
-    -> std::tuple<std::string::const_iterator, bool> {
+inline auto printFormatPartToStream(std::ostream &stream, std::string_view::const_iterator begin,
+                                    std::string_view::const_iterator end)
+    -> std::tuple<std::string_view::const_iterator, bool> {
     auto it = begin;
     while (it != end) {
         auto nextPercent = std::find(it, end, '%');
@@ -303,14 +305,14 @@ std::ostream &printToStream(std::ostream &stream, const T &...args) {
 }
 
 template <typename... T>
-std::string toStringF(const std::string &format, const T &...args) {
+std::string toStringF(std::string_view format, const T &...args) {
     std::stringstream stream;
     printToStreamF(stream, format, args...);
     return stream.str();
 }
 
 template <typename... T>
-std::ostream &printToStreamF(std::ostream &stream, const std::string &format, const T &...args) {
+std::ostream &printToStreamF(std::ostream &stream, std::string_view format, const T &...args) {
     Impl::printToStreamF(stream, format.begin(), format.end(), args...);
     return stream;
 }

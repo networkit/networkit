@@ -11,6 +11,8 @@ from libcpp.set cimport set
 from libcpp.unordered_map cimport unordered_map
 
 from .base cimport _Algorithm, Algorithm
+from .dynbase cimport _DynAlgorithm
+from .dynbase import DynAlgorithm
 from .dynamics cimport _GraphEvent
 from .graph cimport _Graph, Graph
 from .helpers import stdstring
@@ -188,7 +190,7 @@ cdef class SSSP(Algorithm):
 		Parameters
 		----------
 		asarray : optional
-			Return the result as a numpy array. Default: Falsy.
+			Return the result as a numpy array. Default: None
 
  	 	Returns
  	 	-------
@@ -343,14 +345,12 @@ cdef class SSSP(Algorithm):
 
 cdef extern from "<networkit/distance/DynSSSP.hpp>":
 
-	cdef cppclass _DynSSSP "NetworKit::DynSSSP"(_SSSP):
+	cdef cppclass _DynSSSP "NetworKit::DynSSSP"(_SSSP, _DynAlgorithm):
 		_DynSSSP(_Graph G, node source, bool_t storePaths, bool_t storeStack, node target) except +
-		void update(_GraphEvent ev) except +
-		void updateBatch(vector[_GraphEvent] batch) except +
 		bool_t modified() except +
 		void setTargetNode(node t) except +
 
-cdef class DynSSSP(SSSP):
+cdef class DynSSSP(SSSP, DynAlgorithm):
 	""" 
 	DynSSSP(G, source, storePredecessors, target)
 
@@ -359,35 +359,6 @@ cdef class DynSSSP(SSSP):
 	def __init__(self, *args, **namedargs):
 		if type(self) == SSSP:
 			raise RuntimeError("Error, you may not use DynSSSP directly, use a sub-class instead")
-
-	def update(self, ev):
-		""" 
-		update(ev)
-
-		Updates shortest paths with the edge insertion.
-
-		Parameters
-		----------
-		ev : networkit.dynamics.GraphEvent
-			A graph event.
-		"""
-		(<_DynSSSP*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-
-	def updateBatch(self, batch):
-		""" 
-		updateBatch(batch)
-
-		Updates shortest paths with a batch of edge insertions.
-
-		Parameters
-		----------
-		batch : list(networkit.dynamics.GraphEvent)
-			List of graph events.
-		"""
-		cdef vector[_GraphEvent] _batch
-		for ev in batch:
-			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-		(<_DynSSSP*>(self._this)).updateBatch(_batch)
 
 	def modified(self):
 		""" 
@@ -534,9 +505,9 @@ cdef class Diameter(Algorithm):
 	algo : networkit.distance.DiameterAlgo, optional
 		Algorithm which should be used for diameter computation. Default: networkit.distance.DiameterAlgo.AUTOMATIC
 	error : float, optional
-		Possible error used for diameter algorithm EstimatedRange.
+		Possible error used for diameter algorithm EstimatedRange. Default: -1
 	nSamples : int, optional
-		Number of samples (influencing the quality of the output) used for diameter algorithm EstimatedSamples.
+		Number of samples (influencing the quality of the output) used for diameter algorithm EstimatedSamples. Default: 0
 	"""
 	cdef Graph _G
 
@@ -835,7 +806,7 @@ cdef class Volume:
 		r : float
 			the radius (or radii)
 		samples : int, optional
-			the number of samples
+			The number of samples. Default: 500
 
 		Returns
 		-------
@@ -870,7 +841,7 @@ cdef class Volume:
 cdef extern from "<networkit/distance/JaccardDistance.hpp>":
 
 	cdef cppclass _JaccardDistance "NetworKit::JaccardDistance":
-		_JaccardDistance(const _Graph& G, const vector[count]& triangles) except +
+		_JaccardDistance(const _Graph& G, const vector[count]& _triangles) except +
 		void preprocess() except +
 		vector[double] &getEdgeScores() except +
 
@@ -891,7 +862,7 @@ cdef class JaccardDistance:
 
 	cdef _JaccardDistance* _this
 	cdef Graph _G
-	cdef vector[count] triangles
+	cdef vector[count] _triangles
 
 	def __cinit__(self, Graph G, vector[count] triangles):
 		self._G = G
@@ -980,15 +951,15 @@ cdef class AlgebraicDistance:
 	G : networkit.Graph
 		The graph to calculate Jaccard distances for.
 	numberSystems : int, optional
-	 	Number of vectors/systems used for algebraic iteration.
+	 	Number of vectors/systems used for algebraic iteration. Default: 10
 	numberIterations : int, optional
-	 	Number of iterations in each system.
+	 	Number of iterations in each system. Default: 30
 	omega : float, optional
-	 	Attenuation factor in [0,1] influencing convergence speed.
+	 	Attenuation factor in [0,1] influencing convergence speed. Default: 0.5
 	norm : int, optional
-		The norm factor of the extended algebraic distance.
+		The norm factor of the extended algebraic distance. Default: 0
 	withEdgeScores : bool, optional
-		Calculate array of scores for edges {u,v} that equal ad(u,v)
+		Calculate array of scores for edges {u,v} that equal ad(u,v). Default: False
 	"""
 
 	cdef _AlgebraicDistance* _this
@@ -1035,7 +1006,7 @@ cdef class CommuteTimeDistance(Algorithm):
 	G : networkit.Graph
 		The graph.
 	tol: float, optional
-		Tolerance for computation (higher tolerance leads to faster running times).
+		Tolerance for computation (higher tolerance leads to faster running times). Default: 0.1
 	"""
 	cdef Graph _G
 
@@ -1150,7 +1121,7 @@ cdef class NeighborhoodFunctionHeuristic(Algorithm):
 	G : networkit.Graph
 		The graph.
 	nSamples : int, optional
-		The amount of samples, set to zero for heuristic of max(sqrt(m), 0.15*n).
+		The amount of samples, set to zero for heuristic of max(sqrt(m), 0.15*n). Default: 0
 	strategy : networkit.distance.SelectionStrategy, optional
 		The strategy to select the samples, accepts RANDOM (0) or SPLIT (1). Default: networkit.distance.SelectionStrategy.SPLIT
 	"""
@@ -1352,12 +1323,10 @@ cdef class SPSP(Algorithm):
 
 cdef extern from "<networkit/distance/DynAPSP.hpp>":
 
-	cdef cppclass _DynAPSP "NetworKit::DynAPSP"(_APSP):
+	cdef cppclass _DynAPSP "NetworKit::DynAPSP"(_APSP, _DynAlgorithm):
 		_DynAPSP(_Graph G) except +
-		void update(_GraphEvent ev) except +
-		void updateBatch(vector[_GraphEvent] batch) except +
 
-cdef class DynAPSP(APSP):
+cdef class DynAPSP(APSP, DynAlgorithm):
 	""" 
 	DynAPSP(G)
 	
@@ -1373,34 +1342,7 @@ cdef class DynAPSP(APSP):
 		self._G = G
 		self._this = new _DynAPSP(G._this)
 
-	def update(self, ev):
-		""" 
-		update(ev)
 
-		Updates shortest paths with the edge insertion.
-
-		Parameters
-		----------
-		ev : networkit.dynamics.GraphEvent
-			A graph event.
-		"""
-		(<_DynAPSP*>(self._this)).update(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-
-	def updateBatch(self, batch):
-		""" 
-		updateBatch(batch)
-
-		Updates shortest paths with a batch of edge insertions.
-
-		Parameters
-		----------
-		batch : list(networkit.dynamics.GraphEvent)
-			List of graph events.
-		"""
-		cdef vector[_GraphEvent] _batch
-		for ev in batch:
-			_batch.push_back(_GraphEvent(ev.type, ev.u, ev.v, ev.w))
-		(<_DynAPSP*>(self._this)).updateBatch(_batch)
 
 cdef extern from "<networkit/distance/BFS.hpp>":
 
@@ -1420,9 +1362,9 @@ cdef class BFS(SSSP):
 	source : int
 		The source node of the breadth-first search.
 	storePaths : bool, optional
-		Controls whether to store paths and number of paths.
+		Controls whether to store paths and number of paths. Default: True
 	storeNodesSortedByDistance : bool, optional
-		Controls whether to store nodes sorted by distance.
+		Controls whether to store nodes sorted by distance. Default: False
 	target: int or None, optional
 		Terminate search when the target has been reached. In default-mode, this target is set to None.
 	"""
@@ -1450,9 +1392,9 @@ cdef class Dijkstra(SSSP):
 	source : int
 		The source node of the Dijkstra search.
 	storePaths : bool, optional
-		Controls whether to store paths and number of paths.
+		Controls whether to store paths and number of paths. Default: True
 	storeNodesSortedByDistance : bool, optional
-		Controls whether to store nodes sorted by distance.
+		Controls whether to store nodes sorted by distance. Default: False
 	target: int or None, optional
 		Terminate search when the target has been reached. In default-mode, this target is set to None.
 	"""
@@ -1593,7 +1535,7 @@ cdef class BidirectionalBFS(STSP):
 		The target node.
 	storePred : bool, optional
 		If True, the algorithm will also store the predecessors
-		and reconstruct a shortest path from source and target.
+		and reconstruct a shortest path from source and target. Default: True
 	"""
 
 	def __cinit__(self, Graph G, node source, node target, bool_t storePred=True):
@@ -1667,7 +1609,7 @@ cdef class AStar(STSP):
 		The target node.
 	storePred : bool, optional
 		If True, the algorithm will also store the predecessors
-		and reconstruct a shortest path from source and target.
+		and reconstruct a shortest path from source and target. Default: True
 	"""
 
 	cdef vector[double] heu
@@ -1781,9 +1723,9 @@ cdef class ReverseBFS(SSSP):
 	source : int
 		The source node of the breadth-first search.
 	storePaths : bool, optional
-		Controls whether to store paths and number of paths.
+		Controls whether to store paths and number of paths. Default: True
 	storeNodesSortedByDistance : bool, optional
-		Controls whether to store nodes sorted by distance.
+		Controls whether to store nodes sorted by distance. Default: False
 	target: int or None, optional
 		Terminate search when the target has been reached. In default-mode, this target is set to None.
 	"""
@@ -1799,7 +1741,7 @@ cdef extern from "<networkit/distance/PrunedLandmarkLabeling.hpp>":
 		count query(node u, node v) except +
 
 cdef class PrunedLandmarkLabeling(Algorithm):
-	""" 
+	"""
 	PrunedLandmarkLabeling(G)
 
 	Pruned Landmark Labeling algorithm based on the paper "Fast exact shortest-path distance
@@ -1841,3 +1783,56 @@ cdef class PrunedLandmarkLabeling(Algorithm):
 			The shortest-path distances from the source node to the target node.
 		"""
 		return (<_PrunedLandmarkLabeling*>(self._this)).query(u, v)
+
+
+cdef extern from "<networkit/distance/DynPrunedLandmarkLabeling.hpp>":
+
+	cdef cppclass _DynPrunedLandmarkLabeling "NetworKit::DynPrunedLandmarkLabeling"(_Algorithm, _DynAlgorithm):
+		_DynPrunedLandmarkLabeling(_Graph G) except +
+		count query(node u, node v) except +
+
+cdef class DynPrunedLandmarkLabeling(Algorithm, DynAlgorithm):
+	"""
+	DynPrunedLandmarkLabeling(G)
+
+	Dynamic Pruned Landmark Labeling algorithm based on the paper "Fully
+	Dynamic 2-Hop Cover Labeling " from D'Angelo et al., ACM JEA 2019. The
+	algorithm computes distance labels by performing pruned breadth-first
+	searches from each vertex. Distance labels can be updated efficiently
+	after edge insertions.
+	Note: this algorithm only works for unweighted graphs and only supports
+	edge insertions.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	"""
+	cdef Graph _G
+
+	def __cinit__(self, Graph G):
+		self._G = G
+		self._this = new _DynPrunedLandmarkLabeling(G._this)
+
+	def __dealloc__(self):
+		self._G = None
+
+	def query(self, node u, node v):
+		"""
+		query(u, v)
+
+		Returns the shortest-path distance between the two nodes.
+
+		Parameters
+		----------
+		u : node
+			Source node.
+		v : node
+			Target node.
+
+		Returns
+		-------
+		int
+			The shortest-path distances from the source node to the target node.
+		"""
+		return (<_DynPrunedLandmarkLabeling*>(self._this)).query(u, v)

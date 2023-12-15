@@ -405,7 +405,7 @@ class Profile:
 		preset: str
 			Name of preset configuration: "complete", "minimal", "default"
 		Config: networkit.profile.profile.Config
-			Config object to control some aspects of the generation behaviour.
+			Config object to control some aspects of the generation behaviour. Default: None
 	
 		Returns
 		-------
@@ -654,6 +654,8 @@ class Profile:
 			Profile output format ("HTML", "LaTeX").
 		directory: str
 			Directory to write.
+		filename: str, optional
+			Enable/disable additional logfile support to given file. Default: ""
 		style: str, optional
 			Style of generated output. Default: "light"
 		color: tuple(float, float, float), optional
@@ -1241,7 +1243,7 @@ class Profile:
 		end : str, optional
 			Marker for line break. Default: "\\n"
 		level : int, optional
-			Level for verbose printing.
+			Level for verbose printing. Default: 0
 		"""
 		if cls.__verboseLevel >= level:
 			text = text + end
@@ -1274,6 +1276,8 @@ def walk(inputDir, outputDir, graphFormat, filePattern="*",  preset="default", c
 		Specify accepted file names, e.g.: `*.METIS.graph`. Default: `*`
 	preset : str, optional
 		Config preset ("minimal", "default", "full"). Default: "default"
+	Config: networkit.profile.profile.Config
+		Config object to control some aspects of the generation behaviour. Default: None	
 	outputType: str, optional
 		Profile output format ("HTML", "LaTeX"). Default: "HTML"
 	style: str, optional

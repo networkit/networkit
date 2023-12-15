@@ -26,7 +26,7 @@ public:
      *
      * @param G The graph.
      */
-    DynAPSP(Graph &G);
+    DynAPSP(const Graph &G);
 
     /** initialize distances and Pred by repeatedly running the Dijkstra2 algorithm */
     void run() override;

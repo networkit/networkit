@@ -75,29 +75,10 @@ Graph HyperbolicGenerator::generate(count n, double R, double alpha, double T) {
     vector<double> radii(n);
 
     // sample points randomly
-    HyperbolicSpace::fillPoints(angles, radii, R, alpha);
-    vector<index> permutation(n);
-
-    index p = 0;
-    std::generate(permutation.begin(), permutation.end(), [&p]() { return p++; });
-
-    // can probably be parallelized easily, but doesn't bring much benefit
-    Aux::Parallel::sort(
-        permutation.begin(), permutation.end(), [&angles, &radii](index i, index j) {
-            return angles[i] < angles[j] || (angles[i] == angles[j] && radii[i] < radii[j]);
-        });
-
-    vector<double> anglecopy(n);
-    vector<double> radiicopy(n);
-
-#pragma omp parallel for
-    for (omp_index j = 0; j < static_cast<omp_index>(n); j++) {
-        anglecopy[j] = angles[permutation[j]];
-        radiicopy[j] = radii[permutation[j]];
-    }
+    HyperbolicSpace::fillPointsSorted(angles, radii, R, alpha);
 
     INFO("Generated Points");
-    return generate(anglecopy, radiicopy, R, T);
+    return generate(angles, radii, R, T);
 }
 
 Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vector<double> &radii,
@@ -130,7 +111,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
         for (index i = 0; i < n; i++) {
             double alias = permutation[i];
             if (radii[alias] >= bandRadii[j] && radii[alias] <= bandRadii[j + 1]) {
-                bands[j].push_back(Point2DWithIndex<double>(angles[alias], radii[alias], alias));
+                bands[j].emplace_back(angles[alias], radii[alias], alias);
             }
         }
     }

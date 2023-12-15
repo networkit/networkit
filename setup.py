@@ -5,6 +5,7 @@ import sys
 import sysconfig
 import os
 from Cython.Build import cythonize
+import numpy as np
 
 cmakeCompiler = None
 buildDirectory = "build/build_python"
@@ -71,7 +72,7 @@ sys.argv = [__file__] + args
 # compiler identification
 ################################################
 
-candidates = ["g++", "g++-8", "g++-7", "g++-6.1", "g++-6", "g++-5.5", "g++-5.4", "g++-5.3", "g++-5", "clang++", "clang++-3.9"]
+candidates = ["g++", "g++-12", "g++-11", "g++-10", "g++-9", "g++-8", "g++-7", "g++-6.1", "clang++", "clang++-3.9"]
 
 def determineCompiler(candidates, std, flags):
 	sample = open("sample.cpp", "w")
@@ -160,6 +161,8 @@ def buildNetworKit(install_prefix, externalCore=False, externalTlx=None, withTes
 	comp_cmd.append("-DNETWORKIT_PYTHON="+get_paths()['include']) # provide python.h files
 	comp_cmd.append("-DNETWORKIT_PYTHON_EXECUTABLE="+sys.executable) # provide cmake with Python interpreter
 	comp_cmd.append("-DNETWORKIT_PYTHON_SOABI="+os_soabi) # provide lib env specification
+	comp_cmd.append("-DNETWORKIT_PYTHON_VERSION="+sysconfig.get_python_version())
+	comp_cmd.append("-DNETWORKIT_NUMPY="+np.get_include()) # provide numpy.h files
 	if externalCore:
 		if sys.platform == "win32":
 			# Reasoning: only static builds are supported and libs+dlls must reside in the same folder

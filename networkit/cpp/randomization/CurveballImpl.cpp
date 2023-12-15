@@ -105,7 +105,7 @@ nodepair_vector CurveballAdjacencyList::getEdges() const {
     edges.reserve(degreeCount);
     for (node nodeid = 0; nodeid < static_cast<node>(offsets.size()); nodeid++) {
         for (auto it = cbegin(nodeid); it != cend(nodeid); it++) {
-            edges.push_back(std::make_pair(nodeid, *it));
+            edges.emplace_back(nodeid, *it);
         }
     }
 
@@ -385,7 +385,6 @@ void CurveballIM::run(const trade_vector &trades) {
     else
         restructureGraph(trades);
 
-    count trade_count = 0;
     neighbour_vector common_neighbours;
     neighbour_vector disjoint_neighbours;
 
@@ -509,8 +508,6 @@ void CurveballIM::run(const trade_vector &trades) {
         // Do not forget edge between u and v
         if (shared)
             update(u, v);
-
-        trade_count++;
     }
 
     hasRun = true;

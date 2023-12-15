@@ -98,9 +98,9 @@ cdef class BarabasiAlbertGenerator(StaticGraphGenerator):
 	nMax : int
 		Maximum number of nodes produced.
 	n0 : int or networkit.Graph
-		Number of starting nodes or the initial starting graph.
+		Number of starting nodes or the initial starting graph. Default: 0
 	batagelj : bool
-		Specifies whether to use batagelj's method or the original one.
+		Specifies whether to use batagelj's method or the original one. Default: True
 	"""
 
 	def __cinit__(self, count k, count nMax, n0=0, bool_t batagelj=True):
@@ -569,11 +569,11 @@ cdef class HyperbolicGenerator(StaticGraphGenerator):
 		Parameters
 		----------
 		angles : list(float)
-			List with angles of node positions
+			List with angles of node positions.
 		radii : list(float)
-			List with radii of node positions
-		r : float
-			Radius of poincare disk to place nodes in
+			List with radii of node positions.
+		R : float
+			Radius of poincare disk to place nodes in.
 		T : float, optional
 			Edges are added for nodes closer to each other than threshold T. Default: 0.0
 		"""
@@ -987,7 +987,7 @@ cdef class LFRGenerator(Algorithm):
 		Parameters
 		----------
 		useReferenceImplementation : bool
-			Sets whether the reference implmentation should be used for generating. 
+			Sets whether the reference implmentation should be used for generating. Default: False
 
 		Returns
 		-------
@@ -1254,7 +1254,7 @@ cdef class HavelHakimiGenerator(StaticGraphGenerator):
 	sequence : list(int)
 		Degree sequence to realize. Must be non-increasing.
 	ignoreIfRealizable : bool, optional
-		If True, generate the graph even if the degree sequence is not realizable. Some nodes may get lower degrees than requested in the sequence.
+		If True, generate the graph even if the degree sequence is not realizable. Some nodes may get lower degrees than requested in the sequence. Default: True
 	"""
 
 	def __cinit__(self, vector[count] degreeSequence, ignoreIfRealizable=True):
@@ -1310,15 +1310,15 @@ cdef class DynamicHyperbolicGenerator:
 	numNodes : int
 		Number of nodes.
 	avgDegree : float
-		Average degree of the resulting graph.
+		Average degree of the resulting graph. Default: 6.0
 	gamma : float
-		Power-law exponent of the resulting graph.
+		Power-law exponent of the resulting graph. Default: 3.0
 	T : float
-		Temperature, selecting a graph family on the continuum between hyperbolic unit disk graphs and Erdos-Renyi graphs.
+		Temperature, selecting a graph family on the continuum between hyperbolic unit disk graphs and Erdos-Renyi graphs. Default: 0.0
 	moveEachStep : float
-		Fraction of nodes to be moved in each time step. The nodes are chosen randomly each step.
+		Fraction of nodes to be moved in each time step. The nodes are chosen randomly each step. Default: 1.0
 	moveDistance: float
-		Base value for the node movements.
+		Base value for the node movements. Default: 0.1
 	"""
 	cdef _DynamicHyperbolicGenerator* _this
 
@@ -1445,7 +1445,7 @@ cdef class RmatGenerator(StaticGraphGenerator):
 	weighted : bool, optional
 		Indicates whether the resulting graph should be weighted. Default: False
 	reduceNodes : int, optional
-		The number of nodes, which should be deleted from the generated graph.
+		The number of nodes, which should be deleted from the generated graph. Default: 0
 	"""
 	paths = {"kronfitPath" : None}
 
@@ -1558,7 +1558,7 @@ cdef class DynamicForestFireGenerator:
 	directed : bool
 		Decides whether the resulting graph should be directed.
 	r : float, optional
-		Backward burning probability.
+		Backward burning probability. Default 1.0
 	"""
 	cdef _DynamicForestFireGenerator* _this
 

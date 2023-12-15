@@ -38,8 +38,8 @@ public:
      */
     count query(node u, node v) const;
 
-private:
-    count queryImpl(node u, node v) const;
+protected:
+    count queryImpl(node u, node v, node upperBound = none) const;
 
     static constexpr count infDist = std::numeric_limits<count>::max();
 

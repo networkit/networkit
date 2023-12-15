@@ -28,15 +28,6 @@ class EdmondsKarp final : public Algorithm {
     std::vector<edgeweight> flow;
     edgeweight flowValue;
 
-    /**
-     * Performs a breadth-first search on the graph from the source node to find an augmenting path
-     * to the sink node respecting the flow values
-     * @param residFlow The residual flow in the network.
-     * @param pred Used to store the path from the source to the sink.
-     * @return The gain in terms of flow.
-     */
-    edgeweight BFS(std::vector<edgeweight> &residFlow, std::vector<node> &pred) const;
-
 public:
     /**
      * Constructs an instance of the EdmondsKarp algorithm for the given graph, source and sink
@@ -94,6 +85,26 @@ public:
      * @return The flow values of all edges
      */
     const std::vector<edgeweight> &getFlowVector() const;
+
+private:
+    void runUndirected();
+    void runDirected();
+
+    /**
+     * Performs an undirected breadth-first search on the graph from the source node to find
+     * an augmenting path to the sink node respecting the flow values
+     * @param pred Used to store the path from the source to the sink.
+     * @return The gain in terms of flow.
+     */
+    edgeweight BFS(std::vector<node> &pred) const;
+
+    /**
+     * Performs a directed breadth-first search on the graph from the source node to find
+     * an augmenting path to the sink node respecting the flow values
+     * @param pred Used to store the path from the source to the sink.
+     * @return The gain in terms of flow.
+     */
+    edgeweight directedBFS(const std::vector<count> &reverseEdges, std::vector<node> &pred) const;
 };
 
 } /* namespace NetworKit */

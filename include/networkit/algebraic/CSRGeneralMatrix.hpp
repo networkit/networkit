@@ -987,6 +987,27 @@ public:
     void forElementsInRow(index i, L handle) const;
 
     /**
+     * Iterate in parallel over all elements (including zeros) of row @a row in the matrix and call
+     * handler(index column, double value)
+     */
+    template <typename L>
+    void parallelForElementsInRow(index row, L handle) const;
+
+    /**
+     * Iterate over all elements of the matrix in row order and call handler (lambda
+     * closure).
+     */
+    template <typename L>
+    void forElementsInRowOrder(L handle) const;
+
+    /**
+     * Iterate in parallel over all rows and call handler (lambda closure) on elements of
+     * the matrix.
+     */
+    template <typename L>
+    void parallelForElementsInRowOrder(L handle) const;
+
+    /**
      * Iterate over all non-zero elements of the matrix in row order and call
      * handler (lambda closure).
      */
@@ -1158,6 +1179,45 @@ inline void CSRGeneralMatrix<ValueType>::forElementsInRow(index i, L handle) con
     Vector rowVector = row(i);
     index j = 0;
     rowVector.forElements([&](ValueType val) { handle(j++, val); });
+}
+
+template <typename ValueType>
+template <typename L>
+inline void CSRGeneralMatrix<ValueType>::parallelForElementsInRow(index i, L handle) const {
+    row(i).parallelForElements(handle);
+}
+
+template <typename ValueType>
+template <typename L>
+inline void CSRGeneralMatrix<ValueType>::forElementsInRowOrder(L handle) const {
+    for (index i = 0; i < nRows; ++i) {
+        index col = 0;
+        for (index k = rowIdx[i]; k < rowIdx[i + 1]; ++k) {
+            while (col < columnIdx[k]) {
+                handle(i, col, getZero());
+                ++col;
+            }
+            handle(i, col, nonZeros[k]);
+            ++col;
+        }
+    }
+}
+
+template <typename ValueType>
+template <typename L>
+inline void CSRGeneralMatrix<ValueType>::parallelForElementsInRowOrder(L handle) const {
+#pragma omp parallel for
+    for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
+        index col = 0;
+        for (index k = rowIdx[i]; k < rowIdx[i + 1]; ++k) {
+            while (col < columnIdx[k]) {
+                handle(i, col, getZero());
+                ++col;
+            }
+            handle(i, col, nonZeros[k]);
+            ++col;
+        }
+    }
 }
 
 template <typename ValueType>

@@ -72,7 +72,7 @@ class TestGEXFIO(unittest.TestCase):
 		G = nk.generators.ErdosRenyiGenerator(100, 0.1).generate()
 		someFailed = False
 
-		excluded_formats = set([nk.Format.KONECT, nk.Format.DOT, nk.Format.GraphViz, nk.Format.SNAP])
+		excluded_formats = set([nk.Format.KONECT, nk.Format.DOT, nk.Format.GraphViz, nk.Format.SNAP, nk.Format.MatrixMarket])
 
 		for format in nk.Format:
 			if format in excluded_formats:
@@ -93,6 +93,21 @@ class TestGEXFIO(unittest.TestCase):
 			else:
 				G1 = nk.graphio.readGraph(filename, format, *kargs)
 			self.checkStatic(G, G1)
+	
+	def testGuessFormat(self):
+		instances = [
+			("airfoil1.graph", nk.Format.METIS),
+			("comments.edgelist", nk.Format.EdgeListTabOne),
+			("dynamicTest.gexf", nk.Format.GEXF),
+			("foodweb-baydry.konect", nk.Format.KONECT),
+			("foodweb-baydry.networkit", nk.Format.NetworkitBinary),
+			("jazz2_directed.gml", nk.Format.GML),
+			("chesapeake.mtx", nk.Format.MatrixMarket),
+		]
+
+		for (file, expected_result) in instances:
+			guess = nk.graphio.guessFileFormat(f"input/{file}")
+			self.assertEqual(guess, expected_result)
 
 
 if __name__ == "__main__":

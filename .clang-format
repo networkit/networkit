@@ -60,7 +60,6 @@ ForEachMacros:
     - BOOST_FOREACH
 IncludeBlocks: Preserve
 IncludeCategories:
-IncludeCategories:
   - Regex: '^<networkit/'
     Priority: 4
   - Regex: '^<(tlx|googletest|ttmath)/'
@@ -74,6 +73,7 @@ IndentCaseLabels: false
 IndentPPDirectives: None
 IndentWidth: 4
 IndentWrappedFunctionNames: false
+InsertNewlineAtEOF: true
 JavaScriptQuotes: Leave
 JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: true

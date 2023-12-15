@@ -9,6 +9,7 @@ from libcpp.map cimport map as cmap
 from libcpp.unordered_map cimport unordered_map
 from .helpers import stdstring
 
+import re
 import os
 import logging
 import numpy
@@ -734,7 +735,7 @@ cdef extern from "<networkit/io/EdgeListPartitionReader.hpp>":
 
 cdef class EdgeListPartitionReader:
 	""" 
-	EdgeListPartitionReader(firstNode=1, sepChar = '`\`t')
+	EdgeListPartitionReader(firstNode=1, sepChar = "\\t")
 	
 	Reads a partition from an edge list type of file.
 
@@ -743,7 +744,7 @@ cdef class EdgeListPartitionReader:
 	firstNode : int, optional
 		Id of first node. Default: 1
 	sepChar : str
-		Character which is used for data seperation. Default: '\t'
+		Character which is used for data seperation. Default: '\t' (tab)
 	"""
 	cdef _EdgeListPartitionReader _this
 
@@ -1021,11 +1022,12 @@ class Format(__AutoNumber):
 	- networkit.graphio.Format.GraphViz
 	- networkit.graphio.Format.GEXF
 	- networkit.graphio.Format.GML
-	- networkit.graphio.Format.KONEC
+	- networkit.graphio.Format.KONECT
 	- networkit.graphio.Format.LFR
 	- networkit.graphio.Format.METIS
 	- networkit.graphio.Format.NetworkitBinary
 	- networkit.graphio.Format.SNAP
+	- networkit.graphio.Format.MatrixMarket
 	
 	"""
 	SNAP = ()
@@ -1047,6 +1049,7 @@ class Format(__AutoNumber):
 	MAT = ()
 	ThrillBinary = ()
 	NetworkitBinary = ()
+	MatrixMarket = ()
 
 # reading
 
@@ -1098,17 +1101,166 @@ def getReader(fileformat, *kargs, **kwargs):
 
 	return reader
 
-
-def readGraph(path, fileformat, *kargs, **kwargs):
+def guessFileFormat(filepath: str) -> Format:
 	"""
-	readGraph(path, fileformat, *kargs, **kwargs)
+	guessFileFormat(filepath)
+
+	Guesses the graph file format using heuristics. May fail and throw an IOException.
+	
+	The running time of this function depends on the file format: 
+	Guessing Binary formats and structured text (GEXF, GraphML, GraphViz, GML, KONECT, MatrixMarket) takes constant time.
+	If the format is EdgeList, METIS or SNAP, running time is linear in the file size.
+
+	Returns networkit.graphio.Format
+
+	Parameters
+	----------
+	filepath : str
+		Input file path.
+	"""
+	# first, check for binary formats: look at magic bytes
+
+	with open(filepath, 'rb') as f:
+		x = f.read(6)
+		if x == bytes([0xe2, 0x9b, 0xbe, 0x20, 0x67, 0x74]): 
+			return Format.GraphToolBinary	# GraphToolBinary - binary. first 6 bytes: e2 9b be 20 67 74 then version number: 01 then endian: 00 (=little) or 01 (=big)
+		if x + f.read(1) == bytes([0x6e, 0x6b, 0x62, 0x67, 0x30, 0x30, 0x32]): 
+			return Format.NetworkitBinary	# NetworkitBinary - binary. starts with 6E 6B 62 67 30 30 32
+
+	# otherwise, open as text file and check the first lines for structured text formats
+	with open(filepath, 'r') as f:
+		firstline = f.readline()
+		secondline = f.readline()
+
+		# check if xml. expect <?xml in first line
+		if firstline.startswith('<?xml'):
+			if secondline.startswith('<gexf'): # GEXF - xml, base element is <gexf ...>
+				return Format.GEXF
+			if secondline.startswith('<graphml'): # GraphML - XML file, base element is <graphml ...>
+				return Format.GraphML
+
+		# GraphViz - ".dot language". starts with a specific first line
+		if re.match(r'^(strict)?\s?(di)?graph(\s.)*\s?{', firstline.lower()):
+			return Format.GraphViz 
+
+		# GML - starts with 'graph ['
+		if re.match(r'^graph\s\[$', firstline.lower()):
+			return Format.GML 
+		
+		# KONECT - has comments with % sign, starts with % FORMAT WEIGHTS
+		if re.match(r'^%\s((asym)|(sym)|(bip))\s((unweighted)|(positive)|(posweighted)|(signed)|(multisigned)|(weighted)|(multiweighted)|(dynamic)|(multiposweighted))$', firstline.lower()):
+			return Format.KONECT
+		
+		# MatrixMarket - has specific first line. Specification defines the first line as "%%MatrixMarket [...]", but some files use a single % instead. We accept both.
+		if re.match(r'%+MatrixMarket', firstline):
+			return Format.MatrixMarket
+
+	# if none match, read all lines of the file and guess the format out of METIS, SNAP, EdgeList variants
+	# types:
+	# METIS - first non-comment line contains 'n m'. has n+1 (non-comment) lines. comments: %
+	# SNAP - file without comments, each line stores an edge '\d+ \d+' (empty lines are allowed as well)
+
+	# first: guess comment character
+	with open(filepath, 'r') as f:
+		# guess comment character: first char of first line
+		commentPrefix = f.readline()[0]
+	if commentPrefix.isnumeric():
+		commentPrefix = None
+	
+	# then guess separator character (for the edge list case): separator of first line matching \d+<sep>\d+
+	separator = None
+	with open(filepath, 'r') as f:
+		for line in f.readlines():
+			if commentPrefix and line.startswith(commentPrefix): continue
+			match = re.search(r'^\d+(.)\d+', line)
+			if match:
+				separator = match.group(1)
+
+	# read all lines and check for metis/snap/edgelist conditions
+	minId = float('inf')
+	snapFound = True if not commentPrefix and separator in (' ', '\t') else False
+	metisFound = False
+	with open(filepath, 'r') as f:
+		n = None
+		m = None
+		noncommentlines = 0
+		edges = 0
+		for line in f.readlines():
+			# snap check: keep verifying line format while the file could be a snap file
+			# check that all lines have format \d+ \d+ (or are empty lines)
+			if snapFound:
+					match = re.match(r'(^\d+\s\d+\s*$)|(^\s*$)', line)
+					if not match:
+						snapFound = False
+			
+			# skip lines with comments
+			if commentPrefix and line.startswith(commentPrefix): continue
+
+			# update minId (for edgeList)
+			match = re.search(r'^(\d+)\s(\d+)', line) # line is id<sep>id<sep>weight. get ids
+			if match:
+				u = int(match.group(1))
+				v = int(match.group(2))
+				minId = min(minId, u, v)
+			
+			# track lines and n,m for METIS
+			if noncommentlines == 0: # first line: "n m"
+				match = re.match(r'(\d+)\s(\d+)', line)
+				if match:
+					n = int(match.group(1))
+					m = int(match.group(2))
+				else:
+					break
+			if noncommentlines != 0:	# other lines
+				edges += len(re.findall(r'\d+', line))
+			noncommentlines += 1
+		
+		# file read done. check METIS conditions
+		if n == noncommentlines - 1 and m == edges / 2 and commentPrefix in ('%', None):
+			metisFound = True
+
+	# finally, guess type
+	guess = None
+	if commentPrefix == '#':	# for edge list, expect comment prefix '#' (otherwise, custom handling is required)
+		if minId == 0:	# could extend this to set the correct minId, but for now just pick one of the nk.Format enums
+			if separator == '\t':
+				guess = Format.EdgeListTabZero
+			if separator == ' ':
+				guess = Format.EdgeListSpaceZero
+		else:
+			if separator == '\t':
+				guess = Format.EdgeListTabOne
+			if separator == ' ':
+				guess = Format.EdgeListSpaceOne
+			if separator == ',':
+				guess = Format.EdgeListCommaOne
+
+	if snapFound:	# edge list and snap are mutually exclusive (commentPrefix or none)
+		guess = Format.SNAP
+	
+	if metisFound and guess: # file could be both metis and edge list
+		raise IOError("Format guessing failed: file could be METIS or edge list!")
+	
+	if guess:
+		return guess
+	if metisFound:
+		return Format.METIS
+	
+	# if none match, raise error
+	raise IOError("Format guessing failed: no type found")
+	
+
+def readGraph(path, fileformat=None, *kargs, **kwargs):
+	"""
+	readGraph(path, fileformat=None, *kargs, **kwargs)
 
  	Read graph file in various formats and return a graph.
 
 	Parameters
 	----------
-	fileformat : networkit.graphio.Format
+	fileformat : networkit.graphio.Format or None
 		A supported file format.
+		If None is passed, this function will try to guess the format. May fail and throw an exception.
 	`*kargs` : tuple()
 		Additional input parameter (depending on the file format).
 	`**kwargs` : dict()
@@ -1118,7 +1270,6 @@ def readGraph(path, fileformat, *kargs, **kwargs):
 		continuous=True and directed` are optional because of their default values. 
 		:code:`firstNode` is not needed when :code:`continuous=True`.
 	"""
-	reader = getReader(fileformat, *kargs, **kwargs)
 
 	if ("~" in path):
 		path = os.path.expanduser(path)
@@ -1126,6 +1277,10 @@ def readGraph(path, fileformat, *kargs, **kwargs):
 	if not os.path.isfile(path):
 		raise IOError("{0} is not a file".format(path))
 	else:
+		if not fileformat:
+			fileformat = guessFileFormat(path)
+		reader = getReader(fileformat, *kargs, **kwargs)
+
 		with open(path, "r") as file:    # catch a wrong path before it crashes the interpreter
 			try:
 				G = reader.read(path)
@@ -1516,12 +1671,18 @@ class GEXFReader:
 	def read(self, fpath):
 		""" 
 		read(fpath)
+
 		Reads and returns the graph object defined in fpath.
 		
 		Parameters
 		----------
 		fpath : str
 			File path for GEXF-file.
+
+		Returns
+		-------
+		tuple(networkit.Graph, list(str))
+			Tuple with the graph parsed from the given fpath and the list of graph events sorted by timestamp.
 		"""
 		#0. Reset internal vars and parse the xml
 		self.__init__()
@@ -1619,6 +1780,7 @@ class GEXFReader:
 	def parseDynamics(self, element, elementType, controlList,  u,  v = "0", w = "0"):
 		"""
 		parseDynamics(element, elementType, controlList,  u,  v = "0", w = "0")
+
 		Determine the operations as follows:
 		1. Element has start and not deleted before: Create add event
 		2. Element has start and deleted before: Create restore event
@@ -1629,6 +1791,7 @@ class GEXFReader:
 		or inline attributes. These 2 shouldn't be mixed.
 		(For example, Gephi will treat them differently. It'll ignore the inline declaration
 		if the same element also contains spells)
+
 		Parameters
 		----------
 		element : str
@@ -1712,15 +1875,16 @@ class GEXFReader:
 	def createEvent(self, eventTime, eventType, u, v, w):
 		"""
 		createEvent(eventTime, eventType, u, v, w)
+
 		Creates a NetworKit::GraphEvent from the supplied parameters
 		and passes it to eventStream.
+
 		Parameters
 		----------
 		eventTime : int
 			Timestep indicating when the event happen (creating an order of events).
 		eventType : str
-			Abbreviation string representing a graph event. Should be one of the following:
-			:code:`e, an, dn, rn, ae, re, de, ce`.
+			Abbreviation string representing a graph event. Should be one of the following: {`e, an, dn, rn, ae, re, de, ce`.}
 		u : int
 			Id of node u involved in graph event.
 		v : int
@@ -1819,9 +1983,9 @@ class GEXFWriter:
 		fname : str 
 			The desired file path and name to be written to.
 		eventStream : list(networkit.dynamics.GraphEvent)
-			Stream of events, each represented by networkit.dynamics.GraphEvent.
+			Stream of events, each represented by networkit.dynamics.GraphEvent. Default: list()
 		mapping : list(int)
-			Random node mapping.
+			Random node mapping. Default: list()
 		"""
 		#0. Reset internal vars
 		self.__init__()
@@ -2094,6 +2258,10 @@ class GraphMLReader:
 		----------
 		fpath: str
 			The path to the file as a String.
+		Returns
+		-------
+		networkit.Graph
+			The constructed graph.
 		"""
 		xml.sax.parse(fpath, self.graphmlsax)
 		return self.graphmlsax.getGraph()

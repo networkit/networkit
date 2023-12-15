@@ -36,8 +36,10 @@ def isSupported(cmd):
 
 def findClangFormat():
 	"""Tries to find clang-format-XXX variants within the path"""
+	if "NETWORKIT_OVERRIDE_CLANG_FORMAT" in os.environ:
+		return os.environ["NETWORKIT_OVERRIDE_CLANG_FORMAT"]
 	cmd = "clang-format"
-	allowed = [cmd] + [cmd + "-" + str(x) for x in range(nkt.MIN_CLANG_FORMAT_VERSION, nkt.MAX_CLANG_FORMAT_VERSION + 1)]
+	allowed = [cmd + "-" + str(x) for x in range(nkt.MAX_CLANG_FORMAT_VERSION, nkt.MIN_CLANG_FORMAT_VERSION - 1, -1)] + [cmd]
 	for candidate in allowed:
 		if isSupported(candidate):
 			if nkt.isVerbose():
@@ -49,7 +51,7 @@ def findClangFormat():
 
 	raise FileNotFoundError("clang-format binary not found. We searched for:\n " + "\n ".join(allowed))
 
-def runClangFormat(inputFilename, outputFilename, clangFormatBinary = 'clang-format-8'):
+def runClangFormat(inputFilename, outputFilename, clangFormatBinary = 'clang-format-16'):
 	"""Execute clang-format onto inputFilename and stores the result in outputFilename"""
 	with open(outputFilename, "w") as outfile:
 		subprocess.call([clangFormatBinary, '-style=file', inputFilename], stdout=outfile)

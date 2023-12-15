@@ -39,7 +39,14 @@ void MultiscaleScore::run() {
             edgeweight p = normalizedWeights[v];
             double probability = getProbability(k, p);
 
+#if defined(__GNUC__) && (__GNUC__ >= 12)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
             multiscaleAttribute[eid] = std::max(multiscaleAttribute[eid], probability);
+#if defined(__GNUC__) && (__GNUC__ >= 12)
+#pragma GCC diagnostic pop
+#endif
             //}
         });
     });

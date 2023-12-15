@@ -8,6 +8,7 @@
 #ifndef NETWORKIT_CENTRALITY_DYN_BETWEENNESS_ONE_NODE_HPP_
 #define NETWORKIT_CENTRALITY_DYN_BETWEENNESS_ONE_NODE_HPP_
 
+#include <networkit/base/Algorithm.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
 #include <networkit/dynamics/GraphEvent.hpp>
 
@@ -17,7 +18,7 @@ namespace NetworKit {
  * @ingroup graph
  * Dynamic betweenness of a single node.
  */
-class DynBetweennessOneNode : public DynAlgorithm {
+class DynBetweennessOneNode : public Algorithm, public DynAlgorithm {
 
 public:
     /**
@@ -29,7 +30,7 @@ public:
     DynBetweennessOneNode(Graph &G, node x);
 
     /** initialize distances and Pred by repeatedly running the Dijkstra2 algorithm */
-    void run();
+    void run() override;
 
     /**
      * Updates the betweenness centrality of x after an edge insertions on the graph.

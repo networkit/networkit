@@ -22,7 +22,7 @@ SimmelianScore::getRankedNeighborhood(const Graph &g, const std::vector<count> &
         // Sort ego's alters from strongly to weakly tied.
         g.forNeighborsOf(u, [&](node, node v, edgeid eid) {
             count triangleCount = std::round(triangles[eid]);
-            neighbors[u].push_back(RankedEdge(u, v, triangleCount));
+            neighbors[u].emplace_back(u, v, triangleCount);
         });
         std::sort(neighbors[u].begin(), neighbors[u].end());
 

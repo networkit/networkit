@@ -11,7 +11,6 @@ namespace NetworKit {
 
 class TraversalGTest : public testing::TestWithParam<std::pair<bool, bool>> {
 protected:
-    Graph generateRandomWeights(const Graph &G) const;
     bool weighted() const noexcept;
     bool directed() const noexcept;
 };
@@ -19,12 +18,6 @@ protected:
 INSTANTIATE_TEST_SUITE_P(InstantiationName, TraversalGTest,
                          testing::Values(std::make_pair(false, false), std::make_pair(true, false),
                                          std::make_pair(false, true), std::make_pair(true, true)));
-
-Graph TraversalGTest::generateRandomWeights(const Graph &G) const {
-    Graph Gw(G, true, G.isDirected());
-    Gw.forEdges([&](node u, node v) { Gw.setWeight(u, v, Aux::Random::probability()); });
-    return Gw;
-}
 
 bool TraversalGTest::weighted() const noexcept {
     return GetParam().first;
@@ -175,7 +168,7 @@ TEST_P(TraversalGTest, testDijkstraFrom) {
         Aux::Random::setSeed(seed, false);
         auto G = ErdosRenyiGenerator(n, p, directed()).generate();
         if (weighted()) {
-            G = generateRandomWeights(G);
+            GraphTools::randomizeWeights(G);
         }
 
         G.forNodes([&](const node u) {

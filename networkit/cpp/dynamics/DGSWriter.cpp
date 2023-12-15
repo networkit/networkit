@@ -27,7 +27,7 @@ void DGSWriter::write(std::vector<GraphEvent> &stream, const std::string &path) 
             break;
         }
         case GraphEvent::NODE_RESTORATION: {
-            out << "rn" << ev.u << "\n";
+            out << "rn " << ev.u << "\n";
             break;
         }
         case GraphEvent::EDGE_ADDITION: {

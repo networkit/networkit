@@ -34,6 +34,15 @@ TEST(VectorGTest, testVectorConstruction) {
     }
 }
 
+TEST(VectorGTest, testVectorConstructionFromStdVector) {
+    std::vector<double> std_v = {1.0, 2.2, 3.4};
+    Vector v(std_v, true);
+    EXPECT_EQ(v.getDimension(), std_v.size());
+    for (uint64_t i = 0; i < v.getDimension(); ++i) {
+        EXPECT_EQ(v[i], std_v[i]);
+    }
+}
+
 TEST(VectorGTest, testFill) {
     const index n = 10;
     Vector v(n);
@@ -199,6 +208,23 @@ TEST(VectorGTest, testVectorAddition) {
 
     v3 = v1.transpose() + v2.transpose();
     EXPECT_TRUE(v3.isTransposed());
+}
+
+TEST(VectorGTest, testVectorValueAddition) {
+    Vector v1 = {1.0, 2.0, 3.0, 4.0, 5.0};
+    Vector res = v1 + 4.0;
+
+    ASSERT_EQ(v1.getDimension(), res.getDimension());
+    for (uint64_t i = 0; i < res.getDimension(); i++) {
+        EXPECT_EQ(v1[i] + 4.0, res[i]);
+    }
+
+    Vector v2 = {0.5, 1.5, 2.5, 3.5, 4.5, 5.5};
+    v2 += 0.5;
+
+    for (uint64_t i = 0; i < v2.getDimension(); i++) {
+        EXPECT_EQ(v2[i], i + 1);
+    }
 }
 
 TEST(VectorGTest, testVectorSubtraction) {

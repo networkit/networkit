@@ -21,7 +21,7 @@
 
 namespace NetworKit {
 
-DynAPSP::DynAPSP(Graph &G) : APSP(G) {}
+DynAPSP::DynAPSP(const Graph &G) : APSP(G) {}
 
 /**
  * Run method that stores a single shortest path for each node pair and stores shortest distances

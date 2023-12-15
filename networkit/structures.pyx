@@ -241,7 +241,7 @@ cdef class Cover:
 
 		Returns
 		-------
-		dict(int `:` int)
+		dict(int ``:`` int)
 			A map from subset id to size of the subset.
 		"""
 		return self._this.subsetSizeMap()
@@ -597,7 +597,7 @@ cdef class Partition:
 
 		Returns
 		-------
-		dict(int `:` int)
+		dict(int ``:`` int)
 			A map from subset id to size of the subset.
 		"""
 		return self._this.subsetSizeMap()

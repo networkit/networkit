@@ -47,6 +47,7 @@ void RandomSpanningForest::run() {
             curr = neigh;
         }
     }
+    hasRun = true;
 }
 
 } /* namespace NetworKit */
