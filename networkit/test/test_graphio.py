@@ -100,7 +100,8 @@ class TestGEXFIO(unittest.TestCase):
 			("comments.edgelist", nk.Format.EdgeListTabOne),
 			("dynamicTest.gexf", nk.Format.GEXF),
 			("foodweb-baydry.konect", nk.Format.KONECT),
-			("foodweb-baydry.networkit", nk.Format.NetworkitBinary),
+			("foodweb-baydry.nkbg002", nk.Format.NetworkitBinary),
+			("foodweb-baydry.nkbg003", nk.Format.NetworkitBinary),
 			("jazz2_directed.gml", nk.Format.GML),
 			("chesapeake.mtx", nk.Format.MatrixMarket),
 		]
