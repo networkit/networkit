@@ -1124,8 +1124,11 @@ def guessFileFormat(filepath: str) -> Format:
 		x = f.read(6)
 		if x == bytes([0xe2, 0x9b, 0xbe, 0x20, 0x67, 0x74]): 
 			return Format.GraphToolBinary	# GraphToolBinary - binary. first 6 bytes: e2 9b be 20 67 74 then version number: 01 then endian: 00 (=little) or 01 (=big)
-		if x + f.read(1) == bytes([0x6e, 0x6b, 0x62, 0x67, 0x30, 0x30, 0x32]): 
-			return Format.NetworkitBinary	# NetworkitBinary - binary. starts with 6E 6B 62 67 30 30 32
+		nkmagicbits = x + f.read(1)
+		if nkmagicbits == bytes([0x6e, 0x6b, 0x62, 0x67, 0x30, 0x30, 0x32]): 
+			return Format.NetworkitBinary	# NetworkitBinary version 2 - binary. starts with 6E 6B 62 67 30 30 32
+		if nkmagicbits == bytes([0x6e, 0x6b, 0x62, 0x67, 0x30, 0x30, 0x33]): 
+			return Format.NetworkitBinary	# NetworkitBinary version 3 - binary. starts with 6E 6B 62 67 30 30 33
 
 	# otherwise, open as text file and check the first lines for structured text formats
 	with open(filepath, 'r') as f:
