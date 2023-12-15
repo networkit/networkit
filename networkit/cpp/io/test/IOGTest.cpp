@@ -815,7 +815,7 @@ TEST_F(IOGTest, testBinaryEdgeListPartitionWriterAndReader) {
     EXPECT_EQ(Q.upperBound(), P[4] + 1);
 }
 
-TEST_F(IOGTest, testGXLGraphReader){
+TEST_F(IOGTest, testGXLGraphReader) {
     GXLGraphReader reader;
     Graph G = reader.read("input/dummy_test.gxl");
     ASSERT_TRUE(!G.isDirected());
