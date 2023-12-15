@@ -1,5 +1,4 @@
 # distutils: language=c++
-# cython: c_string_type=unicode, c_string_encoding=utf8
 
 from cython.operator import dereference, preincrement
 
@@ -1166,10 +1165,10 @@ cdef class NodeIntAttribute:
 		return val
 
 	def write(self, path: str):
-		return self._this.write(path)
+		return self._this.write(stdstring(path))
 
 	def read(self, path: str):
-		return self._this.read(path)
+		return self._this.read(stdstring(path))
 
 
 cdef class NodeDoubleAttribute:
@@ -1210,10 +1209,10 @@ cdef class NodeDoubleAttribute:
 		return val
 
 	def write(self, path: str):
-		return self._this.write(path)
+		return self._this.write(stdstring(path))
 	
 	def read(self, path: str):
-		return self._this.read(path)
+		return self._this.read(stdstring(path))
 
 cdef class NodeStringAttribute:
 
@@ -1255,10 +1254,10 @@ cdef class NodeStringAttribute:
 		return val
 
 	def write(self, path: str):
-		return self._this.write(path)
+		return self._this.write(stdstring(path))
 
 	def read(self, path: str):
-		return self._this.read(path)
+		return self._this.read(stdstring(path))
 
 class NodeAttribute:
 	"""
@@ -1311,10 +1310,10 @@ class NodeAttribute:
 		return next(self._iter)
 	
 	def write(self, path: str):
-		return self.attr.write(path)
+		return self.attr.write(stdstring(path))
 
 	def read(self, path: str):
-		return self.attr.read(path)
+		return self.attr.read(stdstring(path))
 
 
 # The following 3 classes EdgeIntAttribute, EdgeDoubleAttribute and 
@@ -1377,10 +1376,10 @@ cdef class EdgeIntAttribute:
 		return val
 
 	def write(self, path: str):
-		return self._this.write(path)
+		return self._this.write(stdstring(path))
 	
 	def read(self, path: str):
-		return self._this.read(path)
+		return self._this.read(stdstring(path))
 
 cdef class EdgeDoubleAttribute:
 	cdef setThis(self, _EdgeDoubleAttribute& other, _Graph* G):
@@ -1434,10 +1433,10 @@ cdef class EdgeDoubleAttribute:
 		return val
 	
 	def write(self, path: str):
-		return self._this.write(path)
+		return self._this.write(stdstring(path))
 
 	def read(self, path: str):
-		return self._this.read(path)
+		return self._this.read(stdstring(path))
 
 cdef class EdgeStringAttribute:
 
@@ -1493,10 +1492,10 @@ cdef class EdgeStringAttribute:
 		return val
 	
 	def write(self, path: str):
-		return self._this.write(path)
+		return self._this.write(stdstring(path))
 
 	def read(self, path: str):
-		return self._this.read(path)
+		return self._this.read(stdstring(path))
 
 class EdgeAttribute:
 	"""
@@ -1546,10 +1545,10 @@ class EdgeAttribute:
 		return next(self._iter)
 
 	def write(self, path: str):
-		return self.attr.write(path)
+		return self.attr.write(stdstring(path))
 
 	def read(self, path: str):
-		return self.attr.read(path)
+		return self.attr.read(stdstring(path))
 
 
 cdef cppclass EdgeCallBackWrapper:
