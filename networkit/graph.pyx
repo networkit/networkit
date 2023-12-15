@@ -1310,10 +1310,10 @@ class NodeAttribute:
 		return next(self._iter)
 	
 	def write(self, path: str):
-		return self.attr.write(stdstring(path))
+		return self.attr.write(path)
 
 	def read(self, path: str):
-		return self.attr.read(stdstring(path))
+		return self.attr.read(path)
 
 
 # The following 3 classes EdgeIntAttribute, EdgeDoubleAttribute and 
@@ -1545,10 +1545,10 @@ class EdgeAttribute:
 		return next(self._iter)
 
 	def write(self, path: str):
-		return self.attr.write(stdstring(path))
+		return self.attr.write(path)
 
 	def read(self, path: str):
-		return self.attr.read(stdstring(path))
+		return self.attr.read(path)
 
 
 cdef cppclass EdgeCallBackWrapper:
