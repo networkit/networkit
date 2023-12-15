@@ -317,8 +317,8 @@ class TestGraph(unittest.TestCase):
 			for u in G.iterNodes():
 				self.assertEqual(attrs[u], attrsRead[u])
 
-			G.detachEdgeAttribute("attribute")
-			G.detachEdgeAttribute("attributeRead")
+			G.detachNodeAttribute("attribute")
+			G.detachNodeAttribute("attributeRead")
 
 	def testEdgeAttributesMandatoryIndexing(self):
 		G = nk.Graph(5)
