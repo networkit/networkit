@@ -40,7 +40,7 @@ class Dimension:
 	Three = 2
 
 # returns color palette for nodes and edges
-def _getColorPalette(nodePalette = None, nodePartition = None):
+def _getColorPalette(nodePalette = None, nodePartition = None, edgePalette = None):
 	# Set color palettes
 	if not nodePalette:
 		if not hasSeaborn:
@@ -50,7 +50,8 @@ def _getColorPalette(nodePalette = None, nodePartition = None):
 			nodePalette = seaborn.color_palette("hls", nodePartition.numberOfSubsets())
 		else:
 			nodePalette = seaborn.color_palette("rocket_r", as_cmap=True).colors
-	edgePalette = seaborn.color_palette("rocket_r", as_cmap=True).colors
+	if not edgePalette:
+		edgePalette = seaborn.color_palette("rocket_r", as_cmap=True).colors
 	return nodePalette, edgePalette
 
 def _calculateNodeColoring(G, palette, nodeScores = None, nodePartition = None):
@@ -138,7 +139,7 @@ def _calculateEdgeColoring(G, palette, edgeScores: list[float] = None):
 	return hcColors
 
 
-def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartition = None, nodePalette = None, showIds = True, customSize = None, edgeScores: list[float] | dict[tuple[int], float] = None):
+def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartition = None, nodePalette = None, showIds = True, customSize = None, edgeScores: list[float] | dict[tuple[int], float] = None, edgePalette = None):
 	""" 
 	widgetFromGraph(G, dimension=Dimension.Two, nodeScores=None, nodePartition=None, nodePalette=None, showIds=True, customSize=None, edgeScores=None)
 
@@ -204,7 +205,7 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 			raise Exception("edgeScores should include scores for every edge.", edgeScores, G.numberOfEdges())
 
 	# Color palette is needed for node coloring with Plotly and Cytoscape
-	nodePalette, edgePalette = _getColorPalette(nodePalette=nodePalette, nodePartition=nodePartition)
+	nodePalette, edgePalette = _getColorPalette(nodePalette=nodePalette, nodePartition=nodePartition, edgePalette=edgePalette)
 	
 	# Set styling for cytoscape
 	if showIds:
@@ -325,6 +326,8 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 				name='edges')
 
 		else:
+			if edgeScores:
+				edgeScoresMapped = [None] * G.numberOfEdges() * 3
 			edges = [[None] * G.numberOfEdges() * 3,[None] * G.numberOfEdges() * 3, [None] * G.numberOfEdges() * 3]
 			for e in G.iterEdges():
 				edges[0][index] = coordinates[e[0]][0]
@@ -333,6 +336,11 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 				edges[1][index+1] = coordinates[e[1]][1]
 				edges[2][index] = coordinates[e[0]][2]
 				edges[2][index+1] = coordinates[e[1]][2]
+				if edgeScores:
+					edgeScoresMapped[index] = edgeScores[G.edgeId(e[0], e[1])]
+					edgeScoresMapped[index+1] = edgeScores[G.edgeId(e[0], e[1])]
+					edgeScoresMapped[index+2] = edgeScores[G.edgeId(e[0], e[1])]
+
 				index = index + 3
 
 			nodeScatter = go.Scatter3d(x=nodes[0],
@@ -348,15 +356,28 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 				hoverinfo='text',
 				text = labels)
 
-			edgeScatter = go.Scatter3d(x=edges[0],
-				y=edges[1],
-				z=edges[2],
-				mode='lines',
-				opacity=0.7,
-				line= dict(color='rgb(180,180,180)', width=2),
-				hoverinfo='none',
-				showlegend=None,
-				name='edges')
+			if edgeScores:
+				edgeScatter = go.Scatter3d(x=edges[0],
+					y=edges[1],
+					z=edges[2],
+					mode='lines',
+					opacity=0.7,
+					line= dict(color=edgeScoresMapped, 
+						colorscale=px.colors.convert_colorscale_to_rgb(px.colors.make_colorscale(edgePalette)),
+						width=2, autocolorscale=False),
+					hoverinfo='none',
+					showlegend=None,
+					name='edges')
+			else:
+				edgeScatter = go.Scatter3d(x=edges[0],
+					y=edges[1],
+					z=edges[2],
+					mode='lines',
+					opacity=0.7,
+					line= dict(color='rgb(180,180,180)', width=2),
+					hoverinfo='none',
+					showlegend=None,
+					name='edges')
 
 		graphWidget.add_traces(nodeScatter)
 		graphWidget.add_traces(edgeScatter)       
