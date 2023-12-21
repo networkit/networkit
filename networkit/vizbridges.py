@@ -39,19 +39,19 @@ class Dimension:
 	TwoForcePlotly = 1
 	Three = 2
 
+# returns color palette for nodes and edges
 def _getColorPalette(nodePalette = None, nodePartition = None):
 	# Set color palettes
-	if nodePalette is not None:
-		palette = nodePalette
-	else:
+	if not nodePalette:
 		if not hasSeaborn:
 			raise MissingDependencyError("seaborn")
 		# Partitions and scores have different default color palettes
 		if nodePartition is not None:
-			palette = seaborn.color_palette("hls", nodePartition.numberOfSubsets())
+			nodePalette = seaborn.color_palette("hls", nodePartition.numberOfSubsets())
 		else:
-			palette = seaborn.color_palette("rocket_r", as_cmap=True).colors
-	return palette
+			nodePalette = seaborn.color_palette("rocket_r", as_cmap=True).colors
+	edgePalette = seaborn.color_palette("rocket_r", as_cmap=True).colors
+	return nodePalette, edgePalette
 
 def _calculateNodeColoring(G, palette, nodeScores = None, nodePartition = None):
 
@@ -102,10 +102,45 @@ def _calculateNodeColoring(G, palette, nodeScores = None, nodePartition = None):
 
 	return hcColors
 
+def _calculateEdgeColoring(G, palette, edgeScores: list[float] = None):
 
-def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartition = None, nodePalette = None, showIds = True, customSize = None):
+	# Color calculation: score = continuous distribution, partition = discrete distribution
+	hcColors = []
+
+	# Score
+	if edgeScores:
+
+		minhc = min(edgeScores)
+		maxhc = max(edgeScores)
+
+		# Calculate coloring of nodes
+		def getRgb(minimum, maximum, value):
+			minimum, maximum, value = float(minimum), float(maximum), float(value)
+			ratio = int((len(palette) - 1) * (value-minimum) / (maximum - minimum) * (value-minimum) / (maximum - minimum))
+			r = int(palette[ratio][0] * 255)
+			g = int(palette[ratio][1] * 255)
+			b = int(palette[ratio][2] * 255)
+			return r, g, b
+
+		if abs(maxhc - minhc) > 0:
+			for score in edgeScores:
+				hcColors.append(getRgb(minhc, maxhc, score))
+		else:
+			color = palette[int((len(palette) -1) / 2)];
+			for i in range(0, len(edgeScores)):
+				hcColors.append((color[0] * 255, color[1] * 255, color[2] * 255))
+
+	# No edge values
+	else:
+		color = palette[0]
+		hcColors = [(color[0] * 255, color[1] * 255, color[2] * 255)] * G.numberOfEdges()
+
+	return hcColors
+
+
+def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartition = None, nodePalette = None, showIds = True, customSize = None, edgeScores: list[float] | dict[tuple[int], float] = None):
 	""" 
-	widgetFromGraph(G, dimension=Dimension.Two, nodeScores=None, nodePartition=None, nodePalette=None, showIds=True, customSize=None)
+	widgetFromGraph(G, dimension=Dimension.Two, nodeScores=None, nodePartition=None, nodePalette=None, showIds=True, customSize=None, edgeScores=None)
 
 	Creates a widget with a visualization of a given graph. The widget uses one of the supported
 	plugins - either Cytoscape (2D) or Plotly (3D). The returned widget already contains
@@ -124,19 +159,23 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 		for visualization. For 2D Cytoscape with auto-layouting is used, for 3D Plotly with
 		a Maxent-Stress layout is used. Option :code:`Dimension.TwoForcePlotly` forces a plot 
 		in 2D with using Plotly instead of Cytoscape. Default: networkit.vizbridges.Dimension.Two
-	nodeScores : list(float), optional
-		List of scores for each nodes, for example scores from a centrality measure. This is 
+	nodeScores : list(float) or dict, optional
+		List of scores for each node, for example scores from a centrality measure. This is 
 		used for color-calculation of the nodes (continuous distribution). Provide either 
-		node_scores or node_partition - not both. Default: None
+		nodeScores or nodePartition - not both. Default: None
 	nodePartition : networkit.structures.Partition, optional
 		Partition object. This is used for color-calculation of the nodes (discrete distribution). 
-		Provide either node_scores or node_partition - not both. Default: None	
+		Provide either nodeScores or nodePartition - not both. Default: None	
 	nodePalette : list(tuple(float, float, float)), optional
 		List consisting of normalized rgb-values. If none is given, seaborn.color_palette.colors is used. Default: None
 	showIds : boolean, optional
 		Set whether node ids should be visible in plot-widget. Default: True
 	customSize : int, optional
-		If not set, plugins will use a default size. Otherwise the widget will have a certain width and height. Default: None       
+		If not set, plugins will use a default size. Otherwise the widget will have a certain width and height. Default: None      
+	edgeScores: list(float) or dict, optional
+		List of scores for each edge, for example scores from a centrality measure. This is 
+		used for color-calculation of the edges (continuous distribution). 
+		If type is list, indexed by edgeids; if type is dict, indexed by node pair tuples. Default: None
 	"""
 	# Sanity checks
 	if dimension == Dimension.Two and not hasCyto:
@@ -150,24 +189,52 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 			raise Exception("Provide either nodeScores or nodePartition - not both.")
 		if len(nodeScores) != G.upperNodeIdBound():
 			raise Exception("nodeScores should include scores for every node.")	
+	
+	if edgeScores:
+		if isinstance(edgeScores, dict):
+			if not G.hasEdgeIds():
+				raise Exception("Edges need to be indexed to draw edge scores.")
+			edgeScoresList = [None] * G.numberOfEdges()
+			for u,v in G.iterEdges():
+				edgeScoresList[G.edgeId(u,v)] = edgeScores[(u,v)]
+			if None in edgeScoresList:
+				raise Exception("edgeScores should include scores for every edge.")
+			edgeScores = edgeScoresList
+		if len(edgeScores) != G.numberOfEdges():
+			raise Exception("edgeScores should include scores for every edge.", edgeScores, G.numberOfEdges())
 
 	# Color palette is needed for node coloring with Plotly and Cytoscape
-	palette = _getColorPalette(nodePalette=nodePalette, nodePartition=nodePartition)
+	nodePalette, edgePalette = _getColorPalette(nodePalette=nodePalette, nodePartition=nodePartition)
 	
-	# Set styling
+	# Set styling for cytoscape
 	if showIds:
-		s = [{
+		style = [{
 			'selector': 'node',
 			'css': {
 				'background-color': 'data(color)',
-				'content': 'data(id)'}
-			}]
+				'content': 'data(id)',
+				}
+		},
+		{
+			'selector': 'edge',
+			'css': {
+				'line-color': 'data(color)',
+				}
+		},
+		]
 	else:
-		s = [{
+		style = [{
 			'selector': 'node',
 			'css': {
 				'background-color': 'data(color)'}
-			}]
+		},
+		{
+			'selector': 'edge',
+			'css': {
+				'line-color': 'data(color)',
+				}
+		},
+		]
 
 	if dimension == Dimension.Two:
 		# Create widget
@@ -182,14 +249,16 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 			edgeClass = "undirected "
 
 		# Color list (norm. RGB-values) is needed for node coloring with Cytoscape 
-		hcColors = _calculateNodeColoring(G, palette, nodeScores, nodePartition)
+		nodeHcColors = _calculateNodeColoring(G, nodePalette, nodeScores, nodePartition)
+		if edgeScores:
+			edgeHcColors = _calculateEdgeColoring(G, edgePalette, edgeScores)
 
 		for i in G.iterNodes():
-			n = ipycytoscape.Node(data={"id": i, "color": hcColors[i] })						
+			n = ipycytoscape.Node(data={"id": i, "color": nodeHcColors[i] })						
 			nodes.append(n)
 
 		for u,v in G.iterEdges():
-			e = ipycytoscape.Edge(data={"source": u, "target": v, "classes": edgeClass })
+			e = ipycytoscape.Edge(data={"source": u, "target": v, "classes": edgeClass, "color": edgeHcColors[G.edgeId(u,v)] if edgeHcColors else None })
 			edges.append(e)
 
 		# It is much faster to add edges and nodes in bulk.
@@ -197,7 +266,7 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 		graphWidget.graph.add_edges(edges, G.isDirected())
 
 		# Set layout
-		graphWidget.set_style(s)
+		graphWidget.set_style(style)
 		graphWidget.set_layout(name='cose')
 
 	else:
@@ -240,7 +309,7 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 				name='nodes',
 				marker=dict(symbol='circle',
 					size=9,
-					colorscale=px.colors.convert_colorscale_to_rgb(px.colors.make_colorscale(palette)),
+					colorscale=px.colors.convert_colorscale_to_rgb(px.colors.make_colorscale(nodePalette)),
 					color=scores,
 					line=dict(color='rgb(50,50,50)', width=0.5)),
 				hoverinfo='text',
@@ -273,7 +342,7 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 				name='nodes',
 				marker=dict(symbol='circle',
 					size=9,
-					colorscale=px.colors.convert_colorscale_to_rgb(px.colors.make_colorscale(palette)),
+					colorscale=px.colors.convert_colorscale_to_rgb(px.colors.make_colorscale(nodePalette)),
 					color=scores,
 					line=dict(color='rgb(50,50,50)', width=0.5)),
 				hoverinfo='text',
