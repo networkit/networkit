@@ -8,6 +8,7 @@
 #ifndef NETWORKIT_AUXILIARY_PRIO_QUEUE_HPP_
 #define NETWORKIT_AUXILIARY_PRIO_QUEUE_HPP_
 
+#include <cstdint>
 #include <limits>
 #include <set>
 #include <vector>

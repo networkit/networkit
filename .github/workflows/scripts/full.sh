@@ -6,9 +6,10 @@ $CXX --version
 python3 --version
 cmake --version
 
+# Note: setuptools<69.0.0 is needed for editable installs. Normal installs work with more recent releases of setuptools
 python3 -m venv pyenv && . pyenv/bin/activate
 pip3 install --upgrade pip
-pip3 install 'cython==0.29.*' numpy ipython jupyter
+pip3 install cython numpy ipython jupyter setuptools
 
 # Build tlx
 cd tlx
@@ -27,6 +28,7 @@ UBSAN_OPTIONS=print_stacktrace=1:halt_on_error=1 ASAN_OPTIONS=abort_on_error=1 c
 cd ..
 export CMAKE_LIBRARY_PATH=${CMAKE_LIBRARY_PATH:+$CMAKE_LIBRARY_PATH:}$(pwd)/core_build
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$(pwd)/core_build
+export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH:+$DYLD_LIBRARY_PATH:}$(pwd)/core_build
 export CPU_COUNT=$(python3 $GITHUB_WORKSPACE/.github/workflows/scripts/get_core_count.py)
 
 # Build networkit

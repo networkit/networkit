@@ -6,7 +6,7 @@ python3 -m venv pyenv && . pyenv/bin/activate
 pip3 install --upgrade pip
  
 # cython is required because git does not contain _NetworKit.
-pip3 install 'cython==0.29.*'
+pip3 install cython setuptools
 
 # Several modules are required to build the documentation.
 # Note: First, install an old version of sphinx to be compatible with all addons. 
