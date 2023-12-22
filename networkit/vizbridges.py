@@ -4,6 +4,8 @@ from .structures import Partition
 from .viz import MaxentStress
 
 # external imports
+from typing import List, Mapping, Tuple
+from enum import Enum
 try:
 	import ipycytoscape
 except ImportError:
@@ -25,7 +27,7 @@ except ImportError:
 else:
 	hasSeaborn = True
 
-class Dimension:
+class Dimension(Enum):
 	"""
 	Supported dimensions for visualization.
 
@@ -103,7 +105,7 @@ def _calculateNodeColoring(G, palette, nodeScores = None, nodePartition = None):
 
 	return hcColors
 
-def _calculateEdgeColoring(G, palette, edgeScores: list[float] = None):
+def _calculateEdgeColoring(G, palette, edgeScores: List[float] = None) :
 
 	# Color calculation: score = continuous distribution, partition = discrete distribution
 	hcColors = []
@@ -139,9 +141,9 @@ def _calculateEdgeColoring(G, palette, edgeScores: list[float] = None):
 	return hcColors
 
 
-def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartition = None, nodePalette = None, showIds = True, customSize = None, edgeScores: list[float] | dict[tuple[int], float] = None, edgePalette = None):
+def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartition = None, nodePalette = None, showIds = True, customSize = None, edgeScores: List[float] | Mapping[Tuple[int, int], float] = None, edgePalette = None):
 	""" 
-	widgetFromGraph(G, dimension=Dimension.Two, nodeScores=None, nodePartition=None, nodePalette=None, showIds=True, customSize=None, edgeScores=None)
+	widgetFromGraph(G, dimension=Dimension.Two, nodeScores=None, nodePartition=None, nodePalette=None, showIds=True, customSize=None, edgeScores=None, edgePalette=None)
 
 	Creates a widget with a visualization of a given graph. The widget uses one of the supported
 	plugins - either Cytoscape (2D) or Plotly (3D). The returned widget already contains
@@ -177,6 +179,8 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 		List of scores for each edge, for example scores from a centrality measure. This is 
 		used for color-calculation of the edges (continuous distribution). 
 		If type is list, indexed by edgeids; if type is dict, indexed by node pair tuples. Default: None
+	edgePalette : list(tuple(float, float, float)), optional
+		List consisting of normalized rgb-values. If none is given, seaborn.color_palette.colors is used. Default: None
 	"""
 	# Sanity checks
 	if dimension == Dimension.Two and not hasCyto:
@@ -207,37 +211,38 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 	# Color palette is needed for node coloring with Plotly and Cytoscape
 	nodePalette, edgePalette = _getColorPalette(nodePalette=nodePalette, nodePartition=nodePartition, edgePalette=edgePalette)
 	
-	# Set styling for cytoscape
-	if showIds:
-		style = [{
-			'selector': 'node',
-			'css': {
-				'background-color': 'data(color)',
-				'content': 'data(id)',
-				}
-		},
-		{
-			'selector': 'edge',
-			'css': {
-				'line-color': 'data(color)',
-				}
-		},
-		]
-	else:
-		style = [{
-			'selector': 'node',
-			'css': {
-				'background-color': 'data(color)'}
-		},
-		{
-			'selector': 'edge',
-			'css': {
-				'line-color': 'data(color)',
-				}
-		},
-		]
+	
 
 	if dimension == Dimension.Two:
+		# Set styling for cytoscape
+		if showIds:
+			style = [{
+				'selector': 'node',
+				'css': {
+					'background-color': 'data(color)',
+					'content': 'data(id)',
+					}
+			},
+			{
+				'selector': 'edge',
+				'css': {
+					'line-color': 'data(color)',
+					}
+			},
+			]
+		else:
+			style = [{
+				'selector': 'node',
+				'css': {
+					'background-color': 'data(color)'}
+			},
+			{
+				'selector': 'edge',
+				'css': {
+					'line-color': 'data(color)',
+					}
+			},
+			]
 		# Create widget
 		graphWidget = ipycytoscape.CytoscapeWidget()
 
@@ -253,6 +258,8 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 		nodeHcColors = _calculateNodeColoring(G, nodePalette, nodeScores, nodePartition)
 		if edgeScores:
 			edgeHcColors = _calculateEdgeColoring(G, edgePalette, edgeScores)
+		else:
+			edgeHcColors = None
 
 		for i in G.iterNodes():
 			n = ipycytoscape.Node(data={"id": i, "color": nodeHcColors[i] })						
@@ -296,12 +303,17 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 
 		index = 0
 		if dimension == Dimension.TwoForcePlotly:
+			if edgeScores:
+				edgeScoresMapped = [None] * G.numberOfEdges() * 2
 			edges = [[None] * G.numberOfEdges() * 2,[None] * G.numberOfEdges() * 2, [None] * G.numberOfEdges() * 2]
 			for e in G.iterEdges():
 				edges[0][index] = coordinates[e[0]][0]
 				edges[0][index+1] = coordinates[e[1]][0]
 				edges[1][index] = coordinates[e[0]][1]
 				edges[1][index+1] = coordinates[e[1]][1]
+				if edgeScores:
+					edgeScoresMapped[index] = edgeScores[G.edgeId(e[0], e[1])]
+					edgeScoresMapped[index+1] = edgeScores[G.edgeId(e[0], e[1])]
 				index = index + 2
 		
 			nodeScatter = go.Scatter(x=nodes[0],
@@ -315,12 +327,20 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 					line=dict(color='rgb(50,50,50)', width=0.5)),
 				hoverinfo='text',
 				text = labels)
+			
+		
+			if edgeScores:
+				line = dict(color=edgeScoresMapped, 
+						colorscale=px.colors.convert_colorscale_to_rgb(px.colors.make_colorscale(edgePalette)),
+						width=5, autocolorscale=False)
+			else:
+				line = dict(color='rgb(180,180,180)', width=2)
 
 			edgeScatter = go.Scatter(x=edges[0],
 				y=edges[1],
 				mode='lines',
 				opacity=0.7,
-				line= dict(color='rgb(180,180,180)', width=2),
+				line=line,
 				hoverinfo='none',
 				showlegend=None,
 				name='edges')
@@ -357,27 +377,21 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 				text = labels)
 
 			if edgeScores:
-				edgeScatter = go.Scatter3d(x=edges[0],
-					y=edges[1],
-					z=edges[2],
-					mode='lines',
-					opacity=0.7,
-					line= dict(color=edgeScoresMapped, 
+				line = dict(color=edgeScoresMapped, 
 						colorscale=px.colors.convert_colorscale_to_rgb(px.colors.make_colorscale(edgePalette)),
-						width=2, autocolorscale=False),
-					hoverinfo='none',
-					showlegend=None,
-					name='edges')
+						width=5, autocolorscale=False)
 			else:
-				edgeScatter = go.Scatter3d(x=edges[0],
-					y=edges[1],
-					z=edges[2],
-					mode='lines',
-					opacity=0.7,
-					line= dict(color='rgb(180,180,180)', width=2),
-					hoverinfo='none',
-					showlegend=None,
-					name='edges')
+				line= dict(color='rgb(180,180,180)', width=2)
+
+			edgeScatter = go.Scatter3d(x=edges[0],
+				y=edges[1],
+				z=edges[2],
+				mode='lines',
+				opacity=0.7,
+				line=line,
+				hoverinfo='none',
+				showlegend=None,
+				name='edges')
 
 		graphWidget.add_traces(nodeScatter)
 		graphWidget.add_traces(edgeScatter)       
