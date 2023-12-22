@@ -126,6 +126,14 @@ class Graph final {
     //!< true if edge ids have been assigned
     bool edgesIndexed;
 
+    //!< true if edge removals should maintain compact edge ids
+    bool maintainCompactEdges = false;
+    //!< true if edge removals should maintain sorted edge ids
+    bool maintainSortedEdges = false;
+
+    //!< saves the ID of the most recently removed edge (if exists)
+    edgeid deletedID;
+
     // per node data
     //!< exists[v] is true if node v has not been removed from the graph
     std::vector<bool> exists;
@@ -1981,20 +1989,38 @@ public:
                            uint64_t index = 0, bool checkForMultiEdges = false);
 
     /**
+     * If set to true, the ingoing and outgoing adjacency vectors will
+     * automatically be updated to maintain a sorting (if it existed before) by performing up to n-1
+     * swaps. If the user plans to remove multiple edges, better set it to false and call
+     * sortEdges() afterwards to avoid redundant swaps. Default = true.
+     */
+    void setKeepEdgesSorted(bool sorted = true) { maintainSortedEdges = sorted; }
+
+    /**
+     * If set to true, the EdgeIDs will automatically be adjusted,
+     * so that no gaps in between IDs exist. If the user plans to remove multiple edges, better set
+     * it to false and call indexEdges(force=true) afterwards to avoid redundant re-indexing.
+     * Default = true.
+     */
+    void setMaintainCompactEdges(bool compact = true) { maintainCompactEdges = compact; }
+
+    /**
+     * Returns true if edges are currently being sorted when removeEdge() is called.
+     */
+    bool getKeepEdgesSorted() const noexcept { return maintainSortedEdges; }
+
+    /*
+     * Returns true if edges are currently being compacted when removeEdge() is called.
+     */
+    bool getMaintainCompactEdges() const noexcept { return maintainCompactEdges; }
+
+    /**
+     *
      * Removes the undirected edge {@a u,@a v}.
      * @param u Endpoint of edge.
      * @param v Endpoint of edge.
-     * @param maintainSortedEdges If set to true, the ingoing and outgoing adjacency vectors will
-     * automatically be updated to maintain a sorting (if it existed before) by performing up to n-1
-     * swaps. If the user plans to remove multiple edges, better set it to false and call
-     * sortEdges() afterwards to avoid redundant swaps. Default = false.
-     * @param maintainCompactEdgeIDs If set to true, the EdgeIDs will automatically be adjusted,
-     * so that no gaps in between IDs exist. If the user plans to remove multiple edges, better set
-     * it to false and call indexEdges(force=true) afterwards to avoid redundant re-indexing.
-     * Default = false.
      */
-    void removeEdge(node u, node v, bool maintainSortedEdges = false,
-                    bool maintainCompactEdgeIDs = false);
+    void removeEdge(node u, node v);
 
     /**
      * Removes all the edges in the graph.

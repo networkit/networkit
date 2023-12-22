@@ -2253,8 +2253,9 @@ TEST_P(GraphGTest, testEdgeIdsSortingAfterRemove) {
     // remove edges
     while (2 * G.numberOfEdges() > original.numberOfEdges()) {
         const auto e = GraphTools::randomEdge(G, false);
-        G.removeEdge(e.first, e.second, true, false); // with sorting after each removal
-        original.removeEdge(e.first, e.second);       // without sorting
+        G.setKeepEdgesSorted();
+        G.removeEdge(e.first, e.second);        // with sorting after each removal
+        original.removeEdge(e.first, e.second); // without sorting
     }
 
     original.sortEdges(); // calling sort only once
@@ -2308,10 +2309,11 @@ TEST_P(GraphGTest, testEdgeIdsConsistencyAfterRemove) {
     auto original = G;
 
     // remove edges
+    G.setMaintainCompactEdges();
     while (2 * G.numberOfEdges() > original.numberOfEdges()) {
         const auto e = GraphTools::randomEdge(G, false);
-        G.removeEdge(e.first, e.second, false, true); // re-indexing after each removal
-        original.removeEdge(e.first, e.second);       // not re-indexing
+        G.removeEdge(e.first, e.second);        // re-indexing after each removal
+        original.removeEdge(e.first, e.second); // not re-indexing
     }
 
     original.indexEdges(true); // re-indexing only once
