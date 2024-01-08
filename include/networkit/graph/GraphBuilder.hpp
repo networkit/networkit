@@ -10,8 +10,6 @@
 
 #include <vector>
 
-#include <tlx/define/deprecated.hpp>
-
 #include <networkit/Globals.hpp>
 #include <networkit/graph/Graph.hpp>
 
@@ -160,14 +158,6 @@ public:
     void increaseWeight(node u, node v, edgeweight ew) { increaseOutWeight(u, v, ew); }
     void increaseOutWeight(node u, node v, edgeweight ew);
     void increaseInWeight(node u, node v, edgeweight ew);
-
-    /**
-     * Generates a Graph instance. The graph builder will be reseted at the end.
-     *
-     * Deprecated, use completeGraph instead.
-     *
-     */
-    Graph TLX_DEPRECATED(toGraph(bool autoCompleteEdges = true, bool parallel = false));
 
     /**
      * Generates a Graph instance. The graph builder will be reseted at the end.

@@ -8,6 +8,7 @@ import networkit as nk
 
 import os as os
 import sys, traceback
+import timeit
 import configparser
 from pathlib import PurePosixPath, PureWindowsPath
 
@@ -429,7 +430,7 @@ class Profile:
 
 		def funcSizes(instance):
 			""" returns partition subset sizes """
-			return helpers.sorted(instance.getPartition().subsetSizes())
+			return sorted(instance.getPartition().subsetSizes())
 
 		if G.isDirected():
 			classConnectedComponents = components.StronglyConnectedComponents
@@ -464,14 +465,14 @@ class Profile:
 		]: result.__addMeasure(parameter)
 
 		if cls.__verbose:
-			timerAll = stopwatch.Timer()
+			timerAll = timeit.default_timer()
 		result.__loadProperties()
 		result.__loadMeasures()
 		if cls.__verbose:
 			if cls.__verboseLevel < 1:
 				print("")
-			print("\ntotal time (measures + stats + correlations): {:.2F} s".format(timerAll.elapsed))
-			print("total speed: {:.1F} edges/s".format(G.numberOfEdges() / timerAll.elapsed))
+			print("\ntotal time (measures + stats + correlations): {:.2F} s".format(timerAll - timeit.default_timer()))
+			print("total speed: {:.1F} edges/s".format(G.numberOfEdges() / (timerAll - timeit.default_timer())))
 		return result;
 
 
@@ -1046,11 +1047,11 @@ class Profile:
 
 		if self.__config.getProperty("Diameter"):
 			try:
-				timerInstance = stopwatch.Timer()
+				timerInstance = timeit.default_timer()
 				self.verbosePrint("Diameter: ", end="")
 				diam = distance.Diameter(self.__G, distance.DiameterAlgo.ESTIMATED_RANGE, error = 0.1)
 				diameter = diam.run().getDiameter()
-				elapsedMain = timerInstance.elapsed
+				elapsedMain = timeit.default_timer() - timeit.default_timer()
 				self.verbosePrint("{:.2F} s".format(elapsedMain))
 				self.verbosePrint("")
 			except Exception as e:
@@ -1062,11 +1063,11 @@ class Profile:
 
 		if self.__config.getProperty("EffectiveDiameter"):
 			try:
-				timerInstance = stopwatch.Timer()
+				timerInstance = timeit.default_timer()
 				self.verbosePrint("EffectiveDiameter: ", end="")
 				diam = distance.EffectiveDiameterApproximation(self.__G)
 				diameter = diam.run().getEffectiveDiameter()
-				elapsedMain = timerInstance.elapsed
+				elapsedMain = timeit.default_timer() - timerInstance
 				self.verbosePrint("{:.2F} s".format(elapsedMain))
 				self.verbosePrint("")
 			except:
@@ -1077,7 +1078,7 @@ class Profile:
 		self.__properties["Effective Diameter"] = diameter
 
 
-		timerInstance = stopwatch.Timer()
+		timerInstance = timeit.default_timer()
 		self.verbosePrint("Connected Components: ", end="")
 		try:
 			if self.__G.isDirected():
@@ -1089,7 +1090,7 @@ class Profile:
 		except:
 			self.verbosePrint("ConnectedComponents raised exception")
 			num = "N/A"
-		elapsedMain = timerInstance.elapsed
+		elapsedMain = timeit.default_timer() - timerInstance
 		self.verbosePrint("{:.2F} s".format(elapsedMain))
 		self.verbosePrint("")
 		self.__properties["Connected Components"] = num
@@ -1111,45 +1112,45 @@ class Profile:
 				continue
 
 			# run algorithm and get result
-			timerInstance = stopwatch.Timer()
+			timerInstance = timeit.default_timer()
 			instance.run()
 			measure["data"]["sample"] = measure["getter"](instance)
 			#self.verbosePrint("{0} called on {1}".format(measure["getter"], instance))
-			elapsedMain = timerInstance.elapsed
+			elapsedMain = timeit.default_timer() - timerInstance
 			self.verbosePrint("{:.2F} s".format(elapsedMain))
 
 			self.verbosePrint("    Sort: ", end="")
-			timerPostSort = stopwatch.Timer()
-			measure["data"]["sorted"] = helpers.sorted(measure["data"]["sample"])
-			elapsedPostSort = timerPostSort.elapsed
+			timerPostSort = timeit.default_timer()
+			measure["data"]["sorted"] = sorted(measure["data"]["sample"])
+			elapsedPostSort = timeit.default_timer() - timerPostSort
 			self.verbosePrint("{:.2F} s".format(elapsedPostSort))
 
 			self.verbosePrint("    Rank: ", end="")
-			timerPostRank = stopwatch.Timer()
+			timerPostRank = timeit.default_timer()
 			measure["data"]["ranked"] = helpers.ranked(measure["data"]["sample"])
-			elapsedPostRank = timerPostRank.elapsed
+			elapsedPostRank = timeit.default_timer() - timerPostRank
 			self.verbosePrint("{:.2F} s".format(elapsedPostRank))
 
 			if self.__measures[name]["category"] == "Node Centrality":
 				self.verbosePrint("    Assortativity: ", end="")
-				timerPostAssortativity = stopwatch.Timer()
+				timerPostAssortativity = timeit.default_timer()
 				assortativity = nk.correlation.Assortativity(self.__G, measure["data"]["sample"])
 				assortativity.run()
 				measure["assortativity"] = assortativity.getCoefficient()
-				elapsedPostAssortativity = timerPostAssortativity.elapsed
+				elapsedPostAssortativity = timeit.default_timer() - timerPostAssortativity
 				self.verbosePrint("{:.2F} s".format(elapsedPostAssortativity))
 			else:
 				measure["assortativity"] = float("nan")
 
 			if self.__measures[name]["category"] == "Node Centrality":
 				self.verbosePrint("    Centralization: ", end="")
-				timerPostCentralization = stopwatch.Timer()
+				timerPostCentralization = timeit.default_timer()
 				try:
 					measure["centralization"] = instance.centralization()
 				except:
 					self.verbosePrint("Centrality.centralization not properly defined for {0}. ".format(name), level=0, end="")
 					measure["centralization"] = float("nan")
-				elapsedPostCentralization = timerPostCentralization.elapsed
+				elapsedPostCentralization =  timeit.default_timer() - timerPostCentralization
 				self.verbosePrint("{:.2F} s".format(elapsedPostCentralization))
 			else:
 				measure["centralization"] = float("nan")

@@ -68,7 +68,6 @@ void GraphEventProxy::incrementWeight(node u, node v, edgeweight delta) {
 }
 
 void GraphEventProxy::timeStep() {
-    WARN("GraphEventProxy::timeStep is deprecated and will not be supported in future releases.");
     // increment time step counter in G
     this->G->timeStep();
     for (GraphEventHandler *observer : this->observers) {
