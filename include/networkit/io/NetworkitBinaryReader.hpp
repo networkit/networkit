@@ -18,7 +18,12 @@ namespace NetworKit {
 /**
  * @ingroup io
  *
- * Reads a graph written in the custom Networkit format documented in cpp/io/NetworkitGraph.md
+ * Reads a graph written in the custom Networkit binary format.
+ * Note that there are multiple versions of the Networkit binary format.
+ * This Reader can read files that are written with format version 2 and 3.
+ * Format version 3 was released with Networkit 9.1 (December 2021).
+ * Further information can be found here:
+ * https://github.com/networkit/networkit/blob/master/networkit/cpp/io/NetworkitBinaryGraph.md
  */
 
 class NetworkitBinaryReader final : public GraphReader {
