@@ -110,6 +110,12 @@ class TestGEXFIO(unittest.TestCase):
 			guess = nk.graphio.guessFileFormat(f"input/{file}")
 			self.assertEqual(guess, expected_result)
 
+	def testBinaryFormatVersionUpgrade(self):
+		output_filepath = 'output/testBinaryFormatVersionUpgrade.nkbg'
+		nk.graphio.writeGraph(nk.graphio.readGraph('input/foodweb-baydry.nkbg002'), output_filepath, nk.Format.NetworkitBinary)
+		with open(output_filepath, 'rb') as f:
+			nkmagicbits = f.read(7)
+			self.assertEqual(nkmagicbits, bytes([0x6e, 0x6b, 0x62, 0x67, 0x30, 0x30, 0x33]))
 
 if __name__ == "__main__":
 	unittest.main()
