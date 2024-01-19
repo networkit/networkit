@@ -1,6 +1,7 @@
 networkit_add_module(generators
     BarabasiAlbertGenerator.cpp
     ChungLuGenerator.cpp
+    ChungLuGeneratorAlamEtAl.cpp
     ClusteredRandomGraphGenerator.cpp
     DorogovtsevMendesGenerator.cpp
     DynamicBarabasiAlbertGenerator.cpp
