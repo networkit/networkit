@@ -15,10 +15,10 @@ jobs:
         cibw_archs: ["x86_64"]
         manylinux_image: ["manylinux2014"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v5
         name: Install Python
         with:
           python-version: '3.10'
@@ -28,26 +28,35 @@ jobs:
           CIBW_BEFORE_BUILD: pip install cython
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp38-* cp39-* cp310-* cp311-* cp312-*' || 'cp311-* cp312-*' }}
+          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp38-* cp39-* cp310-* cp311-* cp312-*' || 'cp312-*' }}
           CIBW_SKIP: "pp* *-musllinux_*"
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp38-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp38*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp39-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp310-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp310*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp311*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
@@ -61,13 +70,13 @@ jobs:
         manylinux_image: ["manylinux2014"]
     steps:
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v3
         with:
           platforms: all
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v5
         name: Install Python
         with:
           python-version: '3.9'
@@ -79,13 +88,15 @@ jobs:
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
           CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp311-* cp312-*' || 'cp312-*' }}
           CIBW_SKIP: "pp* *-musllinux_*"
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp311*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
@@ -96,10 +107,10 @@ jobs:
       matrix:
         cibw_archs: ["x86_64"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v5
         name: Install Python
         with:
           python-version: '3.10'
@@ -110,27 +121,36 @@ jobs:
             pip install cython &&
             brew install libomp ninja
           CIBW_ARCHS_MACOS: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp38-* cp39-* cp310-* cp311-* cp312-*' || 'cp311-* cp312-*' }}
+          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp38-* cp39-* cp310-* cp311-* cp312-*' || 'cp312-*' }}
           CIBW_ENVIRONMENT: CXX='c++'
           CIBW_SKIP: "pp* *-musllinux_*"
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
+          name: 'macos-${{ matrix.cibw_archs }}-cp38-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp38*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
+          name: 'macos-${{ matrix.cibw_archs }}-cp39-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
+          name: 'macos-${{ matrix.cibw_archs }}-cp310-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp310*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
+          name: 'macos-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp311*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
+          name: 'macos-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
@@ -183,12 +203,12 @@ jobs:
       matrix:
         cibw_archs: [amd64]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
       - name: Setup devCmd (vstools)
         uses: ilammy/msvc-dev-cmd@v1
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v5
         name: Install Python
         with:
           python-version: '3.10'
@@ -197,26 +217,35 @@ jobs:
         env:
           CIBW_BEFORE_BUILD: pip install cython ipython
           CIBW_ARCHS: "AMD64"
-          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp38-* cp39-* cp310-* cp311-* cp312-*' || 'cp311-* cp312-*' }}
+          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp38-* cp39-* cp310-* cp311-* cp312-*' || 'cp312-*' }}
           CIBW_SKIP: pp*
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
+          name: 'win-${{ matrix.cibw_archs }}-cp38-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp38*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
+          name: 'win-${{ matrix.cibw_archs }}-cp39-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
+          name: 'win-${{ matrix.cibw_archs }}-cp310-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp310*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
+          name: 'win-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp311*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
+          name: 'win-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
   
@@ -225,10 +254,10 @@ jobs:
     name: 'Source distribution'
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v5
         name: Install Python
         with:
           python-version: '3.10'
@@ -237,8 +266,9 @@ jobs:
           pip install cython numpy
           python3 setup.py build_ext
           python3 setup.py sdist
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
+          name: 'sdist-${{ github.run_id }}.tar.gz'
           path: ./dist/*networkit*.tar.gz
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
@@ -265,10 +295,10 @@ jobs:
     runs-on: ubuntu-20.04
     needs: [cpython-macos-x86_64, cpython-linux-aarch64, cpython-linux-x86_64, cpython-windows, source-distribution, check-release-tag]
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           path: ./dist
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v5
         name: Install Python
         with:
           python-version: '3.10'
