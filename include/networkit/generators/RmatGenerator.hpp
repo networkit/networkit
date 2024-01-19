@@ -24,10 +24,19 @@ namespace NetworKit {
 class RmatGenerator final : public StaticGraphGenerator {
     count scale; ///< n = 2^scale
     count edgeFactor;
-    double a, b, c; ///< probabilities
     double defaultEdgeWeight;
     bool weighted;
     count reduceNodes;
+    bool discardSelfLoops;
+
+    // Data for the alias table:
+    std::vector<std::pair<uint32_t, uint32_t>> bits;
+    std::vector<uint8_t> numberOfBits;
+    std::vector<uint32_t> coinFlipProbability;
+    std::vector<uint32_t> coinFlipReplacement;
+    uint32_t mask;
+    std::pair<uint32_t, uint32_t> curBits{0, 0};
+    uint32_t remainingBits = 0;
 
 public:
     /**
@@ -39,14 +48,20 @@ public:
      * @param[in] d Probability for quadrant lower right
      * @param[in] weighted  result graph weighted?
      * @param[in] reduceNodes  number of random nodes to delete to achieve a given node count
+     * @param[in] discardSelfLoops ignore self loops
      */
     RmatGenerator(count scale, count edgeFactor, double a, double b, double c, double d,
-                  bool weighted = false, count reduceNodes = 0);
+                  bool weighted = false, count reduceNodes = 0, bool discardSelfLoops = true);
 
     /**
      * @return Graph to be generated according to parameters specified in constructor.
      */
     Graph generate() override;
+
+private:
+    void sample(std::mt19937_64 &urng);
+
+    std::pair<node, node> sampleEdge(std::mt19937_64 &urng, uint8_t bits);
 };
 
 } /* namespace NetworKit */
