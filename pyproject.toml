@@ -1,6 +1,6 @@
 [project]
 name = "networkit"
-version = "10.1"
+version = "11.0"
 description = "NetworKit is a toolbox for high-performance network analysis"
 readme = "README.md"
 requires-python = ">=3.7"
