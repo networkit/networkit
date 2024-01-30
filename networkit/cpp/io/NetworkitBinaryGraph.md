@@ -25,7 +25,7 @@ struct Header {
 };
 ```
 - magic: A constant value used to identify the file format version.
-    - The current version is '*nkbg002*' which supports weighted, undirected and directed graphs.
+    - The current version is '*nkbg003*' which supports weighted, undirected and directed graphs.
 - checksum: Currently not used
 - features: Contains the graph information bitwise
     - Bit 0 : directed or undirected
@@ -41,8 +41,6 @@ struct Header {
 - offsetBaseData: Offset of base data in the file 
 - offsetAdjLists: Offset of the adjacency lists in the file
 - offsetTranspose: Offset of the transposed adjaceny lists in the file
-- offsetWeightLists: Offset of the adjacency weights in the file
-- offsetWeightTranspose: Offset of the transposed adjacency weights in the file
 - offsetWeightLists: Offset of the adjacency weights in the file
 - offsetWeightTranspose: Offset of the transposed adjacency weights in the file
 - offsetAdjIdLists: Offset of the adjacency edge ids in the file

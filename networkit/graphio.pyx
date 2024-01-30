@@ -163,8 +163,11 @@ cdef class NetworkitBinaryReader(GraphReader):
 	"""
 	NetworkitBinaryReader()
 
-	Reads a graph written in the custom Networkit format. Further information can be found here: 
-	https://github.com/networkit/networkit/blob/master/networkit/cpp/io/NetworkitBinaryGraph.md
+	Reads a graph written in the custom Networkit binary format. 
+	Note that there are multiple versions of the Networkit binary format.
+	This Reader can read files that are written with format version 2 and 3.
+	Format version 3 was released with Networkit 9.1 (December 2021).
+	Further information can be found here: https://github.com/networkit/networkit/blob/master/networkit/cpp/io/NetworkitBinaryGraph.md
 	"""
 
 	def __cinit__(self):
@@ -194,8 +197,11 @@ cdef class NetworkitBinaryWriter(GraphWriter):
 	"""
 	NetworkitBinaryWriter()
 
-	Writes a graph written in the custom Networkit format. Further information can be found here:
-	https://github.com/networkit/networkit/blob/master/networkit/cpp/io/NetworkitBinaryGraph.md
+	Writes a graph written in the custom Networkit format. 
+	Note that there are multiple versions of the Networkit binary format.
+	Since Networkit 9.1 (December 2021), the writer always writes files using format version 3.
+	Reading a binary file with version < 3 and re-writing it, implicitly upgrades the format to the current version.
+	Further information can be found here: https://github.com/networkit/networkit/blob/master/networkit/cpp/io/NetworkitBinaryGraph.md
 	"""
 	def __cinit__(self):
 		self._this = new _NetworkitBinaryWriter()
@@ -1124,8 +1130,11 @@ def guessFileFormat(filepath: str) -> Format:
 		x = f.read(6)
 		if x == bytes([0xe2, 0x9b, 0xbe, 0x20, 0x67, 0x74]): 
 			return Format.GraphToolBinary	# GraphToolBinary - binary. first 6 bytes: e2 9b be 20 67 74 then version number: 01 then endian: 00 (=little) or 01 (=big)
-		if x + f.read(1) == bytes([0x6e, 0x6b, 0x62, 0x67, 0x30, 0x30, 0x32]): 
-			return Format.NetworkitBinary	# NetworkitBinary - binary. starts with 6E 6B 62 67 30 30 32
+		nkmagicbits = x + f.read(1)
+		if nkmagicbits == bytes([0x6e, 0x6b, 0x62, 0x67, 0x30, 0x30, 0x32]): 
+			return Format.NetworkitBinary	# NetworkitBinary version 2 - binary. starts with 6E 6B 62 67 30 30 32
+		if nkmagicbits == bytes([0x6e, 0x6b, 0x62, 0x67, 0x30, 0x30, 0x33]): 
+			return Format.NetworkitBinary	# NetworkitBinary version 3 - binary. starts with 6E 6B 62 67 30 30 33
 
 	# otherwise, open as text file and check the first lines for structured text formats
 	with open(filepath, 'r') as f:

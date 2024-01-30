@@ -27,7 +27,8 @@ This folder contains many smaller graphs. They are used in the testing suite and
 | example.graph                    | Format.METIS            | METISGraphReader        | 16                 | 4               | 2               | FALSE    | FALSE    | n/a     |
 | example2.dgs                     | n/a                     | DGSReader               | 161                | n/a             | n/a             | n/a      | n/a      | n/a     |
 | foodweb-baydry.konect            | Format.KONECT           | KONECTGraphReader       | 42847              | 128             | 2137            | TRUE     | TRUE     | n/a     |
-| foodweb-baydry.networkit         | Format.NETWORKITBINARY  | NetworkitBinaryReader   | 42491              | 128             | 2137            | TRUE     | TRUE     | n/a     |
+| foodweb-baydry.nkbg002           | Format.NETWORKITBINARY  | NetworkitBinaryReader   | 42491              | 128             | 2137            | TRUE     | TRUE     | n/a     |
+| foodweb-baydry.nkbg003           | Format.NETWORKITBINARY  | NetworkitBinaryReader   | 40698              | 128             | 2137            | TRUE     | TRUE     | n/a     |
 | GD01_b.mtx                       | n/a                     | MatrixMarketReader      | 244                | 18              | 37              | TRUE     | FALSE    | n/a     |
 | grid-5x5-dist-arch.graph         | Format.METIS            | METISGraphReader        | 218                | 25              | 40              | FALSE    | FALSE    | n/a     |
 | hamming6-4.edgelist              | Format.EdgeListSpaceOne | EdgeListReader          | 4088               | 64              | 704             | FALSE    | FALSE    | n/a     |
