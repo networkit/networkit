@@ -77,20 +77,29 @@ cdef extern from "<networkit/generators/BarabasiAlbertGenerator.hpp>":
 
 	cdef cppclass _BarabasiAlbertGenerator "NetworKit::BarabasiAlbertGenerator"(_StaticGraphGenerator):
 		_BarabasiAlbertGenerator() except +
-		_BarabasiAlbertGenerator(count k, count nMax, count n0, bool_t batagelj) except +
-		_BarabasiAlbertGenerator(count k, count nMax, const _Graph & initGraph, bool_t batagelj) except +
+		_BarabasiAlbertGenerator(count k, count nMax, count n0, bool_t parallel) except +
+		_BarabasiAlbertGenerator(count k, count nMax, const _Graph & initGraph, bool_t parallel) except +
 
 cdef class BarabasiAlbertGenerator(StaticGraphGenerator):
 	"""
-	BarabasiAlbertGenerator(k, nMax, n0=0, batagelj=True)
+	BarabasiAlbertGenerator(k, nMax, n0=0, sequential=True)
 
-	This generator implements the preferential attachment model as introduced by Barabasi and Albert[1].
-	The original algorithm is very slow and thus, the much faster method from Batagelj and Brandes[2] is
-	implemented and the current default.
-	The original method can be chosen by setting \p batagelj to false.
-	[1] Barabasi, Albert: Emergence of Scaling in Random Networks http://arxiv.org/pdf/cond-mat/9910332.pdf
-	[2] ALG 5 of Batagelj, Brandes: Efficient Generation of Large Random Networks https://kops.uni-konstanz.de/bitstream/handle/123456789/5799/random.pdf?sequence=1
+	This generator uses the preferential attachment model as introduced by Barabasi and
+	Albert[1], implemented in the much faster method from Batagelj and Brandes[2] per default
+	where the running time is O(n+m). Furthermore there is a parallel version from Sanders and
+	Schulz[3] implemented. This implementation can be selected by setting sequential=false. 
+	Empirically, the parallel version shows better runtimes (when executed multi-threaded).
 
+	[1] Barabasi, Albert: [Emergence of Scaling in Random Networks]
+		(http://arxiv.org/pdf/cond-mat/9910332.pdf)
+	[2] ALG 5 of Batagelj, Brandes: [Efficient Generation of Large Random Networks]
+		(https://kops.uni-konstanz.de/bitstream/handle/123456789/5799/random.pdf?sequence=1)
+	[3] Peter Sanders, Christian Schulz: [Scalable generation of scale-free graphs]
+		(https://www.sciencedirect.com/science/article/pii/S0020019016300102)
+
+	The generator will emit a simple graph, where all
+    new nodes are initially connected to k random neighbors.
+    	
 	Parameters
 	----------
 	k : int
@@ -99,15 +108,15 @@ cdef class BarabasiAlbertGenerator(StaticGraphGenerator):
 		Maximum number of nodes produced.
 	n0 : int or networkit.Graph
 		Number of starting nodes or the initial starting graph. Default: 0
-	batagelj : bool
-		Specifies whether to use batagelj's method or the original one. Default: True
+	sequential : bool
+		Specifies whether to compute sequentially using batagelj's method or in parallel (if the number of threads allow for it). Default=True
 	"""
 
-	def __cinit__(self, count k, count nMax, n0=0, bool_t batagelj=True):
+	def __cinit__(self, count k, count nMax, n0=0, bool_t sequential=True):
 		if isinstance(n0, Graph):
-			self._this = new _BarabasiAlbertGenerator(k, nMax, (<Graph>n0)._this, batagelj)
+			self._this = new _BarabasiAlbertGenerator(k, nMax, (<Graph>n0)._this, sequential)
 		else:
-			self._this = new _BarabasiAlbertGenerator(k, nMax, <count>n0, batagelj)
+			self._this = new _BarabasiAlbertGenerator(k, nMax, <count>n0, sequential)
 
 	@classmethod
 	def fit(cls, Graph G, scale=1):
