@@ -541,6 +541,30 @@ TEST_F(GeneratorsGTest, generatetBarabasiAlbertGeneratorGraph) {
     io.writeAdjacencyList(G, "output/BarabasiGraph.txt");
 }
 
+TEST_F(GeneratorsGTest, testParallelBarabasiAlbertGeneratorDistribution) {
+    count k = 3;
+    count nMax = 1000;
+    count n0 = 3;
+
+    BarabasiAlbertGenerator BarabasiAlbert(k, nMax, n0, false);
+
+    Graph G = BarabasiAlbert.generate();
+    G.forNodes([&G, k, n0](node u) {
+        if (u < n0)
+            return;
+        int totalEdges = 0;
+        G.forEdgesOf(u, [&totalEdges, u](node v) {
+            if (v < u)
+                totalEdges++;
+        });
+        EXPECT_EQ(totalEdges, k);
+    });
+    PowerlawDegreeSequence sequence(G);
+    auto gamma = sequence.getGamma();
+    EXPECT_LT(gamma, -2);
+    EXPECT_GT(gamma, -3);
+}
+
 TEST_F(GeneratorsGTest, testDynamicPathGenerator) {
     count nSteps = 42;
     DynamicPathGenerator gen;
