@@ -1,15 +1,15 @@
 /*
-* BipartitGTest.cpp
-*
-* Created on: 18.09.2023
-*     Author: Michael Kaibel
+ * BipartitGTest.cpp
+ *
+ * Created on: 18.09.2023
+ *     Author: Michael Kaibel
  */
 
 #include <gtest/gtest.h>
 
 #include <random>
 
-#include "networkit/bipartit/Bipartit.hpp"
+#include "networkit/bipartite/Bipartite.hpp"
 #include "networkit/graph/Graph.hpp"
 #include "networkit/generators/ErdosRenyiGenerator.hpp"
 
@@ -17,7 +17,7 @@ namespace NetworKit {
 
 class BipartitGTest : public testing::Test {};
 
-bool isBipartitPartition(const Graph &G, const Partition &partition) {
+bool isBipartitePartition(const Graph &G, const Partition &partition) {
     for (node v : G.nodeRange()) {
         if (partition[v] == none)
             return false;
@@ -63,14 +63,14 @@ TEST_F(BipartitGTest, testBipartitTinyBipartit) {
     G.addEdge(2, 7);
     G.addEdge(3, 7);
 
-    Bipartit bipartit(G);
-    bipartit.run();
+    Bipartite bipartite(G);
+    bipartite.run();
 
-    EXPECT_TRUE(bipartit.isBipartit());
+    EXPECT_TRUE(bipartite.isBipartite());
 
-    EXPECT_TRUE(isBipartitPartition(G, bipartit.getPartition()));
+    EXPECT_TRUE(isBipartitePartition(G, bipartite.getPartition()));
 
-    EXPECT_ANY_THROW(bipartit.getOddCycle());
+    EXPECT_ANY_THROW(bipartite.getOddCycle());
 }
 
 TEST_F(BipartitGTest, testBipartitTinyOddCircle) {
@@ -84,32 +84,31 @@ TEST_F(BipartitGTest, testBipartitTinyOddCircle) {
     G.addEdge(6, 7);
     G.addEdge(7, 0);
 
-    Bipartit bipartit(G);
-    bipartit.run();
+    Bipartite bipartite(G);
+    bipartite.run();
 
-    EXPECT_FALSE(bipartit.isBipartit());
+    EXPECT_FALSE(bipartite.isBipartite());
 
-    EXPECT_ANY_THROW(bipartit.getPartition());
+    EXPECT_ANY_THROW(bipartite.getPartition());
 
-    EXPECT_TRUE(isOddCircle(G, bipartit.getOddCycle()));
+    EXPECT_TRUE(isOddCircle(G, bipartite.getOddCycle()));
 }
 
 TEST_F(BipartitGTest, testBipartitLargeRandom) {
     Aux::Random::setSeed(42, false);
     Graph G = ErdosRenyiGenerator(200, 0.01, false).generate();
 
-    Bipartit bipartit(G);
-    bipartit.run();
+    Bipartite bipartite(G);
+    bipartite.run();
 
-    if (bipartit.isBipartit()) {
-        EXPECT_TRUE(isBipartitPartition(G, bipartit.getPartition()));
+    if (bipartite.isBipartite()) {
+        EXPECT_TRUE(isBipartitePartition(G, bipartite.getPartition()));
 
-        EXPECT_ANY_THROW(bipartit.getOddCycle());
-    }
-    else {
-        EXPECT_ANY_THROW(bipartit.getPartition());
+        EXPECT_ANY_THROW(bipartite.getOddCycle());
+    } else {
+        EXPECT_ANY_THROW(bipartite.getPartition());
 
-        EXPECT_TRUE(isOddCircle(G, bipartit.getOddCycle()));
+        EXPECT_TRUE(isOddCircle(G, bipartite.getOddCycle()));
     }
 }
 
@@ -136,14 +135,14 @@ TEST_F(BipartitGTest, testBipartitLargeRandomBipartit) {
             G.addEdge(v, w);
     }
 
-    Bipartit bipartit(G);
-    bipartit.run();
+    Bipartite bipartite(G);
+    bipartite.run();
 
-    EXPECT_TRUE(bipartit.isBipartit());
+    EXPECT_TRUE(bipartite.isBipartite());
 
-    EXPECT_TRUE(isBipartitPartition(G, bipartit.getPartition()));
+    EXPECT_TRUE(isBipartitePartition(G, bipartite.getPartition()));
 
-    EXPECT_ANY_THROW(bipartit.getOddCycle());
+    EXPECT_ANY_THROW(bipartite.getOddCycle());
 }
 
-} // NetworKit
+} // namespace NetworKit

@@ -1,44 +1,44 @@
 /*
- * Bipartit.hpp
+ * Bipartite.hpp
  *
  * Created on: 18.09.2023
  *     Author: Michael Kaibel
  */
 
-#ifndef NETWORKIT_BIPARTIT_BIPARTIT_HPP_
-#define NETWORKIT_BIPARTIT_BIPARTIT_HPP_
+#ifndef NETWORKIT_BIPARTITE_BIPARTITE_HPP_
+#define NETWORKIT_BIPARTITE_BIPARTITE_HPP_
 
-#include <networkit/graph/Graph.hpp>
 #include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 
-class Bipartit final : public Algorithm {
+class Bipartite final : public Algorithm {
 public:
     /**
-     * Creates Bipartit class for graph @G
+     * Creates Bipartite class for graph @G
      *
      * @param G the graph
      */
-    Bipartit(const Graph &G);
+    Bipartite(const Graph &G);
 
     /**
-     * Calculates if graph @G is bipartit. If yes generates bipartition, if no finds odd cycle
+     * Calculates if graph @G is bipartite. If yes generates bipartition, if no finds odd cycle
      */
     void run() override;
 
     /**
-     * Check if the graph is bipartit
+     * Check if the graph is bipartite
      *
-     * @return true iff the graph is bipartit
+     * @return true iff the graph is bipartite
      */
-    bool isBipartit();
+    bool isBipartite();
 
     /**
-     * Get a bipartition iff the graph is bipartit
+     * Get a bipartition iff the graph is bipartite
      *
-     * @return a bipartition iff the graph is bipartit, throws error otherwise
+     * @return a bipartition iff the graph is bipartite, throws error otherwise
      */
     const Partition &getPartition();
 
@@ -56,11 +56,11 @@ protected:
 
     std::vector<node> oddCircle;
 
-    bool bipartit = false;
+    bool bipartite = false;
 
     void findOddCircle(std::vector<node> &parent, node v, node w);
 };
 
-} // NetworKit
+} // namespace NetworKit
 
-#endif // NETWORKIT_BIPARTIT_BIPARTIT_HPP_
+#endif // NETWORKIT_BIPARTITE_BIPARTITE_HPP_

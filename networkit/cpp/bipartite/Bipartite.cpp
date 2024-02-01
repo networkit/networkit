@@ -1,44 +1,44 @@
 /*
-* Bipartit.cpp
-*
-* Created on: 18.09.2023
-*     Author: Michael Kaibel
+ * Bipartite.cpp
+ *
+ * Created on: 18.09.2023
+ *     Author: Michael Kaibel
 */
 
-#include <networkit/bipartit/Bipartit.hpp>
+#include <networkit/bipartite/Bipartite.hpp>
 #include <deque>
 
 namespace NetworKit {
 
-Bipartit::Bipartit(const Graph &G) : G(&G) {
+Bipartite::Bipartite(const Graph &G) : G(&G) {
     partition = Partition(G.upperNodeIdBound(), none);
 }
 
-bool Bipartit::isBipartit() {
+bool Bipartite::isBipartite() {
     assureFinished();
 
-    return bipartit;
+    return bipartite;
 }
 
-const Partition &Bipartit::getPartition() {
+const Partition &Bipartite::getPartition() {
     assureFinished();
 
-    if (not bipartit)
+    if (!bipartite)
         throw std::runtime_error("Can't provide bipartition on non-bipartite graph");
 
     return partition;
 }
 
-const std::vector<node> &Bipartit::getOddCycle() {
+const std::vector<node> &Bipartite::getOddCycle() {
     assureFinished();
 
-    if (bipartit)
+    if (bipartite)
         throw std::runtime_error("Can't provide odd circle on bipartit graph");
 
     return oddCircle;
 }
 
-void Bipartit::run() {
+void Bipartite::run() {
     hasRun = true;
 
     std::vector<node> parent(G->upperNodeIdBound(), none);
@@ -51,7 +51,7 @@ void Bipartit::run() {
 
         std::deque queue(1, v);
 
-        while (not queue.empty()) {
+        while (!queue.empty()) {
             node w = queue.front();
             queue.pop_front();
 
@@ -59,7 +59,7 @@ void Bipartit::run() {
 
             for (node x : G->neighborRange(w)) {
                 if (partition[w] == partition[x]) {
-                    bipartit = false;
+                    bipartite = false;
                     findOddCircle(parent, w, x);
                     return;
                 }
@@ -73,10 +73,10 @@ void Bipartit::run() {
         }
     }
 
-    bipartit = true;
+    bipartite = true;
 }
 
-void Bipartit::findOddCircle(std::vector<node> &parent, NetworKit::node v, NetworKit::node w) {
+void Bipartite::findOddCircle(std::vector<node> &parent, NetworKit::node v, NetworKit::node w) {
     std::vector<node> pathToW;
     while (v != w) {
         oddCircle.emplace_back(v);
@@ -92,4 +92,4 @@ void Bipartit::findOddCircle(std::vector<node> &parent, NetworKit::node v, Netwo
     }
 }
 
-} // NetworKit
+} // namespace NetworKit
