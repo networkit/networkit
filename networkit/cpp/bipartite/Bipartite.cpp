@@ -5,8 +5,8 @@
  *     Author: Michael Kaibel
  */
 
-#include <networkit/bipartite/Bipartite.hpp>
 #include <deque>
+#include <networkit/bipartite/Bipartite.hpp>
 
 namespace NetworKit {
 
