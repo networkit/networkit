@@ -1,5 +1,5 @@
 /*
- * BipartitGTest.cpp
+ * BipartiteGTest.cpp
  *
  * Created on: 18.09.2023
  *     Author: Michael Kaibel
@@ -10,8 +10,8 @@
 #include <random>
 
 #include "networkit/bipartite/Bipartite.hpp"
-#include "networkit/graph/Graph.hpp"
 #include "networkit/generators/ErdosRenyiGenerator.hpp"
+#include "networkit/graph/Graph.hpp"
 
 namespace NetworKit {
 
@@ -40,7 +40,7 @@ bool isOddCircle(const Graph &G, const std::vector<node> &path) {
     if (path.size() % 2 == 0)
         return false;
     for (index i = 0; i < path.size(); i++)
-        for (index j = i+1; j < path.size(); j++)
+        for (index j = i + 1; j < path.size(); j++)
             if (path[i] == path[j])
                 throw std::runtime_error("Not a path");
 
@@ -112,7 +112,8 @@ TEST_F(BipartitGTest, testBipartitLargeRandom) {
     }
 }
 
-//Since a random ErdosRenyi-Graph almost certainly has an odd circle we also do a test with an explicitly bipartit graph
+// Since a random ErdosRenyi-Graph almost certainly has an odd circle we also do a test with an
+// explicitly bipartit graph
 TEST_F(BipartitGTest, testBipartitLargeRandomBipartit) {
     node n = 200;
 
@@ -128,8 +129,8 @@ TEST_F(BipartitGTest, testBipartitLargeRandomBipartit) {
 
     Graph G(n);
 
-    for (index i = 0; i < 5*n; i++) {
-        node v = nodes[dis(rng) % (n/2)], w = nodes[(n/2) + (dis(rng) % (n/2))];
+    for (index i = 0; i < 5 * n; i++) {
+        node v = nodes[dis(rng) % (n / 2)], w = nodes[(n / 2) + (dis(rng) % (n / 2))];
 
         if (not G.hasEdge(v, w))
             G.addEdge(v, w);

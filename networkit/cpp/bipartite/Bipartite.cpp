@@ -3,7 +3,7 @@
  *
  * Created on: 18.09.2023
  *     Author: Michael Kaibel
-*/
+ */
 
 #include <networkit/bipartite/Bipartite.hpp>
 #include <deque>
