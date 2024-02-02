@@ -23,7 +23,7 @@ jobs:
         with:
           python-version: '3.10'
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.2
+        uses: pypa/cibuildwheel@v2.16.5
         env:
           CIBW_BEFORE_BUILD: pip install cython
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
@@ -33,30 +33,30 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
-          name: 'linux-${{ matrix.cibw_archs }}-cp38-${{ github.run_id }}.wheel'
+          name: 'linux-${{ matrix.cibw_archs }}-cp38-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp38*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
-          name: 'linux-${{ matrix.cibw_archs }}-cp39-${{ github.run_id }}.wheel'
+          name: 'linux-${{ matrix.cibw_archs }}-cp39-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
-          name: 'linux-${{ matrix.cibw_archs }}-cp310-${{ github.run_id }}.wheel'
+          name: 'linux-${{ matrix.cibw_archs }}-cp310-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp310*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
-          name: 'linux-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}.wheel'
+          name: 'linux-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp311*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
         with:
-          name: 'linux-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}.wheel'
+          name: 'linux-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
@@ -81,7 +81,7 @@ jobs:
         with:
           python-version: '3.9'
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.2
+        uses: pypa/cibuildwheel@v2.16.5
         env:
           CIBW_BEFORE_BUILD: pip install cython
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
@@ -91,12 +91,12 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
-          name: 'linux-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}.wheel'
+          name: 'linux-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp311*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
         with:
-          name: 'linux-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}.wheel'
+          name: 'linux-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
@@ -115,7 +115,7 @@ jobs:
         with:
           python-version: '3.10'
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.2
+        uses: pypa/cibuildwheel@v2.16.5
         env:
           CIBW_BEFORE_BUILD: 
             pip install cython &&
@@ -127,30 +127,30 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
-          name: 'macos-${{ matrix.cibw_archs }}-cp38-${{ github.run_id }}.wheel'
+          name: 'macos-${{ matrix.cibw_archs }}-cp38-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp38*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
-          name: 'macos-${{ matrix.cibw_archs }}-cp39-${{ github.run_id }}.wheel'
+          name: 'macos-${{ matrix.cibw_archs }}-cp39-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
-          name: 'macos-${{ matrix.cibw_archs }}-cp310-${{ github.run_id }}.wheel'
+          name: 'macos-${{ matrix.cibw_archs }}-cp310-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp310*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
-          name: 'macos-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}.wheel'
+          name: 'macos-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp311*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
         with:
-          name: 'macos-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}.wheel'
+          name: 'macos-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
@@ -213,7 +213,7 @@ jobs:
         with:
           python-version: '3.10'
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.2
+        uses: pypa/cibuildwheel@v2.16.5
         env:
           CIBW_BEFORE_BUILD: pip install cython ipython
           CIBW_ARCHS: "AMD64"
@@ -222,30 +222,30 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
-          name: 'win-${{ matrix.cibw_archs }}-cp38-${{ github.run_id }}.wheel'
+          name: 'win-${{ matrix.cibw_archs }}-cp38-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp38*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
-          name: 'win-${{ matrix.cibw_archs }}-cp39-${{ github.run_id }}.wheel'
+          name: 'win-${{ matrix.cibw_archs }}-cp39-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
-          name: 'win-${{ matrix.cibw_archs }}-cp310-${{ github.run_id }}.wheel'
+          name: 'win-${{ matrix.cibw_archs }}-cp310-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp310*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
-          name: 'win-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}.wheel'
+          name: 'win-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp311*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
         with:
-          name: 'win-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}.wheel'
+          name: 'win-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
   
