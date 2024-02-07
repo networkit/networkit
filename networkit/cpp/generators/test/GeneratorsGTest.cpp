@@ -14,6 +14,7 @@
 #include <networkit/generators/BarabasiAlbertGenerator.hpp>
 #include <networkit/generators/ChungLuGenerator.hpp>
 #include <networkit/generators/ClusteredRandomGraphGenerator.hpp>
+#include <networkit/generators/ConfigurationModel.hpp>
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/DynamicBarabasiAlbertGenerator.hpp>
 #include <networkit/generators/DynamicDorogovtsevMendesGenerator.hpp>
@@ -224,6 +225,62 @@ TEST_F(GeneratorsGTest, testClusteredRandomGraphGeneratorSparseCommunities) {
                 });
                 EXPECT_EQ(leftToVisit, 0);
             }
+        }
+    }
+}
+
+TEST_F(GeneratorsGTest, testConfigurationModelGeneratorWithEdgeSwitchingOnRealSequence) {
+    METISGraphReader reader;
+    auto graphs = {"input/jazz.graph", "input/lesmis.graph"};
+
+    for (auto path : graphs) {
+        Graph G = reader.read(path);
+        count n = G.upperNodeIdBound();
+        std::vector<count> sequence(n);
+        G.forNodes([&](node u) { sequence[u] = G.degree(u); });
+
+        bool skipTest = false;
+        EdgeSwitchingMarkovChainGenerator gen(sequence, skipTest);
+        Graph G2 = gen.generate();
+
+        count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
+        EXPECT_EQ(volume, 2 * G2.numberOfEdges());
+
+        std::vector<count> testSequence(n);
+        G2.forNodes([&](node u) { testSequence[u] = G2.degree(u); });
+        Aux::Parallel::sort(testSequence.begin(), testSequence.end(), std::greater<count>());
+        Aux::Parallel::sort(sequence.begin(), sequence.end(), std::greater<count>());
+
+        for (index i = 0; i < n; ++i) {
+            EXPECT_EQ(sequence[i], testSequence[i]);
+        }
+    }
+}
+
+TEST_F(GeneratorsGTest, testConfigurationModelGeneratorWithRejectionSamplingOnRealSequence) {
+    METISGraphReader reader;
+    Aux::Random::setSeed(42, false);
+    auto graphs = {"input/jazz.graph", "input/lesmis.graph"};
+
+    for (auto path : graphs) {
+        Graph G = reader.read(path);
+        count n = G.numberOfNodes();
+        std::vector<count> sequence(n);
+        G.forNodes([&](node u) { sequence[u] = G.degree(u); });
+
+        ConfigurationModel gen(sequence);
+        Graph G2 = gen.generate();
+
+        count volume = std::accumulate(sequence.begin(), sequence.end(), 0);
+        EXPECT_EQ(volume, 2 * G2.numberOfEdges());
+
+        std::vector<count> testSequence(n);
+        G2.forNodes([&](node u) { testSequence[u] = G2.degree(u); });
+        Aux::Parallel::sort(testSequence.begin(), testSequence.end(), std::greater<count>());
+        Aux::Parallel::sort(sequence.begin(), sequence.end(), std::greater<count>());
+
+        for (index i = 0; i < n; ++i) {
+            EXPECT_EQ(sequence[i], testSequence[i]);
         }
     }
 }
