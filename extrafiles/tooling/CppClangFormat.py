@@ -31,15 +31,18 @@ def isSupported(cmd):
 	# Read major revision number from "clang-format version XX.XX.XX ... "
 	version = str(subprocess.check_output([cmd, "--version"],
 		universal_newlines=True, env=getEnv())).strip().split()[-1].split('.')[0]
-	return int(version) >= nkt.MIN_CLANG_FORMAT_VERSION
-
+	try:
+		found_version = int(version)
+		return found_version == nkt.CLANG_FORMAT_VERSION
+	except ValueError as val_error:
+		return False
 
 def findClangFormat():
 	"""Tries to find clang-format-XXX variants within the path"""
 	if "NETWORKIT_OVERRIDE_CLANG_FORMAT" in os.environ:
 		return os.environ["NETWORKIT_OVERRIDE_CLANG_FORMAT"]
 	cmd = "clang-format"
-	allowed = [cmd + "-" + str(x) for x in range(nkt.MAX_CLANG_FORMAT_VERSION, nkt.MIN_CLANG_FORMAT_VERSION - 1, -1)] + [cmd]
+	allowed = [cmd] + [cmd + "-" + str(nkt.CLANG_FORMAT_VERSION)]
 	for candidate in allowed:
 		if isSupported(candidate):
 			if nkt.isVerbose():
@@ -51,11 +54,10 @@ def findClangFormat():
 
 	raise FileNotFoundError("clang-format binary not found. We searched for:\n " + "\n ".join(allowed))
 
-def runClangFormat(inputFilename, outputFilename, clangFormatBinary = 'clang-format-16'):
+def runClangFormat(inputFilename, outputFilename, clangFormatBinary = f"clang-format-{nkt.CLANG_FORMAT_VERSION}"):
 	"""Execute clang-format onto inputFilename and stores the result in outputFilename"""
 	with open(outputFilename, "w") as outfile:
 		subprocess.call([clangFormatBinary, '-style=file', inputFilename], stdout=outfile)
-
 
 nkt.setup()
 
