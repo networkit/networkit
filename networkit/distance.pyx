@@ -1373,6 +1373,37 @@ cdef class BFS(SSSP):
 		self._G = G
 		self._this = new _BFS(G._this, source, storePaths, storeNodesSortedByDistance, target)
 
+cdef extern from "<networkit/distance/BFSFiltered.hpp>":
+
+	cdef cppclass _BFSFiltered "NetworKit::BFSFiltered"(_SSSP):
+		_BFSFiltered(_Graph G, node source, vector[node].iterator filteredFirst, vector[node].iterator filteredLast, bool_t storePaths, bool_t storeNodesSortedByDistance, node target) except +
+
+cdef class BFSFiltered(SSSP):
+	""" 
+	BFSFiltered(G, source, filteredNodes, storePaths=True, storeNodesSortedByDistance=False, target=None)
+	
+	Simple breadth-first search on a Graph from a given source.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The graph.
+	source : int
+		The source node of the breadth-first search.
+	filteredNodes : list(int)
+		List of nodes that should not be considered in BFS
+	storePaths : bool, optional
+		Controls whether to store paths and number of paths. Default: True
+	storeNodesSortedByDistance : bool, optional
+		Controls whether to store nodes sorted by distance. Default: False
+	target: int or None, optional
+		Terminate search when the target has been reached. In default-mode, this target is set to None.
+	"""
+
+	def __cinit__(self, Graph G, source, vector[node] filteredNodes, storePaths=True, storeNodesSortedByDistance=False, target=none):
+		self._G = G
+		self._this = new _BFSFiltered(G._this, source, filteredNodes.begin(), filteredNodes.end() , storePaths, storeNodesSortedByDistance, target)
+
 cdef extern from "<networkit/distance/Dijkstra.hpp>":
 
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra"(_SSSP):
