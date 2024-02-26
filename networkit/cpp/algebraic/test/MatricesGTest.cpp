@@ -1384,6 +1384,48 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValue) {
     ASSERT_EQ(A(0,1), -1);
     ASSERT_EQ(A(1,0), -1);
     ASSERT_EQ(A(1,1), 1);
+
+    /* 0 0.5 0 -1.2
+     * 0  0 -2  0
+     * 0  0  0 0.6
+     * 0  0  0 0.5
+     * */
+
+    CSRMatrix B(4);
+
+    B.setValue(0, 1, 0.5);
+    B.setValue(0, 3, -1.2);
+    B.setValue(1, 2, -2);
+    B.setValue(2, 3, 0.6);
+    B.setValue(3, 3, 0.5);
+
+    ASSERT_TRUE(B.sorted());
+
+    ASSERT_EQ(B(0, 1), 0.5);
+    ASSERT_EQ(B(0, 3), -1.2);
+    ASSERT_EQ(B(1, 2), -2);
+    ASSERT_EQ(B(2, 3), 0.6);
+    ASSERT_EQ(B(3, 3), 0.5);
+
+    CSRMatrix C(4);
+
+    C.setValue(1, 0, 1);
+    C.setValue(1, 1, 2);
+    C.setValue(1, 2, 3);
+    C.setValue(1, 3, 4);
+    C.setValue(3, 3, 5);
+    C.setValue(2, 3, 6);
+    C.setValue(0, 3, 7);
+
+    ASSERT_TRUE(C.sorted());
+
+    ASSERT_EQ(C(1, 0), 1);
+    ASSERT_EQ(C(1, 1), 2);
+    ASSERT_EQ(C(1, 2), 3);
+    ASSERT_EQ(C(1, 3), 4);
+    ASSERT_EQ(C(3, 3), 5);
+    ASSERT_EQ(C(2, 3), 6);
+    ASSERT_EQ(C(0, 3), 7);
 }
 
 } // namespace
