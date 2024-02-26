@@ -1367,5 +1367,24 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSort) {
     csr.sort();
 }
 
+TEST_F(CSRMatrixGTest, testCSRMatrixSetValue) {
+    /* 1 -1
+     * -1 1
+     */
+
+    CSRMatrix A(2);
+    A.setValue(0, 0, 1);
+    A.setValue(0, 1, -1);
+    A.setValue(1, 0, -1);
+    A.setValue(1, 1, 1);
+
+    ASSERT_TRUE(A.sorted());
+
+    ASSERT_EQ(A(0,0), 1);
+    ASSERT_EQ(A(0,1), -1);
+    ASSERT_EQ(A(1,0), -1);
+    ASSERT_EQ(A(1,1), 1);
+}
+
 } // namespace
 } // namespace NetworKit
