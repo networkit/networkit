@@ -44,20 +44,19 @@ class CSRGeneralMatrix {
     /**
      * Binary search the sorted columnIdx vector between [@a left, @a right]
      * for column @a j.
-     * If @a j is not present, the index that is immediately left of the place
-     * where @a j would be is returned.
+     * If @a j is not present, non is returned
      * @param left
      * @param right
      * @param j
-     * @return The position of column @a j in columnIdx or the element immediately
-     * to the left of the place where @a j would be.
+     * @return The position of column @a j in columnIdx or none if @a j is not present.
      */
     index binarySearchColumns(index left, index right, index j) const {
         assert(sorted());
-        const auto it = std::lower_bound(columnIdx.begin() + left, columnIdx.begin() + right, j);
+        const auto it = std::lower_bound(columnIdx.begin() + left, columnIdx.begin() + right, j,
+                                         [](index i, index value) { return i > value; });
         if (it == columnIdx.end() || *it != j)
             return none;
-        return it - columnIdx.begin();
+        return std::distance(columnIdx.begin(), it);
     }
 
 public:
@@ -280,7 +279,7 @@ public:
                 }
             }
         } else {
-            index colIdx = binarySearchColumns(rowIdx[i], rowIdx[i + 1] - 1, j);
+            index colIdx = binarySearchColumns(rowIdx[i], rowIdx[i + 1], j);
             if (colIdx != none && rowIdx[i] <= colIdx && columnIdx[colIdx] == j) {
                 value = nonZeros[colIdx];
             }
@@ -308,7 +307,7 @@ public:
                 }
             }
         } else {
-            colIdx = binarySearchColumns(rowIdx[i], rowIdx[i + 1] - 1, j);
+            colIdx = binarySearchColumns(rowIdx[i], rowIdx[i + 1], j);
         }
 
         if (colIdx != none && colIdx >= rowIdx[i]
