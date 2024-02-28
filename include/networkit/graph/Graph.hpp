@@ -581,6 +581,36 @@ public:
         return edgeAttributes().attach<std::string>(name);
     }
 
+    auto getNodeIntAttribute(const std::string &name) {
+        nodeAttributes().theGraph = this;
+        return nodeAttributes().get<int>(name);
+    }
+
+    auto getEdgeIntAttribute(const std::string &name) {
+        edgeAttributes().theGraph = this;
+        return edgeAttributes().get<int>(name);
+    }
+
+    auto getNodeDoubleAttribute(const std::string &name) {
+        nodeAttributes().theGraph = this;
+        return nodeAttributes().get<double>(name);
+    }
+
+    auto getEdgeDoubleAttribute(const std::string &name) {
+        edgeAttributes().theGraph = this;
+        return edgeAttributes().get<double>(name);
+    }
+
+    auto getNodeStringAttribute(const std::string &name) {
+        nodeAttributes().theGraph = this;
+        return nodeAttributes().get<std::string>(name);
+    }
+
+    auto getEdgeStringAttribute(const std::string &name) {
+        edgeAttributes().theGraph = this;
+        return edgeAttributes().get<std::string>(name);
+    }
+
     void detachNodeAttribute(std::string const &name) {
         nodeAttributes().theGraph = this;
         nodeAttributes().detach(name);
