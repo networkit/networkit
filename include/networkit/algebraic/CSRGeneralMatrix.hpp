@@ -41,24 +41,6 @@ class CSRGeneralMatrix {
     bool isSorted;
     ValueType zero;
 
-    /**
-     * Binary search the sorted columnIdx vector between [@a left, @a right]
-     * for column @a j.
-     * If @a j is not present, non is returned
-     * @param left
-     * @param right
-     * @param j
-     * @return The position of column @a j in columnIdx or none if @a j is not present.
-     */
-    index binarySearchColumns(index left, index right, index j) const {
-        assert(sorted());
-        const auto it = std::lower_bound(columnIdx.begin() + left, columnIdx.begin() + right, j,
-                                         [](index i, index value) { return i > value; });
-        if (it == columnIdx.end() || *it != j)
-            return none;
-        return std::distance(columnIdx.begin(), it);
-    }
-
 public:
     /** Default constructor */
     CSRGeneralMatrix()
@@ -68,19 +50,21 @@ public:
      * Constructs the CSRGeneralMatrix with size @a dimension x @a dimension.
      * @param dimension Defines how many rows and columns this matrix has.
      * @param zero The zero element (default = 0).
+     * @param isSorted If the matrix representation should uses sorted vectors.
      */
-    CSRGeneralMatrix(count dimension, ValueType zero = 0)
+    CSRGeneralMatrix(count dimension, ValueType zero = 0, bool isSorted = true)
         : rowIdx(dimension + 1), columnIdx(0), nonZeros(0), nRows(dimension), nCols(dimension),
-          isSorted(true), zero(zero) {}
+          isSorted(isSorted), zero(zero) {}
 
     /**
      * Constructs the CSRGeneralMatrix with size @a nRows x @a nCols.
      * @param nRows Number of rows.
      * @param nCols Number of columns.
      * @param zero The zero element (default = 0).
+     * @param isSorted If the matrix representation should uses sorted vectors.
      */
-    CSRGeneralMatrix(count nRows, count nCols, ValueType zero = 0)
-        : rowIdx(nRows + 1), columnIdx(0), nonZeros(0), nRows(nRows), nCols(nCols), isSorted(true),
+    CSRGeneralMatrix(count nRows, count nCols, ValueType zero = 0, bool isSorted = true)
+        : rowIdx(nRows + 1), columnIdx(0), nonZeros(0), nRows(nRows), nCols(nCols), isSorted(isSorted),
           zero(zero) {}
 
     /**
@@ -279,8 +263,10 @@ public:
                 }
             }
         } else {
-            index colIdx = binarySearchColumns(rowIdx[i], rowIdx[i + 1], j);
-            if (colIdx != none && rowIdx[i] <= colIdx && columnIdx[colIdx] == j) {
+            auto it = std::lower_bound(columnIdx.begin() + rowIdx[i], columnIdx.begin() + rowIdx[i + 1], j);
+            auto colIdx = it - columnIdx.begin();
+
+            if (*it == j && rowIdx[i] <= colIdx && rowIdx[i + 1] > colIdx) {
                 value = nonZeros[colIdx];
             }
         }
@@ -298,50 +284,59 @@ public:
         assert(j < nCols);
 
         index colIdx = none;
-        if (nnzInRow(i) == 0) {
-            colIdx = none;
-        } else if (!sorted()) {
+
+        if (!sorted()) {
             for (index k = rowIdx[i]; k < rowIdx[i + 1]; ++k) {
                 if (columnIdx[k] == j) {
                     colIdx = k;
                 }
             }
         } else {
-            colIdx = binarySearchColumns(rowIdx[i], rowIdx[i + 1], j);
+            auto it = std::lower_bound(columnIdx.begin() + rowIdx[i], columnIdx.begin() + rowIdx[i + 1], j);
+            colIdx = it - columnIdx.begin();
         }
 
-        if (colIdx != none && colIdx >= rowIdx[i]
-            && columnIdx[colIdx] == j) { // the matrix already has an entry at (i,j) => replace it
-            if (value == getZero()) {    // remove the nonZero value
-                columnIdx.erase(columnIdx.begin() + colIdx);
-                nonZeros.erase(nonZeros.begin() + colIdx);
+        if (!sorted()) {
+            if (colIdx != none) {
+                if (nonZeros[colIdx] != zero) { // update existing value
+                    nonZeros[colIdx] = value;
+                } else { // remove value if set to zero
+                    columnIdx.erase(columnIdx.begin() + colIdx);
+                    nonZeros.erase(nonZeros.begin() + colIdx);
+
+                    for (index k = i + 1; k < rowIdx.size(); ++k) {
+                        --rowIdx[k];
+                    }
+                }
+            } else if (value != zero) { // don't add zero values
+                columnIdx.emplace(std::next(columnIdx.begin(), rowIdx[i + 1]), j);
+                nonZeros.emplace(std::next(nonZeros.begin(), rowIdx[i + 1]), value);
 
                 // update rowIdx
                 for (index k = i + 1; k < rowIdx.size(); ++k) {
-                    --rowIdx[k];
-                }
-            } else {
-                nonZeros[colIdx] = value;
-            }
-        } else { // create a new non-zero entry at (i,j)
-            if (!sorted()) {
-                columnIdx.emplace(std::next(columnIdx.begin(), rowIdx[i + 1]), j);
-                nonZeros.emplace(std::next(nonZeros.begin(), rowIdx[i + 1]), value);
-            } else {
-                if (colIdx < rowIdx[i] || colIdx == none) { // emplace the value in
-                                                            // front of all other values
-                                                            // of row i
-                    columnIdx.emplace(std::next(columnIdx.begin(), rowIdx[i]), j);
-                    nonZeros.emplace(std::next(nonZeros.begin(), rowIdx[i]), value);
-                } else {
-                    columnIdx.emplace(std::next(columnIdx.begin(), colIdx + 1), j);
-                    nonZeros.emplace(std::next(nonZeros.begin(), colIdx + 1), value);
+                    rowIdx[k]++;
                 }
             }
+        } else {
+            if (colIdx < rowIdx[i + 1] && columnIdx[colIdx] == j) {
+                if (nonZeros[colIdx] != zero) { // update existing value
+                    nonZeros[colIdx] = value;
+                } else { // remove value if set to zero
+                    columnIdx.erase(columnIdx.begin() + colIdx);
+                    nonZeros.erase(nonZeros.begin() + colIdx);
 
-            // update rowIdx
-            for (index k = i + 1; k < rowIdx.size(); ++k) {
-                rowIdx[k]++;
+                    for (index k = i + 1; k < rowIdx.size(); ++k) {
+                        --rowIdx[k];
+                    }
+                }
+            } else if (value != zero) { // don't add zero values
+                columnIdx.emplace(std::next(columnIdx.begin(), colIdx), j);
+                nonZeros.emplace(std::next(nonZeros.begin(), colIdx), value);
+
+                // update rowIdx
+                for (index k = i + 1; k < rowIdx.size(); ++k) {
+                    rowIdx[k]++;
+                }
             }
         }
     }
