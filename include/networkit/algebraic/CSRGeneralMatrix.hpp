@@ -265,7 +265,7 @@ public:
         } else {
             auto it = std::lower_bound(columnIdx.begin() + rowIdx[i],
                                        columnIdx.begin() + rowIdx[i + 1], j);
-            auto colIdx = it - columnIdx.begin();
+            index colIdx = static_cast<index>(it - columnIdx.begin());
 
             if (*it == j && rowIdx[i] <= colIdx && rowIdx[i + 1] > colIdx) {
                 value = nonZeros[colIdx];
@@ -295,12 +295,12 @@ public:
         } else {
             auto it = std::lower_bound(columnIdx.begin() + rowIdx[i],
                                        columnIdx.begin() + rowIdx[i + 1], j);
-            colIdx = it - columnIdx.begin();
+            colIdx = static_cast<index>(it - columnIdx.begin());
         }
 
         if (!sorted()) {
             if (colIdx != none) {
-                if (nonZeros[colIdx] != zero) { // update existing value
+                if (value != zero) { // update existing value
                     nonZeros[colIdx] = value;
                 } else { // remove value if set to zero
                     columnIdx.erase(columnIdx.begin() + colIdx);
@@ -321,7 +321,7 @@ public:
             }
         } else {
             if (colIdx < rowIdx[i + 1] && columnIdx[colIdx] == j) {
-                if (nonZeros[colIdx] != zero) { // update existing value
+                if (value != zero) { // update existing value
                     nonZeros[colIdx] = value;
                 } else { // remove value if set to zero
                     columnIdx.erase(columnIdx.begin() + colIdx);
