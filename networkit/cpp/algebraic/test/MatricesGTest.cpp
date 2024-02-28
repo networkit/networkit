@@ -1367,23 +1367,27 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSort) {
     csr.sort();
 }
 
-TEST_F(CSRMatrixGTest, testCSRMatrixSetValue) {
-    /* 1 -1
-     * -1 1
+TEST_F(CSRMatrixGTest, testCSRMatrixSetValueSorted) {
+    /* 1 -1 1
+     * -1 1 -1
      */
 
-    CSRMatrix A(2);
+    CSRMatrix A(2, 3, 0, true);
     A.setValue(0, 0, 1);
     A.setValue(0, 1, -1);
     A.setValue(1, 0, -1);
     A.setValue(1, 1, 1);
+    A.setValue(0, 2, 1);
+    A.setValue(1, 2, -1);
 
     ASSERT_TRUE(A.sorted());
 
-    ASSERT_EQ(A(0,0), 1);
-    ASSERT_EQ(A(0,1), -1);
-    ASSERT_EQ(A(1,0), -1);
-    ASSERT_EQ(A(1,1), 1);
+    ASSERT_EQ(A(0, 0), 1);
+    ASSERT_EQ(A(0, 1), -1);
+    ASSERT_EQ(A(1, 0), -1);
+    ASSERT_EQ(A(1, 1), 1);
+    ASSERT_EQ(A(0, 2), 1);
+    ASSERT_EQ(A(1, 2), -1);
 
     /* 0 0.5 0 -1.2
      * 0  0 -2  0
@@ -1410,12 +1414,13 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValue) {
     CSRMatrix C(4);
 
     C.setValue(1, 0, 1);
+    C.setValue(1, 3, 4);
     C.setValue(1, 1, 2);
     C.setValue(1, 2, 3);
-    C.setValue(1, 3, 4);
     C.setValue(3, 3, 5);
     C.setValue(2, 3, 6);
     C.setValue(0, 3, 7);
+    C.setValue(0, 2, 0);
 
     ASSERT_TRUE(C.sorted());
 
@@ -1426,6 +1431,100 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValue) {
     ASSERT_EQ(C(3, 3), 5);
     ASSERT_EQ(C(2, 3), 6);
     ASSERT_EQ(C(0, 3), 7);
+    ASSERT_EQ(C(0, 2), 0);
+
+    C.setValue(1, 0, 0);
+    C.setValue(1, 3, 0);
+    C.setValue(2, 3, 0);
+
+    ASSERT_EQ(C(1, 0), 0);
+    ASSERT_EQ(C(1, 1), 2);
+    ASSERT_EQ(C(1, 2), 3);
+    ASSERT_EQ(C(1, 3), 0);
+    ASSERT_EQ(C(3, 3), 5);
+    ASSERT_EQ(C(2, 3), 0);
+    ASSERT_EQ(C(0, 3), 7);
+    ASSERT_EQ(C(0, 2), 0);
+}
+
+TEST_F(CSRMatrixGTest, testCSRMatrixSetValueUnsorted) {
+    /* 1 -1 1
+     * -1 1 -1
+     */
+
+    CSRMatrix A(2, 3, 0, false);
+    A.setValue(0, 0, 1);
+    A.setValue(0, 1, -1);
+    A.setValue(1, 0, -1);
+    A.setValue(1, 1, 1);
+    A.setValue(0, 2, 1);
+    A.setValue(1, 2, -1);
+
+    ASSERT_FALSE(A.sorted());
+
+    ASSERT_EQ(A(0, 0), 1);
+    ASSERT_EQ(A(0, 1), -1);
+    ASSERT_EQ(A(1, 0), -1);
+    ASSERT_EQ(A(1, 1), 1);
+    ASSERT_EQ(A(0, 2), 1);
+    ASSERT_EQ(A(1, 2), -1);
+
+    /* 0 0.5 0 -1.2
+     * 0  0 -2  0
+     * 0  0  0 0.6
+     * 0  0  0 0.5
+     * */
+
+    CSRMatrix B(4, 0, false);
+
+    B.setValue(0, 1, 0.5);
+    B.setValue(0, 3, -1.2);
+    B.setValue(1, 2, -2);
+    B.setValue(2, 3, 0.6);
+    B.setValue(3, 3, 0.5);
+
+    ASSERT_FALSE(B.sorted());
+
+    ASSERT_EQ(B(0, 1), 0.5);
+    ASSERT_EQ(B(0, 3), -1.2);
+    ASSERT_EQ(B(1, 2), -2);
+    ASSERT_EQ(B(2, 3), 0.6);
+    ASSERT_EQ(B(3, 3), 0.5);
+
+    CSRMatrix C(4, 0, false);
+
+    C.setValue(1, 0, 1);
+    C.setValue(1, 3, 4);
+    C.setValue(1, 1, 2);
+    C.setValue(1, 2, 3);
+    C.setValue(3, 3, 5);
+    C.setValue(2, 3, 6);
+    C.setValue(0, 3, 7);
+    C.setValue(0, 2, 0);
+
+    ASSERT_FALSE(C.sorted());
+
+    ASSERT_EQ(C(1, 0), 1);
+    ASSERT_EQ(C(1, 1), 2);
+    ASSERT_EQ(C(1, 2), 3);
+    ASSERT_EQ(C(1, 3), 4);
+    ASSERT_EQ(C(3, 3), 5);
+    ASSERT_EQ(C(2, 3), 6);
+    ASSERT_EQ(C(0, 3), 7);
+    ASSERT_EQ(C(0, 2), 0);
+
+    C.setValue(1, 0, 0);
+    C.setValue(1, 3, 0);
+    C.setValue(2, 3, 0);
+
+    ASSERT_EQ(C(1, 0), 0);
+    ASSERT_EQ(C(1, 1), 2);
+    ASSERT_EQ(C(1, 2), 3);
+    ASSERT_EQ(C(1, 3), 0);
+    ASSERT_EQ(C(3, 3), 5);
+    ASSERT_EQ(C(2, 3), 0);
+    ASSERT_EQ(C(0, 3), 7);
+    ASSERT_EQ(C(0, 2), 0);
 }
 
 } // namespace
