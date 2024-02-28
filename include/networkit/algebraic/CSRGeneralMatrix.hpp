@@ -64,8 +64,8 @@ public:
      * @param isSorted If the matrix representation should uses sorted vectors.
      */
     CSRGeneralMatrix(count nRows, count nCols, ValueType zero = 0, bool isSorted = true)
-        : rowIdx(nRows + 1), columnIdx(0), nonZeros(0), nRows(nRows), nCols(nCols), isSorted(isSorted),
-          zero(zero) {}
+        : rowIdx(nRows + 1), columnIdx(0), nonZeros(0), nRows(nRows), nCols(nCols),
+          isSorted(isSorted), zero(zero) {}
 
     /**
      * Constructs the @a dimension x @a dimension Matrix from the elements at
@@ -263,7 +263,8 @@ public:
                 }
             }
         } else {
-            auto it = std::lower_bound(columnIdx.begin() + rowIdx[i], columnIdx.begin() + rowIdx[i + 1], j);
+            auto it = std::lower_bound(columnIdx.begin() + rowIdx[i],
+                                       columnIdx.begin() + rowIdx[i + 1], j);
             auto colIdx = it - columnIdx.begin();
 
             if (*it == j && rowIdx[i] <= colIdx && rowIdx[i + 1] > colIdx) {
@@ -292,7 +293,8 @@ public:
                 }
             }
         } else {
-            auto it = std::lower_bound(columnIdx.begin() + rowIdx[i], columnIdx.begin() + rowIdx[i + 1], j);
+            auto it = std::lower_bound(columnIdx.begin() + rowIdx[i],
+                                       columnIdx.begin() + rowIdx[i + 1], j);
             colIdx = it - columnIdx.begin();
         }
 
