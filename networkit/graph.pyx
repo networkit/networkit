@@ -1202,7 +1202,6 @@ cdef class NodeIntAttribute:
 
 	cdef setThis(self, _NodeIntAttribute& other, _Graph* G):
 		self._this.swap(other)
-		self._G = G
 		return self
 
 	def __getitem__(self, node):
@@ -1247,7 +1246,6 @@ cdef class NodeIntAttribute:
 cdef class NodeDoubleAttribute:
 	cdef setThis(self, _NodeDoubleAttribute& other, _Graph* G):
 		self._this.swap(other)
-		self._G = G
 		return self
 
 	def __getitem__(self, node):
@@ -1291,7 +1289,6 @@ cdef class NodeStringAttribute:
 
 	cdef setThis(self, _NodeStringAttribute& other, _Graph* G):
 		self._this.swap(other)
-		self._G = G
 		return self
 
 	def getName(self):
@@ -1399,7 +1396,6 @@ cdef class EdgeIntAttribute:
 
 	cdef setThis(self, _EdgeIntAttribute& other, _Graph* G):
 		self._this.swap(other)
-		self._G = G
 		return self
 
 	def __getitem__(self, edgeIdORnodePair):
@@ -1457,7 +1453,6 @@ cdef class EdgeIntAttribute:
 cdef class EdgeDoubleAttribute:
 	cdef setThis(self, _EdgeDoubleAttribute& other, _Graph* G):
 		self._this.swap(other)
-		self._G = G
 		return self
 
 	def __getitem__(self, edgeIdORnodePair):
@@ -1515,7 +1510,6 @@ cdef class EdgeStringAttribute:
 
 	cdef setThis(self, _EdgeStringAttribute& other, _Graph* G):
 		self._this.swap(other)
-		self._G = G
 		return self
 
 	def __getitem__(self, edgeIdORnodePair):
