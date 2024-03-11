@@ -8,8 +8,8 @@
 #include <gtest/gtest.h>
 
 #include <networkit/community/LouvainMapEquation.hpp>
-#include <networkit/generators/ClusteredRandomGraphGenerator.hpp>
-#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/generators/BarabasiAlbertGenerator.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
@@ -48,11 +48,38 @@ TEST_F(MapEquationGTest, testLocalMoveSmall) {
 
 TEST_F(MapEquationGTest, testLocalMove) {
     Aux::Random::setSeed(2342556, false);
-    ClusteredRandomGraphGenerator generator(100, 4, 0.5, 0.05);
-    Graph G = generator.generate();
-    Partition groundTruth = generator.getCommunities();
 
-    LouvainMapEquation algo(G, true, 32, "synchronous");
+    count n = 300;
+    BarabasiAlbertGenerator generator(50, n);
+    Graph G = generator.generate();
+
+    // generate 3 independent clusterings (=ground truth)
+    Partition groundTruth(n);
+    groundTruth.setUpperBound(3);
+    std::unordered_set<node> G1_range(100);
+    std::unordered_set<node> G2_range(100);
+    std::unordered_set<node> G3_range(100);
+    for (node i = 0; i < n; ++i) {
+        if (i < 100) {
+            G1_range.insert(i);
+            groundTruth.addToSubset(0, i);
+        } else if (100 <= i && i < 200) {
+            G2_range.insert(i);
+            groundTruth.addToSubset(1, i);
+        } else {
+            G3_range.insert(i);
+            groundTruth.addToSubset(2, i);
+        }
+    }
+    Graph G1 = GraphTools::subgraphFromNodes(G, G1_range);
+    Graph G2 = GraphTools::subgraphFromNodes(G, G2_range);
+    Graph G3 = GraphTools::subgraphFromNodes(G, G3_range);
+
+    // G1 becomes clustered version of G
+    GraphTools::merge(G1, G2);
+    GraphTools::merge(G1, G3);
+
+    LouvainMapEquation algo(G1, true, 32, "synchronous");
     algo.run();
     auto partition = algo.getPartition();
 
