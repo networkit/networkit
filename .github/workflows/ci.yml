@@ -99,14 +99,14 @@ env:
 
 jobs:
   macos-build-latest-version-apple-clang:
-    name: "macOS ${{ matrix.os }} (apple-clang, CPython 3.12): ${{ matrix.build-configuration }}"
+    name: "macOS ${{ matrix.os }} ${{ startsWith(matrix.os, '14') && ', arm64' || '' }} (apple-clang, CPython 3.12): ${{ matrix.build-configuration }}"
     runs-on: macos-${{ matrix.os }}
     env:
       CC: cc
       CXX: c++
     strategy:
       matrix:
-        os: ['13']
+        os: ['13', '14'] # For macos-14, the default image is arm based. So 13 = x86_64, 14 = arm64
         build-configuration: ['full', 'full (native)']
     steps:
       - name: Install prerequisites
@@ -138,23 +138,18 @@ jobs:
     runs-on: macos-${{ matrix.os }}
     strategy:
       matrix:
-        os: ['13']
-        compiler: ['clang-17', 'gcc-13']
+        os: ['14'] # llvm and gcc are only tested on arm based machines
+        compiler: ['llvm-17', 'gcc-12']
     steps:
       - name: Install prerequisites
         run: |
-          brew install libomp
           brew install ninja
       - name: Install compiler llvm
-        if: matrix.compiler == 'clang-17'
+        if: matrix.compiler == 'llvm-17'
         run: |
+          brew install libomp
           brew reinstall llvm@17
           brew link --overwrite llvm@17
-      - name: Install compiler gcc
-        if: matrix.compiler == 'gcc-13'
-        run: |
-          brew reinstall gcc@13
-          brew link --overwrite gcc@13
       - name: Checkout networkit
         uses: actions/checkout@v4
         with:
@@ -163,11 +158,11 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
         shell: bash
         env:
-          CC: ${{ matrix.compiler == 'clang-16' && '/usr/local/opt/llvm@17/bin/clang' || 'gcc-13' }}
-          CXX: ${{ matrix.compiler == 'clang-16' && '/usr/local/opt/llvm@17/bin/clang++' || 'g++-13' }}
+          CC: ${{ matrix.compiler == 'llvm-17' && '/opt/homebrew/opt/llvm/bin/clang' || 'gcc-12' }}
+          CXX: ${{ matrix.compiler == 'llvm-17' && '/opt/homebrew/opt/llvm/bin/clang++' || 'g++-12' }}
 
   linux-build-latest:
-    name: "Linux (gcc-12${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.12' || '' }}): ${{ matrix.build-configuration }}"
+    name: "Linux (gcc-13${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.12' || '' }}): ${{ matrix.build-configuration }}"
     runs-on: ubuntu-22.04
     env:
       CC: gcc-13
@@ -209,14 +204,14 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        compiler: ['clang-17']
+        compiler: ['llvm-18']
     steps:
       - name: Install prerequisites
         run:  |
           curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-17 main" | sudo tee /etc/apt/sources.list.d/llvm17.list
+          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-18 main" | sudo tee /etc/apt/sources.list.d/llvm18.list
           sudo apt-get update
-          sudo apt-get install clang-17 libomp-17-dev ninja-build
+          sudo apt-get install clang-18 libomp-18-dev ninja-build
       - name: Checkout networkit
         uses: actions/checkout@v4
         with:
@@ -230,8 +225,8 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
         shell: bash
         env:
-          CC: clang-17
-          CXX: clang++-17
+          CC: clang-18
+          CXX: clang++-18
 
   linux-pep-518-install:
     name: "Linux: Release build using pyproject.toml"
@@ -286,7 +281,7 @@ jobs:
           CXX: ${{ matrix.compiler == 'gcc-8' && 'g++-8' || 'clang++-7' }}
 
   linux-build-clang-tidy:
-    name: "Linux (clang-16): clang-tidy"
+    name: "Linux (llvm-17): clang-tidy"
     runs-on: ubuntu-20.04
     env:
       CC: clang-17
@@ -468,9 +463,9 @@ jobs:
       - name: Install prerequisites
         run: |
           curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-17 main" | sudo tee /etc/apt/sources.list.d/llvm17.list
+          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-18 main" | sudo tee /etc/apt/sources.list.d/llvm18.list
           sudo apt-get update
-          sudo apt-get install clang-format-17 python3-yaml
+          sudo apt-get install clang-format-18 python3-yaml
       - name: Checkout networkit
         uses: actions/checkout@v4
         with:
@@ -480,4 +475,4 @@ jobs:
           set -e
           ./check_code.sh -v
         env:
-          NETWORKIT_OVERRIDE_CLANG_FORMAT: "clang-format-17"
+          NETWORKIT_OVERRIDE_CLANG_FORMAT: "clang-format-18"
