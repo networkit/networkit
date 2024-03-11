@@ -335,6 +335,36 @@ cdef class ErdosRenyiGenerator(StaticGraphGenerator):
 			p = (2 * m) / (scale * n * (n-1))
 		return cls(scale * n, p)
 
+cdef extern from "<networkit/generators/GeometricInhomogeneousGenerator.hpp>":
+	cdef cppclass _GeometricInhomogeneousGenerator "NetworKit::GeometricInhomogeneousGenerator"(_StaticGraphGenerator):
+		_GeometricInhomogeneousGenerator(count n, double avgDegree, double powerlawExp, double temperature, unsigned dim) except +
+
+cdef class GeometricInhomogeneousGenerator(StaticGraphGenerator):
+	"""
+	GeometricInhomogeneousGenerator(count numNodes, double avgDegree, double powerlawExp, double temperature, unsigned dimensions)
+
+	Creates a Geometric Inhomogeneous Random Graph by first samling n random points in a d-dimension space
+	and then connecting them according to their weights and distances. It implements the generator of
+	Blaesius et al. "Efficiently Generating Geometric Inhomogeneous and Hyperbolic Random Graphs" [https://arxiv.org/abs/1905.06706]
+
+
+	Parameters
+	----------
+	numNodes : count
+		Number of nodes n in the graph.
+	avgDegree : double
+		Desired average degree -- will be met only in expection, though variance is quite small.
+	powerlawExp : double
+		Exponenent of the powerlaw degree distribution with powerlawExp > 2
+	temperature : double
+		Temperature adds noise to the instance with 0 <= T <= 1
+	dimensions : unsigned
+		Number of dimensions in the underlying geometric with 1 <= dimensions <= 5
+	"""
+
+	def __cinit__(self, numNodes, avgDegree, powerlawExp = 3, temperature = 0, dimensions = 1):
+		self._this = new _GeometricInhomogeneousGenerator(numNodes, avgDegree, powerlawExp, temperature, dimensions)
+
 cdef extern from "<networkit/generators/DorogovtsevMendesGenerator.hpp>":
 
 	cdef cppclass _DorogovtsevMendesGenerator "NetworKit::DorogovtsevMendesGenerator"(_StaticGraphGenerator):

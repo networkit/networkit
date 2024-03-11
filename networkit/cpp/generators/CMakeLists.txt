@@ -13,6 +13,7 @@ networkit_add_module(generators
     DynamicPubWebGenerator.cpp
     EdgeSwitchingMarkovChainGenerator.cpp
     ErdosRenyiGenerator.cpp
+    GeometricInhomogeneousGenerator.cpp
     HavelHakimiGenerator.cpp
     HyperbolicGenerator.cpp
     LFRGenerator.cpp
