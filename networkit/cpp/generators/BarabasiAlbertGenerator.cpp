@@ -5,13 +5,18 @@
  *      Author: forigem, Manuel Penschuck <networkit@manuel.jetzt>
  */
 
+#include <atomic>
+#include <chrono>
+#include <iostream>
 #include <random>
 #include <unordered_set>
+#include <tlx/math/clz.hpp>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/generators/BarabasiAlbertGenerator.hpp>
+#include <networkit/graph/ParallelGraphBuilder.hpp>
 
 namespace NetworKit {
 BarabasiAlbertGenerator::BarabasiAlbertGenerator(count k, count nMax, count n0, bool batagelj)
@@ -46,14 +51,118 @@ BarabasiAlbertGenerator::BarabasiAlbertGenerator(count k, count nMax, const Grap
             "initialization graph cannot have more nodes than the target graph (nMax)");
 }
 
+struct RNG {
+    uint64_t seedThing;
+    RNG(uint64_t seedThing) : seedThing(seedThing) {}
+
+    void next(uint64_t &in) { in = (in * seedThing ^ 58493648962871) * 1432563757536332561L; }
+
+    uint64_t nextInt(uint64_t &in, uint64_t max) {
+        const uint64_t shift = tlx::clz(max);
+        next(in);
+        while (true) {
+            next(in);
+            uint64_t val = in >> shift;
+            if (val < max)
+                return val;
+        }
+    }
+};
+
 Graph BarabasiAlbertGenerator::generate() {
     if (!nMax)
         return Graph();
 
-    if (!batagelj)
-        WARN("The original implementation is no longer supported and this option will be remove in "
-             "future releases. Using the much faster Brandes' implementation instead");
+    if (batagelj) {
+        return generateBatagelj();
+    } else {
+        return generateParallel();
+    }
+}
 
+Graph BarabasiAlbertGenerator::generateParallel() {
+    const node n = nMax;
+
+    ParallelGraphBuilder builder{nMax, false};
+    Graph G{nMax};
+
+    // Temporarily stored edges of the seed graph in edge list to allow fast random access.
+    std::vector<node> seedGraphData;
+
+    auto addSeedGraphEdge = [&](node u, node v) {
+        seedGraphData.push_back(u);
+        seedGraphData.push_back(v);
+        G.addEdge(u, v);
+    };
+
+    if (initGraph.numberOfNodes() == 0) {
+        seedGraphData.reserve(2 * n0 + 2 * (n - n0) * k);
+
+        // initialize n0 connected nodes
+        for (index v = 0; v < n0 - 1; ++v) {
+            addSeedGraphEdge(v, v + 1);
+        }
+        addSeedGraphEdge(0, n0 - 1);
+    } else {
+        seedGraphData.reserve(2 * initGraph.numberOfEdges()
+                              + 2 * (n - initGraph.numberOfNodes()) * k);
+
+        initGraph.forEdges([&](node u, node v) { addSeedGraphEdge(u, v); });
+        n0 = initGraph.numberOfNodes();
+    }
+
+    // for each of the remaining nodes [n0, n), we draw k random DIFFERENT neighbors
+    RNG rng{Aux::Random::integer(0xffffffffffffffffL) | 1};
+#pragma omp parallel
+    {
+        std::vector<index> currentEdges(k);
+        int threads = omp_get_num_threads();
+        int threadId = omp_get_thread_num();
+        for (index v = n0 + threadId; v < n; v += threads) {
+            G.preallocateUndirected(v, k);
+            for (index i = 0; i < k; ++i) {
+                for (index attempt = 0;; ++attempt) {
+                    index u = 2 * (i + k * (v - n0)) + seedGraphData.size();
+                    uint64_t seed = u + attempt * 0x52785628791L;
+                    while (true) {
+                        u = rng.nextInt(seed, u);
+                        if (u < seedGraphData.size()) {
+                            u = seedGraphData[u];
+                            break;
+                        } else if ((u - seedGraphData.size()) % 2 != 0) {
+                            u = n0 + (u - seedGraphData.size()) / 2 / k;
+                            break;
+                        }
+                        seed = u;
+                    }
+                    if (v == u)
+                        continue;
+                    assert(u < v);
+                    bool hasEdge = false;
+                    for (index j = 0; j < i; j++) {
+                        if (currentEdges[j] == u) {
+                            hasEdge = true;
+                            break;
+                        }
+                    }
+                    if (!hasEdge) {
+                        G.addPartialEdge(Unsafe{}, v,
+                                         u); // Already add the first half of the edge to reduce the
+                                             // work of the graph builder.
+                        builder.addHalfEdgeParallel(Unsafe{}, u, v);
+                        currentEdges[i] = u;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    builder.addEdgesToGraphParallel(Unsafe{}, G);
+    G.setEdgeCount(Unsafe{}, (count)seedGraphData.size() / 2 + (n - n0) * k);
+    return G;
+}
+
+Graph BarabasiAlbertGenerator::generateBatagelj() {
     const node n = nMax;
 
     // Temporarily stored edges in edge list M to allow fast  random access.

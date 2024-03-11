@@ -71,6 +71,8 @@ public:
     BarabasiAlbertGenerator(count k, count nMax, const Graph &initGraph, bool batagelj = true);
 
     Graph generate() override;
+    Graph generateParallel();
+    Graph generateBatagelj();
 };
 
 } /* namespace NetworKit */
