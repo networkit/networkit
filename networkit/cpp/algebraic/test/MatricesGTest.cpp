@@ -1382,12 +1382,12 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValueSorted) {
 
     ASSERT_TRUE(A.sorted());
 
-    ASSERT_EQ(A(0, 0), 1);
-    ASSERT_EQ(A(0, 1), -1);
-    ASSERT_EQ(A(1, 0), -1);
-    ASSERT_EQ(A(1, 1), 1);
-    ASSERT_EQ(A(0, 2), 1);
-    ASSERT_EQ(A(1, 2), -1);
+    EXPECT_EQ(A(0, 0), 1);
+    EXPECT_EQ(A(0, 1), -1);
+    EXPECT_EQ(A(1, 0), -1);
+    EXPECT_EQ(A(1, 1), 1);
+    EXPECT_EQ(A(0, 2), 1);
+    EXPECT_EQ(A(1, 2), -1);
 
     /* 0 0.5 0 -1.2
      * 0  0 -2  0
@@ -1405,11 +1405,11 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValueSorted) {
 
     ASSERT_TRUE(B.sorted());
 
-    ASSERT_EQ(B(0, 1), 0.5);
-    ASSERT_EQ(B(0, 3), -1.2);
-    ASSERT_EQ(B(1, 2), -2);
-    ASSERT_EQ(B(2, 3), 0.6);
-    ASSERT_EQ(B(3, 3), 0.5);
+    EXPECT_EQ(B(0, 1), 0.5);
+    EXPECT_EQ(B(0, 3), -1.2);
+    EXPECT_EQ(B(1, 2), -2);
+    EXPECT_EQ(B(2, 3), 0.6);
+    EXPECT_EQ(B(3, 3), 0.5);
 
     CSRMatrix C(4);
 
@@ -1424,27 +1424,27 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValueSorted) {
 
     ASSERT_TRUE(C.sorted());
 
-    ASSERT_EQ(C(1, 0), 1);
-    ASSERT_EQ(C(1, 1), 2);
-    ASSERT_EQ(C(1, 2), 3);
-    ASSERT_EQ(C(1, 3), 4);
-    ASSERT_EQ(C(3, 3), 5);
-    ASSERT_EQ(C(2, 3), 6);
-    ASSERT_EQ(C(0, 3), 7);
-    ASSERT_EQ(C(0, 2), 0);
+    EXPECT_EQ(C(1, 0), 1);
+    EXPECT_EQ(C(1, 1), 2);
+    EXPECT_EQ(C(1, 2), 3);
+    EXPECT_EQ(C(1, 3), 4);
+    EXPECT_EQ(C(3, 3), 5);
+    EXPECT_EQ(C(2, 3), 6);
+    EXPECT_EQ(C(0, 3), 7);
+    EXPECT_EQ(C(0, 2), 0);
 
     C.setValue(1, 0, 0);
     C.setValue(1, 3, 0);
     C.setValue(2, 3, 0);
 
-    ASSERT_EQ(C(1, 0), 0);
-    ASSERT_EQ(C(1, 1), 2);
-    ASSERT_EQ(C(1, 2), 3);
-    ASSERT_EQ(C(1, 3), 0);
-    ASSERT_EQ(C(3, 3), 5);
-    ASSERT_EQ(C(2, 3), 0);
-    ASSERT_EQ(C(0, 3), 7);
-    ASSERT_EQ(C(0, 2), 0);
+    EXPECT_EQ(C(1, 0), 0);
+    EXPECT_EQ(C(1, 1), 2);
+    EXPECT_EQ(C(1, 2), 3);
+    EXPECT_EQ(C(1, 3), 0);
+    EXPECT_EQ(C(3, 3), 5);
+    EXPECT_EQ(C(2, 3), 0);
+    EXPECT_EQ(C(0, 3), 7);
+    EXPECT_EQ(C(0, 2), 0);
 }
 
 TEST_F(CSRMatrixGTest, testCSRMatrixSetValueUnsorted) {
@@ -1462,12 +1462,12 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValueUnsorted) {
 
     ASSERT_FALSE(A.sorted());
 
-    ASSERT_EQ(A(0, 0), 1);
-    ASSERT_EQ(A(0, 1), -1);
-    ASSERT_EQ(A(1, 0), -1);
-    ASSERT_EQ(A(1, 1), 1);
-    ASSERT_EQ(A(0, 2), 1);
-    ASSERT_EQ(A(1, 2), -1);
+    EXPECT_EQ(A(0, 0), 1);
+    EXPECT_EQ(A(0, 1), -1);
+    EXPECT_EQ(A(1, 0), -1);
+    EXPECT_EQ(A(1, 1), 1);
+    EXPECT_EQ(A(0, 2), 1);
+    EXPECT_EQ(A(1, 2), -1);
 
     /* 0 0.5 0 -1.2
      * 0  0 -2  0
@@ -1485,11 +1485,11 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValueUnsorted) {
 
     ASSERT_FALSE(B.sorted());
 
-    ASSERT_EQ(B(0, 1), 0.5);
-    ASSERT_EQ(B(0, 3), -1.2);
-    ASSERT_EQ(B(1, 2), -2);
-    ASSERT_EQ(B(2, 3), 0.6);
-    ASSERT_EQ(B(3, 3), 0.5);
+    EXPECT_EQ(B(0, 1), 0.5);
+    EXPECT_EQ(B(0, 3), -1.2);
+    EXPECT_EQ(B(1, 2), -2);
+    EXPECT_EQ(B(2, 3), 0.6);
+    EXPECT_EQ(B(3, 3), 0.5);
 
     CSRMatrix C(4, 0, false);
 
@@ -1504,27 +1504,27 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValueUnsorted) {
 
     ASSERT_FALSE(C.sorted());
 
-    ASSERT_EQ(C(1, 0), 1);
-    ASSERT_EQ(C(1, 1), 2);
-    ASSERT_EQ(C(1, 2), 3);
-    ASSERT_EQ(C(1, 3), 4);
-    ASSERT_EQ(C(3, 3), 5);
-    ASSERT_EQ(C(2, 3), 6);
-    ASSERT_EQ(C(0, 3), 7);
-    ASSERT_EQ(C(0, 2), 0);
+    EXPECT_EQ(C(1, 0), 1);
+    EXPECT_EQ(C(1, 1), 2);
+    EXPECT_EQ(C(1, 2), 3);
+    EXPECT_EQ(C(1, 3), 4);
+    EXPECT_EQ(C(3, 3), 5);
+    EXPECT_EQ(C(2, 3), 6);
+    EXPECT_EQ(C(0, 3), 7);
+    EXPECT_EQ(C(0, 2), 0);
 
     C.setValue(1, 0, 0);
     C.setValue(1, 3, 0);
     C.setValue(2, 3, 0);
 
-    ASSERT_EQ(C(1, 0), 0);
-    ASSERT_EQ(C(1, 1), 2);
-    ASSERT_EQ(C(1, 2), 3);
-    ASSERT_EQ(C(1, 3), 0);
-    ASSERT_EQ(C(3, 3), 5);
-    ASSERT_EQ(C(2, 3), 0);
-    ASSERT_EQ(C(0, 3), 7);
-    ASSERT_EQ(C(0, 2), 0);
+    EXPECT_EQ(C(1, 0), 0);
+    EXPECT_EQ(C(1, 1), 2);
+    EXPECT_EQ(C(1, 2), 3);
+    EXPECT_EQ(C(1, 3), 0);
+    EXPECT_EQ(C(3, 3), 5);
+    EXPECT_EQ(C(2, 3), 0);
+    EXPECT_EQ(C(0, 3), 7);
+    EXPECT_EQ(C(0, 2), 0);
 }
 
 } // namespace
