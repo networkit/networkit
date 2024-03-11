@@ -153,22 +153,45 @@ TEST_F(DistanceGTest, testAStar) {
 }
 
 TEST_P(DistanceGTest, testAdamicAdar) {
-    auto G = generateERGraph(500, 0.03);
+    Graph G(100, isWeighted(), isDirected());
     // arbitrary nodes
-    node source = 0;
-    node target = 42;
-    if (!G.hasEdge(source, target)) {
-        G.addEdge(source, target);
-        if (G.isDirected())
-            G.addEdge(target, source);
+    node u = 0;
+    node v = 42;
+
+    // Generate an equivalent neighborhood for `u` and `v`.
+    for (node i = 1; i < 10; ++i) {
+        if (!G.hasEdge(u, i)) {
+            G.addEdge(u, i);
+        }
+        if (!G.hasEdge(v, i)) {
+            G.addEdge(v, i);
+        }
+        if (G.isDirected()) {
+            G.addEdge(i, u);
+            G.addEdge(i, v);
+        }
+    }
+
+    // add (many) more edges to u
+    for (node i = 10; i < 100; ++i) {
+        if (!G.hasEdge(u, i)) {
+            G.addEdge(u, i);
+            if (G.isDirected())
+                G.addEdge(i, u);
+        }
     }
     G.indexEdges();
 
     AdamicAdarDistance AAD(G);
     AAD.preprocess();
-    EXPECT_GT(AAD.distance(source, target), 1);
+
     auto res = AAD.getEdgeScores();
     EXPECT_EQ(G.numberOfEdges(), res.size());
+
+    // expect predictions of u (in common neighbourhoods) to be less significant
+    for (node i = 1; i < 10; ++i) {
+        EXPECT_LE(AAD.distance(u, i), AAD.distance(v, i));
+    }
 }
 
 TEST_P(DistanceGTest, testAlgebraicDistance) {
