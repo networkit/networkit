@@ -143,6 +143,40 @@ class TestVizbridges(unittest.TestCase):
                     edgePalette=[(i / 10, i / 10, i / 10) for i in range(4)],
                 )
 
+    def testNodeScoreAndPartitionExclusive(self):
+        G = self.getSmallGraph(False, False)
+        partition = nk.community.ClusteringGenerator(G).makeRandomClustering(G, 3)
+        with self.assertRaises(Exception): 
+            vizbridges.widgetFromGraph(
+                G,
+                nodeScores=list(range(G.numberOfNodes())),
+                nodePalette=partition
+            )
+
+    def testCompleteNodeScores(self):
+        G = self.getSmallGraph(False, False)
+        with self.assertRaises(Exception): 
+            vizbridges.widgetFromGraph(
+                G,
+                nodeScores=list(range(G.numberOfNodes()-1))
+            )
+
+    def testCompleteEdgeScores(self):
+        G = self.getSmallGraph(False, False)
+        with self.assertRaises(Exception): 
+            vizbridges.widgetFromGraph(
+                G,
+                edgeScores=list(range(G.numberOfEdges()-1))
+            )
+
+    def testNoneInEdgeScores(self):
+        G = self.getSmallGraph(False, False)
+        scores = [None] * G.numberOfEdges()
+        with self.assertRaises(Exception): 
+            vizbridges.widgetFromGraph(
+                G,
+                edgeScores=scores
+            )
 
 if __name__ == "__main__":
     unittest.main()
