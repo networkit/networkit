@@ -1,7 +1,7 @@
 """
 This module handles compatibility between NetworKit and NetworkX
 """
-from typing import Union
+from typing import Union, Mapping
 
 # local imports
 from . import graph
@@ -39,7 +39,10 @@ def _inferType(attr: object) -> Union[int, float, str, None]:
 
 
 def nx2nk(
-    nxG: Union[nx.Graph, nx.DiGraph], weightAttr: str = None, data: bool = False
+    nxG: Union[nx.Graph, nx.DiGraph],
+    weightAttr: str = None,
+    data: bool = False,
+    typeMap: Mapping[str, type] = None,
 ) -> graph.Graph:
     """
     nx2nk(nxG, weightAttr=None)
@@ -49,6 +52,7 @@ def nx2nk(
     Note that there are limitations to this conversion: networkit only supports int, float, and str attribute types.
     Other types will be converted into their string representation.
     Attribute keys are always converted to strings.
+    Optionally, a dictionary that maps attribute names to specific types can be supplied.
 
     Parameters
     ----------
@@ -58,6 +62,8 @@ def nx2nk(
             The edge attribute which should be treated as the edge weight. Default: None
     data : bool, optional
             If true, convert networkx.Graph data into networkit.Graph attributes. Default: False
+    typeMap : dict, optional
+            Specifies the data type an attribute has. Missing attributes are inferred as described above. Default: None
     """
 
     if not have_nx:
@@ -90,7 +96,7 @@ def nx2nk(
         for node, attributes in nxG.nodes(data=True):
             # when we see a new attr, create/attach to graph. otherwise add to existing (get by name). if type is not compatible, raise exception. type is inferred from the first occurence.
             for key, value in attributes.items():
-                valueType = _inferType(value)
+                valueType = typeMap[key] if str(key) in typeMap else _inferType(value)
                 try:
                     attribute = nkG.getNodeAttribute(str(key), valueType or str)
                 except RuntimeError:  # attribute does not exist or is of different type
@@ -121,7 +127,7 @@ def nx2nk(
             for key, value in attributes.items():
                 if key == weightAttr:
                     continue
-                valueType = _inferType(value)
+                valueType = typeMap[key] if str(key) in typeMap else _inferType(value)
                 try:
                     attribute = nkG.getEdgeAttribute(str(key), valueType or str)
                 except RuntimeError:  # attribute does not exist or is of different type
