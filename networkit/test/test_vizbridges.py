@@ -38,6 +38,7 @@ class TestVizbridges(unittest.TestCase):
                 partition = nk.community.ClusteringGenerator(G).makeRandomClustering(
                     G, 3
                 )
+                print(partition.getVector())
                 vizbridges.widgetFromGraph(
                     G,
                     dimension=dim,
@@ -146,37 +147,27 @@ class TestVizbridges(unittest.TestCase):
     def testNodeScoreAndPartitionExclusive(self):
         G = self.getSmallGraph(False, False)
         partition = nk.community.ClusteringGenerator(G).makeRandomClustering(G, 3)
-        with self.assertRaises(Exception): 
+        with self.assertRaises(Exception):
             vizbridges.widgetFromGraph(
-                G,
-                nodeScores=list(range(G.numberOfNodes())),
-                nodePalette=partition
+                G, nodeScores=list(range(G.numberOfNodes())), nodePalette=partition
             )
 
     def testCompleteNodeScores(self):
         G = self.getSmallGraph(False, False)
-        with self.assertRaises(Exception): 
-            vizbridges.widgetFromGraph(
-                G,
-                nodeScores=list(range(G.numberOfNodes()-1))
-            )
+        with self.assertRaises(Exception):
+            vizbridges.widgetFromGraph(G, nodeScores=list(range(G.numberOfNodes() - 1)))
 
     def testCompleteEdgeScores(self):
         G = self.getSmallGraph(False, False)
-        with self.assertRaises(Exception): 
-            vizbridges.widgetFromGraph(
-                G,
-                edgeScores=list(range(G.numberOfEdges()-1))
-            )
+        with self.assertRaises(Exception):
+            vizbridges.widgetFromGraph(G, edgeScores=list(range(G.numberOfEdges() - 1)))
 
     def testNoneInEdgeScores(self):
         G = self.getSmallGraph(False, False)
         scores = [None] * G.numberOfEdges()
-        with self.assertRaises(Exception): 
-            vizbridges.widgetFromGraph(
-                G,
-                edgeScores=scores
-            )
+        with self.assertRaises(Exception):
+            vizbridges.widgetFromGraph(G, edgeScores=scores)
+
 
 if __name__ == "__main__":
     unittest.main()
