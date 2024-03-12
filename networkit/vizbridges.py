@@ -341,15 +341,18 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 
 		else:
 			if edgeScores:
-				edgeScoresMapped = [None] * G.numberOfEdges() * 3
-			edges = [[None] * G.numberOfEdges() * 3,[None] * G.numberOfEdges() * 3, [None] * G.numberOfEdges() * 3]
+				edgeScoresMapped = np.zeros(3 * G.numberOfEdges())
+			edges = np.zeros((3, 3 * G.numberOfEdges()))
 			for e in G.iterEdges():
 				edges[0][index] = coordinates[e[0]][0]
 				edges[0][index+1] = coordinates[e[1]][0]
+				edges[0][index+2] = None
 				edges[1][index] = coordinates[e[0]][1]
 				edges[1][index+1] = coordinates[e[1]][1]
+				edges[1][index+2] = None
 				edges[2][index] = coordinates[e[0]][2]
 				edges[2][index+1] = coordinates[e[1]][2]
+				edges[2][index+2] = None
 				if edgeScores:
 					edgeScoresMapped[index] = edgeScores[G.edgeId(e[0], e[1])]
 					edgeScoresMapped[index+1] = edgeScores[G.edgeId(e[0], e[1])]
