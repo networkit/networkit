@@ -6,6 +6,8 @@ from .viz import MaxentStress
 # external imports
 from typing import List, Mapping, Tuple
 from enum import Enum
+import numpy as np
+
 try:
 	import ipycytoscape
 except ImportError:
@@ -303,18 +305,27 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 
 		index = 0
 		if dimension == Dimension.TwoForcePlotly:
-			if edgeScores:
-				edgeScoresMapped = [None] * G.numberOfEdges() * 2
-			edges = [[None] * G.numberOfEdges() * 2,[None] * G.numberOfEdges() * 2, [None] * G.numberOfEdges() * 2]
+			edgeScatter = []
+
 			for e in G.iterEdges():
-				edges[0][index] = coordinates[e[0]][0]
-				edges[0][index+1] = coordinates[e[1]][0]
-				edges[1][index] = coordinates[e[0]][1]
-				edges[1][index+1] = coordinates[e[1]][1]
+				endpoint1 = [coordinates[e[0]][0], coordinates[e[1]][0]]
+				endpoint2 = [coordinates[e[0]][1], coordinates[e[1]][1]]
 				if edgeScores:
-					edgeScoresMapped[index] = edgeScores[G.edgeId(e[0], e[1])]
-					edgeScoresMapped[index+1] = edgeScores[G.edgeId(e[0], e[1])]
-				index = index + 2
+					edgeHcColors = _calculateEdgeColoring(G, edgePalette, edgeScores)
+					colorTuple = edgeHcColors[G.edgeId(e[0],e[1])]
+					rgbString = 'rgb(' + ','.join(map(str,colorTuple)) + ')'
+					line = dict(color=rgbString, width=5)
+				else:
+					line = dict(color='rgb(180,180,180)', width=2)
+				index = index + 1
+				edgeScatter.append(go.Scatter(x=endpoint1,
+				y=endpoint2,
+				mode='lines',
+				opacity=0.7,
+				line=line,
+				hoverinfo='none',
+				showlegend=None,
+				name='edges'))
 		
 			nodeScatter = go.Scatter(x=nodes[0],
 				y=nodes[1],
@@ -327,23 +338,6 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 					line=dict(color='rgb(50,50,50)', width=0.5)),
 				hoverinfo='text',
 				text = labels)
-			
-		
-			if edgeScores:
-				line = dict(color=edgeScoresMapped, 
-						colorscale=px.colors.convert_colorscale_to_rgb(px.colors.make_colorscale(edgePalette)),
-						width=5, autocolorscale=False)
-			else:
-				line = dict(color='rgb(180,180,180)', width=2)
-
-			edgeScatter = go.Scatter(x=edges[0],
-				y=edges[1],
-				mode='lines',
-				opacity=0.7,
-				line=line,
-				hoverinfo='none',
-				showlegend=None,
-				name='edges')
 
 		else:
 			if edgeScores:
