@@ -203,7 +203,10 @@ def widgetFromGraph(G, dimension = Dimension.Two, nodeScores = None, nodePartiti
 				raise Exception("Edges need to be indexed to draw edge scores.")
 			edgeScoresList = [None] * G.numberOfEdges()
 			for u,v in G.iterEdges():
-				edgeScoresList[G.edgeId(u,v)] = edgeScores[(u,v)]
+				score = edgeScores.get((u,v))
+				if score == None:
+					score = edgeScores.get((v,u))
+				edgeScoresList[G.edgeId(u,v)] = score
 			if None in edgeScoresList:
 				raise Exception("edgeScores should include scores for every edge.")
 			edgeScores = edgeScoresList
