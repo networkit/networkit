@@ -1380,7 +1380,7 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValueSorted) {
     A.setValue(0, 2, 1);
     A.setValue(1, 2, -1);
 
-    ASSERT_TRUE(A.sorted());
+    EXPECT_TRUE(A.sorted());
 
     EXPECT_EQ(A(0, 0), 1);
     EXPECT_EQ(A(0, 1), -1);
@@ -1403,7 +1403,7 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValueSorted) {
     B.setValue(2, 3, 0.6);
     B.setValue(3, 3, 0.5);
 
-    ASSERT_TRUE(B.sorted());
+    EXPECT_TRUE(B.sorted());
 
     EXPECT_EQ(B(0, 1), 0.5);
     EXPECT_EQ(B(0, 3), -1.2);
@@ -1422,7 +1422,7 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValueSorted) {
     C.setValue(0, 3, 7);
     C.setValue(0, 2, 0);
 
-    ASSERT_TRUE(C.sorted());
+    EXPECT_TRUE(C.sorted());
 
     EXPECT_EQ(C(1, 0), 1);
     EXPECT_EQ(C(1, 1), 2);
@@ -1460,7 +1460,7 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValueUnsorted) {
     A.setValue(0, 2, 1);
     A.setValue(1, 2, -1);
 
-    ASSERT_FALSE(A.sorted());
+    EXPECT_FALSE(A.sorted());
 
     EXPECT_EQ(A(0, 0), 1);
     EXPECT_EQ(A(0, 1), -1);
@@ -1483,7 +1483,7 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValueUnsorted) {
     B.setValue(2, 3, 0.6);
     B.setValue(3, 3, 0.5);
 
-    ASSERT_FALSE(B.sorted());
+    EXPECT_FALSE(B.sorted());
 
     EXPECT_EQ(B(0, 1), 0.5);
     EXPECT_EQ(B(0, 3), -1.2);
@@ -1502,7 +1502,7 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValueUnsorted) {
     C.setValue(0, 3, 7);
     C.setValue(0, 2, 0);
 
-    ASSERT_FALSE(C.sorted());
+    EXPECT_FALSE(C.sorted());
 
     EXPECT_EQ(C(1, 0), 1);
     EXPECT_EQ(C(1, 1), 2);
