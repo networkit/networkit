@@ -286,7 +286,7 @@ public:
 
         index colIdx = none;
 
-        if (!sorted()) {
+        if (! isSorted) {
             for (index k = rowIdx[i]; k < rowIdx[i + 1]; ++k) {
                 if (columnIdx[k] == j) {
                     colIdx = k;
@@ -298,7 +298,7 @@ public:
             colIdx = static_cast<index>(it - columnIdx.begin());
         }
 
-        if (!sorted()) {
+        if (! isSorted) {
             if (colIdx != none) {
                 if (value != zero) { // update existing value
                     nonZeros[colIdx] = value;
@@ -316,7 +316,7 @@ public:
 
                 // update rowIdx
                 for (index k = i + 1; k < rowIdx.size(); ++k) {
-                    rowIdx[k]++;
+                    ++rowIdx[k];
                 }
             }
         } else {
@@ -337,7 +337,7 @@ public:
 
                 // update rowIdx
                 for (index k = i + 1; k < rowIdx.size(); ++k) {
-                    rowIdx[k]++;
+                    ++rowIdx[k];
                 }
             }
         }
