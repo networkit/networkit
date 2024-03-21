@@ -44,23 +44,36 @@ class GraphBuilder {
     count n;         //!< current number of nodes
     count selfloops; //!< currently encountered number of self loops
 
-    bool weighted; //!< true if the graph will be weighted, false otherwise
-    bool directed; //!< true if the graph will be directed, false otherwise
+    bool weighted;                  //!< true if the graph will be weighted, false otherwise
+    bool directed;                  //!< true if the graph will be directed, false otherwise
+    bool autoCompleteEdges = false; //!< if set to true, all function calls of addHalfEdge() will
+                                    //!< add both half edges, reducing the time to build
 
-    std::vector<std::vector<node>>
-        outEdges; //!< (outgoing) edges, for each edge (u, v) v is saved in
-                  //!< outEdges[u] and for undirected also u in outEdges[v]
-    std::vector<std::vector<edgeweight>>
-        outEdgeWeights; //!< same schema (and same order!) as outEdges
+    index indexInOutEdgeArrayPerThread(node u, node v) const;
 
-    std::vector<std::vector<node>> inEdges; //!< only used for directed graphs, inEdges[v] contains
-                                            //!< all nodes u that have an edge (u, v)
-    std::vector<std::vector<edgeweight>>
-        inEdgeWeights; //!< only used for directed graphs, same schema as inEdges
+    index indexInInEdgeArrayPerThread(node u, node v) const;
 
-    index indexInOutEdgeArray(node u, node v) const;
+    //!< only used in parallel graph building
+    struct HalfEdge {
+        node source;
+        node destination;
+        // HalfEdge(node source, node destination);
+        HalfEdge(){};
+        HalfEdge(node source, node destination) : source(source), destination(destination){};
+    };
 
-    index indexInInEdgeArray(node u, node v) const;
+    std::vector<std::vector<std::vector<HalfEdge>>>
+        outEdgesPerThread; //!< outgoing adjacency list for each thread, where
+                           //!< outEdges[cur_thread][u%max_threads] contains v if the edge (u,v)
+                           //!< exists
+    std::vector<std::vector<std::vector<edgeweight>>>
+        outEdgeWeightsPerThread; //!< corresponding weights (if weighted)
+    std::vector<std::vector<std::vector<HalfEdge>>>
+        inEdgesPerThread; //!< ingoing adjacency list (if directed) for each thread, where
+                          //!< inEdges[cur_thread][u%max_threads] contains v if the edge (u,v)
+                          //!< exists
+    std::vector<std::vector<std::vector<edgeweight>>>
+        inEdgeWeightsPerThread; //!< corresponding weights (if weighted)
 
 public:
     /**
@@ -76,8 +89,11 @@ public:
      * @param n Number of nodes.
      * @param weighted If set to <code>true</code>, the graph has edge weights.
      * @param directed If set to @c true, the graph will be directed.
+     * @param autoCompleteEdges If set to @c true, the edges will automatically be added to the
+     * adjacency lists of both nodes (decreases the time to build).
      */
-    GraphBuilder(count n = 0, bool weighted = false, bool directed = false);
+    GraphBuilder(count n = 0, bool weighted = false, bool directed = false,
+                 bool autoCompleteEdges = false);
 
     void reset(count n = 0);
 
@@ -122,13 +138,13 @@ public:
     /**
      * Insert an edge between the nodes @a u and @a v. If the graph is weighted
      * you can optionally set a weight for this edge. The default weight is 1.0.
+     * If setUseWholeEdges(true) has been called prior, this sets both half edges, which improves
+     * the performance of the graph builder.
      * @param u Endpoint of edge.
      * @param v Endpoint of edge.
      * @param weight Optional edge weight.
      */
-    void addHalfEdge(node u, node v, edgeweight ew = defaultEdgeWeight) {
-        addHalfOutEdge(u, v, ew);
-    }
+    void addHalfEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
     void addHalfOutEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
     void addHalfInEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
 
@@ -160,9 +176,19 @@ public:
     void increaseInWeight(node u, node v, edgeweight ew);
 
     /**
-     * Generates a Graph instance. The graph builder will be reseted at the end.
+     * Generates a Graph instance. The graph builder will be resetted at the end.
      */
-    Graph completeGraph(bool parallel);
+    Graph completeGraph();
+
+    /**
+     * DEPRECATED: use completeGraph() instead which uses the parallel mode by default (if
+     * possible).
+     */
+    Graph TLX_DEPRECATED(completeGraph([[maybe_unused]] bool parallel)) {
+        WARN("GraphBuilder::completeGraph(bool parallel) is deprecated, use "
+             "GraphBuilder::completeGraph() instead");
+        return completeGraph();
+    }
 
     /**
      * Iterate over all nodes of the graph and call @a handle (lambda closure).
@@ -199,9 +225,17 @@ public:
     template <typename L>
     void parallelForNodePairs(L handle) const;
 
+    /*
+     * If set to true, the graph builder automatically adds the second part of the halfEdge when
+     * calling <code>addHalfEdge(u,v)</code>. This enables the graph building process to be more
+     * efficient, while adding the halfEdges takes slightly longer.
+     */
+    void setAutoCompleteEdges(bool completeEdges = false) { autoCompleteEdges = completeEdges; };
+
 private:
     void toGraphSequential(Graph &G);
     void toGraphParallel(Graph &G);
+    void addHalfEdgesToGraph(Graph &G);
 
     template <typename T>
     static void copyAndClear(std::vector<T> &source, std::vector<T> &target);

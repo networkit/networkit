@@ -127,7 +127,7 @@ Graph ClusteredRandomGraphGenerator::generate() {
         addHalfOutEdges(u, end - 1, n, pInter);
     }
 
-    return graphBuilder.completeGraph(true);
+    return graphBuilder.completeGraph();
 }
 
 Partition ClusteredRandomGraphGenerator::getCommunities() {
