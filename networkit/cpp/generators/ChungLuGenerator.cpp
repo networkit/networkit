@@ -54,7 +54,7 @@ Graph ChungLuGenerator::generate() {
         }
     }
 
-    return gB.completeGraph(true);
+    return gB.completeGraph();
 }
 
 } /* namespace NetworKit */

@@ -92,7 +92,7 @@ Graph ThrillGraphBinaryReader::read(const std::vector<std::string> &paths) {
         }
     }
 
-    return gb.completeGraph(true);
+    return gb.completeGraph();
 }
 
 } // namespace NetworKit
