@@ -36,7 +36,7 @@ Graph GlobalThresholdFilter::calculate() {
         });
     });
 
-    auto sGraph = builder.completeGraph(false);
+    auto sGraph = builder.completeGraph();
     // WARNING: removeNode() must not be called in parallel (writes on vector<bool> and does
     // non-atomic decrement of number of nodes)!
     sGraph.forNodes([&](const node u) {
