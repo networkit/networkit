@@ -653,10 +653,11 @@ cdef class PowerlawDegreeSequence:
 	def __cinit__(self, minDeg, count maxDeg = 0, double gamma = -2):
 		if isinstance(minDeg, Graph):
 			self._this = new _PowerlawDegreeSequence((<Graph>minDeg)._this)
-		try:
-			self._this = new _PowerlawDegreeSequence(<vector[double]?>minDeg)
-		except TypeError:
-			self._this = new _PowerlawDegreeSequence((<count?>minDeg), maxDeg, gamma)
+		else:
+			try:
+				self._this = new _PowerlawDegreeSequence(<vector[double]?>minDeg)
+			except TypeError:
+				self._this = new _PowerlawDegreeSequence((<count?>minDeg), maxDeg, gamma)
 
 	def __dealloc__(self):
 		del self._this
