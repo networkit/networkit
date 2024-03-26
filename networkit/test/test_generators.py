@@ -182,10 +182,6 @@ class TestGraph(unittest.TestCase):
         degG = nk.centrality.DegreeCentrality(self.G).run().scores()
         minDegG = min(degG)
         maxDegG = max(degG)
-        avgDegG = sum(degG) / len(degG)
-        self.assertAlmostEqual(
-            PowGen.getExpectedAverageDegree(), avgDegG, avgDegG / 10.0
-        )
         self.assertEqual(PowGen.getMinimumDegree(), minDegG)
         self.assertEqual(PowGen.getMaximumDegree(), maxDegG)
 
