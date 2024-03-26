@@ -41,8 +41,7 @@ static void testEre(const bool directed, const node n, const double prob) {
         // initialize data
         edge_exists.assign(n * n, 0);
 
-        constexpr size_t cacheline_scale = 17; // avoid false sharing
-        std::vector<count> num_edges_thread(omp_get_max_threads() * cacheline_scale);
+        std::vector<count> num_edges_thread(omp_get_max_threads());
 
         auto handle = [&](int tid, node u, node v) {
             // ensure edge is legal (for undirected edges the
@@ -54,9 +53,9 @@ static void testEre(const bool directed, const node n, const double prob) {
             ASSERT_FALSE(edge_exists[edgeindex(u, v, n)]);
             edge_exists[edgeindex(u, v, n)] = 1;
 
-            // collect statistics for probabilisitic checks
+            // collect statistics for probabilistic checks
             edge_counts[edgeindex(u, v, n)]++;
-            num_edges_thread[cacheline_scale * tid]++;
+            num_edges_thread[tid]++;
         };
 
         count num_edges_gen;
@@ -65,16 +64,16 @@ static void testEre(const bool directed, const node n, const double prob) {
         else
             num_edges_gen = ere.forEdges(handle);
 
-        size_t num_edges = std::accumulate(num_edges_thread.cbegin(), num_edges_thread.cend(), 0u);
-        size_t active_threads = std::count_if(num_edges_thread.cbegin(), num_edges_thread.cend(),
-                                              [](count c) { return !!c; });
+        size_t num_edges = std::accumulate(num_edges_thread.begin(), num_edges_thread.end(), 0u);
+        size_t active_threads = std::count_if(num_edges_thread.begin(), num_edges_thread.end(),
+                                              [&](auto const &val) { return val > 0; });
 
         ASSERT_EQ(num_edges, num_edges_gen);
 
         // Check that result is somewhat balanced along threads
         if (Parallel && prob > 0) {
-            for (auto count : num_edges_thread)
-                ASSERT_LE(count, 2 * num_edges / active_threads);
+            for (auto edgeCount : num_edges_thread)
+                ASSERT_LE(edgeCount, 2 * num_edges / active_threads);
         }
 
         if (prob == 0.0 || prob == 1.0) {
