@@ -75,11 +75,7 @@ void IOBenchmark::convertToHeatMap(std::vector<bool> &infected, std::vector<doub
     file.open(filename.c_str());
 
     // write column labels
-    file << "x"
-         << "\t"
-         << "y"
-         << "\t"
-         << "label" << std::endl;
+    file << "x" << "\t" << "y" << "\t" << "label" << std::endl;
 
     // write heat map
     for (index i = 0; i < infectedByRegion.size(); i++) {
