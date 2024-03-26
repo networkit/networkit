@@ -85,32 +85,34 @@ def nodeAttributes(G, attribute=None):
 	else:
 		raise "Error, attribute has wrong type, call with nk.graph.NodeAttribute or tuple(nk.graph.NodeAttribute)." 
 
-def degreeDistribution(G, **kwargs):
+def degreeDistribution(G, *args, **kwargs):
 	"""
 	degreeDistribution(G, **kwargs)
 
 	Plots the degree distribution of the given network using matplotlib.
-	
+
 	Parameters
 	----------
 	G : networkit.Graph
 		The input graph.
-	`**kwargs` : `**kwargs`
-		Input data currently not used.
+	`*args` : list()
+		Additional *args parameter passed to matplotlib.pyplot.bar.
+	`**kwargs` : dict()
+		Additional **kwargs parameter passed to matplotlib.pyplot.bar
 	"""
 	if not have_plt:
 		raise MissingDependencyError("matplotlib")
-	dd=[0]*(graphtools.maxDegree(G)+1)
-	nodes=[]
+	dd = [0] * (graphtools.maxDegree(G) + 1)
+	nodes = []
 	for i in range(G.numberOfNodes()):
-		dd[G.degree(i)] += 1	
+		dd[G.degree(i)] += 1
 	for i in range(len(dd)):
 		nodes.append(i)
-	fig, ax = plt.subplots()	
-	ax.bar(nodes, dd)
-	ax.title.set_text("Degree Distribution")
-	ax.set_xlabel("Degree")
-	ax.set_ylabel("Number of Nodes")
+
+	plt.bar(nodes, dd, *args, **kwargs)
+	plt.title("Degree Distribution")
+	plt.xlabel("Degree")
+	plt.ylabel("Number of Nodes")
 	plt.show()
 
 def connectedComponentsSizes(G, relativeSizes=True, **kwargs):
