@@ -710,7 +710,7 @@ install(DIRECTORY include/networkit
 # Install ttmath header files
 install(DIRECTORY extlibs/ttmath/ttmath
 	DESTINATION ${NETWORKIT_INSTALL_INCLUDE_DIR}
-	FILES_MATCHING PATTERN "*.hpp")
+	FILES_MATCHING PATTERN "*.h")
 
 ################################################################################
 # Prepare pkg-config file
