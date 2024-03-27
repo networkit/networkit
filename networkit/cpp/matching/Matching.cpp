@@ -104,4 +104,4 @@ std::vector<node> Matching::getVector() const {
 }
 
 } // namespace NetworKit
-  /* namespace NetworKit */
+/* namespace NetworKit */
