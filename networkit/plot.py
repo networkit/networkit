@@ -115,9 +115,9 @@ def degreeDistribution(G, *args, **kwargs):
 	plt.ylabel("Number of Nodes")
 	plt.show()
 
-def connectedComponentsSizes(G, relativeSizes=True, **kwargs):
+def connectedComponentsSizes(G, relativeSizes=True):
 	""" 
-	connectedComponentsSizes(G, **kwargs)
+	connectedComponentsSizes(G, relativeSizes=True)
 	
 	Plot the size distribution of connected components as a pie chart using matplotlib. 
 	
@@ -125,16 +125,18 @@ def connectedComponentsSizes(G, relativeSizes=True, **kwargs):
 	----------
 	G : networkit.Graph
 		The input graph.
-	`**kwargs` : `**kwargs`
-		Input parameter currently not used.
+	relativeSizes : bool, optional
+		If relativeSizes is set to True, the component sizes in the pie chart will
+		correlate with their number of nodes. Default: True
 	"""
 	if not have_seaborn:
 		raise MissingDependencyError("seaborn")
 	if not have_plt:
 		raise MissingDependencyError("matplotlib")
 	csizes = components.ConnectedComponents(G).run().getComponentSizes()
+	data = sorted(list(csizes.values()), reverse=True)
 	colors = seaborn.color_palette("Set2", 10)
-	data = list(csizes.values())
+	total = sum(data)
 	# explode the largest component pie piece
 	maxi = data.index(max(data))
 	explode = [0 for i in range(len(data))]
@@ -142,9 +144,13 @@ def connectedComponentsSizes(G, relativeSizes=True, **kwargs):
 	# plot
 	plt.figure(figsize=(5,5))
 	plt.title("Size of Connected Components")
-	total = sum(data)
-	if relativeSizes:
-		plt.pie(data, colors=colors, autopct='%1.1f%%', explode=explode)
+	# TODO: add legend for topK (how much is the total percentage worth) '%1.1f%%'
+
+	def filter_autopct(pct):
+		return ('%1.f%%' % pct) if pct > 5 else ''
+
+	if relativeSizes: 
+		plt.pie(data, colors=colors, autopct=filter_autopct, explode=explode)
 	else: 
 		plt.pie(data, colors=colors, autopct=lambda p: '{:.0f}'.format(p * total / 100), explode=explode)
 
