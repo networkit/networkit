@@ -144,7 +144,6 @@ def connectedComponentsSizes(G, relativeSizes=True):
 	# plot
 	plt.figure(figsize=(5,5))
 	plt.title("Size of Connected Components")
-	# TODO: add legend for topK (how much is the total percentage worth) '%1.1f%%'
 
 	def filter_autopct(pct):
 		return ('%1.f%%' % pct) if pct > 5 else ''
@@ -205,7 +204,7 @@ def clusteringPerDegree(G):
 	data = data.groupby("deg", as_index=False).mean()
 	jointplot = seaborn.jointplot(data, x="deg", y="cc",kind="reg", ylim=(0, 1))
 
-def hopPlot(G, **kwargs):
+def hopPlot(G, *args, **kwargs):
 	""" 
 	hopPlot(G, **kwargs)
 	
@@ -215,8 +214,10 @@ def hopPlot(G, **kwargs):
 	----------
 	G : networkit.Graph
 		The input graph.
-	`**kwargs` : `**kwargs`
-		Input parameter currently not used.
+	`*args` : list()
+		Additional *args parameter passed to matplotlib.pyplot.bar.
+	`**kwargs` : dict()
+		Additional **kwargs parameter passed to matplotlib.pyplot.bar
 	"""
 	#hop-plot
 	if not have_plt:
@@ -237,5 +238,5 @@ def hopPlot(G, **kwargs):
 	plt.xlabel('Distance (d)')
 	plt.ylabel('Percentage of connected nodes (g(d))')
 	plt.ylim([0,102])
-	plt.plot(list(hopPlot.keys()), distances, **kwargs)
+	plt.plot(list(hopPlot.keys()), distances, *args, **kwargs)
 	plt.show()
