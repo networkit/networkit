@@ -2,11 +2,12 @@
 import unittest
 import networkit as nk
 
+
 class TestGraph(unittest.TestCase):
-    
+
     def setUp(self):
         self.G = nk.readGraph("input/looptest1.gml", nk.Format.GML)
-                
+
     def testClusteredRandomGraphGenerator(self):
         n, k = 100, 10
         pIntra, pInter = 0.1, 0.05
@@ -16,22 +17,22 @@ class TestGraph(unittest.TestCase):
         nCommunities = len(set(gen.getCommunities().getVector()))
         self.assertGreater(nCommunities, 0)
         self.assertLessEqual(nCommunities, k)
-      
+
     def testBarabasiAlbertGenerator(self):
         g = nk.generators.BarabasiAlbertGenerator(2, 50, 1)
-        g.fit(self.G)  
+        g.fit(self.G)
         self.assertEqual(g.generate().numberOfNodes(), 50)
         self.assertEqual(g.generate().numberOfEdges(), 98)
-  
+
     def testBTERReplicator(self):
         g = nk.generators.BTERReplicator(self.G)
         g.setPaths("./BTER.data")
         g.fit(self.G)
-    
+
     def testChungLuGenerator(self):
         g = nk.generators.ChungLuGenerator([1.3, 1.5, 1.7])
         g.fit(self.G)
-        self.assertEqual(g.generate().numberOfNodes(), 3)    
+        self.assertEqual(g.generate().numberOfNodes(), 3)
 
     def testDorogovtsevMendesGenerator(self):
         g = nk.generators.DorogovtsevMendesGenerator(100)
@@ -45,7 +46,7 @@ class TestGraph(unittest.TestCase):
         res = g.getGraph()
         coords = g.getCoordinates()
         self.assertEqual(res.numberOfNodes(), 100)
-        self.assertEqual(len(coords), 100) 
+        self.assertEqual(len(coords), 100)
 
     def testDynamicPubWebGenerator(self):
         n = 100
@@ -59,9 +60,9 @@ class TestGraph(unittest.TestCase):
 
         # check that all points are within the unit square and that they are non-empt
         self.assertTrue(all(0.0 <= pt[0] <= 1 for pt in coords))
-        self.assertTrue(any(0.0 <  pt[0] <  1 for pt in coords))
+        self.assertTrue(any(0.0 < pt[0] < 1 for pt in coords))
         self.assertTrue(all(0.0 <= pt[1] <= 1 for pt in coords))
-        self.assertTrue(any(0.0 <  pt[1] <  1 for pt in coords))
+        self.assertTrue(any(0.0 < pt[1] < 1 for pt in coords))
 
         gen.generate(10)
 
@@ -72,16 +73,18 @@ class TestGraph(unittest.TestCase):
     def testDynamicForestFireGenerator(self):
         dyn = nk.generators.DynamicForestFireGenerator(0.5, directed=True)
         G = dyn.generate(10)
-        self.assertGreaterEqual(len(G), 20)    
-    
+        self.assertGreaterEqual(len(G), 20)
+
     def testEdgeSwitchingMarkovChainGenerator(self):
         n = 100
         while True:
-            degseq = nk.generators.PowerlawDegreeSequence(2, n).run().getDegreeSequence(n)
+            degseq = (
+                nk.generators.PowerlawDegreeSequence(2, n).run().getDegreeSequence(n)
+            )
             gen = nk.generators.EdgeSwitchingMarkovChainGenerator(degseq, False, 10)
             if not gen.isRealizable():
                 continue
-            
+
             G = gen.generate()
             self.assertEqual(G.numberOfNodes(), n)
             for u in range(G.numberOfNodes()):
@@ -95,13 +98,13 @@ class TestGraph(unittest.TestCase):
         self.assertEqual(g.generate().numberOfNodes(), 10)
 
     def testHavelHakimiGenerator(self):
-        g = nk.generators.HavelHakimiGenerator([2,2,2,2])
-        self.assertTrue(g.isRealizable()) 
+        g = nk.generators.HavelHakimiGenerator([2, 2, 2, 2])
+        self.assertTrue(g.isRealizable())
         self.assertTrue(g.getRealizable())
 
     def testHavelHakimiGeneratorFit(self):
-        g = nk.generators.HavelHakimiGenerator([2,2,2,2])  
-        g.fit(self.G)  
+        g = nk.generators.HavelHakimiGenerator([2, 2, 2, 2])
+        g.fit(self.G)
         self.assertEqual(g.generate().numberOfNodes(), 4)
         self.assertEqual(g.generate().numberOfEdges(), 4)
 
@@ -114,9 +117,9 @@ class TestGraph(unittest.TestCase):
 
     def testLFRGenerator(self):
         g = nk.generators.LFRGenerator(5)
-        g.setDegreeSequence([0,0,0,0,0])
+        g.setDegreeSequence([0, 0, 0, 0, 0])
         g.setMu(1.5)
-        g.setCommunitySizeSequence([1,1,1,1,1])
+        g.setCommunitySizeSequence([1, 1, 1, 1, 1])
         self.assertEqual(g.generate().numberOfNodes(), 5)
         g.run()
         self.assertEqual(g.getGraph().numberOfEdges(), 0)
@@ -124,15 +127,15 @@ class TestGraph(unittest.TestCase):
 
     def testLFRGeneratorFit(self):
         g = nk.generators.LFRGenerator(5)
-        g.setDegreeSequence([0,0,0,0,0])
+        g.setDegreeSequence([0, 0, 0, 0, 0])
         g.setMu(1.5)
-        g.setCommunitySizeSequence([1,1,1,1,1])
+        g.setCommunitySizeSequence([1, 1, 1, 1, 1])
         g.fit(self.G)
         self.assertEqual(g.generate().numberOfNodes(), 5)
-        self.assertEqual(g.generate().numberOfEdges(), 0)   
-        
+        self.assertEqual(g.generate().numberOfEdges(), 0)
+
     def testLFRGeneratorPowerlawDegreeSequence(self):
-        #Example with generatingPowerlaw functions
+        # Example with generatingPowerlaw functions
         g2 = nk.generators.LFRGenerator(100)
         g2.generatePowerlawDegreeSequence(10, 20, -2)
         g2.generatePowerlawCommunitySizeSequence(10, 50, -1)
@@ -155,9 +158,9 @@ class TestGraph(unittest.TestCase):
         g2.generatePowerlawDegreeSequence(5, 6, -2)
         g2.generatePowerlawCommunitySizeSequence(5, 6, -1)
         g2.setMu(0.5)
-        g2.fit(self.G, vanilla=True, plfit=False) 
+        g2.fit(self.G, vanilla=True, plfit=False)
         self.assertEqual(g2.generate().numberOfNodes(), 10)
-   
+
     def testPowerLawDegreeSequence(self):
         n = 100
         PowGen = nk.generators.PowerlawDegreeSequence(2, n)
@@ -172,6 +175,16 @@ class TestGraph(unittest.TestCase):
         # Algorithm is not deterministic
         self.assertIsInstance(PowGen.getDegree(), int)
 
+    def testPowerLawDegreeSequenceFromGraph(self):
+        PowGen = nk.generators.PowerlawDegreeSequence(self.G)
+        PowGen.run()
+
+        degG = nk.centrality.DegreeCentrality(self.G).run().scores()
+        minDegG = min(degG)
+        maxDegG = max(degG)
+        self.assertEqual(PowGen.getMinimumDegree(), minDegG)
+        self.assertEqual(PowGen.getMaximumDegree(), maxDegG)
+
     def testPubWebGenerator(self):
         n = 100
         gen = nk.generators.PubWebGenerator(n, 8, 0.1, 4)
@@ -184,9 +197,9 @@ class TestGraph(unittest.TestCase):
 
         # check that all points are within the unit square and that they are non-empt
         self.assertTrue(all(0.0 <= pt[0] <= 1 for pt in coords))
-        self.assertTrue(any(0.0 <  pt[0] <  1 for pt in coords))
+        self.assertTrue(any(0.0 < pt[0] < 1 for pt in coords))
         self.assertTrue(all(0.0 <= pt[1] <= 1 for pt in coords))
-        self.assertTrue(any(0.0 <  pt[1] <  1 for pt in coords))
+        self.assertTrue(any(0.0 < pt[1] < 1 for pt in coords))
 
     def testRmatGenerator(self):
         g = nk.generators.RmatGenerator(2, 1, 0.25, 0.25, 0.25, 0.25)
@@ -199,11 +212,11 @@ class TestGraph(unittest.TestCase):
         g = nk.generators.RmatGenerator(2, 1, 0.25, 0.25, 0.25, 0.25)
         g.setPaths("./rMat.data")
         inputGraph = nk.Graph(3)
-        inputGraph.addEdge(0,1)
-        inputGraph.addEdge(1,2)
-        g.fit(inputGraph, kronfit=False) 
+        inputGraph.addEdge(0, 1)
+        inputGraph.addEdge(1, 2)
+        g.fit(inputGraph, kronfit=False)
         self.assertEqual(g.generate().numberOfNodes(), 4)
-        self.assertEqual(g.generate().numberOfEdges(), 4) 
+        self.assertEqual(g.generate().numberOfEdges(), 4)
 
     def testWattsStrogatzGenerator(self):
         n = 12
@@ -211,7 +224,8 @@ class TestGraph(unittest.TestCase):
         G = nk.generators.WattsStrogatzGenerator(n, nbrs, 0.5).generate()
 
         self.assertEqual(G.numberOfNodes(), n)
-        self.assertEqual(G.numberOfEdges(), n*nbrs)
+        self.assertEqual(G.numberOfEdges(), n * nbrs)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -90,7 +90,7 @@ if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR
 	endif()
 
 elseif (MSVC)
-	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DNETWORKIT_OMP2 /MP /DNETWORKIT_WINDOWS")
+	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DNETWORKIT_OMP2 /MP /DNETWORKIT_WINDOWS /permissive-")
 
 	# TTMath requires running an ASM for MSVC which we disable here at the cost of worse performance
 	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DTTMATH_NOASM=1")
@@ -710,7 +710,7 @@ install(DIRECTORY include/networkit
 # Install ttmath header files
 install(DIRECTORY extlibs/ttmath/ttmath
 	DESTINATION ${NETWORKIT_INSTALL_INCLUDE_DIR}
-	FILES_MATCHING PATTERN "*.hpp")
+	FILES_MATCHING PATTERN "*.h")
 
 ################################################################################
 # Prepare pkg-config file
