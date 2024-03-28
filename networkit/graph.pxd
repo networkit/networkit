@@ -90,10 +90,16 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		_NodeIntAttribute attachNodeIntAttribute(string) except +
 		_NodeDoubleAttribute attachNodeDoubleAttribute(string) except +
 		_NodeStringAttribute attachNodeStringAttribute(string) except +
+		_NodeIntAttribute getNodeIntAttribute(string) except +
+		_NodeDoubleAttribute getNodeDoubleAttribute(string) except +
+		_NodeStringAttribute getNodeStringAttribute(string) except +
 		void detachNodeAttribute(string) except +
 		_EdgeIntAttribute attachEdgeIntAttribute(string) except +
 		_EdgeDoubleAttribute attachEdgeDoubleAttribute(string) except +
 		_EdgeStringAttribute attachEdgeStringAttribute(string) except +
+		_EdgeIntAttribute getEdgeIntAttribute(string) except +
+		_EdgeDoubleAttribute getEdgeDoubleAttribute(string) except +
+		_EdgeStringAttribute getEdgeStringAttribute(string) except +
 		void detachEdgeAttribute(string) except +
 
 cdef extern from "<networkit/graph/Graph.hpp>":

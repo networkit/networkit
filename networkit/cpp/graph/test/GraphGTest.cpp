@@ -1929,10 +1929,14 @@ TEST_P(GraphGTest, testEdgeIndexResolver) {
     G.addEdge(5, 6);
     G.addEdge(2, 2);
 
+    if (G.isDirected())
+        G.addEdge(3, 2);
+
     std::map<std::pair<node, node>, edgeid> expectedEdges;
     expectedEdges[std::make_pair(0, 0)] = 0;
     expectedEdges[std::make_pair(5, 6)] = 1;
     expectedEdges[std::make_pair(2, 2)] = 2;
+    expectedEdges[std::make_pair(3, 2)] = 3;
 
     G.forEdges([&](node, node, edgeid eid) {
         auto edge = G.edgeById(eid);

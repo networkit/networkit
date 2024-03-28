@@ -395,6 +395,44 @@ class TestGraph(unittest.TestCase):
 			G.detachEdgeAttribute("attribute")
 			G.detachEdgeAttribute("attributeRead")
 
+	def testEdgeAttributeGet(self):
+		G = nk.Graph(5)
+		G.indexEdges()
+
+		G.addEdge(0, 1)
+		G.addEdge(0, 2)
+		G.addEdge(1, 3)
+		G.addEdge(2, 4)
+
+		for attType in [int, float, str]:
+			attVals = [attType(u+v) for u,v in G.iterEdges()]
+
+			attrs = G.attachEdgeAttribute("attribute", attType)
+			for u,v in G.iterEdges():
+				attrs[u,v] = attVals[u]
+			
+			attrsGet = G.getEdgeAttribute("attribute", attType)
+			for u,v in G.iterEdges():
+				self.assertEqual(attrs[u,v], attrsGet[u,v])
+
+			G.detachEdgeAttribute("attribute")
+
+	def testNodeAttributeReadWrite(self):
+		G = nk.Graph(5)
+
+		for attType in [int, float, str]:
+			attVals = [attType(u) for u in G.iterNodes()]
+
+			attrs = G.attachNodeAttribute("attribute", attType)
+			for u in G.iterNodes():
+				attrs[u] = attVals[u]
+
+			attrsGet = G.getNodeAttribute("attribute", attType)
+			for u in G.iterNodes():
+				self.assertEqual(attrs[u], attrsGet[u])
+
+			G.detachNodeAttribute("attribute")
+
 	def testRandomEdgesReproducibility(self):
 		numSamples = 10
 		numSeeds = 3

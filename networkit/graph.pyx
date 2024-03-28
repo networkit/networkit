@@ -989,6 +989,42 @@ cdef class Graph:
 		elif ofType == str:
 			return NodeAttribute(NodeStringAttribute().setThis(self._this.attachNodeStringAttribute(stdstring(name)), &self._this), str)
 
+	def getNodeAttribute(self, name, ofType):
+		"""
+		getNodeAttribute(name, ofType)
+
+		Gets a node attribute that is already attached to the graph and returns it.
+
+		.. code-block::
+			
+			A = G.getNodeAttribute("attributeIdentifier", ofType)
+
+		Notes
+		-----
+		Using node attributes is in experimental state. The API may change in future updates.
+
+		Parameters
+		----------
+		name   : str
+			Name for this attribute
+		ofType : type
+			Type of the attribute (either int, float, or str)
+
+		Returns
+		-------
+		networkit.graph.NodeAttribute
+			The resulting node attribute container.
+		"""
+		if not isinstance(name, str):
+			raise Exception("Attribute name has to be a string")
+
+		if ofType == int:
+			return NodeAttribute(NodeIntAttribute().setThis(self._this.getNodeIntAttribute(stdstring(name)), &self._this), int)
+		elif ofType == float:
+			return NodeAttribute(NodeDoubleAttribute().setThis(self._this.getNodeDoubleAttribute(stdstring(name)), &self._this), float)
+		elif ofType == str:
+			return NodeAttribute(NodeStringAttribute().setThis(self._this.getNodeStringAttribute(stdstring(name)), &self._this), str)
+
 	def detachNodeAttribute(self, name):
 		"""
 		detachNodeAttribute(name)
@@ -1053,6 +1089,43 @@ cdef class Graph:
 			return EdgeAttribute(EdgeDoubleAttribute().setThis(self._this.attachEdgeDoubleAttribute(stdstring(name)), &self._this), float)
 		elif ofType == str:
 			return EdgeAttribute(EdgeStringAttribute().setThis(self._this.attachEdgeStringAttribute(stdstring(name)), &self._this), str)
+
+	
+	def getEdgeAttribute(self, name, ofType):
+		"""
+		getEdgeAttribute(name, ofType)
+
+		Gets an edge attribute that is already attached to the graph and returns it.
+
+		.. code-block::
+	
+			A = G.getEdgeAttribute("attributeIdentifier", ofType)
+
+		Notes
+		-----
+		Using edge attributes is in experimental state. The API may change in future updates.
+
+		Parameters
+		----------
+		name   : str
+			Name for this attribute
+		ofType : type
+			Type of the attribute (either int, float, or str)
+
+		Returns
+		-------
+		networkit.graph.EdgeAttribute
+			The resulting edge attribute container.
+		"""
+		if not isinstance(name, str):
+			raise Exception("Attribute name has to be a string")
+
+		if ofType == int:
+			return EdgeAttribute(EdgeIntAttribute().setThis(self._this.getEdgeIntAttribute(stdstring(name)), &self._this), int)
+		elif ofType == float:
+			return EdgeAttribute(EdgeDoubleAttribute().setThis(self._this.getEdgeDoubleAttribute(stdstring(name)), &self._this), float)
+		elif ofType == str:
+			return EdgeAttribute(EdgeStringAttribute().setThis(self._this.getEdgeStringAttribute(stdstring(name)), &self._this), str)
 
 	def detachEdgeAttribute(self, name):
 		"""
@@ -1129,7 +1202,6 @@ cdef class NodeIntAttribute:
 
 	cdef setThis(self, _NodeIntAttribute& other, _Graph* G):
 		self._this.swap(other)
-		self._G = G
 		return self
 
 	def __getitem__(self, node):
@@ -1174,7 +1246,6 @@ cdef class NodeIntAttribute:
 cdef class NodeDoubleAttribute:
 	cdef setThis(self, _NodeDoubleAttribute& other, _Graph* G):
 		self._this.swap(other)
-		self._G = G
 		return self
 
 	def __getitem__(self, node):
@@ -1218,7 +1289,6 @@ cdef class NodeStringAttribute:
 
 	cdef setThis(self, _NodeStringAttribute& other, _Graph* G):
 		self._this.swap(other)
-		self._G = G
 		return self
 
 	def getName(self):
@@ -1326,7 +1396,6 @@ cdef class EdgeIntAttribute:
 
 	cdef setThis(self, _EdgeIntAttribute& other, _Graph* G):
 		self._this.swap(other)
-		self._G = G
 		return self
 
 	def __getitem__(self, edgeIdORnodePair):
@@ -1384,7 +1453,6 @@ cdef class EdgeIntAttribute:
 cdef class EdgeDoubleAttribute:
 	cdef setThis(self, _EdgeDoubleAttribute& other, _Graph* G):
 		self._this.swap(other)
-		self._G = G
 		return self
 
 	def __getitem__(self, edgeIdORnodePair):
@@ -1442,7 +1510,6 @@ cdef class EdgeStringAttribute:
 
 	cdef setThis(self, _EdgeStringAttribute& other, _Graph* G):
 		self._this.swap(other)
-		self._G = G
 		return self
 
 	def __getitem__(self, edgeIdORnodePair):
