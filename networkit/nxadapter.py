@@ -96,7 +96,11 @@ def nx2nk(
         for node, attributes in nxG.nodes(data=True):
             # when we see a new attr, create/attach to graph. otherwise add to existing (get by name). if type is not compatible, raise exception. type is inferred from the first occurence.
             for key, value in attributes.items():
-                valueType = typeMap[key] if str(key) in typeMap else _inferType(value)
+                valueType = (
+                    typeMap.get(key, _inferType(value))
+                    if typeMap
+                    else _inferType(value)
+                )
                 try:
                     attribute = nkG.getNodeAttribute(str(key), valueType or str)
                 except RuntimeError:  # attribute does not exist or is of different type
@@ -127,7 +131,11 @@ def nx2nk(
             for key, value in attributes.items():
                 if key == weightAttr:
                     continue
-                valueType = typeMap[key] if str(key) in typeMap else _inferType(value)
+                valueType = (
+                    typeMap.get(key, _inferType(value))
+                    if typeMap
+                    else _inferType(value)
+                )
                 try:
                     attribute = nkG.getEdgeAttribute(str(key), valueType or str)
                 except RuntimeError:  # attribute does not exist or is of different type
