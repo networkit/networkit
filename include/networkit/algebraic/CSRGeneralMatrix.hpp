@@ -52,9 +52,9 @@ public:
      * @param zero The zero element (default = 0).
      * @param isSorted If the matrix representation should uses sorted vectors.
      */
-    CSRGeneralMatrix(count dimension, ValueType zero = 0, bool isSorted = true)
+    CSRGeneralMatrix(count dimension, ValueType zero = 0)
         : rowIdx(dimension + 1), columnIdx(0), nonZeros(0), nRows(dimension), nCols(dimension),
-          isSorted(isSorted), zero(zero) {}
+          isSorted(true), zero(zero) {}
 
     /**
      * Constructs the CSRGeneralMatrix with size @a nRows x @a nCols.
@@ -63,9 +63,9 @@ public:
      * @param zero The zero element (default = 0).
      * @param isSorted If the matrix representation should uses sorted vectors.
      */
-    CSRGeneralMatrix(count nRows, count nCols, ValueType zero = 0, bool isSorted = true)
+    CSRGeneralMatrix(count nRows, count nCols, ValueType zero = 0)
         : rowIdx(nRows + 1), columnIdx(0), nonZeros(0), nRows(nRows), nCols(nCols),
-          isSorted(isSorted), zero(zero) {}
+          isSorted(true), zero(zero) {}
 
     /**
      * Constructs the @a dimension x @a dimension Matrix from the elements at
@@ -386,6 +386,13 @@ public:
      * @return True if the matrix is sorted, otherwise false.
      */
     bool sorted() const noexcept { return isSorted; }
+
+    /**
+     * Make the matrix use an unsorted representation.
+     */
+    void makeUnsorted() {
+        isSorted = false;
+    }
 
     /**
      * @return Row @a i of this matrix as vector.

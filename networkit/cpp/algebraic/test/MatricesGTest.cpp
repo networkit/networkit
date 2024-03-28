@@ -1372,7 +1372,7 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValueSorted) {
      * -1 1 -1
      */
 
-    CSRMatrix A(2, 3, 0, true);
+    CSRMatrix A(2, 3, 0);
     A.setValue(0, 0, 1);
     A.setValue(0, 1, -1);
     A.setValue(1, 0, -1);
@@ -1452,7 +1452,9 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValueUnsorted) {
      * -1 1 -1
      */
 
-    CSRMatrix A(2, 3, 0, false);
+    CSRMatrix A(2, 3, 0);
+    A.makeUnsorted();
+
     A.setValue(0, 0, 1);
     A.setValue(0, 1, -1);
     A.setValue(1, 0, -1);
@@ -1475,7 +1477,8 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValueUnsorted) {
      * 0  0  0 0.5
      * */
 
-    CSRMatrix B(4, 0, false);
+    CSRMatrix B(4, 0.0);
+    B.makeUnsorted();
 
     B.setValue(0, 1, 0.5);
     B.setValue(0, 3, -1.2);
@@ -1491,7 +1494,8 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValueUnsorted) {
     EXPECT_EQ(B(2, 3), 0.6);
     EXPECT_EQ(B(3, 3), 0.5);
 
-    CSRMatrix C(4, 0, false);
+    CSRMatrix C(4, 0.0);
+    C.makeUnsorted();
 
     C.setValue(1, 0, 1);
     C.setValue(1, 3, 4);
@@ -1512,6 +1516,100 @@ TEST_F(CSRMatrixGTest, testCSRMatrixSetValueUnsorted) {
     EXPECT_EQ(C(2, 3), 6);
     EXPECT_EQ(C(0, 3), 7);
     EXPECT_EQ(C(0, 2), 0);
+
+    C.setValue(1, 0, 0);
+    C.setValue(1, 3, 0);
+    C.setValue(2, 3, 0);
+
+    EXPECT_EQ(C(1, 0), 0);
+    EXPECT_EQ(C(1, 1), 2);
+    EXPECT_EQ(C(1, 2), 3);
+    EXPECT_EQ(C(1, 3), 0);
+    EXPECT_EQ(C(3, 3), 5);
+    EXPECT_EQ(C(2, 3), 0);
+    EXPECT_EQ(C(0, 3), 7);
+    EXPECT_EQ(C(0, 2), 0);
+}
+
+TEST_F(CSRMatrixGTest, testCSRMatrixSetValueMakeUnsorted) {
+    /* 1 -1 1
+     * -1 1 -1
+     */
+
+    CSRMatrix A(2, 3, 0);
+    A.setValue(0, 0, 1);
+    A.setValue(0, 1, -1);
+    A.setValue(1, 0, -1);
+    A.setValue(1, 1, 1);
+    A.setValue(0, 2, 1);
+    A.setValue(1, 2, -1);
+
+    EXPECT_TRUE(A.sorted());
+
+    EXPECT_EQ(A(0, 0), 1);
+    EXPECT_EQ(A(0, 1), -1);
+    EXPECT_EQ(A(1, 0), -1);
+    EXPECT_EQ(A(1, 1), 1);
+    EXPECT_EQ(A(0, 2), 1);
+    EXPECT_EQ(A(1, 2), -1);
+
+    A.makeUnsorted();
+    EXPECT_FALSE(A.sorted());
+
+    EXPECT_EQ(A(0, 0), 1);
+    EXPECT_EQ(A(0, 1), -1);
+    EXPECT_EQ(A(1, 0), -1);
+    EXPECT_EQ(A(1, 1), 1);
+    EXPECT_EQ(A(0, 2), 1);
+    EXPECT_EQ(A(1, 2), -1);
+
+    /* 0 0.5 0 -1.2
+     * 0  0 -2  0
+     * 0  0  0 0.6
+     * 0  0  0 0.5
+     * */
+
+    CSRMatrix B(4, 0.0);
+    B.makeUnsorted();
+
+    B.setValue(0, 1, 0.5);
+    B.setValue(0, 3, -1.2);
+    B.setValue(1, 2, -2);
+    B.setValue(2, 3, 0.6);
+    B.setValue(3, 3, 0.5);
+
+    EXPECT_FALSE(B.sorted());
+
+    EXPECT_EQ(B(0, 1), 0.5);
+    EXPECT_EQ(B(0, 3), -1.2);
+    EXPECT_EQ(B(1, 2), -2);
+    EXPECT_EQ(B(2, 3), 0.6);
+    EXPECT_EQ(B(3, 3), 0.5);
+
+    CSRMatrix C(4, 0.0);
+
+    C.setValue(1, 0, 1);
+    C.setValue(1, 3, 4);
+    C.setValue(1, 1, 2);
+    C.setValue(1, 2, 3);
+    C.setValue(3, 3, 5);
+    C.setValue(2, 3, 6);
+    C.setValue(0, 3, 7);
+    C.setValue(0, 2, 0);
+
+    EXPECT_TRUE(C.sorted());
+
+    EXPECT_EQ(C(1, 0), 1);
+    EXPECT_EQ(C(1, 1), 2);
+    EXPECT_EQ(C(1, 2), 3);
+    EXPECT_EQ(C(1, 3), 4);
+    EXPECT_EQ(C(3, 3), 5);
+    EXPECT_EQ(C(2, 3), 6);
+    EXPECT_EQ(C(0, 3), 7);
+    EXPECT_EQ(C(0, 2), 0);
+
+    C.makeUnsorted();
+    EXPECT_FALSE(C.sorted());
 
     C.setValue(1, 0, 0);
     C.setValue(1, 3, 0);
