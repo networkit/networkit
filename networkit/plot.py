@@ -87,7 +87,7 @@ def nodeAttributes(G, attribute=None):
 
 def degreeDistribution(G, *args, **kwargs):
 	"""
-	degreeDistribution(G, **kwargs)
+	degreeDistribution(G, *args, **kwargs)
 
 	Plots the degree distribution of the given network using matplotlib.
 
@@ -154,9 +154,9 @@ def connectedComponentsSizes(G, relativeSizes=True):
 	else: 
 		plt.pie(data, colors=colors, autopct=lambda p: '{:.0f}'.format(p * total / 100), explode=explode)
 
-def coreDecompositionSequence(G, **kwargs):
+def coreDecompositionSequence(G, *args, **kwargs):
 	""" 
-	coreDecompositionSequence(G, **kwargs)
+	coreDecompositionSequence(G, *args, **kwargs)
 	
 	Plots the core decomposition sequence of G, i.e. the size of the k-shell for the core number k using matplotlib.
 	
@@ -164,8 +164,10 @@ def coreDecompositionSequence(G, **kwargs):
 	----------
 	G : networkit.Graph
 		The input graph.
-	`**kwargs` : `**kwargs`
-		Input parameter currently not used.
+	`*args` : list()
+		Additional *args parameter passed to matplotlib.pyplot.bar.
+	`**kwargs` : dict()
+		Additional **kwargs parameter passed to matplotlib.pyplot.bar
 	"""
 	if not have_plt:
 		raise MissingDependencyError("matplotlib")
@@ -174,13 +176,12 @@ def coreDecompositionSequence(G, **kwargs):
 	for i in range(len(shells)):
 		k.append(i+1)
 
-	fig, ax = plt.subplots(squeeze=True)	
-	ax.title.set_text("Size of Core Decomposition K-Shells")
-	ax.bar(k, shells)
-	ax.set_xticks(k)
-	ax.set_yticks(shells)
-	ax.set_xlabel("K-core decomposition(k)")
-	ax.set_ylabel("Size of k-shell")
+	plt.bar(k, shells, *args, **kwargs)
+	plt.title("Size of Core Decomposition K-Shells")
+	plt.xticks(k)
+	plt.yticks(shells)
+	plt.xlabel("K-core decomposition(k)")
+	plt.ylabel("Size of k-shell")
 	plt.show()
 
 def clusteringPerDegree(G):
