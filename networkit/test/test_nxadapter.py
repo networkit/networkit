@@ -261,13 +261,10 @@ class TestNXAdapter(unittest.TestCase):
         self.assertEqual(edgeAttr[1, 0], "(0, 'a', '0a')")
         self.assertEqual(edgeAttr[2, 0], "(0, 3, '03')")
         self.assertEqual(edgeAttr[3, 1], "('a', 2, 'a2')")
-        self.assertEqual(edgeAttr[2, 3], "(3, 2, '32'")
+        self.assertEqual(edgeAttr[2, 3], "(3, 2, '32')")
 
         mock_stdout.write.assert_has_calls(
             [
-                unittest.mock.call(
-                    "Info: the node attribute complexNodeAttr has been converted to its string representation."
-                ),
                 unittest.mock.call(
                     "Info: the edge attribute complexEdgeAttr has been converted to its string representation."
                 ),
@@ -285,9 +282,24 @@ class TestNXAdapter(unittest.TestCase):
         self.assertEqual(len(nxG.edges()), 2)
         self.assertEqual(len(nxG.nodes()), 3)
 
+    @unittest.mock.patch("sys.stdout")
+    def test_nx2nk_custom_typemap(self, mock_stdout):
+        nxG = self.toyNxgraph(directed=False, data=["intEdgeAttr", "intNodeAttr"])
+        nkG = nk.nxadapter.nx2nk(nxG, data=True, typeMap={"intEdgeAttr": int})
 
-# @unittest.mock.patch('sys.stdout', new_callable=io.StringIO)
+        edgeAttr = nkG.getEdgeAttribute("intEdgeAttr", int)
+        self.assertEqual(edgeAttr[0, 1], 1)
+        self.assertEqual(edgeAttr[0, 2], 2)
+        self.assertEqual(edgeAttr[1, 3], -3)
+
+        nodeAttr = nkG.getNodeAttribute("intNodeAttr", int)
+        self.assertEqual(nodeAttr[0], 4)
+        self.assertEqual(nodeAttr[1], 5)
+        self.assertEqual(nodeAttr[3], 6)
+        self.assertEqual(nodeAttr[2], 7)
+
+        mock_stdout.write.assert_not_called()
+
 
 if __name__ == "__main__":
-    # TestNXAdapter().test_nx2nk_int_directed()
     unittest.main()
