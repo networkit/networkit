@@ -40,9 +40,9 @@ def _inferType(attr: object) -> Union[int, float, str, None]:
 
 def nx2nk(
     nxG: Union[nx.Graph, nx.DiGraph],
-    weightAttr: str = None,
+    weightAttr: Union[str, None] = None,
     data: bool = False,
-    typeMap: Mapping[str, type] = None,
+    typeMap: Union[Mapping[str, type], None] = None,
 ) -> graph.Graph:
     """
     nx2nk(nxG, weightAttr=None)
