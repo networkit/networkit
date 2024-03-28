@@ -22,14 +22,14 @@ Graph ErdosRenyiGenerator::generate() {
 
     {
         ErdosRenyiEnumeratorDefault impl(nNodes, prob, directed);
-        impl.forEdgesParallel([&](int /*tid*/, node u, node v) {
+        impl.forEdges([&](int /*tid*/, node u, node v) {
             if (!self_loops && u == v)
                 return;
             builder.addHalfEdge(u, v);
         });
     }
 
-    return builder.completeGraph(false);
+    return builder.completeGraph();
 }
 
 } /* namespace NetworKit */

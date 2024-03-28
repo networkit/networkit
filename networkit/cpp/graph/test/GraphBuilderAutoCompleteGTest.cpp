@@ -18,7 +18,7 @@
 
 namespace NetworKit {
 
-class GraphBuilderAutoCompleteGTest : public testing::TestWithParam<std::tuple<bool, bool, bool>> {
+class GraphBuilderAutoCompleteGTest : public testing::TestWithParam<std::tuple<bool, bool>> {
 public:
     virtual void SetUp();
 
@@ -36,20 +36,14 @@ protected:
 
     bool isWeighted() const;
     bool isDirected() const;
-    bool useParallel() const;
 
     GraphBuilder createGraphBuilder(count n = 0) const;
     Graph toGraph(GraphBuilder &b) const;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    InstantiationName, GraphBuilderAutoCompleteGTest,
-    testing::Values(std::make_tuple(false, false, false), // weighted, directed, parallel
-                    std::make_tuple(true, false, false), std::make_tuple(false, true, false),
-                    std::make_tuple(true, true, false),
-
-                    std::make_tuple(false, false, true), std::make_tuple(true, false, true),
-                    std::make_tuple(false, true, true), std::make_tuple(true, true, true)));
+INSTANTIATE_TEST_SUITE_P(InstantiationName, GraphBuilderAutoCompleteGTest,
+                         testing::Values(std::make_pair(false, false), std::make_pair(true, false),
+                                         std::make_pair(false, true), std::make_pair(true, true)));
 
 bool GraphBuilderAutoCompleteGTest::isWeighted() const {
     return std::get<0>(GetParam());
@@ -58,16 +52,12 @@ bool GraphBuilderAutoCompleteGTest::isDirected() const {
     return std::get<1>(GetParam());
 }
 
-bool GraphBuilderAutoCompleteGTest::useParallel() const {
-    return std::get<2>(GetParam());
-}
-
 GraphBuilder GraphBuilderAutoCompleteGTest::createGraphBuilder(count n) const {
     return GraphBuilder(n, isWeighted(), isDirected());
 }
 
 Graph GraphBuilderAutoCompleteGTest::toGraph(GraphBuilder &b) const {
-    return b.completeGraph(useParallel());
+    return b.completeGraph();
 }
 
 void GraphBuilderAutoCompleteGTest::SetUp() {
@@ -96,7 +86,7 @@ void GraphBuilderAutoCompleteGTest::SetUp() {
     for (auto &e : houseEdgesOut) {
         node u = e.first;
         node v = e.second;
-        bHouse.addHalfOutEdge(u, v, ew);
+        bHouse.addHalfEdge(u, v, ew);
 
         Ahouse[u][v] = ew;
         if (!bHouse.isDirected()) {
@@ -441,6 +431,41 @@ TEST_P(GraphBuilderAutoCompleteGTest, testForValidStateAfterToGraph) {
         ASSERT_EQ(0.25, G2.weight(v, u));
     } else {
         ASSERT_EQ(1.0, G2.weight(v, u));
+    }
+}
+
+TEST_P(GraphBuilderAutoCompleteGTest, testSwapNeighbours) {
+    GraphBuilder GB1(5, isWeighted(), isDirected());
+
+    GB1.addHalfEdge(0, 1);
+    GB1.addHalfEdge(0, 3);
+    GB1.addHalfEdge(1, 3);
+    GB1.addHalfEdge(1, 4);
+    GB1.addHalfEdge(2, 4);
+
+    std::vector<node> new_neighbours = {0, 2, 4};
+    std::vector<edgeweight> new_weights;
+    if (isWeighted()) {
+        new_weights = {1.2, 2.4, 4.8};
+    } else {
+        new_weights = {1., 1., 1.};
+    }
+    GB1.swapNeighborhood(0, new_neighbours, new_weights, true);
+    Graph G = GB1.completeGraph();
+
+    EXPECT_TRUE(G.hasEdge(0, 0));
+    EXPECT_TRUE(G.hasEdge(0, 2));
+    EXPECT_TRUE(G.hasEdge(0, 4));
+    EXPECT_FALSE(G.hasEdge(0, 1));
+    EXPECT_FALSE(G.hasEdge(0, 3));
+    if (isWeighted()) {
+        EXPECT_EQ(G.weight(0, 0), 1.2);
+        EXPECT_EQ(G.weight(0, 2), 2.4);
+        EXPECT_EQ(G.weight(0, 4), 4.8);
+    } else {
+        EXPECT_EQ(G.weight(0, 0), 1.);
+        EXPECT_EQ(G.weight(0, 2), 1.);
+        EXPECT_EQ(G.weight(0, 4), 1.);
     }
 }
 
