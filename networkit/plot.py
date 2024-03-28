@@ -85,37 +85,39 @@ def nodeAttributes(G, attribute=None):
 	else:
 		raise "Error, attribute has wrong type, call with nk.graph.NodeAttribute or tuple(nk.graph.NodeAttribute)." 
 
-def degreeDistribution(G, **kwargs):
+def degreeDistribution(G, *args, **kwargs):
 	"""
-	degreeDistribution(G, **kwargs)
+	degreeDistribution(G, *args, **kwargs)
 
 	Plots the degree distribution of the given network using matplotlib.
-	
+
 	Parameters
 	----------
 	G : networkit.Graph
 		The input graph.
-	`**kwargs` : `**kwargs`
-		Input data currently not used.
+	`*args` : list()
+		Additional *args parameter passed to matplotlib.pyplot.bar.
+	`**kwargs` : dict()
+		Additional **kwargs parameter passed to matplotlib.pyplot.bar
 	"""
 	if not have_plt:
 		raise MissingDependencyError("matplotlib")
-	dd=[0]*(graphtools.maxDegree(G)+1)
-	nodes=[]
+	dd = [0] * (graphtools.maxDegree(G) + 1)
+	nodes = []
 	for i in range(G.numberOfNodes()):
-		dd[G.degree(i)] += 1	
+		dd[G.degree(i)] += 1
 	for i in range(len(dd)):
 		nodes.append(i)
-	fig, ax = plt.subplots()	
-	ax.bar(nodes, dd)
-	ax.title.set_text("Degree Distribution")
-	ax.set_xlabel("Degree")
-	ax.set_ylabel("Number of Nodes")
+
+	plt.bar(nodes, dd, *args, **kwargs)
+	plt.title("Degree Distribution")
+	plt.xlabel("Degree")
+	plt.ylabel("Number of Nodes")
 	plt.show()
 
-def connectedComponentsSizes(G, relativeSizes=True, **kwargs):
+def connectedComponentsSizes(G, relativeSizes=True):
 	""" 
-	connectedComponentsSizes(G, **kwargs)
+	connectedComponentsSizes(G, relativeSizes=True)
 	
 	Plot the size distribution of connected components as a pie chart using matplotlib. 
 	
@@ -123,16 +125,18 @@ def connectedComponentsSizes(G, relativeSizes=True, **kwargs):
 	----------
 	G : networkit.Graph
 		The input graph.
-	`**kwargs` : `**kwargs`
-		Input parameter currently not used.
+	relativeSizes : bool, optional
+		If relativeSizes is set to True, the component sizes in the pie chart will
+		correlate with their number of nodes. Default: True
 	"""
 	if not have_seaborn:
 		raise MissingDependencyError("seaborn")
 	if not have_plt:
 		raise MissingDependencyError("matplotlib")
 	csizes = components.ConnectedComponents(G).run().getComponentSizes()
+	data = sorted(list(csizes.values()), reverse=True)
 	colors = seaborn.color_palette("Set2", 10)
-	data = list(csizes.values())
+	total = sum(data)
 	# explode the largest component pie piece
 	maxi = data.index(max(data))
 	explode = [0 for i in range(len(data))]
@@ -140,15 +144,18 @@ def connectedComponentsSizes(G, relativeSizes=True, **kwargs):
 	# plot
 	plt.figure(figsize=(5,5))
 	plt.title("Size of Connected Components")
-	total = sum(data)
-	if relativeSizes:
-		plt.pie(data, colors=colors, autopct='%1.1f%%', explode=explode)
+
+	def filter_autopct(pct):
+		return ('%1.f%%' % pct) if pct > 5 else ''
+
+	if relativeSizes: 
+		plt.pie(data, colors=colors, autopct=filter_autopct, explode=explode)
 	else: 
 		plt.pie(data, colors=colors, autopct=lambda p: '{:.0f}'.format(p * total / 100), explode=explode)
 
-def coreDecompositionSequence(G, **kwargs):
+def coreDecompositionSequence(G, *args, **kwargs):
 	""" 
-	coreDecompositionSequence(G, **kwargs)
+	coreDecompositionSequence(G, *args, **kwargs)
 	
 	Plots the core decomposition sequence of G, i.e. the size of the k-shell for the core number k using matplotlib.
 	
@@ -156,8 +163,10 @@ def coreDecompositionSequence(G, **kwargs):
 	----------
 	G : networkit.Graph
 		The input graph.
-	`**kwargs` : `**kwargs`
-		Input parameter currently not used.
+	`*args` : list()
+		Additional *args parameter passed to matplotlib.pyplot.bar.
+	`**kwargs` : dict()
+		Additional **kwargs parameter passed to matplotlib.pyplot.bar
 	"""
 	if not have_plt:
 		raise MissingDependencyError("matplotlib")
@@ -166,13 +175,12 @@ def coreDecompositionSequence(G, **kwargs):
 	for i in range(len(shells)):
 		k.append(i+1)
 
-	fig, ax = plt.subplots(squeeze=True)	
-	ax.title.set_text("Size of Core Decomposition K-Shells")
-	ax.bar(k, shells)
-	ax.set_xticks(k)
-	ax.set_yticks(shells)
-	ax.set_xlabel("K-core decomposition(k)")
-	ax.set_ylabel("Size of k-shell")
+	plt.bar(k, shells, *args, **kwargs)
+	plt.title("Size of Core Decomposition K-Shells")
+	plt.xticks(k)
+	plt.yticks(shells)
+	plt.xlabel("K-core decomposition(k)")
+	plt.ylabel("Size of k-shell")
 	plt.show()
 
 def clusteringPerDegree(G):
@@ -196,7 +204,7 @@ def clusteringPerDegree(G):
 	data = data.groupby("deg", as_index=False).mean()
 	jointplot = seaborn.jointplot(data, x="deg", y="cc",kind="reg", ylim=(0, 1))
 
-def hopPlot(G, **kwargs):
+def hopPlot(G, *args, **kwargs):
 	""" 
 	hopPlot(G, **kwargs)
 	
@@ -206,8 +214,10 @@ def hopPlot(G, **kwargs):
 	----------
 	G : networkit.Graph
 		The input graph.
-	`**kwargs` : `**kwargs`
-		Input parameter currently not used.
+	`*args` : list()
+		Additional *args parameter passed to matplotlib.pyplot.bar.
+	`**kwargs` : dict()
+		Additional **kwargs parameter passed to matplotlib.pyplot.bar
 	"""
 	#hop-plot
 	if not have_plt:
@@ -228,5 +238,5 @@ def hopPlot(G, **kwargs):
 	plt.xlabel('Distance (d)')
 	plt.ylabel('Percentage of connected nodes (g(d))')
 	plt.ylim([0,102])
-	plt.plot(list(hopPlot.keys()), distances, **kwargs)
+	plt.plot(list(hopPlot.keys()), distances, *args, **kwargs)
 	plt.show()
