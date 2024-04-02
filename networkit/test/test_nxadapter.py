@@ -4,6 +4,7 @@ import unittest.mock
 import io
 import networkit as nk
 import networkx as nx
+import warnings
 
 from typing import Union, List
 
@@ -117,8 +118,8 @@ class TestNXAdapter(unittest.TestCase):
         self.assertEqual(nkG.weight(3, 1), -6)
         self.assertEqual(nkG.weight(2, 3), -5)
 
-    @unittest.mock.patch("sys.stdout")
-    def test_nx2nk_int_undirected(self, mock_stdout):
+    @unittest.mock.patch("sys.stderr")
+    def test_nx2nk_int_undirected(self, mock_stderr):
         nxG = self.toyNxgraph(directed=False, data=["intEdgeAttr", "intNodeAttr"])
         nkG = nk.nxadapter.nx2nk(nxG, data=True)
 
@@ -133,10 +134,10 @@ class TestNXAdapter(unittest.TestCase):
         self.assertEqual(nodeAttr[3], 6)
         self.assertEqual(nodeAttr[2], 7)
 
-        mock_stdout.write.assert_not_called()
+        mock_stderr.write.assert_not_called()
 
-    @unittest.mock.patch("sys.stdout")
-    def test_nx2nk_int_directed(self, mock_stdout):
+    @unittest.mock.patch("sys.stderr")
+    def test_nx2nk_int_directed(self, mock_stderr):
         nxG = self.toyNxgraph(directed=True, data=["intEdgeAttr"])
         nkG = nk.nxadapter.nx2nk(nxG, data=True)
 
@@ -149,10 +150,10 @@ class TestNXAdapter(unittest.TestCase):
         self.assertEqual(edgeAttr[3, 1], -3)
         self.assertEqual(edgeAttr[2, 3], -1)
 
-        mock_stdout.write.assert_not_called()
+        mock_stderr.write.assert_not_called()
 
-    @unittest.mock.patch("sys.stdout")
-    def test_nx2nk_float_undirected(self, mock_stdout):
+    @unittest.mock.patch("sys.stderr")
+    def test_nx2nk_float_undirected(self, mock_stderr):
         nxG = self.toyNxgraph(directed=False, data=["floatEdgeAttr", "floatNodeAttr"])
         nkG = nk.nxadapter.nx2nk(nxG, data=True)
 
@@ -167,10 +168,10 @@ class TestNXAdapter(unittest.TestCase):
         self.assertEqual(nodeAttr[3], 6.5)
         self.assertEqual(nodeAttr[2], 7.4)
 
-        mock_stdout.write.assert_not_called()
+        mock_stderr.write.assert_not_called()
 
-    @unittest.mock.patch("sys.stdout")
-    def test_nx2nk_float_directed(self, mock_stdout):
+    @unittest.mock.patch("sys.stderr")
+    def test_nx2nk_float_directed(self, mock_stderr):
         nxG = self.toyNxgraph(directed=True, data=["floatEdgeAttr"])
         nkG = nk.nxadapter.nx2nk(nxG, data=True)
 
@@ -183,10 +184,10 @@ class TestNXAdapter(unittest.TestCase):
         self.assertEqual(edgeAttr[3, 1], -3.1)
         self.assertEqual(edgeAttr[2, 3], -1.2)
 
-        mock_stdout.write.assert_not_called()
+        mock_stderr.write.assert_not_called()
 
-    @unittest.mock.patch("sys.stdout")
-    def test_nx2nk_str_undirected(self, mock_stdout):
+    @unittest.mock.patch("sys.stderr")
+    def test_nx2nk_str_undirected(self, mock_stderr):
         nxG = self.toyNxgraph(directed=False, data=["strEdgeAttr", "strNodeAttr"])
         nkG = nk.nxadapter.nx2nk(nxG, data=True)
 
@@ -201,10 +202,10 @@ class TestNXAdapter(unittest.TestCase):
         self.assertEqual(nodeAttr[3], "n2")
         self.assertEqual(nodeAttr[2], "n3")
 
-        mock_stdout.write.assert_not_called()
+        mock_stderr.write.assert_not_called()
 
-    @unittest.mock.patch("sys.stdout")
-    def test_nx2nk_str_directed(self, mock_stdout):
+    @unittest.mock.patch("sys.stderr")
+    def test_nx2nk_str_directed(self, mock_stderr):
         nxG = self.toyNxgraph(directed=True, data=["strEdgeAttr"])
         nkG = nk.nxadapter.nx2nk(nxG, data=True)
 
@@ -217,14 +218,28 @@ class TestNXAdapter(unittest.TestCase):
         self.assertEqual(edgeAttr[3, 1], "a2")
         self.assertEqual(edgeAttr[2, 3], "32")
 
-        mock_stdout.write.assert_not_called()
+        mock_stderr.write.assert_not_called()
 
-    @unittest.mock.patch("sys.stdout")
-    def test_nx2nk_complex_undirected(self, mock_stdout):
+    def test_nx2nk_complex_undirected(self):
         nxG = self.toyNxgraph(
             directed=False, data=["complexEdgeAttr", "complexNodeAttr"]
         )
-        nkG = nk.nxadapter.nx2nk(nxG, data=True)
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+            # Trigger a warning.
+            nkG = nk.nxadapter.nx2nk(nxG, data=True)
+            # Verify some things
+            self.assertEqual(len(w), 2)
+            self.assertIn(
+                "Info: the node attribute complexNodeAttr has been converted to its string representation.",
+                str(w[0].message),
+            )
+            self.assertIn(
+                "Info: the edge attribute complexEdgeAttr has been converted to its string representation.",
+                str(w[1].message),
+            )
 
         edgeAttr = nkG.getEdgeAttribute("complexEdgeAttr", str)
         self.assertEqual(edgeAttr[0, 1], "(0, 'a', '0a')")
@@ -237,22 +252,20 @@ class TestNXAdapter(unittest.TestCase):
         self.assertEqual(nodeAttr[3], "(2, '2')")
         self.assertEqual(nodeAttr[2], "(3, '3')")
 
-        mock_stdout.write.assert_has_calls(
-            [
-                unittest.mock.call(
-                    "Info: the node attribute complexNodeAttr has been converted to its string representation."
-                ),
-                unittest.mock.call(
-                    "Info: the edge attribute complexEdgeAttr has been converted to its string representation."
-                ),
-            ],
-            any_order=True,
-        )
-
-    @unittest.mock.patch("sys.stdout")
-    def test_nx2nk_complex_directed(self, mock_stdout):
+    def test_nx2nk_complex_directed(self):
         nxG = self.toyNxgraph(directed=True, data=["complexEdgeAttr"])
-        nkG = nk.nxadapter.nx2nk(nxG, data=True)
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+            # Trigger a warning.
+            nkG = nk.nxadapter.nx2nk(nxG, data=True)
+            # Verify some things
+            self.assertEqual(len(w), 1)
+            self.assertIn(
+                "Info: the edge attribute complexEdgeAttr has been converted to its string representation.",
+                str(w[0].message),
+            )
 
         edgeAttr = nkG.getEdgeAttribute("complexEdgeAttr", str)
         self.assertEqual(edgeAttr[0, 1], "(0, 'a', '0a')")
@@ -262,15 +275,6 @@ class TestNXAdapter(unittest.TestCase):
         self.assertEqual(edgeAttr[2, 0], "(0, 3, '03')")
         self.assertEqual(edgeAttr[3, 1], "('a', 2, 'a2')")
         self.assertEqual(edgeAttr[2, 3], "(3, 2, '32')")
-
-        mock_stdout.write.assert_has_calls(
-            [
-                unittest.mock.call(
-                    "Info: the edge attribute complexEdgeAttr has been converted to its string representation."
-                ),
-            ],
-            any_order=True,
-        )
 
     def test_nx2nk(self):
         nkG = nk.Graph(3)
@@ -282,8 +286,8 @@ class TestNXAdapter(unittest.TestCase):
         self.assertEqual(len(nxG.edges()), 2)
         self.assertEqual(len(nxG.nodes()), 3)
 
-    @unittest.mock.patch("sys.stdout")
-    def test_nx2nk_custom_typemap(self, mock_stdout):
+    @unittest.mock.patch("sys.stderr")
+    def test_nx2nk_custom_typemap(self, mock_stderr):
         nxG = self.toyNxgraph(directed=False, data=["intEdgeAttr", "intNodeAttr"])
         nkG = nk.nxadapter.nx2nk(nxG, data=True, typeMap={"intEdgeAttr": int})
 
@@ -298,7 +302,7 @@ class TestNXAdapter(unittest.TestCase):
         self.assertEqual(nodeAttr[3], 6)
         self.assertEqual(nodeAttr[2], 7)
 
-        mock_stdout.write.assert_not_called()
+        mock_stderr.write.assert_not_called()
 
 
 if __name__ == "__main__":
