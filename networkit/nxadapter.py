@@ -5,7 +5,7 @@ from typing import Union, Mapping
 
 # local imports
 from . import graph
-import warnings
+from warnings import warn
 from .support import MissingDependencyError
 
 # non standard library modules / external
@@ -107,7 +107,7 @@ def nx2nk(
                     try:
                         attribute = nkG.attachNodeAttribute(str(key), valueType or str)
                         if valueType is None:
-                            print(
+                            warn(
                                 f"Info: the node attribute {key} has been converted to its string representation."
                             )
                     except (
@@ -142,7 +142,7 @@ def nx2nk(
                     try:
                         attribute = nkG.attachEdgeAttribute(str(key), valueType or str)
                         if valueType is None:
-                            print(
+                            warn(
                                 f"Info: the edge attribute {key} has been converted to its string representation."
                             )
                     except (
