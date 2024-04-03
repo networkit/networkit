@@ -64,8 +64,8 @@ public:
      * @param isSorted If the matrix representation should uses sorted vectors.
      */
     CSRGeneralMatrix(count nRows, count nCols, ValueType zero = 0)
-        : rowIdx(nRows + 1), columnIdx(0), nonZeros(0), nRows(nRows), nCols(nCols),
-          isSorted(true), zero(zero) {}
+        : rowIdx(nRows + 1), columnIdx(0), nonZeros(0), nRows(nRows), nCols(nCols), isSorted(true),
+          zero(zero) {}
 
     /**
      * Constructs the @a dimension x @a dimension Matrix from the elements at
@@ -286,7 +286,7 @@ public:
 
         index colIdx = none;
 
-        if (! isSorted) {
+        if (!isSorted) {
             for (index k = rowIdx[i]; k < rowIdx[i + 1]; ++k) {
                 if (columnIdx[k] == j) {
                     colIdx = k;
@@ -298,7 +298,7 @@ public:
             colIdx = static_cast<index>(it - columnIdx.begin());
         }
 
-        if (! isSorted) {
+        if (!isSorted) {
             if (colIdx != none) {
                 if (value != zero) { // update existing value
                     nonZeros[colIdx] = value;
@@ -390,9 +390,7 @@ public:
     /**
      * Make the matrix use an unsorted representation.
      */
-    void makeUnsorted() {
-        isSorted = false;
-    }
+    void makeUnsorted() { isSorted = false; }
 
     /**
      * @return Row @a i of this matrix as vector.
