@@ -174,27 +174,50 @@ def _calculateEdgeColoring(G, palette, edgeScores: List[float] = None):
 
     return hcColors
 
-
-def _getEdgeScore(
+def _getEdgeScoreDirected(
     edgeScoresDict: Mapping[Tuple[int, int], float], u: int, v: int
 ) -> Optional[float]:
 
-    score = None
+    getUV = edgeScoresDict.get((u,v))
 
+    # missing edge score
+    if getUV == None:
+        raise Exception(f"edgeScores should include scores for every edge. ({u},{v}) is missing");
+
+    return getUV
+
+def _getEdgeScoreUndirected(
+    edgeScoresDict: Mapping[Tuple[int, int], float], u: int, v: int
+) -> Optional[float]:
+
+    getUV = edgeScoresDict.get((u,v))
+    getVU = edgeScoresDict.get((v,u))
+
+    # missing edge score
+    if getUV == None and getVU == None:
+        raise Exception(f"edgeScores should include scores for every edge. ({u},{v}) is missing");
+
+    # (u,v) is present
+    if getUV == None and getVU != None:
+        return getVU
+
+    # (v,u) is present
+    if getVU == None and getUV != None:
+        return getUV
+
+    # both are present and the same
+    if getVU == getUV:
+        return getUV
+    
+    # both directions are present and the score is different (and not None)
     if isinstance(edgeScoresDict, defaultdict):
-        score = edgeScoresDict.get((u, v))
-        if score == None:
-            score = edgeScoresDict.get((v, u))
-        if score == None:
-            score = edgeScoresDict[u, v]
-
-    if isinstance(edgeScoresDict, dict):
-        score = edgeScoresDict.get((u, v))
-        if score != edgeScoresDict.get(v, u):
-            warn(f"WARNING: Edge score for ({u},{v}) differs for both directions")
-
-    return score
-
+        defaultValue = edgeScoresDict.default_factory()
+        if getUV != defaultValue and getVU != defaultValue:
+            raise Exception(f"edgeScore different for both directions of ({u},{v}).");
+        elif getUV != defaultValue:
+            return getVU
+        else:
+            return getUV
 
 def widgetFromGraph(
     G,
@@ -268,7 +291,10 @@ def widgetFromGraph(
                 raise Exception("Edges need to be indexed to draw edge scores.")
             edgeScoresList = [None] * G.numberOfEdges()
             for u, v in G.iterEdges():
-                edgeScoresList[G.edgeId(u, v)] = _getEdgeScore(edgeScores, u, v)
+                if G.isDirected():
+                    edgeScoresList[G.edgeId(u, v)] = _getEdgeScoreDirected(edgeScores, u, v)
+                else:
+                    edgeScoresList[G.edgeId(u, v)] = _getEdgeScoreUndirected(edgeScores, u, v)
             edgeScores = edgeScoresList
         if None in edgeScores:
             raise Exception("edgeScores should include scores for every edge.")
