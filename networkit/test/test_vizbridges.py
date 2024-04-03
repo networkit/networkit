@@ -38,6 +38,7 @@ class TestVizbridges(unittest.TestCase):
                 partition = nk.community.ClusteringGenerator(G).makeRandomClustering(
                     G, 3
                 )
+                partition.compact()
                 print(partition.getVector())
                 vizbridges.widgetFromGraph(
                     G,
@@ -123,7 +124,6 @@ class TestVizbridges(unittest.TestCase):
                 scores = defaultdict(lambda: 0)
                 for u, v in G.iterEdges():
                     scores[u, v] = 1
-                    break
                 vizbridges.widgetFromGraph(
                     G,
                     dimension=dim,
