@@ -1,4 +1,5 @@
 # local imports
+from .graph import Graph
 from .support import MissingDependencyError
 from .structures import Partition
 from .viz import MaxentStress
@@ -73,14 +74,14 @@ def _calculateNodeColoring(G, palette, nodeScores=None, nodePartition=None):
     # Partition
     if nodePartition is not None:
         if len(palette) < nodePartition.numberOfSubsets():
-            raise Exception(
+            raise IndexError(
                 "Number of partitions higher than number of colors in provided palette. Provide node_palette with enough colors."
             )
 
         partitions = nodePartition.getVector()
 
         if len(palette) < nodePartition.numberOfSubsets():
-            raise Exception(
+            raise IndexError(
                 "Number of partitions to high for default coloring. Provide node_palette with enough colors."
             )
 
@@ -182,7 +183,7 @@ def _getEdgeScoreDirected(
 
     # missing edge score
     if getUV == None:
-        raise Exception(f"edgeScores should include scores for every edge. ({u},{v}) is missing");
+        raise KeyError(f"edgeScores should include scores for every edge. ({u},{v}) is missing");
 
     return getUV
 
@@ -195,7 +196,7 @@ def _getEdgeScoreUndirected(
 
     # missing edge score
     if getUV == None and getVU == None:
-        raise Exception(f"edgeScores should include scores for every edge. ({u},{v}) is missing");
+        raise KeyError(f"edgeScores should include scores for every edge. ({u},{v}) is missing");
 
     # (u,v) is present
     if getUV == None and getVU != None:
@@ -220,15 +221,15 @@ def _getEdgeScoreUndirected(
             return getUV
 
 def widgetFromGraph(
-    G,
-    dimension=Dimension.Two,
-    nodeScores=None,
-    nodePartition=None,
-    nodePalette=None,
-    showIds=True,
-    customSize=None,
+    G: Graph,
+    dimension: Dimension = Dimension.Two,
+    nodeScores: List[float] = None,
+    nodePartition: Partition = None,
+    nodePalette: List[Tuple[float, float, float]] = None,
+    showIds: bool = True,
+    customSize: int = None,
     edgeScores: Union[List[float], Mapping[Tuple[int, int], float]] = None,
-    edgePalette=None,
+    edgePalette: List[Tuple[float, float, float]] = None,
 ):
     """
     widgetFromGraph(G, dimension=Dimension.Two, nodeScores=None, nodePartition=None, nodePalette=None, showIds=True, customSize=None, edgeScores=None, edgePalette=None)
@@ -281,14 +282,14 @@ def widgetFromGraph(
 
     if nodeScores is not None:
         if nodePartition is not None:
-            raise Exception("Provide either nodeScores or nodePartition - not both.")
+            raise ValueError("Provide either nodeScores or nodePartition - not both.")
         if len(nodeScores) != G.upperNodeIdBound():
-            raise Exception("nodeScores should include scores for every node.")
+            raise ValueError("nodeScores should include scores for every node.")
 
     if edgeScores:
         if isinstance(edgeScores, dict):
             if not G.hasEdgeIds():
-                raise Exception("Edges need to be indexed to draw edge scores.")
+                raise ValueError("Edges need to be indexed to draw edge scores.")
             edgeScoresList = [None] * G.numberOfEdges()
             for u, v in G.iterEdges():
                 if G.isDirected():
@@ -297,7 +298,7 @@ def widgetFromGraph(
                     edgeScoresList[G.edgeId(u, v)] = _getEdgeScoreUndirected(edgeScores, u, v)
             edgeScores = edgeScoresList
         if None in edgeScores:
-            raise Exception("edgeScores should include scores for every edge.")
+            raise ValueError("edgeScores should include scores for every edge.")
         if len(edgeScores) != G.numberOfEdges():
             raise Exception(
                 "edgeScores should include scores for every edge.",

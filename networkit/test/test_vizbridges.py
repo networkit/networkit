@@ -14,6 +14,8 @@ class TestVizbridges(unittest.TestCase):
         G.addEdge(3, 1, 4.0)
         G.addEdge(3, 2, 5.0)
         G.addEdge(1, 2, 3.0)
+        if directed:
+            G.addEdge(2, 1, 6.0)
 
         return G
 
@@ -34,12 +36,9 @@ class TestVizbridges(unittest.TestCase):
             vizbridges.Dimension, [True, False], [True, False]
         ):
             with self.subTest(dim=dim, directed=directed, weighted=weighted):
-                G = self.getSmallGraph(weighted, directed)
-                partition = nk.community.ClusteringGenerator(G).makeRandomClustering(
-                    G, 3
-                )
-                partition.compact()
-                print(partition.getVector())
+                G = self.getSmallGraph(weighted, directed)               
+                partition = nk.Partition(G.numberOfNodes())
+                partition.allToSingletons()
                 vizbridges.widgetFromGraph(
                     G,
                     dimension=dim,
@@ -60,16 +59,16 @@ class TestVizbridges(unittest.TestCase):
                 )
 
     def testVizShowIds(self):
-        for dim, directed, weighted in zip(
-            vizbridges.Dimension, [True, False], [True, False]
+        for dim, directed, weighted, show in zip(
+            vizbridges.Dimension, [True, False], [True, False], [True, False]
         ):
-            with self.subTest(dim=dim, directed=directed, weighted=weighted):
+            with self.subTest(dim=dim, directed=directed, weighted=weighted, show=show):
                 G = self.getSmallGraph(weighted, directed)
                 vizbridges.widgetFromGraph(
                     G,
                     dimension=dim,
                     nodeScores=list(range(G.numberOfNodes())),
-                    showIds=False,
+                    showIds=show,
                 )
 
     def testVizCustomSize(self):
@@ -108,6 +107,22 @@ class TestVizbridges(unittest.TestCase):
                 scores = {}
                 for i, [u, v] in enumerate(G.iterEdges()):
                     scores[u, v] = i
+                vizbridges.widgetFromGraph(
+                    G,
+                    dimension=dim,
+                    edgeScores=scores,
+                )
+
+    def testVizEdgeScoresUndirectedReversed(self):
+        for dim, weighted in zip(
+            vizbridges.Dimension, [True, False]
+        ):
+            with self.subTest(dim=dim, weighted=weighted):
+                G = self.getSmallGraph(weighted, False)
+                G.indexEdges()
+                scores = {}
+                for i, [u, v] in enumerate(G.iterEdges()):
+                    scores[v, u] = i
                 vizbridges.widgetFromGraph(
                     G,
                     dimension=dim,
