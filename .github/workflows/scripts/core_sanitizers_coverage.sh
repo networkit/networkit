@@ -2,7 +2,7 @@
 
 python3 -m venv pyenv && . pyenv/bin/activate
 pip3 install --upgrade pip
-pip3 install coveralls cython gcovr matplotlib requests setuptools tabulate numpy networkx
+pip3 install coveralls cython gcovr matplotlib requests setuptools tabulate numpy networkx ipycytoscape seaborn plotly
 
 mkdir core_build && cd "$_"
 export CPU_COUNT=$(python3 $GITHUB_WORKSPACE/.github/workflows/scripts/get_core_count.py)

@@ -412,6 +412,7 @@ jobs:
           pip install -e .
           python -c 'import networkit'
           pip install -r requirements.txt
+          pip install ipycytoscape seaborn plotly
           python -m unittest discover -v networkit/test/
           pip install ipycytoscape plotly seaborn
           python notebooks/test_notebooks.py "notebooks"
