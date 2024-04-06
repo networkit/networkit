@@ -39,6 +39,7 @@ NETWORKIT_PARALLEL_JOBS=$CPU_COUNT pip3 install -e .
 python3 -c 'import networkit'
 
 pip3 install -r requirements.txt
+pip3 install plotly ipycytoscape seaborn matplotlib
 
 python3 -m unittest discover -v networkit/test/
 
