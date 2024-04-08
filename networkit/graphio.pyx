@@ -1167,8 +1167,8 @@ def guessFileFormat(filepath: str) -> Format:
 	# if none match, read all lines of the file and guess the format out of METIS, SNAP, EdgeList variants
 	# types:
 	# METIS - first non-comment line contains 'n m'. has n+1 (non-comment) lines. comments: %
-	#         optional: up to two more values after 'n m'. if the third parameter ('fmt') is 1, graph is weighted
-	#		  			we ignore the fourth parameter
+	# optional: up to two more values after 'n m'. if the third parameter ('fmt') is 1, graph is weighted. if 0, unweighted. 
+	# Files where fmt is another value or the fourth parameter is set are currently not handled by this heuristic.
 	# SNAP - file without comments, each line stores an edge '\d+ \d+' (empty lines are allowed as well)
 
 	# first: guess comment character
