@@ -145,6 +145,24 @@ class TestVizbridges(unittest.TestCase):
                     edgeScores=scores,
                 )
 
+    def testVizEdgeScoresDefaultdictOneEntry(self):
+        for dim, directed, weighted in zip(
+            vizbridges.Dimension, [True, False], [True, False]
+        ):
+            with self.subTest(dim=dim, directed=directed, weighted=weighted):
+                G = self.getSmallGraph(weighted, directed)
+                G.indexEdges()
+                scores = defaultdict(lambda: 0)
+                # create incomplete defaultdict
+                for u, v in G.iterEdges():
+                    scores[u, v] = 1
+                    break
+                vizbridges.widgetFromGraph(
+                    G,
+                    dimension=dim,
+                    edgeScores=scores,
+                )
+
     def testVizEdgePalette(self):
         for dim, directed, weighted in zip(
             vizbridges.Dimension, [True, False], [True, False]
