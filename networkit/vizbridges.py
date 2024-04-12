@@ -175,28 +175,38 @@ def _calculateEdgeColoring(G, palette, edgeScores: List[float] = None):
 
     return hcColors
 
+
 def _getEdgeScoreDirected(
     edgeScoresDict: Mapping[Tuple[int, int], float], u: int, v: int
-) -> Optional[float]:
+) -> float:
 
-    getUV = edgeScoresDict.get((u,v))
+    try:
+        return edgeScoresDict[u, v]
+    except KeyError:
+        raise KeyError(
+            f"edgeScores should include scores for every edge. ({u},{v}) is missing"
+        )
 
-    # missing edge score
-    if getUV == None:
-        raise KeyError(f"edgeScores should include scores for every edge. ({u},{v}) is missing");
-
-    return getUV
 
 def _getEdgeScoreUndirected(
     edgeScoresDict: Mapping[Tuple[int, int], float], u: int, v: int
-) -> Optional[float]:
+) -> float:
 
-    getUV = edgeScoresDict.get((u,v))
-    getVU = edgeScoresDict.get((v,u))
+    # this try block is requried to handle dict and defaultdict. get() returns None for defaultdict
+    try:
+        getUV = edgeScoresDict[u, v]
+    except KeyError:
+        getUV = None
+    try:
+        getVU = edgeScoresDict[v, u]
+    except KeyError:
+        getVU = None
 
     # missing edge score
     if getUV == None and getVU == None:
-        raise KeyError(f"edgeScores should include scores for every edge. ({u},{v}) is missing");
+        raise KeyError(
+            f"edgeScores should include scores for every edge. ({u},{v}) is missing"
+        )
 
     # (u,v) is present
     if getUV == None and getVU != None:
@@ -209,16 +219,17 @@ def _getEdgeScoreUndirected(
     # both are present and the same
     if getVU == getUV:
         return getUV
-    
+
     # both directions are present and the score is different (and not None)
     if isinstance(edgeScoresDict, defaultdict):
         defaultValue = edgeScoresDict.default_factory()
         if getUV != defaultValue and getVU != defaultValue:
-            raise Exception(f"edgeScore different for both directions of ({u},{v}).");
+            raise ValueError(f"edgeScore different for both directions of ({u},{v}).")
         elif getUV != defaultValue:
             return getVU
         else:
             return getUV
+
 
 def widgetFromGraph(
     G: Graph,
@@ -293,14 +304,18 @@ def widgetFromGraph(
             edgeScoresList = [None] * G.numberOfEdges()
             for u, v in G.iterEdges():
                 if G.isDirected():
-                    edgeScoresList[G.edgeId(u, v)] = _getEdgeScoreDirected(edgeScores, u, v)
+                    edgeScoresList[G.edgeId(u, v)] = _getEdgeScoreDirected(
+                        edgeScores, u, v
+                    )
                 else:
-                    edgeScoresList[G.edgeId(u, v)] = _getEdgeScoreUndirected(edgeScores, u, v)
+                    edgeScoresList[G.edgeId(u, v)] = _getEdgeScoreUndirected(
+                        edgeScores, u, v
+                    )
             edgeScores = edgeScoresList
         if None in edgeScores:
             raise ValueError("edgeScores should include scores for every edge.")
         if len(edgeScores) != G.numberOfEdges():
-            raise Exception(
+            raise ValueError(
                 "edgeScores should include scores for every edge.",
                 edgeScores,
                 G.numberOfEdges(),
