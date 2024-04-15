@@ -54,9 +54,9 @@ public:
             throw std::runtime_error("Decreasing value that is missing");
         }
 
-        OptionalValue(const ValueType &){};
+        OptionalValue(const ValueType &) {};
 
-        OptionalValue(){};
+        OptionalValue() {};
     };
 
     template <typename ValueType>
@@ -89,9 +89,9 @@ public:
             return *this;
         }
 
-        OptionalValue(const ValueType &v) : value(v){};
+        OptionalValue(const ValueType &v) : value(v) {};
 
-        OptionalValue() : value(){};
+        OptionalValue() : value() {};
 
         ValueType value;
     };

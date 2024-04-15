@@ -30,7 +30,7 @@ void PrefixJaccardScore<AttributeT>::run() {
         AttributeT att;
         count rank;
 
-        RankedEdge(node u, AttributeT att, count rank) : u(u), att(att), rank(rank){};
+        RankedEdge(node u, AttributeT att, count rank) : u(u), att(att), rank(rank) {};
 
         bool operator<(const RankedEdge &other) const {
             return std::tie(rank, att, u) < std::tie(other.rank, other.att, other.u);

@@ -995,7 +995,7 @@ public:
     public:
         NodeRange(const Graph &G) : G(&G) {}
 
-        NodeRange() : G(nullptr){};
+        NodeRange() : G(nullptr) {};
 
         ~NodeRange() = default;
 
@@ -1220,7 +1220,7 @@ public:
     public:
         EdgeRange(const Graph &G) : G(&G) {}
 
-        EdgeRange() : G(nullptr){};
+        EdgeRange() : G(nullptr) {};
 
         ~EdgeRange() = default;
 
@@ -1245,7 +1245,7 @@ public:
     public:
         EdgeWeightRange(const Graph &G) : G(&G) {}
 
-        EdgeWeightRange() : G(nullptr){};
+        EdgeWeightRange() : G(nullptr) {};
 
         ~EdgeWeightRange() = default;
 
@@ -1410,7 +1410,7 @@ public:
     public:
         NeighborRange(const Graph &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
 
-        NeighborRange() : G(nullptr){};
+        NeighborRange() : G(nullptr) {};
 
         NeighborIterator begin() const {
             assert(G);
@@ -1442,7 +1442,7 @@ public:
     public:
         NeighborWeightRange(const Graph &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
 
-        NeighborWeightRange() : G(nullptr){};
+        NeighborWeightRange() : G(nullptr) {};
 
         NeighborWeightIterator begin() const {
             assert(G);
