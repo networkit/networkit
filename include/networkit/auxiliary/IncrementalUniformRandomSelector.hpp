@@ -24,7 +24,7 @@ public:
     /**
      * Initialize the random select for one element.
      */
-    IncrementalUniformRandomSelector() : counter(1){};
+    IncrementalUniformRandomSelector() : counter(1) {};
 
     /**
      * Add the next element.

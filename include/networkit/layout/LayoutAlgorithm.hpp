@@ -22,7 +22,7 @@ class LayoutAlgorithm {
 
 public:
     LayoutAlgorithm(const Graph &G)
-        : G(G){
+        : G(G) {
 
           };
 
