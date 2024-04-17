@@ -109,6 +109,28 @@ class TestGEXFIO(unittest.TestCase):
 		for (file, expected_result) in instances:
 			guess = nk.graphio.guessFileFormat(f"input/{file}")
 			self.assertEqual(guess, expected_result)
+	
+	def testGuessFormatInputGraphs(self):
+		# this test does not check the guess result; 
+  		# it is just used to make sure (most) graphs in our input directory are readable by the guess format code
+		excludeFiles = [
+			"README.md",
+			"celegans_metabolic.thrill",
+			"community.dat",
+			"community_overlapping.dat",
+			"community_overlapping.cover",
+			"example2.dgs",
+			"example_write.dgs",
+			"airfoil1-10p.png",
+			"alphabet.edgelist",
+			"testLFR",
+			"airfoil1.gi",
+			"spaceseparated_weighted.edgelist"
+		]
+		for file in os.listdir("input"):
+			if file not in excludeFiles:
+				with self.subTest(file=file):
+					nk.graphio.guessFileFormat(f"input/{file}")
 
 	def testBinaryFormatVersionUpgrade(self):
 		output_filepath = 'output/testBinaryFormatVersionUpgrade.nkbg'
