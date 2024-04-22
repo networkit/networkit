@@ -65,12 +65,24 @@ public:
      * Compute the multigrid hierarchy for the given Laplacian matrix @a laplacianMatrix.
      * @param laplacianMatrix
      * @note This method also works for disconnected graphs. If you know that the graph is
-     * connected, if is faster to use @ref setupConnected instead.
+     * connected, it is faster to use @ref setupConnected instead.
      */
     void setup(const Matrix &laplacianMatrix) override;
 
     /**
-     * Compute the multigrid hierarchy for te given Laplacian matrix @a laplacianMatrix.
+     * Compute the multigrid hierarchy for the given Laplacian matrix @a laplacianMatrix that
+     * corresponds to the graph @a G using the existing component decomposition @a decomp.
+     * @param laplacianMatrix
+     * @param decomp ComponentDecomposition that corresponds to the graph of the @a laplacianMatrix
+     * @note This setup method allows you to skip some computation in the general setup method. You
+     * can provide your own graph and decomposition via this method to prevent duplicate
+     * computation. Note that the output is undefined if the three parameters do not correspond the
+     * the same graph.
+     */
+    void setup(const Matrix &laplacianMatrix, const Graph &G, const ComponentDecomposition &decomp);
+
+    /**
+     * Compute the multigrid hierarchy for the given Laplacian matrix @a laplacianMatrix.
      * @param laplacianMatrix
      * @note The graph has to be connected for this method to work. Otherwise the output is
      * undefined.
@@ -170,6 +182,12 @@ void Lamg<Matrix>::setupConnected(const Matrix &laplacianMatrix) {
     this->laplacianMatrix = laplacianMatrix;
     initializeForOneComponent();
     numComponents = 1;
+}
+
+template <class Matrix>
+void Lamg<Matrix>::setup(const Matrix &laplacianMatrix, const Graph &G,
+                         const ComponentDecomposition &decomp) {
+    this->setup(laplacianMatrix);
 }
 
 template <class Matrix>
