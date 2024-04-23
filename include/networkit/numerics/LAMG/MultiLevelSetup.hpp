@@ -222,13 +222,12 @@ public:
      * @param matrix Laplcian matrix.
      * @param hierarchy[out] The constructed hierarchy.
      */
-    void setup(const Matrix &matrix, LevelHierarchy<Matrix> &hierarchy) const;
+    void setup(Matrix matrix, LevelHierarchy<Matrix> &hierarchy) const;
 };
 
 template <class Matrix>
-void MultiLevelSetup<Matrix>::setup(const Matrix &matrix, LevelHierarchy<Matrix> &hierarchy) const {
-    CSRMatrix A = matrix;
-    setupForMatrix(A, hierarchy);
+void MultiLevelSetup<Matrix>::setup(Matrix matrix, LevelHierarchy<Matrix> &hierarchy) const {
+    setupForMatrix(matrix, hierarchy);
 }
 
 template <class Matrix>
@@ -835,11 +834,10 @@ void MultiLevelSetup<Matrix>::galerkinOperator(const Matrix &P, const Matrix &A,
 }
 
 template <>
-inline void MultiLevelSetup<CSRMatrix>::setup(const CSRMatrix &matrix,
+inline void MultiLevelSetup<CSRMatrix>::setup(CSRMatrix matrix,
                                               LevelHierarchy<CSRMatrix> &hierarchy) const {
-    CSRMatrix A = matrix;
-    A.sort();
-    setupForMatrix(A, hierarchy);
+    matrix.sort();
+    setupForMatrix(matrix, hierarchy);
 }
 
 template <>
