@@ -830,7 +830,7 @@ void MultiLevelSetup<Matrix>::galerkinOperator(const Matrix &P, const Matrix &A,
         spa.increaseRow();
     }
 
-    B = CSRMatrix(P.numberOfColumns(), P.numberOfColumns(), triplets);
+    B = Matrix(P.numberOfColumns(), P.numberOfColumns(), triplets);
 }
 
 template <>
