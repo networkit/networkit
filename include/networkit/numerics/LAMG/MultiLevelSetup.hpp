@@ -9,6 +9,8 @@
 #define NETWORKIT_NUMERICS_LAMG_MULTI_LEVEL_SETUP_HPP_
 
 #include <networkit/algebraic/CSRMatrix.hpp>
+#include <networkit/algebraic/DenseMatrix.hpp>
+#include <networkit/algebraic/DynamicMatrix.hpp>
 #include <networkit/numerics/LAMG/LevelHierarchy.hpp>
 #include <networkit/numerics/Smoother.hpp>
 
@@ -1080,6 +1082,10 @@ inline void MultiLevelSetup<CSRMatrix>::coarseningAggregation(CSRMatrix &matrix,
 
     hierarchy.addAggregationLevel(matrix, P, R);
 }
+
+extern template class MultiLevelSetup<CSRMatrix>;
+extern template class MultiLevelSetup<DenseMatrix>;
+extern template class MultiLevelSetup<DynamicMatrix>;
 
 } /* namespace NetworKit */
 
