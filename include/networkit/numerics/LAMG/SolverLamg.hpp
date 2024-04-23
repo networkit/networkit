@@ -46,7 +46,7 @@ struct LAMGSolverStatus {
 template <class Matrix>
 class SolverLamg {
 private:
-    LevelHierarchy<Matrix> &hierarchy;
+    const LevelHierarchy<Matrix> &hierarchy;
     const Smoother<Matrix> &smoother;
 
     // data structures for iterate recombination
@@ -64,7 +64,7 @@ private:
     void multigridCycle(index level, Vector &xf, const Vector &bf);
     void saveIterate(index level, const Vector &x, const Vector &r);
     void clearHistory(index level);
-    void minRes(index level, Vector &x, const Vector &r);
+    void minRes(index level, Vector &x, const Vector &r) const;
 
 public:
     /**
@@ -73,7 +73,7 @@ public:
      * @param hierarchy Reference to the LevelHierarchy constructed by MultiLevelSetup.
      * @param smoother Reference to a smoother.
      */
-    SolverLamg(LevelHierarchy<Matrix> &hierarchy, const Smoother<Matrix> &smoother)
+    SolverLamg(const LevelHierarchy<Matrix> &hierarchy, const Smoother<Matrix> &smoother)
         : hierarchy(hierarchy), smoother(smoother),
           bStages(hierarchy.size(), std::vector<Vector>()) {}
 
@@ -134,7 +134,7 @@ void SolverLamg<Matrix>::solve(Vector &x, const Vector &b, LAMGSolverStatus &sta
 }
 
 template <class Matrix>
-void SolverLamg<Matrix>::solveCycle(Vector &x, const Vector &b, int finest,
+void SolverLamg<Matrix>::solveCycle(Vector &x, const Vector &b, const int finest,
                                     LAMGSolverStatus &status) {
     Aux::Timer timer;
     timer.start();
@@ -187,7 +187,7 @@ void SolverLamg<Matrix>::solveCycle(Vector &x, const Vector &b, int finest,
 }
 
 template <class Matrix>
-void SolverLamg<Matrix>::cycle(Vector &x, const Vector &b, int finest, int coarsest,
+void SolverLamg<Matrix>::cycle(Vector &x, const Vector &b, const int finest, const int coarsest,
                                std::vector<count> &numVisits, std::vector<Vector> &X,
                                std::vector<Vector> &B, const LAMGSolverStatus &status) {
     std::fill(numVisits.begin(), numVisits.end(), 0);
@@ -291,7 +291,7 @@ void SolverLamg<Matrix>::cycle(Vector &x, const Vector &b, int finest, int coars
 }
 
 template <class Matrix>
-void SolverLamg<Matrix>::saveIterate(index level, const Vector &x, const Vector &r) {
+void SolverLamg<Matrix>::saveIterate(const index level, const Vector &x, const Vector &r) {
     // update latest pointer
     index i = latestIterate[level];
     latestIterate[level] = (i + 1) % MAX_COMBINED_ITERATES;
@@ -307,13 +307,13 @@ void SolverLamg<Matrix>::saveIterate(index level, const Vector &x, const Vector 
 }
 
 template <class Matrix>
-void SolverLamg<Matrix>::clearHistory(index level) {
+void SolverLamg<Matrix>::clearHistory(const index level) {
     latestIterate[level] = 0;
     numActiveIterates[level] = 0;
 }
 
 template <class Matrix>
-void SolverLamg<Matrix>::minRes(index level, Vector &x, const Vector &r) {
+void SolverLamg<Matrix>::minRes(const index level, Vector &x, const Vector &r) const {
     if (numActiveIterates[level] > 0) {
         count n = numActiveIterates[level];
 
