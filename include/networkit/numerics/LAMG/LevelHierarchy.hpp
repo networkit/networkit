@@ -40,7 +40,7 @@ public:
                              const std::vector<EliminationStage<Matrix>> &coarseningStages);
     void addAggregationLevel(const Matrix &A, const Matrix &P, const Matrix &R);
     void setLastAsCoarsest();
-    inline DenseMatrix &getCoarseMatrix() { return coarseLUMatrix; }
+    inline const DenseMatrix &getCoarseMatrix() const { return coarseLUMatrix; }
 
     inline count size() const {
         return levelType.size() + 1; // elimination + aggregation levels + finestLevel
@@ -48,7 +48,8 @@ public:
 
     LevelType getType(index levelIdx) const;
     Level<Matrix> &at(index levelIdx);
-    double cycleIndex(index levelIdx);
+    const Level<Matrix> &at(index levelIdx) const;
+    double cycleIndex(index levelIdx) const;
 };
 
 template <class Matrix>
@@ -118,7 +119,24 @@ Level<Matrix> &LevelHierarchy<Matrix>::at(index levelIdx) {
 }
 
 template <class Matrix>
-double LevelHierarchy<Matrix>::cycleIndex(index levelIdx) {
+const Level<Matrix> &LevelHierarchy<Matrix>::at(index levelIdx) const {
+    assert(levelIdx < this->size());
+
+    if (levelIdx == 0) { // finest level
+        return finestLevel;
+    } else {
+        levelIdx--;
+    }
+
+    if (levelType[levelIdx] == ELIMINATION) {
+        return eliminationLevels[levelIndex[levelIdx]];
+    } else {
+        return aggregationLevels[levelIndex[levelIdx]];
+    }
+}
+
+template <class Matrix>
+double LevelHierarchy<Matrix>::cycleIndex(index levelIdx) const {
     double gamma = 1.0;
     if (getType(levelIdx + 1) != ELIMINATION) {
         const double finestNumEdges = finestLevel.getLaplacian().nnz();
