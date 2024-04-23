@@ -8,7 +8,9 @@
 #ifndef NETWORKIT_NUMERICS_LAMG_LEVEL_HIERARCHY_HPP_
 #define NETWORKIT_NUMERICS_LAMG_LEVEL_HIERARCHY_HPP_
 
+#include <networkit/algebraic/CSRMatrix.hpp>
 #include <networkit/algebraic/DenseMatrix.hpp>
+#include <networkit/algebraic/DynamicMatrix.hpp>
 #include <networkit/numerics/LAMG/LAMGSettings.hpp>
 #include <networkit/numerics/LAMG/Level/Level.hpp>
 #include <networkit/numerics/LAMG/Level/LevelAggregation.hpp>
@@ -153,6 +155,10 @@ double LevelHierarchy<Matrix>::cycleIndex(index levelIdx) const {
 
     return gamma;
 }
+
+extern template class LevelHierarchy<CSRMatrix>;
+extern template class LevelHierarchy<DenseMatrix>;
+extern template class LevelHierarchy<DynamicMatrix>;
 
 } /* namespace NetworKit */
 
