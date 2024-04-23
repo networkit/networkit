@@ -61,7 +61,6 @@ private:
     void solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverStatus &status);
     void cycle(Vector &x, const Vector &b, int finest, int coarsest, std::vector<count> &numVisits,
                std::vector<Vector> &X, std::vector<Vector> &B, const LAMGSolverStatus &status);
-    void multigridCycle(index level, Vector &xf, const Vector &bf);
     void saveIterate(index level, const Vector &x, const Vector &r);
     void clearHistory(index level);
     void minRes(index level, Vector &x, const Vector &r) const;
