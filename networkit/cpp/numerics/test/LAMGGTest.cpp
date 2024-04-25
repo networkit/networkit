@@ -185,9 +185,11 @@ TEST_P(LAMGGTest, testLamgVariants) {
         return rhs;
     };
 
-    const auto resultProcessor = [&solutions](count i, const Vector &result) {
+    count numProcessorCalls = 0;
+    const auto resultProcessor = [&solutions, &numProcessorCalls](count i, const Vector &result) {
         EXPECT_TRUE(vector_almost_equal(result, solutions[i]))
             << "Lamg result: " << result << "gt: " << solutions[i];
+        ++numProcessorCalls;
     };
 
     if (solveFn == "solve") {
@@ -211,9 +213,10 @@ TEST_P(LAMGGTest, testLamgVariants) {
             EXPECT_TRUE(vector_almost_equal(result, gt))
                 << "Lamg result: " << result << "gt: " << gt;
         }
-    } else if (solveFn == "loaderSolve")
+    } else if (solveFn == "loaderSolve") {
         lamg.parallelSolve(rhsLoader, resultProcessor, {rhss.size(), L.numberOfColumns()});
-    else
+        EXPECT_EQ(numProcessorCalls, rhss.size());
+    } else
         throw std::logic_error("unhandled variant!");
 }
 
