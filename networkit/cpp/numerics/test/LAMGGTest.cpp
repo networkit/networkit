@@ -1,8 +1,8 @@
 /*
  * LAMGGTest.cpp
  *
- *  Created on: 20.11.2014
- *      Author: Michael
+ *  Created on: 24.04.2024
+ *      Author: Lukas
  */
 
 #include <gtest/gtest.h>
@@ -16,9 +16,9 @@
 namespace NetworKit {
 
 // list of variants:
-// - solver: solve, parallelSolve
-// - setup: connected, not connected, not connected with partition
-// - components: one component, multiple components
+// - solver function: solve, parallelSolve
+// - setup function: setupConnected, matrix, matrix graph, matrix graph decomp, graph decomp, graph
+// - components of G: one component, multiple components
 // - parallelism: single thread, multiple threads
 
 class LAMGGTest
@@ -30,13 +30,15 @@ protected:
     std::tuple<Graph, std::vector<Vector>> testData() const;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    LAMGGTest, LAMGGTest,
-    testing::Combine(testing::Values("solve", "parallelSolve", "loaderSolve"),
-                     testing::Values("connected", "disconnected", "disconnectedWithPartition"),
-                     testing::Values("one", "two"), testing::Values("single", "four")));
+INSTANTIATE_TEST_SUITE_P(LAMGGTest, LAMGGTest,
+                         testing::Combine(testing::Values("solve", "parallelSolve", "loaderSolve"),
+                                          testing::Values("setupConnected", "matrix",
+                                                          "matrix graph", "matrix graph decomp",
+                                                          "graph decomp", "graph"),
+                                          testing::Values("one", "two"),
+                                          testing::Values("single", "four")));
 
-// Temporary function
+// print functions for test debugging / output
 inline std::ostream &operator<<(std::ostream &os, const CSRMatrix &M) {
     for (index i = 0; i < M.numberOfRows(); i++) {
         for (index j = 0; j < M.numberOfColumns(); j++)
@@ -159,7 +161,7 @@ TEST_P(LAMGGTest, testLamgVariants) {
         throw std::logic_error("unhandled variant!");
 
     // skip combinations that do not work
-    if (setupFn == "connected" && components != "one")
+    if (setupFn == "setupConnected" && components != "one")
         return;
 
     auto [G, rhss] = testData();
@@ -171,12 +173,18 @@ TEST_P(LAMGGTest, testLamgVariants) {
     ParallelConnectedComponents pcc(G);
     pcc.run();
 
-    if (setupFn == "connected")
+    if (setupFn == "setupConnected")
         lamg.setupConnected(L);
-    else if (setupFn == "disconnected")
+    else if (setupFn == "matrix")
         lamg.setup(L);
-    else if (setupFn == "disconnectedWithPartition")
+    else if (setupFn == "matrix graph")
+        lamg.setup(L, G);
+    else if (setupFn == "matrix graph decomp")
         lamg.setup(L, G, pcc);
+    else if (setupFn == "graph decomp")
+        lamg.setup(G, pcc);
+    else if (setupFn == "graph")
+        lamg.setup(G);
     else
         throw std::logic_error("unhandled variant!");
 

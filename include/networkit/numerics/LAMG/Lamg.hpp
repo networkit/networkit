@@ -31,22 +31,46 @@ namespace NetworKit {
 template <class Matrix>
 class Lamg : public LinearSolver<Matrix> {
 private:
+    // for a graph/matrix with K components and T threads:
+
     bool validSetup;
-    GaussSeidelRelaxation<Matrix> smoother;
-    MultiLevelSetup<Matrix> lamgSetup;
+    const GaussSeidelRelaxation<Matrix> smoother;
+    const MultiLevelSetup<Matrix> lamgSetup;
     Matrix laplacianMatrix;
-    std::vector<LevelHierarchy<Matrix>> compHierarchies;
-    std::vector<SolverLamg<Matrix>> compSolvers;
-    std::vector<LAMGSolverStatus> compStati;
-
-    std::vector<Vector> initialVectors;
-    std::vector<Vector> rhsVectors;
-
     count numComponents;
-    std::vector<std::vector<index>> components;
+
+    // maps a node id from global index (in L) to its node id in the component (block of L) such
+    // that in each component, nodes are indexed from 0 to size(component)-1. Size n
+    // not used in case there is only a single component
     std::vector<index> graph2Components;
 
-    void initializeForOneComponent();
+    // for each component, a vector of ids that are in this component. Size K
+    std::vector<std::vector<index>> components;
+    // one LevelHierarchy for each component. Size K
+    std::vector<LevelHierarchy<Matrix>> compHierarchies;
+
+    // these are internal data structures used in the solve function
+    // one object for each component and each thread - access: [thread][component]
+    mutable std::vector<std::vector<SolverLamg<Matrix>>> compSolvers;
+    // one object for each component and each thread - access: [thread][component]
+    mutable std::vector<std::vector<LAMGSolverStatus>> compStati;
+
+    // one object for each component and each thread - access: [thread][component]
+    mutable std::vector<std::vector<Vector>> initialVectors;
+    // one object for each component and each thread - access: [thread][component]
+    mutable std::vector<std::vector<Vector>> rhsVectors;
+
+    // initializing step 1
+    // initializes numComponents, graph2components, components, compHierarchies
+    // precondition: laplacianMatrix is set correctly
+    void initializeOneComponent();
+    void initializeMultipleComponents(const Graph &G, const ComponentDecomposition &decomp);
+
+    // initializing step 2
+    // initializes compSolvers, compStati, initialVectors, rhsVectors
+    // Precondition: the following members are set correctly:
+    // numComponents, components, compHierarchies
+    void initializeInternalDatastructures() const;
 
 public:
     /**
@@ -70,14 +94,47 @@ public:
     void setup(const Matrix &laplacianMatrix) override;
 
     /**
+     * Compute the multigrid hierarchy for the Laplacian matrix that
+     * corresponds to the graph @a G.
+     * @param laplacianMatrix
+     * @param G Graph that corresponds to the @a laplacianMatrix
+     */
+    void setup(const Graph &graph) override;
+
+    /**
+     * Compute the multigrid hierarchy for the given Laplacian matrix @a laplacianMatrix that
+     * corresponds to the graph @a G.
+     * @param laplacianMatrix
+     * @param G Graph that corresponds to the @a laplacianMatrix
+     * @note This setup method allows you to skip some computation required for setting up LAMG. You
+     * can provide your matrix and graph, which are required for setting up LAMG, via this method to
+     * prevent duplicate computation. Note that the output is undefined if the two parameters do not
+     * correspond the the same graph.
+     */
+    void setup(const Matrix &laplacianMatrix, const Graph &G);
+
+    /**
+     * Compute the multigrid hierarchy for the Laplacian matrix that
+     * corresponds to the graph @a G using the existing component decomposition @a decomp.
+     * @param G Graph that corresponds to the @a laplacianMatrix
+     * @param decomp ComponentDecomposition for the graph @a G
+     * @note This setup method allows you to skip some computation required for setting up LAMG. You
+     * can provide your graph and decomposition, which are required for setting up LAMG, via this
+     * method to prevent duplicate computation. Note that the output is undefined if the two
+     * parameters do not correspond the the same graph.
+     */
+    void setup(const Graph &G, const ComponentDecomposition &decomp);
+
+    /**
      * Compute the multigrid hierarchy for the given Laplacian matrix @a laplacianMatrix that
      * corresponds to the graph @a G using the existing component decomposition @a decomp.
      * @param laplacianMatrix
-     * @param decomp ComponentDecomposition that corresponds to the graph of the @a laplacianMatrix
-     * @note This setup method allows you to skip some computation in the general setup method. You
-     * can provide your own graph and decomposition via this method to prevent duplicate
-     * computation. Note that the output is undefined if the three parameters do not correspond the
-     * the same graph.
+     * @param G Graph that corresponds to the @a laplacianMatrix
+     * @param decomp ComponentDecomposition for the graph @a G
+     * @note This setup method allows you to skip some computation required for setting up LAMG. You
+     * can provide your graph and decomposition, which are required for setting up LAMG, via
+     * this method to prevent duplicate computation. Note that the output is undefined if the three
+     * parameters do not correspond the the same graph.
      */
     void setup(const Matrix &laplacianMatrix, const Graph &G, const ComponentDecomposition &decomp);
 
@@ -135,13 +192,6 @@ public:
                        count maxIterations = std::numeric_limits<count>::max()) const {
         if (numComponents == 1) {
             const index numThreads = omp_get_max_threads();
-            if (compSolvers.size() != numThreads) {
-                compSolvers.clear();
-
-                for (index i = 0; i < (index)numThreads; ++i) {
-                    compSolvers.push_back(SolverLamg<Matrix>(compHierarchies[0], smoother));
-                }
-            }
 
             count n = rhsSize.first;
             count m = rhsSize.second;
@@ -150,7 +200,7 @@ public:
 
 #pragma omp parallel for
             for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
-                index threadId = omp_get_thread_num();
+                const index threadId = omp_get_thread_num();
 
                 const Vector &rhs = rhsLoader(i, RHSs[threadId]);
                 Vector &result = results[threadId];
@@ -161,7 +211,7 @@ public:
                 stat.maxIters = maxIterations;
                 stat.maxConvergenceTime = maxConvergenceTime;
 
-                compSolvers[threadId].solve(result, rhs, stat);
+                compSolvers[threadId][0].solve(result, rhs, stat);
                 resultProcessor(i, result);
             }
         }
@@ -169,80 +219,152 @@ public:
 };
 
 template <class Matrix>
-void Lamg<Matrix>::initializeForOneComponent() {
+void Lamg<Matrix>::initializeInternalDatastructures() const {
+    // preconditions:
+    // - numComponents is correct
+    // - components vector is correct
+    // - compHierarchies is setup
+
+    // first, resize outer vectors
+    // then iterate elements and initialize them correctly
+
+    initialVectors.resize(omp_get_max_threads());
+    rhsVectors.resize(omp_get_max_threads());
+    compSolvers.resize(omp_get_max_threads());
+    compStati.resize(omp_get_max_threads());
+
+#pragma omp parallel for
+    for (index thread = 0; thread < omp_get_max_threads(); ++thread) {
+        // resize inner vectors
+        initialVectors[thread].resize(numComponents);
+        rhsVectors[thread].resize(numComponents);
+        compStati[thread].resize(numComponents);
+
+        // there is no default constructor for SolverLamg - reserve memory and construct later
+        compSolvers[thread].clear();
+        compSolvers[thread].reserve(numComponents);
+
+        // iterate components
+        for (index compIdx = 0; compIdx < numComponents; ++compIdx) {
+            auto &component = components[compIdx];
+
+            // Vector objects do not have a resize method - create new objects instead
+            initialVectors[thread][compIdx] = Vector(component.size());
+            rhsVectors[thread][compIdx] = Vector(component.size());
+
+            compSolvers[thread].emplace_back(compHierarchies[compIdx], smoother);
+
+            LAMGSolverStatus status;
+            status.desiredResidualReduction =
+                this->tolerance * component.size() / laplacianMatrix.numberOfColumns();
+            compStati[thread][compIdx] = status;
+        }
+    }
+}
+
+template <class Matrix>
+void Lamg<Matrix>::initializeOneComponent() {
+    numComponents = 1;
+    components.resize(1);
+    components[0].resize(laplacianMatrix.numberOfColumns());
+    std::iota(components[0].begin(), components[0].end(), 0);
+    graph2Components.clear();
     compHierarchies = std::vector<LevelHierarchy<Matrix>>(1);
     lamgSetup.setup(laplacianMatrix, compHierarchies[0]);
-    compSolvers.clear();
-    compSolvers.push_back(SolverLamg<Matrix>(compHierarchies[0], smoother));
-    validSetup = true;
+    initializeInternalDatastructures();
+}
+
+template <class Matrix>
+void Lamg<Matrix>::initializeMultipleComponents(const Graph &G,
+                                                const ComponentDecomposition &decomp) {
+
+    numComponents = decomp.numberOfComponents();
+
+    components.resize(numComponents);
+    graph2Components.resize(G.numberOfNodes());
+
+    compHierarchies.resize(numComponents);
+
+    index compIdx = 0;
+    for (const auto &partitionComponent : decomp.getPartition().getSubsets()) {
+        components[compIdx].resize(partitionComponent.size());
+        std::copy(partitionComponent.begin(), partitionComponent.end(),
+                  components[compIdx].begin());
+
+        auto &component = components[compIdx];
+
+        index idx = 0;
+        for (node u : component) {
+            graph2Components[u] = idx;
+            idx++;
+        }
+
+        // it is not clear to me if LevelHierarchy can be reused for different matrices. Hence,
+        // construct new objects
+        compHierarchies[compIdx] = LevelHierarchy<Matrix>();
+
+        // construct block matrix via neighborsOf in G
+        std::vector<Triplet> triplets;
+        for (node u : component) {
+            G.forNeighborsOf(u, [&](node v, edgeweight w) {
+                triplets.push_back({graph2Components[u], graph2Components[v], w});
+            });
+        }
+        Matrix compMatrix(component.size(), component.size(), triplets);
+        lamgSetup.setup(compMatrix, compHierarchies[compIdx]);
+
+        ++compIdx;
+    }
+    initializeInternalDatastructures();
 }
 
 template <class Matrix>
 void Lamg<Matrix>::setupConnected(const Matrix &laplacianMatrix) {
+    assert([&]() {
+        auto G = MatrixTools::matrixToGraph(laplacianMatrix);
+        ParallelConnectedComponents cc(G);
+        cc.run();
+        return cc.numberOfComponents() == 1;
+    }());
     this->laplacianMatrix = laplacianMatrix;
-    initializeForOneComponent();
-    numComponents = 1;
+    initializeOneComponent();
+    validSetup = true;
 }
 
 template <class Matrix>
 void Lamg<Matrix>::setup(const Matrix &laplacianMatrix, const Graph &G,
                          const ComponentDecomposition &decomp) {
-    this->setup(laplacianMatrix);
+    this->laplacianMatrix = laplacianMatrix;
+    numComponents = decomp.numberOfComponents();
+    if (numComponents == 1) {
+        initializeOneComponent();
+    } else {
+        initializeMultipleComponents(G, decomp);
+    }
+    validSetup = true;
+}
+
+template <class Matrix>
+void Lamg<Matrix>::setup(const Graph &G, const ComponentDecomposition &decomp) {
+    setup(Matrix::laplacianMatrix(G), G, decomp);
+}
+
+template <class Matrix>
+void Lamg<Matrix>::setup(const Graph &G) {
+    setup(Matrix::laplacianMatrix(G), G);
+}
+
+template <class Matrix>
+void Lamg<Matrix>::setup(const Matrix &laplacianMatrix, const Graph &G) {
+    ParallelConnectedComponents con(G, false);
+    con.run();
+    setup(laplacianMatrix, G, con);
 }
 
 template <class Matrix>
 void Lamg<Matrix>::setup(const Matrix &laplacianMatrix) {
-    this->laplacianMatrix = laplacianMatrix;
     Graph G = MatrixTools::matrixToGraph(laplacianMatrix);
-    ParallelConnectedComponents con(G, false);
-    con.run();
-    numComponents = con.numberOfComponents();
-    if (numComponents == 1) {
-        initializeForOneComponent();
-    } else {
-        graph2Components = std::vector<index>(G.numberOfNodes());
-
-        initialVectors = std::vector<Vector>(numComponents);
-        rhsVectors = std::vector<Vector>(numComponents);
-
-        components = std::vector<std::vector<index>>(numComponents);
-        compHierarchies = std::vector<LevelHierarchy<Matrix>>(numComponents);
-        compSolvers.clear();
-        compStati = std::vector<LAMGSolverStatus>(numComponents);
-
-        // create solver for every component
-        index compIdx = 0;
-        for (const auto &component : con.getPartition().getSubsets()) {
-            components[compIdx] = std::vector<index>(component.begin(), component.end());
-
-            std::vector<Triplet> triplets;
-            index idx = 0;
-            for (node u : components[compIdx]) {
-                graph2Components[u] = idx;
-                idx++;
-            }
-
-            for (node u : components[compIdx]) {
-                G.forNeighborsOf(u, [&](node v, edgeweight w) {
-                    triplets.push_back({graph2Components[u], graph2Components[v], w});
-                });
-            }
-
-            Matrix compMatrix(component.size(), component.size(), triplets);
-            initialVectors[compIdx] = Vector(component.size());
-            rhsVectors[compIdx] = Vector(component.size());
-            lamgSetup.setup(compMatrix, compHierarchies[compIdx]);
-            compSolvers.push_back(SolverLamg<Matrix>(compHierarchies[compIdx], smoother));
-            LAMGSolverStatus status{};
-            status.desiredResidualReduction =
-                this->tolerance * component.size() / G.numberOfNodes();
-            compStati[compIdx] = status;
-
-            compIdx++;
-        }
-
-        validSetup = true;
-    }
+    setup(laplacianMatrix, G);
 }
 
 template <class Matrix>
@@ -261,7 +383,7 @@ SolverStatus Lamg<Matrix>::solve(const Vector &rhs, Vector &result, count maxCon
             this->tolerance * rhs.length() / (laplacianMatrix * result - rhs).length();
         stat.maxIters = maxIterations;
         stat.maxConvergenceTime = maxConvergenceTime;
-        compSolvers[0].solve(result, rhs, stat);
+        compSolvers[0][0].solve(result, rhs, stat);
 
         status.residual = stat.residual;
         status.numIters = stat.numIters;
@@ -271,25 +393,25 @@ SolverStatus Lamg<Matrix>::solve(const Vector &rhs, Vector &result, count maxCon
         count maxIters = 0;
         for (index i = 0; i < components.size(); ++i) {
             for (auto element : components[i]) {
-                initialVectors[i][graph2Components[element]] = result[element];
-                rhsVectors[i][graph2Components[element]] = rhs[element];
+                initialVectors[0][i][graph2Components[element]] = result[element];
+                rhsVectors[0][i][graph2Components[element]] = rhs[element];
             }
 
-            double resReduction =
-                this->tolerance * rhsVectors[i].length()
-                / (compHierarchies[i].at(0).getLaplacian() * initialVectors[i] - rhsVectors[i])
+            double resReduction = this->tolerance * rhsVectors[0][i].length()
+                / (compHierarchies[i].at(0).getLaplacian() * initialVectors[0][i]
+                                     - rhsVectors[0][i])
                       .length();
-            compStati[i].desiredResidualReduction =
+            compStati[0][i].desiredResidualReduction =
                 resReduction * components[i].size() / laplacianMatrix.numberOfRows();
-            compStati[i].maxIters = maxIterations;
-            compStati[i].maxConvergenceTime = maxConvergenceTime;
-            compSolvers[i].solve(initialVectors[i], rhsVectors[i], compStati[i]);
+            compStati[0][i].maxIters = maxIterations;
+            compStati[0][i].maxConvergenceTime = maxConvergenceTime;
+            compSolvers[0][i].solve(initialVectors[0][i], rhsVectors[0][i], compStati[0][i]);
 
             for (auto element : components[i]) { // write solution back to result
-                result[element] = initialVectors[i][graph2Components[element]];
+                result[element] = initialVectors[0][i][graph2Components[element]];
             }
 
-            maxIters = std::max(maxIters, compStati[i].numIters);
+            maxIters = std::max(maxIters, compStati[0][i].numIters);
         }
 
         status.residual = (rhs - laplacianMatrix * result).length();
@@ -306,23 +428,16 @@ void Lamg<Matrix>::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vec
     if (numComponents == 1) {
         assert(rhs.size() == results.size());
         const index numThreads = omp_get_max_threads();
-        if (compSolvers.size() != numThreads) {
-            compSolvers.clear();
-
-            for (index i = 0; i < (index)numThreads; ++i) {
-                compSolvers.push_back(SolverLamg<Matrix>(compHierarchies[0], smoother));
-            }
-        }
 
 #pragma omp parallel for
         for (omp_index i = 0; i < static_cast<omp_index>(rhs.size()); ++i) {
-            index threadId = omp_get_thread_num();
+            const index threadId = omp_get_thread_num();
             LAMGSolverStatus stat;
             stat.desiredResidualReduction = this->tolerance * rhs[i].length()
                                             / (laplacianMatrix * results[i] - rhs[i]).length();
             stat.maxIters = maxIterations;
             stat.maxConvergenceTime = maxConvergenceTime;
-            compSolvers[threadId].solve(results[i], rhs[i], stat);
+            compSolvers[threadId][0].solve(results[i], rhs[i], stat);
         }
     }
 }
