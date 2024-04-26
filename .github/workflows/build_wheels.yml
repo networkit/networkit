@@ -100,12 +100,12 @@ jobs:
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
-  cpython-macos-x86_64:
+  cpython-macos-arm64:
     name: 'macOS CPython  (${{ matrix.cibw_archs }})'
     runs-on: macos-latest
     strategy:
       matrix:
-        cibw_archs: ["x86_64"]
+        cibw_archs: ["universal2"]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -113,7 +113,7 @@ jobs:
       - uses: actions/setup-python@v5
         name: Install Python
         with:
-          python-version: '3.10'
+          python-version: '3.12'
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.16.5
         env:
@@ -153,48 +153,6 @@ jobs:
           name: 'macos-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}.zip'
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-
-  # CROSSBUILDING ON MACOS IS CURRENTLY BROKEN BECAUSE OF OPENMP-DEPENDENCIES
-  # cpython-macos-arm64:
-  #   name: 'macOS CPython  (${{ matrix.cibw_archs }})'
-  #   runs-on: macos-latest
-  #   strategy:
-  #     matrix:
-  #       cibw_archs: ["arm64"]
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         submodules: true
-  #     - uses: actions/setup-python@v2
-  #       name: Install Python
-  #       with:
-  #         python-version: '3.11'
-  #     - name: Build wheels
-  #       uses: pypa/cibuildwheel@v2.1.1
-  #       env:
-  #         CIBW_BEFORE_BUILD: 
-  #           pip install "cython==0.29.*" &&
-  #           brew install libomp ninja &&
-  #           pip install --pre -i https://pypi.anaconda.org/scipy-wheels-nightly/simple scipy
-  #         CIBW_ENVIRONMENT: CXX=c++ NETWORKIT_OSX_CROSSBUILD=ON
-  #         CIBW_ARCHS_MACOS: ${{ matrix.cibw_archs }}
-  #         CIBW_BUILD: "cp39-* cp310-* cp311-*"
-  #         CIBW_SKIP: pp*
-  #     - uses: actions/upload-artifact@v2
-  #       with:
-  #         name: networkit-cp39-macos-${{ matrix.cibw_archs }}.whl
-  #         path: ./wheelhouse/*cp39*.whl
-  #         retention-days: ${{ env.ARTIFACT_RETENTION }}
-  #     - uses: actions/upload-artifact@v2
-  #       with:
-  #         name: networkit-cp310-macos-${{ matrix.cibw_archs }}.whl
-  #         path: ./wheelhouse/*cp310*.whl
-  #         retention-days: ${{ env.ARTIFACT_RETENTION }}
-  #     - uses: actions/upload-artifact@v2
-  #       with:
-  #         name: networkit-cp311-macos-${{ matrix.cibw_archs }}.whl
-  #         path: ./wheelhouse/*cp311*.whl
-  #         retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-windows:
     name: 'Windows CPython (${{ matrix.cibw_archs }})'
