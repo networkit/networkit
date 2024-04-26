@@ -101,7 +101,7 @@ public:
      * residual.
      */
     SolverStatus solve(const Vector &rhs, Vector &result, count maxConvergenceTime = 5 * 60 * 1000,
-                       count maxIterations = std::numeric_limits<count>::max()) override;
+                       count maxIterations = std::numeric_limits<count>::max()) const override;
 
     /**
      * Compute the @a results for the matrix currently setup and the right-hand sides @a rhs.
@@ -114,7 +114,7 @@ public:
      */
     void parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
                        count maxConvergenceTime = 5 * 60 * 1000,
-                       count maxIterations = std::numeric_limits<count>::max()) override;
+                       count maxIterations = std::numeric_limits<count>::max()) const override;
 
     /**
      * Abstract parallel solve function that computes and processes results using @a resultProcessor
@@ -132,7 +132,7 @@ public:
     template <typename RHSLoader, typename ResultProcessor>
     void parallelSolve(const RHSLoader &rhsLoader, const ResultProcessor &resultProcessor,
                        std::pair<count, count> rhsSize, count maxConvergenceTime = 5 * 60 * 1000,
-                       count maxIterations = std::numeric_limits<count>::max()) {
+                       count maxIterations = std::numeric_limits<count>::max()) const {
         if (numComponents == 1) {
             const index numThreads = omp_get_max_threads();
             if (compSolvers.size() != numThreads) {
@@ -247,7 +247,7 @@ void Lamg<Matrix>::setup(const Matrix &laplacianMatrix) {
 
 template <class Matrix>
 SolverStatus Lamg<Matrix>::solve(const Vector &rhs, Vector &result, count maxConvergenceTime,
-                                 count maxIterations) {
+                                 count maxIterations) const {
     if (!validSetup || result.getDimension() != laplacianMatrix.numberOfColumns()
         || rhs.getDimension() != laplacianMatrix.numberOfRows()) {
         throw std::runtime_error("No or wrong matrix is setup for given vectors.");
@@ -302,7 +302,7 @@ SolverStatus Lamg<Matrix>::solve(const Vector &rhs, Vector &result, count maxCon
 
 template <class Matrix>
 void Lamg<Matrix>::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
-                                 count maxConvergenceTime, count maxIterations) {
+                                 count maxConvergenceTime, count maxIterations) const {
     if (numComponents == 1) {
         assert(rhs.size() == results.size());
         const index numThreads = omp_get_max_threads();
