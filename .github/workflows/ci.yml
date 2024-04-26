@@ -139,7 +139,7 @@ jobs:
     strategy:
       matrix:
         os: ['14'] # llvm and gcc are only tested on arm based machines
-        compiler: ['llvm-17', 'gcc-12']
+        compiler: ['llvm-18', 'gcc-12']
     steps:
       - name: Install prerequisites
         run: |
