@@ -26,8 +26,8 @@ class LAMGGTest
     : public testing::TestWithParam<
           std::tuple<std::string, std::string, std::string, std::string>> {
 protected:
-    // returns a graph and a vector of RHS, solution pairs s.t. L*solution = RHS for all entries
-    std::tuple<Graph, std::vector<Vector>, std::vector<Vector>> testData() const;
+    // returns a graph and a vector of RHSs
+    std::tuple<Graph, std::vector<Vector>> testData() const;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -67,7 +67,7 @@ inline bool vector_almost_equal(const Vector &lhs, const Vector &rhs) {
     return true;
 }
 
-std::tuple<Graph, std::vector<Vector>, std::vector<Vector>> LAMGGTest::testData() const {
+std::tuple<Graph, std::vector<Vector>> LAMGGTest::testData() const {
     auto [solveFn, setupFn, components, parallelism] = GetParam();
 
     Graph G(6);
@@ -95,17 +95,20 @@ std::tuple<Graph, std::vector<Vector>, std::vector<Vector>> LAMGGTest::testData(
         G.addEdge(3, 4);
         G.addEdge(4, 5);
 
-        // rhs, solution
         rhss = {
-            {-4, 0, -2, 2, 0, 4},
-            {-8, 2, 10, 14, -8, -10},
-        };
-        solutions = {
-            {-2.5, -1.5, -0.5, 0.5, 1.5, 2.5},
-            {-0.5, 2.5, 3.5, 4.5, -4.5, -5.5},
+            {-4, 0, -2, 2, 0, 4},  {-8, 2, 2, 14, -8, -10}, {4, 0, -2, 2, 0, 4},
+            {8, 2, 10, 0, -8, -1}, {4, 0, 6, 9, 0, 4},      {8, 8, -10, 5, -9, -3},
+            {4, 0, 7, 2, 0, -4},   {8, 9, -7, 14, 8, -2},
         };
 
-        return {G, rhss, solutions};
+        // make sure that each vector sums up to 0
+        for (auto &v : rhss) {
+            double sum = 0;
+            v.forElements([&](double value) { sum += value; });
+            v[0] -= sum;
+        }
+
+        return {G, rhss};
     }
 
     if (components == "two") {
@@ -128,21 +131,19 @@ std::tuple<Graph, std::vector<Vector>, std::vector<Vector>> LAMGGTest::testData(
         G.addEdge(3, 4);
         G.addEdge(4, 5);
 
-        // rhs, solution
         rhss = {
-            {-1, 3, -2, -1, -3, 4},
-            {0, 0, 0, -1, -3, 4},
-            {-1, 3, -2, 0, 0, 0},
-            {-10, 0, 10, 16, -6, -10},
-        };
-        solutions = {
-            {0, 1, -1, -2, -1, 3},
-            {0, 0, 0, -2, -1, 3},
-            {0, 1, -1, 0, 0, 0},
-            {-10, 0, 10, 14, -2, -12},
+            {-1, 3, -2, -1, -3, 4},    {0, 0, 0, -1, -3, 4},       {-1, 3, -2, 0, 0, 0},
+            {-10, 0, 10, 16, -6, -10}, {1, 3, 2, 1, 3, 4},         {0, 0, 0, -1, 3, 4},
+            {1, 3, -2, 0, 0, 0},       {10, 0, -10, -16, -6, -10},
         };
 
-        return {G, rhss, solutions};
+        // make sure that each component sums up to 0
+        for (auto &v : rhss) {
+            v[0] -= v[0] + v[1] + v[2];
+            v[3] -= v[3] + v[4] + v[5];
+        }
+
+        return {G, rhss};
     }
     throw std::logic_error("unknown number of components.");
 }
@@ -161,7 +162,7 @@ TEST_P(LAMGGTest, testLamgVariants) {
     if (setupFn == "connected" && components != "one")
         return;
 
-    auto [G, rhss, solutions] = testData();
+    auto [G, rhss] = testData();
 
     auto L = CSRMatrix::laplacianMatrix(G);
 
@@ -186,32 +187,31 @@ TEST_P(LAMGGTest, testLamgVariants) {
     };
 
     count numProcessorCalls = 0;
-    const auto resultProcessor = [&solutions, &numProcessorCalls](count i, const Vector &result) {
-        EXPECT_TRUE(vector_almost_equal(result, solutions[i]))
-            << "Lamg result: " << result << "gt: " << solutions[i];
+    const auto resultProcessor = [&](count i, const Vector &result) {
+        EXPECT_TRUE(vector_almost_equal(L * result, rhss[i]))
+            << "Lamg result: " << result << "\nL * result: " << L * result << "\nrhs: " << rhss[i];
         ++numProcessorCalls;
     };
 
     if (solveFn == "solve") {
         for (size_t i = 0; i < rhss.size(); ++i) {
             const auto &rhs = rhss[i];
-            const auto &gt = solutions[i];
 
             Vector result(rhs.getDimension());
 
             lamg.solve(rhs, result);
 
-            EXPECT_TRUE(vector_almost_equal(result, gt))
-                << "Lamg result: " << result << "gt: " << gt;
+            EXPECT_TRUE(vector_almost_equal(L * result, rhs))
+                << "Lamg result: " << result << "\nL * result: " << L * result << "\nrhs: " << rhs;
         }
     } else if (solveFn == "parallelSolve") {
         std::vector<Vector> results(rhss.size(), Vector(6));
         lamg.parallelSolve(rhss, results);
         for (size_t i = 0; i < rhss.size(); ++i) {
-            const auto &gt = solutions[i];
+            const auto &rhs = rhss[i];
             const auto &result = results[i];
-            EXPECT_TRUE(vector_almost_equal(result, gt))
-                << "Lamg result: " << result << "gt: " << gt;
+            EXPECT_TRUE(vector_almost_equal(L * result, rhs))
+                << "Lamg result: " << result << "\nL * result: " << L * result << "\nrhs: " << rhs;
         }
     } else if (solveFn == "loaderSolve") {
         lamg.parallelSolve(rhsLoader, resultProcessor, {rhss.size(), L.numberOfColumns()});
