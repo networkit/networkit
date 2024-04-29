@@ -5,6 +5,6 @@ networkit_add_module(viz
     )
 
 networkit_module_link_modules(viz
-    algebraic auxiliary coarsening community components distance graph io structures)
+    algebraic auxiliary coarsening community components distance graph io numerics structures)
 
 add_subdirectory(test)
