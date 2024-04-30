@@ -36,7 +36,7 @@ struct LAMGSolverStatus {
     count numIters = 0; // number of iterations needed during solve phase
     double residual = std::numeric_limits<double>::infinity(); // absolute final residual
     bool converged = false;                                    // flag of conversion status
-    std::vector<double> residualHistory; // history of absolute residuals
+    std::vector<double> residualHistory;                       // history of absolute residuals
 };
 
 /**
