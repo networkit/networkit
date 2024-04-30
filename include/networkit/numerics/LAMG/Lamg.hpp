@@ -175,8 +175,8 @@ public:
      */
     std::vector<SolverStatus>
     parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
-                       count maxConvergenceTime = 5 * 60 * 1000,
-                       count maxIterations = std::numeric_limits<count>::max()) const override;
+                  count maxConvergenceTime = 5 * 60 * 1000,
+                  count maxIterations = std::numeric_limits<count>::max()) const override;
 
     /**
      * Abstract parallel solve function that computes and processes results using @a resultProcessor
@@ -196,30 +196,23 @@ public:
     void parallelSolve(const RHSLoader &rhsLoader, const ResultProcessor &resultProcessor,
                        std::pair<count, count> rhsSize, count maxConvergenceTime = 5 * 60 * 1000,
                        count maxIterations = std::numeric_limits<count>::max()) const {
-        if (numComponents == 1) {
-            const index numThreads = omp_get_max_threads();
 
-            count n = rhsSize.first;
-            count m = rhsSize.second;
-            std::vector<Vector> results(numThreads, Vector(m));
-            std::vector<Vector> RHSs(numThreads, Vector(m));
+        const count n = rhsSize.first;
+        const count m = rhsSize.second;
+        const index numThreads = omp_get_max_threads();
+
+        std::vector<Vector> results(numThreads, Vector(m));
+        std::vector<Vector> RHSs(numThreads, Vector(m));
 
 #pragma omp parallel for
-            for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
-                const index threadId = omp_get_thread_num();
+        for (index i = 0; i < n; ++i) {
+            const index threadId = omp_get_thread_num();
 
-                const Vector &rhs = rhsLoader(i, RHSs[threadId]);
-                Vector &result = results[threadId];
+            const Vector &rhs = rhsLoader(i, RHSs[threadId]);
+            Vector &result = results[threadId];
 
-                LAMGSolverStatus stat;
-                stat.desiredResidualReduction =
-                    this->tolerance * rhs.length() / (laplacianMatrix * result - rhs).length();
-                stat.maxIters = maxIterations;
-                stat.maxConvergenceTime = maxConvergenceTime;
-
-                compSolvers[threadId][0].solve(result, rhs, stat);
-                resultProcessor(i, result);
-            }
+            solveThread(rhs, result, maxConvergenceTime, maxIterations, threadId);
+            resultProcessor(i, result);
         }
     }
 };
@@ -408,7 +401,7 @@ SolverStatus Lamg<Matrix>::solveThread(const Vector &rhs, Vector &result, count 
                 this->tolerance * componentRhs.length()
                 / (compHierarchies[componentId].at(0).getLaplacian() * componentResult
                    - componentRhs)
-                                        .length();
+                      .length();
             stat.desiredResidualReduction =
                 resReduction * components[componentId].size() / laplacianMatrix.numberOfRows();
             stat.maxIters = maxIterations;
@@ -441,21 +434,20 @@ SolverStatus Lamg<Matrix>::solve(const Vector &rhs, Vector &result, count maxCon
 
     return solveThread(rhs, result, maxConvergenceTime, maxIterations, 0);
 }
-                                 count maxConvergenceTime, count maxIterations) const {
-    if (numComponents == 1) {
-        assert(rhs.size() == results.size());
+
+template <class Matrix>
+std::vector<SolverStatus>
+Lamg<Matrix>::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
+                            count maxConvergenceTime, count maxIterations) const {
+    std::vector<SolverStatus> stati(rhs.size());
 
 #pragma omp parallel for
-        for (omp_index i = 0; i < static_cast<omp_index>(rhs.size()); ++i) {
-            const index threadId = omp_get_thread_num();
-            LAMGSolverStatus stat;
-            stat.desiredResidualReduction = this->tolerance * rhs[i].length()
-                                            / (laplacianMatrix * results[i] - rhs[i]).length();
-            stat.maxIters = maxIterations;
-            stat.maxConvergenceTime = maxConvergenceTime;
-            compSolvers[threadId][0].solve(results[i], rhs[i], stat);
-        }
+    for (index i = 0; i < rhs.size(); ++i) {
+        const index threadId = omp_get_thread_num();
+        stati[i] = solveThread(rhs[i], results[i], maxConvergenceTime, maxIterations, threadId);
     }
+
+    return stati;
 }
 
 } /* namespace NetworKit */
