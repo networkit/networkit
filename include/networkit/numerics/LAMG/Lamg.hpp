@@ -205,7 +205,7 @@ public:
         std::vector<Vector> RHSs(numThreads, Vector(m));
 
 #pragma omp parallel for
-        for (int i = 0; i < n; ++i) {
+        for (omp_index i = 0; i < static_cast<omp_index>(n); ++i) {
             const index threadId = omp_get_thread_num();
 
             const Vector &rhs = rhsLoader(i, RHSs[threadId]);
@@ -443,7 +443,7 @@ Lamg<Matrix>::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> 
     std::vector<SolverStatus> stati(rhs.size());
 
 #pragma omp parallel for
-    for (int i = 0; i < rhs.size(); ++i) {
+    for (omp_index i = 0; i < static_cast<omp_index>(rhs.size()); ++i) {
         const index threadId = omp_get_thread_num();
         stati[i] = solveThread(rhs[i], results[i], maxConvergenceTime, maxIterations, threadId);
     }
