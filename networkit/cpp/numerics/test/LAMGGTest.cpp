@@ -192,14 +192,14 @@ TEST_P(LAMGGTest, testLamgVariants) {
         throw std::logic_error("unhandled variant!");
 
     // for loader solve variant
-    count numLoaderCalls = 0;
+    std::atomic<int> numLoaderCalls = 0;
     const auto rhsLoader = [&rhss, &numLoaderCalls](count i, Vector &rhs) -> Vector & {
         rhs = rhss[i];
         ++numLoaderCalls;
         return rhs;
     };
 
-    count numProcessorCalls = 0;
+    std::atomic<int> numProcessorCalls = 0;
     const auto resultProcessor = [&](count i, const Vector &result) {
         EXPECT_TRUE(vector_almost_equal(L * result, rhss[i]))
             << "Lamg result: " << result << "\nL * result: " << L * result << "\nrhs: " << rhss[i];
