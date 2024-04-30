@@ -185,6 +185,7 @@ public:
      * @param maxIterations
      * @note If the solver does not support parallelism during solves, this function falls back to
      * solving the systems sequentially.
+     * @note The @a rhsLoader and @a resultProcessor are called from multiple threads in parallel.
      */
     template <typename RHSLoader, typename ResultProcessor>
     void parallelSolve(const RHSLoader &rhsLoader, const ResultProcessor &resultProcessor,
