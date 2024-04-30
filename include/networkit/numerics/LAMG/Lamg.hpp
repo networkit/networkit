@@ -234,7 +234,7 @@ void Lamg<Matrix>::initializeInternalDatastructures() const {
     compStati.resize(omp_get_max_threads());
 
 #pragma omp parallel for
-    for (index thread = 0; thread < omp_get_max_threads(); ++thread) {
+    for (int thread = 0; thread < omp_get_max_threads(); ++thread) {
         // resize inner vectors
         initialVectors[thread].resize(numComponents);
         rhsVectors[thread].resize(numComponents);
@@ -427,7 +427,6 @@ void Lamg<Matrix>::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vec
                                  count maxConvergenceTime, count maxIterations) const {
     if (numComponents == 1) {
         assert(rhs.size() == results.size());
-        const index numThreads = omp_get_max_threads();
 
 #pragma omp parallel for
         for (omp_index i = 0; i < static_cast<omp_index>(rhs.size()); ++i) {
