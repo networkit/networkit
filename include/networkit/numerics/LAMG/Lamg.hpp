@@ -398,9 +398,9 @@ SolverStatus Lamg<Matrix>::solve(const Vector &rhs, Vector &result, count maxCon
             }
 
             double resReduction = this->tolerance * rhsVectors[0][i].length()
-                / (compHierarchies[i].at(0).getLaplacian() * initialVectors[0][i]
+                                  / (compHierarchies[i].at(0).getLaplacian() * initialVectors[0][i]
                                      - rhsVectors[0][i])
-                      .length();
+                                        .length();
             compStati[0][i].desiredResidualReduction =
                 resReduction * components[i].size() / laplacianMatrix.numberOfRows();
             compStati[0][i].maxIters = maxIterations;
