@@ -72,6 +72,10 @@ private:
     // numComponents, components, compHierarchies
     void initializeInternalDatastructures() const;
 
+    // solves on the given thread
+    SolverStatus solveThread(const Vector &rhs, Vector &result, count maxConvergenceTime,
+                             count maxIterations, index threadId) const;
+
 public:
     /**
      * Construct a solver with the given @a tolerance. The relative residual ||Ax-b||/||b|| will be
@@ -370,22 +374,17 @@ void Lamg<Matrix>::setup(const Matrix &laplacianMatrix) {
 }
 
 template <class Matrix>
-SolverStatus Lamg<Matrix>::solve(const Vector &rhs, Vector &result, count maxConvergenceTime,
-                                 count maxIterations) const {
-    if (!validSetup || result.getDimension() != laplacianMatrix.numberOfColumns()
-        || rhs.getDimension() != laplacianMatrix.numberOfRows()) {
-        throw std::runtime_error("No or wrong matrix is setup for given vectors.");
-    }
-
+SolverStatus Lamg<Matrix>::solveThread(const Vector &rhs, Vector &result, count maxConvergenceTime,
+                                       count maxIterations, const index threadId) const {
     SolverStatus status;
 
     if (numComponents == 1) {
-        LAMGSolverStatus stat;
+        LAMGSolverStatus &stat = compStati[threadId][0];
         stat.desiredResidualReduction =
             this->tolerance * rhs.length() / (laplacianMatrix * result - rhs).length();
         stat.maxIters = maxIterations;
         stat.maxConvergenceTime = maxConvergenceTime;
-        compSolvers[0][0].solve(result, rhs, stat);
+        compSolvers[threadId][0].solve(result, rhs, stat);
 
         status.residual = stat.residual;
         status.numIters = stat.numIters;
@@ -393,27 +392,35 @@ SolverStatus Lamg<Matrix>::solve(const Vector &rhs, Vector &result, count maxCon
     } else {
         // solve on every component
         count maxIters = 0;
-        for (index i = 0; i < components.size(); ++i) {
-            for (auto element : components[i]) {
-                initialVectors[0][i][graph2Components[element]] = result[element];
-                rhsVectors[0][i][graph2Components[element]] = rhs[element];
+        for (index componentId = 0; componentId < components.size(); ++componentId) {
+            LAMGSolverStatus &stat = compStati[threadId][componentId];
+            Vector &componentRhs = rhsVectors[threadId][componentId];
+            Vector &componentResult = initialVectors[threadId][componentId];
+
+            // setup component vectors
+            for (auto element : components[componentId]) {
+                componentResult[graph2Components[element]] = result[element];
+                componentRhs[graph2Components[element]] = rhs[element];
             }
 
-            double resReduction = this->tolerance * rhsVectors[0][i].length()
-                                  / (compHierarchies[i].at(0).getLaplacian() * initialVectors[0][i]
-                                     - rhsVectors[0][i])
+            // setup solver status
+            double resReduction =
+                this->tolerance * componentRhs.length()
+                / (compHierarchies[componentId].at(0).getLaplacian() * componentResult
+                   - componentRhs)
                                         .length();
-            compStati[0][i].desiredResidualReduction =
-                resReduction * components[i].size() / laplacianMatrix.numberOfRows();
-            compStati[0][i].maxIters = maxIterations;
-            compStati[0][i].maxConvergenceTime = maxConvergenceTime;
-            compSolvers[0][i].solve(initialVectors[0][i], rhsVectors[0][i], compStati[0][i]);
+            stat.desiredResidualReduction =
+                resReduction * components[componentId].size() / laplacianMatrix.numberOfRows();
+            stat.maxIters = maxIterations;
+            stat.maxConvergenceTime = maxConvergenceTime;
 
-            for (auto element : components[i]) { // write solution back to result
-                result[element] = initialVectors[0][i][graph2Components[element]];
+            compSolvers[threadId][componentId].solve(componentResult, componentRhs, stat);
+            // write solution back to result
+            for (auto element : components[componentId]) {
+                result[element] = componentResult[graph2Components[element]];
             }
 
-            maxIters = std::max(maxIters, compStati[0][i].numIters);
+            maxIters = std::max(maxIters, stat.numIters);
         }
 
         status.residual = (rhs - laplacianMatrix * result).length();
@@ -425,7 +432,15 @@ SolverStatus Lamg<Matrix>::solve(const Vector &rhs, Vector &result, count maxCon
 }
 
 template <class Matrix>
-void Lamg<Matrix>::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
+SolverStatus Lamg<Matrix>::solve(const Vector &rhs, Vector &result, count maxConvergenceTime,
+                                 count maxIterations) const {
+    if (!validSetup || result.getDimension() != laplacianMatrix.numberOfColumns()
+        || rhs.getDimension() != laplacianMatrix.numberOfRows()) {
+        throw std::runtime_error("No or wrong matrix is setup for given vectors.");
+    }
+
+    return solveThread(rhs, result, maxConvergenceTime, maxIterations, 0);
+}
                                  count maxConvergenceTime, count maxIterations) const {
     if (numComponents == 1) {
         assert(rhs.size() == results.size());
