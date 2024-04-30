@@ -33,9 +33,9 @@ struct LAMGSolverStatus {
     count numPostSmoothIters = 2; // number of post smoothing iterations
 
     // out
-    count numIters;                      // number of iterations needed during solve phase
-    double residual;                     // absolute final residual
-    bool converged;                      // flag of conversion status
+    count numIters = 0; // number of iterations needed during solve phase
+    double residual = std::numeric_limits<double>::infinity(); // absolute final residual
+    bool converged = false;                                    // flag of conversion status
     std::vector<double> residualHistory; // history of absolute residuals
 };
 
