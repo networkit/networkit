@@ -369,6 +369,12 @@ void Lamg<Matrix>::setup(const Matrix &laplacianMatrix) {
 template <class Matrix>
 SolverStatus Lamg<Matrix>::solveThread(const Vector &rhs, Vector &result, count maxConvergenceTime,
                                        count maxIterations, const index threadId) const {
+    if (!validSetup)
+        throw std::runtime_error("LAMG is not properly setup!");
+    if (result.getDimension() != laplacianMatrix.numberOfColumns()
+        || rhs.getDimension() != laplacianMatrix.numberOfRows()) {
+        throw std::runtime_error("Wrong matrix dimensions for given vectors.");
+    }
     SolverStatus status;
 
     if (numComponents == 1) {
@@ -427,11 +433,6 @@ SolverStatus Lamg<Matrix>::solveThread(const Vector &rhs, Vector &result, count 
 template <class Matrix>
 SolverStatus Lamg<Matrix>::solve(const Vector &rhs, Vector &result, count maxConvergenceTime,
                                  count maxIterations) const {
-    if (!validSetup || result.getDimension() != laplacianMatrix.numberOfColumns()
-        || rhs.getDimension() != laplacianMatrix.numberOfRows()) {
-        throw std::runtime_error("No or wrong matrix is setup for given vectors.");
-    }
-
     return solveThread(rhs, result, maxConvergenceTime, maxIterations, 0);
 }
 
