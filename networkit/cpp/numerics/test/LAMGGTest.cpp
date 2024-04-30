@@ -164,7 +164,10 @@ TEST_P(LAMGGTest, testLamgVariants) {
     if (setupFn == "setupConnected" && components != "one")
         return;
 
-    auto [G, rhss] = testData();
+    // auto [G, rhss] = testData();
+    auto data = testData();
+    auto G = std::get<0>(data);
+    auto rhss = std::get<1>(data);
 
     auto L = CSRMatrix::laplacianMatrix(G);
 
