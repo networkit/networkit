@@ -88,12 +88,14 @@ public:
      * @param results
      * @param maxConvergenceTime
      * @param maxIterations
+     * @return A vector of @ref SolverStatus objects for each right hand side.
      * @note If the solver does not support parallelism during solves, this function falls back to
      * solving the systems sequentially.
      */
-    virtual void parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
-                               count maxConvergenceTime = 5 * 60 * 1000,
-                               count maxIterations = std::numeric_limits<count>::max()) const;
+    virtual std::vector<SolverStatus>
+    parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
+                  count maxConvergenceTime = 5 * 60 * 1000,
+                  count maxIterations = std::numeric_limits<count>::max()) const;
 
     /**
      * Abstract parallel solve function that computes and processes results using @a resultProcessor
@@ -134,12 +136,14 @@ void LinearSolver<Matrix>::setupConnected(const Graph &graph) {
 }
 
 template <class Matrix>
-void LinearSolver<Matrix>::parallelSolve(const std::vector<Vector> &rhs,
-                                         std::vector<Vector> &results, count maxConvergenceTime,
-                                         count maxIterations) const {
+std::vector<SolverStatus>
+LinearSolver<Matrix>::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
+                                    count maxConvergenceTime, count maxIterations) const {
+    std::vector<SolverStatus> stati(rhs.size());
     for (index i = 0; i < rhs.size(); ++i) {
-        solve(rhs[i], results[i], maxConvergenceTime, maxIterations);
+        stati[i] = solve(rhs[i], results[i], maxConvergenceTime, maxIterations);
     }
+    return stati;
 }
 
 } /* namespace NetworKit */
