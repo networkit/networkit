@@ -58,9 +58,10 @@ public:
      * @param maxConvergenceTime
      * @param maxIterations
      */
-    void parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
-                       count maxConvergenceTime = 5 * 60 * 1000,
-                       count maxIterations = std::numeric_limits<count>::max()) const override;
+    std::vector<SolverStatus>
+    parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
+                  count maxConvergenceTime = 5 * 60 * 1000,
+                  count maxIterations = std::numeric_limits<count>::max()) const override;
 
     /**
      * Abstract parallel solve function that computes and processes results using @a resultProcessor
@@ -146,14 +147,15 @@ SolverStatus ConjugateGradient<Matrix, Preconditioner>::solve(const Vector &rhs,
 }
 
 template <class Matrix, class Preconditioner>
-void ConjugateGradient<Matrix, Preconditioner>::parallelSolve(const std::vector<Vector> &rhs,
-                                                              std::vector<Vector> &results,
-                                                              count maxConvergenceTime,
-                                                              count maxIterations) const {
+std::vector<SolverStatus> ConjugateGradient<Matrix, Preconditioner>::parallelSolve(
+    const std::vector<Vector> &rhs, std::vector<Vector> &results, count maxConvergenceTime,
+    count maxIterations) const {
+    std::vector<SolverStatus> stati(rhs.size());
 #pragma omp parallel for
     for (omp_index i = 0; i < static_cast<omp_index>(rhs.size()); ++i) {
-        this->solve(rhs[i], results[i], maxConvergenceTime, maxIterations);
+        stati[i] = this->solve(rhs[i], results[i], maxConvergenceTime, maxIterations);
     }
+    return stati;
 }
 
 } /* namespace NetworKit */

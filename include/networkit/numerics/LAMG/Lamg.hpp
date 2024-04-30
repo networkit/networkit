@@ -169,7 +169,8 @@ public:
      * @param maxConvergenceTime
      * @param maxIterations
      */
-    void parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
+    std::vector<SolverStatus>
+    parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
                        count maxConvergenceTime = 5 * 60 * 1000,
                        count maxIterations = std::numeric_limits<count>::max()) const override;
 
