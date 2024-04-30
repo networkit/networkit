@@ -192,8 +192,10 @@ TEST_P(LAMGGTest, testLamgVariants) {
         throw std::logic_error("unhandled variant!");
 
     // for loader solve variant
-    const auto rhsLoader = [&rhss](count i, Vector &rhs) -> Vector & {
+    count numLoaderCalls = 0;
+    const auto rhsLoader = [&rhss, &numLoaderCalls](count i, Vector &rhs) -> Vector & {
         rhs = rhss[i];
+        ++numLoaderCalls;
         return rhs;
     };
 
@@ -227,6 +229,7 @@ TEST_P(LAMGGTest, testLamgVariants) {
     } else if (solveFn == "loaderSolve") {
         lamg.parallelSolve(rhsLoader, resultProcessor, {rhss.size(), L.numberOfColumns()});
         EXPECT_EQ(numProcessorCalls, rhss.size());
+        EXPECT_EQ(numLoaderCalls, rhss.size());
     } else
         throw std::logic_error("unhandled variant!");
 }
