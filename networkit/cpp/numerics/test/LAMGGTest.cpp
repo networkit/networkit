@@ -28,6 +28,8 @@ class LAMGGTest
 protected:
     // returns a graph and a vector of RHSs
     std::tuple<Graph, std::vector<Vector>> testData() const;
+    template <class Matrix>
+    void runTest();
 };
 
 INSTANTIATE_TEST_SUITE_P(LAMGGTest, LAMGGTest,
@@ -150,7 +152,18 @@ std::tuple<Graph, std::vector<Vector>> LAMGGTest::testData() const {
     throw std::logic_error("unknown number of components.");
 }
 
-TEST_P(LAMGGTest, testLamgVariants) {
+TEST_P(LAMGGTest, testLamgCSRMatrixVariants) {
+    runTest<CSRMatrix>();
+}
+TEST_P(LAMGGTest, testLamgDenseMatrixVariants) {
+    runTest<DenseMatrix>();
+}
+TEST_P(LAMGGTest, testLamgDynamicMatrixVariants) {
+    runTest<DynamicMatrix>();
+}
+
+template <class Matrix>
+void LAMGGTest::runTest() {
     auto [solveFn, setupFn, components, parallelism] = GetParam();
 
     if (parallelism == "single")
@@ -169,9 +182,9 @@ TEST_P(LAMGGTest, testLamgVariants) {
     auto G = std::get<0>(data);
     auto rhss = std::get<1>(data);
 
-    auto L = CSRMatrix::laplacianMatrix(G);
+    auto L = Matrix::laplacianMatrix(G);
 
-    Lamg<CSRMatrix> lamg;
+    Lamg<Matrix> lamg;
 
     ParallelConnectedComponents pcc(G);
     pcc.run();
