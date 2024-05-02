@@ -451,6 +451,10 @@ Lamg<Matrix>::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> 
     return stati;
 }
 
+extern template class Lamg<CSRMatrix>;
+extern template class Lamg<DenseMatrix>;
+extern template class Lamg<DynamicMatrix>;
+
 } /* namespace NetworKit */
 
 #endif // NETWORKIT_NUMERICS_LAMG_LAMG_HPP_
