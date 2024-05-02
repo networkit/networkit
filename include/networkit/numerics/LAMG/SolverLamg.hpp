@@ -311,67 +311,9 @@ void SolverLamg<Matrix>::clearHistory(const index level) {
     numActiveIterates[level] = 0;
 }
 
-template <class Matrix>
-void SolverLamg<Matrix>::minRes(const index level, Vector &x, const Vector &r) const {
-    if (numActiveIterates[level] > 0) {
-        count n = numActiveIterates[level];
-
-        std::vector<index> ARowIdx(r.getDimension() + 1);
-        std::vector<index> ERowIdx(r.getDimension() + 1);
-
-#pragma omp parallel for
-        for (omp_index i = 0; i < static_cast<omp_index>(r.getDimension()); ++i) {
-            for (index k = 0; k < n; ++k) {
-                double AEvalue = r[i] - rHistory[level][k][i];
-                if (std::fabs(AEvalue) > 1e-25) {
-                    ++ARowIdx[i + 1];
-                }
-
-                double Eval = history[level][k][i] - x[i];
-                if (std::fabs(Eval) > 1e-25) {
-                    ++ERowIdx[i + 1];
-                }
-            }
-        }
-
-        for (index i = 0; i < r.getDimension(); ++i) {
-            ARowIdx[i + 1] += ARowIdx[i];
-            ERowIdx[i + 1] += ERowIdx[i];
-        }
-
-        std::vector<index> AColumnIdx(ARowIdx[r.getDimension()]);
-        std::vector<double> ANonZeros(ARowIdx[r.getDimension()]);
-
-        std::vector<index> EColumnIdx(ERowIdx[r.getDimension()]);
-        std::vector<double> ENonZeros(ERowIdx[r.getDimension()]);
-
-#pragma omp parallel for
-        for (omp_index i = 0; i < static_cast<omp_index>(r.getDimension()); ++i) {
-            for (index k = 0, aIdx = ARowIdx[i], eIdx = ERowIdx[i]; k < n; ++k) {
-                double AEvalue = r[i] - rHistory[level][k][i];
-                if (std::fabs(AEvalue) > 1e-25) {
-                    AColumnIdx[aIdx] = k;
-                    ANonZeros[aIdx] = AEvalue;
-                    ++aIdx;
-                }
-
-                double Eval = history[level][k][i] - x[i];
-                if (std::fabs(Eval) > 1e-25) {
-                    EColumnIdx[eIdx] = k;
-                    ENonZeros[eIdx] = Eval;
-                    ++eIdx;
-                }
-            }
-        }
-
-        CSRMatrix AE(r.getDimension(), n, ARowIdx, AColumnIdx, ANonZeros, 0.0, true);
-        CSRMatrix E(r.getDimension(), n, ERowIdx, EColumnIdx, ENonZeros, 0.0, true);
-
-        Vector alpha = smoother.relax(CSRMatrix::mTmMultiply(AE, AE), CSRMatrix::mTvMultiply(AE, r),
-                                      Vector(n, 0.0), 10);
-        x += E * alpha;
-    }
-}
+extern template class SolverLamg<CSRMatrix>;
+extern template class SolverLamg<DenseMatrix>;
+extern template class SolverLamg<DynamicMatrix>;
 
 } /* namespace NetworKit */
 
