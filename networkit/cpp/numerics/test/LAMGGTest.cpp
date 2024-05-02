@@ -40,27 +40,6 @@ INSTANTIATE_TEST_SUITE_P(LAMGGTest, LAMGGTest,
                                           testing::Values("one", "two"),
                                           testing::Values("single", "four")));
 
-// print functions for test debugging / output
-inline std::ostream &operator<<(std::ostream &os, const CSRMatrix &M) {
-    for (index i = 0; i < M.numberOfRows(); i++) {
-        for (index j = 0; j < M.numberOfColumns(); j++)
-            os << M(i, j) << ", ";
-        os << std::endl;
-    }
-    return os;
-}
-
-inline std::ostream &operator<<(std::ostream &os, const Vector &vec) {
-    os << "[";
-    for (index i = 0; i < vec.getDimension(); i++) {
-        if (i != 0)
-            os << ", ";
-        os << vec[i];
-    }
-    os << "]";
-    return os;
-}
-
 inline bool vector_almost_equal(const Vector &lhs, const Vector &rhs) {
     if (lhs.getDimension() != rhs.getDimension())
         return false;
