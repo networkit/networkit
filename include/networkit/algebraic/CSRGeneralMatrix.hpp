@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <iostream>
 #include <numeric>
 #include <omp.h>
 #include <stdexcept>
@@ -1236,5 +1237,21 @@ inline void CSRGeneralMatrix<ValueType>::parallelForNonZeroElementsInRowOrder(L 
         for (index k = rowIdx[i]; k < rowIdx[i + 1]; ++k)
             handle(i, columnIdx[k], nonZeros[k]);
 }
+
+// print functions for test debugging / output
+template <typename T>
+inline std::ostream &operator<<(std::ostream &os, const CSRGeneralMatrix<T> &M) {
+    for (index i = 0; i < M.numberOfRows(); i++) {
+        if (i != 0)
+            os << std::endl;
+        for (index j = 0; j < M.numberOfColumns(); j++) {
+            if (j != 0)
+                os << ", ";
+            os << M(i, j);
+        }
+    }
+    return os;
+}
+
 } /* namespace NetworKit */
 #endif // NETWORKIT_ALGEBRAIC_CSR_GENERAL_MATRIX_HPP_

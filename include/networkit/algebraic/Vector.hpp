@@ -10,6 +10,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <iostream>
 #include <numeric>
 #include <stdexcept>
 #include <vector>
@@ -352,6 +353,18 @@ inline void Vector::parallelForElements(L handle) const {
     for (omp_index i = 0; i < static_cast<omp_index>(getDimension()); ++i) {
         handle(i, values[i]);
     }
+}
+
+// print functions for test debugging / output. Prints Vector as [0, 1, 2, 3, 4]
+inline std::ostream &operator<<(std::ostream &os, const Vector &vec) {
+    os << "[";
+    for (index i = 0; i < vec.getDimension(); i++) {
+        if (i != 0)
+            os << ", ";
+        os << vec[i];
+    }
+    os << "]";
+    return os;
 }
 
 } /* namespace NetworKit */
