@@ -311,10 +311,6 @@ void SolverLamg<Matrix>::clearHistory(const index level) {
     numActiveIterates[level] = 0;
 }
 
-extern template class SolverLamg<CSRMatrix>;
-extern template class SolverLamg<DenseMatrix>;
-extern template class SolverLamg<DynamicMatrix>;
-
 } /* namespace NetworKit */
 
 #endif // NETWORKIT_NUMERICS_LAMG_SOLVER_LAMG_HPP_
