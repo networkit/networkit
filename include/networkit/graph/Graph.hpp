@@ -235,11 +235,8 @@ private:
     template <typename NodeOrEdge>
     using ASB = AttributeStorageBase<NodeOrEdge>;
 
-    template <typename NodeOrEdge, typename T>
+    template <typename NodeOrEdge, typename T, bool isConst>
     class Attribute;
-
-    template <typename NodeOrEdge, typename T>
-    class ConstAttribute;
 
     template <typename NodeOrEdge, template <typename> class Base, typename T>
     class AttributeStorage : public Base<NodeOrEdge> {
@@ -275,17 +272,20 @@ private:
             return values[i];
         }
 
-        friend Attribute<NodeOrEdge, T>;
-        friend ConstAttribute<NodeOrEdge, T>;
+        friend Attribute<NodeOrEdge, T, true>;
+        friend Attribute<NodeOrEdge, T, false>;
 
     private:
         using Base<NodeOrEdge>::theGraph;
         std::vector<T> values; // the real attribute storage
     }; // class AttributeStorage<NodeOrEdge, Base, T>
 
-    template <typename NodeOrEdge, typename T>
+    template <typename NodeOrEdge, typename T, bool isConst>
     class Attribute {
     public:
+        using AttributeStorage_type =
+            std::conditional_t<isConst, const AttributeStorage<NodeOrEdge, ASB, T>,
+                               AttributeStorage<NodeOrEdge, ASB, T>>;
         class Iterator {
         public:
             // The value type of the attribute. Returned by
@@ -293,10 +293,10 @@ private:
             using value_type = T;
 
             // Reference to the value_type, required by STL.
-            using reference = value_type &;
+            using reference = std::conditional_t<isConst, const value_type &, value_type &>;
 
             // Pointer to the value_type, required by STL.
-            using pointer = value_type *;
+            using pointer = std::conditional_t<isConst, const value_type *, value_type *>;
 
             // STL iterator category.
             using iterator_category = std::forward_iterator_tag;
@@ -306,7 +306,7 @@ private:
             using difference_type = ptrdiff_t;
 
             Iterator() : storage{nullptr}, idx{0} {}
-            Iterator(AttributeStorage<NodeOrEdge, ASB, T> *storage) : storage{storage}, idx{0} {
+            Iterator(AttributeStorage_type *storage) : storage{storage}, idx{0} {
                 if (storage) {
                     nextValid();
                 }
@@ -348,7 +348,7 @@ private:
             bool operator!=(Iterator const &iter) const noexcept { return !(*this == iter); }
 
         private:
-            AttributeStorage<NodeOrEdge, ASB, T> *storage;
+            AttributeStorage_type *storage;
             index idx;
         }; // class Iterator
 
@@ -361,8 +361,7 @@ private:
             //    - casting an IndexProxy to the attribute type reads the value
             //    - assigning to it (operator=) writes the value
         public:
-            IndexProxy(AttributeStorage<NodeOrEdge, ASB, T> *storage, index idx)
-                : storage{storage}, idx{idx} {}
+            IndexProxy(AttributeStorage_type *storage, index idx) : storage{storage}, idx{idx} {}
 
             // reading at idx
             operator T() const {
@@ -371,21 +370,25 @@ private:
             }
 
             // writing at idx
-            T &operator=(T &&other) {
+            template <bool ic = isConst>
+            std::enable_if_t<!ic, T> &operator=(T &&other) {
                 storage->set(idx, std::move(other));
                 return storage->values[idx];
             }
 
         private:
-            AttributeStorage<NodeOrEdge, ASB, T> *storage;
+            AttributeStorage_type *storage;
             index idx;
         }; // class IndexProxy
     public:
-        explicit Attribute(
-            std::shared_ptr<AttributeStorage<NodeOrEdge, ASB, T>> ownedStorage = nullptr)
+        explicit Attribute(std::shared_ptr<AttributeStorage_type> ownedStorage = nullptr)
             : ownedStorage{ownedStorage}, valid{ownedStorage != nullptr} {}
 
         Attribute(Attribute const &other) : ownedStorage{other.ownedStorage}, valid{other.valid} {}
+
+        template <bool ic = isConst, std::enable_if_t<ic, int> = 0>
+        Attribute(Attribute<NodeOrEdge, T, false> const &other)
+            : ownedStorage{other.ownedStorage}, valid{other.valid} {}
 
         Attribute &operator=(Attribute other) {
             this->swap(other);
@@ -402,6 +405,12 @@ private:
             other.valid = false;
         }
 
+        template <bool ic = isConst, std::enable_if_t<ic, int> = 0>
+        Attribute(Attribute<NodeOrEdge, T, false> &&other) noexcept
+            : ownedStorage{std::move(other.ownedStorage)}, valid{other.valid} {
+            other.valid = false;
+        }
+
         auto begin() const {
             checkAttribute();
             return Iterator(ownedStorage.get()).nextValid();
@@ -411,12 +420,14 @@ private:
 
         auto size() const noexcept { return ownedStorage->size(); }
 
-        void set(index i, T v) {
+        template <bool ic = isConst>
+        std::enable_if_t<!ic> set(index i, T v) {
             checkAttribute();
             ownedStorage->set(i, std::move(v));
         }
 
-        void set2(node u, node v, T t) {
+        template <bool ic = isConst>
+        std::enable_if_t<!ic> set2(node u, node v, T t) {
             static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
             set(ownedStorage->theGraph->edgeId(u, v), t);
         }
@@ -476,7 +487,8 @@ private:
             out.close();
         }
 
-        void read(const std::string &filename) {
+        template <bool ic = isConst>
+        std::enable_if_t<!ic> read(const std::string &filename) {
             std::ifstream in(filename);
             if (!in) {
                 ERROR("cannot open ", filename, " for reading");
@@ -491,198 +503,10 @@ private:
             }
         }
 
-        friend ConstAttribute<NodeOrEdge, T>;
-
     private:
-        std::shared_ptr<AttributeStorage<NodeOrEdge, ASB, T>> ownedStorage;
+        std::shared_ptr<AttributeStorage_type> ownedStorage;
         bool valid;
     }; // class Attribute
-
-    template <typename NodeOrEdge, typename T>
-    class ConstAttribute {
-    public:
-        class Iterator {
-        public:
-            // The value type of the attribute. Returned by
-            // operator*().
-            using value_type = const T;
-
-            // Reference to the value_type, required by STL.
-            using reference = value_type &;
-
-            // Pointer to the value_type, required by STL.
-            using pointer = value_type *;
-
-            // STL iterator category.
-            using iterator_category = std::forward_iterator_tag;
-
-            // Signed integer type of the result of subtracting two pointers,
-            // required by STL.
-            using difference_type = ptrdiff_t;
-
-            Iterator() : storage{nullptr}, idx{0} {}
-            Iterator(const AttributeStorage<NodeOrEdge, ASB, T> *storage)
-                : storage{storage}, idx{0} {
-                if (storage) {
-                    nextValid();
-                }
-            }
-
-            Iterator &nextValid() {
-                while (storage && !storage->isValid(idx)) {
-                    if (idx >= storage->values.size()) {
-                        storage = nullptr;
-                        return *this;
-                    }
-                    ++idx;
-                }
-                return *this;
-            }
-
-            Iterator &operator++() {
-                if (!storage) {
-                    throw std::runtime_error("Invalid attribute iterator");
-                }
-                ++idx;
-                return nextValid();
-            }
-
-            auto operator*() const {
-                if (!storage) {
-                    throw std::runtime_error("Invalid attribute iterator");
-                }
-                return std::make_pair(idx, storage->values[idx]);
-            }
-
-            bool operator==(Iterator const &iter) const noexcept {
-                if (storage == nullptr && iter.storage == nullptr) {
-                    return true;
-                }
-                return storage == iter.storage && idx == iter.idx;
-            }
-
-            bool operator!=(Iterator const &iter) const noexcept { return !(*this == iter); }
-
-        private:
-            const AttributeStorage<NodeOrEdge, ASB, T> *storage;
-            index idx;
-        }; // class Iterator
-
-    private:
-        class IndexProxy {
-            // a helper class for distinguished read and write on an indexed
-            // attribute
-            // operator[] on an attribute yields an IndexProxy holding
-            // location and index of access
-            //    - casting an IndexProxy to the attribute type reads the value
-            //    - assigning to it (operator=) writes the value
-        public:
-            IndexProxy(const AttributeStorage<NodeOrEdge, ASB, T> *storage, index idx)
-                : storage{storage}, idx{idx} {}
-
-            // reading at idx
-            operator T() const {
-                storage->checkIndex(idx);
-                return storage->values[idx];
-            }
-
-        private:
-            const AttributeStorage<NodeOrEdge, ASB, T> *storage;
-            index idx;
-        }; // class IndexProxy
-    public:
-        explicit ConstAttribute(
-            std::shared_ptr<const AttributeStorage<NodeOrEdge, ASB, T>> ownedStorage = nullptr)
-            : ownedStorage{ownedStorage}, valid{ownedStorage != nullptr} {}
-
-        ConstAttribute(ConstAttribute const &other)
-            : ownedStorage{other.ownedStorage}, valid{other.valid} {}
-        ConstAttribute(Attribute<NodeOrEdge, T> const &other)
-            : ownedStorage{other.ownedStorage}, valid{other.valid} {}
-
-        ConstAttribute &operator=(ConstAttribute other) {
-            this->swap(other);
-            return *this;
-        }
-
-        void swap(ConstAttribute &other) {
-            std::swap(ownedStorage, other.ownedStorage);
-            std::swap(valid, other.valid);
-        }
-
-        ConstAttribute(ConstAttribute &&other) noexcept
-            : ownedStorage{std::move(other.ownedStorage)}, valid{other.valid} {
-            other.valid = false;
-        }
-
-        auto begin() const {
-            checkAttribute();
-            return Iterator(ownedStorage.get()).nextValid();
-        }
-
-        auto end() const { return Iterator(nullptr); }
-
-        auto size() const noexcept { return ownedStorage->size(); }
-
-        auto get(index i) const {
-            checkAttribute();
-            return ownedStorage->get(i);
-        }
-
-        auto get2(node u, node v) const {
-            static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
-            return get(ownedStorage->theGraph->edgeId(u, v));
-        }
-
-        auto get(index i, T defaultT) const {
-            checkAttribute();
-            return ownedStorage->get(i, defaultT);
-        }
-
-        auto get2(node u, node v, T defaultT) const {
-            static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
-            return get(ownedStorage->theGraph->edgeId(u, v), defaultT);
-        }
-
-        IndexProxy operator[](index i) const {
-            checkAttribute();
-            return IndexProxy(ownedStorage.get(), i);
-        }
-
-        IndexProxy operator()(node u, node v) const {
-            static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
-            checkAttribute();
-            return IndexProxy(ownedStorage.get(), ownedStorage->theGraph->edgeId(u, v));
-        }
-
-        void checkAttribute() const {
-            if (!ownedStorage->validStorage)
-                throw std::runtime_error("Invalid attribute");
-        }
-
-        auto getName() const {
-            checkAttribute();
-            return ownedStorage->getName();
-        }
-
-        void write(std::string const &filename) const {
-            std::ofstream out(filename);
-            if (!out)
-                ERROR("cannot open ", filename, " for writing");
-
-            for (auto it = begin(); it != end(); ++it) {
-                auto pair = *it;
-                auto n = pair.first;  // node/edgeid
-                auto v = pair.second; // value
-                out << n << "\t" << v << "\n";
-            }
-            out.close();
-        }
-
-    private:
-        std::shared_ptr<const AttributeStorage<NodeOrEdge, ASB, T>> ownedStorage;
-        bool valid;
-    }; // class ConstAttribute
 
     template <typename NodeOrEdge>
     class AttributeMap {
@@ -719,7 +543,7 @@ private:
             if (!success) {
                 throw std::runtime_error("Attribute with same name already exists");
             }
-            return Attribute<NodeOrEdge, T>{ownedPtr};
+            return Attribute<NodeOrEdge, T, false>{ownedPtr};
         }
 
         void detach(const std::string &name) {
@@ -735,7 +559,7 @@ private:
             auto it = find(name);
             if (it->second.get()->getType() != typeid(T))
                 throw std::runtime_error("Type mismatch in Attributes().get()");
-            return Attribute<NodeOrEdge, T>{
+            return Attribute<NodeOrEdge, T, false>{
                 std::static_pointer_cast<AttributeStorage<NodeOrEdge, ASB, T>>(it->second)};
         }
 
@@ -744,7 +568,7 @@ private:
             auto it = find(name);
             if (it->second.get()->getType() != typeid(T))
                 throw std::runtime_error("Type mismatch in Attributes().get()");
-            return ConstAttribute<NodeOrEdge, T>{
+            return Attribute<NodeOrEdge, T, true>{
                 std::static_pointer_cast<const AttributeStorage<NodeOrEdge, ASB, T>>(it->second)};
         }
 
@@ -832,13 +656,13 @@ public:
         edgeAttributes().detach(name);
     }
 
-    using NodeIntAttribute = Attribute<PerNode, int>;
-    using NodeDoubleAttribute = Attribute<PerNode, double>;
-    using NodeStringAttribute = Attribute<PerNode, std::string>;
+    using NodeIntAttribute = Attribute<PerNode, int, false>;
+    using NodeDoubleAttribute = Attribute<PerNode, double, false>;
+    using NodeStringAttribute = Attribute<PerNode, std::string, false>;
 
-    using EdgeIntAttribute = Attribute<PerEdge, int>;
-    using EdgeDoubleAttribute = Attribute<PerEdge, double>;
-    using EdgeStringAttribute = Attribute<PerEdge, std::string>;
+    using EdgeIntAttribute = Attribute<PerEdge, int, false>;
+    using EdgeDoubleAttribute = Attribute<PerEdge, double, false>;
+    using EdgeStringAttribute = Attribute<PerEdge, std::string, false>;
 
 private:
     /**
