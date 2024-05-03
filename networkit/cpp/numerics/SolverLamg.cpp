@@ -8,10 +8,6 @@
 
 namespace NetworKit {
 
-template class SolverLamg<CSRMatrix>;
-template class SolverLamg<DenseMatrix>;
-template class SolverLamg<DynamicMatrix>;
-
 template <>
 void SolverLamg<CSRMatrix>::minRes(const index level, Vector &x, const Vector &r) const {
     if (numActiveIterates[level] > 0) {
@@ -136,5 +132,9 @@ void SolverLamg<DenseMatrix>::minRes(const index level, Vector &x, const Vector 
         x += E * alpha;
     }
 }
+
+template class SolverLamg<CSRMatrix>;
+template class SolverLamg<DenseMatrix>;
+template class SolverLamg<DynamicMatrix>;
 
 } // namespace NetworKit
