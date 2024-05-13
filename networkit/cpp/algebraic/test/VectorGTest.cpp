@@ -290,4 +290,13 @@ TEST(VectorGTest, testMean) {
     EXPECT_EQ(mean, 3);
 }
 
+TEST(VectorGTest, testPrint) {
+    Vector v = {1.0, 2.0, 3.0, 4.0, 5.0};
+
+    std::stringstream ss;
+
+    ss << v;
+    EXPECT_EQ(ss.str(), "[1, 2, 3, 4, 5]");
+}
+
 } /* namespace NetworKit */
