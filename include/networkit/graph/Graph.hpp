@@ -498,7 +498,12 @@ private:
             std::string line;
             while (std::getline(in, line)) {
                 std::istringstream istring(line);
-                istring >> n >> v;
+                if constexpr (std::is_same_v<T, std::string>) {
+                    istring >> n >> std::ws;
+                    std::getline(istring, v);
+                } else {
+                    istring >> n >> v;
+                }
                 set(n, v);
             }
         }
