@@ -983,26 +983,26 @@ bool Graph::checkConsistency() const {
 /* ATTRIBUTE PREMISE AND INDEX CHECKS */
 
 template <>
-void Graph::ASB<Graph::PerNode>::checkPremise() const {
+void ASB<PerNode, Graph>::checkPremise() const {
     // nothing
 }
 
 template <>
-void Graph::ASB<Graph::PerEdge>::checkPremise() const {
+void ASB<PerEdge, Graph>::checkPremise() const {
     if (!theGraph->hasEdgeIds()) {
         throw std::runtime_error("Edges must be indexed");
     }
 }
 
 template <>
-void Graph::ASB<Graph::PerNode>::indexOK(index n) const {
+void ASB<PerNode, Graph>::indexOK(index n) const {
     if (!theGraph->hasNode(n)) {
         throw std::runtime_error("This node does not exist");
     }
 }
 
 template <>
-void Graph::ASB<Graph::PerEdge>::indexOK(index n) const {
+void ASB<PerEdge, Graph>::indexOK(index n) const {
     auto uv = theGraph->edgeById(n);
     if (!theGraph->hasEdge(uv.first, uv.second)) {
         throw std::runtime_error("This edgeId does not exist");
