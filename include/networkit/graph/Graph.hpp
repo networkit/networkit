@@ -33,6 +33,7 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/graph/Attributes.hpp>
+#include <networkit/graph/NodeIterators.hpp>
 
 #include <tlx/define/deprecated.hpp>
 
@@ -522,111 +523,10 @@ private:
     }
 
 public:
-    /**
-     * Class to iterate over the nodes of a graph.
-     */
-    class NodeIterator {
-
-        const Graph *G;
-        node u;
-
-    public:
-        // The value type of the nodes (i.e. nodes). Returned by
-        // operator*().
-        using value_type = node;
-
-        // Reference to the value_type, required by STL.
-        using reference = value_type &;
-
-        // Pointer to the value_type, required by STL.
-        using pointer = value_type *;
-
-        // STL iterator category.
-        using iterator_category = std::forward_iterator_tag;
-
-        // Signed integer type of the result of subtracting two pointers,
-        // required by STL.
-        using difference_type = ptrdiff_t;
-
-        // Own type.
-        using self = NodeIterator;
-
-        NodeIterator(const Graph *G, node u) : G(G), u(u) {
-            if (!G->hasNode(u) && u < G->upperNodeIdBound()) {
-                ++(*this);
-            }
-        }
-
-        /**
-         * @brief WARNING: This constructor is required for Python and should not be used as the
-         * iterator is not initialized.
-         */
-        NodeIterator() : G(nullptr) {}
-
-        ~NodeIterator() = default;
-
-        NodeIterator &operator++() {
-            assert(u < G->upperNodeIdBound());
-            do {
-                ++u;
-            } while (!(G->hasNode(u) || u >= G->upperNodeIdBound()));
-            return *this;
-        }
-
-        NodeIterator operator++(int) {
-            const auto tmp = *this;
-            ++(*this);
-            return tmp;
-        }
-
-        NodeIterator operator--() {
-            assert(u);
-            do {
-                --u;
-            } while (!G->hasNode(u));
-            return *this;
-        }
-
-        NodeIterator operator--(int) {
-            const auto tmp = *this;
-            --(*this);
-            return tmp;
-        }
-
-        bool operator==(const NodeIterator &rhs) const noexcept { return u == rhs.u; }
-
-        bool operator!=(const NodeIterator &rhs) const noexcept { return !(*this == rhs); }
-
-        node operator*() const noexcept {
-            assert(u < G->upperNodeIdBound());
-            return u;
-        }
-    };
-
-    /**
-     * Wrapper class to iterate over a range of the nodes of a graph.
-     */
-    class NodeRange {
-
-        const Graph *G;
-
-    public:
-        NodeRange(const Graph &G) : G(&G) {}
-
-        NodeRange() : G(nullptr) {};
-
-        ~NodeRange() = default;
-
-        NodeIterator begin() const noexcept {
-            assert(G);
-            return NodeIterator(G, node{0});
-        }
-
-        NodeIterator end() const noexcept {
-            assert(G);
-            return NodeIterator(G, G->upperNodeIdBound());
-        }
-    };
+    // For support of legacy API: NetworKit::Graph::NodeIterator
+    using NodeIterator = NodeIteratorBase<Graph>;
+    // For support of legacy API: NetworKit::Graph::NodeRange
+    using NodeRange = NodeRangeBase<Graph>;
 
     // Necessary for friendship with EdgeIteratorBase.
     class EdgeIterator;
