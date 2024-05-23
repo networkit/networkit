@@ -49,6 +49,9 @@
 # Script:      scripts/documentation.sh
 # Build-type:  Debug
 #
+# code-style:
+# -----------
+# Description: For code check always use a the (latest - 1) major release of clang-format. 
 #
 # Jobs:
 # =====
@@ -163,7 +166,7 @@ jobs:
 
   linux-build-latest:
     name: "Linux (gcc-13${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.12' || '' }}): ${{ matrix.build-configuration }}"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       CC: gcc-13
       CXX: g++-13
@@ -464,9 +467,9 @@ jobs:
       - name: Install prerequisites
         run: |
           curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-18 main" | sudo tee /etc/apt/sources.list.d/llvm18.list
+          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-17 main" | sudo tee /etc/apt/sources.list.d/llvm17.list
           sudo apt-get update
-          sudo apt-get install clang-format-18 python3-yaml
+          sudo apt-get install clang-format-17 python3-yaml
       - name: Checkout networkit
         uses: actions/checkout@v4
         with:
@@ -476,4 +479,4 @@ jobs:
           set -e
           ./check_code.sh -v
         env:
-          NETWORKIT_OVERRIDE_CLANG_FORMAT: "clang-format-18"
+          NETWORKIT_OVERRIDE_CLANG_FORMAT: "clang-format-17"

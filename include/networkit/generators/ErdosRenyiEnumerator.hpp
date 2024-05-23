@@ -299,14 +299,14 @@ private:
 
     // SFINAE to allow using functors with and without thread id as parameter
     template <typename Handle>
-    auto callHandle(Handle h, unsigned tid, node u,
-                    node v) const -> decltype(h(0u, node{0}, node{0})) {
+    auto callHandle(Handle h, unsigned tid, node u, node v) const
+        -> decltype(h(0u, node{0}, node{0})) {
         return h(tid, u, v);
     }
 
     template <typename Handle>
-    auto callHandle(Handle h, unsigned /*tid*/, node u,
-                    node v) const -> decltype(h(node{0}, node{0})) {
+    auto callHandle(Handle h, unsigned /*tid*/, node u, node v) const
+        -> decltype(h(node{0}, node{0})) {
         return h(u, v);
     }
 };

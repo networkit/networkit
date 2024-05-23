@@ -211,7 +211,8 @@ public:
      */
     template <typename F>
     void forTrianglesOf(node u, F callback) {
-        forTrianglesOf(u, [](node, edgeweight) {}, callback);
+        forTrianglesOf(
+            u, [](node, edgeweight) {}, callback);
     }
 
     /**

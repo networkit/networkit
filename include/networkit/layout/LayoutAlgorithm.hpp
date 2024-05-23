@@ -22,9 +22,9 @@ class LayoutAlgorithm {
 
 public:
     LayoutAlgorithm(const Graph &G)
-        : G(G) {
+        : G(G){
 
-          };
+        };
 
     virtual void run() = 0;
 
