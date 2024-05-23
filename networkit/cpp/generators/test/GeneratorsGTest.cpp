@@ -970,8 +970,9 @@ TEST_F(GeneratorsGTest, testStaticDegreeSequenceGenerator) {
     for (int iter = 0; iter < 100; ++iter) {
         const auto n = distr_num_nodes(prng);
         std::vector<count> seq(n);
-        std::generate(seq.begin(), seq.end(),
-                      [&] { return std::uniform_int_distribution<count>{0, n - 1}(prng); });
+        std::generate(seq.begin(), seq.end(), [&] {
+            return std::uniform_int_distribution<count>{0, n - 1}(prng);
+        });
 
         HavelHakimiGenerator gen(seq, true);
         const auto isRealizable = gen.isRealizable();

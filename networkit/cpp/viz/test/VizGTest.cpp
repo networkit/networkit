@@ -33,8 +33,9 @@ TEST_F(VizGTest, testPostscriptWriterOnRandomGraph) {
     std::vector<Point2D> coordinates(G.upperNodeIdBound());
 
     // create coordinates
-    G.forNodes(
-        [&](node u) { coordinates[u] = {Aux::Random::probability(), Aux::Random::probability()}; });
+    G.forNodes([&](node u) {
+        coordinates[u] = {Aux::Random::probability(), Aux::Random::probability()};
+    });
 
     // write graph to file
     std::string path = "output/testGraph.eps";

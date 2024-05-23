@@ -96,7 +96,7 @@ private:
                                && (u > other.u || (u == other.u && v > other.v)))));
         };
         weightedEdge(node u, node v, double attribute, edgeid eid = 0)
-            : attribute(attribute), u(u), v(v), eid(eid), rand(Aux::Random::integer()) {};
+            : attribute(attribute), u(u), v(v), eid(eid), rand(Aux::Random::integer()){};
     };
 
     const Graph &G;
