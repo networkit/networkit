@@ -447,7 +447,7 @@ cdef class Graph:
 			Check if edge is already present in the graph. If detected, do not insert the edge. Default: False
 		"""
 
-		cdef cnp.ndarray[cnp.npy_uint, ndim = 1, mode = 'c'] row, col
+		cdef cnp.ndarray[cnp.npy_ulong, ndim = 1, mode = 'c'] row, col
 		cdef cnp.ndarray[cnp.npy_double, ndim = 1, mode = 'c'] data
 
 		if isinstance(inputData, coo_matrix):
