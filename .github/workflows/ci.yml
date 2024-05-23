@@ -166,7 +166,7 @@ jobs:
 
   linux-build-latest:
     name: "Linux (gcc-13${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.12' || '' }}): ${{ matrix.build-configuration }}"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       CC: gcc-13
       CXX: g++-13
