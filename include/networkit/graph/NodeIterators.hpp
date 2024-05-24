@@ -104,7 +104,7 @@ class NodeRangeBase {
 public:
     NodeRangeBase(const GraphType &G) : G(&G) {}
 
-    NodeRangeBase() : G(nullptr) {};
+    NodeRangeBase() : G(nullptr){};
 
     ~NodeRangeBase() = default;
 

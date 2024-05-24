@@ -154,7 +154,7 @@ class EdgeTypeRange {
 public:
     EdgeTypeRange(const GraphType &G) : G(&G) {}
 
-    EdgeTypeRange() : G(nullptr) {};
+    EdgeTypeRange() : G(nullptr){};
 
     ~EdgeTypeRange() = default;
 
