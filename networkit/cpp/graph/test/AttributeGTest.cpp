@@ -17,6 +17,54 @@ namespace NetworKit {
 
 class AttributeGTest : public testing::Test {};
 
+template <class Type>
+class AttributeTypeGTest : public testing::Test {
+protected:
+    using AttrType = Type;
+};
+
+using AttrTypes = testing::Types<int, double, std::string>;
+TYPED_TEST_SUITE(AttributeTypeGTest, AttrTypes, /*Comma needed for variadic macro.*/);
+
+TYPED_TEST(AttributeTypeGTest, testReadWrite) {
+    using AttrType = typename TestFixture::AttrType;
+
+    const int n = 10;
+    const std::string path = "output/attribute.txt";
+    const std::string name = "attribute";
+
+    auto attrValue = [](node u, node v) {
+        if constexpr (std::is_same_v<AttrType, int>)
+            return AttrType{static_cast<int>(u + v)};
+        if constexpr (std::is_same_v<AttrType, double>)
+            return AttrType{u + v + 0.2};
+        if constexpr (std::is_same_v<AttrType, std::string>)
+            return AttrType{"AttributeGTest with spaces and, and special symbols !: and \t tabs"};
+    };
+
+    {
+        Graph graph(n, false, false, true);
+        graph.addEdge(0, 1);
+        graph.addEdge(1, 2);
+        graph.addEdge(2, 3);
+        auto attr = graph.edgeAttributes().attach<AttrType>(name);
+        graph.forEdges([&](node u, node v) { attr.set2(u, v, attrValue(u, v)); });
+        attr.write(path);
+    }
+
+    {
+        Graph graph(n, false, false, true);
+        graph.addEdge(0, 1);
+        graph.addEdge(1, 2);
+        graph.addEdge(2, 3);
+        auto attr = graph.edgeAttributes().attach<AttrType>(name);
+        attr.read(path);
+        graph.forEdges([&](node u, node v) { EXPECT_EQ(attrValue(u, v), attr.get2(u, v)); });
+    }
+
+    std::remove(path.c_str());
+}
+
 /// NODE ATTRIBUTE TESTS ///
 
 TEST_F(AttributeGTest, testNodeAttributeSetGetOnExistingNodes) {
