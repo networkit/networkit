@@ -96,6 +96,47 @@ public:
     DenseMatrix &operator=(const DenseMatrix &other) = default;
 
     /**
+     * Compares this matrix to @a other and returns true if the shapes and entries are the same,
+     * otherwise returns false.
+     * @param other
+     */
+    bool operator==(const DenseMatrix &other) const {
+        bool equal =
+            nRows == other.nRows && nCols == other.nCols && entries.size() == other.entries.size();
+        if (equal) {
+            forElementsInRowOrder([&](index i, index j, double value) {
+                if (other(i, j) != value) {
+                    equal = false;
+                    return;
+                }
+            });
+        }
+        return equal;
+    }
+
+    /**
+     * Compares this matrix to @a other and returns true if the shape and zero
+     * element are the same as well as
+     * all entries are the same (within the absolute error range of @a eps), otherwise returns
+     * false.
+     * @param other
+     * @param eps
+     */
+    bool isApprox(const DenseMatrix &other, const double eps = 0.01) const {
+        bool equal =
+            nRows == other.nRows && nCols == other.nCols && entries.size() == other.entries.size();
+        if (equal) {
+            forElementsInRowOrder([&](index i, index j, double value) {
+                if (std::abs(other(i, j) - value) > eps) {
+                    equal = false;
+                    return;
+                }
+            });
+        }
+        return equal;
+    }
+
+    /**
      * @return Number of rows.
      */
     inline count numberOfRows() const { return nRows; }
@@ -127,6 +168,11 @@ public:
      * @return Value at matrix position (i,j).
      */
     double operator()(index i, index j) const;
+
+    /**
+     * Set the matrix at position (@a i, @a j) to @a value.
+     */
+    double &operator()(index i, index j);
 
     /**
      * Set the matrix at position (@a i, @a j) to @a value.
