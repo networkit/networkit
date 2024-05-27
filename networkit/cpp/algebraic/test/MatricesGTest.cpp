@@ -681,6 +681,121 @@ TYPED_TEST(MatricesGTest, testMatrixSubtractionEqual) {
     EXPECT_EQ(mat1(4, 1), 0);
 }
 
+TYPED_TEST(MatricesGTest, testMatrixEquality) {
+    std::vector<Triplet> triplets1 = {{0, 0, 1.0}};
+    std::vector<Triplet> triplets2 = {{0, 0, 1.0}, {2, 1, 1.0}};
+
+    using Matrix = typename TestFixture::Matrix;
+    Matrix mat1(3, 3, triplets1);
+    Matrix mat2(3, 3, triplets2);
+
+    EXPECT_FALSE(mat1 == mat2);
+
+    mat1(2, 1) = 1.0; // add the missing value
+
+    EXPECT_TRUE(mat1 == mat2);
+}
+
+TYPED_TEST(MatricesGTest, testMatrixAlmostEquality) {
+    std::vector<Triplet> triplets1 = {{0, 0, 1.0}, {2, 1, 1.0}};
+    std::vector<Triplet> triplets2 = {{0, 0, 1.0}, {2, 1, 1.1}};
+
+    using Matrix = typename TestFixture::Matrix;
+    Matrix mat1(3, 3, triplets1);
+    Matrix mat2(3, 3, triplets2);
+
+    double eps = 0.01;
+    EXPECT_FALSE(mat1.isApprox(mat2, eps)); // epsilon 0.01 < 0.1, therefore expecting false
+
+    mat2(2, 1) = 1.001;
+
+    EXPECT_TRUE(mat1.isApprox(mat2, eps)); // now epsilon 0.01 > 0.001
+}
+
+TYPED_TEST(MatricesGTest, testMatrixConversion) {
+    std::vector<Triplet> triplets = {{2, 1, 1.0}, {3, 1, 2.0}, {0, 2, 1.5}, {0, 1, 1.0}};
+    // ground truth
+    DenseMatrix den(4, 4, triplets);
+    CSRMatrix csr(4, 4, triplets);
+    DynamicMatrix dyn(4, 4, triplets);
+
+    using Matrix = typename TestFixture::Matrix;
+    Matrix mat(4, 4, triplets);
+
+    DenseMatrix mat_to_den = MatrixTools::matrixTo<DenseMatrix>(mat);
+    EXPECT_TRUE(den == mat_to_den);
+    CSRMatrix mat_to_csr = MatrixTools::matrixTo<CSRMatrix>(mat);
+    EXPECT_TRUE(csr == mat_to_csr);
+    DynamicMatrix mat_to_dyn = MatrixTools::matrixTo<DynamicMatrix>(mat);
+    EXPECT_TRUE(dyn == mat_to_dyn);
+}
+
+TYPED_TEST(MatricesGTest, testMatrixAssignmentOperator) {
+    std::vector<Triplet> triplets = {{0, 0, 1.0}, {2, 1, 1.0}, {3, 1, 2.0}, {0, 2, 1.5}};
+    std::vector<Triplet> triplets_plus_one = {
+        {0, 0, 1.0}, {2, 1, 1.0}, {3, 1, 2.0}, {0, 2, 1.5}, {2, 3, 4.0}};
+
+    using Matrix = typename TestFixture::Matrix;
+    Matrix mat(4, 4, triplets);
+    Matrix mat_plus_one(4, 4, triplets_plus_one);
+
+    mat(2, 3) = 4;
+    EXPECT_TRUE(mat == mat_plus_one);
+}
+
+TYPED_TEST(MatricesGTest, LaplacianMatrixRemoveNode) {
+    using Matrix = typename TestFixture::Matrix;
+
+    Graph G(4);
+    G.addEdge(1, 2);
+    auto L4 = Matrix::laplacianMatrix(G);
+    Matrix expected4(4);
+    expected4.setValue(1, 2, -1);
+    expected4.setValue(2, 1, -1);
+    expected4.setValue(1, 1, 1);
+    expected4.setValue(2, 2, 1);
+
+    EXPECT_TRUE(L4 == expected4);
+
+    G.removeNode(3);
+    auto L3 = Matrix::laplacianMatrix(G);
+
+    Matrix expected3(3);
+    expected3.setValue(1, 2, -1);
+    expected3.setValue(2, 1, -1);
+    expected3.setValue(1, 1, 1);
+    expected3.setValue(2, 2, 1);
+    EXPECT_TRUE(L3 == expected3);
+}
+
+TYPED_TEST(MatricesGTest, LaplacianMatrixRemoveEdge) {
+    using Matrix = typename TestFixture::Matrix;
+
+    Graph G(4);
+    G.addEdge(1, 2);
+    G.addEdge(0, 1);
+    auto L = Matrix::laplacianMatrix(G);
+    Matrix expected(4);
+    expected.setValue(1, 2, -1);
+    expected.setValue(2, 1, -1);
+    expected.setValue(0, 1, -1);
+    expected.setValue(1, 0, -1);
+    expected.setValue(1, 1, 2);
+    expected.setValue(0, 0, 1);
+    expected.setValue(2, 2, 1);
+
+    EXPECT_TRUE(L == expected);
+
+    G.removeEdge(1, 2);
+    auto LRemove = Matrix::laplacianMatrix(G);
+    Matrix expectedRemove(4);
+    expectedRemove.setValue(1, 0, -1);
+    expectedRemove.setValue(0, 1, -1);
+    expectedRemove.setValue(1, 1, 1);
+    expectedRemove.setValue(0, 0, 1);
+    EXPECT_TRUE(LRemove == expectedRemove);
+}
+
 TYPED_TEST(MatricesGTest, testScalarMultiplication) {
     const int num_triplets = 100;
     std::vector<Triplet> triplets(num_triplets);

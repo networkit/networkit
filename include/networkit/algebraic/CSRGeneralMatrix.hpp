@@ -42,24 +42,21 @@ class CSRGeneralMatrix {
     bool isSorted;
     ValueType zero;
 
-    /**
-     * Binary search the sorted columnIdx vector between [@a left, @a right]
-     * for column @a j.
-     * If @a j is not present, the index that is immediately left of the place
-     * where @a j would be is returned.
-     * @param left
-     * @param right
-     * @param j
-     * @return The position of column @a j in columnIdx or the element immediately
-     * to the left of the place where @a j would be.
-     */
-    index binarySearchColumns(index left, index right, index j) const {
-        assert(sorted());
-        const auto it = std::lower_bound(columnIdx.begin() + left, columnIdx.begin() + right, j);
-        if (it == columnIdx.end() || *it != j)
-            return none;
-        return it - columnIdx.begin();
-    }
+    class IndexProxy {
+    public:
+        IndexProxy(CSRGeneralMatrix &mat, index i, index j) : Matrix{mat}, i{i}, j{j} {}
+
+        operator const ValueType &() const {
+            return const_cast<const CSRGeneralMatrix &>(Matrix)(i, j);
+        }
+
+        void operator=(double rhs) { Matrix.setValue(i, j, rhs); }
+
+    private:
+        CSRGeneralMatrix &Matrix;
+        index i;
+        index j;
+    };
 
 public:
     /** Default constructor */
@@ -206,6 +203,8 @@ public:
     /** Default copy assignment operator */
     CSRGeneralMatrix &operator=(const CSRGeneralMatrix &other) = default;
 
+    IndexProxy operator()(index i, index j) { return IndexProxy(*this, i, j); }
+
     /**
      * Compares this matrix to @a other and returns true if the shape and zero
      * element are the same as well as
@@ -213,10 +212,33 @@ public:
      * @param other
      */
     bool operator==(const CSRGeneralMatrix &other) const {
-        bool equal = nRows == other.nRows && nCols == other.nCols && zero == other.zero;
+        bool equal = nRows == other.nRows && nCols == other.nCols && zero == other.zero
+                     && nnz() == other.nnz();
         if (equal)
             forNonZeroElementsInRowOrder([&](index i, index j, ValueType value) {
                 if (other(i, j) != value) {
+                    equal = false;
+                    return;
+                }
+            });
+
+        return equal;
+    }
+
+    /**
+     * Compares this matrix to @a other and returns true if the shape and zero
+     * element are the same as well as
+     * all entries are the same (within the absolute error range of @a eps), otherwise returns
+     * false.
+     * @param other
+     * @param eps
+     */
+    bool isApprox(const CSRGeneralMatrix &other, const double eps = 0.01) const {
+        bool equal = nRows == other.nRows && nCols == other.nCols && zero == other.zero
+                     && nnz() == other.nnz();
+        if (equal)
+            forNonZeroElementsInRowOrder([&](index i, index j, ValueType value) {
+                if (std::abs(other(i, j) - value) > eps) {
                     equal = false;
                     return;
                 }
@@ -265,29 +287,32 @@ public:
     /**
      * @return Value at matrix position (i,j).
      */
-    ValueType operator()(index i, index j) const {
+    const ValueType &operator()(index i, index j) const {
         assert(i < nRows);
         assert(j < nCols);
 
         if (rowIdx[i] == rowIdx[i + 1])
             return zero; // no non-zero value is present in this row
 
-        double value = zero;
         if (!sorted()) {
             for (index k = rowIdx[i]; k < rowIdx[i + 1]; ++k) {
                 if (columnIdx[k] == j) {
-                    value = nonZeros[k];
-                    break;
+                    return nonZeros[k];
                 }
             }
         } else {
-            index colIdx = binarySearchColumns(rowIdx[i], rowIdx[i + 1] - 1, j);
-            if (colIdx != none && rowIdx[i] <= colIdx && columnIdx[colIdx] == j) {
-                value = nonZeros[colIdx];
+            // finding the correct index where j should be inserted
+            auto it = std::lower_bound(columnIdx.begin() + rowIdx[i],
+                                       columnIdx.begin() + rowIdx[i + 1], j);
+            index colIdx = static_cast<index>(it - columnIdx.begin());
+
+            if (it == columnIdx.end())
+                return zero;
+            else if (*it == j) {
+                return nonZeros[colIdx];
             }
         }
-
-        return value;
+        return zero;
     }
 
     /**
@@ -300,52 +325,61 @@ public:
         assert(j < nCols);
 
         index colIdx = none;
-        if (nnzInRow(i) == 0) {
-            colIdx = none;
-        } else if (!sorted()) {
+
+        if (!isSorted) {
             for (index k = rowIdx[i]; k < rowIdx[i + 1]; ++k) {
                 if (columnIdx[k] == j) {
                     colIdx = k;
                 }
             }
-        } else {
-            colIdx = binarySearchColumns(rowIdx[i], rowIdx[i + 1] - 1, j);
-        }
+            if (colIdx != none) {
+                if (value != zero) { // update existing value
+                    nonZeros[colIdx] = value;
+                } else { // remove value if set to zero
+                    columnIdx.erase(columnIdx.begin() + colIdx);
+                    nonZeros.erase(nonZeros.begin() + colIdx);
 
-        if (colIdx != none && colIdx >= rowIdx[i]
-            && columnIdx[colIdx] == j) { // the matrix already has an entry at (i,j) => replace it
-            if (value == getZero()) {    // remove the nonZero value
-                columnIdx.erase(columnIdx.begin() + colIdx);
-                nonZeros.erase(nonZeros.begin() + colIdx);
+                    for (index k = i + 1; k < rowIdx.size(); ++k) {
+                        --rowIdx[k];
+                    }
+                }
+            } else if (value != zero) { // don't add zero values
+                columnIdx.emplace(std::next(columnIdx.begin(), rowIdx[i + 1]), j);
+                nonZeros.emplace(std::next(nonZeros.begin(), rowIdx[i + 1]), value);
 
                 // update rowIdx
                 for (index k = i + 1; k < rowIdx.size(); ++k) {
-                    --rowIdx[k];
-                }
-            } else {
-                nonZeros[colIdx] = value;
-            }
-        } else { // create a new non-zero entry at (i,j)
-            if (!sorted()) {
-                columnIdx.emplace(std::next(columnIdx.begin(), rowIdx[i + 1]), j);
-                nonZeros.emplace(std::next(nonZeros.begin(), rowIdx[i + 1]), value);
-            } else {
-                if (colIdx < rowIdx[i] || colIdx == none) { // emplace the value in
-                                                            // front of all other values
-                                                            // of row i
-                    columnIdx.emplace(std::next(columnIdx.begin(), rowIdx[i]), j);
-                    nonZeros.emplace(std::next(nonZeros.begin(), rowIdx[i]), value);
-                } else {
-                    columnIdx.emplace(std::next(columnIdx.begin(), colIdx + 1), j);
-                    nonZeros.emplace(std::next(nonZeros.begin(), colIdx + 1), value);
+                    ++rowIdx[k];
                 }
             }
+        } else {
+            // finding the correct index where j should be inserted
+            auto it = std::lower_bound(columnIdx.begin() + rowIdx[i],
+                                       columnIdx.begin() + rowIdx[i + 1], j);
+            colIdx = static_cast<index>(it - columnIdx.begin());
 
-            // update rowIdx
-            for (index k = i + 1; k < rowIdx.size(); ++k) {
-                rowIdx[k]++;
+            if (colIdx < rowIdx[i + 1] && columnIdx[colIdx] == j) {
+                if (value != zero) { // update existing value
+                    nonZeros[colIdx] = value;
+                } else { // remove value if set to zero
+                    columnIdx.erase(columnIdx.begin() + colIdx);
+                    nonZeros.erase(nonZeros.begin() + colIdx);
+
+                    for (index k = i + 1; k < rowIdx.size(); ++k) {
+                        --rowIdx[k];
+                    }
+                }
+            } else if (value != zero) { // don't add zero values
+                columnIdx.emplace(std::next(columnIdx.begin(), colIdx), j);
+                nonZeros.emplace(std::next(nonZeros.begin(), colIdx), value);
+
+                // update rowIdx
+                for (index k = i + 1; k < rowIdx.size(); ++k) {
+                    ++rowIdx[k];
+                }
             }
         }
+        assert(this->operator()(i, j) == value);
     }
 
     /**
@@ -928,10 +962,11 @@ public:
                 triples.push_back({i, j, -weight});
             });
 
-            triples.push_back({i, i, weightedDegree}); // degree matrix
+            if (weightedDegree != 0)
+                triples.push_back({i, i, weightedDegree}); // degree matrix
         });
 
-        return CSRGeneralMatrix(graph.upperNodeIdBound(), triples, zero);
+        return CSRGeneralMatrix(graph.numberOfNodes(), triples, zero);
     }
 
     /**

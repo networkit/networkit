@@ -11,7 +11,11 @@
 #include <atomic>
 #include <cmath>
 
+#include <networkit/Globals.hpp>
 #include <networkit/algebraic/AlgebraicGlobals.hpp>
+#include <networkit/algebraic/CSRMatrix.hpp>
+#include <networkit/algebraic/DenseMatrix.hpp>
+#include <networkit/algebraic/DynamicMatrix.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace MatrixTools {
@@ -127,6 +131,23 @@ NetworKit::Graph matrixToGraph(const Matrix &matrix) {
         });
 
     return G;
+}
+
+/**
+ * Converts the @a other matrix into a equivalent matrix of the template parametrized type.
+ * @param other The input Matrix.
+ * @return Matrix of type DenseMatrix, CSRMatrix or DynamicMatrix.
+ */
+template <class ToMatrix, class FromMatrix>
+ToMatrix matrixTo(const FromMatrix &other) {
+    int nRows = other.numberOfRows();
+    int nCols = other.numberOfColumns();
+    ToMatrix ResMat(nRows, nCols, other.getZero());
+
+    other.forNonZeroElementsInRowOrder(
+        [&ResMat](int i, int j, double val) { ResMat.setValue(i, j, val); });
+
+    return ResMat;
 }
 
 } // namespace MatrixTools

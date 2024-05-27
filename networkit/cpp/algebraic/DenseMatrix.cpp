@@ -8,7 +8,6 @@
 #include <algorithm>
 
 #include <networkit/algebraic/DenseMatrix.hpp>
-#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -63,6 +62,10 @@ double DenseMatrix::operator()(const index i, const index j) const {
 
 void DenseMatrix::setValue(const index i, const index j, const double value) {
     entries[i * numberOfColumns() + j] = value;
+}
+
+double &DenseMatrix::operator()(const index i, const index j) {
+    return entries[i * numberOfColumns() + j];
 }
 
 Vector DenseMatrix::row(const index i) const {
@@ -267,7 +270,7 @@ DenseMatrix DenseMatrix::incidenceMatrix(const Graph &graph, double zero) {
 }
 
 DenseMatrix DenseMatrix::laplacianMatrix(const Graph &graph, double zero) {
-    DenseMatrix L(graph.upperNodeIdBound(), zero);
+    DenseMatrix L(graph.numberOfNodes(), zero);
     graph.forNodes([&](const index i) {
         double weightedDegree = 0.0;
 
