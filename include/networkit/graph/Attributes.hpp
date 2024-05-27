@@ -12,7 +12,15 @@
 #ifndef NETWORKIT_GRAPH_ATTRIBUTES_HPP_
 #define NETWORKIT_GRAPH_ATTRIBUTES_HPP_
 
-#include <networkit/graph/Graph.hpp>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <typeindex>
+#include <unordered_map>
+#include <vector>
+
+#include <networkit/Globals.hpp>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 
