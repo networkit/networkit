@@ -171,4 +171,4 @@ public:
 
 } // namespace NetworKit
 
-#endif //
+#endif // NETWORKIT_GRAPH_EDGE_ITERATORS_HPP_

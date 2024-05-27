@@ -121,4 +121,4 @@ public:
 
 } // namespace NetworKit
 
-#endif //
+#endif // NETWORKIT_GRAPH_NODE_ITERATORS_HPP_

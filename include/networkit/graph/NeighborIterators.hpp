@@ -152,4 +152,4 @@ public:
 
 } // namespace NetworKit
 
-#endif //
+#endif // NETWORKIT_GRAPH_NEIGHBOR_ITERATORS_HPP_
