@@ -2,6 +2,7 @@
  * SolverLamg.cpp
  *
  *  Created on: 02.05.2024
+ *      Author: Lukas
  */
 
 #include <networkit/numerics/LAMG/SolverLamg.hpp>
