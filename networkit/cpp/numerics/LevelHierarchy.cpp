@@ -1,7 +1,7 @@
 /*
  * LevelHierarchy.cpp
  *
- *  Created on: 23.04.2024 
+ *  Created on: 23.04.2024
  *      Author: Lukas
  */
 
