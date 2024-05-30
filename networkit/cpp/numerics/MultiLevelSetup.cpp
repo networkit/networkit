@@ -2,6 +2,7 @@
  * MultiLevelSetup.cpp
  *
  *  Created on: 23.04.2024
+ *      Author: Lukas
  */
 
 #include <networkit/numerics/LAMG/MultiLevelSetup.hpp>
