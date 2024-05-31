@@ -173,6 +173,16 @@ class TestCommunity(unittest.TestCase):
 		PLPLLP = PLPLL.getPartition()
 		NMI = nk.community.NMIDistance()
 		self.assertIsInstance(NMI.getDissimilarity(self.LL, PLMLLP, PLPLLP),float)
+	
+	def testOverlappingNMIDistance(self):
+		PLMLL = nk.community.PLM(self.LL)
+		PLMLL.run()
+		PLMLLP = PLMLL.getPartition()
+		PLPLL = nk.community.PLP(self.LL)
+		PLPLL.run()
+		PLPLLP = PLPLL.getPartition()
+		NMI_Distance = nk.community.OverlappingNMIDistance()
+		self.assertIsInstance(NMI_Distance.getDissimilarity(self.LL, PLMLLP, PLPLLP),float)	
 
 	def testNodeStructuralRandMeasure(self):
 		PLMLL = nk.community.PLM(self.LL)
