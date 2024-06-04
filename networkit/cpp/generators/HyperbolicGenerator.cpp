@@ -193,7 +193,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
     }
     timer.stop();
     INFO("Generating Edges took ", timer.elapsedMilliseconds(), " milliseconds.");
-    return result.completeGraph(true);
+    return result.completeGraph();
 }
 
 Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii,
@@ -253,6 +253,6 @@ Graph HyperbolicGenerator::generate(const vector<double> &angles, const vector<d
         }
     }
     DEBUG("Candidates tested: ", totalCandidates);
-    return result.completeGraph(true);
+    return result.completeGraph();
 }
 } // namespace NetworKit

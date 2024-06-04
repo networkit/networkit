@@ -29,7 +29,7 @@ Graph ErdosRenyiGenerator::generate() {
         });
     }
 
-    return builder.completeGraph(false);
+    return builder.completeGraph();
 }
 
 } /* namespace NetworKit */
