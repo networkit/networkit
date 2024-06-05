@@ -50,7 +50,6 @@ public:
      * Constructs the CSRGeneralMatrix with size @a dimension x @a dimension.
      * @param dimension Defines how many rows and columns this matrix has.
      * @param zero The zero element (default = 0).
-     * @param isSorted If the matrix representation should uses sorted vectors.
      */
     CSRGeneralMatrix(count dimension, ValueType zero = 0)
         : rowIdx(dimension + 1), columnIdx(0), nonZeros(0), nRows(dimension), nCols(dimension),
@@ -61,7 +60,6 @@ public:
      * @param nRows Number of rows.
      * @param nCols Number of columns.
      * @param zero The zero element (default = 0).
-     * @param isSorted If the matrix representation should uses sorted vectors.
      */
     CSRGeneralMatrix(count nRows, count nCols, ValueType zero = 0)
         : rowIdx(nRows + 1), columnIdx(0), nonZeros(0), nRows(nRows), nCols(nCols), isSorted(true),
