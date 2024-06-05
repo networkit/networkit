@@ -9,6 +9,7 @@
 #define NETWORKIT_ALGEBRAIC_DENSE_MATRIX_HPP_
 
 #include <cassert>
+#include <iostream>
 #include <vector>
 
 #include <networkit/Globals.hpp>
@@ -469,6 +470,20 @@ inline void DenseMatrix::parallelForNonZeroElementsInRowOrder(L handle) const {
             }
         }
     }
+}
+
+// print functions for test debugging / output
+inline std::ostream &operator<<(std::ostream &os, const DenseMatrix &M) {
+    for (index row = 0; row < M.numberOfRows(); ++row) {
+        if (row != 0)
+            os << std::endl;
+        for (index col = 0; col < M.numberOfColumns(); ++col) {
+            if (col != 0)
+                os << ", ";
+            os << M(row, col);
+        }
+    }
+    return os;
 }
 
 } /* namespace NetworKit */

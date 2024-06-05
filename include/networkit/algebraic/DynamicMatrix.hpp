@@ -8,6 +8,8 @@
 #ifndef NETWORKIT_ALGEBRAIC_DYNAMIC_MATRIX_HPP_
 #define NETWORKIT_ALGEBRAIC_DYNAMIC_MATRIX_HPP_
 
+#include <iostream>
+
 #include <networkit/algebraic/AlgebraicGlobals.hpp>
 #include <networkit/algebraic/SparseAccumulator.hpp>
 #include <networkit/algebraic/Vector.hpp>
@@ -451,5 +453,21 @@ inline void NetworKit::DynamicMatrix::parallelForNonZeroElementsInRowOrder(L han
         graph.forEdgesOf(i, [&](index j, edgeweight weight) { handle(i, j, weight); });
     }
 }
+
+namespace NetworKit {
+// print functions for test debugging / output
+inline std::ostream &operator<<(std::ostream &os, const DynamicMatrix &M) {
+    for (index row = 0; row < M.numberOfRows(); ++row) {
+        if (row != 0)
+            os << std::endl;
+        for (index col = 0; col < M.numberOfColumns(); ++col) {
+            if (col != 0)
+                os << ", ";
+            os << M(row, col);
+        }
+    }
+    return os;
+}
+} // namespace NetworKit
 
 #endif // NETWORKIT_ALGEBRAIC_DYNAMIC_MATRIX_HPP_

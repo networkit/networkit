@@ -1347,6 +1347,16 @@ TYPED_TEST(MatricesGTest, testMatrixToGraph) {
     EXPECT_EQ(G.numberOfEdges(), 6594);
 }
 
+TYPED_TEST(MatricesGTest, testPrint) {
+    Graph G(3);
+    G.addEdge(1, 2);
+    auto L = DynamicMatrix::laplacianMatrix(G);
+
+    std::stringstream ss;
+
+    ss << L;
+    EXPECT_EQ(ss.str(), "0, 0, 0\n0, 1, -1\n0, -1, 1");
+}
 } // namespace
 
 namespace {

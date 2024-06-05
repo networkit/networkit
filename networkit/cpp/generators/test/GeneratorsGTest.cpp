@@ -613,6 +613,40 @@ TEST_F(GeneratorsGTest, testRmatGenerator) {
     EXPECT_TRUE(G.checkConsistency());
 }
 
+TEST_F(GeneratorsGTest, testRmatGeneratorDistribution) {
+    constexpr count scale = 2;
+    constexpr count n = (1 << scale);
+    count edgeFactor = 1;
+    double a = 0.51;
+    double b = 0.12;
+    double c = 0.12;
+    double d = 0.25;
+    double edgeExpectedProbability[n][n] = {
+        {0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00},
+        {2.242834007823646e-01, 0.0e+00, 0.0e+00, 0.0e+00},
+        {2.242834007823646e-01, 1.0219127659785153e-01, 0.0e+00, 0.0e+00},
+        {1.0219127659785153e-01, 1.7352532261978387e-01, 1.7352532261978387e-01, 0.0e+00},
+    };
+
+    RmatGenerator rmat(scale, edgeFactor, a, b, c, d, false, 0, true);
+    count edgeCount[n][n]{{0}};
+    count totalEdges = 0;
+    // Now we generate a bunch of graphs and count the edges.
+    for (index k = 0; k < 1000; k++) {
+        Graph G = rmat.generate();
+        G.forEdges([&edgeCount, &totalEdges](node u, node v) {
+            edgeCount[u][v] += 1;
+            totalEdges += 1;
+        });
+    }
+    for (index i = 0; i < n; ++i) {
+        for (index j = 0; j < n; ++j) {
+            EXPECT_NEAR((static_cast<double>(edgeCount[i][j]) / static_cast<double>(totalEdges)),
+                        edgeExpectedProbability[i][j], 0.01);
+        }
+    }
+}
+
 TEST_F(GeneratorsGTest, testRmatGeneratorReduceNodes) {
     count scale = 9;
     count n = (1 << scale);
@@ -936,8 +970,9 @@ TEST_F(GeneratorsGTest, testStaticDegreeSequenceGenerator) {
     for (int iter = 0; iter < 100; ++iter) {
         const auto n = distr_num_nodes(prng);
         std::vector<count> seq(n);
-        std::generate(seq.begin(), seq.end(),
-                      [&] { return std::uniform_int_distribution<count>{0, n - 1}(prng); });
+        std::generate(seq.begin(), seq.end(), [&] {
+            return std::uniform_int_distribution<count>{0, n - 1}(prng);
+        });
 
         HavelHakimiGenerator gen(seq, true);
         const auto isRealizable = gen.isRealizable();

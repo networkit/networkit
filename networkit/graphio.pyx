@@ -1167,6 +1167,8 @@ def guessFileFormat(filepath: str) -> Format:
 	# if none match, read all lines of the file and guess the format out of METIS, SNAP, EdgeList variants
 	# types:
 	# METIS - first non-comment line contains 'n m'. has n+1 (non-comment) lines. comments: %
+	# optional: up to two more values after 'n m'. if the third parameter ('fmt') is 1, graph is weighted. if 0, unweighted. 
+	# Files where fmt is another value or the fourth parameter is set are currently not handled by this heuristic.
 	# SNAP - file without comments, each line stores an edge '\d+ \d+' (empty lines are allowed as well)
 
 	# first: guess comment character
@@ -1192,6 +1194,7 @@ def guessFileFormat(filepath: str) -> Format:
 	with open(filepath, 'r') as f:
 		n = None
 		m = None
+		fmt = None # fmt meta information for METIS format. 0 or None = unweighted graph; 1 = weighted graph
 		noncommentlines = 0
 		edges = 0
 		for line in f.readlines():
@@ -1205,6 +1208,9 @@ def guessFileFormat(filepath: str) -> Format:
 			# skip lines with comments
 			if commentPrefix and line.startswith(commentPrefix): continue
 
+			# skip empty lines
+			if line == "\n" and noncommentlines == n + 1: continue
+
 			# update minId (for edgeList)
 			match = re.search(r'^(\d+)\s(\d+)', line) # line is id<sep>id<sep>weight. get ids
 			if match:
@@ -1214,18 +1220,20 @@ def guessFileFormat(filepath: str) -> Format:
 			
 			# track lines and n,m for METIS
 			if noncommentlines == 0: # first line: "n m"
-				match = re.match(r'(\d+)\s(\d+)', line)
+				match = re.match(r'\s*(\d+)\s+(\d+)(?:\s+(\d+))?(?:\s+(\d+))?', line)
 				if match:
 					n = int(match.group(1))
 					m = int(match.group(2))
+					if match.group(3):
+						fmt = int(match.group(3))
 				else:
 					break
 			if noncommentlines != 0:	# other lines
-				edges += len(re.findall(r'\d+', line))
+				edges += len(re.findall(r'\d+(\.\d+)?', line))
 			noncommentlines += 1
 		
 		# file read done. check METIS conditions
-		if n == noncommentlines - 1 and m == edges / 2 and commentPrefix in ('%', None):
+		if n == noncommentlines - 1 and commentPrefix in ('%', None) and ((fmt in (None, 0) and m == edges / 2) or (fmt == 1 and m == edges / 4) or fmt in (10,11)):
 			metisFound = True
 
 	# finally, guess type

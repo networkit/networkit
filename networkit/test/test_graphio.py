@@ -21,7 +21,9 @@ class TestGEXFIO(unittest.TestCase):
 		self.assertEqual(graph.isDirected(), graph2.isDirected())
 		self.assertEqual(graph.isWeighted(), graph2.isWeighted())
 		self.assertEqual(graph.numberOfNodes(), graph2.numberOfNodes())
-		self.assertEqual([(u, v) for u, v in graph.iterEdges()], [(u, v) for u, v in graph2.iterEdges()])
+		graph_edges = sorted([(u, v) for u, v in graph.iterEdges()])
+		graph2_edges = sorted([(u, v) for u, v in graph2.iterEdges()])
+		self.assertEqual(graph_edges, graph2_edges)
 
 	def checkDynamic(self, eventStream, eventStream2):
 		from networkit.dynamics import GraphEvent
@@ -109,6 +111,28 @@ class TestGEXFIO(unittest.TestCase):
 		for (file, expected_result) in instances:
 			guess = nk.graphio.guessFileFormat(f"input/{file}")
 			self.assertEqual(guess, expected_result)
+	
+	def testGuessFormatInputGraphs(self):
+		# this test does not check the guess result; 
+  		# it is just used to make sure (most) graphs in our input directory are readable by the guess format code
+		excludeFiles = [
+			"README.md",
+			"celegans_metabolic.thrill",
+			"community.dat",
+			"community_overlapping.dat",
+			"community_overlapping.cover",
+			"example2.dgs",
+			"example_write.dgs",
+			"airfoil1-10p.png",
+			"alphabet.edgelist",
+			"testLFR",
+			"airfoil1.gi",
+			"spaceseparated_weighted.edgelist"
+		]
+		for file in os.listdir("input"):
+			if file not in excludeFiles:
+				with self.subTest(file=file):
+					nk.graphio.guessFileFormat(f"input/{file}")
 
 	def testBinaryFormatVersionUpgrade(self):
 		output_filepath = 'output/testBinaryFormatVersionUpgrade.nkbg'

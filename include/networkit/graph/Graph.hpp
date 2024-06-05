@@ -235,7 +235,7 @@ private:
     template <typename NodeOrEdge>
     using ASB = AttributeStorageBase<NodeOrEdge>;
 
-    template <typename NodeOrEdge, typename T>
+    template <typename NodeOrEdge, typename T, bool isConst>
     class Attribute;
 
     template <typename NodeOrEdge, template <typename> class Base, typename T>
@@ -272,16 +272,20 @@ private:
             return values[i];
         }
 
-        friend Attribute<NodeOrEdge, T>;
+        friend Attribute<NodeOrEdge, T, true>;
+        friend Attribute<NodeOrEdge, T, false>;
 
     private:
         using Base<NodeOrEdge>::theGraph;
         std::vector<T> values; // the real attribute storage
-    }; // class AttributeStorage<NodeOrEdge, Base, T>
+    };                         // class AttributeStorage<NodeOrEdge, Base, T>
 
-    template <typename NodeOrEdge, typename T>
+    template <typename NodeOrEdge, typename T, bool isConst>
     class Attribute {
     public:
+        using AttributeStorage_type =
+            std::conditional_t<isConst, const AttributeStorage<NodeOrEdge, ASB, T>,
+                               AttributeStorage<NodeOrEdge, ASB, T>>;
         class Iterator {
         public:
             // The value type of the attribute. Returned by
@@ -289,10 +293,10 @@ private:
             using value_type = T;
 
             // Reference to the value_type, required by STL.
-            using reference = value_type &;
+            using reference = std::conditional_t<isConst, const value_type &, value_type &>;
 
             // Pointer to the value_type, required by STL.
-            using pointer = value_type *;
+            using pointer = std::conditional_t<isConst, const value_type *, value_type *>;
 
             // STL iterator category.
             using iterator_category = std::forward_iterator_tag;
@@ -302,7 +306,7 @@ private:
             using difference_type = ptrdiff_t;
 
             Iterator() : storage{nullptr}, idx{0} {}
-            Iterator(AttributeStorage<NodeOrEdge, ASB, T> *storage) : storage{storage}, idx{0} {
+            Iterator(AttributeStorage_type *storage) : storage{storage}, idx{0} {
                 if (storage) {
                     nextValid();
                 }
@@ -344,7 +348,7 @@ private:
             bool operator!=(Iterator const &iter) const noexcept { return !(*this == iter); }
 
         private:
-            AttributeStorage<NodeOrEdge, ASB, T> *storage;
+            AttributeStorage_type *storage;
             index idx;
         }; // class Iterator
 
@@ -357,8 +361,7 @@ private:
             //    - casting an IndexProxy to the attribute type reads the value
             //    - assigning to it (operator=) writes the value
         public:
-            IndexProxy(AttributeStorage<NodeOrEdge, ASB, T> *storage, index idx)
-                : storage{storage}, idx{idx} {}
+            IndexProxy(AttributeStorage_type *storage, index idx) : storage{storage}, idx{idx} {}
 
             // reading at idx
             operator T() const {
@@ -367,21 +370,25 @@ private:
             }
 
             // writing at idx
-            T &operator=(T &&other) {
+            template <bool ic = isConst>
+            std::enable_if_t<!ic, T> &operator=(T &&other) {
                 storage->set(idx, std::move(other));
                 return storage->values[idx];
             }
 
         private:
-            AttributeStorage<NodeOrEdge, ASB, T> *storage;
+            AttributeStorage_type *storage;
             index idx;
         }; // class IndexProxy
     public:
-        explicit Attribute(
-            std::shared_ptr<AttributeStorage<NodeOrEdge, ASB, T>> ownedStorage = nullptr)
+        explicit Attribute(std::shared_ptr<AttributeStorage_type> ownedStorage = nullptr)
             : ownedStorage{ownedStorage}, valid{ownedStorage != nullptr} {}
 
         Attribute(Attribute const &other) : ownedStorage{other.ownedStorage}, valid{other.valid} {}
+
+        template <bool ic = isConst, std::enable_if_t<ic, int> = 0>
+        Attribute(Attribute<NodeOrEdge, T, false> const &other)
+            : ownedStorage{other.ownedStorage}, valid{other.valid} {}
 
         Attribute &operator=(Attribute other) {
             this->swap(other);
@@ -398,6 +405,12 @@ private:
             other.valid = false;
         }
 
+        template <bool ic = isConst, std::enable_if_t<ic, int> = 0>
+        Attribute(Attribute<NodeOrEdge, T, false> &&other) noexcept
+            : ownedStorage{std::move(other.ownedStorage)}, valid{other.valid} {
+            other.valid = false;
+        }
+
         auto begin() const {
             checkAttribute();
             return Iterator(ownedStorage.get()).nextValid();
@@ -407,12 +420,14 @@ private:
 
         auto size() const noexcept { return ownedStorage->size(); }
 
-        void set(index i, T v) {
+        template <bool ic = isConst>
+        std::enable_if_t<!ic> set(index i, T v) {
             checkAttribute();
             ownedStorage->set(i, std::move(v));
         }
 
-        void set2(node u, node v, T t) {
+        template <bool ic = isConst>
+        std::enable_if_t<!ic> set2(node u, node v, T t) {
             static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
             set(ownedStorage->theGraph->edgeId(u, v), t);
         }
@@ -472,7 +487,8 @@ private:
             out.close();
         }
 
-        void read(const std::string &filename) {
+        template <bool ic = isConst>
+        std::enable_if_t<!ic> read(const std::string &filename) {
             std::ifstream in(filename);
             if (!in) {
                 ERROR("cannot open ", filename, " for reading");
@@ -482,13 +498,18 @@ private:
             std::string line;
             while (std::getline(in, line)) {
                 std::istringstream istring(line);
-                istring >> n >> v;
+                if constexpr (std::is_same_v<T, std::string>) {
+                    istring >> n >> std::ws;
+                    std::getline(istring, v);
+                } else {
+                    istring >> n >> v;
+                }
                 set(n, v);
             }
         }
 
     private:
-        std::shared_ptr<AttributeStorage<NodeOrEdge, ASB, T>> ownedStorage;
+        std::shared_ptr<AttributeStorage_type> ownedStorage;
         bool valid;
     }; // class Attribute
 
@@ -510,6 +531,14 @@ private:
             return it;
         }
 
+        auto find(std::string const &name) const {
+            auto it = attrMap.find(name);
+            if (it == attrMap.end()) {
+                throw std::runtime_error("No such attribute");
+            }
+            return it;
+        }
+
         template <typename T>
         auto attach(const std::string &name) {
             auto ownedPtr =
@@ -519,7 +548,7 @@ private:
             if (!success) {
                 throw std::runtime_error("Attribute with same name already exists");
             }
-            return Attribute<NodeOrEdge, T>{ownedPtr};
+            return Attribute<NodeOrEdge, T, false>{ownedPtr};
         }
 
         void detach(const std::string &name) {
@@ -535,8 +564,17 @@ private:
             auto it = find(name);
             if (it->second.get()->getType() != typeid(T))
                 throw std::runtime_error("Type mismatch in Attributes().get()");
-            return Attribute<NodeOrEdge, T>{
+            return Attribute<NodeOrEdge, T, false>{
                 std::static_pointer_cast<AttributeStorage<NodeOrEdge, ASB, T>>(it->second)};
+        }
+
+        template <typename T>
+        auto get(const std::string &name) const {
+            auto it = find(name);
+            if (it->second.get()->getType() != typeid(T))
+                throw std::runtime_error("Type mismatch in Attributes().get()");
+            return Attribute<NodeOrEdge, T, true>{
+                std::static_pointer_cast<const AttributeStorage<NodeOrEdge, ASB, T>>(it->second)};
         }
 
     }; // class AttributeMap
@@ -546,7 +584,9 @@ private:
 
 public:
     auto &nodeAttributes() noexcept { return nodeAttributeMap; }
+    const auto &nodeAttributes() const noexcept { return nodeAttributeMap; }
     auto &edgeAttributes() noexcept { return edgeAttributeMap; }
+    const auto &edgeAttributes() const noexcept { return edgeAttributeMap; }
 
     // wrap up some typed attributes for the cython interface:
     //
@@ -621,13 +661,13 @@ public:
         edgeAttributes().detach(name);
     }
 
-    using NodeIntAttribute = Attribute<PerNode, int>;
-    using NodeDoubleAttribute = Attribute<PerNode, double>;
-    using NodeStringAttribute = Attribute<PerNode, std::string>;
+    using NodeIntAttribute = Attribute<PerNode, int, false>;
+    using NodeDoubleAttribute = Attribute<PerNode, double, false>;
+    using NodeStringAttribute = Attribute<PerNode, std::string, false>;
 
-    using EdgeIntAttribute = Attribute<PerEdge, int>;
-    using EdgeDoubleAttribute = Attribute<PerEdge, double>;
-    using EdgeStringAttribute = Attribute<PerEdge, std::string>;
+    using EdgeIntAttribute = Attribute<PerEdge, int, false>;
+    using EdgeDoubleAttribute = Attribute<PerEdge, double, false>;
+    using EdgeStringAttribute = Attribute<PerEdge, std::string, false>;
 
 private:
     /**
@@ -811,8 +851,8 @@ private:
                                   typename Aux::FunctionTraits<F>::template arg<2>::type>::value
                   && std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<3>::type>::
                       value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight ew,
-                    edgeid id) const -> decltype(f(u, v, ew, id)) {
+    auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid id) const
+        -> decltype(f(u, v, ew, id)) {
         return f(u, v, ew, id);
     }
 
@@ -844,8 +884,8 @@ private:
                   (Aux::FunctionTraits<F>::arity >= 2)
                   && std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<
                                                   2>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight ew,
-                    edgeid /*id*/) const -> decltype(f(u, v, ew)) {
+    auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid /*id*/) const
+        -> decltype(f(u, v, ew)) {
         return f(u, v, ew);
     }
 
@@ -858,8 +898,8 @@ private:
                            (Aux::FunctionTraits<F>::arity >= 1)
                            && std::is_same<node, typename Aux::FunctionTraits<F>::template arg<
                                                      1>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight /*ew*/,
-                    edgeid /*id*/) const -> decltype(f(u, v)) {
+    auto edgeLambda(F &f, node u, node v, edgeweight /*ew*/, edgeid /*id*/) const
+        -> decltype(f(u, v)) {
         return f(u, v);
     }
 

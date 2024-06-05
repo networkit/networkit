@@ -7,10 +7,6 @@ from scipy.sparse import coo_matrix
 cimport numpy as cnp
 cnp.import_array()
 
-ctypedef cnp.uint_t DUINT_t
-ctypedef cnp.int32_t DINT32_t
-ctypedef cnp.double_t DDOUBLE_t
-
 from .base import Algorithm
 from .helpers import stdstring, pystring
 from .traversal import Traversal
@@ -451,8 +447,8 @@ cdef class Graph:
 			Check if edge is already present in the graph. If detected, do not insert the edge. Default: False
 		"""
 
-		cdef cnp.ndarray[DUINT_t, ndim = 1, mode = 'c'] row, col
-		cdef cnp.ndarray[DDOUBLE_t, ndim = 1, mode = 'c'] data
+		cdef cnp.ndarray[cnp.npy_ulong, ndim = 1, mode = 'c'] row, col
+		cdef cnp.ndarray[cnp.npy_double, ndim = 1, mode = 'c'] data
 
 		if isinstance(inputData, coo_matrix):
 			try:
