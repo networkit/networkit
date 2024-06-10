@@ -1899,7 +1899,7 @@ cdef extern from "<networkit/community/OverlappingNMIDistance.hpp>" namespace "N
 		MAX,
 		JOINT_ENTROPY
 
-class Normalization:
+class Normalization(object):
 	MIN = _Normalization.MIN
 	GEOMETRIC_MEAN = _Normalization.GEOMETRIC_MEAN
 	ARITHMETIC_MEAN = _Normalization.ARITHMETIC_MEAN
@@ -2026,8 +2026,8 @@ cdef class OverlappingNMIDistance(DissimilarityMeasure):
 		return ret
 
 	def _validateNormalization(self, _Normalization normalization):
-		if normalization not in {OverlappingNMIDistance.Min, OverlappingNMIDistance.GeometricMean,
-				OverlappingNMIDistance.ArithmeticMean, OverlappingNMIDistance.Max, OverlappingNMIDistance.JointEntropy}:
+		if normalization not in {Normalization.MIN, Normalization.GEOMETRIC_MEAN,
+				Normalization.ARITHMETIC_MEAN, Normalization.MAX, Normalization.JOINT_ENTROPY}:
 			raise ValueError("Error, invalid normalization method")
 
 class SpectralPartitioner:
