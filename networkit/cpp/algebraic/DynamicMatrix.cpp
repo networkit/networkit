@@ -312,7 +312,7 @@ DynamicMatrix DynamicMatrix::incidenceMatrix(const Graph &graph, double zero) {
 }
 
 DynamicMatrix DynamicMatrix::laplacianMatrix(const Graph &graph, double zero) {
-    DynamicMatrix L(graph.upperNodeIdBound(), zero);
+    DynamicMatrix L(graph.numberOfNodes(), zero);
     graph.forNodes([&](const index i) {
         double weightedDegree = 0.0;
 
@@ -323,7 +323,8 @@ DynamicMatrix DynamicMatrix::laplacianMatrix(const Graph &graph, double zero) {
             }
         });
 
-        L.setValue(i, i, weightedDegree); // degree matrix
+        if (weightedDegree != 0)
+            L.setValue(i, i, weightedDegree); // degree matrix
     });
 
     return L;

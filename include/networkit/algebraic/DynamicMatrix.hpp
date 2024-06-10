@@ -32,6 +32,21 @@ protected:
 
     double zero;
 
+    // necessary for operator() const to allow for index addressing via DynamicMatrix(i,j) = value
+    class IndexProxy {
+    public:
+        IndexProxy(DynamicMatrix &mat, index i, index j) : Matrix{mat}, i{i}, j{j} {}
+
+        operator double() const { return const_cast<const DynamicMatrix &>(Matrix)(i, j); }
+
+        void operator=(double rhs) { Matrix.setValue(i, j, rhs); }
+
+    private:
+        DynamicMatrix &Matrix;
+        index i;
+        index j;
+    };
+
 public:
     /** Default constructor */
     DynamicMatrix();
@@ -92,6 +107,29 @@ public:
     }
 
     /**
+     * Compares this matrix to @a other and returns true if the shape and zero
+     * element are the same as well as
+     * all entries are the same (within the absolute error range of @a eps), otherwise returns
+     * false.
+     * @param other
+     * @param eps
+     */
+    bool isApprox(const DynamicMatrix &other, const double eps = 0.01) const {
+        bool graphsEqual = graph.numberOfNodes() == other.graph.numberOfNodes()
+                           && graph.numberOfEdges() == other.graph.numberOfEdges();
+        if (graphsEqual) {
+            graph.forEdges([&](node u, node v, edgeweight w) {
+                if (std::abs(w - other.graph.weight(u, v)) > eps) {
+                    graphsEqual = false;
+                    return;
+                }
+            });
+        }
+
+        return graphsEqual && nRows == other.nRows && nCols == other.nCols && zero == other.zero;
+    }
+
+    /**
      * Compares this matrix to @a other and returns false if the shape and zero element are the same
      * as well as all entries, otherwise returns true.
      * @param other
@@ -128,6 +166,11 @@ public:
      * @return Value at matrix position (i,j).
      */
     double operator()(index i, index j) const;
+
+    /**
+     * Set the matrix at position (@a i, @a j) to @a value.
+     */
+    IndexProxy operator()(index i, index j) { return IndexProxy(*this, i, j); }
 
     /**
      * Set the matrix at position (@a i, @a j) to @a value.
@@ -359,8 +402,6 @@ public:
     void parallelForNonZeroElementsInRowOrder(L handle) const;
 };
 
-} /* namespace NetworKit */
-
 template <typename F>
 void NetworKit::DynamicMatrix::apply(F unaryElementFunction) {
     forNonZeroElementsInRowOrder(
@@ -454,7 +495,6 @@ inline void NetworKit::DynamicMatrix::parallelForNonZeroElementsInRowOrder(L han
     }
 }
 
-namespace NetworKit {
 // print functions for test debugging / output
 inline std::ostream &operator<<(std::ostream &os, const DynamicMatrix &M) {
     for (index row = 0; row < M.numberOfRows(); ++row) {
