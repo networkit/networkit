@@ -5,8 +5,8 @@
  *      Author: Fabian Brandt-Tumescheit
  */
 
-#ifndef NETWORKIT_GENERATORS_SIMPLEHYPERGRAPHGENERATOR_HPP_
-#define NETWORKIT_GENERATORS_SIMPLEHYPERGRAPHGENERATOR_HPP_
+#ifndef NETWORKIT_GENERATORS_SIMPLE_HYPERGRAPH_GENERATOR_HPP_
+#define NETWORKIT_GENERATORS_SIMPLE_HYPERGRAPH_GENERATOR_HPP_
 
 #include <networkit/generators/StaticGraphGenerator.hpp>
 #include <networkit/graph/Hypergraph.hpp>
@@ -53,4 +53,4 @@ private:
 
 } // namespace NetworKit
 
-#endif //
+#endif // NETWORKIT_GENERATORS_SIMPLE_HYPERGRAPH_GENERATOR_HPP_
