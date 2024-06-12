@@ -43,4 +43,4 @@ std::vector<edgeid> randomEdges(const Hypergraph &hGraph, count numEdges);
 
 } // namespace NetworKit
 
-#endif // NETWORKIT_GRAPH_GRAPH_TOOLS_HPP_
+#endif // NETWORKIT_GRAPH_HYPERGRAPH_TOOLS_HPP_
