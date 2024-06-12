@@ -8,6 +8,7 @@
 #ifndef NETWORKIT_GRAPH_HYPERGRAPH_HPP_
 #define NETWORKIT_GRAPH_HYPERGRAPH_HPP_
 
+#include <cstddef>
 #include <set>
 #include <vector>
 
