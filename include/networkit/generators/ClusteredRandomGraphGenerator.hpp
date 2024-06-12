@@ -21,7 +21,7 @@ namespace NetworKit {
  * for intra-cluster and inter-cluster edges.
  * In parallel the generated graph is not deterministic. To ensure determinism, use a single thread.
  */
-class ClusteredRandomGraphGenerator final : public StaticGraphGenerator {
+class ClusteredRandomGraphGenerator final : public StaticGraphGenerator<Graph> {
 public:
     /**
      * Creates a clustered random graph:

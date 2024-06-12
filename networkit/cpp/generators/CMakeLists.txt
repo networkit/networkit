@@ -24,6 +24,7 @@ networkit_add_module(generators
     PubWebGenerator.cpp
     RegularRingLatticeGenerator.cpp
     RmatGenerator.cpp
+    SimpleHypergraphGenerator.cpp
     StaticDegreeSequenceGenerator.cpp
     StochasticBlockmodel.cpp
     WattsStrogatzGenerator.cpp
