@@ -14,7 +14,7 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class WattsStrogatzGenerator final : public StaticGraphGenerator {
+class WattsStrogatzGenerator final : public StaticGraphGenerator<Graph> {
 
 public:
     /**

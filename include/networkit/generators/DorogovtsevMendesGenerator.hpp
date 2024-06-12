@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class DorogovtsevMendesGenerator final : public StaticGraphGenerator {
+class DorogovtsevMendesGenerator final : public StaticGraphGenerator<Graph> {
 
 public:
     /**
