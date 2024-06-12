@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class RegularRingLatticeGenerator final : public StaticGraphGenerator {
+class RegularRingLatticeGenerator final : public StaticGraphGenerator<Graph> {
 
 public:
     /**

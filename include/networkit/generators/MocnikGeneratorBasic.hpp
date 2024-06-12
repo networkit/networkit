@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class MocnikGeneratorBasic : public StaticGraphGenerator {
+class MocnikGeneratorBasic : public StaticGraphGenerator<Graph> {
     // GENERAL DATA
 
     /**
