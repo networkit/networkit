@@ -141,6 +141,6 @@ TEST_P(HypergraphGTest, testRestoreNode) {
 
 TEST_P(HypergraphGTest, testDegree) {
     Hypergraph hGraph = SimpleHypergraphGenerator(100, 100, none, false, 10).generate();
-    hGraph.forNodes([&](node u) { ASSERT_EQ(10u, hGraph.getDegree(u)); });
+    hGraph.forNodes([&](node u) { ASSERT_EQ(10u, hGraph.degree(u)); });
 }
 } // namespace NetworKit
