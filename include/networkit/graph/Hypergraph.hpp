@@ -552,4 +552,4 @@ inline nodeweight Hypergraph::nodeWeightIteratorHelper<false>(node) const {
 
 } // namespace NetworKit
 
-#endif //
+#endif // NETWORKIT_GRAPH_HYPERGRAPH_HPP_
