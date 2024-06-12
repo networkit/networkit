@@ -15,7 +15,7 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class StochasticBlockmodel final : public StaticGraphGenerator {
+class StochasticBlockmodel final : public StaticGraphGenerator<Graph> {
 
 public:
     /**
