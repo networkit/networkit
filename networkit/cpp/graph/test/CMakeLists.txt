@@ -6,7 +6,8 @@ networkit_add_test(graph TraversalGTest generators)
 networkit_add_test(graph SpanningGTest io)
 networkit_add_test(graph TopologicalSortGTest)
 networkit_add_test(graph AttributeGTest graph)
+networkit_add_test(graph HypergraphGTest graph)
+networkit_add_test(graph HypergraphToolsGTest graph)
 
 networkit_add_benchmark(graph Graph2Benchmark)
 networkit_add_benchmark(graph GraphBenchmark auxiliary)
-

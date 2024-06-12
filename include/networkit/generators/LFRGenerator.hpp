@@ -25,7 +25,7 @@ namespace NetworKit {
  * The edge-switching markov-chain algorithm implementation in NetworKit is used which is different
  * from the implementation in the original LFR benchmark.
  */
-class LFRGenerator final : public Algorithm, public StaticGraphGenerator {
+class LFRGenerator final : public Algorithm, public StaticGraphGenerator<Graph> {
 public:
     /**
      * Initialize the LFR generator for @a n nodes.

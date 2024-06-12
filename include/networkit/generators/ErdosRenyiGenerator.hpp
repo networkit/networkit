@@ -17,7 +17,7 @@ namespace NetworKit {
  *
  * This class is a wrapper to @ref ErdosRenyiEnumerator.
  */
-class ErdosRenyiGenerator final : public StaticGraphGenerator {
+class ErdosRenyiGenerator final : public StaticGraphGenerator<Graph> {
 public:
     /**
      * Creates random graphs in the G(n,p) model.
