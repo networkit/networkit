@@ -10,7 +10,7 @@
 
 #include <vector>
 
-#include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/generators/StaticGraphGeneratorBase.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/viz/Point.hpp>
 
@@ -39,7 +39,7 @@ namespace NetworKit {
  * - neighborhoodRadius: the higher, the better the connectivity [0.1, 0.35]
  * - maxNumberOfNeighbors: maximum degree, a higher value corresponds to better connectivity [4, 40]
  */
-class PubWebGenerator final : public StaticGraphGenerator<Graph> {
+class PubWebGenerator final : public StaticGraphGenerator {
     friend class DynamicPubWebGenerator;
 
 public:

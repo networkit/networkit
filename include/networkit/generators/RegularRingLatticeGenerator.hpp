@@ -8,14 +8,14 @@
 #ifndef NETWORKIT_GENERATORS_REGULAR_RING_LATTICE_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_REGULAR_RING_LATTICE_GENERATOR_HPP_
 
-#include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/generators/StaticGraphGeneratorBase.hpp>
 
 namespace NetworKit {
 
 /**
  * @ingroup generators
  */
-class RegularRingLatticeGenerator final : public StaticGraphGenerator<Graph> {
+class RegularRingLatticeGenerator final : public StaticGraphGenerator {
 
 public:
     /**
