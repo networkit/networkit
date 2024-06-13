@@ -12,7 +12,7 @@
 #include <vector>
 
 #include <networkit/auxiliary/Timer.hpp>
-#include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/generators/StaticGraphGeneratorBase.hpp>
 #include <networkit/generators/quadtree/Quadtree.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
 
@@ -21,7 +21,7 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class HyperbolicGenerator final : public StaticGraphGenerator<Graph> {
+class HyperbolicGenerator final : public StaticGraphGenerator {
     friend class DynamicHyperbolicGenerator;
 
 public:

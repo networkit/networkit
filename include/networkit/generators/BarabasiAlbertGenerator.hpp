@@ -8,7 +8,7 @@
 #ifndef NETWORKIT_GENERATORS_BARABASI_ALBERT_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_BARABASI_ALBERT_GENERATOR_HPP_
 
-#include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/generators/StaticGraphGeneratorBase.hpp>
 
 namespace NetworKit {
 
@@ -16,7 +16,7 @@ namespace NetworKit {
  * @ingroup generators
  * Generates a scale-free graph using the Barabasi-Albert preferential attachment model.
  */
-class BarabasiAlbertGenerator final : public StaticGraphGenerator<Graph> {
+class BarabasiAlbertGenerator final : public StaticGraphGenerator {
     Graph initGraph;
     count k{0};      //!< Attachments made per node
     count nMax{0};   //!< The maximal number of nodes attached
