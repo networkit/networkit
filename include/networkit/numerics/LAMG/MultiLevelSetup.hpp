@@ -9,6 +9,8 @@
 #define NETWORKIT_NUMERICS_LAMG_MULTI_LEVEL_SETUP_HPP_
 
 #include <networkit/algebraic/CSRMatrix.hpp>
+#include <networkit/algebraic/DenseMatrix.hpp>
+#include <networkit/algebraic/DynamicMatrix.hpp>
 #include <networkit/numerics/LAMG/LevelHierarchy.hpp>
 #include <networkit/numerics/Smoother.hpp>
 
@@ -220,13 +222,12 @@ public:
      * @param matrix Laplcian matrix.
      * @param hierarchy[out] The constructed hierarchy.
      */
-    void setup(const Matrix &matrix, LevelHierarchy<Matrix> &hierarchy) const;
+    void setup(Matrix matrix, LevelHierarchy<Matrix> &hierarchy) const;
 };
 
 template <class Matrix>
-void MultiLevelSetup<Matrix>::setup(const Matrix &matrix, LevelHierarchy<Matrix> &hierarchy) const {
-    CSRMatrix A = matrix;
-    setupForMatrix(A, hierarchy);
+void MultiLevelSetup<Matrix>::setup(Matrix matrix, LevelHierarchy<Matrix> &hierarchy) const {
+    setupForMatrix(matrix, hierarchy);
 }
 
 template <class Matrix>
@@ -829,15 +830,14 @@ void MultiLevelSetup<Matrix>::galerkinOperator(const Matrix &P, const Matrix &A,
         spa.increaseRow();
     }
 
-    B = CSRMatrix(P.numberOfColumns(), P.numberOfColumns(), triplets);
+    B = Matrix(P.numberOfColumns(), P.numberOfColumns(), triplets);
 }
 
 template <>
-inline void MultiLevelSetup<CSRMatrix>::setup(const CSRMatrix &matrix,
+inline void MultiLevelSetup<CSRMatrix>::setup(CSRMatrix matrix,
                                               LevelHierarchy<CSRMatrix> &hierarchy) const {
-    CSRMatrix A = matrix;
-    A.sort();
-    setupForMatrix(A, hierarchy);
+    matrix.sort();
+    setupForMatrix(matrix, hierarchy);
 }
 
 template <>
@@ -1080,6 +1080,10 @@ inline void MultiLevelSetup<CSRMatrix>::coarseningAggregation(CSRMatrix &matrix,
 
     hierarchy.addAggregationLevel(matrix, P, R);
 }
+
+extern template class MultiLevelSetup<CSRMatrix>;
+extern template class MultiLevelSetup<DenseMatrix>;
+extern template class MultiLevelSetup<DynamicMatrix>;
 
 } /* namespace NetworKit */
 
