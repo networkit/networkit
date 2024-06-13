@@ -8,7 +8,7 @@
 #ifndef NETWORKIT_GENERATORS_STATIC_DEGREE_SEQUENCE_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_STATIC_DEGREE_SEQUENCE_GENERATOR_HPP_
 
-#include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/generators/StaticGraphGeneratorBase.hpp>
 
 namespace NetworKit {
 
@@ -20,7 +20,7 @@ const short UNKNOWN = 2;
 /**
  * @ingroup generators
  */
-class StaticDegreeSequenceGenerator : public StaticGraphGenerator<Graph> {
+class StaticDegreeSequenceGenerator : public StaticGraphGenerator {
 protected:
     std::vector<count> seq;
     short realizable;

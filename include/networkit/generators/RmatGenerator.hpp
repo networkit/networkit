@@ -9,7 +9,7 @@
 #define NETWORKIT_GENERATORS_RMAT_GENERATOR_HPP_
 
 #include <stdint.h>
-#include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/generators/StaticGraphGeneratorBase.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
@@ -22,7 +22,7 @@ namespace NetworKit {
  * Deepayan Chakrabarti, Yiping Zhan, Christos Faloutsos:
  * R-MAT: A Recursive Model for Graph Mining. SDM 2004: 442-446.
  */
-class RmatGenerator final : public StaticGraphGenerator<Graph> {
+class RmatGenerator final : public StaticGraphGenerator {
     count scale; ///< n = 2^scale
     count edgeFactor;
     double defaultEdgeWeight;

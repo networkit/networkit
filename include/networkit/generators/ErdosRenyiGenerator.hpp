@@ -8,7 +8,7 @@
 #ifndef NETWORKIT_GENERATORS_ERDOS_RENYI_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_ERDOS_RENYI_GENERATOR_HPP_
 
-#include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/generators/StaticGraphGeneratorBase.hpp>
 
 namespace NetworKit {
 /**
@@ -17,7 +17,7 @@ namespace NetworKit {
  *
  * This class is a wrapper to @ref ErdosRenyiEnumerator.
  */
-class ErdosRenyiGenerator final : public StaticGraphGenerator<Graph> {
+class ErdosRenyiGenerator final : public StaticGraphGenerator {
 public:
     /**
      * Creates random graphs in the G(n,p) model.
