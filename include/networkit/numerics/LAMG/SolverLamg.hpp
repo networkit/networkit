@@ -46,7 +46,7 @@ struct LAMGSolverStatus {
 template <class Matrix>
 class SolverLamg {
 private:
-    LevelHierarchy<Matrix> &hierarchy;
+    const LevelHierarchy<Matrix> &hierarchy;
     const Smoother<Matrix> &smoother;
 
     // data structures for iterate recombination
@@ -61,10 +61,9 @@ private:
     void solveCycle(Vector &x, const Vector &b, int finest, LAMGSolverStatus &status);
     void cycle(Vector &x, const Vector &b, int finest, int coarsest, std::vector<count> &numVisits,
                std::vector<Vector> &X, std::vector<Vector> &B, const LAMGSolverStatus &status);
-    void multigridCycle(index level, Vector &xf, const Vector &bf);
     void saveIterate(index level, const Vector &x, const Vector &r);
     void clearHistory(index level);
-    void minRes(index level, Vector &x, const Vector &r);
+    void minRes(index level, Vector &x, const Vector &r) const;
 
 public:
     /**
@@ -73,7 +72,7 @@ public:
      * @param hierarchy Reference to the LevelHierarchy constructed by MultiLevelSetup.
      * @param smoother Reference to a smoother.
      */
-    SolverLamg(LevelHierarchy<Matrix> &hierarchy, const Smoother<Matrix> &smoother)
+    SolverLamg(const LevelHierarchy<Matrix> &hierarchy, const Smoother<Matrix> &smoother)
         : hierarchy(hierarchy), smoother(smoother),
           bStages(hierarchy.size(), std::vector<Vector>()) {}
 
@@ -134,7 +133,7 @@ void SolverLamg<Matrix>::solve(Vector &x, const Vector &b, LAMGSolverStatus &sta
 }
 
 template <class Matrix>
-void SolverLamg<Matrix>::solveCycle(Vector &x, const Vector &b, int finest,
+void SolverLamg<Matrix>::solveCycle(Vector &x, const Vector &b, const int finest,
                                     LAMGSolverStatus &status) {
     Aux::Timer timer;
     timer.start();
@@ -187,7 +186,7 @@ void SolverLamg<Matrix>::solveCycle(Vector &x, const Vector &b, int finest,
 }
 
 template <class Matrix>
-void SolverLamg<Matrix>::cycle(Vector &x, const Vector &b, int finest, int coarsest,
+void SolverLamg<Matrix>::cycle(Vector &x, const Vector &b, const int finest, const int coarsest,
                                std::vector<count> &numVisits, std::vector<Vector> &X,
                                std::vector<Vector> &B, const LAMGSolverStatus &status) {
     std::fill(numVisits.begin(), numVisits.end(), 0);
@@ -291,7 +290,7 @@ void SolverLamg<Matrix>::cycle(Vector &x, const Vector &b, int finest, int coars
 }
 
 template <class Matrix>
-void SolverLamg<Matrix>::saveIterate(index level, const Vector &x, const Vector &r) {
+void SolverLamg<Matrix>::saveIterate(const index level, const Vector &x, const Vector &r) {
     // update latest pointer
     index i = latestIterate[level];
     latestIterate[level] = (i + 1) % MAX_COMBINED_ITERATES;
@@ -307,71 +306,9 @@ void SolverLamg<Matrix>::saveIterate(index level, const Vector &x, const Vector 
 }
 
 template <class Matrix>
-void SolverLamg<Matrix>::clearHistory(index level) {
+void SolverLamg<Matrix>::clearHistory(const index level) {
     latestIterate[level] = 0;
     numActiveIterates[level] = 0;
-}
-
-template <class Matrix>
-void SolverLamg<Matrix>::minRes(index level, Vector &x, const Vector &r) {
-    if (numActiveIterates[level] > 0) {
-        count n = numActiveIterates[level];
-
-        std::vector<index> ARowIdx(r.getDimension() + 1);
-        std::vector<index> ERowIdx(r.getDimension() + 1);
-
-#pragma omp parallel for
-        for (omp_index i = 0; i < static_cast<omp_index>(r.getDimension()); ++i) {
-            for (index k = 0; k < n; ++k) {
-                double AEvalue = r[i] - rHistory[level][k][i];
-                if (std::fabs(AEvalue) > 1e-25) {
-                    ++ARowIdx[i + 1];
-                }
-
-                double Eval = history[level][k][i] - x[i];
-                if (std::fabs(Eval) > 1e-25) {
-                    ++ERowIdx[i + 1];
-                }
-            }
-        }
-
-        for (index i = 0; i < r.getDimension(); ++i) {
-            ARowIdx[i + 1] += ARowIdx[i];
-            ERowIdx[i + 1] += ERowIdx[i];
-        }
-
-        std::vector<index> AColumnIdx(ARowIdx[r.getDimension()]);
-        std::vector<double> ANonZeros(ARowIdx[r.getDimension()]);
-
-        std::vector<index> EColumnIdx(ERowIdx[r.getDimension()]);
-        std::vector<double> ENonZeros(ERowIdx[r.getDimension()]);
-
-#pragma omp parallel for
-        for (omp_index i = 0; i < static_cast<omp_index>(r.getDimension()); ++i) {
-            for (index k = 0, aIdx = ARowIdx[i], eIdx = ERowIdx[i]; k < n; ++k) {
-                double AEvalue = r[i] - rHistory[level][k][i];
-                if (std::fabs(AEvalue) > 1e-25) {
-                    AColumnIdx[aIdx] = k;
-                    ANonZeros[aIdx] = AEvalue;
-                    ++aIdx;
-                }
-
-                double Eval = history[level][k][i] - x[i];
-                if (std::fabs(Eval) > 1e-25) {
-                    EColumnIdx[eIdx] = k;
-                    ENonZeros[eIdx] = Eval;
-                    ++eIdx;
-                }
-            }
-        }
-
-        CSRMatrix AE(r.getDimension(), n, ARowIdx, AColumnIdx, ANonZeros, 0.0, true);
-        CSRMatrix E(r.getDimension(), n, ERowIdx, EColumnIdx, ENonZeros, 0.0, true);
-
-        Vector alpha = smoother.relax(CSRMatrix::mTmMultiply(AE, AE), CSRMatrix::mTvMultiply(AE, r),
-                                      Vector(n, 0.0), 10);
-        x += E * alpha;
-    }
 }
 
 } /* namespace NetworKit */
