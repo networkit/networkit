@@ -9,7 +9,7 @@
 #ifndef NETWORKIT_GENERATORS_CLUSTERED_RANDOM_GRAPH_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_CLUSTERED_RANDOM_GRAPH_GENERATOR_HPP_
 
-#include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/generators/StaticGraphGeneratorBase.hpp>
 #include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
@@ -21,7 +21,7 @@ namespace NetworKit {
  * for intra-cluster and inter-cluster edges.
  * In parallel the generated graph is not deterministic. To ensure determinism, use a single thread.
  */
-class ClusteredRandomGraphGenerator final : public StaticGraphGenerator<Graph> {
+class ClusteredRandomGraphGenerator final : public StaticGraphGenerator {
 public:
     /**
      * Creates a clustered random graph:

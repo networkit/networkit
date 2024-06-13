@@ -20,7 +20,7 @@ namespace NetworKit {
 /**
  * @ingroup generators
  */
-class HyperbolicGenerator final : public StaticGraphGenerator<Graph> {
+class HyperbolicGenerator final : public StaticGraphGenerator {
     friend class DynamicHyperbolicGenerator;
 
 public:

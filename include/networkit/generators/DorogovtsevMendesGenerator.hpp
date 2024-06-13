@@ -8,14 +8,14 @@
 #ifndef NETWORKIT_GENERATORS_DOROGOVTSEV_MENDES_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_DOROGOVTSEV_MENDES_GENERATOR_HPP_
 
-#include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/generators/StaticGraphGeneratorBase.hpp>
 
 namespace NetworKit {
 
 /**
  * @ingroup generators
  */
-class DorogovtsevMendesGenerator final : public StaticGraphGenerator<Graph> {
+class DorogovtsevMendesGenerator final : public StaticGraphGenerator {
 
 public:
     /**

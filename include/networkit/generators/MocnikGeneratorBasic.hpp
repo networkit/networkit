@@ -8,14 +8,14 @@
 #ifndef NETWORKIT_GENERATORS_MOCNIK_GENERATOR_BASIC_HPP_
 #define NETWORKIT_GENERATORS_MOCNIK_GENERATOR_BASIC_HPP_
 
-#include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/generators/StaticGraphGeneratorBase.hpp>
 
 namespace NetworKit {
 
 /**
  * @ingroup generators
  */
-class MocnikGeneratorBasic : public StaticGraphGenerator<Graph> {
+class MocnikGeneratorBasic : public StaticGraphGenerator {
     // GENERAL DATA
 
     /**
