@@ -8,7 +8,7 @@
 #ifndef NETWORKIT_GENERATORS_SIMPLE_HYPERGRAPH_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_SIMPLE_HYPERGRAPH_GENERATOR_HPP_
 
-#include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/generators/StaticGraphGeneratorBase.hpp>
 #include <networkit/graph/Hypergraph.hpp>
 
 namespace NetworKit {
@@ -17,7 +17,7 @@ namespace NetworKit {
  * @ingroup generators
  * A simple hypergraph generator, unweighted, uniform and regular hypergraphs.
  */
-class SimpleHypergraphGenerator final : public StaticGraphGenerator<Hypergraph> {
+class SimpleHypergraphGenerator final : public StaticHypergraphGenerator {
 
 public:
     /**
