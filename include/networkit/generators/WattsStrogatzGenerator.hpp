@@ -7,14 +7,14 @@
 #ifndef NETWORKIT_GENERATORS_WATTS_STROGATZ_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_WATTS_STROGATZ_GENERATOR_HPP_
 
-#include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/generators/StaticGraphGeneratorBase.hpp>
 
 namespace NetworKit {
 
 /**
  * @ingroup generators
  */
-class WattsStrogatzGenerator final : public StaticGraphGenerator<Graph> {
+class WattsStrogatzGenerator final : public StaticGraphGenerator {
 
 public:
     /**
