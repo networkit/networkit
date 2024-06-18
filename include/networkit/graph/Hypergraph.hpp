@@ -91,7 +91,7 @@ class Hypergraph final {
     std::vector<edgeweight> edgeWeights;
 
     //!< list of node ids, which are part of a certain hyperedge.
-    std::vector<std::set<edgeid>> edgeIncidence;
+    std::vector<std::set<node>> edgeIncidence;
 
     AttributeMap<PerNode, Hypergraph> nodeAttributeMap;
     AttributeMap<PerEdge, Hypergraph> edgeAttributeMap;
