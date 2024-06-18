@@ -143,4 +143,94 @@ TEST_P(HypergraphGTest, testDegree) {
     Hypergraph hGraph = SimpleHypergraphGenerator(100, 100, none, false, 10).generate();
     hGraph.forNodes([&](node u) { ASSERT_EQ(10u, hGraph.degree(u)); });
 }
+
+/** EDGE ITERATORS **/
+
+TEST_P(HypergraphGTest, testForEdges) {
+    Aux::Log::setLogLevel("INFO");
+    Hypergraph hGraph = Hypergraph(5, 4);
+    hGraph.addNodeTo({0}, 0);
+    hGraph.addNodeTo({0, 1}, 1);
+    hGraph.addNodeTo({1, 2}, 2);
+    hGraph.addNodeTo({2, 3}, 3);
+    hGraph.addNodeTo({3}, 4);
+
+    std::vector<bool> edgesSeen(4, false);
+
+    hGraph.forEdges([&](edgeid eid) {
+        ASSERT_TRUE(hGraph.hasNode(static_cast<node>(eid), eid));
+        ASSERT_TRUE(hGraph.hasNode(static_cast<node>(eid + 1), eid));
+        edgesSeen[static_cast<index>(eid)] = true;
+    });
+
+    for (auto b : edgesSeen) {
+        ASSERT_TRUE(b);
+    }
+}
+
+// TEST_P(GraphGTest, testForWeightedEdges) {
+//     double epsilon = 1e-6;
+
+//     Graph G = createGraph(4);
+//     G.addEdge(0, 1, 0.1); // 0 * 1 = 0
+//     G.addEdge(3, 2, 0.2); // 3 * 2 = 1 (mod 5)
+//     G.addEdge(1, 2, 0.3); // 1 * 2 = 2
+//     G.addEdge(3, 1, 0.4); // 3 * 1 = 3
+//     G.addEdge(2, 2, 0.5); // 2 * 2 = 4
+
+//     std::vector<bool> edgesSeen(5, false);
+
+//     edgeweight weightSum = 0;
+//     G.forEdges([&](node u, node v, edgeweight ew) {
+//         ASSERT_TRUE(G.hasEdge(u, v));
+//         ASSERT_EQ(G.weight(u, v), ew);
+
+//         index id = (u * v) % 5;
+//         edgesSeen[id] = true;
+//         if (G.isWeighted()) {
+//             ASSERT_NEAR((id + 1) * 0.1, ew, epsilon);
+//         } else {
+//             ASSERT_EQ(defaultEdgeWeight, ew);
+//         }
+//         weightSum += ew;
+//     });
+
+//     for (auto b : edgesSeen) {
+//         ASSERT_TRUE(b);
+//     }
+//     if (G.isWeighted()) {
+//         ASSERT_NEAR(1.5, weightSum, epsilon);
+//     } else {
+//         ASSERT_NEAR(5 * defaultEdgeWeight, weightSum, epsilon);
+//     }
+// }
+
+// TEST_P(GraphGTest, testParallelForWeightedEdges) {
+//     count n = 4;
+//     Graph G = createGraph(n);
+//     G.forNodePairs([&](node u, node v) { G.addEdge(u, v, 1.0); });
+
+//     edgeweight weightSum = 0.0;
+//     G.parallelForEdges([&](node, node, edgeweight ew) {
+// #pragma omp atomic
+//         weightSum += ew;
+//     });
+
+//     ASSERT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in every case";
+// }
+
+// TEST_P(GraphGTest, testParallelForEdges) {
+//     count n = 4;
+//     Graph G = createGraph(n);
+//     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
+
+//     edgeweight weightSum = 0.0;
+//     G.parallelForEdges([&](node, node) {
+// #pragma omp atomic
+//         weightSum += 1;
+//     });
+
+//     ASSERT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in every case";
+// }
+
 } // namespace NetworKit
