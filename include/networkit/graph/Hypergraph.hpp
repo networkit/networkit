@@ -548,7 +548,7 @@ inline nodeweight Hypergraph::nodeWeightIteratorHelper(node nId) const {
 // implementation for weighted == false
 template <>
 inline nodeweight Hypergraph::nodeWeightIteratorHelper<false>(node) const {
-    return defaultEdgeWeight;
+    return defaultNodeWeight;
 }
 
 } // namespace NetworKit
