@@ -193,7 +193,6 @@ TEST_P(HypergraphGTest, testaddWithNodesAddMissing) {
 /** EDGE ITERATORS **/
 
 TEST_P(HypergraphGTest, testForEdges) {
-    Aux::Log::setLogLevel("INFO");
     Hypergraph hGraph = Hypergraph(5, 4);
     hGraph.addNodeTo({0}, 0);
     hGraph.addNodeTo({0, 1}, 1);
@@ -214,42 +213,48 @@ TEST_P(HypergraphGTest, testForEdges) {
     }
 }
 
-// TEST_P(GraphGTest, testForWeightedEdges) {
-//     double epsilon = 1e-6;
+TEST_P(HypergraphGTest, testForWeightedEdges) {
+    double epsilon = 1e-6;
 
-//     Graph G = createGraph(4);
-//     G.addEdge(0, 1, 0.1); // 0 * 1 = 0
-//     G.addEdge(3, 2, 0.2); // 3 * 2 = 1 (mod 5)
-//     G.addEdge(1, 2, 0.3); // 1 * 2 = 2
-//     G.addEdge(3, 1, 0.4); // 3 * 1 = 3
-//     G.addEdge(2, 2, 0.5); // 2 * 2 = 4
+    Hypergraph hGraph = Hypergraph(5, 4, true);
+    hGraph.setEdgeWeight(0, 0.1);
+    hGraph.setEdgeWeight(1, 0.2);
+    hGraph.setEdgeWeight(2, 0.3);
+    hGraph.setEdgeWeight(3, 0.4);
 
-//     std::vector<bool> edgesSeen(5, false);
+    hGraph.addNodeTo({0}, 0);
+    hGraph.addNodeTo({0, 1}, 1);
+    hGraph.addNodeTo({1, 2}, 2);
+    hGraph.addNodeTo({2, 3}, 3);
+    hGraph.addNodeTo({3}, 4);
 
-//     edgeweight weightSum = 0;
-//     G.forEdges([&](node u, node v, edgeweight ew) {
-//         ASSERT_TRUE(G.hasEdge(u, v));
-//         ASSERT_EQ(G.weight(u, v), ew);
+    std::vector<bool> edgesSeen(4, false);
+    edgeweight weightSum = 0;
 
-//         index id = (u * v) % 5;
-//         edgesSeen[id] = true;
-//         if (G.isWeighted()) {
-//             ASSERT_NEAR((id + 1) * 0.1, ew, epsilon);
-//         } else {
-//             ASSERT_EQ(defaultEdgeWeight, ew);
-//         }
-//         weightSum += ew;
-//     });
+    hGraph.forEdges([&](edgeid eid, edgeweight ew) {
+        ASSERT_TRUE(hGraph.hasNode(static_cast<node>(eid), eid));
+        ASSERT_TRUE(hGraph.hasNode(static_cast<node>(eid + 1), eid));
+        ASSERT_EQ(hGraph.getEdgeWeight(eid), ew);
 
-//     for (auto b : edgesSeen) {
-//         ASSERT_TRUE(b);
-//     }
-//     if (G.isWeighted()) {
-//         ASSERT_NEAR(1.5, weightSum, epsilon);
-//     } else {
-//         ASSERT_NEAR(5 * defaultEdgeWeight, weightSum, epsilon);
-//     }
-// }
+        edgesSeen[static_cast<index>(eid)] = true;
+
+        if (hGraph.isWeighted()) {
+            ASSERT_NEAR((eid + 1) * 0.1, ew, epsilon);
+        } else {
+            ASSERT_EQ(defaultEdgeWeight, ew);
+        }
+        weightSum += ew;
+    });
+
+    for (auto b : edgesSeen) {
+        ASSERT_TRUE(b);
+    }
+    if (hGraph.isWeighted()) {
+        ASSERT_NEAR(1.0, weightSum, epsilon);
+    } else {
+        ASSERT_NEAR(4 * defaultEdgeWeight, weightSum, epsilon);
+    }
+}
 
 // TEST_P(GraphGTest, testParallelForWeightedEdges) {
 //     count n = 4;
