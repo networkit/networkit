@@ -144,6 +144,52 @@ TEST_P(HypergraphGTest, testDegree) {
     hGraph.forNodes([&](node u) { ASSERT_EQ(10u, hGraph.degree(u)); });
 }
 
+/** EDGE MODIFIERS **/
+
+TEST_P(HypergraphGTest, testaddEdge) {
+    Hypergraph hGraph = Hypergraph();
+
+    ASSERT_FALSE(hGraph.hasEdge(0));
+    ASSERT_FALSE(hGraph.hasEdge(1));
+    ASSERT_EQ(0u, hGraph.numberOfEdges());
+
+    hGraph.addEdge();
+    ASSERT_TRUE(hGraph.hasEdge(0));
+    ASSERT_FALSE(hGraph.hasEdge(1));
+    ASSERT_EQ(1u, hGraph.numberOfEdges());
+
+    Hypergraph hGraph2 = Hypergraph(0, 2);
+    ASSERT_TRUE(hGraph2.hasEdge(0));
+    ASSERT_TRUE(hGraph2.hasEdge(1));
+    ASSERT_FALSE(hGraph2.hasEdge(2));
+    ASSERT_EQ(2u, hGraph2.numberOfEdges());
+
+    hGraph2.addEdge();
+    hGraph2.addEdge();
+    ASSERT_TRUE(hGraph2.hasEdge(2));
+    ASSERT_TRUE(hGraph2.hasEdge(3));
+    ASSERT_FALSE(hGraph2.hasEdge(4));
+    ASSERT_EQ(4u, hGraph2.numberOfEdges());
+}
+
+TEST_P(HypergraphGTest, testaddWithNodes) {
+    Hypergraph hGraph = Hypergraph(2);
+
+    hGraph.addEdge({0, 1});
+    ASSERT_TRUE(hGraph.hasEdge(0));
+    ASSERT_EQ(1u, hGraph.numberOfEdges());
+}
+
+TEST_P(HypergraphGTest, testaddWithNodesAddMissing) {
+    Hypergraph hGraph = Hypergraph();
+
+    hGraph.addEdge({0, 1}, true);
+    ASSERT_TRUE(hGraph.hasEdge(0));
+    ASSERT_TRUE(hGraph.hasNode(0, 0));
+    ASSERT_TRUE(hGraph.hasNode(1, 0));
+    ASSERT_EQ(1u, hGraph.numberOfEdges());
+}
+
 /** EDGE ITERATORS **/
 
 TEST_P(HypergraphGTest, testForEdges) {
