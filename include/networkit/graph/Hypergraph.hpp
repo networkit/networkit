@@ -216,7 +216,7 @@ public:
     node addNodes(count numberOfNewNodes);
 
     /**
-     * Connect a node @a u to a list of hyperedges @a edges. If no node is given, a new
+     * Connect a node @a u to an array of hyperedges @a edges. If no node is given, a new
      * node is added to the hypergraph and directly connected to a list of hyperedges
      * @a edges.
      * @return The new node.
@@ -224,16 +224,31 @@ public:
     node addNodeTo(const std::vector<edgeid> &edges, node u = none);
 
     /**
-     * Connect a list of nodes @a u to a hyperedge @a edgeid. If no edge is given, a new
+     * Connect an array of nodes @a u to a hyperedge @a edgeid. If no edge is given, a new
      * hyperedge is added to the hypergraph.
      * @return The new hyperedge.
      */
     node addNodesTo(const std::vector<node> &nodes, edgeid eid = none);
 
-    // TODO: add doc string
+    /**
+     * Tests whether a node exists in the hypergraph. Returns true, if the node id
+     * is present and marked as active.
+     *
+     * @param u The node id.
+     * @return true
+     * @return false
+     */
     bool hasNode(node u) const { return u < nextNodeId && nodeExists[u]; };
 
-    // TODO: add doc string
+    /**
+     * Tests whether a node exists in a given edge. Returns true, if the node id
+     * is present in the edge and marked as active.
+     *
+     * @param u The node id.
+     * @param eid The edge id.
+     * @return true
+     * @return false
+     */
     bool hasNode(node u, edgeid eid) const {
         return hasNode(u) && edgeIncidence[eid].find(eid) != edgeIncidence[eid].end();
     }
@@ -244,13 +259,19 @@ public:
      */
     void removeNode(node u);
 
-    // TODO: add docstring
+    /**
+     * Restores a previously deleted node @a v with its previous id in the
+     * hypergraph.
+     *
+     * @param v The node id.
+     *
+     */
     void restoreNode(node v);
 
     /**
      * Remove a node @a u from a certain edge in  the hypergraph.
-     * @param u Node.
-     * @param eid Edge.
+     * @param u The node id.
+     * @param eid The edge id.
      */
     void removeNodeFrom(node u, edgeid eid);
 
@@ -258,8 +279,8 @@ public:
      * Return node weight of node @a u. Returns 0 if node does not
      * exist.
      *
-     * @param u Node id
-     * @return Node weight of @a u or 0 if node does not exist.
+     * @param u The node id.
+     * @return The node weight of @a u or 0 if node does not exist.
      */
     nodeweight getNodeWeight(node u) const;
 
@@ -267,12 +288,17 @@ public:
      * Set the weight of a node. If the node does not exist,
      * it will be inserted.
      *
-     * @param[in]	u	node id
-     * @param[in]	weight	node weight
+     * @param[in]	u The node id.
+     * @param[in]	weight	The node weight.
      */
     void setNodeWeight(node u, nodeweight nw);
 
-    // TODO: add docstring
+    /**
+     * Returns the (unweighted) degree of a node.
+     *
+     * @param u The node id.
+     * @return count Degree of node.
+     */
     count degree(node u) const;
 
     /* EDGE MODIFIERS */
@@ -284,10 +310,10 @@ public:
     edgeid addEdge();
 
     /**
-     * TODO: Add documentation string.
+     * Add a new edge with incident nodes to the hypergraph and return it. If parameter addMissing
+     * is set to true, the missing nodes (based on the node id) are added to the Hypergraph.
      * @param nodes Nodes to add to this edge. If a node is non-existing, this node is added if @a
      * addMissing is set to true.
-     * @param ew Optional edge weight.
      * @param addMissing Adds unknown nodes if set to true. Note, that this increases the running
      * time due to additional checks.
      * @return The new edge or none, if the creation was unsuccessful
@@ -295,9 +321,10 @@ public:
     edgeid addEdge(const std::vector<node> &nodes, bool addMissing = false);
 
     /**
-     * TODO: Add documentation string.
+     * Remove an edge @a eid from the hypergraph.
+     * @param edge The edge id.
      */
-    void removeEdge(edgeid edge);
+    void removeEdge(edgeid eid);
 
     /**
      * Return edge weight of edge @a u. Returns 0 if edge does not
@@ -317,7 +344,14 @@ public:
      */
     void setEdgeWeight(edgeid u, edgeweight nw);
 
-    // TODO: add doc string
+    /**
+     * Tests whether an edge exists in the hypergraph. Returns true, if the edge id
+     * is present and marked as active.
+     *
+     * @param u The edge id.
+     * @return true
+     * @return false
+     */
     bool hasEdge(edgeid eid) const { return eid < nextEdgeId && edgeExists[eid]; };
 
     /* ITERATORS */
@@ -374,9 +408,8 @@ public:
      * Iterate over all edges of the const graph and call @a handle (lambda
      * closure).
      *
-     * @param handle Takes parameters <code>(node, node)</code>, <code>(node,
-     * node, edgweight)</code>, <code>(node, node, edgeid)</code> or
-     * <code>(node, node, edgeweight, edgeid)</code>.
+     * @param handle Takes parameters <code>(edgeid)</code> or
+     * <code>(edgeid, edgweight)</code>
      */
     template <typename L>
     void forEdges(L handle) const;
@@ -385,9 +418,8 @@ public:
      * Iterate in parallel over all edges of the const graph and call @a
      * handle (lambda closure).
      *
-     * @param handle Takes parameters <code>(node, node)</code> or
-     * <code>(node, node, edgweight)</code>, <code>(node, node, edgeid)</code>
-     * or <code>(node, node, edgeweight, edgeid)</code>.
+     * @param handle Takes parameters <code>(edgeid)</code> or
+     * <code>(edgeid, edgweight)</code>
      */
     template <typename L>
     void parallelForEdges(L handle) const;

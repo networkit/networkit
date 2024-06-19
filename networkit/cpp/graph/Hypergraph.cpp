@@ -179,7 +179,7 @@ void Hypergraph::removeEdge(edgeid eid) {
 
     edgeIncidence[eid].clear();
 
-    // Make the attributes of this node invalid
+    // Make the attributes of this edge invalid
     auto &theMap = edgeAttributeMap.attrMap;
     for (auto it = theMap.begin(); it != theMap.end(); ++it) {
         auto attributeStorageBase = it->second.get();
