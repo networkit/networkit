@@ -131,4 +131,43 @@ std::vector<edgeid> HypergraphTools::randomEdges(const Hypergraph &hGraph, count
     return selectedEdges;
 }
 
+count HypergraphTools::maxEdgeOrder(const Hypergraph &hGraph) {
+    count result = 0;
+#ifndef NETWORKIT_OMP2
+#pragma omp parallel for reduction(max : result)
+    for (omp_index eid = 0; eid < static_cast<omp_index>(hGraph.upperEdgeIdBound()); ++eid) {
+        result = std::max(result, hGraph.order(static_cast<edgeid>(eid)));
+    }
+#else
+    hGraph.forEdges([&](edgeid eid) { result = std::max(result, hGraph.order(eid)); });
+#endif
+    return result;
+}
+
+count HypergraphTools::maxDegree(const Hypergraph &hGraph) {
+    count result = 0;
+#ifndef NETWORKIT_OMP2
+#pragma omp parallel for reduction(max : result)
+    for (omp_index u = 0; u < static_cast<omp_index>(hGraph.upperNodeIdBound()); ++u) {
+        result = std::max(result, hGraph.degree(static_cast<node>(u)));
+    }
+#else
+    hGraph.forNodes([&](node u) { result = std::max(result, hGraph.degree(u)); });
+#endif
+    return result;
+}
+
+count HypergraphTools::maxWeightedDegree(const Hypergraph &hGraph) {
+    count result = 0;
+#ifndef NETWORKIT_OMP2
+#pragma omp parallel for reduction(max : result)
+    for (omp_index u = 0; u < static_cast<omp_index>(hGraph.upperNodeIdBound()); ++u) {
+        result = std::max(result, hGraph.weightedDegree(static_cast<node>(u)));
+    }
+#else
+    hGraph.forNodes([&](node u) { result = std::max(result, hGraph.weightedDegree(u)); });
+#endif
+    return result;
+}
+
 } // namespace NetworKit

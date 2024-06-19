@@ -135,6 +135,21 @@ count Hypergraph::degree(node u) const {
     return res;
 }
 
+// NOTE: might profit from a parallel reduction
+count Hypergraph::weightedDegree(node u) const {
+    assert(u < nextNodeId);
+    assert(weighted);
+
+    count res{0};
+
+    if (nodeExists[u]) {
+        for (edgeid eid : nodeIncidence[u]) {
+            res += edgeWeights[eid];
+        }
+    }
+    return res;
+}
+
 edgeid Hypergraph::addEdge() {
     edgeid eid = nextEdgeId; // edge gets maximum id
     nextEdgeId++;            // increment edge range
