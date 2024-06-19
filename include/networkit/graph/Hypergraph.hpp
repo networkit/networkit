@@ -460,6 +460,17 @@ public:
     };
 
     /**
+     * Iterate over all neighbors of a node and call @a handle (lamdba
+     * closure).
+     *
+     * @param u Node.
+     * @param handle Takes parameter <code>(node)</code> which is a neighbor of @a u.
+     *
+     */
+    template <typename L>
+    void forNeighborsOf(node u, L handle) const;
+
+    /**
      * Iterate over all edges of the const graph and call @a handle (lambda
      * closure).
      *
@@ -562,6 +573,16 @@ void Hypergraph::parallelForNodesImpl(L handle) const {
     for (omp_index nId = 0; nId < static_cast<omp_index>(nextNodeId); ++nId) {
         if (nodeExists[nId]) {
             nodeLambda<L>(handle, nId, nodeWeightIteratorHelper<hasWeights>(nId));
+        }
+    }
+}
+
+template <typename L>
+void Hypergraph::forNeighborsOf(node u, L handle) const {
+    std::set<node> neighborsOfU = getNeighbors(u);
+    for (auto nIter = neighborsOfU.begin(); nIter != neighborsOfU.end(); nIter++) {
+        if (nodeExists[*nIter]) {
+            handle(*nIter);
         }
     }
 }

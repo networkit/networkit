@@ -308,4 +308,22 @@ TEST_P(HypergraphGTest, testForWeightedEdges) {
 //     ASSERT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in every case";
 // }
 
+/* NEIGHBOR ITERATORS */
+
+TEST_P(HypergraphGTest, testForNeighborsOf) {
+    std::vector<node> visited;
+    Hypergraph hGraph = Hypergraph(5, 5);
+    hGraph.addNodesTo({0, 1}, 0);
+    hGraph.addNodesTo({1}, 1);
+    hGraph.addNodesTo({1, 2}, 2);
+    hGraph.addNodesTo({1, 4}, 4);
+
+    hGraph.forNeighborsOf(1, [&](node u) { visited.push_back(u); });
+
+    ASSERT_EQ(3u, visited.size());
+    ASSERT_EQ(0u, visited[0]);
+    ASSERT_EQ(2u, visited[1]);
+    ASSERT_EQ(4u, visited[2]);
+}
+
 } // namespace NetworKit
