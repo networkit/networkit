@@ -301,7 +301,15 @@ public:
      */
     count degree(node u) const;
 
-    /* EDGE MODIFIERS */
+    /**
+     * Returns the (weighted) degree of a node.
+     *
+     * @param u The node id.
+     * @return count Weighted degree of node.
+     */
+    count weightedDegree(node u) const;
+
+    /* EDGE PROPERTIES & MODIFIERS */
 
     /**
      * Add a new edge to the hypergraph and return it.
@@ -353,6 +361,14 @@ public:
      * @return false
      */
     bool hasEdge(edgeid eid) const { return eid < nextEdgeId && edgeExists[eid]; };
+
+    /**
+     * Returns the order of a given edge.
+     *
+     * @param eid The edge id.
+     * @return count
+     */
+    count order(edgeid eid) const { return edgeIncidence[eid].size(); }
 
     /* ITERATORS */
 
