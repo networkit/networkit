@@ -62,9 +62,9 @@ class Hypergraph final {
     count numEdges;
 
     //!< current upper bound of node ids, z will be the id of the next node
-    node maxNodeId;
+    node nextNodeId;
     //!< current upper bound of edge ids, will be the id of the next edge
-    edgeid maxEdgeId;
+    edgeid nextEdgeId;
 
     //!< true if the hypergraph is weighted, false otherwise
     bool weighted;
@@ -192,13 +192,13 @@ public:
      * Get an upper bound for the node ids in the hypergraph.
      * @return An upper bound for the node ids.
      */
-    index upperNodeIdBound() const noexcept { return maxNodeId; }
+    index upperNodeIdBound() const noexcept { return nextNodeId; }
 
     /**
      * Get an upper bound for the edge ids in the hypergraph.
      * @return An upper bound for the node ids.
      */
-    index upperEdgeIdBound() const noexcept { return maxEdgeId; }
+    index upperEdgeIdBound() const noexcept { return nextEdgeId; }
 
     /* NODE PROPERTIES & MODIFIERS */
 
@@ -221,17 +221,17 @@ public:
      * @a edges.
      * @return The new node.
      */
-    node addNodeTo(std::vector<edgeid> edges, node u = none);
+    node addNodeTo(const std::vector<edgeid> &edges, node u = none);
 
     /**
      * Connect a list of nodes @a u to a hyperedge @a edgeid. If no edge is given, a new
      * hyperedge is added to the hypergraph.
      * @return The new hyperedge.
      */
-    node addNodesTo(std::vector<node> nodes, edgeid eid = none);
+    node addNodesTo(const std::vector<node> &nodes, edgeid eid = none);
 
     // TODO: add doc string
-    bool hasNode(node u) const { return u < maxNodeId && nodeExists[u]; };
+    bool hasNode(node u) const { return u < nextNodeId && nodeExists[u]; };
 
     // TODO: add doc string
     bool hasNode(node u, edgeid eid) const {
@@ -292,8 +292,7 @@ public:
      * time due to additional checks.
      * @return The new edge or none, if the creation was unsuccessful
      */
-    edgeid addEdge(const std::vector<node> &nodes, edgeweight ew = defaultEdgeWeight,
-                   bool addMissing = false);
+    edgeid addEdge(const std::vector<node> &nodes, bool addMissing = false);
 
     /**
      * TODO: Add documentation string.
@@ -319,7 +318,7 @@ public:
     void setEdgeWeight(edgeid u, edgeweight nw);
 
     // TODO: add doc string
-    bool hasEdge(edgeid eid) const { return eid < maxEdgeId && edgeExists[eid]; };
+    bool hasEdge(edgeid eid) const { return eid < nextEdgeId && edgeExists[eid]; };
 
     /* ITERATORS */
 
@@ -463,7 +462,7 @@ void Hypergraph::parallelForNodes(L handle) const {
 
 template <bool hasWeights, typename L>
 void Hypergraph::forNodesImpl(L handle) const {
-    for (node nId = 0; nId < maxNodeId; ++nId) {
+    for (node nId = 0; nId < nextNodeId; ++nId) {
         if (nodeExists[nId]) {
             nodeLambda<L>(handle, nId, nodeWeightIteratorHelper<hasWeights>(nId));
         }
@@ -473,7 +472,7 @@ void Hypergraph::forNodesImpl(L handle) const {
 template <bool hasWeights, typename L>
 void Hypergraph::parallelForNodesImpl(L handle) const {
 #pragma omp parallel for
-    for (omp_index nId = 0; nId < static_cast<omp_index>(maxNodeId); ++nId) {
+    for (omp_index nId = 0; nId < static_cast<omp_index>(nextNodeId); ++nId) {
         if (nodeExists[nId]) {
             nodeLambda<L>(handle, nId, nodeWeightIteratorHelper<hasWeights>(nId));
         }
@@ -482,7 +481,7 @@ void Hypergraph::parallelForNodesImpl(L handle) const {
 
 template <bool hasWeights, typename L>
 inline void Hypergraph::forEdgeImpl(L handle) const {
-    for (edgeid eId = 0; eId < maxEdgeId; ++eId) {
+    for (edgeid eId = 0; eId < nextEdgeId; ++eId) {
         if (edgeExists[eId]) {
             edgeLambda<L>(handle, eId, edgeWeightIteratorHelper<hasWeights>(eId));
         }
@@ -492,7 +491,7 @@ inline void Hypergraph::forEdgeImpl(L handle) const {
 template <bool hasWeights, typename L>
 inline void Hypergraph::parallelForEdgesImpl(L handle) const {
 #pragma omp parallel for schedule(guided)
-    for (omp_index eId = 0; eId < static_cast<omp_index>(maxEdgeId); ++eId) {
+    for (omp_index eId = 0; eId < static_cast<omp_index>(nextEdgeId); ++eId) {
         if (edgeExists[eId]) {
             edgeLambda<L>(handle, eId, edgeWeightIteratorHelper<hasWeights>(eId));
         }
