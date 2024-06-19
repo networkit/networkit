@@ -309,6 +309,14 @@ public:
      */
     count weightedDegree(node u) const;
 
+    /**
+     * Retrieve the neighbors of a given node @a u.
+     *
+     * @param u The node id.
+     * @return The neighbors of @a u.
+     */
+    std::set<node> getNeighbors(node u) const;
+
     /* EDGE PROPERTIES & MODIFIERS */
 
     /**
@@ -413,12 +421,43 @@ public:
     // For support of API: NetworKit::Hypergraph::NodeRange
     using NodeRange = NodeRangeBase<Hypergraph>;
 
+    // For support of API: NetworKit::Hypergraph::NeighborIterator;
+    using NeighborIterator = NeighborIteratorBase<std::set<node>>;
+
     /**
      * Get an iterable range over the nodes of the graph.
      *
      * @return Iterator range over the nodes of the graph.
      */
     NodeRange nodeRange() const noexcept { return NodeRange(*this); }
+
+    /**
+     * Wrapper class to iterate over a range of the neighbors of a node within
+     * a for loop.
+     */
+    class NeighborRange {
+        const Hypergraph *hGraph;
+        std::set<node> neighbors;
+        node curNode;
+
+    public:
+        NeighborRange(const Hypergraph &hGraph, node u) : hGraph(&hGraph), curNode(u) {
+            assert(hGraph.hasNode(curNode));
+            neighbors = hGraph.getNeighbors(curNode);
+        };
+
+        NeighborRange() : hGraph(nullptr) {};
+
+        NeighborIterator begin() const {
+            assert(hGraph);
+            return NeighborIterator(neighbors.begin());
+        }
+
+        NeighborIterator end() const {
+            assert(hGraph);
+            return NeighborIterator(neighbors.begin());
+        }
+    };
 
     /**
      * Iterate over all edges of the const graph and call @a handle (lambda
