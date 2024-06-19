@@ -15,14 +15,15 @@ namespace NetworKit {
 /**
  * Class to iterate over the in/out neighbors of a node.
  */
+template <typename containerType>
 class NeighborIteratorBase {
 
-    std::vector<node>::const_iterator nIter;
+    typename containerType::const_iterator elementIter;
 
 public:
     // The value type of the neighbors (i.e. nodes). Returned by
     // operator*().
-    using value_type = node;
+    using value_type = typename containerType::value_type;
 
     // Reference to the value_type, required by STL.
     using reference = value_type &;
@@ -40,7 +41,8 @@ public:
     // Own type.
     using self = NeighborIteratorBase;
 
-    NeighborIteratorBase(std::vector<node>::const_iterator nodesIter) : nIter(nodesIter) {}
+    NeighborIteratorBase(typename containerType::const_iterator elementIter)
+        : elementIter(elementIter) {}
 
     /**
      * @brief WARNING: This contructor is required for Python and should not be used as the
@@ -49,47 +51,53 @@ public:
     NeighborIteratorBase() {}
 
     NeighborIteratorBase &operator++() {
-        ++nIter;
+        ++elementIter;
         return *this;
     }
 
     NeighborIteratorBase operator++(int) {
         const auto tmp = *this;
-        ++nIter;
+        ++elementIter;
         return tmp;
     }
 
     NeighborIteratorBase operator--() {
         const auto tmp = *this;
-        --nIter;
+        --elementIter;
         return tmp;
     }
 
     NeighborIteratorBase operator--(int) {
-        --nIter;
+        --elementIter;
         return *this;
     }
 
-    bool operator==(const NeighborIteratorBase &rhs) const { return nIter == rhs.nIter; }
+    bool operator==(const NeighborIteratorBase &rhs) const {
+        return elementIter == rhs.elementIter;
+    }
 
-    bool operator!=(const NeighborIteratorBase &rhs) const { return !(nIter == rhs.nIter); }
+    bool operator!=(const NeighborIteratorBase &rhs) const {
+        return !(elementIter == rhs.elementIter);
+    }
 
-    node operator*() const { return *nIter; }
+    value_type operator*() const { return *elementIter; }
 };
 
 /**
  * Class to iterate over the in/out neighbors of a node including the edge
  * weights. Values are std::pair<node, edgeweight>.
  */
+template <typename containerType, typename weightContainerType>
 class NeighborWeightIteratorBase {
 
-    std::vector<node>::const_iterator nIter;
-    std::vector<edgeweight>::const_iterator wIter;
+    typename containerType::const_iterator elementIter;
+    typename weightContainerType::const_iterator weightIter;
 
 public:
     // The value type of the neighbors (i.e. nodes). Returned by
     // operator*().
-    using value_type = std::pair<node, edgeweight>;
+    using value_type =
+        std::pair<typename containerType::value_type, typename weightContainerType::value_type>;
 
     // Reference to the value_type, required by STL.
     using reference = value_type &;
@@ -107,9 +115,9 @@ public:
     // Own type.
     using self = NeighborWeightIteratorBase;
 
-    NeighborWeightIteratorBase(std::vector<node>::const_iterator nodesIter,
-                               std::vector<edgeweight>::const_iterator weightIter)
-        : nIter(nodesIter), wIter(weightIter) {}
+    NeighborWeightIteratorBase(typename containerType::const_iterator elementIter,
+                               typename weightContainerType::const_iterator weightIter)
+        : elementIter(elementIter), weightIter(weightIter) {}
 
     /**
      * @brief WARNING: This contructor is required for Python and should not be used as the
@@ -118,8 +126,8 @@ public:
     NeighborWeightIteratorBase() {}
 
     NeighborWeightIteratorBase &operator++() {
-        ++nIter;
-        ++wIter;
+        ++elementIter;
+        ++weightIter;
         return *this;
     }
 
@@ -130,8 +138,8 @@ public:
     }
 
     NeighborWeightIteratorBase operator--() {
-        --nIter;
-        --wIter;
+        --elementIter;
+        --weightIter;
         return *this;
     }
 
@@ -142,12 +150,15 @@ public:
     }
 
     bool operator==(const NeighborWeightIteratorBase &rhs) const {
-        return nIter == rhs.nIter && wIter == rhs.wIter;
+        return elementIter == rhs.elementIter && weightIter == rhs.weightIter;
     }
 
     bool operator!=(const NeighborWeightIteratorBase &rhs) const { return !(*this == rhs); }
 
-    std::pair<node, edgeweight> operator*() const { return std::make_pair(*nIter, *wIter); }
+    std::pair<typename containerType::value_type, typename weightContainerType::value_type>
+    operator*() const {
+        return std::make_pair(*elementIter, *weightIter);
+    }
 };
 
 } // namespace NetworKit
