@@ -172,7 +172,7 @@ TEST_P(HypergraphGTest, testaddEdge) {
     ASSERT_EQ(4u, hGraph2.numberOfEdges());
 }
 
-TEST_P(HypergraphGTest, testaddWithNodes) {
+TEST_P(HypergraphGTest, testaddEdgeWithNodes) {
     Hypergraph hGraph = Hypergraph(2);
 
     hGraph.addEdge({0, 1});
@@ -180,7 +180,7 @@ TEST_P(HypergraphGTest, testaddWithNodes) {
     ASSERT_EQ(1u, hGraph.numberOfEdges());
 }
 
-TEST_P(HypergraphGTest, testaddWithNodesAddMissing) {
+TEST_P(HypergraphGTest, testaddEdgeWithNodesAddMissing) {
     Hypergraph hGraph = Hypergraph();
 
     hGraph.addEdge({0, 1}, true);
