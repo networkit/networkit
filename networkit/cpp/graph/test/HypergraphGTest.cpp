@@ -6,6 +6,7 @@
  *
  */
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Random.hpp>
@@ -142,6 +143,29 @@ TEST_P(HypergraphGTest, testRestoreNode) {
 TEST_P(HypergraphGTest, testDegree) {
     Hypergraph hGraph = SimpleHypergraphGenerator(100, 100, none, false, 10).generate();
     hGraph.forNodes([&](node u) { ASSERT_EQ(10u, hGraph.degree(u)); });
+}
+
+TEST_P(HypergraphGTest, testNeighborsWithoutDuplicates) {
+    Hypergraph hGraph = Hypergraph(3, 3);
+    hGraph.addNodesTo({0, 1}, 0);
+    hGraph.addNodesTo({1}, 1);
+    hGraph.addNodesTo({1, 2}, 2);
+
+    auto neighbors = hGraph.getNeighbors(1);
+
+    ASSERT_THAT(neighbors, testing::ElementsAre(0, 2));
+}
+
+TEST_P(HypergraphGTest, testNeighborsWithDuplicates) {
+    Hypergraph hGraph = Hypergraph(3, 3);
+    hGraph.addNodesTo({0, 1}, 0);
+    hGraph.addNodesTo({1}, 1);
+    hGraph.addNodesTo({0, 1}, 2);
+
+    auto neighbors = hGraph.getNeighbors(1);
+
+    ASSERT_EQ(neighbors.size(), 1);
+    ASSERT_THAT(neighbors, testing::ElementsAre(0));
 }
 
 /** EDGE MODIFIERS **/
