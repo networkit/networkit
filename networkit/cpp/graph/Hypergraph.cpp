@@ -6,6 +6,7 @@
  */
 
 #include <networkit/graph/Hypergraph.hpp>
+#include <networkit/graph/HypergraphTools.hpp>
 
 namespace NetworKit {
 
@@ -148,6 +149,20 @@ count Hypergraph::weightedDegree(node u) const {
         }
     }
     return res;
+}
+
+std::set<node> Hypergraph::getNeighbors(node u) const {
+    assert(u < nextNodeId);
+
+    std::set<node> neighbors;
+
+    for (edgeid eid : nodeIncidence[u]) {
+        neighbors.insert(edgeIncidence[eid].begin(), edgeIncidence[eid].end());
+    }
+
+    neighbors.erase(u);
+
+    return neighbors;
 }
 
 edgeid Hypergraph::addEdge() {
