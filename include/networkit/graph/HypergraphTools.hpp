@@ -53,6 +53,30 @@ edgeid randomEdge(const Hypergraph &hGraph);
  */
 std::vector<edgeid> randomEdges(const Hypergraph &hGraph, count numEdges);
 
+/**
+ * Computes the max edge order (cardinality) for a given Hypergraph.
+ *
+ * @param hGraph The Hypergraph.
+ * @return Maximum edge order.
+ */
+count maxEdgeOrder(const Hypergraph &hGraph);
+
+/**
+ * Computes the maximum unweighted degree for a given Hypergraph.
+ *
+ * @param hGraph The Hypergraph.
+ * @return Maximum unweighted node degree.
+ */
+count maxDegree(const Hypergraph &hGraph);
+
+/**
+ * Computes the maximum weighted degree for a given Hypergraph.
+ *
+ * @param hGraph The Hypergraph.
+ * @return Maximum weighted node degree.
+ */
+count maxWeightedDegree(const Hypergraph &hGraph);
+
 // template <typename Matrix>
 // Matrix computeIncidenceMatrix(const Hypergraph &hGraph);
 
