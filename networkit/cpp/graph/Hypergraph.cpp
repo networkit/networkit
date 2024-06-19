@@ -10,7 +10,7 @@
 namespace NetworKit {
 
 Hypergraph::Hypergraph(count n, count m, bool weighted)
-    : numNodes(n), numEdges(m), maxNodeId(n), maxEdgeId(m),
+    : numNodes(n), numEdges(m), nextNodeId(n), nextEdgeId(m),
 
       weighted(weighted), // indicates whether the graph is weighted or not
                           //   directed(directed), // indicates whether the graph is directed or not
@@ -26,9 +26,9 @@ Hypergraph::Hypergraph(count n, count m, bool weighted)
       nodeAttributeMap(this), edgeAttributeMap(this) {}
 
 node Hypergraph::addNode() {
-    node v = maxNodeId; // node gets maximum id
-    maxNodeId++;        // increment node range
-    numNodes++;         // increment node count
+    node v = nextNodeId; // node gets maximum id
+    nextNodeId++;        // increment node range
+    numNodes++;          // increment node count
 
     // update per node data structures
     nodeExists.push_back(true);
@@ -42,19 +42,19 @@ node Hypergraph::addNode() {
 
 node Hypergraph::addNodes(count numberOfNewNodes) {
 
-    maxNodeId += numberOfNewNodes;
+    nextNodeId += numberOfNewNodes;
     numNodes += numberOfNewNodes;
 
     // update per node data structures
-    nodeExists.resize(maxNodeId, true);
-    nodeIncidence.resize(maxNodeId);
+    nodeExists.resize(nextNodeId, true);
+    nodeIncidence.resize(nextNodeId);
     if (weighted)
-        nodeWeights.resize(maxNodeId, defaultNodeWeight);
+        nodeWeights.resize(nextNodeId, defaultNodeWeight);
 
-    return maxNodeId - 1;
+    return nextNodeId - 1;
 }
 
-node Hypergraph::addNodeTo(std::vector<edgeid> edges, node u) {
+node Hypergraph::addNodeTo(const std::vector<edgeid> &edges, node u) {
     if (u == none)
         u = addNode();
     for (auto eid : edges) {
@@ -65,7 +65,7 @@ node Hypergraph::addNodeTo(std::vector<edgeid> edges, node u) {
     return u;
 }
 
-edgeid Hypergraph::addNodesTo(std::vector<node> nodes, edgeid eid) {
+edgeid Hypergraph::addNodesTo(const std::vector<node> &nodes, edgeid eid) {
     if (eid == none)
         eid = addEdge();
     for (auto curNode : nodes) {
@@ -76,7 +76,7 @@ edgeid Hypergraph::addNodesTo(std::vector<node> nodes, edgeid eid) {
 }
 
 void Hypergraph::removeNode(node u) {
-    assert(u < maxNodeId);
+    assert(u < nextNodeId);
     assert(nodeExists[u]);
 
     nodeIncidence[u].clear();
@@ -93,7 +93,7 @@ void Hypergraph::removeNode(node u) {
 }
 
 void Hypergraph::restoreNode(node v) {
-    assert(v < maxNodeId);
+    assert(v < nextNodeId);
     assert(!nodeExists[v]);
 
     nodeExists[v] = true;
@@ -101,14 +101,14 @@ void Hypergraph::restoreNode(node v) {
 }
 
 void Hypergraph::removeNodeFrom(node u, edgeid eid) {
-    assert(eid < maxEdgeId);
+    assert(eid < nextEdgeId);
     assert(edgeExists[eid]);
 
     edgeIncidence[eid].erase(u);
 }
 
 nodeweight Hypergraph::getNodeWeight(node u) const {
-    assert(u < maxNodeId);
+    assert(u < nextNodeId);
 
     nodeweight res{0.0};
     if (nodeExists[u]) {
@@ -126,7 +126,7 @@ void Hypergraph::setNodeWeight(node u, nodeweight nw) {
 }
 
 count Hypergraph::degree(node u) const {
-    assert(u < maxNodeId);
+    assert(u < nextNodeId);
 
     count res{0};
     if (nodeExists[u]) {
@@ -136,9 +136,9 @@ count Hypergraph::degree(node u) const {
 }
 
 edgeid Hypergraph::addEdge() {
-    edgeid eid = maxEdgeId; // edge gets maximum id
-    maxEdgeId++;            // increment edge range
-    numEdges++;             // increment edge count
+    edgeid eid = nextEdgeId; // edge gets maximum id
+    nextEdgeId++;            // increment edge range
+    numEdges++;              // increment edge count
 
     // update per edge data structures
     edgeExists.push_back(true);
@@ -150,20 +150,19 @@ edgeid Hypergraph::addEdge() {
     return eid;
 }
 
-edgeid Hypergraph::addEdge(const std::vector<node> &nodes, edgeweight ew, bool addMissing) {
+edgeid Hypergraph::addEdge(const std::vector<node> &nodes, bool addMissing) {
 
     edgeid eid = addEdge();
-    edgeWeights[eid] = ew;
     edgeIncidence[eid] = std::set<node>(nodes.begin(), nodes.end());
 
     if (addMissing) {
         for (auto v : edgeIncidence[eid]) {
-            node currentMax = maxEdgeId;
+            node currentMax = numNodes;
             while (v > currentMax) {
                 currentMax = addNode();
                 nodeExists[currentMax] = false;
             }
-            nodeExists[v] = true;
+            addNode();
         }
     }
 
@@ -175,7 +174,7 @@ edgeid Hypergraph::addEdge(const std::vector<node> &nodes, edgeweight ew, bool a
 }
 
 void Hypergraph::removeEdge(edgeid eid) {
-    assert(eid < maxEdgeId);
+    assert(eid < nextEdgeId);
     assert(edgeExists[eid]);
 
     edgeIncidence[eid].clear();
@@ -192,7 +191,7 @@ void Hypergraph::removeEdge(edgeid eid) {
 }
 
 edgeweight Hypergraph::getEdgeWeight(edgeid eid) const {
-    assert(eid < maxEdgeId);
+    assert(eid < nextEdgeId);
     return weighted ? edgeWeights[eid] : defaultEdgeWeight;
 }
 
