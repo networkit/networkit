@@ -339,8 +339,8 @@ public:
      * Set the weight of a edge. If the edge does not exist,
      * it will be inserted.
      *
-     * @param[in]	u	edge id
-     * @param[in]	weight	edge weight
+     * @param	u	The edge id.
+     * @param	weight	The edge weight.
      */
     void setEdgeWeight(edgeid u, edgeweight nw);
 
