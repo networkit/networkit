@@ -241,6 +241,7 @@ def widgetFromGraph(
     customSize: int = None,
     edgeScores: Union[List[float], Mapping[Tuple[int, int], float]] = None,
     edgePalette: List[Tuple[float, float, float]] = None,
+    edgeAttributes: List[Tuple[str, type]] = None,    
 ):
     """
     widgetFromGraph(G, dimension=Dimension.Two, nodeScores=None, nodePartition=None, nodePalette=None, showIds=True, customSize=None, edgeScores=None, edgePalette=None)
@@ -281,6 +282,8 @@ def widgetFromGraph(
             If type is list, indexed by edgeids; if type is dict, indexed by node pair tuples. Default: None
     edgePalette : list(tuple(float, float, float)), optional
             List consisting of normalized rgb-values. If none is given, seaborn.color_palette.colors is used. Default: None
+    edgeAttributes: list[tuple[str, type]], optional
+            List consisting of all (already attached) edge attributes in the format: Tuple(nameOfAttribute, typeOfAttribute) that will be presented as edge labels. Default: None 
     """
     # Sanity checks
     if dimension == Dimension.Two and not hasCyto:
@@ -326,6 +329,19 @@ def widgetFromGraph(
         nodePalette=nodePalette, nodePartition=nodePartition, edgePalette=edgePalette
     )
 
+    if edgeAttributes:
+        edgeAttributeList = []
+        for u,v in G.iterEdges():
+            att_cur_edge = ""
+            for att in edgeAttributes:
+                try:
+                    cur_attribute = G.getEdgeAttribute(att[0], att[1])
+                    if cur_attribute: 
+                        att_cur_edge = att_cur_edge + str(att[0]) + ": " + str(cur_attribute[u,v]) + ", "
+                except:
+                    raise ValueError("Input edge attribute does not exist.")            
+            edgeAttributeList.append(att_cur_edge)
+            
     if dimension == Dimension.Two:
         # Set styling for cytoscape
         if showIds:
@@ -428,7 +444,10 @@ def widgetFromGraph(
 
             for e in G.iterEdges():
                 endpoint1 = [coordinates[e[0]][0], coordinates[e[1]][0]]
-                endpoint2 = [coordinates[e[0]][1], coordinates[e[1]][1]]
+                endpoint2 = [coordinates[e[0]][1], coordinates[e[1]][1]]            
+                if edgeAttributes:
+                    midpoint1 = [np.mean([coordinates[e[0]][0], coordinates[e[1]][0]])]
+                    midpoint2 = [np.mean([coordinates[e[0]][1], coordinates[e[1]][1]])]
                 if edgeScores:
                     edgeHcColors = _calculateEdgeColoring(G, edgePalette, edgeScores)
                     colorTuple = edgeHcColors[G.edgeId(e[0], e[1])]
@@ -449,6 +468,19 @@ def widgetFromGraph(
                         name="edges",
                     )
                 )
+                if edgeAttributes:
+                    edgeScatter.append(
+                        go.Scatter(
+                            x=midpoint1,
+                            y=midpoint2,
+                            mode="text",
+                            opacity=0.7,
+                            hoverinfo="none",
+                            showlegend=None,
+                            name="edges",
+                            text=edgeAttributeList[index-1],
+                        )
+                    )
 
             nodeScatter = go.Scatter(
                 x=nodes[0],
@@ -468,9 +500,11 @@ def widgetFromGraph(
                 text=labels,
             )
 
-        else:
+        else: # Dimension 3
             if edgeScores:
                 edgeScoresMapped = np.zeros(3 * G.numberOfEdges())
+            if edgeAttributes:
+                edgeAttributePositions = [[],[],[]]
             edges = np.zeros((3, 3 * G.numberOfEdges()))
             for e in G.iterEdges():
                 edges[0][index] = coordinates[e[0]][0]
@@ -482,6 +516,10 @@ def widgetFromGraph(
                 edges[2][index] = coordinates[e[0]][2]
                 edges[2][index + 1] = coordinates[e[1]][2]
                 edges[2][index + 2] = None
+                if edgeAttributes: # use mean (mid point) to write edge label next to
+                    edgeAttributePositions[0].append(np.mean([coordinates[e[0]][0], coordinates[e[1]][0]]))
+                    edgeAttributePositions[1].append(np.mean([coordinates[e[0]][1], coordinates[e[1]][1]]))
+                    edgeAttributePositions[2].append(np.mean([coordinates[e[0]][2], coordinates[e[1]][2]]))
                 if edgeScores:
                     edgeScoresMapped[index] = edgeScores[G.edgeId(e[0], e[1])]
                     edgeScoresMapped[index + 1] = edgeScores[G.edgeId(e[0], e[1])]
@@ -531,6 +569,19 @@ def widgetFromGraph(
                 showlegend=None,
                 name="edges",
             )
+            if edgeAttributes:
+                graphWidget.add_traces(go.Scatter3d(
+                    x=edgeAttributePositions[0],
+                    y=edgeAttributePositions[1],
+                    z=edgeAttributePositions[2],
+                    mode="text",
+                    opacity=0.7,
+                    line=line,
+                    hoverinfo="none",
+                    showlegend=None,
+                    name="edges",
+                    text = edgeAttributeList
+                    ))
 
         graphWidget.add_traces(nodeScatter)
         graphWidget.add_traces(edgeScatter)
