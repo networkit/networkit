@@ -139,11 +139,11 @@ template <class Matrix>
 std::vector<SolverStatus>
 LinearSolver<Matrix>::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
                                     count maxConvergenceTime, count maxIterations) const {
-    std::vector<SolverStatus> stati(rhs.size());
+    std::vector<SolverStatus> stats(rhs.size());
     for (index i = 0; i < rhs.size(); ++i) {
-        stati[i] = solve(rhs[i], results[i], maxConvergenceTime, maxIterations);
+        stats[i] = solve(rhs[i], results[i], maxConvergenceTime, maxIterations);
     }
-    return stati;
+    return stats;
 }
 
 } /* namespace NetworKit */
