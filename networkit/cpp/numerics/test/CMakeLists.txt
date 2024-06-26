@@ -1,4 +1,4 @@
 networkit_add_test(numerics GaussSeidelRelaxationGTest algebraic graph)
 networkit_add_test(numerics LAMGGTest algebraic auxiliary components)
-networkit_add_test(numerics LAMGSolverGTest algebraic auxiliary components io)
+networkit_add_test(numerics SolverLamgGTest algebraic auxiliary components io)
 

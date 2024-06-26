@@ -1,5 +1,5 @@
 /*
- * LAMGGTest.cpp
+ * SolverLamgGTest.cpp
  *
  *  Created on: 20.11.2014
  *      Author: Michael
@@ -24,7 +24,7 @@
 
 namespace NetworKit {
 
-class LAMGSolverGTest : public testing::Test {
+class SolverLamgGTest : public testing::Test {
 protected:
     const std::vector<std::string> GRAPH_INSTANCES = {"input/jazz.graph", "input/power.graph"};
 
@@ -32,7 +32,7 @@ protected:
     Vector randVector(count dimension) const;
 };
 
-TEST_F(LAMGSolverGTest, testSmallGraphs) {
+TEST_F(SolverLamgGTest, testSmallGraphs) {
     METISGraphReader reader;
     GaussSeidelRelaxation<CSRMatrix> gaussSmoother, smoother;
     MultiLevelSetup<CSRMatrix> setup(gaussSmoother);
@@ -80,7 +80,7 @@ TEST_F(LAMGSolverGTest, testSmallGraphs) {
     }
 }
 
-Vector LAMGSolverGTest::randVector(count dimension) const {
+Vector SolverLamgGTest::randVector(count dimension) const {
     Vector randVector(dimension);
     for (index i = 0; i < dimension; ++i) {
         randVector[i] = 2.0 * Aux::Random::probability() - 1.0;
@@ -94,7 +94,7 @@ Vector LAMGSolverGTest::randVector(count dimension) const {
     return randVector;
 }
 
-Vector LAMGSolverGTest::randZeroSum(const Graph &G, size_t seed) const {
+Vector SolverLamgGTest::randZeroSum(const Graph &G, size_t seed) const {
     std::mt19937 rand(seed);
     auto rand_value = std::uniform_real_distribution<double>(-1.0, 1.0);
     ConnectedComponents con(G);
