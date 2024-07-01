@@ -58,33 +58,22 @@ class TestGraph(unittest.TestCase):
 		G = nk.Graph(0)
 
 		with self.assertRaises(RuntimeError):
-			G.addEdge(0, 1)
+			G.addEdge(0, 1, addMissing = False)
 
 		self.assertEqual(G.numberOfNodes(), 0)
 		self.assertEqual(G.numberOfEdges(), 0)
 
 		G.addEdge(0, 2, addMissing = True)
 
-		self.assertEqual(G.numberOfNodes(), 3)
-		self.assertEqual(G.numberOfEdges(), 1)
-
-		G.removeNode(1)
-
-		self.assertEqual(G.numberOfNodes(), 2)
-		self.assertEqual(G.numberOfEdges(), 1)
+		self.assertTrue(G.hasNode(0))
+		self.assertTrue(G.hasNode(2))
+		self.assertTrue(G.hasEdge(0,2))
+		self.assertFalse(G.hasNode(1)) #this node should not be active
 
 		G.addEdge(0, 1, addMissing = True)
 
 		self.assertEqual(G.numberOfNodes(), 3)
 		self.assertEqual(G.numberOfEdges(), 2)
-
-		G.removeNode(2)
-
-		G.addEdge(1, 2, addMissing = True)
-
-		self.assertEqual(G.numberOfNodes(), 3)
-		self.assertEqual(G.numberOfEdges(), 2)
-	
 
 	def testEdgeIterator(self):
 		for weighted in [True, False]:

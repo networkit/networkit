@@ -408,8 +408,13 @@ cdef class Graph:
 				raise RuntimeError("Cannot create edge ({0}, {1}) as at least one end point does not exist".format(u,v))
 
 			k = max(u, v)
+			previous_num_nodes = self._this.numberOfNodes()
 			if k >= self._this.upperNodeIdBound():
 				self._this.addNodes(k - self._this.upperNodeIdBound() + 1)
+				# removing the nodes that have not been added by this edge 
+				for node in range(previous_num_nodes, self._this.numberOfNodes()):
+					if node != u and node != v:
+						self._this.removeNode(node)
 
 			if not self._this.hasNode(u):
 				self._this.restoreNode(u)
