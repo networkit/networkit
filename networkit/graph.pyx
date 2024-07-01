@@ -457,30 +457,30 @@ cdef class Graph:
 
 		if isinstance(inputData, coo_matrix):
 			try:
-				row = inputData.row.astype(np.uint).view(np.uint)
-				col = inputData.col.astype(np.uint).view(np.uint)
+				row = inputData.row.astype(np.ulong)
+				col = inputData.col.astype(np.ulong)
 				data = inputData.data.view(np.double)
 			except (TypeError, ValueError) as e:
 				raise TypeError('invalid input format') from e
 		elif isinstance(inputData, tuple) and len(inputData) == 2:
 			if isinstance(inputData[1], tuple):
 				try:
-					row = inputData[1][0].view(dtype = np.uint)
-					col = inputData[1][1].view(dtype = np.uint)
+					row = inputData[1][0].astype(np.ulong)
+					col = inputData[1][1].astype(np.ulong)
 					data = inputData[0].view(dtype = np.double)
 				except (TypeError, ValueError) as e:
 					raise TypeError('invalid input format') from e
 			else:
 				try:
-					row = inputData[0].view(dtype = np.uint)
-					col = inputData[1].view(dtype = np.uint)
+					row = inputData[0].astype(np.ulong)
+					col = inputData[1].astype(np.ulong)
 					data = np.ones(len(row), dtype = np.double)
 				except (TypeError, ValueError) as e:
 					raise TypeError('invalid input format') from e				
 		else:
 			raise TypeError('invalid input format')
 
-		cdef int numEdges = np.shape(row)[0]
+		cdef int numEdges = len(row)
 
 		if addMissing:	
 			for i in range(numEdges):

@@ -251,7 +251,7 @@ jobs:
           python3 -c "import networkit"
 
   linux-build-min-support:
-    name: "Linux (${{ matrix.compiler }}, CPython 3.8): full"
+    name: "Linux (${{ matrix.compiler }}, CPython 3.9): full"
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -263,10 +263,10 @@ jobs:
           sudo apt-get install ninja-build
           sudo apt-get install clang-7 clang++-7
           sudo apt-get install gcc-8 g++-8
-      - name: Setup Python 3.8
+      - name: Setup Python 3.9
         uses: actions/setup-python@v5
         with:
-          python-version: '3.8'
+          python-version: '3.9'
       - name: Checkout networkit
         uses: actions/checkout@v4
         with:
@@ -295,7 +295,7 @@ jobs:
           wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
           echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-17 main" | sudo tee /etc/apt/sources.list.d/llvm17.list
           sudo apt-get update
-          sudo apt-get install python3.8 libomp-17-dev clang-17 clang-tidy-17 ninja-build
+          sudo apt-get install python3.9 libomp-17-dev clang-17 clang-tidy-17 ninja-build
       - name: Checkout networkit
         uses: actions/checkout@v4
         with:
