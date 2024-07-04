@@ -23,6 +23,8 @@ networkit_add_module(io
     METISGraphReader.cpp
     METISGraphWriter.cpp
     METISParser.cpp
+    MTXGraphReader.cpp
+    MTXParser.cpp
     NetworkitBinaryReader.cpp
     NetworkitBinaryWriter.cpp
     MatrixMarketReader.cpp
