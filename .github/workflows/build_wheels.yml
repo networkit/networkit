@@ -124,7 +124,7 @@ jobs:
             brew install libomp ninja
           CIBW_ARCHS_MACOS: ${{ matrix.buildplat[1] }}
           CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp38-* cp39-* cp310-* cp311-* cp312-*' || 'cp312-*' }}
-          CIBW_ENVIRONMENT: CXX='c++' NETWORKIT_OSX_CROSSBUILD=ON
+          CIBW_ENVIRONMENT: CXX='c++' NETWORKIT_OSX_CROSSBUILD=ON MACOSX_DEPLOYMENT_TARGET='11.0'
           CIBW_SKIP: "pp* *-musllinux_*"
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
