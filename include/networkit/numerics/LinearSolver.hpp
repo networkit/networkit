@@ -78,7 +78,7 @@ public:
      */
     virtual SolverStatus solve(const Vector &rhs, Vector &result,
                                count maxConvergenceTime = 5 * 60 * 1000,
-                               count maxIterations = std::numeric_limits<count>::max()) = 0;
+                               count maxIterations = std::numeric_limits<count>::max()) const = 0;
 
     /**
      * Abstract parallel solve function that computes the @a results for the matrix currently setup
@@ -88,12 +88,14 @@ public:
      * @param results
      * @param maxConvergenceTime
      * @param maxIterations
+     * @return A vector of @ref SolverStatus objects for each right hand side.
      * @note If the solver does not support parallelism during solves, this function falls back to
      * solving the systems sequentially.
      */
-    virtual void parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
-                               count maxConvergenceTime = 5 * 60 * 1000,
-                               count maxIterations = std::numeric_limits<count>::max());
+    virtual std::vector<SolverStatus>
+    parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
+                  count maxConvergenceTime = 5 * 60 * 1000,
+                  count maxIterations = std::numeric_limits<count>::max()) const;
 
     /**
      * Abstract parallel solve function that computes and processes results using @a resultProcessor
@@ -111,7 +113,7 @@ public:
     template <typename RHSLoader, typename ResultProcessor>
     void parallelSolve(const RHSLoader &rhsLoader, const ResultProcessor &resultProcessor,
                        std::pair<count, count> rhsSize, count maxConvergenceTime = 5 * 60 * 1000,
-                       count maxIterations = std::numeric_limits<count>::max()) {
+                       count maxIterations = std::numeric_limits<count>::max()) const {
         count n = rhsSize.first;
         count m = rhsSize.second;
         Vector rhs(m);
@@ -134,12 +136,14 @@ void LinearSolver<Matrix>::setupConnected(const Graph &graph) {
 }
 
 template <class Matrix>
-void LinearSolver<Matrix>::parallelSolve(const std::vector<Vector> &rhs,
-                                         std::vector<Vector> &results, count maxConvergenceTime,
-                                         count maxIterations) {
+std::vector<SolverStatus>
+LinearSolver<Matrix>::parallelSolve(const std::vector<Vector> &rhs, std::vector<Vector> &results,
+                                    count maxConvergenceTime, count maxIterations) const {
+    std::vector<SolverStatus> stats(rhs.size());
     for (index i = 0; i < rhs.size(); ++i) {
-        solve(rhs[i], results[i], maxConvergenceTime, maxIterations);
+        stats[i] = solve(rhs[i], results[i], maxConvergenceTime, maxIterations);
     }
+    return stats;
 }
 
 } /* namespace NetworKit */
