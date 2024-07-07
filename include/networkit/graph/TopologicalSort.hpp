@@ -7,6 +7,7 @@
 #ifndef NETWORKIT_GRAPH_TOPOLOGICAL_SORT_HPP_
 #define NETWORKIT_GRAPH_TOPOLOGICAL_SORT_HPP_
 
+#include <unordered_map>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
@@ -21,11 +22,19 @@ class TopologicalSort final : public Algorithm {
 public:
     /**
      * Initialize the topological sort algorithm by passing an input graph. Note that topological
-     * sort is defined for directed graphs only.
+     * sort is defined for directed graphs only. Node ids must be continuous in the interval [0, n).
      *
      * @param G The input graph.
      */
     TopologicalSort(const Graph &G);
+
+    /**
+     * Initialize the topological sort algorithm by passing an input graph. Note that topological
+     * sort is defined for directed graphs only. The node id mapping must be a continuous.
+     *
+     * @param G The input graph.
+     */
+    TopologicalSort(const Graph &G, const std::unordered_map<node, node> &nodeIdMapping);
 
     /**
      * Execute the algorithm. The algorithm is not parallel.
@@ -47,6 +56,8 @@ private:
 
     const Graph *G;
 
+    const std::unordered_map<node, node> *nodeIdMap;
+
     // Used to mark the status of each node, one vector per thread
     std::vector<NodeMark> topSortMark;
 
@@ -55,6 +66,8 @@ private:
 
     // Helper structures
     count current;
+
+    void checkDirected();
 
     // Reset algorithm data structure
     void reset();

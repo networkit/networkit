@@ -4,12 +4,23 @@
  *  Created on: 22.11.2021
  *      Author: Fabian Brandt-Tumescheit
  */
+#include <stdexcept>
 #include <networkit/graph/TopologicalSort.hpp>
 
 namespace NetworKit {
 
-TopologicalSort::TopologicalSort(const Graph &G) : G(&G) {
-    if (!G.isDirected())
+TopologicalSort::TopologicalSort(const Graph &G) : G(&G), nodeIdMap(nullptr) {
+    checkDirected();
+}
+
+TopologicalSort::TopologicalSort(const Graph &G,
+                                 const std::unordered_map<node, node> &nodeIdMap)
+    : G(&G), nodeIdMap(&nodeIdMap) {
+    checkDirected();
+}
+
+void TopologicalSort::checkDirected() {
+    if (!G->isDirected())
         throw std::runtime_error("Topological sort is defined for directed graphs only.");
 }
 
@@ -18,33 +29,59 @@ void TopologicalSort::run() {
 
     std::stack<node> nodeStack;
 
-    G->forNodes([&](node u) {
-        if (topSortMark[u] == NodeMark::PERM)
-            return;
+    try {
+        G->forNodes([&](node u) {
+            node mappedU;
+            if (nodeIdMap != nullptr)
+                mappedU = nodeIdMap->at(u);
+            else
+                mappedU = u;
 
-        nodeStack.push(u);
-        do {
-            node v = nodeStack.top();
-            if (topSortMark[v] != NodeMark::NONE) {
-                nodeStack.pop();
-                if (topSortMark[v] == NodeMark::TEMP) {
-                    topSortMark[v] = NodeMark::PERM;
-                    topology[current] = v;
-                    current--;
+            if (topSortMark.at(mappedU) == NodeMark::PERM)
+                return;
+
+            nodeStack.push(u);
+            do {
+                node v = nodeStack.top();
+                node mappedV;
+                if (nodeIdMap != nullptr)
+                    mappedV = nodeIdMap->at(v);
+                else
+                    mappedV = v;
+
+                if (topSortMark.at(mappedV) != NodeMark::NONE) {
+                    nodeStack.pop();
+                    if (topSortMark.at(mappedV) == NodeMark::TEMP) {
+                        topSortMark.at(mappedV) = NodeMark::PERM;
+                        topology[current] = v;
+                        current--;
+                    }
+                } else {
+                    topSortMark.at(mappedV) = NodeMark::TEMP;
+                    G->forNeighborsOf(v, [&](node w) {
+                        node mappedW;
+                        if (nodeIdMap != nullptr)
+                            mappedW = nodeIdMap->at(w);
+                        else
+                            mappedW = w;
+
+                        if (topSortMark.at(mappedW) == NodeMark::NONE)
+                            nodeStack.push(w);
+                        else if (topSortMark.at(mappedW) == NodeMark::TEMP)
+                            throw std::runtime_error("Error: the input graph has cycles.");
+                    });
                 }
-            } else {
-                topSortMark[v] = NodeMark::TEMP;
-                G->forNeighborsOf(v, [&](node w) {
-                    if (topSortMark[w] == NodeMark::NONE)
-                        nodeStack.push(w);
-                    else if (topSortMark[w] == NodeMark::TEMP)
-                        throw std::runtime_error("Error: the input graph has cycles.");
-                });
-            }
-        } while (!nodeStack.empty());
-    });
+            } while (!nodeStack.empty());
+        });
 
-    hasRun = true;
+        hasRun = true;
+    } catch (const std::out_of_range &) {
+        if (nodeIdMap != nullptr) {
+            throw std::runtime_error("Error: node id mapping does not contain all nodes");
+        }
+
+        throw std::runtime_error("Error: node ids are not continuous");
+    }
 }
 
 void TopologicalSort::reset() {
