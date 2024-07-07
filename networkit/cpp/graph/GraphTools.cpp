@@ -520,5 +520,13 @@ std::vector<node> topologicalSort(const Graph &G) {
     return topSort.getResult();
 }
 
+std::vector<node> topologicalSort(const Graph &G,
+                                  const std::unordered_map<node, node> &nodeIdMapping) {
+    TopologicalSort topSort(G, nodeIdMapping);
+    topSort.run();
+
+    return topSort.getResult();
+}
+
 } // namespace GraphTools
 } // namespace NetworKit
