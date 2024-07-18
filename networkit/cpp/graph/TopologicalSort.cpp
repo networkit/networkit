@@ -13,8 +13,7 @@ TopologicalSort::TopologicalSort(const Graph &G) : G(&G), nodeIdMap(nullptr) {
     checkDirected();
 }
 
-TopologicalSort::TopologicalSort(const Graph &G,
-                                 const std::unordered_map<node, node> &nodeIdMap)
+TopologicalSort::TopologicalSort(const Graph &G, const std::unordered_map<node, node> &nodeIdMap)
     : G(&G), nodeIdMap(&nodeIdMap) {
     checkDirected();
 }
