@@ -471,6 +471,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraBatchesEdgeDeletions) {
         G.forNodes([&](node i) {
             EXPECT_EQ(dyn_dij.distance(i), dij.distance(i));
             EXPECT_EQ(dyn_dij.numberOfPaths(i), dij.numberOfPaths(i));
+            EXPECT_EQ(dyn_dij.getPaths(i), dij.getPaths(i));
             if (i != source) {
                 EXPECT_NE(dyn_dij.distance(i), 0);
             }
