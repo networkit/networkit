@@ -74,7 +74,7 @@ void TopologicalSort::run() {
         });
 
         hasRun = true;
-    } catch (std::out_of_range) {
+    } catch (const std::out_of_range &) {
         if (nodeIdMap != nullptr) {
             throw std::runtime_error("Error: node id mapping does not contain all nodes");
         }
