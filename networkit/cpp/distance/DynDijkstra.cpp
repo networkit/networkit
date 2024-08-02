@@ -149,6 +149,11 @@ void DynDijkstra::updateBatch(const std::vector<GraphEvent> &batch) {
     while (!updateHeap.empty()) {
         mod = true;
         node current = updateHeap.extract_top();
+        // the previous vector for the current node is potentially outdated and will be refilled
+        // during the update
+        if (storePreds) {
+            previous[current].clear();
+        }
         if (color[current] == BLACK
             && Aux::NumericTools::logically_equal(updateDistances[current], distances[current])) {
             auto tmp = npaths[current];
