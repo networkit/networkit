@@ -18,6 +18,7 @@
 #include <vector>
 
 #include <networkit/algebraic/CSRMatrix.hpp>
+#include <networkit/algebraic/MatrixTools.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/io/BinaryEdgeListPartitionReader.hpp>
 #include <networkit/io/BinaryEdgeListPartitionWriter.hpp>
@@ -39,6 +40,7 @@
 #include <networkit/io/KONECTGraphReader.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/METISGraphWriter.hpp>
+#include <networkit/io/MTXGraphReader.hpp>
 #include <networkit/io/MatrixMarketReader.hpp>
 #include <networkit/io/NetworkitBinaryGraph.hpp>
 #include <networkit/io/NetworkitBinaryReader.hpp>
@@ -1257,6 +1259,16 @@ TEST_F(IOGTest, testMatrixMarketReaderUnweightedUndirected) {
     EXPECT_EQ(csr(26, 13), 1.0);
     csr.forNonZeroElementsInRowOrder(
         [&](index i, index j, double) { EXPECT_EQ(csr(i, j), csr(j, i)); });
+
+    // check that the MTXGraphReader is equivalent
+    Graph G = MTXGraphReader{}.read("input/chesapeake.mtx");
+    Graph G_from_csr = MatrixTools::matrixToGraph(csr);
+    EXPECT_EQ(G.numberOfNodes(), G_from_csr.numberOfNodes());
+    EXPECT_EQ(G.numberOfEdges(), G_from_csr.numberOfEdges());
+    G.forEdges([&](node u, node v, edgeweight w) {
+        EXPECT_TRUE(G_from_csr.hasEdge(u, v));
+        EXPECT_EQ(G_from_csr.weight(u, v), w);
+    });
 }
 
 TEST_F(IOGTest, testMatrixMarketReaderUnweightedDirected) {
@@ -1269,6 +1281,16 @@ TEST_F(IOGTest, testMatrixMarketReaderUnweightedDirected) {
     EXPECT_EQ(csr(3, 9), 1.0);
     EXPECT_EQ(csr(11, 12), 1.0);
     EXPECT_EQ(csr(17, 13), 1.0);
+
+    // check that the MTXGraphReader is equivalent
+    Graph G = MTXGraphReader{}.read("input/GD01_b.mtx");
+    Graph G_from_csr = MatrixTools::matrixToGraph(csr);
+    EXPECT_EQ(G.numberOfNodes(), G_from_csr.numberOfNodes());
+    EXPECT_EQ(G.numberOfEdges(), G_from_csr.numberOfEdges());
+    G.forEdges([&](node u, node v, edgeweight w) {
+        EXPECT_TRUE(G_from_csr.hasEdge(u, v));
+        EXPECT_EQ(G_from_csr.weight(u, v), w);
+    });
 }
 
 TEST_F(IOGTest, testMatrixMarketReaderWeightedUndirected) {
@@ -1284,6 +1306,16 @@ TEST_F(IOGTest, testMatrixMarketReaderWeightedUndirected) {
     EXPECT_EQ(csr(13, 11), 94.2528);
     csr.forNonZeroElementsInRowOrder(
         [&](index i, index j, double) { EXPECT_EQ(csr(i, j), csr(j, i)); });
+
+    // check that the MTXGraphReader is equivalent
+    Graph G = MTXGraphReader{}.read("input/LFAT5.mtx");
+    Graph G_from_csr = MatrixTools::matrixToGraph(csr);
+    EXPECT_EQ(G.numberOfNodes(), G_from_csr.numberOfNodes());
+    EXPECT_EQ(G.numberOfEdges(), G_from_csr.numberOfEdges());
+    G.forEdges([&](node u, node v, edgeweight w) {
+        EXPECT_TRUE(G_from_csr.hasEdge(u, v));
+        EXPECT_EQ(G_from_csr.weight(u, v), w);
+    });
 }
 
 TEST_F(IOGTest, testMatrixMarketReaderWeightedDirected) {
@@ -1296,6 +1328,16 @@ TEST_F(IOGTest, testMatrixMarketReaderWeightedDirected) {
     EXPECT_EQ(csr(5, 9), -0.2039265503510711);
     EXPECT_EQ(csr(9, 16), 0.2213493690543944);
     EXPECT_EQ(csr(11, 23), 0.04492168652740657);
+
+    // check that the MTXGraphReader is equivalent
+    Graph G = MTXGraphReader{}.read("input/Hamrle1.mtx");
+    Graph G_from_csr = MatrixTools::matrixToGraph(csr);
+    EXPECT_EQ(G.numberOfNodes(), G_from_csr.numberOfNodes());
+    EXPECT_EQ(G.numberOfEdges(), G_from_csr.numberOfEdges());
+    G.forEdges([&](node u, node v, edgeweight w) {
+        EXPECT_TRUE(G_from_csr.hasEdge(u, v));
+        EXPECT_EQ(G_from_csr.weight(u, v), w);
+    });
 }
 
 TEST_F(IOGTest, testMatrixMarketReaderIntegerWeights) {
@@ -1308,6 +1350,16 @@ TEST_F(IOGTest, testMatrixMarketReaderIntegerWeights) {
     EXPECT_EQ(csr(23, 9), 2.0);
     EXPECT_EQ(csr(4, 10), 4.0);
     EXPECT_EQ(csr(21, 21), 6.0);
+
+    // check that the MTXGraphReader is equivalent
+    Graph G = MTXGraphReader{}.read("input/Ragusa16.mtx");
+    Graph G_from_csr = MatrixTools::matrixToGraph(csr);
+    EXPECT_EQ(G.numberOfNodes(), G_from_csr.numberOfNodes());
+    EXPECT_EQ(G.numberOfEdges(), G_from_csr.numberOfEdges());
+    G.forEdges([&](node u, node v, edgeweight w) {
+        EXPECT_TRUE(G_from_csr.hasEdge(u, v));
+        EXPECT_EQ(G_from_csr.weight(u, v), w);
+    });
 }
 
 } /* namespace NetworKit */
