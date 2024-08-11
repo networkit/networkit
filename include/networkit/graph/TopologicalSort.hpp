@@ -7,6 +7,7 @@
 #ifndef NETWORKIT_GRAPH_TOPOLOGICAL_SORT_HPP_
 #define NETWORKIT_GRAPH_TOPOLOGICAL_SORT_HPP_
 
+#include <optional>
 #include <unordered_map>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -34,7 +35,8 @@ public:
      *
      * @param G The input graph.
      */
-    TopologicalSort(const Graph &G, const std::unordered_map<node, node> &nodeIdMapping);
+    TopologicalSort(const Graph &G, std::unordered_map<node, node> &nodeIdMapping,
+                    bool checkMapping = false);
 
     /**
      * Execute the algorithm. The algorithm is not parallel.
@@ -56,7 +58,9 @@ private:
 
     const Graph *G;
 
-    const std::unordered_map<node, node> *nodeIdMap;
+    std::optional<std::unordered_map<node, node>> computedNodeIdMap;
+    
+    std::unordered_map<node, node> *nodeIdMap;
 
     // Used to mark the status of each node, one vector per thread
     std::vector<NodeMark> topSortMark;

@@ -66,7 +66,6 @@ TEST_F(TopologicalSortGTest, testRepeatedRuns) {
     TopologicalSort topSort = TopologicalSort(G);
     topSort.run();
     std::vector<node> res = topSort.getResult();
-    topSort = TopologicalSort(G);
     topSort.run();
     std::vector<node> res2 = topSort.getResult();
     EXPECT_TRUE(res == res2);
@@ -83,14 +82,29 @@ TEST_F(TopologicalSortGTest, testRejectUndirectedGraph) {
     EXPECT_THROW(TopologicalSort(inputGraph(false)), std::runtime_error);
 }
 
-TEST_F(TopologicalSortGTest, testRejectNonContinuousNodeIds) {
+TEST_F(TopologicalSortGTest, testNonContinuousNodeIds) {
     auto G = inputGraph(true);
     G.removeNode(3);
+
     TopologicalSort topSort = TopologicalSort(G);
-    EXPECT_THROW(topSort.run(), std::runtime_error);
+    topSort.run();
+    std::vector<node> res = topSort.getResult();
+
+    // Test for valid topology
+    auto indexNode0 = std::distance(res.begin(), std::find(res.begin(), res.end(), 0));
+    auto indexNode1 = std::distance(res.begin(), std::find(res.begin(), res.end(), 1));
+    auto indexNode2 = std::distance(res.begin(), std::find(res.begin(), res.end(), 2));
+    auto indexNode4 = std::distance(res.begin(), std::find(res.begin(), res.end(), 4));
+    EXPECT_EQ(res.size(), 4);
+    // node 2 is depending on node 0
+    EXPECT_TRUE(indexNode2 > indexNode0);
+    // node 2 is depending on node 4
+    EXPECT_TRUE(indexNode2 > indexNode4);
+    // node 1 is depending on node 2
+    EXPECT_TRUE(indexNode1 > indexNode2);
 }
 
-TEST_F(TopologicalSortGTest, testHandleNodeIdMapping) {
+TEST_F(TopologicalSortGTest, testCustomNodeIdMapping) {
     auto G = inputGraph(true);
     G.removeNode(3);
     std::unordered_map<node, node> mapping;

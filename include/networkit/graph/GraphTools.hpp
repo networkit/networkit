@@ -422,8 +422,8 @@ void sortEdgesByWeight(Graph &G, bool decreasing = false);
  */
 std::vector<node> topologicalSort(const Graph &G);
 
-std::vector<node> topologicalSort(const Graph &G,
-                                  const std::unordered_map<node, node> &nodeIdMapping);
+std::vector<node> topologicalSort(const Graph &G, std::unordered_map<node, node> &nodeIdMapping,
+                                  bool checkMapping = false);
 
 /**
  * Randomizes the weights of the given graph. The weights are uniformly distributed in

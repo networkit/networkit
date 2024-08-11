@@ -520,9 +520,9 @@ std::vector<node> topologicalSort(const Graph &G) {
     return topSort.getResult();
 }
 
-std::vector<node> topologicalSort(const Graph &G,
-                                  const std::unordered_map<node, node> &nodeIdMapping) {
-    TopologicalSort topSort(G, nodeIdMapping);
+std::vector<node> topologicalSort(const Graph &G, std::unordered_map<node, node> &nodeIdMapping,
+                                  bool checkMapping) {
+    TopologicalSort topSort(G, nodeIdMapping, checkMapping);
     topSort.run();
 
     return topSort.getResult();
