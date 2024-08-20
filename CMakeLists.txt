@@ -18,6 +18,7 @@ option(NETWORKIT_CLANG_TIDY "Check code with clang-tidy" OFF)
 option(NETWORKIT_FLATINSTALL "Install into a flat directory structure (useful when building a Python package)" OFF)
 option(NETWORKIT_COVERAGE "Build with support for coverage" OFF)
 option(NETWORKIT_SANITY_CHECKS "Algorithms will perform further (expensive) checks" OFF)
+option(NETWORKIT_USE_DHB "Enable DHB)" ON)
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
 set(NETWORKIT_NUMPY "" CACHE STRING "Directory containing Numpy.h.")
 set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Implies MONOLITH=TRUE")
@@ -232,6 +233,25 @@ else()
 endif()
 
 ################################################################################
+# Use DHB as a CMake submodule
+if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/dhb/CMakeLists.txt")
+set(DHB_WITH_64BIT_IDS TRUE "Use 64 bit IDs.")
+		add_subdirectory(extlibs/dhb)
+
+else()
+	message(FATAL_ERROR
+			"Missing DHB library in extlibs/dhb "
+			"Please run `git submodule update --init` to fetch the submodule.")
+endif()
+
+if(NETWORKIT_USE_DHB)
+    message(STATUS "Using DHB.")
+    add_compile_definitions(-DUSING_DHB)
+else()
+    message(STATUS "Not using DHB.")
+endif()
+
+################################################################################
 # NETWORKIT MODULES
 if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 
@@ -265,6 +285,7 @@ if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 	endif()
 
 	target_link_libraries(networkit PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
+	target_link_libraries(networkit PRIVATE dhb)
 
 	set_target_properties(networkit PROPERTIES
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
@@ -480,6 +501,7 @@ if (NETWORKIT_BUILD_TESTS)
 				gmock
 				networkit
 				tlx
+				dhb
 				OpenMP::OpenMP_CXX
 		)
 
@@ -526,6 +548,7 @@ if (NETWORKIT_BUILD_TESTS)
 					gmock
 				PRIVATE
 					tlx
+					dhb
 					networkit_auxiliary
 					OpenMP::OpenMP_CXX
 		)
