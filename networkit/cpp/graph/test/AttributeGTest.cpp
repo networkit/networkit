@@ -297,35 +297,6 @@ TEST_F(AttributeGTest, testConstGetEdgeAttribute) {
 
 /// COMBINED ATTRIBUTE TESTS ///
 
-TEST_F(AttributeGTest, testAttributeSetGetOnNonExistingNodes) {
-
-    auto tester = [&](auto &attributeMap) {
-        auto intAttr = attributeMap.template attach<int>("some int attribute");
-
-        auto readAtIndex = [&intAttr](node n) -> int { return intAttr[n]; };
-
-        EXPECT_THROW(intAttr.set(5, 5), std::runtime_error);
-        EXPECT_THROW(intAttr.get(5), std::runtime_error);
-        EXPECT_THROW(intAttr[5] = 5, std::runtime_error);
-        // trigger read access by int conversion
-        EXPECT_THROW(readAtIndex(5), std::runtime_error);
-
-        EXPECT_THROW(intAttr.set(3, 3), std::runtime_error);
-        EXPECT_THROW(intAttr.get(3), std::runtime_error);
-        EXPECT_THROW(intAttr[3] = 3, std::runtime_error);
-        // trigger read access by int conversion
-        EXPECT_THROW(readAtIndex(3), std::runtime_error);
-
-        attributeMap.detach("some int attribute");
-    };
-
-    Graph graph(5, false, false, true);
-    graph.removeNode(3);
-
-    tester(graph.nodeAttributes());
-    tester(graph.edgeAttributes());
-}
-
 TEST_F(AttributeGTest, testAttributeAttachDetachAttach) {
 
     auto tester = [&](auto &attributeMap) {

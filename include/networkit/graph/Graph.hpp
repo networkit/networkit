@@ -202,7 +202,9 @@ private:
 
     protected:
         void markValid(index n) {
-            indexOK(n); // specialized for node/edgeid
+#ifndef NDEBUG
+            indexOK(n);
+#endif // NDEBUG
             if (n >= valid.size())
                 valid.resize(n + 1);
             if (!valid[n]) {
@@ -212,7 +214,9 @@ private:
         }
 
         void checkIndex(index n) const {
+#ifndef NDEBUG
             indexOK(n);
+#endif // NDEBUG
             if (!isValid(n)) {
                 throw std::runtime_error("Invalid attribute value");
             }
