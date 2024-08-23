@@ -6,8 +6,9 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/graph_helper/Edge.hpp>
-
+#if defined(USING_DHB)
 #include <dhb/dynamic_hashed_blocks.h>
+#endif
 #include <tlx/define/deprecated.hpp>
 
 #include <algorithm>
@@ -21,6 +22,7 @@
 #include <sstream>
 #include <stack>
 #include <stdexcept>
+#include <thread>
 #include <typeindex>
 #include <unordered_map>
 #include <unordered_set>
@@ -648,6 +650,7 @@ private:
                                      bool countSelfLoopsTwice = false) const;
 
     /**
+     * This is a private helper function of dhb.
      * @param u Node.
      * @param i The index of the incoming neighbor to check.
      *
@@ -655,7 +658,13 @@ private:
      * neighbors.
      */
     bool ithNeighborExists(node u, index i) const {
+#if defined(USING_DHB)
         return hasNode(u) && i < m_dhb_graph.neighbors(u).degree();
+#else
+        // This private helper function is intended to be used only when 'USING_DHB' is defined.
+        // If DHB is not enabled, this function should not be called, so we return false.
+        return false;
+#endif
     }
 
     /**
@@ -765,7 +774,7 @@ private:
      * @brief Get edge weight and edge ID for a DHB edge
      */
     template <bool hasWeights, bool graphHasEdgeIds>
-    std::tuple<dhb::Weight, edgeid> getDHBEdgeData(node u, node v) const;
+    std::tuple<edgeweight, edgeid> getDHBEdgeData(node u, node v) const;
 
     /**
      * @brief Implementation of the for loop for outgoing edges of u
@@ -2093,7 +2102,7 @@ public:
      * Set the number of self-loops.
      *
      * @param loops New number of self-loops.
-     *
+     **/
     void setNumberOfSelfLoops(Unsafe, count loops) { storedNumberOfSelfLoops = loops; }
 
     /* NODE MODIFIERS */
@@ -2928,7 +2937,7 @@ inline bool DHBGraph::useEdgeInIteration(node /* u */, node /* v */) const {
 }
 
 template <bool hasWeights, bool graphHasEdgeIds>
-std::tuple<dhb::Weight, edgeid> DHBGraph::getDHBEdgeData(node u, node v) const {
+std::tuple<edgeweight, edgeid> DHBGraph::getDHBEdgeData(node u, node v) const {
     auto const w = hasWeights ? weight(u, v) : defaultEdgeWeight;
     auto const id = graphHasEdgeIds ? edgeId(u, v) : none;
     return std::make_tuple(w, id);
