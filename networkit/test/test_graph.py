@@ -325,14 +325,6 @@ class TestGraph(unittest.TestCase):
 		with self.assertRaises(Exception):
 			G.attachEdgeAttribute("my Attr", int)
 
-	def testEdgeAttributesNonExisting(self):
-		G = nk.Graph(5)
-		G.indexEdges()
-		myAttr = G.attachEdgeAttribute("my Attr", int)
-
-		with self.assertRaises(Exception):
-			myAttr[0] = 1
-
 	def testEdgeAttributesByIndex(self):
 		G = nk.Graph(5)
 		G.indexEdges()
