@@ -1,6 +1,7 @@
 #include <networkit/graph/DHBGraph.hpp>
-
+#if defined(USING_DHB)
 #include <dhb/dynamic_hashed_blocks.h>
+#endif
 
 #include <cmath>
 #include <map>
