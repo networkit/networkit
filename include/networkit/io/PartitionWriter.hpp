@@ -21,8 +21,8 @@ namespace NetworKit {
 class PartitionWriter final {
 
 public:
-    void write(const Partition &zeta, const std::string &path) const {
-        std::ofstream file{path};
+    void write(const Partition &zeta, std::string_view path) const {
+        std::ofstream file{path.data()};
         zeta.forEntries([&](node, const index c) { file << c << '\n'; });
     }
 };

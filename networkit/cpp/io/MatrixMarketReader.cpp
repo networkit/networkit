@@ -19,17 +19,17 @@ static constexpr char COMMENT_CHAR = '%';
 static const std::string MAGIC1 = "%matrixmarket";
 static const std::string MAGIC2 = "%" + MAGIC1;
 
-std::string tolower(const std::string &str) {
+std::string tolower(std::string_view str) {
     std::string out;
     std::transform(str.begin(), str.end(), std::back_inserter(out), ::tolower);
     return out;
 }
 } // namespace
 
-CSRMatrix MatrixMarketReader::read(const std::string &path) {
-    std::ifstream in(path);
+CSRMatrix MatrixMarketReader::read(std::string_view path) {
+    std::ifstream in(path.data());
     if (!in.is_open()) {
-        throw std::runtime_error("could not open: " + path);
+        throw std::runtime_error("could not open: " + std::string(path));
     }
     return read(in);
 }

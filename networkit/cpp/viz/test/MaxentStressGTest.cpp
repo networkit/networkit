@@ -49,7 +49,7 @@ TEST_F(MaxentStressGTest, benchMaxentStressCoordinatesLAMG) {
     std::vector<std::string> graphFiles = {"input/airfoil1.graph"};
     METISGraphReader reader;
 
-    for (const std::string &graphFile : graphFiles) {
+    for (std::string_view graphFile : graphFiles) {
         Graph graph = reader.read(graphFile);
 
         double runtime = 0;
@@ -83,7 +83,7 @@ TEST_F(MaxentStressGTest, benchMaxentStressConjGradIdPrecAlgebraicDistance) {
     std::vector<std::string> graphFiles = {"input/airfoil1.graph"};
     METISGraphReader reader;
 
-    for (const std::string &graphFile : graphFiles) {
+    for (std::string_view graphFile : graphFiles) {
         Graph graph = reader.read(graphFile);
 
         double runtime = 0;
@@ -117,7 +117,7 @@ TEST_F(MaxentStressGTest, benchMaxentStressConjGradDiagPrecond) {
     std::vector<std::string> graphFiles = {"input/airfoil1.graph"};
     METISGraphReader reader;
 
-    for (const std::string &graphFile : graphFiles) {
+    for (std::string_view graphFile : graphFiles) {
         Graph graph = reader.read(graphFile);
 
         double runtime = 0;
@@ -150,7 +150,7 @@ TEST_F(MaxentStressGTest, benchMaxentStressCoordConjGradIdPrecond) {
     std::vector<std::string> graphFiles = {"input/airfoil1.graph"};
     METISGraphReader reader;
 
-    for (const std::string &graphFile : graphFiles) {
+    for (std::string_view graphFile : graphFiles) {
         Graph graph = reader.read(graphFile);
 
         double runtime = 0;

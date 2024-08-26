@@ -59,8 +59,8 @@ class GeneratorsGTest : public testing::Test {
 
 protected:
     template <class Type>
-    std::vector<Type> readVector(const std::string &path) const {
-        std::ifstream inputFile(path);
+    std::vector<Type> readVector(std::string_view path) const {
+        std::ifstream inputFile(path.data());
         Type cur;
         std::vector<Type> data;
 

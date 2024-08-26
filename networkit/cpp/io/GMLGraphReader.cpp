@@ -18,8 +18,8 @@
 
 namespace NetworKit {
 
-Graph GMLGraphReader::read(const std::string &path) {
-    std::ifstream graphFile(path);
+Graph GMLGraphReader::read(std::string_view path) {
+    std::ifstream graphFile(path.data());
     Aux::enforceOpened(graphFile);
     std::string line;
 

@@ -9,9 +9,9 @@
 
 namespace NetworKit {
 
-Partition PartitionReader::read(const std::string &path) {
+Partition PartitionReader::read(std::string_view path) {
 
-    std::ifstream file(path);
+    std::ifstream file(path.data());
 
     // check if file readable
     if (!file) {

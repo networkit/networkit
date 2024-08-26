@@ -26,7 +26,7 @@ public:
      *
      * @param[out]  the graph read from file
      */
-    Graph read(const std::string &path) override;
+    Graph read(std::string_view path) override;
 };
 
 } /* namespace NetworKit */

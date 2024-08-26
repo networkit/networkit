@@ -53,7 +53,7 @@ public:
                           NetworkitBinaryWeights weightsType = NetworkitBinaryWeights::AUTO_DETECT,
                           NetworkitBinaryEdgeIDs edgeIndex = NetworkitBinaryEdgeIDs::AUTO_DETECT);
 
-    void write(const Graph &G, const std::string &path) override;
+    void write(const Graph &G, std::string_view path) override;
     std::vector<uint8_t> writeToBuffer(const Graph &G);
 
 private:

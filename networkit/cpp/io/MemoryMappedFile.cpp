@@ -5,7 +5,7 @@
 namespace NetworKit {
 MemoryMappedFile::MemoryMappedFile() {}
 
-MemoryMappedFile::MemoryMappedFile(const std::string &path) {
+MemoryMappedFile::MemoryMappedFile(std::string_view path) {
     open(path);
 }
 
@@ -48,7 +48,7 @@ struct MemoryMappedFileState {
     HANDLE hMap{nullptr};
 };
 
-void MemoryMappedFile::open(const std::string &path) {
+void MemoryMappedFile::open(std::string_view path) {
     if (!state) {
         state.reset(new MemoryMappedFileState{});
     } else {
@@ -56,10 +56,10 @@ void MemoryMappedFile::open(const std::string &path) {
     }
 
     state->hFile =
-        CreateFile(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0);
+        CreateFile(path.data(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0);
     if (state->hFile == INVALID_HANDLE_VALUE) {
         DWORD dwErrorCode = ::GetLastError();
-        throw std::runtime_error("Unable to open file " + path + " "
+        throw std::runtime_error("Unable to open file " + std::string(path) + " "
                                  + std::system_category().message(dwErrorCode));
     }
 
@@ -118,11 +118,11 @@ namespace NetworKit {
 
 struct MemoryMappedFileState {};
 
-void MemoryMappedFile::open(const std::string &path) {
+void MemoryMappedFile::open(std::string_view path) {
     if (beginIt)
         close();
 
-    auto fd = ::open(path.c_str(), O_RDONLY);
+    auto fd = ::open(path.data(), O_RDONLY);
     if (fd < 0)
         throw std::runtime_error("Unable to open file");
 

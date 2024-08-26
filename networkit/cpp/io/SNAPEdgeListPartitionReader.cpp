@@ -19,7 +19,7 @@
 
 namespace NetworKit {
 
-Cover SNAPEdgeListPartitionReader::read(const std::string &path,
+Cover SNAPEdgeListPartitionReader::read(std::string_view path,
                                         std::unordered_map<node, node> &mapNodeIds, Graph &G) {
     std::ifstream file;
     std::string line; // the current line
@@ -28,7 +28,7 @@ Cover SNAPEdgeListPartitionReader::read(const std::string &path,
     // unfortunately there is an empty line at the ending of the file, so we need to get the line
     // before that
 
-    file.open(path);
+    file.open(path.data());
     if (!file.good()) {
         throw std::runtime_error("unable to read from file");
     }

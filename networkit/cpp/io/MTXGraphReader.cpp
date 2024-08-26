@@ -6,8 +6,8 @@
 
 namespace NetworKit {
 
-Graph MTXGraphReader::read(const std::string &path) {
-    MTXParser parser(path);
+Graph MTXGraphReader::read(std::string_view path) {
+    MTXParser parser(path.data());
 
     auto header = parser.getHeader();
     auto size = parser.getMatrixSize();

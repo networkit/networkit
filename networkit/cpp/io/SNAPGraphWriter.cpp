@@ -12,8 +12,8 @@
 
 namespace NetworKit {
 
-void SNAPGraphWriter::write(const Graph &G, const std::string &path) {
-    std::ofstream file(path);
+void SNAPGraphWriter::write(const Graph &G, std::string_view path) {
+    std::ofstream file(path.data());
     Aux::enforceOpened(file);
 
     // write "problem line" - n, m, directed/undirected, weighted/weight type

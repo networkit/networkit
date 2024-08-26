@@ -28,8 +28,8 @@ std::map<index, double> DotPartitionWriter::createHueMap(Graph &graph, Partition
     return clusterHueMap;
 }
 
-void DotPartitionWriter::write(Graph &graph, Partition &zeta, const std::string &path) const {
-    std::ofstream file{path};
+void DotPartitionWriter::write(Graph &graph, Partition &zeta, std::string_view path) const {
+    std::ofstream file{path.data()};
 
     auto hueMap = this->createHueMap(graph, zeta);
 

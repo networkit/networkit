@@ -27,7 +27,7 @@ namespace NetworKit {
 class IOBenchmark : public testing::Test {
 public:
     static void convertToHeatMap(std::vector<bool> &infected, std::vector<double> &xcoords,
-                                 std::vector<double> &ycoords, const std::string &filename,
+                                 std::vector<double> &ycoords, std::string_view filename,
                                  double resolution = 1);
 };
 
@@ -35,7 +35,7 @@ public:
  * This should actually not be in the benchmark but somewhere else. Can't figure out where yet.
  */
 void IOBenchmark::convertToHeatMap(std::vector<bool> &infected, std::vector<double> &xcoords,
-                                   std::vector<double> &ycoords, const std::string &filename,
+                                   std::vector<double> &ycoords, std::string_view filename,
                                    double resolution) {
 
     auto minmaxx = std::minmax_element(xcoords.begin(), xcoords.end());
@@ -72,7 +72,7 @@ void IOBenchmark::convertToHeatMap(std::vector<bool> &infected, std::vector<doub
 
     // open output file
     std::ofstream file;
-    file.open(filename.c_str());
+    file.open(filename.data());
 
     // write column labels
     file << "x"

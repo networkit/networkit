@@ -142,7 +142,7 @@ void SpanningEdgeCentrality::runParallelApproximation() {
     hasRun = true;
 }
 
-uint64_t SpanningEdgeCentrality::runApproximationAndWriteVectors(const std::string &) {
+uint64_t SpanningEdgeCentrality::runApproximationAndWriteVectors(std::string_view) {
     WARN("SpanningEdgeCentrality::runApproximationAndWriteVectors should not be used and will be "
          "deprecated in the future.");
     Aux::Timer t;

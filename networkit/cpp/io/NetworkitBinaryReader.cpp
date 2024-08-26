@@ -23,7 +23,7 @@ const char *accessData(const std::vector<uint8_t> &source) {
 
 namespace NetworKit {
 
-Graph NetworkitBinaryReader::read(const std::string &path) {
+Graph NetworkitBinaryReader::read(std::string_view path) {
     MemoryMappedFile mmfile(path);
     Graph G = readData(mmfile);
     return G;

@@ -10,19 +10,19 @@
 
 namespace NetworKit {
 
-void GraphIO::writeEdgeList(const Graph &G, const std::string &path) {
+void GraphIO::writeEdgeList(const Graph &G, std::string_view path) {
 
     std::ofstream file;
-    file.open(path.c_str());
+    file.open(path.data());
 
     G.forEdges([&](const node v, const node w) { file << v << " " << w << '\n'; });
 
     file.close();
 }
 
-void GraphIO::writeAdjacencyList(const Graph &G, const std::string &path) {
+void GraphIO::writeAdjacencyList(const Graph &G, std::string_view path) {
     std::ofstream file;
-    file.open(path.c_str());
+    file.open(path.data());
 
     G.forNodes([&](const node v) {
         file << v;

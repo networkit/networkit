@@ -15,8 +15,8 @@ namespace NetworKit {
 EdgeListWriter::EdgeListWriter(char separator, node firstNode, bool bothDirections)
     : separator(separator), firstNode(firstNode), bothDirections(bothDirections) {}
 
-void EdgeListWriter::write(const Graph &G, const std::string &path) {
-    std::ofstream file(path);
+void EdgeListWriter::write(const Graph &G, std::string_view path) {
+    std::ofstream file(path.data());
     Aux::enforceOpened(file);
 
     auto writeWeightedEdge = [&](node u, node v, edgeweight weight) {

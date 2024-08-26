@@ -33,7 +33,7 @@ public:
      * @param[in] path Path and name of file to be read.
      * @return Vectors of x- and y-coordinates of the points.
      */
-    std::pair<std::vector<double>, std::vector<double>> read(const std::string &path);
+    std::pair<std::vector<double>, std::vector<double>> read(std::string_view path);
 };
 
 } /* namespace NetworKit */

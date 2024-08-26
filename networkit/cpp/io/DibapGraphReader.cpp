@@ -29,7 +29,7 @@ enum class DibapIOType : short {
     TE = ('T' << 8) | 'E'
 };
 
-Graph DibapGraphReader::read(const std::string &path) {
+Graph DibapGraphReader::read(std::string_view path) {
     int n, i;
     short type;
     FILE *file = NULL; // TODO: Use std::ifstream; this function won't reliably close the handle
@@ -46,7 +46,7 @@ Graph DibapGraphReader::read(const std::string &path) {
 
     // init, try to open file
     DEBUG("reading graph in DibaP format... ");
-    file = fopen(path.c_str(), "r");
+    file = fopen(path.data(), "r");
     if (file == NULL) {
         throw std::runtime_error("cannot open file ");
         return 0;

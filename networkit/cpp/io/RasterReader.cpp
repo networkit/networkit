@@ -16,10 +16,10 @@ namespace NetworKit {
 
 RasterReader::RasterReader(double normalizationFactor) : normalizationFactor(normalizationFactor) {}
 
-std::pair<std::vector<double>, std::vector<double>> RasterReader::read(const std::string &path) {
+std::pair<std::vector<double>, std::vector<double>> RasterReader::read(std::string_view path) {
     DEBUG("start reading raster file...");
 
-    std::ifstream file(path);
+    std::ifstream file(path.data());
     Aux::enforceOpened(file);
     std::string line;
 

@@ -31,7 +31,7 @@ public:
      *
      * @param[in]  path  Path to file.
      */
-    Partition read(const std::string &path);
+    Partition read(std::string_view path);
 
 private:
     uint8_t width;
