@@ -270,12 +270,12 @@ public:
 
     auto begin() const {
         checkAttribute();
-        return Iterator(ownedStorage.get()).nextValid();
+        return Iterator(lockStorage().get()).nextValid();
     }
 
     auto end() const { return Iterator(nullptr); }
 
-    auto size() const noexcept { return ownedStorage->size(); }
+    auto size() const noexcept { return lockStorage()->size(); }
 
     template <bool ic = isConst>
     std::enable_if_t<!ic> set(index i, T v) {
@@ -283,12 +283,13 @@ public:
 #ifndef NDEBUG
         indexOK(i);
 #endif // NDEBUG
-        ownedStorage->set(i, std::move(v));
+        lockStorage()->set(i, std::move(v));
     }
 
     template <bool ic = isConst>
     std::enable_if_t<!ic> set2(node u, node v, T t) {
         static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
+        checkAttribute();
         set(theGraph->edgeId(u, v), t);
     }
 
@@ -297,11 +298,12 @@ public:
 #ifndef NDEBUG
         indexOK(i);
 #endif // NDEBUG
-        return ownedStorage->get(i);
+        return lockStorage()->get(i);
     }
 
     auto get2(node u, node v) const {
         static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
+        checkAttribute();
         return get(theGraph->edgeId(u, v));
     }
 
@@ -310,11 +312,12 @@ public:
 #ifndef NDEBUG
         indexOK(i);
 #endif // NDEBUG
-        return ownedStorage->get(i, defaultT);
+        return lockStorage()->get(i, defaultT);
     }
 
     auto get2(node u, node v, T defaultT) const {
         static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
+        checkAttribute();
         return get(theGraph->edgeId(u, v), defaultT);
     }
 
@@ -323,7 +326,7 @@ public:
 #ifndef NDEBUG
         indexOK(i);
 #endif // NDEBUG
-        return IndexProxy(ownedStorage.get(), i);
+        return IndexProxy(lockStorage().get(), i);
     }
 
     IndexProxy operator()(node u, node v) const {
@@ -333,17 +336,17 @@ public:
 #ifndef NDEBUG
         indexOK(idx);
 #endif // NDEBUG
-        return IndexProxy(ownedStorage.get(), idx);
+        return IndexProxy(lockStorage().get(), idx);
     }
 
     void checkAttribute() const {
-        if (!ownedStorage->validStorage)
+        if (!lockStorage()->validStorage || !valid)
             throw std::runtime_error("Invalid attribute");
     }
 
     auto getName() const {
         checkAttribute();
-        return ownedStorage->getName();
+        return lockStorage()->getName();
     }
 
     void write(std::string const &filename) const {
@@ -397,7 +400,14 @@ private:
     };
 #endif // NDEBUG
 
-    std::shared_ptr<AttributeStorage_type> ownedStorage;
+    auto lockStorage() const {
+        auto s = ownedStorage.lock();
+        if (s)
+            return s;
+        throw std::runtime_error("Attribute does not exist");
+    }
+
+    std::weak_ptr<AttributeStorage_type> ownedStorage;
     const GraphType *theGraph;
     bool valid;
 }; // class Attribute
