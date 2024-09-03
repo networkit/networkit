@@ -38,10 +38,8 @@ namespace NetworKit {
 template <typename NodeOrEdge, typename GraphType>
 class AttributeStorageBase { // alias ASB
 public:
-    AttributeStorageBase(const GraphType *graph, std::string name, std::type_index type)
-        : name{std::move(name)}, type{type}, theGraph{graph}, validStorage{true} {
-        checkPremise(); // node for PerNode, theGraph.hasEdgeIds() for PerEdges
-    }
+    AttributeStorageBase(std::string name, std::type_index type)
+        : name{std::move(name)}, type{type}, validStorage{true} {}
 
     void invalidateStorage() { validStorage = false; }
 
@@ -61,7 +59,6 @@ public:
 
 protected:
     void markValid(index n) {
-        indexOK(n); // specialized for node/edgeid
         if (n >= valid.size())
             valid.resize(n + 1);
         if (!valid[n]) {
@@ -71,7 +68,6 @@ protected:
     }
 
     void checkIndex(index n) const {
-        indexOK(n);
         if (!isValid(n)) {
             throw std::runtime_error("Invalid attribute value");
         }
@@ -83,10 +79,7 @@ private:
     std::vector<bool> valid; // For each node/edgeid: whether attribute is set or not.
 
 protected:
-    void indexOK(index n) const;
-    void checkPremise() const;
     index validElements = 0;
-    const GraphType *theGraph;
     bool validStorage; // Validity of the whole storage
 
 }; // class AttributeStorageBase
@@ -101,8 +94,7 @@ template <typename NodeOrEdge, typename GraphType, template <typename, typename>
           typename T>
 class AttributeStorage : public Base<NodeOrEdge, GraphType> {
 public:
-    AttributeStorage(const GraphType *theGraph, std::string name)
-        : Base<NodeOrEdge, GraphType>{theGraph, std::move(name), typeid(T)} {}
+    AttributeStorage(std::string name) : Base<NodeOrEdge, GraphType>{std::move(name), typeid(T)} {}
 
     void resize(index i) {
         if (i >= values.size())
@@ -136,7 +128,6 @@ public:
     friend Attribute<NodeOrEdge, GraphType, T, false>;
 
 private:
-    using Base<NodeOrEdge, GraphType>::theGraph;
     std::vector<T> values; // the real attribute storage
 };                         // class AttributeStorage<NodeOrEdge, Base, T>
 
@@ -241,14 +232,17 @@ private:
         index idx;
     }; // class IndexProxy
 public:
-    explicit Attribute(std::shared_ptr<AttributeStorage_type> ownedStorage = nullptr)
-        : ownedStorage{ownedStorage}, valid{ownedStorage != nullptr} {}
+    explicit Attribute(std::shared_ptr<AttributeStorage_type> ownedStorage = nullptr,
+                       const GraphType *graph = nullptr)
+        : ownedStorage{ownedStorage}, theGraph{graph},
+          valid{ownedStorage != nullptr && graph != nullptr} {}
 
-    Attribute(Attribute const &other) : ownedStorage{other.ownedStorage}, valid{other.valid} {}
+    Attribute(Attribute const &other)
+        : ownedStorage{other.ownedStorage}, theGraph{other.theGraph}, valid{other.valid} {}
 
     template <bool ic = isConst, std::enable_if_t<ic, int> = 0>
     Attribute(Attribute<NodeOrEdge, GraphType, T, false> const &other)
-        : ownedStorage{other.ownedStorage}, valid{other.valid} {}
+        : ownedStorage{other.ownedStorage}, theGraph{other.theGraph}, valid{other.valid} {}
 
     Attribute &operator=(Attribute other) {
         this->swap(other);
@@ -257,17 +251,20 @@ public:
 
     void swap(Attribute &other) {
         std::swap(ownedStorage, other.ownedStorage);
+        std::swap(theGraph, other.theGraph);
         std::swap(valid, other.valid);
     }
 
     Attribute(Attribute &&other) noexcept
-        : ownedStorage{std::move(other.ownedStorage)}, valid{other.valid} {
+        : ownedStorage{std::move(other.ownedStorage)}, theGraph{std::move(other.theGraph)},
+          valid{std::move(other.valid)} {
         other.valid = false;
     }
 
     template <bool ic = isConst, std::enable_if_t<ic, int> = 0>
     Attribute(Attribute<NodeOrEdge, GraphType, T, false> &&other) noexcept
-        : ownedStorage{std::move(other.ownedStorage)}, valid{other.valid} {
+        : ownedStorage{std::move(other.ownedStorage)}, theGraph{std::move(other.theGraph)},
+          valid{std::move(other.valid)} {
         other.valid = false;
     }
 
@@ -283,44 +280,60 @@ public:
     template <bool ic = isConst>
     std::enable_if_t<!ic> set(index i, T v) {
         checkAttribute();
+#ifndef NDEBUG
+        indexOK(i);
+#endif // NDEBUG
         ownedStorage->set(i, std::move(v));
     }
 
     template <bool ic = isConst>
     std::enable_if_t<!ic> set2(node u, node v, T t) {
         static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
-        set(ownedStorage->theGraph->edgeId(u, v), t);
+        set(theGraph->edgeId(u, v), t);
     }
 
     auto get(index i) const {
         checkAttribute();
+#ifndef NDEBUG
+        indexOK(i);
+#endif // NDEBUG
         return ownedStorage->get(i);
     }
 
     auto get2(node u, node v) const {
         static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
-        return get(ownedStorage->theGraph->edgeId(u, v));
+        return get(theGraph->edgeId(u, v));
     }
 
     auto get(index i, T defaultT) const {
         checkAttribute();
+#ifndef NDEBUG
+        indexOK(i);
+#endif // NDEBUG
         return ownedStorage->get(i, defaultT);
     }
 
     auto get2(node u, node v, T defaultT) const {
         static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
-        return get(ownedStorage->theGraph->edgeId(u, v), defaultT);
+        return get(theGraph->edgeId(u, v), defaultT);
     }
 
     IndexProxy operator[](index i) const {
         checkAttribute();
+#ifndef NDEBUG
+        indexOK(i);
+#endif // NDEBUG
         return IndexProxy(ownedStorage.get(), i);
     }
 
     IndexProxy operator()(node u, node v) const {
         static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
         checkAttribute();
-        return IndexProxy(ownedStorage.get(), ownedStorage->theGraph->edgeId(u, v));
+        auto idx = theGraph->edgeId(u, v);
+#ifndef NDEBUG
+        indexOK(idx);
+#endif // NDEBUG
+        return IndexProxy(ownedStorage.get(), idx);
     }
 
     void checkAttribute() const {
@@ -369,7 +382,23 @@ public:
     }
 
 private:
+#ifndef NDEBUG
+    void indexOK(index n) const {
+        if constexpr (NodeOrEdge::edges) {
+            auto uv = theGraph->edgeById(n);
+            if (uv.first == none) {
+                throw std::runtime_error("This edgeId does not exist");
+            }
+        } else {
+            if (!theGraph->hasNode(n)) {
+                throw std::runtime_error("This node does not exist");
+            }
+        }
+    };
+#endif // NDEBUG
+
     std::shared_ptr<AttributeStorage_type> ownedStorage;
+    const GraphType *theGraph;
     bool valid;
 }; // class Attribute
 
@@ -378,10 +407,11 @@ class AttributeMap {
     friend GraphType;
     const GraphType *theGraph;
 
-public:
     std::unordered_map<std::string, std::shared_ptr<ASB<NodeOrEdge, GraphType>>> attrMap;
 
-    AttributeMap(const GraphType *g) : theGraph{g} {}
+public:
+    AttributeMap(const GraphType *g) : theGraph{g} { assert(theGraph != nullptr); }
+
 
     auto find(std::string const &name) {
         auto it = attrMap.find(name);
@@ -401,14 +431,19 @@ public:
 
     template <typename T>
     auto attach(const std::string &name) {
-        auto ownedPtr = std::make_shared<AttributeStorage<NodeOrEdge, GraphType, ASB, T>>(
-            theGraph, std::string{name});
+        if constexpr (NodeOrEdge::edges) {
+            if (!theGraph->hasEdgeIds()) {
+                throw std::runtime_error("Edges must be indexed");
+            }
+        }
+        auto ownedPtr =
+            std::make_shared<AttributeStorage<NodeOrEdge, GraphType, ASB, T>>(std::string{name});
         auto insertResult = attrMap.emplace(ownedPtr->getName(), ownedPtr);
         auto success = insertResult.second;
         if (!success) {
             throw std::runtime_error("Attribute with same name already exists");
         }
-        return Attribute<NodeOrEdge, GraphType, T, false>{ownedPtr};
+        return Attribute<NodeOrEdge, GraphType, T, false>{ownedPtr, theGraph};
     }
 
     void detach(const std::string &name) {
@@ -425,7 +460,8 @@ public:
         if (it->second.get()->getType() != typeid(T))
             throw std::runtime_error("Type mismatch in Attributes().get()");
         return Attribute<NodeOrEdge, GraphType, T, false>{
-            std::static_pointer_cast<AttributeStorage<NodeOrEdge, GraphType, ASB, T>>(it->second)};
+            std::static_pointer_cast<AttributeStorage<NodeOrEdge, GraphType, ASB, T>>(it->second),
+            theGraph};
     }
 
     template <typename T>
@@ -451,35 +487,6 @@ class PerEdge {
 public:
     static constexpr bool edges = true;
 };
-
-/* ATTRIBUTE PREMISE AND INDEX CHECKS */
-
-template <>
-inline void ASB<PerNode, Graph>::checkPremise() const {
-    // nothing
-}
-
-template <>
-inline void ASB<PerEdge, Graph>::checkPremise() const {
-    if (!theGraph->hasEdgeIds()) {
-        throw std::runtime_error("Edges must be indexed");
-    }
-}
-
-template <>
-inline void ASB<PerNode, Graph>::indexOK(index n) const {
-    if (!theGraph->hasNode(n)) {
-        throw std::runtime_error("This node does not exist");
-    }
-}
-
-template <>
-inline void ASB<PerEdge, Graph>::indexOK(index n) const {
-    auto uv = theGraph->edgeById(n);
-    if (!theGraph->hasEdge(uv.first, uv.second)) {
-        throw std::runtime_error("This edgeId does not exist");
-    }
-}
 
 } // namespace NetworKit
 
