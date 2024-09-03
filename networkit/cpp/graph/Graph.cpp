@@ -980,33 +980,4 @@ bool Graph::checkConsistency() const {
     return noMultiEdges && correctNodeUpperbound && correctNumberOfEdges;
 }
 
-/* ATTRIBUTE PREMISE AND INDEX CHECKS */
-
-template <>
-void ASB<PerNode, Graph>::checkPremise() const {
-    // nothing
-}
-
-template <>
-void ASB<PerEdge, Graph>::checkPremise() const {
-    if (!theGraph->hasEdgeIds()) {
-        throw std::runtime_error("Edges must be indexed");
-    }
-}
-
-template <>
-void ASB<PerNode, Graph>::indexOK(index n) const {
-    if (!theGraph->hasNode(n)) {
-        throw std::runtime_error("This node does not exist");
-    }
-}
-
-template <>
-void ASB<PerEdge, Graph>::indexOK(index n) const {
-    auto uv = theGraph->edgeById(n);
-    if (!theGraph->hasEdge(uv.first, uv.second)) {
-        throw std::runtime_error("This edgeId does not exist");
-    }
-}
-
 } /* namespace NetworKit */

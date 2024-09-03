@@ -138,7 +138,7 @@ public:
 private:
     using Base<NodeOrEdge, GraphType>::theGraph;
     std::vector<T> values; // the real attribute storage
-}; // class AttributeStorage<NodeOrEdge, Base, T>
+};                         // class AttributeStorage<NodeOrEdge, Base, T>
 
 template <typename NodeOrEdge, typename GraphType, typename T, bool isConst>
 class Attribute {
@@ -452,6 +452,35 @@ public:
     static constexpr bool edges = true;
 };
 
+/* ATTRIBUTE PREMISE AND INDEX CHECKS */
+
+template <>
+inline void ASB<PerNode, Graph>::checkPremise() const {
+    // nothing
+}
+
+template <>
+inline void ASB<PerEdge, Graph>::checkPremise() const {
+    if (!theGraph->hasEdgeIds()) {
+        throw std::runtime_error("Edges must be indexed");
+    }
+}
+
+template <>
+inline void ASB<PerNode, Graph>::indexOK(index n) const {
+    if (!theGraph->hasNode(n)) {
+        throw std::runtime_error("This node does not exist");
+    }
+}
+
+template <>
+inline void ASB<PerEdge, Graph>::indexOK(index n) const {
+    auto uv = theGraph->edgeById(n);
+    if (!theGraph->hasEdge(uv.first, uv.second)) {
+        throw std::runtime_error("This edgeId does not exist");
+    }
+}
+
 } // namespace NetworKit
 
-#endif //
+#endif // NETWORKIT_GRAPH_ATTRIBUTES_HPP_
