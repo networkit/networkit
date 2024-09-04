@@ -439,7 +439,7 @@ public:
         // the shared_ptr and not the data
         for (auto &[key, value] : other.attrMap) {
             auto ptr = value->clone();
-            auto insertResult = attrMap.emplace(key, ptr);
+            attrMap.emplace(key, ptr);
         }
     }
 
