@@ -47,6 +47,8 @@ public:
 
     std::type_index getType() const noexcept { return type; }
 
+    virtual std::shared_ptr<AttributeStorageBase> clone() const = 0;
+
     bool isValid(index n) const noexcept { return n < valid.size() && valid[n]; }
 
     // Called by Graph when node/edgeid n is deleted.
@@ -95,6 +97,10 @@ template <typename NodeOrEdge, typename GraphType, template <typename, typename>
 class AttributeStorage : public Base<NodeOrEdge, GraphType> {
 public:
     AttributeStorage(std::string name) : Base<NodeOrEdge, GraphType>{std::move(name), typeid(T)} {}
+
+    virtual std::shared_ptr<Base<NodeOrEdge, GraphType>> clone() const override {
+        return std::make_shared<AttributeStorage>(*this);
+    };
 
     void resize(index i) {
         if (i >= values.size())
@@ -422,6 +428,24 @@ class AttributeMap {
 public:
     AttributeMap(const GraphType *g) : theGraph{g} { assert(theGraph != nullptr); }
 
+    // do not allow copying of AttributeMap. There is a 1:1 relation to the Graph!
+    AttributeMap(AttributeMap &) = delete;
+    AttributeMap &operator=(const AttributeMap &) = delete;
+
+    // copying is only allowed with a new graph pointer. This constructor copies all data.
+    AttributeMap(const AttributeMap &other, const GraphType *g) : theGraph(g) {
+        assert(theGraph != nullptr);
+        // manual copy is required here since the copy constructor for unordered_map would only copy
+        // the shared_ptr and not the data
+        for (auto &[key, value] : other.attrMap) {
+            auto ptr = value->clone();
+            auto insertResult = attrMap.emplace(key, ptr);
+        }
+    }
+
+    // move operators
+    AttributeMap(AttributeMap &&other) = default;
+    AttributeMap &operator=(AttributeMap &&other) = default;
 
     auto find(std::string const &name) {
         auto it = attrMap.find(name);
@@ -481,7 +505,8 @@ public:
             throw std::runtime_error("Type mismatch in Attributes().get()");
         return Attribute<NodeOrEdge, GraphType, T, true>{
             std::static_pointer_cast<const AttributeStorage<NodeOrEdge, GraphType, ASB, T>>(
-                it->second)};
+                it->second),
+            theGraph};
     }
 
 }; // class AttributeMap
