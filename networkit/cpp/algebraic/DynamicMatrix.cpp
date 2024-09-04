@@ -148,7 +148,7 @@ DynamicMatrix DynamicMatrix::operator*(const DynamicMatrix &other) const {
     assert(nCols == other.nRows);
 
     DynamicMatrix result(numberOfRows(), other.numberOfColumns());
-    SparseAccumulator spa(other.numberOfRows());
+    SparseAccumulator spa(other.numberOfColumns());
     for (index r = 0; r < numberOfRows(); ++r) {
         graph.forNeighborsOf(r, [&](node v, double w1) {
             other.graph.forNeighborsOf(v, [&](node u, double w2) {
