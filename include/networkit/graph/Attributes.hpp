@@ -98,7 +98,7 @@ class AttributeStorage : public Base<NodeOrEdge, GraphType> {
 public:
     AttributeStorage(std::string name) : Base<NodeOrEdge, GraphType>{std::move(name), typeid(T)} {}
 
-    virtual std::shared_ptr<Base<NodeOrEdge, GraphType>> clone() const override {
+    std::shared_ptr<Base<NodeOrEdge, GraphType>> clone() const override {
         return std::make_shared<AttributeStorage>(*this);
     };
 
