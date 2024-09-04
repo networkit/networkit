@@ -1276,16 +1276,55 @@ public:
           nodeAttributeMap(other.nodeAttributeMap, this),
           edgeAttributeMap(other.edgeAttributeMap, this){};
 
-    /** Default move constructor */
-    Graph(Graph &&other) noexcept = default;
+    /** move constructor */
+    Graph(Graph &&other) noexcept
+        : n(std::move(other.n)), m(std::move(other.m)),
+          storedNumberOfSelfLoops(std::move(other.storedNumberOfSelfLoops)), z(std::move(other.z)),
+          omega(std::move(other.omega)), t(std::move(other.t)), weighted(std::move(other.weighted)),
+          directed(std::move(other.directed)), edgesIndexed(std::move(other.edgesIndexed)),
+          exists(std::move(other.exists)), inEdges(std::move(other.inEdges)),
+          outEdges(std::move(other.outEdges)), inEdgeWeights(std::move(other.inEdgeWeights)),
+          outEdgeWeights(std::move(other.outEdgeWeights)), inEdgeIds(std::move(other.inEdgeIds)),
+          outEdgeIds(std::move(other.outEdgeIds)),
+          nodeAttributeMap(std::move(other.nodeAttributeMap)),
+          edgeAttributeMap(std::move(other.edgeAttributeMap)) {
+        // attributes: set graph pointer to this new graph
+        nodeAttributeMap.theGraph = this;
+        edgeAttributeMap.theGraph = this;
+    };
 
     /** Default destructor */
     ~Graph() = default;
 
-    /** Default move assignment operator */
-    Graph &operator=(Graph &&other) noexcept = default;
+    /** move assignment operator */
+    Graph &operator=(Graph &&other) noexcept {
+        std::swap(n, other.n);
+        std::swap(m, other.m);
+        std::swap(storedNumberOfSelfLoops, other.storedNumberOfSelfLoops);
+        std::swap(z, other.z);
+        std::swap(omega, other.omega);
+        std::swap(t, other.t);
+        std::swap(weighted, other.weighted);
+        std::swap(directed, other.directed);
+        std::swap(edgesIndexed, other.edgesIndexed);
+        std::swap(exists, other.exists);
+        std::swap(inEdges, other.inEdges);
+        std::swap(outEdges, other.outEdges);
+        std::swap(inEdgeWeights, other.inEdgeWeights);
+        std::swap(outEdgeWeights, other.outEdgeWeights);
+        std::swap(inEdgeIds, other.inEdgeIds);
+        std::swap(outEdgeIds, other.outEdgeIds);
 
-    /** Default copy assignment operator */
+        // attributes: set graph pointer to this new graph
+        std::swap(nodeAttributeMap, other.nodeAttributeMap);
+        std::swap(edgeAttributeMap, other.edgeAttributeMap);
+        nodeAttributeMap.theGraph = this;
+        edgeAttributeMap.theGraph = this;
+
+        return *this;
+    };
+
+    /** copy assignment operator */
     Graph &operator=(const Graph &other) {
         n = other.n;
         m = other.m;

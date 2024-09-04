@@ -424,6 +424,18 @@ TEST_F(AttributeGTest, testGraphModeChange) {
     EXPECT_EQ(wEdgeAttr3(0, 1), 3);
 }
 
+TEST_F(AttributeGTest, testMoveGraph) {
+    Graph graph1(3);
+    graph1.indexEdges();
+    graph1.addEdge(0, 1);
+    auto attr1 = graph1.edgeAttributes().attach<int>("attr");
+    attr1(0, 1) = 1;
+    Graph graph2(std::move(graph1));
+    // make sure that attr2 does not point to graph1 which was moved and may not be accessed anymore
+    auto attr2 = graph2.edgeAttributes().get<int>("attr");
+    EXPECT_EQ(attr2(0, 1), 1);
+}
+
 TEST_F(AttributeGTest, testInvalidate) {
 
     Graph graph(10);
