@@ -1104,14 +1104,17 @@ public:
           // let the following be empty for the start, we fill them later
           inEdges(0), outEdges(0), inEdgeWeights(0), outEdgeWeights(0), inEdgeIds(0), outEdgeIds(0),
 
-          // empty node attribute map as last member for this graph
-          nodeAttributeMap(this), edgeAttributeMap(this) {
+          // copy node attribute map
+          nodeAttributeMap(G.nodeAttributeMap, this),
+          // fill this later
+          edgeAttributeMap(this) {
 
         if (G.isDirected() == directed) {
             // G.inEdges might be empty (if G is undirected), but
             // that's fine
             inEdges = G.inEdges;
             outEdges = G.outEdges;
+            edgeAttributeMap = AttributeMap(G.edgeAttributeMap, this);
 
             // copy weights if needed
             if (weighted) {
@@ -1142,6 +1145,12 @@ public:
         } else if (G.isDirected()) {
             // G is directed, but we want an undirected graph
             // so we need to combine the out and in stuff for every node
+
+            // for edge attributes, it is not well defined how they should be comined - we will skip
+            // that step and warn the user
+            WARN("Edge attributes are not preserved when converting from directed to undirected "
+                 "graphs. The resulting graph will have empty edge attributes.");
+
             outEdges.resize(z);
             if (weighted)
                 outEdgeWeights.resize(z);
@@ -1210,6 +1219,11 @@ public:
         } else {
             // G is not directed, but this copy should be
             // generally we can can copy G.out stuff into our in stuff
+
+            // for edge attributes, we currently do not have a way to iterate them for duplication
+            WARN("Edge attributes are currently not preserved when converting from undirected to "
+                 "directed graphs.");
+
             inEdges = G.outEdges;
             outEdges = G.outEdges;
             if (weighted) {
@@ -1251,7 +1265,16 @@ public:
      * Create a graph as copy of @a other.
      * @param other The graph to copy.
      */
-    Graph(const Graph &other) = default;
+    Graph(const Graph &other)
+        : n(other.n), m(other.m), storedNumberOfSelfLoops(other.storedNumberOfSelfLoops),
+          z(other.z), omega(other.omega), t(other.t), weighted(other.weighted),
+          directed(other.directed), edgesIndexed(other.edgesIndexed), exists(other.exists),
+          inEdges(other.inEdges), outEdges(other.outEdges), inEdgeWeights(other.inEdgeWeights),
+          outEdgeWeights(other.outEdgeWeights), inEdgeIds(other.inEdgeIds),
+          outEdgeIds(other.outEdgeIds),
+          // call special constructors to copy attribute maps
+          nodeAttributeMap(other.nodeAttributeMap, this),
+          edgeAttributeMap(other.edgeAttributeMap, this){};
 
     /** Default move constructor */
     Graph(Graph &&other) noexcept = default;
@@ -1263,7 +1286,30 @@ public:
     Graph &operator=(Graph &&other) noexcept = default;
 
     /** Default copy assignment operator */
-    Graph &operator=(const Graph &other) = default;
+    Graph &operator=(const Graph &other) {
+        n = other.n;
+        m = other.m;
+        storedNumberOfSelfLoops = other.storedNumberOfSelfLoops;
+        z = other.z;
+        omega = other.omega;
+        t = other.t;
+        weighted = other.weighted;
+        directed = other.directed;
+        edgesIndexed = other.edgesIndexed;
+        exists = other.exists;
+        inEdges = other.inEdges;
+        outEdges = other.outEdges;
+        inEdgeWeights = other.inEdgeWeights;
+        outEdgeWeights = other.outEdgeWeights;
+        inEdgeIds = other.inEdgeIds;
+        outEdgeIds = other.outEdgeIds;
+
+        // call special constructors to copy attribute maps
+        nodeAttributeMap = AttributeMap(other.nodeAttributeMap, this);
+        edgeAttributeMap = AttributeMap(other.edgeAttributeMap, this);
+
+        return *this;
+    };
 
     /**
      * Reserves memory in the node's edge containers for undirected graphs.
