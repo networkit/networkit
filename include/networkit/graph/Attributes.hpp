@@ -94,7 +94,7 @@ class Attribute;
 
 template <typename NodeOrEdge, typename GraphType, template <typename, typename> class Base,
           typename T>
-class AttributeStorage : public Base<NodeOrEdge, GraphType> {
+class AttributeStorage final : public Base<NodeOrEdge, GraphType> {
 public:
     AttributeStorage(std::string name) : Base<NodeOrEdge, GraphType>{std::move(name), typeid(T)} {}
 
