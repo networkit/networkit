@@ -1278,10 +1278,9 @@ public:
 
     /** move constructor */
     Graph(Graph &&other) noexcept
-        : n(std::move(other.n)), m(std::move(other.m)),
-          storedNumberOfSelfLoops(std::move(other.storedNumberOfSelfLoops)), z(std::move(other.z)),
-          omega(std::move(other.omega)), t(std::move(other.t)), weighted(std::move(other.weighted)),
-          directed(std::move(other.directed)), edgesIndexed(std::move(other.edgesIndexed)),
+        : n(other.n), m(other.m), storedNumberOfSelfLoops(other.storedNumberOfSelfLoops),
+          z(other.z), omega(other.omega), t(other.t), weighted(other.weighted),
+          directed(other.directed), edgesIndexed(other.edgesIndexed),
           exists(std::move(other.exists)), inEdges(std::move(other.inEdges)),
           outEdges(std::move(other.outEdges)), inEdgeWeights(std::move(other.inEdgeWeights)),
           outEdgeWeights(std::move(other.outEdgeWeights)), inEdgeIds(std::move(other.inEdgeIds)),
