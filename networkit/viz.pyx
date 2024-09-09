@@ -36,7 +36,7 @@ cdef extern from "<networkit/viz/GraphLayoutAlgorithm.hpp>":
 		vector[Point[double]] getCoordinates() except +
 		bool_t writeGraphToGML(string path) except +
 		bool_t writeKinemage(string path) except +
-		void run() nogil except +
+		void run() except + nogil
 
 cdef class GraphLayoutAlgorithm:
 	"""

@@ -619,14 +619,14 @@ cdef extern from "<networkit/generators/PowerlawDegreeSequence.hpp>":
 		_PowerlawDegreeSequence(count minDeg, count maxDeg, double gamma) except +
 		_PowerlawDegreeSequence(_Graph) except +
 		_PowerlawDegreeSequence(vector[double]) except +
-		void setMinimumFromAverageDegree(double avgDeg) nogil except +
-		void setGammaFromAverageDegree(double avgDeg, double minGamma, double maxGamma) nogil except +
+		void setMinimumFromAverageDegree(double avgDeg) except + nogil
+		void setGammaFromAverageDegree(double avgDeg, double minGamma, double maxGamma) except + nogil
 		double getExpectedAverageDegree() except +
 		count getMinimumDegree() const
 		count getMaximumDegree() const
 		double getGamma() const
 		double setGamma(double) const
-		void run() nogil except +
+		void run() except + nogil
 		vector[count] getDegreeSequence(count numNodes) except +
 		count getDegree() except +
 
@@ -816,14 +816,14 @@ cdef extern from "<networkit/generators/LFRGenerator.hpp>":
 
 	cdef cppclass _LFRGenerator "NetworKit::LFRGenerator"(_Algorithm):
 		_LFRGenerator(count n) except +
-		void setDegreeSequence(vector[count] degreeSequence) nogil except +
-		void generatePowerlawDegreeSequence(count avgDegree, count maxDegree, double nodeDegreeExp) nogil except +
-		void setCommunitySizeSequence(vector[count] communitySizeSequence) nogil except +
-		void setPartition(_Partition zeta) nogil except +
-		void generatePowerlawCommunitySizeSequence(count minCommunitySize, count maxCommunitySize, double communitySizeExp) nogil except +
-		void setMu(double mu) nogil except +
-		void setMu(const vector[double] & mu) nogil except +
-		void setMuWithBinomialDistribution(double mu) nogil except +
+		void setDegreeSequence(vector[count] degreeSequence) except + nogil
+		void generatePowerlawDegreeSequence(count avgDegree, count maxDegree, double nodeDegreeExp) except + nogil
+		void setCommunitySizeSequence(vector[count] communitySizeSequence) except + nogil
+		void setPartition(_Partition zeta) except + nogil
+		void generatePowerlawCommunitySizeSequence(count minCommunitySize, count maxCommunitySize, double communitySizeExp) except + nogil
+		void setMu(double mu) except + nogil
+		void setMu(const vector[double] & mu) except + nogil
+		void setMuWithBinomialDistribution(double mu) except + nogil
 		_Graph getGraph() except +
 		_Partition getPartition() except +
 		_Graph generate() except +
