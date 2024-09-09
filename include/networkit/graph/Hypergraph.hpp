@@ -250,7 +250,7 @@ public:
      * @return false
      */
     bool hasNode(node u, edgeid eid) const {
-        return hasNode(u) && edgeIncidence[eid].find(eid) != edgeIncidence[eid].end();
+        return hasNode(u) && edgeIncidence[eid].find(u) != edgeIncidence[eid].end();
     }
 
     /**
