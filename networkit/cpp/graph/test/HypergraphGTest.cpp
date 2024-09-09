@@ -112,6 +112,27 @@ TEST_P(HypergraphGTest, testHasNode) {
     ASSERT_FALSE(hGraph.hasNode(6));
 }
 
+TEST_P(HypergraphGTest, testHasNodeInHyperedge) {
+    Hypergraph hGraph = Hypergraph(4);
+
+    hGraph.addEdge({0, 1});
+    hGraph.addEdge({1, 2, 3});
+    hGraph.addEdge({0, 3});
+
+    ASSERT_TRUE(hGraph.hasNode(0, 0));
+    ASSERT_TRUE(hGraph.hasNode(1, 0));
+    ASSERT_TRUE(hGraph.hasNode(2, 1));
+    ASSERT_TRUE(hGraph.hasNode(3, 1));
+    ASSERT_TRUE(hGraph.hasNode(3, 2));
+    ASSERT_FALSE(hGraph.hasNode(2, 0));
+    ASSERT_FALSE(hGraph.hasNode(2, 2));
+    ASSERT_FALSE(hGraph.hasNode(3, 0));
+
+    hGraph.removeNode(2);
+
+    ASSERT_FALSE(hGraph.hasNode(2, 1));
+}
+
 TEST_P(HypergraphGTest, testRestoreNode) {
     Hypergraph hGraph = Hypergraph(4);
 
