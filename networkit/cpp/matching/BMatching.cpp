@@ -44,13 +44,10 @@ bool BMatching::areMatched(node u, node v) const {
 }
 
 count BMatching::size(const Graph &G) const {
-    count size = 0;
-    G.forNodes([&](node v) {
-        if (!isUnmatched(v)) {
-            ++size;
-        }
+    double size = G.parallelSumForNodes([&](node v) {
+        return !isUnmatched(v);
     });
-    return size / 2;
+    return static_cast<count>(size / 2);
 }
 
 edgeweight BMatching::weight(const Graph &G) const {
