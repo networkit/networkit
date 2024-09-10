@@ -17,11 +17,11 @@ BSuitorMatcher::BSuitorMatcher(const Graph &G, const std::vector<count> &b) : BM
             "The number of b values does not match the number of nodes in this graph.");
 
     const auto n = G.upperNodeIdBound();
-    Suitors.reserve(n);
-    Proposed.reserve(n);
+    suitors.reserve(n);
+    proposed.reserve(n);
     for (index i = 0; i < n; i++) {
-        Suitors.emplace_back(std::make_unique<NodeMatchesInfo>(b.at(i)));
-        Proposed.emplace_back(std::make_unique<NodeMatchesInfo>(b.at(i)));
+        suitors.emplace_back(std::make_unique<MatchingNodeInfo>(b.at(i)));
+        proposed.emplace_back(std::make_unique<MatchingNodeInfo>(b.at(i)));
     }
 }
 
@@ -72,22 +72,22 @@ void BSuitorMatcher::findSuitors(node cur) {
     }
 }
 
-Node BSuitorMatcher::findPreferred(node u) {
-    Node best = Node{none, 0};
+BSuitorMatcher::MatchingNode BSuitorMatcher::findPreferred(node u) {
+    MatchingNode best = MatchingNode{none, 0};
 
     auto hasProposedTo = [&](node x) -> bool {
-        return std::any_of(Proposed.at(u)->partners.begin(), Proposed.at(u)->partners.end(),
-                           [x](const Node &y) { return y.id == x; });
+        return std::any_of(proposed.at(u)->partners.begin(), proposed.at(u)->partners.end(),
+                           [x](const MatchingNode &y) { return y.id == x; });
     };
 
     for (auto n : G->weightNeighborRange(u)) {
-        const Node v = Node(n.first, n.second);
+        const MatchingNode v = MatchingNode(n.first, n.second);
         if (!hasProposedTo(v.id)) {
             if (v.weight > best.weight || (v.weight == best.weight && v.id < best.id)) {
-                const auto n_suitor_weight = Suitors.at(v.id)->min.weight;
+                const auto n_suitor_weight = suitors.at(v.id)->min.weight;
 
                 if (v.weight > n_suitor_weight
-                    || (v.weight == n_suitor_weight && u < Suitors.at(v.id)->min.id)) {
+                    || (v.weight == n_suitor_weight && u < suitors.at(v.id)->min.id)) {
                     best = v;
                 }
             }
@@ -97,12 +97,12 @@ Node BSuitorMatcher::findPreferred(node u) {
 }
 
 void BSuitorMatcher::makeSuitor(node u, edgeweight w, node v) {
-    auto smallest = Suitors.at(v)->popMinIfFull();
-    Suitors.at(v)->insert(Node(u, w));
-    Proposed.at(u)->insert(Node(v, w));
+    auto smallest = suitors.at(v)->popMinIfFull();
+    suitors.at(v)->insert(MatchingNode(u, w));
+    proposed.at(u)->insert(MatchingNode(v, w));
 
     if (smallest.id != none) {
-        Proposed.at(smallest.id)->remove(v);
+        proposed.at(smallest.id)->remove(v);
         auto [pref, heaviest] = findPreferred(smallest.id);
         if (pref != none) {
             makeSuitor(smallest.id, heaviest, pref);
@@ -113,7 +113,7 @@ void BSuitorMatcher::makeSuitor(node u, edgeweight w, node v) {
 bool BSuitorMatcher::isSymmetrical() const {
     bool sym = true;
     auto matchedSymmetrical = [&](node x, node y) -> bool {
-        return Suitors.at(x)->hasPartner(y) == Suitors.at(y)->hasPartner(x);
+        return suitors.at(x)->hasPartner(y) == suitors.at(y)->hasPartner(x);
     };
 
     G->forNodes([&](node u) {
@@ -131,8 +131,8 @@ void BSuitorMatcher::buildBMatching() {
         throw std::runtime_error("Call run() before creating b-matching.");
     }
     G->forNodes([&](node x) {
-        assert(Suitors.at(x)->partners.size() <= b.at(x));
-        for (auto y : Suitors.at(x)->partners) {
+        assert(suitors.at(x)->partners.size() <= b.at(x));
+        for (auto y : suitors.at(x)->partners) {
             if (y.id != none && x < y.id) {
                 M.match(x, y.id);
             }
