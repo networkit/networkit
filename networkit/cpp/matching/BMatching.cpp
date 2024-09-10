@@ -44,9 +44,7 @@ bool BMatching::areMatched(node u, node v) const {
 }
 
 count BMatching::size(const Graph &G) const {
-    double size = G.parallelSumForNodes([&](node v) {
-        return !isUnmatched(v);
-    });
+    double size = G.parallelSumForNodes([&](node v) { return !isUnmatched(v); });
     return static_cast<count>(size / 2);
 }
 

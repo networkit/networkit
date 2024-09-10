@@ -6,7 +6,6 @@
  *              Frieda Gerharz
  */
 
-
 #ifndef NETWORKIT_MATCHING_B_SUITOR_MATCHER_HPP_
 #define NETWORKIT_MATCHING_B_SUITOR_MATCHER_HPP_
 
@@ -24,76 +23,78 @@ namespace NetworKit {
  */
 class BSuitorMatcher : public BMatcher {
 public:
+    struct MatchingNode {
+        node id;
+        edgeweight weight;
 
-struct MatchingNode {
-    node id;
-    edgeweight weight;
+        MatchingNode() = default;
+        MatchingNode(node n, edgeweight w) : id(n), weight(w) {}
 
-    MatchingNode() = default;
-    MatchingNode(node n, edgeweight w) : id(n), weight(w) {}
-
-    bool operator==(const MatchingNode &other) const { return id == other.id && weight == other.weight; }
-    bool operator!=(const MatchingNode &other) const { return id != other.id || weight != other.weight; }
-};
-
-struct MatchingNodeInfo {
-    std::vector<MatchingNode> partners;
-    MatchingNode min; // (none, 0) if partners still has free capacity
-    count max_size;
-
-    MatchingNodeInfo() = default;
-
-    MatchingNodeInfo(count b) {
-        partners.reserve(b);
-        min = MatchingNode(none, 0);
-        max_size = b;
-    }
-
-    bool hasPartner(node u) {
-        return std::find_if(partners.begin(), partners.end(),
-                            [u](const MatchingNode &v) { return v.id == u; })
-               != partners.end();
-    }
-
-    MatchingNode popMinIfFull() {
-        if (partners.size() < max_size) {
-            return {none, 0};
-        } else {
-            MatchingNode min_copy = min;
-            remove(min.id);
-            return min_copy;
+        bool operator==(const MatchingNode &other) const {
+            return id == other.id && weight == other.weight;
         }
-    }
-
-    void insert(const MatchingNode &u) {
-        assert(partners.size() < max_size);
-        partners.emplace_back(u);
-        if (partners.size() == max_size && !partners.empty()) {
-            min = *std::min_element(partners.begin(), partners.end(),
-                                    [](const MatchingNode &x, const MatchingNode &y) {
-                                        if (x.weight == y.weight) {
-                                            return x.id > y.id;
-                                        }
-                                        return x.weight < y.weight;
-                                    });
+        bool operator!=(const MatchingNode &other) const {
+            return id != other.id || weight != other.weight;
         }
-    }
+    };
 
-    void remove(node u) {
-        partners.erase(std::remove_if(partners.begin(), partners.end(),
-                                      [u](const MatchingNode &v) {
-                                          return v.id == u;
-                                      }),
-                       partners.end());
-        min = MatchingNode(none, 0);
-    }
+    struct MatchingNodeInfo {
+        std::vector<MatchingNode> partners;
+        MatchingNode min; // (none, 0) if partners still has free capacity
+        count max_size;
 
-    void sort() {
-        std::sort(partners.begin(), partners.end(), [](const MatchingNode &u, const MatchingNode &v) {
-            return (u.weight > v.weight || (u.weight == v.weight && u.id < v.id));
-        });
-    }
-};
+        MatchingNodeInfo() = default;
+
+        MatchingNodeInfo(count b) {
+            partners.reserve(b);
+            min = MatchingNode(none, 0);
+            max_size = b;
+        }
+
+        bool hasPartner(node u) {
+            return std::find_if(partners.begin(), partners.end(),
+                                [u](const MatchingNode &v) { return v.id == u; })
+                   != partners.end();
+        }
+
+        MatchingNode popMinIfFull() {
+            if (partners.size() < max_size) {
+                return {none, 0};
+            } else {
+                MatchingNode min_copy = min;
+                remove(min.id);
+                return min_copy;
+            }
+        }
+
+        void insert(const MatchingNode &u) {
+            assert(partners.size() < max_size);
+            partners.emplace_back(u);
+            if (partners.size() == max_size && !partners.empty()) {
+                min = *std::min_element(partners.begin(), partners.end(),
+                                        [](const MatchingNode &x, const MatchingNode &y) {
+                                            if (x.weight == y.weight) {
+                                                return x.id > y.id;
+                                            }
+                                            return x.weight < y.weight;
+                                        });
+            }
+        }
+
+        void remove(node u) {
+            partners.erase(std::remove_if(partners.begin(), partners.end(),
+                                          [u](const MatchingNode &v) { return v.id == u; }),
+                           partners.end());
+            min = MatchingNode(none, 0);
+        }
+
+        void sort() {
+            std::sort(partners.begin(), partners.end(),
+                      [](const MatchingNode &u, const MatchingNode &v) {
+                          return (u.weight > v.weight || (u.weight == v.weight && u.id < v.id));
+                      });
+        }
+    };
 
     /**
      * Computes a 1/2-approximate maximum weight b-matching of an undirected weighted Graph @c G
