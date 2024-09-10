@@ -19,7 +19,7 @@ BSuitorMatcher::BSuitorMatcher(const Graph &G, const std::vector<count> &b) : BM
     const auto n = G.upperNodeIdBound();
     suitors.reserve(n);
     proposed.reserve(n);
-    for (index i = 0; i < n; i++) {
+    for (index i = 0; i < n; ++i) {
         suitors.emplace_back(std::make_unique<MatchingNodeInfo>(b.at(i)));
         proposed.emplace_back(std::make_unique<MatchingNodeInfo>(b.at(i)));
     }
@@ -54,7 +54,7 @@ std::vector<count> BSuitorMatcher::readBValuesFromFile(count size, const std::st
                                      + std::to_string(line_number) + ".");
         }
         b.emplace_back(val);
-        line_number++;
+        ++line_number;
     }
     if (b.size() != size) {
         throw std::runtime_error("The number of values in file " + path
