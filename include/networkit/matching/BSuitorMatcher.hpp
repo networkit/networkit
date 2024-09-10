@@ -59,9 +59,9 @@ struct MatchingNodeInfo {
         if (partners.size() < max_size) {
             return {none, 0};
         } else {
-            auto ret = min;
+            MatchingNode min_copy = min;
             remove(min.id);
-            return ret;
+            return min_copy;
         }
     }
 
@@ -82,10 +82,7 @@ struct MatchingNodeInfo {
     void remove(node u) {
         partners.erase(std::remove_if(partners.begin(), partners.end(),
                                       [u](const MatchingNode &v) {
-                                          if (v.id == u) {
-                                              return true;
-                                          }
-                                          return false;
+                                          return v.id == u;
                                       }),
                        partners.end());
         min = MatchingNode(none, 0);
