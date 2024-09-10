@@ -28,13 +28,13 @@ BSuitorMatcher::BSuitorMatcher(const Graph &G, const std::vector<count> &b) : BM
 BSuitorMatcher::BSuitorMatcher(const Graph &G, count b)
     : BSuitorMatcher(G, std::vector<count>(G.numberOfNodes(), b)) {}
 
-BSuitorMatcher::BSuitorMatcher(const Graph &G, const std::string &path)
+BSuitorMatcher::BSuitorMatcher(const Graph &G, std::string_view &path)
     : BSuitorMatcher(G, readBValuesFromFile(G.numberOfNodes(), path)) {}
 
-std::vector<count> BSuitorMatcher::readBValuesFromFile(count size, const std::string &path) const {
+std::vector<count> BSuitorMatcher::readBValuesFromFile(count size, std::string_view &path) const {
     std::vector<count> b;
     b.reserve(size);
-    std::ifstream file(path);
+    std::ifstream file(path.data());
     std::string line;
     int line_number = 1;
 
@@ -42,22 +42,22 @@ std::vector<count> BSuitorMatcher::readBValuesFromFile(count size, const std::st
         std::istringstream istring(line);
         int val;
         if (!(istring >> val)) {
-            throw std::runtime_error("File " + path + " contains an invalid value in line "
+            throw std::runtime_error("File " + std::string{path} + " contains an invalid value in line "
                                      + std::to_string(line_number) + ".");
         }
         if (istring >> val) {
-            throw std::runtime_error("File " + path + " contains multiple values in line "
+            throw std::runtime_error("File " + std::string{path} + " contains multiple values in line "
                                      + std::to_string(line_number) + ".");
         }
         if (val < 0) {
-            throw std::runtime_error("File " + path + " contains a negative value in line "
+            throw std::runtime_error("File " + std::string{path} + " contains a negative value in line "
                                      + std::to_string(line_number) + ".");
         }
         b.emplace_back(val);
         ++line_number;
     }
     if (b.size() != size) {
-        throw std::runtime_error("The number of values in file " + path
+        throw std::runtime_error("The number of values in file " + std::string{path}
                                  + " does not match the number of nodes in this graph.");
     }
     return b;
