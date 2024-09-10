@@ -41,7 +41,7 @@ public:
     void run() override = 0;
 
     /**
-     * Gets the b-matching for the stored graph. 
+     * Gets the b-matching for the stored graph.
      * Note: The b-matching is only valid, if the corresponding algorithm
      * has taken care of populating it properly.
      */

@@ -42,15 +42,18 @@ std::vector<count> BSuitorMatcher::readBValuesFromFile(count size, std::string_v
         std::istringstream istring(line);
         int val;
         if (!(istring >> val)) {
-            throw std::runtime_error("File " + std::string{path} + " contains an invalid value in line "
+            throw std::runtime_error("File " + std::string{path}
+                                     + " contains an invalid value in line "
                                      + std::to_string(line_number) + ".");
         }
         if (istring >> val) {
-            throw std::runtime_error("File " + std::string{path} + " contains multiple values in line "
+            throw std::runtime_error("File " + std::string{path}
+                                     + " contains multiple values in line "
                                      + std::to_string(line_number) + ".");
         }
         if (val < 0) {
-            throw std::runtime_error("File " + std::string{path} + " contains a negative value in line "
+            throw std::runtime_error("File " + std::string{path}
+                                     + " contains a negative value in line "
                                      + std::to_string(line_number) + ".");
         }
         b.emplace_back(val);
@@ -82,7 +85,8 @@ BSuitorMatcher::MatchingNode BSuitorMatcher::findPreferred(node u) {
 
     for (auto [v, weight] : G->weightNeighborRange(u)) {
         const MatchingNode w = MatchingNode(v, weight);
-        if (hasProposedTo(w.id)) continue;
+        if (hasProposedTo(w.id))
+            continue;
         if (w.weight > best.weight || (w.weight == best.weight && w.id < best.id)) {
             const edgeweight n_suitor_weight = suitors[w.id]->min.weight;
 
