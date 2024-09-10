@@ -10,7 +10,7 @@
 #ifndef NETWORKIT_MATCHING_B_MATCHING_HPP_
 #define NETWORKIT_MATCHING_B_MATCHING_HPP_
 
-#include <set>
+#include <unordered_set>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/graph/Graph.hpp>
 
@@ -90,7 +90,7 @@ public:
     /**
      * Retrieves a reference to the set of matches for each node.
      */
-    const std::vector<std::set<node>> &getMatches() const;
+    const std::vector<std::unordered_set<node>> &getMatches() const;
 
     /**
      * Retrieves the b-value for each node.
@@ -98,7 +98,7 @@ public:
     std::vector<count> getB() const;
 
 protected:
-    std::vector<std::set<node>> matches;
+    std::vector<std::unordered_set<node>> matches;
     const std::vector<count> b;
 };
 
