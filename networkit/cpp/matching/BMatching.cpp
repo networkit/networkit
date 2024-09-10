@@ -9,8 +9,8 @@ BMatching::BMatching(const std::vector<count> &b, count z) : b(b) {
 bool BMatching::isProper(const Graph &G) const {
     // check if entries are symmetric and every pair exists as an edge
     for (node v : G.nodeRange()) {
-        for (node w : matches.at(v)) {
-            if (matches.at(w).find(v) == matches.at(w).end()) {
+        for (node w : matches[v]) {
+            if (matches[w].find(v) == matches[w].end()) {
                 DEBUG("node ", v, " is not symmetrically matched");
                 return false;
             }
@@ -24,23 +24,23 @@ bool BMatching::isProper(const Graph &G) const {
 }
 
 void BMatching::match(node u, node v) {
-    assert(matches.at(u).size() <= b.at(u));
-    assert(matches.at(v).size() <= b.at(v));
-    matches.at(u).insert(v);
-    matches.at(v).insert(u);
+    assert(matches[u].size() <= b[u]);
+    assert(matches[v].size() <= b[v]);
+    matches[u].insert(v);
+    matches[v].insert(u);
 }
 
 void BMatching::unmatch(node u, node v) {
-    matches.at(u).erase(v);
-    matches.at(v).erase(u);
+    matches[u].erase(v);
+    matches[v].erase(u);
 }
 
 bool BMatching::isUnmatched(node u) const {
-    return matches.at(u).empty();
+    return matches[u].empty();
 }
 
 bool BMatching::areMatched(node u, node v) const {
-    return matches.at(u).find(v) != matches.at(u).end();
+    return matches[u].find(v) != matches[u].end();
 }
 
 count BMatching::size(const Graph &G) const {
@@ -56,7 +56,7 @@ count BMatching::size(const Graph &G) const {
 edgeweight BMatching::weight(const Graph &G) const {
     return G.parallelSumForNodes([&](node v) {
         edgeweight weight_per_node = 0.0;
-        for (auto u : matches.at(v)) {
+        for (auto u : matches[v]) {
             if (v < u) {
                 weight_per_node += G.weight(v, u);
             }
@@ -65,7 +65,7 @@ edgeweight BMatching::weight(const Graph &G) const {
     });
 }
 
-const std::vector<std::set<node>> &BMatching::getMatches() const {
+const std::vector<std::unordered_set<node>> &BMatching::getMatches() const {
     return matches;
 }
 
