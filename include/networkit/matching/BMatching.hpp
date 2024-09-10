@@ -6,7 +6,6 @@
  *              Frieda Gerharz
  */
 
-
 #ifndef NETWORKIT_MATCHING_B_MATCHING_HPP_
 #define NETWORKIT_MATCHING_B_MATCHING_HPP_
 
