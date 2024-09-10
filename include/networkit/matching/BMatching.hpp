@@ -78,7 +78,14 @@ public:
      */
     edgeweight weight(const Graph &G) const;
 
+    /**
+     * Retrieves a reference to the set of matches for each node.
+     */
     const std::vector<std::set<node>> &getMatches() const;
+
+    /**
+     * Retrieves the b-value for each node.
+     */
     std::vector<count> getB() const;
 
 protected:
