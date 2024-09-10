@@ -11,6 +11,8 @@
 #define NETWORKIT_MATCHING_B_SUITOR_MATCHER_HPP_
 
 #include <algorithm>
+#include <string_view>
+
 #include <networkit/graph/Graph.hpp>
 #include <networkit/matching/BMatcher.hpp>
 
@@ -120,7 +122,7 @@ struct MatchingNodeInfo {
      * @param path  A path to a file containing @a b values that represents the max number of edges
      * per vertex in the b-Matching.
      */
-    BSuitorMatcher(const Graph &G, const std::string &path);
+    BSuitorMatcher(const Graph &G, std::string_view &path);
 
     ~BSuitorMatcher() override = default;
 
@@ -148,7 +150,7 @@ protected:
      * @param path
      * @return std::vector<count>
      */
-    std::vector<count> readBValuesFromFile(count size, const std::string &path) const;
+    std::vector<count> readBValuesFromFile(count size, std::string_view &path) const;
 
     /**
      * Iterates up to @a b times over the heaviest neighbors of node @a u and makes
