@@ -119,6 +119,11 @@ public:
      */
     void run() override;
 
+    /**
+     * Creates the b-matching for given graph G. Function run() has to be called before calling
+     * buildMatching. After invoking buildBMatching(), use getBMatching() to retrieve the resulting
+     * b-matching.
+     */
     void buildBMatching();
 
 protected:
