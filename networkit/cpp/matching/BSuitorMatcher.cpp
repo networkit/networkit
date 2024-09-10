@@ -127,7 +127,9 @@ bool BSuitorMatcher::isSymmetrical() const {
 }
 
 void BSuitorMatcher::buildBMatching() {
-    // TODO make parallel
+    if (!hasRun) {
+        throw std::runtime_error("Call run() before creating b-matching.");
+    }
     G->forNodes([&](node x) {
         assert(Suitors.at(x)->partners.size() <= b.at(x));
         for (auto y : Suitors.at(x)->partners) {
