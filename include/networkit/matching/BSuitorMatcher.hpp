@@ -16,37 +16,44 @@
 
 namespace NetworKit {
 
-struct Node {
+/**
+ * @ingroup matching
+ * B-Suitor matching finding algorithm.
+ */
+class BSuitorMatcher : public BMatcher {
+public:
+
+struct MatchingNode {
     node id;
     edgeweight weight;
 
-    Node() = default;
-    Node(node n, edgeweight w) : id(n), weight(w) {}
+    MatchingNode() = default;
+    MatchingNode(node n, edgeweight w) : id(n), weight(w) {}
 
-    bool operator==(const Node &other) const { return id == other.id && weight == other.weight; }
-    bool operator!=(const Node &other) const { return id != other.id || weight != other.weight; }
+    bool operator==(const MatchingNode &other) const { return id == other.id && weight == other.weight; }
+    bool operator!=(const MatchingNode &other) const { return id != other.id || weight != other.weight; }
 };
 
-struct NodeMatchesInfo {
-    std::vector<Node> partners;
-    Node min; // (none, 0) if partners still has free capacity
+struct MatchingNodeInfo {
+    std::vector<MatchingNode> partners;
+    MatchingNode min; // (none, 0) if partners still has free capacity
     count max_size;
 
-    NodeMatchesInfo() = default;
+    MatchingNodeInfo() = default;
 
-    NodeMatchesInfo(count b) {
+    MatchingNodeInfo(count b) {
         partners.reserve(b);
-        min = Node(none, 0);
+        min = MatchingNode(none, 0);
         max_size = b;
     }
 
     bool hasPartner(node u) {
         return std::find_if(partners.begin(), partners.end(),
-                            [u](const Node &v) { return v.id == u; })
+                            [u](const MatchingNode &v) { return v.id == u; })
                != partners.end();
     }
 
-    Node popMinIfFull() {
+    MatchingNode popMinIfFull() {
         if (partners.size() < max_size) {
             return {none, 0};
         } else {
@@ -56,12 +63,12 @@ struct NodeMatchesInfo {
         }
     }
 
-    void insert(const Node &u) {
+    void insert(const MatchingNode &u) {
         assert(partners.size() < max_size);
         partners.emplace_back(u);
         if (partners.size() == max_size && !partners.empty()) {
             min = *std::min_element(partners.begin(), partners.end(),
-                                    [](const Node &x, const Node &y) {
+                                    [](const MatchingNode &x, const MatchingNode &y) {
                                         if (x.weight == y.weight) {
                                             return x.id > y.id;
                                         }
@@ -72,29 +79,23 @@ struct NodeMatchesInfo {
 
     void remove(node u) {
         partners.erase(std::remove_if(partners.begin(), partners.end(),
-                                      [u](const Node &v) {
+                                      [u](const MatchingNode &v) {
                                           if (v.id == u) {
                                               return true;
                                           }
                                           return false;
                                       }),
                        partners.end());
-        min = Node(none, 0);
+        min = MatchingNode(none, 0);
     }
 
     void sort() {
-        std::sort(partners.begin(), partners.end(), [](const Node &u, const Node &v) {
+        std::sort(partners.begin(), partners.end(), [](const MatchingNode &u, const MatchingNode &v) {
             return (u.weight > v.weight || (u.weight == v.weight && u.id < v.id));
         });
     }
 };
 
-/**
- * @ingroup matching
- * B-Suitor matching finding algorithm.
- */
-class BSuitorMatcher : public BMatcher {
-public:
     /**
      * Computes a 1/2-approximate maximum weight b-matching of an undirected weighted Graph @c G
      * using the sequential b-Suitor algorithm published by Khan et al. in "Efficient Approximation
@@ -136,8 +137,8 @@ public:
     void buildBMatching();
 
 protected:
-    std::vector<std::unique_ptr<NodeMatchesInfo>> Suitors;
-    std::vector<std::unique_ptr<NodeMatchesInfo>> Proposed;
+    std::vector<std::unique_ptr<MatchingNodeInfo>> suitors;
+    std::vector<std::unique_ptr<MatchingNodeInfo>> proposed;
     const std::vector<count> b;
 
     /**
@@ -165,7 +166,7 @@ protected:
      * @param y
      * @return Node
      */
-    Node findPreferred(node u);
+    MatchingNode findPreferred(node u);
 
     /**
      * Makes @a v a suitor of @a u and recursively calls itself for previous worse
