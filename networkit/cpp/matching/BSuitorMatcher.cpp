@@ -64,7 +64,7 @@ std::vector<count> BSuitorMatcher::readBValuesFromFile(count size, std::string_v
 }
 
 void BSuitorMatcher::findSuitors(node cur) {
-    for (index i = 0; i < b.at(cur); i++) {
+    for (index i = 0; i < b[cur]; i++) {
         auto [pref, heaviest] = findPreferred(cur);
         if (pref != none) {
             makeSuitor(cur, heaviest, pref);
@@ -76,20 +76,19 @@ BSuitorMatcher::MatchingNode BSuitorMatcher::findPreferred(node u) {
     MatchingNode best = MatchingNode{none, 0};
 
     auto hasProposedTo = [&](node x) -> bool {
-        return std::any_of(proposed.at(u)->partners.begin(), proposed.at(u)->partners.end(),
+        return std::any_of(proposed[u]->partners.begin(), proposed[u]->partners.end(),
                            [x](const MatchingNode &y) { return y.id == x; });
     };
 
-    for (auto n : G->weightNeighborRange(u)) {
-        const MatchingNode v = MatchingNode(n.first, n.second);
-        if (!hasProposedTo(v.id)) {
-            if (v.weight > best.weight || (v.weight == best.weight && v.id < best.id)) {
-                const auto n_suitor_weight = suitors.at(v.id)->min.weight;
+    for (auto [v, weight] : G->weightNeighborRange(u)) {
+        const MatchingNode w = MatchingNode(v, weight);
+        if (hasProposedTo(w.id)) continue;
+        if (w.weight > best.weight || (w.weight == best.weight && w.id < best.id)) {
+            const edgeweight n_suitor_weight = suitors[w.id]->min.weight;
 
-                if (v.weight > n_suitor_weight
-                    || (v.weight == n_suitor_weight && u < suitors.at(v.id)->min.id)) {
-                    best = v;
-                }
+            if (w.weight > n_suitor_weight
+                || (w.weight == n_suitor_weight && u < suitors[w.id]->min.id)) {
+                best = w;
             }
         }
     }
@@ -97,12 +96,12 @@ BSuitorMatcher::MatchingNode BSuitorMatcher::findPreferred(node u) {
 }
 
 void BSuitorMatcher::makeSuitor(node u, edgeweight w, node v) {
-    auto smallest = suitors.at(v)->popMinIfFull();
-    suitors.at(v)->insert(MatchingNode(u, w));
-    proposed.at(u)->insert(MatchingNode(v, w));
+    auto smallest = suitors[v]->popMinIfFull();
+    suitors[v]->insert(MatchingNode(u, w));
+    proposed[u]->insert(MatchingNode(v, w));
 
     if (smallest.id != none) {
-        proposed.at(smallest.id)->remove(v);
+        proposed[smallest.id]->remove(v);
         auto [pref, heaviest] = findPreferred(smallest.id);
         if (pref != none) {
             makeSuitor(smallest.id, heaviest, pref);
@@ -113,16 +112,18 @@ void BSuitorMatcher::makeSuitor(node u, edgeweight w, node v) {
 bool BSuitorMatcher::isSymmetrical() const {
     bool sym = true;
     auto matchedSymmetrical = [&](node x, node y) -> bool {
-        return suitors.at(x)->hasPartner(y) == suitors.at(y)->hasPartner(x);
+        return suitors[x]->hasPartner(y) == suitors[y]->hasPartner(x);
     };
 
-    G->forNodes([&](node u) {
-        G->forNodes([&](node v) {
-            if (u > v && !matchedSymmetrical(u, v)) {
+    for (node u : G->nodeRange()) {
+        for (node v = u; v < G->upperNodeIdBound(); ++v) {
+            if (!matchedSymmetrical(u, v)) {
                 sym = false;
+                break;
             }
-        });
-    });
+        }
+    }
+
     return sym;
 }
 
@@ -131,8 +132,8 @@ void BSuitorMatcher::buildBMatching() {
         throw std::runtime_error("Call run() before creating b-matching.");
     }
     G->forNodes([&](node x) {
-        assert(suitors.at(x)->partners.size() <= b.at(x));
-        for (auto y : suitors.at(x)->partners) {
+        assert(suitors[x]->partners.size() <= b.at(x));
+        for (MatchingNode y : suitors[x]->partners) {
             if (y.id != none && x < y.id) {
                 M.match(x, y.id);
             }
