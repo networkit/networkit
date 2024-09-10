@@ -1,3 +1,12 @@
+/*
+ * BMatching.hpp
+ *
+ *  Created on: 07.08.2023
+ *      Author: Fabian Brandt-Tumescheit
+ *              Frieda Gerharz
+ */
+
+
 #ifndef NETWORKIT_MATCHING_B_MATCHING_HPP_
 #define NETWORKIT_MATCHING_B_MATCHING_HPP_
 
