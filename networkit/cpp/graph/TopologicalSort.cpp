@@ -11,7 +11,7 @@
 namespace NetworKit {
 
 TopologicalSort::TopologicalSort(const Graph &G)
-    : G(&G), nodeIdMap(nullptr), computedNodeIdMap({}) {
+    : G(&G), computedNodeIdMap(GraphTools::getContinuousNodeIds(G)) {
     checkDirected();
     if (G.upperNodeIdBound() != G.numberOfNodes() - 1) {
         computedNodeIdMap = GraphTools::getContinuousNodeIds(G);
@@ -23,11 +23,29 @@ TopologicalSort::TopologicalSort(const Graph &G, std::unordered_map<node, node> 
                                  bool checkMapping)
     : G(&G), nodeIdMap(&nodeIdMap), computedNodeIdMap({}) {
     checkDirected();
+    if (checkMapping) {
+        checkNodeIdMap();
+    }
 }
 
 void TopologicalSort::checkDirected() {
     if (!G->isDirected())
         throw std::runtime_error("Topological sort is defined for directed graphs only.");
+}
+
+void TopologicalSort::checkNodeIdMap() {
+    size_t numberOfNodes = G->numberOfNodes();
+    if (nodeIdMap->size() != numberOfNodes)
+        throw std::runtime_error("Node id mapping contains an incorrect number of entries");
+
+    std::vector<bool> checkTable(numberOfNodes);
+    for (auto it = nodeIdMap->begin(); it != nodeIdMap->end(); it++) {
+        node mappedNode = it->second;
+        if (mappedNode < numberOfNodes && !checkTable[mappedNode])
+            checkTable[mappedNode] = true;
+        else
+            throw std::runtime_error("Node id mapping is not continuous.");
+    }
 }
 
 void TopologicalSort::run() {

@@ -129,4 +129,26 @@ TEST_F(TopologicalSortGTest, testCustomNodeIdMapping) {
     // node 1 is depending on node 2
     EXPECT_TRUE(indexNode1 > indexNode2);
 }
+
+TEST_F(TopologicalSortGTest, testNonContinuousNodeIdMapping) {
+    auto G = inputGraph(true);
+    G.removeNode(3);
+    std::unordered_map<node, node> mapping;
+    mapping[0] = 0;
+    mapping[1] = 4;
+    mapping[2] = 2;
+    mapping[4] = 3;
+    EXPECT_THROW(TopologicalSort(G, mapping, true), std::runtime_error);
+}
+
+TEST_F(TopologicalSortGTest, testNonInjectiveNodeIdMapping) {
+    auto G = inputGraph(true);
+    G.removeNode(3);
+    std::unordered_map<node, node> mapping;
+    mapping[0] = 0;
+    mapping[1] = 1;
+    mapping[2] = 1;
+    mapping[4] = 3;
+    EXPECT_THROW(TopologicalSort(G, mapping, true), std::runtime_error);
+}
 } // namespace NetworKit
