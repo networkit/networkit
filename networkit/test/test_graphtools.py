@@ -505,8 +505,8 @@ class TestGraphTools(unittest.TestCase):
 			return mapping
 
 		def assertTopological(G, res):
-			indices = []
-			self.assertEqual(res.size(), G.numberOfNodes())
+			self.assertEqual(len(res), G.numberOfNodes())
+			indices = G.numberOfNodes() * [0]
 			for u in G.iterNodes():
 				indices[u] = res.index(u)
 			for u in G.iterNodes():
