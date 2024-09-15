@@ -497,7 +497,7 @@ class TestGraphTools(unittest.TestCase):
 			return G
 
 		def generateMapping():
-			mapping = dict()
+			mapping = {}
 			mapping[0] = 0;
 			mapping[1] = 1;
 			mapping[2] = 2;
@@ -506,7 +506,7 @@ class TestGraphTools(unittest.TestCase):
 
 		def assertTopological(G, res):
 			self.assertEqual(len(res), G.numberOfNodes())
-			indices = G.numberOfNodes() * [0]
+			indices = {}
 			for u in G.iterNodes():
 				indices[u] = res.index(u)
 			for u in G.iterNodes():

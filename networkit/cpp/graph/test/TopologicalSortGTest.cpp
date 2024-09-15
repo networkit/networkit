@@ -51,7 +51,7 @@ std::unordered_map<node, node> TopologicalSortGTest::makeMapping() const noexcep
 }
 
 void TopologicalSortGTest::assertTopological(Graph &G, std::vector<node> &sort) {
-    std::vector<node> indices(G.numberOfNodes());
+    std::unordered_map<node, node> indices;
     EXPECT_EQ(sort.size(), G.numberOfNodes());
     G.forNodes([&](node u) {
         indices[u] = std::distance(sort.begin(), std::find(sort.begin(), sort.end(), u));
