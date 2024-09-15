@@ -8,6 +8,7 @@
 #include <networkit/graph/TopologicalSort.hpp>
 
 #include <stdexcept>
+#include <unordered_map>
 #include <gtest/gtest.h>
 
 namespace NetworKit {
@@ -15,6 +16,8 @@ namespace NetworKit {
 class TopologicalSortGTest : public testing::Test {
 protected:
     Graph inputGraph(bool directed) const noexcept;
+    std::unordered_map<node, node> makeMapping() const noexcept;
+    void assertTopological(Graph &G, std::vector<node> &sort);
 };
 
 Graph TopologicalSortGTest::inputGraph(bool directed) const noexcept {
@@ -37,6 +40,27 @@ Graph TopologicalSortGTest::inputGraph(bool directed) const noexcept {
     return G;
 }
 
+std::unordered_map<node, node> TopologicalSortGTest::makeMapping() const noexcept {
+    std::unordered_map<node, node> mapping;
+    mapping[0] = 0;
+    mapping[1] = 1;
+    mapping[2] = 2;
+    mapping[4] = 3;
+
+    return mapping;
+}
+
+void TopologicalSortGTest::assertTopological(Graph &G, std::vector<node> &sort) {
+    std::vector<node> indices(G.numberOfNodes());
+    EXPECT_EQ(sort.size(), G.numberOfNodes());
+    G.forNodes([&](node u) {
+        indices[u] = std::distance(sort.begin(), std::find(sort.begin(), sort.end(), u));
+    });
+    G.forNodes([&](node u) {
+        G.forNeighborsOf(u, [&](node v) { EXPECT_TRUE(indices[u] < indices[v]); });
+    });
+}
+
 TEST_F(TopologicalSortGTest, testTopologicalSort) {
     auto G = inputGraph(true);
 
@@ -44,21 +68,7 @@ TEST_F(TopologicalSortGTest, testTopologicalSort) {
     topSort.run();
     std::vector<node> res = topSort.getResult();
 
-    // Test for valid topology
-    auto indexNode0 = std::distance(res.begin(), std::find(res.begin(), res.end(), 0));
-    auto indexNode1 = std::distance(res.begin(), std::find(res.begin(), res.end(), 1));
-    auto indexNode2 = std::distance(res.begin(), std::find(res.begin(), res.end(), 2));
-    auto indexNode3 = std::distance(res.begin(), std::find(res.begin(), res.end(), 3));
-    auto indexNode4 = std::distance(res.begin(), std::find(res.begin(), res.end(), 4));
-    EXPECT_EQ(res.size(), 5);
-    // node 2 is depending on node 0
-    EXPECT_TRUE(indexNode2 > indexNode0);
-    // node 2 is depending on node 4
-    EXPECT_TRUE(indexNode2 > indexNode4);
-    // node 1 is depending on node 2
-    EXPECT_TRUE(indexNode1 > indexNode2);
-    // node 3 is depending on node 1
-    EXPECT_TRUE(indexNode3 > indexNode1);
+    assertTopological(G, res);
 }
 
 TEST_F(TopologicalSortGTest, testRepeatedRuns) {
@@ -90,54 +100,24 @@ TEST_F(TopologicalSortGTest, testNonContinuousNodeIds) {
     topSort.run();
     std::vector<node> res = topSort.getResult();
 
-    // Test for valid topology
-    auto indexNode0 = std::distance(res.begin(), std::find(res.begin(), res.end(), 0));
-    auto indexNode1 = std::distance(res.begin(), std::find(res.begin(), res.end(), 1));
-    auto indexNode2 = std::distance(res.begin(), std::find(res.begin(), res.end(), 2));
-    auto indexNode4 = std::distance(res.begin(), std::find(res.begin(), res.end(), 4));
-    EXPECT_EQ(res.size(), 4);
-    // node 2 is depending on node 0
-    EXPECT_TRUE(indexNode2 > indexNode0);
-    // node 2 is depending on node 4
-    EXPECT_TRUE(indexNode2 > indexNode4);
-    // node 1 is depending on node 2
-    EXPECT_TRUE(indexNode1 > indexNode2);
+    assertTopological(G, res);
 }
 
 TEST_F(TopologicalSortGTest, testCustomNodeIdMapping) {
     auto G = inputGraph(true);
     G.removeNode(3);
-    std::unordered_map<node, node> mapping;
-    mapping[0] = 0;
-    mapping[1] = 1;
-    mapping[2] = 2;
-    mapping[4] = 3;
+    std::unordered_map<node, node> mapping = makeMapping();
     TopologicalSort topSort = TopologicalSort(G, mapping);
     topSort.run();
     std::vector<node> res = topSort.getResult();
 
-    // Test for valid topology
-    auto indexNode0 = std::distance(res.begin(), std::find(res.begin(), res.end(), 0));
-    auto indexNode1 = std::distance(res.begin(), std::find(res.begin(), res.end(), 1));
-    auto indexNode2 = std::distance(res.begin(), std::find(res.begin(), res.end(), 2));
-    auto indexNode4 = std::distance(res.begin(), std::find(res.begin(), res.end(), 4));
-    EXPECT_EQ(res.size(), 4);
-    // node 2 is depending on node 0
-    EXPECT_TRUE(indexNode2 > indexNode0);
-    // node 2 is depending on node 4
-    EXPECT_TRUE(indexNode2 > indexNode4);
-    // node 1 is depending on node 2
-    EXPECT_TRUE(indexNode1 > indexNode2);
+    assertTopological(G, res);
 }
 
 TEST_F(TopologicalSortGTest, testWrongSizeOfNodeIdMapping) {
     auto G = inputGraph(true);
     G.removeNode(3);
-    std::unordered_map<node, node> mapping;
-    mapping[0] = 0;
-    mapping[1] = 1;
-    mapping[2] = 2;
-    mapping[4] = 3;
+    std::unordered_map<node, node> mapping = makeMapping();
     mapping[5] = 4;
     EXPECT_THROW(TopologicalSort(G, mapping), std::runtime_error);
 }
@@ -145,22 +125,16 @@ TEST_F(TopologicalSortGTest, testWrongSizeOfNodeIdMapping) {
 TEST_F(TopologicalSortGTest, testNonContinuousNodeIdMapping) {
     auto G = inputGraph(true);
     G.removeNode(3);
-    std::unordered_map<node, node> mapping;
-    mapping[0] = 0;
+    std::unordered_map<node, node> mapping = makeMapping();
     mapping[1] = 4;
-    mapping[2] = 2;
-    mapping[4] = 3;
     EXPECT_THROW(TopologicalSort(G, mapping, true), std::runtime_error);
 }
 
 TEST_F(TopologicalSortGTest, testNonInjectiveNodeIdMapping) {
     auto G = inputGraph(true);
     G.removeNode(3);
-    std::unordered_map<node, node> mapping;
-    mapping[0] = 0;
-    mapping[1] = 1;
+    std::unordered_map<node, node> mapping = makeMapping();
     mapping[2] = 1;
-    mapping[4] = 3;
     EXPECT_THROW(TopologicalSort(G, mapping, true), std::runtime_error);
 }
 } // namespace NetworKit

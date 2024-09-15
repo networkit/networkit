@@ -496,22 +496,32 @@ class TestGraphTools(unittest.TestCase):
 			G.addEdge(4, 2)
 			return G
 
+		def generateMapping():
+			mapping = dict()
+			mapping[0] = 0;
+			mapping[1] = 1;
+			mapping[2] = 2;
+			mapping[4] = 3;
+			return mapping
+
+		def assertTopological(G, res):
+			indices = []
+			self.assertEqual(res.size(), G.numberOfNodes())
+			for u in G.iterNodes():
+				indices[u] = res.index(u)
+			for u in G.iterNodes():
+				for v in G.iterNeighbors(u):
+					self.assertLess(indices[u], indices[v])
+		
 		G = generateGraph(False)
 		with self.assertRaises(Exception):
 			nk.graphtools.topologicalSort(G)
 
 		G = generateGraph(True)
 		res = nk.graphtools.topologicalSort(G)
-		indexNode0 = res.index(0)
-		indexNode1 = res.index(1)
-		indexNode2 = res.index(2)
-		indexNode3 = res.index(3)
-		indexNode4 = res.index(4)
-		self.assertEqual(res.size(), 5)
-		self.assertLess(indexNode0, indexNode2)
-		self.assertLess(indexNode4, indexNode2)
-		self.assertLess(indexNode2, indexNode1)
-		self.assertLess(indexNode1, indexNode3)
+		assertTopological(G, res)
+        res2 = nk.graphtools.topologicalSort(G);
+        self.assertEqual(res, res2);
 
 		# create the cycle 3-4-2-1
 		G.addEdge(3, 4)
@@ -520,40 +530,24 @@ class TestGraphTools(unittest.TestCase):
 
 		G.removeNode(3);
 		res = nk.graphtools.topologicalSort(G)
-		indexNode0 = res.index(0)
-		indexNode1 = res.index(1)
-		indexNode2 = res.index(2)
-		indexNode4 = res.index(4)
-		self.assertEqual(res.size(), 4)
-		self.assertLess(indexNode0, indexNode2)
-		self.assertLess(indexNode4, indexNode2)
-		self.assertLess(indexNode2, indexNode1)
+		assertTopological(G, res)
 
-		mapping = dict()
-		mapping[0] = 0;
-		mapping[1] = 1;
-		mapping[2] = 2;
-		mapping[4] = 3;
+		mapping = generateMapping()
 		res = nk.graphtools.topologicalSort(G, mapping);
-		indexNode0 = res.index(0)
-		indexNode1 = res.index(1)
-		indexNode2 = res.index(2)
-		indexNode4 = res.index(4)
-		self.assertEqual(res.size(), 4)
-		self.assertLess(indexNode0, indexNode2)
-		self.assertLess(indexNode4, indexNode2)
-		self.assertLess(indexNode2, indexNode1)
+		assertTopological(G, res)
 
 		mapping[5] = 4;
 		with self.assertRaises(Exception):
 			nk.graphtools.topologicalSort(G, mapping)
 
-		del mapping[5]
+		# make mapping non-continuous  
+		mapping = generateMapping()
 		mapping[1] = 4
 		with self.assertRaises(Exception):
 			nk.graphtools.topologicalSort(G, mapping, True)
 
-		mapping[1] = 1
+		# make mapping non-injective
+		mapping = generateMapping()
 		mapping[2] = 1
 		with self.assertRaises(Exception):
 			nk.graphtools.topologicalSort(G, mapping, True)

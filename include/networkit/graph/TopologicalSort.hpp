@@ -60,7 +60,7 @@ private:
 
     std::optional<std::unordered_map<node, node>> computedNodeIdMap;
 
-    std::unordered_map<node, node> * nodeIdMap;
+    std::unordered_map<node, node> *nodeIdMap;
 
     // Used to mark the status of each node, one vector per thread
     std::vector<NodeMark> topSortMark;
