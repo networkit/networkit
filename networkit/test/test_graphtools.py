@@ -520,8 +520,8 @@ class TestGraphTools(unittest.TestCase):
 		G = generateGraph(True)
 		res = nk.graphtools.topologicalSort(G)
 		assertTopological(G, res)
-        res2 = nk.graphtools.topologicalSort(G);
-        self.assertEqual(res, res2);
+		res2 = nk.graphtools.topologicalSort(G);
+		self.assertEqual(res, res2);
 
 		# create the cycle 3-4-2-1
 		G.addEdge(3, 4)

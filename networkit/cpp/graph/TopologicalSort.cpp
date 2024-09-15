@@ -21,7 +21,7 @@ TopologicalSort::TopologicalSort(const Graph &G)
 
 TopologicalSort::TopologicalSort(const Graph &G, std::unordered_map<node, node> &nodeIdMap,
                                  bool checkMapping)
-    : G(&G), nodeIdMap(&nodeIdMap), computedNodeIdMap({}) {
+    : G(&G), computedNodeIdMap({}), nodeIdMap(&nodeIdMap) {
     checkDirected();
     size_t numberOfNodes = G.numberOfNodes();
     if (nodeIdMap.size() != numberOfNodes)
