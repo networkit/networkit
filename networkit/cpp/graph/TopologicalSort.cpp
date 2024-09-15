@@ -23,9 +23,13 @@ TopologicalSort::TopologicalSort(const Graph &G, std::unordered_map<node, node> 
                                  bool checkMapping)
     : G(&G), nodeIdMap(&nodeIdMap), computedNodeIdMap({}) {
     checkDirected();
-    if (checkMapping) {
+    size_t numberOfNodes = G.numberOfNodes();
+    if (nodeIdMap.size() != numberOfNodes)
+        throw std::runtime_error(
+            "Node id mapping should contain exactly one entry for every node.");
+
+    if (checkMapping)
         checkNodeIdMap();
-    }
 }
 
 void TopologicalSort::checkDirected() {
@@ -35,9 +39,6 @@ void TopologicalSort::checkDirected() {
 
 void TopologicalSort::checkNodeIdMap() {
     size_t numberOfNodes = G->numberOfNodes();
-    if (nodeIdMap->size() != numberOfNodes)
-        throw std::runtime_error("Node id mapping contains an incorrect number of entries");
-
     std::vector<bool> checkTable(numberOfNodes);
     for (auto it = nodeIdMap->begin(); it != nodeIdMap->end(); it++) {
         node mappedNode = it->second;
