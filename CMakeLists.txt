@@ -236,7 +236,7 @@ endif()
 # Use DHB as a CMake submodule
 if(NETWORKIT_USE_DHB)
 	if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/dhb/CMakeLists.txt")
-		set(DHB_WITH_64BIT_IDS TRUE "Use 64 bit IDs.")
+		option(DHB_WITH_64BIT_IDS "Use 64 bit IDs." TRUE)
 		add_subdirectory(extlibs/dhb)
 	else()
 		message(FATAL_ERROR
