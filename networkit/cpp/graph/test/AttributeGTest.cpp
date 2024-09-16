@@ -430,4 +430,33 @@ TEST_F(AttributeGTest, testDefaultGet) {
     EXPECT_EQ(intAttr.get(2, 0), 0);
 }
 
+TEST_F(AttributeGTest, deleteOtherNode) {
+    Graph graph(3, false, true, true);
+
+    graph.addEdge(0, 1);
+    graph.addEdge(1, 2);
+
+    auto nodeAttr = graph.nodeAttributes().attach<node>("nodeAttr");
+    nodeAttr[0] = 0;
+    nodeAttr[1] = 1;
+    nodeAttr[2] = 2;
+
+    std::cout << nodeAttr[0] << "\n";
+    std::cout << nodeAttr[1] << "\n";
+    std::cout << nodeAttr[2] << "\n";
+
+    graph.removeNode(1);
+
+    EXPECT_EQ(nodeAttr[0], 0);
+    EXPECT_THROW(nodeAttr[1], std::runtime_error);
+    EXPECT_EQ(nodeAttr[2], 2);
+    std::cout << nodeAttr[2] << "\n";
+
+    graph.removeNode(0);
+
+    EXPECT_THROW(nodeAttr[0], std::runtime_error);
+    EXPECT_THROW(nodeAttr[1], std::runtime_error);
+    EXPECT_EQ(nodeAttr[2], 2);
+}
+
 } // namespace NetworKit
