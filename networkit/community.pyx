@@ -501,7 +501,7 @@ cdef extern from "<networkit/community/Modularity.hpp>":
 
 	cdef cppclass _Modularity "NetworKit::Modularity":
 		_Modularity() except +
-		double getQuality(_Partition _zeta, _Graph _G) nogil except +
+		double getQuality(_Partition _zeta, _Graph _G) except + nogil
 
 
 cdef class Modularity:
@@ -907,7 +907,7 @@ cdef extern from "<networkit/community/CutClustering.hpp>":
 
 cdef extern from "<networkit/community/CutClustering.hpp>" namespace "NetworKit::CutClustering":
 
-	map[double, _Partition] CutClustering_getClusterHierarchy "NetworKit::CutClustering::getClusterHierarchy"(const _Graph& G) nogil except +
+	map[double, _Partition] CutClustering_getClusterHierarchy "NetworKit::CutClustering::getClusterHierarchy"(const _Graph& G) except + nogil
 
 
 cdef class CutClustering(CommunityDetector):
@@ -971,7 +971,7 @@ cdef extern from "<networkit/community/NodeStructuralRandMeasure.hpp>":
 
 	cdef cppclass _NodeStructuralRandMeasure "NetworKit::NodeStructuralRandMeasure":
 		_NodeStructuralRandMeasure() except +
-		double getDissimilarity(_Graph G, _Partition first, _Partition second) nogil except +
+		double getDissimilarity(_Graph G, _Partition first, _Partition second) except + nogil
 
 cdef class NodeStructuralRandMeasure(DissimilarityMeasure):
 	""" 
@@ -1012,7 +1012,7 @@ cdef extern from "<networkit/community/GraphStructuralRandMeasure.hpp>":
 
 	cdef cppclass _GraphStructuralRandMeasure "NetworKit::GraphStructuralRandMeasure":
 		_GraphStructuralRandMeasure() except +
-		double getDissimilarity(_Graph G, _Partition first, _Partition second) nogil except +
+		double getDissimilarity(_Graph G, _Partition first, _Partition second) except + nogil
 
 cdef class GraphStructuralRandMeasure(DissimilarityMeasure):
 	""" 
@@ -1053,7 +1053,7 @@ cdef extern from "<networkit/community/JaccardMeasure.hpp>":
 
 	cdef cppclass _JaccardMeasure "NetworKit::JaccardMeasure":
 		_JaccardMeasure() except +
-		double getDissimilarity(_Graph G, _Partition first, _Partition second) nogil except +
+		double getDissimilarity(_Graph G, _Partition first, _Partition second) except + nogil
 
 cdef class JaccardMeasure(DissimilarityMeasure):
 	""" 
@@ -1090,7 +1090,7 @@ cdef extern from "<networkit/community/NMIDistance.hpp>":
 
 	cdef cppclass _NMIDistance "NetworKit::NMIDistance":
 		_NMIDistance() except +
-		double getDissimilarity(_Graph G, _Partition first, _Partition second) nogil except +
+		double getDissimilarity(_Graph G, _Partition first, _Partition second) except + nogil
 
 cdef class NMIDistance(DissimilarityMeasure):
 	""" 
@@ -1129,7 +1129,7 @@ cdef class NMIDistance(DissimilarityMeasure):
 cdef extern from "<networkit/community/AdjustedRandMeasure.hpp>":
 
 	cdef cppclass _AdjustedRandMeasure "NetworKit::AdjustedRandMeasure":
-		double getDissimilarity(_Graph G, _Partition first, _Partition second) nogil except +
+		double getDissimilarity(_Graph G, _Partition first, _Partition second) except + nogil
 
 cdef class AdjustedRandMeasure(DissimilarityMeasure):
 	"""
@@ -1917,8 +1917,8 @@ cdef extern from "<networkit/community/OverlappingNMIDistance.hpp>":
 		_OverlappingNMIDistance() except +
 		_OverlappingNMIDistance(_Normalization normalization) except +
 		void setNormalization(_Normalization normalization) except +
-		double getDissimilarity(_Graph G, _Partition first, _Partition second) nogil except +
-		double getDissimilarity(_Graph G, _Cover first, _Cover second) nogil except +
+		double getDissimilarity(_Graph G, _Partition first, _Partition second) except + nogil
+		double getDissimilarity(_Graph G, _Cover first, _Cover second) except + nogil
 
 cdef class OverlappingNMIDistance(DissimilarityMeasure):
 	"""

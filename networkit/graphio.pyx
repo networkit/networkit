@@ -37,8 +37,8 @@ cdef extern from "<algorithm>" namespace "std":
 cdef extern from "<networkit/io/GraphReader.hpp>":
 
 	cdef cppclass _GraphReader "NetworKit::GraphReader":
-		_GraphReader() nogil except +
-		_Graph read(string path) nogil except +
+		_GraphReader() except + nogil
+		_Graph read(string path) except + nogil
 
 cdef class GraphReader:
 	""" Abstract base class for graph readers"""
@@ -98,8 +98,8 @@ class MultipleEdgesHandling:
 cdef extern from "<networkit/io/GraphWriter.hpp>":
 
 	cdef cppclass _GraphWriter "NetworKit::GraphWriter":
-		_GraphWriter() nogil except +
-		void write(_Graph G, string path) nogil except +
+		_GraphWriter() except + nogil
+		void write(_Graph G, string path) except + nogil
 
 
 cdef class GraphWriter:
@@ -141,7 +141,7 @@ cdef class GraphWriter:
 cdef extern from "<networkit/io/METISGraphReader.hpp>":
 
 	cdef cppclass _METISGraphReader "NetworKit::METISGraphReader" (_GraphReader):
-		_METISGraphReader() nogil except +
+		_METISGraphReader() except + nogil
 
 cdef class METISGraphReader(GraphReader):
 	"""
@@ -237,7 +237,7 @@ cdef extern from "<networkit/io/ThrillGraphBinaryReader.hpp>":
 
 	cdef cppclass _ThrillGraphBinaryReader "NetworKit::ThrillGraphBinaryReader" (_GraphReader):
 		_ThrillGraphBinaryReader(count n) except +
-		_Graph read(vector[string] paths) nogil except +
+		_Graph read(vector[string] paths) except + nogil
 
 cdef class ThrillGraphBinaryReader(GraphReader):
 	"""
@@ -617,7 +617,7 @@ cdef extern from "<networkit/io/PartitionWriter.hpp>":
 
 	cdef cppclass _PartitionWriter "NetworKit::PartitionWriter":
 		_PartitionWriter() except +
-		void write(_Partition, string path) nogil except +
+		void write(_Partition, string path) except + nogil
 
 
 cdef class PartitionWriter:
@@ -695,7 +695,7 @@ cdef extern from "<networkit/io/BinaryPartitionWriter.hpp>":
 	cdef cppclass _BinaryPartitionWriter "NetworKit::BinaryPartitionWriter":
 		_BinaryPartitionWriter() except +
 		_BinaryPartitionWriter(uint8_t width) except +
-		_Partition write(_Partition zeta, string path) nogil except +
+		_Partition write(_Partition zeta, string path) except + nogil
 
 cdef class BinaryPartitionWriter:
 	"""
@@ -780,8 +780,8 @@ cdef extern from "<networkit/io/BinaryEdgeListPartitionReader.hpp>":
 	cdef cppclass _BinaryEdgeListPartitionReader "NetworKit::BinaryEdgeListPartitionReader":
 		_BinaryEdgeListPartitionReader() except +
 		_BinaryEdgeListPartitionReader(node firstNode, uint8_t width) except +
-		_Partition read(string path) nogil except +
-		_Partition read(vector[string] paths) nogil except +
+		_Partition read(string path) except + nogil
+		_Partition read(vector[string] paths) except + nogil
 
 cdef class BinaryEdgeListPartitionReader:
 	"""
@@ -840,7 +840,7 @@ cdef extern from "<networkit/io/BinaryEdgeListPartitionWriter.hpp>":
 	cdef cppclass _BinaryEdgeListPartitionWriter "NetworKit::BinaryEdgeListPartitionWriter":
 		_BinaryEdgeListPartitionWriter() except +
 		_BinaryEdgeListPartitionWriter(node firstNode, uint8_t width) except +
-		_Partition write(_Partition P, string path) nogil except +
+		_Partition write(_Partition P, string path) except + nogil
 
 cdef class BinaryEdgeListPartitionWriter:
 	"""
@@ -935,7 +935,7 @@ cdef extern from "<networkit/io/CoverWriter.hpp>":
 
 	cdef cppclass _CoverWriter "NetworKit::CoverWriter":
 		_CoverWriter() except +
-		void write(_Cover, string path) nogil except +
+		void write(_Cover, string path) except + nogil
 
 
 cdef class CoverWriter:

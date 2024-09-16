@@ -387,7 +387,7 @@ cdef extern from "<networkit/dynamics/GraphUpdater.hpp>":
 
 	cdef cppclass _GraphUpdater "NetworKit::GraphUpdater":
 		_GraphUpdater(_Graph G) except +
-		void update(vector[_GraphEvent] stream) nogil except +
+		void update(vector[_GraphEvent] stream) except + nogil
 		vector[pair[count, count]] &getSizeTimeline() except +
 
 cdef class GraphUpdater:

@@ -75,16 +75,16 @@ cdef cppclass TraversalNodePairCallbackWrapper:
 
 cdef extern from "<networkit/graph/BFS.hpp>" namespace "NetworKit::Traversal":
 
-	void BFSfrom[InputIt, Callback](_Graph G, InputIt first, InputIt last, Callback c) nogil except +
-	void BFSEdgesFrom[Callback](_Graph G, node source, Callback c) nogil except +
+	void BFSfrom[InputIt, Callback](_Graph G, InputIt first, InputIt last, Callback c) except + nogil
+	void BFSEdgesFrom[Callback](_Graph G, node source, Callback c) except + nogil
 
 cdef extern from "<networkit/graph/DFS.hpp>" namespace "NetworKit::Traversal":
-	void DFSfrom[Callback](_Graph G, node source, Callback c) nogil except +
-	void DFSEdgesFrom[Callback](_Graph G, node source, Callback c) nogil except +
+	void DFSfrom[Callback](_Graph G, node source, Callback c) except + nogil
+	void DFSEdgesFrom[Callback](_Graph G, node source, Callback c) except + nogil
 
 cdef extern from "<networkit/graph/Dijkstra.hpp>" namespace "NetworKit::Traversal":
 
-	void DijkstraFrom[InputIt, Callback](_Graph G, InputIt first, InputIt last, Callback c) nogil except +
+	void DijkstraFrom[InputIt, Callback](_Graph G, InputIt first, InputIt last, Callback c) except + nogil
 
 cdef class Traversal:
 	"""

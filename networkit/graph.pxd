@@ -336,7 +336,7 @@ cdef extern from "<networkit/graph/SpanningForest.hpp>":
 
 	cdef cppclass _SpanningForest "NetworKit::SpanningForest":
 		_SpanningForest(_Graph) except +
-		void run() nogil except +
+		void run() except + nogil
 		_Graph getForest() except +
 
 
