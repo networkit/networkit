@@ -7,6 +7,9 @@
 #ifndef NETWORKIT_GRAPH_NODE_ITERATORS_HPP_
 #define NETWORKIT_GRAPH_NODE_ITERATORS_HPP_
 
+#include <cassert>
+#include <iterator>
+
 #include <networkit/Globals.hpp>
 
 namespace NetworKit {

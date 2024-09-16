@@ -1471,6 +1471,28 @@ public:
     edgeweight totalEdgeWeight() const noexcept;
 
     /**
+     * Return the i-th (outgoing) neighbor of @a u.
+     *
+     * @param u Node.
+     * @param i index; should be in [0, degreeOut(u))
+     * @return @a i-th (outgoing) neighbor of @a u, or @c none if no such
+     * neighbor exists.
+     */
+    node getIthNeighbor(Unsafe, node u, index i) const { return outEdges[u][i]; }
+
+    /**
+     * Return the weight to the i-th (outgoing) neighbor of @a u.
+     *
+     * @param u Node.
+     * @param i index; should be in [0, degreeOut(u))
+     * @return @a edge weight to the i-th (outgoing) neighbor of @a u, or @c +inf if no such
+     * neighbor exists.
+     */
+    edgeweight getIthNeighborWeight(Unsafe, node u, index i) const {
+        return isWeighted() ? outEdgeWeights[u][i] : defaultEdgeWeight;
+    }
+
+    /**
      * Get an iterable range over the nodes of the graph.
      *
      * @return Iterator range over the nodes of the graph.
