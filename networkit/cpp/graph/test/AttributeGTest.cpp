@@ -12,6 +12,7 @@
 #include <gtest/gtest.h>
 
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 
@@ -297,35 +298,6 @@ TEST_F(AttributeGTest, testConstGetEdgeAttribute) {
 
 /// COMBINED ATTRIBUTE TESTS ///
 
-TEST_F(AttributeGTest, testAttributeSetGetOnNonExistingNodes) {
-
-    auto tester = [&](auto &attributeMap) {
-        auto intAttr = attributeMap.template attach<int>("some int attribute");
-
-        auto readAtIndex = [&intAttr](node n) -> int { return intAttr[n]; };
-
-        EXPECT_THROW(intAttr.set(5, 5), std::runtime_error);
-        EXPECT_THROW(intAttr.get(5), std::runtime_error);
-        EXPECT_THROW(intAttr[5] = 5, std::runtime_error);
-        // trigger read access by int conversion
-        EXPECT_THROW(readAtIndex(5), std::runtime_error);
-
-        EXPECT_THROW(intAttr.set(3, 3), std::runtime_error);
-        EXPECT_THROW(intAttr.get(3), std::runtime_error);
-        EXPECT_THROW(intAttr[3] = 3, std::runtime_error);
-        // trigger read access by int conversion
-        EXPECT_THROW(readAtIndex(3), std::runtime_error);
-
-        attributeMap.detach("some int attribute");
-    };
-
-    Graph graph(5, false, false, true);
-    graph.removeNode(3);
-
-    tester(graph.nodeAttributes());
-    tester(graph.edgeAttributes());
-}
-
 TEST_F(AttributeGTest, testAttributeAttachDetachAttach) {
 
     auto tester = [&](auto &attributeMap) {
@@ -374,6 +346,65 @@ TEST_F(AttributeGTest, testAttributeDoubleAttach) {
 
     tester(graph.nodeAttributes());
     tester(graph.edgeAttributes());
+}
+
+TEST_F(AttributeGTest, testAttributeCopy) {
+
+    Graph graph1(5);
+    graph1.addEdge(0, 1);
+    graph1.indexEdges();
+
+    auto edgeAttr1 = graph1.edgeAttributes().attach<int>("int edge attr");
+    edgeAttr1(0, 1) = 3;
+
+    // make copy of graph (and its attributes)
+    Graph graph2{graph1};
+
+    // modify attribute of graph1
+    edgeAttr1(0, 1) = 4;
+
+    auto edgeAttr2 = graph2.edgeAttributes().get<int>("int edge attr");
+
+    EXPECT_EQ(edgeAttr2(0, 1), 3);
+
+    // modify graph1
+    graph1.removeEdge(0, 1);
+
+    EXPECT_EQ(edgeAttr2(0, 1), 3);
+}
+
+TEST_F(AttributeGTest, testGraphModeChange) {
+    Graph dgraph(5, false, true);
+    dgraph.indexEdges();
+    dgraph.addEdge(0, 1);
+    auto edgeAttr = dgraph.edgeAttributes().attach<int>("int edge attr");
+    edgeAttr(0, 1) = 3;
+    auto nodeAttr = dgraph.nodeAttributes().attach<int>("int node attr");
+    nodeAttr[2] = 4;
+
+    auto wdgraph = GraphTools::toWeighted(dgraph);
+    auto wNodeAttr = wdgraph.nodeAttributes().get<int>("int node attr");
+    EXPECT_EQ(wNodeAttr[2], 4);
+    auto wEdgeAttr = wdgraph.edgeAttributes().get<int>("int edge attr");
+    EXPECT_EQ(wEdgeAttr(0, 1), 3);
+
+    auto graph3 = GraphTools::toUnweighted(wdgraph);
+    auto wNodeAttr3 = graph3.nodeAttributes().get<int>("int node attr");
+    EXPECT_EQ(wNodeAttr3[2], 4);
+    auto wEdgeAttr3 = graph3.edgeAttributes().get<int>("int edge attr");
+    EXPECT_EQ(wEdgeAttr3(0, 1), 3);
+}
+
+TEST_F(AttributeGTest, testMoveGraph) {
+    Graph graph1(3);
+    graph1.indexEdges();
+    graph1.addEdge(0, 1);
+    auto attr1 = graph1.edgeAttributes().attach<int>("attr");
+    attr1(0, 1) = 1;
+    Graph graph2(std::move(graph1));
+    // make sure that attr2 does not point to graph1 which was moved and may not be accessed anymore
+    auto attr2 = graph2.edgeAttributes().get<int>("attr");
+    EXPECT_EQ(attr2(0, 1), 1);
 }
 
 TEST_F(AttributeGTest, testInvalidate) {

@@ -328,7 +328,7 @@ Graph toUnweighted(const Graph &G) {
         WARN("The graph is already unweighted");
     }
 
-    return Graph(G, false, G.isDirected());
+    return Graph(G, false, G.isDirected(), G.hasEdgeIds());
 }
 
 Graph toWeighted(const Graph &G) {
@@ -336,7 +336,7 @@ Graph toWeighted(const Graph &G) {
         WARN("The graph is already weighted");
     }
 
-    return Graph(G, true, G.isDirected());
+    return Graph(G, true, G.isDirected(), G.hasEdgeIds());
 }
 
 Graph transpose(const Graph &G) {
