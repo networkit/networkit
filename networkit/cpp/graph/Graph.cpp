@@ -635,8 +635,8 @@ void Graph::removeEdge(node u, node v) {
     }
     if (edgesIndexed) {
         erase<edgeid>(u, vi, outEdgeIds);
-        // Make the attributes of this node invalid
-        auto &theMap = nodeAttributeMap.attrMap;
+        // Make the attributes of this edge invalid
+        auto &theMap = edgeAttributeMap.attrMap;
         for (auto it = theMap.begin(); it != theMap.end(); ++it) {
             auto attributeStorageBase = it->second.get();
             attributeStorageBase->invalidate(vi);
