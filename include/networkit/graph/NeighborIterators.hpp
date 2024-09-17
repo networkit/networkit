@@ -84,7 +84,7 @@ public:
 };
 
 /**
- * Class to iterate over the in/out neighbors of a containerType, including the 
+ * Class to iterate over the in/out neighbors of a containerType, including the
  * weights given by weightContainerType.
  */
 template <typename containerType, typename weightContainerType>

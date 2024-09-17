@@ -11,21 +11,21 @@
 namespace NetworKit {
 
 template <>
-bool EdgeIteratorBase<Graph>::validEdge() const noexcept {    
+bool EdgeIteratorBase<Graph>::validEdge() const noexcept {
     return G->isDirected() || (*nodeIter <= G->getIthNeighbor(Unsafe{}, *nodeIter, i));
 }
 
 template <>
 Edge EdgeTypeIterator<Graph, Edge>::operator*() const noexcept {
-        assert(nodeIter != G->nodeRange().end());
+    assert(nodeIter != G->nodeRange().end());
     return Edge(*nodeIter, G->getIthNeighbor(Unsafe{}, *nodeIter, i));
 }
 
 template <>
 WeightedEdge EdgeTypeIterator<Graph, WeightedEdge>::operator*() const noexcept {
-        assert(nodeIter != G->nodeRange().end());
+    assert(nodeIter != G->nodeRange().end());
     return WeightedEdge(*nodeIter, G->getIthNeighbor(Unsafe{}, *nodeIter, i),
                         G->getIthNeighborWeight(Unsafe{}, *nodeIter, i));
 }
 
-}
+} // namespace NetworKit

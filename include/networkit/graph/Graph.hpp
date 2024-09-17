@@ -525,7 +525,6 @@ private:
     }
 
 public:
-
     // For support of API: NetworKit::Graph::NodeIterator
     using NodeIterator = NodeIteratorBase<Graph>;
     // For support of API: NetworKit::Graph::NodeRange
@@ -544,7 +543,7 @@ public:
     using NeighborIterator = NeighborIteratorBase<std::vector<node>>;
     // For support of API: NetworKit::Graph::NeighborIterator;
     using NeighborWeightIterator =
-    NeighborWeightIteratorBase<std::vector<node>, std::vector<edgeweight>>;
+        NeighborWeightIteratorBase<std::vector<node>, std::vector<edgeweight>>;
 
     /**
      * Wrapper class to iterate over a range of the neighbors of a node within
