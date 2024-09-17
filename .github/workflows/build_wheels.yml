@@ -205,7 +205,7 @@ jobs:
           python-version: '3.12'
       - name: Create sdist source
         run: |
-          pip install cython numpy
+          pip install cython numpy setuptools
           python3 setup.py build_ext
           python3 setup.py sdist
       - uses: actions/upload-artifact@v4
