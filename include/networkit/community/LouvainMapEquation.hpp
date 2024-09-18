@@ -53,7 +53,7 @@ public:
      */
     explicit LouvainMapEquation(const Graph &graph, bool hierarchical = false,
                                 count maxIterations = 32,
-                                const std::string &parallelizationStrategy = "relaxmap")
+                                std::string_view parallelizationStrategy = "relaxmap")
         : LouvainMapEquation(graph, hierarchical, maxIterations,
                              convertStringToParallelizationType(parallelizationStrategy)) {}
 
@@ -123,7 +123,7 @@ private:
     }
 
     ParallelizationType
-    convertStringToParallelizationType(const std::string &parallelizationStrategy) const {
+    convertStringToParallelizationType(std::string_view parallelizationStrategy) const {
         if (parallelizationStrategy == "none")
             return ParallelizationType::NONE;
         else if (parallelizationStrategy == "relaxmap")
@@ -132,7 +132,7 @@ private:
             return ParallelizationType::SYNCHRONOUS;
         else
             throw std::runtime_error("Invalid parallelization type for map equation Louvain: "
-                                     + parallelizationStrategy);
+                                     + std::string(parallelizationStrategy));
     }
 
 #ifndef NDEBUG

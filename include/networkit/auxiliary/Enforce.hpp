@@ -34,8 +34,8 @@ inline void enforce(bool b, const char *msg = "") {
  * @param msg Message of the exception
  */
 template <typename Exception = std::runtime_error>
-inline void enforce(bool b, const std::string &msg) {
-    enforce<Exception>(b, msg.c_str());
+inline void enforce(bool b, std::string_view msg) {
+    enforce<Exception>(b, msg.data());
 }
 
 /**

@@ -31,7 +31,7 @@ public:
      *
      * @param[in]  path  file path
      */
-    METISParser(const std::string &path);
+    METISParser(std::string_view path);
 
     /**
      * Get the METIS graph file header

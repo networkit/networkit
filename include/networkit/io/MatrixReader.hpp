@@ -23,10 +23,10 @@ public:
     /**
      * Reads the matrix in @a path.
      */
-    virtual CSRMatrix read(const std::string &path) = 0;
+    virtual CSRMatrix read(std::string_view path) = 0;
 
     /** only to be used by Cython - this eliminates an unnecessary copy */
-    CSRMatrix *_read(const std::string &path) { return new CSRMatrix{read(path)}; };
+    CSRMatrix *_read(std::string_view path) { return new CSRMatrix{read(path)}; };
 };
 
 } // namespace NetworKit

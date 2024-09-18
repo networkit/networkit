@@ -63,7 +63,7 @@ Timer::my_steady_clock::time_point Timer::stopTimeOrNow() const noexcept {
     return running ? std::chrono::steady_clock::now() : stopped;
 }
 
-LoggingTimer::LoggingTimer(const std::string &label, Aux::Log::LogLevel level) : level(level) {
+LoggingTimer::LoggingTimer(std::string_view label, Aux::Log::LogLevel level) : level(level) {
     if (!Aux::Log::isLogLevelEnabled(level))
         return;
 

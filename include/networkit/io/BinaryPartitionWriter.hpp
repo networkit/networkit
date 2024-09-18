@@ -34,7 +34,7 @@ public:
      * @param[in] zeta The partition to write.
      * @param[in] path The path to write to.
      */
-    void write(const Partition &zeta, const std::string &path) const;
+    void write(const Partition &zeta, std::string_view path) const;
 
 private:
     uint8_t width;

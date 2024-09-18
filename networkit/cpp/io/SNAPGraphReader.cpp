@@ -15,7 +15,7 @@ namespace NetworKit {
 SNAPGraphReader::SNAPGraphReader(bool directed, const bool &remapNodes, const count &nodeCount)
     : directed(directed), nodeCount(nodeCount), remapNodes(remapNodes) {}
 
-Graph SNAPGraphReader::read(const std::string &path) {
+Graph SNAPGraphReader::read(std::string_view path) {
     Graph graph(0, false, directed);
 
     // In the actual state this parameter has very little influence on the reader performance.

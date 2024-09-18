@@ -33,7 +33,7 @@ public:
      * @param[in] path Path to file or to several files (which are read in order).
      * @return The partition contained in the file at @a path.
      */
-    Partition read(const std::string &path);
+    Partition read(std::string_view path);
 
     Partition read(const std::vector<std::string> &paths);
 

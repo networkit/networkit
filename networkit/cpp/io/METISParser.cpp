@@ -23,7 +23,7 @@ namespace NetworKit {
  *
  * @param[out]  adjacencies  node indices extracted from line
  */
-static std::vector<node> parseLine(const std::string &line, count ignoreFirst = 0) {
+static std::vector<node> parseLine(std::string_view line, count ignoreFirst = 0) {
     auto it = line.begin();
     auto end = line.end();
     std::vector<node> adjacencies;
@@ -86,7 +86,7 @@ static std::vector<std::pair<node, double>> parseWeightedLine(std::string line,
     return adjacencies;
 }
 
-METISParser::METISParser(const std::string &path) : graphFile(path) {
+METISParser::METISParser(std::string_view path) : graphFile(path.data()) {
     if (!(this->graphFile)) {
         ERROR("invalid graph file: ", path);
         throw std::runtime_error("invalid graph file");

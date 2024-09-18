@@ -11,8 +11,8 @@
 
 namespace NetworKit {
 
-Graph GraphToolBinaryReader::read(const std::string &path) {
-    std::ifstream file(path, std::ios::binary | std::ios::in);
+Graph GraphToolBinaryReader::read(std::string_view path) {
+    std::ifstream file(path.data(), std::ios::binary | std::ios::in);
     Aux::enforceOpened(file);
     // if the header is ok, continue reading the file
     if (checkHeader(file)) {

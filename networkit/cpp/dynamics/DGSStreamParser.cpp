@@ -11,8 +11,8 @@
 
 namespace NetworKit {
 
-DGSStreamParser::DGSStreamParser(const std::string &path, bool mapped, node baseIndex)
-    : dgsFile(path), mapped(mapped), baseIndex(baseIndex), nextNode(0) {}
+DGSStreamParser::DGSStreamParser(std::string_view path, bool mapped, node baseIndex)
+    : dgsFile(path.data()), mapped(mapped), baseIndex(baseIndex), nextNode(0) {}
 
 std::vector<GraphEvent> DGSStreamParser::getStream() {
     if (!dgsFile.is_open()) {
@@ -42,12 +42,12 @@ std::vector<GraphEvent> DGSStreamParser::getStream() {
         /**
          * Maps key string to consecutive, 0-based node id.
          */
-        auto map = [&](const std::string &key) {
-            auto iter = this->key2id.find(key);
+        auto map = [&](std::string_view key) {
+            auto iter = this->key2id.find(key.data());
             if (iter == key2id.end()) {
-                key2id[key] = nextNode;
+                key2id[key.data()] = nextNode;
                 nextNode++;
-                return key2id[key];
+                return key2id[key.data()];
             } else {
                 return iter->second;
             }

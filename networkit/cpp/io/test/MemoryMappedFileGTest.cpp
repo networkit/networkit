@@ -84,7 +84,7 @@ public:
         }
     }
 
-    const std::string &filename() const { return path; }
+    std::string_view filename() const { return path; }
 
     const_iterator cbegin() const { return dataBegin.get(); }
 

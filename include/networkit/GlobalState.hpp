@@ -60,7 +60,7 @@ NETWORKIT_EXPORT bool getPrintLocation();
 NETWORKIT_EXPORT void setPrintLocation(bool b);
 
 NETWORKIT_EXPORT std::ofstream &getLogFile();
-NETWORKIT_EXPORT void setLogfile(const std::string &filename);
+NETWORKIT_EXPORT void setLogfile(std::string_view filename);
 
 NETWORKIT_EXPORT std::mutex &getLogFileMutex();
 

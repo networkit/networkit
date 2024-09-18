@@ -32,7 +32,7 @@ public:
      *
      * @param[in]  path  input file path
      */
-    virtual Graph read(const std::string &path) = 0;
+    virtual Graph read(std::string_view path) = 0;
 };
 
 } /* namespace NetworKit */

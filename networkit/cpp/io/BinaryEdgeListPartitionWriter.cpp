@@ -11,7 +11,7 @@ BinaryEdgeListPartitionWriter::BinaryEdgeListPartitionWriter(node firstNode, uin
     }
 }
 
-void BinaryEdgeListPartitionWriter::write(Partition &zeta, const std::string &path) const {
+void BinaryEdgeListPartitionWriter::write(Partition &zeta, std::string_view path) const {
     auto write_little_endian = [](std::ofstream &os, index x, uint8_t width) {
         for (uint8_t w = 0; w < width; ++w) {
             os.put(uint8_t(x));
@@ -25,7 +25,7 @@ void BinaryEdgeListPartitionWriter::write(Partition &zeta, const std::string &pa
             "int of width 4. Please use a width of 8.");
     }
 
-    std::ofstream os(path, std::ios::trunc | std::ios::binary);
+    std::ofstream os(path.data(), std::ios::trunc | std::ios::binary);
 
     os.exceptions(std::ofstream::badbit | std::ofstream::failbit);
 

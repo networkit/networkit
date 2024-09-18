@@ -45,7 +45,7 @@ public:
      *
      * @param[in]  path  input file path
      */
-    Graph read(const std::string &path) override;
+    Graph read(std::string_view path) override;
 };
 
 } /* namespace NetworKit */

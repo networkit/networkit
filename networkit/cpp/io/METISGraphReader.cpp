@@ -13,7 +13,7 @@
 
 namespace NetworKit {
 
-Graph METISGraphReader::read(const std::string &path) {
+Graph METISGraphReader::read(std::string_view path) {
 
     METISParser parser(path);
 

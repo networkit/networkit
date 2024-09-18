@@ -19,7 +19,7 @@ namespace NetworKit {
 KONECTGraphReader::KONECTGraphReader(bool remapNodes, MultipleEdgesHandling handlingmethod)
     : remapNodes(remapNodes), multipleEdgesHandlingMethod(handlingmethod) {}
 
-Graph KONECTGraphReader::read(const std::string &path) {
+Graph KONECTGraphReader::read(std::string_view path) {
     std::string graphFormat = "";
     std::string graphType = "";
     count numberOfNodes = -1;
