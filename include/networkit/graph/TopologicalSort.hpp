@@ -14,6 +14,8 @@
 
 namespace NetworKit {
 
+static std::unordered_map<node, node> defaultNodeIdMap = {};
+
 /**
  * Given a directed graph G, the topology sort algorithm creates one valid topology order of nodes.
  * Undirected graphs are not accepted as input, since a topology sort is a linear ordering of
@@ -23,19 +25,12 @@ class TopologicalSort final : public Algorithm {
 public:
     /**
      * Initialize the topological sort algorithm by passing an input graph. Note that topological
-     * sort is defined for directed graphs only. Node ids must be continuous in the interval [0, n).
-     *
-     * @param G The input graph.
-     */
-    TopologicalSort(const Graph &G);
-
-    /**
-     * Initialize the topological sort algorithm by passing an input graph. Note that topological
      * sort is defined for directed graphs only. The node id mapping must be a continuous.
      *
      * @param G The input graph.
      */
-    TopologicalSort(const Graph &G, std::unordered_map<node, node> &nodeIdMapping,
+    TopologicalSort(const Graph &G,
+                    std::unordered_map<node, node> &nodeIdMapping = defaultNodeIdMap,
                     bool checkMapping = false);
 
     /**
@@ -56,11 +51,11 @@ public:
 private:
     enum class NodeMark : unsigned char { NONE, TEMP, PERM };
 
-    const Graph *G;
+    const Graph &G;
 
     std::optional<std::unordered_map<node, node>> computedNodeIdMap;
 
-    std::unordered_map<node, node> *nodeIdMap;
+    std::unordered_map<node, node> &nodeIdMap;
 
     // Used to mark the status of each node, one vector per thread
     std::vector<NodeMark> topSortMark;
@@ -74,6 +69,8 @@ private:
     void checkDirected();
 
     void checkNodeIdMap();
+
+    node mapNode(node u);
 
     // Reset algorithm data structure
     void reset();

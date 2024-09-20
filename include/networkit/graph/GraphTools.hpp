@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
+#include "networkit/graph/TopologicalSort.hpp"
 
 #include <tlx/unused.hpp>
 #include <networkit/GlobalState.hpp>
@@ -420,9 +421,8 @@ void sortEdgesByWeight(Graph &G, bool decreasing = false);
  * @param   nodeIdMapping   Optional continuous node id mapping
  * @return                  A vector of node-ids sorted according to their topology.
  */
-std::vector<node> topologicalSort(const Graph &G);
-
-std::vector<node> topologicalSort(const Graph &G, std::unordered_map<node, node> &nodeIdMapping,
+std::vector<node> topologicalSort(const Graph &G,
+                                  std::unordered_map<node, node> &nodeIdMapping = defaultNodeIdMap,
                                   bool checkMapping = false);
 
 /**

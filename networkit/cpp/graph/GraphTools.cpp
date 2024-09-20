@@ -513,14 +513,8 @@ void sortEdgesByWeight(Graph &G, bool decreasing) {
         });
 }
 
-std::vector<node> topologicalSort(const Graph &G) {
-    TopologicalSort topSort(G);
-    topSort.run();
-
-    return topSort.getResult();
-}
-
-std::vector<node> topologicalSort(const Graph &G, std::unordered_map<node, node> &nodeIdMapping,
+std::vector<node> topologicalSort(const Graph &G,
+                                  std::unordered_map<node, node> &nodeIdMapping,
                                   bool checkMapping) {
     TopologicalSort topSort(G, nodeIdMapping, checkMapping);
     topSort.run();
