@@ -22,7 +22,7 @@ namespace NetworKit {
  * B-Suitor matching finding algorithm.
  */
 class BSuitorMatcher : public BMatcher {
-public:
+protected:
     struct MatchingNode {
         node id;
         edgeweight weight;
@@ -96,6 +96,7 @@ public:
         }
     };
 
+public:
     /**
      * Computes a 1/2-approximate maximum weight b-matching of an undirected weighted Graph @c G
      * using the sequential b-Suitor algorithm published by Khan et al. in "Efficient Approximation
