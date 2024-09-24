@@ -139,7 +139,7 @@ void BSuitorMatcher::buildBMatching() {
         assert(suitors[x]->partners.size() <= b.at(x));
         for (MatchingNode y : suitors[x]->partners) {
             if (y.id != none && x < y.id) {
-                M.match(x, y.id);
+                bMatch.match(x, y.id);
             }
         }
     });

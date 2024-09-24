@@ -24,10 +24,10 @@ public:
     /**
      * Constructs a new BMatching.
      *
-     * @param z Maximum number of nodes.
      * @param b b values
+     * @param numNodes Maximum number of nodes.
      */
-    BMatching(const std::vector<count> &b, count z = 0);
+    BMatching(const std::vector<count> &b, count numNodes = 0);
 
     /**
      * Checks whether this is a proper b-matching.
