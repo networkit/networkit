@@ -132,9 +132,6 @@ bool BSuitorMatcher::isSymmetrical() const {
 }
 
 void BSuitorMatcher::buildBMatching() {
-    if (!hasRun) {
-        throw std::runtime_error("Call run() before creating b-matching.");
-    }
     G->forNodes([&](node x) {
         assert(suitors[x]->partners.size() <= b.at(x));
         for (MatchingNode y : suitors[x]->partners) {
@@ -147,6 +144,7 @@ void BSuitorMatcher::buildBMatching() {
 
 void BSuitorMatcher::run() {
     G->forNodes([&](node u) { findSuitors(u); });
+    buildBMatching();
     hasRun = true;
 }
 } // namespace NetworKit
