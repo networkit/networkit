@@ -2,8 +2,8 @@
 
 namespace NetworKit {
 
-BMatching::BMatching(const std::vector<count> &b, count z) : b(b) {
-    matches.resize(z);
+BMatching::BMatching(const std::vector<count> &b, count numNodes) : b(b) {
+    matches.resize(numNodes);
 }
 
 bool BMatching::isProper(const Graph &G) const {

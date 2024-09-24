@@ -21,7 +21,7 @@ namespace NetworKit {
 class BMatcher : public Algorithm {
 protected:
     const Graph *G;
-    BMatching M;
+    BMatching bMatch;
 
 public:
     /**
