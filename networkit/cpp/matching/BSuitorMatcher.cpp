@@ -87,7 +87,7 @@ BSuitorMatcher::MatchingNode BSuitorMatcher::findPreferred(node u) {
         const MatchingNode w = MatchingNode(v, weight);
         if (hasProposedTo(w.id))
             continue;
-        if (w.weight > best.weight || (w.weight == best.weight && w.id < best.id)) {
+        if (w > best) {
             const edgeweight n_suitor_weight = suitors[w.id]->min.weight;
 
             if (w.weight > n_suitor_weight
