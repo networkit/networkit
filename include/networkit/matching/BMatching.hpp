@@ -97,8 +97,8 @@ public:
     std::vector<count> getB() const;
 
 protected:
-    std::vector<std::unordered_set<node>> matches;
     const std::vector<count> b;
+    std::vector<std::unordered_set<node>> matches;
 };
 
 } /* namespace NetworKit */
