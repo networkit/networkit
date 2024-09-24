@@ -30,11 +30,13 @@ protected:
         MatchingNode() = default;
         MatchingNode(node n, edgeweight w) : id(n), weight(w) {}
 
-        bool operator==(const MatchingNode &other) const {
-            return id == other.id && weight == other.weight;
-        }
-        bool operator!=(const MatchingNode &other) const {
-            return id != other.id || weight != other.weight;
+        // If the edgeweight is the same for two MatchingNodes
+        // then we compare the node id, where a smaller id is 
+        // ranked higher. 
+        std::partial_ordering operator<=>(const MatchingNode &other) const {
+            if (auto cmp = weight <=> other.weight; cmp != 0)
+                return cmp;
+            return -id <=> -other.id;
         }
     };
 
@@ -86,13 +88,6 @@ protected:
                                           [u](const MatchingNode &v) { return v.id == u; }),
                            partners.end());
             min = MatchingNode(none, 0);
-        }
-
-        void sort() {
-            std::sort(partners.begin(), partners.end(),
-                      [](const MatchingNode &u, const MatchingNode &v) {
-                          return (u.weight > v.weight || (u.weight == v.weight && u.id < v.id));
-                      });
         }
     };
 
