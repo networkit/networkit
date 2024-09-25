@@ -226,7 +226,7 @@ TEST_F(MatcherGTest, testBSuitorMatcherTieBreaking) {
     bsm.run();
     const auto M = bsm.getBMatching();
 
-    EXPECT_TRUE(M.isProper(G));
+    EXPECT_TRUE(M.isProper());
     EXPECT_FALSE(hasUnmatchedNeighbors(G, M));
 }
 
@@ -243,7 +243,7 @@ TEST_F(MatcherGTest, testBSuitorMatcherEqualsSuitorMatcher) {
     bsm.run();
     const auto bM = bsm.getBMatching();
 
-    EXPECT_TRUE(bM.isProper(G));
+    EXPECT_TRUE(bM.isProper());
     EXPECT_TRUE(M.isProper(G));
     EXPECT_FALSE(hasUnmatchedNeighbors(G, M));
     EXPECT_FALSE(hasUnmatchedNeighbors(G, bM));
@@ -257,7 +257,7 @@ TEST_F(MatcherGTest, testBSuitorMatcherConstantB) {
         BSuitorMatcher bsm(G, b);
         bsm.run();
         const auto M = bsm.getBMatching();
-        EXPECT_TRUE(M.isProper(G));
+        EXPECT_TRUE(M.isProper());
         EXPECT_FALSE(hasUnmatchedNeighbors(G, M));
     }
 }
@@ -276,7 +276,7 @@ TEST_F(MatcherGTest, testBSuitorMatcherDifferentB) {
     BSuitorMatcher bsm(G, b);
     bsm.run();
     const auto M = bsm.getBMatching();
-    EXPECT_TRUE(M.isProper(G));
+    EXPECT_TRUE(M.isProper());
     EXPECT_FALSE(hasUnmatchedNeighbors(G, M));
 }
 } // namespace NetworKit
