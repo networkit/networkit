@@ -12,6 +12,9 @@
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/DibapGraphReader.hpp>
 #include <networkit/io/METISGraphReader.hpp>
+#include <networkit/matching/BMatcher.hpp>
+#include <networkit/matching/BMatching.hpp>
+#include <networkit/matching/BSuitorMatcher.hpp>
 #include <networkit/matching/LocalMaxMatcher.hpp>
 #include <networkit/matching/Matcher.hpp>
 #include <networkit/matching/Matching.hpp>
@@ -20,7 +23,22 @@
 
 namespace NetworKit {
 
-class MatcherGTest : public testing::Test {};
+class MatcherGTest : public testing::Test {
+protected:
+    bool hasUnmatchedNeighbors(const Graph &G, const BMatching &M) {
+        for (const auto e : G.edgeRange())
+            if (M.isUnmatched(e.u) && M.isUnmatched(e.v))
+                return true;
+        return false;
+    }
+
+    bool hasUnmatchedNeighbors(const Graph &G, const Matching &M) {
+        for (const auto e : G.edgeRange())
+            if (!M.isMatched(e.u) && !M.isMatched(e.v))
+                return true;
+        return false;
+    }
+};
 
 TEST_F(MatcherGTest, testLocalMaxMatching) {
     {
@@ -134,14 +152,7 @@ TEST_F(MatcherGTest, testSuitorMatcher) {
 
     const edgeweight maxWeight = 10;
 
-    const auto hasUnmatchedNeighbors = [](const Graph &G, const Matching &M) -> bool {
-        for (const auto e : G.edgeRange())
-            if (!M.isMatched(e.u) && !M.isMatched(e.v))
-                return true;
-        return false;
-    };
-
-    const auto doTest = [maxWeight, &hasUnmatchedNeighbors](Graph &G) -> void {
+    const auto doTest = [&, maxWeight](Graph &G) -> void {
         // Test suitor matcher
         SuitorMatcher sm(G, false, true);
         sm.run();
@@ -185,4 +196,87 @@ TEST_F(MatcherGTest, testSuitorMatcher) {
     }
 }
 
+TEST_F(MatcherGTest, testBSuitorMatcherInvalidGraphDirected) {
+    Graph G(10, true, true);
+    EXPECT_THROW(BSuitorMatcher(G, 2), std::runtime_error);
+}
+
+TEST_F(MatcherGTest, testBSuitorMatcherInvalidGraphSelfLoops) {
+    Graph G(10);
+    G.addEdge(0, 0);
+    G.addEdge(0, 0);
+    EXPECT_THROW(BSuitorMatcher(G, 2), std::runtime_error);
+}
+
+TEST_F(MatcherGTest, testBSuitorMatcherInvalidGraphHoles) {
+    Graph G(10);
+    node u = GraphTools::randomNode(G);
+    G.removeNode(u);
+    EXPECT_THROW(BSuitorMatcher(G, 2), std::runtime_error);
+    G.restoreNode(u);
+    EXPECT_NO_THROW(BSuitorMatcher(G, 2));
+}
+
+TEST_F(MatcherGTest, testBSuitorMatcherTieBreaking) {
+    auto G = METISGraphReader{}.read("input/tie.graph");
+    G.removeSelfLoops();
+    G.removeMultiEdges();
+
+    BSuitorMatcher bsm(G, 4);
+    bsm.run();
+    const auto M = bsm.getBMatching();
+
+    EXPECT_TRUE(M.isProper());
+    EXPECT_FALSE(hasUnmatchedNeighbors(G, M));
+}
+
+TEST_F(MatcherGTest, testBSuitorMatcherEqualsSuitorMatcher) {
+    auto G = METISGraphReader{}.read("input/lesmis.graph");
+    G.removeSelfLoops();
+    G.removeMultiEdges();
+
+    SuitorMatcher sm(G, false, false);
+    sm.run();
+    const auto M = sm.getMatching();
+
+    BSuitorMatcher bsm(G, 1);
+    bsm.run();
+    const auto bM = bsm.getBMatching();
+
+    EXPECT_TRUE(bM.isProper());
+    EXPECT_TRUE(M.isProper(G));
+    EXPECT_FALSE(hasUnmatchedNeighbors(G, M));
+    EXPECT_FALSE(hasUnmatchedNeighbors(G, bM));
+}
+
+TEST_F(MatcherGTest, testBSuitorMatcherConstantB) {
+    for (int b : {2, 3, 4, 5}) {
+        auto G = METISGraphReader{}.read("input/lesmis.graph");
+        G.removeSelfLoops();
+        G.removeMultiEdges();
+        BSuitorMatcher bsm(G, b);
+        bsm.run();
+        const auto M = bsm.getBMatching();
+        EXPECT_TRUE(M.isProper());
+        EXPECT_FALSE(hasUnmatchedNeighbors(G, M));
+    }
+}
+
+TEST_F(MatcherGTest, testBSuitorMatcherDifferentB) {
+    Aux::Random::setSeed(1, true);
+
+    auto G = METISGraphReader{}.read("input/lesmis.graph");
+    G.removeSelfLoops();
+    G.removeMultiEdges();
+    std::vector<count> b;
+    for (count i = 0; i < G.numberOfNodes(); i++) {
+        b.emplace_back(Aux::Random::integer(1, (G.numberOfNodes() - 1)));
+    }
+
+    BSuitorMatcher bsm(G, b);
+    bsm.run();
+    const auto M = bsm.getBMatching();
+    EXPECT_TRUE(M.isProper());
+    EXPECT_FALSE(hasUnmatchedNeighbors(G, M));
+}
 } // namespace NetworKit
