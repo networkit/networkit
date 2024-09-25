@@ -20,7 +20,8 @@ BSuitorMatcher::BSuitorMatcher(const Graph &G, const std::vector<count> &b) : BM
 
     if (n != G.numberOfNodes())
         throw std::runtime_error(
-            "The graph needs to be compact in order to calculate the b-matching, e.g., preprocess the graph with GraphTools::getCompactedGraph.");
+            "The graph needs to be compact in order to calculate the b-matching, e.g., preprocess "
+            "the graph with GraphTools::getCompactedGraph.");
 
     suitors.reserve(n);
     proposed.reserve(n);

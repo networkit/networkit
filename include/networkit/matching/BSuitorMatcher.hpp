@@ -31,8 +31,8 @@ protected:
         MatchingNode(node n, edgeweight w) : id(n), weight(w) {}
 
         // If the edgeweight is the same for two MatchingNodes
-        // then we compare the node id, where a smaller id is 
-        // ranked higher. 
+        // then we compare the node id, where a smaller id is
+        // ranked higher.
         std::partial_ordering operator<=>(const MatchingNode &other) const {
             if (auto cmp = weight <=> other.weight; cmp != 0)
                 return cmp;
@@ -175,14 +175,12 @@ protected:
     bool isSymmetrical() const;
 
 private:
-
     /**
      * Creates the b-matching for given graph G. Function run() has to be called before calling
      * buildMatching. After invoking buildBMatching(), use getBMatching() to retrieve the resulting
      * b-matching.
      */
     void buildBMatching();
-
 };
 } // namespace NetworKit
 
