@@ -25,10 +25,10 @@ protected:
 
 public:
     /**
-     * Constructs a new BMatcher.
+     * Constructs a new BMatcher. 
      *
-     * @param G
-     * @param b
+     * @param G The graph to compute the b-matching on.
+     * @param b A vector of b-values for all nodes in the graph.
      */
     BMatcher(const Graph &G, const std::vector<count> &b);
 
