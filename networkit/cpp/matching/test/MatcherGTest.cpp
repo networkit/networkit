@@ -208,6 +208,15 @@ TEST_F(MatcherGTest, testBSuitorMatcherInvalidGraphSelfLoops) {
     EXPECT_THROW(BSuitorMatcher(G, 2), std::runtime_error);
 }
 
+TEST_F(MatcherGTest, testBSuitorMatcherInvalidGraphHoles) {
+    Graph G(10);
+    node u = GraphTools::randomNode(G);
+    G.removeNode(u);
+    EXPECT_THROW(BSuitorMatcher(G, 2), std::runtime_error);
+    G.restoreNode(u);
+    EXPECT_NO_THROW(BSuitorMatcher(G, 2));
+}
+
 TEST_F(MatcherGTest, testBSuitorMatcherTieBreaking) {
     auto G = METISGraphReader{}.read("input/tie.graph");
     G.removeSelfLoops();
