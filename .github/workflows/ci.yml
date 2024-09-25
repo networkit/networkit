@@ -94,7 +94,7 @@ on: [push, pull_request]
 # Default parameters for all builds.
 env:
   OMP_NUM_THREADS: 2
-  CXX_STANDARD: 17
+  CXX_STANDARD: 20
   MONOLITH: ON
   TLX_PATH: /home/runner/work/networkit/networkit/tlx
   TLX_PATH_WIN: /d/a/networkit/networkit/tlx
