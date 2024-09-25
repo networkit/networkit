@@ -27,7 +27,7 @@ protected:
         node id;
         edgeweight weight;
 
-        MatchingNode() = default;
+        MatchingNode() : id(none), weight(0) {}
         MatchingNode(node n, edgeweight w) : id(n), weight(w) {}
 
         // If the edgeweight is the same for two MatchingNodes
@@ -49,7 +49,7 @@ protected:
 
         MatchingNodeInfo(count b) {
             partners.reserve(b);
-            min = MatchingNode(none, 0);
+            min = MatchingNode();
             max_size = b;
         }
 
@@ -87,7 +87,7 @@ protected:
             partners.erase(std::remove_if(partners.begin(), partners.end(),
                                           [u](const MatchingNode &v) { return v.id == u; }),
                            partners.end());
-            min = MatchingNode(none, 0);
+            min = MatchingNode();
         }
     };
 
