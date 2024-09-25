@@ -14,8 +14,6 @@
 
 namespace NetworKit {
 
-static std::unordered_map<node, node> defaultNodeIdMap = {};
-
 /**
  * Given a directed graph G, the topology sort algorithm creates one valid topology order of nodes.
  * Undirected graphs are not accepted as input, since a topology sort is a linear ordering of
@@ -29,8 +27,7 @@ public:
      *
      * @param G The input graph.
      */
-    TopologicalSort(const Graph &G,
-                    std::unordered_map<node, node> &nodeIdMapping = defaultNodeIdMap,
+    TopologicalSort(const Graph &G, const std::unordered_map<node, node> &nodeIdMapping = {},
                     bool checkMapping = false);
 
     /**
@@ -55,7 +52,7 @@ private:
 
     std::optional<std::unordered_map<node, node>> computedNodeIdMap;
 
-    std::unordered_map<node, node> &nodeIdMap;
+    const std::unordered_map<node, node> &nodeIdMap;
 
     // Used to mark the status of each node, one vector per thread
     std::vector<NodeMark> topSortMark;

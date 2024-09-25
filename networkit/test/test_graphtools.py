@@ -546,6 +546,14 @@ class TestGraphTools(unittest.TestCase):
 		with self.assertRaises(Exception):
 			nk.graphtools.topologicalSort(G, mapping, True)
 
+		mapping = generateMapping()
+		del mapping[1];
+		mapping[5] = 5;
+		with self.assertRaises(Exception):
+			nk.graphtools.topologicalSort(G, mapping, True)
+		with self.assertRaises(Exception):
+			nk.graphtools.topologicalSort(G, mapping)
+
 		# make mapping non-injective
 		mapping = generateMapping()
 		mapping[2] = 1

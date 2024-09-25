@@ -128,6 +128,14 @@ TEST_F(TopologicalSortGTest, testNonContinuousNodeIdMapping) {
     std::unordered_map<node, node> mapping = makeMapping();
     mapping[1] = 4;
     EXPECT_THROW(TopologicalSort(G, mapping, true), std::runtime_error);
+
+    mapping = makeMapping();
+    mapping.erase(1);
+    // to get correct size
+    mapping[5] = 5;
+    EXPECT_THROW(TopologicalSort(G, mapping, true), std::runtime_error);
+    TopologicalSort topSort = TopologicalSort(G, mapping);
+    EXPECT_THROW(topSort.run(), std::runtime_error);
 }
 
 TEST_F(TopologicalSortGTest, testNonInjectiveNodeIdMapping) {

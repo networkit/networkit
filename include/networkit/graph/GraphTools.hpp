@@ -422,7 +422,7 @@ void sortEdgesByWeight(Graph &G, bool decreasing = false);
  * @return                  A vector of node-ids sorted according to their topology.
  */
 std::vector<node> topologicalSort(const Graph &G,
-                                  std::unordered_map<node, node> &nodeIdMapping = defaultNodeIdMap,
+                                  const std::unordered_map<node, node> &nodeIdMapping = {},
                                   bool checkMapping = false);
 
 /**
