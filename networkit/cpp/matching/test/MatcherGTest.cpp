@@ -25,7 +25,6 @@ namespace NetworKit {
 
 class MatcherGTest : public testing::Test {
 protected:
-    // TODO use template instead of an overload when Matching base class is done
     bool hasUnmatchedNeighbors(const Graph &G, const BMatching &M) {
         for (const auto e : G.edgeRange())
             if (M.isUnmatched(e.u) && M.isUnmatched(e.v))
