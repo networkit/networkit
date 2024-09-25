@@ -2,9 +2,9 @@
 
 namespace NetworKit {
 
-BMatching::BMatching(const std::vector<count> &b, count numNodes) : b(b), matches(numNodes) {}
+BMatching::BMatching(const Graph &G, const std::vector<count> &b, count numNodes) : G(G), b(b), matches(numNodes) {}
 
-bool BMatching::isProper(const Graph &G) const {
+bool BMatching::isProper() const {
     // check if entries are symmetric and every pair exists as an edge
     for (node v : G.nodeRange()) {
         for (node w : matches[v]) {
@@ -41,12 +41,12 @@ bool BMatching::areMatched(node u, node v) const {
     return matches[u].find(v) != matches[u].end();
 }
 
-count BMatching::size(const Graph &G) const {
+count BMatching::size() const {
     double size = G.parallelSumForNodes([&](node v) { return !isUnmatched(v); });
     return static_cast<count>(size / 2);
 }
 
-edgeweight BMatching::weight(const Graph &G) const {
+edgeweight BMatching::weight() const {
     return G.parallelSumForNodes([&](node v) {
         edgeweight weight_per_node = 0.0;
         for (node u : matches[v]) {

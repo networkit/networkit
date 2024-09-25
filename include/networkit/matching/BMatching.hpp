@@ -27,15 +27,14 @@ public:
      * @param b b values
      * @param numNodes Maximum number of nodes.
      */
-    BMatching(const std::vector<count> &b, count numNodes = 0);
+    BMatching(const Graph &G, const std::vector<count> &b, count numNodes = 0);
 
     /**
      * Checks whether this is a proper b-matching.
      *
-     * @param G
      * @return bool
      */
-    bool isProper(const Graph &G) const;
+    bool isProper() const;
 
     /**
      * Sets two nodes @a u and @a v as each others matching NodeMatches.
@@ -73,18 +72,16 @@ public:
     /**
      * Get the number of edges in this b-matching.
      *
-     * @param G  A graph.
      * @return Number of edges in b-matching.
      */
-    count size(const Graph &G) const;
+    count size() const;
 
     /**
      * Get total weight of edges in this b-matching.
      *
-     * @param G
      * @return edgeweight
      */
-    edgeweight weight(const Graph &G) const;
+    edgeweight weight() const;
 
     /**
      * Retrieves a reference to the set of matches for each node.
@@ -97,6 +94,7 @@ public:
     std::vector<count> getB() const;
 
 protected:
+    const Graph &G;
     const std::vector<count> b;
     std::vector<std::unordered_set<node>> matches;
 };
