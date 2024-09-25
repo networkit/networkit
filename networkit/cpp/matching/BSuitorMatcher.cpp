@@ -17,6 +17,11 @@ BSuitorMatcher::BSuitorMatcher(const Graph &G, const std::vector<count> &b) : BM
             "The number of b values does not match the number of nodes in this graph.");
 
     const auto n = G.upperNodeIdBound();
+
+    if (n != G.numberOfNodes())
+        throw std::runtime_error(
+            "The graph needs to be compact in order to calculate the b-matching, e.g., preprocess the graph with GraphTools::getCompactedGraph.");
+
     suitors.reserve(n);
     proposed.reserve(n);
     for (index i = 0; i < n; ++i) {
