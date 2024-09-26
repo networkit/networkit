@@ -5,7 +5,7 @@
  *      Author: Fabian Brandt-Tumescheit
  */
 #include <stdexcept>
-#include "networkit/graph/GraphTools.hpp"
+#include <networkit/graph/GraphTools.hpp>
 #include <networkit/graph/TopologicalSort.hpp>
 
 namespace NetworKit {
