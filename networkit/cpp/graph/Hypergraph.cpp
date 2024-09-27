@@ -151,10 +151,10 @@ count Hypergraph::weightedDegree(node u) const {
     return res;
 }
 
-std::set<node> Hypergraph::getNeighbors(node u) const {
+std::unordered_set<node> Hypergraph::getNeighbors(node u) const {
     assert(u < nextNodeId);
 
-    std::set<node> neighbors;
+    std::unordered_set<node> neighbors;
 
     for (edgeid eid : nodeIncidence[u]) {
         neighbors.insert(edgeIncidence[eid].begin(), edgeIncidence[eid].end());
@@ -183,7 +183,7 @@ edgeid Hypergraph::addEdge() {
 edgeid Hypergraph::addEdge(const std::vector<node> &nodes, bool addMissing) {
 
     edgeid eid = addEdge();
-    edgeIncidence[eid] = std::set<node>(nodes.begin(), nodes.end());
+    edgeIncidence[eid] = std::unordered_set<node>(nodes.begin(), nodes.end());
 
     if (addMissing) {
         for (auto v : edgeIncidence[eid]) {
@@ -192,7 +192,7 @@ edgeid Hypergraph::addEdge(const std::vector<node> &nodes, bool addMissing) {
                 currentMax = addNode();
                 nodeExists[currentMax] = false;
             }
-            addNode();
+            nodeExists[v] = true;
         }
     }
 

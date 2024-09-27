@@ -174,7 +174,7 @@ TEST_P(HypergraphGTest, testNeighborsWithoutDuplicates) {
 
     auto neighbors = hGraph.getNeighbors(1);
 
-    ASSERT_THAT(neighbors, testing::ElementsAre(0, 2));
+    ASSERT_THAT(neighbors, testing::UnorderedElementsAre(0, 2));
 }
 
 TEST_P(HypergraphGTest, testNeighborsWithDuplicates) {
