@@ -436,7 +436,7 @@ public:
      * a for loop.
      */
     class NeighborRange {
-        const Hypergraph *hGraph;
+        [[maybe_unused]] const Hypergraph *hGraph;
         std::unordered_set<node> neighbors;
         node curNode;
 
