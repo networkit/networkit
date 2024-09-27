@@ -436,17 +436,17 @@ public:
      * a for loop.
      */
     class NeighborRange {
-        [[maybe_unused]] const Hypergraph *hGraph;
+        const Hypergraph *hGraph;
         std::unordered_set<node> neighbors;
         node curNode;
 
     public:
         NeighborRange(const Hypergraph &hGraph, node u) : hGraph(&hGraph), curNode(u) {
-            assert(hGraph.hasNode(curNode));
-            neighbors = hGraph.getNeighbors(curNode);
+            assert(this->hGraph->hasNode(curNode));
+            neighbors = this->hGraph->getNeighbors(curNode);
         };
 
-        NeighborRange() : hGraph(nullptr) {};
+        NeighborRange() : hGraph(nullptr){};
 
         NeighborIterator begin() const {
             assert(hGraph);
