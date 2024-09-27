@@ -9,7 +9,7 @@
 #define NETWORKIT_GRAPH_HYPERGRAPH_HPP_
 
 #include <cstddef>
-#include <set>
+#include <unordered_set>
 #include <vector>
 
 #include <networkit/Globals.hpp>
@@ -25,12 +25,12 @@ namespace NetworKit {
  * A unweighted hyperedge
  */
 struct Hyperedge {
-    std::set<node> nodes;
+    std::unordered_set<node> nodes;
 
     Hyperedge() = default;
 
     Hyperedge(const std::vector<node> &otherNodes) {
-        nodes = std::set<node>(otherNodes.begin(), otherNodes.end());
+        nodes = std::unordered_set<node>(otherNodes.begin(), otherNodes.end());
     }
 };
 
@@ -80,7 +80,7 @@ class Hypergraph final {
     std::vector<nodeweight> nodeWeights;
 
     //!< list of edge ids, which a node is incident to.
-    std::vector<std::set<edgeid>> nodeIncidence;
+    std::vector<std::unordered_set<edgeid>> nodeIncidence;
 
     // Edge related data
 
@@ -91,7 +91,7 @@ class Hypergraph final {
     std::vector<edgeweight> edgeWeights;
 
     //!< list of node ids, which are part of a certain hyperedge.
-    std::vector<std::set<node>> edgeIncidence;
+    std::vector<std::unordered_set<node>> edgeIncidence;
 
     AttributeMap<PerNode, Hypergraph> nodeAttributeMap;
     AttributeMap<PerEdge, Hypergraph> edgeAttributeMap;
@@ -315,7 +315,7 @@ public:
      * @param u The node id.
      * @return The neighbors of @a u.
      */
-    std::set<node> getNeighbors(node u) const;
+    std::unordered_set<node> getNeighbors(node u) const;
 
     /* EDGE PROPERTIES & MODIFIERS */
 
@@ -422,7 +422,7 @@ public:
     using NodeRange = NodeRangeBase<Hypergraph>;
 
     // For support of API: NetworKit::Hypergraph::NeighborIterator;
-    using NeighborIterator = NeighborIteratorBase<std::set<node>>;
+    using NeighborIterator = NeighborIteratorBase<std::unordered_set<node>>;
 
     /**
      * Get an iterable range over the nodes of the graph.
@@ -437,7 +437,7 @@ public:
      */
     class NeighborRange {
         const Hypergraph *hGraph;
-        std::set<node> neighbors;
+        std::unordered_set<node> neighbors;
         node curNode;
 
     public:
@@ -579,7 +579,7 @@ void Hypergraph::parallelForNodesImpl(L handle) const {
 
 template <typename L>
 void Hypergraph::forNeighborsOf(node u, L handle) const {
-    std::set<node> neighborsOfU = getNeighbors(u);
+    std::unordered_set<node> neighborsOfU = getNeighbors(u);
     for (auto nIter = neighborsOfU.begin(); nIter != neighborsOfU.end(); nIter++) {
         if (nodeExists[*nIter]) {
             handle(*nIter);
