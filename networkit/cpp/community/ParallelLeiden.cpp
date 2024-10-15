@@ -163,7 +163,7 @@ void ParallelLeiden::parallelMove(const Graph &graph) {
         for (int i = start; i < end; i++) {
             if (graph.hasNode(i)) {
                 currentNodes.push_back(i);
-                std::atomic_init(&inQueue[i], true);
+                inQueue[i].store(true);
             }
         }
         if (random)
