@@ -338,8 +338,8 @@ jobs:
           cd ${{ github.workspace }}
           . pyenv/bin/activate
           cd core_build
-          gcovr -e '.*test/.*' -e '.*CMakeFiles.*' -e '.*/extlibs/.*' -e '.*/scripts/.*' -e '.*/pyenv/.*' -e '.*/include/tlx/.*' --coveralls -r .. > networkit_cpp.json
-          gcovr -e '.*test/.*' -e '.*CMakeFiles.*' -e '.*/extlibs/.*' -e '.*/scripts/.*' -e '.*/pyenv/.*' -e '.*/include/tlx/.*' -r ..
+          gcovr -e '.*test/.*' -e '.*CMakeFiles.*' -e '.*/extlibs/.*' -e '.*/scripts/.*' -e '.*/pyenv/.*' -e '.*/include/tlx/.*' --gcov-ignore-parse-errors=suspicious_hits.warn --coveralls -r .. > networkit_cpp.json
+          gcovr -e '.*test/.*' -e '.*CMakeFiles.*' -e '.*/extlibs/.*' -e '.*/scripts/.*' -e '.*/pyenv/.*' -e '.*/include/tlx/.*' --gcov-ignore-parse-errors=suspicious_hits.warn -r ..
       - name: Create Python coverage and merge files
         run: |
           cd ${{ github.workspace }}
