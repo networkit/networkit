@@ -1004,6 +1004,20 @@ cdef class EdgeListCoverReader:
 		"""
 		return Cover().setThis(self._this.read(stdstring(path), G._this))
 
+cdef extern from "<networkit/io/MTXGraphReader.hpp>":
+
+	cdef cppclass _MTXGraphReader "NetworKit::MTXGraphReader"(_GraphReader):
+		_MTXGraphReader() except +
+
+cdef class MTXGraphReader(GraphReader):
+	""" 
+	MTXGraphReader()
+
+	Reader for the MTX / MatrixMarket graph format, which is documented here: https://networkrepository.com/mtx-matrix-market-format.html
+ 	"""
+	def __cinit__(self):
+		self._this = new _MTXGraphReader()
+
 class __AutoNumber(Enum):
 	def __new__(cls):
 		value = len(cls.__members__) + 1
@@ -1091,7 +1105,8 @@ def getReader(fileformat, *kargs, **kwargs):
 		Format.GraphToolBinary:		GraphToolBinaryReader(),
 		Format.MAT:			MatReader(),
 		Format.ThrillBinary:		ThrillGraphBinaryReader(),
-		Format.NetworkitBinary:         NetworkitBinaryReader()
+		Format.NetworkitBinary:         NetworkitBinaryReader(),
+		Format.MatrixMarket: MTXGraphReader(),
 	}
 
 	# special case for custom Edge Lists
