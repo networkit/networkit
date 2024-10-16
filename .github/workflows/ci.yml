@@ -207,14 +207,14 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        compiler: ['llvm-18']
+        compiler: ['llvm-19']
     steps:
       - name: Install prerequisites
         run:  |
           curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/jammy llvm-toolchain-jammy-18 main" | sudo tee /etc/apt/sources.list.d/llvm18.list
+          echo "deb http://apt.llvm.org/jammy llvm-toolchain-jammy-19 main" | sudo tee /etc/apt/sources.list.d/llvm19.list
           sudo apt-get update
-          sudo apt-get install clang-18 libomp-18-dev ninja-build
+          sudo apt-get install clang-19 libomp-19-dev ninja-build
       - name: Checkout networkit
         uses: actions/checkout@v4
         with:
@@ -228,8 +228,8 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
         shell: bash
         env:
-          CC: clang-18
-          CXX: clang++-18
+          CC: clang-19
+          CXX: clang++-19
 
   linux-pep-518-install:
     name: "Linux: Release build using pyproject.toml"
