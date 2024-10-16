@@ -31,46 +31,155 @@ bool HypergraphGTest::isWeighted() const {
     return std::get<0>(GetParam());
 }
 
+/** BASIC PROPERTIES **/
+
+TEST_P(HypergraphGTest, testEmptyHypergraph) {
+    Hypergraph hGraph = Hypergraph();
+
+    EXPECT_TRUE(hGraph.isEmpty());
+
+    hGraph.addNode();
+
+    EXPECT_FALSE(hGraph.isEmpty());
+}
+
+TEST_P(HypergraphGTest, testNumNodes) {
+    Hypergraph hGraph = Hypergraph();
+
+    EXPECT_EQ(0u, hGraph.numberOfNodes());
+
+    hGraph.addNode();
+
+    EXPECT_EQ(1u, hGraph.numberOfNodes());
+}
+
+TEST_P(HypergraphGTest, testNumEdges) {
+    Hypergraph hGraph = Hypergraph();
+
+    EXPECT_EQ(0u, hGraph.numberOfEdges());
+
+    hGraph.addEdge();
+
+    EXPECT_EQ(1u, hGraph.numberOfEdges());
+}
+
+TEST_P(HypergraphGTest, testUpperNodeIdBound) {
+    Hypergraph hGraph = Hypergraph();
+
+    EXPECT_EQ(0u, hGraph.upperNodeIdBound());
+
+    hGraph.addNodes(10);
+
+    EXPECT_EQ(10u, hGraph.upperNodeIdBound());
+}
+
+TEST_P(HypergraphGTest, testUpperEdgeIdBound) {
+    Hypergraph hGraph = Hypergraph();
+
+    EXPECT_EQ(0u, hGraph.upperEdgeIdBound());
+
+    hGraph.addEdge();
+    hGraph.addEdge();
+    hGraph.addEdge();
+
+    EXPECT_EQ(3u, hGraph.upperEdgeIdBound());
+}
+
+
 /** NODE MODIFIERS **/
 
 TEST_P(HypergraphGTest, testAddNode) {
     Hypergraph hGraph = Hypergraph();
 
-    ASSERT_FALSE(hGraph.hasNode(0));
-    ASSERT_FALSE(hGraph.hasNode(1));
-    ASSERT_EQ(0u, hGraph.numberOfNodes());
+    EXPECT_FALSE(hGraph.hasNode(0));
+    EXPECT_FALSE(hGraph.hasNode(1));
+    EXPECT_EQ(0u, hGraph.numberOfNodes());
 
     hGraph.addNode();
-    ASSERT_TRUE(hGraph.hasNode(0));
-    ASSERT_FALSE(hGraph.hasNode(1));
-    ASSERT_EQ(1u, hGraph.numberOfNodes());
+    EXPECT_TRUE(hGraph.hasNode(0));
+    EXPECT_FALSE(hGraph.hasNode(1));
+    EXPECT_EQ(1u, hGraph.numberOfNodes());
 
     Hypergraph hGraph2 = Hypergraph(2);
-    ASSERT_TRUE(hGraph2.hasNode(0));
-    ASSERT_TRUE(hGraph2.hasNode(1));
-    ASSERT_FALSE(hGraph2.hasNode(2));
-    ASSERT_EQ(2u, hGraph2.numberOfNodes());
+    EXPECT_TRUE(hGraph2.hasNode(0));
+    EXPECT_TRUE(hGraph2.hasNode(1));
+    EXPECT_FALSE(hGraph2.hasNode(2));
+    EXPECT_EQ(2u, hGraph2.numberOfNodes());
 
     hGraph2.addNode();
     hGraph2.addNode();
-    ASSERT_TRUE(hGraph2.hasNode(2));
-    ASSERT_TRUE(hGraph2.hasNode(3));
-    ASSERT_FALSE(hGraph2.hasNode(4));
-    ASSERT_EQ(4u, hGraph2.numberOfNodes());
+    EXPECT_TRUE(hGraph2.hasNode(2));
+    EXPECT_TRUE(hGraph2.hasNode(3));
+    EXPECT_FALSE(hGraph2.hasNode(4));
+    EXPECT_EQ(4u, hGraph2.numberOfNodes());
 }
 
 TEST_P(HypergraphGTest, testAddNodes) {
     Hypergraph hGraph = Hypergraph(5);
     hGraph.addNodes(5);
 
-    ASSERT_EQ(hGraph.numberOfNodes(), 10);
-    ASSERT_TRUE(hGraph.hasNode(9));
+    EXPECT_EQ(hGraph.numberOfNodes(), 10);
+    EXPECT_TRUE(hGraph.hasNode(9));
 
     hGraph.addNodes(90);
 
-    ASSERT_EQ(hGraph.numberOfNodes(), 100);
-    ASSERT_TRUE(hGraph.hasNode(99));
+    EXPECT_EQ(hGraph.numberOfNodes(), 100);
+    EXPECT_TRUE(hGraph.hasNode(99));
 }
+
+TEST_P(HypergraphGTest, testAddNodeToNonExisting) {
+    Hypergraph hGraph = Hypergraph();
+
+    EXPECT_THROW(hGraph.addNodeTo({0}, 0), std::runtime_error);
+}
+
+TEST_P(HypergraphGTest, testAddNodeToWithoutNodeId) {
+    Hypergraph hGraph = Hypergraph();
+    hGraph.addEdge();
+
+    hGraph.addNodeTo({0});
+
+    EXPECT_EQ(1u, hGraph.numberOfNodes());
+    EXPECT_TRUE(hGraph.hasNode(0));
+}
+
+TEST_P(HypergraphGTest, testAddNodeToWithNodeId) {
+    Hypergraph hGraph = Hypergraph();
+    hGraph.addEdge();
+    hGraph.addNode();
+
+    hGraph.addNodeTo({0}, 0);
+
+    EXPECT_EQ(1u, hGraph.numberOfNodes());
+    EXPECT_TRUE(hGraph.hasNode(0));
+}
+
+TEST_P(HypergraphGTest, testAddNodesToNonExisting) {
+    Hypergraph hGraph = Hypergraph();
+
+    EXPECT_THROW(hGraph.addNodesTo({0}, 0), std::runtime_error);
+}
+
+TEST_P(HypergraphGTest, testAddNodesToWithoutEdgeId) {
+    Hypergraph hGraph = Hypergraph();
+    hGraph.addNode();
+
+    hGraph.addNodesTo({0});
+
+    EXPECT_EQ(1u, hGraph.numberOfEdges());
+    EXPECT_TRUE(hGraph.hasEdge(0));
+}
+
+TEST_P(HypergraphGTest, testAddNodesToWithEdgeId) {
+    Hypergraph hGraph = Hypergraph();
+    hGraph.addEdge();
+    hGraph.addNode();
+
+    hGraph.addNodeTo({0}, 0);
+
+    EXPECT_TRUE(hGraph.hasNode(0,0));
+}
+
 
 TEST_P(HypergraphGTest, testRemoveNode) {
     auto testGraph = [&](Hypergraph &hGraph) {
@@ -79,8 +188,8 @@ TEST_P(HypergraphGTest, testRemoveNode) {
         for (node u = 0; u < maxNodeId; ++u) {
             hGraph.removeNode(u);
             --numNodes;
-            ASSERT_EQ(hGraph.numberOfNodes(), numNodes);
-            hGraph.forNodes([&](node v) { ASSERT_EQ(hGraph.hasNode(v), v > u); });
+            EXPECT_EQ(hGraph.numberOfNodes(), numNodes);
+            hGraph.forNodes([&](node v) { EXPECT_EQ(hGraph.hasNode(v), v > u); });
         }
     };
 
@@ -91,25 +200,25 @@ TEST_P(HypergraphGTest, testRemoveNode) {
 TEST_P(HypergraphGTest, testHasNode) {
     Hypergraph hGraph = Hypergraph(5);
 
-    ASSERT_TRUE(hGraph.hasNode(0));
-    ASSERT_TRUE(hGraph.hasNode(1));
-    ASSERT_TRUE(hGraph.hasNode(2));
-    ASSERT_TRUE(hGraph.hasNode(3));
-    ASSERT_TRUE(hGraph.hasNode(4));
-    ASSERT_FALSE(hGraph.hasNode(5));
-    ASSERT_FALSE(hGraph.hasNode(6));
+    EXPECT_TRUE(hGraph.hasNode(0));
+    EXPECT_TRUE(hGraph.hasNode(1));
+    EXPECT_TRUE(hGraph.hasNode(2));
+    EXPECT_TRUE(hGraph.hasNode(3));
+    EXPECT_TRUE(hGraph.hasNode(4));
+    EXPECT_FALSE(hGraph.hasNode(5));
+    EXPECT_FALSE(hGraph.hasNode(6));
 
     hGraph.removeNode(0);
     hGraph.removeNode(2);
     hGraph.addNode();
 
-    ASSERT_FALSE(hGraph.hasNode(0));
-    ASSERT_TRUE(hGraph.hasNode(1));
-    ASSERT_FALSE(hGraph.hasNode(2));
-    ASSERT_TRUE(hGraph.hasNode(3));
-    ASSERT_TRUE(hGraph.hasNode(4));
-    ASSERT_TRUE(hGraph.hasNode(5));
-    ASSERT_FALSE(hGraph.hasNode(6));
+    EXPECT_FALSE(hGraph.hasNode(0));
+    EXPECT_TRUE(hGraph.hasNode(1));
+    EXPECT_FALSE(hGraph.hasNode(2));
+    EXPECT_TRUE(hGraph.hasNode(3));
+    EXPECT_TRUE(hGraph.hasNode(4));
+    EXPECT_TRUE(hGraph.hasNode(5));
+    EXPECT_FALSE(hGraph.hasNode(6));
 }
 
 TEST_P(HypergraphGTest, testHasNodeInHyperedge) {
@@ -119,51 +228,51 @@ TEST_P(HypergraphGTest, testHasNodeInHyperedge) {
     hGraph.addEdge({1, 2, 3});
     hGraph.addEdge({0, 3});
 
-    ASSERT_TRUE(hGraph.hasNode(0, 0));
-    ASSERT_TRUE(hGraph.hasNode(1, 0));
-    ASSERT_TRUE(hGraph.hasNode(2, 1));
-    ASSERT_TRUE(hGraph.hasNode(3, 1));
-    ASSERT_TRUE(hGraph.hasNode(3, 2));
-    ASSERT_FALSE(hGraph.hasNode(2, 0));
-    ASSERT_FALSE(hGraph.hasNode(2, 2));
-    ASSERT_FALSE(hGraph.hasNode(3, 0));
+    EXPECT_TRUE(hGraph.hasNode(0, 0));
+    EXPECT_TRUE(hGraph.hasNode(1, 0));
+    EXPECT_TRUE(hGraph.hasNode(2, 1));
+    EXPECT_TRUE(hGraph.hasNode(3, 1));
+    EXPECT_TRUE(hGraph.hasNode(3, 2));
+    EXPECT_FALSE(hGraph.hasNode(2, 0));
+    EXPECT_FALSE(hGraph.hasNode(2, 2));
+    EXPECT_FALSE(hGraph.hasNode(3, 0));
 
     hGraph.removeNode(2);
 
-    ASSERT_FALSE(hGraph.hasNode(2, 1));
+    EXPECT_FALSE(hGraph.hasNode(2, 1));
 }
 
 TEST_P(HypergraphGTest, testRestoreNode) {
     Hypergraph hGraph = Hypergraph(4);
 
-    ASSERT_EQ(4u, hGraph.numberOfNodes());
-    ASSERT_TRUE(hGraph.hasNode(0));
-    ASSERT_TRUE(hGraph.hasNode(1));
-    ASSERT_TRUE(hGraph.hasNode(2));
-    ASSERT_TRUE(hGraph.hasNode(3));
+    EXPECT_EQ(4u, hGraph.numberOfNodes());
+    EXPECT_TRUE(hGraph.hasNode(0));
+    EXPECT_TRUE(hGraph.hasNode(1));
+    EXPECT_TRUE(hGraph.hasNode(2));
+    EXPECT_TRUE(hGraph.hasNode(3));
 
     hGraph.removeNode(0);
 
-    ASSERT_EQ(3u, hGraph.numberOfNodes());
-    ASSERT_FALSE(hGraph.hasNode(0));
-    ASSERT_TRUE(hGraph.hasNode(1));
-    ASSERT_TRUE(hGraph.hasNode(2));
-    ASSERT_TRUE(hGraph.hasNode(3));
+    EXPECT_EQ(3u, hGraph.numberOfNodes());
+    EXPECT_FALSE(hGraph.hasNode(0));
+    EXPECT_TRUE(hGraph.hasNode(1));
+    EXPECT_TRUE(hGraph.hasNode(2));
+    EXPECT_TRUE(hGraph.hasNode(3));
 
     hGraph.restoreNode(0);
 
-    ASSERT_EQ(4u, hGraph.numberOfNodes());
-    ASSERT_TRUE(hGraph.hasNode(0));
-    ASSERT_TRUE(hGraph.hasNode(1));
-    ASSERT_TRUE(hGraph.hasNode(2));
-    ASSERT_TRUE(hGraph.hasNode(3));
+    EXPECT_EQ(4u, hGraph.numberOfNodes());
+    EXPECT_TRUE(hGraph.hasNode(0));
+    EXPECT_TRUE(hGraph.hasNode(1));
+    EXPECT_TRUE(hGraph.hasNode(2));
+    EXPECT_TRUE(hGraph.hasNode(3));
 }
 
 /** NODE PROPERTIES **/
 
 TEST_P(HypergraphGTest, testDegree) {
     Hypergraph hGraph = SimpleHypergraphGenerator(100, 100, none, false, 10).generate();
-    hGraph.forNodes([&](node u) { ASSERT_EQ(10u, hGraph.degree(u)); });
+    hGraph.forNodes([&](node u) { EXPECT_EQ(10u, hGraph.degree(u)); });
 }
 
 TEST_P(HypergraphGTest, testNeighborsWithoutDuplicates) {
@@ -174,7 +283,7 @@ TEST_P(HypergraphGTest, testNeighborsWithoutDuplicates) {
 
     auto neighbors = hGraph.getNeighbors(1);
 
-    ASSERT_THAT(neighbors, testing::UnorderedElementsAre(0, 2));
+    EXPECT_THAT(neighbors, testing::UnorderedElementsAre(0, 2));
 }
 
 TEST_P(HypergraphGTest, testNeighborsWithDuplicates) {
@@ -185,8 +294,17 @@ TEST_P(HypergraphGTest, testNeighborsWithDuplicates) {
 
     auto neighbors = hGraph.getNeighbors(1);
 
-    ASSERT_EQ(neighbors.size(), 1);
-    ASSERT_THAT(neighbors, testing::ElementsAre(0));
+    EXPECT_EQ(neighbors.size(), 1);
+    EXPECT_THAT(neighbors, testing::ElementsAre(0));
+}
+
+TEST_P(HypergraphGTest, testGetSetNodeWeight) {
+    Hypergraph hGraph = Hypergraph(3, none, true);
+
+    auto neighbors = hGraph.getNeighbors(1);
+
+    EXPECT_EQ(neighbors.size(), 1);
+    EXPECT_THAT(neighbors, testing::ElementsAre(0));
 }
 
 /** EDGE MODIFIERS **/
@@ -194,45 +312,45 @@ TEST_P(HypergraphGTest, testNeighborsWithDuplicates) {
 TEST_P(HypergraphGTest, testaddEdge) {
     Hypergraph hGraph = Hypergraph();
 
-    ASSERT_FALSE(hGraph.hasEdge(0));
-    ASSERT_FALSE(hGraph.hasEdge(1));
-    ASSERT_EQ(0u, hGraph.numberOfEdges());
+    EXPECT_FALSE(hGraph.hasEdge(0));
+    EXPECT_FALSE(hGraph.hasEdge(1));
+    EXPECT_EQ(0u, hGraph.numberOfEdges());
 
     hGraph.addEdge();
-    ASSERT_TRUE(hGraph.hasEdge(0));
-    ASSERT_FALSE(hGraph.hasEdge(1));
-    ASSERT_EQ(1u, hGraph.numberOfEdges());
+    EXPECT_TRUE(hGraph.hasEdge(0));
+    EXPECT_FALSE(hGraph.hasEdge(1));
+    EXPECT_EQ(1u, hGraph.numberOfEdges());
 
     Hypergraph hGraph2 = Hypergraph(0, 2);
-    ASSERT_TRUE(hGraph2.hasEdge(0));
-    ASSERT_TRUE(hGraph2.hasEdge(1));
-    ASSERT_FALSE(hGraph2.hasEdge(2));
-    ASSERT_EQ(2u, hGraph2.numberOfEdges());
+    EXPECT_TRUE(hGraph2.hasEdge(0));
+    EXPECT_TRUE(hGraph2.hasEdge(1));
+    EXPECT_FALSE(hGraph2.hasEdge(2));
+    EXPECT_EQ(2u, hGraph2.numberOfEdges());
 
     hGraph2.addEdge();
     hGraph2.addEdge();
-    ASSERT_TRUE(hGraph2.hasEdge(2));
-    ASSERT_TRUE(hGraph2.hasEdge(3));
-    ASSERT_FALSE(hGraph2.hasEdge(4));
-    ASSERT_EQ(4u, hGraph2.numberOfEdges());
+    EXPECT_TRUE(hGraph2.hasEdge(2));
+    EXPECT_TRUE(hGraph2.hasEdge(3));
+    EXPECT_FALSE(hGraph2.hasEdge(4));
+    EXPECT_EQ(4u, hGraph2.numberOfEdges());
 }
 
 TEST_P(HypergraphGTest, testaddEdgeWithNodes) {
     Hypergraph hGraph = Hypergraph(2);
 
     hGraph.addEdge({0, 1});
-    ASSERT_TRUE(hGraph.hasEdge(0));
-    ASSERT_EQ(1u, hGraph.numberOfEdges());
+    EXPECT_TRUE(hGraph.hasEdge(0));
+    EXPECT_EQ(1u, hGraph.numberOfEdges());
 }
 
 TEST_P(HypergraphGTest, testaddEdgeWithNodesAddMissing) {
     Hypergraph hGraph = Hypergraph();
 
     hGraph.addEdge({0, 1}, true);
-    ASSERT_TRUE(hGraph.hasEdge(0));
-    ASSERT_TRUE(hGraph.hasNode(0, 0));
-    ASSERT_TRUE(hGraph.hasNode(1, 0));
-    ASSERT_EQ(1u, hGraph.numberOfEdges());
+    EXPECT_TRUE(hGraph.hasEdge(0));
+    EXPECT_TRUE(hGraph.hasNode(0, 0));
+    EXPECT_TRUE(hGraph.hasNode(1, 0));
+    EXPECT_EQ(1u, hGraph.numberOfEdges());
 }
 
 /** EDGE ITERATORS **/
@@ -248,13 +366,13 @@ TEST_P(HypergraphGTest, testForEdges) {
     std::vector<bool> edgesSeen(4, false);
 
     hGraph.forEdges([&](edgeid eid) {
-        ASSERT_TRUE(hGraph.hasNode(static_cast<node>(eid), eid));
-        ASSERT_TRUE(hGraph.hasNode(static_cast<node>(eid + 1), eid));
+        EXPECT_TRUE(hGraph.hasNode(static_cast<node>(eid), eid));
+        EXPECT_TRUE(hGraph.hasNode(static_cast<node>(eid + 1), eid));
         edgesSeen[static_cast<index>(eid)] = true;
     });
 
     for (auto b : edgesSeen) {
-        ASSERT_TRUE(b);
+        EXPECT_TRUE(b);
     }
 }
 
@@ -277,27 +395,27 @@ TEST_P(HypergraphGTest, testForWeightedEdges) {
     edgeweight weightSum = 0;
 
     hGraph.forEdges([&](edgeid eid, edgeweight ew) {
-        ASSERT_TRUE(hGraph.hasNode(static_cast<node>(eid), eid));
-        ASSERT_TRUE(hGraph.hasNode(static_cast<node>(eid + 1), eid));
-        ASSERT_EQ(hGraph.getEdgeWeight(eid), ew);
+        EXPECT_TRUE(hGraph.hasNode(static_cast<node>(eid), eid));
+        EXPECT_TRUE(hGraph.hasNode(static_cast<node>(eid + 1), eid));
+        EXPECT_EQ(hGraph.getEdgeWeight(eid), ew);
 
         edgesSeen[static_cast<index>(eid)] = true;
 
         if (hGraph.isWeighted()) {
-            ASSERT_NEAR((eid + 1) * 0.1, ew, epsilon);
+            EXPECT_NEAR((eid + 1) * 0.1, ew, epsilon);
         } else {
-            ASSERT_EQ(defaultEdgeWeight, ew);
+            EXPECT_EQ(defaultEdgeWeight, ew);
         }
         weightSum += ew;
     });
 
     for (auto b : edgesSeen) {
-        ASSERT_TRUE(b);
+        EXPECT_TRUE(b);
     }
     if (hGraph.isWeighted()) {
-        ASSERT_NEAR(1.0, weightSum, epsilon);
+        EXPECT_NEAR(1.0, weightSum, epsilon);
     } else {
-        ASSERT_NEAR(4 * defaultEdgeWeight, weightSum, epsilon);
+        EXPECT_NEAR(4 * defaultEdgeWeight, weightSum, epsilon);
     }
 }
 
@@ -312,7 +430,7 @@ TEST_P(HypergraphGTest, testForWeightedEdges) {
 //         weightSum += ew;
 //     });
 
-//     ASSERT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in every case";
+//     EXPECT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in every case";
 // }
 
 // TEST_P(GraphGTest, testParallelForEdges) {
@@ -326,7 +444,7 @@ TEST_P(HypergraphGTest, testForWeightedEdges) {
 //         weightSum += 1;
 //     });
 
-//     ASSERT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in every case";
+//     EXPECT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in every case";
 // }
 
 /* NEIGHBOR ITERATORS */
@@ -341,10 +459,10 @@ TEST_P(HypergraphGTest, testForNeighborsOf) {
 
     hGraph.forNeighborsOf(1, [&](node u) { visited.push_back(u); });
 
-    ASSERT_EQ(3u, visited.size());
-    ASSERT_EQ(0u, visited[0]);
-    ASSERT_EQ(2u, visited[1]);
-    ASSERT_EQ(4u, visited[2]);
+    EXPECT_EQ(3u, visited.size());
+    EXPECT_EQ(0u, visited[0]);
+    EXPECT_EQ(2u, visited[1]);
+    EXPECT_EQ(4u, visited[2]);
 }
 
 } // namespace NetworKit
