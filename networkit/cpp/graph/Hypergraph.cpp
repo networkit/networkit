@@ -58,9 +58,14 @@ node Hypergraph::addNodes(count numberOfNewNodes) {
 node Hypergraph::addNodeTo(const std::vector<edgeid> &edges, node u) {
     if (u == none)
         u = addNode();
+    if (numberOfNodes() == 0 || !nodeExists[u])
+        throw std::runtime_error("Error, the node does not exist!");
+
     for (auto eid : edges) {
-        edgeIncidence[eid].insert(u);
-        nodeIncidence[u].insert(eid);
+        if(edgeExists[eid]) {
+            edgeIncidence[eid].insert(u);
+            nodeIncidence[u].insert(eid);
+        }
     }
 
     return u;
@@ -69,9 +74,14 @@ node Hypergraph::addNodeTo(const std::vector<edgeid> &edges, node u) {
 edgeid Hypergraph::addNodesTo(const std::vector<node> &nodes, edgeid eid) {
     if (eid == none)
         eid = addEdge();
+    if (numberOfEdges() == 0 || !edgeExists[eid])
+        throw std::runtime_error("Error, the edge does not exist!");
+
     for (auto curNode : nodes) {
-        nodeIncidence[curNode].insert(eid);
-        edgeIncidence[eid].insert(curNode);
+        if(nodeExists[eid]) {
+            nodeIncidence[curNode].insert(eid);
+            edgeIncidence[eid].insert(curNode);
+        }
     }
     return eid;
 }
