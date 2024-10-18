@@ -47,6 +47,7 @@
 #include <networkit/io/NetworkitBinaryWriter.hpp>
 #include <networkit/io/PartitionReader.hpp>
 #include <networkit/io/PartitionWriter.hpp>
+#include <networkit/io/RBMatrixReader.hpp>
 #include <networkit/io/SNAPEdgeListPartitionReader.hpp>
 #include <networkit/io/SNAPGraphReader.hpp>
 #include <networkit/io/SNAPGraphWriter.hpp>
@@ -1244,6 +1245,35 @@ TEST_F(IOGTest, testNetworkitWriterNonContinuousNodesIds) {
             EXPECT_TRUE(GRead.hasEdge(u, v));
             EXPECT_DOUBLE_EQ(G.weight(u, v), GRead.weight(u, v));
         });
+    });
+}
+
+TEST_F(IOGTest, testRBMatrixReader) {
+    RBMatrixReader reader;
+    auto csrRB = reader.read("input/rbexample.rb");
+    auto csrMM = MatrixMarketReader{}.read("input/rbexample.matrixmarket");
+    EXPECT_EQ(csrRB, csrMM);
+}
+
+TEST_F(IOGTest, testRBGraphReader) {
+    RBGraphReader reader;
+    auto graphRB = reader.read("input/rbexample.rb");
+    auto graphMM = MTXGraphReader{}.read("input/rbexample.matrixmarket");
+
+    EXPECT_EQ(graphRB.numberOfNodes(), graphMM.numberOfNodes());
+    EXPECT_EQ(graphRB.numberOfEdges(), graphMM.numberOfEdges());
+    EXPECT_EQ(graphRB.numberOfSelfLoops(), graphMM.numberOfSelfLoops());
+    EXPECT_EQ(graphRB.isWeighted(), graphMM.isWeighted());
+    EXPECT_EQ(graphRB.isDirected(), graphMM.isDirected());
+
+    graphRB.forEdges([&](node u, node v, edgeweight w) {
+        EXPECT_TRUE(graphMM.hasEdge(u, v));
+        EXPECT_EQ(graphMM.weight(u, v), w);
+    });
+
+    graphMM.forEdges([&](node u, node v, edgeweight w) {
+        EXPECT_TRUE(graphRB.hasEdge(u, v));
+        EXPECT_EQ(graphRB.weight(u, v), w);
     });
 }
 
