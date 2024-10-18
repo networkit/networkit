@@ -91,7 +91,7 @@ class TestMTXGraphReader(unittest.TestCase):
 class TestRBGraphReader(unittest.TestCase):
     def testRead(self):
         reader = nk.graphio.RBGraphReader()
-        graph = reader.read("input/rbexample.rb")
+        graph = reader.read("input/tiny_05.rb")
         self.assertEqual(graph.numberOfNodes(), 5)
         self.assertEqual(graph.numberOfEdges(), 11)
         self.assertTrue(graph.isDirected())
@@ -154,7 +154,7 @@ class TestGraphIO(unittest.TestCase):
             ("foodweb-baydry.nkbg003", nk.Format.NetworkitBinary),
             ("jazz2_directed.gml", nk.Format.GML),
             ("chesapeake.mtx", nk.Format.MatrixMarket),
-            ("rbexample.rb", nk.Format.RB),
+            ("tiny_05.rb", nk.Format.RB),
         ]
 
         for file, expected_result in instances:

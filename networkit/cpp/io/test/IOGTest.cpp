@@ -1250,15 +1250,15 @@ TEST_F(IOGTest, testNetworkitWriterNonContinuousNodesIds) {
 
 TEST_F(IOGTest, testRBMatrixReader) {
     RBMatrixReader reader;
-    auto csrRB = reader.read("input/rbexample.rb");
-    auto csrMM = MatrixMarketReader{}.read("input/rbexample.matrixmarket");
+    auto csrRB = reader.read("input/tiny_05.rb");
+    auto csrMM = MatrixMarketReader{}.read("input/tiny_05.matrixmarket");
     EXPECT_EQ(csrRB, csrMM);
 }
 
 TEST_F(IOGTest, testRBGraphReader) {
     RBGraphReader reader;
-    auto graphRB = reader.read("input/rbexample.rb");
-    auto graphMM = MTXGraphReader{}.read("input/rbexample.matrixmarket");
+    auto graphRB = reader.read("input/tiny_05.rb");
+    auto graphMM = MTXGraphReader{}.read("input/tiny_05.matrixmarket");
 
     EXPECT_EQ(graphRB.numberOfNodes(), graphMM.numberOfNodes());
     EXPECT_EQ(graphRB.numberOfEdges(), graphMM.numberOfEdges());
