@@ -1018,6 +1018,20 @@ cdef class MTXGraphReader(GraphReader):
 	def __cinit__(self):
 		self._this = new _MTXGraphReader()
 
+cdef extern from "<networkit/io/RBGraphReader.hpp>":
+
+	cdef cppclass _RBGraphReader "NetworKit::RBGraphReader"(_GraphReader):
+		_RBGraphReader() except +
+
+cdef class RBGraphReader(GraphReader):
+	""" 
+	RBGraphReader()
+
+	Reader for the Rutherford Boeing (RB) matrix file format as described in http://sparse-files.engr.tamu.edu/files/DOC/rb.pdf.
+ 	"""
+	def __cinit__(self):
+		self._this = new _RBGraphReader()
+
 class __AutoNumber(Enum):
 	def __new__(cls):
 		value = len(cls.__members__) + 1
@@ -1048,6 +1062,7 @@ class Format(__AutoNumber):
 	- networkit.graphio.Format.NetworkitBinary
 	- networkit.graphio.Format.SNAP
 	- networkit.graphio.Format.MatrixMarket
+	- networkit.graphio.Format.RB
 	
 	"""
 	SNAP = ()
@@ -1070,6 +1085,7 @@ class Format(__AutoNumber):
 	ThrillBinary = ()
 	NetworkitBinary = ()
 	MatrixMarket = ()
+	RB = ()
 
 # reading
 
@@ -1107,6 +1123,7 @@ def getReader(fileformat, *kargs, **kwargs):
 		Format.ThrillBinary:		ThrillGraphBinaryReader(),
 		Format.NetworkitBinary:         NetworkitBinaryReader(),
 		Format.MatrixMarket: MTXGraphReader(),
+		Format.RB: RBGraphReader(),
 	}
 
 	# special case for custom Edge Lists
@@ -1178,6 +1195,12 @@ def guessFileFormat(filepath: str) -> Format:
 		# MatrixMarket - has specific first line. Specification defines the first line as "%%MatrixMarket [...]", but some files use a single % instead. We accept both.
 		if re.match(r'%+MatrixMarket', firstline):
 			return Format.MatrixMarket
+		
+		# Rutherford Boeing (RB) - has a structured text header. We check for line 4, which has a rather uncommon structure
+		line3 = f.readline()
+		line4 = f.readline()
+		if re.match(r'^\(\d+[A-Z]\d+\)\s+\(\d+[A-Z]\d+\)\s+\(\d+[A-Z]\d+', line4):
+			return Format.RB
 
 	# if none match, read all lines of the file and guess the format out of METIS, SNAP, EdgeList variants
 	# types:
