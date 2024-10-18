@@ -45,4 +45,4 @@ private:
 };
 
 } // namespace NetworKit
-#endif // NETWORKIT_IO_MATRIX_MARKET_READER_HPP_
+#endif // NETWORKIT_IO_RB_MATRIX_READER_HPP_

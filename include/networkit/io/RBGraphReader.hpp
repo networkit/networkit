@@ -28,4 +28,4 @@ public:
 };
 
 } /* namespace NetworKit */
-#endif // NETWORKIT_IO_MTX_GRAPH_READER_HPP_
+#endif // NETWORKIT_IO_RB_GRAPH_READER_HPP_
