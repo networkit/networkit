@@ -1,3 +1,10 @@
+/*
+ *  RBGraphReader.cpp
+ *
+ *  Created on: 16.10.2024
+ *      Author: bernlu
+ */
+
 #include <networkit/auxiliary/Enforce.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/StringTools.hpp>

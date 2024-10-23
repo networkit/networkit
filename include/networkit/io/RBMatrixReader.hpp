@@ -1,8 +1,8 @@
 /*
  * RBMatrixReader.hpp
  *
- *  Created on: 25.07.2014
- *      Author: dhoske
+ *  Created on: 16.10.2024
+ *      Author: bernlu
  */
 
 #ifndef NETWORKIT_IO_RB_MATRIX_READER_HPP_
@@ -18,7 +18,7 @@ namespace NetworKit {
  * Reader for the Rutherford Boeing (RB) matrix file format as described in
  * http://sparse-files.engr.tamu.edu/files/DOC/rb.pdf.
  *
- * @note currently only supports compressed column format for real, integer, or pattern data types.
+ * @note currently the reader only supports compressed column format for real, integer, or pattern data types.
  */
 class RBMatrixReader final : public MatrixReader {
 public:
