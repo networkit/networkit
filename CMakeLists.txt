@@ -18,7 +18,6 @@ option(NETWORKIT_CLANG_TIDY "Check code with clang-tidy" OFF)
 option(NETWORKIT_FLATINSTALL "Install into a flat directory structure (useful when building a Python package)" OFF)
 option(NETWORKIT_COVERAGE "Build with support for coverage" OFF)
 option(NETWORKIT_SANITY_CHECKS "Algorithms will perform further (expensive) checks" OFF)
-option(NETWORKIT_USE_DHB "Enable DHB)" OFF)
 set(NETWORKIT_PYTHON "" CACHE STRING "Directory containing Python.h. Implies MONOLITH=TRUE")
 set(NETWORKIT_NUMPY "" CACHE STRING "Directory containing Numpy.h.")
 set(NETWORKIT_PYTHON_SOABI "" CACHE STRING "Platform specific file extension. Implies MONOLITH=TRUE")
@@ -234,20 +233,16 @@ endif()
 
 ################################################################################
 # Use DHB as a CMake submodule
-if(NETWORKIT_USE_DHB)
-	if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/dhb/CMakeLists.txt")
-		set(DHB_WITH_64BIT_IDS TRUE "Use 64 bit IDs.")
-		add_subdirectory(extlibs/dhb)
-	else()
-		message(FATAL_ERROR
-				"Missing DHB library in extlibs/dhb "
-				"Please run `git submodule update --init` to fetch the submodule.")
-	endif()
-    message(STATUS "Using DHB.")
-    add_compile_definitions(-DUSING_DHB)
+if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/dhb/CMakeLists.txt")
+	set(DHB_WITH_64BIT_IDS TRUE "Use 64 bit IDs.")
+	add_subdirectory(extlibs/dhb)
 else()
-    message(STATUS "Not using DHB.")
+	message(FATAL_ERROR
+			"Missing DHB library in extlibs/dhb "
+			"Please run `git submodule update --init` to fetch the submodule.")
 endif()
+# TODO: remove USING_DHB from code base
+add_compile_definitions(-DUSING_DHB)
 
 ################################################################################
 # NETWORKIT MODULES
@@ -282,10 +277,11 @@ if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 		target_include_directories(networkit_state BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 	endif()
 
-	target_link_libraries(networkit PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
-	if(NETWORKIT_USE_DHB)
-		target_link_libraries(networkit PRIVATE dhb)
-	endif()
+	target_link_libraries(networkit PRIVATE 
+									dhb 
+									OpenMP::OpenMP_CXX 
+									PUBLIC 
+									tlx)
 
 	set_target_properties(networkit PROPERTIES
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
@@ -498,18 +494,13 @@ if (NETWORKIT_BUILD_TESTS)
 
 		target_link_libraries(networkit_tests
 			PRIVATE
-				gtest
+				dhb
 				gmock
+				gtest
 				networkit
-				tlx
 				OpenMP::OpenMP_CXX
+				tlx
 		)
-
-		if(NETWORKIT_USE_DHB)
-			target_link_libraries(networkit_tests 
-			PRIVATE 
-				dhb)
-		endif()
 
 		if(WIN32)
 			target_link_libraries(networkit_tests
@@ -550,18 +541,14 @@ if (NETWORKIT_BUILD_TESTS)
 
 		target_link_libraries(networkit_gtest_main
 				PUBLIC
-					gtest
 					gmock
+					gtest
 				PRIVATE
-					tlx
+					dhb
 					networkit_auxiliary
 					OpenMP::OpenMP_CXX
+					tlx
 		)
-		if(NETWORKIT_USE_DHB)
-			target_link_libraries(networkit_gtest_main
-				PRIVATE
-					dhb)
-		endif()
 
 	endif()
 endif()
