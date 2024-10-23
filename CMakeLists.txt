@@ -241,8 +241,6 @@ else()
 			"Missing DHB library in extlibs/dhb "
 			"Please run `git submodule update --init` to fetch the submodule.")
 endif()
-# TODO: remove USING_DHB from code base
-add_compile_definitions(-DUSING_DHB)
 
 ################################################################################
 # NETWORKIT MODULES
