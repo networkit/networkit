@@ -1,3 +1,10 @@
+/*
+ * RBGraphReader.hpp
+ *
+ *  Created on: 16.10.2024
+ *      Author: bernlu
+ */
+
 #ifndef NETWORKIT_IO_RB_GRAPH_READER_HPP_
 #define NETWORKIT_IO_RB_GRAPH_READER_HPP_
 
@@ -7,12 +14,10 @@ namespace NetworKit {
 
 /**
  * @ingroup io
+ * Reader for the Rutherford Boeing (RB) matrix file format as described in
+ * http://sparse-files.engr.tamu.edu/files/DOC/rb.pdf.
  *
- * Reader for the RB matrix file format documented in
- * https://networkrepository.com/mtx-matrix-market-format.html
- *
- * Does not allow complex fields.
- *
+ * @note currently the reader only supports compressed column format for real, integer, or pattern data types.
  */
 class RBGraphReader final : public GraphReader {
 public:
