@@ -43,7 +43,6 @@ class CurveballMaterialization;
  * - [ ] Review the passing by value semantics for all lambdas passed
  *       to a method such as f(L handle). Instead, we might want to pass
  *       all lambdas by rvalue-reference as in f(L&& handle).
- * - [ ] Review which type of omp parallel for should we use.
  */
 class DHBGraph final {
 
@@ -2369,7 +2368,7 @@ void DHBGraph::forNodes(L handle) const {
 
 template <typename L>
 void DHBGraph::forNodesParallel(L handle) const {
-#pragma omp parallel for
+#pragma omp parallel for schedule(guided)
     for (dhb::Vertex v = 0; v < m_dhb_graph.vertices_count(); ++v) {
         handle(v);
     }
@@ -2601,7 +2600,7 @@ void DHBGraph::forEdgesImplParallel(L handle) const {
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 double DHBGraph::parallelSumForEdgesImpl(L handle) const {
     double total_sum = 0.0;
-#pragma omp parallel for reduction(+ : total_sum)
+#pragma omp parallel for schedule(guided) reduction(+ : total_sum)
     for (dhb::Vertex u = 0; u < m_dhb_graph.vertices_count(); ++u) {
         auto neighbors = m_dhb_graph.neighbors(u);
 
@@ -2839,7 +2838,7 @@ template <typename L>
 double DHBGraph::sumForNodesParallel(L handle) const {
     double sum = 0.0;
 
-#pragma omp parallel for reduction(+ : sum)
+#pragma omp parallel for schedule(guided) reduction(+ : sum)
     for (dhb::Vertex v = 0; v < m_dhb_graph.vertices_count(); ++v) {
         sum += handle(v);
     }
