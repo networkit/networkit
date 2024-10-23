@@ -6,9 +6,9 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/graph_helper/Edge.hpp>
-#if defined(USING_DHB)
+
+#include <omp.h>
 #include <dhb/dynamic_hashed_blocks.h>
-#endif
 #include <tlx/define/deprecated.hpp>
 
 #include <algorithm>
@@ -17,7 +17,6 @@
 #include <iostream>
 #include <memory>
 #include <numeric>
-#include <omp.h>
 #include <queue>
 #include <sstream>
 #include <stack>
@@ -99,15 +98,12 @@ class DHBGraph final {
     //!< same schema (and same order!) as outEdges
     std::vector<std::vector<edgeid>> outEdgeIds;
 
-//! DHB Stuff
-#if defined(USING_DHB)
     struct EdgeData {
         edgeweight weight;
         edgeid id;
     };
 
     dhb::Matrix<EdgeData> m_dhb_graph;
-#endif
 
 private:
     // base class for all node (and edge) attribute
@@ -658,13 +654,7 @@ private:
      * neighbors.
      */
     bool ithNeighborExists(node u, index i) const {
-#if defined(USING_DHB)
         return hasNode(u) && i < m_dhb_graph.neighbors(u).degree();
-#else
-        // This private helper function is intended to be used only when 'USING_DHB' is defined.
-        // If DHB is not enabled, this function should not be called, so we return false.
-        return false;
-#endif
     }
 
     /**
@@ -1106,12 +1096,8 @@ public:
         index i;
 
         bool validEdge() const noexcept {
-#if defined(USING_DHB)
             return G->isDirected()
                    || (*nodeIter <= G->m_dhb_graph.neighbors(*nodeIter)[i].vertex());
-#else
-            return G->isDirected() || (*nodeIter <= G->outEdges[*nodeIter][i]);
-#endif
         }
 
         void nextEdge() {
@@ -1203,11 +1189,7 @@ public:
 
         Edge operator*() const noexcept {
             assert(nodeIter != G->nodeRange().end());
-#if defined(USING_DHB)
             return Edge(*nodeIter, G->m_dhb_graph.neighbors(*nodeIter)[i].vertex());
-#else
-            return Edge(*nodeIter, G->outEdges[*nodeIter][i]);
-#endif
         }
 
         EdgeIterator &operator++() {
@@ -1298,14 +1280,9 @@ public:
 
         WeightedEdge operator*() const noexcept {
             assert(nodeIter != G->nodeRange().end());
-#if defined(USING_DHB)
             return WeightedEdge(
                 *nodeIter, G->m_dhb_graph.neighbors(*nodeIter)[i].vertex(),
                 G->isWeighted() ? G->m_dhb_graph.neighbors(*nodeIter)[i].data().weight : 1);
-#else
-            return WeightedEdge(*nodeIter, G->outEdges[*nodeIter][i],
-                                G->isWeighted() ? G->outEdgeWeights[*nodeIter][i] : 1);
-#endif
         }
     };
 
@@ -1363,12 +1340,9 @@ public:
      * Class to iterate over the in/out neighbors of a node.
      */
     class NeighborIterator {
-#if defined(USING_DHB)
         using IteratorType = dhb::BlockState<EdgeData>::const_iterator;
         IteratorType it;
-#else
-        std::vector<node>::const_iterator nIter;
-#endif
+
     public:
         // The value type of the neighbors (i.e. nodes). Returned by
         // operator*().
@@ -1390,84 +1364,41 @@ public:
         // Own type.
         using self = NeighborIterator;
 
-#if defined(USING_DHB)
         NeighborIterator(IteratorType it) : it(it) {}
 
-#else
-        NeighborIterator(std::vector<node>::const_iterator nodesIter) : nIter(nodesIter) {}
-#endif
         /**
          * @brief WARNING: This contructor is required for Python and should not be used as the
          * iterator is not initialized.
          */
         NeighborIterator() {}
 
-        NeighborIterator &operator++() {
-#if defined(USING_DHB)
+        NeighborIterator& operator++() {
             ++it;
-#else
-            ++nIter;
-#endif
             return *this;
         }
 
         NeighborIterator operator++(int) {
-#if defined(USING_DHB)
             auto const tmp = *this;
             ++(*this);
             return tmp;
-#else
-            auto const tmp = *this;
-            ++nIter;
-            return tmp;
-#endif
         }
 
         NeighborIterator operator--() {
-#if defined(USING_DHB)
             --it;
             return *this;
-#else
-            --nIter;
-            return *this;
-#endif
         }
 
         NeighborIterator operator--(int) {
-#if defined(USING_DHB)
             auto const tmp = *this;
             --(*this);
             return tmp;
-#else
-            auto const tmp = *this;
-            --nIter;
-            return tmp;
-#endif
         }
 
-        bool operator==(NeighborIterator const& rhs) const {
-#if defined(USING_DHB)
-            return it == rhs.it;
-#else
-            return nIter == rhs.nIter;
-#endif
-        }
+        bool operator==(NeighborIterator const& rhs) const { return it == rhs.it; }
 
-        bool operator!=(NeighborIterator const& rhs) const {
-#if defined(USING_DHB)
-            return !(it == rhs.it);
-#else
-            return !(nIter == rhs.nIter);
-#endif
-        }
+        bool operator!=(NeighborIterator const& rhs) const { return !(it == rhs.it); }
 
-        node operator*() const {
-#if defined(USING_DHB)
-            return it->vertex();
-#else
-            return *nIter;
-#endif
-        }
+        node operator*() const { return it->vertex(); }
     };
 
     /**
@@ -1475,13 +1406,9 @@ public:
      * weights. Values are std::pair<node, edgeweight>.
      */
     class NeighborWeightIterator {
-#if defined(USING_DHB)
         using IteratorType = dhb::BlockState<EdgeData>::const_iterator;
         IteratorType it;
-#else
-        std::vector<node>::const_iterator nIter;
-        std::vector<edgeweight>::const_iterator wIter;
-#endif
+
     public:
         // The value type of the neighbors (i.e. nodes). Returned by
         // operator*().
@@ -1502,14 +1429,9 @@ public:
 
         // Own type.
         using self = NeighborWeightIterator;
-#if defined(USING_DHB)
+
         NeighborWeightIterator(IteratorType it) : it(it) {}
 
-#else
-        NeighborWeightIterator(std::vector<node>::const_iterator nodesIter,
-                               std::vector<edgeweight>::const_iterator weightIter)
-            : nIter(nodesIter), wIter(weightIter) {}
-#endif
         /**
          * @brief WARNING: This contructor is required for Python and should not be used as the
          * iterator is not initialized.
@@ -1517,12 +1439,7 @@ public:
         NeighborWeightIterator() {}
 
         NeighborWeightIterator& operator++() {
-#if defined(USING_DHB)
             ++it;
-#else
-            ++nIter;
-            ++wIter;
-#endif
             return *this;
         }
 
@@ -1533,14 +1450,8 @@ public:
         }
 
         NeighborWeightIterator operator--() {
-#if defined(USING_DHB)
             --it;
             return *this;
-#else
-            --nIter;
-            --wIter;
-            return *this;
-#endif
         }
 
         NeighborWeightIterator operator--(int) {
@@ -1549,28 +1460,12 @@ public:
             return tmp;
         }
 
-        bool operator==(NeighborWeightIterator const& rhs) const {
-#if defined(USING_DHB)
-            return it == rhs.it;
-#else
-            return nIter == rhs.nIter && wIter == rhs.wIter;
-#endif
-        }
+        bool operator==(NeighborWeightIterator const& rhs) const { return it == rhs.it; }
 
-        bool operator!=(NeighborWeightIterator const& rhs) const {
-#if defined(USING_DHB)
-            return !(it == rhs.it);
-#else
-            return !(*this == rhs);
-#endif
-        }
+        bool operator!=(NeighborWeightIterator const& rhs) const { return !(it == rhs.it); }
 
         std::pair<node, edgeweight> operator*() const {
-#if defined(USING_DHB)
             return std::make_pair(it->vertex(), it->data().weight);
-#else
-            return std::make_pair(*nIter, *wIter);
-#endif
         }
     };
 
@@ -1590,27 +1485,15 @@ public:
 
         NeighborIterator begin() const {
             assert(G);
-#if defined(USING_DHB)
             // in DHB we don't support iterator over InEdges = true;
             static_assert(!InEdges);
             return NeighborIterator(G->m_dhb_graph.neighbors(u).begin());
-#else
-
-            return InEdges ? NeighborIterator(G->inEdges[u].begin())
-                           : NeighborIterator(G->outEdges[u].begin());
-#endif
         }
 
         NeighborIterator end() const {
-#if defined(USING_DHB)
             // in DHB we don't support iterator over InEdges = true;
             static_assert(!InEdges);
             return NeighborIterator(G->m_dhb_graph.neighbors(u).end());
-#else
-
-            return InEdges ? NeighborIterator(G->inEdges[u].end())
-                           : NeighborIterator(G->outEdges[u].end());
-#endif
         }
     };
 
@@ -1633,29 +1516,16 @@ public:
 
         NeighborWeightIterator begin() const {
             assert(G);
-#if defined(USING_DHB)
             // in DHB we don't support iterator over InEdges = true;
             static_assert(!InEdges);
             return NeighborWeightIterator(G->m_dhb_graph.neighbors(u).begin());
-#else
-            return InEdges
-                       ? NeighborWeightIterator(G->inEdges[u].begin(), G->inEdgeWeights[u].begin())
-                       : NeighborWeightIterator(G->outEdges[u].begin(),
-                                                G->outEdgeWeights[u].begin());
-#endif
         }
 
         NeighborWeightIterator end() const {
             assert(G);
-#if defined(USING_DHB)
             // in DHB we don't support iterator over InEdges = true;
             static_assert(!InEdges);
             return NeighborWeightIterator(G->m_dhb_graph.neighbors(u).end());
-#else
-            return InEdges
-                       ? NeighborWeightIterator(G->inEdges[u].end(), G->inEdgeWeights[u].end())
-                       : NeighborWeightIterator(G->outEdges[u].end(), G->outEdgeWeights[u].end());
-#endif
         }
     };
 
@@ -1686,10 +1556,7 @@ public:
           inEdges(0), outEdges(0), inEdgeWeights(0), outEdgeWeights(0), inEdgeIds(0), outEdgeIds(0),
 
           // empty node attribute map as last member for this graph
-          nodeAttributeMap(this), edgeAttributeMap(this)
-#if defined(USING_DHB)
-          ,
-          m_dhb_graph(G.m_dhb_graph) {
+          nodeAttributeMap(this), edgeAttributeMap(this), m_dhb_graph(G.m_dhb_graph) {
         // G - The original
         // this - The copy
 
@@ -1716,140 +1583,6 @@ public:
                 }
             }
         }
-
-#else
-    {
-        if (G.isDirected() == directed) {
-            // G.inEdges might be empty (if G is undirected), but
-            // that's fine
-            inEdges = G.inEdges;
-            outEdges = G.outEdges;
-
-            // copy weights if needed
-            if (weighted) {
-                if (G.isWeighted()) {
-                    // just copy from G, again either both graphs are directed or both are
-                    // undirected
-                    inEdgeWeights = G.inEdgeWeights;
-                    outEdgeWeights = G.outEdgeWeights;
-                } else {
-                    // G has no weights, set defaultEdgeWeight for all edges
-                    if (directed) {
-                        inEdgeWeights.resize(z);
-                        for (node u = 0; u < z; u++) {
-                            inEdgeWeights[u].resize(G.inEdges[u].size(), defaultEdgeWeight);
-                        }
-                    }
-
-                    outEdgeWeights.resize(z);
-                    for (node u = 0; u < z; u++) {
-                        outEdgeWeights[u].resize(outEdges[u].size(), defaultEdgeWeight);
-                    }
-                }
-            }
-            if (G.hasEdgeIds() && edgesIndexed) {
-                inEdgeIds = G.inEdgeIds;
-                outEdgeIds = G.outEdgeIds;
-            }
-        } else if (G.isDirected()) {
-            // G is directed, but we want an undirected graph
-            // so we need to combine the out and in stuff for every node
-            outEdges.resize(z);
-            if (weighted)
-                outEdgeWeights.resize(z);
-            if (G.hasEdgeIds() && edgesIndexed)
-                outEdgeIds.resize(z);
-            G.balancedParallelForNodes([&](node u) {
-                // copy both out and in edges into our new outEdges
-                outEdges[u].reserve(G.outEdges[u].size() + G.inEdges[u].size());
-                outEdges[u].insert(outEdges[u].end(), G.outEdges[u].begin(), G.outEdges[u].end());
-                if (weighted) {
-                    if (G.isWeighted()) {
-                        // same for weights
-                        outEdgeWeights[u].reserve(G.outEdgeWeights[u].size()
-                                                  + G.inEdgeWeights[u].size());
-                        outEdgeWeights[u].insert(outEdgeWeights[u].end(),
-                                                 G.outEdgeWeights[u].begin(),
-                                                 G.outEdgeWeights[u].end());
-                    } else {
-                        // we are undirected, so no need to write anything into inEdgeWeights
-                        outEdgeWeights[u].resize(outEdges[u].size(), defaultEdgeWeight);
-                    }
-                }
-                if (G.hasEdgeIds() && edgesIndexed) {
-                    // copy both out and in edges ids into our new outEdgesIds
-                    outEdgeIds[u].reserve(G.outEdgeIds[u].size() + G.inEdgeIds[u].size());
-                    outEdgeIds[u].insert(outEdgeIds[u].end(), G.outEdgeIds[u].begin(),
-                                         G.outEdgeIds[u].end());
-                }
-            });
-            G.balancedParallelForNodes([&](node u) {
-                // this is necessary to avoid multi edges, because both u -> v and v -> u can exist
-                // in G
-                count edgeSurplus = 0;
-                for (count i = 0; i < G.inEdges[u].size(); ++i) {
-                    node v = G.inEdges[u][i];
-                    bool alreadyPresent = false;
-                    for (count j = 0; j < G.outEdges[u].size(); ++j) {
-                        if (v != G.outEdges[u][j])
-                            continue; // the edge already exists as an out edge
-                        alreadyPresent = true;
-                        if (u != v) {
-                            ++edgeSurplus;
-                            if (weighted) // we need combine those edges weights when making it a
-                                          // single edge
-                                outEdgeWeights[u][j] =
-                                    G.isWeighted()
-                                        ? edgeMerger(G.inEdgeWeights[u][i], G.outEdgeWeights[u][j])
-                                        : edgeMerger(defaultEdgeWeight, defaultEdgeWeight);
-                            if (G.hasEdgeIds() && edgesIndexed)
-                                outEdgeIds[u][j] = std::min(G.inEdgeIds[u][i], G.outEdgeIds[u][j]);
-                        }
-                        break;
-                    }
-                    if (!alreadyPresent) { // an equivalent out edge wasn't present so we add it
-                        outEdges[u].push_back(v);
-                        if (weighted)
-                            outEdgeWeights[u].push_back(G.isWeighted() ? G.inEdgeWeights[u][i]
-                                                                       : defaultEdgeWeight);
-                        if (G.hasEdgeIds() && edgesIndexed)
-                            outEdgeIds[u].push_back(G.inEdgeIds[u][i]);
-                    }
-                }
-#pragma omp atomic
-                m -= edgeSurplus;
-            });
-        } else {
-            // G is not directed, but this copy should be directed
-            // generally we can can copy G.out stuff into our in stuff
-            inEdges = G.outEdges;
-            outEdges = G.outEdges;
-            if (weighted) {
-                if (G.isWeighted()) {
-                    inEdgeWeights = G.outEdgeWeights;
-                    outEdgeWeights = G.outEdgeWeights;
-                } else {
-                    // initialize both inEdgeWeights and outEdgeWeights with the
-                    // defaultEdgeWeight
-                    inEdgeWeights.resize(z);
-                    for (node u = 0; u < z; ++u) {
-                        inEdgeWeights[u].resize(inEdges[u].size(), defaultEdgeWeight);
-                    }
-                    outEdgeWeights.resize(z);
-                    for (node u = 0; u < z; ++u) {
-                        outEdgeWeights[u].resize(outEdges[u].size(), defaultEdgeWeight);
-                    }
-                }
-            }
-            if (G.hasEdgeIds() && edgesIndexed) {
-                inEdgeIds = G.outEdgeIds;
-                outEdgeIds = G.outEdgeIds;
-            }
-        }
-
-        if (!G.edgesIndexed && edgesIndexed)
-            indexEdges();
-#endif
     }
 
     /**
@@ -1936,70 +1669,9 @@ public:
      * Sort edges according to accending neighbors for all vertices.
      */
     void sortEdges() {
-#if defined(USING_DHB)
         return sortEdges([](node a_vertex, edgeweight, edgeid, node b_vertex, edgeweight, edgeid) {
             return a_vertex < b_vertex;
         });
-#else
-        std::vector<std::vector<node>> targetAdjacencies(upperNodeIdBound());
-        std::vector<std::vector<edgeweight>> targetWeight;
-        std::vector<std::vector<edgeid>> targetEdgeIds;
-
-        if (isWeighted()) {
-            targetWeight.resize(upperNodeIdBound());
-            forNodes([&](node u) { targetWeight[u].reserve(degree(u)); });
-        }
-        if (hasEdgeIds()) {
-            targetEdgeIds.resize(upperNodeIdBound());
-            forNodes([&](node u) { targetEdgeIds[u].reserve(degree(u)); });
-        }
-
-        forNodes([&](node u) { targetAdjacencies[u].reserve(degree(u)); });
-
-        auto assignToTarget = [&](node u, node v, edgeweight w, edgeid eid) {
-            targetAdjacencies[v].push_back(u);
-            if (isWeighted()) {
-                targetWeight[v].push_back(w);
-            }
-            if (hasEdgeIds()) {
-                targetEdgeIds[v].push_back(eid);
-            }
-        };
-
-        forNodes([&](node u) { forInEdgesOf(u, assignToTarget); });
-
-        outEdges.swap(targetAdjacencies);
-        outEdgeWeights.swap(targetWeight);
-        outEdgeIds.swap(targetEdgeIds);
-
-        if (isDirected()) {
-            inEdges.swap(targetAdjacencies);
-            inEdgeWeights.swap(targetWeight);
-            inEdgeIds.swap(targetEdgeIds);
-
-            forNodes([&](node u) {
-                targetAdjacencies[u].resize(degreeIn(u));
-                targetAdjacencies[u].shrink_to_fit();
-                targetAdjacencies[u].clear();
-                if (isWeighted()) {
-                    targetWeight[u].resize(degreeIn(u));
-                    targetWeight[u].shrink_to_fit();
-                    targetWeight[u].clear();
-                }
-                if (hasEdgeIds()) {
-                    targetEdgeIds[u].resize(degreeIn(u));
-                    targetEdgeIds[u].shrink_to_fit();
-                    targetEdgeIds[u].clear();
-                }
-            });
-
-            forNodes([&](node u) { forEdgesOf(u, assignToTarget); });
-
-            inEdges.swap(targetAdjacencies);
-            inEdgeWeights.swap(targetWeight);
-            inEdgeIds.swap(targetEdgeIds);
-        }
-#endif
     }
     /**
      * Default graph class: Sorts the adjacency arrays by a custom criterion.
@@ -2013,76 +1685,12 @@ public:
      */
     template <typename Lambda>
     void sortEdges(Lambda&& lambda) {
-#if defined(USING_DHB)
         for (node v = 0; v < m_dhb_graph.vertices_count(); ++v) {
             m_dhb_graph.sort(v, [l = std::move(lambda)](dhb::BlockState<EdgeData>::Entry& a,
                                                         dhb::BlockState<EdgeData>::Entry& b) {
                 return l(a.vertex, a.data.weight, a.data.id, b.vertex, b.data.weight, b.data.id);
             });
         }
-#else
-        std::vector<std::vector<index>> indicesGlobal(omp_get_max_threads());
-
-        auto const sortAdjacencyArrays = [&](node u, std::vector<node>& adjList,
-                                             std::vector<edgeweight>& weights,
-                                             std::vector<edgeid>& edgeIds) -> void {
-            auto& indices = indicesGlobal[omp_get_thread_num()];
-            if (adjList.size() > indices.size())
-                indices.resize(adjList.size());
-
-            auto const indicesEnd =
-                indices.begin()
-                + static_cast<
-                    std::iterator_traits<std::vector<index>::const_iterator>::difference_type>(
-                    adjList.size());
-            std::iota(indices.begin(), indicesEnd, 0);
-
-            if (isWeighted()) {
-                if (hasEdgeIds())
-                    std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
-                        return lambda(WeightedEdgeWithId{u, adjList[a], weights[a], edgeIds[a]},
-                                      WeightedEdgeWithId{u, adjList[b], weights[b], edgeIds[b]});
-                    });
-                else
-                    std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
-                        return lambda(WeightedEdgeWithId{u, adjList[a], weights[a], 0},
-                                      WeightedEdgeWithId{u, adjList[b], weights[b], 0});
-                    });
-            } else if (hasEdgeIds())
-                std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
-                    return lambda(WeightedEdgeWithId{u, adjList[a], defaultEdgeWeight, edgeIds[a]},
-                                  WeightedEdgeWithId{u, adjList[b], defaultEdgeWeight, edgeIds[b]});
-                });
-            else
-                std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
-                    return lambda(WeightedEdgeWithId{u, adjList[a], defaultEdgeWeight, 0},
-                                  WeightedEdgeWithId{u, adjList[b], defaultEdgeWeight, 0});
-                });
-
-            Aux::ArrayTools::applyPermutation(adjList.begin(), adjList.end(), indices.begin());
-
-            if (isWeighted())
-                Aux::ArrayTools::applyPermutation(weights.begin(), weights.end(), indices.begin());
-
-            if (hasEdgeIds())
-                Aux::ArrayTools::applyPermutation(edgeIds.begin(), edgeIds.end(), indices.begin());
-        };
-
-        balancedParallelForNodes([&](node const u) {
-            if (degree(u) < 2)
-                return;
-
-            std::vector<edgeweight> dummyEdgeWeights;
-            std::vector<edgeid> dummyEdgeIds;
-            sortAdjacencyArrays(u, outEdges[u], isWeighted() ? outEdgeWeights[u] : dummyEdgeWeights,
-                                hasEdgeIds() ? outEdgeIds[u] : dummyEdgeIds);
-
-            if (isDirected())
-                sortAdjacencyArrays(u, inEdges[u],
-                                    isWeighted() ? inEdgeWeights[u] : dummyEdgeWeights,
-                                    hasEdgeIds() ? inEdgeIds[u] : dummyEdgeIds);
-        });
-#endif
     }
 
     /**
@@ -2354,11 +1962,7 @@ public:
      * @return <code>true</code> if graph contains no nodes.
      */
     bool isEmpty() const noexcept {
-#if defined(USING_DHB)
         return 0u == m_dhb_graph.vertices_count();
-#else
-        return !n;
-#endif
     }
 
     /**
@@ -2758,55 +2362,27 @@ public:
 
 template <typename L>
 void DHBGraph::forNodes(L handle) const {
-#if defined(USING_DHB)
     for (node v = 0; v < m_dhb_graph.vertices_count(); ++v) {
         handle(v);
     }
-#else
-    for (node v = 0; v < z; ++v) {
-        if (exists[v]) {
-            handle(v);
-        }
-    }
-#endif
 }
 
 template <typename L>
 void DHBGraph::forNodesParallel(L handle) const {
-#if defined(USING_DHB)
 #pragma omp parallel for
     for (dhb::Vertex v = 0; v < m_dhb_graph.vertices_count(); ++v) {
         handle(v);
     }
-#else
-#pragma omp parallel for
-    for (omp_index v = 0; v < static_cast<omp_index>(z); ++v) {
-        if (exists[v]) {
-            handle(v);
-        }
-    }
-#endif
 }
 
 template <typename C, typename L>
 void DHBGraph::forNodesWhile(C condition, L handle) const {
-#if defined(USING_DHB)
     for (dhb::Vertex v = 0; v < m_dhb_graph.vertices_count(); ++v) {
         if (!condition()) {
             break;
         }
         handle(v);
     }
-#else
-    for (node v = 0; v < z; ++v) {
-        if (exists[v]) {
-            if (!condition()) {
-                break;
-            }
-            handle(v);
-        }
-    }
-#endif
 }
 
 template <typename L>
@@ -2833,47 +2409,21 @@ void DHBGraph::balancedParallelForNodes(L handle) const {
 
 template <typename L>
 void DHBGraph::forNodePairs(L handle) const {
-#if defined(USING_DHB)
     for (node u = 0; u < m_dhb_graph.vertices_count(); ++u) {
         for (node v = u + 1; v < m_dhb_graph.vertices_count(); ++v) {
             handle(u, v);
         }
     }
-#else
-    for (node u = 0; u < z; ++u) {
-        if (exists[u]) {
-            for (node v = u + 1; v < z; ++v) {
-                if (exists[v]) {
-                    handle(u, v);
-                }
-            }
-        }
-    }
-#endif
 }
 
 template <typename L>
 void DHBGraph::forNodePairsParallel(L handle) const {
-#if defined(USING_DHB)
 #pragma omp parallel for collapse(2)
     for (dhb::Vertex u = 0; u < m_dhb_graph.vertices_count(); ++u) {
         for (node v = u + 1; v < m_dhb_graph.vertices_count(); ++v) {
             handle(u, v);
         }
     }
-#else
-
-#pragma omp parallel for schedule(guided)
-    for (omp_index u = 0; u < static_cast<omp_index>(z); ++u) {
-        if (exists[u]) {
-            for (node v = u + 1; v < z; ++v) {
-                if (exists[v]) {
-                    handle(u, v);
-                }
-            }
-        }
-    }
-#endif
 }
 
 /* EDGE ITERATORS */
@@ -2951,7 +2501,6 @@ inline bool DHBGraph::useEdgeInIteration<false>(node u, node v) const {
 
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 void DHBGraph::forOutEdgesOfImpl(node u, L handle) const {
-#if defined(USING_DHB)
     assert(u < m_dhb_graph.vertices_count());
     auto neighbors = m_dhb_graph.neighbors(u);
 
@@ -2960,21 +2509,10 @@ void DHBGraph::forOutEdgesOfImpl(node u, L handle) const {
         auto const [w, id] = getDHBEdgeData<hasWeights, graphHasEdgeIds>(u, v);
         edgeLambda<L>(handle, u, v, w, id);
     }
-#else
-    for (index i = 0; i < outEdges[u].size(); ++i) {
-        node v = outEdges[u][i];
-
-        if (useEdgeInIteration<graphIsDirected>(u, v)) {
-            edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
-                          getOutEdgeId<graphHasEdgeIds>(u, i));
-        }
-    }
-#endif
 }
 
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 void DHBGraph::forOutEdgesOfImplParallel(node u, L handle) const {
-#if defined(USING_DHB)
     assert(u < m_dhb_graph.vertices_count());
     auto neighbors = m_dhb_graph.neighbors(u);
 
@@ -2984,21 +2522,10 @@ void DHBGraph::forOutEdgesOfImplParallel(node u, L handle) const {
         auto const [w, id] = getDHBEdgeData<hasWeights, graphHasEdgeIds>(u, v);
         edgeLambda<L>(handle, u, v, w, id);
     }
-#else
-    for (index i = 0; i < outEdges[u].size(); ++i) {
-        node v = outEdges[u][i];
-
-        if (useEdgeInIteration<graphIsDirected>(u, v)) {
-            edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
-                          getOutEdgeId<graphHasEdgeIds>(u, i));
-        }
-    }
-#endif
 }
 
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 void DHBGraph::forInEdgesOfImpl(node u, L handle) const {
-#if defined(USING_DHB)
     assert(u < m_dhb_graph.vertices_count());
     if (graphIsDirected) {
         for (dhb::Vertex from = 0; from < m_dhb_graph.vertices_count(); ++from) {
@@ -3013,33 +2540,11 @@ void DHBGraph::forInEdgesOfImpl(node u, L handle) const {
     } else {
         forNeighborsOf(u, handle);
     }
-#else
-    if (graphIsDirected) {
-        for (index i = 0; i < inEdges[u].size(); i++) {
-            node v = inEdges[u][i];
-
-            if (useEdgeInIteration<true>(u, v)) {
-                edgeLambda<L>(handle, u, v, getInEdgeWeight<hasWeights>(u, i),
-                              getInEdgeId<graphHasEdgeIds>(u, i));
-            }
-        }
-    } else {
-        for (index i = 0; i < outEdges[u].size(); ++i) {
-            node v = outEdges[u][i];
-
-            if (useEdgeInIteration<true>(u, v)) {
-                edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
-                              getOutEdgeId<graphHasEdgeIds>(u, i));
-            }
-        }
-    }
-#endif
 }
 
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void DHBGraph::forInEdgesOfImplParallel(node u, L handle) const {
 
-#if defined(USING_DHB)
     assert(u < m_dhb_graph.vertices_count());
     if (graphIsDirected) {
 #pragma omp parallel for schedule(guided)
@@ -3055,32 +2560,10 @@ inline void DHBGraph::forInEdgesOfImplParallel(node u, L handle) const {
     } else {
         forNeighborsOfParallel(u, handle);
     }
-#else
-    if (graphIsDirected) {
-        for (index i = 0; i < inEdges[u].size(); i++) {
-            node v = inEdges[u][i];
-
-            if (useEdgeInIteration<true>(u, v)) {
-                edgeLambda<L>(handle, u, v, getInEdgeWeight<hasWeights>(u, i),
-                              getInEdgeId<graphHasEdgeIds>(u, i));
-            }
-        }
-    } else {
-        for (index i = 0; i < outEdges[u].size(); ++i) {
-            node v = outEdges[u][i];
-
-            if (useEdgeInIteration<true>(u, v)) {
-                edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
-                              getOutEdgeId<graphHasEdgeIds>(u, i));
-            }
-        }
-    }
-#endif
 }
 
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 void DHBGraph::forEdgeImpl(L handle) const {
-#if defined(USING_DHB)
     for (dhb::Vertex u = 0; u < m_dhb_graph.vertices_count(); ++u) {
         auto neighbors = m_dhb_graph.neighbors(u);
         for (auto it = neighbors.begin(); it != neighbors.end(); ++it) {
@@ -3095,17 +2578,10 @@ void DHBGraph::forEdgeImpl(L handle) const {
             }
         }
     }
-
-#else
-    for (node u = 0; u < z; ++u) {
-        forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(u, handle);
-    }
-#endif
 }
 
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 void DHBGraph::forEdgesImplParallel(L handle) const {
-#if defined(USING_DHB)
 #pragma omp parallel for schedule(guided)
     for (dhb::Vertex u = 0; u < m_dhb_graph.vertices_count(); ++u) {
         auto neighbors = m_dhb_graph.neighbors(u);
@@ -3120,18 +2596,10 @@ void DHBGraph::forEdgesImplParallel(L handle) const {
             }
         }
     }
-#else
-
-#pragma omp parallel for schedule(guided)
-    for (omp_index u = 0; u < static_cast<omp_index>(z); ++u) {
-        forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(u, handle);
-    }
-#endif
 }
 
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 double DHBGraph::parallelSumForEdgesImpl(L handle) const {
-#if defined(USING_DHB)
     double total_sum = 0.0;
 #pragma omp parallel for reduction(+ : total_sum)
     for (dhb::Vertex u = 0; u < m_dhb_graph.vertices_count(); ++u) {
@@ -3151,25 +2619,6 @@ double DHBGraph::parallelSumForEdgesImpl(L handle) const {
         total_sum /= 2;
     }
     return total_sum;
-#else
-    double sum = 0.F;
-
-#pragma omp parallel for reduction(+ : sum)
-    for (omp_index u = 0; u < static_cast<omp_index>(z); ++u) {
-        for (index i = 0; i < outEdges[u].size(); ++i) {
-            node v = outEdges[u][i];
-
-            // undirected, do not iterate over edges twice
-            // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
-            if (useEdgeInIteration<graphIsDirected>(u, v)) {
-                sum += edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
-                                     getOutEdgeId<graphHasEdgeIds>(u, i));
-            }
-        }
-    }
-
-    return sum;
-#endif
 }
 
 template <typename L>
@@ -3388,7 +2837,6 @@ void DHBGraph::forInEdgesOf(node u, L handle) const {
 
 template <typename L>
 double DHBGraph::sumForNodesParallel(L handle) const {
-#if defined(USING_DHB)
     double sum = 0.0;
 
 #pragma omp parallel for reduction(+ : sum)
@@ -3397,18 +2845,6 @@ double DHBGraph::sumForNodesParallel(L handle) const {
     }
 
     return sum;
-#else
-    double sum = 0.0;
-
-#pragma omp parallel for reduction(+ : sum)
-    for (omp_index v = 0; v < static_cast<omp_index>(z); ++v) {
-        if (exists[v]) {
-            sum += handle(v);
-        }
-    }
-
-    return sum;
-#endif
 }
 
 template <typename L>
@@ -3456,7 +2892,6 @@ double DHBGraph::sumForEdgesParallel(L handle) const {
 
 template <typename Condition>
 std::pair<count, count> DHBGraph::removeAdjacentEdges(node u, Condition condition, bool edgesIn) {
-#if defined(USING_DHB)
     std::vector<std::pair<dhb::Vertex, dhb::Vertex>> edgesToRemove;
     count removedEdges = 0;
     count removedSelfLoops = 0;
@@ -3488,37 +2923,6 @@ std::pair<count, count> DHBGraph::removeAdjacentEdges(node u, Condition conditio
         return {removedEdges >> 1, removedSelfLoops};
     }
     return {removedEdges, removedSelfLoops};
-#else
-    count removedEdges = 0;
-    count removedSelfLoops = 0;
-
-    // For directed graphs, this function is supposed to be called twice: one to remove out-edges,
-    // and one to remove in-edges.
-    auto& edges_ = edgesIn ? inEdges[u] : outEdges[u];
-    for (index vi = 0; vi < edges_.size();) {
-        if (condition(edges_[vi])) {
-            auto const isSelfLoop = (edges_[vi] == u);
-            removedSelfLoops += isSelfLoop;
-            removedEdges += !isSelfLoop;
-            edges_[vi] = edges_.back();
-            edges_.pop_back();
-            if (isWeighted()) {
-                auto& weights_ = edgesIn ? inEdgeWeights[u] : outEdgeWeights[u];
-                weights_[vi] = weights_.back();
-                weights_.pop_back();
-            }
-            if (hasEdgeIds()) {
-                auto& edgeIds_ = edgesIn ? inEdgeIds[u] : outEdgeIds[u];
-                edgeIds_[vi] = edgeIds_.back();
-                edgeIds_.pop_back();
-            }
-        } else {
-            ++vi;
-        }
-    }
-
-    return {removedEdges, removedSelfLoops};
-#endif
 }
 
 } /* namespace NetworKit */
