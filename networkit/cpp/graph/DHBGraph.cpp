@@ -544,7 +544,8 @@ std::pair<node, edgeweight> DHBGraph::getIthNeighborWithWeight(node u, index i) 
     return {neighbor, weight};
 }
 
-std::pair<node, edgeweight> DHBGraph::getIthNeighborWithWeight(Unsafe, node u, index i) const {
+// TODO: Implement?!
+std::pair<node, edgeweight> DHBGraph::getIthNeighborWithWeight(Unsafe, node, index) const {
     return {none, none};
 }
 
