@@ -2515,7 +2515,7 @@ void DHBGraph::forOutEdgesOfImplParallel(node u, L handle) const {
     auto neighbors = m_dhb_graph.neighbors(u);
 
 #pragma omp parallel for schedule(guided)
-    for (auto i = 0; i < neighbors.degree(); ++i) {
+    for (dhb::Vertex i = 0u; i < neighbors.degree(); ++i) {
         dhb::Vertex const v = neighbors[i].vertex();
         auto const [w, id] = getDHBEdgeData<hasWeights, graphHasEdgeIds>(u, v);
         edgeLambda<L>(handle, u, v, w, id);
