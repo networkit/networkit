@@ -1819,11 +1819,10 @@ public:
      * @param u Endpoint of edge.
      * @param v Endpoint of edge.
      * @param weight Optional edge weight.
-     * @param checkMultiEdge If true, this enables a check for a possible multi-edge.
      * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
      * true and the new edge would have been a multi-edge.)
      */
-    bool addEdge(node u, node v, edgeweight ew = defaultEdgeWeight, bool checkMultiEdge = false);
+    bool addEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
 
     /**
      * @brief Adds a collection of weighted edges to the DHBGraph.
