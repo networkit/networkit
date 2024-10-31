@@ -200,7 +200,7 @@ bool DHBGraph::hasNode(node v) const noexcept {
 
 /** EDGE MODIFIERS **/
 
-bool DHBGraph::addEdge(node u, node v, edgeweight ew, bool checkForMultiEdges) {
+bool DHBGraph::addEdge(node u, node v, edgeweight ew) {
     assert(u < m_dhb_graph.vertices_count());
     assert(v < m_dhb_graph.vertices_count());
 
