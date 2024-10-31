@@ -111,7 +111,7 @@ bool DHBGraph::isIsolated(node v) const {
     if (directed) {
         bool const has_no_outgoing_edges = (m_dhb_graph.degree(v) == 0);
         bool has_no_incoming_edges = true;
-        forEdges([&](node from, node to) {
+        forEdges([&](node, node to) {
             if (v == to) {
                 has_no_incoming_edges = false;
             }
@@ -242,7 +242,6 @@ bool DHBGraph::addEdges(std::vector<WeightedEdge>&& weighted_edges, bool do_upda
     assert(omp_get_max_threads() == num_threads);
 
     auto cmp = [](WeightedEdge const& a, WeightedEdge const& b) { return a.u < b.u; };
-    auto key = [](WeightedEdge const& e) { return e.u; };
 
     std::vector<uint8_t> insertion_result(omp_get_max_threads(), 1);
     auto insert_edge_f = [&](WeightedEdge const& e) {
@@ -278,7 +277,7 @@ bool DHBGraph::addEdges(std::vector<WeightedEdge>&& weighted_edges, bool do_upda
     };
 
     par(std::begin(weighted_edges), std::end(weighted_edges), std::move(get_source_f),
-        std::move(key), std::move(cmp), std::move(processEdge));
+        std::move(cmp), std::move(processEdge));
 
     bool const acc_insertion_result_directed = std::all_of(
         std::begin(insertion_result), std::end(insertion_result), [](bool const r) { return r; });
@@ -296,7 +295,7 @@ bool DHBGraph::addEdges(std::vector<WeightedEdge>&& weighted_edges, bool do_upda
             }
 
             par(std::begin(weighted_edges_v_to_u), std::end(weighted_edges_v_to_u),
-                std::move(get_source_f), std::move(key), std::move(cmp), std::move(processEdge));
+                std::move(get_source_f), std::move(cmp), std::move(processEdge));
 
             return std::all_of(std::begin(insertion_result), std::end(insertion_result),
                                [](bool const r) { return r; });
@@ -399,7 +398,7 @@ count DHBGraph::degreeIn(node v) const {
     assert(v < m_dhb_graph.vertices_count());
     if (directed) {
         count in_degree = 0;
-        parallelForEdges([&](node from, node to) {
+        parallelForEdges([&](node, node to) {
             if (v == to) {
 #pragma omp atomic
                 ++in_degree;
