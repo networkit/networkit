@@ -699,34 +699,6 @@ cdef class PLM(CommunityDetector):
 		"""
 		return Partition().setThis(PLM_prolong(Gcoarse._this, zetaCoarse._this, Gfine._this, nodeToMetaNode))
 
-cdef extern from "<networkit/community/ParallelLeiden.hpp>":
-
-	cdef cppclass _ParallelLeiden "NetworKit::ParallelLeiden"(_CommunityDetectionAlgorithm):
-		_ParallelLeiden(_Graph _G) except +
-		_ParallelLeiden(_Graph _G, int iterations, bool_t randomize, double gamma) except +
-
-cdef class ParallelLeiden(CommunityDetector):
-	""" 
-	ParallelLeiden(G, randomize=True, iterations=3, gamma=1)
-
-	Parallel Leiden Algorithm.
-
-	Parameters
-	----------
-	G : networkit.Graph
-		A graph.
-	randomize : bool, optional
-		Whether to randomize the node order or not. Default: True
-	iterations : int, optional
-		Maximum count of Leiden runs. Default: 3
-	gamma : float, optional
-		Multi-resolution modularity parameter: 1.0 (standard modularity), 0.0 (one community), 2m (singleton communities). Default: 1.0
-	"""
-
-	def __cinit__(self, Graph G not None, int iterations = 3, bool_t randomize = True, double gamma = 1):
-		self._G = G
-		self._this = new _ParallelLeiden(G._this,iterations,randomize,gamma)
-
 cdef extern from "<networkit/community/LouvainMapEquation.hpp>":
 	cdef cppclass _LouvainMapEquation "NetworKit::LouvainMapEquation"(_CommunityDetectionAlgorithm):
 		_LouvainMapEquation(_Graph, bool, count, string ) except +

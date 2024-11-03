@@ -34,7 +34,6 @@
 #include <networkit/community/PLM.hpp>
 #include <networkit/community/PLP.hpp>
 #include <networkit/community/ParallelAgglomerativeClusterer.hpp>
-#include <networkit/community/ParallelLeiden.hpp>
 #include <networkit/community/PartitionFragmentation.hpp>
 #include <networkit/community/PartitionIntersection.hpp>
 #include <networkit/community/SampledGraphStructuralRandMeasure.hpp>
@@ -297,29 +296,6 @@ TEST_F(CommunityGTest, testPLM) {
     PLM plmr(G, true, 1.0);
     plmr.run();
     Partition zeta2 = plmr.getPartition();
-
-    DEBUG("number of clusters: ", zeta2.numberOfSubsets());
-    DEBUG("modularity: ", modularity.getQuality(zeta2, G));
-    EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta2));
-}
-
-TEST_F(CommunityGTest, testParallelLeiden) {
-    METISGraphReader reader;
-    Modularity modularity;
-    Graph G = reader.read("input/caidaRouterLevel.graph");
-
-    ParallelLeiden pl(G);
-    pl.VECTOR_OVERSIZE = 1;
-    pl.run();
-    Partition zeta = pl.getPartition();
-
-    DEBUG("number of clusters: ", zeta.numberOfSubsets());
-    DEBUG("modularity: ", modularity.getQuality(zeta, G));
-    EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta));
-
-    ParallelLeiden plnr(G, 3, false);
-    plnr.run();
-    Partition zeta2 = plnr.getPartition();
 
     DEBUG("number of clusters: ", zeta2.numberOfSubsets());
     DEBUG("modularity: ", modularity.getQuality(zeta2, G));

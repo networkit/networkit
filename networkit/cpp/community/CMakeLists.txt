@@ -36,7 +36,6 @@ networkit_add_module(community
     SampledNodeStructuralRandMeasure.cpp
     StablePartitionNodes.cpp
     LouvainMapEquation.cpp
-    ParallelLeiden.cpp
     )
 
 networkit_module_link_modules(community
