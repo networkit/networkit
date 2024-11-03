@@ -62,7 +62,7 @@ node Hypergraph::addNodeTo(const std::vector<edgeid> &edges, node u) {
         throw std::runtime_error("Error, the node does not exist!");
 
     for (auto eid : edges) {
-        if(edgeExists[eid]) {
+        if (edgeExists[eid]) {
             edgeIncidence[eid].insert(u);
             nodeIncidence[u].insert(eid);
         }
@@ -78,7 +78,7 @@ edgeid Hypergraph::addNodesTo(const std::vector<node> &nodes, edgeid eid) {
         throw std::runtime_error("Error, the edge does not exist!");
 
     for (auto curNode : nodes) {
-        if(nodeExists[eid]) {
+        if (nodeExists[eid]) {
             nodeIncidence[curNode].insert(eid);
             edgeIncidence[eid].insert(curNode);
         }
@@ -130,7 +130,8 @@ nodeweight Hypergraph::getNodeWeight(node u) const {
 
 void Hypergraph::setNodeWeight(node u, nodeweight nw) {
 
-    if(!weighted) return;
+    if (!weighted)
+        return;
 
     node tempN = u;
     if (!nodeExists[tempN])
@@ -153,7 +154,8 @@ count Hypergraph::degree(node u) const {
 count Hypergraph::weightedDegree(node u) const {
     assert(u < nextNodeId);
 
-    if(!weighted) return degree(u);
+    if (!weighted)
+        return degree(u);
 
     count res{0};
 
@@ -240,8 +242,9 @@ edgeweight Hypergraph::getEdgeWeight(edgeid eid) const {
 }
 
 void Hypergraph::setEdgeWeight(edgeid eid, edgeweight ew) {
-    if (!weighted) return;
-    
+    if (!weighted)
+        return;
+
     edgeid tempEid = eid;
     if (!edgeExists[tempEid])
         tempEid = addEdge();
