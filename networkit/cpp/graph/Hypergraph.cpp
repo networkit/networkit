@@ -16,11 +16,11 @@ Hypergraph::Hypergraph(count n, count m, bool weighted)
       weighted(weighted), // indicates whether the graph is weighted or not
                           //   directed(directed), // indicates whether the graph is directed or not
 
-      nodeExists(n, true), nodeWeights(weighted ? n : 0),
+      nodeExists(n, true), nodeWeights(weighted ? n : 0, defaultNodeWeight),
 
       nodeIncidence(n),
 
-      edgeExists(m, true), edgeWeights(weighted ? m : 0),
+      edgeExists(m, true), edgeWeights(weighted ? m : 0, defaultEdgeWeight),
 
       edgeIncidence(m),
 
@@ -122,13 +122,16 @@ nodeweight Hypergraph::getNodeWeight(node u) const {
     assert(u < nextNodeId);
 
     nodeweight res{0.0};
-    if (nodeExists[u]) {
+    if (nodeExists[u] && weighted) {
         res = nodeWeights[u];
     }
-    return res;
+    return weighted ? res : defaultNodeWeight;
 }
 
 void Hypergraph::setNodeWeight(node u, nodeweight nw) {
+
+    if(!weighted) return;
+
     node tempN = u;
     if (!nodeExists[tempN])
         tempN = addNode();
@@ -149,7 +152,8 @@ count Hypergraph::degree(node u) const {
 // NOTE: might profit from a parallel reduction
 count Hypergraph::weightedDegree(node u) const {
     assert(u < nextNodeId);
-    assert(weighted);
+
+    if(!weighted) return degree(u);
 
     count res{0};
 
@@ -236,9 +240,8 @@ edgeweight Hypergraph::getEdgeWeight(edgeid eid) const {
 }
 
 void Hypergraph::setEdgeWeight(edgeid eid, edgeweight ew) {
-    if (!weighted) {
-        throw std::runtime_error("Cannot set edge weight in unweighted hypergraphs.");
-    }
+    if (!weighted) return;
+    
     edgeid tempEid = eid;
     if (!edgeExists[tempEid])
         tempEid = addEdge();
