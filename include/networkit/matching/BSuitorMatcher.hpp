@@ -53,7 +53,7 @@ protected:
             max_size = b;
         }
 
-        bool hasPartner(node u) {
+        bool hasPartner(node u) const {
             return std::find_if(partners.begin(), partners.end(),
                                 [u](const MatchingNode &v) { return v.id == u; })
                    != partners.end();
@@ -126,8 +126,8 @@ public:
     void run() override;
 
 protected:
-    std::vector<std::unique_ptr<MatchingNodeInfo>> suitors;
-    std::vector<std::unique_ptr<MatchingNodeInfo>> proposed;
+    std::vector<MatchingNodeInfo> suitors;
+    std::vector<MatchingNodeInfo> proposed;
     const std::vector<count> b;
 
     /**
