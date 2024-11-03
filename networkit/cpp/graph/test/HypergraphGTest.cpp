@@ -85,7 +85,6 @@ TEST_P(HypergraphGTest, testUpperEdgeIdBound) {
     EXPECT_EQ(3u, hGraph.upperEdgeIdBound());
 }
 
-
 /** NODE MODIFIERS **/
 
 TEST_P(HypergraphGTest, testAddNode) {
@@ -100,7 +99,7 @@ TEST_P(HypergraphGTest, testAddNode) {
     EXPECT_FALSE(hGraph.hasNode(1));
     EXPECT_EQ(1u, hGraph.numberOfNodes());
 
-    Hypergraph hGraph2 = Hypergraph(2, 0 ,isWeightedHypergraph());
+    Hypergraph hGraph2 = Hypergraph(2, 0, isWeightedHypergraph());
     EXPECT_TRUE(hGraph2.hasNode(0));
     EXPECT_TRUE(hGraph2.hasNode(1));
     EXPECT_FALSE(hGraph2.hasNode(2));
@@ -177,9 +176,8 @@ TEST_P(HypergraphGTest, testAddNodesToWithEdgeId) {
 
     hGraph.addNodeTo({0}, 0);
 
-    EXPECT_TRUE(hGraph.hasNode(0,0));
+    EXPECT_TRUE(hGraph.hasNode(0, 0));
 }
-
 
 TEST_F(HypergraphGTest, testRemoveNode) {
     auto testGraph = [&](Hypergraph &hGraph) {
@@ -301,9 +299,8 @@ TEST_P(HypergraphGTest, testWeightedDegree) {
     hGraph.addNodeTo({1}, 0);
     hGraph.addNodeTo({2}, 0);
 
-    hGraph.forEdges([&](edgeid eid){
-        hGraph.setEdgeWeight(eid, static_cast<edgeweight>(eid+1));
-    });
+    hGraph.forEdges(
+        [&](edgeid eid) { hGraph.setEdgeWeight(eid, static_cast<edgeweight>(eid + 1)); });
 
     EXPECT_DOUBLE_EQ(hGraph.weightedDegree(0), isWeightedHypergraph() ? 6.0 : 3.0);
 }
@@ -423,7 +420,8 @@ TEST_F(HypergraphGTest, testRemoveEdge) {
             hGraph.removeEdge(eid);
             --numEdges;
             EXPECT_EQ(hGraph.numberOfEdges(), numEdges);
-            hGraph.forEdges([&](edgeid edgeTest) { EXPECT_EQ(hGraph.hasEdge(edgeTest), edgeTest > eid); });
+            hGraph.forEdges(
+                [&](edgeid edgeTest) { EXPECT_EQ(hGraph.hasEdge(edgeTest), edgeTest > eid); });
         }
     };
 
