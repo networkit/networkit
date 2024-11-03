@@ -27,7 +27,7 @@ public:
      * @param b b values
      * @param numNodes Maximum number of nodes.
      */
-    BMatching(const Graph &G, const std::vector<count> &b, count numNodes = 0);
+    BMatching(const Graph &G, const std::vector<count> &b);
 
     /**
      * Checks whether this is a proper b-matching.
