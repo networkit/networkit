@@ -49,7 +49,6 @@ protected:
 
         MatchingNodeInfo(count b) {
             partners.reserve(b);
-            min = MatchingNode();
             max_size = b;
         }
 
