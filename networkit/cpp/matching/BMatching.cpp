@@ -2,7 +2,8 @@
 
 namespace NetworKit {
 
-BMatching::BMatching(const Graph &G, const std::vector<count> &b) : G(G), b(b), matches(G.numberOfNodes()) {}
+BMatching::BMatching(const Graph &G, const std::vector<count> &b)
+    : G(G), b(b), matches(G.numberOfNodes()) {}
 
 bool BMatching::isProper() const {
     // check if entries are symmetric and every pair exists as an edge
