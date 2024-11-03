@@ -38,6 +38,8 @@ protected:
                 return cmp;
             return -id <=> -other.id;
         }
+
+        bool operator==(const MatchingNode &other) const = default;
     };
 
     struct MatchingNodeInfo {
