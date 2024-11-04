@@ -151,13 +151,13 @@ count Hypergraph::degree(node u) const {
 }
 
 // NOTE: might profit from a parallel reduction
-count Hypergraph::weightedDegree(node u) const {
+edgeweight Hypergraph::weightedDegree(node u) const {
     assert(u < nextNodeId);
 
     if (!weighted)
-        return degree(u);
+        return static_cast<edgeweight>(degree(u));
 
-    count res{0};
+    edgeweight res{0.0};
 
     if (nodeExists[u]) {
         for (edgeid eid : nodeIncidence[u]) {
