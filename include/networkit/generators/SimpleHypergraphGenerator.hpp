@@ -46,7 +46,7 @@ private:
 
     count numNodes;
     count numEdges;
-    [[maybe_unused]] count maxEdgeOrder;
+    count maxEdgeOrder;
     bool uniform;
     count regularNodeDegree;
 };

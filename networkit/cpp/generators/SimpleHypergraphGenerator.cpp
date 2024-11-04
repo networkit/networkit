@@ -21,9 +21,6 @@ SimpleHypergraphGenerator::SimpleHypergraphGenerator(count numNodes, count numEd
             std::runtime_error("The node degree exceeds the number of edges. At least use as many "
                                "edges, as each node needs for it's degree.");
     }
-
-    if (maxEdgeOrder == none)
-        maxEdgeOrder = numNodes;
 }
 
 void SimpleHypergraphGenerator::satisfyEdgeOrder(Hypergraph &hGraph) {
@@ -47,8 +44,11 @@ Hypergraph SimpleHypergraphGenerator::generate() {
     // node-to-edge distribution
     if (regularNodeDegree != none)
         satisfyNodeDegree(hGraph);
-    else
+    else {
+        if (maxEdgeOrder == none)
+            maxEdgeOrder = numNodes;
         satisfyEdgeOrder(hGraph);
+    }
 
     return hGraph;
 }
