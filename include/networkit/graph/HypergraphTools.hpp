@@ -75,7 +75,7 @@ count maxDegree(const Hypergraph &hGraph);
  * @param hGraph The Hypergraph.
  * @return Maximum weighted node degree.
  */
-count maxWeightedDegree(const Hypergraph &hGraph);
+edgeweight maxWeightedDegree(const Hypergraph &hGraph);
 
 // template <typename Matrix>
 // Matrix computeIncidenceMatrix(const Hypergraph &hGraph);
