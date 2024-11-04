@@ -36,7 +36,7 @@ protected:
         std::partial_ordering operator<=>(const MatchingNode &other) const {
             if (auto cmp = weight <=> other.weight; cmp != 0)
                 return cmp;
-            
+
             return -static_cast<int64_t>(id) <=> -static_cast<int64_t>(other.id);
         }
 
