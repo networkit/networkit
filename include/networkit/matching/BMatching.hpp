@@ -91,7 +91,7 @@ public:
     /**
      * Retrieves the b-value for each node.
      */
-    std::vector<count> getB() const;
+    const std::vector<count> &getB() const;
 
 protected:
     const Graph &G;

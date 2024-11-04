@@ -63,7 +63,7 @@ const std::vector<std::unordered_set<node>> &BMatching::getMatches() const {
     return matches;
 }
 
-std::vector<count> BMatching::getB() const {
+const std::vector<count> &BMatching::getB() const {
     return b;
 }
 
