@@ -36,7 +36,8 @@ protected:
         std::partial_ordering operator<=>(const MatchingNode &other) const {
             if (auto cmp = weight <=> other.weight; cmp != 0)
                 return cmp;
-            return -id <=> -other.id;
+            
+            return -static_cast<int64_t>(id) <=> -static_cast<int64_t>(other.id);
         }
 
         bool operator==(const MatchingNode &other) const = default;
@@ -74,13 +75,7 @@ protected:
             assert(partners.size() < max_size);
             partners.emplace_back(u);
             if (partners.size() == max_size && !partners.empty()) {
-                min = *std::min_element(partners.begin(), partners.end(),
-                                        [](const MatchingNode &x, const MatchingNode &y) {
-                                            if (x.weight == y.weight) {
-                                                return x.id > y.id;
-                                            }
-                                            return x.weight < y.weight;
-                                        });
+                min = *std::min_element(partners.begin(), partners.end());
             }
         }
 
