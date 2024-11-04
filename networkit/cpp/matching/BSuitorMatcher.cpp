@@ -26,8 +26,8 @@ BSuitorMatcher::BSuitorMatcher(const Graph &G, const std::vector<count> &b) : BM
     suitors.reserve(n);
     proposed.reserve(n);
     for (index i = 0; i < n; ++i) {
-        suitors.emplace_back(MatchingNodeInfo(b.at(i)));
-        proposed.emplace_back(MatchingNodeInfo(b.at(i)));
+        suitors.emplace_back(b.at(i));
+        proposed.emplace_back(b.at(i));
     }
 }
 
