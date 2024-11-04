@@ -453,27 +453,6 @@ TEST_F(HypergraphGTest, testOrder) {
 /** EDGE ITERATORS **/
 
 TEST_P(HypergraphGTest, testForEdges) {
-    Hypergraph hGraph = Hypergraph(5, 4, isWeightedHypergraph());
-    hGraph.addNodeTo({0}, 0);
-    hGraph.addNodeTo({0, 1}, 1);
-    hGraph.addNodeTo({1, 2}, 2);
-    hGraph.addNodeTo({2, 3}, 3);
-    hGraph.addNodeTo({3}, 4);
-
-    std::vector<bool> edgesSeen(4, false);
-
-    hGraph.forEdges([&](edgeid eid) {
-        EXPECT_TRUE(hGraph.hasNode(static_cast<node>(eid), eid));
-        EXPECT_TRUE(hGraph.hasNode(static_cast<node>(eid + 1), eid));
-        edgesSeen[static_cast<index>(eid)] = true;
-    });
-
-    for (auto b : edgesSeen) {
-        EXPECT_TRUE(b);
-    }
-}
-
-TEST_P(HypergraphGTest, testForWeightedEdges) {
     double epsilon = 1e-6;
 
     Hypergraph hGraph = Hypergraph(5, 4, true);
@@ -516,33 +495,49 @@ TEST_P(HypergraphGTest, testForWeightedEdges) {
     }
 }
 
-// TEST_P(GraphGTest, testParallelForWeightedEdges) {
-//     count n = 4;
-//     Graph G = createGraph(n);
-//     G.forNodePairs([&](node u, node v) { G.addEdge(u, v, 1.0); });
+TEST_P(HypergraphGTest, testParallelForEdges) {
+    double epsilon = 1e-6;
 
-//     edgeweight weightSum = 0.0;
-//     G.parallelForEdges([&](node, node, edgeweight ew) {
-// #pragma omp atomic
-//         weightSum += ew;
-//     });
+    Hypergraph hGraph = Hypergraph(5, 4, true);
+    hGraph.setEdgeWeight(0, 0.1);
+    hGraph.setEdgeWeight(1, 0.2);
+    hGraph.setEdgeWeight(2, 0.3);
+    hGraph.setEdgeWeight(3, 0.4);
 
-//     EXPECT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in every case";
-// }
+    hGraph.addNodeTo({0}, 0);
+    hGraph.addNodeTo({0, 1}, 1);
+    hGraph.addNodeTo({1, 2}, 2);
+    hGraph.addNodeTo({2, 3}, 3);
+    hGraph.addNodeTo({3}, 4);
 
-// TEST_P(GraphGTest, testParallelForEdges) {
-//     count n = 4;
-//     Graph G = createGraph(n);
-//     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
+    std::vector<bool> edgesSeen(4, false);
+    edgeweight weightSum = 0;
 
-//     edgeweight weightSum = 0.0;
-//     G.parallelForEdges([&](node, node) {
-// #pragma omp atomic
-//         weightSum += 1;
-//     });
+    hGraph.parallelForEdges([&](edgeid eid, edgeweight ew) {
+        EXPECT_TRUE(hGraph.hasNode(static_cast<node>(eid), eid));
+        EXPECT_TRUE(hGraph.hasNode(static_cast<node>(eid + 1), eid));
+        EXPECT_EQ(hGraph.getEdgeWeight(eid), ew);
 
-//     EXPECT_EQ(6.0, weightSum) << "sum of edge weights should be 6 in every case";
-// }
+        edgesSeen[static_cast<index>(eid)] = true;
+
+        if (hGraph.isWeighted()) {
+            EXPECT_NEAR((eid + 1) * 0.1, ew, epsilon);
+        } else {
+            EXPECT_EQ(defaultEdgeWeight, ew);
+        }
+#pragma omp atomic
+        weightSum += ew;
+    });
+
+    for (auto b : edgesSeen) {
+        EXPECT_TRUE(b);
+    }
+    if (hGraph.isWeighted()) {
+        EXPECT_NEAR(1.0, weightSum, epsilon);
+    } else {
+        EXPECT_NEAR(4 * defaultEdgeWeight, weightSum, epsilon);
+    }
+}
 
 /* NEIGHBOR ITERATORS */
 
