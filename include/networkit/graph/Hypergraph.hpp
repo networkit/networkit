@@ -307,7 +307,7 @@ public:
      * @param u The node id.
      * @return count Weighted degree of node.
      */
-    count weightedDegree(node u) const;
+    edgeweight weightedDegree(node u) const;
 
     /**
      * Retrieve the neighbors of a given node @a u.

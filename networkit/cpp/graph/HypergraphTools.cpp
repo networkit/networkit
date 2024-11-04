@@ -157,8 +157,8 @@ count HypergraphTools::maxDegree(const Hypergraph &hGraph) {
     return result;
 }
 
-count HypergraphTools::maxWeightedDegree(const Hypergraph &hGraph) {
-    count result = 0;
+edgeweight HypergraphTools::maxWeightedDegree(const Hypergraph &hGraph) {
+    edgeweight result = 0;
 #ifndef NETWORKIT_OMP2
 #pragma omp parallel for reduction(max : result)
     for (omp_index u = 0; u < static_cast<omp_index>(hGraph.upperNodeIdBound()); ++u) {
