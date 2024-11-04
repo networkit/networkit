@@ -202,9 +202,10 @@ edgeid Hypergraph::addEdge(const std::vector<node> &nodes, bool addMissing) {
     edgeIncidence[eid] = std::unordered_set<node>(nodes.begin(), nodes.end());
 
     if (addMissing) {
+        node currentMax;
         for (auto v : edgeIncidence[eid]) {
-            node currentMax = numNodes;
-            while (v > currentMax) {
+            currentMax = nextNodeId;
+            while (v >= currentMax) {
                 currentMax = addNode();
                 nodeExists[currentMax] = false;
             }
