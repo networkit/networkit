@@ -1,4 +1,9 @@
-// TODO: add boilerplate
+/*
+ * HypergraphTools.cpp
+ *
+ *  Created on: 24.05.2024
+ *      Author: Fabian Brandt-Tumescheit
+ */
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/graph/HypergraphTools.hpp>
