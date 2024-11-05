@@ -1,3 +1,10 @@
+/*
+ * HypergraphTools.hpp
+ *
+ *  Created on: 24.05.2024
+ *      Author: Fabian Brandt-Tumescheit
+ */
+
 #ifndef NETWORKIT_GRAPH_HYPERGRAPH_TOOLS_HPP_
 #define NETWORKIT_GRAPH_HYPERGRAPH_TOOLS_HPP_
 
@@ -76,18 +83,6 @@ count maxDegree(const Hypergraph &hGraph);
  * @return Maximum weighted node degree.
  */
 edgeweight maxWeightedDegree(const Hypergraph &hGraph);
-
-// template <typename Matrix>
-// Matrix computeIncidenceMatrix(const Hypergraph &hGraph);
-
-// template <>
-// CSRMatrix computeIncidenceMatrix(const Hypergraph &hGraph);
-
-// template <>
-// DenseMatrix computeIncidenceMatrix(const Hypergraph &hGraph);
-
-// template <>
-// DynamicMatrix computeIncidenceMatrix(const Hypergraph &hGraph);
 
 } // namespace HypergraphTools
 
