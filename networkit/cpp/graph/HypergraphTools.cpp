@@ -1,5 +1,7 @@
 // TODO: add boilerplate
 
+#include <ranges>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/graph/HypergraphTools.hpp>
 
@@ -168,6 +170,17 @@ edgeweight HypergraphTools::maxWeightedDegree(const Hypergraph &hGraph) {
     hGraph.forNodes([&](node u) { result = std::max(result, hGraph.weightedDegree(u)); });
 #endif
     return result;
+}
+
+std::unordered_set<node> HypergraphTools::getIntersection(Hypergraph &hGraph, edgeid eid1, edgeid eid2) {
+    std::unordered_set<node> setEid1 = hGraph.edgeMembers(eid1);
+    std::unordered_set<node> setEid2 = hGraph.edgeMembers(eid2);
+
+    auto view = setEid1 | std::views::filter([&setEid2](int e) {
+        return setEid2.contains(e);
+    };
+
+    return std::unordered_set<node>(view.begin(), view.end());
 }
 
 } // namespace NetworKit

@@ -252,4 +252,5 @@ void Hypergraph::setEdgeWeight(edgeid eid, edgeweight ew) {
 
     edgeWeights[tempEid] = ew;
 }
+
 } // namespace NetworKit
