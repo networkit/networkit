@@ -378,6 +378,14 @@ public:
      */
     count order(edgeid eid) const { return edgeIncidence[eid].size(); }
 
+    /**
+     * Returns map of node members of an hyperedge
+     * 
+     * @param eid The edge id.
+     * @return map of node members of each hyperedge
+     */
+    const std::unordered_set<node> &edgeMembers(edgeid eid) const { return edgeIncidence[eid]; }
+
     /* ITERATORS */
 
     /**
