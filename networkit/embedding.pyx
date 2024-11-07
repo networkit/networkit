@@ -72,9 +72,14 @@ cdef class Node2Vec(Algorithm):
 
 
 cdef extern from "<networkit/embedding/KHop.hpp>" namespace "NetworKit::KHop":
+
 	cdef enum _khopMode "NetworKit::KHop::khopMode":
 		STRICT,
 		DEFAULT
+
+class khopMode(object):
+	STRICT = _khopMode.STRICT
+	DEFAULT = _khopMode.DEFAULT
 
 cdef extern from "<networkit/embedding/KHop.hpp>":
 
@@ -90,7 +95,7 @@ cdef class KHop(Algorithm):
 	cdef Graph _G
 	cdef Graph _G_k
 
-	def __cinit__(self, Graph G, K=2, S=6.25, L=80, N=10, D=128, M=_khopMode.DEFAULT, winSize=8, iterations=20):
+	def __cinit__(self, Graph G, K=2, S=6.25, L=80, N=10, D=128, M=khopMode.DEFAULT, winSize=8, iterations=20):
 		self._G = G
 		self._this = new _KHop(G._this, K, S, L, N, D, M, winSize, iterations)
 
