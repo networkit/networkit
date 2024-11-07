@@ -85,7 +85,7 @@ cdef extern from "<networkit/embedding/KHop.hpp>":
 
 	cdef cppclass _KHop "NetworKit::KHop"(_Algorithm):
 		_KHop(_Graph G, size_t K, double S, count L, count N, count D, _khopMode M, count winSize, count iterations) except +
-		Graph GetG_k() except +
+		#Graph GetG_k() except +
 		vector[vector[float]] &getFeatures() except +
 
 cdef class KHop(Algorithm):
@@ -99,18 +99,18 @@ cdef class KHop(Algorithm):
 		self._G = G
 		self._this = new _KHop(G._this, K, S, L, N, D, M, winSize, iterations)
 
-	def GetG_k(self):
-		"""
-		GetG_k()
-
-		Returns k-Hop Graph G_k
-
-		Returns
-		-------
-		Graph G_k
-			k-Hop Graph of G
-		"""
-		return (<_KHop*>(self._this)).GetG_k()
+#	def GetG_k(self):
+#		"""
+#		GetG_k()
+#
+#		Returns k-Hop Graph G_k
+#
+#		Returns
+#		-------
+#		Graph G_k
+#			k-Hop Graph of G
+#		"""
+#		return (<_KHop*>(self._this)).GetG_k()
 
 	def getFeatures(self):
 		"""
