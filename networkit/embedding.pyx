@@ -71,7 +71,7 @@ cdef class Node2Vec(Algorithm):
 		return (<_Node2Vec*>(self._this)).getFeatures()
 
 
-cdef extern from "<networkit/embedding/KHop.hpp>" namespace "NetworKit::KHop::khopMode":
+cdef extern from "<networkit/embedding/KHop.hpp>" namespace "NetworKit::KHop":
 	cdef enum _khopMode "NetworKit::KHop::khopMode":
 		STRICT,
 		DEFAULT
