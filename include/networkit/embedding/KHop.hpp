@@ -21,7 +21,7 @@ namespace NetworKit {
 class KHop final : public Algorithm {
 
 public:
-    enum class khopMode {
+    enum khopMode {
         STRICT = 0,
         DEFAULT = 1,
     };
