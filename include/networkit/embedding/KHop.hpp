@@ -66,7 +66,9 @@ public:
     /**
      * @return Graph
      */
-    const Graph GetG_k() const;
+    const Graph GetG_k() const {
+        return G_k;
+    }
 
 private:
     // The graph
