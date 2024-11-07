@@ -110,8 +110,8 @@ cdef class KHop(Algorithm):
 		Graph G_k
 			k-Hop Graph of G
 		"""
-		return (<_KHop*>(self._this)).GetG_k()
-
+		#return (<_KHop*>(self._this)).GetG_k()
+		return (<_KHop*>(self._this)).G_k
 
 	def getFeatures(self):
 		"""
