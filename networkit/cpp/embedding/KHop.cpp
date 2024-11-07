@@ -183,4 +183,8 @@ void KHop::kHop(node node) {
     }
 }
 
+const Graph GetG_k() const {
+    return G_k;
+}
+
 } /* namespace NetworKit */
