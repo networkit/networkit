@@ -80,7 +80,7 @@ cdef extern from "<networkit/embedding/KHop.hpp>":
 
 	cdef cppclass _KHop "NetworKit::KHop"(_Algorithm):
 		_KHop(_Graph G, size_t K, double S, count L, count N, count D, _khopMode M, count winSize, count iterations) except +
-		_Graph GetG_k() except +
+		Graph GetG_k() except +
 		vector[vector[float]] &getFeatures() except +
 
 cdef class KHop(Algorithm):
