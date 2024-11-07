@@ -94,18 +94,18 @@ cdef class KHop(Algorithm):
 		self._G = G
 		self._this = new _KHop(G._this, K, S, L, N, D, M, winSize, iterations)
 
-	def GetG_k(self):
-		"""
-		GetG_k()
-
-		Returns k-Hop Graph G_k
-
-		Returns
-		-------
-		Graph G_k
-			k-Hop Graph of G
-		"""
-		return (<_KHop*>(self._this)).GetG_k()
+#	def GetG_k(self):
+#		"""
+#		GetG_k()
+#
+#		Returns k-Hop Graph G_k
+#
+#		Returns
+#		-------
+#		Graph G_k
+#			k-Hop Graph of G
+#		"""
+#		return (<_KHop*>(self._this)).GetG_k()
 
 
 	def getFeatures(self):
