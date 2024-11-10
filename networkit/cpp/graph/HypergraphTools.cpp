@@ -209,6 +209,26 @@ count HypergraphTools::getIntersectionSize(Hypergraph &hGraph, edgeid eid1, edge
     return intersectionSize;
 }
 
+Graph HypergraphTools::cliqueExpansion(Hypergraph &hGraph) {
+
+    Graph cliqueExpansion(hGraph.numberOfNodes());
+
+    hGraph.forEdges([&](edgeid eid) {
+        const std::unordered_set<node> &nodesInEdge = hGraph.edgeMembers(eid);
+        for (auto firstIt = nodesInEdge.begin(); firstIt != nodesInEdge.end(); ++firstIt) {
+            for (auto secondIt = std::next(firstIt); secondIt != nodesInEdge.end(); ++secondIt) {
+                node v = *firstIt;
+                node w = *secondIt;
+                if (v > w)
+                    cliqueExpansion.addEdge(v, w);
+            }
+        }
+    });
+
+    cliqueExpansion.removeMultiEdges();
+
+    return cliqueExpansion;
+}
 
     auto view = setEid1 | std::views::filter([&setEid2](int e) {
         return setEid2.contains(e);
