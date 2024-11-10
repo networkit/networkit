@@ -113,6 +113,20 @@ Graph cliqueExpansion(Hypergraph &hGraph);
  * @return lineExpansion The line expansion.
  */
 Graph lineExpansion(Hypergraph &hGraph);
+
+/**
+ * Converts a hypergraph into its line graph (a simple graph) with optional weights.
+ * The weights are computed based on: 1/3 * (union + union/intersection) of two hyperedges.
+ * The formula is taken from "Distances in Higher-Order Networks and the Metric Structure of
+ * Hypergraphs" (E. Vasilyeva et al.) Link: https://doi.org/10.3390/e25060923
+ *
+ * @param hGraph The Hypergraph.
+ * @param weighted weighted Optional: If set to true, the edges of the line graph are weighted based
+ * on their order and intersection size. Default value: false.
+ * @return lineGraph The line graph.
+ */
+Graph lineGraph(Hypergraph &hGraph, bool weighted = false);
+
 // template <typename Matrix>
 // Matrix computeIncidenceMatrix(const Hypergraph &hGraph);
 
