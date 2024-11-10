@@ -230,9 +230,53 @@ Graph HypergraphTools::cliqueExpansion(Hypergraph &hGraph) {
     return cliqueExpansion;
 }
 
-    auto view = setEid1 | std::views::filter([&setEid2](int e) {
-        return setEid2.contains(e);
-    };
+Graph HypergraphTools::lineExpansion(Hypergraph &hGraph) {
+    std::map<std::pair<node, edgeid>, node> lineMap;
+
+    count expansionSize = 0;
+    hGraph.forEdges([&](edgeid eid) { expansionSize += hGraph.order(eid); });
+
+    // now create the lineExpansion graph since we now know the amount of nodes in it
+    Graph lineExpansion(expansionSize);
+    auto attrNodeRef = lineExpansion.nodeAttributes().attach<node>("node");
+    auto attrEdgeRef = lineExpansion.nodeAttributes().attach<edgeid>("edgeid");
+
+    // First add all edges inside each clique
+    // In addition set the node attributes in order to maintain the original data
+    count currentId = 0;
+    hGraph.forEdges([&](edgeid eid) {
+        const std::unordered_set<node> &nodesInEdge = hGraph.edgeMembers(eid);
+        count currentOrder = hGraph.order(eid);
+        node offset = 0;
+        for (auto firstIt = nodesInEdge.begin(); firstIt != nodesInEdge.end(); ++firstIt) {
+            attrNodeRef[currentId + offset] = node{*firstIt};
+            attrEdgeRef[currentId + offset] = edgeid{eid};
+            lineMap[std::make_pair(node{*firstIt} + offset, edgeid{eid})] = currentId + offset;
+            for (count nextIdsInEdge = currentId + offset; nextIdsInEdge < currentId + currentOrder;
+                 ++nextIdsInEdge) {
+                lineExpansion.addEdge(currentId, nextIdsInEdge);
+            }
+            offset++;
+        }
+        currentId += currentOrder;
+    });
+
+    // Now add all edges between hyperedges
+    hGraph.forNodes([&](node u) {
+        const std::unordered_set<node> &edgesOfNode = hGraph.edgesOf(u);
+        for (auto firstIt = edgesOfNode.begin(); firstIt != edgesOfNode.end(); ++firstIt) {
+            for (auto secondIt = std::next(firstIt); secondIt != edgesOfNode.end(); ++secondIt) {
+                node v = lineMap[std::make_pair(u, *firstIt)];
+                node w = lineMap[std::make_pair(u, *secondIt)];
+                lineExpansion.addEdge(v, w);
+            }
+        }
+    });
+
+    lineExpansion.removeMultiEdges();
+
+    return lineExpansion;
+}
 
     return std::unordered_set<node>(view.begin(), view.end());
 }

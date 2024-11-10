@@ -104,6 +104,15 @@ count getIntersectionSize(Hypergraph &hGraph, edgeid eid1, edgeid eid2);
  * @return cliqueExpansion The clique expansion.
  */
 Graph cliqueExpansion(Hypergraph &hGraph);
+
+/**
+ * Converts a hypergraph into its line expansion (an attributed graph).
+ * The attributes in the graph contain the original node and edge id from the Hypergraph.
+ *
+ * @param hGraph The Hypergraph.
+ * @return lineExpansion The line expansion.
+ */
+Graph lineExpansion(Hypergraph &hGraph);
 // template <typename Matrix>
 // Matrix computeIncidenceMatrix(const Hypergraph &hGraph);
 
