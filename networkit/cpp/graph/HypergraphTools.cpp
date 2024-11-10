@@ -1,5 +1,6 @@
 // TODO: add boilerplate
 
+#include <map>
 #include <ranges>
 
 #include <networkit/auxiliary/Log.hpp>
