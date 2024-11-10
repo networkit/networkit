@@ -96,6 +96,14 @@ std::unordered_set<node> getIntersection(Hypergraph &hGraph, edgeid eid1, edgeid
  * @return intersection size
  */
 count getIntersectionSize(Hypergraph &hGraph, edgeid eid1, edgeid eid2);
+
+/**
+ * Converts a hypergraph into its clique expansion (a simple graph)
+ *
+ * @param hGraph The Hypergraph.
+ * @return cliqueExpansion The clique expansion.
+ */
+Graph cliqueExpansion(Hypergraph &hGraph);
 // template <typename Matrix>
 // Matrix computeIncidenceMatrix(const Hypergraph &hGraph);
 
