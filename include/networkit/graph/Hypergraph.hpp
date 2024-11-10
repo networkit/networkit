@@ -315,7 +315,7 @@ public:
      * @param u The node id.
      * @return The edges containing @a u.
      */
-    std::unordered_set<edgeid> edgesOf(node u) const { return nodeIncidence[u]; };
+    const std::unordered_set<edgeid> &edgesOf(node u) const { return nodeIncidence[u]; };
 
     /**
      * Retrieve the neighbors of a given node @a u.
