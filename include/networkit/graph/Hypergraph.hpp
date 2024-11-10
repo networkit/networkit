@@ -310,6 +310,14 @@ public:
     edgeweight weightedDegree(node u) const;
 
     /**
+     * Retrieve the edges a given node @a u is part of.
+     *
+     * @param u The node id.
+     * @return The edges containing @a u.
+     */
+    std::unordered_set<edgeid> edgesOf(node u) const { return nodeIncidence[u]; };
+
+    /**
      * Retrieve the neighbors of a given node @a u.
      *
      * @param u The node id.
@@ -380,7 +388,7 @@ public:
 
     /**
      * Returns map of node members of an hyperedge
-     * 
+     *
      * @param eid The edge id.
      * @return map of node members of each hyperedge
      */
