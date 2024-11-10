@@ -172,9 +172,43 @@ edgeweight HypergraphTools::maxWeightedDegree(const Hypergraph &hGraph) {
     return result;
 }
 
-std::unordered_set<node> HypergraphTools::getIntersection(Hypergraph &hGraph, edgeid eid1, edgeid eid2) {
-    std::unordered_set<node> setEid1 = hGraph.edgeMembers(eid1);
-    std::unordered_set<node> setEid2 = hGraph.edgeMembers(eid2);
+std::unordered_set<node> HypergraphTools::getIntersection(Hypergraph &hGraph, edgeid eid1,
+                                                          edgeid eid2) {
+    std::unordered_set<node> smallerUSet = hGraph.order(eid1) < hGraph.order(eid2)
+                                               ? hGraph.edgeMembers(eid1)
+                                               : hGraph.edgeMembers(eid2);
+    std::unordered_set<node> largerUSet = hGraph.order(eid1) < hGraph.order(eid2)
+                                              ? hGraph.edgeMembers(eid2)
+                                              : hGraph.edgeMembers(eid1);
+
+    std::unordered_set<node> uSetIntersection;
+
+    for (node u : smallerUSet) {
+        if (largerUSet.count(u) > 0)
+            uSetIntersection.insert(u);
+    }
+
+    return uSetIntersection;
+}
+
+count HypergraphTools::getIntersectionSize(Hypergraph &hGraph, edgeid eid1, edgeid eid2) {
+    std::unordered_set<node> smallerUSet = hGraph.order(eid1) < hGraph.order(eid2)
+                                               ? hGraph.edgeMembers(eid1)
+                                               : hGraph.edgeMembers(eid2);
+    std::unordered_set<node> largerUSet = hGraph.order(eid1) < hGraph.order(eid2)
+                                              ? hGraph.edgeMembers(eid2)
+                                              : hGraph.edgeMembers(eid1);
+
+    count intersectionSize = 0;
+
+    for (node u : smallerUSet) {
+        if (largerUSet.count(u) > 0)
+            intersectionSize++;
+    }
+
+    return intersectionSize;
+}
+
 
     auto view = setEid1 | std::views::filter([&setEid2](int e) {
         return setEid2.contains(e);

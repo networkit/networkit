@@ -79,14 +79,23 @@ edgeweight maxWeightedDegree(const Hypergraph &hGraph);
 
 /**
  * Returns the intersection of two hyperedges as a set
- * 
- * @param hypergraph Input hypergraph
+ *
+ * @param hypergraph The Hypergraph.
  * @param eid1 first hyperedge
  * @param eid2 second hyperedge
  * @return intersection
  */
 std::unordered_set<node> getIntersection(Hypergraph &hGraph, edgeid eid1, edgeid eid2);
 
+/**
+ * Returns the size of the intersection of two hyperedges
+ *
+ * @param hypergraph The Hypergraph.
+ * @param eid1 first hyperedge
+ * @param eid2 second hyperedge
+ * @return intersection size
+ */
+count getIntersectionSize(Hypergraph &hGraph, edgeid eid1, edgeid eid2);
 // template <typename Matrix>
 // Matrix computeIncidenceMatrix(const Hypergraph &hGraph);
 
