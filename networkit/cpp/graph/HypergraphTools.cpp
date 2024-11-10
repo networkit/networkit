@@ -278,7 +278,30 @@ Graph HypergraphTools::lineExpansion(Hypergraph &hGraph) {
     return lineExpansion;
 }
 
-    return std::unordered_set<node>(view.begin(), view.end());
+Graph HypergraphTools::lineGraph(Hypergraph &hGraph, bool weighted) {
+    Graph lineGraph(hGraph.numberOfEdges(), weighted);
+
+    hGraph.forNodes([&](node u) {
+        const std::unordered_set<node> &edgesOfNode = hGraph.edgesOf(u);
+        for (auto firstIt = edgesOfNode.begin(); firstIt != edgesOfNode.end(); ++firstIt) {
+            for (auto secondIt = std::next(firstIt); secondIt != edgesOfNode.end(); ++secondIt) {
+                node v = static_cast<node>(*firstIt);
+                node w = static_cast<node>(*secondIt);
+                edgeweight eWeight = defaultEdgeWeight;
+                if (weighted) {
+                    edgeweight intersectionSize = getIntersectionSize(hGraph, *firstIt, *secondIt);
+                    edgeweight unionSize = static_cast<edgeweight>(hGraph.order(*firstIt))
+                                           + static_cast<edgeweight>(hGraph.order(*secondIt))
+                                           - intersectionSize;
+                    eWeight = (1.0 / 3.0) * (unionSize + (unionSize / intersectionSize)) - 1.0;
+                }
+                lineGraph.addEdge(v, w, eWeight);
+            }
+        }
+    });
+    lineGraph.removeMultiEdges();
+
+    return lineGraph;
 }
 
 } // namespace NetworKit
