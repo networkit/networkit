@@ -1,4 +1,7 @@
 networkit_add_module(matching
+    BMatcher.cpp
+    BMatching.cpp
+    BSuitorMatcher.cpp
     LocalMaxMatcher.cpp
     Matcher.cpp
     Matching.cpp
