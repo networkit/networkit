@@ -8,6 +8,8 @@
 #ifndef NETWORKIT_DISTANCE_A_STAR_GENERAL_HPP_
 #define NETWORKIT_DISTANCE_A_STAR_GENERAL_HPP_
 
+#include <ranges>
+
 #include <networkit/auxiliary/VectorComparator.hpp>
 #include <networkit/distance/STSP.hpp>
 
@@ -53,11 +55,11 @@ public:
         const count n = G->upperNodeIdBound();
         distance = infdist;
 
-        std::fill(distFromSource.begin(), distFromSource.end(), infdist);
+        std::ranges::fill(distFromSource, infdist);
         distFromSource.resize(n, infdist);
         distFromSource[source] = 0.;
 
-        std::fill(prio.begin(), prio.end(), infdist);
+        std::ranges::fill(prio, infdist);
         prio.resize(n, infdist);
         prio[source] = 0.;
 

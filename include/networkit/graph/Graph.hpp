@@ -18,6 +18,7 @@
 #include <numeric>
 #include <omp.h>
 #include <queue>
+#include <ranges>
 #include <sstream>
 #include <stack>
 #include <stdexcept>
@@ -1852,7 +1853,7 @@ void Graph::forNodesInRandomOrder(L handle) const {
     std::vector<node> randVec;
     randVec.reserve(numberOfNodes());
     forNodes([&](node u) { randVec.push_back(u); });
-    std::shuffle(randVec.begin(), randVec.end(), Aux::Random::getURNG());
+    std::ranges::shuffle(randVec, Aux::Random::getURNG());
     for (node v : randVec) {
         handle(v);
     }

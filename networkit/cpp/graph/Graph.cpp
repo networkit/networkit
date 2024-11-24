@@ -10,6 +10,7 @@
 #include <cmath>
 #include <map>
 #include <random>
+#include <ranges>
 #include <sstream>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -529,8 +530,7 @@ bool Graph::addPartialEdge(Unsafe, node u, node v, edgeweight ew, uint64_t index
     assert(v < z);
     assert(exists[v]);
 
-    if (checkForMultiEdges
-        && (std::find(outEdges[u].begin(), outEdges[u].end(), v) != outEdges[u].end())) {
+    if (checkForMultiEdges && (std::ranges::find(outEdges[u], v) != outEdges[u].end())) {
         return false;
     }
 
@@ -553,8 +553,7 @@ bool Graph::addPartialOutEdge(Unsafe, node u, node v, edgeweight ew, uint64_t in
     assert(v < z);
     assert(exists[v]);
 
-    if (checkForMultiEdges
-        && (std::find(outEdges[u].begin(), outEdges[u].end(), v) != outEdges[u].end())) {
+    if (checkForMultiEdges && (std::ranges::find(outEdges[u], v) != outEdges[u].end())) {
         return false;
     }
 
@@ -577,8 +576,7 @@ bool Graph::addPartialInEdge(Unsafe, node u, node v, edgeweight ew, uint64_t ind
     assert(v < z);
     assert(exists[v]);
 
-    if (checkForMultiEdges
-        && (std::find(inEdges[u].begin(), inEdges[u].end(), v) != inEdges[u].end())) {
+    if (checkForMultiEdges && (std::ranges::find(inEdges[u], v) != inEdges[u].end())) {
         return false;
     }
 
