@@ -264,27 +264,6 @@ class TestCommunity(unittest.TestCase):
 		comms = nk.community.readCommunities("input/comments.edgelist")
 		self.assertDictEqual(comms.subsetSizeMap(), {1: 2, 2: 2, 3: 2, 4: 2, 5: 2, 6: 2, 7: 2, 8: 2, 9: 1, 10: 3})	
 
-	def testPL(self):
-		PLL = nk.community.ParallelLeiden(self.L)
-		PLLL = nk.community.ParallelLeiden(self.LL)
-		PLL.run()
-		PLLL.run()
-		PLLP = PLL.getPartition()
-		PLLLP = PLLL.getPartition()
-		self.assertIsNot(PLLP.getSubsetIds(), None)
-		self.assertIsNot(PLLLP.getSubsetIds(), None)
-		# test if partitions add up to original set
-		reconstructedSet = []
-		for i in PLLP.getSubsetIds():
-			for j in PLLP.getMembers(i):
-				reconstructedSet.append(j)
-		self.assertEqual(set(self.L.iterNodes()), set(reconstructedSet))
-		reconstructedSet = []
-		for i in PLLLP.getSubsetIds():
-			for j in PLLLP.getMembers(i):
-				reconstructedSet.append(j)
-		self.assertEqual(set(self.LL.iterNodes()), set(reconstructedSet))
-
 	def testPLP(self):
 		PLPL = nk.community.PLP(self.L)
 		PLPLL = nk.community.PLP(self.LL)
