@@ -169,7 +169,7 @@ std::pair<node, node> RmatGenerator::sampleEdge(uint8_t input_bits) {
 }
 
 Graph RmatGenerator::generate() {
-    double n = (1 << scale);
+    double n = std::pow(2.0, static_cast<double>(scale));
     if (n <= reduceNodes) {
         throw std::runtime_error("Error, shall delete more nodes than the graph originally has");
     }
