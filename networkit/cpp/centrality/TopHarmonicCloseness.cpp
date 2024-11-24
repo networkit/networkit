@@ -11,6 +11,7 @@
 #include <atomic>
 #include <omp.h>
 #include <queue>
+#include <ranges>
 
 #include <networkit/centrality/TopHarmonicCloseness.hpp>
 #include <networkit/reachability/ReachableNodes.hpp>
@@ -295,7 +296,7 @@ bool TopHarmonicCloseness::bfscutUnweighted(node source, double kthCloseness) {
 
 bool TopHarmonicCloseness::bfscutWeighted(node source, double kthCloseness) {
     auto &distance = distanceGlobal[omp_get_thread_num()];
-    std::fill(distance.begin(), distance.end(), std::numeric_limits<edgeweight>::max());
+    std::ranges::fill(distance, std::numeric_limits<edgeweight>::max());
     distance[source] = 0;
     auto &pq = dijkstraHeaps[omp_get_thread_num()];
     pq.clear();
@@ -363,9 +364,7 @@ void TopHarmonicCloseness::bfsbound(node source) {
     for (count i = 1; i < numberOfNodesAtLevel.size() && numberOfNodesAtLevel[i] > 0; ++i)
         numberOfNodesAtLevel[i] = 0;
 
-    assert(std::count_if(numberOfNodesAtLevel.begin(), numberOfNodesAtLevel.end(),
-                         [](count i) { return i > 0; })
-           == 0);
+    assert(std::ranges::count_if(numberOfNodesAtLevel, [](count i) { return i > 0; }) == 0);
 
     std::queue<node> q1, q2;
     q1.push(source);

@@ -5,16 +5,16 @@
  *      Author: elisabetta bergamini
  */
 
-#include <networkit/auxiliary/BucketPQ.hpp>
-#include <networkit/auxiliary/Log.hpp>
-#include <networkit/centrality/GroupCloseness.hpp>
-#include <networkit/centrality/TopCloseness.hpp>
-
 #include <atomic>
 #include <memory>
 #include <omp.h>
 #include <queue>
+#include <ranges>
 
+#include <networkit/auxiliary/BucketPQ.hpp>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/centrality/GroupCloseness.hpp>
+#include <networkit/centrality/TopCloseness.hpp>
 namespace NetworKit {
 
 GroupCloseness::GroupCloseness(const Graph &G, count k, count H) : G(&G), k(k), H(H) {
@@ -24,7 +24,7 @@ GroupCloseness::GroupCloseness(const Graph &G, count k, count H) : G(&G), k(k), 
 edgeweight GroupCloseness::computeImprovement(node u, count h) {
     // computes the marginal gain due to adding u to S
     auto &d1 = d1Global[omp_get_thread_num()];
-    std::copy(d.begin(), d.end(), d1.begin());
+    std::ranges::copy(d, d1.begin());
 
     d1[u] = 0;
     count improvement = d[u]; // old distance of u
@@ -78,8 +78,9 @@ void GroupCloseness::run() {
         topcc.run();
         top = topcc.topkNodesList()[0];
     } else
-        top = *std::max_element(G->nodeRange().begin(), G->nodeRange().end(),
-                                [&G = G](node u, node v) { return G->degree(u) > G->degree(v); });
+        top = *std::ranges::max_element(
+            G->nodeRange().begin(), G->nodeRange().end(),
+            [&G = G](node u, node v) { return G->degree(u) > G->degree(v); });
 
     // first, we store the distances between each node and the top node
     d.clear();

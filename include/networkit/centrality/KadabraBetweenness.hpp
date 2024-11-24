@@ -12,6 +12,7 @@
 #include <atomic>
 #include <memory>
 #include <random>
+#include <ranges>
 #include <vector>
 
 #include <networkit/auxiliary/SortedList.hpp>
@@ -29,7 +30,7 @@ public:
     std::vector<count> apx;
 
     void reset(count newEpoch) {
-        std::fill(apx.begin(), apx.end(), 0);
+        std::ranges::fill(apx, 0);
         nPairs = 0;
         epoch = newEpoch;
     }
@@ -177,7 +178,7 @@ public:
 
     count maxAllocatedFrames() const {
         assureFinished();
-        return *std::max_element(maxFrames.begin(), maxFrames.end());
+        return *std::ranges::max_element(maxFrames);
     }
 
 protected:

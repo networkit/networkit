@@ -7,6 +7,7 @@
 
 #include <cmath>
 #include <omp.h>
+#include <ranges>
 
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/centrality/GedWalk.hpp>
@@ -150,14 +151,14 @@ void GedWalk::estimateGains() {
     // Each node has a 0-path.
     // For nodes in the group, we claim that there is no 0-path. This ensures that we do
     // not consider paths that cross the group in this method.
-    std::fill(pathsOut[0].begin(), pathsOut[0].end(), walks{1});
+    std::ranges::fill(pathsOut[0], walks{1});
 
     for (const auto u : group) {
         pathsOut[0][u] = 0.0;
     }
 
     if (G->isDirected()) {
-        std::fill(pathsIn[0].begin(), pathsIn[0].end(), walks{1});
+        std::ranges::fill(pathsIn[0], walks{1});
         for (const auto u : group) {
             pathsIn[0][u] = 0.0;
         }
@@ -495,7 +496,7 @@ void GedWalk::fillPQs() {
         DEBUG("n = ", G->upperNodeIdBound(), " |S| = ", group.size(), ", c = ", c);
         DEBUG("Pick = ", pick);
         // Mark all nodes as 'not picked'
-        std::fill(nodesToPick.begin(), nodesToPick.end(), static_cast<unsigned char>(!pick));
+        std::ranges::fill(nodesToPick, static_cast<unsigned char>(!pick));
 
         for (const auto u : group) {
             nodesToPick[u] = 0;
@@ -546,11 +547,11 @@ void GedWalk::run() {
     // Doing this will not change the (qualitative) result of the algorithm but it would let it
     // do a "fresh start" if it already ran before.
 
-    std::fill(inGroup.begin(), inGroup.end(), static_cast<unsigned char>(0));
-    std::fill(gainScore.begin(), gainScore.end(), std::numeric_limits<double>::max());
-    std::fill(gainBound.begin(), gainBound.end(), std::numeric_limits<double>::max());
-    std::fill(pathsHit[0].begin(), pathsHit[0].end(), walks{0});
-    std::fill(pathsMiss[0].begin(), pathsMiss[0].end(), walks{1});
+    std::ranges::fill(inGroup, static_cast<unsigned char>(0));
+    std::ranges::fill(gainScore, std::numeric_limits<double>::max());
+    std::ranges::fill(gainBound, std::numeric_limits<double>::max());
+    std::ranges::fill(pathsHit[0], walks{0});
+    std::ranges::fill(pathsMiss[0], walks{1});
 
     fillPQs();
     graphW = evaluateGraph().w;
@@ -573,7 +574,7 @@ void GedWalk::run() {
 
             // This has to be reset whenever the group changes or nLevles is increased.
             // For simplicity, just reset it here.
-            std::fill(isExact.begin(), isExact.end(), static_cast<unsigned char>(0));
+            std::ranges::fill(isExact, static_cast<unsigned char>(0));
 
             maximizeGain();
             DEBUG("Maximize gain success");

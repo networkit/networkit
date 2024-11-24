@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iomanip>
+#include <ranges>
 #include <stdexcept>
 
 namespace NetworKit {
@@ -85,8 +86,8 @@ BSuitorMatcher::MatchingNode BSuitorMatcher::findPreferred(node u) {
     MatchingNode best = MatchingNode{none, 0};
 
     auto hasProposedTo = [&](node x) -> bool {
-        return std::any_of(proposed[u].partners.begin(), proposed[u].partners.end(),
-                           [x](const MatchingNode &y) { return y.id == x; });
+        return std::ranges::any_of(proposed[u].partners,
+                                   [x](const MatchingNode &y) { return y.id == x; });
     };
 
     for (auto [v, weight] : G->weightNeighborRange(u)) {

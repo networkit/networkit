@@ -8,14 +8,15 @@
 #ifndef NETWORKIT_DISTANCE_STSP_HPP_
 #define NETWORKIT_DISTANCE_STSP_HPP_
 
+#include <algorithm>
+#include <ranges>
+#include <unordered_map>
+#include <vector>
+
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
-
-#include <algorithm>
-#include <unordered_map>
-#include <vector>
 
 namespace NetworKit {
 
@@ -185,7 +186,7 @@ inline void STSP::buildPath() {
         path.push_back(pred[t]);
         t = pred[t];
     }
-    std::reverse(path.begin(), path.end());
+    std::ranges::reverse(path);
 }
 
 } // namespace NetworKit

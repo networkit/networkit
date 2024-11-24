@@ -15,6 +15,7 @@
 #include <iostream>
 #include <numeric>
 #include <omp.h>
+#include <ranges>
 #include <stdexcept>
 #include <vector>
 
@@ -399,7 +400,7 @@ public:
 
                 permutation.resize(nonZerosInRow);
                 std::iota(permutation.begin(), permutation.end(), index{0});
-                std::sort(permutation.begin(), permutation.end(), [&](index x, index y) {
+                std::ranges::sort(permutation, [&](index x, index y) {
                     return columnIdx[startOfRow + x] < columnIdx[startOfRow + y];
                 });
 
@@ -598,7 +599,7 @@ public:
                 }
             }
 
-            std::fill(marker.begin(), marker.end(), -1);
+            std::ranges::fill(marker, -1);
 
 #pragma omp barrier
 #pragma omp single
