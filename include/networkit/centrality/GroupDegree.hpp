@@ -9,6 +9,7 @@
 #define NETWORKIT_CENTRALITY_GROUP_DEGREE_HPP_
 
 #include <omp.h>
+#include <ranges>
 
 #include <networkit/auxiliary/BucketPQ.hpp>
 #include <networkit/base/Algorithm.hpp>
@@ -94,7 +95,7 @@ inline count GroupDegree::getScore() {
 }
 
 inline void GroupDegree::computeScore() {
-    groupScore = std::count(reachable.begin(), reachable.end(), true);
+    groupScore = std::ranges::count(reachable, true);
 
     if (!countGroupNodes) {
         groupScore -= k;
@@ -141,7 +142,7 @@ inline count GroupDegree::scoreOfGroup(const std::vector<node> &group) const {
             G.forInNeighborsOf(v, [&](node u) { processNeighbor(u, v); });
         }
     });
-    count result = std::count(touched.begin(), touched.end(), true);
+    count result = std::ranges::count(touched, true);
     if (countGroupNodes) {
         result += group.size();
     }

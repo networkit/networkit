@@ -10,6 +10,7 @@
 #define NETWORKIT_MATCHING_B_SUITOR_MATCHER_HPP_
 
 #include <algorithm>
+#include <ranges>
 #include <string_view>
 
 #include <networkit/graph/Graph.hpp>
@@ -56,8 +57,7 @@ protected:
         }
 
         bool hasPartner(node u) const {
-            return std::find_if(partners.begin(), partners.end(),
-                                [u](const MatchingNode &v) { return v.id == u; })
+            return std::ranges::find_if(partners, [u](const MatchingNode &v) { return v.id == u; })
                    != partners.end();
         }
 
@@ -75,7 +75,7 @@ protected:
             assert(partners.size() < max_size);
             partners.emplace_back(u);
             if (partners.size() == max_size && !partners.empty()) {
-                min = *std::min_element(partners.begin(), partners.end());
+                min = *std::ranges::min_element(partners);
             }
         }
 

@@ -8,6 +8,7 @@
 #define NETWORKIT_CENTRALITY_APPROX_GROUP_BETWEENNESS_HPP_
 
 #include <omp.h>
+#include <ranges>
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/distance/BFS.hpp>
@@ -76,7 +77,7 @@ inline double ApproxGroupBetweenness::scoreOfGroup(const std::vector<node> &S,
 
     auto computeDeps = [&](node source) {
         auto &dep = deps[omp_get_thread_num()];
-        std::fill(dep.begin(), dep.end(), 0);
+        std::ranges::fill(dep, 0);
 
         BFS &bfs = bfss[omp_get_thread_num()];
         bfs.setSource(source);
