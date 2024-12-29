@@ -49,7 +49,7 @@ void TopologicalSort::run() {
 
     std::stack<node> nodeStack;
 
-    G.forNodes([&](node u) {
+    G.forNodes([&](const node u) {
         node mappedU = mapNode(u);
         if (topSortMark[mappedU] == NodeMark::PERM)
             return;

@@ -148,7 +148,7 @@ public:
     void addHalfOutEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
     void addHalfInEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
 
-    void swapNeighborhood(node u, std::vector<node> &neighbours, std::vector<edgeweight> &weights,
+    void swapNeighborhood(node u, const std::vector<node> &neighbours, std::vector<edgeweight> &weights,
                           bool selfloop);
 
     /**

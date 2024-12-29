@@ -84,7 +84,7 @@ void UnionMaximumSpanningForest::run() {
     hasRun = true;
 }
 
-bool UnionMaximumSpanningForest::inUMSF(edgeid eid) const {
+bool UnionMaximumSpanningForest::inUMSF(const edgeid eid) const {
     if (!hasAttribute)
         throw std::runtime_error(
             "Error: Either the attribute hasn't be calculated yet or the graph has no edge ids.");
@@ -92,7 +92,7 @@ bool UnionMaximumSpanningForest::inUMSF(edgeid eid) const {
     return umsfAttribute[eid];
 }
 
-bool UnionMaximumSpanningForest::inUMSF(node u, node v) const {
+bool UnionMaximumSpanningForest::inUMSF(const node u, const node v) const {
     if (hasUMSF) {
         return umsf.hasEdge(u, v);
     } else if (hasAttribute) {
@@ -102,7 +102,7 @@ bool UnionMaximumSpanningForest::inUMSF(node u, node v) const {
     }
 }
 
-std::vector<bool> UnionMaximumSpanningForest::getAttribute(bool move) {
+std::vector<bool> UnionMaximumSpanningForest::getAttribute(const bool move) {
     std::vector<bool> result;
 
     if (!hasAttribute)
@@ -118,7 +118,7 @@ std::vector<bool> UnionMaximumSpanningForest::getAttribute(bool move) {
     return result;
 }
 
-Graph UnionMaximumSpanningForest::getUMSF(bool move) {
+Graph UnionMaximumSpanningForest::getUMSF(const bool move) {
     Graph result;
 
     if (!hasUMSF)
