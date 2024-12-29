@@ -26,8 +26,7 @@ Graph::Graph(const count n, const bool weighted, const bool directed, const bool
 
       weighted(weighted), // indicates whether the graph is weighted or not
       directed(directed), // indicates whether the graph is directed or not
-      edgesIndexed(edgesIndexed),
-      deletedID(none),
+      edgesIndexed(edgesIndexed), deletedID(none),
       // edges are not indexed by default
 
       exists(n, true),

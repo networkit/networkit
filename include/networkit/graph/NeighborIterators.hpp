@@ -7,7 +7,6 @@
 #ifndef NETWORKIT_GRAPH_NEIGHBOR_ITERATORS_HPP_
 #define NETWORKIT_GRAPH_NEIGHBOR_ITERATORS_HPP_
 
-
 namespace NetworKit {
 
 /**
