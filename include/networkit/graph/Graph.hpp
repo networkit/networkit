@@ -433,8 +433,8 @@ private:
                                   typename Aux::FunctionTraits<F>::template arg<2>::type>::value
                   && std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<3>::type>::
                       value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid id) const
-        -> decltype(f(u, v, ew, id)) {
+    auto edgeLambda(F &f, node u, node v, edgeweight ew,
+                    edgeid id) const -> decltype(f(u, v, ew, id)) {
         return f(u, v, ew, id);
     }
 
@@ -466,8 +466,8 @@ private:
                   (Aux::FunctionTraits<F>::arity >= 2)
                   && std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<
                                                   2>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid /*id*/) const
-        -> decltype(f(u, v, ew)) {
+    auto edgeLambda(F &f, node u, node v, edgeweight ew,
+                    edgeid /*id*/) const -> decltype(f(u, v, ew)) {
         return f(u, v, ew);
     }
 
@@ -480,8 +480,8 @@ private:
                            (Aux::FunctionTraits<F>::arity >= 1)
                            && std::is_same<node, typename Aux::FunctionTraits<F>::template arg<
                                                      1>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight /*ew*/, edgeid /*id*/) const
-        -> decltype(f(u, v)) {
+    auto edgeLambda(F &f, node u, node v, edgeweight /*ew*/,
+                    edgeid /*id*/) const -> decltype(f(u, v)) {
         return f(u, v);
     }
 
@@ -558,7 +558,7 @@ public:
     public:
         NeighborRange(const Graph &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
 
-        NeighborRange() : G(nullptr){};
+        NeighborRange() : G(nullptr) {};
 
         NeighborIterator begin() const {
             assert(G);
@@ -590,7 +590,7 @@ public:
     public:
         NeighborWeightRange(const Graph &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
 
-        NeighborWeightRange() : G(nullptr){};
+        NeighborWeightRange() : G(nullptr) {};
 
         NeighborWeightIterator begin() const {
             assert(G);
@@ -804,7 +804,7 @@ public:
           outEdgeIds(other.outEdgeIds),
           // call special constructors to copy attribute maps
           nodeAttributeMap(other.nodeAttributeMap, this),
-          edgeAttributeMap(other.edgeAttributeMap, this){};
+          edgeAttributeMap(other.edgeAttributeMap, this) {};
 
     /** move constructor */
     Graph(Graph &&other) noexcept

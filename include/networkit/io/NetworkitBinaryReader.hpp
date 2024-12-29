@@ -29,7 +29,7 @@ namespace NetworKit {
 class NetworkitBinaryReader final : public GraphReader {
 
 public:
-    NetworkitBinaryReader(){};
+    NetworkitBinaryReader() {};
 
     Graph read(std::string_view path) override;
     Graph readFromBuffer(const std::vector<uint8_t> &data);
