@@ -7,8 +7,6 @@
 #ifndef NETWORKIT_GRAPH_NEIGHBOR_ITERATORS_HPP_
 #define NETWORKIT_GRAPH_NEIGHBOR_ITERATORS_HPP_
 
-#include <networkit/Globals.hpp>
-#include <networkit/graph/NodeIterators.hpp>
 
 namespace NetworKit {
 

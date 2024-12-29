@@ -169,7 +169,7 @@ public:
      *
      * @param[in]  u  endpoint of edge
      * @param[in]  v  endpoint of edge
-     * @param[in]  weight  edge weight
+     * @param[in]  ew  edge weight
      */
     void increaseWeight(node u, node v, edgeweight ew) { increaseOutWeight(u, v, ew); }
     void increaseOutWeight(node u, node v, edgeweight ew);

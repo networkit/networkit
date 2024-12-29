@@ -1,7 +1,6 @@
 #ifndef NETWORKIT_GRAPH_UNION_MAXIMUM_SPANNING_FOREST_HPP_
 #define NETWORKIT_GRAPH_UNION_MAXIMUM_SPANNING_FOREST_HPP_
 
-#include <limits>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/base/Algorithm.hpp>

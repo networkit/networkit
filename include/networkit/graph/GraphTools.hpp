@@ -79,8 +79,8 @@ node randomNeighbor(const Graph &G, node u);
  * give you a real uniform distributed edge, but will be slower.
  * Exp. time complexity: O(1) for uniformDistribution = false, O(n) otherwise.
  *
- * @param Graph G The input graph.
- * @param bool uniformDistribution Whether the random edge should be extracted uniformly at
+ * @param G The input graph.
+ * @param uniformDistribution Whether the random edge should be extracted uniformly at
  * random.
  * @return std::pair<node, node> A random edge.
  */

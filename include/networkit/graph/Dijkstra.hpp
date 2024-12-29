@@ -35,7 +35,7 @@ auto callDijkstraHandle(F &f, node u, edgeweight) -> decltype(f(u)) {
  * @param G The input graph.
  * @param first The first element of the range.
  * @param last The end of the range.
- * @param lambda Takes a node and its distance from the nodes in the range as input parameters.
+ * @param handle Takes a node and its distance from the nodes in the range as input parameters.
  */
 template <class InputIt, typename Handle>
 void DijkstraFrom(const Graph &G, InputIt first, InputIt last, Handle handle) {
