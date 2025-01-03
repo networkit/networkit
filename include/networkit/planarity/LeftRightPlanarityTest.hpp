@@ -1,0 +1,8 @@
+//
+// Created by andreas on 03.01.25.
+//
+
+#ifndef LEFT_RIGHT_PLANARITY_TEST_HPP
+#define LEFT_RIGHT_PLANARITY_TEST_HPP
+
+#endif //LEFT_RIGHT_PLANARITY_TEST_HPP
