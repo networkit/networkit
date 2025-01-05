@@ -6,5 +6,98 @@
 namespace NetworKit {
 
 
+void LeftRightPlanarityTest::initialization() {
+    const auto n = graph_->upperNodeIdBound();
+    heights.assign(n, noneHeight);
+}
+
+void LeftRightPlanarityTest::run() {
+    // Euler-critirium
+
+    initialization();
+    if (graph_->numberOfNodes() > 2 && graph_->numberOfEdges() > 3 * graph_->numberOfNodes() - 6)
+    {
+        is_planar_ = false;
+        return;
+    }
+    graph_->forNodes([&](const node currentNode) {
+        if(heights[currentNode] == noneHeight) {
+            heights[currentNode] = 0;
+            roots.push_back(currentNode);
+            this->dfsOrientation(currentNode);
+        }
+    });
+
+
+}
+
+
+void LeftRightPlanarityTest::dfsOrientation(const node startNode) {
+
+        std::stack<std::pair<node, Graph::NeighborIterator>> dfs_stack;
+        auto preprocessed_edges = std::unordered_set<Edge>{};
+
+        while (!dfs_stack.empty())
+        {
+            auto currentNode = dfs_stack.top().first;
+            auto &neighborIterator = dfs_stack.top().second;
+            dfs_stack.pop();
+            auto parentEdge = parentEdges[currentNode];
+            auto processedNeighbors = std::unordered_set<node>{};
+
+            for (; neighborIterator != graph_->neighborRange(currentNode).end(); ++neighborIterator) {
+                const auto neighbor = *neighborIterator;
+                if (processedNeighbors.contains(neighbor))
+                    continue;
+                processedNeighbors.insert(neighbor);
+                const auto currentEdge = Edge(currentNode, neighbor);
+                if (!preprocessed_edges.contains(currentEdge))
+                {
+                    const auto currentReversedEdge = Edge(neighbor, currentNode);
+                    if (visitedEdges.contains(currentEdge) || visitedEdges.contains(currentReversedEdge))
+                        continue;
+                    visitedEdges.insert(currentEdge);
+                    dfsGraph.addEdge(currentNode, neighbor);
+                    lowestPoint[currentEdge] = heights[currentNode];
+                    secondLowestPoint[currentEdge] = heights[currentNode];
+                    if (heights[neighbor] == noneHeight) // Tree edge
+                    {
+                        parentEdges[neighbor] = currentEdge;
+                        heights[neighbor] = heights[currentNode] + 1;
+                        dfs_stack.emplace(currentNode, graph_->neighborRange(currentNode).begin());
+                        dfs_stack.emplace(neighbor, graph_->neighborRange(neighbor).begin());
+                        preprocessed_edges.insert(currentEdge);
+                        break;
+                    }
+                    // back edge
+                    lowestPoint[currentEdge] = heights[neighbor];
+                }
+
+                nestingDepth[currentEdge] = 2 * lowestPoint[currentEdge];
+                if (secondLowestPoint[currentEdge] < heights[currentNode])
+                {
+                    nestingDepth[currentEdge] += 1;
+                }
+
+                if (parentEdge != noneEdge)
+                {
+                    if (lowestPoint[currentEdge] < lowestPoint[parentEdge])
+                    {
+                        secondLowestPoint[parentEdge] = std::min(lowestPoint[parentEdge],secondLowestPoint[currentEdge]);
+                        lowestPoint[parentEdge] = lowestPoint[currentEdge];
+                    }
+                    else if (lowestPoint[currentEdge] > lowestPoint[parentEdge])
+                    {
+                        secondLowestPoint[parentEdge] = std::min(secondLowestPoint[parentEdge],lowestPoint[currentEdge]);
+                    }
+                    else
+                    {
+                        secondLowestPoint[parentEdge] = std::min(secondLowestPoint[parentEdge],secondLowestPoint[currentEdge]);
+                    }
+                }
+            }
+        }
+
+}
 
 }

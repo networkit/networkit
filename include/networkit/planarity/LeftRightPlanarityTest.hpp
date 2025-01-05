@@ -9,12 +9,12 @@
 
 namespace NetworKit {
 
-const Edge LRNoneEdge{none, none};
+const Edge noneEdge{none, none};
 
 struct Interval
 {
-    Edge low{LRNoneEdge}; // Represents the lower bound of the interval
-    Edge high{LRNoneEdge}; // Represents the upper bound of the interval
+    Edge low{noneEdge}; // Represents the lower bound of the interval
+    Edge high{noneEdge}; // Represents the upper bound of the interval
 
     // Default constructor
     Interval() = default;
@@ -27,7 +27,7 @@ struct Interval
 
     bool is_empty() const
     {
-        return low == LRNoneEdge && high == LRNoneEdge;
+        return low == noneEdge && high == noneEdge;
     }
 };
 
@@ -68,22 +68,30 @@ class LeftRightPlanarityTest final : public Algorithm {
 
 public:
     LeftRightPlanarityTest(const Graph &graph): graph_(&graph){}
+
     void run() override;
-	bool is_planar() const
+
+    void initialization();
+
+    bool is_planar() const
     {
         return is_planar_;
     }
 
+
+
 private:
+    constexpr count noneHeight{std::numeric_limits<count>::max()};
     const Graph *graph_;
 	bool is_planar_{};
-    void dfsOrientation();
+    void dfsOrientation(node currentNode);
     void dfsTesting();
     bool applyConstraints();
     void removeBackEdges();
-    std::vector<index> height;
-    std::vector<count> lowPoint;
-    std::vector<count> secondLowestPoint;
+    std::vector<count> heights;
+    std::unordered_map<Edge, count> lowestPoint;
+    std::unordered_map<Edge, count> secondLowestPoint;
+    std::vector<node> roots;
 	std::unordered_map<Edge, Edge> lowPointEdge;
     std::unordered_map<Edge, count> nestingDepth;
     std::unordered_map<index, Edge> parentEdges;
