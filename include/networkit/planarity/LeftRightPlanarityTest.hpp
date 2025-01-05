@@ -84,10 +84,10 @@ private:
     constexpr count noneHeight{std::numeric_limits<count>::max()};
     const Graph *graph_;
 	bool is_planar_{};
-    void dfsOrientation(node currentNode);
-    void dfsTesting();
-    bool applyConstraints();
-    void removeBackEdges();
+    void dfsOrientation(node startNode);
+    bool dfsTesting(node startNode);
+    bool applyConstraints(Edge edge, Edge parentEdge);
+    void removeBackEdges(Edge edge);
     std::vector<count> heights;
     std::unordered_map<Edge, count> lowestPoint;
     std::unordered_map<Edge, count> secondLowestPoint;
