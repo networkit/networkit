@@ -30,10 +30,24 @@ void LeftRightPlanarityTest::run() {
     }
 }
 
+template <typename ForwardIterator, typename Compare>
+void iteratorCompatibleSort(ForwardIterator begin, ForwardIterator end, Compare comp) {
+    for (auto it = begin; it != end; ++it) {
+        auto minIt = it;
+        for (auto jt = std::next(it); jt != end; ++jt) {
+            if (comp(*jt, *minIt)) {
+                minIt = jt;
+            }
+        }
+        if (minIt != it) {
+            std::iter_swap(it, minIt);
+        }
+    }
+}
 void LeftRightPlanarityTest::sortAdjacencyListByNestingDepth() {
 
     dfsGraph.forNodes([&](const node currentNode) {
-        std::sort(dfsGraph.neighborRange(currentNode).begin(),
+        iteratorCompatibleSort(dfsGraph.neighborRange(currentNode).begin(),
                   dfsGraph.neighborRange(currentNode).end(), [&](const node a, const node b) {
                       return nestingDepth.at(Edge(currentNode, a))
                              < nestingDepth.at(Edge(currentNode, b));

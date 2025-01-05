@@ -81,7 +81,7 @@ public:
 
 
 private:
-    constexpr count noneHeight{std::numeric_limits<count>::max()};
+    const count noneHeight{std::numeric_limits<count>::max()};
     const Graph *graph_;
 	bool is_planar_{};
     void dfsOrientation(node startNode);
