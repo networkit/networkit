@@ -25,8 +25,13 @@ void LeftRightPlanarityTest::run() {
             this->dfsOrientation(currentNode);
         }
     });
+
     sortAdjacencyListByNestingDepth();
-    
+    is_planar_ = true;
+    for(const auto rootNode : roots) {
+        if(!dfsTesting(rootNode))
+            is_planar_ = false;
+    }
 }
 
 void LeftRightPlanarityTest::sortAdjacencyListByNestingDepth() {
