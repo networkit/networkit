@@ -5,19 +5,15 @@
 
 namespace NetworKit {
 
-void LeftRightPlanarityTest::initialization() {
-    const auto n = graph_->upperNodeIdBound();
-    heights.assign(n, noneHeight);
-}
 
 void LeftRightPlanarityTest::run() {
-    // Euler-critirium
-
-    initialization();
+    // Euler-criterion
     if (graph_->numberOfNodes() > 2 && graph_->numberOfEdges() > 3 * graph_->numberOfNodes() - 6) {
         is_planar_ = false;
         return;
     }
+
+    heights.assign(graph_->upperNodeIdBound(), noneHeight);
     graph_->forNodes([&](const node currentNode) {
         if (heights[currentNode] == noneHeight) {
             heights[currentNode] = 0;
@@ -111,10 +107,7 @@ count LeftRightPlanarityTest::getLowestLowPoint(const ConflictPair &conflict_pai
 void LeftRightPlanarityTest::removeBackEdges(Edge edge) {
     auto parent_node = edge.u;
     while (!stack.empty() && getLowestLowPoint(stack.top()) == heights[parent_node]) {
-        // auto conflict_pair = stack.top();
         stack.pop();
-        // if (conflict_pair.left.low != NoneEdge<NodeType>)
-        //     side[conflict_pair.left.low] = -1;
     }
 
     if (!stack.empty()) {
