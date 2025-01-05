@@ -45,6 +45,80 @@ void LeftRightPlanarityTest::sortAdjacencyListByNestingDepth() {
     });
 }
 
+bool LeftRightPlanarityTest::conflicting(const Interval& interval, const Edge& edge)
+{
+    return !interval.is_empty() && lowestPoint[interval.high] > lowestPoint[edge];
+}
+
+
+bool LeftRightPlanarityTest::applyConstraints(Edge edge, Edge parentEdge) {
+        auto help_conflict_pair = ConflictPair{};
+        do
+        {
+            auto current_conflict_pair = stack.top();
+            stack.pop();
+            if (!current_conflict_pair.left.is_empty())
+            {
+                current_conflict_pair.swap();
+            }
+            if (!current_conflict_pair.left.is_empty())
+            {
+                return false;
+            }
+            if (lowestPoint[current_conflict_pair.right.low] > lowestPoint[parentEdge])
+            {
+                if (help_conflict_pair.right.is_empty())
+                {
+                    help_conflict_pair.right = current_conflict_pair.right;
+                }
+                else
+                {
+                    ref[help_conflict_pair.right.low] = current_conflict_pair.right.high;
+                }
+
+                help_conflict_pair.right.low = current_conflict_pair.right.low;
+            }
+            else
+            {
+                ref[current_conflict_pair.right.low] = lowPointEdge[parentEdge];
+            }
+        } while(!stack.empty() && (stack.top() != stackBottom[edge]));
+
+        while (!stack.empty() && (conflicting(stack.top().left, edge) || conflicting(stack.top().right, edge)))
+        {
+            auto current_conflict_pair = stack.top();
+            stack.pop();
+            if (conflicting(current_conflict_pair.right, edge))
+            {
+                current_conflict_pair.swap();
+            }
+            if (conflicting(current_conflict_pair.right, edge))
+            {
+                return false;
+            }
+            ref[help_conflict_pair.right.low] = current_conflict_pair.right.high;
+            if (current_conflict_pair.right.low != noneEdge)
+            {
+                help_conflict_pair.right = current_conflict_pair.right;
+            }
+            if (help_conflict_pair.left.is_empty())
+            {
+                help_conflict_pair.left = current_conflict_pair.left;
+            }
+            else
+            {
+                ref[help_conflict_pair.left.low] = current_conflict_pair.left.high;
+            }
+            help_conflict_pair.left.low = current_conflict_pair.left.low;
+        }
+
+        if (!help_conflict_pair.left.is_empty() || !help_conflict_pair.right.is_empty())
+            stack.push(help_conflict_pair);
+        return true;
+
+}
+
+
 bool LeftRightPlanarityTest::dfsTesting(node startNode) {
     std::stack<std::pair<node, Graph::NeighborIterator>> dfs_stack;
     dfs_stack.emplace(startNode, graph_->neighborRange(startNode).begin());
