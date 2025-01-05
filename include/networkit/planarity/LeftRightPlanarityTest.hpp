@@ -89,7 +89,8 @@ private:
     bool applyConstraints(Edge edge, Edge parentEdge);
     void removeBackEdges(Edge edge);
     void sortAdjacencyListByNestingDepth();
-    void conflicting();
+    bool conflicting(const Interval& interval, const Edge& edge);
+    count getLowestLowPoint(const ConflictPair& conflict_pair);
     std::vector<count> heights;
     std::unordered_map<Edge, count> lowestPoint;
     std::unordered_map<Edge, count> secondLowestPoint;
