@@ -88,6 +88,7 @@ private:
     bool dfsTesting(node startNode);
     bool applyConstraints(Edge edge, Edge parentEdge);
     void removeBackEdges(Edge edge);
+    void sortAdjacencyListByNestingDepth();
     std::vector<count> heights;
     std::unordered_map<Edge, count> lowestPoint;
     std::unordered_map<Edge, count> secondLowestPoint;
