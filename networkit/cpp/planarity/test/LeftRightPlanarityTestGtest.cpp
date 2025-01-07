@@ -206,4 +206,51 @@ TEST_F(LeftRightPlanarityTestGTest, CompleteGraph) {
     }
 }
 
+TEST_F(LeftRightPlanarityTestGTest, GeneralizedPetersenGraph51) {
+	Graph graph(10);
+    graph.addEdge(0, 1);
+    graph.addEdge(0, 4);
+    graph.addEdge(0, 5);
+    graph.addEdge(1, 2);
+    graph.addEdge(1, 6);
+    graph.addEdge(2, 3);
+    graph.addEdge(2, 7);
+    graph.addEdge(3, 4);
+    graph.addEdge(3, 8);
+    graph.addEdge(4, 9);
+    graph.addEdge(5, 6);
+    graph.addEdge(5, 9);
+    graph.addEdge(6, 7);
+    graph.addEdge(7, 8);
+    graph.addEdge(8, 9);
+
+ 	LeftRightPlanarityTest test(graph);
+    test.run();
+    EXPECT_TRUE(test.isPlanar());
+
+}
+
+TEST_F(LeftRightPlanarityTestGTest, GeneralizedPetersenGraph52) {
+	Graph graph(10);
+    graph.addEdge(0, 2);
+    graph.addEdge(0, 3);
+    graph.addEdge(0, 5);
+    graph.addEdge(1, 3);
+    graph.addEdge(1, 4);
+    graph.addEdge(1, 6);
+    graph.addEdge(2, 4);
+    graph.addEdge(2, 7);
+    graph.addEdge(3, 8);
+    graph.addEdge(4, 9);
+    graph.addEdge(5, 6);
+    graph.addEdge(5, 9);
+    graph.addEdge(6, 7);
+    graph.addEdge(7, 8);
+    graph.addEdge(8, 9);
+ 	LeftRightPlanarityTest test(graph);
+    test.run();
+    EXPECT_FALSE(test.isPlanar());
+
+}
+
 }
