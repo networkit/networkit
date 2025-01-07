@@ -22,17 +22,33 @@ public:
 
 };
 
+
+TEST_F(LeftRightPlanarityTestGTest, EmptyGraph) {
+
+    auto graph = Graph{};
+    LeftRightPlanarityTest test(graph);
+    test.run();
+    EXPECT_TRUE(test.isPlanar());
+}
+
+TEST_F(LeftRightPlanarityTestGTest, SingleNode) {
+
+    auto graph = Graph{1};
+    LeftRightPlanarityTest test(graph);
+    test.run();
+    EXPECT_TRUE(test.isPlanar());
+}
+
+
 TEST_F(LeftRightPlanarityTestGTest, PathGraph) {
 
     for (count numberOfNodes{2}; numberOfNodes <= max_number_of_nodes; ++numberOfNodes)
     {
-
         auto graph = pathGraph(numberOfNodes);
-
         LeftRightPlanarityTest test(graph);
         test.run();
         EXPECT_TRUE(test.isPlanar());
     }
-
 }
+
 }
