@@ -82,6 +82,17 @@ public:
 	    return graph;
     }
 
+    static Graph completeGraph(const count numNodes) {
+        Graph graph(numNodes);
+
+        for (count i = 0; i < numNodes; ++i) {
+            for (count j = i + 1; j < numNodes; ++j) {
+                graph.addEdge(i, j);
+            }
+        }
+        return graph;
+    }
+
 };
 
 
@@ -176,9 +187,23 @@ TEST_F(LeftRightPlanarityTestGTest, GridGraph3x3) {
     graph.addEdge(3, 6);
     graph.addEdge(4, 7);
     graph.addEdge(5, 8);
+
     LeftRightPlanarityTest test(graph);
     test.run();
     EXPECT_TRUE(test.isPlanar());
+}
+
+TEST_F(LeftRightPlanarityTestGTest, CompleteGraph) {
+	for (count numberOfNodes{2}; numberOfNodes <= max_number_of_nodes; ++numberOfNodes)
+    {
+        auto graph = completeGraph(numberOfNodes);
+ 	    LeftRightPlanarityTest test(graph);
+        test.run();
+        if(numberOfNodes < 5)
+        	EXPECT_TRUE(test.isPlanar());
+        else
+	       EXPECT_FALSE(test.isPlanar());
+    }
 }
 
 }
