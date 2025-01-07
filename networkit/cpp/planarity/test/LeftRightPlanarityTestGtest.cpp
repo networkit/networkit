@@ -157,4 +157,28 @@ TEST_F(LeftRightPlanarityTestGTest, WheelGraph) {
     }
 }
 
+TEST_F(LeftRightPlanarityTestGTest, GridGraph3x3) {
+
+    Graph graph(9);
+
+    // Horizontal edges
+    graph.addEdge(0, 1);
+    graph.addEdge(1, 2);
+    graph.addEdge(3, 4);
+    graph.addEdge(4, 5);
+    graph.addEdge(6, 7);
+    graph.addEdge(7, 8);
+
+    // Vertical edges
+    graph.addEdge(0, 3);
+    graph.addEdge(1, 4);
+    graph.addEdge(2, 5);
+    graph.addEdge(3, 6);
+    graph.addEdge(4, 7);
+    graph.addEdge(5, 8);
+    LeftRightPlanarityTest test(graph);
+    test.run();
+    EXPECT_TRUE(test.isPlanar());
+}
+
 }
