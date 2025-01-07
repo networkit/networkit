@@ -277,3 +277,246 @@ cdef class SuitorMatcher(Matcher):
 	def __cinit__(self, Graph G not None, sortSuitor = True, checkSortedEdges = False):
 		self.G = G
 		self._this = new _SuitorMather(G._this, sortSuitor, checkSortedEdges)
+
+cdef class BMatching:
+	""" 
+	BMatching(b)
+	
+	Implements a graph matching. Create a new matching data structure for `z` elements.
+
+		Parameters
+		----------
+		b : list(int)
+			List containing the b-values for all nodes.
+	"""
+	def __cinit__(self, G, vector[count] b):
+		self.G = G
+		self._this = new _BMatching(G._this, vector[count] b)
+
+	def isProper(self):
+		"""
+		isProper()
+
+		Check whether this is a proper matching in the graph, i.e. there is an edge between
+		each pair and if the matching partner of v is u then the matching partner of u is v.
+	
+		Returns
+		-------
+		bool
+			True if this is a proper matching.
+		"""
+		return self._this.isProper()
+
+	def match(self, node u, node v):
+		"""
+		match(u, v)
+		
+		Set two nodes u and v as each others matching partners.
+
+		Parameters
+		----------
+		u : int
+			The first node.
+		v : int
+			The second node.
+		"""
+		self._this.match(u,v)
+
+	def unmatch(self, node u,  node v):
+		"""
+		unmatch(u, v)
+
+		Reset the two nodes u and v to unmatched.
+
+		Parameters
+		----------
+		u : int
+			The first node.
+		v : int
+			The second node.
+		"""
+		self._this.unmatch(u, v)
+
+	def isUnmatched(self, node u):
+		"""
+		isMatched(u)
+
+		Check if node u is unmatched.
+
+		Parameters
+		----------
+		u : int
+			The input node.
+
+		Returns
+		-------
+		bool
+			True if u has no matching partner.
+		"""
+		return self._this.isUnmatched(u)
+
+	def areMatched(self, node u, node v):
+		"""
+		areMatched(u, v)
+
+		Check if the nodes u and v are matched to each other.
+
+		Parameters
+		----------
+		u : int
+			The first node.
+		v : int
+			The second node.
+
+		Returns
+		-------
+		bool
+			True if node u and v are matched to each other.
+		"""
+		return self._this.areMatched(u,v)
+
+
+
+	def size(self):
+		"""
+		size()
+
+		Get the number of edges in this matching.
+
+		Returns
+		-------
+		int
+			Total number of edges in the matching.
+		"""
+		return self._this.size()
+
+	def weight(self):
+		"""
+		weight()
+
+		Get total weight of edges in this matching.
+
+		Returns
+		-------
+		float
+			Total weight of edges in this matching.
+		"""
+		return self._this.weight()
+
+	def getMatches(self):
+		"""
+		getMatches()
+
+		Get the set of matches for each node.
+		
+		Returns
+		-------
+		list(TODO)
+			TODO: add doc string
+		"""
+		return self._this.getMatches()
+
+	def getB(self):
+		"""
+		getB()
+
+		Get the b-value for each node.
+		
+		Returns
+		-------
+		list(int)
+			A list, containing the b-values (int) for each node.
+		"""
+		return self._this.getB()
+
+	def reset(self):
+		"""
+		reset()
+
+		Removes all entries from the b-matching data structure
+		"""
+		return self._this.reset()
+
+cdef extern from "<networkit/matching/BMatcher.hpp>":
+
+	cdef cppclass _BMatcher "NetworKit::BMatcher"(_Algorithm):
+		_BMatcher(const _Graph _G, vector[count] b) except +
+		_BMatching getBMatching() except +
+
+cdef class BMatcher(Algorithm):
+	""" Abstract base class for matching algorithms """
+	cdef Graph G
+
+	def __init__(self, Graph G, vector[count] b):
+		if type(self) == BMatcher:
+			raise RuntimeError("Instantiation of abstract base class")
+
+	def getBMatching(self):
+		"""
+		getMatching()
+
+		Returns the matching.
+
+		Returns
+		-------
+		networkit.BMatching
+			Current b-matching of graph.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return Matching().setThis((<_Matcher*>(self._this)).getMatching())
+
+cdef extern from "<networkit/matching/BSuitorMatcher.hpp>":
+	cdef cppclass _BSuitorMatcher "NetworKit::BSuitorMatcher"(_BMatcher):
+		_BSuitorMatcher(_Graph, vector[count] b) except +
+		_BSuitorMatcher(_Graph, count b) except +
+		_BSuitorMatcher(_Graph, string path) except +
+	    buildBMatching() except +
+
+cdef class BSuitorMatcher(BMatcher):
+	"""
+	BSuitorMatcher(G, )
+
+	TODO: new doc
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph, must be undirected.
+	TODO: add parameters
+	"""
+
+	def __cinit__(self, Graph G, second):
+		self._G = G
+		if isinstance(second, vector[count]):
+			self._this = new _BSuitorMatcher(G._this, <vector[count]> second)
+		elif isinstance(second, int):
+			self._this = new _BSuitorMatcher(G._this, <count> second)
+		elif isinstance(second, string):
+			self._this = new _BSuitorMatcher(G._this, <string> second)
+		else:
+			raise Exception("Error: the second parameter must be either an int (global b-value), a list of ints (single b-values for all nodes) or a path to the file, containing b-values for every node.")
+
+	def buildBMatching(self):
+		"""
+		buildBMatching()
+
+    	Creates the b-matching for given graph G. Function run() automatically invokes
+    	buildMatching. After invoking buildBMatching(), use getBMatching() to retrieve the resulting
+    	b-matching.
+		"""
+		(<_BSuitorMatcher*>(self._this)).buildBMatching()
+
+cdef extern from "<networkit/matching/DynamicBSuitorMatcher.hpp>":
+	cdef cppclass _DynamicBSuitorMatcher "NetworKit::DynamicBSuitorMatcher"(_BSuitorMatcher, _DynAlgorithm):
+		_DynamicBSuitorMatcher(_Graph, vector[count] b) except +
+		_DynamicBSuitorMatcher(_Graph, count b) except +
+		_DynamicBSuitorMatcher(_Graph, string path) except +
+	    addEdge(WeightedEdge) except +
+		addEdges(vector[WeightedEdge]) except +
+
+TODOs:
+- Check reference vs. pass by value
+- WeightedEdge import oder definieren
+- Fix docs
+- Change implementation to use DynamicAlgorithm
