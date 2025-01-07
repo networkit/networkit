@@ -250,7 +250,6 @@ TEST_F(LeftRightPlanarityTestGTest, GeneralizedPetersenGraph5_2) {
  	LeftRightPlanarityTest test(graph);
     test.run();
     EXPECT_FALSE(test.isPlanar());
-
 }
 
 TEST_F(LeftRightPlanarityTestGTest, CompleteBipartiteGraphK3_3) {
@@ -277,7 +276,7 @@ TEST_F(LeftRightPlanarityTestGTest, CompleteTripartiteGraphK3_3_3) {
     graph.addEdge(0, 5);
     graph.addEdge(1, 3);
     graph.addEdge(1, 4);
-    graph.addEdge(2, 5);
+    graph.addEdge(1, 5);
     graph.addEdge(2, 3);
     graph.addEdge(2, 4);
     graph.addEdge(2, 5);

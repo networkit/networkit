@@ -156,26 +156,29 @@ void LeftRightPlanarityTest::removeBackEdges(Edge edge) {
 }
 
 bool LeftRightPlanarityTest::dfsTesting(node startNode) {
-    std::stack<std::pair<node, Graph::NeighborIterator>> dfs_stack;
-    dfs_stack.emplace(startNode, graph_->neighborRange(startNode).begin());
+    std::stack<node> dfs_stack;
+    dfs_stack.emplace(startNode);
+    auto neighborIterators = std::unordered_map<node, decltype(dfsGraph.neighborRange(startNode).begin())>{};
 
     auto preprocessed_edges = std::unordered_set<Edge>{};
     while (!dfs_stack.empty()) {
-        const auto currentNode = dfs_stack.top().first;
-        auto &neighborIterator = dfs_stack.top().second;
-
+        const auto currentNode = dfs_stack.top();
         dfs_stack.pop();
         const auto parentEdge = parentEdges[currentNode];
         bool callRemoveBackEdges{true};
-
-        while (neighborIterator != graph_->neighborRange(currentNode).end()) {
+        if (!neighborIterators.contains(currentNode))
+        {
+            neighborIterators[currentNode] = dfsGraph.neighborRange(currentNode).begin();
+        }
+        auto& neighborIterator = neighborIterators[currentNode];
+        while (neighborIterator != dfsGraph.neighborRange(currentNode).end()) {
             const auto neighbor = *neighborIterator;
             auto currentEdge = Edge(currentNode, neighbor);
             if (!preprocessed_edges.contains(currentEdge)) {
                 stackBottom[currentEdge] = stack.empty() ? NoneConflictPair : stack.top();
                 if (currentEdge == parentEdges[neighbor]) {
-                    dfs_stack.emplace(currentNode, graph_->neighborRange(currentNode).begin());
-                    dfs_stack.emplace(neighbor, graph_->neighborRange(neighbor).begin());
+                    dfs_stack.emplace(currentNode);
+                    dfs_stack.emplace(neighbor);
                     preprocessed_edges.insert(currentEdge);
                     callRemoveBackEdges = false;
                     break;
