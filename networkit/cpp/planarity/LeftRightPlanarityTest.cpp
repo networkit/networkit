@@ -206,27 +206,21 @@ bool LeftRightPlanarityTest::dfsTesting(node startNode) {
 
 void LeftRightPlanarityTest::dfsOrientation(const node startNode) {
 
-    std::stack<std::pair<node, Graph::NeighborIterator>> dfs_stack;
-    dfs_stack.emplace(startNode, graph_->neighborRange(startNode).begin());
+    std::stack<node> dfs_stack;
+    dfs_stack.emplace(startNode);
     auto preprocessed_edges = std::unordered_set<Edge>{};
 
     while (!dfs_stack.empty()) {
-        const auto currentNode = dfs_stack.top().first;
-        auto &neighborIterator = dfs_stack.top().second;
+        const auto currentNode = dfs_stack.top();
         dfs_stack.pop();
         const auto parentEdge = parentEdges[currentNode];
-        auto processedNeighbors = std::unordered_set<node>{};
 
-        for (; neighborIterator != graph_->neighborRange(currentNode).end(); ++neighborIterator) {
-            const auto neighbor = *neighborIterator;
-            if (processedNeighbors.contains(neighbor))
-                continue;
-            processedNeighbors.insert(neighbor);
+        for (const auto neighbor : graph_->neighborRange(currentNode)) {
+
             const auto currentEdge = Edge(currentNode, neighbor);
             if (!preprocessed_edges.contains(currentEdge)) {
                 const auto currentReversedEdge = Edge(neighbor, currentNode);
-                if (visitedEdges.contains(currentEdge)
-                    || visitedEdges.contains(currentReversedEdge))
+                if (visitedEdges.contains(currentEdge) || visitedEdges.contains(currentReversedEdge))
                     continue;
                 visitedEdges.insert(currentEdge);
                 dfsGraph.addEdge(currentNode, neighbor);
@@ -236,8 +230,8 @@ void LeftRightPlanarityTest::dfsOrientation(const node startNode) {
                 {
                     parentEdges[neighbor] = currentEdge;
                     heights[neighbor] = heights[currentNode] + 1;
-                    dfs_stack.emplace(currentNode, graph_->neighborRange(currentNode).begin());
-                    dfs_stack.emplace(neighbor, graph_->neighborRange(neighbor).begin());
+                    dfs_stack.emplace(currentNode);
+                    dfs_stack.emplace(neighbor);
                     preprocessed_edges.insert(currentEdge);
                     break;
                 }

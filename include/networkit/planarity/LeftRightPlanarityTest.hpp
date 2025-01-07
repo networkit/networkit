@@ -68,7 +68,7 @@ class LeftRightPlanarityTest final : public Algorithm {
 
 public:
     LeftRightPlanarityTest(const Graph &graph): graph_(&graph){
-        dfsGraph.addNodes(graph_->numberOfNodes());
+        dfsGraph = Graph(graph_->numberOfNodes(), false, true, false);
     }
 
     void run() override;
