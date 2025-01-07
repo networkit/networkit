@@ -5,7 +5,6 @@
 
 namespace NetworKit {
 
-
 void LeftRightPlanarityTest::run() {
     // Euler-criterion
     if (graph_->numberOfNodes() > 2 && graph_->numberOfEdges() > 3 * graph_->numberOfNodes() - 6) {
@@ -30,7 +29,6 @@ void LeftRightPlanarityTest::run() {
     }
 }
 
-
 void LeftRightPlanarityTest::sortAdjacencyListByNestingDepth() {
 
     dfsGraph.sortEdges([&](const WeightedEdgeWithId &edge1, const WeightedEdgeWithId &edge2) {
@@ -39,7 +37,7 @@ void LeftRightPlanarityTest::sortAdjacencyListByNestingDepth() {
 }
 
 bool LeftRightPlanarityTest::conflicting(const Interval &interval, const Edge &edge) {
-    return !interval.is_empty() && lowestPoint[interval.high] > lowestPoint[edge];
+    return !interval.is_empty() && lowestPoint.contains(interval.high) && lowestPoint.contains(edge) && lowestPoint[interval.high] > lowestPoint[edge];
 }
 
 bool LeftRightPlanarityTest::applyConstraints(const Edge edge, const Edge parentEdge) {
@@ -53,7 +51,9 @@ bool LeftRightPlanarityTest::applyConstraints(const Edge edge, const Edge parent
         if (!current_conflict_pair.left.is_empty()) {
             return false;
         }
-        if (lowestPoint[current_conflict_pair.right.low] > lowestPoint[parentEdge]) {
+        if (lowestPoint.contains(current_conflict_pair.right.low)
+            && lowestPoint.contains(parentEdge)
+            && lowestPoint[current_conflict_pair.right.low] > lowestPoint[parentEdge]) {
             if (help_conflict_pair.right.is_empty()) {
                 help_conflict_pair.right = current_conflict_pair.right;
             } else {
@@ -111,20 +111,20 @@ void LeftRightPlanarityTest::removeBackEdges(Edge edge) {
         auto conflict_pair = stack.top();
         stack.pop();
         while (conflict_pair.left.high != noneEdge && conflict_pair.left.high.v == parent_node) {
-            conflict_pair.left.high = ref[conflict_pair.left.high];
+            auto it = ref.find(conflict_pair.left.high);
+            conflict_pair.left.high = (it != ref.end()) ? it->second : noneEdge;
         }
         if (conflict_pair.left.high == noneEdge && conflict_pair.left.low != noneEdge) {
             ref[conflict_pair.left.low] = conflict_pair.right.low;
-            // side[conflict_pair.left.low] = -1;
             conflict_pair.left.low = noneEdge;
         }
         while (conflict_pair.right.high != noneEdge && conflict_pair.right.high.v == parent_node) {
-            conflict_pair.right.high = ref[conflict_pair.right.high];
+            auto it = ref.find(conflict_pair.right.high);
+            conflict_pair.right.high = (it != ref.end()) ? it->second : noneEdge;
         }
 
         if (conflict_pair.right.high == noneEdge && conflict_pair.right.low != noneEdge) {
             ref[conflict_pair.right.low] = conflict_pair.left.low;
-            // side[conflict_pair.right.low] = -1;
             conflict_pair.right.low = noneEdge;
         }
         stack.push(conflict_pair);
@@ -152,17 +152,13 @@ bool LeftRightPlanarityTest::dfsTesting(node startNode) {
     while (!dfs_stack.empty()) {
         const auto currentNode = dfs_stack.top().first;
         auto &neighborIterator = dfs_stack.top().second;
+
         dfs_stack.pop();
         const auto parentEdge = parentEdges[currentNode];
         bool callRemoveBackEdges{true};
-        auto processed_neighbors = std::unordered_set<node>{};
 
-        for (; neighborIterator != graph_->neighborRange(currentNode).end(); ++neighborIterator) {
+        while (neighborIterator != graph_->neighborRange(currentNode).end()) {
             const auto neighbor = *neighborIterator;
-            if (processed_neighbors.contains(neighbor))
-                continue;
-            processed_neighbors.insert(neighbor);
-
             auto currentEdge = Edge(currentNode, neighbor);
             if (!preprocessed_edges.contains(currentEdge)) {
                 stackBottom[currentEdge] = stack.empty() ? NoneConflictPair : stack.top();
@@ -177,7 +173,8 @@ bool LeftRightPlanarityTest::dfsTesting(node startNode) {
                 stack.emplace(Interval{}, Interval(currentEdge, currentEdge));
             }
 
-            if (lowestPoint[currentEdge] < heights[currentNode]) {
+            if (lowestPoint.contains(currentEdge)
+                && lowestPoint[currentEdge] < heights[currentNode]) {
                 if (neighbor == *dfsGraph.neighborRange(currentNode).begin()) {
                     lowPointEdge[parentEdge] = lowPointEdge[currentEdge];
                 } else {
@@ -185,6 +182,7 @@ bool LeftRightPlanarityTest::dfsTesting(node startNode) {
                         return false;
                 }
             }
+            ++neighborIterator;
         }
 
         if (callRemoveBackEdges) {
