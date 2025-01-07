@@ -63,6 +63,25 @@ public:
         return graph;
     }
 
+    static Graph wheelGraph(const count numNodes)
+    {
+        Graph graph(numNodes);
+    	if (numNodes < 4) {
+	        throw std::invalid_argument("A wheel graph requires at least 4 nodes.");
+	    }
+    	// Form cycle
+    	for (count i = 1; i < numNodes - 1; ++i) {
+        	graph.addEdge(i, i + 1);
+    	}
+    	graph.addEdge(numNodes - 1, 1); // Close the cycle
+
+	    // Connect center to cycle
+	    for (count i = 1; i < numNodes; ++i) {
+    	    graph.addEdge(0, i);
+    	}
+	    return graph;
+    }
+
 };
 
 
@@ -121,6 +140,17 @@ TEST_F(LeftRightPlanarityTestGTest, TreeGraph) {
     for (count numberOfNodes{2}; numberOfNodes <= max_number_of_nodes; ++numberOfNodes)
     {
         auto graph = binaryTreeGraph(numberOfNodes);
+        LeftRightPlanarityTest test(graph);
+        test.run();
+        EXPECT_TRUE(test.isPlanar());
+    }
+}
+
+TEST_F(LeftRightPlanarityTestGTest, WheelGraph) {
+
+    for (count numberOfNodes{4}; numberOfNodes <= max_number_of_nodes; ++numberOfNodes)
+    {
+        auto graph = wheelGraph(numberOfNodes);
         LeftRightPlanarityTest test(graph);
         test.run();
         EXPECT_TRUE(test.isPlanar());
