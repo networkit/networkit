@@ -611,7 +611,7 @@ void Graph::removeEdge(node u, node v) {
     index vi = indexInOutEdgeArray(u, v);
     index ui = indexInInEdgeArray(v, u);
 
-    if (maintainCompactEdges) {
+    if (edgesIndexed) {
         deletedID = edgeId(u, v);
     }
 
@@ -637,7 +637,7 @@ void Graph::removeEdge(node u, node v) {
         auto &theMap = edgeAttributeMap.attrMap;
         for (auto it = theMap.begin(); it != theMap.end(); ++it) {
             auto attributeStorageBase = it->second.get();
-            attributeStorageBase->invalidate(vi);
+            attributeStorageBase->invalidate(deletedID);
         }
     }
     if (!directed && !isLoop) {
