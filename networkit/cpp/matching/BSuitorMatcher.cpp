@@ -107,8 +107,7 @@ BSuitorMatcher::MatchingNode BSuitorMatcher::findPreferred(node u) {
 }
 
 void BSuitorMatcher::makeSuitor(node u, edgeweight w, node v) {
-    auto smallest = suitors[v].popMinIfFull();
-    suitors[v].insert(MatchingNode(u, w));
+    auto smallest = suitors[v].insert(MatchingNode(u, w));
     proposed[u].insert(MatchingNode(v, w));
 
     if (smallest.id != none) {
@@ -139,6 +138,7 @@ bool BSuitorMatcher::isSymmetrical() const {
 }
 
 void BSuitorMatcher::buildBMatching() {
+    bMatch.reset();
     G->forNodes([&](node x) {
         assert(suitors[x].partners.size() <= b.at(x));
         for (MatchingNode y : suitors[x].partners) {

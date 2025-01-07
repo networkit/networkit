@@ -67,4 +67,10 @@ const std::vector<count> &BMatching::getB() const {
     return b;
 }
 
+void BMatching::reset() {
+    for (auto &nodeMatches : matches) {
+        nodeMatches.clear();
+    }
+}
+
 } // namespace NetworKit

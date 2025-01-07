@@ -71,12 +71,17 @@ protected:
             }
         }
 
-        void insert(const MatchingNode &u) {
-            assert(partners.size() < max_size);
+        MatchingNode insert(const MatchingNode &u) {
+            if (hasPartner(u.id))
+                return {none, 0};
+
+            MatchingNode prevMin = popMinIfFull();
+
             partners.emplace_back(u);
             if (partners.size() == max_size && !partners.empty()) {
                 min = *std::ranges::min_element(partners);
             }
+            return prevMin;
         }
 
         void remove(node u) {
@@ -120,6 +125,13 @@ public:
      * Runs the algorithm.
      */
     void run() override;
+
+    /**
+     * Creates the b-matching for given graph G. Function run() automatically invokes
+     * buildMatching. After invoking buildBMatching(), use getBMatching() to retrieve the resulting
+     * b-matching.
+     */
+    void buildBMatching();
 
 protected:
     std::vector<MatchingNodeInfo> suitors;
@@ -169,14 +181,6 @@ protected:
      *
      */
     bool isSymmetrical() const;
-
-private:
-    /**
-     * Creates the b-matching for given graph G. Function run() has to be called before calling
-     * buildMatching. After invoking buildBMatching(), use getBMatching() to retrieve the resulting
-     * b-matching.
-     */
-    void buildBMatching();
 };
 } // namespace NetworKit
 

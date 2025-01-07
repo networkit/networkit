@@ -93,6 +93,11 @@ public:
      */
     const std::vector<count> &getB() const;
 
+    /**
+     * Removes all entries from the b-matching data structure
+     */
+    void reset();
+
 protected:
     const Graph &G;
     const std::vector<count> b;
