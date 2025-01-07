@@ -7,7 +7,6 @@
 namespace NetworKit {
 class LeftRightPlanarityTestGTest : public testing::Test {
 
-    L
 
 };
 
