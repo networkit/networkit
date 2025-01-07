@@ -942,6 +942,29 @@ public:
     bool hasEdgeIds() const noexcept { return edgesIndexed; }
 
     /**
+     * Sorts the neighbors of a given node according to a user-defined comparison function.
+     *
+     * @param u The node whose neighbors will be sorted.
+     * @param lambda A binary predicate used to compare two neighbors. The predicate should
+     *               take two nodes as arguments and return true if the first node should
+     *               precede the second in the sorted order.
+     *
+     * @note The function has no effect if the degree of the node is less than 2.
+     *       Sorting is performed in-place on the adjacency list of the node.
+     */
+     void sortNeighbors(const node u, const std::function<bool(node, node)> &lambda) {
+        if (degree(u) < 2) {
+          // No need to sort if the degree is less than 2
+          return;
+        }
+
+        // Sort the adjacency list of the given node `u`
+        std::sort(outEdges[u].begin(), outEdges[u].end(), [&](node a, node b) {
+            return lambda(a, b);
+        });
+      }
+
+    /**
      * Get the id of the given edge.
      */
     edgeid edgeId(node u, node v) const;

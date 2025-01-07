@@ -31,8 +31,19 @@ void LeftRightPlanarityTest::run() {
 
 void LeftRightPlanarityTest::sortAdjacencyListByNestingDepth() {
 
-    dfsGraph.sortEdges([&](const WeightedEdgeWithId &edge1, const WeightedEdgeWithId &edge2) {
-        return nestingDepth.at(Edge(edge1.u, edge1.v)) < nestingDepth.at(Edge(edge2.u, edge2.v));
+    dfsGraph.forNodes([&](const node currentNode) {
+
+        dfsGraph.sortNeighbors(currentNode, [&](const node neighbor1, const node neighbor2) {
+
+            auto it1 = nestingDepth.find(Edge(currentNode, neighbor1));
+            auto it2 = nestingDepth.find(Edge(currentNode, neighbor2));
+
+            if (it1 != nestingDepth.end() && it2 != nestingDepth.end()) {
+                return it1->second < it2->second;
+            }
+
+            return false;
+        });
     });
 }
 

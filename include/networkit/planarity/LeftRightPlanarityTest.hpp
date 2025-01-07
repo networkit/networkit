@@ -67,13 +67,15 @@ inline  bool operator==(const ConflictPair& lhs, const ConflictPair& rhs)
 class LeftRightPlanarityTest final : public Algorithm {
 
 public:
-    LeftRightPlanarityTest(const Graph &graph): graph_(&graph){}
+    LeftRightPlanarityTest(const Graph &graph): graph_(&graph){
+        dfsGraph.addNodes(graph_->numberOfNodes());
+    }
 
     void run() override;
 
     void initialization();
 
-    bool is_planar() const
+    bool isPlanar() const
     {
         return is_planar_;
     }
