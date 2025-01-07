@@ -93,6 +93,26 @@ public:
         return graph;
     }
 
+    static Graph gridGraph(const count rows, const count columns) {
+		Graph graph(rows*columns);
+        for (count row = 0; row < rows; ++row) {
+            for (count col = 0; col < columns; ++col) {
+                count currentNode = row * columns + col;
+
+                // Connect to the right neighbor
+                if (col + 1 < columns) {
+                    graph.addEdge(currentNode, currentNode + 1);
+                }
+
+                // Connect to the bottom neighbor
+                if (row + 1 < rows) {
+                    graph.addEdge(currentNode, currentNode + columns);
+                }
+            }
+        }
+	    return graph;
+    }
+
 };
 
 
@@ -168,30 +188,6 @@ TEST_F(LeftRightPlanarityTestGTest, WheelGraph) {
     }
 }
 
-TEST_F(LeftRightPlanarityTestGTest, GridGraph3x3) {
-
-    Graph graph(9);
-
-    // Horizontal edges
-    graph.addEdge(0, 1);
-    graph.addEdge(1, 2);
-    graph.addEdge(3, 4);
-    graph.addEdge(4, 5);
-    graph.addEdge(6, 7);
-    graph.addEdge(7, 8);
-
-    // Vertical edges
-    graph.addEdge(0, 3);
-    graph.addEdge(1, 4);
-    graph.addEdge(2, 5);
-    graph.addEdge(3, 6);
-    graph.addEdge(4, 7);
-    graph.addEdge(5, 8);
-
-    LeftRightPlanarityTest test(graph);
-    test.run();
-    EXPECT_TRUE(test.isPlanar());
-}
 
 TEST_F(LeftRightPlanarityTestGTest, CompleteGraph) {
 	for (count numberOfNodes{2}; numberOfNodes <= max_number_of_nodes; ++numberOfNodes)
@@ -203,6 +199,20 @@ TEST_F(LeftRightPlanarityTestGTest, CompleteGraph) {
         	EXPECT_TRUE(test.isPlanar());
         else
 	       EXPECT_FALSE(test.isPlanar());
+    }
+}
+
+TEST_F(LeftRightPlanarityTestGTest, GridGraph) {
+
+    for(count numberOfRows{2}; numberOfRows < 11; ++numberOfRows)
+    {
+    	for(count numberOfColumns{2}; numberOfColumns < 11; ++numberOfColumns)
+        {
+        	auto graph = gridGraph(numberOfRows, numberOfColumns);
+		 	LeftRightPlanarityTest test(graph);
+        	test.run();
+        	EXPECT_TRUE(test.isPlanar());
+        }
     }
 }
 
