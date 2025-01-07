@@ -97,7 +97,7 @@ public:
 		Graph graph(rows*columns);
         for (count row = 0; row < rows; ++row) {
             for (count col = 0; col < columns; ++col) {
-                count currentNode = row * columns + col;
+                const count currentNode = row * columns + col;
 
                 // Connect to the right neighbor
                 if (col + 1 < columns) {
@@ -552,6 +552,57 @@ TEST_F(LeftRightPlanarityTestGTest, RandomGeneratedPlanarConnectedGraph51Nodes) 
     graph.addEdge(38, 46);
     graph.addEdge(43, 50);
     graph.addEdge(44, 49);
+    LeftRightPlanarityTest test(graph);
+    test.run();
+    EXPECT_TRUE(test.isPlanar());
+}
+
+TEST_F(LeftRightPlanarityTestGTest, TwoSubGraphsOnePlanarOneNonPlanar) {
+    Graph graph(10);
+    graph.addEdge(0, 1);
+    graph.addEdge(1, 2);
+    graph.addEdge(2, 3);
+    graph.addEdge(0, 3);
+    graph.addEdge(0, 4);
+    graph.addEdge(0, 5);
+    graph.addEdge(1, 3);
+    graph.addEdge(1, 4);
+    graph.addEdge(1, 5);
+    graph.addEdge(2, 3);
+    graph.addEdge(2, 4);
+    graph.addEdge(2, 5);
+    graph.addEdge(6, 7);
+    graph.addEdge(7, 8);
+    graph.addEdge(8, 9);
+    graph.addEdge(9, 6);
+    LeftRightPlanarityTest test(graph);
+    test.run();
+    EXPECT_FALSE(test.isPlanar());
+}
+
+TEST_F(LeftRightPlanarityTestGTest, TwoRandomSubGraphsBothPlanar) {
+    Graph graph(20);
+    graph.addEdge(0, 9);
+    graph.addEdge(0, 12);
+    graph.addEdge(0, 16);
+    graph.addEdge(0, 17);
+    graph.addEdge(1, 11);
+    graph.addEdge(2, 6);
+    graph.addEdge(2, 7);
+    graph.addEdge(2, 19);
+    graph.addEdge(3, 7);
+    graph.addEdge(3, 15);
+    graph.addEdge(4, 9);
+    graph.addEdge(5, 18);
+    graph.addEdge(6, 8);
+    graph.addEdge(6, 10);
+    graph.addEdge(6, 14);
+    graph.addEdge(6, 19);
+    graph.addEdge(10, 13);
+    graph.addEdge(11, 18);
+    graph.addEdge(16, 17);
+    graph.addEdge(16, 18);
+    graph.addEdge(17, 18);
     LeftRightPlanarityTest test(graph);
     test.run();
     EXPECT_TRUE(test.isPlanar());
