@@ -34,11 +34,9 @@ void LeftRightPlanarityTest::run() {
 void LeftRightPlanarityTest::sortAdjacencyListByNestingDepth() {
 
     dfsGraph.forNodes([&](const node currentNode) {
-
         dfsGraph.sortNeighbors(currentNode, [&](const node neighbor1, const node neighbor2) {
-
             if (auto it1 = nestingDepth.find(Edge(currentNode, neighbor1)),
-                     it2 = nestingDepth.find(Edge(currentNode, neighbor2));
+                it2 = nestingDepth.find(Edge(currentNode, neighbor2));
                 it1 != nestingDepth.end() && it2 != nestingDepth.end()) {
                 return it1->second < it2->second;
             }
@@ -48,7 +46,8 @@ void LeftRightPlanarityTest::sortAdjacencyListByNestingDepth() {
 }
 
 bool LeftRightPlanarityTest::conflicting(const Interval &interval, const Edge &edge) {
-    return !interval.is_empty() && lowestPoint.contains(interval.high) && lowestPoint.contains(edge) && lowestPoint[interval.high] > lowestPoint[edge];
+    return !interval.is_empty() && lowestPoint.contains(interval.high) && lowestPoint.contains(edge)
+           && lowestPoint[interval.high] > lowestPoint[edge];
 }
 
 bool LeftRightPlanarityTest::applyConstraints(const Edge edge, const Edge parentEdge) {
@@ -158,7 +157,8 @@ void LeftRightPlanarityTest::removeBackEdges(Edge edge) {
 bool LeftRightPlanarityTest::dfsTesting(node startNode) {
     std::stack<node> dfs_stack;
     dfs_stack.emplace(startNode);
-    auto neighborIterators = std::unordered_map<node, decltype(dfsGraph.neighborRange(startNode).begin())>{};
+    auto neighborIterators =
+        std::unordered_map<node, decltype(dfsGraph.neighborRange(startNode).begin())>{};
 
     auto preprocessed_edges = std::unordered_set<Edge>{};
     while (!dfs_stack.empty()) {
@@ -169,7 +169,7 @@ bool LeftRightPlanarityTest::dfsTesting(node startNode) {
         if (auto it = neighborIterators.find(currentNode); it == neighborIterators.end()) {
             neighborIterators[currentNode] = dfsGraph.neighborRange(currentNode).begin();
         }
-        auto& neighborIterator = neighborIterators[currentNode];
+        auto &neighborIterator = neighborIterators[currentNode];
         while (neighborIterator != dfsGraph.neighborRange(currentNode).end()) {
             const auto neighbor = *neighborIterator;
             auto currentEdge = Edge(currentNode, neighbor);
@@ -219,7 +219,8 @@ void LeftRightPlanarityTest::dfsOrientation(const node startNode) {
 
             const auto currentEdge = Edge(currentNode, neighbor);
             if (!preprocessed_edges.contains(currentEdge)) {
-                if (dfsGraph.hasEdge(currentNode, neighbor) || dfsGraph.hasEdge(neighbor, currentNode))
+                if (dfsGraph.hasEdge(currentNode, neighbor)
+                    || dfsGraph.hasEdge(neighbor, currentNode))
                     continue;
                 dfsGraph.addEdge(currentNode, neighbor);
                 lowestPoint[currentEdge] = heights[currentNode];

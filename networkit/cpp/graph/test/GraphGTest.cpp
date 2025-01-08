@@ -2389,20 +2389,20 @@ TEST_P(GraphGTest, testSortEdgesMethod) {
 
     G.forNodes([&](const node currentNode) {
         G.sortNeighbors(currentNode, [&](const node neighbor1, const node neighbor2) {
-                    return neighbor1 < neighbor2;
+            return neighbor1 < neighbor2;
         });
     });
 
     G.forNodes([&](const node currentNode) {
-     const auto &sortedNeighbors = G.neighborRange(currentNode);
-     std::vector<node> sortedNeighborVector(sortedNeighbors.begin(), sortedNeighbors.end());
+        const auto &sortedNeighbors = G.neighborRange(currentNode);
+        std::vector<node> sortedNeighborVector(sortedNeighbors.begin(), sortedNeighbors.end());
 
-     EXPECT_TRUE(std::is_sorted(sortedNeighborVector.begin(), sortedNeighborVector.end()));
+        EXPECT_TRUE(std::is_sorted(sortedNeighborVector.begin(), sortedNeighborVector.end()));
 
-     if (!std::is_sorted(originalNeighbors[currentNode].begin(), originalNeighbors[currentNode].end())) {
-         EXPECT_NE(originalNeighbors[currentNode], sortedNeighborVector);
-     }
- });
-
+        if (!std::is_sorted(originalNeighbors[currentNode].begin(),
+                            originalNeighbors[currentNode].end())) {
+            EXPECT_NE(originalNeighbors[currentNode], sortedNeighborVector);
+        }
+    });
 }
 } /* namespace NetworKit */

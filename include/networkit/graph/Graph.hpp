@@ -949,13 +949,12 @@ public:
      *               take two nodes as arguments and return true if the first node should
      *               precede the second in the sorted order.
      */
-     void sortNeighbors(const node u, const std::function<bool(node, node)> &lambda) {
+    void sortNeighbors(const node u, const std::function<bool(node, node)> &lambda) {
         if (degree(u) < 2) {
-          return;
+            return;
         }
-        std::sort(outEdges[u].begin(), outEdges[u].end(), [&](node a, node b) {
-            return lambda(a, b);
-        });
+        std::sort(outEdges[u].begin(), outEdges[u].end(),
+                  [&](node a, node b) { return lambda(a, b); });
     }
 
     /**
