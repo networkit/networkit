@@ -98,10 +98,9 @@ private:
     std::unordered_map<Edge, count> secondLowestPoint;
     std::unordered_map<Edge, Edge> ref;
     std::vector<node> roots;
-	std::unordered_map<Edge, Edge> lowPointEdge;
+	std::unordered_map<Edge, Edge> lowestPointEdge;
     std::unordered_map<Edge, count> nestingDepth;
     std::unordered_map<index, Edge> parentEdges;
-    std::unordered_set<Edge> visitedEdges;
     std::stack<ConflictPair> stack;
     std::unordered_map<Edge, ConflictPair> stackBottom;
     Graph dfsGraph;
