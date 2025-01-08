@@ -12,12 +12,58 @@
 #include <set>
 #include <unordered_map>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/base/DynAlgorithm.hpp>
 #include <networkit/matching/BSuitorMatcher.hpp>
 
 namespace NetworKit {
-class DynamicBSuitorMatcher final : public BSuitorMatcher {
+class DynamicBSuitorMatcher final : public BSuitorMatcher, public DynAlgorithm {
     enum class Operation { Insert, Remove };
 
+public:
+    /**
+     * Implementation from the algorithm from "A Fully-dynamic Approximation Algorithm for Maximum 
+     * Weight b-Matchings in Graphs" from Proceedings of The Thirteenth International Conference on 
+     * Complex Networks and their Applications 2024 by Fabian Brandt-Tumescheit, Frieda Gerharz and
+     * Henning Meyerhenke. The algorithm dynamically updates the b-matching based on the b-Suitor 
+     * algorithm by Khan et al. The solution is the same as a complete recomputation of the b-Suitor
+     * b-matching.
+     *
+     * @param   G	The graph,
+     * @param   b   List of b-values for each node in the graph.
+     */
+    DynamicBSuitorMatcher(const Graph &G, const std::vector<count> &b) : BSuitorMatcher(G, b) {}
+
+    /** 
+     * @param   G	The graph,
+     * @param   b   Set the same b-value for all nodes. Optional and defaults to 1.
+     */
+    DynamicBSuitorMatcher(const Graph &G, count b = 1) : BSuitorMatcher(G, b) {}
+
+    /** 
+     * @param   G	    The graph,
+     * @param   path    Path to file, which contains b-values for all nodes in the graph.   
+     */
+    DynamicBSuitorMatcher(const Graph &G, const std::string &path) : BSuitorMatcher(G, 1) {}
+
+    /**
+     * Updates the b-matching after an edge insertion or deletion on the graph.
+     * Notice: Supported events include edge insertion and deletion.
+     *
+     * @param e The update event.
+     */
+    void update(GraphEvent e) override;
+
+    /**
+     * Updates the b-matching after a batch of edge insertions or deletions on the graph.
+     * Notice: Supported events include edge insertion and deletion.
+     *
+     * @param e The batch of update events.
+     */
+    void updateBatch(const std::vector<GraphEvent> &batch) override;
+
+private:
+
+    // helper function
     bool isBetterMatch(node u, node v, edgeweight ew) const noexcept {
         const auto currentMatch = suitors[u].min;
         bool isBetterMatch = currentMatch.id == none || currentMatch.weight < ew
@@ -25,26 +71,21 @@ class DynamicBSuitorMatcher final : public BSuitorMatcher {
         return isBetterMatch;
     }
 
+    // Internal logic for handling edge insertions (initial check)
+    void addEdge(const GraphEvent &event);
+
+    // Internal logic for handling edge insertions (initial suitor update)
+    void processEdgeInsertion(const GraphEvent &event);
+
+    // Internal logic for handling edge removals (initial check)
+    void removeEdge(const GraphEvent &event);
+
+    // Internal logic for handling edge removals (initial suitor update)
+    void processEdgeRemoval(const GraphEvent &event);
+
+    // Internal logic for tracking update paths (both insertion + deletion)
     void trackUpdatePath(size_t batchId, node start, bool recursiveCall = false);
-    void processEdgeInsertion(const WeightedEdge &edge);
-    void processEdgeRemoval(const Edge &edge);
 
-public:
-    DynamicBSuitorMatcher(const Graph &G, const std::vector<count> &b) : BSuitorMatcher(G, b) {}
-    DynamicBSuitorMatcher(const Graph &G, count b = 1) : BSuitorMatcher(G, b) {}
-    DynamicBSuitorMatcher(const Graph &G, const std::string &path) : BSuitorMatcher(G, 1) {}
-
-    void addEdge(WeightedEdge &edge) {
-        std::vector<WeightedEdge> edges{edge};
-        addEdges(edges);
-    }
-    void addEdges(std::vector<WeightedEdge> &edges, bool sort = true);
-
-    void removeEdge(Edge &edge) {
-        std::vector<Edge> edges{edge};
-        removeEdges(edges);
-    }
-    void removeEdges(std::vector<Edge> &edges);
 };
 
 } // namespace NetworKit

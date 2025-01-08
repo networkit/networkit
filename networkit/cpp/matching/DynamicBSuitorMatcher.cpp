@@ -13,11 +13,32 @@
 
 namespace NetworKit {
 
-void DynamicBSuitorMatcher::processEdgeInsertion(const WeightedEdge &edge) {
+void DynamicBSuitorMatcher::update(GraphEvent e) {
+    switch(e.type) {
+        case GraphEvent::EDGE_ADDITION:
+            addEdge(e);
+            break;
+        case GraphEvent::EDGE_REMOVAL:
+            removeEdge(e);
+            break;
+        default:
+            throw std::runtime_error(
+        "Event type not allowed. Edge insertions and removals only.");
+    }   
+}
 
-    node u = edge.u;
-    node v = edge.v;
-    edgeweight w = G->weight(u, v);
+void DynamicBSuitorMatcher::updateBatch(const std::vector<GraphEvent> &batch) {
+    for (GraphEvent e : batch) {
+        update(e);
+    };
+}
+
+
+void DynamicBSuitorMatcher::processEdgeInsertion(const GraphEvent &event) {
+
+    node u = event.u;
+    node v = event.v;
+    edgeweight w = event.w;
 
     MatchingNode startU = suitors[u].insert({v, w});
     MatchingNode startV = suitors[v].insert({u, w});
@@ -98,10 +119,10 @@ void DynamicBSuitorMatcher::trackUpdatePath(size_t batchId, node start, bool rec
     }
 }
 
-void DynamicBSuitorMatcher::processEdgeRemoval(const Edge &edge) {
+void DynamicBSuitorMatcher::processEdgeRemoval(const GraphEvent &event) {
 
-    node u = edge.u;
-    node v = edge.v;
+    node u = event.u;
+    node v = event.v;
 
     suitors[u].remove(v);
     suitors[v].remove(u);
@@ -110,30 +131,19 @@ void DynamicBSuitorMatcher::processEdgeRemoval(const Edge &edge) {
     trackUpdatePath(0, v);
 }
 
-void DynamicBSuitorMatcher::addEdges(std::vector<WeightedEdge> &edges, bool sort) {
-    if (sort) {
-        std::sort(edges.begin(), edges.end(),
-                  [](const WeightedEdge &a, const WeightedEdge &b) { return a.weight > b.weight; });
+void DynamicBSuitorMatcher::addEdge(const GraphEvent &event) {
+    if ((suitors[event.u].hasPartner(event.v) && suitors[event.v].hasPartner(event.u))
+        || !isBetterMatch(event.u, event.v, event.w)
+        || !isBetterMatch(event.v, event.u, event.w)) {
+        return;
     }
-
-    for (const auto &edge : edges) {
-        if ((suitors[edge.u].hasPartner(edge.v) && suitors[edge.v].hasPartner(edge.u))
-            || !isBetterMatch(edge.u, edge.v, edge.weight)
-            || !isBetterMatch(edge.v, edge.u, edge.weight)) {
-            continue;
-        }
-
-        processEdgeInsertion(edge);
-    }
+    processEdgeInsertion(event);
 }
 
-void DynamicBSuitorMatcher::removeEdges(std::vector<Edge> &edges) {
-    for (const auto &edge : edges) {
-        assert(!G->hasEdge(edge.u, edge.v));
-        if (suitors[edge.u].hasPartner(edge.v)) {
-
-            processEdgeRemoval(edge);
-        }
+void DynamicBSuitorMatcher::removeEdge(const GraphEvent &event) {
+    assert(!G->hasEdge(event.u, event.v));
+    if (suitors[event.u].hasPartner(event.v)) {
+        processEdgeRemoval(event);
     }
 }
 

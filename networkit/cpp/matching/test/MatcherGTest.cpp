@@ -295,14 +295,14 @@ TEST_F(MatcherGTest, testBSuitorMatcherDifferentB) {
 TEST_F(MatcherGTest, testDynBSuitorInsertEdges) {
     for (int i = 0; i < 100; i++) {
         auto G = generateRandomWeightedGraph(100);
-        std::vector<WeightedEdge> edges;
+        std::vector<GraphEvent> events;
         count m = 10;
         // Select m edges of the graph, remove them but put them into edges for later insertion.
         // This will make sure that the graph is valid.
         for (auto j = 0; j < m; j++) {
             const auto [u, v] = GraphTools::randomEdge(G);
             assert(G.hasEdge(u, v));
-            edges.emplace_back(u, v, G.weight(u, v));
+            events.emplace_back(GraphEvent{GraphEvent::EDGE_ADDITION, u,v, G.weight(u,v)});
             G.removeEdge(u, v);
         }
 
@@ -310,11 +310,11 @@ TEST_F(MatcherGTest, testDynBSuitorInsertEdges) {
         DynamicBSuitorMatcher dbsm(G, b);
         dbsm.run();
 
-        for (auto &myEdge : edges) {
-            G.addEdge(myEdge.u, myEdge.v, myEdge.weight);
+        for (auto &e : events) {
+            G.addEdge(e.u, e.v, e.w);
         }
 
-        dbsm.addEdges(edges);
+        dbsm.updateBatch(events);
 
         dbsm.buildBMatching();
         const auto dm = dbsm.getBMatching();
@@ -340,17 +340,59 @@ TEST_F(MatcherGTest, testDynBSuitorRemoveEdges) {
         DynamicBSuitorMatcher dbsm(G, b);
         dbsm.run();
 
-        std::vector<Edge> edges;
-        std::vector<edgeweight> edgeWeights;
+        std::vector<GraphEvent> events;
         count m = 10;
         for (auto j = 0; j < m; j++) {
             const auto [u, v] = GraphTools::randomEdge(G);
-            edges.emplace_back(u, v, G.weight(u, v));
-            edgeWeights.emplace_back(G.weight(u, v));
+            events.emplace_back(GraphEvent{GraphEvent::EDGE_REMOVAL, u, v});
             G.removeEdge(u, v);
         }
 
-        dbsm.removeEdges(edges);
+        dbsm.updateBatch(events);
+        dbsm.buildBMatching();
+        const auto dm = dbsm.getBMatching();
+        auto dres = dm.getMatches();
+        const auto dwm = dm.weight();
+
+        BSuitorMatcher bsm(G, b);
+        bsm.run();
+        bsm.buildBMatching();
+        const auto sm = bsm.getBMatching();
+        auto res = sm.getMatches();
+        const auto wm = sm.weight();
+
+        EXPECT_EQ(dwm, wm);
+    }
+}
+
+TEST_F(MatcherGTest, testDynBSuitorMixedBatch) {
+    for (int i = 0; i < 100; i++) {
+        auto G = generateRandomWeightedGraph(100);
+
+        const count b = 6;
+        DynamicBSuitorMatcher dbsm(G, b);
+        dbsm.run();
+
+        std::vector<GraphEvent> events;
+        count m = 10;
+        
+        for (auto j = 0; j < m; j++) {
+            uint64_t guesser = Aux::Random::integer(0,1);
+            if (guesser) {
+                auto potNonEdge = GraphTools::randomNodes(G, 2);
+                while(G.hasEdge(potNonEdge[0], potNonEdge[1])) {
+                    potNonEdge = GraphTools::randomNodes(G, 2);
+                }
+                events.emplace_back(GraphEvent{GraphEvent::EDGE_ADDITION, potNonEdge[0], potNonEdge[1], G.weight(potNonEdge[0], potNonEdge[1])});
+                G.addEdge(potNonEdge[0], potNonEdge[1]);
+            } else {
+                const auto [u, v] = GraphTools::randomEdge(G);
+                events.emplace_back(GraphEvent{GraphEvent::EDGE_REMOVAL, u, v});
+                G.removeEdge(u, v);
+            }
+        }
+
+        dbsm.updateBatch(events);
         dbsm.buildBMatching();
         const auto dm = dbsm.getBMatching();
         auto dres = dm.getMatches();
