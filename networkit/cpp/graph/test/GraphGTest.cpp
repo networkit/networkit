@@ -2379,8 +2379,6 @@ TEST_P(GraphGTest, testSortEdgesMethod) {
 
     Aux::Random::setSeed(42, true);
     auto G = createGraph(n, 10 * n);
-    G.indexEdges();
-    auto original = G;
     std::unordered_map<node, std::vector<node>> originalNeighbors;
     G.forNodes([&](const node currentNode) {
         originalNeighbors[currentNode] = std::vector<node>(G.neighborRange(currentNode).begin(),
