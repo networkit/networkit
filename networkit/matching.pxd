@@ -37,9 +37,8 @@ cdef class Matching:
 cdef extern from "<networkit/matching/BMatching.hpp>":
 
 	cdef cppclass _BMatching "NetworKit::BMatching":
-		_BMatching() except +
-		_BMatching(vector[count]) except +
-		bool_t isProper(_Graph) except +
+		_BMatching(_Graph, vector[count]) except +
+		bool_t isProper() except +
 		void match(node, node) except +
 		void unmatch(node, node) except +
 		bool_t isUnmatched(node) except +
@@ -48,8 +47,8 @@ cdef extern from "<networkit/matching/BMatching.hpp>":
 		edgeweight weight() except +
 		vector[unordered_set[node]] getMatches() except +
 		vector[count] getB() except +
-		reset() except +
+		void reset() except +
 
 cdef class BMatching:
-	cdef _BMatching _this
-	cdef setThis(self,  _BMatching& other)
+	cdef _BMatching *_this
+	cdef Graph _G

@@ -1,5 +1,13 @@
 # distutils: language=c++
 
+from libcpp.string cimport string
+from libcpp.vector cimport vector
+
+from .dynbase cimport _DynAlgorithm
+from .dynbase import DynAlgorithm
+from .dynamics cimport _GraphEvent, GraphEvent
+from .structures cimport count, node
+
 cdef class Matching:
 	""" 
 	Matching(z=0)
@@ -289,9 +297,9 @@ cdef class BMatching:
 		b : list(int)
 			List containing the b-values for all nodes.
 	"""
-	def __cinit__(self, G, vector[count] b):
-		self.G = G
-		self._this = new _BMatching(G._this, vector[count] b)
+	def __cinit__(self, Graph G, vector[count] b):
+		self._G = G
+		self._this = new _BMatching(G._this, b)
 
 	def isProper(self):
 		"""
@@ -445,9 +453,9 @@ cdef extern from "<networkit/matching/BMatcher.hpp>":
 
 cdef class BMatcher(Algorithm):
 	""" Abstract base class for matching algorithms """
-	cdef Graph G
+	cdef Graph _G
 
-	def __init__(self, Graph G, vector[count] b):
+	def __cinit__(self, Graph G, vector[count] b):
 		if type(self) == BMatcher:
 			raise RuntimeError("Instantiation of abstract base class")
 
@@ -471,13 +479,16 @@ cdef extern from "<networkit/matching/BSuitorMatcher.hpp>":
 		_BSuitorMatcher(_Graph, vector[count] b) except +
 		_BSuitorMatcher(_Graph, count b) except +
 		_BSuitorMatcher(_Graph, string path) except +
-	    buildBMatching() except +
+		void buildBMatching() except +
 
 cdef class BSuitorMatcher(BMatcher):
 	"""
-	BSuitorMatcher(G, )
+	BSuitorMatcher(G, b)
 
-	TODO: new doc
+    Computes a 1/2-approximate maximum weight b-matching of an undirected weighted Graph @c G
+    using the sequential b-Suitor algorithm published by Khan et al. in "Efficient Approximation
+    Algorithms For Weighted B-Matching", SIAM Journal on Scientific Computing, Vol. 38, Iss. 5
+    (2016).
 
 	Parameters
 	----------
@@ -487,13 +498,13 @@ cdef class BSuitorMatcher(BMatcher):
 	"""
 
 	def __cinit__(self, Graph G, second):
+		cdef string c_path
+
 		self._G = G
-		if isinstance(second, vector[count]):
+		if isinstance(second, list):
 			self._this = new _BSuitorMatcher(G._this, <vector[count]> second)
 		elif isinstance(second, int):
 			self._this = new _BSuitorMatcher(G._this, <count> second)
-		elif isinstance(second, string):
-			self._this = new _BSuitorMatcher(G._this, <string> second)
 		else:
 			raise Exception("Error: the second parameter must be either an int (global b-value), a list of ints (single b-values for all nodes) or a path to the file, containing b-values for every node.")
 
@@ -512,11 +523,31 @@ cdef extern from "<networkit/matching/DynamicBSuitorMatcher.hpp>":
 		_DynamicBSuitorMatcher(_Graph, vector[count] b) except +
 		_DynamicBSuitorMatcher(_Graph, count b) except +
 		_DynamicBSuitorMatcher(_Graph, string path) except +
-	    addEdge(WeightedEdge) except +
-		addEdges(vector[WeightedEdge]) except +
 
-TODOs:
-- Check reference vs. pass by value
-- WeightedEdge import oder definieren
-- Fix docs
-- Change implementation to use DynamicAlgorithm
+cdef class DynamicBSuitorMatcher(BSuitorMatcher, DynAlgorithm):
+	""" 
+	DynamicBSuitorMatcher(G, ...)
+	
+    Implementation from the algorithm from "A Fully-dynamic Approximation Algorithm for Maximum 
+    Weight b-Matchings in Graphs" from Proceedings of The Thirteenth International Conference on 
+    Complex Networks and their Applications 2024 by Fabian Brandt-Tumescheit, Frieda Gerharz and
+    Henning Meyerhenke. The algorithm dynamically updates the b-matching based on the b-Suitor 
+    algorithm by Khan et al. The solution is the same as a complete recomputation of the b-Suitor
+    b-matching.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		An unweighted graph.
+	"""
+
+	def __cinit__(self, Graph G, second):
+		cdef string c_path
+		
+		self._G = G
+		if isinstance(second, list):
+			self._this = new _DynamicBSuitorMatcher(G._this, <vector[count]> second)
+		elif isinstance(second, int):
+			self._this = new _DynamicBSuitorMatcher(G._this, <count> second)
+		else:
+			raise Exception("Error: the second parameter must be either an int (global b-value), a list of ints (single b-values for all nodes) or a path to the file, containing b-values for every node.")
