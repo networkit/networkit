@@ -9,7 +9,6 @@
 
 namespace NetworKit {
 
-
 class LeftRightPlanarityTest final : public Algorithm {
 
 public:
@@ -27,7 +26,7 @@ private:
         Edge low{noneEdge};
         Edge high{noneEdge};
 
-        Interval(): low{noneEdge}, high{noneEdge} {};
+        Interval() : low{noneEdge}, high{noneEdge} {};
         Interval(const Edge &low, const Edge &high) : low(low), high(high) {}
         bool is_empty() const { return low == noneEdge && high == noneEdge; }
 
