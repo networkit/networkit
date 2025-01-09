@@ -9,42 +9,6 @@
 
 namespace NetworKit {
 
-const Edge noneEdge{none, none};
-
-struct Interval {
-    Edge low{noneEdge};  // Represents the lower bound of the interval
-    Edge high{noneEdge}; // Represents the upper bound of the interval
-
-    // Default constructor
-    Interval() = default;
-
-    // Constructor with specific low and high values
-    Interval(const Edge &low, const Edge &high) : low(low), high(high) {}
-
-    bool is_empty() const { return low == noneEdge && high == noneEdge; }
-};
-
-inline bool operator==(const Interval &lhs, const Interval &rhs) {
-    return lhs.low == rhs.low && lhs.high == rhs.high;
-}
-
-struct ConflictPair {
-    Interval left{};  // Left interval of edges
-    Interval right{}; // Right interval of edges
-
-    ConflictPair() = default;
-
-    // Constructor with initial intervals
-    ConflictPair(const Interval &left, const Interval &right) : left(left), right(right) {}
-
-    void swap() { std::swap(left, right); }
-};
-
-const ConflictPair NoneConflictPair{Interval{}, Interval{}};
-
-inline bool operator==(const ConflictPair &lhs, const ConflictPair &rhs) {
-    return lhs.left == rhs.left && lhs.right == rhs.right;
-}
 
 class LeftRightPlanarityTest final : public Algorithm {
 
@@ -52,15 +16,41 @@ public:
     LeftRightPlanarityTest(const Graph &graph) : graph_(&graph) {
         dfsGraph = Graph(graph_->numberOfNodes(), false, true, false);
     }
-
     void run() override;
-
-    void initialization();
-
     bool isPlanar() const { return is_planar_; }
 
 private:
-    const count noneHeight{std::numeric_limits<count>::max()};
+    static constexpr Edge noneEdge{};
+    static constexpr count noneHeight{std::numeric_limits<count>::max()};
+
+    struct Interval {
+        Edge low{noneEdge};
+        Edge high{noneEdge};
+
+        Interval(): low{noneEdge}, high{noneEdge} {};
+        Interval(const Edge &low, const Edge &high) : low(low), high(high) {}
+        bool is_empty() const { return low == noneEdge && high == noneEdge; }
+
+        friend bool operator==(const Interval &lhs, const Interval &rhs) {
+            return lhs.low == rhs.low && lhs.high == rhs.high;
+        }
+    };
+
+    struct ConflictPair {
+        Interval left{};
+        Interval right{};
+
+        ConflictPair() = default;
+        ConflictPair(const Interval &left, const Interval &right) : left(left), right(right) {}
+
+        void swap() { std::swap(left, right); }
+
+        friend bool operator==(const ConflictPair &lhs, const ConflictPair &rhs) {
+            return lhs.left == rhs.left && lhs.right == rhs.right;
+        }
+    };
+    const ConflictPair NoneConflictPair{Interval(), Interval()};
+
     const Graph *graph_;
     bool is_planar_{};
     void dfsOrientation(node startNode);
