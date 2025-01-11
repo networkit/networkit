@@ -16,7 +16,7 @@ public:
         dfsGraph = Graph(graph_->numberOfNodes(), false, true, false);
     }
     void run() override;
-    bool isPlanar() const { return is_planar_; }
+    bool isPlanar() const { return isPlanar_; }
 
 private:
     static constexpr Edge noneEdge{};
@@ -28,7 +28,7 @@ private:
 
         Interval() : low{noneEdge}, high{noneEdge} {};
         Interval(const Edge &low, const Edge &high) : low(low), high(high) {}
-        bool is_empty() const { return low == noneEdge && high == noneEdge; }
+        bool isEmpty() const { return low == noneEdge && high == noneEdge; }
 
         friend bool operator==(const Interval &lhs, const Interval &rhs) {
             return lhs.low == rhs.low && lhs.high == rhs.high;
@@ -51,14 +51,14 @@ private:
     const ConflictPair NoneConflictPair{Interval(), Interval()};
 
     const Graph *graph_;
-    bool is_planar_{};
+    bool isPlanar_{};
     void dfsOrientation(node startNode);
     bool dfsTesting(node startNode);
     bool applyConstraints(Edge edge, Edge parentEdge);
     void removeBackEdges(Edge edge);
     void sortAdjacencyListByNestingDepth();
     bool conflicting(const Interval &interval, const Edge &edge);
-    count getLowestLowPoint(const ConflictPair &conflict_pair);
+    count getLowestLowPoint(const ConflictPair &conflictPair);
     std::vector<count> heights;
     std::unordered_map<Edge, count> lowestPoint;
     std::unordered_map<Edge, count> secondLowestPoint;
