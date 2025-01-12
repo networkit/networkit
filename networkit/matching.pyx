@@ -6,6 +6,7 @@ from libcpp.vector cimport vector
 from .dynbase cimport _DynAlgorithm
 from .dynbase import DynAlgorithm
 from .dynamics cimport _GraphEvent, GraphEvent
+from .helpers import stdstring
 from .structures cimport count, node
 
 cdef class Matching:
@@ -505,6 +506,9 @@ cdef class BSuitorMatcher(BMatcher):
 			self._this = new _BSuitorMatcher(G._this, <vector[count]> second)
 		elif isinstance(second, int):
 			self._this = new _BSuitorMatcher(G._this, <count> second)
+		elif isinstance(second, str):
+			c_path = stdstring(second)
+			self._this = new _DynamicBSuitorMatcher(G._this, c_path)
 		else:
 			raise Exception("Error: the second parameter must be either an int (global b-value), a list of ints (single b-values for all nodes) or a path to the file, containing b-values for every node.")
 
@@ -549,5 +553,8 @@ cdef class DynamicBSuitorMatcher(BSuitorMatcher, DynAlgorithm):
 			self._this = new _DynamicBSuitorMatcher(G._this, <vector[count]> second)
 		elif isinstance(second, int):
 			self._this = new _DynamicBSuitorMatcher(G._this, <count> second)
+		elif isinstance(second, str):
+			c_path = stdstring(second)
+			self._this = new _DynamicBSuitorMatcher(G._this, c_path)
 		else:
 			raise Exception("Error: the second parameter must be either an int (global b-value), a list of ints (single b-values for all nodes) or a path to the file, containing b-values for every node.")
