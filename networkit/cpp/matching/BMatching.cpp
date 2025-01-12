@@ -3,17 +3,17 @@
 namespace NetworKit {
 
 BMatching::BMatching(const Graph &G, const std::vector<count> &b)
-    : G(G), b(b), matches(G.numberOfNodes()) {}
+    : G(&G), b(b), matches(G.numberOfNodes()) {}
 
 bool BMatching::isProper() const {
     // check if entries are symmetric and every pair exists as an edge
-    for (node v : G.nodeRange()) {
+    for (node v : G->nodeRange()) {
         for (node w : matches[v]) {
             if (matches[w].find(v) == matches[w].end()) {
                 DEBUG("node ", v, " is not symmetrically matched");
                 return false;
             }
-            if ((v != w) && !G.hasEdge(v, w)) {
+            if ((v != w) && !G->hasEdge(v, w)) {
                 DEBUG("matched pair (", v, ",", w, ") is not an edge");
                 return false;
             }
@@ -43,16 +43,16 @@ bool BMatching::areMatched(node u, node v) const {
 }
 
 count BMatching::size() const {
-    double size = G.parallelSumForNodes([&](node v) { return !isUnmatched(v); });
+    double size = G->parallelSumForNodes([&](node v) { return !isUnmatched(v); });
     return static_cast<count>(size / 2);
 }
 
 edgeweight BMatching::weight() const {
-    return G.parallelSumForNodes([&](node v) {
+    return G->parallelSumForNodes([&](node v) {
         edgeweight weight_per_node = 0.0;
         for (node u : matches[v]) {
             if (v < u) {
-                weight_per_node += G.weight(v, u);
+                weight_per_node += G->weight(v, u);
             }
         }
         return weight_per_node;

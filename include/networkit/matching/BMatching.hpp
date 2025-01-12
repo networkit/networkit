@@ -24,10 +24,23 @@ public:
     /**
      * Constructs a new BMatching.
      *
+     */
+    BMatching() = default;
+
+    /**
+     * Constructs a new BMatching.
+     *
      * @param G The graph
      * @param b b values for all nodes
      */
     BMatching(const Graph &G, const std::vector<count> &b);
+
+    BMatching& operator=(const BMatching &other)
+    {
+        G = other.G;
+        b = other.b;
+        return *this;
+    }
 
     /**
      * Checks whether this is a proper b-matching.
@@ -99,8 +112,8 @@ public:
     void reset();
 
 protected:
-    const Graph &G;
-    const std::vector<count> b;
+    const Graph *G;
+    std::vector<count> b;
     std::vector<std::unordered_set<node>> matches;
 };
 

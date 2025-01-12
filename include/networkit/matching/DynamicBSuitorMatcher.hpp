@@ -39,12 +39,6 @@ public:
      */
     DynamicBSuitorMatcher(const Graph &G, count b = 1) : BSuitorMatcher(G, b) {}
 
-    /** 
-     * @param   G	    The graph,
-     * @param   path    Path to file, which contains b-values for all nodes in the graph.   
-     */
-    DynamicBSuitorMatcher(const Graph &G, const std::string &path) : BSuitorMatcher(G, 1) {}
-
     /**
      * Updates the b-matching after an edge insertion or deletion on the graph.
      * Notice: Supported events include edge insertion and deletion.

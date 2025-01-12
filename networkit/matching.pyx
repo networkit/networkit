@@ -1,6 +1,5 @@
 # distutils: language=c++
 
-from libcpp.string cimport string
 from libcpp.vector cimport vector
 
 from .dynbase cimport _DynAlgorithm
@@ -300,7 +299,11 @@ cdef class BMatching:
 	"""
 	def __cinit__(self, Graph G, vector[count] b):
 		self._G = G
-		self._this = new _BMatching(G._this, b)
+		self._this = move(_BMatching(G._this, b))
+
+	cdef setThis(self,  _BMatching& other):
+		swap[_BMatching](self._this,  other)
+		return self
 
 	def isProper(self):
 		"""
@@ -420,8 +423,8 @@ cdef class BMatching:
 		
 		Returns
 		-------
-		list(TODO)
-			TODO: add doc string
+		list(set)
+			Returns the set of matches for each node.
 		"""
 		return self._this.getMatches()
 
@@ -456,7 +459,7 @@ cdef class BMatcher(Algorithm):
 	""" Abstract base class for matching algorithms """
 	cdef Graph _G
 
-	def __cinit__(self, Graph G, vector[count] b):
+	def __init__(self, *args, **namedargs):
 		if type(self) == BMatcher:
 			raise RuntimeError("Instantiation of abstract base class")
 
@@ -473,18 +476,17 @@ cdef class BMatcher(Algorithm):
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
-		return Matching().setThis((<_Matcher*>(self._this)).getMatching())
+		return BMatching().setThis((<_BMatcher*>(self._this)).getBMatching())
 
 cdef extern from "<networkit/matching/BSuitorMatcher.hpp>":
 	cdef cppclass _BSuitorMatcher "NetworKit::BSuitorMatcher"(_BMatcher):
 		_BSuitorMatcher(_Graph, vector[count] b) except +
 		_BSuitorMatcher(_Graph, count b) except +
-		_BSuitorMatcher(_Graph, string path) except +
 		void buildBMatching() except +
 
 cdef class BSuitorMatcher(BMatcher):
 	"""
-	BSuitorMatcher(G, b)
+	BSuitorMatcher(G, second)
 
     Computes a 1/2-approximate maximum weight b-matching of an undirected weighted Graph @c G
     using the sequential b-Suitor algorithm published by Khan et al. in "Efficient Approximation
@@ -495,20 +497,18 @@ cdef class BSuitorMatcher(BMatcher):
 	----------
 	G : networkit.Graph
 		The input graph, must be undirected.
-	TODO: add parameters
+    second : The second parameter contains information about b-values of nodes. This can either be given as
+             single value (int), indicating the same b-value for all nodes. Other options: list of b-values
+             for each node, str-based path to file containing b-values.
 	"""
 
 	def __cinit__(self, Graph G, second):
-		cdef string c_path
 
 		self._G = G
 		if isinstance(second, list):
 			self._this = new _BSuitorMatcher(G._this, <vector[count]> second)
 		elif isinstance(second, int):
 			self._this = new _BSuitorMatcher(G._this, <count> second)
-		elif isinstance(second, str):
-			c_path = stdstring(second)
-			self._this = new _DynamicBSuitorMatcher(G._this, c_path)
 		else:
 			raise Exception("Error: the second parameter must be either an int (global b-value), a list of ints (single b-values for all nodes) or a path to the file, containing b-values for every node.")
 
@@ -526,11 +526,10 @@ cdef extern from "<networkit/matching/DynamicBSuitorMatcher.hpp>":
 	cdef cppclass _DynamicBSuitorMatcher "NetworKit::DynamicBSuitorMatcher"(_BSuitorMatcher, _DynAlgorithm):
 		_DynamicBSuitorMatcher(_Graph, vector[count] b) except +
 		_DynamicBSuitorMatcher(_Graph, count b) except +
-		_DynamicBSuitorMatcher(_Graph, string path) except +
 
 cdef class DynamicBSuitorMatcher(BSuitorMatcher, DynAlgorithm):
 	""" 
-	DynamicBSuitorMatcher(G, ...)
+	DynamicBSuitorMatcher(G, second)
 	
     Implementation from the algorithm from "A Fully-dynamic Approximation Algorithm for Maximum 
     Weight b-Matchings in Graphs" from Proceedings of The Thirteenth International Conference on 
@@ -543,6 +542,9 @@ cdef class DynamicBSuitorMatcher(BSuitorMatcher, DynAlgorithm):
 	----------
 	G : networkit.Graph
 		An unweighted graph.
+    second : The second parameter contains information about b-values of nodes. This can either be given as
+             single value (int), indicating the same b-value for all nodes. Other options: list of b-values
+             for each node, str-based path to file containing b-values.
 	"""
 
 	def __cinit__(self, Graph G, second):
@@ -553,8 +555,5 @@ cdef class DynamicBSuitorMatcher(BSuitorMatcher, DynAlgorithm):
 			self._this = new _DynamicBSuitorMatcher(G._this, <vector[count]> second)
 		elif isinstance(second, int):
 			self._this = new _DynamicBSuitorMatcher(G._this, <count> second)
-		elif isinstance(second, str):
-			c_path = stdstring(second)
-			self._this = new _DynamicBSuitorMatcher(G._this, c_path)
 		else:
 			raise Exception("Error: the second parameter must be either an int (global b-value), a list of ints (single b-values for all nodes) or a path to the file, containing b-values for every node.")

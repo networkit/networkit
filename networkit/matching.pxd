@@ -13,6 +13,7 @@ cdef extern from "cython_helper.h":
 cdef extern from "<algorithm>" namespace "std":
 	void swap[T](T &a,  T &b)
 	_Matching move(_Matching) nogil
+	_BMatching move(_BMatching) nogil
 
 cdef extern from "<networkit/matching/Matching.hpp>":
 
@@ -37,6 +38,7 @@ cdef class Matching:
 cdef extern from "<networkit/matching/BMatching.hpp>":
 
 	cdef cppclass _BMatching "NetworKit::BMatching":
+		_BMatching() except +
 		_BMatching(_Graph, vector[count]) except +
 		bool_t isProper() except +
 		void match(node, node) except +
@@ -45,10 +47,11 @@ cdef extern from "<networkit/matching/BMatching.hpp>":
 		bool_t areMatched(node, node) except +
 		count size() except +
 		edgeweight weight() except +
-		vector[unordered_set[node]] getMatches() except +
+		vector[unordered_set[node]] &getMatches() except +
 		vector[count] getB() except +
 		void reset() except +
 
 cdef class BMatching:
-	cdef _BMatching *_this
+	cdef _BMatching _this
 	cdef Graph _G
+	cdef setThis(self,  _BMatching& other)
