@@ -238,7 +238,7 @@ private:
 
         // move + copy assignment from other proxy objects
 
-        IndexProxy &operator=(IndexProxy &&other)
+        IndexProxy &operator=(IndexProxy &&other) noexcept
             requires(!isConst)
         {
             storage->set(idx, static_cast<T>(other));
