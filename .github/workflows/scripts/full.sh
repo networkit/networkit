@@ -14,7 +14,7 @@ pip3 install cython numpy ipython jupyter setuptools
 # Build tlx
 cd tlx
 mkdir build && cd "$_"
-cmake -GNinja -DCMAKE_INSTALL_PREFIX=$TLX_PATH ..
+cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$TLX_PATH ..
 ninja
 ninja install
 cd ../..
