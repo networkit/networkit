@@ -22,7 +22,8 @@ class BMatching {
 
 public:
     /**
-     * Constructs a new BMatching.
+     * @brief WARNING: This contructor is required for Python and should not be used as the
+     * BMatching is not correctly initialized.
      *
      */
     BMatching() = default;
@@ -34,13 +35,6 @@ public:
      * @param b b values for all nodes
      */
     BMatching(const Graph &G, const std::vector<count> &b);
-
-    BMatching& operator=(const BMatching &other)
-    {
-        G = other.G;
-        b = other.b;
-        return *this;
-    }
 
     /**
      * Checks whether this is a proper b-matching.

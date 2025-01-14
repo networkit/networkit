@@ -14,17 +14,16 @@
 namespace NetworKit {
 
 void DynamicBSuitorMatcher::update(GraphEvent e) {
-    switch(e.type) {
-        case GraphEvent::EDGE_ADDITION:
-            addEdge(e);
-            break;
-        case GraphEvent::EDGE_REMOVAL:
-            removeEdge(e);
-            break;
-        default:
-            throw std::runtime_error(
-        "Event type not allowed. Edge insertions and removals only.");
-    }   
+    switch (e.type) {
+    case GraphEvent::EDGE_ADDITION:
+        addEdge(e);
+        break;
+    case GraphEvent::EDGE_REMOVAL:
+        removeEdge(e);
+        break;
+    default:
+        throw std::runtime_error("Event type not allowed. Edge insertions and removals only.");
+    }
 }
 
 void DynamicBSuitorMatcher::updateBatch(const std::vector<GraphEvent> &batch) {
@@ -32,7 +31,6 @@ void DynamicBSuitorMatcher::updateBatch(const std::vector<GraphEvent> &batch) {
         update(e);
     };
 }
-
 
 void DynamicBSuitorMatcher::processEdgeInsertion(const GraphEvent &event) {
 
@@ -133,8 +131,7 @@ void DynamicBSuitorMatcher::processEdgeRemoval(const GraphEvent &event) {
 
 void DynamicBSuitorMatcher::addEdge(const GraphEvent &event) {
     if ((suitors[event.u].hasPartner(event.v) && suitors[event.v].hasPartner(event.u))
-        || !isBetterMatch(event.u, event.v, event.w)
-        || !isBetterMatch(event.v, event.u, event.w)) {
+        || !isBetterMatch(event.u, event.v, event.w) || !isBetterMatch(event.v, event.u, event.w)) {
         return;
     }
     processEdgeInsertion(event);

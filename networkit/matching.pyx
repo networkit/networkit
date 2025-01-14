@@ -297,11 +297,14 @@ cdef class BMatching:
 		b : list(int)
 			List containing the b-values for all nodes.
 	"""
-	def __cinit__(self, Graph G, vector[count] b):
-		self._G = G
-		self._this = move(_BMatching(G._this, b))
+	def __cinit__(self, Graph G = None, second = None):
+		if G is not None:
+			self._G = G
+			self._this = move(_BMatching(G._this, <vector[count]> second))
+		else:
+			self._this = move(_BMatching())
 
-	cdef setThis(self,  _BMatching& other):
+	cdef setThis(self, _BMatching& other):
 		swap[_BMatching](self._this,  other)
 		return self
 

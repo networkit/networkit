@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/generators/BarabasiAlbertGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphTools.hpp>
@@ -302,7 +303,7 @@ TEST_F(MatcherGTest, testDynBSuitorInsertEdges) {
         for (auto j = 0; j < m; j++) {
             const auto [u, v] = GraphTools::randomEdge(G);
             assert(G.hasEdge(u, v));
-            events.emplace_back(GraphEvent{GraphEvent::EDGE_ADDITION, u,v, G.weight(u,v)});
+            events.emplace_back(GraphEvent{GraphEvent::EDGE_ADDITION, u, v, G.weight(u, v)});
             G.removeEdge(u, v);
         }
 
@@ -375,15 +376,17 @@ TEST_F(MatcherGTest, testDynBSuitorMixedBatch) {
 
         std::vector<GraphEvent> events;
         count m = 10;
-        
+
         for (auto j = 0; j < m; j++) {
-            uint64_t guesser = Aux::Random::integer(0,1);
+            uint64_t guesser = Aux::Random::integer(0, 1);
             if (guesser) {
                 auto potNonEdge = GraphTools::randomNodes(G, 2);
-                while(G.hasEdge(potNonEdge[0], potNonEdge[1])) {
+                while (G.hasEdge(potNonEdge[0], potNonEdge[1])) {
                     potNonEdge = GraphTools::randomNodes(G, 2);
                 }
-                events.emplace_back(GraphEvent{GraphEvent::EDGE_ADDITION, potNonEdge[0], potNonEdge[1], G.weight(potNonEdge[0], potNonEdge[1])});
+                events.emplace_back(GraphEvent{GraphEvent::EDGE_ADDITION, potNonEdge[0],
+                                               potNonEdge[1],
+                                               G.weight(potNonEdge[0], potNonEdge[1])});
                 G.addEdge(potNonEdge[0], potNonEdge[1]);
             } else {
                 const auto [u, v] = GraphTools::randomEdge(G);

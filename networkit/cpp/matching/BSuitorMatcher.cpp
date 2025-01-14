@@ -17,6 +17,10 @@ BSuitorMatcher::BSuitorMatcher(const Graph &G, const std::vector<count> &b) : BM
         throw std::runtime_error(
             "The number of b values does not match the number of nodes in this graph.");
 
+    if (!G.isWeighted())
+        throw std::runtime_error("This algorithm does not support unweighted graphs, use "
+                                 "GraphTools::toWeighted to convert the graph.");
+
     const auto n = G.upperNodeIdBound();
 
     if (n != G.numberOfNodes())

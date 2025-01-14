@@ -21,10 +21,10 @@ class DynamicBSuitorMatcher final : public BSuitorMatcher, public DynAlgorithm {
 
 public:
     /**
-     * Implementation from the algorithm from "A Fully-dynamic Approximation Algorithm for Maximum 
-     * Weight b-Matchings in Graphs" from Proceedings of The Thirteenth International Conference on 
+     * Implementation from the algorithm from "A Fully-dynamic Approximation Algorithm for Maximum
+     * Weight b-Matchings in Graphs" from Proceedings of The Thirteenth International Conference on
      * Complex Networks and their Applications 2024 by Fabian Brandt-Tumescheit, Frieda Gerharz and
-     * Henning Meyerhenke. The algorithm dynamically updates the b-matching based on the b-Suitor 
+     * Henning Meyerhenke. The algorithm dynamically updates the b-matching based on the b-Suitor
      * algorithm by Khan et al. The solution is the same as a complete recomputation of the b-Suitor
      * b-matching.
      *
@@ -33,7 +33,7 @@ public:
      */
     DynamicBSuitorMatcher(const Graph &G, const std::vector<count> &b) : BSuitorMatcher(G, b) {}
 
-    /** 
+    /**
      * @param   G	The graph,
      * @param   b   Set the same b-value for all nodes. Optional and defaults to 1.
      */
@@ -56,7 +56,6 @@ public:
     void updateBatch(const std::vector<GraphEvent> &batch) override;
 
 private:
-
     // helper function
     bool isBetterMatch(node u, node v, edgeweight ew) const noexcept {
         const auto currentMatch = suitors[u].min;
@@ -79,7 +78,6 @@ private:
 
     // Internal logic for tracking update paths (both insertion + deletion)
     void trackUpdatePath(size_t batchId, node start, bool recursiveCall = false);
-
 };
 
 } // namespace NetworKit
