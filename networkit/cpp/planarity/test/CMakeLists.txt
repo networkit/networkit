@@ -1,2 +1,2 @@
-networkit_add_test(planarity LeftRightPlanarityTestGtest)
+networkit_add_test(planarity LeftRightPlanarityCheckGTest)
 

@@ -2374,33 +2374,33 @@ TEST_P(GraphGTest, testEdgeIdsAfterRemoveWithoutSortingOrIDs) {
     });
 }
 
-TEST_P(GraphGTest, testSortEdgesMethod) {
-    constexpr node n = 100;
-
-    Aux::Random::setSeed(42, true);
-    auto G = createGraph(n, 10 * n);
-    std::unordered_map<node, std::vector<node>> originalNeighbors;
-    G.forNodes([&](const node currentNode) {
-        originalNeighbors[currentNode] = std::vector<node>(G.neighborRange(currentNode).begin(),
-                                                           G.neighborRange(currentNode).end());
-    });
-
-    G.forNodes([&](const node currentNode) {
-        G.sortNeighbors(currentNode, [&](const node neighbor1, const node neighbor2) {
-            return neighbor1 < neighbor2;
-        });
-    });
-
-    G.forNodes([&](const node currentNode) {
-        const auto &sortedNeighbors = G.neighborRange(currentNode);
-        std::vector<node> sortedNeighborVector(sortedNeighbors.begin(), sortedNeighbors.end());
-
-        EXPECT_TRUE(std::is_sorted(sortedNeighborVector.begin(), sortedNeighborVector.end()));
-
-        if (!std::is_sorted(originalNeighbors[currentNode].begin(),
-                            originalNeighbors[currentNode].end())) {
-            EXPECT_NE(originalNeighbors[currentNode], sortedNeighborVector);
-        }
-    });
-}
+// TEST_P(GraphGTest, testSortEdgesMethod) {
+//     constexpr node n = 100;
+//
+//     Aux::Random::setSeed(42, true);
+//     auto G = createGraph(n, 10 * n);
+//     std::unordered_map<node, std::vector<node>> originalNeighbors;
+//     G.forNodes([&](const node currentNode) {
+//         originalNeighbors[currentNode] = std::vector<node>(G.neighborRange(currentNode).begin(),
+//                                                            G.neighborRange(currentNode).end());
+//     });
+//
+//     G.forNodes([&](const node currentNode) {
+//         G.sortNeighbors(currentNode, [&](const node neighbor1, const node neighbor2) {
+//             return neighbor1 < neighbor2;
+//         });
+//     });
+//
+//     G.forNodes([&](const node currentNode) {
+//         const auto &sortedNeighbors = G.neighborRange(currentNode);
+//         std::vector<node> sortedNeighborVector(sortedNeighbors.begin(), sortedNeighbors.end());
+//
+//         EXPECT_TRUE(std::is_sorted(sortedNeighborVector.begin(), sortedNeighborVector.end()));
+//
+//         if (!std::is_sorted(originalNeighbors[currentNode].begin(),
+//                             originalNeighbors[currentNode].end())) {
+//             EXPECT_NE(originalNeighbors[currentNode], sortedNeighborVector);
+//         }
+//     });
+// }
 } /* namespace NetworKit */

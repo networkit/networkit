@@ -1,22 +1,29 @@
-//
-// Created by andreas on 03.01.25.
-//
+/*  LeftRightPlanarityCheck.hpp
+ *
+ *	Created on: 03.01.2025
+ *  Authors: Andreas Scharf (andreas.b.scharf@gmail.com)
+ *
+ */
 
-#ifndef NETWORKIT_PLANARITY_LEFT_RIGHT_PLANARITY_TEST_HPP_
-#define NETWORKIT_PLANARITY_LEFT_RIGHT_PLANARITY_TEST_HPP_
+#ifndef NETWORKIT_PLANARITY_LEFT_RIGHT_PLANARITY_CHECK_HPP_
+#define NETWORKIT_PLANARITY_LEFT_RIGHT_PLANARITY_CHECK_HPP_
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
-class LeftRightPlanarityTest final : public Algorithm {
+class LeftRightPlanarityCheck final : public Algorithm {
 
 public:
-    LeftRightPlanarityTest(const Graph &graph) : graph_(&graph) {
+    LeftRightPlanarityCheck(const Graph &graph) : graph_(&graph) {
         dfsGraph = Graph(graph_->numberOfNodes(), false, true, false);
     }
     void run() override;
-    bool isPlanar() const { return isPlanar_; }
+    bool isPlanar() const {
+        if (!hasRun)
+            throw std::logic_error("isPlanar() called before the run() method was called.");
+        return isPlanar_;
+    }
 
 private:
     static constexpr Edge noneEdge{};

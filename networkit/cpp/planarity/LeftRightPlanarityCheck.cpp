@@ -1,13 +1,18 @@
-//
-// Created by andreas on 03.01.25.
-//
-#include <networkit/planarity/LeftRightPlanarityTest.hpp>
+/*  LeftRightPlanarityCheck.cpp
+ *
+ *	Created on: 03.01.2025
+ *  Authors: Andreas Scharf (andreas.b.scharf@gmail.com)
+ *
+ */
+
+#include <networkit/planarity/LeftRightPlanarityCheck.hpp>
 
 namespace NetworKit {
 
-void LeftRightPlanarityTest::run() {
+void LeftRightPlanarityCheck::run() {
     // Euler-criterion
     if (graph_->numberOfNodes() > 2 && graph_->numberOfEdges() > 3 * graph_->numberOfNodes() - 6) {
+        hasRun = true;
         isPlanar_ = false;
         return;
     }
@@ -29,9 +34,10 @@ void LeftRightPlanarityTest::run() {
             break;
         }
     }
+    hasRun = true;
 }
 
-void LeftRightPlanarityTest::sortAdjacencyListByNestingDepth() {
+void LeftRightPlanarityCheck::sortAdjacencyListByNestingDepth() {
 
     dfsGraph.forNodes([&](const node currentNode) {
         dfsGraph.sortNeighbors(currentNode, [&](const node neighbor1, const node neighbor2) {
@@ -45,12 +51,12 @@ void LeftRightPlanarityTest::sortAdjacencyListByNestingDepth() {
     });
 }
 
-bool LeftRightPlanarityTest::conflicting(const Interval &interval, const Edge &edge) {
+bool LeftRightPlanarityCheck::conflicting(const Interval &interval, const Edge &edge) {
     return !interval.isEmpty() && lowestPoint.contains(interval.high) && lowestPoint.contains(edge)
            && lowestPoint[interval.high] > lowestPoint[edge];
 }
 
-bool LeftRightPlanarityTest::applyConstraints(const Edge edge, const Edge parentEdge) {
+bool LeftRightPlanarityCheck::applyConstraints(const Edge edge, const Edge parentEdge) {
     auto tmpConflictPair = ConflictPair{};
     do {
         auto currentConflictPair = stack.top();
@@ -102,7 +108,7 @@ bool LeftRightPlanarityTest::applyConstraints(const Edge edge, const Edge parent
     return true;
 }
 
-count LeftRightPlanarityTest::getLowestLowPoint(const ConflictPair &conflictPair) {
+count LeftRightPlanarityCheck::getLowestLowPoint(const ConflictPair &conflictPair) {
     if (conflictPair.left.isEmpty())
         return lowestPoint[conflictPair.right.low];
     if (conflictPair.right.isEmpty())
@@ -110,7 +116,7 @@ count LeftRightPlanarityTest::getLowestLowPoint(const ConflictPair &conflictPair
     return std::min(lowestPoint[conflictPair.right.low], lowestPoint[conflictPair.left.low]);
 }
 
-void LeftRightPlanarityTest::removeBackEdges(Edge edge) {
+void LeftRightPlanarityCheck::removeBackEdges(Edge edge) {
     auto parentNode = edge.u;
     while (!stack.empty() && getLowestLowPoint(stack.top()) == heights[parentNode]) {
         stack.pop();
@@ -152,7 +158,7 @@ void LeftRightPlanarityTest::removeBackEdges(Edge edge) {
     }
 }
 
-bool LeftRightPlanarityTest::dfsTesting(node startNode) {
+bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
     std::stack<node> dfsStack;
     dfsStack.emplace(startNode);
     auto neighborIterators =
@@ -204,7 +210,7 @@ bool LeftRightPlanarityTest::dfsTesting(node startNode) {
     return true;
 }
 
-void LeftRightPlanarityTest::dfsOrientation(const node startNode) {
+void LeftRightPlanarityCheck::dfsOrientation(const node startNode) {
 
     std::stack<node> dfsStack;
     dfsStack.emplace(startNode);
