@@ -50,15 +50,15 @@ void DynamicBSuitorMatcher::processEdgeInsertion(const GraphEvent &event) {
     }
 
     if (startU.id != none) {
-        trackUpdatePath(0, startU.id);
+        trackUpdatePath(startU.id);
     }
 
     if (startV.id != none) {
-        trackUpdatePath(0, startV.id);
+        trackUpdatePath(startV.id);
     }
 }
 
-void DynamicBSuitorMatcher::trackUpdatePath(size_t batchId, node start, bool recursiveCall) {
+void DynamicBSuitorMatcher::trackUpdatePath(node start) {
     bool done = false;
 
     node current = start;
@@ -113,7 +113,7 @@ void DynamicBSuitorMatcher::trackUpdatePath(size_t batchId, node start, bool rec
 
     for (auto &looseEnd : looseEnds) {
 
-        trackUpdatePath(batchId, looseEnd.id, true);
+        trackUpdatePath(looseEnd.id);
     }
 }
 
@@ -125,8 +125,8 @@ void DynamicBSuitorMatcher::processEdgeRemoval(const GraphEvent &event) {
     suitors[u].remove(v);
     suitors[v].remove(u);
 
-    trackUpdatePath(0, u);
-    trackUpdatePath(0, v);
+    trackUpdatePath(u);
+    trackUpdatePath(v);
 }
 
 void DynamicBSuitorMatcher::addEdge(const GraphEvent &event) {

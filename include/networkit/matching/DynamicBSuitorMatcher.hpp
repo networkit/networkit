@@ -77,7 +77,7 @@ private:
     void processEdgeRemoval(const GraphEvent &event);
 
     // Internal logic for tracking update paths (both insertion + deletion)
-    void trackUpdatePath(size_t batchId, node start, bool recursiveCall = false);
+    void trackUpdatePath(node start);
 };
 
 } // namespace NetworKit

@@ -138,9 +138,10 @@ TEST_F(MatcherGTest, testPgaMatching) {
 #endif
 }
 
-TEST_F(MatcherGTest, debugValidMatching) {
-    METISGraphReader reader;
-    Graph G = reader.read("coAuthorsDBLP.graph");
+TEST_F(MatcherGTest, testValidMatching) {
+    auto G = METISGraphReader{}.read("input/lesmis.graph");
+    G.removeSelfLoops();
+    G.removeMultiEdges();   
 
     LocalMaxMatcher pmatcher(G);
     pmatcher.run();
@@ -223,6 +224,7 @@ TEST_F(MatcherGTest, testBSuitorMatcherInvalidGraphSelfLoops) {
 
 TEST_F(MatcherGTest, testBSuitorMatcherInvalidGraphHoles) {
     Graph G(10);
+    G = GraphTools::toWeighted(G);
     node u = GraphTools::randomNode(G);
     G.removeNode(u);
     EXPECT_THROW(BSuitorMatcher(G, 2), std::runtime_error);
