@@ -302,7 +302,7 @@ TEST_F(MatcherGTest, testDynBSuitorInsertEdges) {
         count m = 10;
         // Select m edges of the graph, remove them but put them into edges for later insertion.
         // This will make sure that the graph is valid.
-        for (auto j = 0; j < m; j++) {
+        for (count j = 0; j < m; j++) {
             const auto [u, v] = GraphTools::randomEdge(G);
             assert(G.hasEdge(u, v));
             events.emplace_back(GraphEvent{GraphEvent::EDGE_ADDITION, u, v, G.weight(u, v)});
@@ -345,7 +345,7 @@ TEST_F(MatcherGTest, testDynBSuitorRemoveEdges) {
 
         std::vector<GraphEvent> events;
         count m = 10;
-        for (auto j = 0; j < m; j++) {
+        for (count j = 0; j < m; j++) {
             const auto [u, v] = GraphTools::randomEdge(G);
             events.emplace_back(GraphEvent{GraphEvent::EDGE_REMOVAL, u, v});
             G.removeEdge(u, v);
@@ -379,7 +379,7 @@ TEST_F(MatcherGTest, testDynBSuitorMixedBatch) {
         std::vector<GraphEvent> events;
         count m = 10;
 
-        for (auto j = 0; j < m; j++) {
+        for (count j = 0; j < m; j++) {
             uint64_t guesser = Aux::Random::integer(0, 1);
             if (guesser) {
                 auto potNonEdge = GraphTools::randomNodes(G, 2);

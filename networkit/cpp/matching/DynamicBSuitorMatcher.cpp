@@ -138,7 +138,6 @@ void DynamicBSuitorMatcher::addEdge(const GraphEvent &event) {
 }
 
 void DynamicBSuitorMatcher::removeEdge(const GraphEvent &event) {
-    assert(!G->hasEdge(event.u, event.v));
     if (suitors[event.u].hasPartner(event.v)) {
         processEdgeRemoval(event);
     }
