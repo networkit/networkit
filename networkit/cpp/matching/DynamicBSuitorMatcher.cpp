@@ -96,8 +96,7 @@ void DynamicBSuitorMatcher::trackUpdatePath(node start) {
 
         if (prevCurrent.id != none) {
             suitors[prevCurrent.id].remove(current);
-            looseEnds.emplace_back(
-                MatchingNode{prevCurrent.id, suitors[prevCurrent.id].min.weight});
+            looseEnds.emplace_back(prevCurrent.id, suitors[prevCurrent.id].min.weight);
         }
 
         if (prevPartner.id != none) {
@@ -138,6 +137,7 @@ void DynamicBSuitorMatcher::addEdge(const GraphEvent &event) {
 }
 
 void DynamicBSuitorMatcher::removeEdge(const GraphEvent &event) {
+
     if (suitors[event.u].hasPartner(event.v)) {
         processEdgeRemoval(event);
     }

@@ -141,7 +141,7 @@ TEST_F(MatcherGTest, testPgaMatching) {
 TEST_F(MatcherGTest, testValidMatching) {
     auto G = METISGraphReader{}.read("input/lesmis.graph");
     G.removeSelfLoops();
-    G.removeMultiEdges();   
+    G.removeMultiEdges();
 
     LocalMaxMatcher pmatcher(G);
     pmatcher.run();
