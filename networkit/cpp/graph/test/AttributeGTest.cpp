@@ -459,4 +459,20 @@ TEST_F(AttributeGTest, deleteOtherNode) {
     EXPECT_EQ(nodeAttr[2], 2);
 }
 
+TEST_F(AttributeGTest, testDeleteEdges) {
+    NetworKit::Graph graph(3);
+    graph.addEdge(0, 1);
+    graph.addEdge(0, 2);
+
+    graph.indexEdges();
+    auto attr = graph.edgeAttributes().attach<double>("attr");
+
+    attr(0, 1) = 1.0;
+    attr(0, 2) = 2.0;
+
+    graph.removeEdge(2, 0);
+
+    EXPECT_EQ(attr(0, 1), 1.0);
+}
+
 } // namespace NetworKit
