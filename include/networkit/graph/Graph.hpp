@@ -555,7 +555,7 @@ public:
         node u{none};
 
     public:
-        NeighborRange(const Graph &G, const node u) : G(&G), u(u) { assert(G.hasNode(u)); };
+        NeighborRange(const Graph &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
 
         NeighborRange() : G(nullptr){};
 
@@ -587,7 +587,7 @@ public:
         node u{none};
 
     public:
-        NeighborWeightRange(const Graph &G, const node u) : G(&G), u(u) { assert(G.hasNode(u)); };
+        NeighborWeightRange(const Graph &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
 
         NeighborWeightRange() : G(nullptr){};
 
@@ -623,7 +623,7 @@ public:
     Graph(count n = 0, bool weighted = false, bool directed = false, bool edgesIndexed = false);
 
     template <class EdgeMerger = std::plus<edgeweight>>
-    Graph(const Graph &G, const bool weighted, const bool directed, const bool edgesIndexed = false,
+    Graph(const Graph &G, bool weighted, bool directed, bool edgesIndexed = false,
           EdgeMerger edgeMerger = std::plus<edgeweight>())
         : n(G.n), m(G.m), storedNumberOfSelfLoops(G.storedNumberOfSelfLoops), z(G.z),
           omega(edgesIndexed ? G.omega : 0), t(G.t), weighted(weighted), directed(directed),

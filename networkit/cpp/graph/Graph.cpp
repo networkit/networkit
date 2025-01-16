@@ -21,7 +21,7 @@ namespace NetworKit {
 
 /** CONSTRUCTORS **/
 
-Graph::Graph(const count n, const bool weighted, const bool directed, const bool edgesIndexed)
+Graph::Graph(count n, bool weighted, bool directed, bool edgesIndexed)
     : n(n), m(0), storedNumberOfSelfLoops(0), z(n), omega(0), t(0),
 
       weighted(weighted), // indicates whether the graph is weighted or not
@@ -42,7 +42,7 @@ Graph::Graph(const count n, const bool weighted, const bool directed, const bool
       inEdgeIds(edgesIndexed && directed ? n : 0), outEdgeIds(edgesIndexed ? n : 0),
       nodeAttributeMap(this), edgeAttributeMap(this) {}
 
-Graph::Graph(const std::initializer_list<WeightedEdge> edges) : Graph(0, true) {
+Graph::Graph(std::initializer_list<WeightedEdge> edges) : Graph(0, true) {
     using namespace std;
 
     /* Number of nodes = highest node index + 1 */
@@ -59,7 +59,7 @@ Graph::Graph(const std::initializer_list<WeightedEdge> edges) : Graph(0, true) {
     }
 }
 
-void Graph::preallocateUndirected(const node u, const size_t size) {
+void Graph::preallocateUndirected(node u, size_t size) {
     assert(!directed);
     assert(exists[u]);
     outEdges[u].reserve(size);
@@ -71,12 +71,12 @@ void Graph::preallocateUndirected(const node u, const size_t size) {
     }
 }
 
-void Graph::preallocateDirected(const node u, const size_t outSize, const size_t inSize) {
+void Graph::preallocateDirected(node u, size_t outSize, size_t inSize) {
     preallocateDirectedOutEdges(u, outSize);
     preallocateDirectedInEdges(u, inSize);
 }
 
-void Graph::preallocateDirectedOutEdges(const node u, const size_t outSize) {
+void Graph::preallocateDirectedOutEdges(node u, size_t outSize) {
     assert(directed);
     assert(exists[u]);
     outEdges[u].reserve(outSize);
@@ -89,7 +89,7 @@ void Graph::preallocateDirectedOutEdges(const node u, const size_t outSize) {
     }
 }
 
-void Graph::preallocateDirectedInEdges(const node u, const size_t inSize) {
+void Graph::preallocateDirectedInEdges(node u, size_t inSize) {
     assert(directed);
     assert(exists[u]);
     inEdges[u].reserve(inSize);
@@ -103,7 +103,7 @@ void Graph::preallocateDirectedInEdges(const node u, const size_t inSize) {
 }
 /** PRIVATE HELPERS **/
 
-index Graph::indexInInEdgeArray(const node v, const node u) const {
+index Graph::indexInInEdgeArray(node v, node u) const {
     if (!directed) {
         return indexInOutEdgeArray(v, u);
     }
@@ -116,7 +116,7 @@ index Graph::indexInInEdgeArray(const node v, const node u) const {
     return none;
 }
 
-index Graph::indexInOutEdgeArray(const node u, const node v) const {
+index Graph::indexInOutEdgeArray(node u, node v) const {
     for (index i = 0; i < outEdges[u].size(); i++) {
         node x = outEdges[u][i];
         if (x == v) {
@@ -128,7 +128,7 @@ index Graph::indexInOutEdgeArray(const node u, const node v) const {
 
 /** EDGE IDS **/
 
-void Graph::indexEdges(const bool force) {
+void Graph::indexEdges(bool force) {
     if (edgesIndexed && !force)
         return;
 
@@ -184,7 +184,7 @@ void Graph::indexEdges(const bool force) {
                          // needs to create edge ids
 }
 
-edgeid Graph::edgeId(const node u, const node v) const {
+edgeid Graph::edgeId(node u, node v) const {
     if (!edgesIndexed) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
@@ -340,8 +340,7 @@ void Graph::sortEdges() {
     }
 }
 
-edgeweight Graph::computeWeightedDegree(const node u, const bool inDegree,
-                                        const bool countSelfLoopsTwice) const {
+edgeweight Graph::computeWeightedDegree(node u, bool inDegree, bool countSelfLoopsTwice) const {
     if (weighted) {
         edgeweight sum = 0.0;
         auto sumWeights = [&](node v, edgeweight w) {
@@ -428,7 +427,7 @@ node Graph::addNodes(count numberOfNewNodes) {
     return z - 1;
 }
 
-void Graph::removeNode(const node v) {
+void Graph::removeNode(node v) {
     assert(v < z);
     assert(exists[v]);
 
@@ -450,7 +449,7 @@ void Graph::removeNode(const node v) {
     n--;
 }
 
-void Graph::restoreNode(const node v) {
+void Graph::restoreNode(node v) {
     assert(v < z);
     assert(!exists[v]);
 
@@ -460,18 +459,17 @@ void Graph::restoreNode(const node v) {
 
 /** NODE PROPERTIES **/
 
-edgeweight Graph::weightedDegree(const node u, const bool countSelfLoopsTwice) const {
+edgeweight Graph::weightedDegree(node u, bool countSelfLoopsTwice) const {
     return computeWeightedDegree(u, false, countSelfLoopsTwice);
 }
 
-edgeweight Graph::weightedDegreeIn(const node u, const bool countSelfLoopsTwice) const {
+edgeweight Graph::weightedDegreeIn(node u, bool countSelfLoopsTwice) const {
     return computeWeightedDegree(u, true, countSelfLoopsTwice);
 }
 
 /** EDGE MODIFIERS **/
 
-bool Graph::addEdge(const node u, const node v, const edgeweight ew,
-                    const bool checkForMultiEdges) {
+bool Graph::addEdge(node u, node v, edgeweight ew, bool checkForMultiEdges) {
     assert(u < z);
     assert(exists[u]);
     assert(v < z);
@@ -526,8 +524,8 @@ bool Graph::addEdge(const node u, const node v, const edgeweight ew,
 
     return true;
 }
-bool Graph::addPartialEdge(Unsafe, const node u, const node v, const edgeweight ew,
-                           const uint64_t index, const bool checkForMultiEdges) {
+bool Graph::addPartialEdge(Unsafe, node u, node v, edgeweight ew, uint64_t index,
+                           bool checkForMultiEdges) {
     assert(u < z);
     assert(exists[u]);
     assert(v < z);
@@ -549,8 +547,8 @@ bool Graph::addPartialEdge(Unsafe, const node u, const node v, const edgeweight 
 
     return true;
 }
-bool Graph::addPartialOutEdge(Unsafe, const node u, const node v, const edgeweight ew,
-                              const uint64_t index, const bool checkForMultiEdges) {
+bool Graph::addPartialOutEdge(Unsafe, node u, node v, edgeweight ew, uint64_t index,
+                              bool checkForMultiEdges) {
     assert(u < z);
     assert(exists[u]);
     assert(v < z);
@@ -572,8 +570,8 @@ bool Graph::addPartialOutEdge(Unsafe, const node u, const node v, const edgeweig
 
     return true;
 }
-auto Graph::addPartialInEdge(Unsafe, const node u, const node v, const edgeweight ew,
-                             const uint64_t index, bool checkForMultiEdges) -> bool {
+bool Graph::addPartialInEdge(Unsafe, node u, node v, edgeweight ew, uint64_t index,
+                             bool checkForMultiEdges) {
     assert(u < z);
     assert(exists[u]);
     assert(v < z);
@@ -601,7 +599,7 @@ void erase(node u, index idx, std::vector<std::vector<T>> &vec) {
     vec[u].pop_back();
 }
 
-void Graph::removeEdge(const node u, const node v) {
+void Graph::removeEdge(node u, node v) {
     assert(u < z);
     assert(exists[u]);
     assert(v < z);
@@ -783,7 +781,7 @@ void Graph::removeMultiEdges() {
     storedNumberOfSelfLoops -= removedSelfLoops;
 }
 
-void Graph::swapEdge(const node s1, const node t1, const node s2, const node t2) {
+void Graph::swapEdge(node s1, node t1, node s2, node t2) {
     index s1t1 = indexInOutEdgeArray(s1, t1);
     if (s1t1 == none)
         throw std::runtime_error("The first edge does not exist");
@@ -819,7 +817,7 @@ void Graph::swapEdge(const node s1, const node t1, const node s2, const node t2)
     }
 }
 
-bool Graph::hasEdge(const node u, const node v) const noexcept {
+bool Graph::hasEdge(node u, node v) const noexcept {
     if (u >= z || v >= z) {
         return false;
     }
@@ -834,7 +832,7 @@ bool Graph::hasEdge(const node u, const node v) const noexcept {
 
 /** EDGE ATTRIBUTES **/
 
-edgeweight Graph::weight(const node u, const node v) const {
+edgeweight Graph::weight(node u, node v) const {
     index vi = indexInOutEdgeArray(u, v);
     if (vi == none) {
         return nullWeight;
@@ -843,7 +841,7 @@ edgeweight Graph::weight(const node u, const node v) const {
     }
 }
 
-void Graph::setWeight(const node u, const node v, const edgeweight ew) {
+void Graph::setWeight(node u, node v, edgeweight ew) {
     if (!weighted) {
         throw std::runtime_error("Cannot set edge weight in unweighted graph.");
     }
@@ -866,7 +864,7 @@ void Graph::setWeight(const node u, const node v, const edgeweight ew) {
     }
 }
 
-void Graph::increaseWeight(const node u, const node v, const edgeweight ew) {
+void Graph::increaseWeight(node u, node v, edgeweight ew) {
     if (!weighted) {
         throw std::runtime_error("Cannot increase edge weight in unweighted graph.");
     }
@@ -888,11 +886,11 @@ void Graph::increaseWeight(const node u, const node v, const edgeweight ew) {
     }
 }
 
-void Graph::setWeightAtIthNeighbor(Unsafe, const node u, const index i, const edgeweight ew) {
+void Graph::setWeightAtIthNeighbor(Unsafe, node u, index i, edgeweight ew) {
     outEdgeWeights[u][i] = ew;
 }
 
-void Graph::setWeightAtIthInNeighbor(Unsafe, const node u, const index i, const edgeweight ew) {
+void Graph::setWeightAtIthInNeighbor(Unsafe, node u, index i, edgeweight ew) {
     inEdgeWeights[u][i] = ew;
 }
 

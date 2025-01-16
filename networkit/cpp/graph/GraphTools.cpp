@@ -74,7 +74,7 @@ node randomNode(const Graph &G) {
     return v;
 }
 
-std::vector<node> randomNodes(const Graph &G, const count n) {
+std::vector<node> randomNodes(const Graph &G, count n) {
     assert(n <= G.numberOfNodes());
     std::vector<node> selectedNodes;
     std::vector<bool> alreadySelected(G.numberOfNodes(), false);
@@ -112,7 +112,7 @@ std::vector<node> randomNodes(const Graph &G, const count n) {
     return selectedNodes;
 }
 
-std::pair<node, node> randomEdge(const Graph &G, const bool uniformDistribution) {
+std::pair<node, node> randomEdge(const Graph &G, bool uniformDistribution) {
     if (!G.numberOfEdges()) {
         throw std::runtime_error("Error: the graph has no edges!");
     }
@@ -176,7 +176,7 @@ std::pair<node, node> randomEdge(const Graph &G, const bool uniformDistribution)
     return {u, v};
 }
 
-std::vector<std::pair<node, node>> randomEdges(const Graph &G, const count nr) {
+std::vector<std::pair<node, node>> randomEdges(const Graph &G, count nr) {
     if (!nr)
         return {};
 
@@ -218,7 +218,7 @@ std::vector<std::pair<node, node>> randomEdges(const Graph &G, const count nr) {
     return edges;
 }
 
-node randomNeighbor(const Graph &G, const node u) {
+node randomNeighbor(const Graph &G, node u) {
     if (!G.degree(u))
         return none;
 
@@ -262,7 +262,7 @@ Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes) {
 }
 
 Graph subgraphAndNeighborsFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
-                                    const bool includeOutNeighbors, const bool includeInNeighbors) {
+                                    bool includeOutNeighbors, bool includeInNeighbors) {
     const auto neighbors = [&] {
         std::unordered_set<node> neighbors;
 

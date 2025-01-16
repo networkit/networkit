@@ -130,8 +130,8 @@ void GraphBuilder::addHalfInEdge(node u, node v, edgeweight ew) {
     }
 }
 
-void GraphBuilder::swapNeighborhood(const node u, const std::vector<node> &neighbours,
-                                    std::vector<edgeweight> &weights, const bool selfloop) {
+void GraphBuilder::swapNeighborhood(node u, std::vector<node> &neighbours,
+                                    std::vector<edgeweight> &weights, bool selfloop) {
     if (weighted)
         assert(neighbours.size() == weights.size());
 
