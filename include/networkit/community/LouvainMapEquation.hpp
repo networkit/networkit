@@ -59,6 +59,19 @@ public:
 
     void run() override;
 
+    ParallelizationType
+    convertStringToParallelizationType(std::string parallelizationStrategy) const {
+        if (parallelizationStrategy == "none")
+            return ParallelizationType::NONE;
+        else if (parallelizationStrategy == "relaxmap")
+            return ParallelizationType::RELAX_MAP;
+        else if (parallelizationStrategy == "synchronous")
+            return ParallelizationType::SYNCHRONOUS;
+        else
+            throw std::runtime_error("Invalid parallelization type for map equation Louvain: "
+                                     + std::string(parallelizationStrategy));
+    }
+
 private:
     struct Move {
         node movedNode = none;
@@ -120,19 +133,6 @@ private:
 
     std::pair<count, count> chunkBounds(count i, count n, count chunkSize) const {
         return std::make_pair(i * chunkSize, std::min(n, (i + 1) * chunkSize));
-    }
-
-    ParallelizationType
-    convertStringToParallelizationType(std::string_view parallelizationStrategy) const {
-        if (parallelizationStrategy == "none")
-            return ParallelizationType::NONE;
-        else if (parallelizationStrategy == "relaxmap")
-            return ParallelizationType::RELAX_MAP;
-        else if (parallelizationStrategy == "synchronous")
-            return ParallelizationType::SYNCHRONOUS;
-        else
-            throw std::runtime_error("Invalid parallelization type for map equation Louvain: "
-                                     + std::string(parallelizationStrategy));
     }
 
 #ifndef NDEBUG

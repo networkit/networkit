@@ -22,12 +22,22 @@ namespace NetworKit {
 class TopologicalSort final : public Algorithm {
 public:
     /**
-     * Initialize the topological sort algorithm by passing an input graph. Note that topological
-     * sort is defined for directed graphs only. The node id mapping must be a continuous.
+     * Initialize the topological sort algorithm by passing an input graph.
      *
      * @param G The input graph.
      */
-    TopologicalSort(const Graph &G, const std::unordered_map<node, node> &nodeIdMapping = {},
+    TopologicalSort(const Graph &G);
+
+    /**
+     * Initialize the topological sort algorithm by passing an input graph and an node id map.
+     * The node id mapping must be a continuous. This can be checked by setting checkMapping to
+     * true.
+     *
+     * @param G The input graph.
+     * @param nodeIdMapping Node id mapping from non-continuous to continuous ids.
+     * @param checkMapping Check whether the given node id map is continuous.
+     */
+    TopologicalSort(const Graph &G, const std::unordered_map<node, node> &nodeIdMapping,
                     bool checkMapping = false);
 
     /**
@@ -52,7 +62,7 @@ private:
 
     std::optional<std::unordered_map<node, node>> computedNodeIdMap;
 
-    const std::unordered_map<node, node> &nodeIdMap;
+    const std::unordered_map<node, node> *nodeIdMap = nullptr;
 
     // Used to mark the status of each node, one vector per thread
     std::vector<NodeMark> topSortMark;
