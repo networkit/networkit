@@ -269,7 +269,7 @@ Graph subgraphAndNeighborsFromNodes(const Graph &G, const std::unordered_set<nod
         if (!includeOutNeighbors && !includeInNeighbors)
             return neighbors;
 
-        for (const node u : nodes) {
+        for (node u : nodes) {
             if (includeOutNeighbors)
                 for (const node v : G.neighborRange(u))
                     neighbors.insert(v);

@@ -679,7 +679,7 @@ void Graph::removeEdge(node u, node v) {
     }
     if (maintainCompactEdges) {
         // re-index edge IDs from deleted edge upwards
-        balancedParallelForNodes([&](const node w) {
+        balancedParallelForNodes([&](node w) {
             for (index i = 0; i < outEdges[w].size(); ++i) {
                 auto curID = outEdgeIds[w][i];
                 if (curID > deletedID) {
@@ -714,7 +714,7 @@ void Graph::removeEdge(node u, node v) {
 
         if (maintainCompactEdges) {
             // re-index edge ids from target node
-            balancedParallelForNodes([&](const node w) {
+            balancedParallelForNodes([&](node w) {
                 for (index i = 0; i < inEdges[w].size(); ++i) {
                     node vv = inEdges[w][i];
                     if (vv != none) {
