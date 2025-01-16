@@ -10,7 +10,8 @@
 
 namespace NetworKit {
 
-TopologicalSort::TopologicalSort(const Graph &G) : G(G), computedNodeIdMap(GraphTools::getContinuousNodeIds(G)) {
+TopologicalSort::TopologicalSort(const Graph &G)
+    : G(G), computedNodeIdMap(GraphTools::getContinuousNodeIds(G)) {
     checkDirected();
 }
 

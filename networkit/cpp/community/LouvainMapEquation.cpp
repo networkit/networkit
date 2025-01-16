@@ -34,6 +34,21 @@ LouvainMapEquation::LouvainMapEquation(const Graph &graph, bool hierarchical, co
     result = Partition(graph.upperNodeIdBound());
 }
 
+LouvainMapEquation::LouvainMapEquation(const Graph &graph, bool hierarchical, count maxIterations,
+                                       std::string_view parallelizationStrategy)
+    : CommunityDetectionAlgorithm(graph), hierarchical(hierarchical), maxIterations(maxIterations),
+      clusterCut(graph.upperNodeIdBound()), clusterVolume(graph.upperNodeIdBound()) {
+    parallelizationType = convertStringToParallelizationType(parallelizationStrategy);
+    parallel = (parallelizationType > ParallelizationType::NONE);
+    nextPartition = Partition(
+        parallelizationType == ParallelizationType::SYNCHRONOUS ? graph.upperNodeIdBound() : 0);
+    ets_neighborClusterWeights =
+        std::vector<SparseVector<double>>(parallel ? Aux::getMaxNumberOfThreads() : 1);
+    locks = std::vector<Aux::Spinlock>(
+        parallelizationType == ParallelizationType::RELAX_MAP ? graph.upperNodeIdBound() : 0);
+    result = Partition(graph.upperNodeIdBound());
+}
+
 void LouvainMapEquation::run() {
     if (hasRun)
         throw std::runtime_error("Algorithm was already run!");
