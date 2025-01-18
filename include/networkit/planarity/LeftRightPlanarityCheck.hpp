@@ -15,10 +15,40 @@ namespace NetworKit {
 class LeftRightPlanarityCheck final : public Algorithm {
 
 public:
+    /**
+     * Implements the left-right planarity test as described in
+     * [citation](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=7963e9feffe1c9362eb1a69010a5139d1da3661e).
+     * This algorithm determines whether a graph is planar, i.e., whether it can be drawn on a plane
+     * without any edges crossing. For an overview of planar graphs, refer to:
+     * https://en.wikipedia.org/wiki/Planar_graph
+     *
+     * The algorithm achieves (almost) linear runtime complexity. The only non-linear component
+     * arises from sorting the nodes of the depth-first search tree.
+     *
+     * @param graph The input graph to test for planarity. The graph should be undirected.
+     */
     LeftRightPlanarityCheck(const Graph &graph) : graph_(&graph) {
+        if (graph.isDirected()) {
+            throw std::logic_error("The graph is not an undirected graph.");
+        }
         dfsGraph = Graph(graph_->numberOfNodes(), false, true, false);
     }
+
+    /**
+     * Executes the left-right planarity test on the input graph.
+     * This method performs all necessary computations to determine
+     * whether the graph is planar and prepares the result for retrieval
+     * via the `isPlanar()` method.
+     */
     void run() override;
+
+    /**
+     * Returns whether the input graph is planar.
+     * The result is only valid after the `run()` method has been called.
+     *
+     * @return True if the graph is planar, false otherwise.
+     * @throws std::logic_error if called before `run()` has been executed.
+     */
     bool isPlanar() const {
         if (!hasRun)
             throw std::logic_error("isPlanar() called before the run() method was called.");
@@ -79,4 +109,4 @@ private:
     Graph dfsGraph;
 };
 } // namespace NetworKit
-#endif // NETWORKIT_PLANARITY_LEFT_RIGHT_PLANARITY_TEST_HPP_
+#endif // NETWORKIT_PLANARITY_LEFT_RIGHT_PLANARITY_CHECK_HPP_

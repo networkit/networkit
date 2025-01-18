@@ -44,22 +44,22 @@ public:
     }
 
     Graph binaryTreeGraph(const count numNodes) {
-        Graph graph(numNodes);
+        Graph graph(numNodes, true, false, true);
         for (count i{}; i < numNodes; ++i) {
             count leftChild = 2 * i + 1;
             count rightChild = 2 * i + 2;
             if (leftChild < numNodes) {
-                graph.addEdge(i, leftChild);
+                graph.addEdge(i, leftChild, static_cast<double>(i));
             }
             if (rightChild < numNodes) {
-                graph.addEdge(i, rightChild);
+                graph.addEdge(i, rightChild, static_cast<double>(i));
             }
         }
         return graph;
     }
 
     Graph wheelGraph(const count numNodes) {
-        Graph graph(numNodes);
+        Graph graph(numNodes, false, false, true);
         if (numNodes < 4) {
             throw std::invalid_argument("A wheel graph requires at least 4 nodes.");
         }
@@ -77,11 +77,11 @@ public:
     }
 
     Graph completeGraph(const count numNodes) {
-        Graph graph(numNodes);
+        Graph graph(numNodes, true);
 
         for (count i = 0; i < numNodes; ++i) {
             for (count j = i + 1; j < numNodes; ++j) {
-                graph.addEdge(i, j);
+                graph.addEdge(i, j, static_cast<double>(j * (j + 1)));
             }
         }
         return graph;
@@ -125,6 +125,18 @@ public:
         return graph;
     }
 };
+
+TEST_F(LeftRightPlanarityCheckGTest, testDirectedGraphThrows) {
+    auto graph = Graph(0, false, true, false);
+    try {
+        LeftRightPlanarityCheck test(graph);
+        FAIL() << "Expected std::logic_error";
+    } catch (const std::logic_error &e) {
+        EXPECT_STREQ(e.what(), "The graph is not an undirected graph.");
+    } catch (...) {
+        FAIL() << "Expected std::logic_error but got a different exception.";
+    }
+}
 
 TEST_F(LeftRightPlanarityCheckGTest, testIsPlanarThrowsIfRunIsNotCalled) {
     auto graph = Graph{};

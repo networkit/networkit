@@ -27,13 +27,8 @@ void LeftRightPlanarityCheck::run() {
     });
 
     sortAdjacencyListByNestingDepth();
-    isPlanar_ = true;
-    for (const auto rootNode : roots) {
-        if (!dfsTesting(rootNode)) {
-            isPlanar_ = false;
-            break;
-        }
-    }
+    isPlanar_ =
+        std::ranges::all_of(roots, [this](const auto rootNode) { return dfsTesting(rootNode); });
     hasRun = true;
 }
 
