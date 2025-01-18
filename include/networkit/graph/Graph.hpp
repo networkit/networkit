@@ -953,8 +953,46 @@ public:
         if (degree(u) < 2) {
             return;
         }
-        std::sort(outEdges[u].begin(), outEdges[u].end(),
-                  [&](node a, node b) { return lambda(a, b); });
+
+        // Sort indices array according to the lambda
+        std::vector<index> outIndices(outEdges[u].size());
+        std::iota(outIndices.begin(), outIndices.end(), 0);
+        std::ranges::sort(outIndices,
+                          [&](index a, index b) { return lambda(outEdges[u][a], outEdges[u][b]); });
+
+        Aux::ArrayTools::applyPermutation(outEdges[u].begin(), outEdges[u].end(),
+                                          outIndices.begin());
+
+        if (weighted) {
+            Aux::ArrayTools::applyPermutation(outEdgeWeights[u].begin(), outEdgeWeights[u].end(),
+                                              outIndices.begin());
+        }
+
+        if (edgesIndexed) {
+            Aux::ArrayTools::applyPermutation(outEdgeIds[u].begin(), outEdgeIds[u].end(),
+                                              outIndices.begin());
+        }
+
+        if (directed) {
+            std::vector<index> inIndices(inEdges[u].size());
+            std::iota(inIndices.begin(), inIndices.end(), 0);
+
+            std::ranges::sort(
+                inIndices, [&](index a, index b) { return lambda(inEdges[u][a], inEdges[u][b]); });
+
+            Aux::ArrayTools::applyPermutation(inEdges[u].begin(), inEdges[u].end(),
+                                              inIndices.begin());
+
+            if (weighted) {
+                Aux::ArrayTools::applyPermutation(inEdgeWeights[u].begin(), inEdgeWeights[u].end(),
+                                                  inIndices.begin());
+            }
+
+            if (edgesIndexed) {
+                Aux::ArrayTools::applyPermutation(inEdgeIds[u].begin(), inEdgeIds[u].end(),
+                                                  inIndices.begin());
+            }
+        }
     }
 
     /**
