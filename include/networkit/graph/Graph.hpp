@@ -953,8 +953,7 @@ public:
         if (degree(u) < 2) {
             return;
         }
-
-        // Sort indices array according to the lambda
+        // Sort the outEdge-Attributes
         std::vector<index> outIndices(outEdges[u].size());
         std::iota(outIndices.begin(), outIndices.end(), 0);
         std::ranges::sort(outIndices,
@@ -973,6 +972,7 @@ public:
                                               outIndices.begin());
         }
 
+        // For directed graphs we need to sort the inEdge-Attributes separately
         if (directed) {
             std::vector<index> inIndices(inEdges[u].size());
             std::iota(inIndices.begin(), inIndices.end(), 0);
