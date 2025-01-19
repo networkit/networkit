@@ -25,13 +25,13 @@ public:
      * The algorithm achieves (almost) linear runtime complexity. The only non-linear component
      * arises from sorting the nodes of the depth-first search tree.
      *
-     * @param graph The input graph to test for planarity. The graph should be undirected.
+     * @param G The input graph to test for planarity. The graph should be undirected.
      */
-    LeftRightPlanarityCheck(const Graph &graph) : graph_(&graph) {
-        if (graph.isDirected()) {
-            throw std::logic_error("The graph is not an undirected graph.");
+    LeftRightPlanarityCheck(const Graph &G) : graph(&G) {
+        if (G.isDirected()) {
+            throw std::runtime_error("The graph is not an undirected graph.");
         }
-        dfsGraph = Graph(graph_->numberOfNodes(), false, true, false);
+        dfsGraph = Graph(graph->numberOfNodes(), false, true, false);
     }
 
     /**
@@ -50,9 +50,8 @@ public:
      * @throws std::logic_error if called before `run()` has been executed.
      */
     bool isPlanar() const {
-        if (!hasRun)
-            throw std::logic_error("isPlanar() called before the run() method was called.");
-        return isPlanar_;
+        Algorithm::assureFinished();
+        return isGraphPlanar;
     }
 
 private:
@@ -87,12 +86,12 @@ private:
     };
     const ConflictPair NoneConflictPair{Interval(), Interval()};
 
-    const Graph *graph_;
-    bool isPlanar_{};
+    const Graph *graph;
+    bool isGraphPlanar{};
     void dfsOrientation(node startNode);
     bool dfsTesting(node startNode);
-    bool applyConstraints(Edge edge, Edge parentEdge);
-    void removeBackEdges(Edge edge);
+    bool applyConstraints(const Edge &edge, const Edge &parentEdge);
+    void removeBackEdges(const Edge &edge);
     void sortAdjacencyListByNestingDepth();
     bool conflicting(const Interval &interval, const Edge &edge);
     count getLowestLowPoint(const ConflictPair &conflictPair);

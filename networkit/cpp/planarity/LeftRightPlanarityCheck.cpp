@@ -11,14 +11,14 @@ namespace NetworKit {
 
 void LeftRightPlanarityCheck::run() {
     // Euler-criterion
-    if (graph_->numberOfNodes() > 2 && graph_->numberOfEdges() > 3 * graph_->numberOfNodes() - 6) {
+    if (graph->numberOfNodes() > 2 && graph->numberOfEdges() > 3 * graph->numberOfNodes() - 6) {
         hasRun = true;
-        isPlanar_ = false;
+        isGraphPlanar = false;
         return;
     }
 
-    heights.assign(graph_->upperNodeIdBound(), noneHeight);
-    graph_->forNodes([&](const node currentNode) {
+    heights.assign(graph->upperNodeIdBound(), noneHeight);
+    graph->forNodes([&](node currentNode) {
         if (heights[currentNode] == noneHeight) {
             heights[currentNode] = 0;
             roots.push_back(currentNode);
@@ -27,15 +27,14 @@ void LeftRightPlanarityCheck::run() {
     });
 
     sortAdjacencyListByNestingDepth();
-    isPlanar_ =
-        std::ranges::all_of(roots, [this](const auto rootNode) { return dfsTesting(rootNode); });
+    isGraphPlanar =
+        std::ranges::all_of(roots, [this](node rootNode) { return dfsTesting(rootNode); });
     hasRun = true;
 }
 
 void LeftRightPlanarityCheck::sortAdjacencyListByNestingDepth() {
-
-    dfsGraph.forNodes([&](const node currentNode) {
-        dfsGraph.sortNeighbors(currentNode, [&](const node neighbor1, const node neighbor2) {
+    dfsGraph.forNodes([&](node currentNode) {
+        dfsGraph.sortNeighbors(currentNode, [&](node neighbor1, node neighbor2) {
             if (auto it1 = nestingDepth.find(Edge(currentNode, neighbor1)),
                 it2 = nestingDepth.find(Edge(currentNode, neighbor2));
                 it1 != nestingDepth.end() && it2 != nestingDepth.end()) {
@@ -47,14 +46,16 @@ void LeftRightPlanarityCheck::sortAdjacencyListByNestingDepth() {
 }
 
 bool LeftRightPlanarityCheck::conflicting(const Interval &interval, const Edge &edge) {
-    return !interval.isEmpty() && lowestPoint.contains(interval.high) && lowestPoint.contains(edge)
-           && lowestPoint[interval.high] > lowestPoint[edge];
+    auto iteratorHigh = lowestPoint.find(interval.high);
+    auto iteratorEdge = lowestPoint.find(edge);
+    return !interval.isEmpty() && iteratorHigh != lowestPoint.end()
+           && iteratorEdge != lowestPoint.end() && iteratorHigh->second > iteratorEdge->second;
 }
 
-bool LeftRightPlanarityCheck::applyConstraints(const Edge edge, const Edge parentEdge) {
-    auto tmpConflictPair = ConflictPair{};
+bool LeftRightPlanarityCheck::applyConstraints(const Edge &edge, const Edge &parentEdge) {
+    ConflictPair tmpConflictPair{};
     do {
-        auto currentConflictPair = stack.top();
+        ConflictPair currentConflictPair = stack.top();
         stack.pop();
         if (!currentConflictPair.left.isEmpty()) {
             currentConflictPair.swap();
@@ -62,8 +63,10 @@ bool LeftRightPlanarityCheck::applyConstraints(const Edge edge, const Edge paren
         if (!currentConflictPair.left.isEmpty()) {
             return false;
         }
-        if (lowestPoint.contains(currentConflictPair.right.low) && lowestPoint.contains(parentEdge)
-            && lowestPoint[currentConflictPair.right.low] > lowestPoint[parentEdge]) {
+        auto rightLowIterator = lowestPoint.find(currentConflictPair.right.low);
+        auto parentEdgeIterator = lowestPoint.find(parentEdge);
+        if (rightLowIterator != lowestPoint.end() && parentEdgeIterator != lowestPoint.end()
+            && rightLowIterator->second > parentEdgeIterator->second) {
             if (tmpConflictPair.right.isEmpty()) {
                 tmpConflictPair.right = currentConflictPair.right;
             } else {
@@ -111,8 +114,8 @@ count LeftRightPlanarityCheck::getLowestLowPoint(const ConflictPair &conflictPai
     return std::min(lowestPoint[conflictPair.right.low], lowestPoint[conflictPair.left.low]);
 }
 
-void LeftRightPlanarityCheck::removeBackEdges(Edge edge) {
-    auto parentNode = edge.u;
+void LeftRightPlanarityCheck::removeBackEdges(const Edge &edge) {
+    const node parentNode = edge.u;
     while (!stack.empty() && getLowestLowPoint(stack.top()) == heights[parentNode]) {
         stack.pop();
     }
@@ -141,8 +144,8 @@ void LeftRightPlanarityCheck::removeBackEdges(Edge edge) {
     }
 
     if (!stack.empty() && lowestPoint[edge] < heights[parentNode]) {
-        auto highestReturnEdgeLeft = stack.top().left.high;
-        auto highestReturnEdgeRight = stack.top().right.high;
+        const Edge highestReturnEdgeLeft = stack.top().left.high;
+        const Edge highestReturnEdgeRight = stack.top().right.high;
         if (highestReturnEdgeLeft != noneEdge
             && (highestReturnEdgeRight != noneEdge
                 || lowestPoint[highestReturnEdgeLeft] > lowestPoint[highestReturnEdgeRight])) {
@@ -156,22 +159,20 @@ void LeftRightPlanarityCheck::removeBackEdges(Edge edge) {
 bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
     std::stack<node> dfsStack;
     dfsStack.emplace(startNode);
-    auto neighborIterators =
-        std::unordered_map<node, decltype(dfsGraph.neighborRange(startNode).begin())>{};
-
-    auto preprocessedEdges = std::unordered_set<Edge>{};
-    while (!dfsStack.empty()) {
-        const auto currentNode = dfsStack.top();
+    std::unordered_map<node, decltype(dfsGraph.neighborRange(startNode).begin())> neighborIterators;
+    std::unordered_set<Edge> preprocessedEdges;
+    do {
+        const node currentNode = dfsStack.top();
         dfsStack.pop();
-        const auto parentEdge = parentEdges[currentNode];
+        const Edge parentEdge = parentEdges[currentNode];
         bool callRemoveBackEdges{true};
         if (auto it = neighborIterators.find(currentNode); it == neighborIterators.end()) {
             neighborIterators[currentNode] = dfsGraph.neighborRange(currentNode).begin();
         }
         auto &neighborIterator = neighborIterators[currentNode];
         while (neighborIterator != dfsGraph.neighborRange(currentNode).end()) {
-            const auto neighbor = *neighborIterator;
-            auto currentEdge = Edge(currentNode, neighbor);
+            const node neighbor = *neighborIterator;
+            const Edge currentEdge(currentNode, neighbor);
             if (!preprocessedEdges.contains(currentEdge)) {
                 stackBottom[currentEdge] = stack.empty() ? NoneConflictPair : stack.top();
                 if (currentEdge == parentEdges[neighbor]) {
@@ -185,8 +186,9 @@ bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
                 stack.emplace(Interval{}, Interval(currentEdge, currentEdge));
             }
 
-            if (lowestPoint.contains(currentEdge)
-                && lowestPoint[currentEdge] < heights[currentNode]) {
+            auto currentEdgeIterator = lowestPoint.find(currentEdge);
+            if (currentEdgeIterator != lowestPoint.end()
+                && currentEdgeIterator->second < heights[currentNode]) {
                 if (neighbor == *dfsGraph.neighborRange(currentNode).begin()) {
                     lowestPointEdge[parentEdge] = lowestPointEdge[currentEdge];
                 } else {
@@ -201,22 +203,21 @@ bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
             if (parentEdge != noneEdge)
                 removeBackEdges(parentEdge);
         }
-    }
+    } while (!dfsStack.empty());
     return true;
 }
 
-void LeftRightPlanarityCheck::dfsOrientation(const node startNode) {
-
+void LeftRightPlanarityCheck::dfsOrientation(node startNode) {
     std::stack<node> dfsStack;
     dfsStack.emplace(startNode);
-    auto preprocessedEdges = std::unordered_set<Edge>{};
-    while (!dfsStack.empty()) {
-        const auto currentNode = dfsStack.top();
+    std::unordered_set<Edge> preprocessedEdges;
+    do {
+        const node currentNode = dfsStack.top();
         dfsStack.pop();
-        const auto parentEdge = parentEdges[currentNode];
-        for (const auto neighbor : graph_->neighborRange(currentNode)) {
+        const Edge parentEdge = parentEdges[currentNode];
+        for (node neighbor : graph->neighborRange(currentNode)) {
 
-            const auto currentEdge = Edge(currentNode, neighbor);
+            const Edge currentEdge = Edge(currentNode, neighbor);
             if (!preprocessedEdges.contains(currentEdge)) {
                 if (dfsGraph.hasEdge(currentNode, neighbor)
                     || dfsGraph.hasEdge(neighbor, currentNode))
@@ -256,7 +257,7 @@ void LeftRightPlanarityCheck::dfsOrientation(const node startNode) {
                 }
             }
         }
-    }
+    } while (!dfsStack.empty());
 }
 
 } // namespace NetworKit
