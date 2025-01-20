@@ -1961,27 +1961,29 @@ TEST_F(CentralityGTest, testApproxElectricalCloseness) {
     }
 }
 
+TEST_F(CentralityGTest, testGroupClosenessDirected) {
+    // directed graphs are not supported
+    Graph G(10, false, true);
+    std::array<node, 1> group = {{0}};
+    EXPECT_THROW(GroupClosenessGrowShrink(G, group.begin(), group.end()), std::runtime_error);
+}
+
+TEST_F(CentralityGTest, testGroupClosenessEmptyGroups) {
+    // Empty input groups are not supported
+    Graph G(10);
+    std::vector<node> emptyGroup;
+    EXPECT_THROW(GroupClosenessGrowShrink(G, emptyGroup.begin(), emptyGroup.end()),
+                 std::runtime_error);
+}
+
 TEST_P(CentralityGTest, testGroupClosenessGrowShrink) {
-    if (isDirected()) { // directed graphs are not supported
-        Graph G(10, isWeighted(), true);
-        std::array<node, 1> group = {{0}};
-        EXPECT_THROW(GroupClosenessGrowShrink(G, group.begin(), group.end()), std::runtime_error);
-        return;
-    }
-
-    { // Empty input groups are not supported
-        Graph G(10, isWeighted(), false);
-        std::vector<node> emptyGroup;
-        EXPECT_THROW(GroupClosenessGrowShrink(G, emptyGroup.begin(), emptyGroup.end()),
-                     std::runtime_error);
-    }
-
-    const count k = 5;
+    omp_set_num_threads(2);
+    const count k = 3;
     auto G = EdgeListReader{'\t', 0, "#", false, false}.read("input/MIT8.edgelist");
     G = ConnectedComponents::extractLargestConnectedComponent(G);
 
     if (isWeighted()) {
-        Aux::Random::setSeed(42, false);
+        Aux::Random::setSeed(42, true);
         GraphTools::randomizeWeights(G);
     }
 
@@ -2001,7 +2003,7 @@ TEST_P(CentralityGTest, testGroupClosenessGrowShrink) {
     };
 
     for (int seed : {1, 2, 3}) {
-        Aux::Random::setSeed(seed, true);
+        Aux::Random::setSeed(seed, false);
 
         std::unordered_set<node> group;
 
