@@ -9,6 +9,8 @@
 
 namespace NetworKit {
 
+const Edge LeftRightPlanarityCheck::noneEdge{};
+
 void LeftRightPlanarityCheck::run() {
     // Euler-criterion
     if (graph->numberOfNodes() > 2 && graph->numberOfEdges() > 3 * graph->numberOfNodes() - 6) {

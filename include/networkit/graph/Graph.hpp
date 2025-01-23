@@ -45,7 +45,7 @@ namespace NetworKit {
 struct Edge {
     node u, v;
 
-    constexpr Edge() : u(none), v(none) {}
+    Edge() : u(none), v(none) {}
 
     Edge(node _u, node _v, bool sorted = false) {
         u = sorted ? std::min(_u, _v) : _u;

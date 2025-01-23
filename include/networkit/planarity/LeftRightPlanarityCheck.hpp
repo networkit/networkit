@@ -55,7 +55,7 @@ public:
     }
 
 private:
-    static constexpr Edge noneEdge{};
+    static const Edge noneEdge;
     static constexpr count noneHeight{std::numeric_limits<count>::max()};
 
     struct Interval {
