@@ -5,6 +5,7 @@
  *      Author: Andreas Scharf (andreas.b.scharf@gmail.com)
  */
 #include <gtest/gtest.h>
+#include <networkit/io/METISGraphReader.hpp>
 #include <networkit/planarity/LeftRightPlanarityCheck.hpp>
 
 namespace NetworKit {
@@ -342,6 +343,38 @@ TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarPetersenGraphs) {
             }
         }
     }
+}
+
+TEST_F(LeftRightPlanarityCheckGTest, testPlanar4eltGraph) {
+    METISGraphReader reader;
+    Graph graph = reader.read("input/4elt.graph");
+    LeftRightPlanarityCheck test(graph);
+    test.run();
+    EXPECT_TRUE(test.isPlanar());
+}
+
+TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarHepthGraph) {
+    METISGraphReader reader;
+    Graph graph = reader.read("input/hep-th.graph");
+    LeftRightPlanarityCheck test(graph);
+    test.run();
+    EXPECT_FALSE(test.isPlanar());
+}
+
+TEST_F(LeftRightPlanarityCheckGTest, testPlanarAirfil1Graph) {
+    METISGraphReader reader;
+    Graph graph = reader.read("input/airfoil1.graph");
+    LeftRightPlanarityCheck test(graph);
+    test.run();
+    EXPECT_TRUE(test.isPlanar());
+}
+
+TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarAstroPhGraph) {
+    METISGraphReader reader;
+    Graph graph = reader.read("input/astro-ph.graph");
+    LeftRightPlanarityCheck test(graph);
+    test.run();
+    EXPECT_FALSE(test.isPlanar());
 }
 
 } // namespace NetworKit
