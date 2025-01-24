@@ -475,4 +475,23 @@ TEST_F(AttributeGTest, testDeleteEdges) {
     EXPECT_EQ(attr(0, 1), 1.0);
 }
 
+TEST_F(AttributeGTest, assignAttributeToAttribute) {
+    Graph graph(3);
+    auto attr1 = graph.nodeAttributes().attach<int>("attr1");
+    auto attr2 = graph.nodeAttributes().attach<int>("attr2");
+
+    attr1[0] = 1;
+    attr2[0] = 3;
+    attr2[0] = attr1[0]; // operator=(IndexProxy&&)
+    EXPECT_EQ(attr2[0], 1);
+
+    attr1[1] = 4;
+    auto v1 = attr1[1];
+    EXPECT_EQ(v1, 4);
+    auto v2 = attr2[1];
+    v2 = v1; // operator=(const IndexProxy&)
+    EXPECT_EQ(v2, 4);
+    EXPECT_EQ(attr2[1], 4);
+}
+
 } // namespace NetworKit

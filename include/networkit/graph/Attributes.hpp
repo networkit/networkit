@@ -219,6 +219,8 @@ private:
         //    - assigning to it (operator=) writes the value
     public:
         IndexProxy(AttributeStorage_type *storage, index idx) : storage{storage}, idx{idx} {}
+        IndexProxy(IndexProxy &&) = delete;
+        IndexProxy(const IndexProxy &) = delete;
 
         // reading at idx
         operator T() const {
@@ -227,10 +229,27 @@ private:
         }
 
         // writing at idx
-        template <bool ic = isConst>
-        std::enable_if_t<!ic, T> &operator=(T &&other) {
+        IndexProxy &operator=(T &&other)
+            requires(!isConst)
+        {
             storage->set(idx, std::move(other));
-            return storage->values[idx];
+            return *this;
+        }
+
+        // move + copy assignment from other proxy objects
+
+        IndexProxy &operator=(IndexProxy &&other) noexcept
+            requires(!isConst)
+        {
+            storage->set(idx, static_cast<T>(other));
+            return *this;
+        }
+
+        IndexProxy &operator=(const IndexProxy &other)
+            requires(!isConst)
+        {
+            storage->set(idx, static_cast<T>(other));
+            return *this;
         }
 
     private:
