@@ -358,7 +358,7 @@ jobs:
     name: "Linux (gcc-10, CPython 3.12): leak checks"
     runs-on: ubuntu-22.04
     env:
-      UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+      UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1:report_error_type=1
     steps:
       - name: Install prerequisites
         run:  |
