@@ -163,18 +163,13 @@ bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
     dfsStack.emplace(startNode);
     std::unordered_map<node, decltype(dfsGraph.neighborRange(startNode).begin())> neighborIterators;
     std::unordered_set<Edge> preprocessedEdges;
-    do {
-        const node currentNode = dfsStack.top();
-        dfsStack.pop();
-        const Edge parentEdge = parentEdges[currentNode];
-        bool callRemoveBackEdges{true};
-        if (auto it = neighborIterators.find(currentNode); it == neighborIterators.end()) {
-            neighborIterators[currentNode] = dfsGraph.neighborRange(currentNode).begin();
-        }
+
+    auto processNeighborEdges = [&](node currentNode, bool &callRemoveBackEdges) -> bool {
         auto &neighborIterator = neighborIterators[currentNode];
         while (neighborIterator != dfsGraph.neighborRange(currentNode).end()) {
             const node neighbor = *neighborIterator;
             const Edge currentEdge(currentNode, neighbor);
+
             if (!preprocessedEdges.contains(currentEdge)) {
                 stackBottom[currentEdge] = stack.empty() ? NoneConflictPair : stack.top();
                 if (currentEdge == parentEdges[neighbor]) {
@@ -182,30 +177,52 @@ bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
                     dfsStack.emplace(neighbor);
                     preprocessedEdges.insert(currentEdge);
                     callRemoveBackEdges = false;
-                    break;
+                    return true; // Indicate further processing needed
                 }
+
                 lowestPointEdge[currentEdge] = currentEdge;
                 stack.emplace(Interval{}, Interval(currentEdge, currentEdge));
             }
 
-            auto currentEdgeIterator = lowestPoint.find(currentEdge);
-            if (currentEdgeIterator != lowestPoint.end()
+            if (auto currentEdgeIterator = lowestPoint.find(currentEdge);
+                currentEdgeIterator != lowestPoint.end()
                 && currentEdgeIterator->second < heights[currentNode]) {
+
                 if (neighbor == *dfsGraph.neighborRange(currentNode).begin()) {
-                    lowestPointEdge[parentEdge] = lowestPointEdge[currentEdge];
+                    lowestPointEdge[parentEdges[currentNode]] = lowestPointEdge[currentEdge];
                 } else {
-                    if (!applyConstraints(currentEdge, parentEdge))
+                    if (!applyConstraints(currentEdge, parentEdges[currentNode])) {
                         return false;
+                    }
                 }
             }
             ++neighborIterator;
         }
+        return true;
+    };
+
+    // Main DFS loop
+    do {
+        const node currentNode = dfsStack.top();
+        dfsStack.pop();
+        const Edge parentEdge = parentEdges[currentNode];
+        bool callRemoveBackEdges{true};
+
+        if (auto it = neighborIterators.find(currentNode); it == neighborIterators.end()) {
+            neighborIterators[currentNode] = dfsGraph.neighborRange(currentNode).begin();
+        }
+
+        if (!processNeighborEdges(currentNode, callRemoveBackEdges)) {
+            return false;
+        }
 
         if (callRemoveBackEdges) {
-            if (parentEdge != noneEdge)
+            if (parentEdge != noneEdge) {
                 removeBackEdges(parentEdge);
+            }
         }
     } while (!dfsStack.empty());
+
     return true;
 }
 
