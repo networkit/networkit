@@ -362,8 +362,10 @@ jobs:
     steps:
       - name: Install prerequisites
         run:  |
+          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          echo "deb http://apt.llvm.org/jammy llvm-toolchain-jammy-17 main" | sudo tee /etc/apt/sources.list.d/llvm17.list
           sudo apt-get update
-          sudo apt-get install ninja-build
+          sudo apt-get install libomp-17-dev clang-17 clang-tidy-17 ninja-build
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -371,7 +373,7 @@ jobs:
       - name: Prepare environment and run checks
         run:  |
           mkdir build && cd build
-          cmake -GNinja -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DNETWORKIT_WITH_SANITIZERS=leak  ..
+          cmake -GNinja -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DNETWORKIT_WITH_SANITIZERS=leak  -DCMAKE_CXX_COMPILER=/usr/bin/clang++-17 ..
           ninja
           ctest -V -C Debug
         shell: bash

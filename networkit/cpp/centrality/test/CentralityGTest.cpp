@@ -2003,7 +2003,7 @@ TEST_P(CentralityGTest, testGroupClosenessGrowShrink) {
     };
 
     for (int seed : {1, 2, 3}) {
-        Aux::Random::setSeed(seed, false);
+        Aux::Random::setSeed(seed, true);
 
         std::unordered_set<node> group;
 
