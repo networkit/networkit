@@ -361,7 +361,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarHepthGraph) {
     EXPECT_FALSE(test.isPlanar());
 }
 
-TEST_F(LeftRightPlanarityCheckGTest, testPlanarAirfil1Graph) {
+TEST_F(LeftRightPlanarityCheckGTest, testPlanarAirfoil1Graph) {
     METISGraphReader reader;
     Graph graph = reader.read("input/airfoil1.graph");
     LeftRightPlanarityCheck test(graph);

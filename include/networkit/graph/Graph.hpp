@@ -942,60 +942,6 @@ public:
     bool hasEdgeIds() const noexcept { return edgesIndexed; }
 
     /**
-     * Sorts the neighbors of a given node according to a user-defined comparison function.
-     *
-     * @param u The node whose neighbors will be sorted.
-     * @param lambda A binary predicate used to compare two neighbors. The predicate should
-     *               take two nodes as arguments and return true if the first node should
-     *               precede the second in the sorted order.
-     */
-    void sortNeighbors(const node u, const std::function<bool(node, node)> &lambda) {
-        if (degree(u) < 2) {
-            return;
-        }
-        // Sort the outEdge-Attributes
-        std::vector<index> outIndices(outEdges[u].size());
-        std::iota(outIndices.begin(), outIndices.end(), 0);
-        std::ranges::sort(outIndices,
-                          [&](index a, index b) { return lambda(outEdges[u][a], outEdges[u][b]); });
-
-        Aux::ArrayTools::applyPermutation(outEdges[u].begin(), outEdges[u].end(),
-                                          outIndices.begin());
-
-        if (weighted) {
-            Aux::ArrayTools::applyPermutation(outEdgeWeights[u].begin(), outEdgeWeights[u].end(),
-                                              outIndices.begin());
-        }
-
-        if (edgesIndexed) {
-            Aux::ArrayTools::applyPermutation(outEdgeIds[u].begin(), outEdgeIds[u].end(),
-                                              outIndices.begin());
-        }
-
-        // For directed graphs we need to sort the inEdge-Attributes separately
-        if (directed) {
-            std::vector<index> inIndices(inEdges[u].size());
-            std::iota(inIndices.begin(), inIndices.end(), 0);
-
-            std::ranges::sort(
-                inIndices, [&](index a, index b) { return lambda(inEdges[u][a], inEdges[u][b]); });
-
-            Aux::ArrayTools::applyPermutation(inEdges[u].begin(), inEdges[u].end(),
-                                              inIndices.begin());
-
-            if (weighted) {
-                Aux::ArrayTools::applyPermutation(inEdgeWeights[u].begin(), inEdgeWeights[u].end(),
-                                                  inIndices.begin());
-            }
-
-            if (edgesIndexed) {
-                Aux::ArrayTools::applyPermutation(inEdgeIds[u].begin(), inEdgeIds[u].end(),
-                                                  inIndices.begin());
-            }
-        }
-    }
-
-    /**
      * Get the id of the given edge.
      */
     edgeid edgeId(node u, node v) const;
@@ -1045,6 +991,17 @@ public:
      * deleted edges.
      */
     void TLX_DEPRECATED(compactEdges());
+
+    /**
+     * Sorts the neighbors of a given node according to a user-defined comparison function.
+     *
+     * @param u The node whose neighbors will be sorted.
+     * @param lambda A binary predicate used to compare two neighbors. The predicate should
+     *               take two nodes as arguments and return true if the first node should
+     *               precede the second in the sorted order.
+     */
+    template <typename Lambda>
+    void sortNeighbors(node u, Lambda lambda);
 
     /**
      * Sorts the adjacency arrays by node id. While the running time is linear
@@ -2322,6 +2279,51 @@ std::pair<count, count> Graph::removeAdjacentEdges(node u, Condition condition, 
     }
 
     return {removedEdges, removedSelfLoops};
+}
+
+template <typename Lambda>
+void Graph::sortNeighbors(node u, Lambda lambda) {
+    if (degree(u) < 2) {
+        return;
+    }
+    // Sort the outEdge-Attributes
+    std::vector<index> outIndices(outEdges[u].size());
+    std::iota(outIndices.begin(), outIndices.end(), 0);
+    std::ranges::sort(outIndices,
+                      [&](index a, index b) { return lambda(outEdges[u][a], outEdges[u][b]); });
+
+    Aux::ArrayTools::applyPermutation(outEdges[u].begin(), outEdges[u].end(), outIndices.begin());
+
+    if (weighted) {
+        Aux::ArrayTools::applyPermutation(outEdgeWeights[u].begin(), outEdgeWeights[u].end(),
+                                          outIndices.begin());
+    }
+
+    if (edgesIndexed) {
+        Aux::ArrayTools::applyPermutation(outEdgeIds[u].begin(), outEdgeIds[u].end(),
+                                          outIndices.begin());
+    }
+
+    // For directed graphs we need to sort the inEdge-Attributes separately
+    if (directed) {
+        std::vector<index> inIndices(inEdges[u].size());
+        std::iota(inIndices.begin(), inIndices.end(), 0);
+
+        std::ranges::sort(inIndices,
+                          [&](index a, index b) { return lambda(inEdges[u][a], inEdges[u][b]); });
+
+        Aux::ArrayTools::applyPermutation(inEdges[u].begin(), inEdges[u].end(), inIndices.begin());
+
+        if (weighted) {
+            Aux::ArrayTools::applyPermutation(inEdgeWeights[u].begin(), inEdgeWeights[u].end(),
+                                              inIndices.begin());
+        }
+
+        if (edgesIndexed) {
+            Aux::ArrayTools::applyPermutation(inEdgeIds[u].begin(), inEdgeIds[u].end(),
+                                              inIndices.begin());
+        }
+    }
 }
 
 template <class Lambda>
