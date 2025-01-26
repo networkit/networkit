@@ -993,9 +993,9 @@ public:
     void TLX_DEPRECATED(compactEdges());
 
     /**
-     * Sorts the neighbors of a given node according to a user-defined comparison function.
+     * Sorts the outgoing neighbors of a given node according to a user-defined comparison function.
      *
-     * @param u The node whose neighbors will be sorted.
+     * @param u The node whose outgoing neighbors will be sorted.
      * @param lambda A binary predicate used to compare two neighbors. The predicate should
      *               take two nodes as arguments and return true if the first node should
      *               precede the second in the sorted order.
@@ -2283,7 +2283,7 @@ std::pair<count, count> Graph::removeAdjacentEdges(node u, Condition condition, 
 
 template <typename Lambda>
 void Graph::sortNeighbors(node u, Lambda lambda) {
-    if (degree(u) < 2) {
+    if ((degreeIn(u) < 2) && (degree(u) < 2)) {
         return;
     }
     // Sort the outEdge-Attributes
