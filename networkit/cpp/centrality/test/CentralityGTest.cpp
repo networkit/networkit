@@ -1977,13 +1977,12 @@ TEST_F(CentralityGTest, testGroupClosenessEmptyGroups) {
 }
 
 TEST_P(CentralityGTest, testGroupClosenessGrowShrink) {
-    omp_set_num_threads(2);
-    const count k = 3;
+    const count k = 5;
     auto G = EdgeListReader{'\t', 0, "#", false, false}.read("input/MIT8.edgelist");
     G = ConnectedComponents::extractLargestConnectedComponent(G);
 
     if (isWeighted()) {
-        Aux::Random::setSeed(42, true);
+        Aux::Random::setSeed(42, false);
         GraphTools::randomizeWeights(G);
     }
 

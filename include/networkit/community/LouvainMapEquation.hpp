@@ -16,9 +16,6 @@
 
 namespace NetworKit {
 
-// TODO: make enum public and use it for construction + string_view for compat
-// string_view again
-
 class LouvainMapEquation : public CommunityDetectionAlgorithm {
 public:
     enum class ParallelizationType : uint8_t {
@@ -136,7 +133,7 @@ private:
     }
 
     ParallelizationType
-    convertStringToParallelizationType(std::string parallelizationStrategy) const {
+    convertStringToParallelizationType(std::string &parallelizationStrategy) const {
         if (parallelizationStrategy == "none")
             return ParallelizationType::NONE;
         else if (parallelizationStrategy == "relaxmap")
