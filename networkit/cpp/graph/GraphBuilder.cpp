@@ -135,22 +135,21 @@ void GraphBuilder::swapNeighborhood(node u, std::vector<node> &neighbours,
     if (weighted)
         assert(neighbours.size() == weights.size());
 
-    index max_threads = omp_get_max_threads();
+    const index max_threads = omp_get_max_threads();
 
     std::vector<HalfEdge> new_edges(neighbours.size());
     for (index i = 0; i < neighbours.size(); ++i) {
         new_edges[i] = HalfEdge(u, neighbours[i]);
-        ;
     }
 
-    size_t size_per_thread = static_cast<int>(new_edges.size() / max_threads);
-    size_t remainder = new_edges.size() % max_threads;
+    const size_t size_per_thread = static_cast<int>(new_edges.size() / max_threads);
+    const size_t remainder = new_edges.size() % max_threads;
     std::vector<std::vector<HalfEdge>> new_edges_per_thread(max_threads);
 
     // split new neighbours into almost equally distributed parts
     int cur_index = 0;
     for (index cur_thread = 0; cur_thread < max_threads; ++cur_thread) {
-        size_t count = size_per_thread + (cur_thread < remainder ? 1 : 0);
+        const size_t count = size_per_thread + (cur_thread < remainder ? 1 : 0);
         new_edges_per_thread[cur_thread].assign(new_edges.begin() + cur_index,
                                                 new_edges.begin() + cur_index + count);
         cur_index += count;
@@ -165,12 +164,12 @@ void GraphBuilder::swapNeighborhood(node u, std::vector<node> &neighbours,
         std::vector<std::vector<edgeweight>> new_weights_per_thread(max_threads);
 
         // split new weights into almost equally distributed parts
-        int cur_index = 0;
+        int cur_index_weighted = 0;
         for (index cur_thread = 0; cur_thread < max_threads; ++cur_thread) {
-            size_t count = size_per_thread + (cur_thread < remainder ? 1 : 0);
-            new_weights_per_thread[cur_thread].assign(weights.begin() + cur_index,
-                                                      weights.begin() + cur_index + count);
-            cur_index += count;
+            const size_t count = size_per_thread + (cur_thread < remainder ? 1 : 0);
+            new_weights_per_thread[cur_thread].assign(weights.begin() + cur_index_weighted,
+                                                      weights.begin() + cur_index_weighted + count);
+            cur_index_weighted += count;
         }
         // distribute new weights across all threads
         for (index thread = 0; thread < max_threads; ++thread) {
@@ -186,11 +185,11 @@ void GraphBuilder::swapNeighborhood(node u, std::vector<node> &neighbours,
 }
 void GraphBuilder::setOutWeight(node u, node v, edgeweight ew) {
     assert(isWeighted());
-    index vi = indexInOutEdgeArrayPerThread(u, v);
+    const index vi = indexInOutEdgeArrayPerThread(u, v);
     if (vi != none) {
         outEdgeWeightsPerThread[omp_get_thread_num()][u % omp_get_max_threads()][vi] = ew;
         if (!directed && autoCompleteEdges) { // need to adjust both half edges
-            index ui = indexInOutEdgeArrayPerThread(v, u);
+            const index ui = indexInOutEdgeArrayPerThread(v, u);
             outEdgeWeightsPerThread[omp_get_thread_num()][v % omp_get_max_threads()][ui] = ew;
         }
     } else {
@@ -201,7 +200,7 @@ void GraphBuilder::setOutWeight(node u, node v, edgeweight ew) {
 void GraphBuilder::setInWeight(node u, node v, edgeweight ew) {
     assert(isWeighted());
     assert(isDirected());
-    index vi = indexInInEdgeArrayPerThread(u, v);
+    const index vi = indexInInEdgeArrayPerThread(u, v);
     if (vi != none) {
         inEdgeWeightsPerThread[omp_get_thread_num()][u % omp_get_max_threads()][vi] = ew;
     } else {
@@ -211,11 +210,11 @@ void GraphBuilder::setInWeight(node u, node v, edgeweight ew) {
 
 void GraphBuilder::increaseOutWeight(node u, node v, edgeweight ew) {
     assert(isWeighted());
-    index vi = indexInOutEdgeArrayPerThread(u, v);
+    const index vi = indexInOutEdgeArrayPerThread(u, v);
     if (vi != none) {
         outEdgeWeightsPerThread[omp_get_thread_num()][u % omp_get_max_threads()][vi] += ew;
         if (!directed && autoCompleteEdges && u != v) { // need to adjust both half edges
-            index ui = indexInOutEdgeArrayPerThread(v, u);
+            const index ui = indexInOutEdgeArrayPerThread(v, u);
             outEdgeWeightsPerThread[omp_get_thread_num()][v % omp_get_max_threads()][ui] += ew;
         }
     } else {
@@ -226,7 +225,7 @@ void GraphBuilder::increaseOutWeight(node u, node v, edgeweight ew) {
 void GraphBuilder::increaseInWeight(node u, node v, edgeweight ew) {
     assert(isWeighted());
     assert(isDirected());
-    index vi = indexInInEdgeArrayPerThread(u, v);
+    const index vi = indexInInEdgeArrayPerThread(u, v);
     if (vi != none) {
         inEdgeWeightsPerThread[omp_get_thread_num()][u % omp_get_max_threads()][vi] += ew;
     } else {

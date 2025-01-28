@@ -18,7 +18,7 @@ class EdgeIteratorBase {
 protected:
     const GraphType *G;
     NodeIteratorBase<GraphType> nodeIter;
-    index i;
+    index i{none};
 
 public:
     EdgeIteratorBase(const GraphType *G, NodeIteratorBase<GraphType> nodeIter)

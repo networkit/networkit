@@ -24,9 +24,10 @@ namespace NetworKit {
 Graph::Graph(count n, bool weighted, bool directed, bool edgesIndexed)
     : n(n), m(0), storedNumberOfSelfLoops(0), z(n), omega(0), t(0),
 
-      weighted(weighted),         // indicates whether the graph is weighted or not
-      directed(directed),         // indicates whether the graph is directed or not
-      edgesIndexed(edgesIndexed), // edges are not indexed by default
+      weighted(weighted), // indicates whether the graph is weighted or not
+      directed(directed), // indicates whether the graph is directed or not
+      edgesIndexed(edgesIndexed), deletedID(none),
+      // edges are not indexed by default
 
       exists(n, true),
 
@@ -678,11 +679,11 @@ void Graph::removeEdge(node u, node v) {
     }
     if (maintainCompactEdges) {
         // re-index edge IDs from deleted edge upwards
-        balancedParallelForNodes([&](node u) {
-            for (index i = 0; i < outEdges[u].size(); ++i) {
-                auto curID = outEdgeIds[u][i];
+        balancedParallelForNodes([&](node w) {
+            for (index i = 0; i < outEdges[w].size(); ++i) {
+                auto curID = outEdgeIds[w][i];
                 if (curID > deletedID) {
-                    outEdgeIds[u][i]--;
+                    outEdgeIds[w][i]--;
                 }
             }
         });
@@ -713,12 +714,12 @@ void Graph::removeEdge(node u, node v) {
 
         if (maintainCompactEdges) {
             // re-index edge ids from target node
-            balancedParallelForNodes([&](node u) {
-                for (index i = 0; i < inEdges[u].size(); ++i) {
-                    node v = inEdges[u][i];
-                    if (v != none) {
-                        index j = indexInOutEdgeArray(v, u);
-                        inEdgeIds[u][i] = outEdgeIds[v][j];
+            balancedParallelForNodes([&](node w) {
+                for (index i = 0; i < inEdges[w].size(); ++i) {
+                    node vv = inEdges[w][i];
+                    if (vv != none) {
+                        index j = indexInOutEdgeArray(vv, w);
+                        inEdgeIds[w][i] = outEdgeIds[vv][j];
                     }
                 }
             });
@@ -898,8 +899,7 @@ void Graph::setWeightAtIthInNeighbor(Unsafe, node u, index i, edgeweight ew) {
 edgeweight Graph::totalEdgeWeight() const noexcept {
     if (weighted)
         return parallelSumForEdges([](node, node, edgeweight ew) { return ew; });
-    else
-        return numberOfEdges() * defaultEdgeWeight;
+    return numberOfEdges() * defaultEdgeWeight;
 }
 
 bool Graph::checkConsistency() const {

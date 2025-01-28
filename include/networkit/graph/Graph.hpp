@@ -13,7 +13,6 @@
 #include <algorithm>
 #include <fstream>
 #include <functional>
-#include <iostream>
 #include <memory>
 #include <numeric>
 #include <omp.h>
@@ -553,7 +552,7 @@ public:
     template <bool InEdges = false>
     class NeighborRange {
         const Graph *G;
-        node u;
+        node u{none};
 
     public:
         NeighborRange(const Graph &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
@@ -585,7 +584,7 @@ public:
     class NeighborWeightRange {
 
         const Graph *G;
-        node u;
+        node u{none};
 
     public:
         NeighborWeightRange(const Graph &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
@@ -798,10 +797,10 @@ public:
     Graph(const Graph &other)
         : n(other.n), m(other.m), storedNumberOfSelfLoops(other.storedNumberOfSelfLoops),
           z(other.z), omega(other.omega), t(other.t), weighted(other.weighted),
-          directed(other.directed), edgesIndexed(other.edgesIndexed), exists(other.exists),
-          inEdges(other.inEdges), outEdges(other.outEdges), inEdgeWeights(other.inEdgeWeights),
-          outEdgeWeights(other.outEdgeWeights), inEdgeIds(other.inEdgeIds),
-          outEdgeIds(other.outEdgeIds),
+          directed(other.directed), edgesIndexed(other.edgesIndexed), deletedID(other.deletedID),
+          exists(other.exists), inEdges(other.inEdges), outEdges(other.outEdges),
+          inEdgeWeights(other.inEdgeWeights), outEdgeWeights(other.outEdgeWeights),
+          inEdgeIds(other.inEdgeIds), outEdgeIds(other.outEdgeIds),
           // call special constructors to copy attribute maps
           nodeAttributeMap(other.nodeAttributeMap, this),
           edgeAttributeMap(other.edgeAttributeMap, this){};
@@ -810,7 +809,7 @@ public:
     Graph(Graph &&other) noexcept
         : n(other.n), m(other.m), storedNumberOfSelfLoops(other.storedNumberOfSelfLoops),
           z(other.z), omega(other.omega), t(other.t), weighted(other.weighted),
-          directed(other.directed), edgesIndexed(other.edgesIndexed),
+          directed(other.directed), edgesIndexed(other.edgesIndexed), deletedID(other.deletedID),
           exists(std::move(other.exists)), inEdges(std::move(other.inEdges)),
           outEdges(std::move(other.outEdges)), inEdgeWeights(std::move(other.inEdgeWeights)),
           outEdgeWeights(std::move(other.outEdgeWeights)), inEdgeIds(std::move(other.inEdgeIds)),
@@ -843,6 +842,7 @@ public:
         std::swap(outEdgeWeights, other.outEdgeWeights);
         std::swap(inEdgeIds, other.inEdgeIds);
         std::swap(outEdgeIds, other.outEdgeIds);
+        std::swap(deletedID, other.deletedID);
 
         // attributes: set graph pointer to this new graph
         std::swap(nodeAttributeMap, other.nodeAttributeMap);
@@ -871,6 +871,7 @@ public:
         outEdgeWeights = other.outEdgeWeights;
         inEdgeIds = other.inEdgeIds;
         outEdgeIds = other.outEdgeIds;
+        deletedID = other.deletedID;
 
         // call special constructors to copy attribute maps
         nodeAttributeMap = AttributeMap(other.nodeAttributeMap, this);
@@ -1047,7 +1048,7 @@ public:
      *
      * Incoming as well as outgoing edges will be removed.
      *
-     * @param u Node.
+     * @param v Node.
      */
     void removeNode(node v);
 
@@ -1055,7 +1056,7 @@ public:
      * Removes out-going edges from node @u. If the graph is weighted and/or has edge ids, weights
      * and/or edge ids will also be removed.
      *
-     * @param node u Node.
+     * @param u Node.
      */
     void removePartialOutEdges(Unsafe, node u) {
         assert(hasNode(u));
@@ -1072,7 +1073,7 @@ public:
      * Removes in-going edges to node @u. If the graph is weighted and/or has edge ids, weights
      * and/or edge ids will also be removed.
      *
-     * @param node u Node.
+     * @param u Node.
      */
     void removePartialInEdges(Unsafe, node u) {
         assert(hasNode(u));
@@ -1185,7 +1186,7 @@ public:
      * to O(max(deg(u), deg(v))).
      * @param u Endpoint of edge.
      * @param v Endpoint of edge.
-     * @param weight Optional edge weight.
+     * @param ew Optional edge weight.
      * @param checkMultiEdge If true, this enables a check for a possible multi-edge.
      * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
      * true and the new edge would have been a multi-edge.)
@@ -1202,10 +1203,10 @@ public:
      * to O(max(deg(u), deg(v))).
      * @param u Endpoint of edge.
      * @param v Endpoint of edge.
-     * @param weight Optional edge weight.
+     * @param ew Optional edge weight.
      * @param ew Optional edge weight.
      * @param index Optional edge index.
-     * @param checkMultiEdge If true, this enables a check for a possible multi-edge.
+     * @param checkForMultiEdges If true, this enables a check for a possible multi-edge.
      * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
      * true and the new edge would have been a multi-edge.)
      */
@@ -1224,7 +1225,7 @@ public:
      * @param v Endpoint of edge.
      * @param ew Optional edge weight.
      * @param index Optional edge index.
-     * @param checkMultiEdge If true, this enables a check for a possible multi-edge.
+     * @param checkForMultiEdges If true, this enables a check for a possible multi-edge.
      * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
      * true and the new edge would have been a multi-edge.)
      */
@@ -1243,7 +1244,7 @@ public:
      * @param v Endpoint of edge.
      * @param ew Optional edge weight.
      * @param index Optional edge index.
-     * @param checkMultiEdge If true, this enables a check for a possible multi-edge.
+     * @param checkForMultiEdges If true, this enables a check for a possible multi-edge.
      * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
      * true and the new edge would have been a multi-edge.)
      */
@@ -1430,7 +1431,7 @@ public:
      *
      * @param[in]	u	endpoint of edge
      * @param[in]	v	endpoint of edge
-     * @param[in]	weight	edge weight
+     * @param[in]	ew	edge weight
      */
     void setWeight(node u, node v, edgeweight ew);
 
@@ -1439,7 +1440,7 @@ public:
      *
      * @param[in]	u	endpoint of edge
      * @param[in]	i	index of the nexight
-     * @param[in]	weight	edge weight
+     * @param[in]	ew	edge weight
      */
     void setWeightAtIthNeighbor(Unsafe, node u, index i, edgeweight ew);
 
@@ -1448,7 +1449,7 @@ public:
      *
      * @param[in]	u	endpoint of edge
      * @param[in]	i	index of the nexight
-     * @param[in]	weight	edge weight
+     * @param[in]	ew	edge weight
      */
     void setWeightAtIthInNeighbor(Unsafe, node u, index i, edgeweight ew);
 
@@ -1458,7 +1459,7 @@ public:
      *
      * @param[in]	u	endpoint of edge
      * @param[in]	v	endpoint of edge
-     * @param[in]	weight	edge weight
+     * @param[in]	ew	edge weight
      */
     void increaseWeight(node u, node v, edgeweight ew);
 
@@ -1981,19 +1982,15 @@ inline void Graph::forInEdgesOfImpl(node u, L handle) const {
         for (index i = 0; i < inEdges[u].size(); i++) {
             node v = inEdges[u][i];
 
-            if (useEdgeInIteration<true>(u, v)) {
-                edgeLambda<L>(handle, u, v, getInEdgeWeight<hasWeights>(u, i),
-                              getInEdgeId<graphHasEdgeIds>(u, i));
-            }
+            edgeLambda<L>(handle, u, v, getInEdgeWeight<hasWeights>(u, i),
+                          getInEdgeId<graphHasEdgeIds>(u, i));
         }
     } else {
         for (index i = 0; i < outEdges[u].size(); ++i) {
             node v = outEdges[u][i];
 
-            if (useEdgeInIteration<true>(u, v)) {
-                edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
-                              getOutEdgeId<graphHasEdgeIds>(u, i));
-            }
+            edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
+                          getOutEdgeId<graphHasEdgeIds>(u, i));
         }
     }
 }

@@ -21,7 +21,7 @@ template <typename GraphType>
 class NodeIteratorBase {
 
     const GraphType *G;
-    node u;
+    node u{none};
 
 public:
     // The value type of the nodes (i.e. nodes). Returned by
