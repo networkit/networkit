@@ -26,6 +26,7 @@ public:
      * arises from sorting the nodes of the depth-first search tree.
      *
      * @param G The input graph to test for planarity. The graph should be undirected.
+     * @throws std::runtime_error if graph is not an undirected graph
      */
     LeftRightPlanarityCheck(const Graph &G) : graph(&G) {
         if (G.isDirected()) {
@@ -47,10 +48,10 @@ public:
      * The result is only valid after the `run()` method has been called.
      *
      * @return True if the graph is planar, false otherwise.
-     * @throws std::logic_error if called before `run()` has been executed.
+     * @throws std::runtime_error if called before `run()` has been executed.
      */
     bool isPlanar() const {
-        Algorithm::assureFinished();
+        assureFinished();
         return isGraphPlanar;
     }
 

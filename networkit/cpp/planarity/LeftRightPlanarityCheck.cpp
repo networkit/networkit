@@ -160,7 +160,7 @@ void LeftRightPlanarityCheck::removeBackEdges(const Edge &edge) {
 
 bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
     std::stack<node> dfsStack;
-    dfsStack.emplace(startNode);
+    dfsStack.push(startNode);
     std::unordered_map<node, decltype(dfsGraph.neighborRange(startNode).begin())> neighborIterators;
     std::unordered_set<Edge> preprocessedEdges;
 
@@ -173,8 +173,8 @@ bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
             if (!preprocessedEdges.contains(currentEdge)) {
                 stackBottom[currentEdge] = stack.empty() ? NoneConflictPair : stack.top();
                 if (currentEdge == parentEdges[neighbor]) {
-                    dfsStack.emplace(currentNode);
-                    dfsStack.emplace(neighbor);
+                    dfsStack.push(currentNode);
+                    dfsStack.push(neighbor);
                     preprocessedEdges.insert(currentEdge);
                     callRemoveBackEdges = false;
                     return true; // Indicate further processing needed
@@ -190,10 +190,8 @@ bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
 
                 if (neighbor == *dfsGraph.neighborRange(currentNode).begin()) {
                     lowestPointEdge[parentEdges[currentNode]] = lowestPointEdge[currentEdge];
-                } else {
-                    if (!applyConstraints(currentEdge, parentEdges[currentNode])) {
-                        return false;
-                    }
+                } else if (!applyConstraints(currentEdge, parentEdges[currentNode])) {
+                    return false;
                 }
             }
             ++neighborIterator;
@@ -216,10 +214,8 @@ bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
             return false;
         }
 
-        if (callRemoveBackEdges) {
-            if (parentEdge != noneEdge) {
-                removeBackEdges(parentEdge);
-            }
+        if (callRemoveBackEdges && parentEdge != noneEdge) {
+            removeBackEdges(parentEdge);
         }
     } while (!dfsStack.empty());
 
@@ -228,7 +224,7 @@ bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
 
 void LeftRightPlanarityCheck::dfsOrientation(node startNode) {
     std::stack<node> dfsStack;
-    dfsStack.emplace(startNode);
+    dfsStack.push(startNode);
     std::unordered_set<Edge> preprocessedEdges;
     do {
         const node currentNode = dfsStack.top();
@@ -248,8 +244,8 @@ void LeftRightPlanarityCheck::dfsOrientation(node startNode) {
                 {
                     parentEdges[neighbor] = currentEdge;
                     heights[neighbor] = heights[currentNode] + 1;
-                    dfsStack.emplace(currentNode);
-                    dfsStack.emplace(neighbor);
+                    dfsStack.push(currentNode);
+                    dfsStack.push(neighbor);
                     preprocessedEdges.insert(currentEdge);
                     break;
                 }

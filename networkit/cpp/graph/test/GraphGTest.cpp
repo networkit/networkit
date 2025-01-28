@@ -2491,7 +2491,7 @@ TEST(GraphGTest, testSortNeighborsWeightedUndirectedGraphByWeights) {
             sortedWeights.push_back(G.weight(currentNode, neighbor));
         }
         // Ensure weights are sorted in ascending order
-        EXPECT_TRUE(std::is_sorted(sortedWeights.begin(), sortedWeights.end()));
+        EXPECT_TRUE(std::ranges::is_sorted(sortedWeights.begin(), sortedWeights.end()));
     });
 }
 
@@ -2573,7 +2573,7 @@ TEST(GraphGTest, testSortNeighborsWeightedDirectedGraphByWeights) {
             sortedWeights.push_back(G.weight(currentNode, neighbor));
         }
         // Ensure weights are sorted in ascending order
-        EXPECT_TRUE(std::is_sorted(sortedWeights.begin(), sortedWeights.end()));
+        EXPECT_TRUE(std::ranges::is_sorted(sortedWeights.begin(), sortedWeights.end()));
 
         const auto sortedInNeighbors = G.neighborRange(currentNode);
         std::vector<edgeweight> sortedInWeights;
@@ -2581,7 +2581,7 @@ TEST(GraphGTest, testSortNeighborsWeightedDirectedGraphByWeights) {
             sortedInWeights.push_back(G.weight(currentNode, neighbor));
         }
         // Ensure inWeights are sorted in ascending order
-        EXPECT_TRUE(std::is_sorted(sortedInWeights.begin(), sortedInWeights.end()));
+        EXPECT_TRUE(std::ranges::is_sorted(sortedInWeights.begin(), sortedInWeights.end()));
     });
 }
 
