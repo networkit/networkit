@@ -106,7 +106,7 @@ jobs:
       CXX: c++
     strategy:
       matrix:
-        os: ['10.15'] # 11.0 temp. removed due to errors in preview image / git actions pipelines
+        os: ['13'] # 11.0 temp. removed due to errors in preview image / git actions pipelines
         build-configuration: ['full', 'full (native)']
     continue-on-error: ${{ matrix.os == '11.0' }}
     steps:
@@ -139,7 +139,7 @@ jobs:
     runs-on: macos-${{ matrix.os }}
     strategy:
       matrix:
-        os: ['10.15']  # 11.0 temp. removed due to errors in preview image / git actions pipelines
+        os: ['13']  # 11.0 temp. removed due to errors in preview image / git actions pipelines
         compiler: ['clang-13', 'gcc-11']
     continue-on-error: ${{ matrix.os == '11.0' }}
     steps:
@@ -237,7 +237,7 @@ jobs:
 
   linux-build-min-support:
     name: "Linux (${{ matrix.compiler }}, CPython 3.6): full"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         compiler: ['gcc-6', 'clang-3.9']
