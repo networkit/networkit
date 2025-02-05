@@ -106,7 +106,7 @@ jobs:
       CXX: c++
     strategy:
       matrix:
-        os: ['11']
+        os: ['13']
         build-configuration: ['full', 'full (native)']
     steps:
       - name: Install prerequisites
@@ -138,7 +138,7 @@ jobs:
     runs-on: macos-${{ matrix.os }}
     strategy:
       matrix:
-        os: ['11']
+        os: ['13']
         compiler: ['clang-15', 'gcc-12']
     steps:
       - name: Install prerequisites
@@ -235,7 +235,7 @@ jobs:
 
   linux-build-min-support:
     name: "Linux (${{ matrix.compiler }}, CPython 3.7): full"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         compiler: ['gcc-7', 'clang-5']
@@ -387,7 +387,7 @@ jobs:
           cd ../..
           python -m venv pyenv
           . ./pyenv/Scripts/activate
-          pip install cython ipython jupyter ipywidgets==7.7.1 jupyterlab-widgets==1.1.1
+          pip install "cython<3.0" ipython jupyter ipywidgets==7.7.1 jupyterlab-widgets==1.1.1
           mkdir build && cd build
           cmake -GNinja -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_STATIC=ON -DCMAKE_BUILD_TYPE=Release -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DNETWORKIT_WARNINGS=ON -DNETWORKIT_WARNINGS_AS_ERRORS=ON -DNETWORKIT_EXT_TLX=${{ env.TLX_PATH_WIN }} -DNETWORKIT_NATIVE=${{ env.NATIVE }} ..
           ninja

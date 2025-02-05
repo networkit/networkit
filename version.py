@@ -1,6 +1,6 @@
 name='networkit'
 
-version='10.1'
+version='10.1.1'
 
 url='https://networkit.github.io/'
 
@@ -53,5 +53,5 @@ classifiers = [
 
 install_requires = [
 	'scipy',
-	'numpy'
+	'numpy<2.0'
 ]
