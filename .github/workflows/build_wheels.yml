@@ -28,28 +28,19 @@ jobs:
           CIBW_BEFORE_BUILD: pip install cython
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp38-* cp39-* cp310-* cp311-* cp312-*' || 'cp312-*' }}
+          CIBW_BUILD: 'cp39-* cp310-* cp311-* cp312-*'
           CIBW_SKIP: "pp* *-musllinux_*"
       - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
-        with:
-          name: 'linux-${{ matrix.cibw_archs }}-cp38-${{ github.run_id }}.wheel'
-          path: ./wheelhouse/*cp38*.whl
-          retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
         with:
           name: 'linux-${{ matrix.cibw_archs }}-cp39-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
         with:
           name: 'linux-${{ matrix.cibw_archs }}-cp310-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp310*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
         with:
           name: 'linux-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp311*.whl
@@ -60,52 +51,14 @@ jobs:
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
-  cpython-linux-aarch64:
-    name: 'Linux CPython (${{ matrix.cibw_archs }}, ${{ matrix.manylinux_image }})'
-    runs-on: ${{ matrix.os }}
+  cpython-macos:
+    name: 'macOS CPython  (${{ matrix.buildplat[1] }})'
+    runs-on: ${{ matrix.buildplat[0] }}
     strategy:
       matrix:
-        os: [ubuntu-20.04]
-        cibw_archs: ["aarch64"]
-        manylinux_image: ["manylinux2014"]
-    steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: all
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-      - uses: actions/setup-python@v5
-        name: Install Python
-        with:
-          python-version: '3.9'
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.2
-        env:
-          CIBW_BEFORE_BUILD: pip install cython
-          CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
-          CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp311-* cp312-*' || 'cp312-*' }}
-          CIBW_SKIP: "pp* *-musllinux_*"
-      - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
-        with:
-          name: 'linux-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}.wheel'
-          path: ./wheelhouse/*cp311*.whl
-          retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v4
-        with:
-          name: 'linux-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}.wheel'
-          path: ./wheelhouse/*cp312*.whl
-          retention-days: ${{ env.ARTIFACT_RETENTION }}
-
-  cpython-macos-x86_64:
-    name: 'macOS CPython  (${{ matrix.cibw_archs }})'
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        cibw_archs: ["x86_64"]
+        buildplat:
+        - [macos-13, x86_64, '']
+        - [macos-latest, arm64, NETWORKIT_OSX_CROSSBUILD=ON]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -113,88 +66,37 @@ jobs:
       - uses: actions/setup-python@v5
         name: Install Python
         with:
-          python-version: '3.10'
+          python-version: '3.12'
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.2
+        uses: pypa/cibuildwheel@v2.21.1
         env:
           CIBW_BEFORE_BUILD: 
             pip install cython &&
             brew install libomp ninja
-          CIBW_ARCHS_MACOS: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp38-* cp39-* cp310-* cp311-* cp312-*' || 'cp312-*' }}
-          CIBW_ENVIRONMENT: CXX='c++'
+          CIBW_ARCHS_MACOS: ${{ matrix.buildplat[1] }}
+          CIBW_BUILD: 'cp39-* cp310-* cp311-* cp312-*'
+          CIBW_ENVIRONMENT: CXX='c++' ${{ matrix.buildplat[2] }} MACOSX_DEPLOYMENT_TARGET='14.0'
           CIBW_SKIP: "pp* *-musllinux_*"
       - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
         with:
-          name: 'macos-${{ matrix.cibw_archs }}-cp38-${{ github.run_id }}.wheel'
-          path: ./wheelhouse/*cp38*.whl
-          retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
-        with:
-          name: 'macos-${{ matrix.cibw_archs }}-cp39-${{ github.run_id }}.wheel'
+          name: 'macos-${{matrix.buildplat[1] }}-cp39-${{ github.run_id }}'
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
         with:
-          name: 'macos-${{ matrix.cibw_archs }}-cp310-${{ github.run_id }}.wheel'
+          name: 'macos-${{ matrix.buildplat[1] }}-cp310-${{ github.run_id }}'
           path: ./wheelhouse/*cp310*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
         with:
-          name: 'macos-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}.wheel'
+          name: 'macos-${{ matrix.buildplat[1] }}-cp311-${{ github.run_id }}'
           path: ./wheelhouse/*cp311*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
         with:
-          name: 'macos-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}.wheel'
+          name: 'macos-${{ matrix.buildplat[1] }}-cp32-${{ github.run_id }}'
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-
-  # CROSSBUILDING ON MACOS IS CURRENTLY BROKEN BECAUSE OF OPENMP-DEPENDENCIES
-  # cpython-macos-arm64:
-  #   name: 'macOS CPython  (${{ matrix.cibw_archs }})'
-  #   runs-on: macos-latest
-  #   strategy:
-  #     matrix:
-  #       cibw_archs: ["arm64"]
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         submodules: true
-  #     - uses: actions/setup-python@v2
-  #       name: Install Python
-  #       with:
-  #         python-version: '3.11'
-  #     - name: Build wheels
-  #       uses: pypa/cibuildwheel@v2.1.1
-  #       env:
-  #         CIBW_BEFORE_BUILD: 
-  #           pip install "cython==0.29.*" &&
-  #           brew install libomp ninja &&
-  #           pip install --pre -i https://pypi.anaconda.org/scipy-wheels-nightly/simple scipy
-  #         CIBW_ENVIRONMENT: CXX=c++ NETWORKIT_OSX_CROSSBUILD=ON
-  #         CIBW_ARCHS_MACOS: ${{ matrix.cibw_archs }}
-  #         CIBW_BUILD: "cp39-* cp310-* cp311-*"
-  #         CIBW_SKIP: pp*
-  #     - uses: actions/upload-artifact@v2
-  #       with:
-  #         name: networkit-cp39-macos-${{ matrix.cibw_archs }}.whl
-  #         path: ./wheelhouse/*cp39*.whl
-  #         retention-days: ${{ env.ARTIFACT_RETENTION }}
-  #     - uses: actions/upload-artifact@v2
-  #       with:
-  #         name: networkit-cp310-macos-${{ matrix.cibw_archs }}.whl
-  #         path: ./wheelhouse/*cp310*.whl
-  #         retention-days: ${{ env.ARTIFACT_RETENTION }}
-  #     - uses: actions/upload-artifact@v2
-  #       with:
-  #         name: networkit-cp311-macos-${{ matrix.cibw_archs }}.whl
-  #         path: ./wheelhouse/*cp311*.whl
-  #         retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-windows:
     name: 'Windows CPython (${{ matrix.cibw_archs }})'
@@ -213,32 +115,23 @@ jobs:
         with:
           python-version: '3.10'
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.2
+        uses: pypa/cibuildwheel@v2.21.1
         env:
           CIBW_BEFORE_BUILD: pip install cython ipython
           CIBW_ARCHS: "AMD64"
-          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp38-* cp39-* cp310-* cp311-* cp312-*' || 'cp312-*' }}
+          CIBW_BUILD: 'cp39-* cp310-* cp311-* cp312-*'
           CIBW_SKIP: pp*
       - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
-        with:
-          name: 'win-${{ matrix.cibw_archs }}-cp38-${{ github.run_id }}.wheel'
-          path: ./wheelhouse/*cp38*.whl
-          retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
         with:
           name: 'win-${{ matrix.cibw_archs }}-cp39-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp39*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
         with:
           name: 'win-${{ matrix.cibw_archs }}-cp310-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp310*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
         with:
           name: 'win-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}.wheel'
           path: ./wheelhouse/*cp311*.whl
@@ -271,42 +164,3 @@ jobs:
           name: 'sdist-${{ github.run_id }}.tar.gz'
           path: ./dist/*networkit*.tar.gz
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-
-  # This job checks whether the current workflow is triggered by a new tag with the following form: INT.INT or INT.INT.INT (for example: 1.0, 1.0.1, ...)
-  # The result is saved in a variable and used as a conditional variable when uploading packages.
-  check-release-tag:
-    name: "Check for new release"
-    runs-on: ubuntu-latest
-    outputs:
-      is-release: ${{ steps.do-check.outputs.is-release }}
-    steps:
-      - name: Check release tag ${{ github.ref }}
-        id: do-check
-        run: |
-          if [[ ${{ github.ref }} =~ ^refs\/tags\/[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
-            echo "::set-output name=is-release::true"
-          else
-            echo "::set-output name=is-release::false"
-          fi
-
-  upload-packages:
-    if: needs.check-release-tag.outputs.is-release == 'true' && github.repository == 'networkit/networkit'
-    name: 'PyPi release upload'
-    runs-on: ubuntu-20.04
-    needs: [cpython-macos-x86_64, cpython-linux-aarch64, cpython-linux-x86_64, cpython-windows, source-distribution, check-release-tag]
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          path: ./dist
-      - uses: actions/setup-python@v5
-        name: Install Python
-        with:
-          python-version: '3.10'
-      - name: Upload to TestPyPI
-        run: |
-          pip install twine 
-          python3 -m twine upload --verbose --skip-existing ./dist/artifact/*
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TWINE_TOKEN }}
-

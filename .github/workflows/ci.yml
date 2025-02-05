@@ -106,7 +106,7 @@ jobs:
       CXX: c++
     strategy:
       matrix:
-        os: ['13']
+        os: ['13', 'latest']
         build-configuration: ['full', 'full (native)']
     steps:
       - name: Install prerequisites
@@ -138,7 +138,7 @@ jobs:
     runs-on: macos-${{ matrix.os }}
     strategy:
       matrix:
-        os: ['13']
+        os: ['latest']
         compiler: ['clang-17', 'gcc-13']
     steps:
       - name: Install prerequisites
@@ -170,8 +170,8 @@ jobs:
     name: "Linux (gcc-12${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.12' || '' }}): ${{ matrix.build-configuration }}"
     runs-on: ubuntu-22.04
     env:
-      CC: gcc-13
-      CXX: g++-13
+      CC: gcc-12
+      CXX: g++-12
     strategy:
       matrix:
         build-configuration: ['full', 'full (native)', 'core (non-monolithic)', 'core (C++20)']
@@ -252,39 +252,6 @@ jobs:
           mkdir ./tmp && cd ./tmp
           python3 -c "import networkit"
 
-  linux-build-min-support:
-    name: "Linux (${{ matrix.compiler }}, CPython 3.8): full"
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        compiler: ['gcc-8', 'clang-7']
-    steps:
-      - name: Install prerequisites
-        run:  |
-          sudo apt-get update
-          sudo apt-get install ninja-build
-          sudo apt-get install clang-7 clang++-7
-          sudo apt-get install gcc-8 g++-8
-      - name: Setup Python 3.8
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.8'
-      - name: Checkout networkit
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-      - name: Checkout tlx
-        uses: actions/checkout@v4
-        with:
-          repository: tlx/tlx
-          path: tlx
-      - name: Prepare environment and run checks
-        run:  ${{ github.workspace }}/.github/workflows/scripts/full.sh
-        shell: bash
-        env:
-          CC: ${{ matrix.compiler == 'gcc-8' && 'gcc-8' || 'clang-7' }}
-          CXX: ${{ matrix.compiler == 'gcc-8' && 'g++-8' || 'clang++-7' }}
-
   linux-build-clang-tidy:
     name: "Linux (clang-16): clang-tidy"
     runs-on: ubuntu-20.04
@@ -305,54 +272,6 @@ jobs:
       - name: Prepare environment and run checks
         run:  ${{ github.workspace }}/.github/workflows/scripts/clang_tidy.sh
         shell: bash
-
-  linux-build-core-sanitizers-coverage:
-    name: "Linux (gcc-10, CPython 3.12): coverage"
-    runs-on: ubuntu-20.04
-    env:
-      CC: gcc-10
-      CXX: g++-10
-      COVERALLS_DUMP_FILE: coveralls.dump
-      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-      COVERALLS_SVC_NUM: ${{ github.run_number }}
-      NETWORKIT_BUILD_TESTS: ON
-    steps:
-      - name: Install prerequisites
-        run:  |
-          sudo apt-get update
-          sudo apt-get install ninja-build
-      - name: Setup Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-      - name: Prepare environment and run checks
-        run:  ${{ github.workspace }}/.github/workflows/scripts/core_sanitizers_coverage.sh
-        shell: bash
-        timeout-minutes: 180
-      - name: Create C++ coverage
-        run: |
-          cd ${{ github.workspace }}
-          . pyenv/bin/activate
-          cd core_build
-          gcovr -e '.*test/.*' -e '.*CMakeFiles.*' -e '.*/extlibs/.*' -e '.*/scripts/.*' -e '.*/pyenv/.*' -e '.*/include/tlx/.*' --coveralls -r .. > networkit_cpp.json
-          gcovr -e '.*test/.*' -e '.*CMakeFiles.*' -e '.*/extlibs/.*' -e '.*/scripts/.*' -e '.*/pyenv/.*' -e '.*/include/tlx/.*' -r ..
-      - name: Create Python coverage and merge files
-        run: |
-          cd ${{ github.workspace }}
-          . pyenv/bin/activate
-          coverage run -m unittest discover -v networkit/test
-          coverage report
-          coveralls --merge=core_build/networkit_cpp.json --output=$COVERALLS_DUMP_FILE
-      - name: Upload coverage
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: |
-          cd ${{ github.workspace }}
-          . pyenv/bin/activate
-          python3 ${{ github.workspace }}/.github/workflows/scripts/upload_coverage.py
 
   windows-build-msvc:
     name: "Windows (msvc 14.38): ${{ matrix.build-configuration }}"
@@ -407,7 +326,7 @@ jobs:
           cd ../..
           python -m venv pyenv
           . ./pyenv/Scripts/activate
-          pip install cython ipython ipywidgets==7.7.1 jupyter jupyterlab-widgets==1.1.1 numpy setuptools
+          pip install cython ipython ipywidgets==7.7.1 jupyter jupyterlab-widgets==1.1.1 numpy setuptools anywidget
           mkdir build && cd build
           cmake -GNinja -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_STATIC=ON -DCMAKE_BUILD_TYPE=Release -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DNETWORKIT_WARNINGS=ON -DNETWORKIT_WARNINGS_AS_ERRORS=ON -DNETWORKIT_EXT_TLX=${{ env.TLX_PATH_WIN }} -DNETWORKIT_NATIVE=${{ env.NATIVE }} ..
           ninja

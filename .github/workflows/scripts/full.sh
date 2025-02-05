@@ -9,12 +9,12 @@ cmake --version
 # Note: setuptools<69.0.0 is needed for editable installs. Normal installs work with more recent releases of setuptools
 python3 -m venv pyenv && . pyenv/bin/activate
 pip3 install --upgrade pip
-pip3 install cython numpy ipython jupyter setuptools
+pip3 install cython "numpy" ipython jupyter setuptools
 
 # Build tlx
 cd tlx
 mkdir build && cd "$_"
-cmake -GNinja -DCMAKE_INSTALL_PREFIX=$TLX_PATH ..
+cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$TLX_PATH ..
 ninja
 ninja install
 cd ../..
@@ -44,6 +44,6 @@ python3 -m unittest discover -v networkit/test/
 
 # Installing ipywidgets and jupyterlab-widgets (+ pinned versions) is temp. necessary due to incompatibility with Jupyterlab/plotly and ipywidgets>8.X
 # See: https://github.com/plotly/plotly.py/issues/3686
-pip3 install ipycytoscape plotly seaborn ipywidgets==7.7.1 jupyterlab-widgets==1.1.1
+pip3 install ipycytoscape plotly seaborn ipywidgets==7.7.1 jupyterlab-widgets==1.1.1 anywidget
 
 python3 notebooks/test_notebooks.py 'notebooks/'
