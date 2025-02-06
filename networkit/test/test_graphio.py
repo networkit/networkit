@@ -131,6 +131,16 @@ class TestGraphIO(unittest.TestCase):
                 G1 = nk.graphio.readGraph(filename, format, *kargs)
             self.checkStatic(G, G1)
 
+    def testWriteEmptyGraph(self):
+        empty_graph_write = nk.graph.Graph()
+        # empty_graph_write.addNode()
+        output_path = 'output/empty_graph.bin'
+        nk.graphio.writeGraph(empty_graph_write, output_path, nk.Format.NetworkitBinary)
+        empty_graph_read = nk.readGraph(output_path, nk.Format.NetworkitBinary)
+        self.assertEqual(empty_graph_write.numberOfNodes(), empty_graph_read.numberOfNodes())
+        self.assertEqual(empty_graph_write.numberOfEdges(), empty_graph_read.numberOfEdges())
+        os.remove(output_path)
+
     def testGuessFormat(self):
         instances = [
             ("airfoil1.graph", nk.Format.METIS),
