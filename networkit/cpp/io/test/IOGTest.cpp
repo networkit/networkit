@@ -11,6 +11,7 @@
 #include <cassert>
 #include <chrono>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -644,6 +645,17 @@ TEST_F(IOGTest, testGraphToolBinaryReader) {
     EXPECT_EQ(4941u, G.numberOfNodes());
     EXPECT_EQ(6594u, G.numberOfEdges());
     EXPECT_FALSE(G.isDirected());
+}
+
+TEST_F(IOGTest, testGraphToolBinaryEmptyFileCanBeRead) {
+    Graph graph(0, false, true);
+    GraphToolBinaryWriter writer;
+    std::filesystem::path const path = "output/empty_graph.gt";
+    writer.write(graph, path.c_str());
+
+    GraphToolBinaryReader reader;
+    Graph graph_read = reader.read(path.c_str());
+    EXPECT_EQ(graph.numberOfNodes(), graph_read.numberOfNodes());
 }
 
 TEST_F(IOGTest, testGraphToolBinaryWriter) {
