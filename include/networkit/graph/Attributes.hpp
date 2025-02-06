@@ -107,8 +107,9 @@ public:
     void swapData(index i, index j) override {
         assert(i < values.size());
         assert(j < values.size());
-        std::swap(values[i], values[j]);
-        std::swap(this->valid[i], this->valid[j]);
+        using std::swap;
+        swap(values[i], values[j]);
+        swap(this->valid[i], this->valid[j]);
     }
 
     void erase(index i) override {
@@ -150,7 +151,7 @@ public:
 
 private:
     std::vector<T> values; // the real attribute storage
-};                         // class AttributeStorage<NodeOrEdge, Base, T>
+}; // class AttributeStorage<NodeOrEdge, Base, T>
 
 template <typename NodeOrEdge, typename GraphType, typename T, bool isConst>
 class Attribute {
