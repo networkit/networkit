@@ -32,6 +32,8 @@ void TopologicalSort::checkDirected() {
 }
 
 void TopologicalSort::checkNodeIdMap() {
+    if (!nodeIdMap) return;
+
     size_t numberOfNodes = G.numberOfNodes();
     std::vector<bool> checkTable(numberOfNodes);
     for (auto &[origNode, mappedNode] : *nodeIdMap) {
