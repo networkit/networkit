@@ -494,4 +494,56 @@ TEST_F(AttributeGTest, assignAttributeToAttribute) {
     EXPECT_EQ(attr2[1], 4);
 }
 
+TEST_F(AttributeGTest, testMaintainCompactEdges) {
+    Graph graph(3);
+    graph.indexEdges();
+    graph.addEdge(0, 1);
+    graph.addEdge(0, 2);
+
+    graph.setMaintainCompactEdges();
+
+    auto attr = graph.edgeAttributes().attach<int>("attr");
+    attr(0, 1) = 0;
+    attr(0, 2) = 1;
+
+    graph.removeEdge(0, 1);
+
+    EXPECT_EQ(attr(0, 2), 1);
+}
+
+TEST_F(AttributeGTest, testMaintainSortedEdges) {
+    Graph graph(3);
+    graph.indexEdges();
+    graph.addEdge(0, 1);
+    graph.addEdge(0, 2);
+
+    graph.setKeepEdgesSorted();
+
+    auto attr = graph.edgeAttributes().attach<int>("attr");
+    attr(0, 1) = 0;
+    attr(0, 2) = 1;
+
+    graph.removeEdge(0, 1);
+
+    EXPECT_EQ(attr(0, 2), 1);
+}
+
+TEST_F(AttributeGTest, testMaintainSortedAndCompactEdges) {
+    Graph graph(3);
+    graph.indexEdges();
+    graph.addEdge(0, 1);
+    graph.addEdge(0, 2);
+
+    graph.setMaintainCompactEdges();
+    graph.setKeepEdgesSorted();
+
+    auto attr = graph.edgeAttributes().attach<int>("attr");
+    attr(0, 1) = 0;
+    attr(0, 2) = 1;
+
+    graph.removeEdge(0, 1);
+
+    EXPECT_EQ(attr(0, 2), 1);
+}
+
 } // namespace NetworKit
