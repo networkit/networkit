@@ -36,8 +36,8 @@ convertStringToParallelizationType(std::string_view parallelizationStrategy) {
 
 LouvainMapEquation::LouvainMapEquation(const Graph &graph, bool hierarchical, count maxIterations,
                                        ParallelizationType parallelizationType)
-    : CommunityDetectionAlgorithm(graph), parallel(parallelizationType > ParallelizationType::NONE),
-      parallelizationType(parallelizationType), hierarchical(hierarchical),
+    : CommunityDetectionAlgorithm(graph), parallelizationType(parallelizationType),
+      parallel(parallelizationType > ParallelizationType::NONE), hierarchical(hierarchical),
       maxIterations(maxIterations), clusterCut(graph.upperNodeIdBound()),
       clusterVolume(graph.upperNodeIdBound()),
       locks(parallelizationType == ParallelizationType::RELAX_MAP ? graph.upperNodeIdBound() : 0),
@@ -49,14 +49,15 @@ LouvainMapEquation::LouvainMapEquation(const Graph &graph, bool hierarchical, co
 
 LouvainMapEquation::LouvainMapEquation(const Graph &graph, bool hierarchical, count maxIterations,
                                        std::string_view parallelizationStrategy)
-    : CommunityDetectionAlgorithm(graph), hierarchical(hierarchical), maxIterations(maxIterations),
-      clusterCut(graph.upperNodeIdBound()), clusterVolume(graph.upperNodeIdBound()),
+    : CommunityDetectionAlgorithm(graph),
       parallelizationType(convertStringToParallelizationType(parallelizationStrategy)),
-      parallel(parallelizationType != ParallelizationType::NONE),
+      parallel(parallelizationType != ParallelizationType::NONE), hierarchical(hierarchical),
+      maxIterations(maxIterations), clusterCut(graph.upperNodeIdBound()),
+      clusterVolume(graph.upperNodeIdBound()),
+      locks(parallelizationType == ParallelizationType::RELAX_MAP ? graph.upperNodeIdBound() : 0),
       nextPartition(
           parallelizationType == ParallelizationType::SYNCHRONOUS ? graph.upperNodeIdBound() : 0),
-      ets_neighborClusterWeights(parallel ? Aux::getMaxNumberOfThreads() : 1),
-      locks(parallelizationType == ParallelizationType::RELAX_MAP ? graph.upperNodeIdBound() : 0) {
+      ets_neighborClusterWeights(parallel ? Aux::getMaxNumberOfThreads() : 1) {
     result = Partition(graph.upperNodeIdBound());
 }
 
