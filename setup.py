@@ -69,78 +69,6 @@ else:
 sys.argv = [__file__] + args
 
 ################################################
-# compiler identification
-################################################
-
-candidates = ["g++", "g++-12", "g++-11", "g++-10", "g++-9", "g++-8", "g++-7", "g++-6.1", "clang++", "clang++-3.9"]
-
-def determineCompiler(candidates, std, flags):
-	sample = open("sample.cpp", "w")
-	sample.write("""
-	#include <omp.h>
-	#include <iostream>
-	void helloWorld() {
-		std::cout << "Hello world" << std::endl;
-	}
-	int main (int argc, char *argv[]) {
-		helloWorld();
-		int nthreads, tid;
-		#pragma omp parallel private(nthreads, tid)
-		{
-			tid = omp_get_thread_num();
-			std::cout << \"Hello World from thread = \" << tid << std::endl;
-			if (tid == 0) {
-				nthreads = omp_get_num_threads();
-				std::cout << \"Number of threads = \" << nthreads << std::endl;
-			}
-		}
-	}""")
-	sample.close()
-
-	for compiler in candidates:
-		cmd = [compiler,"-o","test_build","-std={}".format(std)]
-		cmd.extend(flags)
-		cmd.append("sample.cpp")
-		try:
-			my_env = os.environ.copy()
-			if subprocess.call(cmd,stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=my_env) == 0:
-				os.remove("sample.cpp")
-				os.remove("test_build")
-				return compiler
-		except:
-			pass
-	try:
-		os.remove("sample.cpp")
-	except:
-		pass
-	return None
-
-# only check for a compiler if none is specified
-if cmakeCompiler is None:
-	if sys.platform == "darwin":
-		# homebrew's "libomp" is used as a default package for AppleClang.
-		# For arm64 macOS, homebrew is installed in /opt/homebrew by default, therefore it is not on include/lib path.
-		try:
-			proc = subprocess.run(['brew','--prefix'], stdout=subprocess.PIPE)
-			brewPrefix = proc.stdout.decode('utf-8').strip()
-			cmakeCompiler = determineCompiler(["c++"], "c++17", ["-Xpreprocessor", "-fopenmp", "-I" + str(brewPrefix) + "/include", "-L" + str(brewPrefix) + "/lib", "-lomp"])
-		except:
-			pass
-	if sys.platform == "win32":
-		# On "win32"-systems compiler detection is not easy, since paths are only set by enabling vcvarsall.bat 
-		# (for default compiler cl.exe). We assume that Visual Studio is installed and activated.
-		cmakeCompiler = "cl"
-		print("The default for Windows is to use cl.exe (MSVC), be sure to install and activate Visual Studio command line tools.")
-	if cmakeCompiler is None:
-		cmakeCompiler = determineCompiler(candidates, "c++17", ["-fopenmp"])
-	if cmakeCompiler is None:
-		print("ERROR: No suitable compiler found. Install any of these: ", candidates)
-		print("       If you have a suitable compiler installed, which is not a standard path, you can override detection by setting 'export NETWORKIT_OVERRIDE_CXX=<compiler-path>'")
-		if sys.platform == "darwin":
-			print("If using AppleClang, OpenMP is needed. Use brew or macports to install libomp.")
-		exit(1)
-
-################################################
 # functions for cythonizing and building networkit
 ################################################
 
@@ -153,7 +81,8 @@ def buildNetworKit(install_prefix, externalCore=False, externalTlx=None, withTes
 	abs_prefix = os.path.join(os.getcwd(), install_prefix)
 	comp_cmd = ["cmake","-DCMAKE_BUILD_TYPE=Release"]
 	comp_cmd.append("-DCMAKE_INSTALL_PREFIX="+abs_prefix)
-	comp_cmd.append("-DCMAKE_CXX_COMPILER="+cmakeCompiler)
+	if cmakeCompiler:
+		comp_cmd.append("-DCMAKE_CXX_COMPILER="+cmakeCompiler)
 	comp_cmd.append("-DNETWORKIT_FLATINSTALL=ON")
 	from sysconfig import get_paths, get_config_var
 	# The following cmake parameters set Python-variables. This is done to avoid differences between the 
