@@ -656,6 +656,7 @@ TEST_F(IOGTest, testGraphToolBinaryEmptyFileCanBeRead) {
     GraphToolBinaryReader reader;
     Graph graph_read = reader.read(path.c_str());
     EXPECT_EQ(graph.numberOfNodes(), graph_read.numberOfNodes());
+    EXPECT_EQ(graph.numberOfEdges(), graph_read.numberOfEdges());
 }
 
 TEST_F(IOGTest, testGraphToolBinaryWriter) {
