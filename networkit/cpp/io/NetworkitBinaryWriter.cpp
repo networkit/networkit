@@ -279,13 +279,16 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
     nextOffset += nodes * sizeof(uint8_t)            // nodeFlags.
                   + (chunks - 1) * sizeof(uint64_t); // firstVertex.
     header.offsetAdjLists = nextOffset;
+    size_t size_of_offset_data = adjOffsets.size() > 0 ? adjOffsets.back() : 0;
     nextOffset += (chunks - 1) * sizeof(uint64_t) // adjOffsets
                   + sizeof(uint64_t)              // adjListSize
-                  + adjOffsets.back();            // Size of data
+                  + size_of_offset_data;
     header.offsetAdjTranspose = nextOffset;
+
+    size_of_offset_data = transpOffsets.size() > 0 ? adjOffsets.back() : 0;
     nextOffset += (chunks - 1) * sizeof(uint64_t) // transpOffsets
                   + sizeof(uint64_t)              // adjTranspSize
-                  + transpOffsets.back();         // Size of data
+                  + size_of_offset_data;
 
     if (weightFormat != nkbg::WEIGHT_FORMAT::NONE) {
         header.offsetWeightLists = nextOffset;

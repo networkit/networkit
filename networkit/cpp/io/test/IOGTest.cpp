@@ -839,6 +839,19 @@ TEST_F(IOGTest, testKONECTGraphReader) {
     ASSERT_EQ(G.weight(0, 1), 1.261404);
     ASSERT_EQ(G.weight(127, 48), 0.03050447);
 }
+
+TEST_F(IOGTest, testNetworkitBinaryWriteEmpty) {
+    Graph graph(0, false, true);
+    NetworkitBinaryWriter writer;
+    std::filesystem::path const path = "empty_graph.bin";
+    writer.write(graph, path.c_str());
+
+    NetworkitBinaryReader reader;
+    Graph graph_read = reader.read(path.c_str());
+    EXPECT_EQ(graph.numberOfNodes(), graph_read.numberOfNodes());
+    EXPECT_EQ(graph.numberOfEdges(), graph_read.numberOfEdges());
+}
+
 TEST_F(IOGTest, testNetworkitBinaryTiny01) {
     METISGraphReader reader2;
     Graph G = reader2.read("input/tiny_01.graph");
