@@ -75,6 +75,9 @@ double real(std::mt19937_64 &rng) {
 template <typename F>
 void ChungLuGeneratorAlamEtAl::edgeSkipping(std::mt19937_64 &rng, F &&addEdge, index i, index j,
                                             double p, index end) {
+    if (p == 0.0)
+        return;
+
     index x = 0 - 1;
     double logP = 1.0 / std::log(1.0 - p);
     bool end_arrived = false;
@@ -123,13 +126,10 @@ Graph ChungLuGeneratorAlamEtAl::generateSequential() {
             const double p_j = static_cast<double>(groups[i].degrees)
                                * static_cast<double>(groups[j].degrees)
                                / static_cast<double>(sum_deg);
-            if (p_j > 0.0)
-                edgeSkipping(rng, addEdge, i, j, p_j,
-                             groups[i].vertexCount * groups[j].vertexCount);
+            edgeSkipping(rng, addEdge, i, j, p_j, groups[i].vertexCount * groups[j].vertexCount);
         }
-        if (p_i > 0.0)
-            edgeSkipping(rng, addEdge, i, i, p_i,
-                         groups[i].vertexCount * (groups[i].vertexCount - 1) / 2);
+        edgeSkipping(rng, addEdge, i, i, p_i,
+                     groups[i].vertexCount * (groups[i].vertexCount - 1) / 2);
     }
 
     return G;
