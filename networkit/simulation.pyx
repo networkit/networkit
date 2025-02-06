@@ -58,7 +58,7 @@ cdef class EpidemicSimulationSEIR(Algorithm):
 		"""
 		try:
 			import pandas
-		return pandas.DataFrame((<_EpidemicSimulationSEIR*>(self._this)).getData(), columns=["zero", "time", "state", "count"])
+			return pandas.DataFrame((<_EpidemicSimulationSEIR*>(self._this)).getData(), columns=["zero", "time", "state", "count"])
 		except ImportError:
 			from .support import MissingDependencyError 
 			raise MissingDependencyError("pandas")
