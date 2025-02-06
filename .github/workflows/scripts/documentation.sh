@@ -13,7 +13,7 @@ pip3 install sphinx
 pip3 install Jinja2 sphinx_bootstrap_theme numpydoc exhale nbsphinx breathe
 pip3 install sphinx_copybutton sphinxcontrib.bibtex sphinx_gallery sphinx_last_updated_by_git 
 pip3 install ipykernel ipython matplotlib nbconvert jupyter-client networkx tabulate
-pip3 install ipycytoscape plotly seaborn powerlaw
+pip3 install ipycytoscape plotly seaborn powerlaw anywidget
 
 # Build the C++ core library (no need for optimizations).
 mkdir core_build && cd "$_"
