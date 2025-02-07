@@ -17,7 +17,7 @@
 namespace NetworKit {
 
 class LouvainMapEquation : public CommunityDetectionAlgorithm {
-private:
+public:
     enum class ParallelizationType : uint8_t {
         NONE,
         RELAX_MAP,
@@ -26,19 +26,6 @@ private:
         RelaxMap = RELAX_MAP,
         Synchronous = SYNCHRONOUS
     };
-
-    /**
-     * @param[in] G input graph
-     * @param[in] hierarchical use recursive coarsening
-     * @param[in] maxIterations maximum number of iterations for move phase
-     * @param[in] parallelization strategy (default synchronous):
-     *            none
-     *            relaxmap    -> one lock per community to update cuts
-     *            synchronous -> work on stale cuts and volumes, update in second step
-     *
-     */
-    explicit LouvainMapEquation(const Graph &graph, bool hierarchical, count maxIterations,
-                                ParallelizationType parallelizationType);
 
 public:
     /**
@@ -53,9 +40,19 @@ public:
      */
     explicit LouvainMapEquation(const Graph &graph, bool hierarchical = false,
                                 count maxIterations = 32,
-                                std::string_view parallelizationStrategy = "relaxmap")
-        : LouvainMapEquation(graph, hierarchical, maxIterations,
-                             convertStringToParallelizationType(parallelizationStrategy)) {}
+                                std::string_view parallelizationStrategy = "relaxmap");
+    /**
+     * @param[in] G input graph
+     * @param[in] hierarchical use recursive coarsening
+     * @param[in] maxIterations maximum number of iterations for move phase
+     * @param[in] parallelization strategy (default synchronous):
+     *            none
+     *            relaxmap    -> one lock per community to update cuts
+     *            synchronous -> work on stale cuts and volumes, update in second step
+     *
+     */
+    explicit LouvainMapEquation(const Graph &graph, bool hierarchical, count maxIterations,
+                                ParallelizationType parallelizationType);
 
     void run() override;
 
@@ -74,8 +71,8 @@ private:
     static_assert(std::is_trivially_destructible<Move>::value,
                   "LouvainMapEquation::Move struct is not trivially destructible");
 
-    const bool parallel;
     ParallelizationType parallelizationType;
+    bool parallel;
 
     bool hierarchical;
     count maxIterations;
@@ -120,19 +117,6 @@ private:
 
     std::pair<count, count> chunkBounds(count i, count n, count chunkSize) const {
         return std::make_pair(i * chunkSize, std::min(n, (i + 1) * chunkSize));
-    }
-
-    ParallelizationType
-    convertStringToParallelizationType(std::string_view parallelizationStrategy) const {
-        if (parallelizationStrategy == "none")
-            return ParallelizationType::NONE;
-        else if (parallelizationStrategy == "relaxmap")
-            return ParallelizationType::RELAX_MAP;
-        else if (parallelizationStrategy == "synchronous")
-            return ParallelizationType::SYNCHRONOUS;
-        else
-            throw std::runtime_error("Invalid parallelization type for map equation Louvain: "
-                                     + std::string(parallelizationStrategy));
     }
 
 #ifndef NDEBUG

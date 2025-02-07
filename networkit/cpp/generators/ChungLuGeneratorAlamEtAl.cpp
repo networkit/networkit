@@ -75,12 +75,17 @@ double real(std::mt19937_64 &rng) {
 template <typename F>
 void ChungLuGeneratorAlamEtAl::edgeSkipping(std::mt19937_64 &rng, F &&addEdge, index i, index j,
                                             double p, index end) {
+    if (p == 0.0)
+        return;
+
     index x = 0 - 1;
     double logP = 1.0 / std::log(1.0 - p);
     bool end_arrived = false;
     do {
         double randVal = real(rng);
         double l = std::floor(std::log(randVal) * logP);
+        if (l == std::numeric_limits<double>::infinity())
+            continue;
         x += static_cast<index>(l + 1);
         if (x >= end) {
             end_arrived = true;

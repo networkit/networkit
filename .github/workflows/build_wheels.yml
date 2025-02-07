@@ -54,45 +54,48 @@ jobs:
           path: ./wheelhouse/*cp313*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
-  cpython-linux-aarch64:
-    name: 'Linux CPython (${{ matrix.cibw_archs }}, ${{ matrix.manylinux_image }})'
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-20.04]
-        cibw_archs: ["aarch64"]
-        manylinux_image: ["manylinux2014"]
-    steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: all
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-      - uses: actions/setup-python@v5
-        name: Install Python
-        with:
-          python-version: '3.12'
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.21.1
-        env:
-          CIBW_BEFORE_BUILD: pip install cython
-          CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
-          CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp312-* cp313-*' || 'cp312-*' }}
-          CIBW_SKIP: "pp* *-musllinux_*"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: 'linux-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}'
-          path: ./wheelhouse/*cp312*.whl
-          retention-days: ${{ env.ARTIFACT_RETENTION }}
-      - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
-        with:
-          name: 'linux-${{ matrix.cibw_archs }}-cp313-${{ github.run_id }}'
-          path: ./wheelhouse/*cp313*.whl
-          retention-days: ${{ env.ARTIFACT_RETENTION }}
+  # THIS ACTION IS DISABLED DUE TO SEGMENTATION FAULT IN GCC COMPILER
+  # Additional note: continue-on-error does not work currently for cibuildwheel: 
+  # https://github.com/pypa/cibuildwheel/issues/1062
+  # cpython-linux-aarch64:
+  #   name: 'Linux CPython (${{ matrix.cibw_archs }}, ${{ matrix.manylinux_image }})'
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-20.04]
+  #       cibw_archs: ["aarch64"]
+  #       manylinux_image: ["manylinux2014"]
+  #   steps:
+  #     - name: Set up QEMU
+  #       uses: docker/setup-qemu-action@v3
+  #       with:
+  #         platforms: all
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         submodules: true
+  #     - uses: actions/setup-python@v5
+  #       name: Install Python
+  #       with:
+  #         python-version: '3.12'
+  #     - name: Build wheels
+  #       uses: pypa/cibuildwheel@v2.21.1
+  #       env:
+  #         CIBW_BEFORE_BUILD: pip install cython
+  #         CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
+  #         CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
+  #         CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp312-* cp313-*' || 'cp312-*' }}
+  #         CIBW_SKIP: "pp* *-musllinux_*"
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: 'linux-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}'
+  #         path: ./wheelhouse/*cp312*.whl
+  #         retention-days: ${{ env.ARTIFACT_RETENTION }}
+  #     - uses: actions/upload-artifact@v4
+  #       if: github.ref == 'refs/heads/master'
+  #       with:
+  #         name: 'linux-${{ matrix.cibw_archs }}-cp313-${{ github.run_id }}'
+  #         path: ./wheelhouse/*cp313*.whl
+  #         retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-macos:
     name: 'macOS CPython  (${{ matrix.buildplat[1] }})'
@@ -235,7 +238,7 @@ jobs:
     if: needs.check-release-tag.outputs.is-release == 'true' && github.repository == 'networkit/networkit'
     name: 'PyPi release upload'
     runs-on: ubuntu-22.04
-    needs: [cpython-macos, cpython-linux-aarch64, cpython-linux-x86_64, cpython-windows, source-distribution, check-release-tag]
+    needs: [cpython-macos, cpython-linux-x86_64, cpython-windows, source-distribution, check-release-tag]
     steps:
       - uses: actions/download-artifact@v4
         with:

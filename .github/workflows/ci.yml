@@ -306,7 +306,7 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/clang_tidy.sh
         shell: bash
 
-  linux-build-core-sanitizers-coverage:
+  linux-build-coverage:
     name: "Linux (gcc-10, CPython 3.12): coverage"
     runs-on: ubuntu-22.04
     env:
@@ -330,7 +330,7 @@ jobs:
         with:
           submodules: true
       - name: Prepare environment and run checks
-        run:  ${{ github.workspace }}/.github/workflows/scripts/core_sanitizers_coverage.sh
+        run:  ${{ github.workspace }}/.github/workflows/scripts/coverage.sh
         shell: bash
         timeout-minutes: 180
       - name: Create C++ coverage
@@ -353,6 +353,31 @@ jobs:
           cd ${{ github.workspace }}
           . pyenv/bin/activate
           python3 ${{ github.workspace }}/.github/workflows/scripts/upload_coverage.py
+
+  linux-build-leak:
+    name: "Linux (gcc-10, CPython 3.12): leak checks"
+    runs-on: ubuntu-22.04
+    env:
+      UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1:report_error_type=1:suppressions=../UBSAN.filter
+    steps:
+      - name: Install prerequisites
+        run:  |
+          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          echo "deb http://apt.llvm.org/jammy llvm-toolchain-jammy-17 main" | sudo tee /etc/apt/sources.list.d/llvm17.list
+          sudo apt-get update
+          sudo apt-get install libomp-17-dev clang-17 clang-tidy-17 ninja-build
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Prepare environment and run checks
+        run:  |
+          mkdir build && cd build
+          cmake -GNinja -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DNETWORKIT_WITH_SANITIZERS=leak  -DCMAKE_CXX_COMPILER=/usr/bin/clang++-17 ..
+          ninja
+          ctest -V -C Debug
+        shell: bash
+        timeout-minutes: 180
 
   windows-build-msvc:
     name: "Windows (msvc 14.X): ${{ matrix.build-configuration }}"

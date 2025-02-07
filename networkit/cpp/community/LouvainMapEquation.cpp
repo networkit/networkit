@@ -21,10 +21,37 @@
 
 namespace NetworKit {
 
+LouvainMapEquation::ParallelizationType
+convertStringToParallelizationType(std::string_view parallelizationStrategy) {
+    if (parallelizationStrategy == "none")
+        return LouvainMapEquation::ParallelizationType::NONE;
+    else if (parallelizationStrategy == "relaxmap")
+        return LouvainMapEquation::ParallelizationType::RELAX_MAP;
+    else if (parallelizationStrategy == "synchronous")
+        return LouvainMapEquation::ParallelizationType::SYNCHRONOUS;
+    else
+        throw std::runtime_error("Invalid parallelization type for map equation Louvain: "
+                                 + std::string(parallelizationStrategy));
+}
+
 LouvainMapEquation::LouvainMapEquation(const Graph &graph, bool hierarchical, count maxIterations,
                                        ParallelizationType parallelizationType)
-    : CommunityDetectionAlgorithm(graph), parallel(parallelizationType > ParallelizationType::NONE),
-      parallelizationType(parallelizationType), hierarchical(hierarchical),
+    : CommunityDetectionAlgorithm(graph), parallelizationType(parallelizationType),
+      parallel(parallelizationType > ParallelizationType::NONE), hierarchical(hierarchical),
+      maxIterations(maxIterations), clusterCut(graph.upperNodeIdBound()),
+      clusterVolume(graph.upperNodeIdBound()),
+      locks(parallelizationType == ParallelizationType::RELAX_MAP ? graph.upperNodeIdBound() : 0),
+      nextPartition(
+          parallelizationType == ParallelizationType::SYNCHRONOUS ? graph.upperNodeIdBound() : 0),
+      ets_neighborClusterWeights(parallel ? Aux::getMaxNumberOfThreads() : 1) {
+    result = Partition(graph.upperNodeIdBound());
+}
+
+LouvainMapEquation::LouvainMapEquation(const Graph &graph, bool hierarchical, count maxIterations,
+                                       std::string_view parallelizationStrategy)
+    : CommunityDetectionAlgorithm(graph),
+      parallelizationType(convertStringToParallelizationType(parallelizationStrategy)),
+      parallel(parallelizationType != ParallelizationType::NONE), hierarchical(hierarchical),
       maxIterations(maxIterations), clusterCut(graph.upperNodeIdBound()),
       clusterVolume(graph.upperNodeIdBound()),
       locks(parallelizationType == ParallelizationType::RELAX_MAP ? graph.upperNodeIdBound() : 0),

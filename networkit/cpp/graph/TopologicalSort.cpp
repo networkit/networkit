@@ -10,22 +10,20 @@
 
 namespace NetworKit {
 
+TopologicalSort::TopologicalSort(const Graph &G)
+    : G(G), computedNodeIdMap(GraphTools::getContinuousNodeIds(G)) {
+    checkDirected();
+}
+
 TopologicalSort::TopologicalSort(const Graph &G, const std::unordered_map<node, node> &nodeIdMap,
                                  bool checkMapping)
-    : G(G), nodeIdMap(nodeIdMap) {
+    : G(G), nodeIdMap(&nodeIdMap) {
     checkDirected();
-    size_t numberOfNodes = G.numberOfNodes();
-    if (!nodeIdMap.empty()) {
-        if (nodeIdMap.size() != numberOfNodes)
-            throw std::runtime_error(
-                "Node id mapping should contain exactly one entry for every node.");
-        else if (checkMapping)
-            checkNodeIdMap();
-    } else {
-        if (G.upperNodeIdBound() != numberOfNodes - 1) {
-            computedNodeIdMap = GraphTools::getContinuousNodeIds(G);
-        }
-    }
+    if (nodeIdMap.size() != G.numberOfNodes())
+        throw std::runtime_error(
+            "Node id mapping should contain exactly one entry for every node.");
+    else if (checkMapping)
+        checkNodeIdMap();
 }
 
 void TopologicalSort::checkDirected() {
@@ -34,9 +32,12 @@ void TopologicalSort::checkDirected() {
 }
 
 void TopologicalSort::checkNodeIdMap() {
+    if (!nodeIdMap)
+        return;
+
     size_t numberOfNodes = G.numberOfNodes();
     std::vector<bool> checkTable(numberOfNodes);
-    for (auto &[origNode, mappedNode] : nodeIdMap) {
+    for (auto &[origNode, mappedNode] : *nodeIdMap) {
         if (mappedNode < numberOfNodes && !checkTable[mappedNode])
             checkTable[mappedNode] = true;
         else
@@ -84,9 +85,9 @@ void TopologicalSort::run() {
 }
 
 node TopologicalSort::mapNode(node u) {
-    if (!nodeIdMap.empty()) {
-        auto it = nodeIdMap.find(u);
-        if (it == nodeIdMap.cend()) {
+    if (nodeIdMap) {
+        auto it = nodeIdMap->find(u);
+        if (it == nodeIdMap->cend()) {
             std::stringstream errorMsg;
             errorMsg << "Node id mapping does not contain node " << u;
             throw std::runtime_error(errorMsg.str());
