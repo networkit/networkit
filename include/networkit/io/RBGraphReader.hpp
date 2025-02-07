@@ -17,7 +17,8 @@ namespace NetworKit {
  * Reader for the Rutherford Boeing (RB) matrix file format as described in
  * http://sparse-files.engr.tamu.edu/files/DOC/rb.pdf.
  *
- * @note currently the reader only supports compressed column format for real, integer, or pattern data types.
+ * @note currently the reader only supports compressed column format for real, integer, or pattern
+ * data types.
  */
 class RBGraphReader final : public GraphReader {
 public:
