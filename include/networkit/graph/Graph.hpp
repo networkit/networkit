@@ -2289,17 +2289,10 @@ void Graph::sortNeighbors(Lambda lambda) {
         // Sort the outEdge-Attributes
         auto &outIndices = threadData[omp_get_thread_num()];
         outIndices.clear();
-        if (outEdges[w].empty())
-            return;
         outIndices.resize(outEdges[w].size());
 
         std::iota(outIndices.begin(), outIndices.end(), 0);
         std::ranges::sort(outIndices, [&](index a, index b) {
-            if (a >= outEdges[w].size() || b >= outEdges[w].size()) {
-                std::cerr << "Invalid index in outEdges: " << a << ", " << b
-                          << " (max: " << outEdges[w].size() << ")\n";
-                std::terminate();
-            }
             return extLambda(w, outEdges[w][a], outEdges[w][b]);
         });
 
@@ -2317,10 +2310,12 @@ void Graph::sortNeighbors(Lambda lambda) {
         }
         // For directed graphs we need to sort the inEdge-Attributes separately
         if (directed) {
+            if (inEdges[w].empty())
+                return;
             auto &inIndices = threadData[omp_get_thread_num()];
             inIndices.clear();
-            if (inEdges[w].size() > inIndices.size())
-                inIndices.resize(inEdges[w].size());
+
+            inIndices.resize(inEdges[w].size());
             std::iota(inIndices.begin(), inIndices.end(), 0);
 
             std::ranges::sort(inIndices, [&](index a, index b) {

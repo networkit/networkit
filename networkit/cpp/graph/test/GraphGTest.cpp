@@ -2396,11 +2396,8 @@ TEST(GraphGTest, testSortNeighborsUndirectedGraph) {
     });
 
     // Sort neighbors
-    G.forNodes([&](const node currentNode) {
-        G.sortNeighbors(currentNode, [&](const node neighbor1, const node neighbor2) {
-            return neighbor1 < neighbor2;
-        });
-    });
+    G.sortNeighbors(
+        [&](node currentNode, node neighbor1, node neighbor2) { return neighbor1 < neighbor2; });
 
     // Validate sorting for outgoing neighbors
     G.forNodes([&](const node currentNode) {
@@ -2438,11 +2435,8 @@ TEST(GraphGTest, testSortNeighborsUndirectedIndexedGraph) {
     });
 
     // Sort neighbors
-    G.forNodes([&](const node currentNode) {
-        G.sortNeighbors(currentNode, [&](const node neighbor1, const node neighbor2) {
-            return neighbor1 < neighbor2;
-        });
-    });
+    G.sortNeighbors(
+        [&](node currentNode, node neighbor1, node neighbor2) { return neighbor1 < neighbor2; });
 
     G.forNodes([&](const node currentNode) {
         const auto &sortedNeighbors = G.neighborRange(currentNode);
@@ -2477,10 +2471,8 @@ TEST(GraphGTest, testSortNeighborsWeightedUndirectedGraphByWeights) {
     G.addEdge(2, 3, 6.0);
     G.addEdge(3, 4, 7.0);
 
-    G.forNodes([&](const node currentNode) {
-        G.sortNeighbors(currentNode, [&](const node neighbor1, const node neighbor2) {
-            return G.weight(currentNode, neighbor1) < G.weight(currentNode, neighbor2);
-        });
+    G.sortNeighbors([&](node currentNode, node neighbor1, node neighbor2) {
+        return G.weight(currentNode, neighbor1) < G.weight(currentNode, neighbor2);
     });
 
     // Validate that neighbors are sorted according to weights
@@ -2517,11 +2509,9 @@ TEST(GraphGTest, testSortNeighborsDirectedGraph) {
     });
 
     // Sort neighbors
-    G.forNodes([&](const node currentNode) {
-        G.sortNeighbors(currentNode, [&](const node neighbor1, const node neighbor2) {
-            return neighbor1 < neighbor2;
-        });
-    });
+
+    G.sortNeighbors(
+        [&](node currentNode, node neighbor1, node neighbor2) { return neighbor1 < neighbor2; });
 
     G.forNodes([&](const node currentNode) {
         // Validate sorting of outgoing neighbors
@@ -2537,7 +2527,6 @@ TEST(GraphGTest, testSortNeighborsDirectedGraph) {
         std::vector<node> sortedInNeighborVector(sortedInNeighbors.begin(),
                                                  sortedInNeighbors.end());
         EXPECT_TRUE(std::ranges::is_sorted(sortedInNeighborVector));
-
         if (!std::ranges::is_sorted(originalInNeighbors[currentNode])) {
             EXPECT_NE(originalInNeighbors[currentNode], sortedInNeighborVector);
         }
@@ -2559,10 +2548,8 @@ TEST(GraphGTest, testSortNeighborsWeightedDirectedGraphByWeights) {
     G.addEdge(2, 4, 10.0);
 
     // Sort neighbors according to weights
-    G.forNodes([&](const node currentNode) {
-        G.sortNeighbors(currentNode, [&](const node neighbor1, const node neighbor2) {
-            return G.weight(currentNode, neighbor1) < G.weight(currentNode, neighbor2);
-        });
+    G.sortNeighbors([&](node currentNode, node neighbor1, node neighbor2) {
+        return G.weight(currentNode, neighbor1) < G.weight(currentNode, neighbor2);
     });
 
     // Validate that neighbors are sorted according to weights
@@ -2630,11 +2617,8 @@ TEST(GraphGTest, testSortNeighborsWeightedDirectedIndexedGraph) {
     });
 
     // Sort neighbors
-    G.forNodes([&](const node currentNode) {
-        G.sortNeighbors(currentNode, [&](const node neighbor1, const node neighbor2) {
-            return neighbor1 < neighbor2;
-        });
-    });
+    G.sortNeighbors(
+        [&](node currentNode, node neighbor1, node neighbor2) { return neighbor1 < neighbor2; });
 
     // Validate sorting for outgoing neighbors
     G.forNodes([&](const node currentNode) {
