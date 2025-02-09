@@ -39,6 +39,7 @@ public:
         return graph;
     }
 };
+
 TEST_F(BFSBipartiteCheckGTest, testDirectedGraphThrows) {
     Graph graph(0, false, true, false);
     try {
@@ -81,7 +82,7 @@ TEST_F(BFSBipartiteCheckGTest, testBipartiteSingleNodesGraphs) {
     }
 }
 
-TEST_F(BFSBipartiteCheckGTest, testBiPartiteBinaryTreeGraphs) {
+TEST_F(BFSBipartiteCheckGTest, testBipartiteBinaryTreeGraphs) {
     for (count numberOfNodes = 2; numberOfNodes <= maxNumberOfNodes; ++numberOfNodes) {
         Graph graph = binaryTreeGraph(numberOfNodes);
         BFSBipartiteCheck test(graph);
@@ -90,13 +91,54 @@ TEST_F(BFSBipartiteCheckGTest, testBiPartiteBinaryTreeGraphs) {
     }
 }
 
-TEST_F(BFSBipartiteCheckGTest, testNonBiPartiteCompleteGraphs) {
+TEST_F(BFSBipartiteCheckGTest, testNonBipartiteCompleteGraphs) {
     for (count numberOfNodes = 3; numberOfNodes <= maxNumberOfNodes; ++numberOfNodes) {
         Graph graph = completeGraph(numberOfNodes);
         BFSBipartiteCheck test(graph);
         test.run();
         EXPECT_FALSE(test.isBipartite());
     }
+}
+
+TEST_F(BFSBipartiteCheckGTest, testBipartiteGrid5x5DistArchGraph) {
+    METISGraphReader reader;
+    Graph graph = reader.read("input/grid-5x5-dist-arch.graph");
+    BFSBipartiteCheck test(graph);
+    test.run();
+    EXPECT_TRUE(test.isBipartite());
+}
+
+TEST_F(BFSBipartiteCheckGTest, testNonBipartiteAirfoil1Graph) {
+    METISGraphReader reader;
+    Graph graph = reader.read("input/airfoil1.graph");
+    BFSBipartiteCheck test(graph);
+    test.run();
+    EXPECT_FALSE(test.isBipartite());
+}
+
+TEST_F(BFSBipartiteCheckGTest, testNonBipartiteHepThGraph) {
+    METISGraphReader reader;
+    Graph graph = reader.read("input/hep-th.graph");
+    BFSBipartiteCheck test(graph);
+    test.run();
+    EXPECT_FALSE(test.isBipartite());
+}
+
+TEST_F(BFSBipartiteCheckGTest, testCompleteBipartiteGraphK3_3) {
+    Graph graph(6);
+    graph.addEdge(0, 3);
+    graph.addEdge(0, 4);
+    graph.addEdge(0, 5);
+    graph.addEdge(1, 3);
+    graph.addEdge(1, 4);
+    graph.addEdge(1, 5);
+    graph.addEdge(2, 3);
+    graph.addEdge(2, 4);
+    graph.addEdge(2, 5);
+
+    BFSBipartiteCheck test(graph);
+    test.run();
+    EXPECT_TRUE(test.isBipartite());
 }
 
 } // namespace NetworKit

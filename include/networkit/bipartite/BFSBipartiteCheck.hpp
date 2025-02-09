@@ -4,8 +4,8 @@
  *  Authors: Andreas Scharf (andreas.b.scharf@gmail.com)
  *
  */
-#ifndef NETWORKIT_BFS_BIPARTITE_BIPARTITE_CHECK_HPP_
-#define NETWORKIT_BFS_BIPARTITE_BIPARTITE_CHECK_HPP_
+#ifndef NETWORKIT_BIPARTITE_BFS_BIPARTITE_CHECK_HPP_
+#define NETWORKIT_BIPARTITE_BFS_BIPARTITE_CHECK_HPP_
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 namespace NetworKit {
@@ -61,4 +61,4 @@ private:
     bool isGraphBiPartite{};
 };
 } // namespace NetworKit
-#endif // NETWORKIT_BFS_BIPARTITE_BIPARTITE_CHECK_HPP_
+#endif // NETWORKIT_BIPARTITE_BFS_BIPARTITE_CHECK_HPP_
