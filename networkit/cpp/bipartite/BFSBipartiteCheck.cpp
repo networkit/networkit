@@ -15,6 +15,7 @@ void BFSBipartiteCheck::run() {
     std::vector<signed char> colors(graph->numberOfNodes(), uncolored);
     std::queue<node> q;
     isGraphBiPartite = true;
+    hasRun = true;
     for (node u = 0; u < graph->numberOfNodes(); u++) {
         if (colors[u] == uncolored) {
             colors[u] = black;
