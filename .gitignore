@@ -30,7 +30,6 @@ doxygen
 dist/
 
 ### NetworKit specific
-include/NetworKit
 NetworKit-Tests-*
 .buildDbg/
 output
