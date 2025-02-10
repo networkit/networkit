@@ -73,9 +73,10 @@ TEST_F(BFSBipartiteCheckGTest, testBipartiteEmptyGraph) {
 }
 
 TEST_F(BFSBipartiteCheckGTest, testBipartiteSingleNodesGraphs) {
-    for (count i = 0; i < maxNumberOfNodes; ++i) {
+    for (count i = 1; i < maxNumberOfNodes; ++i) {
         Graph graph{};
-        graph.addNodes(1);
+        for (count j{}; j < i; ++j)
+            graph.addNodes(j);
         BFSBipartiteCheck test(graph);
         test.run();
         EXPECT_TRUE(test.isBipartite());
@@ -137,6 +138,30 @@ TEST_F(BFSBipartiteCheckGTest, testCompleteBipartiteGraphK3_3) {
     graph.addEdge(2, 5);
 
     BFSBipartiteCheck test(graph);
+    test.run();
+    EXPECT_TRUE(test.isBipartite());
+}
+
+TEST_F(BFSBipartiteCheckGTest, testNonBipartiteGraphWithNodeDeletion) {
+    Graph graph(7);
+    graph.addEdge(0, 3);
+    graph.addEdge(0, 4);
+    graph.addEdge(0, 5);
+    graph.addEdge(1, 3);
+    graph.addEdge(1, 4);
+    graph.addEdge(1, 5);
+    graph.addEdge(2, 3);
+    graph.addEdge(2, 4);
+    graph.addEdge(2, 5);
+    // make graph non-bipartite
+    graph.addEdge(0, 6);
+    graph.addEdge(5, 6);
+
+    BFSBipartiteCheck test(graph);
+    test.run();
+    EXPECT_FALSE(test.isBipartite());
+    // remove node 6 to make graph bipartite, K_3,3
+    graph.removeNode(6);
     test.run();
     EXPECT_TRUE(test.isBipartite());
 }

@@ -8,7 +8,9 @@
 #define NETWORKIT_BIPARTITE_BFS_BIPARTITE_CHECK_HPP_
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
+
 namespace NetworKit {
+
 class BFSBipartiteCheck final : public Algorithm {
 
 public:

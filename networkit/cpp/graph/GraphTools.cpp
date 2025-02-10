@@ -522,5 +522,39 @@ std::vector<node> topologicalSort(const Graph &G,
     return topSort.getResult();
 }
 
+bool isBipartite(const Graph &graph) {
+    if (graph.isDirected()) {
+        throw std::runtime_error("The graph is not an undirected graph.");
+    }
+    constexpr signed char uncolored{-1};
+    constexpr signed char black{};
+    constexpr signed char red{1};
+    std::vector<signed char> colors(graph.numberOfNodes(), uncolored);
+    bool isBipartite{true};
+    graph.forNodesWhile([&]() {  return isBipartite == true; },
+                        [&](node u) {
+                            if (colors[u] != uncolored)
+                                return;
+                            colors[u] = black;
+                            std::queue<node> queue;
+                            queue.push(u);
+                            do {
+                                const node currentNode = queue.front();
+                                queue.pop();
+                                for (const auto neighbor : graph.neighborRange(currentNode)) {
+                                    if (colors[neighbor] == uncolored) {
+                                        colors[neighbor] = red - colors[currentNode];
+                                        queue.push(neighbor);
+                                    } else if (colors[neighbor] == colors[currentNode]) {
+                                        isBipartite = false;
+                                        return;
+                                    }
+                                }
+                            } while (!queue.empty());
+                        });
+
+    return isBipartite;
+}
+
 } // namespace GraphTools
 } // namespace NetworKit

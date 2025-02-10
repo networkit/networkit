@@ -13,28 +13,29 @@ void BFSBipartiteCheck::run() {
     constexpr signed char black{};
     constexpr signed char red{1};
     std::vector<signed char> colors(graph->numberOfNodes(), uncolored);
-    std::queue<node> q;
     isGraphBiPartite = true;
     hasRun = true;
-    for (node u = 0; u < graph->numberOfNodes(); u++) {
-        if (colors[u] == uncolored) {
-            colors[u] = black;
-            q.push(u);
-            do {
-                const node currentNode = q.front();
-                q.pop();
-                for (const auto neighbor : graph->neighborRange(currentNode)) {
-                    if (colors[neighbor] == uncolored) {
-                        colors[neighbor] = red - colors[currentNode];
-                        q.push(neighbor);
-                    } else if (colors[neighbor] == colors[currentNode]) {
-                        isGraphBiPartite = false;
-                        return;
-                    }
-                }
-            } while (!q.empty());
-        }
-    }
+    graph->forNodesWhile([&]() { return isGraphBiPartite == true; },
+                         [&](node u) {
+                             if (colors[u] != uncolored)
+                                 return;
+                             colors[u] = black;
+                             std::queue<node> queue;
+                             queue.push(u);
+                             do {
+                                 const node currentNode = queue.front();
+                                 queue.pop();
+                                 for (const auto neighbor : graph->neighborRange(currentNode)) {
+                                     if (colors[neighbor] == uncolored) {
+                                         colors[neighbor] = red - colors[currentNode];
+                                         queue.push(neighbor);
+                                     } else if (colors[neighbor] == colors[currentNode]) {
+                                         isGraphBiPartite = false;
+                                         return;
+                                     }
+                                 }
+                             } while (!queue.empty());
+                         });
 }
 
 } // namespace NetworKit
