@@ -7,12 +7,6 @@ from .graph cimport _Graph, Graph
 from .helpers import ReducedFunctionalityWarning
 from .structures cimport count, index, node
 
-import warnings
-try:
-	import pandas
-except:
-	warnings.warn("WARNING: module 'pandas' not found, some functionality will be restricted", ReducedFunctionalityWarning)
-
 cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
 
 	index _none "NetworKit::none"
@@ -62,4 +56,10 @@ cdef class EpidemicSimulationSEIR(Algorithm):
 		pandas.DataFrame
 			The simulation data.
 		"""
-		return pandas.DataFrame((<_EpidemicSimulationSEIR*>(self._this)).getData(), columns=["zero", "time", "state", "count"])
+		try:
+			import pandas
+			return pandas.DataFrame((<_EpidemicSimulationSEIR*>(self._this)).getData(), columns=["zero", "time", "state", "count"])
+		except ImportError:
+			from .support import MissingDependencyError 
+			raise MissingDependencyError("pandas")
+
