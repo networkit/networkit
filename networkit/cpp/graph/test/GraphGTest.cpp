@@ -2396,8 +2396,9 @@ TEST(GraphGTest, testSortNeighborsUndirectedGraph) {
     });
 
     // Sort neighbors
-    G.sortNeighbors(
-        [&](node currentNode, node neighbor1, node neighbor2) { return neighbor1 < neighbor2; });
+    G.sortNeighbors([&]([[maybe_unused]] node currentNode, node neighbor1, node neighbor2) {
+        return neighbor1 < neighbor2;
+    });
 
     // Validate sorting for outgoing neighbors
     G.forNodes([&](const node currentNode) {
@@ -2435,8 +2436,9 @@ TEST(GraphGTest, testSortNeighborsUndirectedIndexedGraph) {
     });
 
     // Sort neighbors
-    G.sortNeighbors(
-        [&](node currentNode, node neighbor1, node neighbor2) { return neighbor1 < neighbor2; });
+    G.sortNeighbors([&]([[maybe_unused]] node currentNode, node neighbor1, node neighbor2) {
+        return neighbor1 < neighbor2;
+    });
 
     G.forNodes([&](const node currentNode) {
         const auto &sortedNeighbors = G.neighborRange(currentNode);
@@ -2510,8 +2512,9 @@ TEST(GraphGTest, testSortNeighborsDirectedGraph) {
 
     // Sort neighbors
 
-    G.sortNeighbors(
-        [&](node currentNode, node neighbor1, node neighbor2) { return neighbor1 < neighbor2; });
+    G.sortNeighbors([&]([[maybe_unused]] node currentNode, node neighbor1, node neighbor2) {
+        return neighbor1 < neighbor2;
+    });
 
     G.forNodes([&](const node currentNode) {
         // Validate sorting of outgoing neighbors
@@ -2617,8 +2620,9 @@ TEST(GraphGTest, testSortNeighborsWeightedDirectedIndexedGraph) {
     });
 
     // Sort neighbors
-    G.sortNeighbors(
-        [&](node currentNode, node neighbor1, node neighbor2) { return neighbor1 < neighbor2; });
+    G.sortNeighbors([&]([[maybe_unused]] node currentNode, node neighbor1, node neighbor2) {
+        return neighbor1 < neighbor2;
+    });
 
     // Validate sorting for outgoing neighbors
     G.forNodes([&](const node currentNode) {
