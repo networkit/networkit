@@ -1095,7 +1095,7 @@ TEST_F(GraphToolsGTest, testIsBipartiteDirectedGraphThrows) {
         GraphTools::isBipartite(graph);
         FAIL() << "Expected std::runtime_error";
     } catch (const std::runtime_error &e) {
-        EXPECT_STREQ(e.what(), "The graph is not an undirected graph.");
+        EXPECT_STREQ(e.what(), "The graph is not an undirected graph!");
     } catch (...) {
         FAIL() << "Expected std::runtime_error but got a different exception.";
     }

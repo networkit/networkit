@@ -524,7 +524,7 @@ std::vector<node> topologicalSort(const Graph &G,
 
 bool isBipartite(const Graph &graph) {
     if (graph.isDirected()) {
-        throw std::runtime_error("The graph is not an undirected graph.");
+        throw std::runtime_error("The graph is not an undirected graph!");
     }
     constexpr signed char uncolored{-1};
     constexpr signed char black{};
