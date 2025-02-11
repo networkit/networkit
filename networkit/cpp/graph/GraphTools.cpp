@@ -529,7 +529,7 @@ bool isBipartite(const Graph &graph) {
     constexpr signed char uncolored{-1};
     constexpr signed char black{};
     constexpr signed char red{1};
-    std::vector<signed char> colors(graph.numberOfNodes(), uncolored);
+    std::vector<signed char> colors(graph.upperNodeIdBound(), uncolored);
     bool isBipartite{true};
 
     auto bfs = [&](node u) {

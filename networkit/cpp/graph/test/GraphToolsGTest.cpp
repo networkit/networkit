@@ -1207,7 +1207,7 @@ TEST_F(GraphToolsGTest, testIsBipartiteDeleteNode) {
     EXPECT_TRUE(GraphTools::isBipartite(graph));
 }
 
-TEST_F(GraphToolsGTest, testIsBipartiteDeleteAndRestoreNode) {
+TEST_F(GraphToolsGTest, testIsBipartiteDeleteAndRestoreNodes) {
     Graph graph(4);
     graph.addEdge(0, 1);
     graph.addEdge(0, 2);
@@ -1217,11 +1217,12 @@ TEST_F(GraphToolsGTest, testIsBipartiteDeleteAndRestoreNode) {
     graph.addEdge(2, 3);
 
     EXPECT_FALSE(GraphTools::isBipartite(graph));
-    // remove node 1 to make graph bipartite
     graph.removeNode(1);
-    EXPECT_TRUE(GraphTools::isBipartite(graph));
+    EXPECT_FALSE(GraphTools::isBipartite(graph));
     graph.restoreNode(1);
     EXPECT_FALSE(GraphTools::isBipartite(graph));
+    graph.removeNode(2);
+    EXPECT_TRUE(GraphTools::isBipartite(graph));
 }
 
 } // namespace NetworKit
