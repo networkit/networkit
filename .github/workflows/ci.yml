@@ -102,7 +102,7 @@ env:
 
 jobs:
   macos-build-latest-version-apple-clang:
-    name: "macOS ${{ matrix.os }} ${{ startsWith(matrix.os, '14') && ', arm64' || '' }} (apple-clang, CPython 3.12): ${{ matrix.build-configuration }}"
+    name: "macOS ${{ matrix.os }} ${{ startsWith(matrix.os, '14') && ', arm64' || '' }} (apple-clang, CPython 3.13): ${{ matrix.build-configuration }}"
     runs-on: macos-${{ matrix.os }}
     env:
       CC: cc
@@ -116,10 +116,10 @@ jobs:
         run: |
           brew install libomp
           brew install ninja
-      - name: Setup Python 3.12
+      - name: Setup Python 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
       - name: Checkout networkit
         uses: actions/checkout@v4
         with:
@@ -165,7 +165,7 @@ jobs:
           CXX: ${{ matrix.compiler == 'llvm-19' && '/opt/homebrew/opt/llvm/bin/clang++' || 'g++-14' }}
 
   linux-build-latest:
-    name: "Linux (gcc-14${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.12' || '' }}): ${{ matrix.build-configuration }}"
+    name: "Linux (gcc-14${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.13' || '' }}): ${{ matrix.build-configuration }}"
     runs-on: ubuntu-24.04
     env:
       CC: gcc-14
@@ -179,10 +179,10 @@ jobs:
           sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu jammy main universe'
           sudo apt-get update
           sudo apt-get install ninja-build
-      - name: Setup Python 3.12
+      - name: Setup Python 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
       - name: Checkout networkit
         uses: actions/checkout@v4
         with:
@@ -239,10 +239,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
-      - name: Setup Python 3.12
+      - name: Setup Python 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'  
+          python-version: '3.13'  
       - name: Build and install NetworKit using pyproject.toml
         run:  pip install .
       - name: Run minimal function test
@@ -251,7 +251,7 @@ jobs:
           python3 -c "import networkit"
 
   linux-build-min-support:
-    name: "Linux (${{ matrix.compiler }}, CPython 3.9): full"
+    name: "Linux (${{ matrix.compiler }}, CPython 3.10): full"
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -307,7 +307,7 @@ jobs:
         shell: bash
 
   linux-build-coverage:
-    name: "Linux (gcc-10, CPython 3.12): coverage"
+    name: "Linux (gcc-10, CPython 3.13): coverage"
     runs-on: ubuntu-22.04
     env:
       CC: gcc-10
@@ -401,17 +401,17 @@ jobs:
           ctest -V -C Debug
 
   windows-build-latest:
-    name: "Windows (msvc 14.X, CPython 3.12): ${{ matrix.build-configuration }}"
+    name: "Windows (msvc 14.X, CPython 3.13): ${{ matrix.build-configuration }}"
     runs-on: windows-2022
     strategy:
       matrix:
         build-configuration: ['full', 'full (native)']
     steps:
-      # Note: 3.12.X has no compatible numpy headers for Windows yet.
-      - name: Setup Python 3.12
+      # Note: 3.13.X has no compatible numpy headers for Windows yet.
+      - name: Setup Python 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
       - name: Checkout networkit
         uses: actions/checkout@v4
         with:
@@ -450,7 +450,7 @@ jobs:
           NATIVE: ${{ matrix.os == 'full (native)' }}
 
   documentation-build:
-    name: "Linux (gcc-11, CPython 3.12): documentation"
+    name: "Linux (gcc-11, CPython 3.13): documentation"
     runs-on: ubuntu-22.04
     env:
       CC: gcc-11
@@ -462,10 +462,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install gcc-11 g++-11 ninja-build
           sudo apt-get install doxygen pandoc
-      - name: Setup Python 3.12
+      - name: Setup Python 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
       - name: Checkout networkit
         uses: actions/checkout@v4
         with:
