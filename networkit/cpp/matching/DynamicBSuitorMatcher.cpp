@@ -7,7 +7,7 @@
  */
 
 #include <cassert>
-#include <chrono>
+#include <vector>
 
 #include <networkit/matching/DynamicBSuitorMatcher.hpp>
 
@@ -82,7 +82,6 @@ void DynamicBSuitorMatcher::trackUpdatePath(node start) {
                 && (weight <= prev)) {
                 partner = x;
                 heaviest = weight;
-                return;
             }
         });
 
@@ -111,7 +110,6 @@ void DynamicBSuitorMatcher::trackUpdatePath(node start) {
     } while (!done);
 
     for (auto &looseEnd : looseEnds) {
-
         trackUpdatePath(looseEnd.id);
     }
 }
@@ -137,7 +135,6 @@ void DynamicBSuitorMatcher::addEdge(const GraphEvent &event) {
 }
 
 void DynamicBSuitorMatcher::removeEdge(const GraphEvent &event) {
-
     if (suitors[event.u].hasPartner(event.v)) {
         processEdgeRemoval(event);
     }

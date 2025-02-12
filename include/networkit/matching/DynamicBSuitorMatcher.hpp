@@ -59,9 +59,8 @@ private:
     // helper function
     bool isBetterMatch(node u, node v, edgeweight ew) const noexcept {
         const auto currentMatch = suitors[u].min;
-        bool isBetterMatch = currentMatch.id == none || currentMatch.weight < ew
-                             || (currentMatch.weight == ew && v < currentMatch.id);
-        return isBetterMatch;
+        return currentMatch.id == none || currentMatch.weight < ew
+               || (currentMatch.weight == ew && v < currentMatch.id);
     }
 
     // Internal logic for handling edge insertions (initial check)

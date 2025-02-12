@@ -28,16 +28,6 @@ namespace NetworKit {
 
 class MatcherGTest : public testing::Test {
 protected:
-    Graph generateRandomWeightedGraph(count n) {
-        // Generates a random undirected Graph with n nodes, a 50% chance for an edge between a
-        // pair of nodes and without self-loops. Sets a random weight for each edge.
-        auto G = ErdosRenyiGenerator(n, 0.5, false, false).generate();
-        G = GraphTools::toWeighted(G);
-        G.removeMultiEdges();
-        G.forEdges([&G](node u, node v) { G.setWeight(u, v, Aux::Random::integer(1, 99)); });
-        return G;
-    }
-
     bool hasUnmatchedNeighbors(const Graph &G, const BMatching &M) {
         for (const auto e : G.edgeRange())
             if (M.isUnmatched(e.u) && M.isUnmatched(e.v))
@@ -296,8 +286,9 @@ TEST_F(MatcherGTest, testBSuitorMatcherDifferentB) {
 }
 
 TEST_F(MatcherGTest, testDynBSuitorInsertEdges) {
-    for (int i = 0; i < 100; i++) {
-        auto G = generateRandomWeightedGraph(100);
+    for (int i = 0; i < 10; i++) {
+        METISGraphReader graphReader;
+        auto G = graphReader.read("input/lesmis.graph");
         std::vector<GraphEvent> events;
         count m = 10;
         // Select m edges of the graph, remove them but put them into edges for later insertion.
@@ -336,8 +327,9 @@ TEST_F(MatcherGTest, testDynBSuitorInsertEdges) {
 }
 
 TEST_F(MatcherGTest, testDynBSuitorRemoveEdges) {
-    for (int i = 0; i < 100; i++) {
-        auto G = generateRandomWeightedGraph(100);
+    METISGraphReader graphReader;
+    for (int i = 0; i < 10; i++) {
+        auto G = graphReader.read("input/lesmis.graph");
 
         const count b = 6;
         DynamicBSuitorMatcher dbsm(G, b);
@@ -369,9 +361,11 @@ TEST_F(MatcherGTest, testDynBSuitorRemoveEdges) {
 }
 
 TEST_F(MatcherGTest, testDynBSuitorMixedBatch) {
-    for (int i = 0; i < 100; i++) {
-        auto G = generateRandomWeightedGraph(100);
-
+    METISGraphReader graphReader;
+    for (int i = 0; i < 10; i++) {
+        auto G = graphReader.read("input/lesmis.graph");
+        G.removeSelfLoops();
+        G.removeMultiEdges();
         const count b = 6;
         DynamicBSuitorMatcher dbsm(G, b);
         dbsm.run();
@@ -386,9 +380,8 @@ TEST_F(MatcherGTest, testDynBSuitorMixedBatch) {
                 while (G.hasEdge(potNonEdge[0], potNonEdge[1])) {
                     potNonEdge = GraphTools::randomNodes(G, 2);
                 }
-                events.emplace_back(GraphEvent{GraphEvent::EDGE_ADDITION, potNonEdge[0],
-                                               potNonEdge[1],
-                                               G.weight(potNonEdge[0], potNonEdge[1])});
+                events.emplace_back(
+                    GraphEvent{GraphEvent::EDGE_ADDITION, potNonEdge[0], potNonEdge[1], 1.0});
                 G.addEdge(potNonEdge[0], potNonEdge[1]);
             } else {
                 const auto [u, v] = GraphTools::randomEdge(G);
