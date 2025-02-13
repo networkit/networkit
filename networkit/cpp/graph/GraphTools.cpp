@@ -526,11 +526,11 @@ bool isBipartite(const Graph &graph) {
     if (graph.isDirected()) {
         throw std::runtime_error("The graph is not an undirected graph!");
     }
-    constexpr signed char uncolored{-1};
-    constexpr signed char black{};
-    constexpr signed char red{1};
-    std::vector<signed char> colors(graph.upperNodeIdBound(), uncolored);
-    bool isBipartite{true};
+    constexpr int8_t uncolored = -1;
+    constexpr int8_t black = 0;
+    constexpr int8_t red = 1;
+    std::vector<int8_t> colors(graph.upperNodeIdBound(), uncolored);
+    bool isBipartite = true;
 
     auto bfs = [&](node u) {
         if (colors[u] != uncolored)
@@ -541,7 +541,7 @@ bool isBipartite(const Graph &graph) {
         do {
             const node currentNode = queue.front();
             queue.pop();
-            for (const auto neighbor : graph.neighborRange(currentNode)) {
+            for (const node neighbor : graph.neighborRange(currentNode)) {
                 if (colors[neighbor] == uncolored) {
                     colors[neighbor] = red - colors[currentNode];
                     queue.push(neighbor);

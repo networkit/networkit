@@ -1102,14 +1102,14 @@ TEST_F(GraphToolsGTest, testIsBipartiteDirectedGraphThrows) {
 }
 
 TEST_F(GraphToolsGTest, testIsBipartiteEmptyGraph) {
-    Graph graph{};
+    Graph graph;
     EXPECT_TRUE(GraphTools::isBipartite(graph));
 }
 
 TEST_F(GraphToolsGTest, testIsBipartiteSingleNodesGraphs) {
     for (count i = 1; i < 10; ++i) {
-        Graph graph{};
-        for (count j{}; j < i; ++j)
+        Graph graph;
+        for (count j = 0; j < i; ++j)
             graph.addNodes(j);
         EXPECT_TRUE(GraphTools::isBipartite(graph));
     }
