@@ -17,6 +17,10 @@ BSuitorMatcher::BSuitorMatcher(const Graph &G, const std::vector<count> &b) : BM
         throw std::runtime_error(
             "The number of b values does not match the number of nodes in this graph.");
 
+    if (!G.isWeighted())
+        throw std::runtime_error("This algorithm does not support unweighted graphs, use "
+                                 "GraphTools::toWeighted to convert the graph.");
+
     const auto n = G.upperNodeIdBound();
 
     if (n != G.numberOfNodes())
@@ -34,44 +38,6 @@ BSuitorMatcher::BSuitorMatcher(const Graph &G, const std::vector<count> &b) : BM
 
 BSuitorMatcher::BSuitorMatcher(const Graph &G, count b)
     : BSuitorMatcher(G, std::vector<count>(G.numberOfNodes(), b)) {}
-
-BSuitorMatcher::BSuitorMatcher(const Graph &G, std::string_view &path)
-    : BSuitorMatcher(G, readBValuesFromFile(G.numberOfNodes(), path)) {}
-
-std::vector<count> BSuitorMatcher::readBValuesFromFile(count size, std::string_view &path) const {
-    std::vector<count> b;
-    b.reserve(size);
-    std::ifstream file(path.data());
-    std::string line;
-    int line_number = 1;
-
-    while (std::getline(file, line)) {
-        std::istringstream istring(line);
-        int val;
-        if (!(istring >> val)) {
-            throw std::runtime_error("File " + std::string{path}
-                                     + " contains an invalid value in line "
-                                     + std::to_string(line_number) + ".");
-        }
-        if (istring >> val) {
-            throw std::runtime_error("File " + std::string{path}
-                                     + " contains multiple values in line "
-                                     + std::to_string(line_number) + ".");
-        }
-        if (val < 0) {
-            throw std::runtime_error("File " + std::string{path}
-                                     + " contains a negative value in line "
-                                     + std::to_string(line_number) + ".");
-        }
-        b.emplace_back(val);
-        ++line_number;
-    }
-    if (b.size() != size) {
-        throw std::runtime_error("The number of values in file " + std::string{path}
-                                 + " does not match the number of nodes in this graph.");
-    }
-    return b;
-}
 
 void BSuitorMatcher::findSuitors(node cur) {
     for (index i = 0; i < b[cur]; i++) {
@@ -107,8 +73,7 @@ BSuitorMatcher::MatchingNode BSuitorMatcher::findPreferred(node u) {
 }
 
 void BSuitorMatcher::makeSuitor(node u, edgeweight w, node v) {
-    auto smallest = suitors[v].popMinIfFull();
-    suitors[v].insert(MatchingNode(u, w));
+    auto smallest = suitors[v].insert(MatchingNode(u, w));
     proposed[u].insert(MatchingNode(v, w));
 
     if (smallest.id != none) {
@@ -139,6 +104,7 @@ bool BSuitorMatcher::isSymmetrical() const {
 }
 
 void BSuitorMatcher::buildBMatching() {
+    bMatch.reset();
     G->forNodes([&](node x) {
         assert(suitors[x].partners.size() <= b.at(x));
         for (MatchingNode y : suitors[x].partners) {
