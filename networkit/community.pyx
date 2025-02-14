@@ -711,6 +711,13 @@ cdef class ParallelLeiden(CommunityDetector):
 
 	Parallel Leiden Algorithm.
 
+    As reported by Sahu et. al in "GVE-Leiden: Fast Leiden Algorithm for Community
+    Detection in Shared Memory Setting", the current implementation in NetworKit might create a
+    small fraction of disconnected communities. Since this violates the guarantees from the
+    original algorithm, ParallelLeiden should be used with caution. In addition the modularity 
+	value of the resulting partition / clustering can be lower compared to other Leiden 
+	implementations and even Louvain.
+
 	Parameters
 	----------
 	G : networkit.Graph
@@ -726,6 +733,10 @@ cdef class ParallelLeiden(CommunityDetector):
 	def __cinit__(self, Graph G not None, int iterations = 3, bool_t randomize = True, double gamma = 1):
 		self._G = G
 		self._this = new _ParallelLeiden(G._this,iterations,randomize,gamma)
+		from warnings import warn
+		warn("The current implementation might produce results, which do not follow the guarantees "
+		"from the Leiden algorithm. See documentation for more details: "
+		"https://networkit.github.io/dev-docs/python_api/community.html#ParallelLeiden")
 
 cdef extern from "<networkit/community/LouvainMapEquation.hpp>":
 	cdef cppclass _LouvainMapEquation "NetworKit::LouvainMapEquation"(_CommunityDetectionAlgorithm):
