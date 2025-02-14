@@ -88,6 +88,17 @@ class TestMTXGraphReader(unittest.TestCase):
         self.assertTrue(graph.hasEdge(16, 3))
 
 
+class TestRBGraphReader(unittest.TestCase):
+    def testRead(self):
+        reader = nk.graphio.RBGraphReader()
+        graph = reader.read("input/tiny_05.rb")
+        self.assertEqual(graph.numberOfNodes(), 5)
+        self.assertEqual(graph.numberOfEdges(), 11)
+        self.assertTrue(graph.isDirected())
+        self.assertTrue(graph.hasEdge(0, 0))
+        self.assertEqual(graph.weight(1, 4), 10)
+
+
 class TestGraphIO(unittest.TestCase):
 
     def checkStatic(self, graph, graph2):
@@ -101,6 +112,7 @@ class TestGraphIO(unittest.TestCase):
     def testWriteGraphReadGraph(self):
         G = nk.generators.ErdosRenyiGenerator(100, 0.1).generate()
 
+        # we do not have writer and reader classes for these formats:
         excluded_formats = set(
             [
                 nk.Format.KONECT,
@@ -108,6 +120,7 @@ class TestGraphIO(unittest.TestCase):
                 nk.Format.GraphViz,
                 nk.Format.SNAP,
                 nk.Format.MatrixMarket,
+                nk.Format.RB,
             ]
         )
 
@@ -141,6 +154,7 @@ class TestGraphIO(unittest.TestCase):
             ("foodweb-baydry.nkbg003", nk.Format.NetworkitBinary),
             ("jazz2_directed.gml", nk.Format.GML),
             ("chesapeake.mtx", nk.Format.MatrixMarket),
+            ("tiny_05.rb", nk.Format.RB),
         ]
 
         for file, expected_result in instances:

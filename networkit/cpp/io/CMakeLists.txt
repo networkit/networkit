@@ -30,12 +30,14 @@ networkit_add_module(io
     MatrixMarketReader.cpp
     PartitionReader.cpp
     RasterReader.cpp
+    RBMatrixReader.cpp
+    RBGraphReader.cpp
     SNAPEdgeListPartitionReader.cpp
     SNAPGraphReader.cpp
     SNAPGraphWriter.cpp
     ThrillGraphBinaryReader.cpp
     ThrillGraphBinaryWriter.cpp
-    )
+)
 
 networkit_module_link_modules(io
     algebraic auxiliary dynamics graph structures)
