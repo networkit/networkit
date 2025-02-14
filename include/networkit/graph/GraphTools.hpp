@@ -553,6 +553,26 @@ Graph getRemappedGraph(const Graph &graph, count numNodes, UnaryIdMapper &&oldId
         preallocate);
 }
 
+/**
+ * Implements a BFS-based algorithm to check whether a given graph is bipartite.
+ * A graph is bipartite if its vertices can be divided into two disjoint sets such that
+ * no two adjacent vertices belong to the same set.
+ *
+ * This algorithm uses a Breadth-First Search (BFS) traversal to attempt a two-coloring
+ * of the graph. If a conflict is found (i.e., two adjacent nodes are assigned the same
+ * color), the graph is not bipartite.
+ *
+ * The algorithm runs in O(V + E) time complexity, where:
+ * - V is the number of vertices.
+ * - E is the number of edges.
+ *
+ * @param  graph The input graph to check for bipartiteness. The graph should be undirected.
+ * @throws std::runtime_error if the input graph is directed, as bipartiteness is
+ *         typically defined for undirected graphs.
+ * @returns true if the graph is bipartite, else false
+ */
+bool isBipartite(const Graph &graph);
+
 } // namespace GraphTools
 
 } // namespace NetworKit
