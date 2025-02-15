@@ -48,6 +48,8 @@ public:
     std::type_index getType() const noexcept { return type; }
 
     virtual std::shared_ptr<AttributeStorageBase> clone() const = 0;
+    virtual void erase(index i) = 0;
+    virtual void swapData(index i, index j) = 0;
 
     bool isValid(index n) const noexcept { return n < valid.size() && valid[n]; }
 
@@ -78,11 +80,11 @@ protected:
 private:
     std::string name;
     std::type_index type;
-    std::vector<bool> valid; // For each node/edgeid: whether attribute is set or not.
 
 protected:
     index validElements = 0;
-    bool validStorage; // Validity of the whole storage
+    bool validStorage;       // Validity of the whole storage
+    std::vector<bool> valid; // For each node/edgeid: whether attribute is set or not.
 
 }; // class AttributeStorageBase
 
@@ -101,6 +103,20 @@ public:
     std::shared_ptr<Base<NodeOrEdge, GraphType>> clone() const override {
         return std::make_shared<AttributeStorage>(*this);
     };
+
+    void swapData(index i, index j) override {
+        assert(i < values.size());
+        assert(j < values.size());
+        using std::swap;
+        swap(values[i], values[j]);
+        swap(this->valid[i], this->valid[j]);
+    }
+
+    void erase(index i) override {
+        assert(i < values.size());
+        values.erase(values.begin() + i);
+        this->valid.erase(this->valid.begin() + i);
+    }
 
     void resize(index i) {
         if (i >= values.size())
