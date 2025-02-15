@@ -1,14 +1,12 @@
-#include <atomic>
 #include <csignal>
-#include <exception>
 #include <networkit/GlobalState.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
 
 namespace Aux {
 
-namespace SignalHandling {
-
 namespace {
+
+// this function is the signal handler
 void sigHandler(int sig) {
     switch (sig) {
     case SIGINT:
@@ -19,21 +17,27 @@ void sigHandler(int sig) {
 }
 } // namespace
 
-void init(SignalHandler *caller) {
+SignalHandler::SignalHandler() {
+
 #pragma omp critical(SignalHandlerCritical)
     {
         if (!NetworKit::GlobalState::getRootSet()) {
-            NetworKit::GlobalState::setRootSet(caller);
+            // Registers the function `sigHandler` to be invoked, when CTRL+C/SIGINT is received.
+            // Also registers `this` to be the owner of the signal handling resource (via RAII
+            // responsible for cleanup and unregistering)
+            NetworKit::GlobalState::setRoot(this);
             NetworKit::GlobalState::setPrevHandler(signal(SIGINT, sigHandler));
             NetworKit::GlobalState::setRootSet(true);
         }
     }
 }
 
-void reset(SignalHandler *caller) {
+SignalHandler::~SignalHandler() {
+    // Resets receivedSIGINT to false and rootSet to false to allow a new initialization,
+    // if `this` is the root.
 #pragma omp critical(SignalHandlerCritical)
     {
-        if (NetworKit::GlobalState::getRoot() == caller) {
+        if (NetworKit::GlobalState::getRoot() == this) {
             NetworKit::GlobalState::setRootSet(false);
             NetworKit::GlobalState::setReceivedSIGINT(false);
             NetworKit::GlobalState::setRoot(0);
@@ -42,19 +46,9 @@ void reset(SignalHandler *caller) {
     }
 }
 
-} // namespace SignalHandling
-
-SignalHandler::SignalHandler() {
-    Aux::SignalHandling::init(this);
-}
-
-SignalHandler::~SignalHandler() {
-    Aux::SignalHandling::reset(this);
-}
-
 void SignalHandler::assureRunning() {
     if (NetworKit::GlobalState::getReceivedSIGINT()) {
-        throw Aux::SignalHandling::InterruptException();
+        throw InterruptException();
     }
 }
 

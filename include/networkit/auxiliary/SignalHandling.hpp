@@ -6,6 +6,14 @@
 
 namespace Aux {
 
+/**
+ * Signal handler class used to support CTRL+c user interrupts.
+ * This class works by registering a interrupt handler during its lifetime; to check if an interrupt
+ * has been received or to immediately stop running a (long-running) algorithm, use the
+ * `assureRunning` or `isRunning` member functions.
+ * @note Make sure to delete this object when it is no longer required to free up the interrupt
+ * handler again for other code such as the python runtime!
+ */
 class SignalHandler {
 public:
     SignalHandler();
@@ -15,32 +23,16 @@ public:
     void assureRunning();
 
     bool isRunning();
+
+    /**
+     * Special Exception to indicate that a SIGINT has been received.
+     */
+    class InterruptException : public std::exception {
+    public:
+        InterruptException() : std::exception() {}
+        const char *what() const noexcept override { return "Received CTRL+C/SIGINT"; }
+    };
 };
-
-namespace SignalHandling {
-/**
- * Special Exception to indicate, that a SIGINT has been received.
- */
-class InterruptException : public std::exception {
-public:
-    InterruptException() : std::exception() {}
-    const char *what() const noexcept override { return "Received CTRL+C/SIGINT"; }
-};
-
-/**
- * Registers the function `setRunning` to be invoked, when CTRL+C/SIGINT is received.
- * Also registers `caller` to be the root calling object, if none is registered yet.
- * @param caller address of the calling object
- */
-void init(SignalHandler *caller);
-
-/**
- * Resets receivedSIGINT to false and rootSet to false to allow a new initialization,
- * if the calling object is the same as the root.
- * @param caller address of the calling object
- */
-void reset(SignalHandler *caller);
-} // namespace SignalHandling
 
 } // namespace Aux
 
