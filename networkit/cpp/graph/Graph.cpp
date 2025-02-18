@@ -609,8 +609,8 @@ void Graph::removeEdge(node u, node v) {
         throw std::runtime_error("Edges have to be indexed if maintainCompactEdges is set to true");
     }
 
-    index vi = indexInOutEdgeArray(u, v);
-    index ui = indexInInEdgeArray(v, u);
+    index vi = indexInOutEdgeArray(u, v); // index in outEdges array
+    index ui = indexInInEdgeArray(v, u);  // index in inEdges array
 
     if (edgesIndexed) {
         deletedID = edgeId(u, v);
@@ -660,6 +660,12 @@ void Graph::removeEdge(node u, node v) {
             std::swap(outEdges[u][cur], outEdges[u][cur + 1]);
             if (edgesIndexed) {
                 std::swap(outEdgeIds[u][cur], outEdgeIds[u][cur + 1]);
+                // swap attributes as well
+                auto &theMap = edgeAttributeMap.attrMap;
+                for (auto it = theMap.begin(); it != theMap.end(); ++it) {
+                    auto attributeStorageBase = it->second.get();
+                    attributeStorageBase->swapData(outEdgeIds[u][cur], outEdgeIds[u][cur + 1]);
+                }
             }
             ++cur;
         }
@@ -687,6 +693,12 @@ void Graph::removeEdge(node u, node v) {
                 }
             }
         });
+        // use erase to remove data entry at index `deletedID` and compact the data vector again
+        auto &theMap = edgeAttributeMap.attrMap;
+        for (auto it = theMap.begin(); it != theMap.end(); ++it) {
+            auto attributeStorageBase = it->second.get();
+            attributeStorageBase->erase(deletedID);
+        }
     }
     if (directed) {
         assert(ui != none);
