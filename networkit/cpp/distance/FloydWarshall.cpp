@@ -21,9 +21,8 @@ FloydWarshall::FloydWarshall(const Graph &G, double densityThreshold, node maxim
         throw std::invalid_argument("Invalid maximum node count. Must be at least 1.");
     }
 
-    const index maximumNumberOfEdges = G.isDirected() ? maximumNumberOfNodes*(maximumNumberOfNodes-1) : maximumNumberOfNodes*(maximumNumberOfNodes-1)/2;
+    const index maximumNumberOfEdges = G.isDirected() ? numberOfNodes*(numberOfNodes-1) : numberOfNodes*(numberOfNodes-1)/2;
     const double density = static_cast<double>(G.numberOfEdges()) / maximumNumberOfEdges;
-
     if (density < densityThreshold) {
         throw std::domain_error("Graph density is below user-defined density-threshold of: " + std::to_string(densityThreshold));
     }
