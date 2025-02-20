@@ -8,30 +8,16 @@
 
 namespace NetworKit {
 
-FloydWarshall::FloydWarshall(const Graph &G, double densityThreshold, node maximumNumberOfNodes)
-    : graph(&G), numberOfNodes(G.numberOfNodes()) {
+FloydWarshall::FloydWarshall(const Graph &G)
+    : graph(&G) {
 
     if (!G.isWeighted()) {
         throw std::runtime_error("The input graph is unweighted!");
     }
-    if (densityThreshold <= 0.0 || densityThreshold > 1.0) {
-        throw std::invalid_argument("Invalid density threshold. Must be in range (0, 1].");
-    }
-    if (maximumNumberOfNodes < 1) {
-        throw std::invalid_argument("Invalid maximum node count. Must be at least 1.");
-    }
-
-    const index maximumNumberOfEdges = G.isDirected() ? numberOfNodes*(numberOfNodes-1) : numberOfNodes*(numberOfNodes-1)/2;
-    const double density = static_cast<double>(G.numberOfEdges()) / maximumNumberOfEdges;
-    if (density < densityThreshold) {
-        throw std::domain_error("Graph density is below user-defined density-threshold of: " + std::to_string(densityThreshold));
-    }
-    if (numberOfNodes > maximumNumberOfNodes) {
-        throw std::domain_error("Graph size exceeds user-defined max-node-limit of: " + std::to_string(maximumNumberOfNodes));
-    }
 }
 
 void FloydWarshall::tagNegativeCycles() {
+    const index numberOfNodes = graph->numberOfNodes();
     for (node w = 0; w < numberOfNodes; ++w) {
         if (!(distances[w][w] < 0.0))
             continue;
@@ -52,6 +38,7 @@ void FloydWarshall::tagNegativeCycles() {
 }
 
 void FloydWarshall::run() {
+    const index numberOfNodes = graph->numberOfNodes();
     distances = std::vector(numberOfNodes,
                             std::vector(numberOfNodes, std::numeric_limits<edgeweight>::max()));
     nodesInNegativeCycle = std::vector<uint8_t>(numberOfNodes);
@@ -92,10 +79,11 @@ edgeweight FloydWarshall::getDistance(node source, node target) const {
     return distances[source][target];
 }
 
-std::vector<std::vector<edgeweight>> FloydWarshall::getAllDistances() const {
+const std::vector<std::vector<edgeweight>> & FloydWarshall::getAllDistances() const & {
     assureFinished();
     return distances;
 }
+
 
 bool FloydWarshall::isNodeInNegativeCycle(node u) const {
     assureFinished();

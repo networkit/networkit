@@ -9,7 +9,27 @@
 
 namespace NetworKit {
 
-TEST(FloydWarshallTest, testConstructorThrowsUnweightedGraph) {
+class FloydWarshallGTest : public testing::Test {
+public:
+    Graph completeGraphK3() {
+        Graph graph(3, true);
+        graph.addEdge(0, 1, 1);
+        graph.addEdge(1, 2, 2);
+        graph.addEdge(0, 2, 4);
+        return graph;
+    }
+
+    Graph completeGraphK3NegativeCycle() {
+        Graph graph(3, true);
+        graph.addEdge(0, 1, 1);
+        graph.addEdge(1, 2, 2);
+        graph.addEdge(0, 2, -4);
+        return graph;
+    }
+
+};
+
+TEST_F(FloydWarshallGTest, testConstructorThrowsUnweightedGraph) {
     Graph graph(1, false);
     try {
         FloydWarshall test(graph);
@@ -21,76 +41,8 @@ TEST(FloydWarshallTest, testConstructorThrowsUnweightedGraph) {
     }
 }
 
-TEST(FloydWarshallTest, testConstructorThrowsInvalidDensityThreshold) {
+TEST_F(FloydWarshallGTest, testGetDistanceThrows) {
     Graph graph(1, true);
-    try {
-        FloydWarshall test(graph, 0.0);
-        FAIL() << "Expected std::invalid_argument";
-    } catch (const std::invalid_argument &e) {
-        EXPECT_STREQ(e.what(), "Invalid density threshold. Must be in range (0, 1].");
-    } catch (...) {
-        FAIL() << "Expected std::invalid_argument but got a different exception.";
-    }
-    try {
-        FloydWarshall test(graph, 1.1);
-        FAIL() << "Expected std::invalid_argument";
-    } catch (const std::invalid_argument &e) {
-        EXPECT_STREQ(e.what(), "Invalid density threshold. Must be in range (0, 1].");
-    } catch (...) {
-        FAIL() << "Expected std::invalid_argument but got a different exception.";
-    }
-}
-
-TEST(FloydWarshallTest, testConstructorThrowsInvalidMaximumNumberOfNodes) {
-    Graph graph(1, true);
-    try {
-        FloydWarshall test(graph, 0.5, 0);
-        FAIL() << "Expected std::invalid_argument";
-    } catch (const std::invalid_argument &e) {
-        EXPECT_STREQ(e.what(), "Invalid maximum node count. Must be at least 1.");
-    } catch (...) {
-        FAIL() << "Expected std::invalid_argument but got a different exception.";
-    }
-}
-
-TEST(FloydWarshallTest, testConstructorThrowsInvalidDensity) {
-    Graph graph(2, true);
-    constexpr double densityThreshold = 0.5;
-    const std::string exceptionString = "Graph density is below user-defined density-threshold of: "
-                                        + std::to_string(densityThreshold);
-    try {
-        FloydWarshall test(graph, densityThreshold);
-        FAIL() << "Expected std::domain_error";
-    } catch (const std::domain_error &e) {
-        EXPECT_STREQ(e.what(), exceptionString.c_str());
-    } catch (...) {
-        FAIL() << "Expected std::domain_error but got a different exception.";
-    }
-}
-
-TEST(FloydWarshallTest, testConstructorThrowsInvalidNumberOfNodes) {
-    Graph graph(2, true);
-    graph.addEdge(0, 0, 1);
-    constexpr node maximumNumberOfNodes = 1;
-    const std::string exceptionString = "Graph size exceeds user-defined max-node-limit of: "
-                                        + std::to_string(maximumNumberOfNodes);
-    try {
-        constexpr double densityThreshold = 0.5;
-        FloydWarshall test(graph, densityThreshold, maximumNumberOfNodes);
-        FAIL() << "Expected std::domain_error";
-    } catch (const std::domain_error &e) {
-        EXPECT_STREQ(e.what(), exceptionString.c_str());
-    } catch (...) {
-        FAIL() << "Expected std::domain_error but got a different exception.";
-    }
-}
-
-TEST(FloydWarshallTest, testGetDistanceThrows) {
-    constexpr index numberOfNodes{3};
-    Graph graph(numberOfNodes, true);
-    graph.addEdge(0, 1, 1);
-    graph.addEdge(1, 2, 2);
-    graph.addEdge(0, 2, 4);
     FloydWarshall test(graph);
     try {
         test.getDistance(0, 1);
@@ -102,28 +54,8 @@ TEST(FloydWarshallTest, testGetDistanceThrows) {
     }
 }
 
-TEST(FloydWarshallTest, testGetDistance) {
-    constexpr index numberOfNodes{3};
-    Graph graph(numberOfNodes, true);
-    graph.addEdge(0, 1, 1);
-    graph.addEdge(1, 2, 2);
-    graph.addEdge(0, 2, 4);
-    FloydWarshall test(graph);
-    test.run();
-    const std::vector<std::vector<edgeweight>> expectedDistances{{0, 1, 3}, {1, 0, 2}, {3, 2, 0}};
-    for (node u = 0; u < numberOfNodes; ++u) {
-        for (node v = 0; v < numberOfNodes; ++v) {
-            EXPECT_EQ(test.getDistance(u, v), expectedDistances[u][v]) << "u = " << u << ", v = " << v;
-        }
-    }
-}
-
-TEST(FloydWarshallTest, testGetAllDistancesThrows) {
-    constexpr index numberOfNodes{3};
-    Graph graph(numberOfNodes, true);
-    graph.addEdge(0, 1, 1);
-    graph.addEdge(1, 2, 2);
-    graph.addEdge(0, 2, 4);
+TEST_F(FloydWarshallGTest, testGetAllDistancesThrows) {
+    Graph graph(1, true);
     FloydWarshall test(graph);
     try {
         test.getAllDistances();
@@ -135,19 +67,118 @@ TEST(FloydWarshallTest, testGetAllDistancesThrows) {
     }
 }
 
-TEST(FloydWarshallTest, testAllGetDistances) {
-    constexpr index numberOfNodes{3};
-    Graph graph(numberOfNodes, true);
-    graph.addEdge(0, 1, 1);
-    graph.addEdge(1, 2, 2);
-    graph.addEdge(0, 2, 4);
+TEST_F(FloydWarshallGTest, testIsNodeInNegativeCycleThrows) {
+    Graph graph(1, true);
+    FloydWarshall test(graph);
+    try {
+        test.isNodeInNegativeCycle(0);
+        FAIL() << "Expected std::runtime_error";
+    } catch (const std::runtime_error &e) {
+        EXPECT_STREQ(e.what(), "Error, run must be called first");
+    } catch (...) {
+        FAIL() << "Expected std::runtime_error but got a different exception.";
+    }
+}
+
+TEST_F(FloydWarshallGTest, testGetNodesOnShortestPathThrows) {
+    Graph graph(2, true);
+    FloydWarshall test(graph);
+    try {
+        test.getNodesOnShortestPath(0, 1);
+        FAIL() << "Expected std::runtime_error";
+    } catch (const std::runtime_error &e) {
+        EXPECT_STREQ(e.what(), "Error, run must be called first");
+    } catch (...) {
+        FAIL() << "Expected std::runtime_error but got a different exception.";
+    }
+}
+
+TEST_F(FloydWarshallGTest, testGetDistanceCompleteGraphK3) {
+    auto graph = completeGraphK3();
     FloydWarshall test(graph);
     test.run();
     const std::vector<std::vector<edgeweight>> expectedDistances{{0, 1, 3}, {1, 0, 2}, {3, 2, 0}};
-    const auto distances = test.getAllDistances();
-    for (node u = 0; u < numberOfNodes; ++u) {
-        for (node v = 0; v < numberOfNodes; ++v) {
-            EXPECT_EQ(distances[u][v], expectedDistances[u][v]) << "u = " << u << ", v = " << v;
+    for (node source = 0; source < graph.numberOfNodes(); ++source) {
+        for (node target = 0; target < graph.numberOfNodes(); ++target) {
+            EXPECT_EQ(test.getDistance(source, target), expectedDistances[source][target])
+                << "source = " << source << ", target = " << target;
+        }
+    }
+}
+
+TEST_F(FloydWarshallGTest, testAllGetDistancesCompleteGraphK3) {
+    auto graph = completeGraphK3();
+    FloydWarshall test(graph);
+    test.run();
+    const std::vector<std::vector<edgeweight>> expectedDistances{{0, 1, 3}, {1, 0, 2}, {3, 2, 0}};
+    const auto & distances = test.getAllDistances();
+    EXPECT_EQ(distances, expectedDistances);
+}
+
+
+TEST_F(FloydWarshallGTest, testIsNodeInNegativeCycleCompleteGraphK3) {
+    auto graph = completeGraphK3();
+    FloydWarshall test(graph);
+    test.run();
+    for (node u = 0; u < graph.numberOfNodes(); ++u) {
+        EXPECT_FALSE(test.isNodeInNegativeCycle(u));
+    }
+}
+
+TEST_F(FloydWarshallGTest, getNodesOnShortestPathCompleteGraphK3) {
+    auto graph = completeGraphK3();
+    FloydWarshall test(graph);
+    test.run();
+    const std::vector<std::vector<std::vector<node>>> expectedNodesOnShortestPaths{
+        {{0}, {0, 1}, {0, 1, 2}}, {{1, 0}, {1}, {1, 2}}, {{2, 1, 0}, {2, 1}, {2}}};
+    for (node source = 0; source < graph.numberOfNodes(); ++source) {
+        for (node target = 0; target < graph.numberOfNodes(); ++target) {
+            EXPECT_EQ(test.getNodesOnShortestPath(source, target), expectedNodesOnShortestPaths[source][target]);
+        }
+    }
+}
+
+TEST_F(FloydWarshallGTest, testGetDistanceCompleteGraphK3NegativeCycle) {
+    auto graph = completeGraphK3NegativeCycle();
+    FloydWarshall test(graph);
+    test.run();
+    constexpr edgeweight expectedDistance{-std::numeric_limits<edgeweight>::infinity()};
+    for (node source = 0; source < graph.numberOfNodes(); ++source) {
+        for (node target = 0; target < graph.numberOfNodes(); ++target) {
+            EXPECT_EQ(test.getDistance(source, target), expectedDistance);
+        }
+    }
+}
+
+TEST_F(FloydWarshallGTest, testGetAllDistancesCompleteGraphK3NegativeCycle) {
+    auto graph = completeGraphK3NegativeCycle();
+    FloydWarshall test(graph);
+    test.run();
+    constexpr edgeweight expectedDistance{-std::numeric_limits<edgeweight>::infinity()};
+    const auto & distances = test.getAllDistances();
+    for (node source = 0; source < graph.numberOfNodes(); ++source) {
+        for (node target = 0; target < graph.numberOfNodes(); ++target) {
+            EXPECT_EQ(distances[source][target], expectedDistance);
+        }
+    }
+}
+
+TEST_F(FloydWarshallGTest, testIsNodeInNegativeCycleCompleteGraphK3NegativeCycle) {
+    auto graph = completeGraphK3NegativeCycle();
+    FloydWarshall test(graph);
+    test.run();
+    for (node source = 0; source < graph.numberOfNodes(); ++source) {
+        EXPECT_TRUE(test.isNodeInNegativeCycle(source));
+    }
+}
+
+TEST_F(FloydWarshallGTest, getNodesOnShortestPathCompleteGraphK3NegativeCycle) {
+    auto graph = completeGraphK3NegativeCycle();
+    FloydWarshall test(graph);
+    test.run();
+    for (node source = 0; source < graph.numberOfNodes(); ++source) {
+        for (node target = 0; target < graph.numberOfNodes(); ++target) {
+            EXPECT_EQ(test.getNodesOnShortestPath(source, target), std::vector<node>{});
         }
     }
 }

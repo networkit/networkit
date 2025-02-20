@@ -13,13 +13,13 @@ namespace NetworKit {
 
 class FloydWarshall : public Algorithm {
 public:
-    FloydWarshall(const Graph &G, double densityThreshold = 0.5, node maximumNumberOfNodes = 500);
+    FloydWarshall(const Graph &G);
 
     void run() override;
 
     edgeweight getDistance(node source, node target) const;
 
-    std::vector<std::vector<edgeweight>> getAllDistances() const;
+    const std::vector<std::vector<edgeweight>> & getAllDistances() const &;
 
     bool isNodeInNegativeCycle(node u) const;
 
@@ -27,7 +27,6 @@ public:
 
 private:
     const Graph *graph;
-    index numberOfNodes{};
     std::vector<std::vector<edgeweight>> distances;
     std::vector<uint8_t> nodesInNegativeCycle;
     std::vector<std::vector<node>> pathMatrix;
