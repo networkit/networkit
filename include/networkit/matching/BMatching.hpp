@@ -22,10 +22,17 @@ class BMatching {
 
 public:
     /**
+     * @brief WARNING: This contructor is required for Python and should not be used as the
+     * BMatching is not correctly initialized.
+     *
+     */
+    BMatching() = default;
+
+    /**
      * Constructs a new BMatching.
      *
-     * @param b b values
-     * @param numNodes Maximum number of nodes.
+     * @param G The graph
+     * @param b b values for all nodes
      */
     BMatching(const Graph &G, const std::vector<count> &b);
 
@@ -93,9 +100,14 @@ public:
      */
     const std::vector<count> &getB() const;
 
+    /**
+     * Removes all entries from the b-matching data structure
+     */
+    void reset();
+
 protected:
-    const Graph &G;
-    const std::vector<count> b;
+    const Graph *G;
+    std::vector<count> b;
     std::vector<std::unordered_set<node>> matches;
 };
 
