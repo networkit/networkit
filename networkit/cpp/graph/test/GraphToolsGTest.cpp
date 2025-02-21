@@ -1088,4 +1088,141 @@ TEST_P(GraphToolsGTest, testEdgesRandomizerDeterminism) {
     GraphTools::randomizeWeights(Gb);
     Ga.forEdges([&Ga, &Gb](node u, node v) { EXPECT_EQ(Ga.weight(u, v), Gb.weight(u, v)); });
 }
+
+TEST_F(GraphToolsGTest, testIsBipartiteDirectedGraphThrows) {
+    Graph graph(0, false, true, false);
+    try {
+        GraphTools::isBipartite(graph);
+        FAIL() << "Expected std::runtime_error";
+    } catch (const std::runtime_error &e) {
+        EXPECT_STREQ(e.what(), "The graph is not an undirected graph!");
+    } catch (...) {
+        FAIL() << "Expected std::runtime_error but got a different exception.";
+    }
+}
+
+TEST_F(GraphToolsGTest, testIsBipartiteEmptyGraph) {
+    Graph graph;
+    EXPECT_TRUE(GraphTools::isBipartite(graph));
+}
+
+TEST_F(GraphToolsGTest, testIsBipartiteSingleNodesGraphs) {
+    for (count i = 1; i < 10; ++i) {
+        Graph graph;
+        for (count j = 0; j < i; ++j)
+            graph.addNodes(j);
+        EXPECT_TRUE(GraphTools::isBipartite(graph));
+    }
+}
+
+TEST_F(GraphToolsGTest, testIsBipartiteBinaryTreeGraphs) {
+    auto binaryTree = [](count numNodes) {
+        Graph graph(numNodes, true, false, true);
+        for (count i = 0; i < numNodes; ++i) {
+            count leftChild = 2 * i + 1;
+            count rightChild = 2 * i + 2;
+            if (leftChild < numNodes) {
+                graph.addEdge(i, leftChild, static_cast<double>(i));
+            }
+            if (rightChild < numNodes) {
+                graph.addEdge(i, rightChild, static_cast<double>(i));
+            }
+        }
+        return graph;
+    };
+    for (count i = 1; i < 10; ++i) {
+        Graph graph = binaryTree(i);
+        EXPECT_TRUE(GraphTools::isBipartite(graph));
+    }
+}
+
+TEST_F(GraphToolsGTest, testIsBipartiteCompleteGraphs) {
+    auto completeGraph = [&](count numNodes) {
+        Graph graph(numNodes, true);
+        for (count i = 0; i < numNodes; ++i) {
+            for (count j = i + 1; j < numNodes; ++j) {
+                graph.addEdge(i, j, static_cast<double>(j * (j + 1)));
+            }
+        }
+        return graph;
+    };
+
+    for (count numberOfNodes = 3; numberOfNodes <= 10; ++numberOfNodes) {
+        Graph graph = completeGraph(numberOfNodes);
+        EXPECT_FALSE(GraphTools::isBipartite(graph));
+    }
+}
+
+TEST_F(GraphToolsGTest, testIsBipartiteGrid5x5DistArchGraph) {
+    METISGraphReader reader;
+    Graph graph = reader.read("input/grid-5x5-dist-arch.graph");
+    EXPECT_TRUE(GraphTools::isBipartite(graph));
+}
+
+TEST_F(GraphToolsGTest, testIsBipartiteAirfoil1Graph) {
+    METISGraphReader reader;
+    Graph graph = reader.read("input/airfoil1.graph");
+    EXPECT_FALSE(GraphTools::isBipartite(graph));
+}
+
+TEST_F(GraphToolsGTest, testIsBipartiteHepThGraph) {
+    METISGraphReader reader;
+    Graph graph = reader.read("input/hep-th.graph");
+    EXPECT_FALSE(GraphTools::isBipartite(graph));
+}
+
+TEST_F(GraphToolsGTest, testIsBipartiteCompleteBipartiteGraphK3_3) {
+    Graph graph(6);
+    graph.addEdge(0, 3);
+    graph.addEdge(0, 4);
+    graph.addEdge(0, 5);
+    graph.addEdge(1, 3);
+    graph.addEdge(1, 4);
+    graph.addEdge(1, 5);
+    graph.addEdge(2, 3);
+    graph.addEdge(2, 4);
+    graph.addEdge(2, 5);
+
+    EXPECT_TRUE(GraphTools::isBipartite(graph));
+}
+
+TEST_F(GraphToolsGTest, testIsBipartiteDeleteNode) {
+    Graph graph(7);
+    graph.addEdge(0, 3);
+    graph.addEdge(0, 4);
+    graph.addEdge(0, 5);
+    graph.addEdge(1, 3);
+    graph.addEdge(1, 4);
+    graph.addEdge(1, 5);
+    graph.addEdge(2, 3);
+    graph.addEdge(2, 4);
+    graph.addEdge(2, 5);
+    // make graph non-bipartite
+    graph.addEdge(0, 6);
+    graph.addEdge(5, 6);
+
+    EXPECT_FALSE(GraphTools::isBipartite(graph));
+    // remove node 6 to make graph bipartite -> K_{3,3}
+    graph.removeNode(6);
+    EXPECT_TRUE(GraphTools::isBipartite(graph));
+}
+
+TEST_F(GraphToolsGTest, testIsBipartiteDeleteAndRestoreNodes) {
+    Graph graph(4);
+    graph.addEdge(0, 1);
+    graph.addEdge(0, 2);
+    graph.addEdge(0, 3);
+    graph.addEdge(1, 2);
+    graph.addEdge(1, 3);
+    graph.addEdge(2, 3);
+
+    EXPECT_FALSE(GraphTools::isBipartite(graph));
+    graph.removeNode(1);
+    EXPECT_FALSE(GraphTools::isBipartite(graph));
+    graph.restoreNode(1);
+    EXPECT_FALSE(GraphTools::isBipartite(graph));
+    graph.removeNode(2);
+    EXPECT_TRUE(GraphTools::isBipartite(graph));
+}
+
 } // namespace NetworKit
