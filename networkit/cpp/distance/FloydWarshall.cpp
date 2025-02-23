@@ -84,7 +84,7 @@ const std::vector<std::vector<edgeweight>> & FloydWarshall::getAllDistances() co
     return distances;
 }
 
-
+    
 bool FloydWarshall::isNodeInNegativeCycle(node u) const {
     assureFinished();
     return nodesInNegativeCycle[u] == 1;
