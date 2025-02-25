@@ -63,7 +63,7 @@ void DynamicBSuitorMatcher::trackUpdatePath(node start) {
 
     node current = start;
     node partner = suitors[current].min.id;
-    auto heaviest = suitors[current].min.weight;
+    edgeweight heaviest = suitors[current].min.weight;
     edgeweight prev = std::numeric_limits<edgeweight>::max();
 
     std::vector<MatchingNode> looseEnds;
@@ -75,7 +75,7 @@ void DynamicBSuitorMatcher::trackUpdatePath(node start) {
             if (suitors[current].hasPartner(x))
                 return;
 
-            const auto z = suitors[x].min;
+            const MatchingNode z = suitors[x].min;
 
             if ((weight > heaviest || (weight == heaviest && x < partner))
                 && (weight > z.weight || (weight == z.weight && current < z.id))

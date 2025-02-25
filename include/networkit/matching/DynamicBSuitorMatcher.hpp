@@ -58,24 +58,19 @@ public:
 private:
     // helper function
     bool isBetterMatch(node u, node v, edgeweight ew) const noexcept {
-        const auto currentMatch = suitors[u].min;
+        const MatchingNode currentMatch = suitors[u].min;
         return currentMatch.id == none || currentMatch.weight < ew
                || (currentMatch.weight == ew && v < currentMatch.id);
     }
 
-    // Internal logic for handling edge insertions (initial check)
     void addEdge(const GraphEvent &event);
 
-    // Internal logic for handling edge insertions (initial suitor update)
     void processEdgeInsertion(const GraphEvent &event);
 
-    // Internal logic for handling edge removals (initial check)
     void removeEdge(const GraphEvent &event);
 
-    // Internal logic for handling edge removals (initial suitor update)
     void processEdgeRemoval(const GraphEvent &event);
 
-    // Internal logic for tracking update paths (both insertion + deletion)
     void trackUpdatePath(node start);
 };
 
