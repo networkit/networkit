@@ -19,8 +19,6 @@ public:
 
     edgeweight getDistance(node source, node target) const;
 
-    const std::vector<std::vector<edgeweight>> & getAllDistances() const &;
-
     bool isNodeInNegativeCycle(node u) const;
 
     std::vector<node> getNodesOnShortestPath(node source, node target) const;

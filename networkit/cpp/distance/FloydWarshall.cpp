@@ -56,19 +56,19 @@ void FloydWarshall::run() {
         }
     }
 
-    for (node w = 0; w < numberOfNodes; ++w) {
-        for (node u = 0; u < numberOfNodes; ++u) {
-            if (distances[u][w] == std::numeric_limits<edgeweight>::max())
-                continue;
-            for (node v = 0; v < numberOfNodes; ++v) {
-                if (distances[w][v] != std::numeric_limits<edgeweight>::max()
-                    && distances[u][w] + distances[w][v] < distances[u][v]) {
-                    distances[u][v] = distances[u][w] + distances[w][v];
-                    pathMatrix[u][v] = pathMatrix[u][w];
+        for (node w = 0; w < numberOfNodes; ++w) {
+            for (node u = 0; u < numberOfNodes; ++u) {
+                if (distances[u][w] == std::numeric_limits<edgeweight>::max())
+                    continue;
+                for (node v = 0; v < numberOfNodes; ++v) {
+                    if (distances[w][v] != std::numeric_limits<edgeweight>::max()
+                        && distances[u][w] + distances[w][v] < distances[u][v]) {
+                        distances[u][v] = distances[u][w] + distances[w][v];
+                        pathMatrix[u][v] = pathMatrix[u][w];
+                    }
                 }
             }
         }
-    }
 
     tagNegativeCycles();
     hasRun = true;
@@ -79,12 +79,6 @@ edgeweight FloydWarshall::getDistance(node source, node target) const {
     return distances[source][target];
 }
 
-const std::vector<std::vector<edgeweight>> & FloydWarshall::getAllDistances() const & {
-    assureFinished();
-    return distances;
-}
-
-    
 bool FloydWarshall::isNodeInNegativeCycle(node u) const {
     assureFinished();
     return nodesInNegativeCycle[u] == 1;
