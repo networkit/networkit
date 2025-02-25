@@ -41,6 +41,20 @@ protected:
                 return true;
         return false;
     }
+
+    edgeweight computeStaticBMatchingWeight(BSuitorMatcher &staticBMatcher) {
+        staticBMatcher.buildBMatching();
+        const auto sm = staticBMatcher.getBMatching();
+        auto res = sm.getMatches();
+        return sm.weight();
+    }
+
+    edgeweight computeDynamicBMatchingWeight(DynamicBSuitorMatcher &dynBMatcher) {
+        dynBMatcher.buildBMatching();
+        const auto dm = dynBMatcher.getBMatching();
+        auto dres = dm.getMatches();
+        return dm.weight();
+    }
 };
 
 TEST_F(MatcherGTest, testLocalMaxMatching) {
@@ -286,77 +300,46 @@ TEST_F(MatcherGTest, testBSuitorMatcherDifferentB) {
 }
 
 TEST_F(MatcherGTest, testDynBSuitorInsertEdges) {
-    for (int i = 0; i < 10; i++) {
-        METISGraphReader graphReader;
-        auto G = graphReader.read("input/lesmis.graph");
-        std::vector<GraphEvent> events;
-        count m = 10;
-        // Select m edges of the graph, remove them but put them into edges for later insertion.
-        // This will make sure that the graph is valid.
-        for (count j = 0; j < m; j++) {
-            const auto [u, v] = GraphTools::randomEdge(G);
-            assert(G.hasEdge(u, v));
-            events.emplace_back(GraphEvent{GraphEvent::EDGE_ADDITION, u, v, G.weight(u, v)});
-            G.removeEdge(u, v);
-        }
+    METISGraphReader graphReader;
+    auto G = graphReader.read("input/lesmis.graph");
+    std::vector<GraphEvent> events;
+    G.forEdges([&](node u, node v, edgeweight w) {
+        events.emplace_back(GraphEvent{GraphEvent::EDGE_ADDITION, u, v, w});
+    });
+    G.removeAllEdges();
 
-        const count b = 6;
-        DynamicBSuitorMatcher dbsm(G, b);
-        dbsm.run();
+    const count b = 6;
+    DynamicBSuitorMatcher dbsm(G, b);
+    dbsm.run();
 
-        for (auto &e : events) {
-            G.addEdge(e.u, e.v, e.w);
-        }
-
-        dbsm.updateBatch(events);
-
-        dbsm.buildBMatching();
-        const auto dm = dbsm.getBMatching();
-        auto dres = dm.getMatches();
-        const auto dwm = dm.weight();
-
+    for (auto &e : events) {
+        G.addEdge(e.u, e.v, e.w);
+        dbsm.update(e);
         BSuitorMatcher bsm(G, b);
         bsm.run();
-        bsm.buildBMatching();
-        const auto sm = bsm.getBMatching();
-        auto res = sm.getMatches();
-        const auto wm = sm.weight();
-
-        EXPECT_EQ(dwm, wm);
+        EXPECT_EQ(computeDynamicBMatchingWeight(dbsm), computeStaticBMatchingWeight(bsm));
     }
 }
 
 TEST_F(MatcherGTest, testDynBSuitorRemoveEdges) {
     METISGraphReader graphReader;
-    for (int i = 0; i < 10; i++) {
-        auto G = graphReader.read("input/lesmis.graph");
+    auto G = graphReader.read("input/lesmis.graph");
 
-        const count b = 6;
-        DynamicBSuitorMatcher dbsm(G, b);
-        dbsm.run();
+    const count b = 6;
+    DynamicBSuitorMatcher dbsm(G, b);
+    dbsm.run();
 
-        std::vector<GraphEvent> events;
-        count m = 10;
-        for (count j = 0; j < m; j++) {
-            const auto [u, v] = GraphTools::randomEdge(G);
-            events.emplace_back(GraphEvent{GraphEvent::EDGE_REMOVAL, u, v});
-            G.removeEdge(u, v);
-        }
+    std::vector<GraphEvent> events;
+    G.forEdges([&](node u, node v) {
+        events.emplace_back(GraphEvent{GraphEvent::EDGE_REMOVAL, u, v});
+    });
 
-        dbsm.updateBatch(events);
-        dbsm.buildBMatching();
-        const auto dm = dbsm.getBMatching();
-        auto dres = dm.getMatches();
-        const auto dwm = dm.weight();
-
+    for (auto &e : events) {
+        G.removeEdge(e.u, e.v);
+        dbsm.update(e);
         BSuitorMatcher bsm(G, b);
         bsm.run();
-        bsm.buildBMatching();
-        const auto sm = bsm.getBMatching();
-        auto res = sm.getMatches();
-        const auto wm = sm.weight();
-
-        EXPECT_EQ(dwm, wm);
+        EXPECT_EQ(computeDynamicBMatchingWeight(dbsm), computeStaticBMatchingWeight(bsm));
     }
 }
 
@@ -364,8 +347,6 @@ TEST_F(MatcherGTest, testDynBSuitorMixedBatch) {
     METISGraphReader graphReader;
     for (int i = 0; i < 10; i++) {
         auto G = graphReader.read("input/lesmis.graph");
-        G.removeSelfLoops();
-        G.removeMultiEdges();
         const count b = 6;
         DynamicBSuitorMatcher dbsm(G, b);
         dbsm.run();
@@ -391,19 +372,9 @@ TEST_F(MatcherGTest, testDynBSuitorMixedBatch) {
         }
 
         dbsm.updateBatch(events);
-        dbsm.buildBMatching();
-        const auto dm = dbsm.getBMatching();
-        auto dres = dm.getMatches();
-        const auto dwm = dm.weight();
-
         BSuitorMatcher bsm(G, b);
         bsm.run();
-        bsm.buildBMatching();
-        const auto sm = bsm.getBMatching();
-        auto res = sm.getMatches();
-        const auto wm = sm.weight();
-
-        EXPECT_EQ(dwm, wm);
+        EXPECT_EQ(computeDynamicBMatchingWeight(dbsm), computeStaticBMatchingWeight(bsm));
     }
 }
 
