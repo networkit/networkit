@@ -159,7 +159,7 @@ void KHop::kHop(node node) {
     std::vector<int64_t> visited(this->G->numberOfNodes(), -1);
 
     visited[node] = true;
-    queue.push(std::make_tuple(node, 0));
+    queue.emplace(std::make_tuple(node, 0));
 
     while (!queue.empty()) {
         std::tuple<NetworKit::node, count> q = queue.front();
