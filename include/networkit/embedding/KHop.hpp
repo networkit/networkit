@@ -1,11 +1,11 @@
 /*
-*  KHop.cpp
-*
-*
-*  Created on: 23.06.2024
-*      Author: Alexander K. Ziebs
-*
-*/
+ *  KHop.cpp
+ *
+ *
+ *  Created on: 23.06.2024
+ *      Author: Alexander K. Ziebs
+ *
+ */
 
 #ifndef NETWORKIT_KHOP_HPP
 #define NETWORKIT_KHOP_HPP
@@ -38,18 +38,9 @@ public:
      * @param M   STRICT (0) for k-hops exactly k, DEFAULT (1) for additional edges less than k.
      * @param winSize    Window Size for walks.
      * @param iterations Iterations for walks.
-    */
-    KHop(
-        const Graph &G,
-        size_t K = 2,
-        double S = 6.25,
-        count L = 80,
-        count N = 10,
-        count D = 128,
-        khopMode M = khopMode::DEFAULT,
-        count winSize = 8,
-        count iterations = 20
-    );
+     */
+    KHop(const Graph &G, size_t K = 2, double S = 6.25, count L = 80, count N = 10, count D = 128,
+         khopMode M = khopMode::DEFAULT, count winSize = 8, count iterations = 20);
 
     ~KHop() override = default;
 
@@ -66,9 +57,7 @@ public:
     /**
      * @return Graph
      */
-    const Graph GetG_k() const {
-        return G_k;
-    }
+    const Graph GetG_k() const { return G_k; }
 
 private:
     // The graph

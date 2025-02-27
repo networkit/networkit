@@ -73,7 +73,8 @@ TEST_F(KHopTest, testConstructDefaultKHopGraph) {
     KHop hop(preHop, 2, 6.25, 80, 10, 128, KHop::khopMode::DEFAULT);
     Graph G_2 = hop.GetG_k();
 
-    // Expected 2 Hop Graph G_2 should be a fully connected Graph with 4 nodes (including self loops)
+    // Expected 2 Hop Graph G_2 should be a fully connected Graph with 4 nodes (including self
+    // loops)
 
     // check for all edges, that should exist
     EXPECT_TRUE(G_2.hasEdge(0, 0));
