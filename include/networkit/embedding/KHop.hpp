@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef NETWORKIT_KHOP_HPP
-#define NETWORKIT_KHOP_HPP
+#ifndef NETWORKIT_EMBEDDING_K_HOP_HPP_
+#define NETWORKIT_EMBEDDING_K_HOP_HPP_
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -89,4 +89,4 @@ private:
 
 } /* namespace NetworKit */
 
-#endif // NETWORKIT_KHOP_HPP
+#endif // NETWORKIT_EMBEDDING_K_HOP_HPP_
