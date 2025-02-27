@@ -102,12 +102,12 @@ KHop::KHop(const Graph &G, size_t K, double S, count L, count N, count D, khopMo
 
         // get number of neighbors and iterate (faster than edgeweight weight(node u, node v)
         // const;)
-        for (int i = 0; i < degree; ++i) {
+        for (count i = 0; i < degree; ++i) {
             weightsByNeighborIndex[i] = this->G_k.getIthNeighborWeight(v, i);
             sum += weightsByNeighborIndex[i];
         }
 
-        for (int i = 0; i < degree; ++i) {
+        for (count i = 0; i < degree; ++i) {
             this->G_k.setWeight(v, this->G_k.getIthNeighbor(v, i), weightsByNeighborIndex[i] / sum);
         }
     });
@@ -170,7 +170,7 @@ void KHop::kHop(node node) {
 
         if (depth < this->K) {
             this->G->forNeighborsOf(current, [&](NetworKit::node neighbor) {
-                if (visited[neighbor] == -1 || visited[neighbor] > depth + 1) {
+                if (visited[neighbor] == -1 || static_cast<count>(visited[neighbor]) > depth + 1) {
                     visited[neighbor] = depth + 1;
                     queue.push(std::make_tuple(neighbor, depth + 1));
                 }
