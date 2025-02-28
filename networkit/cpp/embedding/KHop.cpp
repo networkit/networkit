@@ -159,7 +159,7 @@ void KHop::kHop(node node) {
     std::vector<int64_t> visited(this->G->numberOfNodes(), -1);
 
     visited[node] = true;
-    queue.emplace(std::make_tuple(node, 0));
+    queue.emplace(node, 0);
 
     while (!queue.empty()) {
         std::tuple<NetworKit::node, count> q = queue.front();
@@ -172,7 +172,7 @@ void KHop::kHop(node node) {
             this->G->forNeighborsOf(current, [&](NetworKit::node neighbor) {
                 if (visited[neighbor] == -1 || static_cast<count>(visited[neighbor]) > depth + 1) {
                     visited[neighbor] = depth + 1;
-                    queue.push(std::make_tuple(neighbor, depth + 1));
+                    queue.emplace(neighbor, depth + 1);
                 }
             });
         }
