@@ -19,7 +19,7 @@ FloydWarshall::FloydWarshall(const Graph &G)
 void FloydWarshall::tagNegativeCycles() {
     const index numberOfNodes = graph->numberOfNodes();
     for (node w = 0; w < numberOfNodes; ++w) {
-        if (!(distances[w][w] < 0.0))
+        if (distances[w][w] >= 0.0)
             continue;
         nodesInNegativeCycle[w] = 1;
         for (node u = 0; u < numberOfNodes; ++u) {
@@ -56,19 +56,20 @@ void FloydWarshall::run() {
         }
     }
 
-        for (node w = 0; w < numberOfNodes; ++w) {
-            for (node u = 0; u < numberOfNodes; ++u) {
-                if (distances[u][w] == std::numeric_limits<edgeweight>::max())
-                    continue;
-                for (node v = 0; v < numberOfNodes; ++v) {
-                    if (distances[w][v] != std::numeric_limits<edgeweight>::max()
-                        && distances[u][w] + distances[w][v] < distances[u][v]) {
-                        distances[u][v] = distances[u][w] + distances[w][v];
-                        pathMatrix[u][v] = pathMatrix[u][w];
-                    }
+    for (node intermediate = 0; intermediate < numberOfNodes; ++intermediate) {
+#pragma omp parallel for
+        for (node source = 0; source < numberOfNodes; ++source) {
+            if (distances[source][intermediate] == std::numeric_limits<edgeweight>::max())
+                continue;
+            for (node target = 0; target < numberOfNodes; ++target) {
+                if (distances[intermediate][target] != std::numeric_limits<edgeweight>::max()
+                    && distances[source][intermediate] + distances[intermediate][target] < distances[source][target]) {
+                    distances[source][target] = distances[source][intermediate] + distances[intermediate][target];
+                    pathMatrix[source][target] = pathMatrix[source][intermediate];
                 }
             }
         }
+    }
 
     tagNegativeCycles();
     hasRun = true;
