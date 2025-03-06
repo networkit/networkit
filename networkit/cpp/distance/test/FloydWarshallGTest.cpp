@@ -12,6 +12,9 @@ namespace NetworKit {
 class FloydWarshallGTest : public testing::Test {
 public:
     static constexpr edgeweight maxDistance = std::numeric_limits<edgeweight>::max();
+    static constexpr edgeweight largeWeight{10.0};
+    static constexpr edgeweight smallWeight{1.0};
+    static constexpr edgeweight mediumWeight{1.0};
     Graph completeGraphK3() {
         Graph graph(3, true);
         graph.addEdge(0, 1, 1);
@@ -63,29 +66,37 @@ public:
     //       |   | self-loop on node 1
     // 0---->1<---
     // A     |
-    // |     |  --->5
-    // |     V /    |
-    // |     2      |
-    // |     | \    |
-    // |     V   \  |
-    // 4<----3    \ V
-    //              6
+    // |     |
+    // |     V
+    // |     2
+    // |     |
+    // |     V
+    // 4<----3
     Graph directedGraphWithNegativeSelfLoop() {
-        Graph graph(7, true, true);
+        Graph graph(5, true, true);
         graph.addEdge(0, 1, 3);
         graph.addEdge(1, 1, -2); // self-loop with negative cycle
         graph.addEdge(1, 2, 2);
         graph.addEdge(2, 3, 1);
         graph.addEdge(3, 4, 4);
         graph.addEdge(4, 0, 1);
-        // Graph without self-loop
-        graph.addEdge(2, 5, 2);
-        graph.addEdge(5, 6, 3);
-        graph.addEdge(6, 2, 3);
-
         return graph;
     }
 
+    Graph oddNodeEdgesHaveZeroWeightGraph() {
+        Graph graph(100, true);
+        for (node u = 0; u < 98; ++u) {
+            // All edges between odd edge id's are zero
+            if (u & 1) {
+                graph.addEdge(u, u + 1, 1);
+                graph.addEdge(u, u + 2, 0);
+            } else {
+                graph.addEdge(u, u + 1, 1);
+                graph.addEdge(u, u + 2, 1);
+            }
+        }
+        return graph;
+    }
 };
 
 TEST_F(FloydWarshallGTest, testConstructorThrowsUnweightedGraph) {
@@ -265,15 +276,15 @@ TEST_F(FloydWarshallGTest, testGetDistanceDisconnectedGraph) {
     }
 }
 
-
-
 TEST_F(FloydWarshallGTest, testGetNodesOnShortestPathDisconnectedGraph) {
     auto graph = disconnectedGraph();
     FloydWarshall test(graph);
     test.run();
     const std::vector<std::vector<std::vector<node>>> expectedNodesOnShortestPaths{
-            {{0}, {0, 1}, {0, 1, 2}, {}}, {{1, 0}, {1}, {1, 2}, {}}, {{2, 1, 0}, {2, 1}, {2}, {}}
-                , {{}, {}, {}, {3}}};
+        {{0}, {0, 1}, {0, 1, 2}, {}},
+        {{1, 0}, {1}, {1, 2}, {}},
+        {{2, 1, 0}, {2, 1}, {2}, {}},
+        {{}, {}, {}, {3}}};
     for (node source = 0; source < graph.numberOfNodes(); ++source) {
         for (node target = 0; target < graph.numberOfNodes(); ++target) {
             EXPECT_EQ(test.getNodesOnShortestPath(source, target),
@@ -292,19 +303,98 @@ TEST_F(FloydWarshallGTest, testIsNodeInNegativeCycleDisconnectedGraph) {
     }
 }
 
-
-
-TEST_F(FloydWarshallGTest, testZeroWeightEdges) {
-    Graph graph(3, true);
-    graph.addEdge(0, 1, 0.0);
-    graph.addEdge(1, 2, 0.0);
-    graph.addEdge(0, 2, 3.0);
+TEST_F(FloydWarshallGTest, testGetDistanceDirectedGraphWithNegativeSelfLoop) {
+    auto graph = directedGraphWithNegativeSelfLoop();
     FloydWarshall test(graph);
     test.run();
-    EXPECT_EQ(test.getDistance(0, 1), 0.0);
-    EXPECT_EQ(test.getDistance(1, 2), 0.0);
-    EXPECT_EQ(test.getDistance(0, 2), 0.0);
+    constexpr edgeweight expectedDistance{-std::numeric_limits<edgeweight>::infinity()};
+    for (node source = 0; source < graph.numberOfNodes(); ++source) {
+        for (node target = 0; target < graph.numberOfNodes(); ++target) {
+            EXPECT_EQ(test.getDistance(source, target), expectedDistance);
+        }
+    }
 }
 
+TEST_F(FloydWarshallGTest, testIsNodeInNegativeCycleDirectedGraphWithNegativeSelfLoop) {
+    auto graph = directedGraphWithNegativeSelfLoop();
+    FloydWarshall test(graph);
+    test.run();
+    for (node source = 0; source < graph.numberOfNodes(); ++source) {
+        EXPECT_TRUE(test.isNodeInNegativeCycle(source));
+    }
+}
+
+TEST_F(FloydWarshallGTest, testGetDistanceWithMediumSizedGraph) {
+    auto graph = oddNodeEdgesHaveZeroWeightGraph();
+    FloydWarshall test(graph);
+    test.run();
+    for (node source = 0; source < graph.numberOfNodes(); ++source) {
+        for (node target = {source + 1}; target < graph.numberOfNodes(); ++target) {
+            if ((source & 1) && (target & 1)) {
+                EXPECT_EQ(test.getDistance(source, target), 0.0) << source << ", " << target;
+            }
+            if (!(source & 1) && !(target & 1))
+                if (target == source + 2) {
+                    EXPECT_EQ(test.getDistance(source, target), 1.0) << source << ", " << target;
+                } else {
+                    EXPECT_EQ(test.getDistance(source, target), 2.0) << source << ", " << target;
+                }
+            if ((!(source & 1) && (target & 1)) || ((source & 1) && !(target & 1))) {
+                EXPECT_EQ(test.getDistance(source, target), 1.0) << source << ", " << target;
+            }
+        }
+    }
+}
+
+TEST_F(FloydWarshallGTest, testGetNodesOnShortestPathWithMediumSizedGraph) {
+    auto graph = oddNodeEdgesHaveZeroWeightGraph();
+    FloydWarshall test(graph);
+    test.run();
+    for (node source = 0; source < graph.numberOfNodes(); ++source) {
+        for (node target = {source + 1}; target < graph.numberOfNodes(); ++target) {
+            if ((source & 1) && (target & 1)) {
+                std::vector<node> expected_path;
+                for (node u = source; u <= target; u += 2) {
+                    expected_path.push_back(u);
+                }
+                EXPECT_EQ(expected_path, test.getNodesOnShortestPath(source, target));
+            }
+            if (!(source & 1) && !(target & 1))
+                if (target == source + 2) {
+                    std::vector<node> expected_path{source, target};
+                    EXPECT_EQ(expected_path, test.getNodesOnShortestPath(source, target));
+                }
+                else if (target == source + 4) {
+                    std::vector<node> expected_path{source, source+2, target};
+                    EXPECT_EQ(expected_path, test.getNodesOnShortestPath(source, target));
+                }
+                else
+                {
+                    std::vector<node> expected_path{source};
+                    for (node u = source + 1; u <= target - 1; u += 2) {
+                        expected_path.push_back(u);
+                    }
+                    expected_path.push_back(target);
+                    EXPECT_EQ(expected_path, test.getNodesOnShortestPath(source, target));
+                }
+            if (!(source & 1) && (target & 1)) {
+                std::vector<node> expected_path{source};
+                for (node u = source + 1; u <= target; u += 2) {
+                    expected_path.push_back(u);
+                }
+                EXPECT_EQ(expected_path, test.getNodesOnShortestPath(source, target));
+            }
+            if ((source & 1) && !(target & 1)) {
+                std::vector<node> expected_path{};
+                for (node u = source; u <= target-1; u += 2) {
+                    expected_path.push_back(u);
+                }
+                expected_path.push_back(target);
+                EXPECT_EQ(expected_path, test.getNodesOnShortestPath(source, target));
+            }
+
+        }
+    }
+}
 
 } // namespace NetworKit

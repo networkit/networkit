@@ -8,8 +8,7 @@
 
 namespace NetworKit {
 
-FloydWarshall::FloydWarshall(const Graph &G)
-    : graph(&G) {
+FloydWarshall::FloydWarshall(const Graph &G) : graph(&G) {
 
     if (!G.isWeighted()) {
         throw std::runtime_error("The input graph is unweighted!");
@@ -43,7 +42,8 @@ void FloydWarshall::run() {
                             std::vector(numberOfNodes, std::numeric_limits<edgeweight>::max()));
     nodesInNegativeCycle = std::vector<uint8_t>(numberOfNodes);
     pathMatrix = std::vector(numberOfNodes, std::vector(numberOfNodes, none));
-
+    hopCount =
+        std::vector<std::vector<count>>(numberOfNodes, std::vector<count>(numberOfNodes, none));
     for (node u = 0; u < numberOfNodes; ++u) {
         distances[u][u] = 0.0;
         pathMatrix[u][u] = u;
@@ -62,10 +62,20 @@ void FloydWarshall::run() {
             if (distances[source][intermediate] == std::numeric_limits<edgeweight>::max())
                 continue;
             for (node target = 0; target < numberOfNodes; ++target) {
-                if (distances[intermediate][target] != std::numeric_limits<edgeweight>::max()
-                    && distances[source][intermediate] + distances[intermediate][target] < distances[source][target]) {
-                    distances[source][target] = distances[source][intermediate] + distances[intermediate][target];
-                    pathMatrix[source][target] = pathMatrix[source][intermediate];
+                if (distances[intermediate][target] != std::numeric_limits<edgeweight>::max()) {
+                    if (distances[source][intermediate] + distances[intermediate][target]
+                        < distances[source][target]) {
+                        distances[source][target] =
+                            distances[source][intermediate] + distances[intermediate][target];
+                        pathMatrix[source][target] = pathMatrix[source][intermediate];
+                        hopCount[source][target] =
+                            hopCount[source][intermediate] + hopCount[intermediate][target] + 1;
+                    } else if (distances[source][intermediate] + distances[intermediate][target]
+                               == distances[source][target] & hopCount[source][intermediate] + hopCount[intermediate][target] + 1 < hopCount[source][target])
+                    {
+                        pathMatrix[source][target] = pathMatrix[source][intermediate];
+                        hopCount[source][target] = hopCount[source][intermediate] + hopCount[intermediate][target] + 1;
+                    }
                 }
             }
         }

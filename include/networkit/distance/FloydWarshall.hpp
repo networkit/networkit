@@ -28,6 +28,7 @@ private:
     std::vector<std::vector<edgeweight>> distances;
     std::vector<uint8_t> nodesInNegativeCycle;
     std::vector<std::vector<node>> pathMatrix;
+    std::vector<std::vector<count>> hopCount;
     void tagNegativeCycles();
 };
 } // namespace NetworKit
