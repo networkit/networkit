@@ -4,6 +4,7 @@
  *  Authors: Andreas Scharf (andreas.b.scharf@gmail.com)
  *
  */
+#include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/distance/FloydWarshall.hpp>
 
 namespace NetworKit {
@@ -42,17 +43,18 @@ void FloydWarshall::run() {
                             std::vector(numberOfNodes, std::numeric_limits<edgeweight>::max()));
     nodesInNegativeCycle = std::vector<uint8_t>(numberOfNodes);
     pathMatrix = std::vector(numberOfNodes, std::vector(numberOfNodes, none));
-    hopCount =
-        std::vector<std::vector<count>>(numberOfNodes, std::vector<count>(numberOfNodes, none));
+    hops = std::vector(numberOfNodes, std::vector(numberOfNodes, none));
     for (node u = 0; u < numberOfNodes; ++u) {
         distances[u][u] = 0.0;
         pathMatrix[u][u] = u;
+        hops[u][u] = 0;
     }
 
     for (node u = 0; u < numberOfNodes; ++u) {
         for (const node v : graph->neighborRange(u)) {
             distances[u][v] = graph->weight(u, v);
             pathMatrix[u][v] = v;
+            hops[u][v] = 1;
         }
     }
 
@@ -62,20 +64,22 @@ void FloydWarshall::run() {
             if (distances[source][intermediate] == std::numeric_limits<edgeweight>::max())
                 continue;
             for (node target = 0; target < numberOfNodes; ++target) {
-                if (distances[intermediate][target] != std::numeric_limits<edgeweight>::max()) {
-                    if (distances[source][intermediate] + distances[intermediate][target]
-                        < distances[source][target]) {
-                        distances[source][target] =
-                            distances[source][intermediate] + distances[intermediate][target];
-                        pathMatrix[source][target] = pathMatrix[source][intermediate];
-                        hopCount[source][target] =
-                            hopCount[source][intermediate] + hopCount[intermediate][target] + 1;
-                    } else if (distances[source][intermediate] + distances[intermediate][target]
-                               == distances[source][target] & hopCount[source][intermediate] + hopCount[intermediate][target] + 1 < hopCount[source][target])
-                    {
-                        pathMatrix[source][target] = pathMatrix[source][intermediate];
-                        hopCount[source][target] = hopCount[source][intermediate] + hopCount[intermediate][target] + 1;
-                    }
+                if (distances[intermediate][target] == std::numeric_limits<edgeweight>::max()) {
+                    continue;
+                }
+
+                const edgeweight candidateDistance =
+                    distances[source][intermediate] + distances[intermediate][target];
+                const count candidateHops = hops[source][intermediate] + hops[intermediate][target];
+                if (candidateDistance < distances[source][target]) {
+                    distances[source][target] = candidateDistance;
+                    hops[source][target] = candidateHops;
+                    pathMatrix[source][target] = pathMatrix[source][intermediate];
+                }
+                if (Aux::NumericTools::equal(candidateDistance, distances[source][target])
+                    && candidateHops < hops[source][target]) {
+                    hops[source][target] = candidateHops;
+                    pathMatrix[source][target] = pathMatrix[source][intermediate];
                 }
             }
         }

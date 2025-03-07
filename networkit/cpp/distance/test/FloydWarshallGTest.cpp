@@ -95,6 +95,7 @@ public:
                 graph.addEdge(u, u + 2, 1);
             }
         }
+        graph.addEdge(98, 99, 1);
         return graph;
     }
 };
@@ -324,6 +325,31 @@ TEST_F(FloydWarshallGTest, testIsNodeInNegativeCycleDirectedGraphWithNegativeSel
     }
 }
 
+TEST_F(FloydWarshallGTest, testMultipleShortestDistancePaths) {
+    Graph graph(11, true);
+    // Shortest path, first case [0,10] with 5 nodes (inclusive)
+    graph.addEdge(0, 1, 1);
+    graph.addEdge(1, 2, 1);
+    graph.addEdge(2, 3, 1);
+    graph.addEdge(3, 10, 2);
+    // Shortest path, second case [0,10] with 4 nodes (inclusive)
+    graph.addEdge(0, 4, 1);
+    graph.addEdge(4, 5, 1);
+    graph.addEdge(5, 10, 3);
+    // Shortest path, third case [0,10] with 6 nodes (inclusive)
+    graph.addEdge(0, 6, 1);
+    graph.addEdge(6, 7, 1);
+    graph.addEdge(7, 8, 1);
+    graph.addEdge(8, 9, 1);
+    graph.addEdge(9, 10, 1);
+    FloydWarshall test(graph);
+    test.run();
+    constexpr edgeweight expectedShortestDistance = 5.0;
+    const std::vector<node> expectedPath{0, 4, 5, 10};
+    EXPECT_EQ(test.getDistance(0, 10), expectedShortestDistance);
+    EXPECT_EQ(test.getNodesOnShortestPath(0, 10), expectedPath);
+}
+
 TEST_F(FloydWarshallGTest, testGetDistanceWithMediumSizedGraph) {
     auto graph = oddNodeEdgesHaveZeroWeightGraph();
     FloydWarshall test(graph);
@@ -363,13 +389,10 @@ TEST_F(FloydWarshallGTest, testGetNodesOnShortestPathWithMediumSizedGraph) {
                 if (target == source + 2) {
                     std::vector<node> expected_path{source, target};
                     EXPECT_EQ(expected_path, test.getNodesOnShortestPath(source, target));
-                }
-                else if (target == source + 4) {
-                    std::vector<node> expected_path{source, source+2, target};
+                } else if (target == source + 4) {
+                    std::vector<node> expected_path{source, source + 2, target};
                     EXPECT_EQ(expected_path, test.getNodesOnShortestPath(source, target));
-                }
-                else
-                {
+                } else {
                     std::vector<node> expected_path{source};
                     for (node u = source + 1; u <= target - 1; u += 2) {
                         expected_path.push_back(u);
@@ -385,16 +408,14 @@ TEST_F(FloydWarshallGTest, testGetNodesOnShortestPathWithMediumSizedGraph) {
                 EXPECT_EQ(expected_path, test.getNodesOnShortestPath(source, target));
             }
             if ((source & 1) && !(target & 1)) {
-                std::vector<node> expected_path{};
-                for (node u = source; u <= target-1; u += 2) {
+                std::vector<node> expected_path;
+                for (node u = source; u <= target - 1; u += 2) {
                     expected_path.push_back(u);
                 }
                 expected_path.push_back(target);
                 EXPECT_EQ(expected_path, test.getNodesOnShortestPath(source, target));
             }
-
         }
     }
 }
-
 } // namespace NetworKit
