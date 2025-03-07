@@ -62,16 +62,7 @@ public:
 
         return graph;
     }
-    //        ___
-    //       |   | self-loop on node 1
-    // 0---->1<---
-    // A     |
-    // |     |
-    // |     V
-    // |     2
-    // |     |
-    // |     V
-    // 4<----3
+
     Graph directedGraphWithNegativeSelfLoop() {
         Graph graph(5, true, true);
         graph.addEdge(0, 1, 3);
@@ -86,7 +77,8 @@ public:
     Graph oddNodeEdgesHaveZeroWeightGraph() {
         Graph graph(100, true);
         for (node u = 0; u < 98; ++u) {
-            // All edges between odd edge id's are zero
+            // All weights between odd edge IDs are zero
+            // All other weights are one
             if (u & 1) {
                 graph.addEdge(u, u + 1, 1);
                 graph.addEdge(u, u + 2, 0);
