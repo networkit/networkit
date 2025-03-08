@@ -351,12 +351,13 @@ TEST_F(FloydWarshallGTest, testGetDistanceWithMediumSizedGraph) {
             if ((source & 1) && (target & 1)) {
                 EXPECT_EQ(test.getDistance(source, target), 0.0) << source << ", " << target;
             }
-            if (!(source & 1) && !(target & 1))
+            if (!(source & 1) && !(target & 1)) {
                 if (target == source + 2) {
                     EXPECT_EQ(test.getDistance(source, target), 1.0) << source << ", " << target;
                 } else {
                     EXPECT_EQ(test.getDistance(source, target), 2.0) << source << ", " << target;
                 }
+            }
             if ((!(source & 1) && (target & 1)) || ((source & 1) && !(target & 1))) {
                 EXPECT_EQ(test.getDistance(source, target), 1.0) << source << ", " << target;
             }
@@ -377,7 +378,7 @@ TEST_F(FloydWarshallGTest, testGetNodesOnShortestPathWithMediumSizedGraph) {
                 }
                 EXPECT_EQ(expected_path, test.getNodesOnShortestPath(source, target));
             }
-            if (!(source & 1) && !(target & 1))
+            if (!(source & 1) && !(target & 1)) {
                 if (target == source + 2) {
                     std::vector<node> expected_path{source, target};
                     EXPECT_EQ(expected_path, test.getNodesOnShortestPath(source, target));
@@ -392,6 +393,7 @@ TEST_F(FloydWarshallGTest, testGetNodesOnShortestPathWithMediumSizedGraph) {
                     expected_path.push_back(target);
                     EXPECT_EQ(expected_path, test.getNodesOnShortestPath(source, target));
                 }
+            }
             if (!(source & 1) && (target & 1)) {
                 std::vector<node> expected_path{source};
                 for (node u = source + 1; u <= target; u += 2) {
