@@ -60,7 +60,7 @@ void FloydWarshall::run() {
 
     for (node intermediate = 0; intermediate < numberOfNodes; ++intermediate) {
 #pragma omp parallel for
-        for (node source = 0; source < numberOfNodes; ++source) {
+        for (omp_index source = 0; source < numberOfNodes; ++source) {
             if (distances[source][intermediate] == std::numeric_limits<edgeweight>::max())
                 continue;
             for (node target = 0; target < numberOfNodes; ++target) {
