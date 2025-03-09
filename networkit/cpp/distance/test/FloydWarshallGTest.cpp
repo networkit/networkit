@@ -91,24 +91,30 @@ public:
         return graph;
     }
 
-    void compareDistances(const std::vector<std::vector<edgeweight>> &expectedDistances, const FloydWarshall & testObject) {
+    void compareDistances(const std::vector<std::vector<edgeweight>> &expectedDistances,
+                          const FloydWarshall &testObject) {
         const node n = expectedDistances.size();
-        for (node source =0 ; source < n; ++source) {
-            for (node target =0 ; target < n; ++target) {
-                EXPECT_EQ(testObject.getDistance(source, target), expectedDistances[source][target]) << "source = " << source << ", target = " << target;;
+        for (node source = 0; source < n; ++source) {
+            for (node target = 0; target < n; ++target) {
+                EXPECT_EQ(testObject.getDistance(source, target), expectedDistances[source][target])
+                    << "source = " << source << ", target = " << target;
+                ;
             }
         }
     }
 
-    void compareNodesOnShortestPaths(const std::vector<std::vector<std::vector<node>>> &expectedPaths, const FloydWarshall & testObject) {
+    void
+    compareNodesOnShortestPaths(const std::vector<std::vector<std::vector<node>>> &expectedPaths,
+                                const FloydWarshall &testObject) {
         const node n = expectedPaths.size();
-        for (node source =0 ; source < n; ++source) {
-            for (node target =0 ; target < n; ++target) {
-                EXPECT_EQ(testObject.getNodesOnShortestPath(source, target), expectedPaths[source][target]) << "source = " << source << ", target = " << target;;
+        for (node source = 0; source < n; ++source) {
+            for (node target = 0; target < n; ++target) {
+                EXPECT_EQ(testObject.getNodesOnShortestPath(source, target),
+                          expectedPaths[source][target])
+                    << "source = " << source << ", target = " << target;
             }
         }
     }
-
 };
 
 TEST_F(FloydWarshallGTest, testConstructorThrowsUnweightedGraph) {
