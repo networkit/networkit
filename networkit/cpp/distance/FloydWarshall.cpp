@@ -10,64 +10,60 @@
 namespace NetworKit {
 
 FloydWarshall::FloydWarshall(const Graph &G) : graph(&G) {
-
     if (!G.isWeighted()) {
         throw std::runtime_error("The input graph is unweighted!");
     }
 }
 
 void FloydWarshall::tagNegativeCycles() {
-    const index numberOfNodes = graph->numberOfNodes();
-    for (node w = 0; w < numberOfNodes; ++w) {
+    graph->forNodes([&](node w) {
         if (distances[w][w] >= 0.0)
-            continue;
+            return;
         nodesInNegativeCycle[w] = 1;
-        for (node u = 0; u < numberOfNodes; ++u) {
-            if (distances[u][w] == std::numeric_limits<edgeweight>::max())
-                continue;
-            for (node v = 0; v < numberOfNodes; ++v) {
-                if (distances[w][v] != std::numeric_limits<edgeweight>::max()) {
+        graph->forNodes([&](node u) {
+            if (distances[u][w] == infiniteDistance)
+                return;
+            graph->forNodes([&](node v) {
+                if (distances[w][v] != infiniteDistance) {
                     nodesInNegativeCycle[u] = 1;
                     nodesInNegativeCycle[v] = 1;
                     distances[u][v] = -std::numeric_limits<edgeweight>::infinity();
                     pathMatrix[u][v] = none;
                 }
-            }
-        }
-    }
+            });
+        });
+    });
 }
 
 void FloydWarshall::run() {
     const index numberOfNodes = graph->numberOfNodes();
-    distances = std::vector(numberOfNodes,
-                            std::vector(numberOfNodes, std::numeric_limits<edgeweight>::max()));
-    nodesInNegativeCycle = std::vector<uint8_t>(numberOfNodes);
-    pathMatrix = std::vector(numberOfNodes, std::vector(numberOfNodes, none));
-    hops = std::vector(numberOfNodes, std::vector(numberOfNodes, none));
-    for (node u = 0; u < numberOfNodes; ++u) {
+    distances.resize(numberOfNodes, std::vector<edgeweight>(numberOfNodes, infiniteDistance));
+    nodesInNegativeCycle.resize(numberOfNodes);
+    pathMatrix.resize(numberOfNodes, std::vector(numberOfNodes, none));
+    hops.resize(numberOfNodes, std::vector(numberOfNodes, none));
+
+    graph->forNodes([&](node u) {
         distances[u][u] = 0.0;
         pathMatrix[u][u] = u;
         hops[u][u] = 0;
-    }
+    });
 
-    for (node u = 0; u < numberOfNodes; ++u) {
+    graph->forNodes([&](node u) {
         for (const node v : graph->neighborRange(u)) {
             distances[u][v] = graph->weight(u, v);
             pathMatrix[u][v] = v;
             hops[u][v] = 1;
         }
-    }
+    });
 
-    for (node intermediate = 0; intermediate < numberOfNodes; ++intermediate) {
-#pragma omp parallel for
-        for (omp_index source = 0; source < numberOfNodes; ++source) {
-            if (distances[source][intermediate] == std::numeric_limits<edgeweight>::max())
-                continue;
-            for (node target = 0; target < numberOfNodes; ++target) {
-                if (distances[intermediate][target] == std::numeric_limits<edgeweight>::max()) {
-                    continue;
+    graph->forNodes([&](node intermediate) {
+        graph->parallelForNodes([&](node source) {
+            if (distances[source][intermediate] == infiniteDistance)
+                return;
+            graph->forNodes([&](node target) {
+                if (distances[intermediate][target] == infiniteDistance) {
+                    return;
                 }
-
                 const edgeweight candidateDistance =
                     distances[source][intermediate] + distances[intermediate][target];
                 const count candidateHops = hops[source][intermediate] + hops[intermediate][target];
@@ -81,9 +77,9 @@ void FloydWarshall::run() {
                     hops[source][target] = candidateHops;
                     pathMatrix[source][target] = pathMatrix[source][intermediate];
                 }
-            }
-        }
-    }
+            });
+        });
+    });
 
     tagNegativeCycles();
     hasRun = true;

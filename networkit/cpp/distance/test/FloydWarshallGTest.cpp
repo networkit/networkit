@@ -75,8 +75,8 @@ public:
     }
 
     Graph oddNodeEdgesHaveZeroWeightGraph() {
-        Graph graph(100, true);
-        for (node u = 0; u < 98; ++u) {
+        Graph graph(1000, true);
+        for (node u = 0; u < 998; ++u) {
             // All weights between odd edge IDs are zero
             // All other weights are one
             if (u & 1) {
@@ -87,7 +87,7 @@ public:
                 graph.addEdge(u, u + 2, 1);
             }
         }
-        graph.addEdge(98, 99, 1);
+        graph.addEdge(998, 999, 1);
         return graph;
     }
 };
