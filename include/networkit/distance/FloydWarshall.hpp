@@ -7,8 +7,10 @@
 
 #ifndef NETWORKIT_DISTANCE_FLOYD_WARSHALL_HPP_
 #define NETWORKIT_DISTANCE_FLOYD_WARSHALL_HPP_
+
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
+
 namespace NetworKit {
 
 /**
