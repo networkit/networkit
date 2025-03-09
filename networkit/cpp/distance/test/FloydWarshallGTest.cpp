@@ -74,23 +74,6 @@ public:
         return graph;
     }
 
-    Graph oddNodeEdgesHaveZeroWeightGraph() {
-        Graph graph(1000, true);
-        for (node u = 0; u < 998; ++u) {
-            // All weights between odd edge IDs are zero
-            // All other weights are one
-            if (u & 1) {
-                graph.addEdge(u, u + 1, 1);
-                graph.addEdge(u, u + 2, 0);
-            } else {
-                graph.addEdge(u, u + 1, 1);
-                graph.addEdge(u, u + 2, 1);
-            }
-        }
-        graph.addEdge(998, 999, 1);
-        return graph;
-    }
-
     void compareDistances(const std::vector<std::vector<edgeweight>> &expectedDistances,
                           const FloydWarshall &testObject) {
         const node n = expectedDistances.size();
