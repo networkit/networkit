@@ -8,6 +8,8 @@
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/generators/BarabasiAlbertGenerator.hpp>
+#include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/DibapGraphReader.hpp>
@@ -15,6 +17,7 @@
 #include <networkit/matching/BMatcher.hpp>
 #include <networkit/matching/BMatching.hpp>
 #include <networkit/matching/BSuitorMatcher.hpp>
+#include <networkit/matching/DynamicBSuitorMatcher.hpp>
 #include <networkit/matching/LocalMaxMatcher.hpp>
 #include <networkit/matching/Matcher.hpp>
 #include <networkit/matching/Matching.hpp>
@@ -37,6 +40,20 @@ protected:
             if (!M.isMatched(e.u) && !M.isMatched(e.v))
                 return true;
         return false;
+    }
+
+    edgeweight computeStaticBMatchingWeight(BSuitorMatcher &staticBMatcher) {
+        staticBMatcher.buildBMatching();
+        const auto sm = staticBMatcher.getBMatching();
+        auto res = sm.getMatches();
+        return sm.weight();
+    }
+
+    edgeweight computeDynamicBMatchingWeight(DynamicBSuitorMatcher &dynBMatcher) {
+        dynBMatcher.buildBMatching();
+        const auto dm = dynBMatcher.getBMatching();
+        auto dres = dm.getMatches();
+        return dm.weight();
     }
 };
 
@@ -125,9 +142,10 @@ TEST_F(MatcherGTest, testPgaMatching) {
 #endif
 }
 
-TEST_F(MatcherGTest, debugValidMatching) {
-    METISGraphReader reader;
-    Graph G = reader.read("coAuthorsDBLP.graph");
+TEST_F(MatcherGTest, testValidMatching) {
+    auto G = METISGraphReader{}.read("input/lesmis.graph");
+    G.removeSelfLoops();
+    G.removeMultiEdges();
 
     LocalMaxMatcher pmatcher(G);
     pmatcher.run();
@@ -210,6 +228,7 @@ TEST_F(MatcherGTest, testBSuitorMatcherInvalidGraphSelfLoops) {
 
 TEST_F(MatcherGTest, testBSuitorMatcherInvalidGraphHoles) {
     Graph G(10);
+    G = GraphTools::toWeighted(G);
     node u = GraphTools::randomNode(G);
     G.removeNode(u);
     EXPECT_THROW(BSuitorMatcher(G, 2), std::runtime_error);
@@ -279,4 +298,84 @@ TEST_F(MatcherGTest, testBSuitorMatcherDifferentB) {
     EXPECT_TRUE(M.isProper());
     EXPECT_FALSE(hasUnmatchedNeighbors(G, M));
 }
+
+TEST_F(MatcherGTest, testDynBSuitorInsertEdges) {
+    METISGraphReader graphReader;
+    auto G = graphReader.read("input/lesmis.graph");
+    std::vector<GraphEvent> events;
+    G.forEdges([&](node u, node v, edgeweight w) {
+        events.emplace_back(GraphEvent{GraphEvent::EDGE_ADDITION, u, v, w});
+    });
+    G.removeAllEdges();
+
+    const count b = 6;
+    DynamicBSuitorMatcher dbsm(G, b);
+    dbsm.run();
+
+    for (auto &e : events) {
+        G.addEdge(e.u, e.v, e.w);
+        dbsm.update(e);
+        BSuitorMatcher bsm(G, b);
+        bsm.run();
+        EXPECT_EQ(computeDynamicBMatchingWeight(dbsm), computeStaticBMatchingWeight(bsm));
+    }
+}
+
+TEST_F(MatcherGTest, testDynBSuitorRemoveEdges) {
+    METISGraphReader graphReader;
+    auto G = graphReader.read("input/lesmis.graph");
+
+    const count b = 6;
+    DynamicBSuitorMatcher dbsm(G, b);
+    dbsm.run();
+
+    std::vector<GraphEvent> events;
+    G.forEdges([&](node u, node v) {
+        events.emplace_back(GraphEvent{GraphEvent::EDGE_REMOVAL, u, v});
+    });
+
+    for (auto &e : events) {
+        G.removeEdge(e.u, e.v);
+        dbsm.update(e);
+        BSuitorMatcher bsm(G, b);
+        bsm.run();
+        EXPECT_EQ(computeDynamicBMatchingWeight(dbsm), computeStaticBMatchingWeight(bsm));
+    }
+}
+
+TEST_F(MatcherGTest, testDynBSuitorMixedBatch) {
+    METISGraphReader graphReader;
+    for (int i = 0; i < 10; i++) {
+        auto G = graphReader.read("input/lesmis.graph");
+        const count b = 6;
+        DynamicBSuitorMatcher dbsm(G, b);
+        dbsm.run();
+
+        std::vector<GraphEvent> events;
+        count m = 10;
+
+        for (count j = 0; j < m; j++) {
+            uint64_t guesser = Aux::Random::integer(0, 1);
+            if (guesser) {
+                auto potNonEdge = GraphTools::randomNodes(G, 2);
+                while (G.hasEdge(potNonEdge[0], potNonEdge[1])) {
+                    potNonEdge = GraphTools::randomNodes(G, 2);
+                }
+                events.emplace_back(
+                    GraphEvent{GraphEvent::EDGE_ADDITION, potNonEdge[0], potNonEdge[1], 1.0});
+                G.addEdge(potNonEdge[0], potNonEdge[1]);
+            } else {
+                const auto [u, v] = GraphTools::randomEdge(G);
+                events.emplace_back(GraphEvent{GraphEvent::EDGE_REMOVAL, u, v});
+                G.removeEdge(u, v);
+            }
+        }
+
+        dbsm.updateBatch(events);
+        BSuitorMatcher bsm(G, b);
+        bsm.run();
+        EXPECT_EQ(computeDynamicBMatchingWeight(dbsm), computeStaticBMatchingWeight(bsm));
+    }
+}
+
 } // namespace NetworKit

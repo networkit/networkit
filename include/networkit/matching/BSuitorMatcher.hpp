@@ -11,7 +11,6 @@
 
 #include <algorithm>
 #include <ranges>
-#include <string_view>
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/matching/BMatcher.hpp>
@@ -71,12 +70,17 @@ protected:
             }
         }
 
-        void insert(const MatchingNode &u) {
-            assert(partners.size() < max_size);
+        MatchingNode insert(const MatchingNode &u) {
+            if (hasPartner(u.id))
+                return {none, 0};
+
+            MatchingNode prevMin = popMinIfFull();
+
             partners.emplace_back(u);
             if (partners.size() == max_size && !partners.empty()) {
                 min = *std::ranges::min_element(partners);
             }
+            return prevMin;
         }
 
         void remove(node u) {
@@ -107,13 +111,6 @@ public:
      */
     BSuitorMatcher(const Graph &G, count b = 1);
 
-    /**
-     * @param G  An undirected graph.
-     * @param path  A path to a file containing @a b values that represents the max number of edges
-     * per vertex in the b-Matching.
-     */
-    BSuitorMatcher(const Graph &G, std::string_view &path);
-
     ~BSuitorMatcher() override = default;
 
     /**
@@ -121,19 +118,17 @@ public:
      */
     void run() override;
 
+    /**
+     * Creates the b-matching for given graph G. Function run() automatically invokes
+     * buildMatching. After invoking buildBMatching(), use getBMatching() to retrieve the resulting
+     * b-matching.
+     */
+    void buildBMatching();
+
 protected:
     std::vector<MatchingNodeInfo> suitors;
     std::vector<MatchingNodeInfo> proposed;
     const std::vector<count> b;
-
-    /**
-     * Reads values from a file at @a path into the vector of b-values.
-     *
-     * @param size
-     * @param path
-     * @return std::vector<count>
-     */
-    std::vector<count> readBValuesFromFile(count size, std::string_view &path) const;
 
     /**
      * Iterates up to @a b times over the heaviest neighbors of node @a u and makes
@@ -169,14 +164,6 @@ protected:
      *
      */
     bool isSymmetrical() const;
-
-private:
-    /**
-     * Creates the b-matching for given graph G. Function run() has to be called before calling
-     * buildMatching. After invoking buildBMatching(), use getBMatching() to retrieve the resulting
-     * b-matching.
-     */
-    void buildBMatching();
 };
 } // namespace NetworKit
 
