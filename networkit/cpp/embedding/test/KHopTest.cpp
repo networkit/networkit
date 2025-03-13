@@ -27,8 +27,8 @@ TEST_F(KHopTest, testConstructStrictKHopGraph) {
     preHop.addEdge(2, 3);
     preHop.addEdge(3, 4);
 
-    KHop hop(preHop, 2, 6.25, 80, 10, 128, KHop::khopMode::STRICT);
-    Graph G_2 = hop.GetG_k();
+    KHop hop(preHop, 2, 80, 10, 128, KHop::KHopMode::STRICT);
+    Graph G_2 = hop.getKHopGraph();
 
     // Expected 2 Hop Graph G_2:
     /*
@@ -70,8 +70,8 @@ TEST_F(KHopTest, testConstructDefaultKHopGraph) {
     preHop.addEdge(1, 2);
     preHop.addEdge(1, 3);
 
-    KHop hop(preHop, 2, 6.25, 80, 10, 128, KHop::khopMode::DEFAULT);
-    Graph G_2 = hop.GetG_k();
+    KHop hop(preHop, 2, 80, 10, 128, KHop::KHopMode::DEFAULT);
+    Graph G_2 = hop.getKHopGraph();
 
     // Expected 2 Hop Graph G_2 should be a fully connected Graph with 4 nodes (including self
     // loops)

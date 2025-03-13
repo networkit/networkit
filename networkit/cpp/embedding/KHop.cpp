@@ -15,7 +15,7 @@
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
-#include <networkit/linkprediction/NeighborhoodUtility.hpp>
+#include <networkit/linkprediction/OverlapCoefficient.hpp>
 
 #include "AliasSampler.hpp"
 #include "BiasedRandomWalk.hpp"
@@ -24,12 +24,10 @@
 
 namespace NetworKit {
 
-KHop::KHop(const Graph &G, size_t K, double S, count L, count N, count D, khopMode M, count winSize,
+KHop::KHop(const Graph &G, size_t K, count L, count N, count D, KHopMode M, count winSize,
            count iterations)
-    : G(&G), K(K), S(S), L(L), N(N), D(D), M(M), winSize(winSize), iterations(iterations) {
+    : G(G), K(K), L(L), N(N), D(D), M(M), winSize(winSize), iterations(iterations) {
 
-    if (S < 0.0)
-        throw std::runtime_error("S should be positive.");
     if (L < 1)
         throw std::runtime_error("L must be greater than 0.");
     if (N < 1)
@@ -57,60 +55,9 @@ KHop::KHop(const Graph &G, size_t K, double S, count L, count N, count D, khopMo
     if (hasIsolatedNodes)
         throw std::runtime_error("Isolated nodes are not allowed.");
 
-    // Generate G_k
-
-    // create G with same set of nodes
-    this->G_k = NetworKit::Graph(this->G->numberOfNodes(), true, this->G->isDirected());
-    // construct G_k by drawing edges to k-hop neighbors
-    this->G->forNodes([&](node v) { this->kHop(v); });
-
-    // set probabilities and assign them as edge-weights
-    double min = this->G_k.numberOfNodes();
-    double max = 0.0;
-    this->G_k.forNodes([&](node v) {
-        auto begin = this->G_k.neighborRange(v).begin();
-        auto end = this->G_k.neighborRange(v).end();
-
-        // if the neighbors of v have a distance of 0, self-loop is the only edge of v
-        if (std::distance(begin, end) == 0) {
-            this->G_k.addEdge(v, v); // edged on weighted graphs have a default weight of 1.0
-        } else {
-            this->G_k.forNeighborsOf(v, [&](node u) {
-                double weight = std::exp(this->overlapCoefficient(v, u));
-
-                // assign computed weight
-                this->G_k.setWeight(v, u, weight);
-
-                if (weight < min)
-                    min = weight;
-                if (weight > max)
-                    max = weight;
-            });
-        }
-    });
-
-    // scale weights
-    this->G_k.forEdges([&](node v, node u, edgeweight w) {
-        this->G_k.setWeight(v, u, this->rescale(w, min, max, 1.0, 1 + this->S));
-    });
-
-    // normalize
-    this->G_k.forNodes([&](node v) {
-        double sum = 0;
-        count degree = this->G_k.degreeOut(v);
-        std::vector<double> weightsByNeighborIndex(degree, 0.0);
-
-        // get number of neighbors and iterate (faster than edgeweight weight(node u, node v)
-        // const;)
-        for (count i = 0; i < degree; ++i) {
-            weightsByNeighborIndex[i] = this->G_k.getIthNeighborWeight(v, i);
-            sum += weightsByNeighborIndex[i];
-        }
-
-        for (count i = 0; i < degree; ++i) {
-            this->G_k.setWeight(v, this->G_k.getIthNeighbor(v, i), weightsByNeighborIndex[i] / sum);
-        }
-    });
+    // Initialize k-hop graph
+    computeKHopGraph();
+    generateEdgeWeights();
 }
 
 void KHop::run() {
@@ -120,17 +67,16 @@ void KHop::run() {
 
     TRACE("preprocess transition probabilities ...");
 
-    BiasedRandomWalk brw(&this->G_k);
+    BiasedRandomWalk brw(&kHopGraph);
     brw.preprocessTransitionProbs(1, 1);
     handler.assureRunning();
 
     TRACE("do biased walks ...");
-    auto walks = brw.doWalks(this->L, this->N);
+    auto walks = brw.doWalks(L, N);
     handler.assureRunning();
 
     TRACE("learn embeddings ...");
-    features =
-        learnEmbeddings(walks, this->G_k.numberOfNodes(), this->D, this->winSize, this->iterations);
+    features = learnEmbeddings(walks, kHopGraph.numberOfNodes(), D, winSize, iterations);
     handler.assureRunning();
 
     hasRun = true;
@@ -141,48 +87,71 @@ const std::vector<std::vector<float>> &KHop::getFeatures() const {
     return features;
 }
 
-double KHop::overlapCoefficient(node node1, node node2) {
-    return (double)NeighborhoodUtility::getCommonNeighbors(*this->G, node1, node2).size()
-           / (double)(std::min(this->G->degree(node1), this->G->degree(node2)));
+void KHop::generateEdgeWeights() {
+    OverlapCoefficient oCoeff;
+    oCoeff.setGraph(kHopGraph);
+
+    kHopGraph.parallelForNodes([&](node u) {
+        count neighborIndex = 0;
+        kHopGraph.forNeighborsOf(u, [&](node v) {
+            neighborIndex++;
+            if (v > u) {
+                kHopGraph.setWeightAtIthNeighbor(unsafe, u, neighborIndex,
+                                                 std::exp(oCoeff.run(u, v)));
+            }
+        });
+    });
 }
 
-double KHop::rescale(double weight, double min, double max, double low, double high) {
-    return ((weight - min) / (max - min)) * (high - low) + low;
-}
+void KHop::computeKHopGraph() {
+    kHopGraph = NetworKit::Graph(G.numberOfNodes(), true, G.isDirected());
 
-void KHop::kHop(node node) {
+    auto prunedBFS = [&](node startNode, count bfsLevel, bool reverse) {
+        std::vector<bool> visited(G.numberOfNodes(), 0);
+        std::fill(visited.begin(), visited.end(), false);
+        visited[startNode] = true;
+        count currentLevel = 0;
 
-    // queue of tuples with nodes and their 'depth'
-    std::queue<std::tuple<NetworKit::node, count>> queue;
-    // vector of visited nodes and the depth at which they have been visited (while -1 means not
-    // visited)
-    std::vector<int64_t> visited(this->G->numberOfNodes(), -1);
+        std::queue<node> q0, q1;
+        q0.push(startNode);
 
-    visited[node] = true;
-    queue.emplace(node, 0);
+        auto processNeighbor = [&](node v) -> void {
+            if (visited[v])
+                return;
+            visited[v] = true;
+            q1.push(v);
+            if (M == KHopMode::STRICT && currentLevel < bfsLevel)
+                return;
+            if (reverse)
+                kHopGraph.addPartialInEdge(unsafe, startNode, v);
+            else
+                kHopGraph.addPartialOutEdge(unsafe, startNode, v);
+        };
 
-    while (!queue.empty()) {
-        std::tuple<NetworKit::node, count> q = queue.front();
-        queue.pop();
+        do {
+            currentLevel++;
+            do {
+                const node u = q0.front();
+                q0.pop();
 
-        NetworKit::node current = std::get<0>(q);
-        count depth = std::get<1>(q);
+                if (!currentLevel)
+                    continue;
 
-        if (depth < this->K) {
-            this->G->forNeighborsOf(current, [&](NetworKit::node neighbor) {
-                if (visited[neighbor] == -1 || static_cast<count>(visited[neighbor]) > depth + 1) {
-                    visited[neighbor] = depth + 1;
-                    queue.emplace(neighbor, depth + 1);
-                }
-            });
-        }
+                if (reverse)
+                    G.forInNeighborsOf(u, processNeighbor);
+                else
+                    G.forNeighborsOf(u, processNeighbor);
 
-        if (((this->M == khopMode::STRICT && depth == this->K)
-             || (this->M == khopMode::DEFAULT && depth <= this->K))
-            && !this->G_k.hasEdge(node, current)) {
-            this->G_k.addEdge(node, current);
-        }
-    }
+            } while (!q0.empty());
+
+            std::swap(q0, q1);
+        } while (!q0.empty() && currentLevel < bfsLevel);
+    };
+
+    kHopGraph.parallelForNodes([&](node u) { prunedBFS(u, K, false); });
+
+    if (kHopGraph.isDirected())
+        kHopGraph.parallelForNodes([&](node u) { prunedBFS(u, K, true); });
 }
 
 } /* namespace NetworKit */

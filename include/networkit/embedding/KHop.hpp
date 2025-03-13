@@ -21,7 +21,7 @@ namespace NetworKit {
 class KHop final : public Algorithm {
 
 public:
-    enum khopMode {
+    enum class KHopMode : unsigned char {
         STRICT = 0,
         DEFAULT = 1,
     };
@@ -31,7 +31,6 @@ public:
      *
      * @param G   The Graph.
      * @param K   Number of hops.
-     * @param S   Probability Scaling.
      * @param L   Walk length.
      * @param N   Walk count.
      * @param D   Dimension of embedding vectors.
@@ -39,8 +38,8 @@ public:
      * @param winSize    Window Size for walks.
      * @param iterations Iterations for walks.
      */
-    KHop(const Graph &G, size_t K = 2, double S = 6.25, count L = 80, count N = 10, count D = 128,
-         khopMode M = khopMode::DEFAULT, count winSize = 8, count iterations = 20);
+    KHop(const Graph &G, size_t K = 2, count L = 80, count N = 10, count D = 128,
+         KHopMode M = KHopMode::DEFAULT, count winSize = 8, count iterations = 20);
 
     ~KHop() override = default;
 
@@ -55,17 +54,17 @@ public:
     const std::vector<std::vector<float>> &getFeatures() const;
 
     /**
+     * Returns the computed k-hop graph.
+     *
      * @return Graph
      */
-    Graph GetG_k() const { return G_k; }
+    Graph getKHopGraph() const { return kHopGraph; }
 
 private:
     // The graph
-    const Graph *G;
+    const Graph &G;
     // Neighbourhood size K
     size_t K;
-    // Probability Scaling S
-    double S;
     // Walk length L
     count L;
     // Walk count N
@@ -73,18 +72,17 @@ private:
     // Feature Dimension D
     count D;
     // Mode for k-hop graph generation
-    khopMode M;
+    KHopMode M;
     // Windowsize walk
     count winSize;
     // Iterations walk
     count iterations;
 
     std::vector<std::vector<float>> features;
-    Graph G_k;
+    Graph kHopGraph;
 
-    double overlapCoefficient(node node1, node node2);
-    double rescale(double weight, double min, double max, double low, double high);
-    void kHop(node node);
+    void computeKHopGraph();
+    void generateEdgeWeights();
 };
 
 } /* namespace NetworKit */
