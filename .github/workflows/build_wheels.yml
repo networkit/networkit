@@ -25,11 +25,12 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.23.0
         env:
-          CIBW_BEFORE_BUILD: pip install cython
+          CIBW_BEFORE_BUILD: pip install cython auditwheel --upgrade
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
           CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp310-* cp311-* cp312-* cp313-*' || 'cp313-*' }}
           CIBW_SKIP: "pp* *-musllinux_*"
+          CIBW_TEST_COMMAND: python3 -c 'import networkit'
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
@@ -123,6 +124,8 @@ jobs:
           CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp310-* cp311-* cp312-* cp313-*' || 'cp313-*' }}
           CIBW_ENVIRONMENT: CXX='c++' ${{ matrix.buildplat[2] }} MACOSX_DEPLOYMENT_TARGET='14.0'
           CIBW_SKIP: "pp* *-musllinux_*"
+          CIBW_TEST_COMMAND: python3 -c 'import networkit'
+          CIBW_TEST_SKIP: "*-macosx_x86_64 *-macosx_universal2:x86_64"
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
@@ -171,6 +174,7 @@ jobs:
           CIBW_ARCHS: "AMD64"
           CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp310-* cp311-* cp312-* cp313-*' || 'cp313-*' }}
           CIBW_SKIP: pp*
+          CIBW_TEST_COMMAND: python -c "import networkit"
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/master'
         with:
