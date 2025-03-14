@@ -9,7 +9,7 @@ env:
 jobs:
   cpython-linux-x86_64:
     name: 'Linux CPython (${{ matrix.cibw_archs }}, ${{ matrix.manylinux_image }})'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         cibw_archs: ["x86_64"]
@@ -23,7 +23,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.21.1
+        uses: pypa/cibuildwheel@v2.23.0
         env:
           CIBW_BEFORE_BUILD: pip install cython
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
@@ -43,12 +43,12 @@ jobs:
           path: ./wheelhouse/*cp311*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
           name: 'linux-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}'
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
         with:
           name: 'linux-${{ matrix.cibw_archs }}-cp313-${{ github.run_id }}'
           path: ./wheelhouse/*cp313*.whl
@@ -114,7 +114,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.21.1
+        uses: pypa/cibuildwheel@v2.23.0
         env:
           CIBW_BEFORE_BUILD: 
             pip install cython &&
@@ -136,12 +136,12 @@ jobs:
           path: ./wheelhouse/*cp311*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
           name: 'macos-${{ matrix.buildplat[1] }}-cp312-${{ github.run_id }}'
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
         with:
           name: 'macos-${{ matrix.buildplat[1] }}-cp313-${{ github.run_id }}'
           path: ./wheelhouse/*cp313*.whl
@@ -165,7 +165,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.21.1
+        uses: pypa/cibuildwheel@v2.23.0
         env:
           CIBW_BEFORE_BUILD: pip install cython ipython
           CIBW_ARCHS: "AMD64"
@@ -184,12 +184,12 @@ jobs:
           path: ./wheelhouse/*cp311*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
           name: 'win-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}'
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
         with:
           name: 'win-${{ matrix.cibw_archs }}-cp313-${{ github.run_id }}'
           path: ./wheelhouse/*cp313*.whl
