@@ -12,9 +12,6 @@ namespace NetworKit {
 class FloydWarshallGTest : public testing::Test {
 public:
     static constexpr edgeweight maxDistance = std::numeric_limits<edgeweight>::max();
-    static constexpr edgeweight largeWeight{10.0};
-    static constexpr edgeweight smallWeight{1.0};
-    static constexpr edgeweight mediumWeight{1.0};
     Graph completeGraphK3() {
         Graph graph(3, true);
         graph.addEdge(0, 1, 1);

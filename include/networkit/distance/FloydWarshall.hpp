@@ -83,7 +83,7 @@ private:
     const Graph *graph;
     static constexpr edgeweight infiniteDistance = std::numeric_limits<edgeweight>::max();
     std::vector<std::vector<edgeweight>> distances;
-    std::vector<uint8_t> nodesInNegativeCycle;
+    std::vector<bool> nodesInNegativeCycle;
     std::vector<std::vector<node>> pathMatrix;
     std::vector<std::vector<count>> hops;
     void tagNegativeCycles();
