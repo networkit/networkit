@@ -26,7 +26,7 @@ class DibapGraphReader final : public GraphReader {
 public:
     DibapGraphReader() = default;
 
-    Graph read(const std::string &path) override;
+    Graph read(std::string_view path) override;
 
     const std::vector<Point<coordinate>> &getCoordinates() const noexcept { return coordinates; }
 

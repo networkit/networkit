@@ -32,7 +32,7 @@ public:
      * @param[in]	graph	The graph object
      * @param[in]	path	The file path to be written to
      */
-    void write(const Graph &G, const std::string &path) override;
+    void write(const Graph &G, std::string_view path) override;
 };
 
 } /* namespace NetworKit */

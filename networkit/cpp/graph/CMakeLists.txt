@@ -1,4 +1,5 @@
 networkit_add_module(graph
+    EdgeIterators.cpp
     Graph.cpp
     GraphBuilder.cpp
     GraphTools.cpp

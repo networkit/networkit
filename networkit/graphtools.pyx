@@ -11,38 +11,39 @@ from .structures cimport count, index, node, edgeweight
 
 cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphTools":
 
-	count maxDegree(_Graph G) nogil except +
-	count maxInDegree(_Graph G) nogil except +
-	edgeweight maxWeightedDegree(_Graph G) nogil except +
-	edgeweight maxWeightedInDegree(_Graph G) nogil except +
-	node randomNode(_Graph G) nogil except +
-	vector[node] randomNodes(_Graph G, count n) nogil except +
-	node randomNeighbor(_Graph G, node u) nogil except +
-	pair[node, node] randomEdge(_Graph G, bool_t uniformDistribution) nogil except +
-	vector[pair[node, node]] randomEdges(_Graph G, count numEdges) nogil except +
-	pair[count, count] size(_Graph G) nogil except +
-	double density(_Graph G) nogil except +
-	double volume(_Graph G) nogil except +
-	double volume[InputIt](_Graph G, InputIt first, InputIt last) nogil except +
-	double inVolume[InputIt](_Graph G, InputIt first, InputIt last) nogil except +
-	_Graph copyNodes(_Graph G) nogil except +
-	_Graph toUndirected(_Graph G) nogil except +
-	_Graph toUnweighted(_Graph G) nogil except +
-	_Graph toWeighted(_Graph G) nogil except +
-	_Graph subgraphFromNodes[InputIt](_Graph G, InputIt first, InputIt last, bool_t compact) nogil except +
-	_Graph subgraphAndNeighborsFromNodes(_Graph G, unordered_set[node], bool_t, bool_t) nogil except +
-	void append(_Graph G, _Graph G1) nogil except +
-	void merge(_Graph G, _Graph G1) nogil except +
+	count maxDegree(_Graph G) except + nogil
+	count maxInDegree(_Graph G) except + nogil
+	edgeweight maxWeightedDegree(_Graph G) except + nogil
+	edgeweight maxWeightedInDegree(_Graph G) except + nogil
+	node randomNode(_Graph G) except + nogil
+	vector[node] randomNodes(_Graph G, count n) except + nogil
+	node randomNeighbor(_Graph G, node u) except + nogil
+	pair[node, node] randomEdge(_Graph G, bool_t uniformDistribution) except + nogil
+	vector[pair[node, node]] randomEdges(_Graph G, count numEdges) except + nogil
+	pair[count, count] size(_Graph G) except + nogil
+	double density(_Graph G) except + nogil
+	double volume(_Graph G) except + nogil
+	double volume[InputIt](_Graph G, InputIt first, InputIt last) except + nogil
+	double inVolume[InputIt](_Graph G, InputIt first, InputIt last) except + nogil
+	_Graph copyNodes(_Graph G) except + nogil
+	_Graph toUndirected(_Graph G) except + nogil
+	_Graph toUnweighted(_Graph G) except + nogil
+	_Graph toWeighted(_Graph G) except + nogil
+	_Graph subgraphFromNodes[InputIt](_Graph G, InputIt first, InputIt last, bool_t compact) except + nogil
+	_Graph subgraphAndNeighborsFromNodes(_Graph G, unordered_set[node], bool_t, bool_t) except + nogil
+	void append(_Graph G, _Graph G1) except + nogil
+	void merge(_Graph G, _Graph G1) except + nogil
 	void removeEdgesFromIsolatedSet[InputIt](_Graph G, InputIt first, InputIt last) except +
-	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) nogil except +
-	_Graph transpose(_Graph G) nogil except +
-	unordered_map[node,node] getContinuousNodeIds(_Graph G) nogil except +
-	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) nogil except +
-	void sortEdgesByWeight(_Graph G, bool_t) nogil except +
-	vector[node] topologicalSort(_Graph G) nogil except +
-	node augmentGraph(_Graph G) nogil except +
-	pair[_Graph, node] createAugmentedGraph(_Graph G) nogil except +
-	void randomizeWeights(_Graph G) nogil except +
+	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) except + nogil
+	_Graph transpose(_Graph G) except + nogil
+	unordered_map[node,node] getContinuousNodeIds(_Graph G) except + nogil
+	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) except + nogil
+	void sortEdgesByWeight(_Graph G, bool_t) except + nogil
+	vector[node] topologicalSort(_Graph G) except + nogil
+	vector[node] topologicalSort(_Graph G, unordered_map[node, node], bool_t) except + nogil
+	node augmentGraph(_Graph G) except + nogil
+	pair[_Graph, node] createAugmentedGraph(_Graph G) except + nogil
+	void randomizeWeights(_Graph G) except + nogil
 
 cdef class GraphTools:
 
@@ -629,19 +630,30 @@ cdef class GraphTools:
 		sortEdgesByWeight(G._this, decreasing)
 
 	@staticmethod
-	def topologicalSort(Graph G):
+	def topologicalSort(Graph G, dict[node, node] nodeIdMap = None, bool_t checkMapping = False):
 		"""
-		topologicalSort(G)
+		topologicalSort(G, nodeIdMap = None, checkMapping = False)
 
 		Given a directed graph G, the topology sort algorithm creates one valid topology order of nodes.
 		Undirected graphs are not accepted as input, since a topology sort is a linear ordering of vertices 
 		such that for every edge u -> v, node u comes before v in the ordering.
+		Node ids must either be continuous or you must provide a continuous node id mapping.
 
 		Parameters
 		----------
 		G : networkit.Graph
 			The directed input graph.
+		nodeIdMap : dict(int, int), optional
+					Optional continuous node id mapping.
+		checkMapping : bool, optional
+					   Flag to determine if the node id mapping should be checked that it 
+					   is continuous. This check takes O(|V|) time and space.
 		"""
+		cdef unordered_map[node,node] cNodeIdMap
+		if nodeIdMap is not None:
+			for node, mapped in nodeIdMap.items():
+				cNodeIdMap[node] = mapped
+			return topologicalSort(G._this, cNodeIdMap, checkMapping)
 		return topologicalSort(G._this)
 
 	@staticmethod

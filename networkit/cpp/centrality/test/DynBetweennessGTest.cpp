@@ -14,6 +14,7 @@
 #include <networkit/centrality/Betweenness.hpp>
 #include <networkit/centrality/DynApproxBetweenness.hpp>
 #include <networkit/centrality/DynBetweenness.hpp>
+#include <networkit/centrality/DynBetweennessOneNode.hpp>
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>
@@ -245,6 +246,36 @@ TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertUndirected) {
             brandes.run();
             g.forNodes([&](node w) { EXPECT_NEAR(brandes.score(w), ibet.score(w), 1e-8); });
         }
+}
+
+TEST_P(DynBetweennessGTest, testDynamicBetweennessOneNode) {
+    // for each of the 8 focus nodes in the small graph
+    for (node x = 0; x < 8; ++x) {
+        Graph G = generateSmallGraph();
+
+        DynBetweennessOneNode dynb(G, x);
+        dynb.run();
+
+        Betweenness b(G);
+        b.run();
+
+        EXPECT_NEAR(dynb.getbcx(), b.score(x), 0.01);
+
+        for (count i = 0; i < 10; ++i) {
+            auto e = getNonAdjacentNodes(G);
+            edgeweight ew = 1.0;
+            if (G.isWeighted()) {
+                ew = Aux::Random::real(1);
+            }
+            G.addEdge(e.first, e.second, ew);
+            dynb.update(GraphEvent(GraphEvent::EDGE_ADDITION, e.first, e.second, ew));
+        }
+
+        Betweenness b_updated(G);
+        b_updated.run();
+
+        EXPECT_NEAR(dynb.getbcx(), b_updated.score(x), 0.01);
+    }
 }
 
 } /* namespace NetworKit */

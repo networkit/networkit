@@ -12,8 +12,8 @@ namespace NetworKit {
 EdgeListPartitionReader::EdgeListPartitionReader(node firstNode, char sepChar)
     : firstNode(firstNode), sepChar(sepChar) {}
 
-Partition EdgeListPartitionReader::read(const std::string &path) {
-    std::ifstream file(path);
+Partition EdgeListPartitionReader::read(std::string_view path) {
+    std::ifstream file(path.data());
 
     // check if file readable
     if (!file) {

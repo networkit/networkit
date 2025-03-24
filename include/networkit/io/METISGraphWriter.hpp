@@ -20,9 +20,9 @@ class METISGraphWriter final : public GraphWriter {
 public:
     METISGraphWriter() = default;
 
-    void write(const Graph &G, const std::string &path) override;
+    void write(const Graph &G, std::string_view path) override;
 
-    void write(const Graph &G, bool weighted, const std::string &path);
+    void write(const Graph &G, bool weighted, std::string_view path);
 };
 
 } /* namespace NetworKit */

@@ -5,8 +5,8 @@
 
 namespace NetworKit {
 
-void CoverWriter::write(Cover &zeta, const std::string &path) const {
-    std::ofstream file{path};
+void CoverWriter::write(Cover &zeta, std::string_view path) const {
+    std::ofstream file{path.data()};
 
     std::vector<std::vector<index>> sets(zeta.upperBound());
     zeta.forEntries([&](index v, const std::set<index> &c) {

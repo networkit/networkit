@@ -131,7 +131,7 @@ public:
      *              If logging at the given level is disable the Timer is very cheap to construct.
      *              If logging is disabled during construction or destruction, no message is shown.
      */
-    explicit LoggingTimer(const std::string &label = "",
+    explicit LoggingTimer(std::string_view label = "",
                           Aux::Log::LogLevel level = Aux::Log::LogLevel::DEBUG);
     ~LoggingTimer();
 

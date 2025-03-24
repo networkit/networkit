@@ -104,7 +104,7 @@ cdef extern from "<networkit/components/ConnectedComponents.hpp>":
 	cdef cppclass _ConnectedComponents "NetworKit::ConnectedComponents"(_ComponentDecomposition):
 		_ConnectedComponents(_Graph G) except +
 		@staticmethod
-		_Graph extractLargestConnectedComponent(_Graph G, bool_t) nogil except +
+		_Graph extractLargestConnectedComponent(_Graph G, bool_t) except + nogil
 
 cdef class ConnectedComponents(ComponentDecomposition):
 	"""

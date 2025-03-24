@@ -14,7 +14,7 @@ namespace NetworKit {
 
 class CoverWriter final {
 public:
-    void write(Cover &zeta, const std::string &path) const;
+    void write(Cover &zeta, std::string_view path) const;
 };
 } // namespace NetworKit
 

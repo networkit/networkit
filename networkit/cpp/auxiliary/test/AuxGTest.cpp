@@ -497,7 +497,7 @@ TEST_F(AuxGTest, testNumberParsingBasicReal) {
 }
 
 TEST_F(AuxGTest, testNumberParsingAdvancedReal) {
-    auto helper = [](const std::string &str, double expected) {
+    auto helper = [](std::string_view str, double expected) {
         auto result = std::get<0>(Aux::Parsing::strTo<double>(str.begin(), str.end()));
         EXPECT_DOUBLE_EQ(result, expected);
     };

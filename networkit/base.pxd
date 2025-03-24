@@ -3,7 +3,7 @@ from libcpp cimport bool as bool_t
 cdef extern from "<networkit/base/Algorithm.hpp>" namespace "NetworKit":
 	cdef cppclass _Algorithm "NetworKit::Algorithm":
 		_Algorithm()
-		void run() nogil except +
+		void run() except + nogil
 		bool_t hasFinished() except +
 
 cdef class _CythonParentClass:

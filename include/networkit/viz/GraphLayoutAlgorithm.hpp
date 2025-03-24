@@ -71,12 +71,12 @@ public:
         return 0;
     }
 
-    virtual bool writeGraphToGML(const std::string &filePath) {
+    virtual bool writeGraphToGML(std::string_view filePath) {
         if (vertexCoordinates.empty() || vertexCoordinates[0].getDimensions() < 2
             || vertexCoordinates[0].getDimensions() > 3)
             return false;
         count dim = vertexCoordinates[0].getDimensions();
-        std::ofstream file(filePath);
+        std::ofstream file(filePath.data());
         Aux::enforceOpened(file);
 
         file << "graph [\n";
@@ -110,11 +110,11 @@ public:
         return true;
     }
 
-    virtual bool writeKinemage(const std::string &filePath) {
+    virtual bool writeKinemage(std::string_view filePath) {
         if (vertexCoordinates.empty() || vertexCoordinates[0].getDimensions() != 3)
             return false;
-        std::string fileName = filePath.substr(filePath.find_last_of("/"));
-        std::ofstream file(filePath);
+        std::string_view fileName = filePath.substr(filePath.find_last_of("/"));
+        std::ofstream file(filePath.data());
         Aux::enforceOpened(file);
 
         file << "@whitebackground" << std::endl;

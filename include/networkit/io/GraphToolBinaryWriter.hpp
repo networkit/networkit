@@ -26,7 +26,7 @@ public:
      *
      * @param[in]  path  input file path
      */
-    void write(const Graph &G, const std::string &path) override;
+    void write(const Graph &G, std::string_view path) override;
 
 private:
     bool littleEndianness;

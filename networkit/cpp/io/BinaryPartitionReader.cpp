@@ -10,8 +10,8 @@ BinaryPartitionReader::BinaryPartitionReader(uint8_t width) : width(width) {
     }
 }
 
-Partition BinaryPartitionReader::read(const std::string &path) {
-    std::ifstream is(path, std::ios_base::in | std::ios_base::binary);
+Partition BinaryPartitionReader::read(std::string_view path) {
+    std::ifstream is(path.data(), std::ios_base::in | std::ios_base::binary);
 
     if (!is) {
         throw std::runtime_error("Error: partition file couldn't be opened");

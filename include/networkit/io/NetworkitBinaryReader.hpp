@@ -31,7 +31,7 @@ class NetworkitBinaryReader final : public GraphReader {
 public:
     NetworkitBinaryReader(){};
 
-    Graph read(const std::string &path) override;
+    Graph read(std::string_view path) override;
     Graph readFromBuffer(const std::vector<uint8_t> &data);
 
 private:

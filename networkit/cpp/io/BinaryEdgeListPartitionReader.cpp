@@ -11,8 +11,8 @@ BinaryEdgeListPartitionReader::BinaryEdgeListPartitionReader(node firstNode, uin
     }
 }
 
-Partition BinaryEdgeListPartitionReader::read(const std::string &path) {
-    return read(std::vector<std::string>(1, path));
+Partition BinaryEdgeListPartitionReader::read(std::string_view path) {
+    return read(std::vector<std::string>(1, path.data()));
 }
 
 Partition BinaryEdgeListPartitionReader::read(const std::vector<std::string> &paths) {

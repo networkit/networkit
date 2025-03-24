@@ -12,8 +12,8 @@
 
 namespace NetworKit {
 
-void GMLGraphWriter::write(const Graph &G, const std::string &path) {
-    std::ofstream file(path);
+void GMLGraphWriter::write(const Graph &G, std::string_view path) {
+    std::ofstream file(path.data());
     Aux::enforceOpened(file);
 
     file << "graph [\n";

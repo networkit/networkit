@@ -8,11 +8,11 @@ from .structures cimport count
 
 cdef extern from "<networkit/global/ClusteringCoefficient.hpp>" namespace "NetworKit::ClusteringCoefficient":
 
-		double avgLocal(_Graph G, bool_t turbo) nogil except +
-		double sequentialAvgLocal(_Graph G) nogil except +
-		double approxAvgLocal(_Graph G, count trials) nogil except +
-		double exactGlobal(_Graph G) nogil except +
-		double approxGlobal(_Graph G, count trials) nogil except +
+		double avgLocal(_Graph G, bool_t turbo) except + nogil
+		double sequentialAvgLocal(_Graph G) except + nogil
+		double approxAvgLocal(_Graph G, count trials) except + nogil
+		double exactGlobal(_Graph G) except + nogil
+		double approxGlobal(_Graph G, count trials) except + nogil
 
 cdef class ClusteringCoefficient:
 	"""

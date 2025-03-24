@@ -33,7 +33,7 @@ public:
     MemoryMappedFile();
 
     //! Invokes open(path) automatically
-    explicit MemoryMappedFile(const std::string &path);
+    explicit MemoryMappedFile(std::string_view path);
 
     //! Invokes close
     ~MemoryMappedFile();
@@ -52,7 +52,7 @@ public:
 
     //! Opens the file and maps it to cbegin() ... cend()
     //! Opening an empty file is considered an error.
-    void open(const std::string &file);
+    void open(std::string_view file);
 
     //! If a file is mapped, it is closed. Otherwise, operation is carried out.
     //! @note This function is automatically called by the destructor.

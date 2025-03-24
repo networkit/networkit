@@ -482,7 +482,7 @@ cdef extern from "<networkit/distance/Diameter.hpp>" namespace "NetworKit::Diame
 
 	cdef cppclass _Diameter "NetworKit::Diameter"(_Algorithm):
 		_Diameter(_Graph G, _DiameterAlgo algo, double error, count nSamples) except +
-		pair[count, count] getDiameter() nogil except +
+		pair[count, count] getDiameter() except + nogil
 
 cdef class Diameter(Algorithm):
 	"""
@@ -777,8 +777,8 @@ cdef class NeighborhoodFunctionApproximation(Algorithm):
 
 cdef extern from "<networkit/distance/Volume.hpp>" namespace "NetworKit::Volume":
 
-	double volume(const _Graph G, const double r, const count samples) nogil except +
-	vector[double] volume(const _Graph G, const vector[double] r, const count samples) nogil except +
+	double volume(const _Graph G, const double r, const count samples) except + nogil
+	vector[double] volume(const _Graph G, const vector[double] r, const count samples) except + nogil
 
 cdef class Volume:
 	"""
@@ -1604,7 +1604,7 @@ cdef extern from "<networkit/reachability/AllSimplePaths.hpp>":
 
 	cdef cppclass _AllSimplePaths "NetworKit::AllSimplePaths":
 		_AllSimplePaths(_Graph G, node source, node target, count cutoff) except +
-		void run() nogil except +
+		void run() except + nogil
 		count numberOfSimplePaths() except +
 		vector[vector[node]] getAllSimplePaths() except +
 		void forAllSimplePaths[Callback](Callback c) except +

@@ -22,8 +22,8 @@ NetworkitBinaryWriter::NetworkitBinaryWriter(uint64_t chunks, NetworkitBinaryWei
                                              NetworkitBinaryEdgeIDs edgeIndex)
     : chunks(chunks), weightsType(weightsType), edgeIndex(edgeIndex) {}
 
-void NetworkitBinaryWriter::write(const Graph &G, const std::string &path) {
-    std::ofstream outfile(path, std::ios::binary);
+void NetworkitBinaryWriter::write(const Graph &G, std::string_view path) {
+    std::ofstream outfile(path.data(), std::ios::binary);
     Aux::enforceOpened(outfile);
     writeData(outfile, G);
     INFO("Written graph to ", path);

@@ -66,7 +66,7 @@ public:
      * @param directory
      * @return Elapsed time in milliseconds.
      */
-    uint64_t TLX_DEPRECATED(runApproximationAndWriteVectors(const std::string &graphPath));
+    uint64_t TLX_DEPRECATED(runApproximationAndWriteVectors(std::string_view graphPath));
 
     /**
      * @return The elapsed time to setup the solver in milliseconds.

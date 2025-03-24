@@ -635,8 +635,8 @@ void Graph::removeEdge(node u, node v) {
     }
     if (edgesIndexed) {
         erase<edgeid>(u, vi, outEdgeIds);
-        // Make the attributes of this node invalid
-        auto &theMap = nodeAttributeMap.attrMap;
+        // Make the attributes of this edge invalid
+        auto &theMap = edgeAttributeMap.attrMap;
         for (auto it = theMap.begin(); it != theMap.end(); ++it) {
             auto attributeStorageBase = it->second.get();
             attributeStorageBase->invalidate(vi);
@@ -978,35 +978,6 @@ bool Graph::checkConsistency() const {
         DEBUG("Saved number of edges is incorrect!");
 
     return noMultiEdges && correctNodeUpperbound && correctNumberOfEdges;
-}
-
-/* ATTRIBUTE PREMISE AND INDEX CHECKS */
-
-template <>
-void Graph::ASB<Graph::PerNode>::checkPremise() const {
-    // nothing
-}
-
-template <>
-void Graph::ASB<Graph::PerEdge>::checkPremise() const {
-    if (!theGraph->hasEdgeIds()) {
-        throw std::runtime_error("Edges must be indexed");
-    }
-}
-
-template <>
-void Graph::ASB<Graph::PerNode>::indexOK(index n) const {
-    if (!theGraph->hasNode(n)) {
-        throw std::runtime_error("This node does not exist");
-    }
-}
-
-template <>
-void Graph::ASB<Graph::PerEdge>::indexOK(index n) const {
-    auto uv = theGraph->edgeById(n);
-    if (!theGraph->hasEdge(uv.first, uv.second)) {
-        throw std::runtime_error("This edgeId does not exist");
-    }
 }
 
 } /* namespace NetworKit */

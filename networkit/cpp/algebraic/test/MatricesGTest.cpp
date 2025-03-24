@@ -1472,6 +1472,26 @@ TYPED_TEST(MatricesGTest, testPrint) {
     ss << L;
     EXPECT_EQ(ss.str(), "0, 0, 0\n0, 1, -1\n0, -1, 1");
 }
+
+TYPED_TEST(MatricesGTest, test1by4) {
+    using Matrix = typename TestFixture::Matrix;
+
+    Matrix m1(4, 1, 0);
+    Matrix m2(1, 4, 0);
+
+    m1(0, 0) = 1;
+    m1(1, 0) = 1;
+    m1(2, 0) = 1;
+    m1(3, 0) = 1;
+
+    m2(0, 0) = 1;
+    m2(0, 1) = 1;
+    m2(0, 2) = 1;
+    m2(0, 3) = 1;
+
+    Matrix m3 = m1 * m2;
+}
+
 } // namespace
 
 namespace {

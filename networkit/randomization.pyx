@@ -11,7 +11,7 @@ from .structures cimport count, index, node
 cdef extern from "<networkit/randomization/EdgeSwitching.hpp>":
 	cdef cppclass _EdgeSwitching "NetworKit::EdgeSwitching"(_Algorithm):
 		_EdgeSwitching(_Graph, double, bool_t) except +
-		void run(count) nogil except +
+		void run(count) except + nogil
 		_Graph getGraph() except +
 		count getNumberOfAffectedEdges()
 		double getNumberOfSwitchesPerEdge()
@@ -19,7 +19,7 @@ cdef extern from "<networkit/randomization/EdgeSwitching.hpp>":
 
 	cdef cppclass _EdgeSwitchingInPlace "NetworKit::EdgeSwitchingInPlace"(_Algorithm):
 		_EdgeSwitchingInPlace(_Graph, double) except +
-		void run(count) nogil except +
+		void run(count) except + nogil
 		count getNumberOfAffectedEdges()
 		double getNumberOfSwitchesPerEdge()
 		void setNumberOfSwitchesPerEdge(double)
@@ -244,7 +244,7 @@ cdef extern from "<networkit/randomization/CurveballUniformTradeGenerator.hpp>":
 
 	cdef cppclass _CurveballUniformTradeGenerator "NetworKit::CurveballUniformTradeGenerator":
 		_CurveballUniformTradeGenerator(count runLength, count numNodes) except +
-		vector[pair[node, node]] generate() nogil except +
+		vector[pair[node, node]] generate() except + nogil
 
 cdef class CurveballUniformTradeGenerator:
 	"""
@@ -276,7 +276,7 @@ cdef extern from "<networkit/randomization/CurveballGlobalTradeGenerator.hpp>":
 
 	cdef cppclass _CurveballGlobalTradeGenerator "NetworKit::CurveballGlobalTradeGenerator":
 		_CurveballGlobalTradeGenerator(count runLength, count numNodes) except +
-		vector[pair[node, node]] generate() nogil except +
+		vector[pair[node, node]] generate() except + nogil
 
 cdef class CurveballGlobalTradeGenerator:
 	"""
@@ -321,7 +321,7 @@ cdef extern from "<networkit/randomization/Curveball.hpp>":
 
 	cdef cppclass _Curveball "NetworKit::Curveball"(_Algorithm):
 		_Curveball(_Graph) except +
-		void run(vector[pair[node, node]] trades) nogil except +
+		void run(vector[pair[node, node]] trades) except + nogil
 		_Graph getGraph() except +
 		vector[pair[node, node]] getEdges() except +
 		count getNumberOfAffectedEdges() except +

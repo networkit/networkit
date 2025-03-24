@@ -16,7 +16,7 @@
 
 namespace NetworKit {
 
-EdgeListReader::EdgeListReader(char separator, node firstNode, const std::string &commentPrefix,
+EdgeListReader::EdgeListReader(char separator, node firstNode, std::string_view commentPrefix,
                                bool continuous, bool directed)
     : separator(separator), commentPrefix(commentPrefix), firstNode(firstNode),
       continuous(continuous), mapNodeIds(), directed(directed) {
@@ -34,7 +34,7 @@ const std::map<std::string, node> &EdgeListReader::getNodeMap() const {
     return this->mapNodeIds;
 }
 
-Graph EdgeListReader::read(const std::string &path) {
+Graph EdgeListReader::read(std::string_view path) {
     this->mapNodeIds.clear();
     MemoryMappedFile mmfile(path);
     auto it = mmfile.cbegin();

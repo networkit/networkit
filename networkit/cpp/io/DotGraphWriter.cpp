@@ -11,8 +11,8 @@
 
 namespace NetworKit {
 
-void DotGraphWriter::write(const Graph &G, const std::string &path) {
-    std::ofstream file{path};
+void DotGraphWriter::write(const Graph &G, std::string_view path) {
+    std::ofstream file{path.data()};
 
     file << "graph {\n";
     G.forEdges([&](node u, node v) { file << u << " -- " << v << ";\n"; });

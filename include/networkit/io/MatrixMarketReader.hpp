@@ -23,7 +23,7 @@ class MatrixMarketReader final : public MatrixReader {
 public:
     MatrixMarketReader() = default;
 
-    CSRMatrix read(const std::string &path) override;
+    CSRMatrix read(std::string_view path) override;
 
     /** Reads the matrix in @a in. */
     CSRMatrix read(std::istream &in);

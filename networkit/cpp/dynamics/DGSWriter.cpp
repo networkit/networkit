@@ -11,8 +11,8 @@
 
 namespace NetworKit {
 
-void DGSWriter::write(std::vector<GraphEvent> &stream, const std::string &path) {
-    std::ofstream out(path);
+void DGSWriter::write(std::vector<GraphEvent> &stream, std::string_view path) {
+    std::ofstream out(path.data());
 
     out << "DGS004\nnoname 0 0\n";
 

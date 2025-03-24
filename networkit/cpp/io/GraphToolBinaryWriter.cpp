@@ -16,8 +16,8 @@ namespace NetworKit {
 GraphToolBinaryWriter::GraphToolBinaryWriter(bool littleEndianness)
     : littleEndianness(littleEndianness) {}
 
-void GraphToolBinaryWriter::write(const Graph &G, const std::string &path) {
-    std::ofstream file(path, std::ios::binary | std::ios::out);
+void GraphToolBinaryWriter::write(const Graph &G, std::string_view path) {
+    std::ofstream file(path.data(), std::ios::binary | std::ios::out);
     Aux::enforceOpened(file);
     writeHeader(file);
     writeComment(file);
