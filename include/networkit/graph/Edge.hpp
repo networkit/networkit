@@ -1,5 +1,5 @@
-#ifndef NETWORKIT_GRAPH_HELPER_EDGE
-#define NETWORKIT_GRAPH_HELPER_EDGE
+#ifndef NETWORKIT_GRAPH_EDGE_HPP_
+#define NETWORKIT_GRAPH_EDGE_HPP_
 
 #include <algorithm>
 #include <vector>
@@ -59,4 +59,4 @@ struct hash<NetworKit::Edge> {
 };
 } // namespace std
 
-#endif
+#endif // NETWORKIT_GRAPH_EDGE_HPP_
