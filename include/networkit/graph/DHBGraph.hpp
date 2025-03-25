@@ -227,7 +227,7 @@ private:
     private:
         using Base<NodeOrEdge>::theGraph;
         std::vector<T> values; // the real attribute storage
-    }; // class AttributeStorage<NodeOrEdge, Base, T>
+    };                         // class AttributeStorage<NodeOrEdge, Base, T>
 
     template <typename NodeOrEdge, typename T, bool isConst>
     class Attribute {
@@ -886,8 +886,8 @@ private:
                                   typename Aux::FunctionTraits<F>::template arg<2>::type>::value
                   && std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<3>::type>::
                       value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight ew,
-                    edgeid id) const -> decltype(f(u, v, ew, id)) {
+    auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid id) const
+        -> decltype(f(u, v, ew, id)) {
         return f(u, v, ew, id);
     }
 
@@ -919,8 +919,8 @@ private:
                   (Aux::FunctionTraits<F>::arity >= 2)
                   && std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<
                                                   2>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight ew,
-                    edgeid /*id*/) const -> decltype(f(u, v, ew)) {
+    auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid /*id*/) const
+        -> decltype(f(u, v, ew)) {
         return f(u, v, ew);
     }
 
@@ -933,8 +933,8 @@ private:
                            (Aux::FunctionTraits<F>::arity >= 1)
                            && std::is_same<node, typename Aux::FunctionTraits<F>::template arg<
                                                      1>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight /*ew*/,
-                    edgeid /*id*/) const -> decltype(f(u, v)) {
+    auto edgeLambda(F &f, node u, node v, edgeweight /*ew*/, edgeid /*id*/) const
+        -> decltype(f(u, v)) {
         return f(u, v);
     }
 
@@ -1092,7 +1092,7 @@ public:
     class EdgeIteratorBase {
         friend class EdgeIterator;
         friend class EdgeWeightIterator;
-        DHBGraph const* const G;
+        DHBGraph const *const G;
         NodeIterator nodeIter;
         index i;
 
@@ -1186,7 +1186,7 @@ public:
             return this->EdgeIteratorBase::operator==(static_cast<EdgeIteratorBase>(rhs));
         }
 
-        bool operator!=(EdgeIterator const& rhs) const noexcept { return !(*this == rhs); }
+        bool operator!=(EdgeIterator const &rhs) const noexcept { return !(*this == rhs); }
 
         Edge operator*() const noexcept {
             assert(nodeIter != G->nodeRange().end());
@@ -1350,10 +1350,10 @@ public:
         using value_type = node;
 
         // Reference to the value_type, required by STL.
-        using reference = value_type&;
+        using reference = value_type &;
 
         // Pointer to the value_type, required by STL.
-        using pointer = value_type*;
+        using pointer = value_type *;
 
         // STL iterator category.
         using iterator_category = std::forward_iterator_tag;
@@ -1373,7 +1373,7 @@ public:
          */
         NeighborIterator() {}
 
-        NeighborIterator& operator++() {
+        NeighborIterator &operator++() {
             ++it;
             return *this;
         }
@@ -1395,9 +1395,9 @@ public:
             return tmp;
         }
 
-        bool operator==(NeighborIterator const& rhs) const { return it == rhs.it; }
+        bool operator==(NeighborIterator const &rhs) const { return it == rhs.it; }
 
-        bool operator!=(NeighborIterator const& rhs) const { return !(it == rhs.it); }
+        bool operator!=(NeighborIterator const &rhs) const { return !(it == rhs.it); }
 
         node operator*() const { return it->vertex(); }
     };
@@ -1416,10 +1416,10 @@ public:
         using value_type = std::pair<node, edgeweight>;
 
         // Reference to the value_type, required by STL.
-        using reference = value_type&;
+        using reference = value_type &;
 
         // Pointer to the value_type, required by STL.
-        using pointer = value_type*;
+        using pointer = value_type *;
 
         // STL iterator category.
         using iterator_category = std::forward_iterator_tag;
@@ -1439,7 +1439,7 @@ public:
          */
         NeighborWeightIterator() {}
 
-        NeighborWeightIterator& operator++() {
+        NeighborWeightIterator &operator++() {
             ++it;
             return *this;
         }
@@ -1461,9 +1461,9 @@ public:
             return tmp;
         }
 
-        bool operator==(NeighborWeightIterator const& rhs) const { return it == rhs.it; }
+        bool operator==(NeighborWeightIterator const &rhs) const { return it == rhs.it; }
 
-        bool operator!=(NeighborWeightIterator const& rhs) const { return !(it == rhs.it); }
+        bool operator!=(NeighborWeightIterator const &rhs) const { return !(it == rhs.it); }
 
         std::pair<node, edgeweight> operator*() const {
             return std::make_pair(it->vertex(), it->data().weight);
@@ -1476,11 +1476,11 @@ public:
      */
     template <bool InEdges = false>
     class NeighborRange {
-        DHBGraph const* G;
+        DHBGraph const *G;
         node u;
 
     public:
-        NeighborRange(DHBGraph const& G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
+        NeighborRange(DHBGraph const &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
 
         NeighborRange() : G(nullptr){};
 
@@ -1546,7 +1546,7 @@ public:
     DHBGraph(count n = 0, bool weighted = false, bool directed = false, bool edgesIndexed = false);
 
     template <class EdgeMerger = std::plus<edgeweight>>
-    DHBGraph(DHBGraph const& G, bool weighted, bool directed, bool edgesIndexed = false,
+    DHBGraph(DHBGraph const &G, bool weighted, bool directed, bool edgesIndexed = false,
              EdgeMerger edgeMerger = std::plus<edgeweight>())
         : n(G.n), m(G.m), storedNumberOfSelfLoops(G.storedNumberOfSelfLoops), z(G.z),
           omega(edgesIndexed ? G.omega : 0), weighted(weighted), directed(directed),
@@ -1685,10 +1685,10 @@ public:
      * TODO: Maybe we need to think of a nicer way for the interface in lambda.
      */
     template <typename Lambda>
-    void sortEdges(Lambda&& lambda) {
+    void sortEdges(Lambda &&lambda) {
         for (node v = 0; v < m_dhb_graph.vertices_count(); ++v) {
-            m_dhb_graph.sort(v, [l = std::move(lambda)](dhb::BlockState<EdgeData>::Entry& a,
-                                                        dhb::BlockState<EdgeData>::Entry& b) {
+            m_dhb_graph.sort(v, [l = std::move(lambda)](dhb::BlockState<EdgeData>::Entry &a,
+                                                        dhb::BlockState<EdgeData>::Entry &b) {
                 return l(a.vertex, a.data.weight, a.data.id, b.vertex, b.data.weight, b.data.id);
             });
         }
@@ -1842,7 +1842,7 @@ public:
      *
      * @return `true` if all insertions were successful, `false` otherwise.
      */
-    bool addEdges(std::vector<WeightedEdge>&& edges, bool do_update,
+    bool addEdges(std::vector<WeightedEdge> &&edges, bool do_update,
                   unsigned int num_threads = std::thread::hardware_concurrency());
 
     /**
@@ -1855,7 +1855,7 @@ public:
      *
      * @return `true` if all edges were successfully added, `false` otherwise.
      */
-    bool addEdges(std::vector<Edge>&& edges, bool do_update,
+    bool addEdges(std::vector<Edge> &&edges, bool do_update,
                   unsigned int num_threads = std::thread::hardware_concurrency());
 
     /**
@@ -1960,9 +1960,7 @@ public:
      * Return <code>true</code> if graph contains no nodes.
      * @return <code>true</code> if graph contains no nodes.
      */
-    bool isEmpty() const noexcept {
-        return 0u == m_dhb_graph.vertices_count();
-    }
+    bool isEmpty() const noexcept { return 0u == m_dhb_graph.vertices_count(); }
 
     /**
      * Return the number of nodes in the graph.
@@ -2910,7 +2908,7 @@ std::pair<count, count> DHBGraph::removeAdjacentEdges(node u, Condition conditio
     }
 
     // actual removal
-    for (auto const& edge : edgesToRemove) {
+    for (auto const &edge : edgesToRemove) {
         bool const remove_success = removeEdge(edge.first, edge.second);
         bool const is_loop = edge.first == edge.second;
         if (remove_success) {
