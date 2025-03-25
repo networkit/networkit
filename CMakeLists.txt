@@ -235,6 +235,11 @@ endif()
 # Use DHB as a CMake submodule
 if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/dhb/CMakeLists.txt")
 	set(DHB_WITH_64BIT_IDS ON CACHE BOOL "Build DHB using 64 bit vertex IDs.")
+	
+	if(MSVC)
+		set(DHB_WITH_SYSTEM_ALLOCATOR ON CACHE BOOL "Use DHB system allocator for MSVC targets.")
+	endif()
+	
 	add_subdirectory(extlibs/dhb)
 else()
 	message(FATAL_ERROR
