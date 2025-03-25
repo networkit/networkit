@@ -32,8 +32,8 @@
 #include <networkit/auxiliary/FunctionTraits.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
-#include <networkit/graph_helper/Edge.hpp>
 #include <networkit/graph/Attributes.hpp>
+#include <networkit/graph/Edge.hpp>
 #include <networkit/graph/EdgeIterators.hpp>
 #include <networkit/graph/NeighborIterators.hpp>
 #include <networkit/graph/NodeIterators.hpp>

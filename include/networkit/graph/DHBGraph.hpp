@@ -5,7 +5,7 @@
 #include <networkit/auxiliary/FunctionTraits.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
-#include <networkit/graph_helper/Edge.hpp>
+#include <networkit/graph/Edge.hpp>
 
 #include <omp.h>
 #include <dhb/dynamic_hashed_blocks.h>
