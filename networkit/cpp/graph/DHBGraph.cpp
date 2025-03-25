@@ -236,6 +236,16 @@ bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew, edgeid c
     return false;
 }
 
+// This is the public interface.
+bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew) {
+    assert(u < m_dhb_graph.vertices_count());
+    assert(v < m_dhb_graph.vertices_count());
+
+    edgeid const id = edgesIndexed ? omega : 0;
+    auto const applied_edge_weight = weighted ? ew : defaultEdgeWeight;
+    return addEdge(u, v, applied_edge_weight, id);
+}
+
 bool DHBGraph::addEdges(std::vector<WeightedEdge>&& weighted_edges, bool do_update,
                         unsigned int num_threads) {
     omp_set_num_threads(num_threads);
