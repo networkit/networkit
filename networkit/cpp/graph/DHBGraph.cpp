@@ -171,13 +171,13 @@ void DHBGraph::removeNode(node v) {
             }
         });
 
-        for (auto const& edge : edgesToRemove) {
+        for (auto const &edge : edgesToRemove) {
             removeEdge(edge.first, edge.second);
         }
     } else {
         std::vector<node> neighbors;
         forNeighborsOf(v, [&](node u) { neighbors.push_back(u); });
-        for (auto const& neighbor : neighbors) {
+        for (auto const &neighbor : neighbors) {
             removeEdge(v, neighbor);
             removeEdge(neighbor, v);
         }
@@ -246,25 +246,25 @@ bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew) {
     return addEdge(u, v, applied_edge_weight, id);
 }
 
-bool DHBGraph::addEdges(std::vector<WeightedEdge>&& weighted_edges, bool do_update,
+bool DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool do_update,
                         unsigned int num_threads) {
     omp_set_num_threads(num_threads);
     assert(omp_get_max_threads() == num_threads);
 
-    auto cmp = [](WeightedEdge const& a, WeightedEdge const& b) { return a.u < b.u; };
+    auto cmp = [](WeightedEdge const &a, WeightedEdge const &b) { return a.u < b.u; };
 
     std::vector<uint8_t> insertion_result(omp_get_max_threads(), 1);
-    auto insert_edge_f = [&](WeightedEdge const& e) {
+    auto insert_edge_f = [&](WeightedEdge const &e) {
         EdgeData data{e.weight, 0};
         auto [it, inserted] = m_dhb_graph.neighbors(e.u).insert(e.v, data);
         if (inserted) {
             storedNumberOfSelfLoops += uint64_t(e.u == e.v);
         }
-        uint8_t& insertion_result_t = insertion_result[omp_get_thread_num()];
+        uint8_t &insertion_result_t = insertion_result[omp_get_thread_num()];
         insertion_result_t = insertion_result_t && inserted;
     };
 
-    auto insert_and_update_f = [&](WeightedEdge const& e) {
+    auto insert_and_update_f = [&](WeightedEdge const &e) {
         EdgeData data{e.weight, 0};
         auto [it, inserted] = m_dhb_graph.neighbors(e.u).insert(e.v, data);
         if (inserted) {
@@ -272,13 +272,13 @@ bool DHBGraph::addEdges(std::vector<WeightedEdge>&& weighted_edges, bool do_upda
         } else {
             it->data() = EdgeData{e.weight, it->data().id};
         }
-        uint8_t& insertion_result_t = insertion_result[omp_get_thread_num()];
+        uint8_t &insertion_result_t = insertion_result[omp_get_thread_num()];
         insertion_result_t = insertion_result_t && inserted;
     };
 
-    auto get_source_f = [](WeightedEdge const& e) { return e.u; };
+    auto get_source_f = [](WeightedEdge const &e) { return e.u; };
     dhb::BatchParallelizer<WeightedEdge> par;
-    auto processEdge = [&](WeightedEdge const& e) {
+    auto processEdge = [&](WeightedEdge const &e) {
         if (do_update) {
             insert_and_update_f(e);
         } else {
@@ -317,10 +317,10 @@ bool DHBGraph::addEdges(std::vector<WeightedEdge>&& weighted_edges, bool do_upda
     return acc_insertion_result_directed && acc_insertion_result_undirected;
 }
 
-bool DHBGraph::addEdges(std::vector<Edge>&& edges, bool do_update, unsigned int num_threads) {
+bool DHBGraph::addEdges(std::vector<Edge> &&edges, bool do_update, unsigned int num_threads) {
     std::vector<WeightedEdge> weighted_edges;
     weighted_edges.reserve(edges.size());
-    for (auto& edge : edges) {
+    for (auto &edge : edges) {
         WeightedEdge w_edge = WeightedEdge{edge.u, edge.v, defaultEdgeWeight};
         weighted_edges.emplace_back(std::move(w_edge));
     }
