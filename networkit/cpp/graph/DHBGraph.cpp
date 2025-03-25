@@ -200,11 +200,11 @@ bool DHBGraph::hasNode(node v) const noexcept {
 
 /** EDGE MODIFIERS **/
 
-bool DHBGraph::addEdge(node u, node v, edgeweight ew) {
+// This interface is private. We are hiding the edge id as a parameter from the
+// user since we're managing edge IDs internally.
+bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew, edgeid const id) {
     assert(u < m_dhb_graph.vertices_count());
     assert(v < m_dhb_graph.vertices_count());
-
-    edgeid const id = edgesIndexed ? omega : 0;
 
     auto const edge_weight = weighted ? ew : defaultEdgeWeight;
     EdgeData const edge_data{edge_weight, dhb::EdgeID{id}};
