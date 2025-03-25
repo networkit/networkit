@@ -845,7 +845,6 @@ TEST_P(DHBGraphGTest, testHasEdge) {
     }
 }
 
-
 TEST_P(DHBGraphGTest, testNumberOfNodes) {
     ASSERT_EQ(this->n_house, this->Ghouse.numberOfNodes());
 
@@ -1034,7 +1033,7 @@ TEST_P(DHBGraphGTest, testEdgeIterator) {
     std::vector<Edge> edges;
     this->Ghouse.forEdges([&](node u, node v) { edges.push_back(Edge{u, v}); });
 
-    for (auto const& edge : edges) {
+    for (auto const &edge : edges) {
         ASSERT_TRUE(iter != this->Ghouse.edgeRange().end());
         ++iter;
     }
