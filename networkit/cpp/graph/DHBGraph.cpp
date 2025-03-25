@@ -419,33 +419,32 @@ count DHBGraph::degreeIn(node v) const {
     return degreeOut(v);
 }
 
-void DHBGraph::swapEdge(node s1, node t1, node s2, node t2) {
-    edgeweight const weight_1 = isWeighted() ? weight(s1, t1) : defaultEdgeWeight;
-    edgeweight const weight_2 = isWeighted() ? weight(s2, t2) : defaultEdgeWeight;
-    edgeid const id_1 = edgeId(s1, t1);
-    edgeid const id_2 = edgeId(s2, t2);
-
-    if (isDirected()) {
-        m_dhb_graph.neighbors(s1).iterator_to(t1).get_ptr()->vertex = t2;
-        auto iter_data_t1 = m_dhb_graph.neighbors(s1).iterator_to(t1)->data();
-        iter_data_t1.weight = weight_2;
-        iter_data_t1.id = id_2;
-
-        m_dhb_graph.neighbors(s2).iterator_to(t2).get_ptr()->vertex = t1;
-        auto iter_data_t2 = m_dhb_graph.neighbors(s2).iterator_to(t2)->data();
-        iter_data_t2.weight = weight_1;
-        iter_data_t2.id = id_1;
-    } else {
-        removeEdge(s1, t1);
-        removeEdge(s2, t2);
-        m_dhb_graph.insert(s1, t2, EdgeData{weight_1, id_1});
-        m_dhb_graph.insert(t2, s1, EdgeData{weight_1, id_1});
-        m_dhb_graph.insert(s2, t1, EdgeData{weight_2, id_2});
-        m_dhb_graph.insert(t1, s2, EdgeData{weight_2, id_2});
+void DHBGraph::swapEdge(node source_a, node target_a, node source_b, node target_b) {
+    auto neigh_a = m_dhb_graph.neighbors(source_a);
+    auto edge_a = neigh_a.iterator_to(target_a);
+    if (edge_a == neigh_a.end()) {
+        throw std::runtime_error("Edge (source_a, target_a) does not exist!");
     }
-    if (t1 == s2 || t2 == s1) {
-        storedNumberOfSelfLoops++;
+
+    auto neigh_b = m_dhb_graph.neighbors(source_b);
+    auto edge_b = neigh_b.iterator_to(target_b);
+    if (edge_b == neigh_b.end()) {
+        throw std::runtime_error("Edge (source_b, target_b) does not exist!");
     }
+
+    if (neigh_a.exists(target_b)) {
+        throw std::runtime_error("Edge (source_a, target_b) does already exist!");
+    }
+
+    if (neigh_b.exists(target_a)) {
+        throw std::runtime_error("Edge (source_b, target_a) does already exist!");
+    }
+
+    addEdge(source_a, target_b, edge_a->data().weight, edge_a->data().id);
+    addEdge(source_b, target_a, edge_b->data().weight, edge_b->data().id);
+
+    removeEdge(source_a, target_a);
+    removeEdge(source_b, target_b);
 }
 
 bool DHBGraph::hasEdge(node u, node v) const noexcept {
