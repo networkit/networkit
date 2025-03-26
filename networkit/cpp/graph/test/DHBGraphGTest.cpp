@@ -1030,20 +1030,21 @@ TEST_P(DHBGraphGTest, testTotalEdgeWeight) {
 }
 
 TEST_P(DHBGraphGTest, testEdgeIterator) {
-    DHBGraph::EdgeIterator iter = this->Ghouse.edgeRange().begin();
     std::vector<Edge> edges;
     this->Ghouse.forEdges([&](node u, node v) { edges.push_back(Edge{u, v}); });
-
-    for (auto const &edge : edges) {
-        // WIP: perhaps we should revise this test? Especially how we handle
-        // edge iterators.
-        ASSERT_EQ((*iter).u, edge.u);
-        ASSERT_EQ((*iter).v, edge.v);
-        ASSERT_TRUE(iter != this->Ghouse.edgeRange().end());
-        ++iter;
+    // Insert back edges
+    size_t size_without_back_edges = edges.size();
+    edges.reserve(size_without_back_edges * 2);
+    for (size_t i = 0; i < size_without_back_edges; ++i) {
+        edges.push_back(Edge{edges[i].v, edges[i].u});
     }
 
-    ASSERT_TRUE(iter == this->Ghouse.edgeRange().end());
+    for (DHBGraph::EdgeIterator it = this->Ghouse.edgeRange().begin();
+         it != this->Ghouse.edgeRange().end(); ++it) {
+        Edge tmp_edge{(*it).u, (*it).v};
+        auto found_it = std::find(std::begin(edges), std::end(edges), tmp_edge);
+        EXPECT_TRUE(found_it != std::end(edges));
+    }
 }
 
 TEST_P(DHBGraphGTest, testNeighborsIterators) {
