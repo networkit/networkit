@@ -11,7 +11,7 @@
 
 #include <networkit/io/METISGraphReader.hpp>
 
-namespace NetworKit {
+using namespace NetworKit;
 
 class DHBGraphGTest : public ::testing::TestWithParam<std::tuple<bool, bool>> {
 public:
@@ -889,7 +889,7 @@ TEST_P(DHBGraphGTest, DISABLED_testSelfLoopConversion) {
     Aux::Random::setSeed(1, false);
     count const runs = 100;
     const count n_max = 200;
-    for (index i = 0; i < runs; i++) {
+    for (NetworKit::index i = 0; i < runs; i++) {
         bool directed = Aux::Random::probability() < 0.5;
         count n = Aux::Random::integer(n_max);
         DHBGraph G(n, false, directed);
@@ -1219,9 +1219,9 @@ TEST_P(DHBGraphGTest, testIndexOfNeighbor) {
     G.addEdge(0, 2, 2.f);
     G.addEdge(0, 3, 2.f);
 
-    index i_1 = G.indexOfNeighbor(0, 2);
-    index i_2 = G.indexOfNeighbor(0, 3);
-    index i_none = G.indexOfNeighbor(0, 4);
+    NetworKit::index i_1 = G.indexOfNeighbor(0, 2);
+    NetworKit::index i_2 = G.indexOfNeighbor(0, 3);
+    NetworKit::index i_none = G.indexOfNeighbor(0, 4);
 
     ASSERT_EQ(1, i_1);
     ASSERT_EQ(2, i_2);
@@ -1244,13 +1244,13 @@ TEST_P(DHBGraphGTest, testIndexOfNeighbor_2) {
     G.addEdge(0, 9, 2.f);
 
     // Test index retrieval for existing neighbors
-    index i_1 = G.indexOfNeighbor(0, 2);
-    index i_2 = G.indexOfNeighbor(0, 4);
-    index i_3 = G.indexOfNeighbor(0, 6);
-    index i_4 = G.indexOfNeighbor(0, 9);
+    NetworKit::index i_1 = G.indexOfNeighbor(0, 2);
+    NetworKit::index i_2 = G.indexOfNeighbor(0, 4);
+    NetworKit::index i_3 = G.indexOfNeighbor(0, 6);
+    NetworKit::index i_4 = G.indexOfNeighbor(0, 9);
 
     // Test index retrieval for non-existing neighbor
-    index i_none = G.indexOfNeighbor(0, 10); // Node 10 does not exist
+    NetworKit::index i_none = G.indexOfNeighbor(0, 10); // Node 10 does not exist
 
     // Check expected indices
     ASSERT_EQ(1, i_1);
@@ -1284,7 +1284,7 @@ TEST_P(DHBGraphGTest, testParallelForNodes) {
     Aux::Parallel::sort(visited.begin(), visited.end());
 
     ASSERT_EQ(5u, visited.size());
-    for (index i = 0; i < this->Ghouse.upperNodeIdBound(); i++) {
+    for (NetworKit::index i = 0; i < this->Ghouse.upperNodeIdBound(); i++) {
         ASSERT_EQ(i, visited[i]);
     }
 }
@@ -1387,7 +1387,7 @@ TEST_P(DHBGraphGTest, testForEdges) {
 
     G.forEdges([&](node u, node v) {
         ASSERT_TRUE(G.hasEdge(u, v));
-        index id = (u * v) % 5;
+        NetworKit::index id = (u * v) % 5;
         edgesSeen[id] = true;
     });
 
@@ -1413,7 +1413,7 @@ TEST_P(DHBGraphGTest, testForWeightedEdges) {
         ASSERT_TRUE(G.hasEdge(u, v));
         ASSERT_EQ(G.weight(u, v), ew);
 
-        index id = (u * v) % 5;
+        NetworKit::index id = (u * v) % 5;
         edgesSeen[id] = true;
         if (G.isWeighted()) {
             ASSERT_NEAR((id + 1) * 0.1, ew, epsilon);
@@ -2197,5 +2197,3 @@ TEST_P(DHBGraphGTest, testSwapEdges) {
     ASSERT_EQ(id_orig_2, G.edgeId(0, 0));
     ASSERT_EQ(1u, G.numberOfSelfLoops());
 }
-
-} /* namespace NetworKit */
