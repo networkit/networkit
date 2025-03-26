@@ -97,8 +97,6 @@ class DHBGraph final {
         edgeid id;
     };
 
-    dhb::Matrix<EdgeData> m_dhb_graph;
-
 private:
     // base class for all node (and edge) attribute
     // storages with attribute type info
@@ -527,6 +525,7 @@ private:
 
     AttributeMap<PerNode> nodeAttributeMap;
     AttributeMap<PerEdge> edgeAttributeMap;
+    dhb::Matrix<EdgeData> m_dhb_graph;
 
 public:
     auto &nodeAttributes() noexcept { return nodeAttributeMap; }
