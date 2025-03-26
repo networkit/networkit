@@ -1530,8 +1530,7 @@ public:
     DHBGraph(count n = 0, bool weighted = false, bool directed = false, bool edgesIndexed = false);
 
     template <class EdgeMerger = std::plus<edgeweight>>
-    DHBGraph(DHBGraph const &G, bool weighted, bool directed, bool edgesIndexed = false,
-             EdgeMerger edgeMerger = std::plus<edgeweight>())
+    DHBGraph(DHBGraph const &G, bool weighted, bool directed, bool edgesIndexed = false)
         : n(G.n), m(G.m), storedNumberOfSelfLoops(G.storedNumberOfSelfLoops), z(G.z),
           omega(edgesIndexed ? G.omega : 0), weighted(weighted), directed(directed),
           edgesIndexed(edgesIndexed), // edges are not indexed by default
