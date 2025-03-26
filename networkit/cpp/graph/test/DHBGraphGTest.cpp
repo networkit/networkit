@@ -2178,22 +2178,61 @@ TEST_P(DHBGraphGTest, testSortEdges_specified_lambda) {
 }
 
 TEST_P(DHBGraphGTest, testSwapEdges) {
-    DHBGraph G = this->Ghouse;
-    if (isWeighted()) {
-        G.setWeight(1, 0, 5.f);
-        G.setWeight(0, 2, 3.f);
+    // For reference:
+    // Edges of Ghouse (undirected, so we added the back edges in the second row):
+    // {3, 1} {1, 3}
+    // {1, 0} {0, 1}
+    // {0, 2} {2, 0}
+    // {2, 1} {1, 2}
+    // {1, 4} {4, 1}
+    // {4, 3} {3, 4}
+    // {3, 2} {2, 3} 
+    // {2, 4} {4, 2}
+    //
+    // Edges after edge swap:
+    // {0, 2} -> {0, 4}
+    // {2, 4} -> {2, 2}
+
+    DHBGraph G(this->Ghouse);
+    ASSERT_EQ(0u, G.numberOfSelfLoops());
+
+    NetworKit::node source_a = 0;
+    NetworKit::node target_a = 2;
+    NetworKit::node source_b = 2;
+    NetworKit::node target_b = 4;
+
+    ASSERT_TRUE(G.hasEdge(source_a, target_a));
+    ASSERT_TRUE(G.hasEdge(source_b, target_b));
+    
+    ASSERT_FALSE(G.hasEdge(source_a, target_b));
+    ASSERT_FALSE(G.hasEdge(source_b, target_a));
+
+    float const weight_a = 5.f;
+    float const weight_b = 3.f;
+
+    if (G.isWeighted()) {
+        G.setWeight(source_a, target_a, weight_a);
+        G.setWeight(source_b, target_b, weight_b);
     }
+
     G.indexEdges();
-    edgeid id_orig_1 = G.edgeId(1, 0);
-    edgeid id_orig_2 = G.edgeId(0, 2);
-    G.swapEdge(1, 0, 0, 2);
-    ASSERT_TRUE(G.hasEdge(0, 0));
-    ASSERT_TRUE(G.hasEdge(1, 2));
-    ASSERT_FALSE(G.hasEdge(1, 0));
-    ASSERT_FALSE(G.hasEdge(0, 2));
-    ASSERT_FLOAT_EQ(G.isWeighted() ? 5.f : defaultEdgeWeight, G.weight(1, 2));
-    ASSERT_FLOAT_EQ(G.isWeighted() ? 3.f : defaultEdgeWeight, G.weight(0, 0));
-    ASSERT_EQ(id_orig_1, G.edgeId(1, 2));
-    ASSERT_EQ(id_orig_2, G.edgeId(0, 0));
+
+    edgeid const id_origin_a = G.edgeId(source_a, target_a);
+    edgeid const id_origin_b = G.edgeId(source_b, target_b);
+    
+    G.swapEdge(source_a, target_a, source_b, target_b);
+
+    ASSERT_TRUE(G.hasEdge(source_a, target_b));
+    ASSERT_TRUE(G.hasEdge(source_b, target_a));
+
+    if (G.isWeighted())
+    {
+        ASSERT_FLOAT_EQ(5.f, G.weight(source_a, target_b));
+        ASSERT_FLOAT_EQ(3.f, G.weight(source_b, target_a));
+    }
+
+    ASSERT_EQ(id_origin_a, G.edgeId(source_a, target_b));
+    ASSERT_EQ(id_origin_b, G.edgeId(source_b, target_a));
+    
     ASSERT_EQ(1u, G.numberOfSelfLoops());
 }
