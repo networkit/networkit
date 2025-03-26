@@ -54,6 +54,7 @@ void DHBGraph::indexEdges(bool force) {
     if (edgesIndexed && !force) {
         return;
     }
+
     omega = 0; // reset edge ids (for re-indexing)
 
     if (directed) {
