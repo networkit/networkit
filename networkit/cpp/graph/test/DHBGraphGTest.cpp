@@ -194,7 +194,7 @@ TEST_P(DHBGraphGTest, testCopyConstructor) {
     }
     this->Ghouse.forNodes([&](node v) {
         count d = this->Ghouse.degree(v);
-        count dUndirected = isDirected() ? d + this->Ghouse.degreeIn(v) : d;
+        // count dUndirected = isDirected() ? d + this->Ghouse.degreeIn(v) : d;
 
         // Comment out following evaluation, since when copying from an directed graph to an
         // undirected graph, the degree of a vertex may change.
@@ -616,6 +616,7 @@ TEST_P(DHBGraphGTest, testAddEdges_large_graph) {
         edges.emplace_back(u, v, defaultEdgeWeight);
     }
     bool const insertion_result = G.addEdges(std::move(edges), false);
+    ASSERT_TRUE(insertion_result);
     for (size_t i = 0; i < 1000000; ++i) {
         size_t u = edges[i].u;
         size_t v = edges[i].v;
@@ -777,7 +778,7 @@ TEST_P(DHBGraphGTest, testRemoveAllEdges) {
 
 TEST_P(DHBGraphGTest, testRemoveAdjacentEdges_outEdge) {
     DHBGraph G = this->Ghouse;
-    auto condition = [&](node node) { return true; };
+    auto condition = [&](node) { return true; };
     auto [removedEdges, removedSelfLoops] = G.removeAdjacentEdges(2, condition, false);
     ASSERT_FALSE(G.hasEdge(2, 1));
     ASSERT_FALSE(G.hasEdge(2, 4));
@@ -787,7 +788,7 @@ TEST_P(DHBGraphGTest, testRemoveAdjacentEdges_outEdge) {
 
 TEST_P(DHBGraphGTest, testRemoveAdjacentEdges_inEdge) {
     DHBGraph G = this->Ghouse;
-    auto condition = [&](node node) { return true; };
+    auto condition = [&](node) { return true; };
 
     auto [removedEdges, removedSelfLoops] = G.removeAdjacentEdges(2, condition, true);
     ASSERT_FALSE(G.hasEdge(0, 2));
@@ -801,7 +802,7 @@ TEST_P(DHBGraphGTest, testRemoveAdjacentEdges_selfloop_outEdge) {
     G.addEdge(0, 0);
     ASSERT_EQ(1, G.numberOfSelfLoops());
 
-    auto condition = [&](node node) { return true; };
+    auto condition = [&](node) { return true; };
     auto [removedEdges, removedSelfLoops] = G.removeAdjacentEdges(0, condition, false);
     ASSERT_FALSE(G.hasEdge(0, 2));
     ASSERT_FALSE(G.hasEdge(0, 0));
@@ -1029,11 +1030,15 @@ TEST_P(DHBGraphGTest, testTotalEdgeWeight) {
 }
 
 TEST_P(DHBGraphGTest, testEdgeIterator) {
-    auto iter = this->Ghouse.edgeRange().begin();
+    DHBGraph::EdgeIterator iter = this->Ghouse.edgeRange().begin();
     std::vector<Edge> edges;
     this->Ghouse.forEdges([&](node u, node v) { edges.push_back(Edge{u, v}); });
 
     for (auto const &edge : edges) {
+        // WIP: perhaps we should revise this test? Especially how we handle
+        // edge iterators.
+        ASSERT_EQ((*iter).u, edge.u);
+        ASSERT_EQ((*iter).v, edge.v);
         ASSERT_TRUE(iter != this->Ghouse.edgeRange().end());
         ++iter;
     }
@@ -1777,7 +1782,7 @@ TEST_P(DHBGraphGTest, testForWeightedInEdgesOf) {
     this->Ahouse[3][3] = 2.5;
 
     std::vector<edgeweight> visited(this->n_house, -1.0);
-    this->Ghouse.forInEdgesOf(3, [&](node v, node u, edgeweight ew) {
+    this->Ghouse.forInEdgesOf(3, [&](node, node u, edgeweight ew) {
         ASSERT_EQ(-1.0, visited[u]);
         visited[u] = ew;
     });

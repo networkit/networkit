@@ -2501,7 +2501,7 @@ void DHBGraph::forOutEdgesOfImpl(node u, L handle) const {
     assert(u < m_dhb_graph.vertices_count());
     auto neighbors = m_dhb_graph.neighbors(u);
 
-    for (auto i = 0; i < neighbors.degree(); ++i) {
+    for (size_t i = 0; i < neighbors.degree(); ++i) {
         dhb::Vertex const v = neighbors[i].vertex();
         auto const [w, id] = getDHBEdgeData<hasWeights, graphHasEdgeIds>(u, v);
         edgeLambda<L>(handle, u, v, w, id);
