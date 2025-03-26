@@ -19,10 +19,6 @@ DHBGraph::DHBGraph(count n, bool weighted, bool directed, bool edgesIndexed)
 
       exists(n, true),
 
-      /* for directed graphs inEdges stores an adjacency list only considering
-         incoming edges, for undirected graphs inEdges is not used*/
-      inEdges(directed ? n : 0),
-
       /* for directed graphs outEdges stores an adjacency list only considering
       outgoing edges, for undirected graphs outEdges stores the adjacency list of
       undirected edges*/

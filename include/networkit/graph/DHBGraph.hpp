@@ -80,9 +80,6 @@ class DHBGraph final {
     //!< exists[v] is true if node v has not been removed from the graph
     std::vector<bool> exists;
 
-    //!< only used for directed graphs, inEdges[v] contains all nodes u that
-    //!< have an edge (u, v)
-    std::vector<std::vector<node>> inEdges;
     //!< (outgoing) edges, for each edge (u, v) v is saved in outEdges[u] and
     //!< for undirected also u in outEdges[v]
     std::vector<std::vector<node>> outEdges;
@@ -676,20 +673,20 @@ private:
     }
 
     /**
-     * Removes in-going edges to node @u. If the graph is weighted and/or has edge ids, weights
-     * and/or edge ids will also be removed.
+     * Removes in-going edges to node @v.
      *
-     * @param node u Node.
+     * @param node v Node.
      */
-    void removePartialInEdges(Unsafe, node u) {
-        assert(hasNode(u));
-        inEdges[u].clear();
-        if (isWeighted()) {
-            inEdgeWeights[u].clear();
-        }
-        if (hasEdgeIds()) {
-            inEdgeIds[u].clear();
-        }
+    void removePartialInEdges(Unsafe, node v) {
+        assert(hasNode(v));
+
+        auto remove_edge = [&](dhb::Vertex const u) {
+            if (m_dhb_graph.neighbors(u).exists(v)) {
+                removeEdge(u, v);
+            }
+        };
+
+        m_dhb_graph.for_nodes(std::move(remove_edge));
     }
 
     /**
@@ -1554,7 +1551,7 @@ public:
           exists(G.exists),
 
           // let the following be empty for the start, we fill them later
-          inEdges(0), outEdges(0), inEdgeWeights(0), outEdgeWeights(0), inEdgeIds(0), outEdgeIds(0),
+          outEdges(0), inEdgeWeights(0), outEdgeWeights(0), outEdgeIds(0),
 
           // empty node attribute map as last member for this graph
           nodeAttributeMap(this), edgeAttributeMap(this), m_dhb_graph(G.m_dhb_graph) {
