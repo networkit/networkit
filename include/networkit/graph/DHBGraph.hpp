@@ -89,8 +89,6 @@ class DHBGraph final {
     //!< same schema (and same order!) as outEdges
     std::vector<std::vector<edgeweight>> outEdgeWeights;
 
-    //!< only used for directed graphs, same schema as inEdges
-    std::vector<std::vector<edgeid>> inEdgeIds;
     //!< same schema (and same order!) as outEdges
     std::vector<std::vector<edgeid>> outEdgeIds;
 
@@ -721,17 +719,6 @@ private:
      */
     template <bool graphHasEdgeIds>
     inline edgeid getOutEdgeId(node u, index i) const;
-
-    /**
-     * Returns the edge id of the edge of index i in the incoming edges of node
-     * u
-     *
-     * @param u The node
-     * @param i The index in the incoming edges of u
-     * @return The edge id
-     */
-    template <bool graphHasEdgeIds>
-    inline edgeid getInEdgeId(node u, index i) const;
 
     /**
      * @brief Returns if the edge (u, v) shall be used in the iteration of all
@@ -2459,18 +2446,6 @@ inline edgeid DHBGraph::getOutEdgeId(node u, index i) const {
 // implementation for hasEdgeIds == false
 template <>
 inline edgeid DHBGraph::getOutEdgeId<false>(node, index) const {
-    return none;
-}
-
-// implementation for hasEdgeIds == true
-template <bool graphHasEdgeIds>
-inline edgeid DHBGraph::getInEdgeId(node u, index i) const {
-    return inEdgeIds[u][i];
-}
-
-// implementation for hasEdgeIds == false
-template <>
-inline edgeid DHBGraph::getInEdgeId<false>(node, index) const {
     return none;
 }
 
