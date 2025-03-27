@@ -410,7 +410,7 @@ function(networkit_add_module modname)
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
 
-		target_link_libraries(${MODULE_TARGET} PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
+		target_link_libraries(${MODULE_TARGET} PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx dhb)
 		
 		target_include_directories(${MODULE_TARGET} BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 		target_include_directories(${MODULE_TARGET} PUBLIC "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
