@@ -497,12 +497,12 @@ if (NETWORKIT_BUILD_TESTS)
 
 		target_link_libraries(networkit_tests
 			PRIVATE
-				dhb
 				gmock
 				gtest
 				networkit
 				OpenMP::OpenMP_CXX
 				tlx
+				dhb
 		)
 
 		if(WIN32)
@@ -547,10 +547,10 @@ if (NETWORKIT_BUILD_TESTS)
 					gmock
 					gtest
 				PRIVATE
-					dhb
 					networkit_auxiliary
 					OpenMP::OpenMP_CXX
 					tlx
+					dhb
 		)
 
 	endif()
@@ -583,9 +583,10 @@ function(networkit_add_extra IS_TEST MOD NAME)
 				PRIVATE
 					gtest networkit_gtest_main
 				PRIVATE
-					networkit_${MOD}
-					tlx
 					OpenMP::OpenMP_CXX
+					tlx
+					dhb
+					networkit_${MOD}
 					)
 			set_target_properties(${TARGET_NAME} PROPERTIES
 				CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
