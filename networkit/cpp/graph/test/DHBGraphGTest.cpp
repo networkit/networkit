@@ -7,7 +7,6 @@
 #include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
-#include <networkit/graph/DHBGraph.hpp>
 
 #include <networkit/io/METISGraphReader.hpp>
 
