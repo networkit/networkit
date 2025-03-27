@@ -581,6 +581,9 @@ function(networkit_add_extra IS_TEST MOD NAME)
 
 			add_executable(${TARGET_NAME} ${TEST_SOURCE})
 
+			# If you're missing a module for your test target, lookg at the
+			# CMakeLists.txt at the same level as your testfile. There you can
+			# add networkit modules to be linked against your target.
 			target_link_libraries(${TARGET_NAME}
 				PRIVATE
 					gtest networkit_gtest_main
