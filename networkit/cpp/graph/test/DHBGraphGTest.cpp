@@ -2182,7 +2182,7 @@ TEST_P(DHBGraphGTest, testSwapEdges) {
     // {2, 1} {1, 2}
     // {1, 4} {4, 1}
     // {4, 3} {3, 4}
-    // {3, 2} {2, 3} 
+    // {3, 2} {2, 3}
     // {2, 4} {4, 2}
     //
     // Edges after edge swap:
@@ -2199,7 +2199,7 @@ TEST_P(DHBGraphGTest, testSwapEdges) {
 
     ASSERT_TRUE(G.hasEdge(source_a, target_a));
     ASSERT_TRUE(G.hasEdge(source_b, target_b));
-    
+
     ASSERT_FALSE(G.hasEdge(source_a, target_b));
     ASSERT_FALSE(G.hasEdge(source_b, target_a));
 
@@ -2215,20 +2215,19 @@ TEST_P(DHBGraphGTest, testSwapEdges) {
 
     edgeid const id_origin_a = G.edgeId(source_a, target_a);
     edgeid const id_origin_b = G.edgeId(source_b, target_b);
-    
+
     G.swapEdge(source_a, target_a, source_b, target_b);
 
     ASSERT_TRUE(G.hasEdge(source_a, target_b));
     ASSERT_TRUE(G.hasEdge(source_b, target_a));
 
-    if (G.isWeighted())
-    {
+    if (G.isWeighted()) {
         ASSERT_FLOAT_EQ(5.f, G.weight(source_a, target_b));
         ASSERT_FLOAT_EQ(3.f, G.weight(source_b, target_a));
     }
 
     ASSERT_EQ(id_origin_a, G.edgeId(source_a, target_b));
     ASSERT_EQ(id_origin_b, G.edgeId(source_b, target_a));
-    
+
     ASSERT_EQ(1u, G.numberOfSelfLoops());
 }
