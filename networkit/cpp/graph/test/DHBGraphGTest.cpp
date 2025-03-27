@@ -599,27 +599,23 @@ TEST_P(DHBGraphGTest, testAddEdges_weighted_edge_no_update) {
 }
 
 TEST_P(DHBGraphGTest, testAddEdges_large_graph) {
-    size_t num_vertices = 100000;
+    uint32_t constexpr num_vertices = 100'000;
     DHBGraph G = createGraph(num_vertices);
 
-    size_t num_edges = 1000000;
-    std::vector<WeightedEdge> edges;
-    edges.reserve(num_edges);
+    float constexpr erdos_renyi_p = 0.0001;
+    ErdosRenyiGenerator gen(num_vertices, erdos_renyi_p);
+    Graph er_graph = gen.generate();
 
-    std::mt19937 rng(42);
-    std::uniform_int_distribution<size_t> vertex_dist(0, num_vertices - 1);
-    float defaultEdgeWeight = 1.0f;
+    std::vector<Edge> edges;
+    er_graph.forEdges(
+        [&edges](NetworKit::node u, NetworKit::node v) { edges.push_back(Edge{u, v}); });
 
-    for (size_t i = 0; i < num_edges; ++i) {
-        size_t u = vertex_dist(rng);
-        size_t v = vertex_dist(rng);
-        edges.emplace_back(u, v, defaultEdgeWeight);
-    }
     bool const insertion_result = G.addEdges(std::move(edges), false);
     ASSERT_TRUE(insertion_result);
-    for (size_t i = 0; i < 1000000; ++i) {
-        size_t u = edges[i].u;
-        size_t v = edges[i].v;
+
+    for (auto const &e : edges) {
+        NetworKit::node const u = e.u;
+        NetworKit::node const v = e.v;
         ASSERT_TRUE(G.hasEdge(u, v)) << "Edge (" << u << ", " << v << ") should exist.";
     }
 }
