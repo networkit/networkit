@@ -190,7 +190,14 @@ bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew, edgeid c
     assert(v < m_dhb_graph.vertices_count());
 
     auto const edge_weight = weighted ? ew : defaultEdgeWeight;
-    EdgeData const edge_data{edge_weight, dhb::EdgeID{id}};
+
+    // TODO: Why is dhb::EdgeID of unsigned int? That would be 32 bit unsigned
+    // integer.. why is it not a 64 bit unsigned integer.
+    //
+    // For now, we will accept the "narrowing conversion of ‘id’ from ‘const
+    // edgeid’ {aka ‘const long unsigned int’} to ‘dhb::EdgeID’ {aka ‘unsigned
+    // int’}".
+    EdgeData const edge_data{edge_weight, static_cast<dhb::EdgeID>(id)};
 
     bool is_inserted_in = false;
     bool is_inserted_out = false;
