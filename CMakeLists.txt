@@ -575,6 +575,8 @@ function(networkit_add_extra IS_TEST MOD NAME)
 				MESSAGE(FATAL_ERROR "Unknown NetworKit module '${MOD}'")
 			endif()
 
+			# Each test target is composed such that test file DHBGraphGTest in
+			# module graph is named: networkit_graph_DHBGraphGTest
 			set(TARGET_NAME "networkit_${MOD}_${NAME}")
 
 			add_executable(${TARGET_NAME} ${TEST_SOURCE})
