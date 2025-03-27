@@ -2397,10 +2397,11 @@ void DHBGraph::forNodePairs(L handle) const {
 
 template <typename L>
 void DHBGraph::forNodePairsParallel(L handle) const {
-#pragma omp parallel for collapse(2)
-    for (dhb::Vertex u = 0; u < m_dhb_graph.vertices_count(); ++u) {
-        for (node v = u + 1; v < m_dhb_graph.vertices_count(); ++v) {
-            handle(u, v);
+#pragma omp parallel for schedule(guided)
+    for (omp_index u = 0; u < static_cast<omp_index>(m_dhb_graph.vertices_count()); ++u) {
+        auto neighborhood = m_dhb_graph.neighbors(u);
+        for (auto target = neighborhood.begin(); target != neighborhood.end(); ++target) {
+            handle(u, target->vertex());
         }
     }
 }
