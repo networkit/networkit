@@ -2876,3 +2876,5 @@ std::pair<count, count> DHBGraph::removeAdjacentEdges(node u, Condition conditio
 }
 
 } /* namespace NetworKit */
+
+#endif // NETWORKIT_GRAPH_DHBGRAPH_HPP_
