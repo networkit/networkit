@@ -288,7 +288,7 @@ bool DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool do_upda
             weighted_edges_v_to_u.resize(weighted_edges.size());
 
 #pragma omp parallel for schedule(guided)
-            for (count i = 0; i < weighted_edges_v_to_u.size(); ++i) {
+            for (omp_index i = 0; i < static_cast<omp_index>(weighted_edges_v_to_u.size()); ++i) {
                 weighted_edges_v_to_u[i].u = weighted_edges[i].v;
                 weighted_edges_v_to_u[i].v = weighted_edges[i].u;
                 weighted_edges_v_to_u[i].weight = weighted_edges[i].weight;
