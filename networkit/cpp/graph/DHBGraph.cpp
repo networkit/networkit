@@ -538,7 +538,7 @@ node DHBGraph::getIthInNeighbor(node v, index index) const {
 
 edgeweight DHBGraph::getIthNeighborWeight(node u, index i) const {
     if (!ithNeighborExists(u, i)) {
-        return none;
+        return defaultEdgeWeight;
     }
     return isWeighted() ? m_dhb_graph.neighbors(u)[i].data().weight : defaultEdgeWeight;
 }
