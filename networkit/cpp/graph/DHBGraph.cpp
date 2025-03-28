@@ -514,20 +514,26 @@ node DHBGraph::getIthNeighbor(node u, index i) const {
     return m_dhb_graph.neighbors(u)[i].vertex();
 }
 
-node DHBGraph::getIthInNeighbor(node u, index i) const {
-    index currentIndex = 0;
-    for (dhb::Vertex from = 0; from < m_dhb_graph.vertices_count(); ++from) {
-        for (auto it = neighborRange(from).begin(); it != neighborRange(from).end(); ++it) {
-            dhb::Vertex const to = *it;
-            if (u == to) {
-                if (currentIndex == i) {
-                    return from;
-                }
-                currentIndex++;
+node DHBGraph::getIthInNeighbor(node v, index index) const {
+    size_t ith_neighbor_counter = 0;
+    node ith_neighbor = none;
+    m_dhb_graph.for_nodes([&](dhb::Vertex u) {
+        auto neighbors = m_dhb_graph.neighbors(u);
+        auto target = neighbors.iterator_to(v);
+        if (target != neighbors.end()) {
+            if (ith_neighbor_counter == index) {
+                ith_neighbor = static_cast<node>(target->vertex());
+                return;
             }
+            ++ith_neighbor_counter;
         }
-    }
-    return none;
+
+        if (ith_neighbor_counter > index) {
+            return;
+        }
+    });
+
+    return ith_neighbor;
 }
 
 edgeweight DHBGraph::getIthNeighborWeight(node u, index i) const {
