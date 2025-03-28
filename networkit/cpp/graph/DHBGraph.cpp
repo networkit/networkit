@@ -493,10 +493,6 @@ void DHBGraph::setWeightAtIthNeighbor(Unsafe, node u, index i, edgeweight ew) {
     m_dhb_graph.neighbors(u)[i].data().weight = ew;
 }
 
-void DHBGraph::setWeightAtIthInNeighbor(Unsafe, node u, index i, edgeweight ew) {
-    setWeight(getIthInNeighbor(u, i), u, ew);
-}
-
 index DHBGraph::indexOfNeighbor(node u, node v) const {
     for (index i = 0; i < m_dhb_graph.neighbors(u).degree(); i++) {
         node current = m_dhb_graph.neighbors(u)[i].vertex();
@@ -512,28 +508,6 @@ node DHBGraph::getIthNeighbor(node u, index i) const {
         return none;
     }
     return m_dhb_graph.neighbors(u)[i].vertex();
-}
-
-node DHBGraph::getIthInNeighbor(node v, index index) const {
-    size_t ith_neighbor_counter = 0;
-    node ith_neighbor = none;
-    m_dhb_graph.for_nodes([&](dhb::Vertex u) {
-        auto neighbors = m_dhb_graph.neighbors(u);
-        auto target = neighbors.iterator_to(v);
-        if (target != neighbors.end()) {
-            if (ith_neighbor_counter == index) {
-                ith_neighbor = static_cast<node>(target->vertex());
-                return;
-            }
-            ++ith_neighbor_counter;
-        }
-
-        if (ith_neighbor_counter > index) {
-            return;
-        }
-    });
-
-    return ith_neighbor;
 }
 
 edgeweight DHBGraph::getIthNeighborWeight(node u, index i) const {
