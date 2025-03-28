@@ -2002,14 +2002,6 @@ public:
     void setWeightAtIthNeighbor(Unsafe, node u, index i, edgeweight ew);
 
     /**
-     * Set the weight to the i-th incoming neighbour of u.
-     * @param[in]	u	endpoint of edge
-     * @param[in]	i	index of the nexight
-     * @param[in]	weight	edge weight
-     */
-    void setWeightAtIthInNeighbor(Unsafe, node u, index i, edgeweight ew);
-
-    /**
      * Increase the weight of an edge. If the edge does not exist,
      * it will be inserted.
      *
@@ -2094,17 +2086,6 @@ public:
      * neighbor exists.
      */
     node getIthNeighbor(node u, index i) const;
-
-    /**
-     * Return the i-th (incoming) neighbor of @a u.
-     *
-     * @param u Node.
-     * @param i index; Must be in [0, degreeIn(u))
-     * @return @a i-th (incoming) neighbor of @a u, or @c none if no such
-     * neighbor exists.
-     *
-     */
-    node getIthInNeighbor(node u, index i) const;
 
     /**
      * Return the weight to the i-th (outgoing) neighbor of @a u.
