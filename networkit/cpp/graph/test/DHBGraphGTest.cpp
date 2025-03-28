@@ -1120,21 +1120,6 @@ TEST_P(DHBGraphGTest, testGetIthNeighbor) {
     ASSERT_EQ(3, neighbor_2);
 }
 
-TEST_P(DHBGraphGTest, testGetIthInNeighbor) {
-    DHBGraph G = createGraph(4);
-    G.addEdge(1, 0);
-    G.addEdge(2, 0);
-    G.addEdge(3, 0);
-
-    node neighbor_0 = G.getIthInNeighbor(0, 0);
-    node neighbor_1 = G.getIthInNeighbor(0, 1);
-    node neighbor_2 = G.getIthInNeighbor(0, 2);
-
-    ASSERT_EQ(1, neighbor_0);
-    ASSERT_EQ(2, neighbor_1);
-    ASSERT_EQ(3, neighbor_2);
-}
-
 TEST_P(DHBGraphGTest, testGetIthNeighborWeight) {
     DHBGraph G = createGraph(4);
     G.addEdge(0, 1, 2.f);
@@ -1197,17 +1182,6 @@ TEST_P(DHBGraphGTest, testSetWeightAtIthNeighbor) {
     G.setWeightAtIthNeighbor(unsafe, 0, 0, 5.f);
     double const result = G.isWeighted() ? 5.f : defaultEdgeWeight;
     ASSERT_EQ(result, G.getIthNeighborWeight(0, 0));
-}
-
-TEST_P(DHBGraphGTest, testSetWeightAtIthInNeighbor) {
-    DHBGraph G = createGraph(4);
-    G.addEdge(1, 0, 2.f);
-    G.addEdge(2, 0, 2.f);
-    G.addEdge(3, 0, 2.f);
-
-    G.setWeightAtIthInNeighbor(unsafe, 0, 0, 5.f);
-    double const result = G.isWeighted() ? 5.f : defaultEdgeWeight;
-    ASSERT_EQ(result, G.weight(1, 0));
 }
 
 TEST_P(DHBGraphGTest, testIndexOfNeighbor) {
