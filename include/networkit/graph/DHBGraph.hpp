@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NETWORKIT_GRAPH_DHBGRAPH_HPP_
+#define NETWORKIT_GRAPH_DHBGRAPH_HPP_
 
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/ArrayTools.hpp>
