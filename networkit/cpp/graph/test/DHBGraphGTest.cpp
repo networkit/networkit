@@ -606,8 +606,9 @@ TEST_P(DHBGraphGTest, testAddEdges_large_graph) {
     Graph er_graph = gen.generate();
 
     std::vector<Edge> edges;
-    er_graph.forEdges(
-        [&edges](NetworKit::node u, NetworKit::node v) { edges.push_back(Edge{u, v}); });
+    er_graph.forEdges([&edges](NetworKit::node u, NetworKit::node v) {
+        edges.push_back(Edge{u, v});
+    });
 
     bool const insertion_result = G.addEdges(std::move(edges), false);
     ASSERT_TRUE(insertion_result);
