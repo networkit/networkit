@@ -2331,8 +2331,8 @@ void DHBGraph::forNodes(L handle) const {
 template <typename L>
 void DHBGraph::forNodesParallel(L handle) const {
 #pragma omp parallel for schedule(guided)
-    for (dhb::Vertex v = 0; v < m_dhb_graph.vertices_count(); ++v) {
-        handle(v);
+    for (omp_index v = 0; v < static_cast<omp_index>(m_dhb_graph.vertices_count()); ++v) {
+        handle(static_cast<node>(v));
     }
 }
 
