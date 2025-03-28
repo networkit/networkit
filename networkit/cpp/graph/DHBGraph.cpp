@@ -438,7 +438,11 @@ void DHBGraph::swapEdge(node source_a, node target_a, node source_b, node target
 }
 
 bool DHBGraph::hasEdge(node u, node v) const noexcept {
-    return m_dhb_graph.neighbors(u).exists(v);
+    if (u < m_dhb_graph.vertices_count()) {
+        return m_dhb_graph.neighbors(u).exists(v);
+    }
+
+    return false;
 }
 
 /** EDGE ATTRIBUTES **/
