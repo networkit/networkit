@@ -2342,67 +2342,7 @@ void Graph::sortNeighbors(Lambda lambda) {
 
 template <class Lambda>
 void Graph::sortEdges(Lambda lambda) {
-
-    std::vector<std::vector<index>> indicesGlobal(omp_get_max_threads());
-
-    const auto sortAdjacencyArrays = [&](node u, std::vector<node> &adjList,
-                                         std::vector<edgeweight> &weights,
-                                         std::vector<edgeid> &edgeIds) -> void {
-        auto &indices = indicesGlobal[omp_get_thread_num()];
-        if (adjList.size() > indices.size())
-            indices.resize(adjList.size());
-
-        const auto indicesEnd =
-            indices.begin()
-            + static_cast<
-                std::iterator_traits<std::vector<index>::const_iterator>::difference_type>(
-                adjList.size());
-        std::iota(indices.begin(), indicesEnd, 0);
-
-        if (isWeighted()) {
-            if (hasEdgeIds())
-                std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
-                    return lambda(WeightedEdgeWithId{u, adjList[a], weights[a], edgeIds[a]},
-                                  WeightedEdgeWithId{u, adjList[b], weights[b], edgeIds[b]});
-                });
-            else
-                std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
-                    return lambda(WeightedEdgeWithId{u, adjList[a], weights[a], 0},
-                                  WeightedEdgeWithId{u, adjList[b], weights[b], 0});
-                });
-        } else if (hasEdgeIds())
-            std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
-                return lambda(WeightedEdgeWithId{u, adjList[a], defaultEdgeWeight, edgeIds[a]},
-                              WeightedEdgeWithId{u, adjList[b], defaultEdgeWeight, edgeIds[b]});
-            });
-        else
-            std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
-                return lambda(WeightedEdgeWithId{u, adjList[a], defaultEdgeWeight, 0},
-                              WeightedEdgeWithId{u, adjList[b], defaultEdgeWeight, 0});
-            });
-
-        Aux::ArrayTools::applyPermutation(adjList.begin(), adjList.end(), indices.begin());
-
-        if (isWeighted())
-            Aux::ArrayTools::applyPermutation(weights.begin(), weights.end(), indices.begin());
-
-        if (hasEdgeIds())
-            Aux::ArrayTools::applyPermutation(edgeIds.begin(), edgeIds.end(), indices.begin());
-    };
-
-    balancedParallelForNodes([&](const node u) {
-        if (degree(u) < 2)
-            return;
-
-        std::vector<edgeweight> dummyEdgeWeights;
-        std::vector<edgeid> dummyEdgeIds;
-        sortAdjacencyArrays(u, outEdges[u], isWeighted() ? outEdgeWeights[u] : dummyEdgeWeights,
-                            hasEdgeIds() ? outEdgeIds[u] : dummyEdgeIds);
-
-        if (isDirected())
-            sortAdjacencyArrays(u, inEdges[u], isWeighted() ? inEdgeWeights[u] : dummyEdgeWeights,
-                                hasEdgeIds() ? inEdgeIds[u] : dummyEdgeIds);
-    });
+    sortNeighbors(lambda);
 }
 
 } /* namespace NetworKit */

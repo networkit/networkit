@@ -500,16 +500,16 @@ std::pair<Graph, node> createAugmentedGraph(const Graph &G) {
 
 void sortEdgesByWeight(Graph &G, bool decreasing) {
     if (decreasing)
-        G.sortEdges([](auto e1, auto e2) {
-            if (e1.weight == e2.weight)
-                return e1.v < e2.v;
-            return e1.weight > e2.weight;
+        G.sortNeighbors([&](node currenNode, node neighbor1, node neighbor2) {
+            if (G.weight(currenNode, neighbor1) == G.weight(currenNode, neighbor2))
+                return neighbor1 < neighbor2;
+            return G.weight(currenNode, neighbor1) > G.weight(currenNode, neighbor2);
         });
     else
-        G.sortEdges([](auto e1, auto e2) {
-            if (e1.weight == e2.weight)
-                return e1.v < e2.v;
-            return e1.weight < e2.weight;
+        G.sortNeighbors([&](node currenNode, node neighbor1, node neighbor2) {
+            if (G.weight(currenNode, neighbor1) == G.weight(currenNode, neighbor2))
+                return neighbor1 < neighbor2;
+            return G.weight(currenNode, neighbor1) < G.weight(currenNode, neighbor2);
         });
 }
 
