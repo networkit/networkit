@@ -15,17 +15,16 @@ namespace NetworKit {
 
 class PrimMST : public SpanningForest {
 
+    PrimMST(const Graph &G) : SpanningForest(G) {}
+
     void run() override;
 
-    /**
-     * @return Forest computed by run method.
-     * Note: So far no explicit check if run method has been invoked before.
-     */
     const Graph &getForest() {
         assureFinished();
         return forest;
     }
-
+private:
+    static constexpr edgeweight infiniteWeight = std::numeric_limits<edgeweight>::max();
 };
 }
 #endif //NETWORKIT_GRAPH_ORIM_MST_H
