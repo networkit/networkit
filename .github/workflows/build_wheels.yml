@@ -1,6 +1,12 @@
 name: Build wheels
 
-on: [push, pull_request]
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
 
 # Default parameters for all builds
 env:
