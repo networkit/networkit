@@ -1549,7 +1549,7 @@ public:
 
         if (copy_weighted_graph_to_unweighted) {
 #pragma omp parallel for schedule(guided)
-            for (dhb::Vertex u = 0u; u < m_dhb_graph.vertices_count(); ++u) {
+            for (omp_index u = 0; u < static_cast<omp_index>(m_dhb_graph.vertices_count()); ++u) {
                 dhb::Matrix<EdgeData>::NeighborView n = m_dhb_graph.neighbors(u);
                 for (auto v = n.begin(); v != n.end(); ++v) {
                     v->data().weight = defaultEdgeWeight;
@@ -2467,7 +2467,7 @@ void DHBGraph::forOutEdgesOfImplParallel(node u, L handle) const {
     auto neighbors = m_dhb_graph.neighbors(u);
 
 #pragma omp parallel for schedule(guided)
-    for (dhb::Vertex i = 0u; i < neighbors.degree(); ++i) {
+    for (omp_index i = 0; i < static_cast<omp_index>(neighbors.degree()); ++i) {
         dhb::Vertex const v = neighbors[i].vertex();
         auto const [w, id] = getDHBEdgeData<hasWeights, graphHasEdgeIds>(u, v);
         edgeLambda<L>(handle, u, v, w, id);
@@ -2498,7 +2498,8 @@ inline void DHBGraph::forInEdgesOfImplParallel(node u, L handle) const {
     assert(u < m_dhb_graph.vertices_count());
     if (graphIsDirected) {
 #pragma omp parallel for schedule(guided)
-        for (dhb::Vertex from = 0; from < m_dhb_graph.vertices_count(); ++from) {
+        for (omp_index from = 0; from < static_cast<omp_index>(m_dhb_graph.vertices_count());
+             ++from) {
             for (auto it = neighborRange(from).begin(); it != neighborRange(from).end(); ++it) {
                 dhb::Vertex const to = *it;
                 if (u == to) {
@@ -2533,7 +2534,7 @@ void DHBGraph::forEdgeImpl(L handle) const {
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 void DHBGraph::forEdgesImplParallel(L handle) const {
 #pragma omp parallel for schedule(guided)
-    for (dhb::Vertex u = 0; u < m_dhb_graph.vertices_count(); ++u) {
+    for (omp_index u = 0; u < static_cast<omp_index>(m_dhb_graph.vertices_count()); ++u) {
         auto neighbors = m_dhb_graph.neighbors(u);
         for (auto it = neighbors.begin(); it != neighbors.end(); ++it) {
             dhb::Vertex const v = it->vertex();
@@ -2552,7 +2553,7 @@ template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename 
 double DHBGraph::parallelSumForEdgesImpl(L handle) const {
     double total_sum = 0.0;
 #pragma omp parallel for schedule(guided) reduction(+ : total_sum)
-    for (dhb::Vertex u = 0; u < m_dhb_graph.vertices_count(); ++u) {
+    for (omp_index u = 0; u < static_cast<omp_index>(m_dhb_graph.vertices_count()); ++u) {
         auto neighbors = m_dhb_graph.neighbors(u);
 
         for (auto it = neighbors.begin(); it != neighbors.end(); ++it) {
@@ -2790,7 +2791,7 @@ double DHBGraph::sumForNodesParallel(L handle) const {
     double sum = 0.0;
 
 #pragma omp parallel for schedule(guided) reduction(+ : sum)
-    for (dhb::Vertex v = 0; v < m_dhb_graph.vertices_count(); ++v) {
+    for (omp_index v = 0; v < static_cast<omp_index>(m_dhb_graph.vertices_count()); ++v) {
         sum += handle(v);
     }
 
