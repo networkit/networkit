@@ -311,7 +311,7 @@ bool DHBGraph::addEdges(std::vector<Edge> &&edges, bool do_update, unsigned int 
     weighted_edges.reserve(edges.size());
     for (auto &edge : edges) {
         WeightedEdge w_edge = WeightedEdge{edge.u, edge.v, defaultEdgeWeight};
-        weighted_edges.emplace_back(std::move(w_edge));
+        weighted_edges.push_back(w_edge);
     }
     return addEdges(std::move(weighted_edges), do_update, num_threads);
 }
