@@ -9,7 +9,7 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/graph/KruskalMSF.hpp>
-#include <networkit/graph/PrimMST.hpp>
+#include <networkit/graph/PrimMSF.hpp>
 #include <networkit/graph/RandomMaximumSpanningForest.hpp>
 #include <networkit/graph/SpanningForest.hpp>
 #include <networkit/graph/UnionMaximumSpanningForest.hpp>
