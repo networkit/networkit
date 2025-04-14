@@ -37,11 +37,16 @@ void PrimMSF::run() {
         }
         minHeap.emplace(nullWeight, startNode);
         weights[startNode] = nullWeight;
+        parents[startNode] = startNode;
         while (!minHeap.empty()) {
             const auto [currentWeight, currentNode] = minHeap.top();
             minHeap.pop();
             if (visited[currentNode]) {
                 continue;
+            }
+            if (const node parentNode = parents[currentNode]; currentNode != parentNode) {
+                forest.addEdge(parentNode, currentNode);
+                totalWeight += currentWeight;
             }
             visited[currentNode] = true;
             G->forNeighborsOf(currentNode, [&](node neighbor, edgeweight neighborWeight) {
@@ -51,12 +56,6 @@ void PrimMSF::run() {
                     parents[neighbor] = currentNode;
                 }
             });
-        }
-    });
-    G->forNodes([&](node node) {
-        if (parents[node] != none) {
-            forest.addEdge(parents[node], node);
-            totalWeight += weights[node];
         }
     });
     hasRun = true;
