@@ -39,7 +39,9 @@ void PrimMSF::run() {
         weights[startNode] = nullWeight;
         parents[startNode] = startNode;
         while (!minHeap.empty()) {
-            const auto [currentWeight, currentNode] = minHeap.top();
+            const auto pair = minHeap.top();
+            const edgeweight currentWeight = pair.first;
+            const node currentNode = pair.second;
             minHeap.pop();
             if (visited[currentNode]) {
                 continue;
