@@ -25,34 +25,41 @@ void PrimMSF::run() {
     forest = GraphTools::copyNodes(*G);
     const index numberOfNodes = G->numberOfNodes();
     std::vector<edgeweight> weights(numberOfNodes, infiniteWeight);
+    std::vector<node> parents(numberOfNodes, none);
     std::vector<bool> visited(numberOfNodes, false);
-    std::priority_queue<std::pair<edgeweight, node>, std::vector<std::pair<edgeweight, node>>, std::greater<>> minHeap;
+    std::priority_queue<std::pair<edgeweight, node>, std::vector<std::pair<edgeweight, node>>,
+                        std::greater<>>
+        minHeap;
 
-    G->forNodes([&](node startVertex) {
-        if (visited[startVertex]) {
+    G->forNodes([&](node startNode) {
+        if (visited[startNode]) {
             return;
         }
-        minHeap.emplace(nullWeight, startVertex);
-        weights[startVertex] = nullWeight;
-        while(!minHeap.empty()) {
-            auto [currentWeight, currentNode] = minHeap.top();
+        minHeap.emplace(nullWeight, startNode);
+        weights[startNode] = nullWeight;
+        while (!minHeap.empty()) {
+            const auto [currentWeight, currentNode] = minHeap.top();
             minHeap.pop();
-            if(visited[currentNode]) {
+            if (visited[currentNode]) {
                 continue;
             }
             visited[currentNode] = true;
-            G->forNeighborsOf( currentNode, [&](node neighbor, edgeweight neighborWeight) {
-                if(!visited[neighbor] && weights[neighbor] > neighborWeight) {
+            G->forNeighborsOf(currentNode, [&](node neighbor, edgeweight neighborWeight) {
+                if (!visited[neighbor] && weights[neighbor] > neighborWeight) {
                     weights[neighbor] = neighborWeight;
                     minHeap.emplace(neighborWeight, neighbor);
-                    forest.addEdge(currentNode, neighbor);
-                    totalWeight += neighborWeight;
+                    parents[neighbor] = currentNode;
                 }
             });
+        }
+    });
+    G->forNodes([&](node node) {
+        if (parents[node] != none) {
+            forest.addEdge(parents[node], node);
+            totalWeight += weights[node];
         }
     });
     hasRun = true;
 }
 
-
-}
+} // namespace NetworKit
