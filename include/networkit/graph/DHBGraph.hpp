@@ -1,5 +1,5 @@
-#ifndef NETWORKIT_GRAPH_DHBGRAPH_HPP_
-#define NETWORKIT_GRAPH_DHBGRAPH_HPP_
+#ifndef NETWORKIT_GRAPH_DHB_GRAPH_HPP_
+#define NETWORKIT_GRAPH_DHB_GRAPH_HPP_
 
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/ArrayTools.hpp>
@@ -2878,4 +2878,4 @@ std::pair<count, count> DHBGraph::removeAdjacentEdges(node u, Condition conditio
 
 } /* namespace NetworKit */
 
-#endif // NETWORKIT_GRAPH_DHBGRAPH_HPP_
+#endif // NETWORKIT_GRAPH_DHB_GRAPH_HPP_
