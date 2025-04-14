@@ -237,21 +237,24 @@ bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew) {
 }
 
 bool DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool do_update,
-                        unsigned int num_threads) {
+                        unsigned int const num_threads) {
     omp_set_num_threads(static_cast<int>(num_threads));
     assert(omp_get_max_threads() == num_threads);
 
     auto cmp = [](WeightedEdge const &a, WeightedEdge const &b) { return a.u < b.u; };
 
-    std::vector<uint8_t> insertion_result(omp_get_max_threads(), 1);
+    std::vector<uint8_t> insertions_result(num_threads, 1u);
+    assert(insertions_result.size() == num_threads);
+
     auto insert_edge_f = [&](WeightedEdge const &e) {
         EdgeData data{e.weight, 0};
         auto [it, inserted] = m_dhb_graph.neighbors(e.u).insert(e.v, data);
         if (inserted) {
             storedNumberOfSelfLoops += uint64_t(e.u == e.v);
         }
-        uint8_t &insertion_result_t = insertion_result[omp_get_thread_num()];
-        insertion_result_t = insertion_result_t && inserted;
+
+        insertions_result[omp_get_thread_num()] =
+            insertions_result[omp_get_thread_num()] && inserted;
     };
 
     auto insert_and_update_f = [&](WeightedEdge const &e) {
@@ -262,8 +265,9 @@ bool DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool do_upda
         } else {
             it->data() = EdgeData{e.weight, it->data().id};
         }
-        uint8_t &insertion_result_t = insertion_result[omp_get_thread_num()];
-        insertion_result_t = insertion_result_t && inserted;
+
+        insertions_result[omp_get_thread_num()] =
+            insertions_result[omp_get_thread_num()] && inserted;
     };
 
     auto get_source_f = [](WeightedEdge const &e) { return e.u; };
@@ -279,7 +283,7 @@ bool DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool do_upda
     par(std::begin(weighted_edges), std::end(weighted_edges), get_source_f, cmp, processEdge);
 
     bool const acc_insertion_result_directed = std::all_of(
-        std::begin(insertion_result), std::end(insertion_result), [](bool const r) { return r; });
+        std::begin(insertions_result), std::end(insertions_result), [](bool const r) { return r; });
 
     bool const acc_insertion_result_undirected = [&]() {
         if (!isDirected()) {
@@ -296,7 +300,7 @@ bool DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool do_upda
             par(std::begin(weighted_edges_v_to_u), std::end(weighted_edges_v_to_u), get_source_f,
                 cmp, processEdge);
 
-            return std::all_of(std::begin(insertion_result), std::end(insertion_result),
+            return std::all_of(std::begin(insertions_result), std::end(insertions_result),
                                [](bool const r) { return r; });
         }
 
