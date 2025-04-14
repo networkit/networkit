@@ -13,18 +13,21 @@
 
 namespace NetworKit {
 
-class PrimMST : public SpanningForest {
-
-    PrimMST(const Graph &G) : SpanningForest(G) {}
+class PrimMSF : public SpanningForest {
+public:
+    PrimMSF(const Graph &G) : SpanningForest(G) {}
 
     void run() override;
 
-    const Graph &getForest() {
+    edgeweight getTotalWeight() const {
         assureFinished();
-        return forest;
+        if (G->isWeighted())
+            return totalWeight;
+        return static_cast<edgeweight>(forest.numberOfEdges());
     }
 private:
     static constexpr edgeweight infiniteWeight = std::numeric_limits<edgeweight>::max();
+    edgeweight totalWeight = 0;
 };
 }
 #endif //NETWORKIT_GRAPH_ORIM_MST_H
