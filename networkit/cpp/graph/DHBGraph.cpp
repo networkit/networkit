@@ -276,8 +276,7 @@ bool DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool do_upda
         }
     };
 
-    par(std::begin(weighted_edges), std::end(weighted_edges), std::move(get_source_f),
-        std::move(cmp), std::move(processEdge));
+    par(std::begin(weighted_edges), std::end(weighted_edges), get_source_f, cmp, processEdge);
 
     bool const acc_insertion_result_directed = std::all_of(
         std::begin(insertion_result), std::end(insertion_result), [](bool const r) { return r; });
@@ -294,8 +293,8 @@ bool DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool do_upda
                 weighted_edges_v_to_u[i].weight = weighted_edges[i].weight;
             }
 
-            par(std::begin(weighted_edges_v_to_u), std::end(weighted_edges_v_to_u),
-                std::move(get_source_f), std::move(cmp), std::move(processEdge));
+            par(std::begin(weighted_edges_v_to_u), std::end(weighted_edges_v_to_u), get_source_f,
+                cmp, processEdge);
 
             return std::all_of(std::begin(insertion_result), std::end(insertion_result),
                                [](bool const r) { return r; });
