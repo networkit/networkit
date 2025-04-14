@@ -522,7 +522,7 @@ private:
 
     }; // class AttributeMap
 
-    bool addEdge(node u, node v, edgeweight ew, edgeid const id);
+    bool addEdge(node u, node v, edgeweight ew, edgeid id);
 
     AttributeMap<PerNode> nodeAttributeMap;
     AttributeMap<PerEdge> edgeAttributeMap;
