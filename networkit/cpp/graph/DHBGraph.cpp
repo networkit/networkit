@@ -238,7 +238,7 @@ bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew) {
 
 bool DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool do_update,
                         unsigned int num_threads) {
-    omp_set_num_threads(num_threads);
+    omp_set_num_threads(static_cast<int>(num_threads));
     assert(omp_get_max_threads() == num_threads);
 
     auto cmp = [](WeightedEdge const &a, WeightedEdge const &b) { return a.u < b.u; };
