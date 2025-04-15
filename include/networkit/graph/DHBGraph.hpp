@@ -1824,9 +1824,9 @@ public:
      * @param[in] do_update A boolean flag indicating whether existing edges should be updated. If
      * `true`, the function will update existing edges; if `false`, it will only insert new edges.
      *
-     * @return `true` if all insertions were successful, `false` otherwise.
+     * TODO: Document how to check for successful insertions.
      */
-    bool addEdges(std::vector<WeightedEdge> &&edges, bool do_update,
+    void addEdges(std::vector<WeightedEdge> &&edges, bool do_update,
                   unsigned int num_threads = std::thread::hardware_concurrency());
 
     /**
@@ -1839,7 +1839,7 @@ public:
      *
      * @return `true` if all edges were successfully added, `false` otherwise.
      */
-    bool addEdges(std::vector<Edge> &&edges, bool do_update,
+    void addEdges(std::vector<Edge> &&edges, bool do_update,
                   unsigned int num_threads = std::thread::hardware_concurrency());
 
     /**
