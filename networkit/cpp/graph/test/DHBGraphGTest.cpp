@@ -618,23 +618,28 @@ TEST_P(DHBGraphGTest, testAddEdges_large_graph) {
     }
 }
 
-TEST_P(DHBGraphGTest, testAddEdges_weighted_edge_do_update) {
+TEST_P(DHBGraphGTest, testAddEdges_weighted_edge_insert_twice_no_update) {
     DHBGraph G = createGraph(5);
     WeightedEdge e1(0, 2, defaultEdgeWeight);
     WeightedEdge e2(1, 2, defaultEdgeWeight);
     G.addEdge(0, 2, 5.0);
     G.addEdge(1, 2, 5.0);
+
+    NetworKit::edgeweight new_weight = 2.0f;
+    e1.weight = new_weight;
+    e2.weight = new_weight;
+
     std::vector<WeightedEdge> edges;
     edges.push_back(e1);
     edges.push_back(e2);
-    bool const insertion_result = G.addEdges(std::move(edges), true, 11);
+
+    G.addEdges(std::move(edges), false);
+
     ASSERT_TRUE(G.hasEdge(0, 2));
     ASSERT_TRUE(G.hasEdge(1, 2));
-    ASSERT_EQ(defaultEdgeWeight, G.weight(0, 2));
-    ASSERT_EQ(defaultEdgeWeight, G.weight(1, 2));
 
-    // Edges already exist, therefore new edges are not inserted.
-    ASSERT_FALSE(insertion_result);
+    ASSERT_FALSE(new_weight == G.weight(0, 2));
+    ASSERT_FALSE(new_weight == G.weight(1, 2));
 }
 
 TEST_P(DHBGraphGTest, testAddEdges_weighted_edge_no_update_failed) {
