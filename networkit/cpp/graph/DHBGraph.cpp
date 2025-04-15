@@ -236,25 +236,20 @@ bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew) {
     return addEdge(u, v, applied_edge_weight, id);
 }
 
-bool DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool do_update,
+void DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool const do_update,
                         unsigned int const num_threads) {
     omp_set_num_threads(static_cast<int>(num_threads));
     assert(omp_get_max_threads() == num_threads);
 
     auto cmp = [](WeightedEdge const &a, WeightedEdge const &b) { return a.u < b.u; };
-
-    std::vector<uint8_t> insertions_result(num_threads, 1u);
-    assert(insertions_result.size() == num_threads);
+    auto get_source_f = [](WeightedEdge const &e) { return e.u; };
 
     auto insert_edge_f = [&](WeightedEdge const &e) {
         EdgeData data{e.weight, 0};
-        auto [it, inserted] = m_dhb_graph.neighbors(e.u).insert(e.v, data);
+        auto [_, inserted] = m_dhb_graph.neighbors(e.u).insert(e.v, data);
         if (inserted) {
             storedNumberOfSelfLoops += uint64_t(e.u == e.v);
         }
-
-        insertions_result[omp_get_thread_num()] =
-            insertions_result[omp_get_thread_num()] && inserted;
     };
 
     auto insert_and_update_f = [&](WeightedEdge const &e) {
@@ -265,13 +260,12 @@ bool DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool do_upda
         } else {
             it->data() = EdgeData{e.weight, it->data().id};
         }
-
-        insertions_result[omp_get_thread_num()] =
-            insertions_result[omp_get_thread_num()] && inserted;
     };
 
-    auto get_source_f = [](WeightedEdge const &e) { return e.u; };
     dhb::BatchParallelizer<WeightedEdge> par;
+
+    // TODO: we should not differ between updating and not updating edges within
+    // the parallel for loop. This may slow down our inserts.
     auto processEdge = [&](WeightedEdge const &e) {
         if (do_update) {
             insert_and_update_f(e);
@@ -282,42 +276,30 @@ bool DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool do_upda
 
     par(std::begin(weighted_edges), std::end(weighted_edges), get_source_f, cmp, processEdge);
 
-    bool const acc_insertion_result_directed = std::all_of(
-        std::begin(insertions_result), std::end(insertions_result), [](bool const r) { return r; });
-
-    bool const acc_insertion_result_undirected = [&]() {
-        if (!isDirected()) {
-            std::vector<WeightedEdge> weighted_edges_v_to_u;
-            weighted_edges_v_to_u.resize(weighted_edges.size());
+    if (!isDirected()) {
+        std::vector<WeightedEdge> weighted_edges_v_to_u(weighted_edges.size());
 
 #pragma omp parallel for schedule(guided)
-            for (omp_index i = 0; i < static_cast<omp_index>(weighted_edges_v_to_u.size()); ++i) {
-                weighted_edges_v_to_u[i].u = weighted_edges[i].v;
-                weighted_edges_v_to_u[i].v = weighted_edges[i].u;
-                weighted_edges_v_to_u[i].weight = weighted_edges[i].weight;
-            }
-
-            par(std::begin(weighted_edges_v_to_u), std::end(weighted_edges_v_to_u), get_source_f,
-                cmp, processEdge);
-
-            return std::all_of(std::begin(insertions_result), std::end(insertions_result),
-                               [](bool const r) { return r; });
+        for (omp_index i = 0u; i < static_cast<omp_index>(weighted_edges_v_to_u.size()); ++i) {
+            weighted_edges_v_to_u[i].u = weighted_edges[i].v;
+            weighted_edges_v_to_u[i].v = weighted_edges[i].u;
+            weighted_edges_v_to_u[i].weight = weighted_edges[i].weight;
         }
 
-        return true;
-    }();
-
-    return acc_insertion_result_directed && acc_insertion_result_undirected;
+        par(std::begin(weighted_edges_v_to_u), std::end(weighted_edges_v_to_u), get_source_f, cmp,
+            processEdge);
+    }
 }
 
-bool DHBGraph::addEdges(std::vector<Edge> &&edges, bool do_update, unsigned int num_threads) {
+void DHBGraph::addEdges(std::vector<Edge> &&edges, bool do_update, unsigned int num_threads) {
     std::vector<WeightedEdge> weighted_edges;
     weighted_edges.reserve(edges.size());
     for (auto &edge : edges) {
         WeightedEdge w_edge = WeightedEdge{edge.u, edge.v, defaultEdgeWeight};
         weighted_edges.push_back(w_edge);
     }
-    return addEdges(std::move(weighted_edges), do_update, num_threads);
+
+    addEdges(std::move(weighted_edges), do_update, num_threads);
 }
 
 template <typename T>
