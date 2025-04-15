@@ -590,7 +590,7 @@ TEST_P(DHBGraphGTest, testAddEdges_weighted_edge_no_update) {
     edges.push_back(e1);
     edges.push_back(e2);
 
-    G.addEdges(std::move(edges), false, 2);
+    G.addEdges(std::move(edges), false);
 
     ASSERT_TRUE(G.hasEdge(0, 2));
     ASSERT_TRUE(G.hasEdge(1, 2));
@@ -651,7 +651,7 @@ TEST_P(DHBGraphGTest, testAddEdges_weighted_edge_no_update_failed) {
     std::vector<WeightedEdge> edges;
     edges.push_back(e1);
     edges.push_back(e2);
-    G.addEdges(std::move(edges), false, 11);
+    G.addEdges(std::move(edges), false);
     ASSERT_TRUE(G.hasEdge(0, 2));
     ASSERT_TRUE(G.hasEdge(1, 2));
 }
@@ -663,7 +663,7 @@ TEST_P(DHBGraphGTest, testAddEdges_edge_no_update) {
     std::vector<Edge> edges;
     edges.push_back(e1);
     edges.push_back(e2);
-    G.addEdges(std::move(edges), false, 10);
+    G.addEdges(std::move(edges), false);
     ASSERT_TRUE(G.hasEdge(0, 2));
     ASSERT_TRUE(G.hasEdge(1, 2));
 }
