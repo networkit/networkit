@@ -1026,6 +1026,70 @@ TEST_P(DHBGraphGTest, testTotalEdgeWeight) {
     }
 }
 
+/** Collections **/
+
+TEST_P(DHBGraphGTest, testNodeIterator) {
+    auto testForward = [](const DHBGraph &G) {
+        auto preIter = G.nodeRange().begin();
+        auto postIter = G.nodeRange().begin();
+
+        G.forNodes([&](const node u) {
+            ASSERT_EQ(*preIter, u);
+            ASSERT_EQ(*postIter, u);
+            ++preIter;
+            postIter++;
+        });
+
+        ASSERT_EQ(preIter, G.nodeRange().end());
+        ASSERT_EQ(postIter, G.nodeRange().end());
+
+        DHBGraph G1(G);
+
+        for (const auto u : DHBGraph::NodeRange(G)) {
+            ASSERT_TRUE(G1.hasNode(u));
+            G1.removeNode(u);
+        }
+
+        G1.forNodes([&](node u) { ASSERT_EQ(G1.degree(u), 0); });
+    };
+
+    auto testBackward = [](const DHBGraph &G) {
+        const std::vector<node> nodes(DHBGraph::NodeRange(G).begin(), DHBGraph::NodeRange(G).end());
+        std::vector<node> v;
+        G.forNodes([&](node u) { v.push_back(u); });
+
+        ASSERT_EQ(std::unordered_set<node>(nodes.begin(), nodes.end()).size(), nodes.size());
+        ASSERT_EQ(nodes.size(), G.numberOfNodes());
+
+        auto preIter = G.nodeRange().begin();
+        auto postIter = G.nodeRange().begin();
+        for (count i = 0; i < G.numberOfNodes(); ++i) {
+            ++preIter;
+            postIter++;
+        }
+
+        ASSERT_EQ(preIter, G.nodeRange().end());
+        ASSERT_EQ(postIter, G.nodeRange().end());
+        auto vecIter = nodes.rbegin();
+        while (vecIter != nodes.rend()) {
+            ASSERT_EQ(*vecIter, *(--preIter));
+            if (postIter != G.nodeRange().end()) {
+                ASSERT_NE(*vecIter, *(postIter--));
+            } else {
+                postIter--;
+            }
+            ASSERT_EQ(*vecIter, *postIter);
+            ++vecIter;
+        }
+
+        ASSERT_EQ(preIter, G.nodeRange().begin());
+        ASSERT_EQ(postIter, G.nodeRange().begin());
+    };
+
+    testForward(Ghouse);
+    testBackward(Ghouse);
+}
+
 TEST_P(DHBGraphGTest, testEdgeIterator) {
     auto testForward = [&](const DHBGraph &G) {
         DHBGraph G1(G);
