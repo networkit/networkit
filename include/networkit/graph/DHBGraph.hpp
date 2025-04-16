@@ -6,6 +6,7 @@
 #include <networkit/auxiliary/FunctionTraits.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/graph/Attributes.hpp>
 #include <networkit/graph/Edge.hpp>
 
 #include <omp.h>
@@ -99,433 +100,10 @@ class DHBGraph final {
     };
 
 private:
-    // base class for all node (and edge) attribute
-    // storages with attribute type info
-    // independent of the attribute type, holds bookkeeping info only:
-    // - attribute name
-    // - type info of derived (real storage holding) classes
-    // - which indices are valid
-    // - number of valid indices
-    // - the associated graph (who knows, which nodes/edges exist)
-    // - the validity of the whole storage (initially true, false after detach)
-    // all indexed accesses by NetworKit::index: synonym both for node and edgeid
-
-    class PerNode {
-    public:
-        static constexpr bool edges = false;
-    };
-    class PerEdge {
-    public:
-        static constexpr bool edges = true;
-    };
-
-    template <typename NodeOrEdge>
-    class AttributeStorageBase { // alias ASB
-    public:
-        AttributeStorageBase(const DHBGraph *graph, std::string name, std::type_index type)
-            : name{std::move(name)}, type{type}, theGraph{graph}, validStorage{true} {
-            checkPremise(); // node for PerNode, theGraph.hasEdgeIds() for PerEdges
-        }
-
-        void invalidateStorage() { validStorage = false; }
-
-        const std::string &getName() const noexcept { return name; }
-
-        std::type_index getType() const noexcept { return type; }
-
-        bool isValid(index n) const noexcept { return n < valid.size() && valid[n]; }
-
-        // Called by DHBGraph when node/edgeid n is deleted.
-        void invalidate(index n) {
-            if (isValid(n)) {
-                valid[n] = false;
-                --validElements;
-            }
-        }
-
-    protected:
-        void markValid(index n) {
-            indexOK(n); // specialized for node/edgeid
-            if (n >= valid.size())
-                valid.resize(n + 1);
-            if (!valid[n]) {
-                valid[n] = true;
-                ++validElements;
-            }
-        }
-
-        void checkIndex(index n) const {
-            indexOK(n);
-            if (!isValid(n)) {
-                throw std::runtime_error("Invalid attribute value");
-            }
-        }
-
-    private:
-        std::string name;
-        std::type_index type;
-        std::vector<bool> valid; // For each node/edgeid: whether attribute is set or not.
-
-    protected:
-        void indexOK(index n) const;
-        void checkPremise() const;
-        index validElements = 0;
-        const DHBGraph *theGraph;
-        bool validStorage; // Validity of the whole storage
-
-    }; // class AttributeStorageBase
-
-    template <typename NodeOrEdge>
-    using ASB = AttributeStorageBase<NodeOrEdge>;
-
-    template <typename NodeOrEdge, typename T, bool isConst>
-    class Attribute;
-
-    template <typename NodeOrEdge, template <typename> class Base, typename T>
-    class AttributeStorage : public Base<NodeOrEdge> {
-    public:
-        AttributeStorage(const DHBGraph *theGraph, std::string name)
-            : Base<NodeOrEdge>{theGraph, std::move(name), typeid(T)} {}
-
-        void resize(index i) {
-            if (i >= values.size())
-                values.resize(i + 1);
-        }
-
-        auto size() const noexcept { return this->validElements; }
-
-        void set(index i, T &&v) {
-            this->markValid(i);
-            resize(i);
-            values[i] = std::move(v);
-        }
-
-        // instead of returning an std::optional (C++17) we provide these
-        // C++14 options
-        // (1) throw an exception when invalid:
-        T get(index i) const { // may throw
-            this->checkIndex(i);
-            return values[i];
-        }
-
-        // (2) give default value when invalid:
-        T get(index i, T defaultT) const noexcept {
-            if (i >= values.size() || !this->isValid(i))
-                return defaultT;
-            return values[i];
-        }
-
-        friend Attribute<NodeOrEdge, T, true>;
-        friend Attribute<NodeOrEdge, T, false>;
-
-    private:
-        using Base<NodeOrEdge>::theGraph;
-        std::vector<T> values; // the real attribute storage
-    };                         // class AttributeStorage<NodeOrEdge, Base, T>
-
-    template <typename NodeOrEdge, typename T, bool isConst>
-    class Attribute {
-    public:
-        using AttributeStorage_type =
-            std::conditional_t<isConst, const AttributeStorage<NodeOrEdge, ASB, T>,
-                               AttributeStorage<NodeOrEdge, ASB, T>>;
-        class Iterator {
-        public:
-            // The value type of the attribute. Returned by
-            // operator*().
-            using value_type = T;
-
-            // Reference to the value_type, required by STL.
-            using reference = std::conditional_t<isConst, const value_type &, value_type &>;
-
-            // Pointer to the value_type, required by STL.
-            using pointer = std::conditional_t<isConst, const value_type *, value_type *>;
-
-            // STL iterator category.
-            using iterator_category = std::forward_iterator_tag;
-
-            // Signed integer type of the result of subtracting two pointers,
-            // required by STL.
-            using difference_type = ptrdiff_t;
-
-            Iterator() : storage{nullptr}, idx{0} {}
-            Iterator(AttributeStorage_type *storage) : storage{storage}, idx{0} {
-                if (storage) {
-                    nextValid();
-                }
-            }
-
-            Iterator &nextValid() {
-                while (storage && !storage->isValid(idx)) {
-                    if (idx >= storage->values.size()) {
-                        storage = nullptr;
-                        return *this;
-                    }
-                    ++idx;
-                }
-                return *this;
-            }
-
-            Iterator &operator++() {
-                if (!storage) {
-                    throw std::runtime_error("Invalid attribute iterator");
-                }
-                ++idx;
-                return nextValid();
-            }
-
-            auto operator*() const {
-                if (!storage) {
-                    throw std::runtime_error("Invalid attribute iterator");
-                }
-                return std::make_pair(idx, storage->values[idx]);
-            }
-
-            bool operator==(Iterator const &iter) const noexcept {
-                if (storage == nullptr && iter.storage == nullptr) {
-                    return true;
-                }
-                return storage == iter.storage && idx == iter.idx;
-            }
-
-            bool operator!=(Iterator const &iter) const noexcept { return !(*this == iter); }
-
-        private:
-            AttributeStorage_type *storage;
-            index idx;
-        }; // class Iterator
-
-    private:
-        class IndexProxy {
-            // a helper class for distinguished read and write on an indexed
-            // attribute
-            // operator[] on an attribute yields an IndexProxy holding
-            // location and index of access
-            //    - casting an IndexProxy to the attribute type reads the value
-            //    - assigning to it (operator=) writes the value
-        public:
-            IndexProxy(AttributeStorage_type *storage, index idx) : storage{storage}, idx{idx} {}
-
-            // reading at idx
-            operator T() const {
-                storage->checkIndex(idx);
-                return storage->values[idx];
-            }
-
-            // writing at idx
-            template <bool ic = isConst>
-            std::enable_if_t<!ic, T> &operator=(T &&other) {
-                storage->set(idx, std::move(other));
-                return storage->values[idx];
-            }
-
-        private:
-            AttributeStorage_type *storage;
-            index idx;
-        }; // class IndexProxy
-    public:
-        explicit Attribute(std::shared_ptr<AttributeStorage_type> ownedStorage = nullptr)
-            : ownedStorage{ownedStorage}, valid{ownedStorage != nullptr} {}
-
-        Attribute(Attribute const &other) : ownedStorage{other.ownedStorage}, valid{other.valid} {}
-
-        template <bool ic = isConst, std::enable_if_t<ic, int> = 0>
-        Attribute(Attribute<NodeOrEdge, T, false> const &other)
-            : ownedStorage{other.ownedStorage}, valid{other.valid} {}
-
-        Attribute &operator=(Attribute other) {
-            this->swap(other);
-            return *this;
-        }
-
-        void swap(Attribute &other) {
-            std::swap(ownedStorage, other.ownedStorage);
-            std::swap(valid, other.valid);
-        }
-
-        Attribute(Attribute &&other) noexcept
-            : ownedStorage{std::move(other.ownedStorage)}, valid{other.valid} {
-            other.valid = false;
-        }
-
-        template <bool ic = isConst, std::enable_if_t<ic, int> = 0>
-        Attribute(Attribute<NodeOrEdge, T, false> &&other) noexcept
-            : ownedStorage{std::move(other.ownedStorage)}, valid{other.valid} {
-            other.valid = false;
-        }
-
-        auto begin() const {
-            checkAttribute();
-            return Iterator(ownedStorage.get()).nextValid();
-        }
-
-        auto end() const { return Iterator(nullptr); }
-
-        auto size() const noexcept { return ownedStorage->size(); }
-
-        template <bool ic = isConst>
-        std::enable_if_t<!ic> set(index i, T v) {
-            checkAttribute();
-            ownedStorage->set(i, std::move(v));
-        }
-
-        template <bool ic = isConst>
-        std::enable_if_t<!ic> set2(node u, node v, T t) {
-            static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
-            set(ownedStorage->theGraph->edgeId(u, v), t);
-        }
-
-        auto get(index i) const {
-            checkAttribute();
-            return ownedStorage->get(i);
-        }
-
-        auto get2(node u, node v) const {
-            static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
-            return get(ownedStorage->theGraph->edgeId(u, v));
-        }
-
-        auto get(index i, T defaultT) const {
-            checkAttribute();
-            return ownedStorage->get(i, defaultT);
-        }
-
-        auto get2(node u, node v, T defaultT) const {
-            static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
-            return get(ownedStorage->theGraph->edgeId(u, v), defaultT);
-        }
-
-        IndexProxy operator[](index i) const {
-            checkAttribute();
-            return IndexProxy(ownedStorage.get(), i);
-        }
-
-        IndexProxy operator()(node u, node v) const {
-            static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
-            checkAttribute();
-            return IndexProxy(ownedStorage.get(), ownedStorage->theGraph->edgeId(u, v));
-        }
-
-        void checkAttribute() const {
-            if (!ownedStorage->validStorage)
-                throw std::runtime_error("Invalid attribute");
-        }
-
-        auto getName() const {
-            checkAttribute();
-            return ownedStorage->getName();
-        }
-
-        void write(std::string const &filename) const {
-            std::ofstream out(filename);
-            if (!out)
-                ERROR("cannot open ", filename, " for writing");
-
-            for (auto it = begin(); it != end(); ++it) {
-                auto pair = *it;
-                auto n = pair.first;  // node/edgeid
-                auto v = pair.second; // value
-                out << n << "\t" << v << "\n";
-            }
-            out.close();
-        }
-
-        template <bool ic = isConst>
-        std::enable_if_t<!ic> read(const std::string &filename) {
-            std::ifstream in(filename);
-            if (!in) {
-                ERROR("cannot open ", filename, " for reading");
-            }
-            index n; // node/edgeid
-            T v;     // value
-            std::string line;
-            while (std::getline(in, line)) {
-                std::istringstream istring(line);
-                if constexpr (std::is_same_v<T, std::string>) {
-                    istring >> n >> std::ws;
-                    std::getline(istring, v);
-                } else {
-                    istring >> n >> v;
-                }
-                set(n, v);
-            }
-        }
-
-    private:
-        std::shared_ptr<AttributeStorage_type> ownedStorage;
-        bool valid;
-    }; // class Attribute
-
-    template <typename NodeOrEdge>
-    class AttributeMap {
-        friend DHBGraph;
-        const DHBGraph *theGraph;
-
-    public:
-        std::unordered_map<std::string, std::shared_ptr<ASB<NodeOrEdge>>> attrMap;
-
-        AttributeMap(const DHBGraph *g) : theGraph{g} {}
-
-        auto find(std::string const &name) {
-            auto it = attrMap.find(name);
-            if (it == attrMap.end()) {
-                throw std::runtime_error("No such attribute");
-            }
-            return it;
-        }
-
-        auto find(std::string const &name) const {
-            auto it = attrMap.find(name);
-            if (it == attrMap.end()) {
-                throw std::runtime_error("No such attribute");
-            }
-            return it;
-        }
-
-        template <typename T>
-        auto attach(const std::string &name) {
-            auto ownedPtr =
-                std::make_shared<AttributeStorage<NodeOrEdge, ASB, T>>(theGraph, std::string{name});
-            auto insertResult = attrMap.emplace(ownedPtr->getName(), ownedPtr);
-            auto success = insertResult.second;
-            if (!success) {
-                throw std::runtime_error("Attribute with same name already exists");
-            }
-            return Attribute<NodeOrEdge, T, false>{ownedPtr};
-        }
-
-        void detach(const std::string &name) {
-            auto it = find(name);
-            auto storage = it->second.get();
-            storage->invalidateStorage();
-            it->second.reset();
-            attrMap.erase(name);
-        }
-
-        template <typename T>
-        auto get(const std::string &name) {
-            auto it = find(name);
-            if (it->second.get()->getType() != typeid(T))
-                throw std::runtime_error("Type mismatch in Attributes().get()");
-            return Attribute<NodeOrEdge, T, false>{
-                std::static_pointer_cast<AttributeStorage<NodeOrEdge, ASB, T>>(it->second)};
-        }
-
-        template <typename T>
-        auto get(const std::string &name) const {
-            auto it = find(name);
-            if (it->second.get()->getType() != typeid(T))
-                throw std::runtime_error("Type mismatch in Attributes().get()");
-            return Attribute<NodeOrEdge, T, true>{
-                std::static_pointer_cast<const AttributeStorage<NodeOrEdge, ASB, T>>(it->second)};
-        }
-
-    }; // class AttributeMap
-
     bool addEdge(node u, node v, edgeweight ew, edgeid id);
 
-    AttributeMap<PerNode> nodeAttributeMap;
-    AttributeMap<PerEdge> edgeAttributeMap;
+    AttributeMap<PerNode, DHBGraph> nodeAttributeMap;
+    AttributeMap<PerEdge, DHBGraph> edgeAttributeMap;
     dhb::Matrix<EdgeData> m_dhb_graph;
 
 public:
@@ -607,13 +185,13 @@ public:
         edgeAttributes().detach(name);
     }
 
-    using NodeIntAttribute = Attribute<PerNode, int, false>;
-    using NodeDoubleAttribute = Attribute<PerNode, double, false>;
-    using NodeStringAttribute = Attribute<PerNode, std::string, false>;
+    using NodeIntAttribute = Attribute<PerNode, DHBGraph, int, false>;
+    using NodeDoubleAttribute = Attribute<PerNode, DHBGraph, double, false>;
+    using NodeStringAttribute = Attribute<PerNode, DHBGraph, std::string, false>;
 
-    using EdgeIntAttribute = Attribute<PerEdge, int, false>;
-    using EdgeDoubleAttribute = Attribute<PerEdge, double, false>;
-    using EdgeStringAttribute = Attribute<PerEdge, std::string, false>;
+    using EdgeIntAttribute = Attribute<PerEdge, DHBGraph, int, false>;
+    using EdgeDoubleAttribute = Attribute<PerEdge, DHBGraph, double, false>;
+    using EdgeStringAttribute = Attribute<PerEdge, DHBGraph, std::string, false>;
 
 private:
     /**
@@ -1581,19 +1159,87 @@ public:
      * Create a graph as copy of @a other.
      * @param other The graph to copy.
      */
-    DHBGraph(const DHBGraph &other) = default;
+    DHBGraph(const DHBGraph &other)
+        : n(other.n), m(other.m), storedNumberOfSelfLoops(other.storedNumberOfSelfLoops),
+          z(other.z), omega(other.omega), weighted(other.weighted), directed(other.directed),
+          edgesIndexed(other.edgesIndexed), deletedID(other.deletedID), exists(other.exists),
+          outEdges(other.outEdges), inEdgeWeights(other.inEdgeWeights),
+          outEdgeWeights(other.outEdgeWeights), outEdgeIds(other.outEdgeIds),
+          // call special constructors to copy attribute maps
+          nodeAttributeMap(other.nodeAttributeMap, this),
+          edgeAttributeMap(other.edgeAttributeMap, this), m_dhb_graph(other.m_dhb_graph){};
 
     /** Default move constructor */
-    DHBGraph(DHBGraph &&other) noexcept = default;
+    DHBGraph(DHBGraph &&other) noexcept
+        : n(other.n), m(other.m), storedNumberOfSelfLoops(other.storedNumberOfSelfLoops),
+          z(other.z), omega(other.omega), weighted(other.weighted), directed(other.directed),
+          edgesIndexed(other.edgesIndexed), deletedID(other.deletedID),
+          exists(std::move(other.exists)), outEdges(std::move(other.outEdges)),
+          inEdgeWeights(std::move(other.inEdgeWeights)),
+          outEdgeWeights(std::move(other.outEdgeWeights)), outEdgeIds(std::move(other.outEdgeIds)),
+          nodeAttributeMap(std::move(other.nodeAttributeMap)),
+          edgeAttributeMap(std::move(other.edgeAttributeMap)), m_dhb_graph(other.m_dhb_graph) {
+        // attributes: set graph pointer to this new graph
+        nodeAttributeMap.theGraph = this;
+        edgeAttributeMap.theGraph = this;
+    };
 
     /** Default destructor */
     ~DHBGraph() = default;
 
     /** Default move assignment operator */
-    DHBGraph &operator=(DHBGraph &&other) noexcept = default;
+    DHBGraph &operator=(DHBGraph &&other) noexcept {
+        std::swap(n, other.n);
+        std::swap(m, other.m);
+        std::swap(storedNumberOfSelfLoops, other.storedNumberOfSelfLoops);
+        std::swap(z, other.z);
+        std::swap(omega, other.omega);
+        std::swap(weighted, other.weighted);
+        std::swap(directed, other.directed);
+        std::swap(edgesIndexed, other.edgesIndexed);
+        std::swap(exists, other.exists);
+        std::swap(outEdges, other.outEdges);
+        std::swap(inEdgeWeights, other.inEdgeWeights);
+        std::swap(outEdgeWeights, other.outEdgeWeights);
+        std::swap(outEdgeIds, other.outEdgeIds);
+        std::swap(deletedID, other.deletedID);
+
+        // attributes: set graph pointer to this new graph
+        std::swap(nodeAttributeMap, other.nodeAttributeMap);
+        std::swap(edgeAttributeMap, other.edgeAttributeMap);
+        nodeAttributeMap.theGraph = this;
+        edgeAttributeMap.theGraph = this;
+
+        std::swap(m_dhb_graph, other.m_dhb_graph);
+
+        return *this;
+    };
 
     /** Default copy assignment operator */
-    DHBGraph &operator=(const DHBGraph &other) = default;
+    DHBGraph &operator=(const DHBGraph &other) {
+        n = other.n;
+        m = other.m;
+        storedNumberOfSelfLoops = other.storedNumberOfSelfLoops;
+        z = other.z;
+        omega = other.omega;
+        weighted = other.weighted;
+        directed = other.directed;
+        edgesIndexed = other.edgesIndexed;
+        exists = other.exists;
+        outEdges = other.outEdges;
+        inEdgeWeights = other.inEdgeWeights;
+        outEdgeWeights = other.outEdgeWeights;
+        outEdgeIds = other.outEdgeIds;
+        deletedID = other.deletedID;
+
+        // call special constructors to copy attribute maps
+        nodeAttributeMap = AttributeMap(other.nodeAttributeMap, this);
+        edgeAttributeMap = AttributeMap(other.edgeAttributeMap, this);
+
+        m_dhb_graph = other.m_dhb_graph;
+
+        return *this;
+    };
 
     /** EDGE IDS **/
 

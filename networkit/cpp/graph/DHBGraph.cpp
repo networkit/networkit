@@ -537,33 +537,4 @@ edgeweight DHBGraph::totalEdgeWeight() const noexcept {
         return numberOfEdges() * defaultEdgeWeight;
 }
 
-/* ATTRIBUTE PREMISE AND INDEX CHECKS */
-
-template <>
-void DHBGraph::ASB<DHBGraph::PerNode>::checkPremise() const {
-    // nothing
-}
-
-template <>
-void DHBGraph::ASB<DHBGraph::PerEdge>::checkPremise() const {
-    if (!theGraph->hasEdgeIds()) {
-        throw std::runtime_error("Edges must be indexed");
-    }
-}
-
-template <>
-void DHBGraph::ASB<DHBGraph::PerNode>::indexOK(index n) const {
-    if (!theGraph->hasNode(n)) {
-        throw std::runtime_error("This node does not exist");
-    }
-}
-
-template <>
-void DHBGraph::ASB<DHBGraph::PerEdge>::indexOK(index n) const {
-    auto uv = theGraph->edgeById(n);
-    if (!theGraph->hasEdge(uv.first, uv.second)) {
-        throw std::runtime_error("This edgeId does not exist");
-    }
-}
-
 } // namespace NetworKit
