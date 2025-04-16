@@ -1027,21 +1027,118 @@ TEST_P(DHBGraphGTest, testTotalEdgeWeight) {
 }
 
 TEST_P(DHBGraphGTest, testEdgeIterator) {
-    std::vector<Edge> edges;
-    this->Ghouse.forEdges([&](node u, node v) { edges.push_back(Edge{u, v}); });
-    // Insert back edges
-    size_t size_without_back_edges = edges.size();
-    edges.reserve(size_without_back_edges * 2);
-    for (size_t i = 0; i < size_without_back_edges; ++i) {
-        edges.push_back(Edge{edges[i].v, edges[i].u});
-    }
+    auto testForward = [&](const DHBGraph &G) {
+        DHBGraph G1(G);
+        auto preIter = G.edgeRange().begin();
+        auto postIter = G.edgeRange().begin();
 
-    for (DHBGraph::EdgeIterator it = this->Ghouse.edgeRange().begin();
-         it != this->Ghouse.edgeRange().end(); ++it) {
-        Edge tmp_edge{(*it).u, (*it).v};
-        auto found_it = std::find(std::begin(edges), std::end(edges), tmp_edge);
-        EXPECT_TRUE(found_it != std::end(edges));
-    }
+        G.forEdges([&](node, node) {
+            ASSERT_EQ(preIter, postIter);
+            const auto edge = *preIter;
+            ASSERT_TRUE(G.hasEdge(edge.u, edge.v));
+            G1.removeEdge(edge.u, edge.v);
+            ++preIter;
+            postIter++;
+        });
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+        ASSERT_EQ(preIter, G.edgeRange().end());
+        ASSERT_EQ(postIter, G.edgeRange().end());
+
+        G1 = G;
+        for (const auto edge : DHBGraph::EdgeRange(G)) {
+            ASSERT_TRUE(G1.hasEdge(edge.u, edge.v));
+            G1.removeEdge(edge.u, edge.v);
+        }
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+    };
+
+    auto testForwardWeighted = [&](const DHBGraph &G) {
+        DHBGraph G1(G);
+        auto preIter = G.edgeWeightRange().begin();
+        auto postIter = preIter;
+
+        G.forEdges([&](node, node) {
+            ASSERT_EQ(preIter, postIter);
+
+            const auto edge = *preIter;
+            ASSERT_TRUE(G.hasEdge(edge.u, edge.v));
+            ASSERT_DOUBLE_EQ(G.weight(edge.u, edge.v), edge.weight);
+            G1.removeEdge(edge.u, edge.v);
+            ++preIter;
+            postIter++;
+        });
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+        ASSERT_EQ(preIter, G.edgeWeightRange().end());
+        ASSERT_EQ(postIter, G.edgeWeightRange().end());
+
+        G1 = G;
+        for (const auto edge : DHBGraph::EdgeWeightRange(G)) {
+            ASSERT_TRUE(G1.hasEdge(edge.u, edge.v));
+            ASSERT_DOUBLE_EQ(G1.weight(edge.u, edge.v), edge.weight);
+            G1.removeEdge(edge.u, edge.v);
+        }
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+    };
+
+    auto testBackward = [&](const DHBGraph &G) {
+        DHBGraph G1(G);
+        auto preIter = G.edgeRange().begin();
+        auto postIter = preIter;
+        G.forEdges([&](node, node) {
+            ++preIter;
+            postIter++;
+        });
+
+        ASSERT_EQ(preIter, G.edgeRange().end());
+        ASSERT_EQ(postIter, G.edgeRange().end());
+
+        G.forEdges([&](node, node) {
+            --preIter;
+            postIter--;
+            ASSERT_EQ(preIter, postIter);
+            const auto edge = *preIter;
+            ASSERT_TRUE(G.hasEdge(edge.u, edge.v));
+            G1.removeEdge(edge.u, edge.v);
+        });
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+    };
+
+    auto testBackwardWeighted = [&](const DHBGraph &G) {
+        DHBGraph G1(G);
+        auto preIter = G.edgeWeightRange().begin();
+        auto postIter = preIter;
+        G.forEdges([&](node, node) {
+            ++preIter;
+            postIter++;
+        });
+
+        G.forEdges([&](node, node) {
+            --preIter;
+            postIter--;
+            ASSERT_EQ(preIter, postIter);
+
+            const auto edge = *preIter;
+            ASSERT_TRUE(G.hasEdge(edge.u, edge.v));
+            ASSERT_DOUBLE_EQ(G.weight(edge.u, edge.v), edge.weight);
+            G1.removeEdge(edge.u, edge.v);
+        });
+
+        ASSERT_EQ(G1.numberOfEdges(), 0);
+    };
+
+    auto doTests = [&](const DHBGraph &G) {
+        testForward(G);
+        testForwardWeighted(G);
+        testBackward(G);
+        testBackwardWeighted(G);
+    };
+
+    doTests(Ghouse);
 }
 
 TEST_P(DHBGraphGTest, testNeighborsIterators) {
