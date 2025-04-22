@@ -258,7 +258,7 @@ jobs:
 
   linux-build-min-support:
     name: "Linux (${{ matrix.compiler }}, CPython 3.10): full"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         compiler: ['gcc-10', 'clang-10']
