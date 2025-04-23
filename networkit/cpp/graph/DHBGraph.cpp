@@ -200,6 +200,7 @@ bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew, edgeid c
         if (edgesIndexed) {
             omega++;
         }
+        m++;
         return true;
     }
     return false;
@@ -307,6 +308,7 @@ bool DHBGraph::removeEdge(node u, node v) {
         if (is_loop) {
             storedNumberOfSelfLoops--;
         }
+        m--;
         return true;
     }
     return false;
@@ -314,6 +316,9 @@ bool DHBGraph::removeEdge(node u, node v) {
 
 void DHBGraph::removeAllEdges() {
     m_dhb_graph = dhb::Matrix<EdgeData>(m_dhb_graph.vertices_count());
+    m = 0;
+    storedNumberOfSelfLoops = 0;
+    omega = 0;
 }
 
 void DHBGraph::removeSelfLoops() {
@@ -330,19 +335,7 @@ void DHBGraph::removeSelfLoops() {
 }
 
 count DHBGraph::numberOfEdges() const noexcept {
-    // DHB stores only directed edges. Thus, if the count of edges for an undirected graph
-    // is requested we must divide the count of edges coming from the DHB object by 2.
-
-    // DHB stores the edge only once if a self loop is added, because it does not allow duplicate
-    // edges. Therefore storedNumberOfSelfLoops should be added to count for counting edges
-    // correctly.
-    uint64_t count = m_dhb_graph.edges_count();
-    if (directed) {
-        return count;
-    }
-    count += storedNumberOfSelfLoops;
-    assert(count % 2 == 0);
-    return count >> 1;
+    return m;
 }
 
 index DHBGraph::upperNodeIdBound() const noexcept {
