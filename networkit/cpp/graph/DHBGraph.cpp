@@ -11,12 +11,9 @@ namespace NetworKit {
 /** CONSTRUCTORS **/
 
 DHBGraph::DHBGraph(count n, bool weighted, bool directed, bool edgesIndexed)
-    : n(n), m(0), storedNumberOfSelfLoops(0), z(n), omega(0),
-
-      weighted(weighted),         // indicates whether the graph is weighted or not
-      directed(directed),         // indicates whether the graph is directed or not
+    : weighted(weighted), directed(directed), m(0), storedNumberOfSelfLoops(0), omega(0),
       edgesIndexed(edgesIndexed), // edges are not indexed by default
-      exists(n, true), nodeAttributeMap(this), edgeAttributeMap(this) {
+      nodeAttributeMap(this), edgeAttributeMap(this) {
 
     m_dhb_graph = dhb::Matrix<EdgeData>(n);
 }
