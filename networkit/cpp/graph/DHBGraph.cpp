@@ -16,14 +16,7 @@ DHBGraph::DHBGraph(count n, bool weighted, bool directed, bool edgesIndexed)
       weighted(weighted),         // indicates whether the graph is weighted or not
       directed(directed),         // indicates whether the graph is directed or not
       edgesIndexed(edgesIndexed), // edges are not indexed by default
-
-      exists(n, true),
-
-      /* for directed graphs outEdges stores an adjacency list only considering
-      outgoing edges, for undirected graphs outEdges stores the adjacency list of
-      undirected edges*/
-      outEdges(n), // inEdgeWeights(weighted && directed ? n : 0), outEdgeWeights(weighted ? n : 0),
-      nodeAttributeMap(this), edgeAttributeMap(this) {
+      exists(n, true), nodeAttributeMap(this), edgeAttributeMap(this) {
 
     m_dhb_graph = dhb::Matrix<EdgeData>(n);
 }
@@ -35,17 +28,6 @@ DHBGraph::DHBGraph(std::initializer_list<WeightedEdge> edges) : DHBGraph(0, true
     for (const auto &weighted_edge : edges) {
         m_dhb_graph.insert(weighted_edge.u, weighted_edge.v, EdgeData{weighted_edge.weight, 0});
     }
-}
-/** PRIVATE HELPERS **/
-
-index DHBGraph::indexInOutEdgeArray(node u, node v) const {
-    for (index i = 0; i < outEdges[u].size(); i++) {
-        node x = outEdges[u][i];
-        if (x == v) {
-            return i;
-        }
-    }
-    return none;
 }
 
 /** EDGE IDS **/
