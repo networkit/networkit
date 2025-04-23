@@ -75,25 +75,9 @@ class DHBGraph final {
     //!< true if edge removals should maintain sorted edge ids
     bool maintainSortedEdges = false;
 
-    //!< saves the ID of the most recently removed edge (if exists)
-    edgeid deletedID;
-
     // per node data
     //!< exists[v] is true if node v has not been removed from the graph
     std::vector<bool> exists;
-
-    //!< (outgoing) edges, for each edge (u, v) v is saved in outEdges[u] and
-    //!< for undirected also u in outEdges[v]
-    std::vector<std::vector<node>> outEdges;
-
-    // //!< only used for directed graphs, same schema as inEdges
-    // std::vector<std::vector<edgeweight>> inEdgeWeights;
-    // //!< same schema (and same order!) as outEdges
-    // std::vector<std::vector<edgeweight>> outEdgeWeights;
-
-    //!< same schema (and same order!) as outEdges
-    std::vector<std::vector<edgeid>> outEdgeIds;
-
     struct EdgeData {
         edgeweight weight;
         edgeid id;
@@ -194,11 +178,6 @@ public:
     using EdgeStringAttribute = Attribute<PerEdge, DHBGraph, std::string, false>;
 
 private:
-    /**
-     * Returns the index of node v in the array of outgoing edges of node u.
-     */
-    index indexInOutEdgeArray(node u, node v) const;
-
     /**
      * Computes the weighted in/out degree of node @a u. If graph is directed and @a inDegree is
      * true, the function runs in O(n) since it needs to iterate over all edges.
@@ -1067,9 +1046,6 @@ public:
           edgesIndexed(edgesIndexed), // edges are not indexed by default
           exists(G.exists),
 
-          // let the following be empty for the start, we fill them later
-          outEdges(0), outEdgeIds(0),
-
           // empty node attribute map as last member for this graph
           nodeAttributeMap(this), edgeAttributeMap(this), m_dhb_graph(G.m_dhb_graph) {
         // G - The original
@@ -1115,8 +1091,7 @@ public:
     DHBGraph(const DHBGraph &other)
         : n(other.n), m(other.m), storedNumberOfSelfLoops(other.storedNumberOfSelfLoops),
           z(other.z), omega(other.omega), weighted(other.weighted), directed(other.directed),
-          edgesIndexed(other.edgesIndexed), deletedID(other.deletedID), exists(other.exists),
-          outEdges(other.outEdges), outEdgeIds(other.outEdgeIds),
+          edgesIndexed(other.edgesIndexed), exists(other.exists),
           // call special constructors to copy attribute maps
           nodeAttributeMap(other.nodeAttributeMap, this),
           edgeAttributeMap(other.edgeAttributeMap, this), m_dhb_graph(other.m_dhb_graph){};
@@ -1125,9 +1100,7 @@ public:
     DHBGraph(DHBGraph &&other) noexcept
         : n(other.n), m(other.m), storedNumberOfSelfLoops(other.storedNumberOfSelfLoops),
           z(other.z), omega(other.omega), weighted(other.weighted), directed(other.directed),
-          edgesIndexed(other.edgesIndexed), deletedID(other.deletedID),
-          exists(std::move(other.exists)), outEdges(std::move(other.outEdges)),
-          outEdgeIds(std::move(other.outEdgeIds)),
+          edgesIndexed(other.edgesIndexed), exists(std::move(other.exists)),
           nodeAttributeMap(std::move(other.nodeAttributeMap)),
           edgeAttributeMap(std::move(other.edgeAttributeMap)), m_dhb_graph(other.m_dhb_graph) {
         // attributes: set graph pointer to this new graph
@@ -1149,9 +1122,6 @@ public:
         std::swap(directed, other.directed);
         std::swap(edgesIndexed, other.edgesIndexed);
         std::swap(exists, other.exists);
-        std::swap(outEdges, other.outEdges);
-        std::swap(outEdgeIds, other.outEdgeIds);
-        std::swap(deletedID, other.deletedID);
 
         // attributes: set graph pointer to this new graph
         std::swap(nodeAttributeMap, other.nodeAttributeMap);
@@ -1175,9 +1145,6 @@ public:
         directed = other.directed;
         edgesIndexed = other.edgesIndexed;
         exists = other.exists;
-        outEdges = other.outEdges;
-        outEdgeIds = other.outEdgeIds;
-        deletedID = other.deletedID;
 
         // call special constructors to copy attribute maps
         nodeAttributeMap = AttributeMap(other.nodeAttributeMap, this);
