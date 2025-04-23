@@ -163,11 +163,7 @@ TEST_P(DHBGraphGTest, testCopyConstructor) {
     ASSERT_EQ(this->Ghouse.numberOfNodes(), G.numberOfNodes());
 
     // copying from undirected graph to directed graph
-    if (!isDirected() && G.isDirected()) {
-        ASSERT_EQ(this->Ghouse.numberOfEdges(), G.numberOfEdges() * 2);
-    } else {
-        ASSERT_EQ(this->Ghouse.numberOfEdges(), G.numberOfEdges());
-    }
+    ASSERT_EQ(this->Ghouse.numberOfEdges(), G.numberOfEdges());
 
     ASSERT_TRUE(GW.isWeighted());
     ASSERT_FALSE(GW.isDirected());
@@ -178,20 +174,12 @@ TEST_P(DHBGraphGTest, testCopyConstructor) {
     ASSERT_EQ(this->Ghouse.numberOfNodes(), D.numberOfNodes());
 
     // if orig is not directed, but copy to a directed graph, edge number should double.
-    if (!this->Ghouse.isDirected()) {
-        ASSERT_EQ(this->Ghouse.numberOfEdges() * 2, D.numberOfEdges());
-    } else {
-        ASSERT_EQ(this->Ghouse.numberOfEdges(), D.numberOfEdges());
-    }
+    ASSERT_EQ(this->Ghouse.numberOfEdges(), D.numberOfEdges());
 
     ASSERT_TRUE(DW.isWeighted());
     ASSERT_TRUE(DW.isDirected());
     ASSERT_EQ(this->Ghouse.numberOfNodes(), DW.numberOfNodes());
-    if (!this->Ghouse.isDirected()) {
-        ASSERT_EQ(this->Ghouse.numberOfEdges() * 2, DW.numberOfEdges());
-    } else {
-        ASSERT_EQ(this->Ghouse.numberOfEdges(), DW.numberOfEdges());
-    }
+    ASSERT_EQ(this->Ghouse.numberOfEdges(), DW.numberOfEdges());
     this->Ghouse.forNodes([&](node v) {
         count d = this->Ghouse.degree(v);
         // count dUndirected = isDirected() ? d + this->Ghouse.degreeIn(v) : d;

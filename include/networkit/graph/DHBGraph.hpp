@@ -709,6 +709,7 @@ public:
         }
 
         if (copy_directed_graph_to_undirected) { // insert bidirectional edges if they don't exist
+            m = 0;
             for (dhb::Vertex u = 0u; u < m_dhb_graph.vertices_count(); ++u) {
                 auto n = m_dhb_graph.neighbors(u);
                 for (auto v = n.begin(); v != n.end(); ++v) {
