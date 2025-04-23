@@ -6,6 +6,7 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/auxiliary/Parallelism.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 
 #include <networkit/io/METISGraphReader.hpp>
@@ -810,7 +811,7 @@ TEST_P(DHBGraphGTest, testRemoveAdjacentEdges_selfloop_outEdge) {
 }
 
 TEST_P(DHBGraphGTest, testRemoveSelfLoops) {
-
+    Aux::setNumberOfThreads(1);
     DHBGraph G = this->Ghouse;
     G.addEdge(0, 0);
     G.addEdge(1, 1);
