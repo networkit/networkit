@@ -9,7 +9,6 @@
 #include <networkit/graph/Attributes.hpp>
 #include <networkit/graph/Edge.hpp>
 #include <networkit/graph/EdgeIterators.hpp>
-#include <networkit/graph/NeighborIterators.hpp>
 #include <networkit/graph/NodeIterators.hpp>
 
 #include <omp.h>
