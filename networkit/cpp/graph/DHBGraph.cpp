@@ -22,7 +22,7 @@ DHBGraph::DHBGraph(count n, bool weighted, bool directed, bool edgesIndexed)
       /* for directed graphs outEdges stores an adjacency list only considering
       outgoing edges, for undirected graphs outEdges stores the adjacency list of
       undirected edges*/
-      outEdges(n), inEdgeWeights(weighted && directed ? n : 0), outEdgeWeights(weighted ? n : 0),
+      outEdges(n), // inEdgeWeights(weighted && directed ? n : 0), outEdgeWeights(weighted ? n : 0),
       nodeAttributeMap(this), edgeAttributeMap(this) {
 
     m_dhb_graph = dhb::Matrix<EdgeData>(n);
