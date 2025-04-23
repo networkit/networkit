@@ -8,6 +8,9 @@
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/graph/Attributes.hpp>
 #include <networkit/graph/Edge.hpp>
+#include <networkit/graph/EdgeIterators.hpp>
+#include <networkit/graph/NeighborIterators.hpp>
+#include <networkit/graph/NodeIterators.hpp>
 
 #include <omp.h>
 #include <dhb/dynamic_hashed_blocks.h>
@@ -186,7 +189,8 @@ private:
      * neighbors.
      */
     bool ithNeighborExists(node u, index i) const {
-        return hasNode(u) && i < m_dhb_graph.neighbors(u).degree();
+        assert(u < upperNodeIdBound());
+        return i < m_dhb_graph.neighbors(u).degree();
     }
 
     /**
@@ -195,7 +199,7 @@ private:
      * @param node u Node.
      */
     void removePartialOutEdges(Unsafe, node u) {
-        assert(hasNode(u));
+        assert(u < upperNodeIdBound());
         m_dhb_graph.neighbors(u).clear();
     }
 
@@ -205,7 +209,7 @@ private:
      * @param node v Node.
      */
     void removePartialInEdges(Unsafe, node v) {
-        assert(hasNode(v));
+        assert(v < upperNodeIdBound());
 
         auto remove_edge = [&](dhb::Vertex const u) {
             if (m_dhb_graph.neighbors(u).exists(v)) {
@@ -459,363 +463,19 @@ private:
     }
 
 public:
-    /**
-     * Class to iterate over the nodes of a graph.
-     */
-    class NodeIterator {
-
-        const DHBGraph *G;
-        node u;
-
-    public:
-        // The value type of the nodes (i.e. nodes). Returned by
-        // operator*().
-        using value_type = node;
-
-        // Reference to the value_type, required by STL.
-        using reference = value_type &;
-
-        // Pointer to the value_type, required by STL.
-        using pointer = value_type *;
-
-        // STL iterator category.
-        using iterator_category = std::forward_iterator_tag;
-
-        // Signed integer type of the result of subtracting two pointers,
-        // required by STL.
-        using difference_type = ptrdiff_t;
-
-        // Own type.
-        using self = NodeIterator;
-
-        NodeIterator(const DHBGraph *G, node u) : G(G), u(u) {
-            if (!G->hasNode(u) && u < G->upperNodeIdBound()) {
-                ++(*this);
-            }
-        }
-
-        /**
-         * @brief WARNING: This constructor is required for Python and should not be used as the
-         * iterator is not initialized.
-         */
-        NodeIterator() : G(nullptr) {}
-
-        ~NodeIterator() = default;
-
-        NodeIterator &operator++() {
-            assert(u < G->upperNodeIdBound());
-            do {
-                ++u;
-            } while (!(G->hasNode(u) || u >= G->upperNodeIdBound()));
-            return *this;
-        }
-
-        NodeIterator operator++(int) {
-            const auto tmp = *this;
-            ++(*this);
-            return tmp;
-        }
-
-        NodeIterator operator--() {
-            assert(u);
-            do {
-                --u;
-            } while (!G->hasNode(u));
-            return *this;
-        }
-
-        NodeIterator operator--(int) {
-            const auto tmp = *this;
-            --(*this);
-            return tmp;
-        }
-
-        bool operator==(const NodeIterator &rhs) const noexcept { return u == rhs.u; }
-
-        bool operator!=(const NodeIterator &rhs) const noexcept { return !(*this == rhs); }
-
-        node operator*() const noexcept {
-            assert(u < G->upperNodeIdBound());
-            return u;
-        }
-    };
-
-    /**
-     * Wrapper class to iterate over a range of the nodes of a graph.
-     */
-    class NodeRange {
-
-        const DHBGraph *G;
-
-    public:
-        NodeRange(const DHBGraph &G) : G(&G) {}
-
-        NodeRange() : G(nullptr){};
-
-        ~NodeRange() = default;
-
-        NodeIterator begin() const noexcept {
-            assert(G);
-            return NodeIterator(G, node{0});
-        }
-
-        NodeIterator end() const noexcept {
-            assert(G);
-            return NodeIterator(G, G->upperNodeIdBound());
-        }
-    };
-
-    // Necessary for friendship with EdgeIteratorBase.
-    class EdgeIterator;
-    class EdgeWeightIterator;
-
-    class EdgeIteratorBase {
-        friend class EdgeIterator;
-        friend class EdgeWeightIterator;
-        DHBGraph const *const G;
-        NodeIterator nodeIter;
-        index i;
-
-        bool validEdge() const noexcept {
-            return G->isDirected()
-                   || (*nodeIter <= G->m_dhb_graph.neighbors(*nodeIter)[i].vertex());
-        }
-
-        void nextEdge() {
-            do {
-                if (++i >= G->degree(*nodeIter)) {
-                    i = 0;
-                    do {
-                        assert(nodeIter != G->nodeRange().end());
-                        ++nodeIter;
-                        if (nodeIter == G->nodeRange().end()) {
-                            return;
-                        }
-                    } while (!G->degree(*nodeIter));
-                }
-            } while (!validEdge());
-        }
-
-        void prevEdge() {
-            do {
-                if (!i) {
-                    do {
-                        assert(nodeIter != G->nodeRange().begin());
-                        --nodeIter;
-                    } while (!G->degree(*nodeIter));
-
-                    i = G->degree(*nodeIter);
-                }
-                --i;
-            } while (!validEdge());
-        }
-
-        EdgeIteratorBase(const DHBGraph *G, NodeIterator nodeIter)
-            : G(G), nodeIter(nodeIter), i(index{0}) {
-            if (nodeIter != G->nodeRange().end() && !G->degree(*nodeIter)) {
-                nextEdge();
-            }
-        }
-
-        /**
-         * @brief WARNING: This constructor is required for Python and should not be used as the
-         * iterator is not initialized.
-         */
-        EdgeIteratorBase() : G(nullptr) {}
-
-        virtual ~EdgeIteratorBase() = default;
-
-        bool operator==(const EdgeIteratorBase &rhs) const noexcept {
-            return nodeIter == rhs.nodeIter && i == rhs.i;
-        }
-
-        bool operator!=(const EdgeIteratorBase &rhs) const noexcept { return !(*this == rhs); }
-    };
-
-    /**
-     * Class to iterate over the edges of the graph. If the graph is undirected, operator*()
-     * returns the edges (u, v) s.t. u <= v.
-     */
-    class EdgeIterator : public EdgeIteratorBase {
-
-    public:
-        // The value type of the edges (i.e. a pair). Returned by operator*().
-        using value_type = Edge;
-
-        // Reference to the value_type, required by STL.
-        using reference = value_type &;
-
-        // Pointer to the value_type, required by STL.
-        using pointer = value_type *;
-
-        // STL iterator category.
-        using iterator_category = std::forward_iterator_tag;
-
-        // Signed integer type of the result of subtracting two pointers,
-        // required by STL.
-        using difference_type = ptrdiff_t;
-
-        // Own type.
-        using self = EdgeIterator;
-
-        EdgeIterator(const DHBGraph *G, NodeIterator nodeIter) : EdgeIteratorBase(G, nodeIter) {}
-
-        EdgeIterator() : EdgeIteratorBase() {}
-
-        bool operator==(const EdgeIterator &rhs) const noexcept {
-            return this->EdgeIteratorBase::operator==(static_cast<EdgeIteratorBase>(rhs));
-        }
-
-        bool operator!=(EdgeIterator const &rhs) const noexcept { return !(*this == rhs); }
-
-        Edge operator*() const noexcept {
-            assert(nodeIter != G->nodeRange().end());
-            return Edge(*nodeIter, G->m_dhb_graph.neighbors(*nodeIter)[i].vertex());
-        }
-
-        EdgeIterator &operator++() {
-            nextEdge();
-            return *this;
-        }
-
-        EdgeIterator operator++(int) {
-            const auto tmp = *this;
-            ++(*this);
-            return tmp;
-        }
-
-        EdgeIterator operator--() {
-            prevEdge();
-            return *this;
-        }
-
-        EdgeIterator operator--(int) {
-            const auto tmp = *this;
-            --(*this);
-            return tmp;
-        }
-    };
-
-    /**
-     * Class to iterate over the edges of the graph and their weights. If the graph is undirected,
-     * operator*() returns a WeightedEdge struct with u <= v.
-     */
-    class EdgeWeightIterator : public EdgeIteratorBase {
-    public:
-        // The value type of the edges and their weights (i.e. WeightedEdge). Returned by
-        // operator*().
-        using value_type = WeightedEdge;
-
-        // Reference to the value_type, required by STL.
-        using reference = value_type &;
-
-        // Pointer to the value_type, required by STL.
-        using pointer = value_type *;
-
-        // STL iterator category.
-        using iterator_category = std::forward_iterator_tag;
-
-        // Signed integer type of the result of subtracting two pointers,
-        // required by STL.
-        using difference_type = ptrdiff_t;
-
-        // Own type.
-        using self = EdgeWeightIterator;
-
-        EdgeWeightIterator(const DHBGraph *G, NodeIterator nodeIter)
-            : EdgeIteratorBase(G, nodeIter) {}
-
-        /**
-         * @brief WARNING: This constructor is required for Python and should not be used as the
-         * iterator is not initialized.
-         */
-        EdgeWeightIterator() : EdgeIteratorBase() {}
-
-        bool operator==(const EdgeWeightIterator &rhs) const noexcept {
-            return this->EdgeIteratorBase::operator==(static_cast<EdgeIteratorBase>(rhs));
-        }
-
-        bool operator!=(const EdgeWeightIterator &rhs) const noexcept { return !(*this == rhs); }
-
-        EdgeWeightIterator &operator++() {
-            nextEdge();
-            return *this;
-        }
-
-        EdgeWeightIterator operator++(int) {
-            const auto tmp = *this;
-            ++(*this);
-            return tmp;
-        }
-
-        EdgeWeightIterator operator--() {
-            prevEdge();
-            return *this;
-        }
-
-        EdgeWeightIterator operator--(int) {
-            const auto tmp = *this;
-            --(*this);
-            return tmp;
-        }
-
-        WeightedEdge operator*() const noexcept {
-            assert(nodeIter != G->nodeRange().end());
-            return WeightedEdge(
-                *nodeIter, G->m_dhb_graph.neighbors(*nodeIter)[i].vertex(),
-                G->isWeighted() ? G->m_dhb_graph.neighbors(*nodeIter)[i].data().weight : 1);
-        }
-    };
-
-    /**
-     * Wrapper class to iterate over a range of the edges of a graph.
-     */
-    class EdgeRange {
-
-        const DHBGraph *G;
-
-    public:
-        EdgeRange(const DHBGraph &G) : G(&G) {}
-
-        EdgeRange() : G(nullptr){};
-
-        ~EdgeRange() = default;
-
-        EdgeIterator begin() const {
-            assert(G);
-            return EdgeIterator(G, G->nodeRange().begin());
-        }
-
-        EdgeIterator end() const {
-            assert(G);
-            return EdgeIterator(G, G->nodeRange().end());
-        }
-    };
-
-    /**
-     * Wrapper class to iterate over a range of the edges of a graph and their weights.
-     */
-    class EdgeWeightRange {
-
-        const DHBGraph *G;
-
-    public:
-        EdgeWeightRange(const DHBGraph &G) : G(&G) {}
-
-        EdgeWeightRange() : G(nullptr){};
-
-        ~EdgeWeightRange() = default;
-
-        EdgeWeightIterator begin() const {
-            assert(G);
-            return EdgeWeightIterator(G, G->nodeRange().begin());
-        }
-
-        EdgeWeightIterator end() const {
-            assert(G);
-            return EdgeWeightIterator(G, G->nodeRange().end());
-        }
-    };
+    // For support of API: NetworKit::DHBGraph::NodeIterator
+    using NodeIterator = NodeIteratorBase<DHBGraph>;
+    // For support of API: NetworKit::DHBGraph::NodeRange
+    using NodeRange = NodeRangeBase<DHBGraph>;
+
+    // For support of API: NetworKit::DHBGraph:EdgeIterator
+    using EdgeIterator = EdgeTypeIterator<DHBGraph, Edge>;
+    // For support of API: NetworKit::DHBGraph:EdgeWeightIterator
+    using EdgeWeightIterator = EdgeTypeIterator<DHBGraph, WeightedEdge>;
+    // For support of API: NetworKit::DHBGraph:EdgeRange
+    using EdgeRange = EdgeTypeRange<DHBGraph, Edge>;
+    // For support of API: NetworKit::DHBGraph:EdgeWeightRange
+    using EdgeWeightRange = EdgeTypeRange<DHBGraph, WeightedEdge>;
 
     /**
      * Class to iterate over the in/out neighbors of a node.
@@ -1561,7 +1221,7 @@ public:
      * @return Iterator range over the neighbors of @a u.
      */
     NeighborRange<false> neighborRange(node u) const {
-        assert(m_dhb_graph.vertices_count() > u);
+        assert(u < upperNodeIdBound());
         return NeighborRange<false>(*this, u);
     }
 
@@ -1575,7 +1235,7 @@ public:
      */
     NeighborWeightRange<false> weightNeighborRange(node u) const {
         assert(isWeighted());
-        assert(m_dhb_graph.vertices_count() > u);
+        assert(u < upperNodeIdBound());
         return NeighborWeightRange<false>(*this, u);
     }
 
@@ -1922,7 +1582,7 @@ inline bool DHBGraph::useEdgeInIteration<false>(node u, node v) const {
 
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 void DHBGraph::forOutEdgesOfImpl(node u, L handle) const {
-    assert(u < m_dhb_graph.vertices_count());
+    assert(u < upperNodeIdBound());
     auto neighbors = m_dhb_graph.neighbors(u);
 
     for (size_t i = 0; i < neighbors.degree(); ++i) {
@@ -1934,7 +1594,7 @@ void DHBGraph::forOutEdgesOfImpl(node u, L handle) const {
 
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 void DHBGraph::forOutEdgesOfImplParallel(node u, L handle) const {
-    assert(u < m_dhb_graph.vertices_count());
+    assert(u < upperNodeIdBound());
     auto neighbors = m_dhb_graph.neighbors(u);
 
 #pragma omp parallel for schedule(guided)
@@ -1947,7 +1607,7 @@ void DHBGraph::forOutEdgesOfImplParallel(node u, L handle) const {
 
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 void DHBGraph::forInEdgesOfImpl(node u, L handle) const {
-    assert(u < m_dhb_graph.vertices_count());
+    assert(u < upperNodeIdBound());
     if (graphIsDirected) {
         for (dhb::Vertex from = 0; from < m_dhb_graph.vertices_count(); ++from) {
             for (auto it = neighborRange(from).begin(); it != neighborRange(from).end(); ++it) {
@@ -1966,7 +1626,7 @@ void DHBGraph::forInEdgesOfImpl(node u, L handle) const {
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void DHBGraph::forInEdgesOfImplParallel(node u, L handle) const {
 
-    assert(u < m_dhb_graph.vertices_count());
+    assert(u < upperNodeIdBound());
     if (graphIsDirected) {
 #pragma omp parallel for schedule(guided)
         for (omp_index from = 0; from < static_cast<omp_index>(m_dhb_graph.vertices_count());
