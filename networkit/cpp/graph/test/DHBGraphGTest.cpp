@@ -810,6 +810,7 @@ TEST_P(DHBGraphGTest, testRemoveAdjacentEdges_selfloop_outEdge) {
 }
 
 TEST_P(DHBGraphGTest, testRemoveSelfLoops) {
+
     DHBGraph G = this->Ghouse;
     G.addEdge(0, 0);
     G.addEdge(1, 1);
@@ -1412,7 +1413,7 @@ TEST_P(DHBGraphGTest, testForNodes) {
 
 TEST_P(DHBGraphGTest, testParallelForNodes) {
     std::vector<node> visited(Ghouse.upperNodeIdBound());
-    this->Ghouse.forNodesParallel([&](node u) { visited[u] = u; });
+    this->Ghouse.parallelForNodes([&](node u) { visited[u] = u; });
 
     Aux::Parallel::sort(visited.begin(), visited.end());
 

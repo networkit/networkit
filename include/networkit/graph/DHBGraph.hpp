@@ -1318,7 +1318,7 @@ public:
      * @param handle Takes parameter <code>(node)</code>.
      */
     template <typename L>
-    void forNodesParallel(L handle) const;
+    void parallelForNodes(L handle) const;
 
     /** Iterate over all nodes of the graph and call @a handle (lambda
      * closure) as long as @a condition remains true. This allows for breaking
@@ -1499,7 +1499,7 @@ void DHBGraph::forNodes(L handle) const {
 }
 
 template <typename L>
-void DHBGraph::forNodesParallel(L handle) const {
+void DHBGraph::parallelForNodes(L handle) const {
 #pragma omp parallel for schedule(guided)
     for (omp_index v = 0; v < static_cast<omp_index>(m_dhb_graph.vertices_count()); ++v) {
         handle(static_cast<node>(v));

@@ -317,7 +317,7 @@ void DHBGraph::removeAllEdges() {
 }
 
 void DHBGraph::removeSelfLoops() {
-    forNodesParallel([&](node const u) {
+    parallelForNodes([&](node const u) {
         auto isSelfLoop = [u](node const v) { return u == v; };
         removeAdjacentEdges(u, isSelfLoop);
         if (isDirected()) {
