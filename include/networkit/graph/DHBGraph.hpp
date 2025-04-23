@@ -48,36 +48,22 @@ class CurveballMaterialization;
  */
 class DHBGraph final {
 
-    // graph attributes
-    //!< current number of nodes
-    count n;
-    //!< current number of edges
-    count m;
-
-    //!< current number of self loops, edges which have the same origin and
-    //!< target
-    count storedNumberOfSelfLoops;
-
-    //!< current upper bound of node ids, z will be the id of the next node
-    node z;
-    //!< current upper bound of edge ids, will be the id of the next edge
-    edgeid omega;
-
+    // DHBGraph properties
     //!< true if the graph is weighted, false otherwise
     bool weighted;
     //!< true if the graph is directed, false otherwise
     bool directed;
+
+    // Edge properties
+    //!< current number of edges
+    count m;
+    //!< current number of self loops, edges which have the same origin and
+    //!< target
+    count storedNumberOfSelfLoops;
+    //!< current upper bound of edge ids, will be the id of the next edge
+    edgeid omega;
     //!< true if edge ids have been assigned
     bool edgesIndexed;
-
-    //!< true if edge removals should maintain compact edge ids
-    bool maintainCompactEdges = false;
-    //!< true if edge removals should maintain sorted edge ids
-    bool maintainSortedEdges = false;
-
-    // per node data
-    //!< exists[v] is true if node v has not been removed from the graph
-    std::vector<bool> exists;
     struct EdgeData {
         edgeweight weight;
         edgeid id;
@@ -1041,10 +1027,9 @@ public:
 
     template <class EdgeMerger = std::plus<edgeweight>>
     DHBGraph(DHBGraph const &G, bool weighted, bool directed, bool edgesIndexed = false)
-        : n(G.n), m(G.m), storedNumberOfSelfLoops(G.storedNumberOfSelfLoops), z(G.z),
+        : m(G.m), storedNumberOfSelfLoops(G.storedNumberOfSelfLoops),
           omega(edgesIndexed ? G.omega : 0), weighted(weighted), directed(directed),
           edgesIndexed(edgesIndexed), // edges are not indexed by default
-          exists(G.exists),
 
           // empty node attribute map as last member for this graph
           nodeAttributeMap(this), edgeAttributeMap(this), m_dhb_graph(G.m_dhb_graph) {
@@ -1089,19 +1074,16 @@ public:
      * @param other The graph to copy.
      */
     DHBGraph(const DHBGraph &other)
-        : n(other.n), m(other.m), storedNumberOfSelfLoops(other.storedNumberOfSelfLoops),
-          z(other.z), omega(other.omega), weighted(other.weighted), directed(other.directed),
-          edgesIndexed(other.edgesIndexed), exists(other.exists),
-          // call special constructors to copy attribute maps
-          nodeAttributeMap(other.nodeAttributeMap, this),
+        : weighted(other.weighted), directed(other.directed), m(other.m),
+          storedNumberOfSelfLoops(other.storedNumberOfSelfLoops), omega(other.omega),
+          edgesIndexed(other.edgesIndexed), nodeAttributeMap(other.nodeAttributeMap, this),
           edgeAttributeMap(other.edgeAttributeMap, this), m_dhb_graph(other.m_dhb_graph){};
 
     /** Default move constructor */
     DHBGraph(DHBGraph &&other) noexcept
-        : n(other.n), m(other.m), storedNumberOfSelfLoops(other.storedNumberOfSelfLoops),
-          z(other.z), omega(other.omega), weighted(other.weighted), directed(other.directed),
-          edgesIndexed(other.edgesIndexed), exists(std::move(other.exists)),
-          nodeAttributeMap(std::move(other.nodeAttributeMap)),
+        : weighted(other.weighted), directed(other.directed), m(other.m),
+          storedNumberOfSelfLoops(other.storedNumberOfSelfLoops), omega(other.omega),
+          edgesIndexed(other.edgesIndexed), nodeAttributeMap(std::move(other.nodeAttributeMap)),
           edgeAttributeMap(std::move(other.edgeAttributeMap)), m_dhb_graph(other.m_dhb_graph) {
         // attributes: set graph pointer to this new graph
         nodeAttributeMap.theGraph = this;
@@ -1113,15 +1095,12 @@ public:
 
     /** Default move assignment operator */
     DHBGraph &operator=(DHBGraph &&other) noexcept {
-        std::swap(n, other.n);
-        std::swap(m, other.m);
-        std::swap(storedNumberOfSelfLoops, other.storedNumberOfSelfLoops);
-        std::swap(z, other.z);
-        std::swap(omega, other.omega);
         std::swap(weighted, other.weighted);
         std::swap(directed, other.directed);
+        std::swap(m, other.m);
+        std::swap(storedNumberOfSelfLoops, other.storedNumberOfSelfLoops);
+        std::swap(omega, other.omega);
         std::swap(edgesIndexed, other.edgesIndexed);
-        std::swap(exists, other.exists);
 
         // attributes: set graph pointer to this new graph
         std::swap(nodeAttributeMap, other.nodeAttributeMap);
@@ -1136,15 +1115,12 @@ public:
 
     /** Default copy assignment operator */
     DHBGraph &operator=(const DHBGraph &other) {
-        n = other.n;
-        m = other.m;
-        storedNumberOfSelfLoops = other.storedNumberOfSelfLoops;
-        z = other.z;
-        omega = other.omega;
         weighted = other.weighted;
         directed = other.directed;
+        m = other.m;
+        storedNumberOfSelfLoops = other.storedNumberOfSelfLoops;
+        omega = other.omega;
         edgesIndexed = other.edgesIndexed;
-        exists = other.exists;
 
         // call special constructors to copy attribute maps
         nodeAttributeMap = AttributeMap(other.nodeAttributeMap, this);
@@ -1403,32 +1379,6 @@ public:
                   unsigned int num_threads = std::thread::hardware_concurrency());
 
     /**
-     * If set to true, the ingoing and outgoing adjacency vectors will
-     * automatically be updated to maintain a sorting (if it existed before) by performing up to n-1
-     * swaps. If the user plans to remove multiple edges, better set it to false and call
-     * sortEdges() afterwards to avoid redundant swaps. Default = true.
-     */
-    void setKeepEdgesSorted(bool sorted = true) { maintainSortedEdges = sorted; }
-
-    /**
-     * If set to true, the EdgeIDs will automatically be adjusted,
-     * so that no gaps in between IDs exist. If the user plans to remove multiple edges, better set
-     * it to false and call indexEdges(force=true) afterwards to avoid redundant re-indexing.
-     * Default = true.
-     */
-    void setMaintainCompactEdges(bool compact = true) { maintainCompactEdges = compact; }
-
-    /**
-     * Returns true if edges are currently being sorted when removeEdge() is called.
-     */
-    bool getKeepEdgesSorted() const noexcept { return maintainSortedEdges; }
-
-    /*
-     * Returns true if edges are currently being compacted when removeEdge() is called.
-     */
-    bool getMaintainCompactEdges() const noexcept { return maintainCompactEdges; }
-
-    /**
      *
      * Removes the undirected edge {@a u,@a v}.
      * @param u Endpoint of edge.
@@ -1611,7 +1561,7 @@ public:
      * @return Iterator range over the neighbors of @a u.
      */
     NeighborRange<false> neighborRange(node u) const {
-        assert(exists[u]);
+        assert(m_dhb_graph.vertices_count() > u);
         return NeighborRange<false>(*this, u);
     }
 
@@ -1625,7 +1575,7 @@ public:
      */
     NeighborWeightRange<false> weightNeighborRange(node u) const {
         assert(isWeighted());
-        assert(exists[u]);
+        assert(m_dhb_graph.vertices_count() > u);
         return NeighborWeightRange<false>(*this, u);
     }
 
@@ -1922,10 +1872,8 @@ template <typename L>
 void DHBGraph::balancedParallelForNodes(L handle) const {
 // TODO: define min block size (and test it!)
 #pragma omp parallel for schedule(guided)
-    for (omp_index v = 0; v < static_cast<omp_index>(z); ++v) {
-        if (exists[v]) {
-            handle(v);
-        }
+    for (omp_index v = 0; v < static_cast<omp_index>(m_dhb_graph.vertices_count()); ++v) {
+        handle(v);
     }
 }
 
