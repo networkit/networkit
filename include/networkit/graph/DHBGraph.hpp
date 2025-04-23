@@ -86,10 +86,10 @@ class DHBGraph final {
     //!< for undirected also u in outEdges[v]
     std::vector<std::vector<node>> outEdges;
 
-    //!< only used for directed graphs, same schema as inEdges
-    std::vector<std::vector<edgeweight>> inEdgeWeights;
-    //!< same schema (and same order!) as outEdges
-    std::vector<std::vector<edgeweight>> outEdgeWeights;
+    // //!< only used for directed graphs, same schema as inEdges
+    // std::vector<std::vector<edgeweight>> inEdgeWeights;
+    // //!< same schema (and same order!) as outEdges
+    // std::vector<std::vector<edgeweight>> outEdgeWeights;
 
     //!< same schema (and same order!) as outEdges
     std::vector<std::vector<edgeid>> outEdgeIds;
@@ -195,13 +195,6 @@ public:
 
 private:
     /**
-     * Returns the index of node u in the array of incoming edges of node v.
-     * (for directed graphs inEdges is searched, while for indirected outEdges
-     * is searched, which gives the same result as indexInOutEdgeArray).
-     */
-    index indexInInEdgeArray(node v, node u) const;
-
-    /**
      * Returns the index of node v in the array of outgoing edges of node u.
      */
     index indexInOutEdgeArray(node u, node v) const;
@@ -232,20 +225,13 @@ private:
     }
 
     /**
-     * Removes out-going edges from node @u. If the graph is weighted and/or has edge ids, weights
-     * and/or edge ids will also be removed.
+     * Removes out-going edges from node @u.
      *
      * @param node u Node.
      */
     void removePartialOutEdges(Unsafe, node u) {
         assert(hasNode(u));
-        outEdges[u].clear();
-        if (isWeighted()) {
-            outEdgeWeights[u].clear();
-        }
-        if (hasEdgeIds()) {
-            outEdgeIds[u].clear();
-        }
+        m_dhb_graph.neighbors(u).clear();
     }
 
     /**
@@ -264,39 +250,6 @@ private:
 
         m_dhb_graph.for_nodes(std::move(remove_edge));
     }
-
-    /**
-     * Returns the edge weight of the outgoing edge of index i in the outgoing
-     * edges of node u
-     * @param u The node
-     * @param i The index
-     * @return The weight of the outgoing edge or defaultEdgeWeight if the graph
-     * is unweighted
-     */
-    template <bool hasWeights>
-    inline edgeweight getOutEdgeWeight(node u, index i) const;
-
-    /**
-     * Returns the edge weight of the incoming edge of index i in the incoming
-     * edges of node u
-     *
-     * @param u The node
-     * @param i The index in the incoming edge array
-     * @return The weight of the incoming edge
-     */
-    template <bool hasWeights>
-    inline edgeweight getInEdgeWeight(node u, index i) const;
-
-    /**
-     * Returns the edge id of the edge of index i in the outgoing edges of node
-     * u
-     *
-     * @param u The node
-     * @param i The index in the outgoing edges
-     * @return The edge id
-     */
-    template <bool graphHasEdgeIds>
-    inline edgeid getOutEdgeId(node u, index i) const;
 
     /**
      * @brief Returns if the edge (u, v) shall be used in the iteration of all
@@ -1115,7 +1068,7 @@ public:
           exists(G.exists),
 
           // let the following be empty for the start, we fill them later
-          outEdges(0), inEdgeWeights(0), outEdgeWeights(0), outEdgeIds(0),
+          outEdges(0), outEdgeIds(0),
 
           // empty node attribute map as last member for this graph
           nodeAttributeMap(this), edgeAttributeMap(this), m_dhb_graph(G.m_dhb_graph) {
@@ -1163,8 +1116,7 @@ public:
         : n(other.n), m(other.m), storedNumberOfSelfLoops(other.storedNumberOfSelfLoops),
           z(other.z), omega(other.omega), weighted(other.weighted), directed(other.directed),
           edgesIndexed(other.edgesIndexed), deletedID(other.deletedID), exists(other.exists),
-          outEdges(other.outEdges), inEdgeWeights(other.inEdgeWeights),
-          outEdgeWeights(other.outEdgeWeights), outEdgeIds(other.outEdgeIds),
+          outEdges(other.outEdges), outEdgeIds(other.outEdgeIds),
           // call special constructors to copy attribute maps
           nodeAttributeMap(other.nodeAttributeMap, this),
           edgeAttributeMap(other.edgeAttributeMap, this), m_dhb_graph(other.m_dhb_graph){};
@@ -1175,8 +1127,7 @@ public:
           z(other.z), omega(other.omega), weighted(other.weighted), directed(other.directed),
           edgesIndexed(other.edgesIndexed), deletedID(other.deletedID),
           exists(std::move(other.exists)), outEdges(std::move(other.outEdges)),
-          inEdgeWeights(std::move(other.inEdgeWeights)),
-          outEdgeWeights(std::move(other.outEdgeWeights)), outEdgeIds(std::move(other.outEdgeIds)),
+          outEdgeIds(std::move(other.outEdgeIds)),
           nodeAttributeMap(std::move(other.nodeAttributeMap)),
           edgeAttributeMap(std::move(other.edgeAttributeMap)), m_dhb_graph(other.m_dhb_graph) {
         // attributes: set graph pointer to this new graph
@@ -1199,8 +1150,6 @@ public:
         std::swap(edgesIndexed, other.edgesIndexed);
         std::swap(exists, other.exists);
         std::swap(outEdges, other.outEdges);
-        std::swap(inEdgeWeights, other.inEdgeWeights);
-        std::swap(outEdgeWeights, other.outEdgeWeights);
         std::swap(outEdgeIds, other.outEdgeIds);
         std::swap(deletedID, other.deletedID);
 
@@ -1227,8 +1176,6 @@ public:
         edgesIndexed = other.edgesIndexed;
         exists = other.exists;
         outEdges = other.outEdges;
-        inEdgeWeights = other.inEdgeWeights;
-        outEdgeWeights = other.outEdgeWeights;
         outEdgeIds = other.outEdgeIds;
         deletedID = other.deletedID;
 
@@ -2037,45 +1984,7 @@ void DHBGraph::forNodePairsParallel(L handle) const {
 
 /* EDGE ITERATORS */
 
-/* HELPERS */
-
-template <typename T>
-void erase(node u, index idx, std::vector<std::vector<T>> &vec);
-// implementation for weighted == true
-template <bool hasWeights>
-inline edgeweight DHBGraph::getOutEdgeWeight(node u, index i) const {
-    return outEdgeWeights[u][i];
-}
-
-// implementation for weighted == false
-template <>
-inline edgeweight DHBGraph::getOutEdgeWeight<false>(node, index) const {
-    return defaultEdgeWeight;
-}
-
-// implementation for weighted == true
-template <bool hasWeights>
-inline edgeweight DHBGraph::getInEdgeWeight(node u, index i) const {
-    return inEdgeWeights[u][i];
-}
-
-// implementation for weighted == false
-template <>
-inline edgeweight DHBGraph::getInEdgeWeight<false>(node, index) const {
-    return defaultEdgeWeight;
-}
-
-// implementation for hasEdgeIds == true
-template <bool graphHasEdgeIds>
-inline edgeid DHBGraph::getOutEdgeId(node u, index i) const {
-    return outEdgeIds[u][i];
-}
-
-// implementation for hasEdgeIds == false
-template <>
-inline edgeid DHBGraph::getOutEdgeId<false>(node, index) const {
-    return none;
-}
+// /* HELPERS */
 
 // implementation for graphIsDirected == true
 template <bool graphIsDirected>
