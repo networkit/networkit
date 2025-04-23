@@ -686,8 +686,8 @@ public:
 
     template <class EdgeMerger = std::plus<edgeweight>>
     DHBGraph(DHBGraph const &G, bool weighted, bool directed, bool edgesIndexed = false)
-        : m(G.m), storedNumberOfSelfLoops(G.storedNumberOfSelfLoops),
-          omega(edgesIndexed ? G.omega : 0), weighted(weighted), directed(directed),
+        : weighted(weighted), directed(directed), m(G.m),
+          storedNumberOfSelfLoops(G.storedNumberOfSelfLoops), omega(edgesIndexed ? G.omega : 0),
           edgesIndexed(edgesIndexed), // edges are not indexed by default
 
           // empty node attribute map as last member for this graph
