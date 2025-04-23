@@ -688,12 +688,8 @@ public:
     DHBGraph(DHBGraph const &G, bool weighted, bool directed, bool edgesIndexed = false)
         : weighted(weighted), directed(directed), m(G.m),
           storedNumberOfSelfLoops(G.storedNumberOfSelfLoops), omega(edgesIndexed ? G.omega : 0),
-          edgesIndexed(edgesIndexed), // edges are not indexed by default
-
-          // empty node attribute map as last member for this graph
-          nodeAttributeMap(this), edgeAttributeMap(this), m_dhb_graph(G.m_dhb_graph) {
-        // G - The original
-        // this - The copy
+          edgesIndexed(edgesIndexed), nodeAttributeMap(G.nodeAttributeMap, this),
+          edgeAttributeMap(G.edgeAttributeMap, this), m_dhb_graph(G.m_dhb_graph) {
 
         bool const copy_weighted_graph_to_unweighted = G.isWeighted() && !weighted;
         bool const copy_directed_graph_to_undirected = G.isDirected() && !directed;
@@ -708,16 +704,10 @@ public:
             }
         }
 
-        if (copy_directed_graph_to_undirected) { // insert bidirectional edges if they don't exist
-            m = 0;
-            for (dhb::Vertex u = 0u; u < m_dhb_graph.vertices_count(); ++u) {
-                auto n = m_dhb_graph.neighbors(u);
-                for (auto v = n.begin(); v != n.end(); ++v) {
-                    if (!hasEdge(v->vertex(), u)) {
-                        addEdge(v->vertex(), u, v->data().weight);
-                    }
-                }
-            }
+        if (copy_directed_graph_to_undirected) {
+            // insert bidirectional edges if they don't exist
+            removeAllEdges();
+            G.forEdges([&](node u, node v, edgeweight ew, edgeid id) { addEdge(u, v, ew, id); });
         }
     }
 
