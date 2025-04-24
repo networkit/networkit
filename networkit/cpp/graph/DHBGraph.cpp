@@ -23,6 +23,10 @@ DHBGraph::DHBGraph(std::initializer_list<WeightedEdge> edges) : DHBGraph(0, true
 
     m_dhb_graph = dhb::Matrix<EdgeData>();
     for (const auto &weighted_edge : edges) {
+        auto maxId = std::max(weighted_edge.u, weighted_edge.v);
+        if (maxId >= m_dhb_graph.vertices_count()) {
+            m_dhb_graph.resize(maxId + 1);
+        }
         addEdge(weighted_edge.u, weighted_edge.v, weighted_edge.weight);
     }
 }
