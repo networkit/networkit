@@ -216,11 +216,7 @@ bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew) {
     return addEdge(u, v, applied_edge_weight, id);
 }
 
-void DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool const do_update,
-                        unsigned int const num_threads) {
-    omp_set_num_threads(static_cast<int>(num_threads));
-    assert(omp_get_max_threads() == static_cast<int>(num_threads));
-
+void DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool const do_update) {
     auto cmp = [](WeightedEdge const &a, WeightedEdge const &b) { return a.u < b.u; };
     auto get_source_f = [](WeightedEdge const &e) { return e.u; };
 
@@ -271,7 +267,7 @@ void DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool const d
     }
 }
 
-void DHBGraph::addEdges(std::vector<Edge> &&edges, bool do_update, unsigned int num_threads) {
+void DHBGraph::addEdges(std::vector<Edge> &&edges, bool do_update) {
     std::vector<WeightedEdge> weighted_edges;
     weighted_edges.reserve(edges.size());
     for (auto &edge : edges) {
@@ -279,7 +275,7 @@ void DHBGraph::addEdges(std::vector<Edge> &&edges, bool do_update, unsigned int 
         weighted_edges.push_back(w_edge);
     }
 
-    addEdges(std::move(weighted_edges), do_update, num_threads);
+    addEdges(std::move(weighted_edges), do_update);
 }
 
 template <typename T>

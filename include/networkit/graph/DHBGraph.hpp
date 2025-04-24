@@ -1009,11 +1009,8 @@ public:
      * parameter is an rvalue reference.
      * @param[in] do_update A boolean flag indicating whether existing edges should be updated. If
      * `true`, the function will update existing edges; if `false`, it will only insert new edges.
-     *
-     * TODO: Document how to check for successful insertions.
      */
-    void addEdges(std::vector<WeightedEdge> &&edges, bool do_update,
-                  unsigned int num_threads = std::thread::hardware_concurrency());
+    void addEdges(std::vector<WeightedEdge> &&edges, bool do_update);
 
     /**
      * @brief Converts a vector of `Edge` objects to `WeightedEdge` and adds them to the `DHBGraph`.
@@ -1022,11 +1019,8 @@ public:
      * parameter is an rvalue reference.
      * @param[in] do_update A boolean flag indicating whether existing edges should be updated. If
      * `true`, the function will update existing edges; if `false`, it will only insert new edges.
-     *
-     * @return `true` if all edges were successfully added, `false` otherwise.
      */
-    void addEdges(std::vector<Edge> &&edges, bool do_update,
-                  unsigned int num_threads = std::thread::hardware_concurrency());
+    void addEdges(std::vector<Edge> &&edges, bool do_update);
 
     /**
      *
