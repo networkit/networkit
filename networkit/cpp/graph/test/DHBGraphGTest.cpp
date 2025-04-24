@@ -1327,10 +1327,12 @@ TEST_P(DHBGraphGTest, testGetIthNeighbor) {
     node neighbor_0 = G.getIthNeighbor(0, 0);
     node neighbor_1 = G.getIthNeighbor(0, 1);
     node neighbor_2 = G.getIthNeighbor(0, 2);
+    node neighbor_3 = G.getIthNeighbor(0, 3);
 
     ASSERT_EQ(1, neighbor_0);
     ASSERT_EQ(2, neighbor_1);
     ASSERT_EQ(3, neighbor_2);
+    ASSERT_EQ(none, neighbor_3);
 }
 
 TEST_P(DHBGraphGTest, testGetIthNeighborWeight) {
