@@ -1891,73 +1891,52 @@ TEST_P(DHBGraphGTest, testForInNeighborsOf) {
 }
 
 TEST_P(DHBGraphGTest, testForInEdgesOf) {
-    std::vector<bool> visited(this->n_house, false);
-    this->Ghouse.forInEdgesOf(3, [&](node u, node v) {
-        ASSERT_EQ(3u, u);
-        if (isDirected()) {
-            ASSERT_TRUE(this->Ahouse[v][u] > 0.0);
-            ASSERT_TRUE(this->Ghouse.hasEdge(v, u));
+    for (bool setIndexed : {false, true}) {
+        if (setIndexed) {
+            this->Ghouse.indexEdges();
         }
-        ASSERT_FALSE(visited[v]);
-        visited[v] = true;
-    });
 
-    if (isDirected()) {
-        EXPECT_FALSE(visited[0]);
-        EXPECT_FALSE(visited[1]);
-        EXPECT_FALSE(visited[2]);
-        EXPECT_FALSE(visited[3]);
-        EXPECT_TRUE(visited[4]);
-    } else {
-        EXPECT_FALSE(visited[0]);
-        EXPECT_TRUE(visited[1]);
-        EXPECT_TRUE(visited[2]);
-        EXPECT_FALSE(visited[3]);
-        EXPECT_TRUE(visited[4]);
-    }
-}
+        // add self-loop
+        this->Ghouse.addEdge(3, 3, 2.5);
+        this->Ahouse[3][3] = 2.5;
 
-TEST_P(DHBGraphGTest, testForWeightedInEdgesOf) {
-    // add self-loop
-    this->Ghouse.addEdge(3, 3, 2.5);
-    this->Ahouse[3][3] = 2.5;
+        std::vector<edgeweight> visited(this->n_house, -1.0);
+        this->Ghouse.forInEdgesOf(3, [&](node, node u, edgeweight ew) {
+            ASSERT_EQ(-1.0, visited[u]);
+            visited[u] = ew;
+        });
 
-    std::vector<edgeweight> visited(this->n_house, -1.0);
-    this->Ghouse.forInEdgesOf(3, [&](node, node u, edgeweight ew) {
-        ASSERT_EQ(-1.0, visited[u]);
-        visited[u] = ew;
-    });
+        if (isGraph()) {
+            ASSERT_EQ(-1.0, visited[0]);
+            ASSERT_EQ(defaultEdgeWeight, visited[1]);
+            ASSERT_EQ(defaultEdgeWeight, visited[2]);
+            ASSERT_EQ(defaultEdgeWeight, visited[3]);
+            ASSERT_EQ(defaultEdgeWeight, visited[4]);
+        }
 
-    if (isGraph()) {
-        ASSERT_EQ(-1.0, visited[0]);
-        ASSERT_EQ(defaultEdgeWeight, visited[1]);
-        ASSERT_EQ(defaultEdgeWeight, visited[2]);
-        ASSERT_EQ(defaultEdgeWeight, visited[3]);
-        ASSERT_EQ(defaultEdgeWeight, visited[4]);
-    }
+        if (isWeightedGraph()) {
+            ASSERT_EQ(-1.0, visited[0]);
+            ASSERT_EQ(this->Ahouse[3][1], visited[1]);
+            ASSERT_EQ(this->Ahouse[3][2], visited[2]);
+            ASSERT_EQ(this->Ahouse[3][3], visited[3]);
+            ASSERT_EQ(this->Ahouse[3][4], visited[4]);
+        }
 
-    if (isWeightedGraph()) {
-        ASSERT_EQ(-1.0, visited[0]);
-        ASSERT_EQ(this->Ahouse[3][1], visited[1]);
-        ASSERT_EQ(this->Ahouse[3][2], visited[2]);
-        ASSERT_EQ(this->Ahouse[3][3], visited[3]);
-        ASSERT_EQ(this->Ahouse[3][4], visited[4]);
-    }
+        if (isDirectedGraph()) {
+            ASSERT_EQ(-1.0, visited[0]);
+            ASSERT_EQ(-1.0, visited[1]);
+            ASSERT_EQ(-1.0, visited[2]);
+            ASSERT_EQ(defaultEdgeWeight, visited[3]);
+            ASSERT_EQ(defaultEdgeWeight, visited[4]);
+        }
 
-    if (isDirectedGraph()) {
-        ASSERT_EQ(-1.0, visited[0]);
-        ASSERT_EQ(-1.0, visited[1]);
-        ASSERT_EQ(-1.0, visited[2]);
-        ASSERT_EQ(defaultEdgeWeight, visited[3]);
-        ASSERT_EQ(defaultEdgeWeight, visited[4]);
-    }
-
-    if (isWeightedDirectedGraph()) {
-        ASSERT_EQ(-1.0, visited[0]);
-        ASSERT_EQ(-1.0, visited[1]);
-        ASSERT_EQ(-1.0, visited[2]);
-        ASSERT_EQ(this->Ahouse[3][3], visited[3]);
-        ASSERT_EQ(this->Ahouse[4][3], visited[4]);
+        if (isWeightedDirectedGraph()) {
+            ASSERT_EQ(-1.0, visited[0]);
+            ASSERT_EQ(-1.0, visited[1]);
+            ASSERT_EQ(-1.0, visited[2]);
+            ASSERT_EQ(this->Ahouse[3][3], visited[3]);
+            ASSERT_EQ(this->Ahouse[4][3], visited[4]);
+        }
     }
 }
 
