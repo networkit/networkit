@@ -1377,6 +1377,7 @@ TEST_P(DHBGraphGTest, testGetIthNeighborWithId) {
     auto [neighbor_0, id_0] = G.getIthNeighborWithId(0, 0);
     auto [neighbor_1, id_1] = G.getIthNeighborWithId(0, 1);
     auto [neighbor_2, id_2] = G.getIthNeighborWithId(0, 2);
+    auto [neighbor_3, id_3] = G.getIthNeighborWithId(0, 3);
 
     ASSERT_EQ(1, neighbor_0);
     ASSERT_EQ(2, neighbor_1);
@@ -1385,6 +1386,7 @@ TEST_P(DHBGraphGTest, testGetIthNeighborWithId) {
     ASSERT_EQ(0, id_0);
     ASSERT_EQ(1, id_1);
     ASSERT_EQ(2, id_2);
+    ASSERT_EQ(none, id_3);
 }
 
 TEST_P(DHBGraphGTest, testSetWeightAtIthNeighbor) {
