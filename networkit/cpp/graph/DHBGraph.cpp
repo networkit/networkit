@@ -71,9 +71,6 @@ edgeid DHBGraph::edgeId(node u, node v) const {
 /** GRAPH INFORMATION **/
 
 bool DHBGraph::isIsolated(node v) const {
-    if (v >= m_dhb_graph.vertices_count()) {
-        return true;
-    }
     if (directed) {
         bool const has_no_outgoing_edges = (m_dhb_graph.degree(v) == 0);
         bool has_no_incoming_edges = true;
