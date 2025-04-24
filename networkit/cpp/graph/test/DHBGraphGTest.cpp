@@ -1951,12 +1951,18 @@ TEST_P(DHBGraphGTest, testParallelSumForNodes) {
     ASSERT_EQ(expected_sum, sum);
 }
 
-TEST_P(DHBGraphGTest, testParallelSumForWeightedEdges) {
-    double sum =
-        this->Ghouse.sumForEdgesParallel([](node, node, edgeweight ew) { return 1.5 * ew; });
+TEST_P(DHBGraphGTest, testParallelSumForEdges) {
+    for (bool setIndexed : {false, true}) {
+        if (setIndexed) {
+            this->Ghouse.indexEdges();
+        }
 
-    double expected_sum = 1.5 * this->Ghouse.totalEdgeWeight();
-    ASSERT_EQ(expected_sum, sum);
+        double sum =
+            this->Ghouse.sumForEdgesParallel([](node, node, edgeweight ew) { return 1.5 * ew; });
+
+        double expected_sum = 1.5 * this->Ghouse.totalEdgeWeight();
+        ASSERT_EQ(expected_sum, sum);
+    }
 }
 
 /** GRAPH SEARCHES **/
