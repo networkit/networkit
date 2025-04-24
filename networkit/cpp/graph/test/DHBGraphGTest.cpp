@@ -1029,7 +1029,7 @@ TEST_P(DHBGraphGTest, testSetWeight) {
     }
 }
 
-TEST_P(DHBGraphGTest, increaseWeight) {
+TEST_P(DHBGraphGTest, testIncreaseWeight) {
     DHBGraph G = createGraph(5);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
@@ -1043,6 +1043,10 @@ TEST_P(DHBGraphGTest, increaseWeight) {
         ASSERT_EQ(defaultEdgeWeight + 0.5, G.weight(1, 2));
         ASSERT_EQ(3.14 - 0.5, G.weight(3, 4));
 
+        G.increaseWeight(2, 3, 0.3);
+        ASSERT_EQ(0.3, G.weight(2, 3));
+        ASSERT_TRUE(G.hasEdge(2, 3));
+
         if (G.isDirected()) {
             // reverse edges do net exist => weight should be nullWeight
             ASSERT_EQ(nullWeight, G.weight(1, 0));
@@ -1055,7 +1059,6 @@ TEST_P(DHBGraphGTest, increaseWeight) {
         }
     } else {
         EXPECT_ANY_THROW(G.increaseWeight(1, 2, 0.3));
-        EXPECT_ANY_THROW(G.increaseWeight(2, 3, 0.3)); // edge does not exists
     }
 }
 
