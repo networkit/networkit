@@ -1186,8 +1186,6 @@ public:
      * Get an iterable range over the edges of the graph.
      *
      * @return Iterator range over the edges of the graph.
-     *
-     * TODO: Write more test for edgeIterator and nodeIterator.
      */
     EdgeRange edgeRange() const noexcept { return EdgeRange(*this); }
 
@@ -1514,7 +1512,6 @@ void DHBGraph::forNodesInRandomOrder(L handle) const {
 
 template <typename L>
 void DHBGraph::balancedParallelForNodes(L handle) const {
-// TODO: define min block size (and test it!)
 #pragma omp parallel for schedule(guided)
     for (omp_index v = 0; v < static_cast<omp_index>(m_dhb_graph.vertices_count()); ++v) {
         handle(v);
