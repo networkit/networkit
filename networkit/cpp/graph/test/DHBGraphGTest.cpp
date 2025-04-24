@@ -150,6 +150,53 @@ TEST_P(DHBGraphGTest, testCopyConstructorWithIndexedEdgeIds) {
     EXPECT_TRUE(GCopy.hasEdge(1, 2));
 }
 
+TEST_P(DHBGraphGTest, testConstructorWithInitializerListWeightedEdges) {
+    // Create a graph using an initializer list of WeightedEdges
+    DHBGraph G({{0, 1, 1.5}, {1, 2, 2.5}, {2, 3, 3.5}, {3, 0, 4.5}});
+
+    // Verify the graph properties
+    ASSERT_EQ(4u, G.numberOfNodes());
+    ASSERT_EQ(4u, G.numberOfEdges());
+
+    // Check if the edges exist with the correct weights
+    ASSERT_TRUE(G.hasEdge(0, 1));
+    ASSERT_TRUE(G.hasEdge(1, 2));
+    ASSERT_TRUE(G.hasEdge(2, 3));
+    ASSERT_TRUE(G.hasEdge(3, 0));
+
+    if (G.isWeighted()) {
+        ASSERT_EQ(1.5, G.weight(0, 1));
+        ASSERT_EQ(2.5, G.weight(1, 2));
+        ASSERT_EQ(3.5, G.weight(2, 3));
+        ASSERT_EQ(4.5, G.weight(3, 0));
+    } else {
+        ASSERT_EQ(defaultEdgeWeight, G.weight(0, 1));
+        ASSERT_EQ(defaultEdgeWeight, G.weight(1, 2));
+        ASSERT_EQ(defaultEdgeWeight, G.weight(2, 3));
+        ASSERT_EQ(defaultEdgeWeight, G.weight(3, 0));
+    }
+
+    if (!G.isDirected()) {
+        // Check symmetry for undirected graphs
+        ASSERT_TRUE(G.hasEdge(1, 0));
+        ASSERT_TRUE(G.hasEdge(2, 1));
+        ASSERT_TRUE(G.hasEdge(3, 2));
+        ASSERT_TRUE(G.hasEdge(0, 3));
+
+        if (G.isWeighted()) {
+            ASSERT_EQ(1.5, G.weight(1, 0));
+            ASSERT_EQ(2.5, G.weight(2, 1));
+            ASSERT_EQ(3.5, G.weight(3, 2));
+            ASSERT_EQ(4.5, G.weight(0, 3));
+        } else {
+            ASSERT_EQ(defaultEdgeWeight, G.weight(1, 0));
+            ASSERT_EQ(defaultEdgeWeight, G.weight(2, 1));
+            ASSERT_EQ(defaultEdgeWeight, G.weight(3, 2));
+            ASSERT_EQ(defaultEdgeWeight, G.weight(0, 3));
+        }
+    }
+}
+
 TEST_P(DHBGraphGTest, testCopyConstructor) {
     // G, GW, D, DW - the copy
     // This - the origin
@@ -501,6 +548,20 @@ TEST_P(DHBGraphGTest, testWeightedDegree2) {
 }
 
 /** EDGE MODIFIERS **/
+
+TEST_P(DHBGraphGTest, testIndexEdgesForce) {
+    DHBGraph G(3);
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+    G.indexEdges(true);
+
+    EXPECT_EQ(G.edgeId(0, 1), 0);
+    EXPECT_EQ(G.edgeId(1, 2), 1);
+    if (isGraph()) {
+        EXPECT_EQ(G.edgeId(1, 0), 0);
+        EXPECT_EQ(G.edgeId(2, 1), 1);
+    }
+}
 
 TEST_P(DHBGraphGTest, testAddEdge) {
     DHBGraph G = createGraph(3);
