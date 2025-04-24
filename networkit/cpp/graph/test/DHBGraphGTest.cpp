@@ -1587,54 +1587,61 @@ TEST_P(DHBGraphGTest, testParallelForEdges) {
 /** NEIGHBORHOOD ITERATORS **/
 
 TEST_P(DHBGraphGTest, testForNeighborsOf) {
-    std::vector<node> visited;
-
-    this->Ghouse.forNeighborsOf(3, [&](node v) { visited.push_back(v); });
-
-    Aux::Parallel::sort(visited.begin(), visited.end());
-
-    if (isDirected()) {
-        ASSERT_EQ(2u, visited.size());
-        ASSERT_EQ(1u, visited[0]);
-        ASSERT_EQ(2u, visited[1]);
-    } else {
-        ASSERT_EQ(3u, visited.size());
-        ASSERT_EQ(1u, visited[0]);
-        ASSERT_EQ(2u, visited[1]);
-        ASSERT_EQ(4u, visited[2]);
-    }
-}
-
-TEST_P(DHBGraphGTest, testForNeighborsOfParallel) {
-    std::vector<node> visited;
-    std::mutex visitedMutex;
-
-    this->Ghouse.forNeighborsOfParallel(3, [&](node v) {
-        std::lock_guard<std::mutex> lock(visitedMutex);
-        visited.push_back(v);
-    });
-
-    Aux::Parallel::sort(visited.begin(), visited.end());
-
-    if (isDirected()) {
-        ASSERT_EQ(2u, visited.size());
-        ASSERT_EQ(1u, visited[0]);
-        ASSERT_EQ(2u, visited[1]);
-    } else {
-        ASSERT_EQ(3u, visited.size());
-        ASSERT_EQ(1u, visited[0]);
-        ASSERT_EQ(2u, visited[1]);
-        ASSERT_EQ(4u, visited[2]);
-    }
-}
-
-TEST_P(DHBGraphGTest, testForWeightedNeighborsOf) {
     std::vector<std::pair<node, edgeweight>> visited;
     this->Ghouse.forNeighborsOf(
         3, [&](node u, edgeweight ew) { visited.push_back(std::make_pair(u, ew)); });
 
     // should sort after the first element
     Aux::Parallel::sort(visited.begin(), visited.end());
+
+    if (isGraph()) {
+        ASSERT_EQ(3u, visited.size());
+        ASSERT_EQ(1u, visited[0].first);
+        ASSERT_EQ(2u, visited[1].first);
+        ASSERT_EQ(4u, visited[2].first);
+        ASSERT_EQ(defaultEdgeWeight, visited[0].second);
+        ASSERT_EQ(defaultEdgeWeight, visited[1].second);
+        ASSERT_EQ(defaultEdgeWeight, visited[2].second);
+    }
+
+    if (isWeightedGraph()) {
+        ASSERT_EQ(3u, visited.size());
+        ASSERT_EQ(1u, visited[0].first);
+        ASSERT_EQ(2u, visited[1].first);
+        ASSERT_EQ(4u, visited[2].first);
+        ASSERT_EQ(1.0, visited[0].second);
+        ASSERT_EQ(7.0, visited[1].second);
+        ASSERT_EQ(6.0, visited[2].second);
+    }
+
+    if (isDirectedGraph()) {
+        ASSERT_EQ(2u, visited.size());
+        ASSERT_EQ(1u, visited[0].first);
+        ASSERT_EQ(2u, visited[1].first);
+        ASSERT_EQ(defaultEdgeWeight, visited[0].second);
+        ASSERT_EQ(defaultEdgeWeight, visited[1].second);
+    }
+
+    if (isWeightedDirectedGraph()) {
+        ASSERT_EQ(2u, visited.size());
+        ASSERT_EQ(1u, visited[0].first);
+        ASSERT_EQ(2u, visited[1].first);
+        ASSERT_EQ(1.0, visited[0].second);
+        ASSERT_EQ(7.0, visited[1].second);
+    }
+}
+
+TEST_P(DHBGraphGTest, testForNeighborsOfParallel) {
+    std::vector<std::pair<node, edgeweight>> visited;
+    std::mutex visitedMutex;
+
+    this->Ghouse.forNeighborsOfParallel(3, [&](node u, edgeweight ew) {
+        std::lock_guard<std::mutex> lock(visitedMutex);
+        visited.push_back(std::make_pair(u, ew));
+    });
+
+    // should sort after the first element
+    std::sort(visited.begin(), visited.end());
 
     if (isGraph()) {
         ASSERT_EQ(3u, visited.size());
@@ -1788,87 +1795,98 @@ TEST_P(DHBGraphGTest, testForWeightedEdgesOf) {
     }
 }
 
-TEST_P(DHBGraphGTest, testForInNeighborsOf) {
-    std::vector<node> visited;
-
-    auto visit = [&](node v) { visited.push_back(v); };
-
-    this->Ghouse.forInNeighborsOf(2, visit);
-    Aux::Parallel::sort(visited.begin(), visited.end());
-
-    if (isDirected()) {
-        EXPECT_EQ(2u, visited.size());
-        EXPECT_EQ(0u, visited[0]);
-        EXPECT_EQ(3u, visited[1]);
-    } else {
-        EXPECT_EQ(4u, visited.size());
-        EXPECT_EQ(0u, visited[0]);
-        EXPECT_EQ(1u, visited[1]);
-        EXPECT_EQ(3u, visited[2]);
-        EXPECT_EQ(4u, visited[3]);
-    }
-}
-
 TEST_P(DHBGraphGTest, testForInNeighborsOfParallel) {
-    std::vector<node> visited;
-    std::mutex visitedMutex;
+    for (bool setIndexed : {false, true}) {
+        if (setIndexed) {
+            this->Ghouse.indexEdges();
+        }
+        std::vector<std::pair<node, edgeweight>> visited;
+        std::mutex visitedMutex;
 
-    auto visit = [&](node v) {
-        std::lock_guard<std::mutex> lock(visitedMutex);
-        visited.push_back(v);
-    };
-    omp_set_num_threads(3);
-    this->Ghouse.forInNeighborsOfParallel(2, visit);
-    Aux::Parallel::sort(visited.begin(), visited.end());
+        this->Ghouse.forInNeighborsOfParallel(3, [&](node v, edgeweight ew) {
+            std::lock_guard<std::mutex> lock(visitedMutex);
+            visited.push_back({v, ew});
+        });
 
-    if (isDirected()) {
-        EXPECT_EQ(2u, visited.size());
-        EXPECT_EQ(0u, visited[0]);
-        EXPECT_EQ(3u, visited[1]);
-    } else {
-        EXPECT_EQ(4u, visited.size());
-        EXPECT_EQ(0u, visited[0]);
-        EXPECT_EQ(1u, visited[1]);
-        EXPECT_EQ(3u, visited[2]);
-        EXPECT_EQ(4u, visited[3]);
+        std::sort(visited.begin(), visited.end());
+
+        if (isGraph()) {
+            ASSERT_EQ(3u, visited.size());
+            ASSERT_EQ(1u, visited[0].first);
+            ASSERT_EQ(2u, visited[1].first);
+            ASSERT_EQ(4u, visited[2].first);
+            ASSERT_EQ(defaultEdgeWeight, visited[0].second);
+            ASSERT_EQ(defaultEdgeWeight, visited[1].second);
+            ASSERT_EQ(defaultEdgeWeight, visited[2].second);
+        }
+
+        if (isWeightedGraph()) {
+            ASSERT_EQ(3u, visited.size());
+            ASSERT_EQ(1u, visited[0].first);
+            ASSERT_EQ(2u, visited[1].first);
+            ASSERT_EQ(4u, visited[2].first);
+            ASSERT_EQ(1.0, visited[0].second);
+            ASSERT_EQ(7.0, visited[1].second);
+            ASSERT_EQ(6.0, visited[2].second);
+        }
+
+        if (isDirectedGraph()) {
+            ASSERT_EQ(1u, visited.size());
+            ASSERT_EQ(4u, visited[0].first);
+            ASSERT_EQ(defaultEdgeWeight, visited[0].second);
+        }
+
+        if (isWeightedDirectedGraph()) {
+            ASSERT_EQ(1u, visited.size());
+            ASSERT_EQ(4u, visited[0].first);
+            ASSERT_EQ(6.0, visited[0].second);
+        }
     }
 }
 
-TEST_P(DHBGraphGTest, testForWeightedInNeighborsOf) {
-    std::vector<std::pair<node, edgeweight>> visited;
-    this->Ghouse.forInNeighborsOf(3, [&](node v, edgeweight ew) { visited.push_back({v, ew}); });
-    Aux::Parallel::sort(visited.begin(), visited.end());
+TEST_P(DHBGraphGTest, testForInNeighborsOf) {
+    for (bool setIndexed : {false, true}) {
+        if (setIndexed) {
+            this->Ghouse.indexEdges();
+        }
 
-    if (isGraph()) {
-        ASSERT_EQ(3u, visited.size());
-        ASSERT_EQ(1u, visited[0].first);
-        ASSERT_EQ(2u, visited[1].first);
-        ASSERT_EQ(4u, visited[2].first);
-        ASSERT_EQ(defaultEdgeWeight, visited[0].second);
-        ASSERT_EQ(defaultEdgeWeight, visited[1].second);
-        ASSERT_EQ(defaultEdgeWeight, visited[2].second);
-    }
+        std::vector<std::pair<node, edgeweight>> visited;
+        this->Ghouse.forInNeighborsOf(3, [&](node v, edgeweight ew) {
+            visited.push_back({v, ew});
+        });
+        std::sort(visited.begin(), visited.end());
 
-    if (isWeightedGraph()) {
-        ASSERT_EQ(3u, visited.size());
-        ASSERT_EQ(1u, visited[0].first);
-        ASSERT_EQ(2u, visited[1].first);
-        ASSERT_EQ(4u, visited[2].first);
-        ASSERT_EQ(1.0, visited[0].second);
-        ASSERT_EQ(7.0, visited[1].second);
-        ASSERT_EQ(6.0, visited[2].second);
-    }
+        if (isGraph()) {
+            ASSERT_EQ(3u, visited.size());
+            ASSERT_EQ(1u, visited[0].first);
+            ASSERT_EQ(2u, visited[1].first);
+            ASSERT_EQ(4u, visited[2].first);
+            ASSERT_EQ(defaultEdgeWeight, visited[0].second);
+            ASSERT_EQ(defaultEdgeWeight, visited[1].second);
+            ASSERT_EQ(defaultEdgeWeight, visited[2].second);
+        }
 
-    if (isDirectedGraph()) {
-        ASSERT_EQ(1u, visited.size());
-        ASSERT_EQ(4u, visited[0].first);
-        ASSERT_EQ(defaultEdgeWeight, visited[0].second);
-    }
+        if (isWeightedGraph()) {
+            ASSERT_EQ(3u, visited.size());
+            ASSERT_EQ(1u, visited[0].first);
+            ASSERT_EQ(2u, visited[1].first);
+            ASSERT_EQ(4u, visited[2].first);
+            ASSERT_EQ(1.0, visited[0].second);
+            ASSERT_EQ(7.0, visited[1].second);
+            ASSERT_EQ(6.0, visited[2].second);
+        }
 
-    if (isWeightedDirectedGraph()) {
-        ASSERT_EQ(1u, visited.size());
-        ASSERT_EQ(4u, visited[0].first);
-        ASSERT_EQ(6.0, visited[0].second);
+        if (isDirectedGraph()) {
+            ASSERT_EQ(1u, visited.size());
+            ASSERT_EQ(4u, visited[0].first);
+            ASSERT_EQ(defaultEdgeWeight, visited[0].second);
+        }
+
+        if (isWeightedDirectedGraph()) {
+            ASSERT_EQ(1u, visited.size());
+            ASSERT_EQ(4u, visited[0].first);
+            ASSERT_EQ(6.0, visited[0].second);
+        }
     }
 }
 
@@ -2045,7 +2063,6 @@ TEST_P(DHBGraphGTest, testEdgeIndexResolver) {
     expectedEdges[std::make_pair(0, 0)] = 0;
     expectedEdges[std::make_pair(5, 6)] = 1;
     expectedEdges[std::make_pair(2, 2)] = 2;
-    // expectedEdges[std::make_pair(0, 1)] = 3;
     expectedEdges[std::make_pair(4, 2)] = 3;
     expectedEdges[std::make_pair(2, 4)] = 3;
     expectedEdges[std::make_pair(3, 2)] = 4;
