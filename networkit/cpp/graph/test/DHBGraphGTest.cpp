@@ -602,6 +602,16 @@ TEST_P(DHBGraphGTest, testIndexEdgesForce) {
     }
 }
 
+TEST_P(DHBGraphGTest, testIndexEdgesTwice) {
+    DHBGraph G(3);
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+    G.indexEdges(true);
+
+    // Call indexEdges twice with forcing to check for early return (increase coverage)
+    G.indexEdges(false);
+}
+
 TEST_P(DHBGraphGTest, testAddEdge) {
     DHBGraph G = createGraph(3);
 
