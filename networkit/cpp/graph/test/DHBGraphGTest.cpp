@@ -547,6 +547,45 @@ TEST_P(DHBGraphGTest, testWeightedDegree2) {
     }
 }
 
+TEST_P(DHBGraphGTest, testWeightedInDegree) {
+    // add self-loop
+    this->Ghouse.addEdge(2, 2, 0.75);
+
+    if (isGraph()) {
+        ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegreeIn(0));
+        ASSERT_EQ(4 * defaultEdgeWeight, this->Ghouse.weightedDegreeIn(1));
+        ASSERT_EQ(5 * defaultEdgeWeight, this->Ghouse.weightedDegreeIn(2));
+        ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.weightedDegreeIn(3));
+        ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.weightedDegreeIn(4));
+    }
+
+    if (isWeightedGraph()) {
+        ASSERT_EQ(5.0, this->Ghouse.weightedDegreeIn(0));
+        ASSERT_EQ(12.0, this->Ghouse.weightedDegreeIn(1));
+        ASSERT_EQ(22.75, this->Ghouse.weightedDegreeIn(2));
+        ASSERT_EQ(14.0, this->Ghouse.weightedDegreeIn(3));
+        ASSERT_EQ(19.0, this->Ghouse.weightedDegreeIn(4));
+    }
+
+    if (isDirectedGraph()) {
+        // only count outgoing edges
+        ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.weightedDegreeIn(0));
+        ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegreeIn(1));
+        ASSERT_EQ(3 * defaultEdgeWeight, this->Ghouse.weightedDegreeIn(2));
+        ASSERT_EQ(1 * defaultEdgeWeight, this->Ghouse.weightedDegreeIn(3));
+        ASSERT_EQ(2 * defaultEdgeWeight, this->Ghouse.weightedDegreeIn(4));
+    }
+
+    if (isWeightedDirectedGraph()) {
+        // only sum weight of outgoing edges
+        ASSERT_EQ(2.0, this->Ghouse.weightedDegreeIn(0));
+        ASSERT_EQ(5.0, this->Ghouse.weightedDegreeIn(1));
+        ASSERT_EQ(10.75, this->Ghouse.weightedDegreeIn(2));
+        ASSERT_EQ(6.0, this->Ghouse.weightedDegreeIn(3));
+        ASSERT_EQ(13.0, this->Ghouse.weightedDegreeIn(4));
+    }
+}
+
 /** EDGE MODIFIERS **/
 
 TEST_P(DHBGraphGTest, testIndexEdgesForce) {
