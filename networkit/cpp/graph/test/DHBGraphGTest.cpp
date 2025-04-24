@@ -1342,10 +1342,12 @@ TEST_P(DHBGraphGTest, testGetIthNeighborWeight) {
     node neighbor_0_weight = G.getIthNeighborWeight(0, 0);
     node neighbor_1_weight = G.getIthNeighborWeight(0, 1);
     node neighbor_2_weight = G.getIthNeighborWeight(0, 2);
+    node neighbor_3_weight = G.getIthNeighborWeight(0, 3);
 
     ASSERT_EQ(G.isWeighted() ? 2.f : defaultEdgeWeight, neighbor_0_weight);
     ASSERT_EQ(G.isWeighted() ? 2.f : defaultEdgeWeight, neighbor_1_weight);
     ASSERT_EQ(G.isWeighted() ? 2.f : defaultEdgeWeight, neighbor_2_weight);
+    ASSERT_EQ(defaultEdgeWeight, neighbor_3_weight);
 }
 
 TEST_P(DHBGraphGTest, testGetIthNeighborWithWeight) {
@@ -1357,14 +1359,17 @@ TEST_P(DHBGraphGTest, testGetIthNeighborWithWeight) {
     auto [neighbor_0, weight_0] = G.getIthNeighborWithWeight(0, 0);
     auto [neighbor_1, weight_1] = G.getIthNeighborWithWeight(0, 1);
     auto [neighbor_2, weight_2] = G.getIthNeighborWithWeight(0, 2);
+    auto [neighbor_3, weight_3] = G.getIthNeighborWithWeight(0, 3);
 
     ASSERT_EQ(1, neighbor_0);
     ASSERT_EQ(2, neighbor_1);
     ASSERT_EQ(3, neighbor_2);
+    ASSERT_EQ(none, neighbor_3);
 
     ASSERT_EQ(G.isWeighted() ? 2.f : defaultEdgeWeight, weight_0);
-    ASSERT_EQ(G.isWeighted() ? 2.f : defaultEdgeWeight, weight_0);
-    ASSERT_EQ(G.isWeighted() ? 2.f : defaultEdgeWeight, weight_0);
+    ASSERT_EQ(G.isWeighted() ? 2.f : defaultEdgeWeight, weight_1);
+    ASSERT_EQ(G.isWeighted() ? 2.f : defaultEdgeWeight, weight_2);
+    ASSERT_EQ(defaultEdgeWeight, weight_3);
 }
 
 TEST_P(DHBGraphGTest, testGetIthNeighborWithId) {
