@@ -894,6 +894,13 @@ TEST_P(DHBGraphGTest, testHasEdge) {
     }
 }
 
+TEST_P(DHBGraphGTest, testHasEdgeNegative) {
+    // Test for both edge directions + self loops
+    ASSERT_FALSE(this->Ghouse.hasEdge(0, 5));
+    ASSERT_FALSE(this->Ghouse.hasEdge(5, 0));
+    ASSERT_FALSE(this->Ghouse.hasEdge(0, 0));
+}
+
 TEST_P(DHBGraphGTest, testNumberOfNodes) {
     ASSERT_EQ(this->n_house, this->Ghouse.numberOfNodes());
 
