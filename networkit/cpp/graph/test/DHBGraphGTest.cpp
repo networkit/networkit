@@ -1037,6 +1037,12 @@ TEST_P(DHBGraphGTest, testUpperNodeIdBound) {
 
 /** EDGE ATTRIBUTES **/
 
+TEST_P(DHBGraphGTest, testEdgeIdNonIndexed) {
+    DHBGraph G = createGraph(5);
+    G.addEdge(0, 1);
+    ASSERT_THROW(G.edgeId(0, 1), std::runtime_error);
+}
+
 TEST_P(DHBGraphGTest, testWeight) {
     this->Ghouse.forNodes([&](node u) {
         this->Ghouse.forNodes(
