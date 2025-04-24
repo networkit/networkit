@@ -718,6 +718,20 @@ TEST_P(DHBGraphGTest, testAddEdges_edge_no_update) {
     ASSERT_TRUE(G.hasEdge(1, 2));
 }
 
+TEST_P(DHBGraphGTest, testAddEdges_edge_with_update) {
+    DHBGraph G = this->Ghouse;
+    WeightedEdge e1(3, 1, isWeightedGraph() ? 3.0 : defaultEdgeWeight);
+    WeightedEdge e2(1, 0, isWeightedGraph() ? 2.0 : defaultEdgeWeight);
+    std::vector<WeightedEdge> edges;
+    edges.push_back(e1);
+    edges.push_back(e2);
+    G.addEdges(std::move(edges), true);
+    ASSERT_TRUE(G.hasEdge(3, 1));
+    ASSERT_TRUE(G.hasEdge(1, 0));
+    ASSERT_EQ(G.weight(3, 1), isWeightedGraph() ? 3.0 : defaultEdgeWeight);
+    ASSERT_EQ(G.weight(1, 0), isWeightedGraph() ? 2.0 : defaultEdgeWeight);
+}
+
 TEST_P(DHBGraphGTest, testRemoveEdge) {
     double epsilon = 1e-6;
     DHBGraph G = createGraph(3);
