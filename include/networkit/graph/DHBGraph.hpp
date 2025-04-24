@@ -814,8 +814,6 @@ public:
         forNodesWhile([&] { return !found; },
                       [&](node u) {
                           forNeighborsOf(u, [&](node v) {
-                              if (!this->isDirected() && v < u)
-                                  return;
                               auto uvId = edgeId(u, v);
                               if (uvId == id) {
                                   found = true;

@@ -2036,6 +2036,7 @@ TEST_P(DHBGraphGTest, testEdgeIndexResolver) {
     G.addEdge(0, 0);
     G.addEdge(5, 6);
     G.addEdge(2, 2);
+    G.addEdge(4, 2);
 
     if (G.isDirected())
         G.addEdge(3, 2);
@@ -2044,7 +2045,10 @@ TEST_P(DHBGraphGTest, testEdgeIndexResolver) {
     expectedEdges[std::make_pair(0, 0)] = 0;
     expectedEdges[std::make_pair(5, 6)] = 1;
     expectedEdges[std::make_pair(2, 2)] = 2;
-    expectedEdges[std::make_pair(3, 2)] = 3;
+    // expectedEdges[std::make_pair(0, 1)] = 3;
+    expectedEdges[std::make_pair(4, 2)] = 3;
+    expectedEdges[std::make_pair(2, 4)] = 3;
+    expectedEdges[std::make_pair(3, 2)] = 4;
 
     G.forEdges([&](node, node, edgeid eid) {
         auto edge = G.edgeById(eid);
