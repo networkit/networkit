@@ -364,6 +364,10 @@ count DHBGraph::degreeIn(node v) const {
 }
 
 void DHBGraph::swapEdge(node source_a, node target_a, node source_b, node target_b) {
+    assert(source_a < m_dhb_graph.vertices_count());
+    assert(target_a < m_dhb_graph.vertices_count());
+    assert(source_b < m_dhb_graph.vertices_count());
+
     auto neigh_a = m_dhb_graph.neighbors(source_a);
     auto edge_a = neigh_a.iterator_to(target_a);
     if (edge_a == neigh_a.end()) {
