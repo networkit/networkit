@@ -72,7 +72,7 @@ class DHBGraph final {
     };
 
 private:
-    bool addEdge(node u, node v, edgeweight ew, edgeid id);
+    bool addEdge(node u, node v, edgeweight ew, edgeid id, bool do_update = true);
 
     AttributeMap<PerNode, DHBGraph> nodeAttributeMap;
     AttributeMap<PerEdge, DHBGraph> edgeAttributeMap;
@@ -989,10 +989,12 @@ public:
      * @param u Endpoint of edge.
      * @param v Endpoint of edge.
      * @param weight Optional edge weight.
+     * @param do_update (Optional) If set to true, the function will update existing edges with new
+     * data; if false, it will only insert new edges.
      * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
      * true and the new edge would have been a multi-edge.)
      */
-    bool addEdge(node u, node v, edgeweight ew = defaultEdgeWeight);
+    bool addEdge(node u, node v, edgeweight ew = defaultEdgeWeight, bool do_update = true);
 
     /**
      * @brief Adds a collection of weighted edges to the DHBGraph.

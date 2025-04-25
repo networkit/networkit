@@ -681,6 +681,12 @@ TEST_P(DHBGraphGTest, testAddEdge) {
     }
 }
 
+TEST_P(DHBGraphGTest, testAddEdgeFalseState) {
+    DHBGraph G = createGraph(3);
+    G.addEdge(0, 1);
+    ASSERT_FALSE(G.addEdge(0, 1, defaultEdgeWeight, false));
+}
+
 TEST_P(DHBGraphGTest, testAddEdges_weighted_edge_no_update) {
     Aux::setNumberOfThreads(1);
     DHBGraph G = createGraph(5);

@@ -165,7 +165,8 @@ bool DHBGraph::hasNode(node v) const noexcept {
 
 // This interface is private. We are hiding the edge id as a parameter from the
 // user since we're managing edge IDs internally.
-bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew, edgeid const id) {
+bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew, edgeid const id,
+                       bool do_update) {
     assert(u < m_dhb_graph.vertices_count());
     assert(v < m_dhb_graph.vertices_count());
 
@@ -185,10 +186,10 @@ bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew, edgeid c
 
     // Insert edges depending on whether the graph is directed or undirected
     if (!directed) {
-        is_inserted_out = m_dhb_graph.insert(u, v, edge_data);
-        is_inserted_in = m_dhb_graph.insert(v, u, edge_data);
+        is_inserted_out = m_dhb_graph.insert(u, v, edge_data, do_update);
+        is_inserted_in = m_dhb_graph.insert(v, u, edge_data, do_update);
     } else {
-        is_inserted = m_dhb_graph.insert(u, v, edge_data);
+        is_inserted = m_dhb_graph.insert(u, v, edge_data, do_update);
     }
 
     bool const undirected_insertion_success = is_inserted_in && is_inserted_out && !directed;
@@ -208,13 +209,13 @@ bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew, edgeid c
 }
 
 // This is the public interface.
-bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew) {
+bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew, bool do_update) {
     assert(u < m_dhb_graph.vertices_count());
     assert(v < m_dhb_graph.vertices_count());
 
     edgeid const id = edgesIndexed ? omega : 0;
     auto const applied_edge_weight = weighted ? ew : defaultEdgeWeight;
-    return addEdge(u, v, applied_edge_weight, id);
+    return addEdge(u, v, applied_edge_weight, id, do_update);
 }
 
 void DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool const do_update) {
