@@ -682,6 +682,7 @@ TEST_P(DHBGraphGTest, testAddEdge) {
 }
 
 TEST_P(DHBGraphGTest, testAddEdges_weighted_edge_no_update) {
+    Aux::setNumberOfThreads(1);
     DHBGraph G = createGraph(5);
     WeightedEdge e1(0, 2, defaultEdgeWeight);
     WeightedEdge e2(1, 2, defaultEdgeWeight);
