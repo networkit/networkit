@@ -2514,7 +2514,7 @@ TEST_P(DHBGraphGTest, testSwapEdges) {
     ASSERT_EQ(1u, G.numberOfSelfLoops());
 }
 TEST_P(DHBGraphGTest, testSwapEdgeCornerCases) {
-    DHBGraph G = createGraph(5);
+    DHBGraph G = createGraph(6);
 
     // Add some edges
     G.addEdge(0, 1);
@@ -2527,8 +2527,8 @@ TEST_P(DHBGraphGTest, testSwapEdgeCornerCases) {
     G.indexEdges();
 
     // Swap edges where one of the edges does not exist
-    ASSERT_THROW(G.swapEdge(0, 1, 4, 5), std::runtime_error);
-    ASSERT_THROW(G.swapEdge(5, 6, 0, 1), std::runtime_error);
+    ASSERT_THROW(G.swapEdge(0, 1, 3, 5), std::runtime_error);
+    ASSERT_THROW(G.swapEdge(3, 5, 0, 1), std::runtime_error);
 
     // Swap edges that already exist
     ASSERT_THROW(G.swapEdge(2, 3, 3, 4), std::runtime_error);
