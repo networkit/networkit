@@ -28,23 +28,17 @@ void LeftRightPlanarityCheck::run() {
         }
     });
 
-    sortAdjacencyListByNestingDepth();
+    dfsGraph.sortNeighbors([&](node currentNode, node neighbor1, node neighbor2) {
+        if (auto it1 = nestingDepth.find(Edge(currentNode, neighbor1)),
+            it2 = nestingDepth.find(Edge(currentNode, neighbor2));
+            it1 != nestingDepth.end() && it2 != nestingDepth.end()) {
+            return it1->second < it2->second;
+        }
+        return false;
+    });
     isGraphPlanar =
         std::ranges::all_of(roots, [this](node rootNode) { return dfsTesting(rootNode); });
     hasRun = true;
-}
-
-void LeftRightPlanarityCheck::sortAdjacencyListByNestingDepth() {
-    dfsGraph.forNodes([&](node currentNode) {
-        dfsGraph.sortNeighbors(currentNode, [&](node neighbor1, node neighbor2) {
-            if (auto it1 = nestingDepth.find(Edge(currentNode, neighbor1)),
-                it2 = nestingDepth.find(Edge(currentNode, neighbor2));
-                it1 != nestingDepth.end() && it2 != nestingDepth.end()) {
-                return it1->second < it2->second;
-            }
-            return false;
-        });
-    });
 }
 
 bool LeftRightPlanarityCheck::conflicting(const Interval &interval, const Edge &edge) {
