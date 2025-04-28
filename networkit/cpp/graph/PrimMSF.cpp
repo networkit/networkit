@@ -6,8 +6,9 @@
  */
 #include <networkit/graph/PrimMSF.hpp>
 
-#include <queue>
 #include <vector>
+#include <tlx/container/d_ary_heap.hpp>
+#include <networkit/auxiliary/VectorComparator.hpp>
 #include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
@@ -27,21 +28,17 @@ void PrimMSF::run() {
     std::vector<edgeweight> weights(numberOfNodes, infiniteWeight);
     std::vector<node> parents(numberOfNodes, none);
     std::vector<bool> visited(numberOfNodes, false);
-    std::priority_queue<std::pair<edgeweight, node>, std::vector<std::pair<edgeweight, node>>,
-                        std::greater<>>
-        minHeap;
+    tlx::d_ary_heap<std::pair<edgeweight, node>, 2, std::less<std::pair<edgeweight, node>>> minHeap;
 
     G->forNodes([&](node startNode) {
         if (visited[startNode]) {
             return;
         }
-        minHeap.emplace(nullWeight, startNode);
+        minHeap.push({nullWeight, startNode});
         weights[startNode] = nullWeight;
         parents[startNode] = startNode;
         while (!minHeap.empty()) {
-            const auto pair = minHeap.top();
-            const edgeweight currentWeight = pair.first;
-            const node currentNode = pair.second;
+            const auto [currentWeight, currentNode] = minHeap.top();
             minHeap.pop();
             if (visited[currentNode]) {
                 continue;
@@ -54,7 +51,7 @@ void PrimMSF::run() {
             G->forNeighborsOf(currentNode, [&](node neighbor, edgeweight neighborWeight) {
                 if (!visited[neighbor] && weights[neighbor] > neighborWeight) {
                     weights[neighbor] = neighborWeight;
-                    minHeap.emplace(neighborWeight, neighbor);
+                    minHeap.push({neighborWeight, neighbor});
                     parents[neighbor] = currentNode;
                 }
             });
