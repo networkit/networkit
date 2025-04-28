@@ -69,3 +69,58 @@ cdef class Node2Vec(Algorithm):
 			A vector containing feature vectors of all nodes
 		"""
 		return (<_Node2Vec*>(self._this)).getFeatures()
+
+
+cdef extern from "<networkit/embedding/KHop.hpp>" namespace "NetworKit::KHop":
+
+	cdef enum _khopMode "NetworKit::KHop::khopMode":
+		STRICT,
+		DEFAULT
+
+class khopMode(object):
+	STRICT = _khopMode.STRICT
+	DEFAULT = _khopMode.DEFAULT
+
+cdef extern from "<networkit/embedding/KHop.hpp>":
+
+	cdef cppclass _KHop "NetworKit::KHop"(_Algorithm):
+		_KHop(_Graph G, size_t K, double S, count L, count N, count D, _khopMode M, count winSize, count iterations) except +
+		_Graph GetG_k() except +
+		vector[vector[float]] &getFeatures() except +
+
+cdef class KHop(Algorithm):
+	"""
+	"""
+
+	cdef Graph _G
+	cdef Graph _G_k
+
+	def __cinit__(self, Graph G, K=2, S=6.25, L=80, N=10, D=128, M=khopMode.DEFAULT, winSize=8, iterations=20):
+		self._G = G
+		self._this = new _KHop(G._this, K, S, L, N, D, M, winSize, iterations)
+
+	def GetG_k(self):
+		"""
+		GetG_k()
+
+		Returns k-Hop Graph G_k
+
+		Returns
+		-------
+		Graph G_k
+			k-Hop Graph of G
+		"""
+		return Graph().setThis((<_KHop*>(self._this)).GetG_k())
+
+	def getFeatures(self):
+		"""
+		getFeatures()
+
+		Returns all feature vectors
+
+		Returns
+		-------
+		list(list(float))
+			A vector containing feature vectors of all nodes
+		"""
+		return (<_KHop*>(self._this)).getFeatures()
