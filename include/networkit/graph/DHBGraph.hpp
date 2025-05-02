@@ -831,8 +831,6 @@ public:
      */
     index upperEdgeIdBound() const noexcept { return omega; }
 
-    /** GRAPH INFORMATION **/
-
     /**
      * Sort edges according to accending neighbors for all vertices.
      */

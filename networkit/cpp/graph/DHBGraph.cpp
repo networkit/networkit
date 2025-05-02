@@ -200,9 +200,9 @@ bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew, edgeid c
             ++storedNumberOfSelfLoops;
         }
         if (edgesIndexed) {
-            omega++;
+            ++omega;
         }
-        m++;
+        ++m;
         return true;
     }
     return false;
@@ -304,9 +304,9 @@ bool DHBGraph::removeEdge(node u, node v) {
 
     if (undirected_removal_success || directed_removal_success) {
         if (is_loop) {
-            storedNumberOfSelfLoops--;
+            --storedNumberOfSelfLoops;
         }
-        m--;
+        --m;
         return true;
     }
     return false;

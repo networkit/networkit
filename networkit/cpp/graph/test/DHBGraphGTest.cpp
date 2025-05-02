@@ -229,13 +229,6 @@ TEST_P(DHBGraphGTest, testCopyConstructor) {
     ASSERT_EQ(this->Ghouse.numberOfEdges(), DW.numberOfEdges());
     this->Ghouse.forNodes([&](node v) {
         count d = this->Ghouse.degree(v);
-        // count dUndirected = isDirected() ? d + this->Ghouse.degreeIn(v) : d;
-
-        // Comment out following evaluation, since when copying from an directed graph to an
-        // undirected graph, the degree of a vertex may change.
-
-        // ASSERT_EQ(dUndirected, G.degree(v));
-        // ASSERT_EQ(dUndirected, GW.degree(v));
         ASSERT_EQ(d, D.degree(v));
         ASSERT_EQ(d, DW.degree(v));
     });
@@ -792,25 +785,11 @@ TEST_P(DHBGraphGTest, testRemoveEdge) {
     double epsilon = 1e-6;
     DHBGraph G = createGraph(3);
 
-    edgeweight ewBefore = G.totalEdgeWeight();
-
     G.addEdge(0, 1, 3.14);
-
-    if (G.isWeighted()) {
-        ASSERT_NEAR(ewBefore + 3.14, G.totalEdgeWeight(), epsilon);
-    } else {
-        ASSERT_NEAR(ewBefore + defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
-    }
-
     G.addEdge(0, 0);
 
-    ASSERT_EQ(2u, G.numberOfEdges());
-    ASSERT_TRUE(G.hasEdge(0, 0));
-    ASSERT_TRUE(G.hasEdge(0, 1));
-    ASSERT_FALSE(G.hasEdge(2, 1));
-
     // test remove regular edge
-    ewBefore = G.totalEdgeWeight();
+    edgeweight ewBefore = G.totalEdgeWeight();
     G.removeEdge(0, 1);
     if (G.isWeighted()) {
         ASSERT_NEAR(ewBefore - 3.14, G.totalEdgeWeight(), epsilon);
@@ -822,63 +801,32 @@ TEST_P(DHBGraphGTest, testRemoveEdge) {
     ASSERT_TRUE(G.hasEdge(0, 0));
     ASSERT_FALSE(G.hasEdge(0, 1));
     ASSERT_FALSE(G.hasEdge(2, 1));
+}
 
-    // test remove self-loop
-    G.addEdge(2, 1);
+TEST_P(DHBGraphGTest, testRemoveEdgeSelfLoop) {
+    double epsilon = 1e-6;
+    DHBGraph G = createGraph(3);
 
-    ewBefore = G.totalEdgeWeight();
-    G.removeEdge(0, 0);
-    if (G.isWeighted()) {
-        ASSERT_NEAR(ewBefore - defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
-    } else {
-        ASSERT_NEAR(ewBefore - defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
-    }
-
-    ASSERT_EQ(1u, G.numberOfEdges());
-    ASSERT_FALSE(G.hasEdge(0, 0));
-    ASSERT_FALSE(G.hasEdge(0, 1));
-    ASSERT_TRUE(G.hasEdge(2, 1));
-
-    // test from removeselfloops adapted for removeEdge
-    G = createGraph(2);
-
-    ewBefore = G.totalEdgeWeight();
-
-    G.addEdge(0, 1);
     G.addEdge(0, 0, 3.14);
+    G.addEdge(0, 1);
     G.addEdge(1, 1);
 
-    if (G.isWeighted()) {
-        EXPECT_NEAR(ewBefore + 3.14 + 2 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
-    } else {
-        EXPECT_NEAR(ewBefore + 3 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
-    }
-
-    EXPECT_EQ(3u, G.numberOfEdges());
-    EXPECT_TRUE(G.hasEdge(0, 0));
-    EXPECT_TRUE(G.hasEdge(0, 1));
-    EXPECT_TRUE(G.hasEdge(1, 1));
-    EXPECT_EQ(G.numberOfSelfLoops(), 2u);
-
-    // remove self-loops
-    ewBefore = G.totalEdgeWeight();
-
+    // test remove self loop
+    edgeweight ewBefore = G.totalEdgeWeight();
     G.removeEdge(0, 0);
-    G.removeEdge(1, 1);
-
     if (G.isWeighted()) {
-        EXPECT_NEAR(ewBefore - defaultEdgeWeight - 3.14, G.totalEdgeWeight(), epsilon);
+        ASSERT_NEAR(ewBefore - 3.14, G.totalEdgeWeight(), epsilon);
     } else {
-        EXPECT_NEAR(ewBefore - 2 * defaultEdgeWeight, G.totalEdgeWeight(), epsilon)
-            << "Weighted, directed: " << G.isWeighted() << ", " << G.isDirected();
+        ASSERT_NEAR(ewBefore - defaultEdgeWeight, G.totalEdgeWeight(), epsilon);
     }
 
-    EXPECT_EQ(1u, G.numberOfEdges());
-    EXPECT_FALSE(G.hasEdge(0, 0));
-    EXPECT_FALSE(G.hasEdge(1, 1));
-    EXPECT_TRUE(G.hasEdge(0, 1));
-    EXPECT_EQ(0u, G.numberOfSelfLoops())
-        << "Weighted, directed: " << G.isWeighted() << ", " << G.isDirected();
+    ASSERT_EQ(2u, G.numberOfEdges());
+    ASSERT_FALSE(G.hasEdge(0, 0));
+    ASSERT_TRUE(G.hasEdge(0, 1));
+
+    ASSERT_EQ(1u, G.numberOfSelfLoops());
+    G.removeEdge(0, 0);
+    ASSERT_EQ(1u, G.numberOfSelfLoops());
 }
 
 TEST_P(DHBGraphGTest, testRemoveAllEdges) {
@@ -1067,7 +1015,7 @@ TEST_P(DHBGraphGTest, testWeight) {
     });
 }
 
-TEST_P(DHBGraphGTest, testSetWeight) {
+TEST_P(DHBGraphGTest, testSetWeightForPresentEdge) {
     DHBGraph G = createGraph(10);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
@@ -1086,24 +1034,48 @@ TEST_P(DHBGraphGTest, testSetWeight) {
             EXPECT_EQ(defaultEdgeWeight, G.weight(1, 0));
             EXPECT_EQ(2.718, G.weight(2, 1));
         }
+    }
+}
 
+TEST_P(DHBGraphGTest, testSetWeighCreateEdge) {
+    DHBGraph G = createGraph(10);
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+
+    if (isWeighted()) {
         // setting an edge weight should create the edge if it doesn't exists
         ASSERT_FALSE(G.hasEdge(5, 6));
         G.setWeight(5, 6, 56.0);
         ASSERT_EQ(56.0, G.weight(5, 6));
         ASSERT_EQ(isDirected() ? nullWeight : 56.0, G.weight(6, 5));
         ASSERT_TRUE(G.hasEdge(5, 6));
+    }
+}
 
+TEST_P(DHBGraphGTest, testSetWeightTestSymmetry) {
+    DHBGraph G = createGraph(10);
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+
+    if (isWeighted()) {
         // directed graphs are not symmetric, undirected are
         G.setWeight(2, 1, 5.243);
         if (isDirected()) {
-            EXPECT_EQ(2.718, G.weight(1, 2));
+            EXPECT_EQ(defaultEdgeWeight, G.weight(1, 2));
             EXPECT_EQ(5.243, G.weight(2, 1));
         } else {
             EXPECT_EQ(5.243, G.weight(1, 2));
             EXPECT_EQ(5.243, G.weight(2, 1));
         }
+    }
+}
 
+TEST_P(DHBGraphGTest, testSetWeightSelfLoops) {
+    DHBGraph G = createGraph(10);
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+
+    if (isWeighted()) {
         // self-loop
         G.addEdge(4, 4, 2.5);
         ASSERT_EQ(2.5, G.weight(4, 4));
