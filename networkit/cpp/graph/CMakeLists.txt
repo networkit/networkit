@@ -4,6 +4,7 @@ networkit_add_module(graph
     GraphBuilder.cpp
     GraphTools.cpp
     KruskalMSF.cpp
+    PrimMSF.cpp
     RandomMaximumSpanningForest.cpp
     SpanningForest.cpp
     TopologicalSort.cpp

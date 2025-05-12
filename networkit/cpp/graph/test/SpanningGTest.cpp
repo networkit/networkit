@@ -9,6 +9,7 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/graph/KruskalMSF.hpp>
+#include <networkit/graph/PrimMSF.hpp>
 #include <networkit/graph/RandomMaximumSpanningForest.hpp>
 #include <networkit/graph/SpanningForest.hpp>
 #include <networkit/graph/UnionMaximumSpanningForest.hpp>
@@ -163,6 +164,121 @@ TEST_F(SpanningGTest, testKruskalMinimumSpanningForestIsMSFNonUnitWeights) {
 
     isValidForest(g, T);
     EXPECT_EQ(msf.getTotalWeight(), 6);
+}
+
+TEST_F(SpanningGTest, testPrimThrowsForDirectedGraph) {
+    Graph g(5, true, true);
+    try {
+        PrimMSF msf(g);
+        FAIL() << "Expected std::runtime_error";
+    } catch (const std::runtime_error &e) {
+        EXPECT_STREQ(e.what(), "The graph is not an undirected graph.");
+    } catch (...) {
+        FAIL() << "Expected std::runtime_error but got a different exception.";
+    }
+}
+
+TEST_F(SpanningGTest, testPrimMinSpanningForest) {
+    METISGraphReader reader;
+    std::vector<std::string> graphs = {"karate", "jazz", "celegans_metabolic"};
+
+    for (const auto &graphname : graphs) {
+        std::string filename = "input/" + graphname + ".graph";
+        Graph G = reader.read(filename);
+        PrimMSF msf(G);
+        msf.run();
+        Graph T = msf.getForest();
+
+        isValidForest(G, T);
+    }
+}
+
+TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSTUnitWeights) {
+    Graph g(5, true);
+    g.addEdge(0, 1, 1);
+    g.addEdge(1, 2, 1);
+    g.addEdge(1, 3, 1);
+    g.addEdge(3, 4, 1);
+    g.addEdge(1, 4, 1);
+    g.indexEdges();
+
+    PrimMSF msf(g);
+    msf.run();
+    Graph T = msf.getForest();
+
+    isValidForest(g, T);
+    EXPECT_EQ(msf.getTotalWeight(), 4);
+}
+
+TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSFUnitWeights) {
+    Graph g(6, true);
+    g.addEdge(0, 1, 1);
+    g.addEdge(1, 2, 1);
+    g.addEdge(2, 0, 1);
+    g.addEdge(3, 4, 1);
+    g.addEdge(4, 5, 1);
+    g.addEdge(5, 3, 1);
+    g.indexEdges();
+
+    PrimMSF msf(g);
+    msf.run();
+    Graph T = msf.getForest();
+
+    isValidForest(g, T);
+    EXPECT_EQ(msf.getTotalWeight(), 4);
+}
+
+TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSTNonUnitWeights) {
+    Graph g(4, true);
+    g.addEdge(0, 1, 1);
+    g.addEdge(0, 2, 1);
+    g.addEdge(0, 3, 1);
+    g.addEdge(1, 2, 2);
+    g.addEdge(2, 3, 2);
+    g.indexEdges();
+
+    PrimMSF msf(g);
+    msf.run();
+    Graph T = msf.getForest();
+
+    isValidForest(g, T);
+    EXPECT_EQ(msf.getTotalWeight(), 3);
+}
+
+TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSFNonUnitWeights) {
+    Graph g(6, true);
+    g.addEdge(0, 1, 1);
+    g.addEdge(1, 2, 2);
+    g.addEdge(2, 0, 3);
+    g.addEdge(3, 4, 1);
+    g.addEdge(4, 5, 2);
+    g.addEdge(5, 3, 3);
+    g.indexEdges();
+
+    PrimMSF msf(g);
+    msf.run();
+    Graph T = msf.getForest();
+
+    isValidForest(g, T);
+    EXPECT_EQ(msf.getTotalWeight(), 6);
+}
+
+TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSFUnweighted) {
+    Graph g(6);
+    g.addEdge(0, 1);
+    g.addEdge(1, 2);
+    g.addEdge(2, 0);
+    g.addEdge(3, 4);
+    g.addEdge(4, 5);
+    g.addEdge(5, 3);
+    g.indexEdges();
+
+    PrimMSF msf(g);
+    msf.run();
+    Graph T = msf.getForest();
+
+    isValidForest(g, T);
+    EXPECT_EQ(msf.getTotalWeight(), 4);
 }
 
 } /* namespace NetworKit */
