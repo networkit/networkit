@@ -27,10 +27,12 @@ using coordinate = double;
 
 using count = uint64_t;    ///< more expressive name for an integer quantity
 using node = index;        ///< node indices are 0-based
+using nodeweight = double; ///< node weight type
 using edgeweight = double; ///< edge weight type
 using edgeid = index;      ///< edge id
 
 constexpr edgeweight defaultEdgeWeight = 1.0;
+constexpr edgeweight defaultNodeWeight = 1.0;
 constexpr edgeweight nullWeight = 0.0;
 constexpr index none = std::numeric_limits<index>::max(); ///< value for not existing nodes/edges
 
