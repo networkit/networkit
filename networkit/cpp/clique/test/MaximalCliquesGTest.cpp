@@ -12,6 +12,19 @@ namespace NetworKit {
 
 class MaximalCliquesGTest : public testing::Test {};
 
+TEST_F(MaximalCliquesGTest, testGetCliquesThrowsWithCallback) {
+    Graph graph(0, false, true, false);
+    MaximalCliques clique(graph, [&](const std::vector<node> &cliq){});
+    try {
+        clique.getCliques();
+        FAIL() << "Expected std::runtime_error";
+    } catch (const std::runtime_error &e) {
+        EXPECT_STREQ(e.what(), "MaximalCliques used with callback does not store cliques");
+    } catch (...) {
+        FAIL() << "Expected std::runtime_error but got a different exception.";
+    }
+}
+
 TEST_F(MaximalCliquesGTest, testMaximalCliques) {
 
     METISGraphReader reader;
