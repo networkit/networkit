@@ -14,7 +14,7 @@ class MaximalCliquesGTest : public testing::Test {};
 
 TEST_F(MaximalCliquesGTest, testGetCliquesThrowsWithCallback) {
     Graph graph(0, false, true, false);
-    MaximalCliques clique(graph, [&](const std::vector<node> &cliq){});
+    MaximalCliques clique(graph, [&](const std::vector<node> &cliq) {});
     try {
         clique.getCliques();
         FAIL() << "Expected std::runtime_error";
