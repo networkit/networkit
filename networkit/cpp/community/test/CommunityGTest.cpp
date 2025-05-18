@@ -836,6 +836,7 @@ TEST_F(CommunityGTest, testCoverF1Similarity) {
     EXPECT_DOUBLE_EQ(0.0, sim.getValue(2));
     EXPECT_DOUBLE_EQ((1.0 + f1) / 3.0, sim.getUnweightedAverage());
     EXPECT_DOUBLE_EQ((1.0 * 10.0 + f1 * 10.0) / 29.0, sim.getWeightedAverage());
+    EXPECT_FALSE(sim.isSmallBetter());
 }
 
 TEST_F(CommunityGTest, testOverlappingNMIDistance) {
