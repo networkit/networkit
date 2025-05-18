@@ -318,6 +318,16 @@ TEST_P(DistanceGTest, testBidirectionalBFS) {
     };
 }
 
+TEST_F(DistanceGTest, testBidirectionalBFSTargetEqualSource) {
+    Graph G(3, false, false);
+    G.addEdge(0, 1);
+    G.addEdge(0, 2);
+
+    BidirectionalBFS bbfs(G, 1, 1, false);
+    bbfs.run();
+    EXPECT_EQ(bbfs.getDistance(), 0);
+}
+
 TEST_P(DistanceGTest, testBidirectionalDijkstra) {
     Aux::Random::setSeed(42, false);
     auto G = generateERGraph(500, isDirected() ? 0.05 : 0.02);
@@ -349,6 +359,16 @@ TEST_P(DistanceGTest, testBidirectionalDijkstra) {
         } else
             EXPECT_EQ(infdist, bdij.getDistance());
     };
+}
+
+TEST_F(DistanceGTest, testBidirectionalDijkstraTargetEqualSource) {
+    Graph G(3, true, false);
+    G.addEdge(0, 1, 1.0);
+    G.addEdge(0, 2, 3.0);
+
+    BidirectionalDijkstra bdij(G, 1, 1, false);
+    bdij.run();
+    EXPECT_EQ(bdij.getDistance(), 0);
 }
 
 TEST_F(DistanceGTest, testExactDiameter) {
