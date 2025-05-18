@@ -77,6 +77,18 @@ TEST_F(ConnectedComponentsGTest, testConnectedComponents) {
     EXPECT_EQ(1029u, cc.numberOfComponents());
 }
 
+TEST_F(ConnectedComponentsGTest, testParallelConnectedComponentsThowsForDirectedGraph) {
+    Graph G(2, false, true);
+    try {
+        ParallelConnectedComponents test(G);
+        FAIL() << "Expected std::runtime_error";
+    } catch (const std::runtime_error &e) {
+        EXPECT_STREQ(e.what(), "algorithm does not accept directed graphs");
+    } catch (...) {
+        FAIL() << "Expected std::runtime_error but got a different exception.";
+    }
+}
+
 TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
     METISGraphReader reader;
     std::vector<std::string> graphs = {"PGPgiantcompo", "celegans_metabolic", "hep-th", "jazz"};
