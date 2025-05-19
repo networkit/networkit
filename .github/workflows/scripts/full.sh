@@ -9,7 +9,7 @@ cmake --version
 # Note: setuptools<69.0.0 is needed for editable installs. Normal installs work with more recent releases of setuptools
 python3 -m venv pyenv && . pyenv/bin/activate
 pip3 install --upgrade pip
-pip3 install cython numpy ipython jupyter setuptools
+pip3 install cython==3.0.9 numpy ipython jupyter setuptools
 
 # Build tlx
 cd tlx
