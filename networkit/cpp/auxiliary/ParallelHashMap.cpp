@@ -18,18 +18,8 @@ namespace {
 // al. (2016): h_c(x) := floor(h(x) * (c/U)) where c = capacity and U = key
 // space = 64 (bit) in our case. Since capacity and U are both power of 2 we can
 // change the formula to use bit-shifting.
-uint64_t scaling(uint64_t const h, size_t const capacity) {
-    return h >> uint64_t(ParallelHashMap::ht_key_space - std::log2(capacity));
-}
-
-// Use this if you already precomputed log2(capacity).
 uint64_t scaling_log(uint64_t const h, uint64_t const log_2_capacity) {
     return h >> (ParallelHashMap::ht_key_space - log_2_capacity);
-}
-
-size_t index(uint64_t const key, uint64_t const offset, size_t const capacity) {
-    uint64_t const h_c = scaling(key, capacity);
-    return fastMod(h_c + offset, capacity);
 }
 
 bool ht_filled(size_t const occupancy, size_t const capacity) {
@@ -69,13 +59,13 @@ using HTHandle = ParallelHashMap::HTHandle;
 HTAtomic128::HTAtomic128() : m_cells(m_capacity, Cell{}) {}
 
 HTAtomic128::HTAtomic128(size_t const capacity)
-    : m_cells(capacity, Cell{}), m_capacity(capacity), m_log_capacity(std::log2(capacity)) {}
+    : m_capacity(capacity), m_log_capacity(std::log2(capacity)), m_cells(capacity, Cell{}) {}
 
 HTAtomic128::HTAtomic128(HTAtomic128 const &other)
-    : m_cells(other.m_cells), m_capacity(other.m_capacity), m_log_capacity(other.m_log_capacity),
+    : m_capacity(other.m_capacity), m_log_capacity(other.m_log_capacity), m_cells(other.m_cells),
       m_global_occupancy(other.m_global_occupancy.load()) {}
 
-HTAtomic128::HTAtomic128(HTAtomic128 &&other) : HTAtomic128() {
+HTAtomic128::HTAtomic128(HTAtomic128 &&other) noexcept : HTAtomic128() {
     swap(*this, other);
 }
 
@@ -308,8 +298,8 @@ HTAtomic128::clusterRange(uint32_t const p_count, uint32_t const p_id) {
 HTSyncData::HTSyncData(std::unique_ptr<HTAtomic128> &_source, std::unique_ptr<HTAtomic128> &_target,
                        std::atomic_uint32_t &_busy, std::atomic_bool &_request_growth, int _p_count,
                        int _p_id, uint32_t _insert_threshold)
-    : source(_source), target(_target), busy(_busy), request_growth(_request_growth),
-      p_count(_p_count), p_id(_p_id), insert_threshold(_insert_threshold) {}
+    : source(_source), target(_target), busy(_busy), insert_threshold(_insert_threshold),
+      request_growth(_request_growth), p_count(_p_count), p_id(_p_id) {}
 
 HTHandle::HTHandle(HTSyncData sync_data) : m_ht(sync_data.source.get()), m_sync_data(sync_data) {
     setBitAtomically(m_sync_data.busy, m_sync_data.p_id);
@@ -327,9 +317,8 @@ HTHandle::~HTHandle() {
 
     while (m_sync_data.busy.load() != 0u) {
         if (m_sync_data.request_growth.load()) {
-            auto disposable_ht =
-                grow_hashtable(m_sync_data.source, m_sync_data.target, m_sync_data.request_growth,
-                               m_sync_data.p_count, m_sync_data.p_id);
+            grow_hashtable(m_sync_data.source, m_sync_data.target, m_sync_data.request_growth,
+                           m_sync_data.p_count, m_sync_data.p_id);
         }
     }
 }
@@ -375,7 +364,7 @@ ParallelHashMap::ParallelHashMap(ParallelHashMap const &other) {
     m_source = std::make_unique<HTAtomic128>(*other.m_source.get());
 }
 
-ParallelHashMap::ParallelHashMap(ParallelHashMap &&other) : ParallelHashMap() {
+ParallelHashMap::ParallelHashMap(ParallelHashMap &&other) noexcept : ParallelHashMap() {
     swap(*this, other);
 }
 
@@ -393,7 +382,7 @@ std::unique_ptr<HTHandle> ParallelHashMap::makeHandle() {
     return handle;
 }
 
-HTAtomic128 const *const ParallelHashMap::currentTable() const {
+HTAtomic128 const *ParallelHashMap::currentTable() const {
     return m_source.get();
 }
 

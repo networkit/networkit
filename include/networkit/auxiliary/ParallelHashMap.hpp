@@ -11,6 +11,12 @@
 #include <networkit/auxiliary/AtomicUtils.hpp>
 #include <networkit/auxiliary/HashUtils.hpp>
 
+#if defined(__GNUC__)
+#define ASM_CLOBBER_CC
+#else
+#define ASM_CLOBBER_CC "cc"
+#endif
+
 namespace Aux {
 
 // An object of this class will handle a dynamic hashtable and offers factory
@@ -26,9 +32,9 @@ public:
         swapAtomicsNonAtomically<bool>(p.m_request_growth, q.m_request_growth);
     }
 
-    class HTHandle;
     class HTAtomic128;
     class HTSyncData;
+    class HTHandle;
 
     static constexpr uint64_t ht_invalid_key = std::numeric_limits<uint64_t>::max();
     static constexpr uint64_t ht_invalid_value = std::numeric_limits<uint64_t>::max() - 1;
@@ -42,13 +48,13 @@ public:
     ParallelHashMap();
 
     // begin_capacity: Must be multiple of 2.
-    ParallelHashMap(size_t const begin_capacity);
+    ParallelHashMap(size_t begin_capacity);
 
     ~ParallelHashMap() = default;
 
     ParallelHashMap(ParallelHashMap const &other);
 
-    ParallelHashMap(ParallelHashMap &&other);
+    ParallelHashMap(ParallelHashMap &&other) noexcept;
 
     ParallelHashMap &operator=(ParallelHashMap other) {
         swap(*this, other);
@@ -57,7 +63,7 @@ public:
 
     std::unique_ptr<HTHandle> makeHandle();
 
-    HTAtomic128 const *const currentTable() const;
+    HTAtomic128 const *currentTable() const;
 
     uint32_t randomThreadRange();
 
@@ -94,10 +100,10 @@ public:
     using Cells = std::vector<Cell>;
 
     HTAtomic128();
-    HTAtomic128(size_t const capacity);
+    HTAtomic128(size_t capacity);
     ~HTAtomic128() = default;
     HTAtomic128(HTAtomic128 const &other);
-    HTAtomic128(HTAtomic128 &&other);
+    HTAtomic128(HTAtomic128 &&other) noexcept;
 
     HTAtomic128 &operator=(HTAtomic128 other);
 
@@ -114,15 +120,15 @@ public:
 
     // Returns false if key already exists, and true if (key, value) was
     // successfully inserted.
-    bool insert(uint64_t const key, uint64_t const value);
+    bool insert(uint64_t key, uint64_t value);
 
     // Returns the actual value of the cell if key is present, ht_invalid_key
     // otherwise.
-    uint64_t find(uint64_t const key) const;
+    uint64_t find(uint64_t key) const;
 
     // Returns false if key does not exist, true if (key, value) was
     // successfully updated.
-    bool update(uint64_t const key, uint64_t const value);
+    bool update(uint64_t key, uint64_t value);
 
     struct Iterator {
         using iterator_category = std::input_iterator_tag;
@@ -189,12 +195,11 @@ public:
     // scale_factor: is power of 2
     //
     // p_count: must be >= 1
-    void roam(ParallelHashMap::HTAtomic128 &target, uint32_t const p_count = 1,
-              uint32_t const p_id = 0);
+    void roam(ParallelHashMap::HTAtomic128 &target, uint32_t p_count = 1, uint32_t p_id = 0);
 
     std::pair<ParallelHashMap::HTAtomic128::Cells::const_iterator,
               ParallelHashMap::HTAtomic128::Cells::const_iterator>
-    clusterRange(uint32_t const p_count = 1, uint32_t const p_id = 0);
+    clusterRange(uint32_t p_count = 1, uint32_t p_id = 0);
 
 private:
     static Cell makeCell(uint64_t key, uint64_t value) {
@@ -223,6 +228,11 @@ private:
                      : "=@ccz"(res), "+m"(r), "+a"(expected.key), "+d"(expected.value)
                      : "b"(desired.key), "c"(desired.value)
                      : "memory");
+#elif defined(_MSC_VER)
+        res = _InterlockedCompareExchange128(
+            reinterpret_cast<volatile __int64 *>(&r), static_cast<__int64>(desired.value),
+            static_cast<__int64>(desired.key), reinterpret_cast<__int64 *>(&expected));
+
 #else
         // For ARM64 we use the ld/stxp instruction pair to perform the DWCAS operation.
         // See:
@@ -240,8 +250,7 @@ private:
                        [original_1] "=&r"(original.value)
                      : [desired_0] "r"(desired.key), [desired_1] "r"(desired.value),
                        [expected_0] "r"(expected.key), [expected_1] "r"(expected.value)
-                     : "cc"
-                       "memory");
+                     : ASM_CLOBBER_CC "memory");
 #endif
         return res;
     }
@@ -285,11 +294,11 @@ public:
 
     ~HTHandle();
 
-    bool insert(uint64_t const key, uint64_t const value);
+    bool insert(uint64_t key, uint64_t value);
 
-    uint64_t find(uint64_t const key) const;
+    uint64_t find(uint64_t key) const;
 
-    bool update(uint64_t const key, uint64_t const value) const;
+    bool update(uint64_t key, uint64_t value) const;
 
     HTAtomic128 const &hashtable();
 

@@ -14,7 +14,7 @@ inline uint32_t unsetBitAtomically(std::atomic_uint32_t &bitmask, size_t positio
     }
 
     return desired_bitmask;
-};
+}
 
 inline uint32_t setBitAtomically(std::atomic_uint32_t &bitmask, size_t position) {
     uint32_t current_bitmask = bitmask.load();
@@ -33,7 +33,7 @@ void swapAtomicsNonAtomically(std::atomic<T> &a, std::atomic<T> &b) {
     T const a_temp = a.load();
     a.store(b);
     b.store(a_temp);
-};
+}
 
 template <typename T>
 T incrementAtomically(std::atomic<T> &value, T increment = T(1)) {

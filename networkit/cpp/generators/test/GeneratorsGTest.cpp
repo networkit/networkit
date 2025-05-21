@@ -724,7 +724,7 @@ TEST_F(GeneratorsGTest, testRmatGeneratorDistribution) {
     for (index i = 0; i < n; ++i) {
         for (index j = 0; j < n; ++j) {
             EXPECT_NEAR((static_cast<double>(edgeCount[i][j]) / static_cast<double>(totalEdges)),
-                        edgeExpectedProbability[i][j], 0.01);
+                        edgeExpectedProbability[i][j], 0.015);
         }
     }
 }

@@ -336,8 +336,8 @@ TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128ConcurrentAccess) {
     HTAtomic128 ht{begin_capacity};
 
 #pragma omp parallel for
-    for (auto e : mockup_data) {
-        ht.insert(e.first, e.second);
+    for (size_t i = 0; i < mockup_data.size(); i++) {
+        ht.insert(mockup_data[i].first, mockup_data[i].second);
     }
 
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, ht));
@@ -429,13 +429,16 @@ TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128InsertDualThread) {
     constexpr size_t begin_capacity = 16384u;
     HTAtomic128 ht_first{begin_capacity};
 
-    bool all_inserted_successful = true;
-#pragma omp parallel
-    for (size_t i = 0; i < mockup_data.size() && all_inserted_successful; ++i) {
-        all_inserted_successful = ht_first.insert(mockup_data[i].first, mockup_data[i].second);
+    std::vector<bool> successful_inserts({true, true});
+#pragma omp parallel for
+    for (size_t i = 0; i < mockup_data.size(); ++i) {
+        successful_inserts[omp_get_thread_num()] =
+            successful_inserts[omp_get_thread_num()]
+            && ht_first.insert(mockup_data[i].first, mockup_data[i].second);
     }
 
-    ASSERT_TRUE(all_inserted_successful);
+    ASSERT_TRUE(successful_inserts[0]);
+    ASSERT_TRUE(successful_inserts[1]);
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, ht_first));
 }
 
@@ -698,7 +701,6 @@ TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128HTHandleHTRoamingDualThreadRoam
             std::advance(end, mockup_data_share);
         }
 
-        bool all_inserted_successful = true;
         for (auto it = begin; it != end; it++) {
             successful_inserts[thread_id] =
                 successful_inserts[thread_id] && handle.insert(it->first, it->second);
@@ -743,7 +745,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianCopyConstructor) {
 
     auto handle_a = phm_a.makeHandle();
 
-    bool all_inserted_successful = insertData(*handle_a.get(), mockup_data);
+    insertData(*handle_a.get(), mockup_data);
 
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, handle_a->hashtable()));
 
@@ -761,9 +763,11 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianMoveConstructor) {
 
     auto handle_a = phm_a.makeHandle();
 
-    bool all_inserted_successful = insertData(*handle_a.get(), mockup_data);
+    insertData(*handle_a.get(), mockup_data);
 
     Aux::ParallelHashMap phm_b(std::move(phm_a));
+
+    handle_a.reset();
 
     auto handle_b = phm_b.makeHandle();
 
@@ -776,7 +780,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianCopyAssignment) {
 
     auto handle_a = phm_a.makeHandle();
 
-    bool all_inserted_successful = insertData(*handle_a.get(), mockup_data);
+    insertData(*handle_a.get(), mockup_data);
 
     Aux::ParallelHashMap phm_b;
     phm_b = phm_a;
