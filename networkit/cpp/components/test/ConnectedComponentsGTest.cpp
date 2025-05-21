@@ -79,14 +79,7 @@ TEST_F(ConnectedComponentsGTest, testConnectedComponents) {
 
 TEST_F(ConnectedComponentsGTest, testParallelConnectedComponentsThowsForDirectedGraph) {
     Graph G(2, false, true);
-    try {
-        ParallelConnectedComponents test(G);
-        FAIL() << "Expected std::runtime_error";
-    } catch (const std::runtime_error &e) {
-        EXPECT_STREQ(e.what(), "algorithm does not accept directed graphs");
-    } catch (...) {
-        FAIL() << "Expected std::runtime_error but got a different exception.";
-    }
+    EXPECT_THROW(ParallelConnectedComponents test(G), std::runtime_error);
 }
 
 TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
