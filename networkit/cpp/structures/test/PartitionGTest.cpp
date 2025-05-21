@@ -21,6 +21,12 @@ TEST_F(PartitionGTest, testConstructor) {
     EXPECT_EQ(1u, p.upperBound());
 }
 
+TEST_F(PartitionGTest, testConstructorIndexAndDefaultValue) {
+    Partition p(10, 1);
+    EXPECT_EQ(0u, p.lowerBound());
+    EXPECT_EQ(1u, p.upperBound());
+}
+
 TEST_F(PartitionGTest, testVectorConstructor) {
     Partition p(10);
     Partition p2(p.getVector());

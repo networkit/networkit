@@ -671,6 +671,36 @@ TEST_F(IOGTest, testGraphToolBinaryWriter) {
     EXPECT_EQ(G.isWeighted(), Gread.isWeighted());
 }
 
+TEST_F(IOGTest, testGraphToolBinaryWriterDifferentGraphSizes) {
+    GraphToolBinaryWriter writer;
+    GraphToolBinaryReader reader;
+    std::string path = "output/test.gt";
+    // less than 8 nodes
+    Graph G0(3, false, false);
+    writer.write(G0, path);
+    Graph G0read = reader.read(path);
+    EXPECT_EQ(G0.numberOfNodes(), G0read.numberOfNodes());
+    EXPECT_EQ(G0.numberOfEdges(), G0read.numberOfEdges());
+    EXPECT_EQ(G0.isDirected(), G0read.isDirected());
+    EXPECT_EQ(G0.isWeighted(), G0read.isWeighted());
+    // less than 2^16 nodes
+    Graph G1(30000, false, false);
+    writer.write(G1, path);
+    Graph G1read = reader.read(path);
+    EXPECT_EQ(G1.numberOfNodes(), G1read.numberOfNodes());
+    EXPECT_EQ(G1.numberOfEdges(), G1read.numberOfEdges());
+    EXPECT_EQ(G1.isDirected(), G1read.isDirected());
+    EXPECT_EQ(G1.isWeighted(), G1read.isWeighted());
+    // less than 2^32 nodes
+    Graph G2(100000, false, true);
+    writer.write(G2, path);
+    Graph G2read = reader.read(path);
+    EXPECT_EQ(G2.numberOfNodes(), G2read.numberOfNodes());
+    EXPECT_EQ(G2.numberOfEdges(), G2read.numberOfEdges());
+    EXPECT_EQ(G2.isDirected(), G2read.isDirected());
+    EXPECT_EQ(G2.isWeighted(), G2read.isWeighted());
+}
+
 TEST_F(IOGTest, testGraphToolBinaryWriterWithDeletedNodes) {
     Graph G(10, false, false);
     G.removeNode(0);

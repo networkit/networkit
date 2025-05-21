@@ -77,6 +77,11 @@ TEST_F(ConnectedComponentsGTest, testConnectedComponents) {
     EXPECT_EQ(1029u, cc.numberOfComponents());
 }
 
+TEST_F(ConnectedComponentsGTest, testParallelConnectedComponentsThowsForDirectedGraph) {
+    Graph G(2, false, true);
+    EXPECT_THROW(ParallelConnectedComponents test(G), std::runtime_error);
+}
+
 TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
     METISGraphReader reader;
     std::vector<std::string> graphs = {"PGPgiantcompo", "celegans_metabolic", "hep-th", "jazz"};
