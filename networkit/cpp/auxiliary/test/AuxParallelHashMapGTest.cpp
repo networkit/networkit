@@ -24,7 +24,7 @@ using HTSyncData = Aux::ParallelHashMap::HTSyncData;
 class AuxParallelGrowingHTGTest : public testing::Test {
 
 public:
-    bool get_and_check_all(std::vector<node> const &mockup_data, HTAtomic128 &ht) {
+    bool getAndCheckAll(std::vector<node> const &mockup_data, HTAtomic128 &ht) {
         size_t idx = 0;
         bool all_good = true;
         for (size_t i = 0; i < mockup_data.size() && all_good; ++i) {
@@ -65,7 +65,7 @@ public:
         return all_good;
     }
 
-    bool insert_data(HTAtomic128 &ht, MockupData const &data) {
+    bool insertData(HTAtomic128 &ht, MockupData const &data) {
         bool all_inserted_successful = true;
         for (size_t i = 0; i < data.size(); ++i) {
             all_inserted_successful = ht.insert(data[i].first, data[i].second);
@@ -76,7 +76,7 @@ public:
         return all_inserted_successful;
     }
 
-    bool insert_data(HTHandle &handle, MockupData const &data) {
+    bool insertData(HTHandle &handle, MockupData const &data) {
         bool all_inserted_successful = true;
         for (size_t i = 0; i < data.size() && all_inserted_successful; ++i) {
             all_inserted_successful = handle.insert(data[i].first, data[i].second);
@@ -89,17 +89,17 @@ TEST_F(AuxParallelGrowingHTGTest, testHashUtilsfastMod) {
     uint32_t idx = 8;
     size_t capacity = 16;
 
-    uint32_t idx_wrapped = Aux::fast_mod(idx, capacity);
+    uint32_t idx_wrapped = Aux::fastMod(idx, capacity);
 
     ASSERT_EQ(idx_wrapped, idx);
 
     idx = 13;
-    idx_wrapped = Aux::fast_mod(idx, capacity);
+    idx_wrapped = Aux::fastMod(idx, capacity);
 
     ASSERT_EQ(idx_wrapped, idx);
 
     idx = 17;
-    idx_wrapped = Aux::fast_mod(idx, capacity);
+    idx_wrapped = Aux::fastMod(idx, capacity);
 
     ASSERT_EQ(idx_wrapped, 1);
 }
@@ -138,7 +138,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128Constructor) {
         ht.insert(mockupData[i], i);
     }
 
-    ASSERT_TRUE(get_and_check_all(mockupData, ht));
+    ASSERT_TRUE(getAndCheckAll(mockupData, ht));
 }
 
 TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128CopyConstructor) {
@@ -158,8 +158,8 @@ TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128CopyConstructor) {
 
     HTAtomic128 dvh_copy(ht);
 
-    ASSERT_TRUE(get_and_check_all(mockupData, dvh_copy));
-    ASSERT_TRUE(get_and_check_all(mockupData, ht));
+    ASSERT_TRUE(getAndCheckAll(mockupData, dvh_copy));
+    ASSERT_TRUE(getAndCheckAll(mockupData, ht));
 }
 
 TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128MoveConstructor) {
@@ -179,7 +179,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128MoveConstructor) {
 
     HTAtomic128 dvh_moved(std::move(ht));
 
-    ASSERT_TRUE(get_and_check_all(mockupData, dvh_moved));
+    ASSERT_TRUE(getAndCheckAll(mockupData, dvh_moved));
 }
 
 TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128Swap) {
@@ -211,12 +211,12 @@ TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128Swap) {
         ht_b.insert(mockupDataB[i], i);
     }
 
-    ht_b.increment_global_occupancy(mockupDataB.size());
+    ht_b.incrementGlobalOccupancy(mockupDataB.size());
 
     swap(ht, ht_b);
 
-    ASSERT_TRUE(get_and_check_all(mockupDataB, ht));
-    ASSERT_TRUE(get_and_check_all(mockupData, ht_b));
+    ASSERT_TRUE(getAndCheckAll(mockupDataB, ht));
+    ASSERT_TRUE(getAndCheckAll(mockupData, ht_b));
 }
 
 TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128CopyAssignment) {
@@ -236,8 +236,8 @@ TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128CopyAssignment) {
     HTAtomic128 ht_b{Aux::ParallelHashMap::ht_begin_capacity};
     ht_b = ht;
 
-    ASSERT_TRUE(get_and_check_all(mockupData, ht_b));
-    ASSERT_TRUE(get_and_check_all(mockupData, ht));
+    ASSERT_TRUE(getAndCheckAll(mockupData, ht_b));
+    ASSERT_TRUE(getAndCheckAll(mockupData, ht));
 }
 
 TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128InputIterator) {
@@ -456,7 +456,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128ClusterRangeSingleThread) {
     auto const cells_begin = std::cbegin(source.cells());
     auto const cells_end = std::cend(source.cells());
 
-    auto c_range = source.cluster_range();
+    auto c_range = source.clusterRange();
     ASSERT_EQ(c_range.first, cells_begin);
     ASSERT_EQ(c_range.second, cells_end);
 }
@@ -478,11 +478,11 @@ TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128ClusterRangeDualThread) {
     auto const cells_begin = std::cbegin(source.cells());
     auto const cells_end = std::cend(source.cells());
 
-    auto c_range_t0 = source.cluster_range(2, 0);
+    auto c_range_t0 = source.clusterRange(2, 0);
     ASSERT_EQ(c_range_t0.first, cells_begin);
     ASSERT_TRUE(c_range_t0.second != cells_end);
 
-    auto c_range_t1 = source.cluster_range(2, 1);
+    auto c_range_t1 = source.clusterRange(2, 1);
     ASSERT_TRUE(c_range_t1.first != cells_begin);
     ASSERT_EQ(c_range_t1.second, cells_end);
 
@@ -508,21 +508,21 @@ TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128ClusterRangeQuadrupleThread) {
 
     uint32_t const thread_count = 4;
 
-    auto c_range_t0 = source.cluster_range(thread_count, 0);
+    auto c_range_t0 = source.clusterRange(thread_count, 0);
     ASSERT_EQ(c_range_t0.first, cells_begin);
     ASSERT_TRUE(c_range_t0.second != cells_end);
 
-    auto c_range_t1 = source.cluster_range(thread_count, 1);
+    auto c_range_t1 = source.clusterRange(thread_count, 1);
     ASSERT_TRUE(c_range_t1.first != cells_begin);
     ASSERT_TRUE(c_range_t1.second != cells_end);
     ASSERT_EQ(c_range_t0.second, c_range_t1.first);
 
-    auto c_range_t2 = source.cluster_range(thread_count, 2);
+    auto c_range_t2 = source.clusterRange(thread_count, 2);
     ASSERT_TRUE(c_range_t2.first != cells_begin);
     ASSERT_TRUE(c_range_t2.second != cells_end);
     ASSERT_EQ(c_range_t1.second, c_range_t2.first);
 
-    auto c_range_t3 = source.cluster_range(thread_count, 3);
+    auto c_range_t3 = source.clusterRange(thread_count, 3);
     ASSERT_TRUE(c_range_t3.first != cells_begin);
     ASSERT_EQ(c_range_t3.second, cells_end);
     ASSERT_EQ(c_range_t2.second, c_range_t3.first);
@@ -561,7 +561,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128RoamingDualThread) {
     constexpr size_t begin_capacity = 32;
     HTAtomic128 ht_first{begin_capacity};
 
-    bool all_inserted_successful = insert_data(ht_first, mockup_data);
+    bool all_inserted_successful = insertData(ht_first, mockup_data);
 
     ASSERT_TRUE(all_inserted_successful);
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, ht_first));
@@ -584,7 +584,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128BigRoaming) {
     constexpr size_t begin_capacity = 16384u; //
     HTAtomic128 ht_first{begin_capacity};
 
-    bool all_inserted_successful = insert_data(ht_first, mockup_data);
+    bool all_inserted_successful = insertData(ht_first, mockup_data);
 
     ASSERT_TRUE(all_inserted_successful);
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, ht_first));
@@ -615,13 +615,13 @@ TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128HTHandleHTRoamingSingleThread) 
         source, target, busy_bitset, request_growth, 1, Aux::getCurrentNumberOfThreads(), 2};
     HTHandle handle{sync_data};
 
-    bool const all_inserted_successful = insert_data(handle, mockup_data);
+    bool const all_inserted_successful = insertData(handle, mockup_data);
 
     ASSERT_TRUE(all_inserted_successful);
 
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, handle.hashtable()));
 
-    ASSERT_EQ(handle.hashtable().global_occupancy(), mockup_data.size());
+    ASSERT_EQ(handle.hashtable().globalOccupancy(), mockup_data.size());
 }
 
 TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128HTHandleHTRoamingDualThread) {
@@ -663,7 +663,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128HTHandleHTRoamingDualThread) {
 
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, ht));
 
-    ASSERT_EQ(ht.global_occupancy(), mockup_data.size());
+    ASSERT_EQ(ht.globalOccupancy(), mockup_data.size());
 }
 
 TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128HTHandleHTRoamingDualThreadRoaming) {
@@ -722,16 +722,16 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianConstructor) {
 
     MockupData mockup_data = generateMockupData();
 
-    auto handle_a = phm_a.make_handle();
-    auto handle_b = phm_b.make_handle();
+    auto handle_a = phm_a.makeHandle();
+    auto handle_b = phm_b.makeHandle();
 
     ASSERT_TRUE(handle_a->insert(mockup_data[0].first, mockup_data[0].second));
     ASSERT_TRUE(handle_b->insert(mockup_data[1].first, mockup_data[1].second));
 
     swap(phm_a, phm_b);
 
-    auto handle_a_new = phm_a.make_handle();
-    auto handle_b_new = phm_b.make_handle();
+    auto handle_a_new = phm_a.makeHandle();
+    auto handle_b_new = phm_b.makeHandle();
 
     ASSERT_TRUE(handle_a_new->find(mockup_data[1].first) == mockup_data[1].second);
     ASSERT_TRUE(handle_b_new->find(mockup_data[0].first) == mockup_data[0].second);
@@ -741,15 +741,15 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianCopyConstructor) {
     Aux::ParallelHashMap phm_a;
     auto mockup_data = generateMockupData();
 
-    auto handle_a = phm_a.make_handle();
+    auto handle_a = phm_a.makeHandle();
 
-    bool all_inserted_successful = insert_data(*handle_a.get(), mockup_data);
+    bool all_inserted_successful = insertData(*handle_a.get(), mockup_data);
 
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, handle_a->hashtable()));
 
     Aux::ParallelHashMap phm_b(phm_a);
 
-    auto handle_b = phm_b.make_handle();
+    auto handle_b = phm_b.makeHandle();
 
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, handle_b->hashtable()));
 }
@@ -759,13 +759,13 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianMoveConstructor) {
     Aux::ParallelHashMap phm_a;
     auto mockup_data = generateMockupData();
 
-    auto handle_a = phm_a.make_handle();
+    auto handle_a = phm_a.makeHandle();
 
-    bool all_inserted_successful = insert_data(*handle_a.get(), mockup_data);
+    bool all_inserted_successful = insertData(*handle_a.get(), mockup_data);
 
     Aux::ParallelHashMap phm_b(std::move(phm_a));
 
-    auto handle_b = phm_b.make_handle();
+    auto handle_b = phm_b.makeHandle();
 
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, handle_b->hashtable()));
 }
@@ -774,14 +774,14 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianCopyAssignment) {
     Aux::ParallelHashMap phm_a;
     auto mockup_data = generateMockupData();
 
-    auto handle_a = phm_a.make_handle();
+    auto handle_a = phm_a.makeHandle();
 
-    bool all_inserted_successful = insert_data(*handle_a.get(), mockup_data);
+    bool all_inserted_successful = insertData(*handle_a.get(), mockup_data);
 
     Aux::ParallelHashMap phm_b;
     phm_b = phm_a;
 
-    auto handle_b = phm_b.make_handle();
+    auto handle_b = phm_b.makeHandle();
 
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, handle_b->hashtable()));
 }
@@ -796,13 +796,13 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianSingleThread) {
 
 #pragma omp parallel num_threads(1) shared(phm)
     {
-        auto handle = phm.make_handle();
+        auto handle = phm.makeHandle();
         for (auto it = std::cbegin(mockup_data); it != std::cend(mockup_data); ++it) {
             handle->insert(it->first, it->second);
         }
     }
 
-    ASSERT_TRUE(checkEntriesForMockupData(mockup_data, *phm.current_table()));
+    ASSERT_TRUE(checkEntriesForMockupData(mockup_data, *phm.currentTable()));
 }
 
 TEST_F(AuxParallelGrowingHTGTest, testHTCustodianDualThread) {
@@ -817,7 +817,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianDualThread) {
 #pragma omp parallel num_threads(2) shared(phm, mockup_data)
     {
         uint32_t const thread_id = omp_get_thread_num();
-        auto handle = phm.make_handle();
+        auto handle = phm.makeHandle();
 
         auto local_begin = std::cbegin(mockup_data);
         size_t const elements_per_thread = mockup_data.size() / 2;
@@ -841,7 +841,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianDualThread) {
 
     ASSERT_TRUE(successful_inserts[0]);
     ASSERT_TRUE(successful_inserts[1]);
-    ASSERT_TRUE(checkEntriesForMockupData(mockup_data, *phm.current_table()));
+    ASSERT_TRUE(checkEntriesForMockupData(mockup_data, *phm.currentTable()));
 }
 
 TEST_F(AuxParallelGrowingHTGTest, testHTCustodianQuadrupleThread) {
@@ -856,7 +856,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianQuadrupleThread) {
 #pragma omp parallel num_threads(4) shared(phm, mockup_data)
     {
         uint32_t const thread_id = omp_get_thread_num();
-        auto handle = phm.make_handle();
+        auto handle = phm.makeHandle();
 
         auto local_begin = std::cbegin(mockup_data);
         size_t const elements_per_thread = mockup_data.size() / 4;
@@ -882,7 +882,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianQuadrupleThread) {
     ASSERT_TRUE(successful_inserts[1]);
     ASSERT_TRUE(successful_inserts[2]);
     ASSERT_TRUE(successful_inserts[3]);
-    ASSERT_TRUE(checkEntriesForMockupData(mockup_data, *phm.current_table()));
+    ASSERT_TRUE(checkEntriesForMockupData(mockup_data, *phm.currentTable()));
 }
 
 } // namespace NetworKit

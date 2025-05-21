@@ -4,7 +4,7 @@
 #include <atomic>
 
 namespace Aux {
-inline uint32_t unset_bit_atomically(std::atomic_uint32_t &bitmask, size_t position) {
+inline uint32_t unsetBitAtomically(std::atomic_uint32_t &bitmask, size_t position) {
     uint32_t current_bitmask = bitmask.load();
     uint32_t desired_bitmask = current_bitmask & ~(1u << position);
 
@@ -16,7 +16,7 @@ inline uint32_t unset_bit_atomically(std::atomic_uint32_t &bitmask, size_t posit
     return desired_bitmask;
 };
 
-inline uint32_t set_bit_atomically(std::atomic_uint32_t &bitmask, size_t position) {
+inline uint32_t setBitAtomically(std::atomic_uint32_t &bitmask, size_t position) {
     uint32_t current_bitmask = bitmask.load();
     uint32_t desired_bitmask = current_bitmask | (1u << position);
 
@@ -29,14 +29,14 @@ inline uint32_t set_bit_atomically(std::atomic_uint32_t &bitmask, size_t positio
 }
 
 template <typename T>
-void swap_atomics_non_atomically(std::atomic<T> &a, std::atomic<T> &b) {
+void swapAtomicsNonAtomically(std::atomic<T> &a, std::atomic<T> &b) {
     T const a_temp = a.load();
     a.store(b);
     b.store(a_temp);
 };
 
 template <typename T>
-T increment_atomically(std::atomic<T> &value, T increment = T(1)) {
+T incrementAtomically(std::atomic<T> &value, T increment = T(1)) {
     T current_value = value.load();
     T incremented_value = current_value + increment;
 

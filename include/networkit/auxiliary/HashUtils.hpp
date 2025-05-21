@@ -16,7 +16,7 @@ void hashCombine(std::size_t &seed, T const &v) {
 // capacity: must be power of 2
 // T shall be unsigned.
 template <typename T>
-T fast_mod(T const idx, size_t const capacity) {
+T fastMod(T const idx, size_t const capacity) {
     return idx & (capacity - 1);
 }
 

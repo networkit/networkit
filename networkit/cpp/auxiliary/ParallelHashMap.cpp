@@ -29,7 +29,7 @@ uint64_t scaling_log(uint64_t const h, uint64_t const log_2_capacity) {
 
 size_t index(uint64_t const key, uint64_t const offset, size_t const capacity) {
     uint64_t const h_c = scaling(key, capacity);
-    return fast_mod(h_c + offset, capacity);
+    return fastMod(h_c + offset, capacity);
 }
 
 bool ht_filled(size_t const occupancy, size_t const capacity) {
@@ -85,13 +85,13 @@ HTAtomic128 &HTAtomic128::operator=(HTAtomic128 other) {
 }
 
 bool HTAtomic128::insert(uint64_t const key, uint64_t const value) {
-    Cell const desired = make_cell(key, value);
-    Cell expected = invalid_cell();
+    Cell const desired = makeCell(key, value);
+    Cell expected = invalidCell();
     uint64_t const hashed_key = hash64(key);
     size_t idx = scaling_log(hashed_key, m_log_capacity);
 
     while (true) {
-        idx = fast_mod(idx, m_capacity);
+        idx = fastMod(idx, m_capacity);
         assert(idx < m_capacity);
 
         Cell &cell = m_cells[idx];
@@ -122,12 +122,12 @@ bool HTAtomic128::insert(uint64_t const key, uint64_t const value) {
 }
 
 uint64_t HTAtomic128::find(uint64_t const key) const {
-    Cell actual = invalid_cell();
+    Cell actual = invalidCell();
     uint64_t const hashed_key = hash64(key);
     size_t idx = scaling_log(hashed_key, m_log_capacity);
 
     while (true) {
-        idx = fast_mod(idx, m_capacity);
+        idx = fastMod(idx, m_capacity);
         assert(idx < m_capacity);
 
         Cell const &cell = m_cells[idx];
@@ -151,13 +151,13 @@ uint64_t HTAtomic128::find(uint64_t const key) const {
 }
 
 bool HTAtomic128::update(uint64_t const key, uint64_t const value) {
-    Cell const desired = make_cell(key, value);
-    Cell expected = invalid_cell();
+    Cell const desired = makeCell(key, value);
+    Cell expected = invalidCell();
     uint64_t const hashed_key = hash64(key);
     size_t idx = scaling_log(hashed_key, m_log_capacity);
 
     while (true) {
-        idx = fast_mod(idx, m_capacity);
+        idx = fastMod(idx, m_capacity);
         assert(idx < m_capacity);
 
         Cell &cell = m_cells[idx];
@@ -223,11 +223,11 @@ HTAtomic128::Iterator HTAtomic128::end() const {
     return end_it;
 }
 
-size_t HTAtomic128::increment_global_occupancy(size_t increment) {
-    return Aux::increment_atomically(m_global_occupancy, increment);
+size_t HTAtomic128::incrementGlobalOccupancy(size_t increment) {
+    return Aux::incrementAtomically(m_global_occupancy, increment);
 }
 
-size_t HTAtomic128::global_occupancy() const {
+size_t HTAtomic128::globalOccupancy() const {
     return m_global_occupancy.load();
 }
 
@@ -240,12 +240,12 @@ bool HTAtomic128::filled() const {
 }
 
 void HTAtomic128::roam(HTAtomic128 &target, uint32_t const p_count, uint32_t const p_id) {
-    auto range_to_move = cluster_range(p_count, p_id);
-    move_cells(range_to_move.first, range_to_move.second, target);
+    auto range_to_move = clusterRange(p_count, p_id);
+    moveCells(range_to_move.first, range_to_move.second, target);
 }
 
-void HTAtomic128::move_cells(HTAtomic128::Cells::const_iterator begin,
-                             HTAtomic128::Cells::const_iterator end, HTAtomic128 &target) {
+void HTAtomic128::moveCells(HTAtomic128::Cells::const_iterator begin,
+                            HTAtomic128::Cells::const_iterator end, HTAtomic128 &target) {
     size_t local_occupancy = 0;
     for (HTAtomic128::Cells::const_iterator c = begin; c != end; ++c) {
         if (c->key != ParallelHashMap::ht_invalid_key) {
@@ -254,12 +254,12 @@ void HTAtomic128::move_cells(HTAtomic128::Cells::const_iterator begin,
             local_occupancy += size_t(inserted);
         }
     }
-    target.increment_global_occupancy(local_occupancy);
+    target.incrementGlobalOccupancy(local_occupancy);
 }
 
 std::pair<ParallelHashMap::HTAtomic128::Cells::const_iterator,
           ParallelHashMap::HTAtomic128::Cells::const_iterator>
-HTAtomic128::cluster_range(uint32_t const p_count, uint32_t const p_id) {
+HTAtomic128::clusterRange(uint32_t const p_count, uint32_t const p_id) {
     auto cells_begin = m_cells.begin();
     auto cells_end = m_cells.end();
 
@@ -312,18 +312,18 @@ HTSyncData::HTSyncData(std::unique_ptr<HTAtomic128> &_source, std::unique_ptr<HT
       p_count(_p_count), p_id(_p_id), insert_threshold(_insert_threshold) {}
 
 HTHandle::HTHandle(HTSyncData sync_data) : m_ht(sync_data.source.get()), m_sync_data(sync_data) {
-    set_bit_atomically(m_sync_data.busy, m_sync_data.p_id);
+    setBitAtomically(m_sync_data.busy, m_sync_data.p_id);
 }
 
 HTHandle::~HTHandle() {
-    size_t const occupancy = m_ht->increment_global_occupancy(m_sync_data.insert_counter);
+    size_t const occupancy = m_ht->incrementGlobalOccupancy(m_sync_data.insert_counter);
 
     if (ht_filled(occupancy, m_ht->capacity())) {
         m_ht = grow_hashtable(m_sync_data.source, m_sync_data.target, m_sync_data.request_growth,
                               m_sync_data.p_count, m_sync_data.p_id);
     }
 
-    Aux::unset_bit_atomically(m_sync_data.busy, m_sync_data.p_id);
+    Aux::unsetBitAtomically(m_sync_data.busy, m_sync_data.p_id);
 
     while (m_sync_data.busy.load() != 0u) {
         if (m_sync_data.request_growth.load()) {
@@ -339,7 +339,7 @@ bool HTHandle::insert(uint64_t const key, uint64_t const value) {
     m_sync_data.insert_counter += uint32_t(success);
 
     if (m_sync_data.insert_threshold == m_sync_data.insert_counter) {
-        size_t const occupancy = m_ht->increment_global_occupancy(m_sync_data.insert_counter);
+        size_t const occupancy = m_ht->incrementGlobalOccupancy(m_sync_data.insert_counter);
 
         if (ht_filled(occupancy, m_ht->capacity())) {
             m_ht =
@@ -379,25 +379,25 @@ ParallelHashMap::ParallelHashMap(ParallelHashMap &&other) : ParallelHashMap() {
     swap(*this, other);
 }
 
-std::unique_ptr<HTHandle> ParallelHashMap::make_handle() {
+std::unique_ptr<HTHandle> ParallelHashMap::makeHandle() {
     Aux::HTSyncData sync_data{m_source,
                               m_target,
                               m_busy_bitset,
                               m_request_growth,
                               omp_get_num_threads(),
                               omp_get_thread_num(),
-                              random_thread_range()};
+                              randomThreadRange()};
 
     auto handle = std::make_unique<HTHandle>(sync_data);
 
     return handle;
 }
 
-HTAtomic128 const *const ParallelHashMap::current_table() const {
+HTAtomic128 const *const ParallelHashMap::currentTable() const {
     return m_source.get();
 }
 
-uint32_t ParallelHashMap::random_thread_range() {
+uint32_t ParallelHashMap::randomThreadRange() {
     std::uniform_int_distribution<uint32_t> m_dist(1, omp_get_num_threads());
     return m_dist(m_generator);
 }

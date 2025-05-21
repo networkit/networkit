@@ -22,8 +22,8 @@ public:
 
         swap(p.m_source, q.m_source);
         swap(p.m_target, q.m_target);
-        swap_atomics_non_atomically<uint32_t>(p.m_busy_bitset, q.m_busy_bitset);
-        swap_atomics_non_atomically<bool>(p.m_request_growth, q.m_request_growth);
+        swapAtomicsNonAtomically<uint32_t>(p.m_busy_bitset, q.m_busy_bitset);
+        swapAtomicsNonAtomically<bool>(p.m_request_growth, q.m_request_growth);
     }
 
     class HTHandle;
@@ -55,11 +55,11 @@ public:
         return *this;
     }
 
-    std::unique_ptr<HTHandle> make_handle();
+    std::unique_ptr<HTHandle> makeHandle();
 
-    HTAtomic128 const *const current_table() const;
+    HTAtomic128 const *const currentTable() const;
 
-    uint32_t random_thread_range();
+    uint32_t randomThreadRange();
 
 private:
     std::unique_ptr<HTAtomic128> m_source;
@@ -109,7 +109,7 @@ public:
         swap(a.m_cells, b.m_cells);
         swap(a.m_capacity, b.m_capacity);
         swap(a.m_log_capacity, b.m_log_capacity);
-        swap_atomics_non_atomically(a.m_global_occupancy, b.m_global_occupancy);
+        swapAtomicsNonAtomically(a.m_global_occupancy, b.m_global_occupancy);
     }
 
     // Returns false if key already exists, and true if (key, value) was
@@ -169,9 +169,9 @@ public:
 
     Iterator end() const;
 
-    size_t increment_global_occupancy(size_t increment);
+    size_t incrementGlobalOccupancy(size_t increment);
 
-    size_t global_occupancy() const;
+    size_t globalOccupancy() const;
 
     size_t capacity() const;
 
@@ -194,18 +194,18 @@ public:
 
     std::pair<ParallelHashMap::HTAtomic128::Cells::const_iterator,
               ParallelHashMap::HTAtomic128::Cells::const_iterator>
-    cluster_range(uint32_t const p_count = 1, uint32_t const p_id = 0);
+    clusterRange(uint32_t const p_count = 1, uint32_t const p_id = 0);
 
 private:
-    static Cell make_cell(uint64_t key, uint64_t value) {
+    static Cell makeCell(uint64_t key, uint64_t value) {
         Cell c;
         c.key = key;
         c.value = value;
         return c;
     }
 
-    static Cell invalid_cell() {
-        return make_cell(ParallelHashMap::ht_invalid_key, ParallelHashMap::ht_invalid_value);
+    static Cell invalidCell() {
+        return makeCell(ParallelHashMap::ht_invalid_key, ParallelHashMap::ht_invalid_value);
     }
 
     // Double Width Compare And Swap:
@@ -246,9 +246,9 @@ private:
         return res;
     }
 
-    void move_cells(ParallelHashMap::HTAtomic128::Cells::const_iterator begin,
-                    ParallelHashMap::HTAtomic128::Cells::const_iterator end,
-                    ParallelHashMap::HTAtomic128 &target);
+    void moveCells(ParallelHashMap::HTAtomic128::Cells::const_iterator begin,
+                   ParallelHashMap::HTAtomic128::Cells::const_iterator end,
+                   ParallelHashMap::HTAtomic128 &target);
 
 private:
     size_t m_capacity{ParallelHashMap::ht_begin_capacity};
