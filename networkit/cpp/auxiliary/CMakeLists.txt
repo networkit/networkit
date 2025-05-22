@@ -3,6 +3,7 @@ networkit_add_module(auxiliary
     BucketPQ.cpp
     Log.cpp
     NumericTools.cpp
+    ParallelHashMap.cpp
     Parallelism.cpp
     Random.cpp
     SignalHandling.cpp
