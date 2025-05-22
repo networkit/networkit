@@ -714,7 +714,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTAtomic128HTHandleHTRoamingDualThreadRoam
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, ht_2));
 }
 
-TEST_F(AuxParallelGrowingHTGTest, testHTCustodianConstructor) {
+TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapConstructor) {
     Aux::setNumberOfThreads(1);
 
     // Swap
@@ -739,7 +739,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianConstructor) {
     ASSERT_TRUE(handle_b_new->find(mockup_data[0].first) == mockup_data[0].second);
 }
 
-TEST_F(AuxParallelGrowingHTGTest, testHTCustodianCopyConstructor) {
+TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapCopyConstructor) {
     Aux::ParallelHashMap phm_a;
     auto mockup_data = generateMockupData();
 
@@ -756,7 +756,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianCopyConstructor) {
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, handle_b->hashtable()));
 }
 
-TEST_F(AuxParallelGrowingHTGTest, testHTCustodianMoveConstructor) {
+TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapMoveConstructor) {
 
     Aux::ParallelHashMap phm_a;
     auto mockup_data = generateMockupData();
@@ -774,7 +774,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianMoveConstructor) {
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, handle_b->hashtable()));
 }
 
-TEST_F(AuxParallelGrowingHTGTest, testHTCustodianCopyAssignment) {
+TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapCopyAssignment) {
     Aux::ParallelHashMap phm_a;
     auto mockup_data = generateMockupData();
 
@@ -790,7 +790,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianCopyAssignment) {
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, handle_b->hashtable()));
 }
 
-TEST_F(AuxParallelGrowingHTGTest, testHTCustodianSingleThread) {
+TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapSingleThread) {
     Aux::setNumberOfThreads(1);
 
     Aux::ParallelHashMap phm{32};
@@ -809,7 +809,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianSingleThread) {
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, *phm.currentTable()));
 }
 
-TEST_F(AuxParallelGrowingHTGTest, testHTCustodianDualThread) {
+TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapDualThread) {
     Aux::setNumberOfThreads(2);
 
     Aux::ParallelHashMap phm{32};
@@ -848,7 +848,7 @@ TEST_F(AuxParallelGrowingHTGTest, testHTCustodianDualThread) {
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, *phm.currentTable()));
 }
 
-TEST_F(AuxParallelGrowingHTGTest, testHTCustodianQuadrupleThread) {
+TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapQuadrupleThread) {
     Aux::setNumberOfThreads(4);
 
     Aux::ParallelHashMap phm{32};
