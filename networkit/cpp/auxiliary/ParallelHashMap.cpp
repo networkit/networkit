@@ -122,10 +122,8 @@ uint64_t HTAtomic128::find(uint64_t const key) const {
 
         Cell const &cell = m_cells[idx];
 
-#pragma omp atomic read
         actual.key = cell.key;
 
-#pragma omp atomic read
         actual.value = cell.value;
 
         if (actual.key == key) {
