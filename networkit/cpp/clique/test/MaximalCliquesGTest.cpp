@@ -12,6 +12,12 @@ namespace NetworKit {
 
 class MaximalCliquesGTest : public testing::Test {};
 
+TEST_F(MaximalCliquesGTest, testGetCliquesThrowsWithCallback) {
+    Graph graph(0, false, true, false);
+    MaximalCliques maxClique(graph, [&](const std::vector<node> &) {});
+    EXPECT_THROW(maxClique.getCliques(), std::runtime_error);
+}
+
 TEST_F(MaximalCliquesGTest, testMaximalCliques) {
 
     METISGraphReader reader;
