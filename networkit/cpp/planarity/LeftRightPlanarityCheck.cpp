@@ -9,7 +9,7 @@
 
 namespace NetworKit {
 
-const Edge LeftRightPlanarityCheck::noneEdge{};
+const Edge<node> LeftRightPlanarityCheck::noneEdge{};
 
 void LeftRightPlanarityCheck::run() {
     // Euler-criterion
@@ -37,8 +37,8 @@ void LeftRightPlanarityCheck::run() {
 void LeftRightPlanarityCheck::sortAdjacencyListByNestingDepth() {
     dfsGraph.forNodes([&](node currentNode) {
         dfsGraph.sortNeighbors(currentNode, [&](node neighbor1, node neighbor2) {
-            if (auto it1 = nestingDepth.find(Edge(currentNode, neighbor1)),
-                it2 = nestingDepth.find(Edge(currentNode, neighbor2));
+            if (auto it1 = nestingDepth.find(Edge<node>(currentNode, neighbor1)),
+                it2 = nestingDepth.find(Edge<node>(currentNode, neighbor2));
                 it1 != nestingDepth.end() && it2 != nestingDepth.end()) {
                 return it1->second < it2->second;
             }
@@ -47,14 +47,15 @@ void LeftRightPlanarityCheck::sortAdjacencyListByNestingDepth() {
     });
 }
 
-bool LeftRightPlanarityCheck::conflicting(const Interval &interval, const Edge &edge) {
+bool LeftRightPlanarityCheck::conflicting(const Interval &interval, const Edge<node> &edge) {
     auto iteratorHigh = lowestPoint.find(interval.high);
     auto iteratorEdge = lowestPoint.find(edge);
     return !interval.isEmpty() && iteratorHigh != lowestPoint.end()
            && iteratorEdge != lowestPoint.end() && iteratorHigh->second > iteratorEdge->second;
 }
 
-bool LeftRightPlanarityCheck::applyConstraints(const Edge &edge, const Edge &parentEdge) {
+bool LeftRightPlanarityCheck::applyConstraints(const Edge<node> &edge,
+                                               const Edge<node> &parentEdge) {
     ConflictPair tmpConflictPair{};
     do {
         ConflictPair currentConflictPair = stack.top();
@@ -116,7 +117,7 @@ count LeftRightPlanarityCheck::getLowestLowPoint(const ConflictPair &conflictPai
     return std::min(lowestPoint[conflictPair.right.low], lowestPoint[conflictPair.left.low]);
 }
 
-void LeftRightPlanarityCheck::removeBackEdges(const Edge &edge) {
+void LeftRightPlanarityCheck::removeBackEdges(const Edge<node> &edge) {
     const node parentNode = edge.u;
     while (!stack.empty() && getLowestLowPoint(stack.top()) == heights[parentNode]) {
         stack.pop();
@@ -146,8 +147,8 @@ void LeftRightPlanarityCheck::removeBackEdges(const Edge &edge) {
     }
 
     if (!stack.empty() && lowestPoint[edge] < heights[parentNode]) {
-        const Edge highestReturnEdgeLeft = stack.top().left.high;
-        const Edge highestReturnEdgeRight = stack.top().right.high;
+        const Edge<node> highestReturnEdgeLeft = stack.top().left.high;
+        const Edge<node> highestReturnEdgeRight = stack.top().right.high;
         if (highestReturnEdgeLeft != noneEdge
             && (highestReturnEdgeRight != noneEdge
                 || lowestPoint[highestReturnEdgeLeft] > lowestPoint[highestReturnEdgeRight])) {
@@ -162,13 +163,13 @@ bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
     std::stack<node> dfsStack;
     dfsStack.push(startNode);
     std::unordered_map<node, decltype(dfsGraph.neighborRange(startNode).begin())> neighborIterators;
-    std::unordered_set<Edge> preprocessedEdges;
+    std::unordered_set<Edge<node>> preprocessedEdges;
 
     auto processNeighborEdges = [&](node currentNode, bool &callRemoveBackEdges) -> bool {
         auto &neighborIterator = neighborIterators[currentNode];
         while (neighborIterator != dfsGraph.neighborRange(currentNode).end()) {
             const node neighbor = *neighborIterator;
-            const Edge currentEdge(currentNode, neighbor);
+            const Edge<node> currentEdge(currentNode, neighbor);
 
             if (!preprocessedEdges.contains(currentEdge)) {
                 stackBottom[currentEdge] = stack.empty() ? NoneConflictPair : stack.top();
@@ -203,7 +204,7 @@ bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
     do {
         const node currentNode = dfsStack.top();
         dfsStack.pop();
-        const Edge parentEdge = parentEdges[currentNode];
+        const Edge<node> parentEdge = parentEdges[currentNode];
         bool callRemoveBackEdges{true};
 
         if (auto it = neighborIterators.find(currentNode); it == neighborIterators.end()) {
@@ -225,14 +226,14 @@ bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
 void LeftRightPlanarityCheck::dfsOrientation(node startNode) {
     std::stack<node> dfsStack;
     dfsStack.push(startNode);
-    std::unordered_set<Edge> preprocessedEdges;
+    std::unordered_set<Edge<node>> preprocessedEdges;
     do {
         const node currentNode = dfsStack.top();
         dfsStack.pop();
-        const Edge parentEdge = parentEdges[currentNode];
+        const Edge<node> parentEdge = parentEdges[currentNode];
         for (node neighbor : graph->neighborRange(currentNode)) {
 
-            const Edge currentEdge = Edge(currentNode, neighbor);
+            const Edge<node> currentEdge(currentNode, neighbor);
             if (!preprocessedEdges.contains(currentEdge)) {
                 if (dfsGraph.hasEdge(currentNode, neighbor)
                     || dfsGraph.hasEdge(neighbor, currentNode))
