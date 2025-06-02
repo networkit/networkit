@@ -11,6 +11,7 @@
 #include <cassert>
 #include <chrono>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -647,6 +648,18 @@ TEST_F(IOGTest, testGraphToolBinaryReader) {
     EXPECT_FALSE(G.isDirected());
 }
 
+TEST_F(IOGTest, testGraphToolBinaryEmptyFileCanBeRead) {
+    Graph graph(0, false, true);
+    GraphToolBinaryWriter writer;
+    std::filesystem::path const path = "output/empty_graph.gt";
+    writer.write(graph, path.c_str());
+
+    GraphToolBinaryReader reader;
+    Graph graph_read = reader.read(path.c_str());
+    EXPECT_EQ(graph.numberOfNodes(), graph_read.numberOfNodes());
+    EXPECT_EQ(graph.numberOfEdges(), graph_read.numberOfEdges());
+}
+
 TEST_F(IOGTest, testGraphToolBinaryWriter) {
     Graph G(10, false, false);
     G.addEdge(0, 1);
@@ -857,6 +870,19 @@ TEST_F(IOGTest, testKONECTGraphReader) {
     ASSERT_EQ(G.weight(0, 1), 1.261404);
     ASSERT_EQ(G.weight(127, 48), 0.03050447);
 }
+
+TEST_F(IOGTest, testNetworkitBinaryWriteEmpty) {
+    Graph graph(0, false, true);
+    NetworkitBinaryWriter writer;
+    std::filesystem::path const path = "empty_graph.bin";
+    writer.write(graph, path.c_str());
+
+    NetworkitBinaryReader reader;
+    Graph graph_read = reader.read(path.c_str());
+    EXPECT_EQ(graph.numberOfNodes(), graph_read.numberOfNodes());
+    EXPECT_EQ(graph.numberOfEdges(), graph_read.numberOfEdges());
+}
+
 TEST_F(IOGTest, testNetworkitBinaryTiny01) {
     METISGraphReader reader2;
     Graph G = reader2.read("input/tiny_01.graph");
