@@ -9,6 +9,7 @@
 #include <cfloat>
 #include <cmath>
 #include <omp.h>
+#include <span>
 
 #include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/auxiliary/Timer.hpp>
@@ -64,7 +65,7 @@ void DynKatzCentrality::run() {
     hasRun = true;
 }
 
-void DynKatzCentrality::updateBatch(const std::vector<GraphEvent> &events) {
+void DynKatzCentrality::updateBatch(std::span<const GraphEvent> events) {
     std::vector<count> preUpdatePaths(G.upperNodeIdBound(), 0);
     std::vector<count> preUpdateContrib(G.upperNodeIdBound(), 0);
 

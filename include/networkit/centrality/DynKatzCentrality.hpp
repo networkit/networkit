@@ -9,6 +9,8 @@
 #ifndef NETWORKIT_CENTRALITY_DYN_KATZ_CENTRALITY_HPP_
 #define NETWORKIT_CENTRALITY_DYN_KATZ_CENTRALITY_HPP_
 
+#include <span>
+
 #include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
 #include <networkit/centrality/Centrality.hpp>
@@ -56,7 +58,7 @@ public:
      *
      * @param event The edge insertions or deletion.
      */
-    void updateBatch(const std::vector<GraphEvent> &events) override;
+    void updateBatch(std::span<const GraphEvent> events) override;
 
     void update(GraphEvent singleEvent) override {
         std::vector<GraphEvent> events{singleEvent};
