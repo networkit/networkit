@@ -8,6 +8,8 @@
 #ifndef NETWORKIT_DISTANCE_DYN_DIJKSTRA_HPP_
 #define NETWORKIT_DISTANCE_DYN_DIJKSTRA_HPP_
 
+#include <span>
+
 #include <tlx/container/d_ary_addressable_int_heap.hpp>
 
 #include <networkit/auxiliary/VectorComparator.hpp>
@@ -39,7 +41,7 @@ public:
     void update(GraphEvent e) override;
 
     /** Updates the distances after a batch of edge insertions.*/
-    void updateBatch(const std::vector<GraphEvent> &batch) override;
+    void updateBatch(std::span<const GraphEvent> batch) override;
 
 private:
     enum Color { WHITE, GRAY, BLACK };

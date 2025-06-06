@@ -8,6 +8,8 @@
 #ifndef NETWORKIT_DISTANCE_DYN_BFS_HPP_
 #define NETWORKIT_DISTANCE_DYN_BFS_HPP_
 
+#include <span>
+
 #include <networkit/distance/DynSSSP.hpp>
 
 namespace NetworKit {
@@ -36,7 +38,7 @@ public:
     void update(GraphEvent e) override;
 
     /** Updates the distances after a batch of edge insertions.*/
-    void updateBatch(const std::vector<GraphEvent> &batch) override;
+    void updateBatch(std::span<const GraphEvent> batch) override;
 
     /* Returns the number of shortest paths to node t.*/
     bigfloat getNumberOfPaths(node t) const;

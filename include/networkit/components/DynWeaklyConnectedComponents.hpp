@@ -9,6 +9,7 @@
 #define NETWORKIT_COMPONENTS_DYN_WEAKLY_CONNECTED_COMPONENTS_HPP_
 
 #include <memory>
+#include <span>
 
 #include <networkit/base/DynAlgorithm.hpp>
 #include <networkit/components/ComponentDecomposition.hpp>
@@ -62,7 +63,7 @@ public:
      * @param[in] batch  A vector that contains a batch of edge events
      *                   (insertions or deletions).
      */
-    void updateBatch(const std::vector<GraphEvent> &batch) override;
+    void updateBatch(std::span<const GraphEvent> batch) override;
 
 private:
     std::unique_ptr<DynConnectedComponentsDetails::DynConnectedComponentsImpl<true>> impl;
