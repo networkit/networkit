@@ -7,6 +7,8 @@
 
 #include "DynConnectedComponentsImpl.hpp"
 
+#include <span>
+
 #include <networkit/components/DynConnectedComponents.hpp>
 
 namespace NetworKit {
@@ -26,7 +28,7 @@ void DynConnectedComponents::update(GraphEvent event) {
     impl->update(event);
 }
 
-void DynConnectedComponents::updateBatch(const std::vector<GraphEvent> &batch) {
+void DynConnectedComponents::updateBatch(std::span<const GraphEvent> batch) {
     impl->updateBatch(batch);
 }
 } // namespace NetworKit

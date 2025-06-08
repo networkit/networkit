@@ -1,5 +1,5 @@
-
 #include <algorithm>
+#include <span>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
@@ -468,7 +468,7 @@ std::vector<node> invertContinuousNodeIds(const std::unordered_map<node, node> &
     return invertedIdMap;
 }
 
-Graph restoreGraph(const std::vector<node> &invertedIdMap, const Graph &G) {
+Graph restoreGraph(std::span<const node> invertedIdMap, const Graph &G) {
     // with the inverted id map and the compacted graph, generate the original graph again
     Graph Goriginal(invertedIdMap.back(), G.isWeighted(), G.isDirected());
     index current = 0;

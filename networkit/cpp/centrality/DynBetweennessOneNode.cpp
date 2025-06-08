@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <queue>
+#include <span>
 #include <unordered_set>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -276,8 +277,8 @@ void DynBetweennessOneNode::update(GraphEvent event) {
     }
 }
 
-void DynBetweennessOneNode::updateBatch(const std::vector<GraphEvent> &batch) {
-    for (auto e : batch) {
+void DynBetweennessOneNode::updateBatch(std::span<const GraphEvent> batch) {
+    for (const auto &e : batch) {
         update(e);
     }
 }

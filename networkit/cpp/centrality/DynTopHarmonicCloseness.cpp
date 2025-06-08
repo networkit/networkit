@@ -8,6 +8,7 @@
 #include <cmath>
 #include <limits>
 #include <omp.h>
+#include <span>
 
 #include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/centrality/DynTopHarmonicCloseness.hpp>
@@ -851,8 +852,8 @@ void DynTopHarmonicCloseness::removeEdge(const GraphEvent &event) {
     }
 }
 
-void DynTopHarmonicCloseness::updateBatch(const std::vector<GraphEvent> &batch) {
-    for (auto event : batch) {
+void DynTopHarmonicCloseness::updateBatch(std::span<const GraphEvent> batch) {
+    for (const auto &event : batch) {
         update(event);
     }
 }

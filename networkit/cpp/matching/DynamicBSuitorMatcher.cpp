@@ -7,6 +7,7 @@
  */
 
 #include <cassert>
+#include <span>
 #include <vector>
 
 #include <networkit/matching/DynamicBSuitorMatcher.hpp>
@@ -26,8 +27,8 @@ void DynamicBSuitorMatcher::update(GraphEvent e) {
     }
 }
 
-void DynamicBSuitorMatcher::updateBatch(const std::vector<GraphEvent> &batch) {
-    for (GraphEvent e : batch) {
+void DynamicBSuitorMatcher::updateBatch(std::span<const GraphEvent> batch) {
+    for (const GraphEvent &e : batch) {
         update(e);
     };
 }
