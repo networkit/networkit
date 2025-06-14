@@ -84,6 +84,17 @@ TEST_F(DistanceGTest, testVertexDiameterPedantically) {
 
 TEST_F(DistanceGTest, testAStar) {
 
+    // test throw condition in AStar constructor
+    {
+        Graph G(5);
+        std::vector<double> distanceHeu = {1.0, 2.0};  // size mismatch (2 instead of 5)
+
+        node source = 0;
+        node target = 1;
+
+        EXPECT_THROW({AStar astar_bad(G, distanceHeu, source, target);}, std::runtime_error);
+    }
+
     // Builds a mesh graph with the given number of rows and columns
     auto buildMesh = [](count rows, count cols) -> Graph {
         Graph G(rows * cols, false, false);
