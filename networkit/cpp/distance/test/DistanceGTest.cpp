@@ -181,10 +181,10 @@ TEST_F(DistanceGTest, testAlgebraicDistanceThrowBehaviour) {
     // Test: invalid omega parameter
     {
         Graph G(5, true, true);
-        EXPECT_THROW(
-            { AlgebraicDistance AGD(G, 10UL, 30UL, 1.1, 0UL, true); }, std::invalid_argument);
-        EXPECT_THROW(
-            { AlgebraicDistance AGD(G, 10UL, 30UL, -0.3, 0UL, true); }, std::invalid_argument);
+        EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, 1.1, 0UL, true); },
+                     std::invalid_argument);
+        EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, -0.3, 0UL, true); },
+                     std::invalid_argument);
     }
 
     // Test: withEdgeScores but no edge id's
@@ -201,7 +201,6 @@ TEST_F(DistanceGTest, testAlgebraicDistanceThrowBehaviour) {
         node target = 2;
         EXPECT_THROW(AGD.distance(source, target), std::runtime_error);
     }
-
 }
 
 TEST_P(DistanceGTest, testAdamicAdar) {
