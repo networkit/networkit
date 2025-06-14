@@ -87,12 +87,12 @@ TEST_F(DistanceGTest, testAStar) {
     // test throw condition in AStar constructor
     {
         Graph G(5);
-        std::vector<double> distanceHeu = {1.0, 2.0};  // size mismatch (2 instead of 5)
+        std::vector<double> distanceHeu = {1.0, 2.0}; // size mismatch (2 instead of 5)
 
         node source = 0;
         node target = 1;
 
-        EXPECT_THROW({AStar astar_bad(G, distanceHeu, source, target);}, std::runtime_error);
+        EXPECT_THROW({ AStar astar_bad(G, distanceHeu, source, target); }, std::runtime_error);
     }
 
     // Builds a mesh graph with the given number of rows and columns
@@ -206,6 +206,21 @@ TEST_P(DistanceGTest, testAdamicAdar) {
 }
 
 TEST_P(DistanceGTest, testAlgebraicDistance) {
+    // test invalid omega parameter
+    {
+        Graph G(5, isWeighted(), isDirected());
+        EXPECT_THROW(
+            { AlgebraicDistance AGD(G, 10UL, 30UL, 1.1, 0UL, true); }, std::invalid_argument);
+        EXPECT_THROW(
+            { AlgebraicDistance AGD(G, 10UL, 30UL, -0.3, 0UL, true); }, std::invalid_argument);
+    }
+
+    // test withEdgeScores but no edge id's
+    {
+        Graph G(5, isWeighted(), isDirected(), false);
+        EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true); }, std::runtime_error);
+    }
+
     Aux::Random::setSeed(42, false);
     auto G = generateERGraph(500, 0.03);
     G.indexEdges();
