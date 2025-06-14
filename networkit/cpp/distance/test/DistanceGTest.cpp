@@ -84,7 +84,21 @@ TEST_F(DistanceGTest, testVertexDiameterPedantically) {
 
 TEST_F(DistanceGTest, testAStar) {
 
-    // test throw condition in AStar constructor
+    // Test: Test AStarGeneral implementation for source = target
+    {
+        Graph G(5);
+        std::vector<double> distanceHeu = {1.0, 2.0, 3.0, 4.0, 5.0};
+
+        node source = 0;
+        node target = 0;
+
+        AStar astar(G, distanceHeu, source, target);
+        astar.run();
+        double expected_result = 0.0;
+        EXPECT_DOUBLE_EQ(astar.getDistance(), expected_result);
+    }
+
+    // Test: throw condition in AStar constructor
     {
         Graph G(5);
         std::vector<double> distanceHeu = {1.0, 2.0}; // size mismatch (2 instead of 5)
