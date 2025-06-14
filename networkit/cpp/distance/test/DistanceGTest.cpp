@@ -163,6 +163,33 @@ TEST_F(DistanceGTest, testAStar) {
     testMesh(25, 5);
 }
 
+TEST_F(DistanceGTest, testAlgebraicDistanceThrowBehaviour) {
+    // Test: invalid omega parameter
+    {
+        Graph G(5, true, true);
+        EXPECT_THROW(
+            { AlgebraicDistance AGD(G, 10UL, 30UL, 1.1, 0UL, true); }, std::invalid_argument);
+        EXPECT_THROW(
+            { AlgebraicDistance AGD(G, 10UL, 30UL, -0.3, 0UL, true); }, std::invalid_argument);
+    }
+
+    // Test: withEdgeScores but no edge id's
+    {
+        Graph G(5, true, true, false);
+        EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true); }, std::runtime_error);
+    }
+
+    // Test: call distance throws if preprocess is not called
+    {
+        Graph G(5, true, true, true);
+        AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true);
+        node source = 0;
+        node target = 2;
+        EXPECT_THROW(AGD.distance(source, target), std::runtime_error);
+    }
+
+}
+
 TEST_P(DistanceGTest, testAdamicAdar) {
     Graph G(100, isWeighted(), isDirected());
     // arbitrary nodes
@@ -206,21 +233,6 @@ TEST_P(DistanceGTest, testAdamicAdar) {
 }
 
 TEST_P(DistanceGTest, testAlgebraicDistance) {
-    // test invalid omega parameter
-    {
-        Graph G(5, isWeighted(), isDirected());
-        EXPECT_THROW(
-            { AlgebraicDistance AGD(G, 10UL, 30UL, 1.1, 0UL, true); }, std::invalid_argument);
-        EXPECT_THROW(
-            { AlgebraicDistance AGD(G, 10UL, 30UL, -0.3, 0UL, true); }, std::invalid_argument);
-    }
-
-    // test withEdgeScores but no edge id's
-    {
-        Graph G(5, isWeighted(), isDirected(), false);
-        EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true); }, std::runtime_error);
-    }
-
     Aux::Random::setSeed(42, false);
     auto G = generateERGraph(500, 0.03);
     G.indexEdges();
