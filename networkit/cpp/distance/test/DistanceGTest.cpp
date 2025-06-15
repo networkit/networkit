@@ -95,6 +95,26 @@ TEST_F(DistanceGTest, testAStarEqualSourceAndTargetDistanceZero) {
     EXPECT_DOUBLE_EQ(astar.getDistance(), expected_result);
 }
 
+TEST_F(DistanceGTest, testAStarInvalidSourceNode) {
+    Graph G(5);
+    std::vector<double> distanceHeu = {1.0, 2.0, 3.0, 4.0, 5.0};
+
+    node invalid_source = 6;
+    node target = 0;
+
+    EXPECT_THROW({ AStar astar(G, distanceHeu, invalid_source, target); }, std::runtime_error);
+}
+
+TEST_F(DistanceGTest, testAStarInvalidTargetNode) {
+    Graph G(5);
+    std::vector<double> distanceHeu = {1.0, 2.0, 3.0, 4.0, 5.0};
+
+    node source = 0;
+    node invalid_target = 6;
+
+    EXPECT_THROW({ AStar astar(G, distanceHeu, source, invalid_target); }, std::runtime_error);
+}
+
 TEST_F(DistanceGTest, testAStarConstructorThrowsMismatchHeuristicAndNodeCount) {
     Graph G(5);
     std::vector<double> distanceHeu = {1.0, 2.0}; // size mismatch (2 instead of 5)
