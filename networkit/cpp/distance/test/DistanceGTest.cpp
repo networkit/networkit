@@ -748,6 +748,27 @@ TEST_P(DistanceGTest, testSPSPWithUnreachableTarget) {
             EXPECT_DOUBLE_EQ(apsp.getDistance(source, target), spsp.getDistance(source, target));
 }
 
+TEST_F(DistanceGTest, testMultiTargetBFSThrowsInvalidSourceWithTargetRange) {
+    Graph G(5);
+    node invalid_source = 6;
+    std::vector<node> targets = {0, 1, 2, 3};
+    EXPECT_THROW(
+        { MultiTargetBFS astar(G, invalid_source, targets.begin(), targets.end()); },
+        std::runtime_error);
+}
+
+TEST_F(DistanceGTest, testMultiTargetBFSThrowsWithOneInvalidTargetInTargetRange) {
+    Graph G(5);
+    node source = 0;
+    std::vector<node> targets_with_one_invalid = {0, 1, 2, 6};
+    EXPECT_THROW(
+        {
+            MultiTargetBFS astar(G, source, targets_with_one_invalid.begin(),
+                                 targets_with_one_invalid.end());
+        },
+        std::runtime_error);
+}
+
 TEST_P(DistanceGTest, testMultiTargetBFS) {
     Aux::Random::setSeed(42, true);
     const auto G = generateERGraph(100, 0.15);
