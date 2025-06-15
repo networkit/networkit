@@ -394,6 +394,18 @@ TEST_F(DistanceGTest, testBidirectionalBFSTargetEqualSource) {
     EXPECT_EQ(bbfs.getDistance(), 0);
 }
 
+TEST_F(DistanceGTest, testBidirectionalBFSGetPathIsEmpty) {
+    Graph G(3, false, false);
+    G.addEdge(0, 1);
+    G.addEdge(0, 2);
+
+    BidirectionalBFS bbfs(G, 1, 1, false);
+    bbfs.run();
+    auto result = bbfs.getPath();
+    std::vector<node> expected_result{};
+    EXPECT_EQ(result, expected_result);
+}
+
 TEST_P(DistanceGTest, testBidirectionalDijkstra) {
     Aux::Random::setSeed(42, false);
     auto G = generateERGraph(500, isDirected() ? 0.05 : 0.02);
