@@ -12,7 +12,6 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/Dijkstra.hpp>
-#include <networkit/distance/DynBFS.hpp>
 #include <networkit/distance/DynDijkstra.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 
@@ -50,6 +49,23 @@ TEST_F(SSSPGTest, testDijkstra) {
     std::vector<node> stack = sssp.getNodesSortedByDistance();
     for (count i = 0; i < stack.size() - 1; ++i)
         EXPECT_LE(sssp.distance(stack[i]), sssp.distance(stack[i + 1]));
+}
+
+TEST_F(SSSPGTest, testSSSPThrowBehavior) {
+    constexpr int n = 5;
+    Graph G(n, true);
+    int source =1;
+    BFS bfs(G, source);
+    // Test: invalid source throws
+    {
+        int invalid_source = 6;
+        EXPECT_THROW(bfs.setSource(invalid_source), std::runtime_error);
+    }
+    // Test: invalid target throws
+    {
+        int invalid_target = 6;
+        EXPECT_THROW(bfs.setTarget(invalid_target), std::runtime_error);
+    }
 }
 
 TEST_F(SSSPGTest, testShortestPaths) {
