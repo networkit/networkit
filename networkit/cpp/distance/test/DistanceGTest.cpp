@@ -82,33 +82,29 @@ TEST_F(DistanceGTest, testVertexDiameterPedantically) {
     EXPECT_EQ(1000, vd);
 }
 
+TEST_F(DistanceGTest, testAStarEqualSourceAndTargetDistanceZero) {
+    Graph G(5);
+    std::vector<double> distanceHeu = {1.0, 2.0, 3.0, 4.0, 5.0};
+
+    node source = 0;
+    node target = 0;
+
+    AStar astar(G, distanceHeu, source, target);
+    astar.run();
+    double expected_result = 0.0;
+    EXPECT_DOUBLE_EQ(astar.getDistance(), expected_result);
+}
+
+TEST_F(DistanceGTest, testAStarConstructorThrowsMismatchHeuristicAndNodeCount) {
+    Graph G(5);
+    std::vector<double> distanceHeu = {1.0, 2.0}; // size mismatch (2 instead of 5)
+    node source = 0;
+    node target = 1;
+
+    EXPECT_THROW({ AStar astar_bad(G, distanceHeu, source, target); }, std::runtime_error);
+}
+
 TEST_F(DistanceGTest, testAStar) {
-
-    // Test: Test AStarGeneral implementation for source = target
-    {
-        Graph G(5);
-        std::vector<double> distanceHeu = {1.0, 2.0, 3.0, 4.0, 5.0};
-
-        node source = 0;
-        node target = 0;
-
-        AStar astar(G, distanceHeu, source, target);
-        astar.run();
-        double expected_result = 0.0;
-        EXPECT_DOUBLE_EQ(astar.getDistance(), expected_result);
-    }
-
-    // Test: throw condition in AStar constructor
-    {
-        Graph G(5);
-        std::vector<double> distanceHeu = {1.0, 2.0}; // size mismatch (2 instead of 5)
-
-        node source = 0;
-        node target = 1;
-
-        EXPECT_THROW({ AStar astar_bad(G, distanceHeu, source, target); }, std::runtime_error);
-    }
-
     // Builds a mesh graph with the given number of rows and columns
     auto buildMesh = [](count rows, count cols) -> Graph {
         Graph G(rows * cols, false, false);
@@ -177,30 +173,29 @@ TEST_F(DistanceGTest, testAStar) {
     testMesh(25, 5);
 }
 
-TEST_F(DistanceGTest, testAlgebraicDistanceThrowBehaviour) {
-    // Test: invalid omega parameter
-    {
-        Graph G(5, true, true);
-        EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, 1.1, 0UL, true); },
-                     std::invalid_argument);
-        EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, -0.3, 0UL, true); },
-                     std::invalid_argument);
-    }
+TEST_F(DistanceGTest, testAlgebraicDistanceContructorThrowsForInvalidOmegaValues) {
+    Graph G(5, true, true);
+    double invalid_omega_value1 = 1.1;
+    double invalid_omega_value2 = -0.3;
+    EXPECT_THROW(
+        { AlgebraicDistance AGD(G, 10UL, 30UL, invalid_omega_value1, 0UL, true); },
+        std::invalid_argument);
+    EXPECT_THROW(
+        { AlgebraicDistance AGD(G, 10UL, 30UL, invalid_omega_value2, 0UL, true); },
+        std::invalid_argument);
+}
 
-    // Test: withEdgeScores but no edge id's
-    {
-        Graph G(5, true, true, false);
-        EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true); }, std::runtime_error);
-    }
+TEST_F(DistanceGTest, testAlgebraicDistanceContructorThrowsForEdgecoresWithoutEdgeIds) {
+    Graph G(5, true, true, false);
+    EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true); }, std::runtime_error);
+}
 
-    // Test: call distance throws if preprocess is not called
-    {
-        Graph G(5, true, true, true);
-        AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true);
-        node source = 0;
-        node target = 2;
-        EXPECT_THROW(AGD.distance(source, target), std::runtime_error);
-    }
+TEST_F(DistanceGTest, testAlgebraicDistanceDistanceThrowsIfPreprocessNotCalled) {
+    Graph G(5, true, true, true);
+    AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true);
+    node source = 0;
+    node target = 2;
+    EXPECT_THROW(AGD.distance(source, target), std::runtime_error);
 }
 
 TEST_P(DistanceGTest, testAdamicAdar) {
