@@ -51,21 +51,34 @@ TEST_F(SSSPGTest, testDijkstra) {
         EXPECT_LE(sssp.distance(stack[i]), sssp.distance(stack[i + 1]));
 }
 
-TEST_F(SSSPGTest, testSSSPThrowBehavior) {
+TEST_F(SSSPGTest, testSSSPThrowsInvalidSource) {
     constexpr int n = 5;
     Graph G(n, true);
-    int source =1;
+    int source = 1;
     BFS bfs(G, source);
-    // Test: invalid source throws
-    {
-        int invalid_source = 6;
-        EXPECT_THROW(bfs.setSource(invalid_source), std::runtime_error);
-    }
-    // Test: invalid target throws
-    {
-        int invalid_target = 6;
-        EXPECT_THROW(bfs.setTarget(invalid_target), std::runtime_error);
-    }
+    int invalid_source = 6;
+    EXPECT_THROW(bfs.setSource(invalid_source), std::runtime_error);
+}
+
+TEST_F(SSSPGTest, testSSSPThrowsInvalidTarget) {
+    constexpr int n = 5;
+    Graph G(n, true);
+    int source = 1;
+    BFS bfs(G, source);
+    int invalid_target = 6;
+    EXPECT_THROW(bfs.setTarget(invalid_target), std::runtime_error);
+}
+
+TEST_F(SSSPGTest, testSSSPThrowsStorepathNotTrueCallPredecessor) {
+    constexpr int n = 3;
+    Graph G(n, true);
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    int source = 0;
+    BFS bfs(G, source, false);
+    bfs.setTarget(2);
+    bfs.run();
+    EXPECT_THROW(bfs.getPredecessors(1), std::runtime_error);
 }
 
 TEST_F(SSSPGTest, testShortestPaths) {
