@@ -197,12 +197,10 @@ TEST_F(DistanceGTest, testAlgebraicDistanceContructorThrowsForInvalidOmegaValues
     Graph G(5, true, true);
     double invalid_omega_value1 = 1.1;
     double invalid_omega_value2 = -0.3;
-    EXPECT_THROW(
-        { AlgebraicDistance AGD(G, 10UL, 30UL, invalid_omega_value1, 0UL, true); },
-        std::invalid_argument);
-    EXPECT_THROW(
-        { AlgebraicDistance AGD(G, 10UL, 30UL, invalid_omega_value2, 0UL, true); },
-        std::invalid_argument);
+    EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, invalid_omega_value1, 0UL, true); },
+                 std::invalid_argument);
+    EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, invalid_omega_value2, 0UL, true); },
+                 std::invalid_argument);
 }
 
 TEST_F(DistanceGTest, testAlgebraicDistanceContructorThrowsForEdgecoresWithoutEdgeIds) {
@@ -764,9 +762,8 @@ TEST_F(DistanceGTest, testMultiTargetBFSThrowsInvalidSourceWithTargetRange) {
     Graph G(5);
     node invalid_source = 6;
     std::vector<node> targets = {0, 1, 2, 3};
-    EXPECT_THROW(
-        { MultiTargetBFS astar(G, invalid_source, targets.begin(), targets.end()); },
-        std::runtime_error);
+    EXPECT_THROW({ MultiTargetBFS astar(G, invalid_source, targets.begin(), targets.end()); },
+                 std::runtime_error);
 }
 
 TEST_F(DistanceGTest, testMultiTargetBFSThrowsWithOneInvalidTargetInTargetRange) {
