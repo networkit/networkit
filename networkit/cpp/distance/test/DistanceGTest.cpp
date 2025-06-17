@@ -86,10 +86,7 @@ TEST_F(DistanceGTest, testAStarEqualSourceAndTargetDistanceZero) {
     Graph G(5);
     std::vector<double> distanceHeu = {1.0, 2.0, 3.0, 4.0, 5.0};
 
-    node source = 0;
-    node target = 0;
-
-    AStar astar(G, distanceHeu, source, target);
+    AStar astar(G, distanceHeu, /*source*/ 0, /*target*/ 0);
     astar.run();
     double expected_result = 0.0;
     EXPECT_DOUBLE_EQ(astar.getDistance(), expected_result);
@@ -99,29 +96,24 @@ TEST_F(DistanceGTest, testAStarInvalidSourceNode) {
     Graph G(5);
     std::vector<double> distanceHeu = {1.0, 2.0, 3.0, 4.0, 5.0};
 
-    node invalid_source = 6;
-    node target = 0;
-
-    EXPECT_THROW({ AStar astar(G, distanceHeu, invalid_source, target); }, std::runtime_error);
+    EXPECT_THROW({ AStar astar(G, distanceHeu, /*invalid_source*/ 6, /*target*/ 0); },
+                 std::runtime_error);
 }
 
 TEST_F(DistanceGTest, testAStarInvalidTargetNode) {
     Graph G(5);
     std::vector<double> distanceHeu = {1.0, 2.0, 3.0, 4.0, 5.0};
 
-    node source = 0;
-    node invalid_target = 6;
-
-    EXPECT_THROW({ AStar astar(G, distanceHeu, source, invalid_target); }, std::runtime_error);
+    EXPECT_THROW({ AStar astar(G, distanceHeu, /*source*/ 0, /*invalid_target*/ 6); },
+                 std::runtime_error);
 }
 
 TEST_F(DistanceGTest, testAStarConstructorThrowsMismatchHeuristicAndNodeCount) {
     Graph G(5);
     std::vector<double> distanceHeu = {1.0, 2.0}; // size mismatch (2 instead of 5)
-    node source = 0;
-    node target = 1;
 
-    EXPECT_THROW({ AStar astar_bad(G, distanceHeu, source, target); }, std::runtime_error);
+    EXPECT_THROW({ AStar astar_bad(G, distanceHeu, /*source*/ 0, /*target*/ 1); },
+                 std::runtime_error);
 }
 
 TEST_F(DistanceGTest, testAStar) {
@@ -195,25 +187,24 @@ TEST_F(DistanceGTest, testAStar) {
 
 TEST_F(DistanceGTest, testAlgebraicDistanceContructorThrowsForInvalidOmegaValues) {
     Graph G(5, true, true);
-    double invalid_omega_value1 = 1.1;
-    double invalid_omega_value2 = -0.3;
-    EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, invalid_omega_value1, 0UL, true); },
+
+    EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, /* invalid_omega*/ 1.1, 0UL, true); },
                  std::invalid_argument);
-    EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, invalid_omega_value2, 0UL, true); },
+    EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, /* invalid_omega*/ -0.3, 0UL, true); },
                  std::invalid_argument);
 }
 
 TEST_F(DistanceGTest, testAlgebraicDistanceContructorThrowsForEdgecoresWithoutEdgeIds) {
     Graph G(5, true, true, false);
+
     EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true); }, std::runtime_error);
 }
 
 TEST_F(DistanceGTest, testAlgebraicDistanceDistanceThrowsIfPreprocessNotCalled) {
     Graph G(5, true, true, true);
     AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true);
-    node source = 0;
-    node target = 2;
-    EXPECT_THROW(AGD.distance(source, target), std::runtime_error);
+
+    EXPECT_THROW(AGD.distance(/*source*/ 0, /*target*/ 2), std::runtime_error);
 }
 
 TEST_P(DistanceGTest, testAdamicAdar) {
@@ -397,7 +388,7 @@ TEST_F(DistanceGTest, testBidirectionalBFSGetPathIsEmpty) {
     G.addEdge(0, 1);
     G.addEdge(0, 2);
 
-    BidirectionalBFS bbfs(G, 1, 1, false);
+    BidirectionalBFS bbfs(G, /*source*/ 1, /*target*/ 1, false);
     bbfs.run();
     auto result = bbfs.getPath();
     std::vector<node> expected_result{};
@@ -760,19 +751,17 @@ TEST_P(DistanceGTest, testSPSPWithUnreachableTarget) {
 
 TEST_F(DistanceGTest, testMultiTargetBFSThrowsInvalidSourceWithTargetRange) {
     Graph G(5);
-    node invalid_source = 6;
     std::vector<node> targets = {0, 1, 2, 3};
-    EXPECT_THROW({ MultiTargetBFS astar(G, invalid_source, targets.begin(), targets.end()); },
+    EXPECT_THROW({ MultiTargetBFS astar(G, /*invalid_source*/ 6, targets.begin(), targets.end()); },
                  std::runtime_error);
 }
 
 TEST_F(DistanceGTest, testMultiTargetBFSThrowsWithOneInvalidTargetInTargetRange) {
     Graph G(5);
-    node source = 0;
     std::vector<node> targets_with_one_invalid = {0, 1, 2, 6};
     EXPECT_THROW(
         {
-            MultiTargetBFS astar(G, source, targets_with_one_invalid.begin(),
+            MultiTargetBFS astar(G, /*source*/ 0, targets_with_one_invalid.begin(),
                                  targets_with_one_invalid.end());
         },
         std::runtime_error);
