@@ -12,7 +12,6 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/Dijkstra.hpp>
-#include <networkit/distance/DynBFS.hpp>
 #include <networkit/distance/DynDijkstra.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 
@@ -50,6 +49,28 @@ TEST_F(SSSPGTest, testDijkstra) {
     std::vector<node> stack = sssp.getNodesSortedByDistance();
     for (count i = 0; i < stack.size() - 1; ++i)
         EXPECT_LE(sssp.distance(stack[i]), sssp.distance(stack[i + 1]));
+}
+
+TEST_F(SSSPGTest, testSSSPThrowsInvalidSource) {
+    Graph G(5, true);
+    BFS bfs(G, /*source*/ 1);
+    EXPECT_THROW(bfs.setSource(/*invalid_source*/ 6), std::runtime_error);
+}
+
+TEST_F(SSSPGTest, testSSSPThrowsInvalidTarget) {
+    Graph G(5, true);
+    BFS bfs(G, /*source*/ 1);
+    EXPECT_THROW(bfs.setTarget(/*invalid_target*/ 6), std::runtime_error);
+}
+
+TEST_F(SSSPGTest, testSSSPThrowsStorepathNotTrueCallPredecessor) {
+    Graph G(3, true);
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    BFS bfs(G, /*source*/ 0, /*storePaths*/ false);
+    bfs.setTarget(/*target*/ 2);
+    bfs.run();
+    EXPECT_THROW(bfs.getPredecessors(/*node*/ 1), std::runtime_error);
 }
 
 TEST_F(SSSPGTest, testShortestPaths) {

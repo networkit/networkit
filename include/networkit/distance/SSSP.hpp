@@ -9,7 +9,6 @@
 #define NETWORKIT_DISTANCE_SSSP_HPP_
 
 #include <set>
-#include <stack>
 
 #include <networkit/auxiliary/Multiprecision.hpp>
 #include <networkit/base/Algorithm.hpp>

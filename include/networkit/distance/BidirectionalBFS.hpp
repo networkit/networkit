@@ -10,7 +10,6 @@
 
 #include <queue>
 
-#include <networkit/auxiliary/Log.hpp>
 #include <networkit/distance/STSP.hpp>
 
 namespace NetworKit {
