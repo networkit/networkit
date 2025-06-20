@@ -5,7 +5,28 @@
  *
  */
 
-#ifndef DINIC_HPP
-#define DINIC_HPP
+#ifndef NETWORKIT_FLOW_DINIC_HPP_
+#define NETWORKIT_FLOW_DINIC_HPP_
+#include <vector>
+#include <limits>
+#include <networkit/base/Algorithm.hpp>
+#include <networkit/graph/Graph.hpp>
+namespace NetworKit {
 
-#endif //DINIC_HPP
+class Dinic final : public Algorithm {
+
+    public:
+        Dinic(const Graph &G, node s, node t): graph(&G), source(s), target(t) {
+            residual = Graph(graph->upperNodeIdBound(), true, true);
+        }
+        void run() override;
+    private:
+        node source;
+        node target;
+        const Graph *graph;
+        edgeweight maxFlow{};
+        Graph residual;
+
+};
+}
+#endif //NETWORKIT_FLOW_DINIC_HPP_
