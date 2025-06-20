@@ -21,11 +21,16 @@ class Dinic final : public Algorithm {
         }
         void run() override;
     private:
+        void buildResidual();
+        bool bfs();
+        edgeweight dfs(node u, edgeweight flow);
         node source;
         node target;
         const Graph *graph;
         edgeweight maxFlow{};
         Graph residual;
+        std::vector<int> level;
+    std::vector<int> ptr;
 
 };
 }
