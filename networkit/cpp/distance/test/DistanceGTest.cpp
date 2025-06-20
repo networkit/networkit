@@ -6,6 +6,7 @@
  */
 
 #include <limits>
+#include <gmock/gmock-more-matchers.h>
 #include <gtest/gtest.h>
 
 #include <networkit/distance/APSP.hpp>
@@ -88,8 +89,7 @@ TEST_F(DistanceGTest, testAStarEqualSourceAndTargetDistanceZero) {
 
     AStar astar(G, distanceHeu, /*source*/ 0, /*target*/ 0);
     astar.run();
-    double expected_result = 0.0;
-    EXPECT_DOUBLE_EQ(astar.getDistance(), expected_result);
+    EXPECT_DOUBLE_EQ(astar.getDistance(), /* expected_result */ 0.0);
 }
 
 TEST_F(DistanceGTest, testAStarInvalidSourceNode) {
@@ -390,9 +390,7 @@ TEST_F(DistanceGTest, testBidirectionalBFSGetPathIsEmpty) {
 
     BidirectionalBFS bbfs(G, /*source*/ 1, /*target*/ 1, false);
     bbfs.run();
-    auto result = bbfs.getPath();
-    std::vector<node> expected_result{};
-    EXPECT_EQ(result, expected_result);
+    EXPECT_THAT(bbfs.getPath(), testing::IsEmpty());
 }
 
 TEST_P(DistanceGTest, testBidirectionalDijkstra) {
