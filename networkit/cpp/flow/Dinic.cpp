@@ -4,8 +4,9 @@
  *  Authors: Andreas Scharf (andreas.b.scharf@gmail.com)
  *
  */
+#include <queue>
+#include <stack>
 #include <networkit/flow/Dinic.hpp>
-
 namespace NetworKit {
 void Dinic::buildResidual() {
     graph->forEdges([&](node u, node v, edgeweight w) {
@@ -15,7 +16,7 @@ void Dinic::buildResidual() {
 }
 
 bool Dinic::bfs() {
-    std::ranges::fill(level.begin(), level.end(), -1);
+    std::ranges::fill(level, -1);
     std::queue<node> queue;
     level[source] = 0;
     queue.push(source);
@@ -32,19 +33,39 @@ bool Dinic::bfs() {
     return level[target] >= 0;
 }
 
+edgeweight Dinic::dfs(node u, edgeweight flow) {
+    if (u == target || flow == 0)
+        return flow;
+    const auto neighbor = residual.neighborRange(u).begin();
+    while (neighbor != residual.neighborRange(u).end()) {
+        const node v = *neighbor;
+        const auto remainingCapacity = residual.weight(u, v);
+        if (remainingCapacity > 0 && level[v] == level[u] + 1) {
+            edgeweight pushed = dfs(v, std::min(flow, remainingCapacity));
+            if (pushed > 0.0) {
+                residual.setWeight(u, v, remainingCapacity - pushed);
+                residual.setWeight(v, u, residual.weight(v, u) + pushed);
+                return pushed;
+            }
+        }
+    }
+    return 0.0;
+}
+
 void Dinic::run() {
     buildResidual();
     edgeweight flow = 0.0;
-    const edgeweight INF = std::numeric_limits<edgeweight>::max();
     level.resize(residual.upperNodeIdBound());
     ptr.resize(residual.upperNodeIdBound());
     // Main loop: while there is an augmenting path
     while (bfs()) {
-        std::ranges::fill(ptr.begin(), ptr.end(), 0);
+        std::ranges::fill(ptr, 0);
         // Send blocking flow
-        while (auto pushed = dfs(source, std::numeric_limits<edgeweight>::max())) {
-            flow += pushed;
-        }
+        edgeweight pushed;
+        do {
+            pushed = dfs(source, std::numeric_limits<edgeweight>::max());
+            maxFlow += pushed;
+        } while (pushed > 0.0);
     }
     maxFlow = flow;
     hasRun = true;

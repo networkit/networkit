@@ -8,9 +8,9 @@
 #ifndef NETWORKIT_FLOW_DINIC_HPP_
 #define NETWORKIT_FLOW_DINIC_HPP_
 #include <vector>
-#include <limits>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
+
 namespace NetworKit {
 
 class Dinic final : public Algorithm {
