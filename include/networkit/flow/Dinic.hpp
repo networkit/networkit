@@ -16,9 +16,7 @@ namespace NetworKit {
 class Dinic final : public Algorithm {
 
     public:
-        Dinic(const Graph &G, node s, node t): graph(&G), source(s), target(t) {
-            residual = Graph(graph->upperNodeIdBound(), true, true);
-        }
+        Dinic(const Graph &G, node s, node t);
         void run() override;
     private:
         void buildResidual();

@@ -8,6 +8,20 @@
 #include <stack>
 #include <networkit/flow/Dinic.hpp>
 namespace NetworKit {
+
+Dinic::Dinic(const Graph &G, node s, node t) : graph(&G), source(s), target(t) {
+
+    if (!graph->isDirected()) {
+        throw std::runtime_error("Dinic algorithm requires directed graph!");
+    }
+    if (!graph->isWeighted()) {
+        throw std::runtime_error("Dinic algorithm requires weighted graph!");
+    }
+
+    residual = Graph(graph->upperNodeIdBound(), true, true);
+
+}
+
 void Dinic::buildResidual() {
     graph->forEdges([&](node u, node v, edgeweight w) {
         residual.addEdge(u, v, w);
