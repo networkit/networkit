@@ -17,9 +17,9 @@ public:
 };
 
 TEST_F(DinicGTest, testConstructorThrowsForUndirectedGraph) {
-    Graph graph(0, true, false);
+    Graph graph(2, true, false);
     try {
-        Dinic test(graph, 0, 0);
+        Dinic test(graph, /* source */ 0, /*target */ 1);
         FAIL() << "Expected std::runtime_error";
     } catch (const std::runtime_error &e) {
         EXPECT_STREQ(e.what(), "Dinic algorithm requires directed graph!");
@@ -29,9 +29,9 @@ TEST_F(DinicGTest, testConstructorThrowsForUndirectedGraph) {
 }
 
 TEST_F(DinicGTest, testConstructorThrowsForUnweightedGraph) {
-    Graph graph(0, false, true);
+    Graph graph(2, false, true);
     try {
-        Dinic test(graph, 0, 0);
+        Dinic test(graph, /* source */ 0, /*target */ 1);
         FAIL() << "Expected std::runtime_error";
     } catch (const std::runtime_error &e) {
         EXPECT_STREQ(e.what(), "Dinic algorithm requires weighted graph!");
@@ -39,5 +39,18 @@ TEST_F(DinicGTest, testConstructorThrowsForUnweightedGraph) {
         FAIL() << "Expected std::runtime_error but got a different exception.";
     }
 }
+
+TEST_F(DinicGTest, testConstructorThrowsForSameSourceAndTarget) {
+    Graph graph(2, true, true);
+    try {
+        Dinic test(graph, /* source */ 0, /*target */ 0);
+        FAIL() << "Expected std::runtime_error";
+    } catch (const std::runtime_error &e) {
+        EXPECT_STREQ(e.what(), "Dinic algorithm requires `source` and `target` node to be different!");
+    } catch (...) {
+        FAIL() << "Expected std::runtime_error but got a different exception.";
+    }
+}
+
 
 } // namespace NetworKit

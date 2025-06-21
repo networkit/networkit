@@ -17,9 +17,11 @@ Dinic::Dinic(const Graph &G, node s, node t) : graph(&G), source(s), target(t) {
     if (!graph->isWeighted()) {
         throw std::runtime_error("Dinic algorithm requires weighted graph!");
     }
+    if (source == target) {
+        throw std::runtime_error("Dinic algorithm requires `source` and `target` node to be different!");
+    }
 
     residual = Graph(graph->upperNodeIdBound(), true, true);
-
 }
 
 void Dinic::buildResidual() {
@@ -48,22 +50,6 @@ bool Dinic::bfs() {
 }
 
 edgeweight Dinic::dfs(node u, edgeweight flow) {
-    if (u == target || flow == 0)
-        return flow;
-    const auto neighbor = residual.neighborRange(u).begin();
-    while (neighbor != residual.neighborRange(u).end()) {
-        const node v = *neighbor;
-        const auto remainingCapacity = residual.weight(u, v);
-        if (remainingCapacity > 0 && level[v] == level[u] + 1) {
-            edgeweight pushed = dfs(v, std::min(flow, remainingCapacity));
-            if (pushed > 0.0) {
-                residual.setWeight(u, v, remainingCapacity - pushed);
-                residual.setWeight(v, u, residual.weight(v, u) + pushed);
-                return pushed;
-            }
-        }
-    }
-    return 0.0;
 }
 
 void Dinic::run() {
