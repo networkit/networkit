@@ -4,6 +4,7 @@
  *  Authors: Andreas Scharf (andreas.b.scharf@gmail.com)
  *
  */
+#include <deque>
 #include <queue>
 #include <stack>
 #include <networkit/flow/Dinic.hpp>
@@ -21,32 +22,41 @@ Dinic::Dinic(const Graph &G, node s, node t) : graph(&G), source(s), target(t) {
         throw std::runtime_error("Dinic algorithm requires `source` and `target` node to be different!");
     }
 
-    residual = Graph(graph->upperNodeIdBound(), true, true);
+    residualGraph = Graph(graph->upperNodeIdBound(), true, true);
 }
 
 void Dinic::buildResidual() {
     graph->forEdges([&](node u, node v, edgeweight w) {
-        residual.addEdge(u, v, w);
-        residual.addEdge(v, u, 0.0);
+        residualGraph.addEdge(u, v, w);
+        residualGraph.addEdge(v, u, 0.0);
     });
 }
 
-bool Dinic::bfs() {
-    std::ranges::fill(level, -1);
+bool Dinic::get_parents_bfs() {
+    std::fill(levels.begin(), levels.end(), -1);
+    for (auto & deque : parents) {
+        deque.clear();
+    }
     std::queue<node> queue;
-    level[source] = 0;
+    levels[source] = 0;
     queue.push(source);
     while (!queue.empty()) {
         const node u = queue.front();
         queue.pop();
-        for (const auto v : residual.neighborRange(u)) {
-            if (residual.weight(u, v) > 0 && level[v] < 0) {
-                level[v] = level[u] + 1;
-                queue.push(v);
+        for (const node v: residualGraph.neighborRange(u)) {
+            if (residualGraph.weight(u, v) > 0.0) {
+                if(levels[v] == -1) {
+                    levels[v] = levels[u] + 1;
+                    parents[v].push_back(u);
+                    queue.push(v);
+                }
+                else if (levels[v] == levels[u] + 1 ) {
+                    parents[v].push_back(u);
+                }
             }
         }
     }
-    return level[target] >= 0;
+    return levels[target] >= 0;
 }
 
 edgeweight Dinic::dfs(node u, edgeweight flow) {
@@ -55,8 +65,8 @@ edgeweight Dinic::dfs(node u, edgeweight flow) {
 void Dinic::run() {
     buildResidual();
     edgeweight flow = 0.0;
-    level.resize(residual.upperNodeIdBound());
-    ptr.resize(residual.upperNodeIdBound());
+    level.resize(residualGraph.upperNodeIdBound());
+    ptr.resize(residualGraph.upperNodeIdBound());
     // Main loop: while there is an augmenting path
     while (bfs()) {
         std::ranges::fill(ptr, 0);
