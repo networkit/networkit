@@ -22,7 +22,7 @@ public:
 private:
     void buildResidual();
     bool get_parents_bfs();
-    edgeweight dfs(node u, edgeweight flow);
+    edgeweight blocking_path();
     node source;
     node target;
     const Graph *graph;
