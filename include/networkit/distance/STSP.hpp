@@ -9,7 +9,6 @@
 #define NETWORKIT_DISTANCE_STSP_HPP_
 
 #include <algorithm>
-#include <ranges>
 #include <unordered_map>
 #include <vector>
 

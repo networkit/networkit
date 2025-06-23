@@ -6,6 +6,7 @@
  */
 
 #include <limits>
+#include <gmock/gmock-more-matchers.h>
 #include <gtest/gtest.h>
 
 #include <networkit/distance/APSP.hpp>
@@ -82,8 +83,40 @@ TEST_F(DistanceGTest, testVertexDiameterPedantically) {
     EXPECT_EQ(1000, vd);
 }
 
-TEST_F(DistanceGTest, testAStar) {
+TEST_F(DistanceGTest, testAStarEqualSourceAndTargetDistanceZero) {
+    Graph G(5);
+    std::vector<double> distanceHeu = {1.0, 2.0, 3.0, 4.0, 5.0};
 
+    AStar astar(G, distanceHeu, /*source*/ 0, /*target*/ 0);
+    astar.run();
+    EXPECT_DOUBLE_EQ(astar.getDistance(), /* expected_result */ 0.0);
+}
+
+TEST_F(DistanceGTest, testAStarInvalidSourceNode) {
+    Graph G(5);
+    std::vector<double> distanceHeu = {1.0, 2.0, 3.0, 4.0, 5.0};
+
+    EXPECT_THROW({ AStar astar(G, distanceHeu, /*invalid_source*/ 6, /*target*/ 0); },
+                 std::runtime_error);
+}
+
+TEST_F(DistanceGTest, testAStarInvalidTargetNode) {
+    Graph G(5);
+    std::vector<double> distanceHeu = {1.0, 2.0, 3.0, 4.0, 5.0};
+
+    EXPECT_THROW({ AStar astar(G, distanceHeu, /*source*/ 0, /*invalid_target*/ 6); },
+                 std::runtime_error);
+}
+
+TEST_F(DistanceGTest, testAStarConstructorThrowsMismatchHeuristicAndNodeCount) {
+    Graph G(5);
+    std::vector<double> distanceHeu = {1.0, 2.0}; // size mismatch (2 instead of 5)
+
+    EXPECT_THROW({ AStar astar_bad(G, distanceHeu, /*source*/ 0, /*target*/ 1); },
+                 std::runtime_error);
+}
+
+TEST_F(DistanceGTest, testAStar) {
     // Builds a mesh graph with the given number of rows and columns
     auto buildMesh = [](count rows, count cols) -> Graph {
         Graph G(rows * cols, false, false);
@@ -150,6 +183,28 @@ TEST_F(DistanceGTest, testAStar) {
     testMesh(10, 10);
     testMesh(1, 15);
     testMesh(25, 5);
+}
+
+TEST_F(DistanceGTest, testAlgebraicDistanceContructorThrowsForInvalidOmegaValues) {
+    Graph G(5, true, true);
+
+    EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, /* invalid_omega*/ 1.1, 0UL, true); },
+                 std::invalid_argument);
+    EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, /* invalid_omega*/ -0.3, 0UL, true); },
+                 std::invalid_argument);
+}
+
+TEST_F(DistanceGTest, testAlgebraicDistanceContructorThrowsForEdgecoresWithoutEdgeIds) {
+    Graph G(5, true, true, false);
+
+    EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true); }, std::runtime_error);
+}
+
+TEST_F(DistanceGTest, testAlgebraicDistanceDistanceThrowsIfPreprocessNotCalled) {
+    Graph G(5, true, true, true);
+    AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true);
+
+    EXPECT_THROW(AGD.distance(/*source*/ 0, /*target*/ 2), std::runtime_error);
 }
 
 TEST_P(DistanceGTest, testAdamicAdar) {
@@ -326,6 +381,16 @@ TEST_F(DistanceGTest, testBidirectionalBFSTargetEqualSource) {
     BidirectionalBFS bbfs(G, 1, 1, false);
     bbfs.run();
     EXPECT_EQ(bbfs.getDistance(), 0);
+}
+
+TEST_F(DistanceGTest, testBidirectionalBFSGetPathIsEmpty) {
+    Graph G(3, false, false);
+    G.addEdge(0, 1);
+    G.addEdge(0, 2);
+
+    BidirectionalBFS bbfs(G, /*source*/ 1, /*target*/ 1, false);
+    bbfs.run();
+    EXPECT_THAT(bbfs.getPath(), testing::IsEmpty());
 }
 
 TEST_P(DistanceGTest, testBidirectionalDijkstra) {
@@ -680,6 +745,24 @@ TEST_P(DistanceGTest, testSPSPWithUnreachableTarget) {
     for (node source : sources)
         for (node target : targets)
             EXPECT_DOUBLE_EQ(apsp.getDistance(source, target), spsp.getDistance(source, target));
+}
+
+TEST_F(DistanceGTest, testMultiTargetBFSThrowsInvalidSourceWithTargetRange) {
+    Graph G(5);
+    std::vector<node> targets = {0, 1, 2, 3};
+    EXPECT_THROW({ MultiTargetBFS astar(G, /*invalid_source*/ 6, targets.begin(), targets.end()); },
+                 std::runtime_error);
+}
+
+TEST_F(DistanceGTest, testMultiTargetBFSThrowsWithOneInvalidTargetInTargetRange) {
+    Graph G(5);
+    std::vector<node> targets_with_one_invalid = {0, 1, 2, 6};
+    EXPECT_THROW(
+        {
+            MultiTargetBFS astar(G, /*source*/ 0, targets_with_one_invalid.begin(),
+                                 targets_with_one_invalid.end());
+        },
+        std::runtime_error);
 }
 
 TEST_P(DistanceGTest, testMultiTargetBFS) {
