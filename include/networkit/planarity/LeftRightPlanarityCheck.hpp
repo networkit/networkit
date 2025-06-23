@@ -56,15 +56,15 @@ public:
     }
 
 private:
-    static const Edge noneEdge;
+    static const Edge<node> noneEdge;
     static constexpr count noneHeight{std::numeric_limits<count>::max()};
 
     struct Interval {
-        Edge low{noneEdge};
-        Edge high{noneEdge};
+        Edge<node> low{noneEdge};
+        Edge<node> high{noneEdge};
 
         Interval() : low{noneEdge}, high{noneEdge} {};
-        Interval(const Edge &low, const Edge &high) : low(low), high(high) {}
+        Interval(const Edge<node> &low, const Edge<node> &high) : low(low), high(high) {}
         bool isEmpty() const { return low == noneEdge && high == noneEdge; }
 
         friend bool operator==(const Interval &lhs, const Interval &rhs) {
@@ -91,21 +91,21 @@ private:
     bool isGraphPlanar{};
     void dfsOrientation(node startNode);
     bool dfsTesting(node startNode);
-    bool applyConstraints(const Edge &edge, const Edge &parentEdge);
-    void removeBackEdges(const Edge &edge);
+    bool applyConstraints(const Edge<node> &edge, const Edge<node> &parentEdge);
+    void removeBackEdges(const Edge<node> &edge);
     void sortAdjacencyListByNestingDepth();
-    bool conflicting(const Interval &interval, const Edge &edge);
+    bool conflicting(const Interval &interval, const Edge<node> &edge);
     count getLowestLowPoint(const ConflictPair &conflictPair);
     std::vector<count> heights;
-    std::unordered_map<Edge, count> lowestPoint;
-    std::unordered_map<Edge, count> secondLowestPoint;
-    std::unordered_map<Edge, Edge> ref;
+    std::unordered_map<Edge<node>, count> lowestPoint;
+    std::unordered_map<Edge<node>, count> secondLowestPoint;
+    std::unordered_map<Edge<node>, Edge<node>> ref;
     std::vector<node> roots;
-    std::unordered_map<Edge, Edge> lowestPointEdge;
-    std::unordered_map<Edge, count> nestingDepth;
-    std::unordered_map<index, Edge> parentEdges;
+    std::unordered_map<Edge<node>, Edge<node>> lowestPointEdge;
+    std::unordered_map<Edge<node>, count> nestingDepth;
+    std::unordered_map<index, Edge<node>> parentEdges;
     std::stack<ConflictPair> stack;
-    std::unordered_map<Edge, ConflictPair> stackBottom;
+    std::unordered_map<Edge<node>, ConflictPair> stackBottom;
     Graph dfsGraph;
 };
 } // namespace NetworKit
