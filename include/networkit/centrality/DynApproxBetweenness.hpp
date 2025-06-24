@@ -8,16 +8,17 @@
 #ifndef NETWORKIT_CENTRALITY_DYN_APPROX_BETWEENNESS_HPP_
 #define NETWORKIT_CENTRALITY_DYN_APPROX_BETWEENNESS_HPP_
 
+#include <algorithm>
+#include <cmath>
+#include <memory>
+#include <omp.h>
+#include <span>
+
 #include <networkit/base/DynAlgorithm.hpp>
 #include <networkit/centrality/Centrality.hpp>
 #include <networkit/components/StronglyConnectedComponents.hpp>
 #include <networkit/distance/DynSSSP.hpp>
 #include <networkit/dynamics/GraphEvent.hpp>
-
-#include <algorithm>
-#include <cmath>
-#include <memory>
-#include <omp.h>
 
 namespace NetworKit {
 
@@ -61,7 +62,7 @@ public:
      *
      * @param batch The batch of edge insertions and/or deletions.
      */
-    void updateBatch(const std::vector<GraphEvent> &batch) override;
+    void updateBatch(std::span<const GraphEvent> batch) override;
 
     /**
      * Get number of path samples used for last calculation

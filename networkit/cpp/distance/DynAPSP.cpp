@@ -9,6 +9,7 @@
 #include <ctime>
 #include <memory>
 #include <queue>
+#include <span>
 #include <unordered_set>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -154,8 +155,8 @@ void DynAPSP::update(GraphEvent event) {
     }
 }
 
-void DynAPSP::updateBatch(const std::vector<GraphEvent> &batch) {
-    for (auto e : batch) {
+void DynAPSP::updateBatch(std::span<const GraphEvent> batch) {
+    for (const auto &e : batch) {
         update(e);
     }
 }

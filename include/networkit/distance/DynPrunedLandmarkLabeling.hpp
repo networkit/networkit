@@ -1,6 +1,7 @@
 #ifndef NETWORKIT_DISTANCE_DYN_PRUNED_LANDMARK_LABELING_HPP_
 #define NETWORKIT_DISTANCE_DYN_PRUNED_LANDMARK_LABELING_HPP_
 
+#include <span>
 #include <stdexcept>
 #include <vector>
 
@@ -43,7 +44,7 @@ public:
      * Not implemented. The algorithm does not support batch updates.
      * @note This function is not implemented.
      */
-    void updateBatch(const std::vector<GraphEvent> &) override {
+    void updateBatch(std::span<const GraphEvent>) override {
         throw std::runtime_error("Not implemented.");
     }
 

@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <limits>
 #include <set>
+#include <span>
 #include <vector>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -53,7 +54,7 @@ public:
      * Builds priority queue from the vector @a keys, values are indices
      * of @a keys.
      */
-    PrioQueue(const std::vector<Key> &keys);
+    PrioQueue(std::span<Key> keys);
 
     /**
      * Builds priority queue of the specified capacity @a capacity.
@@ -138,7 +139,7 @@ public:
 };
 
 template <class Key, class Value>
-Aux::PrioQueue<Key, Value>::PrioQueue(const std::vector<Key> &keys) {
+Aux::PrioQueue<Key, Value>::PrioQueue(std::span<Key> keys) {
     mapValToKey.resize(keys.size());
     uint64_t index = 0;
     for (auto key : keys) {

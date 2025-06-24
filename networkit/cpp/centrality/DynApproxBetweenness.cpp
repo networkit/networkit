@@ -5,6 +5,9 @@
  *      Author: ebergamini
  */
 
+#include <span>
+#include <vector>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/auxiliary/Random.hpp>
@@ -152,7 +155,7 @@ void DynApproxBetweenness::update(GraphEvent e) {
     updateBatch(batch);
 }
 
-void DynApproxBetweenness::updateBatch(const std::vector<GraphEvent> &batch) {
+void DynApproxBetweenness::updateBatch(std::span<const GraphEvent> batch) {
     assert(sssp.size() == r);
     for (node i = 0; i < r; i++) {
         sssp[i]->updateBatch(batch);
