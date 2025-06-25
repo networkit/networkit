@@ -29,7 +29,7 @@ inline uint32_t setBitAtomically(std::atomic_uint32_t &bitmask, size_t position)
 }
 
 template <typename T>
-void swapAtomicsNonAtomically(std::atomic<T> &a, std::atomic<T> &b) {
+void swapAtomicsNonAtomically(std::atomic<T> &a, std::atomic<T> &b) noexcept {
     T const a_temp = a.load();
     a.store(b);
     b.store(a_temp);

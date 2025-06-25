@@ -727,16 +727,16 @@ TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapConstructor) {
     auto handle_a = phm_a.makeHandle();
     auto handle_b = phm_b.makeHandle();
 
-    ASSERT_TRUE(handle_a->insert(mockup_data[0].first, mockup_data[0].second));
-    ASSERT_TRUE(handle_b->insert(mockup_data[1].first, mockup_data[1].second));
+    ASSERT_TRUE(handle_a.insert(mockup_data[0].first, mockup_data[0].second));
+    ASSERT_TRUE(handle_b.insert(mockup_data[1].first, mockup_data[1].second));
 
     swap(phm_a, phm_b);
 
     auto handle_a_new = phm_a.makeHandle();
     auto handle_b_new = phm_b.makeHandle();
 
-    ASSERT_TRUE(handle_a_new->find(mockup_data[1].first) == mockup_data[1].second);
-    ASSERT_TRUE(handle_b_new->find(mockup_data[0].first) == mockup_data[0].second);
+    ASSERT_TRUE(handle_a_new.find(mockup_data[1].first) == mockup_data[1].second);
+    ASSERT_TRUE(handle_b_new.find(mockup_data[0].first) == mockup_data[0].second);
 }
 
 TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapCopyConstructor) {
@@ -745,15 +745,15 @@ TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapCopyConstructor) {
 
     auto handle_a = phm_a.makeHandle();
 
-    insertData(*handle_a.get(), mockup_data);
+    insertData(handle_a, mockup_data);
 
-    ASSERT_TRUE(checkEntriesForMockupData(mockup_data, handle_a->hashtable()));
+    ASSERT_TRUE(checkEntriesForMockupData(mockup_data, handle_a.hashtable()));
 
     Aux::ParallelHashMap phm_b(phm_a);
 
     auto handle_b = phm_b.makeHandle();
 
-    ASSERT_TRUE(checkEntriesForMockupData(mockup_data, handle_b->hashtable()));
+    ASSERT_TRUE(checkEntriesForMockupData(mockup_data, handle_b.hashtable()));
 }
 
 TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapMoveConstructor) {
@@ -763,15 +763,13 @@ TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapMoveConstructor) {
 
     auto handle_a = phm_a.makeHandle();
 
-    insertData(*handle_a.get(), mockup_data);
+    insertData(handle_a, mockup_data);
 
     Aux::ParallelHashMap phm_b(std::move(phm_a));
 
-    handle_a.reset();
-
     auto handle_b = phm_b.makeHandle();
 
-    ASSERT_TRUE(checkEntriesForMockupData(mockup_data, handle_b->hashtable()));
+    ASSERT_TRUE(checkEntriesForMockupData(mockup_data, handle_b.hashtable()));
 }
 
 TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapCopyAssignment) {
@@ -780,14 +778,14 @@ TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapCopyAssignment) {
 
     auto handle_a = phm_a.makeHandle();
 
-    insertData(*handle_a.get(), mockup_data);
+    insertData(handle_a, mockup_data);
 
     Aux::ParallelHashMap phm_b;
     phm_b = phm_a;
 
     auto handle_b = phm_b.makeHandle();
 
-    ASSERT_TRUE(checkEntriesForMockupData(mockup_data, handle_b->hashtable()));
+    ASSERT_TRUE(checkEntriesForMockupData(mockup_data, handle_b.hashtable()));
 }
 
 TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapSingleThread) {
@@ -802,7 +800,7 @@ TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapSingleThread) {
     {
         auto handle = phm.makeHandle();
         for (auto it = std::cbegin(mockup_data); it != std::cend(mockup_data); ++it) {
-            handle->insert(it->first, it->second);
+            handle.insert(it->first, it->second);
         }
     }
 
@@ -839,7 +837,7 @@ TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapDualThread) {
         }
 
         for (auto it = local_begin; it != local_end && successful_inserts[thread_id]; ++it) {
-            successful_inserts[thread_id] = handle->insert(it->first, it->second);
+            successful_inserts[thread_id] = handle.insert(it->first, it->second);
         }
     }
 
@@ -878,7 +876,7 @@ TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapQuadrupleThread) {
         }
 
         for (auto it = local_begin; it != local_end; ++it) {
-            successful_inserts[thread_id] = handle->insert(it->first, it->second);
+            successful_inserts[thread_id] = handle.insert(it->first, it->second);
         }
     }
 

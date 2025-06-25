@@ -45,9 +45,16 @@ public:
 
     static constexpr uint64_t ht_key_space = sizeof(uint64_t) * 8;
 
+    /** Default constructor */
     ParallelHashMap();
 
-    // begin_capacity: Must be multiple of 2.
+    /**
+     *  Constructs a ParallelHashMap with a given initial capacity.
+     *  The capacity must be a power of 2 and greater than 0.
+     *  @param begin_capacity The initial capacity of the hashtable.
+     *  @throws std::runtime_error if begin_capacity is not a power of 2 or
+     *          if begin_capacity is 0.
+     */
     ParallelHashMap(size_t begin_capacity);
 
     ~ParallelHashMap() = default;
@@ -61,11 +68,15 @@ public:
         return *this;
     }
 
-    std::unique_ptr<HTHandle> makeHandle();
-
+    HTHandle makeHandle();
+    /**
+     *  Returns the current hashtable that is being used by the handle.
+     *  This is the source table that is being used for inserts and lookups.
+     *  @return A pointer to the current hashtable.
+     *  @note This pointer is not guaranteed to be valid after the handle has been
+     *        created, as the hashtable may be swapped out during operations.
+     */
     HTAtomic128 const *currentTable() const;
-
-    uint32_t randomThreadRange();
 
 private:
     std::unique_ptr<HTAtomic128> m_source;
@@ -77,6 +88,8 @@ private:
     // every 1 to p inserts. We're keeping this an internal random number
     // generator engine. However, this could also be injected when constructing.
     std::mt19937 m_generator;
+
+    uint32_t randomThreadRange();
 };
 
 // This is the Hashtable Atomic 128 (HTAtomic128) class which stores (key,
@@ -109,7 +122,7 @@ public:
 
     // Thanks to GManNickG on Stackoverflow explaining the copy-swap idiom:
     // https://stackoverflow.com/a/3279550
-    friend void swap(HTAtomic128 &a, HTAtomic128 &b) {
+    friend void swap(HTAtomic128 &a, HTAtomic128 &b) noexcept {
         using std::swap;
 
         swap(a.m_cells, b.m_cells);
@@ -175,12 +188,30 @@ public:
 
     Iterator end() const;
 
+    /**
+     *  Increments the global occupancy counter by the given amount.
+     *  @param increment The amount to increment the counter by.
+     *  @return The new value of the global occupancy counter.
+     */
     size_t incrementGlobalOccupancy(size_t increment);
-
+    /**
+     *  Checks if the hashtable is filled based on the occupancy and capacity.
+     *  @param occupancy The current occupancy of the hashtable.
+     *  @param capacity The capacity of the hashtable.
+     *  @return true if the hashtable is filled, false otherwise.
+     */
     size_t globalOccupancy() const;
 
+    // Returns the current capacity of the hashtable.
+    // The capacity is the number of cells in the hashtable.
+    // It is always a power of 2.
     size_t capacity() const;
 
+    /**
+     *  Returns the cells of the hashtable.
+     *  This is a reference to the internal vector of cells.
+     *  @return A reference to the vector of cells.
+     */
     Cells const &cells() const { return m_cells; }
 
     // Filled whenever occupancy reaches greater equal than half of the
@@ -197,6 +228,16 @@ public:
     // p_count: must be >= 1
     void roam(ParallelHashMap::HTAtomic128 &target, uint32_t p_count = 1, uint32_t p_id = 0);
 
+    /**
+     *  Returns a range of cells that belong to the cluster of the given thread id.
+     *  The range is defined by the number of threads and the thread id.
+     *  The range is guaranteed to be valid and non-empty for the first thread (p_id = 0).
+     *  For other threads, the range may be empty if there are not enough cells to
+     *  fill the cluster.
+     *  @param p_count The number of threads in the parallel region.
+     *  @param p_id The id of the thread for which the cluster range is requested.
+     *  @return A pair of iterators defining the range of cells for the cluster.
+     */
     std::pair<ParallelHashMap::HTAtomic128::Cells::const_iterator,
               ParallelHashMap::HTAtomic128::Cells::const_iterator>
     clusterRange(uint32_t p_count = 1, uint32_t p_id = 0);

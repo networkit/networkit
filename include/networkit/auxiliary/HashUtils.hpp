@@ -15,7 +15,7 @@ void hashCombine(std::size_t &seed, T const &v) {
 
 // capacity: must be power of 2
 // T shall be unsigned.
-template <typename T>
+template <std::unsigned_integral T>
 T fastMod(T const idx, size_t const capacity) {
     return idx & (capacity - 1);
 }

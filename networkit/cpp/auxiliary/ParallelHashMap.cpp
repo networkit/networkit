@@ -355,6 +355,9 @@ HTAtomic128 const &HTHandle::hashtable() {
 ParallelHashMap::ParallelHashMap() : ParallelHashMap(ParallelHashMap::ht_begin_capacity) {}
 
 ParallelHashMap::ParallelHashMap(size_t const begin_capacity) {
+    if (begin_capacity == 0 || ((begin_capacity & (begin_capacity - 1)) != 0)) {
+        throw std::runtime_error("begin_capacity must be a power of 2 and greater than 0");
+    }
     m_source = std::make_unique<HTAtomic128>(begin_capacity);
 }
 
@@ -366,7 +369,7 @@ ParallelHashMap::ParallelHashMap(ParallelHashMap &&other) noexcept : ParallelHas
     swap(*this, other);
 }
 
-std::unique_ptr<HTHandle> ParallelHashMap::makeHandle() {
+HTHandle ParallelHashMap::makeHandle() {
     Aux::HTSyncData sync_data{m_source,
                               m_target,
                               m_busy_bitset,
@@ -375,9 +378,10 @@ std::unique_ptr<HTHandle> ParallelHashMap::makeHandle() {
                               omp_get_thread_num(),
                               randomThreadRange()};
 
-    auto handle = std::make_unique<HTHandle>(sync_data);
-
+    // auto handle = std::make_unique<HTHandle>(sync_data);
+    HTHandle handle(std::move(sync_data));
     return handle;
+    // return handle;
 }
 
 HTAtomic128 const *ParallelHashMap::currentTable() const {
