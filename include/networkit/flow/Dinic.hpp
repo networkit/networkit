@@ -18,18 +18,18 @@ class Dinic final : public Algorithm {
 public:
     Dinic(const Graph &G, node s, node t);
     void run() override;
-
+    edgeweight getMaxFlow() const;
 private:
-    void buildResidual();
-    bool get_parents_bfs();
-    edgeweight blocking_path();
+    void initializeResidualGraph();
+    bool determineValidParents();
+    edgeweight computeBlockingPath();
     node source;
     node target;
     const Graph *graph;
     edgeweight maxFlow{};
     Graph residualGraph;
     std::vector<std::deque<node>> parents;
-    std::vector<int> levels;
+
 };
 } // namespace NetworKit
 #endif // NETWORKIT_FLOW_DINIC_HPP_
