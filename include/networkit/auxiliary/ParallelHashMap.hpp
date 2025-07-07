@@ -54,6 +54,10 @@ public:
      *  @param begin_capacity The initial capacity of the hashtable.
      *  @throws std::runtime_error if begin_capacity is not a power of 2 or
      *          if begin_capacity is 0.
+     * @note The initial capacity should also exceed the square number of threads. For example,
+     *       if you have 4 threads, the initial capacity should be at least 32 (4^2 = 16, next power
+     * of 2 is 32). If the initial capacity is too small, the hashtable might get locked during
+     * inserts. The default value of 4096 (64^2) is a good starting point for most applications.
      */
     ParallelHashMap(size_t begin_capacity);
 
@@ -131,16 +135,35 @@ public:
         swapAtomicsNonAtomically(a.m_global_occupancy, b.m_global_occupancy);
     }
 
-    // Returns false if key already exists, and true if (key, value) was
-    // successfully inserted.
+    /** Inserts a key-value pair into the hashtable.
+     * If a new entry could not be created, the insertion will fail and return false.
+     * This means that the key already exists in the hashtable. Use update() to change the value
+     * associated with the key.
+     * @param key The key to insert.
+     * @param value The value to insert.
+     * @return True if the insertion was successful, false if the key already exists.
+     * @note This function is thread-safe and can be called concurrently.
+     */
     bool insert(uint64_t key, uint64_t value);
 
-    // Returns the actual value of the cell if key is present, ht_invalid_key
-    // otherwise.
+    /**
+     * Finds the value associated with a key in the hashtable.
+     * If the key is not present, it returns ht_invalid_key.
+     * @param key The key to find.
+     * @return The value associated with the key, or ht_invalid_key if the key is not found.
+     * @note This function is thread-safe and can be called concurrently.
+     */
     uint64_t find(uint64_t key) const;
 
-    // Returns false if key does not exist, true if (key, value) was
-    // successfully updated.
+    /**
+     * Updates the value associated with a key in the hashtable.
+     * If the key does not exist, the update will fail and return false.
+     * If the key exists, the value will be updated to the new value.
+     * @param key The key to update.
+     * @param value The new value to associate with the key.
+     * @return True if the update was successful, false if the key does not exist.
+     * @note This function is thread-safe and can be called concurrently.
+     */
     bool update(uint64_t key, uint64_t value);
 
     struct Iterator {
@@ -202,9 +225,12 @@ public:
      */
     size_t globalOccupancy() const;
 
-    // Returns the current capacity of the hashtable.
-    // The capacity is the number of cells in the hashtable.
-    // It is always a power of 2.
+    /**
+     * Returns the current capacity of the hashtable.
+     * The capacity is the number of cells in the hashtable.
+     * It is always a power of 2.
+     * @return The current capacity of the hashtable.
+     */
     size_t capacity() const;
 
     /**
@@ -214,18 +240,22 @@ public:
      */
     Cells const &cells() const { return m_cells; }
 
-    // Filled whenever occupancy reaches greater equal than half of the
-    // capacity (alpha = 0.5 * capacity).
+    /**
+     * Returns true if the hashtable is filled, meaning that the occupancy
+     * reaches greater equal than half of the capacity (alpha = 0.5 * capacity).
+     * @return True if the hashtable is filled, false otherwise.
+     */
     bool filled() const;
 
-    // Roams source to target with respect to the calling thread which will be given
-    // a defined space of the source table to insert in target. This will guarantee
-    // correctness and roams elements without any synchronisation between threads.
-    // See chapter 5.3.2 for more details and proof.
-    //
-    // scale_factor: is power of 2
-    //
-    // p_count: must be >= 1
+    /**
+     *  Roams the source hashtable to the target hashtable.
+     *  This operation is performed in parallel, with each thread
+     *  operating on a defined space of the source table.
+     *  The target table must be empty before calling this function.
+     *  @param target The target hashtable to roam to.
+     *  @param p_count The number of threads in the parallel region.
+     *  @param p_id The id of the calling thread.
+     */
     void roam(ParallelHashMap::HTAtomic128 &target, uint32_t p_count = 1, uint32_t p_id = 0);
 
     /**
@@ -344,7 +374,6 @@ public:
     HTAtomic128 const &hashtable();
 
 private:
-    HTAtomic128 *m_ht;
     HTSyncData m_sync_data;
 };
 

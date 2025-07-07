@@ -10,9 +10,12 @@
 
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/AtomicUtils.hpp>
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/ParallelHashMap.hpp>
 #include <networkit/auxiliary/Parallelism.hpp>
 #include <networkit/auxiliary/Random.hpp>
+
+#include <thread>
 
 namespace NetworKit {
 
@@ -878,6 +881,29 @@ TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapQuadrupleThread) {
         for (auto it = local_begin; it != local_end; ++it) {
             successful_inserts[thread_id] = handle.insert(it->first, it->second);
         }
+    }
+
+    ASSERT_TRUE(successful_inserts[0]);
+    ASSERT_TRUE(successful_inserts[1]);
+    ASSERT_TRUE(successful_inserts[2]);
+    ASSERT_TRUE(successful_inserts[3]);
+    ASSERT_TRUE(checkEntriesForMockupData(mockup_data, *phm.currentTable()));
+}
+
+TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapGrowOnHandleDestruction) {
+    Aux::setNumberOfThreads(4);
+
+    Aux::ParallelHashMap phm{32};
+
+    constexpr size_t fill_64bit_values = 10254;
+    MockupData mockup_data = generateMockupData(fill_64bit_values);
+    std::vector<bool> successful_inserts({true, true, true, true});
+
+#pragma omp parallel for
+    for (size_t i = 0; i < mockup_data.size(); ++i) {
+        successful_inserts[omp_get_thread_num()] =
+            successful_inserts[omp_get_thread_num()]
+            && phm.makeHandle().insert(mockup_data[i].first, mockup_data[i].second);
     }
 
     ASSERT_TRUE(successful_inserts[0]);
