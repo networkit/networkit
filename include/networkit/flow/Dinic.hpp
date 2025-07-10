@@ -23,13 +23,13 @@ class Dinic final : public Algorithm {
 
 public:
     /**
-    * @brief Construct a Dinic flow solver.
-    *
-    * @param G     Reference to the input directed, weighted graph.
-    * @param s     Source node identifier.
-    * @param t     Target node identifier.
-    * @throws std::runtime_error if the graph is not directed, not weighted, or s == t.
-    */
+     * @brief Construct a Dinic flow solver.
+     *
+     * @param G     Reference to the input directed, weighted graph.
+     * @param s     Source node identifier.
+     * @param t     Target node identifier.
+     * @throws std::runtime_error if the graph is not directed, not weighted, or s == t.
+     */
     Dinic(const Graph &G, node s, node t);
 
     /**
@@ -47,17 +47,17 @@ public:
      * @throws std::runtime_error if called before run().
      */
     edgeweight getMaxFlow() const;
+
 private:
     void initializeResidualGraph();
     bool determineValidParents();
     edgeweight computeBlockingPath();
+    const Graph *graph;
     node source;
     node target;
-    const Graph *graph;
     edgeweight maxFlow{};
     Graph residualGraph;
     std::vector<std::deque<node>> parents;
-
 };
 } // namespace NetworKit
 #endif // NETWORKIT_FLOW_DINIC_HPP_

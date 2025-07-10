@@ -88,13 +88,13 @@ edgeweight Dinic::computeBlockingPath() {
         if (v == source) {
             edgeweight bottleNeckOnPath = std::numeric_limits<edgeweight>::max();
             // determine minimal flow on path
-            for (int i{}; i + 1 < path.size(); ++i) {
+            for (size_t i{}; i + 1 < path.size(); ++i) {
                 const node parent = path[i + 1];
                 const node child = path[i];
                 bottleNeckOnPath = std::min(bottleNeckOnPath, residualGraph.weight(parent, child));
             }
             // update the capacities and flows in the other edges
-            for (int i{}; i + 1 < path.size(); ++i) {
+            for (size_t i{}; i + 1 < path.size(); ++i) {
                 const node parent = path[i + 1];
                 const node child = path[i];
                 const edgeweight currentCapacity = residualGraph.weight(parent, child);
