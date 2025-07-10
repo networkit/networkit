@@ -2,6 +2,7 @@
 #define NETWORKIT_AUXILIARY_ATOMIC_UTILS_HPP_
 
 #include <atomic>
+#include <networkit/auxiliary/Log.hpp>
 
 namespace Aux {
 inline uint32_t unsetBitAtomically(std::atomic_uint32_t &bitmask, size_t position) {
@@ -12,7 +13,6 @@ inline uint32_t unsetBitAtomically(std::atomic_uint32_t &bitmask, size_t positio
         current_bitmask = bitmask.load();
         desired_bitmask = current_bitmask & ~(1u << position);
     }
-
     return desired_bitmask;
 }
 
@@ -24,7 +24,6 @@ inline uint32_t setBitAtomically(std::atomic_uint32_t &bitmask, size_t position)
         current_bitmask = bitmask.load();
         desired_bitmask = current_bitmask | (1u << position);
     }
-
     return desired_bitmask;
 }
 

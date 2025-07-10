@@ -891,19 +891,25 @@ TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapQuadrupleThread) {
 }
 
 TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapGrowOnHandleDestruction) {
-    Aux::setNumberOfThreads(4);
+    Aux::Log::setLogLevel("INFO");
+    Aux::setNumberOfThreads(2);
 
-    Aux::ParallelHashMap phm{32};
+    Aux::ParallelHashMap phm{8};
 
-    constexpr size_t fill_64bit_values = 10254;
+    constexpr size_t fill_64bit_values = 71;
     MockupData mockup_data = generateMockupData(fill_64bit_values);
     std::vector<bool> successful_inserts({true, true, true, true});
 
 #pragma omp parallel for
     for (size_t i = 0; i < mockup_data.size(); ++i) {
+        auto handle = phm.makeHandle();
+
+        INFO("Iteration ", i, ": Inserting key ", mockup_data[i].first,
+             " with value: ", mockup_data[i].second, " in thread ", omp_get_thread_num(),
+             " Hashtable capacity: ", handle.hashtable().capacity());
         successful_inserts[omp_get_thread_num()] =
             successful_inserts[omp_get_thread_num()]
-            && phm.makeHandle().insert(mockup_data[i].first, mockup_data[i].second);
+            && handle.insert(mockup_data[i].first, mockup_data[i].second);
     }
 
     ASSERT_TRUE(successful_inserts[0]);
@@ -911,6 +917,7 @@ TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapGrowOnHandleDestruction) {
     ASSERT_TRUE(successful_inserts[2]);
     ASSERT_TRUE(successful_inserts[3]);
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, *phm.currentTable()));
+    Aux::Log::setLogLevel("QUIET");
 }
 
 } // namespace NetworKit

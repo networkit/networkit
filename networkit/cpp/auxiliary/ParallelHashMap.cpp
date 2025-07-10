@@ -9,6 +9,7 @@
 #include <iterator>
 #include <thread>
 
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/ParallelHashMap.hpp>
 
 namespace Aux {
@@ -315,12 +316,16 @@ HTHandle::~HTHandle() {
 
     Aux::unsetBitAtomically(m_sync_data.busy, m_sync_data.p_id);
 
+    INFO("HTHandle: Before busy check from ", m_sync_data.p_id);
     while (m_sync_data.busy.load() != 0u) {
+        INFO("HTHandle: One thread is still busy from ", m_sync_data.p_id);
         if (m_sync_data.request_growth.load()) {
+            INFO("HTHandle: Start growing from ", m_sync_data.p_id);
             grow_hashtable(m_sync_data.source, m_sync_data.target, m_sync_data.request_growth,
                            m_sync_data.p_count, m_sync_data.p_id);
         }
     }
+    INFO("HTHandle: After busy check from ", m_sync_data.p_id);
 }
 
 bool HTHandle::insert(uint64_t const key, uint64_t const value) {
