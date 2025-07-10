@@ -231,7 +231,7 @@ void ParallelLeiden::parallelMove(const Graph &graph) {
                     if (0 > maxDelta) { // move node to empty community
                         singleton++;
                         bestCommunity = upperBound++;
-                        if (bestCommunity >= communityVolumes.capacity()) {
+                        if (bestCommunity >= communityVolumes.size()) {
                             // Wait until all other threads yielded, then increase vector size
                             // Chances are this will never happen. Ever. Seriously...
                             bool expected = false;
