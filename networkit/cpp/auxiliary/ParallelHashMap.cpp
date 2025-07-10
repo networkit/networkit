@@ -27,9 +27,10 @@ bool ht_filled(size_t const occupancy, size_t const capacity) {
     return occupancy > alpha_elements_count;
 }
 
-void grow_hashtable(std::unique_ptr<ParallelHashMap::HTAtomic128> &source,
-                    std::unique_ptr<ParallelHashMap::HTAtomic128> &target,
-                    std::atomic_bool &request_growth, int const p_count, int const p_id) {
+ParallelHashMap::HTAtomic128 *grow_hashtable(std::unique_ptr<ParallelHashMap::HTAtomic128> &source,
+                                             std::unique_ptr<ParallelHashMap::HTAtomic128> &target,
+                                             std::atomic_bool &request_growth, int const p_count,
+                                             int const p_id) {
     request_growth.store(true);
 
 #pragma omp single
@@ -44,6 +45,8 @@ void grow_hashtable(std::unique_ptr<ParallelHashMap::HTAtomic128> &source,
         source = std::move(target);
     }
     // omp implicit barrier
+
+    return source.get();
 }
 
 } // namespace
@@ -295,17 +298,16 @@ HTSyncData::HTSyncData(std::unique_ptr<HTAtomic128> &_source, std::unique_ptr<HT
     : source(_source), target(_target), busy(_busy), insert_threshold(_insert_threshold),
       request_growth(_request_growth), p_count(_p_count), p_id(_p_id) {}
 
-HTHandle::HTHandle(HTSyncData sync_data) : m_sync_data(sync_data) {
+HTHandle::HTHandle(HTSyncData sync_data) : m_ht(sync_data.source.get()), m_sync_data(sync_data) {
     setBitAtomically(m_sync_data.busy, m_sync_data.p_id);
 }
 
 HTHandle::~HTHandle() {
-    size_t const occupancy =
-        m_sync_data.source->incrementGlobalOccupancy(m_sync_data.insert_counter);
+    size_t const occupancy = m_ht->incrementGlobalOccupancy(m_sync_data.insert_counter);
 
-    if (ht_filled(occupancy, m_sync_data.source->capacity())) {
-        grow_hashtable(m_sync_data.source, m_sync_data.target, m_sync_data.request_growth,
-                       m_sync_data.p_count, m_sync_data.p_id);
+    if (ht_filled(occupancy, m_ht->capacity())) {
+        m_ht = grow_hashtable(m_sync_data.source, m_sync_data.target, m_sync_data.request_growth,
+                              m_sync_data.p_count, m_sync_data.p_id);
     }
 
     Aux::unsetBitAtomically(m_sync_data.busy, m_sync_data.p_id);
@@ -319,16 +321,16 @@ HTHandle::~HTHandle() {
 }
 
 bool HTHandle::insert(uint64_t const key, uint64_t const value) {
-    bool const success = m_sync_data.source->insert(key, value);
+    bool const success = m_ht->insert(key, value);
     m_sync_data.insert_counter += uint32_t(success);
 
     if (m_sync_data.insert_threshold == m_sync_data.insert_counter) {
-        size_t const occupancy =
-            m_sync_data.source->incrementGlobalOccupancy(m_sync_data.insert_counter);
+        size_t const occupancy = m_ht->incrementGlobalOccupancy(m_sync_data.insert_counter);
 
-        if (ht_filled(occupancy, m_sync_data.source->capacity())) {
-            grow_hashtable(m_sync_data.source, m_sync_data.target, m_sync_data.request_growth,
-                           m_sync_data.p_count, m_sync_data.p_id);
+        if (ht_filled(occupancy, m_ht->capacity())) {
+            m_ht =
+                grow_hashtable(m_sync_data.source, m_sync_data.target, m_sync_data.request_growth,
+                               m_sync_data.p_count, m_sync_data.p_id);
         }
 
         m_sync_data.insert_counter = 0;
@@ -338,15 +340,15 @@ bool HTHandle::insert(uint64_t const key, uint64_t const value) {
 }
 
 uint64_t HTHandle::find(uint64_t const key) const {
-    return m_sync_data.source->find(key);
+    return m_ht->find(key);
 }
 
 bool HTHandle::update(uint64_t const key, uint64_t const value) const {
-    return m_sync_data.source->update(key, value);
+    return m_ht->update(key, value);
 }
 
 HTAtomic128 const &HTHandle::hashtable() {
-    return *m_sync_data.source.get();
+    return *m_ht;
 }
 
 ParallelHashMap::ParallelHashMap() : ParallelHashMap(ParallelHashMap::ht_begin_capacity) {}

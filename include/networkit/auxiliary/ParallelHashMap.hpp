@@ -374,6 +374,7 @@ public:
     HTAtomic128 const &hashtable();
 
 private:
+    HTAtomic128 *m_ht;
     HTSyncData m_sync_data;
 };
 
