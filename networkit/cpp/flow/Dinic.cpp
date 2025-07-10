@@ -6,6 +6,7 @@
  */
 #include <deque>
 #include <queue>
+#include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/flow/Dinic.hpp>
 
 namespace NetworKit {
@@ -28,7 +29,9 @@ Dinic::Dinic(const Graph &G, node s, node t) : graph(&G), source(s), target(t) {
 
 void Dinic::initializeResidualGraph() {
     graph->forEdges([&](node u, node v, edgeweight w) {
+        // add original capacity
         residualGraph.addEdge(u, v, w);
+        // add reverse edge to track flow, initially 0
         residualGraph.addEdge(v, u, 0.0);
     });
 }
@@ -66,13 +69,13 @@ bool Dinic::determineValidParents() {
 edgeweight Dinic::computeBlockingPath() {
     edgeweight totalFlow = 0.0;
     std::vector<node> path;
-    path.reserve(residualGraph.numberOfNodes());
     path.push_back(target);
     node u = target;
     std::cout << "Hello1" << std::endl;
     while (true) {
-        node v;
+        node v = none;
         // build path from target to source
+        std::cout << u << std::endl;
         if (!parents[u].empty()) {
             v = parents[u].front();
             path.push_back(v);
@@ -81,24 +84,21 @@ edgeweight Dinic::computeBlockingPath() {
             if (path.empty())
                 break;
             v = path.back();
-
-            parents[v].pop_front();
         }
         // path has been build from target to source
         if (v == source) {
             edgeweight minimalFlowOnPath = std::numeric_limits<edgeweight>::max();
             // determine minimal flow on path
-            std::cout << "Hello2" << std::endl;
             for (int i{}; i + 1 < path.size(); ++i) {
-                const node parent = path[i];
-                const node child = path[i + 1];
+                const node parent = path[i + 1];
+                const node child = path[i];
                 minimalFlowOnPath =
                     std::min(minimalFlowOnPath, residualGraph.weight(parent, child));
             }
             // update the capacities and flows in the other edges
             for (int i{}; i + 1 < path.size(); ++i) {
-                const node parent = path[i];
-                const node child = path[i + 1];
+                const node parent = path[i + 1];
+                const node child = path[i];
                 const edgeweight currentCapacity = residualGraph.weight(parent, child);
                 residualGraph.setWeight(parent, child, currentCapacity - minimalFlowOnPath);
                 if (residualGraph.hasEdge(child, parent)) {
@@ -107,17 +107,18 @@ edgeweight Dinic::computeBlockingPath() {
                 } else {
                     residualGraph.addEdge(child, parent, minimalFlowOnPath);
                 }
-                if (residualGraph.weight(parent, child) == 0) {
+                if (residualGraph.weight(parent, child) == 0 && !parents[child].empty()) {
                     parents[child].pop_front();
                 }
             }
+            std::cout << "minimal " << minimalFlowOnPath << std::endl;
             totalFlow += minimalFlowOnPath;
-            u = source;
-            path.back() = source;
-            continue;
+            path.clear();
+            path.push_back(target);
         }
         u = v;
     }
+
     return totalFlow;
 }
 
@@ -125,7 +126,10 @@ void Dinic::run() {
     initializeResidualGraph();
     maxFlow = 0.0;
     while (determineValidParents()) {
-        maxFlow += computeBlockingPath();
+        if (const double flow = computeBlockingPath(); !Aux::NumericTools::equal(flow, 0.0)) {
+            maxFlow += flow;
+        } else
+            break;
     }
     hasRun = true;
 }
