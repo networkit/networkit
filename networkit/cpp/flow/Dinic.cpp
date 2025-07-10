@@ -71,11 +71,9 @@ edgeweight Dinic::computeBlockingPath() {
     std::vector<node> path;
     path.push_back(target);
     node u = target;
-    std::cout << "Hello1" << std::endl;
     while (true) {
         node v = none;
         // build path from target to source
-        std::cout << u << std::endl;
         if (!parents[u].empty()) {
             v = parents[u].front();
             path.push_back(v);
@@ -111,7 +109,6 @@ edgeweight Dinic::computeBlockingPath() {
                     parents[child].pop_front();
                 }
             }
-            std::cout << "minimal " << minimalFlowOnPath << std::endl;
             totalFlow += minimalFlowOnPath;
             path.clear();
             path.push_back(target);
@@ -135,6 +132,7 @@ void Dinic::run() {
 }
 
 edgeweight Dinic::getMaxFlow() const {
+    assureFinished();
     return maxFlow;
 }
 
