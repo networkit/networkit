@@ -83,33 +83,33 @@ edgeweight Dinic::computeBlockingPath() {
                 break;
             v = path.back();
         }
-        // path has been build from target to source
+        // path has been build from target to source, so the parent is on i+1 position of the ith
+        // child
         if (v == source) {
-            edgeweight minimalFlowOnPath = std::numeric_limits<edgeweight>::max();
+            edgeweight bottleNeckOnPath = std::numeric_limits<edgeweight>::max();
             // determine minimal flow on path
             for (int i{}; i + 1 < path.size(); ++i) {
                 const node parent = path[i + 1];
                 const node child = path[i];
-                minimalFlowOnPath =
-                    std::min(minimalFlowOnPath, residualGraph.weight(parent, child));
+                bottleNeckOnPath = std::min(bottleNeckOnPath, residualGraph.weight(parent, child));
             }
             // update the capacities and flows in the other edges
             for (int i{}; i + 1 < path.size(); ++i) {
                 const node parent = path[i + 1];
                 const node child = path[i];
                 const edgeweight currentCapacity = residualGraph.weight(parent, child);
-                residualGraph.setWeight(parent, child, currentCapacity - minimalFlowOnPath);
+                residualGraph.setWeight(parent, child, currentCapacity - bottleNeckOnPath);
                 if (residualGraph.hasEdge(child, parent)) {
                     const edgeweight reverseCapacity = residualGraph.weight(child, parent);
-                    residualGraph.setWeight(child, parent, reverseCapacity + minimalFlowOnPath);
+                    residualGraph.setWeight(child, parent, reverseCapacity + bottleNeckOnPath);
                 } else {
-                    residualGraph.addEdge(child, parent, minimalFlowOnPath);
+                    residualGraph.addEdge(child, parent, bottleNeckOnPath);
                 }
                 if (residualGraph.weight(parent, child) == 0 && !parents[child].empty()) {
                     parents[child].pop_front();
                 }
             }
-            totalFlow += minimalFlowOnPath;
+            totalFlow += bottleNeckOnPath;
             path.clear();
             path.push_back(target);
         }
@@ -123,6 +123,7 @@ void Dinic::run() {
     initializeResidualGraph();
     maxFlow = 0.0;
     while (determineValidParents()) {
+        countPhases++;
         if (const double flow = computeBlockingPath(); !Aux::NumericTools::equal(flow, 0.0)) {
             maxFlow += flow;
         } else
