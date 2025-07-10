@@ -893,7 +893,7 @@ TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapQuadrupleThread) {
 TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapGrowOnHandleDestruction) {
     Aux::setNumberOfThreads(4);
 
-    Aux::ParallelHashMap phm{32768};
+    Aux::ParallelHashMap phm{32};
 
     constexpr size_t fill_64bit_values = 10254;
     MockupData mockup_data = generateMockupData(fill_64bit_values);

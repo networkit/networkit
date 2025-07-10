@@ -79,7 +79,7 @@ bool HTAtomic128::insert(uint64_t const key, uint64_t const value) {
     uint64_t const hashed_key = hash64(key);
     size_t idx = scaling_log(hashed_key, m_log_capacity);
 
-    while (true) {
+    for (size_t i = 0; i < m_capacity; ++i) {
         idx = fastMod(idx, m_capacity);
         assert(idx < m_capacity);
 
@@ -108,6 +108,9 @@ bool HTAtomic128::insert(uint64_t const key, uint64_t const value) {
             idx++;
         }
     }
+
+    throw std::runtime_error("Failed to insert key-value pair after "
+                             "probing all cells. This should not happen.");
 }
 
 uint64_t HTAtomic128::find(uint64_t const key) const {
