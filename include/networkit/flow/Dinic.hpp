@@ -12,12 +12,40 @@
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
-
+/**
+ * @class Dinic
+ * @brief Computes maximum flow in a directed, weighted graph using Dinic's algorithm.
+ *
+ * This class implements the blocking flow approach of Dinic's algorithm to
+ * compute the maximum flow from a given source to a target node.
+ */
 class Dinic final : public Algorithm {
 
 public:
+    /**
+    * @brief Construct a Dinic flow solver.
+    *
+    * @param G     Reference to the input directed, weighted graph.
+    * @param s     Source node identifier.
+    * @param t     Target node identifier.
+    * @throws std::runtime_error if the graph is not directed, not weighted, or s == t.
+    */
     Dinic(const Graph &G, node s, node t);
+
+    /**
+     * @brief Execute the algorithm to compute maximum flow.
+     *
+     * Initializes the residual graph, then repeatedly performs BFS to build level
+     * graphs and DFS to find blocking flows until no augmenting path remains.
+     */
     void run() override;
+
+    /**
+     * @brief Retrieve the maximum flow value.
+     *
+     * @return The computed maximum flow from source to target.
+     * @throws std::runtime_error if called before run().
+     */
     edgeweight getMaxFlow() const;
 private:
     void initializeResidualGraph();

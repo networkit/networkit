@@ -123,7 +123,6 @@ void Dinic::run() {
     initializeResidualGraph();
     maxFlow = 0.0;
     while (determineValidParents()) {
-        countPhases++;
         if (const double flow = computeBlockingPath(); !Aux::NumericTools::equal(flow, 0.0)) {
             maxFlow += flow;
         } else
