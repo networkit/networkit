@@ -113,7 +113,7 @@ node ApproxElectricalCloseness::approxMinEccNode() {
                              - eccLowerBound.begin());
 }
 
-void ApproxElectricalCloseness::computeNodeSequence() {
+void ApproxElectricalCloseness::computeNodeSequence(node pivot) {
     // We use thread 0's vector
     auto &status = statusGlobal[0];
 
@@ -162,8 +162,12 @@ void ApproxElectricalCloseness::computeNodeSequence() {
         curSequence.clear();
     }
 
-    // Set the root to the highest degree node within the largest biconnected component
-    root = approxMinEccNode();
+    // Set the root to the highest degree node within the largest biconnected component or pivot if
+    // given.
+    if (pivot == none)
+        root = approxMinEccNode();
+    else
+        root = pivot;
 
     biAnchor.resize(bcc.numberOfComponents(), none);
     biParent.resize(bcc.numberOfComponents(), none);
@@ -174,7 +178,7 @@ void ApproxElectricalCloseness::computeNodeSequence() {
 
     // Topological order of biconnected components: tree of biconnected components starting from the
     // root's biconnected component. If the root is in multiple biconnected components, we take one
-    // of them arbitrarily select one of them.
+    // of them arbitrarily.
     std::queue<std::pair<node, index>> q;
     const auto &rootComps = bcc.getComponentsOfNode(root);
     q.emplace(root, *(rootComps.begin()));
@@ -431,6 +435,7 @@ void ApproxElectricalCloseness::dfsUST() {
     } while (!stack.empty());
 }
 
+void ApproxElectricalCloseness::aggregateUST(double weight) {
     auto &approxEffResistance = approxEffResistanceGlobal[omp_get_thread_num()];
     const auto &tree = bfsTrees[omp_get_thread_num()];
     const auto &tVisit = tree.tVisit;
@@ -465,7 +470,7 @@ void ApproxElectricalCloseness::dfsUST() {
             }
 
             if (tVisit[u] >= tVisit[e2] && tFinish[u] <= tFinish[e2])
-                approxEffResistance[u] += reverse ? -1 : 1;
+                approxEffResistance[u] += reverse ? -weight : weight;
 
             goUp();
         }

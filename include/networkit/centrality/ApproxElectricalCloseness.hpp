@@ -25,7 +25,7 @@ namespace NetworKit {
 /**
  * @ingroup centrality
  */
-class ApproxElectricalCloseness final : public Centrality {
+class ApproxElectricalCloseness : public Centrality {
 
 public:
     /**
@@ -73,7 +73,7 @@ public:
      */
     std::vector<double> computeExactDiagonal(double tol = 1e-9) const;
 
-private:
+protected:
     const double epsilon, delta, kappa;
     node root = 0;
     count rootEcc;
@@ -119,8 +119,7 @@ private:
     std::vector<index> topOrder;
 
     // Non-normalized approx effective resistance, one per thread.
-    // Values could be negative, so we use signed integers.
-    std::vector<std::vector<int64_t>> approxEffResistanceGlobal;
+    std::vector<std::vector<double>> approxEffResistanceGlobal;
 
     // Pseudo-inverse diagonal
     std::vector<double> diagonal;
@@ -139,7 +138,7 @@ private:
     void computeBFSTree();
     void sampleUST();
     void dfsUST();
-    void aggregateUST();
+    void aggregateUST(double weight = 1.0);
 
     node approxMinEccNode();
 
