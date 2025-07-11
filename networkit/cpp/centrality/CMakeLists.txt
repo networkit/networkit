@@ -11,6 +11,7 @@ networkit_add_module(centrality
     CoreDecomposition.cpp
     DegreeCentrality.cpp
     DynApproxBetweenness.cpp
+    DynApproxElectricalCloseness.cpp
     DynBetweenness.cpp
     DynBetweennessOneNode.cpp
     DynKatzCentrality.cpp
@@ -40,7 +41,7 @@ networkit_add_module(centrality
     SpanningEdgeCentrality.cpp
     TopCloseness.cpp
     TopHarmonicCloseness.cpp
-    )
+)
 
 networkit_module_link_modules(centrality
         algebraic
