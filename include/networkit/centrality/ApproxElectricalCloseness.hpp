@@ -88,6 +88,19 @@ private:
         VISITED
     };
 
+    struct Tree {
+        std::vector<node> parent;
+        std::vector<node> sibling;
+        std::vector<node> child;
+
+        std::vector<count> tVisit;
+        std::vector<count> tFinish;
+
+        Tree(count n) : parent(n, none), sibling(n), child(n), tVisit(n), tFinish(n) {}
+    };
+
+    std::vector<Tree> bfsTrees;
+
     // Used to mark the status of each node, one vector per thread
     std::vector<std::vector<NodeStatus>> statusGlobal;
 
@@ -95,9 +108,6 @@ private:
 
     // Nodes in each biconnected components sorted by their degree.
     std::vector<std::vector<node>> sequences;
-
-    // Pointers to the parent of the UST, one vector per thread
-    std::vector<std::vector<node>> parentGlobal;
 
     // Index of the parent component of the current component (after the topological order has been
     // determined)
@@ -115,9 +125,6 @@ private:
     // Pseudo-inverse diagonal
     std::vector<double> diagonal;
 
-    // Timestamps for DFS
-    std::vector<std::vector<count>> tVisitGlobal, tFinishGlobal;
-
     // Random number generators
     std::vector<std::mt19937_64> generators;
     std::vector<std::uniform_int_distribution<index>> degDist;
@@ -127,11 +134,7 @@ private:
 
     // Nodes sequences: Wilson's algorithm runs faster if we start the random walks following a
     // specific sequence of nodes. In this function we compute those sequences.
-    void computeNodeSequence();
-
-    // Adjacency list for trees: additional data structure to speed-up the DFS
-    std::vector<std::vector<node>> ustChildPtrGlobal;
-    std::vector<std::vector<node>> ustSiblingPtrGlobal;
+    void computeNodeSequence(node pivot = none);
 
     void computeBFSTree();
     void sampleUST();
@@ -145,9 +148,9 @@ private:
 #ifdef NETWORKIT_SANITY_CHECKS
     // Debugging methods
     void checkBFSTree() const;
-    void checkUST() const;
-    void checkTwoNodesSequence(const std::vector<node> &sequence) const;
-    void checkTimeStamps() const;
+    void checkUST(const Tree &tree) const;
+    void checkTwoNodesSequence(const std::vector<node> &sequence, std::vector<node> &parent) const;
+    void checkTimeStamps(const Tree &tree) const;
 #endif // NETWORKIT_SANITY_CHECKS
 };
 

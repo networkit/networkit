@@ -38,21 +38,16 @@ ApproxElectricalCloseness::ApproxElectricalCloseness(const Graph &G, double epsi
 
     const count n = G.upperNodeIdBound(), threads = omp_get_max_threads();
     statusGlobal.resize(threads, std::vector<NodeStatus>(n, NodeStatus::NOT_VISITED));
-    parentGlobal.resize(threads, std::vector<node>(n, none));
-    approxEffResistanceGlobal.resize(threads, std::vector<int64_t>(n));
+    bfsTrees.resize(threads, Tree(n));
+    approxEffResistanceGlobal.resize(threads, std::vector<double>(n));
     scoreData.resize(n);
     diagonal.resize(n);
-    tVisitGlobal.resize(threads, std::vector<count>(n));
-    tFinishGlobal.resize(threads, std::vector<count>(n));
     generators.reserve(threads);
     for (omp_index i = 0; i < threads; ++i)
         generators.emplace_back(Aux::Random::getURNG());
 
     degDist.reserve(G.upperNodeIdBound());
     G.forNodes([&](node u) { degDist.emplace_back(0, G.degree(u) - 1); });
-
-    ustChildPtrGlobal.resize(threads, std::vector<node>(n));
-    ustSiblingPtrGlobal.resize(threads, std::vector<node>(n));
     bfsParent.resize(n, none);
 }
 
@@ -252,10 +247,11 @@ void ApproxElectricalCloseness::computeBFSTree() {
 
 void ApproxElectricalCloseness::sampleUST() {
     // Getting thread-local vectors
+    auto &tree = bfsTrees[omp_get_thread_num()];
     auto &status = statusGlobal[omp_get_thread_num()];
-    auto &parent = parentGlobal[omp_get_thread_num()];
-    auto &childPtr = ustChildPtrGlobal[omp_get_thread_num()];
-    auto &siblingPtr = ustSiblingPtrGlobal[omp_get_thread_num()];
+    auto &parent = tree.parent;
+    auto &childPtr = tree.child;
+    auto &siblingPtr = tree.sibling;
     std::fill(status.begin(), status.end(), NodeStatus::NOT_IN_COMPONENT);
     std::fill(parent.begin(), parent.end(), none);
     std::fill(childPtr.begin(), childPtr.end(), none);
@@ -299,7 +295,7 @@ void ApproxElectricalCloseness::sampleUST() {
                     updateParentOfAnchor();
             }
 #ifdef NETWORKIT_SANITY_CHECKS
-            checkTwoNodesSequence(sequence);
+            checkTwoNodesSequence(sequence, parent);
 #endif
             continue;
         }
@@ -403,15 +399,16 @@ void ApproxElectricalCloseness::sampleUST() {
     }
 
 #ifdef NETWORKIT_SANITY_CHECKS
-    checkUST();
+    checkUST(tree);
 #endif
 }
 
 void ApproxElectricalCloseness::dfsUST() {
-    auto &tVisit = tVisitGlobal[omp_get_thread_num()];
-    auto &tFinish = tFinishGlobal[omp_get_thread_num()];
-    const auto &childPtr = ustChildPtrGlobal[omp_get_thread_num()];
-    const auto &siblingPtr = ustSiblingPtrGlobal[omp_get_thread_num()];
+    auto &tree = bfsTrees[omp_get_thread_num()];
+    auto &tVisit = tree.tVisit;
+    auto &tFinish = tree.tFinish;
+    const auto &childPtr = tree.child;
+    const auto &siblingPtr = tree.sibling;
 
     std::stack<std::pair<node, node>> stack;
     stack.emplace(root, childPtr[root]);
@@ -429,20 +426,20 @@ void ApproxElectricalCloseness::dfsUST() {
             stack.top().second = siblingPtr[v];
             tVisit[v] = ++timestamp;
             stack.emplace(v, childPtr[v]);
-            assert(parentGlobal[omp_get_thread_num()][v] == u);
+            assert(bfsTrees[omp_get_thread_num()].parent[v] == u);
         }
     } while (!stack.empty());
 }
 
-void ApproxElectricalCloseness::aggregateUST() {
-#ifdef NETWORKIT_SANITY_CHECKS
-    checkTimeStamps();
-#endif
-
     auto &approxEffResistance = approxEffResistanceGlobal[omp_get_thread_num()];
-    const auto &tVisit = tVisitGlobal[omp_get_thread_num()];
-    const auto &tFinish = tFinishGlobal[omp_get_thread_num()];
-    const auto &parent = parentGlobal[omp_get_thread_num()];
+    const auto &tree = bfsTrees[omp_get_thread_num()];
+    const auto &tVisit = tree.tVisit;
+    const auto &tFinish = tree.tFinish;
+    const auto &parent = tree.parent;
+
+#ifdef NETWORKIT_SANITY_CHECKS
+    checkTimeStamps(tree);
+#endif
 
     // Doing aggregation
     G.forNodes([&](const node u) {
@@ -601,11 +598,20 @@ std::vector<double> ApproxElectricalCloseness::computeExactDiagonal(double tol) 
 /*
  * Methods for sanity check.
  */
-void ApproxElectricalCloseness::checkUST() const {
+void ApproxElectricalCloseness::checkUST(const Tree &tree) const {
     std::vector<bool> visitedNodes(G.upperNodeIdBound());
-    const auto &parent = parentGlobal[omp_get_thread_num()];
+    const auto &parent = tree.parent;
+    const auto &childPtr = tree.child;
+    const auto &siblingPtr = tree.sibling;
+
     // To debug
     G.forNodes([&](node u) {
+        if (childPtr[u] != none) {
+            assert(u == parent[childPtr[u]]);
+        }
+        if (siblingPtr[u] != none) {
+            assert(parent[u] == parent[siblingPtr[u]]);
+        }
         if (u == root) {
             assert(parent[u] == none);
         } else {
@@ -627,18 +633,18 @@ void ApproxElectricalCloseness::checkBFSTree() const {
             assert(bfsParent[u] == none);
         } else {
             std::vector<bool> visited(G.upperNodeIdBound());
-            visited[u] = true;
             do {
+                assert(!visited[u]);
+                visited[u] = true;
+                assert(bfsParent[u] != none);
                 u = bfsParent[u];
-                assert(!visited[u]);
-                assert(!visited[u]);
             } while (u != root);
         }
     });
 }
 
-void ApproxElectricalCloseness::checkTwoNodesSequence(const std::vector<node> &sequence) const {
-    const std::vector<node> &parent = parentGlobal[omp_get_thread_num()];
+void ApproxElectricalCloseness::checkTwoNodesSequence(const std::vector<node> &sequence,
+                                                      std::vector<node> &parent) const {
     for (node u : sequence) {
         if (u == root) {
             assert(parent[u] == none);
@@ -654,9 +660,9 @@ void ApproxElectricalCloseness::checkTwoNodesSequence(const std::vector<node> &s
     }
 }
 
-void ApproxElectricalCloseness::checkTimeStamps() const {
-    const auto &tVisit = tVisitGlobal[omp_get_thread_num()];
-    const auto &tFinish = tFinishGlobal[omp_get_thread_num()];
+void ApproxElectricalCloseness::checkTimeStamps(const Tree &tree) const {
+    const auto &tVisit = tree.tVisit;
+    const auto &tFinish = tree.tFinish;
     G.forNodes([&](const node u) {
         assert(tVisit[u] < tFinish[u]);
         if (u == root)
