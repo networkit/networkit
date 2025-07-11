@@ -44,16 +44,13 @@ bool Dinic::determineValidParents() {
     std::queue<node> queue;
     level[source] = 0;
     queue.push(source);
-    while (!queue.empty()) {
+    do {
         const node parent = queue.front();
         queue.pop();
-
         for (const node child : residualGraph.neighborRange(parent)) {
             // We only consider connections with positive remaining capacity
-
             if (residualGraph.weight(parent, child) > 0.0) {
                 if (level[child] == -1) {
-
                     level[child] = level[parent] + 1;
                     parents[child].push_back(parent);
                     queue.push(child);
@@ -62,7 +59,8 @@ bool Dinic::determineValidParents() {
                 }
             }
         }
-    }
+    } while (!queue.empty());
+
     return level[target] > -1;
 }
 
