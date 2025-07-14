@@ -733,10 +733,6 @@ cdef class ParallelLeiden(CommunityDetector):
 	def __cinit__(self, Graph G not None, int iterations = 3, bool_t randomize = True, double gamma = 1):
 		self._G = G
 		self._this = new _ParallelLeiden(G._this,iterations,randomize,gamma)
-		from warnings import warn
-		warn("The current implementation might produce results, which do not follow the guarantees "
-		"from the Leiden algorithm. See documentation for more details: "
-		"https://networkit.github.io/dev-docs/python_api/community.html#ParallelLeiden")
 
 cdef extern from "<networkit/community/LouvainMapEquation.hpp>":
 	cdef cppclass _LouvainMapEquation "NetworKit::LouvainMapEquation"(_CommunityDetectionAlgorithm):

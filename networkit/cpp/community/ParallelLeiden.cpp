@@ -26,7 +26,7 @@ void ParallelLeiden::run() {
             handler.assureRunning();
             parallelMove(*currentGraph);
             // If each community consists of exactly one node we're done, i.e. when |V(G)| = |P|
-            if (currentGraph->numberOfNodes() != result.numberOfSubsets()) {
+            if (currentGraph->numberOfNodes() == result.numberOfSubsets()) {
                 break;
             }
             handler.assureRunning();
@@ -60,6 +60,7 @@ void ParallelLeiden::calculateVolumes(const Graph &graph) {
     // Vol(G) is then 2*|E|
     communityVolumes.clear();
     communityVolumes.resize(result.upperBound() + VECTOR_OVERSIZE);
+    inverseGraphVolume = 0.0; // Reset to 0 before accumulation
     if (graph.isWeighted()) {
         std::vector<double> threadVolumes(omp_get_max_threads());
         graph.parallelForNodes([&](node a) {
@@ -230,7 +231,7 @@ void ParallelLeiden::parallelMove(const Graph &graph) {
                     if (0 > maxDelta) { // move node to empty community
                         singleton++;
                         bestCommunity = upperBound++;
-                        if (bestCommunity >= communityVolumes.capacity()) {
+                        if (bestCommunity >= communityVolumes.size()) {
                             // Wait until all other threads yielded, then increase vector size
                             // Chances are this will never happen. Ever. Seriously...
                             bool expected = false;
