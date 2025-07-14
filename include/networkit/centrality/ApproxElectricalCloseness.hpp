@@ -45,6 +45,11 @@ public:
      */
     ApproxElectricalCloseness(const Graph &G, double epsilon = 0.1, double kappa = 0.3);
 
+    /**
+     * Constructor to set @a delta (the approximation probability) manually.
+     */
+    ApproxElectricalCloseness(const Graph &G, double epsilon, double kappa, double delta);
+
     ~ApproxElectricalCloseness() override = default;
 
     /**

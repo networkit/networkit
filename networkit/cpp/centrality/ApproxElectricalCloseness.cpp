@@ -19,9 +19,9 @@
 
 namespace NetworKit {
 
-ApproxElectricalCloseness::ApproxElectricalCloseness(const Graph &G, double epsilon, double kappa)
-    : Centrality(G), epsilon(epsilon), delta(1.0 / static_cast<double>(G.numberOfNodes())),
-      kappa(kappa), bccPtr(new BiconnectedComponents(G)) {
+ApproxElectricalCloseness::ApproxElectricalCloseness(const Graph &G, double epsilon, double kappa,
+                                                     double delta)
+    : Centrality(G), epsilon(epsilon), delta(delta), kappa(kappa), bcc(G) {
 
     if (G.isDirected())
         throw std::runtime_error("Error: the input graph must be undirected.");
@@ -50,6 +50,9 @@ ApproxElectricalCloseness::ApproxElectricalCloseness(const Graph &G, double epsi
     G.forNodes([&](node u) { degDist.emplace_back(0, G.degree(u) - 1); });
     bfsParent.resize(n, none);
 }
+
+ApproxElectricalCloseness::ApproxElectricalCloseness(const Graph &G, double epsilon, double kappa)
+    : ApproxElectricalCloseness(G, epsilon, kappa, 1.0 / static_cast<double>(G.numberOfNodes())) {}
 
 count ApproxElectricalCloseness::computeNumberOfUSTs() const {
     return rootEcc * rootEcc
