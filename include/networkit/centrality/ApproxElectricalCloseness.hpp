@@ -109,7 +109,7 @@ protected:
     // Used to mark the status of each node, one vector per thread
     std::vector<std::vector<NodeStatus>> statusGlobal;
 
-    std::unique_ptr<BiconnectedComponents> bccPtr;
+    BiconnectedComponents bcc;
 
     // Nodes in each biconnected components sorted by their degree.
     std::vector<std::vector<node>> sequences;

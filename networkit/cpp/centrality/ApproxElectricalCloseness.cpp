@@ -121,7 +121,6 @@ void ApproxElectricalCloseness::computeNodeSequence(node pivot) {
     auto &status = statusGlobal[0];
 
     // Compute the biconnected components
-    auto &bcc = *bccPtr;
     bcc.run();
     auto components = bcc.getComponents();
 
@@ -276,7 +275,7 @@ void ApproxElectricalCloseness::sampleUST() {
         // parent component.
         auto updateParentOfAnchor = [&]() -> void {
             for (const node v : G.neighborRange(curAnchor)) {
-                const auto &vComps = bccPtr->getComponentsOfNode(v);
+                const auto &vComps = bcc.getComponentsOfNode(v);
                 if (vComps.find(biParent[componentIndex]) != vComps.end()) {
                     parent[curAnchor] = v;
                     break;
