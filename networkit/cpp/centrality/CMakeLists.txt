@@ -44,16 +44,17 @@ networkit_add_module(centrality
 )
 
 networkit_module_link_modules(centrality
-        algebraic
-        auxiliary
-        components
-        distance
-        dyn_distance
-        dynamics
-        graph
-        linkprediction
-        reachability
-        structures
-    )
+    algebraic
+    auxiliary
+    components
+    distance
+    dyn_distance
+    dynamics
+    graph
+    linkprediction
+    reachability
+    structures
+    numerics
+)
 
 add_subdirectory(test)
