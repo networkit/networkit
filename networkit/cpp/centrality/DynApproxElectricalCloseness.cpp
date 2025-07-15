@@ -99,7 +99,7 @@ void DynApproxElectricalCloseness::sampleUSTWithEdge(node a, node b) {
     }
 
 #ifdef NETWORKIT_SANITY_CHECKS
-    assert(nodesInSpanningTree == n);
+    assert(nodesInSpanningTree == G.numberOfNodes());
 #endif
 
     // Switch root from b to `root`.
