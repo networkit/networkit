@@ -10,7 +10,6 @@
 #include <omp.h>
 #include <queue>
 
-#include <networkit/algebraic/CSRMatrix.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/centrality/ApproxElectricalCloseness.hpp>
 #include <networkit/numerics/ConjugateGradient.hpp>
@@ -42,6 +41,7 @@ ApproxElectricalCloseness::ApproxElectricalCloseness(const Graph &G, double epsi
     approxEffResistanceGlobal.resize(threads, std::vector<double>(n));
     scoreData.resize(n);
     diagonal.resize(n);
+    resistanceToRoot.resize(n);
     generators.reserve(threads);
     for (omp_index i = 0; i < threads; ++i)
         generators.emplace_back(Aux::Random::getURNG());
@@ -484,36 +484,46 @@ void ApproxElectricalCloseness::run() {
     computeNodeSequence();
     computeBFSTree();
 
-    const count numberOfUSTs = computeNumberOfUSTs();
-    Vector sol(G.numberOfNodes());
+    numberOfUSTs = computeNumberOfUSTs();
+    rootCol = Vector(G.numberOfNodes());
 
+    solveColumnAndSampleUSTs();
+    aggregateResults();
+
+    laplacian = CSRMatrix(); // Clear data to release memory
+    rootCol = Vector();
+    resistanceToRoot.clear();
+
+    hasRun = true;
+}
+
+void ApproxElectricalCloseness::solveColumnAndSampleUSTs() {
 #pragma omp parallel
     {
         // Thread 0 solves the linear system
         if (omp_get_thread_num() == 0) {
             const count n = G.numberOfNodes();
 
-            const auto L = CSRMatrix::laplacianMatrix(G);
+            laplacian = CSRMatrix::laplacianMatrix(G);
             Diameter diamAlgo(G, DiameterAlgo::ESTIMATED_RANGE, 0);
             diamAlgo.run();
             // Getting diameter upper bound
             const auto diam = static_cast<double>(diamAlgo.getDiameter().second);
-            const double tol =
-                epsilon * kappa
-                / (std::sqrt(static_cast<double>((n * G.numberOfEdges())) * std::log(n)) * diam
-                   * 3.);
+            tol = epsilon * kappa
+                  / (std::sqrt(static_cast<double>((n * G.numberOfEdges())) * std::log(n)) * diam
+                     * 3.);
             ConjugateGradient<CSRMatrix, DiagonalPreconditioner> cg(tol);
-            cg.setupConnected(L);
+            cg.setupConnected(laplacian);
 
             Vector rhs(n);
             G.forNodes([&](node u) { rhs[u] = -1.0 / static_cast<double>(n); });
             rhs[root] += 1.;
-            cg.solve(rhs, sol);
+            cg.solve(rhs, rootCol);
 
             // ensure column sum of entries is 0.
             double columnSum = 0.;
-            G.forNodes([&](node u) { columnSum += sol[u]; });
-            sol -= columnSum / static_cast<double>(n);
+            G.forNodes([&](node u) { columnSum += rootCol[u]; });
+            rootCol -= columnSum / static_cast<double>(n);
         }
 
         // All threads sample and aggregate USTs in parallel
@@ -524,24 +534,26 @@ void ApproxElectricalCloseness::run() {
             aggregateUST();
         }
     }
+}
 
+void ApproxElectricalCloseness::aggregateResults() {
     // Aggregating thread-local results
     G.parallelForNodes([&](const node u) {
         // Accumulate all results on thread 0 vector
         for (count i = 1; i < approxEffResistanceGlobal.size(); ++i)
             approxEffResistanceGlobal[0][u] += approxEffResistanceGlobal[i][u];
-        diagonal[u] = static_cast<double>(approxEffResistanceGlobal[0][u])
-                      / static_cast<double>(numberOfUSTs);
+
+        resistanceToRoot[u] = static_cast<double>(approxEffResistanceGlobal[0][u])
+                              / static_cast<double>(numberOfUSTs);
+
+        diagonal[u] = resistanceToRoot[u] - rootCol[root] + 2. * rootCol[u];
     });
 
-    G.parallelForNodes([&](node u) { diagonal[u] = diagonal[u] - sol[root] + 2. * sol[u]; });
-    diagonal[root] = sol[root];
+    diagonal[root] = rootCol[root];
     const double trace = std::accumulate(diagonal.begin(), diagonal.end(), 0.);
     const auto n = static_cast<double>(G.numberOfNodes());
 
     G.parallelForNodes([&](node u) { scoreData[u] = (n - 1.) / (n * diagonal[u] + trace); });
-
-    hasRun = true;
 }
 
 std::vector<double> ApproxElectricalCloseness::computeExactDiagonal(double tol) const {

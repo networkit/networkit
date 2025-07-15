@@ -15,6 +15,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <networkit/algebraic/CSRMatrix.hpp>
 #include <networkit/centrality/Centrality.hpp>
 #include <networkit/components/BiconnectedComponents.hpp>
 #include <networkit/distance/Diameter.hpp>
@@ -80,8 +81,21 @@ public:
 
 protected:
     const double epsilon, delta, kappa;
+    double tol;
     node root = 0;
     count rootEcc;
+    count numberOfUSTs;
+
+    // These members are artifacts from running the algorithm. In the static algorithm, these
+    // members are cleared after running the algorithm to release memory; in the dynamic algorithm,
+    // they are kept to allow updates.
+
+    // laplacian matrix of the graph.
+    CSRMatrix laplacian;
+    // lpinv column of root
+    Vector rootCol;
+    // Resistance of node with root
+    std::vector<double> resistanceToRoot;
 
     // #of BFSs used to estimate a vertex with low eccentricity.
     static constexpr uint32_t sweeps = 10;
@@ -146,6 +160,9 @@ protected:
     void aggregateUST(double weight = 1.0);
 
     node approxMinEccNode();
+
+    void aggregateResults();
+    void solveColumnAndSampleUSTs();
 
     count computeNumberOfUSTs() const;
 
