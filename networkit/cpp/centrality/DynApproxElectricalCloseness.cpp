@@ -37,8 +37,7 @@ DynApproxElectricalCloseness::DynApproxElectricalCloseness(const Graph &G, doubl
                                    1.0 / static_cast<double>(G.numberOfNodes())) {}
 
 void DynApproxElectricalCloseness::sampleUSTWithEdge(node a, node b) {
-    auto n = G.numberOfNodes();
-    assert(a < n && b < n);
+    assert(a < G.numberOfNodes() && b < G.numberOfNodes());
 
     auto &tree = bfsTrees[omp_get_thread_num()];
 
@@ -58,7 +57,10 @@ void DynApproxElectricalCloseness::sampleUSTWithEdge(node a, node b) {
     parent[a] = b;
     status[a] = NodeStatus::IN_SPANNING_TREE;
     status[b] = NodeStatus::IN_SPANNING_TREE;
+
+#ifdef NETWORKIT_SANITY_CHECKS
     unsigned int nodesInSpanningTree = 2;
+#endif
 
     // The tree is generated using Wilson's algorithm, rooted in b.
     // Afterwards reroot it to this->root.
@@ -89,12 +91,16 @@ void DynApproxElectricalCloseness::sampleUSTWithEdge(node a, node b) {
                  currentNode = parent[currentNode]) {
 
                 status[currentNode] = NodeStatus::IN_SPANNING_TREE;
+#ifdef NETWORKIT_SANITY_CHECKS
                 ++nodesInSpanningTree;
+#endif
             }
         }
     }
 
+#ifdef NETWORKIT_SANITY_CHECKS
     assert(nodesInSpanningTree == n);
+#endif
 
     // Switch root from b to `root`.
     node currentNode = root;
