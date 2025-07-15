@@ -18,7 +18,7 @@
 
 #include <networkit/algebraic/CSRMatrix.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
-#include <networkit/centrality/Centrality.hpp>
+#include <networkit/centrality/ApproxElectricalCloseness.hpp>
 #include <networkit/components/BiconnectedComponents.hpp>
 #include <networkit/distance/Diameter.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -28,7 +28,7 @@ namespace NetworKit {
 /**
  * @ingroup centrality
  */
-class DynApproxElectricalCloseness final : public Centrality, public DynAlgorithm {
+class DynApproxElectricalCloseness final : public ApproxElectricalCloseness, public DynAlgorithm {
 
 public:
     /**
@@ -87,113 +87,21 @@ public:
         throw std::runtime_error("Error: batch updates are not supported.");
     }
 
-    /**
-     * Return an epsilon-approximation of the diagonal of the laplacian's pseudoinverse.
-     *
-     * @return Approximation of the diagonal of the laplacian's pseudoinverse.
-     */
-    const std::vector<double> &getDiagonal() const {
-        assureFinished();
-        return diagonal;
-    }
-
     inline NetworKit::count getUstCount() { return numberOfUSTs; }
 
 private:
-    const double epsilon, delta, kappa;
-    double tol;
-    count numberOfUSTs;
-    node root = 0;
     const node pivot;
-    count rootEcc;
-    NetworKit::CSRMatrix laplacian;
-
-    // #of BFSs used to estimate a vertex with low eccentricity.
-    static constexpr uint32_t sweeps = 10;
-
-    enum class NodeStatus : unsigned char {
-        NOT_IN_COMPONENT,
-        IN_SPANNING_TREE,
-        NOT_VISITED,
-        VISITED
-    };
-
-    struct Tree {
-        std::vector<node> parent;
-        std::vector<node> sibling;
-        std::vector<node> child;
-
-        std::vector<count> tVisit;
-        std::vector<count> tFinish;
-        bool timesComputed = false;
-    };
-
-    // Used to mark the status of each node, one vector per thread
-    std::vector<std::vector<NodeStatus>> statusGlobal;
-
-    BiconnectedComponents bcc;
-
-    // Nodes in each biconnected components sorted by their degree.
-    std::vector<std::vector<node>> sequences;
-
-    // Shortest path tree
-    Tree bfsTree;
-
-    // Index of the parent component of the current component (after the topological order has been
-    // determined)
-    std::vector<index> biParent;
-    // Node within the bionnected component that points to the node in the parent component
-    std::vector<node> biAnchor;
-
-    // Topological order of the biconencted components
-    std::vector<index> topOrder;
-
-    // approx effective resistance, summed contribution per tree, one per thread.
-    std::vector<std::vector<double>> approxEffResistanceGlobal;
-
-    // Pseudo-inverse diagonal
-    std::vector<double> diagonal;
-
-    // Resistance of node with root
-    std::vector<double> resistanceToRoot;
-
-    // lpinv column of root
-    Vector rootCol;
 
     // Least common ancestor vectors, per thread
     std::vector<std::vector<node>> lcaGlobal;
 
-    // Random number generators
-    std::vector<std::mt19937_64> generators;
-    std::vector<std::uniform_int_distribution<index>> degDist;
-
-    // Nodes sequences: Wilson's algorithm runs faster if we start the random walks following a
-    // specific sequence of nodes. In this function we compute those sequences.
-    void computeNodeSequence();
-
-    void setDFSTimes(Tree &tree);
-
-    void computeBFSTree();
-    void sampleUST(Tree &result);
-    void sampleUSTWithEdge(Tree &result, node a, node b);
-
-    void aggregateUST(Tree &tree, double weight);
+    void sampleUSTWithEdge(node a, node b);
 
     void edgeAdded(node a, node b);
-
     void edgeRemoved(node a, node b);
 
-    node approxMinEccNode();
-
-    count computeNumberOfUSTs() const;
-
-#ifdef NETWORKIT_SANITY_CHECKS
-    // Debugging methods
-    void checkBFSTree() const;
-    void checkUST(const Tree &tree) const;
-    void checkTwoNodesSequence(const std::vector<node> &sequence, std::vector<node> &parent) const;
-    void checkTimeStamps(const Tree &tree) const;
-#endif // NETWORKIT_SANITY_CHECKS
+    std::tuple<double, Vector, Vector> computeColumnsExact(node a, node b);
+    void solveRootAndResample(node a, node b, double w);
 };
 
 } // namespace NetworKit
