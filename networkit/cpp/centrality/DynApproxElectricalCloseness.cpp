@@ -152,7 +152,10 @@ void DynApproxElectricalCloseness::edgeAdded(node a, node b) {
     laplacian.setValue(a, b, laplacian(a, b) - 1.);
     laplacian.setValue(b, a, laplacian(b, a) - 1.);
 
-    const auto [w, lpinvColA, lpinvColB] = computeColumnsExact(a, b);
+    const auto [_w, _lpinvColA, _lpinvColB] = computeColumnsExact(a, b);
+    const double w = _w;
+    const Vector &lpinvColA = _lpinvColA;
+    const Vector &lpinvColB = _lpinvColB;
 
     solveRootAndResample(a, b, w);
 
@@ -196,7 +199,8 @@ void DynApproxElectricalCloseness::edgeRemoved(node a, node b) {
 
     // Compute lpinv columns for a and b exactly. (for G', old laplacian)
 
-    const auto [w, lpinvColA, lpinvColB] = computeColumnsExact(a, b);
+    const auto [_w, lpinvColA, lpinvColB] = computeColumnsExact(a, b);
+    const double w = _w;
 
     // compute u'th column of laplacian pseudoinverse for G
 
