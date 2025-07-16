@@ -86,6 +86,41 @@ public:
         return tmp;
     }
 
+    node operator-(const NodeIteratorBase &rhs) const noexcept {
+        assert(G == rhs.G);
+        auto tmp = this->u - rhs.u;
+        while (!(G->hasNode(tmp) || tmp < 0)) {
+            --tmp;
+        }
+        return tmp;
+    }
+
+    NodeIteratorBase &operator-=(const NodeIteratorBase &rhs) noexcept {
+        assert(G == rhs.G);
+        u -= rhs.u;
+        while (!(G->hasNode(u) || u < 0)) {
+            --u;
+        }
+        return *this;
+    }
+
+    NodeIteratorBase operator+(difference_type rhs) const noexcept {
+        auto tmp = this->u + rhs;
+        // while (!(G->hasNode(tmp) || tmp >= G->upperNodeIdBound())) {
+        //     ++tmp;
+        // }
+        return NodeIteratorBase(G, tmp);
+    }
+
+    NodeIteratorBase &operator+=(const NodeIteratorBase &rhs) noexcept {
+        assert(G == rhs.G);
+        u += rhs.u;
+        while (!(G->hasNode(u) || u >= G->upperNodeIdBound())) {
+            ++u;
+        }
+        return *this;
+    }
+
     bool operator==(const NodeIteratorBase &rhs) const noexcept { return u == rhs.u; }
 
     bool operator!=(const NodeIteratorBase &rhs) const noexcept { return !(*this == rhs); }
