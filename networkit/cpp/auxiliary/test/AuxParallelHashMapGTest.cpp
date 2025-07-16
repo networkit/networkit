@@ -14,6 +14,8 @@
 #include <networkit/auxiliary/ParallelHashMap.hpp>
 #include <networkit/auxiliary/Parallelism.hpp>
 #include <networkit/auxiliary/Random.hpp>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/io/METISGraphReader.hpp>
 
 #include <thread>
 
@@ -890,34 +892,96 @@ TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapQuadrupleThread) {
     ASSERT_TRUE(checkEntriesForMockupData(mockup_data, *phm.currentTable()));
 }
 
-TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapGrowOnHandleDestruction) {
+TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapForNodes) {
     Aux::Log::setLogLevel("INFO");
-    Aux::setNumberOfThreads(2);
+    Aux::setNumberOfThreads(4);
 
-    Aux::ParallelHashMap phm{8};
+    Aux::ParallelHashMap phm{32};
 
-    constexpr size_t fill_64bit_values = 71;
-    MockupData mockup_data = generateMockupData(fill_64bit_values);
-    std::vector<bool> successful_inserts({true, true, true, true});
+    NetworKit::METISGraphReader reader;
 
-#pragma omp parallel for
-    for (size_t i = 0; i < mockup_data.size(); ++i) {
+    std::string graphFile = "input/tiny_01.graph";
+
+    // NetworKit::Graph G = reader.read(graphFile);
+    NetworKit::Graph G{1000};
+
+    auto nodeIterator = G.nodeRange();
+
+#pragma omp parallel
+    {
+        uint32_t const thread_id = omp_get_thread_num();
+        uint32_t const num_threads = omp_get_num_threads();
+
         auto handle = phm.makeHandle();
 
-        INFO("Iteration ", i, ": Inserting key ", mockup_data[i].first,
-             " with value: ", mockup_data[i].second, " in thread ", omp_get_thread_num(),
-             " Hashtable capacity: ", handle.hashtable().capacity());
-        successful_inserts[omp_get_thread_num()] =
-            successful_inserts[omp_get_thread_num()]
-            && handle.insert(mockup_data[i].first, mockup_data[i].second);
+        size_t const elements_per_thread = G.numberOfNodes() / num_threads;
+        auto local_begin = nodeIterator.begin();
+
+        if (thread_id != 0) {
+            std::advance(local_begin, thread_id * elements_per_thread);
+        }
+
+        auto local_end = local_begin;
+
+        if (thread_id == num_threads - 1) {
+            local_end = nodeIterator.end();
+        } else {
+            std::advance(local_end, elements_per_thread);
+        }
+
+        for (auto it = local_begin; it != local_end; ++it) {
+            handle.insert(*it, *it);
+        }
     }
 
-    ASSERT_TRUE(successful_inserts[0]);
-    ASSERT_TRUE(successful_inserts[1]);
-    ASSERT_TRUE(successful_inserts[2]);
-    ASSERT_TRUE(successful_inserts[3]);
-    ASSERT_TRUE(checkEntriesForMockupData(mockup_data, *phm.currentTable()));
-    Aux::Log::setLogLevel("QUIET");
+    ASSERT_GT(phm.currentTable()->capacity(), G.numberOfNodes());
+
+    for (auto it = phm.currentTable()->begin(); it != phm.currentTable()->end(); ++it) {
+        INFO("Key: ", it->key, ", Value: ", it->value);
+    }
+}
+
+TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapForNodesHandleLambda) {
+    Aux::setNumberOfThreads(4);
+
+    Aux::ParallelHashMap phm{32};
+
+    NetworKit::Graph G{1000};
+
+    auto nodeIterator = G.nodeRange();
+
+    phm.parallelFor(nodeIterator.begin(), nodeIterator.end(),
+                    [&](node n, HTHandle &h) { h.insert(n, n); });
+
+    EXPECT_GT(phm.currentTable()->capacity(), G.numberOfNodes());
+
+    for (auto it = phm.currentTable()->begin(); it != phm.currentTable()->end(); ++it) {
+        EXPECT_EQ(it->key, it->value);
+    }
+}
+
+TEST_F(AuxParallelGrowingHTGTest, testParallelHashMapForNodesHandleLambdaKindOfNested) {
+    Aux::setNumberOfThreads(4);
+
+    Aux::ParallelHashMap phm{32};
+
+    NetworKit::METISGraphReader reader;
+
+    std::string graphFile = "input/tiny_01.graph";
+
+    // NetworKit::Graph G = reader.read(graphFile);
+    NetworKit::Graph G{1000};
+
+    auto nodeIterator = G.nodeRange();
+
+    phm.parallelForKindOfNested(nodeIterator.begin(), nodeIterator.end(),
+                                [&](node n, HTHandle &h) { h.insert(n, n); });
+
+    EXPECT_GT(phm.currentTable()->capacity(), G.numberOfNodes());
+
+    for (auto it = phm.currentTable()->begin(); it != phm.currentTable()->end(); ++it) {
+        EXPECT_EQ(it->key, it->value);
+    }
 }
 
 } // namespace NetworKit

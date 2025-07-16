@@ -72,7 +72,12 @@ public:
         return *this;
     }
 
+    /**
+     *  Creates a new handle for the hashtable.
+     *  @return A handle to the hashtable that can be used for inserts and lookups.
+     */
     HTHandle makeHandle();
+
     /**
      *  Returns the current hashtable that is being used by the handle.
      *  This is the source table that is being used for inserts and lookups.
@@ -81,6 +86,25 @@ public:
      *        created, as the hashtable may be swapped out during operations.
      */
     HTAtomic128 const *currentTable() const;
+
+    /**
+     * Executes a lambda function in parallel over a range of elements. The parallization is done
+     * in chunks of elements, where each thread processes a chunk of the range equally sized in
+     * range of number of threads. Use this function to parallelize insert, update and find
+     * operations on ParallelHashMap when it is expected during the operations the hashtable
+     * is expected to grow. If the hashtable is not expected to grow, you can use parallelForNodes
+     * or parallelForEdges from Graph class instead for possible performance improvements.
+     * @tparam Iterator The iterator type.
+     * @tparam L The lambda function type.
+     * @param begin The beginning of the range.
+     * @param end The end of the range.
+     * @param handle The lambda function to execute.
+     */
+    template <typename Iterator, typename L>
+    void parallelFor(Iterator begin, Iterator end, L handle);
+
+    template <typename Iterator, typename L>
+    void parallelForKindOfNested(Iterator begin, Iterator end, L handle);
 
 private:
     std::unique_ptr<HTAtomic128> m_source;
@@ -378,6 +402,48 @@ private:
     HTSyncData m_sync_data;
 };
 
-} // namespace Aux
+template <typename Iterator, typename L>
+void ParallelHashMap::parallelFor(Iterator begin, Iterator end, L func) {
+#pragma omp parallel shared(begin, end)
+    {
+        uint32_t const thread_id = omp_get_thread_num();
+        uint32_t const num_threads = omp_get_num_threads();
 
+        auto handle = this->makeHandle();
+
+        size_t const elements_per_thread = std::distance(begin, end) / num_threads;
+        auto local_begin = begin;
+
+        if (thread_id != 0) {
+            std::advance(local_begin, thread_id * elements_per_thread);
+        }
+
+        auto local_end = local_begin;
+
+        if (thread_id == num_threads - 1) {
+            local_end = end;
+        } else {
+            std::advance(local_end, elements_per_thread);
+        }
+
+        for (auto it = local_begin; it != local_end; ++it) {
+            func(*it, handle);
+        }
+    }
+}
+
+template <typename Iterator, typename L>
+void ParallelHashMap::parallelForKindOfNested(Iterator begin, Iterator end, L func) {
+#pragma omp parallel shared(begin, end)
+    {
+        auto handle = this->makeHandle();
+
+#pragma omp for
+        for (Iterator it = begin; it != end; ++it) {
+            func(*it, handle);
+        }
+    }
+}
+
+} // namespace Aux
 #endif // NETWORKIT_AUXILIARY_PARALLEL_HASH_MAP_HPP_
