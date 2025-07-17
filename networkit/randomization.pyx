@@ -5,7 +5,7 @@ from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 
 from .base cimport _Algorithm, Algorithm
-from .graph cimport _Graph, Graph
+from .graph cimport _Graph, Graph, _GraphW
 from .structures cimport count, index, node
 
 cdef extern from "<networkit/randomization/EdgeSwitching.hpp>":
@@ -18,7 +18,7 @@ cdef extern from "<networkit/randomization/EdgeSwitching.hpp>":
 		void setNumberOfSwitchesPerEdge(double)
 
 	cdef cppclass _EdgeSwitchingInPlace "NetworKit::EdgeSwitchingInPlace"(_Algorithm):
-		_EdgeSwitchingInPlace(_Graph, double) except +
+		_EdgeSwitchingInPlace(_GraphW, double) except +
 		void run(count) except + nogil
 		count getNumberOfAffectedEdges()
 		double getNumberOfSwitchesPerEdge()
@@ -117,8 +117,11 @@ cdef class EdgeSwitchingInPlace(Algorithm):
 	cdef Graph _localReference # keep reference counter up to prevent GC of graph
 
 	def __cinit__(self, G, numberOfSwitchesPerEdge = 10.0):
+		cdef _GraphW gw
 		if isinstance(G, Graph):
-			self._this = new _EdgeSwitchingInPlace((<Graph>G)._this, numberOfSwitchesPerEdge)
+			gw = _GraphW((<Graph>G)._this)
+			self._this = new _EdgeSwitchingInPlace(gw, numberOfSwitchesPerEdge)
+			(<Graph>G).setThisFromGraphW(gw)
 			self._localReference = G
 		else:
 			raise RuntimeError("Parameter G has to be a graph")

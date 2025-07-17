@@ -2,7 +2,7 @@
 
 from .base cimport _Algorithm
 from .base cimport Algorithm
-from .graph cimport _Graph, Graph
+from .graph cimport _Graph, Graph, _GraphW
 from .helpers import stdstring
 
 def graphFromStream(stream, weighted, directed):
@@ -386,7 +386,7 @@ cdef class GraphDifference(Algorithm):
 cdef extern from "<networkit/dynamics/GraphUpdater.hpp>":
 
 	cdef cppclass _GraphUpdater "NetworKit::GraphUpdater":
-		_GraphUpdater(_Graph G) except +
+		_GraphUpdater(_GraphW G) except +
 		void update(vector[_GraphEvent] stream) except + nogil
 		vector[pair[count, count]] &getSizeTimeline() except +
 
@@ -405,8 +405,11 @@ cdef class GraphUpdater:
 	cdef Graph _G
 
 	def __cinit__(self, Graph G):
+		cdef _GraphW gw
 		self._G = G
-		self._this = new _GraphUpdater(G._this)
+		gw = _GraphW(G._this)
+		self._this = new _GraphUpdater(gw)
+		G.setThisFromGraphW(gw)
 
 	def __dealloc__(self):
 		del self._this

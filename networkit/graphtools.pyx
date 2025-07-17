@@ -6,7 +6,7 @@ from libcpp.utility cimport pair
 from libcpp.unordered_map cimport unordered_map
 from libcpp.unordered_set cimport unordered_set
 
-from .graph cimport _Graph, Graph
+from .graph cimport _Graph, Graph, _GraphW, GraphW
 from .structures cimport count, index, node, edgeweight
 
 cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphTools":
@@ -31,17 +31,17 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	_Graph toWeighted(_Graph G) except + nogil
 	_Graph subgraphFromNodes[InputIt](_Graph G, InputIt first, InputIt last, bool_t compact) except + nogil
 	_Graph subgraphAndNeighborsFromNodes(_Graph G, unordered_set[node], bool_t, bool_t) except + nogil
-	void append(_Graph G, _Graph G1) except + nogil
-	void merge(_Graph G, _Graph G1) except + nogil
-	void removeEdgesFromIsolatedSet[InputIt](_Graph G, InputIt first, InputIt last) except +
+	void append(_GraphW G, _Graph G1) except + nogil
+	void merge(_GraphW G, _Graph G1) except + nogil
+	void removeEdgesFromIsolatedSet[InputIt](_GraphW G, InputIt first, InputIt last) except +
 	_Graph getCompactedGraph(_Graph G, unordered_map[node,node]) except + nogil
 	_Graph transpose(_Graph G) except + nogil
 	unordered_map[node,node] getContinuousNodeIds(_Graph G) except + nogil
 	unordered_map[node,node] getRandomContinuousNodeIds(_Graph G) except + nogil
-	void sortEdgesByWeight(_Graph G, bool_t) except + nogil
+	void sortEdgesByWeight(_GraphW G, bool_t) except + nogil
 	vector[node] topologicalSort(_Graph G) except + nogil
 	vector[node] topologicalSort(_Graph G, unordered_map[node, node], bool_t) except + nogil
-	node augmentGraph(_Graph G) except + nogil
+	node augmentGraph(_GraphW G) except + nogil
 	pair[_Graph, node] createAugmentedGraph(_Graph G) except + nogil
 	void randomizeWeights(_Graph G) except + nogil
 
@@ -245,7 +245,9 @@ cdef class GraphTools:
 		G1 : networkit.Graph
 			Graph that will be appended to `G`.
 		"""
-		append(G._this, G1._this)
+		cdef _GraphW gw = _GraphW(G._this)
+		append(gw, G1._this)
+		G.setThisFromGraphW(gw)
 
 	@staticmethod
 	def merge(Graph G, Graph G1):
@@ -262,7 +264,9 @@ cdef class GraphTools:
 		G1 : networkit.Graph
 			Graph that will be merged with `G`.
 		"""
-		merge(G._this, G1._this)
+		cdef _GraphW gw = _GraphW(G._this)
+		merge(gw, G1._this)
+		G.setThisFromGraphW(gw)
 
 	@staticmethod
 	def removeEdgesFromIsolatedSet(Graph graph, nodes):
@@ -286,8 +290,10 @@ cdef class GraphTools:
 			isolatedSet = <vector[node]?>nodes
 		except TypeError:
 			raise RuntimeError("Error, nodes must be a list of nodes.")
-		removeEdgesFromIsolatedSet[vector[node].iterator](graph._this,
+		cdef _GraphW gw = _GraphW(graph._this)
+		removeEdgesFromIsolatedSet[vector[node].iterator](gw,
 				isolatedSet.begin(), isolatedSet.end())
+		graph.setThisFromGraphW(gw)
 
 	@staticmethod
 	def toUndirected(Graph graph):
@@ -627,7 +633,9 @@ cdef class GraphTools:
 			adjacency arrays are sorted by non-decreasing edge weights. Ties are broken
 			by using node ids. Default: False
 		"""
-		sortEdgesByWeight(G._this, decreasing)
+		cdef _GraphW gw = _GraphW(G._this)
+		sortEdgesByWeight(gw, decreasing)
+		G.setThisFromGraphW(gw)
 
 	@staticmethod
 	def topologicalSort(Graph G, dict[node, node] nodeIdMap = None, bool_t checkMapping = False):
@@ -674,7 +682,10 @@ cdef class GraphTools:
 		int
 			Returns the node id of the new root node.
 		"""
-		return augmentGraph(G._this)
+		cdef _GraphW gw = _GraphW(G._this)
+		cdef node result = augmentGraph(gw)
+		G.setThisFromGraphW(gw)
+		return result
 
 	@staticmethod
 	def createAugmentedGraph(Graph G):
