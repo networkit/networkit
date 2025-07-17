@@ -262,7 +262,7 @@ GraphW subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes) 
 }
 
 GraphW subgraphAndNeighborsFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
-                                    bool includeOutNeighbors, bool includeInNeighbors) {
+                                     bool includeOutNeighbors, bool includeInNeighbors) {
     const auto neighbors = [&] {
         std::unordered_set<node> neighbors;
 
@@ -327,9 +327,7 @@ GraphW toUndirected(const Graph &G) {
         }
     });
 
-    G.forEdges([&](node u, node v, edgeweight w) {
-        newG.addEdge(u, v, w);
-    });
+    G.forEdges([&](node u, node v, edgeweight w) { newG.addEdge(u, v, w); });
 
     return newG;
 }
@@ -346,9 +344,7 @@ GraphW toUnweighted(const Graph &G) {
         }
     });
 
-    G.forEdges([&](node u, node v, edgeweight) {
-        newG.addEdge(u, v, 1.0);
-    });
+    G.forEdges([&](node u, node v, edgeweight) { newG.addEdge(u, v, 1.0); });
 
     return newG;
 }
@@ -365,9 +361,7 @@ GraphW toWeighted(const Graph &G) {
         }
     });
 
-    G.forEdges([&](node u, node v, edgeweight w) {
-        newG.addEdge(u, v, w);
-    });
+    G.forEdges([&](node u, node v, edgeweight w) { newG.addEdge(u, v, w); });
 
     return newG;
 }

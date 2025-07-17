@@ -42,8 +42,6 @@ Graph::Graph(count n, bool weighted, bool directed, bool edgesIndexed)
       inEdgeIds(edgesIndexed && directed ? n : 0), outEdgeIds(edgesIndexed ? n : 0),
       nodeAttributeMap(this), edgeAttributeMap(this) {}
 
-
-
 void Graph::preallocateUndirected(node u, size_t size) {
     assert(!directed);
     assert(exists[u]);
@@ -113,8 +111,6 @@ index Graph::indexInOutEdgeArray(node u, node v) const {
 
 /** EDGE IDS **/
 
-
-
 edgeid Graph::edgeId(node u, node v) const {
     if (!edgesIndexed) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
@@ -130,12 +126,6 @@ edgeid Graph::edgeId(node u, node v) const {
 }
 
 /** GRAPH INFORMATION **/
-
-
-
-
-
-
 
 edgeweight Graph::computeWeightedDegree(node u, bool inDegree, bool countSelfLoopsTwice) const {
     if (weighted) {
@@ -166,14 +156,6 @@ edgeweight Graph::computeWeightedDegree(node u, bool inDegree, bool countSelfLoo
 }
 
 /** NODE MODIFIERS **/
-
-
-
-
-
-
-
-
 
 /** NODE PROPERTIES **/
 
