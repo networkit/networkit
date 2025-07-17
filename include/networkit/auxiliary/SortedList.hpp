@@ -11,8 +11,6 @@
 #include <algorithm>
 #include <vector>
 
-#include <networkit/auxiliary/Log.hpp>
-
 namespace Aux {
 /*
  * Keeps a sorted list of pairs with at most k elements.
@@ -30,7 +28,7 @@ class SortedList {
 private:
     std::vector<std::pair<uint64_t, double>> elements;
     std::vector<uint64_t> position;
-    uint64_t virtualSize;
+    uint64_t virtualSize{};
     const uint64_t size;
     const uint64_t maxKey;
 
