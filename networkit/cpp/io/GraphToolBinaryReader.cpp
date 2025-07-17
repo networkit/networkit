@@ -11,7 +11,7 @@
 
 namespace NetworKit {
 
-Graph GraphToolBinaryReader::read(std::string_view path) {
+GraphW GraphToolBinaryReader::read(std::string_view path) {
     std::ifstream file(path.data(), std::ios::binary | std::ios::in);
     Aux::enforceOpened(file);
     // if the header is ok, continue reading the file
@@ -20,7 +20,7 @@ Graph GraphToolBinaryReader::read(std::string_view path) {
         readComment(file);
         bool directed = getDirected(file);
         count n = getNumNodes(file);
-        Graph G(n, false, directed);
+        GraphW G(n, false, directed);
         addOutNeighbours(file, n, G);
         file.close();
         G.shrinkToFit();
@@ -114,7 +114,7 @@ std::vector<std::vector<uint64_t>> GraphToolBinaryReader::getOutNeighbours(std::
     return adjacencies;
 }
 
-void GraphToolBinaryReader::addOutNeighbours(std::ifstream &file, uint64_t numNodes, Graph &G) {
+void GraphToolBinaryReader::addOutNeighbours(std::ifstream &file, uint64_t numNodes, GraphW &G) {
     // value of numNodes determines the size of the unsigned integer type storing the node ids
     int width = (int)getAdjacencyWidth(numNodes);
     // iterate over each node

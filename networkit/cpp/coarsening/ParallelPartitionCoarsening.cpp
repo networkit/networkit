@@ -31,7 +31,7 @@ void ParallelPartitionCoarsening::run() {
     std::partial_sum(partBegin.begin(), partBegin.end(), partBegin.begin());
     G->forNodes([&](const node u) { nodesSortedByPart[partBegin[nodeToSuperNode[u] + 1]++] = u; });
 
-    Gcoarsened = Graph(numParts, true, false);
+    Gcoarsened = GraphW(numParts, true, false);
 
     auto aggregateEdgeWeights = [&](node su, count &numEdges, count &numSelfLoops,
                                     std::vector<edgeweight> &incidentPartWeights,

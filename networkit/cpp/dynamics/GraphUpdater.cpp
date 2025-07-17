@@ -10,7 +10,7 @@
 
 namespace NetworKit {
 
-GraphUpdater::GraphUpdater(Graph &G) : G(&G) {}
+GraphUpdater::GraphUpdater(GraphW &G) : G(&G) {}
 
 void GraphUpdater::update(const std::vector<GraphEvent> &stream) {
     for (GraphEvent ev : stream) {

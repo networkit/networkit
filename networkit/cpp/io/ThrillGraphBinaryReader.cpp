@@ -44,11 +44,11 @@ uint64_t get_variant(std::ifstream &is) {
 }
 } // namespace
 
-Graph ThrillGraphBinaryReader::read(std::string_view path) {
+GraphW ThrillGraphBinaryReader::read(std::string_view path) {
     return read(std::vector<std::string>(1, path.data()));
 }
 
-Graph ThrillGraphBinaryReader::read(const std::vector<std::string> &paths) {
+GraphW ThrillGraphBinaryReader::read(const std::vector<std::string> &paths) {
     GraphBuilder gb(n);
 
     if (!paths.empty()) {

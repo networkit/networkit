@@ -20,9 +20,9 @@ ConfigurationModel::ConfigurationModel(const std::vector<count> &sequence)
     }
 }
 
-Graph ConfigurationModel::generate() {
+GraphW ConfigurationModel::generate() {
     do {
-        Graph result(seq.size());
+        GraphW result(seq.size());
         std::vector<index> urn{};
         std::vector<count> remaining(seq.size());
         std::vector<bool> alreadyTaken(seq.size(), false);

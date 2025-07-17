@@ -25,6 +25,7 @@
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -84,7 +85,7 @@ public:
     /**
      * resulting graph after running in <code>Mode::singleNode</code>
      */
-    Graph getComplexGraph();
+    GraphW getComplexGraph();
 
     /**
      * nodes in the resulting graph after running in <code>Mode::singleNode</code>
@@ -94,7 +95,7 @@ public:
 
 private:
     const Graph *inputGraph;
-    Graph complexPathGraph;
+    GraphW complexPathGraph;
     std::vector<double> complexPathsLengths;
     std::vector<node> adopters;
     const Mode mode;
@@ -102,7 +103,7 @@ private:
     const count threshold;
     bool normPaths;
 
-    Graph complexPathsGraph(node seed, count threshold, std::vector<node> *adopters);
+    GraphW complexPathsGraph(node seed, count threshold, std::vector<node> *adopters);
     std::vector<double> complexPathLength(count t);
     std::vector<node> generateSeeds(node seed, const Graph &g, count threshold);
 };

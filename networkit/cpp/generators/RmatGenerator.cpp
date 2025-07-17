@@ -168,7 +168,7 @@ std::pair<node, node> RmatGenerator::sampleEdge(uint8_t input_bits) {
     } while (true);
 }
 
-Graph RmatGenerator::generate() {
+GraphW RmatGenerator::generate() {
     double n = std::pow(2.0, static_cast<double>(scale));
     if (n <= reduceNodes) {
         throw std::runtime_error("Error, shall delete more nodes than the graph originally has");
@@ -176,7 +176,7 @@ Graph RmatGenerator::generate() {
     // when nodes are deleted, all nodes have less neighbors
     count numEdges = n * edgeFactor * n * 1.0 / static_cast<double>(n - reduceNodes);
     count wantedEdges = (n - reduceNodes) * edgeFactor;
-    Graph G(n - reduceNodes, weighted);
+    GraphW G(static_cast<count>(n) - reduceNodes, weighted);
     // Reset the internal state of the alias table:
     curBits = {0, 0};
     remainingBits = 0;

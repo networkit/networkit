@@ -265,6 +265,7 @@ protected:
     index indexInOutEdgeArray(node u, node v) const;
 
 private:
+
     /**
      * Computes the weighted in/out degree of node @a u.
      *
@@ -434,8 +435,8 @@ private:
                                   typename Aux::FunctionTraits<F>::template arg<2>::type>::value
                   && std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<3>::type>::
                       value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight ew,
-                    edgeid id) const -> decltype(f(u, v, ew, id)) {
+    auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid id) const
+        -> decltype(f(u, v, ew, id)) {
         return f(u, v, ew, id);
     }
 
@@ -467,8 +468,8 @@ private:
                   (Aux::FunctionTraits<F>::arity >= 2)
                   && std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<
                                                   2>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight ew,
-                    edgeid /*id*/) const -> decltype(f(u, v, ew)) {
+    auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid /*id*/) const
+        -> decltype(f(u, v, ew)) {
         return f(u, v, ew);
     }
 
@@ -481,8 +482,8 @@ private:
                            (Aux::FunctionTraits<F>::arity >= 1)
                            && std::is_same<node, typename Aux::FunctionTraits<F>::template arg<
                                                      1>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight /*ew*/,
-                    edgeid /*id*/) const -> decltype(f(u, v)) {
+    auto edgeLambda(F &f, node u, node v, edgeweight /*ew*/, edgeid /*id*/) const
+        -> decltype(f(u, v)) {
         return f(u, v);
     }
 

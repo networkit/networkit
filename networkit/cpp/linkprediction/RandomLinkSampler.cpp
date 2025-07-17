@@ -6,6 +6,7 @@
  */
 
 #include <networkit/graph/GraphTools.hpp>
+#include <networkit/graph/GraphW.hpp>
 #include <networkit/linkprediction/RandomLinkSampler.hpp>
 
 namespace NetworKit {
@@ -23,7 +24,7 @@ Graph byCount(const Graph &G, count numTrainLinks) {
     if (numTrainLinks > G.numberOfEdges()) {
         throw std::invalid_argument("numTrainLinks > G.numberOfEdges().");
     }
-    Graph trainingGraph(G);
+    GraphW trainingGraph(G);
     for (count i = 0; i < G.numberOfEdges() - numTrainLinks; ++i) {
         std::pair<node, node> edgeToRemove = GraphTools::randomEdge(trainingGraph);
         trainingGraph.removeEdge(edgeToRemove.first, edgeToRemove.second);

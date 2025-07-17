@@ -13,6 +13,7 @@
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -47,7 +48,7 @@ public:
 
 protected:
     const Graph *G;
-    Graph Gcoarsened;
+    GraphW Gcoarsened;
     std::vector<node> nodeMapping;
 };
 

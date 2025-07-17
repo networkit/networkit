@@ -22,6 +22,7 @@
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 #include <networkit/randomization/GlobalCurveball.hpp>
 
 #include "GlobalTradeSequence.hpp"
@@ -318,7 +319,7 @@ public:
 
     Graph getGraph() {
         const bool is_directed = inputGraph.isDirected();
-        Graph outputGraph(inputGraph.numberOfNodes(), false, is_directed);
+        GraphW outputGraph(inputGraph.numberOfNodes(), false, is_directed);
         outputGraph.setEdgeCount(unsafe, prioQueue.size());
         count selfLoops = 0;
 

@@ -10,6 +10,7 @@
 
 #include <networkit/dynamics/GraphEventHandler.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -25,11 +26,11 @@ private:
     std::vector<GraphEventHandler *> observers;
 
 public:
-    Graph *G;
+    GraphW *G;
 
     GraphEventProxy(); // nullary constructor needed for python interface
 
-    GraphEventProxy(Graph &G);
+    GraphEventProxy(GraphW &G);
 
     void registerObserver(GraphEventHandler *observer);
 

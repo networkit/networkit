@@ -47,8 +47,8 @@ class ChungLuGeneratorAlamEtAl final : StaticGraphGenerator {
     template <typename F>
     void edgeSkipping(std::mt19937_64 &generator, F &&addEdge, index i, index j, double p,
                       index end);
-    Graph generateSequential();
-    Graph generateParallel();
+    GraphW generateSequential();
+    GraphW generateParallel();
 
 public:
     ChungLuGeneratorAlamEtAl(const std::vector<count> &degreeSequence, bool parallel = false);
@@ -56,7 +56,7 @@ public:
     /**
      * Generates graph with expected degree sequence seq.
      */
-    Graph generate() override;
+    GraphW generate() override;
 };
 
 } /* namespace NetworKit */

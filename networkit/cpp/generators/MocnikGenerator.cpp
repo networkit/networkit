@@ -226,7 +226,7 @@ std::vector<int> MocnikGenerator::boxVolume(MocnikGenerator::LayerState &s, int 
 
 // EDGE GENERATION
 
-void MocnikGenerator::addEdgesToGraph(Graph &G, count n, double k, double relativeWeight,
+void MocnikGenerator::addEdgesToGraph(GraphW &G, count n, double k, double relativeWeight,
                                       bool baseLayer) {
     // map vector containing the nodes resp. their positions
     MocnikGenerator::LayerState s;
@@ -301,7 +301,7 @@ void MocnikGenerator::addEdgesToGraph(Graph &G, count n, double k, double relati
 
 // GRAPH GENERATION
 
-Graph MocnikGenerator::generate() {
+GraphW MocnikGenerator::generate() {
     // create relative weights
     if (relativeWeights.empty()) {
         relativeWeights.resize(ns.size(), 1);
@@ -316,7 +316,7 @@ Graph MocnikGenerator::generate() {
     assert(relativeWeights.size() == ns.size());
 
     // create graph
-    Graph G(0, weighted, true);
+    GraphW G(0, weighted);
 
     // create the nodes
     node curr = 0;

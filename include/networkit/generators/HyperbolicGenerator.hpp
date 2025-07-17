@@ -41,15 +41,15 @@ public:
      * threshold
      * @return Graph to be generated according to parameters
      */
-    Graph generate(const vector<double> &angles, const vector<double> &radii, double R,
+    GraphW generate(const vector<double> &angles, const vector<double> &radii, double R,
                    double T = 0);
 
-    Graph generateCold(const vector<double> &angles, const vector<double> &radii, double R);
+    GraphW generateCold(const vector<double> &angles, const vector<double> &radii, double R);
 
     /**
      * @return Graph to be generated according to parameters specified in constructor.
      */
-    Graph generate() override;
+    GraphW generate() override;
 
     /**
      * Set the capacity of a quadtree leaf.
@@ -81,7 +81,7 @@ private:
      */
     void initialize();
 
-    Graph generate(count n, double R, double alpha, double T = 0);
+    GraphW generate(count n, double R, double alpha, double T = 0);
 
     static vector<vector<double>>
     getBandAngles(const vector<vector<Point2DWithIndex<double>>> &bands) {

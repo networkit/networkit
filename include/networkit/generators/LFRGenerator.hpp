@@ -117,7 +117,7 @@ public:
      *
      * @return The generated graph.
      */
-    Graph generate() override;
+    GraphW generate() override;
 
     /**
      * Returns (a copy of) the generated graph.
@@ -131,7 +131,7 @@ public:
      *
      * @return The generated graph.
      */
-    Graph &&getMoveGraph();
+    GraphW &&getMoveGraph();
 
     /**
      * Returns (a copy of) the generated partition
@@ -153,9 +153,9 @@ private:
      * generator in order to generate the parts of the graph.
      */
     std::vector<std::vector<node>> assignNodesToCommunities();
-    Graph generateIntraClusterGraph(std::vector<count> intraDegreeSequence,
+    GraphW generateIntraClusterGraph(std::vector<count> intraDegreeSequence,
                                     const std::vector<node> &localToGlobalNode);
-    Graph generateInterClusterGraph(const std::vector<count> &externalDegreeSequence);
+    GraphW generateInterClusterGraph(const std::vector<count> &externalDegreeSequence);
 
     count n;
     bool hasDegreeSequence;
@@ -165,7 +165,7 @@ private:
     bool hasInternalDegreeSequence;
     std::vector<count> internalDegreeSequence;
     bool hasGraph;
-    Graph G;
+    GraphW G;
     bool hasPartition;
     Partition zeta;
 };

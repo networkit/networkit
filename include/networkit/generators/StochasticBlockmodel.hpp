@@ -29,7 +29,7 @@ public:
     StochasticBlockmodel(count n, count nBlocks, const std::vector<index> &membership,
                          const std::vector<std::vector<double>> &affinity);
 
-    Graph generate() override;
+    GraphW generate() override;
 
 private:
     count n;

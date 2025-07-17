@@ -32,9 +32,9 @@ public:
      *
      * @param[in]  path  input file path
      */
-    Graph read(std::string_view path) override;
+    GraphW read(std::string_view path) override;
 
-    Graph read(const std::vector<std::string> &path);
+    GraphW read(const std::vector<std::string> &path);
 
 private:
     const count n;

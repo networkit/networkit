@@ -5,6 +5,7 @@
 
 #include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/components/StronglyConnectedComponents.hpp>
+#include <networkit/graph/GraphW.hpp>
 #include <networkit/reachability/ReachableNodes.hpp>
 
 namespace NetworKit {
@@ -33,7 +34,7 @@ void ReachableNodes::runDirected() {
     std::vector<std::vector<index>> sccVec(nSCCs);
 
     G->forNodes([&](node u) { sccVec[scc.componentOfNode(u)].push_back(u); });
-    Graph sccGraph(nSCCs, false, true);
+    GraphW sccGraph(nSCCs, false, true);
 
     // Compute the SCC graph
     for (index cmp = 0; cmp < nSCCs; ++cmp) {

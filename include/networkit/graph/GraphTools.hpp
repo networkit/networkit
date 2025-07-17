@@ -290,8 +290,8 @@ GraphW subgraphFromNodes(const Graph &G, InputIt first, InputIt last, bool compa
  * @return Induced subgraph.
  */
 GraphW subgraphAndNeighborsFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
-                                     bool includeOutNeighbors = false,
-                                     bool includeInNeighbors = false);
+                                    bool includeOutNeighbors = false,
+                                    bool includeInNeighbors = false);
 
 /**
  * Returns an undirected copy of the input graph.
@@ -517,7 +517,7 @@ void randomizeWeights(Graph &G, Distribution distr = std::uniform_real_distribut
  */
 template <typename UnaryIdMapper, typename SkipEdgePredicate>
 GraphW getRemappedGraph(const Graph &graph, count numNodes, UnaryIdMapper &&oldIdToNew,
-                        SkipEdgePredicate &&skipNode, bool preallocate = true) {
+                       SkipEdgePredicate &&skipNode, bool preallocate = true) {
     tlx::unused(preallocate); // TODO: Add perallocate as soon as Graph supports it
 
 #ifndef NDEBUG
@@ -548,7 +548,7 @@ GraphW getRemappedGraph(const Graph &graph, count numNodes, UnaryIdMapper &&oldI
 
 template <typename UnaryIdMapper>
 GraphW getRemappedGraph(const Graph &graph, count numNodes, UnaryIdMapper &&oldIdToNew,
-                        bool preallocate = true) {
+                       bool preallocate = true) {
     return getRemappedGraph(
         graph, numNodes, std::forward<UnaryIdMapper>(oldIdToNew), [](node) { return false; },
         preallocate);

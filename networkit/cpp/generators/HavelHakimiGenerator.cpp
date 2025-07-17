@@ -18,10 +18,10 @@ HavelHakimiGenerator::HavelHakimiGenerator(const std::vector<count> &sequence,
                                            bool ignoreIfRealizable)
     : StaticDegreeSequenceGenerator(sequence), ignoreIfRealizable(ignoreIfRealizable) {}
 
-Graph HavelHakimiGenerator::generate() {
+GraphW HavelHakimiGenerator::generate() {
     count n = seq.size();
 
-    Graph G(n);
+    GraphW G(n);
     count numDegVals = (*std::max_element(seq.begin(), seq.end())) + 1;
 
     // Havel-Hakimi algorithm, adapted with appropriate data structure for linear time

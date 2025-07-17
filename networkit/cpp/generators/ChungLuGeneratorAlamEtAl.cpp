@@ -105,7 +105,8 @@ void ChungLuGeneratorAlamEtAl::edgeSkipping(std::mt19937_64 &rng, F &&addEdge, i
     } while (!end_arrived);
 }
 
-Graph ChungLuGeneratorAlamEtAl::generate() {
+GraphW ChungLuGeneratorAlamEtAl::generate() {
+    GraphW G;
     if (parallel) {
         return generateParallel();
     } else {
@@ -113,8 +114,8 @@ Graph ChungLuGeneratorAlamEtAl::generate() {
     }
 }
 
-Graph ChungLuGeneratorAlamEtAl::generateSequential() {
-    Graph G(n);
+GraphW ChungLuGeneratorAlamEtAl::generateSequential() {
+    GraphW G(n);
     std::mt19937_64 &rng = Aux::Random::getURNG();
 
     auto addEdge = [&G](index u, index v) { G.addEdge(u, v); };
@@ -135,7 +136,7 @@ Graph ChungLuGeneratorAlamEtAl::generateSequential() {
     return G;
 }
 
-Graph ChungLuGeneratorAlamEtAl::generateParallel() {
+GraphW ChungLuGeneratorAlamEtAl::generateParallel() {
     GraphBuilder builder(n);
 
     auto addEdge = [&builder](index u, index v) { builder.addHalfEdge(u, v); };

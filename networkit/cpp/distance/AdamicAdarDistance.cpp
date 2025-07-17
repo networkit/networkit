@@ -8,17 +8,18 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/distance/AdamicAdarDistance.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
-AdamicAdarDistance::AdamicAdarDistance(const Graph &G) : NodeDistance(G) {}
+AdamicAdarDistance::AdamicAdarDistance(const GraphW &G) : NodeDistance(G) {}
 
 void AdamicAdarDistance::preprocess() {
     if (!G->hasEdgeIds()) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
-    Graph g = *G;
+    GraphW g = *G;
 
     // Node attribute: marker
     std::vector<bool> nodeMarker(g.upperNodeIdBound(), false);

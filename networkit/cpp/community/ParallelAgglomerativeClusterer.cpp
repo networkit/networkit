@@ -25,7 +25,7 @@ void ParallelAgglomerativeClusterer::run() {
     double REL_REPEAT_THRSH = 5e-3;
 
     // copy graph because we make changes due to merges
-    Graph Gcopy(G->numberOfNodes(), true); // make weighted copy
+    GraphW Gcopy(G->numberOfNodes(), true); // make weighted copy
     G->forEdges([&](node u, node v, edgeweight w) { Gcopy.addEdge(u, v, w); });
 
     std::vector<std::vector<node>> mapHierarchy;

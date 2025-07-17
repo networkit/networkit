@@ -14,6 +14,7 @@
 #include <networkit/Globals.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -35,7 +36,7 @@ public:
     /* The algorithm is not parallel. */
     void run(const std::vector<std::pair<node, node>> &trades);
 
-    Graph getGraph(bool parallel = false);
+    GraphW getGraph(bool parallel = false);
 
     count getNumberOfAffectedEdges() const;
 

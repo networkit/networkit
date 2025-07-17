@@ -12,7 +12,7 @@ namespace NetworKit {
 
 GraphEventProxy::GraphEventProxy() {}
 
-GraphEventProxy::GraphEventProxy(Graph &G) {
+GraphEventProxy::GraphEventProxy(GraphW &G) {
     this->G = &G;
 }
 

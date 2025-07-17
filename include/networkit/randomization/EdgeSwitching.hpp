@@ -15,6 +15,7 @@
 #include <networkit/Globals.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -46,7 +47,7 @@ public:
      * @warning For directed graphs preprocessing with DegreePreservingShuffle is necessary. Either
      * do it manually, or use another constructor.
      */
-    EdgeSwitchingInPlace(Graph &G, double numberOfSwitchesPerEdge = 10.0) : graph(G) {
+    EdgeSwitchingInPlace(GraphW &G, double numberOfSwitchesPerEdge = 10.0) : graph(G) {
         setNumberOfSwitchesPerEdge(numberOfSwitchesPerEdge);
     }
 
@@ -61,7 +62,7 @@ public:
     void run() override;
 
     /// Return a reference to the perturbed graph
-    Graph &getGraph() const { return graph; }
+    GraphW &getGraph() const { return graph; }
 
     /**
      * Returns twice the total number of non-rejected swaps carried out during calls to run().
@@ -77,7 +78,7 @@ public:
     void setNumberOfSwitchesPerEdge(double x);
 
 protected:
-    Graph &graph;
+    GraphW &graph;
     std::discrete_distribution<node>
         degreeDistribution; ///< Return node x with probability proportional to degree(x)
 
@@ -147,7 +148,7 @@ public:
     void setNumberOfSwitchesPerEdge(double x) { inPlaceAlgorithm.setNumberOfSwitchesPerEdge(x); }
 
 private:
-    Graph ownedGraph;
+    GraphW ownedGraph;
     EdgeSwitchingInPlace inPlaceAlgorithm;
 };
 

@@ -53,7 +53,7 @@ public:
      * false.
      * @return The generated graph
      */
-    Graph generate() override;
+    GraphW generate() override;
 
 private:
     bool ignoreIfNotRealizable;

@@ -15,6 +15,7 @@
 #include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/Dijkstra.hpp>
+#include <networkit/graph/GraphW.hpp>
 #include <networkit/numerics/ConjugateGradient.hpp>
 #include <networkit/numerics/LAMG/Lamg.hpp>
 #include <networkit/numerics/Preconditioner/DiagonalPreconditioner.hpp>
@@ -207,7 +208,7 @@ void MaxentStress::run() {
 double MaxentStress::computeScalingFactor() {
     count n = G->numberOfNodes();
     bool weighted = false;
-    Graph augmentedGraph(n, true, false);
+    GraphW augmentedGraph(n, true, false);
     for (node u = 0; u < n; ++u) {
         for (ForwardEdge &edge : knownDistances[u]) {
             augmentedGraph.addEdge(u, edge.head, edge.weight);
@@ -266,7 +267,7 @@ double MaxentStress::fullStressMeasure() {
 
     count n = G->numberOfNodes();
     bool weighted = false;
-    Graph augmentedGraph(n, true, false);
+    GraphW augmentedGraph(n, true, false);
     for (node u = 0; u < n; ++u) {
         for (ForwardEdge &edge : knownDistances[u]) {
             augmentedGraph.addEdge(u, edge.head, edge.weight);
@@ -298,7 +299,7 @@ double MaxentStress::maxentMeasure() {
     double entropy = 0;
     count n = G->numberOfNodes();
 
-    Graph augmentedGraph(n, true, false);
+    GraphW augmentedGraph(n, true, false);
     for (node u = 0; u < n; ++u) {
         for (ForwardEdge &edge : knownDistances[u]) {
             augmentedGraph.addEdge(u, edge.head, edge.weight);

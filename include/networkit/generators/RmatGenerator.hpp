@@ -57,7 +57,7 @@ public:
     /**
      * @return Graph to be generated according to parameters specified in constructor.
      */
-    Graph generate() override;
+    GraphW generate() override;
 
 private:
     std::pair<node, node> sampleEdge(uint8_t bits);

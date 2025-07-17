@@ -24,10 +24,10 @@ float getImbalance(const Partition &zeta, const Graph &graph) {
     return computeMaxClusterSize(zeta) / avg;
 }
 
-Graph communicationGraph(const Graph &graph, Partition &zeta) {
+GraphW communicationGraph(const Graph &graph, Partition &zeta) {
     zeta.compact();
     count n = zeta.numberOfSubsets();
-    Graph commGraph(n, true);
+    GraphW commGraph(n, true);
 
     if (graph.isWeighted()) {
         DEBUG("weighted");

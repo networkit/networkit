@@ -2,6 +2,7 @@
 #include <networkit/generators/EdgeSwitchingMarkovChainGenerator.hpp>
 #include <networkit/generators/HavelHakimiGenerator.hpp>
 #include <networkit/randomization/EdgeSwitching.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -10,8 +11,8 @@ EdgeSwitchingMarkovChainGenerator::EdgeSwitchingMarkovChainGenerator(
     : StaticDegreeSequenceGenerator(sequence), ignoreIfNotRealizable(ignoreIfNotRealizable),
       numSwitchesPerEdge(numSwitchesPerEdge) {}
 
-Graph EdgeSwitchingMarkovChainGenerator::generate() {
-    Graph result(HavelHakimiGenerator(seq, ignoreIfNotRealizable).generate());
+GraphW EdgeSwitchingMarkovChainGenerator::generate() {
+    GraphW result(HavelHakimiGenerator(seq, ignoreIfNotRealizable).generate());
 
     EdgeSwitchingInPlace edgeSwitching(result, numSwitchesPerEdge);
     edgeSwitching.run();

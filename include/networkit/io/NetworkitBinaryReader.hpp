@@ -31,8 +31,8 @@ class NetworkitBinaryReader final : public GraphReader {
 public:
     NetworkitBinaryReader(){};
 
-    Graph read(std::string_view path) override;
-    Graph readFromBuffer(const std::vector<uint8_t> &data);
+    GraphW read(std::string_view path) override;
+    GraphW readFromBuffer(const std::vector<uint8_t> &data);
 
 private:
     count nodes;
@@ -43,7 +43,7 @@ private:
     count version;
 
     template <class T>
-    Graph readData(const T &source);
+    GraphW readData(const T &source);
 };
 } // namespace NetworKit
 

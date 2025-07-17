@@ -149,7 +149,7 @@ void NetworKit::LFRGenerator::setPartition(NetworKit::Partition zeta) {
     this->hasCommunitySizeSequence = false;
 }
 
-NetworKit::Graph NetworKit::LFRGenerator::generateIntraClusterGraph(
+NetworKit::GraphW NetworKit::LFRGenerator::generateIntraClusterGraph(
     std::vector<NetworKit::count> intraDegreeSequence,
     const std::vector<NetworKit::node> &localToGlobalNode) {
     // check if sum of degrees is even and fix if necessary
@@ -187,11 +187,11 @@ NetworKit::Graph NetworKit::LFRGenerator::generateIntraClusterGraph(
     return intraGen.generate();
 }
 
-NetworKit::Graph NetworKit::LFRGenerator::generateInterClusterGraph(
+NetworKit::GraphW NetworKit::LFRGenerator::generateInterClusterGraph(
     const std::vector<NetworKit::count> &externalDegreeSequence) {
     EdgeSwitchingMarkovChainGenerator graphGen(externalDegreeSequence, true);
 
-    Graph interG = graphGen.generate();
+    GraphW interG = graphGen.generate();
 
     // rewire intra-cluster edges in interG as only inter-cluster edges should be generated
     std::vector<std::pair<node, node>> edgesToRemove;
@@ -469,7 +469,7 @@ void NetworKit::LFRGenerator::run() {
 
     hasGraph = false;
     // initialize the result graph
-    G = Graph(n);
+    G = GraphW(n);
 
     handler.assureRunning();
 
@@ -514,7 +514,7 @@ void NetworKit::LFRGenerator::run() {
 
         handler.assureRunning();
 
-        Graph intraG = generateIntraClusterGraph(std::move(intraDeg), communityNodes);
+        GraphW intraG = generateIntraClusterGraph(std::move(intraDeg), communityNodes);
 
         handler.assureRunning();
 
@@ -536,7 +536,7 @@ void NetworKit::LFRGenerator::run() {
 
     handler.assureRunning();
 
-    Graph interG = generateInterClusterGraph(externalDegree);
+    GraphW interG = generateInterClusterGraph(externalDegree);
 
     handler.assureRunning();
 
@@ -565,7 +565,7 @@ void NetworKit::LFRGenerator::run() {
     hasRun = true;
 }
 
-NetworKit::Graph NetworKit::LFRGenerator::generate() {
+NetworKit::GraphW NetworKit::LFRGenerator::generate() {
     run();
     return getMoveGraph();
 }
@@ -577,7 +577,7 @@ NetworKit::Graph NetworKit::LFRGenerator::getGraph() const {
     return G;
 }
 
-NetworKit::Graph &&NetworKit::LFRGenerator::getMoveGraph() {
+NetworKit::GraphW &&NetworKit::LFRGenerator::getMoveGraph() {
     if (!hasGraph)
         throw std::runtime_error("Run must be called first");
 

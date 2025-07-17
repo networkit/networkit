@@ -12,8 +12,8 @@ namespace NetworKit {
 RegularRingLatticeGenerator::RegularRingLatticeGenerator(count nNodes, count numberOfNeighbors)
     : nNodes(nNodes), nNeighbors(std::min(numberOfNeighbors, nNodes / 2 - 1)) {}
 
-Graph RegularRingLatticeGenerator::generate() {
-    Graph G(nNodes);
+GraphW RegularRingLatticeGenerator::generate() {
+    GraphW G(nNodes);
     for (count i = 0; i < nNodes; i++) {
         for (count j = 1; j <= nNeighbors; j++) {
             G.addEdge(i, (i + j) % nNodes);

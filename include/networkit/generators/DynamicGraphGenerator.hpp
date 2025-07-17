@@ -9,7 +9,7 @@
 #define NETWORKIT_GENERATORS_DYNAMIC_GRAPH_GENERATOR_HPP_
 
 #include <networkit/dynamics/GraphEvent.hpp>
-#include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -32,7 +32,7 @@ public:
     virtual std::vector<GraphEvent> generate(count nSteps) = 0;
 
 protected:
-    Graph G; // the graph instance
+    GraphW G; // the graph instance
 };
 
 } /* namespace NetworKit */

@@ -6,7 +6,7 @@
 
 namespace NetworKit {
 
-Graph MTXGraphReader::read(std::string_view path) {
+GraphW MTXGraphReader::read(std::string_view path) {
     MTXParser parser(path.data());
 
     auto header = parser.getHeader();
@@ -19,7 +19,7 @@ Graph MTXGraphReader::read(std::string_view path) {
     if (header.symmetry == MTXParser::Symmetry::General)
         symmetric = false;
 
-    Graph G(std::max(size.rows, size.columns), weighted, !symmetric);
+    GraphW G(std::max(size.rows, size.columns), weighted, !symmetric);
     std::string graphName =
         Aux::StringTools::split(Aux::StringTools::split(path, '/').back(), '.').front();
 

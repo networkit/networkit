@@ -29,7 +29,7 @@ enum class DibapIOType : short {
     TE = ('T' << 8) | 'E'
 };
 
-Graph DibapGraphReader::read(std::string_view path) {
+GraphW DibapGraphReader::read(std::string_view path) {
     int n, i;
     short type;
     FILE *file = NULL; // TODO: Use std::ifstream; this function won't reliably close the handle
@@ -155,7 +155,7 @@ Graph DibapGraphReader::read(std::string_view path) {
     fclose(file);
 
     // fill graph: FIXME: so far without node weights, extend to weights
-    Graph graph(static_cast<node>(V));
+    GraphW graph(static_cast<node>(V));
 
     if (dew > 0) {
         for (index v = 0; v < (count)V; ++v) {

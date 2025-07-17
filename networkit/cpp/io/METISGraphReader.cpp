@@ -13,7 +13,7 @@
 
 namespace NetworKit {
 
-Graph METISGraphReader::read(std::string_view path) {
+GraphW METISGraphReader::read(std::string_view path) {
 
     METISParser parser(path);
 
@@ -36,7 +36,7 @@ Graph METISGraphReader::read(std::string_view path) {
         ignoreFirst = ncon;
     }
 
-    Graph G(n, weighted);
+    GraphW G(n, weighted);
     std::string graphName =
         Aux::StringTools::split(Aux::StringTools::split(path, '/').back(), '.').front();
 

@@ -23,7 +23,7 @@ public:
      */
     DorogovtsevMendesGenerator(count nNodes);
 
-    Graph generate() override;
+    GraphW generate() override;
 
 private:
     count nNodes;

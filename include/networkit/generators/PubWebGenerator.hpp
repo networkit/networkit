@@ -50,7 +50,7 @@ public:
     PubWebGenerator(count numNodes, count numberOfDenseAreas, coordinate neighborhoodRadius,
                     count maxNumberOfNeighbors);
 
-    Graph generate() override;
+    GraphW generate() override;
 
     const std::vector<Point2D> &getCoordinates() const { return coordinates; }
     std::vector<Point2D> moveCoordinates() { return std::move(coordinates); }
@@ -77,17 +77,17 @@ private:
     Point2D intoUnitSquare(Point2D pt) const noexcept;
     coordinate squaredDistanceInUnitTorus(Point2D pt1, Point2D pt2) const noexcept;
 
-    void determineNeighbors(Graph &g);
+    void determineNeighbors(GraphW &g);
     void chooseDenseAreaSizes();
-    void fillDenseAreas(Graph &g);
-    void spreadRemainingNodes(Graph &g);
+    void fillDenseAreas(GraphW &g);
+    void spreadRemainingNodes(GraphW &g);
     void chooseClusterSizes();
-    void addNodesToArea(index area, count num, Graph &g);
+    void addNodesToArea(index area, count num, GraphW &g);
 
     /**
      * Adds nodes randomly, distribution respects original one.
      */
-    void addNode(Graph &g);
+    void addNode(GraphW &g);
 };
 
 } /* namespace NetworKit */

@@ -6,6 +6,7 @@
  */
 
 #include <networkit/generators/DynamicGraphSource.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -33,18 +34,18 @@ void DynamicGraphSource::generateEdges(count m) {
 }
 
 GraphEventProxy *DynamicGraphSource::newGraph() {
-    this->G = new Graph(0);
-    this->Gproxy = new GraphEventProxy(*(this->G));
+    this->G = new GraphW(0);
+    this->Gproxy = new GraphEventProxy(*static_cast<GraphW*>(this->G));
     // not returning proxy because only generator needs write access to graph
     this->graphSet = true;
     return this->Gproxy;
 }
 
 void DynamicGraphSource::generateTimeSteps(count t) {
-    while (G->time() < t) {
+    while (static_cast<GraphW*>(G)->time() < t) {
         this->generate();
     }
-    G->shrinkToFit(); // TODO shrinkToFit: is this method supposed be be call often?
+    static_cast<GraphW*>(G)->shrinkToFit(); // TODO shrinkToFit: is this method supposed to be called often?
 }
 
 } /* namespace NetworKit */

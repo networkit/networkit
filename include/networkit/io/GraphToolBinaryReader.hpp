@@ -29,12 +29,12 @@ public:
      *
      * @param[in]  path  input file path
      */
-    Graph read(std::string_view path) override;
+    GraphW read(std::string_view path) override;
 
 private:
     bool littleEndianness;
 
-    void addOutNeighbours(std::ifstream &file, uint64_t numNodes, Graph &G);
+    void addOutNeighbours(std::ifstream &file, uint64_t numNodes, GraphW &G);
 
     std::vector<std::vector<uint64_t>> getOutNeighbours(std::ifstream &file, uint64_t numNodes);
 

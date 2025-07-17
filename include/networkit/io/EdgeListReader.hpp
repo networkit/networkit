@@ -41,7 +41,7 @@ public:
      *
      * @param[in]  path  input file path
      */
-    Graph read(std::string_view path) override;
+    GraphW read(std::string_view path) override;
 
     /**
      * Return the node map, in case node ids are not continuous

@@ -19,12 +19,13 @@ using neighborFunction = std::function<std::vector<node>(node)>;
 
 DynamicForestFireGenerator::DynamicForestFireGenerator(double p, bool directed, double r)
     : p(p), directed(directed), r(r), firstCall(true) {
-    G = Graph(0, false, directed);
+    G = GraphW(0, false, directed);
 }
 
 std::vector<GraphEvent> DynamicForestFireGenerator::generate(count nSteps) {
 
     std::vector<GraphEvent> stream;
+    GraphW G;
 
     /* this function creates a new node and connects it to
      * other nodes according to the forest fire model

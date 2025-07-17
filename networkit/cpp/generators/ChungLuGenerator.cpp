@@ -21,7 +21,7 @@ ChungLuGenerator::ChungLuGenerator(const std::vector<count> &degreeSequence)
     n = (count)seq.size();
 }
 
-Graph ChungLuGenerator::generate() {
+GraphW ChungLuGenerator::generate() {
     GraphBuilder gB(n);
 
     /* We need a sorted list in descending order for this algorithm */

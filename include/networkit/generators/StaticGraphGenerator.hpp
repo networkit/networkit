@@ -9,6 +9,7 @@
 #define NETWORKIT_GENERATORS_STATIC_GRAPH_GENERATOR_HPP_
 
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -22,7 +23,7 @@ public:
     /** Default destructor */
     virtual ~StaticGraphGenerator() = default;
 
-    virtual Graph generate() = 0;
+    virtual GraphW generate() = 0;
 };
 
 } /* namespace NetworKit */

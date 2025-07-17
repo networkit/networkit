@@ -9,6 +9,7 @@
 #define NETWORKIT_PLANARITY_LEFT_RIGHT_PLANARITY_CHECK_HPP_
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -32,7 +33,7 @@ public:
         if (G.isDirected()) {
             throw std::runtime_error("The graph is not an undirected graph.");
         }
-        dfsGraph = Graph(graph->numberOfNodes(), false, true, false);
+        dfsGraph = GraphW(graph->numberOfNodes(), false, true, false);
     }
 
     /**
@@ -106,7 +107,7 @@ private:
     std::unordered_map<index, Edge> parentEdges;
     std::stack<ConflictPair> stack;
     std::unordered_map<Edge, ConflictPair> stackBottom;
-    Graph dfsGraph;
+    GraphW dfsGraph;
 };
 } // namespace NetworKit
 #endif // NETWORKIT_PLANARITY_LEFT_RIGHT_PLANARITY_CHECK_HPP_

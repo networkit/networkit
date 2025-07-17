@@ -39,7 +39,7 @@ public:
     /**
      * Generates graph with expected degree sequence seq.
      */
-    Graph generate() override;
+    GraphW generate() override;
 };
 
 } /* namespace NetworKit */

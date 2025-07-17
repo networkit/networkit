@@ -13,6 +13,7 @@
 #include <networkit/components/StronglyConnectedComponents.hpp>
 #include <networkit/distance/DynSSSP.hpp>
 #include <networkit/dynamics/GraphEvent.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -84,7 +85,7 @@ private:
 
     static constexpr edgeweight infDist = std::numeric_limits<edgeweight>::max();
 
-    std::vector<node> sortComponentsTopologically(Graph &sccDAG, StronglyConnectedComponents &scc);
+    std::vector<node> sortComponentsTopologically(GraphW &sccDAG, StronglyConnectedComponents &scc);
 
     count computeVDdirected();
 };

@@ -96,7 +96,7 @@ class MocnikGenerator final : public StaticGraphGenerator {
      * provided relative weight.  If it is indicated that the edge is part of the
      * base layer, it is not tested whether the edge already exists inside the graph.
      */
-    void addEdgesToGraph(Graph &G, count n, double k, double relativeWeight, bool baseLayer);
+    void addEdgesToGraph(GraphW &G, count n, double k, double relativeWeight, bool baseLayer);
 
     count dim;
     std::vector<count> ns;
@@ -140,7 +140,7 @@ public:
     MocnikGenerator(count dim, std::vector<count> ns, std::vector<double> ks,
                     std::vector<double> weighted);
 
-    Graph generate() override;
+    GraphW generate() override;
 };
 
 } /* namespace NetworKit */

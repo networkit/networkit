@@ -51,7 +51,7 @@ public:
      */
     MocnikGeneratorBasic(count dim, count n, double k);
 
-    Graph generate() override;
+    GraphW generate() override;
 };
 
 } /* namespace NetworKit */

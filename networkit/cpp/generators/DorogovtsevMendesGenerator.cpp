@@ -14,8 +14,8 @@ namespace NetworKit {
 
 DorogovtsevMendesGenerator::DorogovtsevMendesGenerator(count nNodes) : nNodes(nNodes) {}
 
-Graph DorogovtsevMendesGenerator::generate() {
-    Graph G;
+GraphW DorogovtsevMendesGenerator::generate() {
+    GraphW G;
     // create initial triangle
     node s1 = G.addNode();
     node s2 = G.addNode();

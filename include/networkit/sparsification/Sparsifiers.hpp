@@ -9,6 +9,7 @@
 #define NETWORKIT_SPARSIFICATION_SPARSIFIERS_HPP_
 
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -36,7 +37,7 @@ public:
 
 protected:
     const Graph &inputGraph;
-    Graph outputGraph;
+    GraphW outputGraph;
     bool hasOutput;
 };
 

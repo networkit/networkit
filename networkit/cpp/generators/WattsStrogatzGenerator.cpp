@@ -24,7 +24,7 @@ WattsStrogatzGenerator::WattsStrogatzGenerator(count nNodes, count numberOfNeigh
     }
 }
 
-Graph WattsStrogatzGenerator::generate() {
+GraphW WattsStrogatzGenerator::generate() {
     // generate regular ring lattice as initial graph
     auto G = RegularRingLatticeGenerator(nNodes, nNeighbors).generate();
     std::uniform_int_distribution<node> dist(0, nNodes - 1);

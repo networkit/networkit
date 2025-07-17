@@ -7,6 +7,7 @@
 
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/graph/GraphTools.hpp>
+#include <networkit/graph/GraphW.hpp>
 #include <networkit/sparsification/RandomNodeEdgeScore.hpp>
 
 namespace NetworKit {
@@ -19,7 +20,7 @@ void RandomNodeEdgeScore::run() {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
-    Graph sparseGraph = *G;
+    GraphW sparseGraph = *G;
     std::vector<double> workScores(G->upperEdgeIdBound(), 0);
     count numRemoved = 0;
     std::vector<std::pair<node, node>> uniformlyRandomEdges;

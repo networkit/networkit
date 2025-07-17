@@ -19,7 +19,7 @@ void MatchingCoarsening::run() {
     count n = G->numberOfNodes();
     index z = G->upperNodeIdBound();
     count cn = n - M.size(*G);
-    Graph cG(cn, true);
+    GraphW cG(cn, true);
 
     // compute map: old ID -> new coarse ID
     index idx = 0;

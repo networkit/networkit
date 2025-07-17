@@ -25,7 +25,7 @@ DynApproxBetweenness::DynApproxBetweenness(const Graph &G, double epsilon, doubl
       universalConstant(universalConstant) {}
 
 std::vector<node>
-DynApproxBetweenness::sortComponentsTopologically(Graph &sccDAG, StronglyConnectedComponents &scc) {
+DynApproxBetweenness::sortComponentsTopologically(GraphW &sccDAG, StronglyConnectedComponents &scc) {
     G.forEdges([&](node u, node v) {
         if (scc.componentOfNode(u) != scc.componentOfNode(v)) {
             if (!sccDAG.hasEdge(scc.componentOfNode(u), scc.componentOfNode(v))) {
@@ -43,7 +43,7 @@ count DynApproxBetweenness::computeVDdirected() {
     StronglyConnectedComponents scc(G);
     scc.run();
     count sccNum = scc.numberOfComponents();
-    Graph sccDAG(sccNum, false, true);
+    GraphW sccDAG(sccNum, false, true);
 
     std::vector<node> sorted = sortComponentsTopologically(sccDAG, scc);
 

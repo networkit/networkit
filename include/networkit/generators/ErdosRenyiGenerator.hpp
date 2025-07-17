@@ -43,7 +43,7 @@ public:
      */
     ErdosRenyiGenerator(count nNodes, double prob, bool directed = false, bool self_loops = false);
 
-    Graph generate() override;
+    GraphW generate() override;
 
 private:
     node nNodes;

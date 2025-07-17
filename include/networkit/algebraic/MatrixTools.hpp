@@ -17,6 +17,7 @@
 #include <networkit/algebraic/DenseMatrix.hpp>
 #include <networkit/algebraic/DynamicMatrix.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace MatrixTools {
 
@@ -97,9 +98,9 @@ bool isLaplacian(const Matrix &matrix) {
  * @return The graph having a Laplacian equal to @a laplacian.
  */
 template <class Matrix>
-NetworKit::Graph laplacianToGraph(const Matrix &laplacian) {
+NetworKit::GraphW laplacianToGraph(const Matrix &laplacian) {
     assert(isLaplacian(laplacian));
-    NetworKit::Graph G(std::max(laplacian.numberOfRows(), laplacian.numberOfColumns()), true,
+    NetworKit::GraphW G(std::max(laplacian.numberOfRows(), laplacian.numberOfColumns()), true,
                        false);
     laplacian.forNonZeroElementsInRowOrder(
         [&](NetworKit::node u, NetworKit::node v, NetworKit::edgeweight weight) {
@@ -120,9 +121,9 @@ NetworKit::Graph laplacianToGraph(const Matrix &laplacian) {
  * @return The graph having an adjacency matrix equal to @a matrix.
  */
 template <class Matrix>
-NetworKit::Graph matrixToGraph(const Matrix &matrix) {
+NetworKit::GraphW matrixToGraph(const Matrix &matrix) {
     bool directed = !isSymmetric(matrix);
-    NetworKit::Graph G(std::max(matrix.numberOfRows(), matrix.numberOfColumns()), true, directed);
+    NetworKit::GraphW G(std::max(matrix.numberOfRows(), matrix.numberOfColumns()), true, directed);
     matrix.forNonZeroElementsInRowOrder(
         [&](NetworKit::node u, NetworKit::node v, NetworKit::edgeweight weight) {
             if (directed || u <= v) {

@@ -6,6 +6,7 @@
 #define NETWORKIT_COMMUNITY_GRAPH_CLUSTERING_TOOLS_HPP_
 
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 #include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
@@ -45,7 +46,7 @@ float getImbalance(const Partition &zeta, const Graph &graph);
  * @param zeta Partition, which contains information about clusters in the graph
  * @return communication graph
  */
-Graph communicationGraph(const Graph &graph, Partition &zeta);
+GraphW communicationGraph(const Graph &graph, Partition &zeta);
 
 /**
  * Get weightedDegree of node u for a cluster (represented by a partition) of index cid.

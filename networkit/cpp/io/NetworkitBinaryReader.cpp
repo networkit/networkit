@@ -23,18 +23,18 @@ const char *accessData(const std::vector<uint8_t> &source) {
 
 namespace NetworKit {
 
-Graph NetworkitBinaryReader::read(std::string_view path) {
+GraphW NetworkitBinaryReader::read(std::string_view path) {
     MemoryMappedFile mmfile(path);
-    Graph G = readData(mmfile);
+    GraphW G = readData(mmfile);
     return G;
 }
 
-Graph NetworkitBinaryReader::readFromBuffer(const std::vector<uint8_t> &data) {
+GraphW NetworkitBinaryReader::readFromBuffer(const std::vector<uint8_t> &data) {
     return readData(data);
 }
 
 template <class T>
-Graph NetworkitBinaryReader::readData(const T &source) {
+GraphW NetworkitBinaryReader::readData(const T &source) {
     nkbg::Header header;
     nkbg::WeightFormat weightFormat;
 
@@ -94,7 +94,7 @@ Graph NetworkitBinaryReader::readData(const T &source) {
     } else {
         weighted = true;
     }
-    Graph G(nodes, weighted, directed);
+    GraphW G(nodes, weighted, directed);
     if (indexed)
         G.indexEdges();
     // Read base data.

@@ -38,7 +38,7 @@ public:
      * @return Graph with degree sequence seq or modified sequence if ignoreIfRealizable is true and
      * the sequence is not realizable.
      */
-    Graph generate() override;
+    GraphW generate() override;
 
 private:
     bool ignoreIfRealizable;

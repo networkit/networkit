@@ -11,6 +11,7 @@
 
 #include <networkit/Globals.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 namespace CurveballDetails {
@@ -111,8 +112,8 @@ public:
     Graph toGraph(bool parallel);
 
 private:
-    void toGraphParallel(Graph &G);
-    void toGraphSequential(Graph &G);
+    void toGraphParallel(GraphW &G);
+    void toGraphSequential(GraphW &G);
 };
 
 class TradeList {

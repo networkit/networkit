@@ -6,6 +6,7 @@
  */
 
 #include <networkit/graph/GraphBuilder.hpp>
+#include <networkit/graph/GraphW.hpp>
 #include <networkit/sparsification/GlobalThresholdFilter.hpp>
 
 namespace NetworKit {
@@ -50,7 +51,7 @@ Graph GlobalThresholdFilter::calculate() {
 
 Graph GlobalThresholdFilter::calculateUndirected() {
     // Create an edge-less graph.
-    Graph sGraph(graph->upperNodeIdBound(), graph->isWeighted(), graph->isDirected());
+    GraphW sGraph(graph->upperNodeIdBound(), graph->isWeighted(), graph->isDirected());
     count edgeCount = 0;
     count selfLoops = 0;
 

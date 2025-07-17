@@ -29,7 +29,7 @@ public:
      *
      * @param[out]  the graph read from file
      */
-    Graph read(std::string_view path) override;
+    GraphW read(std::string_view path) override;
 };
 
 } /* namespace NetworKit */

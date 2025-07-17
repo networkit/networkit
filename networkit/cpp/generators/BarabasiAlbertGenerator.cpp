@@ -69,7 +69,7 @@ struct RNG {
     }
 };
 
-Graph BarabasiAlbertGenerator::generate() {
+GraphW BarabasiAlbertGenerator::generate() {
     if (!nMax)
         return Graph();
 
@@ -80,12 +80,12 @@ Graph BarabasiAlbertGenerator::generate() {
     }
 }
 
-Graph BarabasiAlbertGenerator::generateParallel() {
+GraphW BarabasiAlbertGenerator::generateParallel() {
     const node n = nMax;
 
     GraphBuilder builder{nMax};
     builder.setAutoCompleteEdges(true);
-    Graph G{nMax};
+    GraphW G{nMax};
 
     // Temporarily stored edges of the seed graph in edge list to allow fast random access.
     std::vector<node> seedGraphData;
@@ -158,7 +158,7 @@ Graph BarabasiAlbertGenerator::generateParallel() {
     return G;
 }
 
-Graph BarabasiAlbertGenerator::generateBatagelj() {
+GraphW BarabasiAlbertGenerator::generateBatagelj() {
     const node n = nMax;
 
     // Temporarily stored edges in edge list M to allow fast  random access.
@@ -229,7 +229,7 @@ Graph BarabasiAlbertGenerator::generateBatagelj() {
         }
     }
 
-    Graph G(nMax);
+    GraphW G(nMax);
 
     for (node u = 0; u < n; ++u)
         G.preallocateUndirected(u, degree[u]);

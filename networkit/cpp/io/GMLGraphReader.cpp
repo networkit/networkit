@@ -18,7 +18,7 @@
 
 namespace NetworKit {
 
-Graph GMLGraphReader::read(std::string_view path) {
+GraphW GMLGraphReader::read(std::string_view path) {
     std::ifstream graphFile(path.data());
     Aux::enforceOpened(graphFile);
     std::string line;
@@ -55,7 +55,7 @@ Graph GMLGraphReader::read(std::string_view path) {
         return std::make_pair(key, value);
     };
 
-    auto parseNode = [&](Graph &G) {
+    auto parseNode = [&](GraphW &G) {
         bool closed = false;
         if (line.find("node") < line.size() && line.find("[") < line.size()) {
             std::getline(graphFile, line);
@@ -86,7 +86,7 @@ Graph GMLGraphReader::read(std::string_view path) {
         }
     };
 
-    auto parseEdge = [&](Graph &G) {
+    auto parseEdge = [&](GraphW &G) {
         if (line.find("edge") < line.size() && line.find("[") < line.size()) {
             std::getline(graphFile, line);
             node u = 0;
@@ -121,7 +121,7 @@ Graph GMLGraphReader::read(std::string_view path) {
     };
 
     auto parseGraph = [&]() {
-        Graph G;
+        GraphW G;
         int key_type = 0; // 0 for graph keys, 1 for node, 2 for edges
         bool directed = false;
         std::getline(graphFile, line);
@@ -143,9 +143,9 @@ Graph GMLGraphReader::read(std::string_view path) {
                             break;
                         } catch (const std::exception &e) {
                             if (directed) {
-                                G = Graph(0, false, true);
+                                G = GraphW(0, false, true);
                             } else {
-                                G = Graph(0, false, false);
+                                G = GraphW(0, false, false);
                             }
                             ++key_type;
                         }
@@ -180,7 +180,7 @@ Graph GMLGraphReader::read(std::string_view path) {
         return G;
     };
 
-    Graph G = parseGraph();
+    GraphW G = parseGraph();
     G.shrinkToFit();
     return G;
 }

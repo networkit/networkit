@@ -30,7 +30,7 @@ public:
      * @param path
      * @return Graph
      */
-    Graph read(std::string_view path) override;
+    GraphW read(std::string_view path) override;
 };
 
 } /* namespace NetworKit */

@@ -10,6 +10,7 @@
 
 #include <networkit/auxiliary/StringTools.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 /**
@@ -32,7 +33,7 @@ public:
      *
      * @param[in]  path  input file path
      */
-    virtual Graph read(std::string_view path) = 0;
+    virtual GraphW read(std::string_view path) = 0;
 };
 
 } /* namespace NetworKit */

@@ -9,6 +9,7 @@
 #define NETWORKIT_COMMUNITY_PARALLEL_AGGLOMERATIVE_CLUSTERER_HPP_
 
 #include <networkit/community/CommunityDetectionAlgorithm.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 

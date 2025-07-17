@@ -29,6 +29,7 @@
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/PrunedLandmarkLabeling.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -66,7 +67,7 @@ std::vector<double> ComplexPathAlgorithm::getPLci() {
     return complexPathsLengths;
 }
 
-Graph ComplexPathAlgorithm::getComplexGraph() {
+GraphW ComplexPathAlgorithm::getComplexGraph() {
     if (mode != Mode::singleNode)
         WARN("complexPathAlgorithm[getComplexGraph]: no results in Mode::allNodes.");
     assureFinished();
@@ -80,7 +81,7 @@ std::vector<node> ComplexPathAlgorithm::getAdopters() {
     return adopters;
 }
 
-static void addNewEdge(Graph &g, node u, node v) {
+static void addNewEdge(GraphW &g, node u, node v) {
     if (g.hasEdge(u, v))
         return;
     g.addEdge(u, v);
@@ -122,11 +123,11 @@ std::vector<node> ComplexPathAlgorithm::generateSeeds(node seed, const Graph &g,
     return seeds;
 }
 
-Graph ComplexPathAlgorithm::complexPathsGraph(node seed, count threshold,
+GraphW ComplexPathAlgorithm::complexPathsGraph(node seed, count threshold,
                                               std::vector<node> *adopters) {
     const Graph *g = inputGraph;
     const auto n = g->numberOfNodes();
-    Graph complex_g = Graph(n); // all nodes, no edges so far
+    GraphW complex_g = GraphW(n); // all nodes, no edges so far
     std::vector<bool> activated(n);
     std::vector<count> influence(n);
 
@@ -189,7 +190,7 @@ std::vector<double> ComplexPathAlgorithm::complexPathLength(count t) {
     const auto infDist = std::numeric_limits<edgeweight>::max();
 
     g->parallelForNodes([&](node u) {
-        Graph c_g = complexPathsGraph(u, t, nullptr);
+        GraphW c_g = complexPathsGraph(u, t, nullptr);
         bool noPaths = false;
         BFS bfs(c_g, u, noPaths);
         bfs.run();

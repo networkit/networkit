@@ -9,7 +9,7 @@
 #define NETWORKIT_DYNAMICS_GRAPH_UPDATER_HPP_
 
 #include <networkit/dynamics/GraphEvent.hpp>
-#include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -19,7 +19,7 @@ namespace NetworKit {
 class GraphUpdater final {
 
 public:
-    GraphUpdater(Graph &G);
+    GraphUpdater(GraphW &G);
 
     void update(const std::vector<GraphEvent> &stream);
 
@@ -29,7 +29,7 @@ public:
     static bool equal(GraphEvent a, GraphEvent b);
 
 private:
-    Graph *G;
+    GraphW *G;
     std::vector<std::pair<count, count>> size;
 };
 

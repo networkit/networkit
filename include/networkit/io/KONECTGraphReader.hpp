@@ -34,7 +34,7 @@ public:
      *
      * @param[in]  path  input file path
      */
-    Graph read(std::string_view path) override;
+    GraphW read(std::string_view path) override;
 
 private:
     bool remapNodes;

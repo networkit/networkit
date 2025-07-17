@@ -14,6 +14,7 @@
 #include <networkit/algebraic/SparseAccumulator.hpp>
 #include <networkit/algebraic/Vector.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -25,7 +26,7 @@ namespace NetworKit {
  */
 class DynamicMatrix final {
 protected:
-    Graph graph;
+    GraphW graph;
 
     count nRows;
     count nCols;

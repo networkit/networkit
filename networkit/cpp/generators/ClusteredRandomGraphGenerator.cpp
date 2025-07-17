@@ -42,7 +42,7 @@ ClusteredRandomGraphGenerator::ClusteredRandomGraphGenerator(count n, count k, d
     zeta.setUpperBound(k);
 }
 
-Graph ClusteredRandomGraphGenerator::generate() {
+GraphW ClusteredRandomGraphGenerator::generate() {
     GraphBuilder graphBuilder(n);
 
     // Sequence of all nodes grouped by cluster. Here the vertices of each cluster are stored

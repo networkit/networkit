@@ -24,8 +24,8 @@ class BarabasiAlbertGenerator final : public StaticGraphGenerator {
     bool sequential; //!< Specifies whether to compute sequentially using batagelj's method or in
                      //!< parallel (if the number of threads allow for it).
 
-    Graph generateParallel();
-    Graph generateBatagelj();
+    GraphW generateParallel();
+    GraphW generateBatagelj();
 
 public:
     BarabasiAlbertGenerator() = default;
@@ -80,7 +80,7 @@ public:
      */
     BarabasiAlbertGenerator(count k, count nMax, const Graph &initGraph, bool sequential = true);
 
-    Graph generate() override;
+    GraphW generate() override;
 };
 
 } /* namespace NetworKit */

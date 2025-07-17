@@ -118,7 +118,7 @@ CurveballMaterialization::CurveballMaterialization(const CurveballAdjacencyList 
     : adjacencyList(adj_list) {}
 
 Graph CurveballMaterialization::toGraph(bool parallel) {
-    Graph G(adjacencyList.numberOfNodes(), false, false);
+    GraphW G(adjacencyList.numberOfNodes(), false, false);
 
     if (parallel)
         toGraphParallel(G);
@@ -128,7 +128,7 @@ Graph CurveballMaterialization::toGraph(bool parallel) {
     return G;
 }
 
-void CurveballMaterialization::toGraphParallel(Graph &G) {
+void CurveballMaterialization::toGraphParallel(GraphW &G) {
     // 1) insertion of first half is threadsafe
     // 2) insertion of second half is not threadsafe, for now done sequentially
 
@@ -181,7 +181,7 @@ void CurveballMaterialization::toGraphParallel(Graph &G) {
     G.shrinkToFit();
 }
 
-void CurveballMaterialization::toGraphSequential(Graph &G) {
+void CurveballMaterialization::toGraphSequential(GraphW &G) {
     const node numNodes = adjacencyList.numberOfNodes();
 
     // Analogue to "toGraphSequential" of GraphBuilder

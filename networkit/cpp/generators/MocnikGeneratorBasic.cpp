@@ -39,14 +39,14 @@ static inline double dist(std::vector<double> &v, std::vector<double> &w) {
 
 // GRAPH GENERATION
 
-Graph MocnikGeneratorBasic::generate() {
+GraphW MocnikGeneratorBasic::generate() {
     // assertions
     assert(dim);
     assert(n);
     assert(k > 1);
 
     // create graph
-    Graph G(0, false, true);
+    GraphW G;
 
     // create the nodes
     nodePositions.resize(n);

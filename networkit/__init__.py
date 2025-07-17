@@ -103,7 +103,7 @@ if have_nx:
 from .engineering import getLogLevel, setLogLevel, setPrintLocation, none, setSeed, \
 		setNumberOfThreads, getCurrentNumberOfThreads, getMaxNumberOfThreads
 # local imports into the top namespace
-from .graph import Graph, GraphFromCoo
+from .graph import Graph, GraphW, GraphFromCoo
 from .structures import Partition, Cover
 from .graphio import readGraph, writeGraph, readGraphs, Format
 

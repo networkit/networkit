@@ -5,6 +5,8 @@
 #include <vector>
 #include <networkit/generators/StaticDegreeSequenceGenerator.hpp>
 
+#include <networkit/graph/GraphW.hpp>
+
 namespace NetworKit {
 
 /**
@@ -26,7 +28,7 @@ public:
      * @throws std::runtime_error If the sequence cannot be generated.
      * @return The generated graph
      */
-    Graph generate() override;
+    GraphW generate() override;
 };
 
 } // namespace NetworKit

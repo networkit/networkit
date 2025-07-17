@@ -17,7 +17,7 @@ ErdosRenyiGenerator::ErdosRenyiGenerator(count nNodes, double prob, bool directe
         throw std::runtime_error("Self-loops are only supported for directed graphs");
 }
 
-Graph ErdosRenyiGenerator::generate() {
+GraphW ErdosRenyiGenerator::generate() {
     GraphBuilder builder(nNodes, false, directed);
 
     {

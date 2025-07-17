@@ -9,7 +9,7 @@
 #define NETWORKIT_DISTANCE_ADAMIC_ADAR_DISTANCE_HPP_
 
 #include <networkit/distance/NodeDistance.hpp>
-#include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -26,7 +26,7 @@ public:
     /**
      * @param G The graph.
      */
-    AdamicAdarDistance(const Graph &G);
+    AdamicAdarDistance(const GraphW &G);
 
     /**
      * Computes the Adamic Adar distances of all connected pairs of nodes.

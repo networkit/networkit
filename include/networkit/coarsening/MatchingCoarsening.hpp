@@ -10,6 +10,7 @@
 
 #include <networkit/coarsening/GraphCoarsening.hpp>
 #include <networkit/matching/Matching.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 

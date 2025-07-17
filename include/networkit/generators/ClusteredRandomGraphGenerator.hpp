@@ -37,7 +37,7 @@ public:
      * Generates a clustered random graph with the properties given in the constructor.
      * @return The generated graph.
      */
-    Graph generate() override;
+    GraphW generate() override;
 
     /**
      * Returns the generated ground truth communities.

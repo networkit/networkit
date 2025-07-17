@@ -13,7 +13,7 @@
 
 namespace NetworKit {
 
-Graph RBGraphReader::read(std::string_view path) {
+GraphW RBGraphReader::read(std::string_view path) {
     std::ifstream in(path.data());
     if (!in.is_open()) {
         throw std::runtime_error("could not open: " + std::string(path));
@@ -27,7 +27,7 @@ Graph RBGraphReader::read(std::string_view path) {
         throw std::runtime_error(
             "File does not contain a square matrix - cannot parse this file into a graph!");
 
-    Graph graph(reader.nMatrixCols, !reader.patternOnly, !reader.symmetric);
+    GraphW graph(reader.nMatrixCols, !reader.patternOnly, !reader.symmetric);
 
     // iterate values in csc matrix and add edges to graph
     for (index col = 0; col < reader.nMatrixCols; ++col) {

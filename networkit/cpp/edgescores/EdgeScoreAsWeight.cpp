@@ -6,19 +6,20 @@
  */
 
 #include <networkit/edgescores/EdgeScoreAsWeight.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
-EdgeScoreAsWeight::EdgeScoreAsWeight(const Graph &G, const std::vector<double> &score, bool squared,
-                                     edgeweight offset, edgeweight factor)
+EdgeScoreAsWeight::EdgeScoreAsWeight(const GraphW &G, const std::vector<double> &score,
+                                     bool squared, edgeweight offset, edgeweight factor)
     : G(&G), score(&score), squared(squared), offset(offset), factor(factor) {}
 
-Graph EdgeScoreAsWeight::calculate() {
+GraphW EdgeScoreAsWeight::calculate() {
     if (!G->hasEdgeIds()) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
-    Graph result(*G, true, false);
+    GraphW result(*G);
 
     if (squared) {
         G->parallelForEdges([&](node u, node v, edgeid eid) {

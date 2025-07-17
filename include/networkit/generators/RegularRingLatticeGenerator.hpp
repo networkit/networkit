@@ -26,7 +26,7 @@ public:
      */
     RegularRingLatticeGenerator(count nNodes, count nNeighbors);
 
-    Graph generate() override;
+    GraphW generate() override;
 
 private:
     count nNodes;

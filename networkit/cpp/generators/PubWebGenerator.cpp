@@ -44,7 +44,7 @@ coordinate PubWebGenerator::squaredDistanceInUnitTorus(Point2D pt1, Point2D pt2)
 
 // TODO: use ANN or similar library with appropriate space-partitioning data structure to
 //       get rid of quadratic time complexity
-void PubWebGenerator::determineNeighbors(Graph &g) {
+void PubWebGenerator::determineNeighbors(GraphW &g) {
     coordinate sqrNeighRad = neighRad * neighRad;
 
     using edge = std::pair<node, node>;
@@ -84,7 +84,7 @@ void PubWebGenerator::determineNeighbors(Graph &g) {
     });
 }
 
-void PubWebGenerator::addNodesToArea(index area, count num, Graph &g) {
+void PubWebGenerator::addNodesToArea(index area, count num, GraphW &g) {
     for (index j = 0; j < num; ++j) {
         // compute random angle between [0, 2pi) and distance between [0, width/2]
         coordinate angle = Aux::Random::real() * 2.0 * PI;
@@ -124,7 +124,7 @@ void PubWebGenerator::chooseClusterSizes() {
     }
 }
 
-void PubWebGenerator::fillDenseAreas(Graph &g) {
+void PubWebGenerator::fillDenseAreas(GraphW &g) {
     for (index area = 0; area < numDenseAreas; ++area) {
         // choose center randomly, ensure complete cluster is within (0,1) without modifications
         denseAreaXYR[area].x = Aux::Random::real();
@@ -134,16 +134,16 @@ void PubWebGenerator::fillDenseAreas(Graph &g) {
 }
 
 // randomly spread remaining vertices over whole area
-void PubWebGenerator::spreadRemainingNodes(Graph &g) {
+void PubWebGenerator::spreadRemainingNodes(GraphW &g) {
     while (g.numberOfNodes() < n) {
         g.addNode(); // TODO: Replace with g.addNodes()
         coordinates.emplace_back(Aux::Random::real(), Aux::Random::real());
     }
 }
 
-Graph PubWebGenerator::generate() {
+GraphW PubWebGenerator::generate() {
     // init
-    Graph G(0, true);
+    GraphW G;
 
     // add vertices according to PubWeb distribution
     chooseDenseAreaSizes();

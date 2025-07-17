@@ -31,7 +31,7 @@ public:
      */
     WattsStrogatzGenerator(count nNodes, count nNeighbors, double p);
 
-    Graph generate() override;
+    GraphW generate() override;
 
 private:
     count nNodes;
