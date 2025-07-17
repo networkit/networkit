@@ -95,7 +95,7 @@ private:
     const Graph *G;
     std::vector<weightedEdge> weightedEdges;
 
-    Graph umsf;
+    GraphW umsf;
     std::vector<bool> umsfAttribute;
 
     bool hasWeightedEdges;

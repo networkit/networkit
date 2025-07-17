@@ -3,6 +3,7 @@ networkit_add_module(graph
     Graph.cpp
     GraphBuilder.cpp
     GraphTools.cpp
+    GraphW.cpp
     KruskalMSF.cpp
     PrimMSF.cpp
     RandomMaximumSpanningForest.cpp

@@ -24,6 +24,9 @@
 
 namespace NetworKit {
 
+// Forward declaration
+class GraphW;
+
 // base class for all node (and edge) attribute
 // storages with attribute type info
 // independent of the attribute type, holds bookkeeping info only:
@@ -456,6 +459,7 @@ private:
 template <typename NodeOrEdge, typename GraphType>
 class AttributeMap {
     friend GraphType;
+    friend class GraphW;
     const GraphType *theGraph;
 
     std::unordered_map<std::string, std::shared_ptr<ASB<NodeOrEdge, GraphType>>> attrMap;

@@ -104,8 +104,9 @@ class CurveballMaterialization;
  * @ingroup graph
  * A graph (with optional weights) and parallel iterator methods.
  */
-class Graph final {
+class Graph {
 
+protected:
     // graph attributes
     //!< current number of nodes
     count n;
@@ -250,7 +251,7 @@ public:
     using EdgeDoubleAttribute = Attribute<PerEdge, Graph, double, false>;
     using EdgeStringAttribute = Attribute<PerEdge, Graph, std::string, false>;
 
-private:
+protected:
     /**
      * Returns the index of node u in the array of incoming edges of node v.
      * (for directed graphs inEdges is searched, while for indirected outEdges
@@ -262,6 +263,8 @@ private:
      * Returns the index of node v in the array of outgoing edges of node u.
      */
     index indexInOutEdgeArray(node u, node v) const;
+
+private:
 
     /**
      * Computes the weighted in/out degree of node @a u.
@@ -662,7 +665,7 @@ public:
                     }
 
                     outEdgeWeights.resize(z);
-                    for (node u = 0; u < z; u++) {
+                    for (node u = 0; u < z; ++u) {
                         outEdgeWeights[u].resize(outEdges[u].size(), defaultEdgeWeight);
                     }
                 }
@@ -778,8 +781,10 @@ public:
             }
         }
 
-        if (!G.edgesIndexed && edgesIndexed)
-            indexEdges();
+        if (!G.edgesIndexed && edgesIndexed) {
+            // Graph is read-only, cannot index edges
+            throw std::runtime_error("Cannot index edges on read-only Graph. Use GraphW instead.");
+        }
     }
 
     /**
@@ -928,14 +933,6 @@ public:
     /** EDGE IDS **/
 
     /**
-     * Initially assign integer edge identifiers.
-     *
-     * @param force Force re-indexing of edges even if they have already been
-     * indexed
-     */
-    void indexEdges(bool force = false);
-
-    /**
      * Checks if edges have been indexed
      *
      * @return bool if edges have been indexed
@@ -980,122 +977,10 @@ public:
     /** GRAPH INFORMATION **/
 
     /**
-     * Try to save some memory by shrinking internal data structures of the
-     * graph. Only run this once you finished editing the graph. Otherwise it
-     * will cause unnecessary reallocation of memory.
-     */
-    void shrinkToFit();
-
-    /**
      * DEPRECATED: this function will no longer be supported in later releases.
      * Compacts the adjacency arrays by re-using no longer needed slots from
      * deleted edges.
      */
-    void TLX_DEPRECATED(compactEdges());
-
-    /**
-     * Sorts the outgoing neighbors of a given node according to a user-defined comparison function.
-     *
-     * @param u The node whose outgoing neighbors will be sorted.
-     * @param lambda A binary predicate used to compare two neighbors. The predicate should
-     *               take two nodes as arguments and return true if the first node should
-     *               precede the second in the sorted order.
-     */
-    template <typename Lambda>
-    void sortNeighbors(node u, Lambda lambda);
-
-    /**
-     * Sorts the adjacency arrays by node id. While the running time is linear
-     * this temporarily duplicates the memory.
-     */
-    void sortEdges();
-
-    /**
-     * Sorts the adjacency arrays by a custom criterion.
-     *
-     * @param lambda Lambda function used to sort the edges. It takes two WeightedEdge
-     * e1 and e2 as input parameters, returns true if e1 < e2, false otherwise.
-     */
-    template <class Lambda>
-    void sortEdges(Lambda lambda);
-
-    /**
-     * Set edge count of the graph to edges.
-     * @param edges the edge count of a graph
-     */
-    void setEdgeCount(Unsafe, count edges) { m = edges; }
-
-    /**
-     * Set upper bound of edge count.
-     *
-     * @param newBound New upper edge id bound.
-     */
-    void setUpperEdgeIdBound(Unsafe, edgeid newBound) { omega = newBound; }
-
-    /**
-     * Set the number of self-loops.
-     *
-     * @param loops New number of self-loops.
-     */
-    void setNumberOfSelfLoops(Unsafe, count loops) { storedNumberOfSelfLoops = loops; }
-
-    /* NODE MODIFIERS */
-
-    /**
-     * Add a new node to the graph and return it.
-     * @return The new node.
-     */
-    node addNode();
-
-    /**
-     * Add numberOfNewNodes new nodes.
-     * @param  numberOfNewNodes Number of new nodes.
-     * @return The index of the last node added.
-     */
-    node addNodes(count numberOfNewNodes);
-
-    /**
-     * Remove a node @a v and all incident edges from the graph.
-     *
-     * Incoming as well as outgoing edges will be removed.
-     *
-     * @param v Node.
-     */
-    void removeNode(node v);
-
-    /**
-     * Removes out-going edges from node @u. If the graph is weighted and/or has edge ids, weights
-     * and/or edge ids will also be removed.
-     *
-     * @param u Node.
-     */
-    void removePartialOutEdges(Unsafe, node u) {
-        assert(hasNode(u));
-        outEdges[u].clear();
-        if (isWeighted()) {
-            outEdgeWeights[u].clear();
-        }
-        if (hasEdgeIds()) {
-            outEdgeIds[u].clear();
-        }
-    }
-
-    /**
-     * Removes in-going edges to node @u. If the graph is weighted and/or has edge ids, weights
-     * and/or edge ids will also be removed.
-     *
-     * @param u Node.
-     */
-    void removePartialInEdges(Unsafe, node u) {
-        assert(hasNode(u));
-        inEdges[u].clear();
-        if (isWeighted()) {
-            inEdgeWeights[u].clear();
-        }
-        if (hasEdgeIds()) {
-            inEdgeIds[u].clear();
-        }
-    }
 
     /**
      * Check if node @a v exists in the graph.
@@ -1107,14 +992,24 @@ public:
     bool hasNode(node v) const noexcept { return (v < z) && this->exists[v]; }
 
     /**
-     * Restores a previously deleted node @a v with its previous id in the
-     * graph.
+     * Check if edge (u, v) exists in the graph.
      *
-     * @param v Node.
-     *
+     * @param u First endpoint of edge.
+     * @param v Second endpoint of edge.
+     * @return @c true if edge exists, @c false otherwise.
      */
+    bool hasEdge(node u, node v) const noexcept;
 
-    void restoreNode(node v);
+    /**
+     * Remove adjacent edges satisfying a condition.
+     *
+     * @param u Node.
+     * @param condition A function that takes a node and returns true if the edge should be removed.
+     * @param edgesIn Whether to consider incoming edges.
+     * @return A pair of (number of removed edges, number of checked edges).
+     */
+    template <typename Condition>
+    std::pair<count, count> removeAdjacentEdges(node u, Condition condition, bool edgesIn = false);
 
     /** NODE PROPERTIES **/
     /**
@@ -1185,172 +1080,6 @@ public:
      */
     edgeweight weightedDegreeIn(node u, bool countSelfLoopsTwice = false) const;
 
-    /* EDGE MODIFIERS */
-
-    /**
-     * Insert an edge between the nodes @a u and @a v. If the graph is
-     * weighted you can optionally set a weight for this edge. The default
-     * weight is 1.0. Note: Multi-edges are not supported and will NOT be
-     * handled consistently by the graph data structure. It is possible to check
-     * for multi-edges by enabling parameter "checkForMultiEdges". If already present,
-     * the new edge is not inserted. Enabling this check increases the complexity of the function
-     * to O(max(deg(u), deg(v))).
-     * @param u Endpoint of edge.
-     * @param v Endpoint of edge.
-     * @param ew Optional edge weight.
-     * @param checkMultiEdge If true, this enables a check for a possible multi-edge.
-     * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
-     * true and the new edge would have been a multi-edge.)
-     */
-    bool addEdge(node u, node v, edgeweight ew = defaultEdgeWeight, bool checkMultiEdge = false);
-
-    /**
-     * Insert an edge between the nodes @a u and @a v. Unline the addEdge function, this function
-     * does not not add any information to v. If the graph is weighted you can optionally set a
-     * weight for this edge. The default weight is 1.0. Note: Multi-edges are not supported and will
-     * NOT be handled consistently by the graph data structure. It is possible to check
-     * for multi-edges by enabling parameter "checkForMultiEdges". If already present,
-     * the new edge is not inserted. Enabling this check increases the complexity of the function
-     * to O(max(deg(u), deg(v))).
-     * @param u Endpoint of edge.
-     * @param v Endpoint of edge.
-     * @param ew Optional edge weight.
-     * @param ew Optional edge weight.
-     * @param index Optional edge index.
-     * @param checkForMultiEdges If true, this enables a check for a possible multi-edge.
-     * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
-     * true and the new edge would have been a multi-edge.)
-     */
-    bool addPartialEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
-                        uint64_t index = 0, bool checkForMultiEdges = false);
-
-    /**
-     * Insert an in edge between the nodes @a u and @a v in a directed graph. If the graph is
-     * weighted you can optionally set a weight for this edge. The default
-     * weight is 1.0. Note: Multi-edges are not supported and will NOT be
-     * handled consistently by the graph data structure. It is possible to check
-     * for multi-edges by enabling parameter "checkForMultiEdges". If already present,
-     * the new edge is not inserted. Enabling this check increases the complexity of the function
-     * to O(max(deg(u), deg(v))).
-     * @param u Endpoint of edge.
-     * @param v Endpoint of edge.
-     * @param ew Optional edge weight.
-     * @param index Optional edge index.
-     * @param checkForMultiEdges If true, this enables a check for a possible multi-edge.
-     * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
-     * true and the new edge would have been a multi-edge.)
-     */
-    bool addPartialInEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
-                          uint64_t index = 0, bool checkForMultiEdges = false);
-
-    /**
-     * Insert an out edge between the nodes @a u and @a v in a directed graph. If the graph is
-     * weighted you can optionally set a weight for this edge. The default
-     * weight is 1.0. Note: Multi-edges are not supported and will NOT be
-     * handled consistently by the graph data structure. It is possible to check
-     * for multi-edges by enabling parameter "checkForMultiEdges". If already present,
-     * the new edge is not inserted. Enabling this check increases the complexity of the function
-     * to O(max(deg(u), deg(v))).
-     * @param u Endpoint of edge.
-     * @param v Endpoint of edge.
-     * @param ew Optional edge weight.
-     * @param index Optional edge index.
-     * @param checkForMultiEdges If true, this enables a check for a possible multi-edge.
-     * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
-     * true and the new edge would have been a multi-edge.)
-     */
-    bool addPartialOutEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
-                           uint64_t index = 0, bool checkForMultiEdges = false);
-
-    /**
-     * If set to true, the ingoing and outgoing adjacency vectors will
-     * automatically be updated to maintain a sorting (if it existed before) by performing up to n-1
-     * swaps. If the user plans to remove multiple edges, better set it to false and call
-     * sortEdges() afterwards to avoid redundant swaps. Default = true.
-     */
-    void setKeepEdgesSorted(bool sorted = true) { maintainSortedEdges = sorted; }
-
-    /**
-     * If set to true, the EdgeIDs will automatically be adjusted,
-     * so that no gaps in between IDs exist. If the user plans to remove multiple edges, better set
-     * it to false and call indexEdges(force=true) afterwards to avoid redundant re-indexing.
-     * Default = true.
-     */
-    void setMaintainCompactEdges(bool compact = true) { maintainCompactEdges = compact; }
-
-    /**
-     * Returns true if edges are currently being sorted when removeEdge() is called.
-     */
-    bool getKeepEdgesSorted() const noexcept { return maintainSortedEdges; }
-
-    /*
-     * Returns true if edges are currently being compacted when removeEdge() is called.
-     */
-    bool getMaintainCompactEdges() const noexcept { return maintainCompactEdges; }
-
-    /**
-     *
-     * Removes the undirected edge {@a u,@a v}.
-     * @param u Endpoint of edge.
-     * @param v Endpoint of edge.
-     */
-    void removeEdge(node u, node v);
-
-    /**
-     * Removes all the edges in the graph.
-     */
-    void removeAllEdges();
-
-    /**
-     * Removes edges adjacent to a node according to a specific criterion.
-     *
-     * @param u The node whose adjacent edges shall be removed.
-     * @param condition A function that takes a node as an input and returns a
-     * bool. If true the edge (u, v) is removed.
-     * @param edgesIn Whether in-going or out-going edges shall be removed.
-     * @return std::pair<count, count> The number of removed edges (first) and the number of removed
-     * self-loops (second).
-     */
-    template <typename Condition>
-    std::pair<count, count> removeAdjacentEdges(node u, Condition condition, bool edgesIn = false);
-
-    /**
-     * Removes all self-loops in the graph.
-     */
-    void removeSelfLoops();
-
-    /**
-     * Removes all multi-edges in the graph.
-     */
-    void removeMultiEdges();
-
-    /**
-     * Changes the edges {@a s1, @a t1} into {@a s1, @a t2} and the edge {@a
-     * s2,
-     * @a t2} into {@a s2, @a t1}.
-     *
-     * If there are edge weights or edge ids, they are preserved. Note that no
-     * check is performed if the swap is actually possible, i.e. does not
-     * generate duplicate edges.
-     *
-     * @param s1 The first source
-     * @param t1 The first target
-     * @param s2 The second source
-     * @param t2 The second target
-     */
-    void swapEdge(node s1, node t1, node s2, node t2);
-
-    /**
-     * Checks if undirected edge {@a u,@a v} exists in the graph.
-     * @param u Endpoint of edge.
-     * @param v Endpoint of edge.
-     * @return <code>true</code> if the edge exists, <code>false</code>
-     * otherwise.
-     */
-    bool hasEdge(node u, node v) const noexcept;
-
-    /* GLOBAL PROPERTIES */
-
     /**
      * Returns <code>true</code> if this graph supports edge weights other
      * than 1.0.
@@ -1386,8 +1115,6 @@ public:
     /**
      * Return the number of loops {v,v} in the graph.
      * @return The number of loops.
-     * @note This involves calculation, so store result if needed multiple
-     * times.
      */
     count numberOfSelfLoops() const noexcept { return storedNumberOfSelfLoops; }
 
@@ -1396,6 +1123,16 @@ public:
      * @return An upper bound for the node ids.
      */
     index upperNodeIdBound() const noexcept { return z; }
+
+    /**
+     * Returns true if edges are currently being sorted when removeEdge() is called.
+     */
+    bool getKeepEdgesSorted() const noexcept { return maintainSortedEdges; }
+
+    /**
+     * Returns true if edges are currently being compacted when removeEdge() is called.
+     */
+    bool getMaintainCompactEdges() const noexcept { return maintainCompactEdges; }
 
     /**
      * Check for invalid graph states, such as multi-edges.
@@ -1437,16 +1174,6 @@ public:
     edgeweight weight(node u, node v) const;
 
     /**
-     * Set the weight of an edge. If the edge does not exist,
-     * it will be inserted.
-     *
-     * @param[in]	u	endpoint of edge
-     * @param[in]	v	endpoint of edge
-     * @param[in]	ew	edge weight
-     */
-    void setWeight(node u, node v, edgeweight ew);
-
-    /**
      * Set the weight to the i-th neighbour of u.
      *
      * @param[in]	u	endpoint of edge
@@ -1463,16 +1190,6 @@ public:
      * @param[in]	ew	edge weight
      */
     void setWeightAtIthInNeighbor(Unsafe, node u, index i, edgeweight ew);
-
-    /**
-     * Increase the weight of an edge. If the edge does not exist,
-     * it will be inserted.
-     *
-     * @param[in]	u	endpoint of edge
-     * @param[in]	v	endpoint of edge
-     * @param[in]	ew	edge weight
-     */
-    void increaseWeight(node u, node v, edgeweight ew);
 
     /* SUMS */
 
@@ -2276,116 +1993,6 @@ std::pair<count, count> Graph::removeAdjacentEdges(node u, Condition condition, 
     }
 
     return {removedEdges, removedSelfLoops};
-}
-
-template <typename Lambda>
-void Graph::sortNeighbors(node u, Lambda lambda) {
-    if ((degreeIn(u) < 2) && (degree(u) < 2)) {
-        return;
-    }
-    // Sort the outEdge-Attributes
-    std::vector<index> outIndices(outEdges[u].size());
-    std::iota(outIndices.begin(), outIndices.end(), 0);
-    std::ranges::sort(outIndices,
-                      [&](index a, index b) { return lambda(outEdges[u][a], outEdges[u][b]); });
-
-    Aux::ArrayTools::applyPermutation(outEdges[u].begin(), outEdges[u].end(), outIndices.begin());
-
-    if (weighted) {
-        Aux::ArrayTools::applyPermutation(outEdgeWeights[u].begin(), outEdgeWeights[u].end(),
-                                          outIndices.begin());
-    }
-
-    if (edgesIndexed) {
-        Aux::ArrayTools::applyPermutation(outEdgeIds[u].begin(), outEdgeIds[u].end(),
-                                          outIndices.begin());
-    }
-
-    // For directed graphs we need to sort the inEdge-Attributes separately
-    if (directed) {
-        std::vector<index> inIndices(inEdges[u].size());
-        std::iota(inIndices.begin(), inIndices.end(), 0);
-
-        std::ranges::sort(inIndices,
-                          [&](index a, index b) { return lambda(inEdges[u][a], inEdges[u][b]); });
-
-        Aux::ArrayTools::applyPermutation(inEdges[u].begin(), inEdges[u].end(), inIndices.begin());
-
-        if (weighted) {
-            Aux::ArrayTools::applyPermutation(inEdgeWeights[u].begin(), inEdgeWeights[u].end(),
-                                              inIndices.begin());
-        }
-
-        if (edgesIndexed) {
-            Aux::ArrayTools::applyPermutation(inEdgeIds[u].begin(), inEdgeIds[u].end(),
-                                              inIndices.begin());
-        }
-    }
-}
-
-template <class Lambda>
-void Graph::sortEdges(Lambda lambda) {
-
-    std::vector<std::vector<index>> indicesGlobal(omp_get_max_threads());
-
-    const auto sortAdjacencyArrays = [&](node u, std::vector<node> &adjList,
-                                         std::vector<edgeweight> &weights,
-                                         std::vector<edgeid> &edgeIds) -> void {
-        auto &indices = indicesGlobal[omp_get_thread_num()];
-        if (adjList.size() > indices.size())
-            indices.resize(adjList.size());
-
-        const auto indicesEnd =
-            indices.begin()
-            + static_cast<
-                std::iterator_traits<std::vector<index>::const_iterator>::difference_type>(
-                adjList.size());
-        std::iota(indices.begin(), indicesEnd, 0);
-
-        if (isWeighted()) {
-            if (hasEdgeIds())
-                std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
-                    return lambda(WeightedEdgeWithId{u, adjList[a], weights[a], edgeIds[a]},
-                                  WeightedEdgeWithId{u, adjList[b], weights[b], edgeIds[b]});
-                });
-            else
-                std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
-                    return lambda(WeightedEdgeWithId{u, adjList[a], weights[a], 0},
-                                  WeightedEdgeWithId{u, adjList[b], weights[b], 0});
-                });
-        } else if (hasEdgeIds())
-            std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
-                return lambda(WeightedEdgeWithId{u, adjList[a], defaultEdgeWeight, edgeIds[a]},
-                              WeightedEdgeWithId{u, adjList[b], defaultEdgeWeight, edgeIds[b]});
-            });
-        else
-            std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
-                return lambda(WeightedEdgeWithId{u, adjList[a], defaultEdgeWeight, 0},
-                              WeightedEdgeWithId{u, adjList[b], defaultEdgeWeight, 0});
-            });
-
-        Aux::ArrayTools::applyPermutation(adjList.begin(), adjList.end(), indices.begin());
-
-        if (isWeighted())
-            Aux::ArrayTools::applyPermutation(weights.begin(), weights.end(), indices.begin());
-
-        if (hasEdgeIds())
-            Aux::ArrayTools::applyPermutation(edgeIds.begin(), edgeIds.end(), indices.begin());
-    };
-
-    balancedParallelForNodes([&](const node u) {
-        if (degree(u) < 2)
-            return;
-
-        std::vector<edgeweight> dummyEdgeWeights;
-        std::vector<edgeid> dummyEdgeIds;
-        sortAdjacencyArrays(u, outEdges[u], isWeighted() ? outEdgeWeights[u] : dummyEdgeWeights,
-                            hasEdgeIds() ? outEdgeIds[u] : dummyEdgeIds);
-
-        if (isDirected())
-            sortAdjacencyArrays(u, inEdges[u], isWeighted() ? inEdgeWeights[u] : dummyEdgeWeights,
-                                hasEdgeIds() ? inEdgeIds[u] : dummyEdgeIds);
-    });
 }
 
 } /* namespace NetworKit */

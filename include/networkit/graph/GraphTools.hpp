@@ -10,6 +10,7 @@
 #include <tlx/unused.hpp>
 #include <networkit/GlobalState.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 namespace GraphTools {
@@ -107,7 +108,7 @@ std::vector<std::pair<node, node>> randomEdges(const Graph &G, count nr);
  * is isolated from the rest of the graph.
  */
 template <class InputIt>
-void removeEdgesFromIsolatedSet(Graph &G, InputIt first, InputIt last) {
+void removeEdgesFromIsolatedSet(GraphW &G, InputIt first, InputIt last) {
     count removedEdges = 0;
     while (first != last) {
         const auto u = *first++;
@@ -192,7 +193,7 @@ double inVolume(const Graph &G, InputIt first, InputIt last) {
  *
  * @return Graph with the same nodes as the input graph (and without any edge).
  */
-Graph copyNodes(const Graph &G);
+GraphW copyNodes(const Graph &G);
 
 /**
  * Returns an induced subgraph of the input graph (including potential edge weights/directions)
@@ -204,7 +205,7 @@ Graph copyNodes(const Graph &G);
  *
  * @return Induced subgraph.
  */
-Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes);
+GraphW subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes);
 
 /**
  * Returns an induced subgraph of the input graph (including potential edge weights/directions)
@@ -220,7 +221,7 @@ Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes);
  * @return Induced subgraph.
  */
 template <class InputIt>
-Graph subgraphFromNodes(const Graph &G, InputIt first, InputIt last, bool compact = false) {
+GraphW subgraphFromNodes(const Graph &G, InputIt first, InputIt last, bool compact = false) {
     count subgraphIdBound = 0;
     std::unordered_map<node, node> reverseMapping;
 
@@ -233,7 +234,7 @@ Graph subgraphFromNodes(const Graph &G, InputIt first, InputIt last, bool compac
         subgraphIdBound = G.upperNodeIdBound();
     }
 
-    Graph S(subgraphIdBound, G.isWeighted(), G.isDirected());
+    GraphW S(subgraphIdBound, G.isWeighted(), G.isDirected());
 
     if (compact) {
         for (auto nodeIt : reverseMapping) {
@@ -288,7 +289,7 @@ Graph subgraphFromNodes(const Graph &G, InputIt first, InputIt last, bool compac
  *
  * @return Induced subgraph.
  */
-Graph subgraphAndNeighborsFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
+GraphW subgraphAndNeighborsFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
                                     bool includeOutNeighbors = false,
                                     bool includeInNeighbors = false);
 
@@ -299,7 +300,7 @@ Graph subgraphAndNeighborsFromNodes(const Graph &G, const std::unordered_set<nod
  *
  * @return Undirected copy of the input graph.
  */
-Graph toUndirected(const Graph &G);
+GraphW toUndirected(const Graph &G);
 
 /**
  * Return an unweighted copy of the input graph.
@@ -308,7 +309,7 @@ Graph toUndirected(const Graph &G);
  *
  * @return Unweighted copy of the input graph.
  */
-Graph toUnweighted(const Graph &G);
+GraphW toUnweighted(const Graph &G);
 
 /**
  * Return a weighted copy of the input graph.
@@ -317,7 +318,7 @@ Graph toUnweighted(const Graph &G);
  *
  * @return Weighted copy of the input graph.
  */
-Graph toWeighted(const Graph &G);
+GraphW toWeighted(const Graph &G);
 
 /**
  * Returns the transpose of the input graph. The graph must be directed.
@@ -326,7 +327,7 @@ Graph toWeighted(const Graph &G);
  *
  * @return Transpose of the input graph.
  */
-Graph transpose(const Graph &G);
+GraphW transpose(const Graph &G);
 
 /**
  * Appends graph @a G1 to graph @a G as a new subgraph. Performs node id remapping.
@@ -334,7 +335,7 @@ Graph transpose(const Graph &G);
  * @param G Graph where @G1 will be appended to.
  * @param G1 Graph that will be appended to @a G.
  */
-void append(Graph &G, const Graph &G1);
+void append(GraphW &G, const Graph &G1);
 
 /**
  * Modifies graph @a G to be the union of it and graph @a G1.
@@ -343,7 +344,7 @@ void append(Graph &G, const Graph &G1);
  * @param G Result of the merge.
  * @param G1 Graph that will be merged with @a G.
  */
-void merge(Graph &G, const Graph &G1);
+void merge(GraphW &G, const Graph &G1);
 
 /**
  * Computes a graph with the same structure but with continuous node ids.
@@ -390,7 +391,7 @@ Graph restoreGraph(const std::vector<node> &invertedIdMap, const Graph &G);
  * Augments the input graph in-place as required by ForestCentrality. With respect to the input
  * graph G, the augmented graph has a new root node connected to all the other nodes in the graph.
  */
-node augmentGraph(Graph &G);
+node augmentGraph(GraphW &G);
 
 /**
  * Constructs an augmented graph as required by ForestCentrality. With respect to the input graph G,
@@ -407,7 +408,7 @@ std::pair<Graph, node> createAugmentedGraph(const Graph &G);
  * false, the adjacency arrays are sorted by non-decreasing edge weights. Ties are broken by
  * using node ids.
  */
-void sortEdgesByWeight(Graph &G, bool decreasing = false);
+void sortEdgesByWeight(GraphW &G, bool decreasing = false);
 
 /**
  * Given a directed graph G, the topology sort algorithm creates one valid topology order of nodes.
@@ -515,7 +516,7 @@ void randomizeWeights(Graph &G, Distribution distr = std::uniform_real_distribut
  * @node preallocate is currently not implemented
  */
 template <typename UnaryIdMapper, typename SkipEdgePredicate>
-Graph getRemappedGraph(const Graph &graph, count numNodes, UnaryIdMapper &&oldIdToNew,
+GraphW getRemappedGraph(const Graph &graph, count numNodes, UnaryIdMapper &&oldIdToNew,
                        SkipEdgePredicate &&skipNode, bool preallocate = true) {
     tlx::unused(preallocate); // TODO: Add perallocate as soon as Graph supports it
 
@@ -524,7 +525,7 @@ Graph getRemappedGraph(const Graph &graph, count numNodes, UnaryIdMapper &&oldId
 #endif // NDEBUG
 
     const auto directed = graph.isDirected();
-    Graph Gnew(numNodes, graph.isWeighted(), directed);
+    GraphW Gnew(numNodes, graph.isWeighted(), directed);
 
     graph.forNodes([&](const node u) { // TODO: Make parallel when graph support addHalfEdge
         if (skipNode(u))
@@ -546,7 +547,7 @@ Graph getRemappedGraph(const Graph &graph, count numNodes, UnaryIdMapper &&oldId
 }
 
 template <typename UnaryIdMapper>
-Graph getRemappedGraph(const Graph &graph, count numNodes, UnaryIdMapper &&oldIdToNew,
+GraphW getRemappedGraph(const Graph &graph, count numNodes, UnaryIdMapper &&oldIdToNew,
                        bool preallocate = true) {
     return getRemappedGraph(
         graph, numNodes, std::forward<UnaryIdMapper>(oldIdToNew), [](node) { return false; },
@@ -571,7 +572,7 @@ Graph getRemappedGraph(const Graph &graph, count numNodes, UnaryIdMapper &&oldId
  *         typically defined for undirected graphs.
  * @returns true if the graph is bipartite, else false
  */
-bool isBipartite(const Graph &graph);
+bool isBipartite(const GraphW &graph);
 
 } // namespace GraphTools
 

@@ -119,7 +119,7 @@ std::vector<bool> UnionMaximumSpanningForest::getAttribute(bool move) {
 }
 
 Graph UnionMaximumSpanningForest::getUMSF(bool move) {
-    Graph result;
+    GraphW result;
 
     if (!hasUMSF)
         throw std::runtime_error("Error: The run() method must be executed first");

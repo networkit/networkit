@@ -233,8 +233,8 @@ void GraphBuilder::increaseInWeight(node u, node v, edgeweight ew) {
     }
 }
 
-Graph GraphBuilder::completeGraph() {
-    Graph G(n, weighted, directed);
+GraphW GraphBuilder::completeGraph() {
+    GraphW G(n, weighted, directed);
 #ifdef NETWORKIT_SANITY_CHECKS
     assert(G.checkConsistency());
 #endif
@@ -454,7 +454,7 @@ count GraphBuilder::numberOfEdges(const Graph &G) {
     }
 }
 
-void GraphBuilder::addHalfEdgesToGraph(Graph &G) {
+void GraphBuilder::addHalfEdgesToGraph(GraphW &G) {
     int max_threads = omp_get_max_threads();
 #pragma omp parallel num_threads(max_threads)
     {

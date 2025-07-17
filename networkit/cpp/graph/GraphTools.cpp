@@ -247,21 +247,21 @@ double volume(const Graph &G) {
     return volume;
 }
 
-Graph copyNodes(const Graph &G) {
-    Graph C(G.upperNodeIdBound(), G.isWeighted(), G.isDirected());
-    for (node u = 0; u < G.upperNodeIdBound(); ++u) {
+GraphW copyNodes(const Graph &G) {
+    GraphW C(G.upperNodeIdBound(), G.isWeighted(), G.isDirected());
+    C.forNodes([&](node u) {
         if (!G.hasNode(u)) {
             C.removeNode(u);
         }
-    }
+    });
     return C;
 }
 
-Graph subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes) {
+GraphW subgraphFromNodes(const Graph &G, const std::unordered_set<node> &nodes) {
     return subgraphFromNodes(G, nodes.begin(), nodes.end(), false);
 }
 
-Graph subgraphAndNeighborsFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
+GraphW subgraphAndNeighborsFromNodes(const Graph &G, const std::unordered_set<node> &nodes,
                                     bool includeOutNeighbors, bool includeInNeighbors) {
     const auto neighbors = [&] {
         std::unordered_set<node> neighbors;
@@ -296,7 +296,7 @@ Graph subgraphAndNeighborsFromNodes(const Graph &G, const std::unordered_set<nod
         return 0;
     };
 
-    Graph S(G.upperNodeIdBound(), G.isWeighted(), G.isDirected());
+    GraphW S(G.upperNodeIdBound(), G.isWeighted(), G.isDirected());
     // delete all nodes that are not in the node set
     S.forNodes([&](node u) {
         if (!isRelevantNode(u)) {
@@ -315,37 +315,70 @@ Graph subgraphAndNeighborsFromNodes(const Graph &G, const std::unordered_set<nod
     return S;
 }
 
-Graph toUndirected(const Graph &G) {
+GraphW toUndirected(const Graph &G) {
     if (!G.isDirected()) {
         WARN("The graph is already undirected");
     }
 
-    return Graph(G, G.isWeighted(), false);
+    GraphW newG(G.upperNodeIdBound(), G.isWeighted(), false);
+    G.forNodes([&](node u) {
+        if (!G.hasNode(u)) {
+            newG.removeNode(u);
+        }
+    });
+
+    G.forEdges([&](node u, node v, edgeweight w) {
+        newG.addEdge(u, v, w);
+    });
+
+    return newG;
 }
 
-Graph toUnweighted(const Graph &G) {
+GraphW toUnweighted(const Graph &G) {
     if (!G.isWeighted()) {
         WARN("The graph is already unweighted");
     }
 
-    return Graph(G, false, G.isDirected(), G.hasEdgeIds());
+    GraphW newG(G.upperNodeIdBound(), false, G.isDirected());
+    G.forNodes([&](node u) {
+        if (!G.hasNode(u)) {
+            newG.removeNode(u);
+        }
+    });
+
+    G.forEdges([&](node u, node v, edgeweight) {
+        newG.addEdge(u, v, 1.0);
+    });
+
+    return newG;
 }
 
-Graph toWeighted(const Graph &G) {
+GraphW toWeighted(const Graph &G) {
     if (G.isWeighted()) {
         WARN("The graph is already weighted");
     }
 
-    return Graph(G, true, G.isDirected(), G.hasEdgeIds());
+    GraphW newG(G.upperNodeIdBound(), true, G.isDirected());
+    G.forNodes([&](node u) {
+        if (!G.hasNode(u)) {
+            newG.removeNode(u);
+        }
+    });
+
+    G.forEdges([&](node u, node v, edgeweight w) {
+        newG.addEdge(u, v, w);
+    });
+
+    return newG;
 }
 
-Graph transpose(const Graph &G) {
+GraphW transpose(const Graph &G) {
     if (!G.isDirected()) {
         throw std::runtime_error("The transpose of an undirected graph is "
                                  "identical to the original graph.");
     }
 
-    Graph GTranspose(G.upperNodeIdBound(), G.isWeighted(), true);
+    GraphW GTranspose(G.upperNodeIdBound(), G.isWeighted(), true);
 
     // prepare edge id storage if input has indexed edges
     if (G.hasEdgeIds()) {
@@ -379,7 +412,7 @@ Graph transpose(const Graph &G) {
     return GTranspose;
 }
 
-void append(Graph &G, const Graph &G1) {
+void append(GraphW &G, const Graph &G1) {
     std::unordered_map<node, node> nodeMap;
     G1.forNodes([&](node u) {
         node u_ = G.addNode();
@@ -393,7 +426,7 @@ void append(Graph &G, const Graph &G1) {
     }
 }
 
-void merge(Graph &G, const Graph &G1) {
+void merge(GraphW &G, const Graph &G1) {
     if (G1.upperNodeIdBound() > G.upperNodeIdBound()) {
         count prevBound = G.upperNodeIdBound();
         for (node i = prevBound; i < G1.upperNodeIdBound(); ++i) {
@@ -470,7 +503,7 @@ std::vector<node> invertContinuousNodeIds(const std::unordered_map<node, node> &
 
 Graph restoreGraph(const std::vector<node> &invertedIdMap, const Graph &G) {
     // with the inverted id map and the compacted graph, generate the original graph again
-    Graph Goriginal(invertedIdMap.back(), G.isWeighted(), G.isDirected());
+    GraphW Goriginal(invertedIdMap.back(), G.isWeighted(), G.isDirected());
     index current = 0;
     Goriginal.forNodes([&](node u) {
         if (invertedIdMap[current] == u) {
@@ -483,7 +516,7 @@ Graph restoreGraph(const std::vector<node> &invertedIdMap, const Graph &G) {
     return Goriginal;
 }
 
-node augmentGraph(Graph &G) {
+node augmentGraph(GraphW &G) {
     const node root = G.addNode();
     G.forNodes([&](node u) {
         if (u != root)
@@ -493,12 +526,12 @@ node augmentGraph(Graph &G) {
 }
 
 std::pair<Graph, node> createAugmentedGraph(const Graph &G) {
-    Graph augmented(G);
+    GraphW augmented(G);
     node root = augmentGraph(augmented);
     return {augmented, root};
 }
 
-void sortEdgesByWeight(Graph &G, bool decreasing) {
+void sortEdgesByWeight(GraphW &G, bool decreasing) {
     if (decreasing)
         G.sortEdges([](auto e1, auto e2) {
             if (e1.weight == e2.weight)
@@ -529,7 +562,7 @@ std::vector<node> topologicalSort(const Graph &G,
     return topSort.getResult();
 }
 
-bool isBipartite(const Graph &graph) {
+bool isBipartite(const GraphW &graph) {
     if (graph.isDirected()) {
         throw std::runtime_error("The graph is not an undirected graph!");
     }

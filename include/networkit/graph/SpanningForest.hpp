@@ -10,6 +10,7 @@
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -19,7 +20,7 @@ namespace NetworKit {
 class SpanningForest : public Algorithm {
 protected:
     const Graph *G;
-    Graph forest;
+    GraphW forest;
 
 public:
     SpanningForest(const Graph &G) : G(&G) {}

@@ -102,7 +102,7 @@ private:
     const Graph &G;
     std::vector<weightedEdge> weightedEdges;
 
-    Graph msf;
+    GraphW msf;
     std::vector<bool> msfAttribute;
 
     bool hasWeightedEdges;

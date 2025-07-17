@@ -12,6 +12,7 @@
 
 #include <networkit/Globals.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -178,13 +179,13 @@ public:
     /**
      * Generates a Graph instance. The graph builder will be resetted at the end.
      */
-    Graph completeGraph();
+    GraphW completeGraph();
 
     /**
      * DEPRECATED: use completeGraph() instead which uses the parallel mode by default (if
      * possible).
      */
-    Graph TLX_DEPRECATED(completeGraph([[maybe_unused]] bool parallel)) {
+    GraphW TLX_DEPRECATED(completeGraph([[maybe_unused]] bool parallel)) {
         WARN("GraphBuilder::completeGraph(bool parallel) is deprecated, use "
              "GraphBuilder::completeGraph() instead");
         return completeGraph();
@@ -235,7 +236,7 @@ public:
 private:
     void toGraphSequential(Graph &G);
     void toGraphParallel(Graph &G);
-    void addHalfEdgesToGraph(Graph &G);
+    void addHalfEdgesToGraph(GraphW &G);
 
     template <typename T>
     static void copyAndClear(std::vector<T> &source, std::vector<T> &target);
