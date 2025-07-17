@@ -86,7 +86,7 @@ GraphW EdgeListReader::read(std::string_view path) {
         char *past;
         auto value = strtod(it, &past);
         if (past <= it)
-                throw std::runtime_error("Error in parsing file - looking for weight failed");
+            throw std::runtime_error("Error in parsing file - looking for weight failed");
         it = past;
         return value;
     };

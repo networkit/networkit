@@ -124,7 +124,7 @@ std::vector<node> ComplexPathAlgorithm::generateSeeds(node seed, const Graph &g,
 }
 
 GraphW ComplexPathAlgorithm::complexPathsGraph(node seed, count threshold,
-                                              std::vector<node> *adopters) {
+                                               std::vector<node> *adopters) {
     const Graph *g = inputGraph;
     const auto n = g->numberOfNodes();
     GraphW complex_g = GraphW(n); // all nodes, no edges so far

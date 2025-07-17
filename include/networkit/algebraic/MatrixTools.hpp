@@ -101,7 +101,7 @@ template <class Matrix>
 NetworKit::GraphW laplacianToGraph(const Matrix &laplacian) {
     assert(isLaplacian(laplacian));
     NetworKit::GraphW G(std::max(laplacian.numberOfRows(), laplacian.numberOfColumns()), true,
-                       false);
+                        false);
     laplacian.forNonZeroElementsInRowOrder(
         [&](NetworKit::node u, NetworKit::node v, NetworKit::edgeweight weight) {
             if (u != v) { // exclude diagonal

@@ -1,8 +1,8 @@
 
 #include <networkit/generators/EdgeSwitchingMarkovChainGenerator.hpp>
 #include <networkit/generators/HavelHakimiGenerator.hpp>
-#include <networkit/randomization/EdgeSwitching.hpp>
 #include <networkit/graph/GraphW.hpp>
+#include <networkit/randomization/EdgeSwitching.hpp>
 
 namespace NetworKit {
 

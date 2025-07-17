@@ -42,7 +42,7 @@ public:
      * @return Graph to be generated according to parameters
      */
     GraphW generate(const vector<double> &angles, const vector<double> &radii, double R,
-                   double T = 0);
+                    double T = 0);
 
     GraphW generateCold(const vector<double> &angles, const vector<double> &radii, double R);
 

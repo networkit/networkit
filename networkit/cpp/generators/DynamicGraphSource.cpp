@@ -35,17 +35,18 @@ void DynamicGraphSource::generateEdges(count m) {
 
 GraphEventProxy *DynamicGraphSource::newGraph() {
     this->G = new GraphW(0);
-    this->Gproxy = new GraphEventProxy(*static_cast<GraphW*>(this->G));
+    this->Gproxy = new GraphEventProxy(*static_cast<GraphW *>(this->G));
     // not returning proxy because only generator needs write access to graph
     this->graphSet = true;
     return this->Gproxy;
 }
 
 void DynamicGraphSource::generateTimeSteps(count t) {
-    while (static_cast<GraphW*>(G)->time() < t) {
+    while (static_cast<GraphW *>(G)->time() < t) {
         this->generate();
     }
-    static_cast<GraphW*>(G)->shrinkToFit(); // TODO shrinkToFit: is this method supposed to be called often?
+    static_cast<GraphW *>(G)
+        ->shrinkToFit(); // TODO shrinkToFit: is this method supposed to be called often?
 }
 
 } /* namespace NetworKit */

@@ -154,7 +154,7 @@ private:
      */
     std::vector<std::vector<node>> assignNodesToCommunities();
     GraphW generateIntraClusterGraph(std::vector<count> intraDegreeSequence,
-                                    const std::vector<node> &localToGlobalNode);
+                                     const std::vector<node> &localToGlobalNode);
     GraphW generateInterClusterGraph(const std::vector<count> &externalDegreeSequence);
 
     count n;

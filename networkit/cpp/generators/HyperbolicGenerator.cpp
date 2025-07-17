@@ -82,7 +82,7 @@ GraphW HyperbolicGenerator::generate(count n, double R, double alpha, double T) 
 }
 
 GraphW HyperbolicGenerator::generateCold(const vector<double> &angles, const vector<double> &radii,
-                                        double R) {
+                                         double R) {
     const count n = angles.size();
     assert(radii.size() == n);
 
@@ -197,7 +197,7 @@ GraphW HyperbolicGenerator::generateCold(const vector<double> &angles, const vec
 }
 
 GraphW HyperbolicGenerator::generate(const vector<double> &angles, const vector<double> &radii,
-                                    double R, double T) {
+                                     double R, double T) {
     if (T < 0)
         throw std::runtime_error("Temperature cannot be negative.");
     if (T == 0)
