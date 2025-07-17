@@ -28,7 +28,7 @@ class SortedList {
 private:
     std::vector<std::pair<uint64_t, double>> elements;
     std::vector<uint64_t> position;
-    uint64_t virtualSize{};
+    uint64_t virtualSize;
     const uint64_t size;
     const uint64_t maxKey;
 
