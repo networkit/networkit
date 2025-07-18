@@ -8,6 +8,7 @@
 #include <queue>
 #include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/flow/Dinic.hpp>
+#include <networkit/graph/GraphBuilder.hpp>
 
 namespace NetworKit {
 
@@ -24,19 +25,20 @@ Dinic::Dinic(const Graph &G, node s, node t) : graph(&G), source(s), target(t) {
             "Dinic algorithm requires `source` and `target` node to be different!");
     }
     parents.resize(graph->numberOfNodes());
-    residualGraph = Graph(graph->upperNodeIdBound(), true, true);
 }
 
 void Dinic::initializeResidualGraph() {
-    graph->forEdges([&](node u, node v, edgeweight w) {
-        // add original capacity
-        residualGraph.addEdge(u, v, w);
-        // add reverse edge to track flow, initially 0
-        residualGraph.addEdge(v, u, 0.0);
+    GraphBuilder builder(graph->numberOfNodes(), true, true, false);
+    builder.parallelForNodes([&](node u) {
+        graph->forInNeighborsOf(u, [&](node v, edgeweight w) {
+            builder.addHalfEdge(v, u, w);
+            builder.addHalfEdge(u, v, 0.0);
+        });
     });
+    residualGraph = builder.completeGraph();
 }
 
-bool Dinic::determineValidParents() {
+bool Dinic::canReachTargetInLevelGraph() {
     std::vector<int> level(residualGraph.numberOfNodes(), -1);
     for (auto &parentList : parents) {
         parentList.clear();
@@ -120,7 +122,7 @@ edgeweight Dinic::computeBlockingPath() {
 void Dinic::run() {
     initializeResidualGraph();
     maxFlow = 0.0;
-    while (determineValidParents()) {
+    while (canReachTargetInLevelGraph()) {
         if (const double flow = computeBlockingPath(); !Aux::NumericTools::equal(flow, 0.0)) {
             maxFlow += flow;
         } else

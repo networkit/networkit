@@ -50,7 +50,7 @@ public:
 
 private:
     void initializeResidualGraph();
-    bool determineValidParents();
+    bool canReachTargetInLevelGraph();
     edgeweight computeBlockingPath();
     const Graph *graph;
     node source;
