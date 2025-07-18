@@ -22,13 +22,13 @@ void LocalMaxMatcher::run() {
     count z = G->upperNodeIdBound();
     count E = G->numberOfEdges();
 
-    std::vector<WeightedEdge> edges;
+    std::vector<WeightedEdge<node, edgeweight>> edges;
     edges.reserve(G->numberOfEdges());
     for (auto edge : G->edgeWeightRange())
         edges.emplace_back(edge.u, edge.v, edge.weight + Aux::Random::real(1e-6));
 
     // candidates records mating candidates
-    std::vector<WeightedEdge> candidates(z);
+    std::vector<WeightedEdge<node, edgeweight>> candidates(z);
     G->parallelForNodes([&](node u) {
         candidates[u].weight = (edgeweight)0;
         candidates[u].v = u; // itself as mating partner => unmatched
@@ -58,7 +58,7 @@ void LocalMaxMatcher::run() {
 
         // create remaining "graph" by selecting remaining edges (as triples)
         // adjust candidates
-        std::vector<WeightedEdge> newEdges;
+        std::vector<WeightedEdge<node, edgeweight>> newEdges;
         for (const auto &edge : edges) {
             if (!M.isMatched(edge.u) && !M.isMatched(edge.v) && edge.u != edge.v) {
                 newEdges.push_back(edge);

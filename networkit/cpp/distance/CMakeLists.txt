@@ -12,7 +12,6 @@ networkit_add_module(distance
     Eccentricity.cpp
     EffectiveDiameter.cpp
     EffectiveDiameterApproximation.cpp
-    FloydWarshall.cpp
     GraphDistance.cpp
     HopPlotApproximation.cpp
     IncompleteDijkstra.cpp
