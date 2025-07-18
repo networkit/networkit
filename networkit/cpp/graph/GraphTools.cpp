@@ -495,7 +495,7 @@ std::vector<node> invertContinuousNodeIds(const std::unordered_map<node, node> &
     return invertedIdMap;
 }
 
-Graph restoreGraph(const std::vector<node> &invertedIdMap, const Graph &G) {
+GraphW restoreGraph(const std::vector<node> &invertedIdMap, const Graph &G) {
     // with the inverted id map and the compacted graph, generate the original graph again
     GraphW Goriginal(invertedIdMap.back(), G.isWeighted(), G.isDirected());
     index current = 0;

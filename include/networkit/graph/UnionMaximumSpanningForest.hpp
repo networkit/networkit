@@ -3,7 +3,7 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/base/Algorithm.hpp>
-#include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 #include <networkit/structures/UnionFind.hpp>
 
 namespace NetworKit {
@@ -74,7 +74,7 @@ public:
      * @param move If the graph shall be moved out of the algorithm instance.
      * @return The calculated union of all maximum-weight spanning forests.
      */
-    Graph getUMSF(bool move = false);
+    GraphW getUMSF(bool move = false);
 
 private:
     struct weightedEdge {

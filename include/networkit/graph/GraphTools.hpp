@@ -385,7 +385,7 @@ std::vector<node> invertContinuousNodeIds(const std::unordered_map<node, node> &
  * @param  G             The compacted graph.
  * @return               The original graph.
  */
-Graph restoreGraph(const std::vector<node> &invertedIdMap, const Graph &G);
+GraphW restoreGraph(const std::vector<node> &invertedIdMap, const Graph &G);
 
 /**
  * Augments the input graph in-place as required by ForestCentrality. With respect to the input

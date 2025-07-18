@@ -32,7 +32,7 @@ StochasticBlockmodel::StochasticBlockmodel(count n, count nBlocks,
 }
 
 GraphW StochasticBlockmodel::generate() {
-    GraphW G;
+    GraphW G(n);
 
     G.forNodePairs([&](node u, node v) {
         index a = membership.at(u);

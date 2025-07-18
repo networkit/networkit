@@ -105,7 +105,7 @@ std::vector<bool> RandomMaximumSpanningForest::getAttribute(bool move) {
     return result;
 }
 
-Graph RandomMaximumSpanningForest::getMSF(bool move) {
+GraphW RandomMaximumSpanningForest::getMSF(bool move) {
     GraphW result;
 
     if (!hasMSF)

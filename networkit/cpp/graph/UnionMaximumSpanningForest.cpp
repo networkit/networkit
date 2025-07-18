@@ -118,7 +118,7 @@ std::vector<bool> UnionMaximumSpanningForest::getAttribute(bool move) {
     return result;
 }
 
-Graph UnionMaximumSpanningForest::getUMSF(bool move) {
+GraphW UnionMaximumSpanningForest::getUMSF(bool move) {
     GraphW result;
 
     if (!hasUMSF)
