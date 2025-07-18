@@ -47,12 +47,12 @@
 #include <networkit/community/PLP.hpp>
 #include <networkit/dynamics/GraphUpdater.hpp>
 #include <networkit/global/ClusteringCoefficient.hpp>
+#include <networkit/graph/Graph.hpp>
 #include <networkit/io/DotGraphWriter.hpp>
 #include <networkit/io/GraphIO.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/METISGraphWriter.hpp>
 #include <networkit/viz/PostscriptWriter.hpp>
-#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

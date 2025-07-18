@@ -8,8 +8,8 @@
 #include <gtest/gtest.h>
 
 #include <networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp>
-#include <networkit/sparsification/LocalSimilarityScore.hpp>
 #include <networkit/graph/GraphW.hpp>
+#include <networkit/sparsification/LocalSimilarityScore.hpp>
 
 namespace NetworKit {
 

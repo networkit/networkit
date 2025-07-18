@@ -8,12 +8,12 @@
  *              Arun Sharma
  */
 
-#include <networkit/graph/GraphW.hpp>
-#include <networkit/graph/GraphTools.hpp>
-#include <networkit/auxiliary/Log.hpp>
+#include <ranges>
 #include <sstream>
 #include <unordered_set>
-#include <ranges>
+#include <networkit/auxiliary/Log.hpp>
+#include <networkit/graph/GraphTools.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -382,7 +382,7 @@ bool GraphW::addEdge(node u, node v, edgeweight ew, bool checkForMultiEdges) {
 }
 
 bool GraphW::addPartialEdge(Unsafe, node u, node v, edgeweight ew, uint64_t index,
-                           bool checkForMultiEdges) {
+                            bool checkForMultiEdges) {
     assert(u < z);
     assert(exists[u]);
     assert(v < z);
@@ -406,7 +406,7 @@ bool GraphW::addPartialEdge(Unsafe, node u, node v, edgeweight ew, uint64_t inde
 }
 
 bool GraphW::addPartialOutEdge(Unsafe, node u, node v, edgeweight ew, uint64_t index,
-                              bool checkForMultiEdges) {
+                               bool checkForMultiEdges) {
     assert(u < z);
     assert(exists[u]);
     assert(v < z);
@@ -430,7 +430,7 @@ bool GraphW::addPartialOutEdge(Unsafe, node u, node v, edgeweight ew, uint64_t i
 }
 
 bool GraphW::addPartialInEdge(Unsafe, node u, node v, edgeweight ew, uint64_t index,
-                             bool checkForMultiEdges) {
+                              bool checkForMultiEdges) {
     assert(u < z);
     assert(exists[u]);
     assert(v < z);

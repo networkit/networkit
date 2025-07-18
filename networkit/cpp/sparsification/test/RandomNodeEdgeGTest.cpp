@@ -7,16 +7,16 @@
 
 #include <gtest/gtest.h>
 
+#include <networkit/graph/GraphW.hpp>
 #include <networkit/sparsification/RandomEdgeScore.hpp>
 #include <networkit/sparsification/RandomNodeEdgeScore.hpp>
-#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
 class RandomNodeEdgeGTest : public testing::Test {};
 
 GraphW initGraphUnindexed() {
-    GraphW G(5);      // EdgeId
+    GraphW G(5);     // EdgeId
     G.addEdge(0, 1); // 0     G:  0 - 1
     G.addEdge(0, 2); // 1         | / |
     G.addEdge(1, 2); // 2         2 - 3

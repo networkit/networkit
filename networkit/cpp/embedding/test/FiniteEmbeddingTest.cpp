@@ -11,8 +11,8 @@
 #include <gtest/gtest.h>
 
 #include <networkit/embedding/Node2Vec.hpp>
-#include <networkit/io/METISGraphReader.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/io/METISGraphReader.hpp>
 
 namespace NetworKit {
 

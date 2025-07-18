@@ -16,9 +16,9 @@
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/DynAPSP.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
-#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 class APSPGTest : public testing::Test {};

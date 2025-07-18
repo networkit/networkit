@@ -1,5 +1,5 @@
-#ifndef NETWORKIT_GRAPH_GRAPHW_HPP_
-#define NETWORKIT_GRAPH_GRAPHW_HPP_
+#ifndef NETWORKIT_GRAPH_GRAPH_W_HPP_
+#define NETWORKIT_GRAPH_GRAPH_W_HPP_
 
 #include <networkit/graph/Graph.hpp>
 
@@ -151,20 +151,18 @@ public:
         parallelForNodes([&](node u) {
             if (isWeighted()) {
                 std::vector<WeightedEdge> edges;
-                forNeighborsOf(u, [&](node v, edgeweight w) {
-                    edges.emplace_back(u, v, w);
-                });
+                forNeighborsOf(u, [&](node v, edgeweight w) { edges.emplace_back(u, v, w); });
                 std::sort(edges.begin(), edges.end(), lambda);
 
                 removePartialOutEdges(unsafe, u);
-                for (const auto& edge : edges) {
+                for (const auto &edge : edges) {
                     addPartialOutEdge(unsafe, edge.u, edge.v, edge.weight);
                 }
             } else {
                 std::vector<node> neighbors(outEdges[u]);
                 std::sort(neighbors.begin(), neighbors.end(), [&](node v1, node v2) {
                     return lambda(WeightedEdge(u, v1, defaultEdgeWeight),
-                                 WeightedEdge(u, v2, defaultEdgeWeight));
+                                  WeightedEdge(u, v2, defaultEdgeWeight));
                 });
 
                 removePartialOutEdges(unsafe, u);
@@ -381,8 +379,8 @@ public:
         count removedEdges = 0;
         count removedSelfLoops = 0;
 
-        // For directed graphs, this function is supposed to be called twice: one to remove out-edges,
-        // and one to remove in-edges.
+        // For directed graphs, this function is supposed to be called twice: one to remove
+        // out-edges, and one to remove in-edges.
         auto &edges_ = edgesIn ? inEdges[u] : outEdges[u];
         for (index vi = 0; vi < edges_.size();) {
             if (condition(edges_[vi])) {
@@ -519,4 +517,4 @@ public:
 
 } /* namespace NetworKit */
 
-#endif // NETWORKIT_GRAPH_GRAPHW_HPP_
+#endif // NETWORKIT_GRAPH_GRAPH_W_HPP_

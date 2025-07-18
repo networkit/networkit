@@ -15,8 +15,8 @@
 #include <networkit/distance/DynDijkstra.hpp>
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
-#include <networkit/graph/GraphTools.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
 

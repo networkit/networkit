@@ -7,9 +7,9 @@
 
 #include <gtest/gtest.h>
 
+#include <networkit/graph/GraphW.hpp>
 #include <networkit/sparsification/ChanceCorrectedTriangleScore.hpp>
 #include <networkit/sparsification/SCANStructuralSimilarityScore.hpp>
-#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 

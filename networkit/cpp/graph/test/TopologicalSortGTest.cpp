@@ -5,8 +5,8 @@
  *      Author: Fabian Brandt-Tumescheit
  */
 
-#include <networkit/graph/TopologicalSort.hpp>
 #include <networkit/graph/GraphW.hpp>
+#include <networkit/graph/TopologicalSort.hpp>
 
 #include <stdexcept>
 #include <unordered_map>

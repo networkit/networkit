@@ -154,7 +154,7 @@ public:
 
 private:
     std::vector<T> values; // the real attribute storage
-}; // class AttributeStorage<NodeOrEdge, Base, T>
+};                         // class AttributeStorage<NodeOrEdge, Base, T>
 
 template <typename NodeOrEdge, typename GraphType, typename T, bool isConst>
 class Attribute {

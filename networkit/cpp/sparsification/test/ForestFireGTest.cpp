@@ -7,8 +7,8 @@
 
 #include <gtest/gtest.h>
 
-#include <networkit/sparsification/ForestFireScore.hpp>
 #include <networkit/graph/GraphW.hpp>
+#include <networkit/sparsification/ForestFireScore.hpp>
 
 namespace NetworKit {
 

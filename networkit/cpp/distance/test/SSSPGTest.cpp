@@ -13,8 +13,8 @@
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/DynDijkstra.hpp>
-#include <networkit/io/METISGraphReader.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/io/METISGraphReader.hpp>
 
 #include <tlx/unused.hpp>
 

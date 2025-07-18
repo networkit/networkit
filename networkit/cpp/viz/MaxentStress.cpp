@@ -505,8 +505,9 @@ void MaxentStress::computeKnownDistances(const count k, const GraphDistance grap
     case EDGE_WEIGHT:
         // add edges to known distances
         G->parallelForNodes([&](node u) {
-            G->forNeighborsOf(u,
-                              [&](node v, edgeweight w) { knownDistances[u].push_back({v, w}); });
+            G->forNeighborsOf(u, [&](node v, edgeweight w) {
+                knownDistances[u].push_back({v, w});
+            });
             // add k-neighborhood
             if (k > 1) { // 1-neighborhood are adjacent vertices that are already added above
                 addKNeighborhoodOfVertex(u, k);
