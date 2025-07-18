@@ -9,7 +9,7 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Timer.hpp>
-#include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -54,7 +54,7 @@ TEST_F(GraphBenchmark, edgeInsertions_standard_seq) {
     count n = this->n;
     Aux::Timer runtime;
 
-    Graph G(n);
+    GraphW G(n);
     runtime.start();
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
     runtime.stop();
@@ -67,7 +67,7 @@ TEST_F(GraphBenchmark, edgeInsertions_standard_seq) {
 
 TEST_F(GraphBenchmark, weightedDegree_standard_seq) {
     int64_t n = this->n;
-    Graph G(n);
+    GraphW G(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
 
     Aux::Timer runtime;
@@ -94,7 +94,7 @@ TEST_F(GraphBenchmark, weightedDegree_standard_seq) {
 
 TEST_F(GraphBenchmark, weightedDegree_standard_par) {
     int64_t n = this->n;
-    Graph G(n);
+    GraphW G(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
 
     Aux::Timer runtime;

@@ -23,7 +23,7 @@ TEST_F(AssortativityGTest, testAssortivityPartitionSmallGraph) {
         / \|/ \
        1   4   8
     */
-    Graph G(9);
+    GraphW G(9);
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -63,7 +63,7 @@ TEST_F(AssortativityGTest, testAssortivityAttributeSmallGraph) {
         / \ / \
        1   4   7
     */
-    Graph G(8);
+    GraphW G(8);
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);

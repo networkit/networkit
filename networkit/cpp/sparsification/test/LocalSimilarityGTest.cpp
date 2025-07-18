@@ -9,13 +9,14 @@
 
 #include <networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp>
 #include <networkit/sparsification/LocalSimilarityScore.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
 class LocalSimilarityGTest : public testing::Test {};
 
 TEST_F(LocalSimilarityGTest, testAttributeSimple) {
-    Graph g(4);
+    GraphW g(4);
 
     g.addEdge(0, 1);
     g.addEdge(0, 3);

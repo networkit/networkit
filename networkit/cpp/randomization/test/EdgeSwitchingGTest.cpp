@@ -25,7 +25,7 @@ protected:
      * numberOfSats1+1 is the hub
      */
     Graph createDualStarGraph(count numberOfSats1, count numberOfSats2) {
-        Graph G(numberOfSats1 + numberOfSats2 + 2, false, isDirected());
+        GraphW G(numberOfSats1 + numberOfSats2 + 2, false, isDirected());
 
         const node hub1 = 0;
         const node hub2 = numberOfSats1 + 1;
@@ -43,7 +43,7 @@ protected:
      * Create a circle graph with edges (i, i+1) and (n-1, 0).
      */
     Graph createCircle(count numberOfNodes) {
-        Graph G(numberOfNodes, false, isDirected());
+        GraphW G(numberOfNodes, false, isDirected());
 
         G.addEdge(numberOfNodes - 1, 0);
         for (node u = 0; u < numberOfNodes - 1; ++u)
@@ -63,7 +63,7 @@ TEST_P(EdgeSwitchingGTest, testSatellites) {
     constexpr count kNumSatellites = 100;
     constexpr count kNumSwitches = 100 * kNumSatellites;
     const node hub1 = 0, hub2 = kNumSatellites + 1;
-    auto G = createDualStarGraph(kNumSatellites, kNumSatellites);
+    GraphW G = createDualStarGraph(kNumSatellites, kNumSatellites);
 
     // Check that hubs have correct degree and are unconnected
     ASSERT_FALSE(G.hasEdge(hub1, hub2));

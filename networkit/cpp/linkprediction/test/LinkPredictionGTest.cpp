@@ -38,8 +38,8 @@ public:
     void SetUp();
 
 protected:
-    Graph G{7};
-    Graph trainingGraph;
+    GraphW G{7};
+    GraphW trainingGraph;
 
     std::vector<std::pair<node, node>> missingLinks;
     std::vector<LinkPredictor::prediction> predictions;

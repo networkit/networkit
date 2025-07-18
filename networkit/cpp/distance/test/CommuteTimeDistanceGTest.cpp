@@ -33,7 +33,7 @@ TEST_F(CommuteTimeDistanceGTest, testOnToyGraph) {
             1    4
      */
     count n = 6;
-    Graph G(n, false, false);
+    GraphW G(n, false, false);
     G.indexEdges();
 
     G.addEdge(0, 2);
@@ -75,7 +75,7 @@ TEST_F(CommuteTimeDistanceGTest, testOnWeightedToyGraph) {
                 Edge weight of (u,v): u+v
      */
     count n = 6;
-    Graph G(n, true, false);
+    GraphW G(n, true, false);
     G.indexEdges();
 
     G.addEdge(0, 2, 2);
@@ -103,7 +103,7 @@ TEST_F(CommuteTimeDistanceGTest, runECTDOnSmallGraphs) {
     std::string graphFiles[1] = {"input/tiny_01.graph"};
 
     for (auto graphFile : graphFiles) {
-        Graph G = reader.read(graphFile);
+        GraphW G = reader.read(graphFile);
         G.indexEdges();
         Aux::Timer timer;
         CommuteTimeDistance exact(G);
@@ -140,7 +140,7 @@ TEST_F(CommuteTimeDistanceGTest, runECTDParallelOnSmallGraphs) {
     std::string graphFiles[1] = {"input/tiny_01.graph"};
 
     for (auto graphFile : graphFiles) {
-        Graph G = reader.read(graphFile);
+        GraphW G = reader.read(graphFile);
         G.indexEdges();
         Aux::Timer timer;
         CommuteTimeDistance exact(G);

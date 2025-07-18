@@ -9,13 +9,14 @@
 
 #include <networkit/sparsification/RandomEdgeScore.hpp>
 #include <networkit/sparsification/RandomNodeEdgeScore.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
 class RandomNodeEdgeGTest : public testing::Test {};
 
-Graph initGraphUnindexed() {
-    Graph G(5);      // EdgeId
+GraphW initGraphUnindexed() {
+    GraphW G(5);      // EdgeId
     G.addEdge(0, 1); // 0     G:  0 - 1
     G.addEdge(0, 2); // 1         | / |
     G.addEdge(1, 2); // 2         2 - 3
@@ -26,7 +27,7 @@ Graph initGraphUnindexed() {
 }
 
 TEST_F(RandomNodeEdgeGTest, testRandomEdgeScores) {
-    Graph G = initGraphUnindexed();
+    GraphW G = initGraphUnindexed();
     G.indexEdges();
 
     RandomEdgeScore rndes(G);
@@ -39,7 +40,7 @@ TEST_F(RandomNodeEdgeGTest, testRandomEdgeScores) {
 }
 
 TEST_F(RandomNodeEdgeGTest, testRandomEdgeScore) {
-    Graph G = initGraphUnindexed();
+    GraphW G = initGraphUnindexed();
     G.indexEdges();
 
     RandomEdgeScore rndes(G);
@@ -52,14 +53,14 @@ TEST_F(RandomNodeEdgeGTest, testRandomEdgeScore) {
 }
 
 TEST_F(RandomNodeEdgeGTest, testRandomEdgeScoreUnindexedEdges) {
-    Graph G = initGraphUnindexed();
+    GraphW G = initGraphUnindexed();
 
     RandomEdgeScore rndes(G);
     EXPECT_THROW(rndes.run(), std::runtime_error);
 }
 
 TEST_F(RandomNodeEdgeGTest, testRandomNodeEdgeScores) {
-    Graph G = initGraphUnindexed();
+    GraphW G = initGraphUnindexed();
     G.indexEdges();
 
     RandomNodeEdgeScore rndnes(G);
@@ -72,7 +73,7 @@ TEST_F(RandomNodeEdgeGTest, testRandomNodeEdgeScores) {
 }
 
 TEST_F(RandomNodeEdgeGTest, testRandomNodeEdgeScore) {
-    Graph G = initGraphUnindexed();
+    GraphW G = initGraphUnindexed();
     G.indexEdges();
 
     RandomNodeEdgeScore rndnes(G);
@@ -85,7 +86,7 @@ TEST_F(RandomNodeEdgeGTest, testRandomNodeEdgeScore) {
 }
 
 TEST_F(RandomNodeEdgeGTest, testRandomNodeEdgeScoreUnindexedEdges) {
-    Graph G = initGraphUnindexed();
+    GraphW G = initGraphUnindexed();
 
     RandomEdgeScore rndes(G);
     EXPECT_THROW(rndes.run(), std::runtime_error);

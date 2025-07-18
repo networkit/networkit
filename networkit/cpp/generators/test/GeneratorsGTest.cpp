@@ -52,6 +52,7 @@
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/METISGraphWriter.hpp>
 #include <networkit/viz/PostscriptWriter.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -404,7 +405,7 @@ TEST_F(GeneratorsGTest, testDynamicPubWebGenerator) {
     float rad = 0.08;
 
     DynamicPubWebGenerator dynGen(n, numCluster, rad, maxNumNeighbors, false);
-    Graph G = dynGen.getGraph();
+    GraphW G = dynGen.getGraph();
     GraphUpdater gu(G);
     std::vector<GraphEvent> stream;
 
@@ -455,7 +456,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicGeneratorOnMovedNodes) {
     DynamicHyperbolicGenerator dynGen(angles, radii, R, alpha, T, movedShare, moveDistance);
 
     // generate starting graph
-    Graph G = HyperbolicGenerator().generate(angles, radii, R);
+    GraphW G = HyperbolicGenerator().generate(angles, radii, R);
     count initialEdgeCount = G.numberOfEdges();
     count expected = n * HyperbolicSpace::getExpectedDegree(n, alpha, R) * 0.5;
     EXPECT_NEAR(initialEdgeCount, expected, expected / 5);
@@ -513,7 +514,7 @@ TEST_F(GeneratorsGTest, testDynamicHyperbolicVisualization) {
     HyperbolicSpace::fillPoints(angles, radii, R, alpha);
 
     DynamicHyperbolicGenerator dynGen(angles, radii, R, alpha, T, movedShare, moveDistance);
-    Graph G = dynGen.getGraph();
+    GraphW G = dynGen.getGraph();
 
     GraphUpdater gu(G);
     std::vector<GraphEvent> stream;
@@ -550,11 +551,11 @@ TEST_F(GeneratorsGTest, testBarabasiAlbertGeneratorConstructor) {
     EXPECT_THROW(BarabasiAlbertGenerator generator(5, 9, 10, true), std::runtime_error);
 
     // n0 = initGraph.numberOfNodes() > nMax
-    Graph initGraph(10);
+    GraphW initGraph(10);
     EXPECT_THROW(BarabasiAlbertGenerator generator(6, 9, initGraph, true), std::runtime_error);
 
     // initGraph, k > nMax
-    initGraph = Graph(6);
+    initGraph = GraphW(6);
     EXPECT_THROW(BarabasiAlbertGenerator generator(10, 9, initGraph, true), std::runtime_error);
 
     // initGraph does not have consecutive node ids
@@ -574,7 +575,7 @@ TEST_F(GeneratorsGTest, testBarabasiAlbertGeneratorBatagelj) {
     EXPECT_LE(G.numberOfEdges(), nMax * k);
     EXPECT_TRUE(G.checkConsistency());
 
-    Graph initGraph(4);
+    GraphW initGraph(4);
     initGraph.addEdge(0, 1);
     initGraph.addEdge(2, 1);
     initGraph.addEdge(2, 3);
@@ -946,7 +947,7 @@ TEST_F(GeneratorsGTest, testHavelHakimiGeneratorOnUnrealizableSequence) {
 }
 
 TEST_F(GeneratorsGTest, testDynamicForestFireGenerator) {
-    Graph G1(0);
+    GraphW G1(0);
     GraphUpdater gu1(G1);
     std::vector<GraphEvent> stream;
     DynamicForestFireGenerator ffg1(0.0, false);
@@ -968,7 +969,7 @@ TEST_F(GeneratorsGTest, testDynamicForestFireGenerator) {
         }
     });
 
-    Graph G2(0);
+    GraphW G2(0);
     GraphUpdater gu2(G2);
     DynamicForestFireGenerator ffg2(1.0, true, 1.0);
     stream = ffg2.generate(10);
@@ -1068,7 +1069,7 @@ TEST_F(GeneratorsGTest, testDorogovtsevMendesGenerator) {
 TEST_F(GeneratorsGTest, testDynamicDorogovtsevMendesGenerator) {
     count n0 = 20;
     DynamicDorogovtsevMendesGenerator ddmg = DynamicDorogovtsevMendesGenerator();
-    Graph G(0);
+    GraphW G(0);
     GraphUpdater gu(G);
     std::vector<GraphEvent> stream;
     stream = ddmg.generate(n0 - 3);

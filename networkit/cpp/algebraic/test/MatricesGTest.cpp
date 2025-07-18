@@ -746,7 +746,7 @@ TYPED_TEST(MatricesGTest, testMatrixAssignmentOperator) {
 TYPED_TEST(MatricesGTest, LaplacianMatrixRemoveNode) {
     using Matrix = typename TestFixture::Matrix;
 
-    Graph G(4);
+    GraphW G(4);
     G.addEdge(1, 2);
     auto L4 = Matrix::laplacianMatrix(G);
     Matrix expected4(4);
@@ -771,7 +771,7 @@ TYPED_TEST(MatricesGTest, LaplacianMatrixRemoveNode) {
 TYPED_TEST(MatricesGTest, LaplacianMatrixRemoveEdge) {
     using Matrix = typename TestFixture::Matrix;
 
-    Graph G(4);
+    GraphW G(4);
     G.addEdge(1, 2);
     G.addEdge(0, 1);
     auto L = Matrix::laplacianMatrix(G);
@@ -1102,7 +1102,7 @@ TYPED_TEST(MatricesGTest, testMatrixTransposedVectorMultiplication) {
 }
 
 TYPED_TEST(MatricesGTest, testAdjacencyMatrix) {
-    Graph G(6);
+    GraphW G(6);
     G.addEdge(0, 0);
     G.addEdge(0, 1);
     G.addEdge(0, 4);
@@ -1140,7 +1140,7 @@ TYPED_TEST(MatricesGTest, testAdjacencyMatrix) {
     EXPECT_EQ(mat(4, 5), 0);
 
     // directed, weighted G
-    Graph dGraph(4, true, true);
+    GraphW dGraph(4, true, true);
     dGraph.addEdge(0, 1, 2);
     dGraph.addEdge(0, 0, 42);
     dGraph.addEdge(2, 3, -3);
@@ -1198,7 +1198,7 @@ TYPED_TEST(MatricesGTest, testDiagonalMatrix) {
 }
 
 TYPED_TEST(MatricesGTest, testIncidenceMatrix) {
-    Graph G = Graph(5, true);
+    GraphW G = Graph(5, true);
     G.addEdge(0, 1, 4.0);
     G.addEdge(0, 2, 9.0);
     G.addEdge(0, 3, 16.0);
@@ -1270,7 +1270,7 @@ TYPED_TEST(MatricesGTest, testIncidenceMatrix) {
 }
 
 TYPED_TEST(MatricesGTest, testIncidenceMatrixDirected) {
-    Graph G = Graph(5, true, true);
+    GraphW G = Graph(5, true, true);
     G.addEdge(0, 1, 4.0);
     G.addEdge(0, 2, 9.0);
     G.addEdge(0, 3, 16.0);
@@ -1463,7 +1463,7 @@ TYPED_TEST(MatricesGTest, testMatrixToGraph) {
 }
 
 TYPED_TEST(MatricesGTest, testPrint) {
-    Graph G(3);
+    GraphW G(3);
     G.addEdge(1, 2);
     auto L = DynamicMatrix::laplacianMatrix(G);
 

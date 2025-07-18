@@ -117,7 +117,7 @@ TEST_F(CommunityGTest, testCutClustering) {
 }
 
 TEST_F(CommunityGTest, testCommunicationGraph) {
-    Graph G(4, true);
+    GraphW G(4, true);
     G.addEdge(0, 1, 0.5);
     G.addEdge(0, 3, 2.5);
     G.addEdge(1, 2, 3.0);
@@ -134,7 +134,7 @@ TEST_F(CommunityGTest, testCommunicationGraph) {
 }
 
 TEST_F(CommunityGTest, testWeightedDegreeWithCluster) {
-    Graph G(4, true);
+    GraphW G(4, true);
     G.addEdge(0, 1, 0.5);
     G.addEdge(0, 3, 2.5);
     G.addEdge(1, 2, 3.0);
@@ -148,7 +148,7 @@ TEST_F(CommunityGTest, testWeightedDegreeWithCluster) {
 }
 
 TEST_F(CommunityGTest, testIsolatedInterpartitionConductance) {
-    Graph G(4, true);
+    GraphW G(4, true);
     G.addEdge(0, 1, 0.5);
     G.addEdge(0, 3, 2.5);
     G.addEdge(1, 2, 3.0);
@@ -164,7 +164,7 @@ TEST_F(CommunityGTest, testIsolatedInterpartitionConductance) {
 }
 
 TEST_F(CommunityGTest, testIsolatedInterpartitionExpansion) {
-    Graph G(4, true);
+    GraphW G(4, true);
     G.addEdge(0, 1, 0.5);
     G.addEdge(0, 3, 2.5);
     G.addEdge(1, 2, 3.0);
@@ -239,7 +239,7 @@ TEST_F(CommunityGTest, testLabelPropagationOnDisconnectedGraph) {
 }
 
 TEST_F(CommunityGTest, testLabelPropagationOnSingleNodeWithSelfLoop) {
-    Graph G(1, true);
+    GraphW G(1, true);
     node v = 0;
     G.setWeight(v, v, 42.0);
 
@@ -329,7 +329,7 @@ TEST_F(CommunityGTest, testParallelLeiden) {
 TEST_F(CommunityGTest, testDeletedNodesPLM) {
     METISGraphReader reader;
     Modularity modularity;
-    Graph G = reader.read("input/PGPgiantcompo.graph");
+    GraphW G = reader.read("input/PGPgiantcompo.graph");
 
     G.forNeighborsOf(10, [&](node v) { G.removeEdge(10, v); });
 
@@ -359,7 +359,7 @@ TEST_F(CommunityGTest, testModularity) {
     DEBUG("testing modularity on clustering of complete graph with ", n, " nodes");
 
     // make complete graph
-    Graph G = Graph(n);
+    GraphW G = Graph(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
     DEBUG("total edge weight: ", G.totalEdgeWeight());
 
@@ -390,7 +390,7 @@ TEST_F(CommunityGTest, testCoverage) {
     DEBUG("testing coverage on clustering of complete graph with ", n, " nodes");
 
     // make complete graph
-    Graph G = Graph(n);
+    GraphW G = Graph(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
 
     ClusteringGenerator clusteringGenerator;
@@ -418,7 +418,7 @@ TEST_F(CommunityGTest, testClusteringEquality) {
     count n = 100;
 
     // make complete graph
-    Graph G = Graph(n);
+    GraphW G = Graph(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
 
     ClusteringGenerator clusteringGen;
@@ -444,7 +444,7 @@ TEST_F(CommunityGTest, testEdgeCutMeasure) {
         1    4
      */
     count n = 6;
-    Graph G(n);
+    GraphW G(n);
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -469,7 +469,7 @@ TEST_F(CommunityGTest, testEdgeCutMeasure) {
 TEST_F(CommunityGTest, testJaccardMeasure) {
     count n = 100;
     // make complete graph
-    Graph G = Graph(n);
+    GraphW G = Graph(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
 
     ClusteringGenerator clusteringGen;
@@ -486,7 +486,7 @@ TEST_F(CommunityGTest, testJaccardMeasure) {
 TEST_F(CommunityGTest, testNodeStructuralRandMeasure) {
     count n = 100;
     // make complete graph
-    Graph G = Graph(n);
+    GraphW G = Graph(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
 
     ClusteringGenerator clusteringGen;
@@ -502,7 +502,7 @@ TEST_F(CommunityGTest, testNodeStructuralRandMeasure) {
 TEST_F(CommunityGTest, testGraphStructuralRandMeasure) {
     count n = 100;
     // make complete graph
-    Graph G = Graph(n);
+    GraphW G = Graph(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
 
     ClusteringGenerator clusteringGen;
@@ -555,7 +555,7 @@ TEST_F(CommunityGTest, testNMIDistance) {
 TEST_F(CommunityGTest, testSampledRandMeasures) {
     count n = 42;
     // make complete graph
-    Graph G = Graph(n);
+    GraphW G = Graph(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
     ClusteringGenerator clusteringGenerator;
     Partition one = clusteringGenerator.makeOneClustering(G);
@@ -606,7 +606,7 @@ TEST_F(CommunityGTest, testClusteringIntersection) {
     PartitionIntersection intersection;
     // make complete graph
     count n = 1200;
-    Graph G = Graph(n);
+    GraphW G = Graph(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
 
     ClusteringGenerator clusteringGenerator;
@@ -639,7 +639,7 @@ TEST_F(CommunityGTest, testMakeNoncontinuousClustering) {
     ClusteringGenerator generator;
     // make complete graph
     count n = 100;
-    Graph G = Graph(n);
+    GraphW G = Graph(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
 
     Partition con = generator.makeContinuousBalancedClustering(G, 10);
@@ -660,7 +660,7 @@ TEST_F(CommunityGTest, testHubDominance) {
 
     // make complete graph
     count n = 100;
-    Graph G = Graph(n);
+    GraphW G = Graph(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
     Partition con = generator.makeContinuousBalancedClustering(G, 10);
 
@@ -713,7 +713,7 @@ TEST_F(CommunityGTest, testIntrapartitionDensity) {
     Aux::Random::setSeed(42, false);
     ClusteringGenerator generator;
     count n = 100;
-    Graph G(n);
+    GraphW G(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
     Partition con(generator.makeContinuousBalancedClustering(G, 10));
 
@@ -752,7 +752,7 @@ TEST_F(CommunityGTest, testIntrapartitionDensity) {
 TEST_F(CommunityGTest, testPartitionFragmentation) {
     ClusteringGenerator generator;
     count n = 100;
-    Graph G(n);
+    GraphW G(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
     Partition con(generator.makeContinuousBalancedClustering(G, 10));
 
@@ -787,7 +787,7 @@ TEST_F(CommunityGTest, testPartitionFragmentation) {
 
 TEST_F(CommunityGTest, testCoverHubDominanceConstructor) {
     // constructors and run() are being tested in testHubDominance
-    Graph G(100);
+    GraphW G(100);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
     Partition con = ClusteringGenerator{}.makeContinuousBalancedClustering(G, 10);
     Cover cov(con);

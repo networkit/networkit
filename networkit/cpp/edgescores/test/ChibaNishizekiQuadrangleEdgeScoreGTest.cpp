@@ -8,13 +8,14 @@
 #include <gtest/gtest.h>
 
 #include <networkit/edgescores/ChibaNishizekiQuadrangleEdgeScore.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
 class ChibaNishizekiQuadrangleEdgeScoreGTest : public testing::Test {};
 
 TEST_F(ChibaNishizekiQuadrangleEdgeScoreGTest, testQuadrangleCountsTrivial) {
-    Graph g(5);
+    GraphW g(5);
 
     g.addEdge(0, 1);
     g.addEdge(0, 2);
@@ -37,7 +38,7 @@ TEST_F(ChibaNishizekiQuadrangleEdgeScoreGTest, testQuadrangleCountsTrivial) {
 
 TEST_F(ChibaNishizekiQuadrangleEdgeScoreGTest, testQuadrangleCountsSimple) {
     count n = 7;
-    Graph g(n);
+    GraphW g(n);
 
     g.addEdge(0, 1);
     g.addEdge(0, 3);

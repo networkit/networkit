@@ -19,7 +19,7 @@ namespace NetworKit {
 class AlgebraicBFSGTest : public testing::Test {};
 
 TEST(AlgebraicBFSGTest, testOnToyGraph) {
-    Graph G(5, false, true);
+    GraphW G(5, false, true);
     G.addEdge(0, 1);
     G.addEdge(0, 3);
     G.addEdge(1, 2);

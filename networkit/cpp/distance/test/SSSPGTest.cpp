@@ -14,6 +14,7 @@
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/DynDijkstra.hpp>
 #include <networkit/io/METISGraphReader.hpp>
+#include <networkit/graph/Graph.hpp>
 
 #include <tlx/unused.hpp>
 
@@ -32,7 +33,7 @@ TEST_F(SSSPGTest, testDijkstra) {
          1    4   7
     */
     int n = 8;
-    Graph G(n, true);
+    GraphW G(n, true);
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -64,7 +65,7 @@ TEST_F(SSSPGTest, testSSSPThrowsInvalidTarget) {
 }
 
 TEST_F(SSSPGTest, testSSSPThrowsStorepathNotTrueCallPredecessor) {
-    Graph G(3, true);
+    GraphW G(3, true);
     G.addEdge(0, 2);
     G.addEdge(1, 2);
     BFS bfs(G, /*source*/ 0, /*storePaths*/ false);
@@ -114,7 +115,7 @@ TEST_F(SSSPGTest, testGetAllShortestPaths) {
            1    4   7   10
     */
     int n = 11;
-    Graph G(n, false);
+    GraphW G(n, false);
     G.addEdge(0, 2);
     G.addEdge(1, 2);
     G.addEdge(2, 3);
@@ -156,7 +157,7 @@ TEST_F(SSSPGTest, testDirectedBFS) {
     */
     int n = 8;
     // G directed unweighted
-    Graph G(n, false, true);
+    GraphW G(n, false, true);
 
     G.addEdge(0, 6);
     G.addEdge(0, 2);
@@ -192,7 +193,7 @@ TEST_F(SSSPGTest, testDirectedDijkstra) {
     */
     int n = 8;
     // G directed unweighted
-    Graph G(n, false, true);
+    GraphW G(n, false, true);
 
     G.addEdge(0, 6, 1);
     G.addEdge(0, 2, 1);

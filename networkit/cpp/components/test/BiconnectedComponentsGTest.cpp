@@ -18,7 +18,7 @@ namespace NetworKit {
 class BiconnectedComponentsGTest : public testing::Test {};
 
 TEST_F(BiconnectedComponentsGTest, testBiconnectedComponentsTiny) {
-    Graph G(9, false, false);
+    GraphW G(9, false, false);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
     G.addEdge(1, 3);
@@ -37,7 +37,7 @@ TEST_F(BiconnectedComponentsGTest, testBiconnectedComponentsTiny) {
 }
 
 TEST_F(BiconnectedComponentsGTest, testBiconnectedComponentsTinyDelete) {
-    Graph G(6, false, false);
+    GraphW G(6, false, false);
     G.addEdge(0, 1);
     G.addEdge(0, 2);
     G.addEdge(0, 3);

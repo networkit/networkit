@@ -26,7 +26,7 @@ TEST_F(AlgebraicSpanningEdgeCentralityGTest, testOnToyGraph) {
             1    4
      */
     count n = 6;
-    Graph G(n, false, false);
+    GraphW G(n, false, false);
     G.indexEdges();
 
     G.addEdge(0, 2);
@@ -53,7 +53,7 @@ TEST_F(AlgebraicSpanningEdgeCentralityGTest, testOnRealGraphs) {
     std::string graphFiles[2] = {"input/karate.graph", "input/tiny_01.graph"};
 
     for (auto graphFile : graphFiles) {
-        Graph G = reader.read(graphFile);
+        GraphW G = reader.read(graphFile);
         G.indexEdges();
         Aux::Timer timer;
 

@@ -16,11 +16,11 @@ namespace NetworKit {
 
 class GlobalCurveballGTest : public ::testing::Test {
 protected:
-    void checkWithUndirectedGraph(Graph &);
-    void checkWithDirectedGraph(Graph &G, bool selfLoops);
+    void checkWithUndirectedGraph(GraphW &);
+    void checkWithDirectedGraph(GraphW &G, bool selfLoops);
 };
 
-void GlobalCurveballGTest::checkWithUndirectedGraph(Graph &G) {
+void GlobalCurveballGTest::checkWithUndirectedGraph(GraphW &G) {
     ASSERT_FALSE(G.isDirected());
 
     node numNodes = G.numberOfNodes();
@@ -55,7 +55,7 @@ void GlobalCurveballGTest::checkWithUndirectedGraph(Graph &G) {
     outG.forNodes([&](node u) { ASSERT_EQ(degrees[u], outG.degree(u)); });
 }
 
-void GlobalCurveballGTest::checkWithDirectedGraph(Graph &G, bool selfLoops) {
+void GlobalCurveballGTest::checkWithDirectedGraph(GraphW &G, bool selfLoops) {
     ASSERT_TRUE(G.isDirected());
 
     node numNodes = G.numberOfNodes();
@@ -106,7 +106,7 @@ TEST_F(GlobalCurveballGTest, testCurveballUndirectedErdosRenyi) {
 
     node numNodes = 1000;
     ErdosRenyiGenerator generator(numNodes, 0.01);
-    Graph G = generator.generate();
+    GraphW G = generator.generate();
 
     this->checkWithUndirectedGraph(G);
 }
@@ -116,7 +116,7 @@ TEST_F(GlobalCurveballGTest, testCurveballDirectedErdosRenyi) {
 
     node numNodes = 1000;
     ErdosRenyiGenerator generator(numNodes, 0.01, true, false);
-    Graph G = generator.generate();
+    GraphW G = generator.generate();
 
     this->checkWithDirectedGraph(G, false);
 }
@@ -126,7 +126,7 @@ TEST_F(GlobalCurveballGTest, testCurveballDirectedErdosRenyiSelfLoops) {
 
     node numNodes = 1000;
     ErdosRenyiGenerator generator(numNodes, 0.01, true, true);
-    Graph G = generator.generate();
+    GraphW G = generator.generate();
 
     this->checkWithDirectedGraph(G, true);
 }
@@ -136,7 +136,7 @@ TEST_F(GlobalCurveballGTest, testCurveballHyperbolic) {
 
     node numNodes = 1000;
     HyperbolicGenerator generator(numNodes);
-    Graph G = generator.generate();
+    GraphW G = generator.generate();
 
     this->checkWithUndirectedGraph(G);
 }

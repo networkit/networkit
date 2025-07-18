@@ -18,7 +18,7 @@ public:
     void SetUp() { Aux::Random::setSeed(435913, false); }
 };
 
-void addClique(Graph &graph, Partition &groundTruth, node lowestId, node highestId) {
+void addClique(GraphW &graph, Partition &groundTruth, node lowestId, node highestId) {
     index subsetId = groundTruth.upperBound();
     groundTruth.setUpperBound(subsetId + 1);
     for (node i = lowestId; i <= highestId; ++i) {
@@ -31,7 +31,7 @@ void addClique(Graph &graph, Partition &groundTruth, node lowestId, node highest
 
 TEST_F(MapEquationGTest, testLocalMoveSmall) {
     Aux::Random::setSeed(2342556, false);
-    Graph G(10);
+    GraphW G(10);
     Partition groundTruth(10);
     addClique(G, groundTruth, 0, 4);
     addClique(G, groundTruth, 5, 9);
@@ -61,7 +61,7 @@ TEST_F(MapEquationGTest, testLocalMove) {
         return {nodes.begin(), nodes.end()};
     };
 
-    Graph G1 = GraphTools::subgraphFromNodes(G, generateConsecutiveNodes(0, 100));
+    GraphW G1 = GraphTools::subgraphFromNodes(G, generateConsecutiveNodes(0, 100));
     const Graph G2 = GraphTools::subgraphFromNodes(G, generateConsecutiveNodes(100, 200));
     const Graph G3 = GraphTools::subgraphFromNodes(G, generateConsecutiveNodes(200, 300));
 

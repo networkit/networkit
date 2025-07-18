@@ -18,7 +18,7 @@ namespace NetworKit {
 class AlgebraicTriangleCountingGTest : public testing::Test {};
 
 TEST(AlgebraicTriangleCountingGTest, testToyGraphOne) {
-    Graph graph(5);
+    GraphW graph(5);
 
     graph.addEdge(0, 1);
     graph.addEdge(0, 2);
@@ -37,7 +37,7 @@ TEST(AlgebraicTriangleCountingGTest, testToyGraphOne) {
 }
 
 TEST(AlgebraicTriangleCountingGTest, testToyGraphTwo) {
-    Graph graph(5);
+    GraphW graph(5);
 
     graph.addEdge(0, 1);
     graph.addEdge(0, 2);
@@ -70,7 +70,7 @@ TEST(AlgebraicTriangleCountingGTest, testToyGraphTwo) {
 }
 
 TEST(AlgebraicTriangleCountingGTest, testDirectedToyGraphOne) {
-    Graph graph(5, false, true);
+    GraphW graph(5, false, true);
 
     graph.addEdge(0, 1);
     graph.addEdge(1, 2);
@@ -89,7 +89,7 @@ TEST(AlgebraicTriangleCountingGTest, testDirectedToyGraphOne) {
 }
 
 TEST(AlgebraicTriangleCountingGTest, testDirectedToyGraphTwo) {
-    Graph graph(5, false, true);
+    GraphW graph(5, false, true);
 
     graph.addEdge(0, 1);
     graph.addEdge(0, 2);
@@ -108,7 +108,7 @@ TEST(AlgebraicTriangleCountingGTest, testDirectedToyGraphTwo) {
 }
 
 TEST(AlgebraicTriangleCountingGTest, testDirectedToyGraphThree) {
-    Graph graph(5, false, true);
+    GraphW graph(5, false, true);
 
     graph.addEdge(0, 1);
     graph.addEdge(1, 0);

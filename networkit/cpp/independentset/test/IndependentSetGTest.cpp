@@ -53,7 +53,8 @@ TEST_F(IndependentSetGTest, debugLubyWithSelfLoops) {
     Aux::Random::setSeed(42, true);
     count n = 500;
     ErdosRenyiGenerator generator(n, 0.001);
-    Graph G = generator.generate();
+    Graph G_temp = generator.generate();
+    GraphW G(G_temp);
 
     G.forNodes([&](node u) { G.addEdge(u, u); });
 

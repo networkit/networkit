@@ -146,7 +146,7 @@ TEST_F(CoarseningGTest, testSequentialPartitionCoarseningOnErdosRenyi) {
 
 TEST_F(CoarseningGTest, testSequentialPartitionCoarseningEdgeWeights) {
     METISGraphReader reader;
-    Graph G = reader.read("input/celegans_metabolic.graph");
+    GraphW G = reader.read("input/celegans_metabolic.graph");
     G.addEdge(0, 0); // Add a self loop
 
     ClusteringGenerator clusteringGen;
@@ -171,7 +171,7 @@ TEST_F(CoarseningGTest, testSequentialPartitionCoarseningEdgeWeights) {
 
 TEST_F(CoarseningGTest, testParallelPartitionCoarseningEdgeWeights) {
     METISGraphReader reader;
-    Graph G = reader.read("input/celegans_metabolic.graph");
+    GraphW G = reader.read("input/celegans_metabolic.graph");
     G.addEdge(0, 0); // Add a self loop
 
     ClusteringGenerator clusteringGen;
@@ -260,7 +260,7 @@ TEST_F(CoarseningGTest, testPartitionCoarseningOnRealGraph) {
 
 TEST_F(CoarseningGTest, testParallelPartitionCoarseningOnRealGraphWithLoops) {
     METISGraphReader reader;
-    Graph G = reader.read("input/celegans_metabolic.graph");
+    GraphW G = reader.read("input/celegans_metabolic.graph");
     G.addEdge(0, 0);
 
     ClusteringGenerator clusteringGen;
@@ -312,7 +312,7 @@ TEST_F(CoarseningGTest, testMatchingContractor) {
 }
 
 TEST_F(CoarseningGTest, testMatchingContractorWithSelfLoop) {
-    Graph G(2, true);
+    GraphW G(2, true);
     G.addEdge(0, 1, 1);
     G.addEdge(0, 0, 2);
 

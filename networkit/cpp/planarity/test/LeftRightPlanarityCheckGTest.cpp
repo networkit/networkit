@@ -14,7 +14,7 @@ public:
     LeftRightPlanarityCheckGTest() = default;
     static constexpr int maxNumberOfNodes{10};
     Graph pathGraph(count numNodes) {
-        Graph graph;
+        GraphW graph;
         graph.addNodes(numNodes);
         for (count i = 0; i < numNodes - 1; ++i) {
             graph.addEdge(i, i + 1);
@@ -23,7 +23,7 @@ public:
     }
 
     Graph cycleGraph(count numNodes) {
-        Graph graph;
+        GraphW graph;
         graph.addNodes(numNodes);
         for (count i = 0; i < numNodes - 1; ++i) {
             graph.addEdge(i, i + 1);
@@ -34,7 +34,7 @@ public:
     }
 
     Graph starGraph(count numNodes) {
-        Graph graph;
+        GraphW graph;
         graph.addNodes(numNodes);
         for (count i = 0; i < numNodes - 1; ++i) {
             graph.addEdge(i, i + 1);
@@ -45,7 +45,7 @@ public:
     }
 
     Graph binaryTreeGraph(count numNodes) {
-        Graph graph(numNodes, true, false, true);
+        GraphW graph(numNodes, true, false, true);
         for (count i = 0; i < numNodes; ++i) {
             count leftChild = 2 * i + 1;
             count rightChild = 2 * i + 2;
@@ -60,7 +60,7 @@ public:
     }
 
     Graph wheelGraph(count numNodes) {
-        Graph graph(numNodes, false, false, true);
+        GraphW graph(numNodes, false, false, true);
         if (numNodes < 4) {
             throw std::invalid_argument("A wheel graph requires at least 4 nodes.");
         }
@@ -78,7 +78,7 @@ public:
     }
 
     Graph completeGraph(count numNodes) {
-        Graph graph(numNodes, true);
+        GraphW graph(numNodes, true);
 
         for (count i = 0; i < numNodes; ++i) {
             for (count j = i + 1; j < numNodes; ++j) {
@@ -88,8 +88,8 @@ public:
         return graph;
     }
 
-    Graph gridGraph(count rows, count columns) {
-        Graph graph(rows * columns);
+    GraphW gridGraph(count rows, count columns) {
+        GraphW graph(rows * columns);
         for (count row = 0; row < rows; ++row) {
             for (count col = 0; col < columns; ++col) {
                 count currentNode = row * columns + col;
@@ -109,7 +109,7 @@ public:
     }
 
     Graph petersenGraph(count n, count k) {
-        Graph graph(2 * n);
+        GraphW graph(2 * n);
 
         for (count i = 0; i < n; ++i) {
             graph.addEdge(i, (i + 1) % n);
@@ -128,7 +128,7 @@ public:
 };
 
 TEST_F(LeftRightPlanarityCheckGTest, testDirectedGraphThrows) {
-    Graph graph(0, false, true, false);
+    GraphW graph(0, false, true, false);
     try {
         LeftRightPlanarityCheck test(graph);
         FAIL() << "Expected std::runtime_error";
@@ -140,7 +140,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testDirectedGraphThrows) {
 }
 
 TEST_F(LeftRightPlanarityCheckGTest, testIsPlanarThrowsIfRunIsNotCalled) {
-    Graph graph{};
+    GraphW graph{};
     LeftRightPlanarityCheck test(graph);
     try {
         test.isPlanar();
@@ -153,14 +153,14 @@ TEST_F(LeftRightPlanarityCheckGTest, testIsPlanarThrowsIfRunIsNotCalled) {
 }
 
 TEST_F(LeftRightPlanarityCheckGTest, testPlanarEmptyGraph) {
-    Graph graph{};
+    GraphW graph{};
     LeftRightPlanarityCheck test(graph);
     test.run();
     EXPECT_TRUE(test.isPlanar());
 }
 
 TEST_F(LeftRightPlanarityCheckGTest, testPlanarSingleNode) {
-    Graph graph{1};
+    GraphW graph{1};
     LeftRightPlanarityCheck test(graph);
     test.run();
     EXPECT_TRUE(test.isPlanar());
@@ -168,7 +168,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testPlanarSingleNode) {
 
 TEST_F(LeftRightPlanarityCheckGTest, testPlanarPathGraphs) {
     for (count numberOfNodes = 2; numberOfNodes <= maxNumberOfNodes; ++numberOfNodes) {
-        Graph graph = pathGraph(numberOfNodes);
+        GraphW graph = pathGraph(numberOfNodes);
         LeftRightPlanarityCheck test(graph);
         test.run();
         EXPECT_TRUE(test.isPlanar());
@@ -177,7 +177,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testPlanarPathGraphs) {
 
 TEST_F(LeftRightPlanarityCheckGTest, testPlanarCycleGraphs) {
     for (count numberOfNodes = 2; numberOfNodes <= maxNumberOfNodes; ++numberOfNodes) {
-        Graph graph = cycleGraph(numberOfNodes);
+        GraphW graph = cycleGraph(numberOfNodes);
         LeftRightPlanarityCheck test(graph);
         test.run();
         EXPECT_TRUE(test.isPlanar());
@@ -186,7 +186,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testPlanarCycleGraphs) {
 
 TEST_F(LeftRightPlanarityCheckGTest, testPlanarStarGraphs) {
     for (count numberOfNodes = 2; numberOfNodes <= maxNumberOfNodes; ++numberOfNodes) {
-        Graph graph = starGraph(numberOfNodes);
+        GraphW graph = starGraph(numberOfNodes);
         LeftRightPlanarityCheck test(graph);
         test.run();
         EXPECT_TRUE(test.isPlanar());
@@ -195,7 +195,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testPlanarStarGraphs) {
 
 TEST_F(LeftRightPlanarityCheckGTest, testPlanarTreeGraphs) {
     for (count numberOfNodes = 2; numberOfNodes <= maxNumberOfNodes; ++numberOfNodes) {
-        Graph graph = binaryTreeGraph(numberOfNodes);
+        GraphW graph = binaryTreeGraph(numberOfNodes);
         LeftRightPlanarityCheck test(graph);
         test.run();
         EXPECT_TRUE(test.isPlanar());
@@ -204,7 +204,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testPlanarTreeGraphs) {
 
 TEST_F(LeftRightPlanarityCheckGTest, testPlanarWheelGraphs) {
     for (count numberOfNodes = 4; numberOfNodes <= maxNumberOfNodes; ++numberOfNodes) {
-        Graph graph = wheelGraph(numberOfNodes);
+        GraphW graph = wheelGraph(numberOfNodes);
         LeftRightPlanarityCheck test(graph);
         test.run();
         EXPECT_TRUE(test.isPlanar());
@@ -214,7 +214,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testPlanarWheelGraphs) {
 TEST_F(LeftRightPlanarityCheckGTest, testPlanarCompleteGraphs) {
     constexpr count maxNumberPlanar{5};
     for (count numberOfNodes = 2; numberOfNodes < maxNumberPlanar; ++numberOfNodes) {
-        Graph graph = completeGraph(numberOfNodes);
+        GraphW graph = completeGraph(numberOfNodes);
         LeftRightPlanarityCheck test(graph);
         test.run();
         EXPECT_TRUE(test.isPlanar());
@@ -223,7 +223,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testPlanarCompleteGraphs) {
 
 TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarCompleteGraphsEulerCriterium) {
     for (count numberOfNodes = 5; numberOfNodes <= maxNumberOfNodes; ++numberOfNodes) {
-        Graph graph = completeGraph(numberOfNodes);
+        GraphW graph = completeGraph(numberOfNodes);
         LeftRightPlanarityCheck test(graph);
         test.run();
         EXPECT_FALSE(test.isPlanar());
@@ -234,7 +234,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testPlanarGridGraphs) {
 
     for (count numberOfRows = 2; numberOfRows < maxNumberOfNodes / 2; ++numberOfRows) {
         for (count numberOfColumns = 2; numberOfColumns < maxNumberOfNodes / 2; ++numberOfColumns) {
-            Graph graph = gridGraph(numberOfRows, numberOfColumns);
+            GraphW graph = gridGraph(numberOfRows, numberOfColumns);
             LeftRightPlanarityCheck test(graph);
             test.run();
             EXPECT_TRUE(test.isPlanar());
@@ -243,7 +243,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testPlanarGridGraphs) {
 }
 
 TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarCompleteBipartiteGraphK3_3) {
-    Graph graph(6);
+    GraphW graph(6);
     graph.addEdge(0, 3);
     graph.addEdge(0, 4);
     graph.addEdge(0, 5);
@@ -260,7 +260,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarCompleteBipartiteGraphK3_3) {
 }
 
 TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarCompleteTripartiteGraphK3_3_3) {
-    Graph graph(9);
+    GraphW graph(9);
     graph.addEdge(0, 3);
     graph.addEdge(0, 4);
     graph.addEdge(0, 5);
@@ -296,7 +296,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarCompleteTripartiteGraphK3_3_3)
 }
 
 TEST_F(LeftRightPlanarityCheckGTest, testOnePlanarOneNonPlanarSubGraph) {
-    Graph graph(10);
+    GraphW graph(10);
     // complete bipartite graph K3,3 (non-planar)
     graph.addEdge(0, 3);
     graph.addEdge(0, 4);

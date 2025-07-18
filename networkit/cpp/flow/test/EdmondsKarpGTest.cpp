@@ -9,14 +9,14 @@
 #include <gtest/gtest.h>
 
 #include <networkit/flow/EdmondsKarp.hpp>
-#include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
 class EdmondsKarpGTest : public testing::Test {};
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpP1) {
-    Graph G(7, false);
+    GraphW G(7, false);
     G.addEdge(0, 1);
     G.addEdge(0, 2);
     G.addEdge(0, 3);
@@ -44,7 +44,7 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpP1) {
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpP2) {
-    Graph G(6, true);
+    GraphW G(6, true);
     G.addEdge(0, 1, 5);
     G.addEdge(0, 2, 15);
     G.addEdge(1, 3, 5);
@@ -63,7 +63,7 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpP2) {
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpP3) {
-    Graph G(5, false, false);
+    GraphW G(5, false, false);
     G.addEdge(0, 1);
     G.addEdge(0, 2);
     G.addEdge(1, 3);
@@ -81,7 +81,7 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpP3) {
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected1) {
-    Graph G(4, true, true);
+    GraphW G(4, true, true);
     G.addEdge(0, 1, 10);
     G.addEdge(0, 2, 5);
     G.addEdge(1, 2, 15);
@@ -102,7 +102,7 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected1) {
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected2) {
-    Graph G(5, false, true);
+    GraphW G(5, false, true);
     G.addEdge(0, 1);
     G.addEdge(0, 2);
     G.addEdge(1, 3);
@@ -120,7 +120,7 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected2) {
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected3) {
-    Graph G(9, true, true);
+    GraphW G(9, true, true);
     G.addEdge(0, 1, 2);
     G.addEdge(0, 2, 2);
     G.addEdge(0, 3, 2);
@@ -144,7 +144,7 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected3) {
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected4) {
-    Graph G(9, true, true);
+    GraphW G(9, true, true);
     G.addEdge(8, 7, 2);
     G.addEdge(8, 6, 2);
     G.addEdge(8, 5, 2);
@@ -168,7 +168,7 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected4) {
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected5) {
-    Graph G(4, true, true);
+    GraphW G(4, true, true);
     G.addEdge(3, 2, 3.4);
     G.addEdge(2, 1, 2.4);
     G.addEdge(1, 0, 4.4);
@@ -184,7 +184,7 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected5) {
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected6) {
-    Graph G(4, true, true);
+    GraphW G(4, true, true);
     G.addEdge(3, 2, 3.4);
     G.addEdge(1, 2, 2.4);
     G.addEdge(1, 0, 4.4);
@@ -202,7 +202,7 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected6) {
 TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected7) {
     // Example from wikipedia
     // (https://en.wikipedia.org/wiki/Edmonds%E2%80%93Karp_algorithm#Example)
-    Graph G(7, true, true);
+    GraphW G(7, true, true);
     G.addEdge(0, 1, 3);
     G.addEdge(0, 3, 3);
     G.addEdge(1, 2, 4);
@@ -226,7 +226,7 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpDirected7) {
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpTwoPaths) {
-    Graph G(11);
+    GraphW G(11);
 
     G.addEdge(0, 1);
     G.addEdge(0, 2);
@@ -251,7 +251,7 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpTwoPaths) {
 }
 
 TEST_F(EdmondsKarpGTest, testEdmondsKarpUnconnected) {
-    Graph G(6, true);
+    GraphW G(6, true);
     G.addEdge(0, 1, 5);
     G.addEdge(0, 2, 15);
     G.addEdge(1, 2, 5);

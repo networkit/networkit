@@ -26,7 +26,7 @@ class DynBetweennessGTest : public testing::TestWithParam<std::pair<bool, bool>>
 protected:
     bool isDirected() const noexcept { return GetParam().first; };
     bool isWeighted() const noexcept { return GetParam().second; };
-    Graph generateSmallGraph() const;
+    GraphW generateSmallGraph() const;
 
     static constexpr double epsilon = 0.1, delta = 0.1;
 
@@ -51,7 +51,7 @@ INSTANTIATE_TEST_SUITE_P(InstantiationName, DynBetweennessGTest,
                          testing::Values(std::make_pair(false, false), std::make_pair(true, false),
                                          std::make_pair(false, true), std::make_pair(true, true)));
 
-Graph DynBetweennessGTest::generateSmallGraph() const {
+GraphW DynBetweennessGTest::generateSmallGraph() const {
     /* Graph:
        0    3   6
         \  / \ /
@@ -59,7 +59,7 @@ Graph DynBetweennessGTest::generateSmallGraph() const {
         /  \ / \
        1    4   7
     */
-    Graph G(8, isWeighted(), isDirected());
+    GraphW G(8, isWeighted(), isDirected());
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -84,7 +84,7 @@ Graph DynBetweennessGTest::generateSmallGraph() const {
 }
 
 TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraph) {
-    Graph G = generateSmallGraph();
+    GraphW G = generateSmallGraph();
     DynApproxBetweenness dynbc(G, epsilon, delta);
     Betweenness bc(G);
     dynbc.run();
@@ -99,7 +99,7 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraph) {
 }
 
 TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraphEdgeDeletion) {
-    Graph G = generateSmallGraph();
+    GraphW G = generateSmallGraph();
     DynApproxBetweenness dynbc(G, epsilon, delta);
     Betweenness bc(G);
     dynbc.run();
@@ -116,7 +116,7 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraphEdgeDeletion) {
 TEST_P(DynBetweennessGTest, testDynApproxBetweenessGeneratedGraph) {
     Aux::Random::setSeed(42, false);
     ErdosRenyiGenerator generator(100, 0.25, isDirected());
-    Graph G = generator.generate();
+    GraphW G = generator.generate();
     if (isWeighted()) {
         GraphTools::randomizeWeights(G);
     }
@@ -138,7 +138,7 @@ TEST_P(DynBetweennessGTest, testDynApproxBetweenessGeneratedGraph) {
 TEST_P(DynBetweennessGTest, runDynApproxBetweenessGeneratedGraphEdgeDeletion) {
     Aux::Random::setSeed(42, false);
     ErdosRenyiGenerator generator(100, 0.25, isDirected());
-    Graph G = generator.generate();
+    GraphW G = generator.generate();
     if (isWeighted()) {
         Aux::Random::setSeed(42, false);
         GraphTools::randomizeWeights(G);
@@ -158,7 +158,7 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweenessGeneratedGraphEdgeDeletion) {
 }
 
 TEST_F(DynBetweennessGTest, runDynVsStatic) {
-    Graph G = METISGraphReader{}.read("input/celegans_metabolic.graph");
+    GraphW G = METISGraphReader{}.read("input/celegans_metabolic.graph");
 
     DynApproxBetweenness dynbc(G, epsilon, delta, false);
     ApproxBetweenness bc(G, epsilon, delta);
@@ -178,7 +178,7 @@ TEST_F(DynBetweennessGTest, runDynVsStatic) {
 }
 
 TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
-    Graph G = METISGraphReader{}.read("input/celegans_metabolic.graph");
+    GraphW G = METISGraphReader{}.read("input/celegans_metabolic.graph");
 
     DynApproxBetweenness dynbc(G, epsilon, delta, false);
     ApproxBetweenness bc(G, epsilon, delta);
@@ -251,7 +251,7 @@ TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertUndirected) {
 TEST_P(DynBetweennessGTest, testDynamicBetweennessOneNode) {
     // for each of the 8 focus nodes in the small graph
     for (node x = 0; x < 8; ++x) {
-        Graph G = generateSmallGraph();
+        GraphW G = generateSmallGraph();
 
         DynBetweennessOneNode dynb(G, x);
         dynb.run();

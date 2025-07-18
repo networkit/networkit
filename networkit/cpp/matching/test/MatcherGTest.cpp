@@ -64,7 +64,7 @@ TEST_F(MatcherGTest, testLocalMaxMatching) {
     }
 
     count n = 50;
-    Graph G(n);
+    GraphW G(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
 
     LocalMaxMatcher localMaxMatcher(G);
@@ -92,14 +92,14 @@ TEST_F(MatcherGTest, testLocalMaxMatching) {
 }
 
 TEST_F(MatcherGTest, testLocalMaxMatchingDirectedWarning) {
-    Graph G(2, false, true);
+    GraphW G(2, false, true);
     G.addEdge(0, 1);
     EXPECT_THROW(LocalMaxMatcher localMaxMatcher(G), std::runtime_error);
 }
 
 TEST_F(MatcherGTest, testPgaMatchingOnWeightedGraph) {
     count n = 50;
-    Graph G(n);
+    GraphW G(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v, Aux::Random::real()); });
     PathGrowingMatcher pgaMatcher(G);
     EXPECT_NO_THROW(pgaMatcher.run());
@@ -107,7 +107,7 @@ TEST_F(MatcherGTest, testPgaMatchingOnWeightedGraph) {
 
 TEST_F(MatcherGTest, testPgaMatchingWithSelfLoops) {
     count n = 50;
-    Graph G(n);
+    GraphW G(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v, Aux::Random::real()); });
     G.forNodes([&](node u) { G.addEdge(u, u); });
     EXPECT_THROW(PathGrowingMatcher pgaMatcher(G), std::invalid_argument);
@@ -115,7 +115,7 @@ TEST_F(MatcherGTest, testPgaMatchingWithSelfLoops) {
 
 TEST_F(MatcherGTest, testPgaMatching) {
     count n = 50;
-    Graph G(n);
+    GraphW G(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
     PathGrowingMatcher pgaMatcher(G);
 
@@ -162,7 +162,7 @@ TEST_F(MatcherGTest, testSuitorMatcher) {
     }
 
     { // Graphs with self loops are not supported
-        Graph G(10);
+        GraphW G(10);
         G.addEdge(0, 0);
         G.addEdge(0, 0);
         EXPECT_THROW(SuitorMatcher{G}, std::runtime_error);
@@ -170,7 +170,7 @@ TEST_F(MatcherGTest, testSuitorMatcher) {
 
     const edgeweight maxWeight = 10;
 
-    const auto doTest = [&, maxWeight](Graph &G) -> void {
+    const auto doTest = [&, maxWeight](GraphW &G) -> void {
         // Test suitor matcher
         SuitorMatcher sm(G, false, true);
         sm.run();
@@ -201,7 +201,8 @@ TEST_F(MatcherGTest, testSuitorMatcher) {
         Aux::Random::setSeed(seed, true);
 
         // Test unweighted
-        auto G = METISGraphReader{}.read("input/PGPgiantcompo.graph");
+        auto G_temp = METISGraphReader{}.read("input/PGPgiantcompo.graph");
+        GraphW G(G_temp);
         G.removeSelfLoops();
         G.removeMultiEdges();
         doTest(G);
@@ -220,14 +221,14 @@ TEST_F(MatcherGTest, testBSuitorMatcherInvalidGraphDirected) {
 }
 
 TEST_F(MatcherGTest, testBSuitorMatcherInvalidGraphSelfLoops) {
-    Graph G(10);
+    GraphW G(10);
     G.addEdge(0, 0);
     G.addEdge(0, 0);
     EXPECT_THROW(BSuitorMatcher(G, 2), std::runtime_error);
 }
 
 TEST_F(MatcherGTest, testBSuitorMatcherInvalidGraphHoles) {
-    Graph G(10);
+    GraphW G(10);
     G = GraphTools::toWeighted(G);
     node u = GraphTools::randomNode(G);
     G.removeNode(u);

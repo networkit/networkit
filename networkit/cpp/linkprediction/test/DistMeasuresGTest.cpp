@@ -23,7 +23,7 @@ namespace NetworKit {
 class DistMeasuresGTest : public testing::Test {};
 
 TEST_F(DistMeasuresGTest, testAlgebraicDistanceIndex) {
-    Graph G(42);
+    GraphW G(42);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
 
     count numSystems = 2;

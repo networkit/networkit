@@ -6,6 +6,7 @@
  */
 #include <gtest/gtest.h>
 #include <networkit/distance/FloydWarshall.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -13,7 +14,7 @@ class FloydWarshallGTest : public testing::Test {
 public:
     static constexpr edgeweight maxDistance = std::numeric_limits<edgeweight>::max();
     Graph completeGraphK3() {
-        Graph graph(3, true);
+        GraphW graph(3, true);
         graph.addEdge(0, 1, 1);
         graph.addEdge(1, 2, 2);
         graph.addEdge(0, 2, 4);
@@ -21,7 +22,7 @@ public:
     }
 
     Graph undirectedGraphWithNegativeEdge() {
-        Graph graph(3, true);
+        GraphW graph(3, true);
         graph.addEdge(0, 1, 1);
         graph.addEdge(1, 2, 2);
         graph.addEdge(0, 2, -0.5);
@@ -29,7 +30,7 @@ public:
     }
 
     Graph directedGraphNegativeEdge() {
-        Graph graph(3, true, true);
+        GraphW graph(3, true, true);
         graph.addEdge(0, 1, 1);
         graph.addEdge(1, 2, -2);
         graph.addEdge(0, 2, 4);
@@ -37,7 +38,7 @@ public:
     }
 
     Graph completGraphK5NegativeEdges() {
-        Graph graph(5, true);
+        GraphW graph(5, true);
         graph.addEdge(0, 1, -3);
         graph.addEdge(2, 3, -2);
         graph.addEdge(0, 2, 5);
@@ -53,7 +54,7 @@ public:
     }
 
     Graph disconnectedGraph() {
-        Graph graph(4, true);
+        GraphW graph(4, true);
         graph.addEdge(0, 1, 3);
         graph.addEdge(1, 2, 2);
 
@@ -61,7 +62,7 @@ public:
     }
 
     Graph directedGraphWithNegativeSelfLoop() {
-        Graph graph(5, true, true);
+        GraphW graph(5, true, true);
         graph.addEdge(0, 1, 3);
         graph.addEdge(1, 1, -2); // self-loop with negative cycle
         graph.addEdge(1, 2, 2);
@@ -98,7 +99,7 @@ public:
 };
 
 TEST_F(FloydWarshallGTest, testConstructorThrowsUnweightedGraph) {
-    Graph graph(1, false);
+    GraphW graph(1, false);
     try {
         FloydWarshall test(graph);
         FAIL() << "Expected std::runtime_error";
@@ -110,7 +111,7 @@ TEST_F(FloydWarshallGTest, testConstructorThrowsUnweightedGraph) {
 }
 
 TEST_F(FloydWarshallGTest, testGetDistanceThrows) {
-    Graph graph(1, true);
+    GraphW graph(1, true);
     FloydWarshall test(graph);
     try {
         test.getDistance(0, 1);
@@ -123,7 +124,7 @@ TEST_F(FloydWarshallGTest, testGetDistanceThrows) {
 }
 
 TEST_F(FloydWarshallGTest, testIsNodeInNegativeCycleThrows) {
-    Graph graph(1, true);
+    GraphW graph(1, true);
     FloydWarshall test(graph);
     try {
         test.isNodeInNegativeCycle(0);
@@ -136,7 +137,7 @@ TEST_F(FloydWarshallGTest, testIsNodeInNegativeCycleThrows) {
 }
 
 TEST_F(FloydWarshallGTest, testGetNodesOnShortestPathThrows) {
-    Graph graph(2, true);
+    GraphW graph(2, true);
     FloydWarshall test(graph);
     try {
         test.getNodesOnShortestPath(0, 1);
@@ -291,7 +292,7 @@ TEST_F(FloydWarshallGTest, testIsNodeInNegativeCycleDirectedGraphWithNegativeSel
 }
 
 TEST_F(FloydWarshallGTest, testMultipleShortestDistancePaths) {
-    Graph graph(11, true);
+    GraphW graph(11, true);
     // Shortest path, first case [0,10] with 5 nodes (inclusive)
     graph.addEdge(0, 1, 1);
     graph.addEdge(1, 2, 1);

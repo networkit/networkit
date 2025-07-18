@@ -38,6 +38,7 @@
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 class DistanceGTest : public testing::TestWithParam<std::pair<bool, bool>> {
@@ -48,7 +49,7 @@ protected:
     bool isDirected() const noexcept;
     bool isWeighted() const noexcept;
 
-    Graph generateERGraph(count n, double p) const {
+    GraphW generateERGraph(count n, double p) const {
         auto G = ErdosRenyiGenerator(n, p, isDirected()).generate();
         if (isWeighted()) {
             G = GraphTools::toWeighted(G);
@@ -84,7 +85,7 @@ TEST_F(DistanceGTest, testVertexDiameterPedantically) {
 }
 
 TEST_F(DistanceGTest, testAStarEqualSourceAndTargetDistanceZero) {
-    Graph G(5);
+    GraphW G(5);
     std::vector<double> distanceHeu = {1.0, 2.0, 3.0, 4.0, 5.0};
 
     AStar astar(G, distanceHeu, /*source*/ 0, /*target*/ 0);
@@ -93,7 +94,7 @@ TEST_F(DistanceGTest, testAStarEqualSourceAndTargetDistanceZero) {
 }
 
 TEST_F(DistanceGTest, testAStarInvalidSourceNode) {
-    Graph G(5);
+    GraphW G(5);
     std::vector<double> distanceHeu = {1.0, 2.0, 3.0, 4.0, 5.0};
 
     EXPECT_THROW({ AStar astar(G, distanceHeu, /*invalid_source*/ 6, /*target*/ 0); },
@@ -101,7 +102,7 @@ TEST_F(DistanceGTest, testAStarInvalidSourceNode) {
 }
 
 TEST_F(DistanceGTest, testAStarInvalidTargetNode) {
-    Graph G(5);
+    GraphW G(5);
     std::vector<double> distanceHeu = {1.0, 2.0, 3.0, 4.0, 5.0};
 
     EXPECT_THROW({ AStar astar(G, distanceHeu, /*source*/ 0, /*invalid_target*/ 6); },
@@ -109,7 +110,7 @@ TEST_F(DistanceGTest, testAStarInvalidTargetNode) {
 }
 
 TEST_F(DistanceGTest, testAStarConstructorThrowsMismatchHeuristicAndNodeCount) {
-    Graph G(5);
+    GraphW G(5);
     std::vector<double> distanceHeu = {1.0, 2.0}; // size mismatch (2 instead of 5)
 
     EXPECT_THROW({ AStar astar_bad(G, distanceHeu, /*source*/ 0, /*target*/ 1); },
@@ -118,8 +119,8 @@ TEST_F(DistanceGTest, testAStarConstructorThrowsMismatchHeuristicAndNodeCount) {
 
 TEST_F(DistanceGTest, testAStar) {
     // Builds a mesh graph with the given number of rows and columns
-    auto buildMesh = [](count rows, count cols) -> Graph {
-        Graph G(rows * cols, false, false);
+    auto buildMesh = [](count rows, count cols) -> GraphW {
+        GraphW G(rows * cols, false, false);
 
         for (count i = 0; i < rows; ++i) {
             for (count j = 0; j < cols; ++j) {
@@ -186,7 +187,7 @@ TEST_F(DistanceGTest, testAStar) {
 }
 
 TEST_F(DistanceGTest, testAlgebraicDistanceContructorThrowsForInvalidOmegaValues) {
-    Graph G(5, true, true);
+    GraphW G(5, true, true);
 
     EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, /* invalid_omega*/ 1.1, 0UL, true); },
                  std::invalid_argument);
@@ -195,20 +196,20 @@ TEST_F(DistanceGTest, testAlgebraicDistanceContructorThrowsForInvalidOmegaValues
 }
 
 TEST_F(DistanceGTest, testAlgebraicDistanceContructorThrowsForEdgecoresWithoutEdgeIds) {
-    Graph G(5, true, true, false);
+    GraphW G(5, true, true, false);
 
     EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true); }, std::runtime_error);
 }
 
 TEST_F(DistanceGTest, testAlgebraicDistanceDistanceThrowsIfPreprocessNotCalled) {
-    Graph G(5, true, true, true);
+    GraphW G(5, true, true, true);
     AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true);
 
     EXPECT_THROW(AGD.distance(/*source*/ 0, /*target*/ 2), std::runtime_error);
 }
 
 TEST_P(DistanceGTest, testAdamicAdar) {
-    Graph G(100, isWeighted(), isDirected());
+    GraphW G(100, isWeighted(), isDirected());
     // arbitrary nodes
     node u = 0;
     node v = 42;
@@ -282,7 +283,7 @@ TEST_F(DistanceGTest, testEccentricity) {
 }
 
 TEST_F(DistanceGTest, testJaccardDistance) {
-    Graph G(5);
+    GraphW G(5);
     G.addEdge(0, 1); // G:  0 - 1
     G.addEdge(0, 2); //     | \ |
     G.addEdge(0, 4); //     4   2
@@ -374,7 +375,7 @@ TEST_P(DistanceGTest, testBidirectionalBFS) {
 }
 
 TEST_F(DistanceGTest, testBidirectionalBFSTargetEqualSource) {
-    Graph G(3, false, false);
+    GraphW G(3, false, false);
     G.addEdge(0, 1);
     G.addEdge(0, 2);
 
@@ -384,7 +385,7 @@ TEST_F(DistanceGTest, testBidirectionalBFSTargetEqualSource) {
 }
 
 TEST_F(DistanceGTest, testBidirectionalBFSGetPathIsEmpty) {
-    Graph G(3, false, false);
+    GraphW G(3, false, false);
     G.addEdge(0, 1);
     G.addEdge(0, 2);
 
@@ -427,7 +428,7 @@ TEST_P(DistanceGTest, testBidirectionalDijkstra) {
 }
 
 TEST_F(DistanceGTest, testBidirectionalDijkstraTargetEqualSource) {
-    Graph G(3, true, false);
+    GraphW G(3, true, false);
     G.addEdge(0, 1, 1.0);
     G.addEdge(0, 2, 3.0);
 
@@ -481,7 +482,7 @@ TEST_F(DistanceGTest, testPedanticDiameterErdos) {
 
 TEST_F(DistanceGTest, testEffectiveDiameterMinimal) {
     // Minimal example from the paper
-    Graph G(5);
+    GraphW G(5);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
     G.addEdge(2, 3);
@@ -551,7 +552,7 @@ TEST_F(DistanceGTest, testEffectiveDiameterExact) {
     (7+6+6+5+6+5+5+4+6+5+4+4+5+4+5+5+6+6+7+7) / 20 = 5.4
     */
     count n1 = 20;
-    Graph G1(n1);
+    GraphW G1(n1);
 
     G1.addEdge(0, 1);
     G1.addEdge(0, 2);
@@ -599,7 +600,7 @@ Number of steps needed per node: (1-21)
 (8+7+5+6+6+6+5+5+5+5+7+5+4+4+5+5+5+6+6+6+7) / 21 = 5.619047
 */
     count n2 = 21;
-    Graph G2(n2);
+    GraphW G2(n2);
 
     G2.addEdge(0, 20);
     G2.addEdge(1, 3);
@@ -748,14 +749,14 @@ TEST_P(DistanceGTest, testSPSPWithUnreachableTarget) {
 }
 
 TEST_F(DistanceGTest, testMultiTargetBFSThrowsInvalidSourceWithTargetRange) {
-    Graph G(5);
+    GraphW G(5);
     std::vector<node> targets = {0, 1, 2, 3};
     EXPECT_THROW({ MultiTargetBFS astar(G, /*invalid_source*/ 6, targets.begin(), targets.end()); },
                  std::runtime_error);
 }
 
 TEST_F(DistanceGTest, testMultiTargetBFSThrowsWithOneInvalidTargetInTargetRange) {
-    Graph G(5);
+    GraphW G(5);
     std::vector<node> targets_with_one_invalid = {0, 1, 2, 6};
     EXPECT_THROW(
         {
@@ -831,7 +832,7 @@ TEST_P(DistanceGTest, testPrunedLandmarkLabeling) {
 }
 
 TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingThrowsWithEdgeRemoval) {
-    Graph G(2, isWeighted(), isDirected());
+    GraphW G(2, isWeighted(), isDirected());
     G.addEdge(0, 1);
 
     DynPrunedLandmarkLabeling pll(G);
@@ -847,7 +848,7 @@ TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingAddEdge) {
      *	   1---2   4
      */
 
-    Graph G(5, isWeighted(), isDirected());
+    GraphW G(5, isWeighted(), isDirected());
 
     G.addEdge(0, 1);
     G.addEdge(2, 3);
@@ -882,7 +883,7 @@ TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingAddEdge) {
 
 TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingBuildClique) {
     const count n = 50;
-    Graph G(n, isWeighted(), isDirected());
+    GraphW G(n, isWeighted(), isDirected());
     DynPrunedLandmarkLabeling pll(G);
     pll.run();
 

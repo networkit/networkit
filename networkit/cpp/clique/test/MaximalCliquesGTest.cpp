@@ -128,7 +128,7 @@ TEST_F(MaximalCliquesGTest, benchMaximalCliques) {
     std::getline(std::cin, graphPath);
 
     EdgeListReader r('\t', 0, "#", false);
-    Graph G = r.read(graphPath);
+    GraphW G = r.read(graphPath);
     G.removeSelfLoops();
     INFO(GraphTools::size(G));
     INFO("Starting MaximalCliques");

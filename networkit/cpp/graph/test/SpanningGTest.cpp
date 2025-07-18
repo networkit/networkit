@@ -97,7 +97,7 @@ TEST_F(SpanningGTest, testKruskalMinSpanningForest) {
 }
 
 TEST_F(SpanningGTest, testKruskalMinimumSpanningForestIsMSTUnitWeights) {
-    Graph g(5, true);
+    GraphW g(5, true);
     g.addEdge(0, 1, 1);
     g.addEdge(1, 2, 1);
     g.addEdge(1, 3, 1);
@@ -114,7 +114,7 @@ TEST_F(SpanningGTest, testKruskalMinimumSpanningForestIsMSTUnitWeights) {
 }
 
 TEST_F(SpanningGTest, testKruskalMinimumSpanningForestIsMSFUnitWeights) {
-    Graph g(6, true);
+    GraphW g(6, true);
     g.addEdge(0, 1, 1);
     g.addEdge(1, 2, 1);
     g.addEdge(2, 0, 1);
@@ -132,7 +132,7 @@ TEST_F(SpanningGTest, testKruskalMinimumSpanningForestIsMSFUnitWeights) {
 }
 
 TEST_F(SpanningGTest, testKruskalMinimumSpanningForestIsMSTNonUnitWeights) {
-    Graph g(4, true);
+    GraphW g(4, true);
     g.addEdge(0, 1, 1);
     g.addEdge(0, 2, 1);
     g.addEdge(0, 3, 1);
@@ -149,7 +149,7 @@ TEST_F(SpanningGTest, testKruskalMinimumSpanningForestIsMSTNonUnitWeights) {
 }
 
 TEST_F(SpanningGTest, testKruskalMinimumSpanningForestIsMSFNonUnitWeights) {
-    Graph g(6, true);
+    GraphW g(6, true);
     g.addEdge(0, 1, 1);
     g.addEdge(1, 2, 2);
     g.addEdge(2, 0, 3);
@@ -167,7 +167,7 @@ TEST_F(SpanningGTest, testKruskalMinimumSpanningForestIsMSFNonUnitWeights) {
 }
 
 TEST_F(SpanningGTest, testPrimThrowsForDirectedGraph) {
-    Graph g(5, true, true);
+    GraphW g(5, true, true);
     try {
         PrimMSF msf(g);
         FAIL() << "Expected std::runtime_error";
@@ -194,7 +194,7 @@ TEST_F(SpanningGTest, testPrimMinSpanningForest) {
 }
 
 TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSTUnitWeights) {
-    Graph g(5, true);
+    GraphW g(5, true);
     g.addEdge(0, 1, 1);
     g.addEdge(1, 2, 1);
     g.addEdge(1, 3, 1);
@@ -211,7 +211,7 @@ TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSTUnitWeights) {
 }
 
 TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSFUnitWeights) {
-    Graph g(6, true);
+    GraphW g(6, true);
     g.addEdge(0, 1, 1);
     g.addEdge(1, 2, 1);
     g.addEdge(2, 0, 1);
@@ -229,7 +229,7 @@ TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSFUnitWeights) {
 }
 
 TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSTNonUnitWeights) {
-    Graph g(4, true);
+    GraphW g(4, true);
     g.addEdge(0, 1, 1);
     g.addEdge(0, 2, 1);
     g.addEdge(0, 3, 1);
@@ -246,7 +246,7 @@ TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSTNonUnitWeights) {
 }
 
 TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSFNonUnitWeights) {
-    Graph g(6, true);
+    GraphW g(6, true);
     g.addEdge(0, 1, 1);
     g.addEdge(1, 2, 2);
     g.addEdge(2, 0, 3);
@@ -264,7 +264,7 @@ TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSFNonUnitWeights) {
 }
 
 TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSFUnweighted) {
-    Graph g(6);
+    GraphW g(6);
     g.addEdge(0, 1);
     g.addEdge(1, 2);
     g.addEdge(2, 0);

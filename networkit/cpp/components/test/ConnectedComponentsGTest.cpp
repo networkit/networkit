@@ -31,7 +31,7 @@ class ConnectedComponentsGTest : public testing::Test {};
 
 TEST_F(ConnectedComponentsGTest, testConnectedComponentsTiny) {
     // construct graph
-    Graph g(20);
+    GraphW g(20);
 
     g.addEdge(0, 1, 0);
     g.addEdge(1, 2, 0);
@@ -105,7 +105,7 @@ TEST_F(ConnectedComponentsGTest, testParallelConnectedComponents) {
 }
 
 TEST_F(ConnectedComponentsGTest, testParallelConnectedComponentsWithDeletedNodes) {
-    Graph G(100);
+    GraphW G(100);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
 
     {
@@ -159,7 +159,7 @@ TEST_F(ConnectedComponentsGTest, testStronglyConnectedComponentsTiny) {
 
     count n = 8;
     count m = 14;
-    Graph G(n, false, true);
+    GraphW G(n, false, true);
 
     G.addEdge(0, 4);
     G.addEdge(1, 0);
@@ -261,7 +261,7 @@ TEST_F(ConnectedComponentsGTest, testStronglyConnectedComponents) {
 
 TEST_F(ConnectedComponentsGTest, testDynConnectedComponentsTiny) {
     // construct graph
-    Graph g(20);
+    GraphW g(20);
     g.addEdge(0, 1, 0);
     g.addEdge(1, 2, 0);
     g.addEdge(2, 4, 0);
@@ -364,13 +364,13 @@ TEST_F(ConnectedComponentsGTest, testDynConnectedComponents) {
 }
 
 TEST_F(ConnectedComponentsGTest, testDynConnectedComponentsDirected) {
-    Graph g(0, false, true);
+    GraphW g(0, false, true);
     EXPECT_THROW(DynConnectedComponents{g}, std::runtime_error);
 }
 
 TEST_F(ConnectedComponentsGTest, testWeaklyConnectedComponentsTiny) {
     // construct graph
-    Graph g(0, false, true);
+    GraphW g(0, false, true);
     for (count i = 0; i < 20; ++i) {
         g.addNode();
     }
@@ -425,7 +425,7 @@ TEST_F(ConnectedComponentsGTest, testWeaklyConnectedComponents) {
 
 TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponentsTiny) {
     // construct graph
-    Graph g(20, false, true);
+    GraphW g(20, false, true);
 
     g.addEdge(0, 1, 0);
     g.addEdge(1, 2, 0);
@@ -532,12 +532,12 @@ TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponents) {
 }
 
 TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponentsUndirected) {
-    Graph g(0);
+    GraphW g(0);
     EXPECT_THROW(DynWeaklyConnectedComponents{g}, std::runtime_error);
 }
 
 TEST_F(ConnectedComponentsGTest, testExtractLargestConnectedComponent) {
-    Graph G(8);
+    GraphW G(8);
 
     G.addEdge(0, 1);
     G.addEdge(2, 1);
@@ -592,7 +592,7 @@ TEST_F(ConnectedComponentsGTest, testExtractLargestStronglyConnectedComponent) {
 }
 
 TEST_F(ConnectedComponentsGTest, testRandomSpanningForest) {
-    Graph G(5);
+    GraphW G(5);
     G.addEdge(0, 1);
     G.addEdge(2, 1);
     G.addEdge(3, 1);

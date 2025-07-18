@@ -18,6 +18,7 @@
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 class APSPGTest : public testing::Test {};
@@ -33,7 +34,7 @@ TEST_F(APSPGTest, testAPSP) {
          1    4   7
     */
     int n = 8;
-    Graph G(n);
+    GraphW G(n);
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -66,7 +67,7 @@ TEST_F(APSPGTest, testAPSP) {
 
 TEST_F(APSPGTest, testAPSPUnweightedER) {
     Aux::Random::setSeed(42, false);
-    auto G = ErdosRenyiGenerator(100, 0.01, false).generate();
+    GraphW G = ErdosRenyiGenerator(100, 0.01, false).generate();
     G.addNode();
 
     APSP apsp(G);
@@ -81,7 +82,7 @@ TEST_F(APSPGTest, testAPSPUnweightedER) {
 
 TEST_F(APSPGTest, testAPSPWeightedER) {
     Aux::Random::setSeed(42, false);
-    auto G = ErdosRenyiGenerator(100, 0.01, false).generate();
+    GraphW G = ErdosRenyiGenerator(100, 0.01, false).generate();
     G.addNode();
     G = GraphTools::toWeighted(G);
 
@@ -97,7 +98,7 @@ TEST_F(APSPGTest, testAPSPWeightedER) {
 
 TEST_F(APSPGTest, testAPSPRemovedNodeER) {
     Aux::Random::setSeed(42, false);
-    auto G = ErdosRenyiGenerator(100, 0.01, false).generate();
+    GraphW G = ErdosRenyiGenerator(100, 0.01, false).generate();
     G.removeNode(0);
     G.removeNode(1);
     G.removeNode(3);
@@ -115,7 +116,7 @@ TEST_F(APSPGTest, testAPSPRemovedNodeER) {
 TEST_F(APSPGTest, debugAPSP) {
     count n = 1000;
     count m = int(n * n);
-    Graph G(n, true, false);
+    GraphW G(n, true, false);
     for (count i = 0; i < m; i++) {
         node u = GraphTools::randomNode(G);
         node v = GraphTools::randomNode(G);
@@ -130,7 +131,8 @@ TEST_F(APSPGTest, debugAPSP) {
 
 TEST_F(APSPGTest, testDynAPSPRealGraph) {
     METISGraphReader reader;
-    Graph G = reader.read("input/karate.graph");
+    Graph G_read = reader.read("input/karate.graph");
+    GraphW G(G_read);
     DynAPSP apsp(G);
     apsp.run();
     for (count i = 0; i < 10; i++) {
@@ -161,7 +163,7 @@ TEST_F(APSPGTest, testDynAPSPRealGraph) {
 
 TEST_F(APSPGTest, testAPSPRunDirectedUnweighted) {
     // build G
-    Graph G(6, false, true);
+    GraphW G(6, false, true);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
     G.addEdge(2, 3);
@@ -179,7 +181,7 @@ TEST_F(APSPGTest, testAPSPRunDirectedUnweighted) {
 
 TEST_F(APSPGTest, testAPSPRunUndirectedWeighted) {
     // build G
-    Graph G(4, true, false); // set to 5 and test for isolated nodes and disconnected components
+    GraphW G(4, true, false); // set to 5 and test for isolated nodes and disconnected components
     G.addEdge(0, 1, 1);
     G.addEdge(0, 2, 3);
     G.addEdge(1, 2, 1);
@@ -199,7 +201,7 @@ TEST_F(APSPGTest, testAPSPInsertionUndirectedUnweighted) {
     //       |
     //       3 --- 4 --- 5 --- 6
 
-    Graph G(7);
+    GraphW G(7);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
     G.addEdge(1, 3);
@@ -233,7 +235,7 @@ TEST_F(APSPGTest, testAPSPInsertionUndirectedUnweighted) {
 }
 
 TEST_F(APSPGTest, testAPSPInsertionDirectedUnweighted) {
-    Graph G(6, false, true);
+    GraphW G(6, false, true);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
     G.addEdge(2, 3);
@@ -266,7 +268,7 @@ TEST_F(APSPGTest, testAPSPInsertionDirectedUnweighted) {
 
 TEST_F(APSPGTest, testAPSPUndirectedWeighted) {
     // build G
-    Graph G(7, true, false);
+    GraphW G(7, true, false);
     G.addEdge(0, 1, 1);
     G.addEdge(1, 2, 0.01);
     G.addEdge(1, 3, 0.1);
@@ -314,7 +316,7 @@ TEST_F(APSPGTest, testAPSPUndirectedWeighted) {
 }
 
 TEST_F(APSPGTest, testAPSPDirectedWeighted1) {
-    Graph G(5, true, true); // G+ Ghouse
+    GraphW G(5, true, true); // G+ Ghouse
     G.addEdge(3, 1, 1);
     G.addEdge(1, 0, 2);
     G.addEdge(0, 2, 3);
@@ -347,7 +349,7 @@ TEST_F(APSPGTest, testAPSPDirectedWeighted1) {
 }
 
 TEST_F(APSPGTest, testAPSPDirectedWeighted2) {
-    Graph G(6, true, true);
+    GraphW G(6, true, true);
     G.addEdge(0, 1, 1);
     G.addEdge(1, 2, 1);
     G.addEdge(2, 3, 1);
@@ -378,7 +380,7 @@ TEST_F(APSPGTest, testAPSPDirectedWeighted2) {
 }
 
 TEST_F(APSPGTest, testAPSPIsolatedNode) {
-    Graph G(3, false, false);
+    GraphW G(3, false, false);
 
     // Run baseline apsp with ID 1
     DynAPSP apsp(G);
@@ -404,7 +406,7 @@ TEST_F(APSPGTest, testAPSPIsolatedNode) {
 }
 
 TEST_F(APSPGTest, testAPSPEventTypeError) {
-    Graph G(6, true, true);
+    GraphW G(6, true, true);
     G.addEdge(0, 1, 1);
     G.addEdge(1, 2, 1);
     G.addEdge(2, 3, 1);

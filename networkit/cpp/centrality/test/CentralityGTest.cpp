@@ -92,7 +92,7 @@ TEST_F(CentralityGTest, testBetweennessCentrality) {
      1    4
     */
     count n = 6;
-    Graph G(n);
+    GraphW G(n);
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -125,7 +125,7 @@ TEST_F(CentralityGTest, testBetweenness2Centrality) {
           1    4
     */
     count n = 6;
-    Graph G(n);
+    GraphW G(n);
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -156,7 +156,7 @@ TEST_F(CentralityGTest, runApproxBetweennessSmallGraph) {
      1   4
     */
     count n = 6;
-    Graph G(n);
+    GraphW G(n);
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -199,7 +199,7 @@ TEST_F(CentralityGTest, testBetweennessCentralityWeighted) {
      edges in the lower row have weight 2.
     */
     count n = 8;
-    Graph G(n, true);
+    GraphW G(n, true);
 
     G.addEdge(0, 2, 3);
     G.addEdge(1, 2, 2);
@@ -257,7 +257,7 @@ TEST_F(CentralityGTest, testKatzTopk) {
 }
 
 TEST_F(CentralityGTest, testKatzDynamicAddition) {
-    Graph G = METISGraphReader{}.read("input/caidaRouterLevel.graph");
+    GraphW G = METISGraphReader{}.read("input/caidaRouterLevel.graph");
     DynKatzCentrality kc(G, 100);
     DEBUG("start kc run");
     kc.run();
@@ -287,7 +287,7 @@ TEST_F(CentralityGTest, testKatzDynamicAddition) {
 }
 
 TEST_F(CentralityGTest, testKatzDynamicDeletion) {
-    Graph G = METISGraphReader{}.read("input/caidaRouterLevel.graph");
+    GraphW G = METISGraphReader{}.read("input/caidaRouterLevel.graph");
     DynKatzCentrality kc(G, 100);
     DEBUG("start kc run");
     kc.run();
@@ -331,7 +331,7 @@ TEST_F(CentralityGTest, testKatzDynamicBuilding) {
             maxNode = u;
     });
 
-    Graph G(GIn.upperNodeIdBound());
+    GraphW G(GIn.upperNodeIdBound());
 
     GIn.forEdgesOf(maxNode, [&](node u, edgeweight) { G.addEdge(maxNode, u); });
 
@@ -366,7 +366,7 @@ TEST_F(CentralityGTest, testKatzDynamicBuilding) {
 TEST_F(CentralityGTest, testKatzDirectedAddition) {
     // Same graph as in testCoreDecompositionDirected.
     count n = 16;
-    Graph G(n, false, true);
+    GraphW G(n, false, true);
 
     G.addEdge(2, 4);
     G.addEdge(3, 4);
@@ -428,7 +428,7 @@ TEST_F(CentralityGTest, testKatzDirectedAddition) {
 TEST_F(CentralityGTest, testKatzDirectedDeletion) {
     // Same graph as in testCoreDecompositionDirected.
     count n = 16;
-    Graph G(n, false, true);
+    GraphW G(n, false, true);
 
     G.addEdge(2, 4);
     G.addEdge(3, 4);
@@ -530,7 +530,7 @@ TEST_P(CentralityGTest, testNormalizedPageRank) {
      Normalized PageRank for Evolving Graphs" by Berberich et al.
     */
     count n = 5;
-    Graph G(n, isWeighted(), isDirected());
+    GraphW G(n, isWeighted(), isDirected());
     G.addEdge(0, 1);
     G.addEdge(1, 0);
     G.addEdge(0, 2);
@@ -577,7 +577,7 @@ TEST_F(CentralityGTest, testEigenvectorCentrality) {
      edges in the lower row have weight 2.
     */
     count n = 8;
-    Graph G(n, true);
+    GraphW G(n, true);
 
     G.addEdge(0, 2, 3);
     G.addEdge(1, 2, 2);
@@ -618,7 +618,7 @@ TEST_F(CentralityGTest, testPageRankCentrality) {
      edges in the lower row have weight 2.
     */
     count n = 8;
-    Graph G(n, true);
+    GraphW G(n, true);
 
     G.addEdge(0, 2, 3);
     G.addEdge(1, 2, 2);
@@ -739,7 +739,7 @@ TEST_F(CentralityGTest, testApproxClosenessCentralityOnToyGraph) {
      1    4
     */
     count n = 6;
-    Graph G(n);
+    GraphW G(n);
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -787,7 +787,7 @@ TEST_F(CentralityGTest, testApproxClosenessCentralityOnDirectedToyGraph) {
       /  \ /
      1    4
     */
-    Graph G(6, false, true);
+    GraphW G(6, false, true);
 
     G.addEdge(0, 3);
     G.addEdge(2, 0);
@@ -822,7 +822,7 @@ TEST_F(CentralityGTest, testBetweennessMaximum) {
       /  \ /
      1    4
     */
-    Graph G(6);
+    GraphW G(6);
     G.addEdge(0, 2);
     G.addEdge(1, 2);
     G.addEdge(2, 3);
@@ -845,7 +845,7 @@ TEST_F(CentralityGTest, testBetweennessMaximumNormalized) {
       /  \ /
      1    4
     */
-    Graph G(6);
+    GraphW G(6);
     G.addEdge(0, 2);
     G.addEdge(1, 2);
     G.addEdge(2, 3);
@@ -868,7 +868,7 @@ TEST_F(CentralityGTest, testLocalPartitionCoverage) {
       /  \ /
      1    4
     */
-    Graph G(6);
+    GraphW G(6);
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -894,7 +894,7 @@ TEST_F(CentralityGTest, testSfigality) {
       /  \ /
      1    4
     */
-    Graph G(6);
+    GraphW G(6);
     G.addEdge(0, 2);
     G.addEdge(1, 2);
     G.addEdge(2, 3);
@@ -920,7 +920,7 @@ TEST_F(CentralityGTest, testEdgeBetweennessCentrality) {
      1    4
     */
     count n = 6;
-    Graph G(n);
+    GraphW G(n);
     G.addEdge(0, 2);
     G.addEdge(1, 2);
     G.addEdge(2, 3);
@@ -945,7 +945,7 @@ TEST_F(CentralityGTest, testEdgeBetweennessCentrality) {
 TEST_F(CentralityGTest, debugEdgeBetweennessCentrality) {
     auto path = "input/PGPgiantcompo.graph";
     METISGraphReader reader;
-    Graph G = reader.read(path);
+    GraphW G = reader.read(path);
     G.indexEdges();
 
     Betweenness centrality(G, false, true);
@@ -962,7 +962,7 @@ TEST_P(CentralityGTest, testClosenessCentrality) {
      1    4
     */
     count n = 6;
-    Graph G(n, isWeighted(), isDirected());
+    GraphW G(n, isWeighted(), isDirected());
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -1034,7 +1034,7 @@ TEST_F(CentralityGTest, testHarmonicClosenessCentrality) {
      1    4
     */
     count n = 6;
-    Graph G(n);
+    GraphW G(n);
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -1069,7 +1069,7 @@ TEST_F(CentralityGTest, runKPathCentrality) {
 
 TEST_F(CentralityGTest, testCoreDecompositionSimple) {
     count n = 3;
-    Graph G(n);
+    GraphW G(n);
     G.addEdge(0, 1);
 
     CoreDecomposition coreDec(G);
@@ -1083,7 +1083,7 @@ TEST_F(CentralityGTest, testCoreDecompositionSimple) {
 
 TEST_F(CentralityGTest, testCoreDecomposition) {
     count n = 16;
-    Graph G(n);
+    GraphW G(n);
 
     // 	// create graph used in Baur et al. and network analysis lecture
     G.addEdge(2, 4);
@@ -1151,7 +1151,7 @@ TEST_F(CentralityGTest, testCoreDecomposition) {
     // EXPECT_EQ(cores.get, coreness[15]) << "expected coreness";
 
     // test throw runtime error for self-loop in graph
-    Graph H(2);
+    GraphW H(2);
     H.addEdge(0, 1);
     H.addEdge(1, 1);
     EXPECT_ANY_THROW(CoreDecomposition CoreDec(H));
@@ -1164,7 +1164,8 @@ TEST_F(CentralityGTest, benchCoreDecompositionLocal) {
     for (auto f : filenames) {
         std::string filename("input/" + f + ".graph");
         DEBUG("about to read file ", filename);
-        Graph G = reader.read(filename);
+        Graph G_tmp = reader.read(filename);
+        GraphW G(G_tmp);
         G.removeSelfLoops();
         CoreDecomposition coreDec(G, false);
         Aux::Timer timer;
@@ -1186,7 +1187,7 @@ TEST_F(CentralityGTest, benchCoreDecompositionLocal) {
 
 TEST_F(CentralityGTest, testCoreDecompositionDirected) {
     count n = 16;
-    Graph G(n, false, true);
+    GraphW G(n, false, true);
 
     // 	// create graph used in Baur et al. and network analysis lecture
     G.addEdge(2, 4);
@@ -1246,7 +1247,7 @@ TEST_F(CentralityGTest, testCoreDecompositionDirected) {
 
 TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected) {
     count n = 16;
-    Graph G(n, false, false);
+    GraphW G(n, false, false);
 
     // 	// create graph used in Baur et al. and network analysis lecture
     G.addEdge(2, 4);
@@ -1296,14 +1297,14 @@ TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected) {
     EXPECT_EQ(reference, lccTurbo.scores());
 
     // test throw runtime error for self-loop in graph
-    Graph H(2);
+    GraphW H(2);
     H.addEdge(0, 1);
     H.addEdge(1, 1);
     EXPECT_ANY_THROW(LocalClusteringCoefficient lcc(H));
 }
 
 TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected2) {
-    Graph G(6, false, false);
+    GraphW G(6, false, false);
     G.addEdge(1, 0);
     G.addEdge(2, 0);
     G.addEdge(2, 1);
@@ -1325,7 +1326,7 @@ TEST_F(CentralityGTest, testLocalClusteringCoefficientUndirected2) {
 }
 
 TEST_F(CentralityGTest, testLocalSquareClusteringCoefficientUndirected) {
-    Graph G(7, false, false);
+    GraphW G(7, false, false);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
     G.addEdge(2, 3);
@@ -1344,7 +1345,7 @@ TEST_F(CentralityGTest, testLocalSquareClusteringCoefficientUndirected) {
 }
 
 TEST_F(CentralityGTest, testSimplePermanence) {
-    Graph G(15, false, false);
+    GraphW G(15, false, false);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
     G.addEdge(2, 0);
@@ -1412,7 +1413,7 @@ TEST_F(CentralityGTest, testLaplacianCentrality) {
     //
     // See
     // https://math.wvu.edu/~cqzhang/Publication-files/my-paper/INS-2012-Laplacian-W.pdf.
-    Graph G(6, true);
+    GraphW G(6, true);
 
     G.addEdge(0, 1, 4);
     G.addEdge(0, 2, 2);
@@ -1434,7 +1435,7 @@ TEST_F(CentralityGTest, testLaplacianCentrality) {
 }
 
 TEST_F(CentralityGTest, testLaplacianCentralityNormalized) {
-    Graph G(6, true);
+    GraphW G(6, true);
 
     G.addEdge(0, 1, 4);
     G.addEdge(0, 2, 2);
@@ -1456,7 +1457,7 @@ TEST_F(CentralityGTest, testLaplacianCentralityNormalized) {
 }
 
 TEST_F(CentralityGTest, testLaplacianCentralityUnweighted) {
-    Graph G(6);
+    GraphW G(6);
 
     G.addEdge(0, 1);
     G.addEdge(0, 2);
@@ -1535,7 +1536,7 @@ TEST_F(CentralityGTest, testGroupBetweennessScore) {
      *  | /       \ |
      *  2           7
      */
-    Graph G(8, false, false);
+    GraphW G(8, false, false);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
     G.addEdge(0, 3);
@@ -1613,7 +1614,7 @@ TEST_F(CentralityGTest, runTestApproxGroupBetweennessSmallGraph) {
     Aux::Random::setSeed(42, false);
 
     count n = 8;
-    Graph g(n, false, false);
+    GraphW g(n, false, false);
 
     g.addEdge(0, 2);
     g.addEdge(1, 2);
@@ -1654,7 +1655,7 @@ TEST_F(CentralityGTest, runTestApproxGroupBetweennessSmallGraph) {
 TEST_F(CentralityGTest, testGroupCloseness) {
     Aux::Random::setSeed(42, false);
 
-    Graph g(8, false, false);
+    GraphW g(8, false, false);
 
     g.addEdge(0, 2);
     g.addEdge(1, 2);
@@ -1684,7 +1685,7 @@ TEST_F(CentralityGTest, testGroupCloseness) {
 TEST_F(CentralityGTest, testKadabraAbsolute) {
     Aux::Random::setSeed(42, true);
     const count n = 10;
-    Graph g = ErdosRenyiGenerator(n, 0.1).generate();
+    GraphW g = ErdosRenyiGenerator(n, 0.1).generate();
 
     const double delta = 0.1;
     const double epsilon = 0.01;
@@ -1717,7 +1718,7 @@ TEST_F(CentralityGTest, testKadabraAbsolute) {
 TEST_F(CentralityGTest, testKadabraTopK) {
     Aux::Random::setSeed(42, true);
     const count n = 10;
-    Graph g = ErdosRenyiGenerator(n, 0.1).generate();
+    GraphW g = ErdosRenyiGenerator(n, 0.1).generate();
 
     const double delta = 0.1;
     const double epsilon = 0.01;
@@ -1754,7 +1755,7 @@ TEST_F(CentralityGTest, testKadabraAbsoluteDeterministic) {
     const index seed = 42;
     Aux::Random::setSeed(seed, true);
     const count n = 300;
-    Graph g = ErdosRenyiGenerator(n, 0.1).generate();
+    GraphW g = ErdosRenyiGenerator(n, 0.1).generate();
 
     const double delta = 0.1;
     const double epsilon = 0.01;
@@ -1777,7 +1778,7 @@ TEST_F(CentralityGTest, testKadabraAbsoluteDeterministic) {
 
 TEST_P(CentralityGTest, testDynTopHarmonicCloseness) {
     auto G1 = DorogovtsevMendesGenerator(500).generate();
-    Graph G(G1, false, isDirected());
+    GraphW G(G1, false, isDirected());
 
     constexpr count k = 10;
 
@@ -1880,7 +1881,7 @@ TEST_F(CentralityGTest, testApproxSpanningEdge) {
     // Therefore, in this test we use the approximation algorithm implemented in
     // SpanningEdgeCentrality as baseline, and check that the values are within a 2-epsilon
     // approximation.
-    Graph G = ErdosRenyiGenerator(300, 0.1, false).generate();
+    GraphW G = ErdosRenyiGenerator(300, 0.1, false).generate();
     G.indexEdges();
     constexpr double eps = 0.1;
 
@@ -2031,7 +2032,7 @@ TEST_P(CentralityGTest, testGroupClosenessGrowShrink) {
 }
 
 TEST_P(CentralityGTest, testDegreeCentrality) {
-    Graph g(8, false, isDirected());
+    GraphW g(8, false, isDirected());
 
     g.addEdge(0, 2);
     g.addEdge(0, 5);
@@ -2062,7 +2063,7 @@ TEST_P(CentralityGTest, testDegreeCentrality) {
 }
 
 TEST_P(CentralityGTest, testInDegreeCentrality) {
-    Graph g(8, false, isDirected());
+    GraphW g(8, false, isDirected());
 
     g.addEdge(0, 2);
     g.addEdge(0, 5);
@@ -2092,7 +2093,7 @@ TEST_P(CentralityGTest, testInDegreeCentrality) {
 }
 
 TEST_P(CentralityGTest, testDegreeCentralityIgnoreSelfLoops) {
-    Graph g(8, false, isDirected());
+    GraphW g(8, false, isDirected());
 
     g.addEdge(0, 2);
     g.addEdge(0, 5);
@@ -2294,7 +2295,7 @@ TEST_P(CentralityGTest, testGroupClosenessLocalSearch) {
 TEST_F(CentralityGTest, testForestCentrality) {
     {
         // Directed graphs are not supported
-        Graph G(10, true, true);
+        GraphW G(10, true, true);
         G.addEdge(0, 1);
         EXPECT_THROW(ForestCentrality(G, 0), std::runtime_error);
 
@@ -2334,7 +2335,7 @@ TEST_F(CentralityGTest, testComplexPathsSingleNode) {
        2   5 - 6
       / \ /     \
      1   4 - - - 7 */
-    Graph G(8);
+    GraphW G(8);
     G.addEdge(0, 2);
     G.addEdge(1, 2);
     G.addEdge(2, 3);
@@ -2371,7 +2372,7 @@ TEST_F(CentralityGTest, testComplexPathsAllNodes) {
        2   5 - 6
       / \ /     \
      1   4 - - - 7 */
-    Graph G(8);
+    GraphW G(8);
     G.addEdge(0, 2);
     G.addEdge(1, 2);
     G.addEdge(2, 3);

@@ -20,7 +20,7 @@ class OverlapGTest : public testing::Test {};
 
 TEST_F(OverlapGTest, testHashingOverlapperOnSingletonClusterings) {
     int64_t n = 10;
-    Graph G(n);
+    GraphW G(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
 
     ClusteringGenerator clusterGen;
@@ -45,7 +45,7 @@ TEST_F(OverlapGTest, testHashingOverlapperOnSingletonClusterings) {
 
 TEST_F(OverlapGTest, testHashingOverlapperOnOneClusterings) {
     int64_t n = 10;
-    Graph G(n);
+    GraphW G(n);
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
 
     ClusteringGenerator clusterGen;

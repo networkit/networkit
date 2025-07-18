@@ -28,7 +28,7 @@ protected:
 
 public:
     Graph makeCompleteGraph(count n) {
-        Graph G(n);
+        GraphW G(n);
         G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
         G.shrinkToFit();
         return G;
@@ -39,7 +39,7 @@ TEST_F(SparsificationBenchmark, completeGraphSimmelianSparsificationParametric) 
     int64_t n = this->n;
     Aux::Timer runtime;
 
-    Graph G = SparsificationBenchmark::makeCompleteGraph(n);
+    GraphW G = SparsificationBenchmark::makeCompleteGraph(n);
     G.indexEdges();
 
     runtime.start();
@@ -61,7 +61,7 @@ TEST_F(SparsificationBenchmark, completeGraphSimmelianSparsificationNonParametri
     int64_t n = this->n;
     Aux::Timer runtime;
 
-    Graph G = SparsificationBenchmark::makeCompleteGraph(n);
+    GraphW G = SparsificationBenchmark::makeCompleteGraph(n);
     G.indexEdges();
 
     runtime.start();
@@ -82,7 +82,7 @@ TEST_F(SparsificationBenchmark, completeGraphMultiscaleSparsification) {
     int64_t n = this->n;
     Aux::Timer runtime;
 
-    Graph G = SparsificationBenchmark::makeCompleteGraph(n);
+    GraphW G = SparsificationBenchmark::makeCompleteGraph(n);
     G.indexEdges();
 
     runtime.start();
@@ -102,7 +102,7 @@ TEST_F(SparsificationBenchmark, completeGraphLocalSimilaritySparsification) {
     int64_t n = this->n;
     Aux::Timer runtime;
 
-    Graph G = SparsificationBenchmark::makeCompleteGraph(n);
+    GraphW G = SparsificationBenchmark::makeCompleteGraph(n);
     G.indexEdges();
 
     runtime.start();
@@ -130,7 +130,7 @@ TEST_F(SparsificationBenchmark, SparsificationBenchmarkGraphFile) {
     std::cout << "[BEGIN] reading graph: " << path << std::endl;
     runtime.start();
     METISGraphReader reader;
-    Graph g = reader.read(path);
+    GraphW g = reader.read(path);
     runtime.stop();
     std::cout << "[DONE] reading graph " << runtime.elapsedTag() << std::endl;
 

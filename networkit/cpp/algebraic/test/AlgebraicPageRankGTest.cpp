@@ -64,7 +64,7 @@ TEST(AlgebraicPageRankGTest, testPageRankCentrality) {
        edges in the lower row have weight 2.
     */
     count n = 8;
-    Graph G(n, true);
+    GraphW G(n, true);
 
     G.addEdge(0, 2, 3);
     G.addEdge(1, 2, 2);

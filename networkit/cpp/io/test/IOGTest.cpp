@@ -252,7 +252,7 @@ TEST_F(IOGTest, testMETISGraphReaderWithTinyGraphs) {
 
 TEST_F(IOGTest, testMETISGraphWriter) {
     std::string path = "output/jazz1.graph";
-    Graph G = Graph(3);
+    GraphW G = GraphW(3);
     G.addEdge(0, 2);
     G.addEdge(1, 1);
     G.addEdge(1, 2);
@@ -270,7 +270,7 @@ TEST_F(IOGTest, testMETISGraphWriter) {
 
 TEST_F(IOGTest, testMETISGraphWriterWithWeights) {
     std::string path = "output/jazz2.graph";
-    Graph G = Graph(5);
+    GraphW G = GraphW(5);
     G.addEdge(0, 2);
     G.addEdge(0, 1);
     G.addEdge(0, 0);
@@ -340,7 +340,7 @@ TEST_F(IOGTest, testDotGraphWriter) {
 TEST_F(IOGTest, debugDGSReaderOnBigFile) {
     // read example graph
     DGSReader reader;
-    Graph G;
+    GraphW G;
     GraphEventProxy Gproxy(G);
     reader.read("/Users/forigem/KIT/NetworKit-CommunityDetection/input/AuthorsGraph.dgs", Gproxy);
 }
@@ -348,7 +348,7 @@ TEST_F(IOGTest, debugDGSReaderOnBigFile) {
 TEST_F(IOGTest, debugDGSReader) {
     // read example graph
     DGSReader reader;
-    Graph G;
+    GraphW G;
     GraphEventProxy Gproxy(G);
     reader.read("input/example2.dgs", Gproxy);
 
@@ -576,7 +576,7 @@ TEST_F(IOGTest, debugReadingMETISFile) {
 
 TEST_F(IOGTest, testGMLGraphWriterUndirected) {
     std::string path = "output/jazz2_undirected.gml";
-    Graph G = Graph(5);
+    GraphW G = GraphW(5);
     G.addEdge(0, 2);
     G.addEdge(0, 1);
     G.addEdge(0, 0);
@@ -594,7 +594,7 @@ TEST_F(IOGTest, testGMLGraphWriterUndirected) {
 
 TEST_F(IOGTest, testGMLGraphWriterDirected) {
     std::string path = "output/jazz2_directed.gml";
-    Graph G = Graph(5, false, true);
+    GraphW G = GraphW(5, false, true);
     G.addEdge(0, 2);
     G.addEdge(0, 1);
     G.addEdge(0, 0);
@@ -648,7 +648,7 @@ TEST_F(IOGTest, testGraphToolBinaryReader) {
 }
 
 TEST_F(IOGTest, testGraphToolBinaryWriter) {
-    Graph G(10, false, false);
+    GraphW G(10, false, false);
     G.addEdge(0, 1);
     G.addEdge(2, 1);
     G.addEdge(2, 3);
@@ -702,7 +702,7 @@ TEST_F(IOGTest, testGraphToolBinaryWriterDifferentGraphSizes) {
 }
 
 TEST_F(IOGTest, testGraphToolBinaryWriterWithDeletedNodes) {
-    Graph G(10, false, false);
+    GraphW G(10, false, false);
     G.removeNode(0);
     G.addEdge(2, 1);
     G.addEdge(2, 3);
@@ -724,7 +724,7 @@ TEST_F(IOGTest, testGraphToolBinaryWriterWithDeletedNodes) {
 }
 
 TEST_F(IOGTest, testGraphToolBinaryWriterDirected) {
-    Graph G(10, false, true);
+    GraphW G(10, false, true);
     G.addEdge(0, 1);
     G.addEdge(2, 1);
     G.addEdge(2, 3);
@@ -748,7 +748,7 @@ TEST_F(IOGTest, testGraphToolBinaryWriterDirected) {
 }
 
 TEST_F(IOGTest, testGraphToolBinaryWriterWithDeletedNodesDirected) {
-    Graph G(10, false, true);
+    GraphW G(10, false, true);
     G.removeNode(0);
     G.addEdge(2, 1);
     G.addEdge(2, 3);
@@ -774,7 +774,7 @@ TEST_F(IOGTest, testThrillGraphBinaryWriterAndReader) {
     // do not test the binary writer and reader properly.
     // So we simply use a star.
     count n = 257;
-    Graph G(n, false, false);
+    GraphW G(n, false, false);
     node center = 129;
 
     for (node u = 0; u < n; ++u) {
@@ -893,7 +893,7 @@ TEST_F(IOGTest, testNetworkitBinaryTiny01InMemory) {
 
 TEST_F(IOGTest, testNetworkitBinaryTiny01Indexed) {
     METISGraphReader reader2;
-    Graph G = reader2.read("input/tiny_01.graph");
+    GraphW G = reader2.read("input/tiny_01.graph");
     NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::AUTO_DETECT);
 
     G.indexEdges();
@@ -961,7 +961,7 @@ TEST_F(IOGTest, testNetworkitBinaryKonectInMemory) {
 
 TEST_F(IOGTest, testNetworkitBinaryKonectIndexed) {
     KONECTGraphReader reader2;
-    Graph G = reader2.read("input/foodweb-baydry.konect");
+    GraphW G = reader2.read("input/foodweb-baydry.konect");
     G.indexEdges();
     NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::AUTO_DETECT);
     writer.write(G, "output/binary_konect");
@@ -1001,7 +1001,7 @@ TEST_F(IOGTest, testNetworkitBinaryJazz) {
 
 TEST_F(IOGTest, testNetworkitBinaryJazzIndexed) {
     METISGraphReader reader2;
-    Graph G = reader2.read("input/jazz.graph");
+    GraphW G = reader2.read("input/jazz.graph");
     G.indexEdges();
 
     NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::AUTO_DETECT);
@@ -1036,7 +1036,7 @@ TEST_F(IOGTest, testNetworkitBinaryWiki) {
 
 TEST_F(IOGTest, testNetworkitBinaryWikiIndexed) {
     SNAPGraphReader reader2(true);
-    Graph G = reader2.read("input/wiki-Vote.txt");
+    GraphW G = reader2.read("input/wiki-Vote.txt");
     G.indexEdges();
     NetworkitBinaryWriter writer(32, NetworkitBinaryWeights::AUTO_DETECT);
 
@@ -1054,7 +1054,7 @@ TEST_F(IOGTest, testNetworkitBinaryWikiIndexed) {
 
 TEST_F(IOGTest, testNetworkitBinarySignedWeights) {
 
-    Graph G(10, true, false);
+    GraphW G(10, true, false);
     int64_t weight = -1;
     for (count n = 0; n < G.numberOfNodes(); n++) {
         if (n != G.numberOfNodes() - 1)
@@ -1077,7 +1077,7 @@ TEST_F(IOGTest, testNetworkitBinarySignedWeights) {
 
 TEST_F(IOGTest, testNetworkitBinarySignedWeightsIndexed) {
 
-    Graph G(10, true, false);
+    GraphW G(10, true, false);
     G.indexEdges();
     int64_t weight = -1;
     for (count n = 0; n < G.numberOfNodes(); n++) {
@@ -1102,7 +1102,7 @@ TEST_F(IOGTest, testNetworkitBinarySignedWeightsIndexed) {
 
 TEST_F(IOGTest, testNetworkitBinaryFloatWeights) {
 
-    Graph G(10, true, false);
+    GraphW G(10, true, false);
     float weight = 987.654f;
     for (count n = 0; n < G.numberOfNodes(); n++) {
         if (n != G.numberOfNodes() - 1)
@@ -1125,7 +1125,7 @@ TEST_F(IOGTest, testNetworkitBinaryFloatWeights) {
 
 TEST_F(IOGTest, testNetworkitBinaryFloatWeightsIndexed) {
 
-    Graph G(10, true, false);
+    GraphW G(10, true, false);
     G.indexEdges();
     float weight = 987.654f;
     for (count n = 0; n < G.numberOfNodes(); n++) {
@@ -1149,7 +1149,7 @@ TEST_F(IOGTest, testNetworkitBinaryFloatWeightsIndexed) {
 
 TEST_F(IOGTest, testNetworkitBinaryUndirectedSelfLoops) {
 
-    Graph G(5, false, false);
+    GraphW G(5, false, false);
     G.addEdge(0, 0);
     G.addEdge(1, 1);
     G.addEdge(2, 2);
@@ -1166,7 +1166,7 @@ TEST_F(IOGTest, testNetworkitBinaryUndirectedSelfLoops) {
 
 TEST_F(IOGTest, testNetworkitBinaryDirectedSelfLoops) {
 
-    Graph G(5, false, true);
+    GraphW G(5, false, true);
     G.addEdge(0, 0);
     G.addEdge(1, 1);
     G.addEdge(2, 2);
@@ -1261,7 +1261,7 @@ TEST_F(IOGTest, testNetworkitBinaryZigzag) {
 }
 
 TEST_F(IOGTest, testNetworkitWriterNonContinuousNodesIds) {
-    Graph G(20, true);
+    GraphW G(20, true);
     G.removeNode(10);
     std::string path = "output/test.gt";
     NetworkitBinaryWriter{}.write(G, path);

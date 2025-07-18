@@ -244,7 +244,7 @@ TEST_P(GraphToolsGTest, testRandomNodes) {
 
 TEST_P(GraphToolsGTest, testRandomNeighbor) {
     constexpr count n = 10;
-    auto G = Graph(n, weighted(), directed());
+    auto G = GraphW(n, weighted(), directed());
     G.addEdge(2, 0);
     G.addEdge(2, 1);
     G.addEdge(2, 2);
@@ -282,7 +282,7 @@ TEST_P(GraphToolsGTest, testRandomEdge) {
     constexpr count samples = 100000;
     constexpr double maxAbsoluteError = 0.005;
 
-    Graph G(n, weighted(), directed());
+    GraphW G(n, weighted(), directed());
     G.addEdge(0, 1); // 0 * 1 = 0
     G.addEdge(1, 2); // 1 * 2 = 2
     G.addEdge(3, 2); // 3 * 2 = 1 (mod 5)
@@ -310,7 +310,7 @@ TEST_P(GraphToolsGTest, testRandomEdges) {
     constexpr count samples = 100000;
     constexpr double maxAbsoluteError = 0.005;
 
-    Graph G(n, weighted(), directed());
+    GraphW G(n, weighted(), directed());
     G.addEdge(0, 1); // 0 * 1 = 0
     G.addEdge(1, 2); // 1 * 2 = 2
     G.addEdge(3, 2); // 3 * 2 = 1 (mod 5)
@@ -330,7 +330,7 @@ TEST_P(GraphToolsGTest, testRandomEdges) {
 }
 
 TEST_P(GraphToolsGTest, testGetContinuousOnContinuous) {
-    Graph G(10, weighted(), directed());
+    GraphW G(10, weighted(), directed());
     auto nodeIds = GraphTools::getContinuousNodeIds(G);
     std::unordered_map<node, node> reference = {{0, 0}, {1, 1}, {2, 2}, {3, 3}, {4, 4},
                                                 {5, 5}, {6, 6}, {7, 7}, {8, 8}, {9, 9}};
@@ -338,7 +338,7 @@ TEST_P(GraphToolsGTest, testGetContinuousOnContinuous) {
 }
 
 TEST_P(GraphToolsGTest, testGetContinuousOnDeletedNodes1) {
-    Graph G(10, weighted(), directed());
+    GraphW G(10, weighted(), directed());
     G.removeNode(0);
     G.removeNode(1);
     G.removeNode(2);
@@ -350,7 +350,7 @@ TEST_P(GraphToolsGTest, testGetContinuousOnDeletedNodes1) {
 }
 
 TEST_P(GraphToolsGTest, testGetContinuousOnDeletedNodes2) {
-    Graph G(10, weighted(), directed());
+    GraphW G(10, weighted(), directed());
     G.removeNode(0);
     G.removeNode(2);
     G.removeNode(4);
@@ -362,7 +362,7 @@ TEST_P(GraphToolsGTest, testGetContinuousOnDeletedNodes2) {
 }
 
 TEST_F(GraphToolsGTest, testGetCompactedGraphUndirectedUnweighted1) {
-    Graph G(10, false, false);
+    GraphW G(10, false, false);
     G.addEdge(0, 1);
     G.addEdge(2, 1);
     G.addEdge(0, 3);
@@ -386,7 +386,7 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphUndirectedUnweighted1) {
 }
 
 TEST_F(GraphToolsGTest, testGetCompactedGraphUndirectedUnweighted2) {
-    Graph G(10, false, false);
+    GraphW G(10, false, false);
     G.removeNode(0);
     G.removeNode(2);
     G.removeNode(4);
@@ -412,7 +412,7 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphUndirectedUnweighted2) {
 }
 
 TEST_F(GraphToolsGTest, testGetCompactedGraphUndirectedWeighted1) {
-    Graph G(10, true, false);
+    GraphW G(10, true, false);
     G.removeNode(0);
     G.removeNode(2);
     G.removeNode(4);
@@ -439,7 +439,7 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphUndirectedWeighted1) {
 }
 
 TEST_F(GraphToolsGTest, testGetCompactedGraphDirectedWeighted1) {
-    Graph G(10, true, true);
+    GraphW G(10, true, true);
     G.removeNode(0);
     G.removeNode(2);
     G.removeNode(4);
@@ -466,7 +466,7 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphDirectedWeighted1) {
 }
 
 TEST_F(GraphToolsGTest, testGetCompactedGraphDirectedUnweighted1) {
-    Graph G(10, false, true);
+    GraphW G(10, false, true);
     G.removeNode(0);
     G.removeNode(2);
     G.removeNode(4);
@@ -492,7 +492,7 @@ TEST_F(GraphToolsGTest, testGetCompactedGraphDirectedUnweighted1) {
 }
 
 TEST_P(GraphToolsGTest, testInvertedMapping) {
-    Graph G(10, weighted(), directed());
+    GraphW G(10, weighted(), directed());
     G.removeNode(0);
     G.removeNode(2);
     G.removeNode(4);
@@ -513,7 +513,7 @@ TEST_P(GraphToolsGTest, testInvertedMapping) {
 }
 
 TEST_F(GraphToolsGTest, testRestoreGraph) {
-    Graph G(10, false, true);
+    GraphW G(10, false, true);
     G.removeNode(0);
     G.removeNode(2);
     G.removeNode(4);
@@ -560,7 +560,7 @@ TEST_F(GraphToolsGTest, testAugmentedGraph) {
 
 TEST_P(GraphToolsGTest, testGetRemappedGraph) {
     const auto n = 4;
-    Graph G(n, weighted(), directed());
+    GraphW G(n, weighted(), directed());
     for (auto i : {0, 1, 2})
         G.addEdge(i, i + 1, i);
 
@@ -590,7 +590,7 @@ TEST_P(GraphToolsGTest, testGetRemappedGraph) {
 
 TEST_P(GraphToolsGTest, testGetRemappedGraphWithDelete) {
     const auto n = 4;
-    Graph G(n, weighted(), directed());
+    GraphW G(n, weighted(), directed());
     for (auto i : {0, 1, 2})
         G.addEdge(i, i + 1, i);
 
@@ -667,7 +667,7 @@ TEST_P(GraphToolsGTest, testCopyNodes) {
 }
 
 TEST_P(GraphToolsGTest, testSubgraphFromNodesUndirected) {
-    auto G = Graph(4, weighted(), false);
+    auto G = GraphW(4, weighted(), false);
 
     /**
      *      1
@@ -730,7 +730,7 @@ TEST_P(GraphToolsGTest, testSubgraphFromNodesUndirected) {
 }
 
 TEST_P(GraphToolsGTest, testSubgraphFromNodesDirected) {
-    auto G = Graph(4, weighted(), true);
+    auto G = GraphW(4, weighted(), true);
 
     /**
      *      1
@@ -795,7 +795,7 @@ TEST_P(GraphToolsGTest, testSubgraphFromNodesDirected) {
 }
 
 TEST_P(GraphToolsGTest, testTranspose) {
-    auto G = Graph(4, weighted(), true);
+    auto G = GraphW(4, weighted(), true);
 
     /**
      *      1
@@ -1046,7 +1046,8 @@ TEST_P(GraphToolsGTest, testParallelSumEdgesIndexed) {
     NetworKit::count n = 20;
     int maxWeight = n * n;
 
-    Graph G = ErdosRenyiGenerator{n, 0.01, directed()}.generate();
+    Graph G_tmp = ErdosRenyiGenerator{n, 0.01, directed()}.generate();
+    GraphW G(G_tmp);
     G.indexEdges(true);
     auto sum = G.parallelSumForEdges([&](node, node, edgeweight ew) { return ew; });
     EXPECT_LE(sum, maxWeight);
@@ -1090,7 +1091,7 @@ TEST_P(GraphToolsGTest, testEdgesRandomizerDeterminism) {
 }
 
 TEST_F(GraphToolsGTest, testIsBipartiteDirectedGraphThrows) {
-    Graph graph(0, false, true, false);
+    GraphW graph(0, false, true, false);
     try {
         GraphTools::isBipartite(graph);
         FAIL() << "Expected std::runtime_error";
@@ -1102,13 +1103,13 @@ TEST_F(GraphToolsGTest, testIsBipartiteDirectedGraphThrows) {
 }
 
 TEST_F(GraphToolsGTest, testIsBipartiteEmptyGraph) {
-    Graph graph;
+    GraphW graph;
     EXPECT_TRUE(GraphTools::isBipartite(graph));
 }
 
 TEST_F(GraphToolsGTest, testIsBipartiteSingleNodesGraphs) {
     for (count i = 1; i < 10; ++i) {
-        Graph graph;
+        GraphW graph;
         for (count j = 0; j < i; ++j)
             graph.addNodes(j);
         EXPECT_TRUE(GraphTools::isBipartite(graph));
@@ -1117,7 +1118,7 @@ TEST_F(GraphToolsGTest, testIsBipartiteSingleNodesGraphs) {
 
 TEST_F(GraphToolsGTest, testIsBipartiteBinaryTreeGraphs) {
     auto binaryTree = [](count numNodes) {
-        Graph graph(numNodes, true, false, true);
+        GraphW graph(numNodes, true, false, true);
         for (count i = 0; i < numNodes; ++i) {
             count leftChild = 2 * i + 1;
             count rightChild = 2 * i + 2;
@@ -1131,14 +1132,14 @@ TEST_F(GraphToolsGTest, testIsBipartiteBinaryTreeGraphs) {
         return graph;
     };
     for (count i = 1; i < 10; ++i) {
-        Graph graph = binaryTree(i);
+        GraphW graph = binaryTree(i);
         EXPECT_TRUE(GraphTools::isBipartite(graph));
     }
 }
 
 TEST_F(GraphToolsGTest, testIsBipartiteCompleteGraphs) {
     auto completeGraph = [&](count numNodes) {
-        Graph graph(numNodes, true);
+        GraphW graph(numNodes, true);
         for (count i = 0; i < numNodes; ++i) {
             for (count j = i + 1; j < numNodes; ++j) {
                 graph.addEdge(i, j, static_cast<double>(j * (j + 1)));
@@ -1148,7 +1149,7 @@ TEST_F(GraphToolsGTest, testIsBipartiteCompleteGraphs) {
     };
 
     for (count numberOfNodes = 3; numberOfNodes <= 10; ++numberOfNodes) {
-        Graph graph = completeGraph(numberOfNodes);
+        GraphW graph = completeGraph(numberOfNodes);
         EXPECT_FALSE(GraphTools::isBipartite(graph));
     }
 }
@@ -1172,7 +1173,7 @@ TEST_F(GraphToolsGTest, testIsBipartiteHepThGraph) {
 }
 
 TEST_F(GraphToolsGTest, testIsBipartiteCompleteBipartiteGraphK3_3) {
-    Graph graph(6);
+    GraphW graph(6);
     graph.addEdge(0, 3);
     graph.addEdge(0, 4);
     graph.addEdge(0, 5);
@@ -1187,7 +1188,7 @@ TEST_F(GraphToolsGTest, testIsBipartiteCompleteBipartiteGraphK3_3) {
 }
 
 TEST_F(GraphToolsGTest, testIsBipartiteDeleteNode) {
-    Graph graph(7);
+    GraphW graph(7);
     graph.addEdge(0, 3);
     graph.addEdge(0, 4);
     graph.addEdge(0, 5);
@@ -1208,7 +1209,7 @@ TEST_F(GraphToolsGTest, testIsBipartiteDeleteNode) {
 }
 
 TEST_F(GraphToolsGTest, testIsBipartiteDeleteAndRestoreNodes) {
-    Graph graph(4);
+    GraphW graph(4);
     graph.addEdge(0, 1);
     graph.addEdge(0, 2);
     graph.addEdge(0, 3);

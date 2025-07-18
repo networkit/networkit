@@ -25,7 +25,7 @@ TEST_F(SpanningEdgeCentralityGTest, testOnToyGraph) {
             1    4
      */
     count n = 6;
-    Graph G(n, false, false);
+    GraphW G(n, false, false);
     G.indexEdges();
 
     G.addEdge(0, 2);

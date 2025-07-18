@@ -10,6 +10,7 @@
 #include <networkit/global/ClusteringCoefficient.hpp>
 
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -27,7 +28,7 @@ TEST_F(GlobalGTest, testClusteringCoefficient) {
 }
 
 TEST_F(GlobalGTest, testGlobalClusteringCoefficient) {
-    Graph G(6);
+    GraphW G(6);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
     G.addEdge(1, 3);

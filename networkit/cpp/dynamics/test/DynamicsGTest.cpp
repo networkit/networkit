@@ -14,6 +14,7 @@
 #include <networkit/dynamics/GraphEvent.hpp>
 #include <networkit/dynamics/GraphEventProxy.hpp>
 #include <networkit/dynamics/GraphUpdater.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -59,7 +60,7 @@ TEST_F(DynamicsGTest, testDGSStreamParser) {
     ASSERT_EQ(stream[15].type, GraphEvent::NODE_RESTORATION);
 
     // apply updates
-    Graph G(0, true);
+    GraphW G(0, true);
     GraphUpdater updater(G);
     updater.update(stream);
     ASSERT_EQ(G.numberOfNodes(), 4);
@@ -75,8 +76,8 @@ TEST_F(DynamicsGTest, debugDGSStreamParserOnRealGraph) {
 }
 
 TEST_F(DynamicsGTest, testGraphEventIncrement) {
-    Graph G(2, true, false); // undirected
-    Graph H(2, true, true);  // directed
+    GraphW G(2, true, false); // undirected
+    GraphW H(2, true, true);  // directed
     G.addEdge(0, 1, 3.14);
     H.addEdge(0, 1, 3.14);
     GraphEvent event(GraphEvent::EDGE_WEIGHT_INCREMENT, 0, 1, 2.1);
@@ -105,7 +106,7 @@ TEST_F(DynamicsGTest, testGraphEventOperators) {
 }
 
 TEST_F(DynamicsGTest, testGraphEventProxy) {
-    Graph G(3, true);
+    GraphW G(3, true);
     G.addEdge(1, 2);
 
     GraphEventProxy GEP(G);
@@ -140,7 +141,7 @@ std::string edits_to_string(const std::vector<GraphEvent> &events) {
     return ss.str();
 }
 
-void expect_graph_equals(const Graph &G1, const Graph &G2) {
+void expect_graph_equals(const GraphW &G1, const GraphW &G2) {
     EXPECT_EQ(G1.numberOfNodes(), G2.numberOfNodes());
     EXPECT_EQ(G1.numberOfEdges(), G2.numberOfEdges());
 
@@ -157,8 +158,8 @@ void expect_graph_equals(const Graph &G1, const Graph &G2) {
 } // namespace
 
 TEST_F(DynamicsGTest, testGraphDifference) {
-    Graph G1(11, false, false);
-    Graph G2(8, false, false);
+    GraphW G1(11, false, false);
+    GraphW G2(8, false, false);
 
     G1.addEdge(2, 4);
     G1.addEdge(2, 6);
@@ -179,7 +180,7 @@ TEST_F(DynamicsGTest, testGraphDifference) {
         EXPECT_EQ(diff.getNumberOfNodeRestorations(), 1) << edits_to_string(diff.getEdits());
         EXPECT_EQ(diff.getNumberOfEdgeAdditions(), 1) << edits_to_string(diff.getEdits());
 
-        Graph H = G1;
+        GraphW H = G1;
         GraphUpdater Hupdater(H);
         Hupdater.update(diff.getEdits());
         EXPECT_TRUE(H.hasEdge(2, 3));
@@ -197,7 +198,7 @@ TEST_F(DynamicsGTest, testGraphDifference) {
         EXPECT_EQ(diff.getNumberOfNodeRestorations(), 1) << edits_to_string(diff.getEdits());
         EXPECT_EQ(diff.getNumberOfEdgeRemovals(), 1) << edits_to_string(diff.getEdits());
 
-        Graph H = G2;
+        GraphW H = G2;
         GraphUpdater Hupdater(H);
         Hupdater.update(diff.getEdits());
 
@@ -206,8 +207,8 @@ TEST_F(DynamicsGTest, testGraphDifference) {
 }
 
 TEST_F(DynamicsGTest, testGraphDifferenceDirectedWeighted) {
-    Graph G1(8, true, true);
-    Graph G2(8, true, true);
+    GraphW G1(8, true, true);
+    GraphW G2(8, true, true);
 
     G1.addEdge(0, 1, 0.5);
     G1.addEdge(1, 0, 2);
@@ -217,9 +218,9 @@ TEST_F(DynamicsGTest, testGraphDifferenceDirectedWeighted) {
     G2.addEdge(3, 2, 1.0);
     G2.addEdge(3, 4, 2.5);
 
-    for (const auto &gs : std::vector<std::pair<Graph, Graph>>({{G1, G2}, {G2, G1}})) {
-        const Graph &g1 = gs.first;
-        const Graph &g2 = gs.second;
+    for (const auto &gs : std::vector<std::pair<GraphW, GraphW>>({{G1, G2}, {G2, G1}})) {
+        const GraphW &g1 = gs.first;
+        const GraphW &g2 = gs.second;
 
         GraphDifference diff(g1, g2);
         diff.run();
@@ -229,7 +230,7 @@ TEST_F(DynamicsGTest, testGraphDifferenceDirectedWeighted) {
         EXPECT_EQ(diff.getNumberOfEdgeWeightUpdates(), 1) << edits_to_string(diff.getEdits());
         EXPECT_EQ(diff.getNumberOfEdits(), 5) << edits_to_string(diff.getEdits());
 
-        Graph H = g1;
+        GraphW H = g1;
         GraphUpdater Hupdater(H);
         Hupdater.update(diff.getEdits());
 

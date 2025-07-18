@@ -9,13 +9,14 @@
 
 #include <networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp>
 #include <networkit/edgescores/TriangleEdgeScore.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
 class ChibaNishizekiTriangleEdgeScoreGTest : public testing::Test {};
 
 TEST_F(ChibaNishizekiTriangleEdgeScoreGTest, testTriangleCountsTrivial) {
-    Graph g(5);
+    GraphW g(5);
 
     g.addEdge(0, 1);
     g.addEdge(0, 2);
@@ -33,7 +34,7 @@ TEST_F(ChibaNishizekiTriangleEdgeScoreGTest, testTriangleCountsTrivial) {
 }
 
 TEST_F(ChibaNishizekiTriangleEdgeScoreGTest, testNewTriangleCountsTrivial) {
-    Graph g(5);
+    GraphW g(5);
 
     g.addEdge(0, 1);
     g.addEdge(0, 2);
@@ -54,7 +55,7 @@ TEST_F(ChibaNishizekiTriangleEdgeScoreGTest, testNewTriangleCountsTrivial) {
 
 TEST_F(ChibaNishizekiTriangleEdgeScoreGTest, testTriangleCountsSimple) {
     int64_t n = 6;
-    Graph g(n);
+    GraphW g(n);
 
     g.addEdge(0, 1);
     g.addEdge(0, 2);
@@ -104,7 +105,7 @@ TEST_F(ChibaNishizekiTriangleEdgeScoreGTest, testTriangleCountsSimple) {
 
 TEST_F(ChibaNishizekiTriangleEdgeScoreGTest, testNewTriangleCountsSimple) {
     int64_t n = 6;
-    Graph g(n);
+    GraphW g(n);
 
     g.addEdge(0, 1);
     g.addEdge(0, 2);

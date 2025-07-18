@@ -27,7 +27,7 @@ class LAMGGTest
           std::tuple<std::string, std::string, std::string, std::string>> {
 protected:
     // returns a graph and a vector of RHSs
-    std::tuple<Graph, std::vector<Vector>> testData() const;
+    std::tuple<GraphW, std::vector<Vector>> testData() const;
     template <class Matrix>
     void runTest();
 };
@@ -50,10 +50,10 @@ inline bool vector_almost_equal(const Vector &lhs, const Vector &rhs) {
     return true;
 }
 
-std::tuple<Graph, std::vector<Vector>> LAMGGTest::testData() const {
+std::tuple<GraphW, std::vector<Vector>> LAMGGTest::testData() const {
     auto [solveFn, setupFn, components, parallelism] = GetParam();
 
-    Graph G(6);
+    GraphW G(6);
     std::vector<Vector> rhss;
     std::vector<Vector> solutions;
     if (components == "one") {

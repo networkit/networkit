@@ -15,7 +15,7 @@ namespace NetworKit {
 class MultiscaleBackboneGTest : public testing::Test {};
 
 TEST_F(MultiscaleBackboneGTest, testSimpleMultiscaleBackbone) {
-    Graph g(6, true, false);
+    GraphW g(6, true, false);
 
     g.setWeight(0, 1, 1.0);
     g.setWeight(0, 2, 5.0);

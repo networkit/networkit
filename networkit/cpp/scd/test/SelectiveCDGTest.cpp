@@ -284,7 +284,7 @@ TEST_F(SelectiveCDGTest, testSCDWeighted) {
 }
 
 TEST_F(SelectiveCDGTest, testWeightedCliqueDetect) {
-    Graph G(4, true, false);
+    GraphW G(4, true, false);
 
     G.addEdge(0, 1, 2);
     G.addEdge(0, 2, 1);
@@ -330,7 +330,7 @@ TEST_F(SelectiveCDGTest, testWeightedCliqueDetect) {
 }
 
 TEST_F(SelectiveCDGTest, testSetConductance) {
-    Graph G(4, true, false);
+    GraphW G(4, true, false);
     G.addEdge(0, 1, 2);
     G.addEdge(1, 2, 1);
     G.addEdge(2, 3, 3);

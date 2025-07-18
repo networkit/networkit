@@ -21,10 +21,10 @@ namespace NetworKit {
 
 class CurveballGTest : public testing::Test {
 protected:
-    void checkWithGraph(Graph &, bool checkBuilder = false);
+    void checkWithGraph(GraphW &, bool checkBuilder = false);
 };
 
-void CurveballGTest::checkWithGraph(Graph &G, bool checkBuilder) {
+void CurveballGTest::checkWithGraph(GraphW &G, bool checkBuilder) {
     node numNodes = G.numberOfNodes();
     const count numTrades = 5;
     const count numTradeRuns = 5;
@@ -92,7 +92,7 @@ TEST_F(CurveballGTest, testCurveballErdosRenyi) {
 
     node numNodes = 1000;
     ErdosRenyiGenerator generator(numNodes, 0.3);
-    Graph G = generator.generate();
+    GraphW G = generator.generate();
 
     this->checkWithGraph(G, false);
 }
@@ -102,7 +102,7 @@ TEST_F(CurveballGTest, testCurveballHyperbolic) {
 
     node numNodes = 1000;
     HyperbolicGenerator generator(numNodes);
-    Graph G = generator.generate();
+    GraphW G = generator.generate();
 
     this->checkWithGraph(G, false);
 }
@@ -112,7 +112,7 @@ TEST_F(CurveballGTest, testCurveballMaterialization) {
 
     node numNodes = 500;
     ErdosRenyiGenerator generator(numNodes, 0.3);
-    Graph G = generator.generate();
+    GraphW G = generator.generate();
 
     this->checkWithGraph(G, true);
 }

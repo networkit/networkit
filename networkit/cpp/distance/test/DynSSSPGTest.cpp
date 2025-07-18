@@ -16,6 +16,7 @@
 #include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -30,7 +31,7 @@ TEST_F(DynSSSPGTest, testDynamicBFS_1edge) {
         1    4   7
      */
     count n = 8;
-    Graph G(n);
+    GraphW G(n);
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -69,7 +70,7 @@ TEST_F(DynSSSPGTest, testDynamicBFSEdgeDeletion) {
          /  \ / \
         1    4   7
      */
-    Graph G(8);
+    GraphW G(8);
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -105,7 +106,7 @@ TEST_F(DynSSSPGTest, testDynamicBFS_batch) {
             1    4   7
     */
     count n = 8;
-    Graph G(n);
+    GraphW G(n);
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -152,7 +153,7 @@ TEST_F(DynSSSPGTest, testDynamicBFS_batchDeletion) {
             /  \ / \
             1    4   7
     */
-    Graph G(8);
+    GraphW G(8);
 
     G.addEdge(0, 2);
     G.addEdge(1, 2);
@@ -195,7 +196,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstra) {
        edges in the lower row have weight 2.
     */
     count n = 8;
-    Graph G(n, true);
+    GraphW G(n, true);
 
     G.addEdge(0, 2, 3);
     G.addEdge(1, 2, 2);
@@ -247,7 +248,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraDeletion) {
        the edge in the middle row has weight 1.5,
        edges in the lower row have weight 2.
     */
-    Graph G(8, true);
+    GraphW G(8, true);
 
     G.addEdge(0, 2, 3);
     G.addEdge(1, 2, 2);
@@ -280,7 +281,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraDeletion) {
 TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraph) {
     Aux::Random::setSeed(1, true);
     DorogovtsevMendesGenerator generator(500);
-    Graph G = generator.generate();
+    GraphW G = generator.generate();
     DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
     DynBFS dyn_bfs(G, 0);
     BFS bfs(G, 0);
@@ -313,7 +314,7 @@ TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraph) {
 TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraphEdgeDeletion) {
     Aux::Random::setSeed(1, true);
     DorogovtsevMendesGenerator generator(500);
-    Graph G = generator.generate();
+    GraphW G = generator.generate();
     DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
     DynBFS dyn_bfs(G, 0);
     BFS bfs(G, 0);
@@ -339,8 +340,7 @@ TEST_F(DynSSSPGTest, testDynamicBFSGeneratedGraphEdgeDeletion) {
 
 TEST_F(DynSSSPGTest, testDynamicDijkstraGeneratedGraph) {
     Aux::Random::setSeed(1, true);
-    auto G = DorogovtsevMendesGenerator{1000}.generate();
-    G = GraphTools::toWeighted(G);
+    GraphW G = DorogovtsevMendesGenerator{1000}.generate();
     DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
 
     DynDijkstra dyn_dij(G, 0);
@@ -371,7 +371,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraGeneratedGraphEdgeDeletion) {
     Aux::Random::setSeed(1, true);
     DorogovtsevMendesGenerator generator(1000);
     Graph G1 = generator.generate();
-    Graph G(G1, true, false);
+    GraphW G(G1, true, false);
     DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
     DynDijkstra dyn_dij(G, 0);
     Dijkstra dij(G, 0);
@@ -401,7 +401,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraBatches) {
     std::normal_distribution<double> distribution(100, 10);
     DorogovtsevMendesGenerator generator(100);
     Graph G1 = generator.generate();
-    Graph G(G1, true, false);
+    GraphW G(G1, true, false);
     DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
     // add random normal weights to G
 
@@ -447,7 +447,7 @@ TEST_F(DynSSSPGTest, testDynamicDijkstraBatchesEdgeDeletions) {
     Aux::Random::setSeed(1, true);
     ErdosRenyiGenerator generator(100, 0.25, false, false);
     Graph G1 = generator.generate();
-    Graph G(G1, true, false);
+    GraphW G(G1, true, false);
     DEBUG("Generated graph of dimension ", G.upperNodeIdBound());
     // delete random edges from G
 

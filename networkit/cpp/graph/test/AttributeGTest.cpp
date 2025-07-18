@@ -44,7 +44,7 @@ TYPED_TEST(AttributeTypeGTest, testReadWrite) {
     };
 
     {
-        Graph graph(n, false, false, true);
+        GraphW graph(n, false, false, true);
         graph.addEdge(0, 1);
         graph.addEdge(1, 2);
         graph.addEdge(2, 3);
@@ -54,7 +54,7 @@ TYPED_TEST(AttributeTypeGTest, testReadWrite) {
     }
 
     {
-        Graph graph(n, false, false, true);
+        GraphW graph(n, false, false, true);
         graph.addEdge(0, 1);
         graph.addEdge(1, 2);
         graph.addEdge(2, 3);
@@ -70,7 +70,7 @@ TYPED_TEST(AttributeTypeGTest, testReadWrite) {
 
 TEST_F(AttributeGTest, testNodeAttributeSetGetOnExistingNodes) {
 
-    Graph graph(15);
+    GraphW graph(15);
 
     const std::string name = "some int attribute";
     auto intAttr = graph.nodeAttributes().attach<int>(name);
@@ -86,7 +86,7 @@ TEST_F(AttributeGTest, testNodeAttributeSetGetOnExistingNodes) {
 
 TEST_F(AttributeGTest, testNodeAttributeSetGetOnExistingNodesByIndexProxy) {
 
-    Graph graph(15);
+    GraphW graph(15);
 
     const std::string name = "some int attribute";
     auto intAttr = graph.nodeAttributes().attach<int>(name);
@@ -102,7 +102,7 @@ TEST_F(AttributeGTest, testNodeAttributeSetGetOnExistingNodesByIndexProxy) {
 
 TEST_F(AttributeGTest, testNodeAttributeIteratorOnExistingNodes) {
 
-    Graph graph(15);
+    GraphW graph(15);
 
     const std::string name = "some int attribute";
     auto intAttr = graph.nodeAttributes().attach<int>(name);
@@ -131,14 +131,14 @@ TEST_F(AttributeGTest, testNodeAttributeReadWrite) {
     std::iota(values.begin(), values.end(), 0);
 
     {
-        Graph graph(n);
+        GraphW graph(n);
         auto attr = graph.nodeAttributes().attach<double>(name);
         graph.forNodes([&](node u) { attr.set(u, static_cast<double>(values[u])); });
         attr.write(path);
     }
 
     {
-        Graph graph(n);
+        GraphW graph(n);
         auto attr = graph.nodeAttributes().attach<double>(name);
         attr.read(path);
         graph.forNodes([&](node u) { EXPECT_EQ(values[u], attr[u]); });
@@ -148,8 +148,8 @@ TEST_F(AttributeGTest, testNodeAttributeReadWrite) {
 }
 
 TEST_F(AttributeGTest, testConstGetNodeAttribute) {
-    const Graph graph = []() {
-        Graph graph(10);
+    const GraphW graph = []() {
+        GraphW graph(10);
 
         auto intAttr = graph.nodeAttributes().attach<int>("some int attribute");
         intAttr.set(0, 1);
@@ -165,7 +165,7 @@ TEST_F(AttributeGTest, testConstGetNodeAttribute) {
 
 TEST_F(AttributeGTest, testEdgeAttributeSetGetOnExistingEdges) {
 
-    Graph graph(15, false, false, true);
+    GraphW graph(15, false, false, true);
     graph.addEdge(0, 1);
     graph.addEdge(1, 2);
     graph.addEdge(2, 3);
@@ -184,7 +184,7 @@ TEST_F(AttributeGTest, testEdgeAttributeSetGetOnExistingEdges) {
 
 TEST_F(AttributeGTest, testEdgeAttributeSetGetOnExistingEdgesByIndexProxy) {
 
-    Graph graph(15, false, false, true);
+    GraphW graph(15, false, false, true);
     graph.addEdge(0, 1);
     graph.addEdge(1, 2);
     graph.addEdge(2, 3);
@@ -203,7 +203,7 @@ TEST_F(AttributeGTest, testEdgeAttributeSetGetOnExistingEdgesByIndexProxy) {
 
 TEST_F(AttributeGTest, testEdgeAttributeSetGetOnExistingEdgesByIndexedEdge) {
 
-    Graph graph(15, false, false, true);
+    GraphW graph(15, false, false, true);
     graph.addEdge(0, 1);
     graph.addEdge(1, 2);
     graph.addEdge(2, 3);
@@ -228,7 +228,7 @@ TEST_F(AttributeGTest, testEdgeAttributeSetGetOnExistingEdgesByIndexedEdge) {
 
 TEST_F(AttributeGTest, testEdgeAttributeIteratorOnExistingEdges) {
 
-    Graph graph(15, false, false, true);
+    GraphW graph(15, false, false, true);
     graph.addEdge(0, 1);
     graph.addEdge(1, 2);
     graph.addEdge(2, 3);
@@ -258,7 +258,7 @@ TEST_F(AttributeGTest, testEdgeAttributeReadWrite) {
     const std::string name = "attribute";
 
     {
-        Graph graph(n, false, false, true);
+        GraphW graph(n, false, false, true);
         graph.addEdge(0, 1);
         graph.addEdge(1, 2);
         graph.addEdge(2, 3);
@@ -268,7 +268,7 @@ TEST_F(AttributeGTest, testEdgeAttributeReadWrite) {
     }
 
     {
-        Graph graph(n, false, false, true);
+        GraphW graph(n, false, false, true);
         graph.addEdge(0, 1);
         graph.addEdge(1, 2);
         graph.addEdge(2, 3);
@@ -281,8 +281,8 @@ TEST_F(AttributeGTest, testEdgeAttributeReadWrite) {
 }
 
 TEST_F(AttributeGTest, testConstGetEdgeAttribute) {
-    const Graph graph = []() {
-        Graph graph(10);
+    const GraphW graph = []() {
+        GraphW graph(10);
         graph.addEdge(0, 1);
         graph.indexEdges();
 
@@ -316,7 +316,7 @@ TEST_F(AttributeGTest, testAttributeAttachDetachAttach) {
         attributeMap.detach("some new int attribute");
     };
 
-    Graph graph(15, false, false, true);
+    GraphW graph(15, false, false, true);
     graph.addEdge(0, 1);
     graph.addEdge(1, 2);
     graph.addEdge(2, 3);
@@ -338,7 +338,7 @@ TEST_F(AttributeGTest, testAttributeDoubleAttach) {
         attributeMap.detach("some double attribute");
     };
 
-    Graph graph(15, false, false, true);
+    GraphW graph(15, false, false, true);
     graph.addEdge(0, 1);
     graph.addEdge(1, 2);
     graph.addEdge(2, 3);
@@ -350,7 +350,7 @@ TEST_F(AttributeGTest, testAttributeDoubleAttach) {
 
 TEST_F(AttributeGTest, testAttributeCopy) {
 
-    Graph graph1(5);
+    GraphW graph1(5);
     graph1.addEdge(0, 1);
     graph1.indexEdges();
 
@@ -358,7 +358,7 @@ TEST_F(AttributeGTest, testAttributeCopy) {
     edgeAttr1(0, 1) = 3;
 
     // make copy of graph (and its attributes)
-    Graph graph2{graph1};
+    GraphW graph2{graph1};
 
     // modify attribute of graph1
     edgeAttr1(0, 1) = 4;
@@ -374,7 +374,7 @@ TEST_F(AttributeGTest, testAttributeCopy) {
 }
 
 TEST_F(AttributeGTest, testGraphModeChange) {
-    Graph dgraph(5, false, true);
+    GraphW dgraph(5, false, true);
     dgraph.indexEdges();
     dgraph.addEdge(0, 1);
     auto edgeAttr = dgraph.edgeAttributes().attach<int>("int edge attr");
@@ -396,12 +396,12 @@ TEST_F(AttributeGTest, testGraphModeChange) {
 }
 
 TEST_F(AttributeGTest, testMoveGraph) {
-    Graph graph1(3);
+    GraphW graph1(3);
     graph1.indexEdges();
     graph1.addEdge(0, 1);
     auto attr1 = graph1.edgeAttributes().attach<int>("attr");
     attr1(0, 1) = 1;
-    Graph graph2(std::move(graph1));
+    GraphW graph2(std::move(graph1));
     // make sure that attr2 does not point to graph1 which was moved and may not be accessed anymore
     auto attr2 = graph2.edgeAttributes().get<int>("attr");
     EXPECT_EQ(attr2(0, 1), 1);
@@ -409,7 +409,7 @@ TEST_F(AttributeGTest, testMoveGraph) {
 
 TEST_F(AttributeGTest, testInvalidate) {
 
-    Graph graph(10);
+    GraphW graph(10);
 
     auto intAttr = graph.nodeAttributes().attach<int>("some int attribute");
     intAttr.set(0, 1);
@@ -422,7 +422,7 @@ TEST_F(AttributeGTest, testInvalidate) {
 
 TEST_F(AttributeGTest, testDefaultGet) {
 
-    Graph graph(10);
+    GraphW graph(10);
 
     auto intAttr = graph.nodeAttributes().attach<int>("some int attribute");
     intAttr.set(0, 1);
@@ -431,7 +431,7 @@ TEST_F(AttributeGTest, testDefaultGet) {
 }
 
 TEST_F(AttributeGTest, deleteOtherNode) {
-    Graph graph(3, false, true, true);
+    GraphW graph(3, false, true, true);
 
     graph.addEdge(0, 1);
     graph.addEdge(1, 2);
@@ -460,7 +460,7 @@ TEST_F(AttributeGTest, deleteOtherNode) {
 }
 
 TEST_F(AttributeGTest, testDeleteEdges) {
-    NetworKit::Graph graph(3);
+    NetworKit::GraphW graph(3);
     graph.addEdge(0, 1);
     graph.addEdge(0, 2);
 
@@ -476,7 +476,7 @@ TEST_F(AttributeGTest, testDeleteEdges) {
 }
 
 TEST_F(AttributeGTest, assignAttributeToAttribute) {
-    Graph graph(3);
+    GraphW graph(3);
     auto attr1 = graph.nodeAttributes().attach<int>("attr1");
     auto attr2 = graph.nodeAttributes().attach<int>("attr2");
 
@@ -495,7 +495,7 @@ TEST_F(AttributeGTest, assignAttributeToAttribute) {
 }
 
 TEST_F(AttributeGTest, testMaintainCompactEdges) {
-    Graph graph(3);
+    GraphW graph(3);
     graph.indexEdges();
     graph.addEdge(0, 1);
     graph.addEdge(0, 2);
@@ -512,7 +512,7 @@ TEST_F(AttributeGTest, testMaintainCompactEdges) {
 }
 
 TEST_F(AttributeGTest, testMaintainSortedEdges) {
-    Graph graph(3);
+    GraphW graph(3);
     graph.indexEdges();
     graph.addEdge(0, 1);
     graph.addEdge(0, 2);
@@ -529,7 +529,7 @@ TEST_F(AttributeGTest, testMaintainSortedEdges) {
 }
 
 TEST_F(AttributeGTest, testMaintainSortedAndCompactEdges) {
-    Graph graph(3);
+    GraphW graph(3);
     graph.indexEdges();
     graph.addEdge(0, 1);
     graph.addEdge(0, 2);

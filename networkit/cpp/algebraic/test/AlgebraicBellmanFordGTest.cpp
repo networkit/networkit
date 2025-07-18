@@ -29,7 +29,7 @@ protected:
 };
 
 TEST_F(AlgebraicBellmanFordGTest, testOnToyGraph) {
-    Graph G(5, true, true);
+    GraphW G(5, true, true);
     G.addEdge(0, 1, 6);
     G.addEdge(0, 3, 7);
     G.addEdge(1, 2, 5);

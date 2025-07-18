@@ -193,7 +193,7 @@ TEST_P(GraphBuilderAutoCompleteGTest, testAddHalfEdge) {
     b.addHalfEdge(0, 1, 4.51);
     b.addHalfEdge(1, 2, 2.39);
 
-    Graph G = toGraph(b);
+    GraphW G = toGraph(b);
 
     ASSERT_EQ(2u, G.numberOfEdges());
     ASSERT_FALSE(G.hasEdge(0, 2)); // was never added
@@ -336,7 +336,7 @@ TEST_P(GraphBuilderAutoCompleteGTest, testSameAsGraph) {
     for (index i = 0; i < runs; i++) {
         count n = Aux::Random::integer(n_max);
         auto b = createGraphBuilder(n);
-        Graph G_expected(n, isWeighted(), isDirected());
+        GraphW G_expected(n, isWeighted(), isDirected());
 
         G_expected.forNodes([&](node v) {
             double p = Aux::Random::probability();

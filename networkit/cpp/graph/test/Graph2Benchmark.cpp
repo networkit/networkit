@@ -9,7 +9,7 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Timer.hpp>
-#include <networkit/graph/Graph.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 namespace NetworKit {
 
@@ -80,7 +80,7 @@ TEST_F(Graph2Benchmark, nodePairIteration) {
 TEST_F(Graph2Benchmark, edgeInsertion) {
 
     count n = 1e+4;
-    Graph G(n);
+    GraphW G(n);
 
     Aux::Timer run;
     INFO("[BEGIN] (n=", n, ")");
@@ -94,7 +94,7 @@ TEST_F(Graph2Benchmark, edgeInsertion) {
 
 TEST_F(Graph2Benchmark, edgeRemoval) {
     count n = 1e+4;
-    Graph G(n);
+    GraphW G(n);
 
     // insert edges
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
@@ -111,7 +111,7 @@ TEST_F(Graph2Benchmark, edgeRemoval) {
 
 TEST_F(Graph2Benchmark, edgeIteration) {
     count n = 1e+4;
-    Graph G(n);
+    GraphW G(n);
 
     // insert edges
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
@@ -130,7 +130,7 @@ TEST_F(Graph2Benchmark, edgeIteration) {
 
 TEST_F(Graph2Benchmark, parallelEdgeIteration) {
     count n = 1e+4;
-    Graph G(n);
+    GraphW G(n);
 
     // insert edges
     G.forNodePairs([&](node u, node v) { G.addEdge(u, v); });
@@ -160,7 +160,7 @@ TEST_F(Graph2Benchmark, parallelSumForNodes) {
 TEST_F(Graph2Benchmark, nodeInsertion) {
     count n = 1e+4;
 
-    Graph G(0); // empty graph
+    GraphW G(0); // empty graph
 
     for (count i = 0; i < n; ++i) {
         G.addNode();
@@ -172,7 +172,7 @@ TEST_F(Graph2Benchmark, nodeInsertion) {
 TEST_F(Graph2Benchmark, nodeRemoval) {
     count n = 1e+4;
 
-    Graph G(n); // empty graph
+    GraphW G(n); // empty graph
 
     for (node u = 0; u < n; ++u) {
         G.removeNode(u);

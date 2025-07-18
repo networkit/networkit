@@ -29,7 +29,7 @@ TEST_F(SimmelianBackboneGTest, testOverlapCounting) {
     neighbors[1].push_back(RankedEdge(1, 4, 2, 1));
     neighbors[1].push_back(RankedEdge(1, 3, 1, 3));
 
-    Graph G(0);
+    GraphW G(0);
     G.indexEdges();
 
     SimmelianOverlapScore simmel(G, std::vector<count>(), 0);
@@ -58,7 +58,7 @@ TEST_F(SimmelianBackboneGTest, testOverlapCounting) {
 }
 
 TEST_F(SimmelianBackboneGTest, testRankedNeighborhood) {
-    Graph g(10);
+    GraphW g(10);
 
     g.addEdge(4, 5);
     g.addEdge(4, 6);
@@ -98,7 +98,7 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhood) {
 }
 
 TEST_F(SimmelianBackboneGTest, testRankedNeighborhoodSkippedRanks) {
-    Graph g(7);
+    GraphW g(7);
 
     g.addEdge(0, 1);
     g.addEdge(0, 2);
@@ -142,7 +142,7 @@ TEST_F(SimmelianBackboneGTest, testRankedNeighborhoodSkippedRanks) {
 }
 
 TEST_F(SimmelianBackboneGTest, testOverlapFiltering) {
-    Graph g(10);
+    GraphW g(10);
 
     g.addEdge(0, 1);
     g.addEdge(1, 2);
@@ -191,7 +191,7 @@ TEST_F(SimmelianBackboneGTest, testOverlapFiltering) {
 }
 
 TEST_F(SimmelianBackboneGTest, testBackboneTrivial) {
-    Graph g(5);
+    GraphW g(5);
 
     g.addEdge(0, 1);
     g.addEdge(0, 2);
@@ -207,7 +207,7 @@ TEST_F(SimmelianBackboneGTest, testBackboneTrivial) {
 }
 
 TEST_F(SimmelianBackboneGTest, testBackboneConnectedGraph) {
-    Graph g(25);
+    GraphW g(25);
     g.forNodePairs([&](node u, node v) { g.addEdge(u, v); });
     g.shrinkToFit();
 

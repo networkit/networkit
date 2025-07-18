@@ -6,6 +6,7 @@
  */
 
 #include <networkit/graph/TopologicalSort.hpp>
+#include <networkit/graph/GraphW.hpp>
 
 #include <stdexcept>
 #include <unordered_map>
@@ -15,13 +16,13 @@ namespace NetworKit {
 
 class TopologicalSortGTest : public testing::Test {
 protected:
-    Graph inputGraph(bool directed) const noexcept;
+    GraphW inputGraph(bool directed) const noexcept;
     std::unordered_map<node, node> makeMapping() const noexcept;
-    void assertTopological(Graph &G, std::vector<node> &sort);
+    void assertTopological(GraphW &G, std::vector<node> &sort);
 };
 
-Graph TopologicalSortGTest::inputGraph(bool directed) const noexcept {
-    auto G = Graph(5, false, directed);
+GraphW TopologicalSortGTest::inputGraph(bool directed) const noexcept {
+    auto G = GraphW(5, false, directed);
 
     /**
      * /--> 1 --> 3
@@ -50,7 +51,7 @@ std::unordered_map<node, node> TopologicalSortGTest::makeMapping() const noexcep
     return mapping;
 }
 
-void TopologicalSortGTest::assertTopological(Graph &G, std::vector<node> &sort) {
+void TopologicalSortGTest::assertTopological(GraphW &G, std::vector<node> &sort) {
     std::unordered_map<node, node> indices;
     EXPECT_EQ(sort.size(), G.numberOfNodes());
     G.forNodes([&](node u) {

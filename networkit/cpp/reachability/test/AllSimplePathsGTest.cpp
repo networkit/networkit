@@ -20,7 +20,8 @@ class AllSimplePathsGTest : public testing::Test {};
 
 TEST_F(AllSimplePathsGTest, testAllSimplePaths) {
     EdgeListReader reader('\t', 0, "#", true, true);
-    Graph G = reader.read("input/example.edgelist");
+    Graph G_temp = reader.read("input/example.edgelist");
+    GraphW G(G_temp);
 
     AllSimplePaths allSimplePaths(G, 1, 9);
     EXPECT_ANY_THROW(allSimplePaths.run());

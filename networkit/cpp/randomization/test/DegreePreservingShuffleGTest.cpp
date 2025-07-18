@@ -22,7 +22,7 @@ namespace CurveballDetails {
 TEST_F(DegreePreservingShuffleGTest, UndirectedNoChange) {
     const index n = 10;
 
-    Graph G(2 * n);
+    GraphW G(2 * n);
 
     // build clique between nodes [n, 2n)
     for (index i = n + 1; i < 2 * n; i++) {
