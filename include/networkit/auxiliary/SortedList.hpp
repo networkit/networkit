@@ -11,8 +11,6 @@
 #include <algorithm>
 #include <vector>
 
-#include <networkit/auxiliary/Log.hpp>
-
 namespace Aux {
 /*
  * Keeps a sorted list of pairs with at most k elements.
