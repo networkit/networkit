@@ -5,6 +5,7 @@
  *      Author: Andreas Scharf (andreas.b.scharf@gmail.com)
  */
 
+#include <thread>
 #include <gtest/gtest.h>
 #include <networkit/auxiliary/Timer.hpp>
 
