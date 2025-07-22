@@ -121,7 +121,8 @@ class TestRandomization(unittest.TestCase):
     def testEdgeSwitchingInplace(self):
         for numSwitchesPerEdge in [0, 1]:
             G = nk.generators.ErdosRenyiGenerator(100, 0.1).generate()
-            G_old = copy(G)
+            G_old = G
+            G = nk.graph.GraphW(G)
             algo = nk.randomization.EdgeSwitchingInPlace(G, numSwitchesPerEdge + 1)
             self.assertEqual(algo.getNumberOfSwitchesPerEdge(), numSwitchesPerEdge + 1)
             algo.setNumberOfSwitchesPerEdge(numSwitchesPerEdge)

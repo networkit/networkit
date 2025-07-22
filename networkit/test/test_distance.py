@@ -19,7 +19,7 @@ class TestDistance(unittest.TestCase):
 			for weighted in [True, False]:
 				g = nk.generators.ErdosRenyiGenerator(100, 0.15, directed).generate()
 				if weighted:
-					g = nk.graphtools.toWeighted(g)
+					g = nk.graph.GraphW(nk.graphtools.toWeighted(g))
 					g.forEdges(lambda u, v, ew, eid: g.setWeight(u, v, random.random()))
 				apsp = nk.distance.APSP(g)
 				apsp.run()
@@ -214,7 +214,7 @@ class TestDistance(unittest.TestCase):
 			for weighted in [True, False]:
 				g = nk.generators.ErdosRenyiGenerator(100, 0.15, directed).generate()
 				if weighted:
-					g = nk.graphtools.toWeighted(g)
+					g = nk.graph.GraphW(nk.graphtools.toWeighted(g))
 					g.forEdges(lambda u, v, ew, eid: g.setWeight(u, v, random.random()))
 				yield g
 
@@ -225,7 +225,7 @@ class TestDistance(unittest.TestCase):
 			for weighted in [True, False]:
 				g = nk.generators.ErdosRenyiGenerator(100, 0.15, directed).generate()
 				if weighted:
-					g = nk.graphtools.toWeighted(g)
+					g = nk.graph.GraphW(nk.graphtools.toWeighted(g))
 					g.forEdges(lambda u, v, ew, eid: g.setWeight(u, v, random.random()))
 				spsp = nk.distance.SPSP(g, [0,1,2,3,4])
 				spsp.run()
@@ -346,8 +346,9 @@ class TestDistance(unittest.TestCase):
 		self.assertEqual(pll.query(2, 4), 2)
 
 	def testAdamicAdarDistance(self):
-		self.L.indexEdges()
-		adam = nk.distance.AdamicAdarDistance(self.L)
+		lw = nk.graph.GraphW(self.L)
+		lw.indexEdges()
+		adam = nk.distance.AdamicAdarDistance(lw)
 		adam.preprocess()
 		self.assertEqual(len(adam.getAttribute()), 12)
 		self.assertAlmostEqual(adam.distance(2,3), 0.6931471805599453, delta=0.1)	
