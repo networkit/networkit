@@ -64,7 +64,7 @@ TEST_F(LoggingTimerTest, testStartedTimerElapsedValuesAfterStop) {
 
 TEST_F(LoggingTimerTest, testStartedTimerStartAndStopTimeValid) {
     Aux::StartedTimer timer;
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
     timer.stop();
     EXPECT_LE(timer.startTime(), timer.stopTime());
 }
