@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <set>
+#include <span>
 #include <vector>
 
 namespace Aux {
@@ -31,7 +32,7 @@ public:
     /**
      * @return Intersection of sets provided in @a A and @a B.
      */
-    std::set<T> intersect(const std::vector<T> &A, const std::vector<T> &B);
+    std::set<T> intersect(std::span<const T> A, std::span<const T> B);
 
 private:
     std::vector<bool> bv;
@@ -46,10 +47,9 @@ inline Aux::SetIntersector<T>::SetIntersector(T upperBound) : n(upperBound) {
 }
 
 template <class T>
-inline std::set<T> Aux::SetIntersector<T>::intersect(const std::vector<T> &A,
-                                                     const std::vector<T> &B) {
-    const std::vector<T> &smaller = (A.size() <= B.size()) ? A : B;
-    const std::vector<T> &larger = (A.size() <= B.size()) ? B : A;
+inline std::set<T> Aux::SetIntersector<T>::intersect(std::span<const T> A, std::span<const T> B) {
+    std::span<const T> smaller = (A.size() <= B.size()) ? A : B;
+    std::span<const T> larger = (A.size() <= B.size()) ? B : A;
 
     for (auto entry : smaller) {
         bv[entry] = true;

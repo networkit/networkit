@@ -8,6 +8,8 @@
 #ifndef NETWORKIT_CENTRALITY_DYN_BETWEENNESS_ONE_NODE_HPP_
 #define NETWORKIT_CENTRALITY_DYN_BETWEENNESS_ONE_NODE_HPP_
 
+#include <span>
+
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
 #include <networkit/dynamics/GraphEvent.hpp>
@@ -62,7 +64,7 @@ public:
      *
      * @param batch The batch of edge insertions.
      */
-    void updateBatch(const std::vector<GraphEvent> &batch) override;
+    void updateBatch(std::span<const GraphEvent> batch) override;
 
     /** Returns the new betweenness score of node x after the insertion of an edge. Distances and
      * scores of the other nodes are not changed by this function. */

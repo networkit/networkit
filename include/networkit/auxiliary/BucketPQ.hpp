@@ -10,6 +10,7 @@
 
 #include <limits>
 #include <list>
+#include <span>
 
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/PrioQueue.hpp>
@@ -58,7 +59,7 @@ private:
     /**
      * Constructor. Not to be used, only here for overriding.
      */
-    BucketPQ(const std::vector<int64_t> &) {}
+    BucketPQ(std::span<const int64_t>) {}
 
     /**
      * Constructor. Not to be used, only here for overriding.
@@ -78,7 +79,7 @@ public:
      * @param[in] minAdmissibleKey Minimum admissible key
      * @param[in] maxAdmissibleKey Maximum admissible key
      */
-    BucketPQ(const std::vector<int64_t> &keys, int64_t minAdmissibleKey, int64_t maxAdmissibleKey);
+    BucketPQ(std::span<const int64_t> keys, int64_t minAdmissibleKey, int64_t maxAdmissibleKey);
 
     /**
      * Builds priority queue of the specified capacity @a capacity.
