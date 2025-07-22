@@ -13,14 +13,14 @@ namespace NetworKit {
 
 namespace RandomLinkSampler {
 
-Graph byPercentage(const Graph &G, double trainPercentage) {
+GraphW byPercentage(const Graph &G, double trainPercentage) {
     if (trainPercentage < 0 || trainPercentage > 1) {
         throw std::invalid_argument("Given percentage is not in [0, 1].");
     }
     return byCount(G, trainPercentage * G.numberOfEdges());
 }
 
-Graph byCount(const Graph &G, count numTrainLinks) {
+GraphW byCount(const Graph &G, count numTrainLinks) {
     if (numTrainLinks > G.numberOfEdges()) {
         throw std::invalid_argument("numTrainLinks > G.numberOfEdges().");
     }

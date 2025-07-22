@@ -317,7 +317,7 @@ public:
         DEBUG("Trading took ", timer.elapsedMilliseconds(), " milliseconds.");
     }
 
-    Graph getGraph() {
+    GraphW getGraph() {
         const bool is_directed = inputGraph.isDirected();
         GraphW outputGraph(inputGraph.numberOfNodes(), false, is_directed);
         outputGraph.setEdgeCount(unsafe, prioQueue.size());
