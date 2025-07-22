@@ -353,7 +353,7 @@ cdef class GraphTools:
 		return Graph().setThis(toWeighted(graph._this))
 
 	@staticmethod
-	def size(Graph graph):
+	def size(graph):
 		"""
 		size(graph)
 		
@@ -364,7 +364,10 @@ cdef class GraphTools:
 		tuple(int, int)
 			a pair (n, m) where n is the number of nodes and m is the number of edges.
 		"""
-		return size(graph._this)
+		if not isinstance(graph, Graph) and not isinstance(graph, GraphW):
+			raise Exception("Graph expected, but got something else")
+		cdef Graph c_graph = <Graph>graph
+		return size(c_graph._this)
 
 	@staticmethod
 	def density(Graph graph):
