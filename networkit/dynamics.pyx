@@ -2,7 +2,7 @@
 
 from .base cimport _Algorithm
 from .base cimport Algorithm
-from .graph cimport _Graph, Graph, _GraphW
+from .graph cimport _Graph, Graph, _GraphW, GraphW
 from .helpers import stdstring
 
 def graphFromStream(stream, weighted, directed):
@@ -20,7 +20,7 @@ def graphFromStream(stream, weighted, directed):
 	directed : bool
 		Produce a directed or undirected graph
 	"""
-	G = Graph(0, weighted, directed)
+	G = GraphW(0, weighted, directed)
 	gu = GraphUpdater(G)
 	gu.update(stream)
 	return G

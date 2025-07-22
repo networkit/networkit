@@ -711,7 +711,7 @@ cdef class GraphTools:
 		return Graph().setThis(result.first), result.second
 
 	@staticmethod
-	def randomizeWeights(Graph G):
+	def randomizeWeights(GraphW G):
 		"""
 		randomizeWeights(G)
 
