@@ -46,7 +46,7 @@ GraphW MocnikGeneratorBasic::generate() {
     assert(k > 1);
 
     // create graph
-    GraphW G;
+    GraphW G(0, false, true);
 
     // create the nodes
     nodePositions.resize(n);

@@ -864,7 +864,7 @@ cdef class GraphW:
 
 	def __cinit__(self, n=0, bool_t weighted=False, bool_t directed=False, bool_t edgesIndexed=False):
 		if isinstance(n, Graph):
-			self._this = _GraphW((<Graph>n)._this, weighted, directed, edgesIndexed)
+			self._this = _GraphW((<Graph>n)._this)
 		elif isinstance(n, GraphW):
 			self._this = _GraphW((<GraphW>n)._this)
 		else:

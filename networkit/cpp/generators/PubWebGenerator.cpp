@@ -143,7 +143,7 @@ void PubWebGenerator::spreadRemainingNodes(GraphW &g) {
 
 GraphW PubWebGenerator::generate() {
     // init
-    GraphW G;
+    GraphW G(0, true);
 
     // add vertices according to PubWeb distribution
     chooseDenseAreaSizes();

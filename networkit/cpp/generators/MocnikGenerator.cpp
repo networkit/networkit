@@ -316,7 +316,7 @@ GraphW MocnikGenerator::generate() {
     assert(relativeWeights.size() == ns.size());
 
     // create graph
-    GraphW G(0, weighted);
+    GraphW G(0, weighted, true);
 
     // create the nodes
     node curr = 0;

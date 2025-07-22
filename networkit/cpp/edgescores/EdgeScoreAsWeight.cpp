@@ -19,7 +19,7 @@ GraphW EdgeScoreAsWeight::calculate() {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
-    GraphW result(*G);
+    GraphW result(*G, true, false);
 
     if (squared) {
         G->parallelForEdges([&](node u, node v, edgeid eid) {
