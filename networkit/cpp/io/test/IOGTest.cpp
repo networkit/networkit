@@ -11,6 +11,7 @@
 #include <cassert>
 #include <chrono>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -1420,6 +1421,34 @@ TEST_F(IOGTest, testMatrixMarketReaderIntegerWeights) {
         EXPECT_TRUE(G_from_csr.hasEdge(u, v));
         EXPECT_EQ(G_from_csr.weight(u, v), w);
     });
+}
+
+TEST_F(IOGTest, testGraphToolBinaryEmptyFileCanBeRead) {
+    Graph graph(0, false, true);
+    GraphToolBinaryWriter writer;
+    std::filesystem::path const path = "output/empty_graph.gt";
+    writer.write(graph, path.c_str());
+
+    GraphToolBinaryReader reader;
+    Graph graph_read = reader.read(path.c_str());
+    EXPECT_EQ(graph.numberOfNodes(), graph_read.numberOfNodes());
+    EXPECT_EQ(graph.numberOfEdges(), graph_read.numberOfEdges());
+    EXPECT_EQ(graph.isWeighted(), graph_read.isWeighted());
+    EXPECT_EQ(graph.isDirected(), graph_read.isDirected());
+}
+
+TEST_F(IOGTest, testNetworkitBinaryWriteReadEmptyGraph) {
+    Graph graph(0, false, true);
+    NetworkitBinaryWriter writer;
+    std::filesystem::path const path = "output/empty_graph.nkb";
+    writer.write(graph, path.c_str());
+
+    NetworkitBinaryReader reader;
+    Graph graph_read = reader.read(path.c_str());
+    EXPECT_EQ(graph.numberOfNodes(), graph_read.numberOfNodes());
+    EXPECT_EQ(graph.numberOfEdges(), graph_read.numberOfEdges());
+    EXPECT_EQ(graph.isWeighted(), graph_read.isWeighted());
+    EXPECT_EQ(graph.isDirected(), graph_read.isDirected());
 }
 
 } /* namespace NetworKit */
