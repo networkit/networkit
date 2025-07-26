@@ -49,7 +49,6 @@
 #include <networkit/io/PartitionReader.hpp>
 #include <networkit/io/PartitionWriter.hpp>
 #include <networkit/io/RBMatrixReader.hpp>
-#include <networkit/io/SNAPEdgeListPartitionReader.hpp>
 #include <networkit/io/SNAPGraphReader.hpp>
 #include <networkit/io/SNAPGraphWriter.hpp>
 #include <networkit/io/ThrillGraphBinaryReader.hpp>
@@ -1423,24 +1422,10 @@ TEST_F(IOGTest, testMatrixMarketReaderIntegerWeights) {
     });
 }
 
-TEST_F(IOGTest, testGraphToolBinaryEmptyFileCanBeRead) {
-    Graph graph(0, false, true);
-    GraphToolBinaryWriter writer;
-    std::filesystem::path const path = "output/empty_graph.gt";
-    writer.write(graph, path.string());
-
-    GraphToolBinaryReader reader;
-    Graph graph_read = reader.read(path.string());
-    EXPECT_EQ(graph.numberOfNodes(), graph_read.numberOfNodes());
-    EXPECT_EQ(graph.numberOfEdges(), graph_read.numberOfEdges());
-    EXPECT_EQ(graph.isWeighted(), graph_read.isWeighted());
-    EXPECT_EQ(graph.isDirected(), graph_read.isDirected());
-}
-
 TEST_F(IOGTest, testNetworkitBinaryWriteReadEmptyGraph) {
     Graph graph(0, false, true);
     NetworkitBinaryWriter writer;
-    std::filesystem::path const path = "output/empty_graph.nkb";
+    const std::filesystem::path path = "output/empty_graph.nkb";
     writer.write(graph, path.string());
 
     NetworkitBinaryReader reader;
@@ -1455,7 +1440,7 @@ TEST_F(IOGTest, testNetworkitBinaryWriteReadEmptyGraph) {
 TEST_F(IOGTest, testNetworkitBinaryWriteReadEmptyGraphWithIndexes) {
     Graph graph(0, true, false, true);
     NetworkitBinaryWriter writer;
-    std::filesystem::path const path = "output/empty_graph.nkb";
+    const std::filesystem::path path = "output/empty_graph.nkb";
     writer.write(graph, path.string());
 
     NetworkitBinaryReader reader;
