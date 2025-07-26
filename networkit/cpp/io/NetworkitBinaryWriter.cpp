@@ -154,12 +154,11 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
 
     count nodes = G.numberOfNodes();
     if (nodes == 0) {
-        // build header.features etc. as you do now…
         strncpy(header.magic, "nkbg003", 8);
         setFeatures();
         writeHeader();
         uint64_t zero = 0;
-        outStream.write(reinterpret_cast<char *>(&zero), sizeof(zero)); // adjListSize
+        outStream.write(reinterpret_cast<char *>(&zero), sizeof(zero));
         return;
     }
     if (nodes < chunks) {
