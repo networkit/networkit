@@ -84,7 +84,6 @@ Graph NetworkitBinaryReader::readData(const T &source) {
     };
 
     readHeader();
-
     nodes = header.nodes;
     DEBUG("# nodes here = ", nodes);
     chunks = header.chunks;
@@ -95,8 +94,12 @@ Graph NetworkitBinaryReader::readData(const T &source) {
         weighted = true;
     }
     Graph G(nodes, weighted, directed);
+
     if (indexed)
         G.indexEdges();
+    if (nodes == 0) {
+        return G;
+    }
     // Read base data.
     std::vector<uint8_t> nodeFlags;
     const char *baseIt = startIt + header.offsetBaseData;
