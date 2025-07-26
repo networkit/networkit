@@ -1427,10 +1427,10 @@ TEST_F(IOGTest, testGraphToolBinaryEmptyFileCanBeRead) {
     Graph graph(0, false, true);
     GraphToolBinaryWriter writer;
     std::filesystem::path const path = "output/empty_graph.gt";
-    writer.write(graph, path.c_str());
+    writer.write(graph, path.string());
 
     GraphToolBinaryReader reader;
-    Graph graph_read = reader.read(path.c_str());
+    Graph graph_read = reader.read(path.string());
     EXPECT_EQ(graph.numberOfNodes(), graph_read.numberOfNodes());
     EXPECT_EQ(graph.numberOfEdges(), graph_read.numberOfEdges());
     EXPECT_EQ(graph.isWeighted(), graph_read.isWeighted());
@@ -1441,10 +1441,10 @@ TEST_F(IOGTest, testNetworkitBinaryWriteReadEmptyGraph) {
     Graph graph(0, false, true);
     NetworkitBinaryWriter writer;
     std::filesystem::path const path = "output/empty_graph.nkb";
-    writer.write(graph, path.c_str());
+    writer.write(graph, path.string());
 
     NetworkitBinaryReader reader;
-    Graph graph_read = reader.read(path.c_str());
+    Graph graph_read = reader.read(path.string());
     EXPECT_EQ(graph.numberOfNodes(), graph_read.numberOfNodes());
     EXPECT_EQ(graph.numberOfEdges(), graph_read.numberOfEdges());
     EXPECT_EQ(graph.isWeighted(), graph_read.isWeighted());
@@ -1456,10 +1456,10 @@ TEST_F(IOGTest, testNetworkitBinaryWriteReadEmptyGraphWithIndexes) {
     Graph graph(0, true, false, true);
     NetworkitBinaryWriter writer;
     std::filesystem::path const path = "output/empty_graph.nkb";
-    writer.write(graph, path.c_str());
+    writer.write(graph, path.string());
 
     NetworkitBinaryReader reader;
-    Graph graph_read = reader.read(path.c_str());
+    Graph graph_read = reader.read(path.string());
     EXPECT_EQ(graph.numberOfNodes(), graph_read.numberOfNodes());
     EXPECT_EQ(graph.numberOfEdges(), graph_read.numberOfEdges());
     EXPECT_EQ(graph.isWeighted(), graph_read.isWeighted());
