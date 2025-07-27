@@ -39,7 +39,7 @@ TEST_F(SpinlockGTest, testSpinLockUnderContention) {
     std::vector<std::thread> threads(numberOfThreads);
     std::ranges::iota(threads, 0);
 
-    for (auto &t : threads) {
+    for (std::thread &thread : threads) {
         t.join();
     }
 
