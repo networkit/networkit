@@ -5,6 +5,7 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <array>
@@ -1422,6 +1423,13 @@ TEST_F(IOGTest, testMatrixMarketReaderIntegerWeights) {
     });
 }
 
+MATCHER_P(GraphFeaturesEqual, expected, "Graph matches expected features") {
+    return arg.numberOfNodes() == expected.numberOfNodes()
+           && arg.numberOfEdges() == expected.numberOfEdges()
+           && arg.isWeighted() == expected.isWeighted() && arg.isDirected() == expected.isDirected()
+           && arg.hasEdgeIds() == expected.hasEdgeIds();
+}
+
 TEST_F(IOGTest, testNetworkitBinaryWriteReadEmptyGraph) {
     Graph graph(0, false, true);
     NetworkitBinaryWriter writer;
@@ -1430,11 +1438,7 @@ TEST_F(IOGTest, testNetworkitBinaryWriteReadEmptyGraph) {
 
     NetworkitBinaryReader reader;
     Graph graph_read = reader.read(path.string());
-    EXPECT_EQ(graph.numberOfNodes(), graph_read.numberOfNodes());
-    EXPECT_EQ(graph.numberOfEdges(), graph_read.numberOfEdges());
-    EXPECT_EQ(graph.isWeighted(), graph_read.isWeighted());
-    EXPECT_EQ(graph.isDirected(), graph_read.isDirected());
-    EXPECT_EQ(graph.hasEdgeIds(), graph_read.hasEdgeIds());
+    EXPECT_THAT(graph_read, GraphFeaturesEqual(graph));
 }
 
 TEST_F(IOGTest, testNetworkitBinaryWriteReadEmptyGraphWithIndexes) {
@@ -1445,11 +1449,6 @@ TEST_F(IOGTest, testNetworkitBinaryWriteReadEmptyGraphWithIndexes) {
 
     NetworkitBinaryReader reader;
     Graph graph_read = reader.read(path.string());
-    EXPECT_EQ(graph.numberOfNodes(), graph_read.numberOfNodes());
-    EXPECT_EQ(graph.numberOfEdges(), graph_read.numberOfEdges());
-    EXPECT_EQ(graph.isWeighted(), graph_read.isWeighted());
-    EXPECT_EQ(graph.isDirected(), graph_read.isDirected());
-    EXPECT_EQ(graph.hasEdgeIds(), graph_read.hasEdgeIds());
+    EXPECT_THAT(graph_read, GraphFeaturesEqual(graph));
 }
-
 } /* namespace NetworKit */
