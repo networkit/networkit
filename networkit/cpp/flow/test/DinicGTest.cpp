@@ -77,7 +77,7 @@ TEST_F(DinicGTest, ThreeDisjointPaths) {
 
     Dinic test(G, 0, 4);
     test.run();
-    EXPECT_DOUBLE_EQ(/*expectedFlow*/ 3.0, test.getMaxFlow());
+    EXPECT_DOUBLE_EQ(test.getMaxFlow(), /*expectedFlow*/ 3.0);
 }
 
 TEST_F(DinicGTest, testThreeCycleWithTailGraph) {
@@ -89,11 +89,11 @@ TEST_F(DinicGTest, testThreeCycleWithTailGraph) {
 
     Dinic test0to3(graph, 0, 3);
     test0to3.run();
-    EXPECT_DOUBLE_EQ(/*expectedFlow0to3*/ 0.3, test0to3.getMaxFlow());
+    EXPECT_DOUBLE_EQ(test0to3.getMaxFlow(), /*expectedFlow0to3*/ 0.3);
 
     Dinic test1to3(graph, 1, 3);
     test1to3.run();
-    EXPECT_DOUBLE_EQ(/*expectedFlow1to3*/ 0.6, test1to3.getMaxFlow());
+    EXPECT_DOUBLE_EQ(test1to3.getMaxFlow(), /*expectedFlow1to3*/ 0.6);
 }
 
 TEST_F(DinicGTest, testFourLayeredDAG) {
@@ -112,19 +112,19 @@ TEST_F(DinicGTest, testFourLayeredDAG) {
 
     Dinic test0to7(graph, 0, 7);
     test0to7.run();
-    EXPECT_DOUBLE_EQ(/*expectedFlow0to7*/ 3.0, test0to7.getMaxFlow());
+    EXPECT_DOUBLE_EQ(test0to7.getMaxFlow(), /*expectedFlow0to7*/ 3.0);
 
     Dinic test3to7(graph, 3, 7);
     test3to7.run();
-    EXPECT_DOUBLE_EQ(/*expectedFlow3to7*/ 2.0, test3to7.getMaxFlow());
+    EXPECT_DOUBLE_EQ(test3to7.getMaxFlow(), /*expectedFlow3to7*/ 2.0);
 
     Dinic test0to5(graph, 0, 5);
     test0to5.run();
-    EXPECT_DOUBLE_EQ(/*expectedFlow0to5*/ 2.0, test0to5.getMaxFlow());
+    EXPECT_DOUBLE_EQ(test0to5.getMaxFlow(), /*expectedFlow0to5*/ 2.0);
 
     Dinic test2to4(graph, 2, 4);
     test2to4.run();
-    EXPECT_DOUBLE_EQ(/*expectedFlow2to4*/ 1.0, test2to4.getMaxFlow());
+    EXPECT_DOUBLE_EQ(test2to4.getMaxFlow(), /*expectedFlow2to4*/ 1.0);
 }
 
 TEST_F(DinicGTest, testMaxFlowDiamondWithCrossGraph) {
@@ -137,11 +137,11 @@ TEST_F(DinicGTest, testMaxFlowDiamondWithCrossGraph) {
 
     Dinic test0to3(graph, 0, 3);
     test0to3.run();
-    EXPECT_DOUBLE_EQ(/*expectedFlow0to3*/ 20.0, test0to3.getMaxFlow());
+    EXPECT_DOUBLE_EQ(test0to3.getMaxFlow(), /*expectedFlow0to3*/ 20.0);
 
     Dinic test0to2(graph, 0, 2);
     test0to2.run();
-    EXPECT_DOUBLE_EQ(/*expectedFlow0to2*/ 15.0, test0to2.getMaxFlow());
+    EXPECT_DOUBLE_EQ(test0to2.getMaxFlow(), /*expectedFlow0to2*/ 15.0);
 }
 
 TEST_F(DinicGTest, testMaxFlowDisconnectedGraphs) {
@@ -154,7 +154,7 @@ TEST_F(DinicGTest, testMaxFlowDisconnectedGraphs) {
     graph.addEdge(5, 6, 10.0);
     Dinic test(graph, 0, 5);
     test.run();
-    EXPECT_DOUBLE_EQ(/*expectedFlow*/ 0.0, test.getMaxFlow());
+    EXPECT_DOUBLE_EQ(test.getMaxFlow(), /*expectedFlow*/ 0.0);
 }
 
 } // namespace NetworKit

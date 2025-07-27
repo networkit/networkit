@@ -26,11 +26,11 @@ public:
      * @brief Construct a Dinic flow solver.
      *
      * @param G     Reference to the input directed, weighted graph.
-     * @param s     Source node identifier.
-     * @param t     Target node identifier.
+     * @param src     Source node identifier.
+     * @param dst     Target node identifier.
      * @throws std::runtime_error if the graph is not directed, not weighted, or s == t.
      */
-    Dinic(const Graph &G, node s, node t);
+    Dinic(const Graph &G, node src, node dst);
 
     /**
      * @brief Execute the algorithm to compute maximum flow.

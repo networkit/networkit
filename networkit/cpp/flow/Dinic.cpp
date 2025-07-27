@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-Dinic::Dinic(const Graph &G, node s, node t) : graph(&G), source(s), target(t) {
+Dinic::Dinic(const Graph &G, node src, node dst) : graph(&G), source(src), target(dst) {
 
     if (!graph->isDirected()) {
         throw std::runtime_error("Dinic algorithm requires directed graph!");
@@ -71,7 +71,7 @@ edgeweight Dinic::computeBlockingPath() {
     std::vector<node> path;
     path.push_back(target);
     node u = target;
-    while (true) {
+    do {
         node v = none;
         // build path from target to source
         if (!parents[u].empty()) {
@@ -88,13 +88,13 @@ edgeweight Dinic::computeBlockingPath() {
         if (v == source) {
             edgeweight bottleNeckOnPath = std::numeric_limits<edgeweight>::max();
             // determine minimal flow on path
-            for (size_t i{}; i + 1 < path.size(); ++i) {
+            for (size_t i = 0; i + 1 < path.size(); ++i) {
                 const node parent = path[i + 1];
                 const node child = path[i];
                 bottleNeckOnPath = std::min(bottleNeckOnPath, residualGraph.weight(parent, child));
             }
             // update the capacities and flows in the other edges
-            for (size_t i{}; i + 1 < path.size(); ++i) {
+            for (size_t i = 0; i + 1 < path.size(); ++i) {
                 const node parent = path[i + 1];
                 const node child = path[i];
                 const edgeweight currentCapacity = residualGraph.weight(parent, child);
@@ -114,7 +114,7 @@ edgeweight Dinic::computeBlockingPath() {
             path.push_back(target);
         }
         u = v;
-    }
+    } while (true);
 
     return totalFlow;
 }
@@ -123,10 +123,10 @@ void Dinic::run() {
     initializeResidualGraph();
     maxFlow = 0.0;
     while (canReachTargetInLevelGraph()) {
-        if (const double flow = computeBlockingPath(); !Aux::NumericTools::equal(flow, 0.0)) {
-            maxFlow += flow;
-        } else
+        const double flow = computeBlockingPath();
+        if (Aux::NumericTools::equal(flow, 0.0))
             break;
+        maxFlow += flow;
     }
     hasRun = true;
 }
