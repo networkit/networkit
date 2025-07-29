@@ -28,7 +28,7 @@ public:
      * @param G     Reference to the input directed, weighted graph.
      * @param src     Source node identifier.
      * @param dst     Target node identifier.
-     * @throws std::runtime_error if the graph is not directed, not weighted, or s == t.
+     * @throws std::runtime_error if the graph is not directed, not weighted, or src == dst.
      */
     Dinic(const Graph &G, node src, node dst);
 
