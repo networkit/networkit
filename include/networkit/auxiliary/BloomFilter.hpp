@@ -11,7 +11,6 @@
 #include <vector>
 
 #include <networkit/Globals.hpp>
-#include <networkit/auxiliary/Log.hpp>
 
 namespace Aux {
 

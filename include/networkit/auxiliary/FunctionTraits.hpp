@@ -2,7 +2,6 @@
 #define NETWORKIT_AUXILIARY_FUNCTION_TRAITS_HPP_
 
 #include <tuple>
-#include <type_traits>
 
 namespace Aux {
 

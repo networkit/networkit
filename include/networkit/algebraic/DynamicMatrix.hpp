@@ -8,7 +8,6 @@
 #ifndef NETWORKIT_ALGEBRAIC_DYNAMIC_MATRIX_HPP_
 #define NETWORKIT_ALGEBRAIC_DYNAMIC_MATRIX_HPP_
 
-#include <iostream>
 
 #include <networkit/algebraic/AlgebraicGlobals.hpp>
 #include <networkit/algebraic/SparseAccumulator.hpp>

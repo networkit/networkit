@@ -1,4 +1,3 @@
-#include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Parallelism.hpp>
 
 // OpenMP
