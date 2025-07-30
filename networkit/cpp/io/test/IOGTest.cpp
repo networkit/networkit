@@ -1432,23 +1432,19 @@ MATCHER_P(GraphFeaturesEqual, expected, "Graph matches expected features") {
 
 TEST_F(IOGTest, testNetworkitBinaryWriteReadEmptyGraph) {
     Graph graph(0, false, true);
-    NetworkitBinaryWriter writer;
     const std::filesystem::path path = "output/empty_graph.nkb";
-    writer.write(graph, path.string());
+    NetworkitBinaryWriter{}.write(graph, path.string());
 
-    NetworkitBinaryReader reader;
-    Graph graph_read = reader.read(path.string());
+    const Graph graph_read = NetworkitBinaryReader{}.read(path.string());
     EXPECT_THAT(graph_read, GraphFeaturesEqual(graph));
 }
 
 TEST_F(IOGTest, testNetworkitBinaryWriteReadEmptyGraphWithIndexes) {
     Graph graph(0, true, false, true);
-    NetworkitBinaryWriter writer;
     const std::filesystem::path path = "output/empty_graph.nkb";
-    writer.write(graph, path.string());
+    NetworkitBinaryWriter{}.write(graph, path.string());
 
-    NetworkitBinaryReader reader;
-    Graph graph_read = reader.read(path.string());
+    const Graph graph_read = NetworkitBinaryReader{}.read(path.string());
     EXPECT_THAT(graph_read, GraphFeaturesEqual(graph));
 }
 } /* namespace NetworKit */
