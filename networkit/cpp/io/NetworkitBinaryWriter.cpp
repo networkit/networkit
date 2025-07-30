@@ -161,6 +161,7 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
         outStream.write(reinterpret_cast<char *>(&zero), sizeof(zero));
         return;
     }
+
     if (nodes < chunks) {
         chunks = nodes;
         INFO("reducing chunks to ", chunks, " chunks");
