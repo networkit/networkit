@@ -57,11 +57,11 @@ public:
     std::vector<uint8_t> writeToBuffer(const Graph &G);
 
 private:
+    static constexpr const char *FILE_FORMAT = "nkbg003";
     count chunks;
     NetworkitBinaryWeights weightsType;
     NetworkitBinaryEdgeIDs edgeIndex;
     bool preserveEdgeIndex;
-
     template <class T>
     void writeData(T &outStream, const Graph &G);
 };
