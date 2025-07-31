@@ -80,6 +80,23 @@ TEST_F(DinicGTest, ThreeDisjointPaths) {
     EXPECT_DOUBLE_EQ(test.getMaxFlow(), /*expectedFlow*/ 3.0);
 }
 
+TEST_F(DinicGTest, ThreeDisjointPathsWithParallelEdges) {
+    Graph G(5, true, true);
+    G.addEdge(0, 1, 1);
+    G.addEdge(1, 0, 1);
+    G.addEdge(1, 4, 1);
+    G.addEdge(0, 2, 1);
+    G.addEdge(2, 0, 1);
+    G.addEdge(2, 4, 1);
+    G.addEdge(0, 3, 1);
+    G.addEdge(3, 0, 1);
+    G.addEdge(3, 4, 1);
+
+    Dinic test(G, 0, 4);
+    test.run();
+    EXPECT_DOUBLE_EQ(test.getMaxFlow(), /*expectedFlow*/ 3.0);
+}
+
 TEST_F(DinicGTest, testThreeCycleWithTailGraph) {
     Graph graph(4, true, true);
     graph.addEdge(0, 1, 0.3);
@@ -94,6 +111,25 @@ TEST_F(DinicGTest, testThreeCycleWithTailGraph) {
     Dinic test1to3(graph, 1, 3);
     test1to3.run();
     EXPECT_DOUBLE_EQ(test1to3.getMaxFlow(), /*expectedFlow1to3*/ 0.6);
+}
+
+TEST_F(DinicGTest, testThreeCycleWithTailGraphWithParallelEdges) {
+    Graph graph(4, true, true);
+    graph.addEdge(0, 1, 0.3);
+    graph.addEdge(1, 0, 1.3);
+    graph.addEdge(1, 2, 0.6);
+    graph.addEdge(2, 1, 1.6);
+    graph.addEdge(2, 0, 0.9);
+    graph.addEdge(0, 2, 1.9);
+    graph.addEdge(2, 3, 0.7);
+
+    Dinic test0to3(graph, 0, 3);
+    test0to3.run();
+    EXPECT_DOUBLE_EQ(test0to3.getMaxFlow(), /*expectedFlow0to3*/ 0.7);
+
+    Dinic test1to3(graph, 1, 3);
+    test1to3.run();
+    EXPECT_DOUBLE_EQ(test1to3.getMaxFlow(), /*expectedFlow1to3*/ 0.7);
 }
 
 TEST_F(DinicGTest, testFourLayeredDAG) {

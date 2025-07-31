@@ -28,14 +28,15 @@ Dinic::Dinic(const Graph &G, node src, node dst) : graph(&G), source(src), targe
 }
 
 void Dinic::initializeResidualGraph() {
-    GraphBuilder builder(graph->numberOfNodes(), true, true, false);
-    builder.parallelForNodes([&](node u) {
-        graph->forInNeighborsOf(u, [&](node v, edgeweight w) {
-            builder.addHalfEdge(v, u, w);
-            builder.addHalfEdge(u, v, 0.0);
+    residualGraph = *graph;
+    residualGraph.indexEdges();
+    auto flowAttribute = residualGraph.attachEdgeDoubleAttribute(FLOW);
+
+    residualGraph.forNodes([&](node u) {
+        residualGraph.forEdgesOf(u, [&](node u, node v, edgeweight weight, index edgeIndex) {
+            flowAttribute.set(edgeIndex, 0.0);
         });
     });
-    residualGraph = builder.completeGraph();
 }
 
 bool Dinic::canReachTargetInLevelGraph() {
@@ -71,6 +72,7 @@ edgeweight Dinic::computeBlockingPath() {
     std::vector<node> path;
     path.push_back(target);
     node u = target;
+    auto flow = residualGraph.getEdgeDoubleAttribute(FLOW);
     do {
         node v = none;
         // build path from target to source
@@ -97,13 +99,13 @@ edgeweight Dinic::computeBlockingPath() {
             for (size_t i = 0; i + 1 < path.size(); ++i) {
                 const node parent = path[i + 1];
                 const node child = path[i];
-                const edgeweight currentCapacity = residualGraph.weight(parent, child);
-                residualGraph.setWeight(parent, child, currentCapacity - bottleNeckOnPath);
-                if (residualGraph.hasEdge(child, parent)) {
-                    const edgeweight reverseCapacity = residualGraph.weight(child, parent);
-                    residualGraph.setWeight(child, parent, reverseCapacity + bottleNeckOnPath);
+                const index edgeID = residualGraph.edgeId(parent, child);
+                residualGraph.setWeight(parent, child,
+                                        residualGraph.weight(parent, child) - bottleNeckOnPath);
+                if (flow.get(edgeID) > 0.0) {
+                    flow.set(edgeID, flow.get(edgeID) + bottleNeckOnPath);
                 } else {
-                    residualGraph.addEdge(child, parent, bottleNeckOnPath);
+                    flow.set(edgeID, bottleNeckOnPath);
                 }
                 if (residualGraph.weight(parent, child) == 0 && !parents[child].empty()) {
                     parents[child].pop_front();
