@@ -33,8 +33,12 @@ void Dinic::initializeResidualGraph() {
     auto flowAttribute = residualGraph.attachEdgeDoubleAttribute(FLOW);
 
     residualGraph.forNodes([&](node u) {
-        residualGraph.forEdgesOf(
-            u, [&](node, node, edgeweight, index edgeIndex) { flowAttribute.set(edgeIndex, 0.0); });
+        residualGraph.forEdgesOf(u, [&](node, node, edgeweight weight, index edgeIndex) {
+            if (weight < 0.0)
+                throw std::runtime_error(
+                    "Dinic algorithm requires non-negative weights (capacities)!");
+            flowAttribute.set(edgeIndex, 0.0);
+        });
     });
 }
 

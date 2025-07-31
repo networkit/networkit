@@ -66,6 +66,15 @@ TEST_F(DinicGTest, testRunNotCalledThrows) {
     }
 }
 
+TEST_F(DinicGTest, testNegativeWeightsThrows) {
+    Graph G(3, true, true);
+    G.addEdge(0, 1, 1);
+    G.addEdge(1, 2, -1);
+
+    Dinic test(G, 0, 2);
+    EXPECT_THROW(test.run(), std::runtime_error);
+}
+
 TEST_F(DinicGTest, ThreeDisjointPaths) {
     Graph G(5, true, true);
     G.addEdge(0, 1, 1);
