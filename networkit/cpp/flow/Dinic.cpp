@@ -33,9 +33,8 @@ void Dinic::initializeResidualGraph() {
     auto flowAttribute = residualGraph.attachEdgeDoubleAttribute(FLOW);
 
     residualGraph.forNodes([&](node u) {
-        residualGraph.forEdgesOf(u, [&](node u, node v, edgeweight weight, index edgeIndex) {
-            flowAttribute.set(edgeIndex, 0.0);
-        });
+        residualGraph.forEdgesOf(
+            u, [&](node, node, edgeweight, index edgeIndex) { flowAttribute.set(edgeIndex, 0.0); });
     });
 }
 
