@@ -256,41 +256,6 @@ jobs:
           mkdir ./tmp && cd ./tmp
           python3 -c "import networkit"
 
-  linux-build-min-support:
-    name: "Linux (${{ matrix.compiler }}, CPython 3.10): full"
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        compiler: ['gcc-10', 'clang-10']
-    steps:
-      - name: Install prerequisites
-        run:  |
-          curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-10 main" | sudo tee /etc/apt/sources.list.d/llvm10.list
-          sudo apt-get update
-          sudo apt-get install ninja-build
-          sudo apt-get install clang-10 clang++-10
-          sudo apt-get install gcc-10 g++-10
-      - name: Setup Python 3.10
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - name: Checkout networkit
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-      - name: Checkout tlx
-        uses: actions/checkout@v4
-        with:
-          repository: tlx/tlx
-          path: tlx
-      - name: Prepare environment and run checks
-        run:  ${{ github.workspace }}/.github/workflows/scripts/full.sh
-        shell: bash
-        env:
-          CC: ${{ matrix.compiler == 'gcc-10' && 'gcc-10' || 'clang-10' }}
-          CXX: ${{ matrix.compiler == 'gcc-10' && 'g++-10' || 'clang++-10' }}
-
   linux-build-clang-tidy:
     name: "Linux (llvm-17): clang-tidy"
     runs-on: ubuntu-22.04
