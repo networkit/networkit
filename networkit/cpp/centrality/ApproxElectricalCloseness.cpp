@@ -480,6 +480,8 @@ void ApproxElectricalCloseness::aggregateUST(double weight) {
 }
 
 void ApproxElectricalCloseness::run() {
+    hasRun = false;
+
     // Preprocessing
     computeNodeSequence();
     computeBFSTree();

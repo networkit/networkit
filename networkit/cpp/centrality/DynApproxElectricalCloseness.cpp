@@ -328,6 +328,8 @@ void DynApproxElectricalCloseness::update(GraphEvent e) {
 }
 
 void DynApproxElectricalCloseness::run() {
+    hasRun = false;
+
     // Preprocessing
     computeNodeSequence(pivot);
     computeBFSTree();

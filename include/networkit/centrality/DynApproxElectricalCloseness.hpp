@@ -56,7 +56,26 @@ public:
                                  node pivot = none);
 
     /**
-     * Constructor to set @a delta (the approximation probability) manually.
+     * Approximates the electrical closeness of all the vertices of the graph by approximating the
+     * diagonal of the laplacian's pseudoinverse of @a G. Every element of the diagonal has
+     * a maximum absolute error of @a epsilon with probability (1-(1/n)). Based on "Approximation of
+     * the Diagonal of a Laplacian’s Pseudoinverse for Complex Network Analysis", Angriman et al.,
+     * ESA 2020. The algorithm does two steps: solves a linear system and samples uniform spanning
+     * trees (USTs). The parameter @a kappa balances the tolerance of solver for the linear system
+     * and the number of USTs to be sampled. A high value of @a kappa raises the tolerance (solver
+     * converges faster) but more USTs need to be sampled, vice versa for a low value of @a kappa.
+     *
+     * @note This dynamic algorithm supports addition of arbitrary edges and deletion of edges which
+     * are not in the bfs tree sourced from the pivot node. The algorithm depends on G having a
+     * single connected component - edge deletions which disconnect the graph are not supported.
+     * @note Batch updates are not supported.
+     *
+     * @param G The input graph.
+     * @param epsilon Maximum absolute error of the elements in the diagonal.
+     * @param kappa Balances the tolerance of the solver for the linear system and the number of
+     * @param pivot The pivot node. If none, a node with small approximate
+     * eccentricity will be chosen. USTs to be sampled.
+     * @param delta approximation probability.
      */
     DynApproxElectricalCloseness(const Graph &G, double epsilon, double kappa, node pivot,
                                  double delta);
