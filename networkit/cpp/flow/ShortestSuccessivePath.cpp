@@ -7,20 +7,26 @@
 
 #include <networkit/flow/ShortestSuccessivePath.hpp>
 namespace NetworKit {
+
 MinFlowShortestSuccessivePath::MinFlowShortestSuccessivePath(
-    const Graph &G,
+    const Graph &graph,
     const std::string &capacityName,
     const std::string &supplyName)
-    : graph(G), capacityAttributeName(capacityName), supplyAttributeName(supplyName) {
+    : capacityAttributeName(capacityName), supplyAttributeName(supplyName) {
 
-    if (!G.isDirected()) {
+    if (!graph.isDirected()) {
         throw std::runtime_error(
             "MinFlowShortestSuccessivePath: Graph must be directed");
     }
 
-    if (!G.isWeighted()) {
+    if (!graph.isWeighted()) {
         throw std::runtime_error(
             "MinFlowShortestSuccessivePath: Graph must be weighted.");
+    }
+
+    if (!graph.hasEdgeIds()) {
+        throw std::runtime_error(
+            "MinFlowShortestSuccessivePath: Graph edges must be indexed");
     }
 
     try {
@@ -40,7 +46,14 @@ MinFlowShortestSuccessivePath::MinFlowShortestSuccessivePath(
         throw std::runtime_error(
             "MinFlowShortestSuccessivePath: Provided node attribute '" + supplyName + "' not found");
     }
+    residualGraph = graph;
 }
+
+void MinFlowShortestSuccessivePath::run() {
+
+}
+
+
 
 
 }
