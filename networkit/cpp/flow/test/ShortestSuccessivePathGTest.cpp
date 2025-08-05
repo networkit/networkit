@@ -89,21 +89,53 @@ TEST_F(ShortestSuccessivePathGTest, constructorThrowsForMissingNodeAttribute) {
     }
 }
 
+TEST_F(ShortestSuccessivePathGTest, constructorThrowsForNegativeCapacity) {
+    // Build a minimal valid directed, weighted, indexed graph
+    Graph G(2, /*weighted*/ true, /*directed*/ true);
+    G.indexEdges();
+
+    // Attach the capacity and supply attributes
+    auto capacities   = G.attachEdgeDoubleAttribute(capacityName);
+    auto supplies = G.attachNodeDoubleAttribute(supplyName);
+
+    // Add one edge and set a negative capacity on it
+    G.addEdge(0, 1, /*weight=*/1.0);
+    auto eid = G.edgeId(0, 1);
+    capacities.set(eid, -5.0);  // invalid negative capacity
+
+    // Supplies can all be zero
+    G.forNodes([&](node u) {
+        supplies.set(u, 0.0);
+    });
+
+    // Expect the constructor to catch the negative capacity
+    try {
+        MinFlowShortestSuccessivePath alg(G, capacityName, supplyName);
+        FAIL() << "Expected std::runtime_error for negative capacity";
+    } catch (const std::runtime_error &e) {
+        EXPECT_STREQ(e.what(),
+                     "MinFlowShortestSuccessivePath: Capacities must be non-negative");
+    } catch (...) {
+        FAIL() << "Expected std::runtime_error";
+    }
+}
+
 TEST_F(ShortestSuccessivePathGTest, constructorSucceedsWhenValid) {
     Graph G(3, /*weighted*/ true, /*directed*/ true);
     G.indexEdges();
-    auto eAttr = G.attachEdgeDoubleAttribute(capacityName);
-    auto nAttr = G.attachNodeDoubleAttribute(supplyName);
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
+    auto supplies = G.attachNodeDoubleAttribute(supplyName);
 
     // populate attributes
-    G.forNodes([&](node u) { nAttr.set(u, 0.0); });
+    G.forNodes([&](node u) { supplies.set(u, 0.0); });
     G.addEdge(0, 1, /*weight=*/1.5, /*checkMulti=*/false);
     G.addEdge(1, 2, /*weight=*/2.5, /*checkMulti=*/false);
 
-    eAttr.set(G.edgeId(0, 1), 10.0);
-    eAttr.set(G.edgeId(1, 2), 20.0);
+    capacities.set(G.edgeId(0, 1), 10.0);
+    capacities.set(G.edgeId(1, 2), 20.0);
 
     EXPECT_NO_THROW({ MinFlowShortestSuccessivePath test(G, capacityName, supplyName); });
 }
+
 
 } // namespace NetworKit

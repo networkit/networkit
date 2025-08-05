@@ -47,6 +47,16 @@ MinFlowShortestSuccessivePath::MinFlowShortestSuccessivePath(
             "MinFlowShortestSuccessivePath: Provided node attribute '" + supplyName + "' not found");
     }
     residualGraph = graph;
+    auto flow = residualGraph.attachEdgeDoubleAttribute(FLOW);
+    auto capacities = residualGraph.getEdgeDoubleAttribute(capacityName);
+    residualGraph.forNodes([&](node u) {
+        residualGraph.forEdgesOf(u, [&](node, node, edgeweight, edgeid eid) {
+            if (capacities.get(eid) < 0.0) {
+                throw std::runtime_error("MinFlowShortestSuccessivePath: Capacities must be non-negative");
+            }
+            flow.set(eid, 0.0);
+        });
+    });
 }
 
 void MinFlowShortestSuccessivePath::run() {

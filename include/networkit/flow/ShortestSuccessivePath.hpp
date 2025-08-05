@@ -34,6 +34,7 @@ class MinFlowShortestSuccessivePath : public Algorithm {
         std::string capacityAttributeName;
         std::string supplyAttributeName;
         Graph residualGraph;
+        static constexpr const char * FLOW = "flow";
 };
 
 }
