@@ -29,6 +29,10 @@ class MinFlowShortestSuccessivePath : public Algorithm {
 
 
         void run() override;
+        double getTotalCost() const {
+          assureFinished();
+          return totalCost;
+        }
     private:
         void initializeResidualGraph();
         const Graph *graph;
@@ -36,6 +40,7 @@ class MinFlowShortestSuccessivePath : public Algorithm {
         std::string supplyAttributeName;
         Graph residualGraph;
         static constexpr const char * FLOW = "flow";
+        costs totalCost{};
 };
 
 }
