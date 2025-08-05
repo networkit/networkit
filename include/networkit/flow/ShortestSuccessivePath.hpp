@@ -13,17 +13,17 @@
 
 namespace NetworKit {
 class MinFlowShortestSuccessivePath : public Algorithm {
-
+  using costs = edgeweight;
    public:
         /**
-         * @param graph            underlying graph (must be directed + weighted)
+         * @param G            underlying graph (must be directed + weighted)
          * @param capacityAttr name of the edge attribute holding capacity values
          * @param supplyAttr   name of the node attribute holding supply values
          *
          * @throws std::runtime_error if G is not directed or not weighted,
          *         or if either of the named attributes is missing.
          */
-        MinFlowShortestSuccessivePath(const Graph &graph,
+        MinFlowShortestSuccessivePath(const Graph &G,
                                       const std::string &capacityName,
                                       const std::string &supplyName);
 
@@ -31,6 +31,7 @@ class MinFlowShortestSuccessivePath : public Algorithm {
         void run() override;
     private:
         void initializeResidualGraph();
+        const Graph *graph;
         std::string capacityAttributeName;
         std::string supplyAttributeName;
         Graph residualGraph;
