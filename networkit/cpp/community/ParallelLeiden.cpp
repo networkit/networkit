@@ -1,3 +1,7 @@
+#include <condition_variable>
+#include <tlx/unused.hpp>
+#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
 #include <networkit/community/ParallelLeiden.hpp>
 
 namespace NetworKit {

@@ -12,7 +12,6 @@
 #include <atomic>
 #include <memory>
 #include <random>
-#include <ranges>
 #include <vector>
 
 #include <networkit/auxiliary/SortedList.hpp>

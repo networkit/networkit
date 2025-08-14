@@ -8,9 +8,6 @@
 #ifndef NETWORKIT_CENTRALITY_GROUP_DEGREE_HPP_
 #define NETWORKIT_CENTRALITY_GROUP_DEGREE_HPP_
 
-#include <omp.h>
-#include <ranges>
-
 #include <networkit/auxiliary/BucketPQ.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>

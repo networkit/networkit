@@ -8,7 +8,6 @@
 #ifndef NETWORKIT_CENTRALITY_DYN_BETWEENNESS_HPP_
 #define NETWORKIT_CENTRALITY_DYN_BETWEENNESS_HPP_
 
-#include <memory>
 #include <queue>
 
 #include <networkit/auxiliary/PrioQueue.hpp>

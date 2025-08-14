@@ -9,10 +9,8 @@
 #ifndef NETWORKIT_CENTRALITY_APPROX_ELECTRICAL_CLOSENESS_HPP_
 #define NETWORKIT_CENTRALITY_APPROX_ELECTRICAL_CLOSENESS_HPP_
 
-#include <cmath>
 #include <memory>
 #include <random>
-#include <unordered_map>
 #include <vector>
 
 #include <networkit/centrality/Centrality.hpp>
