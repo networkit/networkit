@@ -117,6 +117,39 @@ TEST_F(ShortestSuccessivePathGTest, constructorSucceedsWhenValid) {
     EXPECT_NO_THROW({ MinFlowShortestSuccessivePath test(G, capacityName, supplyName); });
 }
 
+TEST_F(ShortestSuccessivePathGTest, runThrowsOnNegativeCostCycle) {
+    // 3-node directed graph with a negative cycle: 0->1->2->0, total cost = 1 + 1 - 5 = -3
+    Graph G(3, /*weighted=*/true, /*directed=*/true);
+    G.indexEdges();
+
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
+    auto supply     = G.attachNodeDoubleAttribute(supplyName);
+
+    // Add the negative cycle edges with positive capacities
+    G.addEdge(0, 1, /*cost=*/+1.0);
+    G.addEdge(1, 2, /*cost=*/+1.0);
+    G.addEdge(2, 0, /*cost=*/-5.0); // completes a negative cycle
+
+    for (node u = 0; u < 3; ++u) {
+        supply.set(u, 0.0);
+    }
+    capacities.set(G.edgeId(0,1), 3.0);
+    capacities.set(G.edgeId(1,2), 3.0);
+    capacities.set(G.edgeId(2,0), 3.0);
+
+    MinFlowShortestSuccessivePath solver(G, capacityName, supplyName);
+
+    try {
+        solver.run();
+        FAIL() << "Expected std::runtime_error due to negative-cost cycle";
+    } catch (const std::runtime_error &e) {
+        EXPECT_STREQ(e.what(),
+            "MinFlowShortestSuccessivePath: negative-cost cycle in residual graph");
+    } catch (...) {
+        FAIL() << "Expected std::runtime_error but got a different exception.";
+    }
+}
+
 TEST_F(ShortestSuccessivePathGTest, Simple5NodeGraph) {
     Graph G(5, /*weighted=*/true, /*directed=*/true);
     G.indexEdges();

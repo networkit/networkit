@@ -90,12 +90,19 @@ void MinFlowShortestSuccessivePath::run() {
             break;
     }
 
+    // negative cycle detection
+    // Note: We can not throw in parallel loop since it will terminate the program
+    bool negativeCycleDetected = false;
     residualGraph.parallelForEdges([&](node u, node v, cost cost, edgeid) {
         if (Aux::NumericTools::lt(nodePotential[u] + cost, nodePotential[v])) {
-            throw std::runtime_error(
-                "MinFlowShortestSuccessivePath: negative-cost cycle in residual graph");
+            negativeCycleDetected = true;
         }
     });
+
+    if (negativeCycleDetected) {
+        throw std::runtime_error(
+                "MinFlowShortestSuccessivePath: negative-cost cycle in residual graph");
+    }
 
     // 5) Prepare Dijkstra data structures
     std::vector<cost> distances(numberOfNodes);
