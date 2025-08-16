@@ -13,7 +13,7 @@
 
 namespace NetworKit {
 class MinFlowShortestSuccessivePath : public Algorithm {
-  using costs = edgeweight;
+  using cost = edgeweight;
    public:
         /**
          * @param G            underlying graph (must be directed + weighted)
@@ -40,7 +40,7 @@ class MinFlowShortestSuccessivePath : public Algorithm {
         std::string supplyAttributeName;
         Graph residualGraph;
         static constexpr const char * FLOW = "flow";
-        costs totalCost{};
+        cost totalCost{};
 };
 
 }
