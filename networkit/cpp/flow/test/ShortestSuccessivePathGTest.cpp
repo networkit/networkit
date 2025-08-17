@@ -224,4 +224,36 @@ TEST_F(ShortestSuccessivePathGTest, ComplexMultiSourceNegativeCost) {
     EXPECT_DOUBLE_EQ(solver.getTotalCost(), 18.0);
 }
 
+TEST_F(ShortestSuccessivePathGTest, testZeroWeights) {
+    Graph G(6, /*weighted=*/true, /*directed=*/true);
+    G.indexEdges();
+
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
+    auto supply = G.attachNodeDoubleAttribute(supplyName);
+
+    supply.set(0, 4.0);
+    supply.set(1, -2.0);
+    supply.set(2, -2.0);
+    supply.set(3, -4.0);
+    supply.set(4, +2.0);
+    supply.set(5, +2.0);
+
+    auto addZeroWeightAndCapacity = [&](node u, node v, double capacity) {
+        G.addEdge(u, v, 0.0);
+        capacities.set(G.edgeId(u, v), capacity);
+    };
+
+    addZeroWeightAndCapacity(0, 1, /*capacity=*/4.0);
+    addZeroWeightAndCapacity(0, 2,/*capacity=*/4.0);
+    addZeroWeightAndCapacity(4, 3, /*capacity=*/4.0);
+    addZeroWeightAndCapacity(5, 3,/*capacity=*/4.0);
+    addZeroWeightAndCapacity(0, 3, /*capacity=*/0.0);
+
+    MinFlowShortestSuccessivePath solver(G, capacityName, supplyName);
+    solver.run();
+
+    EXPECT_DOUBLE_EQ(solver.getTotalCost(), 0.0);
+}
+
+
 } // namespace NetworKit

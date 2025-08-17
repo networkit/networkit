@@ -68,7 +68,7 @@ void MinFlowShortestSuccessivePath::run() {
     auto flows = residualGraph.getEdgeDoubleAttribute(FLOW);
     auto supply = residualGraph.getNodeDoubleAttribute(supplyAttributeName);
 
-    // Apply Bellman-Ford to work with negative edges
+    // Apply Bellman-Ford to work to compute node potentials/distances
     std::vector<cost> nodePotential(numberOfNodes, 0.0);
     for (count i = 1; i < numberOfNodes; ++i) {
         bool updated = false;
@@ -107,7 +107,7 @@ void MinFlowShortestSuccessivePath::run() {
 
     // 6) Main successive‐shortest‐path loop
     while (true) {
-        // (a) find a supply node s
+        // (a) find a (new) supply node s with non-zero supply-value
         node s = none;
         for (node u = 0; u < numberOfNodes; ++u) {
             if (supply[u] > epsilon) {
@@ -116,7 +116,7 @@ void MinFlowShortestSuccessivePath::run() {
             }
         }
         if (s == none)
-            break; // done
+            break;
 
         // (b) Dijkstra on residual network from s
         std::fill(distances.begin(), distances.end(), infiniteCosts);
@@ -146,22 +146,21 @@ void MinFlowShortestSuccessivePath::run() {
                 }
             });
 
-            // — backward residual arcs v->u
-            residualGraph.forInEdgesOf(u, [&](node, node v, cost cost, edgeid id) {
-                double residualFlow = flows.get(id);
-                if (residualFlow <= epsilon)
-                    return;
-                // The corrected costs are using nodePotentials to shift negative edges/costs to
-                // positive ones
-                const double correctedCost = -cost + nodePotential[u] - nodePotential[v];
-                if (distances[v] > distances[u] + correctedCost) {
-                    distances[v] = distances[u] + correctedCost;
-                    parentNode[v] = u;
-                    parentEdge[v] = id;
-                    parentDirection[v] = -1;
-                    queue.push({distances[v], v});
-                }
-            });
+            // residualGraph.forInEdgesOf(u, [&](node, node v, cost cost, edgeid id) {
+            //     double residualFlow = flows.get(id);
+            //     if (residualFlow <= epsilon)
+            //         return;
+            //     // The corrected costs are using nodePotentials to shift negative edges/costs to
+            //     // positive ones
+            //     const double correctedCost = -cost + nodePotential[u] - nodePotential[v];
+            //     if (distances[v] > distances[u] + correctedCost) {
+            //         distances[v] = distances[u] + correctedCost;
+            //         parentNode[v] = u;
+            //         parentEdge[v] = id;
+            //         parentDirection[v] = -1;
+            //         queue.push({distances[v], v});
+            //     }
+            // });
         }
 
         // (c) update nodePotentials[u] += dist[u]
