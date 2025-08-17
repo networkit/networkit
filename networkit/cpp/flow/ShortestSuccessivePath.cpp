@@ -59,7 +59,7 @@ MinFlowShortestSuccessivePath::MinFlowShortestSuccessivePath(const Graph &G,
 }
 
 void MinFlowShortestSuccessivePath::run() {
-    const index numberOfNodes = residualGraph.numberOfNodes();
+    const count numberOfNodes = residualGraph.numberOfNodes();
     constexpr cost infiniteCosts = std::numeric_limits<cost>::infinity();
     constexpr double epsilon = 1e-12;
 
@@ -68,24 +68,16 @@ void MinFlowShortestSuccessivePath::run() {
     auto flows = residualGraph.getEdgeDoubleAttribute(FLOW);
     auto supply = residualGraph.getNodeDoubleAttribute(supplyAttributeName);
 
-    // 2) Gather all edges
-    std::vector<std::tuple<node, node, cost>> forwardEdges;
-    residualGraph.forEdges(
-        [&](node u, node v, cost cost, edgeid) { forwardEdges.emplace_back(u, v, cost); });
-
     // Apply Bellman-Ford to work with negative edges
     std::vector<cost> nodePotential(numberOfNodes, 0.0);
-    for (index iter = 0; iter < numberOfNodes - 1; ++iter) {
+    for (count i = 1; i < numberOfNodes; ++i) {
         bool updated = false;
-        for (const auto &tuple : forwardEdges) {
-            node u, v;
-            cost cost;
-            std::tie(u, v, cost) = tuple;
-            if (nodePotential[u] + cost < nodePotential[v]) {
-                nodePotential[v] = nodePotential[u] + cost;
-                updated = true;
-            }
-        }
+        residualGraph.forEdges([&](node u, node v, cost cost, edgeid) {
+           if(nodePotential[u] + cost < nodePotential[v]) {
+               updated = true;
+               nodePotential[v] = nodePotential[u] + cost;
+           }
+        });
         if (!updated)
             break;
     }

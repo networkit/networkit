@@ -117,6 +117,17 @@ TEST_F(ShortestSuccessivePathGTest, constructorSucceedsWhenValid) {
     EXPECT_NO_THROW({ MinFlowShortestSuccessivePath test(G, capacityName, supplyName); });
 }
 
+TEST_F(ShortestSuccessivePathGTest, testZeroNodesGraph) {
+    Graph G(0, /*weighted*/ true, /*directed*/ true);
+    G.indexEdges();
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
+    auto supply = G.attachNodeDoubleAttribute(supplyName);
+
+    MinFlowShortestSuccessivePath test(G, capacityName, supplyName);
+    test.run();
+    EXPECT_DOUBLE_EQ(test.getTotalCost(), 0.0);
+}
+
 TEST_F(ShortestSuccessivePathGTest, runThrowsOnNegativeCostCycle) {
     // 3-node directed graph with a negative cycle: 0->1->2->0, total cost = 1 + 1 - 5 = -3
     Graph G(3, /*weighted=*/true, /*directed=*/true);
