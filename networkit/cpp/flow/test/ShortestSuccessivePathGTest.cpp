@@ -14,6 +14,13 @@ class ShortestSuccessivePathGTest : public ::testing::Test {
 protected:
     const std::string capacityName = "capacity";
     const std::string supplyName = "supply";
+
+    template <typename CapacityAttr>
+    void addCostAndCapacity(Graph &G, CapacityAttr &capacities, node u, node v, double cost,
+                            double capacity) {
+        G.addEdge(u, v, cost);
+        capacities.set(G.edgeId(u, v), capacity);
+    }
 };
 
 TEST_F(ShortestSuccessivePathGTest, constructorThrowsForUndirected) {
@@ -90,19 +97,18 @@ TEST_F(ShortestSuccessivePathGTest, constructorThrowsForNegativeCapacity) {
     Graph G(2, /*weighted*/ true, /*directed*/ true);
     G.indexEdges();
 
-    auto capacities   = G.attachEdgeDoubleAttribute(capacityName);
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
     auto supply = G.attachNodeDoubleAttribute(supplyName);
 
     G.addEdge(0, 1);
     auto eid = G.edgeId(0, 1);
-    capacities.set(eid, -5.0);  // invalid negative capacity
+    capacities.set(eid, -5.0); // invalid negative capacity
 
     try {
         MinFlowShortestSuccessivePath alg(G, capacityName, supplyName);
         FAIL() << "Expected std::runtime_error for negative capacity";
     } catch (const std::runtime_error &e) {
-        EXPECT_STREQ(e.what(),
-                     "MinFlowShortestSuccessivePath: Capacities must be non-negative");
+        EXPECT_STREQ(e.what(), "MinFlowShortestSuccessivePath: Capacities must be non-negative");
     } catch (...) {
         FAIL() << "Expected std::runtime_error";
     }
@@ -134,7 +140,7 @@ TEST_F(ShortestSuccessivePathGTest, runThrowsOnNegativeCostCycle) {
     G.indexEdges();
 
     auto capacities = G.attachEdgeDoubleAttribute(capacityName);
-    auto supply     = G.attachNodeDoubleAttribute(supplyName);
+    auto supply = G.attachNodeDoubleAttribute(supplyName);
 
     // Add the negative cycle edges with positive capacities
     G.addEdge(0, 1, /*cost=*/+1.0);
@@ -144,9 +150,9 @@ TEST_F(ShortestSuccessivePathGTest, runThrowsOnNegativeCostCycle) {
     for (node u = 0; u < 3; ++u) {
         supply.set(u, 0.0);
     }
-    capacities.set(G.edgeId(0,1), 3.0);
-    capacities.set(G.edgeId(1,2), 3.0);
-    capacities.set(G.edgeId(2,0), 3.0);
+    capacities.set(G.edgeId(0, 1), 3.0);
+    capacities.set(G.edgeId(1, 2), 3.0);
+    capacities.set(G.edgeId(2, 0), 3.0);
 
     MinFlowShortestSuccessivePath solver(G, capacityName, supplyName);
 
@@ -155,7 +161,7 @@ TEST_F(ShortestSuccessivePathGTest, runThrowsOnNegativeCostCycle) {
         FAIL() << "Expected std::runtime_error due to negative-cost cycle";
     } catch (const std::runtime_error &e) {
         EXPECT_STREQ(e.what(),
-            "MinFlowShortestSuccessivePath: negative-cost cycle in residual graph");
+                     "MinFlowShortestSuccessivePath: negative-cost cycle in residual graph");
     } catch (...) {
         FAIL() << "Expected std::runtime_error but got a different exception.";
     }
@@ -179,10 +185,10 @@ TEST_F(ShortestSuccessivePathGTest, Simple5NodeGraph) {
     G.addEdge(0, 2, /*cost=*/2.0);
     G.addEdge(2, 4, /*cost=*/1.0);
 
-    capacities.set(G.edgeId(0,1), 3.0);
-    capacities.set(G.edgeId(1,4), 3.0);
-    capacities.set(G.edgeId(0,2), 3.0);
-    capacities.set(G.edgeId(2,4), 3.0);
+    capacities.set(G.edgeId(0, 1), 3.0);
+    capacities.set(G.edgeId(1, 4), 3.0);
+    capacities.set(G.edgeId(0, 2), 3.0);
+    capacities.set(G.edgeId(2, 4), 3.0);
 
     MinFlowShortestSuccessivePath solver(G, capacityName, supplyName);
     solver.run();
@@ -204,19 +210,15 @@ TEST_F(ShortestSuccessivePathGTest, ComplexMultiSourceNegativeCost) {
     supply.set(1, 3.0);
     supply.set(5, -7.0);
 
-    auto addCostAndCapacity = [&](node u, node v, double cost, double capacity) {
-        G.addEdge(u, v, cost);
-        capacities.set(G.edgeId(u, v), capacity);
-    };
 
-    addCostAndCapacity(0, 2, /*cost=*/2.0, /*capacity=*/4.0);
-    addCostAndCapacity(2, 5, /*cost=*/1.0, /*capacity=*/4.0);
-    addCostAndCapacity(0, 3, /*cost=*/1.0, /*capacity=*/2.0);
-    addCostAndCapacity(3, 5, /*cost=*/3.0, /*capacity=*/2.0);
-    addCostAndCapacity(1, 3, /*cost=*/-1.0,/*capacity=*/3.0);
-    addCostAndCapacity(3, 4, /*cost=*/1.0, /*capacity=*/3.0);
-    addCostAndCapacity(4, 5, /*cost=*/2.0, /*capacity=*/3.0);
-    addCostAndCapacity(1, 2, /*cost=*/3.0, /*capacity=*/3.0);
+    addCostAndCapacity(G, capacities,0, 2, /*cost=*/2.0, /*capacity=*/4.0);
+    addCostAndCapacity(G, capacities,2, 5, /*cost=*/1.0, /*capacity=*/4.0);
+    addCostAndCapacity(G, capacities,0, 3, /*cost=*/1.0, /*capacity=*/2.0);
+    addCostAndCapacity(G, capacities,3, 5, /*cost=*/3.0, /*capacity=*/2.0);
+    addCostAndCapacity(G, capacities,1, 3, /*cost=*/-1.0, /*capacity=*/3.0);
+    addCostAndCapacity(G, capacities,3, 4, /*cost=*/1.0, /*capacity=*/3.0);
+    addCostAndCapacity(G, capacities,4, 5, /*cost=*/2.0, /*capacity=*/3.0);
+    addCostAndCapacity(G, capacities,1, 2, /*cost=*/3.0, /*capacity=*/3.0);
 
     MinFlowShortestSuccessivePath solver(G, capacityName, supplyName);
     solver.run();
@@ -238,16 +240,12 @@ TEST_F(ShortestSuccessivePathGTest, testZeroWeights) {
     supply.set(4, +2.0);
     supply.set(5, +2.0);
 
-    auto addZeroWeightAndCapacity = [&](node u, node v, double capacity) {
-        G.addEdge(u, v, 0.0);
-        capacities.set(G.edgeId(u, v), capacity);
-    };
 
-    addZeroWeightAndCapacity(0, 1, /*capacity=*/4.0);
-    addZeroWeightAndCapacity(0, 2,/*capacity=*/4.0);
-    addZeroWeightAndCapacity(4, 3, /*capacity=*/4.0);
-    addZeroWeightAndCapacity(5, 3,/*capacity=*/4.0);
-    addZeroWeightAndCapacity(0, 3, /*capacity=*/0.0);
+    addCostAndCapacity(G, capacities,0, 1, /*cost=*/0.0, /*capacity=*/4.0);
+    addCostAndCapacity(G, capacities,0, 2, /*cost=*/0.0, /*capacity=*/4.0);
+    addCostAndCapacity(G, capacities,4, 3, /*cost=*/0.0, /*capacity=*/4.0);
+    addCostAndCapacity(G, capacities,5, 3, /*cost=*/0.0, /*capacity=*/4.0);
+    addCostAndCapacity(G, capacities,0, 3, /*cost=*/0.0, /*capacity=*/0.0);
 
     MinFlowShortestSuccessivePath solver(G, capacityName, supplyName);
     solver.run();
@@ -255,5 +253,29 @@ TEST_F(ShortestSuccessivePathGTest, testZeroWeights) {
     EXPECT_DOUBLE_EQ(solver.getTotalCost(), 0.0);
 }
 
+// https://lpsolve.sourceforge.net/5.5/DIMACS_mcf.htm
+TEST_F(ShortestSuccessivePathGTest, testSimpleDimacsProblem) {
+    Graph G(4, /*weighted=*/true, /*directed=*/true);
+    G.indexEdges();
+
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
+    auto supply = G.attachNodeDoubleAttribute(supplyName);
+
+    supply.set(0, 4.0);
+    supply.set(1, 0.0);
+    supply.set(2, 0.0);
+    supply.set(3, -4.0);
+
+    addCostAndCapacity(G, capacities, 0, 1, /*cost=*/2.0, /*capacity=*/4.0);
+    addCostAndCapacity(G, capacities, 0, 2, /*cost=*/2.0, /*capacity=*/2.0);
+    addCostAndCapacity(G, capacities, 1, 2, /*cost=*/1.0, /*capacity=*/2.0);
+    addCostAndCapacity(G, capacities, 1, 3, /*cost=*/3.0, /*capacity=*/3.0);
+    addCostAndCapacity(G, capacities, 2, 3, /*cost=*/1.0, /*capacity=*/5.0);
+
+    MinFlowShortestSuccessivePath solver(G, capacityName, supplyName);
+    solver.run();
+
+    EXPECT_DOUBLE_EQ(solver.getTotalCost(), 14.0);
+}
 
 } // namespace NetworKit
