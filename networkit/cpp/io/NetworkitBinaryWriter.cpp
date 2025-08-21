@@ -153,6 +153,15 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
     };
 
     count nodes = G.numberOfNodes();
+    if (nodes == 0) {
+        strncpy(header.magic, FILE_FORMAT, 8);
+        setFeatures();
+        writeHeader();
+        uint64_t zero = 0;
+        outStream.write(reinterpret_cast<char *>(&zero), sizeof(zero));
+        return;
+    }
+
     if (nodes < chunks) {
         chunks = nodes;
         INFO("reducing chunks to ", chunks, " chunks");
@@ -269,7 +278,7 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
         transpIndexOffsets.push_back(transpIndexSize);
     }
     // Write header.
-    strncpy(header.magic, "nkbg003", 8);
+    strncpy(header.magic, FILE_FORMAT, 8);
     header.checksum = 0;
     setFeatures();
     header.nodes = nodes;
