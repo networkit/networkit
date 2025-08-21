@@ -5,8 +5,6 @@
 #include <utility>
 #include <vector>
 
-#include <networkit/Globals.hpp>
-
 #include <tlx/math/integer_log2.hpp>
 
 namespace Aux {

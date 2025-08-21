@@ -1,8 +1,6 @@
 #ifndef NETWORKIT_BASE_DYN_ALGORITHM_HPP_
 #define NETWORKIT_BASE_DYN_ALGORITHM_HPP_
 
-#include <stdexcept>
-#include <string>
 #include <networkit/dynamics/GraphEvent.hpp>
 
 namespace NetworKit {

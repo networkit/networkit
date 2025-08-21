@@ -1,7 +1,6 @@
 #ifndef NETWORKIT_AUXILIARY_SIGNAL_HANDLING_HPP_
 #define NETWORKIT_AUXILIARY_SIGNAL_HANDLING_HPP_
 
-#include <cstdint>
 #include <exception>
 
 namespace Aux {
