@@ -1,4 +1,7 @@
+#include <atomic>
 #include <condition_variable>
+#include <omp.h>
+#include <thread>
 #include <tlx/unused.hpp>
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
