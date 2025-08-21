@@ -8,7 +8,6 @@
 #ifndef NETWORKIT_ALGEBRAIC_GRAPH_BLAS_HPP_
 #define NETWORKIT_ALGEBRAIC_GRAPH_BLAS_HPP_
 
-#include <limits>
 #include <networkit/algebraic/AlgebraicGlobals.hpp>
 #include <networkit/algebraic/Semirings.hpp>
 #include <networkit/algebraic/SparseAccumulator.hpp>

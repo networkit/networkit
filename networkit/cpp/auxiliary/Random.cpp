@@ -7,7 +7,6 @@
 
 #include <atomic>
 #include <cmath>
-#include <limits>
 #include <omp.h>
 
 #include <networkit/GlobalState.hpp>

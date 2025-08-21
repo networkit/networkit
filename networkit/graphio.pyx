@@ -1320,7 +1320,7 @@ def readGraph(path, fileformat=None, *kargs, **kwargs):
 		Additional input parameter (depending on the file format).
 	`**kwargs` : dict()
 		Additional input parameter (depending on the file format). In case of a custom edge list, 
-		pass the generic Fromat.EdgeList accompanied by the defining paramaters as follows:
+		pass the generic Format.EdgeList accompanied by the defining paramaters as follows:
 		:code:`separator, firstNode, commentPrefix, continuous, directed`. :code:`commentPrefix, 
 		continuous=True and directed` are optional because of their default values. 
 		:code:`firstNode` is not needed when :code:`continuous=True`.
@@ -1365,7 +1365,7 @@ def readGraphs(dirPath, pattern, fileformat, some=None, exclude=None, **kwargs):
 		Unix-style string pattern for file exclusion. Default: None
 	`**kwargs` : dict()
 		Additional input parameter (depending on the file format). In case of a custom edge list, 
-		pass the generic Fromat.EdgeList accompanied by the defining paramaters as follows:
+		pass the generic Format.EdgeList accompanied by the defining paramaters as follows:
 		:code:`separator, firstNode, commentPrefix, continuous, directed`. :code:`commentPrefix, 
 		continuous=True and directed` are optional because of their default values. 
 		:code:`firstNode` is not needed when :code:`continuous=True`.
@@ -1561,7 +1561,7 @@ def writeGraph(G, path, fileformat, *kargs, **kwargs):
 		Additional input parameter (depending on the file format).
 	`**kwargs` : dict()
 		Additional input parameter (depending on the file format). In case of a custom edge list, 
-		pass the generic Fromat.EdgeList accompanied by the defining paramaters as follows:
+		pass the generic Format.EdgeList accompanied by the defining paramaters as follows:
 		:code:`separator, firstNode, commentPrefix, continuous, directed`. :code:`commentPrefix, 
 		continuous=True and directed` are optional because of their default values. 
 		:code:`firstNode` is not needed when :code:`continuous=True`.

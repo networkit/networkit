@@ -3,7 +3,6 @@
 #define NETWORKIT_BASE_ALGORITHM_HPP_
 
 #include <stdexcept>
-#include <string>
 
 namespace NetworKit {
 

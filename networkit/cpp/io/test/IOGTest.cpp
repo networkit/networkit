@@ -5,12 +5,14 @@
  *      Author: Christian Staudt (christian.staudt@kit.edu)
  */
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <array>
 #include <cassert>
 #include <chrono>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -48,7 +50,6 @@
 #include <networkit/io/PartitionReader.hpp>
 #include <networkit/io/PartitionWriter.hpp>
 #include <networkit/io/RBMatrixReader.hpp>
-#include <networkit/io/SNAPEdgeListPartitionReader.hpp>
 #include <networkit/io/SNAPGraphReader.hpp>
 #include <networkit/io/SNAPGraphWriter.hpp>
 #include <networkit/io/ThrillGraphBinaryReader.hpp>
@@ -1422,4 +1423,28 @@ TEST_F(IOGTest, testMatrixMarketReaderIntegerWeights) {
     });
 }
 
+MATCHER_P(GraphFeaturesEqual, expected, "Graph matches expected features") {
+    return arg.numberOfNodes() == expected.numberOfNodes()
+           && arg.numberOfEdges() == expected.numberOfEdges()
+           && arg.isWeighted() == expected.isWeighted() && arg.isDirected() == expected.isDirected()
+           && arg.hasEdgeIds() == expected.hasEdgeIds();
+}
+
+TEST_F(IOGTest, testNetworkitBinaryWriteReadEmptyGraph) {
+    Graph graph(0, false, true);
+    const std::filesystem::path path = "output/empty_graph.nkb";
+    NetworkitBinaryWriter{}.write(graph, path.string());
+
+    const Graph graph_read = NetworkitBinaryReader{}.read(path.string());
+    EXPECT_THAT(graph_read, GraphFeaturesEqual(graph));
+}
+
+TEST_F(IOGTest, testNetworkitBinaryWriteReadEmptyGraphWithIndexes) {
+    Graph graph(0, true, false, true);
+    const std::filesystem::path path = "output/empty_graph.nkb";
+    NetworkitBinaryWriter{}.write(graph, path.string());
+
+    const Graph graph_read = NetworkitBinaryReader{}.read(path.string());
+    EXPECT_THAT(graph_read, GraphFeaturesEqual(graph));
+}
 } /* namespace NetworKit */

@@ -9,7 +9,6 @@
 #define NETWORKIT_ALGEBRAIC_DENSE_MATRIX_HPP_
 
 #include <cassert>
-#include <iostream>
 #include <vector>
 
 #include <networkit/Globals.hpp>

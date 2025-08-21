@@ -19,17 +19,17 @@ namespace nkbg {
 
 struct Header {
     char magic[8];
-    uint64_t checksum;
-    uint64_t features;
-    uint64_t nodes;
-    uint64_t chunks;
-    uint64_t offsetBaseData;
-    uint64_t offsetAdjLists;
-    uint64_t offsetAdjTranspose;
-    uint64_t offsetWeightLists;
-    uint64_t offsetWeightTranspose;
-    uint64_t offsetAdjIdLists;
-    uint64_t offsetAdjIdTranspose;
+    uint64_t checksum{};
+    uint64_t features{};
+    uint64_t nodes{};
+    uint64_t chunks{};
+    uint64_t offsetBaseData{};
+    uint64_t offsetAdjLists{};
+    uint64_t offsetAdjTranspose{};
+    uint64_t offsetWeightLists{};
+    uint64_t offsetWeightTranspose{};
+    uint64_t offsetAdjIdLists{};
+    uint64_t offsetAdjIdTranspose{};
 };
 
 enum class WeightFormat : int { NONE = 0, VARINT = 1, SIGNED_VARINT = 2, DOUBLE = 3, FLOAT = 4 };
