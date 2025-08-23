@@ -74,10 +74,10 @@ bool Dinic::canReachTargetInLevelGraph() {
 
 edgeweight Dinic::computeBlockingPath() {
     edgeweight totalFlow = 0.0;
+    constexpr edgeweight epsilon = 1e-12;
     std::vector<node> path;
     path.push_back(target);
     node u = target;
-    auto flow = residualGraph.getEdgeDoubleAttribute(FLOW);
     do {
         node v = none;
         // build path from target to source
@@ -100,25 +100,17 @@ edgeweight Dinic::computeBlockingPath() {
                 const node child = path[i];
                 bottleNeckOnPath = std::min(bottleNeckOnPath, residualGraph.weight(parent, child));
             }
-            // update the capacities and flows in the other edges
+            // apply augmentation: decrease forward, increase reverse
             for (size_t i = 0; i + 1 < path.size(); ++i) {
                 const node parent = path[i + 1];
                 const node child = path[i];
-                const index edgeID = residualGraph.edgeId(parent, child);
-                residualGraph.setWeight(parent, child,
-                                        residualGraph.weight(parent, child) - bottleNeckOnPath);
-                if (flow.get(edgeID) > 0.0) {
-                    flow.set(edgeID, flow.get(edgeID) + bottleNeckOnPath);
-                } else {
-                    flow.set(edgeID, bottleNeckOnPath);
-                }
-                if (residualGraph.weight(parent, child) == 0 && !parents[child].empty()) {
-                    parents[child].pop_front();
-                }
+                const double forward = residualGraph.weight(parent, child);
+                const double reverse = residualGraph.weight(child, parent);
+                residualGraph.setWeight(parent, child, forward - bottleNeckOnPath);
+                residualGraph.setWeight(child, parent, reverse + bottleNeckOnPath);
             }
             totalFlow += bottleNeckOnPath;
-            path.clear();
-            path.push_back(target);
+            path.assign(1, target);
         }
         u = v;
     } while (true);

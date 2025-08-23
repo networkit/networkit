@@ -221,8 +221,7 @@ TEST_F(DinicGTest, testFourLayerDAGChangedIterationOrder) {
     Dinic algo(G, /*src=*/0, /*dst=*/7);
     algo.run();
 
-    // Correct value is 3. Buggy implementation (no reverse residuals) returns 2.
-    EXPECT_DOUBLE_EQ(algo.getMaxFlow(), 3.0);
+    EXPECT_DOUBLE_EQ(algo.getMaxFlow(), /*expectedFlow*/3.0);
 }
 
 } // namespace NetworKit
