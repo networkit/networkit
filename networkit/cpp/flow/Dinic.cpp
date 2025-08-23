@@ -30,16 +30,18 @@ Dinic::Dinic(const Graph &G, node src, node dst) : graph(&G), source(src), targe
 void Dinic::initializeResidualGraph() {
     // Start from the original graph.
     residualGraph = *graph;
-
+    double capacityScale = 0.0;
     // Add missing reverse arcs with 0 capacity (but don't overwrite real antiparallel edges).
     graph->forEdges([&](node u, node v, edgeweight w) {
         if (w < 0.0) {
             throw std::runtime_error("Dinic requires non-negative capacities!");
         }
+        capacityScale = std::max(capacityScale, std::abs(w));
         if (!residualGraph.hasEdge(v, u)) {
             residualGraph.addEdge(v, u, 0.0);
         }
     });
+    tolerance = std::max(ABSOLUTE_TOLERANCE, RELATIVE_TOLERANCE * capacityScale);
     // Rebuild edge indices after structural changes.
     residualGraph.indexEdges();
 }
@@ -57,7 +59,7 @@ bool Dinic::canReachTargetInLevelGraph() {
         queue.pop();
         for (const node child : residualGraph.neighborRange(parent)) {
             // We only consider connections with positive remaining capacity
-            if (residualGraph.weight(parent, child) > 0.0) {
+            if (residualGraph.weight(parent, child) > tolerance) {
                 if (level[child] == -1) {
                     level[child] = level[parent] + 1;
                     parents[child].push_back(parent);
@@ -74,7 +76,6 @@ bool Dinic::canReachTargetInLevelGraph() {
 
 edgeweight Dinic::computeBlockingPath() {
     edgeweight totalFlow = 0.0;
-    constexpr edgeweight epsilon = 1e-12;
     std::vector<node> path;
     path.push_back(target);
     node u = target;
@@ -104,9 +105,13 @@ edgeweight Dinic::computeBlockingPath() {
             for (size_t i = 0; i + 1 < path.size(); ++i) {
                 const node parent = path[i + 1];
                 const node child = path[i];
-                const double forward = residualGraph.weight(parent, child);
-                const double reverse = residualGraph.weight(child, parent);
-                residualGraph.setWeight(parent, child, forward - bottleNeckOnPath);
+                const edgeweight forward = residualGraph.weight(parent, child);
+                const edgeweight reverse = residualGraph.weight(child, parent);
+                double newForward = forward - bottleNeckOnPath;
+                if (std::abs(newForward) < tolerance) {
+                    newForward = 0.0;
+                }
+                residualGraph.setWeight(parent, child, newForward);
                 residualGraph.setWeight(child, parent, reverse + bottleNeckOnPath);
             }
             totalFlow += bottleNeckOnPath;
@@ -123,7 +128,7 @@ void Dinic::run() {
     maxFlow = 0.0;
     while (canReachTargetInLevelGraph()) {
         const double flow = computeBlockingPath();
-        if (Aux::NumericTools::equal(flow, 0.0))
+        if (Aux::NumericTools::equal(flow, 0.0, tolerance))
             break;
         maxFlow += flow;
     }
