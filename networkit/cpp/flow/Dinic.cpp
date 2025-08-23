@@ -28,18 +28,20 @@ Dinic::Dinic(const Graph &G, node src, node dst) : graph(&G), source(src), targe
 }
 
 void Dinic::initializeResidualGraph() {
+    // Start from the original graph.
     residualGraph = *graph;
-    residualGraph.indexEdges();
-    auto flowAttribute = residualGraph.attachEdgeDoubleAttribute(FLOW);
 
-    residualGraph.forNodes([&](node u) {
-        residualGraph.forEdgesOf(u, [&](node, node, edgeweight weight, index edgeIndex) {
-            if (weight < 0.0)
-                throw std::runtime_error(
-                    "Dinic algorithm requires non-negative weights (capacities)!");
-            flowAttribute.set(edgeIndex, 0.0);
-        });
+    // Add missing reverse arcs with 0 capacity (but don't overwrite real antiparallel edges).
+    graph->forEdges([&](node u, node v, edgeweight w) {
+        if (w < 0.0) {
+            throw std::runtime_error("Dinic requires non-negative capacities!");
+        }
+        if (!residualGraph.hasEdge(v, u)) {
+            residualGraph.addEdge(v, u, 0.0);
+        }
     });
+    // Rebuild edge indices after structural changes.
+    residualGraph.indexEdges();
 }
 
 bool Dinic::canReachTargetInLevelGraph() {

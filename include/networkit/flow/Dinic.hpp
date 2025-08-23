@@ -57,7 +57,6 @@ private:
     node target;
     edgeweight maxFlow{};
     Graph residualGraph;
-    static constexpr const char *FLOW = "flow";
     std::vector<std::deque<node>> parents;
 };
 } // namespace NetworKit

@@ -202,4 +202,27 @@ TEST_F(DinicGTest, testMaxFlowDisconnectedGraphs) {
     EXPECT_DOUBLE_EQ(test.getMaxFlow(), /*expectedFlow*/ 0.0);
 }
 
+TEST_F(DinicGTest, testFourLayerDAGChangedIterationOrder) {
+    Graph G(8, /*weighted=*/true, /*directed=*/true);
+    G.addEdge(0, 2, 1.0);
+    G.addEdge(0, 3, 1.0);
+    G.addEdge(0, 1, 1.0);
+
+    G.addEdge(1, 4, 1.0);
+    G.addEdge(2, 4, 1.0);
+    G.addEdge(2, 5, 1.0);
+    G.addEdge(3, 5, 1.0);
+    G.addEdge(3, 6, 1.0);
+
+    G.addEdge(4, 7, 1.0);
+    G.addEdge(5, 7, 1.0);
+    G.addEdge(6, 7, 1.0);
+
+    Dinic algo(G, /*src=*/0, /*dst=*/7);
+    algo.run();
+
+    // Correct value is 3. Buggy implementation (no reverse residuals) returns 2.
+    EXPECT_DOUBLE_EQ(algo.getMaxFlow(), 3.0);
+}
+
 } // namespace NetworKit
