@@ -22,7 +22,7 @@ void ParallelLeiden::run() {
     auto totalTime = Aux::Timer();
     totalTime.start();
     do { // Leiden iteration
-        INFO(numberOfIterations, " Leiden iteration(s) left");
+        INFO(numberOfIterations, "Leiden iteration(s) left");
         numberOfIterations--;
         changed = false;
         const Graph *currentGraph = G;
