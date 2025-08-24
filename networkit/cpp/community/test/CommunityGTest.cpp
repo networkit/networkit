@@ -16,7 +16,6 @@
 #include <networkit/community/CoverHubDominance.hpp>
 #include <networkit/community/Coverage.hpp>
 #include <networkit/community/CutClustering.hpp>
-#include <networkit/community/DynamicNMIDistance.hpp>
 #include <networkit/community/EdgeCut.hpp>
 #include <networkit/community/GraphClusteringTools.hpp>
 #include <networkit/community/GraphStructuralRandMeasure.hpp>
@@ -41,7 +40,6 @@
 #include <networkit/community/SampledNodeStructuralRandMeasure.hpp>
 #include <networkit/community/StablePartitionNodes.hpp>
 #include <networkit/generators/ClusteredRandomGraphGenerator.hpp>
-#include <networkit/generators/DynamicBarabasiAlbertGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/generators/LFRGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>

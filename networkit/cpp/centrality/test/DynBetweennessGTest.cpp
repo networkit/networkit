@@ -15,7 +15,6 @@
 #include <networkit/centrality/DynApproxBetweenness.hpp>
 #include <networkit/centrality/DynBetweenness.hpp>
 #include <networkit/centrality/DynBetweennessOneNode.hpp>
-#include <networkit/generators/DorogovtsevMendesGenerator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>

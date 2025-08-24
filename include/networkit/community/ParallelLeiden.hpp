@@ -1,23 +1,11 @@
 #ifndef NETWORKIT_COMMUNITY_PARALLEL_LEIDEN_HPP_
 #define NETWORKIT_COMMUNITY_PARALLEL_LEIDEN_HPP_
 
-#include <atomic>
-#include <condition_variable>
-#include <iomanip>
-#include <iostream>
 #include <mutex>
-#include <omp.h>
-#include <thread>
-#include <tlx/unused.hpp>
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
-#include <networkit/auxiliary/Parallelism.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
-#include <networkit/auxiliary/Timer.hpp>
-#include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
 #include <networkit/community/CommunityDetectionAlgorithm.hpp>
-#include <networkit/community/Modularity.hpp>
-#include <networkit/community/PLM.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
 

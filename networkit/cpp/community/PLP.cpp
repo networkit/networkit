@@ -5,8 +5,6 @@
  *      Author: Christian Staudt
  */
 
-#include <omp.h>
-
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>

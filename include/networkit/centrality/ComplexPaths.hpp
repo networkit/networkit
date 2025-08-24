@@ -20,7 +20,6 @@
 #ifndef NETWORKIT_CENTRALITY_COMPLEX_PATHS_HPP_
 #define NETWORKIT_CENTRALITY_COMPLEX_PATHS_HPP_
 
-#include <random>
 #include <vector>
 
 #include <networkit/base/Algorithm.hpp>
