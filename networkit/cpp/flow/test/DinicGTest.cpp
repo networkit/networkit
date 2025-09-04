@@ -100,7 +100,7 @@ TEST_F(DinicGTest, ThreeDisjointPathsWithParallelEdges) {
     G.addEdge(0, 3, 1);
     G.addEdge(3, 0, 1);
     G.addEdge(3, 4, 1);
-
+    G.indexEdges();
     Dinic test(G, 0, 4);
     test.run();
     EXPECT_DOUBLE_EQ(test.getMaxFlow(), /*expectedFlow*/ 3.0);
@@ -217,7 +217,7 @@ TEST_F(DinicGTest, testFourLayerDAGChangedIterationOrder) {
     G.addEdge(4, 7, 1.0);
     G.addEdge(5, 7, 1.0);
     G.addEdge(6, 7, 1.0);
-
+    G.indexEdges();
     Dinic algo(G, /*src=*/0, /*dst=*/7);
     algo.run();
 
