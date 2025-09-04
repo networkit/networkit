@@ -123,7 +123,7 @@ jobs:
           brew install libomp
           brew install ninja
       - name: Setup Python 3.13
-        uses: actions/setup-python@6
+        uses: actions/setup-python@5
         with:
           python-version: '3.13'
       - name: Checkout networkit
@@ -186,7 +186,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install ninja-build
       - name: Setup Python 3.13
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.13'
       - name: Checkout networkit
@@ -246,7 +246,7 @@ jobs:
         with:
           submodules: true
       - name: Setup Python 3.13
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.13'  
       - name: Build and install NetworKit using pyproject.toml
@@ -269,10 +269,10 @@ jobs:
           echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-11 main" | sudo tee /etc/apt/sources.list.d/llvm11.list
           sudo apt-get update
           sudo apt-get install ninja-build
-          sudo apt-get install clang-11 clang++-11
+          sudo apt-get install clang-11 clang++-11 libomp-11-dev
           sudo apt-get install gcc-10 g++-10
       - name: Setup Python 3.10
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
       - name: Checkout networkit
@@ -328,7 +328,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install ninja-build
       - name: Setup Python 3.12
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - name: Checkout
@@ -415,7 +415,7 @@ jobs:
     steps:
       # Note: 3.13.X has no compatible numpy headers for Windows yet.
       - name: Setup Python 3.13
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.13'
       - name: Checkout networkit
