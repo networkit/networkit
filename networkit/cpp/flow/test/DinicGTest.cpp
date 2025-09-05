@@ -100,7 +100,7 @@ TEST_F(DinicGTest, ThreeDisjointPathsWithParallelEdges) {
     G.addEdge(0, 3, 1);
     G.addEdge(3, 0, 1);
     G.addEdge(3, 4, 1);
-
+    G.indexEdges();
     Dinic test(G, 0, 4);
     test.run();
     EXPECT_DOUBLE_EQ(test.getMaxFlow(), /*expectedFlow*/ 3.0);
@@ -202,4 +202,68 @@ TEST_F(DinicGTest, testMaxFlowDisconnectedGraphs) {
     EXPECT_DOUBLE_EQ(test.getMaxFlow(), /*expectedFlow*/ 0.0);
 }
 
+TEST_F(DinicGTest, testFourLayerDAGChangedIterationOrder) {
+    Graph G(8, /*weighted=*/true, /*directed=*/true);
+    G.addEdge(0, 2, 1.0);
+    G.addEdge(0, 3, 1.0);
+    G.addEdge(0, 1, 1.0);
+
+    G.addEdge(1, 4, 1.0);
+    G.addEdge(2, 4, 1.0);
+    G.addEdge(2, 5, 1.0);
+    G.addEdge(3, 5, 1.0);
+    G.addEdge(3, 6, 1.0);
+
+    G.addEdge(4, 7, 1.0);
+    G.addEdge(5, 7, 1.0);
+    G.addEdge(6, 7, 1.0);
+    G.indexEdges();
+    Dinic algo(G, /*src=*/0, /*dst=*/7);
+    algo.run();
+
+    EXPECT_DOUBLE_EQ(algo.getMaxFlow(), /*expectedFlow*/ 3.0);
+}
+
+TEST_F(DinicGTest, testNumericalStabilityDecimalSplits) {
+    Graph G(7, /*weighted=*/true, /*directed=*/true);
+
+    G.addEdge(0, 1, 1.0);
+    G.addEdge(1, 2, 0.1);
+    G.addEdge(2, 6, 0.1);
+    G.addEdge(1, 3, 0.2);
+    G.addEdge(3, 6, 0.2);
+    G.addEdge(1, 4, 0.3);
+    G.addEdge(4, 6, 0.3);
+    G.addEdge(1, 5, 0.4);
+    G.addEdge(5, 6, 0.4);
+
+    // Add a sub-epsilon direct edge that should be ignored by tolerance gating.
+    G.addEdge(0, 6, 1e-18);
+
+    Dinic algo(G, 0, 6);
+    algo.run();
+    EXPECT_NEAR(algo.getMaxFlow(), 1.0, 1e-12);
+}
+
+TEST_F(DinicGTest, testNumericalStabilityTinyScale) {
+    constexpr double scale = 1e-9;
+    Graph G(7, /*weighted=*/true, /*directed=*/true);
+
+    G.addEdge(0, 1, 1.0 * scale);
+    G.addEdge(1, 2, 0.1 * scale);
+    G.addEdge(2, 6, 0.1 * scale);
+    G.addEdge(1, 3, 0.2 * scale);
+    G.addEdge(3, 6, 0.2 * scale);
+    G.addEdge(1, 4, 0.3 * scale);
+    G.addEdge(4, 6, 0.3 * scale);
+    G.addEdge(1, 5, 0.4 * scale);
+    G.addEdge(5, 6, 0.4 * scale);
+
+    // Add a sub-epsilon direct edge that should be ignored by tolerance gating.
+    G.addEdge(0, 6, 1e-18);
+
+    Dinic algo(G, 0, 6);
+    algo.run();
+    EXPECT_NEAR(algo.getMaxFlow(), 1.0 * scale, 1e-15);
+}
 } // namespace NetworKit
