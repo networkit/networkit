@@ -5,7 +5,6 @@
  * 		 Author: Eugenio Angriman
  */
 
-#include <cmath>
 #include <stack>
 
 #include <networkit/components/BiconnectedComponents.hpp>

@@ -8,7 +8,6 @@
 #ifndef NETWORKIT_COARSENING_PARALLEL_PARTITION_COARSENING_HPP_
 #define NETWORKIT_COARSENING_PARALLEL_PARTITION_COARSENING_HPP_
 
-#include <networkit/Globals.hpp>
 #include <networkit/coarsening/GraphCoarsening.hpp>
 #include <networkit/structures/Partition.hpp>
 

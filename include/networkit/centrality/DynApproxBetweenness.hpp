@@ -14,10 +14,8 @@
 #include <networkit/distance/DynSSSP.hpp>
 #include <networkit/dynamics/GraphEvent.hpp>
 
-#include <algorithm>
 #include <cmath>
 #include <memory>
-#include <omp.h>
 
 namespace NetworKit {
 

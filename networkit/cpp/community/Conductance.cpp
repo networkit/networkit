@@ -5,7 +5,9 @@
  *      Author: Henning
  */
 
+#include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/community/Conductance.hpp>
+#include <networkit/community/EdgeCut.hpp>
 
 namespace NetworKit {
 
