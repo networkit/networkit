@@ -42,6 +42,7 @@ void Dinic::initializeResidualGraph() {
         }
     });
     tolerance = std::max(ABSOLUTE_TOLERANCE, RELATIVE_TOLERANCE * capacityScale);
+
     // Rebuild edge indices after structural changes.
     residualGraph.indexEdges(true);
 }
