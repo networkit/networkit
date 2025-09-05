@@ -123,7 +123,7 @@ jobs:
           brew install libomp
           brew install ninja
       - name: Setup Python 3.13
-        uses: actions/setup-python@5
+        uses: actions/setup-python@v5
         with:
           python-version: '3.13'
       - name: Checkout networkit
@@ -171,7 +171,7 @@ jobs:
           CXX: ${{ matrix.compiler == 'llvm-21' && '/opt/homebrew/opt/llvm/bin/clang++' || 'g++-15' }}
 
   linux-build-latest:
-    name: "Linux (gcc-14${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.13' || '' }}): ${{ matrix.build-configuration }}"
+    name: "Linux (gcc-15${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.13' || '' }}): ${{ matrix.build-configuration }}"
     runs-on: ubuntu-24.04
     env:
       CC: gcc-15
@@ -182,9 +182,10 @@ jobs:
     steps:
       - name: Install prerequisites
         run:  |
-          sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu jammy main universe'
+          sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu plucky main universe'
           sudo apt-get update
-          sudo apt-get install ninja-build
+          sudo apt-get install ninja-build g++-15 gcc-15
+          sudo apt-get install libomp-15-dev
       - name: Setup Python 3.13
         uses: actions/setup-python@v5
         with:
