@@ -228,17 +228,15 @@ TEST_F(CentralityGTest, testBetweennessCentralityWeighted) {
 
 // TODO: replace by smaller graph
 TEST_F(CentralityGTest, testKatzCentralityDirected) {
+    Aux::Log::setLogLevel("QUIET");
     const auto G = SNAPGraphReader{}.read("input/wiki-Vote.txt");
     KatzCentrality kc(G, 5e-4);
-
-    DEBUG("start kc run");
     kc.run();
-    DEBUG("finish kc");
-
     EXPECT_EQ(kc.ranking().front().first, 699);
 }
 
 TEST_F(CentralityGTest, testKatzTopk) {
+    Aux::Log::setLogLevel("QUIET");
     const auto G = METISGraphReader{}.read("input/caidaRouterLevel.graph");
 
     KatzCentrality exactAlgo(G, 0, 1.0);
