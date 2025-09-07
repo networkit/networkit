@@ -146,21 +146,21 @@ void MinFlowShortestSuccessivePath::run() {
                 }
             });
 
-            // residualGraph.forInEdgesOf(u, [&](node, node v, cost cost, edgeid id) {
-            //     double residualFlow = flows.get(id);
-            //     if (residualFlow <= epsilon)
-            //         return;
-            //     // The corrected costs are using nodePotentials to shift negative edges/costs to
-            //     // positive ones
-            //     const double correctedCost = -cost + nodePotential[u] - nodePotential[v];
-            //     if (distances[v] > distances[u] + correctedCost) {
-            //         distances[v] = distances[u] + correctedCost;
-            //         parentNode[v] = u;
-            //         parentEdge[v] = id;
-            //         parentDirection[v] = -1;
-            //         queue.push({distances[v], v});
-            //     }
-            // });
+            residualGraph.forInEdgesOf(u, [&](node, node v, cost cost, edgeid id) {
+                double residualFlow = flows.get(id);
+                if (residualFlow <= epsilon)
+                    return;
+                // The corrected costs are using nodePotentials to shift negative edges/costs to
+                // positive ones
+                const double correctedCost = -cost + nodePotential[u] - nodePotential[v];
+                if (distances[v] > distances[u] + correctedCost) {
+                    distances[v] = distances[u] + correctedCost;
+                    parentNode[v] = u;
+                    parentEdge[v] = id;
+                    parentDirection[v] = -1;
+                    queue.push({distances[v], v});
+                }
+            });
         }
 
         // (c) update nodePotentials[u] += dist[u]
