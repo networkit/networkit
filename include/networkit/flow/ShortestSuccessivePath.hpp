@@ -34,7 +34,6 @@ class MinFlowShortestSuccessivePath : public Algorithm {
           return totalCost;
         }
     private:
-        void initializeResidualGraph();
         const Graph *graph;
         std::string capacityAttributeName;
         std::string supplyAttributeName;

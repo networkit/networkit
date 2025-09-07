@@ -266,8 +266,8 @@ TEST_F(ShortestSuccessivePathGTest, testSimpleDimacsProblem) {
     supply.set(2, 0.0);
     supply.set(3, -4.0);
 
-    addCostAndCapacity(G, capacities, 0, 1, /*cost=*/2.0, /*capacity=*/4.0);
     addCostAndCapacity(G, capacities, 0, 2, /*cost=*/2.0, /*capacity=*/2.0);
+    addCostAndCapacity(G, capacities, 0, 1, /*cost=*/2.0, /*capacity=*/4.0);
     addCostAndCapacity(G, capacities, 1, 2, /*cost=*/1.0, /*capacity=*/2.0);
     addCostAndCapacity(G, capacities, 1, 3, /*cost=*/3.0, /*capacity=*/3.0);
     addCostAndCapacity(G, capacities, 2, 3, /*cost=*/1.0, /*capacity=*/5.0);
@@ -276,6 +276,38 @@ TEST_F(ShortestSuccessivePathGTest, testSimpleDimacsProblem) {
     solver.run();
 
     EXPECT_DOUBLE_EQ(solver.getTotalCost(), 14.0);
+}
+
+TEST_F(ShortestSuccessivePathGTest, testSwapNeededByBackwardResiduals) {
+    Graph G(6, /*weighted=*/true, /*directed=*/true);
+    G.indexEdges();
+
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
+    auto supply     = G.attachNodeDoubleAttribute(supplyName);
+
+    // Supply / demand: send 2 units from 0 to 5
+    supply.set(0,  2.0);
+    supply.set(1,  0.0);
+    supply.set(2,  0.0);
+    supply.set(3,  0.0);
+    supply.set(4,  0.0);
+    supply.set(5, -2.0);
+
+    addCostAndCapacity(G, capacities, 0, 1, /*cost=*/0.0, /*capacity=*/1.0);
+    addCostAndCapacity(G, capacities, 0, 2, /*cost=*/0.0, /*capacity=*/1.0);
+
+    addCostAndCapacity(G, capacities, 1, 3, /*cost*/ 1.0, /*cap=*/1.0);
+    addCostAndCapacity(G, capacities, 1, 4, /*cost*/ 100.0, /*cap=*/1.0);
+    addCostAndCapacity(G, capacities, 2, 3, /*cost*/ 0.0, /*cap=*/1.0);
+    addCostAndCapacity(G, capacities, 2, 4, /*cost*/ 0.0, /*cap=*/1.0);
+
+    addCostAndCapacity(G, capacities, 3, 5, /*cost*/ 0.0, /*cap=*/1.0);
+    addCostAndCapacity(G, capacities, 4, 5, /*cost*/ 0.0, /*cap=*/1.0);
+
+    MinFlowShortestSuccessivePath solver(G, capacityName, supplyName);
+    solver.run();
+
+    EXPECT_DOUBLE_EQ(solver.getTotalCost(), 1.0);
 }
 
 } // namespace NetworKit
