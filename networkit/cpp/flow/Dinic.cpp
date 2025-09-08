@@ -28,18 +28,23 @@ Dinic::Dinic(const Graph &G, node src, node dst) : graph(&G), source(src), targe
 }
 
 void Dinic::initializeResidualGraph() {
+    // Start from the original graph.
     residualGraph = *graph;
-    residualGraph.indexEdges();
-    auto flowAttribute = residualGraph.attachEdgeDoubleAttribute(FLOW);
-
-    residualGraph.forNodes([&](node u) {
-        residualGraph.forEdgesOf(u, [&](node, node, edgeweight weight, index edgeIndex) {
-            if (weight < 0.0)
-                throw std::runtime_error(
-                    "Dinic algorithm requires non-negative weights (capacities)!");
-            flowAttribute.set(edgeIndex, 0.0);
-        });
+    double capacityScale = 0.0;
+    // Add missing reverse arcs with 0 capacity (but don't overwrite real antiparallel edges).
+    graph->forEdges([&](node u, node v, edgeweight w) {
+        if (w < 0.0) {
+            throw std::runtime_error("Dinic requires non-negative capacities!");
+        }
+        capacityScale = std::max(capacityScale, std::abs(w));
+        if (!residualGraph.hasEdge(v, u)) {
+            residualGraph.addEdge(v, u, 0.0);
+        }
     });
+    tolerance = std::max(ABSOLUTE_TOLERANCE, RELATIVE_TOLERANCE * capacityScale);
+
+    // Rebuild edge indices after structural changes.
+    residualGraph.indexEdges(true);
 }
 
 bool Dinic::canReachTargetInLevelGraph() {
@@ -55,7 +60,7 @@ bool Dinic::canReachTargetInLevelGraph() {
         queue.pop();
         for (const node child : residualGraph.neighborRange(parent)) {
             // We only consider connections with positive remaining capacity
-            if (residualGraph.weight(parent, child) > 0.0) {
+            if (residualGraph.weight(parent, child) > tolerance) {
                 if (level[child] == -1) {
                     level[child] = level[parent] + 1;
                     parents[child].push_back(parent);
@@ -75,7 +80,6 @@ edgeweight Dinic::computeBlockingPath() {
     std::vector<node> path;
     path.push_back(target);
     node u = target;
-    auto flow = residualGraph.getEdgeDoubleAttribute(FLOW);
     do {
         node v = none;
         // build path from target to source
@@ -98,25 +102,21 @@ edgeweight Dinic::computeBlockingPath() {
                 const node child = path[i];
                 bottleNeckOnPath = std::min(bottleNeckOnPath, residualGraph.weight(parent, child));
             }
-            // update the capacities and flows in the other edges
+            // apply augmentation: decrease forward, increase reverse
             for (size_t i = 0; i + 1 < path.size(); ++i) {
                 const node parent = path[i + 1];
                 const node child = path[i];
-                const index edgeID = residualGraph.edgeId(parent, child);
-                residualGraph.setWeight(parent, child,
-                                        residualGraph.weight(parent, child) - bottleNeckOnPath);
-                if (flow.get(edgeID) > 0.0) {
-                    flow.set(edgeID, flow.get(edgeID) + bottleNeckOnPath);
-                } else {
-                    flow.set(edgeID, bottleNeckOnPath);
+                const edgeweight forward = residualGraph.weight(parent, child);
+                const edgeweight reverse = residualGraph.weight(child, parent);
+                double newForward = forward - bottleNeckOnPath;
+                if (std::abs(newForward) < tolerance) {
+                    newForward = 0.0;
                 }
-                if (residualGraph.weight(parent, child) == 0 && !parents[child].empty()) {
-                    parents[child].pop_front();
-                }
+                residualGraph.setWeight(parent, child, newForward);
+                residualGraph.setWeight(child, parent, reverse + bottleNeckOnPath);
             }
             totalFlow += bottleNeckOnPath;
-            path.clear();
-            path.push_back(target);
+            path.assign(1, target);
         }
         u = v;
     } while (true);
@@ -129,7 +129,7 @@ void Dinic::run() {
     maxFlow = 0.0;
     while (canReachTargetInLevelGraph()) {
         const double flow = computeBlockingPath();
-        if (Aux::NumericTools::equal(flow, 0.0))
+        if (Aux::NumericTools::equal(flow, 0.0, tolerance))
             break;
         maxFlow += flow;
     }

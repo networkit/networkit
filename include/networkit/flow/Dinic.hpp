@@ -57,8 +57,10 @@ private:
     node target;
     edgeweight maxFlow{};
     Graph residualGraph;
-    static constexpr const char *FLOW = "flow";
     std::vector<std::deque<node>> parents;
+    static constexpr double RELATIVE_TOLERANCE = 1e-12;
+    static constexpr double ABSOLUTE_TOLERANCE = 1e-15;
+    edgeweight tolerance{};
 };
 } // namespace NetworKit
 #endif // NETWORKIT_FLOW_DINIC_HPP_
