@@ -186,6 +186,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install ninja-build g++-15 gcc-15
           sudo apt-get install libomp-15-dev
+          sudo apt-get install --only-upgrade binutils
+      # "binutils" install from plucky is a workaround: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=119657
       - name: Setup Python 3.13
         uses: actions/setup-python@v5
         with:
