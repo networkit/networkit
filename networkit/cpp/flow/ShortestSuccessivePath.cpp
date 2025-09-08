@@ -16,7 +16,7 @@ MinFlowShortestSuccessivePath::MinFlowShortestSuccessivePath(const Graph &G,
     : capacityAttributeName(capacityName), supplyAttributeName(supplyName), graph(&G) {
 
     if (!G.isDirected()) {
-        throw std::runtime_error("MinFlowShortestSuccessivePath: Graph must be directed");
+        throw std::runtime_error("MinFlowShortestSuccessivePath: Graph must be directed.");
     }
 
     if (!G.isWeighted()) {
@@ -24,38 +24,43 @@ MinFlowShortestSuccessivePath::MinFlowShortestSuccessivePath(const Graph &G,
     }
 
     if (!G.hasEdgeIds()) {
-        throw std::runtime_error("MinFlowShortestSuccessivePath: Graph edges must be indexed");
+        throw std::runtime_error("MinFlowShortestSuccessivePath: Graph edges must be indexed.");
     }
 
     try {
-        // this internally calls AttributeMap::find and will throw if the attribute does not exist
         (void)G.edgeAttributes().find(capacityName);
     } catch (const std::runtime_error &e) {
-        // catch the generic “No such attribute” and give our own
         throw std::runtime_error("MinFlowShortestSuccessivePath: Provided edge attribute '"
-                                 + capacityName + "' not found");
+                                 + capacityName + "' not found.");
     }
 
     try {
-        // this internally calls AttributeMap::find and will throw if the attribute does not exist
         (void)G.nodeAttributes().find(supplyName);
     } catch (const std::runtime_error &e) {
-        // catch the generic “No such attribute” and give our own
         throw std::runtime_error("MinFlowShortestSuccessivePath: Provided node attribute '"
-                                 + supplyName + "' not found");
+                                 + supplyName + "' not found.");
     }
     residualGraph = *graph;
     auto flow = residualGraph.attachEdgeDoubleAttribute(FLOW);
     auto capacities = residualGraph.getEdgeDoubleAttribute(capacityName);
+    auto supply = residualGraph.getNodeDoubleAttribute(supplyName);
+    double totalSupply = 0.0;
     residualGraph.forNodes([&](node u) {
+        totalSupply += supply.get(u);
         residualGraph.forEdgesOf(u, [&](node, node, cost, edgeid eid) {
             if (capacities.get(eid) < 0.0) {
                 throw std::runtime_error(
-                    "MinFlowShortestSuccessivePath: Capacities must be non-negative");
+                    "MinFlowShortestSuccessivePath: Capacities must be non-negative.");
             }
             flow.set(eid, 0.0);
         });
     });
+
+    if(!Aux::NumericTools::equal(totalSupply, 0.0)) {
+        throw std::runtime_error(
+            "MinFlowShortestSuccessivePath: Sum of node supplies and demands does not add up to zero.");
+
+    }
 }
 
 void MinFlowShortestSuccessivePath::run() {
@@ -122,7 +127,7 @@ void MinFlowShortestSuccessivePath::run() {
         std::fill(distances.begin(), distances.end(), infiniteCosts);
         distances[s] = 0;
         queue = decltype(queue)(); // clear
-        queue.push({0, s});
+        queue.emplace(0, s);
         while (!queue.empty()) {
             auto [distance, u] = queue.top();
             queue.pop();
@@ -158,7 +163,7 @@ void MinFlowShortestSuccessivePath::run() {
                     parentNode[v] = u;
                     parentEdge[v] = id;
                     parentDirection[v] = -1;
-                    queue.push({distances[v], v});
+                    queue.emplace(distances[v], v);
                 }
             });
         }
@@ -173,11 +178,12 @@ void MinFlowShortestSuccessivePath::run() {
         // (d) pick a demand node t reachable from s
         node t = none;
         for (node u = 0; u < numberOfNodes; ++u) {
-            if (supply[u] < -epsilon && distances[u] < infiniteCosts) {
+            if (supply.get(u) < -epsilon && distances[u] < infiniteCosts) {
                 t = u;
                 break;
             }
         }
+
         if (t == none) {
             throw std::runtime_error(
                 "MinFlowShortestSuccessivePath: unable to satisfy all supplies");
@@ -186,16 +192,16 @@ void MinFlowShortestSuccessivePath::run() {
         // (e) compute bottleneck f = min(b[s], -b[t], min residual capacity on path)
         double f = std::min(supply.get(s), -supply.get(t));
         for (node v = t; v != s; v = parentNode[v]) {
-            edgeid e = parentEdge[v];
-            double capRes =
+            const edgeid e = parentEdge[v];
+            const double capRes =
                 (parentDirection[v] > 0) ? (capacities.get(e) - flows.get(e)) : flows.get(e);
             f = std::min(f, capRes);
         }
 
         // (f) augment flow along the path
         for (node v = t; v != s; v = parentNode[v]) {
-            edgeid e = parentEdge[v];
-            double old = flows.get(e);
+            const edgeid e = parentEdge[v];
+            const double old = flows.get(e);
             flows.set(e, old + (parentDirection[v] > 0 ? +f : -f));
         }
 
@@ -206,8 +212,7 @@ void MinFlowShortestSuccessivePath::run() {
     totalCost = 0.0;
 
     residualGraph.forEdges([&](node u, node v, cost c, edgeid eid) {
-        double f = flows.get(eid);
-        totalCost += f * c;
+        totalCost += flows.get(eid) * c;
     });
     hasRun = true;
 }

@@ -29,7 +29,7 @@ TEST_F(ShortestSuccessivePathGTest, constructorThrowsForUndirected) {
         MinFlowShortestSuccessivePath test(G, capacityName, supplyName);
         FAIL() << "Expected std::runtime_error for undirected graph";
     } catch (const std::runtime_error &e) {
-        EXPECT_STREQ(e.what(), "MinFlowShortestSuccessivePath: Graph must be directed");
+        EXPECT_STREQ(e.what(), "MinFlowShortestSuccessivePath: Graph must be directed.");
     } catch (...) {
         FAIL() << "Expected std::runtime_error";
     }
@@ -51,9 +51,9 @@ TEST_F(ShortestSuccessivePathGTest, constructorThrowsForUnindexedEdges) {
     Graph G(2, /*weighted*/ true, /*directed*/ true);
     try {
         MinFlowShortestSuccessivePath test(G, capacityName, supplyName);
-        FAIL() << "Expected std::runtime_error for unindexed edges";
+        FAIL() << "Expected std::runtime_error for unindexed edges.";
     } catch (const std::runtime_error &e) {
-        EXPECT_STREQ(e.what(), "MinFlowShortestSuccessivePath: Graph edges must be indexed");
+        EXPECT_STREQ(e.what(), "MinFlowShortestSuccessivePath: Graph edges must be indexed.");
     } catch (...) {
         FAIL() << "Expected std::runtime_error";
     }
@@ -66,10 +66,10 @@ TEST_F(ShortestSuccessivePathGTest, constructorThrowsForMissingEdgeAttribute) {
 
     try {
         MinFlowShortestSuccessivePath test(G, capacityName, supplyName);
-        FAIL() << "Expected std::runtime_error for missing edge attribute";
+        FAIL() << "Expected std::runtime_error for missing edge attribute.";
     } catch (const std::runtime_error &e) {
         EXPECT_STREQ(e.what(), ("MinFlowShortestSuccessivePath: Provided edge attribute '"
-                                + capacityName + "' not found")
+                                + capacityName + "' not found.")
                                    .c_str());
     } catch (...) {
         FAIL() << "Expected std::runtime_error";
@@ -83,10 +83,10 @@ TEST_F(ShortestSuccessivePathGTest, constructorThrowsForMissingNodeAttribute) {
 
     try {
         MinFlowShortestSuccessivePath test(G, capacityName, supplyName);
-        FAIL() << "Expected std::runtime_error for missing node attribute";
+        FAIL() << "Expected std::runtime_error for missing node attribute.";
     } catch (const std::runtime_error &e) {
         EXPECT_STREQ(e.what(), ("MinFlowShortestSuccessivePath: Provided node attribute '"
-                                + supplyName + "' not found")
+                                + supplyName + "' not found.")
                                    .c_str());
     } catch (...) {
         FAIL() << "Expected std::runtime_error";
@@ -103,12 +103,37 @@ TEST_F(ShortestSuccessivePathGTest, constructorThrowsForNegativeCapacity) {
     G.addEdge(0, 1);
     auto eid = G.edgeId(0, 1);
     capacities.set(eid, -5.0); // invalid negative capacity
+    supply.set(0, 0.0);
+    supply.set(1, 0.0);
 
     try {
         MinFlowShortestSuccessivePath alg(G, capacityName, supplyName);
-        FAIL() << "Expected std::runtime_error for negative capacity";
+        FAIL() << "Expected std::runtime_error for negative capacity..";
     } catch (const std::runtime_error &e) {
-        EXPECT_STREQ(e.what(), "MinFlowShortestSuccessivePath: Capacities must be non-negative");
+        EXPECT_STREQ(e.what(), "MinFlowShortestSuccessivePath: Capacities must be non-negative.");
+    } catch (...) {
+        FAIL() << "Expected std::runtime_error";
+    }
+}
+
+TEST_F(ShortestSuccessivePathGTest, constructorThrowsForUnbalancedSupplies) {
+    Graph G(2, /*weighted*/ true, /*directed*/ true);
+    G.indexEdges();
+
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
+    auto supply = G.attachNodeDoubleAttribute(supplyName);
+
+    G.addEdge(0, 1);
+    const auto eid = G.edgeId(0, 1);
+    capacities.set(eid, 5.0);
+    supply.set(0, -5.0);
+    supply.set(1, 4.0);
+
+    try {
+        MinFlowShortestSuccessivePath alg(G, capacityName, supplyName);
+        FAIL() << "Expected std::runtime_error for unbalanced supplies/demands in nodes.";
+    } catch (const std::runtime_error &e) {
+        EXPECT_STREQ(e.what(), "MinFlowShortestSuccessivePath: Sum of node supplies and demands does not add up to zero.");
     } catch (...) {
         FAIL() << "Expected std::runtime_error";
     }
@@ -119,6 +144,10 @@ TEST_F(ShortestSuccessivePathGTest, constructorSucceedsWhenValid) {
     G.indexEdges();
     auto capacities = G.attachEdgeDoubleAttribute(capacityName);
     auto supply = G.attachNodeDoubleAttribute(supplyName);
+    for (node u = 0; u < 3; ++u) {
+        supply.set(u, 0.0);
+    }
+
 
     EXPECT_NO_THROW({ MinFlowShortestSuccessivePath test(G, capacityName, supplyName); });
 }
