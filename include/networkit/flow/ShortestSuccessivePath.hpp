@@ -17,12 +17,18 @@ class MinFlowShortestSuccessivePath : public Algorithm {
 
 public:
     /**
-     * @param G            underlying graph (must be directed + weighted)
-     * @param capacityAttr name of the edge attribute holding capacity values
-     * @param supplyAttr   name of the node attribute holding supply values
+     * @param G             underlying graph (must be directed, weighted, and have indexed edges)
+     * @param capacityName  name of the edge attribute holding non-negative capacity values
+     * @param supplyName    name of the node attribute holding supply/demand values
      *
-     * @throws std::runtime_error if G is not directed or not weighted,
-     *         or if either of the named attributes is missing.
+     * @throws std::runtime_error if:
+     *         - the graph is not directed,
+     *         - the graph is not weighted,
+     *         - the graph does not have indexed edges,
+     *         - the specified edge attribute (capacities) does not exist,
+     *         - the specified node attribute (supplies) does not exist,
+     *         - any edge capacity is negative,
+     *         - or the sum of all node supplies/demands is not zero.
      */
     MinFlowShortestSuccessivePath(const Graph &G, const std::string &capacityName,
                                   const std::string &supplyName);
