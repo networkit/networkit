@@ -62,6 +62,13 @@ MinFlowShortestSuccessivePath::MinFlowShortestSuccessivePath(const Graph &G,
     }
 }
 
+const Graph::EdgeDoubleAttribute &MinFlowShortestSuccessivePath::getFlow() const {
+    if (!hasRun) {
+        throw std::runtime_error("MinFlowShortestSuccessivePath::getFlow: run() must be called first.");
+    }
+    return flows;
+}
+
 void MinFlowShortestSuccessivePath::run() {
     const count numberOfNodes = residualGraph.numberOfNodes();
     constexpr cost infiniteCosts = std::numeric_limits<cost>::infinity();
@@ -69,7 +76,7 @@ void MinFlowShortestSuccessivePath::run() {
 
     // 1) Grab the three attributes:
     const auto capacities = residualGraph.getEdgeDoubleAttribute(capacityAttributeName);
-    auto flows = residualGraph.getEdgeDoubleAttribute(FLOW);
+    flows = residualGraph.getEdgeDoubleAttribute(FLOW);
     auto supply = residualGraph.getNodeDoubleAttribute(supplyAttributeName);
 
     // Apply Bellman-Ford to work to compute node potentials/distances

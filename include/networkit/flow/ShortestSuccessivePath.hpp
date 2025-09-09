@@ -38,6 +38,7 @@ public:
         assureFinished();
         return totalCost;
     }
+    const Graph::EdgeDoubleAttribute &getFlow() const;
 
 private:
     const Graph *graph;
@@ -45,6 +46,7 @@ private:
     std::string supplyAttributeName;
     Graph residualGraph;
     static constexpr const char *FLOW = "flow";
+    Graph::EdgeDoubleAttribute flows;
     cost totalCost{};
 };
 

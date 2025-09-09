@@ -46,7 +46,7 @@ bool willUnderflow(const T &pX, const T &pValue, const T &pMin = std::numeric_li
  * @param error
  * @return True if x is meaningfully less than y; false otherwise.
  */
-inline bool lt(double x, double y, double error = acceptableError);
+bool lt(double x, double y, double error = acceptableError);
 
 /**
  * @brief Robust strict greater-than for doubles with tolerance.
@@ -63,7 +63,7 @@ inline bool lt(double x, double y, double error = acceptableError);
  * @param relTol Relative tolerance (default 1e-12).
  * @return True if x is meaningfully greater than y; false otherwise.
  */
-inline bool gt(double x, double y, double error = acceptableError);
+bool gt(double x, double y, double error = acceptableError);
 
 /**
  * Test doubles for equality within a given error.
