@@ -8,8 +8,8 @@
 #ifndef NETWORKIT_AUXILIARY_NUMERIC_TOOLS_HPP_
 #define NETWORKIT_AUXILIARY_NUMERIC_TOOLS_HPP_
 
-#include <limits>
 #include <algorithm>
+#include <limits>
 
 namespace Aux {
 
@@ -33,25 +33,6 @@ bool willUnderflow(const T &pX, const T &pValue, const T &pMin = std::numeric_li
 }
 
 /**
- * @brief Compute an adaptive comparison tolerance for two doubles.
- *
- * Returns an absolute+relative tolerance:
- *   tol = absoluteTolerance + relativeTolerance * max(|x|, |y|)
- *
- * Use this to make floating-point comparisons scale with magnitude while still
- * guarding against tiny absolute roundoff.
- *
- * @param x First value to compare.
- * @param y Second value to compare.
- * @param absoluteTolerance Minimum tolerated absolute error (default 1e-12).
- * @param relativeTolerance Scale-dependent tolerated error (default 1e-12).
- * @return The combined tolerance to use for comparing @p x and @p y.
- */
-inline double tolerance(double x, double y, double absoluteTolerance=1e-12, double relativeTolerance=1e-12) {
-    return absoluteTolerance + relativeTolerance * std::max(std::abs(x), std::abs(y));
-}
-
-/**
  * @brief Robust strict less-than for doubles with tolerance.
  *
  * Returns true iff x is strictly smaller than y by more than the adaptive
@@ -62,13 +43,10 @@ inline double tolerance(double x, double y, double absoluteTolerance=1e-12, doub
  *
  * @param x Left-hand value.
  * @param y Right-hand value.
- * @param absTol Absolute tolerance (default 1e-12).
- * @param relTol Relative tolerance (default 1e-12).
+ * @param error
  * @return True if x is meaningfully less than y; false otherwise.
  */
-inline bool lt(double x, double y, double absTol=1e-12, double relTol=1e-12) {
-    return x < y - tolerance(x, y, absTol, relTol);
-}
+inline bool lt(double x, double y, double error = acceptableError);
 
 /**
  * @brief Robust strict greater-than for doubles with tolerance.
@@ -85,9 +63,7 @@ inline bool lt(double x, double y, double absTol=1e-12, double relTol=1e-12) {
  * @param relTol Relative tolerance (default 1e-12).
  * @return True if x is meaningfully greater than y; false otherwise.
  */
-inline bool gt(double x, double y, double absTol = 1e-12, double relTol = 1e-12) {
-    return x > y + tolerance(x, y, absTol, relTol);
-}
+inline bool gt(double x, double y, double error = acceptableError);
 
 /**
  * Test doubles for equality within a given error.

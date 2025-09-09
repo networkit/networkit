@@ -56,10 +56,9 @@ MinFlowShortestSuccessivePath::MinFlowShortestSuccessivePath(const Graph &G,
         });
     });
 
-    if(!Aux::NumericTools::equal(totalSupply, 0.0)) {
-        throw std::runtime_error(
-            "MinFlowShortestSuccessivePath: Sum of node supplies and demands does not add up to zero.");
-
+    if (!Aux::NumericTools::equal(totalSupply, 0.0)) {
+        throw std::runtime_error("MinFlowShortestSuccessivePath: Sum of node supplies and demands "
+                                 "does not add up to zero.");
     }
 }
 
@@ -78,10 +77,10 @@ void MinFlowShortestSuccessivePath::run() {
     for (count i = 1; i < numberOfNodes; ++i) {
         bool updated = false;
         residualGraph.forEdges([&](node u, node v, cost cost, edgeid) {
-           if(nodePotential[u] + cost < nodePotential[v]) {
-               updated = true;
-               nodePotential[v] = nodePotential[u] + cost;
-           }
+            if (nodePotential[u] + cost < nodePotential[v]) {
+                updated = true;
+                nodePotential[v] = nodePotential[u] + cost;
+            }
         });
         if (!updated)
             break;
@@ -98,7 +97,7 @@ void MinFlowShortestSuccessivePath::run() {
 
     if (negativeCycleDetected) {
         throw std::runtime_error(
-                "MinFlowShortestSuccessivePath: negative-cost cycle in residual graph");
+            "MinFlowShortestSuccessivePath: negative-cost cycle in residual graph");
     }
 
     // 5) Prepare Dijkstra data structures
@@ -211,9 +210,8 @@ void MinFlowShortestSuccessivePath::run() {
     }
     totalCost = 0.0;
 
-    residualGraph.forEdges([&](node u, node v, cost c, edgeid eid) {
-        totalCost += flows.get(eid) * c;
-    });
+    residualGraph.forEdges(
+        [&](node u, node v, cost c, edgeid eid) { totalCost += flows.get(eid) * c; });
     hasRun = true;
 }
 

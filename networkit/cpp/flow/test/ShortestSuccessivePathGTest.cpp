@@ -367,7 +367,6 @@ TEST_F(ShortestSuccessivePathGTest, testMultipleSuppliesAndDemands) {
     EXPECT_DOUBLE_EQ(solver.getTotalCost(), 15.0);
 }
 
-
 TEST_F(ShortestSuccessivePathGTest, testMultipleSuppliesAndDemandsWithDetour) {
     Graph G(7, /*weighted=*/true, /*directed=*/true);
     G.indexEdges();
@@ -390,7 +389,6 @@ TEST_F(ShortestSuccessivePathGTest, testMultipleSuppliesAndDemandsWithDetour) {
 
     addCostAndCapacity(G, capacities, 2, 5, /*cost*/ 2.0, /*capacity*/ 12.0);
     addCostAndCapacity(G, capacities, 1, 3, /*cost*/ 0.0, /*capacity*/ 1.0);
-
 
     addCostAndCapacity(G, capacities, 3, 4, /*cost*/ 3.0, /*capacity*/ 50.0);
     addCostAndCapacity(G, capacities, 3, 5, /*cost*/ 1.0, /*capacity*/ 1.0);
