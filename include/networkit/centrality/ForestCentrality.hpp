@@ -9,8 +9,6 @@
 #define NETWORKIT_CENTRALITY_FOREST_CENTRALITY_HPP_
 
 #include <cmath>
-#include <functional>
-#include <omp.h>
 #include <random>
 #include <vector>
 

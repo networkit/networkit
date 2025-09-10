@@ -1,3 +1,10 @@
+#include <atomic>
+#include <condition_variable>
+#include <omp.h>
+#include <thread>
+#include <tlx/unused.hpp>
+#include <networkit/auxiliary/Timer.hpp>
+#include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
 #include <networkit/community/ParallelLeiden.hpp>
 
 namespace NetworKit {
@@ -15,7 +22,7 @@ void ParallelLeiden::run() {
     auto totalTime = Aux::Timer();
     totalTime.start();
     do { // Leiden iteration
-        INFO(numberOfIterations, " Leiden iteration(s) left");
+        INFO(numberOfIterations, "Leiden iteration(s) left");
         numberOfIterations--;
         changed = false;
         const Graph *currentGraph = G;

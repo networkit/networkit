@@ -8,8 +8,6 @@
 #ifndef NETWORKIT_COMMUNITY_CONDUCTANCE_HPP_
 #define NETWORKIT_COMMUNITY_CONDUCTANCE_HPP_
 
-#include <networkit/auxiliary/NumericTools.hpp>
-#include <networkit/community/EdgeCut.hpp>
 #include <networkit/community/QualityMeasure.hpp>
 
 namespace NetworKit {

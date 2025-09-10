@@ -19,8 +19,6 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/distance/Diameter.hpp>
-#include <networkit/generators/DorogovtsevMendesGenerator.hpp>
-#include <networkit/generators/HavelHakimiGenerator.hpp>
 #include <networkit/io/EdgeListReader.hpp>
 #include <networkit/io/KONECTGraphReader.hpp>
 #include <networkit/io/METISGraphReader.hpp>

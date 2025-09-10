@@ -10,7 +10,6 @@
 
 #include <networkit/components/ComponentDecomposition.hpp>
 #include <networkit/graph/Graph.hpp>
-#include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
 

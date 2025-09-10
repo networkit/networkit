@@ -10,7 +10,6 @@
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/community/LouvainMapEquation.hpp>
 #include <networkit/generators/ClusteredRandomGraphGenerator.hpp>
-#include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/SNAPGraphReader.hpp>
 
 namespace NetworKit {

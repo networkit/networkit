@@ -8,8 +8,6 @@
 #ifndef NETWORKIT_CENTRALITY_CORE_DECOMPOSITION_HPP_
 #define NETWORKIT_CENTRALITY_CORE_DECOMPOSITION_HPP_
 
-#include <list>
-#include <string>
 #include <vector>
 
 #include <networkit/centrality/Centrality.hpp>

@@ -9,7 +9,6 @@
 #define NETWORKIT_COMMUNITY_DYNAMIC_NMI_DISTANCE_HPP_
 
 #include <networkit/community/DissimilarityMeasure.hpp>
-#include <networkit/community/NMIDistance.hpp>
 
 namespace NetworKit {
 
