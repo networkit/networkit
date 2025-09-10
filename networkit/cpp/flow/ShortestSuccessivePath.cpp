@@ -11,9 +11,8 @@
 
 namespace NetworKit {
 
-SuccessiveShortestPathMinCostFlow::SuccessiveShortestPathMinCostFlow(const Graph &G,
-                                                             const std::string &capacityName,
-                                                             const std::string &supplyName)
+SuccessiveShortestPathMinCostFlow::SuccessiveShortestPathMinCostFlow(
+    const Graph &G, const std::string &capacityName, const std::string &supplyName)
     : capacityAttributeName(capacityName), supplyAttributeName(supplyName), graph(&G) {
 
     if (!G.isDirected()) {

@@ -36,7 +36,7 @@ public:
      *         - or the sum of all node supplies/demands is not zero.
      */
     SuccessiveShortestPathMinCostFlow(const Graph &G, const std::string &capacityName,
-                                  const std::string &supplyName);
+                                      const std::string &supplyName);
 
     /**
      * \brief Compute a minimum-cost feasible flow using the successive shortest path algorithm.
