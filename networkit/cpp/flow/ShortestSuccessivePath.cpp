@@ -5,6 +5,7 @@
  *
  */
 
+#include "tlx/container/d_ary_heap.hpp"
 #include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/flow/ShortestSuccessivePath.hpp>
 
@@ -71,7 +72,7 @@ void MinFlowShortestSuccessivePath::run() {
     flows = residualGraph.getEdgeDoubleAttribute(FLOW);
     auto supply = residualGraph.getNodeDoubleAttribute(supplyAttributeName);
 
-    // Apply Bellman-Ford to work to compute node potentials/distances
+    // Apply Bellman-Ford to compute node potentials/distances (dealing with negative weights/costs)
     std::vector<cost> nodePotential(numberOfNodes, 0.0);
     for (count i = 1; i < numberOfNodes; ++i) {
         bool updated = false;
@@ -105,10 +106,10 @@ void MinFlowShortestSuccessivePath::run() {
     std::vector<edgeid> parentEdge(numberOfNodes);
     std::vector<int> parentDirection(numberOfNodes);
     using costNodePair = std::pair<cost, node>;
-    std::priority_queue<costNodePair, std::vector<costNodePair>, std::greater<costNodePair>> queue;
+    tlx::d_ary_heap<costNodePair, 2, std::greater<costNodePair>> minHeap;
 
     // Main successive‐shortest‐path loop
-    while (true) {
+    do {
         // (a) find a (new) supply node start with non-zero supply-value
         node start = none;
         for (node u = 0; u < numberOfNodes; ++u) {
@@ -123,10 +124,11 @@ void MinFlowShortestSuccessivePath::run() {
         // (b) Dijkstra on residual network from start
         std::ranges::fill(distances.begin(), distances.end(), infiniteCosts);
         distances[start] = 0;
-        queue.emplace(0, start);
-        while (!queue.empty()) {
-            auto [distance, u] = queue.top();
-            queue.pop();
+        minHeap.clear();
+        minHeap.push({0, start});
+        do {
+            auto [distance, u] = minHeap.top();
+            minHeap.pop();
             if (distance > distances[u])
                 continue;
 
@@ -143,7 +145,7 @@ void MinFlowShortestSuccessivePath::run() {
                     parentNode[v] = u;
                     parentEdge[v] = eid;
                     parentDirection[v] = +1;
-                    queue.emplace(distances[v], v);
+                    minHeap.push({distances[v], v});
                 }
             });
 
@@ -160,10 +162,10 @@ void MinFlowShortestSuccessivePath::run() {
                     parentNode[v] = u;
                     parentEdge[v] = eid;
                     parentDirection[v] = -1;
-                    queue.emplace(distances[v], v);
+                    minHeap.push({distances[v], v});
                 }
             });
-        }
+        } while (!minHeap.empty());
 
         // (c) update nodePotentials
         residualGraph.parallelForNodes([&](node u) {
@@ -205,9 +207,9 @@ void MinFlowShortestSuccessivePath::run() {
         // (g) update imbalances
         supply.set(start, supply.get(start) - bottleneckFlow);
         supply.set(target, supply.get(target) + bottleneckFlow);
-    }
-    totalCost = 0.0;
+    } while (true);
 
+    totalCost = 0.0;
     residualGraph.forEdges(
         [&](node, node, cost cost, edgeid eid) { totalCost += flows.get(eid) * cost; });
     hasRun = true;
