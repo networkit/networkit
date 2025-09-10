@@ -21,6 +21,18 @@ protected:
         G.addEdge(u, v, cost);
         capacities.set(G.edgeId(u, v), capacity);
     }
+
+    // For every node: (outgoing flow − incoming flow) must equal its supply/demand.
+    void checkFlowConservation(Graph &G, auto flow) {
+        std::vector<double> imbalance(G.numberOfNodes(), 0.0);
+        const auto supply = G.getNodeDoubleAttribute(supplyName);
+        G.forEdges([&](node u, node v, edgeid eid) {
+            const double f = flow.get(eid);
+            imbalance[u] += f; // outgoing flow
+            imbalance[v] -= f; // incoming flow
+        });
+        G.forNodes([&](node u) { EXPECT_DOUBLE_EQ(imbalance[u], supply.get(u)); });
+    }
 };
 
 TEST_F(ShortestSuccessivePathGTest, testConstructorThrowsForUndirected) {
@@ -102,7 +114,7 @@ TEST_F(ShortestSuccessivePathGTest, testConstructorThrowsForNegativeCapacity) {
 
     G.addEdge(0, 1);
     auto eid = G.edgeId(0, 1);
-    capacities.set(eid, -5.0); // invalid negative capacity
+    capacities.set(eid, -5.0);
     supply.set(0, 0.0);
     supply.set(1, 0.0);
 
@@ -158,30 +170,27 @@ TEST_F(ShortestSuccessivePathGTest, testZeroNodesGraph) {
     auto capacities = G.attachEdgeDoubleAttribute(capacityName);
     auto supply = G.attachNodeDoubleAttribute(supplyName);
 
-    MinFlowShortestSuccessivePath test(G, capacityName, supplyName);
-    test.run();
-    EXPECT_DOUBLE_EQ(test.getTotalCost(), 0.0);
+    MinFlowShortestSuccessivePath solver(G, capacityName, supplyName);
+    solver.run();
+    EXPECT_DOUBLE_EQ(solver.getTotalCost(), 0.0);
+    const auto flow = solver.getFlow();
+    EXPECT_EQ(flow.size(), 0);
 }
 
 TEST_F(ShortestSuccessivePathGTest, testRunThrowsOnNegativeCostCycle) {
-    // 3-node directed graph with a negative cycle: 0->1->2->0, total cost = 1 + 1 - 5 = -3
     Graph G(3, /*weighted=*/true, /*directed=*/true);
     G.indexEdges();
 
     auto capacities = G.attachEdgeDoubleAttribute(capacityName);
     auto supply = G.attachNodeDoubleAttribute(supplyName);
 
-    // Add the negative cycle edges with positive capacities
-    G.addEdge(0, 1, /*cost*/ +1.0);
-    G.addEdge(1, 2, /*cost*/ +1.0);
-    G.addEdge(2, 0, /*cost*/ -5.0); // completes a negative cycle
-
     for (node u = 0; u < 3; ++u) {
         supply.set(u, 0.0);
     }
-    capacities.set(G.edgeId(0, 1), 3.0);
-    capacities.set(G.edgeId(1, 2), 3.0);
-    capacities.set(G.edgeId(2, 0), 3.0);
+
+    addCostAndCapacity(G, capacities, 0, 1, /*cost*/ 1.0, /*capacity*/ 3.0);
+    addCostAndCapacity(G, capacities, 1, 2, /*cost*/ 1.0, /*capacity*/ 3.0);
+    addCostAndCapacity(G, capacities, 2, 0, /*cost*/ -5.0, /*capacity*/ 3.0);
 
     MinFlowShortestSuccessivePath solver(G, capacityName, supplyName);
 
@@ -191,6 +200,35 @@ TEST_F(ShortestSuccessivePathGTest, testRunThrowsOnNegativeCostCycle) {
     } catch (const std::runtime_error &e) {
         EXPECT_STREQ(e.what(),
                      "MinFlowShortestSuccessivePath: negative-cost cycle in residual graph");
+    } catch (...) {
+        FAIL() << "Expected std::runtime_error but got a different exception.";
+    }
+}
+
+TEST_F(ShortestSuccessivePathGTest, testRunThrowsWhenSuppliesDemandsCanNotBeSatisfied) {
+    Graph G(3, /*weighted=*/true, /*directed=*/true);
+    G.indexEdges();
+
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
+    auto supply = G.attachNodeDoubleAttribute(supplyName);
+
+    supply.set(0, 10.0);
+    supply.set(1, -5.0);
+    supply.set(2, -5.0);
+
+    addCostAndCapacity(G, capacities, 0, 1, /*cost*/ 1.0, /*capacity*/ 3.0);
+    addCostAndCapacity(G, capacities, 1, 2, /*cost*/ 1.0, /*capacity*/ 3.0);
+    addCostAndCapacity(G, capacities, 2, 0, /*cost*/ 2.0, /*capacity*/ 3.0);
+
+    MinFlowShortestSuccessivePath solver(G, capacityName, supplyName);
+
+    try {
+        solver.run();
+        FAIL() << "Expected std::runtime_error because supplies/demands can not be satisfied by "
+                  "network.";
+    } catch (const std::runtime_error &e) {
+        EXPECT_STREQ(e.what(),
+                     "MinFlowShortestSuccessivePath: unable to satisfy all supplies/demands");
     } catch (...) {
         FAIL() << "Expected std::runtime_error but got a different exception.";
     }
@@ -209,20 +247,23 @@ TEST_F(ShortestSuccessivePathGTest, testSimple5NodeGraph) {
     supply.set(0, +5.0);
     supply.set(4, -5.0);
 
-    G.addEdge(0, 1, /*cost*/ 1.0);
-    G.addEdge(1, 4, /*cost*/ 1.0);
-    G.addEdge(0, 2, /*cost*/ 2.0);
-    G.addEdge(2, 4, /*cost*/ 1.0);
-
-    capacities.set(G.edgeId(0, 1), 3.0);
-    capacities.set(G.edgeId(1, 4), 3.0);
-    capacities.set(G.edgeId(0, 2), 3.0);
-    capacities.set(G.edgeId(2, 4), 3.0);
+    addCostAndCapacity(G, capacities, 0, 1, /*cost*/ 1.0, /*capacity*/ 3.0);
+    addCostAndCapacity(G, capacities, 1, 4, /*cost*/ 1.0, /*capacity*/ 3.0);
+    addCostAndCapacity(G, capacities, 0, 2, /*cost*/ 2.0, /*capacity*/ 3.0);
+    addCostAndCapacity(G, capacities, 2, 4, /*cost*/ 1.0, /*capacity*/ 3.0);
 
     MinFlowShortestSuccessivePath solver(G, capacityName, supplyName);
     solver.run();
 
     EXPECT_DOUBLE_EQ(solver.getTotalCost(), 12.0);
+
+    const auto flow = solver.getFlow();
+    EXPECT_DOUBLE_EQ(flow.get(G.edgeId(0, 1)), 3.0);
+    EXPECT_DOUBLE_EQ(flow.get(G.edgeId(1, 4)), 3.0);
+    EXPECT_DOUBLE_EQ(flow.get(G.edgeId(0, 2)), 2.0);
+    EXPECT_DOUBLE_EQ(flow.get(G.edgeId(2, 4)), 2.0);
+
+    checkFlowConservation(G, flow);
 }
 
 TEST_F(ShortestSuccessivePathGTest, testComplexMultiSourceNegativeCost) {
@@ -252,9 +293,23 @@ TEST_F(ShortestSuccessivePathGTest, testComplexMultiSourceNegativeCost) {
     solver.run();
 
     EXPECT_DOUBLE_EQ(solver.getTotalCost(), 18.0);
+
+    const auto flow = solver.getFlow();
+    std::vector<double> expected(G.upperEdgeIdBound(), 0.0);
+    expected[G.edgeId(0, 2)] = 4.0;
+    expected[G.edgeId(2, 5)] = 4.0;
+
+    expected[G.edgeId(1, 3)] = 3.0;
+    expected[G.edgeId(3, 5)] = 2.0;
+    expected[G.edgeId(3, 4)] = 1.0;
+    expected[G.edgeId(4, 5)] = 1.0;
+
+    G.forEdges([&](node, node, edgeid eid) { EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]); });
+
+    checkFlowConservation(G, flow);
 }
 
-TEST_F(ShortestSuccessivePathGTest, testZeroWeights) {
+TEST_F(ShortestSuccessivePathGTest, testZeroCosts) {
     Graph G(6, /*weighted=*/true, /*directed=*/true);
     G.indexEdges();
 
@@ -278,6 +333,20 @@ TEST_F(ShortestSuccessivePathGTest, testZeroWeights) {
     solver.run();
 
     EXPECT_DOUBLE_EQ(solver.getTotalCost(), 0.0);
+
+    const auto flow = solver.getFlow();
+
+    std::vector<double> expected(G.upperEdgeIdBound(), 0.0);
+    expected[G.edgeId(0, 1)] = 2.0;
+    expected[G.edgeId(0, 2)] = 2.0;
+    expected[G.edgeId(4, 3)] = 2.0;
+    expected[G.edgeId(5, 3)] = 2.0;
+
+    G.forEdges([&](node /*u*/, node /*v*/, edgeid eid) {
+        EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]);
+    });
+
+    checkFlowConservation(G, flow);
 }
 
 // https://lpsolve.sourceforge.net/5.5/DIMACS_mcf.htm
@@ -303,6 +372,20 @@ TEST_F(ShortestSuccessivePathGTest, testSimpleDimacsProblem) {
     solver.run();
 
     EXPECT_DOUBLE_EQ(solver.getTotalCost(), 14.0);
+
+    const auto flow = solver.getFlow();
+
+    std::vector<double> expected(G.upperEdgeIdBound(), 0.0);
+    expected[G.edgeId(0, 2)] = 2.0;
+    expected[G.edgeId(2, 3)] = 4.0;
+    expected[G.edgeId(0, 1)] = 2.0;
+    expected[G.edgeId(1, 2)] = 2.0;
+
+    G.forEdges([&](node, node, edgeid eid) {
+        EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]);
+    });
+
+    checkFlowConservation(G, flow);
 }
 
 TEST_F(ShortestSuccessivePathGTest, testSwapNeededByBackwardResiduals) {
@@ -312,7 +395,6 @@ TEST_F(ShortestSuccessivePathGTest, testSwapNeededByBackwardResiduals) {
     auto capacities = G.attachEdgeDoubleAttribute(capacityName);
     auto supply = G.attachNodeDoubleAttribute(supplyName);
 
-    // Supply / demand: send 2 units from 0 to 5
     supply.set(0, 2.0);
     supply.set(1, 0.0);
     supply.set(2, 0.0);
@@ -335,6 +417,26 @@ TEST_F(ShortestSuccessivePathGTest, testSwapNeededByBackwardResiduals) {
     solver.run();
 
     EXPECT_DOUBLE_EQ(solver.getTotalCost(), 1.0);
+
+    const auto flow = solver.getFlow();
+
+    std::vector<double> expected(G.upperEdgeIdBound(), 0.0);
+    expected[G.edgeId(0, 1)] = 1.0;
+    expected[G.edgeId(0, 2)] = 1.0;
+
+    expected[G.edgeId(1, 3)] = 1.0;
+    expected[G.edgeId(1, 4)] = 0.0;
+    expected[G.edgeId(2, 3)] = 0.0;
+    expected[G.edgeId(2, 4)] = 1.0;
+
+    expected[G.edgeId(3, 5)] = 1.0;
+    expected[G.edgeId(4, 5)] = 1.0;
+
+    G.forEdges([&](node /*u*/, node /*v*/, edgeid eid) {
+        EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]);
+    });
+
+    checkFlowConservation(G, flow);
 }
 
 TEST_F(ShortestSuccessivePathGTest, testMultipleSuppliesAndDemands) {
@@ -365,6 +467,24 @@ TEST_F(ShortestSuccessivePathGTest, testMultipleSuppliesAndDemands) {
     solver.run();
 
     EXPECT_DOUBLE_EQ(solver.getTotalCost(), 15.0);
+    const auto flow = solver.getFlow();
+
+    std::vector<double> expected(G.upperEdgeIdBound(), 0.0);
+    expected[G.edgeId(0, 1)] = 1.0;
+    expected[G.edgeId(0, 2)] = 1.0;
+
+    expected[G.edgeId(0, 3)] = 0.0;
+    expected[G.edgeId(1, 3)] = 0.0;
+    expected[G.edgeId(2, 5)] = 0.0;
+
+    expected[G.edgeId(3, 4)] = 3.0;
+    expected[G.edgeId(3, 5)] = 1.0;
+
+    G.forEdges([&](node /*u*/, node /*v*/, edgeid eid) {
+        EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]);
+    });
+
+    checkFlowConservation(G, flow);
 }
 
 TEST_F(ShortestSuccessivePathGTest, testMultipleSuppliesAndDemandsWithDetour) {
@@ -400,6 +520,102 @@ TEST_F(ShortestSuccessivePathGTest, testMultipleSuppliesAndDemandsWithDetour) {
     solver.run();
 
     EXPECT_DOUBLE_EQ(solver.getTotalCost(), 277.0);
+
+    const auto flow = solver.getFlow();
+
+    std::vector<double> expected(G.upperEdgeIdBound(), 0.0);
+    expected[G.edgeId(0, 1)] = 1.0;
+    expected[G.edgeId(0, 2)] = 9.0;
+    expected[G.edgeId(0, 3)] = 1.0;
+    expected[G.edgeId(0, 5)] = 10.0;
+
+    expected[G.edgeId(1, 3)] = 0.0;
+    expected[G.edgeId(2, 5)] = 8.0;
+
+    expected[G.edgeId(3, 4)] = 21.0;
+    expected[G.edgeId(3, 5)] = 1.0;
+
+    expected[G.edgeId(4, 6)] = 18.0;
+    expected[G.edgeId(5, 6)] = 19.0;
+
+    G.forEdges([&](node /*u*/, node /*v*/, edgeid eid) {
+        EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]);
+    });
+    checkFlowConservation(G, flow);
 }
 
+// generated with netgen http://archive.dimacs.rutgers.edu/pub/netflow/generators/network/netgen/
+// using these inputs:
+// ./netgen <<EOF > min10x20.min
+// 12345
+// 1
+// 10 3 3 20 1 10 20 1 1 10 100 1 10
+// EOF
+TEST_F(ShortestSuccessivePathGTest, testDimacsGeneratedMin10x20) {
+    Graph G(10, /*weighted=*/true, /*directed=*/true);
+    G.indexEdges();
+
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
+    auto supply = G.attachNodeDoubleAttribute(supplyName);
+
+    supply.set(0, 6.0);
+    supply.set(1, 1.0);
+    supply.set(2, 13.0);
+    supply.set(3, 0.0);
+    supply.set(4, 0.0);
+    supply.set(5, 0.0);
+    supply.set(6, 0.0);
+    supply.set(7, -2.0);
+    supply.set(8, -8.0);
+    supply.set(9, -10.0);
+
+    addCostAndCapacity(G, capacities, 0, 5, /*cost*/ 7.0, /*capacity*/ 6.0);
+    addCostAndCapacity(G, capacities, 0, 8, /*cost*/ 8.0, /*capacity*/ 8.0);
+    addCostAndCapacity(G, capacities, 0, 2, /*cost*/ 3.0, /*capacity*/ 2.0);
+
+    addCostAndCapacity(G, capacities, 5, 6, /*cost*/ 6.0, /*capacity*/ 6.0);
+    addCostAndCapacity(G, capacities, 5, 9, /*cost*/ 9.0, /*capacity*/ 6.0);
+    addCostAndCapacity(G, capacities, 5, 8, /*cost*/ 7.0, /*capacity*/ 6.0);
+    addCostAndCapacity(G, capacities, 5, 2, /*cost*/ 2.0, /*capacity*/ 7.0);
+    addCostAndCapacity(G, capacities, 5, 4, /*cost*/ 6.0, /*capacity*/ 10.0);
+
+    addCostAndCapacity(G, capacities, 6, 7, /*cost*/ 4.0, /*capacity*/ 6.0);
+
+    addCostAndCapacity(G, capacities, 1, 3, /*cost*/ 6.0, /*capacity*/ 1.0);
+    addCostAndCapacity(G, capacities, 1, 4, /*cost*/ 3.0, /*capacity*/ 9.0);
+    addCostAndCapacity(G, capacities, 1, 8, /*cost*/ 6.0, /*capacity*/ 5.0);
+
+    addCostAndCapacity(G, capacities, 3, 7, /*cost*/ 2.0, /*capacity*/ 1.0);
+    addCostAndCapacity(G, capacities, 3, 9, /*cost*/ 10.0, /*capacity*/ 1.0);
+
+    addCostAndCapacity(G, capacities, 2, 4, /*cost*/ 10.0, /*capacity*/ 13.0);
+
+    addCostAndCapacity(G, capacities, 4, 9, /*cost*/ 5.0, /*capacity*/ 13.0);
+    addCostAndCapacity(G, capacities, 4, 8, /*cost*/ 1.0, /*capacity*/ 13.0);
+
+    addCostAndCapacity(G, capacities, 7, 9, /*cost*/ 2.0, /*capacity*/ 10.0);
+    addCostAndCapacity(G, capacities, 7, 5, /*cost*/ 4.0, /*capacity*/ 7.0);
+    addCostAndCapacity(G, capacities, 7, 6, /*cost*/ 7.0, /*capacity*/ 3.0);
+
+    MinFlowShortestSuccessivePath solver(G, capacityName, supplyName);
+    solver.run();
+
+    EXPECT_DOUBLE_EQ(solver.getTotalCost(), 248.0);
+
+    const auto flow = solver.getFlow();
+    std::vector<double> expected(G.upperEdgeIdBound(), 0.0);
+
+    expected[G.edgeId(0, 5)] = 1.0;
+    expected[G.edgeId(0, 8)] = 5.0;
+    expected[G.edgeId(1, 3)] = 1.0;
+    expected[G.edgeId(3, 7)] = 1.0;
+    expected[G.edgeId(5, 6)] = 1.0;
+    expected[G.edgeId(6, 7)] = 1.0;
+    expected[G.edgeId(2, 4)] = 13.0;
+    expected[G.edgeId(4, 9)] = 10.0;
+    expected[G.edgeId(4, 8)] = 3.0;
+
+    G.forEdges([&](node, node, edgeid eid) { EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]); });
+    checkFlowConservation(G, flow);
+}
 } // namespace NetworKit

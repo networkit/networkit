@@ -38,7 +38,7 @@ public:
         assureFinished();
         return totalCost;
     }
-    const Graph::EdgeDoubleAttribute &getFlow() const;
+    const Graph::EdgeDoubleAttribute getFlow() const;
 
 private:
     const Graph *graph;

@@ -62,7 +62,7 @@ MinFlowShortestSuccessivePath::MinFlowShortestSuccessivePath(const Graph &G,
     }
 }
 
-const Graph::EdgeDoubleAttribute &MinFlowShortestSuccessivePath::getFlow() const {
+const Graph::EdgeDoubleAttribute MinFlowShortestSuccessivePath::getFlow() const {
     if (!hasRun) {
         throw std::runtime_error(
             "MinFlowShortestSuccessivePath::getFlow: run() must be called first.");
@@ -193,7 +193,7 @@ void MinFlowShortestSuccessivePath::run() {
 
         if (t == none) {
             throw std::runtime_error(
-                "MinFlowShortestSuccessivePath: unable to satisfy all supplies");
+                "MinFlowShortestSuccessivePath: unable to satisfy all supplies/demands");
         }
 
         // (e) compute bottleneck f = min(b[s], -b[t], min residual capacity on path)
