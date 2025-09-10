@@ -67,7 +67,6 @@ void MinFlowShortestSuccessivePath::run() {
     constexpr cost infiniteCosts = std::numeric_limits<cost>::infinity();
     constexpr double epsilon = 1e-12;
 
-    // 1) Grab the three attributes:
     const auto capacities = residualGraph.getEdgeDoubleAttribute(capacityAttributeName);
     flows = residualGraph.getEdgeDoubleAttribute(FLOW);
     auto supply = residualGraph.getNodeDoubleAttribute(supplyAttributeName);
@@ -100,33 +99,31 @@ void MinFlowShortestSuccessivePath::run() {
             "MinFlowShortestSuccessivePath: negative-cost cycle in residual graph");
     }
 
-    // 5) Prepare Dijkstra data structures
+    // Prepare Dijkstra data structures
     std::vector<cost> distances(numberOfNodes);
     std::vector<node> parentNode(numberOfNodes);
     std::vector<edgeid> parentEdge(numberOfNodes);
-    std::vector<int> parentDirection(numberOfNodes); // +1=forward, -1=backward
-
+    std::vector<int> parentDirection(numberOfNodes);
     using costNodePair = std::pair<cost, node>;
     std::priority_queue<costNodePair, std::vector<costNodePair>, std::greater<costNodePair>> queue;
 
-    // 6) Main successive‐shortest‐path loop
+    // Main successive‐shortest‐path loop
     while (true) {
-        // (a) find a (new) supply node s with non-zero supply-value
-        node s = none;
+        // (a) find a (new) supply node start with non-zero supply-value
+        node start = none;
         for (node u = 0; u < numberOfNodes; ++u) {
             if (supply[u] > epsilon) {
-                s = u;
+                start = u;
                 break;
             }
         }
-        if (s == none)
+        if (start == none)
             break;
 
-        // (b) Dijkstra on residual network from s
-        std::fill(distances.begin(), distances.end(), infiniteCosts);
-        distances[s] = 0;
-        queue = decltype(queue)(); // clear
-        queue.emplace(0, s);
+        // (b) Dijkstra on residual network from start
+        std::ranges::fill(distances.begin(), distances.end(), infiniteCosts);
+        distances[start] = 0;
+        queue.emplace(0, start);
         while (!queue.empty()) {
             auto [distance, u] = queue.top();
             queue.pop();
@@ -134,8 +131,8 @@ void MinFlowShortestSuccessivePath::run() {
                 continue;
 
             // — forward residual arcs u->v
-            residualGraph.forEdgesOf(u, [&](node, node v, cost cost, edgeid id) {
-                const double residualCapacity = capacities.get(id) - flows.get(id);
+            residualGraph.forEdgesOf(u, [&](node, node v, cost cost, edgeid eid) {
+                const double residualCapacity = capacities.get(eid) - flows.get(eid);
                 if (residualCapacity <= epsilon)
                     return;
                 // The corrected costs are using nodePotentials to shift negative edges/costs to
@@ -144,14 +141,15 @@ void MinFlowShortestSuccessivePath::run() {
                 if (distances[v] > distances[u] + correctedCost) {
                     distances[v] = distances[u] + correctedCost;
                     parentNode[v] = u;
-                    parentEdge[v] = id;
+                    parentEdge[v] = eid;
                     parentDirection[v] = +1;
                     queue.emplace(distances[v], v);
                 }
             });
 
-            residualGraph.forInEdgesOf(u, [&](node, node v, cost cost, edgeid id) {
-                double residualFlow = flows.get(id);
+            // — backward residual arcs v->u
+            residualGraph.forInEdgesOf(u, [&](node, node v, cost cost, edgeid eid) {
+                double residualFlow = flows.get(eid);
                 if (residualFlow <= epsilon)
                     return;
                 // The corrected costs are using nodePotentials to shift negative edges/costs to
@@ -160,58 +158,58 @@ void MinFlowShortestSuccessivePath::run() {
                 if (distances[v] > distances[u] + correctedCost) {
                     distances[v] = distances[u] + correctedCost;
                     parentNode[v] = u;
-                    parentEdge[v] = id;
+                    parentEdge[v] = eid;
                     parentDirection[v] = -1;
                     queue.emplace(distances[v], v);
                 }
             });
         }
 
-        // (c) update nodePotentials[u] += dist[u]
-        for (node u = 0; u < numberOfNodes; ++u) {
+        // (c) update nodePotentials
+        residualGraph.parallelForNodes([&](node u) {
             if (distances[u] < infiniteCosts) {
                 nodePotential[u] += distances[u];
             }
-        }
+        });
 
-        // (d) pick a demand node t reachable from s
-        node t = none;
+        // (d) pick a demand node target reachable from start
+        node target = none;
         for (node u = 0; u < numberOfNodes; ++u) {
             if (supply.get(u) < -epsilon && distances[u] < infiniteCosts) {
-                t = u;
+                target = u;
                 break;
             }
         }
 
-        if (t == none) {
+        if (target == none) {
             throw std::runtime_error(
                 "MinFlowShortestSuccessivePath: unable to satisfy all supplies/demands");
         }
 
-        // (e) compute bottleneck f = min(b[s], -b[t], min residual capacity on path)
-        double f = std::min(supply.get(s), -supply.get(t));
-        for (node v = t; v != s; v = parentNode[v]) {
+        // (e) compute bottleneck-flow = min(b[s], -b[t], min residual capacity on path)
+        double bottleneckFlow = std::min(supply.get(start), -supply.get(target));
+        for (node v = target; v != start; v = parentNode[v]) {
             const edgeid e = parentEdge[v];
-            const double capRes =
+            const double residualCapacity =
                 (parentDirection[v] > 0) ? (capacities.get(e) - flows.get(e)) : flows.get(e);
-            f = std::min(f, capRes);
+            bottleneckFlow = std::min(bottleneckFlow, residualCapacity);
         }
 
         // (f) augment flow along the path
-        for (node v = t; v != s; v = parentNode[v]) {
+        for (node v = target; v != start; v = parentNode[v]) {
             const edgeid e = parentEdge[v];
             const double old = flows.get(e);
-            flows.set(e, old + (parentDirection[v] > 0 ? +f : -f));
+            flows.set(e, old + (parentDirection[v] > 0 ? +bottleneckFlow : -bottleneckFlow));
         }
 
         // (g) update imbalances
-        supply.set(s, supply.get(s) - f);
-        supply.set(t, supply.get(t) + f);
+        supply.set(start, supply.get(start) - bottleneckFlow);
+        supply.set(target, supply.get(target) + bottleneckFlow);
     }
     totalCost = 0.0;
 
     residualGraph.forEdges(
-        [&](node u, node v, cost c, edgeid eid) { totalCost += flows.get(eid) * c; });
+        [&](node, node, cost cost, edgeid eid) { totalCost += flows.get(eid) * cost; });
     hasRun = true;
 }
 
