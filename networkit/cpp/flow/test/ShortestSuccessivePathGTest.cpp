@@ -379,9 +379,7 @@ TEST_F(ShortestSuccessivePathGTest, testZeroCosts) {
     expected[G.edgeId(4, 3)] = 2.0;
     expected[G.edgeId(5, 3)] = 2.0;
 
-    G.forEdges([&](node /*u*/, node /*v*/, edgeid eid) {
-        EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]);
-    });
+    G.forEdges([&](node, node, edgeid eid) { EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]); });
 
     checkFlowConservation(G, flow);
 }
@@ -467,9 +465,7 @@ TEST_F(ShortestSuccessivePathGTest, testSwapNeededByBackwardResiduals) {
     expected[G.edgeId(3, 5)] = 1.0;
     expected[G.edgeId(4, 5)] = 1.0;
 
-    G.forEdges([&](node /*u*/, node /*v*/, edgeid eid) {
-        EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]);
-    });
+    G.forEdges([&](node, node, edgeid eid) { EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]); });
 
     checkFlowConservation(G, flow);
 }
@@ -515,9 +511,7 @@ TEST_F(ShortestSuccessivePathGTest, testMultipleSuppliesAndDemands) {
     expected[G.edgeId(3, 4)] = 3.0;
     expected[G.edgeId(3, 5)] = 1.0;
 
-    G.forEdges([&](node /*u*/, node /*v*/, edgeid eid) {
-        EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]);
-    });
+    G.forEdges([&](node, node, edgeid eid) { EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]); });
 
     checkFlowConservation(G, flow);
 }
@@ -573,9 +567,7 @@ TEST_F(ShortestSuccessivePathGTest, testMultipleSuppliesAndDemandsWithDetour) {
     expected[G.edgeId(4, 6)] = 18.0;
     expected[G.edgeId(5, 6)] = 19.0;
 
-    G.forEdges([&](node /*u*/, node /*v*/, edgeid eid) {
-        EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]);
-    });
+    G.forEdges([&](node, node, edgeid eid) { EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]); });
     checkFlowConservation(G, flow);
 }
 

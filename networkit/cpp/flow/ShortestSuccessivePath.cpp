@@ -62,11 +62,6 @@ MinFlowShortestSuccessivePath::MinFlowShortestSuccessivePath(const Graph &G,
     }
 }
 
-Graph::EdgeDoubleAttribute MinFlowShortestSuccessivePath::getFlow() const {
-    assureFinished();
-    return flows;
-}
-
 void MinFlowShortestSuccessivePath::run() {
     const count numberOfNodes = residualGraph.numberOfNodes();
     constexpr cost infiniteCosts = std::numeric_limits<cost>::infinity();
