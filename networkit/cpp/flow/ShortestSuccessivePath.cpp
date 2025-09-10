@@ -11,7 +11,7 @@
 
 namespace NetworKit {
 
-MinFlowShortestSuccessivePath::MinFlowShortestSuccessivePath(const Graph &G,
+SuccessiveShortestPathMinCostFlow::SuccessiveShortestPathMinCostFlow(const Graph &G,
                                                              const std::string &capacityName,
                                                              const std::string &supplyName)
     : capacityAttributeName(capacityName), supplyAttributeName(supplyName), graph(&G) {
@@ -63,7 +63,7 @@ MinFlowShortestSuccessivePath::MinFlowShortestSuccessivePath(const Graph &G,
     }
 }
 
-void MinFlowShortestSuccessivePath::run() {
+void SuccessiveShortestPathMinCostFlow::run() {
     const count numberOfNodes = residualGraph.numberOfNodes();
     constexpr cost infiniteCosts = std::numeric_limits<cost>::infinity();
     constexpr double epsilon = 1e-12;

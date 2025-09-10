@@ -12,7 +12,7 @@
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
-class MinFlowShortestSuccessivePath : public Algorithm {
+class SuccessiveShortestPathMinCostFlow : public Algorithm {
     using cost = edgeweight;
 
 public:
@@ -35,7 +35,7 @@ public:
      *         - any edge capacity is negative,
      *         - or the sum of all node supplies/demands is not zero.
      */
-    MinFlowShortestSuccessivePath(const Graph &G, const std::string &capacityName,
+    SuccessiveShortestPathMinCostFlow(const Graph &G, const std::string &capacityName,
                                   const std::string &supplyName);
 
     /**
