@@ -13,7 +13,7 @@ namespace NetworKit {
 
 SuccessiveShortestPathMinCostFlow::SuccessiveShortestPathMinCostFlow(
     const Graph &G, const std::string &capacityName, const std::string &supplyName)
-    : capacityAttributeName(capacityName), supplyAttributeName(supplyName), graph(&G) {
+    : graph(&G), capacityAttributeName(capacityName), supplyAttributeName(supplyName) {
 
     if (!G.isDirected()) {
         throw std::runtime_error("MinFlowShortestSuccessivePath: Graph must be directed.");
@@ -126,7 +126,8 @@ void SuccessiveShortestPathMinCostFlow::run() {
         minHeap.clear();
         minHeap.push({0, start});
         do {
-            auto [distance, u] = minHeap.top();
+            const cost distance = minHeap.top().first;
+            const node u = minHeap.top().second;
             minHeap.pop();
             if (distance > distances[u])
                 continue;
