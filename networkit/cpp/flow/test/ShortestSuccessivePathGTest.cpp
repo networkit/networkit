@@ -9,7 +9,6 @@
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
-
 class ShortestSuccessivePathGTest : public ::testing::Test {
 protected:
     const std::string capacityName = "capacity";
@@ -161,7 +160,45 @@ TEST_F(ShortestSuccessivePathGTest, testConstructorSucceedsWhenInputValid) {
         supply.set(u, 0.0);
     }
 
-    EXPECT_NO_THROW({ MinFlowShortestSuccessivePath test(G, capacityName, supplyName); });
+    EXPECT_NO_THROW({ MinFlowShortestSuccessivePath solver(G, capacityName, supplyName); });
+}
+
+TEST_F(ShortestSuccessivePathGTest, testRunNotCallesGetTotalCost) {
+    Graph G(3, /*weighted*/ true, /*directed*/ true);
+    G.indexEdges();
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
+    auto supply = G.attachNodeDoubleAttribute(supplyName);
+    for (node u = 0; u < 3; ++u) {
+        supply.set(u, 0.0);
+    }
+    MinFlowShortestSuccessivePath solver(G, capacityName, supplyName);
+    try {
+        solver.getTotalCost();
+        FAIL() << "Expected std::runtime_error";
+    } catch (const std::runtime_error &e) {
+        EXPECT_STREQ(e.what(), "Error, run must be called first");
+    } catch (...) {
+        FAIL() << "Expected std::runtime_error but got a different exception.";
+    }
+}
+
+TEST_F(ShortestSuccessivePathGTest, testRunNotCallesGetFlow) {
+    Graph G(3, /*weighted*/ true, /*directed*/ true);
+    G.indexEdges();
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
+    auto supply = G.attachNodeDoubleAttribute(supplyName);
+    for (node u = 0; u < 3; ++u) {
+        supply.set(u, 0.0);
+    }
+    MinFlowShortestSuccessivePath solver(G, capacityName, supplyName);
+    try {
+        solver.getFlow();
+        FAIL() << "Expected std::runtime_error";
+    } catch (const std::runtime_error &e) {
+        EXPECT_STREQ(e.what(), "Error, run must be called first");
+    } catch (...) {
+        FAIL() << "Expected std::runtime_error but got a different exception.";
+    }
 }
 
 TEST_F(ShortestSuccessivePathGTest, testZeroNodesGraph) {
@@ -381,9 +418,7 @@ TEST_F(ShortestSuccessivePathGTest, testSimpleDimacsProblem) {
     expected[G.edgeId(0, 1)] = 2.0;
     expected[G.edgeId(1, 2)] = 2.0;
 
-    G.forEdges([&](node, node, edgeid eid) {
-        EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]);
-    });
+    G.forEdges([&](node, node, edgeid eid) { EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]); });
 
     checkFlowConservation(G, flow);
 }

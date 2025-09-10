@@ -62,11 +62,8 @@ MinFlowShortestSuccessivePath::MinFlowShortestSuccessivePath(const Graph &G,
     }
 }
 
-const Graph::EdgeDoubleAttribute MinFlowShortestSuccessivePath::getFlow() const {
-    if (!hasRun) {
-        throw std::runtime_error(
-            "MinFlowShortestSuccessivePath::getFlow: run() must be called first.");
-    }
+Graph::EdgeDoubleAttribute MinFlowShortestSuccessivePath::getFlow() const {
+    assureFinished();
     return flows;
 }
 

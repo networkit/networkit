@@ -34,11 +34,13 @@ public:
                                   const std::string &supplyName);
 
     void run() override;
+
     double getTotalCost() const {
         assureFinished();
         return totalCost;
     }
-    const Graph::EdgeDoubleAttribute getFlow() const;
+
+    Graph::EdgeDoubleAttribute getFlow() const;
 
 private:
     const Graph *graph;
