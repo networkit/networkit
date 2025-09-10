@@ -64,7 +64,8 @@ MinFlowShortestSuccessivePath::MinFlowShortestSuccessivePath(const Graph &G,
 
 const Graph::EdgeDoubleAttribute &MinFlowShortestSuccessivePath::getFlow() const {
     if (!hasRun) {
-        throw std::runtime_error("MinFlowShortestSuccessivePath::getFlow: run() must be called first.");
+        throw std::runtime_error(
+            "MinFlowShortestSuccessivePath::getFlow: run() must be called first.");
     }
     return flows;
 }
@@ -97,7 +98,7 @@ void MinFlowShortestSuccessivePath::run() {
     // Note: We can not throw in parallel loop since it will terminate the program
     bool negativeCycleDetected = false;
     residualGraph.parallelForEdges([&](node u, node v, cost cost, edgeid) {
-        if (Aux::NumericTools::lt(nodePotential[u] + cost, nodePotential[v])) {
+        if (nodePotential[u] + cost < nodePotential[v]) {
             negativeCycleDetected = true;
         }
     });

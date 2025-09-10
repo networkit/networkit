@@ -31,14 +31,6 @@ bool logically_equal(double a, double b, double error_factor) {
                                     * error_factor;
 }
 
-bool lt(const double x, const double y, const double error) {
-    return x < y - error;
-}
-
-bool gt(const double x, const double y, const double error) {
-    return x > y + error;
-}
-
 } /* namespace NumericTools */
 
 } // namespace Aux
