@@ -1,3 +1,3 @@
 networkit_add_test(flow EdmondsKarpGTest)
 networkit_add_test(flow DinicGTest)
-networkit_add_test(flow ShortestSuccessivePathGTest)
+networkit_add_test(flow SuccessiveShortestPathGTest)

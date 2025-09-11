@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef NETWORKIT_FLOW_SHORTEST_SUCCESSIVE_PATH_HPP_
-#define NETWORKIT_FLOW_SHORTEST_SUCCESSIVE_PATH_HPP_
+#ifndef NETWORKIT_FLOW_SUCCESSIVE_SHORTEST_PATH_HPP_
+#define NETWORKIT_FLOW_SUCCESSIVE_SHORTEST_PATH_HPP_
 
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -17,7 +17,7 @@ class SuccessiveShortestPathMinCostFlow : public Algorithm {
 
 public:
     /**
-     * @brief Constructs a min-cost flow solver using the shortest successive path algorithm.
+     * @brief Constructs a min-cost flow solver using the successive shortest path algorithm.
      *
      * Initializes the solver on a given directed, weighted graph with edge capacities
      * and node supply/demand attributes.
@@ -100,4 +100,4 @@ private:
 };
 
 } // namespace NetworKit
-#endif // NETWORKIT_FLOW_SHORTEST_SUCCESSIVE_PATH_HPP_
+#endif // NETWORKIT_FLOW_SUCCESSIVE_SHORTEST_PATH_HPP_

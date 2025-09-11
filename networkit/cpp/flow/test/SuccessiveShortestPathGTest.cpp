@@ -5,11 +5,11 @@
  *
  */
 #include <gtest/gtest.h>
-#include <networkit/flow/ShortestSuccessivePath.hpp>
+#include <networkit/flow/SuccessiveShortestPath.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
-class ShortestSuccessivePathGTest : public ::testing::Test {
+class SuccessiveShortestPathGTest : public ::testing::Test {
 protected:
     const std::string capacityName = "capacity";
     const std::string supplyName = "supply";
@@ -34,7 +34,7 @@ protected:
     }
 };
 
-TEST_F(ShortestSuccessivePathGTest, testConstructorThrowsForUndirected) {
+TEST_F(SuccessiveShortestPathGTest, testConstructorThrowsForUndirected) {
     Graph G(2, /*weighted*/ true, /*directed*/ false);
     try {
         SuccessiveShortestPathMinCostFlow test(G, capacityName, supplyName);
@@ -46,7 +46,7 @@ TEST_F(ShortestSuccessivePathGTest, testConstructorThrowsForUndirected) {
     }
 }
 
-TEST_F(ShortestSuccessivePathGTest, testConstructorThrowsForUnweighted) {
+TEST_F(SuccessiveShortestPathGTest, testConstructorThrowsForUnweighted) {
     Graph G(2, /*weighted*/ false, /*directed*/ true);
     try {
         SuccessiveShortestPathMinCostFlow test(G, capacityName, supplyName);
@@ -58,7 +58,7 @@ TEST_F(ShortestSuccessivePathGTest, testConstructorThrowsForUnweighted) {
     }
 }
 
-TEST_F(ShortestSuccessivePathGTest, testConstructorThrowsForUnindexedEdges) {
+TEST_F(SuccessiveShortestPathGTest, testConstructorThrowsForUnindexedEdges) {
     Graph G(2, /*weighted*/ true, /*directed*/ true);
     try {
         SuccessiveShortestPathMinCostFlow test(G, capacityName, supplyName);
@@ -70,7 +70,7 @@ TEST_F(ShortestSuccessivePathGTest, testConstructorThrowsForUnindexedEdges) {
     }
 }
 
-TEST_F(ShortestSuccessivePathGTest, testConstructorThrowsForMissingEdgeAttribute) {
+TEST_F(SuccessiveShortestPathGTest, testConstructorThrowsForMissingEdgeAttribute) {
     Graph G(2, /*weighted*/ true, /*directed*/ true);
     G.indexEdges();
     G.attachNodeDoubleAttribute(supplyName);
@@ -87,7 +87,7 @@ TEST_F(ShortestSuccessivePathGTest, testConstructorThrowsForMissingEdgeAttribute
     }
 }
 
-TEST_F(ShortestSuccessivePathGTest, testConstructorThrowsForMissingNodeAttribute) {
+TEST_F(SuccessiveShortestPathGTest, testConstructorThrowsForMissingNodeAttribute) {
     Graph G(2, /*weighted*/ true, /*directed*/ true);
     G.indexEdges();
     G.attachEdgeDoubleAttribute(capacityName);
@@ -104,7 +104,7 @@ TEST_F(ShortestSuccessivePathGTest, testConstructorThrowsForMissingNodeAttribute
     }
 }
 
-TEST_F(ShortestSuccessivePathGTest, testConstructorThrowsForNegativeCapacity) {
+TEST_F(SuccessiveShortestPathGTest, testConstructorThrowsForNegativeCapacity) {
     Graph G(2, /*weighted*/ true, /*directed*/ true);
     G.indexEdges();
 
@@ -127,7 +127,7 @@ TEST_F(ShortestSuccessivePathGTest, testConstructorThrowsForNegativeCapacity) {
     }
 }
 
-TEST_F(ShortestSuccessivePathGTest, testConstructorThrowsForUnbalancedSupplies) {
+TEST_F(SuccessiveShortestPathGTest, testConstructorThrowsForUnbalancedSupplies) {
     Graph G(2, /*weighted*/ true, /*directed*/ true);
     G.indexEdges();
 
@@ -151,7 +151,7 @@ TEST_F(ShortestSuccessivePathGTest, testConstructorThrowsForUnbalancedSupplies) 
     }
 }
 
-TEST_F(ShortestSuccessivePathGTest, testConstructorSucceedsWhenInputValid) {
+TEST_F(SuccessiveShortestPathGTest, testConstructorSucceedsWhenInputValid) {
     Graph G(3, /*weighted*/ true, /*directed*/ true);
     G.indexEdges();
     auto capacities = G.attachEdgeDoubleAttribute(capacityName);
@@ -163,7 +163,7 @@ TEST_F(ShortestSuccessivePathGTest, testConstructorSucceedsWhenInputValid) {
     EXPECT_NO_THROW({ SuccessiveShortestPathMinCostFlow solver(G, capacityName, supplyName); });
 }
 
-TEST_F(ShortestSuccessivePathGTest, testRunNotCallesGetTotalCost) {
+TEST_F(SuccessiveShortestPathGTest, testRunNotCallesGetTotalCost) {
     Graph G(3, /*weighted*/ true, /*directed*/ true);
     G.indexEdges();
     auto capacities = G.attachEdgeDoubleAttribute(capacityName);
@@ -182,7 +182,7 @@ TEST_F(ShortestSuccessivePathGTest, testRunNotCallesGetTotalCost) {
     }
 }
 
-TEST_F(ShortestSuccessivePathGTest, testRunNotCallesGetFlow) {
+TEST_F(SuccessiveShortestPathGTest, testRunNotCallesGetFlow) {
     Graph G(3, /*weighted*/ true, /*directed*/ true);
     G.indexEdges();
     auto capacities = G.attachEdgeDoubleAttribute(capacityName);
@@ -201,7 +201,7 @@ TEST_F(ShortestSuccessivePathGTest, testRunNotCallesGetFlow) {
     }
 }
 
-TEST_F(ShortestSuccessivePathGTest, testZeroNodesGraph) {
+TEST_F(SuccessiveShortestPathGTest, testZeroNodesGraph) {
     Graph G(0, /*weighted*/ true, /*directed*/ true);
     G.indexEdges();
     auto capacities = G.attachEdgeDoubleAttribute(capacityName);
@@ -214,7 +214,7 @@ TEST_F(ShortestSuccessivePathGTest, testZeroNodesGraph) {
     EXPECT_EQ(flow.size(), 0);
 }
 
-TEST_F(ShortestSuccessivePathGTest, testRunThrowsOnNegativeCostCycle) {
+TEST_F(SuccessiveShortestPathGTest, testRunThrowsOnNegativeCostCycle) {
     Graph G(3, /*weighted=*/true, /*directed=*/true);
     G.indexEdges();
 
@@ -242,7 +242,7 @@ TEST_F(ShortestSuccessivePathGTest, testRunThrowsOnNegativeCostCycle) {
     }
 }
 
-TEST_F(ShortestSuccessivePathGTest, testRunThrowsWhenSuppliesDemandsCanNotBeSatisfied) {
+TEST_F(SuccessiveShortestPathGTest, testRunThrowsWhenSuppliesDemandsCanNotBeSatisfied) {
     Graph G(3, /*weighted=*/true, /*directed=*/true);
     G.indexEdges();
 
@@ -271,7 +271,7 @@ TEST_F(ShortestSuccessivePathGTest, testRunThrowsWhenSuppliesDemandsCanNotBeSati
     }
 }
 
-TEST_F(ShortestSuccessivePathGTest, testSimple5NodeGraph) {
+TEST_F(SuccessiveShortestPathGTest, testSimple5NodeGraph) {
     Graph G(5, /*weighted=*/true, /*directed=*/true);
     G.indexEdges();
 
@@ -303,7 +303,7 @@ TEST_F(ShortestSuccessivePathGTest, testSimple5NodeGraph) {
     checkFlowConservation(G, flow);
 }
 
-TEST_F(ShortestSuccessivePathGTest, testComplexMultiSourceNegativeCost) {
+TEST_F(SuccessiveShortestPathGTest, testComplexMultiSourceNegativeCost) {
     Graph G(6, /*weighted=*/true, /*directed=*/true);
     G.indexEdges();
 
@@ -346,7 +346,7 @@ TEST_F(ShortestSuccessivePathGTest, testComplexMultiSourceNegativeCost) {
     checkFlowConservation(G, flow);
 }
 
-TEST_F(ShortestSuccessivePathGTest, testZeroCosts) {
+TEST_F(SuccessiveShortestPathGTest, testZeroCosts) {
     Graph G(6, /*weighted=*/true, /*directed=*/true);
     G.indexEdges();
 
@@ -385,7 +385,7 @@ TEST_F(ShortestSuccessivePathGTest, testZeroCosts) {
 }
 
 // https://lpsolve.sourceforge.net/5.5/DIMACS_mcf.htm
-TEST_F(ShortestSuccessivePathGTest, testSimpleDimacsProblem) {
+TEST_F(SuccessiveShortestPathGTest, testSimpleDimacsProblem) {
     Graph G(4, /*weighted=*/true, /*directed=*/true);
     G.indexEdges();
 
@@ -421,7 +421,7 @@ TEST_F(ShortestSuccessivePathGTest, testSimpleDimacsProblem) {
     checkFlowConservation(G, flow);
 }
 
-TEST_F(ShortestSuccessivePathGTest, testSwapNeededByBackwardResiduals) {
+TEST_F(SuccessiveShortestPathGTest, testSwapNeededByBackwardResiduals) {
     Graph G(6, /*weighted=*/true, /*directed=*/true);
     G.indexEdges();
 
@@ -470,7 +470,7 @@ TEST_F(ShortestSuccessivePathGTest, testSwapNeededByBackwardResiduals) {
     checkFlowConservation(G, flow);
 }
 
-TEST_F(ShortestSuccessivePathGTest, testMultipleSuppliesAndDemands) {
+TEST_F(SuccessiveShortestPathGTest, testMultipleSuppliesAndDemands) {
     Graph G(6, /*weighted=*/true, /*directed=*/true);
     G.indexEdges();
 
@@ -516,7 +516,7 @@ TEST_F(ShortestSuccessivePathGTest, testMultipleSuppliesAndDemands) {
     checkFlowConservation(G, flow);
 }
 
-TEST_F(ShortestSuccessivePathGTest, testMultipleSuppliesAndDemandsWithDetour) {
+TEST_F(SuccessiveShortestPathGTest, testMultipleSuppliesAndDemandsWithDetour) {
     Graph G(7, /*weighted=*/true, /*directed=*/true);
     G.indexEdges();
 
@@ -578,7 +578,7 @@ TEST_F(ShortestSuccessivePathGTest, testMultipleSuppliesAndDemandsWithDetour) {
 // 1
 // 10 3 3 20 1 10 20 1 1 10 100 1 10
 // EOF
-TEST_F(ShortestSuccessivePathGTest, testDimacsGeneratedMin10x20) {
+TEST_F(SuccessiveShortestPathGTest, testDimacsGeneratedMin10x20) {
     Graph G(10, /*weighted=*/true, /*directed=*/true);
     G.indexEdges();
 

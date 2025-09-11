@@ -7,7 +7,7 @@
 
 #include "tlx/container/d_ary_heap.hpp"
 #include <networkit/auxiliary/NumericTools.hpp>
-#include <networkit/flow/ShortestSuccessivePath.hpp>
+#include <networkit/flow/SuccessiveShortestPath.hpp>
 
 namespace NetworKit {
 
