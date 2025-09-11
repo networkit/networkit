@@ -16,28 +16,28 @@ SuccessiveShortestPathMinCostFlow::SuccessiveShortestPathMinCostFlow(
     : graph(&G), capacityAttributeName(capacityName), supplyAttributeName(supplyName) {
 
     if (!G.isDirected()) {
-        throw std::runtime_error("MinFlowShortestSuccessivePath: Graph must be directed.");
+        throw std::runtime_error("SuccessiveShortestPathMinCostFlow: Graph must be directed.");
     }
 
     if (!G.isWeighted()) {
-        throw std::runtime_error("MinFlowShortestSuccessivePath: Graph must be weighted.");
+        throw std::runtime_error("SuccessiveShortestPathMinCostFlow: Graph must be weighted.");
     }
 
     if (!G.hasEdgeIds()) {
-        throw std::runtime_error("MinFlowShortestSuccessivePath: Graph edges must be indexed.");
+        throw std::runtime_error("SuccessiveShortestPathMinCostFlow: Graph edges must be indexed.");
     }
 
     try {
         (void)G.edgeAttributes().find(capacityName);
     } catch (const std::runtime_error &e) {
-        throw std::runtime_error("MinFlowShortestSuccessivePath: Provided edge attribute '"
+        throw std::runtime_error("SuccessiveShortestPathMinCostFlow: Provided edge attribute '"
                                  + capacityName + "' not found.");
     }
 
     try {
         (void)G.nodeAttributes().find(supplyName);
     } catch (const std::runtime_error &e) {
-        throw std::runtime_error("MinFlowShortestSuccessivePath: Provided node attribute '"
+        throw std::runtime_error("SuccessiveShortestPathMinCostFlow: Provided node attribute '"
                                  + supplyName + "' not found.");
     }
     residualGraph = *graph;
@@ -50,15 +50,16 @@ SuccessiveShortestPathMinCostFlow::SuccessiveShortestPathMinCostFlow(
         residualGraph.forEdgesOf(u, [&](node, node, cost, edgeid eid) {
             if (capacities.get(eid) < 0.0) {
                 throw std::runtime_error(
-                    "MinFlowShortestSuccessivePath: Capacities must be non-negative.");
+                    "SuccessiveShortestPathMinCostFlow: Capacities must be non-negative.");
             }
             flow.set(eid, 0.0);
         });
     });
 
     if (!Aux::NumericTools::equal(totalSupply, 0.0)) {
-        throw std::runtime_error("MinFlowShortestSuccessivePath: Sum of node supplies and demands "
-                                 "does not add up to zero.");
+        throw std::runtime_error(
+            "SuccessiveShortestPathMinCostFlow: Sum of node supplies and demands "
+            "does not add up to zero.");
     }
 }
 
@@ -96,7 +97,7 @@ void SuccessiveShortestPathMinCostFlow::run() {
 
     if (negativeCycleDetected) {
         throw std::runtime_error(
-            "MinFlowShortestSuccessivePath: negative-cost cycle in residual graph");
+            "SuccessiveShortestPathMinCostFlow: negative-cost cycle in residual graph");
     }
 
     // Prepare Dijkstra data structures
@@ -185,7 +186,7 @@ void SuccessiveShortestPathMinCostFlow::run() {
 
         if (target == none) {
             throw std::runtime_error(
-                "MinFlowShortestSuccessivePath: unable to satisfy all supplies/demands");
+                "SuccessiveShortestPathMinCostFlow: unable to satisfy all supplies/demands");
         }
 
         // (e) compute bottleneck-flow = min(b[s], -b[t], min residual capacity on path)
