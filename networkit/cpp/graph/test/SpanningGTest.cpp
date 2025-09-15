@@ -96,6 +96,23 @@ TEST_F(SpanningGTest, testKruskalMinSpanningForest) {
     }
 }
 
+TEST_F(SpanningGTest, testKruskalMinimumSpanningForestUnweightedGraph) {
+    Graph g(5, false);
+    g.addEdge(0, 1);
+    g.addEdge(1, 2);
+    g.addEdge(1, 3);
+    g.addEdge(3, 4);
+    g.addEdge(1, 4);
+    g.indexEdges();
+
+    KruskalMSF msf(g);
+    msf.run();
+    Graph T = msf.getForest();
+
+    isValidForest(g, T);
+    EXPECT_EQ(msf.getTotalWeight(), 4);
+}
+
 TEST_F(SpanningGTest, testKruskalMinimumSpanningForestIsMSTUnitWeights) {
     Graph g(5, true);
     g.addEdge(0, 1, 1);
