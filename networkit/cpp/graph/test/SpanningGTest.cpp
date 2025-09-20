@@ -107,9 +107,8 @@ TEST_F(SpanningGTest, testKruskalMinimumSpanningForestUnweightedGraph) {
 
     KruskalMSF msf(g);
     msf.run();
-    Graph T = msf.getForest();
 
-    isValidForest(g, T);
+    isValidForest(g, msf.getForest());
     EXPECT_EQ(msf.getTotalWeight(), 4);
 }
 
