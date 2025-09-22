@@ -148,18 +148,18 @@ jobs:
     strategy:
       matrix:
         os: ['latest'] # llvm and gcc are only tested on arm based machines
-        compiler: ['llvm-21', 'gcc-15']
+        compiler: ['llvm-20', 'gcc-15']
     steps:
       - name: Install prerequisites
         run: |
           brew install ninja
       - name: Install compiler llvm
-        if: matrix.compiler == 'llvm-21'
+        if: matrix.compiler == 'llvm-20'
         run: |
           brew update
           brew install libomp
           brew reinstall llvm@20
-          brew link --overwrite llvm
+          brew link --overwrite llvm@20
       - name: Checkout networkit
         uses: actions/checkout@v5
         with:
@@ -168,8 +168,8 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
         shell: bash
         env:
-          CC: ${{ matrix.compiler == 'llvm-21' && '/opt/homebrew/opt/llvm/bin/clang' || 'gcc-15' }}
-          CXX: ${{ matrix.compiler == 'llvm-21' && '/opt/homebrew/opt/llvm/bin/clang++' || 'g++-15' }}
+          CC: ${{ matrix.compiler == 'llvm-20' && '/opt/homebrew/opt/llvm@20/bin/clang' || 'gcc-15' }}
+          CXX: ${{ matrix.compiler == 'llvm-20' && '/opt/homebrew/opt/llvm@20/bin/clang++' || 'g++-15' }}
 
   linux-build-latest:
     name: "Linux (gcc-14${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.13' || '' }}): ${{ matrix.build-configuration }}"
