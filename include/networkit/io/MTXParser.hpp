@@ -81,7 +81,7 @@ public:
      * @param weighted
      * @return std::optional<std::pair<NetworKit::Edge, NetworKit::edgeweight>>
      */
-    std::optional<NetworKit::WeightedEdge> getNext(bool weighted);
+    std::optional<WeightedEdge<node, edgeweight>> getNext(bool weighted);
 };
 } /* namespace NetworKit */
 #endif // NETWORKIT_IO_MTX_PARSER_HPP_
