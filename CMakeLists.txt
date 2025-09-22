@@ -153,6 +153,7 @@ if(NOT OpenMP_FOUND)
 	elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 		find_library(LIBOMP_PATH NAMES omp PATHS "/usr/lib" "/usr/lib64" "/opt/local/lib/libomp" "/opt/homebrew/opt/libomp/lib")
 		find_path(LIBOMP_INCLUDE NAMES omp.h PATHS "/usr/include" "/usr/local/opt/libomp/include" "/opt/local/include/libomp" "/opt/homebrew/opt/libomp/include")
+		set(OpenMP_CXX_FLAGS "-fopenmp -I${LIBOMP_INCLUDE}" CACHE STRING "Manually set" FORCE)
 	endif()
 
 	# If libomp was not found yet, try to find it in conda environment
@@ -165,7 +166,6 @@ if(NOT OpenMP_FOUND)
 
 	# Set OpenMP-folders in case they are found with the aid of additional hints
 	if(LIBOMP_PATH AND LIBOMP_INCLUDE)
-		set(OpenMP_CXX_FLAGS "-fopenmp -I${LIBOMP_INCLUDE}" CACHE STRING "Manually set" FORCE)
 		set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "Manually set" FORCE)
 		set(OpenMP_omp_LIBRARY "${LIBOMP_PATH}" CACHE STRING "Manually set" FORCE)
 	else()
