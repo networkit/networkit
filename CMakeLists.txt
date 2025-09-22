@@ -151,22 +151,21 @@ if(NOT OpenMP_FOUND)
 			set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I${LIBOMP_INCLUDE}" CACHE STRING "Manually set" FORCE)
 		endif()
 	elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-		if(DEFINED ENV{CONDA_PREFIX})
+		find_library(LIBOMP_PATH NAMES omp PATHS "/usr/lib" "/usr/lib64" "/opt/local/lib/libomp" "/opt/homebrew/opt/libomp/lib")
+		find_path(LIBOMP_INCLUDE NAMES omp.h PATHS "/usr/include" "/usr/local/opt/libomp/include" "/opt/local/include/libomp" "/opt/homebrew/opt/libomp/include")
+	endif()
+
+	# If libomp was not found yet, try to find it in conda environment
+	if(NOT LIBOMP_PATH OR NOT LIBOMP_INCLUDE)
 			find_library(LIBOMP_PATH NAMES omp HINTS "$ENV{CONDA_PREFIX}/lib"
 				PATHS "/usr/lib" "/usr/lib64")
 			find_path(LIBOMP_INCLUDE NAMES omp.h HINTS "$ENV{CONDA_PREFIX}/include"
 				PATHS "/usr/include")
-		else()
-			find_library(LIBOMP_PATH NAMES omp PATHS "/usr/lib" "/usr/lib64")
-			find_path(LIBOMP_INCLUDE NAMES omp.h PATHS "/usr/include")
-		endif()
-		if(LIBOMP_PATH AND LIBOMP_INCLUDE)
-			set(OpenMP_CXX_FLAGS "-fopenmp -I${LIBOMP_INCLUDE}" CACHE STRING "Manually set" FORCE)
-		endif()
 	endif()
 
 	# Set OpenMP-folders in case they are found with the aid of additional hints
 	if(LIBOMP_PATH AND LIBOMP_INCLUDE)
+		set(OpenMP_CXX_FLAGS "-fopenmp -I${LIBOMP_INCLUDE}" CACHE STRING "Manually set" FORCE)
 		set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "Manually set" FORCE)
 		set(OpenMP_omp_LIBRARY "${LIBOMP_PATH}" CACHE STRING "Manually set" FORCE)
 	else()
