@@ -158,7 +158,7 @@ jobs:
         run: |
           brew update
           brew install libomp
-          brew reinstall llvm@21
+          brew reinstall llvm@20
           brew link --overwrite llvm
       - name: Checkout networkit
         uses: actions/checkout@v5
