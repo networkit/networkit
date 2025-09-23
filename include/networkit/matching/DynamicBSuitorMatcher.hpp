@@ -10,7 +10,9 @@
 #define NETWORKIT_MATCHING_DYNAMIC_B_SUITOR_MATCHER_HPP_
 
 #include <set>
+#include <span>
 #include <unordered_map>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
 #include <networkit/matching/BSuitorMatcher.hpp>
@@ -53,7 +55,7 @@ public:
      *
      * @param e The batch of update events.
      */
-    void updateBatch(const std::vector<GraphEvent> &batch) override;
+    void updateBatch(std::span<const GraphEvent> batch) override;
 
 private:
     // helper function

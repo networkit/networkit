@@ -8,6 +8,8 @@
 #ifndef NETWORKIT_CENTRALITY_DYN_TOP_HARMONIC_CLOSENESS_HPP_
 #define NETWORKIT_CENTRALITY_DYN_TOP_HARMONIC_CLOSENESS_HPP_
 
+#include <span>
+
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/base/DynAlgorithm.hpp>
 #include <networkit/components/DynConnectedComponents.hpp>
@@ -96,7 +98,7 @@ public:
      *
      * @param batch A vector of edge modification events.
      */
-    void updateBatch(const std::vector<GraphEvent> &batch) override;
+    void updateBatch(std::span<const GraphEvent> batch) override;
 
 protected:
     /**

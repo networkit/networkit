@@ -7,6 +7,7 @@
 
 #include <cmath>
 #include <queue>
+#include <span>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/distance/BFS.hpp>
@@ -70,12 +71,11 @@ void DynBFS::run() {
 }
 
 void DynBFS::update(GraphEvent e) {
-    std::vector<GraphEvent> batch(1);
-    batch[0] = e;
+    std::vector<GraphEvent> batch = {e};
     updateBatch(batch);
 }
 
-void DynBFS::updateBatch(const std::vector<GraphEvent> &batch) {
+void DynBFS::updateBatch(std::span<const GraphEvent> batch) {
     std::vector<std::queue<node>> queues(maxDistance + 2);
     mod = false;
 

@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cmath>
 #include <queue>
+#include <span>
 #include <stdexcept>
 #include <unordered_map>
 #include <vector>
@@ -52,7 +53,7 @@ public:
      * @param[in] batch	A vector that contains a batch of edge insertions or
      *					deletions.
      */
-    void updateBatch(const std::vector<GraphEvent> &batch) override;
+    void updateBatch(std::span<const GraphEvent> batch) override;
 
 private:
     const Graph *G;
@@ -341,7 +342,7 @@ void DynConnectedComponentsImpl<WeaklyCC>::update(GraphEvent event) {
 }
 
 template <bool WeaklyCC>
-void DynConnectedComponentsImpl<WeaklyCC>::updateBatch(const std::vector<GraphEvent> &batch) {
+void DynConnectedComponentsImpl<WeaklyCC>::updateBatch(std::span<const GraphEvent> batch) {
     assureFinished();
     for (auto event : batch)
         update(event);

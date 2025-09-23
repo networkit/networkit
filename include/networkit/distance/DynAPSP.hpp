@@ -8,6 +8,8 @@
 #ifndef NETWORKIT_DISTANCE_DYN_APSP_HPP_
 #define NETWORKIT_DISTANCE_DYN_APSP_HPP_
 
+#include <span>
+
 #include <networkit/base/DynAlgorithm.hpp>
 #include <networkit/distance/APSP.hpp>
 #include <networkit/dynamics/GraphEvent.hpp>
@@ -45,7 +47,7 @@ public:
      *
      * @param batch The batch of edge insertions.
      */
-    void updateBatch(const std::vector<GraphEvent> &batch) override;
+    void updateBatch(std::span<const GraphEvent> batch) override;
 
     /** Returns number of visited pairs */
     count visPairs();

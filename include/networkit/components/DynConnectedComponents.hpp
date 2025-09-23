@@ -9,6 +9,7 @@
 #define NETWORKIT_COMPONENTS_DYN_CONNECTED_COMPONENTS_HPP_
 
 #include <memory>
+#include <span>
 #include <vector>
 
 #include <networkit/base/DynAlgorithm.hpp>
@@ -60,7 +61,7 @@ public:
      * @param[in] batch	A vector that contains a batch of edge insertions or
      *					deletions.
      */
-    void updateBatch(const std::vector<GraphEvent> &batch) override;
+    void updateBatch(std::span<const GraphEvent> batch) override;
 
 private:
     std::unique_ptr<DynConnectedComponentsDetails::DynConnectedComponentsImpl<false>> impl;

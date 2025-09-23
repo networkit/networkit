@@ -9,6 +9,7 @@
 #include <ctime>
 #include <memory>
 #include <queue>
+#include <span>
 #include <unordered_set>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -323,7 +324,7 @@ void DynBetweenness::update(GraphEvent event) {
     }
 }
 
-void DynBetweenness::updateBatch(const std::vector<GraphEvent> &batch) {
+void DynBetweenness::updateBatch(std::span<const GraphEvent> batch) {
     for (auto e : batch) {
         update(e);
     }

@@ -2,14 +2,15 @@
 #ifndef NETWORKIT_GRAPH_GRAPH_TOOLS_HPP_
 #define NETWORKIT_GRAPH_GRAPH_TOOLS_HPP_
 
+#include <span>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
-#include "networkit/graph/TopologicalSort.hpp"
 
 #include <tlx/unused.hpp>
 #include <networkit/GlobalState.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/TopologicalSort.hpp>
 
 namespace NetworKit {
 namespace GraphTools {
@@ -384,7 +385,7 @@ std::vector<node> invertContinuousNodeIds(const std::unordered_map<node, node> &
  * @param  G             The compacted graph.
  * @return               The original graph.
  */
-Graph restoreGraph(const std::vector<node> &invertedIdMap, const Graph &G);
+Graph restoreGraph(std::span<const node> invertedIdMap, const Graph &G);
 
 /**
  * Augments the input graph in-place as required by ForestCentrality. With respect to the input

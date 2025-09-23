@@ -1,6 +1,8 @@
 #ifndef NETWORKIT_BASE_DYN_ALGORITHM_HPP_
 #define NETWORKIT_BASE_DYN_ALGORITHM_HPP_
 
+#include <span>
+
 #include <networkit/dynamics/GraphEvent.hpp>
 
 namespace NetworKit {
@@ -21,7 +23,7 @@ public:
     /**
      * The generic update method for updating data structure after a batch of updates.
      */
-    virtual void updateBatch(const std::vector<GraphEvent> &batch) = 0;
+    virtual void updateBatch(std::span<const GraphEvent> batch) = 0;
 };
 
 } // namespace NetworKit

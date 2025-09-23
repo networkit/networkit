@@ -5,6 +5,8 @@
  *      Author: Henning
  */
 
+#include <span>
+
 #include <networkit/auxiliary/BucketPQ.hpp>
 
 namespace Aux {
@@ -12,7 +14,7 @@ namespace Aux {
 Bucket BucketPQ::dummyBucket = {};
 const Bucket::iterator BucketPQ::invalidPtr = BucketPQ::dummyBucket.end();
 
-BucketPQ::BucketPQ(const std::vector<int64_t> &keys, int64_t minAdmissibleKey,
+BucketPQ::BucketPQ(std::span<const int64_t> keys, int64_t minAdmissibleKey,
                    int64_t maxAdmissibleKey)
     : minAdmissibleKey(minAdmissibleKey), maxAdmissibleKey(maxAdmissibleKey) {
     construct(keys.size());
