@@ -27,14 +27,26 @@ PLM::PLM(const Graph &G, const PLM &other)
     : CommunityDetectionAlgorithm(G), parallelism(other.parallelism), refine(other.refine),
       gamma(other.gamma), maxIter(other.maxIter), turbo(other.turbo), recurse(other.recurse) {}
 
+PLM::PLM(const Graph &G, const Partition &baseClustering, bool refine, double gamma, std::string par, count maxIter, bool turbo,
+    bool recurse)
+      : CommunityDetectionAlgorithm(G, baseClustering), parallelism(std::move(par)), refine(refine), gamma(gamma),
+      maxIter(maxIter), turbo(turbo), recurse(recurse) {}
+
 void PLM::run() {
     Aux::SignalHandler handler;
 
     count z = G->upperNodeIdBound();
 
-    // init communities to singletons
-    Partition zeta(z);
-    zeta.allToSingletons();
+    Partition zeta;
+
+    if (result.numberOfElements() != z) {
+        // init communities to singletons
+        zeta = Partition(z);
+        zeta.allToSingletons();
+    } else {
+        zeta = std::move(result);
+    }
+
     index o = zeta.upperBound();
 
     // init graph-dependent temporaries
