@@ -35,8 +35,8 @@ public:
      *         - any edge capacity is negative,
      *         - or the sum of all node supplies/demands is not zero.
      */
-    SuccessiveShortestPathMinCostFlow(const Graph &G, const std::string &capacityName,
-                                      const std::string &supplyName);
+    SuccessiveShortestPathMinCostFlow(const Graph &G, std::string_view capacityName,
+                                      std::string_view supplyName);
 
     /**
      * \brief Compute a minimum-cost feasible flow using the successive shortest path algorithm.
@@ -91,8 +91,8 @@ public:
 
 private:
     const Graph *graph;
-    std::string capacityAttributeName;
-    std::string supplyAttributeName;
+    const std::string capacityAttributeName;
+    const std::string supplyAttributeName;
     Graph residualGraph;
     static constexpr const char *FLOW = "flow";
     Graph::EdgeDoubleAttribute flows;

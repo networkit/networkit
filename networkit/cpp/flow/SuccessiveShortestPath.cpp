@@ -12,8 +12,8 @@
 namespace NetworKit {
 
 SuccessiveShortestPathMinCostFlow::SuccessiveShortestPathMinCostFlow(
-    const Graph &G, const std::string &capacityName, const std::string &supplyName)
-    : graph(&G), capacityAttributeName(capacityName), supplyAttributeName(supplyName) {
+    const Graph &G, std::string_view capacityName, std::string_view supplyName)
+    : graph(&G), capacityAttributeName(capacityName), supplyAttributeName(supplyName), totalCost{} {
 
     if (!G.isDirected()) {
         throw std::runtime_error("SuccessiveShortestPathMinCostFlow: Graph must be directed.");
@@ -28,22 +28,22 @@ SuccessiveShortestPathMinCostFlow::SuccessiveShortestPathMinCostFlow(
     }
 
     try {
-        (void)G.edgeAttributes().find(capacityName);
+        (void)G.edgeAttributes().find(capacityAttributeName);
     } catch (const std::runtime_error &e) {
         throw std::runtime_error("SuccessiveShortestPathMinCostFlow: Provided edge attribute '"
-                                 + capacityName + "' not found.");
+                                 + capacityAttributeName + "' not found.");
     }
 
     try {
-        (void)G.nodeAttributes().find(supplyName);
+        (void)G.nodeAttributes().find(supplyAttributeName);
     } catch (const std::runtime_error &e) {
         throw std::runtime_error("SuccessiveShortestPathMinCostFlow: Provided node attribute '"
-                                 + supplyName + "' not found.");
+                                 + supplyAttributeName + "' not found.");
     }
     residualGraph = *graph;
     auto flow = residualGraph.attachEdgeDoubleAttribute(FLOW);
-    auto capacities = residualGraph.getEdgeDoubleAttribute(capacityName);
-    auto supply = residualGraph.getNodeDoubleAttribute(supplyName);
+    auto capacities = residualGraph.getEdgeDoubleAttribute(capacityAttributeName);
+    auto supply = residualGraph.getNodeDoubleAttribute(supplyAttributeName);
     double totalSupply = 0.0;
     residualGraph.forNodes([&](node u) {
         totalSupply += supply.get(u);
@@ -210,7 +210,6 @@ void SuccessiveShortestPathMinCostFlow::run() {
         supply.set(target, supply.get(target) + bottleneckFlow);
     } while (true);
 
-    totalCost = 0.0;
     residualGraph.forEdges(
         [&](node, node, cost cost, edgeid eid) { totalCost += flows.get(eid) * cost; });
     hasRun = true;
