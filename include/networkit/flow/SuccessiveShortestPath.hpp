@@ -90,6 +90,8 @@ public:
     }
 
 private:
+
+    std::vector<cost> computeNodePotentials(count numberOfNodes);
     const Graph *graph;
     const std::string capacityAttributeName;
     const std::string supplyAttributeName;
@@ -97,6 +99,9 @@ private:
     static constexpr const char *FLOW = "flow";
     Graph::EdgeDoubleAttribute flows;
     cost totalCost{};
+    static constexpr cost infiniteCosts = std::numeric_limits<cost>::infinity();
+    static constexpr double epsilon = 1e-12;
+
 };
 
 } // namespace NetworKit

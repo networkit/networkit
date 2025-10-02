@@ -6,6 +6,7 @@
  */
 
 #include "tlx/container/d_ary_heap.hpp"
+
 #include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/flow/SuccessiveShortestPath.hpp>
 
@@ -63,15 +64,7 @@ SuccessiveShortestPathMinCostFlow::SuccessiveShortestPathMinCostFlow(
     }
 }
 
-void SuccessiveShortestPathMinCostFlow::run() {
-    const count numberOfNodes = residualGraph.numberOfNodes();
-    constexpr cost infiniteCosts = std::numeric_limits<cost>::infinity();
-    constexpr double epsilon = 1e-12;
-
-    const auto capacities = residualGraph.getEdgeDoubleAttribute(capacityAttributeName);
-    flows = residualGraph.getEdgeDoubleAttribute(FLOW);
-    auto supply = residualGraph.getNodeDoubleAttribute(supplyAttributeName);
-
+std::vector<SuccessiveShortestPathMinCostFlow::cost> SuccessiveShortestPathMinCostFlow::computeNodePotentials(count numberOfNodes) {
     // Apply Bellman-Ford to compute node potentials/distances (dealing with negative weights/costs)
     std::vector<cost> nodePotential(numberOfNodes, 0.0);
     for (count i = 1; i < numberOfNodes; ++i) {
@@ -99,6 +92,18 @@ void SuccessiveShortestPathMinCostFlow::run() {
         throw std::runtime_error(
             "SuccessiveShortestPathMinCostFlow: negative-cost cycle in residual graph");
     }
+    return nodePotential;
+}
+
+
+void SuccessiveShortestPathMinCostFlow::run() {
+    const count numberOfNodes = residualGraph.numberOfNodes();
+
+    const auto capacities = residualGraph.getEdgeDoubleAttribute(capacityAttributeName);
+    flows = residualGraph.getEdgeDoubleAttribute(FLOW);
+    auto supply = residualGraph.getNodeDoubleAttribute(supplyAttributeName);
+
+    std::vector<cost> nodePotential = computeNodePotentials(numberOfNodes);
 
     // Prepare Dijkstra data structures
     std::vector<cost> distances(numberOfNodes);
@@ -112,7 +117,7 @@ void SuccessiveShortestPathMinCostFlow::run() {
     do {
         // (a) find a (new) supply node start with non-zero supply-value
         node start = none;
-        for (node u = 0; u < numberOfNodes; ++u) {
+        for (const node u : residualGraph.nodeRange()) {
             if (supply[u] > epsilon) {
                 start = u;
                 break;
@@ -122,7 +127,7 @@ void SuccessiveShortestPathMinCostFlow::run() {
             break;
 
         // (b) Dijkstra on residual network from start
-        std::ranges::fill(distances.begin(), distances.end(), infiniteCosts);
+        std::ranges::fill(distances, infiniteCosts);
         distances[start] = 0;
         minHeap.clear();
         minHeap.push({0, start});
@@ -177,7 +182,7 @@ void SuccessiveShortestPathMinCostFlow::run() {
 
         // (d) pick a demand node target reachable from start
         node target = none;
-        for (node u = 0; u < numberOfNodes; ++u) {
+        for (const node u : residualGraph.nodeRange()) {
             if (supply.get(u) < -epsilon && distances[u] < infiniteCosts) {
                 target = u;
                 break;
