@@ -405,7 +405,7 @@ cdef class GraphTools:
 		if nodes is not None:
 			try:
 				cNodes = <vector[node]?>nodes
-				return volume[vector[node].iterator](graph._this, cNodes.begin(), cNodes.end())
+				return volume(graph._this, cNodes.begin(), cNodes.end())
 			except TypeError:
 				raise RuntimeError("Error, nodes must be a list of nodes.")
 		else:
