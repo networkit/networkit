@@ -12,8 +12,9 @@
 
 namespace NetworKit {
 
-SuccessiveShortestPathMinCostFlow::SuccessiveShortestPathMinCostFlow(
-    const Graph &G, std::string_view capacityName, std::string_view supplyName)
+SuccessiveShortestPathMinCostFlow::SuccessiveShortestPathMinCostFlow(const Graph &G,
+                                                                     std::string_view capacityName,
+                                                                     std::string_view supplyName)
     : graph(&G), capacityAttributeName(capacityName), supplyAttributeName(supplyName), totalCost{} {
 
     if (!G.isDirected()) {
@@ -64,7 +65,8 @@ SuccessiveShortestPathMinCostFlow::SuccessiveShortestPathMinCostFlow(
     }
 }
 
-std::vector<SuccessiveShortestPathMinCostFlow::cost> SuccessiveShortestPathMinCostFlow::computeNodePotentials(count numberOfNodes) {
+std::vector<SuccessiveShortestPathMinCostFlow::cost>
+SuccessiveShortestPathMinCostFlow::computeNodePotentials(count numberOfNodes) {
     // Apply Bellman-Ford to compute node potentials/distances (dealing with negative weights/costs)
     std::vector<cost> nodePotential(numberOfNodes, 0.0);
     for (count i = 1; i < numberOfNodes; ++i) {
@@ -95,6 +97,65 @@ std::vector<SuccessiveShortestPathMinCostFlow::cost> SuccessiveShortestPathMinCo
     return nodePotential;
 }
 
+void SuccessiveShortestPathMinCostFlow::dijkstraOnResidualGraph(
+    node start, const std::vector<cost> &nodePotential, std::vector<cost> &distances,
+    std::vector<node> &parentNode, std::vector<edgeid> &parentEdge,
+    std::vector<int> &parentDirection, const Graph::EdgeDoubleAttribute &capacities) const {
+
+    auto comparator = [&](const NodeWithCost &nwc1, const NodeWithCost &nwc2) {
+        if (!Aux::NumericTools::equal(nwc1.distance, nwc2.distance))
+            return nwc1.distance > nwc2.distance;
+        return nwc1.u > nwc2.u;
+    };
+
+    tlx::d_ary_heap<NodeWithCost, 2, decltype(comparator)> minHeap(comparator);
+
+    std::ranges::fill(distances, infiniteCosts);
+    distances[start] = 0;
+    minHeap.clear();
+    minHeap.push({0, start});
+    do {
+        const cost distance = minHeap.top().distance;
+        const node u = minHeap.top().u;
+        minHeap.pop();
+        if (distance > distances[u])
+            continue;
+
+        // — forward residual arcs u->v
+        residualGraph.forEdgesOf(u, [&](node, node v, cost cost, edgeid eid) {
+            const double residualCapacity = capacities.get(eid) - flows.get(eid);
+            if (residualCapacity <= epsilon)
+                return;
+            // The corrected costs are using nodePotentials to shift negative edges/costs to
+            // positive ones
+            const double correctedCost = cost + nodePotential[u] - nodePotential[v];
+            if (distances[v] > distances[u] + correctedCost) {
+                distances[v] = distances[u] + correctedCost;
+                parentNode[v] = u;
+                parentEdge[v] = eid;
+                parentDirection[v] = +1;
+                minHeap.push({distances[v], v});
+            }
+        });
+
+        // — backward residual arcs v->u
+        residualGraph.forInEdgesOf(u, [&](node, node v, cost cost, edgeid eid) {
+            double residualFlow = flows.get(eid);
+            if (residualFlow <= epsilon)
+                return;
+            // The corrected costs are using nodePotentials to shift negative edges/costs to
+            // positive ones
+            const double correctedCost = -cost + nodePotential[u] - nodePotential[v];
+            if (distances[v] > distances[u] + correctedCost) {
+                distances[v] = distances[u] + correctedCost;
+                parentNode[v] = u;
+                parentEdge[v] = eid;
+                parentDirection[v] = -1;
+                minHeap.push({distances[v], v});
+            }
+        });
+    } while (!minHeap.empty());
+}
 
 void SuccessiveShortestPathMinCostFlow::run() {
     const count numberOfNodes = residualGraph.numberOfNodes();
@@ -110,8 +171,6 @@ void SuccessiveShortestPathMinCostFlow::run() {
     std::vector<node> parentNode(numberOfNodes);
     std::vector<edgeid> parentEdge(numberOfNodes);
     std::vector<int> parentDirection(numberOfNodes);
-    using costNodePair = std::pair<cost, node>;
-    tlx::d_ary_heap<costNodePair, 2, std::greater<costNodePair>> minHeap;
 
     // Main successive‐shortest‐path loop
     do {
@@ -126,52 +185,9 @@ void SuccessiveShortestPathMinCostFlow::run() {
         if (start == none)
             break;
 
-        // (b) Dijkstra on residual network from start
-        std::ranges::fill(distances, infiniteCosts);
-        distances[start] = 0;
-        minHeap.clear();
-        minHeap.push({0, start});
-        do {
-            const cost distance = minHeap.top().first;
-            const node u = minHeap.top().second;
-            minHeap.pop();
-            if (distance > distances[u])
-                continue;
-
-            // — forward residual arcs u->v
-            residualGraph.forEdgesOf(u, [&](node, node v, cost cost, edgeid eid) {
-                const double residualCapacity = capacities.get(eid) - flows.get(eid);
-                if (residualCapacity <= epsilon)
-                    return;
-                // The corrected costs are using nodePotentials to shift negative edges/costs to
-                // positive ones
-                const double correctedCost = cost + nodePotential[u] - nodePotential[v];
-                if (distances[v] > distances[u] + correctedCost) {
-                    distances[v] = distances[u] + correctedCost;
-                    parentNode[v] = u;
-                    parentEdge[v] = eid;
-                    parentDirection[v] = +1;
-                    minHeap.push({distances[v], v});
-                }
-            });
-
-            // — backward residual arcs v->u
-            residualGraph.forInEdgesOf(u, [&](node, node v, cost cost, edgeid eid) {
-                double residualFlow = flows.get(eid);
-                if (residualFlow <= epsilon)
-                    return;
-                // The corrected costs are using nodePotentials to shift negative edges/costs to
-                // positive ones
-                const double correctedCost = -cost + nodePotential[u] - nodePotential[v];
-                if (distances[v] > distances[u] + correctedCost) {
-                    distances[v] = distances[u] + correctedCost;
-                    parentNode[v] = u;
-                    parentEdge[v] = eid;
-                    parentDirection[v] = -1;
-                    minHeap.push({distances[v], v});
-                }
-            });
-        } while (!minHeap.empty());
+        // (b) Dijkstra on residual network from start node
+        dijkstraOnResidualGraph(start, nodePotential, distances, parentNode, parentEdge,
+                                parentDirection, capacities);
 
         // (c) update nodePotentials
         residualGraph.parallelForNodes([&](node u) {

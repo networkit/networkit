@@ -90,8 +90,15 @@ public:
     }
 
 private:
-
+    struct NodeWithCost {
+        cost distance;
+        node u;
+    };
     std::vector<cost> computeNodePotentials(count numberOfNodes);
+    void dijkstraOnResidualGraph(node start, const std::vector<cost> &nodePotential,
+                                 std::vector<cost> &distances, std::vector<node> &parentNode,
+                                 std::vector<edgeid> &parentEdge, std::vector<int> &parentDirection,
+                                 const Graph::EdgeDoubleAttribute &capacities) const;
     const Graph *graph;
     const std::string capacityAttributeName;
     const std::string supplyAttributeName;
@@ -101,7 +108,6 @@ private:
     cost totalCost{};
     static constexpr cost infiniteCosts = std::numeric_limits<cost>::infinity();
     static constexpr double epsilon = 1e-12;
-
 };
 
 } // namespace NetworKit
