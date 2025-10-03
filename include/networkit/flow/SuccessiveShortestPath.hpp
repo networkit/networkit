@@ -105,7 +105,7 @@ private:
     Graph residualGraph;
     static constexpr const char *FLOW = "flow";
     Graph::EdgeDoubleAttribute flows;
-    cost totalCost{};
+    cost totalCost;
     static constexpr cost infiniteCosts = std::numeric_limits<cost>::infinity();
     static constexpr double epsilon = 1e-12;
 };

@@ -4,6 +4,7 @@
  *  Authors: Andreas Scharf (andreas.b.scharf@gmail.com)
  *
  */
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <networkit/flow/SuccessiveShortestPath.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -136,7 +137,7 @@ TEST_F(SuccessiveShortestPathGTest, testConstructorThrowsForUnbalancedSupplies) 
     auto supply = G.attachNodeDoubleAttribute(supplyName);
 
     G.addEdge(0, 1);
-    const auto eid = G.edgeId(0, 1);
+    const edgeid eid = G.edgeId(0, 1);
     capacities.set(eid, 5.0);
     supply.set(0, -5.0);
     supply.set(1, 4.0);
@@ -213,7 +214,7 @@ TEST_F(SuccessiveShortestPathGTest, testZeroNodesGraph) {
     solver.run();
     EXPECT_DOUBLE_EQ(solver.getTotalCost(), 0.0);
     const auto flow = solver.getFlow();
-    EXPECT_EQ(flow.size(), 0);
+    EXPECT_THAT(flow, ::testing::SizeIs(0));
 }
 
 TEST_F(SuccessiveShortestPathGTest, testRunThrowsOnNegativeCostCycle) {

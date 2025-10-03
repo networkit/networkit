@@ -15,7 +15,8 @@ namespace NetworKit {
 SuccessiveShortestPathMinCostFlow::SuccessiveShortestPathMinCostFlow(const Graph &G,
                                                                      std::string_view capacityName,
                                                                      std::string_view supplyName)
-    : graph(&G), capacityAttributeName(capacityName), supplyAttributeName(supplyName), totalCost{} {
+    : graph(&G), capacityAttributeName(capacityName), supplyAttributeName(supplyName),
+      totalCost(0) {
 
     if (!G.isDirected()) {
         throw std::runtime_error("SuccessiveShortestPathMinCostFlow: Graph must be directed.");
@@ -231,8 +232,10 @@ void SuccessiveShortestPathMinCostFlow::run() {
         supply.set(target, supply.get(target) + bottleneckFlow);
     } while (true);
 
-    residualGraph.forEdges(
-        [&](node, node, cost cost, edgeid eid) { totalCost += flows.get(eid) * cost; });
+    totalCost =
+        residualGraph.parallelSumForEdges([&](node /*u*/, node /*v*/, cost c, edgeid eid) -> cost {
+            return flows.get(eid) * c;
+        });
     hasRun = true;
 }
 
