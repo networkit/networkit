@@ -232,10 +232,8 @@ void SuccessiveShortestPathMinCostFlow::run() {
         supply.set(target, supply.get(target) + bottleneckFlow);
     } while (true);
 
-    totalCost =
-        residualGraph.parallelSumForEdges([&](node /*u*/, node /*v*/, cost c, edgeid eid) -> cost {
-            return flows.get(eid) * c;
-        });
+    totalCost = residualGraph.parallelSumForEdges(
+        [&](node /*u*/, node /*v*/, cost c, edgeid eid) -> cost { return flows.get(eid) * c; });
     hasRun = true;
 }
 
