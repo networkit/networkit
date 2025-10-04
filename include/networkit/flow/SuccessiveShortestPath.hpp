@@ -97,9 +97,9 @@ private:
         node u;
     };
     std::vector<cost> computeNodePotentials(count numberOfNodes) const;
-    void dijkstraOnResidualGraph(node start, std::span<cost> nodePotential,
-                                 std::vector<cost> &distances, std::vector<node> &parentNode,
-                                 std::vector<edgeid> &parentEdge, std::vector<int> &parentDirection,
+    void dijkstraOnResidualGraph(node start, std::span<const cost> nodePotential,
+                                 std::span<cost> distances, std::span<node> parentNode,
+                                 std::span<edgeid> parentEdge, std::span<int> parentDirection,
                                  const Graph::EdgeDoubleAttribute &capacities) const;
     const Graph *graph;
     const std::string capacityAttributeName;

@@ -99,9 +99,9 @@ SuccessiveShortestPathMinCostFlow::computeNodePotentials(count numberOfNodes) co
 }
 
 void SuccessiveShortestPathMinCostFlow::dijkstraOnResidualGraph(
-    node start, std::span<cost> nodePotential, std::vector<cost> &distances,
-    std::vector<node> &parentNode, std::vector<edgeid> &parentEdge,
-    std::vector<int> &parentDirection, const Graph::EdgeDoubleAttribute &capacities) const {
+    node start, std::span<const cost> nodePotential, std::span<cost> distances,
+    std::span<node> parentNode, std::span<edgeid> parentEdge, std::span<int> parentDirection,
+    const Graph::EdgeDoubleAttribute &capacities) const {
 
     const auto comparator = [&](const NodeWithCost &nwc1, const NodeWithCost &nwc2) -> bool {
         if (!Aux::NumericTools::equal(nwc1.distance, nwc2.distance))
