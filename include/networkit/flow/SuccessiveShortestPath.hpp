@@ -8,6 +8,8 @@
 #ifndef NETWORKIT_FLOW_SUCCESSIVE_SHORTEST_PATH_HPP_
 #define NETWORKIT_FLOW_SUCCESSIVE_SHORTEST_PATH_HPP_
 
+#include <span>
+
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
@@ -95,7 +97,7 @@ private:
         node u;
     };
     std::vector<cost> computeNodePotentials(count numberOfNodes) const;
-    void dijkstraOnResidualGraph(node start, const std::vector<cost> &nodePotential,
+    void dijkstraOnResidualGraph(node start, std::span<cost> nodePotential,
                                  std::vector<cost> &distances, std::vector<node> &parentNode,
                                  std::vector<edgeid> &parentEdge, std::vector<int> &parentDirection,
                                  const Graph::EdgeDoubleAttribute &capacities) const;
