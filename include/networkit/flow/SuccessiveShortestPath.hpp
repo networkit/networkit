@@ -94,7 +94,7 @@ private:
         cost distance;
         node u;
     };
-    std::vector<cost> computeNodePotentials(count numberOfNodes);
+    std::vector<cost> computeNodePotentials(count numberOfNodes) const;
     void dijkstraOnResidualGraph(node start, const std::vector<cost> &nodePotential,
                                  std::vector<cost> &distances, std::vector<node> &parentNode,
                                  std::vector<edgeid> &parentEdge, std::vector<int> &parentDirection,

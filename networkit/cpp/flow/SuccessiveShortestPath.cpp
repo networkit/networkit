@@ -67,7 +67,7 @@ SuccessiveShortestPathMinCostFlow::SuccessiveShortestPathMinCostFlow(const Graph
 }
 
 std::vector<SuccessiveShortestPathMinCostFlow::cost>
-SuccessiveShortestPathMinCostFlow::computeNodePotentials(count numberOfNodes) {
+SuccessiveShortestPathMinCostFlow::computeNodePotentials(count numberOfNodes) const {
     // Apply Bellman-Ford to compute node potentials/distances (dealing with negative weights/costs)
     std::vector<cost> nodePotential(numberOfNodes, 0.0);
     for (count i = 1; i < numberOfNodes; ++i) {
