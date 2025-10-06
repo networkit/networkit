@@ -456,7 +456,7 @@ jobs:
           pip install ipycytoscape plotly seaborn
           python notebooks/test_notebooks.py "notebooks"
         env:
-          NATIVE: ${{ matrix.os == 'full (native)' }}
+          NATIVE: ${{ matrix.build-configuration == 'full (native)' }}
 
   documentation-build:
     name: "Linux (gcc-11, CPython 3.13): documentation"
