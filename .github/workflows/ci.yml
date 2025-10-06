@@ -316,11 +316,11 @@ jobs:
         shell: bash
 
   linux-build-coverage:
-    name: "Linux (gcc-10, CPython 3.13): coverage"
+    name: "Linux (gcc-12, CPython 3.13): coverage"
     runs-on: ubuntu-22.04
     env:
-      CC: gcc-10
-      CXX: g++-10
+      CC: gcc-12
+      CXX: g++-12
       COVERALLS_DUMP_FILE: coveralls.dump
       COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       COVERALLS_SVC_NUM: ${{ github.run_number }}
@@ -328,12 +328,13 @@ jobs:
     steps:
       - name: Install prerequisites
         run:  |
+          sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu jammy main universe'
           sudo apt-get update
-          sudo apt-get install ninja-build
+          sudo apt-get install gcc-12 g++-12 ninja-build
       - name: Setup Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.12' # Use 3.12 here since coveralls does not support 3.13 yet: https://pypi.org/project/coveralls/
       - name: Checkout
         uses: actions/checkout@v5
         with:
@@ -347,8 +348,8 @@ jobs:
           cd ${{ github.workspace }}
           . pyenv/bin/activate
           cd core_build
-          gcovr -e '.*test/.*' -e '.*CMakeFiles.*' -e '.*/extlibs/.*' -e '.*/scripts/.*' -e '.*/pyenv/.*' -e '.*/include/tlx/.*' --gcov-ignore-parse-errors=suspicious_hits.warn --coveralls -r .. > networkit_cpp.json
-          gcovr -e '.*test/.*' -e '.*CMakeFiles.*' -e '.*/extlibs/.*' -e '.*/scripts/.*' -e '.*/pyenv/.*' -e '.*/include/tlx/.*' --gcov-ignore-parse-errors=suspicious_hits.warn -r ..
+          gcovr --gcov-executable gcov-12 -e '.*test/.*' -e '.*CMakeFiles.*' -e '.*/extlibs/.*' -e '.*/scripts/.*' -e '.*/pyenv/.*' -e '.*/include/tlx/.*' --gcov-ignore-parse-errors=negative_hits.warn --coveralls -r .. > networkit_cpp.json
+          gcovr --gcov-executable gcov-12 -e '.*test/.*' -e '.*CMakeFiles.*' -e '.*/extlibs/.*' -e '.*/scripts/.*' -e '.*/pyenv/.*' -e '.*/include/tlx/.*' --gcov-ignore-parse-errors=negative_hits.warn -r ..
       - name: Create Python coverage and merge files
         run: |
           cd ${{ github.workspace }}
