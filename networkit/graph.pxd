@@ -339,6 +339,11 @@ cdef extern from "<networkit/graph/SpanningForest.hpp>":
 		void run() except + nogil
 		_Graph getForest() except +
 
+cdef extern from "<networkit/graph/KruskalMSF.hpp>":
+	
+	cdef cppclass _KruskalMSF "NetworKit::KruskalMSF"(_SpanningForest):
+		_KruskalMSF(_Graph) except +
+		edgeweight getTotalWeight() except +
 
 cdef extern from "<networkit/graph/RandomMaximumSpanningForest.hpp>":
 

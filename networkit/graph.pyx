@@ -1681,7 +1681,7 @@ cdef cppclass NodePairCallbackWrapper:
 
 cdef class SpanningForest:
 	""" 
-	SpanningForest(G, nodes)
+	SpanningForest(G)
 	
 	Generates a spanning forest for a given graph
 
@@ -1689,8 +1689,6 @@ cdef class SpanningForest:
 	----------
 	G : networkit.Graph
 		The input graph.
-	nodes : list(int)
-		A subset of nodes of `G` which induce the subgraph.
 	"""
 	cdef _SpanningForest* _this
 	cdef Graph _G
@@ -1725,6 +1723,49 @@ cdef class SpanningForest:
 		"""
 		return Graph().setThis(self._this.getForest())
 
+cdef class KruskalMSF(SpanningForest):
+	""" 
+	KruskalMSF(G)
+	
+	Generates a minimum spanning forest for a given graph based in Kruskal's algorithm.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	"""
+	cdef _KruskalMSF* _this
+	cdef Graph _G
+
+	def __cinit__(self, Graph G not None):
+		self._G = G
+		self._this = new _KruskalMSF(G._this)
+
+
+	def __dealloc__(self):
+		del self._this
+
+	def run(self):
+		"""
+		run()
+
+		Executes the algorithm.
+		"""
+		self._this.run()
+		return self
+
+	def getTotalWeight(self):
+		"""
+		getTotalWeight()
+
+		Returns the total weight of the minimum spanning forest.
+
+		Returns
+		-------
+		float
+			The total weight of the minimum spanning forest.
+		"""
+		return self._this.getTotalWeight()
 cdef class RandomMaximumSpanningForest(Algorithm):
 	"""
 	RandomMaximumSpanningForest(G, attributes)
