@@ -8,7 +8,6 @@
 #ifndef NETWORKIT_DYNAMICS_DGS_WRITER_HPP_
 #define NETWORKIT_DYNAMICS_DGS_WRITER_HPP_
 
-#include <string>
 #include <vector>
 
 #include <networkit/dynamics/GraphEvent.hpp>

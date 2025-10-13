@@ -8,7 +8,6 @@
 #ifndef NETWORKIT_DISTANCE_JACCARD_DISTANCE_HPP_
 #define NETWORKIT_DISTANCE_JACCARD_DISTANCE_HPP_
 
-#include <networkit/auxiliary/Timer.hpp>
 #include <networkit/distance/NodeDistance.hpp>
 #include <networkit/graph/Graph.hpp>
 

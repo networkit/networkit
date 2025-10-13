@@ -8,7 +8,6 @@
 #ifndef NETWORKIT_DISTANCE_DIAMETER_HPP_
 #define NETWORKIT_DISTANCE_DIAMETER_HPP_
 
-#include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 

@@ -5,8 +5,6 @@
  *      Author: Michael Hamann, Gerd Lindner
  */
 
-#include <networkit/auxiliary/Log.hpp>
-#include <networkit/auxiliary/Random.hpp>
 #include <networkit/distance/JaccardDistance.hpp>
 
 namespace NetworKit {

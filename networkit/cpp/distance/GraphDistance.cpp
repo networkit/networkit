@@ -6,6 +6,8 @@
  */
 
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/distance/BFS.hpp>
+#include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/GraphDistance.hpp>
 
 namespace NetworKit {

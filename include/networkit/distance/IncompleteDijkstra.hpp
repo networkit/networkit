@@ -13,7 +13,6 @@
 
 #include <tlx/container/d_ary_addressable_int_heap.hpp>
 
-#include <networkit/auxiliary/PrioQueue.hpp>
 #include <networkit/auxiliary/VectorComparator.hpp>
 #include <networkit/distance/IncompleteSSSP.hpp>
 #include <networkit/graph/Graph.hpp>

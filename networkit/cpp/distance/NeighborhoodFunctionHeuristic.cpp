@@ -5,7 +5,6 @@
  */
 
 #include <cmath>
-#include <map>
 #include <omp.h>
 
 #include <networkit/auxiliary/Parallel.hpp>
