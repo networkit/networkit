@@ -9,8 +9,6 @@
 #include <omp.h>
 
 #include <networkit/distance/BFS.hpp>
-#include <networkit/distance/BidirectionalBFS.hpp>
-#include <networkit/distance/BidirectionalDijkstra.hpp>
 #include <networkit/distance/Dijkstra.hpp>
 #include <networkit/distance/MultiTargetBFS.hpp>
 #include <networkit/distance/MultiTargetDijkstra.hpp>

@@ -8,11 +8,8 @@
 #ifndef NETWORKIT_DISTANCE_DYN_SSSP_HPP_
 #define NETWORKIT_DISTANCE_DYN_SSSP_HPP_
 
-#include <set>
-
 #include <networkit/base/DynAlgorithm.hpp>
 #include <networkit/distance/SSSP.hpp>
-#include <networkit/dynamics/GraphEvent.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {

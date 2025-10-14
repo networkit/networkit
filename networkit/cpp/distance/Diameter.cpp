@@ -12,7 +12,6 @@
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/Diameter.hpp>
 #include <networkit/distance/Dijkstra.hpp>
-#include <networkit/distance/Eccentricity.hpp>
 #include <networkit/graph/BFS.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/structures/Partition.hpp>

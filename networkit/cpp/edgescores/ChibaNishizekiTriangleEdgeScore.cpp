@@ -6,7 +6,6 @@
  */
 
 #include <networkit/auxiliary/Log.hpp>
-#include <networkit/auxiliary/Timer.hpp>
 #include <networkit/edgescores/ChibaNishizekiTriangleEdgeScore.hpp>
 
 namespace NetworKit {

@@ -8,8 +8,6 @@
 #ifndef NETWORKIT_DISTANCE_A_STAR_GENERAL_HPP_
 #define NETWORKIT_DISTANCE_A_STAR_GENERAL_HPP_
 
-#include <ranges>
-
 #include <networkit/auxiliary/VectorComparator.hpp>
 #include <networkit/distance/STSP.hpp>
 

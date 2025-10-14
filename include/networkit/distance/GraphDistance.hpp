@@ -8,8 +8,6 @@
 #ifndef NETWORKIT_DISTANCE_GRAPH_DISTANCE_HPP_
 #define NETWORKIT_DISTANCE_GRAPH_DISTANCE_HPP_
 
-#include <networkit/distance/BFS.hpp>
-#include <networkit/distance/Dijkstra.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {

@@ -18,7 +18,6 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
-#include <networkit/auxiliary/Timer.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/embedding/Node2Vec.hpp>
 #include <networkit/graph/Graph.hpp>

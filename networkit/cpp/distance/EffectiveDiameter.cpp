@@ -6,7 +6,6 @@
  */
 
 #include <cmath>
-#include <omp.h>
 
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/components/ConnectedComponents.hpp>

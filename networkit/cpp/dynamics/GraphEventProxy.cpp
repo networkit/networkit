@@ -5,7 +5,6 @@
  *      Author: cls
  */
 
-#include <networkit/auxiliary/Log.hpp>
 #include <networkit/dynamics/GraphEventProxy.hpp>
 
 namespace NetworKit {

@@ -5,7 +5,6 @@
  *      Author: Michael Hamann
  */
 
-#include <numeric>
 #include <tuple>
 
 #include <networkit/auxiliary/Parallel.hpp>

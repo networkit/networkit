@@ -4,11 +4,9 @@
  *  Created on: 30.03.2016
  *      Author: Maximilian Vogel
  */
-#include <cmath>
 #include <map>
 #include <omp.h>
 
-#include <networkit/auxiliary/Random.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/distance/NeighborhoodFunction.hpp>
 #include <networkit/graph/BFS.hpp>
