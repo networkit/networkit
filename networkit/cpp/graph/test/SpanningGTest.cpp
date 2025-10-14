@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/generators/BarabasiAlbertGenerator.hpp>
 #include <networkit/graph/KruskalMSF.hpp>
 #include <networkit/graph/PrimMSF.hpp>
 #include <networkit/graph/RandomMaximumSpanningForest.hpp>
@@ -79,6 +80,16 @@ TEST_F(SpanningGTest, testUnionMaximumSpanningForest) {
         T.forNodes([&](node u) { EXPECT_TRUE(T.degree(u) > 0 || G.degree(u) == 0); });
         T.forEdges([&](node u, node v) { EXPECT_TRUE(umsf.inUMSF(u, v)); });
     }
+}
+
+TEST_F(SpanningGTest, testKruskalMinSpanningForestWithGenerators) {
+    BarabasiAlbertGenerator gen(5, 100);
+    Graph G = gen.generate();
+    KruskalMSF msf(G);
+    msf.run();
+    Graph T = msf.getForest();
+
+    isValidForest(G, T);
 }
 
 TEST_F(SpanningGTest, testKruskalMinSpanningForest) {

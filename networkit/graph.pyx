@@ -1734,8 +1734,6 @@ cdef class KruskalMSF(SpanningForest):
 	G : networkit.Graph
 		The input graph.
 	"""
-	cdef _KruskalMSF* _this
-	cdef Graph _G
 
 	def __cinit__(self, Graph G not None):
 		self._G = G
@@ -1765,7 +1763,7 @@ cdef class KruskalMSF(SpanningForest):
 		float
 			The total weight of the minimum spanning forest.
 		"""
-		return self._this.getTotalWeight()
+		return (<_KruskalMSF*>(self._this)).getTotalWeight()
 cdef class RandomMaximumSpanningForest(Algorithm):
 	"""
 	RandomMaximumSpanningForest(G, attributes)
