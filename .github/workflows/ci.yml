@@ -358,7 +358,6 @@ jobs:
           coverage report
           coveralls --merge=core_build/networkit_cpp.json --output=$COVERALLS_DUMP_FILE
       - name: Upload coverage
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           cd ${{ github.workspace }}
           . pyenv/bin/activate
