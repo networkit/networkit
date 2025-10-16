@@ -1,3 +1,4 @@
 networkit_add_test(edgescores ChibaNishizekiQuadrangleEdgeScoreGTest)
 networkit_add_test(edgescores ChibaNishizekiTriangleEdgeScoreGTest)
+networkit_add_test(edgescores EdgeScoreAsWeightGTest)
 
