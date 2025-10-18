@@ -10,7 +10,7 @@ a change is necessary.
 import filecmp
 import nktooling as nkt
 import tempfile
-import sys
+import re
 import shutil
 import subprocess
 import os
@@ -29,13 +29,26 @@ def isSupported(cmd):
 	if shutil.which(cmd) is None:
 		return False
 	# Read major revision number from "clang-format version XX.XX.XX ... "
-	version = str(subprocess.check_output([cmd, "--version"],
-		universal_newlines=True, env=getEnv())).strip().split()[-1].split('.')[0]
-	try:
-		found_version = int(version)
-		return found_version == nkt.CLANG_FORMAT_VERSION
-	except ValueError as val_error:
-		return False
+	version_output = str(
+		subprocess.check_output([cmd, "--version"], universal_newlines=True, env=getEnv())
+	)
+
+	# Examples the regex handles:
+	#   "Ubuntu clang-format version 17.0.6 (++2023...)"
+	major_version_match = re.search(r'\bversion\s+(\d+)', version_output, re.IGNORECASE)
+	if not major_version_match:
+		# Fallback: grab the first dotted version like 17.0.6
+		major_version_match = re.search(r'\b(\d+)\.\d+(?:\.\d+)?\b', version_output)
+
+	if major_version_match:
+		try:
+			found_version = int(major_version_match.group(1))
+			return found_version == nkt.CLANG_FORMAT_VERSION
+		except ValueError:
+			pass
+
+	return False
+
 
 def findClangFormat():
 	"""Tries to find clang-format-XXX variants within the path"""
