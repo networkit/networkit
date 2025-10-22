@@ -1743,6 +1743,11 @@ public:
      * Iterate over all edges of the const graph and call @a handle (lambda
      * closure).
      *
+     * This iterator can be used to visit each edge in the order of their edge ids.
+     * For this to work, indexEdges() must have been called once before.
+     * If the graph has changed since the last call to indexEdges(), the edge ids may not be in the
+     * correct order. In this case, calling indexEdges(true) again will restore the correct order.
+     *
      * @param handle Takes parameters <code>(node, node)</code>, <code>(node,
      * node, edgweight)</code>, <code>(node, node, edgeid)</code> or
      * <code>(node, node, edgeweight, edgeid)</code>.
@@ -1767,6 +1772,11 @@ public:
      * Iterate over all neighbors of a node and call @a handle (lamdba
      * closure).
      *
+     * This iterator can be used to visit each edge in the order of their edge ids.
+     * For this to work, indexEdges() must have been called once before.
+     * If the graph has changed since the last call to indexEdges(), the edge ids may not be in the
+     * correct order. In this case, calling indexEdges(true) again will restore the correct order.
+     *
      * @param u Node.
      * @param handle Takes parameter <code>(node)</code> or <code>(node,
      * edgeweight)</code> which is a neighbor of @a u.
@@ -1780,6 +1790,11 @@ public:
     /**
      * Iterate over all incident edges of a node and call @a handle (lamdba
      * closure).
+     *
+     * This iterator can be used to visit each edge in the order of their edge ids.
+     * For this to work, indexEdges() must have been called once before.
+     * If the graph has changed since the last call to indexEdges(), the edge ids may not be in the
+     * correct order. In this case, calling indexEdges(true) again will restore the correct order.
      *
      * @param u Node.
      * @param handle Takes parameters <code>(node, node)</code>, <code>(node,
@@ -1795,13 +1810,25 @@ public:
     /**
      * Iterate over all neighbors of a node and call handler (lamdba closure).
      * For directed graphs only incoming edges from u are considered.
+     *
+     * This iterator can be used to visit each edge in the order of their edge ids.
+     * For this to work, indexEdges() must have been called once before.
+     * If the graph has changed since the last call to indexEdges(), the edge ids may not be in the
+     * correct order. In this case, calling indexEdges(true) again will restore the correct order.
+     *
      */
     template <typename L>
     void forInNeighborsOf(node u, L handle) const;
 
     /**
-     * Iterate over all incoming edges of a node and call handler (lamdba
+     * Iterate over all incoming edges of a node and call handler (lambda
      * closure).
+     *
+     * This iterator can be used to visit each edge in the order of their edge ids.
+     * For this to work, indexEdges() must have been called once before.
+     * If the graph has changed since the last call to indexEdges(), the edge ids may not be in the
+     * correct order. In this case, calling indexEdges(true) again will restore the correct order.
+     *
      * @note For undirected graphs all edges incident to u are also incoming
      * edges.
      *

@@ -707,8 +707,11 @@ cdef class Graph:
 	def forEdges(self, object callback):
 		""" 
 		forEdges(callback)
-
-		Experimental edge iterator interface
+	
+		This iterator can be used to visit each edge in the order of their edge ids.
+		For this to work, indexEdges() must have been called once before.
+		If the graph has changed since the last call to indexEdges(), the edge ids may not be in the
+		correct order. In this case, calling indexEdges(True) again will restore the correct order.
 
 		Parameters
 		----------
@@ -727,7 +730,10 @@ cdef class Graph:
 		""" 
 		forEdgesOf(u, callback)
 		
-		Experimental incident (outgoing) edge iterator interface
+		This iterator can be used to visit each edge in the order of their edge ids.
+		For this to work, indexEdges() must have been called once before.
+		If the graph has changed since the last call to indexEdges(), the edge ids may not be in the
+		correct order. In this case, calling indexEdges(True) again will restore the correct order.
 
 		Parameters
 		----------
@@ -748,7 +754,10 @@ cdef class Graph:
 		""" 
 		forInEdgesOf(u, callback)
 		
-		Experimental incident edge iterator interface
+		This iterator can be used to visit each edge in the order of their edge ids.
+		For this to work, indexEdges() must have been called once before.
+		If the graph has changed since the last call to indexEdges(), the edge ids may not be in the
+		correct order. In this case, calling indexEdges(True) again will restore the correct order.
 
 		Parameters
 		----------
