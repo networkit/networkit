@@ -9,6 +9,8 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/UnionFind.hpp>
 
+#include <tlx/define/deprecated.hpp>
+
 namespace NetworKit {
 
 /**
@@ -25,17 +27,20 @@ public:
     RandomMaximumSpanningForest(const Graph &G);
 
     /**
-     * Initialize the random maximum-weight spanning forest algorithm using an attribute as edge
-     * weight.
+     * Initialize the random maximum-weight spanning using a vector of values, one
+     * for each edge. These values are used as edge weights. Each value corresponds to the edge with
+     * the given id.
      *
-     * This copies the attribute values, the supplied attribute vector is not stored.
+     * Note: Since the mapping relies on edge ids, this variant only works, if the graph has edge
+     * ids. Call Graph::indexEdges() beforehand if necessary. The values are copied, the supplied
+     * vector is not stored in the RandomMaximumSpanningForest object.
      *
      * @param G The input graph.
-     * @param attribute The attribute to use, can be either of type edgeweight (double) or count
+     * @param edgeValues The edge values to use, can be either of type edgeweight (double) or count
      * (uint64), internally all values are handled as double.
      */
     template <typename A>
-    RandomMaximumSpanningForest(const Graph &G, const std::vector<A> &attribute);
+    RandomMaximumSpanningForest(const Graph &G, const std::vector<A> &edgeValues);
 
     /**
      * Execute the algorithm. The algorithm is not parallel.
@@ -43,6 +48,9 @@ public:
     void run() override;
 
     /**
+     * DEPRECATED: this function will no longer be supported in later releases. Use getIndicator()
+     * instead.
+     *
      * Get a boolean attribute that indicates for each edge if it is part of the calculated
      * maximum-weight spanning forest.
      *
@@ -52,7 +60,19 @@ public:
      * @param move If the attribute shall be moved out of the algorithm instance.
      * @return The vector with the boolean attribute for each edge.
      */
-    std::vector<bool> getAttribute(bool move = false);
+    std::vector<bool> TLX_DEPRECATED(getAttribute(bool move = false));
+
+    /**
+     * Get a boolean indicator vector that indicates for each edge if it is part of any
+     * maximum-weight spanning forest.
+     *
+     * This indicator vector is only calculated and can thus only be request if the supplied graph
+     * has edge ids.
+     *
+     * @param move If the indicator vector shall be moved out of the algorithm instance.
+     * @return The vector with the boolean indicator for each edge.
+     */
+    std::vector<bool> getIndicator(bool move = false);
 
     /**
      * Checks if the edge (@a u, @a v) is part of the calculated maximum-weight spanning forest.
@@ -112,16 +132,17 @@ private:
 
 template <typename A>
 RandomMaximumSpanningForest::RandomMaximumSpanningForest(const Graph &G,
-                                                         const std::vector<A> &attribute)
+                                                         const std::vector<A> &edgeValues)
     : G(G), hasWeightedEdges(false), hasMSF(false), hasAttribute(false) {
     if (!G.hasEdgeIds()) {
-        throw std::runtime_error("Error: Edges of G must be indexed for using edge attributes");
+        throw std::runtime_error("Error: Edges of G must be indexed for using edge values");
     }
 
     weightedEdges.reserve(G.numberOfEdges());
 
-    G.forEdges(
-        [&](node u, node v, edgeid eid) { weightedEdges.emplace_back(u, v, attribute[eid], eid); });
+    G.forEdges([&](node u, node v, edgeid eid) {
+        weightedEdges.emplace_back(u, v, edgeValues[eid], eid);
+    });
 
     INFO(weightedEdges.size(), " weighted edges saved");
 

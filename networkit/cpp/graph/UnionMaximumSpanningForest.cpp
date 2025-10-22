@@ -102,11 +102,12 @@ bool UnionMaximumSpanningForest::inUMSF(node u, node v) const {
     }
 }
 
-std::vector<bool> UnionMaximumSpanningForest::getAttribute(bool move) {
+std::vector<bool> UnionMaximumSpanningForest::getIndicator(bool move) {
     std::vector<bool> result;
 
     if (!hasAttribute)
-        throw std::runtime_error("Error: The run() method must be executed first");
+        throw std::runtime_error(
+            "Error: The run() method must be executed first or the graph has no edge ids.");
 
     if (move) {
         result = std::move(umsfAttribute);
@@ -116,6 +117,13 @@ std::vector<bool> UnionMaximumSpanningForest::getAttribute(bool move) {
     }
 
     return result;
+}
+
+std::vector<bool> UnionMaximumSpanningForest::getAttribute(bool move) {
+    WARN("getAttribute() is deprecated and will be removed in future releases. Use getIndicator() "
+         "instead.");
+
+    return getIndicator(move);
 }
 
 Graph UnionMaximumSpanningForest::getUMSF(bool move) {
