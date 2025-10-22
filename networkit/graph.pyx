@@ -1739,10 +1739,6 @@ cdef class KruskalMSF(SpanningForest):
 		self._G = G
 		self._this = new _KruskalMSF(G._this)
 
-
-	def __dealloc__(self):
-		del self._this
-
 	def run(self):
 		"""
 		run()
@@ -1764,6 +1760,45 @@ cdef class KruskalMSF(SpanningForest):
 			The total weight of the minimum spanning forest.
 		"""
 		return (<_KruskalMSF*>(self._this)).getTotalWeight()
+
+cdef class PrimMSF(SpanningForest):
+	""" 
+	PrimMSF(G)
+
+	Generates a minimum spanning forest for a given graph based in Prim's algorithm.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	"""
+
+	def __cinit__(self, Graph G not None):
+		self._G = G
+		self._this = new _PrimMSF(G._this)
+
+	def run(self):
+		"""
+		run()
+
+		Executes the algorithm.
+		"""
+		self._this.run()
+		return self
+
+	def getTotalWeight(self):
+		"""
+		getTotalWeight()
+
+		Returns the total weight of the minimum spanning forest.
+
+		Returns
+		-------
+		float
+			The total weight of the minimum spanning forest.
+		"""
+		return (<_PrimMSF*>(self._this)).getTotalWeight()
+
 cdef class RandomMaximumSpanningForest(Algorithm):
 	"""
 	RandomMaximumSpanningForest(G, attributes)

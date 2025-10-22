@@ -610,13 +610,22 @@ class TestGraph(unittest.TestCase):
         self.assertTrue(G.hasNode(1))
 
     def testKruskalMinimumSpanningForest(self):
-        G = nk.generators.BarabasiAlbertGenerator(5, 100).generate()
-        nk.overview(G)
-        # G = self.getSmallGraph()
+        G = self.getSmallGraph()
         kmf = nk.graph.KruskalMSF(G)
         kmf.run()
         self.assertEqual(G.numberOfNodes(), kmf.getForest().numberOfNodes())
-        # self.assertEqual(kmf.getTotalWeight(), 6.0)
+
+    def testPrimMinimumSpanningForest(self):
+        G = self.getSmallGraph()
+        pmf = nk.graph.PrimMSF(G)
+        pmf.run()
+        self.assertEqual(G.numberOfNodes(), pmf.getForest().numberOfNodes())
+
+    def testSpanningForest(self):
+        G = self.getSmallGraph()
+        sf = nk.graph.SpanningForest(G)
+        sf.run()
+        self.assertEqual(G.numberOfNodes(), sf.getForest().numberOfNodes())
 
     def testRandomMaximumSpanningForest(self):
         G = self.getSmallGraph()

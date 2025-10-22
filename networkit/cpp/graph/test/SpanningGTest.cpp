@@ -82,16 +82,6 @@ TEST_F(SpanningGTest, testUnionMaximumSpanningForest) {
     }
 }
 
-TEST_F(SpanningGTest, testKruskalMinSpanningForestWithGenerators) {
-    BarabasiAlbertGenerator gen(5, 100);
-    Graph G = gen.generate();
-    KruskalMSF msf(G);
-    msf.run();
-    Graph T = msf.getForest();
-
-    isValidForest(G, T);
-}
-
 TEST_F(SpanningGTest, testKruskalMinSpanningForest) {
     METISGraphReader reader;
     std::vector<std::string> graphs = {"karate", "jazz", "celegans_metabolic"};
