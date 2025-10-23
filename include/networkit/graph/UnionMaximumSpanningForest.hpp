@@ -65,7 +65,7 @@ public:
      * Get a boolean indicator vector that indicates for each edge if it is part of any
      * maximum-weight spanning forest.
      *
-     * This indicator vector is only calculated and can thus only be request if the supplied graph
+     * This indicator vector is only calculated and can thus only be requested if the supplied graph
      * has edge ids.
      *
      * @param move If the indicator vector shall be moved out of the algorithm instance.

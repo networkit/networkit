@@ -27,7 +27,7 @@ public:
     RandomMaximumSpanningForest(const Graph &G);
 
     /**
-     * Initialize the random maximum-weight spanning using a vector of values, one
+     * Initialize the random maximum-weight spanning forest algorithm using a vector of values, one
      * for each edge. These values are used as edge weights. Each value corresponds to the edge with
      * the given id.
      *
@@ -68,7 +68,7 @@ public:
      * Get a boolean indicator vector that indicates for each edge if it is part of any
      * maximum-weight spanning forest.
      *
-     * This indicator vector is only calculated and can thus only be request if the supplied graph
+     * This indicator vector is only calculated and can thus only be requested if the supplied graph
      * has edge ids.
      *
      * @param move If the indicator vector shall be moved out of the algorithm instance.
@@ -137,7 +137,7 @@ RandomMaximumSpanningForest::RandomMaximumSpanningForest(const Graph &G,
                                                          const std::vector<A> &edgeValues)
     : G(G), hasWeightedEdges(false), hasMSF(false), hasAttribute(false) {
     if (!G.hasEdgeIds()) {
-        throw std::runtime_error("Error: Edges of G must be indexed for using edge values");
+        throw std::runtime_error("Error: Edges of G must be indexed for using edge values.");
     }
 
     weightedEdges.reserve(G.numberOfEdges());

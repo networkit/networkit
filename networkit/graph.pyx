@@ -1736,7 +1736,7 @@ cdef class KruskalMSF(SpanningForest):
 	""" 
 	KruskalMSF(G)
 	
-	Generates a minimum spanning forest for a given graph based in Kruskal's algorithm.
+	Generates a minimum spanning forest for a given graph based on Kruskal's algorithm.
 
 	Parameters
 	----------
@@ -1774,7 +1774,7 @@ cdef class PrimMSF(SpanningForest):
 	""" 
 	PrimMSF(G)
 
-	Generates a minimum spanning forest for a given graph based in Prim's algorithm.
+	Generates a minimum spanning forest for a given graph based on Prim's algorithm.
 
 	Parameters
 	----------
