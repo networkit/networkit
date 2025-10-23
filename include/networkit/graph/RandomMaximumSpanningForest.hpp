@@ -33,7 +33,9 @@ public:
      *
      * Note: Since the mapping relies on edge ids, this variant only works, if the graph has edge
      * ids. Call Graph::indexEdges() beforehand if necessary. The values are copied, the supplied
-     * vector is not stored in the RandomMaximumSpanningForest object.
+     * vector is not stored in the RandomMaximumSpanningForest object. If the graph is changed, i.e.
+     * edges are removed, indexEdges should be called again to ensure that edge ids are contiguous.
+     * Otherwise edgeValues entries for the missing edges can be arbitrary.
      *
      * @param G The input graph.
      * @param edgeValues The edge values to use, can be either of type edgeweight (double) or count

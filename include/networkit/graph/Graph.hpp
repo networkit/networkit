@@ -928,7 +928,11 @@ public:
     /** EDGE IDS **/
 
     /**
-     * Initially assign integer edge identifiers.
+     * Initially assign integer edge identifiers. Edge ids are an optional feature.
+     * They are used by some algorithms and can also be useful to track edges. Given a graph and
+     * generated edge ids, the iterators forEdges, forNeighborsOf, etc. iterate over edges in the
+     * order of their edge ids. Once the graph is changed, the iterators will no longer guarantee
+     * this order. Use indexEdges(true) to re-index edges after modifying the graph.
      *
      * @param force Force re-indexing of edges even if they have already been
      * indexed
