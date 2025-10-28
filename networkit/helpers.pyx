@@ -157,7 +157,7 @@ cdef asarray_2d(vector[vector[element_t]]* nested):
 	cdef:
 		element_t[:] values
 		element_t* target
-		int num_rows, num_cols
+		size_t num_rows, num_cols
 
 	# Return an empty matrix if there are no rows.
 	num_rows = nested.size()
