@@ -707,8 +707,11 @@ cdef class Graph:
 	def forEdges(self, object callback):
 		""" 
 		forEdges(callback)
-
-		Experimental edge iterator interface
+	
+		This iterator can be used to visit each edge in the order of their edge ids.
+		For this to work, indexEdges() must have been called once before.
+		If the graph has changed since the last call to indexEdges(), the edge ids may not be in the
+		correct order. In this case, calling indexEdges(True) again will restore the correct order.
 
 		Parameters
 		----------
@@ -727,7 +730,10 @@ cdef class Graph:
 		""" 
 		forEdgesOf(u, callback)
 		
-		Experimental incident (outgoing) edge iterator interface
+		This iterator can be used to visit each edge in the order of their edge ids.
+		For this to work, indexEdges() must have been called once before.
+		If the graph has changed since the last call to indexEdges(), the edge ids may not be in the
+		correct order. In this case, calling indexEdges(True) again will restore the correct order.
 
 		Parameters
 		----------
@@ -748,7 +754,10 @@ cdef class Graph:
 		""" 
 		forInEdgesOf(u, callback)
 		
-		Experimental incident edge iterator interface
+		This iterator can be used to visit each edge in the order of their edge ids.
+		For this to work, indexEdges() must have been called once before.
+		If the graph has changed since the last call to indexEdges(), the edge ids may not be in the
+		correct order. In this case, calling indexEdges(True) again will restore the correct order.
 
 		Parameters
 		----------
@@ -1681,7 +1690,7 @@ cdef cppclass NodePairCallbackWrapper:
 
 cdef class SpanningForest:
 	""" 
-	SpanningForest(G, nodes)
+	SpanningForest(G)
 	
 	Generates a spanning forest for a given graph
 
@@ -1689,8 +1698,6 @@ cdef class SpanningForest:
 	----------
 	G : networkit.Graph
 		The input graph.
-	nodes : list(int)
-		A subset of nodes of `G` which induce the subgraph.
 	"""
 	cdef _SpanningForest* _this
 	cdef Graph _G
@@ -1724,6 +1731,82 @@ cdef class SpanningForest:
 			The computed spanning forest.
 		"""
 		return Graph().setThis(self._this.getForest())
+
+cdef class KruskalMSF(SpanningForest):
+	""" 
+	KruskalMSF(G)
+	
+	Generates a minimum spanning forest for a given graph based on Kruskal's algorithm.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	"""
+
+	def __cinit__(self, Graph G not None):
+		self._G = G
+		self._this = new _KruskalMSF(G._this)
+
+	def run(self):
+		"""
+		run()
+
+		Executes the algorithm.
+		"""
+		self._this.run()
+		return self
+
+	def getTotalWeight(self):
+		"""
+		getTotalWeight()
+
+		Returns the total weight of the minimum spanning forest.
+
+		Returns
+		-------
+		float
+			The total weight of the minimum spanning forest.
+		"""
+		return (<_KruskalMSF*>(self._this)).getTotalWeight()
+
+cdef class PrimMSF(SpanningForest):
+	""" 
+	PrimMSF(G)
+
+	Generates a minimum spanning forest for a given graph based on Prim's algorithm.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph.
+	"""
+
+	def __cinit__(self, Graph G not None):
+		self._G = G
+		self._this = new _PrimMSF(G._this)
+
+	def run(self):
+		"""
+		run()
+
+		Executes the algorithm.
+		"""
+		self._this.run()
+		return self
+
+	def getTotalWeight(self):
+		"""
+		getTotalWeight()
+
+		Returns the total weight of the minimum spanning forest.
+
+		Returns
+		-------
+		float
+			The total weight of the minimum spanning forest.
+		"""
+		return (<_PrimMSF*>(self._this)).getTotalWeight()
 
 cdef class RandomMaximumSpanningForest(Algorithm):
 	"""

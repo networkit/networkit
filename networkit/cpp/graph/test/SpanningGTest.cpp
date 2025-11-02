@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/generators/BarabasiAlbertGenerator.hpp>
 #include <networkit/graph/KruskalMSF.hpp>
 #include <networkit/graph/PrimMSF.hpp>
 #include <networkit/graph/RandomMaximumSpanningForest.hpp>
