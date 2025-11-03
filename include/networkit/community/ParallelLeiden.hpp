@@ -14,12 +14,7 @@ namespace NetworKit {
 class ParallelLeiden final : public CommunityDetectionAlgorithm {
 public:
     /**
-     * @note As reported by Sahu et. al in "GVE-Leiden: Fast Leiden Algorithm for Community
-     * Detection in Shared Memory Setting", the current implementation in NetworKit might create a
-     * small fraction of disconnected communities. Since this violates the guarantees from the
-     * original algorithm, ParallelLeiden should be used with caution. In addition the modularity
-     * value of the resulting partition / clustering can be lower compared to other Leiden
-     * implementations and even Louvain.
+     * Parallel Leiden algorithm for community detection.
      *
      * @param graph A networkit graph
      * @param iterations Number of Leiden Iterations to be run
