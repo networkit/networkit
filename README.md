@@ -82,6 +82,8 @@ As both a production tool and a research testbed for algorithm engineering, Netw
 
 ### Installation
 
+#### Python Module
+
 **For most users**, NetworKit can be installed directly via package managers with no additional requirements other than Python 3.9+.
 
 | Package Manager | Command |
@@ -90,6 +92,16 @@ As both a production tool and a research testbed for algorithm engineering, Netw
 | **conda** | `conda install -c conda-forge networkit` |
 | **brew** | `brew install networkit` |
 | **spack** | `spack install py-networkit` |
+
+#### C++ Core Library Only
+
+If you only need the C++ core without Python bindings:
+
+| Package Manager | Command |
+|-----------------|---------|
+| **conda** | `conda install -c conda-forge libnetworkit` |
+| **brew** | `brew install libnetworkit` |
+| **spack** | `spack install libnetworkit` |
 
 More platform-specific installation instructions can be found in our [getting started guide](https://networkit.github.io/get_started.html).
 
