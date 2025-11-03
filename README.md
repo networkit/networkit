@@ -113,22 +113,17 @@ More platform-specific installation instructions can be found in our [getting st
 Here's a quick example showing how to generate a random hyperbolic graph with 100k nodes and detect communities:
 
 ```python
-import networkit
+from networkit.generators import HyperbolicGenerator
+from networkit.community import detectCommunities
 
 # Generate a random hyperbolic graph
 g = (
-    networkit
-    .generators
-    .HyperbolicGenerator(1e5)
+    HyperbolicGenerator(1e5)
     .generate()
 )
 
 # Detect communities
-communities = (
-    networkit
-    .community
-    .detectCommunities(g, inspect=True)
-)
+detectCommunities(g, inspect=True)
 ```
 
 Output:
@@ -143,6 +138,34 @@ avg. community size    22.0459
 modularity              0.987243
 -------------------  -----------
 ```
+
+### More Examples
+
+Compute PageRank to rank nodes by importance:
+
+```python
+from networkit.centrality import PageRank
+
+pr = (
+    PageRank(g)
+    .run()
+)
+top_nodes = pr.ranking()[:10]
+```
+
+Analyze graph structure with connected components:
+
+```python
+from networkit.components import ConnectedComponents
+
+cc = (
+    ConnectedComponents(g)
+    .run()
+)
+print(f"Components: {cc.numberOfComponents()}")
+print(f"Largest: {max(cc.getComponentSizes().values())}")
+```
+
 
 For comprehensive examples and tutorials, explore our [interactive notebooks][notebooks], especially the [NetworKit User Guide][NetworKit UserGuide]. You can try NetworKit directly in your browser using our [Binder instance][binder].
 
