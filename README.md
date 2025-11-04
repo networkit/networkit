@@ -178,7 +178,7 @@ For comprehensive examples and tutorials, explore our [interactive notebooks][no
 
 Building from source requires:
 
-- **C++ Compiler**: [g++] (&gt;= 8.1), [clang++] (&gt;= 6.0), or MSVC (&gt;= 14.20)
+- **C++ Compiler**: [g++] (&gt;= 10.0), [clang++] (&gt;= 11.0), or MSVC (&gt;= 14.30)
 - **OpenMP**: For parallelism (usually included with compiler)
 - **Python**: 3.9 or higher with development libraries
   - Debian/Ubuntu: `apt-get install python3-dev`
