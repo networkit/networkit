@@ -35,7 +35,8 @@ classifiers = [
 
 dependencies = [
   "scipy",
-  "numpy"
+  "numpy",
+  "tabulate"
 ]
 
 [project.urls]
