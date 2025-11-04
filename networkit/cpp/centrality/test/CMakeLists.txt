@@ -8,4 +8,6 @@ networkit_add_test(centrality SpanningEdgeCentralityGTest
     graph io numerics)
 networkit_add_test(centrality TopClosenessGTest
     generators graph io)
+networkit_add_test(centrality ApproxElectricalClosenessGTest
+    auxiliary generators io structures algebraic)
 
