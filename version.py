@@ -1,18 +1,18 @@
-name='networkit'
+name = "networkit"
 
-version='11.1.post1'
+version = "11.2"
 
-url='https://networkit.github.io/'
+url = "https://networkit.github.io/"
 
-download_url='https://pypi.python.org/pypi/networkit'
+download_url = "https://pypi.python.org/pypi/networkit"
 
-license='MIT'
+license = "MIT"
 
-author='Christian L. Staudt, Henning Meyerhenke'
+author = "Christian L. Staudt, Henning Meyerhenke"
 
-author_email = 'christian.staudt@kit.edu, meyerhenke@kit.edu'
+author_email = "christian.staudt@kit.edu, meyerhenke@kit.edu"
 
-description = 'NetworKit is a toolbox for high-performance network analysis'
+description = "NetworKit is a toolbox for high-performance network analysis"
 
 long_description = """
 NetworKit is a growing open-source toolkit for high-performance network analysis.
@@ -26,33 +26,30 @@ focus on parallelism and scalability. NetworKit is also a testbed for algorithm
 engineering and contains a few novel algorithms from recently published
 research, especially in the area of community detection."""
 
-keywords = ['graph algorithm', 'network analysis', 'social network']
+keywords = ["graph algorithm", "network analysis", "social network"]
 
-platforms = 'any'
+platforms = "any"
 
 classifiers = [
-'Development Status :: 5 - Production/Stable',
-'Environment :: Console',
-'Environment :: Web Environment',
-'Environment :: Other Environment',
-'Framework :: IPython',
-'Intended Audience :: Developers',
-'Intended Audience :: End Users/Desktop',
-'Intended Audience :: Science/Research',
-'License :: OSI Approved :: MIT License',
-'Natural Language :: English',
-'Operating System :: OS Independent',
-'Programming Language :: C++',
-'Programming Language :: Python :: 3 :: Only',
-'Topic :: Software Development :: Libraries :: Python Modules',
-'Topic :: Scientific/Engineering :: Bio-Informatics',
-'Topic :: Scientific/Engineering :: Chemistry',
-'Topic :: Scientific/Engineering :: Information Analysis',
-'Topic :: Scientific/Engineering :: Mathematics',
-'Topic :: Scientific/Engineering :: Visualization'
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Environment :: Web Environment",
+    "Environment :: Other Environment",
+    "Framework :: IPython",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: C++",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Visualization",
 ]
 
-install_requires = [
-	'scipy',
-	'numpy'
-]
+install_requires = ["scipy", "numpy"]
