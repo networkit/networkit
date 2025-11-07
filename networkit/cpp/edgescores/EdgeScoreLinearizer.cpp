@@ -59,12 +59,4 @@ void EdgeScoreLinearizer::run() {
     hasRun = true;
 }
 
-double EdgeScoreLinearizer::score(node, node) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
-}
-
-double EdgeScoreLinearizer::score(edgeid) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
-}
-
 } /* namespace NetworKit */

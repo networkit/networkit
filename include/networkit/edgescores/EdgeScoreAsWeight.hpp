@@ -12,8 +12,9 @@
 
 namespace NetworKit {
 
-class [[deprecated("Use EdgeScore<T>::calculate(...) on the corresponding EdgeScore instead.")]]
-EdgeScoreAsWeight final {
+class [[deprecated(
+    "Use EdgeScore<T>::calculate(...) on the corresponding EdgeScore instead.")]] EdgeScoreAsWeight
+    final {
 
 public:
     EdgeScoreAsWeight(const Graph &G, const std::vector<double> &score, bool squared = false,

@@ -16,8 +16,6 @@ class ChibaNishizekiQuadrangleEdgeScore final : public EdgeScore<count> {
 
 public:
     ChibaNishizekiQuadrangleEdgeScore(const Graph &G);
-    count score(edgeid eid) override;
-    count score(node u, node v) override;
     void run() override;
 };
 

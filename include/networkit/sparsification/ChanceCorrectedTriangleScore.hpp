@@ -16,8 +16,6 @@ class ChanceCorrectedTriangleScore final : public EdgeScore<double> {
 
 public:
     ChanceCorrectedTriangleScore(const Graph &graph, const std::vector<count> &triangles);
-    double score(edgeid eid) override;
-    double score(node u, node v) override;
     void run() override;
 
 private:

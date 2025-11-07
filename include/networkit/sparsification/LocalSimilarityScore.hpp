@@ -49,8 +49,6 @@ class LocalSimilarityScore final : public EdgeScore<double> {
 
 public:
     LocalSimilarityScore(const Graph &G, const std::vector<count> &triangles);
-    double score(edgeid eid) override;
-    double score(node u, node v) override;
     void run() override;
 
 private:

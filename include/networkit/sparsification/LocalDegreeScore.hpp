@@ -21,8 +21,6 @@ class LocalDegreeScore final : public EdgeScore<double> {
 public:
     LocalDegreeScore(const Graph &G);
     void run() override;
-    double score(edgeid eid) override;
-    double score(node u, node v) override;
 };
 
 } // namespace NetworKit

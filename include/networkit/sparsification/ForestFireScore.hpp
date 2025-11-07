@@ -20,8 +20,6 @@ class ForestFireScore final : public EdgeScore<double> {
 
 public:
     ForestFireScore(const Graph &graph, double pf, double targetBurntRatio);
-    double score(edgeid eid) override;
-    double score(node u, node v) override;
     void run() override;
 
 private:

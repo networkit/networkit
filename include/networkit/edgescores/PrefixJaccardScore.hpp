@@ -10,8 +10,6 @@ class PrefixJaccardScore final : public EdgeScore<double> {
 
 public:
     PrefixJaccardScore(const Graph &G, const std::vector<AttributeT> &attribute);
-    double score(edgeid eid) override;
-    double score(node u, node v) override;
     void run() override;
 
 private:
