@@ -50,6 +50,30 @@ T EdgeScore<T>::score(node u, node v) {
     return score(G->edgeId(u, v));
 }
 
+template <typename T>
+Graph EdgeScore<T>::calculate(bool squared, edgeweight offset, edgeweight factor) const {
+    assureFinished();
+
+    if (!G->hasEdgeIds()) {
+        throw std::runtime_error("edges have not been indexed - call indexEdges first");
+    }
+
+    // Match existing semantics: weighted, undirected clone of G.
+    Graph result(*G, /*weighted=*/true, /*directed=*/false);
+
+    if (squared) {
+        G->parallelForEdges([&](node u, node v, edgeid eid) {
+            const auto s = scoreData[eid];
+            result.setWeight(u, v, offset + factor * s * s);
+        });
+    } else {
+        G->parallelForEdges([&](node u, node v, edgeid eid) {
+            result.setWeight(u, v, offset + factor * scoreData[eid]);
+        });
+    }
+    return result;
+}
+
 template class EdgeScore<double>;
 template class EdgeScore<count>;
 
