@@ -12,8 +12,7 @@ namespace NetworKit {
 
 template <typename T>
 EdgeScore<T>::EdgeScore(const Graph &G) : Algorithm(), G(&G), scoreData() {
-    if (G.isDirected()) {
-        WARN("EdgeScore is not well tested on directed graphs");
+    if (!G.isWeighted()) {
     }
 }
 
@@ -58,8 +57,7 @@ Graph EdgeScore<T>::calculate(bool squared, edgeweight offset, edgeweight factor
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
 
-    // Match existing semantics: weighted, undirected clone of G.
-    Graph result(*G, /*weighted=*/true, /*directed=*/false);
+    Graph result(*G, true, G->isDirected());
 
     if (squared) {
         G->parallelForEdges([&](node u, node v, edgeid eid) {
