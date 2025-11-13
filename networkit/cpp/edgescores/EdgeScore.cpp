@@ -54,7 +54,7 @@ Graph EdgeScore<T>::calculate(bool squared, edgeweight offset, edgeweight factor
     assureFinished();
 
     if (!G->hasEdgeIds()) {
-        throw std::runtime_error("edges have not been indexed - call indexEdges first");
+        throw std::runtime_error("Edges have not been indexed - call indexEdges first");
     }
 
     Graph result(*G, true, G->isDirected());

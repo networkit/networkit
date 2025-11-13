@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-class EdgeScoreTest : public ::testing::Test {
+class EdgeScoreGTest : public ::testing::Test {
 protected:
     void compareTopology(const Graph &original, const Graph &result) {
         EXPECT_EQ(result.numberOfNodes(), original.numberOfNodes());
@@ -38,7 +38,7 @@ public:
     }
 };
 
-TEST_F(EdgeScoreTest, testScoresAndScoreRequireRun) {
+TEST_F(EdgeScoreGTest, testScoresAndScoreRequireRun) {
     Graph G(3, false, false);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
@@ -61,7 +61,7 @@ TEST_F(EdgeScoreTest, testScoresAndScoreRequireRun) {
     });
 }
 
-TEST_F(EdgeScoreTest, testDerivedScoresReturnsScoreVector) {
+TEST_F(EdgeScoreGTest, testDerivedScoresReturnsScoreVector) {
     Graph G(3, false, false);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
@@ -76,7 +76,7 @@ TEST_F(EdgeScoreTest, testDerivedScoresReturnsScoreVector) {
     EXPECT_DOUBLE_EQ(scores[1], 2.0);
 }
 
-TEST_F(EdgeScoreTest, testDerivedScoreByEdgeIdReturnsScore) {
+TEST_F(EdgeScoreGTest, testDerivedScoreByEdgeIdReturnsScore) {
     Graph G(3, false, false);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
@@ -89,7 +89,7 @@ TEST_F(EdgeScoreTest, testDerivedScoreByEdgeIdReturnsScore) {
     EXPECT_DOUBLE_EQ(score.score(1), 2.0);
 }
 
-TEST_F(EdgeScoreTest, testDerivedScoreByEdgeNodesReturnsScore) {
+TEST_F(EdgeScoreGTest, testDerivedScoreByEdgeNodesReturnsScore) {
     Graph G(3, false, false);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
@@ -102,7 +102,7 @@ TEST_F(EdgeScoreTest, testDerivedScoreByEdgeNodesReturnsScore) {
     EXPECT_DOUBLE_EQ(score.score(1, 2), 2.0);
 }
 
-TEST_F(EdgeScoreTest, testCalculateThrowsIfEdgesNotIndexed) {
+TEST_F(EdgeScoreGTest, testCalculateThrowsIfEdgesNotIndexed) {
     Graph G(3, false, false);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
@@ -114,7 +114,7 @@ TEST_F(EdgeScoreTest, testCalculateThrowsIfEdgesNotIndexed) {
                  std::runtime_error);
 }
 
-TEST_F(EdgeScoreTest, testCalculateBuildsWeightedGraphWithLinearWeights) {
+TEST_F(EdgeScoreGTest, testCalculateBuildsWeightedGraphWithLinearWeights) {
     Graph G(3, false, false);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
@@ -136,7 +136,7 @@ TEST_F(EdgeScoreTest, testCalculateBuildsWeightedGraphWithLinearWeights) {
     });
 }
 
-TEST_F(EdgeScoreTest, testCalculateBuildsWeightedGraphWithSquaredWeights) {
+TEST_F(EdgeScoreGTest, testCalculateBuildsWeightedGraphWithSquaredWeights) {
     Graph G(3, false, false);
     G.addEdge(0, 1);
     G.addEdge(1, 2);
@@ -159,7 +159,7 @@ TEST_F(EdgeScoreTest, testCalculateBuildsWeightedGraphWithSquaredWeights) {
     });
 }
 
-TEST_F(EdgeScoreTest, testCalculateOnDirectedWeightedGraphFromScores) {
+TEST_F(EdgeScoreGTest, testCalculateOnDirectedWeightedGraphFromScores) {
     Graph G(3, true, true);
     G.addEdge(0, 1, 7.0);
     G.addEdge(1, 2, 11.0);
