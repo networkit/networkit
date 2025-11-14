@@ -175,8 +175,7 @@ TEST_F(EdgeScoreGTest, testCalculateOnDirectedWeightedGraphFromScores) {
     compareTopology(G, W);
 
     G.forEdges([&](node u, node v, edgeid eid) {
-        const edgeweight expected =
-            offset + factor * static_cast<edgeweight>(eid + 1); // from scoreData[eid]
+        const edgeweight expected = offset + factor * static_cast<edgeweight>(eid + 1);
         EXPECT_DOUBLE_EQ(W.weight(u, v), expected);
     });
 }

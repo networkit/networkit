@@ -16,10 +16,11 @@ namespace NetworKit {
 class EdgeScoreAsWeight final {
 
 public:
+    // Please note this class EdgeScoreAsWeight is deprecated and will be removed in future releases
     TLX_DEPRECATED(EdgeScoreAsWeight(const Graph &G, const std::vector<double> &score,
                                      bool squared = false, edgeweight offset = 1,
                                      edgeweight factor = 1));
-    Graph calculate();
+    TLX_DEPRECATED(Graph calculate());
 
 private:
     const Graph *G;

@@ -11,10 +11,7 @@
 namespace NetworKit {
 
 template <typename T>
-EdgeScore<T>::EdgeScore(const Graph &G) : Algorithm(), G(&G), scoreData() {
-    if (!G.isWeighted()) {
-    }
-}
+EdgeScore<T>::EdgeScore(const Graph &G) : Algorithm(), G(&G), scoreData() {}
 
 /** Compute the edge score. */
 template <typename T>
