@@ -23,8 +23,6 @@ class MultiscaleScore final : public EdgeScore<double> {
 
 public:
     MultiscaleScore(const Graph &graph, const std::vector<double> &attribute);
-    double score(edgeid eid) override;
-    double score(node u, node v) override;
     void run() override;
     double getProbability(count degree, edgeweight normalizedWeight);
 

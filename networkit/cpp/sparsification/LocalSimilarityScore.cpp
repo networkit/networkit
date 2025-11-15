@@ -71,12 +71,4 @@ void LocalSimilarityScore::run() {
     hasRun = true;
 }
 
-double LocalSimilarityScore::score(node, node) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
-}
-
-double LocalSimilarityScore::score(edgeid) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
-}
-
 } /* namespace NetworKit */

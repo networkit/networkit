@@ -19,8 +19,6 @@ public:
     EdgeScoreBlender(const Graph &G, const std::vector<double> &attribute0,
                      const std::vector<double> &attribute1, const std::vector<bool> &selection);
 
-    double score(edgeid eid) override;
-    double score(node u, node v) override;
     void run() override;
 
 private:

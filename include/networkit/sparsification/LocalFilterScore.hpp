@@ -106,14 +106,6 @@ public:
         hasRun = true;
     }
 
-    double score(node u, node v) override {
-        throw std::runtime_error("Not implemented: Use scores() instead.");
-    }
-
-    double score(edgeid eid) override {
-        throw std::runtime_error("Not implemented: Use scores() instead.");
-    }
-
 private:
     const std::vector<InType> *attribute;
     bool logarithmic;

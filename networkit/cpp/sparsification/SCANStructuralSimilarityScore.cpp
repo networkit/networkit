@@ -18,11 +18,3 @@ void NetworKit::SCANStructuralSimilarityScore::run() {
     scoreData = std::move(workScores);
     hasRun = true;
 }
-
-double NetworKit::SCANStructuralSimilarityScore::score(node, node) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
-}
-
-double NetworKit::SCANStructuralSimilarityScore::score(edgeid) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
-}

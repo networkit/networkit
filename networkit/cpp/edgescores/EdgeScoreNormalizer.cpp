@@ -37,16 +37,6 @@ void EdgeScoreNormalizer<A>::run() {
     hasRun = true;
 }
 
-template <typename A>
-double EdgeScoreNormalizer<A>::score(node, node) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
-}
-
-template <typename A>
-double EdgeScoreNormalizer<A>::score(edgeid) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
-}
-
 template class EdgeScoreNormalizer<double>;
 template class EdgeScoreNormalizer<count>;
 

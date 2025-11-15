@@ -21,19 +21,4 @@ void RandomEdgeScore::run() {
         [&](node, node, edgeid eid) { scoreData[eid] = Aux::Random::probability(); });
     hasRun = true;
 }
-
-double RandomEdgeScore::score(node u, node v) {
-    if (hasRun) {
-        return scoreData[G->edgeId(u, v)];
-    }
-    throw std::runtime_error("Call run() prior to using score().");
-}
-
-double RandomEdgeScore::score(edgeid eid) {
-    if (hasRun) {
-        return scoreData[eid];
-    }
-    throw std::runtime_error("Call run() prior to using score().");
-}
-
 } /* namespace NetworKit */

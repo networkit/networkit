@@ -22,9 +22,6 @@ public:
      * Creates a new instance of the Random edge score.
      */
     RandomEdgeScore(const Graph &G);
-
-    double score(edgeid eid) override;
-    double score(node u, node v) override;
     void run() override;
 };
 

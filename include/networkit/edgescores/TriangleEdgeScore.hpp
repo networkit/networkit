@@ -29,8 +29,6 @@ class TriangleEdgeScore final : public EdgeScore<count> {
 
 public:
     TriangleEdgeScore(const Graph &G);
-    count score(edgeid eid) override;
-    count score(node u, node v) override;
     void run() override;
 };
 
