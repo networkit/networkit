@@ -15,10 +15,10 @@ EdgeScoreAsWeight::EdgeScoreAsWeight(const Graph &G, const std::vector<double> &
     : G(&G), score(&score), squared(squared), offset(offset), factor(factor) {}
 
 Graph EdgeScoreAsWeight::calculate() {
-    WARN("The class EdgeScoreAsWeight is deprecated and will be removed in future releases; "
+    WARN("The class EdgeScoreAsWeight is deprecated and will be removed in future releases."
          "Use EdgeScore<T>::calculate(...) instead.");
     if (!G->hasEdgeIds()) {
-        throw std::runtime_error("edges have not been indexed - call indexEdges first");
+        throw std::runtime_error("Edges have not been indexed - call indexEdges first");
     }
 
     Graph result(*G, true, false);
