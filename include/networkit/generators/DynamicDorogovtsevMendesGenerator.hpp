@@ -8,7 +8,6 @@
 #ifndef NETWORKIT_GENERATORS_DYNAMIC_DOROGOVTSEV_MENDES_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_DYNAMIC_DOROGOVTSEV_MENDES_GENERATOR_HPP_
 
-#include <networkit/auxiliary/Random.hpp>
 #include <networkit/generators/DynamicGraphGenerator.hpp>
 
 namespace NetworKit {

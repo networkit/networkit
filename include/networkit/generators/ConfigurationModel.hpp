@@ -1,7 +1,6 @@
 #ifndef NETWORKIT_GENERATORS_CONFIGURATION_MODEL_HPP_
 #define NETWORKIT_GENERATORS_CONFIGURATION_MODEL_HPP_
 
-#include <set>
 #include <vector>
 #include <networkit/generators/StaticDegreeSequenceGenerator.hpp>
 

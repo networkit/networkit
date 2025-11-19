@@ -3,10 +3,6 @@
 #include <networkit/generators/HavelHakimiGenerator.hpp>
 #include <networkit/graph/Graph.hpp>
 
-#include <chrono>
-#include <iostream>
-#include <thread>
-
 namespace NetworKit {
 
 ConfigurationModel::ConfigurationModel(const std::vector<count> &sequence)
