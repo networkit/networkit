@@ -43,9 +43,26 @@ const std::vector<double> &Centrality::scores() const {
     return scoreData;
 }
 
+const std::vector<double> Centrality::compactScores() const {
+    assureFinished();
+    std::vector<double> compactScoreData;
+    compactScoreData.reserve(G.numberOfNodes());
+    G.forNodes([&](node v) { compactScoreData.push_back(scoreData[v]); });
+    return compactScoreData;
+}
+
 std::vector<double> Centrality::edgeScores() {
     assureFinished();
     return edgeScoreData;
+}
+
+std::vector<double> Centrality::compactEdgeScores() {
+    assureFinished();
+    std::vector<double> compactEdgeScoreData;
+    compactEdgeScoreData.reserve(G.numberOfEdges());
+    G.forEdges(
+        [&](node u, node v, edgeid eid) { compactEdgeScoreData.push_back(edgeScoreData[eid]); });
+    return compactEdgeScoreData;
 }
 
 double Centrality::maximum() {

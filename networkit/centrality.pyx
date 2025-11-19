@@ -28,6 +28,7 @@ cdef extern from "<networkit/centrality/Centrality.hpp>":
 	cdef cppclass _Centrality "NetworKit::Centrality"(_Algorithm):
 		_Centrality(_Graph, bool_t, bool_t) except +
 		vector[double] scores() except +
+		vector[double] compactScores() except +
 		vector[pair[node, double]] ranking() except +
 		double score(node) except +
 		double maximum() except +
@@ -59,6 +60,21 @@ cdef class Centrality(Algorithm):
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_Centrality*>(self._this)).scores()
+
+	def compactScores(self):
+		"""
+		compactScores()
+
+		Returns the scores of all existing nodes for the centrality algorithm.
+
+		Returns
+		-------
+		list(float)
+			The list of all scores for existing nodes.
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+		return (<_Centrality*>(self._this)).compactScores()
 
 	def score(self, v):
 		"""
@@ -136,6 +152,7 @@ cdef extern from "<networkit/centrality/Betweenness.hpp>":
 	cdef cppclass _Betweenness "NetworKit::Betweenness" (_Centrality):
 		_Betweenness(_Graph, bool_t, bool_t) except +
 		vector[double] edgeScores() except +
+		vector[double] compactEdgeScores() except +
 
 cdef class Betweenness(Centrality):
 	"""
@@ -173,6 +190,20 @@ cdef class Betweenness(Centrality):
 			The betweenness scores calculated by run().
 		"""
 		return (<_Betweenness*>(self._this)).edgeScores()
+
+	def compactEdgeScores(self):
+		"""
+		compactEdgeScores()
+
+		Get a vector containing the betweenness score for each existing edge in the graph
+		in ascending edge ID order.
+
+		Returns
+		-------
+		list(float)
+			The betweenness scores calculated by run().
+		"""
+		return (<_Betweenness*>(self._this)).compactEdgeScores()
 
 cdef extern from "<networkit/centrality/ApproxBetweenness.hpp>":
 

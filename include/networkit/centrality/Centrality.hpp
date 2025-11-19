@@ -38,16 +38,44 @@ public:
     /**
      * Get a vector containing the centrality score for each node in the graph.
      *
+     * Note: The size of the returned vector is equal to the upper node id bound of the graph.
+     * The vector also contains scores for non-existing nodes. The score of a non-existing node
+     * is implementation-defined (often 0).
+     *
      * @return The centrality scores calculated by @ref run().
      */
     virtual const std::vector<double> &scores() const;
 
     /**
+     * Get a vector containing the centrality score for each existing node in the graph.
+     *
+     * Note: This method creates a compact score vector, using additional memory.
+     *
+     * @return The centrality scores calculated by @ref run().
+     */
+    virtual const std::vector<double> compactScores() const;
+
+    /**
      * Get a vector containing the edge centrality score for each edge in the graph (where
      * applicable).
+     *
+     * Note: The size of the returned vector is equal to the upper edge id bound of the graph.
+     * The vector also contains scores for non-existing edges. The score of a non-existing edges
+     * is implementation-defined.
+     *
      * @return The edge betweenness scores calculated by @ref run().
      */
     virtual std::vector<double> edgeScores();
+
+    /**
+     * Get a vector containing the edge centrality score for each existing edge in the graph (where
+     * applicable).
+     *
+     * Note: This method creates a compact score vector, using additional memory for creation.
+     *
+     * @return The edge betweenness scores calculated by @ref run().
+     */
+    virtual std::vector<double> compactEdgeScores();
 
     /**
      * Get a vector of pairs sorted into descending order. Each pair contains a node and the
