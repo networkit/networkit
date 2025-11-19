@@ -163,6 +163,7 @@ bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
     dfsStack.push(startNode);
     std::unordered_map<node, decltype(dfsGraph.neighborRange(startNode).begin())> neighborIterators;
     std::unordered_set<Edge> preprocessedEdges;
+    preprocessedEdges.reserve(numberOfEdges);
 
     auto processNeighborEdges = [&](node currentNode, bool &callRemoveBackEdges) -> bool {
         auto &neighborIterator = neighborIterators[currentNode];
@@ -226,6 +227,8 @@ void LeftRightPlanarityCheck::dfsOrientation(node startNode) {
     std::stack<node> dfsStack;
     dfsStack.push(startNode);
     std::unordered_set<Edge> preprocessedEdges;
+    preprocessedEdges.reserve(numberOfEdges);
+    parentEdges.reserve(graph->upperNodeIdBound());
     do {
         const node currentNode = dfsStack.top();
         dfsStack.pop();

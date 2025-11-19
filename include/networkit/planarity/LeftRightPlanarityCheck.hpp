@@ -32,6 +32,13 @@ public:
         if (G.isDirected()) {
             throw std::runtime_error("The graph is not an undirected graph.");
         }
+        numberOfEdges = graph->numberOfEdges();
+        lowestPoint.reserve(numberOfEdges);
+        secondLowestPoint.reserve(numberOfEdges);
+        ref.reserve(numberOfEdges);
+        lowestPointEdge.reserve(numberOfEdges);
+        nestingDepth.reserve(numberOfEdges);
+        stackBottom.reserve(numberOfEdges);
         dfsGraph = Graph(graph->numberOfNodes(), false, true, false);
     }
 
@@ -57,6 +64,7 @@ public:
 
 private:
     static const Edge noneEdge;
+    count numberOfEdges;
     static constexpr count noneHeight{std::numeric_limits<count>::max()};
 
     struct Interval {
