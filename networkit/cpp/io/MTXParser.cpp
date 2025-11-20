@@ -88,7 +88,7 @@ MTXParser::MatrixSize MTXParser::getMatrixSize() {
     }
 }
 
-std::optional<NetworKit::WeightedEdge> MTXParser::getNext(bool weighted) {
+std::optional<WeightedEdge<node, edgeweight>> MTXParser::getNext(bool weighted) {
     std::string line;
 
     do {
@@ -105,7 +105,7 @@ std::optional<NetworKit::WeightedEdge> MTXParser::getNext(bool weighted) {
             if (weighted) {
                 w = e.weight.value();
             }
-            return std::optional<NetworKit::WeightedEdge>({e.from, e.to, w});
+            return std::optional<WeightedEdge<node, edgeweight>>({e.from, e.to, w});
         }
     } while (true);
 }

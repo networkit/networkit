@@ -60,7 +60,7 @@ private:
     Partition *componentPtr;
 
     std::vector<bool> isTree;
-    std::unordered_map<Edge, edgeid> edgesMap;
+    std::unordered_map<Edge<node>, edgeid> edgesMap;
     std::vector<count> tmpDistances;
 
     void addEdge(node u, node v);
@@ -88,7 +88,7 @@ template <bool WeaklyCC>
 void DynConnectedComponentsImpl<WeaklyCC>::indexEdges() {
     edgeid eid = 0;
     G->forEdges([&](node u, node v) {
-        Edge edge(u, v, true);
+        Edge<node> edge(u, v, true);
         if (edgesMap.find(edge) == edgesMap.end()) {
             edgesMap.emplace(edge, eid);
             ++eid;
@@ -160,7 +160,7 @@ void DynConnectedComponentsImpl<WeaklyCC>::addEdge(node u, node v) {
     bool isNewEdge = false; // Whether edge (u, v) was seen before
 
     {
-        Edge edge(u, v, true);
+        Edge<node> edge(u, v, true);
         auto it = edgesMap.find(edge);
         if (it == edgesMap.end()) { // This edge was never seen before
             eid = static_cast<edgeid>(edgesMap.size());
@@ -300,7 +300,7 @@ void DynConnectedComponentsImpl<WeaklyCC>::updateTree(node u, node v) {
                     return false; // This edge is not in the shortest path from u to v
 
                 // Add the current edge to the spanning tree
-                isTree[edgesMap.at(Edge(curNode, neighbor, true))] = true;
+                isTree[edgesMap.at(Edge<node>(curNode, neighbor, true))] = true;
                 nextEdgeFound = true;
 
                 if (neighbor != u) // Target node not yet found, proceed BFS

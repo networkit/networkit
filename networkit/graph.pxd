@@ -2,6 +2,7 @@
 
 from cython.operator import dereference, preincrement
 
+from libc.stdint cimport uint64_t
 from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
@@ -25,11 +26,11 @@ cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
 
 cdef extern from "<networkit/graph/Graph.hpp>":
 
-	cdef struct Edge "NetworKit::Edge":
+	cdef cppclass Edge "NetworKit::_CythonEdge":
 		node u
 		node v
 
-	cdef struct WeightedEdge "NetworKit::WeightedEdge":
+	cdef cppclass WeightedEdge "NetworKit::_CythonWeightedEdge":
 		node u
 		node v
 		edgeweight weight

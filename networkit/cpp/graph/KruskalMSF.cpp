@@ -22,11 +22,10 @@ void KruskalMSF::run() {
         UnionFind uf(z);
 
         // sort edges in non-decreasing weight order
-        std::vector<WeightedEdge> sortedEdges(G->numberOfEdges());
+        std::vector<WeightedEdge<node, edgeweight>> sortedEdges(G->numberOfEdges());
         std::copy(G->edgeWeightRange().begin(), G->edgeWeightRange().end(), sortedEdges.begin());
-        Aux::Parallel::sort(
-            sortedEdges.begin(), sortedEdges.end(),
-            [](const WeightedEdge &u, const WeightedEdge &v) { return u.weight < v.weight; });
+        Aux::Parallel::sort(sortedEdges.begin(), sortedEdges.end(),
+                            [](const auto &u, const auto &v) { return u.weight < v.weight; });
 
         // process in non-decreasing weight order
         for (const auto &e : sortedEdges) {

@@ -321,7 +321,7 @@ TEST_F(ConnectedComponentsGTest, testDynConnectedComponents) {
     DynConnectedComponents dw(G);
     dw.run();
 
-    const std::unordered_set<Edge> edges{G.edgeRange().begin(), G.edgeRange().end()};
+    const std::unordered_set<Edge<node>> edges{G.edgeRange().begin(), G.edgeRange().end()};
 
     auto testComponents = [&]() {
         ConnectedComponents wc(G);
@@ -489,7 +489,7 @@ TEST_F(ConnectedComponentsGTest, testDynWeaklyConnectedComponents) {
     DynWeaklyConnectedComponents dw(G);
     dw.run();
 
-    const std::unordered_set<Edge> edges{G.edgeRange().begin(), G.edgeRange().end()};
+    const std::unordered_set<Edge<node>> edges{G.edgeRange().begin(), G.edgeRange().end()};
 
     auto testComponents = [&]() {
         WeaklyConnectedComponents wc(G);

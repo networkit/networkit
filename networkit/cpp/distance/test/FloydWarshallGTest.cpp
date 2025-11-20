@@ -1,43 +1,55 @@
-/*  FloydWarshallGTest.cpp
+/*  FloydWarshallTestFixture.cpp
  *
  *	Created on: 19.02.2025
  *  Authors: Andreas Scharf (andreas.b.scharf@gmail.com)
  *
  */
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <networkit/distance/FloydWarshall.hpp>
+#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
+namespace {
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 
-class FloydWarshallGTest : public testing::Test {
+using GraphTypes = ::testing::Types<DynamicGraph<uint64_t, double>, DynamicGraph<int32_t, float>>;
+
+template <class GraphType>
+class FloydWarshallTestFixture : public testing::Test {
+    using NodeType = typename GraphType::node_type;
+    using EdgeWeightType = typename GraphType::edge_weight_type;
+
 public:
-    static constexpr edgeweight maxDistance = std::numeric_limits<edgeweight>::max();
-    Graph completeGraphK3() {
-        Graph graph(3, true);
+    static constexpr EdgeWeightType maxDistance = std::numeric_limits<EdgeWeightType>::max();
+
+    GraphType completeGraphK3() {
+        GraphType graph(3, true);
         graph.addEdge(0, 1, 1);
         graph.addEdge(1, 2, 2);
         graph.addEdge(0, 2, 4);
         return graph;
     }
 
-    Graph undirectedGraphWithNegativeEdge() {
-        Graph graph(3, true);
+    GraphType undirectedGraphWithNegativeEdge() {
+        GraphType graph(3, true);
         graph.addEdge(0, 1, 1);
         graph.addEdge(1, 2, 2);
         graph.addEdge(0, 2, -0.5);
         return graph;
     }
 
-    Graph directedGraphNegativeEdge() {
-        Graph graph(3, true, true);
+    GraphType directedGraphNegativeEdge() {
+        GraphType graph(3, true, true);
         graph.addEdge(0, 1, 1);
         graph.addEdge(1, 2, -2);
         graph.addEdge(0, 2, 4);
         return graph;
     }
 
-    Graph completGraphK5NegativeEdges() {
-        Graph graph(5, true);
+    GraphType completGraphK5NegativeEdges() {
+        GraphType graph(5, true);
         graph.addEdge(0, 1, -3);
         graph.addEdge(2, 3, -2);
         graph.addEdge(0, 2, 5);
@@ -52,16 +64,16 @@ public:
         return graph;
     }
 
-    Graph disconnectedGraph() {
-        Graph graph(4, true);
+    GraphType disconnectedGraph() {
+        GraphType graph(4, true);
         graph.addEdge(0, 1, 3);
         graph.addEdge(1, 2, 2);
 
         return graph;
     }
 
-    Graph directedGraphWithNegativeSelfLoop() {
-        Graph graph(5, true, true);
+    GraphType directedGraphWithNegativeSelfLoop() {
+        GraphType graph(5, true, true);
         graph.addEdge(0, 1, 3);
         graph.addEdge(1, 1, -2); // self-loop with negative cycle
         graph.addEdge(1, 2, 2);
@@ -71,11 +83,10 @@ public:
         return graph;
     }
 
-    void compareDistances(const std::vector<std::vector<edgeweight>> &expectedDistances,
-                          const FloydWarshall &testObject) {
-        const node n = expectedDistances.size();
-        for (node source = 0; source < n; ++source) {
-            for (node target = 0; target < n; ++target) {
+    void compareDistances(const std::vector<std::vector<EdgeWeightType>> &expectedDistances,
+                          const FloydWarshall<GraphType> &testObject, const GraphType &graph) {
+        for (NodeType source : graph.nodeRange()) {
+            for (NodeType target : graph.nodeRange()) {
                 EXPECT_EQ(testObject.getDistance(source, target), expectedDistances[source][target])
                     << "source = " << source << ", target = " << target;
                 ;
@@ -83,12 +94,11 @@ public:
         }
     }
 
-    void
-    compareNodesOnShortestPaths(const std::vector<std::vector<std::vector<node>>> &expectedPaths,
-                                const FloydWarshall &testObject) {
-        const node n = expectedPaths.size();
-        for (node source = 0; source < n; ++source) {
-            for (node target = 0; target < n; ++target) {
+    void compareNodesOnShortestPaths(
+        const std::vector<std::vector<std::vector<NodeType>>> &expectedPaths,
+        const FloydWarshall<GraphType> &testObject, const GraphType &graph) {
+        for (NodeType source : graph.nodeRange()) {
+            for (NodeType target : graph.nodeRange()) {
                 EXPECT_EQ(testObject.getNodesOnShortestPath(source, target),
                           expectedPaths[source][target])
                     << "source = " << source << ", target = " << target;
@@ -97,10 +107,12 @@ public:
     }
 };
 
-TEST_F(FloydWarshallGTest, testConstructorThrowsUnweightedGraph) {
-    Graph graph(1, false);
+TYPED_TEST_SUITE(FloydWarshallTestFixture, GraphTypes, /*comma required for variadic macro*/);
+
+TYPED_TEST(FloydWarshallTestFixture, testConstructorThrowsUnweightedGraph) {
+    const TypeParam graph(1, false);
     try {
-        FloydWarshall test(graph);
+        FloydWarshall<TypeParam> test(graph);
         FAIL() << "Expected std::runtime_error";
     } catch (const std::runtime_error &e) {
         EXPECT_STREQ(e.what(), "The input graph is unweighted!");
@@ -109,8 +121,8 @@ TEST_F(FloydWarshallGTest, testConstructorThrowsUnweightedGraph) {
     }
 }
 
-TEST_F(FloydWarshallGTest, testGetDistanceThrows) {
-    Graph graph(1, true);
+TYPED_TEST(FloydWarshallTestFixture, testGetDistanceThrows) {
+    const TypeParam graph(1, true);
     FloydWarshall test(graph);
     try {
         test.getDistance(0, 1);
@@ -122,8 +134,8 @@ TEST_F(FloydWarshallGTest, testGetDistanceThrows) {
     }
 }
 
-TEST_F(FloydWarshallGTest, testIsNodeInNegativeCycleThrows) {
-    Graph graph(1, true);
+TYPED_TEST(FloydWarshallTestFixture, testIsNodeInNegativeCycleThrows) {
+    const TypeParam graph(1, true);
     FloydWarshall test(graph);
     try {
         test.isNodeInNegativeCycle(0);
@@ -135,8 +147,8 @@ TEST_F(FloydWarshallGTest, testIsNodeInNegativeCycleThrows) {
     }
 }
 
-TEST_F(FloydWarshallGTest, testGetNodesOnShortestPathThrows) {
-    Graph graph(2, true);
+TYPED_TEST(FloydWarshallTestFixture, testGetNodesOnShortestPathThrows) {
+    const TypeParam graph(2, true);
     FloydWarshall test(graph);
     try {
         test.getNodesOnShortestPath(0, 1);
@@ -148,150 +160,152 @@ TEST_F(FloydWarshallGTest, testGetNodesOnShortestPathThrows) {
     }
 }
 
-TEST_F(FloydWarshallGTest, testGetDistanceCompleteGraphK3) {
-    auto graph = completeGraphK3();
+TYPED_TEST(FloydWarshallTestFixture, testGetDistanceCompleteGraphK3) {
+    const auto graph = this->completeGraphK3();
     FloydWarshall test(graph);
     test.run();
-    const std::vector<std::vector<edgeweight>> expectedDistances{{0, 1, 3}, {1, 0, 2}, {3, 2, 0}};
-    compareDistances(expectedDistances, test);
+    const std::vector<std::vector<typename TypeParam::edge_weight_type>> expectedDistances{
+        {0, 1, 3}, {1, 0, 2}, {3, 2, 0}};
+    this->compareDistances(expectedDistances, test, graph);
 }
 
-TEST_F(FloydWarshallGTest, testIsNodeInNegativeCycleCompleteGraphK3) {
-    auto graph = completeGraphK3();
+TYPED_TEST(FloydWarshallTestFixture, testIsNodeInNegativeCycleCompleteGraphK3) {
+    const auto graph = this->completeGraphK3();
     FloydWarshall test(graph);
     test.run();
-    for (node u = 0; u < graph.numberOfNodes(); ++u) {
-        EXPECT_FALSE(test.isNodeInNegativeCycle(u));
-    }
+    graph.forNodes([&test](const auto u) { EXPECT_FALSE(test.isNodeInNegativeCycle(u)); });
 }
 
-TEST_F(FloydWarshallGTest, getNodesOnShortestPathCompleteGraphK3) {
-    auto graph = completeGraphK3();
+TYPED_TEST(FloydWarshallTestFixture, getNodesOnShortestPathCompleteGraphK3) {
+    const auto graph = this->completeGraphK3();
     FloydWarshall test(graph);
     test.run();
-    const std::vector<std::vector<std::vector<node>>> expectedNodesOnShortestPaths{
-        {{0}, {0, 1}, {0, 1, 2}}, {{1, 0}, {1}, {1, 2}}, {{2, 1, 0}, {2, 1}, {2}}};
-    compareNodesOnShortestPaths(expectedNodesOnShortestPaths, test);
+    const std::vector<std::vector<std::vector<typename TypeParam::node_type>>>
+        expectedNodesOnShortestPaths{
+            {{0}, {0, 1}, {0, 1, 2}}, {{1, 0}, {1}, {1, 2}}, {{2, 1, 0}, {2, 1}, {2}}};
+    this->compareNodesOnShortestPaths(expectedNodesOnShortestPaths, test, graph);
 }
 
-TEST_F(FloydWarshallGTest, testGetDistanceUndirectedGraphWithNegativeEdge) {
+TYPED_TEST(FloydWarshallTestFixture, testGetDistanceUndirectedGraphWithNegativeEdge) {
     // Undirected graph with one negative edge results in negative cycles for all edges
-    auto graph = undirectedGraphWithNegativeEdge();
+    const auto graph = this->undirectedGraphWithNegativeEdge();
     FloydWarshall test(graph);
     test.run();
-    constexpr edgeweight expectedDistance{-std::numeric_limits<edgeweight>::infinity()};
-    for (node source = 0; source < graph.numberOfNodes(); ++source) {
-        for (node target = 0; target < graph.numberOfNodes(); ++target) {
+    using EdgeWeightType = typename TypeParam::edge_weight_type;
+    constexpr EdgeWeightType expectedDistance{-std::numeric_limits<EdgeWeightType>::infinity()};
+    for (const auto source : graph.nodeRange()) {
+        for (const auto target : graph.nodeRange()) {
             EXPECT_EQ(test.getDistance(source, target), expectedDistance);
         }
     }
 }
 
-TEST_F(FloydWarshallGTest, testIsNodeInNegativeCycleUndirectedGraphWithNegativeEdge) {
+TYPED_TEST(FloydWarshallTestFixture, testIsNodeInNegativeCycleUndirectedGraphWithNegativeEdge) {
     // Undirected graph with one negative edge results in negative cycles for all edges
-    auto graph = undirectedGraphWithNegativeEdge();
+    const auto graph = this->undirectedGraphWithNegativeEdge();
     FloydWarshall test(graph);
     test.run();
-    for (node source = 0; source < graph.numberOfNodes(); ++source) {
+    for (const auto source : graph.nodeRange()) {
         EXPECT_TRUE(test.isNodeInNegativeCycle(source));
     }
 }
 
-TEST_F(FloydWarshallGTest, getNodesOnShortestPathUndirectedGraphWithNegativeEdge) {
+TYPED_TEST(FloydWarshallTestFixture, getNodesOnShortestPathUndirectedGraphWithNegativeEdge) {
     // Undirected graph with one negative edge results in negative cycles for all edges
-    auto graph = undirectedGraphWithNegativeEdge();
+    const auto graph = this->undirectedGraphWithNegativeEdge();
     FloydWarshall test(graph);
     test.run();
-    for (node source = 0; source < graph.numberOfNodes(); ++source) {
-        for (node target = 0; target < graph.numberOfNodes(); ++target) {
-            EXPECT_EQ(test.getNodesOnShortestPath(source, target), std::vector<node>{});
+    for (const auto source : graph.nodeRange()) {
+        for (const auto target : graph.nodeRange()) {
+            EXPECT_THAT(test.getNodesOnShortestPath(source, target), IsEmpty());
         }
     }
 }
 
-TEST_F(FloydWarshallGTest, testGetDistanceCompleteGraphK3NegativeEdge) {
-    auto graph = directedGraphNegativeEdge();
+TYPED_TEST(FloydWarshallTestFixture, testGetDistanceCompleteGraphK3NegativeEdge) {
+    const auto graph = this->directedGraphNegativeEdge();
     FloydWarshall test(graph);
     test.run();
-    const std::vector<std::vector<edgeweight>> expectedDistances{
-        {0, 1, -1}, {maxDistance, 0, -2}, {maxDistance, maxDistance, 0}};
-    compareDistances(expectedDistances, test);
+    const std::vector<std::vector<typename TypeParam::edge_weight_type>> expectedDistances{
+        {0, 1, -1}, {this->maxDistance, 0, -2}, {this->maxDistance, this->maxDistance, 0}};
+    this->compareDistances(expectedDistances, test, graph);
 }
 
-TEST_F(FloydWarshallGTest, testIsNodeInNegativeEdgeCompleteGraphK3NegativeEdge) {
-    auto graph = directedGraphNegativeEdge();
+TYPED_TEST(FloydWarshallTestFixture, testIsNodeInNegativeEdgeCompleteGraphK3NegativeEdge) {
+    const auto graph = this->directedGraphNegativeEdge();
     FloydWarshall test(graph);
     test.run();
-    for (node source = 0; source < graph.numberOfNodes(); ++source) {
+    for (const auto source : graph.nodeRange()) {
         EXPECT_FALSE(test.isNodeInNegativeCycle(source));
     }
 }
 
-TEST_F(FloydWarshallGTest, testGetNodesOnShortestPathCompleteGraphK3NegativeEdge) {
-    auto graph = directedGraphNegativeEdge();
+TYPED_TEST(FloydWarshallTestFixture, testGetNodesOnShortestPathCompleteGraphK3NegativeEdge) {
+    const auto graph = this->directedGraphNegativeEdge();
     FloydWarshall test(graph);
     test.run();
-    const std::vector<std::vector<std::vector<node>>> expectedNodesOnShortestPaths{
-        {{0}, {0, 1}, {0, 1, 2}}, {{}, {1}, {1, 2}}, {{}, {}, {2}}};
-    compareNodesOnShortestPaths(expectedNodesOnShortestPaths, test);
+    const std::vector<std::vector<std::vector<typename TypeParam::node_type>>>
+        expectedNodesOnShortestPaths{{{0}, {0, 1}, {0, 1, 2}}, {{}, {1}, {1, 2}}, {{}, {}, {2}}};
+    this->compareNodesOnShortestPaths(expectedNodesOnShortestPaths, test, graph);
 }
 
-TEST_F(FloydWarshallGTest, testGetDistanceDisconnectedGraph) {
-    auto graph = disconnectedGraph();
+TYPED_TEST(FloydWarshallTestFixture, testGetDistanceDisconnectedGraph) {
+    const auto graph = this->disconnectedGraph();
     FloydWarshall test(graph);
     test.run();
-    const std::vector<std::vector<edgeweight>> expectedDistances{
-        {0, 3, 5, maxDistance},
-        {3, 0, 2, maxDistance},
-        {5, 2, 0, maxDistance},
-        {maxDistance, maxDistance, maxDistance, 0}};
-    compareDistances(expectedDistances, test);
+    const std::vector<std::vector<typename TypeParam::edge_weight_type>> expectedDistances{
+        {0, 3, 5, this->maxDistance},
+        {3, 0, 2, this->maxDistance},
+        {5, 2, 0, this->maxDistance},
+        {this->maxDistance, this->maxDistance, this->maxDistance, 0}};
+    this->compareDistances(expectedDistances, test, graph);
 }
 
-TEST_F(FloydWarshallGTest, testGetNodesOnShortestPathDisconnectedGraph) {
-    auto graph = disconnectedGraph();
+TYPED_TEST(FloydWarshallTestFixture, testGetNodesOnShortestPathDisconnectedGraph) {
+    const auto graph = this->disconnectedGraph();
     FloydWarshall test(graph);
     test.run();
-    const std::vector<std::vector<std::vector<node>>> expectedNodesOnShortestPaths{
-        {{0}, {0, 1}, {0, 1, 2}, {}},
-        {{1, 0}, {1}, {1, 2}, {}},
-        {{2, 1, 0}, {2, 1}, {2}, {}},
-        {{}, {}, {}, {3}}};
-    compareNodesOnShortestPaths(expectedNodesOnShortestPaths, test);
+    const std::vector<std::vector<std::vector<typename TypeParam::node_type>>>
+        expectedNodesOnShortestPaths{{{0}, {0, 1}, {0, 1, 2}, {}},
+                                     {{1, 0}, {1}, {1, 2}, {}},
+                                     {{2, 1, 0}, {2, 1}, {2}, {}},
+                                     {{}, {}, {}, {3}}};
+    this->compareNodesOnShortestPaths(expectedNodesOnShortestPaths, test, graph);
 }
 
-TEST_F(FloydWarshallGTest, testIsNodeInNegativeCycleDisconnectedGraph) {
-    auto graph = disconnectedGraph();
+TYPED_TEST(FloydWarshallTestFixture, testIsNodeInNegativeCycleDisconnectedGraph) {
+    const auto graph = this->disconnectedGraph();
     FloydWarshall test(graph);
     test.run();
-    for (node source = 0; source < graph.numberOfNodes(); ++source) {
+    for (const auto source : graph.nodeRange()) {
         EXPECT_FALSE(test.isNodeInNegativeCycle(source));
     }
 }
 
-TEST_F(FloydWarshallGTest, testGetDistanceDirectedGraphWithNegativeSelfLoop) {
-    auto graph = directedGraphWithNegativeSelfLoop();
+TYPED_TEST(FloydWarshallTestFixture, testGetDistanceDirectedGraphWithNegativeSelfLoop) {
+    const auto graph = this->directedGraphWithNegativeSelfLoop();
     FloydWarshall test(graph);
     test.run();
-    constexpr edgeweight expectedDistance{-std::numeric_limits<edgeweight>::infinity()};
-    for (node source = 0; source < graph.numberOfNodes(); ++source) {
-        for (node target = 0; target < graph.numberOfNodes(); ++target) {
+    using EdgeWeightType = typename TypeParam::edge_weight_type;
+    constexpr EdgeWeightType expectedDistance{-std::numeric_limits<EdgeWeightType>::infinity()};
+    for (const auto source : graph.nodeRange()) {
+        for (const auto target : graph.nodeRange()) {
             EXPECT_EQ(test.getDistance(source, target), expectedDistance);
         }
     }
 }
 
-TEST_F(FloydWarshallGTest, testIsNodeInNegativeCycleDirectedGraphWithNegativeSelfLoop) {
-    auto graph = directedGraphWithNegativeSelfLoop();
+TYPED_TEST(FloydWarshallTestFixture, testIsNodeInNegativeCycleDirectedGraphWithNegativeSelfLoop) {
+    const auto graph = this->directedGraphWithNegativeSelfLoop();
     FloydWarshall test(graph);
     test.run();
-    for (node source = 0; source < graph.numberOfNodes(); ++source) {
+    for (const auto source : graph.nodeRange()) {
         EXPECT_TRUE(test.isNodeInNegativeCycle(source));
     }
 }
 
-TEST_F(FloydWarshallGTest, testMultipleShortestDistancePaths) {
-    Graph graph(11, true);
+TYPED_TEST(FloydWarshallTestFixture, testMultipleShortestDistancePaths) {
+    TypeParam graph(11, true);
     // Shortest path, first case [0,10] with 5 nodes (inclusive)
     graph.addEdge(0, 1, 1);
     graph.addEdge(1, 2, 1);
@@ -309,9 +323,8 @@ TEST_F(FloydWarshallGTest, testMultipleShortestDistancePaths) {
     graph.addEdge(9, 10, 1);
     FloydWarshall test(graph);
     test.run();
-    constexpr edgeweight expectedShortestDistance = 5.0;
-    const std::vector<node> expectedPath{0, 4, 5, 10};
-    EXPECT_EQ(test.getDistance(0, 10), expectedShortestDistance);
-    EXPECT_EQ(test.getNodesOnShortestPath(0, 10), expectedPath);
+    EXPECT_EQ(test.getDistance(0, 10), 5.0);
+    EXPECT_THAT(test.getNodesOnShortestPath(0, 10), ElementsAre(0, 4, 5, 10));
 }
+} // namespace
 } // namespace NetworKit
