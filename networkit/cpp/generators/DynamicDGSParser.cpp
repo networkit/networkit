@@ -9,6 +9,7 @@
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
+#include <networkit/auxiliary/StringTools.hpp>
 #include <networkit/generators/DynamicDGSParser.hpp>
 
 namespace NetworKit {

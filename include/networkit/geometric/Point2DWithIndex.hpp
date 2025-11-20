@@ -9,10 +9,7 @@
 #define NETWORKIT_GEOMETRIC_POINT2_D_WITH_INDEX_HPP_
 
 #include <cassert>
-#include <cinttypes>
 #include <cmath>
-#include <cstdint>
-#include <vector>
 
 #include <networkit/Globals.hpp>
 

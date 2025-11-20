@@ -8,12 +8,10 @@
 #ifndef NETWORKIT_GENERATORS_DYNAMIC_DGS_PARSER_HPP_
 #define NETWORKIT_GENERATORS_DYNAMIC_DGS_PARSER_HPP_
 
-#include <iterator>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-#include <networkit/auxiliary/StringTools.hpp>
 #include <networkit/generators/DynamicGraphSource.hpp>
 #include <networkit/structures/Partition.hpp>
 

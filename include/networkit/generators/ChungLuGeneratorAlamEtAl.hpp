@@ -9,7 +9,6 @@
 #ifndef NETWORKIT_GENERATORS_CHUNG_LU_GENERATOR_ALAM_ET_AL_HPP_
 #define NETWORKIT_GENERATORS_CHUNG_LU_GENERATOR_ALAM_ET_AL_HPP_
 
-#include <networkit/generators/StaticDegreeSequenceGenerator.hpp>
 #include <networkit/generators/StaticGraphGenerator.hpp>
 
 namespace NetworKit {

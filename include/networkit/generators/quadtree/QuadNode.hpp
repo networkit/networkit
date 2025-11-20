@@ -14,7 +14,6 @@
 #include <vector>
 
 #include <networkit/auxiliary/Log.hpp>
-#include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
 
 using std::cos;

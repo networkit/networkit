@@ -13,7 +13,6 @@
 
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/generators/StaticGraphGenerator.hpp>
-#include <networkit/generators/quadtree/Quadtree.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
 
 namespace NetworKit {

@@ -8,8 +8,6 @@
 #ifndef NETWORKIT_GENERATORS_DYNAMIC_HYPERBOLIC_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_DYNAMIC_HYPERBOLIC_GENERATOR_HPP_
 
-#include <map>
-
 #include <networkit/generators/DynamicGraphGenerator.hpp>
 #include <networkit/generators/quadtree/Quadtree.hpp>
 
