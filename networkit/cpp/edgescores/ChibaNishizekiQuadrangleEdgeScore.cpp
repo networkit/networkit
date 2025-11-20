@@ -93,12 +93,4 @@ void ChibaNishizekiQuadrangleEdgeScore::run() {
     hasRun = true;
 }
 
-count ChibaNishizekiQuadrangleEdgeScore::score(node, node) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
-}
-
-count ChibaNishizekiQuadrangleEdgeScore::score(edgeid) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
-}
-
 } /* namespace NetworKit */

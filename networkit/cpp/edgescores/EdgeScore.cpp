@@ -11,11 +11,7 @@
 namespace NetworKit {
 
 template <typename T>
-EdgeScore<T>::EdgeScore(const Graph &G) : Algorithm(), G(&G), scoreData() {
-    if (G.isDirected()) {
-        WARN("EdgeScore is not well tested on directed graphs");
-    }
-}
+EdgeScore<T>::EdgeScore(const Graph &G) : Algorithm(), G(&G), scoreData() {}
 
 /** Compute the edge score. */
 template <typename T>
@@ -48,6 +44,29 @@ T EdgeScore<T>::score(edgeid eid) {
 template <typename T>
 T EdgeScore<T>::score(node u, node v) {
     return score(G->edgeId(u, v));
+}
+
+template <typename T>
+Graph EdgeScore<T>::calculate(bool squared, edgeweight offset, edgeweight factor) const {
+    assureFinished();
+
+    if (!G->hasEdgeIds()) {
+        throw std::runtime_error("Edges have not been indexed - call indexEdges first");
+    }
+
+    Graph result(*G, true, G->isDirected());
+
+    if (squared) {
+        G->parallelForEdges([&](node u, node v, edgeid eid) {
+            const auto s = scoreData[eid];
+            result.setWeight(u, v, offset + factor * s * s);
+        });
+    } else {
+        G->parallelForEdges([&](node u, node v, edgeid eid) {
+            result.setWeight(u, v, offset + factor * scoreData[eid]);
+        });
+    }
+    return result;
 }
 
 template class EdgeScore<double>;

@@ -21,9 +21,6 @@ private:
 public:
     EdgeScoreLinearizer(const Graph &graph, const std::vector<double> &attribute,
                         bool inverse = false);
-
-    double score(edgeid eid) override;
-    double score(node u, node v) override;
     void run() override;
 };
 

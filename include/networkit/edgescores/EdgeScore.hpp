@@ -30,15 +30,31 @@ public:
      *
      * @return the edge scores calculated by @ref run().
      */
-    virtual const std::vector<T> &scores() const;
+    const std::vector<T> &scores() const;
 
     /** Get the edge score of the edge with the given edge id.
      */
-    virtual T score(edgeid eid);
+    T score(edgeid eid);
 
     /** Get the edge score of the given edge.
      */
-    virtual T score(node u, node v);
+    T score(node u, node v);
+
+    /**
+     * Build a weighted graph from the computed edge scores.
+     *
+     * The returned graph has the same topology as the input graph but
+     * edge weights are derived from the edge scores:
+     *
+     *   w(e) = offset + factor * score(e)
+     *   or, if squared == true:
+     *   w(e) = offset + factor * score(e)^2
+     *
+     * Requires that edges are indexed (G->hasEdgeIds()).
+     * Currently intended for undirected graphs (same behavior as the
+     * former EdgeScoreAsWeight helper).
+     */
+    Graph calculate(bool squared = false, edgeweight offset = 1, edgeweight factor = 1) const;
 
 protected:
     const Graph *G;

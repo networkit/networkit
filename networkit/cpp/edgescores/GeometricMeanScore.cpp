@@ -41,12 +41,4 @@ void GeometricMeanScore::run() {
     hasRun = true;
 }
 
-double GeometricMeanScore::score(node, node) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
-}
-
-double GeometricMeanScore::score(edgeid) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
-}
-
 } /* namespace NetworKit */

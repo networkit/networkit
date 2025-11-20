@@ -28,12 +28,4 @@ void EdgeScoreBlender::run() {
     hasRun = true;
 }
 
-double EdgeScoreBlender::score(node, node) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
-}
-
-double EdgeScoreBlender::score(edgeid) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
-}
-
 } /* namespace NetworKit */

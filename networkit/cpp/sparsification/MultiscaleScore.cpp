@@ -66,12 +66,4 @@ double MultiscaleScore::getProbability(count degree, edgeweight normalizedWeight
     return 1.0 - std::pow(1.0 - normalizedWeight, static_cast<double>(degree) - 1.0);
 }
 
-double MultiscaleScore::score(node, node) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
-}
-
-double MultiscaleScore::score(edgeid) {
-    throw std::runtime_error("Not implemented: Use scores() instead.");
-}
-
 } /* namespace NetworKit */

@@ -11,8 +11,6 @@ class SCANStructuralSimilarityScore final : public EdgeScore<double> {
 public:
     SCANStructuralSimilarityScore(const Graph &G, const std::vector<count> &triangles);
     void run() override;
-    double score(edgeid eid) override;
-    double score(node u, node v) override;
 
 private:
     const std::vector<count> *triangles;
