@@ -93,7 +93,6 @@ private:
     bool dfsTesting(node startNode);
     bool applyConstraints(const Edge &edge, const Edge &parentEdge);
     void removeBackEdges(const Edge &edge);
-    void sortAdjacencyListByNestingDepth();
     bool conflicting(const Interval &interval, const Edge &edge);
     count getLowestLowPoint(const ConflictPair &conflictPair);
     std::vector<count> heights;
