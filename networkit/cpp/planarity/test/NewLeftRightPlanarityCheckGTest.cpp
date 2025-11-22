@@ -6,12 +6,12 @@
  */
 #include <gtest/gtest.h>
 #include <networkit/io/METISGraphReader.hpp>
-#include <networkit/planarity/LeftRightPlanarityCheck.hpp>
+#include <networkit/planarity/NewLeftRightPlanarityCheck.hpp>
 
 namespace NetworKit {
-class LeftRightPlanarityCheckGTest : public testing::Test {
+class NewLeftRightPlanarityCheckGTest : public testing::Test {
 public:
-    LeftRightPlanarityCheckGTest() = default;
+    NewLeftRightPlanarityCheckGTest() = default;
     static constexpr int maxNumberOfNodes{10};
     Graph pathGraph(count numNodes) {
         Graph graph;
@@ -127,10 +127,10 @@ public:
     }
 };
 
-TEST_F(LeftRightPlanarityCheckGTest, testDirectedGraphThrows) {
+TEST_F(NewLeftRightPlanarityCheckGTest, testDirectedGraphThrows) {
     Graph graph(0, false, true, false);
     try {
-        LeftRightPlanarityCheck test(graph);
+        NewLeftRightPlanarityCheck test(graph);
         FAIL() << "Expected std::runtime_error";
     } catch (const std::runtime_error &e) {
         EXPECT_STREQ(e.what(), "The graph is not an undirected graph.");
@@ -139,9 +139,9 @@ TEST_F(LeftRightPlanarityCheckGTest, testDirectedGraphThrows) {
     }
 }
 
-TEST_F(LeftRightPlanarityCheckGTest, testIsPlanarThrowsIfRunIsNotCalled) {
+TEST_F(NewLeftRightPlanarityCheckGTest, testIsPlanarThrowsIfRunIsNotCalled) {
     Graph graph{};
-    LeftRightPlanarityCheck test(graph);
+    NewLeftRightPlanarityCheck test(graph);
     try {
         test.isPlanar();
         FAIL() << "Expected std::runtime_error";
@@ -152,97 +152,97 @@ TEST_F(LeftRightPlanarityCheckGTest, testIsPlanarThrowsIfRunIsNotCalled) {
     }
 }
 
-TEST_F(LeftRightPlanarityCheckGTest, testPlanarEmptyGraph) {
+TEST_F(NewLeftRightPlanarityCheckGTest, testPlanarEmptyGraph) {
     Graph graph{};
-    LeftRightPlanarityCheck test(graph);
+    NewLeftRightPlanarityCheck test(graph);
     test.run();
     EXPECT_TRUE(test.isPlanar());
 }
 
-TEST_F(LeftRightPlanarityCheckGTest, testPlanarSingleNode) {
+TEST_F(NewLeftRightPlanarityCheckGTest, testPlanarSingleNode) {
     Graph graph{1};
-    LeftRightPlanarityCheck test(graph);
+    NewLeftRightPlanarityCheck test(graph);
     test.run();
     EXPECT_TRUE(test.isPlanar());
 }
 
-TEST_F(LeftRightPlanarityCheckGTest, testPlanarPathGraphs) {
+TEST_F(NewLeftRightPlanarityCheckGTest, testPlanarPathGraphs) {
     for (count numberOfNodes = 2; numberOfNodes <= maxNumberOfNodes; ++numberOfNodes) {
         Graph graph = pathGraph(numberOfNodes);
-        LeftRightPlanarityCheck test(graph);
+        NewLeftRightPlanarityCheck test(graph);
         test.run();
         EXPECT_TRUE(test.isPlanar());
     }
 }
 
-TEST_F(LeftRightPlanarityCheckGTest, testPlanarCycleGraphs) {
+TEST_F(NewLeftRightPlanarityCheckGTest, testPlanarCycleGraphs) {
     for (count numberOfNodes = 2; numberOfNodes <= maxNumberOfNodes; ++numberOfNodes) {
         Graph graph = cycleGraph(numberOfNodes);
-        LeftRightPlanarityCheck test(graph);
+        NewLeftRightPlanarityCheck test(graph);
         test.run();
         EXPECT_TRUE(test.isPlanar());
     }
 }
 
-TEST_F(LeftRightPlanarityCheckGTest, testPlanarStarGraphs) {
+TEST_F(NewLeftRightPlanarityCheckGTest, testPlanarStarGraphs) {
     for (count numberOfNodes = 2; numberOfNodes <= maxNumberOfNodes; ++numberOfNodes) {
         Graph graph = starGraph(numberOfNodes);
-        LeftRightPlanarityCheck test(graph);
+        NewLeftRightPlanarityCheck test(graph);
         test.run();
         EXPECT_TRUE(test.isPlanar());
     }
 }
 
-TEST_F(LeftRightPlanarityCheckGTest, testPlanarTreeGraphs) {
+TEST_F(NewLeftRightPlanarityCheckGTest, testPlanarTreeGraphs) {
     for (count numberOfNodes = 2; numberOfNodes <= maxNumberOfNodes; ++numberOfNodes) {
         Graph graph = binaryTreeGraph(numberOfNodes);
-        LeftRightPlanarityCheck test(graph);
+        NewLeftRightPlanarityCheck test(graph);
         test.run();
         EXPECT_TRUE(test.isPlanar());
     }
 }
 
-TEST_F(LeftRightPlanarityCheckGTest, testPlanarWheelGraphs) {
+TEST_F(NewLeftRightPlanarityCheckGTest, testPlanarWheelGraphs) {
     for (count numberOfNodes = 4; numberOfNodes <= maxNumberOfNodes; ++numberOfNodes) {
         Graph graph = wheelGraph(numberOfNodes);
-        LeftRightPlanarityCheck test(graph);
+        NewLeftRightPlanarityCheck test(graph);
         test.run();
         EXPECT_TRUE(test.isPlanar());
     }
 }
 
-TEST_F(LeftRightPlanarityCheckGTest, testPlanarCompleteGraphs) {
+TEST_F(NewLeftRightPlanarityCheckGTest, testPlanarCompleteGraphs) {
     constexpr count maxNumberPlanar{5};
     for (count numberOfNodes = 2; numberOfNodes < maxNumberPlanar; ++numberOfNodes) {
         Graph graph = completeGraph(numberOfNodes);
-        LeftRightPlanarityCheck test(graph);
+        NewLeftRightPlanarityCheck test(graph);
         test.run();
         EXPECT_TRUE(test.isPlanar());
     }
 }
 
-TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarCompleteGraphsEulerCriterium) {
+TEST_F(NewLeftRightPlanarityCheckGTest, testNonPlanarCompleteGraphsEulerCriterium) {
     for (count numberOfNodes = 5; numberOfNodes <= maxNumberOfNodes; ++numberOfNodes) {
         Graph graph = completeGraph(numberOfNodes);
-        LeftRightPlanarityCheck test(graph);
+        NewLeftRightPlanarityCheck test(graph);
         test.run();
         EXPECT_FALSE(test.isPlanar());
     }
 }
 
-TEST_F(LeftRightPlanarityCheckGTest, testPlanarGridGraphs) {
+TEST_F(NewLeftRightPlanarityCheckGTest, testPlanarGridGraphs) {
 
     for (count numberOfRows = 2; numberOfRows < maxNumberOfNodes / 2; ++numberOfRows) {
         for (count numberOfColumns = 2; numberOfColumns < maxNumberOfNodes / 2; ++numberOfColumns) {
             Graph graph = gridGraph(numberOfRows, numberOfColumns);
-            LeftRightPlanarityCheck test(graph);
+            NewLeftRightPlanarityCheck test(graph);
             test.run();
             EXPECT_TRUE(test.isPlanar());
         }
     }
 }
 
-TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarCompleteBipartiteGraphK3_3) {
+TEST_F(NewLeftRightPlanarityCheckGTest, testNonPlanarCompleteBipartiteGraphK3_3) {
     Graph graph(6);
     graph.addEdge(0, 3);
     graph.addEdge(0, 4);
@@ -254,12 +254,12 @@ TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarCompleteBipartiteGraphK3_3) {
     graph.addEdge(2, 4);
     graph.addEdge(2, 5);
 
-    LeftRightPlanarityCheck test(graph);
+    NewLeftRightPlanarityCheck test(graph);
     test.run();
     EXPECT_FALSE(test.isPlanar());
 }
 
-TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarCompleteTripartiteGraphK3_3_3) {
+TEST_F(NewLeftRightPlanarityCheckGTest, testNonPlanarCompleteTripartiteGraphK3_3_3) {
     Graph graph(9);
     graph.addEdge(0, 3);
     graph.addEdge(0, 4);
@@ -290,12 +290,12 @@ TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarCompleteTripartiteGraphK3_3_3)
     graph.addEdge(5, 6);
     graph.addEdge(5, 7);
     graph.addEdge(5, 8);
-    LeftRightPlanarityCheck test(graph);
+    NewLeftRightPlanarityCheck test(graph);
     test.run();
     EXPECT_FALSE(test.isPlanar());
 }
 
-TEST_F(LeftRightPlanarityCheckGTest, testOnePlanarOneNonPlanarSubGraph) {
+TEST_F(NewLeftRightPlanarityCheckGTest, testOnePlanarOneNonPlanarSubGraph) {
     Graph graph(10);
     // complete bipartite graph K3,3 (non-planar)
     graph.addEdge(0, 3);
@@ -312,18 +312,18 @@ TEST_F(LeftRightPlanarityCheckGTest, testOnePlanarOneNonPlanarSubGraph) {
     graph.addEdge(7, 8);
     graph.addEdge(8, 9);
     graph.addEdge(9, 6);
-    LeftRightPlanarityCheck test(graph);
+    NewLeftRightPlanarityCheck test(graph);
     test.run();
     EXPECT_FALSE(test.isPlanar());
 }
 
-TEST_F(LeftRightPlanarityCheckGTest, testPlanarPetersenGraphs) {
+TEST_F(NewLeftRightPlanarityCheckGTest, testPlanarPetersenGraphs) {
     for (count n = 3; n < maxNumberOfNodes; ++n) {
         for (count k = 1; k <= std::floor(n / 2); ++k) {
             const bool isPlanarPetersenGraph = k == 1 || (k == 2 && !(n & 1));
             if (isPlanarPetersenGraph) {
                 Graph graph = petersenGraph(n, k);
-                LeftRightPlanarityCheck test(graph);
+                NewLeftRightPlanarityCheck test(graph);
                 test.run();
                 EXPECT_TRUE(test.isPlanar());
             }
@@ -331,13 +331,13 @@ TEST_F(LeftRightPlanarityCheckGTest, testPlanarPetersenGraphs) {
     }
 }
 
-TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarPetersenGraphs) {
+TEST_F(NewLeftRightPlanarityCheckGTest, testNonPlanarPetersenGraphs) {
     for (count n = 3; n < maxNumberOfNodes; ++n) {
         for (count k = 1; k <= std::floor(n / 2); ++k) {
             const bool isNonPlanarPetersenGraph = !(k == 1 || (k == 2 && !(n & 1)));
             if (isNonPlanarPetersenGraph) {
                 Graph graph = petersenGraph(n, k);
-                LeftRightPlanarityCheck test(graph);
+                NewLeftRightPlanarityCheck test(graph);
                 test.run();
                 EXPECT_FALSE(test.isPlanar());
             }
@@ -345,34 +345,34 @@ TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarPetersenGraphs) {
     }
 }
 
-// TEST_F(LeftRightPlanarityCheckGTest, testPlanar4eltGraph) {
+// TEST_F(NewLeftRightPlanarityCheckGTest, testPlanar4eltGraph) {
 //     METISGraphReader reader;
 //     Graph graph = reader.read("input/4elt.graph");
-//     LeftRightPlanarityCheck test(graph);
+//     NewLeftRightPlanarityCheck test(graph);
 //     test.run();
 //     EXPECT_TRUE(test.isPlanar());
 // }
 //
-// TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarHepthGraph) {
+// TEST_F(NewLeftRightPlanarityCheckGTest, testNonPlanarHepthGraph) {
 //     METISGraphReader reader;
 //     Graph graph = reader.read("input/hep-th.graph");
-//     LeftRightPlanarityCheck test(graph);
+//     NewLeftRightPlanarityCheck test(graph);
 //     test.run();
 //     EXPECT_FALSE(test.isPlanar());
 // }
 //
-// TEST_F(LeftRightPlanarityCheckGTest, testPlanarAirfoil1Graph) {
+// TEST_F(NewLeftRightPlanarityCheckGTest, testPlanarAirfoil1Graph) {
 //     METISGraphReader reader;
 //     Graph graph = reader.read("input/airfoil1.graph");
-//     LeftRightPlanarityCheck test(graph);
+//     NewLeftRightPlanarityCheck test(graph);
 //     test.run();
 //     EXPECT_TRUE(test.isPlanar());
 // }
 //
-// TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarAstroPhGraph) {
+// TEST_F(NewLeftRightPlanarityCheckGTest, testNonPlanarAstroPhGraph) {
 //     METISGraphReader reader;
 //     Graph graph = reader.read("input/astro-ph.graph");
-//     LeftRightPlanarityCheck test(graph);
+//     NewLeftRightPlanarityCheck test(graph);
 //     test.run();
 //     EXPECT_FALSE(test.isPlanar());
 // }
