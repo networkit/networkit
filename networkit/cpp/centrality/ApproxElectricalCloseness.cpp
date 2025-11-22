@@ -10,7 +10,6 @@
 #include <omp.h>
 #include <queue>
 
-#include <networkit/algebraic/CSRMatrix.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/centrality/ApproxElectricalCloseness.hpp>
 #include <networkit/numerics/ConjugateGradient.hpp>
@@ -19,9 +18,9 @@
 
 namespace NetworKit {
 
-ApproxElectricalCloseness::ApproxElectricalCloseness(const Graph &G, double epsilon, double kappa)
-    : Centrality(G), epsilon(epsilon), delta(1.0 / static_cast<double>(G.numberOfNodes())),
-      kappa(kappa), bccPtr(new BiconnectedComponents(G)) {
+ApproxElectricalCloseness::ApproxElectricalCloseness(const Graph &G, double epsilon, double kappa,
+                                                     double delta)
+    : Centrality(G), epsilon(epsilon), delta(delta), kappa(kappa), bcc(G) {
 
     if (G.isDirected())
         throw std::runtime_error("Error: the input graph must be undirected.");
@@ -38,23 +37,22 @@ ApproxElectricalCloseness::ApproxElectricalCloseness(const Graph &G, double epsi
 
     const count n = G.upperNodeIdBound(), threads = omp_get_max_threads();
     statusGlobal.resize(threads, std::vector<NodeStatus>(n, NodeStatus::NOT_VISITED));
-    parentGlobal.resize(threads, std::vector<node>(n, none));
-    approxEffResistanceGlobal.resize(threads, std::vector<int64_t>(n));
+    bfsTrees.resize(threads, Tree(n));
+    approxEffResistanceGlobal.resize(threads, std::vector<double>(n));
     scoreData.resize(n);
     diagonal.resize(n);
-    tVisitGlobal.resize(threads, std::vector<count>(n));
-    tFinishGlobal.resize(threads, std::vector<count>(n));
+    resistanceToRoot.resize(n);
     generators.reserve(threads);
     for (omp_index i = 0; i < threads; ++i)
         generators.emplace_back(Aux::Random::getURNG());
 
     degDist.reserve(G.upperNodeIdBound());
     G.forNodes([&](node u) { degDist.emplace_back(0, G.degree(u) - 1); });
-
-    ustChildPtrGlobal.resize(threads, std::vector<node>(n));
-    ustSiblingPtrGlobal.resize(threads, std::vector<node>(n));
     bfsParent.resize(n, none);
 }
+
+ApproxElectricalCloseness::ApproxElectricalCloseness(const Graph &G, double epsilon, double kappa)
+    : ApproxElectricalCloseness(G, epsilon, kappa, 1.0 / static_cast<double>(G.numberOfNodes())) {}
 
 count ApproxElectricalCloseness::computeNumberOfUSTs() const {
     return rootEcc * rootEcc
@@ -118,12 +116,11 @@ node ApproxElectricalCloseness::approxMinEccNode() {
                              - eccLowerBound.begin());
 }
 
-void ApproxElectricalCloseness::computeNodeSequence() {
+void ApproxElectricalCloseness::computeNodeSequence(node pivot) {
     // We use thread 0's vector
     auto &status = statusGlobal[0];
 
     // Compute the biconnected components
-    auto &bcc = *bccPtr;
     bcc.run();
     auto components = bcc.getComponents();
 
@@ -167,8 +164,12 @@ void ApproxElectricalCloseness::computeNodeSequence() {
         curSequence.clear();
     }
 
-    // Set the root to the highest degree node within the largest biconnected component
-    root = approxMinEccNode();
+    // Set the root to the highest degree node within the largest biconnected component or pivot if
+    // given.
+    if (pivot == none)
+        root = approxMinEccNode();
+    else
+        root = pivot;
 
     biAnchor.resize(bcc.numberOfComponents(), none);
     biParent.resize(bcc.numberOfComponents(), none);
@@ -179,7 +180,7 @@ void ApproxElectricalCloseness::computeNodeSequence() {
 
     // Topological order of biconnected components: tree of biconnected components starting from the
     // root's biconnected component. If the root is in multiple biconnected components, we take one
-    // of them arbitrarily select one of them.
+    // of them arbitrarily.
     std::queue<std::pair<node, index>> q;
     const auto &rootComps = bcc.getComponentsOfNode(root);
     q.emplace(root, *(rootComps.begin()));
@@ -252,10 +253,11 @@ void ApproxElectricalCloseness::computeBFSTree() {
 
 void ApproxElectricalCloseness::sampleUST() {
     // Getting thread-local vectors
+    auto &tree = bfsTrees[omp_get_thread_num()];
     auto &status = statusGlobal[omp_get_thread_num()];
-    auto &parent = parentGlobal[omp_get_thread_num()];
-    auto &childPtr = ustChildPtrGlobal[omp_get_thread_num()];
-    auto &siblingPtr = ustSiblingPtrGlobal[omp_get_thread_num()];
+    auto &parent = tree.parent;
+    auto &childPtr = tree.child;
+    auto &siblingPtr = tree.sibling;
     std::fill(status.begin(), status.end(), NodeStatus::NOT_IN_COMPONENT);
     std::fill(parent.begin(), parent.end(), none);
     std::fill(childPtr.begin(), childPtr.end(), none);
@@ -273,7 +275,7 @@ void ApproxElectricalCloseness::sampleUST() {
         // parent component.
         auto updateParentOfAnchor = [&]() -> void {
             for (const node v : G.neighborRange(curAnchor)) {
-                const auto &vComps = bccPtr->getComponentsOfNode(v);
+                const auto &vComps = bcc.getComponentsOfNode(v);
                 if (vComps.find(biParent[componentIndex]) != vComps.end()) {
                     parent[curAnchor] = v;
                     break;
@@ -299,7 +301,7 @@ void ApproxElectricalCloseness::sampleUST() {
                     updateParentOfAnchor();
             }
 #ifdef NETWORKIT_SANITY_CHECKS
-            checkTwoNodesSequence(sequence);
+            checkTwoNodesSequence(sequence, parent);
 #endif
             continue;
         }
@@ -403,15 +405,16 @@ void ApproxElectricalCloseness::sampleUST() {
     }
 
 #ifdef NETWORKIT_SANITY_CHECKS
-    checkUST();
+    checkUST(tree);
 #endif
 }
 
 void ApproxElectricalCloseness::dfsUST() {
-    auto &tVisit = tVisitGlobal[omp_get_thread_num()];
-    auto &tFinish = tFinishGlobal[omp_get_thread_num()];
-    const auto &childPtr = ustChildPtrGlobal[omp_get_thread_num()];
-    const auto &siblingPtr = ustSiblingPtrGlobal[omp_get_thread_num()];
+    auto &tree = bfsTrees[omp_get_thread_num()];
+    auto &tVisit = tree.tVisit;
+    auto &tFinish = tree.tFinish;
+    const auto &childPtr = tree.child;
+    const auto &siblingPtr = tree.sibling;
 
     std::stack<std::pair<node, node>> stack;
     stack.emplace(root, childPtr[root]);
@@ -429,20 +432,21 @@ void ApproxElectricalCloseness::dfsUST() {
             stack.top().second = siblingPtr[v];
             tVisit[v] = ++timestamp;
             stack.emplace(v, childPtr[v]);
-            assert(parentGlobal[omp_get_thread_num()][v] == u);
+            assert(bfsTrees[omp_get_thread_num()].parent[v] == u);
         }
     } while (!stack.empty());
 }
 
-void ApproxElectricalCloseness::aggregateUST() {
-#ifdef NETWORKIT_SANITY_CHECKS
-    checkTimeStamps();
-#endif
-
+void ApproxElectricalCloseness::aggregateUST(double weight) {
     auto &approxEffResistance = approxEffResistanceGlobal[omp_get_thread_num()];
-    const auto &tVisit = tVisitGlobal[omp_get_thread_num()];
-    const auto &tFinish = tFinishGlobal[omp_get_thread_num()];
-    const auto &parent = parentGlobal[omp_get_thread_num()];
+    const auto &tree = bfsTrees[omp_get_thread_num()];
+    const auto &tVisit = tree.tVisit;
+    const auto &tFinish = tree.tFinish;
+    const auto &parent = tree.parent;
+
+#ifdef NETWORKIT_SANITY_CHECKS
+    checkTimeStamps(tree);
+#endif
 
     // Doing aggregation
     G.forNodes([&](const node u) {
@@ -468,7 +472,7 @@ void ApproxElectricalCloseness::aggregateUST() {
             }
 
             if (tVisit[u] >= tVisit[e2] && tFinish[u] <= tFinish[e2])
-                approxEffResistance[u] += reverse ? -1 : 1;
+                approxEffResistance[u] += reverse ? -weight : weight;
 
             goUp();
         }
@@ -476,40 +480,52 @@ void ApproxElectricalCloseness::aggregateUST() {
 }
 
 void ApproxElectricalCloseness::run() {
+    hasRun = false;
+
     // Preprocessing
     computeNodeSequence();
     computeBFSTree();
 
-    const count numberOfUSTs = computeNumberOfUSTs();
-    Vector sol(G.numberOfNodes());
+    numberOfUSTs = computeNumberOfUSTs();
+    rootCol = Vector(G.numberOfNodes());
 
+    solveColumnAndSampleUSTs();
+    aggregateResults();
+
+    laplacian = CSRMatrix(); // Clear data to release memory
+    rootCol = Vector();
+    resistanceToRoot.clear();
+
+    hasRun = true;
+}
+
+void ApproxElectricalCloseness::solveColumnAndSampleUSTs() {
 #pragma omp parallel
     {
         // Thread 0 solves the linear system
         if (omp_get_thread_num() == 0) {
             const count n = G.numberOfNodes();
 
-            const auto L = CSRMatrix::laplacianMatrix(G);
+            laplacian = CSRMatrix::laplacianMatrix(G);
             Diameter diamAlgo(G, DiameterAlgo::ESTIMATED_RANGE, 0);
             diamAlgo.run();
             // Getting diameter upper bound
             const auto diam = static_cast<double>(diamAlgo.getDiameter().second);
-            const double tol =
-                epsilon * kappa
-                / (std::sqrt(static_cast<double>((n * G.numberOfEdges())) * std::log(n)) * diam
-                   * 3.);
+            tol = epsilon * kappa
+                  / (std::sqrt(static_cast<double>((n * G.numberOfEdges())) * std::log(n)) * diam
+                     * 3.);
             ConjugateGradient<CSRMatrix, DiagonalPreconditioner> cg(tol);
-            cg.setupConnected(L);
+            cg.setupConnected(laplacian);
 
             Vector rhs(n);
             G.forNodes([&](node u) { rhs[u] = -1.0 / static_cast<double>(n); });
             rhs[root] += 1.;
-            cg.solve(rhs, sol);
+            cg.solve(rhs, rootCol);
 
             // ensure column sum of entries is 0.
             double columnSum = 0.;
-            G.forNodes([&](node u) { columnSum += sol[u]; });
-            sol -= columnSum / static_cast<double>(n);
+            G.forNodes([&](node u) { columnSum += rootCol[u]; });
+            rootCol -= columnSum / static_cast<double>(n);
         }
 
         // All threads sample and aggregate USTs in parallel
@@ -520,24 +536,26 @@ void ApproxElectricalCloseness::run() {
             aggregateUST();
         }
     }
+}
 
+void ApproxElectricalCloseness::aggregateResults() {
     // Aggregating thread-local results
     G.parallelForNodes([&](const node u) {
         // Accumulate all results on thread 0 vector
         for (count i = 1; i < approxEffResistanceGlobal.size(); ++i)
             approxEffResistanceGlobal[0][u] += approxEffResistanceGlobal[i][u];
-        diagonal[u] = static_cast<double>(approxEffResistanceGlobal[0][u])
-                      / static_cast<double>(numberOfUSTs);
+
+        resistanceToRoot[u] = static_cast<double>(approxEffResistanceGlobal[0][u])
+                              / static_cast<double>(numberOfUSTs);
+
+        diagonal[u] = resistanceToRoot[u] - rootCol[root] + 2. * rootCol[u];
     });
 
-    G.parallelForNodes([&](node u) { diagonal[u] = diagonal[u] - sol[root] + 2. * sol[u]; });
-    diagonal[root] = sol[root];
+    diagonal[root] = rootCol[root];
     const double trace = std::accumulate(diagonal.begin(), diagonal.end(), 0.);
     const auto n = static_cast<double>(G.numberOfNodes());
 
     G.parallelForNodes([&](node u) { scoreData[u] = (n - 1.) / (n * diagonal[u] + trace); });
-
-    hasRun = true;
 }
 
 std::vector<double> ApproxElectricalCloseness::computeExactDiagonal(double tol) const {
@@ -601,11 +619,20 @@ std::vector<double> ApproxElectricalCloseness::computeExactDiagonal(double tol) 
 /*
  * Methods for sanity check.
  */
-void ApproxElectricalCloseness::checkUST() const {
+void ApproxElectricalCloseness::checkUST(const Tree &tree) const {
     std::vector<bool> visitedNodes(G.upperNodeIdBound());
-    const auto &parent = parentGlobal[omp_get_thread_num()];
+    const auto &parent = tree.parent;
+    const auto &childPtr = tree.child;
+    const auto &siblingPtr = tree.sibling;
+
     // To debug
     G.forNodes([&](node u) {
+        if (childPtr[u] != none) {
+            assert(u == parent[childPtr[u]]);
+        }
+        if (siblingPtr[u] != none) {
+            assert(parent[u] == parent[siblingPtr[u]]);
+        }
         if (u == root) {
             assert(parent[u] == none);
         } else {
@@ -627,18 +654,18 @@ void ApproxElectricalCloseness::checkBFSTree() const {
             assert(bfsParent[u] == none);
         } else {
             std::vector<bool> visited(G.upperNodeIdBound());
-            visited[u] = true;
             do {
+                assert(!visited[u]);
+                visited[u] = true;
+                assert(bfsParent[u] != none);
                 u = bfsParent[u];
-                assert(!visited[u]);
-                assert(!visited[u]);
             } while (u != root);
         }
     });
 }
 
-void ApproxElectricalCloseness::checkTwoNodesSequence(const std::vector<node> &sequence) const {
-    const std::vector<node> &parent = parentGlobal[omp_get_thread_num()];
+void ApproxElectricalCloseness::checkTwoNodesSequence(const std::vector<node> &sequence,
+                                                      std::vector<node> &parent) const {
     for (node u : sequence) {
         if (u == root) {
             assert(parent[u] == none);
@@ -654,9 +681,9 @@ void ApproxElectricalCloseness::checkTwoNodesSequence(const std::vector<node> &s
     }
 }
 
-void ApproxElectricalCloseness::checkTimeStamps() const {
-    const auto &tVisit = tVisitGlobal[omp_get_thread_num()];
-    const auto &tFinish = tFinishGlobal[omp_get_thread_num()];
+void ApproxElectricalCloseness::checkTimeStamps(const Tree &tree) const {
+    const auto &tVisit = tree.tVisit;
+    const auto &tFinish = tree.tFinish;
     G.forNodes([&](const node u) {
         assert(tVisit[u] < tFinish[u]);
         if (u == root)
