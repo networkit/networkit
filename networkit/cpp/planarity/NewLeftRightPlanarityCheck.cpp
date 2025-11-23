@@ -30,8 +30,6 @@ NewLeftRightPlanarityCheck::NewLeftRightPlanarityCheck(const Graph &G) : graph(&
 
     lowestPoint.reserve(numberOfEdges);
 
-
-
     // dfsGraph: directed view of DFS tree + back edges
     dfsGraph = Graph(graph->numberOfNodes(), /*weighted=*/false,
                      /*directed=*/true, /*edgesIndexed=*/false);
@@ -59,9 +57,6 @@ void NewLeftRightPlanarityCheck::run() {
 
     lowestPoint.clear();
 
-    edgeToNodesDEBUG = std::vector<std::pair<node, node>>(numberOfEdges);
-    graph->forEdges(
-        [&](node u, node v, edgeweight w, edgeid id) { edgeToNodesDEBUG[id] = {u, v}; });
     // DFS orientation
     graph->forNodes([&](node currentNode) {
         if (heights[currentNode] == noneHeight) {
