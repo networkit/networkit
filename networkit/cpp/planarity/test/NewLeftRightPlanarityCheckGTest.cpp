@@ -346,36 +346,36 @@ TEST_F(NewLeftRightPlanarityCheckGTest, testNonPlanarPetersenGraphs) {
     }
 }
 
-// TEST_F(NewLeftRightPlanarityCheckGTest, testPlanar4eltGraph) {
-//     METISGraphReader reader;
-//     Graph graph = reader.read("input/4elt.graph");
-//     NewLeftRightPlanarityCheck test(graph);
-//     test.run();
-//     EXPECT_TRUE(test.isPlanar());
-// }
-//
-// TEST_F(NewLeftRightPlanarityCheckGTest, testNonPlanarHepthGraph) {
-//     METISGraphReader reader;
-//     Graph graph = reader.read("input/hep-th.graph");
-//     NewLeftRightPlanarityCheck test(graph);
-//     test.run();
-//     EXPECT_FALSE(test.isPlanar());
-// }
-//
-// TEST_F(NewLeftRightPlanarityCheckGTest, testPlanarAirfoil1Graph) {
-//     METISGraphReader reader;
-//     Graph graph = reader.read("input/airfoil1.graph");
-//     NewLeftRightPlanarityCheck test(graph);
-//     test.run();
-//     EXPECT_TRUE(test.isPlanar());
-// }
-//
-// TEST_F(NewLeftRightPlanarityCheckGTest, testNonPlanarAstroPhGraph) {
-//     METISGraphReader reader;
-//     Graph graph = reader.read("input/astro-ph.graph");
-//     NewLeftRightPlanarityCheck test(graph);
-//     test.run();
-//     EXPECT_FALSE(test.isPlanar());
-// }
+TEST_F(NewLeftRightPlanarityCheckGTest, testPlanar4eltGraph) {
+    METISGraphReader reader;
+    Graph graph = reader.read("input/4elt.graph");
+    NewLeftRightPlanarityCheck test(graph);
+    test.run();
+    EXPECT_TRUE(test.isPlanar());
+}
+
+TEST_F(NewLeftRightPlanarityCheckGTest, testNonPlanarHepthGraph) {
+    METISGraphReader reader;
+    Graph graph = reader.read("input/hep-th.graph");
+    NewLeftRightPlanarityCheck test(graph);
+    test.run();
+    EXPECT_FALSE(test.isPlanar());
+}
+
+TEST_F(NewLeftRightPlanarityCheckGTest, testPlanarAirfoil1Graph) {
+    METISGraphReader reader;
+    Graph graph = reader.read("input/airfoil1.graph");
+    NewLeftRightPlanarityCheck test(graph);
+    test.run();
+    EXPECT_TRUE(test.isPlanar());
+}
+
+TEST_F(NewLeftRightPlanarityCheckGTest, testNonPlanarAstroPhGraph) {
+    METISGraphReader reader;
+    Graph graph = reader.read("input/astro-ph.graph");
+    NewLeftRightPlanarityCheck test(graph);
+    test.run();
+    EXPECT_FALSE(test.isPlanar());
+}
 
 } // namespace NetworKit
