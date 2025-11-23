@@ -16,13 +16,15 @@ const Edge NewLeftRightPlanarityCheck::noneEdge{};
 
 void NewLeftRightPlanarityCheck::run() {
     // Euler-criterion: non-planar if m > 3n - 6 for n > 2
-    if (graph->numberOfNodes() > 2
-        && graph->numberOfEdges() > 3 * graph->numberOfNodes() - 6) {
+    if (graph->numberOfNodes() > 2 && graph->numberOfEdges() > 3 * graph->numberOfNodes() - 6) {
         hasRun = true;
         isGraphPlanar = false;
         return;
     }
-
+    if (!graph->hasEdgeIds()) {
+        // Logical constness: indexing does not change topology, only adds IDs.
+        const_cast<Graph *>(graph)->indexEdges();
+    }
     // Prepare per-node / per-edge state
     heights.assign(graph->upperNodeIdBound(), noneHeight);
     roots.clear();
@@ -38,9 +40,8 @@ void NewLeftRightPlanarityCheck::run() {
     lowestPointEdge.clear();
     stackBottom.clear();
     edgeToNodesDEBUG = std::vector<std::pair<node, node>>(numberOfEdges);
-    graph->forEdges([&](node u, node v, edgeweight w, edgeid id) {
-        edgeToNodesDEBUG[id] = {u, v};
-    });
+    graph->forEdges(
+        [&](node u, node v, edgeweight w, edgeid id) { edgeToNodesDEBUG[id] = {u, v}; });
     // DFS orientation
     graph->forNodes([&](node currentNode) {
         if (heights[currentNode] == noneHeight) {
@@ -62,12 +63,11 @@ void NewLeftRightPlanarityCheck::run() {
 
 void NewLeftRightPlanarityCheck::sortAdjacencyListByNestingDepth() {
     dfsGraph.forNodes([&](node currentNode) {
-        dfsGraph.sortNeighbors(currentNode,
-                               [&](node neighbor1, node neighbor2) {
-                                   const edgeid e1 = graph->edgeId(currentNode, neighbor1);
-                                   const edgeid e2 = graph->edgeId(currentNode, neighbor2);
-                                   return nestingDepth[e1] < nestingDepth[e2];
-                               });
+        dfsGraph.sortNeighbors(currentNode, [&](node neighbor1, node neighbor2) {
+            const edgeid e1 = graph->edgeId(currentNode, neighbor1);
+            const edgeid e2 = graph->edgeId(currentNode, neighbor2);
+            return nestingDepth[e1] < nestingDepth[e2];
+        });
     });
 }
 
@@ -75,10 +75,8 @@ bool NewLeftRightPlanarityCheck::conflicting(const Interval &interval, edgeid ed
     auto iteratorHigh = lowestPoint.find(interval.high);
     auto iteratorEdge = lowestPoint.find(edgeId);
 
-    return !interval.isEmpty()
-           && iteratorHigh != lowestPoint.end()
-           && iteratorEdge != lowestPoint.end()
-           && iteratorHigh->second > iteratorEdge->second;
+    return !interval.isEmpty() && iteratorHigh != lowestPoint.end()
+           && iteratorEdge != lowestPoint.end() && iteratorHigh->second > iteratorEdge->second;
 }
 
 bool NewLeftRightPlanarityCheck::applyConstraints(edgeid edgeId, edgeid parentEdgeId) {
@@ -93,15 +91,13 @@ bool NewLeftRightPlanarityCheck::applyConstraints(edgeid edgeId, edgeid parentEd
             currentConflictPair.swap();
         }
         if (!currentConflictPair.left.isEmpty()) {
-            // both sides non-empty -> non-planar
             return false;
         }
 
-        auto rightLowIterator   = lowestPoint.find(currentConflictPair.right.low);
+        auto rightLowIterator = lowestPoint.find(currentConflictPair.right.low);
         auto parentEdgeIterator = lowestPoint.find(parentEdgeId);
 
-        if (rightLowIterator != lowestPoint.end()
-            && parentEdgeIterator != lowestPoint.end()
+        if (rightLowIterator != lowestPoint.end() && parentEdgeIterator != lowestPoint.end()
             && rightLowIterator->second > parentEdgeIterator->second) {
 
             if (tmpConflictPair.right.isEmpty()) {
@@ -112,18 +108,13 @@ bool NewLeftRightPlanarityCheck::applyConstraints(edgeid edgeId, edgeid parentEd
 
             tmpConflictPair.right.low = currentConflictPair.right.low;
         } else {
-            // Attach to lowest point edge of the parent
-            auto itLP = lowestPointEdge.find(parentEdgeId);
-            if (itLP != lowestPointEdge.end()) {
-                ref[currentConflictPair.right.low] = itLP->second;
-            }
+            ref[currentConflictPair.right.low] = lowestPointEdge[parentEdgeId];
         }
     } while (!stack.empty() && (stack.top() != stackBottom[edgeId]));
 
     // Second phase: pop while there are conflicts with edgeId, merging left/right intervals.
     while (!stack.empty()
-           && (conflicting(stack.top().left, edgeId)
-               || conflicting(stack.top().right, edgeId))) {
+           && (conflicting(stack.top().left, edgeId) || conflicting(stack.top().right, edgeId))) {
 
         auto currentConflictPair = stack.top();
         stack.pop();
@@ -159,7 +150,6 @@ bool NewLeftRightPlanarityCheck::applyConstraints(edgeid edgeId, edgeid parentEd
     return true;
 }
 
-
 count NewLeftRightPlanarityCheck::getLowestLowPoint(const ConflictPair &conflictPair) {
     if (conflictPair.left.isEmpty()) {
         return lowestPoint[conflictPair.right.low];
@@ -167,13 +157,11 @@ count NewLeftRightPlanarityCheck::getLowestLowPoint(const ConflictPair &conflict
     if (conflictPair.right.isEmpty()) {
         return lowestPoint[conflictPair.left.low];
     }
-    return std::min(lowestPoint[conflictPair.right.low],
-                    lowestPoint[conflictPair.left.low]);
+    return std::min(lowestPoint[conflictPair.right.low], lowestPoint[conflictPair.left.low]);
 }
 
 void NewLeftRightPlanarityCheck::removeBackEdges(const edgeid edgeId, const node parentNode) {
-    while (!stack.empty()
-           && getLowestLowPoint(stack.top()) == heights[parentNode]) {
+    while (!stack.empty() && getLowestLowPoint(stack.top()) == heights[parentNode]) {
         stack.pop();
     }
 
@@ -187,8 +175,7 @@ void NewLeftRightPlanarityCheck::removeBackEdges(const edgeid edgeId, const node
             auto it = ref.find(conflictPair.left.high);
             conflictPair.left.high = (it != ref.end()) ? it->second : noneEdgeId;
         }
-        if (conflictPair.left.high == noneEdgeId
-            && conflictPair.left.low != noneEdgeId) {
+        if (conflictPair.left.high == noneEdgeId && conflictPair.left.low != noneEdgeId) {
             ref[conflictPair.left.low] = conflictPair.right.low;
             conflictPair.left.low = noneEdgeId;
         }
@@ -199,8 +186,7 @@ void NewLeftRightPlanarityCheck::removeBackEdges(const edgeid edgeId, const node
             auto it = ref.find(conflictPair.right.high);
             conflictPair.right.high = (it != ref.end()) ? it->second : noneEdgeId;
         }
-        if (conflictPair.right.high == noneEdgeId
-            && conflictPair.right.low != noneEdgeId) {
+        if (conflictPair.right.high == noneEdgeId && conflictPair.right.low != noneEdgeId) {
             ref[conflictPair.right.low] = conflictPair.left.low;
             conflictPair.right.low = noneEdgeId;
         }
@@ -208,15 +194,17 @@ void NewLeftRightPlanarityCheck::removeBackEdges(const edgeid edgeId, const node
         stack.push(conflictPair);
     }
 
-    if (!stack.empty()  && lowestPoint[edgeId]  < heights[parentNode]) {
-        const edgeid highestReturnEdgeLeft  = stack.top().left.high;
+    if (!stack.empty() && lowestPoint[edgeId] < heights[parentNode]) {
+        const edgeid highestReturnEdgeLeft = stack.top().left.high;
         const edgeid highestReturnEdgeRight = stack.top().right.high;
 
-        if (highestReturnEdgeLeft != noneEdgeId && (highestReturnEdgeRight != noneEdgeId || lowestPoint[highestReturnEdgeLeft]> lowestPoint[highestReturnEdgeRight])) {
-                ref[edgeId] = highestReturnEdgeLeft;
-            } else {
-                ref[edgeId] = highestReturnEdgeRight;
-            }
+        if (highestReturnEdgeLeft != noneEdgeId
+            && (highestReturnEdgeRight != noneEdgeId
+                || lowestPoint[highestReturnEdgeLeft] > lowestPoint[highestReturnEdgeRight])) {
+            ref[edgeId] = highestReturnEdgeLeft;
+        } else {
+            ref[edgeId] = highestReturnEdgeRight;
+        }
     }
 }
 
@@ -225,54 +213,50 @@ bool NewLeftRightPlanarityCheck::dfsTesting(node startNode) {
     dfsStack.push(startNode);
 
     // Per-node neighbor iterators in DFS graph
-    std::unordered_map<node, decltype(dfsGraph.neighborRange(startNode).begin())>
-        neighborIterators;
+    std::unordered_map<node, decltype(dfsGraph.neighborRange(startNode).begin())> neighborIterators;
 
     // We now deduplicate edges by edge IDs instead of Edge
     std::unordered_set<edgeid> preprocessedEdges;
     preprocessedEdges.reserve(numberOfEdges);
 
-    auto processNeighborEdges =
-        [&](node currentNode, bool &callRemoveBackEdges) -> bool {
-            auto &neighborIterator = neighborIterators[currentNode];
-            while (neighborIterator != dfsGraph.neighborRange(currentNode).end()) {
-                const node neighbor = *neighborIterator;
-                const edgeid currentEdgeId    = graph->edgeId(currentNode, neighbor);
+    auto processNeighborEdges = [&](node currentNode, bool &callRemoveBackEdges) -> bool {
+        auto &neighborIterator = neighborIterators[currentNode];
+        while (neighborIterator != dfsGraph.neighborRange(currentNode).end()) {
+            const node neighbor = *neighborIterator;
+            const edgeid currentEdgeId = graph->edgeId(currentNode, neighbor);
 
-                if (!preprocessedEdges.contains(currentEdgeId)) {
-                    stackBottom[currentEdgeId] = stack.empty() ? NoneConflictPair : stack.top();
+            if (!preprocessedEdges.contains(currentEdgeId)) {
+                stackBottom[currentEdgeId] = stack.empty() ? NoneConflictPair : stack.top();
 
-                    if (currentEdgeId == parentEdgeIds[neighbor]) {
-                        // Tree edge: go deeper
-                        dfsStack.push(currentNode);
-                        dfsStack.push(neighbor);
-                        preprocessedEdges.insert(currentEdgeId);
-                        callRemoveBackEdges = false;
-                        ++neighborIterator;
-                        return true; // more work later
-                    }
-
-                    lowestPointEdge[currentEdgeId] = currentEdgeId;
-                    stack.emplace(Interval{}, Interval(currentEdgeId, currentEdgeId));
+                if (currentEdgeId == parentEdgeIds[neighbor]) {
+                    // Tree edge: go deeper
+                    dfsStack.push(currentNode);
+                    dfsStack.push(neighbor);
+                    preprocessedEdges.insert(currentEdgeId);
+                    callRemoveBackEdges = false;
+                    return true; // more work later
                 }
 
-                auto currentEdgeIterator = lowestPoint.find(currentEdgeId);
-                if (currentEdgeIterator != lowestPoint.end()
-                    && currentEdgeIterator->second < heights[currentNode]) {
-
-                    if (neighbor == *dfsGraph.neighborRange(currentNode).begin()) {
-                        // First neighbor: propagate lowestPointEdge to parent edge
-                        lowestPointEdge[parentEdgeIds[currentNode]] =
-                            lowestPointEdge[currentEdgeId];
-                    } else if (!applyConstraints(currentEdgeId, parentEdgeIds[currentNode])) {
-                        return false;
-                    }
-                    }
-
-                ++neighborIterator;
+                lowestPointEdge[currentEdgeId] = currentEdgeId;
+                stack.emplace(Interval{}, Interval(currentEdgeId, currentEdgeId));
             }
 
-            return true;
+            auto currentEdgeIterator = lowestPoint.find(currentEdgeId);
+            if (currentEdgeIterator != lowestPoint.end()
+                && currentEdgeIterator->second < heights[currentNode]) {
+
+                if (neighbor == *dfsGraph.neighborRange(currentNode).begin()) {
+                    // First neighbor: propagate lowestPointEdge to parent edge
+                    lowestPointEdge[parentEdgeIds[currentNode]] = lowestPointEdge[currentEdgeId];
+                } else if (!applyConstraints(currentEdgeId, parentEdgeIds[currentNode])) {
+                    return false;
+                }
+            }
+
+            ++neighborIterator;
+        }
+
+        return true;
     };
 
     // Main DFS loop
@@ -284,10 +268,10 @@ bool NewLeftRightPlanarityCheck::dfsTesting(node startNode) {
         bool callRemoveBackEdges{true};
 
         if (auto it = neighborIterators.find(currentNode); it == neighborIterators.end()) {
-            neighborIterators[currentNode] =
-                dfsGraph.neighborRange(currentNode).begin();
+            neighborIterators[currentNode] = dfsGraph.neighborRange(currentNode).begin();
         }
-
+        // analysis when currentNode is 4 the 2nd time in 'testNonPlanarCompleteBipartiteGraphK3_3', 9 stackBottom are correct, 3 stack entries are correct
+        // 6 parentEdgeIds are correct: lowestPointEdge has different length
         if (!processNeighborEdges(currentNode, callRemoveBackEdges)) {
             return false;
         }
@@ -327,13 +311,13 @@ void NewLeftRightPlanarityCheck::dfsOrientation(node startNode) {
                 dfsGraph.addEdge(currentNode, neighbor);
                 edgeEndpoints[eid] = neighbor;
 
-                lowestPoint[eid]       = heights[currentNode];
+                lowestPoint[eid] = heights[currentNode];
                 secondLowestPoint[eid] = heights[currentNode];
 
                 if (heights[neighbor] == noneHeight) {
                     // Tree edge
                     parentEdgeIds[neighbor] = eid;
-                    parentNodes[neighbor]   = currentNode;
+                    parentNodes[neighbor] = currentNode;
 
                     heights[neighbor] = heights[currentNode] + 1;
 
@@ -356,17 +340,14 @@ void NewLeftRightPlanarityCheck::dfsOrientation(node startNode) {
             if (parentEid != noneEdgeId) {
                 if (lowestPoint[eid] < lowestPoint[parentEid]) {
                     secondLowestPoint[parentEid] =
-                        std::min(lowestPoint[parentEid],
-                                 secondLowestPoint[eid]);
+                        std::min(lowestPoint[parentEid], secondLowestPoint[eid]);
                     lowestPoint[parentEid] = lowestPoint[eid];
                 } else if (lowestPoint[eid] > lowestPoint[parentEid]) {
                     secondLowestPoint[parentEid] =
-                        std::min(secondLowestPoint[parentEid],
-                                 lowestPoint[eid]);
+                        std::min(secondLowestPoint[parentEid], lowestPoint[eid]);
                 } else {
                     secondLowestPoint[parentEid] =
-                        std::min(secondLowestPoint[parentEid],
-                                 secondLowestPoint[eid]);
+                        std::min(secondLowestPoint[parentEid], secondLowestPoint[eid]);
                 }
             }
         }
