@@ -44,6 +44,10 @@ public:
         if (G.isDirected()) {
             throw std::runtime_error("The graph is not an undirected graph.");
         }
+        if (!G.hasEdgeIds()) {
+            throw std::runtime_error("The graph has no edge ids..");
+        }
+
 
         numberOfEdges = graph->numberOfEdges();
 
@@ -140,7 +144,7 @@ private:
 
     // Conflict stack
     std::stack<ConflictPair> stack;
-
+    std::vector<std::pair<node, node>> edgeToNodesDEBUG;
     // DFS graph with tree/back orientation
     Graph dfsGraph;
 };
