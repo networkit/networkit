@@ -31,8 +31,7 @@ NewLeftRightPlanarityCheck::NewLeftRightPlanarityCheck(const Graph &G) : graph(&
     lowestPoint.reserve(numberOfEdges);
 
     // dfsGraph: directed view of DFS tree + back edges
-    dfsGraph = Graph(graph->numberOfNodes(), /*weighted=*/false,
-                     /*directed=*/true, /*edgesIndexed=*/false);
+    dfsGraph = Graph(graph->numberOfNodes(), false,true, false);
 }
 
 void NewLeftRightPlanarityCheck::run() {
@@ -46,16 +45,12 @@ void NewLeftRightPlanarityCheck::run() {
         // Logical constness: indexing does not change topology, only adds IDs.
         const_cast<Graph *>(graph)->indexEdges();
     }
-    // Prepare per-node / per-edge state
-    heights.assign(graph->upperNodeIdBound(), noneHeight);
-    roots.clear();
 
+    heights.assign(graph->upperNodeIdBound(), noneHeight);
     parentEdgeIds.assign(graph->upperNodeIdBound(), noneEdgeId);
     parentNodes.assign(graph->upperNodeIdBound(), none);
-
     edgeEndpoints.assign(graph->upperEdgeIdBound(), none);
 
-    lowestPoint.clear();
 
     // DFS orientation
     graph->forNodes([&](node currentNode) {
@@ -228,26 +223,29 @@ bool NewLeftRightPlanarityCheck::dfsTesting(const node startNode) {
     dfsStack.push(startNode);
 
     // Per-node neighbor iterators in DFS graph
-    std::unordered_map<node, decltype(dfsGraph.neighborRange(startNode).begin())> neighborIterators;
-
-    // We now deduplicate edges by edge IDs instead of Edge
-    std::unordered_set<edgeid> preprocessedEdges;
-    preprocessedEdges.reserve(numberOfEdges);
+    using NeighborIterator =
+        decltype(dfsGraph.neighborRange(static_cast<node>(0)).begin());
+    // Per-node neighbor iterators in DFS graph
+    std::vector<NeighborIterator> neighborIterators(dfsGraph.upperNodeIdBound());
+    std::vector<bool> neighborInitialized(dfsGraph.upperNodeIdBound(), false);
+    std::vector<edgeid> preprocessedEdges(numberOfEdges, noneEdgeId);
 
     auto processNeighborEdges = [&](node currentNode, bool &callRemoveBackEdges) -> bool {
+        auto range = dfsGraph.neighborRange(currentNode);
+
         auto &neighborIterator = neighborIterators[currentNode];
-        while (neighborIterator != dfsGraph.neighborRange(currentNode).end()) {
+        while (neighborIterator != range.end()) {
             const node neighbor = *neighborIterator;
             const edgeid currentEdgeId = graph->edgeId(currentNode, neighbor);
 
-            if (!preprocessedEdges.contains(currentEdgeId)) {
+            if (preprocessedEdges[currentEdgeId] == noneEdgeId) {
                 stackBottom[currentEdgeId] = stack.empty() ? NoneConflictPair : stack.top();
 
                 if (currentEdgeId == parentEdgeIds[neighbor]) {
                     // Tree edge: go deeper
                     dfsStack.push(currentNode);
                     dfsStack.push(neighbor);
-                    preprocessedEdges.insert(currentEdgeId);
+                    preprocessedEdges[currentEdgeId] = currentEdgeId;
                     callRemoveBackEdges = false;
                     return true; // more work later
                 }
@@ -282,11 +280,11 @@ bool NewLeftRightPlanarityCheck::dfsTesting(const node startNode) {
         const edgeid parentEid = parentEdgeIds[currentNode];
         bool callRemoveBackEdges{true};
 
-        if (auto it = neighborIterators.find(currentNode); it == neighborIterators.end()) {
+        if (!neighborInitialized[currentNode]) {
             neighborIterators[currentNode] = dfsGraph.neighborRange(currentNode).begin();
+            neighborInitialized[currentNode] = true;
         }
-        // analysis when currentNode is 4 the 2nd time in 'testNonPlanarCompleteBipartiteGraphK3_3', 9 stackBottom are correct, 3 stack entries are correct
-        // 6 parentEdgeIds are correct: lowestPointEdge has different length
+
         if (!processNeighborEdges(currentNode, callRemoveBackEdges)) {
             return false;
         }
@@ -305,9 +303,7 @@ void NewLeftRightPlanarityCheck::dfsOrientation(const node startNode) {
     dfsStack.push(startNode);
 
     // Deduplicate per *underlying* edge, not per oriented Edge struct
-    std::unordered_set<edgeid> preprocessedEdges;
-    preprocessedEdges.reserve(numberOfEdges);
-
+    std::vector<edgeid> preprocessedEdges(numberOfEdges, noneEdgeId);
     do {
         const node currentNode = dfsStack.top();
         dfsStack.pop();
@@ -317,7 +313,7 @@ void NewLeftRightPlanarityCheck::dfsOrientation(const node startNode) {
         for (node neighbor : graph->neighborRange(currentNode)) {
             const edgeid edgeId = graph->edgeId(currentNode, neighbor);
 
-            if (!preprocessedEdges.contains(edgeId)) {
+            if (preprocessedEdges[edgeId] == noneEdgeId) {
                 if (dfsGraph.hasEdge(currentNode, neighbor)
                     || dfsGraph.hasEdge(neighbor, currentNode)) {
                     continue;
@@ -339,7 +335,7 @@ void NewLeftRightPlanarityCheck::dfsOrientation(const node startNode) {
                     dfsStack.push(currentNode);
                     dfsStack.push(neighbor);
 
-                    preprocessedEdges.insert(edgeId);
+                    preprocessedEdges[edgeId] = edgeId;
                     break;
                 }
 

@@ -52,7 +52,6 @@ public:
 private:
     // We still keep a none-Edge as a *value* sentinel (but never as a key).
     static const Edge noneEdge;
-
     count numberOfEdges;
     static constexpr count noneHeight{std::numeric_limits<count>::max()};
     static constexpr edgeid noneEdgeId{std::numeric_limits<edgeid>::max()};
