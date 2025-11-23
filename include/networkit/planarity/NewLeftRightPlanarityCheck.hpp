@@ -123,7 +123,6 @@ private:
 
     // Conflict stack
     std::stack<ConflictPair> stack;
-    std::vector<std::pair<node, node>> edgeToNodesDEBUG;
     // DFS graph with tree/back orientation
     Graph dfsGraph;
 };
