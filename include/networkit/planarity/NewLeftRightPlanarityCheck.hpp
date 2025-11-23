@@ -109,7 +109,7 @@ private:
     // All maps keyed by edgeid instead of Edge now
     std::unordered_map<edgeid, count> lowestPoint;
     std::vector<count> secondLowestPoint;
-    std::unordered_map<edgeid, edgeid> ref;
+    std::vector<edgeid> ref;
     std::vector<edgeid> lowestPointEdge;
     std::vector<count> nestingDepth;
     std::unordered_map<edgeid, ConflictPair> stackBottom;

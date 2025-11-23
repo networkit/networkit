@@ -22,10 +22,10 @@ NewLeftRightPlanarityCheck::NewLeftRightPlanarityCheck(const Graph &G) : graph(&
     numberOfEdges = graph->numberOfEdges();
     nestingDepth.resize(numberOfEdges, -1);
     lowestPointEdge.resize(numberOfEdges, noneEdgeId);
+    secondLowestPoint.resize(numberOfEdges, none);
+    ref.resize(numberOfEdges, noneEdgeId);
 
     lowestPoint.reserve(numberOfEdges);
-    secondLowestPoint.resize(numberOfEdges, none);
-    ref.reserve(numberOfEdges);
 
     stackBottom.reserve(numberOfEdges);
 
@@ -55,7 +55,6 @@ void NewLeftRightPlanarityCheck::run() {
     edgeEndpoints.assign(graph->upperEdgeIdBound(), noneNode);
 
     lowestPoint.clear();
-    ref.clear();
     stackBottom.clear();
     edgeToNodesDEBUG = std::vector<std::pair<node, node>>(numberOfEdges);
     graph->forEdges(
@@ -190,8 +189,8 @@ void NewLeftRightPlanarityCheck::removeBackEdges(const edgeid edgeId, const node
         // Reduce left interval
         while (conflictPair.left.high != noneEdgeId
                && edgeEndpoints[conflictPair.left.high] == parentNode) {
-            auto it = ref.find(conflictPair.left.high);
-            conflictPair.left.high = (it != ref.end()) ? it->second : noneEdgeId;
+            auto tmpEdgeId = ref[conflictPair.left.high];
+            conflictPair.left.high = (tmpEdgeId != noneEdgeId) ? tmpEdgeId : noneEdgeId;
         }
         if (conflictPair.left.high == noneEdgeId && conflictPair.left.low != noneEdgeId) {
             ref[conflictPair.left.low] = conflictPair.right.low;
@@ -201,8 +200,8 @@ void NewLeftRightPlanarityCheck::removeBackEdges(const edgeid edgeId, const node
         // Reduce right interval
         while (conflictPair.right.high != noneEdgeId
                && edgeEndpoints[conflictPair.right.high] == parentNode) {
-            auto it = ref.find(conflictPair.right.high);
-            conflictPair.right.high = (it != ref.end()) ? it->second : noneEdgeId;
+            auto tmpEdgeId = ref[conflictPair.right.high];
+            conflictPair.right.high = (tmpEdgeId != noneEdgeId) ? tmpEdgeId: noneEdgeId;
         }
         if (conflictPair.right.high == noneEdgeId && conflictPair.right.low != noneEdgeId) {
             ref[conflictPair.right.low] = conflictPair.left.low;
