@@ -243,7 +243,7 @@ TEST_F(NewLeftRightPlanarityCheckGTest, testPlanarGridGraphs) {
 }
 
 TEST_F(NewLeftRightPlanarityCheckGTest, testNonPlanarCompleteBipartiteGraphK3_3) {
-    Graph graph(6);
+    Graph graph(6, false, false, true);
     graph.addEdge(0, 3);
     graph.addEdge(0, 4);
     graph.addEdge(0, 5);
@@ -253,6 +253,7 @@ TEST_F(NewLeftRightPlanarityCheckGTest, testNonPlanarCompleteBipartiteGraphK3_3)
     graph.addEdge(2, 3);
     graph.addEdge(2, 4);
     graph.addEdge(2, 5);
+
 
     NewLeftRightPlanarityCheck test(graph);
     test.run();

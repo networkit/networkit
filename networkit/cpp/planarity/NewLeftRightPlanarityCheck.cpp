@@ -23,12 +23,6 @@ void NewLeftRightPlanarityCheck::run() {
         return;
     }
 
-    // Ensure edges are indexed so edgeId(u,v) is meaningful.
-    if (!graph->hasEdgeIds()) {
-        // Logical constness: indexing does not change topology, only adds IDs.
-        const_cast<Graph *>(graph)->indexEdges();
-    }
-
     // Prepare per-node / per-edge state
     heights.assign(graph->upperNodeIdBound(), noneHeight);
     roots.clear();
@@ -44,7 +38,10 @@ void NewLeftRightPlanarityCheck::run() {
     lowestPointEdge.clear();
     nestingDepth.clear();
     stackBottom.clear();
-
+    edgeToNodesDEBUG = std::vector<std::pair<node, node>>(numberOfEdges);
+    graph->forEdges([&](node u, node v, edgeweight w, edgeid id) {
+        edgeToNodesDEBUG[id] = {u, v};
+    });
     // DFS orientation
     graph->forNodes([&](node currentNode) {
         if (heights[currentNode] == noneHeight) {
@@ -376,7 +373,6 @@ void NewLeftRightPlanarityCheck::dfsOrientation(node startNode) {
 
                 // Back edge: lowpoint is ancestor's height
                 lowestPoint[eid] = heights[neighbor];
-                preprocessedEdges.insert(eid);
             }
 
             nestingDepth[eid] = 2 * lowestPoint[eid];
