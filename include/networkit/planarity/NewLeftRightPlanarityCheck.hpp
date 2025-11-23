@@ -132,7 +132,7 @@ private:
     std::unordered_map<edgeid, count> secondLowestPoint;
     std::unordered_map<edgeid, edgeid> ref;
     std::unordered_map<edgeid, edgeid> lowestPointEdge;
-    std::unordered_map<edgeid, count> nestingDepth;
+    std::vector<count> nestingDepth;
     std::unordered_map<edgeid, ConflictPair> stackBottom;
 
     // Per-node parent edge + parent node in DFS tree (by ID, not Edge)

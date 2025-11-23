@@ -36,7 +36,6 @@ void NewLeftRightPlanarityCheck::run() {
     secondLowestPoint.clear();
     ref.clear();
     lowestPointEdge.clear();
-    nestingDepth.clear();
     stackBottom.clear();
     edgeToNodesDEBUG = std::vector<std::pair<node, node>>(numberOfEdges);
     graph->forEdges([&](node u, node v, edgeweight w, edgeid id) {
@@ -67,14 +66,7 @@ void NewLeftRightPlanarityCheck::sortAdjacencyListByNestingDepth() {
                                [&](node neighbor1, node neighbor2) {
                                    const edgeid e1 = graph->edgeId(currentNode, neighbor1);
                                    const edgeid e2 = graph->edgeId(currentNode, neighbor2);
-
-                                   auto it1 = nestingDepth.find(e1);
-                                   auto it2 = nestingDepth.find(e2);
-
-                                   if (it1 != nestingDepth.end() && it2 != nestingDepth.end()) {
-                                       return it1->second < it2->second;
-                                   }
-                                   return false;
+                                   return nestingDepth[e1] < nestingDepth[e2];
                                });
     });
 }
