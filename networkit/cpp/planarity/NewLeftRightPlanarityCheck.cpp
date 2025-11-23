@@ -14,6 +14,26 @@ namespace NetworKit {
 
 const Edge NewLeftRightPlanarityCheck::noneEdge{};
 
+NewLeftRightPlanarityCheck::NewLeftRightPlanarityCheck(const Graph &G) : graph(&G) {
+    if (G.isDirected()) {
+        throw std::runtime_error("The graph is not an undirected graph.");
+    }
+
+    numberOfEdges = graph->numberOfEdges();
+    nestingDepth.resize(numberOfEdges, -1);
+    lowestPointEdge.resize(numberOfEdges, noneEdgeId);
+
+    lowestPoint.reserve(numberOfEdges);
+    secondLowestPoint.resize(numberOfEdges, none);
+    ref.reserve(numberOfEdges);
+
+    stackBottom.reserve(numberOfEdges);
+
+    // dfsGraph: directed view of DFS tree + back edges
+    dfsGraph = Graph(graph->numberOfNodes(), /*weighted=*/false,
+                     /*directed=*/true, /*edgesIndexed=*/false);
+}
+
 void NewLeftRightPlanarityCheck::run() {
     // Euler-criterion: non-planar if m > 3n - 6 for n > 2
     if (graph->numberOfNodes() > 2 && graph->numberOfEdges() > 3 * graph->numberOfNodes() - 6) {
@@ -35,9 +55,7 @@ void NewLeftRightPlanarityCheck::run() {
     edgeEndpoints.assign(graph->upperEdgeIdBound(), noneNode);
 
     lowestPoint.clear();
-    secondLowestPoint.clear();
     ref.clear();
-    lowestPointEdge.clear();
     stackBottom.clear();
     edgeToNodesDEBUG = std::vector<std::pair<node, node>>(numberOfEdges);
     graph->forEdges(
@@ -297,26 +315,26 @@ void NewLeftRightPlanarityCheck::dfsOrientation(node startNode) {
         const node currentNode = dfsStack.top();
         dfsStack.pop();
 
-        const edgeid parentEid = parentEdgeIds[currentNode];
+        const edgeid parentEdgeId = parentEdgeIds[currentNode];
 
         for (node neighbor : graph->neighborRange(currentNode)) {
-            const edgeid eid = graph->edgeId(currentNode, neighbor);
+            const edgeid edgeId = graph->edgeId(currentNode, neighbor);
 
-            if (!preprocessedEdges.contains(eid)) {
+            if (!preprocessedEdges.contains(edgeId)) {
                 if (dfsGraph.hasEdge(currentNode, neighbor)
                     || dfsGraph.hasEdge(neighbor, currentNode)) {
                     continue;
                 }
 
                 dfsGraph.addEdge(currentNode, neighbor);
-                edgeEndpoints[eid] = neighbor;
+                edgeEndpoints[edgeId] = neighbor;
 
-                lowestPoint[eid] = heights[currentNode];
-                secondLowestPoint[eid] = heights[currentNode];
+                lowestPoint[edgeId] = heights[currentNode];
+                secondLowestPoint[edgeId] = heights[currentNode];
 
                 if (heights[neighbor] == noneHeight) {
                     // Tree edge
-                    parentEdgeIds[neighbor] = eid;
+                    parentEdgeIds[neighbor] = edgeId;
                     parentNodes[neighbor] = currentNode;
 
                     heights[neighbor] = heights[currentNode] + 1;
@@ -324,30 +342,30 @@ void NewLeftRightPlanarityCheck::dfsOrientation(node startNode) {
                     dfsStack.push(currentNode);
                     dfsStack.push(neighbor);
 
-                    preprocessedEdges.insert(eid);
+                    preprocessedEdges.insert(edgeId);
                     break;
                 }
 
                 // Back edge: lowpoint is ancestor's height
-                lowestPoint[eid] = heights[neighbor];
+                lowestPoint[edgeId] = heights[neighbor];
             }
 
-            nestingDepth[eid] = 2 * lowestPoint[eid];
-            if (secondLowestPoint[eid] < heights[currentNode]) {
-                nestingDepth[eid] += 1;
+            nestingDepth[edgeId] = 2 * lowestPoint[edgeId];
+            if (secondLowestPoint[edgeId] < heights[currentNode]) {
+                nestingDepth[edgeId] += 1;
             }
 
-            if (parentEid != noneEdgeId) {
-                if (lowestPoint[eid] < lowestPoint[parentEid]) {
-                    secondLowestPoint[parentEid] =
-                        std::min(lowestPoint[parentEid], secondLowestPoint[eid]);
-                    lowestPoint[parentEid] = lowestPoint[eid];
-                } else if (lowestPoint[eid] > lowestPoint[parentEid]) {
-                    secondLowestPoint[parentEid] =
-                        std::min(secondLowestPoint[parentEid], lowestPoint[eid]);
+            if (parentEdgeId != noneEdgeId) {
+                if (lowestPoint[edgeId] < lowestPoint[parentEdgeId]) {
+                    secondLowestPoint[parentEdgeId] =
+                        std::min(lowestPoint[parentEdgeId], secondLowestPoint[edgeId]);
+                    lowestPoint[parentEdgeId] = lowestPoint[edgeId];
+                } else if (lowestPoint[edgeId] > lowestPoint[parentEdgeId]) {
+                    secondLowestPoint[parentEdgeId] =
+                        std::min(secondLowestPoint[parentEdgeId], lowestPoint[edgeId]);
                 } else {
-                    secondLowestPoint[parentEid] =
-                        std::min(secondLowestPoint[parentEid], secondLowestPoint[eid]);
+                    secondLowestPoint[parentEdgeId] =
+                        std::min(secondLowestPoint[parentEdgeId], secondLowestPoint[edgeId]);
                 }
             }
         }

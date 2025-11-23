@@ -40,24 +40,7 @@ public:
      * @param G The input graph to test for planarity. The graph should be undirected.
      * @throws std::runtime_error if graph is not an undirected graph
      */
-    NewLeftRightPlanarityCheck(const Graph &G) : graph(&G) {
-        if (G.isDirected()) {
-            throw std::runtime_error("The graph is not an undirected graph.");
-        }
-
-        numberOfEdges = graph->numberOfEdges();
-
-        lowestPoint.reserve(numberOfEdges);
-        secondLowestPoint.reserve(numberOfEdges);
-        ref.reserve(numberOfEdges);
-        lowestPointEdge.reserve(numberOfEdges);
-        nestingDepth.resize(numberOfEdges, -1);
-        stackBottom.reserve(numberOfEdges);
-
-        // dfsGraph: directed view of DFS tree + back edges
-        dfsGraph = Graph(graph->numberOfNodes(), /*weighted=*/false,
-                         /*directed=*/true, /*edgesIndexed=*/false);
-    }
+    NewLeftRightPlanarityCheck(const Graph &G);
 
     void run() override;
 
@@ -125,9 +108,9 @@ private:
 
     // All maps keyed by edgeid instead of Edge now
     std::unordered_map<edgeid, count> lowestPoint;
-    std::unordered_map<edgeid, count> secondLowestPoint;
+    std::vector<count> secondLowestPoint;
     std::unordered_map<edgeid, edgeid> ref;
-    std::unordered_map<edgeid, edgeid> lowestPointEdge;
+    std::vector<edgeid> lowestPointEdge;
     std::vector<count> nestingDepth;
     std::unordered_map<edgeid, ConflictPair> stackBottom;
 
