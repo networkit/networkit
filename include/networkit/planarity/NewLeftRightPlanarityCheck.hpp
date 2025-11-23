@@ -136,11 +136,11 @@ private:
     std::unordered_map<edgeid, ConflictPair> stackBottom;
 
     // Per-node parent edge + parent node in DFS tree (by ID, not Edge)
-    std::vector<edgeid> parentEdgeId;  // parent edge for each node (noneEdgeId if root)
+    std::vector<edgeid> parentEdgeIds;  // parent edge for each node (noneEdgeId if root)
     std::vector<node> parentNodes;      // parent node for each node (noneNode if root)
 
     // For each *underlying* edge ID, remember the DFS orientation's head (v)
-    std::vector<node> edgeHead;        // edgeHead[eid] = v in oriented DFS edge (u -> v)
+    std::vector<node> edgeEndpoints;        // edgeEndpoints[eid] = v in oriented DFS edge (u -> v)
 
     // Conflict stack
     std::stack<ConflictPair> stack;
