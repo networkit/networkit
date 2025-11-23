@@ -56,7 +56,6 @@ private:
     count numberOfEdges;
     static constexpr count noneHeight{std::numeric_limits<count>::max()};
     static constexpr edgeid noneEdgeId{std::numeric_limits<edgeid>::max()};
-    static constexpr node noneNode{std::numeric_limits<node>::max()};
 
     struct Interval {
         edgeid low{noneEdgeId};
@@ -96,8 +95,8 @@ private:
     bool dfsTesting(node startNode);
 
     // All these now work with edge IDs
-    bool applyConstraints(const edgeid edgeId, const edgeid parentEdgeId);
-    void removeBackEdges(const edgeid edgeId, const node parentNode);
+    bool applyConstraints(edgeid edgeId, edgeid parentEdgeId);
+    void removeBackEdges(edgeid edgeId, node parentNode);
     void sortAdjacencyListByNestingDepth();
     bool conflicting(const Interval &interval, edgeid edgeId);
     count getLowestLowPoint(const ConflictPair &conflictPair);

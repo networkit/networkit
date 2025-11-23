@@ -22,7 +22,7 @@ NewLeftRightPlanarityCheck::NewLeftRightPlanarityCheck(const Graph &G) : graph(&
     }
 
     numberOfEdges = graph->numberOfEdges();
-    nestingDepth.resize(numberOfEdges, -1);
+    nestingDepth.resize(numberOfEdges, none);
     lowestPointEdge.resize(numberOfEdges, noneEdgeId);
     secondLowestPoint.resize(numberOfEdges, none);
     ref.resize(numberOfEdges, noneEdgeId);
@@ -51,9 +51,9 @@ void NewLeftRightPlanarityCheck::run() {
     roots.clear();
 
     parentEdgeIds.assign(graph->upperNodeIdBound(), noneEdgeId);
-    parentNodes.assign(graph->upperNodeIdBound(), noneNode);
+    parentNodes.assign(graph->upperNodeIdBound(), none);
 
-    edgeEndpoints.assign(graph->upperEdgeIdBound(), noneNode);
+    edgeEndpoints.assign(graph->upperEdgeIdBound(), none);
 
     lowestPoint.clear();
 
@@ -94,7 +94,7 @@ bool NewLeftRightPlanarityCheck::conflicting(const Interval &interval, edgeid ed
            && iteratorEdge != lowestPoint.end() && iteratorHigh->second > iteratorEdge->second;
 }
 
-bool NewLeftRightPlanarityCheck::applyConstraints(edgeid edgeId, edgeid parentEdgeId) {
+bool NewLeftRightPlanarityCheck::applyConstraints(const edgeid edgeId, const edgeid parentEdgeId) {
     ConflictPair tmpConflictPair{};
 
     // First phase: pop until stackBottom[edgeId], merging intervals on the right side.
@@ -223,7 +223,7 @@ void NewLeftRightPlanarityCheck::removeBackEdges(const edgeid edgeId, const node
     }
 }
 
-bool NewLeftRightPlanarityCheck::dfsTesting(node startNode) {
+bool NewLeftRightPlanarityCheck::dfsTesting(const node startNode) {
     std::stack<node> dfsStack;
     dfsStack.push(startNode);
 
@@ -300,7 +300,7 @@ bool NewLeftRightPlanarityCheck::dfsTesting(node startNode) {
     return true;
 }
 
-void NewLeftRightPlanarityCheck::dfsOrientation(node startNode) {
+void NewLeftRightPlanarityCheck::dfsOrientation(const node startNode) {
     std::stack<node> dfsStack;
     dfsStack.push(startNode);
 
