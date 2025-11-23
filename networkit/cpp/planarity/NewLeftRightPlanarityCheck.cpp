@@ -28,7 +28,7 @@ NewLeftRightPlanarityCheck::NewLeftRightPlanarityCheck(const Graph &G) : graph(&
     ref.resize(numberOfEdges, noneEdgeId);
     stackBottom.resize(numberOfEdges, {});
 
-    lowestPoint.reserve(numberOfEdges);
+    lowestPoint.resize(numberOfEdges, none);
 
     // dfsGraph: directed view of DFS tree + back edges
     dfsGraph = Graph(graph->numberOfNodes(), false,true, false);
@@ -82,11 +82,11 @@ void NewLeftRightPlanarityCheck::sortAdjacencyListByNestingDepth() {
 }
 
 bool NewLeftRightPlanarityCheck::conflicting(const Interval &interval, edgeid edgeId) {
-    auto iteratorHigh = lowestPoint.find(interval.high);
-    auto iteratorEdge = lowestPoint.find(edgeId);
+    auto iteratorHigh = lowestPoint[interval.high];
+    auto iteratorEdge = lowestPoint[edgeId];
 
-    return !interval.isEmpty() && iteratorHigh != lowestPoint.end()
-           && iteratorEdge != lowestPoint.end() && iteratorHigh->second > iteratorEdge->second;
+    return !interval.isEmpty() && iteratorHigh != none
+           && iteratorEdge != none && iteratorHigh > iteratorEdge;
 }
 
 bool NewLeftRightPlanarityCheck::applyConstraints(const edgeid edgeId, const edgeid parentEdgeId) {
@@ -104,11 +104,11 @@ bool NewLeftRightPlanarityCheck::applyConstraints(const edgeid edgeId, const edg
             return false;
         }
 
-        auto rightLowIterator = lowestPoint.find(currentConflictPair.right.low);
-        auto parentEdgeIterator = lowestPoint.find(parentEdgeId);
+        auto rightLowIterator = lowestPoint[currentConflictPair.right.low];
+        auto parentEdgeIterator = lowestPoint[parentEdgeId];;
 
-        if (rightLowIterator != lowestPoint.end() && parentEdgeIterator != lowestPoint.end()
-            && rightLowIterator->second > parentEdgeIterator->second) {
+        if (rightLowIterator != none && parentEdgeIterator != none
+            && rightLowIterator > parentEdgeIterator) {
 
             if (tmpConflictPair.right.isEmpty()) {
                 tmpConflictPair.right = currentConflictPair.right;
@@ -254,9 +254,8 @@ bool NewLeftRightPlanarityCheck::dfsTesting(const node startNode) {
                 stack.emplace(Interval{}, Interval(currentEdgeId, currentEdgeId));
             }
 
-            auto currentEdgeIterator = lowestPoint.find(currentEdgeId);
-            if (currentEdgeIterator != lowestPoint.end()
-                && currentEdgeIterator->second < heights[currentNode]) {
+            auto currentEdgeIterator = lowestPoint[currentEdgeId];
+            if (currentEdgeIterator != none && currentEdgeIterator < heights[currentNode]) {
 
                 if (neighbor == *dfsGraph.neighborRange(currentNode).begin()) {
                     // First neighbor: propagate lowestPointEdge to parent edge

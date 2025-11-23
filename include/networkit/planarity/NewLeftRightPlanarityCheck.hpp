@@ -104,8 +104,7 @@ private:
     std::vector<count> heights;        // per node
     std::vector<node> roots;           // roots of DFS forest
 
-    // All maps keyed by edgeid instead of Edge now
-    std::unordered_map<edgeid, count> lowestPoint;
+    std::vector<count> lowestPoint;
     std::vector<count> secondLowestPoint;
     std::vector<edgeid> ref;
     std::vector<edgeid> lowestPointEdge;
@@ -114,7 +113,7 @@ private:
 
     // Per-node parent edge + parent node in DFS tree (by ID, not Edge)
     std::vector<edgeid> parentEdgeIds;  // parent edge for each node (noneEdgeId if root)
-    std::vector<node> parentNodes;      // parent node for each node (noneNode if root)
+    std::vector<node> parentNodes;      // parent node for each node (none if root)
 
     // For each *underlying* edge ID, remember the DFS orientation's head (v)
     std::vector<node> edgeEndpoints;        // edgeEndpoints[eid] = v in oriented DFS edge (u -> v)
