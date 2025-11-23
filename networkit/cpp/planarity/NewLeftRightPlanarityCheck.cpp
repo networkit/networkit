@@ -5,6 +5,8 @@
  *
  */
 
+#include "networkit/planarity/NewLeftRightPlanarityCheck.hpp"
+
 #include <algorithm>
 #include <unordered_set>
 
@@ -24,10 +26,11 @@ NewLeftRightPlanarityCheck::NewLeftRightPlanarityCheck(const Graph &G) : graph(&
     lowestPointEdge.resize(numberOfEdges, noneEdgeId);
     secondLowestPoint.resize(numberOfEdges, none);
     ref.resize(numberOfEdges, noneEdgeId);
+    stackBottom.resize(numberOfEdges, {});
 
     lowestPoint.reserve(numberOfEdges);
 
-    stackBottom.reserve(numberOfEdges);
+
 
     // dfsGraph: directed view of DFS tree + back edges
     dfsGraph = Graph(graph->numberOfNodes(), /*weighted=*/false,
@@ -55,7 +58,7 @@ void NewLeftRightPlanarityCheck::run() {
     edgeEndpoints.assign(graph->upperEdgeIdBound(), noneNode);
 
     lowestPoint.clear();
-    stackBottom.clear();
+
     edgeToNodesDEBUG = std::vector<std::pair<node, node>>(numberOfEdges);
     graph->forEdges(
         [&](node u, node v, edgeweight w, edgeid id) { edgeToNodesDEBUG[id] = {u, v}; });
