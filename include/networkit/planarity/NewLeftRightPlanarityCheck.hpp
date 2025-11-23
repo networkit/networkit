@@ -44,10 +44,6 @@ public:
         if (G.isDirected()) {
             throw std::runtime_error("The graph is not an undirected graph.");
         }
-        if (!G.hasEdgeIds()) {
-            throw std::runtime_error("The graph has no edge ids..");
-        }
-
 
         numberOfEdges = graph->numberOfEdges();
 
@@ -55,7 +51,7 @@ public:
         secondLowestPoint.reserve(numberOfEdges);
         ref.reserve(numberOfEdges);
         lowestPointEdge.reserve(numberOfEdges);
-        nestingDepth.reserve(numberOfEdges);
+        nestingDepth.resize(numberOfEdges, -1);
         stackBottom.reserve(numberOfEdges);
 
         // dfsGraph: directed view of DFS tree + back edges
