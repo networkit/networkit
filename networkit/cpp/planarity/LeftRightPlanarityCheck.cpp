@@ -18,6 +18,9 @@ LeftRightPlanarityCheck::LeftRightPlanarityCheck(const Graph &G) : graph(&G) {
     if (G.isDirected()) {
         throw std::runtime_error("The graph is not an undirected graph.");
     }
+    if (!G.hasEdgeIds()) {
+        throw std::runtime_error("The graph has no edge IDs.");
+    }
 
     numberOfEdges = graph->numberOfEdges();
     nestingDepth.resize(numberOfEdges, none);
@@ -38,10 +41,6 @@ void LeftRightPlanarityCheck::run() {
         hasRun = true;
         isGraphPlanar = false;
         return;
-    }
-    if (!graph->hasEdgeIds()) {
-        // Logical constness: indexing does not change topology, only adds IDs.
-        const_cast<Graph *>(graph)->indexEdges();
     }
 
     heights.assign(graph->upperNodeIdBound(), noneHeight);
