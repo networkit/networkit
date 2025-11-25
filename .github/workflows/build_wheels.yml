@@ -10,16 +10,16 @@ on:
 
 # Default parameters for all builds
 env:
-  ARTIFACT_RETENTION: ${{ github.ref == 'refs/heads/master' && '30' || '7' }}
+  ARTIFACT_RETENTION: ${{ github.ref == 'refs/heads/master' && '7' || '1' }}
 
 jobs:
   cpython-linux-x86_64:
     name: 'Linux CPython (${{ matrix.cibw_archs }}, ${{ matrix.manylinux_image }})'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         cibw_archs: ["x86_64"]
-        manylinux_image: ["manylinux2014"]
+        manylinux_image: ["manylinux_2_28"]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,12 +29,12 @@ jobs:
         with:
           python-version: '3.12'
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.23.0
+        uses: pypa/cibuildwheel@v3.3.0
         env:
           CIBW_BEFORE_BUILD: pip install cython auditwheel --upgrade
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp310-* cp311-* cp312-* cp313-*' || 'cp313-*' }}
+          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp310-* cp311-* cp312-* cp313-* cp314-*' || 'cp314-*' }}
           CIBW_SKIP: "pp* *-musllinux_*"
           CIBW_TEST_COMMAND: python3 -c 'import networkit'
       - uses: actions/upload-artifact@v4
@@ -56,53 +56,56 @@ jobs:
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
           name: 'linux-${{ matrix.cibw_archs }}-cp313-${{ github.run_id }}'
           path: ./wheelhouse/*cp313*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp314-${{ github.run_id }}'
+          path: ./wheelhouse/*cp314*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
 
-  # THIS ACTION IS DISABLED DUE TO SEGMENTATION FAULT IN GCC COMPILER
-  # Additional note: continue-on-error does not work currently for cibuildwheel: 
-  # https://github.com/pypa/cibuildwheel/issues/1062
-  # cpython-linux-aarch64:
-  #   name: 'Linux CPython (${{ matrix.cibw_archs }}, ${{ matrix.manylinux_image }})'
-  #   runs-on: ${{ matrix.os }}
-  #   strategy:
-  #     matrix:
-  #       os: [ubuntu-20.04]
-  #       cibw_archs: ["aarch64"]
-  #       manylinux_image: ["manylinux2014"]
-  #   steps:
-  #     - name: Set up QEMU
-  #       uses: docker/setup-qemu-action@v3
-  #       with:
-  #         platforms: all
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - uses: actions/setup-python@v5
-  #       name: Install Python
-  #       with:
-  #         python-version: '3.12'
-  #     - name: Build wheels
-  #       uses: pypa/cibuildwheel@v2.21.1
-  #       env:
-  #         CIBW_BEFORE_BUILD: pip install cython
-  #         CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
-  #         CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
-  #         CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp312-* cp313-*' || 'cp312-*' }}
-  #         CIBW_SKIP: "pp* *-musllinux_*"
-  #     - uses: actions/upload-artifact@v4
-  #       with:
-  #         name: 'linux-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}'
-  #         path: ./wheelhouse/*cp312*.whl
-  #         retention-days: ${{ env.ARTIFACT_RETENTION }}
-  #     - uses: actions/upload-artifact@v4
-  #       if: github.ref == 'refs/heads/master'
-  #       with:
-  #         name: 'linux-${{ matrix.cibw_archs }}-cp313-${{ github.run_id }}'
-  #         path: ./wheelhouse/*cp313*.whl
-  #         retention-days: ${{ env.ARTIFACT_RETENTION }}
+  cpython-linux-aarch64:
+    # if: github.ref == 'refs/heads/master'
+    name: 'Linux CPython (${{ matrix.cibw_archs }}, ${{ matrix.manylinux_image }})'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        cibw_archs: ["aarch64"]
+        manylinux_image: ["manylinux_2_28"]
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: all
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-python@v5
+        name: Install Python
+        with:
+          python-version: '3.12'
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v3.3.0
+        env:
+          CIBW_BEFORE_BUILD: pip install cython
+          CIBW_MANYLINUX_AARCH64_IMAGE: ${{ matrix.manylinux_image }}
+          CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
+          CIBW_PLATFORM: ${{ 'linux' }}
+          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp313-* cp314-*' || 'cp314-*' }}
+          CIBW_SKIP: "*-musllinux_*"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp313-${{ github.run_id }}'
+          path: ./wheelhouse/*cp313*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp314-${{ github.run_id }}'
+          path: ./wheelhouse/*cp314*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-macos:
     name: 'macOS CPython  (${{ matrix.buildplat[1] }})'
@@ -110,7 +113,6 @@ jobs:
     strategy:
       matrix:
         buildplat:
-        - [macos-13, x86_64, '']
         - [macos-latest, arm64, NETWORKIT_OSX_CROSSBUILD=ON]
     steps:
       - uses: actions/checkout@v4
@@ -121,13 +123,13 @@ jobs:
         with:
           python-version: '3.12'
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.23.0
+        uses: pypa/cibuildwheel@v3.3.0
         env:
           CIBW_BEFORE_BUILD: 
             pip install cython &&
             brew install libomp ninja
           CIBW_ARCHS_MACOS: ${{ matrix.buildplat[1] }}
-          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp310-* cp311-* cp312-* cp313-*' || 'cp313-*' }}
+          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp310-* cp311-* cp312-* cp313-* cp314-*' || 'cp314-*' }}
           CIBW_ENVIRONMENT: CXX='c++' ${{ matrix.buildplat[2] }} MACOSX_DEPLOYMENT_TARGET='15.0'
           CIBW_SKIP: "pp* *-musllinux_*"
           CIBW_TEST_COMMAND: python3 -c 'import networkit'
@@ -151,8 +153,14 @@ jobs:
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
           name: 'macos-${{ matrix.buildplat[1] }}-cp313-${{ github.run_id }}'
+          path: ./wheelhouse/*cp313*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'macos-${{ matrix.buildplat[1] }}-cp314-${{ github.run_id }}'
           path: ./wheelhouse/*cp313*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
@@ -174,11 +182,11 @@ jobs:
         with:
           python-version: '3.12'
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.23.0
+        uses: pypa/cibuildwheel@v3.3.0
         env:
           CIBW_BEFORE_BUILD: pip install cython ipython
           CIBW_ARCHS: "AMD64"
-          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp310-* cp311-* cp312-* cp313-*' || 'cp313-*' }}
+          CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp310-* cp311-* cp312-* cp313-* cp314-*' || 'cp314-*' }}
           CIBW_SKIP: pp*
           CIBW_TEST_COMMAND: python -c "import networkit"
       - uses: actions/upload-artifact@v4
@@ -200,14 +208,20 @@ jobs:
           path: ./wheelhouse/*cp312*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
           name: 'win-${{ matrix.cibw_archs }}-cp313-${{ github.run_id }}'
           path: ./wheelhouse/*cp313*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'win-${{ matrix.cibw_archs }}-cp314-${{ github.run_id }}'
+          path: ./wheelhouse/*cp314*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   source-distribution:
     name: 'Source distribution'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -218,7 +232,7 @@ jobs:
           python-version: '3.12'
       - name: Create sdist source
         run: |
-          pip install cython==3.0.9 numpy setuptools
+          pip install cython numpy setuptools
           python3 setup.py build_ext
           python3 setup.py sdist
       - uses: actions/upload-artifact@v4
@@ -247,7 +261,7 @@ jobs:
   upload-packages:
     if: needs.check-release-tag.outputs.is-release == 'true' && github.repository == 'networkit/networkit'
     name: 'PyPi release upload'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     needs: [cpython-macos, cpython-linux-x86_64, cpython-windows, source-distribution, check-release-tag]
     steps:
       - uses: actions/download-artifact@v4
