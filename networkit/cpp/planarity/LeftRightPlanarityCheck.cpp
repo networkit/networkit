@@ -78,6 +78,9 @@ void LeftRightPlanarityCheck::sortAdjacencyListByNestingDepth() {
 }
 
 bool LeftRightPlanarityCheck::conflicting(const Interval &interval, edgeid edgeId) {
+    if (interval.isEmpty()) {
+        return false;
+    }
     auto iteratorHigh = lowestPoint[interval.high];
     auto iteratorEdge = lowestPoint[edgeId];
 
@@ -204,7 +207,7 @@ void LeftRightPlanarityCheck::removeBackEdges(const edgeid edgeId, const node pa
         const edgeid highestReturnEdgeRight = stack.top().right.high;
 
         if (highestReturnEdgeLeft != noneEdgeId
-            && (highestReturnEdgeRight != noneEdgeId
+            && (highestReturnEdgeRight == noneEdgeId
                 || lowestPoint[highestReturnEdgeLeft] > lowestPoint[highestReturnEdgeRight])) {
             ref[edgeId] = highestReturnEdgeLeft;
         } else {
@@ -230,7 +233,7 @@ bool LeftRightPlanarityCheck::dfsTesting(const node startNode) {
         while (neighborIterator != range.end()) {
             const node neighbor = *neighborIterator;
             const edgeid currentEdgeId = graph->edgeId(currentNode, neighbor);
-
+            assert(currentEdgeId != noneEdgeId);
             if (preprocessedEdges[currentEdgeId] == noneEdgeId) {
                 stackBottom[currentEdgeId] = stack.empty() ? NoneConflictPair : stack.top();
 
