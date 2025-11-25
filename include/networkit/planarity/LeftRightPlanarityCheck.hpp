@@ -1,12 +1,18 @@
 /*  LeftRightPlanarityCheck.hpp
  *
- *	Created on: 03.01.2025
+ *  Created on: 03.01.2025
  *  Authors: Andreas Scharf (andreas.b.scharf@gmail.com)
  *
  */
 
 #ifndef NETWORKIT_PLANARITY_LEFT_RIGHT_PLANARITY_CHECK_HPP_
 #define NETWORKIT_PLANARITY_LEFT_RIGHT_PLANARITY_CHECK_HPP_
+
+#include <limits>
+#include <stack>
+#include <unordered_map>
+#include <vector>
+
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
@@ -28,52 +34,30 @@ public:
      * @param G The input graph to test for planarity. The graph should be undirected.
      * @throws std::runtime_error if graph is not an undirected graph
      */
-    LeftRightPlanarityCheck(const Graph &G) : graph(&G) {
-        if (G.isDirected()) {
-            throw std::runtime_error("The graph is not an undirected graph.");
-        }
-        numberOfEdges = graph->numberOfEdges();
-        lowestPoint.reserve(numberOfEdges);
-        secondLowestPoint.reserve(numberOfEdges);
-        ref.reserve(numberOfEdges);
-        lowestPointEdge.reserve(numberOfEdges);
-        nestingDepth.reserve(numberOfEdges);
-        stackBottom.reserve(numberOfEdges);
-        dfsGraph = Graph(graph->numberOfNodes(), false, true, false);
-    }
+    LeftRightPlanarityCheck(const Graph &G);
 
-    /**
-     * Executes the left-right planarity test on the input graph.
-     * This method performs all necessary computations to determine
-     * whether the graph is planar and prepares the result for retrieval
-     * via the `isPlanar()` method.
-     */
     void run() override;
 
-    /**
-     * Returns whether the input graph is planar.
-     * The result is only valid after the `run()` method has been called.
-     *
-     * @return True if the graph is planar, false otherwise.
-     * @throws std::runtime_error if called before `run()` has been executed.
-     */
     bool isPlanar() const {
         assureFinished();
         return isGraphPlanar;
     }
 
 private:
+    // We still keep a none-Edge as a *value* sentinel (but never as a key).
     static const Edge noneEdge;
     count numberOfEdges;
     static constexpr count noneHeight{std::numeric_limits<count>::max()};
+    static constexpr edgeid noneEdgeId{std::numeric_limits<edgeid>::max()};
 
     struct Interval {
-        Edge low{noneEdge};
-        Edge high{noneEdge};
+        edgeid low{noneEdgeId};
+        edgeid high{noneEdgeId};
 
-        Interval() : low{noneEdge}, high{noneEdge} {};
-        Interval(const Edge &low, const Edge &high) : low(low), high(high) {}
-        bool isEmpty() const { return low == noneEdge && high == noneEdge; }
+        Interval() = default;
+        Interval(edgeid lowId, edgeid highId) : low(lowId), high(highId) {}
+
+        bool isEmpty() const { return low == noneEdgeId && high == noneEdgeId; }
 
         friend bool operator==(const Interval &lhs, const Interval &rhs) {
             return lhs.low == rhs.low && lhs.high == rhs.high;
@@ -93,28 +77,47 @@ private:
             return lhs.left == rhs.left && lhs.right == rhs.right;
         }
     };
-    const ConflictPair NoneConflictPair{Interval(), Interval()};
+
+    const ConflictPair NoneConflictPair{Interval{}, Interval{}};
 
     const Graph *graph;
-    bool isGraphPlanar{};
+    bool isGraphPlanar{false};
+
+    // Algorithm phases
     void dfsOrientation(node startNode);
     bool dfsTesting(node startNode);
-    bool applyConstraints(const Edge &edge, const Edge &parentEdge);
-    void removeBackEdges(const Edge &edge);
+
+    // All these now work with edge IDs
+    bool applyConstraints(edgeid edgeId, edgeid parentEdgeId);
+    void removeBackEdges(edgeid edgeId, node parentNode);
     void sortAdjacencyListByNestingDepth();
-    bool conflicting(const Interval &interval, const Edge &edge);
+    bool conflicting(const Interval &interval, edgeid edgeId);
     count getLowestLowPoint(const ConflictPair &conflictPair);
-    std::vector<count> heights;
-    std::unordered_map<Edge, count> lowestPoint;
-    std::unordered_map<Edge, count> secondLowestPoint;
-    std::unordered_map<Edge, Edge> ref;
-    std::vector<node> roots;
-    std::unordered_map<Edge, Edge> lowestPointEdge;
-    std::unordered_map<Edge, count> nestingDepth;
-    std::unordered_map<index, Edge> parentEdges;
+
+    // DFS / lowpoint state
+    std::vector<count> heights; // per node
+    std::vector<node> roots;    // roots of DFS forest
+
+    std::vector<count> lowestPoint;
+    std::vector<count> secondLowestPoint;
+    std::vector<edgeid> ref;
+    std::vector<edgeid> lowestPointEdge;
+    std::vector<count> nestingDepth;
+    std::vector<ConflictPair> stackBottom;
+
+    // Per-node parent edge + parent node in DFS tree (by ID, not Edge)
+    std::vector<edgeid> parentEdgeIds; // parent edge for each node (noneEdgeId if root)
+    std::vector<node> parentNodes;     // parent node for each node (none if root)
+
+    // For each *underlying* edge ID, remember the DFS orientation's head (v)
+    std::vector<node> edgeEndpoints; // edgeEndpoints[eid] = v in oriented DFS edge (u -> v)
+
+    // Conflict stack
     std::stack<ConflictPair> stack;
-    std::unordered_map<Edge, ConflictPair> stackBottom;
+    // DFS graph with tree/back orientation
     Graph dfsGraph;
 };
+
 } // namespace NetworKit
+
 #endif // NETWORKIT_PLANARITY_LEFT_RIGHT_PLANARITY_CHECK_HPP_
