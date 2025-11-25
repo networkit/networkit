@@ -27,6 +27,15 @@ class TestCentrality(unittest.TestCase):
             "input/looptest2.gml", nk.Format.GML
         )  # with self-loops sprinkled in
 
+    def testScoreAsArray(self):
+        CL = nk.centrality.ApproxBetweenness(self.L, epsilon=0.01, delta=0.1)
+        CL.run()
+        listScores = CL.scores()
+        arrayScores = CL.scores(asarray=True)
+        self.assertIsInstance(listScores, list)
+        self.assertIsInstance(arrayScores.base, np.ndarray)
+        np.testing.assert_allclose(listScores, arrayScores)
+
     def testCompactScores(self):
         n = 6
         G = nk.Graph(n)
@@ -70,7 +79,7 @@ class TestCentrality(unittest.TestCase):
         G.addEdge(3, 5)
         G.addEdge(4, 5)
 
-        G.removeNode(2, 4)
+        G.removeEdge(2, 4)
 
         bet = nk.centrality.Betweenness(G, False, True)
         bet.run()

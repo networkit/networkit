@@ -53,7 +53,7 @@ public:
      *
      * @return The centrality scores calculated by @ref run().
      */
-    virtual const std::vector<double> compactScores() const;
+    virtual std::vector<double> compactScores() const;
 
     /**
      * Get a vector containing the edge centrality score for each edge in the graph (where

@@ -13,8 +13,11 @@ from .dynbase cimport _DynAlgorithm
 from .dynbase import DynAlgorithm
 from .dynamics cimport _GraphEvent, GraphEvent
 from .graph cimport _Graph, Graph
+from .helpers cimport maybe_asarray_1d
 from .structures cimport _Cover, Cover, _Partition, Partition, count, index, node, edgeweight
 from networkit.algebraic import adjacencyEigenvector, PageRankMatrix, symmetricEigenvectors
+
+ctypedef double score_val
 
 cdef extern from "limits.h":
 	cdef uint64_t ULONG_MAX
@@ -27,9 +30,9 @@ cdef extern from "<networkit/centrality/Centrality.hpp>":
 
 	cdef cppclass _Centrality "NetworKit::Centrality"(_Algorithm):
 		_Centrality(_Graph, bool_t, bool_t) except +
-		vector[double] scores() except +
-		vector[double] compactScores() except +
-		vector[pair[node, double]] ranking() except +
+		vector[score_val] &scores() except +
+		vector[score_val] compactScores() except +
+		vector[pair[node, score_val]] ranking() except +
 		double score(node) except +
 		double maximum() except +
 		double centralization() except +
@@ -46,20 +49,25 @@ cdef class Centrality(Algorithm):
 	def __dealloc__(self):
 		self._G = None # just to be sure the graph is deleted
 
-	def scores(self):
+	def scores(self, asarray=None):
 		"""
 		scores()
 
 		Returns the scores of all nodes for the centrality algorithm.
 
+		Parameters
+		----------
+		asarray : optional
+			Return the result as a numpy array. Default: None
+
 		Returns
 		-------
-		list(float)
+		list(float) or ndarray
 			The list of all scores.
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
-		return (<_Centrality*>(self._this)).scores()
+		return maybe_asarray_1d(&(<_Centrality*>(self._this)).scores(), asarray)
 
 	def compactScores(self):
 		"""
@@ -181,8 +189,9 @@ cdef class Betweenness(Centrality):
 		"""
 		edgeScores()
 		
-		Get a vector containing the betweenness score for each edge in the graph
-		in ascending edge ID order.
+		Get a list containing the betweenness score for each edge in the graph
+		in ascending edge ID order. For the creation of this list, additional memory is
+		allocated.
 
 		Returns
 		-------
@@ -195,8 +204,9 @@ cdef class Betweenness(Centrality):
 		"""
 		compactEdgeScores()
 
-		Get a vector containing the betweenness score for each existing edge in the graph
-		in ascending edge ID order.
+		Get a list containing the betweenness score for each existing edge in the graph
+		in ascending edge ID order. For the creation of this list, additional memory is
+		allocated.
 
 		Returns
 		-------
