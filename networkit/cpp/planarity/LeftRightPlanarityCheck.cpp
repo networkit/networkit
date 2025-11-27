@@ -8,11 +8,8 @@
 #include "networkit/planarity/LeftRightPlanarityCheck.hpp"
 
 #include <algorithm>
-#include <unordered_set>
 
 namespace NetworKit {
-
-const Edge LeftRightPlanarityCheck::noneEdge{};
 
 LeftRightPlanarityCheck::LeftRightPlanarityCheck(const Graph &G) : graph(&G) {
     if (G.isDirected()) {
