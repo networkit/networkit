@@ -10,7 +10,6 @@
 
 #include <limits>
 #include <stack>
-#include <unordered_map>
 #include <vector>
 
 #include <networkit/base/Algorithm.hpp>
@@ -44,8 +43,6 @@ public:
     }
 
 private:
-    // We still keep a none-Edge as a *value* sentinel (but never as a key).
-    static const Edge noneEdge;
     count numberOfEdges;
     static constexpr count noneHeight{std::numeric_limits<count>::max()};
     static constexpr edgeid noneEdgeId{std::numeric_limits<edgeid>::max()};
@@ -83,11 +80,9 @@ private:
     const Graph *graph;
     bool isGraphPlanar{false};
 
-    // Algorithm phases
     void dfsOrientation(node startNode);
     bool dfsTesting(node startNode);
 
-    // All these now work with edge IDs
     bool applyConstraints(edgeid edgeId, edgeid parentEdgeId);
     void removeBackEdges(edgeid edgeId, node parentNode);
     void sortAdjacencyListByNestingDepth();
@@ -105,7 +100,7 @@ private:
     std::vector<count> nestingDepth;
     std::vector<ConflictPair> stackBottom;
 
-    // Per-node parent edge + parent node in DFS tree (by ID, not Edge)
+    // Per-node parent edge + parent node in DFS tree
     std::vector<edgeid> parentEdgeIds; // parent edge for each node (noneEdgeId if root)
     std::vector<node> parentNodes;     // parent node for each node (none if root)
 
