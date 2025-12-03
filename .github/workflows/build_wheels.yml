@@ -10,7 +10,7 @@ on:
 
 # Default parameters for all builds
 env:
-  ARTIFACT_RETENTION: ${{ github.ref == 'refs/heads/master' && '7' || '1' }}
+  ARTIFACT_RETENTION: ${{ github.ref == 'refs/heads/master' && '1' || '1' }}
 
 jobs:
 # This job gets the current date in format YYYYMMDD and saves it to an github action variable 'current_date'
@@ -41,6 +41,11 @@ jobs:
         name: Install Python
         with:
           python-version: '3.12'
+      - name: Set nightly name
+        # if: github.ref == 'refs/heads/master'
+        run: |
+          pip install toml-cli
+          toml set --toml-path=pyproject.toml "project.name" "networkit-nightly"
       - name: Build wheels
         uses: pypa/cibuildwheel@v3.3.0
         env:
@@ -76,13 +81,13 @@ jobs:
           path: ./wheelhouse/*cp313*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
           name: 'linux-${{ matrix.cibw_archs }}-cp314-${{ github.run_id }}'
           path: ./wheelhouse/*cp314*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-linux-aarch64:
-    # if: github.ref == 'refs/heads/master'
     name: 'Linux CPython (${{ matrix.cibw_archs }}, ${{ matrix.manylinux_image }})'
     runs-on: ubuntu-latest
     needs: [get-current-date]
@@ -102,7 +107,13 @@ jobs:
         name: Install Python
         with:
           python-version: '3.12'
+      - name: Set nightly name
+        # if: github.ref == 'refs/heads/master'
+        run: |
+          pip install toml-cli
+          toml set --toml-path=pyproject.toml "project.name" "networkit-nightly"
       - name: Build wheels
+        if: github.ref == 'refs/heads/master'
         uses: pypa/cibuildwheel@v3.3.0
         env:
           CIBW_BEFORE_BUILD: pip install cython
@@ -113,11 +124,13 @@ jobs:
           CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp313-* cp314-*' || 'cp314-*' }}
           CIBW_SKIP: "*-musllinux_*"
       - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
           name: 'linux-${{ matrix.cibw_archs }}-cp313-${{ github.run_id }}'
           path: ./wheelhouse/*cp313*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
           name: 'linux-${{ matrix.cibw_archs }}-cp314-${{ github.run_id }}'
           path: ./wheelhouse/*cp314*.whl
@@ -139,6 +152,11 @@ jobs:
         name: Install Python
         with:
           python-version: '3.12'
+      - name: Set nightly name
+        # if: github.ref == 'refs/heads/master'
+        run: |
+          pip install toml-cli
+          toml set --toml-path=pyproject.toml "project.name" "networkit-nightly"
       - name: Build wheels
         uses: pypa/cibuildwheel@v3.3.0
         env:
@@ -176,9 +194,10 @@ jobs:
           path: ./wheelhouse/*cp313*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
           name: 'macos-${{ matrix.buildplat[1] }}-cp314-${{ github.run_id }}'
-          path: ./wheelhouse/*cp313*.whl
+          path: ./wheelhouse/*cp314*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
 
@@ -199,6 +218,11 @@ jobs:
         name: Install Python
         with:
           python-version: '3.12'
+      - name: Set nightly name
+        # if: github.ref == 'refs/heads/master'
+        run: |
+          pip install toml-cli
+          toml set --toml-path=pyproject.toml "project.name" "networkit-nightly"
       - name: Build wheels
         uses: pypa/cibuildwheel@v3.3.0
         env:
@@ -233,6 +257,7 @@ jobs:
           path: ./wheelhouse/*cp313*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
           name: 'win-${{ matrix.cibw_archs }}-cp314-${{ github.run_id }}'
           path: ./wheelhouse/*cp314*.whl
@@ -250,18 +275,22 @@ jobs:
         name: Install Python
         with:
           python-version: '3.12'
+      - name: Set nightly name
+        # if: github.ref == 'refs/heads/master'
+        run: |
+          pip install toml-cli
+          toml set --toml-path=pyproject.toml "project.name" "networkit-nightly"
       - name: Create sdist source
         run: |
           pip install cython numpy setuptools
-          python3 setup.py build_ext
-          python3 setup.py sdist
+          NETWORKIT_BUILD_NUMBER='${{ needs.get-current-date.outputs.current-date }}' python3 setup.py sdist
       - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
           name: 'sdist-${{ github.run_id }}.tar.gz'
           path: ./dist/*networkit*.tar.gz
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-        env:
-          NETWORKIT_BUILD_NUMBER: ${{ needs.get-current-date.outputs.current-date }}
+
 
   # NOTE: Currently disabled.
   # This job checks whether the current workflow is triggered by a new tag with the following form: INT.INT or INT.INT.INT (for example: 1.0, 1.0.1, ...)
@@ -283,10 +312,10 @@ jobs:
 
   # NOTE: Currently disabled.
   # upload-packages:
-  #   if: needs.check-release-tag.outputs.is-release == 'true' && github.repository == 'networkit/networkit'
-  #   name: 'PyPi release upload'
+  #   if: github.ref == 'refs/heads/master' && github.repository == 'networkit/networkit'
+  #   name: 'PyPi test upload'
   #   runs-on: ubuntu-latest
-  #   needs: [cpython-macos, cpython-linux-x86_64, cpython-windows, source-distribution, check-release-tag]
+  #   needs: [cpython-macos, cpython-linux-x86_64, cpython-windows, cpython-linux-aarch64, source-distribution]
   #   steps:
   #     - uses: actions/download-artifact@v4
   #       with:
@@ -302,5 +331,5 @@ jobs:
   #         python3 -m twine upload --verbose --skip-existing ./dist/artifact/*
   #       env:
   #         TWINE_USERNAME: __token__
-  #         TWINE_PASSWORD: ${{ secrets.TWINE_TOKEN }}
+  #         TWINE_PASSWORD: ${{ secrets.TWINE_TEST_TOKEN }}
 
