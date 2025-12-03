@@ -13,9 +13,22 @@ env:
   ARTIFACT_RETENTION: ${{ github.ref == 'refs/heads/master' && '7' || '1' }}
 
 jobs:
+# This job gets the current date in format YYYYMMDD and saves it to an github action variable 'current_date'
+  get-current-date:
+    name: "Get current date"
+    runs-on: ubuntu-latest
+    outputs:
+      current-date: ${{ steps.get_date.outputs.current-date }}
+    steps:
+      - name: Retrieve current date
+        id: get_date
+        run: |
+          echo "::set-output name=current-date::$(date +'%Y%m%d')"
+
   cpython-linux-x86_64:
     name: 'Linux CPython (${{ matrix.cibw_archs }}, ${{ matrix.manylinux_image }})'
     runs-on: ubuntu-latest
+    needs: [get-current-date]
     strategy:
       matrix:
         cibw_archs: ["x86_64"]
@@ -34,6 +47,7 @@ jobs:
           CIBW_BEFORE_BUILD: pip install cython auditwheel --upgrade
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
+          CIBW_ENVIRONMENT: NETWORKIT_BUILD_NUMBER='${{ needs.get-current-date.outputs.current-date }}'
           CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp310-* cp311-* cp312-* cp313-* cp314-*' || 'cp314-*' }}
           CIBW_SKIP: "pp* *-musllinux_*"
           CIBW_TEST_COMMAND: python3 -c 'import networkit'
@@ -71,6 +85,7 @@ jobs:
     # if: github.ref == 'refs/heads/master'
     name: 'Linux CPython (${{ matrix.cibw_archs }}, ${{ matrix.manylinux_image }})'
     runs-on: ubuntu-latest
+    needs: [get-current-date]
     strategy:
       matrix:
         cibw_archs: ["aarch64"]
@@ -93,6 +108,7 @@ jobs:
           CIBW_BEFORE_BUILD: pip install cython
           CIBW_MANYLINUX_AARCH64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
+          CIBW_ENVIRONMENT: NETWORKIT_BUILD_NUMBER='${{ needs.get-current-date.outputs.current-date }}'
           CIBW_PLATFORM: ${{ 'linux' }}
           CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp313-* cp314-*' || 'cp314-*' }}
           CIBW_SKIP: "*-musllinux_*"
@@ -110,6 +126,7 @@ jobs:
   cpython-macos:
     name: 'macOS CPython  (${{ matrix.buildplat[1] }})'
     runs-on: ${{ matrix.buildplat[0] }}
+    needs: [get-current-date]
     strategy:
       matrix:
         buildplat:
@@ -130,7 +147,7 @@ jobs:
             brew install libomp ninja
           CIBW_ARCHS_MACOS: ${{ matrix.buildplat[1] }}
           CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp310-* cp311-* cp312-* cp313-* cp314-*' || 'cp314-*' }}
-          CIBW_ENVIRONMENT: CXX='c++' ${{ matrix.buildplat[2] }} MACOSX_DEPLOYMENT_TARGET='15.0'
+          CIBW_ENVIRONMENT: CXX='c++' ${{ matrix.buildplat[2] }} MACOSX_DEPLOYMENT_TARGET='15.0' NETWORKIT_BUILD_NUMBER='${{ needs.get-current-date.outputs.current-date }}'
           CIBW_SKIP: "pp* *-musllinux_*"
           CIBW_TEST_COMMAND: python3 -c 'import networkit'
           CIBW_TEST_SKIP: "*-macosx_x86_64 *-macosx_universal2:x86_64"
@@ -168,6 +185,7 @@ jobs:
   cpython-windows:
     name: 'Windows CPython (${{ matrix.cibw_archs }})'
     runs-on: windows-latest
+    needs: [get-current-date]
     strategy:
       matrix:
         cibw_archs: [amd64]
@@ -186,6 +204,7 @@ jobs:
         env:
           CIBW_BEFORE_BUILD: pip install cython ipython
           CIBW_ARCHS: "AMD64"
+          CIBW_ENVIRONMENT: NETWORKIT_BUILD_NUMBER='${{ needs.get-current-date.outputs.current-date }}'
           CIBW_BUILD: ${{ github.ref == 'refs/heads/master' && 'cp310-* cp311-* cp312-* cp313-* cp314-*' || 'cp314-*' }}
           CIBW_SKIP: pp*
           CIBW_TEST_COMMAND: python -c "import networkit"
@@ -222,6 +241,7 @@ jobs:
   source-distribution:
     name: 'Source distribution'
     runs-on: ubuntu-latest
+    needs: [get-current-date]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -240,43 +260,47 @@ jobs:
           name: 'sdist-${{ github.run_id }}.tar.gz'
           path: ./dist/*networkit*.tar.gz
           retention-days: ${{ env.ARTIFACT_RETENTION }}
+        env:
+          NETWORKIT_BUILD_NUMBER: ${{ needs.get-current-date.outputs.current-date }}
 
+  # NOTE: Currently disabled.
   # This job checks whether the current workflow is triggered by a new tag with the following form: INT.INT or INT.INT.INT (for example: 1.0, 1.0.1, ...)
   # The result is saved in a variable and used as a conditional variable when uploading packages.
-  check-release-tag:
-    name: "Check for new release"
-    runs-on: ubuntu-latest
-    outputs:
-      is-release: ${{ steps.do-check.outputs.is-release }}
-    steps:
-      - name: Check release tag ${{ github.ref }}
-        id: do-check
-        run: |
-          if [[ ${{ github.ref }} =~ ^refs\/tags\/[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
-            echo "::set-output name=is-release::true"
-          else
-            echo "::set-output name=is-release::false"
-          fi
+  # check-release-tag:
+  #   name: "Check for new release"
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     is-release: ${{ steps.do-check.outputs.is-release }}
+  #   steps:
+  #     - name: Check release tag ${{ github.ref }}
+  #       id: do-check
+  #       run: |
+  #         if [[ ${{ github.ref }} =~ ^refs\/tags\/[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+  #           echo "::set-output name=is-release::true"
+  #         else
+  #           echo "::set-output name=is-release::false"
+  #         fi
 
-  upload-packages:
-    if: needs.check-release-tag.outputs.is-release == 'true' && github.repository == 'networkit/networkit'
-    name: 'PyPi release upload'
-    runs-on: ubuntu-latest
-    needs: [cpython-macos, cpython-linux-x86_64, cpython-windows, source-distribution, check-release-tag]
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          path: ./dist
-      - uses: actions/setup-python@v5
-        name: Install Python
-        with:
-          python-version: '3.12'
-      - name: Upload to TestPyPI
-        run: |
-          unzip "./dist/artifact/*.zip"
-          pip install twine 
-          python3 -m twine upload --verbose --skip-existing ./dist/artifact/*
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TWINE_TOKEN }}
+  # NOTE: Currently disabled.
+  # upload-packages:
+  #   if: needs.check-release-tag.outputs.is-release == 'true' && github.repository == 'networkit/networkit'
+  #   name: 'PyPi release upload'
+  #   runs-on: ubuntu-latest
+  #   needs: [cpython-macos, cpython-linux-x86_64, cpython-windows, source-distribution, check-release-tag]
+  #   steps:
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         path: ./dist
+  #     - uses: actions/setup-python@v5
+  #       name: Install Python
+  #       with:
+  #         python-version: '3.12'
+  #     - name: Upload to TestPyPI
+  #       run: |
+  #         unzip "./dist/artifact/*.zip"
+  #         pip install twine 
+  #         python3 -m twine upload --verbose --skip-existing ./dist/artifact/*
+  #       env:
+  #         TWINE_USERNAME: __token__
+  #         TWINE_PASSWORD: ${{ secrets.TWINE_TOKEN }}
 
