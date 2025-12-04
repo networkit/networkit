@@ -213,7 +213,7 @@ void LeftRightPlanarityCheck::removeBackEdges(const edgeid edgeId, const node pa
     }
 }
 
-bool LeftRightPlanarityCheck::dfsTesting(const node startNode) {
+bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
     std::stack<node> dfsStack;
     dfsStack.push(startNode);
 
@@ -290,7 +290,7 @@ bool LeftRightPlanarityCheck::dfsTesting(const node startNode) {
     return true;
 }
 
-void LeftRightPlanarityCheck::dfsOrientation(const node startNode) {
+void LeftRightPlanarityCheck::dfsOrientation(node startNode) {
     std::stack<node> dfsStack;
     dfsStack.push(startNode);
 
