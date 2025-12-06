@@ -105,3 +105,47 @@ cdef class EdmondsKarp(Algorithm):
 			The flow values of all edges indexed by edge id.
 		"""
 		return (<_EdmondsKarp*>(self._this)).getFlowVector()
+
+# === Dinic binding ===========================================================
+
+cdef extern from "<networkit/flow/Dinic.hpp>":
+
+	cdef cppclass _Dinic "NetworKit::Dinic"(_Algorithm):
+		_Dinic(const _Graph &graph, node src, node dst) except +
+		edgeweight getMaxFlow() except +
+
+
+cdef class Dinic(Algorithm):
+	"""
+	Dinic(graph, source, sink)
+
+	Computes maximum flow in a directed, weighted graph using Dinic's
+	blocking-flow algorithm.
+
+	Parameters
+	----------
+	graph : networkit.Graph
+		Directed, weighted input graph.
+	source : int
+		Source node identifier.
+	sink : int
+		Target node identifier.
+	"""
+	cdef Graph _graph
+
+	def __cinit__(self, Graph graph not None, node source, node sink):
+		self._graph = graph
+		self._this = new _Dinic(graph._this, source, sink)
+
+	def getMaxFlow(self):
+		"""
+		getMaxFlow()
+
+		Returns the computed maximum flow from source to sink.
+
+		Returns
+		-------
+		float
+			The maximum flow value.
+		"""
+		return (<_Dinic*>(self._this)).getMaxFlow()
