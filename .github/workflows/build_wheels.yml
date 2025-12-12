@@ -81,7 +81,7 @@ jobs:
           path: ./wheelhouse/*cp313*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
+        # if: github.ref == 'refs/heads/master'
         with:
           name: 'linux-${{ matrix.cibw_archs }}-cp314-${{ github.run_id }}'
           path: ./wheelhouse/*cp314*.whl
@@ -194,7 +194,7 @@ jobs:
           path: ./wheelhouse/*cp313*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
+        # if: github.ref == 'refs/heads/master'
         with:
           name: 'macos-${{ matrix.buildplat[1] }}-cp314-${{ github.run_id }}'
           path: ./wheelhouse/*cp314*.whl
@@ -257,7 +257,7 @@ jobs:
           path: ./wheelhouse/*cp313*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
+        # if: github.ref == 'refs/heads/master'
         with:
           name: 'win-${{ matrix.cibw_archs }}-cp314-${{ github.run_id }}'
           path: ./wheelhouse/*cp314*.whl
@@ -285,7 +285,7 @@ jobs:
           pip install cython numpy setuptools
           NETWORKIT_BUILD_NUMBER='${{ needs.get-current-date.outputs.current-date }}' python3 setup.py sdist
       - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/master'
+        # if: github.ref == 'refs/heads/master'
         with:
           name: 'sdist-${{ github.run_id }}.tar.gz'
           path: ./dist/*networkit*.tar.gz
@@ -310,26 +310,26 @@ jobs:
   #           echo "::set-output name=is-release::false"
   #         fi
 
-  # NOTE: Currently disabled.
-  # upload-packages:
-  #   if: github.ref == 'refs/heads/master' && github.repository == 'networkit/networkit'
-  #   name: 'PyPi test upload'
-  #   runs-on: ubuntu-latest
-  #   needs: [cpython-macos, cpython-linux-x86_64, cpython-windows, cpython-linux-aarch64, source-distribution]
-  #   steps:
-  #     - uses: actions/download-artifact@v4
-  #       with:
-  #         path: ./dist
-  #     - uses: actions/setup-python@v5
-  #       name: Install Python
-  #       with:
-  #         python-version: '3.12'
-  #     - name: Upload to TestPyPI
-  #       run: |
-  #         unzip "./dist/artifact/*.zip"
-  #         pip install twine 
-  #         python3 -m twine upload --verbose --skip-existing ./dist/artifact/*
-  #       env:
-  #         TWINE_USERNAME: __token__
-  #         TWINE_PASSWORD: ${{ secrets.TWINE_TEST_TOKEN }}
+  upload-packages:
+    if: github.repository == 'networkit/networkit' # github.ref == 'refs/heads/master' && 
+    name: 'PyPi test upload'
+    runs-on: ubuntu-latest
+    needs: [cpython-macos, cpython-linux-x86_64, cpython-windows, cpython-linux-aarch64, source-distribution]
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          path: ./dist
+          merge-multiple: true
+      - uses: actions/setup-python@v5
+        name: Install Python
+        with:
+          python-version: '3.12'
+      - name: Upload to TestPyPI
+        run: |
+          pip install twine
+          ls -la ./dist/ 
+          python3 -m twine upload --repository testpypi --verbose --skip-existing ./dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TWINE_PYPI_TEST }}
 
