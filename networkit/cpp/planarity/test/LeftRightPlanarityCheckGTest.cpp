@@ -19,6 +19,7 @@ public:
         for (count i = 0; i < numNodes - 1; ++i) {
             graph.addEdge(i, i + 1);
         }
+        graph.indexEdges();
         return graph;
     }
 
@@ -30,6 +31,7 @@ public:
         }
         if (numNodes > 2)
             graph.addEdge(numNodes - 2, 0);
+        graph.indexEdges();
         return graph;
     }
 
@@ -41,11 +43,12 @@ public:
         }
         if (numNodes > 2)
             graph.addEdge(numNodes - 2, 0);
+        graph.indexEdges();
         return graph;
     }
 
     Graph binaryTreeGraph(count numNodes) {
-        Graph graph(numNodes, true, false, true);
+        Graph graph(numNodes, true, false);
         for (count i = 0; i < numNodes; ++i) {
             count leftChild = 2 * i + 1;
             count rightChild = 2 * i + 2;
@@ -56,11 +59,12 @@ public:
                 graph.addEdge(i, rightChild, static_cast<double>(i));
             }
         }
+        graph.indexEdges();
         return graph;
     }
 
     Graph wheelGraph(count numNodes) {
-        Graph graph(numNodes, false, false, true);
+        Graph graph(numNodes, false, false);
         if (numNodes < 4) {
             throw std::invalid_argument("A wheel graph requires at least 4 nodes.");
         }
@@ -74,6 +78,7 @@ public:
         for (count i = 1; i < numNodes; ++i) {
             graph.addEdge(0, i);
         }
+        graph.indexEdges();
         return graph;
     }
 
@@ -85,6 +90,7 @@ public:
                 graph.addEdge(i, j, static_cast<double>(j * (j + 1)));
             }
         }
+        graph.indexEdges();
         return graph;
     }
 
@@ -105,6 +111,7 @@ public:
                 }
             }
         }
+        graph.indexEdges();
         return graph;
     }
 
@@ -122,10 +129,22 @@ public:
         for (count i = 0; i < n; ++i) {
             graph.addEdge(i, n + i);
         }
-
+        graph.indexEdges();
         return graph;
     }
 };
+
+TEST_F(LeftRightPlanarityCheckGTest, testNoEdgesIndexedGraphThrows) {
+    Graph graph(0);
+    try {
+        LeftRightPlanarityCheck test(graph);
+        FAIL() << "Expected std::runtime_error";
+    } catch (const std::runtime_error &e) {
+        EXPECT_STREQ(e.what(), "The graph has no edge IDs.");
+    } catch (...) {
+        FAIL() << "Expected std::runtime_error but got a different exception.";
+    }
+}
 
 TEST_F(LeftRightPlanarityCheckGTest, testDirectedGraphThrows) {
     Graph graph(0, false, true, false);
@@ -140,7 +159,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testDirectedGraphThrows) {
 }
 
 TEST_F(LeftRightPlanarityCheckGTest, testIsPlanarThrowsIfRunIsNotCalled) {
-    Graph graph{};
+    Graph graph(0, false, false, true);
     LeftRightPlanarityCheck test(graph);
     try {
         test.isPlanar();
@@ -153,14 +172,14 @@ TEST_F(LeftRightPlanarityCheckGTest, testIsPlanarThrowsIfRunIsNotCalled) {
 }
 
 TEST_F(LeftRightPlanarityCheckGTest, testPlanarEmptyGraph) {
-    Graph graph{};
+    Graph graph(0, false, false, true);
     LeftRightPlanarityCheck test(graph);
     test.run();
     EXPECT_TRUE(test.isPlanar());
 }
 
 TEST_F(LeftRightPlanarityCheckGTest, testPlanarSingleNode) {
-    Graph graph{1};
+    Graph graph{1, false, false, true};
     LeftRightPlanarityCheck test(graph);
     test.run();
     EXPECT_TRUE(test.isPlanar());
@@ -231,7 +250,6 @@ TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarCompleteGraphsEulerCriterium) 
 }
 
 TEST_F(LeftRightPlanarityCheckGTest, testPlanarGridGraphs) {
-
     for (count numberOfRows = 2; numberOfRows < maxNumberOfNodes / 2; ++numberOfRows) {
         for (count numberOfColumns = 2; numberOfColumns < maxNumberOfNodes / 2; ++numberOfColumns) {
             Graph graph = gridGraph(numberOfRows, numberOfColumns);
@@ -253,6 +271,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarCompleteBipartiteGraphK3_3) {
     graph.addEdge(2, 3);
     graph.addEdge(2, 4);
     graph.addEdge(2, 5);
+    graph.indexEdges();
 
     LeftRightPlanarityCheck test(graph);
     test.run();
@@ -290,6 +309,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarCompleteTripartiteGraphK3_3_3)
     graph.addEdge(5, 6);
     graph.addEdge(5, 7);
     graph.addEdge(5, 8);
+    graph.indexEdges();
     LeftRightPlanarityCheck test(graph);
     test.run();
     EXPECT_FALSE(test.isPlanar());
@@ -312,6 +332,8 @@ TEST_F(LeftRightPlanarityCheckGTest, testOnePlanarOneNonPlanarSubGraph) {
     graph.addEdge(7, 8);
     graph.addEdge(8, 9);
     graph.addEdge(9, 6);
+
+    graph.indexEdges();
     LeftRightPlanarityCheck test(graph);
     test.run();
     EXPECT_FALSE(test.isPlanar());
@@ -348,6 +370,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarPetersenGraphs) {
 TEST_F(LeftRightPlanarityCheckGTest, testPlanar4eltGraph) {
     METISGraphReader reader;
     Graph graph = reader.read("input/4elt.graph");
+    graph.indexEdges();
     LeftRightPlanarityCheck test(graph);
     test.run();
     EXPECT_TRUE(test.isPlanar());
@@ -356,6 +379,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testPlanar4eltGraph) {
 TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarHepthGraph) {
     METISGraphReader reader;
     Graph graph = reader.read("input/hep-th.graph");
+    graph.indexEdges();
     LeftRightPlanarityCheck test(graph);
     test.run();
     EXPECT_FALSE(test.isPlanar());
@@ -364,6 +388,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarHepthGraph) {
 TEST_F(LeftRightPlanarityCheckGTest, testPlanarAirfoil1Graph) {
     METISGraphReader reader;
     Graph graph = reader.read("input/airfoil1.graph");
+    graph.indexEdges();
     LeftRightPlanarityCheck test(graph);
     test.run();
     EXPECT_TRUE(test.isPlanar());
@@ -372,6 +397,7 @@ TEST_F(LeftRightPlanarityCheckGTest, testPlanarAirfoil1Graph) {
 TEST_F(LeftRightPlanarityCheckGTest, testNonPlanarAstroPhGraph) {
     METISGraphReader reader;
     Graph graph = reader.read("input/astro-ph.graph");
+    graph.indexEdges();
     LeftRightPlanarityCheck test(graph);
     test.run();
     EXPECT_FALSE(test.isPlanar());
