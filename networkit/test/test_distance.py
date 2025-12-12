@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import numpy as np
-import os
 import random
+import math
 import unittest
 
 import networkit as nk
@@ -378,6 +378,126 @@ class TestDistance(unittest.TestCase):
 		self.assertListEqual(vol.volume(self.L, [0.1, 0.2, 0.8]), [1.0, 1.0, 1.0])
 		#assert correct types
 		self.assertRaises(Exception, vol.volume(self.L, [0.1, 0.2, "wrongType"]))
+
+	def testFloydWarshall_constructor_throws_unweighted_graph(self):
+		G = nk.Graph(1, weighted=False)
+		with self.assertRaisesRegex(RuntimeError, "unweighted"):
+			nk.distance.FloydWarshall(G)
+
+	def testFloydWarshall_getDistance_throws_if_not_run(self):
+		G = nk.Graph(1, weighted=True)
+		fw = nk.distance.FloydWarshall(G)
+		with self.assertRaisesRegex(RuntimeError, "run must be called first"):
+			fw.getDistance(0, 1)
+
+	def testFloydWarshall_isNodeInNegativeCycle_throws_if_not_run(self):
+		G = nk.Graph(1, weighted=True)
+		fw = nk.distance.FloydWarshall(G)
+		with self.assertRaisesRegex(RuntimeError, "run must be called first"):
+			fw.isNodeInNegativeCycle(0)
+
+	def testFloydWarshall_getNodesOnShortestPath_throws_if_not_run(self):
+		G = nk.Graph(2, weighted=True)
+		fw = nk.distance.FloydWarshall(G)
+		with self.assertRaisesRegex(RuntimeError, "run must be called first"):
+			fw.getNodesOnShortestPath(0, 1)
+
+	def testFloydWarshall_completeGraphK3_distances_and_paths(self):
+		G = nk.Graph(3, weighted=True, directed=False)
+		G.addEdge(0, 1, 1.0)
+		G.addEdge(1, 2, 2.0)
+		G.addEdge(0, 2, 4.0)
+		fw = nk.distance.FloydWarshall(G)
+		fw.run()
+
+		expectedDistances = [
+			[0.0, 1.0, 3.0],
+			[1.0, 0.0, 2.0],
+			[3.0, 2.0, 0.0],
+		]
+		n = G.numberOfNodes()
+		for s in range(n):
+			for t in range(n):
+				self.assertEqual(
+					fw.getDistance(s, t), expectedDistances[s][t],
+					msg=f"s={s}, t={t}",
+				)
+
+		expectedPaths = [
+			[[0], [0, 1], [0, 1, 2]],
+			[[1, 0], [1], [1, 2]],
+			[[2, 1, 0], [2, 1], [2]],
+		]
+		for s in range(n):
+			for t in range(n):
+				self.assertEqual(
+					fw.getNodesOnShortestPath(s, t), expectedPaths[s][t],
+					msg=f"s={s}, t={t}",
+				)
+
+	def testFloydWarshall_undirectedGraphWithNegativeEdge(self):
+		# Undirected graph with one negative edge -> negative cycles everywhere
+		G = nk.Graph(3, weighted=True, directed=False)
+		G.addEdge(0, 1, 1.0)
+		G.addEdge(1, 2, -2.0)
+		G.addEdge(0, 2, 4.0)
+		fw = nk.distance.FloydWarshall(G)
+		fw.run()
+
+		n = G.numberOfNodes()
+		for s in range(n):
+			for t in range(n):
+				d = fw.getDistance(s, t)
+				# C++ returns -infinity here
+				self.assertTrue(math.isinf(d) and d < 0, msg=f"s={s}, t={t}")
+				self.assertEqual(fw.getNodesOnShortestPath(s, t), [])
+
+		for u in range(n):
+			self.assertTrue(fw.isNodeInNegativeCycle(u))
+
+	def testFloydWarshall_directedGraphWithNegativeSelfLoop(self):
+		G = nk.Graph(5, weighted=True, directed=True)
+		G.addEdge(0, 1, 3.0)
+		G.addEdge(1, 1, -2.0)  # self-loop with negative cycle
+		G.addEdge(1, 2, 2.0)
+		G.addEdge(2, 3, 1.0)
+		G.addEdge(3, 4, 4.0)
+		G.addEdge(4, 0, 1.0)
+		fw = nk.distance.FloydWarshall(G)
+		fw.run()
+
+		n = G.numberOfNodes()
+		for s in range(n):
+			for t in range(n):
+				d = fw.getDistance(s, t)
+				self.assertTrue(math.isinf(d) and d < 0, msg=f"s={s}, t={t}")
+			self.assertTrue(fw.isNodeInNegativeCycle(s))
+
+	def testFloydWarshall_multipleShortestDistancePaths(self):
+		G = nk.Graph(11, weighted=True, directed=False)
+		# Shortest path 1: 0-1-2-3-10 (5 nodes)
+		G.addEdge(0, 1, 1.0)
+		G.addEdge(1, 2, 1.0)
+		G.addEdge(2, 3, 1.0)
+		G.addEdge(3, 10, 2.0)
+		# Shortest path 2: 0-4-5-10 (4 nodes, same total distance)
+		G.addEdge(0, 4, 1.0)
+		G.addEdge(4, 5, 1.0)
+		G.addEdge(5, 10, 3.0)
+		# Shortest path 3: 0-6-7-8-9-10 (6 nodes, same distance)
+		G.addEdge(0, 6, 1.0)
+		G.addEdge(6, 7, 1.0)
+		G.addEdge(7, 8, 1.0)
+		G.addEdge(8, 9, 1.0)
+		G.addEdge(9, 10, 1.0)
+
+		fw = nk.distance.FloydWarshall(G)
+		fw.run()
+
+		self.assertEqual(fw.getDistance(0, 10), 5.0)
+		# Should pick the path with the fewest nodes
+		self.assertEqual(fw.getNodesOnShortestPath(0, 10), [0, 4, 5, 10])
+
 
 if __name__ == "__main__":
 	unittest.main()
