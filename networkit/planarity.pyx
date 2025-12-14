@@ -9,7 +9,6 @@ from .base cimport _Algorithm, Algorithm
 cdef extern from "<networkit/planarity/LeftRightPlanarityCheck.hpp>":
     cdef cppclass _LeftRightPlanarityCheck "NetworKit::LeftRightPlanarityCheck"(_Algorithm):
         _LeftRightPlanarityCheck(const _Graph& G) except +
-        void run() except +
         cbool isPlanar() except +
 
 cdef class LeftRightPlanarityCheck(Algorithm):
@@ -22,7 +21,6 @@ cdef class LeftRightPlanarityCheck(Algorithm):
         The input graph.
     """
     cdef Graph _graph
-    cdef _LeftRightPlanarityCheck* _this
 
     def __cinit__(self, Graph graph not None):
         self._graph = graph
@@ -33,4 +31,4 @@ cdef class LeftRightPlanarityCheck(Algorithm):
         Returns True iff the graph is planar.
 
         """
-        return bool(self._this.isPlanar())
+        return bool((<_LeftRightPlanarityCheck*>(self._this)).isPlanar())
