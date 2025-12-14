@@ -147,6 +147,89 @@ TEST_F(CentralityGTest, testBetweenness2Centrality) {
     EXPECT_NEAR(1.0, bc[5], tol);
 }
 
+TEST_F(CentralityGTest, testBetweennessCompactScores) {
+    /* Graph:
+     0    3
+      \  / \
+       2    5
+      /  \ /
+     1    4
+    */
+    count n = 6;
+    Graph G(n);
+
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 5);
+    G.addEdge(4, 5);
+
+    G.removeNode(4); // remove a node to test compactScores
+
+    Betweenness centrality(G);
+    centrality.run();
+    std::vector<double> bc = centrality.compactScores();
+
+    Graph G2(n - 1);
+
+    G2.addEdge(0, 2);
+    G2.addEdge(1, 2);
+    G2.addEdge(2, 3);
+    G2.addEdge(3, 4);
+
+    Betweenness centrality2(G);
+    centrality2.run();
+    std::vector<double> bc2 = centrality2.scores();
+    for (size_t i = 0; i < bc.size(); i++) {
+        EXPECT_EQ(bc[i], bc2[i]);
+    }
+}
+
+TEST_F(CentralityGTest, testBetweennessCompactEdgeScores) {
+    /* Graph:
+     0    3
+      \  / \
+       2    5
+      /  \ /
+     1    4
+    */
+    count n = 6;
+    Graph G(n);
+
+    G.indexEdges();
+
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(2, 4);
+    G.addEdge(3, 5);
+    G.addEdge(4, 5);
+
+    G.removeEdge(2, 4); // remove an edge to test compactEdgeScores
+
+    Betweenness centrality(G, false, true);
+    centrality.run();
+    std::vector<double> bc = centrality.compactEdgeScores();
+
+    Graph G2(n);
+
+    G2.indexEdges();
+
+    G2.addEdge(0, 2);
+    G2.addEdge(1, 2);
+    G2.addEdge(2, 3);
+    G2.addEdge(3, 5);
+    G2.addEdge(4, 5);
+
+    Betweenness centrality2(G2, false, true);
+    centrality2.run();
+    std::vector<double> bc2 = centrality2.edgeScores();
+    for (size_t i = 0; i < bc.size(); i++) {
+        EXPECT_EQ(bc[i], bc2[i]);
+    }
+}
+
 TEST_F(CentralityGTest, runApproxBetweennessSmallGraph) {
     /* Graph:
      0    3
