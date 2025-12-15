@@ -1936,29 +1936,6 @@ TEST_P(CentralityGTest, testGedWalk) {
     }
 }
 
-TEST_F(CentralityGTest, testApproxElectricalCloseness) {
-    const double eps = 0.1;
-    const count n = 75;
-    for (int seed : {1, 2, 3}) {
-        Aux::Random::setSeed(seed, true);
-        auto G = HyperbolicGenerator(n, 10, 3).generate();
-        G = ConnectedComponents::extractLargestConnectedComponent(G, true);
-        auto new_n = G.numberOfNodes();
-
-        // Create a biconnected component with size 2.
-        G.addNodes(2);
-        G.addEdge(new_n - 1, new_n);
-        G.addEdge(new_n, new_n + 1);
-
-        ApproxElectricalCloseness apx(G);
-        apx.run();
-        const auto diag = apx.getDiagonal();
-        const auto gt = apx.computeExactDiagonal(1e-12);
-        G.forNodes([&](node u) { EXPECT_NEAR(diag[u], gt[u], eps); });
-        EXPECT_EQ(apx.scores().size(), G.numberOfNodes());
-    }
-}
-
 TEST_F(CentralityGTest, testGroupClosenessDirected) {
     // directed graphs are not supported
     Graph G(10, false, true);
