@@ -149,3 +149,80 @@ cdef class Dinic(Algorithm):
 			The maximum flow value.
 		"""
 		return (<_Dinic*>(self._this)).getMaxFlow()
+
+# === SuccessiveShortestPath (Min-Cost Flow) binding ==========================
+
+cdef extern from "<string_view>" namespace "std":
+	cdef cppclass string_view:
+		string_view() except +
+		string_view(const char*, size_t) except +
+
+# Bind EdgeDoubleAttribute via its fully qualified C++ type name.
+# Note: this is a C++ 'using' alias (not a separately declared class),
+# but it still names a concrete C++ type.
+cdef extern from "<networkit/graph/Graph.hpp>":
+	cdef cppclass _EdgeDoubleAttribute "NetworKit::Graph::EdgeDoubleAttribute":
+		double get(index i) const
+		index size() const
+
+cdef class EdgeDoubleAttribute:
+	"""
+	Thin Python wrapper for NetworKit::Graph::EdgeDoubleAttribute
+	"""
+	cdef _EdgeDoubleAttribute _this
+	cdef object _owner  # keep the producing object alive (SSP instance)
+
+	@staticmethod
+	cdef EdgeDoubleAttribute _from_cpp(_EdgeDoubleAttribute a, object owner):
+		cdef EdgeDoubleAttribute obj = EdgeDoubleAttribute.__new__(EdgeDoubleAttribute)
+		obj._this = a
+		obj._owner = owner
+		return obj
+
+	def size(self):
+		return self._this.size()
+
+	def get(self, index i):
+		return self._this.get(i)
+
+	def __getitem__(self, index i):
+		return self._this.get(i)
+
+
+cdef extern from "<networkit/flow/SuccessiveShortestPath.hpp>":
+
+	cdef cppclass _SuccessiveShortestPathMinCostFlow "NetworKit::SuccessiveShortestPathMinCostFlow"(_Algorithm):
+		_SuccessiveShortestPathMinCostFlow(const _Graph &G,
+										   string_view capacityName,
+										   string_view supplyName) except +
+		double getTotalCost() const
+		_EdgeDoubleAttribute getFlow() const
+
+
+cdef class SuccessiveShortestPathMinCostFlow(Algorithm):
+	"""
+	SuccessiveShortestPathMinCostFlow(graph, capacityAttributeName, supplyAttributeName)
+	"""
+	cdef Graph _graph
+
+	def __cinit__(self, Graph graph not None, capacityAttributeName, supplyAttributeName):
+		self._graph = graph  # keep input graph alive (consistent with other bindings)
+
+		cdef bytes cap_b = (<str>capacityAttributeName).encode("utf-8")
+		cdef bytes sup_b = (<str>supplyAttributeName).encode("utf-8")
+
+		cdef const char* cap_c = cap_b
+		cdef const char* sup_c = sup_b
+
+		cdef string_view cap_sv = string_view(cap_c, <size_t>len(cap_b))
+		cdef string_view sup_sv = string_view(sup_c, <size_t>len(sup_b))
+
+		self._this = new _SuccessiveShortestPathMinCostFlow(graph._this, cap_sv, sup_sv)
+
+	def getTotalCost(self):
+		return (<_SuccessiveShortestPathMinCostFlow*>(self._this)).getTotalCost()
+
+	def getFlow(self):
+		# Return the C++ EdgeDoubleAttribute (wrapped), exactly like the C++ API.
+		cdef _EdgeDoubleAttribute a = (<_SuccessiveShortestPathMinCostFlow*>(self._this)).getFlow()
+		return EdgeDoubleAttribute._from_cpp(a, self)
