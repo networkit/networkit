@@ -195,8 +195,8 @@ cdef extern from "<networkit/flow/SuccessiveShortestPath.hpp>":
 		_SuccessiveShortestPathMinCostFlow(const _Graph &G,
 										   string_view capacityName,
 										   string_view supplyName) except +
-		double getTotalCost() const
-		_EdgeDoubleAttribute getFlow() const
+		double getTotalCost() except +
+		_EdgeDoubleAttribute getFlow() except +
 
 
 cdef class SuccessiveShortestPathMinCostFlow(Algorithm):
