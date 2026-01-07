@@ -110,9 +110,9 @@ from . import stats
 from . import viz
 from . import randomization
 from . import independentset
+from . import planarity
 from .support import MissingDependencyError
 from .graphtools import GraphTools as graphtools
-
 
 if have_plt:
     from . import plot
