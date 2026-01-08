@@ -1,12 +1,6 @@
 name: Build wheels
 
-on:
-  pull_request:
-    branches:
-      - master
-  push:
-    branches:
-      - master
+on: push
 
 # Default parameters for all builds
 env:
@@ -217,43 +211,3 @@ jobs:
           name: 'sdist-${{ github.run_id }}.tar.gz'
           path: ./dist/*networkit*.tar.gz
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-
-  # This job checks whether the current workflow is triggered by a new tag with the following form: INT.INT or INT.INT.INT (for example: 1.0, 1.0.1, ...)
-  # The result is saved in a variable and used as a conditional variable when uploading packages.
-  # check-release-tag:
-  #   name: "Check for new release"
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     is-release: ${{ steps.do-check.outputs.is-release }}
-  #   steps:
-  #     - name: Check release tag ${{ github.ref }}
-  #       id: do-check
-  #       run: |
-  #         if [[ ${{ github.ref }} =~ ^refs\/tags\/[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
-  #           echo "::set-output name=is-release::true"
-  #         else
-  #           echo "::set-output name=is-release::false"
-  #         fi
-
-  # upload-packages:
-  #   if: needs.check-release-tag.outputs.is-release == 'true' && github.repository == 'networkit/networkit'
-  #   name: 'PyPi release upload'
-  #   runs-on: ubuntu-22.04
-  #   needs: [cpython-macos, cpython-linux-x86_64, cpython-windows, source-distribution, check-release-tag]
-  #   steps:
-  #     - uses: actions/download-artifact@v4
-  #       with:
-  #         path: ./dist
-  #     - uses: actions/setup-python@v5
-  #       name: Install Python
-  #       with:
-  #         python-version: '3.12'
-  #     - name: Upload to TestPyPI
-  #       run: |
-  #         unzip "./dist/artifact/*.zip"
-  #         pip install twine 
-  #         python3 -m twine upload --verbose --skip-existing ./dist/artifact/*
-  #       env:
-  #         TWINE_USERNAME: __token__
-  #         TWINE_PASSWORD: ${{ secrets.TWINE_TOKEN }}
-
