@@ -1,9 +1,9 @@
 [project]
 name = "networkit"
-version = "11.2"
+version = "11.2.1"
 description = "NetworKit is a toolbox for high-performance network analysis"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = {file = "License.txt"}
 keywords =["graph algorithm", "network analysis", "social network"]
 authors = [

@@ -59,7 +59,7 @@ __credits__ = [
     "Jörg Weisbarth",
 ]
 __license__ = "MIT"
-__version__ = "11.2"
+__version__ = "11.2.1"
 
 # standard library modules
 import csv
