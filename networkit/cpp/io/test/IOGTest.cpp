@@ -343,7 +343,8 @@ TEST_F(IOGTest, debugDGSReaderOnBigFile) {
     DGSReader reader;
     Graph G;
     GraphEventProxy Gproxy(G);
-    reader.read("/Users/forigem/KIT/NetworKit-CommunityDetection/input/AuthorsGraph.dgs", Gproxy);
+    reader.read("/Users/forigem/KIT/NetworKit-CommunityDetection/input/AuthorsGraph.dgs",
+    Gproxy);
 }
 
 TEST_F(IOGTest, debugDGSReader) {
@@ -1447,4 +1448,34 @@ TEST_F(IOGTest, testNetworkitBinaryWriteReadEmptyGraphWithIndexes) {
     const Graph graph_read = NetworkitBinaryReader{}.read(path.string());
     EXPECT_THAT(graph_read, GraphFeaturesEqual(graph));
 }
+
+TEST_F(IOGTest, testWriteReadNonContinuous) {
+    Graph graph(3);
+    graph.addEdge(0, 2);
+    graph.removeNode(1);
+
+    std::string path = "output/writereadnoncont.nkb";
+
+    NetworkitBinaryWriter writer;
+    writer.write(graph, path);
+
+    NetworkitBinaryReader reader;
+    reader.read(path);
+}
+
+TEST_F(IOGTest, testWriteReadNonContinuousDirected) {
+    Aux::Log::setLogLevel("DEBUG");
+    Graph graph(3, false, true);
+    graph.addEdge(0, 2);
+    graph.removeNode(1);
+
+    std::string path = "output/writereadnoncont.nkb";
+
+    NetworkitBinaryWriter writer;
+    writer.write(graph, path);
+
+    NetworkitBinaryReader reader;
+    reader.read(path);
+}
+
 } /* namespace NetworKit */
