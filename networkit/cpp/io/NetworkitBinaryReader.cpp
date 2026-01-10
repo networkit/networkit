@@ -107,7 +107,7 @@ Graph NetworkitBinaryReader::readData(const T &source) {
         uint8_t flag;
         memcpy(&flag, baseIt, sizeof(uint8_t));
         baseIt += sizeof(uint8_t);
-        if (!(flag & nkbg::DELETED_BIT)) {
+        if (flag & nkbg::DELETED_BIT) {
             G.removeNode(i);
         }
     }
