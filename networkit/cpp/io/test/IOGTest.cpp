@@ -343,8 +343,7 @@ TEST_F(IOGTest, debugDGSReaderOnBigFile) {
     DGSReader reader;
     Graph G;
     GraphEventProxy Gproxy(G);
-    reader.read("/Users/forigem/KIT/NetworKit-CommunityDetection/input/AuthorsGraph.dgs",
-    Gproxy);
+    reader.read("/Users/forigem/KIT/NetworKit-CommunityDetection/input/AuthorsGraph.dgs", Gproxy);
 }
 
 TEST_F(IOGTest, debugDGSReader) {
