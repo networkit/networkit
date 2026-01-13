@@ -250,7 +250,7 @@ TEST_P(DistanceGTest, testAdamicAdar) {
 }
 
 TEST_P(DistanceGTest, testAlgebraicDistance) {
-    Aux::Random::setSeed(42, false);
+    Aux::Random::setSeed(41, false);
     auto G = generateERGraph(500, 0.03);
     G.indexEdges();
 
