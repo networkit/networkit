@@ -7,3 +7,6 @@
 [submodule "extlibs/ttmath"]
 	path = extlibs/ttmath
 	url = https://github.com/networkit/ttmath
+[submodule "extlibs/dhb"]
+	path = extlibs/dhb
+	url = https://github.com/hu-macsy/dhb
