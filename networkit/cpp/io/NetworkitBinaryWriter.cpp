@@ -152,7 +152,7 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
         }
     };
 
-    count nodes = G.numberOfNodes();
+    count nodes = G.upperNodeIdBound();
     if (nodes == 0) {
         strncpy(header.magic, FILE_FORMAT, 8);
         setFeatures();
@@ -229,6 +229,14 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
             uint64_t outNbrs = 0;
             uint64_t inNbrs = 0;
             uint8_t tmp[10];
+
+            if (!G.hasNode(n)) {
+                adjSize += nkbg::varIntEncode(0, tmp);
+                transpSize += nkbg::varIntEncode(0, tmp);
+                nrOutNbrs[n] = 0;
+                nrInNbrs[n] = 0;
+                continue;
+            }
             if (!G.isDirected()) {
                 G.forNeighborsOf(n, [&](node v, edgeweight w) {
                     if (v <= n) {
@@ -319,13 +327,13 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
     }
     writeHeader();
     // Write base data.
-    G.forNodes([&](node u) {
+    for (node u = 0; u < nodes; ++u) {
         uint8_t nodeFlag = 0;
-        if (G.hasNode(u)) {
+        if (!G.hasNode(u)) {
             nodeFlag |= nkbg::DELETED_BIT;
         }
         outStream.write(reinterpret_cast<char *>(&nodeFlag), sizeof(uint8_t));
-    });
+    }
 
     assert(!firstInChunk[0]);
     for (uint64_t c = 1; c < chunks; c++) {
@@ -338,10 +346,12 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
     }
     // Write size of list
     outStream.write(reinterpret_cast<char *>(&adjListSize), sizeof(uint64_t));
-    G.forNodes([&](node u) {
+    for (node u = 0; u < nodes; ++u) {
         uint8_t tmp[10];
         uint64_t nbrsSize = nkbg::varIntEncode(nrOutNbrs[u], tmp);
         outStream.write(reinterpret_cast<char *>(tmp), nbrsSize);
+        if (!G.hasNode(u))
+            continue; // deleted => no neighbors written
         G.forNeighborsOf(u, [&](node v) {
             uint64_t nodeSize;
             if (!G.isDirected()) {
@@ -354,7 +364,7 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
                 outStream.write(reinterpret_cast<char *>(tmp), nodeSize);
             }
         });
-    });
+    }
 
     // Write transpose data.
     for (uint64_t c = 1; c < chunks; c++) {
@@ -362,10 +372,12 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
     }
     // Write size of transpose list.
     outStream.write(reinterpret_cast<char *>(&adjTransposeSize), sizeof(uint64_t));
-    G.forNodes([&](node u) {
+    for (node u = 0; u < nodes; ++u) {
         uint8_t tmp[10];
         uint64_t nbrsSize = nkbg::varIntEncode(nrInNbrs[u], tmp);
         outStream.write(reinterpret_cast<char *>(tmp), nbrsSize);
+        if (!G.hasNode(u))
+            continue;
         uint64_t nodeSize;
         if (!G.isDirected()) {
             G.forNeighborsOf(u, [&](node v) {
@@ -380,13 +392,15 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
                 outStream.write(reinterpret_cast<char *>(tmp), nodeSize);
             });
         }
-    });
+    }
 
     // Write adj weights.
     for (uint64_t c = 1; c < chunks; c++) {
         outStream.write(reinterpret_cast<char *>(&adjWghtOffsets[c - 1]), sizeof(uint64_t));
     }
-    G.forNodes([&](node u) {
+    for (node u = 0; u < nodes; ++u) {
+        if (!G.hasNode(u))
+            continue;
         G.forNeighborsOf(u, [&](node v, edgeweight w) {
             if (!G.isDirected()) {
                 if (v <= u) {
@@ -396,13 +410,15 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
                 writeWeightsToFile(w);
             }
         });
-    });
+    }
 
     // Write transpose weights.
     for (uint64_t c = 1; c < chunks; c++) {
         outStream.write(reinterpret_cast<char *>(&transpWghtOffsets[c - 1]), sizeof(uint64_t));
     }
-    G.forNodes([&](node u) {
+    for (node u = 0; u < nodes; ++u) {
+        if (!G.hasNode(u))
+            continue;
         if (!G.isDirected()) {
             G.forNeighborsOf(u, [&](node v, edgeweight w) {
                 if (v >= u) {
@@ -412,14 +428,16 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
         } else {
             G.forInNeighborsOf(u, [&](node, edgeweight w) { writeWeightsToFile(w); });
         }
-    });
+    }
 
     // Write adj index.
     for (uint64_t c = 1; c < chunks; c++) {
         outStream.write(reinterpret_cast<char *>(&adjIndexOffsets[c - 1]), sizeof(uint64_t));
     }
     if (preserveEdgeIndex) {
-        G.forNodes([&](node u) {
+        for (node u = 0; u < nodes; ++u) {
+            if (!G.hasNode(u))
+                continue;
             G.forNeighborsOf(u, [&](node v) {
                 if (!G.isDirected()) {
                     if (v <= u) {
@@ -433,14 +451,16 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
                     outStream.write(reinterpret_cast<char *>(tmp), edgeidSize);
                 }
             });
-        });
+        }
     }
     // Write transpose index.
     for (uint64_t c = 1; c < chunks; c++) {
         outStream.write(reinterpret_cast<char *>(&transpIndexOffsets[c - 1]), sizeof(uint64_t));
     }
     if (preserveEdgeIndex) {
-        G.forNodes([&](node u) {
+        for (node u = 0; u < nodes; ++u) {
+            if (!G.hasNode(u))
+                continue;
             if (!G.isDirected()) {
                 G.forNeighborsOf(u, [&](node v) {
                     if (v >= u) {
@@ -456,7 +476,7 @@ void NetworkitBinaryWriter::writeData(T &outStream, const Graph &G) {
                     outStream.write(reinterpret_cast<char *>(tmp), edgeidSize);
                 });
             }
-        });
+        }
     }
 }
 

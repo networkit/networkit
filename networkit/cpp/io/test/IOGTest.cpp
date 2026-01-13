@@ -1447,4 +1447,154 @@ TEST_F(IOGTest, testNetworkitBinaryWriteReadEmptyGraphWithIndexes) {
     const Graph graph_read = NetworkitBinaryReader{}.read(path.string());
     EXPECT_THAT(graph_read, GraphFeaturesEqual(graph));
 }
+
+TEST_F(IOGTest, testWriteReadNonContinuousUndirectedWeighted) {
+    Graph graph(8, true, false);
+
+    graph.removeNode(1);
+    graph.removeNode(4);
+    graph.removeNode(6);
+
+    graph.addEdge(0, 2, 2.0);
+    graph.addEdge(0, 3, 1.5);
+    graph.addEdge(2, 3, 3.25);
+    graph.addEdge(2, 5, 0.75);
+    graph.addEdge(3, 7, 4.0);
+    graph.addEdge(5, 7, 2.5);
+
+    // Edge that skips removed IDs
+    graph.addEdge(0, 7, 9.0);
+
+    std::string path = "output/writereadnoncont_weighted_undirected.nkb";
+
+    NetworkitBinaryWriter writer;
+    writer.write(graph, path);
+
+    NetworkitBinaryReader reader;
+    Graph readGraph = reader.read(path);
+
+    EXPECT_EQ(readGraph.numberOfNodes(), graph.numberOfNodes());
+    EXPECT_EQ(readGraph.upperNodeIdBound(), graph.upperNodeIdBound());
+    EXPECT_EQ(readGraph.isDirected(), graph.isDirected());
+    EXPECT_EQ(readGraph.isWeighted(), graph.isWeighted());
+    EXPECT_EQ(readGraph.numberOfEdges(), graph.numberOfEdges());
+
+    for (node u = 0; u < graph.upperNodeIdBound(); ++u) {
+        EXPECT_EQ(readGraph.hasNode(u), graph.hasNode(u)) << "u=" << u;
+    }
+
+    for (node u = 0; u < graph.upperNodeIdBound(); ++u) {
+        if (!graph.hasNode(u))
+            continue;
+
+        EXPECT_EQ(readGraph.degree(u), graph.degree(u)) << "deg u=" << u;
+
+        std::vector<node> nbrG, nbrR;
+        graph.forNeighborsOf(u, [&](node v) { nbrG.push_back(v); });
+        readGraph.forNeighborsOf(u, [&](node v) { nbrR.push_back(v); });
+
+        std::ranges::sort(nbrG);
+        std::ranges::sort(nbrR);
+        EXPECT_EQ(nbrR, nbrG) << "neighbors u=" << u;
+    }
+
+    // Adjacency equality per node
+    for (node u = 0; u < graph.upperNodeIdBound(); ++u) {
+        std::vector<node> nbrG, nbrR;
+
+        graph.forNeighborsOf(u, [&](node v) { nbrG.push_back(v); });
+        readGraph.forNeighborsOf(u, [&](node v) { nbrR.push_back(v); });
+
+        std::ranges::sort(nbrG);
+        std::ranges::sort(nbrR);
+
+        EXPECT_EQ(nbrR, nbrG) << "neighbors u=" << u;
+    }
+
+    const std::vector<WeightedEdge> edges = {
+        {0, 2, 2.0}, {0, 3, 1.5}, {2, 3, 3.25}, {2, 5, 0.75}, {3, 7, 4.0}, {5, 7, 2.5}, {0, 7, 9.0},
+    };
+
+    for (const auto &e : edges) {
+        EXPECT_TRUE(readGraph.hasEdge(e.u, e.v)) << "edge " << e.u << "-" << e.v;
+        EXPECT_TRUE(readGraph.hasEdge(e.v, e.u)) << "edge " << e.v << "-" << e.u;
+
+        EXPECT_DOUBLE_EQ(readGraph.weight(e.u, e.v), e.weight) << "w(" << e.u << "," << e.v << ")";
+        EXPECT_DOUBLE_EQ(readGraph.weight(e.v, e.u), e.weight) << "w(" << e.v << "," << e.u << ")";
+    }
+
+    // Sanity check: removed nodes have no incident edges
+    for (node u : {1u, 4u, 6u}) {
+        EXPECT_FALSE(readGraph.hasNode(u));
+    }
+}
+
+TEST_F(IOGTest, testWriteReadNonContinuousDirectedEdgesIndexed) {
+    Graph graph(10, false, true);
+
+    graph.removeNode(1);
+    graph.removeNode(4);
+    graph.removeNode(8);
+
+    graph.addEdge(0, 2);
+    graph.addEdge(2, 0);
+    graph.addEdge(0, 3);
+    graph.addEdge(3, 5);
+    graph.addEdge(5, 7);
+    graph.addEdge(7, 9);
+    graph.addEdge(9, 2);
+    graph.addEdge(6, 7);
+    graph.addEdge(6, 9);
+    graph.addEdge(2, 7);
+    graph.addEdge(9, 0);
+
+    graph.indexEdges();
+
+    std::string path = "output/writereadnoncont_directed_edgeids.nkb";
+
+    NetworkitBinaryWriter writer;
+    writer.write(graph, path);
+
+    NetworkitBinaryReader reader;
+    Graph readGraph = reader.read(path);
+
+    EXPECT_EQ(readGraph.numberOfNodes(), graph.numberOfNodes());
+    EXPECT_EQ(readGraph.upperNodeIdBound(), graph.upperNodeIdBound());
+    EXPECT_EQ(readGraph.isDirected(), graph.isDirected());
+    EXPECT_EQ(readGraph.isWeighted(), graph.isWeighted());
+    EXPECT_EQ(readGraph.numberOfEdges(), graph.numberOfEdges());
+
+    for (node u = 0; u < graph.upperNodeIdBound(); ++u) {
+        EXPECT_EQ(readGraph.hasNode(u), graph.hasNode(u)) << "u=" << u;
+    }
+
+    // Adjacency equality (strong)
+    for (node u = 0; u < graph.upperNodeIdBound(); ++u) {
+        std::vector<node> nbrG, nbrR;
+        graph.forNeighborsOf(u, [&](node v) { nbrG.push_back(v); });
+        readGraph.forNeighborsOf(u, [&](node v) { nbrR.push_back(v); });
+
+        std::ranges::sort(nbrG);
+        std::ranges::sort(nbrR);
+        EXPECT_EQ(nbrR, nbrG) << "neighbors u=" << u;
+    }
+
+    // Edge ID checks
+    EXPECT_TRUE(graph.hasEdgeIds());
+    EXPECT_TRUE(readGraph.hasEdgeIds());
+
+    graph.forEdges([&](node u, node v) {
+        const auto idG = graph.edgeId(u, v);
+        const auto idR = readGraph.edgeId(u, v);
+        EXPECT_EQ(idR, idG) << "edgeId(" << u << "->" << v << ")";
+    });
+
+    for (edgeid id = 0; id < graph.numberOfEdges(); ++id) {
+        auto [u, v] = readGraph.edgeById(id);
+
+        EXPECT_TRUE(readGraph.hasEdge(u, v)) << "edgeById(" << id << ") gives non-edge";
+        EXPECT_EQ(readGraph.edgeId(u, v), id) << "edgeId(edgeById(" << id << "))";
+    }
+}
+
 } /* namespace NetworKit */
