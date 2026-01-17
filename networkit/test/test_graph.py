@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import unittest
-import random
 import networkit as nk
 import pickle
 import numpy as np
@@ -151,6 +150,26 @@ class TestGraph(unittest.TestCase):
 
         for i in range(len(S.row)):
             self.assertTrue(G.hasEdge(S.row[i], S.col[i]))
+    def testAddEdgesWithInt32Weights(self):
+        # Use a weighted graph so weights are actually stored/checked
+        g = nk.Graph(0, weighted=True)
+
+        # Deterministic endpoints + int32 weights (the failing dtype in #1250)
+        a = np.array([0, 1, 2], dtype=np.int64)
+        b = np.array([1, 2, 3], dtype=np.int64)
+        c = np.array([5, 6, 7], dtype=np.int32)
+
+        # addMissing=True should grow the graph and must not crash
+        g.addEdges((c, (a, b)), addMissing=True)
+
+        # Verify both edge existence and correct weight conversion to float
+        self.assertTrue(g.hasEdge(0, 1))
+        self.assertTrue(g.hasEdge(1, 2))
+        self.assertTrue(g.hasEdge(2, 3))
+
+        self.assertEqual(g.weight(0, 1), 5.0)
+        self.assertEqual(g.weight(1, 2), 6.0)
+        self.assertEqual(g.weight(2, 3), 7.0)
 
     def testGraphPickling(self):
         G = nk.Graph(2)
