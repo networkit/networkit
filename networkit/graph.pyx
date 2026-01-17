@@ -491,7 +491,7 @@ cdef class Graph:
 				try:
 					row = inputData[1][0].view(np.intp)
 					col = inputData[1][1].view(np.intp)
-					data = inputData[0].view(dtype = np.double)
+					data = np.asarray(inputData[0], dtype=np.double, order='C')
 				except (TypeError, ValueError) as e:
 					raise TypeError('invalid input format') from e
 			else:
