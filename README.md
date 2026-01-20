@@ -27,6 +27,7 @@
     <a href="https://badge.fury.io/py/networkit"><img src="https://badge.fury.io/py/networkit.svg"></a>
     <a href="https://coveralls.io/github/networkit/networkit?branch=master"><img src="https://coveralls.io/repos/github/networkit/networkit/badge.svg?branch=master"></a>
     <a href="https://mybinder.org/v2/gh/networkit/networkit/master?urlpath=lab/tree/notebooks/User-Guide.ipynb"><img src="https://mybinder.org/badge_logo.svg"></a>
+    <a href="https://test.pypi.org/project/networkit-nightly/#files"><img src="./docs/badge/nightly.svg">
   </p>
 </div>
 
@@ -104,6 +105,16 @@ If you only need the C++ core without Python bindings:
 | **spack** | `spack install libnetworkit` |
 
 More platform-specific installation instructions can be found in our [getting started guide](https://networkit.github.io/get_started.html).
+
+#### Nightly builds
+
+If you are interested in the most recent build of NetworKit, you can use the nightly repository on [test.pypi.org](https://test.pypi.org/project/networkit-nightly).
+Published packages are based on pushes to the `master`-branch.
+
+| Package Manager | Command |
+|-----------------|---------|
+| **pip** | `pip install -i https://test.pypi.org/simple/ networkit-nightly` |
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
