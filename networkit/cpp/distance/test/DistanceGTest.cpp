@@ -186,7 +186,7 @@ TEST_F(DistanceGTest, testAStar) {
 }
 
 TEST_F(DistanceGTest, testAlgebraicDistanceContructorThrowsForInvalidOmegaValues) {
-    Graph G(5, true, true);
+    Graph G(5, true, false);
 
     EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, /* invalid_omega*/ 1.1, 0UL, true); },
                  std::invalid_argument);
@@ -195,16 +195,24 @@ TEST_F(DistanceGTest, testAlgebraicDistanceContructorThrowsForInvalidOmegaValues
 }
 
 TEST_F(DistanceGTest, testAlgebraicDistanceContructorThrowsForEdgecoresWithoutEdgeIds) {
-    Graph G(5, true, true, false);
+    Graph G(5, true, false, false);
 
     EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true); }, std::runtime_error);
 }
 
 TEST_F(DistanceGTest, testAlgebraicDistanceDistanceThrowsIfPreprocessNotCalled) {
-    Graph G(5, true, true, true);
+    Graph G(5, true, false, true);
     AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true);
 
     EXPECT_THROW(AGD.distance(/*source*/ 0, /*target*/ 2), std::runtime_error);
+}
+
+TEST_F(DistanceGTest, testAlgebraicDistanceThrowsIfGraphIsDirected) {
+    Aux::Random::setSeed(42, false);
+    auto G = ErdosRenyiGenerator(500, 0.03, true, false).generate();
+    G.indexEdges();
+
+    EXPECT_THROW(AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true), std::invalid_argument);
 }
 
 TEST_P(DistanceGTest, testAdamicAdar) {
