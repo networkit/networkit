@@ -266,7 +266,8 @@ TEST_F(DistanceGTest, testAlgebraicDistance) {
     G_weighted_undirected.indexEdges();
 
     // Algebraic Distance only for undirected graphs
-    AlgebraicDistance AGD_unweighted_undirected(G_unweighted_undirected, 10UL, 30UL, 0.5, 0UL, true);
+    AlgebraicDistance AGD_unweighted_undirected(G_unweighted_undirected, 10UL, 30UL, 0.5, 0UL,
+                                                true);
     AlgebraicDistance AGD_weighted_undirected(G_weighted_undirected, 10UL, 30UL, 0.5, 0UL, true);
 
     AGD_unweighted_undirected.preprocess();
@@ -279,7 +280,7 @@ TEST_F(DistanceGTest, testAlgebraicDistance) {
     auto res_unweighted_undirected = AGD_unweighted_undirected.getEdgeScores();
     for (auto dist : res_unweighted_undirected) {
         EXPECT_LE(dist, 1);
-    }    
+    }
 
     // 0 42
     source = 0;
