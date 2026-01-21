@@ -21,6 +21,9 @@ AlgebraicDistance::AlgebraicDistance(const Graph &G, count numberSystems, count 
     if (withEdgeScores && !G.hasEdgeIds()) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
     }
+    if (G.isDirected()) {
+        throw std::invalid_argument("Graph must be undirected");
+    }
 }
 
 void AlgebraicDistance::randomInit() {
