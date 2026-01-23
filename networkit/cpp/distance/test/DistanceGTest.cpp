@@ -209,7 +209,7 @@ TEST_F(DistanceGTest, testAlgebraicDistanceDistanceThrowsIfPreprocessNotCalled) 
 
 TEST_F(DistanceGTest, testAlgebraicDistanceThrowsIfGraphIsDirected) {
     Aux::Random::setSeed(42, false);
-    auto G = ErdosRenyiGenerator(500, 0.03, true, false).generate();
+    Graph G(5, false, true);
     G.indexEdges();
 
     EXPECT_THROW(AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true), std::invalid_argument);
