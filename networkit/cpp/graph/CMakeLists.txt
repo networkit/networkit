@@ -9,6 +9,7 @@ networkit_add_module(graph
     SpanningForest.cpp
     TopologicalSort.cpp
     UnionMaximumSpanningForest.cpp
+    DHBGraph.cpp
     )
 
 networkit_module_link_modules(graph

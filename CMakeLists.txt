@@ -231,6 +231,22 @@ else()
 endif()
 
 ################################################################################
+# Use DHB as a CMake submodule
+if(EXISTS "${PROJECT_SOURCE_DIR}/extlibs/dhb/CMakeLists.txt")
+	set(DHB_WITH_64BIT_IDS ON CACHE BOOL "Build DHB using 64 bit vertex IDs.")
+	
+	if(MSVC)
+		set(DHB_WITH_SYSTEM_ALLOCATOR ON CACHE BOOL "Use DHB system allocator for MSVC targets.")
+	endif()
+	
+	add_subdirectory(extlibs/dhb)
+else()
+	message(FATAL_ERROR
+			"Missing DHB library in extlibs/dhb "
+			"Please run `git submodule update --init` to fetch the submodule.")
+endif()
+
+################################################################################
 # NETWORKIT MODULES
 if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 
@@ -263,7 +279,11 @@ if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 		target_include_directories(networkit_state BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 	endif()
 
-	target_link_libraries(networkit PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
+	target_link_libraries(networkit PRIVATE 
+									dhb 
+									OpenMP::OpenMP_CXX 
+									PUBLIC 
+									tlx)
 
 	set_target_properties(networkit PROPERTIES
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
@@ -360,7 +380,7 @@ if(NETWORKIT_PYTHON)
 			endif()
 		endif()
 
-		target_link_libraries(${TARGET_LIB} PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
+		target_link_libraries(${TARGET_LIB} PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx) 
 
 		install(TARGETS ${TARGET_LIB}
 			LIBRARY DESTINATION "${NETWORKIT_LIB_DEST}/networkit")
@@ -389,7 +409,8 @@ function(networkit_add_module modname)
 			COMPILE_FLAGS "${NETWORKIT_CXX_FLAGS}"
 			LINK_FLAGS "${NETWORKIT_LINK_FLAGS}")
 
-		target_link_libraries(${MODULE_TARGET} PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
+		target_link_libraries(${MODULE_TARGET} PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx dhb)
+		
 		target_include_directories(${MODULE_TARGET} BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 		target_include_directories(${MODULE_TARGET} PUBLIC "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
 
@@ -475,11 +496,12 @@ if (NETWORKIT_BUILD_TESTS)
 
 		target_link_libraries(networkit_tests
 			PRIVATE
-				gtest
 				gmock
+				gtest
 				networkit
-				tlx
 				OpenMP::OpenMP_CXX
+				tlx
+				dhb
 		)
 
 		if(WIN32)
@@ -521,13 +543,15 @@ if (NETWORKIT_BUILD_TESTS)
 
 		target_link_libraries(networkit_gtest_main
 				PUBLIC
-					gtest
 					gmock
+					gtest
 				PRIVATE
-					tlx
 					networkit_auxiliary
 					OpenMP::OpenMP_CXX
+					tlx
+					dhb
 		)
+
 	endif()
 endif()
 
@@ -550,17 +574,23 @@ function(networkit_add_extra IS_TEST MOD NAME)
 				MESSAGE(FATAL_ERROR "Unknown NetworKit module '${MOD}'")
 			endif()
 
+			# Each test target is composed such that test file DHBGraphGTest in
+			# module graph is named: networkit_graph_DHBGraphGTest
 			set(TARGET_NAME "networkit_${MOD}_${NAME}")
 
 			add_executable(${TARGET_NAME} ${TEST_SOURCE})
 
+			# If you're missing a module for your test target, lookg at the
+			# CMakeLists.txt at the same level as your testfile. There you can
+			# add networkit modules to be linked against your target.
 			target_link_libraries(${TARGET_NAME}
 				PRIVATE
 					gtest networkit_gtest_main
 				PRIVATE
-					networkit_${MOD}
-					tlx
 					OpenMP::OpenMP_CXX
+					tlx
+					dhb
+					networkit_${MOD}
 					)
 			set_target_properties(${TARGET_NAME} PROPERTIES
 				CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
