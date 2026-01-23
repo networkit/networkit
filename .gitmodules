@@ -7,3 +7,6 @@
 [submodule "extlibs/ttmath"]
 	path = extlibs/ttmath
 	url = https://github.com/networkit/ttmath
+[submodule "extlibs/girgs"]
+	path = extlibs/girgs
+	url = git@github.com:chistopher/girgs.git
