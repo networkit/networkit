@@ -315,6 +315,18 @@ class TestGraph(unittest.TestCase):
 
             G.detachNodeAttribute("attribute")
 
+    def testNodeAttributesImplicitFloatConversion(self):
+        G = nk.Graph(1)
+
+        integers = [0, -1, -3, 42]
+        attr = G.attachNodeAttribute("test", float)
+        for value in integers:
+            attr[0] = value
+
+            self.assertEqual(attr[0], float(value))
+            self.assertTrue(isinstance(attr[0], float))
+
+
     def testNodeAttributeReadWrite(self):
         G = nk.Graph(5)
 

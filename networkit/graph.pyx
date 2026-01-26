@@ -1401,6 +1401,10 @@ class NodeAttribute:
 		return self.attr[node]
 
 	def __setitem__(self, node, value):
+		# Accept int for float attributes, convert to float
+		if self.type is float and isinstance(value, int):
+			value = float(value)
+
 		if not isinstance(value, self.type):
 			raise Exception("Wrong Attribute type")
 		self.attr[node] = value
