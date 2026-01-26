@@ -186,7 +186,7 @@ TEST_F(DistanceGTest, testAStar) {
 }
 
 TEST_F(DistanceGTest, testAlgebraicDistanceContructorThrowsForInvalidOmegaValues) {
-    Graph G(5, true, true);
+    Graph G(5, true, false);
 
     EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, /* invalid_omega*/ 1.1, 0UL, true); },
                  std::invalid_argument);
@@ -195,16 +195,24 @@ TEST_F(DistanceGTest, testAlgebraicDistanceContructorThrowsForInvalidOmegaValues
 }
 
 TEST_F(DistanceGTest, testAlgebraicDistanceContructorThrowsForEdgecoresWithoutEdgeIds) {
-    Graph G(5, true, true, false);
+    Graph G(5, true, false, false);
 
     EXPECT_THROW({ AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true); }, std::runtime_error);
 }
 
 TEST_F(DistanceGTest, testAlgebraicDistanceDistanceThrowsIfPreprocessNotCalled) {
-    Graph G(5, true, true, true);
+    Graph G(5, true, false, true);
     AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true);
 
     EXPECT_THROW(AGD.distance(/*source*/ 0, /*target*/ 2), std::runtime_error);
+}
+
+TEST_F(DistanceGTest, testAlgebraicDistanceThrowsIfGraphIsDirected) {
+    Aux::Random::setSeed(42, false);
+    Graph G(5, false, true);
+    G.indexEdges();
+
+    EXPECT_THROW(AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true), std::invalid_argument);
 }
 
 TEST_P(DistanceGTest, testAdamicAdar) {
@@ -249,19 +257,37 @@ TEST_P(DistanceGTest, testAdamicAdar) {
     }
 }
 
-TEST_P(DistanceGTest, testAlgebraicDistance) {
+TEST_F(DistanceGTest, testAlgebraicDistance) {
     Aux::Random::setSeed(42, false);
-    auto G = generateERGraph(500, 0.03);
-    G.indexEdges();
+    auto G_unweighted_undirected = METISGraphReader().read("input/celegans_metabolic.graph");
+    auto G_weighted_undirected = METISGraphReader().read("input/lesmis.graph");
 
-    AlgebraicDistance AGD(G, 10UL, 30UL, 0.5, 0UL, true);
-    AGD.preprocess();
-    // arbitrary nodes
-    node source = 0;
-    node target = 42;
-    EXPECT_GT(AGD.distance(source, target), 0.2);
-    auto res = AGD.getEdgeScores();
-    for (auto dist : res) {
+    G_unweighted_undirected.indexEdges();
+    G_weighted_undirected.indexEdges();
+
+    // Algebraic Distance only for undirected graphs
+    AlgebraicDistance AGD_unweighted_undirected(G_unweighted_undirected, 10UL, 30UL, 0.5, 0UL,
+                                                true);
+    AlgebraicDistance AGD_weighted_undirected(G_weighted_undirected, 10UL, 30UL, 0.5, 0UL, true);
+
+    AGD_unweighted_undirected.preprocess();
+    AGD_weighted_undirected.preprocess();
+
+    // 0 42
+    node source = 25;
+    node target = 345;
+    EXPECT_GT(AGD_unweighted_undirected.distance(source, target), 0.037);
+    auto res_unweighted_undirected = AGD_unweighted_undirected.getEdgeScores();
+    for (auto dist : res_unweighted_undirected) {
+        EXPECT_LE(dist, 1);
+    }
+
+    // 0 42
+    source = 0;
+    target = 42;
+    EXPECT_GT(AGD_weighted_undirected.distance(source, target), 0.50);
+    auto res_weighted_undirected = AGD_weighted_undirected.getEdgeScores();
+    for (auto dist : res_weighted_undirected) {
         EXPECT_LE(dist, 1);
     }
 }
