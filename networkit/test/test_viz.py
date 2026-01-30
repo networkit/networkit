@@ -82,6 +82,30 @@ class TestViz(unittest.TestCase):
             self.assertEqual(len(coord), 3)
 
 
+    def testMaxentStressInvalidCoordinateDimensions(self):
+        """Test that invalid coordinate dimensions raise ValueError"""
+        G = self.getSmallGraph(weighted=True)
+
+        # Test 1D coordinates (invalid)
+        coords_1d = [(0.0,), (1.0,), (2.0,), (3.0,), (4.0,)]
+        with self.assertRaises(ValueError) as context:
+            nk.viz.MaxentStress(G, dim=2, k=2, coordinates=coords_1d, tolerance=1e-3)
+        self.assertIn("Coordinates must be 2D or 3D", str(context.exception))
+        self.assertIn("got 1 dimensions", str(context.exception))
+
+        # Test 4D coordinates (invalid)
+        coords_4d = [
+            (0.0, 0.0, 0.0, 0.0),
+            (1.0, 0.0, 0.0, 0.0),
+            (0.0, 1.0, 0.0, 0.0),
+            (1.0, 1.0, 0.0, 0.0),
+            (0.5, 0.5, 1.0, 1.0)
+        ]
+        with self.assertRaises(ValueError) as context:
+            nk.viz.MaxentStress(G, dim=3, k=2, coordinates=coords_4d, tolerance=1e-3)
+        self.assertIn("Coordinates must be 2D or 3D", str(context.exception))
+        self.assertIn("got 4 dimensions", str(context.exception))
+
     def testMaxentStressWithoutCoordinates(self):
         """Test that MaxentStress works without providing start coordinates"""
         G = self.getSmallGraph(weighted=True)
