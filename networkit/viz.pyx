@@ -14,6 +14,8 @@ cdef extern from "<networkit/viz/Point.hpp>" namespace "NetworKit" nogil:
 	cdef cppclass Point[T]:
 		Point()
 		Point(T x, T y)
+		Point(T x, T y, T z)
+		Point(count dimension)
 		count getDimensions()
 		T& operator[](const index i) except +
 		T& at(const index i) except +
@@ -220,8 +222,8 @@ cdef class MaxentStress (GraphLayoutAlgorithm):
 		Number of dimensions.
 	k: int
 		Node distance to take into account for computation. The higher k, the longer computation takes to complete.
-	coordinates: list(tuple(float, float)), optional
-		Fixed coordinates. Default: list()
+	coordinates: list(tuple(float, ...)), optional
+		Initial coordinates for warm start as 2D or 3D points. The algorithm will start from these positions and optimize the layout. For 2D: [(x1, y1), (x2, y2), ...]. For 3D: [(x1, y1, z1), (x2, y2, z2), ...]. Default: list()
 	tolerance: float, optional
 		The tolerance of the solver. Default: 1e-5
 	linearSolverType: networkit.viz.LinearSolverType, optional
@@ -232,15 +234,24 @@ cdef class MaxentStress (GraphLayoutAlgorithm):
 		Decides what type of graph distance should be utilised. Default: networkit.community.GraphDistance.EdgeWeight
 	"""
 
-	def __cinit__(self, Graph G, count dim, count k, vector[pair[double, double]] coordinates = [], double tolerance = 1e-5, linearSolverType = LinearSolverType.LAMG, bool_t fastComputation = False, _GraphDistance graphDistance = GraphDistance.EDGE_WEIGHT):
-		cdef Point[double] p = Point[double](0, 0)
+	def __cinit__(self, Graph G, count dim, count k, vector[vector[double]] coordinates = [], double tolerance = 1e-5, linearSolverType = LinearSolverType.LAMG, bool_t fastComputation = False, _GraphDistance graphDistance = GraphDistance.EDGE_WEIGHT):
+		cdef Point[double] p
 		cdef vector[Point[double]] pointCoordinates = vector[Point[double]]()
 
-		for pr in coordinates:
-			p = Point[double](pr.first, pr.second)
+		for coord in coordinates:
+			if coord.size() == 2:
+				p = Point[double](coord[0], coord[1])
+			elif coord.size() == 3:
+				# Create Point with dimension 3, then set coordinates
+				p = Point[double](3)
+				p[0] = coord[0]
+				p[1] = coord[1]
+				p[2] = coord[2]
+			else:
+				raise ValueError(f"Coordinates must be 2D or 3D, got {coord.size()} dimensions")
 			pointCoordinates.push_back(p)
 
-		if (coordinates.size() != 0):
+		if coordinates.size() != 0:
 			self._this = new _MaxentStress(G._this, dim, pointCoordinates, k, tolerance, linearSolverType, fastComputation, graphDistance)
 		else:
 			self._this = new _MaxentStress(G._this, dim, k, tolerance, linearSolverType, fastComputation, graphDistance)
