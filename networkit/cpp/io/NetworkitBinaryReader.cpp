@@ -51,8 +51,7 @@ Graph NetworkitBinaryReader::readData(const T &source) {
             version = 2;
         } else if (!memcmp("nkbg003", header.magic, 8)) {
             version = 3;
-        }
-        else if (!memcmp("nkbg004", header.magic, 8)) {
+        } else if (!memcmp("nkbg004", header.magic, 8)) {
             version = 4;
         } else {
             throw std::runtime_error("Reader expected another magic value");
