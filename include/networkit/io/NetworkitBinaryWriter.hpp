@@ -57,7 +57,7 @@ public:
     std::vector<uint8_t> writeToBuffer(const Graph &G);
 
 private:
-    static constexpr const char *FILE_FORMAT = "nkbg003";
+    static constexpr const char *FILE_FORMAT = "nkbg004";
     count chunks;
     NetworkitBinaryWeights weightsType;
     NetworkitBinaryEdgeIDs edgeIndex;

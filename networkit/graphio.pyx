@@ -1167,6 +1167,8 @@ def guessFileFormat(filepath: str) -> Format:
 			return Format.NetworkitBinary	# NetworkitBinary version 2 - binary. starts with 6E 6B 62 67 30 30 32
 		if nkmagicbits == bytes([0x6e, 0x6b, 0x62, 0x67, 0x30, 0x30, 0x33]): 
 			return Format.NetworkitBinary	# NetworkitBinary version 3 - binary. starts with 6E 6B 62 67 30 30 33
+		if nkmagicbits == bytes([0x6e, 0x6b, 0x62, 0x67, 0x30, 0x30, 0x34]):
+			return Format.NetworkitBinary  # NetworkitBinary version 4 - binary. starts with 6E 6B 62 67 30 30 34
 
 	# otherwise, open as text file and check the first lines for structured text formats
 	with open(filepath, 'r') as f:
