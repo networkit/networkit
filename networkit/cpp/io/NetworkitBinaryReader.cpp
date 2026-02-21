@@ -224,7 +224,7 @@ Graph NetworkitBinaryReader::readData(const T &source) {
             transIndexOff += nkbg::varIntDecode(
                 reinterpret_cast<const uint8_t *>(transpIdIt + transIndexOff), tmpId);
         };
-
+        uint64_t ignored = 0;
         for (uint64_t i = 0; i < n; i++) {
             uint64_t curr = vertex + i;
             uint64_t outNbrs;
@@ -238,15 +238,14 @@ Graph NetworkitBinaryReader::readData(const T &source) {
             // aligned.
             if (!G.hasNode(curr)) {
                 for (uint64_t j = 0; j < outNbrs; ++j) {
-                    uint64_t add;
-                    off += nkbg::varIntDecode(reinterpret_cast<const uint8_t *>(adjIt + off), add);
+                    off +=
+                        nkbg::varIntDecode(reinterpret_cast<const uint8_t *>(adjIt + off), ignored);
                     consumeAdjWeight();
                     consumeAdjId();
                 }
                 for (uint64_t j = 0; j < inNbrs; ++j) {
-                    uint64_t add;
                     transpOff += nkbg::varIntDecode(
-                        reinterpret_cast<const uint8_t *>(transpIt + transpOff), add);
+                        reinterpret_cast<const uint8_t *>(transpIt + transpOff), ignored);
                     consumeTranspWeight();
                     consumeTranspId();
                 }
