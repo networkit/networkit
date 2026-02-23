@@ -168,6 +168,12 @@ cdef class NetworkitBinaryReader(GraphReader):
 	This Reader can read files that are written with format version 2 and 3.
 	Format version 3 was released with Networkit 9.1 (December 2021).
 	Further information can be found here: https://github.com/networkit/networkit/blob/master/networkit/cpp/io/NetworkitBinaryGraph.md
+
+	Note
+	----
+	A new version 4 is slated for an upcoming release (time of statement: February 2026). This version supports writing/reading 
+	graphs with deleted nodes. As with version 3, all networks written with the new code are automatically upgraded to the newest version 4.
+	If you want to use v4 right away, you can use nightly builds (see Readme on github).
 	"""
 
 	def __cinit__(self):
@@ -202,6 +208,12 @@ cdef class NetworkitBinaryWriter(GraphWriter):
 	Since Networkit 9.1 (December 2021), the writer always writes files using format version 3.
 	Reading a binary file with version < 3 and re-writing it, implicitly upgrades the format to the current version.
 	Further information can be found here: https://github.com/networkit/networkit/blob/master/networkit/cpp/io/NetworkitBinaryGraph.md
+
+	Note
+	----
+	A new version 4 is slated for an upcoming release (time of statement: February 2026). This version supports writing/reading 
+	graphs with deleted nodes. As with version 3, all networks written with the new code are automatically upgraded to the newest version 4.
+	If you want to use v4 right away, you can use nightly builds (see Readme on github).
 	"""
 	def __cinit__(self):
 		self._this = new _NetworkitBinaryWriter()
