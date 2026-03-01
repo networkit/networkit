@@ -4,69 +4,276 @@
  *  Authors: Andreas Scharf (andreas.b.scharf@gmail.com)
  *
  */
-#include <networkit/simulation/EpidemicSimulationSEIR.hpp>
-#include <networkit/graph/Graph.hpp>
 #include <gtest/gtest.h>
+#include <networkit/graph/Graph.hpp>
+#include <networkit/simulation/EpidemicSimulationSEIR.hpp>
+
+#include <array>
 
 namespace NetworKit {
 
-TEST(TestEpidemicSimulationSEIR, testConstructor){
+class EpidemicSimulationSEIRFixture : public ::testing::Test {
+protected:
+    static constexpr count states{4};
+    static constexpr size_t rowWidth{4}; // {zero, t, s, population}
+
+    using SEIRArray = std::array<count, states>; // {S,E,I,R}
+
+    static count popAt(const std::vector<std::vector<count>> &stats, count maxTimestamps, count t,
+                       count s) {
+        EXPECT_LT(t, maxTimestamps);
+        const count idx = t * states + s; // assumes State::S == 0
+        return stats.at(idx).at(3);
+    }
+
+    static SEIRArray readSEIR(const std::vector<std::vector<count>> &stats, count maxTimestamps,
+                              count t) {
+        return {popAt(stats, maxTimestamps, t, 0), popAt(stats, maxTimestamps, t, 1),
+                popAt(stats, maxTimestamps, t, 2), popAt(stats, maxTimestamps, t, 3)};
+    }
+
+    static void expectTotal(const SEIRArray &SEIR, count n) {
+        EXPECT_EQ(SEIR[0] + SEIR[1] + SEIR[2] + SEIR[3], n);
+    }
+
+    static void expectStatsShape(const std::vector<std::vector<count>> &stats,
+                                 count maxTimestamps) {
+        EXPECT_EQ(stats.size(), maxTimestamps * states);
+        for (const auto &row : stats) {
+            EXPECT_EQ(row.size(), rowWidth);
+        }
+    }
+};
+
+TEST_F(EpidemicSimulationSEIRFixture, testConstructor) {
     Graph graph(1);
     constexpr count maxTimestamps{0};
     constexpr double transmissionProb{0.0};
     constexpr count exposureTime{0};
     constexpr count infectiousTime{0};
     constexpr node startingNode{0};
-    EXPECT_NO_THROW(EpidemicSimulationSEIR simulator(graph,maxTimestamps,transmissionProb,exposureTime,infectiousTime,startingNode));
+    EXPECT_NO_THROW(EpidemicSimulationSEIR simulator(graph, maxTimestamps, transmissionProb,
+                                                     exposureTime, infectiousTime, startingNode));
 }
 
-TEST(TestEpidemicSimulationSEIR, testNoMaxTimestampsNoStats){
+TEST_F(EpidemicSimulationSEIRFixture, testNoMaxTimestampsNoStats) {
     Graph graph(2);
-    graph.addEdge(0,1);
+    graph.addEdge(0, 1);
     constexpr count maxTimestamps{0};
     constexpr double transmissionProb{1.0};
     constexpr count exposureTime{2};
     constexpr count infectiousTime{2};
     constexpr node startingNode{0};
-    EpidemicSimulationSEIR simulator(graph,maxTimestamps,transmissionProb,exposureTime,infectiousTime,startingNode);
+    EpidemicSimulationSEIR simulator(graph, maxTimestamps, transmissionProb, exposureTime,
+                                     infectiousTime, startingNode);
     simulator.run();
     auto stats = simulator.getData();
     EXPECT_TRUE(stats.empty());
 }
 
-TEST(TestEpidemicSimulationSEIR, testZeroTransmissionProbabalityNoSpread){
+TEST_F(EpidemicSimulationSEIRFixture, testZeroTransmissionProbabalityNoSpread) {
     Graph graph(10);
-    graph.addEdge(0,1);
-    constexpr count states{4};
+    graph.addEdge(0, 1);
     constexpr count maxTimestamps{10};
     constexpr double transmissionProb{0.0};
     constexpr count exposureTime{2};
     constexpr count infectiousTime{2};
     constexpr node startingNode{0};
-    EpidemicSimulationSEIR simulator(graph,maxTimestamps,transmissionProb,exposureTime,infectiousTime,startingNode);
+    EpidemicSimulationSEIR simulator(graph, maxTimestamps, transmissionProb, exposureTime,
+                                     infectiousTime, startingNode);
     simulator.run();
     auto stats = simulator.getData();
-    EXPECT_EQ(stats.size(), maxTimestamps*states);
-    auto popAt = [&](count t, count s) -> count {
-        const count base = t * states;
-        const count idx = base + (s - 0); // assumes State::S == 0
-        return stats.at(idx).at(3);
-    };
+
+    expectStatsShape(stats, maxTimestamps);
 
     for (count time = 0; time < maxTimestamps; ++time) {
-        const count Susceptible = popAt(time, 0);
-        const count Exposed = popAt(time, 1);
-        const count Infectious = popAt(time, 2);
-        const count Removed = popAt(time, 3);
+        const auto SEIR = readSEIR(stats, maxTimestamps, time);
 
-        EXPECT_EQ(Exposed, 0);
-        EXPECT_EQ(Susceptible, 9);
-        if (time - infectiousTime >= 0)
-            EXPECT_EQ(Removed, 1);
+        EXPECT_EQ(SEIR[1], 0);
+        EXPECT_EQ(SEIR[0], 9);
+        if (time >= infectiousTime)
+            EXPECT_EQ(SEIR[3], 1);
         else
-            EXPECT_EQ(Infectious, 1);
-        EXPECT_EQ(Susceptible + Exposed + Infectious + Removed, 10);
+            EXPECT_EQ(SEIR[2], 1);
+        expectTotal(SEIR, 10);
     }
 }
+
+TEST_F(EpidemicSimulationSEIRFixture, testStatsRowShape) {
+    Graph graph(3);
+    graph.addEdge(0, 1);
+    graph.addEdge(1, 2);
+    constexpr count maxTimestamps{4};
+    constexpr double transmissionProb{0.0};
+    constexpr count exposureTime{1};
+    constexpr count infectiousTime{1};
+    constexpr node startingNode{0};
+    EpidemicSimulationSEIR simulator(graph, maxTimestamps, transmissionProb, exposureTime,
+                                     infectiousTime, startingNode);
+    simulator.run();
+    auto stats = simulator.getData();
+    expectStatsShape(stats, maxTimestamps);
 }
 
+TEST_F(EpidemicSimulationSEIRFixture, testMaxTimestampsOneRecordsExactlyOneStep) {
+    Graph graph(2);
+    graph.addEdge(0, 1);
+    constexpr count maxTimestamps{1};
+    constexpr double transmissionProb{0.0};
+    constexpr count exposureTime{5};
+    constexpr count infectiousTime{5};
+    constexpr node startingNode{0};
+    EpidemicSimulationSEIR simulator(graph, maxTimestamps, transmissionProb, exposureTime,
+                                     infectiousTime, startingNode);
+    simulator.run();
+    auto stats = simulator.getData();
+
+    expectStatsShape(stats, maxTimestamps);
+
+    for (count time = 0; time < maxTimestamps; ++time) {
+        const auto SEIR = readSEIR(stats, maxTimestamps, time);
+
+        EXPECT_EQ(SEIR[0], 1);
+        EXPECT_EQ(SEIR[1], 0);
+        EXPECT_EQ(SEIR[2], 1);
+        EXPECT_EQ(SEIR[3], 0);
+        expectTotal(SEIR, 2);
+    }
+}
+
+TEST_F(EpidemicSimulationSEIRFixture, testZeroTransmissionInfectiousTimeZeroImmediateRemoval) {
+    Graph graph(10);
+    graph.addEdge(0, 1);
+    constexpr count maxTimestamps{5};
+    constexpr double transmissionProb{0.0};
+    constexpr count exposureTime{2};
+    constexpr count infectiousTime{0};
+    constexpr node startingNode{0};
+    EpidemicSimulationSEIR simulator(graph, maxTimestamps, transmissionProb, exposureTime,
+                                     infectiousTime, startingNode);
+    simulator.run();
+    auto stats = simulator.getData();
+
+    expectStatsShape(stats, maxTimestamps);
+
+    for (count time = 0; time < maxTimestamps; ++time) {
+        const auto SEIR = readSEIR(stats, maxTimestamps, time);
+
+        EXPECT_EQ(SEIR[1], 0);
+        EXPECT_EQ(SEIR[0], 9);
+        EXPECT_EQ(SEIR[2], 0);
+        EXPECT_EQ(SEIR[3], 1);
+        expectTotal(SEIR, 10);
+    }
+}
+
+TEST_F(EpidemicSimulationSEIRFixture,
+       testZeroTransmissionInfectiousTimeGreaterThanMaxTimestampsNeverRemoved) {
+    Graph graph(10);
+    graph.addEdge(0, 1);
+    constexpr count maxTimestamps{5};
+    constexpr double transmissionProb{0.0};
+    constexpr count exposureTime{2};
+    constexpr count infectiousTime{100};
+    constexpr node startingNode{0};
+    EpidemicSimulationSEIR simulator(graph, maxTimestamps, transmissionProb, exposureTime,
+                                     infectiousTime, startingNode);
+    simulator.run();
+    auto stats = simulator.getData();
+
+    expectStatsShape(stats, maxTimestamps);
+
+    for (count time = 0; time < maxTimestamps; ++time) {
+        const auto SEIR = readSEIR(stats, maxTimestamps, time);
+
+        EXPECT_EQ(SEIR[1], 0);
+        EXPECT_EQ(SEIR[0], 9);
+        EXPECT_EQ(SEIR[2], 1);
+        EXPECT_EQ(SEIR[3], 0);
+        expectTotal(SEIR, 10);
+    }
+}
+
+TEST_F(EpidemicSimulationSEIRFixture, testFullTransmissionStarExposureAndRemovalTimeline) {
+    Graph starGraph(6);
+    for (node v = 1; v < 6; ++v) {
+        starGraph.addEdge(0, v);
+    }
+
+    constexpr count maxTimestamps{5};
+    constexpr double transmissionProb{1.0};
+    constexpr count exposureTime{2};
+    constexpr count infectiousTime{2};
+    constexpr node startingNode{0};
+
+    EpidemicSimulationSEIR simulator(starGraph, maxTimestamps, transmissionProb, exposureTime,
+                                     infectiousTime, startingNode);
+    simulator.run();
+    auto stats = simulator.getData();
+
+    expectStatsShape(stats, maxTimestamps);
+
+    for (count time = 0; time < maxTimestamps; ++time) {
+        const auto SEIR = readSEIR(stats, maxTimestamps, time);
+
+        if (time == 0 || time == 1) {
+            EXPECT_EQ(SEIR[0], 0);
+            EXPECT_EQ(SEIR[1], 5);
+            EXPECT_EQ(SEIR[2], 1);
+            EXPECT_EQ(SEIR[3], 0);
+        } else if (time == 2 || time == 3) {
+            EXPECT_EQ(SEIR[0], 0);
+            EXPECT_EQ(SEIR[1], 0);
+            EXPECT_EQ(SEIR[2], 5);
+            EXPECT_EQ(SEIR[3], 1);
+        } else if (time == 4) {
+            EXPECT_EQ(SEIR[0], 0);
+            EXPECT_EQ(SEIR[1], 0);
+            EXPECT_EQ(SEIR[2], 0);
+            EXPECT_EQ(SEIR[3], 6);
+        }
+
+        expectTotal(SEIR, 6);
+    }
+}
+
+TEST_F(EpidemicSimulationSEIRFixture,
+       testFullTransmissionStarWithLongExposureTimeNoSecondaryInfections) {
+    Graph starGraph(6);
+    for (node v = 1; v < 6; ++v) {
+        starGraph.addEdge(0, v);
+    }
+
+    constexpr count maxTimestamps{4};
+    constexpr double transmissionProb{1.0};
+    constexpr count exposureTime{100};
+    constexpr count infectiousTime{2};
+    constexpr node startingNode{0};
+
+    EpidemicSimulationSEIR simulator(starGraph, maxTimestamps, transmissionProb, exposureTime,
+                                     infectiousTime, startingNode);
+    simulator.run();
+    auto stats = simulator.getData();
+
+    expectStatsShape(stats, maxTimestamps);
+
+    for (count time = 0; time < maxTimestamps; ++time) {
+        const auto SEIR = readSEIR(stats, maxTimestamps, time);
+
+        if (time < infectiousTime) {
+            EXPECT_EQ(SEIR[0], 0);
+            EXPECT_EQ(SEIR[1], 5);
+            EXPECT_EQ(SEIR[2], 1);
+            EXPECT_EQ(SEIR[3], 0);
+        } else {
+            EXPECT_EQ(SEIR[0], 0);
+            EXPECT_EQ(SEIR[1], 5);
+            EXPECT_EQ(SEIR[2], 0);
+            EXPECT_EQ(SEIR[3], 1);
+        }
+
+        expectTotal(SEIR, 6);
+    }
+}
+
+} // namespace NetworKit
