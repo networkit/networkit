@@ -14,7 +14,8 @@ namespace NetworKit {
 
 EpidemicSimulationSEIR::EpidemicSimulationSEIR(const Graph &G, count tMax, double transP,
                                                count eTime, count iTime, node start)
-    : Algorithm(), G(&G), maxTimestamps(tMax), transmissionProbability(transP), exposedTime(eTime), infectiousTime(iTime), start(start) {}
+    : Algorithm(), G(&G), maxTimestamps(tMax), transmissionProbability(transP), exposedTime(eTime),
+      infectiousTime(iTime), start(start) {}
 
 void EpidemicSimulationSEIR::run() {
 
@@ -36,7 +37,8 @@ void EpidemicSimulationSEIR::run() {
 
     // contact may expose susceptible node to infection
     auto contact = [&](node v) {
-        if ((state[v] == State::Susceptible) && (Aux::Random::probability() <= transmissionProbability)) {
+        if ((state[v] == State::Susceptible)
+            && (Aux::Random::probability() <= transmissionProbability)) {
             setState(v, State::Exposed);
         }
     };
