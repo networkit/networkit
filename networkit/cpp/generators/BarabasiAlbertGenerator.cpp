@@ -103,7 +103,8 @@ Graph BarabasiAlbertGenerator::generateParallel() {
         for (index v = 0; v < n0 - 1; ++v) {
             addSeedGraphEdge(v, v + 1);
         }
-        addSeedGraphEdge(0, n0 - 1);
+        if (n0 > 2)
+            addSeedGraphEdge(0, n0 - 1);
     } else {
         seedGraphData.reserve(2 * initGraph.numberOfEdges()
                               + 2 * (n - initGraph.numberOfNodes()) * k);
