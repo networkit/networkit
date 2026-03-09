@@ -12,7 +12,7 @@
 
 namespace NetworKit {
 
-class EpidemicSimulationSEIRFixture : public ::testing::Test {
+class EpidemicSimulationSEIRTest : public ::testing::Test {
 protected:
     static constexpr count states{4};
     static constexpr size_t rowWidth{4}; // {zero, t, s, population}
@@ -45,7 +45,7 @@ protected:
     }
 };
 
-TEST_F(EpidemicSimulationSEIRFixture, testConstructor) {
+TEST_F(EpidemicSimulationSEIRTest, testConstructor) {
     Graph graph(1);
     constexpr count maxTimestamps{0};
     constexpr double transmissionProb{0.0};
@@ -56,7 +56,7 @@ TEST_F(EpidemicSimulationSEIRFixture, testConstructor) {
                                                      exposureTime, infectiousTime, startingNode));
 }
 
-TEST_F(EpidemicSimulationSEIRFixture, testNoMaxTimestampsNoStats) {
+TEST_F(EpidemicSimulationSEIRTest, testNoMaxTimestampsNoStats) {
     Graph graph(2);
     graph.addEdge(0, 1);
     constexpr count maxTimestamps{0};
@@ -71,7 +71,7 @@ TEST_F(EpidemicSimulationSEIRFixture, testNoMaxTimestampsNoStats) {
     EXPECT_TRUE(stats.empty());
 }
 
-TEST_F(EpidemicSimulationSEIRFixture, testZeroTransmissionProbabalityNoSpread) {
+TEST_F(EpidemicSimulationSEIRTest, testZeroTransmissionProbabalityNoSpread) {
     Graph graph(10);
     graph.addEdge(0, 1);
     constexpr count maxTimestamps{10};
@@ -99,7 +99,7 @@ TEST_F(EpidemicSimulationSEIRFixture, testZeroTransmissionProbabalityNoSpread) {
     }
 }
 
-TEST_F(EpidemicSimulationSEIRFixture, testStatsRowShape) {
+TEST_F(EpidemicSimulationSEIRTest, testStatsRowShape) {
     Graph graph(3);
     graph.addEdge(0, 1);
     graph.addEdge(1, 2);
@@ -115,7 +115,7 @@ TEST_F(EpidemicSimulationSEIRFixture, testStatsRowShape) {
     expectStatsShape(stats, maxTimestamps);
 }
 
-TEST_F(EpidemicSimulationSEIRFixture, testMaxTimestampsOneRecordsExactlyOneStep) {
+TEST_F(EpidemicSimulationSEIRTest, testMaxTimestampsOneRecordsExactlyOneStep) {
     Graph graph(2);
     graph.addEdge(0, 1);
     constexpr count maxTimestamps{1};
@@ -141,7 +141,7 @@ TEST_F(EpidemicSimulationSEIRFixture, testMaxTimestampsOneRecordsExactlyOneStep)
     }
 }
 
-TEST_F(EpidemicSimulationSEIRFixture, testZeroTransmissionInfectiousTimeZeroImmediateRemoval) {
+TEST_F(EpidemicSimulationSEIRTest, testZeroTransmissionInfectiousTimeZeroImmediateRemoval) {
     Graph graph(10);
     graph.addEdge(0, 1);
     constexpr count maxTimestamps{5};
@@ -167,7 +167,7 @@ TEST_F(EpidemicSimulationSEIRFixture, testZeroTransmissionInfectiousTimeZeroImme
     }
 }
 
-TEST_F(EpidemicSimulationSEIRFixture,
+TEST_F(EpidemicSimulationSEIRTest,
        testZeroTransmissionInfectiousTimeGreaterThanMaxTimestampsNeverRemoved) {
     Graph graph(10);
     graph.addEdge(0, 1);
@@ -194,7 +194,7 @@ TEST_F(EpidemicSimulationSEIRFixture,
     }
 }
 
-TEST_F(EpidemicSimulationSEIRFixture, testFullTransmissionStarExposureAndRemovalTimeline) {
+TEST_F(EpidemicSimulationSEIRTest, testFullTransmissionStarExposureAndRemovalTimeline) {
     Graph starGraph(6);
     for (node v = 1; v < 6; ++v) {
         starGraph.addEdge(0, v);
@@ -237,7 +237,7 @@ TEST_F(EpidemicSimulationSEIRFixture, testFullTransmissionStarExposureAndRemoval
     }
 }
 
-TEST_F(EpidemicSimulationSEIRFixture,
+TEST_F(EpidemicSimulationSEIRTest,
        testFullTransmissionStarWithLongExposureTimeNoSecondaryInfections) {
     Graph starGraph(6);
     for (node v = 1; v < 6; ++v) {
