@@ -276,4 +276,38 @@ TEST_F(EpidemicSimulationSEIRTest,
     }
 }
 
+TEST_F(EpidemicSimulationSEIRTest, testStartNoneChoosesRandomNode) {
+    Graph graph(4);
+    graph.addEdge(0, 1);
+    graph.addEdge(1, 2);
+    graph.addEdge(2, 3);
+
+    constexpr count maxTimestamps{1};
+    constexpr double transmissionProb{0.0};
+    constexpr count exposureTime{2};
+    constexpr count infectiousTime{2};
+    constexpr node startingNode{none};
+
+    EpidemicSimulationSEIR simulator(graph, maxTimestamps, transmissionProb, exposureTime,
+                                     infectiousTime, startingNode);
+    simulator.run();
+    auto stats = simulator.getData();
+
+    expectStatsShape(stats, maxTimestamps);
+
+    const count chosenStart = stats.front().at(0);
+    EXPECT_NE(chosenStart, none);
+    EXPECT_LT(chosenStart, graph.upperNodeIdBound());
+
+    for (const auto &row : stats) {
+        EXPECT_EQ(row.at(0), chosenStart);
+    }
+
+    const auto SEIR = readSEIR(stats, maxTimestamps, 0);
+    EXPECT_EQ(SEIR[0], 3);
+    EXPECT_EQ(SEIR[1], 0);
+    EXPECT_EQ(SEIR[2], 1);
+    EXPECT_EQ(SEIR[3], 0);
+    expectTotal(SEIR, 4);
+}
 } // namespace NetworKit
