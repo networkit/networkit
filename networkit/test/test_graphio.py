@@ -152,6 +152,7 @@ class TestGraphIO(unittest.TestCase):
             ("foodweb-baydry.konect", nk.Format.KONECT),
             ("foodweb-baydry.nkbg002", nk.Format.NetworkitBinary),
             ("foodweb-baydry.nkbg003", nk.Format.NetworkitBinary),
+            ("foodweb-baydry.nkbg004", nk.Format.NetworkitBinary),
             ("jazz2_directed.gml", nk.Format.GML),
             ("chesapeake.mtx", nk.Format.MatrixMarket),
             ("tiny_05.rb", nk.Format.RB),
@@ -192,10 +193,16 @@ class TestGraphIO(unittest.TestCase):
         )
         with open(output_filepath, "rb") as f:
             nkmagicbits = f.read(7)
-            self.assertEqual(
-                nkmagicbits, bytes([0x6E, 0x6B, 0x62, 0x67, 0x30, 0x30, 0x33])
-            )
+            self.assertEqual(nkmagicbits, b"nkbg004")
 
+        nk.graphio.writeGraph(
+            nk.graphio.readGraph("input/foodweb-baydry.nkbg003"),
+            output_filepath,
+            nk.Format.NetworkitBinary,
+        )
+        with open(output_filepath, "rb") as f:
+            nkmagicbits = f.read(7)
+            self.assertEqual(nkmagicbits, b"nkbg004")
 
 if __name__ == "__main__":
     unittest.main()

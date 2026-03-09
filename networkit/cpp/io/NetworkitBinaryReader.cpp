@@ -51,6 +51,8 @@ Graph NetworkitBinaryReader::readData(const T &source) {
             version = 2;
         } else if (!memcmp("nkbg003", header.magic, 8)) {
             version = 3;
+        } else if (!memcmp("nkbg004", header.magic, 8)) {
+            version = 4;
         } else {
             throw std::runtime_error("Reader expected another magic value");
         }
@@ -107,7 +109,7 @@ Graph NetworkitBinaryReader::readData(const T &source) {
         uint8_t flag;
         memcpy(&flag, baseIt, sizeof(uint8_t));
         baseIt += sizeof(uint8_t);
-        if (!(flag & nkbg::DELETED_BIT)) {
+        if (flag & nkbg::DELETED_BIT) {
             G.removeNode(i);
         }
     }
@@ -159,16 +161,70 @@ Graph NetworkitBinaryReader::readData(const T &source) {
                 memcpy(&transIndexOff, transpIdIt + (c - 1) * sizeof(uint64_t), sizeof(uint64_t));
             }
         }
-        off += (chunks - 1) * sizeof(uint64_t);
-        transpOff += (chunks - 1) * sizeof(uint64_t);
-        off += sizeof(uint64_t);
-        transpOff += sizeof(uint64_t);
+
+        off += (chunks - 1) * sizeof(uint64_t) + sizeof(uint64_t);
+        transpOff += (chunks - 1) * sizeof(uint64_t) + sizeof(uint64_t);
         wghtOff += (chunks - 1) * sizeof(uint64_t);
         transWghtOff += (chunks - 1) * sizeof(uint64_t);
         indexOff += (chunks - 1) * sizeof(uint64_t);
         transIndexOff += (chunks - 1) * sizeof(uint64_t);
         uint64_t n = firstVert[c + 1] - firstVert[c];
 
+        // Helpers to consume weights/ids even if we skip graph construction for a deleted node.
+        auto consumeAdjWeight = [&]() {
+            switch (weightFormat) {
+            case nkbg::WeightFormat::VARINT:
+            case nkbg::WeightFormat::SIGNED_VARINT: {
+                uint64_t tmp;
+                wghtOff +=
+                    nkbg::varIntDecode(reinterpret_cast<const uint8_t *>(adjWghtIt + wghtOff), tmp);
+            } break;
+            case nkbg::WeightFormat::DOUBLE:
+                wghtOff += sizeof(double);
+                break;
+            case nkbg::WeightFormat::FLOAT:
+                wghtOff += sizeof(float);
+                break;
+            case nkbg::WeightFormat::NONE:
+                break;
+            }
+        };
+
+        auto consumeTranspWeight = [&]() {
+            switch (weightFormat) {
+            case nkbg::WeightFormat::VARINT:
+            case nkbg::WeightFormat::SIGNED_VARINT: {
+                uint64_t tmp;
+                transWghtOff += nkbg::varIntDecode(
+                    reinterpret_cast<const uint8_t *>(transpWghtIt + transWghtOff), tmp);
+            } break;
+            case nkbg::WeightFormat::DOUBLE:
+                transWghtOff += sizeof(double);
+                break;
+            case nkbg::WeightFormat::FLOAT:
+                transWghtOff += sizeof(float);
+                break;
+            case nkbg::WeightFormat::NONE:
+                break;
+            }
+        };
+
+        auto consumeAdjId = [&]() {
+            if (!indexed)
+                return;
+            edgeid tmpId;
+            indexOff +=
+                nkbg::varIntDecode(reinterpret_cast<const uint8_t *>(adjIdIt + indexOff), tmpId);
+        };
+
+        auto consumeTranspId = [&]() {
+            if (!indexed)
+                return;
+            edgeid tmpId;
+            transIndexOff += nkbg::varIntDecode(
+                reinterpret_cast<const uint8_t *>(transpIdIt + transIndexOff), tmpId);
+        };
+        uint64_t ignored = 0;
         for (uint64_t i = 0; i < n; i++) {
             uint64_t curr = vertex + i;
             uint64_t outNbrs;
@@ -176,6 +232,26 @@ Graph NetworkitBinaryReader::readData(const T &source) {
             uint64_t inNbrs;
             transpOff +=
                 nkbg::varIntDecode(reinterpret_cast<const uint8_t *>(transpIt + transpOff), inNbrs);
+
+            // If the node doesn't exist (hole), we must NOT preallocate/add edges,
+            // but we MUST still consume the encoded neighbor/weight/id payload to keep offsets
+            // aligned.
+            if (!G.hasNode(curr)) {
+                for (uint64_t j = 0; j < outNbrs; ++j) {
+                    off +=
+                        nkbg::varIntDecode(reinterpret_cast<const uint8_t *>(adjIt + off), ignored);
+                    consumeAdjWeight();
+                    consumeAdjId();
+                }
+                for (uint64_t j = 0; j < inNbrs; ++j) {
+                    transpOff += nkbg::varIntDecode(
+                        reinterpret_cast<const uint8_t *>(transpIt + transpOff), ignored);
+                    consumeTranspWeight();
+                    consumeTranspId();
+                }
+                continue;
+            }
+
             if (!directed) {
                 G.preallocateUndirected(curr, outNbrs + inNbrs);
             } else {
