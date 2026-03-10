@@ -27,28 +27,28 @@ public:
      * @param transP Transmission probability.
      * @param eTime Exposed time.
      * @param iTime Infectious time.
-     * @param zero Starting node.
+     * @param start Starting node.
      */
     EpidemicSimulationSEIR(const Graph &G, count tMax, double transP, count eTime, count iTime,
-                           node zero);
+                           node start);
 
     void run() override;
 
     /**
      * Returns the data from the simulation (only valid after run() was called).
-     * @return Vector of vectors, containing "zero", "time", "state" and "count" values for each
+     * @return Vector of vectors, containing "start", "time", "state" and "count" values for each
      * node.
      */
     const std::vector<std::vector<count>> &getData() const;
 
 private:
     const Graph *G;
-    count tMax;
-    double transP;
-    count eTime;
-    count iTime;
-    node zero;
-    enum class State { S, E, I, R, U }; // Susceptible, Exposed, Infectious, Removed, Undefined
+    count maxTimestamps;
+    double transmissionProbability;
+    count exposedTime;
+    count infectiousTime;
+    node start;
+    enum class State { Susceptible, Exposed, Infectious, Removed, Undefined };
     std::vector<State> state;
     std::vector<index> timestamp;
     std::vector<std::vector<count>> stats;

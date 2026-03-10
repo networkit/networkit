@@ -1,0 +1,1 @@
+networkit_add_test(simulation EpidemicSimulationSEIRTest)

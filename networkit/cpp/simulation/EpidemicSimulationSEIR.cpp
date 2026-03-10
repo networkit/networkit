@@ -13,8 +13,9 @@
 namespace NetworKit {
 
 EpidemicSimulationSEIR::EpidemicSimulationSEIR(const Graph &G, count tMax, double transP,
-                                               count eTime, count iTime, node zero)
-    : Algorithm(), G(&G), tMax(tMax), transP(transP), eTime(eTime), iTime(iTime), zero(zero) {}
+                                               count eTime, count iTime, node start)
+    : Algorithm(), G(&G), maxTimestamps(tMax), transmissionProbability(transP), exposedTime(eTime),
+      infectiousTime(iTime), start(start) {}
 
 void EpidemicSimulationSEIR::run() {
 
@@ -23,7 +24,7 @@ void EpidemicSimulationSEIR::run() {
     index t = 0;
 
     // initialize state and timestamp arrays
-    state.resize(G->upperNodeIdBound(), State::U);
+    state.resize(G->upperNodeIdBound(), State::Undefined);
     timestamp.resize(G->upperNodeIdBound(), none);
 
     auto setState = [&](node v, State X) {
@@ -32,34 +33,35 @@ void EpidemicSimulationSEIR::run() {
     };
 
     // initialize nodes to Susceptible
-    G->parallelForNodes([&](node v) { setState(v, State::S); });
+    G->parallelForNodes([&](node v) { setState(v, State::Susceptible); });
 
     // contact may expose susceptible node to infection
     auto contact = [&](node v) {
-        if ((state[v] == State::S) && (Aux::Random::probability() <= transP)) {
-            setState(v, State::E);
+        if ((state[v] == State::Susceptible)
+            && (Aux::Random::probability() <= transmissionProbability)) {
+            setState(v, State::Exposed);
         }
     };
 
     // update state of nodes
     auto sweep = [&](node u) {
-        if (state[u] == State::S) {
+        if (state[u] == State::Susceptible) {
             // do nothing
-        } else if (state[u] == State::E) {
+        } else if (state[u] == State::Exposed) {
             // exposed nodes become infectious after time
-            if ((t - timestamp[u]) >= eTime) {
-                setState(u, State::I);
+            if ((t - timestamp[u]) >= exposedTime) {
+                setState(u, State::Infectious);
             }
-        } else if (state[u] == State::I) {
+        } else if (state[u] == State::Infectious) {
             // contact neighbors of infectious node
             G->forNeighborsOf(u, [&](node v) { contact(v); });
             // infectious nodes become removed after time
-            if ((t - timestamp[u]) >= iTime) {
-                setState(u, State::R);
+            if ((t - timestamp[u]) >= infectiousTime) {
+                setState(u, State::Removed);
             }
-        } else if (state[u] == State::R) {
+        } else if (state[u] == State::Removed) {
             // do nothing
-        } else if (state[u] == State::U) {
+        } else if (state[u] == State::Undefined) {
             throw std::runtime_error("node in undefined state encountered - should not happen");
         } else {
             throw std::runtime_error("else branch taken - should not happen");
@@ -73,18 +75,18 @@ void EpidemicSimulationSEIR::run() {
     };
 
     // if starting node node provided, start with random node
-    if (zero == none) {
-        zero = GraphTools::randomNode(*G);
+    if (start == none) {
+        start = GraphTools::randomNode(*G);
     }
-    INFO("zero node: ", zero);
-    setState(zero, State::I); // infect node zero
+    INFO("zero node: ", start);
+    setState(start, State::Infectious); // infect node zero
 
-    while (t < tMax) {
+    while (t < maxTimestamps) {
         G->parallelForNodes(sweep);
         auto populations = census();
 
-        for (int s = (int)State::S; s != (int)State::U; ++s) {
-            std::vector<count> data = {zero, t, (count)s, populations[s]};
+        for (int s = (int)State::Susceptible; s != (int)State::Undefined; ++s) {
+            std::vector<count> data = {start, t, (count)s, populations[s]};
             stats.push_back(data);
         }
 
