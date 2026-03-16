@@ -49,6 +49,7 @@ changelog = "https://github.com/networkit/networkit/blob/master/CHANGES.md"
 [build-system]
 requires = [
   "cython",
+  "cmake",
   "numpy",
   "scipy<1.17.0",
   "setuptools",
