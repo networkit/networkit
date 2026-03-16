@@ -1,0 +1,188 @@
+name: docs-pages
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - '*'
+
+env:
+  CXX_STANDARD: 20
+  DOCS_BASE_PATH: /dev-docs
+
+concurrency:
+  group: docs-pages-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.repository == 'networkit/networkit'
+    runs-on: ubuntu-22.04
+    env:
+      CC: gcc-11
+      CXX: g++-11
+    steps:
+      - name: Resolve deployment target
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          channel=""
+          build_ref=""
+          label=""
+          nightly_date=""
+          skip="false"
+
+          if [[ "${GITHUB_REF}" == "refs/heads/master" ]]; then
+            channel="nightly"
+            build_ref="${GITHUB_SHA}"
+            nightly_timestamp="${{ github.event.head_commit.timestamp }}"
+            nightly_date="$(date -u -d "${nightly_timestamp}" +'%Y-%m-%d')"
+            label="Nightly (${nightly_date})"
+          elif [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            tag="${GITHUB_REF#refs/tags/}"
+            if [[ "${tag}" =~ ^v?[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+              channel="stable"
+              build_ref="${GITHUB_SHA}"
+              label="Stable (${tag})"
+            else
+              echo "Tag '${tag}' is not a release tag. Skipping deployment."
+              skip="true"
+            fi
+          else
+            echo "Unsupported ref '${GITHUB_REF}'. Skipping deployment."
+            skip="true"
+          fi
+
+          echo "skip=${skip}" >> "${GITHUB_OUTPUT}"
+          echo "channel=${channel}" >> "${GITHUB_OUTPUT}"
+          echo "build_ref=${build_ref}" >> "${GITHUB_OUTPUT}"
+          echo "label=${label}" >> "${GITHUB_OUTPUT}"
+          echo "nightly_date=${nightly_date}" >> "${GITHUB_OUTPUT}"
+
+      - name: Checkout networkit
+        if: steps.target.outputs.skip != 'true'
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ steps.target.outputs.build_ref }}
+          submodules: true
+
+      - name: Install prerequisites
+        if: steps.target.outputs.skip != 'true'
+        run: |
+          sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu jammy main universe'
+          sudo apt-get update
+          sudo apt-get install gcc-11 g++-11 ninja-build
+          sudo apt-get install doxygen pandoc
+
+      - name: Setup Python 3.13
+        if: steps.target.outputs.skip != 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Build documentation
+        if: steps.target.outputs.skip != 'true'
+        shell: bash
+        env:
+          NETWORKIT_DOCS_CHANNEL: ${{ steps.target.outputs.channel }}
+          NETWORKIT_DOCS_VERSION_LABEL: ${{ steps.target.outputs.label }}
+          NETWORKIT_DOCS_BASE_URL: ${{ env.DOCS_BASE_PATH }}/
+          NETWORKIT_DOCS_NIGHTLY_URL: ${{ env.DOCS_BASE_PATH }}/nightly/
+          NETWORKIT_DOCS_VERSIONS_JSON_URL: ${{ env.DOCS_BASE_PATH }}/versions.json
+        run: ${{ github.workspace }}/.github/workflows/scripts/documentation.sh
+
+      - name: Checkout published docs repository
+        if: steps.target.outputs.skip != 'true'
+        uses: actions/checkout@v5
+        with:
+          repository: networkit/dev-docs
+          token: ${{ secrets.SECRET_DEPLOY_GITHUB_PAGES }}
+          ref: master
+          fetch-depth: 0
+          path: docs_publish
+
+      - name: Sync generated docs into publish repository
+        if: steps.target.outputs.skip != 'true'
+        shell: bash
+        env:
+          DOCS_CHANNEL: ${{ steps.target.outputs.channel }}
+          DOCS_LABEL: ${{ steps.target.outputs.label }}
+          DOCS_NIGHTLY_DATE: ${{ steps.target.outputs.nightly_date }}
+          DOCS_BUILD_DIR: ${{ github.workspace }}/core_build/htmldocs
+          DOCS_PUBLISH_DIR: ${{ github.workspace }}/docs_publish
+          DOCS_BASE_PATH: ${{ env.DOCS_BASE_PATH }}
+        run: ${{ github.workspace }}/.github/workflows/scripts/deploy_docs.sh
+
+      - name: Verify publish tree
+        if: steps.target.outputs.skip != 'true'
+        shell: bash
+        run: |
+          test -f docs_publish/versions.json
+          if [[ "${{ steps.target.outputs.channel }}" == "stable" ]]; then
+            test -f docs_publish/index.html
+          else
+            test -f docs_publish/nightly/index.html
+          fi
+
+      - name: Commit and push docs
+        if: steps.target.outputs.skip != 'true'
+        shell: bash
+        env:
+          DOCS_CHANNEL: ${{ steps.target.outputs.channel }}
+          DOCS_LABEL: ${{ steps.target.outputs.label }}
+        run: |
+          set -euo pipefail
+          cd docs_publish
+
+          if [[ -z "$(git status --porcelain)" ]]; then
+            echo "No documentation changes to publish."
+            exit 0
+          fi
+
+          git config user_name "github-actions[bot]"
+          git config user_email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "docs: deploy ${DOCS_CHANNEL} (${DOCS_LABEL})"
+          git push origin master
+
+      - name: Smoke check published docs URLs
+        if: steps.target.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import time
+          import urllib.request
+          import urllib.error
+
+          with open("docs_publish/versions.json", "r", encoding="utf-8") as infile:
+              metadata = json.load(infile)
+
+          channels = metadata.get("channels", {})
+          urls = []
+          for name in ("stable", "nightly"):
+              info = channels.get(name, {})
+              if not info.get("label") or not info.get("url"):
+                  continue
+              urls.append(f"https://networkit.github.io{info['url']}index.html")
+
+          for url in urls:
+              success = False
+              for _ in range(12):
+                  try:
+                      request = urllib.request.Request(url, method="HEAD")
+                      with urllib.request.urlopen(request, timeout=15) as response:
+                          if 200 <= response.status < 400:
+                              success = True
+                              break
+                  except urllib.error.URLError:
+                      pass
+                  time.sleep(10)
+              if not success:
+                  raise RuntimeError(f"Smoke check failed for {url}")
+              print(f"Smoke check passed for {url}")
+          PY

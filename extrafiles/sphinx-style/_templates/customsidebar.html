@@ -1,4 +1,20 @@
+{% if docs_channel and docs_stable_label and docs_nightly_label %}
+<div id="docs-version-switcher" class="docs-version-sidebar">
+	<label for="docs-version-select" class="docs-version-label">Version</label>
+	<select id="docs-version-select"
+	        class="docs-version-select form-control"
+	        data-docs-channel="{{ docs_channel|e }}"
+	        data-docs-version-label="{{ docs_version_label|e }}"
+	        data-docs-stable-label="{{ docs_stable_label|e }}"
+	        data-docs-nightly-label="{{ docs_nightly_label|e }}"
+	        data-docs-stable-url="{{ docs_stable_url|e }}"
+	        data-docs-nightly-url="{{ docs_nightly_url|e }}"
+	        data-docs-versions-url="{{ docs_versions_json_url|e }}">
+	  <option value="stable"{% if docs_channel == 'stable' %} selected{% endif %}>{{ docs_stable_label|e }}</option>
+	  <option value="nightly"{% if docs_channel == 'nightly' %} selected{% endif %}>{{ docs_nightly_label|e }}</option>
+	</select>
+</div>
+{% endif %}
 <ul class="sidebar">
 	{{ toctree(includehidden=True) }}
 </ul>
-  

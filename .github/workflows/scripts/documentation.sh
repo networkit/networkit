@@ -28,6 +28,10 @@ export CPU_COUNT=$(python3 $GITHUB_WORKSPACE/.github/workflows/scripts/get_core_
 NETWORKIT_PARALLEL_JOBS=$CPU_COUNT python3 ./setup.py build_ext --inplace --networkit-external-core
 NETWORKIT_PARALLEL_JOBS=$CPU_COUNT pip3 install -e .
 
+# Ensure notebook sources are available under docs/, as expected by docs/notebooks.rst.
+rm -rf docs/notebooks
+cp -R notebooks docs/notebooks
+
 # Build the documentation.
 cd core_build
 make docs
