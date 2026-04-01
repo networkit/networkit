@@ -1,6 +1,6 @@
 #include <algorithm>
-#include <span>
 #include <queue>
+#include <span>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
