@@ -756,14 +756,23 @@ cdef class Closeness(Centrality):
 		is automatically set to False.
 	"""
 
-	def __cinit__(self, Graph G, normalized, third):
+	def __cinit__(self, Graph G, normalized, checkConnectedness=None, variant=None):
 		self._G = G
-		if isinstance(third, int):
-			self._this = new _Closeness(G._this, normalized, <_ClosenessVariant> third)
-		elif isinstance(third, bool):
-			self._this = new _Closeness(G._this, normalized, <bool_t> third)
+
+		if checkConnectedness is not None and variant is not None:
+			raise TypeError("Use either checkConnectedness or variant, not both")
+
+		arg = variant if variant is not None else checkConnectedness
+
+		if arg is None:
+			raise TypeError("Missing third argument: use either checkConnectedness or variant")
+
+		if isinstance(arg, bool):
+			self._this = new _Closeness(G._this, normalized, <bool_t> arg)
+		elif isinstance(arg, int):
+			self._this = new _Closeness(G._this, normalized, <_ClosenessVariant> arg)
 		else:
-			raise Exception("Error: the third parameter must be either a bool or a ClosenessVariant")
+			raise TypeError("Expected checkConnectedness to be bool or variant to be ClosenessVariant")
 
 cdef extern from "<networkit/centrality/ApproxCloseness.hpp>" namespace "NetworKit::ApproxCloseness":
 
