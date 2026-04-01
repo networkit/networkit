@@ -578,7 +578,115 @@ class TestGraphTools(unittest.TestCase):
 				self.assertLessEqual(v2, v1)
 				self.assertLessEqual(v3, v1)			
 
-	
+	def testIsBipartiteDirectedGraphThrows(self):
+		G = nk.Graph(0, False, True)
+		with self.assertRaises(RuntimeError):
+			nk.graphtools.isBipartite(G)
+
+	def testIsBipartiteEmptyGraph(self):
+		G = nk.Graph()
+		self.assertTrue(nk.graphtools.isBipartite(G))
+
+	def testIsBipartiteSingleNodeGraphs(self):
+		for n in range(1, 10):
+			G = nk.Graph(n)
+			self.assertTrue(nk.graphtools.isBipartite(G))
+
+	def testIsBipartiteBinaryTreeGraphs(self):
+		def binaryTree(numNodes):
+			G = nk.Graph(numNodes, True, False)
+			for i in range(numNodes):
+				leftChild = 2 * i + 1
+				rightChild = 2 * i + 2
+				if leftChild < numNodes:
+					G.addEdge(i, leftChild, float(i))
+				if rightChild < numNodes:
+					G.addEdge(i, rightChild, float(i))
+			return G
+
+		for n in range(1, 10):
+			G = binaryTree(n)
+			self.assertTrue(nk.graphtools.isBipartite(G))
+
+	def testIsBipartiteCompleteGraphs(self):
+		def completeGraph(numNodes):
+			G = nk.Graph(numNodes, True, False)
+			for i in range(numNodes):
+				for j in range(i + 1, numNodes):
+					G.addEdge(i, j, float(j * (j + 1)))
+			return G
+
+		for n in range(3, 11):
+			G = completeGraph(n)
+			self.assertFalse(nk.graphtools.isBipartite(G))
+
+	def testIsBipartiteCompleteBipartiteGraphK3_3(self):
+		G = nk.Graph(6)
+		G.addEdge(0, 3)
+		G.addEdge(0, 4)
+		G.addEdge(0, 5)
+		G.addEdge(1, 3)
+		G.addEdge(1, 4)
+		G.addEdge(1, 5)
+		G.addEdge(2, 3)
+		G.addEdge(2, 4)
+		G.addEdge(2, 5)
+
+		self.assertTrue(nk.graphtools.isBipartite(G))
+
+	def testIsBipartiteDeleteNode(self):
+		G = nk.Graph(7)
+		G.addEdge(0, 3)
+		G.addEdge(0, 4)
+		G.addEdge(0, 5)
+		G.addEdge(1, 3)
+		G.addEdge(1, 4)
+		G.addEdge(1, 5)
+		G.addEdge(2, 3)
+		G.addEdge(2, 4)
+		G.addEdge(2, 5)
+
+		# make graph non-bipartite
+		G.addEdge(0, 6)
+		G.addEdge(5, 6)
+
+		self.assertFalse(nk.graphtools.isBipartite(G))
+
+		# remove node 6 to make graph bipartite again -> K_{3,3}
+		G.removeNode(6)
+		self.assertTrue(nk.graphtools.isBipartite(G))
+
+	def testIsBipartiteDeleteAndRestoreNodes(self):
+		G = nk.Graph(4)
+		G.addEdge(0, 1)
+		G.addEdge(0, 2)
+		G.addEdge(0, 3)
+		G.addEdge(1, 2)
+		G.addEdge(1, 3)
+		G.addEdge(2, 3)
+
+		self.assertFalse(nk.graphtools.isBipartite(G))
+
+		G.removeNode(1)
+		self.assertFalse(nk.graphtools.isBipartite(G))
+
+		G.restoreNode(1)
+		self.assertFalse(nk.graphtools.isBipartite(G))
+
+		G.removeNode(2)
+		self.assertTrue(nk.graphtools.isBipartite(G))
+
+	def testIsBipartiteGrid5x5DistArchGraph(self):
+		G = nk.readGraph("input/grid-5x5-dist-arch.graph", nk.Format.METIS)
+		self.assertTrue(nk.graphtools.isBipartite(G))
+
+	def testIsBipartiteAirfoil1Graph(self):
+		G = nk.readGraph("input/airfoil1.graph", nk.Format.METIS)
+		self.assertFalse(nk.graphtools.isBipartite(G))
+
+	def testIsBipartiteHepThGraph(self):
+		G = nk.readGraph("input/hep-th.graph", nk.Format.METIS)
+		self.assertFalse(nk.graphtools.isBipartite(G))
 
 if __name__ == "__main__":
 	unittest.main()
