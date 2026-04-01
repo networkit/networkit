@@ -44,6 +44,7 @@ cdef extern from "<networkit/graph/GraphTools.hpp>" namespace "NetworKit::GraphT
 	node augmentGraph(_Graph G) except + nogil
 	pair[_Graph, node] createAugmentedGraph(_Graph G) except + nogil
 	void randomizeWeights(_Graph G) except + nogil
+	bool_t isBipartite(_Graph G) except + nogil
 
 cdef class GraphTools:
 
@@ -715,3 +716,22 @@ cdef class GraphTools:
 			The input graph.
 		"""
 		randomizeWeights(G._this)
+
+	@staticmethod
+	def isBipartite(Graph G):
+		"""
+		isBipartite(G)
+
+		Checks whether the input graph is bipartite.
+
+		Parameters
+		----------
+		G : networkit.Graph
+			The input graph. Must be undirected.
+
+		Returns
+		-------
+		bool
+			True if the graph is bipartite, False otherwise.
+		"""
+		return isBipartite(G._this)
