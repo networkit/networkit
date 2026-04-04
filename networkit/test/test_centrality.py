@@ -164,6 +164,7 @@ class TestCentrality(unittest.TestCase):
         self.assertEqual(CLL.maximum(), 28.0)
 
     def testCloseness(self):
+        # Original positional API with variant should still work
         CL = nk.centrality.Closeness(
             self.L, True, nk.centrality.ClosenessVariant.GENERALIZED
         )
@@ -174,30 +175,40 @@ class TestCentrality(unittest.TestCase):
         CLL.run()
         self.assertEqual(CL.ranking(), CLL.ranking())
 
-    def testClosenessKeywordCheckConnectedness(self):
-        cl = nk.centrality.Closeness(self.L, True, checkConnectedness=True)
-        cl.run()
-        self.assertEqual(len(cl.ranking()), self.L.numberOfNodes())
-
-    def testClosenessKeywordVariant(self):
-        cl = nk.centrality.Closeness(
+        # Keyword API for variant should behave the same
+        variantKeyword = nk.centrality.Closeness(
             self.L, True, variant=nk.centrality.ClosenessVariant.GENERALIZED
         )
-        cl.run()
-        self.assertEqual(len(cl.ranking()), self.L.numberOfNodes())
+        variantKeyword.run()
+        self.assertEqual(CL.ranking(), variantKeyword.ranking())
 
-    def testClosenessKeywordAndPositionalEquivalent(self):
-        cl1 = nk.centrality.Closeness(
-            self.L, True, nk.centrality.ClosenessVariant.GENERALIZED
-        )
-        cl2 = nk.centrality.Closeness(
-            self.L, True, variant=nk.centrality.ClosenessVariant.GENERALIZED
-        )
-        cl1.run()
-        cl2.run()
-        self.assertEqual(cl1.ranking(), cl2.ranking())
+        # Original positional API with checkConnectedness=True should still work
+        positionalCheckTrue = nk.centrality.Closeness(self.L, False, True)
+        positionalCheckTrue.run()
 
-    def testClosenessRejectsBothKeywordArguments(self):
+        # Keyword API with checkConnectedness=True should behave the same
+        checkConnectednessKeywordTrue = nk.centrality.Closeness(
+            self.L, False, checkConnectedness=True
+        )
+        checkConnectednessKeywordTrue.run()
+        self.assertEqual(
+            positionalCheckTrue.ranking(), checkConnectednessKeywordTrue.ranking()
+        )
+
+        # Original positional API with checkConnectedness=False should still work
+        positionalCheckFalse = nk.centrality.Closeness(self.L, False, False)
+        positionalCheckFalse.run()
+
+        # Keyword API with checkConnectedness=False should behave the same
+        checkConnectednessKeywordFalse = nk.centrality.Closeness(
+            self.L, False, checkConnectedness=False
+        )
+        checkConnectednessKeywordFalse.run()
+        self.assertEqual(
+            positionalCheckFalse.ranking(), checkConnectednessKeywordFalse.ranking()
+        )
+
+        # Passing both keyword arguments should fail
         with self.assertRaises(TypeError):
             nk.centrality.Closeness(
                 self.L,
