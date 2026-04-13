@@ -79,6 +79,16 @@ public:
      */
     std::vector<node> getNodesOnShortestPath(node source, node target) const;
 
+    /**
+     * @brief Returns the full all-pairs distance matrix.
+     *
+     * The returned object is a reference to internal storage. Do not modify it
+     * directly; call run() again if the graph changes.
+     *
+     * @return A matrix where entry [u][v] is the shortest distance from u to v.
+     */
+    const std::vector<std::vector<edgeweight>> &getDistances() const;
+
 private:
     const Graph *graph;
     static constexpr edgeweight infiniteDistance = std::numeric_limits<edgeweight>::max();

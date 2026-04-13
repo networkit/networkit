@@ -113,4 +113,9 @@ std::vector<node> FloydWarshall::getNodesOnShortestPath(node source, node target
     return path;
 }
 
+const std::vector<std::vector<edgeweight>> &FloydWarshall::getDistances() const {
+    assureFinished();
+    return distances;
+}
+
 } // namespace NetworKit

@@ -1827,6 +1827,7 @@ cdef extern from "<networkit/distance/FloydWarshall.hpp>":
 		edgeweight getDistance(node source, node target) except +
 		bint isNodeInNegativeCycle(node u) except +
 		vector[node] getNodesOnShortestPath(node source, node target) except +
+		vector[vector[edgeweight]] &getDistances() except +
 
 cdef class FloydWarshall(Algorithm):
 	"""
@@ -1907,6 +1908,27 @@ cdef class FloydWarshall(Algorithm):
 			True if u lies on a negative cycle, False otherwise.
 		"""
 		return (<_FloydWarshall *> self._this).isNodeInNegativeCycle(u)
+
+	def getDistances(self, asarray=None):
+		"""
+		getDistances(asarray=None)
+
+		Returns the full all-pairs distance matrix.
+
+		Note: the returned matrix is a reference to internal storage.
+		Do not modify it directly; call run() again if the graph changes.
+
+		Parameters
+		----------
+		asarray : optional
+			Return the result as a numpy array. Default: Falsy.
+
+		Returns
+		-------
+		list(list(float)) or np.ndarray
+			distances[u][v] is the shortest path distance from u to v.
+		"""
+		return maybe_asarray_2d(&(<_FloydWarshall*>(self._this)).getDistances(), asarray)
 
 	def getNodesOnShortestPath(self, source, target):
 		"""
