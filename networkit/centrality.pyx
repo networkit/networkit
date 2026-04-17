@@ -772,7 +772,7 @@ cdef class Closeness(Centrality):
 		elif isinstance(arg, int):
 			self._this = new _Closeness(G._this, normalized, <_ClosenessVariant> arg)
 		else:
-			raise TypeError("Expected checkConnectedness to be bool or variant to be ClosenessVariant")
+			raise TypeError("Expected checkConnectedness to be a bool or variant to be a ClosenessVariant")
 
 cdef extern from "<networkit/centrality/ApproxCloseness.hpp>" namespace "NetworKit::ApproxCloseness":
 
