@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <queue>
 #include <span>
 
 #include <networkit/auxiliary/Log.hpp>
