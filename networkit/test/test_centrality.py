@@ -174,6 +174,35 @@ class TestCentrality(unittest.TestCase):
         CLL.run()
         self.assertEqual(CL.ranking(), CLL.ranking())
 
+    def testClosenessCheckConnectednessTrue(self):
+        ranking = nk.centrality.Closeness(self.L, False, True).run().ranking()
+        expected_ranking = [(4, 0.62), (6, 0.57), (1, 0.50), (2, 0.47), (3, 0.47), (7, 0.44), (5, 0.42), (0, 0.35),
+                            (8, 0.32)]
+
+        self.assertEqual(len(ranking), len(expected_ranking))
+        for (node, score), (expected_node, expected_score) in zip(ranking, expected_ranking):
+            self.assertEqual(node, expected_node)
+            self.assertAlmostEqual(score, expected_score, places=2)
+
+    def testClosenessCheckConnectednessFalse(self):
+        ranking = nk.centrality.Closeness(self.L, False, False).run().ranking()
+        expected_ranking = [(4, 0.62), (6, 0.57), (1, 0.50), (2, 0.47), (3, 0.47), (7, 0.44), (5, 0.42), (0, 0.35),
+                            (8, 0.32)]
+
+        self.assertEqual(len(ranking), len(expected_ranking))
+        for (node, score), (expected_node, expected_score) in zip(ranking, expected_ranking):
+            self.assertEqual(node, expected_node)
+            self.assertAlmostEqual(score, expected_score, places=2)
+
+    def testClosenessRejectsBothKeywordArguments(self):
+        with self.assertRaises(TypeError):
+            nk.centrality.Closeness(
+                self.L,
+                True,
+                checkConnectedness=True,
+                variant=nk.centrality.ClosenessVariant.GENERALIZED,
+            )
+
     def testClosenessApprox(self):
         # expecting same results from exact algorithm and approx with 50 samples
         apr = nk.centrality.ApproxCloseness(
