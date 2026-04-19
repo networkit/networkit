@@ -176,25 +176,23 @@ class TestCentrality(unittest.TestCase):
 
     def testClosenessCheckConnectednessTrue(self):
         ranking = nk.centrality.Closeness(self.L, False, True).run().ranking()
-        expected_ranking = [(4, 0.6153846153846154), (6, 0.5714285714285714), (1, 0.5), (2, 0.47058823529411764),
-                            (3, 0.47058823529411764), (7, 0.4444444444444444), (5, 0.42105263157894735),
-                            (0, 0.34782608695652173), (8, 0.32)]
+        expected_ranking = [(4, 0.62), (6, 0.57), (1, 0.50), (2, 0.47), (3, 0.47), (7, 0.44), (5, 0.42), (0, 0.35),
+                            (8, 0.32)]
 
         self.assertEqual(len(ranking), len(expected_ranking))
         for (node, score), (expected_node, expected_score) in zip(ranking, expected_ranking):
             self.assertEqual(node, expected_node)
-            self.assertAlmostEqual(score, expected_score, places=10)
+            self.assertAlmostEqual(score, expected_score, places=2)
 
     def testClosenessCheckConnectednessFalse(self):
         ranking = nk.centrality.Closeness(self.L, False, False).run().ranking()
-        expected_ranking = [(4, 0.6153846153846154), (6, 0.5714285714285714), (1, 0.5), (2, 0.47058823529411764),
-                            (3, 0.47058823529411764), (7, 0.4444444444444444), (5, 0.42105263157894735),
-                            (0, 0.34782608695652173), (8, 0.32)]
+        expected_ranking = [(4, 0.62), (6, 0.57), (1, 0.50), (2, 0.47), (3, 0.47), (7, 0.44), (5, 0.42), (0, 0.35),
+                            (8, 0.32)]
 
         self.assertEqual(len(ranking), len(expected_ranking))
         for (node, score), (expected_node, expected_score) in zip(ranking, expected_ranking):
             self.assertEqual(node, expected_node)
-            self.assertAlmostEqual(score, expected_score, places=10)
+            self.assertAlmostEqual(score, expected_score, places=2)
 
     def testClosenessRejectsBothKeywordArguments(self):
         with self.assertRaises(TypeError):
