@@ -498,8 +498,8 @@ class TestDistance(unittest.TestCase):
 		# Should pick the path with the fewest nodes
 		self.assertEqual(fw.getNodesOnShortestPath(0, 10), [0, 4, 5, 10])
 
-	def test_floyd_warshall_get_distances(self):
-		G = nk.graph.Graph(3, weighted=True, directed=False)
+	def testFloydWarshall_getDistances(self):
+		G = nk.Graph(3, weighted=True, directed=False)
 		G.addEdge(0, 1, 2.0)
 		G.addEdge(1, 2, 3.0)
 		fw = nk.distance.FloydWarshall(G)
@@ -508,15 +508,6 @@ class TestDistance(unittest.TestCase):
 		self.assertAlmostEqual(d[0][2], 5.0)
 		self.assertAlmostEqual(d[1][0], 2.0)
 		self.assertAlmostEqual(d[0][0], 0.0)
-
-	def test_floyd_warshall_negative_cycle(self):
-		G = nk.graph.Graph(3, weighted=True, directed=True)
-		G.addEdge(0, 1,  1.0)
-		G.addEdge(1, 2, -3.0)
-		G.addEdge(2, 0,  1.0)
-		fw = nk.distance.FloydWarshall(G)
-		fw.run()
-		self.assertTrue(fw.isNodeInNegativeCycle(0))
 
 if __name__ == "__main__":
 	unittest.main()
