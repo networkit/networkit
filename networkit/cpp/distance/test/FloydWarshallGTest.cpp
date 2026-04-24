@@ -314,4 +314,29 @@ TEST_F(FloydWarshallGTest, testMultipleShortestDistancePaths) {
     EXPECT_EQ(test.getDistance(0, 10), expectedShortestDistance);
     EXPECT_EQ(test.getNodesOnShortestPath(0, 10), expectedPath);
 }
+
+TEST_F(FloydWarshallGTest, testGetDistances) {
+    Graph graph(3, true);
+    graph.addEdge(0, 1, 2);
+    graph.addEdge(1, 2, 3);
+    FloydWarshall test(graph);
+    test.run();
+    const auto &distances = test.getDistances();
+    EXPECT_EQ(distances[0][2], 5.0);
+    EXPECT_EQ(distances[1][0], 2.0);
+    EXPECT_EQ(distances[0][0], 0.0);
+}
+
+TEST_F(FloydWarshallGTest, testGetDistancesThrows) {
+    Graph graph(1, true);
+    FloydWarshall test(graph);
+    try {
+        test.getDistances();
+        FAIL() << "Expected std::runtime_error";
+    } catch (const std::runtime_error &e) {
+        EXPECT_STREQ(e.what(), "Error, run must be called first");
+    } catch (...) {
+        FAIL() << "Expected std::runtime_error but got a different exception.";
+    }
+}
 } // namespace NetworKit

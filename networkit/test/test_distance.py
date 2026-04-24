@@ -498,6 +498,16 @@ class TestDistance(unittest.TestCase):
 		# Should pick the path with the fewest nodes
 		self.assertEqual(fw.getNodesOnShortestPath(0, 10), [0, 4, 5, 10])
 
+	def testFloydWarshall_getDistances(self):
+		G = nk.Graph(3, weighted=True, directed=False)
+		G.addEdge(0, 1, 2.0)
+		G.addEdge(1, 2, 3.0)
+		fw = nk.distance.FloydWarshall(G)
+		fw.run()
+		d = fw.getDistances()
+		self.assertAlmostEqual(d[0][2], 5.0)
+		self.assertAlmostEqual(d[1][0], 2.0)
+		self.assertAlmostEqual(d[0][0], 0.0)
 
 if __name__ == "__main__":
 	unittest.main()
