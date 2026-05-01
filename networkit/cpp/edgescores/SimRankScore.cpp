@@ -1,6 +1,10 @@
-//
-// Created by andreas on 01.05.26.
-//
+/*  SimRankScore.cpp
+*
+ *  Created on: 01.05.2026
+ *  Authors: Andreas Scharf (andreas.b.scharf@gmail.com)
+ *
+ */
+
 #include <networkit/edgescores/SimRankScore.hpp>
 
 namespace NetworKit {
@@ -20,4 +24,9 @@ SimRankScore::SimRankScore(const Graph &G, double damping, count maxIterations, 
         throw std::invalid_argument("tolerance must be greater than or equal to 0");
     }
 }
+
+void SimRankScore::run() {
+    hasFinished();
+}
+
 } // namespace NetworKit

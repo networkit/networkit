@@ -1,13 +1,18 @@
-//
-// Created by andreas on 01.05.26.
-//
+/*  SimRankScore.hpp
+ *
+ *  Created on: 01.05.2026
+ *  Authors: Andreas Scharf (andreas.b.scharf@gmail.com)
+ *
+ */
 
-#ifndef NETWORKIT_SIMRANKSCORE_H
-#define NETWORKIT_SIMRANKSCORE_H
+#ifndef NETWORKIT_EDGESCORES_SIMRANK_SCORE_HPP
+#define NETWORKIT_EDGESCORES_SIMRANK_SCORE_HPP
 
 #include <networkit/edgescores/EdgeScore.hpp>
 #include <networkit/graph/Graph.hpp>
+
 namespace NetworKit {
+
 class SimRankScore final : public EdgeScore<double> {
 public:
     SimRankScore(const Graph &G, double damping = 0.9, count maxIterations = 100,
@@ -22,5 +27,6 @@ private:
 
     count iterations;
 };
+
 } // namespace NetworKit
-#endif // NETWORKIT_SIMRANKSCORE_H
+#endif // NETWORKIT_EDGESCORES_SIMRANK_SCORE_HPP
