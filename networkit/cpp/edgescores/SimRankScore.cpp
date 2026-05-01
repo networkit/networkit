@@ -9,10 +9,10 @@
 
 namespace NetworKit {
 
-SimRankScore::SimRankScore(const Graph &G, double damping, count maxIterations, double tolerance)
-    : EdgeScore<double>(G), damping(damping), maxIterations(maxIterations), tolerance(tolerance), iterations(0)
+SimRankScore::SimRankScore(const Graph &G, double similarityPropagationFactor, count maxIterations, double tolerance)
+    : EdgeScore<double>(G), similarityPropagationFactor(similarityPropagationFactor), maxIterations(maxIterations), tolerance(tolerance), iterations(0)
 {
-    if (damping < 0.0 || damping > 1.0) {
+    if (similarityPropagationFactor < 0.0 || similarityPropagationFactor > 1.0) {
         throw std::invalid_argument("damping must be in the range [0,1]");
     }
 

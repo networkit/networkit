@@ -15,13 +15,13 @@ namespace NetworKit {
 
 class SimRankScore final : public EdgeScore<double> {
 public:
-    SimRankScore(const Graph &G, double damping = 0.9, count maxIterations = 100,
+    SimRankScore(const Graph &G, double similarityPropagationFactor = 0.9, count maxIterations = 100,
                  double tolerance = 1e-4);
 
     void run() override;
 
 private:
-    double damping;
+    double similarityPropagationFactor;
     count maxIterations;
     double tolerance;
 
