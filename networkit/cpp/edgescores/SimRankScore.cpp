@@ -45,7 +45,7 @@ void SimRankScore::run() {
     std::vector<double> oldScore(matrixSize, 0.0);
     std::vector<double> newScore(matrixSize, 0.0);
 
-    G->forEdges([&](node u) { oldScore[matrixIndex(u, u)] = 1.0; });
+    G->forNodes([&](node u) { oldScore[matrixIndex(u, u)] = 1.0; });
 
     iterations = 0;
     for (count iter = 0; iter < maxIterations; ++iter) {
@@ -95,7 +95,7 @@ void SimRankScore::run() {
     }
     scoreData.assign(G->upperEdgeIdBound(), 0.0);
     G->forEdges([&](node u, node v, edgeid eid) { scoreData[eid] = oldScore[matrixIndex(u, v)]; });
-    assureFinished();
+    hasRun = true;
 }
 
 } // namespace NetworKit
