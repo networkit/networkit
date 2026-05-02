@@ -158,4 +158,20 @@ TEST_F(SimRankScoreGTest, testScoresAreStableAcrossRepeatedRun) {
     }
 }
 
+TEST_F(SimRankScoreGTest, testTriangleWithTailHasExpectedEdgeScores) {
+    Graph G(4, false, false);
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+    G.addEdge(0, 2);
+    G.addEdge(2, 3);
+    G.indexEdges();
+
+    SimRankScore simrank(G, 0.5, 100, 1e-12);
+    simrank.run();
+
+    EXPECT_NEAR(simrank.score(0, 1), 79.0 / 423.0, 1e-10);
+    EXPECT_NEAR(simrank.score(1, 2), 65.0 / 423.0, 1e-10);
+    EXPECT_NEAR(simrank.score(0, 2), 65.0 / 423.0, 1e-10);
+    EXPECT_NEAR(simrank.score(2, 3), 26.0 / 423.0, 1e-10);
+}
 } // namespace NetworKit
