@@ -12,9 +12,7 @@ TEST_F(SimRankScoreGTest, testConstructorAcceptsValidParameters) {
     G.addEdge(0, 1);
     G.addEdge(1, 2);
 
-    EXPECT_NO_THROW({
-        SimRankScore score(G, 0.9, 100, 1e-4);
-    });
+    EXPECT_NO_THROW({ SimRankScore score(G, 0.9, 100, 1e-4); });
 }
 
 TEST_F(SimRankScoreGTest, testConstructorAcceptsDefaultParameters) {
@@ -22,9 +20,7 @@ TEST_F(SimRankScoreGTest, testConstructorAcceptsDefaultParameters) {
     G.addEdge(0, 1);
     G.addEdge(1, 2);
 
-    EXPECT_NO_THROW({
-        SimRankScore score(G);
-    });
+    EXPECT_NO_THROW({ SimRankScore score(G); });
 }
 
 TEST_F(SimRankScoreGTest, testConstructorDoesNotMarkAlgorithmAsRun) {

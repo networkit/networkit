@@ -39,16 +39,12 @@ void SimRankScore::run() {
 
     const index matrixSize = n * n;
 
-    auto matrixIndex = [n](node u, node v) -> index {
-        return u * n + v;
-    };
+    auto matrixIndex = [n](node u, node v) -> index { return u * n + v; };
 
     std::vector<double> oldScore(matrixSize, 0.0);
     std::vector<double> newScore(matrixSize, 0.0);
 
-    G->parallelForNodes([&](node u) {
-        oldScore[matrixIndex(u, u)] = 1.0;
-    });
+    G->parallelForNodes([&](node u) { oldScore[matrixIndex(u, u)] = 1.0; });
 
     iterations = 0;
     double maxDifference = std::numeric_limits<double>::max();
@@ -56,9 +52,7 @@ void SimRankScore::run() {
     for (count iter = 0; iter < maxIterations; ++iter) {
         std::fill(newScore.begin(), newScore.end(), 0.0);
 
-        G->parallelForNodes([&](node u) {
-            newScore[matrixIndex(u, u)] = 1.0;
-        });
+        G->parallelForNodes([&](node u) { newScore[matrixIndex(u, u)] = 1.0; });
 
         std::vector<double> threadMaxDifferences(omp_get_max_threads(), 0.0);
 
@@ -86,7 +80,7 @@ void SimRankScore::run() {
                 }
 
                 value = similarityPropagationFactor * sum
-                      / (static_cast<double>(degreeU) * static_cast<double>(degreeV));
+                        / (static_cast<double>(degreeU) * static_cast<double>(degreeV));
             }
 
             const auto uv = matrixIndex(u, v);
@@ -95,20 +89,16 @@ void SimRankScore::run() {
             newScore[uv] = value;
             newScore[vu] = value;
 
-            const double difference = std::max(
-                std::abs(value - oldScore[uv]),
-                std::abs(value - oldScore[vu])
-            );
+            const double difference =
+                std::max(std::abs(value - oldScore[uv]), std::abs(value - oldScore[vu]));
 
             const int tid = omp_get_thread_num();
-            threadMaxDifferences[tid] =
-                std::max(threadMaxDifferences[tid], difference);
+            threadMaxDifferences[tid] = std::max(threadMaxDifferences[tid], difference);
         });
 
         double iterationMaxDifference = 0.0;
         for (const double localDifference : threadMaxDifferences) {
-            iterationMaxDifference =
-                std::max(iterationMaxDifference, localDifference);
+            iterationMaxDifference = std::max(iterationMaxDifference, localDifference);
         }
 
         oldScore.swap(newScore);
@@ -122,9 +112,8 @@ void SimRankScore::run() {
 
     scoreData.assign(G->upperEdgeIdBound(), 0.0);
 
-    G->parallelForEdges([&](node u, node v, edgeid eid) {
-        scoreData[eid] = oldScore[matrixIndex(u, v)];
-    });
+    G->parallelForEdges(
+        [&](node u, node v, edgeid eid) { scoreData[eid] = oldScore[matrixIndex(u, v)]; });
 
     hasRun = true;
 }
