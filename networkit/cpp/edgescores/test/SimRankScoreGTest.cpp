@@ -174,4 +174,78 @@ TEST_F(SimRankScoreGTest, testTriangleWithTailHasExpectedEdgeScores) {
     EXPECT_NEAR(simrank.score(0, 2), 65.0 / 423.0, 1e-10);
     EXPECT_NEAR(simrank.score(2, 3), 26.0 / 423.0, 1e-10);
 }
+
+TEST_F(SimRankScoreGTest, testResultsDoNotDependOnNumberOfThreads) {
+#ifndef _OPENMP
+    GTEST_SKIP() << "OpenMP is not enabled";
+#else
+    const int previousThreads = omp_get_max_threads();
+
+    Graph G(6, false, false);
+    G.addEdge(0, 1);
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(3, 4);
+    G.addEdge(4, 5);
+    G.addEdge(1, 5);
+    G.addEdge(0, 4);
+    G.indexEdges();
+
+    omp_set_num_threads(1);
+    SimRankScore singleThreaded(G, 0.7, 100, 1e-12);
+    singleThreaded.run();
+    const auto singleThreadedScores = singleThreaded.scores();
+
+    omp_set_num_threads(4);
+    SimRankScore multiThreaded(G, 0.7, 100, 1e-12);
+    multiThreaded.run();
+    const auto multiThreadedScores = multiThreaded.scores();
+
+    omp_set_num_threads(previousThreads);
+
+    EXPECT_EQ(singleThreadedScores.size(), multiThreadedScores.size());
+
+    for (index i = 0; i < singleThreadedScores.size(); ++i) {
+        EXPECT_NEAR(singleThreadedScores[i], multiThreadedScores[i], 1e-12);
+    }
+#endif
+}
+
+TEST_F(SimRankScoreGTest, testRepeatedParallelRunsProduceSameScores) {
+#ifdef _OPENMP
+    const int previousThreads = omp_get_max_threads();
+    omp_set_num_threads(4);
+#endif
+
+    Graph G(6, false, false);
+    G.addEdge(0, 1);
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+    G.addEdge(3, 4);
+    G.addEdge(4, 5);
+    G.addEdge(1, 5);
+    G.addEdge(0, 4);
+    G.indexEdges();
+
+    SimRankScore reference(G, 0.7, 100, 1e-12);
+    reference.run();
+    const auto referenceScores = reference.scores();
+
+    for (index run = 0; run < 20; ++run) {
+        SimRankScore simrank(G, 0.7, 100, 1e-12);
+        simrank.run();
+
+        EXPECT_EQ(referenceScores.size(), simrank.scores().size());
+
+        for (index i = 0; i < referenceScores.size(); ++i) {
+            EXPECT_NEAR(referenceScores[i], simrank.scores()[i], 1e-12);
+        }
+    }
+
+#ifdef _OPENMP
+    omp_set_num_threads(previousThreads);
+#endif
+}
 } // namespace NetworKit
