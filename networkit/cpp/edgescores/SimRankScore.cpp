@@ -33,6 +33,9 @@ void SimRankScore::run() {
 
     const index n = G->upperNodeIdBound();
 
+    // This is practically unreachable in ordinary tests because constructing a graph
+    // with n >= 2^32 nodes usually fails first, but the check prevents n * n from
+    // wrapping before allocating the dense SimRank matrix.
     if (n != 0 && n > std::numeric_limits<index>::max() / n) {
         throw std::overflow_error("SimRankScore matrix size overflows");
     }

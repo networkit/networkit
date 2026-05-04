@@ -171,6 +171,21 @@ TEST_F(SimRankScoreGTest, testTriangleWithTailHasExpectedEdgeScores) {
     EXPECT_NEAR(simrank.score(2, 3), 26.0 / 423.0, 1e-10);
 }
 
+TEST_F(SimRankScoreGTest, testDirectedGraphUsesInNeighbors) {
+    Graph G(3, false, true);
+
+    G.addEdge(0, 1);
+    G.addEdge(0, 2);
+    G.addEdge(1, 2);
+
+    G.indexEdges();
+
+    SimRankScore simRank(G, 0.8, 1, 0.0);
+    simRank.run();
+
+    EXPECT_NEAR(simRank.score(G.edgeId(1, 2)), 0.4, 1e-12);
+}
+
 TEST_F(SimRankScoreGTest, testResultsDoNotDependOnNumberOfThreads) {
 #ifndef _OPENMP
     GTEST_SKIP() << "OpenMP is not enabled";
