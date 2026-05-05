@@ -12,7 +12,7 @@ namespace NetworKit {
 SimRankScore::SimRankScore(const Graph &G, double similarityPropagationFactor, count maxIterations,
                            double tolerance)
     : EdgeScore<double>(G), similarityPropagationFactor(similarityPropagationFactor),
-      maxIterations(maxIterations), tolerance(tolerance), iterations(0) {
+      maxIterations(maxIterations), tolerance(tolerance) {
     if (similarityPropagationFactor < 0.0 || similarityPropagationFactor > 1.0) {
         throw std::invalid_argument("similarityPropagationFactor must be in the range [0,1]");
     }
@@ -47,17 +47,20 @@ void SimRankScore::run() {
     std::vector<double> oldScore(matrixSize, 0.0);
     std::vector<double> newScore(matrixSize, 0.0);
 
-    G->parallelForNodes([&](node u) { oldScore[matrixIndex(u, u)] = 1.0; });
+    auto initDiagonal = [&](std::vector<double> &score) {
+        G->parallelForNodes([&](node u) { score[matrixIndex(u, u)] = 1.0; });
+    };
 
-    iterations = 0;
+    initDiagonal(oldScore);
+
     double maxDifference = std::numeric_limits<double>::max();
+    std::vector<double> threadMaxDifferences(omp_get_max_threads());
 
-    for (count iter = 0; iter < maxIterations; ++iter) {
-        std::fill(newScore.begin(), newScore.end(), 0.0);
+    for (count iterations = 0; iterations < maxIterations; ++iterations) {
+        std::ranges::fill(newScore.begin(), newScore.end(), 0.0);
+        std::ranges::fill(threadMaxDifferences, 0.0);
 
-        G->parallelForNodes([&](node u) { newScore[matrixIndex(u, u)] = 1.0; });
-
-        std::vector<double> threadMaxDifferences(omp_get_max_threads(), 0.0);
+        initDiagonal(newScore);
 
         G->parallelForNodePairs([&](node u, node v) {
             const count degreeU = G->isDirected() ? G->degreeIn(u) : G->degree(u);

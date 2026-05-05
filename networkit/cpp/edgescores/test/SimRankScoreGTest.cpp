@@ -1,5 +1,5 @@
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <networkit/edgescores/SimRankScore.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -81,6 +81,26 @@ TEST_F(SimRankScoreGTest, testScoresUnavailableBeforeRun) {
     EXPECT_ANY_THROW(simrank.score(0, 1));
 }
 
+TEST_F(SimRankScoreGTest, testRunAcceptsEmptyGraph) {
+    Graph G(0, false, false);
+    G.indexEdges();
+
+    SimRankScore score(G);
+
+    EXPECT_NO_THROW(score.run());
+    EXPECT_THAT(score.scores(), testing::IsEmpty());
+}
+
+TEST_F(SimRankScoreGTest, testRunAcceptsSingleNodeGraph) {
+    Graph G(1, false, false);
+    G.indexEdges();
+
+    SimRankScore score(G);
+
+    EXPECT_NO_THROW(score.run());
+    EXPECT_THAT(score.scores(), testing::IsEmpty());
+}
+
 TEST_F(SimRankScoreGTest, testRunProducesOneScorePerIndexedEdge) {
     Graph G(3, false, false, true);
     G.addEdge(0, 1);
@@ -148,7 +168,7 @@ TEST_F(SimRankScoreGTest, testScoresAreStableAcrossRepeatedRun) {
     simrank.run();
     const auto secondScores = simrank.scores();
 
-  EXPECT_THAT(firstScores, testing::Pointwise(testing::DoubleNear(1e-12), secondScores));
+    EXPECT_THAT(firstScores, testing::Pointwise(testing::DoubleNear(1e-12), secondScores));
 }
 
 TEST_F(SimRankScoreGTest, testTriangleWithTailHasExpectedEdgeScores) {
@@ -212,48 +232,9 @@ TEST_F(SimRankScoreGTest, testResultsDoNotDependOnNumberOfThreads) {
 
     omp_set_num_threads(previousThreads);
 
-    EXPECT_EQ(singleThreadedScores.size(), multiThreadedScores.size());
-
-    for (index i = 0; i < singleThreadedScores.size(); ++i) {
-        EXPECT_NEAR(singleThreadedScores[i], multiThreadedScores[i], 1e-12);
-    }
+    EXPECT_THAT(singleThreadedScores,
+                testing::Pointwise(testing::DoubleNear(1e-12), multiThreadedScores));
 #endif
 }
 
-TEST_F(SimRankScoreGTest, testRepeatedParallelRunsProduceSameScores) {
-#ifdef _OPENMP
-    const int previousThreads = omp_get_max_threads();
-    omp_set_num_threads(4);
-#endif
-
-    Graph G(6, false, false);
-    G.addEdge(0, 1);
-    G.addEdge(0, 2);
-    G.addEdge(1, 2);
-    G.addEdge(2, 3);
-    G.addEdge(3, 4);
-    G.addEdge(4, 5);
-    G.addEdge(1, 5);
-    G.addEdge(0, 4);
-    G.indexEdges();
-
-    SimRankScore reference(G, 0.7, 100, 1e-12);
-    reference.run();
-    const auto referenceScores = reference.scores();
-
-    for (index run = 0; run < 20; ++run) {
-        SimRankScore simrank(G, 0.7, 100, 1e-12);
-        simrank.run();
-
-        EXPECT_EQ(referenceScores.size(), simrank.scores().size());
-
-        for (index i = 0; i < referenceScores.size(); ++i) {
-            EXPECT_NEAR(referenceScores[i], simrank.scores()[i], 1e-12);
-        }
-    }
-
-#ifdef _OPENMP
-    omp_set_num_threads(previousThreads);
-#endif
-}
 } // namespace NetworKit

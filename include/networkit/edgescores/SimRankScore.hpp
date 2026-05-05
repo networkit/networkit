@@ -64,7 +64,6 @@ private:
     double similarityPropagationFactor;
     count maxIterations;
     double tolerance;
-    count iterations;
 };
 
 } // namespace NetworKit
