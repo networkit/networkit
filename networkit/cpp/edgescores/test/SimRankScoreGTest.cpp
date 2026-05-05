@@ -88,7 +88,7 @@ TEST_F(SimRankScoreGTest, testRunProducesOneScorePerIndexedEdge) {
     SimRankScore simrank(G);
     simrank.run();
 
-    EXPECT_EQ(simrank.scores().size(), G.upperEdgeIdBound());
+    EXPECT_THAT(simrank.scores(), testing::SizeIs(G.upperEdgeIdBound()));
 }
 
 TEST_F(SimRankScoreGTest, testSingleUndirectedEdgeHasZeroSimRankScore) {
@@ -147,11 +147,7 @@ TEST_F(SimRankScoreGTest, testScoresAreStableAcrossRepeatedRun) {
     simrank.run();
     const auto secondScores = simrank.scores();
 
-    EXPECT_EQ(firstScores.size(), secondScores.size());
-
-    for (index i = 0; i < firstScores.size(); ++i) {
-        EXPECT_NEAR(firstScores[i], secondScores[i], 1e-12);
-    }
+  EXPECT_THAT(firstScores, Pointwise(DoubleNear(1e-12), secondScores));
 }
 
 TEST_F(SimRankScoreGTest, testTriangleWithTailHasExpectedEdgeScores) {

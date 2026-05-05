@@ -99,10 +99,7 @@ void SimRankScore::run() {
             threadMaxDifferences[tid] = std::max(threadMaxDifferences[tid], difference);
         });
 
-        double iterationMaxDifference = 0.0;
-        for (const double localDifference : threadMaxDifferences) {
-            iterationMaxDifference = std::max(iterationMaxDifference, localDifference);
-        }
+        const double iterationMaxDifference = std::ranges::max(threadMaxDifferences);
 
         oldScore.swap(newScore);
         maxDifference = iterationMaxDifference;
