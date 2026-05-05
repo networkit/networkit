@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
 #include <networkit/edgescores/SimRankScore.hpp>
 #include <networkit/graph/Graph.hpp>
@@ -147,7 +148,7 @@ TEST_F(SimRankScoreGTest, testScoresAreStableAcrossRepeatedRun) {
     simrank.run();
     const auto secondScores = simrank.scores();
 
-  EXPECT_THAT(firstScores, Pointwise(DoubleNear(1e-12), secondScores));
+  EXPECT_THAT(firstScores, testing::Pointwise(testing::DoubleNear(1e-12), secondScores));
 }
 
 TEST_F(SimRankScoreGTest, testTriangleWithTailHasExpectedEdgeScores) {
