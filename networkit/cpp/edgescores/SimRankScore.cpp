@@ -5,9 +5,8 @@
  *
  */
 
+#include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/edgescores/SimRankScore.hpp>
-
-#include "networkit/auxiliary/NumericTools.hpp"
 
 namespace NetworKit {
 
