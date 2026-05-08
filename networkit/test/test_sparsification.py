@@ -119,6 +119,7 @@ class TestSparsification(unittest.TestCase):
 			eid = G.edgeId(u, v)
 			self.assertAlmostEqual(simrank.score(u, v), expected, delta=1e-10)
 			self.assertAlmostEqual(simrank.score(eid), expected, delta=1e-10)
+
 	def testSimRankScoreDirectedGraphUsesInNeighbors(self):
 		G = Graph(3, False, True)
 		G.addEdge(0, 1)
