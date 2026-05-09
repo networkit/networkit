@@ -1624,3 +1624,49 @@ class ConstantScore():
 			The input graph.
 		"""
 		return self.constValue
+
+cdef extern from "networkit/edgescores/SimRankScore.hpp" namespace "NetworKit":
+	cdef cppclass _SimRankScore "NetworKit::SimRankScore"(_EdgeScore[double]):
+		_SimRankScore(
+			const _Graph& G,
+			double similarityPropagationFactor,
+			count maxIterations,
+			double tolerance
+		) except +
+
+cdef class SimRankScore(EdgeScore):
+	"""
+	SimRankScore(G, similarityPropagationFactor=0.8, maxIterations=20, tolerance=1e-4)
+
+	Computes a SimRank-based edge score. The score of an edge is the SimRank
+	similarity of its two endpoints.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		The input graph. The graph must have indexed edges.
+	similarityPropagationFactor : float, optional
+		SimRank decay factor. Must be in [0, 1].
+	maxIterations : int, optional
+		Maximum number of iterations. Must be greater than zero.
+	tolerance : float, optional
+		Convergence tolerance. Must be non-negative.
+	"""
+
+	def __cinit__(
+		self,
+		Graph G not None,
+		double similarityPropagationFactor=0.8,
+		count maxIterations=20,
+		double tolerance=1e-4
+	):
+		self._G = G
+		self._this = new _SimRankScore(
+			G._this,
+			similarityPropagationFactor,
+			maxIterations,
+			tolerance
+		)
+
+	cdef bool_t isDoubleValue(self):
+		return True
