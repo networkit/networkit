@@ -5,6 +5,7 @@
  * Authors: Andreas Scharf (andreas.b.scharf@gmail.com)
  */
 
+#include <gmock/gmock-matchers.h>
 #include <gtest/gtest.h>
 
 #include <cmath>
@@ -41,11 +42,10 @@ TEST_F(GeometricMeanScoreGTest, testComputesScoresOnPath) {
     GeometricMeanScore score(G, attribute);
     score.run();
 
-    const auto &scores = score.scores();
-
-    EXPECT_DOUBLE_EQ(scores[G.edgeId(0, 1)], 2.0 / std::sqrt(2.0 * 12.0));
-    EXPECT_DOUBLE_EQ(scores[G.edgeId(1, 2)], 4.0 / std::sqrt(12.0 * 4.0));
-    EXPECT_DOUBLE_EQ(scores[G.edgeId(1, 3)], 6.0 / std::sqrt(12.0 * 6.0));
+    EXPECT_THAT(score.scores(),
+                testing::ElementsAre(testing::DoubleEq(2.0 / std::sqrt(2.0 * 12.0)),
+                                     testing::DoubleEq(4.0 / std::sqrt(12.0 * 4.0)),
+                                     testing::DoubleEq(6.0 / std::sqrt(12.0 * 6.0))));
 }
 
 TEST_F(GeometricMeanScoreGTest, testKeepsZeroAttributeScoreAtZero) {
@@ -61,10 +61,8 @@ TEST_F(GeometricMeanScoreGTest, testKeepsZeroAttributeScoreAtZero) {
     GeometricMeanScore score(G, attribute);
     score.run();
 
-    const auto &scores = score.scores();
-
-    EXPECT_DOUBLE_EQ(scores[G.edgeId(0, 1)], 0.0);
-    EXPECT_DOUBLE_EQ(scores[G.edgeId(1, 2)], 1.0);
+    EXPECT_THAT(score.scores(),
+                testing::ElementsAre(testing::DoubleEq(0.0), testing::DoubleEq(1.0)));
 }
 
 } // namespace NetworKit
