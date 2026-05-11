@@ -119,9 +119,7 @@ class TestCentrality(unittest.TestCase):
         self.assertEqual(CL.numberOfSamples(), 63026)
 
     def testApproxElectricalCloseness(self):
-        # Pin to a single thread: the algorithm is a randomized Monte-Carlo
-        # approximation whose probabilistic error bound is only tight in
-        # expectation, so high thread counts can occasionally exceed eps (#1172).
+        # Pin to a single thread
         threadsAvailable = nk.getMaxNumberOfThreads()
         nk.setNumberOfThreads(1)
         try:
@@ -149,7 +147,6 @@ class TestCentrality(unittest.TestCase):
             nk.setNumberOfThreads(threadsAvailable)
 
     def testApproxSpanningEdge(self):
-        # See note in testApproxElectricalCloseness re: thread count and #1172.
         threadsAvailable = nk.getMaxNumberOfThreads()
         nk.setNumberOfThreads(1)
         try:
@@ -421,7 +418,6 @@ class TestCentrality(unittest.TestCase):
         self.assertEqual(len(CL.ranking()), 9)
 
     def testForest(self):
-        # See note in testApproxElectricalCloseness re: thread count and #1172.
         threadsAvailable = nk.getMaxNumberOfThreads()
         nk.setNumberOfThreads(1)
         try:
