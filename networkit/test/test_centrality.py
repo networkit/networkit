@@ -5,6 +5,15 @@ import networkit as nk
 import numpy as np
 import scipy
 import random
+from contextlib import contextmanager
+
+@contextmanager
+def run_single_thread():
+    nk.setNumberOfThreads(1)
+    try:
+        yield
+    finally:
+        nk.setNumberOfThreads(nk.getMaxNumberOfThreads())
 
 
 class TestCentrality(unittest.TestCase):
@@ -119,10 +128,7 @@ class TestCentrality(unittest.TestCase):
         self.assertEqual(CL.numberOfSamples(), 63026)
 
     def testApproxElectricalCloseness(self):
-        # Pin to a single thread
-        threadsAvailable = nk.getMaxNumberOfThreads()
-        nk.setNumberOfThreads(1)
-        try:
+        with run_single_thread():
             for seed in [1, 2, 3]:
                 nk.engineering.setSeed(seed, True)
                 g = nk.generators.ErdosRenyiGenerator(50, 0.15, False).generate()
@@ -143,13 +149,9 @@ class TestCentrality(unittest.TestCase):
                 pinv = np.linalg.pinv(L).diagonal()
                 for u in g.iterNodes():
                     self.assertLessEqual(abs(apx[u] - pinv[u]), eps)
-        finally:
-            nk.setNumberOfThreads(threadsAvailable)
 
     def testApproxSpanningEdge(self):
-        threadsAvailable = nk.getMaxNumberOfThreads()
-        nk.setNumberOfThreads(1)
-        try:
+        with run_single_thread():
             nk.setSeed(42, False)
             g = nk.generators.ErdosRenyiGenerator(300, 0.1, False).generate()
             g.indexEdges()
@@ -161,8 +163,6 @@ class TestCentrality(unittest.TestCase):
             se.runParallelApproximation()
             for apxScore, exactScore in zip(apx.scores(), se.scores()):
                 self.assertLessEqual(abs(apxScore - exactScore), 2 * eps)
-        finally:
-            nk.setNumberOfThreads(threadsAvailable)
 
     def testBetweenness(self):
         CL = nk.centrality.Betweenness(self.L)
@@ -418,9 +418,7 @@ class TestCentrality(unittest.TestCase):
         self.assertEqual(len(CL.ranking()), 9)
 
     def testForest(self):
-        threadsAvailable = nk.getMaxNumberOfThreads()
-        nk.setNumberOfThreads(1)
-        try:
+        with run_single_thread():
             nk.engineering.setSeed(42, False)
             eps = 0.05
             g = nk.generators.HyperbolicGenerator(200).generate()
@@ -436,8 +434,6 @@ class TestCentrality(unittest.TestCase):
 
             for apx, exact in zip(apxDiag, diag):
                 self.assertLessEqual(abs(apx - exact), eps)
-        finally:
-            nk.setNumberOfThreads(threadsAvailable)
 
     def testGedWalk(self):
         k, epsilon = 2, 0.05
