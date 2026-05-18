@@ -18,8 +18,7 @@ namespace NetworKit {
  */
 class GraphDistance final {
 public:
-    /** Default destructor */
-    virtual ~GraphDistance() = default;
+    ~GraphDistance() = default;
 
     /**
      * Returns the distance between @a u and @a v in Graph @a g i.e., the length of the shortest
