@@ -178,8 +178,6 @@ void DynamicDGSParser::evaluateClusterings(const std::string &path, const Partit
         clusterMappings[normalizedID].reserve(100000);
 
         for (const std::string &category : currentNodeCategories) {
-            clusterMappings[normalizedID].find(category);
-
             const auto got = clusterMappings[normalizedID].find(category);
 
             if (got == clusterMappings[normalizedID].end()) {
