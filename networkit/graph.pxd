@@ -7,6 +7,7 @@ from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from libcpp.string cimport string
 from libcpp.unordered_set cimport unordered_set
+from libc.stddef cimport size_t
 
 from .base cimport _Algorithm, Algorithm
 from .structures cimport edgeid, index, count, node, edgeweight
@@ -111,6 +112,12 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		void detachEdgeAttribute(string) except +
 		@staticmethod
 		_Graph fromCSRMatrix(const CSRGeneralMatrix[double]& matrix, bool_t directed) except +
+		@staticmethod
+		_Graph fromCSRArrays(count nRows, count nCols,
+					const index *indptr, size_t indptrSize,
+					const index *indices, size_t indicesSize,
+					const double *data, size_t dataSize,
+					bool_t directed) except +
 
 cdef extern from "<networkit/graph/Graph.hpp>":
 	cdef cppclass _NodeIterator "NetworKit::Graph::NodeIterator":

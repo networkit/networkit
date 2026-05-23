@@ -996,4 +996,90 @@ Graph Graph::fromCSRMatrix(const CSRGeneralMatrix<double> &matrix, bool directed
     return matrix.toGraph(directed);
 }
 
+Graph Graph::fromCSRArrays(count nRows, count nCols,
+                           const index *indptr, size_t indptrSize,
+                           const index *indices, size_t indicesSize,
+                           const double *data, size_t dataSize,
+                           bool directed) {
+    // Validate sizes
+    if (indptr == nullptr || indices == nullptr) {
+        throw std::invalid_argument("null CSR pointer passed to fromCSRArrays");
+    }
+
+    if (static_cast<size_t>(nRows + 1) > indptrSize) {
+        throw std::invalid_argument("indptr size is too small for nRows");
+    }
+
+    // Determine if graph should be weighted: any data value != 0 and != 1
+    bool isWeighted = false;
+    size_t nnz = indicesSize;
+    if (data != nullptr) {
+        for (size_t k = 0; k < dataSize; ++k) {
+            if (data[k] != 0.0 && data[k] != 1.0) {
+                isWeighted = true;
+                break;
+            }
+        }
+    }
+
+    // Create the Graph with reserved structures
+    Graph graph(nRows, isWeighted, directed);
+
+    // Number of edges equals number of stored column indices
+    count edgeCount = static_cast<count>(nnz);
+
+    graph.outEdges.resize(nRows);
+    if (isWeighted) {
+        graph.outEdgeWeights.resize(nRows);
+    }
+
+    // Fill outEdges (and weights) directly from CSR arrays
+    for (index i = 0; i < nRows; ++i) {
+        index rowStart = indptr[i];
+        index rowEnd = indptr[i + 1];
+        if (rowEnd < rowStart) {
+            throw std::invalid_argument("indptr must be non-decreasing");
+        }
+        // Construct vector<node> from indices[rowStart:rowEnd] using contiguous
+        // subrange copy (avoid element-wise push_back)
+        if (rowEnd > rowStart) {
+            graph.outEdges[i] = std::vector<node>(indices + rowStart, indices + rowEnd);
+        } else {
+            graph.outEdges[i].clear();
+        }
+
+        if (isWeighted) {
+            // Copy weights via contiguous subrange copy
+            if (rowEnd > rowStart) {
+                graph.outEdgeWeights[i] = std::vector<edgeweight>(data + rowStart, data + rowEnd);
+            } else {
+                graph.outEdgeWeights[i].clear();
+            }
+        }
+    }
+
+    // For directed graphs, populate inEdges (and inEdgeWeights)
+    if (directed) {
+        graph.inEdges.resize(nRows);
+        if (isWeighted) {
+            graph.inEdgeWeights.resize(nRows);
+        }
+        for (index i = 0; i < nRows; ++i) {
+            index rowStart = indptr[i];
+            index rowEnd = indptr[i + 1];
+            for (index k = rowStart; k < rowEnd; ++k) {
+                index j = indices[k];
+                graph.inEdges[j].push_back(i);
+                if (isWeighted) {
+                    graph.inEdgeWeights[j].push_back(data[k]);
+                }
+            }
+        }
+    }
+
+    graph.m = edgeCount;
+
+    return graph;
+}
+
 } /* namespace NetworKit */

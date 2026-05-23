@@ -896,6 +896,16 @@ public:
      * @return A Graph constructed from the CSR matrix
      */
     static Graph fromCSRMatrix(const CSRGeneralMatrix<double> &matrix, bool directed = true);
+    /**
+     * Create a Graph from raw CSR arrays. This accepts pointers to the
+     * compressed row index array, column indices array and non-zero values
+     * and copies them efficiently into internal storage.
+     */
+    static Graph fromCSRArrays(count nRows, count nCols,
+                               const index *indptr, size_t indptrSize,
+                               const index *indices, size_t indicesSize,
+                               const double *data, size_t dataSize,
+                               bool directed = true);
 
     /**
      * Reserves memory in the node's edge containers for undirected graphs.

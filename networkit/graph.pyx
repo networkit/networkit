@@ -91,24 +91,28 @@ cdef class Graph:
 		cdef count nCols = <count>csr.shape[1]
 
 		# Build C++ vectors
-		cdef vector[index] rowVec
-		rowVec.reserve(indptr.size)
-		for v in indptr:
-			rowVec.push_back(<index>int(v))
+		# Use raw buffer pointers and call the fast C++ entrypoint to avoid python loops
+		cdef cnp.ndarray indptr_arr = indptr
+		cdef cnp.ndarray indices_arr = indices
+		cdef cnp.ndarray data_arr = data
 
-		cdef vector[index] colVec
-		colVec.reserve(indices.size)
-		for v in indices:
-			colVec.push_back(<index>int(v))
+		# Ensure arrays are contiguous C order
+		indptr_arr = np.ascontiguousarray(indptr_arr, dtype=np.int64)
+		indices_arr = np.ascontiguousarray(indices_arr, dtype=np.int64)
+		data_arr = np.ascontiguousarray(data_arr, dtype=np.double)
 
-		cdef vector[double] dataVec
-		dataVec.reserve(data.size)
-		for v in data:
-			dataVec.push_back(<double>v)
+		cdef const index* indptr_ptr = <const index*> indptr_arr.data
+		cdef size_t indptr_size = indptr_arr.size
+		cdef const index* indices_ptr = <const index*> indices_arr.data
+		cdef size_t indices_size = indices_arr.size
+		cdef const double* data_ptr = <const double*> data_arr.data
+		cdef size_t data_size = data_arr.size
 
-		# Construct CSRGeneralMatrix and delegate to C++ factory
-		cdef CSRGeneralMatrix[double] mat = CSRGeneralMatrix[double](nRows, nCols, rowVec, colVec, dataVec)
-		cdef _Graph tmp = _Graph.fromCSRMatrix(mat, <bool_t>directed)
+		cdef _Graph tmp = _Graph.fromCSRArrays(<count>nRows, <count>nCols,
+					indptr_ptr, indptr_size,
+					indices_ptr, indices_size,
+					data_ptr, data_size,
+					<bool_t>directed)
 		cdef Graph G = Graph()
 		G.setThis(tmp)
 		return G
