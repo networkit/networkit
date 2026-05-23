@@ -7,6 +7,8 @@ from scipy.sparse import coo_matrix
 cimport numpy as cnp
 cnp.import_array()
 
+from libcpp.vector cimport vector
+
 from .base import Algorithm
 from .helpers import stdstring, pystring
 from .traversal import Traversal
@@ -60,6 +62,56 @@ cdef class Graph:
 
 	def __str__(self):
 		return "NetworKit.Graph(n={0}, m={1})".format(self.numberOfNodes(), self.numberOfEdges())
+
+	@staticmethod
+	def fromCSRMatrix(csr, directed=True):
+		"""Create a Graph from a SciPy CSR matrix.
+
+		Parameters
+		----------
+		csr : scipy.sparse.csr_matrix
+			The SciPy CSR matrix representing the adjacency matrix.
+		directed : bool, optional
+			Whether to treat the matrix as directed. Default: True
+
+		Returns
+		-------
+		Graph
+			A new NetworKit Graph built from the CSR matrix.
+		"""
+		# Validate input
+		try:
+			indptr = np.asarray(csr.indptr, dtype=np.int64)
+			indices = np.asarray(csr.indices, dtype=np.int64)
+			data = np.asarray(csr.data, dtype=np.double)
+		except Exception:
+			raise TypeError("Expected a SciPy CSR matrix with attributes .indptr, .indices, .data")
+
+		cdef count nRows = <count>csr.shape[0]
+		cdef count nCols = <count>csr.shape[1]
+
+		# Build C++ vectors
+		cdef vector[index] rowVec
+		rowVec.reserve(indptr.size)
+		for v in indptr:
+			rowVec.push_back(<index>int(v))
+
+		cdef vector[index] colVec
+		colVec.reserve(indices.size)
+		for v in indices:
+			colVec.push_back(<index>int(v))
+
+		cdef vector[double] dataVec
+		dataVec.reserve(data.size)
+		for v in data:
+			dataVec.push_back(<double>v)
+
+		# Construct CSRGeneralMatrix and delegate to C++ factory
+		cdef CSRGeneralMatrix[double] mat = CSRGeneralMatrix[double](nRows, nCols, rowVec, colVec, dataVec)
+		cdef _Graph tmp = _Graph.fromCSRMatrix(mat, <bool_t>directed)
+		cdef Graph G = Graph()
+		G.setThis(tmp)
+		return G
 	
 	def __getstate__(self):
 		return graphio.NetworkitBinaryWriter(graphio.Format.NetworkitBinary, chunks = 32, weightsType = 5).writeToBuffer(self)

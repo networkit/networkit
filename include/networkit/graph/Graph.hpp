@@ -80,6 +80,9 @@ inline bool operator<(const WeightedEdge &e1, const WeightedEdge &e2) {
     return e1.weight < e2.weight;
 }
 
+template <class ValueType>
+class CSRGeneralMatrix;
+
 struct Unsafe {};
 static constexpr Unsafe unsafe{};
 } // namespace NetworKit
@@ -134,6 +137,9 @@ class Graph final {
     bool maintainCompactEdges = false;
     //!< true if edge removals should maintain sorted edge ids
     bool maintainSortedEdges = false;
+
+    template <class ValueType>
+    friend class CSRGeneralMatrix;
 
     //!< saves the ID of the most recently removed edge (if exists)
     edgeid deletedID;
@@ -879,6 +885,17 @@ public:
 
         return *this;
     };
+
+    /**
+     * Create a Graph from a CSR (Compressed Sparse Row) matrix.
+     * The matrix is converted into a Graph where each non-zero element becomes an edge.
+     * For weighted graphs, the matrix values are used as edge weights.
+     *
+     * @param matrix The CSR matrix to convert
+     * @param directed If true, creates a directed graph; if false, creates an undirected graph
+     * @return A Graph constructed from the CSR matrix
+     */
+    static Graph fromCSRMatrix(const CSRGeneralMatrix<double> &matrix, bool directed = true);
 
     /**
      * Reserves memory in the node's edge containers for undirected graphs.

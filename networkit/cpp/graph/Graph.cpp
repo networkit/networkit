@@ -14,6 +14,7 @@
 #include <sstream>
 
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/algebraic/CSRGeneralMatrix.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphTools.hpp>
 
@@ -988,6 +989,11 @@ bool Graph::checkConsistency() const {
         DEBUG("Saved number of edges is incorrect!");
 
     return noMultiEdges && correctNodeUpperbound && correctNumberOfEdges;
+}
+
+Graph Graph::fromCSRMatrix(const CSRGeneralMatrix<double> &matrix, bool directed) {
+    // Delegate to CSRGeneralMatrix::toGraph() which has the efficient implementation
+    return matrix.toGraph(directed);
 }
 
 } /* namespace NetworKit */

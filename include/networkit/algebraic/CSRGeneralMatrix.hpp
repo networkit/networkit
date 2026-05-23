@@ -21,6 +21,7 @@
 #include <networkit/Globals.hpp>
 #include <networkit/algebraic/AlgebraicGlobals.hpp>
 #include <networkit/algebraic/Vector.hpp>
+#include <networkit/auxiliary/ArrayTools.hpp>
 #include <networkit/graph/Graph.hpp>
 
 #include <tlx/unused.hpp>
@@ -1056,6 +1057,28 @@ public:
      */
     template <typename L>
     void parallelForNonZeroElementsInRowOrder(L handle) const;
+
+    /**
+     * Creates a Graph from this matrix, interpreting it as an adjacency matrix.
+     * The matrix dimensions determine the number of nodes, and non-zero entries
+     * define edges with their values as edge weights.
+     *
+     * Directly extracts sub-vectors from the CSR structure and populates the Graph's
+     * internal adjacency lists without iterating element-by-element.
+     *
+     * @param directed If true, treats the matrix as a directed graph.
+     *                 If false, treats it as undirected. Default is true.
+     * @return A Graph represented by this adjacency matrix.
+     *
+     * @note Non-zero entries are interpreted as edge weights. If all non-zero
+     *       entries have the default value, the graph will be unweighted.
+     * @note For undirected graphs, the matrix should be symmetric for correct
+     *       representation. Non-symmetric matrices will be treated as specified
+     *       by the directed parameter.
+     * @note The matrix must be square.
+     * @see MatrixTools::matrixToGraph() for automatic directedness detection
+     */
+    Graph toGraph(bool directed = true) const;
 };
 
 template <typename ValueType>
@@ -1271,6 +1294,82 @@ inline void CSRGeneralMatrix<ValueType>::parallelForNonZeroElementsInRowOrder(L 
     for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i)
         for (index k = rowIdx[i]; k < rowIdx[i + 1]; ++k)
             handle(i, columnIdx[k], nonZeros[k]);
+}
+
+template <typename ValueType>
+inline Graph CSRGeneralMatrix<ValueType>::toGraph(bool directed) const {
+    if (nRows != nCols) {
+        throw std::runtime_error(
+            "Cannot convert non-square matrix to graph: matrix is " + std::to_string(nRows)
+            + " x " + std::to_string(nCols));
+    }
+
+    count numNodes = nRows;
+
+    // Determine if the graph should be weighted by checking values
+    bool isWeighted = false;
+    for (index k = 0; k < static_cast<index>(nonZeros.size()); ++k) {
+        if (nonZeros[k] != zero && nonZeros[k] != ValueType(1)) {
+            isWeighted = true;
+            break;
+        }
+    }
+
+    // Create base graph structure
+    Graph graph(numNodes, isWeighted, directed);
+
+    // Count edges from CSR structure
+    count edgeCount = nnz();
+
+    // Directly populate outEdges from CSR row structure
+    graph.outEdges.resize(numNodes);
+    if (isWeighted) {
+        graph.outEdgeWeights.resize(numNodes);
+    }
+
+    // For each row, directly extract column indices and values
+    for (index i = 0; i < nRows; ++i) {
+        index rowStart = rowIdx[i];
+        index rowEnd = rowIdx[i + 1];
+
+        // Extract column indices for this row as a sub-vector
+        std::vector<node> rowColumns(columnIdx.begin() + rowStart, columnIdx.begin() + rowEnd);
+        graph.outEdges[i] = std::move(rowColumns);
+
+        // Extract and convert values for weighted graphs
+        if (isWeighted) {
+            std::vector<edgeweight> rowWeights;
+            rowWeights.reserve(rowEnd - rowStart);
+            for (index k = rowStart; k < rowEnd; ++k) {
+                rowWeights.push_back(static_cast<edgeweight>(nonZeros[k]));
+            }
+            graph.outEdgeWeights[i] = std::move(rowWeights);
+        }
+    }
+
+    // For directed graphs, populate inEdges and inEdgeWeights
+    if (directed) {
+        graph.inEdges.resize(numNodes);
+        if (isWeighted) {
+            graph.inEdgeWeights.resize(numNodes);
+        }
+
+        // Build inEdges from the CSR structure
+        for (index i = 0; i < nRows; ++i) {
+            for (index k = rowIdx[i]; k < rowIdx[i + 1]; ++k) {
+                index j = columnIdx[k];
+                graph.inEdges[j].push_back(i);
+                if (isWeighted) {
+                    graph.inEdgeWeights[j].push_back(static_cast<edgeweight>(nonZeros[k]));
+                }
+            }
+        }
+    }
+
+    // Update graph counts
+    graph.m = edgeCount;
+
+    return graph;
 }
 
 // print functions for test debugging / output
