@@ -11,6 +11,7 @@
 #include <map>
 #include <random>
 #include <ranges>
+#include <atomic>
 #include <sstream>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -1028,50 +1029,106 @@ Graph Graph::fromCSRArrays(count nRows, count nCols,
     // Number of edges equals number of stored column indices
     count edgeCount = static_cast<count>(nnz);
 
-    graph.outEdges.resize(nRows);
-    if (isWeighted) {
-        graph.outEdgeWeights.resize(nRows);
-    }
-
-    // Fill outEdges (and weights) directly from CSR arrays
+    // Precompute row sizes and preallocate contiguous storage for each row.
+    std::vector<size_t> rowSizes(nRows);
     for (index i = 0; i < nRows; ++i) {
         index rowStart = indptr[i];
         index rowEnd = indptr[i + 1];
         if (rowEnd < rowStart) {
             throw std::invalid_argument("indptr must be non-decreasing");
         }
-        // Construct vector<node> from indices[rowStart:rowEnd] using contiguous
-        // subrange copy (avoid element-wise push_back)
-        if (rowEnd > rowStart) {
-            graph.outEdges[i] = std::vector<node>(indices + rowStart, indices + rowEnd);
-        } else {
-            graph.outEdges[i].clear();
-        }
+        rowSizes[i] = static_cast<size_t>(rowEnd - rowStart);
+    }
 
-        if (isWeighted) {
-            // Copy weights via contiguous subrange copy
+    graph.outEdges.resize(nRows);
+    if (isWeighted) {
+        graph.outEdgeWeights.resize(nRows);
+    }
+
+    // Resize inner vectors once so we can copy into them in parallel.
+    for (index i = 0; i < nRows; ++i) {
+        graph.outEdges[i].resize(rowSizes[i]);
+        if (isWeighted)
+            graph.outEdgeWeights[i].resize(rowSizes[i]);
+    }
+
+    // Decide whether to run parallel copy based on problem size.
+    const bool useParallel = (nnz > 10000 || nRows > 1000);
+
+    if (useParallel) {
+#pragma omp parallel for schedule(static)
+        for (index i = 0; i < nRows; ++i) {
+            index rowStart = indptr[i];
+            index rowEnd = indptr[i + 1];
             if (rowEnd > rowStart) {
-                graph.outEdgeWeights[i] = std::vector<edgeweight>(data + rowStart, data + rowEnd);
-            } else {
-                graph.outEdgeWeights[i].clear();
+                std::copy(indices + rowStart, indices + rowEnd, graph.outEdges[i].begin());
+                if (isWeighted) {
+                    std::copy(data + rowStart, data + rowEnd, graph.outEdgeWeights[i].begin());
+                }
+            }
+        }
+    } else {
+        for (index i = 0; i < nRows; ++i) {
+            index rowStart = indptr[i];
+            index rowEnd = indptr[i + 1];
+            if (rowEnd > rowStart) {
+                std::copy(indices + rowStart, indices + rowEnd, graph.outEdges[i].begin());
+                if (isWeighted) {
+                    std::copy(data + rowStart, data + rowEnd, graph.outEdgeWeights[i].begin());
+                }
             }
         }
     }
 
-    // For directed graphs, populate inEdges (and inEdgeWeights)
+    // For directed graphs, build inEdges (and inEdgeWeights). We compute
+    // in-degrees first, preallocate, then fill the arrays. Filling uses
+    // atomic position counters so it can be parallelized safely.
     if (directed) {
         graph.inEdges.resize(nRows);
         if (isWeighted) {
             graph.inEdgeWeights.resize(nRows);
         }
-        for (index i = 0; i < nRows; ++i) {
-            index rowStart = indptr[i];
-            index rowEnd = indptr[i + 1];
-            for (index k = rowStart; k < rowEnd; ++k) {
-                index j = indices[k];
-                graph.inEdges[j].push_back(i);
-                if (isWeighted) {
-                    graph.inEdgeWeights[j].push_back(data[k]);
+
+        std::vector<size_t> inDeg(nRows, 0);
+        for (size_t k = 0; k < nnz; ++k) {
+            index j = indices[k];
+            ++inDeg[j];
+        }
+
+        for (index j = 0; j < nRows; ++j) {
+            graph.inEdges[j].resize(inDeg[j]);
+            if (isWeighted)
+                graph.inEdgeWeights[j].resize(inDeg[j]);
+        }
+
+        // position counters for each target row; initialize to zero
+        std::vector<std::atomic<size_t>> inPos(nRows);
+        for (index j = 0; j < nRows; ++j)
+            inPos[j].store(0);
+
+        if (useParallel) {
+#pragma omp parallel for schedule(static)
+            for (index i = 0; i < nRows; ++i) {
+                index rowStart = indptr[i];
+                index rowEnd = indptr[i + 1];
+                for (index k = rowStart; k < rowEnd; ++k) {
+                    index j = indices[k];
+                    size_t pos = inPos[j].fetch_add(1);
+                    graph.inEdges[j][pos] = i;
+                    if (isWeighted)
+                        graph.inEdgeWeights[j][pos] = data[k];
+                }
+            }
+        } else {
+            for (index i = 0; i < nRows; ++i) {
+                index rowStart = indptr[i];
+                index rowEnd = indptr[i + 1];
+                for (index k = rowStart; k < rowEnd; ++k) {
+                    index j = indices[k];
+                    size_t pos = inPos[j].fetch_add(1);
+                    graph.inEdges[j][pos] = i;
+                    if (isWeighted)
+                        graph.inEdgeWeights[j][pos] = data[k];
                 }
             }
         }
