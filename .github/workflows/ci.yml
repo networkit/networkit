@@ -94,8 +94,6 @@ on:
     branches:
       - master
   push:
-    branches:
-      - master
 
 # Default parameters for all builds.
 env:
