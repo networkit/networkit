@@ -1228,10 +1228,10 @@ def GraphFromCsr(csr, directed=True, weighted=False):
 	cdef const double* data_ptr = <const double*> data_arr.data
 	cdef size_t data_size = data_arr.size
 
-	cdef _Graph tmp = _Graph.fromCSRArrays(<count>nRows, <count>nCols,
+	cdef _Graph tmp = _Graph.fromCSRArrays(<count>nRows,
 				indptr_ptr, indptr_size,
 				indices_ptr, indices_size,
-				data_ptr, data_size,
+				data_ptr,
 				<bool_t>directed, <bool_t>weighted)
 	cdef Graph G = Graph(nRows, weighted, directed)
 	G.setThis(tmp)

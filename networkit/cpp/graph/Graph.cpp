@@ -993,10 +993,10 @@ bool Graph::checkConsistency() const {
 }
 
 
-Graph Graph::fromCSRArrays(count nRows, count nCols,
+Graph Graph::fromCSRArrays(count nRows,
                            const index *indptr, size_t indptrSize,
                            const index *indices, size_t indicesSize,
-                           const double *data, size_t dataSize,
+                           const double *data,
                            bool directed, bool isWeighted) {
     // Validate sizes
     if (indptr == nullptr || indices == nullptr) {
