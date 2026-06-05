@@ -21,7 +21,6 @@
 #include <networkit/Globals.hpp>
 #include <networkit/algebraic/AlgebraicGlobals.hpp>
 #include <networkit/algebraic/Vector.hpp>
-#include <networkit/auxiliary/ArrayTools.hpp>
 #include <networkit/graph/Graph.hpp>
 
 #include <tlx/unused.hpp>
@@ -1057,7 +1056,6 @@ public:
      */
     template <typename L>
     void parallelForNonZeroElementsInRowOrder(L handle) const;
-
 };
 
 template <typename ValueType>

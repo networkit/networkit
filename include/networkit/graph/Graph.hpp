@@ -80,9 +80,6 @@ inline bool operator<(const WeightedEdge &e1, const WeightedEdge &e2) {
     return e1.weight < e2.weight;
 }
 
-template <class ValueType>
-class CSRGeneralMatrix;
-
 struct Unsafe {};
 static constexpr Unsafe unsafe{};
 } // namespace NetworKit
@@ -137,9 +134,6 @@ class Graph final {
     bool maintainCompactEdges = false;
     //!< true if edge removals should maintain sorted edge ids
     bool maintainSortedEdges = false;
-
-    template <class ValueType>
-    friend class CSRGeneralMatrix;
 
     //!< saves the ID of the most recently removed edge (if exists)
     edgeid deletedID;
