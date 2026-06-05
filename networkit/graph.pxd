@@ -111,13 +111,11 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		_EdgeStringAttribute getEdgeStringAttribute(string) except +
 		void detachEdgeAttribute(string) except +
 		@staticmethod
-		_Graph fromCSRMatrix(const CSRGeneralMatrix[double]& matrix, bool_t directed) except +
-		@staticmethod
 		_Graph fromCSRArrays(count nRows, count nCols,
 					const index *indptr, size_t indptrSize,
 					const index *indices, size_t indicesSize,
 					const double *data, size_t dataSize,
-					bool_t directed) except +
+					bool_t directed, bool_t weighted) except +
 
 cdef extern from "<networkit/graph/Graph.hpp>":
 	cdef cppclass _NodeIterator "NetworKit::Graph::NodeIterator":

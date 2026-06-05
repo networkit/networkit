@@ -62,60 +62,6 @@ cdef class Graph:
 
 	def __str__(self):
 		return "NetworKit.Graph(n={0}, m={1})".format(self.numberOfNodes(), self.numberOfEdges())
-
-	@staticmethod
-	def fromCSRMatrix(csr, directed=True):
-		"""Create a Graph from a SciPy CSR matrix.
-
-		Parameters
-		----------
-		csr : scipy.sparse.csr_matrix
-			The SciPy CSR matrix representing the adjacency matrix.
-		directed : bool, optional
-			Whether to treat the matrix as directed. Default: True
-
-		Returns
-		-------
-		Graph
-			A new NetworKit Graph built from the CSR matrix.
-		"""
-		# Validate input
-		try:
-			indptr = np.asarray(csr.indptr, dtype=np.int64)
-			indices = np.asarray(csr.indices, dtype=np.int64)
-			data = np.asarray(csr.data, dtype=np.double)
-		except Exception:
-			raise TypeError("Expected a SciPy CSR matrix with attributes .indptr, .indices, .data")
-
-		cdef count nRows = <count>csr.shape[0]
-		cdef count nCols = <count>csr.shape[1]
-
-		# Build C++ vectors
-		# Use raw buffer pointers and call the fast C++ entrypoint to avoid python loops
-		cdef cnp.ndarray indptr_arr = indptr
-		cdef cnp.ndarray indices_arr = indices
-		cdef cnp.ndarray data_arr = data
-
-		# Ensure arrays are contiguous C order
-		indptr_arr = np.ascontiguousarray(indptr_arr, dtype=np.int64)
-		indices_arr = np.ascontiguousarray(indices_arr, dtype=np.int64)
-		data_arr = np.ascontiguousarray(data_arr, dtype=np.double)
-
-		cdef const index* indptr_ptr = <const index*> indptr_arr.data
-		cdef size_t indptr_size = indptr_arr.size
-		cdef const index* indices_ptr = <const index*> indices_arr.data
-		cdef size_t indices_size = indices_arr.size
-		cdef const double* data_ptr = <const double*> data_arr.data
-		cdef size_t data_size = data_arr.size
-
-		cdef _Graph tmp = _Graph.fromCSRArrays(<count>nRows, <count>nCols,
-					indptr_ptr, indptr_size,
-					indices_ptr, indices_size,
-					data_ptr, data_size,
-					<bool_t>directed)
-		cdef Graph G = Graph()
-		G.setThis(tmp)
-		return G
 	
 	def __getstate__(self):
 		return graphio.NetworkitBinaryWriter(graphio.Format.NetworkitBinary, chunks = 32, weightsType = 5).writeToBuffer(self)
@@ -1234,6 +1180,62 @@ cdef class Graph:
 		if not isinstance(name, str):
 			raise Exception("Attribute name has to be a string")
 		self._this.detachEdgeAttribute(stdstring(name))
+
+
+def GraphFromCsr(csr, directed=True, weighted=False):
+	"""Create a Graph from a SciPy CSR matrix.
+
+	Parameters
+	----------
+	csr : scipy.sparse.csr_matrix
+		The SciPy CSR matrix representing the adjacency matrix.
+	directed : bool, optional
+		Whether to treat the matrix as directed. Default: True
+	weighted : bool, optional
+		Whether to treat the matrix as weighted. Default: False
+
+	Returns
+	-------
+	Graph
+		A new NetworKit Graph built from the CSR matrix.
+	"""
+	# Validate input
+	try:
+		indptr = np.asarray(csr.indptr, dtype=np.int64)
+		indices = np.asarray(csr.indices, dtype=np.int64)
+		data = np.asarray(csr.data, dtype=np.double)
+	except Exception:
+		raise TypeError("Expected a SciPy CSR matrix with attributes .indptr, .indices, .data")
+
+	cdef count nRows = <count>csr.shape[0]
+	cdef count nCols = <count>csr.shape[1]
+
+	# Build C++ vectors
+	# Use raw buffer pointers and call the fast C++ entrypoint to avoid python loops
+	cdef cnp.ndarray indptr_arr = indptr
+	cdef cnp.ndarray indices_arr = indices
+	cdef cnp.ndarray data_arr = data
+
+	# Ensure arrays are contiguous C order
+	indptr_arr = np.ascontiguousarray(indptr_arr, dtype=np.int64)
+	indices_arr = np.ascontiguousarray(indices_arr, dtype=np.int64)
+	data_arr = np.ascontiguousarray(data_arr, dtype=np.double)
+
+	cdef const index* indptr_ptr = <const index*> indptr_arr.data
+	cdef size_t indptr_size = indptr_arr.size
+	cdef const index* indices_ptr = <const index*> indices_arr.data
+	cdef size_t indices_size = indices_arr.size
+	cdef const double* data_ptr = <const double*> data_arr.data
+	cdef size_t data_size = data_arr.size
+
+	cdef _Graph tmp = _Graph.fromCSRArrays(<count>nRows, <count>nCols,
+				indptr_ptr, indptr_size,
+				indices_ptr, indices_size,
+				data_ptr, data_size,
+				<bool_t>directed, <bool_t>weighted)
+	cdef Graph G = Graph(nRows, weighted, directed)
+	G.setThis(tmp)
+	return G
 
 def GraphFromCoo(inputData, n=0, bool_t weighted=False, bool_t directed=False, bool_t edgesIndexed=False):
 	"""

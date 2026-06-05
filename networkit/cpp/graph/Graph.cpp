@@ -992,16 +992,12 @@ bool Graph::checkConsistency() const {
     return noMultiEdges && correctNodeUpperbound && correctNumberOfEdges;
 }
 
-Graph Graph::fromCSRMatrix(const CSRGeneralMatrix<double> &matrix, bool directed) {
-    // Delegate to CSRGeneralMatrix::toGraph() which has the efficient implementation
-    return matrix.toGraph(directed);
-}
 
 Graph Graph::fromCSRArrays(count nRows, count nCols,
                            const index *indptr, size_t indptrSize,
                            const index *indices, size_t indicesSize,
                            const double *data, size_t dataSize,
-                           bool directed) {
+                           bool directed, bool isWeighted) {
     // Validate sizes
     if (indptr == nullptr || indices == nullptr) {
         throw std::invalid_argument("null CSR pointer passed to fromCSRArrays");
@@ -1010,18 +1006,7 @@ Graph Graph::fromCSRArrays(count nRows, count nCols,
     if (static_cast<size_t>(nRows + 1) > indptrSize) {
         throw std::invalid_argument("indptr size is too small for nRows");
     }
-
-    // Determine if graph should be weighted: any data value != 0 and != 1
-    bool isWeighted = false;
     size_t nnz = indicesSize;
-    if (data != nullptr) {
-        for (size_t k = 0; k < dataSize; ++k) {
-            if (data[k] != 0.0 && data[k] != 1.0) {
-                isWeighted = true;
-                break;
-            }
-        }
-    }
 
     // Create the Graph with reserved structures
     Graph graph(nRows, isWeighted, directed);
@@ -1031,6 +1016,11 @@ Graph Graph::fromCSRArrays(count nRows, count nCols,
 
     // Precompute row sizes and preallocate contiguous storage for each row.
     std::vector<size_t> rowSizes(nRows);
+    graph.outEdges.resize(nRows);
+    if (isWeighted) {
+        graph.outEdgeWeights.resize(nRows);
+    }
+
     for (index i = 0; i < nRows; ++i) {
         index rowStart = indptr[i];
         index rowEnd = indptr[i + 1];
@@ -1038,44 +1028,19 @@ Graph Graph::fromCSRArrays(count nRows, count nCols,
             throw std::invalid_argument("indptr must be non-decreasing");
         }
         rowSizes[i] = static_cast<size_t>(rowEnd - rowStart);
-    }
-
-    graph.outEdges.resize(nRows);
-    if (isWeighted) {
-        graph.outEdgeWeights.resize(nRows);
-    }
-
-    // Resize inner vectors once so we can copy into them in parallel.
-    for (index i = 0; i < nRows; ++i) {
         graph.outEdges[i].resize(rowSizes[i]);
         if (isWeighted)
             graph.outEdgeWeights[i].resize(rowSizes[i]);
     }
 
-    // Decide whether to run parallel copy based on problem size.
-    const bool useParallel = (nnz > 10000 || nRows > 1000);
-
-    if (useParallel) {
 #pragma omp parallel for schedule(static)
-        for (index i = 0; i < nRows; ++i) {
-            index rowStart = indptr[i];
-            index rowEnd = indptr[i + 1];
-            if (rowEnd > rowStart) {
-                std::copy(indices + rowStart, indices + rowEnd, graph.outEdges[i].begin());
-                if (isWeighted) {
-                    std::copy(data + rowStart, data + rowEnd, graph.outEdgeWeights[i].begin());
-                }
-            }
-        }
-    } else {
-        for (index i = 0; i < nRows; ++i) {
-            index rowStart = indptr[i];
-            index rowEnd = indptr[i + 1];
-            if (rowEnd > rowStart) {
-                std::copy(indices + rowStart, indices + rowEnd, graph.outEdges[i].begin());
-                if (isWeighted) {
-                    std::copy(data + rowStart, data + rowEnd, graph.outEdgeWeights[i].begin());
-                }
+    for (index i = 0; i < nRows; ++i) {
+        index rowStart = indptr[i];
+        index rowEnd = indptr[i + 1];
+        if (rowEnd > rowStart) {
+            std::copy(indices + rowStart, indices + rowEnd, graph.outEdges[i].begin());
+            if (isWeighted) {
+                std::copy(data + rowStart, data + rowEnd, graph.outEdgeWeights[i].begin());
             }
         }
     }
@@ -1106,30 +1071,17 @@ Graph Graph::fromCSRArrays(count nRows, count nCols,
         for (index j = 0; j < nRows; ++j)
             inPos[j].store(0);
 
-        if (useParallel) {
+
 #pragma omp parallel for schedule(static)
-            for (index i = 0; i < nRows; ++i) {
-                index rowStart = indptr[i];
-                index rowEnd = indptr[i + 1];
-                for (index k = rowStart; k < rowEnd; ++k) {
-                    index j = indices[k];
-                    size_t pos = inPos[j].fetch_add(1);
-                    graph.inEdges[j][pos] = i;
-                    if (isWeighted)
-                        graph.inEdgeWeights[j][pos] = data[k];
-                }
-            }
-        } else {
-            for (index i = 0; i < nRows; ++i) {
-                index rowStart = indptr[i];
-                index rowEnd = indptr[i + 1];
-                for (index k = rowStart; k < rowEnd; ++k) {
-                    index j = indices[k];
-                    size_t pos = inPos[j].fetch_add(1);
-                    graph.inEdges[j][pos] = i;
-                    if (isWeighted)
-                        graph.inEdgeWeights[j][pos] = data[k];
-                }
+        for (index i = 0; i < nRows; ++i) {
+            index rowStart = indptr[i];
+            index rowEnd = indptr[i + 1];
+            for (index k = rowStart; k < rowEnd; ++k) {
+                index j = indices[k];
+                size_t pos = inPos[j].fetch_add(1);
+                graph.inEdges[j][pos] = i;
+                if (isWeighted)
+                    graph.inEdgeWeights[j][pos] = data[k];
             }
         }
     }

@@ -141,7 +141,7 @@ from .engineering import (
 )
 
 # local imports into the top namespace
-from .graph import Graph, GraphFromCoo
+from .graph import Graph, GraphFromCoo, GraphFromCsr
 from .structures import Partition, Cover
 from .graphio import readGraph, writeGraph, readGraphs, Format
 

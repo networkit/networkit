@@ -887,16 +887,6 @@ public:
     };
 
     /**
-     * Create a Graph from a CSR (Compressed Sparse Row) matrix.
-     * The matrix is converted into a Graph where each non-zero element becomes an edge.
-     * For weighted graphs, the matrix values are used as edge weights.
-     *
-     * @param matrix The CSR matrix to convert
-     * @param directed If true, creates a directed graph; if false, creates an undirected graph
-     * @return A Graph constructed from the CSR matrix
-     */
-    static Graph fromCSRMatrix(const CSRGeneralMatrix<double> &matrix, bool directed = true);
-    /**
      * Create a Graph from raw CSR arrays. This accepts pointers to the
      * compressed row index array, column indices array and non-zero values
      * and copies them efficiently into internal storage.
@@ -905,7 +895,7 @@ public:
                                const index *indptr, size_t indptrSize,
                                const index *indices, size_t indicesSize,
                                const double *data, size_t dataSize,
-                               bool directed = true);
+                               bool directed = true, bool isWeighted = false);
 
     /**
      * Reserves memory in the node's edge containers for undirected graphs.
