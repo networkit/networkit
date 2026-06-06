@@ -15,7 +15,6 @@
 #include <sstream>
 
 #include <networkit/auxiliary/Log.hpp>
-#include <networkit/algebraic/CSRGeneralMatrix.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphTools.hpp>
 
