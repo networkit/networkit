@@ -14,8 +14,8 @@
 #include <ranges>
 #include <sstream>
 
-#include <networkit/graph/Graph.hpp>
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
