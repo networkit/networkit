@@ -885,10 +885,8 @@ public:
      * compressed row index array, column indices array and non-zero values
      * and copies them efficiently into internal storage.
      */
-    static Graph fromCSRArrays(count nRows,
-                               const index *indptr, size_t indptrSize,
-                               const index *indices, size_t indicesSize,
-                               const double *data,
+    static Graph fromCSRArrays(count nRows, const index *indptr, size_t indptrSize,
+                               const index *indices, size_t indicesSize, const double *data,
                                bool directed = true, bool isWeighted = false);
 
     /**

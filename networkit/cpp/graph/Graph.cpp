@@ -7,15 +7,15 @@
  *              Marvin Ritter <marvin.ritter@gmail.com>
  */
 
+#include <atomic>
 #include <cmath>
 #include <map>
 #include <random>
 #include <ranges>
-#include <atomic>
 #include <sstream>
 
-#include <networkit/auxiliary/Log.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/auxiliary/Log.hpp>
 #include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
@@ -991,11 +991,8 @@ bool Graph::checkConsistency() const {
     return noMultiEdges && correctNodeUpperbound && correctNumberOfEdges;
 }
 
-
-Graph Graph::fromCSRArrays(count nRows,
-                           const index *indptr, size_t indptrSize,
-                           const index *indices, size_t indicesSize,
-                           const double *data,
+Graph Graph::fromCSRArrays(count nRows, const index *indptr, size_t indptrSize,
+                           const index *indices, size_t indicesSize, const double *data,
                            bool directed, bool isWeighted) {
     // Validate sizes
     if (indptr == nullptr || indices == nullptr) {
@@ -1069,7 +1066,6 @@ Graph Graph::fromCSRArrays(count nRows,
         std::vector<std::atomic<size_t>> inPos(nRows);
         for (index j = 0; j < nRows; ++j)
             inPos[j].store(0);
-
 
 #pragma omp parallel for schedule(static)
         for (index i = 0; i < nRows; ++i) {
