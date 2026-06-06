@@ -992,8 +992,8 @@ bool Graph::checkConsistency() const {
 }
 
 Graph Graph::fromCSRArrays(count nRows, const index *indptr, size_t indptrSize,
-                           const index *indices, size_t indicesSize, const double *data,
-                           bool directed, bool isWeighted) {
+                           const index *indices, const double *data, bool directed,
+                           bool isWeighted) {
     // Validate sizes
     if (indptr == nullptr || indices == nullptr) {
         throw std::invalid_argument("null CSR pointer passed to fromCSRArrays");
@@ -1002,7 +1002,8 @@ Graph Graph::fromCSRArrays(count nRows, const index *indptr, size_t indptrSize,
     if (static_cast<size_t>(nRows + 1) > indptrSize) {
         throw std::invalid_argument("indptr size is too small for nRows");
     }
-    size_t nnz = indicesSize;
+    // In CSR format the number of stored entries (nnz) is the last row pointer.
+    size_t nnz = static_cast<size_t>(indptr[nRows]);
 
     // Create the Graph with reserved structures
     Graph graph(nRows, isWeighted, directed);

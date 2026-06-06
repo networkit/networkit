@@ -1224,13 +1224,11 @@ def GraphFromCsr(csr, directed=True, weighted=False):
 	cdef const index* indptr_ptr = <const index*> indptr_arr.data
 	cdef size_t indptr_size = indptr_arr.size
 	cdef const index* indices_ptr = <const index*> indices_arr.data
-	cdef size_t indices_size = indices_arr.size
 	cdef const double* data_ptr = <const double*> data_arr.data
-	cdef size_t data_size = data_arr.size
 
 	cdef _Graph tmp = _Graph.fromCSRArrays(<count>nRows,
 				indptr_ptr, indptr_size,
-				indices_ptr, indices_size,
+				indices_ptr,
 				data_ptr,
 				<bool_t>directed, <bool_t>weighted)
 	cdef Graph G = Graph(nRows, weighted, directed)

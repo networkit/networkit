@@ -113,7 +113,7 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		@staticmethod
 		_Graph fromCSRArrays(count nRows,
 					const index *indptr, size_t indptrSize,
-					const index *indices, size_t indicesSize,
+					const index *indices,
 					const double *data,
 					bool_t directed, bool_t weighted) except +
 
