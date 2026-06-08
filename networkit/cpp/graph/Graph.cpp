@@ -1031,7 +1031,7 @@ Graph Graph::fromCSRArrays(count nRows, const index *indptr, size_t indptrSize,
     }
 
 #pragma omp parallel for schedule(static)
-    for (index i = 0; i < nRows; ++i) {
+    for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
         index rowStart = indptr[i];
         index rowEnd = indptr[i + 1];
         if (rowEnd > rowStart) {
@@ -1069,13 +1069,13 @@ Graph Graph::fromCSRArrays(count nRows, const index *indptr, size_t indptrSize,
             inPos[j].store(0);
 
 #pragma omp parallel for schedule(static)
-        for (index i = 0; i < nRows; ++i) {
+        for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
             index rowStart = indptr[i];
             index rowEnd = indptr[i + 1];
             for (index k = rowStart; k < rowEnd; ++k) {
                 index j = indices[k];
                 size_t pos = inPos[j].fetch_add(1);
-                graph.inEdges[j][pos] = i;
+                graph.inEdges[j][pos] = static_cast<node>(i);
                 if (isWeighted)
                     graph.inEdgeWeights[j][pos] = data[k];
             }
