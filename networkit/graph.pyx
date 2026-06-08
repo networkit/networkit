@@ -1222,12 +1222,11 @@ def GraphFromCsr(csr, directed=True, weighted=False):
 	data_arr = np.ascontiguousarray(data_arr, dtype=np.double)
 
 	cdef const index* indptr_ptr = <const index*> indptr_arr.data
-	cdef size_t indptr_size = indptr_arr.size
 	cdef const index* indices_ptr = <const index*> indices_arr.data
 	cdef const double* data_ptr = <const double*> data_arr.data
 
 	cdef _Graph tmp = _Graph.fromCSRArrays(<count>nRows,
-				indptr_ptr, indptr_size,
+				indptr_ptr,
 				indices_ptr,
 				data_ptr,
 				<bool_t>directed, <bool_t>weighted)

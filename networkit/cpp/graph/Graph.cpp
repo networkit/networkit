@@ -991,17 +991,13 @@ bool Graph::checkConsistency() const {
     return noMultiEdges && correctNodeUpperbound && correctNumberOfEdges;
 }
 
-Graph Graph::fromCSRArrays(count nRows, const index *indptr, size_t indptrSize,
-                           const index *indices, const double *data, bool directed,
-                           bool isWeighted) {
+Graph Graph::fromCSRArrays(count nRows, const index *indptr, const index *indices,
+                           const double *data, bool directed, bool isWeighted) {
     // Validate sizes
     if (indptr == nullptr || indices == nullptr) {
         throw std::invalid_argument("null CSR pointer passed to fromCSRArrays");
     }
 
-    if (static_cast<size_t>(nRows + 1) > indptrSize) {
-        throw std::invalid_argument("indptr size is too small for nRows");
-    }
     // In CSR format the number of stored entries (nnz) is the last row pointer.
     size_t nnz = static_cast<size_t>(indptr[nRows]);
 
