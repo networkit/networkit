@@ -452,52 +452,56 @@ cdef class Graph:
 			Check if edge is already present in the graph. If detected, do not insert the edge. Default: False
 		"""
 
-		cdef cnp.ndarray[cnp.npy_intp, ndim = 1, mode = 'c'] row, col
-		cdef cnp.ndarray[cnp.npy_double, ndim = 1, mode = 'c'] data
+		cdef cnp.ndarray[cnp.npy_intp, ndim = 1, mode = 'c'] row_pt, col_pt
+		cdef cnp.ndarray[cnp.npy_float64, ndim = 1, mode = 'c'] data
 		cdef cnp.ndarray[cnp.npy_int32, ndim = 1, mode = 'c'] row_32t, col_32t
+		cdef cnp.ndarray[cnp.npy_int16, ndim = 1, mode = 'c'] row_16t, col_16t
+		cdef cnp.ndarray[cnp.npy_int8, ndim = 1, mode = 'c'] row_8t, col_8t
+
+		def dtyped_row_col(row, col):
+			if row.dtype == np.intp:
+				row_pt = row.view(np.intp)
+				col_pt = col.view(np.intp)
+				return row_pt, col_pt
+			elif row.dtype == np.int32:
+				row_32t = row.view(np.int32)
+				col_32t = col.view(np.int32)
+				return row_32t, col_32t
+			elif row.dtype == np.int16:
+				row_16t = row.view(np.int16)
+				col_16t = col.view(np.int16)
+				return row_16t, col_16t
+			elif row.dtype == np.int8:
+				row_8t = row.view(np.int8)
+				col_8t = col.view(np.int8)
+				return row_8t, col_8t
+			return row, col
 
 		if isinstance(inputData, coo_matrix):
 			try:
-				if inputData.row.dtype == np.int32:
-					row_32t = inputData.row.view(np.int32)
-					col_32t = inputData.col.view(np.int32)
-					data = np.asarray(inputData.data, dtype = np.double, order = 'C')
-					if addMissing:
-						for i in range(len(inputData.row)):
-							# Calling Python interface of addEdge due to addMissing support. 
-							self.addEdge(row_32t[i], col_32t[i], data[i], addMissing, checkMultiEdge)
-					else:	
-						for i in range(len(inputData.row)):
-							# Calling Cython interface of addEdge directly for higher performance. 
-							self._this.addEdge(row_32t[i], col_32t[i], data[i], checkMultiEdge)
-				else:
-					row = inputData.row.view(np.intp)
-					col = inputData.col.view(np.intp)
-					data = np.asarray(inputData.data, dtype = np.double, order = 'C')
-					if addMissing:
-						for i in range(len(inputData.row)):
-							# Calling Python interface of addEdge due to addMissing support. 
-							self.addEdge(row[i], col[i], data[i], addMissing, checkMultiEdge)
-					else:	
-						for i in range(len(inputData.row)):
-							# Calling Cython interface of addEdge directly for higher performance. 
-							self._this.addEdge(row[i], col[i], data[i], checkMultiEdge)
-				
+				row, col = dtyped_row_col(inputData.row, inputData.col)
+				data = np.asarray(inputData[0], dtype=inputData[0].dtype, order='C')
+				if addMissing:	
+					for i in range(len(inputData.row)):
+						# Calling Python interface of addEdge due to addMissing support. 
+						self.addEdge(row[i], col[i], data[i], addMissing, checkMultiEdge)
+				else:	
+					for i in range(len(inputData.row)):
+						# Calling Cython interface of addEdge directly for higher performance. 
+						self._this.addEdge(row[i], col[i], data[i], checkMultiEdge)
 			except (TypeError, ValueError) as e:
 				raise TypeError('invalid input format') from e
 
 		elif isinstance(inputData, tuple) and len(inputData) == 2:
 			if isinstance(inputData[1], tuple):
 				try:
-					row = inputData[1][0].view(np.intp)
-					col = inputData[1][1].view(np.intp)
-					data = np.asarray(inputData[0], dtype=np.double, order='C')
+					row, col = dtyped_row_col(inputData[1][0], inputData[1][1])
+					data = np.asarray(inputData[0], dtype=inputData[0].dtype, order='C')
 				except (TypeError, ValueError) as e:
 					raise TypeError('invalid input format') from e
 			else:
 				try:
-					row = inputData[0].view(np.intp)
-					col = inputData[1].view(np.intp)
+					row, col = dtyped_row_col(inputData[0], inputData[1])
 					data = np.ones(len(row), dtype = np.double)
 				except (TypeError, ValueError) as e:
 					raise TypeError('invalid input format') from e
