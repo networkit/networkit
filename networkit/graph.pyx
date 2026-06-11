@@ -453,10 +453,12 @@ cdef class Graph:
 		"""
 
 		cdef cnp.ndarray[cnp.npy_intp, ndim = 1, mode = 'c'] row_pt, col_pt
-		cdef cnp.ndarray[cnp.npy_float64, ndim = 1, mode = 'c'] data
 		cdef cnp.ndarray[cnp.npy_int32, ndim = 1, mode = 'c'] row_32t, col_32t
 		cdef cnp.ndarray[cnp.npy_int16, ndim = 1, mode = 'c'] row_16t, col_16t
 		cdef cnp.ndarray[cnp.npy_int8, ndim = 1, mode = 'c'] row_8t, col_8t
+
+		cdef cnp.ndarray[cnp.npy_float64, ndim = 1, mode = 'c'] data_pt
+		cdef cnp.ndarray[cnp.npy_float32, ndim = 1, mode = 'c'] data_32t
 
 		def dtyped_row_col(row, col):
 			if row.dtype == np.intp:
@@ -477,6 +479,17 @@ cdef class Graph:
 				return row_8t, col_8t
 			return row, col
 
+		def dtyped_data(data):
+			if data.dtype == np.float64:
+				data_pt = data.view(np.float64)
+				return data_pt
+			elif data.dtype == np.float32:
+				data_32t = data.view(np.float32)
+				return data_32t
+			else:
+				raise TypeError("Unsupported data type for edge weights. Supported types are np.float32 and np.float64.")
+			return data
+
 		if isinstance(inputData, coo_matrix):
 			try:
 				row, col = dtyped_row_col(inputData.row, inputData.col)
@@ -496,7 +509,7 @@ cdef class Graph:
 			if isinstance(inputData[1], tuple):
 				try:
 					row, col = dtyped_row_col(inputData[1][0], inputData[1][1])
-					data = np.asarray(inputData[0], dtype=inputData[0].dtype, order='C')
+					data = dtyped_data(inputData[0])
 				except (TypeError, ValueError) as e:
 					raise TypeError('invalid input format') from e
 			else:
