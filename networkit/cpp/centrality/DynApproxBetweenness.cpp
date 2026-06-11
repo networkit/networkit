@@ -165,10 +165,10 @@ void DynApproxBetweenness::updateBatch(std::span<const GraphEvent> batch) {
         for (node z : sampledPaths[i]) {
             scoreData[z] -= 1 / (double)r;
         }
+        sampledPaths[i].clear();
         if (sssp[i]->distance(v[i]) == infDist) // Skip unreachable node v[i]
             continue;
         // sample a new shortest path
-        sampledPaths[i].clear();
         node t = v[i];
         while (t != u[i]) {
             // sample z in P_u(t) with probability sigma_uz / sigma_us
