@@ -18,6 +18,7 @@
 #include <omp.h>
 #include <queue>
 #include <ranges>
+#include <span>
 #include <sstream>
 #include <stack>
 #include <stdexcept>
@@ -881,12 +882,27 @@ public:
     };
 
     /**
-     * Create a Graph from raw CSR arrays. This accepts pointers to the
-     * compressed row index array, column indices array and non-zero values
-     * and copies them efficiently into internal storage.
+     * Create a Graph from CSR (compressed sparse row) arrays. The spans are
+     * views over the compressed row-pointer array (@a indptr), the column
+     * indices array (@a indices) and the non-zero values (@a data). The number
+     * of rows is derived from @a indptr, whose length is the row count plus
+     * one. The referenced data is copied into internal storage, so the spans
+     * need not outlive the call.
      */
-    static Graph fromCSRArrays(count nRows, const index *indptr, const index *indices,
-                               const double *data, bool directed = true, bool isWeighted = false);
+    static Graph fromCSR(std::span<const index> indptr, std::span<const index> indices,
+                         std::span<const double> data, bool directed = true,
+                         bool isWeighted = false);
+
+    /**
+     * Raw-pointer overload of fromCSR(), forwarding to it via std::span.
+     *
+     * This exists ONLY for Cython interoperability: Cython cannot yet
+     * construct a std::span directly (support is planned for Cython 3.3.0).
+     * Prefer fromCSR() in C++ code; do not use this function on its own.
+     */
+    static Graph _fromCSRRaw(const index *indptr, std::size_t indptrSize, const index *indices,
+                             std::size_t indicesSize, const double *data, std::size_t dataSize,
+                             bool directed = true, bool isWeighted = false);
 
     /**
      * Reserves memory in the node's edge containers for undirected graphs.

@@ -991,15 +991,24 @@ bool Graph::checkConsistency() const {
     return noMultiEdges && correctNodeUpperbound && correctNumberOfEdges;
 }
 
-Graph Graph::fromCSRArrays(count nRows, const index *indptr, const index *indices,
-                           const double *data, bool directed, bool isWeighted) {
-    // Validate sizes
-    if (indptr == nullptr || indices == nullptr) {
-        throw std::invalid_argument("null CSR pointer passed to fromCSRArrays");
+Graph Graph::fromCSR(std::span<const index> indptr, std::span<const index> indices,
+                     std::span<const double> data, bool directed, bool isWeighted) {
+    // In CSR format indptr has nRows + 1 entries, so the number of rows is
+    // derived directly from its length.
+    if (indptr.empty()) {
+        throw std::invalid_argument("indptr must have at least one entry");
     }
+    count nRows = static_cast<count>(indptr.size() - 1);
 
     // In CSR format the number of stored entries (nnz) is the last row pointer.
     size_t nnz = static_cast<size_t>(indptr[nRows]);
+
+    if (indices.size() != nnz) {
+        throw std::invalid_argument("indices size does not match indptr[nRows]");
+    }
+    if (isWeighted && data.size() != nnz) {
+        throw std::invalid_argument("data size does not match indptr[nRows]");
+    }
 
     // Create the Graph with reserved structures
     Graph graph(nRows, isWeighted, directed);
@@ -1031,9 +1040,11 @@ Graph Graph::fromCSRArrays(count nRows, const index *indptr, const index *indice
         index rowStart = indptr[i];
         index rowEnd = indptr[i + 1];
         if (rowEnd > rowStart) {
-            std::copy(indices + rowStart, indices + rowEnd, graph.outEdges[i].begin());
+            std::copy(indices.data() + rowStart, indices.data() + rowEnd,
+                      graph.outEdges[i].begin());
             if (isWeighted) {
-                std::copy(data + rowStart, data + rowEnd, graph.outEdgeWeights[i].begin());
+                std::copy(data.data() + rowStart, data.data() + rowEnd,
+                          graph.outEdgeWeights[i].begin());
             }
         }
     }
@@ -1081,6 +1092,19 @@ Graph Graph::fromCSRArrays(count nRows, const index *indptr, const index *indice
     graph.m = edgeCount;
 
     return graph;
+}
+
+Graph Graph::_fromCSRRaw(const index *indptr, std::size_t indptrSize, const index *indices,
+                         std::size_t indicesSize, const double *data, std::size_t dataSize,
+                         bool directed, bool isWeighted) {
+    // This helper only adapts raw pointers to std::span for callers (e.g. Cython)
+    // that cannot construct a span directly; the real work happens in fromCSR().
+    if (indptr == nullptr || indices == nullptr) {
+        throw std::invalid_argument("null CSR pointer passed to _fromCSRRaw");
+    }
+    return fromCSR(std::span<const index>(indptr, indptrSize),
+                   std::span<const index>(indices, indicesSize),
+                   std::span<const double>(data, dataSize), directed, isWeighted);
 }
 
 } /* namespace NetworKit */

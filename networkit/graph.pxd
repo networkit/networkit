@@ -111,10 +111,9 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		_EdgeStringAttribute getEdgeStringAttribute(string) except +
 		void detachEdgeAttribute(string) except +
 		@staticmethod
-		_Graph fromCSRArrays(count nRows,
-					const index *indptr,
-					const index *indices,
-					const double *data,
+		_Graph _fromCSRRaw(const index *indptr, size_t indptrSize,
+					const index *indices, size_t indicesSize,
+					const double *data, size_t dataSize,
 					bool_t directed, bool_t weighted) except +
 
 cdef extern from "<networkit/graph/Graph.hpp>":

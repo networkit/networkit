@@ -7,8 +7,6 @@ from scipy.sparse import coo_matrix
 cimport numpy as cnp
 cnp.import_array()
 
-from libcpp.vector cimport vector
-
 from .base import Algorithm
 from .helpers import stdstring, pystring
 from .traversal import Traversal
@@ -1210,7 +1208,6 @@ def GraphFromCsr(csr, directed=True, weighted=False):
 	cdef count nRows = <count>csr.shape[0]
 	cdef count nCols = <count>csr.shape[1]
 
-	# Build C++ vectors
 	# Use raw buffer pointers and call the fast C++ entrypoint to avoid python loops
 	cdef cnp.ndarray indptr_arr = indptr
 	cdef cnp.ndarray indices_arr = indices
@@ -1225,10 +1222,16 @@ def GraphFromCsr(csr, directed=True, weighted=False):
 	cdef const index* indices_ptr = <const index*> indices_arr.data
 	cdef const double* data_ptr = <const double*> data_arr.data
 
-	cdef _Graph tmp = _Graph.fromCSRArrays(<count>nRows,
-				indptr_ptr,
-				indices_ptr,
-				data_ptr,
+	cdef size_t indptr_size = indptr_arr.shape[0]
+	cdef size_t indices_size = indices_arr.shape[0]
+	cdef size_t data_size = data_arr.shape[0]
+
+	# _fromCSRRaw is a Cython-only helper that forwards to Graph::fromCSR via
+	# std::span; Cython cannot construct a std::span directly yet.
+	cdef _Graph tmp = _Graph._fromCSRRaw(
+				indptr_ptr, indptr_size,
+				indices_ptr, indices_size,
+				data_ptr, data_size,
 				<bool_t>directed, <bool_t>weighted)
 	cdef Graph G = Graph(nRows, weighted, directed)
 	G.setThis(tmp)
