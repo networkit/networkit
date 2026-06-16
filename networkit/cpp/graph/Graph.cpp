@@ -991,23 +991,23 @@ bool Graph::checkConsistency() const {
     return noMultiEdges && correctNodeUpperbound && correctNumberOfEdges;
 }
 
-Graph Graph::fromCSR(std::span<const index> indptr, std::span<const index> indices,
-                     std::span<const double> data, bool directed, bool isWeighted) {
-    // In CSR format indptr has nRows + 1 entries, so the number of rows is
+Graph Graph::fromCSR(std::span<const index> rowIdxView, std::span<const index> columnIdxView,
+                     std::span<const double> nonZerosView, bool directed, bool isWeighted) {
+    // In CSR format rowIdxView has nRows + 1 entries, so the number of rows is
     // derived directly from its length.
-    if (indptr.empty()) {
-        throw std::invalid_argument("indptr must have at least one entry");
+    if (rowIdxView.empty()) {
+        throw std::invalid_argument("rowIdxView must have at least one entry");
     }
-    count nRows = static_cast<count>(indptr.size() - 1);
+    count nRows = static_cast<count>(rowIdxView.size() - 1);
 
     // In CSR format the number of stored entries (nnz) is the last row pointer.
-    size_t nnz = static_cast<size_t>(indptr[nRows]);
+    size_t nnz = static_cast<size_t>(rowIdxView[nRows]);
 
-    if (indices.size() != nnz) {
-        throw std::invalid_argument("indices size does not match indptr[nRows]");
+    if (columnIdxView.size() != nnz) {
+        throw std::invalid_argument("columnIdxView size does not match rowIdxView[nRows]");
     }
-    if (isWeighted && data.size() != nnz) {
-        throw std::invalid_argument("data size does not match indptr[nRows]");
+    if (isWeighted && nonZerosView.size() != nnz) {
+        throw std::invalid_argument("nonZerosView size does not match rowIdxView[nRows]");
     }
 
     // Create the Graph with reserved structures
@@ -1024,10 +1024,10 @@ Graph Graph::fromCSR(std::span<const index> indptr, std::span<const index> indic
     }
 
     for (index i = 0; i < nRows; ++i) {
-        index rowStart = indptr[i];
-        index rowEnd = indptr[i + 1];
+        index rowStart = rowIdxView[i];
+        index rowEnd = rowIdxView[i + 1];
         if (rowEnd < rowStart) {
-            throw std::invalid_argument("indptr must be non-decreasing");
+            throw std::invalid_argument("rowIdxView must be non-decreasing");
         }
         rowSizes[i] = static_cast<size_t>(rowEnd - rowStart);
         graph.outEdges[i].resize(rowSizes[i]);
@@ -1035,15 +1035,15 @@ Graph Graph::fromCSR(std::span<const index> indptr, std::span<const index> indic
             graph.outEdgeWeights[i].resize(rowSizes[i]);
     }
 
-#pragma omp parallel for schedule(static)
+#pragma omp parallel for schedule(guided)
     for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
-        index rowStart = indptr[i];
-        index rowEnd = indptr[i + 1];
+        index rowStart = rowIdxView[i];
+        index rowEnd = rowIdxView[i + 1];
         if (rowEnd > rowStart) {
-            std::copy(indices.data() + rowStart, indices.data() + rowEnd,
+            std::copy(columnIdxView.data() + rowStart, columnIdxView.data() + rowEnd,
                       graph.outEdges[i].begin());
             if (isWeighted) {
-                std::copy(data.data() + rowStart, data.data() + rowEnd,
+                std::copy(nonZerosView.data() + rowStart, nonZerosView.data() + rowEnd,
                           graph.outEdgeWeights[i].begin());
             }
         }
@@ -1060,7 +1060,7 @@ Graph Graph::fromCSR(std::span<const index> indptr, std::span<const index> indic
 
         std::vector<size_t> inDeg(nRows, 0);
         for (size_t k = 0; k < nnz; ++k) {
-            index j = indices[k];
+            index j = columnIdxView[k];
             ++inDeg[j];
         }
 
@@ -1075,16 +1075,16 @@ Graph Graph::fromCSR(std::span<const index> indptr, std::span<const index> indic
         for (index j = 0; j < nRows; ++j)
             inPos[j].store(0);
 
-#pragma omp parallel for schedule(static)
+#pragma omp parallel for schedule(guided)
         for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
-            index rowStart = indptr[i];
-            index rowEnd = indptr[i + 1];
+            index rowStart = rowIdxView[i];
+            index rowEnd = rowIdxView[i + 1];
             for (index k = rowStart; k < rowEnd; ++k) {
-                index j = indices[k];
+                index j = columnIdxView[k];
                 size_t pos = inPos[j].fetch_add(1);
                 graph.inEdges[j][pos] = static_cast<node>(i);
                 if (isWeighted)
-                    graph.inEdgeWeights[j][pos] = data[k];
+                    graph.inEdgeWeights[j][pos] = nonZerosView[k];
             }
         }
     }
@@ -1094,17 +1094,20 @@ Graph Graph::fromCSR(std::span<const index> indptr, std::span<const index> indic
     return graph;
 }
 
-Graph Graph::_fromCSRRaw(const index *indptr, std::size_t indptrSize, const index *indices,
-                         std::size_t indicesSize, const double *data, std::size_t dataSize,
-                         bool directed, bool isWeighted) {
+Graph Graph::_fromCSRRaw(const index *rowIdxPtr, std::size_t rowIdxSize, const index *columnIdxPtr,
+                         std::size_t columnIdxSize, const double *nonZerosPtr,
+                         std::size_t nonZerosSize, bool directed, bool isWeighted) {
     // This helper only adapts raw pointers to std::span for callers (e.g. Cython)
     // that cannot construct a span directly; the real work happens in fromCSR().
-    if (indptr == nullptr || indices == nullptr) {
+    if (rowIdxPtr == nullptr || columnIdxPtr == nullptr) {
         throw std::invalid_argument("null CSR pointer passed to _fromCSRRaw");
     }
-    return fromCSR(std::span<const index>(indptr, indptrSize),
-                   std::span<const index>(indices, indicesSize),
-                   std::span<const double>(data, dataSize), directed, isWeighted);
+    if (isWeighted && nonZerosPtr == nullptr) {
+        throw std::invalid_argument("null nonZeros pointer passed to _fromCSRRaw for weighted graph");
+    }
+    return fromCSR(std::span<const index>(rowIdxPtr, rowIdxSize),
+                   std::span<const index>(columnIdxPtr, columnIdxSize),
+                   std::span<const double>(nonZerosPtr, nonZerosSize), directed, isWeighted);
 }
 
 } /* namespace NetworKit */

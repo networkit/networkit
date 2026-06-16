@@ -24,14 +24,6 @@ cdef extern from "<networkit/Globals.hpp>" namespace "NetworKit":
 
 	index _none "NetworKit::none"
 
-cdef extern from "<networkit/algebraic/CSRGeneralMatrix.hpp>" namespace "NetworKit":
-
-	cdef cppclass CSRGeneralMatrix[T]:
-		CSRGeneralMatrix() except +
-		CSRGeneralMatrix(count dimension) except +
-		CSRGeneralMatrix(count nRows, count nCols) except +
-		CSRGeneralMatrix(count nRows, count nCols, const vector[index] &rowIdx, const vector[index] &columnIdx, const vector[double] &nonZeros) except +
-
 cdef extern from "<networkit/graph/Graph.hpp>":
 
 	cdef struct Edge "NetworKit::Edge":
@@ -111,9 +103,9 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		_EdgeStringAttribute getEdgeStringAttribute(string) except +
 		void detachEdgeAttribute(string) except +
 		@staticmethod
-		_Graph _fromCSRRaw(const index *indptr, size_t indptrSize,
-					const index *indices, size_t indicesSize,
-					const double *data, size_t dataSize,
+		_Graph _fromCSRRaw(const index *rowIdxPtr, size_t rowIdxSize,
+					const index *columnIdxPtr, size_t columnIdxSize,
+					const double *nonZerosPtr, size_t nonZerosSize,
 					bool_t directed, bool_t weighted) except +
 
 cdef extern from "<networkit/graph/Graph.hpp>":

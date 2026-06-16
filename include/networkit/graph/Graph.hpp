@@ -883,14 +883,14 @@ public:
 
     /**
      * Create a Graph from CSR (compressed sparse row) arrays. The spans are
-     * views over the compressed row-pointer array (@a indptr), the column
-     * indices array (@a indices) and the non-zero values (@a data). The number
-     * of rows is derived from @a indptr, whose length is the row count plus
-     * one. The referenced data is copied into internal storage, so the spans
-     * need not outlive the call.
+     * views over the compressed row-pointer array (@a rowIdxView), the column
+     * indices array (@a columnIdxView) and the non-zero values (@a
+     * nonZerosView). The number of nodes is derived from @a rowIdxView, whose
+     * length is the node count plus one. The referenced data is copied into
+     * internal storage, so the spans need not outlive the call.
      */
-    static Graph fromCSR(std::span<const index> indptr, std::span<const index> indices,
-                         std::span<const double> data, bool directed = true,
+    static Graph fromCSR(std::span<const index> rowIdxView, std::span<const index> columnIdxView,
+                         std::span<const double> nonZerosView, bool directed = true,
                          bool isWeighted = false);
 
     /**
@@ -900,8 +900,9 @@ public:
      * construct a std::span directly (support is planned for Cython 3.3.0).
      * Prefer fromCSR() in C++ code; do not use this function on its own.
      */
-    static Graph _fromCSRRaw(const index *indptr, std::size_t indptrSize, const index *indices,
-                             std::size_t indicesSize, const double *data, std::size_t dataSize,
+    static Graph _fromCSRRaw(const index *rowIdxPtr, std::size_t rowIdxSize,
+                             const index *columnIdxPtr, std::size_t columnIdxSize,
+                             const double *nonZerosPtr, std::size_t nonZerosSize,
                              bool directed = true, bool isWeighted = false);
 
     /**
