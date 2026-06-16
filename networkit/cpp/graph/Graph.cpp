@@ -1103,7 +1103,8 @@ Graph Graph::_fromCSRRaw(const index *rowIdxPtr, std::size_t rowIdxSize, const i
         throw std::invalid_argument("null CSR pointer passed to _fromCSRRaw");
     }
     if (isWeighted && nonZerosPtr == nullptr) {
-        throw std::invalid_argument("null nonZeros pointer passed to _fromCSRRaw for weighted graph");
+        throw std::invalid_argument(
+            "null nonZeros pointer passed to _fromCSRRaw for weighted graph");
     }
     return fromCSR(std::span<const index>(rowIdxPtr, rowIdxSize),
                    std::span<const index>(columnIdxPtr, columnIdxSize),
