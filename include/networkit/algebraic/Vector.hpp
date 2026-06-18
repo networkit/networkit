@@ -304,7 +304,7 @@ Matrix Vector::outerProduct(const Vector &v1, const Vector &v2) {
         for (index j = 0; j < m; ++j) {
             const double result = vi * v2[j];
             if (std::fabs(result) >= FLOAT_EPSILON) {
-                triplets.emplace_back(i, j, result);
+                triplets.push_back({i, j, result});
             }
         }
     }
