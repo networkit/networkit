@@ -81,6 +81,12 @@ public:
     double length() const;
 
     /**
+     * Calculates and returns the squared Euclidean length of this vector
+     * @return The squared Euclidean length of this vector.
+     */
+    double length2() const;
+
+    /**
      * Calculates and returns the arithmetic mean of this vector
      * @return The arithmetic mean of this vector.
      */

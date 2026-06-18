@@ -35,6 +35,10 @@ double Vector::length() const {
     return std::sqrt(innerProduct(*this, *this));
 }
 
+double Vector::length2() const {
+    return innerProduct(*this, *this);
+}
+
 double Vector::mean() const {
     double sum = 0.;
     const auto n = getDimension();
