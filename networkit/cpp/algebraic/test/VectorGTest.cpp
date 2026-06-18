@@ -78,6 +78,7 @@ TEST(VectorGTest, testLength) {
     double result = 0.0;
     v.forElements([&](const double &value) { result += value * value; });
 
+    EXPECT_EQ(result, v.length2());
     EXPECT_EQ(std::sqrt(result), v.length());
 }
 
