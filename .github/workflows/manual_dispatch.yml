@@ -1,0 +1,136 @@
+name: Build wheels
+
+on:
+  workflow_dispatch:
+
+# Default parameters for all builds
+env:
+  ARTIFACT_RETENTION: '1'
+
+jobs:
+  cpython-linux-x86_64:
+    name: 'Linux CPython (${{ matrix.cibw_archs }}, ${{ matrix.manylinux_image }})'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        cibw_archs: ["x86_64"]
+        manylinux_image: ["manylinux_2_28"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-python@v5
+        name: Install Python
+        with:
+          python-version: '3.12'
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v3.3.0
+        env:
+          CIBW_BEFORE_BUILD: pip install cython auditwheel --upgrade
+          CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
+          CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
+          CIBW_BUILD: 'cp314-*'
+          CIBW_SKIP: "pp* *-musllinux_*"
+          CIBW_TEST_COMMAND: python3 -c 'import networkit'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp314-${{ github.run_id }}'
+          path: ./wheelhouse/*cp314*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+
+  cpython-linux-aarch64:
+    name: 'Linux CPython (${{ matrix.cibw_archs }}, ${{ matrix.manylinux_image }})'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        cibw_archs: ["aarch64"]
+        manylinux_image: ["manylinux_2_28"]
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: all
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-python@v5
+        name: Install Python
+        with:
+          python-version: '3.12'
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v3.3.0
+        env:
+          CIBW_BEFORE_BUILD: pip install cython
+          CIBW_MANYLINUX_AARCH64_IMAGE: ${{ matrix.manylinux_image }}
+          CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
+          CIBW_PLATFORM: ${{ 'linux' }}
+          CIBW_BUILD: 'cp314-*'
+          CIBW_SKIP: "*-musllinux_*"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp314-${{ github.run_id }}'
+          path: ./wheelhouse/*cp314*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+
+  cpython-macos:
+    name: 'macOS CPython  (${{ matrix.buildplat[1] }})'
+    runs-on: ${{ matrix.buildplat[0] }}
+    strategy:
+      matrix:
+        buildplat:
+        - [macos-latest, arm64, NETWORKIT_OSX_CROSSBUILD=ON]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-python@v5
+        name: Install Python
+        with:
+          python-version: '3.12'
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v3.3.0
+        env:
+          CIBW_BEFORE_BUILD: 
+            pip install cython &&
+            brew install libomp ninja
+          CIBW_ARCHS_MACOS: ${{ matrix.buildplat[1] }}
+          CIBW_BUILD: 'cp314-*'
+          CIBW_SKIP: "pp* *-musllinux_*"
+          CIBW_TEST_COMMAND: python3 -c 'import networkit'
+          CIBW_TEST_SKIP: "*-macosx_x86_64 *-macosx_universal2:x86_64"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'macos-${{ matrix.buildplat[1] }}-cp314-${{ github.run_id }}'
+          path: ./wheelhouse/*cp314*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+
+
+  cpython-windows:
+    name: 'Windows CPython (${{ matrix.cibw_archs }})'
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        cibw_archs: [amd64]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Setup devCmd (vstools)
+        uses: ilammy/msvc-dev-cmd@v1
+      - uses: actions/setup-python@v5
+        name: Install Python
+        with:
+          python-version: '3.12'
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v3.3.0
+        env:
+          CIBW_BEFORE_BUILD: pip install cython ipython
+          CIBW_ARCHS: "AMD64"
+          CIBW_BUILD: 'cp314-*'
+          CIBW_SKIP: pp*
+          CIBW_TEST_COMMAND: python -c "import networkit"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'win-${{ matrix.cibw_archs }}-cp314-${{ github.run_id }}'
+          path: ./wheelhouse/*cp314*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
