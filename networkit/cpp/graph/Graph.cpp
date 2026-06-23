@@ -8,6 +8,7 @@
  */
 
 #include <atomic>
+#include <cassert>
 #include <cmath>
 #include <map>
 #include <random>
@@ -1026,9 +1027,7 @@ Graph Graph::fromCSR(std::span<const index> rowIdxView, std::span<const index> c
     for (index i = 0; i < nRows; ++i) {
         index rowStart = rowIdxView[i];
         index rowEnd = rowIdxView[i + 1];
-        if (rowEnd < rowStart) {
-            throw std::invalid_argument("rowIdxView must be non-decreasing");
-        }
+        assert(rowEnd >= rowStart && "rowIdxView must be non-decreasing");
         rowSizes[i] = static_cast<size_t>(rowEnd - rowStart);
         graph.outEdges[i].resize(rowSizes[i]);
         if (isWeighted)
