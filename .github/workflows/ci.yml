@@ -145,8 +145,13 @@ jobs:
     runs-on: macos-${{ matrix.os }}
     strategy:
       matrix:
-        os: ['latest'] # llvm and gcc are only tested on arm based machines
-        compiler: ['llvm-20', 'gcc-15']
+        # Temporary: GCC 15 currently fails to compile macOS 26 SDK Mach headers
+        # included by GoogleTest, so keep it on the newest known-good macOS image.
+        include:
+          - os: 'latest'
+            compiler: 'llvm-20'
+          - os: '15'
+            compiler: 'gcc-15'
     steps:
       - name: Install prerequisites
         run: |
