@@ -184,12 +184,11 @@ bool DHBGraph::addEdge(node const u, node const v, edgeweight const ew, edgeid c
     bool is_inserted_out = false;
     bool is_inserted = false;
 
-    // Insert edges depending on whether the graph is directed or undirected
-    if (!directed) {
-        is_inserted_out = m_dhb_graph.insert(u, v, edge_data, do_update);
-        is_inserted_in = m_dhb_graph.insert(v, u, edge_data, do_update);
-    } else {
+    if (directed) {
         is_inserted = m_dhb_graph.insert(u, v, edge_data, do_update);
+    } else {
+        is_inserted_in = m_dhb_graph.insert(v, u, edge_data, do_update);
+        is_inserted_out = m_dhb_graph.insert(u, v, edge_data, do_update);
     }
 
     bool const undirected_insertion_success = is_inserted_in && is_inserted_out && !directed;
