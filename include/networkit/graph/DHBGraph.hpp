@@ -1272,7 +1272,7 @@ public:
      *
      * This function is not supported for DHB. Please use getIthNeighborWithWeight(node u, index i).
      */
-    std::pair<node, edgeweight> getIthNeighborWithWeight(Unsafe, node u, index i) const;
+    std::pair<node, edgeweight> getIthNeighborWithWeight(Unsafe, node u, index i) const = delete;
 
     /**
      * Get i-th (outgoing) neighbor of @a u and the corresponding edge id.
