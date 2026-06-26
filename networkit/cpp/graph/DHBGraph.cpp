@@ -313,6 +313,9 @@ void DHBGraph::removeAllEdges() {
     m = 0;
     storedNumberOfSelfLoops = 0;
     omega = 0;
+
+    nodeAttributeMap = AttributeMap<PerNode, DHBGraph>(this);
+    edgeAttributeMap = AttributeMap<PerEdge, DHBGraph>(this);
 }
 
 void DHBGraph::removeSelfLoops() {
