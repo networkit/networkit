@@ -280,11 +280,12 @@ if(NETWORKIT_BUILD_CORE AND NETWORKIT_MONOLITH)
 		target_include_directories(networkit_state BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 	endif()
 
-	target_link_libraries(networkit PRIVATE 
-									dhb 
-									OpenMP::OpenMP_CXX 
-									PUBLIC 
-									tlx)
+	target_link_libraries(networkit PUBLIC
+		dhb
+		tlx
+		PRIVATE
+		OpenMP::OpenMP_CXX
+	)
 
 	set_target_properties(networkit PROPERTIES
 			CXX_STANDARD ${NETWORKIT_CXX_STANDARD}
