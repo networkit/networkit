@@ -34,11 +34,6 @@
 
 namespace NetworKit {
 
-// forward declaration to randomization/CurveballImpl.hpp
-namespace CurveballDetails {
-class CurveballMaterialization;
-}
-
 /**
  * @ingroup graph
  * A graph (with optional weights) and parallel iterator methods.
