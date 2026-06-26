@@ -479,9 +479,11 @@ std::pair<node, edgeweight> DHBGraph::getIthNeighborWithWeight(node u, index i) 
     if (!ithNeighborExists(u, i)) {
         return {none, defaultEdgeWeight};
     }
+
     node const neighbor = m_dhb_graph.neighbors(u)[i].vertex();
     double const weight =
         isWeighted() ? m_dhb_graph.neighbors(u)[i].data().weight : defaultEdgeWeight;
+
     return {neighbor, weight};
 }
 
