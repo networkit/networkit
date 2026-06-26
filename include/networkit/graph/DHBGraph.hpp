@@ -799,7 +799,9 @@ public:
      *
      * @return bool if edges have been indexed
      */
-    bool hasEdgeIds() const noexcept { return edgesIndexed; }
+    bool hasEdgeIds() const noexcept {
+        return edgesIndexed;
+    }
 
     /**
      * Get the id of the given edge.
@@ -832,7 +834,9 @@ public:
      * Get an upper bound for the edge ids in the graph.
      * @return An upper bound for the edge ids.
      */
-    index upperEdgeIdBound() const noexcept { return omega; }
+    index upperEdgeIdBound() const noexcept {
+        return omega;
+    }
 
     /**
      * Sort edges according to accending neighbors for all vertices.
@@ -867,21 +871,27 @@ public:
      * Set edge count of the graph to edges.
      * @param edges the edge count of a graph
      */
-    void setEdgeCount(Unsafe, count edges) { m = edges; }
+    void setEdgeCount(Unsafe, count edges) {
+        m = edges;
+    }
 
     /**
      * Set upper bound of edge count.
      *
      * @param newBound New upper edge id bound.
      */
-    void setUpperEdgeIdBound(Unsafe, edgeid newBound) { omega = newBound; }
+    void setUpperEdgeIdBound(Unsafe, edgeid newBound) {
+        omega = newBound;
+    }
 
     /**
      * Set the number of self-loops.
      *
      * @param loops New number of self-loops.
      **/
-    void setNumberOfSelfLoops(Unsafe, count loops) { storedNumberOfSelfLoops = loops; }
+    void setNumberOfSelfLoops(Unsafe, count loops) {
+        storedNumberOfSelfLoops = loops;
+    }
 
     /* NODE MODIFIERS */
 
@@ -947,7 +957,9 @@ public:
      * @note The existence of the node is not checked. Calling this function with a non-existing
      * node results in a segmentation fault. Node existence can be checked by calling hasNode(u).
      */
-    count degreeOut(node v) const { return degree(v); }
+    count degreeOut(node v) const {
+        return degree(v);
+    }
 
     /**
      * Check whether @a v is isolated, i.e. degree is 0.
@@ -1087,19 +1099,25 @@ public:
      * @return <code>true</code> if this graph supports edge weights other
      * than 1.0.
      */
-    bool isWeighted() const noexcept { return weighted; }
+    bool isWeighted() const noexcept {
+        return weighted;
+    }
 
     /**
      * Return @c true if this graph supports directed edges.
      * @return @c true if this graph supports directed edges.
      */
-    bool isDirected() const noexcept { return directed; }
+    bool isDirected() const noexcept {
+        return directed;
+    }
 
     /**
      * Return <code>true</code> if graph contains no nodes.
      * @return <code>true</code> if graph contains no nodes.
      */
-    bool isEmpty() const noexcept { return 0u == m_dhb_graph.vertices_count(); }
+    bool isEmpty() const noexcept {
+        return 0u == m_dhb_graph.vertices_count();
+    }
 
     /**
      * Return the number of nodes in the graph.
@@ -1119,7 +1137,9 @@ public:
      * @note This involves calculation, so store result if needed multiple
      * times.
      */
-    count numberOfSelfLoops() const noexcept { return storedNumberOfSelfLoops; }
+    count numberOfSelfLoops() const noexcept {
+        return storedNumberOfSelfLoops;
+    }
 
     /**
      * Get an upper bound for the node ids in the graph.
@@ -1181,21 +1201,27 @@ public:
      *
      * @return Iterator range over the nodes of the graph.
      */
-    NodeRange nodeRange() const noexcept { return NodeRange(*this); }
+    NodeRange nodeRange() const noexcept {
+        return NodeRange(*this);
+    }
 
     /**
      * Get an iterable range over the edges of the graph.
      *
      * @return Iterator range over the edges of the graph.
      */
-    EdgeRange edgeRange() const noexcept { return EdgeRange(*this); }
+    EdgeRange edgeRange() const noexcept {
+        return EdgeRange(*this);
+    }
 
     /**
      * Get an iterable range over the edges of the graph and their weights.
      *
      * @return Iterator range over the edges of the graph and their weights.
      */
-    EdgeWeightRange edgeWeightRange() const noexcept { return EdgeWeightRange(*this); }
+    EdgeWeightRange edgeWeightRange() const noexcept {
+        return EdgeWeightRange(*this);
+    }
 
     /**
      * Get an iterable range over the neighbors of @a.
