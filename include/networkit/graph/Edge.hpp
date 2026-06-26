@@ -18,10 +18,6 @@ struct Edge {
     }
 };
 
-/**
- * A weighted edge used for the graph constructor with
- * initializer list syntax.
- */
 struct WeightedEdge : Edge {
     edgeweight weight;
 
