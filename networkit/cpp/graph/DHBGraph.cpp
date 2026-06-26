@@ -13,10 +13,7 @@ namespace NetworKit {
 DHBGraph::DHBGraph(count n, bool weighted, bool directed, bool edgesIndexed)
     : weighted(weighted), directed(directed), m(0), storedNumberOfSelfLoops(0), omega(0),
       edgesIndexed(edgesIndexed), // edges are not indexed by default
-      nodeAttributeMap(this), edgeAttributeMap(this) {
-
-    m_dhb_graph = dhb::Matrix<EdgeData>(n);
-}
+      nodeAttributeMap(this), edgeAttributeMap(this), m_dhb_graph(dhb::Matrix<EdgeData>(n)) {}
 
 DHBGraph::DHBGraph(std::initializer_list<WeightedEdge> edges) : DHBGraph(0, true) {
     using namespace std;
