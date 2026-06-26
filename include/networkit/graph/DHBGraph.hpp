@@ -35,13 +35,21 @@
 namespace NetworKit {
 
 /**
- * @ingroup graph
- * A graph (with optional weights) and parallel iterator methods.
+ * @ingroup graph A dynamic graph data structure (with optional weights) and
+ * parallel iterator methods.
  *
+ * For a detailed description of DHB, refer to the paper: [A Fast Data Structure
+ * for Dynamic Graphs Based on Hash-Indexed Adjacency Blocks (2022):
+ * https://drops.dagstuhl.de/storage/00lipics/lipics-vol233-sea2022/LIPIcs.SEA.2022.11/LIPIcs.SEA.2022.11.pdf)
+ *
+ * @note The DHB graph wrapper is still experimental. We tried to align our
+ * interface with the Graph class, though it may not yet be an "ad-hoc
+ * replacement" class working with your client code as it did with Graph
+ * .
  * TODO:
- * - [ ] Review the passing by value semantics for all lambdas passed
- *       to a method such as f(L handle). Instead, we might want to pass
- *       all lambdas by rvalue-reference as in f(L&& handle).
+ * - [ ] Review the passing by value semantics for all lambdas passed to a
+ *       method such as f(L handle). Instead, we might want to pass all lambdas
+ *       by rvalue-reference as in f(L&& handle).
  */
 class DHBGraph final {
 
