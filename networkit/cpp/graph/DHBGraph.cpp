@@ -470,14 +470,14 @@ node DHBGraph::getIthNeighbor(node u, index i) const {
 
 edgeweight DHBGraph::getIthNeighborWeight(node u, index i) const {
     if (!ithNeighborExists(u, i)) {
-        return defaultEdgeWeight;
+        return nullWeight;
     }
     return isWeighted() ? m_dhb_graph.neighbors(u)[i].data().weight : defaultEdgeWeight;
 }
 
 std::pair<node, edgeweight> DHBGraph::getIthNeighborWithWeight(node u, index i) const {
     if (!ithNeighborExists(u, i)) {
-        return {none, defaultEdgeWeight};
+        return {none, nullWeight};
     }
 
     node const neighbor = m_dhb_graph.neighbors(u)[i].vertex();
@@ -493,6 +493,7 @@ std::pair<node, edgeid> DHBGraph::getIthNeighborWithId(node u, index i) const {
     if (!ithNeighborExists(u, i)) {
         return {none, none};
     }
+
     node const neighbor = m_dhb_graph.neighbors(u)[i].vertex();
     edgeid const id = m_dhb_graph.neighbors(u)[i].data().id;
     return {neighbor, id};

@@ -1263,18 +1263,18 @@ public:
      *
      * @param u Node.
      * @param i index; should be in [0, degreeOut(u))
-     * @return @a i-th (outgoing) neighbor of @a u, or @c none if no such
-     * neighbor exists.
+     * @return @a i-th (outgoing) neighbor of u, or none if no such neighbor
+     * exists.
      */
     node getIthNeighbor(node u, index i) const;
 
     /**
-     * Return the weight to the i-th (outgoing) neighbor of @a u.
+     * Return the weight to the i-th (outgoing) neighbor of u.
      *
      * @param u Node.
      * @param i index; should be in [0, degreeOut(u))
-     * @return @a edge weight to the i-th (outgoing) neighbor of @a u, or @c +inf if no such
-     * neighbor exists.
+     * @return @a edge weight to the i-th (outgoing) neighbor of u, or 0.0 if no
+     * such neighbor exists.
      */
     edgeweight getIthNeighborWeight(node u, index i) const;
 
@@ -1285,7 +1285,7 @@ public:
      * @param i index; should be in [0, degreeOut(u))
      * @return pair: (i-th (outgoing) neighbor of u, corresponding edge weight).
      * Edge weight is defaultEdgeWeight if unweighted. Finally, if neighbor i of
-     * vertex u does not exist: returns (index none, defaultEdgeWeight).
+     * vertex u does not exist: returns (index none, 0.0).
      */
     std::pair<node, edgeweight> getIthNeighborWithWeight(node u, index i) const;
 
