@@ -1148,10 +1148,9 @@ public:
     index upperNodeIdBound() const noexcept;
 
     /**
-     * Return edge weight of edge {@a u,@a v}. Returns 0 if edge does not
-     * exist.
-     * BEWARE: Running time is \Theta(1) for DHB implementation but \Theta(deg(u)) for fallback
-     * NetworKit graph DS.
+     * Retrieve the weight of an edge.
+     *
+     * BEWARE: Running time is \Theta(1) for DHB implementation.
      *
      * @param u Endpoint of edge.
      * @param v Endpoint of edge.
