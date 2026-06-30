@@ -30,11 +30,18 @@ using node = index;        ///< node indices are 0-based
 using edgeweight = double; ///< edge weight type
 using edgeid = index;      ///< edge id
 
-constexpr edgeweight defaultEdgeWeight = 1.0;
-constexpr edgeweight nullWeight = 0.0;
-constexpr index none = std::numeric_limits<index>::max(); ///< value for not existing nodes/edges
+inline constexpr edgeweight defaultEdgeWeight = 1.0;
+inline constexpr edgeweight nullWeight = 0.0;
+inline constexpr index none =
+    std::numeric_limits<index>::max(); ///< value for not existing nodes/edges
 
-constexpr double PI = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
+inline constexpr double PI =
+    3.141592653589793238462643383279502884197169399375105820974944592307816406286;
+
+template <class NodeT>
+inline constexpr NodeT NullNodeId = std::numeric_limits<NodeT>::max();
+
+inline constexpr edgeid nullEdgeId = std::numeric_limits<edgeid>::max();
 
 } // namespace NetworKit
 
