@@ -4,6 +4,8 @@
  *  Created on: Sep 16, 2013
  *      Author: Maximilian Vogel
  */
+#include <unordered_map>
+
 #include <gtest/gtest.h>
 
 #include <networkit/components/ConnectedComponents.hpp>

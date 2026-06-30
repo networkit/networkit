@@ -6,6 +6,7 @@
  */
 
 #include <list>
+#include <unordered_map>
 
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/linkprediction/KatzIndex.hpp>

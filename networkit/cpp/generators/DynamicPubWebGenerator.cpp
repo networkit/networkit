@@ -6,6 +6,7 @@
  */
 
 #include <map>
+#include <queue>
 
 #include <networkit/generators/DynamicPubWebGenerator.hpp>
 

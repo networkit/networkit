@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iomanip>
 #include <numeric>
+#include <unordered_map>
 
 #include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>

@@ -9,6 +9,7 @@
 #include <numeric>
 #include <omp.h>
 #include <queue>
+#include <stack>
 
 #include <networkit/algebraic/CSRMatrix.hpp>
 #include <networkit/auxiliary/Random.hpp>

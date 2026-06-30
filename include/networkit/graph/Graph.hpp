@@ -11,19 +11,14 @@
 #define NETWORKIT_GRAPH_GRAPH_HPP_
 
 #include <algorithm>
-#include <fstream>
 #include <functional>
-#include <memory>
 #include <numeric>
 #include <omp.h>
-#include <queue>
 #include <ranges>
 #include <sstream>
-#include <stack>
 #include <stdexcept>
 #include <type_traits>
 #include <typeindex>
-#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <vector>

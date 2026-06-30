@@ -9,6 +9,7 @@
  *
  */
 
+#include <unordered_map>
 #include <tlx/unused.hpp>
 
 #include <networkit/auxiliary/Log.hpp>

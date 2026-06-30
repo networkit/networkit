@@ -10,6 +10,7 @@
 #include <memory>
 #include <queue>
 #include <span>
+#include <stack>
 #include <unordered_set>
 
 #include <networkit/auxiliary/Log.hpp>

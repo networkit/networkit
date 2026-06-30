@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <omp.h>
+#include <queue>
 
 #include <networkit/reachability/AllSimplePaths.hpp>
 
