@@ -78,7 +78,7 @@ jobs:
     strategy:
       matrix:
         buildplat:
-        - [macos-latest, arm64, NETWORKIT_OSX_CROSSBUILD=ON]
+        - [macos-latest, arm64]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -90,7 +90,7 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v3.3.0
         env:
-          CIBW_BEFORE_BUILD: 
+          CIBW_BEFORE_BUILD:
             pip install cython &&
             brew install libomp ninja
           CIBW_ARCHS_MACOS: ${{ matrix.buildplat[1] }}
