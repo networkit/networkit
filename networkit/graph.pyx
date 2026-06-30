@@ -461,6 +461,8 @@ cdef class Graph:
 		cdef cnp.ndarray[cnp.npy_float32, ndim = 1, mode = 'c'] data_32t
 
 		def dtyped_row_col(row, col):
+			if row.dtype != col.dtype:
+				raise TypeError("Row and column indices must have the same data type.")
 			if row.dtype == np.intp:
 				row_pt = row.view(np.intp)
 				col_pt = col.view(np.intp)
@@ -477,6 +479,8 @@ cdef class Graph:
 				row_8t = row.view(np.int8)
 				col_8t = col.view(np.int8)
 				return row_8t, col_8t
+			else:
+				raise TypeError("Unsupported data type for row and column indices. Supported types are np.intp, np.int32, np.int16, and np.int8.")
 			return row, col
 
 		def dtyped_data(data):
