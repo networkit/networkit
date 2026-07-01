@@ -480,7 +480,7 @@ public:
     public:
         NeighborRange(const AdjListGraph &G, NodeT u) : G(&G), u(u) { assert(G.hasNode(u)); };
 
-        NeighborRange() : G(nullptr){};
+        NeighborRange() : G(nullptr) {};
 
         NeighborIterator begin() const {
             assert(G);
@@ -512,7 +512,7 @@ public:
     public:
         NeighborWeightRange(const AdjListGraph &G, NodeT u) : G(&G), u(u) { assert(G.hasNode(u)); };
 
-        NeighborWeightRange() : G(nullptr){};
+        NeighborWeightRange() : G(nullptr) {};
 
         NeighborWeightIterator begin() const {
             assert(G);
@@ -727,7 +727,7 @@ public:
           inEdgeIds(other.inEdgeIds), outEdgeIds(other.outEdgeIds),
           // call special constructors to copy attribute maps
           nodeAttributeMap(other.nodeAttributeMap, this),
-          edgeAttributeMap(other.edgeAttributeMap, this){};
+          edgeAttributeMap(other.edgeAttributeMap, this) {};
 
     /** move constructor */
     AdjListGraph(AdjListGraph &&other) noexcept

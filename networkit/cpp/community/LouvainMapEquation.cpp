@@ -212,7 +212,9 @@ count LouvainMapEquation::synchronousLocalMoving(std::vector<node> &nodes, count
 
 #ifndef NDEBUG
 #pragma omp single
-            { checkUpdatedCutsAndVolumesAgainstRecomputation(); }
+            {
+                checkUpdatedCutsAndVolumesAgainstRecomputation();
+            }
 // don't start the next round of moves, before the old ones were validated
 #pragma omp barrier
 #endif

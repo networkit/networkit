@@ -15,15 +15,18 @@ GroupClosenessGrowShrink::GroupClosenessGrowShrink(const Graph &G, const std::ve
                                                    bool extended, count insertions,
                                                    count maxIterations)
     : G(&G),
-      weightedImpl{G.isWeighted() ? std::make_unique<
-                       GroupClosenessGrowShrinkDetails::GroupClosenessGrowShrinkImpl<edgeweight>>(
-                       G, group, extended, insertions, maxIterations)
-                                  : nullptr},
-      unweightedImpl{G.isWeighted()
-                         ? nullptr
-                         : std::make_unique<
-                             GroupClosenessGrowShrinkDetails::GroupClosenessGrowShrinkImpl<count>>(
-                             G, group, extended, insertions, maxIterations)} {}
+      weightedImpl{
+          G.isWeighted()
+              ? std::make_unique<
+                    GroupClosenessGrowShrinkDetails::GroupClosenessGrowShrinkImpl<edgeweight>>(
+                    G, group, extended, insertions, maxIterations)
+              : nullptr},
+      unweightedImpl{
+          G.isWeighted()
+              ? nullptr
+              : std::make_unique<
+                    GroupClosenessGrowShrinkDetails::GroupClosenessGrowShrinkImpl<count>>(
+                    G, group, extended, insertions, maxIterations)} {}
 
 GroupClosenessGrowShrink::~GroupClosenessGrowShrink() = default;
 

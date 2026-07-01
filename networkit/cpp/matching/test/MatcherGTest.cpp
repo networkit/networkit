@@ -330,9 +330,8 @@ TEST_F(MatcherGTest, testDynBSuitorRemoveEdges) {
     dbsm.run();
 
     std::vector<GraphEvent> events;
-    G.forEdges([&](node u, node v) {
-        events.emplace_back(GraphEvent{GraphEvent::EDGE_REMOVAL, u, v});
-    });
+    G.forEdges(
+        [&](node u, node v) { events.emplace_back(GraphEvent{GraphEvent::EDGE_REMOVAL, u, v}); });
 
     for (auto &e : events) {
         G.removeEdge(e.u, e.v);

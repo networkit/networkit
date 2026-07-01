@@ -58,8 +58,8 @@ class GraphBuilder {
         node source;
         node destination;
         // HalfEdge(node source, node destination);
-        HalfEdge(){};
-        HalfEdge(node source, node destination) : source(source), destination(destination){};
+        HalfEdge() {};
+        HalfEdge(node source, node destination) : source(source), destination(destination) {};
     };
 
     std::vector<std::vector<std::vector<HalfEdge>>>
