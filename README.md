@@ -85,7 +85,7 @@ As both a production tool and a research testbed for algorithm engineering, Netw
 
 #### Python Module
 
-**For most users**, NetworKit can be installed directly via package managers with no additional requirements other than Python 3.9+.
+**For most users**, NetworKit can be installed directly via package managers with no additional requirements other than Python 3.10+.
 
 | Package Manager | Command |
 |-----------------|---------|
@@ -191,7 +191,7 @@ Building from source requires:
 
 - **C++ Compiler**: [g++] (&gt;= 10.0), [clang++] (&gt;= 11.0), or MSVC (&gt;= 14.30)
 - **OpenMP**: For parallelism (usually included with compiler)
-- **Python**: 3.9 or higher with development libraries
+- **Python**: 3.10 or higher with development libraries
   - Debian/Ubuntu: `apt-get install python3-dev`
   - RHEL/CentOS: `dnf install python3-devel`
   - Windows: [Official installer](https://www.python.org/downloads/windows/)
