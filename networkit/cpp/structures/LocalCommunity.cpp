@@ -1,3 +1,5 @@
+#include <unordered_map>
+
 #include <networkit/structures/LocalCommunity.hpp>
 
 namespace NetworKit {

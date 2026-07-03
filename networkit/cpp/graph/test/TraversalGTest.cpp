@@ -1,3 +1,6 @@
+#include <queue>
+#include <stack>
+
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/VectorComparator.hpp>

@@ -6,6 +6,7 @@
  */
 
 #include <fstream>
+#include <unordered_map>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Parallel.hpp>

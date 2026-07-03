@@ -8,6 +8,7 @@
 #include <cmath>
 #include <limits>
 #include <omp.h>
+#include <queue>
 #include <span>
 
 #include <networkit/auxiliary/PrioQueue.hpp>

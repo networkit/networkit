@@ -6,6 +6,7 @@
  */
 
 #include <limits>
+#include <queue>
 
 #include <networkit/distance/BidirectionalBFS.hpp>
 

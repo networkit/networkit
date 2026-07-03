@@ -5,6 +5,7 @@
  *      Author: ebergamini
  */
 
+#include <queue>
 #include <span>
 #include <vector>
 

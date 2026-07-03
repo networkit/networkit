@@ -5,6 +5,8 @@
  * Created on 17. Dezember 2016, 16:35
  */
 
+#include <queue>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/distance/AffectedNodes.hpp>
 #include <networkit/distance/BFS.hpp>

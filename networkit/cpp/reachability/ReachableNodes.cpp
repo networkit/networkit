@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cassert>
 #include <omp.h>
+#include <queue>
 
 #include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/components/StronglyConnectedComponents.hpp>
