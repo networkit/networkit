@@ -1,7 +1,12 @@
 #!/usr/bin/python3
 
-import shutil
 import sys
+
+if sys.version_info < (3, 10):
+    print("ERROR: NetworKit requires Python 3.10 or later.")
+    sys.exit(1)
+
+import shutil
 import sysconfig
 import os
 from Cython.Build import cythonize
@@ -12,10 +17,6 @@ buildDirectory = "build/build_python"
 ninja_available = False
 enable_osx_crossbuild = False
 build_tests = False
-
-if sys.version_info.major < 3:
-    print("ERROR: NetworKit requires Python 3.")
-    sys.exit(1)
 
 if "CXX" in os.environ:
     cmakeCompiler = os.environ["CXX"]
@@ -313,6 +314,7 @@ setup(
     package_data={"networkit.profiling": ["html/*", "latex/*", "description/*"]},
     keywords=version.keywords,
     platforms=version.platforms,
+    python_requires=version.python_requires,
     classifiers=version.classifiers,
     cmdclass={"build_ext": build_ext},
     ext_modules=cythonize(["networkit/*pyx"], compiler_directives=compiler_directives),
