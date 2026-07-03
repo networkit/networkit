@@ -169,10 +169,12 @@ The executable file ``check_code.sh`` in NetworKit's root directory carries out 
 
 On top of the aforementioned mentioned points concerning style, the NetworKit C++ code base also complies to a selection of ``clang-tidy`` static-code analysis checks.
 New code must pass these tests before being merged into the development branch. The list of checks can be found in the ``.clang-tidy`` file.
-In order to run the ``clang-tidy`` checks while building NetworKit, set the ``CMake`` flag ``-NETWORKIT_CLANG_TIDY`` to ``ON`` in addition to the other compile flags, e.g.
+In order to run the ``clang-tidy`` checks while building NetworKit, set the ``CMake`` flag ``-DNETWORKIT_CLANG_TIDY`` to ``ON`` in addition to the other compile flags, e.g.
 ::
 
     cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_WARNINGS_AS_ERRORS=ON -DNETWORKIT_CLANG_TIDY=ON ..
+
+To use a specific ``clang-tidy`` executable, set ``-DNETWORKIT_CLANG_TIDY_EXECUTABLE``, e.g. ``-DNETWORKIT_CLANG_TIDY_EXECUTABLE=clang-tidy-22``.
 
 In a nutshell, new developers should familiarise themselves with the existing code base and adapt the existing style in the C++ as well as Python code base when contributing to NetworKit. Always ensure your code is easy to understand and properly documented.
 
