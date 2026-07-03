@@ -67,7 +67,7 @@ public:
 
     void split() {
         assert(isLeaf);
-        assert(children.size() == 0);
+        assert(children.empty());
         vector<double> middle(dimension);
         if (splitTheoretical) {
             // Euclidean space is distributed equally
@@ -299,8 +299,8 @@ public:
         if (isLeaf) {
             return content;
         } else {
-            assert(content.size() == 0);
-            assert(positions.size() == 0);
+            assert(content.empty());
+            assert(positions.empty());
             vector<T> result;
             for (index i = 0; i < children.size(); i++) {
                 std::vector<T> subresult = children[i].getElements();
@@ -314,8 +314,8 @@ public:
         if (isLeaf) {
             pointContainer.insert(pointContainer.end(), positions.begin(), positions.end());
         } else {
-            assert(content.size() == 0);
-            assert(positions.size() == 0);
+            assert(content.empty());
+            assert(positions.empty());
             for (auto &child : children)
                 child.getCoordinates(pointContainer);
         }
@@ -529,7 +529,7 @@ public:
 
     index indexSubtree(index nextID) {
         index result = nextID;
-        assert(children.size() == std::pow(2, dimension) || children.size() == 0);
+        assert(children.size() == std::pow(2, dimension) || children.empty());
         for (auto &child : children)
             result = child.indexSubtree(result);
 

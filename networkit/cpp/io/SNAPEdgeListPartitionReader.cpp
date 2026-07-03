@@ -50,7 +50,7 @@ Cover SNAPEdgeListPartitionReader::read(std::string_view path,
         ++i;
         std::getline(file, line);
         if (line.compare(0, commentPrefix.length(), commentPrefix) == 0) {
-        } else if (line.length() == 0) {
+        } else if (line.empty()) {
         } else {
             std::stringstream linestream(line);
             while (linestream >> current) {

@@ -82,7 +82,7 @@ void BucketPQ::remove(const index &value) {
         myBucket[value] = none;
         --numElems;
 
-        if (size() == 0) {
+        if (empty()) {
             // empty pq: reinit the current min/max pointers
             currentMinKey = std::numeric_limits<int64_t>::max();
             currentMaxKey = std::numeric_limits<int64_t>::min();
