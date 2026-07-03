@@ -27,6 +27,7 @@ set(NETWORKIT_PYTHON_RPATH "" CACHE STRING "Build specific rpath references.")
 set(NETWORKIT_EXT_TLX "" CACHE STRING "Absolute path for external tlx-library. If not set, extlibs/tlx is used")
 
 set (NETWORKIT_CXX_STANDARD "20" CACHE STRING "CXX Version to compile with. Currently fixed to 20")
+set(NETWORKIT_CLANG_TIDY_EXECUTABLE "clang-tidy" CACHE STRING "clang-tidy executable to use when NETWORKIT_CLANG_TIDY is enabled")
 
 # Allow user to set installation paths relative to CMAKE_INSTALL_PREFIX
 
@@ -284,7 +285,7 @@ endif()
 # ENABLE CLANG-TIDY
 if (NETWORKIT_CLANG_TIDY)
 	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-		set_target_properties(networkit PROPERTIES CXX_CLANG_TIDY clang-tidy)
+		set_target_properties(networkit PROPERTIES CXX_CLANG_TIDY "${NETWORKIT_CLANG_TIDY_EXECUTABLE}")
 	else()
 		message(FATAL_ERROR "clang-tidy is only supported when compiling with clang")
 	endif()

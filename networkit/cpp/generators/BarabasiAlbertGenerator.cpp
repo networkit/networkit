@@ -40,7 +40,8 @@ BarabasiAlbertGenerator::BarabasiAlbertGenerator(count k, count nMax, count n0, 
 
 BarabasiAlbertGenerator::BarabasiAlbertGenerator(count k, count nMax, const Graph &initGraph,
                                                  bool sequential)
-    : initGraph(initGraph), k(k), nMax(nMax), n0(0), sequential(sequential) {
+    : initGraph(initGraph), k(k), nMax(nMax), n0(initGraph.numberOfNodes() == 0 ? k : 0),
+      sequential(sequential) {
     if (initGraph.numberOfNodes() != initGraph.upperNodeIdBound())
         throw std::runtime_error("initGraph is expected to have consecutive node ids");
     if (k > nMax)
@@ -126,6 +127,9 @@ Graph BarabasiAlbertGenerator::generateParallel() {
                     index u = 2 * (i + k * (v - n0)) + seedGraphData.size();
                     uint64_t seed = u + attempt * 0x52785628791L;
                     while (true) {
+                        if (u == 0) {
+                            break;
+                        }
                         u = rng.nextInt(seed, u);
                         if (u < seedGraphData.size()) {
                             u = seedGraphData[u];

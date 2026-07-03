@@ -69,7 +69,7 @@ void ApproxGroupBetweenness::run() {
         assert(dist);
         hyperEdgesPerSample[l].reserve(dist - 1);
         for (count i = 0; i < dist - 1; ++i) {
-            auto predecessors = bfs.getPredecessors(t);
+            const auto &predecessors = bfs.getPredecessors(t);
             t = predecessors[Aux::Random::integer(predecessors.size() - 1)];
             hyperEdgesPerSample[l].push_back(t);
         }

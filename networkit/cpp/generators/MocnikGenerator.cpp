@@ -107,6 +107,7 @@ void MocnikGenerator::addNode(MocnikGenerator::LayerState &s, int j) {
 
 int MocnikGenerator::toIndex(MocnikGenerator::LayerState &s, const std::vector<double> &v) {
     std::vector<int> w;
+    w.reserve(v.size());
     for (count j = 0; j < v.size(); j++) {
         w.push_back(std::min(static_cast<int>(std::floor(v[j] * s.aMax)), s.aMax - 1));
     }
@@ -322,6 +323,7 @@ Graph MocnikGenerator::generate() {
     node curr = 0;
     while (curr < *std::max_element(ns.begin(), ns.end())) {
         std::vector<double> v = {};
+        v.reserve(dim);
         for (count j = 0; j < dim; j++) {
             v.push_back(Aux::Random::real());
         }

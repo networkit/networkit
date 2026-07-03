@@ -158,6 +158,7 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweenessGeneratedGraphEdgeDeletion) {
 }
 
 TEST_F(DynBetweennessGTest, runDynVsStatic) {
+    Aux::Random::setSeed(42, false);
     Graph G = METISGraphReader{}.read("input/celegans_metabolic.graph");
 
     DynApproxBetweenness dynbc(G, epsilon, delta, false);
@@ -178,6 +179,7 @@ TEST_F(DynBetweennessGTest, runDynVsStatic) {
 }
 
 TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
+    Aux::Random::setSeed(42, false);
     Graph G = METISGraphReader{}.read("input/celegans_metabolic.graph");
 
     DynApproxBetweenness dynbc(G, epsilon, delta, false);

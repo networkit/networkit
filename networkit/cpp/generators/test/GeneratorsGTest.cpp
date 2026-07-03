@@ -562,6 +562,34 @@ TEST_F(GeneratorsGTest, testBarabasiAlbertGeneratorConstructor) {
     EXPECT_THROW(BarabasiAlbertGenerator generator(3, 9, initGraph, true), std::runtime_error);
 }
 
+TEST_F(GeneratorsGTest, testBarabasiAlbertEmptyInit) {
+    constexpr count k = 3;
+    constexpr count nMax = 20;
+    const Graph initGraph;
+
+    BarabasiAlbertGenerator sequentialGenerator(k, nMax, initGraph, true);
+    const Graph sequentialGraph = sequentialGenerator.generate();
+    EXPECT_EQ(nMax, sequentialGraph.numberOfNodes());
+    EXPECT_TRUE(sequentialGraph.checkConsistency());
+
+    BarabasiAlbertGenerator parallelGenerator(k, nMax, initGraph, false);
+    const Graph parallelGraph = parallelGenerator.generate();
+    EXPECT_EQ(nMax, parallelGraph.numberOfNodes());
+    EXPECT_TRUE(parallelGraph.checkConsistency());
+}
+
+TEST_F(GeneratorsGTest, testBarabasiAlbertParallelKOne) {
+    constexpr count k = 1;
+    constexpr count nMax = 8;
+    const Graph initGraph;
+
+    BarabasiAlbertGenerator generator(k, nMax, initGraph, false);
+    const Graph G = generator.generate();
+
+    EXPECT_EQ(nMax, G.numberOfNodes());
+    EXPECT_TRUE(G.hasEdge(0, 1));
+}
+
 TEST_F(GeneratorsGTest, testBarabasiAlbertGeneratorBatagelj) {
     count k = 3;
     count nMax = 1000;
