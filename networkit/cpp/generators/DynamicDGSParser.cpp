@@ -93,7 +93,6 @@ void DynamicDGSParser::generate() {
         } else if (tag.compare("ae") == 0 && split.size() >= 4) { // add edge
             std::string edge_from = split[2];
             std::string edge_to = split[3];
-            std::string edge_name = split[1];
             Gproxy->addEdge(nodeNames[edge_from], nodeNames[edge_to], 1.0);
 
         } else if (tag.compare("ce") == 0 && split.size() == 3) {
