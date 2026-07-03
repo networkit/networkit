@@ -55,7 +55,7 @@ std::vector<GraphEvent> DGSStreamParser::getStream() {
 
         while (std::getline(dgsFile, line)) {
             ++lineCount;
-            std::vector<std::string> split = Aux::StringTools::split(line);
+            const std::vector<std::string> split = Aux::StringTools::split(line);
             const std::string &tag = split[0];
 
             // parse commands
@@ -116,7 +116,7 @@ std::vector<GraphEvent> DGSStreamParser::getStream() {
 
         while (std::getline(dgsFile, line)) {
             ++lineCount;
-            std::vector<std::string> split = Aux::StringTools::split(line);
+            const std::vector<std::string> split = Aux::StringTools::split(line);
             const std::string &tag = split[0];
 
             // parse commands

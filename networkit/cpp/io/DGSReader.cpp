@@ -46,7 +46,7 @@ void DGSReader::read(std::string path, GraphEventProxy &Gproxy) {
         std::vector<std::string> nodeDates;
 
         while (std::getline(dgsFile, line)) {
-            std::vector<std::string> split = Aux::StringTools::split(line);
+            const std::vector<std::string> split = Aux::StringTools::split(line);
             const std::string &tag = split[0];
 
             if (tag.compare("st") == 0 && split.size() == 2) { // clock
@@ -63,7 +63,7 @@ void DGSReader::read(std::string path, GraphEventProxy &Gproxy) {
 
                     // Example: category="cond-mat.stat-mech, q-fin.ST"
                     const std::string &categoriesFullString = split[2];
-                    std::vector<std::string> categoriesFullStringSplit =
+                    const std::vector<std::string> categoriesFullStringSplit =
                         Aux::StringTools::split(categoriesFullString, '"');
 
                     // Example: cond-mat.stat-mech, q-fin.ST
@@ -76,7 +76,7 @@ void DGSReader::read(std::string path, GraphEventProxy &Gproxy) {
                     nodeCategories.push_back(currentNodeCategories);
 
                     const std::string &dateFullString = split[3]; // Example: date="08-1997"
-                    std::vector<std::string> dateFullStringSplit =
+                    const std::vector<std::string> dateFullStringSplit =
                         Aux::StringTools::split(dateFullString, '"');
                     const std::string &date = dateFullStringSplit[1];
                     nodeDates.push_back(date);
@@ -89,7 +89,7 @@ void DGSReader::read(std::string path, GraphEventProxy &Gproxy) {
             } else if (tag.compare("ce") == 0 && split.size() == 3) {
                 // update edge. Only the "weight" attribute is supported so far
                 const std::string &from_to_edges = split[1];
-                std::vector<std::string> edgesSplit = Aux::StringTools::split(from_to_edges, '-');
+                const std::vector<std::string> edgesSplit = Aux::StringTools::split(from_to_edges, '-');
                 const std::string &edge_from = edgesSplit[0];
                 const std::string &edge_to = edgesSplit[1];
 
@@ -112,7 +112,7 @@ void DGSReader::read(std::string path, GraphEventProxy &Gproxy) {
 
             } else if (tag.compare("de") == 0 && split.size() == 2) {
                 const std::string &from_to_edges = split[1];
-                std::vector<std::string> edgesSplit = Aux::StringTools::split(from_to_edges, '-');
+                const std::vector<std::string> edgesSplit = Aux::StringTools::split(from_to_edges, '-');
                 const std::string &edge_from = edgesSplit[0];
                 const std::string &edge_to = edgesSplit[1];
                 node u = nodeNames[edge_from];
