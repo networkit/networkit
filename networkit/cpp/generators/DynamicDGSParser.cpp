@@ -57,7 +57,7 @@ void DynamicDGSParser::generate() {
 
     while (std::getline(dgsFile, line)) {
         const std::vector<std::string> split = Aux::StringTools::split(line);
-        const std::string &tag = split[0];
+        std::string_view tag = split[0];
 
         if (tag.compare("st") == 0 && split.size() == 2) { // clock
             Gproxy->timeStep();
@@ -72,11 +72,11 @@ void DynamicDGSParser::generate() {
             if (split.size() >= 4) { // DGS with ground truth
 
                 // Example: category="cond-mat.stat-mech, q-fin.ST"
-                const std::string &categoriesFullString = split[2];
+                std::string_view categoriesFullString = split[2];
                 const auto categoriesFullStringSplit = Aux::StringTools::split(categoriesFullString, '"');
 
                 // Example: cond-mat.stat-mech, q-fin.ST
-                const std::string &categoriesCommaSeparated = categoriesFullStringSplit[1];
+                std::string_view categoriesCommaSeparated = categoriesFullStringSplit[1];
                 auto categories = Aux::StringTools::split(categoriesCommaSeparated, ',');
 
                 std::vector<std::string> currentNodeCategories(categories.begin(),
@@ -84,10 +84,10 @@ void DynamicDGSParser::generate() {
                 nodeCategories.push_back(currentNodeCategories);
                 assert(!nodeCategories.empty());
 
-                const std::string &dateFullString = split[3]; // Example: date="08-1997"
+                std::string_view dateFullString = split[3]; // Example: date="08-1997"
                 const auto dateFullStringSplit = Aux::StringTools::split(dateFullString, '"');
-                const std::string &date = dateFullStringSplit[1];
-                nodeDates.push_back(date);
+                std::string_view date = dateFullStringSplit[1];
+                nodeDates.emplace_back(date);
             }
 
         } else if (tag.compare("ae") == 0 && split.size() >= 4) { // add edge
@@ -97,12 +97,12 @@ void DynamicDGSParser::generate() {
 
         } else if (tag.compare("ce") == 0 && split.size() == 3) {
             // update edge. Only the "weight" attribute is supported so far
-            const std::string &from_to_edges = split[1];
+            std::string_view from_to_edges = split[1];
             const auto edgesSplit = Aux::StringTools::split(from_to_edges, '-');
             const std::string &edge_from = edgesSplit[0];
             const std::string &edge_to = edgesSplit[1];
 
-            const std::string &weight = split[2];
+            std::string_view weight = split[2];
             auto weightSplit = Aux::StringTools::split(weight, '=');
             double weightValue = atoi(weightSplit[1].c_str());
 
@@ -120,7 +120,7 @@ void DynamicDGSParser::generate() {
             }
 
         } else if (tag.compare("de") == 0 && split.size() == 2) {
-            const std::string &from_to_edges = split[1];
+            std::string_view from_to_edges = split[1];
             const auto edgesSplit = Aux::StringTools::split(from_to_edges, '-');
             const std::string &edge_from = edgesSplit[0];
             const std::string &edge_to = edgesSplit[1];
