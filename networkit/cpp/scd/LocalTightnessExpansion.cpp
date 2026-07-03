@@ -66,7 +66,7 @@ private:
 public:
     LocalGraph(const Graph &g, NodeAddedCallbackType nodeAddedCallback)
         : LocalDegreeDirectedGraph<is_weighted, InnerNodeAddedCallback<NodeAddedCallbackType>>(
-            g, InnerNodeAddedCallback<NodeAddedCallbackType>{nodeAddedCallback, triangleSum}) {
+              g, InnerNodeAddedCallback<NodeAddedCallbackType>{nodeAddedCallback, triangleSum}) {
         if (g.isWeighted() != is_weighted) {
             throw std::runtime_error("Error, weighted/unweighted status of input graph does not "
                                      "match is_weighted template parameter");

@@ -490,13 +490,15 @@ jobs:
   style-guide-compliance-build:
     name: "Linux (default): code-style"
     runs-on: ubuntu-22.04
+    env:
+      LLVM_VERSION: 22
     steps:
       - name: Install prerequisites
         run: |
-          curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/jammy llvm-toolchain-jammy-17 main" | sudo tee /etc/apt/sources.list.d/llvm17.list
+          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          echo "deb http://apt.llvm.org/jammy llvm-toolchain-jammy-${LLVM_VERSION} main" | sudo tee /etc/apt/sources.list.d/llvm${LLVM_VERSION}.list
           sudo apt-get update
-          sudo apt-get install clang-format-17 python3-yaml
+          sudo apt-get install clang-format-${LLVM_VERSION} python3-yaml
       - name: Checkout networkit
         uses: actions/checkout@v5
         with:
@@ -506,4 +508,4 @@ jobs:
           set -e
           ./check_code.sh -v
         env:
-          NETWORKIT_OVERRIDE_CLANG_FORMAT: "clang-format-17"
+          NETWORKIT_OVERRIDE_CLANG_FORMAT: "clang-format-${{ env.LLVM_VERSION }}"

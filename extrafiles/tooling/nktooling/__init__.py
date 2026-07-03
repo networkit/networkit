@@ -7,7 +7,7 @@ import subprocess
 READONLY = True
 VERBOSE = False
 SHOW_DIFFS = True
-CLANG_FORMAT_VERSION = 17
+CLANG_FORMAT_VERSION = 22
 
 def setup(args = None):
 	"""

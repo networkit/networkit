@@ -20,8 +20,8 @@ namespace NetworKit {
 NeighborhoodFunctionHeuristic::NeighborhoodFunctionHeuristic(const Graph &G, count nSamples,
                                                              SelectionStrategy strategy)
     : Algorithm(), G(&G),
-      nSamples(!nSamples ? (count)std::ceil(
-                   std::max((double)0.15f * G.numberOfNodes(), std::sqrt(G.numberOfEdges())))
+      nSamples(!nSamples ? (count)std::ceil(std::max((double)0.15f * G.numberOfNodes(),
+                                                     std::sqrt(G.numberOfEdges())))
                          : nSamples),
       strategy(strategy) {
 
