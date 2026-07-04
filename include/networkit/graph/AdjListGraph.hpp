@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <atomic>
 #include <cassert>
+#include <concepts>
 #include <functional>
 #include <numeric>
 #include <omp.h>
@@ -41,6 +42,9 @@
 
 namespace NetworKit {
 
+template <typename T>
+concept GraphEdgeWeight = std::integral<T> || std::floating_point<T>;
+
 // forward declaration to randomization/CurveballImpl.hpp
 namespace CurveballDetails {
 class CurveballMaterialization;
@@ -50,10 +54,8 @@ class CurveballMaterialization;
  * @ingroup graph
  * A graph (with optional weights) and parallel iterator methods.
  */
-template <class NodeT, class EdgeWeightT>
+template <std::integral NodeT, GraphEdgeWeight EdgeWeightT>
 class AdjListGraph final {
-    static_assert(std::is_integral_v<NodeT>, "NodeT must be an integer type.");
-    static_assert(std::is_arithmetic_v<EdgeWeightT>, "EdgeWeightT must be a numeric type.");
     // graph attributes
     //!< current number of nodes
     count n;
