@@ -32,7 +32,7 @@ template <typename T>
 concept SignedIntegral = std::integral<T> && std::is_signed_v<T>;
 
 template <typename T>
-concept IntegralValue = std::unsigned_integral<T> && !std::same_as<std::remove_cvref_t<T>, bool>;
+concept IntegralValue = std::integral<T> && !std::same_as<std::remove_cvref_t<T>, bool>;
 
 /**
  * Addressable priority queue for values in the range [0,n) and
@@ -146,6 +146,9 @@ public:
         assert(minAdmissibleKey <= key && key <= maxAdmissibleKey);
 
         const auto valueIdx = static_cast<index>(value);
+        if constexpr (std::is_signed_v<ValueType>) {
+            assert(value >= 0);
+        }
         assert(valueIdx < nodePtr.size());
 
         const auto bucketIdx = static_cast<BucketIndex>(key + offset);
@@ -213,6 +216,9 @@ public:
      */
     bool contains(const ValueType &value) const override {
         const auto valueIdx = static_cast<index>(value);
+        if constexpr (std::is_signed_v<ValueType>) {
+            assert(value >= 0);
+        }
         return valueIdx < nodePtr.size() && nodePtr[valueIdx].valid;
     }
 
@@ -221,6 +227,9 @@ public:
      */
     void remove(const ValueType &value) override {
         const auto valueIdx = static_cast<index>(value);
+        if constexpr (std::is_signed_v<ValueType>) {
+            assert(value >= 0);
+        }
         assert(valueIdx < nodePtr.size());
 
         if (myBucket[valueIdx] != noneBucket) {
@@ -254,6 +263,9 @@ public:
      */
     virtual KeyType getKey(const ValueType &val) {
         const auto valueIdx = static_cast<index>(val);
+        if constexpr (std::is_signed_v<ValueType>) {
+            assert(val >= 0);
+        }
         return static_cast<KeyType>(myBucket[valueIdx]) - offset;
     }
 };
