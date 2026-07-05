@@ -1343,7 +1343,7 @@ public:
      * Get an upper bound for the node ids in the graph.
      * @return An upper bound for the node ids.
      */
-    index upperNodeIdBound() const noexcept { return z; }
+    NodeT upperNodeIdBound() const noexcept { return z; }
 
     /**
      * Check for invalid graph states, such as multi-edges.

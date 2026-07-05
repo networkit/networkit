@@ -35,7 +35,36 @@ TYPED_TEST_P(AdjListGraphGTest, testDefaultConstructor) {
     EXPECT_EQ(G.isDirected(), TypeParam::directed);
 }
 
-REGISTER_TYPED_TEST_SUITE_P(AdjListGraphGTest, testDefaultConstructor);
+TYPED_TEST_P(AdjListGraphGTest, testNodeAndEdgeIterators) {
+    using Graph = AdjListGraph<typename TestFixture::NodeT, typename TestFixture::EdgeWeightT>;
+    using NodeT = typename TestFixture::NodeT;
+    using EdgeWeightT = typename TestFixture::EdgeWeightT;
+
+    Graph G(4, TypeParam::weighted, TypeParam::directed);
+    G.addEdge(NodeT{0}, NodeT{1}, EdgeWeightT{2});
+    G.addEdge(NodeT{1}, NodeT{2}, EdgeWeightT{3});
+
+    count nodes = 0;
+    for ([[maybe_unused]] const auto u : G.nodeRange()) {
+        ++nodes;
+    }
+
+    count edges = 0;
+    for ([[maybe_unused]] const auto edge : G.edgeRange()) {
+        ++edges;
+    }
+
+    count weightedEdges = 0;
+    for ([[maybe_unused]] const auto edge : G.edgeWeightRange()) {
+        ++weightedEdges;
+    }
+
+    EXPECT_EQ(nodes, 4u);
+    EXPECT_EQ(edges, 2u);
+    EXPECT_EQ(weightedEdges, 2u);
+}
+
+REGISTER_TYPED_TEST_SUITE_P(AdjListGraphGTest, testDefaultConstructor, testNodeAndEdgeIterators);
 
 using AdjListTestTypes = ::testing::Types<
     AdjListConfig<node, edgeweight, false, false>, AdjListConfig<node, edgeweight, true, false>,

@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef NETWORKIT_GRAPH_CONCEPTS_HPP_
-#define NETWORKIT_GRAPH_CONCEPTS_HPP_
+#ifndef NETWORKIT_GRAPH_GRAPH_CONCEPTS_HPP_
+#define NETWORKIT_GRAPH_GRAPH_CONCEPTS_HPP_
 
 #include <concepts>
 #include <type_traits>
@@ -20,4 +20,4 @@ concept GraphEdgeWeight = std::integral<T> || std::floating_point<T>;
 
 } // namespace NetworKit
 
-#endif // NETWORKIT_GRAPH_CONCEPTS_HPP_
+#endif // NETWORKIT_GRAPH_GRAPH_CONCEPTS_HPP_
