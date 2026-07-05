@@ -11,13 +11,14 @@
 #include <iterator>
 
 #include <networkit/Globals.hpp>
+#include <networkit/graph/GraphConcepts.hpp>
 
 namespace NetworKit {
 
 /**
  * Class to iterate over the nodes of a graph.
  */
-template <class GraphType, class NodeT, class EdgeWeightT>
+template <class GraphType, GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 class NodeIteratorBase {
 
     const GraphType *G;
@@ -99,7 +100,7 @@ public:
 /**
  * Wrapper class to iterate over a range of the nodes of a graph.
  */
-template <class GraphType, class NodeT, class EdgeWeightT>
+template <class GraphType, GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 class NodeRangeBase {
 
     const GraphType *G;
