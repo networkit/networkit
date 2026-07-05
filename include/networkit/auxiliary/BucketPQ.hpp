@@ -26,8 +26,6 @@ namespace Aux {
 using index = NetworKit::index;
 using count = NetworKit::count;
 
-constexpr int64_t none = std::numeric_limits<int64_t>::max();
-
 template <typename T>
 concept SignedIntegral = std::integral<T> && std::is_signed_v<T>;
 
