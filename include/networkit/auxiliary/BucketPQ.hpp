@@ -51,22 +51,22 @@ private:
 
     std::vector<Bucket> buckets; // the actual buckets
     inline static Bucket dummyBucket{};
-    inline static const Bucket::iterator invalidPtr = dummyBucket.end();
+    inline static const typename Bucket::iterator invalidPtr = dummyBucket.end();
 
     struct OptionalIterator {
         bool valid;
-        Bucket::iterator iter;
+        typename Bucket::iterator iter;
 
         void reset() {
             valid = false;
             iter = invalidPtr;
         }
         OptionalIterator() { reset(); }
-        OptionalIterator(bool valid, Bucket::iterator iter) : valid(valid), iter(iter) {}
+        OptionalIterator(bool valid, typename Bucket::iterator iter) : valid(valid), iter(iter) {}
     };
 
     std::vector<OptionalIterator> nodePtr; // keeps track of node positions
-    std::vector<BucketIndex> myBucket;           // keeps track of current bucket for each value
+    std::vector<BucketIndex> myBucket;     // keeps track of current bucket for each value
     KeyType currentMinKey;                 // current min key
     KeyType currentMaxKey;                 // current max key
     KeyType minAdmissibleKey;              // minimum admissible key

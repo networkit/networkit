@@ -81,7 +81,7 @@ TYPED_TEST_P(BucketPQGTest, testEmptySentinelsUseTemplateTypes) {
     Aux::BucketPQ<KeyType, ValueType> prioQ(4, KeyType{-2}, KeyType{2});
 
     const std::pair<KeyType, ValueType> emptySentinel{std::numeric_limits<KeyType>::max(),
-                                                     std::numeric_limits<ValueType>::max()};
+                                                      std::numeric_limits<ValueType>::max()};
     EXPECT_TRUE(prioQ.empty());
     EXPECT_EQ(prioQ.getMin(), emptySentinel);
     EXPECT_EQ(prioQ.extractMin(), emptySentinel);
