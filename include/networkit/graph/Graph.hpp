@@ -1753,7 +1753,8 @@ using Graph = AdjListGraph<node, edgeweight>;
 
 template <class NodeT, class EdgeWeightT>
 template <typename L>
-void AdjListGraph<NodeT, EdgeWeightT>::forNodes(L handle) const { // NOLINT(performance-unnecessary-value-param)
+void AdjListGraph<NodeT, EdgeWeightT>::forNodes(
+    L handle) const { // NOLINT(performance-unnecessary-value-param)
     for (NodeT v = 0; v < z; ++v) {
         if (exists[v]) {
             handle(v);
@@ -1763,7 +1764,8 @@ void AdjListGraph<NodeT, EdgeWeightT>::forNodes(L handle) const { // NOLINT(perf
 
 template <class NodeT, class EdgeWeightT>
 template <typename L>
-void AdjListGraph<NodeT, EdgeWeightT>::parallelForNodes(L handle) const { // NOLINT(performance-unnecessary-value-param)
+void AdjListGraph<NodeT, EdgeWeightT>::parallelForNodes(
+    L handle) const { // NOLINT(performance-unnecessary-value-param)
 #pragma omp parallel for
     for (omp_index v = 0; v < static_cast<omp_index>(z); ++v) {
         if (exists[v]) {
@@ -1774,7 +1776,8 @@ void AdjListGraph<NodeT, EdgeWeightT>::parallelForNodes(L handle) const { // NOL
 
 template <class NodeT, class EdgeWeightT>
 template <typename C, typename L>
-void AdjListGraph<NodeT, EdgeWeightT>::forNodesWhile(C condition, L handle) const { // NOLINT(performance-unnecessary-value-param)
+void AdjListGraph<NodeT, EdgeWeightT>::forNodesWhile(
+    C condition, L handle) const { // NOLINT(performance-unnecessary-value-param)
     for (NodeT v = 0; v < z; ++v) {
         if (exists[v]) {
             if (!condition()) {
@@ -1787,7 +1790,8 @@ void AdjListGraph<NodeT, EdgeWeightT>::forNodesWhile(C condition, L handle) cons
 
 template <class NodeT, class EdgeWeightT>
 template <typename L>
-void AdjListGraph<NodeT, EdgeWeightT>::forNodesInRandomOrder(L handle) const { // NOLINT(performance-unnecessary-value-param)
+void AdjListGraph<NodeT, EdgeWeightT>::forNodesInRandomOrder(
+    L handle) const { // NOLINT(performance-unnecessary-value-param)
     std::vector<NodeT> randVec;
     randVec.reserve(numberOfNodes());
     forNodes([&](NodeT u) { randVec.push_back(u); });
@@ -1799,7 +1803,8 @@ void AdjListGraph<NodeT, EdgeWeightT>::forNodesInRandomOrder(L handle) const { /
 
 template <class NodeT, class EdgeWeightT>
 template <typename L>
-void AdjListGraph<NodeT, EdgeWeightT>::balancedParallelForNodes(L handle) const { // NOLINT(performance-unnecessary-value-param)
+void AdjListGraph<NodeT, EdgeWeightT>::balancedParallelForNodes(
+    L handle) const { // NOLINT(performance-unnecessary-value-param)
 // TODO: define min block size (and test it!)
 #pragma omp parallel for schedule(guided)
     for (omp_index v = 0; v < static_cast<omp_index>(z); ++v) {
@@ -1811,7 +1816,8 @@ void AdjListGraph<NodeT, EdgeWeightT>::balancedParallelForNodes(L handle) const 
 
 template <class NodeT, class EdgeWeightT>
 template <typename L>
-void AdjListGraph<NodeT, EdgeWeightT>::forNodePairs(L handle) const { // NOLINT(performance-unnecessary-value-param)
+void AdjListGraph<NodeT, EdgeWeightT>::forNodePairs(
+    L handle) const { // NOLINT(performance-unnecessary-value-param)
     for (NodeT u = 0; u < z; ++u) {
         if (exists[u]) {
             for (NodeT v = u + 1; v < z; ++v) {
@@ -1825,7 +1831,8 @@ void AdjListGraph<NodeT, EdgeWeightT>::forNodePairs(L handle) const { // NOLINT(
 
 template <class NodeT, class EdgeWeightT>
 template <typename L>
-void AdjListGraph<NodeT, EdgeWeightT>::parallelForNodePairs(L handle) const { // NOLINT(performance-unnecessary-value-param)
+void AdjListGraph<NodeT, EdgeWeightT>::parallelForNodePairs(
+    L handle) const { // NOLINT(performance-unnecessary-value-param)
 #pragma omp parallel for schedule(guided)
     for (omp_index u = 0; u < static_cast<omp_index>(z); ++u) {
         if (exists[u]) {
@@ -2066,7 +2073,8 @@ void AdjListGraph<NodeT, EdgeWeightT>::forInEdgesOf(NodeT u, L handle) const {
 
 template <class NodeT, class EdgeWeightT>
 template <typename L>
-double AdjListGraph<NodeT, EdgeWeightT>::parallelSumForNodes(L handle) const { // NOLINT(performance-unnecessary-value-param)
+double AdjListGraph<NodeT, EdgeWeightT>::parallelSumForNodes(
+    L handle) const { // NOLINT(performance-unnecessary-value-param)
     double sum = 0.0;
 
 #pragma omp parallel for reduction(+ : sum)
