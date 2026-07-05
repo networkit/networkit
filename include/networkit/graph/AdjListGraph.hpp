@@ -35,15 +35,13 @@
 #include <networkit/graph/Attributes.hpp>
 #include <networkit/graph/EdgeIterators.hpp>
 #include <networkit/graph/EdgeUtils.hpp>
+#include <networkit/graph/GraphConcepts.hpp>
 #include <networkit/graph/NeighborIterators.hpp>
 #include <networkit/graph/NodeIterators.hpp>
 
 #include <tlx/define/deprecated.hpp>
 
 namespace NetworKit {
-
-template <typename T>
-concept GraphEdgeWeight = std::integral<T> || std::floating_point<T>;
 
 // forward declaration to randomization/CurveballImpl.hpp
 namespace CurveballDetails {
@@ -54,7 +52,7 @@ class CurveballMaterialization;
  * @ingroup graph
  * A graph (with optional weights) and parallel iterator methods.
  */
-template <std::integral NodeT, GraphEdgeWeight EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 class AdjListGraph final {
     // graph attributes
     //!< current number of nodes
