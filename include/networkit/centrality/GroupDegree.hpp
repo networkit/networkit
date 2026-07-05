@@ -71,7 +71,7 @@ protected:
     std::vector<bool> reachable;
     std::vector<bool> affected;
     std::vector<bool> inGroup;
-    Aux::BucketPQ queue;
+    Aux::BucketPQ<> queue;
     count groupScore;
 
     void init();
