@@ -12,6 +12,7 @@
 #include <limits>
 #include <set>
 #include <span>
+#include <type_traits>
 #include <vector>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -32,6 +33,13 @@ private:
     std::vector<Key> mapValToKey;
 
     const Key undefined = std::numeric_limits<Key>::max(); // TODO: make static
+
+    static size_t valueToIndex(const Value &value) {
+        if constexpr (std::is_signed_v<Value>) {
+            assert(value >= 0);
+        }
+        return static_cast<size_t>(value);
+    }
 
 protected:
     /**
@@ -143,7 +151,7 @@ Aux::PrioQueue<Key, Value>::PrioQueue(std::span<Key> keys) {
     mapValToKey.resize(keys.size());
     uint64_t index = 0;
     for (auto key : keys) {
-        insert(key, index);
+        insert(key, static_cast<Value>(index));
         ++index;
     }
 }
@@ -155,13 +163,14 @@ Aux::PrioQueue<Key, Value>::PrioQueue(uint64_t capacity) {
 
 template <class Key, class Value>
 void Aux::PrioQueue<Key, Value>::insert(Key key, Value value) {
-    if (value >= mapValToKey.size()) {
-        uint64_t doubledSize = 2 * mapValToKey.size();
-        assert(value < doubledSize);
+    const auto valueIdx = valueToIndex(value);
+    if (valueIdx >= mapValToKey.size()) {
+        const auto doubledSize = 2 * mapValToKey.size();
+        assert(valueIdx < doubledSize);
         mapValToKey.resize(doubledSize);
     }
     pqset.insert(std::make_pair(key, value));
-    mapValToKey.at(value) = key;
+    mapValToKey.at(valueIdx) = key;
 }
 
 template <class Key, class Value>
@@ -171,9 +180,10 @@ void Aux::PrioQueue<Key, Value>::remove(const ElemType &elem) {
 
 template <class Key, class Value>
 void Aux::PrioQueue<Key, Value>::remove(const Value &val) {
-    Key key = mapValToKey.at(val);
+    const auto valueIdx = valueToIndex(val);
+    Key key = mapValToKey.at(valueIdx);
     pqset.erase(std::make_pair(key, val));
-    mapValToKey.at(val) = undefined;
+    mapValToKey.at(valueIdx) = undefined;
 }
 
 template <class Key, class Value>
@@ -212,7 +222,8 @@ bool Aux::PrioQueue<Key, Value>::empty() const noexcept {
 
 template <class Key, class Value>
 bool Aux::PrioQueue<Key, Value>::contains(const Value &value) const {
-    return value < mapValToKey.size() && mapValToKey.at(value) != undefined;
+    const auto valueIdx = valueToIndex(value);
+    return valueIdx < mapValToKey.size() && mapValToKey.at(valueIdx) != undefined;
 }
 
 template <class Key, class Value>
