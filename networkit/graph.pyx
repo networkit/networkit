@@ -461,8 +461,8 @@ cdef class Graph:
 				if inputData.row.dtype == np.int32:
 					row_32t = inputData.row.view(np.int32)
 					col_32t = inputData.col.view(np.int32)
-					data = np.ones(len(row_32t), dtype = np.double)
-					if addMissing:	
+					data = np.asarray(inputData.data, dtype = np.double, order = 'C')
+					if addMissing:
 						for i in range(len(inputData.row)):
 							# Calling Python interface of addEdge due to addMissing support. 
 							self.addEdge(row_32t[i], col_32t[i], data[i], addMissing, checkMultiEdge)
@@ -473,8 +473,8 @@ cdef class Graph:
 				else:
 					row = inputData.row.view(np.intp)
 					col = inputData.col.view(np.intp)
-					data = np.ones(len(row), dtype = np.double)
-					if addMissing:	
+					data = np.asarray(inputData.data, dtype = np.double, order = 'C')
+					if addMissing:
 						for i in range(len(inputData.row)):
 							# Calling Python interface of addEdge due to addMissing support. 
 							self.addEdge(row[i], col[i], data[i], addMissing, checkMultiEdge)
