@@ -198,7 +198,9 @@ private:
             adjList.insertNeighbour(b, a);
             return;
         }
-        { adjList.insertNeighbour(a, b); }
+        {
+            adjList.insertNeighbour(a, b);
+        }
     }
 };
 

@@ -5,6 +5,8 @@
  *      Author: ebergamini, cls
  */
 
+#include <span>
+
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -23,18 +25,21 @@ namespace NetworKit {
 
 class DynBetweennessGTest : public testing::TestWithParam<std::pair<bool, bool>> {
 protected:
+    void SetUp() override { Aux::Random::setSeed(42, false); }
+
     bool isDirected() const noexcept { return GetParam().first; };
     bool isWeighted() const noexcept { return GetParam().second; };
     Graph generateSmallGraph() const;
 
     static constexpr double epsilon = 0.1, delta = 0.1;
 
-    void compareAgainstBaseline(const Graph &G, const std::vector<double> &apxScores,
-                                const std::vector<double> &exactScores, double normalized = false,
-                                double err = epsilon) const {
+    void compareAgainstBaseline(const Graph &G, std::span<const double> apxScores,
+                                std::span<const double> exactScores,
+                                bool normalized = false) const {
         const auto n = static_cast<double>(G.numberOfNodes());
-        const auto normFactor = normalized ? n * (n - 1) : 1.;
-        G.forNodes([&](node u) { EXPECT_NEAR(apxScores[u], exactScores[u] / normFactor, err); });
+        const double normFactor = normalized ? n * (n - 1) : 1.;
+        G.forNodes(
+            [&](node u) { EXPECT_NEAR(apxScores[u], exactScores[u] / normFactor, epsilon); });
     }
 
     std::pair<node, node> getNonAdjacentNodes(const Graph &G) const {
@@ -76,7 +81,6 @@ Graph DynBetweennessGTest::generateSmallGraph() const {
     }
 
     if (isWeighted()) {
-        Aux::Random::setSeed(42, false);
         GraphTools::randomizeWeights(G);
     }
     return G;
@@ -113,7 +117,6 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweennessSmallGraphEdgeDeletion) {
 }
 
 TEST_P(DynBetweennessGTest, testDynApproxBetweenessGeneratedGraph) {
-    Aux::Random::setSeed(42, false);
     ErdosRenyiGenerator generator(100, 0.25, isDirected());
     Graph G = generator.generate();
     if (isWeighted()) {
@@ -135,11 +138,9 @@ TEST_P(DynBetweennessGTest, testDynApproxBetweenessGeneratedGraph) {
 }
 
 TEST_P(DynBetweennessGTest, runDynApproxBetweenessGeneratedGraphEdgeDeletion) {
-    Aux::Random::setSeed(42, false);
     ErdosRenyiGenerator generator(100, 0.25, isDirected());
     Graph G = generator.generate();
     if (isWeighted()) {
-        Aux::Random::setSeed(42, false);
         GraphTools::randomizeWeights(G);
     }
 
@@ -157,6 +158,7 @@ TEST_P(DynBetweennessGTest, runDynApproxBetweenessGeneratedGraphEdgeDeletion) {
 }
 
 TEST_F(DynBetweennessGTest, runDynVsStatic) {
+    Aux::Random::setSeed(42, false);
     Graph G = METISGraphReader{}.read("input/celegans_metabolic.graph");
 
     DynApproxBetweenness dynbc(G, epsilon, delta, false);
@@ -177,6 +179,7 @@ TEST_F(DynBetweennessGTest, runDynVsStatic) {
 }
 
 TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
+    Aux::Random::setSeed(42, false);
     Graph G = METISGraphReader{}.read("input/celegans_metabolic.graph");
 
     DynApproxBetweenness dynbc(G, epsilon, delta, false);
@@ -197,8 +200,6 @@ TEST_F(DynBetweennessGTest, runDynVsStaticEdgeDeletion) {
 }
 
 TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertDirected) {
-    Aux::Random::setSeed(0, false);
-
     for (count n = 2; n <= 25; n++)
         for (count t = 0; t < 100; t++) {
             auto g = ErdosRenyiGenerator(n, 0.3, true).generate();
@@ -223,10 +224,8 @@ TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertDirected) {
 }
 
 TEST_F(DynBetweennessGTest, runDynVsStaticCaseInsertUndirected) {
-    Aux::Random::setSeed(0, false);
-
-    for (count n = 2; n <= 25; n++)
-        for (count t = 0; t < 100; t++) {
+    for (count n = 2; n <= 25; ++n)
+        for (count t = 0; t < 100; ++t) {
             auto g = ErdosRenyiGenerator(n, 0.3, false).generate();
             if (g.numberOfEdges() == g.numberOfNodes() * (g.numberOfNodes() - 1) / 2)
                 continue;

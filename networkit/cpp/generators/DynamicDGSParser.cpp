@@ -6,6 +6,7 @@
  */
 
 #include <fstream>
+#include <unordered_map>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
@@ -55,8 +56,8 @@ void DynamicDGSParser::generate() {
     bool breakTimeStep = false; // true if breaking from the while loop was due to a time step event
 
     while (std::getline(dgsFile, line)) {
-        std::vector<std::string> split = Aux::StringTools::split(line);
-        std::string tag = split[0];
+        const std::vector<std::string> split = Aux::StringTools::split(line);
+        std::string_view tag = split[0];
 
         if (tag.compare("st") == 0 && split.size() == 2) { // clock
             Gproxy->timeStep();
@@ -65,17 +66,18 @@ void DynamicDGSParser::generate() {
 
         } else if (tag.compare("an") == 0 && split.size() >= 2) { // add node
             // Get the node name from the input
-            std::string nodeName = split[1];
+            const std::string &nodeName = split[1];
             // Add a node to a graph, mapping it to the node name inside the nodeNames map
             nodeNames[nodeName] = Gproxy->addNode();
             if (split.size() >= 4) { // DGS with ground truth
 
                 // Example: category="cond-mat.stat-mech, q-fin.ST"
-                std::string categoriesFullString = split[2];
-                auto categoriesFullStringSplit = Aux::StringTools::split(categoriesFullString, '"');
+                std::string_view categoriesFullString = split[2];
+                const auto categoriesFullStringSplit =
+                    Aux::StringTools::split(categoriesFullString, '"');
 
                 // Example: cond-mat.stat-mech, q-fin.ST
-                std::string categoriesCommaSeparated = categoriesFullStringSplit[1];
+                std::string_view categoriesCommaSeparated = categoriesFullStringSplit[1];
                 auto categories = Aux::StringTools::split(categoriesCommaSeparated, ',');
 
                 std::vector<std::string> currentNodeCategories(categories.begin(),
@@ -83,33 +85,32 @@ void DynamicDGSParser::generate() {
                 nodeCategories.push_back(currentNodeCategories);
                 assert(!nodeCategories.empty());
 
-                std::string dateFullString = split[3]; // Example: date="08-1997"
-                auto dateFullStringSplit = Aux::StringTools::split(dateFullString, '"');
-                std::string date = dateFullStringSplit[1];
-                nodeDates.push_back(date);
+                std::string_view dateFullString = split[3]; // Example: date="08-1997"
+                const auto dateFullStringSplit = Aux::StringTools::split(dateFullString, '"');
+                std::string_view date = dateFullStringSplit[1];
+                nodeDates.emplace_back(date);
             }
 
         } else if (tag.compare("ae") == 0 && split.size() >= 4) { // add edge
-            std::string edge_from = split[2];
-            std::string edge_to = split[3];
-            std::string edge_name = split[1];
+            const std::string &edge_from = split[2];
+            const std::string &edge_to = split[3];
             Gproxy->addEdge(nodeNames[edge_from], nodeNames[edge_to], 1.0);
 
         } else if (tag.compare("ce") == 0 && split.size() == 3) {
             // update edge. Only the "weight" attribute is supported so far
-            std::string from_to_edges = split[1];
-            auto edgesSplit = Aux::StringTools::split(from_to_edges, '-');
-            std::string edge_from = edgesSplit[0];
-            std::string edge_to = edgesSplit[1];
+            std::string_view from_to_edges = split[1];
+            const auto edgesSplit = Aux::StringTools::split(from_to_edges, '-');
+            const std::string &edge_from = edgesSplit[0];
+            const std::string &edge_to = edgesSplit[1];
 
-            std::string weight = split[2];
+            std::string_view weight = split[2];
             auto weightSplit = Aux::StringTools::split(weight, '=');
             double weightValue = atoi(weightSplit[1].c_str());
 
             Gproxy->setWeight(nodeNames[edge_from], nodeNames[edge_to], weightValue);
 
         } else if (tag.compare("dn") == 0 && split.size() == 2) {
-            std::string nodeName = split[1];
+            const std::string &nodeName = split[1];
             node deleteNode = nodeNames[nodeName];
             // Delete the nodes only if there are no edges connected to it
             if (Gproxy->G->degree(deleteNode) == 0) {
@@ -120,10 +121,10 @@ void DynamicDGSParser::generate() {
             }
 
         } else if (tag.compare("de") == 0 && split.size() == 2) {
-            std::string from_to_edges = split[1];
-            auto edgesSplit = Aux::StringTools::split(from_to_edges, '-');
-            std::string edge_from = edgesSplit[0];
-            std::string edge_to = edgesSplit[1];
+            std::string_view from_to_edges = split[1];
+            const auto edgesSplit = Aux::StringTools::split(from_to_edges, '-');
+            const std::string &edge_from = edgesSplit[0];
+            const std::string &edge_to = edgesSplit[1];
             node u = nodeNames[edge_from];
             node v = nodeNames[edge_to];
 
@@ -178,8 +179,6 @@ void DynamicDGSParser::evaluateClusterings(const std::string &path, const Partit
         clusterMappings[normalizedID].reserve(100000);
 
         for (const std::string &category : currentNodeCategories) {
-            clusterMappings[normalizedID].find(category);
-
             const auto got = clusterMappings[normalizedID].find(category);
 
             if (got == clusterMappings[normalizedID].end()) {

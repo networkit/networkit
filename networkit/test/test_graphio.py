@@ -162,6 +162,23 @@ class TestGraphIO(unittest.TestCase):
             guess = nk.graphio.guessFileFormat(f"input/{file}")
             self.assertEqual(guess, expected_result)
 
+    def testReadGraphGuessCustomEdgeListOptions(self):
+        filename = "output/testReadGraphGuessCustomEdgeListOptions.edgelist"
+        with open(filename, "w") as f:
+            f.write("# comment\n1,2\n2,3\n")
+
+        graph = nk.graphio.readGraph(
+            filename,
+            separator=",",
+            firstNode=1,
+            continuous=True,
+            directed=True,
+        )
+
+        self.assertTrue(graph.isDirected())
+        self.assertTrue(graph.hasEdge(0, 1))
+        self.assertTrue(graph.hasEdge(1, 2))
+
     def testGuessFormatInputGraphs(self):
         # this test does not check the guess result;
         # it is just used to make sure (most) graphs in our input directory are readable by the guess format code

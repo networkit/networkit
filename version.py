@@ -30,6 +30,8 @@ keywords = ["graph algorithm", "network analysis", "social network"]
 
 platforms = "any"
 
+python_requires = ">=3.10"
+
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",

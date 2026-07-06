@@ -491,7 +491,7 @@ public:
         if (isLeaf) {
             return content;
         } else {
-            assert(content.size() == 0);
+            assert(content.empty());
             assert(angles.empty());
             assert(radii.empty());
             vector<T> result;
@@ -509,7 +509,7 @@ public:
             anglesContainer.insert(anglesContainer.end(), angles.begin(), angles.end());
             radiiContainer.insert(radiiContainer.end(), radii.begin(), radii.end());
         } else {
-            assert(content.size() == 0);
+            assert(content.empty());
             assert(angles.empty());
             assert(radii.empty());
             for (index i = 0; i < children.size(); i++) {
@@ -797,7 +797,7 @@ public:
 
     index indexSubtree(index nextID) {
         index result = nextID;
-        assert(children.size() == 4 || children.size() == 0);
+        assert(children.size() == 4 || children.empty());
         for (index i = 0; i < children.size(); i++) {
             result = children[i].indexSubtree(result);
         }

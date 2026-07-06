@@ -123,7 +123,9 @@ public:
 #pragma omp parallel
         {
 #pragma omp single nowait
-            { root.reindex(0); }
+            {
+                root.reindex(0);
+            }
         }
     }
 

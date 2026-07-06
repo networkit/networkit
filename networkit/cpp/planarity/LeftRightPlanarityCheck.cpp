@@ -8,6 +8,7 @@
 #include "networkit/planarity/LeftRightPlanarityCheck.hpp"
 
 #include <algorithm>
+#include <stack>
 
 namespace NetworKit {
 

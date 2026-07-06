@@ -1,6 +1,7 @@
 #include <atomic>
 #include <condition_variable>
 #include <omp.h>
+#include <queue>
 #include <thread>
 #include <tlx/unused.hpp>
 #include <networkit/auxiliary/Timer.hpp>

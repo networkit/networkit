@@ -7,21 +7,24 @@
 #ifndef NETWORKIT_GRAPH_EDGE_ITERATORS_HPP_
 #define NETWORKIT_GRAPH_EDGE_ITERATORS_HPP_
 
+#include <type_traits>
+
 #include <networkit/Globals.hpp>
+#include <networkit/graph/EdgeUtils.hpp>
 #include <networkit/graph/NodeIterators.hpp>
 
 namespace NetworKit {
 
-template <typename GraphType>
+template <template <class, class> class GraphType, class NodeT, class EdgeWeightT>
 class EdgeIteratorBase {
-
 protected:
-    const GraphType *G;
-    NodeIteratorBase<GraphType> nodeIter;
+    const GraphType<NodeT, EdgeWeightT> *G;
+    NodeIteratorBase<GraphType, NodeT, EdgeWeightT> nodeIter;
     index i{none};
 
 public:
-    EdgeIteratorBase(const GraphType *G, NodeIteratorBase<GraphType> nodeIter)
+    EdgeIteratorBase(const GraphType<NodeT, EdgeWeightT> *G,
+                     NodeIteratorBase<GraphType, NodeT, EdgeWeightT> nodeIter)
         : G(G), nodeIter(nodeIter), i(index{0}) {
         if (nodeIter != G->nodeRange().end() && !G->degree(*nodeIter)) {
             nextEdge();
@@ -37,7 +40,9 @@ public:
     virtual ~EdgeIteratorBase() = default;
 
     // A valid edge might be defined differently for different graph types
-    bool validEdge() const noexcept;
+    bool validEdge() const noexcept {
+        return G->isDirected() || (*nodeIter <= G->getIthNeighbor(Unsafe{}, *nodeIter, i));
+    }
 
     void nextEdge() {
         do {
@@ -75,16 +80,36 @@ public:
     bool operator!=(const EdgeIteratorBase &rhs) const noexcept { return !(*this == rhs); }
 };
 
+template <class T>
+struct is_weighted_edge_specialization : std::false_type {};
+
+template <class NodeT, class EdgeWeightT>
+struct is_weighted_edge_specialization<WeightedEdgeT<NodeT, EdgeWeightT>> : std::true_type {};
+
 /**
  * Class to iterate over the edges of the given graph type. If the graph is undirected, operator*()
  * returns the edges (u, v) s.t. u <= v.
  */
-template <typename GraphType, typename EdgeType>
-class EdgeTypeIterator : public EdgeIteratorBase<GraphType> {
+template <template <class, class> class GraphType, class NodeT, class EdgeWeightT,
+          class IterEdgeWeightT>
+class EdgeWeightTIterator : public EdgeIteratorBase<GraphType, NodeT, EdgeWeightT> {
+    using EdgeIteratorBase<GraphType, NodeT, EdgeWeightT>::nodeIter;
+    using EdgeIteratorBase<GraphType, NodeT, EdgeWeightT>::G;
+    using EdgeIteratorBase<GraphType, NodeT, EdgeWeightT>::i;
+
+    EdgeT<NodeT> starOperator(std::false_type) const {
+        return EdgeT<NodeT>(*nodeIter, G->getIthNeighbor(Unsafe{}, *nodeIter, i));
+    }
+
+    WeightedEdgeT<NodeT, EdgeWeightT> starOperator(std::true_type) const {
+        return WeightedEdgeT<NodeT, EdgeWeightT>(*nodeIter,
+                                                 G->getIthNeighbor(Unsafe{}, *nodeIter, i),
+                                                 G->getIthNeighborWeight(Unsafe{}, *nodeIter, i));
+    }
 
 public:
     // The value type of the edges (i.e. a pair). Returned by operator*().
-    using value_type = EdgeType;
+    using value_type = IterEdgeWeightT;
 
     // Reference to the value_type, required by STL.
     using reference = value_type &;
@@ -100,40 +125,43 @@ public:
     using difference_type = ptrdiff_t;
 
     // Own type.
-    using self = EdgeTypeIterator;
+    using self = EdgeWeightTIterator;
 
-    EdgeTypeIterator(const GraphType *G, NodeIteratorBase<GraphType> nodeIter)
-        : EdgeIteratorBase<GraphType>(G, nodeIter) {}
+    EdgeWeightTIterator(const GraphType<NodeT, EdgeWeightT> *G,
+                        NodeIteratorBase<GraphType, NodeT, EdgeWeightT> nodeIter)
+        : EdgeIteratorBase<GraphType, NodeT, EdgeWeightT>(G, nodeIter) {}
 
-    EdgeTypeIterator() : EdgeIteratorBase<GraphType>() {}
+    EdgeWeightTIterator() : EdgeIteratorBase<GraphType, NodeT, EdgeWeightT>() {}
 
-    bool operator==(const EdgeTypeIterator &rhs) const noexcept {
-        return this->EdgeIteratorBase<GraphType>::operator==(
-            static_cast<EdgeIteratorBase<GraphType>>(rhs));
+    bool operator==(const EdgeWeightTIterator &rhs) const noexcept {
+        return this->EdgeIteratorBase<GraphType, NodeT, EdgeWeightT>::operator==(
+            static_cast<EdgeIteratorBase<GraphType, NodeT, EdgeWeightT>>(rhs));
     }
 
-    bool operator!=(const EdgeTypeIterator &rhs) const noexcept { return !(*this == rhs); }
+    bool operator!=(const EdgeWeightTIterator &rhs) const noexcept { return !(*this == rhs); }
 
     // The returned edge depends on both the type of edge and graph
-    EdgeType operator*() const noexcept;
+    IterEdgeWeightT operator*() const noexcept {
+        return this->starOperator(is_weighted_edge_specialization<IterEdgeWeightT>{});
+    }
 
-    EdgeTypeIterator &operator++() {
-        EdgeIteratorBase<GraphType>::nextEdge();
+    EdgeWeightTIterator &operator++() {
+        EdgeIteratorBase<GraphType, NodeT, EdgeWeightT>::nextEdge();
         return *this;
     }
 
-    EdgeTypeIterator operator++(int) {
+    EdgeWeightTIterator operator++(int) {
         const auto tmp = *this;
         ++(*this);
         return tmp;
     }
 
-    EdgeTypeIterator operator--() {
-        EdgeIteratorBase<GraphType>::prevEdge();
+    EdgeWeightTIterator operator--() {
+        EdgeIteratorBase<GraphType, NodeT, EdgeWeightT>::prevEdge();
         return *this;
     }
 
-    EdgeTypeIterator operator--(int) {
+    EdgeWeightTIterator operator--(int) {
         const auto tmp = *this;
         --(*this);
         return tmp;
@@ -143,26 +171,29 @@ public:
 /**
  * Wrapper class to iterate over a range of the edges.
  */
-template <typename GraphType, typename EdgeType>
-class EdgeTypeRange {
+template <template <class, class> class GraphType, class NodeT, class EdgeWeightT,
+          class IterEdgeWeightT>
+class EdgeWeightTRange {
 
-    const GraphType *G;
+    const GraphType<NodeT, EdgeWeightT> *G;
 
 public:
-    EdgeTypeRange(const GraphType &G) : G(&G) {}
+    EdgeWeightTRange(const GraphType<NodeT, EdgeWeightT> &G) : G(&G) {}
 
-    EdgeTypeRange() : G(nullptr){};
+    EdgeWeightTRange() : G(nullptr) {};
 
-    ~EdgeTypeRange() = default;
+    ~EdgeWeightTRange() = default;
 
-    EdgeTypeIterator<GraphType, EdgeType> begin() const {
+    EdgeWeightTIterator<GraphType, NodeT, EdgeWeightT, IterEdgeWeightT> begin() const {
         assert(G);
-        return EdgeTypeIterator<GraphType, EdgeType>(G, G->nodeRange().begin());
+        return EdgeWeightTIterator<GraphType, NodeT, EdgeWeightT, IterEdgeWeightT>(
+            G, G->nodeRange().begin());
     }
 
-    EdgeTypeIterator<GraphType, EdgeType> end() const {
+    EdgeWeightTIterator<GraphType, NodeT, EdgeWeightT, IterEdgeWeightT> end() const {
         assert(G);
-        return EdgeTypeIterator<GraphType, EdgeType>(G, G->nodeRange().end());
+        return EdgeWeightTIterator<GraphType, NodeT, EdgeWeightT, IterEdgeWeightT>(
+            G, G->nodeRange().end());
     }
 };
 

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <queue>
 #include <stdexcept>
 
 #include <networkit/distance/DynPrunedLandmarkLabeling.hpp>

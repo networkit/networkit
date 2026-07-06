@@ -1116,40 +1116,37 @@ def getReader(fileformat, *kargs, **kwargs):
 	`**kwargs` : dict()
 		Additional input parameter (depending on the file format).
 	"""
-	#define your [edgelist] reader here:
-	readers = {
-		Format.METIS:			METISGraphReader(),
-		Format.GraphML:			GraphMLReader(),
-		Format.GEXF:			GEXFReader(),
-		Format.SNAP:			SNAPGraphReader(),
-		Format.EdgeListCommaOne:	EdgeListReader(',',1,),
-		Format.EdgeListSpaceOne:	EdgeListReader(' ',1),
-		Format.EdgeListSpaceZero:	EdgeListReader(' ',0),
-		Format.EdgeListTabOne:		EdgeListReader('\t',1),
-		Format.EdgeListTabZero:		EdgeListReader('\t',0),
-		Format.LFR:			EdgeListReader('\t',1),
-		Format.KONECT:			KONECTGraphReader(),
-		Format.GML:			GMLGraphReader(),
-		Format.GraphToolBinary:		GraphToolBinaryReader(),
-		Format.MAT:			MatReader(),
-		Format.ThrillBinary:		ThrillGraphBinaryReader(),
-		Format.NetworkitBinary:         NetworkitBinaryReader(),
-		Format.MatrixMarket: MTXGraphReader(),
-		Format.RB: RBGraphReader(),
-	}
 
 	# special case for custom Edge Lists
 	if fileformat == Format.EdgeList:
 		if "continuous" in kwargs and kwargs["continuous"] == False:
 			kwargs["firstNode"] = 0
-		reader = EdgeListReader(*kargs, **kwargs)
+		return EdgeListReader(*kargs, **kwargs)
 
-	else:
-		if fileformat not in readers:
-			raise Exception("unrecognized format/format not supported as input: {0}".format(fileformat))
-		reader = readers[fileformat]#(**kwargs)
+	readers = {
+		Format.METIS:			lambda: METISGraphReader(),
+		Format.GraphML:			lambda: GraphMLReader(),
+		Format.GEXF:			lambda: GEXFReader(),
+		Format.SNAP:			lambda: SNAPGraphReader(),
+		Format.EdgeListCommaOne:	lambda: EdgeListReader(',',1,*kargs,**kwargs),
+		Format.EdgeListSpaceOne:	lambda: EdgeListReader(' ',1,*kargs,**kwargs),
+		Format.EdgeListSpaceZero:	lambda: EdgeListReader(' ',0,*kargs,**kwargs),
+		Format.EdgeListTabOne:		lambda: EdgeListReader('\t',1,*kargs,**kwargs),
+		Format.EdgeListTabZero:		lambda: EdgeListReader('\t',0,*kargs,**kwargs),
+		Format.LFR:			lambda: EdgeListReader('\t',1),
+		Format.KONECT:			lambda: KONECTGraphReader(),
+		Format.GML:			lambda: GMLGraphReader(),
+		Format.GraphToolBinary:		lambda: GraphToolBinaryReader(),
+		Format.MAT:			lambda: MatReader(),
+		Format.ThrillBinary:		lambda: ThrillGraphBinaryReader(),
+		Format.NetworkitBinary:         lambda: NetworkitBinaryReader(),
+		Format.MatrixMarket: lambda: MTXGraphReader(),
+		Format.RB: lambda: RBGraphReader(),
+	}
 
-	return reader
+	if fileformat not in readers:
+		raise Exception("unrecognized format/format not supported as input: {0}".format(fileformat))
+	return readers[fileformat]()
 
 def guessFileFormat(filepath: str) -> Format:
 	"""
@@ -1348,6 +1345,16 @@ def readGraph(path, fileformat=None, *kargs, **kwargs):
 	else:
 		if not fileformat:
 			fileformat = guessFileFormat(path)
+			edgeListFormats = (
+				Format.EdgeListCommaOne,
+				Format.EdgeListSpaceOne,
+				Format.EdgeListSpaceZero,
+				Format.EdgeListTabOne,
+				Format.EdgeListTabZero,
+			)
+			edgeListOptions = ("separator", "firstNode")
+			if fileformat in edgeListFormats and (kargs or any(option in kwargs for option in edgeListOptions)):
+				fileformat = Format.EdgeList
 		reader = getReader(fileformat, *kargs, **kwargs)
 
 		with open(path, "r") as file:    # catch a wrong path before it crashes the interpreter

@@ -6,6 +6,7 @@
  */
 
 #include <omp.h>
+#include <queue>
 #include <utility>
 
 #include <networkit/auxiliary/Log.hpp>

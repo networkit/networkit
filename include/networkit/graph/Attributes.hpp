@@ -14,6 +14,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <typeindex>
 #include <unordered_map>
@@ -151,7 +152,7 @@ public:
 
 private:
     std::vector<T> values; // the real attribute storage
-};                         // class AttributeStorage<NodeOrEdge, Base, T>
+}; // class AttributeStorage<NodeOrEdge, Base, T>
 
 template <typename NodeOrEdge, typename GraphType, typename T, bool isConst>
 class Attribute {
@@ -273,7 +274,7 @@ private:
         index idx;
     }; // class IndexProxy
 public:
-    explicit Attribute(std::shared_ptr<AttributeStorage_type> ownedStorage = nullptr,
+    explicit Attribute(const std::shared_ptr<AttributeStorage_type> &ownedStorage = nullptr,
                        const GraphType *graph = nullptr)
         : ownedStorage{ownedStorage}, theGraph{graph},
           valid{ownedStorage != nullptr && graph != nullptr} {}
@@ -298,14 +299,14 @@ public:
 
     Attribute(Attribute &&other) noexcept
         : ownedStorage{std::move(other.ownedStorage)}, theGraph{std::move(other.theGraph)},
-          valid{std::move(other.valid)} {
+          valid{other.valid} {
         other.valid = false;
     }
 
     template <bool ic = isConst, std::enable_if_t<ic, int> = 0>
     Attribute(Attribute<NodeOrEdge, GraphType, T, false> &&other) noexcept
         : ownedStorage{std::move(other.ownedStorage)}, theGraph{std::move(other.theGraph)},
-          valid{std::move(other.valid)} {
+          valid{other.valid} {
         other.valid = false;
     }
 

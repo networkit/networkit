@@ -5,6 +5,8 @@
  *      Author: cls
  */
 
+#include <stack>
+
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/distance/SSSP.hpp>
 

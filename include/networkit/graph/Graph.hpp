@@ -11,19 +11,17 @@
 #define NETWORKIT_GRAPH_GRAPH_HPP_
 
 #include <algorithm>
-#include <fstream>
+#include <atomic>
+#include <cassert>
 #include <functional>
-#include <memory>
 #include <numeric>
 #include <omp.h>
-#include <queue>
 #include <ranges>
 #include <span>
 #include <sstream>
-#include <stack>
 #include <stdexcept>
+#include <type_traits>
 #include <typeindex>
-#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -35,64 +33,11 @@
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/graph/Attributes.hpp>
 #include <networkit/graph/EdgeIterators.hpp>
+#include <networkit/graph/EdgeUtils.hpp>
 #include <networkit/graph/NeighborIterators.hpp>
 #include <networkit/graph/NodeIterators.hpp>
 
 #include <tlx/define/deprecated.hpp>
-
-namespace NetworKit {
-
-struct Edge {
-    node u, v;
-
-    Edge() : u(none), v(none) {}
-
-    Edge(node _u, node _v, bool sorted = false) {
-        u = sorted ? std::min(_u, _v) : _u;
-        v = sorted ? std::max(_u, _v) : _v;
-    }
-};
-
-/**
- * A weighted edge used for the graph constructor with
- * initializer list syntax.
- */
-struct WeightedEdge : Edge {
-    edgeweight weight;
-
-    // Needed by cython
-    WeightedEdge() : Edge(), weight(std::numeric_limits<edgeweight>::max()) {}
-
-    WeightedEdge(node u, node v, edgeweight w) : Edge(u, v), weight(w) {}
-};
-
-struct WeightedEdgeWithId : WeightedEdge {
-    edgeid eid;
-
-    WeightedEdgeWithId(node u, node v, edgeweight w, edgeid eid)
-        : WeightedEdge(u, v, w), eid(eid) {}
-};
-
-inline bool operator==(const Edge &e1, const Edge &e2) {
-    return e1.u == e2.u && e1.v == e2.v;
-}
-
-inline bool operator<(const WeightedEdge &e1, const WeightedEdge &e2) {
-    return e1.weight < e2.weight;
-}
-
-struct Unsafe {};
-static constexpr Unsafe unsafe{};
-} // namespace NetworKit
-
-namespace std {
-template <>
-struct hash<NetworKit::Edge> {
-    size_t operator()(const NetworKit::Edge &e) const { return hash_node(e.u) ^ hash_node(e.v); }
-
-    hash<NetworKit::node> hash_node;
-};
-} // namespace std
 
 namespace NetworKit {
 
@@ -105,8 +50,10 @@ class CurveballMaterialization;
  * @ingroup graph
  * A graph (with optional weights) and parallel iterator methods.
  */
-class Graph final {
-
+template <class NodeT, class EdgeWeightT>
+class AdjListGraph final {
+    static_assert(std::is_integral_v<NodeT>, "NodeT must be an integer type.");
+    static_assert(std::is_arithmetic_v<EdgeWeightT>, "EdgeWeightT must be a numeric type.");
     // graph attributes
     //!< current number of nodes
     count n;
@@ -118,7 +65,7 @@ class Graph final {
     count storedNumberOfSelfLoops;
 
     //!< current upper bound of node ids, z will be the id of the next node
-    node z;
+    NodeT z;
     //!< current upper bound of edge ids, will be the id of the next edge
     edgeid omega;
     //!< current time step
@@ -145,24 +92,26 @@ class Graph final {
 
     //!< only used for directed graphs, inEdges[v] contains all nodes u that
     //!< have an edge (u, v)
-    std::vector<std::vector<node>> inEdges;
+    std::vector<std::vector<NodeT>> inEdges;
     //!< (outgoing) edges, for each edge (u, v) v is saved in outEdges[u] and
     //!< for undirected also u in outEdges[v]
-    std::vector<std::vector<node>> outEdges;
+    std::vector<std::vector<NodeT>> outEdges;
 
     //!< only used for directed graphs, same schema as inEdges
-    std::vector<std::vector<edgeweight>> inEdgeWeights;
+    std::vector<std::vector<EdgeWeightT>> inEdgeWeights;
     //!< same schema (and same order!) as outEdges
-    std::vector<std::vector<edgeweight>> outEdgeWeights;
+    std::vector<std::vector<EdgeWeightT>> outEdgeWeights;
 
     //!< only used for directed graphs, same schema as inEdges
     std::vector<std::vector<edgeid>> inEdgeIds;
     //!< same schema (and same order!) as outEdges
     std::vector<std::vector<edgeid>> outEdgeIds;
 
+    static constexpr NodeT nullNodeId = NullNodeId<NodeT>;
+
 private:
-    AttributeMap<PerNode, Graph> nodeAttributeMap;
-    AttributeMap<PerEdge, Graph> edgeAttributeMap;
+    AttributeMap<PerNode, AdjListGraph> nodeAttributeMap;
+    AttributeMap<PerEdge, AdjListGraph> edgeAttributeMap;
 
 public:
     auto &nodeAttributes() noexcept { return nodeAttributeMap; }
@@ -175,62 +124,62 @@ public:
 
     auto attachNodeIntAttribute(const std::string &name) {
         nodeAttributes().theGraph = this;
-        return nodeAttributes().attach<int>(name);
+        return nodeAttributes().template attach<int>(name);
     }
 
     auto attachEdgeIntAttribute(const std::string &name) {
         edgeAttributes().theGraph = this;
-        return edgeAttributes().attach<int>(name);
+        return edgeAttributes().template attach<int>(name);
     }
 
     auto attachNodeDoubleAttribute(const std::string &name) {
         nodeAttributes().theGraph = this;
-        return nodeAttributes().attach<double>(name);
+        return nodeAttributes().template attach<double>(name);
     }
 
     auto attachEdgeDoubleAttribute(const std::string &name) {
         edgeAttributes().theGraph = this;
-        return edgeAttributes().attach<double>(name);
+        return edgeAttributes().template attach<double>(name);
     }
 
     auto attachNodeStringAttribute(const std::string &name) {
         nodeAttributes().theGraph = this;
-        return nodeAttributes().attach<std::string>(name);
+        return nodeAttributes().template attach<std::string>(name);
     }
 
     auto attachEdgeStringAttribute(const std::string &name) {
         edgeAttributes().theGraph = this;
-        return edgeAttributes().attach<std::string>(name);
+        return edgeAttributes().template attach<std::string>(name);
     }
 
     auto getNodeIntAttribute(const std::string &name) {
         nodeAttributes().theGraph = this;
-        return nodeAttributes().get<int>(name);
+        return nodeAttributes().template get<int>(name);
     }
 
     auto getEdgeIntAttribute(const std::string &name) {
         edgeAttributes().theGraph = this;
-        return edgeAttributes().get<int>(name);
+        return edgeAttributes().template get<int>(name);
     }
 
     auto getNodeDoubleAttribute(const std::string &name) {
         nodeAttributes().theGraph = this;
-        return nodeAttributes().get<double>(name);
+        return nodeAttributes().template get<double>(name);
     }
 
     auto getEdgeDoubleAttribute(const std::string &name) {
         edgeAttributes().theGraph = this;
-        return edgeAttributes().get<double>(name);
+        return edgeAttributes().template get<double>(name);
     }
 
     auto getNodeStringAttribute(const std::string &name) {
         nodeAttributes().theGraph = this;
-        return nodeAttributes().get<std::string>(name);
+        return nodeAttributes().template get<std::string>(name);
     }
 
     auto getEdgeStringAttribute(const std::string &name) {
         edgeAttributes().theGraph = this;
-        return edgeAttributes().get<std::string>(name);
+        return edgeAttributes().template get<std::string>(name);
     }
 
     void detachNodeAttribute(std::string const &name) {
@@ -243,26 +192,27 @@ public:
         edgeAttributes().detach(name);
     }
 
-    using NodeIntAttribute = Attribute<PerNode, Graph, int, false>;
-    using NodeDoubleAttribute = Attribute<PerNode, Graph, double, false>;
-    using NodeStringAttribute = Attribute<PerNode, Graph, std::string, false>;
+    using NodeIntAttribute = Attribute<PerNode, AdjListGraph, int, false>;
+    using NodeDoubleAttribute = Attribute<PerNode, AdjListGraph, double, false>;
+    using NodeStringAttribute = Attribute<PerNode, AdjListGraph, std::string, false>;
 
-    using EdgeIntAttribute = Attribute<PerEdge, Graph, int, false>;
-    using EdgeDoubleAttribute = Attribute<PerEdge, Graph, double, false>;
-    using EdgeStringAttribute = Attribute<PerEdge, Graph, std::string, false>;
+    using EdgeIntAttribute = Attribute<PerEdge, AdjListGraph, int, false>;
+    using EdgeDoubleAttribute = Attribute<PerEdge, AdjListGraph, double, false>;
+    using EdgeStringAttribute = Attribute<PerEdge, AdjListGraph, std::string, false>;
 
 private:
+    static constexpr EdgeWeightT defaultEdgeWeightT = EdgeWeightT{1};
     /**
      * Returns the index of node u in the array of incoming edges of node v.
      * (for directed graphs inEdges is searched, while for indirected outEdges
      * is searched, which gives the same result as indexInOutEdgeArray).
      */
-    index indexInInEdgeArray(node v, node u) const;
+    index indexInInEdgeArray(NodeT v, NodeT u) const;
 
     /**
      * Returns the index of node v in the array of outgoing edges of node u.
      */
-    index indexInOutEdgeArray(node u, node v) const;
+    index indexInOutEdgeArray(NodeT u, NodeT v) const;
 
     /**
      * Computes the weighted in/out degree of node @a u.
@@ -273,19 +223,24 @@ private:
      *
      * @return Weighted in/out degree of node @a u.
      */
-    edgeweight computeWeightedDegree(node u, bool inDegree = false,
-                                     bool countSelfLoopsTwice = false) const;
+    EdgeWeightT computeWeightedDegree(NodeT u, bool inDegree = false,
+                                      bool countSelfLoopsTwice = false) const;
 
     /**
      * Returns the edge weight of the outgoing edge of index i in the outgoing
      * edges of node u
      * @param u The node
      * @param i The index
-     * @return The weight of the outgoing edge or defaultEdgeWeight if the graph
+     * @return The weight of the outgoing edge or defaultEdgeWeightT if the graph
      * is unweighted
      */
     template <bool hasWeights>
-    inline edgeweight getOutEdgeWeight(node u, index i) const;
+    inline EdgeWeightT getOutEdgeWeight(NodeT u, index i) const {
+        if constexpr (hasWeights)
+            return outEdgeWeights[u][i];
+        else
+            return defaultEdgeWeightT;
+    }
 
     /**
      * Returns the edge weight of the incoming edge of index i in the incoming
@@ -296,7 +251,12 @@ private:
      * @return The weight of the incoming edge
      */
     template <bool hasWeights>
-    inline edgeweight getInEdgeWeight(node u, index i) const;
+    inline EdgeWeightT getInEdgeWeight(NodeT u, index i) const {
+        if constexpr (hasWeights)
+            return inEdgeWeights[u][i];
+        else
+            return defaultEdgeWeightT;
+    }
 
     /**
      * Returns the edge id of the edge of index i in the outgoing edges of node
@@ -307,7 +267,12 @@ private:
      * @return The edge id
      */
     template <bool graphHasEdgeIds>
-    inline edgeid getOutEdgeId(node u, index i) const;
+    inline edgeid getOutEdgeId(NodeT u, index i) const {
+        if constexpr (graphHasEdgeIds)
+            return outEdgeIds[u][i];
+        else
+            return nullEdgeId;
+    }
 
     /**
      * Returns the edge id of the edge of index i in the incoming edges of node
@@ -318,7 +283,12 @@ private:
      * @return The edge id
      */
     template <bool graphHasEdgeIds>
-    inline edgeid getInEdgeId(node u, index i) const;
+    inline edgeid getInEdgeId(NodeT u, index i) const {
+        if constexpr (graphHasEdgeIds)
+            return inEdgeIds[u][i];
+        else
+            return nullEdgeId;
+    }
 
     /**
      * @brief Returns if the edge (u, v) shall be used in the iteration of all
@@ -326,11 +296,16 @@ private:
      *
      * @param u The source node of the edge
      * @param v The target node of the edge
-     * @return If the node shall be used, i.e. if v is not none and in the
+     * @return If the node shall be used, i.e. if v is not nullNodeId and in the
      * undirected case if u >= v
      */
     template <bool graphIsDirected>
-    inline bool useEdgeInIteration(node u, node v) const;
+    inline bool useEdgeInIteration(NodeT u, NodeT v) const {
+        if constexpr (graphIsDirected)
+            return true;
+        else
+            return u >= v;
+    }
 
     /**
      * @brief Implementation of the for loop for outgoing edges of u
@@ -343,7 +318,7 @@ private:
      * @return void
      */
     template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
-    inline void forOutEdgesOfImpl(node u, L handle) const;
+    inline void forOutEdgesOfImpl(NodeT u, L handle) const;
 
     /**
      * @brief Implementation of the for loop for incoming edges of u
@@ -356,7 +331,7 @@ private:
      * @return void
      */
     template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
-    inline void forInEdgesOfImpl(node u, L handle) const;
+    inline void forInEdgesOfImpl(NodeT u, L handle) const;
 
     /**
      * @brief Implementation of the for loop for all edges, @see forEdges
@@ -387,133 +362,76 @@ private:
     template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
     inline double parallelSumForEdgesImpl(L handle) const;
 
-    /*
-     * In the following definition, Aux::FunctionTraits is used in order to only
-     * execute lambda functions with the appropriate parameters. The
-     * decltype-return type is used for determining the return type of the
-     * lambda (needed for summation) but also determines if the lambda accepts
-     * the correct number of parameters. Otherwise the return type declaration
-     * fails and the function is excluded from overload resolution. Then there
-     * are multiple possible lambdas with three (third parameter id or weight)
-     * and two (second parameter can be second node id or edge weight for
-     * neighbor iterators). This is checked using Aux::FunctionTraits and
-     * std::enable_if. std::enable_if only defines the type member when the
-     * given bool is true, this bool comes from std::is_same which compares two
-     * types. The function traits give either the parameter type or if it is out
-     * of bounds they define type as void.
+    /* Compile-time callable dispatcher.
+     *
+     * Aux::FunctionTraits lets us inspect a callable's arity and parameter types
+     * so we can invoke it with the best matching edge callback signature.
+     * SafeArg prevents out-of-bounds access to Traits::arg<N> by returning void
+     * when the callable has fewer than N + 1 parameters.
+     * ArgType normalizes the inspected type with std::decay_t so comparisons work
+     * for references, const qualifiers, and other call-compatible forms.
+     *
+     * The overload selection below is ordered from most specific to least specific.
+     * This matters because several lambda signatures overlap, especially when node
+     * and EdgeWeightT are the same type.
+     *
+     * If no branch matches, the static_assert produces a clear compile-time error
+     * instead of a long substitution failure.
      */
 
-    /**
-     * Triggers a static assert error when no other method is chosen. Because of
-     * the use of "..." as arguments, the priority of this method is lower than
-     * the priority of the other methods. This method avoids ugly and unreadable
-     * template substitution error messages from the other declarations.
-     */
-    template <class F, void * = (void *)0>
-    typename Aux::FunctionTraits<F>::result_type edgeLambda(F &, ...) const {
-        // the strange condition is used in order to delay the evaluation of the
-        // static assert to the moment when this function is actually used
-        static_assert(!std::is_same<F, F>::value,
-                      "Your lambda does not support the required parameters or the "
-                      "parameters have the wrong type.");
-        return std::declval<typename Aux::FunctionTraits<F>::result_type>(); // use the correct
-                                                                             // return type (this
-                                                                             // won't compile)
-    }
+    // Return void when the callable does not have an Nth parameter.
+    template <typename TraitsT, size_t N, typename Enable = void>
+    struct SafeArg {
+        using type = void;
+    };
 
-    /**
-     * Calls the given function f if its fourth argument is of the type edgeid
-     * and third of type edgeweight Note that the decltype check is not enough
-     * as edgeweight can be casted to node and we want to assure that .
-     */
-    template <class F,
-              typename std::enable_if<
-                  (Aux::FunctionTraits<F>::arity >= 3)
-                  && std::is_same<edgeweight,
-                                  typename Aux::FunctionTraits<F>::template arg<2>::type>::value
-                  && std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<3>::type>::
-                      value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid id) const
-        -> decltype(f(u, v, ew, id)) {
-        return f(u, v, ew, id);
-    }
+    // Enable this specialization only when N is in range.
+    template <typename TraitsT, size_t N>
+    struct SafeArg<TraitsT, N, typename std::enable_if<(N < TraitsT::arity)>::type> {
+        using type = typename TraitsT::template arg<N>::type;
+    };
 
-    /**
-     * Calls the given function f if its third argument is of the type edgeid,
-     * discards the edge weight Note that the decltype check is not enough as
-     * edgeweight can be casted to node.
-     */
-    template <
-        class F,
-        typename std::enable_if<
-            (Aux::FunctionTraits<F>::arity >= 2)
-            && std::is_same<edgeid, typename Aux::FunctionTraits<F>::template arg<2>::type>::value
-            && std::is_same<node, typename Aux::FunctionTraits<F>::template arg<1>::type>::
-                value /* prevent f(v, weight, eid)
-                       */
-            >::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight, edgeid id) const -> decltype(f(u, v, id)) {
-        return f(u, v, id);
-    }
+    template <typename F, size_t N>
+    using ArgType = std::decay_t<typename SafeArg<Aux::FunctionTraits<F>, N>::type>;
 
-    /**
-     * Calls the given function f if its third argument is of type edgeweight,
-     * discards the edge id Note that the decltype check is not enough as node
-     * can be casted to edgeweight.
-     */
-    template <class F,
-              typename std::enable_if<
-                  (Aux::FunctionTraits<F>::arity >= 2)
-                  && std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<
-                                                  2>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight ew, edgeid /*id*/) const
-        -> decltype(f(u, v, ew)) {
-        return f(u, v, ew);
-    }
+    template <class F>
+    decltype(auto) edgeLambda(F &f, NodeT u, NodeT v, EdgeWeightT ew, edgeid id) const {
+        using Traits = Aux::FunctionTraits<F>;
+        constexpr size_t arity = Traits::arity;
 
-    /**
-     * Calls the given function f if it has only two arguments and the second
-     * argument is of type node, discards edge weight and id Note that the
-     * decltype check is not enough as edgeweight can be casted to node.
-     */
-    template <class F, typename std::enable_if<
-                           (Aux::FunctionTraits<F>::arity >= 1)
-                           && std::is_same<node, typename Aux::FunctionTraits<F>::template arg<
-                                                     1>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node u, node v, edgeweight /*ew*/, edgeid /*id*/) const
-        -> decltype(f(u, v)) {
-        return f(u, v);
-    }
-
-    /**
-     * Calls the given function f if it has only two arguments and the second
-     * argument is of type edgeweight, discards the first node and the edge id
-     * Note that the decltype check is not enough as edgeweight can be casted to
-     * node.
-     */
-    template <class F,
-              typename std::enable_if<
-                  (Aux::FunctionTraits<F>::arity >= 1)
-                  && std::is_same<edgeweight, typename Aux::FunctionTraits<F>::template arg<
-                                                  1>::type>::value>::type * = (void *)0>
-    auto edgeLambda(F &f, node, node v, edgeweight ew, edgeid /*id*/) const -> decltype(f(v, ew)) {
-        return f(v, ew);
-    }
-
-    /**
-     * Calls the given function f if it has only one argument, discards the
-     * first node id, the edge weight and the edge id
-     */
-    template <class F, void * = (void *)0>
-    auto edgeLambda(F &f, node, node v, edgeweight, edgeid) const -> decltype(f(v)) {
-        return f(v);
+        // Most specific signatures first to avoid ambiguity between overlapping
+        // callable shapes and implicit conversions.
+        if constexpr (arity >= 3 && std::is_same_v<ArgType<F, 2>, EdgeWeightT>
+                      && std::is_same_v<ArgType<F, 3>, edgeid>) {
+            return f(u, v, ew, id);
+        } else if constexpr (arity >= 2 && std::is_same_v<ArgType<F, 2>, edgeid>
+                             && std::is_same_v<ArgType<F, 1>, NodeT>) {
+            return f(u, v, id);
+        } else if constexpr (arity >= 2 && std::is_same_v<ArgType<F, 2>, EdgeWeightT>) {
+            return f(u, v, ew);
+        } else if constexpr (arity >= 1 && std::is_same_v<ArgType<F, 1>, EdgeWeightT>
+                             && !std::is_same_v<NodeT, EdgeWeightT>) {
+            // Treat this as a weight-taking callback only when node ids and weights
+            // are distinct types.
+            return f(v, ew);
+        } else if constexpr (arity >= 1 && std::is_same_v<ArgType<F, 1>, NodeT>) {
+            return f(u, v);
+        } else if constexpr (arity >= 1 && std::is_same_v<ArgType<F, 1>, EdgeWeightT>) {
+            return f(v, ew);
+        } else if constexpr (arity >= 1 && std::is_same_v<ArgType<F, 0>, NodeT>) {
+            return f(v);
+        } else {
+            static_assert(!std::is_same_v<F, F>,
+                          "Your lambda does not support the required parameters or the parameters "
+                          "have the wrong type.");
+        }
     }
 
     /**
      * Calls the given BFS handle with distance parameter
      */
     template <class F>
-    auto callBFSHandle(F &f, node u, count dist) const -> decltype(f(u, dist)) {
+    auto callBFSHandle(F &f, NodeT u, count dist) const -> decltype(f(u, dist)) {
         return f(u, dist);
     }
 
@@ -521,30 +439,32 @@ private:
      * Calls the given BFS handle without distance parameter
      */
     template <class F>
-    auto callBFSHandle(F &f, node u, count) const -> decltype(f(u)) {
+    auto callBFSHandle(F &f, NodeT u, count) const -> decltype(f(u)) {
         return f(u);
     }
 
 public:
-    // For support of API: NetworKit::Graph::NodeIterator
-    using NodeIterator = NodeIteratorBase<Graph>;
-    // For support of API: NetworKit::Graph::NodeRange
-    using NodeRange = NodeRangeBase<Graph>;
+    // For support of API: NetworKit::AdjListGraph::NodeIterator
+    using NodeIterator = NodeIteratorBase<AdjListGraph, NodeT, EdgeWeightT>;
+    // For support of API: NetworKit::AdjListGraph::NodeRange
+    using NodeRange = NodeRangeBase<AdjListGraph, NodeT, EdgeWeightT>;
 
-    // For support of API: NetworKit::Graph:EdgeIterator
-    using EdgeIterator = EdgeTypeIterator<Graph, Edge>;
-    // For support of API: NetworKit::Graph:EdgeWeightIterator
-    using EdgeWeightIterator = EdgeTypeIterator<Graph, WeightedEdge>;
-    // For support of API: NetworKit::Graph:EdgeRange
-    using EdgeRange = EdgeTypeRange<Graph, Edge>;
-    // For support of API: NetworKit::Graph:EdgeWeightRange
-    using EdgeWeightRange = EdgeTypeRange<Graph, WeightedEdge>;
+    // For support of API: NetworKit::AdjListGraph:EdgeIterator
+    using EdgeIterator = EdgeWeightTIterator<AdjListGraph, NodeT, EdgeWeightT, EdgeT<NodeT>>;
+    // For support of API: NetworKit::AdjListGraph:EdgeWeightIterator
+    using EdgeWeightIterator =
+        EdgeWeightTIterator<AdjListGraph, NodeT, EdgeWeightT, WeightedEdgeT<NodeT, EdgeWeightT>>;
+    // For support of API: NetworKit::AdjListGraph:EdgeRange
+    using EdgeRange = EdgeWeightTRange<AdjListGraph, NodeT, EdgeWeightT, EdgeT<NodeT>>;
+    // For support of API: NetworKit::AdjListGraph:EdgeWeightRange
+    using EdgeWeightRange =
+        EdgeWeightTRange<AdjListGraph, NodeT, EdgeWeightT, WeightedEdgeT<NodeT, EdgeWeightT>>;
 
-    // For support of API: NetworKit::Graph::NeighborIterator;
-    using NeighborIterator = NeighborIteratorBase<std::vector<node>>;
-    // For support of API: NetworKit::Graph::NeighborIterator;
+    // For support of API: NetworKit::AdjListGraph::NeighborIterator;
+    using NeighborIterator = NeighborIteratorBase<std::vector<NodeT>>;
+    // For support of API: NetworKit::AdjListGraph::NeighborIterator;
     using NeighborWeightIterator =
-        NeighborWeightIteratorBase<std::vector<node>, std::vector<edgeweight>>;
+        NeighborWeightIteratorBase<std::vector<NodeT>, std::vector<EdgeWeightT>>;
 
     /**
      * Wrapper class to iterate over a range of the neighbors of a node within
@@ -552,13 +472,13 @@ public:
      */
     template <bool InEdges = false>
     class NeighborRange {
-        const Graph *G;
-        node u{none};
+        const AdjListGraph *G;
+        NodeT u{nullNodeId};
 
     public:
-        NeighborRange(const Graph &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
+        NeighborRange(const AdjListGraph &G, NodeT u) : G(&G), u(u) { assert(G.hasNode(u)); };
 
-        NeighborRange() : G(nullptr){};
+        NeighborRange() : G(nullptr) {};
 
         NeighborIterator begin() const {
             assert(G);
@@ -579,18 +499,18 @@ public:
     /**
      * Wrapper class to iterate over a range of the neighbors of a node
      * including the edge weights within a for loop.
-     * Values are std::pair<node, edgeweight>.
+     * Values are std::pair<NodeT, edgeweight>.
      */
     template <bool InEdges = false>
     class NeighborWeightRange {
 
-        const Graph *G;
-        node u{none};
+        const AdjListGraph *G;
+        NodeT u{nullNodeId};
 
     public:
-        NeighborWeightRange(const Graph &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
+        NeighborWeightRange(const AdjListGraph &G, NodeT u) : G(&G), u(u) { assert(G.hasNode(u)); };
 
-        NeighborWeightRange() : G(nullptr){};
+        NeighborWeightRange() : G(nullptr) {};
 
         NeighborWeightIterator begin() const {
             assert(G);
@@ -621,11 +541,12 @@ public:
      * @param weighted If set to <code>true</code>, the graph has edge weights.
      * @param directed If set to @c true, the graph will be directed.
      */
-    Graph(count n = 0, bool weighted = false, bool directed = false, bool edgesIndexed = false);
+    AdjListGraph(count n = 0, bool weighted = false, bool directed = false,
+                 bool edgesIndexed = false);
 
-    template <class EdgeMerger = std::plus<edgeweight>>
-    Graph(const Graph &G, bool weighted, bool directed, bool edgesIndexed = false,
-          EdgeMerger edgeMerger = std::plus<edgeweight>())
+    template <class EdgeMerger = std::plus<EdgeWeightT>>
+    AdjListGraph(const AdjListGraph &G, bool weighted, bool directed, bool edgesIndexed = false,
+                 EdgeMerger edgeMerger = std::plus<EdgeWeightT>())
         : n(G.n), m(G.m), storedNumberOfSelfLoops(G.storedNumberOfSelfLoops), z(G.z),
           omega(edgesIndexed ? G.omega : 0), t(G.t), weighted(weighted), directed(directed),
           edgesIndexed(edgesIndexed), // edges are not indexed by default
@@ -654,17 +575,17 @@ public:
                     inEdgeWeights = G.inEdgeWeights;
                     outEdgeWeights = G.outEdgeWeights;
                 } else {
-                    // G has no weights, set defaultEdgeWeight for all edges
+                    // G has no weights, set defaultEdgeWeightT for all edges
                     if (directed) {
                         inEdgeWeights.resize(z);
-                        for (node u = 0; u < z; u++) {
-                            inEdgeWeights[u].resize(G.inEdges[u].size(), defaultEdgeWeight);
+                        for (NodeT u = 0; u < z; ++u) {
+                            inEdgeWeights[u].resize(G.inEdges[u].size(), defaultEdgeWeightT);
                         }
                     }
 
                     outEdgeWeights.resize(z);
-                    for (node u = 0; u < z; u++) {
-                        outEdgeWeights[u].resize(outEdges[u].size(), defaultEdgeWeight);
+                    for (NodeT u = 0; u < z; ++u) {
+                        outEdgeWeights[u].resize(outEdges[u].size(), defaultEdgeWeightT);
                     }
                 }
             }
@@ -686,7 +607,7 @@ public:
                 outEdgeWeights.resize(z);
             if (G.hasEdgeIds() && edgesIndexed)
                 outEdgeIds.resize(z);
-            G.balancedParallelForNodes([&](node u) {
+            G.balancedParallelForNodes([&](NodeT u) {
                 // copy both out and in edges into our new outEdges
                 outEdges[u].reserve(G.outEdges[u].size() + G.inEdges[u].size());
                 outEdges[u].insert(outEdges[u].end(), G.outEdges[u].begin(), G.outEdges[u].end());
@@ -700,7 +621,7 @@ public:
                                                  G.outEdgeWeights[u].end());
                     } else {
                         // we are undirected, so no need to write anything into inEdgeWeights
-                        outEdgeWeights[u].resize(outEdges[u].size(), defaultEdgeWeight);
+                        outEdgeWeights[u].resize(outEdges[u].size(), defaultEdgeWeightT);
                     }
                 }
                 if (G.hasEdgeIds() && edgesIndexed) {
@@ -710,12 +631,12 @@ public:
                                          G.outEdgeIds[u].end());
                 }
             });
-            G.balancedParallelForNodes([&](node u) {
+            G.balancedParallelForNodes([&](NodeT u) {
                 // this is necessary to avoid multi edges, because both u -> v and v -> u can exist
                 // in G
                 count edgeSurplus = 0;
                 for (count i = 0; i < G.inEdges[u].size(); ++i) {
-                    node v = G.inEdges[u][i];
+                    NodeT v = G.inEdges[u][i];
                     bool alreadyPresent = false;
                     for (count j = 0; j < G.outEdges[u].size(); ++j) {
                         if (v != G.outEdges[u][j])
@@ -728,7 +649,7 @@ public:
                                 outEdgeWeights[u][j] =
                                     G.isWeighted()
                                         ? edgeMerger(G.inEdgeWeights[u][i], G.outEdgeWeights[u][j])
-                                        : edgeMerger(defaultEdgeWeight, defaultEdgeWeight);
+                                        : edgeMerger(defaultEdgeWeightT, defaultEdgeWeightT);
                             if (G.hasEdgeIds() && edgesIndexed)
                                 outEdgeIds[u][j] = std::min(G.inEdgeIds[u][i], G.outEdgeIds[u][j]);
                         }
@@ -738,7 +659,7 @@ public:
                         outEdges[u].push_back(v);
                         if (weighted)
                             outEdgeWeights[u].push_back(G.isWeighted() ? G.inEdgeWeights[u][i]
-                                                                       : defaultEdgeWeight);
+                                                                       : defaultEdgeWeightT);
                         if (G.hasEdgeIds() && edgesIndexed)
                             outEdgeIds[u].push_back(G.inEdgeIds[u][i]);
                     }
@@ -762,14 +683,14 @@ public:
                     outEdgeWeights = G.outEdgeWeights;
                 } else {
                     // initialize both inEdgeWeights and outEdgeWeights with the
-                    // defaultEdgeWeight
+                    // defaultEdgeWeightT
                     inEdgeWeights.resize(z);
-                    for (node u = 0; u < z; ++u) {
-                        inEdgeWeights[u].resize(inEdges[u].size(), defaultEdgeWeight);
+                    for (NodeT u = 0; u < z; ++u) {
+                        inEdgeWeights[u].resize(inEdges[u].size(), defaultEdgeWeightT);
                     }
                     outEdgeWeights.resize(z);
-                    for (node u = 0; u < z; ++u) {
-                        outEdgeWeights[u].resize(outEdges[u].size(), defaultEdgeWeight);
+                    for (NodeT u = 0; u < z; ++u) {
+                        outEdgeWeights[u].resize(outEdges[u].size(), defaultEdgeWeightT);
                     }
                 }
             }
@@ -789,13 +710,13 @@ public:
      *
      * @param[in] edges list of weighted edges
      */
-    Graph(std::initializer_list<WeightedEdge> edges);
+    AdjListGraph(std::initializer_list<WeightedEdgeT<NodeT, EdgeWeightT>> edges);
 
     /**
      * Create a graph as copy of @a other.
      * @param other The graph to copy.
      */
-    Graph(const Graph &other)
+    AdjListGraph(const AdjListGraph &other)
         : n(other.n), m(other.m), storedNumberOfSelfLoops(other.storedNumberOfSelfLoops),
           z(other.z), omega(other.omega), t(other.t), weighted(other.weighted),
           directed(other.directed), edgesIndexed(other.edgesIndexed), deletedID(other.deletedID),
@@ -804,10 +725,10 @@ public:
           inEdgeIds(other.inEdgeIds), outEdgeIds(other.outEdgeIds),
           // call special constructors to copy attribute maps
           nodeAttributeMap(other.nodeAttributeMap, this),
-          edgeAttributeMap(other.edgeAttributeMap, this){};
+          edgeAttributeMap(other.edgeAttributeMap, this) {};
 
     /** move constructor */
-    Graph(Graph &&other) noexcept
+    AdjListGraph(AdjListGraph &&other) noexcept
         : n(other.n), m(other.m), storedNumberOfSelfLoops(other.storedNumberOfSelfLoops),
           z(other.z), omega(other.omega), t(other.t), weighted(other.weighted),
           directed(other.directed), edgesIndexed(other.edgesIndexed), deletedID(other.deletedID),
@@ -823,10 +744,10 @@ public:
     };
 
     /** Default destructor */
-    ~Graph() = default;
+    ~AdjListGraph() = default;
 
     /** move assignment operator */
-    Graph &operator=(Graph &&other) noexcept {
+    AdjListGraph &operator=(AdjListGraph &&other) noexcept {
         std::swap(n, other.n);
         std::swap(m, other.m);
         std::swap(storedNumberOfSelfLoops, other.storedNumberOfSelfLoops);
@@ -855,7 +776,7 @@ public:
     };
 
     /** copy assignment operator */
-    Graph &operator=(const Graph &other) {
+    AdjListGraph &operator=(const AdjListGraph &other) {
         n = other.n;
         m = other.m;
         storedNumberOfSelfLoops = other.storedNumberOfSelfLoops;
@@ -889,9 +810,10 @@ public:
      * length is the node count plus one. The referenced data is copied into
      * internal storage, so the spans need not outlive the call.
      */
-    static Graph fromCSR(std::span<const index> rowIdxView, std::span<const index> columnIdxView,
-                         std::span<const double> nonZerosView, bool directed = true,
-                         bool isWeighted = false);
+    static AdjListGraph fromCSR(std::span<const index> rowIdxView,
+                                std::span<const index> columnIdxView,
+                                std::span<const double> nonZerosView, bool directed = true,
+                                bool isWeighted = false);
 
     /**
      * Raw-pointer overload of fromCSR(), forwarding to it via std::span.
@@ -900,10 +822,10 @@ public:
      * construct a std::span directly (support is planned for Cython 3.3.0).
      * Prefer fromCSR() in C++ code; do not use this function on its own.
      */
-    static Graph _fromCSRRaw(const index *rowIdxPtr, std::size_t rowIdxSize,
-                             const index *columnIdxPtr, std::size_t columnIdxSize,
-                             const double *nonZerosPtr, std::size_t nonZerosSize,
-                             bool directed = true, bool isWeighted = false);
+    static AdjListGraph _fromCSRRaw(const index *rowIdxPtr, std::size_t rowIdxSize,
+                                    const index *columnIdxPtr, std::size_t columnIdxSize,
+                                    const double *nonZerosPtr, std::size_t nonZerosSize,
+                                    bool directed = true, bool isWeighted = false);
 
     /**
      * Reserves memory in the node's edge containers for undirected graphs.
@@ -914,7 +836,7 @@ public:
      * This function is thread-safe if called from different
      * threads on different nodes.
      */
-    void preallocateUndirected(node u, size_t size);
+    void preallocateUndirected(NodeT u, size_t size);
 
     /**
      * Reserves memory in the node's edge containers for directed graphs.
@@ -926,7 +848,7 @@ public:
      * This function is thread-safe if called from different
      * threads on different nodes.
      */
-    void preallocateDirected(node u, size_t outSize, size_t inSize);
+    void preallocateDirected(NodeT u, size_t outSize, size_t inSize);
 
     /**
      * Reserves memory in the node's edge containers for directed graphs.
@@ -937,7 +859,7 @@ public:
      * This function is thread-safe if called from different
      * threads on different nodes.
      */
-    void preallocateDirectedOutEdges(node u, size_t outSize);
+    void preallocateDirectedOutEdges(NodeT u, size_t outSize);
 
     /**
      * Reserves memory in the node's edge containers for directed graphs.
@@ -948,16 +870,12 @@ public:
      * This function is thread-safe if called from different
      * threads on different nodes.
      */
-    void preallocateDirectedInEdges(node u, size_t inSize);
+    void preallocateDirectedInEdges(NodeT u, size_t inSize);
 
     /** EDGE IDS **/
 
     /**
-     * Initially assign integer edge identifiers. Edge ids are an optional feature.
-     * They are used by some algorithms and can also be useful to track edges. Given a graph and
-     * generated edge ids, the iterators forEdges, forNeighborsOf, etc. iterate over edges in the
-     * order of their edge ids. Once the graph is changed, the iterators will no longer guarantee
-     * this order. Use indexEdges(true) to re-index edges after modifying the graph.
+     * Initially assign integer edge identifiers.
      *
      * @param force Force re-indexing of edges even if they have already been
      * indexed
@@ -974,19 +892,19 @@ public:
     /**
      * Get the id of the given edge.
      */
-    edgeid edgeId(node u, node v) const;
+    edgeid edgeId(NodeT u, NodeT v) const;
 
     /**
      * Get the Edge (u,v) of the given id. (inverse to edgeId)
      * @note Time complexity of this function is O(n).
      */
-    std::pair<node, node> edgeById(index id) const {
-        std::pair<node, node> result{none, none};
+    std::pair<NodeT, NodeT> edgeById(index id) const {
+        std::pair<NodeT, NodeT> result{nullNodeId, nullNodeId};
         bool found = false;
 
         forNodesWhile([&] { return !found; },
-                      [&](node u) {
-                          forNeighborsOf(u, [&](node v) {
+                      [&](NodeT u) {
+                          forNeighborsOf(u, [&](NodeT v) {
                               if (!this->isDirected() && v < u)
                                   return;
                               auto uvId = edgeId(u, v);
@@ -1031,7 +949,7 @@ public:
      *               precede the second in the sorted order.
      */
     template <typename Lambda>
-    void sortNeighbors(node u, Lambda lambda);
+    void sortNeighbors(NodeT u, Lambda lambda);
 
     /**
      * Sorts the adjacency arrays by node id. While the running time is linear
@@ -1074,14 +992,14 @@ public:
      * Add a new node to the graph and return it.
      * @return The new node.
      */
-    node addNode();
+    NodeT addNode();
 
     /**
      * Add numberOfNewNodes new nodes.
      * @param  numberOfNewNodes Number of new nodes.
      * @return The index of the last node added.
      */
-    node addNodes(count numberOfNewNodes);
+    NodeT addNodes(count numberOfNewNodes);
 
     /**
      * Remove a node @a v and all incident edges from the graph.
@@ -1090,7 +1008,7 @@ public:
      *
      * @param v Node.
      */
-    void removeNode(node v);
+    void removeNode(NodeT v);
 
     /**
      * Removes out-going edges from node @u. If the graph is weighted and/or has edge ids, weights
@@ -1098,7 +1016,7 @@ public:
      *
      * @param u Node.
      */
-    void removePartialOutEdges(Unsafe, node u) {
+    void removePartialOutEdges(Unsafe, NodeT u) {
         assert(hasNode(u));
         outEdges[u].clear();
         if (isWeighted()) {
@@ -1115,7 +1033,7 @@ public:
      *
      * @param u Node.
      */
-    void removePartialInEdges(Unsafe, node u) {
+    void removePartialInEdges(Unsafe, NodeT u) {
         assert(hasNode(u));
         inEdges[u].clear();
         if (isWeighted()) {
@@ -1133,7 +1051,7 @@ public:
      * @return @c true if @a v exists, @c false otherwise.
      */
 
-    bool hasNode(node v) const noexcept { return (v < z) && this->exists[v]; }
+    bool hasNode(NodeT v) const noexcept { return (v < z) && this->exists[v]; }
 
     /**
      * Restores a previously deleted node @a v with its previous id in the
@@ -1143,7 +1061,7 @@ public:
      *
      */
 
-    void restoreNode(node v);
+    void restoreNode(NodeT v);
 
     /** NODE PROPERTIES **/
     /**
@@ -1154,7 +1072,7 @@ public:
      * @note The existence of the node is not checked. Calling this function with a non-existing
      * node results in a segmentation fault. Node existence can be checked by calling hasNode(u).
      */
-    count degree(node v) const {
+    count degree(NodeT v) const {
         assert(hasNode(v));
         return outEdges[v].size();
     }
@@ -1168,7 +1086,7 @@ public:
      * @note The existence of the node is not checked. Calling this function with a non-existing
      * node results in a segmentation fault. Node existence can be checked by calling hasNode(u).
      */
-    count degreeIn(node v) const {
+    count degreeIn(NodeT v) const {
         assert(hasNode(v));
         return directed ? inEdges[v].size() : outEdges[v].size();
     }
@@ -1181,14 +1099,14 @@ public:
      * @note The existence of the node is not checked. Calling this function with a non-existing
      * node results in a segmentation fault. Node existence can be checked by calling hasNode(u).
      */
-    count degreeOut(node v) const { return degree(v); }
+    count degreeOut(NodeT v) const { return degree(v); }
 
     /**
      * Check whether @a v is isolated, i.e. degree is 0.
      * @param v Node.
      * @return @c true if the node is isolated (= degree is 0)
      */
-    bool isIsolated(node v) const {
+    bool isIsolated(NodeT v) const {
         if (!exists[v])
             throw std::runtime_error("Error, the node does not exist!");
         return outEdges[v].empty() && (!directed || inEdges[v].empty());
@@ -1202,7 +1120,7 @@ public:
      *
      * @return Weighted degree of @a u.
      */
-    edgeweight weightedDegree(node u, bool countSelfLoopsTwice = false) const;
+    EdgeWeightT weightedDegree(NodeT u, bool countSelfLoopsTwice = false) const;
 
     /**
      * Returns the weighted in-degree of @a u.
@@ -1212,7 +1130,7 @@ public:
      *
      * @return Weighted in-degree of @a v.
      */
-    edgeweight weightedDegreeIn(node u, bool countSelfLoopsTwice = false) const;
+    EdgeWeightT weightedDegreeIn(NodeT u, bool countSelfLoopsTwice = false) const;
 
     /* EDGE MODIFIERS */
 
@@ -1231,7 +1149,8 @@ public:
      * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
      * true and the new edge would have been a multi-edge.)
      */
-    bool addEdge(node u, node v, edgeweight ew = defaultEdgeWeight, bool checkMultiEdge = false);
+    bool addEdge(NodeT u, NodeT v, EdgeWeightT ew = defaultEdgeWeightT,
+                 bool checkMultiEdge = false);
 
     /**
      * Insert an edge between the nodes @a u and @a v. Unline the addEdge function, this function
@@ -1250,7 +1169,7 @@ public:
      * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
      * true and the new edge would have been a multi-edge.)
      */
-    bool addPartialEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
+    bool addPartialEdge(Unsafe, NodeT u, NodeT v, EdgeWeightT ew = defaultEdgeWeightT,
                         uint64_t index = 0, bool checkForMultiEdges = false);
 
     /**
@@ -1269,7 +1188,7 @@ public:
      * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
      * true and the new edge would have been a multi-edge.)
      */
-    bool addPartialInEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
+    bool addPartialInEdge(Unsafe, NodeT u, NodeT v, EdgeWeightT ew = defaultEdgeWeightT,
                           uint64_t index = 0, bool checkForMultiEdges = false);
 
     /**
@@ -1288,7 +1207,7 @@ public:
      * @return @c true if edge has been added, false otherwise (in case checkMultiEdge is set to
      * true and the new edge would have been a multi-edge.)
      */
-    bool addPartialOutEdge(Unsafe, node u, node v, edgeweight ew = defaultEdgeWeight,
+    bool addPartialOutEdge(Unsafe, NodeT u, NodeT v, EdgeWeightT ew = defaultEdgeWeightT,
                            uint64_t index = 0, bool checkForMultiEdges = false);
 
     /**
@@ -1323,7 +1242,7 @@ public:
      * @param u Endpoint of edge.
      * @param v Endpoint of edge.
      */
-    void removeEdge(node u, node v);
+    void removeEdge(NodeT u, NodeT v);
 
     /**
      * Removes all the edges in the graph.
@@ -1341,7 +1260,7 @@ public:
      * self-loops (second).
      */
     template <typename Condition>
-    std::pair<count, count> removeAdjacentEdges(node u, Condition condition, bool edgesIn = false);
+    std::pair<count, count> removeAdjacentEdges(NodeT u, Condition condition, bool edgesIn = false);
 
     /**
      * Removes all self-loops in the graph.
@@ -1367,7 +1286,7 @@ public:
      * @param s2 The second source
      * @param t2 The second target
      */
-    void swapEdge(node s1, node t1, node s2, node t2);
+    void swapEdge(NodeT s1, NodeT t1, NodeT s2, NodeT t2);
 
     /**
      * Checks if undirected edge {@a u,@a v} exists in the graph.
@@ -1376,7 +1295,7 @@ public:
      * @return <code>true</code> if the edge exists, <code>false</code>
      * otherwise.
      */
-    bool hasEdge(node u, node v) const noexcept;
+    bool hasEdge(NodeT u, NodeT v) const noexcept;
 
     /* GLOBAL PROPERTIES */
 
@@ -1441,7 +1360,7 @@ public:
      */
     void timeStep() {
         WARN("Graph::timeStep should not be used and will be deprecated in the future.");
-        t++;
+        ++t;
     }
 
     /**
@@ -1463,7 +1382,7 @@ public:
      * @param v Endpoint of edge.
      * @return Edge weight of edge {@a u,@a v} or 0 if edge does not exist.
      */
-    edgeweight weight(node u, node v) const;
+    EdgeWeightT weight(NodeT u, NodeT v) const;
 
     /**
      * Set the weight of an edge. If the edge does not exist,
@@ -1473,7 +1392,7 @@ public:
      * @param[in]	v	endpoint of edge
      * @param[in]	ew	edge weight
      */
-    void setWeight(node u, node v, edgeweight ew);
+    void setWeight(NodeT u, NodeT v, EdgeWeightT ew);
 
     /**
      * Set the weight to the i-th neighbour of u.
@@ -1482,7 +1401,7 @@ public:
      * @param[in]	i	index of the nexight
      * @param[in]	ew	edge weight
      */
-    void setWeightAtIthNeighbor(Unsafe, node u, index i, edgeweight ew);
+    void setWeightAtIthNeighbor(Unsafe, NodeT u, index i, EdgeWeightT ew);
 
     /**
      * Set the weight to the i-th incoming neighbour of u.
@@ -1491,7 +1410,7 @@ public:
      * @param[in]	i	index of the nexight
      * @param[in]	ew	edge weight
      */
-    void setWeightAtIthInNeighbor(Unsafe, node u, index i, edgeweight ew);
+    void setWeightAtIthInNeighbor(Unsafe, NodeT u, index i, EdgeWeightT ew);
 
     /**
      * Increase the weight of an edge. If the edge does not exist,
@@ -1501,7 +1420,7 @@ public:
      * @param[in]	v	endpoint of edge
      * @param[in]	ew	edge weight
      */
-    void increaseWeight(node u, node v, edgeweight ew);
+    void increaseWeight(NodeT u, NodeT v, EdgeWeightT ew);
 
     /* SUMS */
 
@@ -1509,17 +1428,17 @@ public:
      * Returns the sum of all edge weights.
      * @return The sum of all edge weights.
      */
-    edgeweight totalEdgeWeight() const noexcept;
+    EdgeWeightT totalEdgeWeight() const noexcept;
 
     /**
      * Return the i-th (outgoing) neighbor of @a u.
      *
      * @param u Node.
      * @param i index; should be in [0, degreeOut(u))
-     * @return @a i-th (outgoing) neighbor of @a u, or @c none if no such
+     * @return @a i-th (outgoing) neighbor of @a u, or @c nullNodeId if no such
      * neighbor exists.
      */
-    node getIthNeighbor(Unsafe, node u, index i) const { return outEdges[u][i]; }
+    NodeT getIthNeighbor(Unsafe, NodeT u, index i) const { return outEdges[u][i]; }
 
     /**
      * Return the weight to the i-th (outgoing) neighbor of @a u.
@@ -1529,8 +1448,8 @@ public:
      * @return @a edge weight to the i-th (outgoing) neighbor of @a u, or @c +inf if no such
      * neighbor exists.
      */
-    edgeweight getIthNeighborWeight(Unsafe, node u, index i) const {
-        return isWeighted() ? outEdgeWeights[u][i] : defaultEdgeWeight;
+    EdgeWeightT getIthNeighborWeight(Unsafe, NodeT u, index i) const {
+        return isWeighted() ? outEdgeWeights[u][i] : defaultEdgeWeightT;
     }
 
     /**
@@ -1560,7 +1479,7 @@ public:
      * @param u Node.
      * @return Iterator range over the neighbors of @a u.
      */
-    NeighborRange<false> neighborRange(node u) const {
+    NeighborRange<false> neighborRange(NodeT u) const {
         assert(exists[u]);
         return NeighborRange<false>(*this, u);
     }
@@ -1573,7 +1492,7 @@ public:
      * @return Iterator range over pairs of neighbors of @a u and corresponding
      * edge weights.
      */
-    NeighborWeightRange<false> weightNeighborRange(node u) const {
+    NeighborWeightRange<false> weightNeighborRange(NodeT u) const {
         assert(isWeighted());
         assert(exists[u]);
         return NeighborWeightRange<false>(*this, u);
@@ -1585,7 +1504,7 @@ public:
      * @param u Node.
      * @return Iterator range over pairs of in-neighbors of @a u.
      */
-    NeighborRange<true> inNeighborRange(node u) const {
+    NeighborRange<true> inNeighborRange(NodeT u) const {
         assert(isDirected());
         assert(exists[u]);
         return NeighborRange<true>(*this, u);
@@ -1599,7 +1518,7 @@ public:
      * @return Iterator range over pairs of in-neighbors of @a u and corresponding
      * edge weights.
      */
-    NeighborWeightRange<true> weightInNeighborRange(node u) const {
+    NeighborWeightRange<true> weightInNeighborRange(NodeT u) const {
         assert(isDirected() && isWeighted());
         assert(exists[u]);
         return NeighborWeightRange<true>(*this, u);
@@ -1612,19 +1531,19 @@ public:
      * @param v Node
      * @return index of node v in the array of outgoing edges of node u.
      */
-    index indexOfNeighbor(node u, node v) const { return indexInOutEdgeArray(u, v); }
+    index indexOfNeighbor(NodeT u, NodeT v) const { return indexInOutEdgeArray(u, v); }
 
     /**
      * Return the i-th (outgoing) neighbor of @a u.
      *
      * @param u Node.
      * @param i index; should be in [0, degreeOut(u))
-     * @return @a i-th (outgoing) neighbor of @a u, or @c none if no such
+     * @return @a i-th (outgoing) neighbor of @a u, or @c nullNodeId if no such
      * neighbor exists.
      */
-    node getIthNeighbor(node u, index i) const {
+    NodeT getIthNeighbor(NodeT u, index i) const {
         if (!hasNode(u) || i >= outEdges[u].size())
-            return none;
+            return nullNodeId;
         return outEdges[u][i];
     }
 
@@ -1633,12 +1552,12 @@ public:
      *
      * @param u Node.
      * @param i index; should be in [0, degreeIn(u))
-     * @return @a i-th (incoming) neighbor of @a u, or @c none if no such
+     * @return @a i-th (incoming) neighbor of @a u, or @c nullNodeId if no such
      * neighbor exists.
      */
-    node getIthInNeighbor(node u, index i) const {
+    NodeT getIthInNeighbor(NodeT u, index i) const {
         if (!hasNode(u) || i >= inEdges[u].size())
-            return none;
+            return nullNodeId;
         return inEdges[u][i];
     }
 
@@ -1650,10 +1569,10 @@ public:
      * @return @a edge weight to the i-th (outgoing) neighbor of @a u, or @c +inf if no such
      * neighbor exists.
      */
-    edgeweight getIthNeighborWeight(node u, index i) const {
+    EdgeWeightT getIthNeighborWeight(NodeT u, index i) const {
         if (!hasNode(u) || i >= outEdges[u].size())
             return nullWeight;
-        return isWeighted() ? outEdgeWeights[u][i] : defaultEdgeWeight;
+        return isWeighted() ? outEdgeWeights[u][i] : defaultEdgeWeightT;
     }
 
     /**
@@ -1662,11 +1581,11 @@ public:
      * @param u Node.
      * @param i index; should be in [0, degreeOut(u))
      * @return pair: i-th (outgoing) neighbor of @a u and the corresponding
-     * edge weight, or @c defaultEdgeWeight if unweighted.
+     * edge weight, or @c defaultEdgeWeightT if unweighted.
      */
-    std::pair<node, edgeweight> getIthNeighborWithWeight(node u, index i) const {
+    std::pair<NodeT, EdgeWeightT> getIthNeighborWithWeight(NodeT u, index i) const {
         if (!hasNode(u) || i >= outEdges[u].size())
-            return {none, none};
+            return {nullNodeId, EdgeWeightT{0}};
         return getIthNeighborWithWeight(unsafe, u, i);
     }
 
@@ -1676,11 +1595,11 @@ public:
      * @param u Node.
      * @param i index; should be in [0, degreeOut(u))
      * @return pair: i-th (outgoing) neighbor of @a u and the corresponding
-     * edge weight, or @c defaultEdgeWeight if unweighted.
+     * edge weight, or @c defaultEdgeWeightT if unweighted.
      */
-    std::pair<node, edgeweight> getIthNeighborWithWeight(Unsafe, node u, index i) const {
+    std::pair<NodeT, EdgeWeightT> getIthNeighborWithWeight(Unsafe, NodeT u, index i) const {
         if (!isWeighted())
-            return {outEdges[u][i], defaultEdgeWeight};
+            return {outEdges[u][i], defaultEdgeWeightT};
         return {outEdges[u][i], outEdgeWeights[u][i]};
     }
 
@@ -1690,12 +1609,12 @@ public:
      * @param u Node.
      * @param i index; should be in [0, degreeOut(u))
      * @return pair: i-th (outgoing) neighbor of @a u and the corresponding
-     * edge id, or @c none if no such neighbor exists.
+     * edge id, or @c nullNodeId if no such neighbor exists.
      */
-    std::pair<node, edgeid> getIthNeighborWithId(node u, index i) const {
+    std::pair<NodeT, edgeid> getIthNeighborWithId(NodeT u, index i) const {
         assert(hasEdgeIds());
         if (!hasNode(u) || i >= outEdges[u].size())
-            return {none, none};
+            return {nullNodeId, nullEdgeId};
         return {outEdges[u][i], outEdgeIds[u][i]};
     }
 
@@ -1708,7 +1627,7 @@ public:
      * @param handle Takes parameter <code>(node)</code>.
      */
     template <typename L>
-    void forNodes(L handle) const;
+    void forNodes(L handle) const; // NOLINT(performance-unnecessary-value-param)
 
     /**
      * Iterate randomly over all nodes of the graph and call @a handle (lambda
@@ -1717,7 +1636,7 @@ public:
      * @param handle Takes parameter <code>(node)</code>.
      */
     template <typename L>
-    void parallelForNodes(L handle) const;
+    void parallelForNodes(L handle) const; // NOLINT(performance-unnecessary-value-param)
 
     /** Iterate over all nodes of the graph and call @a handle (lambda
      * closure) as long as @a condition remains true. This allows for breaking
@@ -1727,7 +1646,7 @@ public:
      * @param handle Takes parameter <code>(node)</code>.
      */
     template <typename C, typename L>
-    void forNodesWhile(C condition, L handle) const;
+    void forNodesWhile(C condition, L handle) const; // NOLINT(performance-unnecessary-value-param)
 
     /**
      * Iterate randomly over all nodes of the graph and call @a handle (lambda
@@ -1736,7 +1655,7 @@ public:
      * @param handle Takes parameter <code>(node)</code>.
      */
     template <typename L>
-    void forNodesInRandomOrder(L handle) const;
+    void forNodesInRandomOrder(L handle) const; // NOLINT(performance-unnecessary-value-param)
 
     /**
      * Iterate in parallel over all nodes of the graph and call handler
@@ -1746,7 +1665,7 @@ public:
      * @param handle Takes parameter <code>(node)</code>.
      */
     template <typename L>
-    void balancedParallelForNodes(L handle) const;
+    void balancedParallelForNodes(L handle) const; // NOLINT(performance-unnecessary-value-param)
 
     /**
      * Iterate over all undirected pairs of nodes and call @a handle (lambda
@@ -1755,7 +1674,7 @@ public:
      * @param handle Takes parameters <code>(node, node)</code>.
      */
     template <typename L>
-    void forNodePairs(L handle) const;
+    void forNodePairs(L handle) const; // NOLINT(performance-unnecessary-value-param)
 
     /**
      * Iterate over all undirected pairs of nodes in parallel and call @a
@@ -1764,18 +1683,13 @@ public:
      * @param handle Takes parameters <code>(node, node)</code>.
      */
     template <typename L>
-    void parallelForNodePairs(L handle) const;
+    void parallelForNodePairs(L handle) const; // NOLINT(performance-unnecessary-value-param)
 
     /* EDGE ITERATORS */
 
     /**
      * Iterate over all edges of the const graph and call @a handle (lambda
      * closure).
-     *
-     * This iterator can be used to visit each edge in the order of their edge ids.
-     * For this to work, indexEdges() must have been called once before.
-     * If the graph has changed since the last call to indexEdges(), the edge ids may not be in the
-     * correct order. In this case, calling indexEdges(true) again will restore the correct order.
      *
      * @param handle Takes parameters <code>(node, node)</code>, <code>(node,
      * node, edgweight)</code>, <code>(node, node, edgeid)</code> or
@@ -1801,11 +1715,6 @@ public:
      * Iterate over all neighbors of a node and call @a handle (lamdba
      * closure).
      *
-     * This iterator can be used to visit each edge in the order of their edge ids.
-     * For this to work, indexEdges() must have been called once before.
-     * If the graph has changed since the last call to indexEdges(), the edge ids may not be in the
-     * correct order. In this case, calling indexEdges(true) again will restore the correct order.
-     *
      * @param u Node.
      * @param handle Takes parameter <code>(node)</code> or <code>(node,
      * edgeweight)</code> which is a neighbor of @a u.
@@ -1814,16 +1723,11 @@ public:
      *
      */
     template <typename L>
-    void forNeighborsOf(node u, L handle) const;
+    void forNeighborsOf(NodeT u, L handle) const;
 
     /**
      * Iterate over all incident edges of a node and call @a handle (lamdba
      * closure).
-     *
-     * This iterator can be used to visit each edge in the order of their edge ids.
-     * For this to work, indexEdges() must have been called once before.
-     * If the graph has changed since the last call to indexEdges(), the edge ids may not be in the
-     * correct order. In this case, calling indexEdges(true) again will restore the correct order.
      *
      * @param u Node.
      * @param handle Takes parameters <code>(node, node)</code>, <code>(node,
@@ -1834,37 +1738,25 @@ public:
      * outgoing edges.
      */
     template <typename L>
-    void forEdgesOf(node u, L handle) const;
+    void forEdgesOf(NodeT u, L handle) const;
 
     /**
      * Iterate over all neighbors of a node and call handler (lamdba closure).
      * For directed graphs only incoming edges from u are considered.
-     *
-     * This iterator can be used to visit each edge in the order of their edge ids.
-     * For this to work, indexEdges() must have been called once before.
-     * If the graph has changed since the last call to indexEdges(), the edge ids may not be in the
-     * correct order. In this case, calling indexEdges(true) again will restore the correct order.
-     *
      */
     template <typename L>
-    void forInNeighborsOf(node u, L handle) const;
+    void forInNeighborsOf(NodeT u, L handle) const;
 
     /**
-     * Iterate over all incoming edges of a node and call handler (lambda
+     * Iterate over all incoming edges of a node and call handler (lamdba
      * closure).
-     *
-     * This iterator can be used to visit each edge in the order of their edge ids.
-     * For this to work, indexEdges() must have been called once before.
-     * If the graph has changed since the last call to indexEdges(), the edge ids may not be in the
-     * correct order. In this case, calling indexEdges(true) again will restore the correct order.
-     *
      * @note For undirected graphs all edges incident to u are also incoming
      * edges.
      *
      * Handle takes parameters (u, v) or (u, v, w) where w is the edge weight.
      */
     template <typename L>
-    void forInEdgesOf(node u, L handle) const;
+    void forInEdgesOf(NodeT u, L handle) const;
 
     /* REDUCTION ITERATORS */
 
@@ -1873,7 +1765,7 @@ public:
      * returned by the handler
      */
     template <typename L>
-    double parallelSumForNodes(L handle) const;
+    double parallelSumForNodes(L handle) const; // NOLINT(performance-unnecessary-value-param)
 
     /**
      * Iterate in parallel over all edges and sum (reduce +) the values
@@ -1883,19 +1775,25 @@ public:
     double parallelSumForEdges(L handle) const;
 };
 
+using Graph = AdjListGraph<node, edgeweight>;
+
 /* NODE ITERATORS */
 
+template <class NodeT, class EdgeWeightT>
 template <typename L>
-void Graph::forNodes(L handle) const {
-    for (node v = 0; v < z; ++v) {
+void AdjListGraph<NodeT, EdgeWeightT>::forNodes(
+    L handle) const { // NOLINT(performance-unnecessary-value-param)
+    for (NodeT v = 0; v < z; ++v) {
         if (exists[v]) {
             handle(v);
         }
     }
 }
 
+template <class NodeT, class EdgeWeightT>
 template <typename L>
-void Graph::parallelForNodes(L handle) const {
+void AdjListGraph<NodeT, EdgeWeightT>::parallelForNodes(
+    L handle) const { // NOLINT(performance-unnecessary-value-param)
 #pragma omp parallel for
     for (omp_index v = 0; v < static_cast<omp_index>(z); ++v) {
         if (exists[v]) {
@@ -1904,9 +1802,11 @@ void Graph::parallelForNodes(L handle) const {
     }
 }
 
+template <class NodeT, class EdgeWeightT>
 template <typename C, typename L>
-void Graph::forNodesWhile(C condition, L handle) const {
-    for (node v = 0; v < z; ++v) {
+void AdjListGraph<NodeT, EdgeWeightT>::forNodesWhile(
+    C condition, L handle) const { // NOLINT(performance-unnecessary-value-param)
+    for (NodeT v = 0; v < z; ++v) {
         if (exists[v]) {
             if (!condition()) {
                 break;
@@ -1916,19 +1816,23 @@ void Graph::forNodesWhile(C condition, L handle) const {
     }
 }
 
+template <class NodeT, class EdgeWeightT>
 template <typename L>
-void Graph::forNodesInRandomOrder(L handle) const {
-    std::vector<node> randVec;
+void AdjListGraph<NodeT, EdgeWeightT>::forNodesInRandomOrder(
+    L handle) const { // NOLINT(performance-unnecessary-value-param)
+    std::vector<NodeT> randVec;
     randVec.reserve(numberOfNodes());
-    forNodes([&](node u) { randVec.push_back(u); });
+    forNodes([&](NodeT u) { randVec.push_back(u); });
     std::ranges::shuffle(randVec, Aux::Random::getURNG());
-    for (node v : randVec) {
+    for (NodeT v : randVec) {
         handle(v);
     }
 }
 
+template <class NodeT, class EdgeWeightT>
 template <typename L>
-void Graph::balancedParallelForNodes(L handle) const {
+void AdjListGraph<NodeT, EdgeWeightT>::balancedParallelForNodes(
+    L handle) const { // NOLINT(performance-unnecessary-value-param)
 // TODO: define min block size (and test it!)
 #pragma omp parallel for schedule(guided)
     for (omp_index v = 0; v < static_cast<omp_index>(z); ++v) {
@@ -1938,11 +1842,13 @@ void Graph::balancedParallelForNodes(L handle) const {
     }
 }
 
+template <class NodeT, class EdgeWeightT>
 template <typename L>
-void Graph::forNodePairs(L handle) const {
-    for (node u = 0; u < z; ++u) {
+void AdjListGraph<NodeT, EdgeWeightT>::forNodePairs(
+    L handle) const { // NOLINT(performance-unnecessary-value-param)
+    for (NodeT u = 0; u < z; ++u) {
         if (exists[u]) {
-            for (node v = u + 1; v < z; ++v) {
+            for (NodeT v = u + 1; v < z; ++v) {
                 if (exists[v]) {
                     handle(u, v);
                 }
@@ -1951,12 +1857,14 @@ void Graph::forNodePairs(L handle) const {
     }
 }
 
+template <class NodeT, class EdgeWeightT>
 template <typename L>
-void Graph::parallelForNodePairs(L handle) const {
+void AdjListGraph<NodeT, EdgeWeightT>::parallelForNodePairs(
+    L handle) const { // NOLINT(performance-unnecessary-value-param)
 #pragma omp parallel for schedule(guided)
     for (omp_index u = 0; u < static_cast<omp_index>(z); ++u) {
         if (exists[u]) {
-            for (node v = u + 1; v < z; ++v) {
+            for (NodeT v = u + 1; v < z; ++v) {
                 if (exists[v]) {
                     handle(u, v);
                 }
@@ -1967,74 +1875,11 @@ void Graph::parallelForNodePairs(L handle) const {
 
 /* EDGE ITERATORS */
 
-/* HELPERS */
-
-template <typename T>
-void erase(node u, index idx, std::vector<std::vector<T>> &vec);
-// implementation for weighted == true
-template <bool hasWeights>
-inline edgeweight Graph::getOutEdgeWeight(node u, index i) const {
-    return outEdgeWeights[u][i];
-}
-
-// implementation for weighted == false
-template <>
-inline edgeweight Graph::getOutEdgeWeight<false>(node, index) const {
-    return defaultEdgeWeight;
-}
-
-// implementation for weighted == true
-template <bool hasWeights>
-inline edgeweight Graph::getInEdgeWeight(node u, index i) const {
-    return inEdgeWeights[u][i];
-}
-
-// implementation for weighted == false
-template <>
-inline edgeweight Graph::getInEdgeWeight<false>(node, index) const {
-    return defaultEdgeWeight;
-}
-
-// implementation for hasEdgeIds == true
-template <bool graphHasEdgeIds>
-inline edgeid Graph::getOutEdgeId(node u, index i) const {
-    return outEdgeIds[u][i];
-}
-
-// implementation for hasEdgeIds == false
-template <>
-inline edgeid Graph::getOutEdgeId<false>(node, index) const {
-    return none;
-}
-
-// implementation for hasEdgeIds == true
-template <bool graphHasEdgeIds>
-inline edgeid Graph::getInEdgeId(node u, index i) const {
-    return inEdgeIds[u][i];
-}
-
-// implementation for hasEdgeIds == false
-template <>
-inline edgeid Graph::getInEdgeId<false>(node, index) const {
-    return none;
-}
-
-// implementation for graphIsDirected == true
-template <bool graphIsDirected>
-inline bool Graph::useEdgeInIteration(node /* u */, node /* v */) const {
-    return true;
-}
-
-// implementation for graphIsDirected == false
-template <>
-inline bool Graph::useEdgeInIteration<false>(node u, node v) const {
-    return u >= v;
-}
-
+template <class NodeT, class EdgeWeightT>
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
-inline void Graph::forOutEdgesOfImpl(node u, L handle) const {
+inline void AdjListGraph<NodeT, EdgeWeightT>::forOutEdgesOfImpl(NodeT u, L handle) const {
     for (index i = 0; i < outEdges[u].size(); ++i) {
-        node v = outEdges[u][i];
+        NodeT v = outEdges[u][i];
 
         if (useEdgeInIteration<graphIsDirected>(u, v)) {
             edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
@@ -2043,18 +1888,19 @@ inline void Graph::forOutEdgesOfImpl(node u, L handle) const {
     }
 }
 
+template <class NodeT, class EdgeWeightT>
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
-inline void Graph::forInEdgesOfImpl(node u, L handle) const {
+inline void AdjListGraph<NodeT, EdgeWeightT>::forInEdgesOfImpl(NodeT u, L handle) const {
     if (graphIsDirected) {
-        for (index i = 0; i < inEdges[u].size(); i++) {
-            node v = inEdges[u][i];
+        for (index i = 0; i < inEdges[u].size(); ++i) {
+            NodeT v = inEdges[u][i];
 
             edgeLambda<L>(handle, u, v, getInEdgeWeight<hasWeights>(u, i),
                           getInEdgeId<graphHasEdgeIds>(u, i));
         }
     } else {
         for (index i = 0; i < outEdges[u].size(); ++i) {
-            node v = outEdges[u][i];
+            NodeT v = outEdges[u][i];
 
             edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
                           getOutEdgeId<graphHasEdgeIds>(u, i));
@@ -2062,32 +1908,35 @@ inline void Graph::forInEdgesOfImpl(node u, L handle) const {
     }
 }
 
+template <class NodeT, class EdgeWeightT>
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
-inline void Graph::forEdgeImpl(L handle) const {
-    for (node u = 0; u < z; ++u) {
+inline void AdjListGraph<NodeT, EdgeWeightT>::forEdgeImpl(L handle) const {
+    for (NodeT u = 0; u < z; ++u) {
         forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(u, handle);
     }
 }
 
+template <class NodeT, class EdgeWeightT>
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
-inline void Graph::parallelForEdgesImpl(L handle) const {
+inline void AdjListGraph<NodeT, EdgeWeightT>::parallelForEdgesImpl(L handle) const {
 #pragma omp parallel for schedule(guided)
     for (omp_index u = 0; u < static_cast<omp_index>(z); ++u) {
         forOutEdgesOfImpl<graphIsDirected, hasWeights, graphHasEdgeIds, L>(u, handle);
     }
 }
 
+template <class NodeT, class EdgeWeightT>
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
-inline double Graph::parallelSumForEdgesImpl(L handle) const {
+inline double AdjListGraph<NodeT, EdgeWeightT>::parallelSumForEdgesImpl(L handle) const {
     double sum = 0.0;
 
 #pragma omp parallel for reduction(+ : sum)
     for (omp_index u = 0; u < static_cast<omp_index>(z); ++u) {
         for (index i = 0; i < outEdges[u].size(); ++i) {
-            node v = outEdges[u][i];
+            NodeT v = outEdges[u][i];
 
             // undirected, do not iterate over edges twice
-            // {u, v} instead of (u, v); if v == none, u > v is not fulfilled
+            // {u, v} instead of (u, v); if v == nullNodeId, u > v is not fulfilled
             if (useEdgeInIteration<graphIsDirected>(u, v)) {
                 sum += edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
                                      getOutEdgeId<graphHasEdgeIds>(u, i));
@@ -2098,8 +1947,9 @@ inline double Graph::parallelSumForEdgesImpl(L handle) const {
     return sum;
 }
 
+template <class NodeT, class EdgeWeightT>
 template <typename L>
-void Graph::forEdges(L handle) const {
+void AdjListGraph<NodeT, EdgeWeightT>::forEdges(L handle) const {
     switch (weighted + 2 * directed + 4 * edgesIndexed) {
     case 0: // unweighted, undirected, no edgeIds
         forEdgeImpl<false, false, false, L>(handle);
@@ -2135,8 +1985,9 @@ void Graph::forEdges(L handle) const {
     }
 }
 
+template <class NodeT, class EdgeWeightT>
 template <typename L>
-void Graph::parallelForEdges(L handle) const {
+void AdjListGraph<NodeT, EdgeWeightT>::parallelForEdges(L handle) const {
     switch (weighted + 2 * directed + 4 * edgesIndexed) {
     case 0: // unweighted, undirected, no edgeIds
         parallelForEdgesImpl<false, false, false, L>(handle);
@@ -2174,13 +2025,15 @@ void Graph::parallelForEdges(L handle) const {
 
 /* NEIGHBORHOOD ITERATORS */
 
+template <class NodeT, class EdgeWeightT>
 template <typename L>
-void Graph::forNeighborsOf(node u, L handle) const {
+void AdjListGraph<NodeT, EdgeWeightT>::forNeighborsOf(NodeT u, L handle) const {
     forEdgesOf(u, handle);
 }
 
+template <class NodeT, class EdgeWeightT>
 template <typename L>
-void Graph::forEdgesOf(node u, L handle) const {
+void AdjListGraph<NodeT, EdgeWeightT>::forEdgesOf(NodeT u, L handle) const {
     switch (weighted + 2 * edgesIndexed) {
     case 0: // not weighted, no edge ids
         forOutEdgesOfImpl<true, false, false, L>(u, handle);
@@ -2200,13 +2053,15 @@ void Graph::forEdgesOf(node u, L handle) const {
     }
 }
 
+template <class NodeT, class EdgeWeightT>
 template <typename L>
-void Graph::forInNeighborsOf(node u, L handle) const {
+void AdjListGraph<NodeT, EdgeWeightT>::forInNeighborsOf(NodeT u, L handle) const {
     forInEdgesOf(u, handle);
 }
 
+template <class NodeT, class EdgeWeightT>
 template <typename L>
-void Graph::forInEdgesOf(node u, L handle) const {
+void AdjListGraph<NodeT, EdgeWeightT>::forInEdgesOf(NodeT u, L handle) const {
     switch (weighted + 2 * directed + 4 * edgesIndexed) {
     case 0: // unweighted, undirected, no edge ids
         forInEdgesOfImpl<false, false, false, L>(u, handle);
@@ -2244,8 +2099,10 @@ void Graph::forInEdgesOf(node u, L handle) const {
 
 /* REDUCTION ITERATORS */
 
+template <class NodeT, class EdgeWeightT>
 template <typename L>
-double Graph::parallelSumForNodes(L handle) const {
+double AdjListGraph<NodeT, EdgeWeightT>::parallelSumForNodes(
+    L handle) const { // NOLINT(performance-unnecessary-value-param)
     double sum = 0.0;
 
 #pragma omp parallel for reduction(+ : sum)
@@ -2258,8 +2115,9 @@ double Graph::parallelSumForNodes(L handle) const {
     return sum;
 }
 
+template <class NodeT, class EdgeWeightT>
 template <typename L>
-double Graph::parallelSumForEdges(L handle) const {
+double AdjListGraph<NodeT, EdgeWeightT>::parallelSumForEdges(L handle) const {
     double sum = 0.0;
 
     switch (weighted + 2 * directed + 4 * edgesIndexed) {
@@ -2301,8 +2159,10 @@ double Graph::parallelSumForEdges(L handle) const {
 
 /* EDGE MODIFIERS */
 
+template <class NodeT, class EdgeWeightT>
 template <typename Condition>
-std::pair<count, count> Graph::removeAdjacentEdges(node u, Condition condition, bool edgesIn) {
+std::pair<count, count>
+AdjListGraph<NodeT, EdgeWeightT>::removeAdjacentEdges(NodeT u, Condition condition, bool edgesIn) {
     count removedEdges = 0;
     count removedSelfLoops = 0;
 
@@ -2334,8 +2194,9 @@ std::pair<count, count> Graph::removeAdjacentEdges(node u, Condition condition, 
     return {removedEdges, removedSelfLoops};
 }
 
+template <class NodeT, class EdgeWeightT>
 template <typename Lambda>
-void Graph::sortNeighbors(node u, Lambda lambda) {
+void AdjListGraph<NodeT, EdgeWeightT>::sortNeighbors(NodeT u, Lambda lambda) {
     if ((degreeIn(u) < 2) && (degree(u) < 2)) {
         return;
     }
@@ -2379,13 +2240,14 @@ void Graph::sortNeighbors(node u, Lambda lambda) {
     }
 }
 
+template <class NodeT, class EdgeWeightT>
 template <class Lambda>
-void Graph::sortEdges(Lambda lambda) {
+void AdjListGraph<NodeT, EdgeWeightT>::sortEdges(Lambda lambda) {
 
     std::vector<std::vector<index>> indicesGlobal(omp_get_max_threads());
 
-    const auto sortAdjacencyArrays = [&](node u, std::vector<node> &adjList,
-                                         std::vector<edgeweight> &weights,
+    const auto sortAdjacencyArrays = [&](NodeT u, std::vector<NodeT> &adjList,
+                                         std::vector<EdgeWeightT> &weights,
                                          std::vector<edgeid> &edgeIds) -> void {
         auto &indices = indicesGlobal[omp_get_thread_num()];
         if (adjList.size() > indices.size())
@@ -2411,13 +2273,13 @@ void Graph::sortEdges(Lambda lambda) {
                 });
         } else if (hasEdgeIds())
             std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
-                return lambda(WeightedEdgeWithId{u, adjList[a], defaultEdgeWeight, edgeIds[a]},
-                              WeightedEdgeWithId{u, adjList[b], defaultEdgeWeight, edgeIds[b]});
+                return lambda(WeightedEdgeWithId{u, adjList[a], defaultEdgeWeightT, edgeIds[a]},
+                              WeightedEdgeWithId{u, adjList[b], defaultEdgeWeightT, edgeIds[b]});
             });
         else
             std::sort(indices.begin(), indicesEnd, [&](auto a, auto b) -> bool {
-                return lambda(WeightedEdgeWithId{u, adjList[a], defaultEdgeWeight, 0},
-                              WeightedEdgeWithId{u, adjList[b], defaultEdgeWeight, 0});
+                return lambda(WeightedEdgeWithId{u, adjList[a], defaultEdgeWeightT, 0},
+                              WeightedEdgeWithId{u, adjList[b], defaultEdgeWeightT, 0});
             });
 
         Aux::ArrayTools::applyPermutation(adjList.begin(), adjList.end(), indices.begin());
@@ -2429,11 +2291,11 @@ void Graph::sortEdges(Lambda lambda) {
             Aux::ArrayTools::applyPermutation(edgeIds.begin(), edgeIds.end(), indices.begin());
     };
 
-    balancedParallelForNodes([&](const node u) {
+    balancedParallelForNodes([&](const NodeT u) {
         if (degree(u) < 2)
             return;
 
-        std::vector<edgeweight> dummyEdgeWeights;
+        std::vector<EdgeWeightT> dummyEdgeWeights;
         std::vector<edgeid> dummyEdgeIds;
         sortAdjacencyArrays(u, outEdges[u], isWeighted() ? outEdgeWeights[u] : dummyEdgeWeights,
                             hasEdgeIds() ? outEdgeIds[u] : dummyEdgeIds);
@@ -2442,6 +2304,1150 @@ void Graph::sortEdges(Lambda lambda) {
             sortAdjacencyArrays(u, inEdges[u], isWeighted() ? inEdgeWeights[u] : dummyEdgeWeights,
                                 hasEdgeIds() ? inEdgeIds[u] : dummyEdgeIds);
     });
+}
+
+/** CONSTRUCTORS **/
+
+template <class NodeT, class EdgeWeightT>
+AdjListGraph<NodeT, EdgeWeightT>::AdjListGraph(count n, bool weighted, bool directed,
+                                               bool edgesIndexed)
+    : n(n), m(0), storedNumberOfSelfLoops(0), z(n), omega(0), t(0),
+
+      weighted(weighted), // indicates whether the graph is weighted or not
+      directed(directed), // indicates whether the graph is directed or not
+      edgesIndexed(edgesIndexed), deletedID(nullEdgeId),
+      // edges are not indexed by default
+
+      exists(n, true),
+
+      /* for directed graphs inEdges stores an adjacency list only considering
+         incoming edges, for undirected graphs inEdges is not used*/
+      inEdges(directed ? n : 0),
+
+      /* for directed graphs outEdges stores an adjacency list only considering
+      outgoing edges, for undirected graphs outEdges stores the adjacency list of
+      undirected edges*/
+      outEdges(n), inEdgeWeights(weighted && directed ? n : 0), outEdgeWeights(weighted ? n : 0),
+      inEdgeIds(edgesIndexed && directed ? n : 0), outEdgeIds(edgesIndexed ? n : 0),
+      nodeAttributeMap(this), edgeAttributeMap(this) {}
+
+template <class NodeT, class EdgeWeightT>
+AdjListGraph<NodeT, EdgeWeightT>::AdjListGraph(
+    std::initializer_list<WeightedEdgeT<NodeT, EdgeWeightT>> edges)
+    : AdjListGraph(0, true) {
+
+    /* Number of nodes = highest node index + 1 */
+    for (const auto &edge : edges) {
+        NodeT x = std::max(edge.u, edge.v);
+        while (numberOfNodes() <= x) {
+            addNode();
+        }
+    }
+
+    /* Now add all of the edges */
+    for (const auto &edge : edges) {
+        addEdge(edge.u, edge.v, edge.weight);
+    }
+}
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::preallocateUndirected(NodeT u, size_t size) {
+    assert(!directed);
+    assert(exists[u]);
+    outEdges[u].reserve(size);
+    if (weighted) {
+        outEdgeWeights[u].reserve(size);
+    }
+    if (edgesIndexed) {
+        outEdgeIds[u].reserve(size);
+    }
+}
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::preallocateDirected(NodeT u, size_t outSize, size_t inSize) {
+    preallocateDirectedOutEdges(u, outSize);
+    preallocateDirectedInEdges(u, inSize);
+}
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::preallocateDirectedOutEdges(NodeT u, size_t outSize) {
+    assert(directed);
+    assert(exists[u]);
+    outEdges[u].reserve(outSize);
+
+    if (weighted) {
+        outEdgeWeights[u].reserve(outSize);
+    }
+    if (edgesIndexed) {
+        outEdges[u].reserve(outSize);
+    }
+}
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::preallocateDirectedInEdges(NodeT u, size_t inSize) {
+    assert(directed);
+    assert(exists[u]);
+    inEdges[u].reserve(inSize);
+
+    if (weighted) {
+        inEdgeWeights[u].reserve(inSize);
+    }
+    if (edgesIndexed) {
+        inEdgeIds[u].reserve(inSize);
+    }
+}
+/** PRIVATE HELPERS **/
+
+template <class NodeT, class EdgeWeightT>
+index AdjListGraph<NodeT, EdgeWeightT>::indexInInEdgeArray(NodeT v, NodeT u) const {
+    if (!directed) {
+        return indexInOutEdgeArray(v, u);
+    }
+    for (index i = 0; i < inEdges[v].size(); ++i) {
+        NodeT x = inEdges[v][i];
+        if (x == u) {
+            return i;
+        }
+    }
+    return none;
+}
+
+template <class NodeT, class EdgeWeightT>
+index AdjListGraph<NodeT, EdgeWeightT>::indexInOutEdgeArray(NodeT u, NodeT v) const {
+    for (index i = 0; i < outEdges[u].size(); ++i) {
+        NodeT x = outEdges[u][i];
+        if (x == v) {
+            return i;
+        }
+    }
+    return none;
+}
+
+/** EDGE IDS **/
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::indexEdges(bool force) {
+    if (edgesIndexed && !force)
+        return;
+
+    omega = 0; // reset edge ids (for re-indexing)
+
+    outEdgeIds.clear(); // reset ids vector (for re-indexing)
+    outEdgeIds.resize(outEdges.size());
+    forNodes([&](NodeT u) { outEdgeIds[u].resize(outEdges[u].size(), nullEdgeId); });
+
+    if (directed) {
+        inEdgeIds.resize(inEdges.size());
+        forNodes([&](NodeT u) { inEdgeIds[u].resize(inEdges[u].size(), nullEdgeId); });
+    }
+
+    // assign edge ids for edges in one direction
+    forNodes([&](NodeT u) {
+        for (index i = 0; i < outEdges[u].size(); ++i) {
+            NodeT v = outEdges[u][i];
+            if (v != nullNodeId && (directed || (u >= v))) {
+                // new id
+                edgeid id = omega++;
+                outEdgeIds[u][i] = id;
+            }
+        }
+    });
+
+    // copy edge ids for the edges in the other direction. Note that
+    // "indexInOutEdgeArray" is slow which is why this second loop in parallel
+    // makes sense.
+    if (!directed) {
+        balancedParallelForNodes([&](NodeT u) {
+            for (index i = 0; i < outEdges[u].size(); ++i) {
+                NodeT v = outEdges[u][i];
+                if (v != nullNodeId && outEdgeIds[u][i] == nullEdgeId) {
+                    index j = indexInOutEdgeArray(v, u);
+                    outEdgeIds[u][i] = outEdgeIds[v][j];
+                }
+            }
+        });
+    } else {
+        balancedParallelForNodes([&](NodeT u) {
+            for (index i = 0; i < inEdges[u].size(); ++i) {
+                NodeT v = inEdges[u][i];
+                if (v != nullNodeId) {
+                    index j = indexInOutEdgeArray(v, u);
+                    inEdgeIds[u][i] = outEdgeIds[v][j];
+                }
+            }
+        });
+    }
+
+    edgesIndexed = true; // remember that edges have been indexed so that addEdge
+                         // needs to create edge ids
+}
+
+template <class NodeT, class EdgeWeightT>
+edgeid AdjListGraph<NodeT, EdgeWeightT>::edgeId(NodeT u, NodeT v) const {
+    if (!edgesIndexed) {
+        throw std::runtime_error("edges have not been indexed - call indexEdges first");
+    }
+
+    const index i = indexInOutEdgeArray(u, v);
+
+    if (i == none) {
+        throw std::runtime_error("Edge does not exist");
+    }
+    return outEdgeIds[u][i];
+}
+
+/** GRAPH INFORMATION **/
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::shrinkToFit() {
+    exists.shrink_to_fit();
+
+    inEdgeWeights.shrink_to_fit();
+    for (auto &w : inEdgeWeights) {
+        w.shrink_to_fit();
+    }
+
+    outEdgeWeights.shrink_to_fit();
+    for (auto &w : outEdgeWeights) {
+        w.shrink_to_fit();
+    }
+
+    inEdges.shrink_to_fit();
+    for (auto &a : inEdges) {
+        a.shrink_to_fit();
+    }
+
+    outEdges.shrink_to_fit();
+    for (auto &a : outEdges) {
+        a.shrink_to_fit();
+    }
+}
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::compactEdges() {
+    this->parallelForNodes([&](NodeT u) {
+        if (degreeOut(u) == 0) {
+            outEdges[u].clear();
+            if (weighted)
+                outEdgeWeights[u].clear();
+            if (edgesIndexed)
+                outEdgeIds[u].clear();
+        } else {
+            for (index i = 0; i < outEdges[u].size(); ++i) {
+                while (i < outEdges[u].size() && outEdges[u][i] == nullNodeId) {
+                    outEdges[u][i] = outEdges[u].back();
+                    outEdges[u].pop_back();
+
+                    if (weighted) {
+                        outEdgeWeights[u][i] = outEdgeWeights[u].back();
+                        outEdgeWeights[u].pop_back();
+                    }
+
+                    if (edgesIndexed) {
+                        outEdgeIds[u][i] = outEdgeIds[u].back();
+                        outEdgeIds[u].pop_back();
+                    }
+                }
+            }
+        }
+        if (directed) {
+            if (degreeIn(u) == 0) {
+                inEdges[u].clear();
+                if (weighted)
+                    inEdgeWeights[u].clear();
+                if (edgesIndexed)
+                    inEdgeIds[u].clear();
+            } else {
+                for (index i = 0; i < inEdges[u].size(); ++i) {
+                    while (i < inEdges[u].size() && inEdges[u][i] == nullNodeId) {
+                        inEdges[u][i] = inEdges[u].back();
+                        inEdges[u].pop_back();
+
+                        if (weighted) {
+                            inEdgeWeights[u][i] = inEdgeWeights[u].back();
+                            inEdgeWeights[u].pop_back();
+                        }
+
+                        if (edgesIndexed) {
+                            inEdgeIds[u][i] = inEdgeIds[u].back();
+                            inEdgeIds[u].pop_back();
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::sortEdges() {
+    std::vector<std::vector<NodeT>> targetAdjacencies(upperNodeIdBound());
+    std::vector<std::vector<EdgeWeightT>> targetWeight;
+    std::vector<std::vector<edgeid>> targetEdgeIds;
+
+    if (isWeighted()) {
+        targetWeight.resize(upperNodeIdBound());
+        forNodes([&](NodeT u) { targetWeight[u].reserve(degree(u)); });
+    }
+    if (hasEdgeIds()) {
+        targetEdgeIds.resize(upperNodeIdBound());
+        forNodes([&](NodeT u) { targetEdgeIds[u].reserve(degree(u)); });
+    }
+
+    forNodes([&](NodeT u) { targetAdjacencies[u].reserve(degree(u)); });
+
+    auto assignToTarget = [&](NodeT u, NodeT v, EdgeWeightT w, edgeid eid) {
+        targetAdjacencies[v].push_back(u);
+        if (isWeighted()) {
+            targetWeight[v].push_back(w);
+        }
+        if (hasEdgeIds()) {
+            targetEdgeIds[v].push_back(eid);
+        }
+    };
+
+    forNodes([&](NodeT u) { forInEdgesOf(u, assignToTarget); });
+
+    outEdges.swap(targetAdjacencies);
+    outEdgeWeights.swap(targetWeight);
+    outEdgeIds.swap(targetEdgeIds);
+
+    if (isDirected()) {
+        inEdges.swap(targetAdjacencies);
+        inEdgeWeights.swap(targetWeight);
+        inEdgeIds.swap(targetEdgeIds);
+
+        forNodes([&](NodeT u) {
+            targetAdjacencies[u].resize(degreeIn(u));
+            targetAdjacencies[u].shrink_to_fit();
+            targetAdjacencies[u].clear();
+            if (isWeighted()) {
+                targetWeight[u].resize(degreeIn(u));
+                targetWeight[u].shrink_to_fit();
+                targetWeight[u].clear();
+            }
+            if (hasEdgeIds()) {
+                targetEdgeIds[u].resize(degreeIn(u));
+                targetEdgeIds[u].shrink_to_fit();
+                targetEdgeIds[u].clear();
+            }
+        });
+
+        forNodes([&](NodeT u) { forEdgesOf(u, assignToTarget); });
+
+        inEdges.swap(targetAdjacencies);
+        inEdgeWeights.swap(targetWeight);
+        inEdgeIds.swap(targetEdgeIds);
+    }
+}
+
+template <class NodeT, class EdgeWeightT>
+EdgeWeightT
+AdjListGraph<NodeT, EdgeWeightT>::computeWeightedDegree(NodeT u, bool inDegree,
+                                                        bool countSelfLoopsTwice) const {
+    if (weighted) {
+        EdgeWeightT sum{0};
+        auto sumWeights = [&](NodeT v, EdgeWeightT w) {
+            sum += (countSelfLoopsTwice && u == v) ? EdgeWeightT{2} * w : w;
+        };
+        if (inDegree) {
+            forInNeighborsOf(u, sumWeights);
+        } else {
+            forNeighborsOf(u, sumWeights);
+        }
+        return sum;
+    }
+
+    count sum = inDegree ? degreeIn(u) : degreeOut(u);
+    auto countSelfLoops = [&](NodeT v) { sum += (u == v); };
+
+    if (countSelfLoopsTwice && numberOfSelfLoops()) {
+        if (inDegree) {
+            forInNeighborsOf(u, countSelfLoops);
+        } else {
+            forNeighborsOf(u, countSelfLoops);
+        }
+    }
+
+    return static_cast<EdgeWeightT>(sum);
+}
+
+/** NODE MODIFIERS **/
+
+template <class NodeT, class EdgeWeightT>
+NodeT AdjListGraph<NodeT, EdgeWeightT>::addNode() {
+    NodeT v = z; // node gets maximum id
+    ++z;         // increment node range
+    ++n;         // increment node count
+
+    // update per node data structures
+    exists.push_back(true);
+
+    outEdges.emplace_back();
+    if (weighted)
+        outEdgeWeights.emplace_back();
+    if (edgesIndexed)
+        outEdgeIds.emplace_back();
+
+    if (directed) {
+        inEdges.emplace_back();
+        if (weighted)
+            inEdgeWeights.emplace_back();
+        if (edgesIndexed)
+            inEdgeIds.emplace_back();
+    }
+
+    return v;
+}
+
+template <class NodeT, class EdgeWeightT>
+NodeT AdjListGraph<NodeT, EdgeWeightT>::addNodes(count numberOfNewNodes) {
+    if (numberOfNewNodes < 10) {
+        // benchmarks suggested, it's cheaper to call 10 time emplace_back than resizing.
+        while (numberOfNewNodes--)
+            addNode();
+
+        return z - 1;
+    }
+
+    z += numberOfNewNodes;
+    n += numberOfNewNodes;
+
+    // update per node data structures
+    exists.resize(z, true);
+
+    outEdges.resize(z);
+    if (weighted)
+        outEdgeWeights.resize(z);
+    if (edgesIndexed)
+        outEdgeIds.resize(z);
+
+    if (directed) {
+        inEdges.resize(z);
+        if (weighted)
+            inEdgeWeights.resize(z);
+        if (edgesIndexed)
+            inEdgeIds.resize(z);
+    }
+
+    return z - 1;
+}
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::removeNode(NodeT v) {
+    assert(v < z);
+    assert(exists[v]);
+
+    // Remove all outgoing and ingoing edges
+    while (!outEdges[v].empty())
+        removeEdge(v, outEdges[v].front());
+    if (isDirected())
+        while (!inEdges[v].empty())
+            removeEdge(inEdges[v].front(), v);
+
+    // Make the attributes of this node invalid
+    auto &theMap = nodeAttributeMap.attrMap;
+    for (auto it = theMap.begin(); it != theMap.end(); ++it) {
+        auto attributeStorageBase = it->second.get();
+        attributeStorageBase->invalidate(v);
+    }
+
+    exists[v] = false;
+    --n;
+}
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::restoreNode(NodeT v) {
+    assert(v < z);
+    assert(!exists[v]);
+
+    exists[v] = true;
+    ++n;
+}
+
+/** NODE PROPERTIES **/
+
+template <class NodeT, class EdgeWeightT>
+EdgeWeightT AdjListGraph<NodeT, EdgeWeightT>::weightedDegree(NodeT u,
+                                                             bool countSelfLoopsTwice) const {
+    return computeWeightedDegree(u, false, countSelfLoopsTwice);
+}
+
+template <class NodeT, class EdgeWeightT>
+EdgeWeightT AdjListGraph<NodeT, EdgeWeightT>::weightedDegreeIn(NodeT u,
+                                                               bool countSelfLoopsTwice) const {
+    return computeWeightedDegree(u, true, countSelfLoopsTwice);
+}
+
+/** EDGE MODIFIERS **/
+
+template <class NodeT, class EdgeWeightT>
+bool AdjListGraph<NodeT, EdgeWeightT>::addEdge(NodeT u, NodeT v, EdgeWeightT ew,
+                                               bool checkForMultiEdges) {
+    assert(u < z);
+    assert(exists[u]);
+    assert(v < z);
+    assert(exists[v]);
+
+    if (checkForMultiEdges && hasEdge(u, v)) {
+        return false;
+    }
+
+    // increase number of edges
+    ++m;
+    outEdges[u].push_back(v);
+
+    // if edges indexed, give new id
+    if (edgesIndexed) {
+        edgeid id = omega++;
+        outEdgeIds[u].push_back(id);
+    }
+
+    if (directed) {
+        inEdges[v].push_back(u);
+
+        if (edgesIndexed) {
+            inEdgeIds[v].push_back(omega - 1);
+        }
+
+        if (weighted) {
+            inEdgeWeights[v].push_back(ew);
+            outEdgeWeights[u].push_back(ew);
+        }
+
+    } else if (u == v) { // self-loop case
+        if (weighted) {
+            outEdgeWeights[u].push_back(ew);
+        }
+    } else { // undirected, no self-loop
+        outEdges[v].push_back(u);
+
+        if (weighted) {
+            outEdgeWeights[u].push_back(ew);
+            outEdgeWeights[v].push_back(ew);
+        }
+
+        if (edgesIndexed) {
+            outEdgeIds[v].push_back(omega - 1);
+        }
+    }
+
+    if (u == v) { // count self loop
+        ++storedNumberOfSelfLoops;
+    }
+
+    return true;
+}
+
+template <class NodeT, class EdgeWeightT>
+bool AdjListGraph<NodeT, EdgeWeightT>::addPartialEdge(Unsafe, NodeT u, NodeT v, EdgeWeightT ew,
+                                                      uint64_t index, bool checkForMultiEdges) {
+    assert(u < z);
+    assert(exists[u]);
+    assert(v < z);
+    assert(exists[v]);
+
+    if (checkForMultiEdges && (std::ranges::find(outEdges[u], v) != outEdges[u].end())) {
+        return false;
+    }
+
+    outEdges[u].push_back(v);
+
+    // if edges indexed, give new id
+    if (edgesIndexed) {
+        outEdgeIds[u].push_back(index);
+    }
+    if (weighted) {
+        outEdgeWeights[u].push_back(ew);
+    }
+
+    return true;
+}
+
+template <class NodeT, class EdgeWeightT>
+bool AdjListGraph<NodeT, EdgeWeightT>::addPartialOutEdge(Unsafe, NodeT u, NodeT v, EdgeWeightT ew,
+                                                         uint64_t index, bool checkForMultiEdges) {
+    assert(u < z);
+    assert(exists[u]);
+    assert(v < z);
+    assert(exists[v]);
+
+    if (checkForMultiEdges && (std::ranges::find(outEdges[u], v) != outEdges[u].end())) {
+        return false;
+    }
+
+    outEdges[u].push_back(v);
+
+    // if edges indexed, give new id
+    if (edgesIndexed) {
+        outEdgeIds[u].push_back(index);
+    }
+    if (weighted) {
+        outEdgeWeights[u].push_back(ew);
+    }
+
+    return true;
+}
+
+template <class NodeT, class EdgeWeightT>
+bool AdjListGraph<NodeT, EdgeWeightT>::addPartialInEdge(Unsafe, NodeT u, NodeT v, EdgeWeightT ew,
+                                                        uint64_t index, bool checkForMultiEdges) {
+    assert(u < z);
+    assert(exists[u]);
+    assert(v < z);
+    assert(exists[v]);
+
+    if (checkForMultiEdges && (std::ranges::find(inEdges[u], v) != inEdges[u].end())) {
+        return false;
+    }
+
+    inEdges[u].push_back(v);
+
+    if (edgesIndexed) {
+        inEdgeIds[u].push_back(index);
+    }
+    if (weighted) {
+        inEdgeWeights[u].push_back(ew);
+    }
+
+    return true;
+}
+
+template <class NodeT, typename T>
+void erase(NodeT u, index idx, std::vector<std::vector<T>> &vec) {
+    vec[u][idx] = vec[u].back();
+    vec[u].pop_back();
+}
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::removeEdge(NodeT u, NodeT v) {
+    assert(u < z);
+    assert(exists[u]);
+    assert(v < z);
+    assert(exists[v]);
+
+    if (maintainCompactEdges && !edgesIndexed) {
+        throw std::runtime_error("Edges have to be indexed if maintainCompactEdges is set to true");
+    }
+
+    index vi = indexInOutEdgeArray(u, v); // index in outEdges array
+    index ui = indexInInEdgeArray(v, u);  // index in inEdges array
+
+    if (edgesIndexed) {
+        deletedID = edgeId(u, v);
+    }
+
+    if (vi == none) {
+        std::stringstream strm;
+        strm << "edge (" << u << "," << v << ") does not exist";
+        throw std::runtime_error(strm.str());
+    }
+
+    const auto isLoop = (u == v);
+    --m; // decrease number of edges
+    if (isLoop)
+        --storedNumberOfSelfLoops;
+
+    // remove edge for source node
+    erase(u, vi, outEdges);
+    if (weighted) {
+        erase(u, vi, outEdgeWeights);
+    }
+    if (edgesIndexed) {
+        erase(u, vi, outEdgeIds);
+        // Make the attributes of this edge invalid
+        auto &theMap = edgeAttributeMap.attrMap;
+        for (auto it = theMap.begin(); it != theMap.end(); ++it) {
+            auto attributeStorageBase = it->second.get();
+            attributeStorageBase->invalidate(deletedID);
+        }
+    }
+    if (!directed && !isLoop) {
+        // also remove edge for target node
+        erase(v, ui, outEdges);
+        if (weighted) {
+            erase(v, ui, outEdgeWeights);
+        }
+        if (edgesIndexed) {
+            erase(v, ui, outEdgeIds);
+        }
+    }
+    if (maintainSortedEdges) {
+        // initial index of deleted edge, also represents current index
+        index cur = vi;
+
+        // sort edges of source node from deleted index upwards
+        while (cur + 1 < outEdges[u].size() && outEdges[u][cur] > outEdges[u][cur + 1]) {
+            std::swap(outEdges[u][cur], outEdges[u][cur + 1]);
+            if (edgesIndexed) {
+                std::swap(outEdgeIds[u][cur], outEdgeIds[u][cur + 1]);
+                // swap attributes as well
+                auto &theMap = edgeAttributeMap.attrMap;
+                for (auto it = theMap.begin(); it != theMap.end(); ++it) {
+                    auto attributeStorageBase = it->second.get();
+                    attributeStorageBase->swapData(outEdgeIds[u][cur], outEdgeIds[u][cur + 1]);
+                }
+            }
+            ++cur;
+        }
+
+        if (!directed) {
+            cur = ui;
+
+            // sort edges of target node from deleted index upwards
+            while (cur + 1 < outEdges[v].size() && outEdges[v][cur] > outEdges[v][cur + 1]) {
+                std::swap(outEdges[v][cur], outEdges[v][cur + 1]);
+                if (edgesIndexed) {
+                    std::swap(outEdgeIds[v][cur], outEdgeIds[v][cur + 1]);
+                }
+                ++cur;
+            }
+        }
+    }
+    if (maintainCompactEdges) {
+        // re-index edge IDs from deleted edge upwards
+        balancedParallelForNodes([&](NodeT w) {
+            for (index i = 0; i < outEdges[w].size(); ++i) {
+                auto curID = outEdgeIds[w][i];
+                if (curID > deletedID) {
+                    --outEdgeIds[w][i];
+                }
+            }
+        });
+        // use erase to remove data entry at index `deletedID` and compact the data vector again
+        auto &theMap = edgeAttributeMap.attrMap;
+        for (auto it = theMap.begin(); it != theMap.end(); ++it) {
+            auto attributeStorageBase = it->second.get();
+            attributeStorageBase->erase(deletedID);
+        }
+    }
+    if (directed) {
+        assert(ui != none);
+
+        erase(v, ui, inEdges);
+        if (weighted) {
+            erase(v, ui, inEdgeWeights);
+        }
+        if (edgesIndexed) {
+            erase(v, ui, inEdgeIds);
+        }
+        if (maintainSortedEdges) {
+            // initial index of deleted edge, also represents current index
+            index cur = ui;
+
+            // sort edges of target node from deleted index upwards
+            while (cur + 1 < inEdges[v].size() && inEdges[v][cur] > inEdges[v][cur + 1]) {
+                std::swap(inEdges[v][cur], inEdges[v][cur + 1]);
+                if (edgesIndexed) {
+                    std::swap(inEdgeIds[v][cur], inEdgeIds[v][cur + 1]);
+                }
+                ++cur;
+            }
+        }
+
+        if (maintainCompactEdges) {
+            // re-index edge ids from target node
+            balancedParallelForNodes([&](NodeT w) {
+                for (index i = 0; i < inEdges[w].size(); ++i) {
+                    NodeT vv = inEdges[w][i];
+                    if (vv != none) {
+                        index j = indexInOutEdgeArray(vv, w);
+                        inEdgeIds[w][i] = outEdgeIds[vv][j];
+                    }
+                }
+            });
+        }
+    }
+    if (maintainCompactEdges) {
+        --omega; // decrease upperBound of edges
+    }
+}
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::removeAllEdges() {
+    parallelForNodes([&](const NodeT u) {
+        removePartialOutEdges(unsafe, u);
+        if (isDirected()) {
+            removePartialInEdges(unsafe, u);
+        }
+    });
+
+    m = 0;
+}
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::removeSelfLoops() {
+    parallelForNodes([&](const NodeT u) {
+        auto isSelfLoop = [u](const NodeT v) { return u == v; };
+        removeAdjacentEdges(u, isSelfLoop);
+        if (isDirected()) {
+            removeAdjacentEdges(u, isSelfLoop, true);
+        }
+    });
+
+    m -= storedNumberOfSelfLoops;
+    storedNumberOfSelfLoops = 0;
+}
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::removeMultiEdges() {
+    count removedEdges = 0;
+    count removedSelfLoops = 0;
+    std::unordered_set<NodeT> nodes;
+
+    forNodes([&](const NodeT u) {
+        nodes.reserve(degree(u));
+        auto isMultiedge = [&nodes](const NodeT v) { return !nodes.insert(v).second; };
+        auto result = removeAdjacentEdges(u, isMultiedge);
+        removedEdges += result.first;
+        removedSelfLoops += result.second;
+        if (isDirected()) {
+            nodes.clear();
+            removeAdjacentEdges(u, isMultiedge, true);
+        }
+        nodes.clear();
+    });
+
+    if (!isDirected()) {
+        assert(!(removedEdges % 2));
+        removedEdges /= 2;
+    }
+
+    m -= removedEdges + removedSelfLoops;
+    storedNumberOfSelfLoops -= removedSelfLoops;
+}
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::swapEdge(NodeT s1, NodeT t1, NodeT s2, NodeT t2) {
+    index s1t1 = indexInOutEdgeArray(s1, t1);
+    if (s1t1 == none)
+        throw std::runtime_error("The first edge does not exist");
+    index t1s1 = indexInInEdgeArray(t1, s1);
+
+    index s2t2 = indexInOutEdgeArray(s2, t2);
+    if (s2t2 == none)
+        throw std::runtime_error("The second edge does not exist");
+    index t2s2 = indexInInEdgeArray(t2, s2);
+
+    std::swap(outEdges[s1][s1t1], outEdges[s2][s2t2]);
+
+    if (directed) {
+        std::swap(inEdges[t1][t1s1], inEdges[t2][t2s2]);
+
+        if (weighted) {
+            std::swap(inEdgeWeights[t1][t1s1], inEdgeWeights[t2][t2s2]);
+        }
+
+        if (edgesIndexed) {
+            std::swap(inEdgeIds[t1][t1s1], inEdgeIds[t2][t2s2]);
+        }
+    } else {
+        std::swap(outEdges[t1][t1s1], outEdges[t2][t2s2]);
+
+        if (weighted) {
+            std::swap(outEdgeWeights[t1][t1s1], outEdgeWeights[t2][t2s2]);
+        }
+
+        if (edgesIndexed) {
+            std::swap(outEdgeIds[t1][t1s1], outEdgeIds[t2][t2s2]);
+        }
+    }
+}
+
+template <class NodeT, class EdgeWeightT>
+bool AdjListGraph<NodeT, EdgeWeightT>::hasEdge(NodeT u, NodeT v) const noexcept {
+    if (u >= z || v >= z) {
+        return false;
+    }
+    if (!directed && outEdges[u].size() > outEdges[v].size()) {
+        return indexInOutEdgeArray(v, u) != none;
+    } else if (directed && outEdges[u].size() > inEdges[v].size()) {
+        return indexInInEdgeArray(v, u) != none;
+    } else {
+        return indexInOutEdgeArray(u, v) != none;
+    }
+}
+
+/** EDGE ATTRIBUTES **/
+
+template <class NodeT, class EdgeWeightT>
+EdgeWeightT AdjListGraph<NodeT, EdgeWeightT>::weight(NodeT u, NodeT v) const {
+    index vi = indexInOutEdgeArray(u, v);
+    if (vi == none) {
+        return nullWeight;
+    } else {
+        return weighted ? outEdgeWeights[u][vi] : defaultEdgeWeightT;
+    }
+}
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::setWeight(NodeT u, NodeT v, EdgeWeightT ew) {
+    if (!weighted) {
+        throw std::runtime_error("Cannot set edge weight in unweighted graph.");
+    }
+
+    index vi = indexInOutEdgeArray(u, v);
+    if (vi == none) {
+        // edge does not exist, create it, but warn user
+        TRACE("Setting edge weight of a nonexisting edge will create the edge.");
+        addEdge(u, v, ew);
+        return;
+    }
+
+    outEdgeWeights[u][vi] = ew;
+    if (directed) {
+        index ui = indexInInEdgeArray(v, u);
+        inEdgeWeights[v][ui] = ew;
+    } else if (u != v) {
+        index ui = indexInInEdgeArray(v, u);
+        outEdgeWeights[v][ui] = ew;
+    }
+}
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::increaseWeight(NodeT u, NodeT v, EdgeWeightT ew) {
+    if (!weighted) {
+        throw std::runtime_error("Cannot increase edge weight in unweighted graph.");
+    }
+
+    index vi = indexInOutEdgeArray(u, v);
+    if (vi == none) {
+        // edge does not exits, create it, but warn user
+        addEdge(u, v, ew);
+        return;
+    }
+
+    outEdgeWeights[u][vi] += ew;
+    if (directed) {
+        index ui = indexInInEdgeArray(v, u);
+        inEdgeWeights[v][ui] += ew;
+    } else if (u != v) {
+        index ui = indexInInEdgeArray(v, u);
+        outEdgeWeights[v][ui] += ew;
+    }
+}
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::setWeightAtIthNeighbor(Unsafe, NodeT u, index i,
+                                                              EdgeWeightT ew) {
+    outEdgeWeights[u][i] = ew;
+}
+
+template <class NodeT, class EdgeWeightT>
+void AdjListGraph<NodeT, EdgeWeightT>::setWeightAtIthInNeighbor(Unsafe, NodeT u, index i,
+                                                                EdgeWeightT ew) {
+    inEdgeWeights[u][i] = ew;
+}
+
+/** SUMS **/
+
+template <class NodeT, class EdgeWeightT>
+EdgeWeightT AdjListGraph<NodeT, EdgeWeightT>::totalEdgeWeight() const noexcept {
+    if (weighted)
+        return parallelSumForEdges([](NodeT, NodeT, EdgeWeightT ew) { return ew; });
+    return numberOfEdges() * defaultEdgeWeightT;
+}
+
+template <class NodeT, class EdgeWeightT>
+bool AdjListGraph<NodeT, EdgeWeightT>::checkConsistency() const {
+    // check for multi-edges
+    std::vector<NodeT> lastSeen(z, nullNodeId);
+    bool noMultiEdges = true;
+    auto noMultiEdgesDetected = [&noMultiEdges]() { return noMultiEdges; };
+    forNodesWhile(noMultiEdgesDetected, [&](NodeT v) {
+        forNeighborsOf(v, [&](NodeT u) {
+            if (lastSeen[u] == v) {
+                noMultiEdges = false;
+                DEBUG("Multiedge found between ", u, " and ", v, "!");
+            }
+            lastSeen[u] = v;
+        });
+    });
+
+    bool correctNodeUpperbound = (z == outEdges.size()) && ((directed ? z : 0) == inEdges.size())
+                                 && ((weighted ? z : 0) == outEdgeWeights.size())
+                                 && ((weighted && directed ? z : 0) == inEdgeWeights.size())
+                                 && ((edgesIndexed ? z : 0) == outEdgeIds.size())
+                                 && ((edgesIndexed && directed ? z : 0) == inEdgeIds.size());
+
+    if (!correctNodeUpperbound)
+        DEBUG("Saved node upper bound doesn't actually match the actual node upper bound!");
+
+    count NumberOfOutEdges = 0;
+    count NumberOfOutEdgeWeights = 0;
+    count NumberOfOutEdgeIds = 0;
+    for (index i = 0; i < outEdges.size(); ++i) {
+        NumberOfOutEdges += outEdges[i].size();
+    }
+    if (weighted)
+        for (index i = 0; i < outEdgeWeights.size(); ++i) {
+            NumberOfOutEdgeWeights += outEdgeWeights[i].size();
+        }
+    if (edgesIndexed)
+        for (index i = 0; i < outEdgeIds.size(); ++i) {
+            NumberOfOutEdgeIds += outEdgeIds[i].size();
+        }
+
+    count NumberOfInEdges = 0;
+    count NumberOfInEdgeWeights = 0;
+    count NumberOfInEdgeIds = 0;
+    if (directed) {
+        for (index i = 0; i < inEdges.size(); ++i) {
+            NumberOfInEdges += inEdges[i].size();
+        }
+        if (weighted)
+            for (index i = 0; i < inEdgeWeights.size(); ++i) {
+                NumberOfInEdgeWeights += inEdgeWeights[i].size();
+            }
+        if (edgesIndexed)
+            for (index i = 0; i < inEdgeIds.size(); ++i) {
+                NumberOfInEdgeIds += inEdgeIds[i].size();
+            }
+    }
+
+    if (!directed) {
+        NumberOfOutEdges = (NumberOfOutEdges + storedNumberOfSelfLoops) / 2;
+        if (weighted)
+            NumberOfOutEdgeWeights = (NumberOfOutEdgeWeights + storedNumberOfSelfLoops) / 2;
+        if (edgesIndexed)
+            NumberOfOutEdgeIds = (NumberOfOutEdgeIds + storedNumberOfSelfLoops) / 2;
+    }
+
+    bool correctNumberOfEdges = (m == NumberOfOutEdges) && ((directed ? m : 0) == NumberOfInEdges)
+                                && ((weighted ? m : 0) == NumberOfOutEdgeWeights)
+                                && ((weighted && directed ? m : 0) == NumberOfInEdgeWeights)
+                                && ((edgesIndexed ? m : 0) == NumberOfOutEdgeIds)
+                                && ((edgesIndexed && directed ? m : 0) == NumberOfInEdgeIds);
+
+    if (!correctNumberOfEdges)
+        DEBUG("Saved number of edges is incorrect!");
+
+    return noMultiEdges && correctNodeUpperbound && correctNumberOfEdges;
+}
+
+template <class NodeT, class EdgeWeightT>
+AdjListGraph<NodeT, EdgeWeightT>
+AdjListGraph<NodeT, EdgeWeightT>::fromCSR(std::span<const index> rowIdxView,
+                                         std::span<const index> columnIdxView,
+                                         std::span<const double> nonZerosView, bool directed,
+                                         bool isWeighted) {
+    // In CSR format rowIdxView has nRows + 1 entries, so the number of rows is
+    // derived directly from its length.
+    if (rowIdxView.empty()) {
+        throw std::invalid_argument("rowIdxView must have at least one entry");
+    }
+    count nRows = static_cast<count>(rowIdxView.size() - 1);
+
+    // In CSR format the number of stored entries (nnz) is the last row pointer.
+    size_t nnz = static_cast<size_t>(rowIdxView[nRows]);
+
+    if (columnIdxView.size() != nnz) {
+        throw std::invalid_argument("columnIdxView size does not match rowIdxView[nRows]");
+    }
+    if (isWeighted && nonZerosView.size() != nnz) {
+        throw std::invalid_argument("nonZerosView size does not match rowIdxView[nRows]");
+    }
+
+    // Create the Graph with reserved structures
+    AdjListGraph graph(nRows, isWeighted, directed);
+
+    // Number of edges equals number of stored column indices
+    count edgeCount = static_cast<count>(nnz);
+
+    // Precompute row sizes and preallocate contiguous storage for each row.
+    std::vector<size_t> rowSizes(nRows);
+    graph.outEdges.resize(nRows);
+    if (isWeighted) {
+        graph.outEdgeWeights.resize(nRows);
+    }
+
+    for (index i = 0; i < nRows; ++i) {
+        index rowStart = rowIdxView[i];
+        index rowEnd = rowIdxView[i + 1];
+        assert(rowEnd >= rowStart && "rowIdxView must be non-decreasing");
+        rowSizes[i] = static_cast<size_t>(rowEnd - rowStart);
+        graph.outEdges[i].resize(rowSizes[i]);
+        if (isWeighted)
+            graph.outEdgeWeights[i].resize(rowSizes[i]);
+    }
+
+#pragma omp parallel for schedule(guided)
+    for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
+        index rowStart = rowIdxView[i];
+        index rowEnd = rowIdxView[i + 1];
+        if (rowEnd > rowStart) {
+            std::copy(columnIdxView.data() + rowStart, columnIdxView.data() + rowEnd,
+                      graph.outEdges[i].begin());
+            if (isWeighted) {
+                std::copy(nonZerosView.data() + rowStart, nonZerosView.data() + rowEnd,
+                          graph.outEdgeWeights[i].begin());
+            }
+        }
+    }
+
+    // For directed graphs, build inEdges (and inEdgeWeights). We compute
+    // in-degrees first, preallocate, then fill the arrays. Filling uses
+    // atomic position counters so it can be parallelized safely.
+    if (directed) {
+        graph.inEdges.resize(nRows);
+        if (isWeighted) {
+            graph.inEdgeWeights.resize(nRows);
+        }
+
+        std::vector<size_t> inDeg(nRows, 0);
+        for (size_t k = 0; k < nnz; ++k) {
+            index j = columnIdxView[k];
+            ++inDeg[j];
+        }
+
+        for (index j = 0; j < nRows; ++j) {
+            graph.inEdges[j].resize(inDeg[j]);
+            if (isWeighted)
+                graph.inEdgeWeights[j].resize(inDeg[j]);
+        }
+
+        // position counters for each target row; initialize to zero
+        std::vector<std::atomic<size_t>> inPos(nRows);
+        for (index j = 0; j < nRows; ++j)
+            inPos[j].store(0);
+
+#pragma omp parallel for schedule(guided)
+        for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
+            index rowStart = rowIdxView[i];
+            index rowEnd = rowIdxView[i + 1];
+            for (index k = rowStart; k < rowEnd; ++k) {
+                index j = columnIdxView[k];
+                size_t pos = inPos[j].fetch_add(1);
+                graph.inEdges[j][pos] = static_cast<NodeT>(i);
+                if (isWeighted)
+                    graph.inEdgeWeights[j][pos] = nonZerosView[k];
+            }
+        }
+    }
+
+    graph.m = edgeCount;
+
+    return graph;
+}
+
+template <class NodeT, class EdgeWeightT>
+AdjListGraph<NodeT, EdgeWeightT>
+AdjListGraph<NodeT, EdgeWeightT>::_fromCSRRaw(const index *rowIdxPtr, std::size_t rowIdxSize,
+                                             const index *columnIdxPtr, std::size_t columnIdxSize,
+                                             const double *nonZerosPtr, std::size_t nonZerosSize,
+                                             bool directed, bool isWeighted) {
+    // This helper only adapts raw pointers to std::span for callers (e.g. Cython)
+    // that cannot construct a span directly; the real work happens in fromCSR().
+    if (rowIdxPtr == nullptr || columnIdxPtr == nullptr) {
+        throw std::invalid_argument("null CSR pointer passed to _fromCSRRaw");
+    }
+    if (isWeighted && nonZerosPtr == nullptr) {
+        throw std::invalid_argument(
+            "null nonZeros pointer passed to _fromCSRRaw for weighted graph");
+    }
+    return fromCSR(std::span<const index>(rowIdxPtr, rowIdxSize),
+                   std::span<const index>(columnIdxPtr, columnIdxSize),
+                   std::span<const double>(nonZerosPtr, nonZerosSize), directed, isWeighted);
 }
 
 } /* namespace NetworKit */

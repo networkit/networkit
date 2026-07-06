@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <queue>
 #include <span>
+#include <unordered_map>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>

@@ -94,8 +94,6 @@ on:
     branches:
       - master
   push:
-    branches:
-      - master
 
 # Default parameters for all builds.
 env:
@@ -147,8 +145,13 @@ jobs:
     runs-on: macos-${{ matrix.os }}
     strategy:
       matrix:
-        os: ['latest'] # llvm and gcc are only tested on arm based machines
-        compiler: ['llvm-20', 'gcc-15']
+        # Temporary: GCC 15 currently fails to compile macOS 26 SDK Mach headers
+        # included by GoogleTest, so keep it on the newest known-good macOS image.
+        include:
+          - os: 'latest'
+            compiler: 'llvm-20'
+          - os: '15'
+            compiler: 'gcc-15'
     steps:
       - name: Install prerequisites
         run: |
@@ -295,18 +298,19 @@ jobs:
           CXX: ${{ matrix.compiler == 'gcc-10' && 'g++-10' || 'clang++-11' }}
 
   linux-build-clang-tidy:
-    name: "Linux (llvm-17): clang-tidy"
+    name: "Linux (llvm-22): clang-tidy"
     runs-on: ubuntu-22.04
     env:
-      CC: clang-17
-      CXX: clang++-17
+      CC: clang-22
+      CXX: clang++-22
+      LLVM_VERSION: 22
     steps:
       - name: Install prerequisites
         run: |
           wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
-          echo "deb http://apt.llvm.org/jammy llvm-toolchain-jammy-17 main" | sudo tee /etc/apt/sources.list.d/llvm17.list
+          echo "deb http://apt.llvm.org/jammy llvm-toolchain-jammy-${LLVM_VERSION} main" | sudo tee /etc/apt/sources.list.d/llvm${LLVM_VERSION}.list
           sudo apt-get update
-          sudo apt-get install python3.10 libomp-17-dev clang-17 clang-tidy-17 ninja-build
+          sudo apt-get install python3.10 libomp-${LLVM_VERSION}-dev clang-${LLVM_VERSION} clang-tidy-${LLVM_VERSION} ninja-build
       - name: Checkout networkit
         uses: actions/checkout@v4
         with:
@@ -487,13 +491,15 @@ jobs:
   style-guide-compliance-build:
     name: "Linux (default): code-style"
     runs-on: ubuntu-22.04
+    env:
+      LLVM_VERSION: 22
     steps:
       - name: Install prerequisites
         run: |
-          curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/jammy llvm-toolchain-jammy-17 main" | sudo tee /etc/apt/sources.list.d/llvm17.list
+          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          echo "deb http://apt.llvm.org/jammy llvm-toolchain-jammy-${LLVM_VERSION} main" | sudo tee /etc/apt/sources.list.d/llvm${LLVM_VERSION}.list
           sudo apt-get update
-          sudo apt-get install clang-format-17 python3-yaml
+          sudo apt-get install clang-format-${LLVM_VERSION} python3-yaml
       - name: Checkout networkit
         uses: actions/checkout@v5
         with:
@@ -503,4 +509,4 @@ jobs:
           set -e
           ./check_code.sh -v
         env:
-          NETWORKIT_OVERRIDE_CLANG_FORMAT: "clang-format-17"
+          NETWORKIT_OVERRIDE_CLANG_FORMAT: "clang-format-${{ env.LLVM_VERSION }}"

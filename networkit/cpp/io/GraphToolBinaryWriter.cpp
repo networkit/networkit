@@ -47,7 +47,7 @@ uint8_t GraphToolBinaryWriter::getAdjacencyWidth(uint64_t n) {
 
 void GraphToolBinaryWriter::writeHeader(std::ofstream &file) {
     uint8_t header[8] = {0xe2, 0x9b, 0xbe, 0x20, 0x67, 0x74, 0x01, 0x00};
-    header[7] |= (uint8_t) !this->littleEndianness;
+    header[7] |= (uint8_t)!this->littleEndianness;
     file.write((char *)header, 8);
 }
 

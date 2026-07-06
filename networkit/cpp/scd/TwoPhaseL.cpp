@@ -94,7 +94,7 @@ std::set<node> TwoPhaseL::expandOneCommunity(const std::set<node> &seeds) {
         if (!(currentLin > nLin && currentLex < nLex)) {
             TRACE("Removing ", v);
             com.removeNode(v);
-            if (com.size() == 0)
+            if (com.size() == 0) // NOLINT(readability-container-size-empty)
                 return;
             currentLin = 2.0 * com.internalEdgeWeight() / com.size();
             currentLex = com.cut() / com.boundarySize();

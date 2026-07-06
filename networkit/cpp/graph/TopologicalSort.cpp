@@ -4,7 +4,10 @@
  *  Created on: 22.11.2021
  *      Author: Fabian Brandt-Tumescheit
  */
+
+#include <stack>
 #include <stdexcept>
+
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/graph/TopologicalSort.hpp>
 

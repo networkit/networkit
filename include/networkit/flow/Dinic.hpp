@@ -7,7 +7,10 @@
 
 #ifndef NETWORKIT_FLOW_DINIC_HPP_
 #define NETWORKIT_FLOW_DINIC_HPP_
+
+#include <deque>
 #include <vector>
+
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 

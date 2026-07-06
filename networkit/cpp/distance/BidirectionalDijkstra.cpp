@@ -6,6 +6,7 @@
  */
 
 #include <limits>
+#include <stack>
 
 #include <networkit/distance/BidirectionalDijkstra.hpp>
 
