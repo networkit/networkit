@@ -3326,11 +3326,9 @@ bool AdjListGraph<NodeT, EdgeWeightT>::checkConsistency() const {
 }
 
 template <class NodeT, class EdgeWeightT>
-AdjListGraph<NodeT, EdgeWeightT>
-AdjListGraph<NodeT, EdgeWeightT>::fromCSR(std::span<const index> rowIdxView,
-                                         std::span<const index> columnIdxView,
-                                         std::span<const double> nonZerosView, bool directed,
-                                         bool isWeighted) {
+AdjListGraph<NodeT, EdgeWeightT> AdjListGraph<NodeT, EdgeWeightT>::fromCSR(
+    std::span<const index> rowIdxView, std::span<const index> columnIdxView,
+    std::span<const double> nonZerosView, bool directed, bool isWeighted) {
     // In CSR format rowIdxView has nRows + 1 entries, so the number of rows is
     // derived directly from its length.
     if (rowIdxView.empty()) {
@@ -3494,9 +3492,9 @@ AdjListGraph<NodeT, EdgeWeightT>::fromCSR(std::span<const index> rowIdxView,
 template <class NodeT, class EdgeWeightT>
 AdjListGraph<NodeT, EdgeWeightT>
 AdjListGraph<NodeT, EdgeWeightT>::_fromCSRRaw(const index *rowIdxPtr, std::size_t rowIdxSize,
-                                             const index *columnIdxPtr, std::size_t columnIdxSize,
-                                             const double *nonZerosPtr, std::size_t nonZerosSize,
-                                             bool directed, bool isWeighted) {
+                                              const index *columnIdxPtr, std::size_t columnIdxSize,
+                                              const double *nonZerosPtr, std::size_t nonZerosSize,
+                                              bool directed, bool isWeighted) {
     // This helper only adapts raw pointers to std::span for callers (e.g. Cython)
     // that cannot construct a span directly; the real work happens in fromCSR().
     if (rowIdxPtr == nullptr || columnIdxPtr == nullptr) {

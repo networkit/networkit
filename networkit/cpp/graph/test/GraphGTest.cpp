@@ -2779,7 +2779,7 @@ TEST(GraphGTest, testFromCSRUndirected) {
 }
 
 TEST(GraphGTest, testFromCSRUndirectedWeighted) {
-    std::vector<index> rowIdx{0, 2, 3, 3};   // row 0: (0,1),(0,2); row 1: (1,2)
+    std::vector<index> rowIdx{0, 2, 3, 3}; // row 0: (0,1),(0,2); row 1: (1,2)
     std::vector<index> columnIdx{1, 2, 2};
     std::vector<double> nonZeros{1.5, 2.5, 3.5};
 
@@ -2800,7 +2800,7 @@ TEST(GraphGTest, testFromCSRUndirectedWeighted) {
     EXPECT_DOUBLE_EQ(fromCsr.totalEdgeWeight(), reference.totalEdgeWeight());
 
     // Edges and their weights must be reachable from both endpoints.
-    for (const auto [u, v, w] : {std::tuple{0u, 1u, 1.5}, {0u, 2u, 2.5}, {1u, 2u, 3.5}}) {
+    for (const auto &[u, v, w] : {std::tuple{0u, 1u, 1.5}, {0u, 2u, 2.5}, {1u, 2u, 3.5}}) {
         EXPECT_TRUE(fromCsr.hasEdge(u, v));
         EXPECT_TRUE(fromCsr.hasEdge(v, u));
         EXPECT_DOUBLE_EQ(fromCsr.weight(u, v), w);
