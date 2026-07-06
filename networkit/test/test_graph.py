@@ -51,6 +51,17 @@ class TestGraph(unittest.TestCase):
                     self.assertEqual(G.numberOfNodes(), 3)
                     self.assertEqual(G.numberOfEdges(), 3)
 
+                    # The GraphFromCsr path preserves the matrix weights, so the
+                    # total edge weight must equal their sum. The coo_matrix path
+                    # inserts unit weights (it ignores S.data), and unweighted
+                    # graphs use the default weight 1.0, so both sum to the edge
+                    # count. In every case the weighted, undirected total must be
+                    # positive rather than 0.
+                    if weighted and not is_coo:
+                        self.assertAlmostEqual(G.totalEdgeWeight(), float(data.sum()))
+                    else:
+                        self.assertAlmostEqual(G.totalEdgeWeight(), G.numberOfEdges())
+
     def testAddNodes(self):
         G = nk.Graph(0)
         G.addNodes(10)

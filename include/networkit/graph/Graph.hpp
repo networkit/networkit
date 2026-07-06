@@ -3354,41 +3354,48 @@ AdjListGraph<NodeT, EdgeWeightT>::fromCSR(std::span<const index> rowIdxView,
     // Number of edges equals number of stored column indices
     count edgeCount = static_cast<count>(nnz);
 
-    // Precompute row sizes and preallocate contiguous storage for each row.
-    std::vector<size_t> rowSizes(nRows);
-    graph.outEdges.resize(nRows);
-    if (isWeighted) {
-        graph.outEdgeWeights.resize(nRows);
-    }
-
+    // Count self-loops so that numberOfSelfLoops() stays consistent with the
+    // graph that addEdge() would have produced from the same entries.
+    count selfLoops = 0;
     for (index i = 0; i < nRows; ++i) {
-        index rowStart = rowIdxView[i];
-        index rowEnd = rowIdxView[i + 1];
-        assert(rowEnd >= rowStart && "rowIdxView must be non-decreasing");
-        rowSizes[i] = static_cast<size_t>(rowEnd - rowStart);
-        graph.outEdges[i].resize(rowSizes[i]);
-        if (isWeighted)
-            graph.outEdgeWeights[i].resize(rowSizes[i]);
-    }
-
-#pragma omp parallel for schedule(guided)
-    for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
-        index rowStart = rowIdxView[i];
-        index rowEnd = rowIdxView[i + 1];
-        if (rowEnd > rowStart) {
-            std::copy(columnIdxView.data() + rowStart, columnIdxView.data() + rowEnd,
-                      graph.outEdges[i].begin());
-            if (isWeighted) {
-                std::copy(nonZerosView.data() + rowStart, nonZerosView.data() + rowEnd,
-                          graph.outEdgeWeights[i].begin());
-            }
+        assert(rowIdxView[i + 1] >= rowIdxView[i] && "rowIdxView must be non-decreasing");
+        for (index k = rowIdxView[i]; k < rowIdxView[i + 1]; ++k) {
+            if (columnIdxView[k] == i)
+                ++selfLoops;
         }
     }
+    graph.storedNumberOfSelfLoops = selfLoops;
 
-    // For directed graphs, build inEdges (and inEdgeWeights). We compute
-    // in-degrees first, preallocate, then fill the arrays. Filling uses
-    // atomic position counters so it can be parallelized safely.
+    graph.outEdges.resize(nRows);
+    if (isWeighted)
+        graph.outEdgeWeights.resize(nRows);
+
     if (directed) {
+        // Directed: row i lists the out-neighbors of node i directly.
+        for (index i = 0; i < nRows; ++i) {
+            size_t rowSize = static_cast<size_t>(rowIdxView[i + 1] - rowIdxView[i]);
+            graph.outEdges[i].resize(rowSize);
+            if (isWeighted)
+                graph.outEdgeWeights[i].resize(rowSize);
+        }
+
+#pragma omp parallel for schedule(guided)
+        for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
+            index rowStart = rowIdxView[i];
+            index rowEnd = rowIdxView[i + 1];
+            if (rowEnd > rowStart) {
+                std::copy(columnIdxView.data() + rowStart, columnIdxView.data() + rowEnd,
+                          graph.outEdges[i].begin());
+                if (isWeighted) {
+                    std::copy(nonZerosView.data() + rowStart, nonZerosView.data() + rowEnd,
+                              graph.outEdgeWeights[i].begin());
+                }
+            }
+        }
+
+        // Build inEdges (and inEdgeWeights). We compute in-degrees first,
+        // preallocate, then fill the arrays. Filling uses atomic position
+        // counters so it can be parallelized safely.
         graph.inEdges.resize(nRows);
         if (isWeighted) {
             graph.inEdgeWeights.resize(nRows);
@@ -3421,6 +3428,60 @@ AdjListGraph<NodeT, EdgeWeightT>::fromCSR(std::span<const index> rowIdxView,
                 graph.inEdges[j][pos] = static_cast<NodeT>(i);
                 if (isWeighted)
                     graph.inEdgeWeights[j][pos] = nonZerosView[k];
+            }
+        }
+    } else {
+        // Undirected: every stored nonzero (i, j) is an undirected edge and is
+        // stored from both endpoints (self-loops are stored only once), exactly
+        // as addEdge() does.
+        //
+        // First determine the final degree of each node: every entry adds a
+        // slot to its row owner, and every non-self-loop entry adds a mirrored
+        // slot to its neighbor.
+        std::vector<size_t> deg(nRows, 0);
+        for (index i = 0; i < nRows; ++i) {
+            for (index k = rowIdxView[i]; k < rowIdxView[i + 1]; ++k) {
+                index j = columnIdxView[k];
+                ++deg[i];
+                if (j != i)
+                    ++deg[j];
+            }
+        }
+
+        for (index i = 0; i < nRows; ++i) {
+            graph.outEdges[i].resize(deg[i]);
+            if (isWeighted)
+                graph.outEdgeWeights[i].resize(deg[i]);
+        }
+
+        // Per-node position counters. A node's slots are written both by the
+        // thread owning its row and by threads mirroring edges into it, so the
+        // counters must be atomic.
+        std::vector<std::atomic<size_t>> pos(nRows);
+        for (index i = 0; i < nRows; ++i)
+            pos[i].store(0);
+
+#pragma omp parallel for schedule(guided)
+        for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
+            for (index k = rowIdxView[i]; k < rowIdxView[i + 1]; ++k) {
+                index j = columnIdxView[k];
+                bool mirror = j != static_cast<index>(i);
+
+                size_t p = pos[i].fetch_add(1);
+                graph.outEdges[i][p] = static_cast<NodeT>(j);
+
+                size_t q = 0;
+                if (mirror) {
+                    q = pos[j].fetch_add(1);
+                    graph.outEdges[j][q] = static_cast<NodeT>(i);
+                }
+
+                if (isWeighted) {
+                    EdgeWeightT w = static_cast<EdgeWeightT>(nonZerosView[k]);
+                    graph.outEdgeWeights[i][p] = w;
+                    if (mirror)
+                        graph.outEdgeWeights[j][q] = w;
+                }
             }
         }
     }

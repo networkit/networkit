@@ -2753,10 +2753,11 @@ TEST(GraphGTest, testFromCSRDirectedWeighted) {
 }
 
 TEST(GraphGTest, testFromCSRUndirected) {
-    // For an undirected graph the CSR adjacency must be symmetric. Edges
-    // (0,1) and (1,2) are stored from both endpoints.
-    std::vector<index> rowIdx{0, 1, 3, 4};
-    std::vector<index> columnIdx{1, 0, 2, 1};
+    // For an undirected graph each stored nonzero is one undirected edge that is
+    // stored from both endpoints; the input does not need to be symmetric. Here
+    // a triangular matrix encodes edges (0,1) and (1,2).
+    std::vector<index> rowIdx{0, 1, 2, 2};
+    std::vector<index> columnIdx{1, 2};
     std::vector<double> nonZeros{};
 
     Graph G = Graph::fromCSR(rowIdx, columnIdx, nonZeros, /* directed = */ false,
@@ -2773,6 +2774,44 @@ TEST(GraphGTest, testFromCSRUndirected) {
     EXPECT_TRUE(G.hasEdge(2, 1));
 
     EXPECT_EQ(G.degree(1), 2u);
+    // Unweighted: every edge has the default weight of 1.0.
+    EXPECT_DOUBLE_EQ(G.totalEdgeWeight(), static_cast<double>(G.numberOfEdges()));
+}
+
+TEST(GraphGTest, testFromCSRUndirectedWeighted) {
+    std::vector<index> rowIdx{0, 2, 3, 3};   // row 0: (0,1),(0,2); row 1: (1,2)
+    std::vector<index> columnIdx{1, 2, 2};
+    std::vector<double> nonZeros{1.5, 2.5, 3.5};
+
+    Graph fromCsr = Graph::fromCSR(rowIdx, columnIdx, nonZeros, /* directed = */ false,
+                                   /* isWeighted = */ true);
+
+    // Reference graph built the same way GraphFromCoo does, via addEdge().
+    Graph reference(3, /* weighted = */ true, /* directed = */ false);
+    reference.addEdge(0, 1, 1.5);
+    reference.addEdge(0, 2, 2.5);
+    reference.addEdge(1, 2, 3.5);
+
+    EXPECT_FALSE(fromCsr.isDirected());
+    EXPECT_TRUE(fromCsr.isWeighted());
+    EXPECT_EQ(fromCsr.numberOfNodes(), reference.numberOfNodes());
+    EXPECT_EQ(fromCsr.numberOfEdges(), reference.numberOfEdges());
+    EXPECT_DOUBLE_EQ(fromCsr.totalEdgeWeight(), 1.5 + 2.5 + 3.5);
+    EXPECT_DOUBLE_EQ(fromCsr.totalEdgeWeight(), reference.totalEdgeWeight());
+
+    // Edges and their weights must be reachable from both endpoints.
+    for (const auto [u, v, w] : {std::tuple{0u, 1u, 1.5}, {0u, 2u, 2.5}, {1u, 2u, 3.5}}) {
+        EXPECT_TRUE(fromCsr.hasEdge(u, v));
+        EXPECT_TRUE(fromCsr.hasEdge(v, u));
+        EXPECT_DOUBLE_EQ(fromCsr.weight(u, v), w);
+        EXPECT_DOUBLE_EQ(fromCsr.weight(v, u), w);
+    }
+
+    // Weighted degrees must agree with the reference for every node.
+    fromCsr.forNodes([&](node u) {
+        EXPECT_DOUBLE_EQ(fromCsr.weightedDegree(u), reference.weightedDegree(u));
+        EXPECT_EQ(fromCsr.degree(u), reference.degree(u));
+    });
 }
 
 TEST(GraphGTest, testFromCSRThrowsOnEmptyRowIdx) {
