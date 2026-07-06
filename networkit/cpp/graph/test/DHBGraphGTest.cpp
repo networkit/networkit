@@ -704,9 +704,8 @@ TEST_P(DHBGraphGTest, testAddEdges_large_graph) {
     Graph er_graph = gen.generate();
 
     std::vector<Edge> edges;
-    er_graph.forEdges([&edges](NetworKit::node u, NetworKit::node v) {
-        edges.push_back(Edge{u, v});
-    });
+    er_graph.forEdges(
+        [&edges](NetworKit::node u, NetworKit::node v) { edges.push_back(Edge{u, v}); });
 
     G.addEdges(std::move(edges), false);
 
@@ -1979,9 +1978,8 @@ TEST_P(DHBGraphGTest, testForInNeighborsOf) {
         }
 
         std::vector<std::pair<node, edgeweight>> visited;
-        this->Ghouse.forInNeighborsOf(3, [&](node v, edgeweight ew) {
-            visited.push_back({v, ew});
-        });
+        this->Ghouse.forInNeighborsOf(3,
+                                      [&](node v, edgeweight ew) { visited.push_back({v, ew}); });
         std::sort(visited.begin(), visited.end());
 
         if (isGraph()) {
