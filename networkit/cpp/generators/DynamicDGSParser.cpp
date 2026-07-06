@@ -73,7 +73,8 @@ void DynamicDGSParser::generate() {
 
                 // Example: category="cond-mat.stat-mech, q-fin.ST"
                 std::string_view categoriesFullString = split[2];
-                const auto categoriesFullStringSplit = Aux::StringTools::split(categoriesFullString, '"');
+                const auto categoriesFullStringSplit =
+                    Aux::StringTools::split(categoriesFullString, '"');
 
                 // Example: cond-mat.stat-mech, q-fin.ST
                 std::string_view categoriesCommaSeparated = categoriesFullStringSplit[1];

@@ -89,7 +89,8 @@ void DGSReader::read(std::string path, GraphEventProxy &Gproxy) {
             } else if (tag.compare("ce") == 0 && split.size() == 3) {
                 // update edge. Only the "weight" attribute is supported so far
                 std::string_view from_to_edges = split[1];
-                const std::vector<std::string> edgesSplit = Aux::StringTools::split(from_to_edges, '-');
+                const std::vector<std::string> edgesSplit =
+                    Aux::StringTools::split(from_to_edges, '-');
                 const std::string &edge_from = edgesSplit[0];
                 const std::string &edge_to = edgesSplit[1];
 
@@ -112,7 +113,8 @@ void DGSReader::read(std::string path, GraphEventProxy &Gproxy) {
 
             } else if (tag.compare("de") == 0 && split.size() == 2) {
                 std::string_view from_to_edges = split[1];
-                const std::vector<std::string> edgesSplit = Aux::StringTools::split(from_to_edges, '-');
+                const std::vector<std::string> edgesSplit =
+                    Aux::StringTools::split(from_to_edges, '-');
                 const std::string &edge_from = edgesSplit[0];
                 const std::string &edge_to = edgesSplit[1];
                 node u = nodeNames[edge_from];
