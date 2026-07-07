@@ -40,7 +40,7 @@ concept IntegralValue = std::integral<T> && !std::same_as<std::remove_cvref_t<T>
  * Amortized constant running time for each operation.
  */
 template <SignedIntegral KeyType = int64_t, IntegralValue ValueType = index>
-class BucketPQ : public PrioQueue<KeyType, ValueType> {
+class BucketPriorityQueue : public PrioQueue<KeyType, ValueType> {
 private:
     using Bucket = std::list<ValueType>;
     using BucketIndex = index;
@@ -77,12 +77,12 @@ private:
     /**
      * Constructor. Not to be used, only here for overriding.
      */
-    BucketPQ(std::span<const KeyType>) {}
+    BucketPriorityQueue(std::span<const KeyType>) {}
 
     /**
      * Constructor. Not to be used, only here for overriding.
      */
-    BucketPQ(uint64_t) {}
+    BucketPriorityQueue(uint64_t) {}
 
     /**
      * Called from various constructors for initializing members.
@@ -112,7 +112,7 @@ public:
      * @param[in] minAdmissibleKey Minimum admissible key
      * @param[in] maxAdmissibleKey Maximum admissible key
      */
-    BucketPQ(std::span<const KeyType> keys, KeyType minAdmissibleKey, KeyType maxAdmissibleKey)
+    BucketPriorityQueue(std::span<const KeyType> keys, KeyType minAdmissibleKey, KeyType maxAdmissibleKey)
         : minAdmissibleKey(minAdmissibleKey), maxAdmissibleKey(maxAdmissibleKey) {
         construct(keys.size());
 
@@ -127,7 +127,7 @@ public:
     /**
      * Builds priority queue of the specified capacity @a capacity.
      */
-    BucketPQ(uint64_t capacity, KeyType minAdmissibleKey, KeyType maxAdmissibleKey)
+    BucketPriorityQueue(uint64_t capacity, KeyType minAdmissibleKey, KeyType maxAdmissibleKey)
         : minAdmissibleKey(minAdmissibleKey), maxAdmissibleKey(maxAdmissibleKey) {
         construct(capacity);
     }
@@ -135,7 +135,7 @@ public:
     /**
      * Default destructor
      */
-    ~BucketPQ() override = default;
+    ~BucketPriorityQueue() override = default;
 
     /**
      * Inserts key-value pair (@key, @value).
@@ -267,6 +267,9 @@ public:
         return static_cast<KeyType>(myBucket[valueIdx]) - offset;
     }
 };
+
+template <SignedIntegral KeyType = int64_t, IntegralValue ValueType = index>
+using BucketPQ = BucketPriorityQueue<KeyType, ValueType>;
 
 } /* namespace Aux */
 #endif // NETWORKIT_AUXILIARY_BUCKET_PQ_HPP_

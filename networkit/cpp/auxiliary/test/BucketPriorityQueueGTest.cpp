@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-#include <networkit/auxiliary/BucketPQ.hpp>
+#include <networkit/auxiliary/BucketPriorityQueue.hpp>
 
 namespace NetworKit {
 namespace {
@@ -17,15 +17,15 @@ struct BucketPQConfig {
 };
 
 template <typename TestT>
-class BucketPQGTest : public ::testing::Test {
+class BucketPriorityQueueGTest : public ::testing::Test {
 public:
     using KeyType = typename TestT::KeyType;
     using ValueType = typename TestT::ValueType;
 };
 
-TYPED_TEST_SUITE_P(BucketPQGTest);
+TYPED_TEST_SUITE_P(BucketPriorityQueueGTest);
 
-TYPED_TEST_P(BucketPQGTest, testConstructFromKeysSkipsNone) {
+TYPED_TEST_P(BucketPriorityQueueGTest, testConstructFromKeysSkipsNone) {
     using KeyType = typename TestFixture::KeyType;
     using ValueType = typename TestFixture::ValueType;
 
@@ -49,7 +49,7 @@ TYPED_TEST_P(BucketPQGTest, testConstructFromKeysSkipsNone) {
     EXPECT_TRUE(prioQ.empty());
 }
 
-TYPED_TEST_P(BucketPQGTest, testChangeKeyAndRemove) {
+TYPED_TEST_P(BucketPriorityQueueGTest, testChangeKeyAndRemove) {
     using KeyType = typename TestFixture::KeyType;
     using ValueType = typename TestFixture::ValueType;
 
@@ -74,7 +74,7 @@ TYPED_TEST_P(BucketPQGTest, testChangeKeyAndRemove) {
     EXPECT_TRUE(prioQ.empty());
 }
 
-TYPED_TEST_P(BucketPQGTest, testEmptySentinelsUseTemplateTypes) {
+TYPED_TEST_P(BucketPriorityQueueGTest, testEmptySentinelsUseTemplateTypes) {
     using KeyType = typename TestFixture::KeyType;
     using ValueType = typename TestFixture::ValueType;
 
@@ -87,14 +87,14 @@ TYPED_TEST_P(BucketPQGTest, testEmptySentinelsUseTemplateTypes) {
     EXPECT_EQ(prioQ.extractMin(), emptySentinel);
 }
 
-REGISTER_TYPED_TEST_SUITE_P(BucketPQGTest, testConstructFromKeysSkipsNone, testChangeKeyAndRemove,
+REGISTER_TYPED_TEST_SUITE_P(BucketPriorityQueueGTest, testConstructFromKeysSkipsNone, testChangeKeyAndRemove,
                             testEmptySentinelsUseTemplateTypes);
 
-using BucketPQTestTypes =
+using BucketPriorityQueueTestTypes =
     ::testing::Types<BucketPQConfig<int64_t, index>, BucketPQConfig<int32_t, uint32_t>,
                      BucketPQConfig<int16_t, uint16_t>, BucketPQConfig<int64_t, int>>;
 
-INSTANTIATE_TYPED_TEST_SUITE_P(TestBucketPQ, BucketPQGTest, BucketPQTestTypes, );
+INSTANTIATE_TYPED_TEST_SUITE_P(TestBucketPQ, BucketPriorityQueueGTest, BucketPriorityQueueTestTypes, );
 
 } // namespace
 } // namespace NetworKit

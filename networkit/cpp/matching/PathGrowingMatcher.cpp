@@ -5,7 +5,7 @@
  *      Author: Henning
  */
 
-#include <networkit/auxiliary/BucketPQ.hpp>
+#include <networkit/auxiliary/BucketPriorityQueue.hpp>
 #include <networkit/matching/PathGrowingMatcher.hpp>
 
 namespace NetworKit {

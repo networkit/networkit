@@ -1,5 +1,5 @@
 networkit_add_test(auxiliary AuxGTest)
-networkit_add_test(auxiliary BucketPQGTest)
+networkit_add_test(auxiliary BucketPriorityQueueGTest)
 networkit_add_test(auxiliary SparseVectorGTest)
 networkit_add_test(auxiliary SortedListGTest)
 networkit_add_test(auxiliary SpinLockGTest)

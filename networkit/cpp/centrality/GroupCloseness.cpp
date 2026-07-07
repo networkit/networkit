@@ -11,7 +11,7 @@
 #include <queue>
 #include <ranges>
 
-#include <networkit/auxiliary/BucketPQ.hpp>
+#include <networkit/auxiliary/BucketPriorityQueue.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/centrality/GroupCloseness.hpp>
 #include <networkit/centrality/TopCloseness.hpp>
