@@ -766,6 +766,9 @@ cdef class Graph:
 			Any callable object that takes the parameter tuple(int, int, float, int).
 			Parameter list refering to (node id, node id, edge weight, edge id).
 		"""
+		if not self._this.hasNode(u):
+			raise RuntimeError("Cannot iterate over edges of non-existing node {}".format(u))
+
 		cdef EdgeCallBackWrapper* wrapper
 		try:
 			wrapper = new EdgeCallBackWrapper(callback)
@@ -790,6 +793,9 @@ cdef class Graph:
 			Any callable object that takes the parameter tuple(int, int, float, int).
 			Parameter list refering to (node id, node id, edge weight, edge id).
 		"""
+		if not self._this.hasNode(u):
+			raise RuntimeError("Cannot iterate over in-edges of non-existing node {}".format(u))
+
 		cdef EdgeCallBackWrapper* wrapper
 		try:
 			wrapper = new EdgeCallBackWrapper(callback)

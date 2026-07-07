@@ -672,6 +672,65 @@ class TestGraph(unittest.TestCase):
         self.assertEqual(un.getUMSF().numberOfEdges(), 5)
         self.assertTrue(un.inUMST(0, 1))
 
+    def testForInEdgesOfInvalidNodeRaises(self):
+        G = nk.Graph(2, directed=True)
+        G.addEdge(0, 1)
+
+        def edgeFunc(*args):
+            self.fail("Callback should not be called for a non-existing node")
+
+        with self.assertRaisesRegex(
+                RuntimeError,
+                "Cannot iterate over in-edges of non-existing node 912",
+        ):
+            G.forInEdgesOf(912, edgeFunc)
+
+
+    def testForInEdgesOfRemovedNodeRaises(self):
+        G = nk.Graph(3, directed=True)
+        G.addEdge(0, 1)
+        G.addEdge(2, 1)
+
+        G.removeNode(1)
+
+        def edgeFunc(*args):
+            self.fail("Callback should not be called for a removed node")
+
+        with self.assertRaisesRegex(
+                RuntimeError,
+                "Cannot iterate over in-edges of non-existing node 1",
+        ):
+            G.forInEdgesOf(1, edgeFunc)
+
+    def testForEdgesOfInvalidNodeRaises(self):
+        G = nk.Graph(2)
+        G.addEdge(0, 1)
+
+        def edgeFunc(*args):
+            self.fail("Callback should not be called for a non-existing node")
+
+        with self.assertRaisesRegex(
+                RuntimeError,
+                "Cannot iterate over edges of non-existing node 912",
+        ):
+            G.forEdgesOf(912, edgeFunc)
+
+
+    def testForEdgesOfRemovedNodeRaises(self):
+        G = nk.Graph(3)
+        G.addEdge(0, 2)
+
+        G.removeNode(1)
+
+        def edgeFunc(*args):
+            self.fail("Callback should not be called for a removed node")
+
+        with self.assertRaisesRegex(
+                RuntimeError,
+                "Cannot iterate over edges of non-existing node 1",
+        ):
+            G.forEdgesOf(1, edgeFunc)
+
 
 if __name__ == "__main__":
     unittest.main()
