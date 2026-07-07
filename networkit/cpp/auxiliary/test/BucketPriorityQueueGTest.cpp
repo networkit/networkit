@@ -1,3 +1,4 @@
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <cstdint>
@@ -26,6 +27,9 @@ public:
 TYPED_TEST_SUITE_P(BucketPriorityQueueGTest);
 
 TYPED_TEST_P(BucketPriorityQueueGTest, testConstructFromKeysSkipsNone) {
+    using ::testing::IsEmpty;
+    using ::testing::SizeIs;
+
     using KeyType = typename TestFixture::KeyType;
     using ValueType = typename TestFixture::ValueType;
 
@@ -33,7 +37,7 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testConstructFromKeysSkipsNone) {
                                  KeyType{1}};
     Aux::BucketPQ<KeyType, ValueType> prioQ(keys, KeyType{-5}, KeyType{5});
 
-    EXPECT_EQ(prioQ.size(), 3u);
+    EXPECT_THAT(prioQ, SizeIs(3));
     EXPECT_TRUE(prioQ.contains(ValueType{0}));
     EXPECT_FALSE(prioQ.contains(ValueType{1}));
     EXPECT_TRUE(prioQ.contains(ValueType{2}));
@@ -46,10 +50,12 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testConstructFromKeysSkipsNone) {
     EXPECT_EQ(prioQ.extractMin(), (std::pair<KeyType, ValueType>{KeyType{-2}, ValueType{2}}));
     EXPECT_EQ(prioQ.extractMin(), (std::pair<KeyType, ValueType>{KeyType{1}, ValueType{3}}));
     EXPECT_EQ(prioQ.extractMin(), (std::pair<KeyType, ValueType>{KeyType{3}, ValueType{0}}));
-    EXPECT_TRUE(prioQ.empty());
+    EXPECT_THAT(prioQ, IsEmpty());
 }
 
 TYPED_TEST_P(BucketPriorityQueueGTest, testChangeKeyAndRemove) {
+    using ::testing::IsEmpty;
+
     using KeyType = typename TestFixture::KeyType;
     using ValueType = typename TestFixture::ValueType;
 
@@ -71,10 +77,12 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testChangeKeyAndRemove) {
     prioQ.remove(ValueType{1});
     EXPECT_FALSE(prioQ.contains(ValueType{1}));
     EXPECT_EQ(prioQ.extractMin(), (std::pair<KeyType, ValueType>{KeyType{4}, ValueType{0}}));
-    EXPECT_TRUE(prioQ.empty());
+    EXPECT_THAT(prioQ, IsEmpty());
 }
 
 TYPED_TEST_P(BucketPriorityQueueGTest, testEmptySentinelsUseTemplateTypes) {
+    using ::testing::IsEmpty;
+
     using KeyType = typename TestFixture::KeyType;
     using ValueType = typename TestFixture::ValueType;
 
@@ -82,7 +90,7 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testEmptySentinelsUseTemplateTypes) {
 
     const std::pair<KeyType, ValueType> emptySentinel{std::numeric_limits<KeyType>::max(),
                                                       std::numeric_limits<ValueType>::max()};
-    EXPECT_TRUE(prioQ.empty());
+    EXPECT_THAT(prioQ, IsEmpty());
     EXPECT_EQ(prioQ.getMin(), emptySentinel);
     EXPECT_EQ(prioQ.extractMin(), emptySentinel);
 }
