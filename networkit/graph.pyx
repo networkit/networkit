@@ -1255,7 +1255,7 @@ def GraphFromCoo(inputData, n=0, bool_t weighted=False, bool_t directed=False, b
 
 	Parameter :code:`inputData` can be one of the following:
 
-	- scipy.sparse.coo_matrix
+	- scipy.sparse.coo_matrix, where the `scipy.sparse.coo_matrix.data` become the weights
 	- (data, (i,j)) where data, i and j are of type np.ndarray
 	- (i,j) where i and j are of type np.ndarray
 
