@@ -10,6 +10,7 @@
 
 #include <concepts>
 #include <type_traits>
+
 namespace NetworKit {
 
 template <typename T>
