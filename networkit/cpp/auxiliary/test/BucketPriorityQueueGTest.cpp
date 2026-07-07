@@ -95,14 +95,15 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testEmptySentinelsUseTemplateTypes) {
     EXPECT_EQ(prioQ.extractMin(), emptySentinel);
 }
 
-REGISTER_TYPED_TEST_SUITE_P(BucketPriorityQueueGTest, testConstructFromKeysSkipsNone, testChangeKeyAndRemove,
-                            testEmptySentinelsUseTemplateTypes);
+REGISTER_TYPED_TEST_SUITE_P(BucketPriorityQueueGTest, testConstructFromKeysSkipsNone,
+                            testChangeKeyAndRemove, testEmptySentinelsUseTemplateTypes);
 
 using BucketPriorityQueueTestTypes =
     ::testing::Types<BucketPQConfig<int64_t, index>, BucketPQConfig<int32_t, uint32_t>,
                      BucketPQConfig<int16_t, uint16_t>, BucketPQConfig<int64_t, int>>;
 
-INSTANTIATE_TYPED_TEST_SUITE_P(TestBucketPQ, BucketPriorityQueueGTest, BucketPriorityQueueTestTypes, );
+INSTANTIATE_TYPED_TEST_SUITE_P(TestBucketPQ, BucketPriorityQueueGTest,
+                               BucketPriorityQueueTestTypes, );
 
 } // namespace
 } // namespace NetworKit

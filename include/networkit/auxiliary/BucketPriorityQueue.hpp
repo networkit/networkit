@@ -1,14 +1,13 @@
 /*
- * BucketPQ.hpp
+ * BucketPriorityQueue.hpp
  *
  *  Created on: 02.03.2017
  *      Author: Henning
  */
 
-#ifndef NETWORKIT_AUXILIARY_BUCKET_PQ_HPP_
-#define NETWORKIT_AUXILIARY_BUCKET_PQ_HPP_
+#ifndef NETWORKIT_AUXILIARY_BUCKET_PRIORITY_QUEUE_HPP_
+#define NETWORKIT_AUXILIARY_BUCKET_PRIORITY_QUEUE_HPP_
 
-#include <cassert>
 #include <concepts>
 #include <cstdint>
 #include <limits>
@@ -87,22 +86,7 @@ private:
     /**
      * Called from various constructors for initializing members.
      */
-    void construct(uint64_t capacity) {
-        // check range of keys
-        if (minAdmissibleKey > maxAdmissibleKey) {
-            throw std::invalid_argument("minAdmissibleKey cannot be larger than maxAdmissibleKey");
-        }
-
-        // init
-        buckets.resize(maxAdmissibleKey - minAdmissibleKey + 1);
-        nodePtr.resize(capacity);
-        myBucket.assign(capacity, noneBucket);
-        currentMinKey = noneKey;
-        currentMaxKey = std::numeric_limits<KeyType>::min();
-        numElems = 0;
-
-        offset = -minAdmissibleKey;
-    }
+    void construct(uint64_t capacity);
 
 public:
     /**
@@ -112,25 +96,13 @@ public:
      * @param[in] minAdmissibleKey Minimum admissible key
      * @param[in] maxAdmissibleKey Maximum admissible key
      */
-    BucketPriorityQueue(std::span<const KeyType> keys, KeyType minAdmissibleKey, KeyType maxAdmissibleKey)
-        : minAdmissibleKey(minAdmissibleKey), maxAdmissibleKey(maxAdmissibleKey) {
-        construct(keys.size());
-
-        // insert key-value pairs
-        for (index i = 0; i < keys.size(); ++i) {
-            if (keys[i] != noneKey) {
-                insert(keys[i], static_cast<ValueType>(i));
-            }
-        }
-    }
+    BucketPriorityQueue(std::span<const KeyType> keys, KeyType minAdmissibleKey,
+                        KeyType maxAdmissibleKey);
 
     /**
      * Builds priority queue of the specified capacity @a capacity.
      */
-    BucketPriorityQueue(uint64_t capacity, KeyType minAdmissibleKey, KeyType maxAdmissibleKey)
-        : minAdmissibleKey(minAdmissibleKey), maxAdmissibleKey(maxAdmissibleKey) {
-        construct(capacity);
-    }
+    BucketPriorityQueue(uint64_t capacity, KeyType minAdmissibleKey, KeyType maxAdmissibleKey);
 
     /**
      * Default destructor
@@ -140,136 +112,56 @@ public:
     /**
      * Inserts key-value pair (@key, @value).
      */
-    void insert(KeyType key, ValueType value) override {
-        assert(minAdmissibleKey <= key && key <= maxAdmissibleKey);
-
-        const auto valueIdx = static_cast<index>(value);
-        if constexpr (std::is_signed_v<ValueType>) {
-            assert(value >= 0);
-        }
-        assert(valueIdx < nodePtr.size());
-
-        const auto bucketIdx = static_cast<BucketIndex>(key + offset);
-        buckets[bucketIdx].push_front(value);
-        nodePtr[valueIdx] = OptionalIterator{true, buckets[bucketIdx].begin()};
-        myBucket[valueIdx] = bucketIdx;
-        ++numElems;
-
-        // bookkeeping
-        if (key < currentMinKey) {
-            currentMinKey = key;
-        }
-        if (key > currentMaxKey) {
-            currentMaxKey = key;
-        }
-    }
+    void insert(KeyType key, ValueType value) override;
 
     /**
      * Returns the element on top of the PrioQ.
      */
-    std::pair<KeyType, ValueType> getMin() {
-        if (empty())
-            return {noneKey, noneValue};
-        else
-            return {currentMinKey, buckets[currentMinKey + offset].front()};
-    }
+    std::pair<KeyType, ValueType> getMin();
 
     /**
      * Removes the element with minimum key and returns the key-value pair.
      */
-    std::pair<KeyType, ValueType> extractMin() override {
-        if (empty())
-            return {noneKey, noneValue};
-
-        ValueType result = buckets[currentMinKey + offset].front();
-
-        // store currentMinKey because remove(result) will change it
-        KeyType oldMinKey = currentMinKey;
-        remove(result);
-        return {oldMinKey, result};
-    }
+    std::pair<KeyType, ValueType> extractMin() override;
 
     /**
      * Modifies entry with value @a value.
      * The entry is then set to @a newKey with the same value.
      * If the corresponding key is not present, the element will be inserted.
      */
-    void changeKey(KeyType newKey, ValueType value) override {
-        remove(value);
-        insert(newKey, value);
-    }
+    void changeKey(KeyType newKey, ValueType value) override;
 
     /**
      * @return Number of elements in PQ.
      */
-    uint64_t size() const override { return numElems; }
+    uint64_t size() const override;
 
     /**
      * @return Whether or not the PQ is empty.
      */
-    bool empty() const noexcept override { return numElems == 0; }
+    bool empty() const noexcept override;
 
     /**
      * @return Whether or not the PQ contains the given element.
      */
-    bool contains(const ValueType &value) const override {
-        const auto valueIdx = static_cast<index>(value);
-        if constexpr (std::is_signed_v<ValueType>) {
-            assert(value >= 0);
-        }
-        return valueIdx < nodePtr.size() && nodePtr[valueIdx].valid;
-    }
+    bool contains(const ValueType &value) const override;
 
     /**
      * Removes key-value pair given by value @a val.
      */
-    void remove(const ValueType &value) override {
-        const auto valueIdx = static_cast<index>(value);
-        if constexpr (std::is_signed_v<ValueType>) {
-            assert(value >= 0);
-        }
-        assert(valueIdx < nodePtr.size());
-
-        if (myBucket[valueIdx] != noneBucket) {
-            // remove from appropriate bucket
-            BucketIndex bucketIdx = myBucket[valueIdx];
-            buckets[bucketIdx].erase(nodePtr[valueIdx].iter);
-            nodePtr[valueIdx].reset();
-            myBucket[valueIdx] = noneBucket;
-            --numElems;
-
-            if (empty()) {
-                // empty pq: reinit the current min/max pointers
-                currentMinKey = noneKey;
-                currentMaxKey = std::numeric_limits<KeyType>::min();
-            } else {
-                // adjust max pointer if necessary
-                while (buckets[currentMaxKey + offset].empty() && currentMaxKey > currentMinKey) {
-                    --currentMaxKey;
-                }
-
-                // adjust min pointer if necessary
-                while (buckets[currentMinKey + offset].empty() && currentMinKey < currentMaxKey) {
-                    ++currentMinKey;
-                }
-            }
-        }
-    }
+    void remove(const ValueType &value) override;
 
     /**
      * @return key to given value @val.
      */
-    virtual KeyType getKey(const ValueType &val) {
-        const auto valueIdx = static_cast<index>(val);
-        if constexpr (std::is_signed_v<ValueType>) {
-            assert(val >= 0);
-        }
-        return static_cast<KeyType>(myBucket[valueIdx]) - offset;
-    }
+    virtual KeyType getKey(const ValueType &val);
 };
 
 template <SignedIntegral KeyType = int64_t, IntegralValue ValueType = index>
 using BucketPQ = BucketPriorityQueue<KeyType, ValueType>;
 
 } /* namespace Aux */
-#endif // NETWORKIT_AUXILIARY_BUCKET_PQ_HPP_
+
+#include <networkit/auxiliary/BucketPriorityQueueImpl.hpp>
+
+#endif // NETWORKIT_AUXILIARY_BUCKET_PRIORITY_QUEUE_HPP_
