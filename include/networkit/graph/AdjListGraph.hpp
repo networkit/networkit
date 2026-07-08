@@ -11,10 +11,13 @@
 #define NETWORKIT_GRAPH_ADJ_LIST_GRAPH_HPP_
 
 #include <algorithm>
+#include <atomic>
+#include <cassert>
 #include <functional>
 #include <numeric>
 #include <omp.h>
 #include <ranges>
+#include <span>
 #include <sstream>
 #include <stdexcept>
 #include <type_traits>
@@ -798,6 +801,31 @@ public:
 
         return *this;
     };
+
+    /**
+     * Create a Graph from CSR (compressed sparse row) arrays. The spans are
+     * views over the compressed row-pointer array (@a rowIdxView), the column
+     * indices array (@a columnIdxView) and the non-zero values (@a
+     * nonZerosView). The number of nodes is derived from @a rowIdxView, whose
+     * length is the node count plus one. The referenced data is copied into
+     * internal storage, so the spans need not outlive the call.
+     */
+    static AdjListGraph fromCSR(std::span<const index> rowIdxView,
+                                std::span<const index> columnIdxView,
+                                std::span<const double> nonZerosView, bool directed = true,
+                                bool isWeighted = false);
+
+    /**
+     * Raw-pointer overload of fromCSR(), forwarding to it via std::span.
+     *
+     * This exists ONLY for Cython interoperability: Cython cannot yet
+     * construct a std::span directly (support is planned for Cython 3.3.0).
+     * Prefer fromCSR() in C++ code; do not use this function on its own.
+     */
+    static AdjListGraph _fromCSRRaw(const index *rowIdxPtr, std::size_t rowIdxSize,
+                                    const index *columnIdxPtr, std::size_t columnIdxSize,
+                                    const double *nonZerosPtr, std::size_t nonZerosSize,
+                                    bool directed = true, bool isWeighted = false);
 
     /**
      * Reserves memory in the node's edge containers for undirected graphs.

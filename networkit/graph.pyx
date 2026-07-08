@@ -461,8 +461,8 @@ cdef class Graph:
 				if inputData.row.dtype == np.int32:
 					row_32t = inputData.row.view(np.int32)
 					col_32t = inputData.col.view(np.int32)
-					data = np.ones(len(row_32t), dtype = np.double)
-					if addMissing:	
+					data = np.asarray(inputData.data, dtype = np.double, order = 'C')
+					if addMissing:
 						for i in range(len(inputData.row)):
 							# Calling Python interface of addEdge due to addMissing support. 
 							self.addEdge(row_32t[i], col_32t[i], data[i], addMissing, checkMultiEdge)
@@ -473,8 +473,8 @@ cdef class Graph:
 				else:
 					row = inputData.row.view(np.intp)
 					col = inputData.col.view(np.intp)
-					data = np.ones(len(row), dtype = np.double)
-					if addMissing:	
+					data = np.asarray(inputData.data, dtype = np.double, order = 'C')
+					if addMissing:
 						for i in range(len(inputData.row)):
 							# Calling Python interface of addEdge due to addMissing support. 
 							self.addEdge(row[i], col[i], data[i], addMissing, checkMultiEdge)
@@ -1185,6 +1185,64 @@ cdef class Graph:
 			raise Exception("Attribute name has to be a string")
 		self._this.detachEdgeAttribute(stdstring(name))
 
+
+def GraphFromCsr(csr, directed=True, weighted=False):
+	"""Create a Graph from a SciPy CSR matrix.
+
+	Parameters
+	----------
+	csr : scipy.sparse.csr_matrix
+		The SciPy CSR matrix representing the adjacency matrix.
+	directed : bool, optional
+		Whether to treat the matrix as directed. Default: True
+	weighted : bool, optional
+		Whether to treat the matrix as weighted. Default: False
+
+	Returns
+	-------
+	Graph
+		A new NetworKit Graph built from the CSR matrix.
+	"""
+	# Validate input
+	try:
+		indptr = np.asarray(csr.indptr, dtype=np.int64)
+		indices = np.asarray(csr.indices, dtype=np.int64)
+		data = np.asarray(csr.data, dtype=np.double)
+	except Exception:
+		raise TypeError("Expected a SciPy CSR matrix with attributes .indptr, .indices, .data")
+
+	cdef count nRows = <count>csr.shape[0]
+	cdef count nCols = <count>csr.shape[1]
+
+	# Use raw buffer pointers and call the fast C++ entrypoint to avoid python loops
+	cdef cnp.ndarray indptr_arr = indptr
+	cdef cnp.ndarray indices_arr = indices
+	cdef cnp.ndarray data_arr = data
+
+	# Ensure arrays are contiguous C order
+	indptr_arr = np.ascontiguousarray(indptr_arr, dtype=np.int64)
+	indices_arr = np.ascontiguousarray(indices_arr, dtype=np.int64)
+	data_arr = np.ascontiguousarray(data_arr, dtype=np.double)
+
+	cdef const index* indptr_ptr = <const index*> indptr_arr.data
+	cdef const index* indices_ptr = <const index*> indices_arr.data
+	cdef const double* data_ptr = <const double*> data_arr.data
+
+	cdef size_t indptr_size = indptr_arr.shape[0]
+	cdef size_t indices_size = indices_arr.shape[0]
+	cdef size_t data_size = data_arr.shape[0]
+
+	# _fromCSRRaw is a Cython-only helper that forwards to Graph::fromCSR via
+	# std::span; Cython cannot construct a std::span directly yet.
+	cdef _Graph tmp = _Graph._fromCSRRaw(
+				indptr_ptr, indptr_size,
+				indices_ptr, indices_size,
+				data_ptr, data_size,
+				<bool_t>directed, <bool_t>weighted)
+	cdef Graph G = Graph(nRows, weighted, directed)
+	G.setThis(tmp)
+	return G
+
 def GraphFromCoo(inputData, n=0, bool_t weighted=False, bool_t directed=False, bool_t edgesIndexed=False):
 	"""
 	graphFromInputData(inputData, n=0, bool_t weighted=False, bool_t directed=False, bool_t edgesIndexed=False):
@@ -1197,7 +1255,7 @@ def GraphFromCoo(inputData, n=0, bool_t weighted=False, bool_t directed=False, b
 
 	Parameter :code:`inputData` can be one of the following:
 
-	- scipy.sparse.coo_matrix
+	- scipy.sparse.coo_matrix, where the `scipy.sparse.coo_matrix.data` become the weights
 	- (data, (i,j)) where data, i and j are of type np.ndarray
 	- (i,j) where i and j are of type np.ndarray
 

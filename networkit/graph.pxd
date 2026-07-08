@@ -8,6 +8,7 @@ from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from libcpp.string cimport string
 from libcpp.unordered_set cimport unordered_set
+from libc.stddef cimport size_t
 
 from .base cimport _Algorithm, Algorithm
 from .structures cimport edgeid, index, count, node, edgeweight
@@ -102,6 +103,11 @@ cdef extern from "<networkit/graph/Graph.hpp>":
 		_EdgeDoubleAttribute getEdgeDoubleAttribute(string) except +
 		_EdgeStringAttribute getEdgeStringAttribute(string) except +
 		void detachEdgeAttribute(string) except +
+		@staticmethod
+		_Graph _fromCSRRaw(const index *rowIdxPtr, size_t rowIdxSize,
+					const index *columnIdxPtr, size_t columnIdxSize,
+					const double *nonZerosPtr, size_t nonZerosSize,
+					bool_t directed, bool_t weighted) except +
 
 cdef extern from "<networkit/graph/Graph.hpp>":
 	cdef cppclass _NodeIterator "NetworKit::Graph::NodeIterator":

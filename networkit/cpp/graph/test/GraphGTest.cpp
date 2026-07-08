@@ -2701,4 +2701,146 @@ TEST(GraphGTest, testSortNeighborsWeightedDirectedIndexedGraph) {
     });
 }
 
+TEST(GraphGTest, testFromCSRDirectedUnweighted) {
+    // Hand-crafted directed graph: 0->1, 0->2, 1->2.
+    // CSR row pointers have nRows + 1 == 4 entries.
+    std::vector<index> rowIdx{0, 2, 3, 3};
+    std::vector<index> columnIdx{1, 2, 2};
+    std::vector<double> nonZeros{}; // unused for unweighted
+
+    Graph G = Graph::fromCSR(rowIdx, columnIdx, nonZeros, /* directed = */ true,
+                             /* isWeighted = */ false);
+
+    EXPECT_TRUE(G.isDirected());
+    EXPECT_FALSE(G.isWeighted());
+    EXPECT_EQ(G.numberOfNodes(), 3u);
+    EXPECT_EQ(G.numberOfEdges(), 3u);
+
+    EXPECT_TRUE(G.hasEdge(0, 1));
+    EXPECT_TRUE(G.hasEdge(0, 2));
+    EXPECT_TRUE(G.hasEdge(1, 2));
+    // Edges are directed, so the reverse directions must not exist.
+    EXPECT_FALSE(G.hasEdge(1, 0));
+    EXPECT_FALSE(G.hasEdge(2, 0));
+    EXPECT_FALSE(G.hasEdge(2, 1));
+
+    EXPECT_EQ(G.degreeOut(0), 2u);
+    EXPECT_EQ(G.degreeOut(1), 1u);
+    EXPECT_EQ(G.degreeOut(2), 0u);
+
+    EXPECT_EQ(G.degreeIn(0), 0u);
+    EXPECT_EQ(G.degreeIn(1), 1u);
+    EXPECT_EQ(G.degreeIn(2), 2u);
+}
+
+TEST(GraphGTest, testFromCSRDirectedWeighted) {
+    // Same structure as the unweighted case, now with edge weights.
+    std::vector<index> rowIdx{0, 2, 3, 3};
+    std::vector<index> columnIdx{1, 2, 2};
+    std::vector<double> nonZeros{1.5, 2.5, 3.5};
+
+    Graph G = Graph::fromCSR(rowIdx, columnIdx, nonZeros, /* directed = */ true,
+                             /* isWeighted = */ true);
+
+    EXPECT_TRUE(G.isDirected());
+    EXPECT_TRUE(G.isWeighted());
+    EXPECT_EQ(G.numberOfNodes(), 3u);
+    EXPECT_EQ(G.numberOfEdges(), 3u);
+
+    EXPECT_DOUBLE_EQ(G.weight(0, 1), 1.5);
+    EXPECT_DOUBLE_EQ(G.weight(0, 2), 2.5);
+    EXPECT_DOUBLE_EQ(G.weight(1, 2), 3.5);
+}
+
+TEST(GraphGTest, testFromCSRUndirected) {
+    // For an undirected graph each stored nonzero is one undirected edge that is
+    // stored from both endpoints; the input does not need to be symmetric. Here
+    // a triangular matrix encodes edges (0,1) and (1,2).
+    std::vector<index> rowIdx{0, 1, 2, 2};
+    std::vector<index> columnIdx{1, 2};
+    std::vector<double> nonZeros{};
+
+    Graph G = Graph::fromCSR(rowIdx, columnIdx, nonZeros, /* directed = */ false,
+                             /* isWeighted = */ false);
+
+    EXPECT_FALSE(G.isDirected());
+    EXPECT_EQ(G.numberOfNodes(), 3u);
+    // fromCSR sets the edge count to the number of stored entries (nnz).
+    EXPECT_EQ(G.numberOfEdges(), columnIdx.size());
+
+    EXPECT_TRUE(G.hasEdge(0, 1));
+    EXPECT_TRUE(G.hasEdge(1, 0));
+    EXPECT_TRUE(G.hasEdge(1, 2));
+    EXPECT_TRUE(G.hasEdge(2, 1));
+
+    EXPECT_EQ(G.degree(1), 2u);
+    // Unweighted: every edge has the default weight of 1.0.
+    EXPECT_DOUBLE_EQ(G.totalEdgeWeight(), static_cast<double>(G.numberOfEdges()));
+}
+
+TEST(GraphGTest, testFromCSRUndirectedWeighted) {
+    std::vector<index> rowIdx{0, 2, 3, 3}; // row 0: (0,1),(0,2); row 1: (1,2)
+    std::vector<index> columnIdx{1, 2, 2};
+    std::vector<double> nonZeros{1.5, 2.5, 3.5};
+
+    Graph fromCsr = Graph::fromCSR(rowIdx, columnIdx, nonZeros, /* directed = */ false,
+                                   /* isWeighted = */ true);
+
+    // Reference graph built the same way GraphFromCoo does, via addEdge().
+    Graph reference(3, /* weighted = */ true, /* directed = */ false);
+    reference.addEdge(0, 1, 1.5);
+    reference.addEdge(0, 2, 2.5);
+    reference.addEdge(1, 2, 3.5);
+
+    EXPECT_FALSE(fromCsr.isDirected());
+    EXPECT_TRUE(fromCsr.isWeighted());
+    EXPECT_EQ(fromCsr.numberOfNodes(), reference.numberOfNodes());
+    EXPECT_EQ(fromCsr.numberOfEdges(), reference.numberOfEdges());
+    EXPECT_DOUBLE_EQ(fromCsr.totalEdgeWeight(), 1.5 + 2.5 + 3.5);
+    EXPECT_DOUBLE_EQ(fromCsr.totalEdgeWeight(), reference.totalEdgeWeight());
+
+    // Edges and their weights must be reachable from both endpoints.
+    for (const auto &[u, v, w] : {std::tuple{0u, 1u, 1.5}, {0u, 2u, 2.5}, {1u, 2u, 3.5}}) {
+        EXPECT_TRUE(fromCsr.hasEdge(u, v));
+        EXPECT_TRUE(fromCsr.hasEdge(v, u));
+        EXPECT_DOUBLE_EQ(fromCsr.weight(u, v), w);
+        EXPECT_DOUBLE_EQ(fromCsr.weight(v, u), w);
+    }
+
+    // Weighted degrees must agree with the reference for every node.
+    fromCsr.forNodes([&](node u) {
+        EXPECT_DOUBLE_EQ(fromCsr.weightedDegree(u), reference.weightedDegree(u));
+        EXPECT_EQ(fromCsr.degree(u), reference.degree(u));
+    });
+}
+
+TEST(GraphGTest, testFromCSRThrowsOnEmptyRowIdx) {
+    // CSR row pointers must hold at least one entry (nRows + 1).
+    std::vector<index> rowIdx{};
+    std::vector<index> columnIdx{};
+    std::vector<double> nonZeros{};
+
+    EXPECT_THROW(Graph::fromCSR(rowIdx, columnIdx, nonZeros), std::invalid_argument);
+}
+
+TEST(GraphGTest, testFromCSRThrowsOnColumnIdxSizeMismatch) {
+    // rowIdx[nRows] == 3, but only two column indices are provided.
+    std::vector<index> rowIdx{0, 2, 3, 3};
+    std::vector<index> columnIdx{1, 2};
+    std::vector<double> nonZeros{};
+
+    EXPECT_THROW(Graph::fromCSR(rowIdx, columnIdx, nonZeros), std::invalid_argument);
+}
+
+TEST(GraphGTest, testFromCSRThrowsOnNonZerosSizeMismatchWhenWeighted) {
+    // For a weighted graph the number of non-zeros must match rowIdx[nRows].
+    std::vector<index> rowIdx{0, 2, 3, 3};
+    std::vector<index> columnIdx{1, 2, 2};
+    std::vector<double> nonZeros{1.5, 2.5}; // one weight too few
+
+    EXPECT_THROW(Graph::fromCSR(rowIdx, columnIdx, nonZeros, /* directed = */ true,
+                                /* isWeighted = */ true),
+                 std::invalid_argument);
+}
+
 } /* namespace NetworKit */

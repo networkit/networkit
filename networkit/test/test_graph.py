@@ -39,15 +39,23 @@ class TestGraph(unittest.TestCase):
         row = np.array([0, 1, 2])
         col = np.array([1, 2, 0])
         data = np.array([1.0, 2.0, 3.0])
-        S = sc.sparse.coo_matrix((data, (row, col)), dtype=np.double)
+        for mat_typ in ["coo_matrix", "csr_matrix"]:
+            is_coo = "coo" in mat_typ
+            S = getattr(sc.sparse, mat_typ)((data, (row, col)), dtype=np.double)
 
-        for weighted in [True, False]:
-            for directed in [True, False]:
-                G = nk.GraphFromCoo(S, n=3, directed=directed, weighted=weighted)
-                self.assertEqual(G.isDirected(), directed)
-                self.assertEqual(G.isWeighted(), weighted)
-                self.assertEqual(G.numberOfNodes(), 3)
-                self.assertEqual(G.numberOfEdges(), 3)
+            for weighted in [True, False]:
+                for directed in [True, False]:
+                    G = getattr(nk, "GraphFromCoo" if is_coo else "GraphFromCsr")(S, directed=directed, weighted=weighted, **({"n":3} if is_coo else {}))
+                    self.assertEqual(G.isDirected(), directed)
+                    self.assertEqual(G.isWeighted(), weighted)
+                    self.assertEqual(G.numberOfNodes(), 3)
+                    self.assertEqual(G.numberOfEdges(), 3)
+
+                    # Unweighted graphs use the default weight 1.0, so their total equals the edge count.
+                    if weighted:
+                        self.assertAlmostEqual(G.totalEdgeWeight(), float(data.sum()))
+                    else:
+                        self.assertAlmostEqual(G.totalEdgeWeight(), G.numberOfEdges())
 
     def testAddNodes(self):
         G = nk.Graph(0)

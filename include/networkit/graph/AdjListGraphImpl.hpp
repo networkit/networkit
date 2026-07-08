@@ -1551,6 +1551,190 @@ bool AdjListGraph<NodeT, EdgeWeightT>::checkConsistency() const {
     return noMultiEdges && correctNodeUpperbound && correctNumberOfEdges;
 }
 
+template <class NodeT, class EdgeWeightT>
+AdjListGraph<NodeT, EdgeWeightT> AdjListGraph<NodeT, EdgeWeightT>::fromCSR(
+    std::span<const index> rowIdxView, std::span<const index> columnIdxView,
+    std::span<const double> nonZerosView, bool directed, bool isWeighted) {
+    // In CSR format rowIdxView has nRows + 1 entries, so the number of rows is
+    // derived directly from its length.
+    if (rowIdxView.empty()) {
+        throw std::invalid_argument("rowIdxView must have at least one entry");
+    }
+    count nRows = static_cast<count>(rowIdxView.size() - 1);
+
+    // In CSR format the number of stored entries (nnz) is the last row pointer.
+    size_t nnz = static_cast<size_t>(rowIdxView[nRows]);
+
+    if (columnIdxView.size() != nnz) {
+        throw std::invalid_argument("columnIdxView size does not match rowIdxView[nRows]");
+    }
+    if (isWeighted && nonZerosView.size() != nnz) {
+        throw std::invalid_argument("nonZerosView size does not match rowIdxView[nRows]");
+    }
+
+    // Create the Graph with reserved structures
+    AdjListGraph graph(nRows, isWeighted, directed);
+
+    // Number of edges equals number of stored column indices
+    count edgeCount = static_cast<count>(nnz);
+
+    // Count self-loops so that numberOfSelfLoops() stays consistent with the
+    // graph that addEdge() would have produced from the same entries.
+    count selfLoops = 0;
+    for (index i = 0; i < nRows; ++i) {
+        assert(rowIdxView[i + 1] >= rowIdxView[i] && "rowIdxView must be non-decreasing");
+        for (index k = rowIdxView[i]; k < rowIdxView[i + 1]; ++k) {
+            if (columnIdxView[k] == i)
+                ++selfLoops;
+        }
+    }
+    graph.storedNumberOfSelfLoops = selfLoops;
+
+    graph.outEdges.resize(nRows);
+    if (isWeighted)
+        graph.outEdgeWeights.resize(nRows);
+
+    if (directed) {
+        // Directed: row i lists the out-neighbors of node i directly.
+        for (index i = 0; i < nRows; ++i) {
+            size_t rowSize = static_cast<size_t>(rowIdxView[i + 1] - rowIdxView[i]);
+            graph.outEdges[i].resize(rowSize);
+            if (isWeighted)
+                graph.outEdgeWeights[i].resize(rowSize);
+        }
+
+#pragma omp parallel for schedule(guided)
+        for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
+            index rowStart = rowIdxView[i];
+            index rowEnd = rowIdxView[i + 1];
+            if (rowEnd > rowStart) {
+                std::copy(columnIdxView.data() + rowStart, columnIdxView.data() + rowEnd,
+                          graph.outEdges[i].begin());
+                if (isWeighted) {
+                    std::copy(nonZerosView.data() + rowStart, nonZerosView.data() + rowEnd,
+                              graph.outEdgeWeights[i].begin());
+                }
+            }
+        }
+
+        // Build inEdges (and inEdgeWeights). We compute in-degrees first,
+        // preallocate, then fill the arrays. Filling uses atomic position
+        // counters so it can be parallelized safely.
+        graph.inEdges.resize(nRows);
+        if (isWeighted) {
+            graph.inEdgeWeights.resize(nRows);
+        }
+
+        std::vector<size_t> inDeg(nRows, 0);
+        for (size_t k = 0; k < nnz; ++k) {
+            index j = columnIdxView[k];
+            ++inDeg[j];
+        }
+
+        for (index j = 0; j < nRows; ++j) {
+            graph.inEdges[j].resize(inDeg[j]);
+            if (isWeighted)
+                graph.inEdgeWeights[j].resize(inDeg[j]);
+        }
+
+        // position counters for each target row; initialize to zero
+        std::vector<std::atomic<size_t>> inPos(nRows);
+        for (index j = 0; j < nRows; ++j)
+            inPos[j].store(0);
+
+#pragma omp parallel for schedule(guided)
+        for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
+            index rowStart = rowIdxView[i];
+            index rowEnd = rowIdxView[i + 1];
+            for (index k = rowStart; k < rowEnd; ++k) {
+                index j = columnIdxView[k];
+                size_t pos = inPos[j].fetch_add(1);
+                graph.inEdges[j][pos] = static_cast<NodeT>(i);
+                if (isWeighted)
+                    graph.inEdgeWeights[j][pos] = nonZerosView[k];
+            }
+        }
+    } else {
+        // Undirected: every stored nonzero (i, j) is an undirected edge and is
+        // stored from both endpoints (self-loops are stored only once), exactly
+        // as addEdge() does.
+        //
+        // First determine the final degree of each node: every entry adds a
+        // slot to its row owner, and every non-self-loop entry adds a mirrored
+        // slot to its neighbor.
+        std::vector<size_t> deg(nRows, 0);
+        for (index i = 0; i < nRows; ++i) {
+            for (index k = rowIdxView[i]; k < rowIdxView[i + 1]; ++k) {
+                index j = columnIdxView[k];
+                ++deg[i];
+                if (j != i)
+                    ++deg[j];
+            }
+        }
+
+        for (index i = 0; i < nRows; ++i) {
+            graph.outEdges[i].resize(deg[i]);
+            if (isWeighted)
+                graph.outEdgeWeights[i].resize(deg[i]);
+        }
+
+        // Per-node position counters. A node's slots are written both by the
+        // thread owning its row and by threads mirroring edges into it, so the
+        // counters must be atomic.
+        std::vector<std::atomic<size_t>> pos(nRows);
+        for (index i = 0; i < nRows; ++i)
+            pos[i].store(0);
+
+#pragma omp parallel for schedule(guided)
+        for (omp_index i = 0; i < static_cast<omp_index>(nRows); ++i) {
+            for (index k = rowIdxView[i]; k < rowIdxView[i + 1]; ++k) {
+                index j = columnIdxView[k];
+                bool mirror = j != static_cast<index>(i);
+
+                size_t p = pos[i].fetch_add(1);
+                graph.outEdges[i][p] = static_cast<NodeT>(j);
+
+                size_t q = 0;
+                if (mirror) {
+                    q = pos[j].fetch_add(1);
+                    graph.outEdges[j][q] = static_cast<NodeT>(i);
+                }
+
+                if (isWeighted) {
+                    EdgeWeightT w = static_cast<EdgeWeightT>(nonZerosView[k]);
+                    graph.outEdgeWeights[i][p] = w;
+                    if (mirror)
+                        graph.outEdgeWeights[j][q] = w;
+                }
+            }
+        }
+    }
+
+    graph.m = edgeCount;
+
+    return graph;
+}
+
+template <class NodeT, class EdgeWeightT>
+AdjListGraph<NodeT, EdgeWeightT>
+AdjListGraph<NodeT, EdgeWeightT>::_fromCSRRaw(const index *rowIdxPtr, std::size_t rowIdxSize,
+                                              const index *columnIdxPtr, std::size_t columnIdxSize,
+                                              const double *nonZerosPtr, std::size_t nonZerosSize,
+                                              bool directed, bool isWeighted) {
+    // This helper only adapts raw pointers to std::span for callers (e.g. Cython)
+    // that cannot construct a span directly; the real work happens in fromCSR().
+    if (rowIdxPtr == nullptr || columnIdxPtr == nullptr) {
+        throw std::invalid_argument("null CSR pointer passed to _fromCSRRaw");
+    }
+    if (isWeighted && nonZerosPtr == nullptr) {
+        throw std::invalid_argument(
+            "null nonZeros pointer passed to _fromCSRRaw for weighted graph");
+    }
+    return fromCSR(std::span<const index>(rowIdxPtr, rowIdxSize),
+                   std::span<const index>(columnIdxPtr, columnIdxSize),
+                   std::span<const double>(nonZerosPtr, nonZerosSize), directed, isWeighted);
+}
+
 } /* namespace NetworKit */
 
 #endif // NETWORKIT_GRAPH_ADJ_LIST_GRAPH_IMPL_HPP_
