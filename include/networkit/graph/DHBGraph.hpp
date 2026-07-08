@@ -7,8 +7,8 @@
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/graph/Attributes.hpp>
-#include <networkit/graph/Edge.hpp>
 #include <networkit/graph/EdgeIterators.hpp>
+#include <networkit/graph/EdgeUtils.hpp>
 #include <networkit/graph/NodeIterators.hpp>
 
 #include <omp.h>
@@ -51,6 +51,7 @@ namespace NetworKit {
  *       method such as f(L handle). Instead, we might want to pass all lambdas
  *       by rvalue-reference as in f(L&& handle).
  */
+
 class DHBGraph final {
 
     // DHBGraph properties
@@ -466,18 +467,20 @@ private:
 
 public:
     // For support of API: NetworKit::DHBGraph::NodeIterator
-    using NodeIterator = NodeIteratorBase<DHBGraph>;
+    using NodeIterator = NodeIteratorBase<DHBGraph, node, edgeweight>;
     // For support of API: NetworKit::DHBGraph::NodeRange
-    using NodeRange = NodeRangeBase<DHBGraph>;
+    using NodeRange = NodeRangeBase<DHBGraph, node, edgeweight>;
 
     // For support of API: NetworKit::DHBGraph:EdgeIterator
-    using EdgeIterator = EdgeTypeIterator<DHBGraph, Edge>;
+    using EdgeIterator = EdgeWeightTIterator<DHBGraph, node, edgeweight, EdgeT<node>>;
     // For support of API: NetworKit::DHBGraph:EdgeWeightIterator
-    using EdgeWeightIterator = EdgeTypeIterator<DHBGraph, WeightedEdge>;
+    using EdgeWeightIterator =
+        EdgeWeightTIterator<DHBGraph, node, edgeweight, WeightedEdgeT<node, edgeweight>>;
     // For support of API: NetworKit::DHBGraph:EdgeRange
-    using EdgeRange = EdgeTypeRange<DHBGraph, Edge>;
+    using EdgeRange = EdgeWeightTRange<DHBGraph, node, edgeweight, EdgeT<node>>;
     // For support of API: NetworKit::DHBGraph:EdgeWeightRange
-    using EdgeWeightRange = EdgeTypeRange<DHBGraph, WeightedEdge>;
+    using EdgeWeightRange =
+        EdgeWeightTRange<DHBGraph, node, edgeweight, WeightedEdgeT<node, edgeweight>>;
 
     /**
      * Class to iterate over the in/out neighbors of a node.
@@ -624,7 +627,7 @@ public:
     public:
         NeighborRange(DHBGraph const &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
 
-        NeighborRange() : G(nullptr) {};
+        NeighborRange() : G(nullptr){};
 
         NeighborIterator begin() const {
             assert(G);
@@ -655,7 +658,7 @@ public:
     public:
         NeighborWeightRange(const DHBGraph &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
 
-        NeighborWeightRange() : G(nullptr) {};
+        NeighborWeightRange() : G(nullptr){};
 
         NeighborWeightIterator begin() const {
             assert(G);
@@ -730,7 +733,7 @@ public:
         : weighted(other.weighted), directed(other.directed), m(other.m),
           storedNumberOfSelfLoops(other.storedNumberOfSelfLoops), omega(other.omega),
           edgesIndexed(other.edgesIndexed), nodeAttributeMap(other.nodeAttributeMap, this),
-          edgeAttributeMap(other.edgeAttributeMap, this), m_dhb_graph(other.m_dhb_graph) {};
+          edgeAttributeMap(other.edgeAttributeMap, this), m_dhb_graph(other.m_dhb_graph){};
 
     /** Default move constructor */
     DHBGraph(DHBGraph &&other) noexcept
@@ -1242,6 +1245,19 @@ public:
     node getIthNeighbor(node u, index i) const;
 
     /**
+     * Return the i-th (outgoing) neighbor of @a u.
+     *
+     * @param u Node.
+     * @param i index; should be in [0, degreeOut(u))
+     * @return @a i-th (outgoing) neighbor of @a u, or @c nullNodeId if no such
+     * neighbor exists.
+     *
+     * @note DHB does not support Unsafe functions. This function is logically the same as using
+     * getIthNeighbor(node, index).
+     */
+    node getIthNeighbor(Unsafe, node u, index i) const;
+
+    /**
      * Return the weight to the i-th (outgoing) neighbor of u.
      *
      * @param u Node.
@@ -1250,6 +1266,19 @@ public:
      * such neighbor exists.
      */
     edgeweight getIthNeighborWeight(node u, index i) const;
+
+    /**
+     * Return the weight to the i-th (outgoing) neighbor of u.
+     *
+     * @param u Node.
+     * @param i index; should be in [0, degreeOut(u))
+     * @return @a edge weight to the i-th (outgoing) neighbor of u, or 0.0 if no
+     * such neighbor exists.
+     *
+     * @note DHB does not support Unsafe functions. This function is logically the same as using
+     * getIthNeighborWeight(node, index).
+     */
+    edgeweight getIthNeighborWeight(Unsafe, node u, index i) const;
 
     /**
      * Get i-th (outgoing) neighbor of @a u and the corresponding edge weight.
@@ -1270,9 +1299,10 @@ public:
      * @return pair: i-th (outgoing) neighbor of @a u and the corresponding
      * edge weight, or @c defaultEdgeWeight if unweighted.
      *
-     * This function is not supported for DHB. Please use getIthNeighborWithWeight(node u, index i).
+     * @note DHB does not support Unsafe functions. This function is logically the same as using
+     * getIthNeighborWithWeight(node, index).
      */
-    std::pair<node, edgeweight> getIthNeighborWithWeight(Unsafe, node u, index i) const = delete;
+    std::pair<node, edgeweight> getIthNeighborWithWeight(Unsafe, node u, index i) const;
 
     /**
      * Get i-th (outgoing) neighbor of @a u and the corresponding edge id.

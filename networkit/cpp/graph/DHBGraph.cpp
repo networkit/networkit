@@ -468,6 +468,13 @@ node DHBGraph::getIthNeighbor(node u, index i) const {
     return m_dhb_graph.neighbors(u)[i].vertex();
 }
 
+node DHBGraph::getIthNeighbor(Unsafe, node u, index i) const {
+    if (!ithNeighborExists(u, i)) {
+        return none;
+    }
+    return m_dhb_graph.neighbors(u)[i].vertex();
+}
+
 edgeweight DHBGraph::getIthNeighborWeight(node u, index i) const {
     if (!ithNeighborExists(u, i)) {
         return nullWeight;
@@ -475,7 +482,26 @@ edgeweight DHBGraph::getIthNeighborWeight(node u, index i) const {
     return isWeighted() ? m_dhb_graph.neighbors(u)[i].data().weight : defaultEdgeWeight;
 }
 
+edgeweight DHBGraph::getIthNeighborWeight(Unsafe, node u, index i) const {
+    if (!ithNeighborExists(u, i)) {
+        return nullWeight;
+    }
+    return isWeighted() ? m_dhb_graph.neighbors(u)[i].data().weight : defaultEdgeWeight;
+}
+
 std::pair<node, edgeweight> DHBGraph::getIthNeighborWithWeight(node u, index i) const {
+    if (!ithNeighborExists(u, i)) {
+        return {none, nullWeight};
+    }
+
+    node const neighbor = m_dhb_graph.neighbors(u)[i].vertex();
+    double const weight =
+        isWeighted() ? m_dhb_graph.neighbors(u)[i].data().weight : defaultEdgeWeight;
+
+    return {neighbor, weight};
+}
+
+std::pair<node, edgeweight> DHBGraph::getIthNeighborWithWeight(Unsafe, node u, index i) const {
     if (!ithNeighborExists(u, i)) {
         return {none, nullWeight};
     }

@@ -17,10 +17,10 @@ namespace NetworKit {
 /**
  * Class to iterate over the nodes of a graph.
  */
-template <template <class, class> class GraphType, class NodeT, class EdgeWeightT>
+template <class GraphType, class NodeT, class EdgeWeightT>
 class NodeIteratorBase {
 
-    const GraphType<NodeT, EdgeWeightT> *G;
+    const GraphType *G;
     NodeT u{NullNodeId<NodeT>};
 
 public:
@@ -44,7 +44,7 @@ public:
     // Own type.
     using self = NodeIteratorBase;
 
-    NodeIteratorBase(const GraphType<NodeT, EdgeWeightT> *G, NodeT u) : G(G), u(u) {
+    NodeIteratorBase(const GraphType *G, NodeT u) : G(G), u(u) {
         if (!G->hasNode(u) && u < G->upperNodeIdBound()) {
             ++(*this);
         }
@@ -99,26 +99,26 @@ public:
 /**
  * Wrapper class to iterate over a range of the nodes of a graph.
  */
-template <template <class, class> class GraphType, class NodeT, class EdgeWeightT>
+template <class GraphType, class NodeT, class EdgeWeightT>
 class NodeRangeBase {
 
-    const GraphType<NodeT, EdgeWeightT> *G;
+    const GraphType *G;
 
 public:
-    NodeRangeBase(const GraphType<NodeT, EdgeWeightT> &G) : G(&G) {}
+    NodeRangeBase(const GraphType &G) : G(&G) {}
 
-    NodeRangeBase() : G(nullptr) {};
+    NodeRangeBase() : G(nullptr){};
 
     ~NodeRangeBase() = default;
 
     NodeIteratorBase<GraphType, NodeT, EdgeWeightT> begin() const noexcept {
         assert(G != nullptr);
-        return NodeIteratorBase(G, NodeT{0});
+        return NodeIteratorBase<GraphType, NodeT, EdgeWeightT>(G, NodeT{0});
     }
 
     NodeIteratorBase<GraphType, NodeT, EdgeWeightT> end() const noexcept {
         assert(G);
-        return NodeIteratorBase(G, G->upperNodeIdBound());
+        return NodeIteratorBase<GraphType, NodeT, EdgeWeightT>(G, G->upperNodeIdBound());
     }
 };
 
