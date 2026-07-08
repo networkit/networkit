@@ -177,7 +177,7 @@ class EdgeWeightTRange {
 public:
     EdgeWeightTRange(const GraphType &G) : G(&G) {}
 
-    EdgeWeightTRange() : G(nullptr){};
+    EdgeWeightTRange() : G(nullptr) {};
 
     ~EdgeWeightTRange() = default;
 

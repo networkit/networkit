@@ -627,7 +627,7 @@ public:
     public:
         NeighborRange(DHBGraph const &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
 
-        NeighborRange() : G(nullptr){};
+        NeighborRange() : G(nullptr) {};
 
         NeighborIterator begin() const {
             assert(G);
@@ -658,7 +658,7 @@ public:
     public:
         NeighborWeightRange(const DHBGraph &G, node u) : G(&G), u(u) { assert(G.hasNode(u)); };
 
-        NeighborWeightRange() : G(nullptr){};
+        NeighborWeightRange() : G(nullptr) {};
 
         NeighborWeightIterator begin() const {
             assert(G);
@@ -733,7 +733,7 @@ public:
         : weighted(other.weighted), directed(other.directed), m(other.m),
           storedNumberOfSelfLoops(other.storedNumberOfSelfLoops), omega(other.omega),
           edgesIndexed(other.edgesIndexed), nodeAttributeMap(other.nodeAttributeMap, this),
-          edgeAttributeMap(other.edgeAttributeMap, this), m_dhb_graph(other.m_dhb_graph){};
+          edgeAttributeMap(other.edgeAttributeMap, this), m_dhb_graph(other.m_dhb_graph) {};
 
     /** Default move constructor */
     DHBGraph(DHBGraph &&other) noexcept
