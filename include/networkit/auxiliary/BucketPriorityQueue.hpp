@@ -157,8 +157,7 @@ public:
     virtual KeyType getKey(const ValueType &val);
 };
 
-template <SignedIntegral KeyType = int64_t, IntegralValue ValueType = index>
-using BucketPQ = BucketPriorityQueue<KeyType, ValueType>;
+using BucketPQ = BucketPriorityQueue<int64_t, index>;
 
 } /* namespace Aux */
 

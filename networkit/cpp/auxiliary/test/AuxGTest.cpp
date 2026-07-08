@@ -214,7 +214,7 @@ TEST_F(AuxGTest, testBucketPQ) {
     Aux::Random::setSeed(42, false);
     const int64_t maxKey = 100;
     const count capacity = 100;
-    Aux::BucketPQ<> prioQ(capacity, 0, maxKey);
+    Aux::BucketPQ prioQ(capacity, 0, maxKey);
 
     EXPECT_TRUE(prioQ.empty());
 
@@ -243,7 +243,7 @@ TEST_F(AuxGTest, testBucketPQUpdateRemove) {
     Aux::Random::setSeed(42, false);
     const int64_t maxKey = 100;
     const count capacity = 100;
-    Aux::BucketPQ<> prioQ(capacity, 0, maxKey);
+    Aux::BucketPQ prioQ(capacity, 0, maxKey);
 
     EXPECT_TRUE(prioQ.empty());
 

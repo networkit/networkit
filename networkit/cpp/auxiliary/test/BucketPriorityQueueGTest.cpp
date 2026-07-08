@@ -35,7 +35,7 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testConstructFromKeysSkipsNone) {
 
     std::vector<KeyType> keys = {KeyType{3}, std::numeric_limits<KeyType>::max(), KeyType{-2},
                                  KeyType{1}};
-    Aux::BucketPQ<KeyType, ValueType> prioQ(keys, KeyType{-5}, KeyType{5});
+    Aux::BucketPriorityQueue<KeyType, ValueType> prioQ(keys, KeyType{-5}, KeyType{5});
 
     EXPECT_THAT(prioQ, SizeIs(3));
     EXPECT_TRUE(prioQ.contains(ValueType{0}));
@@ -59,7 +59,7 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testChangeKeyAndRemove) {
     using KeyType = typename TestFixture::KeyType;
     using ValueType = typename TestFixture::ValueType;
 
-    Aux::BucketPQ<KeyType, ValueType> prioQ(5, KeyType{-10}, KeyType{10});
+    Aux::BucketPriorityQueue<KeyType, ValueType> prioQ(5, KeyType{-10}, KeyType{10});
 
     prioQ.insert(KeyType{4}, ValueType{0});
     prioQ.insert(KeyType{-3}, ValueType{1});
@@ -86,7 +86,7 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testEmptySentinelsUseTemplateTypes) {
     using KeyType = typename TestFixture::KeyType;
     using ValueType = typename TestFixture::ValueType;
 
-    Aux::BucketPQ<KeyType, ValueType> prioQ(4, KeyType{-2}, KeyType{2});
+    Aux::BucketPriorityQueue<KeyType, ValueType> prioQ(4, KeyType{-2}, KeyType{2});
 
     const std::pair<KeyType, ValueType> emptySentinel{std::numeric_limits<KeyType>::max(),
                                                       std::numeric_limits<ValueType>::max()};

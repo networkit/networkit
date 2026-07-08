@@ -40,7 +40,7 @@ void ApproxGroupBetweenness::run() {
     const auto samples = static_cast<count>(
         std::ceil(static_cast<double>(groupSize) * std::log(n) / (epsilon * epsilon)));
     std::vector<std::vector<count>> hyperEdgesPerSample(samples);
-    Aux::BucketPQ<> nodeDegrees(bucketInitializer, -static_cast<int64_t>(samples), 1);
+    Aux::BucketPQ nodeDegrees(bucketInitializer, -static_cast<int64_t>(samples), 1);
     std::vector<BFS> bfss(omp_get_max_threads(), BFS(G, 0, true, true));
 
 #pragma omp parallel for

@@ -104,7 +104,7 @@ void GroupCloseness::run() {
     // loop to find k group members
     for (index i = 1; i < k; i++) {
         DEBUG("k = ", i);
-        Aux::BucketPQ<> Q(n, -currentImpr - 1, 0);
+        Aux::BucketPQ Q(n, -currentImpr - 1, 0);
         G->forNodes([&](node v) {
             if (d[v] > 0)
                 Q.insert(-prevBound[v], v);

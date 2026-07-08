@@ -40,7 +40,7 @@ void PathGrowingMatcher::run() {
     // PQ to retrieve vertices with degree > 0 quickly
     int64_t minKey = -((int64_t)G->numberOfNodes());
     int64_t maxKey = 0;
-    Aux::BucketPQ<> bpq(z, minKey, maxKey);
+    Aux::BucketPQ bpq(z, minKey, maxKey);
 
     // degrees tracks degree of vertices,
     // avoids to make a copy of the graph and
