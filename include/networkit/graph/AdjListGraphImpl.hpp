@@ -1551,7 +1551,7 @@ bool AdjListGraph<NodeT, EdgeWeightT>::checkConsistency() const {
     return noMultiEdges && correctNodeUpperbound && correctNumberOfEdges;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 AdjListGraph<NodeT, EdgeWeightT> AdjListGraph<NodeT, EdgeWeightT>::fromCSR(
     std::span<const index> rowIdxView, std::span<const index> columnIdxView,
     std::span<const double> nonZerosView, bool directed, bool isWeighted) {
@@ -1715,7 +1715,7 @@ AdjListGraph<NodeT, EdgeWeightT> AdjListGraph<NodeT, EdgeWeightT>::fromCSR(
     return graph;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 AdjListGraph<NodeT, EdgeWeightT>
 AdjListGraph<NodeT, EdgeWeightT>::_fromCSRRaw(const index *rowIdxPtr, std::size_t rowIdxSize,
                                               const index *columnIdxPtr, std::size_t columnIdxSize,
