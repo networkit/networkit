@@ -857,10 +857,11 @@ public:
      */
     template <typename Lambda>
     void sortEdges(Lambda &&lambda) {
+        auto l = std::forward<Lambda>(lambda);
+
         for (node v = 0; v < m_dhb_graph.vertices_count(); ++v) {
-            m_dhb_graph.sort(v, [l = std::forward<Lambda>(lambda)](
-                                    dhb::BlockState<EdgeData>::Entry &a,
-                                    dhb::BlockState<EdgeData>::Entry &b) {
+            m_dhb_graph.sort(v, [&l](dhb::BlockState<EdgeData>::Entry &a,
+                                     dhb::BlockState<EdgeData>::Entry &b) {
                 return l(a.vertex, a.data.weight, a.data.id, b.vertex, b.data.weight, b.data.id);
             });
         }
