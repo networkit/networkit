@@ -1406,7 +1406,7 @@ TEST_P(DHBGraphGTest, testGetIthNeighborWeight) {
     ASSERT_EQ(G.isWeighted() ? 2.f : defaultEdgeWeight, neighbor_0_weight);
     ASSERT_EQ(G.isWeighted() ? 2.f : defaultEdgeWeight, neighbor_1_weight);
     ASSERT_EQ(G.isWeighted() ? 2.f : defaultEdgeWeight, neighbor_2_weight);
-    ASSERT_EQ(defaultEdgeWeight, neighbor_3_weight);
+    ASSERT_EQ(nullWeight, neighbor_3_weight);
 }
 
 TEST_P(DHBGraphGTest, testGetIthNeighborWithWeight) {
@@ -1428,7 +1428,7 @@ TEST_P(DHBGraphGTest, testGetIthNeighborWithWeight) {
     ASSERT_EQ(G.isWeighted() ? 2.f : defaultEdgeWeight, weight_0);
     ASSERT_EQ(G.isWeighted() ? 2.f : defaultEdgeWeight, weight_1);
     ASSERT_EQ(G.isWeighted() ? 2.f : defaultEdgeWeight, weight_2);
-    ASSERT_EQ(defaultEdgeWeight, weight_3);
+    ASSERT_EQ(nullWeight, weight_3);
 }
 
 TEST_P(DHBGraphGTest, testGetIthNeighborWithId) {
