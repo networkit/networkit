@@ -15,16 +15,15 @@
 
 namespace NetworKit {
 
-template <template <class, class> class GraphType, class NodeT, class EdgeWeightT>
+template <class GraphType, class NodeT, class EdgeWeightT>
 class EdgeIteratorBase {
 protected:
-    const GraphType<NodeT, EdgeWeightT> *G;
+    const GraphType *G;
     NodeIteratorBase<GraphType, NodeT, EdgeWeightT> nodeIter;
     index i{none};
 
 public:
-    EdgeIteratorBase(const GraphType<NodeT, EdgeWeightT> *G,
-                     NodeIteratorBase<GraphType, NodeT, EdgeWeightT> nodeIter)
+    EdgeIteratorBase(const GraphType *G, NodeIteratorBase<GraphType, NodeT, EdgeWeightT> nodeIter)
         : G(G), nodeIter(nodeIter), i(index{0}) {
         if (nodeIter != G->nodeRange().end() && !G->degree(*nodeIter)) {
             nextEdge();
@@ -90,8 +89,7 @@ struct is_weighted_edge_specialization<WeightedEdgeT<NodeT, EdgeWeightT>> : std:
  * Class to iterate over the edges of the given graph type. If the graph is undirected, operator*()
  * returns the edges (u, v) s.t. u <= v.
  */
-template <template <class, class> class GraphType, class NodeT, class EdgeWeightT,
-          class IterEdgeWeightT>
+template <class GraphType, class NodeT, class EdgeWeightT, class IterEdgeWeightT>
 class EdgeWeightTIterator : public EdgeIteratorBase<GraphType, NodeT, EdgeWeightT> {
     using EdgeIteratorBase<GraphType, NodeT, EdgeWeightT>::nodeIter;
     using EdgeIteratorBase<GraphType, NodeT, EdgeWeightT>::G;
@@ -127,7 +125,7 @@ public:
     // Own type.
     using self = EdgeWeightTIterator;
 
-    EdgeWeightTIterator(const GraphType<NodeT, EdgeWeightT> *G,
+    EdgeWeightTIterator(const GraphType *G,
                         NodeIteratorBase<GraphType, NodeT, EdgeWeightT> nodeIter)
         : EdgeIteratorBase<GraphType, NodeT, EdgeWeightT>(G, nodeIter) {}
 
@@ -171,14 +169,13 @@ public:
 /**
  * Wrapper class to iterate over a range of the edges.
  */
-template <template <class, class> class GraphType, class NodeT, class EdgeWeightT,
-          class IterEdgeWeightT>
+template <class GraphType, class NodeT, class EdgeWeightT, class IterEdgeWeightT>
 class EdgeWeightTRange {
 
-    const GraphType<NodeT, EdgeWeightT> *G;
+    const GraphType *G;
 
 public:
-    EdgeWeightTRange(const GraphType<NodeT, EdgeWeightT> &G) : G(&G) {}
+    EdgeWeightTRange(const GraphType &G) : G(&G) {}
 
     EdgeWeightTRange() : G(nullptr) {};
 
