@@ -9,7 +9,6 @@
 #define NETWORKIT_GRAPH_GRAPH_CONCEPTS_HPP_
 
 #include <concepts>
-#include <type_traits>
 
 namespace NetworKit {
 
