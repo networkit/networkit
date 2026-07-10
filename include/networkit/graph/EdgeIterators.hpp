@@ -11,11 +11,12 @@
 
 #include <networkit/Globals.hpp>
 #include <networkit/graph/EdgeUtils.hpp>
+#include <networkit/graph/GraphConcepts.hpp>
 #include <networkit/graph/NodeIterators.hpp>
 
 namespace NetworKit {
 
-template <class GraphType, class NodeT, class EdgeWeightT>
+template <class GraphType, GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 class EdgeIteratorBase {
 protected:
     const GraphType *G;
@@ -82,14 +83,14 @@ public:
 template <class T>
 struct is_weighted_edge_specialization : std::false_type {};
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 struct is_weighted_edge_specialization<WeightedEdgeT<NodeT, EdgeWeightT>> : std::true_type {};
 
 /**
  * Class to iterate over the edges of the given graph type. If the graph is undirected, operator*()
  * returns the edges (u, v) s.t. u <= v.
  */
-template <class GraphType, class NodeT, class EdgeWeightT, class IterEdgeWeightT>
+template <class GraphType, GraphNode NodeT, GraphEdgeWeight EdgeWeightT, class IterEdgeWeightT>
 class EdgeWeightTIterator : public EdgeIteratorBase<GraphType, NodeT, EdgeWeightT> {
     using EdgeIteratorBase<GraphType, NodeT, EdgeWeightT>::nodeIter;
     using EdgeIteratorBase<GraphType, NodeT, EdgeWeightT>::G;
@@ -169,7 +170,7 @@ public:
 /**
  * Wrapper class to iterate over a range of the edges.
  */
-template <class GraphType, class NodeT, class EdgeWeightT, class IterEdgeWeightT>
+template <class GraphType, GraphNode NodeT, GraphEdgeWeight EdgeWeightT, class IterEdgeWeightT>
 class EdgeWeightTRange {
 
     const GraphType *G;

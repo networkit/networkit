@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <atomic>
 #include <cassert>
+#include <concepts>
 #include <functional>
 #include <numeric>
 #include <omp.h>
@@ -34,6 +35,7 @@
 #include <networkit/graph/Attributes.hpp>
 #include <networkit/graph/EdgeIterators.hpp>
 #include <networkit/graph/EdgeUtils.hpp>
+#include <networkit/graph/GraphConcepts.hpp>
 #include <networkit/graph/NeighborIterators.hpp>
 #include <networkit/graph/NodeIterators.hpp>
 
@@ -50,10 +52,8 @@ class CurveballMaterialization;
  * @ingroup graph
  * A graph (with optional weights) and parallel iterator methods.
  */
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 class AdjListGraph final {
-    static_assert(std::is_integral_v<NodeT>, "NodeT must be an integer type.");
-    static_assert(std::is_arithmetic_v<EdgeWeightT>, "EdgeWeightT must be a numeric type.");
     // graph attributes
     //!< current number of nodes
     count n;
@@ -1343,7 +1343,7 @@ public:
      * Get an upper bound for the node ids in the graph.
      * @return An upper bound for the node ids.
      */
-    index upperNodeIdBound() const noexcept { return z; }
+    NodeT upperNodeIdBound() const noexcept { return z; }
 
     /**
      * Check for invalid graph states, such as multi-edges.

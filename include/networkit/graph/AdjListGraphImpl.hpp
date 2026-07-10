@@ -5,7 +5,7 @@ namespace NetworKit {
 
 /* NODE ITERATORS */
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <typename L>
 void AdjListGraph<NodeT, EdgeWeightT>::forNodes(
     L handle) const { // NOLINT(performance-unnecessary-value-param)
@@ -16,7 +16,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::forNodes(
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <typename L>
 void AdjListGraph<NodeT, EdgeWeightT>::parallelForNodes(
     L handle) const { // NOLINT(performance-unnecessary-value-param)
@@ -28,7 +28,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::parallelForNodes(
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <typename C, typename L>
 void AdjListGraph<NodeT, EdgeWeightT>::forNodesWhile(
     C condition, L handle) const { // NOLINT(performance-unnecessary-value-param)
@@ -42,7 +42,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::forNodesWhile(
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <typename L>
 void AdjListGraph<NodeT, EdgeWeightT>::forNodesInRandomOrder(
     L handle) const { // NOLINT(performance-unnecessary-value-param)
@@ -55,7 +55,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::forNodesInRandomOrder(
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <typename L>
 void AdjListGraph<NodeT, EdgeWeightT>::balancedParallelForNodes(
     L handle) const { // NOLINT(performance-unnecessary-value-param)
@@ -68,7 +68,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::balancedParallelForNodes(
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <typename L>
 void AdjListGraph<NodeT, EdgeWeightT>::forNodePairs(
     L handle) const { // NOLINT(performance-unnecessary-value-param)
@@ -83,7 +83,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::forNodePairs(
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <typename L>
 void AdjListGraph<NodeT, EdgeWeightT>::parallelForNodePairs(
     L handle) const { // NOLINT(performance-unnecessary-value-param)
@@ -101,7 +101,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::parallelForNodePairs(
 
 /* EDGE ITERATORS */
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void AdjListGraph<NodeT, EdgeWeightT>::forOutEdgesOfImpl(NodeT u, L handle) const {
     for (index i = 0; i < outEdges[u].size(); ++i) {
@@ -114,7 +114,7 @@ inline void AdjListGraph<NodeT, EdgeWeightT>::forOutEdgesOfImpl(NodeT u, L handl
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void AdjListGraph<NodeT, EdgeWeightT>::forInEdgesOfImpl(NodeT u, L handle) const {
     if (graphIsDirected) {
@@ -134,7 +134,7 @@ inline void AdjListGraph<NodeT, EdgeWeightT>::forInEdgesOfImpl(NodeT u, L handle
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void AdjListGraph<NodeT, EdgeWeightT>::forEdgeImpl(L handle) const {
     for (NodeT u = 0; u < z; ++u) {
@@ -142,7 +142,7 @@ inline void AdjListGraph<NodeT, EdgeWeightT>::forEdgeImpl(L handle) const {
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline void AdjListGraph<NodeT, EdgeWeightT>::parallelForEdgesImpl(L handle) const {
 #pragma omp parallel for schedule(guided)
@@ -151,7 +151,7 @@ inline void AdjListGraph<NodeT, EdgeWeightT>::parallelForEdgesImpl(L handle) con
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
 inline double AdjListGraph<NodeT, EdgeWeightT>::parallelSumForEdgesImpl(L handle) const {
     double sum = 0.0;
@@ -173,7 +173,7 @@ inline double AdjListGraph<NodeT, EdgeWeightT>::parallelSumForEdgesImpl(L handle
     return sum;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <typename L>
 void AdjListGraph<NodeT, EdgeWeightT>::forEdges(L handle) const {
     switch (weighted + 2 * directed + 4 * edgesIndexed) {
@@ -211,7 +211,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::forEdges(L handle) const {
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <typename L>
 void AdjListGraph<NodeT, EdgeWeightT>::parallelForEdges(L handle) const {
     switch (weighted + 2 * directed + 4 * edgesIndexed) {
@@ -251,13 +251,13 @@ void AdjListGraph<NodeT, EdgeWeightT>::parallelForEdges(L handle) const {
 
 /* NEIGHBORHOOD ITERATORS */
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <typename L>
 void AdjListGraph<NodeT, EdgeWeightT>::forNeighborsOf(NodeT u, L handle) const {
     forEdgesOf(u, handle);
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <typename L>
 void AdjListGraph<NodeT, EdgeWeightT>::forEdgesOf(NodeT u, L handle) const {
     switch (weighted + 2 * edgesIndexed) {
@@ -279,13 +279,13 @@ void AdjListGraph<NodeT, EdgeWeightT>::forEdgesOf(NodeT u, L handle) const {
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <typename L>
 void AdjListGraph<NodeT, EdgeWeightT>::forInNeighborsOf(NodeT u, L handle) const {
     forInEdgesOf(u, handle);
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <typename L>
 void AdjListGraph<NodeT, EdgeWeightT>::forInEdgesOf(NodeT u, L handle) const {
     switch (weighted + 2 * directed + 4 * edgesIndexed) {
@@ -325,7 +325,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::forInEdgesOf(NodeT u, L handle) const {
 
 /* REDUCTION ITERATORS */
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <typename L>
 double AdjListGraph<NodeT, EdgeWeightT>::parallelSumForNodes(
     L handle) const { // NOLINT(performance-unnecessary-value-param)
@@ -341,7 +341,7 @@ double AdjListGraph<NodeT, EdgeWeightT>::parallelSumForNodes(
     return sum;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <typename L>
 double AdjListGraph<NodeT, EdgeWeightT>::parallelSumForEdges(L handle) const {
     double sum = 0.0;
@@ -385,7 +385,7 @@ double AdjListGraph<NodeT, EdgeWeightT>::parallelSumForEdges(L handle) const {
 
 /* EDGE MODIFIERS */
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <typename Condition>
 std::pair<count, count>
 AdjListGraph<NodeT, EdgeWeightT>::removeAdjacentEdges(NodeT u, Condition condition, bool edgesIn) {
@@ -420,7 +420,7 @@ AdjListGraph<NodeT, EdgeWeightT>::removeAdjacentEdges(NodeT u, Condition conditi
     return {removedEdges, removedSelfLoops};
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <typename Lambda>
 void AdjListGraph<NodeT, EdgeWeightT>::sortNeighbors(NodeT u, Lambda lambda) {
     if ((degreeIn(u) < 2) && (degree(u) < 2)) {
@@ -466,7 +466,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::sortNeighbors(NodeT u, Lambda lambda) {
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 template <class Lambda>
 void AdjListGraph<NodeT, EdgeWeightT>::sortEdges(Lambda lambda) {
 
@@ -534,7 +534,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::sortEdges(Lambda lambda) {
 
 /** CONSTRUCTORS **/
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 AdjListGraph<NodeT, EdgeWeightT>::AdjListGraph(count n, bool weighted, bool directed,
                                                bool edgesIndexed)
     : n(n), m(0), storedNumberOfSelfLoops(0), z(n), omega(0), t(0),
@@ -557,7 +557,7 @@ AdjListGraph<NodeT, EdgeWeightT>::AdjListGraph(count n, bool weighted, bool dire
       inEdgeIds(edgesIndexed && directed ? n : 0), outEdgeIds(edgesIndexed ? n : 0),
       nodeAttributeMap(this), edgeAttributeMap(this) {}
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 AdjListGraph<NodeT, EdgeWeightT>::AdjListGraph(
     std::initializer_list<WeightedEdgeT<NodeT, EdgeWeightT>> edges)
     : AdjListGraph(0, true) {
@@ -576,7 +576,7 @@ AdjListGraph<NodeT, EdgeWeightT>::AdjListGraph(
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::preallocateUndirected(NodeT u, size_t size) {
     assert(!directed);
     assert(exists[u]);
@@ -589,13 +589,13 @@ void AdjListGraph<NodeT, EdgeWeightT>::preallocateUndirected(NodeT u, size_t siz
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::preallocateDirected(NodeT u, size_t outSize, size_t inSize) {
     preallocateDirectedOutEdges(u, outSize);
     preallocateDirectedInEdges(u, inSize);
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::preallocateDirectedOutEdges(NodeT u, size_t outSize) {
     assert(directed);
     assert(exists[u]);
@@ -609,7 +609,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::preallocateDirectedOutEdges(NodeT u, size
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::preallocateDirectedInEdges(NodeT u, size_t inSize) {
     assert(directed);
     assert(exists[u]);
@@ -624,7 +624,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::preallocateDirectedInEdges(NodeT u, size_
 }
 /** PRIVATE HELPERS **/
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 index AdjListGraph<NodeT, EdgeWeightT>::indexInInEdgeArray(NodeT v, NodeT u) const {
     if (!directed) {
         return indexInOutEdgeArray(v, u);
@@ -638,7 +638,7 @@ index AdjListGraph<NodeT, EdgeWeightT>::indexInInEdgeArray(NodeT v, NodeT u) con
     return none;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 index AdjListGraph<NodeT, EdgeWeightT>::indexInOutEdgeArray(NodeT u, NodeT v) const {
     for (index i = 0; i < outEdges[u].size(); ++i) {
         NodeT x = outEdges[u][i];
@@ -651,7 +651,7 @@ index AdjListGraph<NodeT, EdgeWeightT>::indexInOutEdgeArray(NodeT u, NodeT v) co
 
 /** EDGE IDS **/
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::indexEdges(bool force) {
     if (edgesIndexed && !force)
         return;
@@ -708,7 +708,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::indexEdges(bool force) {
                          // needs to create edge ids
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 edgeid AdjListGraph<NodeT, EdgeWeightT>::edgeId(NodeT u, NodeT v) const {
     if (!edgesIndexed) {
         throw std::runtime_error("edges have not been indexed - call indexEdges first");
@@ -724,7 +724,7 @@ edgeid AdjListGraph<NodeT, EdgeWeightT>::edgeId(NodeT u, NodeT v) const {
 
 /** GRAPH INFORMATION **/
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::shrinkToFit() {
     exists.shrink_to_fit();
 
@@ -749,7 +749,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::shrinkToFit() {
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::compactEdges() {
     this->parallelForNodes([&](NodeT u) {
         if (degreeOut(u) == 0) {
@@ -805,7 +805,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::compactEdges() {
     });
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::sortEdges() {
     std::vector<std::vector<NodeT>> targetAdjacencies(upperNodeIdBound());
     std::vector<std::vector<EdgeWeightT>> targetWeight;
@@ -867,7 +867,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::sortEdges() {
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 EdgeWeightT
 AdjListGraph<NodeT, EdgeWeightT>::computeWeightedDegree(NodeT u, bool inDegree,
                                                         bool countSelfLoopsTwice) const {
@@ -900,7 +900,7 @@ AdjListGraph<NodeT, EdgeWeightT>::computeWeightedDegree(NodeT u, bool inDegree,
 
 /** NODE MODIFIERS **/
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 NodeT AdjListGraph<NodeT, EdgeWeightT>::addNode() {
     NodeT v = z; // node gets maximum id
     ++z;         // increment node range
@@ -926,7 +926,7 @@ NodeT AdjListGraph<NodeT, EdgeWeightT>::addNode() {
     return v;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 NodeT AdjListGraph<NodeT, EdgeWeightT>::addNodes(count numberOfNewNodes) {
     if (numberOfNewNodes < 10) {
         // benchmarks suggested, it's cheaper to call 10 time emplace_back than resizing.
@@ -959,7 +959,7 @@ NodeT AdjListGraph<NodeT, EdgeWeightT>::addNodes(count numberOfNewNodes) {
     return z - 1;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::removeNode(NodeT v) {
     assert(v < z);
     assert(exists[v]);
@@ -982,7 +982,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::removeNode(NodeT v) {
     --n;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::restoreNode(NodeT v) {
     assert(v < z);
     assert(!exists[v]);
@@ -993,13 +993,13 @@ void AdjListGraph<NodeT, EdgeWeightT>::restoreNode(NodeT v) {
 
 /** NODE PROPERTIES **/
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 EdgeWeightT AdjListGraph<NodeT, EdgeWeightT>::weightedDegree(NodeT u,
                                                              bool countSelfLoopsTwice) const {
     return computeWeightedDegree(u, false, countSelfLoopsTwice);
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 EdgeWeightT AdjListGraph<NodeT, EdgeWeightT>::weightedDegreeIn(NodeT u,
                                                                bool countSelfLoopsTwice) const {
     return computeWeightedDegree(u, true, countSelfLoopsTwice);
@@ -1007,7 +1007,7 @@ EdgeWeightT AdjListGraph<NodeT, EdgeWeightT>::weightedDegreeIn(NodeT u,
 
 /** EDGE MODIFIERS **/
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 bool AdjListGraph<NodeT, EdgeWeightT>::addEdge(NodeT u, NodeT v, EdgeWeightT ew,
                                                bool checkForMultiEdges) {
     assert(u < z);
@@ -1065,7 +1065,7 @@ bool AdjListGraph<NodeT, EdgeWeightT>::addEdge(NodeT u, NodeT v, EdgeWeightT ew,
     return true;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 bool AdjListGraph<NodeT, EdgeWeightT>::addPartialEdge(Unsafe, NodeT u, NodeT v, EdgeWeightT ew,
                                                       uint64_t index, bool checkForMultiEdges) {
     assert(u < z);
@@ -1090,7 +1090,7 @@ bool AdjListGraph<NodeT, EdgeWeightT>::addPartialEdge(Unsafe, NodeT u, NodeT v, 
     return true;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 bool AdjListGraph<NodeT, EdgeWeightT>::addPartialOutEdge(Unsafe, NodeT u, NodeT v, EdgeWeightT ew,
                                                          uint64_t index, bool checkForMultiEdges) {
     assert(u < z);
@@ -1115,7 +1115,7 @@ bool AdjListGraph<NodeT, EdgeWeightT>::addPartialOutEdge(Unsafe, NodeT u, NodeT 
     return true;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 bool AdjListGraph<NodeT, EdgeWeightT>::addPartialInEdge(Unsafe, NodeT u, NodeT v, EdgeWeightT ew,
                                                         uint64_t index, bool checkForMultiEdges) {
     assert(u < z);
@@ -1145,7 +1145,7 @@ void erase(NodeT u, index idx, std::vector<std::vector<T>> &vec) {
     vec[u].pop_back();
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::removeEdge(NodeT u, NodeT v) {
     assert(u < z);
     assert(exists[u]);
@@ -1289,7 +1289,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::removeEdge(NodeT u, NodeT v) {
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::removeAllEdges() {
     parallelForNodes([&](const NodeT u) {
         removePartialOutEdges(unsafe, u);
@@ -1301,7 +1301,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::removeAllEdges() {
     m = 0;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::removeSelfLoops() {
     parallelForNodes([&](const NodeT u) {
         auto isSelfLoop = [u](const NodeT v) { return u == v; };
@@ -1315,7 +1315,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::removeSelfLoops() {
     storedNumberOfSelfLoops = 0;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::removeMultiEdges() {
     count removedEdges = 0;
     count removedSelfLoops = 0;
@@ -1343,7 +1343,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::removeMultiEdges() {
     storedNumberOfSelfLoops -= removedSelfLoops;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::swapEdge(NodeT s1, NodeT t1, NodeT s2, NodeT t2) {
     index s1t1 = indexInOutEdgeArray(s1, t1);
     if (s1t1 == none)
@@ -1380,7 +1380,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::swapEdge(NodeT s1, NodeT t1, NodeT s2, No
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 bool AdjListGraph<NodeT, EdgeWeightT>::hasEdge(NodeT u, NodeT v) const noexcept {
     if (u >= z || v >= z) {
         return false;
@@ -1396,7 +1396,7 @@ bool AdjListGraph<NodeT, EdgeWeightT>::hasEdge(NodeT u, NodeT v) const noexcept 
 
 /** EDGE ATTRIBUTES **/
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 EdgeWeightT AdjListGraph<NodeT, EdgeWeightT>::weight(NodeT u, NodeT v) const {
     index vi = indexInOutEdgeArray(u, v);
     if (vi == none) {
@@ -1406,7 +1406,7 @@ EdgeWeightT AdjListGraph<NodeT, EdgeWeightT>::weight(NodeT u, NodeT v) const {
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::setWeight(NodeT u, NodeT v, EdgeWeightT ew) {
     if (!weighted) {
         throw std::runtime_error("Cannot set edge weight in unweighted graph.");
@@ -1430,7 +1430,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::setWeight(NodeT u, NodeT v, EdgeWeightT e
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::increaseWeight(NodeT u, NodeT v, EdgeWeightT ew) {
     if (!weighted) {
         throw std::runtime_error("Cannot increase edge weight in unweighted graph.");
@@ -1453,13 +1453,13 @@ void AdjListGraph<NodeT, EdgeWeightT>::increaseWeight(NodeT u, NodeT v, EdgeWeig
     }
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::setWeightAtIthNeighbor(Unsafe, NodeT u, index i,
                                                               EdgeWeightT ew) {
     outEdgeWeights[u][i] = ew;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 void AdjListGraph<NodeT, EdgeWeightT>::setWeightAtIthInNeighbor(Unsafe, NodeT u, index i,
                                                                 EdgeWeightT ew) {
     inEdgeWeights[u][i] = ew;
@@ -1467,14 +1467,14 @@ void AdjListGraph<NodeT, EdgeWeightT>::setWeightAtIthInNeighbor(Unsafe, NodeT u,
 
 /** SUMS **/
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 EdgeWeightT AdjListGraph<NodeT, EdgeWeightT>::totalEdgeWeight() const noexcept {
     if (weighted)
         return parallelSumForEdges([](NodeT, NodeT, EdgeWeightT ew) { return ew; });
     return numberOfEdges() * defaultEdgeWeightT;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 bool AdjListGraph<NodeT, EdgeWeightT>::checkConsistency() const {
     // check for multi-edges
     std::vector<NodeT> lastSeen(z, nullNodeId);
@@ -1551,7 +1551,7 @@ bool AdjListGraph<NodeT, EdgeWeightT>::checkConsistency() const {
     return noMultiEdges && correctNodeUpperbound && correctNumberOfEdges;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 AdjListGraph<NodeT, EdgeWeightT> AdjListGraph<NodeT, EdgeWeightT>::fromCSR(
     std::span<const index> rowIdxView, std::span<const index> columnIdxView,
     std::span<const double> nonZerosView, bool directed, bool isWeighted) {
@@ -1715,7 +1715,7 @@ AdjListGraph<NodeT, EdgeWeightT> AdjListGraph<NodeT, EdgeWeightT>::fromCSR(
     return graph;
 }
 
-template <class NodeT, class EdgeWeightT>
+template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
 AdjListGraph<NodeT, EdgeWeightT>
 AdjListGraph<NodeT, EdgeWeightT>::_fromCSRRaw(const index *rowIdxPtr, std::size_t rowIdxSize,
                                               const index *columnIdxPtr, std::size_t columnIdxSize,
