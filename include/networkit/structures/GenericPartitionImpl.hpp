@@ -2,16 +2,14 @@
 // Created by andreas on 10.07.26.
 //
 
-#ifndef NETWORKIT_STRUCTURES_PARTITION_IMPL_HPP_
-#define NETWORKIT_STRUCTURES_PARTITION_IMPL_HPP_
+#ifndef NETWORKIT_STRUCTURES_GENERIC_PARTITION_IMPL_HPP_
+#define NETWORKIT_STRUCTURES_GENERIC_PARTITION_IMPL_HPP_
 
 #include <algorithm>
 #include <atomic>
 #include <memory>
 
 #include <networkit/auxiliary/Parallel.hpp>
-#include <networkit/structures/Partition.hpp>
-
 namespace NetworKit {
 
 template <IntegralValue IndexType>
@@ -183,4 +181,4 @@ std::set<IndexType> GenericPartition<IndexType>::getSubsetIds() const {
 }
 
 } // namespace NetworKit
-#endif // NETWORKIT_STRUCTURES_PARTITION_IMPL_HPP_
+#endif // NETWORKIT_STRUCTURES_GENERIC_PARTITION_IMPL_HPP_
