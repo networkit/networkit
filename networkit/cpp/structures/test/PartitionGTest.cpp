@@ -5,12 +5,10 @@
  *      Author: Maximilian Vogel (uocvf@student.kit.edu)
  */
 
-#include <cstdint>
 #include <iostream>
 
 #include <gtest/gtest.h>
 
-#include <networkit/structures/GenericPartition.hpp>
 #include <networkit/structures/Partition.hpp>
 
 namespace NetworKit {
@@ -21,13 +19,6 @@ TEST_F(PartitionGTest, testConstructor) {
     Partition p(10);
     EXPECT_EQ(0u, p.lowerBound());
     EXPECT_EQ(1u, p.upperBound());
-}
-
-TEST_F(PartitionGTest, testGenericPartitionConstructor) {
-    GenericPartition<std::uint32_t> p(10);
-    p.allToSingletons();
-    EXPECT_EQ(10u, p.numberOfElements());
-    EXPECT_EQ(10u, p.numberOfSubsets());
 }
 
 TEST_F(PartitionGTest, testConstructorIndexAndDefaultValue) {

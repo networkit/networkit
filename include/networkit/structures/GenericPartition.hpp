@@ -32,6 +32,7 @@ template <IntegralValue IndexType>
 class GenericPartition final {
 
     static constexpr IndexType noneIndex = std::numeric_limits<IndexType>::max();
+
 public:
     GenericPartition();
 
@@ -121,7 +122,7 @@ public:
      */
     inline void addToSubset(IndexType s, IndexType e) {
         assert(data[e] == noneIndex); // guarantee that element was unassigned
-        assert(s <= omega);      // do not create new subset ids
+        assert(s <= omega);           // do not create new subset ids
         data[e] = s;
     }
 
