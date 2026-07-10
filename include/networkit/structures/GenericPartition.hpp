@@ -31,6 +31,7 @@ concept IntegralValue = std::integral<T> && !std::same_as<std::remove_cvref_t<T>
 template <IntegralValue IndexType>
 class GenericPartition final {
 
+    static constexpr IndexType noneIndex = std::numeric_limits<IndexType>::max();
 public:
     GenericPartition();
 
@@ -94,10 +95,10 @@ public:
 
     /**
      * Extend the data structure and create a slot for one more element.
-     * Initializes the entry to none and returns the index of the entry.
+     * Initializes the entry to noneIndex and returns the index of the entry.
      */
     inline IndexType extend() {
-        data.push_back(none);
+        data.push_back(noneIndex);
         z++;
         assert(z == data.size()); //(data.size() - 1)
         return z - 1;
@@ -105,11 +106,11 @@ public:
 
     /**
      * Removes the entry for the given element
-     * by setting it to none.
+     * by setting it to noneIndex.
      */
     inline void remove(IndexType e) {
         assert(e < z);
-        data[e] = none;
+        data[e] = noneIndex;
     }
 
     /**
@@ -119,7 +120,7 @@ public:
      * @param e The element to add.
      */
     inline void addToSubset(IndexType s, IndexType e) {
-        assert(data[e] == none); // guarantee that element was unassigned
+        assert(data[e] == noneIndex); // guarantee that element was unassigned
         assert(s <= omega);      // do not create new subset ids
         data[e] = s;
     }
@@ -202,7 +203,7 @@ public:
      */
     inline bool contains(IndexType e) const {
         // e is in the element index range and the entry is not empty
-        return (e < z) && (data[e] != none);
+        return (e < z) && (data[e] != noneIndex);
     }
 
     /**
@@ -213,8 +214,8 @@ public:
      * @return @c true if @a e1 and @a e2 belong to same subset, @c false otherwise.
      */
     inline bool inSameSubset(IndexType e1, IndexType e2) const {
-        assert(data[e1] != none);
-        assert(data[e2] != none);
+        assert(data[e1] != noneIndex);
+        assert(data[e2] != noneIndex);
         return data[e1] == data[e2];
     }
 

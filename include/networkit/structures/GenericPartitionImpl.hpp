@@ -19,11 +19,11 @@ template <IntegralValue IndexType>
 GenericPartition<IndexType>::GenericPartition(const std::vector<IndexType> &data)
     : z(data.size()), omega(), data(data) {
     auto max_elem = *std::max_element(data.begin(), data.end());
-    this->omega = (max_elem == none) ? 0 : max_elem;
+    this->omega = (max_elem == noneIndex) ? 0 : max_elem;
 }
 
 template <IntegralValue IndexType>
-GenericPartition<IndexType>::GenericPartition(IndexType z) : z(z), omega(0), data(z, none) {}
+GenericPartition<IndexType>::GenericPartition(IndexType z) : z(z), omega(0), data(z, noneIndex) {}
 
 template <IntegralValue IndexType>
 GenericPartition<IndexType>::GenericPartition(IndexType z, IndexType defaultValue)
@@ -48,7 +48,7 @@ IndexType GenericPartition<IndexType>::mergeSubsets(IndexType s, IndexType t) {
         }
         return m;
     }
-    return none; // no new cluster formed
+    return noneIndex; // no new cluster formed
 }
 
 template <IntegralValue IndexType>
@@ -57,7 +57,7 @@ count GenericPartition<IndexType>::numberOfSubsets() const {
     // a boolean vector would not be thread-safe
     std::unique_ptr<std::atomic<bool>[]> exists(new std::atomic<bool>[n] {});
     this->parallelForEntries([&](IndexType, IndexType s) {
-        if (s != none) {
+        if (s != noneIndex) {
             exists[s] = true;
         }
     });
@@ -83,21 +83,21 @@ void GenericPartition<IndexType>::compact(bool useTurbo) {
 
         this->parallelForEntries(
             [&](IndexType e, IndexType s) { // replace old SubsetIDs with the new IDs
-                if (s != none) {
+                if (s != noneIndex) {
                     data[e] = std::distance(usedIds.begin(),
                                             std::lower_bound(usedIds.begin(), usedIds.end(), s));
                 }
             });
     } else {
-        std::vector<IndexType> compactingMap(this->upperBound(), none);
+        std::vector<IndexType> compactingMap(this->upperBound(), noneIndex);
         this->forEntries([&](IndexType, IndexType s) {
-            if (s != none && compactingMap[s] == none) {
+            if (s != noneIndex && compactingMap[s] == noneIndex) {
                 compactingMap[s] = i++;
             }
         });
         this->parallelForEntries(
             [&](IndexType e, IndexType s) { // replace old SubsetIDs with the new IDs
-                if (s != none) {
+                if (s != noneIndex) {
                     data[e] = compactingMap[s];
                 }
             });
@@ -121,7 +121,7 @@ std::map<IndexType, count> GenericPartition<IndexType>::subsetSizeMap() const {
     std::map<IndexType, count> subset2size;
 
     this->forEntries([&](IndexType, IndexType s) {
-        if (s != none) {
+        if (s != noneIndex) {
             subset2size[s] += 1;
         }
     });
@@ -173,7 +173,7 @@ template <IntegralValue IndexType>
 std::set<IndexType> GenericPartition<IndexType>::getSubsetIds() const {
     std::set<IndexType> ids;
     for (IndexType id : data) {
-        if (id != none) {
+        if (id != noneIndex) {
             ids.insert(id);
         }
     }
