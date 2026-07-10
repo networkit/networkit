@@ -19,22 +19,27 @@
 
 namespace NetworKit {
 
+template <typename T>
+concept IntegralValue = std::integral<T> && !std::same_as<std::remove_cvref_t<T>, bool>;
+
 /**
  * @ingroup structures
  * Implements a partition of a set, i.e. a subdivision of the
  * set into disjoint subsets.
  */
-class Partition final {
+
+template <IntegralValue IndexType>
+class GenericPartition final {
 
 public:
-    Partition();
+    GenericPartition();
 
     /**
      * Create a new partition data structure for @a z elements.
      *
-     * @param[in] z maximum index
+     * @param[in] z maximum ValueType
      */
-    Partition(index z);
+    GenericPartition(IndexType z);
 
     /**
      * Create a new partition data structure for @a z elements. Initialize each
@@ -42,12 +47,12 @@ public:
      * interface and may leave the object in an inconsistent state. Use only in
      * exceptional cases.
      *
-     * @param[in] z maximum index
+     * @param[in] z maximum ValueType
      * @param[in] defaultValue
      */
-    Partition(index z, index defaultValue);
+    GenericPartition(IndexType z, IndexType defaultValue);
 
-    Partition(const std::vector<index> &data);
+    GenericPartition(const std::vector<IndexType> &data);
 
     /* Updates the maximum index of the partition to @a newZ and sets all its
      * values to @a defaultValue.
@@ -55,7 +60,7 @@ public:
      * @param[in] newZ New maximum index of the partition. @param[in]
      * defaultValue Default value of all the elements in the partition.
      */
-    void reset(index newZ, index defaultValue) {
+    void reset(IndexType newZ, IndexType defaultValue) {
         data.clear();
         data.resize(newZ, defaultValue);
         z = newZ;
@@ -67,14 +72,14 @@ public:
      *
      *  @param[in] e an element
      */
-    inline index &operator[](index e) { return this->data[e]; }
+    inline IndexType &operator[](IndexType e) { return this->data[e]; }
 
     /**
      * Index operator for const instances of this class.
      *
      * @param[in] e an element
      */
-    inline const index &operator[](index e) const { return this->data[e]; }
+    inline const IndexType &operator[](IndexType e) const { return this->data[e]; }
 
     /**
      * Get the set (id) in which the element @a e is contained.
@@ -82,7 +87,7 @@ public:
      * @param e Index of element.
      * @return The index of the set in which @a e is contained.
      */
-    inline index subsetOf(index e) const {
+    inline IndexType subsetOf(IndexType e) const {
         assert(e < this->numberOfElements());
         return this->data[e];
     }
@@ -91,7 +96,7 @@ public:
      * Extend the data structure and create a slot for one more element.
      * Initializes the entry to none and returns the index of the entry.
      */
-    inline index extend() {
+    inline IndexType extend() {
         data.push_back(none);
         z++;
         assert(z == data.size()); //(data.size() - 1)
@@ -102,7 +107,7 @@ public:
      * Removes the entry for the given element
      * by setting it to none.
      */
-    inline void remove(index e) {
+    inline void remove(IndexType e) {
         assert(e < z);
         data[e] = none;
     }
@@ -113,7 +118,7 @@ public:
      * @param s The index of the subset.
      * @param e The element to add.
      */
-    inline void addToSubset(index s, index e) {
+    inline void addToSubset(IndexType s, IndexType e) {
         assert(data[e] == none); // guarantee that element was unassigned
         assert(s <= omega);      // do not create new subset ids
         data[e] = s;
@@ -125,7 +130,7 @@ public:
      * @param s The index of the subset.
      * @param e The element to move.
      */
-    inline void moveToSubset(index s, index e) {
+    inline void moveToSubset(IndexType s, IndexType e) {
         assert(this->contains(e));
         assert(s <= omega); // do not create new subset ids
         data[e] = s;
@@ -136,7 +141,7 @@ public:
      *
      * @param e The index of the element.
      */
-    inline void toSingleton(index e) { data[e] = newSubsetId(); }
+    inline void toSingleton(IndexType e) { data[e] = newSubsetId(); }
 
     /**
      * Assigns every element to a singleton set.
@@ -157,14 +162,14 @@ public:
      * @param t Set to merge.
      * @return Id of newly created set.
      */
-    index mergeSubsets(index s, index t);
+    IndexType mergeSubsets(IndexType s, IndexType t);
 
     /**
      * Sets an upper bound for the subset ids that CAN be assigned.
      *
      * @param[in] upper highest assigned subset ID + 1
      */
-    inline void setUpperBound(index upper) { this->omega = upper - 1; }
+    inline void setUpperBound(IndexType upper) { this->omega = upper - 1; }
 
     /**
      * Return an upper bound for the subset ids that have been assigned.
@@ -172,14 +177,14 @@ public:
      *
      * @return The upper bound.
      */
-    inline index upperBound() const { return omega + 1; }
+    inline IndexType upperBound() const { return omega + 1; }
 
     /**
      * Get a lower bound for the subset ids that have been assigned.
      *
      * @return The lower bound.
      */
-    inline index lowerBound() const { return 0; }
+    inline IndexType lowerBound() const { return 0; }
 
     /**
      * Change subset IDs to be consecutive, starting at 0.
@@ -195,7 +200,7 @@ public:
      * @param e The element.
      * @return @c true if the assigned subset is valid, @c false otherwise.
      */
-    inline bool contains(index e) const {
+    inline bool contains(IndexType e) const {
         // e is in the element index range and the entry is not empty
         return (e < z) && (data[e] != none);
     }
@@ -207,7 +212,7 @@ public:
      * @param e2 Element.
      * @return @c true if @a e1 and @a e2 belong to same subset, @c false otherwise.
      */
-    inline bool inSameSubset(index e1, index e2) const {
+    inline bool inSameSubset(IndexType e1, IndexType e2) const {
         assert(data[e1] != none);
         assert(data[e2] != none);
         return data[e1] == data[e2];
@@ -225,7 +230,7 @@ public:
      *
      * @return A map from subset id to size of the subset.
      */
-    std::map<index, count> subsetSizeMap() const;
+    std::map<IndexType, count> subsetSizeMap() const;
 
     /**
      * Get the members of the subset @a s.
@@ -233,12 +238,12 @@ public:
      * @param s The subset.
      * @return A set containing the members of @a s.
      */
-    std::set<index> getMembers(index s) const;
+    std::set<IndexType> getMembers(IndexType s) const;
 
     /**
      * @return number of elements in the partition.
      */
-    inline count numberOfElements() const {
+    inline IndexType numberOfElements() const {
         return z; // z is the maximum element id
     }
 
@@ -254,19 +259,19 @@ public:
      *
      * @return vector containing information about partitions.
      */
-    const std::vector<index> &getVector() const;
+    const std::vector<IndexType> &getVector() const;
 
     /**
      * @return the subsets of the partition as a set of sets.
      */
-    std::set<std::set<index>> getSubsets() const;
+    std::set<std::set<IndexType>> getSubsets() const;
 
     /**
      * Get the ids of nonempty subsets.
      *
      * @return A set of ids of nonempty subsets.
      */
-    std::set<index> getSubsetIds() const;
+    std::set<IndexType> getSubsetIds() const;
 
     /**
      * Set a human-readable identifier @a name for the instance.
@@ -301,35 +306,42 @@ public:
     void parallelForEntries(Callback handle) const;
 
 private:
-    index z;                 //!< maximum element index that can be mapped
-    index omega;             //!< maximum subset index ever assigned
-    std::vector<index> data; //!< data container, indexed by element index, containing subset index
+    IndexType z;     //!< maximum element index that can be mapped
+    IndexType omega; //!< maximum subset index ever assigned
+    std::vector<IndexType>
+        data; //!< data container, indexed by element index, containing subset index
     std::string name;
 
     /**
      * Allocates and returns a new subset id.
      */
-    inline index newSubsetId() {
-        index s = ++omega;
+    inline IndexType newSubsetId() {
+        IndexType s = ++omega;
         return s;
     }
 };
 
+template <IntegralValue IndexType>
 template <typename Callback>
-inline void Partition::forEntries(Callback handle) const {
-    for (index e = 0; e < this->z; e++) {
+inline void GenericPartition<IndexType>::forEntries(Callback handle) const {
+    for (IndexType e = 0; e < this->z; e++) {
         handle(e, data[e]);
     }
 }
 
+template <IntegralValue IndexType>
 template <typename Callback>
-inline void Partition::parallelForEntries(Callback handle) const {
+inline void GenericPartition<IndexType>::parallelForEntries(Callback handle) const {
 #pragma omp parallel for
     for (omp_index e = 0; e < static_cast<omp_index>(this->z); e++) {
-        handle(e, this->data[e]);
+        handle(static_cast<IndexType>(e), this->data[static_cast<IndexType>(e)]);
     }
 }
 
+using Partition = GenericPartition<index>;
+
 } /* namespace NetworKit */
+
+#include <networkit/structures/PartitionImpl.hpp>
 
 #endif // NETWORKIT_STRUCTURES_PARTITION_HPP_
