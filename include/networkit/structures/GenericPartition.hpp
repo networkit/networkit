@@ -9,9 +9,12 @@
 #define NETWORKIT_STRUCTURES_GENERIC_PARTITION_HPP_
 
 #include <cassert>
+#include <concepts>
+#include <limits>
 #include <map>
 #include <set>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -31,9 +34,9 @@ concept IntegralValue = std::integral<T> && !std::same_as<std::remove_cvref_t<T>
 template <IntegralValue IndexType>
 class GenericPartition final {
 
+public:
     static constexpr IndexType noneIndex = std::numeric_limits<IndexType>::max();
 
-public:
     GenericPartition();
 
     /**
