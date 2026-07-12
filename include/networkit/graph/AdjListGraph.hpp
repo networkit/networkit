@@ -52,8 +52,13 @@ class CurveballMaterialization;
  * @ingroup graph
  * A graph (with optional weights) and parallel iterator methods.
  */
-template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
+template <GraphNode Node_T, GraphEdgeWeight EdgeWeight_T>
 class AdjListGraph final {
+public:
+    using NodeT = Node_T;
+    using EdgeWeightT = EdgeWeight_T;
+
+private:
     // graph attributes
     //!< current number of nodes
     count n;
@@ -109,7 +114,6 @@ class AdjListGraph final {
 
     static constexpr NodeT nullNodeId = NullNodeId<NodeT>;
 
-private:
     AttributeMap<PerNode, AdjListGraph> nodeAttributeMap;
     AttributeMap<PerEdge, AdjListGraph> edgeAttributeMap;
 
