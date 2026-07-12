@@ -25,7 +25,6 @@ networkit_add_module(distance
     PrunedLandmarkLabeling.cpp
     ReverseBFS.cpp
     SPSP.cpp
-    SSSP.cpp
     Volume.cpp
     )
 
