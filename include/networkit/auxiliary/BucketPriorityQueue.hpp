@@ -49,13 +49,13 @@ private:
     std::vector<ValueType> bucketHead;
     std::vector<ValueType> previous;
     std::vector<ValueType> next;
-    std::vector<BucketIndex> myBucket;     // keeps track of current bucket for each value
-    KeyType currentMinKey;                 // current min key
-    KeyType currentMaxKey;                 // current max key
-    KeyType minAdmissibleKey;              // minimum admissible key
-    KeyType maxAdmissibleKey;              // maximum admissible key
-    count numElems;                        // number of elements stored
-    KeyType offset;                        // offset from minAdmissibleKeys to 0
+    std::vector<BucketIndex> myBucket; // keeps track of current bucket for each value
+    KeyType currentMinKey;             // current min key
+    KeyType currentMaxKey;             // current max key
+    KeyType minAdmissibleKey;          // minimum admissible key
+    KeyType maxAdmissibleKey;          // maximum admissible key
+    count numElems;                    // number of elements stored
+    KeyType offset;                    // offset from minAdmissibleKeys to 0
 
     static index valueToIndex(ValueType value) {
         if constexpr (std::is_signed_v<ValueType>) {

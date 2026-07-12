@@ -168,12 +168,14 @@ void BucketPriorityQueue<KeyType, ValueType>::remove(const ValueType &value) {
             currentMaxKey = std::numeric_limits<KeyType>::min();
         } else {
             // adjust max pointer if necessary
-            while (bucketHead[currentMaxKey + offset] == noneValue && currentMaxKey > currentMinKey) {
+            while (bucketHead[currentMaxKey + offset] == noneValue
+                   && currentMaxKey > currentMinKey) {
                 --currentMaxKey;
             }
 
             // adjust min pointer if necessary
-            while (bucketHead[currentMinKey + offset] == noneValue && currentMinKey < currentMaxKey) {
+            while (bucketHead[currentMinKey + offset] == noneValue
+                   && currentMinKey < currentMaxKey) {
                 ++currentMinKey;
             }
         }
