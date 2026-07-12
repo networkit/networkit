@@ -11,6 +11,9 @@
 namespace NetworKit {
 namespace {
 
+using ::testing::IsEmpty;
+using ::testing::SizeIs;
+
 template <typename KeyT, typename ValueT>
 struct BucketPQConfig {
     using KeyType = KeyT;
@@ -27,9 +30,6 @@ public:
 TYPED_TEST_SUITE_P(BucketPriorityQueueGTest);
 
 TYPED_TEST_P(BucketPriorityQueueGTest, testConstructFromKeysSkipsNone) {
-    using ::testing::IsEmpty;
-    using ::testing::SizeIs;
-
     using KeyType = typename TestFixture::KeyType;
     using ValueType = typename TestFixture::ValueType;
 
@@ -54,8 +54,6 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testConstructFromKeysSkipsNone) {
 }
 
 TYPED_TEST_P(BucketPriorityQueueGTest, testChangeKeyAndRemove) {
-    using ::testing::IsEmpty;
-
     using KeyType = typename TestFixture::KeyType;
     using ValueType = typename TestFixture::ValueType;
 
@@ -81,8 +79,6 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testChangeKeyAndRemove) {
 }
 
 TYPED_TEST_P(BucketPriorityQueueGTest, testEmptySentinelsUseTemplateTypes) {
-    using ::testing::IsEmpty;
-
     using KeyType = typename TestFixture::KeyType;
     using ValueType = typename TestFixture::ValueType;
 
