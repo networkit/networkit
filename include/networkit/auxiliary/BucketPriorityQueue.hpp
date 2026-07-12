@@ -1,16 +1,21 @@
 /*
- * BucketPQ.hpp
+ * BucketPriorityQueue.hpp
  *
  *  Created on: 02.03.2017
  *      Author: Henning
  */
 
-#ifndef NETWORKIT_AUXILIARY_BUCKET_PQ_HPP_
-#define NETWORKIT_AUXILIARY_BUCKET_PQ_HPP_
+#ifndef NETWORKIT_AUXILIARY_BUCKET_PRIORITY_QUEUE_HPP_
+#define NETWORKIT_AUXILIARY_BUCKET_PRIORITY_QUEUE_HPP_
 
+#include <concepts>
+#include <cstdint>
 #include <limits>
 #include <list>
 #include <span>
+#include <stdexcept>
+#include <type_traits>
+#include <vector>
 
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/PrioQueue.hpp>
@@ -19,8 +24,12 @@ namespace Aux {
 
 using index = NetworKit::index;
 using count = NetworKit::count;
-using Bucket = std::list<index>;
-constexpr int64_t none = std::numeric_limits<int64_t>::max();
+
+template <typename T>
+concept SignedIntegral = std::integral<T> && std::is_signed_v<T>;
+
+template <typename T>
+concept IntegralValue = std::integral<T> && !std::same_as<std::remove_cvref_t<T>, bool>;
 
 /**
  * Addressable priority queue for values in the range [0,n) and
@@ -29,42 +38,50 @@ constexpr int64_t none = std::numeric_limits<int64_t>::max();
  * the obvious constraint minPrio <= maxPrio.
  * Amortized constant running time for each operation.
  */
-class BucketPQ : public PrioQueue<int64_t, index> {
+template <SignedIntegral KeyType = int64_t, IntegralValue ValueType = index>
+class BucketPriorityQueue : public PrioQueue<KeyType, ValueType> {
 private:
+    using Bucket = std::list<ValueType>;
+    using BucketIndex = index;
+
+    static constexpr KeyType noneKey = std::numeric_limits<KeyType>::max();
+    static constexpr ValueType noneValue = std::numeric_limits<ValueType>::max();
+    static constexpr BucketIndex noneBucket = std::numeric_limits<BucketIndex>::max();
+
     std::vector<Bucket> buckets; // the actual buckets
-    static Bucket dummyBucket;
-    static const Bucket::iterator invalidPtr;
+    inline static Bucket dummyBucket{};
+    inline static const typename Bucket::iterator invalidPtr = dummyBucket.end();
 
     struct OptionalIterator {
         bool valid;
-        Bucket::iterator iter;
+        typename Bucket::iterator iter;
 
         void reset() {
             valid = false;
             iter = invalidPtr;
         }
         OptionalIterator() { reset(); }
-        OptionalIterator(bool valid, Bucket::iterator iter) : valid(valid), iter(iter) {}
+        OptionalIterator(bool valid, typename Bucket::iterator iter) : valid(valid), iter(iter) {}
     };
 
     std::vector<OptionalIterator> nodePtr; // keeps track of node positions
-    std::vector<index> myBucket;           // keeps track of current bucket for each value
-    int64_t currentMinKey;                 // current min key
-    int64_t currentMaxKey;                 // current max key
-    int64_t minAdmissibleKey;              // minimum admissible key
-    int64_t maxAdmissibleKey;              // maximum admissible key
+    std::vector<BucketIndex> myBucket;     // keeps track of current bucket for each value
+    KeyType currentMinKey;                 // current min key
+    KeyType currentMaxKey;                 // current max key
+    KeyType minAdmissibleKey;              // minimum admissible key
+    KeyType maxAdmissibleKey;              // maximum admissible key
     count numElems;                        // number of elements stored
-    int64_t offset;                        // offset from minAdmissibleKeys to 0
+    KeyType offset;                        // offset from minAdmissibleKeys to 0
 
     /**
      * Constructor. Not to be used, only here for overriding.
      */
-    BucketPQ(std::span<const int64_t>) {}
+    BucketPriorityQueue(std::span<const KeyType>) {}
 
     /**
      * Constructor. Not to be used, only here for overriding.
      */
-    BucketPQ(uint64_t) {}
+    BucketPriorityQueue(uint64_t) {}
 
     /**
      * Called from various constructors for initializing members.
@@ -79,39 +96,40 @@ public:
      * @param[in] minAdmissibleKey Minimum admissible key
      * @param[in] maxAdmissibleKey Maximum admissible key
      */
-    BucketPQ(std::span<const int64_t> keys, int64_t minAdmissibleKey, int64_t maxAdmissibleKey);
+    BucketPriorityQueue(std::span<const KeyType> keys, KeyType minAdmissibleKey,
+                        KeyType maxAdmissibleKey);
 
     /**
      * Builds priority queue of the specified capacity @a capacity.
      */
-    BucketPQ(uint64_t capacity, int64_t minAdmissibleKey, int64_t maxAdmissibleKey);
+    BucketPriorityQueue(uint64_t capacity, KeyType minAdmissibleKey, KeyType maxAdmissibleKey);
 
     /**
      * Default destructor
      */
-    ~BucketPQ() override = default;
+    ~BucketPriorityQueue() override = default;
 
     /**
      * Inserts key-value pair (@key, @value).
      */
-    void insert(int64_t key, index value) override;
+    void insert(KeyType key, ValueType value) override;
 
     /**
      * Returns the element on top of the PrioQ.
      */
-    std::pair<int64_t, index> getMin();
+    std::pair<KeyType, ValueType> getMin();
 
     /**
      * Removes the element with minimum key and returns the key-value pair.
      */
-    std::pair<int64_t, index> extractMin() override;
+    std::pair<KeyType, ValueType> extractMin() override;
 
     /**
      * Modifies entry with value @a value.
      * The entry is then set to @a newKey with the same value.
      * If the corresponding key is not present, the element will be inserted.
      */
-    void changeKey(int64_t newKey, index value) override;
+    void changeKey(KeyType newKey, ValueType value) override;
 
     /**
      * @return Number of elements in PQ.
@@ -126,18 +144,23 @@ public:
     /**
      * @return Whether or not the PQ contains the given element.
      */
-    bool contains(const index &value) const override;
+    bool contains(const ValueType &value) const override;
 
     /**
      * Removes key-value pair given by value @a val.
      */
-    void remove(const index &val) override;
+    void remove(const ValueType &value) override;
 
     /**
      * @return key to given value @val.
      */
-    virtual int64_t getKey(const index &val);
+    virtual KeyType getKey(const ValueType &val);
 };
 
+using BucketPQ = BucketPriorityQueue<int64_t, index>;
+
 } /* namespace Aux */
-#endif // NETWORKIT_AUXILIARY_BUCKET_PQ_HPP_
+
+#include <networkit/auxiliary/BucketPriorityQueueImpl.hpp>
+
+#endif // NETWORKIT_AUXILIARY_BUCKET_PRIORITY_QUEUE_HPP_

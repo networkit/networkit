@@ -8,7 +8,7 @@
 #ifndef NETWORKIT_CENTRALITY_GROUP_DEGREE_HPP_
 #define NETWORKIT_CENTRALITY_GROUP_DEGREE_HPP_
 
-#include <networkit/auxiliary/BucketPQ.hpp>
+#include <networkit/auxiliary/BucketPriorityQueue.hpp>
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 

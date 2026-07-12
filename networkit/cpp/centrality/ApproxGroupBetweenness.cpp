@@ -8,7 +8,7 @@
 #include <cmath>
 #include <omp.h>
 
-#include <networkit/auxiliary/BucketPQ.hpp>
+#include <networkit/auxiliary/BucketPriorityQueue.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/centrality/ApproxGroupBetweenness.hpp>
 #include <networkit/distance/BFS.hpp>

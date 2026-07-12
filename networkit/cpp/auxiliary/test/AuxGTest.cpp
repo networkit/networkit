@@ -23,7 +23,7 @@
 
 #include <networkit/auxiliary/ArrayTools.hpp>
 #include <networkit/auxiliary/BloomFilter.hpp>
-#include <networkit/auxiliary/BucketPQ.hpp>
+#include <networkit/auxiliary/BucketPriorityQueue.hpp>
 #include <networkit/auxiliary/Enforce.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/MissingMath.hpp>
