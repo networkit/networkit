@@ -12,7 +12,6 @@
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/centrality/ApproxGroupBetweenness.hpp>
 #include <networkit/distance/BFS.hpp>
-#include <networkit/distance/SSSP.hpp>
 #include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {

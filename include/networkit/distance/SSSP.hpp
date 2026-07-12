@@ -8,6 +8,7 @@
 #ifndef NETWORKIT_DISTANCE_SSSP_HPP_
 #define NETWORKIT_DISTANCE_SSSP_HPP_
 
+#include <limits>
 #include <set>
 
 #include <networkit/auxiliary/Multiprecision.hpp>
@@ -38,7 +39,7 @@ public:
      * increasing distance from the source.
      * @param target The target node.
      */
-    SingleSourceShortestPaths(const Graph &G, NodeT source, bool storePaths = true,
+    SingleSourceShortestPaths(const GraphT &G, NodeT source, bool storePaths = true,
                               bool storeNodesSortedByDistance = false, NodeT target = nullNodeId);
 
     ~SingleSourceShortestPaths() override = default;
@@ -175,8 +176,8 @@ protected:
     const GraphT *G;
     NodeT source;
     NodeT target;
-    double sumDist;
-    count reachedNodes;
+    double sumDist = std::numeric_limits<double>::max();
+    count reachedNodes = 0;
     std::vector<EdgeWeightT> distances;
     std::vector<std::vector<NodeT>> previous; // predecessors on shortest path
     std::vector<bigfloat> npaths;

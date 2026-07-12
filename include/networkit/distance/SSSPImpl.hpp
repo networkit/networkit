@@ -16,7 +16,7 @@
 namespace NetworKit {
 
 template <class GraphT>
-SingleSourceShortestPaths<GraphT>::SingleSourceShortestPaths(const Graph &G, NodeT source,
+SingleSourceShortestPaths<GraphT>::SingleSourceShortestPaths(const GraphT &G, NodeT source,
                                                              bool storePaths,
                                                              bool storeNodesSortedByDistance,
                                                              NodeT target)
