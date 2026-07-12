@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <stack>
+#include <utility>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/distance/SSSP.hpp>
