@@ -115,9 +115,32 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testEmptySentinelsUseTemplateTypes) {
     EXPECT_EQ(prioQ.extractMin(), emptySentinel);
 }
 
+TYPED_TEST_P(BucketPriorityQueueGTest, testClearResetsBucketState) {
+    using KeyType = typename TestFixture::KeyType;
+    using ValueType = typename TestFixture::ValueType;
+
+    Aux::BucketPriorityQueue<KeyType, ValueType> prioQ(5, KeyType{-2}, KeyType{4});
+
+    prioQ.insert(KeyType{0}, ValueType{0});
+    prioQ.insert(KeyType{2}, ValueType{1});
+    prioQ.insert(KeyType{-1}, ValueType{2});
+
+    prioQ.clear();
+
+    EXPECT_THAT(prioQ, IsEmpty());
+    EXPECT_FALSE(prioQ.contains(ValueType{0}));
+    EXPECT_EQ(prioQ.getMin(),
+              (std::pair<KeyType, ValueType>{std::numeric_limits<KeyType>::max(),
+                                             std::numeric_limits<ValueType>::max()}));
+
+    prioQ.insert(KeyType{4}, ValueType{3});
+    EXPECT_EQ(prioQ.extractMin(), (std::pair<KeyType, ValueType>{KeyType{4}, ValueType{3}}));
+    EXPECT_THAT(prioQ, IsEmpty());
+}
+
 REGISTER_TYPED_TEST_SUITE_P(BucketPriorityQueueGTest, testConstructFromKeysSkipsNone,
-                            testChangeKeyAndRemove, testRemoveElementsWithSameKey,
-                            testEmptySentinelsUseTemplateTypes);
+                            testChangeKeyAndRemove, testEmptySentinelsUseTemplateTypes,
+                            testClearResetsBucketState, testRemoveElementsWithSameKey);
 
 using BucketPriorityQueueTestTypes =
     ::testing::Types<BucketPQConfig<int64_t, index>, BucketPQConfig<int32_t, uint32_t>,
