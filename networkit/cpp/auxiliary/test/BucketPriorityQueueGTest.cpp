@@ -78,6 +78,30 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testChangeKeyAndRemove) {
     EXPECT_THAT(prioQ, IsEmpty());
 }
 
+TYPED_TEST_P(BucketPriorityQueueGTest, testRemoveElementsWithSameKey) {
+    using KeyType = typename TestFixture::KeyType;
+    using ValueType = typename TestFixture::ValueType;
+
+    Aux::BucketPriorityQueue<KeyType, ValueType> prioQ(6, KeyType{-2}, KeyType{2});
+
+    prioQ.insert(KeyType{1}, ValueType{0});
+    prioQ.insert(KeyType{1}, ValueType{1});
+    prioQ.insert(KeyType{1}, ValueType{2});
+    prioQ.insert(KeyType{-1}, ValueType{3});
+
+    prioQ.remove(ValueType{1});
+    EXPECT_FALSE(prioQ.contains(ValueType{1}));
+    EXPECT_TRUE(prioQ.contains(ValueType{0}));
+    EXPECT_TRUE(prioQ.contains(ValueType{2}));
+
+    EXPECT_EQ(prioQ.extractMin(), (std::pair<KeyType, ValueType>{KeyType{-1}, ValueType{3}}));
+
+    prioQ.remove(ValueType{2});
+    EXPECT_FALSE(prioQ.contains(ValueType{2}));
+    EXPECT_EQ(prioQ.extractMin(), (std::pair<KeyType, ValueType>{KeyType{1}, ValueType{0}}));
+    EXPECT_THAT(prioQ, IsEmpty());
+}
+
 TYPED_TEST_P(BucketPriorityQueueGTest, testEmptySentinelsUseTemplateTypes) {
     using KeyType = typename TestFixture::KeyType;
     using ValueType = typename TestFixture::ValueType;
@@ -92,7 +116,8 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testEmptySentinelsUseTemplateTypes) {
 }
 
 REGISTER_TYPED_TEST_SUITE_P(BucketPriorityQueueGTest, testConstructFromKeysSkipsNone,
-                            testChangeKeyAndRemove, testEmptySentinelsUseTemplateTypes);
+                            testChangeKeyAndRemove, testRemoveElementsWithSameKey,
+                            testEmptySentinelsUseTemplateTypes);
 
 using BucketPriorityQueueTestTypes =
     ::testing::Types<BucketPQConfig<int64_t, index>, BucketPQConfig<int32_t, uint32_t>,

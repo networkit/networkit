@@ -19,10 +19,14 @@ void BucketPriorityQueue<KeyType, ValueType>::construct(uint64_t capacity) {
         throw std::invalid_argument("minAdmissibleKey cannot be larger than maxAdmissibleKey");
     }
 
+    assureCapacityFitsValueType(capacity);
+
     // init
-    buckets.resize(maxAdmissibleKey - minAdmissibleKey + 1);
-    nodePtr.resize(capacity);
+    bucketHead.assign(maxAdmissibleKey - minAdmissibleKey + 1, noneValue);
     myBucket.assign(capacity, noneBucket);
+    previous.assign(capacity, noneValue);
+    next.assign(capacity, noneValue);
+
     currentMinKey = noneKey;
     currentMaxKey = std::numeric_limits<KeyType>::min();
     numElems = 0;
@@ -57,15 +61,20 @@ template <SignedIntegral KeyType, IntegralValue ValueType>
 void BucketPriorityQueue<KeyType, ValueType>::insert(KeyType key, ValueType value) {
     assert(minAdmissibleKey <= key && key <= maxAdmissibleKey);
 
-    const auto valueIdx = static_cast<index>(value);
-    if constexpr (std::is_signed_v<ValueType>) {
-        assert(value >= 0);
-    }
-    assert(valueIdx < nodePtr.size());
+    const auto valueIdx = valueToIndex(value);
+    assert(valueIdx < myBucket.size());
+    assert(myBucket[valueIdx] == noneBucket);
 
     const auto bucketIdx = static_cast<BucketIndex>(key + offset);
-    buckets[bucketIdx].push_front(value);
-    nodePtr[valueIdx] = OptionalIterator{true, buckets[bucketIdx].begin()};
+    const ValueType oldHead = bucketHead[bucketIdx];
+    next[valueIdx] = oldHead;
+    previous[valueIdx] = noneValue;
+
+    if (oldHead != noneValue) {
+        previous[valueToIndex(oldHead)] = value;
+    }
+    bucketHead[bucketIdx] = value;
+
     myBucket[valueIdx] = bucketIdx;
     ++numElems;
 
@@ -83,7 +92,7 @@ std::pair<KeyType, ValueType> BucketPriorityQueue<KeyType, ValueType>::getMin() 
     if (empty())
         return {noneKey, noneValue};
     else
-        return {currentMinKey, buckets[currentMinKey + offset].front()};
+        return {currentMinKey, bucketHead[currentMinKey + offset]};
 }
 
 template <SignedIntegral KeyType, IntegralValue ValueType>
@@ -91,7 +100,7 @@ std::pair<KeyType, ValueType> BucketPriorityQueue<KeyType, ValueType>::extractMi
     if (empty())
         return {noneKey, noneValue};
 
-    ValueType result = buckets[currentMinKey + offset].front();
+    ValueType result = bucketHead[currentMinKey + offset];
 
     // store currentMinKey because remove(result) will change it
     KeyType oldMinKey = currentMinKey;
@@ -121,7 +130,7 @@ bool BucketPriorityQueue<KeyType, ValueType>::contains(const ValueType &value) c
     if constexpr (std::is_signed_v<ValueType>) {
         assert(value >= 0);
     }
-    return valueIdx < nodePtr.size() && nodePtr[valueIdx].valid;
+    return valueIdx < myBucket.size() && myBucket[valueIdx] != noneBucket;
 }
 
 template <SignedIntegral KeyType, IntegralValue ValueType>
@@ -130,13 +139,26 @@ void BucketPriorityQueue<KeyType, ValueType>::remove(const ValueType &value) {
     if constexpr (std::is_signed_v<ValueType>) {
         assert(value >= 0);
     }
-    assert(valueIdx < nodePtr.size());
+    assert(valueIdx < myBucket.size());
 
     if (myBucket[valueIdx] != noneBucket) {
         // remove from appropriate bucket
-        BucketIndex bucketIdx = myBucket[valueIdx];
-        buckets[bucketIdx].erase(nodePtr[valueIdx].iter);
-        nodePtr[valueIdx].reset();
+        const BucketIndex bucketIdx = myBucket[valueIdx];
+        const ValueType previousValue = previous[valueIdx];
+        const ValueType nextValue = next[valueIdx];
+
+        if (previousValue != noneValue) {
+            next[valueToIndex(previousValue)] = nextValue;
+        } else {
+            bucketHead[bucketIdx] = nextValue;
+        }
+
+        if (nextValue != noneValue) {
+            previous[valueToIndex(nextValue)] = previousValue;
+        }
+
+        previous[valueIdx] = noneValue;
+        next[valueIdx] = noneValue;
         myBucket[valueIdx] = noneBucket;
         --numElems;
 
@@ -146,12 +168,14 @@ void BucketPriorityQueue<KeyType, ValueType>::remove(const ValueType &value) {
             currentMaxKey = std::numeric_limits<KeyType>::min();
         } else {
             // adjust max pointer if necessary
-            while (buckets[currentMaxKey + offset].empty() && currentMaxKey > currentMinKey) {
+            while (bucketHead[currentMaxKey + offset] == noneValue
+                   && currentMaxKey > currentMinKey) {
                 --currentMaxKey;
             }
 
             // adjust min pointer if necessary
-            while (buckets[currentMinKey + offset].empty() && currentMinKey < currentMaxKey) {
+            while (bucketHead[currentMinKey + offset] == noneValue
+                   && currentMinKey < currentMaxKey) {
                 ++currentMinKey;
             }
         }

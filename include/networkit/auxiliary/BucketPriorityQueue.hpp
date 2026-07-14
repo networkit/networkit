@@ -11,7 +11,6 @@
 #include <concepts>
 #include <cstdint>
 #include <limits>
-#include <list>
 #include <span>
 #include <stdexcept>
 #include <type_traits>
@@ -41,37 +40,35 @@ concept IntegralValue = std::integral<T> && !std::same_as<std::remove_cvref_t<T>
 template <SignedIntegral KeyType = int64_t, IntegralValue ValueType = index>
 class BucketPriorityQueue : public PrioQueue<KeyType, ValueType> {
 private:
-    using Bucket = std::list<ValueType>;
     using BucketIndex = index;
 
     static constexpr KeyType noneKey = std::numeric_limits<KeyType>::max();
     static constexpr ValueType noneValue = std::numeric_limits<ValueType>::max();
     static constexpr BucketIndex noneBucket = std::numeric_limits<BucketIndex>::max();
 
-    std::vector<Bucket> buckets; // the actual buckets
-    inline static Bucket dummyBucket{};
-    inline static const typename Bucket::iterator invalidPtr = dummyBucket.end();
+    std::vector<ValueType> bucketHead;
+    std::vector<ValueType> previous;
+    std::vector<ValueType> next;
+    std::vector<BucketIndex> myBucket; // keeps track of current bucket for each value
+    KeyType currentMinKey;             // current min key
+    KeyType currentMaxKey;             // current max key
+    KeyType minAdmissibleKey;          // minimum admissible key
+    KeyType maxAdmissibleKey;          // maximum admissible key
+    count numElems;                    // number of elements stored
+    KeyType offset;                    // offset from minAdmissibleKeys to 0
 
-    struct OptionalIterator {
-        bool valid;
-        typename Bucket::iterator iter;
-
-        void reset() {
-            valid = false;
-            iter = invalidPtr;
+    static index valueToIndex(ValueType value) {
+        if constexpr (std::is_signed_v<ValueType>) {
+            assert(value >= 0);
         }
-        OptionalIterator() { reset(); }
-        OptionalIterator(bool valid, typename Bucket::iterator iter) : valid(valid), iter(iter) {}
-    };
+        return static_cast<index>(value);
+    }
 
-    std::vector<OptionalIterator> nodePtr; // keeps track of node positions
-    std::vector<BucketIndex> myBucket;     // keeps track of current bucket for each value
-    KeyType currentMinKey;                 // current min key
-    KeyType currentMaxKey;                 // current max key
-    KeyType minAdmissibleKey;              // minimum admissible key
-    KeyType maxAdmissibleKey;              // maximum admissible key
-    count numElems;                        // number of elements stored
-    KeyType offset;                        // offset from minAdmissibleKeys to 0
+    static void assureCapacityFitsValueType(uint64_t capacity) {
+        if (capacity > static_cast<uint64_t>(noneValue)) {
+            throw std::invalid_argument("capacity cannot be represented by ValueType");
+        }
+    }
 
     /**
      * Constructor. Not to be used, only here for overriding.
