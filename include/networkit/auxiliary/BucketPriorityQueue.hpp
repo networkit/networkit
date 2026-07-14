@@ -42,7 +42,6 @@ concept IntegralValue = std::integral<T> && !std::same_as<std::remove_cvref_t<T>
 template <SignedIntegral KeyType = int64_t, IntegralValue ValueType = index>
 class BucketPriorityQueue : public PrioQueue<KeyType, ValueType> {
 private:
-    using Bucket = std::list<ValueType>;
     using BucketIndex = index;
 
     static constexpr KeyType noneKey = std::numeric_limits<KeyType>::max();

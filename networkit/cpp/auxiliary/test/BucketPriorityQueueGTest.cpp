@@ -3,7 +3,6 @@
 
 #include <cstdint>
 #include <limits>
-#include <utility>
 #include <vector>
 
 #include <networkit/auxiliary/BucketPriorityQueue.hpp>
@@ -48,9 +47,9 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testConstructFromKeysSkipsNone) {
     EXPECT_EQ(prioQ.getKey(ValueType{2}), KeyType{-2});
     EXPECT_EQ(prioQ.getKey(ValueType{3}), KeyType{1});
 
-    EXPECT_EQ(prioQ.extractMin(), (std::pair<KeyType, ValueType>{KeyType{-2}, ValueType{2}}));
-    EXPECT_EQ(prioQ.extractMin(), (std::pair<KeyType, ValueType>{KeyType{1}, ValueType{3}}));
-    EXPECT_EQ(prioQ.extractMin(), (std::pair<KeyType, ValueType>{KeyType{3}, ValueType{0}}));
+    EXPECT_THAT(prioQ.extractMin(), Pair(KeyType{-2}, ValueType{2}));
+    EXPECT_THAT(prioQ.extractMin(), Pair(KeyType{1}, ValueType{3}));
+    EXPECT_THAT(prioQ.extractMin(), Pair(KeyType{3}, ValueType{0}));
     EXPECT_THAT(prioQ, IsEmpty());
 }
 
@@ -67,15 +66,15 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testChangeKeyAndRemove) {
     EXPECT_TRUE(prioQ.contains(ValueType{0}));
     EXPECT_TRUE(prioQ.contains(ValueType{1}));
     EXPECT_TRUE(prioQ.contains(ValueType{2}));
-    EXPECT_EQ(prioQ.getMin(), (std::pair<KeyType, ValueType>{KeyType{-3}, ValueType{1}}));
+    EXPECT_THAT(prioQ.getMin(), Pair(KeyType{-3}, ValueType{1}));
 
     prioQ.changeKey(KeyType{-5}, ValueType{2});
     EXPECT_EQ(prioQ.getKey(ValueType{2}), KeyType{-5});
-    EXPECT_EQ(prioQ.extractMin(), (std::pair<KeyType, ValueType>{KeyType{-5}, ValueType{2}}));
+    EXPECT_THAT(prioQ.extractMin(), Pair(KeyType{-5}, ValueType{2}));
 
     prioQ.remove(ValueType{1});
     EXPECT_FALSE(prioQ.contains(ValueType{1}));
-    EXPECT_EQ(prioQ.extractMin(), (std::pair<KeyType, ValueType>{KeyType{4}, ValueType{0}}));
+    EXPECT_THAT(prioQ.extractMin(), Pair(KeyType{4}, ValueType{0}));
     EXPECT_THAT(prioQ, IsEmpty());
 }
 
@@ -95,11 +94,11 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testRemoveElementsWithSameKey) {
     EXPECT_TRUE(prioQ.contains(ValueType{0}));
     EXPECT_TRUE(prioQ.contains(ValueType{2}));
 
-    EXPECT_EQ(prioQ.extractMin(), (std::pair<KeyType, ValueType>{KeyType{-1}, ValueType{3}}));
+    EXPECT_THAT(prioQ.extractMin(), Pair(KeyType{-1}, ValueType{3}));
 
     prioQ.remove(ValueType{2});
     EXPECT_FALSE(prioQ.contains(ValueType{2}));
-    EXPECT_EQ(prioQ.extractMin(), (std::pair<KeyType, ValueType>{KeyType{1}, ValueType{0}}));
+    EXPECT_THAT(prioQ.extractMin(), Pair(KeyType{1}, ValueType{0}));
     EXPECT_THAT(prioQ, IsEmpty());
 }
 
@@ -109,11 +108,11 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testEmptySentinelsUseTemplateTypes) {
 
     Aux::BucketPriorityQueue<KeyType, ValueType> prioQ(4, KeyType{-2}, KeyType{2});
 
-    const std::pair<KeyType, ValueType> emptySentinel{std::numeric_limits<KeyType>::max(),
-                                                      std::numeric_limits<ValueType>::max()};
     EXPECT_THAT(prioQ, IsEmpty());
-    EXPECT_EQ(prioQ.getMin(), emptySentinel);
-    EXPECT_EQ(prioQ.extractMin(), emptySentinel);
+    EXPECT_THAT(prioQ.getMin(),
+                Pair(std::numeric_limits<KeyType>::max(), std::numeric_limits<ValueType>::max()));
+    EXPECT_THAT(prioQ.extractMin(),
+                Pair(std::numeric_limits<KeyType>::max(), std::numeric_limits<ValueType>::max()));
 }
 
 TYPED_TEST_P(BucketPriorityQueueGTest, testClearResetsBucketState) {
