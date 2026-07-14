@@ -33,6 +33,20 @@ except ImportError:
 else:
     hasSeaborn = True
 
+try:
+    from iplotx.typing import LayoutType
+    from iplotx.ingest.typing import (
+        NetworkDataProvider as IplotxNetworkDataProvider,
+        NetworkData as IplotxNetworkData,
+    )
+except (ImportError, ModuleNotFoundError):  # pragma: no cover
+    LayoutType = object  # type: ignore[assignment,misc]
+    IplotxNetworkDataProvider = object  # type: ignore[assignment,misc]
+    IplotxNetworkData = object  # type: ignore[assignment,misc]
+    hasIplotx = False
+else:
+    hasIplotx = True
+
 
 class Dimension(Enum):
     """
@@ -630,3 +644,115 @@ def widgetFromGraph(
             hovermode="closest",
         )
     return graphWidget
+
+
+class NetworkitIplotxNetworkDataProvider(IplotxNetworkDataProvider):
+    @staticmethod
+    def check_dependencies() -> bool:
+        # NOTE: Since this is implemented in networkit and no other dep is required, the dep is automatically satisfied.
+        return True
+
+    @staticmethod
+    def graph_type():
+        return Graph
+
+    def is_directed(self):
+        """Whether the network is directed."""
+        return self.network.isDirected()
+
+    def number_of_vertices(self):
+        """The number of vertices/nodes in the network."""
+        return self.network.numberOfNodes()
+
+    def __call__(
+        self,
+        layout: Optional[LayoutType] = None,
+        vertex_labels: Optional[Sequence[str] | dict[Hashable, str] | pd.Series] = None,
+        edge_labels: Optional[Sequence[str] | dict[str]] = None,
+    ) -> IplotxNetworkData:
+        """Create network data object for iplotx from a networkit graph object."""
+        # Pandas is a dep of iplotx, so if we are here we have pandas
+        import pandas as pd
+        from iplotx.ingest.heuristics import normalise_layout
+        from iplotx.utils.internal import _make_layout_columns
+
+        # Get layout
+        vertex_df = normalise_layout(
+            layout,
+            network=self.network,
+            nvertices=self.number_of_vertices(),
+        )
+        ndim = vertex_df.shape[1]
+        vertex_df.columns = _make_layout_columns(ndim)
+
+        # Vertex labels
+        # Recast vertex_labels=False as vertex_labels=None
+        if np.isscalar(vertex_labels) and (not vertex_labels):
+            vertex_labels = None
+        if vertex_labels is not None:
+            if np.isscalar(vertex_labels):
+                vertex_df["label"] = vertex_df.index.astype(str)
+            elif len(vertex_labels) != len(vertex_df):
+                raise ValueError(
+                    "Vertex labels must be the same length as the number of vertices."
+                )
+            else:
+                vertex_df["label"] = vertex_labels
+
+        # Get edge data
+        tmp = list(self.network.iterEdges())
+        edge_df = pd.DataFrame(tmp, columns=["_ipx_source", "_ipx_target"])
+        del tmp
+
+        # Edge labels
+        if edge_labels is not None:
+            if len(edge_labels) != len(edge_df):
+                raise ValueError(
+                    "Edge labels must be the same length as the number of edges."
+                )
+            edge_df["label"] = edge_labels
+
+        network_data = {
+            "vertex_df": vertex_df,
+            "edge_df": edge_df,
+            "directed": self.is_directed(),
+            "ndim": ndim,
+        }
+        return network_data
+
+
+def iplotxFromGraph(
+    G: Graph,
+    layout: LayoutType,
+    **kwargs,
+):
+    """Visualise graph using iplotx.
+
+    Parameters
+    ----------
+    G : networkit.graph.Graph
+            The input graph.
+    **kwargs: Keyword arguments passed to iplotx.network.
+
+
+
+    Returns
+    -------
+    matplotlib.artist.Artist
+        A matplotlib artist with the visualisation of the graph.
+    """
+    if not hasIplotx:
+        raise MissingDependencyError("iplotx")
+
+    import iplotx as ipx
+
+    if "network" in kwargs:
+        raise ValueError("`network` argument is not allowed, use `G` instead.")
+
+    artist = ipx.network(
+        network=G,
+        layout=layout,
+        **kwargs,
+    )[0]
+
+    return artist
