@@ -12,6 +12,7 @@ namespace NetworKit {
 namespace {
 
 using ::testing::IsEmpty;
+using ::testing::Pair;
 using ::testing::SizeIs;
 
 template <typename KeyT, typename ValueT>
@@ -129,12 +130,11 @@ TYPED_TEST_P(BucketPriorityQueueGTest, testClearResetsBucketState) {
 
     EXPECT_THAT(prioQ, IsEmpty());
     EXPECT_FALSE(prioQ.contains(ValueType{0}));
-    EXPECT_EQ(prioQ.getMin(),
-              (std::pair<KeyType, ValueType>{std::numeric_limits<KeyType>::max(),
-                                             std::numeric_limits<ValueType>::max()}));
+    EXPECT_THAT(prioQ.getMin(),
+                Pair(std::numeric_limits<KeyType>::max(), std::numeric_limits<ValueType>::max()));
 
     prioQ.insert(KeyType{4}, ValueType{3});
-    EXPECT_EQ(prioQ.extractMin(), (std::pair<KeyType, ValueType>{KeyType{4}, ValueType{3}}));
+    EXPECT_THAT(prioQ.extractMin(), Pair(KeyType{4}, ValueType{3}));
     EXPECT_THAT(prioQ, IsEmpty());
 }
 

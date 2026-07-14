@@ -184,13 +184,13 @@ void BucketPriorityQueue<KeyType, ValueType>::remove(const ValueType &value) {
 
 template <SignedIntegral KeyType, IntegralValue ValueType>
 void BucketPriorityQueue<KeyType, ValueType>::clear() {
-    for (auto &bucket : buckets) {
+    for (std::list<ValueType> &bucket : buckets) {
         bucket.clear();
     }
-    for (auto &ptr : nodePtr) {
+    for (OptionalIterator &ptr : nodePtr) {
         ptr.reset();
     }
-    std::fill(myBucket.begin(), myBucket.end(), noneBucket);
+    std::ranges::fill(myBucket.begin(), myBucket.end(), noneBucket);
     currentMinKey = noneKey;
     currentMaxKey = std::numeric_limits<KeyType>::min();
     numElems = 0;
