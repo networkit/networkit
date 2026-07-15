@@ -8,9 +8,11 @@
 #ifndef NETWORKIT_AUXILIARY_BUCKET_PRIORITY_QUEUE_HPP_
 #define NETWORKIT_AUXILIARY_BUCKET_PRIORITY_QUEUE_HPP_
 
+#include <algorithm>
 #include <concepts>
 #include <cstdint>
 #include <limits>
+#include <ranges>
 #include <span>
 #include <stdexcept>
 #include <type_traits>
@@ -147,6 +149,11 @@ public:
      * Removes key-value pair given by value @a val.
      */
     void remove(const ValueType &value) override;
+
+    /**
+     * Removes all elements from the priority queue.
+     */
+    void clear() override;
 
     /**
      * @return key to given value @val.
