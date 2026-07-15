@@ -7,7 +7,8 @@ from .viz import MaxentStress
 # external imports
 from collections import defaultdict
 from enum import Enum
-from typing import List, Mapping, Optional, Tuple, Union
+from typing import List, Mapping, Optional, Tuple, Union, Sequence
+from collections.abc import Hashable
 from warnings import warn
 
 import numpy as np
