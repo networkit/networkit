@@ -1,3 +1,3 @@
 networkit_add_test(structures CoverGTest auxiliary)
 networkit_add_test(structures GenericPartitionGTest)
-networkit_add_test(structures UnionFindGTest)
+networkit_add_test(structures GenericUnionFindGTest)
