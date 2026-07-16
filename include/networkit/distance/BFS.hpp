@@ -17,11 +17,15 @@ namespace NetworKit {
  * The BFS class is used to do a breadth-first search on a Graph from a given
  * source node.
  */
-class BFS final : public SSSP {
+template <class GraphT>
+class BreadthFirstSearch final : public SingleSourceShortestPaths<GraphT> {
+    using NodeT = typename GraphT::NodeT;
+    using EdgeWeightT = typename GraphT::EdgeWeightT;
+    static constexpr NodeT nullNodeId = NullNodeId<NodeT>;
 
 public:
     /**
-     * Constructs the BFS class for @a G and source node @a source.
+     * Constructs the BreadthFirstSearch class for @a G and source node @a source.
      *
      * @param G The graph
      * @param source The source node of the breadth-first search
@@ -31,13 +35,19 @@ public:
      * increasing distance from the source.
      * @param target The target node.
      */
-    BFS(const Graph &G, node source, bool storePaths = true,
-        bool storeNodesSortedByDistance = false, node target = none);
+    BreadthFirstSearch(const GraphT &G, NodeT source, bool storePaths = true,
+                       bool storeNodesSortedByDistance = false, NodeT target = nullNodeId);
 
     /**
      * Breadth-first search from @a source.
      */
     void run() override;
 };
+
+using BFS = BreadthFirstSearch<AdjListGraph<node, edgeweight>>;
+
 } /* namespace NetworKit */
+
+#include <networkit/distance/BFSImpl.hpp>
+
 #endif // NETWORKIT_DISTANCE_BFS_HPP_
