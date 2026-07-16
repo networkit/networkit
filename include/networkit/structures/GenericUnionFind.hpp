@@ -100,7 +100,7 @@ public:
         partition.setUpperBound(static_cast<IndexType>(parent.size()));
         for (std::size_t e = 0; e < parent.size(); ++e) {
             const auto element = static_cast<IndexType>(e);
-            partition.moveToSubset(find(element), element);
+            partition.addToSubset(find(element), element);
         }
         return partition;
     }
