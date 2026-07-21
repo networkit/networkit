@@ -5,7 +5,6 @@
  *      Author: Maximilian Vogel (uocvf@student.kit.edu)
  */
 
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <concepts>
@@ -15,9 +14,6 @@
 
 namespace NetworKit {
 namespace {
-
-using ::testing::Eq;
-using ::testing::Ne;
 
 template <typename IndexType>
 class GenericUnionFindGTest : public testing::Test {};
@@ -29,18 +25,18 @@ TYPED_TEST_P(GenericUnionFindGTest, testAllToSingletons) {
     unionFind.allToSingletons();
 
     for (TypeParam i = 0; i < TypeParam{10}; ++i) {
-        EXPECT_THAT(unionFind.find(i),
-                    Ne(unionFind.find(static_cast<TypeParam>((i + TypeParam{1}) % TypeParam{10}))));
+        EXPECT_NE(unionFind.find(i),
+                  unionFind.find(static_cast<TypeParam>((i + TypeParam{1}) % TypeParam{10})));
     }
 }
 
 TYPED_TEST_P(GenericUnionFindGTest, testEmptyUnionFindConvertsToEmptyPartition) {
     GenericUnionFind<TypeParam> unionFind(TypeParam{0});
 
-    const auto partition = unionFind.toPartition();
+    const GenericPartition<TypeParam> partition = unionFind.toPartition();
 
-    EXPECT_THAT(partition.numberOfElements(), Eq(TypeParam{0}));
-    EXPECT_THAT(partition.numberOfSubsets(), Eq(count{0}));
+    EXPECT_EQ(partition.numberOfElements(), TypeParam{0});
+    EXPECT_EQ(partition.numberOfSubsets(), count{0});
 }
 
 TYPED_TEST_P(GenericUnionFindGTest, testSingleElementAndSelfMerge) {
@@ -48,24 +44,24 @@ TYPED_TEST_P(GenericUnionFindGTest, testSingleElementAndSelfMerge) {
 
     unionFind.merge(TypeParam{0}, TypeParam{0});
 
-    EXPECT_THAT(unionFind.find(TypeParam{0}), Eq(TypeParam{0}));
+    EXPECT_EQ(unionFind.find(TypeParam{0}), TypeParam{0});
 
-    const auto partition = unionFind.toPartition();
-    EXPECT_THAT(partition.numberOfElements(), Eq(TypeParam{1}));
-    EXPECT_THAT(partition.numberOfSubsets(), Eq(count{1}));
-    EXPECT_THAT(partition.subsetOf(TypeParam{0}), Eq(TypeParam{0}));
+    const GenericPartition<TypeParam> partition = unionFind.toPartition();
+    EXPECT_EQ(partition.numberOfElements(), TypeParam{1});
+    EXPECT_EQ(partition.numberOfSubsets(), count{1});
+    EXPECT_EQ(partition.subsetOf(TypeParam{0}), TypeParam{0});
 }
 
 TYPED_TEST_P(GenericUnionFindGTest, testToPartitionAssignsFreshPartitionElements) {
     GenericUnionFind<TypeParam> unionFind(TypeParam{4});
 
-    const auto partition = unionFind.toPartition();
+    const GenericPartition<TypeParam> partition = unionFind.toPartition();
 
-    EXPECT_THAT(partition.numberOfElements(), Eq(TypeParam{4}));
-    EXPECT_THAT(partition.numberOfSubsets(), Eq(count{4}));
+    EXPECT_EQ(partition.numberOfElements(), TypeParam{4});
+    EXPECT_EQ(partition.numberOfSubsets(), count{4});
     for (TypeParam i = 0; i < TypeParam{4}; ++i) {
-        EXPECT_THAT(partition.contains(i), Eq(true));
-        EXPECT_THAT(partition.subsetOf(i), Eq(i));
+        EXPECT_TRUE(partition.contains(i));
+        EXPECT_EQ(partition.subsetOf(i), i);
     }
 }
 
@@ -74,22 +70,22 @@ TYPED_TEST_P(GenericUnionFindGTest, testMergeSimple) {
 
     unionFind.merge(TypeParam{3}, TypeParam{8});
 
-    EXPECT_THAT(unionFind.find(TypeParam{8}), Eq(unionFind.find(TypeParam{3})));
+    EXPECT_EQ(unionFind.find(TypeParam{8}), unionFind.find(TypeParam{3}));
 }
 
 TYPED_TEST_P(GenericUnionFindGTest, testRepeatedMergeOfSameElementsDoesNotChangeSets) {
     GenericUnionFind<TypeParam> unionFind(TypeParam{4});
 
     unionFind.merge(TypeParam{0}, TypeParam{1});
-    const auto representative = unionFind.find(TypeParam{0});
+    const TypeParam representative = unionFind.find(TypeParam{0});
 
     unionFind.merge(TypeParam{0}, TypeParam{1});
     unionFind.merge(TypeParam{1}, TypeParam{0});
 
-    EXPECT_THAT(unionFind.find(TypeParam{0}), Eq(representative));
-    EXPECT_THAT(unionFind.find(TypeParam{1}), Eq(representative));
-    EXPECT_THAT(unionFind.find(TypeParam{2}), Ne(representative));
-    EXPECT_THAT(unionFind.find(TypeParam{3}), Ne(representative));
+    EXPECT_EQ(unionFind.find(TypeParam{0}), representative);
+    EXPECT_EQ(unionFind.find(TypeParam{1}), representative);
+    EXPECT_NE(unionFind.find(TypeParam{2}), representative);
+    EXPECT_NE(unionFind.find(TypeParam{3}), representative);
 }
 
 TYPED_TEST_P(GenericUnionFindGTest, testMergeSubsets) {
@@ -102,7 +98,7 @@ TYPED_TEST_P(GenericUnionFindGTest, testMergeSubsets) {
     unionFind.merge(TypeParam{0}, TypeParam{1});
     unionFind.merge(TypeParam{1}, TypeParam{2});
 
-    EXPECT_THAT(unionFind.find(TypeParam{9}), Eq(unionFind.find(TypeParam{7})));
+    EXPECT_EQ(unionFind.find(TypeParam{9}), unionFind.find(TypeParam{7}));
 }
 
 TYPED_TEST_P(GenericUnionFindGTest, testMergeCircular) {
@@ -127,18 +123,18 @@ TYPED_TEST_P(GenericUnionFindGTest, testMergeCircular) {
     unionFind.merge(TypeParam{7}, TypeParam{15});
 
     for (TypeParam i = 0; i < TypeParam{15}; ++i) {
-        EXPECT_THAT(unionFind.find(i),
-                    Eq(unionFind.find(static_cast<TypeParam>((i + TypeParam{4}) % TypeParam{16}))));
-        EXPECT_THAT(unionFind.find(i),
-                    Eq(unionFind.find(static_cast<TypeParam>((i + TypeParam{8}) % TypeParam{16}))));
-        EXPECT_THAT(unionFind.find(i), Eq(unionFind.find(static_cast<TypeParam>((i + TypeParam{12})
-                                                                                % TypeParam{16}))));
-        EXPECT_THAT(unionFind.find(i),
-                    Ne(unionFind.find(static_cast<TypeParam>((i + TypeParam{1}) % TypeParam{16}))));
-        EXPECT_THAT(unionFind.find(i),
-                    Ne(unionFind.find(static_cast<TypeParam>((i + TypeParam{2}) % TypeParam{16}))));
-        EXPECT_THAT(unionFind.find(i),
-                    Ne(unionFind.find(static_cast<TypeParam>((i + TypeParam{3}) % TypeParam{16}))));
+        EXPECT_EQ(unionFind.find(i),
+                  unionFind.find(static_cast<TypeParam>((i + TypeParam{4}) % TypeParam{16})));
+        EXPECT_EQ(unionFind.find(i),
+                  unionFind.find(static_cast<TypeParam>((i + TypeParam{8}) % TypeParam{16})));
+        EXPECT_EQ(unionFind.find(i),
+                  unionFind.find(static_cast<TypeParam>((i + TypeParam{12}) % TypeParam{16})));
+        EXPECT_NE(unionFind.find(i),
+                  unionFind.find(static_cast<TypeParam>((i + TypeParam{1}) % TypeParam{16})));
+        EXPECT_NE(unionFind.find(i),
+                  unionFind.find(static_cast<TypeParam>((i + TypeParam{2}) % TypeParam{16})));
+        EXPECT_NE(unionFind.find(i),
+                  unionFind.find(static_cast<TypeParam>((i + TypeParam{3}) % TypeParam{16})));
     }
 }
 
@@ -151,7 +147,7 @@ TYPED_TEST_P(GenericUnionFindGTest, testAllToSingletonsAfterMergesRestoresDistin
     unionFind.allToSingletons();
 
     for (TypeParam i = 0; i < TypeParam{6}; ++i) {
-        EXPECT_THAT(unionFind.find(i), Eq(i));
+        EXPECT_EQ(unionFind.find(i), i);
     }
 }
 
@@ -161,13 +157,13 @@ TYPED_TEST_P(GenericUnionFindGTest, testToPartitionUsesTemplateIndexType) {
     unionFind.merge(TypeParam{1}, TypeParam{4});
     unionFind.merge(TypeParam{0}, TypeParam{1});
 
-    const auto partition = unionFind.toPartition();
+    const GenericPartition<TypeParam> partition = unionFind.toPartition();
 
-    EXPECT_THAT(partition.numberOfElements(), Eq(TypeParam{6}));
-    EXPECT_THAT(partition.numberOfSubsets(), Eq(count{3}));
-    EXPECT_THAT(partition.inSameSubset(TypeParam{0}, TypeParam{4}), Eq(true));
-    EXPECT_THAT(partition.inSameSubset(TypeParam{5}, TypeParam{1}), Eq(true));
-    EXPECT_THAT(partition.inSameSubset(TypeParam{0}, TypeParam{2}), Eq(false));
+    EXPECT_EQ(partition.numberOfElements(), TypeParam{6});
+    EXPECT_EQ(partition.numberOfSubsets(), count{3});
+    EXPECT_TRUE(partition.inSameSubset(TypeParam{0}, TypeParam{4}));
+    EXPECT_TRUE(partition.inSameSubset(TypeParam{5}, TypeParam{1}));
+    EXPECT_FALSE(partition.inSameSubset(TypeParam{0}, TypeParam{2}));
 }
 
 REGISTER_TYPED_TEST_SUITE_P(GenericUnionFindGTest, testAllToSingletons,
