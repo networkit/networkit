@@ -70,7 +70,7 @@ using LocalCommunityConfigs = ::testing::Types<
     LocalCommunityConfig<true, true, false>, LocalCommunityConfig<false, false, true>,
     LocalCommunityConfig<true, false, true>, LocalCommunityConfig<true, true, true>>;
 
-TYPED_TEST_SUITE(LocalCommunityGTest, LocalCommunityConfigs);
+TYPED_TEST_SUITE(LocalCommunityGTest, LocalCommunityConfigs, /*Comma needed for variadic macro.*/);
 
 TYPED_TEST(LocalCommunityGTest, testConstructorRejectsDirectedGraphs) {
     Graph G(2, false, true);
@@ -134,7 +134,8 @@ using RemovableLocalCommunityConfigs = ::testing::Types<LocalCommunityConfig<fal
                                                         LocalCommunityConfig<true, false, true>,
                                                         LocalCommunityConfig<true, true, true>>;
 
-TYPED_TEST_SUITE(RemovableLocalCommunityGTest, RemovableLocalCommunityConfigs);
+TYPED_TEST_SUITE(RemovableLocalCommunityGTest, RemovableLocalCommunityConfigs,
+                 /*Comma needed for variadic macro.*/);
 
 TYPED_TEST(RemovableLocalCommunityGTest, testRemoveNodeMaintainsCommunityShellAndCut) {
     Graph G = weightedGraph();
