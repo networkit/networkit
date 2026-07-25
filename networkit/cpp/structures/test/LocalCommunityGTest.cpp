@@ -163,6 +163,8 @@ TYPED_TEST(RemovableLocalCommunityGTest, testRemoveNodeMaintainsCommunityShellAn
 
     if constexpr (TypeParam::maintainBoundary) {
         EXPECT_EQ(community.boundarySize(), 2u);
+        EXPECT_THAT(collectShell(community, [](const auto &info) { return info.boundaryChange(); }),
+                    UnorderedElementsAre(Pair(0, 1), Pair(3, 0)));
     }
 }
 

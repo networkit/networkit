@@ -17,8 +17,8 @@ void LocalCommunity<ShellMaintainsExtDeg, MaintainBoundary, AllowRemoval>::addNo
     std::tie(uIt, std::ignore) = community.insert({u, CommunityInfo()});
     shell.erase(u);
 
-    node boundaryNeighbor = none; // if u is in the boundary and has only one neighbor outside of
-                                  // the community, store it here.
+    // If u has exactly one shell neighbor, store it here for removal bookkeeping.
+    node exclusiveShellNeighbor = none;
     std::unordered_map<node, count>::iterator boundaryIt;
 
     if (MaintainBoundary) {
@@ -54,7 +54,7 @@ void LocalCommunity<ShellMaintainsExtDeg, MaintainBoundary, AllowRemoval>::addNo
                             if (it != shell.end()) {
                                 it->second.numExclusiveBoundaryMembers += 1;
                                 if (AllowRemoval) {
-                                    *uIt->second.exclusiveOutsideNeighbor = it->first;
+                                    *vIt->second.exclusiveOutsideNeighbor = it->first;
                                 }
                             }
                         });
@@ -95,7 +95,7 @@ void LocalCommunity<ShellMaintainsExtDeg, MaintainBoundary, AllowRemoval>::addNo
                 if (MaintainBoundary) {
                     if (boundaryIt == currentBoundary->end()) {
                         std::tie(boundaryIt, std::ignore) = currentBoundary->insert({u, 0});
-                        boundaryNeighbor = v;
+                        exclusiveShellNeighbor = v;
                     }
 
                     ++boundaryIt->second;
@@ -114,10 +114,14 @@ void LocalCommunity<ShellMaintainsExtDeg, MaintainBoundary, AllowRemoval>::addNo
 #endif
             }
         });
-
+    // If the added node u has exactly one outside neighbor, that shell node gains
+    // u as an exclusive boundary member. Store the neighbor for future removals.
     if (MaintainBoundary && boundaryIt != currentBoundary->end() && boundaryIt->second == 1) {
-        assert(boundaryNeighbor != none);
-        shell[boundaryNeighbor].numExclusiveBoundaryMembers += 1;
+        assert(exclusiveShellNeighbor != none);
+        shell[exclusiveShellNeighbor].numExclusiveBoundaryMembers += 1;
+        if (AllowRemoval) {
+            *uIt->second.exclusiveOutsideNeighbor = exclusiveShellNeighbor;
+        }
     }
 
     if (MaintainBoundary && AllowRemoval && boundaryIt == currentBoundary->end()) {
@@ -197,13 +201,20 @@ void LocalCommunity<ShellMaintainsExtDeg, MaintainBoundary, AllowRemoval>::remov
                             }
                         });
 
-                        // u has now a neighbor that is only in the boundary
-                        // becuase of u
+                        // v is now a boundary node whose only shell neighbor is u.
                         uIt->second.numExclusiveBoundaryMembers += 1;
                     } else if (it->second == 2) {
-                        *vIt->second.exclusiveOutsideNeighbor = none;
+                        if (AllowRemoval) {
+                            const auto exclusiveOutsideNeighbor =
+                                *vIt->second.exclusiveOutsideNeighbor;
+                            assert(exclusiveOutsideNeighbor != none);
 
-                        uIt->second.numExclusiveBoundaryMembers -= 1;
+                            auto shellIt = shell.find(exclusiveOutsideNeighbor);
+                            assert(shellIt != shell.end());
+                            shellIt->second.numExclusiveBoundaryMembers -= 1;
+
+                            *vIt->second.exclusiveOutsideNeighbor = none;
+                        }
                     }
                 }
 
