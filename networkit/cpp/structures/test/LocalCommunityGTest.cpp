@@ -12,6 +12,7 @@
 namespace NetworKit {
 namespace {
 
+using ::testing::ElementsAre;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
@@ -51,6 +52,17 @@ auto collectCommunity(LocalCommunity &community, F getValue) {
     return result;
 }
 
+//        (5)
+//         |  13
+//        (0)
+//         |  2
+//        (1)------ 3 ------(2)
+//         |                 |
+//         5                 7
+//         |                 |
+//         +------(3)--------+
+//                 |  11
+//                (4)
 Graph weightedGraph() {
     Graph G(6, true, false);
     G.addEdge(0, 1, 2.0);
@@ -80,13 +92,13 @@ TYPED_TEST(LocalCommunityGTest, testConstructorRejectsDirectedGraphs) {
 }
 
 TYPED_TEST(LocalCommunityGTest, testAddNodeMaintainsCommunityShellAndCut) {
-    Graph G = weightedGraph();
+    const Graph G = weightedGraph();
     typename TypeParam::Community community(G);
 
     community.addNode(1);
 
     EXPECT_TRUE(community.contains(1));
-    EXPECT_EQ(community.toSet(), std::set<node>({1}));
+    EXPECT_THAT(community.toSet(), ElementsAre(1));
     EXPECT_EQ(community.internalEdgeWeight(), 0.0);
     EXPECT_EQ(community.cut(), 10.0);
     EXPECT_THAT(collectShell(community, [](const auto &info) { return *info.intDeg; }),
@@ -107,7 +119,7 @@ TYPED_TEST(LocalCommunityGTest, testAddNodeMaintainsCommunityShellAndCut) {
     community.addNode(2);
     community.addNode(3);
 
-    EXPECT_EQ(community.toSet(), std::set<node>({1, 2, 3}));
+    EXPECT_THAT(community.toSet(), ElementsAre(1, 2, 3));
     EXPECT_EQ(community.internalEdgeWeight(), 15.0);
     EXPECT_EQ(community.cut(), 13.0);
     EXPECT_THAT(collectShell(community, [](const auto &info) { return *info.intDeg; }),
@@ -138,7 +150,7 @@ TYPED_TEST_SUITE(RemovableLocalCommunityGTest, RemovableLocalCommunityConfigs,
                  /*Comma needed for variadic macro.*/);
 
 TYPED_TEST(RemovableLocalCommunityGTest, testRemoveNodeMaintainsCommunityShellAndCut) {
-    Graph G = weightedGraph();
+    const Graph G = weightedGraph();
     typename TypeParam::Community community(G);
 
     community.addNode(1);
@@ -146,7 +158,7 @@ TYPED_TEST(RemovableLocalCommunityGTest, testRemoveNodeMaintainsCommunityShellAn
     community.addNode(3);
     community.removeNode(3);
 
-    EXPECT_EQ(community.toSet(), std::set<node>({1, 2}));
+    EXPECT_THAT(community.toSet(), ElementsAre(1, 2));
     EXPECT_TRUE(!community.contains(3));
     EXPECT_EQ(community.internalEdgeWeight(), 3.0);
     EXPECT_EQ(community.cut(), 14.0);
@@ -169,7 +181,7 @@ TYPED_TEST(RemovableLocalCommunityGTest, testRemoveNodeMaintainsCommunityShellAn
 }
 
 TYPED_TEST(RemovableLocalCommunityGTest, testCommunityNodeInfoSupportsRemovalScoring) {
-    Graph G = weightedGraph();
+    const Graph G = weightedGraph();
     typename TypeParam::Community community(G);
 
     community.addNode(1);
