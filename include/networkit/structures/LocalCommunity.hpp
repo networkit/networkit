@@ -146,7 +146,7 @@ public:
         OptionalValue<node, MaintainBoundary && AllowRemoval> exclusiveOutsideNeighbor;
 
         /**
-         * The number of neighbors that have no internal neighbors.
+         * The number of neighboring community nodes that have no external neighbors.
          */
         OptionalValue<count, MaintainBoundary && AllowRemoval> numFullyInternalNeighbors;
 
