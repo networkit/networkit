@@ -6,6 +6,8 @@ networkit_add_test(distance DistanceGTest
     dyn_distance generators io)
 networkit_add_test(distance GraphDistanceGTest
     io)
+networkit_add_test(distance BFSGTest
+    auxiliary io)
 networkit_add_test(distance SSSPGTest
     auxiliary io)
 networkit_add_test(dyn_distance DynSSSPGTest

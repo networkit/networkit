@@ -1,36 +1,41 @@
 /*
- * SSSP.cpp
+ * SSSPImpl.hpp
  *
  *  Created on: 15.04.2014
  *      Author: cls
  */
 
+#ifndef NETWORKIT_DISTANCE_SSSP_IMPL_HPP_
+#define NETWORKIT_DISTANCE_SSSP_IMPL_HPP_
+
+#include <algorithm>
 #include <stack>
+#include <utility>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/distance/SSSP.hpp>
 
 namespace NetworKit {
 
-SSSP::SSSP(const Graph &G, node source, bool storePaths, bool storeNodesSortedByDistance,
-           node target)
+template <class GraphT>
+SingleSourceShortestPaths<GraphT>::SingleSourceShortestPaths(const GraphT &G, NodeT source,
+                                                             bool storePaths,
+                                                             bool storeNodesSortedByDistance,
+                                                             NodeT target)
     : Algorithm(), G(&G), source(source), target(target), storePaths(storePaths),
       storeNodesSortedByDistance(storeNodesSortedByDistance) {}
 
-const std::vector<edgeweight> &SSSP::getDistances() {
-    return distances;
-}
-
-std::vector<node> SSSP::getPath(node t, bool forward) const {
+template <class GraphT>
+auto SingleSourceShortestPaths<GraphT>::getPath(NodeT t, bool forward) const -> std::vector<NodeT> {
     if (!storePaths) {
         throw std::runtime_error("paths have not been stored");
     }
-    std::vector<node> path;
+    std::vector<NodeT> path;
     if (previous[t].empty()) { // t is not reachable from source
         WARN("there is no path from ", source, " to ", t);
         return path;
     }
-    node v = t;
+    NodeT v = t;
     while (v != source) {
         path.push_back(v);
         v = previous[v].front();
@@ -38,28 +43,30 @@ std::vector<node> SSSP::getPath(node t, bool forward) const {
     path.push_back(source);
 
     if (forward) {
-        std::reverse(path.begin(), path.end());
+        std::ranges::reverse(path);
     }
     return path;
 }
 
-std::set<std::vector<node>> SSSP::getPaths(node t, bool forward) const {
+template <class GraphT>
+auto SingleSourceShortestPaths<GraphT>::getPaths(NodeT t, bool forward) const
+    -> std::set<std::vector<NodeT>> {
 
-    std::set<std::vector<node>> paths;
+    std::set<std::vector<NodeT>> paths;
     if (previous[t].empty()) { // t is not reachable from source
         WARN("there is no path from ", source, " to ", t);
         return paths;
     }
 
-    std::vector<node> targetPredecessors = previous[t];
+    std::vector<NodeT> targetPredecessors = previous[t];
 
 #pragma omp parallel for schedule(dynamic)
     for (omp_index i = 0; i < static_cast<omp_index>(targetPredecessors.size()); ++i) {
 
-        std::stack<std::vector<node>> stack;
-        std::vector<std::vector<node>> currPaths;
+        std::stack<std::vector<NodeT>> stack;
+        std::vector<std::vector<NodeT>> currPaths;
 
-        node pred = targetPredecessors[i];
+        NodeT pred = targetPredecessors[i];
         if (pred == source) {
             currPaths.push_back({t, pred});
         } else {
@@ -68,7 +75,7 @@ std::set<std::vector<node>> SSSP::getPaths(node t, bool forward) const {
 
         while (!stack.empty()) {
 
-            node topPathLastNode = stack.top().back();
+            NodeT topPathLastNode = stack.top().back();
 
             if (topPathLastNode == source) {
                 currPaths.push_back(stack.top());
@@ -76,13 +83,13 @@ std::set<std::vector<node>> SSSP::getPaths(node t, bool forward) const {
                 continue;
             }
 
-            std::vector<node> topPath = stack.top();
+            std::vector<NodeT> topPath = stack.top();
             stack.pop();
 
-            std::vector<node> currPredecessors = previous[topPath.back()];
+            std::vector<NodeT> currPredecessors = previous[topPath.back()];
 
-            for (node currPredecessor : currPredecessors) {
-                std::vector<node> suffix(topPath);
+            for (NodeT currPredecessor : currPredecessors) {
+                std::vector<NodeT> suffix(topPath);
                 suffix.push_back(currPredecessor);
                 stack.push(suffix);
             }
@@ -93,18 +100,20 @@ std::set<std::vector<node>> SSSP::getPaths(node t, bool forward) const {
     }
 
     if (forward) {
-        std::set<std::vector<node>> reversedPaths;
-        for (std::vector<node> path : paths) {
-            std::reverse(std::begin(path), std::end(path));
+        std::set<std::vector<NodeT>> reversedPaths;
+        for (std::vector<NodeT> path : paths) {
+            std::ranges::reverse(path);
             reversedPaths.insert(path);
         }
-        paths = reversedPaths;
+        std::swap(paths, reversedPaths);
     }
 
     return paths;
 }
 
-const std::vector<node> &SSSP::getNodesSortedByDistance() const {
+template <class GraphT>
+auto SingleSourceShortestPaths<GraphT>::getNodesSortedByDistance() const
+    -> const std::vector<NodeT> & {
     if (!storeNodesSortedByDistance) {
         throw std::runtime_error("Nodes sorted by distance have not been stored. Set "
                                  "storeNodesSortedByDistance in the constructor to true to enable "
@@ -116,3 +125,5 @@ const std::vector<node> &SSSP::getNodesSortedByDistance() const {
 }
 
 } /* namespace NetworKit */
+
+#endif // NETWORKIT_DISTANCE_SSSP_IMPL_HPP_
