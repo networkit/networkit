@@ -11,6 +11,7 @@
 #define NETWORKIT_STRUCTURES_GENERIC_UNION_FIND_HPP_
 
 #include <cstddef>
+#include <numeric>
 #include <vector>
 
 #include <networkit/Globals.hpp>
@@ -45,11 +46,7 @@ public:
      * Assigns every element to a singleton set.
      * Set id is equal to element id.
      */
-    void allToSingletons() {
-        for (std::size_t i = 0; i < parent.size(); ++i) {
-            parent[i] = static_cast<IndexType>(i);
-        }
-    }
+    void allToSingletons() { std::iota(parent.begin(), parent.end(), IndexType{0}); }
 
     /**
      * Find the representative to element @u
