@@ -101,8 +101,8 @@ void GenericCover<IndexType>::mergeSubsets(IndexType s, IndexType t) {
     if (s != t) {
         IndexType m = newSubsetId(); // new id for merged set
         for (IndexType e = 0; e <= this->z; ++e) {
-            auto its = data[e].find(s);
-            auto itt = data[e].find(t);
+            typename std::set<IndexType>::iterator its = data[e].find(s);
+            typename std::set<IndexType>::iterator itt = data[e].find(t);
             if (its != data[e].end()) {
                 data[e].erase(its);
                 data[e].insert(m);
@@ -165,7 +165,7 @@ count GenericCover<IndexType>::numberOfSubsets() const {
 
     this->parallelForEntries([&](IndexType, const std::set<IndexType> &s) {
         if (!s.empty()) {
-            for (auto it = s.begin(); it != s.end(); it++) {
+            for (typename std::set<IndexType>::const_iterator it = s.begin(); it != s.end(); it++) {
                 IndexType currentSubset = *it;
                 exists[currentSubset] = 1;
             }
@@ -204,7 +204,7 @@ void GenericCover<IndexType>::setUpperBound(IndexType upper) {
 template <IntegralValue IndexType>
 std::set<IndexType> GenericCover<IndexType>::getSubsetIds() const {
     std::set<IndexType> ids;
-    for (const auto &subset : data) {
+    for (const std::set<IndexType> &subset : data) {
         ids.insert(subset.begin(), subset.end());
     }
     return ids;
