@@ -70,8 +70,8 @@ public:
      *  @param v element v
      */
     void merge(IndexType u, IndexType v) {
-        const auto setU = find(u);
-        const auto setV = find(v);
+        const IndexType setU = find(u);
+        const IndexType setV = find(v);
         if (setU == setV) {
             return;
         }
