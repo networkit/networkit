@@ -29,6 +29,7 @@ jobs:
           CIBW_BEFORE_BUILD: pip install cython auditwheel --upgrade
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
+          CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET='26.0'
           CIBW_BUILD: 'cp314-*'
           CIBW_SKIP: "pp* *-musllinux_*"
           CIBW_TEST_COMMAND: python3 -c 'import networkit'
