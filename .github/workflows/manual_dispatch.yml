@@ -29,7 +29,6 @@ jobs:
           CIBW_BEFORE_BUILD: pip install cython auditwheel --upgrade
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
-          CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET='26.0'
           CIBW_BUILD: 'cp314-*'
           CIBW_SKIP: "pp* *-musllinux_*"
           CIBW_TEST_COMMAND: python3 -c 'import networkit'
@@ -98,6 +97,7 @@ jobs:
           CIBW_BUILD: 'cp314-*'
           CIBW_SKIP: "pp* *-musllinux_*"
           CIBW_TEST_COMMAND: python3 -c 'import networkit'
+          CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET='26.0'
           CIBW_TEST_SKIP: "*-macosx_x86_64 *-macosx_universal2:x86_64"
       - uses: actions/upload-artifact@v4
         with:
