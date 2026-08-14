@@ -1,5 +1,5 @@
-#ifndef NETWORKIT_STRUCTURES_GENERIC_COVER_IMPL_HPP_
-#define NETWORKIT_STRUCTURES_GENERIC_COVER_IMPL_HPP_
+#ifndef NETWORKIT_STRUCTURES_COVER_IMPL_HPP_
+#define NETWORKIT_STRUCTURES_COVER_IMPL_HPP_
 
 #include <algorithm>
 #include <cassert>
@@ -134,10 +134,11 @@ std::vector<count> GenericCover<IndexType>::subsetSizes() const {
     for (IndexType e = 0; e <= this->z; ++e) { // stores sizes in a vector
         for (IndexType t : data[e]) {
             if (mapping.find(t) == mapping.end()) {
-                mapping[t] = newIndex++;
+                mapping[t] = newIndex;
+                ++newIndex;
                 sizes.push_back(1);
             } else {
-                sizes[mapping[t]]++;
+                ++sizes[mapping[t]];
             }
         }
     }
@@ -152,7 +153,7 @@ std::map<IndexType, count> GenericCover<IndexType>::subsetSizeMap() const {
             if (sizeMap.find(t) == sizeMap.end()) {
                 sizeMap[t] = 1;
             } else {
-                sizeMap[t]++;
+                ++sizeMap[t];
             }
         }
     }
@@ -165,7 +166,7 @@ count GenericCover<IndexType>::numberOfSubsets() const {
 
     this->parallelForEntries([&](IndexType, const std::set<IndexType> &s) {
         if (!s.empty()) {
-            for (typename std::set<IndexType>::const_iterator it = s.begin(); it != s.end(); it++) {
+            for (typename std::set<IndexType>::const_iterator it = s.begin(); it != s.end(); ++it) {
                 IndexType currentSubset = *it;
                 exists[currentSubset] = 1;
             }
@@ -176,7 +177,7 @@ count GenericCover<IndexType>::numberOfSubsets() const {
 #pragma omp parallel for reduction(+ : k)
     for (omp_index i = 0; i < static_cast<omp_index>(upperBound()); ++i) {
         if (exists[i]) {
-            k++;
+            ++k;
         }
     }
 
@@ -212,4 +213,4 @@ std::set<IndexType> GenericCover<IndexType>::getSubsetIds() const {
 
 } /* namespace NetworKit */
 
-#endif // NETWORKIT_STRUCTURES_GENERIC_COVER_IMPL_HPP_
+#endif // NETWORKIT_STRUCTURES_COVER_IMPL_HPP_

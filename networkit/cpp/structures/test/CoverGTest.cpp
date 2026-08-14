@@ -1,5 +1,5 @@
 /*
- * GenericCoverGTest.cpp
+ * CoverGTest.cpp
  *
  *  Created on: 12.12.2013
  *      Author: Maximilian Vogel (uocvf@student.kit.edu)
@@ -12,7 +12,7 @@
 #include <cstdint>
 #include <set>
 
-#include <networkit/structures/GenericCover.hpp>
+#include <networkit/structures/Cover.hpp>
 
 namespace NetworKit {
 namespace {
@@ -34,7 +34,7 @@ GenericCover<IndexType> makeOverlappingCover() {
         cover.toSingleton(i + IndexType{1});
         cover.addToSubset(sid, i + IndexType{1});
     }
-    for (IndexType i = 0; i < n; i++) {
+    for (IndexType i = 0; i < n; ++i) {
         cover.addToSubset(i + IndexType{1}, IndexType{0});
     }
     return cover;
@@ -136,7 +136,7 @@ TYPED_TEST_P(GenericCoverGTest, testSubsetSizesWithUnassignedElements) {
 TYPED_TEST_P(GenericCoverGTest, testSubsetSizesTrivial) {
     constexpr TypeParam n{10};
     GenericCover<TypeParam> cover(n);
-    for (TypeParam i = 0; i < n; i++) {
+    for (TypeParam i = 0; i < n; ++i) {
         cover.toSingleton(i);
     }
     EXPECT_THAT(cover.subsetSizes(), ElementsAre(count{1}, count{1}, count{1}, count{1}, count{1},
@@ -158,7 +158,7 @@ TYPED_TEST_P(GenericCoverGTest, testSubsetSizesTrivial2) {
 TYPED_TEST_P(GenericCoverGTest, testSubsetSizesAssignedToMultipleSubsets) {
     constexpr TypeParam n{10};
     GenericCover<TypeParam> cover(n);
-    for (TypeParam i = 0; i < n; i++) {
+    for (TypeParam i = 0; i < n; ++i) {
         cover.toSingleton(i);
     }
     for (TypeParam i = 1; i < n; i += TypeParam{2}) {
@@ -178,7 +178,7 @@ TYPED_TEST_P(GenericCoverGTest, testSubsetSizesAssignedToMultipleSubsets2) {
 TYPED_TEST_P(GenericCoverGTest, testSubsetSizeMapMultipleSets) {
     constexpr TypeParam n{10};
     GenericCover<TypeParam> cover(n);
-    for (TypeParam i = 0; i < n; i++) {
+    for (TypeParam i = 0; i < n; ++i) {
         cover.toSingleton(i);
     }
     for (TypeParam i = 1; i < n; i += TypeParam{2}) {
