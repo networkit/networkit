@@ -17,8 +17,8 @@
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/METISGraphWriter.hpp>
 #include <networkit/numerics/GaussSeidelRelaxation.hpp>
-#include <networkit/numerics/LAMG/Level/EliminationStage.hpp>
 #include <networkit/numerics/LAMG/Lamg.hpp>
+#include <networkit/numerics/LAMG/Level/EliminationStage.hpp>
 #include <networkit/numerics/LAMG/MultiLevelSetup.hpp>
 #include <networkit/numerics/LAMG/SolverLamg.hpp>
 #include <networkit/structures/Partition.hpp>
@@ -91,9 +91,8 @@ TEST_F(SolverLamgGTest, testSolveWithSingletonEliminationLevelSetsZeroResult) {
     LevelHierarchy<CSRMatrix> hierarchy;
     hierarchy.addFinestLevel(finestLaplacian);
     hierarchy.addEliminationLevel(
-        coarseLaplacian,
-        {EliminationStage<CSRMatrix>(interpolation, q, std::vector<index>{0},
-                                     std::vector<index>{1})});
+        coarseLaplacian, {EliminationStage<CSRMatrix>(interpolation, q, std::vector<index>{0},
+                                                      std::vector<index>{1})});
 
     GaussSeidelRelaxation<CSRMatrix> smoother;
     SolverLamg<CSRMatrix> solver(hierarchy, smoother);
