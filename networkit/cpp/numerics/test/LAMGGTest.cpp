@@ -44,6 +44,8 @@ inline bool vector_almost_equal(const Vector &lhs, const Vector &rhs) {
     if (lhs.getDimension() != rhs.getDimension())
         return false;
     for (size_t i = 0; i < lhs.getDimension(); ++i) {
+        if (std::isnan(lhs[i]) || std::isnan(rhs[i]))
+            return false;
         if (std::abs(lhs[i] - rhs[i]) > 1e-4)
             return false;
     }
