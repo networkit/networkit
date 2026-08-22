@@ -102,7 +102,9 @@ TEST_F(SolverLamgGTest, testSolveWithSingletonEliminationLevelSetsZeroResult) {
 
     solver.solve(x, b, status);
 
-    EXPECT_THAT(my_vector, AllOf(SizeIs(2), Each(DoubleEq(0.0))));
+    EXPECT_EQ(x.getDimension(), 2);
+    EXPECT_DOUBLE_EQ(x[0], 0.0);
+    EXPECT_DOUBLE_EQ(x[1], 0.0);
 }
 
 Vector SolverLamgGTest::randVector(count dimension) const {
