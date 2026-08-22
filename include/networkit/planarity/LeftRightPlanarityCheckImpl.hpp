@@ -1,18 +1,22 @@
-/*  LeftRightPlanarityCheck.cpp
+/*  LeftRightPlanarityCheckImpl.hpp
  *
  *  Created on: 03.01.2025
  *  Authors: Andreas Scharf (andreas.b.scharf@gmail.com)
  *
  */
 
-#include "networkit/planarity/LeftRightPlanarityCheck.hpp"
+#ifndef NETWORKIT_PLANARITY_LEFT_RIGHT_PLANARITY_CHECK_IMPL_HPP_
+#define NETWORKIT_PLANARITY_LEFT_RIGHT_PLANARITY_CHECK_IMPL_HPP_
 
 #include <algorithm>
-#include <stack>
+#include <ranges>
+#include <stdexcept>
 
 namespace NetworKit {
 
-LeftRightPlanarityCheck::LeftRightPlanarityCheck(const Graph &G) : graph(&G) {
+template <typename GraphT>
+GenericLeftRightPlanarityCheck<GraphT>::GenericLeftRightPlanarityCheck(const GraphT &G)
+    : graph(&G) {
     if (G.isDirected()) {
         throw std::runtime_error("The graph is not an undirected graph.");
     }
@@ -30,10 +34,11 @@ LeftRightPlanarityCheck::LeftRightPlanarityCheck(const Graph &G) : graph(&G) {
     lowestPoint.resize(numberOfEdges, none);
 
     // dfsGraph: directed view of DFS tree + back edges
-    dfsGraph = Graph(graph->numberOfNodes(), false, true, false);
+    dfsGraph = GraphT(graph->numberOfNodes(), false, true, false);
 }
 
-void LeftRightPlanarityCheck::run() {
+template <typename GraphT>
+void GenericLeftRightPlanarityCheck<GraphT>::run() {
     // Euler-criterion: non-planar if m > 3n - 6 for n > 2
     if (graph->numberOfNodes() > 2 && graph->numberOfEdges() > 3 * graph->numberOfNodes() - 6) {
         hasRun = true;
@@ -47,7 +52,7 @@ void LeftRightPlanarityCheck::run() {
     edgeEndpoints.assign(graph->upperEdgeIdBound(), none);
 
     // DFS orientation
-    graph->forNodes([&](node currentNode) {
+    graph->forNodes([&](NodeT currentNode) {
         if (heights[currentNode] == noneHeight) {
             heights[currentNode] = 0;
             roots.push_back(currentNode);
@@ -60,14 +65,15 @@ void LeftRightPlanarityCheck::run() {
 
     // Planarity testing DFS
     isGraphPlanar =
-        std::ranges::all_of(roots, [this](node rootNode) { return dfsTesting(rootNode); });
+        std::ranges::all_of(roots, [this](NodeT rootNode) { return dfsTesting(rootNode); });
 
     hasRun = true;
 }
 
-void LeftRightPlanarityCheck::sortAdjacencyListByNestingDepth() {
-    dfsGraph.forNodes([&](node currentNode) {
-        dfsGraph.sortNeighbors(currentNode, [&](node neighbor1, node neighbor2) {
+template <typename GraphT>
+void GenericLeftRightPlanarityCheck<GraphT>::sortAdjacencyListByNestingDepth() {
+    dfsGraph.forNodes([&](NodeT currentNode) {
+        dfsGraph.sortNeighbors(currentNode, [&](NodeT neighbor1, NodeT neighbor2) {
             const edgeid e1 = graph->edgeId(currentNode, neighbor1);
             const edgeid e2 = graph->edgeId(currentNode, neighbor2);
             return nestingDepth[e1] < nestingDepth[e2];
@@ -75,7 +81,9 @@ void LeftRightPlanarityCheck::sortAdjacencyListByNestingDepth() {
     });
 }
 
-bool LeftRightPlanarityCheck::conflicting(const Interval &interval, edgeid edgeId) {
+template <typename GraphT>
+bool GenericLeftRightPlanarityCheck<GraphT>::conflicting(const Interval &interval,
+                                                        edgeid edgeId) {
     if (interval.isEmpty()) {
         return false;
     }
@@ -86,7 +94,9 @@ bool LeftRightPlanarityCheck::conflicting(const Interval &interval, edgeid edgeI
            && iteratorHigh > iteratorEdge;
 }
 
-bool LeftRightPlanarityCheck::applyConstraints(const edgeid edgeId, const edgeid parentEdgeId) {
+template <typename GraphT>
+bool GenericLeftRightPlanarityCheck<GraphT>::applyConstraints(const edgeid edgeId,
+                                                             const edgeid parentEdgeId) {
     ConflictPair tmpConflictPair{};
 
     // First phase: pop until stackBottom[edgeId], merging intervals on the right side.
@@ -103,7 +113,6 @@ bool LeftRightPlanarityCheck::applyConstraints(const edgeid edgeId, const edgeid
 
         auto rightLowIterator = lowestPoint[currentConflictPair.right.low];
         auto parentEdgeIterator = lowestPoint[parentEdgeId];
-        ;
 
         if (rightLowIterator != none && parentEdgeIterator != none
             && rightLowIterator > parentEdgeIterator) {
@@ -156,7 +165,9 @@ bool LeftRightPlanarityCheck::applyConstraints(const edgeid edgeId, const edgeid
     return true;
 }
 
-count LeftRightPlanarityCheck::getLowestLowPoint(const ConflictPair &conflictPair) {
+template <typename GraphT>
+count GenericLeftRightPlanarityCheck<GraphT>::getLowestLowPoint(
+    const ConflictPair &conflictPair) {
     if (conflictPair.left.isEmpty()) {
         return lowestPoint[conflictPair.right.low];
     }
@@ -166,7 +177,9 @@ count LeftRightPlanarityCheck::getLowestLowPoint(const ConflictPair &conflictPai
     return std::min(lowestPoint[conflictPair.right.low], lowestPoint[conflictPair.left.low]);
 }
 
-void LeftRightPlanarityCheck::removeBackEdges(const edgeid edgeId, const node parentNode) {
+template <typename GraphT>
+void GenericLeftRightPlanarityCheck<GraphT>::removeBackEdges(const edgeid edgeId,
+                                                            const NodeT parentNode) {
     while (!stack.empty() && getLowestLowPoint(stack.top()) == heights[parentNode]) {
         stack.pop();
     }
@@ -214,22 +227,23 @@ void LeftRightPlanarityCheck::removeBackEdges(const edgeid edgeId, const node pa
     }
 }
 
-bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
-    std::stack<node> dfsStack;
+template <typename GraphT>
+bool GenericLeftRightPlanarityCheck<GraphT>::dfsTesting(NodeT startNode) {
+    std::stack<NodeT> dfsStack;
     dfsStack.push(startNode);
 
     // Per-node neighbor iterators in DFS graph
-    using NeighborIterator = decltype(dfsGraph.neighborRange(static_cast<node>(0)).begin());
+    using NeighborIterator = decltype(dfsGraph.neighborRange(static_cast<NodeT>(0)).begin());
     std::vector<NeighborIterator> neighborIterators(dfsGraph.upperNodeIdBound());
     std::vector<bool> neighborInitialized(dfsGraph.upperNodeIdBound(), false);
     std::vector<edgeid> preprocessedEdges(numberOfEdges, noneEdgeId);
 
-    auto processNeighborEdges = [&](node currentNode, bool &callRemoveBackEdges) -> bool {
+    auto processNeighborEdges = [&](NodeT currentNode, bool &callRemoveBackEdges) -> bool {
         auto range = dfsGraph.neighborRange(currentNode);
 
         auto &neighborIterator = neighborIterators[currentNode];
         while (neighborIterator != range.end()) {
-            const node neighbor = *neighborIterator;
+            const NodeT neighbor = *neighborIterator;
             const edgeid currentEdgeId = graph->edgeId(currentNode, neighbor);
             assert(currentEdgeId != noneEdgeId);
             if (preprocessedEdges[currentEdgeId] == noneEdgeId) {
@@ -267,7 +281,7 @@ bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
 
     // Main DFS loop
     do {
-        const node currentNode = dfsStack.top();
+        const NodeT currentNode = dfsStack.top();
         dfsStack.pop();
 
         const edgeid parentEid = parentEdgeIds[currentNode];
@@ -291,18 +305,19 @@ bool LeftRightPlanarityCheck::dfsTesting(node startNode) {
     return true;
 }
 
-void LeftRightPlanarityCheck::dfsOrientation(node startNode) {
-    std::stack<node> dfsStack;
+template <typename GraphT>
+void GenericLeftRightPlanarityCheck<GraphT>::dfsOrientation(NodeT startNode) {
+    std::stack<NodeT> dfsStack;
     dfsStack.push(startNode);
 
     std::vector<edgeid> preprocessedEdges(numberOfEdges, noneEdgeId);
     do {
-        const node currentNode = dfsStack.top();
+        const NodeT currentNode = dfsStack.top();
         dfsStack.pop();
 
         const edgeid parentEdgeId = parentEdgeIds[currentNode];
 
-        for (node neighbor : graph->neighborRange(currentNode)) {
+        for (NodeT neighbor : graph->neighborRange(currentNode)) {
             const edgeid edgeId = graph->edgeId(currentNode, neighbor);
 
             if (preprocessedEdges[edgeId] == noneEdgeId) {
@@ -358,3 +373,5 @@ void LeftRightPlanarityCheck::dfsOrientation(node startNode) {
 }
 
 } // namespace NetworKit
+
+#endif // NETWORKIT_PLANARITY_LEFT_RIGHT_PLANARITY_CHECK_IMPL_HPP_
