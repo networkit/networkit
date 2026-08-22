@@ -49,16 +49,15 @@ public:
 private:
     count numberOfEdges;
     static constexpr count noneHeight{std::numeric_limits<count>::max()};
-    static constexpr edgeid noneEdgeId{std::numeric_limits<edgeid>::max()};
 
     struct Interval {
-        edgeid low{noneEdgeId};
-        edgeid high{noneEdgeId};
+        edgeid low{nullEdgeId};
+        edgeid high{nullEdgeId};
 
         Interval() = default;
         Interval(edgeid lowId, edgeid highId) : low(lowId), high(highId) {}
 
-        bool isEmpty() const { return low == noneEdgeId && high == noneEdgeId; }
+        bool isEmpty() const { return low == nullEdgeId && high == nullEdgeId; }
 
         friend bool operator==(const Interval &lhs, const Interval &rhs) {
             return lhs.low == rhs.low && lhs.high == rhs.high;
@@ -94,7 +93,7 @@ private:
     count getLowestLowPoint(const ConflictPair &conflictPair);
 
     // DFS / lowpoint state
-    std::vector<count> heights; // per node
+    std::vector<count> heights; // per vertex
     std::vector<NodeT> roots;   // roots of DFS forest
 
     std::vector<count> lowestPoint;
@@ -104,9 +103,9 @@ private:
     std::vector<count> nestingDepth;
     std::vector<ConflictPair> stackBottom;
 
-    // Per-node parent edge + parent node in DFS tree
-    std::vector<edgeid> parentEdgeIds; // parent edge for each node (noneEdgeId if root)
-    std::vector<NodeT> parentNodes;    // parent node for each node (none if root)
+    // Per-vertex parent edge + parent vertex in DFS tree
+    std::vector<edgeid> parentEdgeIds; // parent edge for each vertex (nullEdgeId if root)
+    std::vector<NodeT> parentNodes;    // parent vertex for each vertex (NullNodeId<NodeT> if root)
 
     // For each *underlying* edge ID, remember the DFS orientation's head (v)
     std::vector<NodeT> edgeEndpoints; // edgeEndpoints[eid] = v in oriented DFS edge (u -> v)
