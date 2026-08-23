@@ -77,51 +77,51 @@ public:
     }
 
     std::vector<std::vector<edgeweight>> distancesFromGetDistance(const FloydWarshallT &testObject,
-                                                                  count numberOfNodes) const {
+                                                                  NodeT numberOfNodes) const {
         std::vector<std::vector<edgeweight>> distances(numberOfNodes,
                                                        std::vector<edgeweight>(numberOfNodes));
-        for (count source = 0; source < numberOfNodes; ++source) {
-            for (count target = 0; target < numberOfNodes; ++target) {
-                distances[source][target] =
-                    testObject.getDistance(static_cast<NodeT>(source), static_cast<NodeT>(target));
+        for (NodeT source = 0; source < numberOfNodes; ++source) {
+            for (NodeT target = 0; target < numberOfNodes; ++target) {
+                distances[source][target] = testObject.getDistance(source, target);
             }
         }
         return distances;
     }
 
     std::vector<std::vector<std::vector<NodeT>>>
-    pathsFromGetNodesOnShortestPath(const FloydWarshallT &testObject, count numberOfNodes) const {
+    pathsFromGetNodesOnShortestPath(const FloydWarshallT &testObject, NodeT numberOfNodes) const {
         std::vector<std::vector<std::vector<NodeT>>> paths(
             numberOfNodes, std::vector<std::vector<NodeT>>(numberOfNodes));
-        for (count source = 0; source < numberOfNodes; ++source) {
-            for (count target = 0; target < numberOfNodes; ++target) {
-                paths[source][target] = testObject.getNodesOnShortestPath(
-                    static_cast<NodeT>(source), static_cast<NodeT>(target));
+        for (NodeT source = 0; source < numberOfNodes; ++source) {
+            for (NodeT target = 0; target < numberOfNodes; ++target) {
+                paths[source][target] = testObject.getNodesOnShortestPath(source, target);
             }
         }
         return paths;
     }
 
     std::vector<bool> negativeCycleFlags(const FloydWarshallT &testObject,
-                                         count numberOfNodes) const {
+                                         NodeT numberOfNodes) const {
         std::vector<bool> flags(numberOfNodes);
-        for (count u = 0; u < numberOfNodes; ++u) {
-            flags[u] = testObject.isNodeInNegativeCycle(static_cast<NodeT>(u));
+        for (NodeT u = 0; u < numberOfNodes; ++u) {
+            flags[u] = testObject.isNodeInNegativeCycle(u);
         }
         return flags;
     }
 
     void compareDistances(const std::vector<std::vector<edgeweight>> &expectedDistances,
                           const FloydWarshallT &testObject) const {
-        EXPECT_THAT(distancesFromGetDistance(testObject, expectedDistances.size()),
-                    testing::ElementsAreArray(expectedDistances));
+        EXPECT_THAT(
+            distancesFromGetDistance(testObject, static_cast<NodeT>(expectedDistances.size())),
+            testing::ElementsAreArray(expectedDistances));
     }
 
     void
     compareNodesOnShortestPaths(const std::vector<std::vector<std::vector<NodeT>>> &expectedPaths,
                                 const FloydWarshallT &testObject) const {
-        EXPECT_THAT(pathsFromGetNodesOnShortestPath(testObject, expectedPaths.size()),
-                    testing::ElementsAreArray(expectedPaths));
+        EXPECT_THAT(
+            pathsFromGetNodesOnShortestPath(testObject, static_cast<NodeT>(expectedPaths.size())),
+            testing::ElementsAreArray(expectedPaths));
     }
 };
 
@@ -205,7 +205,7 @@ TYPED_TEST_P(FloydWarshallGTest, testIsNodeInNegativeCycleCompleteGraphK3) {
     auto graph = this->completeGraphK3();
     typename TestFixture::FloydWarshallT test(graph);
     test.run();
-    EXPECT_THAT(this->negativeCycleFlags(test, graph.numberOfNodes()), testing::Each(false));
+    EXPECT_THAT(this->negativeCycleFlags(test, graph.upperNodeIdBound()), testing::Each(false));
 }
 
 TYPED_TEST_P(FloydWarshallGTest, getNodesOnShortestPathCompleteGraphK3) {
@@ -226,7 +226,7 @@ TYPED_TEST_P(FloydWarshallGTest, testGetDistanceUndirectedGraphWithNegativeEdge)
     typename TestFixture::FloydWarshallT test(graph);
     test.run();
     constexpr edgeweight expectedDistance{-std::numeric_limits<edgeweight>::infinity()};
-    EXPECT_THAT(this->distancesFromGetDistance(test, graph.numberOfNodes()),
+    EXPECT_THAT(this->distancesFromGetDistance(test, graph.upperNodeIdBound()),
                 testing::Each(testing::Each(expectedDistance)));
 }
 
@@ -234,14 +234,14 @@ TYPED_TEST_P(FloydWarshallGTest, testIsNodeInNegativeCycleUndirectedGraphWithNeg
     auto graph = this->undirectedGraphWithNegativeEdge();
     typename TestFixture::FloydWarshallT test(graph);
     test.run();
-    EXPECT_THAT(this->negativeCycleFlags(test, graph.numberOfNodes()), testing::Each(true));
+    EXPECT_THAT(this->negativeCycleFlags(test, graph.upperNodeIdBound()), testing::Each(true));
 }
 
 TYPED_TEST_P(FloydWarshallGTest, getNodesOnShortestPathUndirectedGraphWithNegativeEdge) {
     auto graph = this->undirectedGraphWithNegativeEdge();
     typename TestFixture::FloydWarshallT test(graph);
     test.run();
-    EXPECT_THAT(this->pathsFromGetNodesOnShortestPath(test, graph.numberOfNodes()),
+    EXPECT_THAT(this->pathsFromGetNodesOnShortestPath(test, graph.upperNodeIdBound()),
                 testing::Each(testing::Each(testing::IsEmpty())));
 }
 
@@ -258,7 +258,7 @@ TYPED_TEST_P(FloydWarshallGTest, testIsNodeInNegativeEdgeCompleteGraphK3Negative
     auto graph = this->directedGraphNegativeEdge();
     typename TestFixture::FloydWarshallT test(graph);
     test.run();
-    EXPECT_THAT(this->negativeCycleFlags(test, graph.numberOfNodes()), testing::Each(false));
+    EXPECT_THAT(this->negativeCycleFlags(test, graph.upperNodeIdBound()), testing::Each(false));
 }
 
 TYPED_TEST_P(FloydWarshallGTest, testGetNodesOnShortestPathCompleteGraphK3NegativeEdge) {
@@ -304,7 +304,7 @@ TYPED_TEST_P(FloydWarshallGTest, testIsNodeInNegativeCycleDisconnectedGraph) {
     auto graph = this->disconnectedGraph();
     typename TestFixture::FloydWarshallT test(graph);
     test.run();
-    EXPECT_THAT(this->negativeCycleFlags(test, graph.numberOfNodes()), testing::Each(false));
+    EXPECT_THAT(this->negativeCycleFlags(test, graph.upperNodeIdBound()), testing::Each(false));
 }
 
 TYPED_TEST_P(FloydWarshallGTest, testGetDistanceDirectedGraphWithNegativeSelfLoop) {
@@ -312,7 +312,7 @@ TYPED_TEST_P(FloydWarshallGTest, testGetDistanceDirectedGraphWithNegativeSelfLoo
     typename TestFixture::FloydWarshallT test(graph);
     test.run();
     constexpr edgeweight expectedDistance{-std::numeric_limits<edgeweight>::infinity()};
-    EXPECT_THAT(this->distancesFromGetDistance(test, graph.numberOfNodes()),
+    EXPECT_THAT(this->distancesFromGetDistance(test, graph.upperNodeIdBound()),
                 testing::Each(testing::Each(expectedDistance)));
 }
 
@@ -320,7 +320,7 @@ TYPED_TEST_P(FloydWarshallGTest, testIsNodeInNegativeCycleDirectedGraphWithNegat
     auto graph = this->directedGraphWithNegativeSelfLoop();
     typename TestFixture::FloydWarshallT test(graph);
     test.run();
-    EXPECT_THAT(this->negativeCycleFlags(test, graph.numberOfNodes()), testing::Each(true));
+    EXPECT_THAT(this->negativeCycleFlags(test, graph.upperNodeIdBound()), testing::Each(true));
 }
 
 TYPED_TEST_P(FloydWarshallGTest, testMultipleShortestDistancePaths) {
