@@ -4,7 +4,6 @@
  *  Created on: 05.01.2025
  *      Author: Andreas Scharf (andreas.b.scharf@gmail.com)
  */
-#include <cmath>
 #include <stdexcept>
 
 #include <gtest/gtest.h>
@@ -33,120 +32,115 @@ public:
 
     static constexpr int maxNumberOfNodes{10};
 
-    GraphType graphWithNodes(count numNodes) {
+    GraphType graphWithNodes(NodeT numNodes) {
         return GraphType(numNodes, TestT::weighted, false, true);
     }
 
-    GraphType pathGraph(count numNodes) {
+    GraphType pathGraph(NodeT numNodes) {
         GraphType graph = graphWithNodes(numNodes);
-        for (count i = 0; i < numNodes - 1; ++i) {
-            graph.addEdge(static_cast<NodeT>(i), static_cast<NodeT>(i + 1));
+        for (NodeT i = 0; i < numNodes - 1; ++i) {
+            graph.addEdge(i, i + 1);
         }
         return graph;
     }
 
-    GraphType cycleGraph(count numNodes) {
+    GraphType cycleGraph(NodeT numNodes) {
         GraphType graph = graphWithNodes(numNodes);
-        for (count i = 0; i < numNodes - 1; ++i) {
-            graph.addEdge(static_cast<NodeT>(i), static_cast<NodeT>(i + 1));
-        }
-        if (numNodes > 2)
-            graph.addEdge(static_cast<NodeT>(numNodes - 2), NodeT{0});
-        return graph;
-    }
-
-    GraphType starGraph(count numNodes) {
-        GraphType graph = graphWithNodes(numNodes);
-        for (count i = 0; i < numNodes - 1; ++i) {
-            graph.addEdge(static_cast<NodeT>(i), static_cast<NodeT>(i + 1));
+        for (NodeT i = 0; i < numNodes - 1; ++i) {
+            graph.addEdge(i, i + 1);
         }
         if (numNodes > 2)
-            graph.addEdge(static_cast<NodeT>(numNodes - 2), NodeT{0});
+            graph.addEdge(numNodes - 2, NodeT{0});
         return graph;
     }
 
-    GraphType binaryTreeGraph(count numNodes) {
+    GraphType starGraph(NodeT numNodes) {
         GraphType graph = graphWithNodes(numNodes);
-        for (count i = 0; i < numNodes; ++i) {
-            count leftChild = 2 * i + 1;
-            count rightChild = 2 * i + 2;
+        for (NodeT i = 0; i < numNodes - 1; ++i) {
+            graph.addEdge(i, i + 1);
+        }
+        if (numNodes > 2)
+            graph.addEdge(numNodes - 2, NodeT{0});
+        return graph;
+    }
+
+    GraphType binaryTreeGraph(NodeT numNodes) {
+        GraphType graph = graphWithNodes(numNodes);
+        for (NodeT i = 0; i < numNodes; ++i) {
+            const NodeT leftChild = 2 * i + 1;
+            const NodeT rightChild = 2 * i + 2;
             if (leftChild < numNodes) {
-                graph.addEdge(static_cast<NodeT>(i), static_cast<NodeT>(leftChild),
-                              static_cast<EdgeWeightT>(i));
+                graph.addEdge(i, leftChild, static_cast<EdgeWeightT>(i));
             }
             if (rightChild < numNodes) {
-                graph.addEdge(static_cast<NodeT>(i), static_cast<NodeT>(rightChild),
-                              static_cast<EdgeWeightT>(i));
+                graph.addEdge(i, rightChild, static_cast<EdgeWeightT>(i));
             }
         }
         return graph;
     }
 
-    GraphType wheelGraph(count numNodes) {
+    GraphType wheelGraph(NodeT numNodes) {
         GraphType graph = graphWithNodes(numNodes);
         if (numNodes < 4) {
             throw std::invalid_argument("A wheel graph requires at least 4 nodes.");
         }
         // Form cycle
-        for (count i = 1; i < numNodes - 1; ++i) {
-            graph.addEdge(static_cast<NodeT>(i), static_cast<NodeT>(i + 1));
+        for (NodeT i = 1; i < numNodes - 1; ++i) {
+            graph.addEdge(i, i + 1);
         }
-        graph.addEdge(static_cast<NodeT>(numNodes - 1), NodeT{1}); // Close the cycle
+        graph.addEdge(numNodes - 1, NodeT{1}); // Close the cycle
 
         // Connect center to cycle
-        for (count i = 1; i < numNodes; ++i) {
-            graph.addEdge(NodeT{0}, static_cast<NodeT>(i));
+        for (NodeT i = 1; i < numNodes; ++i) {
+            graph.addEdge(NodeT{0}, i);
         }
         return graph;
     }
 
-    GraphType completeGraph(count numNodes) {
+    GraphType completeGraph(NodeT numNodes) {
         GraphType graph = graphWithNodes(numNodes);
 
-        for (count i = 0; i < numNodes; ++i) {
-            for (count j = i + 1; j < numNodes; ++j) {
-                graph.addEdge(static_cast<NodeT>(i), static_cast<NodeT>(j),
-                              static_cast<EdgeWeightT>(j * (j + 1)));
+        for (NodeT i = 0; i < numNodes; ++i) {
+            for (NodeT j = i + 1; j < numNodes; ++j) {
+                graph.addEdge(i, j, static_cast<EdgeWeightT>(j * (j + 1)));
             }
         }
         return graph;
     }
 
-    GraphType gridGraph(count rows, count columns) {
+    GraphType gridGraph(NodeT rows, NodeT columns) {
         GraphType graph = graphWithNodes(rows * columns);
-        for (count row = 0; row < rows; ++row) {
-            for (count col = 0; col < columns; ++col) {
-                count currentNode = row * columns + col;
+        for (NodeT row = 0; row < rows; ++row) {
+            for (NodeT col = 0; col < columns; ++col) {
+                const NodeT currentNode = row * columns + col;
 
                 // Connect to the right neighbor
                 if (col + 1 < columns) {
-                    graph.addEdge(static_cast<NodeT>(currentNode),
-                                  static_cast<NodeT>(currentNode + 1));
+                    graph.addEdge(currentNode, currentNode + 1);
                 }
 
                 // Connect to the bottom neighbor
                 if (row + 1 < rows) {
-                    graph.addEdge(static_cast<NodeT>(currentNode),
-                                  static_cast<NodeT>(currentNode + columns));
+                    graph.addEdge(currentNode, currentNode + columns);
                 }
             }
         }
         return graph;
     }
 
-    GraphType petersenGraph(count n, count k) {
+    GraphType petersenGraph(NodeT n, NodeT k) {
         GraphType graph = graphWithNodes(2 * n);
 
-        for (count i = 0; i < n; ++i) {
-            graph.addEdge(static_cast<NodeT>(i), static_cast<NodeT>((i + 1) % n));
+        for (NodeT i = 0; i < n; ++i) {
+            graph.addEdge(i, (i + 1) % n);
         }
 
-        for (count i = 0; i < n; ++i) {
-            graph.addEdge(static_cast<NodeT>(n + i), static_cast<NodeT>(n + (i + k) % n));
+        for (NodeT i = 0; i < n; ++i) {
+            graph.addEdge(n + i, n + (i + k) % n);
         }
 
-        for (count i = 0; i < n; ++i) {
-            graph.addEdge(static_cast<NodeT>(i), static_cast<NodeT>(n + i));
+        for (NodeT i = 0; i < n; ++i) {
+            graph.addEdge(i, n + i);
         }
         return graph;
     }
@@ -211,7 +205,9 @@ TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testPlanarSingleNode) {
 }
 
 TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testPlanarPathGraphs) {
-    for (count numberOfNodes = 2; numberOfNodes <= TestFixture::maxNumberOfNodes; ++numberOfNodes) {
+    using NodeT = typename TestFixture::NodeT;
+
+    for (NodeT numberOfNodes = 2; numberOfNodes <= TestFixture::maxNumberOfNodes; ++numberOfNodes) {
         typename TestFixture::GraphType graph = this->pathGraph(numberOfNodes);
         typename TestFixture::PlanarityCheck test(graph);
         test.run();
@@ -220,7 +216,9 @@ TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testPlanarPathGraphs) {
 }
 
 TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testPlanarCycleGraphs) {
-    for (count numberOfNodes = 2; numberOfNodes <= TestFixture::maxNumberOfNodes; ++numberOfNodes) {
+    using NodeT = typename TestFixture::NodeT;
+
+    for (NodeT numberOfNodes = 2; numberOfNodes <= TestFixture::maxNumberOfNodes; ++numberOfNodes) {
         typename TestFixture::GraphType graph = this->cycleGraph(numberOfNodes);
         typename TestFixture::PlanarityCheck test(graph);
         test.run();
@@ -229,7 +227,9 @@ TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testPlanarCycleGraphs) {
 }
 
 TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testPlanarStarGraphs) {
-    for (count numberOfNodes = 2; numberOfNodes <= TestFixture::maxNumberOfNodes; ++numberOfNodes) {
+    using NodeT = typename TestFixture::NodeT;
+
+    for (NodeT numberOfNodes = 2; numberOfNodes <= TestFixture::maxNumberOfNodes; ++numberOfNodes) {
         typename TestFixture::GraphType graph = this->starGraph(numberOfNodes);
         typename TestFixture::PlanarityCheck test(graph);
         test.run();
@@ -238,7 +238,9 @@ TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testPlanarStarGraphs) {
 }
 
 TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testPlanarTreeGraphs) {
-    for (count numberOfNodes = 2; numberOfNodes <= TestFixture::maxNumberOfNodes; ++numberOfNodes) {
+    using NodeT = typename TestFixture::NodeT;
+
+    for (NodeT numberOfNodes = 2; numberOfNodes <= TestFixture::maxNumberOfNodes; ++numberOfNodes) {
         typename TestFixture::GraphType graph = this->binaryTreeGraph(numberOfNodes);
         typename TestFixture::PlanarityCheck test(graph);
         test.run();
@@ -247,7 +249,9 @@ TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testPlanarTreeGraphs) {
 }
 
 TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testPlanarWheelGraphs) {
-    for (count numberOfNodes = 4; numberOfNodes <= TestFixture::maxNumberOfNodes; ++numberOfNodes) {
+    using NodeT = typename TestFixture::NodeT;
+
+    for (NodeT numberOfNodes = 4; numberOfNodes <= TestFixture::maxNumberOfNodes; ++numberOfNodes) {
         typename TestFixture::GraphType graph = this->wheelGraph(numberOfNodes);
         typename TestFixture::PlanarityCheck test(graph);
         test.run();
@@ -256,8 +260,10 @@ TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testPlanarWheelGraphs) {
 }
 
 TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testPlanarCompleteGraphs) {
-    constexpr count maxNumberPlanar{5};
-    for (count numberOfNodes = 2; numberOfNodes < maxNumberPlanar; ++numberOfNodes) {
+    using NodeT = typename TestFixture::NodeT;
+
+    constexpr NodeT maxNumberPlanar{5};
+    for (NodeT numberOfNodes = 2; numberOfNodes < maxNumberPlanar; ++numberOfNodes) {
         typename TestFixture::GraphType graph = this->completeGraph(numberOfNodes);
         typename TestFixture::PlanarityCheck test(graph);
         test.run();
@@ -266,7 +272,9 @@ TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testPlanarCompleteGraphs) {
 }
 
 TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testNonPlanarCompleteGraphsEulerCriterium) {
-    for (count numberOfNodes = 5; numberOfNodes <= TestFixture::maxNumberOfNodes; ++numberOfNodes) {
+    using NodeT = typename TestFixture::NodeT;
+
+    for (NodeT numberOfNodes = 5; numberOfNodes <= TestFixture::maxNumberOfNodes; ++numberOfNodes) {
         typename TestFixture::GraphType graph = this->completeGraph(numberOfNodes);
         typename TestFixture::PlanarityCheck test(graph);
         test.run();
@@ -275,8 +283,10 @@ TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testNonPlanarCompleteGraphsEuler
 }
 
 TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testPlanarGridGraphs) {
-    for (count numberOfRows = 2; numberOfRows < TestFixture::maxNumberOfNodes / 2; ++numberOfRows) {
-        for (count numberOfColumns = 2; numberOfColumns < TestFixture::maxNumberOfNodes / 2;
+    using NodeT = typename TestFixture::NodeT;
+
+    for (NodeT numberOfRows = 2; numberOfRows < TestFixture::maxNumberOfNodes / 2; ++numberOfRows) {
+        for (NodeT numberOfColumns = 2; numberOfColumns < TestFixture::maxNumberOfNodes / 2;
              ++numberOfColumns) {
             typename TestFixture::GraphType graph = this->gridGraph(numberOfRows, numberOfColumns);
             typename TestFixture::PlanarityCheck test(graph);
@@ -370,8 +380,10 @@ TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testOnePlanarOneNonPlanarSubGrap
 }
 
 TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testPlanarPetersenGraphs) {
-    for (count n = 3; n < TestFixture::maxNumberOfNodes; ++n) {
-        for (count k = 1; k <= std::floor(n / 2); ++k) {
+    using NodeT = typename TestFixture::NodeT;
+
+    for (NodeT n = 3; n < TestFixture::maxNumberOfNodes; ++n) {
+        for (NodeT k = 1; k <= n / 2; ++k) {
             const bool isPlanarPetersenGraph = k == 1 || (k == 2 && !(n & 1));
             if (isPlanarPetersenGraph) {
                 typename TestFixture::GraphType graph = this->petersenGraph(n, k);
@@ -384,8 +396,10 @@ TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testPlanarPetersenGraphs) {
 }
 
 TYPED_TEST(GenericLeftRightPlanarityCheckGTest, testNonPlanarPetersenGraphs) {
-    for (count n = 3; n < TestFixture::maxNumberOfNodes; ++n) {
-        for (count k = 1; k <= std::floor(n / 2); ++k) {
+    using NodeT = typename TestFixture::NodeT;
+
+    for (NodeT n = 3; n < TestFixture::maxNumberOfNodes; ++n) {
+        for (NodeT k = 1; k <= n / 2; ++k) {
             const bool isNonPlanarPetersenGraph = !(k == 1 || (k == 2 && !(n & 1)));
             if (isNonPlanarPetersenGraph) {
                 typename TestFixture::GraphType graph = this->petersenGraph(n, k);
