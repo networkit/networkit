@@ -9,6 +9,8 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <limits>
+#include <ostream>
 
 #include <tlx/define/likely.hpp>
 #include <tlx/math/clz.hpp>
@@ -32,7 +34,15 @@ struct Header {
     uint64_t offsetAdjIdTranspose{};
 };
 
-enum class WeightFormat : int { NONE = 0, VARINT = 1, SIGNED_VARINT = 2, DOUBLE = 3, FLOAT = 4 };
+enum class WeightFormat : int {
+    NONE = 0,
+    VARINT = 1,
+    SIGNED_VARINT = 2,
+    DOUBLE = 3,
+    FLOAT = 4,
+    FIXED_UNSIGNED = 5,
+    FIXED_SIGNED = 6
+};
 
 using WEIGHT_FORMAT = WeightFormat; // enum alias for backwards compatibility
 
@@ -42,6 +52,52 @@ static constexpr uint64_t WGHT_MASK = 0xE;  // bit 1-3
 static constexpr uint64_t WGHT_SHIFT = 0x1;
 static constexpr uint64_t INDEX_MASK = 0x10; // bit 4
 static constexpr uint64_t INDEX_SHIFT = 0x4;
+static constexpr uint64_t NODE_TYPE_WIDTH_MASK = 0x60; // bit 5-6
+static constexpr uint64_t NODE_TYPE_WIDTH_SHIFT = 0x5;
+static constexpr uint64_t WEIGHT_TYPE_WIDTH_MASK = 0x180; // bit 7-8
+static constexpr uint64_t WEIGHT_TYPE_WIDTH_SHIFT = 0x7;
+static constexpr uint64_t TABLE_WIDTH_MASK = 0x600; // bit 9-10
+static constexpr uint64_t TABLE_WIDTH_SHIFT = 0x9;
+
+inline uint8_t widthCode(uint8_t bytes) noexcept {
+    return bytes <= 1 ? 0 : bytes <= 2 ? 1 : bytes <= 4 ? 2 : 3;
+}
+
+inline uint8_t widthBytes(uint8_t code) noexcept {
+    return static_cast<uint8_t>(1u << code);
+}
+
+inline uint8_t widthBytesFor(uint64_t value) noexcept {
+    if (value <= std::numeric_limits<uint8_t>::max())
+        return 1;
+    if (value <= std::numeric_limits<uint16_t>::max())
+        return 2;
+    if (value <= std::numeric_limits<uint32_t>::max())
+        return 4;
+    return 8;
+}
+
+inline void writeUint(std::ostream &out, uint64_t value, uint8_t bytes) {
+    for (uint8_t i = 0; i < bytes; ++i) {
+        const auto byte = static_cast<uint8_t>((value >> (i * 8)) & 0xFF);
+        out.write(reinterpret_cast<const char *>(&byte), sizeof(byte));
+    }
+}
+
+inline uint64_t readUint(const char *&it, uint8_t bytes) noexcept {
+    uint64_t value = 0;
+    for (uint8_t i = 0; i < bytes; ++i)
+        value |= static_cast<uint64_t>(static_cast<uint8_t>(it[i])) << (i * 8);
+    it += bytes;
+    return value;
+}
+
+inline uint64_t readUintAt(const char *it, uint8_t bytes) noexcept {
+    uint64_t value = 0;
+    for (uint8_t i = 0; i < bytes; ++i)
+        value |= static_cast<uint64_t>(static_cast<uint8_t>(it[i])) << (i * 8);
+    return value;
+}
 
 /**
  * Serializes value into a buffer and returns the number of bytes written.

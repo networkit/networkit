@@ -25,7 +25,7 @@ struct Header {
 };
 ```
 - magic: A constant value used to identify the file format version.
-    - The current version is '*nkbg004*' which supports weighted, undirected and directed graphs.
+    - The current version is '*nkbg005*' which supports weighted, undirected and directed graphs.
 - checksum: Currently not used
 - features: Contains the graph information bitwise
     - Bit 0 : directed or undirected
@@ -35,7 +35,13 @@ struct Header {
         - 2 = Weights are signed integers
         - 3 = Weights are doubles
         - 4 = Weights are floats
+        - 5 = Weights are fixed-width unsigned integers (v5)
+        - 6 = Weights are fixed-width signed integers (v5)
     - Bit 4 = edge indices are present
+    - Bit 5-6 = graph node type width stored as a width code in v5 files
+    - Bit 7-8 = graph edge-weight type width stored as a width code in v5 files
+    - Bit 9-10 = chunk metadata table width stored as a width code in v5 files
+    - v5 width codes are: 0 = 1 byte, 1 = 2 bytes, 2 = 4 bytes, 3 = 8 bytes
 - nodes : The number of nodes the graph has
 - chunks: The number of chunks the nodes have been divided in
 - offsetBaseData: Offset of base data in the file 
@@ -53,6 +59,7 @@ Base data
 ```
 uint64_t nodeFlags[nodes]: Flags storing information about a node
 uint64_t firstVertex[chunks-1]: The index of the first vertex of each chunk excluding the first chunk
+    - v5 stores these entries with the chunk metadata table width from the features field
 ```
 Adjacency lists
 -----------------
@@ -60,6 +67,7 @@ Adjacency lists
 uint64_t nrOfEdges: the total number of edges in the block
 uint64_t offset[chunks-1]: Offset of the file where the adjacency list of 
 the firstVertex of each chunk relative to data starts
+    - v5 stores `nrOfEdges` and `offset` entries with the chunk metadata table width from the features field
 varint data [...]: Varint encoded adjaceny lists  
 ```
 Transpose lists
@@ -68,6 +76,7 @@ Transpose lists
 uint64_t nrOfEdges: the total number of edges in the block
 uint64_t offset[chunks-1]: Offset of the file where the tranpose list of 
 the firstVertex of each chunk relative to data starts
+    - v5 stores `nrOfEdges` and `offset` entries with the chunk metadata table width from the features field
 varint data [...]: Varint encoded transpose lists  
 
 ```
@@ -75,29 +84,35 @@ Weight lists
 --------------------
 ```
 uint64_t offset[chunks-1]: Offset of the file where the weights are
+    - v5 stores `offset` entries with the chunk metadata table width from the features field
 Depending on the type of weights:
  - unsigned/signed weights: varint data [...]: Varint encoded weight lists
  - double weights: double data [...]: Weight lists as doubles
  - float weights: float data [...]: Weight lists as floats
+ - fixed-width integer weights: integer data [...]: Weight lists stored with the edge-weight type width from the features field
 ```
 Weight transpose
 --------------------
 ```
 uint64_t offset[chunks-1]: Offset of the file where the transposed weights are
+    - v5 stores `offset` entries with the chunk metadata table width from the features field
 Depending on the type of weights:
  - unsigned/signed weights: varint data [...]: Varint encoded weight lists
  - double weights: double data [...]: Weight lists as doubles
  - float weights: float data [...]: Weight lists as floats
+ - fixed-width integer weights: integer data [...]: Weight lists stored with the edge-weight type width from the features field
 ```
 Index lists
 --------------------
 ```
 uint64_t offset[chunks-1]: Offset of the file where the indices are
+    - v5 stores `offset` entries with the chunk metadata table width from the features field
 varint data [...]: Varint encoded weight lists
 ```
 Index transpose
 --------------------
 ```
 uint64_t offset[chunks-1]: Offset of the file where the transposed indices are:
+    - v5 stores `offset` entries with the chunk metadata table width from the features field
 varint data [...]: Varint encoded index lists
 ```

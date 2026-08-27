@@ -892,6 +892,82 @@ TEST_F(IOGTest, testNetworkitBinaryTiny01InMemory) {
     G.forNodes([&](node u) { G.forEdgesOf(u, [&](node v) { ASSERT_TRUE(G2.hasEdge(u, v)); }); });
 }
 
+TEST_F(IOGTest, testNetworkitBinaryAdjListGraphTemplateInMemory) {
+    using SmallGraph = AdjListGraph<uint32_t, float>;
+
+    SmallGraph G(6, true, true);
+    G.addEdge(0, 1, 1.25f);
+    G.addEdge(2, 4, -3.5f);
+    G.addEdge(4, 2, 7.0f);
+    G.addEdge(5, 5, 2.0f);
+    G.indexEdges();
+
+    NetworkitBinaryWriter writer(4, NetworkitBinaryWeights::AUTO_DETECT);
+    const auto data = writer.writeToBuffer(G);
+
+    ASSERT_EQ(0, std::memcmp(data.data(), "nkbg005", 8));
+    uint64_t features;
+    std::memcpy(&features, data.data() + 2 * sizeof(uint64_t), sizeof(uint64_t));
+    EXPECT_EQ(nkbg::widthCode(sizeof(SmallGraph::NodeT)),
+              (features & nkbg::NODE_TYPE_WIDTH_MASK) >> nkbg::NODE_TYPE_WIDTH_SHIFT);
+    EXPECT_EQ(nkbg::widthCode(sizeof(SmallGraph::EdgeWeightT)),
+              (features & nkbg::WEIGHT_TYPE_WIDTH_MASK) >> nkbg::WEIGHT_TYPE_WIDTH_SHIFT);
+
+    NetworkitBinaryReader reader;
+    const SmallGraph G2 = reader.readFromBuffer<SmallGraph>(data);
+    EXPECT_TRUE(G2.isDirected());
+    EXPECT_TRUE(G2.isWeighted());
+    EXPECT_TRUE(G2.hasEdgeIds());
+    ASSERT_EQ(G.numberOfNodes(), G2.numberOfNodes());
+    ASSERT_EQ(G.numberOfEdges(), G2.numberOfEdges());
+    G.forEdges([&](uint32_t u, uint32_t v, float w) {
+        ASSERT_TRUE(G2.hasEdge(u, v));
+        EXPECT_EQ(w, G2.weight(u, v));
+        EXPECT_EQ(G.edgeId(u, v), G2.edgeId(u, v));
+    });
+}
+
+TEST_F(IOGTest, testNetworkitBinaryUsesCompactV5TableWidth) {
+    AdjListGraph<uint16_t, uint16_t> G(8, false, false);
+    G.addEdge(0, 1);
+    G.addEdge(2, 3);
+    G.addEdge(4, 5);
+    G.addEdge(6, 7);
+
+    NetworkitBinaryWriter writer(8);
+    const auto data = writer.writeToBuffer(G);
+
+    uint64_t features;
+    std::memcpy(&features, data.data() + 2 * sizeof(uint64_t), sizeof(uint64_t));
+    const auto tableWidthCode =
+        (features & nkbg::TABLE_WIDTH_MASK) >> nkbg::TABLE_WIDTH_SHIFT;
+    EXPECT_EQ(nkbg::widthCode(1), tableWidthCode);
+}
+
+TEST_F(IOGTest, testNetworkitBinaryAdjListGraphFixedIntegerWeights) {
+    using SmallGraph = AdjListGraph<uint16_t, int16_t>;
+
+    SmallGraph G(4, true, false);
+    G.addEdge(0, 1, -42);
+    G.addEdge(2, 3, 327);
+
+    NetworkitBinaryWriter writer(4);
+    const auto data = writer.writeToBuffer(G);
+
+    uint64_t features;
+    std::memcpy(&features, data.data() + 2 * sizeof(uint64_t), sizeof(uint64_t));
+    EXPECT_EQ(static_cast<uint64_t>(nkbg::WeightFormat::FIXED_SIGNED),
+              (features & nkbg::WGHT_MASK) >> nkbg::WGHT_SHIFT);
+    EXPECT_EQ(nkbg::widthCode(sizeof(SmallGraph::EdgeWeightT)),
+              (features & nkbg::WEIGHT_TYPE_WIDTH_MASK) >> nkbg::WEIGHT_TYPE_WIDTH_SHIFT);
+
+    NetworkitBinaryReader reader;
+    const SmallGraph G2 = reader.readFromBuffer<SmallGraph>(data);
+    EXPECT_TRUE(G2.isWeighted());
+    EXPECT_EQ(G.weight(0, 1), G2.weight(0, 1));
+    EXPECT_EQ(G.weight(2, 3), G2.weight(2, 3));
+}
+
 TEST_F(IOGTest, testNetworkitBinaryTiny01Indexed) {
     METISGraphReader reader2;
     Graph G = reader2.read("input/tiny_01.graph");
