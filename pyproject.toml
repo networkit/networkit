@@ -46,6 +46,10 @@ repository = "https://github.com/networkit/networkit"
 changelog = "https://github.com/networkit/networkit/blob/master/CHANGES.md"
 
 
+[project.entry-points.'iplotx.network_data_providers']
+networkit = 'networkit.vizbridges:NetworkitIplotxNetworkDataProvider'
+
+
 [build-system]
 requires = [
   "cython",
