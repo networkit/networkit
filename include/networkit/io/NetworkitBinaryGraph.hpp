@@ -34,13 +34,7 @@ struct Header {
     uint64_t offsetAdjIdTranspose{};
 };
 
-enum class WeightFormat : int {
-    NONE = 0,
-    VARINT = 1,
-    SIGNED_VARINT = 2,
-    DOUBLE = 3,
-    FLOAT = 4
-};
+enum class WeightFormat : int { NONE = 0, VARINT = 1, SIGNED_VARINT = 2, DOUBLE = 3, FLOAT = 4 };
 
 using WEIGHT_FORMAT = WeightFormat; // enum alias for backwards compatibility
 

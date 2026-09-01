@@ -118,8 +118,8 @@ AnyBinaryGraph NetworkitBinaryReader::readCompactData(const T &source) {
         const char *weightIt = startIt + header.offsetWeightLists;
         for (uint64_t i = 0; i < weights; ++i) {
             uint64_t encodedWeight;
-            weightOff += nkbg::varIntDecode(
-                reinterpret_cast<const uint8_t *>(weightIt + weightOff), encodedWeight);
+            weightOff += nkbg::varIntDecode(reinterpret_cast<const uint8_t *>(weightIt + weightOff),
+                                            encodedWeight);
             const int64_t weight = nkbg::zigzagDecode(encodedWeight);
             minSignedWeight = std::min(minSignedWeight, weight);
             maxSignedWeight = std::max(maxSignedWeight, weight);
@@ -140,11 +140,10 @@ AnyBinaryGraph NetworkitBinaryReader::readCompactData(const T &source) {
 }
 
 template <class T, class NodeT>
-AnyBinaryGraph NetworkitBinaryReader::readCompactDataWithNodeType(const T &source,
-                                                                  nkbg::WeightFormat weightFormat,
-                                                                  int64_t minSignedWeight,
-                                                                  int64_t maxSignedWeight,
-                                                                  uint64_t maxUnsignedWeight) {
+AnyBinaryGraph
+NetworkitBinaryReader::readCompactDataWithNodeType(const T &source, nkbg::WeightFormat weightFormat,
+                                                   int64_t minSignedWeight, int64_t maxSignedWeight,
+                                                   uint64_t maxUnsignedWeight) {
     switch (weightFormat) {
     case nkbg::WeightFormat::VARINT:
     case nkbg::WeightFormat::NONE:
@@ -271,11 +270,13 @@ GraphT NetworkitBinaryReader::readData(const T &source) {
     const char *adjIdIt = (version > 2) ? startIt + header.offsetAdjIdLists : nullptr;
     const char *transpIdIt = (version > 2) ? startIt + header.offsetAdjIdTranspose : nullptr;
     const uint64_t adjListSize = nkbg::readUint(adjIt + (chunks - 1) * tableWidth, tableWidth);
-    const uint64_t transposeListSize =
-        nkbg::readUint(transpIt + (chunks - 1) * tableWidth, tableWidth);
 
-    if (!directed)
+    if (!directed) {
+        const std::optional<uint64_t> transposeListSize =
+            nkbg::readUint(transpIt + (chunks - 1) * tableWidth, tableWidth);
         assert(adjListSize == transposeListSize);
+    }
+
     G.setEdgeCount(unsafe, adjListSize);
 
     std::atomic<count> selfLoops{0};

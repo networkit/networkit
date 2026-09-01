@@ -937,8 +937,7 @@ TEST_F(IOGTest, testNetworkitBinaryUsesCompactV5TableWidth) {
 
     uint64_t features;
     std::memcpy(&features, data.data() + 2 * sizeof(uint64_t), sizeof(uint64_t));
-    const auto tableWidthCode =
-        (features & nkbg::TABLE_WIDTH_MASK) >> nkbg::TABLE_WIDTH_SHIFT;
+    const auto tableWidthCode = (features & nkbg::TABLE_WIDTH_MASK) >> nkbg::TABLE_WIDTH_SHIFT;
     EXPECT_EQ(nkbg::widthCode(1), tableWidthCode);
 }
 
