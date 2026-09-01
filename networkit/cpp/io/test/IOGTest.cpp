@@ -910,8 +910,6 @@ TEST_F(IOGTest, testNetworkitBinaryAdjListGraphTemplateInMemory) {
     std::memcpy(&features, data.data() + 2 * sizeof(uint64_t), sizeof(uint64_t));
     EXPECT_EQ(nkbg::widthCode(sizeof(SmallGraph::NodeT)),
               (features & nkbg::NODE_TYPE_WIDTH_MASK) >> nkbg::NODE_TYPE_WIDTH_SHIFT);
-    EXPECT_EQ(nkbg::widthCode(sizeof(SmallGraph::EdgeWeightT)),
-              (features & nkbg::WEIGHT_TYPE_WIDTH_MASK) >> nkbg::WEIGHT_TYPE_WIDTH_SHIFT);
 
     NetworkitBinaryReader reader;
     const SmallGraph G2 = reader.readFromBuffer<SmallGraph>(data);
@@ -944,7 +942,7 @@ TEST_F(IOGTest, testNetworkitBinaryUsesCompactV5TableWidth) {
     EXPECT_EQ(nkbg::widthCode(1), tableWidthCode);
 }
 
-TEST_F(IOGTest, testNetworkitBinaryAdjListGraphFixedIntegerWeights) {
+TEST_F(IOGTest, testNetworkitBinaryAdjListGraphVarintIntegerWeights) {
     using SmallGraph = AdjListGraph<uint16_t, int16_t>;
 
     SmallGraph G(4, true, false);
@@ -956,16 +954,29 @@ TEST_F(IOGTest, testNetworkitBinaryAdjListGraphFixedIntegerWeights) {
 
     uint64_t features;
     std::memcpy(&features, data.data() + 2 * sizeof(uint64_t), sizeof(uint64_t));
-    EXPECT_EQ(static_cast<uint64_t>(nkbg::WeightFormat::FIXED_SIGNED),
+    EXPECT_EQ(static_cast<uint64_t>(nkbg::WeightFormat::SIGNED_VARINT),
               (features & nkbg::WGHT_MASK) >> nkbg::WGHT_SHIFT);
-    EXPECT_EQ(nkbg::widthCode(sizeof(SmallGraph::EdgeWeightT)),
-              (features & nkbg::WEIGHT_TYPE_WIDTH_MASK) >> nkbg::WEIGHT_TYPE_WIDTH_SHIFT);
 
     NetworkitBinaryReader reader;
     const SmallGraph G2 = reader.readFromBuffer<SmallGraph>(data);
     EXPECT_TRUE(G2.isWeighted());
     EXPECT_EQ(G.weight(0, 1), G2.weight(0, 1));
     EXPECT_EQ(G.weight(2, 3), G2.weight(2, 3));
+
+    AdjListGraph<uint32_t, uint16_t> unsignedG(4, true, false);
+    unsignedG.addEdge(0, 1, 42);
+    unsignedG.addEdge(2, 3, 327);
+
+    const auto unsignedData = writer.writeToBuffer(unsignedG);
+
+    std::memcpy(&features, unsignedData.data() + 2 * sizeof(uint64_t), sizeof(uint64_t));
+    EXPECT_EQ(static_cast<uint64_t>(nkbg::WeightFormat::VARINT),
+              (features & nkbg::WGHT_MASK) >> nkbg::WGHT_SHIFT);
+
+    const auto unsignedG2 = reader.readFromBuffer<AdjListGraph<uint32_t, uint16_t>>(unsignedData);
+    EXPECT_TRUE(unsignedG2.isWeighted());
+    EXPECT_EQ(unsignedG.weight(0, 1), unsignedG2.weight(0, 1));
+    EXPECT_EQ(unsignedG.weight(2, 3), unsignedG2.weight(2, 3));
 }
 
 TEST_F(IOGTest, testNetworkitBinaryTiny01Indexed) {

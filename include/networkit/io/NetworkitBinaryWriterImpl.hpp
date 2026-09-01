@@ -46,8 +46,8 @@ void NetworkitBinaryWriter::writeData(StreamT &outStream, const GraphT &G) {
             return nkbg::WEIGHT_FORMAT::NONE;
 
         if constexpr (std::is_integral_v<EdgeWeightT>) {
-            return std::is_signed_v<EdgeWeightT> ? nkbg::WEIGHT_FORMAT::FIXED_SIGNED
-                                                 : nkbg::WEIGHT_FORMAT::FIXED_UNSIGNED;
+            return std::is_signed_v<EdgeWeightT> ? nkbg::WEIGHT_FORMAT::SIGNED_VARINT
+                                                 : nkbg::WEIGHT_FORMAT::VARINT;
         }
 
         bool isUnsigned = true;
@@ -62,8 +62,7 @@ void NetworkitBinaryWriter::writeData(StreamT &outStream, const GraphT &G) {
                 fitsIntoFloat = false;
         });
         if (fitsIntoInt64)
-            return isUnsigned ? nkbg::WEIGHT_FORMAT::VARINT
-                              : nkbg::WEIGHT_FORMAT::SIGNED_VARINT;
+            return isUnsigned ? nkbg::WEIGHT_FORMAT::VARINT : nkbg::WEIGHT_FORMAT::SIGNED_VARINT;
         return fitsIntoFloat ? nkbg::WEIGHT_FORMAT::FLOAT : nkbg::WEIGHT_FORMAT::DOUBLE;
     };
 
@@ -106,14 +105,10 @@ void NetworkitBinaryWriter::writeData(StreamT &outStream, const GraphT &G) {
         header.features =
             (G.isDirected() & nkbg::DIR_MASK)
             | ((static_cast<uint64_t>(weightFormat) << nkbg::WGHT_SHIFT) & nkbg::WGHT_MASK)
-            | ((static_cast<uint64_t>(preserveEdgeIndex) << nkbg::INDEX_SHIFT)
-               & nkbg::INDEX_MASK)
+            | ((static_cast<uint64_t>(preserveEdgeIndex) << nkbg::INDEX_SHIFT) & nkbg::INDEX_MASK)
             | ((static_cast<uint64_t>(nkbg::widthCode(sizeof(NodeT)))
                 << nkbg::NODE_TYPE_WIDTH_SHIFT)
                & nkbg::NODE_TYPE_WIDTH_MASK)
-            | ((static_cast<uint64_t>(nkbg::widthCode(sizeof(EdgeWeightT)))
-                << nkbg::WEIGHT_TYPE_WIDTH_SHIFT)
-               & nkbg::WEIGHT_TYPE_WIDTH_MASK)
             | ((static_cast<uint64_t>(nkbg::widthCode(tableWidth)) << nkbg::TABLE_WIDTH_SHIFT)
                & nkbg::TABLE_WIDTH_MASK);
     };
@@ -154,13 +149,6 @@ void NetworkitBinaryWriter::writeData(StreamT &outStream, const GraphT &G) {
             float weight = static_cast<float>(w);
             outStream.write(reinterpret_cast<char *>(&weight), sizeof(float));
         } break;
-        case nkbg::WEIGHT_FORMAT::FIXED_UNSIGNED:
-            nkbg::writeUint(outStream, static_cast<uint64_t>(w), sizeof(EdgeWeightT));
-            break;
-        case nkbg::WEIGHT_FORMAT::FIXED_SIGNED:
-            nkbg::writeUint(outStream, static_cast<uint64_t>(static_cast<int64_t>(w)),
-                            sizeof(EdgeWeightT));
-            break;
         case nkbg::WEIGHT_FORMAT::NONE:
             break;
         }
@@ -221,10 +209,6 @@ void NetworkitBinaryWriter::writeData(StreamT &outStream, const GraphT &G) {
             break;
         case nkbg::WEIGHT_FORMAT::FLOAT:
             size = sizeof(float);
-            break;
-        case nkbg::WEIGHT_FORMAT::FIXED_UNSIGNED:
-        case nkbg::WEIGHT_FORMAT::FIXED_SIGNED:
-            size = sizeof(EdgeWeightT);
             break;
         case nkbg::WEIGHT_FORMAT::NONE:
             break;
@@ -303,7 +287,7 @@ void NetworkitBinaryWriter::writeData(StreamT &outStream, const GraphT &G) {
                                   transpWeightSize, adjIndexSize, transpIndexSize});
     }
 
-    const uint8_t tableWidth = nkbg::widthBytesFor(maxTableValue);
+    const uint8_t tableWidth = nkbg::getFitWidthBytes(maxTableValue);
     strncpy(header.magic, FILE_FORMAT, 8);
     header.checksum = 0;
     setFeatures(tableWidth);

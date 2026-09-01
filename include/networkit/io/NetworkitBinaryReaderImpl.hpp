@@ -73,9 +73,8 @@ GraphT NetworkitBinaryReader::readData(const T &source) {
             indexed = (header.features & nkbg::INDEX_MASK) >> nkbg::INDEX_SHIFT;
         tableWidth = 8;
         if (version >= 5)
-            tableWidth = nkbg::widthBytes(
-                static_cast<uint8_t>((header.features & nkbg::TABLE_WIDTH_MASK)
-                                     >> nkbg::TABLE_WIDTH_SHIFT));
+            tableWidth = nkbg::widthBytes(static_cast<uint8_t>(
+                (header.features & nkbg::TABLE_WIDTH_MASK) >> nkbg::TABLE_WIDTH_SHIFT));
         memcpy(&header.nodes, it, sizeof(uint64_t));
         it += sizeof(uint64_t);
         memcpy(&header.chunks, it, sizeof(uint64_t));
@@ -122,8 +121,10 @@ GraphT NetworkitBinaryReader::readData(const T &source) {
 
     std::vector<uint64_t> firstVert;
     firstVert.push_back(0);
-    for (uint64_t ch = 1; ch < chunks; ch++)
+    for (uint64_t ch = 1; ch < chunks; ch++) {
         firstVert.push_back(nkbg::readUint(baseIt, tableWidth));
+        baseIt += tableWidth;
+    }
     firstVert.push_back(nodes);
 
     const char *adjIt = startIt + header.offsetAdjLists;
@@ -132,10 +133,9 @@ GraphT NetworkitBinaryReader::readData(const T &source) {
     const char *transpWghtIt = startIt + header.offsetWeightTranspose;
     const char *adjIdIt = (version > 2) ? startIt + header.offsetAdjIdLists : nullptr;
     const char *transpIdIt = (version > 2) ? startIt + header.offsetAdjIdTranspose : nullptr;
-    const uint64_t adjListSize =
-        nkbg::readUintAt(adjIt + (chunks - 1) * tableWidth, tableWidth);
+    const uint64_t adjListSize = nkbg::readUint(adjIt + (chunks - 1) * tableWidth, tableWidth);
     const uint64_t transposeListSize =
-        nkbg::readUintAt(transpIt + (chunks - 1) * tableWidth, tableWidth);
+        nkbg::readUint(transpIt + (chunks - 1) * tableWidth, tableWidth);
 
     if (!directed)
         assert(adjListSize == transposeListSize);
@@ -143,20 +143,6 @@ GraphT NetworkitBinaryReader::readData(const T &source) {
 
     std::atomic<count> selfLoops{0};
     edgeid omega = 0;
-    const uint8_t weightTypeWidth =
-        version >= 5 ? nkbg::widthBytes(static_cast<uint8_t>(
-                           (header.features & nkbg::WEIGHT_TYPE_WIDTH_MASK)
-                           >> nkbg::WEIGHT_TYPE_WIDTH_SHIFT))
-                     : sizeof(edgeweight);
-
-    auto signExtend = [](uint64_t value, uint8_t bytes) -> int64_t {
-        if (bytes >= 8)
-            return static_cast<int64_t>(value);
-        const uint64_t signBit = uint64_t{1} << (bytes * 8 - 1);
-        if (value & signBit)
-            value |= ~((uint64_t{1} << (bytes * 8)) - 1);
-        return static_cast<int64_t>(value);
-    };
 
     auto constructGraph = [&](uint64_t c) {
         const NodeT vertex = static_cast<NodeT>(firstVert[c]);
@@ -167,14 +153,13 @@ GraphT NetworkitBinaryReader::readData(const T &source) {
         uint64_t indexOff = 0;
         uint64_t transIndexOff = 0;
         if (vertex) {
-            off = nkbg::readUintAt(adjIt + (c - 1) * tableWidth, tableWidth);
-            transpOff = nkbg::readUintAt(transpIt + (c - 1) * tableWidth, tableWidth);
-            wghtOff = nkbg::readUintAt(adjWghtIt + (c - 1) * tableWidth, tableWidth);
-            transWghtOff = nkbg::readUintAt(transpWghtIt + (c - 1) * tableWidth, tableWidth);
+            off = nkbg::readUint(adjIt + (c - 1) * tableWidth, tableWidth);
+            transpOff = nkbg::readUint(transpIt + (c - 1) * tableWidth, tableWidth);
+            wghtOff = nkbg::readUint(adjWghtIt + (c - 1) * tableWidth, tableWidth);
+            transWghtOff = nkbg::readUint(transpWghtIt + (c - 1) * tableWidth, tableWidth);
             if (indexed) {
-                indexOff = nkbg::readUintAt(adjIdIt + (c - 1) * tableWidth, tableWidth);
-                transIndexOff =
-                    nkbg::readUintAt(transpIdIt + (c - 1) * tableWidth, tableWidth);
+                indexOff = nkbg::readUint(adjIdIt + (c - 1) * tableWidth, tableWidth);
+                transIndexOff = nkbg::readUint(transpIdIt + (c - 1) * tableWidth, tableWidth);
             }
         }
 
@@ -200,10 +185,6 @@ GraphT NetworkitBinaryReader::readData(const T &source) {
             case nkbg::WeightFormat::FLOAT:
                 wghtOff += sizeof(float);
                 break;
-            case nkbg::WeightFormat::FIXED_UNSIGNED:
-            case nkbg::WeightFormat::FIXED_SIGNED:
-                wghtOff += weightTypeWidth;
-                break;
             case nkbg::WeightFormat::NONE:
                 break;
             }
@@ -222,10 +203,6 @@ GraphT NetworkitBinaryReader::readData(const T &source) {
                 break;
             case nkbg::WeightFormat::FLOAT:
                 transWghtOff += sizeof(float);
-                break;
-            case nkbg::WeightFormat::FIXED_UNSIGNED:
-            case nkbg::WeightFormat::FIXED_SIGNED:
-                transWghtOff += weightTypeWidth;
                 break;
             case nkbg::WeightFormat::NONE:
                 break;
@@ -275,17 +252,6 @@ GraphT NetworkitBinaryReader::readData(const T &source) {
                 wghtOff += sizeof(float);
                 weight = static_cast<EdgeWeightT>(floatWeight);
             } break;
-            case nkbg::WeightFormat::FIXED_UNSIGNED: {
-                const char *weightIt = adjWghtIt + wghtOff;
-                weight = static_cast<EdgeWeightT>(nkbg::readUint(weightIt, weightTypeWidth));
-                wghtOff += weightTypeWidth;
-            } break;
-            case nkbg::WeightFormat::FIXED_SIGNED: {
-                const char *weightIt = adjWghtIt + wghtOff;
-                weight = static_cast<EdgeWeightT>(
-                    signExtend(nkbg::readUint(weightIt, weightTypeWidth), weightTypeWidth));
-                wghtOff += weightTypeWidth;
-            } break;
             case nkbg::WeightFormat::NONE:
                 break;
             }
@@ -298,8 +264,7 @@ GraphT NetworkitBinaryReader::readData(const T &source) {
             case nkbg::WeightFormat::VARINT: {
                 uint64_t unsignedWeight;
                 transWghtOff += nkbg::varIntDecode(
-                    reinterpret_cast<const uint8_t *>(transpWghtIt + transWghtOff),
-                    unsignedWeight);
+                    reinterpret_cast<const uint8_t *>(transpWghtIt + transWghtOff), unsignedWeight);
                 weight = static_cast<EdgeWeightT>(unsignedWeight);
             } break;
             case nkbg::WeightFormat::DOUBLE: {
@@ -311,8 +276,7 @@ GraphT NetworkitBinaryReader::readData(const T &source) {
             case nkbg::WeightFormat::SIGNED_VARINT: {
                 uint64_t unsignedWeight;
                 transWghtOff += nkbg::varIntDecode(
-                    reinterpret_cast<const uint8_t *>(transpWghtIt + transWghtOff),
-                    unsignedWeight);
+                    reinterpret_cast<const uint8_t *>(transpWghtIt + transWghtOff), unsignedWeight);
                 weight = static_cast<EdgeWeightT>(nkbg::zigzagDecode(unsignedWeight));
             } break;
             case nkbg::WeightFormat::FLOAT: {
@@ -320,17 +284,6 @@ GraphT NetworkitBinaryReader::readData(const T &source) {
                 memcpy(&floatWeight, transpWghtIt + transWghtOff, sizeof(float));
                 transWghtOff += sizeof(float);
                 weight = static_cast<EdgeWeightT>(floatWeight);
-            } break;
-            case nkbg::WeightFormat::FIXED_UNSIGNED: {
-                const char *weightIt = transpWghtIt + transWghtOff;
-                weight = static_cast<EdgeWeightT>(nkbg::readUint(weightIt, weightTypeWidth));
-                transWghtOff += weightTypeWidth;
-            } break;
-            case nkbg::WeightFormat::FIXED_SIGNED: {
-                const char *weightIt = transpWghtIt + transWghtOff;
-                weight = static_cast<EdgeWeightT>(
-                    signExtend(nkbg::readUint(weightIt, weightTypeWidth), weightTypeWidth));
-                transWghtOff += weightTypeWidth;
             } break;
             case nkbg::WeightFormat::NONE:
                 break;
@@ -374,8 +327,8 @@ GraphT NetworkitBinaryReader::readData(const T &source) {
                 off += nkbg::varIntDecode(reinterpret_cast<const uint8_t *>(adjIt + off), add);
                 const EdgeWeightT weight = readAdjWeight();
                 if (indexed) {
-                    indexOff +=
-                        nkbg::varIntDecode(reinterpret_cast<const uint8_t *>(adjIdIt + indexOff), id);
+                    indexOff += nkbg::varIntDecode(
+                        reinterpret_cast<const uint8_t *>(adjIdIt + indexOff), id);
                     if (id > omega)
                         omega = id;
                 }

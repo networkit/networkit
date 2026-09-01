@@ -35,11 +35,8 @@ struct Header {
         - 2 = Weights are signed integers
         - 3 = Weights are doubles
         - 4 = Weights are floats
-        - 5 = Weights are fixed-width unsigned integers (v5)
-        - 6 = Weights are fixed-width signed integers (v5)
     - Bit 4 = edge indices are present
     - Bit 5-6 = graph node type width stored as a width code in v5 files
-    - Bit 7-8 = graph edge-weight type width stored as a width code in v5 files
     - Bit 9-10 = chunk metadata table width stored as a width code in v5 files
     - v5 width codes are: 0 = 1 byte, 1 = 2 bytes, 2 = 4 bytes, 3 = 8 bytes
 - nodes : The number of nodes the graph has
@@ -89,7 +86,6 @@ Depending on the type of weights:
  - unsigned/signed weights: varint data [...]: Varint encoded weight lists
  - double weights: double data [...]: Weight lists as doubles
  - float weights: float data [...]: Weight lists as floats
- - fixed-width integer weights: integer data [...]: Weight lists stored with the edge-weight type width from the features field
 ```
 Weight transpose
 --------------------
@@ -100,7 +96,6 @@ Depending on the type of weights:
  - unsigned/signed weights: varint data [...]: Varint encoded weight lists
  - double weights: double data [...]: Weight lists as doubles
  - float weights: float data [...]: Weight lists as floats
- - fixed-width integer weights: integer data [...]: Weight lists stored with the edge-weight type width from the features field
 ```
 Index lists
 --------------------
