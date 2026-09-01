@@ -979,6 +979,36 @@ TEST_F(IOGTest, testNetworkitBinaryAdjListGraphVarintIntegerWeights) {
     EXPECT_EQ(unsignedG.weight(2, 3), unsignedG2.weight(2, 3));
 }
 
+TEST_F(IOGTest, testNetworkitBinaryReadCompact) {
+    NetworkitBinaryWriter writer(4);
+    NetworkitBinaryReader reader;
+
+    using CompactUnsignedGraph = AdjListGraph<uint16_t, uint8_t>;
+    CompactUnsignedGraph unsignedG(300, true, false);
+    unsignedG.addEdge(0, 299, 200);
+
+    writer.write(unsignedG, "output/binary_compact_unsigned");
+    const auto compactUnsigned = reader.readCompact("output/binary_compact_unsigned");
+    ASSERT_TRUE(std::holds_alternative<CompactUnsignedGraph>(compactUnsigned));
+    const auto &unsignedG2 = std::get<CompactUnsignedGraph>(compactUnsigned);
+    EXPECT_EQ(unsignedG.numberOfNodes(), unsignedG2.numberOfNodes());
+    EXPECT_EQ(unsignedG.weight(0, 299), unsignedG2.weight(0, 299));
+
+    using SignedGraph = AdjListGraph<uint16_t, int16_t>;
+    SignedGraph signedG(4, true, false);
+    signedG.addEdge(0, 1, -42);
+    signedG.addEdge(2, 3, 327);
+
+    writer.write(signedG, "output/binary_compact_signed");
+    const auto compactSigned = reader.readCompact("output/binary_compact_signed");
+    using CompactSignedGraph = AdjListGraph<uint8_t, int16_t>;
+    ASSERT_TRUE(std::holds_alternative<CompactSignedGraph>(compactSigned));
+    const auto &signedG2 = std::get<CompactSignedGraph>(compactSigned);
+    EXPECT_EQ(signedG.numberOfNodes(), signedG2.numberOfNodes());
+    EXPECT_EQ(signedG.weight(0, 1), signedG2.weight(0, 1));
+    EXPECT_EQ(signedG.weight(2, 3), signedG2.weight(2, 3));
+}
+
 TEST_F(IOGTest, testNetworkitBinaryTiny01Indexed) {
     METISGraphReader reader2;
     Graph G = reader2.read("input/tiny_01.graph");
