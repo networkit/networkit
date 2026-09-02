@@ -514,7 +514,7 @@ if (NETWORKIT_BUILD_TESTS)
 		endif()
 
 		if(WIN32)
-			set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /wd4996")
+			set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /wd4996 /bigobj")
 		else()
 			set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} -Wno-deprecated-declarations")
 		endif()
