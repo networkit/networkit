@@ -49,21 +49,11 @@ void NetworkitBinaryWriter::writeData(StreamT &outStream, const GraphT &G) {
             return std::is_signed_v<EdgeWeightT> ? nkbg::WEIGHT_FORMAT::SIGNED_VARINT
                                                  : nkbg::WEIGHT_FORMAT::VARINT;
         }
-
-        bool isUnsigned = true;
-        bool fitsIntoInt64 = true;
-        bool fitsIntoFloat = true;
-        G.forEdges([&](NodeT, NodeT, EdgeWeightT w) {
-            if (w < 0)
-                isUnsigned = false;
-            if (w != static_cast<int64_t>(w))
-                fitsIntoInt64 = false;
-            if (w != static_cast<float>(w))
-                fitsIntoFloat = false;
-        });
-        if (fitsIntoInt64)
-            return isUnsigned ? nkbg::WEIGHT_FORMAT::VARINT : nkbg::WEIGHT_FORMAT::SIGNED_VARINT;
-        return fitsIntoFloat ? nkbg::WEIGHT_FORMAT::FLOAT : nkbg::WEIGHT_FORMAT::DOUBLE;
+        if constexpr (std::is_floating_point_v<EdgeWeightT>) {
+            return std::is_same_v<EdgeWeightT, float> ? nkbg::WEIGHT_FORMAT::FLOAT
+                                                      : nkbg::WEIGHT_FORMAT::DOUBLE;
+        }
+        throw std::runtime_error("Unsupported NetworkitBinaryGraph weight type");
     };
 
     switch (weightsType) {
