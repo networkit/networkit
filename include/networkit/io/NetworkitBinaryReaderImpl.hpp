@@ -272,7 +272,7 @@ GraphT NetworkitBinaryReader::readData(const T &source) {
     const uint64_t adjListSize = nkbg::readUint(adjIt + (chunks - 1) * tableWidth, tableWidth);
 
     if (!directed) {
-        const std::optional<uint64_t> transposeListSize =
+        [[maybe_unused]] const uint64_t transposeListSize =
             nkbg::readUint(transpIt + (chunks - 1) * tableWidth, tableWidth);
         assert(adjListSize == transposeListSize);
     }
