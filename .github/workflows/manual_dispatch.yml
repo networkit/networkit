@@ -29,13 +29,18 @@ jobs:
           CIBW_BEFORE_BUILD: pip install cython auditwheel --upgrade
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: 'cp314-*'
+          CIBW_BUILD: 'cp314-* cp315-*'
           CIBW_SKIP: "pp* *-musllinux_*"
           CIBW_TEST_COMMAND: python3 -c 'import networkit'
       - uses: actions/upload-artifact@v4
         with:
           name: 'linux-${{ matrix.cibw_archs }}-cp314-${{ github.run_id }}'
           path: ./wheelhouse/*cp314*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp315-${{ github.run_id }}'
+          path: ./wheelhouse/*cp315*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-linux-aarch64:
@@ -64,12 +69,17 @@ jobs:
           CIBW_MANYLINUX_AARCH64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
           CIBW_PLATFORM: ${{ 'linux' }}
-          CIBW_BUILD: 'cp314-*'
+          CIBW_BUILD: 'cp314-* cp315-*'
           CIBW_SKIP: "*-musllinux_*"
       - uses: actions/upload-artifact@v4
         with:
           name: 'linux-${{ matrix.cibw_archs }}-cp314-${{ github.run_id }}'
           path: ./wheelhouse/*cp314*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp315-${{ github.run_id }}'
+          path: ./wheelhouse/*cp315*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-macos:
@@ -94,7 +104,7 @@ jobs:
             pip install cython &&
             brew install libomp ninja
           CIBW_ARCHS_MACOS: ${{ matrix.buildplat[1] }}
-          CIBW_BUILD: 'cp314-*'
+          CIBW_BUILD: 'cp314-* cp315-*'
           CIBW_SKIP: "pp* *-musllinux_*"
           CIBW_TEST_COMMAND: python3 -c 'import networkit'
           CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET='26.0'
@@ -104,7 +114,11 @@ jobs:
           name: 'macos-${{ matrix.buildplat[1] }}-cp314-${{ github.run_id }}'
           path: ./wheelhouse/*cp314*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
-
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'macos-${{ matrix.buildplat[1] }}-cp315-${{ github.run_id }}'
+          path: ./wheelhouse/*cp315*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
 
   cpython-windows:
     name: 'Windows CPython (${{ matrix.cibw_archs }})'
@@ -127,11 +141,16 @@ jobs:
         env:
           CIBW_BEFORE_BUILD: pip install cython ipython
           CIBW_ARCHS: "AMD64"
-          CIBW_BUILD: 'cp314-*'
+          CIBW_BUILD: 'cp314-* cp315-*'
           CIBW_SKIP: pp*
           CIBW_TEST_COMMAND: python -c "import networkit"
       - uses: actions/upload-artifact@v4
         with:
           name: 'win-${{ matrix.cibw_archs }}-cp314-${{ github.run_id }}'
           path: ./wheelhouse/*cp314*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'win-${{ matrix.cibw_archs }}-cp315-${{ github.run_id }}'
+          path: ./wheelhouse/*cp315*.whl
           retention-days: ${{ env.ARTIFACT_RETENTION }}
