@@ -48,7 +48,7 @@ changelog = "https://github.com/networkit/networkit/blob/master/CHANGES.md"
 
 [build-system]
 requires = [
-  "cython",
+  "cython<3.3.0",
   "numpy",
   "setuptools",
   "wheel"
