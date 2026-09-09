@@ -27,32 +27,6 @@ namespace NetworKit {
 
 class VF2GTest : public testing::Test {};
 
-TEST_F(VF2GTest, dummyTest) {
-
-    Graph target = Graph(6);
-
-    target.addEdge(0, 1);
-    target.addEdge(1, 2);
-    target.addEdge(2, 0);
-
-    target.addEdge(3, 4);
-    target.addEdge(4, 5);
-    target.addEdge(5, 3);
-
-    target.addEdge(2, 3);
-
-    Graph pattern = Graph(3);
-
-    pattern.addEdge(0, 1);
-    pattern.addEdge(1, 2);
-    pattern.addEdge(2, 0);
-
-    VF2 vf = VF2(pattern, target);
-    vf.run();
-    EXPECT_TRUE(vf.hasMatch());
-    EXPECT_EQ(vf.numberOfMatches(), 12);
-}
-
 TEST_F(VF2GTest, testExceptionWhenBadlyCollapsed) {
 
     // Target badly collapsed

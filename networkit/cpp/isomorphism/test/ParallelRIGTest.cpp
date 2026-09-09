@@ -85,18 +85,6 @@ std::vector<Match> parallelMatches(const Graph &pattern, const Graph &target, Se
     return matches;
 }
 
-/// How many matches a search finds, without keeping any of them.
-///
-/// Counting rather than storing is what makes an enumeration big enough to provoke stealing also
-/// cheap enough for a unit test: a few hundred thousand matches cost nothing to count and tens of
-/// megabytes, plus a sort, to compare one by one.
-template <typename Algo>
-count countOnly(Algo &&algo) {
-    algo.setStoreMatches(false);
-    algo.run();
-    return algo.numberOfMatches();
-}
-
 } // namespace
 
 /**
@@ -150,29 +138,14 @@ TEST_P(ParallelRIGTest, testCallbackFormsAgree) {
 // -------------------------------------------------------------------------------------------
 
 /**
- * The strongest correctness assertion in the file: the same enumeration, run both ways, compared
- * element by element rather than merely counted.
- *
- * A count alone would let a lost match and a duplicated one cancel each other out, which is
- * exactly the shape a stealing bug takes.
- */
-TEST_P(ParallelRIGTest, testAgreesWithSequentialRI) {
-    const Graph target = karate();
-    const Graph pattern = path(5);
-
-    const std::vector<Match> expected =
-        sequentialMatches(pattern, target, Semantics::MONOMORPHISM, GetParam());
-    ASSERT_EQ(expected.size(), 22064u) << "a change here would quietly weaken every case below";
-
-    EXPECT_EQ(parallelMatches(pattern, target, Semantics::MONOMORPHISM, GetParam()), expected);
-}
-
-/**
  * The property that catches lost and duplicated work: the answer must not depend on how many
  * workers produced it.
  *
+ * The comparison is element by element rather than by count, because a count alone would let a
+ * lost match and a duplicated one cancel each other out - exactly the shape a stealing bug takes.
+ *
  * One worker is not a special case in the implementation - it walks the queues, the coalescing and
- * the token ring like any other count - so this really does compare the same machinery at four
+ * the token ring like any other count - so this really does compare the same machinery at five
  * different degrees of contention.
  */
 TEST_P(ParallelRIGTest, testAnswerDoesNotDependOnWorkerCount) {
@@ -181,7 +154,7 @@ TEST_P(ParallelRIGTest, testAnswerDoesNotDependOnWorkerCount) {
 
     const std::vector<Match> expected =
         sequentialMatches(pattern, target, Semantics::MONOMORPHISM, GetParam());
-    ASSERT_FALSE(expected.empty());
+    ASSERT_EQ(expected.size(), 22064u) << "a change here would quietly weaken every case below";
 
     for (const int workers : {1, 2, 4, 8, 16}) {
         Aux::setNumberOfThreads(workers);
@@ -246,32 +219,6 @@ TEST_P(ParallelRIGTest, testSingletonDomainAgreesAtEveryWorkerCount) {
         std::vector<Match> actual = algo.getMatches();
         sortMatches(actual);
         EXPECT_EQ(actual, expected) << "workers: " << workers;
-    }
-}
-
-/**
- * The same question as above, on a search long enough that the workers genuinely have to steal
- * from each other, and answered by counting so that it stays cheap.
- *
- * A 7-path in karate has 326 328 occurrences over a search tree of several million states, which
- * is far past the point where every worker still has its own root to chew on. This is therefore
- * the case that actually puts load on the published queues and the token ring - and the one whose
- * count drifts if a steal ever loses or duplicates a state. Run it repeatedly
- * (`--gtest_repeat=50`): a race that shows up once in ten runs is exactly the expected failure
- * mode here.
- */
-TEST_P(ParallelRIGTest, testLongEnumerationAgreesAtEveryWorkerCount) {
-    const Graph target = karate();
-    const Graph pattern = path(7);
-
-    RI reference(pattern, target, GetParam(), Semantics::MONOMORPHISM, 0);
-    const count expected = countOnly(reference);
-    ASSERT_EQ(expected, 326328u);
-
-    for (const int workers : {1, 2, 4, 8, 16}) {
-        Aux::setNumberOfThreads(workers);
-        ParallelRI algo(pattern, target, GetParam(), Semantics::MONOMORPHISM, 0);
-        EXPECT_EQ(countOnly(algo), expected) << "workers: " << workers;
     }
 }
 

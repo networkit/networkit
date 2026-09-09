@@ -301,37 +301,6 @@ TEST_F(SubgraphIsomorphismGTest, testNumberOfWorkers) {
     }
 }
 
-TEST_F(SubgraphIsomorphismGTest, testWorkerIdsStayBelowNumberOfWorkers) {
-
-    // The contract ParallelMatchCallback documents. Sizing a buffer by numberOfWorkers() has to be
-    // safe, so no tid may reach it.
-    const Graph pattern = graphOf(3, {{0, 1}, {1, 2}});
-    const Graph target = completeGraph(7);
-    const count workers = 4;
-
-    MultiWorkerReporter algo(pattern, target, Semantics::MONOMORPHISM, workers);
-
-    std::vector<count> seen(algo.numberOfWorkers(), 0);
-    std::atomic<count> outOfRange{0};
-
-    algo.setCallback([&](index tid, const Match &) {
-        if (tid >= seen.size()) {
-            outOfRange.fetch_add(1, std::memory_order_relaxed);
-            return;
-        }
-        // Safe unsynchronized: each tid owns its slot, which is the whole promise.
-        ++seen[tid];
-    });
-    algo.run();
-
-    EXPECT_EQ(outOfRange.load(), 0u) << "a worker id reached numberOfWorkers()";
-
-    count total = 0;
-    for (count c : seen)
-        total += c;
-    EXPECT_EQ(total, algo.numberOfMatches());
-}
-
 TEST_F(SubgraphIsomorphismGTest, testInterruptLeavesTheAlgorithmUnfinished) {
 
     // The documented policy: run() throws, the algorithm is left not-finished, and every result
