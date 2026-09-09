@@ -19,6 +19,13 @@ void EigenvectorCentrality::run() {
     std::vector<double> values(G.upperNodeIdBound(), 1.0);
     scoreData = values;
 
+    if (G.isEmpty()) {
+        hasRun = true;
+        return;
+    }
+
+    const double uniform = 1.0 / std::sqrt(static_cast<double>(G.numberOfNodes()));
+
     double length = 0.0;
     double oldLength = 0.0;
 
@@ -41,14 +48,19 @@ void EigenvectorCentrality::run() {
         length = G.parallelSumForNodes([&values](node u) { return (values[u] * values[u]); });
         length = std::sqrt(length);
 
-        assert(!Aux::NumericTools::equal(length, 1e-16));
+        if (!(length > 0.0)) {
+            G.parallelForNodes([this, uniform](node u) { scoreData[u] = uniform; });
+            hasRun = true;
+            return;
+        }
+
         G.parallelForNodes([&values, length](node u) { values[u] /= length; });
 
         std::swap(scoreData, values);
     } while (!converged(length, oldLength));
 
     // check sign and correct if necessary
-    if (scoreData[0] < 0) {
+    if (scoreData[*G.nodeRange().begin()] < 0) {
         G.parallelForNodes([&](node u) { scoreData[u] = std::fabs(scoreData[u]); });
     }
 
