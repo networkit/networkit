@@ -105,7 +105,10 @@ INSTANTIATE_TEST_SUITE_P(Variants, RIGTest, testing::Values(RI::Variant::RI, RI:
 // The three assertions the shared harness offers
 // -------------------------------------------------------------------------------------------
 
-TEST_P(RIGTest, testMatchesReference) {
+TEST_P(RIGTest, testAgreesWithTheReference) {
+
+    // The match set, the match cap, and the three callback forms agreeing with each other. One
+    // factory, so all three see exactly the same algorithm at the same variant.
     const RI::Variant variant = GetParam();
     const auto make = [variant](const Graph &pattern, const Graph &target, Semantics semantics,
                                 count maxMatches) {
@@ -114,27 +117,7 @@ TEST_P(RIGTest, testMatchesReference) {
     };
 
     IsomorphismTest::expectMatchesReference(make);
-}
-
-TEST_P(RIGTest, testRespectsMatchCap) {
-    const RI::Variant variant = GetParam();
-    const auto make = [variant](const Graph &pattern, const Graph &target, Semantics semantics,
-                                count maxMatches) {
-        return std::unique_ptr<SubgraphIsomorphism>(
-            new RI(pattern, target, variant, semantics, maxMatches));
-    };
-
     IsomorphismTest::expectRespectsMatchCap(make);
-}
-
-TEST_P(RIGTest, testCallbackFormsAgree) {
-    const RI::Variant variant = GetParam();
-    const auto make = [variant](const Graph &pattern, const Graph &target, Semantics semantics,
-                                count maxMatches) {
-        return std::unique_ptr<SubgraphIsomorphism>(
-            new RI(pattern, target, variant, semantics, maxMatches));
-    };
-
     IsomorphismTest::expectCallbackFormsAgree(make);
 }
 
@@ -199,7 +182,7 @@ TEST_P(RIGTest, testOrderingInvariants) {
 }
 
 /**
- * Two orders small enough to work out by hand, plus the pair that proves the score is three-level.
+ * Orders small enough to work out by hand, checked term by term down the whole ranking key.
  *
  * The eight-node graph is built in the shape of the paper's worked example. At the step that
  * decides between nodes 5 and 0 the two tie on the first term (one arc into the order each) and on
@@ -207,6 +190,10 @@ TEST_P(RIGTest, testOrderingInvariants) {
  * already-ordered node 1 through the still-unordered node 2, while 0 reaches nothing. So 5 coming
  * before 0 is the only direct evidence that the middle term is computed at all - a two-level score
  * would order them the other way round, by node id.
+ *
+ * The last block goes one level further down, to the domain-size key of section 4.2.1 that settles
+ * a tie on the whole triple. It belongs here because it is the same kind of assertion: an order
+ * small enough to read off by hand, arranged so that exactly one term of the key can explain it.
  */
 TEST_P(RIGTest, testOrderingHandTraced) {
     const RI::Variant variant = GetParam();
@@ -235,6 +222,35 @@ TEST_P(RIGTest, testOrderingHandTraced) {
     EXPECT_EQ(worked.order[0], 4u) << "the first node must be the unique maximum-degree node";
     EXPECT_LT(positionOf(worked, 5), positionOf(worked, 0))
         << "node 5 beats node 0 only on the two-hop term";
+
+    // One level further down: a tie on all three terms is settled by the smaller domain. Two
+    // isolated pattern nodes tie on everything - no arcs into the order, no two-hop reach, no
+    // untouched neighbours - so under plain RI the order is node id alone and node 0 wins. Giving
+    // node 1 the rarer label leaves it the smaller domain without making it a singleton, so
+    // flipping the order is the only thing the domain-size key can be doing.
+    const Graph tiedTarget(5);
+    const std::vector<index> tiedTargetLabels{1, 1, 1, 2, 2};
+
+    const Graph tiedPattern(2);
+    const std::vector<index> tiedPatternLabels{1, 2};
+
+    const SearchGraph tiedPatternGraph(tiedPattern, /* buildMatrix = */ true);
+    const SearchGraph tiedTargetGraph(tiedTarget, /* buildMatrix = */ false);
+    const Preprocessed tied(tiedPatternGraph, tiedTargetGraph, tiedPatternLabels, tiedTargetLabels,
+                            variant);
+
+    if (variant == RI::Variant::RI) {
+        EXPECT_EQ(tied.ordering.order, (std::vector<node>{0, 1}))
+            << "with no domains a full tie goes to the smallest node id - erratum 6";
+        return;
+    }
+
+    // Three target nodes can host pattern node 0, two can host pattern node 1. Neither is a
+    // singleton, so the singletons-first rule is not what is being measured here.
+    ASSERT_EQ(tied.domains.ofPatternNode[0].size(), 3u);
+    ASSERT_EQ(tied.domains.ofPatternNode[1].size(), 2u);
+    EXPECT_EQ(tied.ordering.order, (std::vector<node>{1, 0}))
+        << "the tie on all three counts must go to the more constrained node";
 }
 
 // -------------------------------------------------------------------------------------------
@@ -364,8 +380,13 @@ TEST_P(RIGTest, testSelectiveDomainsDoNotChangeTheMatchSet) {
 // -------------------------------------------------------------------------------------------
 
 /**
- * A singleton domain names the only target node its pattern node can take, so injectivity forbids
- * that node to every other pattern node. This asserts the removal happens.
+ * What a singleton domain buys, on both sides of the pipeline: the target node it names is taken
+ * away from every other pattern node, and the pattern node itself opens the matching order.
+ *
+ * The two belong together because they are read off one construction. Section 4.1 says a pattern
+ * node whose domain holds one target node is mapped before any node whose domain is larger, since
+ * its image is already decided and mapping it first constrains everything that follows for free.
+ * Injectivity then forbids that target node to everyone else.
  *
  * The construction keeps the refinement sweep out of it. Pattern node 2 is **isolated**, so it is
  * adjacent to neither of the others and the sweep - which only ever relates adjacent pattern nodes
@@ -373,8 +394,37 @@ TEST_P(RIGTest, testSelectiveDomainsDoNotChangeTheMatchSet) {
  * checking is then the only thing in the pipeline that can take that target node away from nodes 0
  * and 1. The assertion below that target node 2 survives in a domain is what pins that down: it is
  * a neighbour of target node 3, which is exactly the reason the sweep had to keep 3.
+ *
+ * The order is checked over the whole corpus as well, because singletons-first is a hard filter on
+ * the order and so has to hold at every position, not only at the front.
  */
-TEST_P(RIGTest, testForwardCheckingRemovesSingletonImages) {
+TEST_P(RIGTest, testSingletonDomainsAreRemovedAndComeFirst) {
+    const auto expectSingletonsFirst = [](const SearchGraph &pattern, const SearchGraph &target,
+                                          const std::vector<index> &patternNodeLabels,
+                                          const std::vector<index> &targetNodeLabels,
+                                          RI::Variant variant, const char *name) {
+        const Preprocessed prep(pattern, target, patternNodeLabels, targetNodeLabels, variant);
+        if (prep.domains.ofPatternNode.empty())
+            return;
+
+        bool seenLargerDomain = false;
+        for (const node pu : prep.ordering.order) {
+            if (prep.domains.ofPatternNode[pu].size() == 1)
+                EXPECT_FALSE(seenLargerDomain)
+                    << "case: " << name << " - pattern node " << pu
+                    << " has a singleton domain but is ordered after one that does not";
+            else
+                seenLargerDomain = true;
+        }
+    };
+
+    for (const Case &testCase : IsomorphismTest::standardCases()) {
+        const Snapshot snapshot(testCase);
+        expectSingletonsFirst(snapshot.pattern, snapshot.target, testCase.patternNodeLabels,
+                              testCase.targetNodeLabels, GetParam(), testCase.name.c_str());
+    }
+
+    // The corpus is unlabelled, so a singleton only turns up when one is engineered.
     constexpr node unique = 3;
     constexpr index rareLabel = 7;
 
@@ -389,22 +439,32 @@ TEST_P(RIGTest, testForwardCheckingRemovesSingletonImages) {
 
     const SearchGraph patternGraph(pattern, /* buildMatrix = */ true);
     const SearchGraph targetGraph(target, /* buildMatrix = */ false);
-    const RIImpl::Domains domains = RIImpl::computeDomains(
-        patternGraph, targetGraph, patternNodeLabels, targetNodeLabels, GetParam());
+
+    expectSingletonsFirst(patternGraph, targetGraph, patternNodeLabels, targetNodeLabels,
+                          GetParam(), "engineered-singleton");
+
+    const Preprocessed prep(patternGraph, targetGraph, patternNodeLabels, targetNodeLabels,
+                            GetParam());
 
     if (GetParam() == RI::Variant::RI) {
-        EXPECT_TRUE(domains.ofPatternNode.empty()) << "plain RI must build no domains at all";
+        EXPECT_TRUE(prep.domains.ofPatternNode.empty()) << "plain RI must build no domains at all";
+        EXPECT_EQ(prep.ordering.order.front(), 0u)
+            << "plain RI has no domains, so it starts at a maximum-degree node as it always did";
         return;
     }
 
-    EXPECT_FALSE(domains.anyEmpty);
-    EXPECT_EQ(domains.ofPatternNode[2], (std::vector<node>{unique}));
-    EXPECT_EQ(domains.ofPatternNode[0], (std::vector<node>{0, 1, 2, 4, 5}));
-    EXPECT_EQ(domains.ofPatternNode[1], (std::vector<node>{0, 1, 2, 4, 5}));
-    EXPECT_TRUE(std::find(domains.ofPatternNode[1].begin(), domains.ofPatternNode[1].end(), 2u)
-                != domains.ofPatternNode[1].end())
+    const std::vector<std::vector<node>> &domains = prep.domains.ofPatternNode;
+
+    EXPECT_FALSE(prep.domains.anyEmpty);
+    EXPECT_EQ(domains[2], (std::vector<node>{unique}));
+    EXPECT_EQ(domains[0], (std::vector<node>{0, 1, 2, 4, 5}));
+    EXPECT_EQ(domains[1], (std::vector<node>{0, 1, 2, 4, 5}));
+    EXPECT_TRUE(std::find(domains[1].begin(), domains[1].end(), 2u) != domains[1].end())
         << "target node 2 is a neighbour of target node 3, which is why the sweep kept 3 - without "
            "this the removal above could be the sweep's rather than forward checking's";
+
+    EXPECT_EQ(prep.ordering.order.front(), 2u)
+        << "the singleton-domain node must open the order under RI-Ds";
 }
 
 /**
@@ -492,100 +552,6 @@ TEST_P(RIGTest, testForwardCheckingRejectsImpossibleInstances) {
     algo.setNodeLabels(patternNodeLabels, targetNodeLabels);
     algo.run();
     EXPECT_EQ(algo.numberOfMatches(), 0u);
-}
-
-/**
- * Section 4.1: a pattern node whose domain holds one target node is mapped before any node whose
- * domain is larger, because its image is already decided and mapping it first constrains
- * everything that follows for free.
- *
- * Checked over the whole corpus and over a labelled case built to have a singleton, because the
- * rule is a hard filter on the order and so has to hold at every position, not just the first.
- */
-TEST_P(RIGTest, testSingletonDomainsComeFirst) {
-    const auto expectSingletonsFirst = [](const SearchGraph &pattern, const SearchGraph &target,
-                                          const std::vector<index> &patternNodeLabels,
-                                          const std::vector<index> &targetNodeLabels,
-                                          RI::Variant variant, const char *name) {
-        const Preprocessed prep(pattern, target, patternNodeLabels, targetNodeLabels, variant);
-        if (prep.domains.ofPatternNode.empty())
-            return;
-
-        bool seenLargerDomain = false;
-        for (const node pu : prep.ordering.order) {
-            if (prep.domains.ofPatternNode[pu].size() == 1)
-                EXPECT_FALSE(seenLargerDomain)
-                    << "case: " << name << " - pattern node " << pu
-                    << " has a singleton domain but is ordered after one that does not";
-            else
-                seenLargerDomain = true;
-        }
-    };
-
-    for (const Case &testCase : IsomorphismTest::standardCases()) {
-        const Snapshot snapshot(testCase);
-        expectSingletonsFirst(snapshot.pattern, snapshot.target, testCase.patternNodeLabels,
-                              testCase.targetNodeLabels, GetParam(), testCase.name.c_str());
-    }
-
-    // The corpus is unlabelled, so a singleton only turns up when one is engineered. This is the
-    // construction from testForwardCheckingRemovesSingletonImages: pattern node 2 is the singleton
-    // and must be ordered first, ahead of the connected component that would otherwise start.
-    const Graph target = IsomorphismTest::graphOf(6, {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}});
-    std::vector<index> targetNodeLabels(6, 0);
-    targetNodeLabels[3] = 7;
-    const Graph pattern = IsomorphismTest::graphOf(3, {{0, 1}});
-    const std::vector<index> patternNodeLabels{none, none, 7};
-
-    const SearchGraph patternGraph(pattern, /* buildMatrix = */ true);
-    const SearchGraph targetGraph(target, /* buildMatrix = */ false);
-    expectSingletonsFirst(patternGraph, targetGraph, patternNodeLabels, targetNodeLabels,
-                          GetParam(), "engineered-singleton");
-
-    const Preprocessed prep(patternGraph, targetGraph, patternNodeLabels, targetNodeLabels,
-                            GetParam());
-    if (GetParam() == RI::Variant::RI_DS)
-        EXPECT_EQ(prep.ordering.order.front(), 2u)
-            << "the singleton-domain node must open the order under RI-Ds";
-    else
-        EXPECT_EQ(prep.ordering.order.front(), 0u)
-            << "plain RI has no domains, so it starts at a maximum-degree node as it always did";
-}
-
-/**
- * Section 4.2.1: a candidate that ties on the whole triple is settled by the smaller domain.
- *
- * Two isolated pattern nodes tie on all three terms - no arcs into the order, no two-hop reach, no
- * untouched neighbours - so under plain RI the order is decided by node id alone and node 0 wins.
- * Giving node 1 the rarer label leaves it the smaller domain without making it a singleton, so
- * flipping the order is the only thing the domain-size key can be doing. This is the analogue of
- * the "node 5 beats node 0 only on the two-hop term" assertion above, one level further down.
- */
-TEST_P(RIGTest, testDomainSizeBreaksTiesInTheOrdering) {
-    // No edges anywhere, so every node's triple is (0, 0, 0) and only the labels differ.
-    const Graph target(5);
-    const std::vector<index> targetNodeLabels{1, 1, 1, 2, 2};
-
-    const Graph pattern(2);
-    const std::vector<index> patternNodeLabels{1, 2};
-
-    const SearchGraph patternGraph(pattern, /* buildMatrix = */ true);
-    const SearchGraph targetGraph(target, /* buildMatrix = */ false);
-    const Preprocessed prep(patternGraph, targetGraph, patternNodeLabels, targetNodeLabels,
-                            GetParam());
-
-    if (GetParam() == RI::Variant::RI) {
-        EXPECT_EQ(prep.ordering.order, (std::vector<node>{0, 1}))
-            << "with no domains a full tie goes to the smallest node id - erratum 6";
-        return;
-    }
-
-    // Three target nodes can host pattern node 0, two can host pattern node 1. Neither is a
-    // singleton, so the singletons-first rule is not what is being measured here.
-    ASSERT_EQ(prep.domains.ofPatternNode[0].size(), 3u);
-    ASSERT_EQ(prep.domains.ofPatternNode[1].size(), 2u);
-    EXPECT_EQ(prep.ordering.order, (std::vector<node>{1, 0}))
-        << "the tie on all three counts must go to the more constrained node";
 }
 
 // -------------------------------------------------------------------------------------------

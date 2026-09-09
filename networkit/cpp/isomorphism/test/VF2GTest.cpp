@@ -328,33 +328,19 @@ TEST_F(VF2GTest, testTrivialCases) {
     EXPECT_EQ(vf7.getMatches(), std::vector<IsomorphismTest::Match>{});
 }
 
-TEST_F(VF2GTest, testMatchesReference) {
-    auto make = [](const Graph &pattern, const Graph &target,
-                   SubgraphIsomorphism::Semantics semantics, count maxMatches) {
+TEST_F(VF2GTest, testAgreesWithTheReference) {
+
+    // The three differential checks every algorithm in the module has to pass, against the
+    // brute-force reference: the match set itself, the match cap, and the three callback forms
+    // agreeing with each other. One factory, so all three see exactly the same algorithm.
+    const auto make = [](const Graph &pattern, const Graph &target,
+                         SubgraphIsomorphism::Semantics semantics, count maxMatches) {
         return std::unique_ptr<SubgraphIsomorphism>(
             new VF2(pattern, target, semantics, maxMatches));
     };
 
     IsomorphismTest::expectMatchesReference(make);
-}
-
-TEST_F(VF2GTest, testRespectsMatchCap) {
-    auto make = [](const Graph &pattern, const Graph &target,
-                   SubgraphIsomorphism::Semantics semantics, count maxMatches) {
-        return std::unique_ptr<SubgraphIsomorphism>(
-            new VF2(pattern, target, semantics, maxMatches));
-    };
-
     IsomorphismTest::expectRespectsMatchCap(make);
-}
-
-TEST_F(VF2GTest, testCallbackFormsAgree) {
-    auto make = [](const Graph &pattern, const Graph &target,
-                   SubgraphIsomorphism::Semantics semantics, count maxMatches) {
-        return std::unique_ptr<SubgraphIsomorphism>(
-            new VF2(pattern, target, semantics, maxMatches));
-    };
-
     IsomorphismTest::expectCallbackFormsAgree(make);
 }
 

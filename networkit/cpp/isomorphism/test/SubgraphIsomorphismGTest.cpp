@@ -157,32 +157,39 @@ TEST_F(SubgraphIsomorphismGTest, testHarnessDrivesAnAlgorithmThroughTheRunProtoc
     IsomorphismTest::expectCallbackFormsAgree(make);
 }
 
-TEST_F(SubgraphIsomorphismGTest, testSerialCallbackIsNeverEnteredConcurrently) {
+TEST_F(SubgraphIsomorphismGTest, testBothCallbackFormsReceiveEveryMatchOnce) {
 
-    // The guarantee MatchCallback makes, and the one the module got wrong before invokeCallback()
-    // took the lock itself: ParallelRIImpl was handed a "serialize this" flag, but the reporting
-    // call lives inside RIImpl several levels down, which had no way to act on it. ParallelRIGTest
-    // asserts the same thing through the real search; this one pins it to the base class.
+    // The two callback forms differ only in what the base class does before it calls them, so they
+    // are checked on one input, one after the other. The serial form has to be entered by one
+    // worker at a time; the parallel form is entered by each worker directly, with that worker's
+    // id. Both must deliver every match exactly once.
+    //
+    // The serial half is the one the module got wrong before invokeCallback() took the lock
+    // itself: ParallelRIImpl was handed a "serialize this" flag, but the reporting call lives
+    // inside RIImpl several levels down, which had no way to act on it. ParallelRIGTest asserts
+    // the same thing through the real search; this one pins it to the base class.
+    //
     // A 4-path in K8: 8 * 7 * 6 * 5 = 1680 matches, so the four workers really do pile into the
     // callback rather than taking turns by accident.
     const Graph pattern = graphOf(4, {{0, 1}, {1, 2}, {2, 3}});
     const Graph target = completeGraph(8);
+    const count numWorkers = 4;
 
     std::vector<Match> expected = referenceMatches(pattern, target, Semantics::MONOMORPHISM);
     IsomorphismTest::sortMatches(expected);
     ASSERT_EQ(expected.size(), 1680u);
 
-    // The detector: count how many callback invocations are in flight at once. A real user's
-    // callback needs none of this - that is precisely the guarantee. The mutex below belongs to
-    // the test, not to the guarantee: without it, a regression corrupts the heap and aborts
-    // instead of failing an assertion, which is a much worse thing to hand somebody.
+    // The detector for the serial form: count how many callback invocations are in flight at once.
+    // A real user's callback needs none of this - that is precisely the guarantee. The mutex below
+    // belongs to the test, not to the guarantee: without it, a regression corrupts the heap and
+    // aborts instead of failing an assertion, which is a much worse thing to hand somebody.
     std::atomic<int> inside{0};
     std::atomic<int> maxObserved{0};
     std::mutex collectedMutex;
     std::vector<Match> collected;
 
-    MultiWorkerReporter algo(pattern, target, Semantics::MONOMORPHISM, 4);
-    algo.setCallback([&](const Match &match) {
+    MultiWorkerReporter serial(pattern, target, Semantics::MONOMORPHISM, numWorkers);
+    serial.setCallback([&](const Match &match) {
         const int now = inside.fetch_add(1, std::memory_order_acq_rel) + 1;
 
         int previousMax = maxObserved.load(std::memory_order_relaxed);
@@ -197,7 +204,7 @@ TEST_F(SubgraphIsomorphismGTest, testSerialCallbackIsNeverEnteredConcurrently) {
 
         inside.fetch_sub(1, std::memory_order_acq_rel);
     });
-    algo.run();
+    serial.run();
 
     // Verified to catch the real thing: with the lock removed from invokeCallback(), this reports
     // 3 or 4 rather than 1.
@@ -205,50 +212,45 @@ TEST_F(SubgraphIsomorphismGTest, testSerialCallbackIsNeverEnteredConcurrently) {
 
     IsomorphismTest::sortMatches(collected);
     EXPECT_EQ(collected, expected);
-    EXPECT_EQ(algo.numberOfMatches(), expected.size());
-}
+    EXPECT_EQ(serial.numberOfMatches(), expected.size());
 
-TEST_F(SubgraphIsomorphismGTest, testParallelCallbackReceivesEveryMatchOnce) {
-
-    // The other form: invoked directly by each worker with that worker's id, no queueing. Every
-    // match must still arrive exactly once, and every tid must be in range.
-    const Graph pattern = graphOf(4, {{0, 1}, {1, 2}, {2, 3}});
-    const Graph target = completeGraph(8);
-    const count numWorkers = 4;
-
-    std::vector<Match> expected = referenceMatches(pattern, target, Semantics::MONOMORPHISM);
-    IsomorphismTest::sortMatches(expected);
-
+    // Now the parallel form on the same input. No queueing, so the only thing keeping the pushes
+    // below safe is that a tid names one slot and no worker shares it.
     std::vector<std::vector<Match>> perWorker(numWorkers);
 
-    MultiWorkerReporter algo(pattern, target, Semantics::MONOMORPHISM, numWorkers);
-    algo.setCallback([&](index tid, const Match &match) {
+    MultiWorkerReporter parallel(pattern, target, Semantics::MONOMORPHISM, numWorkers);
+    parallel.setCallback([&](index tid, const Match &match) {
         ASSERT_LT(tid, numWorkers);
         perWorker[tid].push_back(match); // no lock needed: each tid owns its slot
     });
-    algo.run();
+    parallel.run();
 
-    std::vector<Match> collected;
+    std::vector<Match> fromWorkers;
     for (const std::vector<Match> &slot : perWorker)
-        collected.insert(collected.end(), slot.begin(), slot.end());
+        fromWorkers.insert(fromWorkers.end(), slot.begin(), slot.end());
 
-    IsomorphismTest::sortMatches(collected);
-    EXPECT_EQ(collected, expected);
-    EXPECT_EQ(algo.numberOfMatches(), expected.size());
+    IsomorphismTest::sortMatches(fromWorkers);
+    EXPECT_EQ(fromWorkers, expected);
+    EXPECT_EQ(parallel.numberOfMatches(), expected.size());
 }
 
-TEST_F(SubgraphIsomorphismGTest, testWorkerBuffersMergeIntoOneResult) {
+TEST_F(SubgraphIsomorphismGTest, testTheAnswerDoesNotDependOnTheWorkerCount) {
+
+    // Three claims about worker counts, all made by sweeping the same range of them, so they are
+    // one test. The merged match set has to be the same at every count. The count survives even
+    // when nothing is stored. And numberOfWorkers() reports what the algorithm declared, both
+    // before and after the run.
+    const Graph pattern = graphOf(2, {{0, 1}});
 
     // With no callback at all, each worker fills its own padded buffer and the merged pair goes to
     // finishRun(). The result must not depend on how many workers produced it.
-    const Graph pattern = graphOf(2, {{0, 1}});
-    const Graph target = graphOf(5, {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 0}});
+    const Graph cycle = graphOf(5, {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 0}});
 
-    std::vector<Match> expected = referenceMatches(pattern, target, Semantics::MONOMORPHISM);
+    std::vector<Match> expected = referenceMatches(pattern, cycle, Semantics::MONOMORPHISM);
     IsomorphismTest::sortMatches(expected);
 
     for (count workers : {count{1}, count{2}, count{4}, count{8}}) {
-        MultiWorkerReporter algo(pattern, target, Semantics::MONOMORPHISM, workers);
+        MultiWorkerReporter algo(pattern, cycle, Semantics::MONOMORPHISM, workers);
         algo.run();
 
         std::vector<Match> actual = algo.getMatches();
@@ -257,36 +259,26 @@ TEST_F(SubgraphIsomorphismGTest, testWorkerBuffersMergeIntoOneResult) {
         EXPECT_EQ(actual, expected) << "workers: " << workers;
         EXPECT_EQ(algo.numberOfMatches(), expected.size()) << "workers: " << workers;
     }
-}
-
-TEST_F(SubgraphIsomorphismGTest, testCountingOnlyStoresNothing) {
 
     // setStoreMatches(false) is what storesMatches() reports to a parallel search, and the whole
     // point is that it then allocates nothing per match. The count must survive regardless.
-    const Graph pattern = graphOf(2, {{0, 1}});
-    const Graph target = completeGraph(6);
-
-    const count expected = referenceMatches(pattern, target, Semantics::MONOMORPHISM).size();
+    const Graph k6 = completeGraph(6);
+    const count expectedCount = referenceMatches(pattern, k6, Semantics::MONOMORPHISM).size();
 
     for (count workers : {count{1}, count{4}}) {
-        MultiWorkerReporter algo(pattern, target, Semantics::MONOMORPHISM, workers);
+        MultiWorkerReporter algo(pattern, k6, Semantics::MONOMORPHISM, workers);
         algo.setStoreMatches(false);
         algo.run();
 
-        EXPECT_EQ(algo.numberOfMatches(), expected) << "workers: " << workers;
+        EXPECT_EQ(algo.numberOfMatches(), expectedCount) << "workers: " << workers;
         EXPECT_TRUE(algo.hasMatch()) << "workers: " << workers;
         EXPECT_THROW(algo.getMatches(), std::runtime_error) << "workers: " << workers;
     }
-}
-
-TEST_F(SubgraphIsomorphismGTest, testNumberOfWorkers) {
-
-    const Graph pattern = graphOf(2, {{0, 1}});
-    const Graph target = completeGraph(5);
 
     // A sequential algorithm reports one worker, before and after the run alike.
-    IsomorphismTest::ReferenceSubgraphIsomorphism sequential(pattern, target,
-                                                             Semantics::MONOMORPHISM);
+    const Graph k5 = completeGraph(5);
+
+    IsomorphismTest::ReferenceSubgraphIsomorphism sequential(pattern, k5, Semantics::MONOMORPHISM);
     EXPECT_EQ(sequential.numberOfWorkers(), 1u);
     sequential.run();
     EXPECT_EQ(sequential.numberOfWorkers(), 1u);
@@ -294,20 +286,25 @@ TEST_F(SubgraphIsomorphismGTest, testNumberOfWorkers) {
     // A parallel one reports what it declared - and the answer is available *before* run(), which
     // is the point: it is what a caller sizes a per-worker accumulator by.
     for (count workers : {count{1}, count{2}, count{4}, count{7}}) {
-        MultiWorkerReporter algo(pattern, target, Semantics::MONOMORPHISM, workers);
+        MultiWorkerReporter algo(pattern, k5, Semantics::MONOMORPHISM, workers);
         EXPECT_EQ(algo.numberOfWorkers(), workers);
         algo.run();
         EXPECT_EQ(algo.numberOfWorkers(), workers);
     }
 }
 
-TEST_F(SubgraphIsomorphismGTest, testInterruptLeavesTheAlgorithmUnfinished) {
+TEST_F(SubgraphIsomorphismGTest, testInterruptLeavesTheAlgorithmUnfinishedButUsable) {
 
-    // The documented policy: run() throws, the algorithm is left not-finished, and every result
-    // accessor throws. Driven by setting the global flag rather than by raising a real SIGINT,
-    // which would be untestable.
+    // Both halves of the interrupt policy, on one input. First what an interrupt does: run()
+    // throws, the algorithm is left not-finished, and every result accessor throws. Then what it
+    // must not do: the object is not poisoned, so a second, clean run gives the full answer.
+    // Driven by setting the global flag rather than by raising a real SIGINT, which would be
+    // untestable.
     const Graph pattern = graphOf(3, {{0, 1}, {1, 2}});
     const Graph target = completeGraph(6);
+
+    std::vector<Match> expected = referenceMatches(pattern, target, Semantics::MONOMORPHISM);
+    IsomorphismTest::sortMatches(expected);
 
     IsomorphismTest::ReferenceSubgraphIsomorphism algo(pattern, target, Semantics::MONOMORPHISM);
 
@@ -327,28 +324,22 @@ TEST_F(SubgraphIsomorphismGTest, testInterruptLeavesTheAlgorithmUnfinished) {
 
     // Matches already handed to the callback stay handed over - a search cannot take them back.
     EXPECT_GE(delivered, 5u);
-}
 
-TEST_F(SubgraphIsomorphismGTest, testAlgorithmRecoversAfterAnInterrupt) {
-
-    // An interrupted object must not be poisoned: a second, clean run has to give the full answer.
-    const Graph pattern = graphOf(3, {{0, 1}, {1, 2}});
-    const Graph target = completeGraph(6);
-
-    std::vector<Match> expected = referenceMatches(pattern, target, Semantics::MONOMORPHISM);
-    IsomorphismTest::sortMatches(expected);
-
-    IsomorphismTest::ReferenceSubgraphIsomorphism algo(pattern, target, Semantics::MONOMORPHISM);
+    // The recovery half, on a second object because a callback turns match storage off and this
+    // part asks for the stored matches. Interrupt it before the search starts, then run it again
+    // cleanly: the whole match set has to come back.
+    IsomorphismTest::ReferenceSubgraphIsomorphism recovering(pattern, target,
+                                                             Semantics::MONOMORPHISM);
 
     GlobalState::setReceivedSIGINT(true);
-    EXPECT_THROW(algo.run(), Aux::SignalHandler::InterruptException);
+    EXPECT_THROW(recovering.run(), Aux::SignalHandler::InterruptException);
     GlobalState::setReceivedSIGINT(false);
-    ASSERT_FALSE(algo.hasFinished());
+    ASSERT_FALSE(recovering.hasFinished());
 
-    algo.run();
+    recovering.run();
 
-    ASSERT_TRUE(algo.hasFinished());
-    std::vector<Match> actual = algo.getMatches();
+    ASSERT_TRUE(recovering.hasFinished());
+    std::vector<Match> actual = recovering.getMatches();
     IsomorphismTest::sortMatches(actual);
     EXPECT_EQ(actual, expected);
 }
@@ -509,6 +500,7 @@ TEST_F(SubgraphIsomorphismGTest, testRunRechecksNodeLabelSizes) {
     VF2 algo(pattern, target, Semantics::MONOMORPHISM);
     algo.setNodeLabels({1, 1}, {1, 1, 1});
     ASSERT_NO_THROW(algo.run());
+    ASSERT_GT(algo.numberOfMatches(), 0u);
 
     // The label vector was sized against the target as it was. One more node and it is short,
     // which without the recheck is a read past its end rather than an error.
@@ -517,7 +509,11 @@ TEST_F(SubgraphIsomorphismGTest, testRunRechecksNodeLabelSizes) {
 
     EXPECT_THROW(algo.run(), std::runtime_error)
         << "a node added after setNodeLabels() leaves the label vector short";
+
+    // The recheck runs after the reset on purpose: a rejected run must not hand back the matches
+    // of the run before it.
     EXPECT_FALSE(algo.hasFinished());
+    EXPECT_THROW(algo.getMatches(), std::runtime_error);
 
     // Re-supplying the labels at the new size is all it takes to make the run legal again.
     algo.setNodeLabels({1, 1}, {1, 1, 1, 1});
@@ -554,25 +550,6 @@ TEST_F(SubgraphIsomorphismGTest, testRunRechecksEdgeLabelSizes) {
     algo.setEdgeLabels(pattern.edgeLabels, grown);
     EXPECT_NO_THROW(algo.run());
     EXPECT_TRUE(algo.hasFinished());
-}
-
-TEST_F(SubgraphIsomorphismGTest, testRunRechecksLeaveNothingQueryableWhenTheyFire) {
-
-    const Graph pattern = graphOf(2, {{0, 1}});
-    Graph target = graphOf(3, {{0, 1}, {1, 2}});
-
-    VF2 algo(pattern, target, Semantics::MONOMORPHISM);
-    algo.setNodeLabels({1, 1}, {1, 1, 1});
-    ASSERT_NO_THROW(algo.run());
-    ASSERT_GT(algo.numberOfMatches(), 0u);
-
-    target.addNode();
-    ASSERT_THROW(algo.run(), std::runtime_error);
-
-    // The recheck runs after the reset on purpose: a rejected run must not hand back the matches
-    // of the run before it.
-    EXPECT_FALSE(algo.hasFinished());
-    EXPECT_THROW(algo.getMatches(), std::runtime_error);
 }
 
 } // namespace NetworKit

@@ -119,18 +119,16 @@ INSTANTIATE_TEST_SUITE_P(Variants, ParallelRIGTest,
 // The three assertions the shared harness offers
 // -------------------------------------------------------------------------------------------
 
-TEST_P(ParallelRIGTest, testMatchesReference) {
-    IsomorphismTest::expectMatchesReference(parallelFactory(GetParam()));
-}
+TEST_P(ParallelRIGTest, testAgreesWithTheReference) {
 
-TEST_P(ParallelRIGTest, testRespectsMatchCap) {
-    IsomorphismTest::expectRespectsMatchCap(parallelFactory(GetParam()));
-}
+    // The match set, the match cap, and the three callback forms. The last of those is the first
+    // real exercise of SubgraphIsomorphism::invokeCallback()'s mutex: a serial MatchCallback must
+    // see every match exactly once even though several workers produce them.
+    const auto make = parallelFactory(GetParam());
 
-TEST_P(ParallelRIGTest, testCallbackFormsAgree) {
-    // The first real exercise of SubgraphIsomorphism::invokeCallback()'s mutex: a serial
-    // MatchCallback must see every match exactly once even though several workers produce them.
-    IsomorphismTest::expectCallbackFormsAgree(parallelFactory(GetParam()));
+    IsomorphismTest::expectMatchesReference(make);
+    IsomorphismTest::expectRespectsMatchCap(make);
+    IsomorphismTest::expectCallbackFormsAgree(make);
 }
 
 // -------------------------------------------------------------------------------------------
@@ -223,13 +221,22 @@ TEST_P(ParallelRIGTest, testSingletonDomainAgreesAtEveryWorkerCount) {
 }
 
 /**
- * Duplication and loss told apart, which comparing sets cannot do.
+ * Duplication and loss told apart, which comparing sets cannot do, and the worker id contract that
+ * makes telling them apart possible at all.
  *
  * The per-worker slots are merged into one sequence and sorted, so the comparison is between
  * multisets: a match reported twice makes the sequence longer, a match lost makes it shorter, and
  * either way the two sequences stop being equal.
+ *
+ * Sizing those slots from numberOfWorkers() is the whole reason that accessor is public, and the
+ * reason the worker count is asked for once inside run() rather than re-read per match. A worker
+ * id outside [0, numberOfWorkers()) would make every documented per-worker accumulator write out
+ * of bounds, so the id is checked on every match rather than assumed. The thread count is pinned
+ * first, so the number the accessor reports is one this test chose.
  */
 TEST_P(ParallelRIGTest, testEveryMatchIsReportedExactlyOnce) {
+    Aux::setNumberOfThreads(4);
+
     const Graph target = karate();
     const Graph pattern = triangle();
 
@@ -238,9 +245,12 @@ TEST_P(ParallelRIGTest, testEveryMatchIsReportedExactlyOnce) {
     ASSERT_EQ(expected.size(), 270u) << "karate's triangle count is what pins this case";
 
     ParallelRI algo(pattern, target, GetParam(), Semantics::MONOMORPHISM, 0);
+    ASSERT_EQ(algo.numberOfWorkers(), 4u);
+
     std::vector<std::vector<Match>> perWorker(algo.numberOfWorkers());
     algo.setCallback([&](index tid, const Match &match) {
-        ASSERT_LT(tid, perWorker.size());
+        ASSERT_LT(tid, perWorker.size()) << "a worker id outside [0, numberOfWorkers()) would make "
+                                            "every documented per-worker accumulator unsafe";
         perWorker[tid].push_back(match);
     });
     algo.run();
@@ -354,44 +364,6 @@ TEST_P(ParallelRIGTest, testInterruptStopsEveryWorker) {
     const std::vector<Match> expected =
         sequentialMatches(pattern, target, Semantics::MONOMORPHISM, GetParam());
     EXPECT_EQ(parallelMatches(pattern, target, Semantics::MONOMORPHISM, GetParam()), expected);
-}
-
-// -------------------------------------------------------------------------------------------
-// The contract numberOfWorkers() exists for
-// -------------------------------------------------------------------------------------------
-
-/**
- * A worker id handed to a ParallelMatchCallback must be a valid index into a vector sized by
- * numberOfWorkers().
- *
- * That is the entire reason the accessor is public, and the reason the number of workers is asked
- * for once inside run() rather than re-read per match: a caller that sized its accumulator from it
- * would otherwise be writing out of bounds.
- */
-TEST_P(ParallelRIGTest, testWorkerIdsStayBelowNumberOfWorkers) {
-    Aux::setNumberOfThreads(4);
-
-    const Graph target = karate();
-    const Graph pattern = triangle();
-
-    ParallelRI algo(pattern, target, GetParam(), Semantics::MONOMORPHISM, 0);
-    const count workers = algo.numberOfWorkers();
-    ASSERT_EQ(workers, 4u);
-
-    std::vector<std::vector<Match>> perWorker(workers);
-    algo.setCallback([&](index tid, const Match &match) {
-        ASSERT_LT(tid, perWorker.size()) << "a worker id outside [0, numberOfWorkers()) would make "
-                                            "every documented per-worker accumulator unsafe";
-        perWorker[tid].push_back(match);
-    });
-    algo.run();
-
-    count total = 0;
-    for (const std::vector<Match> &slot : perWorker)
-        total += slot.size();
-
-    EXPECT_EQ(total, algo.numberOfMatches())
-        << "every match has to arrive in exactly one worker's slot";
 }
 
 } // namespace NetworKit
