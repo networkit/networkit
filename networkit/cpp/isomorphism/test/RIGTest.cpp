@@ -245,9 +245,9 @@ TEST_P(RIGTest, testOrderingHandTraced) {
  * The corpus is far too small for a domain to prune, so RI-Ds is effectively untested by it.
  *
  * Domains are pure pruning, so any divergence between the variants is an unsound domain - the
- * refinement sweep removed a target node a real match needs. The absolute count is pinned the way
- * ReferenceMatcherGTest does it, against ChibaNishizeki's per-edge triangle counts, which is an
- * independent check from a part of NetworKit that has nothing to do with this module.
+ * refinement sweep removed a target node a real match needs. The absolute count is pinned against
+ * ChibaNishizeki's per-edge triangle counts, which is an independent check from a part of
+ * NetworKit that has nothing to do with this module.
  */
 TEST_P(RIGTest, testVariantsAgreeOnKarate) {
     METISGraphReader reader;

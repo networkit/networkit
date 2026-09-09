@@ -411,40 +411,39 @@ TEST_F(SubgraphIsomorphismGTest, testSetEdgeLabelsValidatesItsInput) {
     EXPECT_NO_THROW(algo.setEdgeLabels({}, {}));
 }
 
-TEST_F(SubgraphIsomorphismGTest, testAlgorithmsThatCannotHonourEdgeLabelsRefuseThem) {
+TEST_F(SubgraphIsomorphismGTest, testEdgeLabelsAreEitherHonouredOrRefused) {
 
-    // The module's rule, judged here rather than in either algorithm's own test file because it
-    // applies to every driver: refuse edge labels outright in the algorithms that will not
-    // understand them. Silently returning matches that violate an edge label the caller asked for
-    // is the one failure worse than refusing.
+    // The module's rule, judged here rather than in any one algorithm's own test file because it
+    // applies to every driver: an algorithm either honours the edge labels it was given or refuses
+    // them outright. Silently returning matches that violate an edge label the caller asked for is
+    // the one failure worse than refusing.
     const IsomorphismTest::LabelledGraph pattern =
         IsomorphismTest::labelledGraphOf(3, {{0, 1, 1}, {1, 2, 2}});
     const IsomorphismTest::LabelledGraph target =
         IsomorphismTest::labelledGraphOf(4, {{0, 1, 1}, {1, 2, 2}, {2, 3, 1}});
 
-    VF2 vf2(pattern.G, target.G, Semantics::MONOMORPHISM);
-    vf2.setEdgeLabels(pattern.edgeLabels, target.edgeLabels);
-    EXPECT_THROW(vf2.run(), std::runtime_error);
-    EXPECT_FALSE(vf2.hasFinished()) << "a refused run must not count as finished";
-
+    // The refusing side is VF3 alone. Its search is still unwritten, so honouring a label is not
+    // something it could do even if it tried.
     VF3 vf3(pattern.G, target.G, Semantics::MONOMORPHISM);
     vf3.setEdgeLabels(pattern.edgeLabels, target.edgeLabels);
     EXPECT_THROW(vf3.run(), std::runtime_error);
     EXPECT_FALSE(vf3.hasFinished()) << "a refused run must not count as finished";
 
-    // Without edge labels both are back to whatever they did before. VF2 answers; VF3's search is
-    // still unwritten and says so with a logic_error, which is a different failure from a refusal.
-    VF2 unlabelled(pattern.G, target.G, Semantics::MONOMORPHISM);
-    EXPECT_NO_THROW(unlabelled.run());
-    EXPECT_TRUE(unlabelled.hasFinished());
-
-    // The mirror assertion: an algorithm that does understand edge labels must not refuse them.
-    // RI and ParallelRI honour them, so they answer - and answer the labelled question, not the
-    // unlabelled one, which is why the count is compared against the reference rather than merely
-    // being nonzero.
+    // The honouring side is VF2, RI and ParallelRI. Each must answer the labelled question, not
+    // the unlabelled one, which is why every count is compared against the reference rather than
+    // merely being nonzero.
     const count labelled = referenceMatches(pattern.G, target.G, Semantics::MONOMORPHISM, {}, {},
                                             pattern.edgeLabels, target.edgeLabels)
                                .size();
+    const count unlabelled = referenceMatches(pattern.G, target.G, Semantics::MONOMORPHISM).size();
+    ASSERT_LT(labelled, unlabelled) << "the labels must rule some match out, or the comparison "
+                                       "below cannot tell an honoured label from an ignored one";
+
+    VF2 vf2(pattern.G, target.G, Semantics::MONOMORPHISM);
+    vf2.setEdgeLabels(pattern.edgeLabels, target.edgeLabels);
+    EXPECT_NO_THROW(vf2.run());
+    EXPECT_TRUE(vf2.hasFinished());
+    EXPECT_EQ(vf2.numberOfMatches(), labelled);
 
     RI ri(pattern.G, target.G, RI::Variant::RI, Semantics::MONOMORPHISM);
     ri.setEdgeLabels(pattern.edgeLabels, target.edgeLabels);
@@ -457,6 +456,13 @@ TEST_F(SubgraphIsomorphismGTest, testAlgorithmsThatCannotHonourEdgeLabelsRefuseT
     EXPECT_NO_THROW(parallelRi.run());
     EXPECT_TRUE(parallelRi.hasFinished());
     EXPECT_EQ(parallelRi.numberOfMatches(), labelled);
+
+    // Passing no labels at all must still reach the larger answer, so the labelled count above is
+    // a restriction the search applied and not a search that lost matches for another reason.
+    VF2 vf2Unlabelled(pattern.G, target.G, Semantics::MONOMORPHISM);
+    EXPECT_NO_THROW(vf2Unlabelled.run());
+    EXPECT_TRUE(vf2Unlabelled.hasFinished());
+    EXPECT_EQ(vf2Unlabelled.numberOfMatches(), unlabelled);
 }
 
 TEST_F(SubgraphIsomorphismGTest, testParallelEdgesWithDisagreeingLabelsAreRefused) {
