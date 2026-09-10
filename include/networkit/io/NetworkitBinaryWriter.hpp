@@ -48,10 +48,9 @@ enum class NetworkitBinaryEdgeIDs : int {
  *
  * 	Note
  *  ----
- * A new version 4 is slated for an upcoming release (time of statement: February 2026). This
- * version supports writing/reading graphs with deleted nodes. As with version 3, all networks
- * written with the new code are automatically upgraded to the newest version 4. If you want to
- * use v4 right away, you can use nightly builds (see Readme on github).
+ * Version 5 supports writing/reading templated AdjListGraph instances and stores compact chunk
+ * metadata tables according to the required bit width. All networks written with this writer are
+ * automatically upgraded to the newest version 5.
  *
  */
 class NetworkitBinaryWriter final : public GraphWriter {
@@ -62,18 +61,24 @@ public:
                           NetworkitBinaryEdgeIDs edgeIndex = NetworkitBinaryEdgeIDs::AUTO_DETECT);
 
     void write(const Graph &G, std::string_view path) override;
+    template <class GraphT>
+    void write(const GraphT &G, std::string_view path);
     std::vector<uint8_t> writeToBuffer(const Graph &G);
+    template <class GraphT>
+    std::vector<uint8_t> writeToBuffer(const GraphT &G);
 
 private:
-    static constexpr const char *FILE_FORMAT = "nkbg004";
+    static constexpr const char *FILE_FORMAT = "nkbg005";
     count chunks;
     NetworkitBinaryWeights weightsType;
     NetworkitBinaryEdgeIDs edgeIndex;
     bool preserveEdgeIndex;
-    template <class T>
-    void writeData(T &outStream, const Graph &G);
+    template <class StreamT, class GraphT>
+    void writeData(StreamT &outStream, const GraphT &G);
 };
 
 } // namespace NetworKit
+
+#include <networkit/io/NetworkitBinaryWriterImpl.hpp>
 
 #endif // NETWORKIT_IO_NETWORKIT_BINARY_WRITER_HPP_
