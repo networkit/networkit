@@ -145,4 +145,29 @@ TEST_F(TopologicalSortGTest, testNonInjectiveNodeIdMapping) {
     mapping[2] = 1;
     EXPECT_THROW(TopologicalSort(G, mapping, true), std::runtime_error);
 }
+
+TEST_F(TopologicalSortGTest, testGenericTopologicalSort) {
+    using NodeT = uint32_t;
+    using WeightT = float;
+    using GraphT = AdjListGraph<NodeT, WeightT>;
+
+    GraphT G(5, false, true);
+    G.addEdge(NodeT{0}, NodeT{1});
+    G.addEdge(NodeT{0}, NodeT{2});
+    G.addEdge(NodeT{2}, NodeT{1});
+    G.addEdge(NodeT{1}, NodeT{3});
+    G.addEdge(NodeT{4}, NodeT{2});
+
+    GenericTopologicalSort<GraphT> topSort(G);
+    topSort.run();
+    const auto &res = topSort.getResult();
+
+    std::unordered_map<NodeT, index> indices;
+    EXPECT_EQ(res.size(), G.numberOfNodes());
+    G.forNodes([&](NodeT u) {
+        indices[u] = std::distance(res.begin(), std::find(res.begin(), res.end(), u));
+    });
+    G.forNodes(
+        [&](NodeT u) { G.forNeighborsOf(u, [&](NodeT v) { EXPECT_LT(indices[u], indices[v]); }); });
+}
 } // namespace NetworKit
