@@ -38,6 +38,12 @@ Diameter::Diameter(const Graph &G, DiameterAlgo algo, double error, count nSampl
 
 void Diameter::run() {
     diameterBounds = {0, 0};
+
+    if (G->isEmpty()) {
+        hasRun = true;
+        return;
+    }
+
     if (algo == DiameterAlgo::EXACT) {
         std::get<0>(diameterBounds) = this->exactDiameter(*G);
     } else if (algo == DiameterAlgo::ESTIMATED_RANGE) {
