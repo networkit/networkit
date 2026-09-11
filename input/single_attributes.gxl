@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<gxl>
+<graph id="molecule_1" edgeids="true" edgemode="undirected">
+<node id="1"><attr name="chem"><string>C</string></attr></node>
+<node id="2"><attr name="chem"><string>C</string></attr></node>
+<node id="3"><attr name="chem"><string>C</string></attr></node>
+<edge from="1" to="2"><attr name="valence"><int>2</int></attr></edge>
+<edge from="1" to="3"><attr name="valence"><int>1</int></attr></edge>
+</graph>
+</gxl>

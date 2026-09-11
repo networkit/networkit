@@ -39,6 +39,7 @@
 #include <networkit/io/GraphIO.hpp>
 #include <networkit/io/GraphToolBinaryReader.hpp>
 #include <networkit/io/GraphToolBinaryWriter.hpp>
+#include <networkit/io/GXLGraphReader.hpp>
 #include <networkit/io/KONECTGraphReader.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/io/METISGraphWriter.hpp>
@@ -848,6 +849,17 @@ TEST_F(IOGTest, testBinaryEdgeListPartitionWriterAndReader) {
     EXPECT_EQ(Q.upperBound(), P[4] + 1);
 }
 
+TEST_F(IOGTest, testGXLGraphReader) {
+    GXLGraphReader reader;
+    Graph G = reader.read("input/dummy_test.gxl");
+    ASSERT_TRUE(!G.isDirected());
+    ASSERT_EQ(G.numberOfNodes(), 3);
+    ASSERT_EQ(G.numberOfEdges(), 2);
+    ASSERT_TRUE(G.hasEdge(1, 0));
+    ASSERT_TRUE(G.hasEdge(2, 0));
+    ASSERT_FALSE(G.hasEdge(1, 2));
+}
+
 TEST_F(IOGTest, testKONECTGraphReader) {
     KONECTGraphReader reader;
     Graph G = reader.read("input/foodweb-baydry.konect");
@@ -858,6 +870,7 @@ TEST_F(IOGTest, testKONECTGraphReader) {
     ASSERT_EQ(G.weight(0, 1), 1.261404);
     ASSERT_EQ(G.weight(127, 48), 0.03050447);
 }
+
 TEST_F(IOGTest, testNetworkitBinaryTiny01) {
     METISGraphReader reader2;
     Graph G = reader2.read("input/tiny_01.graph");
