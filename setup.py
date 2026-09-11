@@ -44,8 +44,9 @@ except ImportError:
 	sys.exit(1)
 
 os_soabi = sysconfig.get_config_var('SOABI')
+ext_suffix = sysconfig.get_config_var('EXT_SUFFIX')
 if os_soabi is None:
-	os_soabi =  sysconfig.get_config_var('EXT_SUFFIX').split(".")[1] # get_config_var('SOABI') is None on win32-systems
+	os_soabi = ext_suffix.split(".")[1] # get_config_var('SOABI') is None on win32-systems
 
 import os
 import platform
@@ -200,7 +201,7 @@ class build_ext(Command):
 
 	# Returns the file name of the DSO implementing a module (see distutils).
 	def get_ext_filename(self, fullname):
-		return fullname + '.' + os_soabi + '.so'
+		return fullname + ext_suffix
 
 	def run(self):
 		# A generic build_ext command for cmake would iterate over all self.extensions.
