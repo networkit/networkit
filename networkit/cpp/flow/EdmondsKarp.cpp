@@ -15,7 +15,14 @@
 namespace NetworKit {
 
 EdmondsKarp::EdmondsKarp(const Graph &graph, node source, node sink)
-    : graph(&graph), source(source), sink(sink) {}
+    : graph(&graph), source(source), sink(sink) {
+    if (!this->graph->hasNode(this->source)) {
+        throw std::runtime_error("EdmondsKarp: source node is not in the graph");
+    }
+    if (!this->graph->hasNode(this->sink)) {
+        throw std::runtime_error("EdmondsKarp: sink node is not in the graph");
+    }
+}
 
 edgeweight EdmondsKarp::BFS(std::vector<node> &pred) const {
     std::fill(pred.begin(), pred.end(), none);
