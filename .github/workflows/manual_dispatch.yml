@@ -143,6 +143,7 @@ jobs:
           CIBW_ARCHS: "AMD64"
           CIBW_BUILD: 'cp314-*'
           CIBW_SKIP: pp*
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: python scripts/repair_windows_wheel.py --wheel {wheel} --dest-dir {dest_dir}
           CIBW_TEST_COMMAND: python -c "import networkit"
       - uses: actions/upload-artifact@v4
         with:

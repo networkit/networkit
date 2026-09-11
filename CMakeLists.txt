@@ -363,7 +363,8 @@ if(NETWORKIT_PYTHON)
 		target_link_libraries(${TARGET_LIB} PRIVATE OpenMP::OpenMP_CXX PUBLIC tlx)
 
 		install(TARGETS ${TARGET_LIB}
-			LIBRARY DESTINATION "${NETWORKIT_LIB_DEST}/networkit")
+			LIBRARY DESTINATION "${NETWORKIT_LIB_DEST}/networkit"
+			RUNTIME DESTINATION "${NETWORKIT_LIB_DEST}/networkit")
 	endforeach()
 endif()
 
