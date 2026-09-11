@@ -5,10 +5,17 @@
  *      Author: Henning
  */
 
+#include <cstdint>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/generators/BarabasiAlbertGenerator.hpp>
+#include <networkit/graph/AdjListGraph.hpp>
 #include <networkit/graph/KruskalMSF.hpp>
 #include <networkit/graph/PrimMSF.hpp>
 #include <networkit/graph/RandomMaximumSpanningForest.hpp>
@@ -21,9 +28,91 @@ namespace NetworKit {
 class SpanningGTest : public testing::Test {};
 
 // check that each node has an edge in the spanning tree (if it had one before)
-inline void isValidForest(const Graph &g, const Graph &t) {
-    t.forNodes([&](node u) { EXPECT_TRUE(t.degree(u) > 0 || g.degree(u) == 0); });
+template <typename GraphT>
+inline void isValidForest(const GraphT &g, const GraphT &t) {
+    using NodeT = typename GraphT::NodeT;
+
+    std::vector<NodeT> graphNodes;
+    graphNodes.reserve(g.numberOfNodes());
+    g.forNodes([&](NodeT u) { graphNodes.push_back(u); });
+
+    std::vector<NodeT> forestNodes;
+    forestNodes.reserve(t.numberOfNodes());
+    t.forNodes([&](NodeT u) { forestNodes.push_back(u); });
+
+    EXPECT_THAT(forestNodes, testing::UnorderedElementsAreArray(graphNodes));
+    t.forNodes([&](NodeT u) { EXPECT_TRUE(t.degree(u) > 0 || g.degree(u) == 0); });
 }
+
+template <class NodeT_, class EdgeWeightT_>
+struct PrimMSFConfig {
+    using NodeT = NodeT_;
+    using EdgeWeightT = EdgeWeightT_;
+};
+
+template <class TestT>
+class PrimMSFGTest : public testing::Test {
+public:
+    using NodeT = typename TestT::NodeT;
+    using EdgeWeightT = typename TestT::EdgeWeightT;
+    using GraphT = AdjListGraph<NodeT, EdgeWeightT>;
+    using PrimMSFT = GenericPrimMSF<GraphT>;
+
+    GraphT weightedMSTWithUnitWeights() const {
+        GraphT g(5, true);
+        g.addEdge(NodeT{0}, NodeT{1}, EdgeWeightT{1});
+        g.addEdge(NodeT{1}, NodeT{2}, EdgeWeightT{1});
+        g.addEdge(NodeT{1}, NodeT{3}, EdgeWeightT{1});
+        g.addEdge(NodeT{3}, NodeT{4}, EdgeWeightT{1});
+        g.addEdge(NodeT{1}, NodeT{4}, EdgeWeightT{1});
+        return g;
+    }
+
+    GraphT weightedMSFWithUnitWeights() const {
+        GraphT g(6, true);
+        g.addEdge(NodeT{0}, NodeT{1}, EdgeWeightT{1});
+        g.addEdge(NodeT{1}, NodeT{2}, EdgeWeightT{1});
+        g.addEdge(NodeT{2}, NodeT{0}, EdgeWeightT{1});
+        g.addEdge(NodeT{3}, NodeT{4}, EdgeWeightT{1});
+        g.addEdge(NodeT{4}, NodeT{5}, EdgeWeightT{1});
+        g.addEdge(NodeT{5}, NodeT{3}, EdgeWeightT{1});
+        return g;
+    }
+
+    GraphT weightedMSTWithNonUnitWeights() const {
+        GraphT g(4, true);
+        g.addEdge(NodeT{0}, NodeT{1}, EdgeWeightT{1});
+        g.addEdge(NodeT{0}, NodeT{2}, EdgeWeightT{1});
+        g.addEdge(NodeT{0}, NodeT{3}, EdgeWeightT{1});
+        g.addEdge(NodeT{1}, NodeT{2}, EdgeWeightT{2});
+        g.addEdge(NodeT{2}, NodeT{3}, EdgeWeightT{2});
+        return g;
+    }
+
+    GraphT weightedMSFWithNonUnitWeights() const {
+        GraphT g(6, true);
+        g.addEdge(NodeT{0}, NodeT{1}, EdgeWeightT{1});
+        g.addEdge(NodeT{1}, NodeT{2}, EdgeWeightT{2});
+        g.addEdge(NodeT{2}, NodeT{0}, EdgeWeightT{3});
+        g.addEdge(NodeT{3}, NodeT{4}, EdgeWeightT{1});
+        g.addEdge(NodeT{4}, NodeT{5}, EdgeWeightT{2});
+        g.addEdge(NodeT{5}, NodeT{3}, EdgeWeightT{3});
+        return g;
+    }
+
+    GraphT unweightedMSF() const {
+        GraphT g(6);
+        g.addEdge(NodeT{0}, NodeT{1});
+        g.addEdge(NodeT{1}, NodeT{2});
+        g.addEdge(NodeT{2}, NodeT{0});
+        g.addEdge(NodeT{3}, NodeT{4});
+        g.addEdge(NodeT{4}, NodeT{5});
+        g.addEdge(NodeT{5}, NodeT{3});
+        return g;
+    }
+};
+
+TYPED_TEST_SUITE_P(PrimMSFGTest);
 
 TEST_F(SpanningGTest, testSpanningForest) {
     METISGraphReader reader;
@@ -183,10 +272,10 @@ TEST_F(SpanningGTest, testKruskalMinimumSpanningForestIsMSFNonUnitWeights) {
     EXPECT_EQ(msf.getTotalWeight(), 6);
 }
 
-TEST_F(SpanningGTest, testPrimThrowsForDirectedGraph) {
-    Graph g(5, true, true);
+TYPED_TEST_P(PrimMSFGTest, testThrowsForDirectedGraph) {
+    typename TestFixture::GraphT g(5, true, true);
     try {
-        PrimMSF msf(g);
+        typename TestFixture::PrimMSFT msf(g);
         FAIL() << "Expected std::runtime_error";
     } catch (const std::runtime_error &e) {
         EXPECT_STREQ(e.what(), "The graph is not an undirected graph.");
@@ -210,92 +299,71 @@ TEST_F(SpanningGTest, testPrimMinSpanningForest) {
     }
 }
 
-TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSTUnitWeights) {
-    Graph g(5, true);
-    g.addEdge(0, 1, 1);
-    g.addEdge(1, 2, 1);
-    g.addEdge(1, 3, 1);
-    g.addEdge(3, 4, 1);
-    g.addEdge(1, 4, 1);
-    g.indexEdges();
+TYPED_TEST_P(PrimMSFGTest, testMinimumSpanningForestIsMSTUnitWeights) {
+    auto g = this->weightedMSTWithUnitWeights();
 
-    PrimMSF msf(g);
+    typename TestFixture::PrimMSFT msf(g);
     msf.run();
-    Graph T = msf.getForest();
+    const auto &T = msf.getForest();
 
     isValidForest(g, T);
     EXPECT_EQ(msf.getTotalWeight(), 4);
 }
 
-TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSFUnitWeights) {
-    Graph g(6, true);
-    g.addEdge(0, 1, 1);
-    g.addEdge(1, 2, 1);
-    g.addEdge(2, 0, 1);
-    g.addEdge(3, 4, 1);
-    g.addEdge(4, 5, 1);
-    g.addEdge(5, 3, 1);
-    g.indexEdges();
+TYPED_TEST_P(PrimMSFGTest, testMinimumSpanningForestIsMSFUnitWeights) {
+    auto g = this->weightedMSFWithUnitWeights();
 
-    PrimMSF msf(g);
+    typename TestFixture::PrimMSFT msf(g);
     msf.run();
-    Graph T = msf.getForest();
+    const auto &T = msf.getForest();
 
     isValidForest(g, T);
     EXPECT_EQ(msf.getTotalWeight(), 4);
 }
 
-TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSTNonUnitWeights) {
-    Graph g(4, true);
-    g.addEdge(0, 1, 1);
-    g.addEdge(0, 2, 1);
-    g.addEdge(0, 3, 1);
-    g.addEdge(1, 2, 2);
-    g.addEdge(2, 3, 2);
-    g.indexEdges();
+TYPED_TEST_P(PrimMSFGTest, testMinimumSpanningForestIsMSTNonUnitWeights) {
+    auto g = this->weightedMSTWithNonUnitWeights();
 
-    PrimMSF msf(g);
+    typename TestFixture::PrimMSFT msf(g);
     msf.run();
-    Graph T = msf.getForest();
+    const auto &T = msf.getForest();
 
     isValidForest(g, T);
     EXPECT_EQ(msf.getTotalWeight(), 3);
 }
 
-TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSFNonUnitWeights) {
-    Graph g(6, true);
-    g.addEdge(0, 1, 1);
-    g.addEdge(1, 2, 2);
-    g.addEdge(2, 0, 3);
-    g.addEdge(3, 4, 1);
-    g.addEdge(4, 5, 2);
-    g.addEdge(5, 3, 3);
-    g.indexEdges();
+TYPED_TEST_P(PrimMSFGTest, testMinimumSpanningForestIsMSFNonUnitWeights) {
+    auto g = this->weightedMSFWithNonUnitWeights();
 
-    PrimMSF msf(g);
+    typename TestFixture::PrimMSFT msf(g);
     msf.run();
-    Graph T = msf.getForest();
+    const auto &T = msf.getForest();
 
     isValidForest(g, T);
     EXPECT_EQ(msf.getTotalWeight(), 6);
 }
 
-TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSFUnweighted) {
-    Graph g(6);
-    g.addEdge(0, 1);
-    g.addEdge(1, 2);
-    g.addEdge(2, 0);
-    g.addEdge(3, 4);
-    g.addEdge(4, 5);
-    g.addEdge(5, 3);
-    g.indexEdges();
+TYPED_TEST_P(PrimMSFGTest, testMinimumSpanningForestIsMSFUnweighted) {
+    auto g = this->unweightedMSF();
 
-    PrimMSF msf(g);
+    typename TestFixture::PrimMSFT msf(g);
     msf.run();
-    Graph T = msf.getForest();
+    const auto &T = msf.getForest();
 
     isValidForest(g, T);
     EXPECT_EQ(msf.getTotalWeight(), 4);
 }
+
+REGISTER_TYPED_TEST_SUITE_P(PrimMSFGTest, testThrowsForDirectedGraph,
+                            testMinimumSpanningForestIsMSTUnitWeights,
+                            testMinimumSpanningForestIsMSFUnitWeights,
+                            testMinimumSpanningForestIsMSTNonUnitWeights,
+                            testMinimumSpanningForestIsMSFNonUnitWeights,
+                            testMinimumSpanningForestIsMSFUnweighted);
+
+using PrimMSFTestTypes = ::testing::Types<PrimMSFConfig<node, edgeweight>,
+                                          PrimMSFConfig<uint32_t, float>, PrimMSFConfig<int, int>>;
+
+INSTANTIATE_TYPED_TEST_SUITE_P(TestPrimMSF, PrimMSFGTest, PrimMSFTestTypes, );
 
 } /* namespace NetworKit */
