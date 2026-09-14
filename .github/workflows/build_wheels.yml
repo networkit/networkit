@@ -324,6 +324,21 @@ jobs:
         name: Install Python
         with:
           python-version: '3.12'
+      # We keep only the newest nightly before uploading the next one.
+      - name: Prune old nightlies on TestPyPI
+        run: |
+          if [ -z "$TESTPYPI_CLEANUP_USERNAME" ] || [ -z "$PYPI_CLEANUP_PASSWORD" ] || [ -z "$TESTPYPI_CLEANUP_TOTP_SECRET" ]; then
+            echo "::warning::TestPyPI cleanup secrets are not set, so old nightlies are not deleted."
+            exit 0
+          fi
+          pip install pypi-cleanup==0.1.10 pyotp==2.10.0
+          python3 -c 'import os, pyotp; print(pyotp.TOTP(os.environ["TESTPYPI_CLEANUP_TOTP_SECRET"]).now())' |
+            pypi-cleanup --host https://test.pypi.org/ --package networkit-nightly \
+              --username "$TESTPYPI_CLEANUP_USERNAME" --leave-most-recent-only --do-it
+        env:
+          TESTPYPI_CLEANUP_USERNAME: ${{ secrets.TESTPYPI_CLEANUP_USERNAME }}
+          PYPI_CLEANUP_PASSWORD: ${{ secrets.TESTPYPI_CLEANUP_PASSWORD }}
+          TESTPYPI_CLEANUP_TOTP_SECRET: ${{ secrets.TESTPYPI_CLEANUP_TOTP_SECRET }}
       - name: Upload to TestPyPI
         run: |
           pip install twine
