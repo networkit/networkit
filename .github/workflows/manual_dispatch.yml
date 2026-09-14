@@ -127,6 +127,7 @@ jobs:
           CIBW_BEFORE_BUILD: pip install "cython<3.3.0" ipython
           CIBW_ARCHS: "AMD64"
           CIBW_BUILD: 'cp315-*'
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: python .github/workflows/scripts/repair_windows_wheel.py --wheel {wheel} --dest-dir {dest_dir}
           CIBW_SKIP: pp*
           CIBW_TEST_COMMAND: python -c "import networkit"
       - uses: actions/upload-artifact@v4
