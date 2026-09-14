@@ -24,7 +24,13 @@ Dinic::Dinic(const Graph &G, node src, node dst) : graph(&G), source(src), targe
         throw std::runtime_error(
             "Dinic algorithm requires `source` and `target` node to be different!");
     }
-    parents.resize(graph->numberOfNodes());
+    if (!graph->hasNode(source)) {
+        throw std::runtime_error("Dinic: source node is not in the graph");
+    }
+    if (!graph->hasNode(target)) {
+        throw std::runtime_error("Dinic: target node is not in the graph");
+    }
+    parents.resize(graph->upperNodeIdBound());
 }
 
 void Dinic::initializeResidualGraph() {
@@ -48,7 +54,7 @@ void Dinic::initializeResidualGraph() {
 }
 
 bool Dinic::canReachTargetInLevelGraph() {
-    std::vector<int> level(residualGraph.numberOfNodes(), -1);
+    std::vector<int> level(residualGraph.upperNodeIdBound(), -1);
     for (auto &parentList : parents) {
         parentList.clear();
     }
