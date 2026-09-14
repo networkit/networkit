@@ -29,9 +29,29 @@ jobs:
           CIBW_BEFORE_BUILD: pip install cython auditwheel --upgrade
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
           CIBW_ARCHS_LINUX: ${{ matrix.cibw_archs }}
-          CIBW_BUILD: 'cp314-* cp315-*'
+          CIBW_BUILD: 'cp310-* cp311-* cp312-* cp313-* cp314-* cp315-*'
           CIBW_SKIP: "pp* *-musllinux_*"
           CIBW_TEST_COMMAND: python3 -c 'import networkit'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp310-${{ github.run_id }}'
+          path: ./wheelhouse/*cp310*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}'
+          path: ./wheelhouse/*cp311*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}'
+          path: ./wheelhouse/*cp312*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'linux-${{ matrix.cibw_archs }}-cp313-${{ github.run_id }}'
+          path: ./wheelhouse/*cp313*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
         with:
           name: 'linux-${{ matrix.cibw_archs }}-cp314-${{ github.run_id }}'
@@ -104,11 +124,31 @@ jobs:
             pip install cython &&
             brew install libomp ninja
           CIBW_ARCHS_MACOS: ${{ matrix.buildplat[1] }}
-          CIBW_BUILD: 'cp314-* cp315-*'
+          CIBW_BUILD: 'cp310-* cp311-* cp312-* cp313-* cp314-* cp315-*'
           CIBW_SKIP: "pp* *-musllinux_*"
           CIBW_TEST_COMMAND: python3 -c 'import networkit'
           CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET='26.0'
           CIBW_TEST_SKIP: "*-macosx_x86_64 *-macosx_universal2:x86_64"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'macos-${{ matrix.buildplat[1] }}-cp310-${{ github.run_id }}'
+          path: ./wheelhouse/*cp310*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'macos-${{ matrix.buildplat[1] }}-cp311-${{ github.run_id }}'
+          path: ./wheelhouse/*cp311*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'macos-${{ matrix.buildplat[1] }}-cp312-${{ github.run_id }}'
+          path: ./wheelhouse/*cp312*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'macos-${{ matrix.buildplat[1] }}-cp313-${{ github.run_id }}'
+          path: ./wheelhouse/*cp313*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
         with:
           name: 'macos-${{ matrix.buildplat[1] }}-cp314-${{ github.run_id }}'
@@ -141,10 +181,30 @@ jobs:
         env:
           CIBW_BEFORE_BUILD: pip install "cython<3.3.0" ipython
           CIBW_ARCHS: "AMD64"
-          CIBW_BUILD: 'cp314-*'
+          CIBW_BUILD: 'cp310-* cp311-* cp312-* cp313-* cp314-*'
           CIBW_SKIP: pp*
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: python scripts/repair_windows_wheel.py --wheel {wheel} --dest-dir {dest_dir}
           CIBW_TEST_COMMAND: python -c "import networkit"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'win-${{ matrix.cibw_archs }}-cp310-${{ github.run_id }}'
+          path: ./wheelhouse/*cp310*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'win-${{ matrix.cibw_archs }}-cp311-${{ github.run_id }}'
+          path: ./wheelhouse/*cp311*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'win-${{ matrix.cibw_archs }}-cp312-${{ github.run_id }}'
+          path: ./wheelhouse/*cp312*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'win-${{ matrix.cibw_archs }}-cp313-${{ github.run_id }}'
+          path: ./wheelhouse/*cp313*.whl
+          retention-days: ${{ env.ARTIFACT_RETENTION }}
       - uses: actions/upload-artifact@v4
         with:
           name: 'win-${{ matrix.cibw_archs }}-cp314-${{ github.run_id }}'
