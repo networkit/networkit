@@ -73,6 +73,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		self.assertEqual({tuple(match) for match in vf2.getMatches()}, self.expected)
 
 	def testIsoVsMono(self):
+		# Due to the diagonal edge in the target there should be no induced matching
 		vf2_iso = nk.isomorphism.VF2(self.square, self.diagonal, nk.isomorphism.Semantics.INDUCED)
 		vf2_iso.run()
 		self.assertFalse(vf2_iso.hasMatch())
@@ -96,6 +97,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		vf2_2.run()
 		self.assertEqual(vf2_2.numberOfMatches(), 1)
 
+		# Reset all node labels to wildcards so now only edge labels matter
 		vf2_2.setNodeLabels([nk.none, nk.none], [nk.none, nk.none, nk.none, nk.none])
 		vf2_2.run()
 		self.assertEqual(vf2_2.numberOfMatches(), 6)
@@ -138,6 +140,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 
 		self.assertEqual(len(matches), 8)
 		self.assertEqual({tuple(match) for match in matches}, self.expected)
+		# SubgraphIsomorphism used with a callback does not store the matches
 		with self.assertRaises(RuntimeError):
 			vf2.getMatches()
 
@@ -154,6 +157,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 
 		self.assertEqual(len(matches), 8)
 		self.assertEqual({tuple(match) for match in matches}, self.expected)
+		# SubgraphIsomorphism used with a callback does not store the matches
 		with self.assertRaises(RuntimeError):
 			ri.getMatches()
 
@@ -172,6 +176,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 			self.assertGreaterEqual(workerId, 0)
 			self.assertLess(workerId, riPar.numberOfWorkers())
 		self.assertEqual({tuple(match) for workerId, match in matches}, self.expected)
+		# SubgraphIsomorphism used with a callback does not store the matches
 		with self.assertRaises(RuntimeError):
 			riPar.getMatches()
 
@@ -197,11 +202,13 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		vf2 = nk.isomorphism.VF2(self.arc, self.square)
 		vf2.run()
 
+		# No callback was set before run so there should not be anything in matches
 		self.assertEqual(len(matches), 0)
 
 		vf2.setCallback(callback)
 		vf2.run()
 
+		# Callback has been set before run so matches should be filled
 		self.assertEqual(len(matches), 8)
 		self.assertEqual({tuple(match) for match in matches}, self.expected)
 
@@ -220,6 +227,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		vf2.setCallback(callback2)
 		vf2.run()
 
+		# callback2 was most recently set so it should be filled, callback1 should be empty
 		self.assertEqual(len(matches1), 0)
 		self.assertEqual(len(matches2), 8)
 		self.assertEqual({tuple(match) for match in matches2}, self.expected)
