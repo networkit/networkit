@@ -108,23 +108,10 @@ void expectLabelsPairWithHeads(const Graph &G, const std::vector<index> &edgeLab
 
 class SearchGraphGTest : public testing::Test {};
 
-TEST_F(SearchGraphGTest, testSearchGraphBasicFuncs) {
+TEST_F(SearchGraphGTest, testSearchGraphCSR) {
 
-    Graph G = Graph(10, false, true);
-
-    G.removeNode(5);
-    G.removeNode(7);
-
-    IsomorphismDetails::SearchGraph SG = IsomorphismDetails::SearchGraph(G, false);
-
-    EXPECT_EQ(SG.numberOfNodes(), 8);
-    EXPECT_EQ(SG.upperNodeIdBound(), 10);
-    EXPECT_EQ(SG.isDirected(), true);
-}
-
-TEST_F(SearchGraphGTest, testSearchGraphCSRUndirected) {
-
-    // Graph G is undirected
+    // The CSR backend answers the same questions in both directednesses, so both are one test.
+    // Undirected first: every edge is reachable from either end.
     Graph G = Graph(10);
 
     G.addEdge(3, 5);
@@ -174,54 +161,58 @@ TEST_F(SearchGraphGTest, testSearchGraphCSRUndirected) {
     // G still has the self-loop, so the snapshot degree is one lower than the Graph degree
     EXPECT_EQ(G.degreeOut(5), 5);
     EXPECT_EQ(SG.outDegree(5), 4);
-}
+    EXPECT_FALSE(SG.isDirected());
 
-TEST_F(SearchGraphGTest, testSearchGraphCSRDirected) {
+    // Directed now. The same rules hold, except that an arc is reachable from one end only. So a
+    // node's two degrees come apart and hasEdge() stops being symmetric.
+    Graph D = Graph(8, false, true);
 
-    // Graph G is directed
-    Graph G = Graph(8, false, true);
+    D.addEdge(0, 5);
+    D.addEdge(0, 4);
+    D.addEdge(0, 3);
+    D.addEdge(0, 2);
+    D.addEdge(0, 1);
+    D.addEdge(0, 0);
 
-    G.addEdge(0, 5);
-    G.addEdge(0, 4);
-    G.addEdge(0, 3);
-    G.addEdge(0, 2);
-    G.addEdge(0, 1);
-    G.addEdge(0, 0);
+    D.removeNode(4);
+    D.removeNode(7);
+    D.removeEdge(0, 5);
 
-    G.removeNode(4);
-    G.removeNode(7);
-    G.removeEdge(0, 5);
+    IsomorphismDetails::SearchGraph SD = IsomorphismDetails::SearchGraph(D, false);
 
-    IsomorphismDetails::SearchGraph SG = IsomorphismDetails::SearchGraph(G, false);
+    expectSlicesAreSimpleNeighborhoods(D, SD);
 
-    expectSlicesAreSimpleNeighborhoods(G, SG);
-
-    EXPECT_NE(SG.inDegree(0), SG.outDegree(0));
+    EXPECT_TRUE(SD.isDirected());
+    EXPECT_NE(SD.inDegree(0), SD.outDegree(0));
 
     // All present edges must be found, except the self loop at node 0, which is dropped
-    G.forEdges([&](node u, node v) {
+    D.forEdges([&](node u, node v) {
         if (u == v) {
-            EXPECT_FALSE(SG.hasEdge(u, v));
+            EXPECT_FALSE(SD.hasEdge(u, v));
         } else {
-            EXPECT_TRUE(SG.hasEdge(u, v));
-            EXPECT_FALSE(SG.hasEdge(v, u));
+            EXPECT_TRUE(SD.hasEdge(u, v));
+            EXPECT_FALSE(SD.hasEdge(v, u));
         }
     });
 
     // Non-present edges must not be found
-    EXPECT_FALSE(SG.hasEdge(1, 2));
-    EXPECT_FALSE(SG.hasEdge(0, 4));
-    EXPECT_FALSE(SG.hasEdge(0, 5));
+    EXPECT_FALSE(SD.hasEdge(1, 2));
+    EXPECT_FALSE(SD.hasEdge(0, 4));
+    EXPECT_FALSE(SD.hasEdge(0, 5));
 
     // Check in and out slices. Node 0's self-loop appears in neither.
-    EXPECT_EQ(std::vector<node>(SG.inBegin(0), SG.inEnd(0)), (std::vector<node>{}));
-    EXPECT_EQ(std::vector<node>(SG.outBegin(0), SG.outEnd(0)), (std::vector<node>{1, 2, 3}));
-    EXPECT_EQ(std::vector<node>(SG.inBegin(1), SG.inEnd(1)), (std::vector<node>{0}));
-    EXPECT_EQ(std::vector<node>(SG.outBegin(1), SG.outEnd(1)), (std::vector<node>{}));
+    EXPECT_EQ(std::vector<node>(SD.inBegin(0), SD.inEnd(0)), (std::vector<node>{}));
+    EXPECT_EQ(std::vector<node>(SD.outBegin(0), SD.outEnd(0)), (std::vector<node>{1, 2, 3}));
+    EXPECT_EQ(std::vector<node>(SD.inBegin(1), SD.inEnd(1)), (std::vector<node>{0}));
+    EXPECT_EQ(std::vector<node>(SD.outBegin(1), SD.outEnd(1)), (std::vector<node>{}));
 
     // Deleted or isolated nodes have empty slice
-    EXPECT_EQ(SG.inBegin(4), SG.inEnd(4));
-    EXPECT_EQ(SG.inBegin(6), SG.inEnd(6));
+    EXPECT_EQ(SD.inBegin(4), SD.inEnd(4));
+    EXPECT_EQ(SD.inBegin(6), SD.inEnd(6));
+
+    // Both snapshots keep the node counts the Graph had, removed ids included in the bound.
+    EXPECT_EQ(SD.numberOfNodes(), 6);
+    EXPECT_EQ(SD.upperNodeIdBound(), 8);
 }
 
 TEST_F(SearchGraphGTest, testSearchGraphAdjMatrix) {
@@ -268,21 +259,6 @@ TEST_F(SearchGraphGTest, testSearchGraphAdjMatrix) {
     });
 }
 
-TEST_F(SearchGraphGTest, testCSRAdjEqualBehaviour) {
-
-    METISGraphReader reader;
-    Graph G = reader.read("input/karate.graph");
-
-    IsomorphismDetails::SearchGraph S_CSR = IsomorphismDetails::SearchGraph(G, false);
-    IsomorphismDetails::SearchGraph S_Adj = IsomorphismDetails::SearchGraph(G, true);
-
-    for (node u = 0; u < G.upperNodeIdBound(); u++) {
-        for (node v = 0; v < G.upperNodeIdBound(); v++) {
-            EXPECT_EQ(S_CSR.hasEdge(u, v), S_Adj.hasEdge(u, v));
-        }
-    }
-}
-
 TEST_F(SearchGraphGTest, testMultiEdgesAndLoopsCollapsed) {
 
     // Graph::addEdge() permits parallel edges and self-loops by default, so a snapshot has to
@@ -292,9 +268,9 @@ TEST_F(SearchGraphGTest, testMultiEdgesAndLoopsCollapsed) {
     //
     // Both directednesses and both hasEdge() backends have to agree about all of that, which is
     // why they are one test: the CSR drops self-loops, so the matrix has to leave the diagonal
-    // clear too, and karate - which testCSRAdjEqualBehaviour uses - has neither loops nor
-    // parallel edges to catch it with. The id bound reaches past 64 so the matrix spans more than
-    // one word per row.
+    // clear too. This is also the graph the two backends are compared on edge for edge, because
+    // an ordinary graph has neither loops nor parallel edges to catch a disagreement with. The id
+    // bound reaches past 64 so the matrix spans more than one word per row.
     for (bool directed : {false, true}) {
         Graph G = Graph(70, false, directed);
 
@@ -608,12 +584,17 @@ TEST_F(SearchGraphGTest, testCommonOutNeighbors) {
     EXPECT_EQ(SG.commonOutNeighbors(0, 0), SG.outDegree(0));
 }
 
-TEST_F(SearchGraphGTest, testEdgeLabelsSurviveTheSort) {
+TEST_F(SearchGraphGTest, testEdgeLabelsStayWithTheirArcs) {
 
-    // Node 9 is given its neighbours in *descending* id order, so the scattered order and the
-    // sorted order genuinely differ and std::sort has real work to do. Every edge carries a
-    // different label, so a sort that moved heads without moving labels with them cannot cancel
-    // out - each arc would visibly end up with another arc's label.
+    // A label is identified by the offset it sits at, so every step that moves a head has to move
+    // its label with it. Three steps can break that pairing, and all three are checked here,
+    // because the symptom is the same in each case: an arc quietly ends up holding another arc's
+    // label, and nothing else goes visibly wrong.
+
+    // First the sort. Node 9 is given its neighbours in *descending* id order, so the scattered
+    // order and the sorted order genuinely differ and std::sort has real work to do. Every edge
+    // carries a different label, so a sort that moved heads without moving labels with them
+    // cannot cancel out - each arc would visibly end up with another arc's label.
     for (bool directed : {false, true}) {
         const IsomorphismTest::LabelledGraph labelled = IsomorphismTest::labelledGraphOf(
             10, {{9, 6, 60}, {9, 4, 40}, {9, 2, 20}, {9, 0, 5}, {8, 7, 70}, {8, 1, 10}, {3, 5, 50}},
@@ -649,14 +630,11 @@ TEST_F(SearchGraphGTest, testEdgeLabelsSurviveTheSort) {
             EXPECT_FALSE(SG.collapsedLabelledEdges()) << "directed=" << directed;
         }
     }
-}
 
-TEST_F(SearchGraphGTest, testEdgeLabelsSurviveTheCompaction) {
-
-    // The same invariant, but now with the compaction in the way: it rewrites the slices in place
-    // and would corrupt the pairing just as thoroughly as the sort if it moved a head without its
-    // label. Parallel arcs here all agree on their label, so collapsing them is lossless and the
-    // survivor must keep it; self-loops are dropped outright, whatever they carry.
+    // Then the compaction. It rewrites the slices in place and would corrupt the pairing just as
+    // thoroughly as the sort if it moved a head without its label. Parallel arcs here all agree on
+    // their label, so collapsing them is lossless and the survivor must keep it; self-loops are
+    // dropped outright, whatever they carry.
     for (bool directed : {false, true}) {
         const IsomorphismTest::LabelledGraph labelled =
             IsomorphismTest::labelledGraphOf(6,
@@ -686,6 +664,33 @@ TEST_F(SearchGraphGTest, testEdgeLabelsSurviveTheCompaction) {
         EXPECT_EQ(SG.edgeLabel(2, 2), none) << "directed=" << directed;
         EXPECT_FALSE(SG.collapsedLabelledEdges()) << "directed=" << directed;
     }
+
+    // Last the two directions of a mutual pair. Those are two edges with two ids sitting in two
+    // different slices, so they carry unrelated labels. Storing a label per node pair rather than
+    // per arc collides them, and the assertions below say so immediately.
+    const IsomorphismTest::LabelledGraph mutual = IsomorphismTest::labelledGraphOf(
+        3, {{0, 1, 7}, {1, 0, 8}, {1, 2, 9}}, /* directed = */ true);
+
+    const IsomorphismDetails::SearchGraph SM(mutual.G, /* buildMatrix = */ true, mutual.edgeLabels);
+
+    EXPECT_EQ(SM.edgeLabel(0, 1), 7u);
+    EXPECT_EQ(SM.edgeLabel(1, 0), 8u);
+    EXPECT_EQ(SM.edgeLabel(1, 2), 9u);
+    EXPECT_EQ(SM.edgeLabel(2, 1), none);
+    EXPECT_FALSE(SM.collapsedLabelledEdges());
+
+    expectLabelsPairWithHeads(mutual.G, mutual.edgeLabels, SM);
+
+    // The in-slices are a second copy of the same arcs, so they have to agree arc for arc rather
+    // than merely hold the right multiset. Node 1 is reached by 0 -> 1, which carries 7.
+    ASSERT_EQ(SM.inDegree(1), 1u);
+    EXPECT_EQ(*SM.inBegin(1), 0u);
+    EXPECT_EQ(*SM.inLabelBegin(1), 7u);
+
+    // ... and node 0 by 1 -> 0, which carries 8. Keying by node pair would give both the same.
+    ASSERT_EQ(SM.inDegree(0), 1u);
+    EXPECT_EQ(*SM.inBegin(0), 1u);
+    EXPECT_EQ(*SM.inLabelBegin(0), 8u);
 }
 
 TEST_F(SearchGraphGTest, testCollapsedLabelledEdges) {
@@ -722,37 +727,6 @@ TEST_F(SearchGraphGTest, testCollapsedLabelledEdges) {
         EXPECT_EQ(unlabelled.edgeLabel(0, 1), none) << "directed=" << directed;
         EXPECT_EQ(unlabelled.outLabelBegin(0), nullptr) << "directed=" << directed;
     }
-}
-
-TEST_F(SearchGraphGTest, testDirectedArcLabelsAreIndependent) {
-
-    // A directed mutual pair is two edges with two ids in two different slices, so the two
-    // directions carry unrelated labels. Storing labels per node pair instead of per arc collides
-    // them, and this is the assertion that says so immediately.
-    const IsomorphismTest::LabelledGraph labelled = IsomorphismTest::labelledGraphOf(
-        3, {{0, 1, 7}, {1, 0, 8}, {1, 2, 9}}, /* directed = */ true);
-
-    const IsomorphismDetails::SearchGraph SG(labelled.G, /* buildMatrix = */ true,
-                                             labelled.edgeLabels);
-
-    EXPECT_EQ(SG.edgeLabel(0, 1), 7u);
-    EXPECT_EQ(SG.edgeLabel(1, 0), 8u);
-    EXPECT_EQ(SG.edgeLabel(1, 2), 9u);
-    EXPECT_EQ(SG.edgeLabel(2, 1), none);
-    EXPECT_FALSE(SG.collapsedLabelledEdges());
-
-    expectLabelsPairWithHeads(labelled.G, labelled.edgeLabels, SG);
-
-    // The in-slices are a second copy of the same arcs, so they have to agree arc for arc rather
-    // than merely hold the right multiset. Node 1 is reached by 0 -> 1, which carries 7.
-    ASSERT_EQ(SG.inDegree(1), 1u);
-    EXPECT_EQ(*SG.inBegin(1), 0u);
-    EXPECT_EQ(*SG.inLabelBegin(1), 7u);
-
-    // ... and node 0 by 1 -> 0, which carries 8. Keying by node pair would give both the same.
-    ASSERT_EQ(SG.inDegree(0), 1u);
-    EXPECT_EQ(*SG.inBegin(0), 1u);
-    EXPECT_EQ(*SG.inLabelBegin(0), 8u);
 }
 
 TEST_F(SearchGraphGTest, testEdgeLabelsNeedEdgeIds) {

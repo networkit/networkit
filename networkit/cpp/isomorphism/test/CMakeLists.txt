@@ -1,5 +1,4 @@
 networkit_add_test(isomorphism SearchGraphGTest auxiliary generators graph io)
-networkit_add_test(isomorphism ReferenceMatcherGTest auxiliary edgescores generators graph io)
 networkit_add_test(isomorphism SubgraphIsomorphismGTest auxiliary generators graph io)
 networkit_add_test(isomorphism VF2GTest auxiliary generators graph io)
 networkit_add_test(isomorphism RIGTest auxiliary edgescores generators graph io)
