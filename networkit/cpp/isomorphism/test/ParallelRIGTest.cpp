@@ -85,6 +85,14 @@ std::vector<Match> parallelMatches(const Graph &pattern, const Graph &target, Se
     return matches;
 }
 
+/// Runs @a algo without storing matches and returns how many it found.
+template <typename Algo>
+count countOnly(Algo &&algo) {
+    algo.setStoreMatches(false);
+    algo.run();
+    return algo.numberOfMatches();
+}
+
 } // namespace
 
 /**
