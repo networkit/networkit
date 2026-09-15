@@ -231,6 +231,10 @@ public:
      * @ref getMatches(), @ref numberOfMatches() and @ref hasMatch() all throw. Matches already
      * handed to a callback stay handed over - a search cannot take them back. This is what every
      * interruptible algorithm in NetworKit does, so nothing here is a special case.
+     *
+     * An exception thrown by a callback ends the run the same way: the search stops, the algorithm
+     * is left not finished, and the exception comes out of run(). A parallel search first stops
+     * every worker and then rethrows the first exception any of them caught.
      */
     void run() override = 0;
 
@@ -414,6 +418,10 @@ protected:
     // isRunning() inside the region and assureRunning() once after the workers join, because an
     // exception escaping an OpenMP structured block is undefined behaviour - see Betweenness.cpp,
     // which is the pattern to copy.
+    //
+    // The same rule covers an exception thrown by a callback, which a parallel search reaches
+    // from inside the region. Catch it there, stop the other workers, and rethrow it after the
+    // join. ParallelRIImpl::stopOnException() in ParallelRI.cpp does exactly that.
     //
     // Use isNodeLabelled() to find out whether node labels are in play, and isEdgeLabelled() for
     // edge labels. The module's rule about the latter is: refuse edge labels outright in the
