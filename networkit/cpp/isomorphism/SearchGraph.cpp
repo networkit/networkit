@@ -15,29 +15,17 @@ namespace IsomorphismDetails {
 namespace {
 
 /**
- * Largest node id bound for which the bit matrix is still worth building.
- *
- * The CSR costs memory per edge; the matrix costs a bit per *ordered pair of node ids*, so it is
- * the one part of the snapshot whose size ignores how sparse the graph is. This bound is the
- * integer square root of 64 MiB expressed in bits, which is orders of magnitude beyond any real
- * pattern. It is a soft boundary: crossing it costs speed, not correctness, because hasEdge()
- * simply falls back to the CSR.
+ * Largest node id bound for which the adjacency matrix is built, so that the matrix takes at most
+ * 64 MiB. Beyond it, hasEdge() falls back to the CSR.
  */
 constexpr count maxMatrixNodes = 23170;
 
 /**
- * Sort every slice of a CSR ascending by neighbour, keeping the parallel label array aligned.
- *
- * Without labels this is a plain sort over the heads. With them the two arrays have to move
- * together: a label is identified by *where it sits*, so sorting the heads on their own would hand
- * every arc some other arc's label, silently and without any of it failing to compile or crash.
- * Sorting (head, label) pairs and unzipping is the least error-prone way to say that, and the
- * scratch buffer is reused across nodes so it costs one allocation for the whole graph.
+ * Sorts every slice of a CSR in ascending order and moves the labels along with their heads.
  */
 void sortSlices(const std::vector<index> &first, std::vector<node> &head, std::vector<index> &label,
                 count z) {
     if (label.empty()) {
-        // Sorting over pointers rather than iterators keeps the offsets unsigned.
         for (node u = 0; u < z; ++u)
             std::sort(head.data() + first[u], head.data() + first[u + 1]);
         return;
@@ -52,8 +40,7 @@ void sortSlices(const std::vector<index> &first, std::vector<node> &head, std::v
         for (index i = begin; i < end; ++i)
             slice.emplace_back(head[i], label[i]);
 
-        // Lexicographic, so parallel arcs land next to each other in a defined order rather than
-        // whichever one the scatter happened to write first.
+        // Sorting (head, label) pairs orders parallel arcs by label.
         std::sort(slice.begin(), slice.end());
 
         for (index i = begin; i < end; ++i) {
@@ -64,20 +51,10 @@ void sortSlices(const std::vector<index> &first, std::vector<node> &head, std::v
 }
 
 /**
- * Drop self-loops and collapse parallel edges in a sorted CSR, in place.
+ * Drops self-loops and collapses parallel edges in a sorted CSR, in place, and moves the labels
+ * along with their heads.
  *
- * Both are meaningless to a subgraph search - the two matching semantics only ever constrain
- * pairs of distinct nodes - and both actively break it if left in: a repeated neighbour makes the
- * search enumerate the same candidate twice and report the same match twice, and either one
- * inflates the degrees that every feasibility rule prunes on.
- *
- * The slices are already sorted, so equal entries are adjacent and one linear scan suffices.
- * Compaction happens in place because the write cursor can never overtake the read cursor. The
- * label array is carried along for the same reason the sort has to carry it: it is indexed by
- * position, so moving a head without its label corrupts both.
- *
- * @return true if a collapsed run of equal heads held labels that were not all equal, so that the
- *         one arc left cannot stand for all of them. Always false without labels.
+ * @return true if collapsed parallel arcs had different labels. Always false without labels.
  */
 bool compactSlices(std::vector<index> &first, std::vector<node> &head, std::vector<index> &label,
                    count z) {
@@ -96,8 +73,7 @@ bool compactSlices(std::vector<index> &first, std::vector<node> &head, std::vect
             if (v == u)
                 continue;
             if (v == previous) {
-                // Equal heads are adjacent after the sort, so the label this one is being dropped
-                // in favour of is simply the one just written.
+                // Compare with the label of the arc that was kept for this head.
                 if (labelled && label[i] != label[write - 1])
                     lost = true;
                 continue;
@@ -123,10 +99,7 @@ bool compactSlices(std::vector<index> &first, std::vector<node> &head, std::vect
 SearchGraph::SearchGraph(const Graph &G, bool buildMatrix, const std::vector<index> &edgeLabels)
     : lostLabels(false), maxOut(0), maxIn(0), matrixStride(0), n(G.numberOfNodes()),
       z(G.upperNodeIdBound()), directed(G.isDirected()), hasMatrix(buildMatrix) {
-    // Labels are indexed by edge id, so the scatter below reads edgeLabels[eid] for every arc.
-    // Without ids that index does not exist and without enough entries it runs off the end, so
-    // both are refused here rather than read past. SubgraphIsomorphism::setEdgeLabels() checks the
-    // same two things; this is what keeps a snapshot built any other way honest.
+    // buildCSR() indexes edgeLabels by edge id.
     if (!edgeLabels.empty()) {
         if (!G.hasEdgeIds())
             throw std::runtime_error("SearchGraph: edge labels need a graph with edge ids - call "
@@ -136,12 +109,8 @@ SearchGraph::SearchGraph(const Graph &G, bool buildMatrix, const std::vector<ind
                 "SearchGraph: edge label vector is shorter than the graph's upperEdgeIdBound()");
     }
 
-    // The matrix is a request, not a demand: when it will not fit, drop it and let hasEdge() use
-    // the CSR, which is how every target snapshot already works. Note the bound is the *id* bound,
-    // and removeNode() lowers neither it nor the ids above it, so a small pattern carved out of a
-    // large graph still asks for the large graph's matrix. That case is a caller mistake with an
-    // easy fix, so it warrants a warning; a genuinely large pattern does not, since there is
-    // nothing to do differently.
+    // The matrix is sized by the node id bound, not by the number of nodes. If compacting the
+    // node ids would make it fit, warn the caller.
     if (hasMatrix && z > maxMatrixNodes) {
         if (n <= z / 2) {
             WARN("SearchGraph: skipping the adjacency matrix - the node id bound is ", z,
@@ -164,10 +133,7 @@ SearchGraph::SearchGraph(const Graph &G, bool buildMatrix, const std::vector<ind
 void SearchGraph::buildCSR(const Graph &G, const std::vector<index> &edgeLabels) {
     const bool labelled = !edgeLabels.empty();
 
-    // Count the out-degree of every node into outFirst[u + 1], then turn the counts into start
-    // offsets with a prefix sum. A node that was removed keeps a degree of 0 and so ends up with
-    // an empty slice - indistinguishable from an isolated node by adjacency alone, which is why
-    // the same pass records which ids are nodes at all.
+    // Count the out-degrees into outFirst[u + 1] and turn them into offsets with a prefix sum.
     outFirst.assign(z + 1, 0);
     nodeExists.assign(z, false);
     for (node u = 0; u < z; ++u) {
@@ -178,14 +144,8 @@ void SearchGraph::buildCSR(const Graph &G, const std::vector<index> &edgeLabels)
     }
     std::partial_sum(outFirst.begin(), outFirst.end(), outFirst.begin());
 
-    // Place every neighbour into its node's slice. forEdges() visits an undirected edge once,
-    // oriented u >= v, so the reverse orientation has to be added here - except for a self-loop,
-    // which Graph stores only once and which degreeOut() therefore also counted only once.
-    //
-    // The four-argument overload hands out the edge id alongside the arc, which is what lets the
-    // label land at the same offset as its head in the very same pass. An undirected edge writes
-    // its one id into both endpoints' slices; a directed mutual pair is two ids in two different
-    // slices, so per-arc labels stay well defined either way.
+    // Scatter the arcs and their labels. forEdges() visits an undirected edge once, so the reverse
+    // arc is added here, except for a self-loop, which degreeOut() counts once.
     outHead.resize(outFirst[z]);
     if (labelled)
         outLabel.resize(outFirst[z], none);
@@ -201,19 +161,15 @@ void SearchGraph::buildCSR(const Graph &G, const std::vector<index> &edgeLabels)
         }
     });
 
-    // hasEdge() binary-searches a slice and the feasibility rules intersect two of them, so both
-    // rely on the order.
     sortSlices(outFirst, outHead, outLabel, z);
     lostLabels |= compactSlices(outFirst, outHead, outLabel, z);
 
-    // Only now are the slices the sets the search reasons about, so only now is the maximum the
-    // number a caller may compare a pattern degree against.
+    // The maximum is taken after the compaction, so it counts distinct neighbours.
     for (node u = 0; u < z; ++u) {
         maxOut = std::max(maxOut, outDegree(u));
     }
 
-    // For an undirected graph inBegin()/inEnd() fall back to the out-arrays, so a second copy
-    // would only waste memory.
+    // Undirected snapshots use the out-arrays for the in-arcs.
     if (directed) {
         inFirst.assign(z + 1, 0);
         for (node u = 0; u < z; ++u) {
@@ -246,10 +202,7 @@ void SearchGraph::buildAdjacencyMatrix() {
     matrixStride = tlx::div_ceil(z, 64);
     matrix.assign(static_cast<std::size_t>(z) * matrixStride, 0);
 
-    // Filled from the compacted CSR, not from `Graph`. Parallel edges and self-loops are already
-    // gone by the time this runs, so neither needs handling here - and, more to the point, neither
-    // *can* be handled differently than the CSR handled it, which is what the two hasEdge()
-    // backends agreeing depends on. A removed id has an empty slice and so contributes no bits.
+    // The matrix is filled from the compacted CSR, so both hasEdge() backends agree.
     for (node u = 0; u < z; ++u)
         for (const node *it = outBegin(u); it != outEnd(u); ++it)
             matrix[static_cast<std::size_t>(u) * matrixStride + *it / 64] |= uint64_t{1}

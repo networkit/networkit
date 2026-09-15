@@ -4,43 +4,6 @@
 
 #include <networkit/isomorphism/SubgraphIsomorphism.hpp>
 
-/*
- * ## What this module reuses from the rest of NetworKit
- *
- * Nothing in NetworKit does subgraph matching, so the search algorithms themselves are written
- * from scratch. The pieces around them are not. Before filling in any of the TODOs in this module,
- * check this list - each entry either drops in unchanged or saves writing a known-fiddly helper.
- *
- * Used as-is, no adaptation:
- *
- * - `Aux::SignalHandler` (networkit/auxiliary/SignalHandling.hpp) is what every checkSignal() stub
- *   in this module should be. Hold one as a member and call assureRunning() on it; there is no
- *   need to write any interruption machinery. Construction is cheap and nesting is a no-op, which
- *   is why MaximalCliques declares one in run() and another inside its recursive tomita().
- * - `Aux::Random::getURNG()` (networkit/auxiliary/Random.hpp) is already thread-local, so it is
- *   safe inside a parallel region without any seeding work. ParallelRI can use it for victim
- *   selection instead of carrying a per-worker seed.
- * - `Aux::SparseVector<T>` (networkit/auxiliary/SparseVector.hpp) clears only the entries that
- *   were actually touched, not the whole array. That is the right structure for scratch marks that
- *   get dirtied and then wiped in bulk, such as RI-DS domain bookkeeping. It is *not* the right
- *   structure for core1/core2, which are undone one entry at a time on backtrack and are already
- *   O(1) as plain vectors.
- * - `CoreDecomposition::getNodeOrder()` (networkit/centrality/CoreDecomposition.hpp) hands back a
- *   degeneracy ordering in three lines. Optional input to the target-side tie-break in
- *   RIImpl::computeOrdering; it does not replace the pattern ordering, which is the algorithm.
- * - `tlx::div_ceil` (tlx/math/div_ceil.hpp) says what (z + 63) / 64 means in SearchGraph.
- *
- * Same shape exists, but the code has to be written here:
- *
- * - There is no CSR graph class anywhere in NetworKit, so SearchGraph::buildCSR has to be written.
- *   The count/prefix-sum/scatter idiom to follow is in ParallelPartitionCoarsening.cpp, and
- *   MaximalCliques.cpp keeps its own CSR under the same firstOut/head names this module uses.
- * - Candidate sets: MaximalCliques.cpp partitions one buffer with pxvector/pxlookup and
- *   swapNodeToPos(), which keeps a backtracking search free of allocation. Worth copying the
- *   technique for the terminal sets in VF2 and the domains in RI-DS.
- *
- */
-
 namespace NetworKit {
 
 SubgraphIsomorphism::SubgraphIsomorphism(const Graph &pattern, const Graph &target,
@@ -55,16 +18,14 @@ void SubgraphIsomorphism::validateInput() const {
         throw std::runtime_error(
             "Pattern and target graph must either both be directed or both be undirected");
 
-    // Self-loops of the target are harmless: both matching semantics only constrain pairs of
-    // distinct nodes, so a target self-loop is never used by a loop-free pattern.
+    // Target self-loops are harmless, since both semantics only constrain pairs of distinct nodes.
     if (pattern->numberOfSelfLoops() > 0)
         throw std::runtime_error("Subgraph isomorphism is undefined for patterns with self-loops");
 }
 
 void SubgraphIsomorphism::validateNodeLabels(const std::vector<index> &patternNodeLabels,
                                              const std::vector<index> &targetNodeLabels) const {
-    // Two empty vectors mean "unlabelled", which is always valid. Tested first, or the size checks
-    // below would reject the documented way of clearing.
+    // Two empty vectors clear the labels.
     if (patternNodeLabels.empty() && targetNodeLabels.empty())
         return;
 
@@ -82,8 +43,6 @@ void SubgraphIsomorphism::validateEdgeLabels(const std::vector<index> &patternEd
     if (patternEdgeLabels.empty() && targetEdgeLabels.empty())
         return;
 
-    // Edge labels are indexed by edge id, so without ids there is no index space for the vector at
-    // all. Saying that here beats whatever the search would fail on later.
     if (!pattern->hasEdgeIds())
         throw std::runtime_error("Pattern graph has no edge ids - call indexEdges() on it before "
                                  "setting edge labels");
@@ -103,7 +62,7 @@ void SubgraphIsomorphism::validateEdgeLabels(const std::vector<index> &patternEd
 
 void SubgraphIsomorphism::setNodeLabels(const std::vector<index> &patternNodeLabels,
                                         const std::vector<index> &targetNodeLabels) {
-    // Validated before anything is assigned, so a rejected call leaves the object as it was.
+    // Validate first, so that a rejected call changes nothing.
     validateNodeLabels(patternNodeLabels, targetNodeLabels);
 
     this->patternNodeLabels = patternNodeLabels;
@@ -140,13 +99,8 @@ void SubgraphIsomorphism::prepareRun() {
 
     matchCount = 0;
 
-    // Both graphs are held by pointer, so the caller may have changed them since we were
-    // constructed and configured. The label vectors were sized against the graphs as they were
-    // *then*: a node or edge added since leaves them short, and the search would read past their
-    // end. Rechecking here turns that undefined behaviour into a thrown exception.
-    //
-    // Deliberately after the reset above, so a rejected run leaves nothing queryable rather than
-    // handing back the previous run's matches.
+    // The graphs may have changed since construction, which can leave the label vectors too
+    // short. The check runs after the reset, so that a rejected run leaves no results behind.
     validateInput();
     validateNodeLabels(patternNodeLabels, targetNodeLabels);
     validateEdgeLabels(patternEdgeLabels, targetEdgeLabels);
@@ -155,8 +109,7 @@ void SubgraphIsomorphism::prepareRun() {
 bool SubgraphIsomorphism::reportMatch(const Match &match) {
     ++matchCount;
 
-    // Single-threaded, so the serial callback needs no lock and the parallel one is simply told
-    // it is worker 0. Both forms therefore work unchanged with a sequential algorithm.
+    // The search is sequential, so the parallel callback runs as worker 0.
     if (parallelCallback)
         parallelCallback(0, match);
     else if (callback)
@@ -174,10 +127,7 @@ bool SubgraphIsomorphism::invokeCallback(index tid, const Match &match) {
     }
 
     if (callback) {
-        // A MatchCallback promises never to be entered twice at once. Honouring it here rather
-        // than in each parallel algorithm is what makes the promise true: the reporting call sits
-        // deep inside a search's recursion, far from the code that knows how many threads are
-        // running. Only a parallel search reaches this, so no sequential one pays for the lock.
+        // A MatchCallback must never be called concurrently.
         const std::lock_guard<std::mutex> guard(reportMutex);
         callback(match);
         return true;
@@ -187,8 +137,7 @@ bool SubgraphIsomorphism::invokeCallback(index tid, const Match &match) {
 }
 
 void SubgraphIsomorphism::finishRun() {
-    // A sequential search stops the moment reportMatch() returns false, so the cap already holds
-    // exactly. Nothing to trim.
+    // reportMatch() already enforced the cap.
     hasRun = true;
 }
 
@@ -197,8 +146,8 @@ void SubgraphIsomorphism::finishRun(std::vector<Match> &&matches, count found) {
     if (!hasCallback() && storeMatches)
         result = std::move(matches);
 
-    // Workers may overshoot the cap slightly before they all observe it. Nothing was handed to
-    // the caller yet unless a callback is in use, so everything but the callback stays exact.
+    // Workers may overshoot the cap. Without a callback, no match has been delivered yet, so the
+    // result is trimmed to the cap.
     if (!hasCallback() && maxMatches != 0 && matchCount > maxMatches) {
         matchCount = maxMatches;
         if (result.size() > maxMatches)

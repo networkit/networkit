@@ -13,19 +13,16 @@ namespace NetworKit {
 namespace IsomorphismDetails {
 
 /**
- * How a search core hands a complete mapping back to the algorithm that owns it.
+ * Callback through which a search implementation (VF2Impl, VF3Impl, RIImpl) reports a complete
+ * mapping, indexed by pattern node. It returns false once the search must stop because the cap on
+ * the number of matches is reached.
  *
- * The cores (VF2Impl, VF3Impl, RIImpl) are not subclasses of SubgraphIsomorphism - they live in
- * the .cpp files so that the public header never grows a member - so they cannot call its
- * protected reportMatch() themselves. The algorithm's run(), which can, wraps it in a lambda and
- * passes that down:
+ * The implementations are not subclasses of SubgraphIsomorphism, so run() passes a lambda that
+ * calls the protected SubgraphIsomorphism::reportMatch():
  *
  * @code
  * VF2Impl(..., [this](const SubgraphIsomorphism::Match &m) { return reportMatch(m); }).run();
  * @endcode
- *
- * @param match The mapping, indexed by pattern node.
- * @return false once the search must stop, because the requested number of matches is reached.
  */
 using MatchReporter = std::function<bool(const SubgraphIsomorphism::Match &)>;
 

@@ -17,9 +17,6 @@ void RI::run() {
     Aux::SignalHandler handler;
     prepareRun();
 
-    // The snapshots, the RI-DS domains and the matching order, built in the one sequence that
-    // works. Shared with ParallelRI::run() rather than repeated here, so the sequential and the
-    // parallel search cannot end up answering different questions.
     const RISearchSetup setup =
         prepareRISearch(*pattern, *target, patternNodeLabels, targetNodeLabels, patternEdgeLabels,
                         targetEdgeLabels, variant, "RI");
@@ -29,9 +26,7 @@ void RI::run() {
            [this](const Match &match) { return reportMatch(match); })
         .run();
 
-    // RIImpl may only poll isRunning(), so an interrupted search just returns. Without this, that
-    // lands straight in finishRun() and the caller silently gets a truncated match set instead of
-    // the documented InterruptException. ParallelRI.cpp does exactly this after its workers join.
+    // RIImpl only polls isRunning(), so an interrupted search returns normally and throws here.
     handler.assureRunning();
     finishRun();
 }
