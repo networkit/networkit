@@ -13,6 +13,8 @@ from .base cimport _Algorithm, Algorithm
 from .graph cimport _Graph, Graph
 from .structures cimport count, index, node
 
+import inspect
+
 cdef extern from "cython_helper.h":
 	void throw_runtime_error(string message) nogil
 
@@ -103,7 +105,12 @@ cdef class SubgraphIsomorphism(Algorithm):
 
 	def numberOfWorkers(self):
 		"""
-		Return the number of workers used by the algorithm.
+		numberofWorkers()
+
+		Returns
+		-------
+		int
+			The number of workers used by the algorithm.
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
@@ -114,6 +121,13 @@ cdef class SubgraphIsomorphism(Algorithm):
 		setNodeLabels(patternNodeLabels, targetNodeLabels)
 
 		Set labels for pattern and target nodes. Labels are indexed by node id.
+
+		Parameters
+		----------
+		patternNodeLabels : list(int)
+			List with pattern node labels.
+		targetNodeLabels : list(int)
+			List with target node labels.
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
@@ -125,37 +139,95 @@ cdef class SubgraphIsomorphism(Algorithm):
 		setEdgeLabels(patternEdgeLabels, targetEdgeLabels)
 
 		Set labels for pattern and target edges. Labels are indexed by edge id.
+
+		Parameters
+		----------
+		patternEdgeLabels : list(int)
+			List with pattern edge labels.
+		targetEdgeLabels : list(int)
+			List with target edge labels.
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_SubgraphIsomorphism*>(self._this)).setEdgeLabels(patternEdgeLabels, targetEdgeLabels)
 
-	def setCallback(self, object callback, bool_t parallel=False):
+	def setSequentialCallback(self, object callback):
 		"""
-		setCallback(callback, parallel=False)
+		setSequentialCallback(callback)
 
-		Set a Python callback that is called for every match.
+		Set a Python callback. Every match will be handed to this callback as it is found, rather than collecting them. If the callback raises, the search stops and ``run()`` raises a ``RuntimeError`` that carries the original message.
 
-		With ``parallel=False``:
-			callback(match)
-
-		With ``parallel=True``:
-			callback(workerId, match)
-
-		If the callback raises, the search stops and ``run()`` raises a
-		``RuntimeError`` that carries the original message.
+		Parameters
+		----------
+		callback : callable
+			Called once per match. Must accept (match).
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 
 		if not callable(callback):
-			raise TypeError("callback must be callable")
+			raise TypeError("Callback must be callable")
+
+		if isinstance(self, ParallelRI):
+			raise RuntimeError("Error, must use setParallelCallback(callback) for parallel algorithms")
+
+		try:
+			signature = inspect.signature(callback)
+			signature.bind(None)
+		except (TypeError, ValueError):
+				raise TypeError("callback must accept (match)") from None
 
 		# Remove a previously registered wrapper.
 		if self._callback != NULL:
 			del self._callback
 			self._callback = NULL
 
+		# Keep the Python callback alive.
+		self._py_callback = callback
+
+		self._callback = new MatchCallbackWrapper(callback)
+		try:
+			(<_SubgraphIsomorphism*>(self._this)).setCallback(
+				dereference(self._callback)
+			)
+		except BaseException:
+			del self._callback
+			self._callback = NULL
+			self._py_callback = None
+			raise
+		
+	def __dealloc__(self):
+		if self._callback != NULL:
+			del self._callback
+			self._callback = NULL
+		
+	def setParallelCallback(self, object callback):
+		"""
+		setParallelCallback(callback)
+
+		Like setSequentialCallback(callback), but this one sets a callback that also receives the worker id.
+
+		Parameters
+		----------
+		callback : callable
+			Called once per match. Must accept (workerId, match).
+		"""
+		if self._this == NULL:
+			raise RuntimeError("Error, object not properly initialized")
+
+		if not callable(callback):
+			raise TypeError("Callback must be callable")
+
+		if (isinstance(self, ParallelRI) == False):
+			raise RuntimeError ("Error, must use setSequentialCallback(callback) for sequential algorithms")
+
+		try:
+			signature = inspect.signature(callback)
+			signature.bind(None, None)
+		except (TypeError, ValueError):
+			raise TypeError("callback must accept (workerId, match)") from None
+
+		# Remove a previously registered wrapper.
 		if self._parallelCallback != NULL:
 			del self._parallelCallback
 			self._parallelCallback = NULL
@@ -163,34 +235,18 @@ cdef class SubgraphIsomorphism(Algorithm):
 		# Keep the Python callback alive.
 		self._py_callback = callback
 
-		if parallel:
-			self._parallelCallback = new ParallelMatchCallbackWrapper(callback)
-			try:
-				(<_SubgraphIsomorphism*>(self._this)).setCallback(
-					dereference(self._parallelCallback)
-				)
-			except BaseException:
-				del self._parallelCallback
-				self._parallelCallback = NULL
-				self._py_callback = None
-				raise
-		else:
-			self._callback = new MatchCallbackWrapper(callback)
-			try:
-				(<_SubgraphIsomorphism*>(self._this)).setCallback(
-					dereference(self._callback)
-				)
-			except BaseException:
-				del self._callback
-				self._callback = NULL
-				self._py_callback = None
-				raise
+		self._parallelCallback = new ParallelMatchCallbackWrapper(callback)
+		try:
+			(<_SubgraphIsomorphism*>(self._this)).setCallback(
+				dereference(self._parallelCallback)
+			)
+		except BaseException:
+			del self._parallelCallback
+			self._parallelCallback = NULL
+			self._py_callback = None
+			raise
 
 	def __dealloc__(self):
-		if self._callback != NULL:
-			del self._callback
-			self._callback = NULL
-
 		if self._parallelCallback != NULL:
 			del self._parallelCallback
 			self._parallelCallback = NULL
@@ -199,7 +255,12 @@ cdef class SubgraphIsomorphism(Algorithm):
 		"""
 		setStoreMatches(storeMatches)
 
-		Choose whether found matches are kept for ``getMatches()``.
+		Choose whether found matches are kept for getMatches().
+
+		Parameters
+		----------
+		storeMatches : bool
+			Whether to keep matches for getMatches(). Default: True
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
@@ -209,7 +270,12 @@ cdef class SubgraphIsomorphism(Algorithm):
 		"""
 		getMatches()
 
-		Return all stored matches. Each match is indexed by pattern node.
+		Returns all matches found, each one a vector indexed by pattern node. Throws an error if the matches were never stored, which happens when a callback was set or @ref setStoreMatches(false) was called, and if @ref run() has not been called yet.
+
+		Returns
+		-------
+		list(list(int))
+			A list of matches, each being represented as a list of target node ids.
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
@@ -217,7 +283,12 @@ cdef class SubgraphIsomorphism(Algorithm):
 
 	def numberOfMatches(self):
 		"""
-		Return the number of matches found.
+		Returns how many matches were found. Works regardless of whether they were stored. If a match limit was specified, the returned value is capped at that limit.
+
+		Returns
+		-------
+		int
+			The number of matches reported.
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
@@ -225,12 +296,18 @@ cdef class SubgraphIsomorphism(Algorithm):
 
 	def hasMatch(self):
 		"""
+		hasMatch()
+
 		Return whether at least one match was found.
+	
+		Returns
+		-------
+		bool
+			True if there was at least one match.
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_SubgraphIsomorphism*>(self._this)).hasMatch()
-
 
 cdef extern from "<networkit/isomorphism/VF2.hpp>" namespace "NetworKit":
 	cdef cppclass _VF2 "NetworKit::VF2" (_SubgraphIsomorphism):
@@ -238,12 +315,21 @@ cdef extern from "<networkit/isomorphism/VF2.hpp>" namespace "NetworKit":
 
 cdef class VF2(SubgraphIsomorphism):
 	"""
-	VF2(pattern, target, semantics=networkit.isomorphism.Semantics.INDUCED,
-		maxMatches=0)
+	VF2(pattern, target, semantics=networkit.isomorphism.Semantics.INDUCED, maxMatches=0)
 
-	Finds every occurrence of a pattern graph inside a target graph using VF2.
+	Finds every occurrence of a pattern graph inside a target graph, using the VF2 algorithm.
+
+	Parameters
+	----------
+	pattern : networkit.Graph
+		The pattern graph. Must not contain self-loops.
+	target : networkit.Graph
+		The target graph. Must agree with pattern on directedness.
+	semantics : 
+		Whether matches must be induced. Default: networkit.isomorphism.Semantics.INDUCED
+	maxMatches : int
+		Stop after this many matches; 0 means no limit. Default: 0
 	"""
-
 	cdef Graph _pattern
 	cdef Graph _target
 
@@ -270,8 +356,20 @@ cdef class RI(SubgraphIsomorphism):
 	   semantics=networkit.isomorphism.Semantics.INDUCED, maxMatches=0)
 
 	Finds every occurrence of a pattern graph inside a target graph using RI.
-	"""
 
+	Parameters
+	----------
+	pattern : networkit.Graph
+		The pattern graph. Must not contain self-loops.
+	target : networkit.Graph
+		The target graph. Must agree with pattern on directedness.
+	variant : networkit.isomorphism.Variant.RI
+		Plain RI or RI-DS.
+	semantics : 
+		Whether matches must be induced. Default: networkit.isomorphism.Semantics.INDUCED
+	maxMatches : int
+		Stop after this many matches; 0 means no limit. Default: 0
+	"""
 	cdef Graph _pattern
 	cdef Graph _target
 
@@ -290,8 +388,20 @@ cdef class ParallelRI(SubgraphIsomorphism):
 			   semantics=networkit.isomorphism.Semantics.INDUCED, maxMatches=0)
 
 	Parallel version of RI.
+	
+	Parameters
+	----------
+	pattern : networkit.Graph
+		The pattern graph. Must not contain self-loops.
+	target : networkit.Graph
+		The target graph. Must agree with pattern on directedness.
+	variant : networkit.isomorphism.Variant.RI
+		Plain RI or RI-DS.
+	semantics : 
+		Whether matches must be induced. Default: networkit.isomorphism.Semantics.INDUCED
+	maxMatches : int
+		Stop after this many matches; 0 means no limit. Default: 0
 	"""
-
 	cdef Graph _pattern
 	cdef Graph _target
 
