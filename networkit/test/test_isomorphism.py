@@ -150,7 +150,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		def callback(match):
 			matches.append(match)
 
-		ri = nk.isomorphism.VF2(self.arc, self.square)
+		ri = nk.isomorphism.RI(self.arc, self.square)
 		ri.setStoreMatches(True)
 		ri.setCallback(callback)
 		ri.run()
