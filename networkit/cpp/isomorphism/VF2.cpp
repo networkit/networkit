@@ -19,38 +19,6 @@ using IsomorphismDetails::MatchReporter;
 using IsomorphismDetails::SearchGraph;
 
 /**
- * Issues:
- *
- * MK: Valid concern, use a vector v (probably two -- for target and pattern)
- * to store what nodes you added into the terminal set on the depth d. Then remove those
- * that are from the end of the vector. Precalculate the vector pre-allocation size, if
- * the calculation is chaep.
- *   It will also automatically fix the issue with depth=0 and non-present node,
- * bacuse you do not need to store the depths in the in1/out1 etc., only 0/1
- * to store present (may be unordered_set would be more suitable), and solely the
- * vector (actually stack) v is enough for removePair.
- *
- * AS: In addNodePair(pu, tv), when we map pu to tv, if either of them was part of a terminal set
- * before, they must be removed from it. But they have not necessarily been added to it at the
- * current depth so its entry in the member vector is somewhere further left and should be invalid.
- * Currently we just leave these entries and when iterating over the member vectors we check fo
- * each entry whether it is currently mapped. If yes, we skip that entry. So it is not a problem but
- * maybe it is inefficient.
- *
- * AS: In addNodePair(pu, tv), we remove pu, tv from all terminal sets that they were part of.
- * Currently we use a vector of length 4 to remember if pu, tv were part of any terminal sets. We
- * hand this vector to removePair(pu, tv) to restore pu and tv terminal sets membership. Now that we
- * have the member vectors we could also do this by iterating over the member vectors until we
- * find pu, tv. Then we know it was part of the corresponding terminal set before addPair(pu, tv).
- *
- * depth parameter in nextCandidatePair() is never used. If both in1 and in2 or both out1 and out2
- * are nonempty, in nextCandidatePair() we pair the smallest node in the first set with every node
- * in the second set. Could/should we use the depth parameter anywhere?
- *
- * TODO: More testcases?
- */
-
-/**
  * The actual VF2 search.
  *
  * Lives here rather than in VF2.hpp so that the public header never has to mention the search
@@ -225,7 +193,7 @@ private:
                     break;
                 }
             }
-            // Pair with every unmapped target node
+            // Pair it with every unmapped target node
             for (node v = cursor; v < core2.size(); ++v) {
                 if (targetGraph.hasNode(v) && core2[v] == none) {
                     tv = v;
@@ -239,8 +207,11 @@ private:
     }
 
     /**
-     * Whether the pair (@a pu, @a tv) may be added to the mapping.
+     * @param pu The first node.
+     * @param tv The second node.
+     * @return true if the pair @a pu, @a tv may be added to the mapping.
      */
+
     bool feasible(node pu, node tv) const {
 
         return ruleSuccessors(pu, tv) && rulePredecessors(pu, tv) && ruleTerminalCounts(pu, tv)
@@ -248,8 +219,11 @@ private:
     }
 
     /**
-     * Consistency rule for out-edges. For every out-neighbour of @a pu that is already mapped, the
-     * target must contain the corresponding edge out of @a tv.
+     * Consistency check for out-edges. For every out-neighbour of @a pu that is already mapped, the target must contain the corresponding edge out of @a tv.
+     * 
+     * @param pu The first node.
+     * @param tv The second node.
+     * @return true if the out-edges of @a pu, @a tv are consistent.
      */
     bool ruleSuccessors(node pu, node tv) const {
 
@@ -295,9 +269,11 @@ private:
     }
 
     /**
-     * Consistency rule for in-edges. The mirror image of @ref ruleSuccessors(). For every
-     * in-neighbour of @a pu that is already mapped, the target must contain the corresponding edge
-     * into @a tv.
+     * Consistency check for in-edges. For every in-neighbour of @a pu that is already mapped, the target must contain the corresponding edge into @a tv. The mirror image of @ref ruleSuccessors().
+     * 
+     * @param pu The first node.
+     * @param tv The second node.
+     * @return true if the in-edges of @a pu, @a tv are consistent.
      */
     bool rulePredecessors(node pu, node tv) const {
 
@@ -347,9 +323,11 @@ private:
     }
 
     /**
-     * One-step look-ahead on the terminal sets. Count unmapped, out- and in-neighbors of pu and tv
-     * that are part of a terminal set and return false if the pattern count exceeds the target
-     * count.
+     * One-step look-ahead on the terminal sets. Count unmapped, out- and in-terminal neighbors of @a pu and @a tv. Return false if the pattern count exceeds the target count for either.
+     * 
+     * @param pu The first node.
+     * @param tv The second node.
+     * @return true if one-step look-ahead on the terminal sets of @a pu, @a tv passes.
      */
     bool ruleTerminalCounts(node pu, node tv) const {
 
@@ -358,7 +336,7 @@ private:
         count in2Neighbors = 0;
         count out2Neighbors = 0;
 
-        // Count unmapped, out-terminal out-neighbors of tv and pu
+        // Count unmapped, out-terminal neighbors of tv and pu
         for (auto it = targetGraph.outBegin(tv); it != targetGraph.outEnd(tv); ++it) {
             node v = *it;
             if (core2[v] == none && out2[v] != none) {
@@ -375,7 +353,7 @@ private:
             }
         }
 
-        // If directed, do the same for in-neighbors
+        // If directed, do the same for unmapped, in-terminal neighbors
         if (patternGraph.isDirected()) {
             for (auto it = targetGraph.inBegin(tv); it != targetGraph.inEnd(tv); ++it) {
                 node v = *it;
@@ -397,9 +375,11 @@ private:
     }
 
     /**
-     * Two-step look-ahead on the nodes outside both the mapping and the terminal sets. Count
-     * unmapped out- and in-neighbors of pu and tv that are not part of any terminal set and return
-     * false if the pattern count exceeds the target count.
+     * Two-step look-ahead on the terminal sets. Count unmapped, out- and in-neighbors of @a pu and @a tv that are not part of any terminal set. Return false if the pattern count exceeds the target count for either.
+     * 
+     * @param pu The first node.
+     * @param tv The second node.
+     * @return true if two-step look-ahead on the terminal sets of @a pu, @a tv passes.
      */
     bool ruleNewCounts(node pu, node tv) const {
 
@@ -452,9 +432,11 @@ private:
     }
 
     /**
-     * Label rule. Return true immediately if the search is unlabelled. Otherwise the two
-     * labels must be equal, except that @ref none on either side is a wildcard that matches
-     * anything.
+     * Consistency check for labels. Return true immediately if the search is unlabelled. Otherwise the labels of @a pu and @a tv must be equal, except that @ref none on either side is a wildcard that matches anything.
+     * 
+     * @param pu The first node.
+     * @param tv The second node.
+     * @return true if the labels of @a pu, @a tv are consistent.
      */
     bool ruleLabels(node pu, node tv) const {
 
@@ -700,11 +682,6 @@ VF2::VF2(const Graph &pattern, const Graph &target, Semantics semantics, count m
     : SubgraphIsomorphism(pattern, target, semantics, maxMatches) {}
 
 void VF2::run() {
-    // VF2's feasibility rules compare *node* labels and nothing else, so an edge label set here
-    // would simply be ignored and the matches reported would violate it, with nothing to say so.
-    // Refusing is the honest answer. Teaching the search to honour edge labels is later work and
-    // belongs in ruleSuccessors/rulePredecessors, where the mapped neighbour's edge is already in
-    // hand - see the TODO at the top of this file.
     Aux::SignalHandler handler;
     prepareRun();
     VF2Impl(*pattern, *target, patternNodeLabels, targetNodeLabels, patternEdgeLabels,
