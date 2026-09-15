@@ -140,6 +140,23 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 
 		self.assertEqual({tuple(match) for match in riPar.getMatches()}, self.expected)
 
+	def testRIVariants(self):
+		ri = nk.isomorphism.RI(self.arc, self.square, variant=nk.isomorphism.Variant.RI)
+		ri.run()
+
+		ri_ds = nk.isomorphism.RI(self.arc, self.square, variant=nk.isomorphism.Variant.RI_DS)
+		ri_ds.run()
+
+		self.assertTrue(ri.hasMatch())
+		self.assertEqual(ri.numberOfMatches(), 8)
+
+		self.assertTrue(ri_ds.hasMatch())
+		self.assertEqual(ri_ds.numberOfMatches(), 8)
+
+		self.assertEqual({tuple(match) for match in ri.getMatches()}, self.expected)
+
+		self.assertEqual({tuple(match) for match in ri_ds.getMatches()}, self.expected)
+
 	def testVF2Callback(self):
 		matches = []
 
