@@ -4,321 +4,335 @@ import unittest
 
 import networkit as nk
 
-
 class TestSubgraphIsomorphism(unittest.TestCase):
 
-    def setUp(self):
-        # Pattern: 0 -- 1
-        self.pattern = nk.Graph(2)
-        self.pattern.addEdge(0, 1)
+	def setUp(self):
+		# Pattern: Edge (0,1)
+		self.arc = nk.Graph(2)
+		self.arc.addEdge(0, 1)
+
+		# Target: Square {0, 1, 2, 3}
+		self.square = nk.Graph(4)
+		self.square.addEdge(0, 1)
+		self.square.addEdge(1, 2)
+		self.square.addEdge(2, 3)
+		self.square.addEdge(3, 0)
+
+		# Target: Square {0, 1, 2, 3} with diagonal (0,2)
+		self.diagonal = nk.Graph(5)
+		self.diagonal.addEdge(0, 1)
+		self.diagonal.addEdge(1, 2)
+		self.diagonal.addEdge(2, 3)
+		self.diagonal.addEdge(3, 0)
+		self.diagonal.addEdge(0, 2)
 
-        # Target: 0 -- 1 -- 2
-        self.target = nk.Graph(3)
-        self.target.addEdge(0, 1)
-        self.target.addEdge(1, 2)
+		self.expected = {
+			(0, 1),
+			(1, 2),
+			(2, 3),
+			(3, 0),
+			(1, 0),
+			(2, 1),
+			(3, 2),
+			(0, 3),
+		}
 
-    def testVF2Callback(self):
-        matches = []
+	def testInstantiationOfAbstractBaseClass(self):
+		with self.assertRaises(RuntimeError):
+			nk.isomorphism.SubgraphIsomorphism(self.arc, self.square)
+
+	def testNoMatch(self):
+		target = nk.Graph(2)
+
+		vf2 = nk.isomorphism.VF2(self.arc, target)
+		vf2.run()
 
-        def callback(match):
-            matches.append(match)
+		self.assertFalse(vf2.hasMatch())
+		self.assertEqual(vf2.numberOfMatches(), 0)
 
-        iso = nk.isomorphism.VF2(self.pattern, self.target)
-        iso.setCallback(callback)
-        iso.run()
+	def testMatchReporting(self):   
+		vf2 = nk.isomorphism.VF2(self.arc, self.square)
+		vf2.setStoreMatches(False)
+		vf2.run()
 
-        self.assertEqual(len(matches), 4)
-        self.assertEqual(len(matches[0]), 2)
-        self.assertEqual(len(matches[1]), 2)
+		self.assertEqual(vf2.numberOfWorkers(), 1)
+		self.assertTrue(vf2.hasMatch())
+		self.assertEqual(vf2.numberOfMatches(), 8)
 
-    def testRINumberOfMatches(self):
-        iso = nk.isomorphism.RI(self.pattern, self.target)
-        iso.run()
+		with self.assertRaises(RuntimeError):
+			vf2.getMatches()
 
-        self.assertEqual(iso.numberOfMatches(), 4)
-        self.assertTrue(iso.hasMatch())
+		vf2.setStoreMatches(True)
+		vf2.run()
 
-    def testParallelRICallback(self):
-        matches = []
+		self.assertEqual({tuple(match) for match in vf2.getMatches()}, self.expected)
 
-        def callback(workerId, match):
-            matches.append((workerId, match))
+		# Check that running again gives the same matches
+		vf2.run()
 
-        iso = nk.isomorphism.ParallelRI(self.pattern, self.target)
-        iso.setCallback(callback, parallel=True)
-        iso.run()
+		self.assertEqual({tuple(match) for match in vf2.getMatches()}, self.expected)
+
+	def testIsoVsMono(self):
+		vf2_iso = nk.isomorphism.VF2(self.square, self.diagonal, nk.isomorphism.Semantics.INDUCED)
+		vf2_iso.run()
+		self.assertFalse(vf2_iso.hasMatch())
+
+		vf2_mono = nk.isomorphism.VF2(self.square, self.diagonal, nk.isomorphism.Semantics.MONOMORPHISM)
+		vf2_mono.run()
+		self.assertEqual(vf2_mono.numberOfMatches(), 8)
+
+	def testNodeAndEdgeLabels(self):
+		vf2 = nk.isomorphism.VF2(self.arc, self.square)
+
+		vf2.setNodeLabels([0, 1], [0, 1, 2, 1])
+		vf2.run()
+		self.assertEqual(vf2.numberOfMatches(), 2)
+
+		self.arc.indexEdges()
+		self.square.indexEdges()
+		vf2_2 = nk.isomorphism.VF2(self.arc, self.square)
+		vf2_2.setNodeLabels([0, 1], [0, 1, 2, 1])
+		vf2_2.setEdgeLabels([0], [0, 0, 0, 1])
+		vf2_2.run()
+		self.assertEqual(vf2_2.numberOfMatches(), 1)
 
-        self.assertEqual(len(matches), 4)
-        self.assertEqual(len(matches[0][1]), 2)
+		vf2_2.setNodeLabels([nk.none, nk.none], [nk.none, nk.none, nk.none, nk.none])
+		vf2_2.run()
+		self.assertEqual(vf2_2.numberOfMatches(), 6)
 
-    def testCallbackReceivesIndependentMatches(self):
-        pattern = nk.Graph(2)
-        pattern.addEdge(0, 1)
+	def testDifferentAlgos(self):
+		vf2 = nk.isomorphism.VF2(self.arc, self.square)
+		vf2.run()
 
-        target = nk.Graph(3)
-        target.addEdge(0, 1)
-        target.addEdge(1, 2)
+		ri = nk.isomorphism.RI(self.arc, self.square)
+		ri.run()
 
-        matches = []
+		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
+		riPar.run()
 
-        def callback(match):
-            matches.append(match)
+		self.assertTrue(vf2.hasMatch())
+		self.assertEqual(vf2.numberOfMatches(), 8)
 
-        iso = nk.isomorphism.VF2(pattern, target)
-        iso.setCallback(callback)
-        iso.run()
+		self.assertTrue(ri.hasMatch())
+		self.assertEqual(ri.numberOfMatches(), 8)
 
-        saved = [tuple(match) for match in matches]
+		self.assertTrue(riPar.hasMatch())
+		self.assertEqual(riPar.numberOfMatches(), 8)
 
-        self.assertEqual(len(saved), 4)
-        self.assertEqual(len({id(match) for match in matches}), 4)
+		self.assertEqual({tuple(match) for match in vf2.getMatches()}, self.expected)
 
-    def testCallbackCanMutateReceivedMatch(self):
-        pattern = nk.Graph(2)
-        pattern.addEdge(0, 1)
+		self.assertEqual({tuple(match) for match in ri.getMatches()}, self.expected)
 
-        target = nk.Graph(3)
-        target.addEdge(0, 1)
-        target.addEdge(1, 2)
+		self.assertEqual({tuple(match) for match in riPar.getMatches()}, self.expected)
 
-        matches = []
+	def testVF2Callback(self):
+		matches = []
 
-        def callback(match):
-            match[0] = 999
-            matches.append(tuple(match))
+		def callback(match):
+			matches.append(match)
 
-        iso = nk.isomorphism.VF2(pattern, target)
-        iso.setCallback(callback)
-        iso.run()
+		vf2 = nk.isomorphism.VF2(self.arc, self.square)
+		vf2.setCallback(callback)
+		vf2.setStoreMatches(True)
+		vf2.run()
 
-        self.assertEqual(len(matches), 4)
+		self.assertEqual(len(matches), 8)
+		self.assertEqual({tuple(match) for match in matches}, self.expected)
+		with self.assertRaises(RuntimeError):
+			vf2.getMatches()
 
-    def testCallbackCalledExactlyOncePerMatch(self):
-        pattern = nk.Graph(2)
-        pattern.addEdge(0, 1)
+	def testRICallback(self):
+		matches = []
 
-        target = nk.Graph(4)
-        target.addEdge(0, 1)
-        target.addEdge(1, 2)
-        target.addEdge(2, 3)
+		def callback(match):
+			matches.append(match)
 
-        callback_count = 0
+		ri = nk.isomorphism.VF2(self.arc, self.square)
+		ri.setStoreMatches(True)
+		ri.setCallback(callback)
+		ri.run()
 
-        def callback(match):
-            nonlocal callback_count
-            callback_count += 1
+		self.assertEqual(len(matches), 8)
+		self.assertEqual({tuple(match) for match in matches}, self.expected)
+		with self.assertRaises(RuntimeError):
+			ri.getMatches()
 
-        iso = nk.isomorphism.VF2(pattern, target)
-        iso.setCallback(callback)
-        iso.run()
+	def testParallelRICallback(self):
+		matches = []
 
-        self.assertEqual(callback_count, 6)
+		def callback(workerId, match):
+			matches.append((workerId, match))
 
-    def testCallbackCanBeCallableObject(self):
-        pattern = nk.Graph(2)
-        pattern.addEdge(0, 1)
+		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
+		riPar.setCallback(callback, parallel=True)
+		riPar.run()
 
-        target = nk.Graph(3)
-        target.addEdge(0, 1)
-        target.addEdge(1, 2)
+		self.assertEqual(len(matches), 8)
+		for workerId, match in matches:
+			self.assertGreaterEqual(workerId, 0)
+			self.assertLess(workerId, riPar.numberOfWorkers())
+		self.assertEqual({tuple(match) for workerId, match in matches}, self.expected)
+		with self.assertRaises(RuntimeError):
+			riPar.getMatches()
 
-        class Callback:
-            def __init__(self):
-                self.matches = []
+	def testCallbackCalledExactlyOncePerMatch(self):
+		callback_count = 0
 
-            def __call__(self, match):
-                self.matches.append(tuple(match))
+		def callback(match):
+			nonlocal callback_count
+			callback_count += 1
 
-        callback = Callback()
+		vf2 = nk.isomorphism.VF2(self.arc, self.square)
+		vf2.setCallback(callback)
+		vf2.run()
 
-        iso = nk.isomorphism.VF2(pattern, target)
-        iso.setCallback(callback)
-        iso.run()
+		self.assertEqual(callback_count, 8)
 
-        self.assertEqual(len(callback.matches), 4)
+	def testSetCallbackAfterRun(self):
+		matches = []
 
-    def testCallbackLambda(self):
-        pattern = nk.Graph(2)
-        pattern.addEdge(0, 1)
+		def callback(match):
+			matches.append(match)
 
-        target = nk.Graph(2)
-        target.addEdge(0, 1)
+		vf2 = nk.isomorphism.VF2(self.arc, self.square)
+		vf2.run()
 
-        matches = []
+		self.assertEqual(len(matches), 0)
 
-        iso = nk.isomorphism.VF2(pattern, target)
-        iso.setCallback(lambda match: matches.append(tuple(match)))
-        iso.run()
+		vf2.setCallback(callback)
+		vf2.run()
 
-        self.assertEqual(len(matches), 2)
+		self.assertEqual(len(matches), 8)
+		self.assertEqual({tuple(match) for match in matches}, self.expected)
 
-    #TODO This test causes an issue that needs to be investigated.
-    def testCallbackRaisesOnFirstMatch(self):
-        pattern = nk.Graph(2)
-        pattern.addEdge(0, 1)
+	def testUseLastSetCallback(self):
+		matches1 = []
+		matches2 = []
 
-        target = nk.Graph(4)
-        target.addEdge(0, 1)
-        target.addEdge(1, 2)
-        target.addEdge(2, 3)
+		def callback1(match):
+			matches1.append(match)
 
-        calls = 0
+		def callback2(match):
+			matches2.append(match)
 
-        def callback(match):
-            nonlocal calls
-            calls += 1
-            raise RuntimeError("stop")
+		vf2 = nk.isomorphism.VF2(self.arc, self.square)
+		vf2.setCallback(callback1)
+		vf2.setCallback(callback2)
+		vf2.run()
 
-        iso = nk.isomorphism.RI(pattern, target)
-        iso.setCallback(callback)
+		self.assertEqual(len(matches1), 0)
+		self.assertEqual(len(matches2), 8)
+		self.assertEqual({tuple(match) for match in matches2}, self.expected)
 
-        with self.assertRaises(RuntimeError):
-            iso.run()
+	def testCallbackCanBeCallableObject(self):
+		class Callback:
+			def __init__(self):
+				self.matches = []
 
-        self.assertEqual(calls, 1)
+			def __call__(self, match):
+				self.matches.append(tuple(match))
 
-    def testDifferentCallbacksDoNotShareState(self):
-        pattern = nk.Graph(2)
-        pattern.addEdge(0, 1)
+		callback = Callback()
 
-        target = nk.Graph(3)
-        target.addEdge(0, 1)
-        target.addEdge(1, 2)
+		vf2 = nk.isomorphism.VF2(self.arc, self.square)
+		vf2.setCallback(callback)
+		vf2.run()
 
-        first = []
-        second = []
+		self.assertEqual(len(callback.matches), 8)
+		self.assertEqual(set(callback.matches), self.expected)
 
-        def callback1(match):
-            first.append(tuple(match))
+	def testDifferentCallbacksDoNotShareState(self):
+		matches_1 = []
+		matches_2 = []
 
-        def callback2(match):
-            second.append(tuple(match))
+		def callback1(match):
+			matches_1.append(tuple(match))
 
-        iso1 = nk.isomorphism.VF2(pattern, target)
-        iso2 = nk.isomorphism.VF2(pattern, target)
+		def callback2(match):
+			matches_2.append(tuple(match))
 
-        iso1.setCallback(callback1)
-        iso2.setCallback(callback2)
+		vf2_1 = nk.isomorphism.VF2(self.arc, self.square)
+		vf2_2 = nk.isomorphism.VF2(self.arc, self.square)
 
-        iso1.run()
-        iso2.run()
+		vf2_1.setCallback(callback1)
+		vf2_2.setCallback(callback2)
 
-        self.assertEqual(len(first), 4)
-        self.assertEqual(len(second), 4)
-        self.assertEqual(first, second)
+		vf2_1.run()
+		vf2_2.run()
 
-    def testCallbackKeepsObjectAlive(self):
-        pattern = nk.Graph(2)
-        pattern.addEdge(0, 1)
+		self.assertEqual(len(matches_1), 8)
+		self.assertEqual(len(matches_2), 8)
+		self.assertEqual(matches_1, matches_2)
 
-        target = nk.Graph(3)
-        target.addEdge(0, 1)
-        target.addEdge(1, 2)
+	def testCallbackKeepsObjectAlive(self):
+		class Callback:
+			def __init__(self):
+				self.count = 0
 
-        class Callback:
-            def __init__(self):
-                self.count = 0
+			def __call__(self, match):
+				self.count += 1
 
-            def __call__(self, match):
-                self.count += 1
+		callback = Callback()
 
-        callback = Callback()
+		vf2 = nk.isomorphism.VF2(self.arc, self.square)
+		vf2.setCallback(callback)
 
-        iso = nk.isomorphism.VF2(pattern, target)
-        iso.setCallback(callback)
+		del callback
+		vf2.run()
 
-        del callback
-        iso.run()
+		self.assertEqual(vf2.numberOfMatches(), 8)
 
-        self.assertEqual(
-            iso.numberOfMatches(),
-            4
-        )
+	def testCallbackRaisesOnFirstMatchSeq(self):
+		matches = []
 
-    def testParallelCallbackReceivesValidWorkerIds(self):
-        pattern = nk.Graph(2)
-        pattern.addEdge(0, 1)
+		def callback(match):
+			matches.append(tuple(match))
+			raise RuntimeError("sequential callback failed")
 
-        target = nk.Graph(3)
-        target.addEdge(0, 1)
-        target.addEdge(1, 2)
+		ri = nk.isomorphism.RI(self.arc, self.square)
+		ri.setCallback(callback)
 
-        calls = []
+		with self.assertRaises(RuntimeError):
+			ri.run()
 
-        def callback(workerId, match):
-            calls.append((workerId, tuple(match)))
+		self.assertEqual(len(matches), 1)
 
-        iso = nk.isomorphism.ParallelRI(pattern, target)
-        iso.setCallback(callback, parallel=True)
-        iso.run()
+	#TODO This test causes an issue.
+	def testCallbackRaisesOnFirstMatchPar(self):
+		matches = []
 
-        self.assertEqual(len(calls), 4)
+		def callback(workerId, match):
+			matches.append((workerId, tuple(match)))
+			raise RuntimeError("parallel callback failed")
 
-        for workerId, match in calls:
-            self.assertGreaterEqual(workerId, 0)
-            self.assertLess(workerId, iso.numberOfWorkers())
-            self.assertEqual(len(match), 2)
+		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
+		riPar.setCallback(callback, parallel=True)
 
-    def testParallelCallbackExceptionPropagates(self):
-        pattern = nk.Graph(2)
-        pattern.addEdge(0, 1)
+		with self.assertRaises(RuntimeError):
+			riPar.run()
 
-        target = nk.Graph(4)
-        target.addEdge(0, 1)
-        target.addEdge(1, 2)
-        target.addEdge(2, 3)
+		self.assertGreaterEqual(len(matches), 1)
 
-        calls = []
+	def testParallelCallbackResultsMatchSerialResults(self):
+		matches_ri = []
+		matches_riPar = []
 
-        def callback(workerId, match):
-            calls.append((workerId, tuple(match)))
-            raise RuntimeError("parallel callback failed")
+		def callback_ri(match):
+			matches_ri.append(tuple(match))
 
-        iso = nk.isomorphism.ParallelRI(pattern, target)
-        iso.setCallback(callback, parallel=True)
+		def callback_riPar(workerId, match):
+			matches_riPar.append(tuple(match))
 
-        with self.assertRaises(RuntimeError):
-            iso.run()
+		ri = nk.isomorphism.RI(self.arc, self.square)
+		ri.setCallback(callback_ri)
+		ri.run()
 
-        self.assertGreaterEqual(len(calls), 1)
+		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
+		riPar.setCallback(callback_riPar, parallel=True)
+		riPar.run()
 
-    def testParallelCallbackResultsMatchSerialResults(self):
-        pattern = nk.Graph(3)
-        pattern.addEdge(0, 1)
-        pattern.addEdge(1, 2)
-
-        target = nk.Graph(4)
-        target.addEdge(0, 1)
-        target.addEdge(1, 2)
-        target.addEdge(2, 3)
-
-        serial_matches = []
-        parallel_matches = []
-
-        def serial_callback(match):
-            serial_matches.append(tuple(match))
-
-        def parallel_callback(workerId, match):
-            parallel_matches.append(tuple(match))
-
-        serial = nk.isomorphism.RI(pattern, target)
-        serial.setCallback(serial_callback)
-        serial.run()
-
-        parallel = nk.isomorphism.ParallelRI(pattern, target)
-        parallel.setCallback(parallel_callback, parallel=True)
-        parallel.run()
-
-        self.assertEqual(
-            set(serial_matches),
-            set(parallel_matches)
-        )
-        self.assertEqual(
-            len(serial_matches),
-            len(parallel_matches)
-        )
-    
-
+		self.assertEqual(set(matches_ri), set(matches_riPar))
+		self.assertEqual(len(matches_ri), len(matches_riPar))
 
 if __name__ == "__main__":
-    unittest.main()
+	unittest.main()
