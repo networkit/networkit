@@ -50,7 +50,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		self.assertFalse(vf2.hasMatch())
 		self.assertEqual(vf2.numberOfMatches(), 0)
 
-	def testMatchReporting(self):   
+	def testMatchReporting(self):
 		vf2 = nk.isomorphism.VF2(self.arc, self.square)
 		vf2.setStoreMatches(False)
 		vf2.run()

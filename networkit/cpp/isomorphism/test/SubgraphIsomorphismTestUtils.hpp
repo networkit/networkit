@@ -1,9 +1,8 @@
 #ifndef NETWORKIT_CPP_ISOMORPHISM_TEST_SUBGRAPH_ISOMORPHISM_TEST_UTILS_HPP_
 #define NETWORKIT_CPP_ISOMORPHISM_TEST_SUBGRAPH_ISOMORPHISM_TEST_UTILS_HPP_
 
-// Shared test fixture for the isomorphism module. Header-only because networkit_add_test compiles
-// exactly one .cpp per test target, so this is the only way four separate test files can share a
-// corpus and a reference implementation.
+// Shared test helpers for the isomorphism module: a brute-force reference matcher, a corpus of
+// test cases, and assertions that compare an algorithm against the reference.
 
 #include <algorithm>
 #include <functional>
@@ -34,18 +33,8 @@ using Match = SubgraphIsomorphism::Match;
 // ---------------------------------------------------------------------------------------------
 // The reference matcher
 //
-// Everything downstream trusts this, so it is written to be *obviously* right rather than fast.
-// Two rules it follows deliberately:
-//
-//   1. It never touches SearchGraph. A reference built on the code under test inherits that
-//      code's bugs and proves nothing. It works straight off Graph.
-//   2. Generating candidate mappings and judging them are separate functions. The generator knows
-//      only about injectivity; the judge re-derives every rule from scratch on a finished mapping.
-//      Neither half is clever enough to be wrong in an interesting way.
-//
-// Plain Graph::hasEdge is safe here even on inputs with self-loops and parallel edges: a mapping
-// is injective over distinct pattern nodes, so every pair it asks about has u != v, and hasEdge
-// answers a boolean question that multiplicity cannot change.
+// It works directly on Graph rather than on SearchGraph, so that it cannot share a bug with the
+// code under test. It enumerates every injective mapping and checks each one from scratch.
 // ---------------------------------------------------------------------------------------------
 
 /// Whether pattern node @a pu may sit on target node @a tv as far as labels are concerned.
@@ -60,15 +49,9 @@ inline bool nodeLabelsCompatible(const std::vector<index> &patternNodeLabels,
     return patternLabel == none || targetLabel == none || patternLabel == targetLabel;
 }
 
-/// Every label carried by an edge, keyed by *ordered* node pair.
-///
-/// Read from forEdges(), which visits each edge exactly once and hands out a distinct id for every
-/// copy of a parallel pair, and then symmetrized by hand for an undirected graph. Asking an
-/// endpoint for its incident edge ids instead would be wrong: `Graph::indexEdges()` gives both
-/// copies of an undirected parallel pair the *same* id when they are read from the lower-numbered
-/// endpoint, so which labels you saw would depend on which end you asked from.
-///
-/// A pair maps to a vector rather than a single label because parallel edges are legal input.
+/// The labels of all edges, keyed by ordered node pair. A pair has several labels if the graph has
+/// parallel edges. The labels are read with forEdges(), which visits every parallel edge with its
+/// own id.
 inline std::map<std::pair<node, node>, std::vector<index>>
 edgeLabelsByPair(const Graph &G, const std::vector<index> &edgeLabels) {
     std::map<std::pair<node, node>, std::vector<index>> byPair;
@@ -89,13 +72,9 @@ labelsOfPair(const std::map<std::pair<node, node>, std::vector<index>> &byPair, 
     return found == byPair.end() ? nothing : found->second;
 }
 
-/// Whether a pattern edge may sit on a target edge as far as edge labels are concerned.
-///
-/// `none` is a wildcard on either side, exactly as it is for node labels. A pair of nodes carries
-/// several labels only when the graph has parallel edges, and then it is enough that *some*
-/// pattern label is compatible with *some* target label - the reading spelled out under "Ideas for
-/// later" in the class documentation. On the simple graphs the module accepts today there is one
-/// label per side and this is plain equality-with-wildcards.
+/// Whether a pattern edge may sit on a target edge as far as edge labels are concerned. `none` is a
+/// wildcard on either side. With parallel edges a node pair carries several labels, and then some
+/// pattern label must be compatible with some target label.
 inline bool edgeLabelsCompatible(const std::vector<index> &patternEdgeLabels,
                                  const std::vector<index> &targetEdgeLabels) {
     for (index patternLabel : patternEdgeLabels) {
@@ -107,11 +86,8 @@ inline bool edgeLabelsCompatible(const std::vector<index> &patternEdgeLabels,
     return false;
 }
 
-/// Whether one complete mapping is a match. Judged from scratch, without reference to how the
-/// mapping was produced, so this doubles as the check that an *algorithm's* output is well-formed.
-///
-/// The edge-label vectors are last and default to empty so that every call site that predates them
-/// keeps reading as it did. They are indexed by edge id, not node id.
+/// Whether one complete mapping is a match. Also checks that the output of an algorithm is
+/// well-formed. The edge label vectors are indexed by edge id.
 inline bool isValidMatch(const Graph &pattern, const Graph &target, Semantics semantics,
                          const std::vector<index> &patternNodeLabels,
                          const std::vector<index> &targetNodeLabels, const Match &match,
@@ -122,8 +98,6 @@ inline bool isValidMatch(const Graph &pattern, const Graph &target, Semantics se
     if (match.size() != pz)
         return false;
 
-    // Rebuilt per mapping rather than cached, because being obviously right matters more here than
-    // being fast, and the corpus graphs have a handful of edges each.
     const bool edgeLabelled = !patternEdgeLabels.empty();
     std::map<std::pair<node, node>, std::vector<index>> patternEdgeLabelsByPair;
     std::map<std::pair<node, node>, std::vector<index>> targetEdgeLabelsByPair;
@@ -174,8 +148,7 @@ inline bool isValidMatch(const Graph &pattern, const Graph &target, Semantics se
             if (semantics == Semantics::INDUCED && !patternEdge && targetEdge)
                 return false;
 
-            // Edge labels only ever constrain edges that exist, so a pattern non-edge is never
-            // involved and the INDUCED rule above is untouched by them.
+            // Edge labels only constrain pattern edges.
             if (edgeLabelled && patternEdge
                 && !edgeLabelsCompatible(labelsOfPair(patternEdgeLabelsByPair, a, b),
                                          labelsOfPair(targetEdgeLabelsByPair, match[a], match[b])))
@@ -186,14 +159,9 @@ inline bool isValidMatch(const Graph &pattern, const Graph &target, Semantics se
     return true;
 }
 
-/// Every match, by exhaustive enumeration.
-///
-/// Generates every injective assignment of pattern nodes to target nodes with no pruning beyond
-/// injectivity, then hands each finished assignment to @ref isValidMatch(). That is
-/// O(targetNodes ^ patternNodes), so it is only usable on the tiny inputs in @ref standardCases().
-///
-/// An empty pattern yields exactly one match - the empty mapping - which is the convention the
-/// four algorithms have to agree on.
+/// Every match, found by checking every injective mapping with @ref isValidMatch(). This takes
+/// O(targetNodes ^ patternNodes) time, so it is only usable on tiny inputs. An empty pattern has
+/// exactly one match, the empty mapping.
 inline std::vector<Match> referenceMatches(const Graph &pattern, const Graph &target,
                                            Semantics semantics,
                                            const std::vector<index> &patternNodeLabels = {},
@@ -235,8 +203,7 @@ inline std::vector<Match> referenceMatches(const Graph &pattern, const Graph &ta
     return matches;
 }
 
-/// Put matches in a canonical order so two result sets can be compared. Necessary rather than
-/// cosmetic: ParallelRI explicitly promises no particular order.
+/// Sorts matches, so that two result sets can be compared. ParallelRI guarantees no order.
 inline void sortMatches(std::vector<Match> &matches) {
     std::sort(matches.begin(), matches.end());
 }
@@ -272,16 +239,8 @@ struct LabelledGraph {
     std::vector<index> edgeLabels;
 };
 
-/// Like @ref graphOf(), but each edge is written as `{u, v, label}` and the result carries the
-/// label vector the setter wants.
-///
-/// The indirection is unavoidable: edge labels are indexed by edge id, and nobody knows what id an
-/// edge got until `indexEdges()` has run over the finished graph. So the labels are queued per node
-/// pair in the order they were written, and then handed out in the order `forEdges()` meets the
-/// edges - which is also how @ref edgeLabelsByPair() and `SearchGraph` read them back, and which
-/// covers parallel edges, since `forEdges()` visits each copy with an id of its own. Two parallel
-/// copies of the same pair may end up swapping labels with each other; nothing here depends on
-/// which of the two got which.
+/// Like @ref graphOf(), but each edge is written as `{u, v, label}`, and the result also carries
+/// the edge label vector, indexed by edge id. Two parallel edges may swap their labels.
 inline LabelledGraph labelledGraphOf(count n,
                                      std::initializer_list<std::tuple<node, node, index>> edges,
                                      bool directed = false) {
@@ -307,10 +266,7 @@ inline LabelledGraph labelledGraphOf(count n,
     return {std::move(G), std::move(edgeLabels)};
 }
 
-/// The cases every algorithm must agree with the reference on.
-///
-/// Each one is here because it is somewhere four independent implementations would otherwise
-/// quietly disagree - not for coverage of the happy path, which any of them will get right.
+/// The cases on which every algorithm must agree with the reference.
 inline std::vector<Case> standardCases() {
     std::vector<Case> cases;
 
@@ -362,9 +318,8 @@ inline std::vector<Case> standardCases() {
                      {},
                      {}});
 
-    // Removed node ids. In the snapshot a removed id looks exactly like an isolated node - both
-    // have an empty adjacency slice - so an algorithm that does not consult hasNode() will map
-    // pattern nodes onto ids that are not nodes and invent matches that do not exist.
+    // Removed node ids. A removed id has an empty slice, like an isolated node, so an algorithm
+    // that does not check hasNode() maps pattern nodes onto ids that are not nodes.
     Graph gappedTarget = graphOf(7, {{0, 1}, {1, 3}, {3, 4}, {4, 6}});
     gappedTarget.removeNode(2);
     gappedTarget.removeNode(5);
@@ -585,13 +540,9 @@ inline std::vector<Case> standardCases() {
 }
 
 /**
- * The reference matcher wearing the SubgraphIsomorphism interface.
- *
- * Nobody should ever *use* this - it enumerates every injective mapping - but it follows the
- * run() protocol exactly, and that buys two things. It is a worked example of that protocol for
- * whoever implements a real algorithm, short enough to read in one go. And it gives the helpers
- * below something to run against before any real algorithm exists, so a mistake in the harness
- * surfaces now rather than on the first day somebody tries to use it.
+ * The reference matcher behind the SubgraphIsomorphism interface. It follows the run() protocol
+ * of a sequential algorithm, so it tests the base class and the helpers below independently of
+ * any real search.
  */
 class ReferenceSubgraphIsomorphism final : public SubgraphIsomorphism {
 
@@ -601,16 +552,12 @@ public:
         : SubgraphIsomorphism(pattern, target, semantics, maxMatches) {}
 
     void run() override {
-        // The signal handler is a plain local, exactly as in MaximalCliques::run(). This search is
-        // sequential, so the throwing assureRunning() is safe; a parallel one would have to use
-        // isRunning() inside the region instead.
         Aux::SignalHandler handler;
 
         // 1. Forget any earlier run.
         prepareRun();
 
-        // 2. Search, reporting each complete mapping and stopping the moment reportMatch()
-        //    says so.
+        // 2. Report every match until reportMatch() returns false.
         for (const Match &match :
              referenceMatches(*pattern, *target, semantics, patternNodeLabels, targetNodeLabels,
                               patternEdgeLabels, targetEdgeLabels)) {
@@ -643,14 +590,9 @@ inline void applyLabels(SubgraphIsomorphism &algo, const Case &testCase) {
         algo.setEdgeLabels(testCase.patternEdgeLabels, testCase.targetEdgeLabels);
 }
 
-/// Run an algorithm over one corpus case, allowing it to refuse an edge-labelled one.
-///
-/// Edge labels are the single place where an algorithm is allowed a second answer. The module's
-/// rule is that it either honours them or throws from run(); VF2 and VF3 throw today, and RI and
-/// ParallelRI throw on the parallel-edge case. So a `std::runtime_error` on an edge-labelled case
-/// is a pass and the comparison is skipped. Anything else - a refusal of an *unlabelled* case, or a
-/// wrong answer instead of a refusal - is not, which is the whole point of checking rather than
-/// swallowing.
+/// Run an algorithm over one corpus case. It may refuse an edge-labelled case with
+/// `std::runtime_error`: VF3 refuses all edge labels, and every algorithm refuses parallel edges
+/// with different labels. Refusing an unlabelled case fails the test.
 ///
 /// @return true if the run produced results to compare against the reference.
 template <typename Algo>
@@ -723,11 +665,8 @@ void expectRespectsMatchCap(Construct construct) {
     }
 }
 
-/// Assert that the three ways of receiving matches agree with each other.
-///
-/// This is where the serialization guarantee on MatchCallback gets exercised: the serial form must
-/// see every match exactly once even when several workers are producing them, which is what
-/// SubgraphIsomorphism::invokeCallback() takes a lock for.
+/// Assert that the serial callback, the parallel callback and counting without storing all agree
+/// with the reference.
 template <typename Construct>
 void expectCallbackFormsAgree(Construct construct) {
     for (const Case &testCase : standardCases()) {
@@ -759,8 +698,6 @@ void expectCallbackFormsAgree(Construct construct) {
         }
 
         // Parallel callback: every worker gets its own slot, so this needs no locking either.
-        // Sizing by numberOfWorkers() is the point of that accessor - and if an algorithm ever
-        // reported a tid at or beyond it, this would index out of bounds and the test would say so.
         {
             std::unique_ptr<SubgraphIsomorphism> algo = build();
             std::vector<std::vector<Match>> perWorker(algo->numberOfWorkers());

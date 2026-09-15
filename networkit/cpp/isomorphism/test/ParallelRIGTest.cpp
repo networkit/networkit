@@ -183,10 +183,10 @@ TEST_P(ParallelRIGTest, testAnswerDoesNotDependOnWorkerCount) {
  *
  * Nothing else in either test file drives a singleton domain through the parallel path, and a
  * singleton is what all three of the RI-Ds improvements turn on - it opens the matching order, it
- * is what forward checking strikes out of every other domain, and it is the reason the order is no
- * longer the one plain RI would produce. Since the whole preprocessing result is now built once
- * and read concurrently by every worker, this is also the case where a worker reading a domain the
- * driver got wrong would show up as a wrong answer rather than as a crash.
+ * is what forward checking strikes out of every other domain, and it is the reason the order
+ * differs from plain RI's. Since the preprocessing result is built once and read concurrently by
+ * every worker, a worker reading a domain the driver got wrong would show up here as a wrong
+ * answer rather than as a crash.
  *
  * The reference is sequential **plain RI**, not sequential RI-Ds: an independent search that has
  * no domains at all, so agreement cannot come from both sides making the same mistake.
@@ -378,10 +378,10 @@ TEST_P(ParallelRIGTest, testInterruptStopsEveryWorker) {
  * A callback that throws on every match it is handed, in both callback forms.
  *
  * Several workers can reach the callback at once, and each of them throws. An exception that
- * escaped the OpenMP region would call std::terminate and take the whole test binary down, which
- * is what a Python callback that raised used to do. The first exception has to come out of run()
- * instead, after every worker has unwound. The serial form also has to release its lock on the way
- * out, or the next worker would block on it forever and the region would never join.
+ * escaped the OpenMP region would call std::terminate and take the whole test binary down. The
+ * first exception has to come out of run() instead, after every worker has unwound. The serial
+ * form also has to release its lock on the way out, or the next worker would block on it forever
+ * and the region would never join.
  */
 TEST_P(ParallelRIGTest, testThrowingCallbackStopsEveryWorker) {
     // Local, so that no other runtime_error out of run() can satisfy EXPECT_THROW.

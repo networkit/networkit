@@ -88,14 +88,8 @@ std::vector<index> randomNodeLabels(count upperNodeIdBound) {
 } // namespace
 
 /**
- * Everything here is parameterised over the variant, so neither is tested less than the other.
- *
- * The two no longer produce the same matching order: RI-Ds puts singleton-domain nodes first and
- * settles a full tie by domain size, so its order depends on the target. Running a test twice is
- * therefore no longer evidence that the orders agree - where they must differ, the expectation
- * branches on the parameter, and where the domains are empty under plain RI the test says so
- * rather than asserting nothing. What running twice does still prove is the thing that matters
- * most: both variants must return exactly the same *matches*, because domains are pure pruning.
+ * Every test runs for both variants. The variants may produce different matching orders, since
+ * the RI-DS order depends on the domains, but they must find exactly the same matches.
  */
 class RIGTest : public testing::TestWithParam<RI::Variant> {};
 
@@ -122,15 +116,13 @@ TEST_P(RIGTest, testAgreesWithTheReference) {
 }
 
 // -------------------------------------------------------------------------------------------
-// The ordering, which agreement with the reference judges only by luck on a 4-node corpus
+// The matching order, checked directly
 // -------------------------------------------------------------------------------------------
 
 /**
- * Structural invariants of the matching order, checked directly rather than through a search.
- *
- * This is what catches the whole "the ordering is subtly wrong" class: a removed id in the order,
- * a node listed twice, a parent pointing forwards, a parent that is not actually adjacent, or a
- * `none` parent at a position that does have an earlier neighbour.
+ * Structural invariants of the matching order: no removed ids, no duplicates, and every parent is
+ * an earlier adjacent position, with a `none` parent exactly where no earlier position is
+ * adjacent.
  */
 TEST_P(RIGTest, testOrderingInvariants) {
     for (const Case &testCase : IsomorphismTest::standardCases()) {
@@ -241,7 +233,7 @@ TEST_P(RIGTest, testOrderingHandTraced) {
 
     if (variant == RI::Variant::RI) {
         EXPECT_EQ(tied.ordering.order, (std::vector<node>{0, 1}))
-            << "with no domains a full tie goes to the smallest node id - erratum 6";
+            << "with no domains a full tie goes to the smallest node id";
         return;
     }
 
@@ -555,12 +547,12 @@ TEST_P(RIGTest, testForwardCheckingRejectsImpossibleInstances) {
 }
 
 // -------------------------------------------------------------------------------------------
-// expand(), which nothing else exercises while ParallelRIImpl is stubbed
+// expand(), driven the way the ParallelRI workers drive it
 // -------------------------------------------------------------------------------------------
 
 /**
- * Drive RIImpl a level at a time, in the shape ParallelRIImpl::workerLoop() will use, and assert
- * the match set is the recursion's.
+ * Drive RIImpl a level at a time, as ParallelRIImpl::workerLoop() does, and assert that the match
+ * set is the same as that of the recursion.
  *
  * Nothing is carried on the C++ call stack here: every state on the pending list has to be
  * self-contained, which is exactly the property a stolen state needs. A disagreement means
