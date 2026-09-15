@@ -103,11 +103,12 @@ private:
     /**
      * One level of the depth-first search: extend a mapping of @a depth pairs by one more.
      *
+     * @param depth Current search depth.
      * @return false if the whole search must stop, true otherwise.
      */
     bool match(count depth) {
 
-        // If all pattern nodes are mapped, return mapping
+        // If depth equals the number of pattern nodes, all pattern nodes are mapped
         if (depth == patternGraph.numberOfNodes()) {
             return reportMapping();
         }
@@ -207,8 +208,8 @@ private:
     }
 
     /**
-     * @param pu The first node.
-     * @param tv The second node.
+     * @param pu The pattern node.
+     * @param tv The target node.
      * @return true if the pair @a pu, @a tv may be added to the mapping.
      */
 
@@ -219,10 +220,11 @@ private:
     }
 
     /**
-     * Consistency check for out-edges. For every out-neighbour of @a pu that is already mapped, the target must contain the corresponding edge out of @a tv.
-     * 
-     * @param pu The first node.
-     * @param tv The second node.
+     * Consistency check for out-edges. For every out-neighbour of @a pu that is already mapped, the
+     * target must contain the corresponding edge out of @a tv.
+     *
+     * @param pu The pattern node.
+     * @param tv The target node.
      * @return true if the out-edges of @a pu, @a tv are consistent.
      */
     bool ruleSuccessors(node pu, node tv) const {
@@ -269,10 +271,12 @@ private:
     }
 
     /**
-     * Consistency check for in-edges. For every in-neighbour of @a pu that is already mapped, the target must contain the corresponding edge into @a tv. The mirror image of @ref ruleSuccessors().
-     * 
-     * @param pu The first node.
-     * @param tv The second node.
+     * Consistency check for in-edges. For every in-neighbour of @a pu that is already mapped, the
+     * target must contain the corresponding edge into @a tv. The mirror image of @ref
+     * ruleSuccessors().
+     *
+     * @param pu The pattern node.
+     * @param tv The target node.
      * @return true if the in-edges of @a pu, @a tv are consistent.
      */
     bool rulePredecessors(node pu, node tv) const {
@@ -323,10 +327,11 @@ private:
     }
 
     /**
-     * One-step look-ahead on the terminal sets. Count unmapped, out- and in-terminal neighbors of @a pu and @a tv. Return false if the pattern count exceeds the target count for either.
-     * 
-     * @param pu The first node.
-     * @param tv The second node.
+     * One-step look-ahead on the terminal sets. Count unmapped, out- and in-terminal neighbors of
+     * @a pu and @a tv. Return false if the pattern count exceeds the target count for either.
+     *
+     * @param pu The pattern node.
+     * @param tv The target node.
      * @return true if one-step look-ahead on the terminal sets of @a pu, @a tv passes.
      */
     bool ruleTerminalCounts(node pu, node tv) const {
@@ -375,10 +380,12 @@ private:
     }
 
     /**
-     * Two-step look-ahead on the terminal sets. Count unmapped, out- and in-neighbors of @a pu and @a tv that are not part of any terminal set. Return false if the pattern count exceeds the target count for either.
-     * 
-     * @param pu The first node.
-     * @param tv The second node.
+     * Two-step look-ahead on the terminal sets. Count unmapped, out- and in-neighbors of @a pu and
+     * @a tv that are not part of any terminal set. Return false if the pattern count exceeds the
+     * target count for either.
+     *
+     * @param pu The pattern node.
+     * @param tv The target node.
      * @return true if two-step look-ahead on the terminal sets of @a pu, @a tv passes.
      */
     bool ruleNewCounts(node pu, node tv) const {
@@ -432,10 +439,12 @@ private:
     }
 
     /**
-     * Consistency check for labels. Return true immediately if the search is unlabelled. Otherwise the labels of @a pu and @a tv must be equal, except that @ref none on either side is a wildcard that matches anything.
-     * 
-     * @param pu The first node.
-     * @param tv The second node.
+     * Consistency check for labels. Return true immediately if the search is unlabelled. Otherwise
+     * the labels of @a pu and @a tv must be equal, except that @ref none on either side is a
+     * wildcard that matches anything.
+     *
+     * @param pu The pattern node.
+     * @param tv The target node.
      * @return true if the labels of @a pu, @a tv are consistent.
      */
     bool ruleLabels(node pu, node tv) const {
@@ -492,6 +501,8 @@ private:
     /**
      * Add (@a pu, @a tv) to the mapping and update the four terminal sets.
      *
+     * @param pu The pattern node.
+     * @param tv The target node.
      * @return The record @ref removePair() needs to undo this call. Entries 0 to 3 hold the
      * positions @a pu and @a tv had in the four member vectors, or @ref none where the node was
      * not in that set. Entries 4 to 7 hold the sizes the four member vectors had beforehand.
@@ -592,6 +603,8 @@ private:
     /**
      * Undo @ref addPair() exactly.
      *
+     * @param pu The pattern node.
+     * @param tv The target node.
      * @param restoreTerminalSets The record @ref addPair() returned for this very pair.
      */
     void removePair(node pu, node tv, const std::array<count, 8> &restoreTerminalSets) {
@@ -628,7 +641,7 @@ private:
 
     /**
      * Hand a complete mapping over. Copy core1 into 'mapping' for the pattern nodes that exist,
-     * then return report(mapping)
+     * then report the mapping.
      */
     bool reportMapping() {
 
@@ -651,9 +664,7 @@ private:
 
     SubgraphIsomorphism::Semantics semantics;
 
-    /// Call `handler->assureRunning()` in the recursion; it throws to abort a long search.
-    /// VF2 is sequential, so the throwing form is safe here - see Betweenness.cpp for what a
-    /// parallel search has to do instead.
+    /// Signal handler used to abort the search on interruption.
     Aux::SignalHandler *handler;
 
     MatchReporter report;
