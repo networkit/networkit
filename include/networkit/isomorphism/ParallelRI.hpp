@@ -10,68 +10,22 @@ namespace NetworKit {
 
 /**
  * @ingroup isomorphism
- * The @ref RI search spread across several CPU cores.
+ * Parallel version of @ref RI.
  *
- * See @ref SubgraphIsomorphism for what "occurrence" means and how to use the class, and
- * @ref RI for how the underlying algorithm works. This class runs exactly that search and finds
- * exactly the same matches; only the speed and the order differ.
+ * See @ref SubgraphIsomorphism for the definition of a match and how to use the class, and
+ * @ref RI for the algorithm. ParallelRI finds the same matches as @ref RI, but the order of the
+ * matches may differ from run to run.
  *
- * ## How the work is split
+ * Every worker expands partial mappings from its own queue, depth first. To balance the load, a
+ * worker publishes batches of its oldest partial mappings, and an idle worker steals from the
+ * batches of a randomly chosen other worker. A token that is passed around a ring of workers
+ * detects when all of them are idle. The number of workers is the global thread count, see
+ * `Aux::setNumberOfThreads()`.
  *
- * The search explores a tree: each node of the tree is a partial mapping, and its children are
- * the ways of extending that mapping by one more pattern node. That tree is wildly unbalanced -
- * one branch may die immediately while its sibling contains millions of matches - so handing each
- * worker a fixed slice of it up front would leave most of them idle almost at once.
+ * A @ref SubgraphIsomorphism::MatchCallback is never called concurrently, so the workers wait for
+ * each other to call it. A @ref SubgraphIsomorphism::ParallelMatchCallback avoids this.
  *
- * Instead each worker keeps a **private queue** of partial mappings. It pushes and pops at the
- * newest end, which is genuinely its own: no other thread ever touches that queue, so the common
- * path performs no atomic operation of any kind. Only the oldest few states a worker owns are
- * ever **published** into a second, small queue that thieves may reach, and that second queue is
- * the only thing a lock protects. When a worker runs out of work it **steals** from the far end of
- * what some randomly chosen victim has published. Taking from the far end is deliberate: that is
- * where the oldest, shallowest, and therefore largest pieces of the search tree sit, so one steal
- * buys a lot of work and steals stay rare.
- *
- * Two refinements make this pay off:
- *
- * - Expanding a single partial mapping is so cheap that publishing every one of them for stealing
- *   would cost more than doing the work. States are therefore **coalesced into larger tasks**
- *   before they become visible to thieves.
- * - Working out that *everybody* has finished is itself a synchronization problem. Rather than a
- *   shared counter that every worker hammers, a **token is passed around a ring** of workers; a
- *   full lap with nobody having found new work means the search is over.
- *
- * Recording matches costs nothing extra: each worker writes into its own padded slot, and the
- * slots are merged once at the end. There is no lock anywhere on the hot path.
- *
- * ## Number of workers
- *
- * Taken from the global NetworKit setting. Change it with `Aux::setNumberOfThreads()`, exactly as
- * for every other parallel algorithm in the library.
- *
- * ## Two things that differ from the sequential algorithms
- *
- * @note **The order of the matches is not reproducible.** The set of matches is always the same,
- * but which worker finds what depends on timing, so @ref getMatches() may come back in a
- * different order from one run to the next. If you need a stable order, sort the result or use
- * @ref RI.
- *
- * @note **The choice of callback decides whether this class can actually use its cores.** A
- * @ref SubgraphIsomorphism::MatchCallback is never invoked concurrently, so every worker has to
- * queue up behind it and the speedup is capped by how long the callback takes. A
- * @ref SubgraphIsomorphism::ParallelMatchCallback is invoked directly by each worker, along with
- * that worker's id, and needs no queueing - but it must be thread-safe. If you are streaming
- * matches out of a parallel search, you almost certainly want the second one.
- *
- * @note With a callback *and* a match limit, a few matches beyond the limit may be delivered
- * before every worker notices that the limit was reached, and @ref numberOfMatches() then counts
- * every one of them - so it can come back slightly above the limit. That is deliberate: the extra
- * matches really were handed to the callback and a search cannot take them back, so the count says
- * what happened rather than what was asked for. Without a callback nothing has left the algorithm
- * yet, and both the stored matches and @ref numberOfMatches() are trimmed to the limit exactly.
- *
- * The search polls `Aux::SignalHandler` regularly, so a long enumeration can be stopped with
- * CTRL+C.
+ * The search can be interrupted with CTRL+C.
  *
  * The implementation is based on
  *
@@ -93,16 +47,15 @@ public:
                Semantics semantics = Semantics::INDUCED, count maxMatches = 0);
 
     /**
-     * Run the search. Retrieve the results with @ref getMatches(), @ref numberOfMatches() or
+     * Runs the search. Query the result with @ref getMatches(), @ref numberOfMatches() or
      * @ref hasMatch().
      */
     void run() override;
 
     /**
-     * How many workers the search will use: the global NetworKit thread count.
+     * Returns the number of workers @ref run() uses, which is the global thread count.
      *
-     * Read it after any `Aux::setNumberOfThreads()` call - @ref run() asks the same question when
-     * it starts, so changing the setting in between changes both answers together.
+     * @return the number of workers.
      */
     count numberOfWorkers() const override;
 
