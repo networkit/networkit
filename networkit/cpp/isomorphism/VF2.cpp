@@ -18,27 +18,6 @@ namespace {
 using IsomorphismDetails::MatchReporter;
 using IsomorphismDetails::SearchGraph;
 
-/**
- * The actual VF2 search.
- *
- * Lives here rather than in VF2.hpp so that the public header never has to mention the search
- * state. Everything below is created when VF2::run() starts and thrown away when it returns,
- * which is the same shape MaximalCliquesImpl uses in networkit/cpp/clique/MaximalCliques.cpp.
- *
- * ## The state, in words
- *
- * The partial mapping is stored twice, once in each direction: `core1[u]` is the target node
- * that pattern node @a u is mapped to, and `core2[v]` is the pattern node that target node @a v
- * is mapped to. Both hold @ref none where nothing is mapped yet. Keeping both directions means
- * "is this target node already taken" is a single array read.
- *
- * The four terminal sets are *not* stored as sets. Instead, `out1[u]` holds the search depth at
- * which pattern node @a u entered the out-terminal set, or 0 if it is not in it. Membership is
- * then one comparison, and undoing a step on backtrack is "reset every entry whose depth equals
- * the depth we are leaving" rather than an expensive set removal. `in1`, `in2` and `out2` work
- * the same way for the other three sets. `t1out` and friends are just the sizes, kept up to date
- * incrementally because the look-ahead rules compare them.
- */
 class VF2Impl {
 
 public:
@@ -464,17 +443,18 @@ private:
     /**
      * The smallest node still in a terminal set, or @ref none when the set holds nothing.
      *
-     * A member vector can carry entries whose slot reads @ref none. Those are nodes that were
-     * mapped after they joined the set: @ref addPair() clears the slot but leaves the entry in
-     * place, and @ref removePair() puts the slot back. A live slot therefore implies an unmapped
-     * node, so the slot alone decides membership here. There are never more than @a depth dead
-     * entries, which is why walking the member vector beats walking every node id.
+     * @param members The member vector of the terminal set.
+     * @param positions The corresponding in1/out1/in2/out2 vector storing index of each node in @a
+     * members. An entry of @ref none means that the node has been mapped and is no longer part of
+     * the terminal set.
+     * @return the smallest node still in a terminal set, or @ref none when the set holds nothing.
      */
-    static node smallestMember(const std::vector<node> &members, const std::vector<index> &slot) {
+    static node smallestMember(const std::vector<node> &members,
+                               const std::vector<index> &positions) {
         node smallest = none;
         for (node u : members) {
             // none is the largest representable id, so an empty set falls out of the comparison.
-            if (slot[u] != none && u < smallest) {
+            if (positions[u] != none && u < smallest) {
                 smallest = u;
             }
         }
@@ -482,17 +462,18 @@ private:
     }
 
     /**
-     * Drop everything a terminal set gained since it had size @a mark, and clear those slots.
+     * Drop everything a terminal set gained since it had size @a mark and set the terminal set
+     * member vector positions of the removed nodes to @ref none.
      *
-     * The member vectors only ever grow between an @ref addPair() and its matching
-     * @ref removePair(), because every deeper depth has already undone itself by then. The tail
-     * above @a mark is therefore exactly what this depth added. Capacity is kept on purpose: the
-     * next descent reuses it, which is the whole point of holding the members in a flat stack.
+     * @param members The member vector of the terminal set.
+     * @param positions The corresponding in1/out1/in2/out2 vector storing index of each node in @a
+     * members.
+     * @param mark The index from which to remove the nodes.
      */
-    static void popTail(std::vector<node> &members, std::vector<index> &slot, count mark,
+    static void popTail(std::vector<node> &members, std::vector<index> &positions, count mark,
                         count &size) {
         for (index i = mark; i < members.size(); ++i) {
-            slot[members[i]] = none;
+            positions[members[i]] = none;
         }
         size -= members.size() - mark;
         members.resize(mark);
@@ -613,7 +594,8 @@ private:
         core1[pu] = none;
         core2[tv] = none;
 
-        // Drop everything the four terminal sets gained in addPair(pu, tv) and clear those slots
+        // Drop everything the four terminal sets gained in addPair(pu, tv) and set the terminal set
+        // member vector positions of removed nodes to none
         popTail(membersIn1, in1, restoreTerminalSets[4], t1in);
         popTail(membersIn2, in2, restoreTerminalSets[5], t2in);
         popTail(membersOut1, out1, restoreTerminalSets[6], t1out);
