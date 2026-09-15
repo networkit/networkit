@@ -327,7 +327,7 @@ TEST_P(ParallelRIGTest, testDegenerateInputs) {
 }
 
 // -------------------------------------------------------------------------------------------
-// Interruption, which has to unwind every worker and then throw exactly once
+// Interruption and throwing callbacks, which have to unwind every worker and then throw once
 // -------------------------------------------------------------------------------------------
 
 /**
@@ -364,6 +364,59 @@ TEST_P(ParallelRIGTest, testInterruptStopsEveryWorker) {
     const std::vector<Match> expected =
         sequentialMatches(pattern, target, Semantics::MONOMORPHISM, GetParam());
     EXPECT_EQ(parallelMatches(pattern, target, Semantics::MONOMORPHISM, GetParam()), expected);
+}
+
+/**
+ * A callback that throws on every match it is handed, in both callback forms.
+ *
+ * Several workers can reach the callback at once, and each of them throws. An exception that
+ * escaped the OpenMP region would call std::terminate and take the whole test binary down, which
+ * is what a Python callback that raised used to do. The first exception has to come out of run()
+ * instead, after every worker has unwound. The serial form also has to release its lock on the way
+ * out, or the next worker would block on it forever and the region would never join.
+ */
+TEST_P(ParallelRIGTest, testThrowingCallbackStopsEveryWorker) {
+    // Local, so that no other runtime_error out of run() can satisfy EXPECT_THROW.
+    struct CallbackFailure : std::runtime_error {
+        CallbackFailure() : std::runtime_error("callback failed") {}
+    };
+
+    const Graph target = karate();
+    const Graph pattern = path(5);
+    const count expected = countOnly(RI(pattern, target, GetParam(), Semantics::MONOMORPHISM, 0));
+
+    for (const bool parallelForm : {true, false}) {
+        SCOPED_TRACE(parallelForm ? "ParallelMatchCallback" : "MatchCallback");
+
+        ParallelRI algo(pattern, target, GetParam(), Semantics::MONOMORPHISM, 0);
+        std::atomic<count> delivered{0};
+        if (parallelForm)
+            algo.setCallback([&](index, const Match &) {
+                delivered.fetch_add(1);
+                throw CallbackFailure();
+            });
+        else
+            algo.setCallback([&](const Match &) {
+                delivered.fetch_add(1);
+                throw CallbackFailure();
+            });
+
+        EXPECT_THROW(algo.run(), CallbackFailure);
+        EXPECT_FALSE(algo.hasFinished()) << "a run that threw must not count as finished";
+
+        // Every call throws, so a worker that kept searching after its own exception would call
+        // back a second time and push this past one call per worker.
+        EXPECT_GE(delivered.load(), 1u);
+        EXPECT_LE(delivered.load(), algo.numberOfWorkers());
+
+        // And nothing is poisoned: the same object, given a callback that does not throw, runs to
+        // the end and finds everything.
+        std::atomic<count> counted{0};
+        algo.setCallback([&](index, const Match &) { counted.fetch_add(1); });
+        algo.run();
+        EXPECT_TRUE(algo.hasFinished());
+        EXPECT_EQ(counted.load(), expected);
+    }
 }
 
 } // namespace NetworKit

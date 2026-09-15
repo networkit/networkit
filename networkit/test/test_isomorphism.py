@@ -305,7 +305,6 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 
 		self.assertEqual(len(matches), 1)
 
-	#TODO This test causes an issue.
 	def testCallbackRaisesOnFirstMatchPar(self):
 		matches = []
 

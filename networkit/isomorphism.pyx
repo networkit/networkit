@@ -141,6 +141,9 @@ cdef class SubgraphIsomorphism(Algorithm):
 
 		With ``parallel=True``:
 			callback(workerId, match)
+
+		If the callback raises, the search stops and ``run()`` raises a
+		``RuntimeError`` that carries the original message.
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")

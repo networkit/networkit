@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <atomic>
 #include <deque>
+#include <exception>
 #include <functional>
 #include <iterator>
 #include <random>
@@ -181,6 +182,9 @@ public:
      * thread runs the same loop. There is no shortcut for a team of one - a single worker walks
      * the queues, the coalescing and the token ring exactly as sixteen do, which is what makes
      * comparing worker counts a real test and what the paper's own speedup baseline measures.
+     *
+     * If a worker caught an exception, run() rethrows the first one after every worker has joined.
+     * In practice that exception comes from the user's callback; see @ref stopOnException().
      */
     void run() {
         // The bail-outs RIImpl::run() does and the expand() path does not: a pattern with more
@@ -218,13 +222,17 @@ public:
                 // opens. It is the OpenMP contract that holds it up, not this clamp.
                 activeWorkers.store(
                     std::min<count>(static_cast<count>(omp_get_num_threads()), numWorkers));
-                seedRoots(impl);
+                stopOnException([&] { seedRoots(impl); });
             }
             // The implicit barrier ending the single is what makes writing into other workers'
             // private queues above legal: nobody else has started yet.
 
-            workerLoop(tid, impl);
+            stopOnException([&] { workerLoop(tid, impl); });
         }
+
+        // Every worker has joined, so the exception may finally leave.
+        if (failure)
+            std::rethrow_exception(failure);
     }
 
     /**
@@ -325,6 +333,31 @@ private:
         }
 
         return !stopped.load(std::memory_order_relaxed);
+    }
+
+    /**
+     * Run @a step, and turn anything it throws into a stop of the whole search.
+     *
+     * An exception must not leave an OpenMP structured block. The runtime answers with
+     * std::terminate, so a callback that throws would kill the process instead of reaching the
+     * caller. A Python callback that raises is the common case: its wrapper rethrows the error as
+     * a std::runtime_error, and several workers may do so at once.
+     *
+     * This function keeps the first exception and sets `stopped`, which makes every other worker
+     * unwind; run() rethrows the exception after the join. Any later exception is dropped, because
+     * it can only come from a worker that had not seen `stopped` yet. Unwinding out of the middle
+     * of an expansion leaves nothing held: the serial callback's mutex sits in a lock_guard, and
+     * every queue flag here sits in a QueueUnlock.
+     */
+    template <typename Step>
+    void stopOnException(Step &&step) {
+        try {
+            step();
+        } catch (...) {
+            if (!failed.exchange(true))
+                failure = std::current_exception();
+            stopped.store(true, std::memory_order_relaxed);
+        }
     }
 
     /**
@@ -588,7 +621,7 @@ private:
     }
 
     /// Whether the search is over: a full lap of the ring with nobody having found work, or the
-    /// match limit reached, or an interrupt.
+    /// match limit reached, or an interrupt, or an exception.
     bool quiescent() const {
         return stopped.load(std::memory_order_relaxed) || tokenHops.load() >= activeWorkers.load();
     }
@@ -612,7 +645,8 @@ private:
     /// called on it; ParallelRI::run() does the throwing assureRunning() once, after the join.
     Aux::SignalHandler *handler;
 
-    /// Where the user's callback is invoked. Entered by several workers at once.
+    /// Where the user's callback is invoked. Entered by several workers at once, and may throw;
+    /// see @ref stopOnException().
     Deliver deliver;
     bool storeMatches;
     /// 0 means no limit.
@@ -627,8 +661,14 @@ private:
     /// libgomp's barriers, does not report the handover as a race.
     std::atomic<count> activeWorkers;
 
-    /// Set when the match limit is reached or the search is interrupted, so every worker unwinds.
+    /// Set when the match limit is reached, the search is interrupted or a worker caught an
+    /// exception, so every worker unwinds.
     std::atomic<bool> stopped;
+    /// Set by the first worker that catches an exception, so exactly one worker writes `failure`.
+    std::atomic<bool> failed{false};
+    /// The first exception a worker caught. Written inside the region and read by run() after the
+    /// join, which orders the two.
+    std::exception_ptr failure;
     /// Who currently holds the termination token.
     std::atomic<index> tokenHolder;
     /// Set by any thief the moment a steal succeeds. The next hop reads and clears it, and voids
