@@ -113,8 +113,6 @@ cdef class SubgraphIsomorphism(Algorithm):
 
 	cdef Graph _pattern
 	cdef Graph _target
-	cdef MatchCallbackWrapper* _callback
-	cdef ParallelMatchCallbackWrapper* _parallelCallback
 	cdef object _py_callback
 
 	def __init__(self, *args, **namedargs):
@@ -183,6 +181,8 @@ cdef class SubgraphIsomorphism(Algorithm):
 		callback : callable
 			Called once per match. Must accept (match).
 		"""
+		cdef MatchCallbackWrapper* wrapper
+
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 
@@ -195,24 +195,15 @@ cdef class SubgraphIsomorphism(Algorithm):
 		except (TypeError, ValueError):
 			raise TypeError("callback must accept (match)") from None
 
-		# Remove a previously registered wrapper.
-		if self._callback != NULL:
-			del self._callback
-			self._callback = NULL
-
-		# Keep the Python callback alive.
-		self._py_callback = callback
-
-		self._callback = new MatchCallbackWrapper(callback)
+		# setCallback() stores its own copy of the wrapper, so the wrapper is freed right away.
+		wrapper = new MatchCallbackWrapper(callback)
 		try:
-			(<_SubgraphIsomorphism*>(self._this)).setCallback(
-				dereference(self._callback)
-			)
-		except BaseException:
-			del self._callback
-			self._callback = NULL
-			self._py_callback = None
-			raise
+			(<_SubgraphIsomorphism*>(self._this)).setCallback(dereference(wrapper))
+		finally:
+			del wrapper
+
+		# The copy holds no reference to the Python callback, so keep the callback alive here.
+		self._py_callback = callback
 
 	def setParallelCallback(self, object callback):
 		"""
@@ -225,6 +216,8 @@ cdef class SubgraphIsomorphism(Algorithm):
 		callback : callable
 			Called once per match. Must accept (workerId, match).
 		"""
+		cdef ParallelMatchCallbackWrapper* wrapper
+
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
 
@@ -237,33 +230,15 @@ cdef class SubgraphIsomorphism(Algorithm):
 		except (TypeError, ValueError):
 			raise TypeError("callback must accept (workerId, match)") from None
 
-		# Remove a previously registered wrapper.
-		if self._parallelCallback != NULL:
-			del self._parallelCallback
-			self._parallelCallback = NULL
-
-		# Keep the Python callback alive.
-		self._py_callback = callback
-
-		self._parallelCallback = new ParallelMatchCallbackWrapper(callback)
+		# setCallback() stores its own copy of the wrapper, so the wrapper is freed right away.
+		wrapper = new ParallelMatchCallbackWrapper(callback)
 		try:
-			(<_SubgraphIsomorphism*>(self._this)).setCallback(
-				dereference(self._parallelCallback)
-			)
-		except BaseException:
-			del self._parallelCallback
-			self._parallelCallback = NULL
-			self._py_callback = None
-			raise
+			(<_SubgraphIsomorphism*>(self._this)).setCallback(dereference(wrapper))
+		finally:
+			del wrapper
 
-	def __dealloc__(self):
-		if self._callback != NULL:
-			del self._callback
-			self._callback = NULL
-
-		if self._parallelCallback != NULL:
-			del self._parallelCallback
-			self._parallelCallback = NULL
+		# The copy holds no reference to the Python callback, so keep the callback alive here.
+		self._py_callback = callback
 
 	def setStoreMatches(self, bool_t storeMatches):
 		"""

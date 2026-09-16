@@ -334,6 +334,28 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		self.assertEqual(len(matches2), 8)
 		self.assertEqual({tuple(match) for match in matches2}, self.expected)
 
+	def testUseLastSetCallbackOfEitherForm(self):
+		matches_serial = []
+		matches_parallel = []
+
+		def callback_serial(match):
+			matches_serial.append(tuple(match))
+
+		def callback_parallel(workerId, match):
+			matches_parallel.append(tuple(match))
+
+		vf2 = nk.isomorphism.VF2(self.arc, self.square)
+		vf2.setParallelCallback(callback_parallel)
+		vf2.setCallback(callback_serial)
+
+		# Nothing references the replaced callback anymore, so it must never be called
+		del callback_parallel
+		vf2.run()
+
+		self.assertEqual(len(matches_parallel), 0)
+		self.assertEqual(len(matches_serial), 8)
+		self.assertEqual(set(matches_serial), self.expected)
+
 	def testCallbackCanBeCallableObject(self):
 		class Callback:
 			def __init__(self):
