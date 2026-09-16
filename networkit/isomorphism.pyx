@@ -350,8 +350,6 @@ cdef class VF2(SubgraphIsomorphism):
 	maxMatches : int
 		Stop after this many matches; 0 means no limit. Default: 0
 	"""
-	cdef Graph _pattern
-	cdef Graph _target
 
 	def __cinit__(self, Graph pattern, Graph target, semantics=_Semantics.INDUCED, maxMatches=0):
 		self._pattern = pattern
@@ -396,8 +394,6 @@ cdef class RI(SubgraphIsomorphism):
 	maxMatches : int
 		Stop after this many matches; 0 means no limit. Default: 0
 	"""
-	cdef Graph _pattern
-	cdef Graph _target
 
 	def __cinit__(self, Graph pattern, Graph target, variant=_RIVariant.RI, semantics=_Semantics.INDUCED, maxMatches=0):
 		self._pattern = pattern
@@ -428,8 +424,6 @@ cdef class ParallelRI(SubgraphIsomorphism):
 	maxMatches : int
 		Stop after this many matches; 0 means no limit. Default: 0
 	"""
-	cdef Graph _pattern
-	cdef Graph _target
 
 	def __cinit__(self, Graph pattern, Graph target, variant=_RIVariant.RI, semantics=_Semantics.INDUCED, maxMatches=0):
 		self._pattern = pattern
