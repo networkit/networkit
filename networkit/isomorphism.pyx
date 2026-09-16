@@ -33,7 +33,7 @@ cdef cppclass MatchCallbackWrapper:
 		with gil:
 			try:
 				(<object>callback)(Match)
-			except Exception as e:
+			except BaseException as e:
 				error = True
 				message = stdstring(
 					"An Exception occurred, aborting execution of iterator: {0}".format(e)
@@ -59,7 +59,7 @@ cdef cppclass ParallelMatchCallbackWrapper:
 		with gil:
 			try:
 				(<object>callback)(tid, Match)
-			except Exception as e:
+			except BaseException as e:
 				error = True
 				message = stdstring(
 					"An Exception occurred, aborting execution of iterator: {0}".format(e)

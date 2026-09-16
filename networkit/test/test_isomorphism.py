@@ -444,6 +444,31 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 
 		self.assertGreaterEqual(len(matches), 1)
 
+	def testCallbackRaisesBaseException(self):
+		matches = []
+
+		def callback_seq(match):
+			matches.append(tuple(match))
+			raise SystemExit("callback exited")
+
+		def callback_par(workerId, match):
+			callback_seq(match)
+
+		# SystemExit does not derive from Exception, but it has to stop the search as well
+		ri = nk.isomorphism.RI(self.arc, self.square)
+		ri.setCallback(callback_seq)
+
+		with self.assertRaisesRegex(RuntimeError, "callback exited"):
+			ri.run()
+
+		self.assertEqual(len(matches), 1)
+
+		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
+		riPar.setParallelCallback(callback_par)
+
+		with self.assertRaisesRegex(RuntimeError, "callback exited"):
+			riPar.run()
+
 	def testParallelCallbackResultsMatchSerialResults(self):
 		matches_ri = []
 		matches_riPar = []
