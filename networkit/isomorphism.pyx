@@ -176,7 +176,7 @@ cdef class SubgraphIsomorphism(Algorithm):
 		"""
 		setCallback(callback)
 
-		Set a Python callback. Every match will be handed to this callback as it is found, rather than collecting them. If the callback raises, the search stops and ``run()`` raises a ``RuntimeError`` that carries the original message.
+		Set a Python callback. Every match will be handed to this callback as it is found, rather than collecting them. The callback is never called concurrently. ParallelRI makes its workers take turns at the callback, so the callback may change shared state without a lock. If the callback raises, the search stops and ``run()`` raises a ``RuntimeError`` that carries the original message. A later call of setCallback() or setParallelCallback() replaces the callback.
 
 		Parameters
 		----------
@@ -189,14 +189,11 @@ cdef class SubgraphIsomorphism(Algorithm):
 		if not callable(callback):
 			raise TypeError("Callback must be callable")
 
-		if isinstance(self, ParallelRI):
-			raise RuntimeError("Error, must use setParallelCallback(callback) for parallel algorithms")
-
 		try:
 			signature = inspect.signature(callback)
 			signature.bind(None)
 		except (TypeError, ValueError):
-				raise TypeError("callback must accept (match)") from None
+			raise TypeError("callback must accept (match)") from None
 
 		# Remove a previously registered wrapper.
 		if self._callback != NULL:
@@ -221,7 +218,7 @@ cdef class SubgraphIsomorphism(Algorithm):
 		"""
 		setParallelCallback(callback)
 
-		Like setCallback(callback), but this one sets a callback that also receives the worker id.
+		Like setCallback(callback), but the callback also receives the id of the worker that found the match. ParallelRI may call the callback from several workers, and these calls can overlap, so the callback must be thread-safe. The worker id is smaller than numberOfWorkers(), so results that are kept per worker id need no lock. ParallelRI uses the global thread count, so call numberOfWorkers() after networkit.setNumberOfThreads(). The sequential algorithms always pass worker id 0.
 
 		Parameters
 		----------
@@ -233,9 +230,6 @@ cdef class SubgraphIsomorphism(Algorithm):
 
 		if not callable(callback):
 			raise TypeError("Callback must be callable")
-
-		if (isinstance(self, ParallelRI) == False):
-			raise RuntimeError ("Error, must use setCallback(callback) for sequential algorithms")
 
 		try:
 			signature = inspect.signature(callback)

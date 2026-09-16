@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import time
 import unittest
 
 import networkit as nk
@@ -210,6 +211,53 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		with self.assertRaises(RuntimeError):
 			riPar.getMatches()
 
+	def testSerialCallbackWithParallelRI(self):
+		matches = []
+		inFlight = 0
+		maxInFlight = 0
+
+		def callback(match):
+			nonlocal inFlight, maxInFlight
+			inFlight += 1
+			maxInFlight = max(maxInFlight, inFlight)
+			# Sleeping releases the GIL, which would let an overlapping call start
+			time.sleep(0.001)
+			matches.append(tuple(match))
+			inFlight -= 1
+
+		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
+		riPar.setCallback(callback)
+		riPar.run()
+
+		# The workers of ParallelRI take turns at a callback set with setCallback
+		self.assertEqual(maxInFlight, 1)
+		self.assertEqual(len(matches), 8)
+		self.assertEqual(set(matches), self.expected)
+
+	def testParallelCallbackWithSequentialAlgorithms(self):
+		matches_vf2 = []
+		matches_ri = []
+
+		def callback_vf2(workerId, match):
+			matches_vf2.append((workerId, tuple(match)))
+
+		def callback_ri(workerId, match):
+			matches_ri.append((workerId, tuple(match)))
+
+		vf2 = nk.isomorphism.VF2(self.arc, self.square)
+		vf2.setParallelCallback(callback_vf2)
+		vf2.run()
+
+		ri = nk.isomorphism.RI(self.arc, self.square)
+		ri.setParallelCallback(callback_ri)
+		ri.run()
+
+		# The sequential algorithms report every match as worker 0
+		for matches in (matches_vf2, matches_ri):
+			self.assertEqual(len(matches), 8)
+			self.assertEqual({workerId for workerId, match in matches}, {0})
+			self.assertEqual({match for workerId, match in matches}, self.expected)
+
 	def testCallbackTypeMismatches(self):
 		matches_seq = []
 		matches_par = []
@@ -221,11 +269,11 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 			matches_par.append((workerId, match))
 
 		vf2 = nk.isomorphism.VF2(self.arc, self.square)
-		with self.assertRaises(RuntimeError):
+		with self.assertRaises(TypeError):
 			vf2.setParallelCallback(callback_seq)
 
 		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
-		with self.assertRaises(RuntimeError):
+		with self.assertRaises(TypeError):
 			riPar.setCallback(callback_par)
 
 		with self.assertRaises(TypeError):
