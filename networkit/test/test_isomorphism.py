@@ -164,7 +164,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 			matches.append(match)
 
 		vf2 = nk.isomorphism.VF2(self.arc, self.square)
-		vf2.setSequentialCallback(callback)
+		vf2.setCallback(callback)
 		vf2.setStoreMatches(True)
 		vf2.run()
 
@@ -182,7 +182,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 
 		ri = nk.isomorphism.RI(self.arc, self.square)
 		ri.setStoreMatches(True)
-		ri.setSequentialCallback(callback)
+		ri.setCallback(callback)
 		ri.run()
 
 		self.assertEqual(len(matches), 8)
@@ -226,10 +226,10 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 
 		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
 		with self.assertRaises(RuntimeError):
-			riPar.setSequentialCallback(callback_par)
+			riPar.setCallback(callback_par)
 
 		with self.assertRaises(TypeError):
-			vf2.setSequentialCallback(callback_par)
+			vf2.setCallback(callback_par)
 
 		with self.assertRaises(TypeError):
 			riPar.setParallelCallback(callback_seq)
@@ -242,7 +242,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 			callback_count += 1
 
 		vf2 = nk.isomorphism.VF2(self.arc, self.square)
-		vf2.setSequentialCallback(callback)
+		vf2.setCallback(callback)
 		vf2.run()
 
 		self.assertEqual(callback_count, 8)
@@ -259,7 +259,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		# No callback was set before run so there should not be anything in matches
 		self.assertEqual(len(matches), 0)
 
-		vf2.setSequentialCallback(callback)
+		vf2.setCallback(callback)
 		vf2.run()
 
 		# Callback has been set before run so matches should be filled
@@ -277,8 +277,8 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 			matches2.append(match)
 
 		vf2 = nk.isomorphism.VF2(self.arc, self.square)
-		vf2.setSequentialCallback(callback1)
-		vf2.setSequentialCallback(callback2)
+		vf2.setCallback(callback1)
+		vf2.setCallback(callback2)
 		vf2.run()
 
 		# callback2 was most recently set so it should be filled, callback1 should be empty
@@ -297,7 +297,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		callback = Callback()
 
 		vf2 = nk.isomorphism.VF2(self.arc, self.square)
-		vf2.setSequentialCallback(callback)
+		vf2.setCallback(callback)
 		vf2.run()
 
 		self.assertEqual(len(callback.matches), 8)
@@ -316,8 +316,8 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		vf2_1 = nk.isomorphism.VF2(self.arc, self.square)
 		vf2_2 = nk.isomorphism.VF2(self.arc, self.square)
 
-		vf2_1.setSequentialCallback(callback1)
-		vf2_2.setSequentialCallback(callback2)
+		vf2_1.setCallback(callback1)
+		vf2_2.setCallback(callback2)
 
 		vf2_1.run()
 		vf2_2.run()
@@ -337,7 +337,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		callback = Callback()
 
 		vf2 = nk.isomorphism.VF2(self.arc, self.square)
-		vf2.setSequentialCallback(callback)
+		vf2.setCallback(callback)
 
 		del callback
 		vf2.run()
@@ -352,7 +352,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 			raise RuntimeError("sequential callback failed")
 
 		ri = nk.isomorphism.RI(self.arc, self.square)
-		ri.setSequentialCallback(callback)
+		ri.setCallback(callback)
 
 		with self.assertRaises(RuntimeError):
 			ri.run()
@@ -385,7 +385,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 			matches_riPar.append(tuple(match))
 
 		ri = nk.isomorphism.RI(self.arc, self.square)
-		ri.setSequentialCallback(callback_ri)
+		ri.setCallback(callback_ri)
 		ri.run()
 
 		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)

@@ -172,9 +172,9 @@ cdef class SubgraphIsomorphism(Algorithm):
 			raise RuntimeError("Error, object not properly initialized")
 		return (<_SubgraphIsomorphism*>(self._this)).setEdgeLabels(patternEdgeLabels, targetEdgeLabels)
 
-	def setSequentialCallback(self, object callback):
+	def setCallback(self, object callback):
 		"""
-		setSequentialCallback(callback)
+		setCallback(callback)
 
 		Set a Python callback. Every match will be handed to this callback as it is found, rather than collecting them. If the callback raises, the search stops and ``run()`` raises a ``RuntimeError`` that carries the original message.
 
@@ -221,7 +221,7 @@ cdef class SubgraphIsomorphism(Algorithm):
 		"""
 		setParallelCallback(callback)
 
-		Like setSequentialCallback(callback), but this one sets a callback that also receives the worker id.
+		Like setCallback(callback), but this one sets a callback that also receives the worker id.
 
 		Parameters
 		----------
@@ -235,7 +235,7 @@ cdef class SubgraphIsomorphism(Algorithm):
 			raise TypeError("Callback must be callable")
 
 		if (isinstance(self, ParallelRI) == False):
-			raise RuntimeError ("Error, must use setSequentialCallback(callback) for sequential algorithms")
+			raise RuntimeError ("Error, must use setCallback(callback) for sequential algorithms")
 
 		try:
 			signature = inspect.signature(callback)
