@@ -6,6 +6,7 @@
  */
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <memory>
 #include <stdexcept>
@@ -64,6 +65,12 @@ Graph path(count n) {
 Graph triangle() {
     return graphOf(3, {{0, 1}, {1, 2}, {2, 0}});
 }
+
+/// The worker counts the agreement tests compare. The largest is 8 rather than 16. libomp sizes its
+/// thread team for twice the number of CPUs, and growing the team past that leaks the per-thread
+/// dispatch buffers in `__kmp_reallocate_team_arrays()`. LeakSanitizer reports that leak on the
+/// 4-CPU CI runner.
+constexpr std::array<int, 4> workerCounts{1, 2, 4, 8};
 
 /// Sorted matches from the sequential search, which is the answer ParallelRI has to reproduce.
 std::vector<Match> sequentialMatches(const Graph &pattern, const Graph &target, Semantics semantics,
@@ -151,7 +158,7 @@ TEST_P(ParallelRIGTest, testAgreesWithTheReference) {
  * lost match and a duplicated one cancel each other out - exactly the shape a stealing bug takes.
  *
  * One worker is not a special case in the implementation - it walks the queues, the coalescing and
- * the token ring like any other count - so this really does compare the same machinery at five
+ * the token ring like any other count - so this really does compare the same machinery at four
  * different degrees of contention.
  */
 TEST_P(ParallelRIGTest, testAnswerDoesNotDependOnWorkerCount) {
@@ -162,7 +169,7 @@ TEST_P(ParallelRIGTest, testAnswerDoesNotDependOnWorkerCount) {
         sequentialMatches(pattern, target, Semantics::MONOMORPHISM, GetParam());
     ASSERT_EQ(expected.size(), 22064u) << "a change here would quietly weaken every case below";
 
-    for (const int workers : {1, 2, 4, 8, 16}) {
+    for (const int workers : workerCounts) {
         Aux::setNumberOfThreads(workers);
 
         ParallelRI algo(pattern, target, GetParam(), Semantics::MONOMORPHISM, 0);
@@ -215,7 +222,7 @@ TEST_P(ParallelRIGTest, testSingletonDomainAgreesAtEveryWorkerCount) {
     for (const Match &match : expected)
         ASSERT_EQ(match[3], anchor);
 
-    for (const int workers : {1, 2, 4, 8, 16}) {
+    for (const int workers : workerCounts) {
         Aux::setNumberOfThreads(workers);
 
         ParallelRI algo(pattern, target, GetParam(), Semantics::MONOMORPHISM, 0);
