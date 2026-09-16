@@ -291,6 +291,7 @@ class build_ext(Command):
 # initialize python setup
 ################################################
 from setuptools import find_packages  # in addition to setup
+import email.parser
 import version
 
 compiler_directives = {}
@@ -298,10 +299,12 @@ if build_tests:
     compiler_directives["linetrace"] = True
 compiler_directives["language_level"] = 3
 
-try:
+if "NETWORKIT_BUILD_NUMBER" in os.environ:
     version.version += ".dev" + os.environ["NETWORKIT_BUILD_NUMBER"]
-except KeyError:
-    pass
+elif os.path.isfile("PKG-INFO"):
+    # A build from an sdist keeps the sdist's version, or pip discards the sdist.
+    with open("PKG-INFO", encoding="utf-8") as pkg_info:
+        version.version = email.parser.Parser().parse(pkg_info)["Version"]
 
 setup(
     name=version.name,
