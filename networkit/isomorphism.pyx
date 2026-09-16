@@ -216,12 +216,7 @@ cdef class SubgraphIsomorphism(Algorithm):
 			self._callback = NULL
 			self._py_callback = None
 			raise
-		
-	def __dealloc__(self):
-		if self._callback != NULL:
-			del self._callback
-			self._callback = NULL
-		
+
 	def setParallelCallback(self, object callback):
 		"""
 		setParallelCallback(callback)
@@ -268,6 +263,10 @@ cdef class SubgraphIsomorphism(Algorithm):
 			raise
 
 	def __dealloc__(self):
+		if self._callback != NULL:
+			del self._callback
+			self._callback = NULL
+
 		if self._parallelCallback != NULL:
 			del self._parallelCallback
 			self._parallelCallback = NULL
