@@ -145,8 +145,9 @@ TEST_P(RIGTest, testOrderingInvariants) {
             seen[pu] = true;
         }
 
-        if (!ordering.parent.empty())
+        if (!ordering.parent.empty()) {
             EXPECT_EQ(ordering.parent[0], none) << "case: " << testCase.name;
+        }
 
         for (index i = 0; i < ordering.order.size(); ++i) {
             const node pu = ordering.order[i];
