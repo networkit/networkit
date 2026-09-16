@@ -52,8 +52,13 @@ class CurveballMaterialization;
  * @ingroup graph
  * A graph (with optional weights) and parallel iterator methods.
  */
-template <GraphNode NodeT, GraphEdgeWeight EdgeWeightT>
+template <GraphNode NodeType, GraphEdgeWeight EdgeWeightType>
 class AdjListGraph final {
+public:
+    using NodeT = NodeType;
+    using EdgeWeightT = EdgeWeightType;
+
+private:
     // graph attributes
     //!< current number of nodes
     count n;
@@ -109,7 +114,6 @@ class AdjListGraph final {
 
     static constexpr NodeT nullNodeId = NullNodeId<NodeT>;
 
-private:
     AttributeMap<PerNode, AdjListGraph> nodeAttributeMap;
     AttributeMap<PerEdge, AdjListGraph> edgeAttributeMap;
 
@@ -380,14 +384,14 @@ private:
      */
 
     // Return void when the callable does not have an Nth parameter.
-    template <typename TraitsT, size_t N, typename Enable = void>
+    template <typename TraitsT, size_t N, bool InRange = (N < TraitsT::arity)>
     struct SafeArg {
         using type = void;
     };
 
     // Enable this specialization only when N is in range.
     template <typename TraitsT, size_t N>
-    struct SafeArg<TraitsT, N, typename std::enable_if<(N < TraitsT::arity)>::type> {
+    struct SafeArg<TraitsT, N, true> {
         using type = typename TraitsT::template arg<N>::type;
     };
 

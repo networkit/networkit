@@ -109,7 +109,7 @@ void SolverLamg<Matrix>::solve(Vector &x, const Vector &b, LAMGSolverStatus &sta
         if (hierarchy.getType(1) == ELIMINATION) {
             hierarchy.at(1).restrict(b, bc, bStages[1]);
             if (hierarchy.at(1).getLaplacian().numberOfRows() == 1) {
-                x = 0.0;
+                x.fill(0.0);
                 return;
             } else {
                 hierarchy.at(1).coarseType(x, xc);

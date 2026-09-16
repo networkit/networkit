@@ -53,6 +53,24 @@ TEST_F(DinicGTest, testConstructorThrowsForSameSourceAndTarget) {
     }
 }
 
+TEST_F(DinicGTest, testConstructorThrowsForOutOfRangeSource) {
+    Graph graph(3, true, true);
+    EXPECT_THROW(Dinic test(graph, /* source */ 99, /* target */ 0), std::runtime_error);
+}
+
+TEST_F(DinicGTest, testConstructorThrowsForOutOfRangeTarget) {
+    Graph graph(3, true, true);
+    EXPECT_THROW(Dinic test(graph, /* source */ 0, /* target */ 99), std::runtime_error);
+}
+
+TEST_F(DinicGTest, testConstructorThrowsForDeletedEndpoint) {
+    Graph graph(4, true, true);
+    graph.removeNode(3);
+
+    EXPECT_THROW(Dinic deletedSource(graph, /* source */ 3, /* target */ 0), std::runtime_error);
+    EXPECT_THROW(Dinic deletedTarget(graph, /* source */ 0, /* target */ 3), std::runtime_error);
+}
+
 TEST_F(DinicGTest, testRunNotCalledThrows) {
     Graph graph(2, true, true);
     Dinic test(graph, /* source */ 0, /*target */ 1);
@@ -265,5 +283,17 @@ TEST_F(DinicGTest, testNumericalStabilityTinyScale) {
     Dinic algo(G, 0, 6);
     algo.run();
     EXPECT_NEAR(algo.getMaxFlow(), 1.0 * scale, 1e-15);
+}
+
+TEST_F(DinicGTest, testValidSparseNodeIds) {
+    Graph G(4, true, true);
+    G.removeNode(1);
+    G.addEdge(0, 2, 2.0);
+    G.addEdge(2, 3, 2.0);
+
+    Dinic algo(G, 0, 3);
+    algo.run();
+
+    EXPECT_DOUBLE_EQ(algo.getMaxFlow(), 2.0);
 }
 } // namespace NetworKit

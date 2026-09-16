@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import unittest
+import math
 import os
 import networkit as nk
 import numpy as np
@@ -411,6 +412,18 @@ class TestCentrality(unittest.TestCase):
         CLL.run()
         # test if lists have the same length
         self.assertEqual(len(CL.ranking()), len(CLL.ranking()))
+
+    def testEigenvectorCentralityWithoutEdges(self):
+        for n in range(4):
+            for directed in (False, True):
+                G = nk.Graph(n, False, directed)
+                ec = nk.centrality.EigenvectorCentrality(G)
+                ec.run()
+                scores = ec.scores()
+                self.assertEqual(len(scores), n)
+                self.assertTrue(all(math.isfinite(s) for s in scores))
+                for s in scores:
+                    self.assertAlmostEqual(s, 1.0 / math.sqrt(n))
 
     def testEstimateBetweeness(self):
         CL = nk.centrality.EstimateBetweenness(self.L, 50)

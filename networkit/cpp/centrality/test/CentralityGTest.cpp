@@ -5,6 +5,7 @@
  *      Author: cls
  */
 
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <random>
@@ -684,6 +685,78 @@ TEST_F(CentralityGTest, testEigenvectorCentrality) {
     EXPECT_NEAR(0.5290, std::fabs(cen[5]), tol);
     EXPECT_NEAR(0.2254, std::fabs(cen[6]), tol);
     EXPECT_NEAR(0.1503, std::fabs(cen[7]), tol);
+}
+
+TEST_F(CentralityGTest, testEigenvectorCentralityEmptyGraph) {
+    Graph G(0);
+
+    EigenvectorCentrality centrality(G);
+    centrality.run();
+
+    EXPECT_TRUE(centrality.scores().empty());
+}
+
+TEST_P(CentralityGTest, testEigenvectorCentralityNoEdges) {
+    for (count n : {1, 2, 5}) {
+        Graph G(n, isWeighted(), isDirected());
+
+        EigenvectorCentrality centrality(G);
+        centrality.run();
+        const std::vector<double> cen = centrality.scores();
+
+        ASSERT_EQ(n, cen.size());
+
+        double squaredNorm = 0.0;
+        for (node u = 0; u < n; ++u) {
+            EXPECT_TRUE(std::isfinite(cen[u]));
+            EXPECT_NEAR(1.0 / std::sqrt(static_cast<double>(n)), cen[u], 1e-12);
+            squaredNorm += cen[u] * cen[u];
+        }
+        EXPECT_NEAR(1.0, squaredNorm, 1e-12);
+    }
+}
+
+TEST_F(CentralityGTest, testEigenvectorCentralityIsolatedNode) {
+    count n = 9;
+    Graph G(n, true);
+
+    G.addEdge(0, 2, 3);
+    G.addEdge(1, 2, 2);
+    G.addEdge(2, 3, 3);
+    G.addEdge(2, 4, 2);
+    G.addEdge(2, 5, 1.5);
+    G.addEdge(3, 5, 3);
+    G.addEdge(4, 5, 2);
+    G.addEdge(5, 6, 3);
+    G.addEdge(5, 7, 2);
+
+    EigenvectorCentrality centrality(G);
+    centrality.run();
+    std::vector<double> cen = centrality.scores();
+
+    const double tol = 1e-4;
+    EXPECT_NEAR(0.2254, std::fabs(cen[0]), tol);
+    EXPECT_NEAR(0.1503, std::fabs(cen[1]), tol);
+    EXPECT_NEAR(0.5290, std::fabs(cen[2]), tol);
+    EXPECT_NEAR(0.4508, std::fabs(cen[3]), tol);
+    EXPECT_NEAR(0.3006, std::fabs(cen[4]), tol);
+    EXPECT_NEAR(0.5290, std::fabs(cen[5]), tol);
+    EXPECT_NEAR(0.2254, std::fabs(cen[6]), tol);
+    EXPECT_NEAR(0.1503, std::fabs(cen[7]), tol);
+    EXPECT_NEAR(0.0, cen[8], tol);
+}
+
+TEST_F(CentralityGTest, testEigenvectorCentralityDirectedAcyclic) {
+    Graph G(2, false, true);
+    G.addEdge(0, 1);
+
+    EigenvectorCentrality centrality(G);
+    centrality.run();
+    const std::vector<double> cen = centrality.scores();
+
+    ASSERT_EQ(2u, cen.size());
+    EXPECT_TRUE(std::isfinite(cen[0]));
+    EXPECT_TRUE(std::isfinite(cen[1]));
 }
 
 TEST_F(CentralityGTest, testPageRankCentrality) {

@@ -180,3 +180,9 @@ cdef asarray_2d(vector[vector[element_t]]* nested):
 			preincrement(target)
 		preincrement(row_iterator)
 	return np.reshape(values, (num_rows, num_cols))
+
+cdef maybe_asarray_1d(vector[element_t]* vec, asarray):
+	return asarray_1d[element_t](vec) if asarray else dereference(vec)
+
+cdef maybe_asarray_2d(vector[vector[element_t]]* nested, asarray):
+	return asarray_2d[element_t](nested) if asarray else dereference(nested)

@@ -481,6 +481,29 @@ TEST_F(DistanceGTest, testExactDiameter) {
     }
 }
 
+TEST_F(DistanceGTest, testDiameterEmptyGraph) {
+    Graph G(0);
+    const auto expectedDiameter = std::make_pair<count, count>(0, 0);
+
+    for (const auto algo :
+         {DiameterAlgo::AUTOMATIC, DiameterAlgo::EXACT, DiameterAlgo::ESTIMATED_PEDANTIC}) {
+        Diameter diam(G, algo);
+        diam.run();
+        EXPECT_TRUE(diam.hasFinished());
+        EXPECT_EQ(diam.getDiameter(), expectedDiameter);
+    }
+
+    Diameter estimatedRange(G, DiameterAlgo::ESTIMATED_RANGE, 0.1);
+    estimatedRange.run();
+    EXPECT_TRUE(estimatedRange.hasFinished());
+    EXPECT_EQ(estimatedRange.getDiameter(), expectedDiameter);
+
+    Diameter estimatedSamples(G, DiameterAlgo::ESTIMATED_SAMPLES, -1., 1);
+    estimatedSamples.run();
+    EXPECT_TRUE(estimatedSamples.hasFinished());
+    EXPECT_EQ(estimatedSamples.getDiameter(), expectedDiameter);
+}
+
 TEST_F(DistanceGTest, testEstimatedDiameterRange) {
     using namespace std;
 

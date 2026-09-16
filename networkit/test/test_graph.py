@@ -35,6 +35,24 @@ class TestGraph(unittest.TestCase):
                 self.assertEqual(G.numberOfNodes(), 3)
                 self.assertEqual(G.numberOfEdges(), 3)
 
+    def testConstructorWithCooDtypes(self):
+        dtypes = [np.int8, np.int16, np.int32, np.int64]
+
+        for dtype in dtypes:
+            row = np.array([0, 1, 2], dtype=dtype)
+            col = np.array([1, 2, 0], dtype=dtype)
+            data = np.array([1.0, 2.0, 3.0], dtype=np.float64)
+
+            for weighted in [True, False]:
+                for directed in [True, False]:
+                    G = nk.GraphFromCoo(
+                        (data, (row, col)), n=3, directed=directed, weighted=weighted
+                    )
+                    self.assertEqual(G.isDirected(), directed)
+                    self.assertEqual(G.isWeighted(), weighted)
+                    self.assertEqual(G.numberOfNodes(), 3)
+                    self.assertEqual(G.numberOfEdges(), 3)
+
     def testConstructorWithMatrix(self):
         row = np.array([0, 1, 2])
         col = np.array([1, 2, 0])
@@ -158,26 +176,18 @@ class TestGraph(unittest.TestCase):
 
         for i in range(len(S.row)):
             self.assertTrue(G.hasEdge(S.row[i], S.col[i]))
-    def testAddEdgesWithInt32Weights(self):
+
+    def testAddEdgesWithNonFloatWeights(self):
         # Use a weighted graph so weights are actually stored/checked
         g = nk.Graph(0, weighted=True)
 
-        # Deterministic endpoints + int32 weights (the failing dtype in #1250)
+        # Deterministic endpoints + int32 weights
         a = np.array([0, 1, 2], dtype=np.int64)
         b = np.array([1, 2, 3], dtype=np.int64)
         c = np.array([5, 6, 7], dtype=np.int32)
 
-        # addMissing=True should grow the graph and must not crash
-        g.addEdges((c, (a, b)), addMissing=True)
-
-        # Verify both edge existence and correct weight conversion to float
-        self.assertTrue(g.hasEdge(0, 1))
-        self.assertTrue(g.hasEdge(1, 2))
-        self.assertTrue(g.hasEdge(2, 3))
-
-        self.assertEqual(g.weight(0, 1), 5.0)
-        self.assertEqual(g.weight(1, 2), 6.0)
-        self.assertEqual(g.weight(2, 3), 7.0)
+        with self.assertRaisesRegex(TypeError, "invalid input format"):
+            g.addEdges((c, (a, b)), addMissing=False)
 
     def testGraphPickling(self):
         G = nk.Graph(2)
@@ -333,7 +343,6 @@ class TestGraph(unittest.TestCase):
 
             self.assertEqual(attr[0], float(value))
             self.assertTrue(isinstance(attr[0], float))
-
 
     def testNodeAttributeReadWrite(self):
         G = nk.Graph(5)

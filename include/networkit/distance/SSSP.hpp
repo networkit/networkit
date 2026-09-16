@@ -8,11 +8,12 @@
 #ifndef NETWORKIT_DISTANCE_SSSP_HPP_
 #define NETWORKIT_DISTANCE_SSSP_HPP_
 
+#include <limits>
 #include <set>
 
 #include <networkit/auxiliary/Multiprecision.hpp>
 #include <networkit/base/Algorithm.hpp>
-#include <networkit/graph/Graph.hpp>
+#include <networkit/graph/AdjListGraph.hpp>
 
 namespace NetworKit {
 
@@ -20,11 +21,15 @@ namespace NetworKit {
  * @ingroup distance
  * Abstract base class for single-source shortest path algorithms.
  */
-class SSSP : public Algorithm {
+template <class GraphT>
+class SingleSourceShortestPaths : public Algorithm {
+    using NodeT = typename GraphT::NodeT;
+    using EdgeWeightT = typename GraphT::EdgeWeightT;
+    static constexpr NodeT nullNodeId = NullNodeId<NodeT>;
 
 public:
     /**
-     * Creates the SSSP class for @a G and source @a s.
+     * Creates the SingleSourceShortestPaths class for @a G and source @a s.
      *
      * @param G The graph.
      * @param source The source node.
@@ -34,10 +39,10 @@ public:
      * increasing distance from the source.
      * @param target The target node.
      */
-    SSSP(const Graph &G, node source, bool storePaths = true,
-         bool storeNodesSortedByDistance = false, node target = none);
+    SingleSourceShortestPaths(const GraphT &G, NodeT source, bool storePaths = true,
+                              bool storeNodesSortedByDistance = false, NodeT target = nullNodeId);
 
-    ~SSSP() override = default;
+    ~SingleSourceShortestPaths() override = default;
 
     /** Computes the shortest paths from the source to all other nodes. */
     void run() override = 0;
@@ -49,21 +54,26 @@ public:
      * @return The weighted distances from the source node to any other node in
      * the graph.
      */
-    const std::vector<edgeweight> &getDistances();
+    const std::vector<EdgeWeightT> &getDistances() { return distances; }
 
     /**
      * Returns the distance from the source node to @a t.
      * @param  t Target node.
      * @return The distance from source to target node @a t.
      */
-    edgeweight distance(node t) const;
+    EdgeWeightT distance(NodeT t) const { return distances[t]; }
 
     /**
      * Returns the number of shortest paths between the source node and @a t.
      * @param  t Target node.
      * @return The number of shortest paths between source and @a t.
      */
-    bigfloat numberOfPaths(node t) const;
+    bigfloat numberOfPaths(NodeT t) const {
+        if (!storePaths) {
+            throw std::runtime_error("number of paths have not been stored");
+        }
+        return npaths[t];
+    }
 
     /**
      * Returns the number of shortest paths between the source node and @a t
@@ -71,7 +81,7 @@ public:
      * @param  t Target node.
      * @return The number of shortest paths between source and @a t.
      */
-    double _numberOfPaths(node t) const;
+    double _numberOfPaths(NodeT t) const;
 
     /**
      * Returns the predecessor nodes of @a t on all shortest paths from source
@@ -80,7 +90,12 @@ public:
      * @return The predecessors of @a t on all shortest paths from source to @a
      * t.
      */
-    const std::vector<node> &getPredecessors(node t) const;
+    const std::vector<NodeT> &getPredecessors(NodeT t) const {
+        if (!storePaths) {
+            throw std::runtime_error("predecessors have not been stored");
+        }
+        return previous[t];
+    }
 
     /**
      * Returns a shortest path from source to @a t and an empty path if source
@@ -91,7 +106,7 @@ public:
      * @a t, otherwise the path is reversed.
      * @return A shortest path from source to @a t or an empty path.
      */
-    std::vector<node> getPath(node t, bool forward = true) const;
+    std::vector<NodeT> getPath(NodeT t, bool forward = true) const;
 
     /**
      * Returns all shortest paths from source to @a t and an empty set if source
@@ -102,10 +117,10 @@ public:
      * @a t, otherwise the path is reversed.
      * @return All shortest paths from source node to target node @a t.
      */
-    std::set<std::vector<node>> getPaths(node t, bool forward = true) const;
+    std::set<std::vector<NodeT>> getPaths(NodeT t, bool forward = true) const;
 
     /* Returns the number of shortest paths to node t.*/
-    bigfloat getNumberOfPaths(node t) const;
+    bigfloat getNumberOfPaths(NodeT t) const { return npaths[t]; }
 
     /**
      * Returns a vector of nodes ordered in increasing distance from the source.
@@ -116,7 +131,7 @@ public:
      *
      * @return vector of nodes ordered in increasing distance from the source
      */
-    const std::vector<node> &getNodesSortedByDistance() const;
+    const std::vector<NodeT> &getNodesSortedByDistance() const;
 
     /**
      * Returns the number of nodes reached by the source.
@@ -133,7 +148,7 @@ public:
      *
      * @param newSource The new source node.
      */
-    void setSource(node newSource) {
+    void setSource(NodeT newSource) {
         if (!G->hasNode(newSource))
             throw std::runtime_error("Error: node not in the graph.");
         source = newSource;
@@ -142,14 +157,14 @@ public:
     /**
      * Sets a new target.
      */
-    void setTarget(node newTarget) {
+    void setTarget(NodeT newTarget) {
         if (!G->hasNode(newTarget))
             throw std::runtime_error("Error: node not in the graph.");
         target = newTarget;
     }
 
     /**
-     * Returns the sum of distances from the source node node to the reached
+     * Returns the sum of distances from the source node to the reached
      * nodes.
      */
     double getSumOfDistances() const {
@@ -158,16 +173,16 @@ public:
     }
 
 protected:
-    const Graph *G;
-    node source;
-    node target;
-    double sumDist;
-    count reachedNodes;
-    std::vector<edgeweight> distances;
-    std::vector<std::vector<node>> previous; // predecessors on shortest path
+    const GraphT *G;
+    NodeT source;
+    NodeT target;
+    double sumDist = std::numeric_limits<double>::max();
+    count reachedNodes = 0;
+    std::vector<EdgeWeightT> distances;
+    std::vector<std::vector<NodeT>> previous; // predecessors on shortest path
     std::vector<bigfloat> npaths;
 
-    std::vector<node> nodesSortedByDistance;
+    std::vector<NodeT> nodesSortedByDistance;
 
     bool storePaths;                 //!< if true, paths are reconstructable and the number of
                                      //!< paths is stored
@@ -176,18 +191,8 @@ protected:
                                      //!< the source
 };
 
-inline edgeweight SSSP::distance(node t) const {
-    return distances[t];
-}
-
-inline bigfloat SSSP::numberOfPaths(node t) const {
-    if (!storePaths) {
-        throw std::runtime_error("number of paths have not been stored");
-    }
-    return npaths[t];
-}
-
-inline double SSSP::_numberOfPaths(node t) const {
+template <class GraphT>
+inline double SingleSourceShortestPaths<GraphT>::_numberOfPaths(NodeT t) const {
     if (!storePaths) {
         throw std::runtime_error("number of paths have not been stored");
     }
@@ -200,17 +205,10 @@ inline double SSSP::_numberOfPaths(node t) const {
     return res;
 }
 
-inline const std::vector<node> &SSSP::getPredecessors(node t) const {
-    if (!storePaths) {
-        throw std::runtime_error("predecessors have not been stored");
-    }
-    return previous[t];
-}
-
-inline bigfloat SSSP::getNumberOfPaths(node t) const {
-    return npaths[t];
-}
+using SSSP = SingleSourceShortestPaths<AdjListGraph<node, edgeweight>>;
 
 } /* namespace NetworKit */
+
+#include <networkit/distance/SSSPImpl.hpp>
 
 #endif // NETWORKIT_DISTANCE_SSSP_HPP_

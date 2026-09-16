@@ -34,7 +34,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "scipy<1.17.0",
+  "scipy",
   "numpy",
   "tabulate"
 ]
@@ -48,10 +48,10 @@ changelog = "https://github.com/networkit/networkit/blob/master/CHANGES.md"
 
 [build-system]
 requires = [
-  "cython",
+  "cython<3.3.0",
   "cmake",
   "numpy",
-  "scipy<1.17.0",
+  "scipy",
   "setuptools",
   "wheel"
 ]

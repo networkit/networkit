@@ -14,7 +14,6 @@ import numpy as np
 
 cmakeCompiler = None
 buildDirectory = "build/build_python"
-ninja_available = False
 enable_osx_crossbuild = False
 build_tests = False
 
@@ -30,14 +29,6 @@ if "NETWORKIT_OSX_CROSSBUILD" in os.environ:
 if "NETWORKIT_BUILD_TESTS" in os.environ:
     build_tests = True
 
-if shutil.which("cmake") is None:
-    print("ERROR: NetworKit compilation requires cmake.")
-    sys.exit(1)
-
-ninja_available = shutil.which("ninja") is not None
-if not (ninja_available or shutil.which("make")):
-    print("ERROR: NetworKit compilation requires Make or Ninja.")
-    sys.exit(1)
 try:
     from setuptools import setup  # to ensure setuptools is installed
 except ImportError:
@@ -83,6 +74,18 @@ sys.argv = [__file__] + args
 def buildNetworKit(
     install_prefix, externalCore=False, externalTlx=None, withTests=False, rpath=None
 ):
+    # cmake and a generator (make or ninja) are only needed to *compile*
+    # NetworKit. Check for them here, at build time, instead of at import time
+    # so that PEP 517 metadata hooks (e.g. get_requires_for_build_wheel) can run
+    # without a C++ build toolchain installed. See issue #1450.
+    if shutil.which("cmake") is None:
+        print("ERROR: NetworKit compilation requires cmake.")
+        sys.exit(1)
+    ninja_available = shutil.which("ninja") is not None
+    if not (ninja_available or shutil.which("make")):
+        print("ERROR: NetworKit compilation requires Make or Ninja.")
+        sys.exit(1)
+
     try:
         os.makedirs(buildDirectory)
     except FileExistsError:

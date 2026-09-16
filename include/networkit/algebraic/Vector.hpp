@@ -42,7 +42,7 @@ public:
      * @param transpose Indicates whether this vector is transposed (row vector) or not (column
      * vector).
      */
-    Vector(count dimension, double initialValue = 0, bool transpose = false);
+    explicit Vector(count dimension, double initialValue = 0, bool transpose = false);
 
     /**
      * Constructs the Vector with the contents of @a values.
