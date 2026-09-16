@@ -272,7 +272,9 @@ cdef class SubgraphIsomorphism(Algorithm):
 
 	def numberOfMatches(self):
 		"""
-		Returns how many matches were found. Works regardless of whether they were stored. If a match limit was specified, the returned value is capped at that limit.
+		numberOfMatches()
+
+		Returns how many matches were found. Works regardless of whether they were stored. If a match limit was specified, the returned value is at most that limit. ParallelRI with a callback is the exception, since its workers may deliver a few matches beyond the limit before they all stop. These matches are counted too.
 
 		Returns
 		-------
