@@ -236,9 +236,9 @@ private:
                         return false;
                     }
                     if (edgeLabelled) {
-                        if (!(patternGraph.edgeLabel(tv, v) == targetGraph.edgeLabel(pu, core2[v])
-                              || patternGraph.edgeLabel(tv, v) == none
-                              || targetGraph.edgeLabel(pu, core2[v]) == none)) {
+                        if (!(patternGraph.edgeLabel(pu, core2[v]) == targetGraph.edgeLabel(tv, v)
+                              || patternGraph.edgeLabel(pu, core2[v]) == none
+                              || targetGraph.edgeLabel(tv, v) == none)) {
                             return false;
                         }
                     }
@@ -292,9 +292,9 @@ private:
                         return false;
                     }
                     if (edgeLabelled) {
-                        if (!(patternGraph.edgeLabel(v, tv) == targetGraph.edgeLabel(core2[v], pu)
-                              || patternGraph.edgeLabel(v, tv) == none
-                              || targetGraph.edgeLabel(core2[v], pu) == none)) {
+                        if (!(patternGraph.edgeLabel(core2[v], pu) == targetGraph.edgeLabel(v, tv)
+                              || patternGraph.edgeLabel(core2[v], pu) == none
+                              || targetGraph.edgeLabel(v, tv) == none)) {
                             return false;
                         }
                     }
@@ -656,8 +656,8 @@ private:
     /// core2[targetNode] = pattern node mapped onto it, or `none`.
     std::vector<node> core2;
 
-    /// Index at which each node can be found in the terminal set member vectors; none means "not in
-    /// it".
+    /// Index at which each node can be found in the terminal set member vectors; `none` means "not
+    /// in it".
     std::vector<index> in1, out1, in2, out2;
     /// Current sizes of the four terminal sets.
     count t1in, t1out, t2in, t2out;

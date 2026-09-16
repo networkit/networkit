@@ -102,6 +102,19 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		vf2_2.run()
 		self.assertEqual(vf2_2.numberOfMatches(), 6)
 
+	def testMatchCap(self):
+		vf2_noCap = nk.isomorphism.VF2(self.arc, self.square)
+		vf2_cap0 = nk.isomorphism.VF2(self.arc, self.square, maxMatches=0)
+		vf2_cap3 = nk.isomorphism.VF2(self.arc, self.square, maxMatches=3)
+
+		vf2_noCap.run()
+		vf2_cap0.run()
+		vf2_cap3.run()
+
+		self.assertEqual(vf2_noCap.numberOfMatches(), 8)
+		self.assertEqual(vf2_cap0.numberOfMatches(), 8)
+		self.assertEqual(vf2_cap3.numberOfMatches(), 3)
+
 	def testDifferentAlgos(self):
 		vf2 = nk.isomorphism.VF2(self.arc, self.square)
 		vf2.run()
@@ -127,6 +140,23 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 
 		self.assertEqual({tuple(match) for match in riPar.getMatches()}, self.expected)
 
+	def testRIVariants(self):
+		ri = nk.isomorphism.RI(self.arc, self.square, variant=nk.isomorphism.Variant.RI)
+		ri.run()
+
+		ri_ds = nk.isomorphism.RI(self.arc, self.square, variant=nk.isomorphism.Variant.RI_DS)
+		ri_ds.run()
+
+		self.assertTrue(ri.hasMatch())
+		self.assertEqual(ri.numberOfMatches(), 8)
+
+		self.assertTrue(ri_ds.hasMatch())
+		self.assertEqual(ri_ds.numberOfMatches(), 8)
+
+		self.assertEqual({tuple(match) for match in ri.getMatches()}, self.expected)
+
+		self.assertEqual({tuple(match) for match in ri_ds.getMatches()}, self.expected)
+
 	def testVF2Callback(self):
 		matches = []
 
@@ -134,7 +164,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 			matches.append(match)
 
 		vf2 = nk.isomorphism.VF2(self.arc, self.square)
-		vf2.setCallback(callback)
+		vf2.setSequentialCallback(callback)
 		vf2.setStoreMatches(True)
 		vf2.run()
 
@@ -152,7 +182,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 
 		ri = nk.isomorphism.RI(self.arc, self.square)
 		ri.setStoreMatches(True)
-		ri.setCallback(callback)
+		ri.setSequentialCallback(callback)
 		ri.run()
 
 		self.assertEqual(len(matches), 8)
@@ -168,7 +198,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 			matches.append((workerId, match))
 
 		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
-		riPar.setCallback(callback, parallel=True)
+		riPar.setParallelCallback(callback)
 		riPar.run()
 
 		self.assertEqual(len(matches), 8)
@@ -180,6 +210,30 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		with self.assertRaises(RuntimeError):
 			riPar.getMatches()
 
+	def testCallbackTypeMismatches(self):
+		matches_seq = []
+		matches_par = []
+
+		def callback_seq(match):
+			matches_seq.append(match)
+
+		def callback_par(workerId, match):
+			matches_par.append((workerId, match))
+
+		vf2 = nk.isomorphism.VF2(self.arc, self.square)
+		with self.assertRaises(RuntimeError):
+			vf2.setParallelCallback(callback_seq)
+
+		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
+		with self.assertRaises(RuntimeError):
+			riPar.setSequentialCallback(callback_par)
+
+		with self.assertRaises(TypeError):
+			vf2.setSequentialCallback(callback_par)
+
+		with self.assertRaises(TypeError):
+			riPar.setParallelCallback(callback_seq)
+
 	def testCallbackCalledExactlyOncePerMatch(self):
 		callback_count = 0
 
@@ -188,7 +242,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 			callback_count += 1
 
 		vf2 = nk.isomorphism.VF2(self.arc, self.square)
-		vf2.setCallback(callback)
+		vf2.setSequentialCallback(callback)
 		vf2.run()
 
 		self.assertEqual(callback_count, 8)
@@ -205,7 +259,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		# No callback was set before run so there should not be anything in matches
 		self.assertEqual(len(matches), 0)
 
-		vf2.setCallback(callback)
+		vf2.setSequentialCallback(callback)
 		vf2.run()
 
 		# Callback has been set before run so matches should be filled
@@ -223,8 +277,8 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 			matches2.append(match)
 
 		vf2 = nk.isomorphism.VF2(self.arc, self.square)
-		vf2.setCallback(callback1)
-		vf2.setCallback(callback2)
+		vf2.setSequentialCallback(callback1)
+		vf2.setSequentialCallback(callback2)
 		vf2.run()
 
 		# callback2 was most recently set so it should be filled, callback1 should be empty
@@ -243,7 +297,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		callback = Callback()
 
 		vf2 = nk.isomorphism.VF2(self.arc, self.square)
-		vf2.setCallback(callback)
+		vf2.setSequentialCallback(callback)
 		vf2.run()
 
 		self.assertEqual(len(callback.matches), 8)
@@ -262,8 +316,8 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		vf2_1 = nk.isomorphism.VF2(self.arc, self.square)
 		vf2_2 = nk.isomorphism.VF2(self.arc, self.square)
 
-		vf2_1.setCallback(callback1)
-		vf2_2.setCallback(callback2)
+		vf2_1.setSequentialCallback(callback1)
+		vf2_2.setSequentialCallback(callback2)
 
 		vf2_1.run()
 		vf2_2.run()
@@ -283,7 +337,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		callback = Callback()
 
 		vf2 = nk.isomorphism.VF2(self.arc, self.square)
-		vf2.setCallback(callback)
+		vf2.setSequentialCallback(callback)
 
 		del callback
 		vf2.run()
@@ -298,7 +352,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 			raise RuntimeError("sequential callback failed")
 
 		ri = nk.isomorphism.RI(self.arc, self.square)
-		ri.setCallback(callback)
+		ri.setSequentialCallback(callback)
 
 		with self.assertRaises(RuntimeError):
 			ri.run()
@@ -313,7 +367,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 			raise RuntimeError("parallel callback failed")
 
 		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
-		riPar.setCallback(callback, parallel=True)
+		riPar.setParallelCallback(callback)
 
 		with self.assertRaises(RuntimeError):
 			riPar.run()
@@ -331,11 +385,11 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 			matches_riPar.append(tuple(match))
 
 		ri = nk.isomorphism.RI(self.arc, self.square)
-		ri.setCallback(callback_ri)
+		ri.setSequentialCallback(callback_ri)
 		ri.run()
 
 		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
-		riPar.setCallback(callback_riPar, parallel=True)
+		riPar.setParallelCallback(callback_riPar)
 		riPar.run()
 
 		self.assertEqual(set(matches_ri), set(matches_riPar))
