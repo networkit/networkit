@@ -91,8 +91,8 @@ public:
 
     bool hasEdgeLabels() const noexcept { return !outLabel.empty(); }
 
-    /// Whether collapsing parallel edges with different labels discarded a label. An algorithm
-    /// that supports edge labels must refuse such input.
+    /// Whether collapsing parallel edges with different labels discarded a label. The algorithms
+    /// throw from run() for such input.
     bool collapsedLabelledEdges() const noexcept { return lostLabels; }
 
     /// The label of the arc @a u -> @a v, or @ref none if the arc does not exist or the snapshot

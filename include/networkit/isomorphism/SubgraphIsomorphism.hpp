@@ -106,12 +106,13 @@ public:
      */
     void setStoreMatches(bool storeMatches);
 
-    /// Returns the matches of @ref run(). Throws if a callback was set or matches are not stored.
+    /// Returns the matches of @ref run(). Throws if @ref run() has not finished, a callback was set
+    /// or matches are not stored.
     const std::vector<Match> &getMatches() const;
 
     /**
      * Returns the number of matches found, stored or not. A parallel search with a callback may
-     * deliver and count a few matches beyond the cap.
+     * deliver and count a few matches beyond `maxMatches`.
      */
     count numberOfMatches() const;
 

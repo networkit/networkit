@@ -34,7 +34,7 @@ constexpr count MaxPublishInterval = 64;
 /// Shared-count updates per worker to aim for, which bounds the overshoot past maxMatches.
 constexpr count PublishRounds = 8;
 
-/// Section V-B2 of the paper finds 4 best.
+/// Section 5.2.2 of Kimmig, Meyerhenke and Strash finds 4 best.
 constexpr count TaskGroupSize = 4;
 constexpr count StealAttempts = 4;
 

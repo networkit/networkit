@@ -14,7 +14,7 @@ namespace NetworKit {
  * VF2 extends a partial mapping one node pair at a time, depth first, and draws the candidate pairs
  * from the terminal sets of unmapped nodes adjacent to mapped ones. It supports both semantics,
  * directed and undirected graphs, node labels and edge labels. VF2 serves as the reference
- * implementation, but @ref RI is usually faster.
+ * implementation, but @ref RI is usually faster on sparse targets.
  *
  * The implementation is based on
  *

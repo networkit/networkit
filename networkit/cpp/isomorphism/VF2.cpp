@@ -520,12 +520,12 @@ private:
 
     MatchReporter report;
 
-    /// core1[patternNode] = target node it is mapped to, or `none`.
+    /// `core1[u]` is the target node that pattern node u is mapped to, or @ref none.
     std::vector<node> core1;
-    /// core2[targetNode] = pattern node mapped onto it, or `none`.
+    /// `core2[v]` is the pattern node mapped to target node v, or @ref none.
     std::vector<node> core2;
 
-    /// Position of each node in the member vectors, or `none` if it is not in the terminal set.
+    /// Position of each node in the member vectors, or @ref none if it is not in the terminal set.
     std::vector<index> in1, out1, in2, out2;
     /// Current sizes of the four terminal sets.
     count t1in, t1out, t2in, t2out;
