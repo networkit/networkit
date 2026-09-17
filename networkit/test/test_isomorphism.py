@@ -282,6 +282,33 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		with self.assertRaises(TypeError):
 			riPar.setParallelCallback(callback_seq)
 
+		with self.assertRaisesRegex(TypeError, "must be callable"):
+			vf2.setCallback(42)
+
+		with self.assertRaisesRegex(TypeError, "must be callable"):
+			vf2.setParallelCallback(42)
+
+	def testUninitializedObjectRaises(self):
+		# A subclass that does not create the C++ object must get an error instead of a crash
+		class Uninitialized(nk.isomorphism.SubgraphIsomorphism):
+			pass
+
+		algo = Uninitialized()
+		calls = [
+			algo.numberOfWorkers,
+			lambda: algo.setNodeLabels([], []),
+			lambda: algo.setEdgeLabels([], []),
+			lambda: algo.setCallback(lambda match: None),
+			lambda: algo.setParallelCallback(lambda workerId, match: None),
+			lambda: algo.setStoreMatches(False),
+			algo.getMatches,
+			algo.numberOfMatches,
+			algo.hasMatch,
+		]
+		for call in calls:
+			with self.assertRaisesRegex(RuntimeError, "not properly initialized"):
+				call()
+
 	def testCallbackCalledExactlyOncePerMatch(self):
 		callback_count = 0
 
