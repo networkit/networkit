@@ -24,7 +24,6 @@
 #include <networkit/isomorphism/RI.hpp>
 #include <networkit/isomorphism/SubgraphIsomorphism.hpp>
 #include <networkit/isomorphism/VF2.hpp>
-#include <networkit/isomorphism/VF3.hpp>
 
 #include "SubgraphIsomorphismTestUtils.hpp"
 
@@ -300,17 +299,12 @@ TEST_F(SubgraphIsomorphismGTest, testSetEdgeLabelsValidatesItsInput) {
     EXPECT_NO_THROW(algo.setEdgeLabels({}, {}));
 }
 
-TEST_F(SubgraphIsomorphismGTest, testEdgeLabelsAreEitherHonouredOrRefused) {
+TEST_F(SubgraphIsomorphismGTest, testEdgeLabelsAreHonoured) {
 
     const IsomorphismTest::LabelledGraph pattern =
         IsomorphismTest::labelledGraphOf(3, {{0, 1, 1}, {1, 2, 2}});
     const IsomorphismTest::LabelledGraph target =
         IsomorphismTest::labelledGraphOf(4, {{0, 1, 1}, {1, 2, 2}, {2, 3, 1}});
-
-    VF3 vf3(pattern.G, target.G, Semantics::MONOMORPHISM);
-    vf3.setEdgeLabels(pattern.edgeLabels, target.edgeLabels);
-    EXPECT_THROW(vf3.run(), std::runtime_error);
-    EXPECT_FALSE(vf3.hasFinished()) << "a refused run must not count as finished";
 
     const count labelled = referenceMatches(pattern.G, target.G, Semantics::MONOMORPHISM, {}, {},
                                             pattern.edgeLabels, target.edgeLabels)

@@ -23,8 +23,7 @@ namespace NetworKit {
  * times.
  *
  * @ref VF2 is the reference implementation, and @ref RI is usually faster on sparse targets.
- * @ref ParallelRI runs RI on several threads and reports the matches in no fixed order. The search
- * of @ref VF3 is not implemented yet.
+ * @ref ParallelRI runs RI on several threads and reports the matches in no fixed order.
  *
  * Pattern and target must both be directed or both be undirected, and the pattern must not contain
  * self-loops. The search ignores edge weights and target self-loops, and it collapses parallel
