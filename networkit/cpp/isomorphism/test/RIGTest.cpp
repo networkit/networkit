@@ -13,6 +13,7 @@
 
 #include <gtest/gtest.h>
 
+#include <networkit/GlobalState.hpp>
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
@@ -82,7 +83,10 @@ std::vector<index> randomNodeLabels(count upperNodeIdBound) {
 } // namespace
 
 /// The variants may order the pattern nodes differently but must find the same matches.
-class RIGTest : public testing::TestWithParam<RI::Variant> {};
+class RIGTest : public testing::TestWithParam<RI::Variant> {
+protected:
+    void TearDown() override { GlobalState::setReceivedSIGINT(false); }
+};
 
 INSTANTIATE_TEST_SUITE_P(Variants, RIGTest, testing::Values(RI::Variant::RI, RI::Variant::RI_DS));
 
@@ -296,6 +300,35 @@ TEST_P(RIGTest, testSelectiveDomainsDoNotChangeTheMatchSet) {
     EXPECT_EQ(actual, expected);
 }
 
+/// The domains are set by hand, since a computed domain keeps every neighbour that could host the
+/// pattern node. The slice of target node 5 has a node below and a node above the domain.
+TEST_P(RIGTest, testCandidatesAreIntersectedWithTheDomain) {
+    if (GetParam() == RI::Variant::RI)
+        GTEST_SKIP() << "plain RI builds no domains";
+
+    const SearchGraph pattern(IsomorphismTest::graphOf(2, {{0, 1}}), /* buildMatrix = */ true);
+    const SearchGraph target(IsomorphismTest::graphOf(10, {{5, 1}, {5, 3}, {5, 7}, {5, 9}}),
+                             /* buildMatrix = */ false);
+
+    RIImpl::Domains domains;
+    domains.ofPatternNode = {{5}, {3, 7}};
+    domains.earnsItsKeep = {false, true};
+    const RIImpl::Ordering ordering = RIImpl::computeOrdering(pattern, domains);
+    ASSERT_EQ(ordering.parent, (std::vector<index>{none, 0}));
+
+    Aux::SignalHandler handler;
+    std::vector<Match> matches;
+    RIImpl(pattern, target, {}, {}, ordering, domains, Semantics::MONOMORPHISM, handler,
+           [&matches](const Match &match) {
+               matches.push_back(match);
+               return true;
+           })
+        .run();
+
+    IsomorphismTest::sortMatches(matches);
+    EXPECT_EQ(matches, (std::vector<Match>{{5, 3}, {5, 7}}));
+}
+
 /**
  * A singleton domain opens the matching order, and forward checking removes its target node from
  * all other domains. Pattern node 2 is isolated, so the refinement cannot relate it to nodes 0 and
@@ -489,6 +522,26 @@ TEST_P(RIGTest, testExpandAgreesWithRun) {
         IsomorphismTest::sortMatches(viaExpand);
         EXPECT_EQ(viaExpand, viaRun) << "case: " << testCase.name;
     }
+}
+
+/// The recursion checks for an interrupt before every report, so no match follows the interrupt.
+TEST_P(RIGTest, testInterruptStopsTheSearch) {
+    const Graph pattern = IsomorphismTest::graphOf(3, {{0, 1}, {1, 2}});
+    const Graph cycle =
+        IsomorphismTest::graphOf(6, {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 0}});
+
+    RI algo(pattern, cycle, GetParam(), Semantics::MONOMORPHISM, 0);
+    count delivered = 0;
+    algo.setCallback([&](const Match &) {
+        if (++delivered == 5)
+            GlobalState::setReceivedSIGINT(true);
+    });
+
+    EXPECT_THROW(algo.run(), Aux::SignalHandler::InterruptException);
+    GlobalState::setReceivedSIGINT(false);
+
+    EXPECT_EQ(delivered, 5u);
+    EXPECT_FALSE(algo.hasFinished());
 }
 
 TEST_P(RIGTest, testMatchesReferenceOnRandomGraphs) {
