@@ -1631,6 +1631,42 @@ TEST_F(CentralityGTest, testLaplacianCentralityUnweighted) {
     EXPECT_EQ(6, scores[5]);
 }
 
+TEST_F(CentralityGTest, testLaplacianCentralityFractionalWeights) {
+    // The node's own weighted degree must not be truncated before being squared.
+    // The weighted degrees here are 2.5, 3.75 and 1.25, and every value below is
+    // exact in binary floating point.
+    Graph G(3, true);
+
+    G.addEdge(0, 1, 2.5);
+    G.addEdge(1, 2, 1.25);
+
+    LaplacianCentrality lc(G);
+    lc.run();
+    std::vector<double> scores = lc.scores();
+
+    EXPECT_DOUBLE_EQ(31.25, scores[0]);
+    EXPECT_DOUBLE_EQ(37.5, scores[1]);
+    EXPECT_DOUBLE_EQ(12.5, scores[2]);
+}
+
+TEST_F(CentralityGTest, testLaplacianCentralityFractionalWeightsNormalized) {
+    Graph G(3, true);
+
+    G.addEdge(0, 1, 2.5);
+    G.addEdge(1, 2, 1.25);
+
+    LaplacianCentrality lc(G, true);
+    lc.run();
+    std::vector<double> scores = lc.scores();
+
+    // Removing the middle vertex releases the whole Laplacian energy of this
+    // path, so its normalized score is 1. Truncating the weighted degree shrank
+    // the denominator and pushed the score above 1.
+    EXPECT_NEAR(31.25 / 37.5, scores[0], 1e-12);
+    EXPECT_NEAR(1.0, scores[1], 1e-12);
+    EXPECT_NEAR(12.5 / 37.5, scores[2], 1e-12);
+}
+
 TEST_P(CentralityGTest, testGroupDegree) {
     Aux::Random::setSeed(42, false);
     constexpr count nodes = 12;
