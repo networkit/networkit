@@ -127,22 +127,24 @@ public:
     }
 
     std::vector<Match> takeMatches() {
-        std::vector<Match> merged;
         if (!storeMatches)
-            return merged;
+            return {};
 
         count total = 0;
         for (const Worker &worker : workers)
             total += worker.buffer.size();
 
+        // The other buffers are appended to the first one.
+        std::vector<Match> &merged = workers.front().buffer;
         merged.reserve(total);
-        for (Worker &worker : workers) {
-            merged.insert(merged.end(), std::make_move_iterator(worker.buffer.begin()),
-                          std::make_move_iterator(worker.buffer.end()));
-            worker.buffer.clear();
-            worker.buffer.shrink_to_fit();
+        for (index w = 1; w < workers.size(); ++w) {
+            std::vector<Match> &buffer = workers[w].buffer;
+            merged.insert(merged.end(), std::make_move_iterator(buffer.begin()),
+                          std::make_move_iterator(buffer.end()));
+            buffer.clear();
+            buffer.shrink_to_fit();
         }
-        return merged;
+        return std::move(merged);
     }
 
     count matchesFound() const {

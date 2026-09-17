@@ -308,9 +308,7 @@ RIImpl::RIImpl(const SearchGraph &pattern, const SearchGraph &target,
 }
 
 RIImpl::State RIImpl::rootState() const {
-    State state;
-    state.mapping.assign(ordering->order.size(), none);
-    return state;
+    return State{std::vector<node>(ordering->order.size(), none)};
 }
 
 void RIImpl::run() {
