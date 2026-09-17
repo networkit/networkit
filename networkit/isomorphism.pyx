@@ -174,7 +174,12 @@ cdef class SubgraphIsomorphism(Algorithm):
 		"""
 		setCallback(callback)
 
-		Set a Python callback. Every match will be handed to this callback as it is found, rather than collecting them. The callback is never called concurrently. ParallelRI makes its workers take turns at the callback, so the callback may change shared state without a lock. If the callback raises, the search stops and ``run()`` raises a ``RuntimeError`` that carries the original message. A later call of setCallback() or setParallelCallback() replaces the callback.
+		Set a Python callback. Every match will be handed to this callback as it is found, rather
+		than collecting them. The callback is never called concurrently. ParallelRI makes its
+		workers take turns at the callback, so the callback may change shared state without a lock.
+		If the callback raises, the search stops and ``run()`` raises a ``RuntimeError`` that
+		carries the original message. A later call of setCallback() or setParallelCallback()
+		replaces the callback.
 
 		Parameters
 		----------
@@ -209,7 +214,12 @@ cdef class SubgraphIsomorphism(Algorithm):
 		"""
 		setParallelCallback(callback)
 
-		Like setCallback(callback), but the callback also receives the id of the worker that found the match. ParallelRI may call the callback from several workers, and these calls can overlap, so the callback must be thread-safe. The worker id is smaller than numberOfWorkers(), so results that are kept per worker id need no lock. ParallelRI uses the global thread count, so call numberOfWorkers() after networkit.setNumberOfThreads(). The sequential algorithms always pass worker id 0.
+		Like setCallback(callback), but the callback also receives the id of the worker that found
+		the match. ParallelRI may call the callback from several workers, and these calls can
+		overlap, so the callback must be thread-safe. The worker id is smaller than
+		numberOfWorkers(), so results that are kept per worker id need no lock. ParallelRI uses the
+		global thread count, so call numberOfWorkers() after networkit.setNumberOfThreads(). The
+		sequential algorithms always pass worker id 0.
 
 		Parameters
 		----------
@@ -259,7 +269,9 @@ cdef class SubgraphIsomorphism(Algorithm):
 		"""
 		getMatches()
 
-		Returns all matches found, each one a vector indexed by pattern node. Raises an error if run() has not been called yet or if the matches were not stored. Matches are not stored when a callback was set or setStoreMatches(False) was called.
+		Returns all matches found, each one a vector indexed by pattern node. Raises an error if
+		run() has not been called yet or if the matches were not stored. Matches are not stored when
+		a callback was set or setStoreMatches(False) was called.
 
 		Returns
 		-------
@@ -274,7 +286,10 @@ cdef class SubgraphIsomorphism(Algorithm):
 		"""
 		numberOfMatches()
 
-		Returns how many matches were found. Works regardless of whether they were stored. If a match limit was specified, the returned value is at most that limit. ParallelRI with a callback is the exception, since its workers may deliver a few matches beyond the limit before they all stop. These matches are counted too.
+		Returns how many matches were found. Works regardless of whether they were stored. If a
+		match limit was specified, the returned value is at most that limit. ParallelRI with a
+		callback is the exception, since its workers may deliver a few matches beyond the limit
+		before they all stop. These matches are counted too.
 
 		Returns
 		-------
