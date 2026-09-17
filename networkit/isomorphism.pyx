@@ -105,10 +105,15 @@ cdef class SubgraphIsomorphism(Algorithm):
 	to a target edge. A match is a list indexed by pattern node, so match[u] is the target node that
 	pattern node u is mapped to, and it holds networkit.none at ids that are not nodes. Under
 	networkit.isomorphism.Semantics.INDUCED, pattern non-edges must also be mapped to target
-	non-edges.
+	non-edges. The search finds an occurrence once per automorphism of the pattern, so a triangle
+	occurs six times.
 
-	Edge weights are ignored, the pattern must not contain self-loops, and parallel edges are
-	collapsed.
+	VF2 is the reference implementation, and RI is usually faster on sparse targets. ParallelRI runs
+	RI on several threads and reports the matches in no fixed order.
+
+	Pattern and target must both be directed or both be undirected, and the pattern must not contain
+	self-loops. The search ignores edge weights and target self-loops, and it collapses parallel
+	edges.
 	"""
 
 	cdef Graph _pattern
@@ -139,14 +144,16 @@ cdef class SubgraphIsomorphism(Algorithm):
 		"""
 		setNodeLabels(patternNodeLabels, targetNodeLabels)
 
-		Set labels for pattern and target nodes. Labels are indexed by node id.
+		Restricts matches to map every pattern node to a target node with the same label. The label
+		networkit.none matches any label, and two empty lists remove the labels. Call this before
+		run().
 
 		Parameters
 		----------
 		patternNodeLabels : list(int)
-			List with pattern node labels.
+			Labels of the pattern nodes, indexed by node id.
 		targetNodeLabels : list(int)
-			List with target node labels.
+			Labels of the target nodes, indexed by node id.
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
@@ -157,14 +164,17 @@ cdef class SubgraphIsomorphism(Algorithm):
 		"""
 		setEdgeLabels(patternEdgeLabels, targetEdgeLabels)
 
-		Set labels for pattern and target edges. Labels are indexed by edge id.
+		Restricts matches to map every pattern edge to a target edge with the same label. The label
+		networkit.none matches any label, and two empty lists remove the labels. Both graphs need
+		edge ids, see networkit.Graph.indexEdges(). run() raises an error for parallel edges with
+		different labels. Call this before run().
 
 		Parameters
 		----------
 		patternEdgeLabels : list(int)
-			List with pattern edge labels.
+			Labels of the pattern edges, indexed by edge id.
 		targetEdgeLabels : list(int)
-			List with target edge labels.
+			Labels of the target edges, indexed by edge id.
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
@@ -174,8 +184,8 @@ cdef class SubgraphIsomorphism(Algorithm):
 		"""
 		setCallback(callback)
 
-		Set a Python callback. Every match will be handed to this callback as it is found, rather
-		than collecting them. The callback is never called concurrently. ParallelRI makes its
+		Passes every match to the callback instead of storing it, so getMatches() raises an error.
+		The callback is never called concurrently. ParallelRI makes its
 		workers take turns at the callback, so the callback may change shared state without a lock.
 		If the callback raises, the search stops and ``run()`` raises a ``RuntimeError`` that
 		carries the original message. A later call of setCallback() or setParallelCallback()
@@ -254,12 +264,13 @@ cdef class SubgraphIsomorphism(Algorithm):
 		"""
 		setStoreMatches(storeMatches)
 
-		Choose whether found matches are kept for getMatches().
+		Sets whether matches are stored. Pass False to only count them, so getMatches() raises an
+		error. Matches are stored by default. Call this before run().
 
 		Parameters
 		----------
 		storeMatches : bool
-			Whether to keep matches for getMatches(). Default: True
+			Whether to keep matches for getMatches().
 		"""
 		if self._this == NULL:
 			raise RuntimeError("Error, object not properly initialized")
@@ -286,10 +297,9 @@ cdef class SubgraphIsomorphism(Algorithm):
 		"""
 		numberOfMatches()
 
-		Returns how many matches were found. Works regardless of whether they were stored. If a
-		match limit was specified, the returned value is at most that limit. ParallelRI with a
-		callback is the exception, since its workers may deliver a few matches beyond the limit
-		before they all stop. These matches are counted too.
+		Returns how many matches were found, stored or not. The returned value is at most
+		maxMatches. ParallelRI with a callback is the exception, since its workers may deliver a few
+		matches beyond maxMatches before they all stop. These matches are counted too.
 
 		Returns
 		-------
@@ -304,7 +314,7 @@ cdef class SubgraphIsomorphism(Algorithm):
 		"""
 		hasMatch()
 
-		Return whether at least one match was found.
+		Returns whether a match was found. Pass maxMatches=1 to stop at the first one.
 
 		Returns
 		-------
@@ -323,7 +333,11 @@ cdef class VF2(SubgraphIsomorphism):
 	"""
 	VF2(pattern, target, semantics=networkit.isomorphism.Semantics.INDUCED, maxMatches=0)
 
-	Finds every occurrence of a pattern graph inside a target graph, using the VF2 algorithm.
+	Finds every occurrence of a pattern graph inside a target graph using the VF2 algorithm.
+
+	VF2 extends a partial mapping one node pair at a time, depth first, and draws the candidate
+	pairs from the terminal sets of unmapped nodes adjacent to mapped ones. VF2 serves as the
+	reference implementation, but RI is usually faster on sparse targets.
 
 	Parameters
 	----------
@@ -365,7 +379,12 @@ cdef class RI(SubgraphIsomorphism):
 	RI(pattern, target, variant=networkit.isomorphism.Variant.RI,
 	   semantics=networkit.isomorphism.Semantics.INDUCED, maxMatches=0)
 
-	Finds every occurrence of a pattern graph inside a target graph using RI.
+	Finds every occurrence of a pattern graph inside a target graph using the RI algorithm.
+
+	RI fixes the order of the pattern nodes once and then backtracks along this order. The variant
+	networkit.isomorphism.Variant.RI_DS first computes a domain of candidate target nodes for every
+	pattern node. It pays off for disconnected patterns and selective node labels, but otherwise
+	usually costs more than it saves.
 
 	Parameters
 	----------
@@ -395,10 +414,10 @@ cdef class ParallelRI(SubgraphIsomorphism):
 	ParallelRI(pattern, target, variant=networkit.isomorphism.Variant.RI,
 			   semantics=networkit.isomorphism.Semantics.INDUCED, maxMatches=0)
 
-	Parallel version of RI. It finds the same matches as RI, but their order may differ from run to run.
-	The number of workers is the global thread count, see networkit.setNumberOfThreads(). Idle workers
-	steal batches of partial mappings from busy ones. A callback set with setCallback() makes the
-	workers take turns, and a callback set with setParallelCallback() avoids this.
+	Parallel version of RI. It finds the same matches as RI, but their order may differ from run to
+	run. The number of workers is the global thread count, see networkit.setNumberOfThreads(). Idle
+	workers steal batches of partial mappings from busy ones. A callback set with setCallback()
+	makes the workers take turns, and a callback set with setParallelCallback() avoids this.
 
 	Parameters
 	----------
