@@ -349,15 +349,18 @@ void DHBGraph::removeAllEdges() {
 }
 
 void DHBGraph::removeSelfLoops() {
-    parallelForNodes([&](node const u) {
-        auto isSelfLoop = [u](node const v) { return u == v; };
-        removeAdjacentEdges(u, isSelfLoop);
-        if (isDirected()) {
-            removeAdjacentEdges(u, isSelfLoop, true);
+    // A self-loop at u is a single entry in the block of u, so every iteration changes only its own
+    // block. The counters are updated after the loop.
+    count removedSelfLoops = 0;
+#pragma omp parallel for schedule(guided) reduction(+ : removedSelfLoops)
+    for (omp_index u = 0; u < static_cast<omp_index>(m_dhb_graph.vertices_count()); ++u) {
+        auto const vertex = static_cast<dhb::Vertex>(u);
+        if (m_dhb_graph.removeEdge(vertex, vertex)) {
+            ++removedSelfLoops;
         }
-    });
+    }
 
-    m -= storedNumberOfSelfLoops;
+    m -= removedSelfLoops;
     storedNumberOfSelfLoops = 0;
 }
 
