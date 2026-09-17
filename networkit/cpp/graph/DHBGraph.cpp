@@ -1,5 +1,8 @@
 #include <networkit/graph/DHBGraph.hpp>
 
+#include <omp.h>
+
+#include <algorithm>
 #include <cmath>
 #include <map>
 #include <random>
@@ -218,11 +221,26 @@ void DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool const d
     auto cmp = [](WeightedEdge const &a, WeightedEdge const &b) { return a.u < b.u; };
     auto get_source_f = [](WeightedEdge const &e) { return e.u; };
 
+    // The parallelizer inserts on the threads of a new team or, for small batches, on the calling
+    // thread. Each thread counts in its own slot, and the slots are added to the graph counters
+    // after all insertions.
+    struct alignas(64) InsertionCounts {
+        count entries = 0;
+        count selfLoops = 0;
+    };
+    std::vector<InsertionCounts> countsPerThread(
+        std::max(omp_get_max_threads(), omp_get_thread_num() + 1));
+    auto countInsertion = [&](WeightedEdge const &e) {
+        InsertionCounts &counts = countsPerThread[omp_get_thread_num()];
+        ++counts.entries;
+        counts.selfLoops += (e.u == e.v);
+    };
+
     auto insert_edge_f = [&](WeightedEdge const &e) {
         EdgeData data{e.weight, 0};
         auto [_, inserted] = m_dhb_graph.neighbors(e.u).insert(e.v, data);
         if (inserted) {
-            storedNumberOfSelfLoops += uint64_t(e.u == e.v);
+            countInsertion(e);
         }
     };
 
@@ -230,7 +248,7 @@ void DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool const d
         EdgeData data{e.weight, 0};
         auto [it, inserted] = m_dhb_graph.neighbors(e.u).insert(e.v, data);
         if (inserted) {
-            storedNumberOfSelfLoops += uint64_t(e.u == e.v);
+            countInsertion(e);
         } else {
             it->data() = EdgeData{e.weight, it->data().id};
         }
@@ -263,6 +281,18 @@ void DHBGraph::addEdges(std::vector<WeightedEdge> &&weighted_edges, bool const d
         par(std::begin(weighted_edges_v_to_u), std::end(weighted_edges_v_to_u), get_source_f, cmp,
             processEdge);
     }
+
+    count insertedEntries = 0;
+    count insertedSelfLoops = 0;
+    for (InsertionCounts const &counts : countsPerThread) {
+        insertedEntries += counts.entries;
+        insertedSelfLoops += counts.selfLoops;
+    }
+
+    // An undirected edge {u, v} with u != v takes one entry in the block of u and one in the block
+    // of v. A self-loop takes a single entry.
+    m += directed ? insertedEntries : (insertedEntries + insertedSelfLoops) / 2;
+    storedNumberOfSelfLoops += insertedSelfLoops;
 }
 
 void DHBGraph::addEdges(std::vector<Edge> &&edges, bool do_update) {
