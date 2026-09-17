@@ -35,7 +35,6 @@ using Semantics = SubgraphIsomorphism::Semantics;
 
 namespace {
 
-/// Builds a ParallelRI of the given variant in the shape the shared harness wants.
 template <typename Variant>
 auto parallelFactory(Variant variant) {
     return [variant](const Graph &pattern, const Graph &target, Semantics semantics,
@@ -45,16 +44,13 @@ auto parallelFactory(Variant variant) {
     };
 }
 
-/// The graph the agreement tests run on. Small enough to read in milliseconds, real enough that
-/// the search tree is as lopsided as the work stealing is meant to cope with - which the 4-node
-/// corpus in the shared harness is far too regular to be.
+/// Unlike the corpus, karate gives a search tree lopsided enough to exercise the work stealing.
 Graph karate() {
     METISGraphReader reader;
     return reader.read("input/karate.graph");
 }
 
-/// A path of @a n nodes. Lengthening it is the cheapest way to buy a deeper and much wider search
-/// tree without changing the target: in karate a 5-path occurs 22 064 times and a 7-path 326 328.
+/// In karate, a 5-path occurs 22 064 times and a 7-path 326 328 times.
 Graph path(count n) {
     Graph G(n);
     for (node u = 0; u + 1 < n; ++u)
@@ -73,7 +69,6 @@ std::vector<int> workerCounts() {
     return counts;
 }
 
-/// Sorted matches from the sequential search, which is the answer ParallelRI has to reproduce.
 std::vector<Match> sequentialMatches(const Graph &pattern, const Graph &target, Semantics semantics,
                                      RI::Variant variant) {
     RI algo(pattern, target, variant, semantics, 0);
@@ -83,7 +78,6 @@ std::vector<Match> sequentialMatches(const Graph &pattern, const Graph &target, 
     return matches;
 }
 
-/// Sorted matches from the parallel search, at whatever the current thread setting is.
 std::vector<Match> parallelMatches(const Graph &pattern, const Graph &target, Semantics semantics,
                                    RI::Variant variant) {
     ParallelRI algo(pattern, target, variant, semantics, 0);
@@ -93,7 +87,6 @@ std::vector<Match> parallelMatches(const Graph &pattern, const Graph &target, Se
     return matches;
 }
 
-/// Runs @a algo without storing matches and returns how many it found.
 template <typename Algo>
 count countOnly(Algo &&algo) {
     algo.setStoreMatches(false);
@@ -103,22 +96,13 @@ count countOnly(Algo &&algo) {
 
 } // namespace
 
-/**
- * Parameterised over the variant, exactly as RIGTest is, so RI-Ds gets the same parallel exercise
- * plain RI does - including the domains, which are built once by the driver and then read by every
- * worker at the same time, a sharing pattern nothing on the sequential path exercises.
- *
- * A hung test here is a termination bug rather than a slow test: the failure mode of the token
- * ring is a worker that never notices the search is over, not a wrong answer.
- */
+/// A hanging test points to a termination bug: a worker that never notices that the search is over.
 class ParallelRIGTest : public testing::TestWithParam<RI::Variant> {
 
 protected:
     void SetUp() override { threadsBefore = Aux::getMaxNumberOfThreads(); }
 
-    /// Both of these are process-*global*. A failing ASSERT_* returns from a test early, so
-    /// restoring them here rather than at the end of each test is what keeps one failure from
-    /// quietly changing how every later test in the binary behaves.
+    /// Restores the process-global state, also after a failing ASSERT_* returned early.
     void TearDown() override {
         GlobalState::setReceivedSIGINT(false);
         Aux::setNumberOfThreads(threadsBefore);
@@ -131,15 +115,7 @@ private:
 INSTANTIATE_TEST_SUITE_P(Variants, ParallelRIGTest,
                          testing::Values(RI::Variant::RI, RI::Variant::RI_DS));
 
-// -------------------------------------------------------------------------------------------
-// The three assertions the shared harness offers
-// -------------------------------------------------------------------------------------------
-
 TEST_P(ParallelRIGTest, testAgreesWithTheReference) {
-
-    // The match set, the match cap, and the three callback forms. The last of those is the first
-    // real exercise of SubgraphIsomorphism::invokeCallback()'s mutex: a serial MatchCallback must
-    // see every match exactly once even though several workers produce them.
     const auto make = parallelFactory(GetParam());
 
     IsomorphismTest::expectMatchesReference(make);
@@ -147,21 +123,8 @@ TEST_P(ParallelRIGTest, testAgreesWithTheReference) {
     IsomorphismTest::expectCallbackFormsAgree(make);
 }
 
-// -------------------------------------------------------------------------------------------
-// Agreement with the sequential search, on a graph big enough for the workers to overlap
-// -------------------------------------------------------------------------------------------
-
-/**
- * The property that catches lost and duplicated work: the answer must not depend on how many
- * workers produced it.
- *
- * The comparison is element by element rather than by count, because a count alone would let a
- * lost match and a duplicated one cancel each other out - exactly the shape a stealing bug takes.
- *
- * One worker is not a special case in the implementation - it walks the queues, the coalescing and
- * the token ring like any other count - so this really does compare the same machinery at
- * different degrees of contention.
- */
+/// Compares the matches element by element, since in a count a lost and a duplicated match would
+/// cancel out.
 TEST_P(ParallelRIGTest, testAnswerDoesNotDependOnWorkerCount) {
     const Graph target = karate();
     const Graph pattern = path(5);
@@ -186,18 +149,8 @@ TEST_P(ParallelRIGTest, testAnswerDoesNotDependOnWorkerCount) {
 }
 
 /**
- * The same question again, on the input shape RI-DS-SI-FC exists for: one pattern node whose
- * domain has been narrowed to a single target node.
- *
- * Nothing else in either test file drives a singleton domain through the parallel path, and a
- * singleton is what all three of the RI-Ds improvements turn on - it opens the matching order, it
- * is what forward checking strikes out of every other domain, and it is the reason the order
- * differs from plain RI's. Since the preprocessing result is built once and read concurrently by
- * every worker, a worker reading a domain the driver got wrong would show up here as a wrong
- * answer rather than as a crash.
- *
- * The reference is sequential **plain RI**, not sequential RI-Ds: an independent search that has
- * no domains at all, so agreement cannot come from both sides making the same mistake.
+ * A singleton domain drives all three RI-DS rules, and all workers read the domains concurrently.
+ * The reference is sequential plain RI, which has no domains and so cannot share a domain bug.
  */
 TEST_P(ParallelRIGTest, testSingletonDomainAgreesAtEveryWorkerCount) {
     constexpr node anchor = 0;
@@ -206,8 +159,7 @@ TEST_P(ParallelRIGTest, testSingletonDomainAgreesAtEveryWorkerCount) {
     const Graph target = karate();
     const Graph pattern = path(4);
 
-    // Exactly one target node carries the rare label, and the pattern node that requires it is an
-    // endpoint - the position plain RI's degree-first rule would order last.
+    // Plain RI would order the pattern endpoint that requires the rare label last.
     std::vector<index> targetNodeLabels(target.upperNodeIdBound(), 0);
     targetNodeLabels[anchor] = rareLabel;
     const std::vector<index> patternNodeLabels{none, none, none, rareLabel};
@@ -219,7 +171,6 @@ TEST_P(ParallelRIGTest, testSingletonDomainAgreesAtEveryWorkerCount) {
     sortMatches(expected);
     ASSERT_FALSE(expected.empty());
 
-    // Every match has to put the labelled pattern node on the one target node that can host it.
     for (const Match &match : expected)
         ASSERT_EQ(match[3], anchor);
 
@@ -236,20 +187,8 @@ TEST_P(ParallelRIGTest, testSingletonDomainAgreesAtEveryWorkerCount) {
     }
 }
 
-/**
- * Duplication and loss told apart, which comparing sets cannot do, and the worker id contract that
- * makes telling them apart possible at all.
- *
- * The per-worker slots are merged into one sequence and sorted, so the comparison is between
- * multisets: a match reported twice makes the sequence longer, a match lost makes it shorter, and
- * either way the two sequences stop being equal.
- *
- * Sizing those slots from numberOfWorkers() is the whole reason that accessor is public, and the
- * reason the worker count is asked for once inside run() rather than re-read per match. A worker
- * id outside [0, numberOfWorkers()) would make every documented per-worker accumulator write out
- * of bounds, so the id is checked on every match rather than assumed. The thread count is pinned
- * first, so the number the accessor reports is one this test chose.
- */
+/// The merged per-worker slots form a multiset, so a duplicated or a lost match changes the sorted
+/// sequence. Every worker id must lie in [0, numberOfWorkers()).
 TEST_P(ParallelRIGTest, testEveryMatchIsReportedExactlyOnce) {
     Aux::setNumberOfThreads(4);
 
@@ -280,13 +219,8 @@ TEST_P(ParallelRIGTest, testEveryMatchIsReportedExactlyOnce) {
     EXPECT_EQ(algo.numberOfMatches(), expected.size());
 }
 
-/**
- * A pattern in two components, so some position has no parent and draws candidates from the whole
- * target rather than from one neighbourhood.
- *
- * That parentless path is also where RI-Ds uses a domain unconditionally, so this is the case in
- * which the two variants do the most different things while having to agree.
- */
+/// A position without a parent draws its candidates from the whole target, or from the domain under
+/// RI-DS.
 TEST_P(ParallelRIGTest, testDisconnectedPatternIsSearchedInParallel) {
     const Graph target = karate();
     const Graph pattern = graphOf(4, {{0, 1}, {2, 3}});
@@ -298,22 +232,15 @@ TEST_P(ParallelRIGTest, testDisconnectedPatternIsSearchedInParallel) {
     EXPECT_EQ(parallelMatches(pattern, target, Semantics::MONOMORPHISM, GetParam()), expected);
 }
 
-// -------------------------------------------------------------------------------------------
-// The inputs where the pool has to stop without ever having had anything to do
-// -------------------------------------------------------------------------------------------
-
 TEST_P(ParallelRIGTest, testDegenerateInputs) {
-    // Every graph here is a named local, never a temporary: SubgraphIsomorphism holds both graphs
-    // by pointer so that a caller can mutate them between runs, which makes `ParallelRI algo(f(),
-    // g(), ...)` a dangling read the moment the constructor returns.
+    // SubgraphIsomorphism holds the graphs by pointer, so they must not be temporaries.
     const Graph k4 = graphOf(4, {{0, 1}, {0, 2}, {0, 3}, {1, 2}, {1, 3}, {2, 3}});
     const Graph nothing(0);
     const Graph oneEdge = graphOf(2, {{0, 1}});
     const Graph path3 = graphOf(3, {{0, 1}, {1, 2}});
     const Graph tri = triangle();
 
-    // An empty pattern has exactly one match - the empty mapping - and it is reported during
-    // seeding, before any worker has a queue to drain. No bail-out may swallow it.
+    // Seeding reports the only match of an empty pattern.
     ParallelRI empty(nothing, k4, GetParam(), Semantics::INDUCED, 0);
     empty.run();
     ASSERT_TRUE(empty.hasFinished());
@@ -321,48 +248,30 @@ TEST_P(ParallelRIGTest, testDegenerateInputs) {
     ASSERT_EQ(empty.getMatches().size(), 1u);
     EXPECT_TRUE(empty.getMatches().front().empty());
 
-    // More pattern nodes than target nodes: nothing can match, and run() has to say so through
-    // patternCannotFit() rather than by starting a pool with an empty seed set.
     ParallelRI tooBig(k4, oneEdge, GetParam(), Semantics::INDUCED, 0);
     tooBig.run();
     ASSERT_TRUE(tooBig.hasFinished());
     EXPECT_EQ(tooBig.numberOfMatches(), 0u);
     EXPECT_FALSE(tooBig.hasMatch());
 
-    // The other way to find nothing: the shape passes every cheap bail-out, so the pool really
-    // runs and every branch dies. This is the one that hangs if termination is wrong.
+    // The pool runs and every branch dies, which hangs if termination is wrong.
     ParallelRI noMatch(tri, path3, GetParam(), Semantics::MONOMORPHISM, 0);
     noMatch.run();
     ASSERT_TRUE(noMatch.hasFinished());
     EXPECT_EQ(noMatch.numberOfMatches(), 0u);
 
-    // A cap of zero means "no limit", not "no matches" - the same reading RI gives it.
     ParallelRI uncapped(tri, k4, GetParam(), Semantics::MONOMORPHISM, 0);
     uncapped.run();
     EXPECT_EQ(uncapped.numberOfMatches(), 24u);
 }
 
-// -------------------------------------------------------------------------------------------
-// Interruption and throwing callbacks, which have to unwind every worker and then throw once
-// -------------------------------------------------------------------------------------------
-
-/**
- * CTRL+C partway through a long enumeration.
- *
- * The workers may only poll the non-throwing isRunning(), because an exception leaving an OpenMP
- * structured block is undefined behaviour; the InterruptException comes from the single
- * assureRunning() after the join. What this test really proves is that the pool *unwinds* - if any
- * worker kept spinning in the token ring, the region would never join and the binary would hang
- * here rather than fail.
- */
+/// The binary hangs here instead of failing if a worker keeps spinning after CTRL+C.
 TEST_P(ParallelRIGTest, testInterruptStopsEveryWorker) {
     const Graph target = karate();
     const Graph pattern = path(5);
 
     ParallelRI algo(pattern, target, GetParam(), Semantics::MONOMORPHISM, 0);
 
-    // Several workers hit this at once, so the counter has to be atomic; a user's callback would
-    // not need one unless it kept state of its own.
     std::atomic<count> delivered{0};
     algo.setCallback([&](index, const Match &) {
         if (delivered.fetch_add(1) + 1 == 5)
@@ -376,21 +285,13 @@ TEST_P(ParallelRIGTest, testInterruptStopsEveryWorker) {
     EXPECT_THROW(algo.numberOfMatches(), std::runtime_error);
     EXPECT_GE(delivered.load(), 5u) << "matches already handed over cannot be taken back";
 
-    // And nothing is poisoned: a clean second search gives the whole answer.
     const std::vector<Match> expected =
         sequentialMatches(pattern, target, Semantics::MONOMORPHISM, GetParam());
     EXPECT_EQ(parallelMatches(pattern, target, Semantics::MONOMORPHISM, GetParam()), expected);
 }
 
-/**
- * A callback that throws on every match it is handed, in both callback forms.
- *
- * Several workers can reach the callback at once, and each of them throws. An exception that
- * escaped the OpenMP region would call std::terminate and take the whole test binary down. The
- * first exception has to come out of run() instead, after every worker has unwound. The serial
- * form also has to release its lock on the way out, or the next worker would block on it forever
- * and the region would never join.
- */
+/// An exception that escaped the OpenMP region would terminate the binary. The serial callback form
+/// must also release its lock, or the next worker would block forever.
 TEST_P(ParallelRIGTest, testThrowingCallbackStopsEveryWorker) {
     // Local, so that no other runtime_error out of run() can satisfy EXPECT_THROW.
     struct CallbackFailure : std::runtime_error {
@@ -420,13 +321,10 @@ TEST_P(ParallelRIGTest, testThrowingCallbackStopsEveryWorker) {
         EXPECT_THROW(algo.run(), CallbackFailure);
         EXPECT_FALSE(algo.hasFinished()) << "a run that threw must not count as finished";
 
-        // Every call throws, so a worker that kept searching after its own exception would call
-        // back a second time and push this past one call per worker.
+        // A worker that kept searching after its own exception would call back a second time.
         EXPECT_GE(delivered.load(), 1u);
         EXPECT_LE(delivered.load(), algo.numberOfWorkers());
 
-        // And nothing is poisoned: the same object, given a callback that does not throw, runs to
-        // the end and finds everything.
         std::atomic<count> counted{0};
         algo.setCallback([&](index, const Match &) { counted.fetch_add(1); });
         algo.run();

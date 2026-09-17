@@ -30,15 +30,9 @@ using Semantics = SubgraphIsomorphism::Semantics;
 
 using Match = SubgraphIsomorphism::Match;
 
-// ---------------------------------------------------------------------------------------------
-// The reference matcher
-//
-// It works directly on Graph rather than on SearchGraph, so that it cannot share a bug with the
-// code under test. It enumerates every injective mapping and checks each one from scratch.
-// ---------------------------------------------------------------------------------------------
+// The reference matcher works on Graph rather than on SearchGraph, so that it cannot share a bug
+// with the code under test.
 
-/// Whether pattern node @a pu may sit on target node @a tv as far as labels are concerned.
-/// Unlabelled searches accept everything; `none` is a wildcard on either side.
 inline bool nodeLabelsCompatible(const std::vector<index> &patternNodeLabels,
                                  const std::vector<index> &targetNodeLabels, node pu, node tv) {
     if (patternNodeLabels.empty())
@@ -49,9 +43,7 @@ inline bool nodeLabelsCompatible(const std::vector<index> &patternNodeLabels,
     return patternLabel == none || targetLabel == none || patternLabel == targetLabel;
 }
 
-/// The labels of all edges, keyed by ordered node pair. A pair has several labels if the graph has
-/// parallel edges. The labels are read with forEdges(), which visits every parallel edge with its
-/// own id.
+/// The labels of all edges, keyed by ordered node pair. Parallel edges give a pair several labels.
 inline std::map<std::pair<node, node>, std::vector<index>>
 edgeLabelsByPair(const Graph &G, const std::vector<index> &edgeLabels) {
     std::map<std::pair<node, node>, std::vector<index>> byPair;
@@ -64,7 +56,6 @@ edgeLabelsByPair(const Graph &G, const std::vector<index> &edgeLabels) {
     return byPair;
 }
 
-/// The labels on the edge from @a u to @a v, or nothing at all if there is no such edge.
 inline const std::vector<index> &
 labelsOfPair(const std::map<std::pair<node, node>, std::vector<index>> &byPair, node u, node v) {
     static const std::vector<index> nothing;
@@ -72,9 +63,7 @@ labelsOfPair(const std::map<std::pair<node, node>, std::vector<index>> &byPair, 
     return found == byPair.end() ? nothing : found->second;
 }
 
-/// Whether a pattern edge may sit on a target edge as far as edge labels are concerned. `none` is a
-/// wildcard on either side. With parallel edges a node pair carries several labels, and then some
-/// pattern label must be compatible with some target label.
+/// With parallel edges, some pattern label must be compatible with some target label.
 inline bool edgeLabelsCompatible(const std::vector<index> &patternEdgeLabels,
                                  const std::vector<index> &targetEdgeLabels) {
     for (index patternLabel : patternEdgeLabels) {
@@ -86,8 +75,7 @@ inline bool edgeLabelsCompatible(const std::vector<index> &patternEdgeLabels,
     return false;
 }
 
-/// Whether one complete mapping is a match. Also checks that the output of an algorithm is
-/// well-formed. The edge label vectors are indexed by edge id.
+/// Whether a complete mapping is a well-formed match.
 inline bool isValidMatch(const Graph &pattern, const Graph &target, Semantics semantics,
                          const std::vector<index> &patternNodeLabels,
                          const std::vector<index> &targetNodeLabels, const Match &match,
@@ -106,8 +94,6 @@ inline bool isValidMatch(const Graph &pattern, const Graph &target, Semantics se
         targetEdgeLabelsByPair = edgeLabelsByPair(target, targetEdgeLabels);
     }
 
-    // Exactly the pattern nodes that exist are mapped, each to a target node that exists, and
-    // each respecting the labels.
     for (node pu = 0; pu < pz; ++pu) {
         if (!pattern.hasNode(pu)) {
             if (match[pu] != none)
@@ -131,8 +117,7 @@ inline bool isValidMatch(const Graph &pattern, const Graph &target, Semantics se
         }
     }
 
-    // The semantics themselves, over every *ordered* pair of distinct pattern nodes - ordered so
-    // that directed graphs get both directions checked independently.
+    // Ordered pairs check both directions of a directed graph.
     for (node a = 0; a < pz; ++a) {
         if (!pattern.hasNode(a))
             continue;
@@ -159,9 +144,7 @@ inline bool isValidMatch(const Graph &pattern, const Graph &target, Semantics se
     return true;
 }
 
-/// Every match, found by checking every injective mapping with @ref isValidMatch(). This takes
-/// O(targetNodes ^ patternNodes) time, so it is only usable on tiny inputs. An empty pattern has
-/// exactly one match, the empty mapping.
+/// Checks every injective mapping, which takes O(targetNodes ^ patternNodes) time.
 inline std::vector<Match> referenceMatches(const Graph &pattern, const Graph &target,
                                            Semantics semantics,
                                            const std::vector<index> &patternNodeLabels = {},
@@ -203,17 +186,11 @@ inline std::vector<Match> referenceMatches(const Graph &pattern, const Graph &ta
     return matches;
 }
 
-/// Sorts matches, so that two result sets can be compared. ParallelRI guarantees no order.
 inline void sortMatches(std::vector<Match> &matches) {
     std::sort(matches.begin(), matches.end());
 }
 
-// ---------------------------------------------------------------------------------------------
-// The shared corpus
-// ---------------------------------------------------------------------------------------------
-
-/// One entry of the corpus. Label vectors are empty for an unlabelled case; the edge-label ones are
-/// indexed by edge id, so a case that uses them builds its graphs with @ref labelledGraphOf().
+/// Edge label vectors are indexed by edge id, so their graphs come from labelledGraphOf().
 struct Case {
     std::string name;
     Graph pattern;
@@ -233,14 +210,12 @@ inline Graph graphOf(count n, std::initializer_list<std::pair<node, node>> edges
     return G;
 }
 
-/// A graph together with the edge-label vector that goes with it, keyed by edge id.
 struct LabelledGraph {
     Graph G;
     std::vector<index> edgeLabels;
 };
 
-/// Like @ref graphOf(), but each edge is written as `{u, v, label}`, and the result also carries
-/// the edge label vector, indexed by edge id. Two parallel edges may swap their labels.
+/// Like graphOf(), with each edge written as `{u, v, label}`. Parallel edges may swap labels.
 inline LabelledGraph labelledGraphOf(count n,
                                      std::initializer_list<std::tuple<node, node, index>> edges,
                                      bool directed = false) {
@@ -266,7 +241,6 @@ inline LabelledGraph labelledGraphOf(count n,
     return {std::move(G), std::move(edgeLabels)};
 }
 
-/// The cases on which every algorithm must agree with the reference.
 inline std::vector<Case> standardCases() {
     std::vector<Case> cases;
 
@@ -276,20 +250,16 @@ inline std::vector<Case> standardCases() {
     const Graph k5 = graphOf(
         5, {{0, 1}, {0, 2}, {0, 3}, {0, 4}, {1, 2}, {1, 3}, {1, 4}, {2, 3}, {2, 4}, {3, 4}});
 
-    // The worked example in the class documentation: a 3-path does occur in a triangle, but not
-    // as an induced occurrence, because the pattern's missing edge must stay missing.
+    // A 3-path occurs in a triangle, but not as an induced occurrence.
     cases.push_back(
         {"path3-in-triangle-mono", path3, triangle, Semantics::MONOMORPHISM, {}, {}, {}, {}});
     cases.push_back(
         {"path3-in-triangle-induced", path3, triangle, Semantics::INDUCED, {}, {}, {}, {}});
 
-    // Dense: here the two semantics agree, because the pattern has no missing edge to protect.
     cases.push_back({"triangle-in-k4-mono", triangle, k4, Semantics::MONOMORPHISM, {}, {}, {}, {}});
     cases.push_back({"triangle-in-k4-induced", triangle, k4, Semantics::INDUCED, {}, {}, {}, {}});
     cases.push_back({"k4-in-k5-induced", k4, k5, Semantics::INDUCED, {}, {}, {}, {}});
 
-    // A pattern that cannot fit. Catches an early-exit that bails out too eagerly, and one that
-    // does not bail out at all.
     cases.push_back({"pattern-larger-than-target",
                      triangle,
                      graphOf(2, {{0, 1}}),
@@ -299,8 +269,7 @@ inline std::vector<Case> standardCases() {
                      {},
                      {}});
 
-    // An isolated pattern node has no already-mapped neighbour to draw candidates from, so it
-    // exercises the fallback "every unmapped target node" rule.
+    // An isolated pattern node takes its candidates from all target nodes.
     cases.push_back({"pattern-with-isolated-node",
                      graphOf(3, {{0, 1}}),
                      graphOf(4, {{0, 1}, {1, 2}}),
@@ -318,8 +287,7 @@ inline std::vector<Case> standardCases() {
                      {},
                      {}});
 
-    // Removed node ids. A removed id has an empty slice, like an isolated node, so an algorithm
-    // that does not check hasNode() maps pattern nodes onto ids that are not nodes.
+    // A removed id has an empty slice, like an isolated node.
     Graph gappedTarget = graphOf(7, {{0, 1}, {1, 3}, {3, 4}, {4, 6}});
     gappedTarget.removeNode(2);
     gappedTarget.removeNode(5);
@@ -339,8 +307,7 @@ inline std::vector<Case> standardCases() {
     cases.push_back(
         {"pattern-with-removed-ids", gappedPattern, k4, Semantics::MONOMORPHISM, {}, {}, {}, {}});
 
-    // Degenerate patterns. Both must produce exactly one match - the empty mapping - rather than
-    // zero or a crash, and the match has to be full width with `none` at every gap.
+    // Both degenerate patterns have one match, the empty mapping.
     cases.push_back({"empty-pattern", Graph(0), k4, Semantics::INDUCED, {}, {}, {}, {}});
     Graph allRemoved(3);
     for (node u = 0; u < 3; ++u)
@@ -350,8 +317,6 @@ inline std::vector<Case> standardCases() {
     cases.push_back(
         {"single-node-pattern", Graph(1), gappedTarget, Semantics::MONOMORPHISM, {}, {}, {}, {}});
 
-    // Multi-edges and a self-loop in the target must change nothing. If they leak through, the
-    // same match gets reported twice, or degree pruning rejects valid host nodes.
     Graph messyTarget(4, false, false);
     messyTarget.addEdge(0, 1);
     messyTarget.addEdge(0, 1); // parallel
@@ -376,8 +341,7 @@ inline std::vector<Case> standardCases() {
                      {},
                      {}});
 
-    // Directed. The 2-cycle is the case that catches an implementation checking only one
-    // direction: it is a different question from an undirected edge, and both arcs must exist.
+    // The 2-cycle catches an implementation that checks only one direction.
     const Graph arc = graphOf(2, {{0, 1}}, true);
     const Graph twoCycle = graphOf(2, {{0, 1}, {1, 0}}, true);
     const Graph directedTriangle = graphOf(3, {{0, 1}, {1, 2}, {2, 0}}, true);
@@ -410,7 +374,6 @@ inline std::vector<Case> standardCases() {
                      {},
                      {}});
 
-    // Labels, including `none` as a wildcard on each side independently.
     cases.push_back({"labelled-path3-in-k4",
                      path3,
                      k4,
@@ -444,10 +407,8 @@ inline std::vector<Case> standardCases() {
                      {},
                      {}});
 
-    // Edge labels. The pattern asks for a 1-edge followed by a 2-edge, and the target carries
-    // three kinds of edge, so a match has to land on the right *kind* and not merely on an edge of
-    // the right shape. Every case below is MONOMORPHISM, because the question here is what an edge
-    // label does and the induced rule constrains non-edges, which carry no labels.
+    // The edge-label cases use MONOMORPHISM, since the induced rule constrains non-edges, which
+    // carry no labels.
     const LabelledGraph edgeLabelledPattern = labelledGraphOf(3, {{0, 1, 1}, {1, 2, 2}});
     const LabelledGraph edgeLabelledTarget =
         labelledGraphOf(4, {{0, 1, 1}, {1, 2, 2}, {2, 3, 1}, {0, 3, 3}});
@@ -461,8 +422,7 @@ inline std::vector<Case> standardCases() {
                      edgeLabelledPattern.edgeLabels,
                      edgeLabelledTarget.edgeLabels});
 
-    // Same shape, and the 3-path still fits structurally - only the label the middle edge carries
-    // has moved. An implementation that ignores edge labels reports matches here.
+    // An implementation that ignores edge labels reports matches here.
     const LabelledGraph nearMissTarget =
         labelledGraphOf(4, {{0, 1, 1}, {1, 2, 5}, {2, 3, 1}, {0, 3, 3}});
     cases.push_back({"edge-labelled-near-miss",
@@ -474,7 +434,6 @@ inline std::vector<Case> standardCases() {
                      edgeLabelledPattern.edgeLabels,
                      nearMissTarget.edgeLabels});
 
-    // `none` is a wildcard on each side independently, exactly as it is for node labels.
     const LabelledGraph wildcardPattern = labelledGraphOf(3, {{0, 1, none}, {1, 2, 2}});
     cases.push_back({"edge-labelled-wildcard-on-pattern",
                      wildcardPattern.G,
@@ -496,9 +455,7 @@ inline std::vector<Case> standardCases() {
                      edgeLabelledPattern.edgeLabels,
                      wildcardTarget.edgeLabels});
 
-    // A directed mutual pair is two edges with two ids, so the two directions carry independent
-    // labels. An implementation that keys labels by node pair rather than by arc collides them and
-    // reports the reversed mapping too.
+    // The two arcs of a directed mutual pair carry independent labels.
     const LabelledGraph mutualPattern = labelledGraphOf(2, {{0, 1, 7}}, true);
     const LabelledGraph mutualTarget = labelledGraphOf(3, {{0, 1, 7}, {1, 0, 8}, {1, 2, 8}}, true);
     cases.push_back({"directed-mutual-pair-different-labels",
@@ -510,10 +467,7 @@ inline std::vector<Case> standardCases() {
                      mutualPattern.edgeLabels,
                      mutualTarget.edgeLabels});
 
-    // Parallel edges. Collapsing two arcs that carry the *same* label is lossless and must keep
-    // working; collapsing two that disagree is not, and is what every algorithm has to refuse
-    // rather than answer - see SearchGraph::collapsedLabelledEdges(). Both are here so that an
-    // over-eager refusal is as visible as a missing one.
+    // Algorithms must refuse parallel edges with different labels but accept equal labels.
     const LabelledGraph parallelDisagreeing =
         labelledGraphOf(4, {{0, 1, 1}, {0, 1, 4}, {1, 2, 2}, {2, 3, 1}});
     cases.push_back({"edge-labelled-parallel-edges-refused",
@@ -539,11 +493,7 @@ inline std::vector<Case> standardCases() {
     return cases;
 }
 
-/**
- * The reference matcher behind the SubgraphIsomorphism interface. It follows the run() protocol
- * of a sequential algorithm, so it tests the base class and the helpers below independently of
- * any real search.
- */
+/// The reference matcher behind the interface, following the sequential run() protocol.
 class ReferenceSubgraphIsomorphism final : public SubgraphIsomorphism {
 
 public:
@@ -554,10 +504,8 @@ public:
     void run() override {
         Aux::SignalHandler handler;
 
-        // 1. Forget any earlier run.
         prepareRun();
 
-        // 2. Report every match until reportMatch() returns false.
         for (const Match &match :
              referenceMatches(*pattern, *target, semantics, patternNodeLabels, targetNodeLabels,
                               patternEdgeLabels, targetEdgeLabels)) {
@@ -566,23 +514,12 @@ public:
                 break;
         }
 
-        // 3. Mark the run finished.
         finishRun();
     }
 };
 
-// ---------------------------------------------------------------------------------------------
-// The assertions each algorithm's test file calls
-//
-// Every helper takes a factory rather than a type, because RI and ParallelRI need a Variant
-// argument that VF2 and VF3 do not:
-//
-//     auto make = [](const Graph &p, const Graph &t, Semantics s, count cap) {
-//         return std::unique_ptr<SubgraphIsomorphism>(new VF2(p, t, s, cap));
-//     };
-// ---------------------------------------------------------------------------------------------
+// The assertions take a factory rather than a type, because RI and ParallelRI need a Variant.
 
-/// Configure an algorithm with whatever labels the case carries.
 inline void applyLabels(SubgraphIsomorphism &algo, const Case &testCase) {
     if (!testCase.patternNodeLabels.empty())
         algo.setNodeLabels(testCase.patternNodeLabels, testCase.targetNodeLabels);
@@ -590,11 +527,8 @@ inline void applyLabels(SubgraphIsomorphism &algo, const Case &testCase) {
         algo.setEdgeLabels(testCase.patternEdgeLabels, testCase.targetEdgeLabels);
 }
 
-/// Run an algorithm over one corpus case. It may refuse an edge-labelled case with
-/// `std::runtime_error`: VF3 refuses all edge labels, and every algorithm refuses parallel edges
-/// with different labels. Refusing an unlabelled case fails the test.
-///
-/// @return true if the run produced results to compare against the reference.
+/// Returns false if the algorithm refused an edge-labelled case. Refusing an unlabelled case fails
+/// the test.
 template <typename Algo>
 bool runAllowingEdgeLabelRefusal(Algo &algo, const Case &testCase) {
     try {
@@ -607,7 +541,6 @@ bool runAllowingEdgeLabelRefusal(Algo &algo, const Case &testCase) {
     return true;
 }
 
-/// Run the algorithm over the whole corpus and assert it reproduces the reference exactly.
 template <typename Construct>
 void expectMatchesReference(Construct construct) {
     for (const Case &testCase : standardCases()) {
@@ -629,8 +562,6 @@ void expectMatchesReference(Construct construct) {
         EXPECT_EQ(algo->numberOfMatches(), expected.size()) << "case: " << testCase.name;
         EXPECT_EQ(algo->hasMatch(), !expected.empty()) << "case: " << testCase.name;
 
-        // Independently of agreeing with the reference, every match must be well-formed on its
-        // own terms - full width, `none` at pattern gaps, injective, semantics respected.
         for (const Match &match : actual) {
             EXPECT_TRUE(isValidMatch(testCase.pattern, testCase.target, testCase.semantics,
                                      testCase.patternNodeLabels, testCase.targetNodeLabels, match,
@@ -640,7 +571,6 @@ void expectMatchesReference(Construct construct) {
     }
 }
 
-/// Assert that a cap on the number of matches is honoured exactly.
 template <typename Construct>
 void expectRespectsMatchCap(Construct construct) {
     // 24 matches: every ordering of 3 of K4's 4 nodes.
@@ -665,8 +595,6 @@ void expectRespectsMatchCap(Construct construct) {
     }
 }
 
-/// Assert that the serial callback, the parallel callback and counting without storing all agree
-/// with the reference.
 template <typename Construct>
 void expectCallbackFormsAgree(Construct construct) {
     for (const Case &testCase : standardCases()) {
@@ -682,8 +610,7 @@ void expectCallbackFormsAgree(Construct construct) {
             return algo;
         };
 
-        // Serial callback: collected without any locking of our own, which is only safe because
-        // the module promises this form is never entered twice at once.
+        // The serial callback needs no lock, since it is never called concurrently.
         {
             std::vector<Match> collected;
             std::unique_ptr<SubgraphIsomorphism> algo = build();
@@ -697,7 +624,7 @@ void expectCallbackFormsAgree(Construct construct) {
                 << "case: " << testCase.name << " (serial callback)";
         }
 
-        // Parallel callback: every worker gets its own slot, so this needs no locking either.
+        // Every worker owns its slot.
         {
             std::unique_ptr<SubgraphIsomorphism> algo = build();
             std::vector<std::vector<Match>> perWorker(algo->numberOfWorkers());
@@ -715,7 +642,6 @@ void expectCallbackFormsAgree(Construct construct) {
             EXPECT_EQ(collected, expected) << "case: " << testCase.name << " (parallel callback)";
         }
 
-        // Counting only: nothing is stored, so getMatches() throws but the count still holds.
         {
             std::unique_ptr<SubgraphIsomorphism> algo = build();
             algo->setStoreMatches(false);

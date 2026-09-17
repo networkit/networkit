@@ -330,9 +330,6 @@ TEST_F(VF2GTest, testTrivialCases) {
 
 TEST_F(VF2GTest, testAgreesWithTheReference) {
 
-    // The three differential checks every algorithm in the module has to pass, against the
-    // brute-force reference: the match set itself, the match cap, and the three callback forms
-    // agreeing with each other. One factory, so all three see exactly the same algorithm.
     const auto make = [](const Graph &pattern, const Graph &target,
                          SubgraphIsomorphism::Semantics semantics, count maxMatches) {
         return std::unique_ptr<SubgraphIsomorphism>(

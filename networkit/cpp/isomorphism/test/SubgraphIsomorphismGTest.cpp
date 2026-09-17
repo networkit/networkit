@@ -43,7 +43,6 @@ protected:
 
 namespace {
 
-/// The complete graph on @a n nodes, which has many matches for its size.
 Graph completeGraph(count n) {
     Graph G(n);
     for (node u = 0; u < n; ++u)
@@ -52,8 +51,7 @@ Graph completeGraph(count n) {
     return G;
 }
 
-/// Reports the reference matches from several threads at once and accumulates them per worker, as
-/// ParallelRI does. A minimal example of the parallel run() protocol.
+/// Reports the reference matches from several threads, as ParallelRI does.
 class MultiWorkerReporter final : public SubgraphIsomorphism {
 
 public:
@@ -70,7 +68,6 @@ public:
         Aux::SignalHandler handler;
         prepareRun();
 
-        // One per worker, padded to its own cache line.
         struct alignas(64) Slot {
             std::vector<Match> buffer;
             count found = 0;
@@ -86,7 +83,6 @@ public:
             const count team = static_cast<count>(omp_get_num_threads());
 
             Slot &slot = slots[tid];
-            // Deal the matches round-robin so every worker reports, and reports interleaved.
             for (index i = tid; i < all.size(); i += team) {
                 // Non-throwing inside the region; the throw happens once after the join.
                 if (!handler.isRunning())
@@ -118,8 +114,6 @@ private:
 
 TEST_F(SubgraphIsomorphismGTest, testHarnessDrivesAnAlgorithmThroughTheRunProtocol) {
 
-    // Agreement with the reference is trivial here. What this tests is the protocol around it:
-    // prepareRun, reportMatch, finishRun, the callback forms, setStoreMatches and the match cap.
     const auto make = [](const Graph &pattern, const Graph &target, Semantics semantics,
                          count maxMatches) {
         return std::unique_ptr<SubgraphIsomorphism>(
@@ -134,9 +128,7 @@ TEST_F(SubgraphIsomorphismGTest, testHarnessDrivesAnAlgorithmThroughTheRunProtoc
 
 TEST_F(SubgraphIsomorphismGTest, testBothCallbackFormsReceiveEveryMatchOnce) {
 
-    // The serial form must be called by one worker at a time, the parallel form by every worker
-    // with its own id. Both must deliver every match exactly once. A 4-path in K8 has
-    // 8 * 7 * 6 * 5 = 1680 matches, so the four workers really compete for the callback.
+    // A 4-path in K8 has 1680 matches, so the four workers compete for the callback.
     const Graph pattern = graphOf(4, {{0, 1}, {1, 2}, {2, 3}});
     const Graph target = completeGraph(8);
     const count numWorkers = 4;
@@ -145,8 +137,7 @@ TEST_F(SubgraphIsomorphismGTest, testBothCallbackFormsReceiveEveryMatchOnce) {
     IsomorphismTest::sortMatches(expected);
     ASSERT_EQ(expected.size(), 1680u);
 
-    // Count how many calls of the serial callback are in flight at once. The mutex only keeps a
-    // regression from corrupting `collected` instead of failing the assertion.
+    // The mutex keeps a regression from corrupting `collected` instead of failing the assertion.
     std::atomic<int> inside{0};
     std::atomic<int> maxObserved{0};
     std::mutex collectedMutex;
@@ -176,7 +167,6 @@ TEST_F(SubgraphIsomorphismGTest, testBothCallbackFormsReceiveEveryMatchOnce) {
     EXPECT_EQ(collected, expected);
     EXPECT_EQ(serial.numberOfMatches(), expected.size());
 
-    // Now the parallel form on the same input.
     std::vector<std::vector<Match>> perWorker(numWorkers);
 
     MultiWorkerReporter parallel(pattern, target, Semantics::MONOMORPHISM, numWorkers);
@@ -197,8 +187,6 @@ TEST_F(SubgraphIsomorphismGTest, testBothCallbackFormsReceiveEveryMatchOnce) {
 
 TEST_F(SubgraphIsomorphismGTest, testTheAnswerDoesNotDependOnTheWorkerCount) {
 
-    // The merged match set and the count must not depend on the number of workers, even without
-    // storing matches. numberOfWorkers() must report the declared number before and after run().
     const Graph pattern = graphOf(2, {{0, 1}});
 
     const Graph cycle = graphOf(5, {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 0}});
@@ -217,7 +205,6 @@ TEST_F(SubgraphIsomorphismGTest, testTheAnswerDoesNotDependOnTheWorkerCount) {
         EXPECT_EQ(algo.numberOfMatches(), expected.size()) << "workers: " << workers;
     }
 
-    // Counting only.
     const Graph k6 = completeGraph(6);
     const count expectedCount = referenceMatches(pattern, k6, Semantics::MONOMORPHISM).size();
 
@@ -231,7 +218,6 @@ TEST_F(SubgraphIsomorphismGTest, testTheAnswerDoesNotDependOnTheWorkerCount) {
         EXPECT_THROW(algo.getMatches(), std::runtime_error) << "workers: " << workers;
     }
 
-    // A sequential algorithm reports one worker, before and after the run alike.
     const Graph k5 = completeGraph(5);
 
     IsomorphismTest::ReferenceSubgraphIsomorphism sequential(pattern, k5, Semantics::MONOMORPHISM);
@@ -239,7 +225,6 @@ TEST_F(SubgraphIsomorphismGTest, testTheAnswerDoesNotDependOnTheWorkerCount) {
     sequential.run();
     EXPECT_EQ(sequential.numberOfWorkers(), 1u);
 
-    // A parallel one reports what it declared, already before run().
     for (count workers : {count{1}, count{2}, count{4}, count{7}}) {
         MultiWorkerReporter algo(pattern, k5, Semantics::MONOMORPHISM, workers);
         EXPECT_EQ(algo.numberOfWorkers(), workers);
@@ -250,9 +235,7 @@ TEST_F(SubgraphIsomorphismGTest, testTheAnswerDoesNotDependOnTheWorkerCount) {
 
 TEST_F(SubgraphIsomorphismGTest, testInterruptLeavesTheAlgorithmUnfinishedButUsable) {
 
-    // An interrupted run() throws and leaves the algorithm unfinished, so every result accessor
-    // throws. A second, clean run gives the full answer. The test sets the global flag instead of
-    // raising a real SIGINT.
+    // The test sets the global flag instead of raising a real SIGINT.
     const Graph pattern = graphOf(3, {{0, 1}, {1, 2}});
     const Graph target = completeGraph(6);
 
@@ -263,7 +246,6 @@ TEST_F(SubgraphIsomorphismGTest, testInterruptLeavesTheAlgorithmUnfinishedButUsa
 
     count delivered = 0;
     algo.setCallback([&](const Match &) {
-        // Interrupt partway through, so the search is genuinely mid-flight.
         if (++delivered == 5)
             GlobalState::setReceivedSIGINT(true);
     });
@@ -275,7 +257,6 @@ TEST_F(SubgraphIsomorphismGTest, testInterruptLeavesTheAlgorithmUnfinishedButUsa
     EXPECT_THROW(algo.numberOfMatches(), std::runtime_error);
     EXPECT_THROW(algo.hasMatch(), std::runtime_error);
 
-    // Matches already handed to the callback stay handed over - a search cannot take them back.
     EXPECT_GE(delivered, 5u);
 
     // A second object without a callback, since the recovery check needs the stored matches.
@@ -321,19 +302,16 @@ TEST_F(SubgraphIsomorphismGTest, testSetEdgeLabelsValidatesItsInput) {
 
 TEST_F(SubgraphIsomorphismGTest, testEdgeLabelsAreEitherHonouredOrRefused) {
 
-    // Every algorithm either honours edge labels or refuses them from run().
     const IsomorphismTest::LabelledGraph pattern =
         IsomorphismTest::labelledGraphOf(3, {{0, 1, 1}, {1, 2, 2}});
     const IsomorphismTest::LabelledGraph target =
         IsomorphismTest::labelledGraphOf(4, {{0, 1, 1}, {1, 2, 2}, {2, 3, 1}});
 
-    // VF3 refuses them.
     VF3 vf3(pattern.G, target.G, Semantics::MONOMORPHISM);
     vf3.setEdgeLabels(pattern.edgeLabels, target.edgeLabels);
     EXPECT_THROW(vf3.run(), std::runtime_error);
     EXPECT_FALSE(vf3.hasFinished()) << "a refused run must not count as finished";
 
-    // VF2, RI and ParallelRI honour them, so each must find exactly the labelled matches.
     const count labelled = referenceMatches(pattern.G, target.G, Semantics::MONOMORPHISM, {}, {},
                                             pattern.edgeLabels, target.edgeLabels)
                                .size();
@@ -359,7 +337,6 @@ TEST_F(SubgraphIsomorphismGTest, testEdgeLabelsAreEitherHonouredOrRefused) {
     EXPECT_TRUE(parallelRi.hasFinished());
     EXPECT_EQ(parallelRi.numberOfMatches(), labelled);
 
-    // Without labels, the search finds the larger unlabelled match set.
     VF2 vf2Unlabelled(pattern.G, target.G, Semantics::MONOMORPHISM);
     EXPECT_NO_THROW(vf2Unlabelled.run());
     EXPECT_TRUE(vf2Unlabelled.hasFinished());
@@ -368,8 +345,7 @@ TEST_F(SubgraphIsomorphismGTest, testEdgeLabelsAreEitherHonouredOrRefused) {
 
 TEST_F(SubgraphIsomorphismGTest, testParallelEdgesWithDisagreeingLabelsAreRefused) {
 
-    // The two parallel 0-1 edges have different labels, which one arc of the snapshot cannot
-    // represent, so RI and ParallelRI must refuse the input.
+    // One arc of the snapshot cannot represent the two differently labelled 0-1 edges.
     const IsomorphismTest::LabelledGraph pattern =
         IsomorphismTest::labelledGraphOf(3, {{0, 1, 1}, {1, 2, 2}});
     const IsomorphismTest::LabelledGraph target =
@@ -385,8 +361,6 @@ TEST_F(SubgraphIsomorphismGTest, testParallelEdgesWithDisagreeingLabelsAreRefuse
     EXPECT_THROW(parallelRi.run(), std::runtime_error);
     EXPECT_FALSE(parallelRi.hasFinished());
 
-    // Equally-labelled parallel edges collapse losslessly, so they must get past the refusal and
-    // be searched normally.
     const IsomorphismTest::LabelledGraph agreeing =
         IsomorphismTest::labelledGraphOf(4, {{0, 1, 1}, {0, 1, 1}, {1, 2, 2}, {2, 3, 1}});
 
@@ -401,10 +375,6 @@ TEST_F(SubgraphIsomorphismGTest, testParallelEdgesWithDisagreeingLabelsAreRefuse
                   .size());
 }
 
-// ------------------------------------------------------------------------------------------
-// Revalidation at run(), since the graphs may change after construction and configuration
-// ------------------------------------------------------------------------------------------
-
 TEST_F(SubgraphIsomorphismGTest, testRunRechecksGraphInvariants) {
 
     Graph pattern = graphOf(3, {{0, 1}, {1, 2}});
@@ -413,8 +383,6 @@ TEST_F(SubgraphIsomorphismGTest, testRunRechecksGraphInvariants) {
     VF2 algo(pattern, target, Semantics::MONOMORPHISM);
     ASSERT_NO_THROW(algo.run());
 
-    // The constructor rejected self-loops in the pattern. Adding one afterwards must not sneak
-    // an undefined query past that check.
     pattern.addEdge(1, 1);
     ASSERT_EQ(pattern.numberOfSelfLoops(), 1u);
 
@@ -433,7 +401,6 @@ TEST_F(SubgraphIsomorphismGTest, testRunRechecksNodeLabelSizes) {
     ASSERT_NO_THROW(algo.run());
     ASSERT_GT(algo.numberOfMatches(), 0u);
 
-    // One more node makes the target label vector too short.
     target.addNode();
     ASSERT_GT(target.upperNodeIdBound(), 3u);
 
@@ -444,7 +411,6 @@ TEST_F(SubgraphIsomorphismGTest, testRunRechecksNodeLabelSizes) {
     EXPECT_FALSE(algo.hasFinished());
     EXPECT_THROW(algo.getMatches(), std::runtime_error);
 
-    // Re-supplying the labels at the new size is all it takes to make the run legal again.
     algo.setNodeLabels({1, 1}, {1, 1, 1, 1});
     EXPECT_NO_THROW(algo.run());
     EXPECT_TRUE(algo.hasFinished());
@@ -456,8 +422,6 @@ TEST_F(SubgraphIsomorphismGTest, testRunRechecksEdgeLabelSizes) {
     IsomorphismTest::LabelledGraph target =
         IsomorphismTest::labelledGraphOf(3, {{0, 1, 1}, {1, 2, 1}});
 
-    // The SearchGraph constructor checks the edge label vector as well, so this pins the guarantee
-    // at the run() boundary rather than at the layer that enforces it.
     RI algo(pattern.G, target.G, RI::Variant::RI, Semantics::MONOMORPHISM);
     algo.setEdgeLabels(pattern.edgeLabels, target.edgeLabels);
     ASSERT_NO_THROW(algo.run());
