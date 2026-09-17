@@ -97,12 +97,10 @@ private:
     /// stopped. Returns false once the candidates are exhausted.
     bool nextCandidatePair(index &cursor, node &pu, node &tv) const {
 
+        // A nonzero set size guarantees that smallestMember() finds a node.
         if (t1out != 0 && t2out != 0) {
 
             pu = smallestMember(membersOut1, out1);
-            if (pu == none) {
-                return false;
-            }
             for (index i = cursor; i < membersOut2.size(); ++i) {
                 node v = membersOut2[i];
                 if (out2[v] != none) {
@@ -117,9 +115,6 @@ private:
         } else if (t1in != 0 && t2in != 0) {
 
             pu = smallestMember(membersIn1, in1);
-            if (pu == none) {
-                return false;
-            }
             for (index i = cursor; i < membersIn2.size(); ++i) {
                 node v = membersIn2[i];
                 if (in2[v] != none) {
@@ -177,20 +172,12 @@ private:
             }
         }
 
+        // The loop above has already compared the labels of the edges that both graphs contain.
         if (semantics == SubgraphIsomorphism::Semantics::INDUCED) {
             for (auto it = targetGraph.outBegin(tv); it != targetGraph.outEnd(tv); ++it) {
                 node v = *it;
-                if (core2[v] != none) {
-                    if (!patternGraph.hasEdge(pu, core2[v])) {
-                        return false;
-                    }
-                    if (edgeLabelled) {
-                        if (!(patternGraph.edgeLabel(pu, core2[v]) == targetGraph.edgeLabel(tv, v)
-                              || patternGraph.edgeLabel(pu, core2[v]) == none
-                              || targetGraph.edgeLabel(tv, v) == none)) {
-                            return false;
-                        }
-                    }
+                if (core2[v] != none && !patternGraph.hasEdge(pu, core2[v])) {
+                    return false;
                 }
             }
         }
@@ -224,17 +211,8 @@ private:
         if (semantics == SubgraphIsomorphism::Semantics::INDUCED) {
             for (auto it = targetGraph.inBegin(tv); it != targetGraph.inEnd(tv); ++it) {
                 node v = *it;
-                if (core2[v] != none) {
-                    if (!patternGraph.hasEdge(core2[v], pu)) {
-                        return false;
-                    }
-                    if (edgeLabelled) {
-                        if (!(patternGraph.edgeLabel(core2[v], pu) == targetGraph.edgeLabel(v, tv)
-                              || patternGraph.edgeLabel(core2[v], pu) == none
-                              || targetGraph.edgeLabel(v, tv) == none)) {
-                            return false;
-                        }
-                    }
+                if (core2[v] != none && !patternGraph.hasEdge(core2[v], pu)) {
+                    return false;
                 }
             }
         }
