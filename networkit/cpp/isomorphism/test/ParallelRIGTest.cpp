@@ -148,6 +148,33 @@ TEST_P(ParallelRIGTest, testAnswerDoesNotDependOnWorkerCount) {
     }
 }
 
+/// The workers publish their counts in batches and may overshoot the cap, which the stored matches
+/// must not show.
+TEST_P(ParallelRIGTest, testCapHoldsAtEveryWorkerCount) {
+    constexpr count cap = 1000;
+    const Graph target = karate();
+    const Graph pattern = path(5);
+
+    const std::vector<Match> all =
+        sequentialMatches(pattern, target, Semantics::MONOMORPHISM, GetParam());
+    ASSERT_GT(all.size(), cap);
+
+    for (const int workers : workerCounts()) {
+        Aux::setNumberOfThreads(workers);
+
+        ParallelRI algo(pattern, target, GetParam(), Semantics::MONOMORPHISM, cap);
+        algo.run();
+
+        EXPECT_EQ(algo.numberOfMatches(), cap) << "workers: " << workers;
+
+        std::vector<Match> actual = algo.getMatches();
+        sortMatches(actual);
+        EXPECT_EQ(actual.size(), cap) << "workers: " << workers;
+        EXPECT_TRUE(std::includes(all.begin(), all.end(), actual.begin(), actual.end()))
+            << "workers: " << workers << " - a stored match is invalid or duplicated";
+    }
+}
+
 /**
  * A singleton domain drives all three RI-DS rules, and all workers read the domains concurrently.
  * The reference is sequential plain RI, which has no domains and so cannot share a domain bug.
@@ -247,6 +274,12 @@ TEST_P(ParallelRIGTest, testDegenerateInputs) {
     EXPECT_EQ(empty.numberOfMatches(), 1u);
     ASSERT_EQ(empty.getMatches().size(), 1u);
     EXPECT_TRUE(empty.getMatches().front().empty());
+
+    // The empty mapping alone reaches a cap of one, so seeding stops the search.
+    ParallelRI emptyCapped(nothing, k4, GetParam(), Semantics::INDUCED, 1);
+    emptyCapped.run();
+    ASSERT_TRUE(emptyCapped.hasFinished());
+    EXPECT_EQ(emptyCapped.numberOfMatches(), 1u);
 
     ParallelRI tooBig(k4, oneEdge, GetParam(), Semantics::INDUCED, 0);
     tooBig.run();
