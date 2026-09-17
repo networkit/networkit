@@ -50,13 +50,14 @@ Graph completeGraph(count n) {
     return G;
 }
 
-/// Reports the reference matches from several threads, as ParallelRI does.
+/// Reports the reference matches from several threads, as ParallelRI does. It ignores
+/// @a maxMatches, like workers that overshoot the cap.
 class MultiWorkerReporter final : public SubgraphIsomorphism {
 
 public:
     MultiWorkerReporter(const Graph &pattern, const Graph &target, Semantics semantics,
-                        count numWorkers)
-        : SubgraphIsomorphism(pattern, target, semantics, 0), numWorkers(numWorkers) {}
+                        count numWorkers, count maxMatches = 0)
+        : SubgraphIsomorphism(pattern, target, semantics, maxMatches), numWorkers(numWorkers) {}
 
     count numberOfWorkers() const override { return numWorkers; }
 
@@ -232,6 +233,34 @@ TEST_F(SubgraphIsomorphismGTest, testTheAnswerDoesNotDependOnTheWorkerCount) {
     }
 }
 
+TEST_F(SubgraphIsomorphismGTest, testOvershootIsTrimmedUnlessACallbackReceivedIt) {
+
+    const Graph pattern = graphOf(2, {{0, 1}});
+    const Graph target = completeGraph(5);
+    const count total = referenceMatches(pattern, target, Semantics::MONOMORPHISM).size();
+    constexpr count cap = 5;
+    constexpr count numWorkers = 4;
+    ASSERT_GT(total, cap);
+
+    MultiWorkerReporter stored(pattern, target, Semantics::MONOMORPHISM, numWorkers, cap);
+    stored.run();
+    EXPECT_EQ(stored.numberOfMatches(), cap);
+    EXPECT_EQ(stored.getMatches().size(), cap);
+
+    MultiWorkerReporter counted(pattern, target, Semantics::MONOMORPHISM, numWorkers, cap);
+    counted.setStoreMatches(false);
+    counted.run();
+    EXPECT_EQ(counted.numberOfMatches(), cap);
+
+    count delivered = 0;
+    MultiWorkerReporter called(pattern, target, Semantics::MONOMORPHISM, numWorkers, cap);
+    called.setCallback([&](const Match &) { ++delivered; });
+    called.run();
+    EXPECT_EQ(delivered, total);
+    EXPECT_EQ(called.numberOfMatches(), total) << "delivered matches cannot be taken back";
+    EXPECT_THROW(called.getMatches(), std::runtime_error);
+}
+
 TEST_F(SubgraphIsomorphismGTest, testInterruptLeavesTheAlgorithmUnfinishedButUsable) {
 
     // The test sets the global flag instead of raising a real SIGINT.
@@ -275,6 +304,28 @@ TEST_F(SubgraphIsomorphismGTest, testInterruptLeavesTheAlgorithmUnfinishedButUsa
     EXPECT_EQ(actual, expected);
 }
 
+TEST_F(SubgraphIsomorphismGTest, testGraphsMustAgreeOnDirectedness) {
+
+    const Graph undirected = graphOf(2, {{0, 1}});
+    const Graph directed = graphOf(2, {{0, 1}}, true);
+
+    EXPECT_THROW(VF2 algo(undirected, directed), std::runtime_error);
+    EXPECT_THROW(VF2 algo(directed, undirected), std::runtime_error);
+    EXPECT_NO_THROW(VF2 algo(directed, directed));
+}
+
+TEST_F(SubgraphIsomorphismGTest, testSetNodeLabelsValidatesItsInput) {
+
+    const Graph pattern = graphOf(2, {{0, 1}});
+    const Graph target = graphOf(3, {{0, 1}, {1, 2}});
+    VF2 algo(pattern, target, Semantics::MONOMORPHISM);
+
+    EXPECT_THROW(algo.setNodeLabels({1}, {1, 1, 1}), std::runtime_error) << "pattern too short";
+    EXPECT_THROW(algo.setNodeLabels({1, 1}, {1, 1}), std::runtime_error) << "target too short";
+    EXPECT_NO_THROW(algo.setNodeLabels({1, 1}, {1, 1, 1}));
+    EXPECT_NO_THROW(algo.setNodeLabels({}, {}));
+}
+
 TEST_F(SubgraphIsomorphismGTest, testSetEdgeLabelsValidatesItsInput) {
 
     Graph pattern = graphOf(3, {{0, 1}, {1, 2}});
@@ -290,6 +341,9 @@ TEST_F(SubgraphIsomorphismGTest, testSetEdgeLabelsValidatesItsInput) {
     EXPECT_NO_THROW(unindexed.setEdgeLabels({}, {}));
 
     pattern.indexEdges();
+    EXPECT_THROW(unindexed.setEdgeLabels({1, 2}, {1, 2, 3}), std::runtime_error)
+        << "the target needs edge ids as well";
+
     target.indexEdges();
     IsomorphismTest::ReferenceSubgraphIsomorphism algo(pattern, target, Semantics::MONOMORPHISM);
 
