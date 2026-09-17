@@ -14,10 +14,7 @@ namespace IsomorphismDetails {
 
 namespace {
 
-/**
- * @return true if the node labels of pattern node @a pu and target node @a tv are compatible.
- * @ref none is a wildcard on either side.
- */
+/// @ref none is a wildcard on either side.
 bool nodeLabelsCompatible(const std::vector<index> &patternNodeLabels,
                           const std::vector<index> &targetNodeLabels, node pu, node tv) {
     if (patternNodeLabels.empty())
@@ -28,16 +25,11 @@ bool nodeLabelsCompatible(const std::vector<index> &patternNodeLabels,
     return patternLabel == none || targetLabel == none || patternLabel == targetLabel;
 }
 
-/// @return true if a pattern arc labelled @a patternLabel may be mapped to a target arc labelled
-/// @a targetLabel. @ref none is a wildcard on either side.
 bool edgeLabelsCompatible(index patternLabel, index targetLabel) noexcept {
     return patternLabel == none || targetLabel == none || patternLabel == targetLabel;
 }
 
-/**
- * Calls @a fn for every arc incident to @a u, ignoring direction. A directed mutual pair is
- * visited twice, once per arc.
- */
+/// Ignores direction and visits a directed mutual pair twice, once per arc.
 template <typename Callback>
 void forEachIncidentArc(const SearchGraph &g, node u, Callback fn) {
     for (const node *it = g.outBegin(u); it != g.outEnd(u); ++it)
@@ -51,9 +43,6 @@ void forEachIncidentArc(const SearchGraph &g, node u, Callback fn) {
         fn(*it);
 }
 
-/**
- * Calls @a fn for every distinct neighbour of @a u, ignoring direction.
- */
 template <typename Callback>
 void forEachDistinctNeighbor(const SearchGraph &g, node u, Callback fn) {
     for (const node *it = g.outBegin(u); it != g.outEnd(u); ++it)
@@ -67,10 +56,6 @@ void forEachDistinctNeighbor(const SearchGraph &g, node u, Callback fn) {
             fn(*it);
 }
 
-/**
- * @return true if target node @a tv can host pattern node @a pu, judged only by existence, degrees
- * and node labels.
- */
 bool couldMap(const SearchGraph &pattern, const SearchGraph &target,
               const std::vector<index> &patternNodeLabels,
               const std::vector<index> &targetNodeLabels, node pu, node tv) {
@@ -86,18 +71,11 @@ bool couldMap(const SearchGraph &pattern, const SearchGraph &target,
     return nodeLabelsCompatible(patternNodeLabels, targetNodeLabels, pu, tv);
 }
 
-/**
- * @return true if the sorted slice `[begin, end)` contains a node of @a domain whose arc label is
- * compatible with @a patternLabel.
- *
- * @param labels One label per slice entry, or nullptr to ignore labels.
- */
+/// @a labels holds one label per slice entry, or nullptr to ignore labels.
 bool intersectsDomain(const node *begin, const node *end, const index *labels, index patternLabel,
                       const std::vector<node> &domain) {
     auto candidate = domain.begin();
     for (const node *it = begin; it != end; ++it) {
-        // Search from the previous position, which is cheap when the slice is much shorter than
-        // the domain.
         candidate = std::lower_bound(candidate, domain.end(), *it);
 
         if (candidate == domain.end())
@@ -113,23 +91,14 @@ bool intersectsDomain(const node *begin, const node *end, const index *labels, i
     return false;
 }
 
-/**
- * One pattern arc at the pattern node whose domain the refinement pass filters.
- */
+/// One pattern arc at the pattern node whose domain the refinement pass filters.
 struct ArcConstraint {
-    /// The other endpoint of the arc.
     node pj;
-    /// The label of the arc, or @ref none if the pattern is unlabelled or the label is a wildcard.
     index label;
-    /// Whether the arc leaves the filtered pattern node.
     bool outgoing;
 };
 
-/**
- * Appends one @ref ArcConstraint per arc incident to pattern node @a pu to @a out. In an
- * undirected pattern, every arc is outgoing. A directed mutual pair yields two constraints, since
- * its two arcs may carry different labels.
- */
+/// A directed mutual pair yields two constraints, since its two arcs may carry different labels.
 void collectArcConstraints(const SearchGraph &pattern, node pu, std::vector<ArcConstraint> &out) {
     const node *outBegin = pattern.outBegin(pu);
     const index *outLabels = pattern.outLabelBegin(pu);
@@ -147,25 +116,18 @@ void collectArcConstraints(const SearchGraph &pattern, node pu, std::vector<ArcC
 
 /**
  * Minimum fraction of a domain that the refinement and forward checking must remove before the
- * domain is intersected with target neighbourhoods. Below it, the degree and label checks in
- * RIImpl::consistent() reject the same candidates more cheaply. On caidaRouterLevel with a
+ * search intersects target neighbourhoods with the domain. Below it, the degree and label checks
+ * in RIImpl::consistent() reject the same candidates more cheaply. On caidaRouterLevel with a
  * labelled triangle pattern, intersecting costs 21% at a yield of 0.56 and breaks even at about
  * 0.8.
  */
 constexpr double MinSweepYieldForSliceIntersection = 0.8;
 
-/**
- * Forward checking, Section 4.2.2 of Kimmig, Meyerhenke and Strash. Removes the target node of
- * every single-element domain from all other domains, and repeats this for domains that become
- * single-element in the process.
- *
- * @return false if a domain became empty, in which case there are no matches.
- */
+/// Forward checking, Section 4.2.2 of Kimmig, Meyerhenke and Strash. Returns false if a domain
+/// becomes empty, in which case there are no matches.
 bool forwardCheckSingletons(const SearchGraph &pattern, std::vector<std::vector<node>> &domains) {
     const count z = pattern.upperNodeIdBound();
 
-    // Every node is queued at most once. A queued domain can only shrink further to empty, which
-    // returns false below.
     std::vector<bool> queued(z, false);
     std::vector<node> pending;
 
@@ -214,16 +176,11 @@ bool forwardCheckSingletons(const SearchGraph &pattern, std::vector<std::vector<
 } // namespace
 
 RIImpl::Ordering RIImpl::computeOrdering(const SearchGraph &pattern, const Domains &domains) {
-    // The score of an unordered node u is the triple (V_vis, V_neig, V_unv) of Bonnici et al.,
-    // where mu is the ordered prefix:
-    //
-    //   V_vis(u)  - arcs from u into mu.
-    //   V_neig(u) - nodes of mu reachable from u in two hops through an unordered node.
-    //   V_unv(u)  - unordered neighbours of u that are adjacent to no node of mu.
-    //
-    // Where Figure 2 of the paper disagrees with its text, this follows the text: the third term
-    // is V_unv rather than V_neig, and V_unv only counts unordered nodes. Unlike the figure, the
-    // best score is reset in every iteration, and ties go to the smallest node id.
+    // The score of an unordered node is the triple (V_vis, V_neig, V_unv) of Bonnici et al.: its
+    // arcs into the ordered prefix, the prefix nodes two hops away through an unordered node, and
+    // its unordered neighbours adjacent to no prefix node. Where Figure 2 of the paper disagrees
+    // with its text, this follows the text. The best score is reset in every iteration, and ties
+    // go to the smallest node id.
 
     const count z = pattern.upperNodeIdBound();
     const count total = pattern.numberOfNodes();
@@ -234,10 +191,8 @@ RIImpl::Ordering RIImpl::computeOrdering(const SearchGraph &pattern, const Domai
 
     std::vector<bool> inOrder(z, false);
 
-    // visCount[u] is the number of arcs from u into the order, updated incrementally.
     std::vector<count> visCount(z, 0);
 
-    // Marks for V_neig. SparseVector::reset() clears only the touched entries.
     SparseVector<bool> reached(z, false);
 
     const auto tripleFor = [&](node u) {
@@ -264,13 +219,13 @@ RIImpl::Ordering RIImpl::computeOrdering(const SearchGraph &pattern, const Domai
         return score;
     };
 
-    // The domain size under RI-DS. It is 0 under plain RI, which disables both RI-DS rules below.
+    // 0 under plain RI, which disables both RI-DS rules below.
     const auto domainSize = [&](node u) -> count {
         return domains.ofPatternNode.empty() ? 0 : domains.ofPatternNode[u].size();
     };
 
-    // Under RI-DS, nodes with a single-element domain are ordered before all other nodes (Section
-    // 4.1 of Kimmig, Meyerhenke and Strash).
+    // Under RI-DS, single-element domains come first (Section 4.1 of Kimmig, Meyerhenke and
+    // Strash).
     count remainingSingletons = 0;
     for (node u = 0; u < z; ++u)
         if (pattern.hasNode(u) && domainSize(u) == 1)
@@ -296,8 +251,7 @@ RIImpl::Ordering RIImpl::computeOrdering(const SearchGraph &pattern, const Domai
 
             const std::array<count, 3> score = tripleFor(u);
 
-            // Ascending ids with a strict comparison give ties to the smallest id. Under RI-DS, a
-            // tie on the triple goes to the smaller domain first (Section 4.2.1).
+            // Under RI-DS, a tie on the triple goes to the smaller domain first (Section 4.2.1).
             if (best == none || score > bestScore
                 || (score == bestScore && domainSize(u) < domainSize(best))) {
                 best = u;
@@ -305,12 +259,9 @@ RIImpl::Ordering RIImpl::computeOrdering(const SearchGraph &pattern, const Domai
             }
         }
 
-        // Cannot happen, since some eligible node always attains bestVis. Stop instead of indexing
-        // with none.
         if (best == none)
             break;
 
-        // While singletons remain, eligible() admits only singletons.
         if (remainingSingletons != 0)
             --remainingSingletons;
 
@@ -386,7 +337,6 @@ bool RIImpl::recurse(State &state) {
     if (state.depth == ordering->order.size())
         return reportMapping(state);
 
-    // candidatesFor() appends the candidates of this depth to the shared buffer.
     const index base = candidateBuffer.size();
     candidatesFor(state, candidateBuffer);
     const index end = candidateBuffer.size();
@@ -405,7 +355,6 @@ bool RIImpl::recurse(State &state) {
         state.mapping[state.depth] = none;
     }
 
-    // Remove the candidates of this depth.
     candidateBuffer.resize(base);
     return keepGoing;
 }
@@ -413,14 +362,12 @@ bool RIImpl::recurse(State &state) {
 bool RIImpl::expand(State &state, std::vector<State> &children) {
     const count full = ordering->order.size();
 
-    // States derived from rootState() are full width already; this only guards other states.
     if (state.mapping.size() < full)
         state.mapping.resize(full, none);
 
     if (state.depth == full)
         return reportMapping(state);
 
-    // expand() does not recurse, so it uses the whole buffer.
     candidateBuffer.clear();
     candidatesFor(state, candidateBuffer);
 
@@ -460,24 +407,19 @@ void RIImpl::candidatesFor(const State &state, std::vector<node> &out) const {
             return;
         }
 
-        // Skip removed ids, whose empty slices look like those of isolated nodes.
         for (node tv = 0; tv < targetGraph->upperNodeIdBound(); ++tv)
             if (targetGraph->hasNode(tv))
                 out.push_back(tv);
         return;
     }
 
-    // Intersect the slice with the domain only if the domain earns its keep; see
-    // MinSweepYieldForSliceIntersection.
     const std::vector<node> *domain =
         builtDomain != nullptr && domains->earnsItsKeep[pu] ? builtDomain : nullptr;
 
     const node pp = ordering->order[parentPos];
     const node parentImage = state.mapping[parentPos];
 
-    // Walk the out-slice of the parent's image for a pattern arc pp -> pu and the in-slice for
-    // pu -> pp. For a mutual pair take the shorter slice, since ruleEdgesToPrefix() checks both
-    // directions.
+    // For a mutual pair, walk the shorter slice, since ruleEdgesToPrefix() checks both directions.
     const bool forward = patternGraph->hasEdge(pp, pu);
     const bool backward = patternGraph->isDirected() && patternGraph->hasEdge(pu, pp);
     bool useOut = forward;
@@ -493,7 +435,6 @@ void RIImpl::candidatesFor(const State &state, std::vector<node> &out) const {
     const index patternLabel =
         useOut ? patternGraph->edgeLabel(pp, pu) : patternGraph->edgeLabel(pu, pp);
 
-    // A wildcard pattern label needs no filtering.
     const bool filterLabels = sliceLabels != nullptr && patternLabel != none;
 
     auto inDomain = domain == nullptr ? std::vector<node>::const_iterator{} : domain->begin();
@@ -503,7 +444,6 @@ void RIImpl::candidatesFor(const State &state, std::vector<node> &out) const {
         if (filterLabels && !edgeLabelsCompatible(patternLabel, sliceLabels[it - begin]))
             continue;
 
-        // Both ranges are ascending, so the domain is searched from the previous position.
         if (domain != nullptr) {
             inDomain = std::lower_bound(inDomain, domain->end(), tv);
             if (inDomain == domain->end())
@@ -519,7 +459,6 @@ void RIImpl::candidatesFor(const State &state, std::vector<node> &out) const {
 bool RIImpl::consistent(const State &state, node tv) const {
     const node pu = ordering->order[state.depth];
 
-    // Cheapest checks first. candidatesFor() only returns target nodes that exist.
     if (targetGraph->outDegree(tv) < patternGraph->outDegree(pu))
         return false;
 
@@ -557,8 +496,7 @@ bool RIImpl::ruleEdgesToPrefix(const State &state, node tv) const {
                 return false;
         }
 
-        // hasEdge() is symmetric in undirected snapshots, so only a directed pattern needs the
-        // reverse arc, which has its own label.
+        // The reverse arc of a directed pattern has its own label.
         if (patternGraph->isDirected() && patternGraph->hasEdge(pu, pi)) {
             if (!targetGraph->hasEdge(tv, ti))
                 return false;
@@ -606,11 +544,10 @@ RIImpl::Domains RIImpl::computeDomains(const SearchGraph &pattern, const SearchG
     if (z == 0)
         return result;
 
-    // Ids that are not nodes keep an empty domain.
     result.ofPatternNode.assign(z, {});
     result.earnsItsKeep.assign(z, false);
 
-    // Build the domains. Walking the target ids in ascending order keeps every domain sorted.
+    // Walking the target ids in ascending order keeps every domain sorted.
     for (node pu = 0; pu < z; ++pu) {
         if (!pattern.hasNode(pu))
             continue;
@@ -621,9 +558,9 @@ RIImpl::Domains RIImpl::computeDomains(const SearchGraph &pattern, const SearchG
                 domain.push_back(tv);
     }
 
-    // Refine the domains in a single pass rather than until convergence, since the pass is costly
-    // on a large unlabelled target, where a domain holds almost every node. Refining in place is
-    // sound, because a removed node cannot be the image of its pattern node in any match.
+    // A single refinement pass, since the pass is costly on a large unlabelled target, where a
+    // domain holds almost every node. Refining in place is sound, because a removed node cannot be
+    // the image of its pattern node in any match.
     std::vector<count> builtSize(z, 0);
     std::vector<ArcConstraint> constraints;
 
@@ -634,7 +571,6 @@ RIImpl::Domains RIImpl::computeDomains(const SearchGraph &pattern, const SearchG
         std::vector<node> &domain = result.ofPatternNode[pu];
         builtSize[pu] = domain.size();
 
-        // The constraints depend only on pu, so they are collected once for all candidates.
         constraints.clear();
         collectArcConstraints(pattern, pu, constraints);
 
@@ -658,13 +594,9 @@ RIImpl::Domains RIImpl::computeDomains(const SearchGraph &pattern, const SearchG
             domain.end());
     }
 
-    // Forward checking runs after the refinement, whose smaller domains it benefits from, and
-    // before the ordering, which puts single-element domains first.
     result.anyEmpty = !forwardCheckSingletons(pattern, result.ofPatternNode);
 
-    // A domain earns its keep if the refinement and forward checking removed enough of it. What
-    // the build removed does not count, since consistent() rejects those candidates anyway. See
-    // MinSweepYieldForSliceIntersection.
+    // What the build removed does not count, since consistent() rejects those candidates anyway.
     for (node pu = 0; pu < z; ++pu) {
         if (!pattern.hasNode(pu))
             continue;
@@ -681,7 +613,6 @@ RIImpl::Domains RIImpl::computeDomains(const SearchGraph &pattern, const SearchG
 }
 
 bool RIImpl::reportMapping(const State &state) {
-    // state.mapping is indexed by position in the order, matchBuffer by pattern node.
     for (index i = 0; i < ordering->order.size(); ++i)
         matchBuffer[ordering->order[i]] = state.mapping[i];
 
@@ -695,18 +626,14 @@ RISearchSetup prepareRISearch(const Graph &pattern, const Graph &target,
                               const std::vector<index> &patternEdgeLabels,
                               const std::vector<index> &targetEdgeLabels, RI::Variant variant,
                               const std::string &algorithmName) {
-    // Only the pattern is small enough for the adjacency matrix.
     SearchGraph patternGraph(pattern, /* buildMatrix = */ true, patternEdgeLabels);
     SearchGraph targetGraph(target, /* buildMatrix = */ false, targetEdgeLabels);
 
-    // One arc of the snapshot cannot represent parallel edges with different labels. Refused
-    // before ParallelRI starts any worker.
     if (patternGraph.collapsedLabelledEdges() || targetGraph.collapsedLabelledEdges())
         throw std::runtime_error(algorithmName
                                  + " does not support parallel edges whose edge labels disagree - "
                                    "see SubgraphIsomorphism::setEdgeLabels()");
 
-    // Under RI-DS, the ordering depends on the domain sizes.
     RIImpl::Domains domains = RIImpl::computeDomains(patternGraph, targetGraph, patternNodeLabels,
                                                      targetNodeLabels, variant);
     RIImpl::Ordering ordering = RIImpl::computeOrdering(patternGraph, domains);

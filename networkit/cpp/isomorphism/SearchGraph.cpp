@@ -14,15 +14,9 @@ namespace IsomorphismDetails {
 
 namespace {
 
-/**
- * Largest node id bound for which the adjacency matrix is built, so that the matrix takes at most
- * 64 MiB. Beyond it, hasEdge() falls back to the CSR.
- */
+/// Largest node id bound for which the adjacency matrix takes at most 64 MiB.
 constexpr count maxMatrixNodes = 23170;
 
-/**
- * Sorts every slice of a CSR in ascending order and moves the labels along with their heads.
- */
 void sortSlices(const std::vector<index> &first, std::vector<node> &head, std::vector<index> &label,
                 count z) {
     if (label.empty()) {
@@ -50,12 +44,8 @@ void sortSlices(const std::vector<index> &first, std::vector<node> &head, std::v
     }
 }
 
-/**
- * Drops self-loops and collapses parallel edges in a sorted CSR, in place, and moves the labels
- * along with their heads.
- *
- * @return true if collapsed parallel arcs had different labels. Always false without labels.
- */
+/// Drops self-loops and collapses parallel edges in a sorted CSR. Returns true if collapsed
+/// parallel arcs had different labels.
 bool compactSlices(std::vector<index> &first, std::vector<node> &head, std::vector<index> &label,
                    count z) {
     const bool labelled = !label.empty();
@@ -99,7 +89,6 @@ bool compactSlices(std::vector<index> &first, std::vector<node> &head, std::vect
 SearchGraph::SearchGraph(const Graph &G, bool buildMatrix, const std::vector<index> &edgeLabels)
     : lostLabels(false), maxOut(0), maxIn(0), matrixStride(0), n(G.numberOfNodes()),
       z(G.upperNodeIdBound()), directed(G.isDirected()), hasMatrix(buildMatrix) {
-    // buildCSR() indexes edgeLabels by edge id.
     if (!edgeLabels.empty()) {
         if (!G.hasEdgeIds())
             throw std::runtime_error("SearchGraph: edge labels need a graph with edge ids - call "
@@ -109,8 +98,6 @@ SearchGraph::SearchGraph(const Graph &G, bool buildMatrix, const std::vector<ind
                 "SearchGraph: edge label vector is shorter than the graph's upperEdgeIdBound()");
     }
 
-    // The matrix is sized by the node id bound, not by the number of nodes. If compacting the
-    // node ids would make it fit, warn the caller.
     if (hasMatrix && z > maxMatrixNodes) {
         if (n <= z / 2) {
             WARN("SearchGraph: skipping the adjacency matrix - the node id bound is ", z,
@@ -133,7 +120,6 @@ SearchGraph::SearchGraph(const Graph &G, bool buildMatrix, const std::vector<ind
 void SearchGraph::buildCSR(const Graph &G, const std::vector<index> &edgeLabels) {
     const bool labelled = !edgeLabels.empty();
 
-    // Count the out-degrees into outFirst[u + 1] and turn them into offsets with a prefix sum.
     outFirst.assign(z + 1, 0);
     nodeExists.assign(z, false);
     for (node u = 0; u < z; ++u) {
@@ -144,8 +130,8 @@ void SearchGraph::buildCSR(const Graph &G, const std::vector<index> &edgeLabels)
     }
     std::partial_sum(outFirst.begin(), outFirst.end(), outFirst.begin());
 
-    // Scatter the arcs and their labels. forEdges() visits an undirected edge once, so the reverse
-    // arc is added here, except for a self-loop, which degreeOut() counts once.
+    // forEdges() visits an undirected edge once, so this adds the reverse arc, except for a
+    // self-loop, which degreeOut() counts once.
     outHead.resize(outFirst[z]);
     if (labelled)
         outLabel.resize(outFirst[z], none);
@@ -164,12 +150,10 @@ void SearchGraph::buildCSR(const Graph &G, const std::vector<index> &edgeLabels)
     sortSlices(outFirst, outHead, outLabel, z);
     lostLabels |= compactSlices(outFirst, outHead, outLabel, z);
 
-    // The maximum is taken after the compaction, so it counts distinct neighbours.
     for (node u = 0; u < z; ++u) {
         maxOut = std::max(maxOut, outDegree(u));
     }
 
-    // Undirected snapshots use the out-arrays for the in-arcs.
     if (directed) {
         inFirst.assign(z + 1, 0);
         for (node u = 0; u < z; ++u) {

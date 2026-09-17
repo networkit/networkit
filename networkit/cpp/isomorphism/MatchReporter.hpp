@@ -1,8 +1,6 @@
 #ifndef NETWORKIT_CPP_ISOMORPHISM_MATCH_REPORTER_HPP_
 #define NETWORKIT_CPP_ISOMORPHISM_MATCH_REPORTER_HPP_
 
-// Private header of the isomorphism module. Not installed, not part of the public API.
-
 #include <functional>
 #include <vector>
 
@@ -12,18 +10,8 @@
 namespace NetworKit {
 namespace IsomorphismDetails {
 
-/**
- * Callback through which a search implementation (VF2Impl, VF3Impl, RIImpl) reports a complete
- * mapping, indexed by pattern node. It returns false once the search must stop because the cap on
- * the number of matches is reached.
- *
- * The implementations are not subclasses of SubgraphIsomorphism, so run() passes a lambda that
- * calls the protected SubgraphIsomorphism::reportMatch():
- *
- * @code
- * VF2Impl(..., [this](const SubgraphIsomorphism::Match &m) { return reportMatch(m); }).run();
- * @endcode
- */
+/// Receives a complete mapping, indexed by pattern node, from a search implementation. Returns
+/// false once the search must stop because the cap on the number of matches is reached.
 using MatchReporter = std::function<bool(const SubgraphIsomorphism::Match &)>;
 
 } // namespace IsomorphismDetails

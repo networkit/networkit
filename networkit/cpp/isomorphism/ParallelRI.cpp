@@ -31,29 +31,23 @@ using IsomorphismDetails::SearchGraph;
 
 /// Maximum number of matches a worker records between two updates of the shared count.
 constexpr count MaxPublishInterval = 64;
-/// Number of shared-count updates per worker to aim for, which bounds the overshoot past
-/// maxMatches.
+/// Shared-count updates per worker to aim for, which bounds the overshoot past maxMatches.
 constexpr count PublishRounds = 8;
 
-/// Number of states a worker publishes for stealing at once. Section V-B2 of the paper finds 4
-/// best.
+/// Section V-B2 of the paper finds 4 best.
 constexpr count TaskGroupSize = 4;
-/// Number of victims a thief tries before it joins the termination protocol.
 constexpr count StealAttempts = 4;
 
-/// Tries to take a worker's queue flag without waiting. Thieves use this, so that a steal never
-/// waits for the victim.
+/// Thieves use this, so that a steal never waits for the victim.
 bool tryLockQueue(std::atomic<bool> &flag) {
     return !flag.exchange(true, std::memory_order_acquire);
 }
 
-/// Takes a worker's queue flag, spinning until it is free. The owner uses this.
 void lockQueue(std::atomic<bool> &flag) {
     while (!tryLockQueue(flag))
         std::this_thread::yield();
 }
 
-/// Releases a queue flag taken by @ref lockQueue() or @ref tryLockQueue() when the scope is left.
 class QueueUnlock {
 
 public:
@@ -67,40 +61,17 @@ private:
 };
 
 /**
- * The worker pool of @ref ParallelRI. Every worker owns an RIImpl and a private queue of states.
- *
- * A worker pushes and pops states at the back of `Worker::states`, which no other thread touches,
- * so it walks the search tree depth first without synchronization. When enough states have
- * accumulated, it moves the oldest ones to `Worker::stealable`, which `Worker::busy` guards. A
- * worker without states first reclaims its own `stealable` states and then steals from the front
- * of another worker's `stealable`, where the shallowest states with the largest subtrees are. A
- * token passed around the ring of workers detects termination; see @ref passToken().
- *
- * Every worker counts and stores its matches in its own slot, and ParallelRI::run() merges them
- * after the join. Only the user's callback is shared, through @a deliver.
+ * The worker pool of @ref ParallelRI. Every worker walks the search tree depth first on its private
+ * `Worker::states` and moves its oldest states to `Worker::stealable`. An idle worker reclaims its
+ * own published states first and then steals the shallowest states of another worker. A token
+ * passed around the ring of workers detects termination; see @ref passToken().
  */
 class ParallelRIImpl {
 
 public:
-    /// Passes a match to the user's callback. Thread-safe. Returns true if a callback received the
-    /// match, in which case the match must not be stored.
+    /// Passes a match to the user's callback. Returns true if a callback received the match.
     using Deliver = std::function<bool(index, const Match &)>;
 
-    /**
-     * @param patternGraph Snapshot of the pattern, shared read-only.
-     * @param targetGraph Snapshot of the target, shared read-only.
-     * @param patternNodeLabels Empty if the search is unlabelled.
-     * @param targetNodeLabels Empty if the search is unlabelled.
-     * @param ordering Matching order, shared read-only.
-     * @param domains RI-DS domains, shared read-only. Empty under plain RI.
-     * @param semantics Whether matches must be induced.
-     * @param handler Shared by all workers. Only isRunning() may be called on it inside the
-     * parallel region.
-     * @param deliver Passes a match to the user's callback. Called concurrently.
-     * @param storeMatches Whether matches have to be stored rather than only counted.
-     * @param maxMatches Stop after this many matches; 0 means no limit.
-     * @param numWorkers Number of workers, as reported by SubgraphIsomorphism::numberOfWorkers().
-     */
     ParallelRIImpl(const SearchGraph &patternGraph, const SearchGraph &targetGraph,
                    const std::vector<index> &patternNodeLabels,
                    const std::vector<index> &targetNodeLabels, const RIImpl::Ordering &ordering,
@@ -115,7 +86,6 @@ public:
           // Worker is neither copyable nor movable, so the vector is sized on construction.
           workers(this->numWorkers), activeWorkers(this->numWorkers), stopped(false),
           tokenHolder(0), tokenDirty(false), tokenHops(0), published(0),
-          // Publish the local count rarely, but often enough to overshoot maxMatches only slightly.
           publishInterval(
               maxMatches == 0
                   ? 0
@@ -126,10 +96,6 @@ public:
             worker.untilPublish = publishInterval;
     }
 
-    /**
-     * Runs the parallel search. If a worker caught an exception, rethrows the first one after all
-     * workers have joined.
-     */
     void run() {
         // The early exits of RIImpl::run(). An empty pattern has one match, the empty mapping.
         if (!ordering->order.empty()
@@ -146,14 +112,12 @@ public:
 
 #pragma omp single
             {
-                // OpenMP may start fewer threads than requested, but never more. The ring spans
-                // only the started threads, while `workers` is sized for the request.
+                // OpenMP may start fewer threads than requested. The ring spans only the started
+                // threads, while `workers` is sized for the request.
                 activeWorkers.store(
                     std::min<count>(static_cast<count>(omp_get_num_threads()), numWorkers));
                 stopOnException([&] { seedRoots(impl); });
             }
-            // The barrier at the end of the single region lets the seeding finish before any
-            // worker starts.
 
             stopOnException([&] { workerLoop(tid, impl); });
         }
@@ -162,10 +126,6 @@ public:
             std::rethrow_exception(failure);
     }
 
-    /**
-     * @return the concatenated matches of all workers. Empty if no matches were stored. Call this
-     * once, after @ref run().
-     */
     std::vector<Match> takeMatches() {
         std::vector<Match> merged;
         if (!storeMatches)
@@ -185,7 +145,6 @@ public:
         return merged;
     }
 
-    /// @return the total number of matches found, stored or not. Call this after @ref run().
     count matchesFound() const {
         count total = 0;
         for (const Worker &worker : workers)
@@ -194,32 +153,22 @@ public:
     }
 
 private:
-    /// The state of one worker, padded to its own cache line.
     struct alignas(64) Worker {
-        /// States that only this worker touches, pushed and popped at the back.
+        /// Only this worker touches these states.
         std::deque<RIImpl::State> states;
-        /// States published for stealing. Guarded by `busy`.
+        /// Guarded by `busy`.
         std::deque<RIImpl::State> stealable;
         /// Size of `stealable`, readable without taking `busy`. Exact while `busy` is held.
         std::atomic<count> offered{0};
-        /// Guards `stealable`.
         std::atomic<bool> busy{false};
-        /// Number of states pushed since the last publication.
         count sinceLastPublish = 0;
-        /// Matches found and stored by this worker.
         std::vector<Match> buffer;
-        /// Number of matches found by this worker, stored or not.
         count found = 0;
-        /// Matches left until the next update of `published`. Only used if maxMatches != 0.
         count untilPublish = 0;
     };
 
-    /**
-     * Records a match found by worker @a tid. With a cap on the number of matches, the shared
-     * count is only updated every `publishInterval` matches.
-     *
-     * @return false once the cap is reached.
-     */
+    /// Updates the shared count only every `publishInterval` matches. Returns false once the cap
+    /// is reached.
     bool recordMatch(index tid, const Match &match) {
         Worker &worker = workers[tid];
         ++worker.found;
@@ -247,10 +196,8 @@ private:
         return !stopped.load(std::memory_order_relaxed);
     }
 
-    /**
-     * Runs @a step. If it throws, stores the first exception, which run() rethrows after the join,
-     * and stops all workers. An exception must not leave an OpenMP region.
-     */
+    /// An exception must not leave an OpenMP region, so this stores the first one for run() to
+    /// rethrow after the join, and stops all workers.
     template <typename Step>
     void stopOnException(Step &&step) {
         try {
@@ -262,13 +209,8 @@ private:
         }
     }
 
-    /**
-     * Expands the empty mapping and deals the resulting states round-robin to the workers. For an
-     * empty pattern, this reports the only match. Called inside `omp single`, while all other
-     * workers wait at its barrier.
-     *
-     * @param impl The RIImpl of the seeding thread.
-     */
+    /// Deals the children of the empty mapping round-robin to the workers. This runs inside
+    /// `omp single`, so all other workers wait at its barrier.
     void seedRoots(RIImpl &impl) {
         RIImpl::State root = impl.rootState();
 
@@ -286,14 +228,8 @@ private:
         }
     }
 
-    /**
-     * Main loop of worker @a tid: takes a state from its own queue or steals one, expands it and
-     * pushes the children. Without a state, it passes the termination token and returns once the
-     * search is over.
-     *
-     * Every state is expanded completely, so `RIImpl::State::nextCandidate` is never used to
-     * resume. A position without a parent therefore pushes one state per target node at once.
-     */
+    /// Every state is expanded completely, so `RIImpl::State::nextCandidate` never resumes an
+    /// expansion. A position without a parent therefore pushes one state per target node at once.
     void workerLoop(index tid, RIImpl &impl) {
         RIImpl::State state;
         std::vector<RIImpl::State> children;
@@ -314,9 +250,7 @@ private:
             }
 
             children.clear();
-            // A state at full depth is reported by expand().
             if (!impl.expand(state, children)) {
-                // The cap is reached.
                 stopped.store(true, std::memory_order_relaxed);
                 return;
             }
@@ -326,12 +260,6 @@ private:
         }
     }
 
-    /**
-     * Takes the newest state of worker @a tid, reclaiming its published states if its private
-     * queue is empty.
-     *
-     * @return false if the worker has no states left, that is, it is idle.
-     */
     bool popLocal(index tid, RIImpl::State &out) {
         Worker &worker = workers[tid];
 
@@ -358,8 +286,6 @@ private:
         return true;
     }
 
-    /// Pushes a state onto the private queue of worker @a tid, and tries to publish a batch every
-    /// TaskGroupSize pushes.
     void pushLocal(index tid, RIImpl::State &&state) {
         Worker &worker = workers[tid];
         worker.states.push_back(std::move(state));
@@ -367,11 +293,6 @@ private:
             coalesceIntoTask(tid);
     }
 
-    /**
-     * Publishes a batch of the oldest states of worker @a tid for stealing, unless states are
-     * still on offer or the worker has at most TaskGroupSize states. The worker keeps at least
-     * TaskGroupSize states.
-     */
     void coalesceIntoTask(index tid) {
         Worker &worker = workers[tid];
         worker.sinceLastPublish = 0;
@@ -393,11 +314,6 @@ private:
         worker.offered.store(worker.stealable.size());
     }
 
-    /**
-     * Tries to steal the oldest published state of another worker.
-     *
-     * @return false if no state was stolen.
-     */
     bool trySteal(index thief, RIImpl::State &out) {
         // pickVictim() needs at least two workers.
         const count active = activeWorkers.load();
@@ -428,11 +344,6 @@ private:
         return false;
     }
 
-    /**
-     * @param thief The stealing worker, which is never returned.
-     * @param active The number of workers; at least 2.
-     * @return a uniformly random worker other than @a thief.
-     */
     index pickVictim(index thief, count active) const {
         auto &urng = Aux::Random::getURNG();
 
@@ -444,14 +355,12 @@ private:
 
     /**
      * Passes the termination token on if the idle worker @a tid holds it. The search is over once
-     * the token has made a full lap of `activeWorkers` hops without a successful steal.
+     * the token has made a full lap without a successful steal.
      *
-     * No lap completes while work remains. A worker calls this only after @ref popLocal() found
-     * both its queues empty, and every successful steal sets `tokenDirty` while holding the
-     * victim's flag. A worker that has work at the end of a lap was idle at its own hop, so it
-     * stole the work afterwards. That steal set `tokenDirty` before a later hop of the lap, which
-     * then voided the lap. `tokenDirty` and `Worker::offered` use sequentially consistent
-     * operations for this argument.
+     * No lap completes while work remains. A worker with work at the end of a lap was idle at its
+     * own hop, so it stole the work afterwards. That steal set `tokenDirty` under the victim's flag
+     * before a later hop, which voided the lap. The argument needs sequentially consistent
+     * operations on `tokenDirty` and `Worker::offered`.
      */
     void passToken(index tid) {
         if (tokenHolder.load() != tid)
@@ -466,7 +375,6 @@ private:
         tokenHolder.store(static_cast<index>((tid + 1) % active));
     }
 
-    /// @return true if the token has made a full lap or the search was stopped.
     bool quiescent() const {
         return stopped.load(std::memory_order_relaxed) || tokenHops.load() >= activeWorkers.load();
     }
@@ -482,37 +390,28 @@ private:
 
     SubgraphIsomorphism::Semantics semantics;
 
-    /// Only isRunning() may be called on it inside the parallel region.
     Aux::SignalHandler *handler;
 
     Deliver deliver;
     bool storeMatches;
-    /// 0 means no limit.
     count maxMatches;
     count numWorkers;
 
     std::vector<Worker> workers;
 
-    /// Number of threads that OpenMP actually started, at most `numWorkers`. Atomic, so that
-    /// ThreadSanitizer does not report the handover through the OpenMP barrier as a race.
+    /// Atomic, so that ThreadSanitizer does not report the handover through the OpenMP barrier as
+    /// a race.
     std::atomic<count> activeWorkers;
 
-    /// Stops all workers once the cap is reached, the search is interrupted or a worker threw.
     std::atomic<bool> stopped;
-    /// Set by the first worker that catches an exception.
     std::atomic<bool> failed{false};
-    /// The first exception a worker caught. Rethrown by run() after the join.
     std::exception_ptr failure;
-    /// The worker that holds the termination token.
     std::atomic<index> tokenHolder;
     /// Set by every successful steal. Voids the current lap of the token.
     std::atomic<bool> tokenDirty;
-    /// Hops since the last void. Reaching `activeWorkers` ends the search.
     std::atomic<count> tokenHops;
 
-    /// Matches published by all workers. Only used if maxMatches != 0 and several workers run.
     std::atomic<count> published;
-    /// Number of matches a worker records between two updates of `published`.
     count publishInterval;
 };
 
@@ -534,7 +433,6 @@ void ParallelRI::run() {
     // Read once, so that the search uses the number of workers that numberOfWorkers() reports.
     const count numWorkers = numberOfWorkers();
 
-    // All workers share this setup read-only. prepareRISearch() throws before any worker starts.
     const IsomorphismDetails::RISearchSetup setup = IsomorphismDetails::prepareRISearch(
         *pattern, *target, patternNodeLabels, targetNodeLabels, patternEdgeLabels, targetEdgeLabels,
         variant, "ParallelRI");
