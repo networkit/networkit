@@ -259,9 +259,6 @@ RIImpl::Ordering RIImpl::computeOrdering(const SearchGraph &pattern, const Domai
             }
         }
 
-        if (best == none)
-            break;
-
         if (remainingSingletons != 0)
             --remainingSingletons;
 
@@ -361,9 +358,6 @@ bool RIImpl::recurse(State &state) {
 
 bool RIImpl::expand(State &state, std::vector<State> &children) {
     const count full = ordering->order.size();
-
-    if (state.mapping.size() < full)
-        state.mapping.resize(full, none);
 
     if (state.depth == full)
         return reportMapping(state);

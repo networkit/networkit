@@ -74,7 +74,8 @@ public:
     void run();
 
     /// Appends the children of @a state to @a children, or reports @a state if it is complete.
-    /// Returns false once the cap on the number of matches is reached.
+    /// @a state must descend from rootState(). Returns false once the cap on the number of matches
+    /// is reached.
     bool expand(State &state, std::vector<State> &children);
 
 private:

@@ -473,8 +473,7 @@ TEST_P(RIGTest, testExpandAgreesWithRun) {
                             return true;
                         });
 
-        std::vector<RIImpl::State> pending(1);
-        pending.front().mapping.assign(ordering.order.size(), none);
+        std::vector<RIImpl::State> pending{expander.rootState()};
         while (!pending.empty()) {
             RIImpl::State state = std::move(pending.back());
             pending.pop_back();
