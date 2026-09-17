@@ -10,6 +10,8 @@ networkit_add_test(graph AdjListGraphGTest graph)
 networkit_add_test(graph DHBGraphGTest generators)
 networkit_add_test(graph GraphConceptsGTest graph)
 networkit_add_test(graph GraphTestUtilsGTest graph)
+networkit_add_test(graph HypergraphGTest generators graph)
+networkit_add_test(graph HypergraphToolsGTest generators graph)
 
 networkit_add_benchmark(graph Graph2Benchmark)
 networkit_add_benchmark(graph GraphBenchmark auxiliary)
