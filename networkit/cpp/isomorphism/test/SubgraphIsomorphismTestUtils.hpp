@@ -374,6 +374,25 @@ inline std::vector<Case> standardCases() {
                      {},
                      {}});
 
+    // Node 0 has only in-arcs, so VF2 continues from the in-terminal sets.
+    const Graph inArcsFirst = graphOf(3, {{1, 0}, {2, 0}, {2, 1}}, true);
+    Graph completeDigraph(4, false, true);
+    for (node u = 0; u < 4; ++u)
+        for (node v = 0; v < 4; ++v)
+            if (u != v)
+                completeDigraph.addEdge(u, v);
+
+    cases.push_back(
+        {"in-arcs-first-induced", inArcsFirst, directedTarget, Semantics::INDUCED, {}, {}, {}, {}});
+    cases.push_back({"in-arcs-first-in-complete-digraph",
+                     inArcsFirst,
+                     completeDigraph,
+                     Semantics::MONOMORPHISM,
+                     {},
+                     {},
+                     {},
+                     {}});
+
     cases.push_back({"labelled-path3-in-k4",
                      path3,
                      k4,
@@ -466,6 +485,21 @@ inline std::vector<Case> standardCases() {
                      {},
                      mutualPattern.edgeLabels,
                      mutualTarget.edgeLabels});
+
+    // RI walks one arc of a mutual pair and checks the other. From target nodes 0 and 2 it walks
+    // different arcs, and each time the other arc has the wrong label.
+    const LabelledGraph twoLabelPair = labelledGraphOf(2, {{0, 1, 1}, {1, 0, 2}}, true);
+    const LabelledGraph twoLabelTarget = labelledGraphOf(
+        6, {{0, 1, 1}, {1, 0, 5}, {3, 0, 2}, {2, 3, 9}, {3, 2, 2}, {2, 1, 4}, {4, 5, 1}, {5, 4, 2}},
+        true);
+    cases.push_back({"directed-mutual-pair-labels-checked-both-ways",
+                     twoLabelPair.G,
+                     twoLabelTarget.G,
+                     Semantics::MONOMORPHISM,
+                     {},
+                     {},
+                     twoLabelPair.edgeLabels,
+                     twoLabelTarget.edgeLabels});
 
     // Algorithms must refuse parallel edges with different labels but accept equal labels.
     const LabelledGraph parallelDisagreeing =
