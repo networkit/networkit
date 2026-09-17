@@ -259,7 +259,7 @@ cdef class SubgraphIsomorphism(Algorithm):
 		"""
 		getMatches()
 
-		Returns all matches found, each one a vector indexed by pattern node. Throws an error if the matches were never stored, which happens when a callback was set or @ref setStoreMatches(false) was called, and if @ref run() has not been called yet.
+		Returns all matches found, each one a vector indexed by pattern node. Raises an error if run() has not been called yet or if the matches were not stored. Matches are not stored when a callback was set or setStoreMatches(False) was called.
 
 		Returns
 		-------
@@ -290,7 +290,7 @@ cdef class SubgraphIsomorphism(Algorithm):
 		hasMatch()
 
 		Return whether at least one match was found.
-	
+
 		Returns
 		-------
 		bool
@@ -316,9 +316,9 @@ cdef class VF2(SubgraphIsomorphism):
 		The pattern graph. Must not contain self-loops.
 	target : networkit.Graph
 		The target graph. Must agree with pattern on directedness.
-	semantics : 
+	semantics : networkit.isomorphism.Semantics, optional
 		Whether matches must be induced. Default: networkit.isomorphism.Semantics.INDUCED
-	maxMatches : int
+	maxMatches : int, optional
 		Stop after this many matches; 0 means no limit. Default: 0
 	"""
 
@@ -358,11 +358,11 @@ cdef class RI(SubgraphIsomorphism):
 		The pattern graph. Must not contain self-loops.
 	target : networkit.Graph
 		The target graph. Must agree with pattern on directedness.
-	variant : networkit.isomorphism.Variant.RI
-		Plain RI or RI-DS.
-	semantics : 
+	variant : networkit.isomorphism.Variant, optional
+		Plain RI or RI-DS. Default: networkit.isomorphism.Variant.RI
+	semantics : networkit.isomorphism.Semantics, optional
 		Whether matches must be induced. Default: networkit.isomorphism.Semantics.INDUCED
-	maxMatches : int
+	maxMatches : int, optional
 		Stop after this many matches; 0 means no limit. Default: 0
 	"""
 
@@ -380,19 +380,22 @@ cdef class ParallelRI(SubgraphIsomorphism):
 	ParallelRI(pattern, target, variant=networkit.isomorphism.Variant.RI,
 			   semantics=networkit.isomorphism.Semantics.INDUCED, maxMatches=0)
 
-	Parallel version of RI.
-	
+	Parallel version of RI. It finds the same matches as RI, but their order may differ from run to run.
+	The number of workers is the global thread count, see networkit.setNumberOfThreads(). Idle workers
+	steal batches of partial mappings from busy ones. A callback set with setCallback() makes the
+	workers take turns, and a callback set with setParallelCallback() avoids this.
+
 	Parameters
 	----------
 	pattern : networkit.Graph
 		The pattern graph. Must not contain self-loops.
 	target : networkit.Graph
 		The target graph. Must agree with pattern on directedness.
-	variant : networkit.isomorphism.Variant.RI
-		Plain RI or RI-DS.
-	semantics : 
+	variant : networkit.isomorphism.Variant, optional
+		Plain RI or RI-DS. Default: networkit.isomorphism.Variant.RI
+	semantics : networkit.isomorphism.Semantics, optional
 		Whether matches must be induced. Default: networkit.isomorphism.Semantics.INDUCED
-	maxMatches : int
+	maxMatches : int, optional
 		Stop after this many matches; 0 means no limit. Default: 0
 	"""
 
