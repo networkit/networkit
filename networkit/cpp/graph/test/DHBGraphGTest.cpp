@@ -681,7 +681,6 @@ TEST_P(DHBGraphGTest, testAddEdgeFalseState) {
 }
 
 TEST_P(DHBGraphGTest, testAddEdges_weighted_edge_no_update) {
-    Aux::setNumberOfThreads(1);
     DHBGraph G = createGraph(5);
     WeightedEdge e1(0, 2, defaultEdgeWeight);
     WeightedEdge e2(1, 2, defaultEdgeWeight);
@@ -877,7 +876,6 @@ TEST_P(DHBGraphGTest, testRemoveAdjacentEdges_selfloop_outEdge) {
 }
 
 TEST_P(DHBGraphGTest, testRemoveSelfLoops) {
-    Aux::setNumberOfThreads(1);
     DHBGraph G = this->Ghouse;
     G.addEdge(0, 0);
     G.addEdge(1, 1);
