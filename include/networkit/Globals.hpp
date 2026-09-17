@@ -32,6 +32,7 @@ using edgeweight = double; ///< edge weight type
 using edgeid = index;      ///< edge id
 
 inline constexpr edgeweight defaultEdgeWeight = 1.0;
+inline constexpr nodeweight defaultNodeWeight = 1.0;
 inline constexpr edgeweight nullWeight = 0.0;
 inline constexpr index none =
     std::numeric_limits<index>::max(); ///< value for not existing nodes/edges

@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <tuple>
+#include <unordered_set>
 
 #include <networkit/Globals.hpp>
 
@@ -71,6 +72,31 @@ using _CythonEdge = Edge;
 using _CythonWeightedEdge = WeightedEdge;
 } // namespace NetworKit
 
+template <class NodeT>
+struct HyperedgeT {
+    std::unordered_set<NodeT> nodes;
+
+    HyperedgeT() = default;
+
+    HyperedgeT(const std::vector<NodeT> &otherNodes) {
+        nodes = std::unordered_set<NodeT>(otherNodes.begin(), otherNodes.end());
+    }
+};
+
+template <class NodeT, class EdgeWeightT>
+struct WeightedHyperedgeT : HyperedgeT<NodeT> {
+    EdgeWeightT weight;
+
+    // Needed by cython
+    WeightedHyperedgeT() : HyperedgeT<NodeT>(), weight(std::numeric_limits<EdgeWeightT>::max()) {}
+
+    WeightedHyperedgeT(const std::vector<NodeT> &otherNodes, EdgeWeightT w)
+        : HyperedgeT<NodeT>(otherNodes), weight(w) {}
+};
+
+using Hyperedge = HyperedgeT<NetworKit::node>;
+using WeightedHyperedge = WeightedHyperedgeT<NetworKit::node, NetworKit::edgeweight>;
+
 namespace std {
 template <class NodeT>
 struct hash<NetworKit::EdgeT<NodeT>> {
@@ -79,6 +105,7 @@ struct hash<NetworKit::EdgeT<NodeT>> {
     }
     hash<NodeT> hash_node;
 };
+
 } // namespace std
 
 #endif // NETWORKIT_GRAPH_EDGE_UTILS_HPP_

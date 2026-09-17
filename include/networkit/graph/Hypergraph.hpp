@@ -16,36 +16,11 @@
 #include <networkit/auxiliary/FunctionTraits.hpp>
 #include <networkit/graph/Attributes.hpp>
 #include <networkit/graph/EdgeIterators.hpp>
+#include <networkit/graph/EdgeUtils.hpp>
 #include <networkit/graph/NeighborIterators.hpp>
 #include <networkit/graph/NodeIterators.hpp>
 
 namespace NetworKit {
-
-/**
- * A unweighted hyperedge
- */
-struct Hyperedge {
-    std::unordered_set<node> nodes;
-
-    Hyperedge() = default;
-
-    Hyperedge(const std::vector<node> &otherNodes) {
-        nodes = std::unordered_set<node>(otherNodes.begin(), otherNodes.end());
-    }
-};
-
-/**
- * A weighted hyperedge
- */
-struct WeightedHyperedge : Hyperedge {
-    edgeweight weight;
-
-    // Needed by cython
-    WeightedHyperedge() : Hyperedge(), weight(std::numeric_limits<edgeweight>::max()) {}
-
-    WeightedHyperedge(const std::vector<node> &otherNodes, edgeweight w)
-        : Hyperedge(otherNodes), weight(w) {}
-};
 
 /**
  * @ingroup graph
@@ -433,9 +408,9 @@ public:
     inline void parallelForNodesImpl(L handle) const;
 
     // For support of API: NetworKit::Hypergraph::NodeIterator
-    using NodeIterator = NodeIteratorBase<Hypergraph>;
+    using NodeIterator = NodeIteratorBase<Hypergraph, node, nodeweight>;
     // For support of API: NetworKit::Hypergraph::NodeRange
-    using NodeRange = NodeRangeBase<Hypergraph>;
+    using NodeRange = NodeRangeBase<Hypergraph, node, nodeweight>;
 
     // For support of API: NetworKit::Hypergraph::NeighborIterator;
     using NeighborIterator = NeighborIteratorBase<std::unordered_set<node>>;
@@ -507,13 +482,13 @@ public:
     void parallelForEdges(L handle) const;
 
     // For support of API: NetworKit::Hypergraph:EdgeIterator
-    using EdgeIterator = EdgeTypeIterator<Hypergraph, Hyperedge>;
+    using EdgeIterator = EdgeWeightTIterator<Hypergraph, node, edgeweight, Hyperedge>;
     // For support of API: NetworKit::Hypergraph:EdgeWeightIterator
-    using EdgeWeightIterator = EdgeTypeIterator<Hypergraph, WeightedHyperedge>;
+    using EdgeWeightIterator = EdgeWeightTIterator<Hypergraph, node, edgeweight, WeightedHyperedge>;
     // For support of API: NetworKit::Hypergraph:EdgeRange
-    using EdgeRange = EdgeTypeRange<Hypergraph, Hyperedge>;
+    using EdgeRange = EdgeWeightTRange<Hypergraph, node, edgeweight, Hyperedge>;
     // For support of API: NetworKit::Hypergraph:EdgeWeightRange
-    using EdgeWeightRange = EdgeTypeRange<Hypergraph, WeightedHyperedge>;
+    using EdgeWeightRange = EdgeWeightTRange<Hypergraph, node, edgeweight, WeightedHyperedge>;
 
     /**
      * @brief Implementation of the for loop for all edges, @see forEdges
