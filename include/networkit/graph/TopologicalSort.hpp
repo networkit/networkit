@@ -9,6 +9,8 @@
 
 #include <optional>
 #include <unordered_map>
+#include <vector>
+
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
@@ -19,14 +21,18 @@ namespace NetworKit {
  * Undirected graphs are not accepted as input, since a topology sort is a linear ordering of
  * vertices such that for every edge u -> v, node u comes before v in the ordering.
  */
-class TopologicalSort final : public Algorithm {
+template <typename GraphT>
+class GenericTopologicalSort final : public Algorithm {
 public:
+    using NodeT = typename GraphT::NodeT;
+    using NodeIdMapping = std::unordered_map<NodeT, index>;
+
     /**
      * Initialize the topological sort algorithm by passing an input graph.
      *
      * @param G The input graph.
      */
-    TopologicalSort(const Graph &G);
+    GenericTopologicalSort(const GraphT &G);
 
     /**
      * Initialize the topological sort algorithm by passing an input graph and an node id map.
@@ -37,8 +43,8 @@ public:
      * @param nodeIdMapping Node id mapping from non-continuous to continuous ids.
      * @param checkMapping Check whether the given node id map is continuous.
      */
-    TopologicalSort(const Graph &G, const std::unordered_map<node, node> &nodeIdMapping,
-                    bool checkMapping = false);
+    GenericTopologicalSort(const GraphT &G, const NodeIdMapping &nodeIdMapping,
+                           bool checkMapping = false);
 
     /**
      * Execute the algorithm. The algorithm is not parallel.
@@ -50,7 +56,7 @@ public:
      *
      * @return One valid topology. Order in topology is from 0 to number of nodes.
      */
-    const std::vector<node> &getResult() const {
+    const std::vector<NodeT> &getResult() const {
         assureFinished();
         return topology;
     }
@@ -58,30 +64,37 @@ public:
 private:
     enum class NodeMark : unsigned char { NONE, TEMP, PERM };
 
-    const Graph &G;
+    const GraphT &G;
 
-    std::optional<std::unordered_map<node, node>> computedNodeIdMap;
+    std::optional<NodeIdMapping> computedNodeIdMap;
 
-    const std::unordered_map<node, node> *nodeIdMap = nullptr;
+    const NodeIdMapping *nodeIdMap = nullptr;
 
     // Used to mark the status of each node, one vector per thread
     std::vector<NodeMark> topSortMark;
 
     // Contains information about the computed topology
-    std::vector<node> topology;
+    std::vector<NodeT> topology;
 
     // Helper structures
     count current;
+
+    static NodeIdMapping computeContinuousNodeIds(const GraphT &G);
 
     void checkDirected();
 
     void checkNodeIdMap();
 
-    node mapNode(node u);
+    index mapNode(NodeT u) const;
 
     // Reset algorithm data structure
     void reset();
 };
+
+using TopologicalSort = GenericTopologicalSort<Graph>;
+
 } // namespace NetworKit
+
+#include <networkit/graph/TopologicalSortImpl.hpp>
 
 #endif // NETWORKIT_GRAPH_TOPOLOGICAL_SORT_HPP_
