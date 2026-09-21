@@ -5,7 +5,6 @@ networkit_add_module(graph
     PrimMSF.cpp
     RandomMaximumSpanningForest.cpp
     SpanningForest.cpp
-    TopologicalSort.cpp
     UnionMaximumSpanningForest.cpp
     DHBGraph.cpp
     )
