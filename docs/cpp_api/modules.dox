@@ -69,6 +69,11 @@
  * @brief Implementations for various input and output formats.
  */
 
+/**
+ * @defgroup isomorphism Subgraph Isomorphism
+ * @brief Algorithms that find every occurrence of a pattern graph in a target graph.
+ */
+
  /**
   * @defgroup linkprediction Link Prediction
   * @brief Algorithms for predicting links in a graph.
