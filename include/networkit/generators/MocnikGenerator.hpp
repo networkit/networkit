@@ -8,7 +8,7 @@
 #ifndef NETWORKIT_GENERATORS_MOCNIK_GENERATOR_HPP_
 #define NETWORKIT_GENERATORS_MOCNIK_GENERATOR_HPP_
 
-#include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/generators/StaticGraphGeneratorBase.hpp>
 
 namespace NetworKit {
 

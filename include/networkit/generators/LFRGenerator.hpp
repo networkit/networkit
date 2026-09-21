@@ -2,7 +2,7 @@
 #define NETWORKIT_GENERATORS_LFR_GENERATOR_HPP_
 
 #include <networkit/base/Algorithm.hpp>
-#include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/generators/StaticGraphGeneratorBase.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/structures/Partition.hpp>
 

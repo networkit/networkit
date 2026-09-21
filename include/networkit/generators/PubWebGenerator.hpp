@@ -10,7 +10,7 @@
 
 #include <vector>
 
-#include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/generators/StaticGraphGeneratorBase.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/viz/Point.hpp>
 
