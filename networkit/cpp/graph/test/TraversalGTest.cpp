@@ -1,16 +1,108 @@
+#include <cstdint>
 #include <queue>
 #include <stack>
+#include <tuple>
+#include <vector>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/VectorComparator.hpp>
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/graph/AdjListGraph.hpp>
 #include <networkit/graph/BFS.hpp>
 #include <networkit/graph/DFS.hpp>
 #include <networkit/graph/Dijkstra.hpp>
 #include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
+
+template <class GraphT_>
+struct BFSTraversalConfig {
+    using GraphT = GraphT_;
+};
+
+template <class TestT>
+class GenericBFSTraversalGTest : public testing::Test {
+public:
+    using GraphT = typename TestT::GraphT;
+    using NodeT = typename GraphT::NodeT;
+    using EdgeWeightT = typename GraphT::EdgeWeightT;
+
+    GraphT unweightedGraph() const {
+        GraphT G(7, false);
+        G.addEdge(NodeT{0}, NodeT{1});
+        G.addEdge(NodeT{0}, NodeT{2});
+        G.addEdge(NodeT{1}, NodeT{3});
+        G.addEdge(NodeT{2}, NodeT{4});
+        G.addEdge(NodeT{3}, NodeT{5});
+        G.addEdge(NodeT{4}, NodeT{6});
+        return G;
+    }
+
+    GraphT weightedGraph() const {
+        GraphT G(7, true);
+        G.addEdge(NodeT{0}, NodeT{1}, EdgeWeightT{10});
+        G.addEdge(NodeT{0}, NodeT{2}, EdgeWeightT{20});
+        G.addEdge(NodeT{1}, NodeT{3}, EdgeWeightT{30});
+        G.addEdge(NodeT{2}, NodeT{4}, EdgeWeightT{40});
+        G.addEdge(NodeT{3}, NodeT{5}, EdgeWeightT{50});
+        G.addEdge(NodeT{4}, NodeT{6}, EdgeWeightT{60});
+        G.addEdge(NodeT{2}, NodeT{3}, EdgeWeightT{70});
+        return G;
+    }
+};
+
+using BFSTraversalTestTypes =
+    ::testing::Types<BFSTraversalConfig<Graph>, BFSTraversalConfig<AdjListGraph<uint32_t, float>>,
+                     BFSTraversalConfig<AdjListGraph<int, int>>>;
+
+TYPED_TEST_SUITE(GenericBFSTraversalGTest, BFSTraversalTestTypes);
+
+TYPED_TEST(GenericBFSTraversalGTest, testBFSfromTypedGraphs) {
+    using NodeT = typename TestFixture::NodeT;
+
+    const auto G = this->unweightedGraph();
+
+    std::vector<NodeT> sourceSequence;
+    std::vector<count> sourceDistances;
+    Traversal::BFSfrom(G, NodeT{0}, [&](NodeT u, count dist) {
+        sourceSequence.push_back(u);
+        sourceDistances.push_back(dist);
+    });
+
+    EXPECT_THAT(sourceSequence, testing::ElementsAre(NodeT{0}, NodeT{1}, NodeT{2}, NodeT{3},
+                                                     NodeT{4}, NodeT{5}, NodeT{6}));
+    EXPECT_THAT(sourceDistances, testing::ElementsAre(0, 1, 1, 2, 2, 3, 3));
+
+    const std::vector<NodeT> sources{NodeT{0}, NodeT{6}};
+    std::vector<NodeT> rangeSequence;
+    Traversal::BFSfrom(G, sources.begin(), sources.end(),
+                       [&](NodeT u) { rangeSequence.push_back(u); });
+
+    EXPECT_THAT(rangeSequence, testing::ElementsAre(NodeT{0}, NodeT{6}, NodeT{1}, NodeT{2},
+                                                    NodeT{4}, NodeT{3}, NodeT{5}));
+}
+
+TYPED_TEST(GenericBFSTraversalGTest, testBFSEdgesFromTypedGraphs) {
+    using NodeT = typename TestFixture::NodeT;
+    using EdgeWeightT = typename TestFixture::EdgeWeightT;
+
+    const auto G = this->weightedGraph();
+    std::vector<std::tuple<NodeT, NodeT, EdgeWeightT>> edgeSequence;
+
+    Traversal::BFSEdgesFrom(G, NodeT{0}, [&](NodeT u, NodeT v, EdgeWeightT w, edgeid) {
+        edgeSequence.emplace_back(u, v, w);
+    });
+
+    EXPECT_THAT(edgeSequence,
+                testing::ElementsAre(std::make_tuple(NodeT{0}, NodeT{1}, EdgeWeightT{10}),
+                                     std::make_tuple(NodeT{0}, NodeT{2}, EdgeWeightT{20}),
+                                     std::make_tuple(NodeT{1}, NodeT{3}, EdgeWeightT{30}),
+                                     std::make_tuple(NodeT{2}, NodeT{4}, EdgeWeightT{40}),
+                                     std::make_tuple(NodeT{3}, NodeT{5}, EdgeWeightT{50}),
+                                     std::make_tuple(NodeT{4}, NodeT{6}, EdgeWeightT{60})));
+}
 
 class TraversalGTest : public testing::TestWithParam<std::pair<bool, bool>> {
 protected:

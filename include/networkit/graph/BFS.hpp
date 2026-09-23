@@ -3,7 +3,9 @@
 #define NETWORKIT_GRAPH_BFS_HPP_
 
 #include <array>
+#include <cassert>
 #include <queue>
+#include <type_traits>
 #include <vector>
 
 #include <networkit/graph/Graph.hpp>
@@ -12,21 +14,33 @@ namespace NetworKit {
 
 namespace Traversal {
 
+namespace Impl {
+
 /**
  * Calls the given BFS handle with distance parameter
  */
-template <class F>
-auto callBFSHandle(F &f, node u, count dist) -> decltype(f(u, dist)) {
+template <class F, class NodeT>
+auto callBFSHandle(F &f, NodeT u, count dist) -> decltype(f(u, dist)) {
     return f(u, dist);
 }
 
 /**
  * Calls the given BFS handle without distance parameter
  */
-template <class F>
-auto callBFSHandle(F &f, node u, count) -> decltype(f(u)) {
+template <class F, class NodeT>
+auto callBFSHandle(F &f, NodeT u, count) -> decltype(f(u)) {
     return f(u);
 }
+
+template <typename NodeT>
+index nodeIndex(NodeT u) {
+    if constexpr (std::is_signed_v<NodeT>) {
+        assert(u >= 0);
+    }
+    return static_cast<index>(u);
+}
+
+} // namespace Impl
 
 /**
  * Iterate over nodes in breadth-first search order starting from the nodes within the given range.
@@ -36,25 +50,27 @@ auto callBFSHandle(F &f, node u, count) -> decltype(f(u)) {
  * @param last The end of the range.
  * @param handle Takes a node as input parameter.
  */
-template <class InputIt, typename L>
-void BFSfrom(const Graph &G, InputIt first, InputIt last, L handle) {
-    std::vector<bool> marked(G.upperNodeIdBound());
-    std::queue<node> q, qNext;
+template <class GraphT, class InputIt, typename L>
+void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
+    using NodeT = typename GraphT::NodeT;
+
+    std::vector<bool> marked(static_cast<index>(G.upperNodeIdBound()));
+    std::queue<NodeT> q, qNext;
     count dist = 0;
     // enqueue start nodes
     for (; first != last; ++first) {
         q.push(*first);
-        marked[*first] = true;
+        marked[Impl::nodeIndex(*first)] = true;
     }
     do {
         const auto u = q.front();
         q.pop();
         // apply function
-        callBFSHandle(handle, u, dist);
-        G.forNeighborsOf(u, [&](node v) {
-            if (!marked[v]) {
+        Impl::callBFSHandle(handle, u, dist);
+        G.forNeighborsOf(u, [&](NodeT v) {
+            if (!marked[Impl::nodeIndex(v)]) {
                 qNext.push(v);
-                marked[v] = true;
+                marked[Impl::nodeIndex(v)] = true;
             }
         });
         if (q.empty() && !qNext.empty()) {
@@ -71,9 +87,11 @@ void BFSfrom(const Graph &G, InputIt first, InputIt last, L handle) {
  * @param source The source node.
  * @param handle Takes a node as input parameter.
  */
-template <typename L>
-void BFSfrom(const Graph &G, node source, L handle) {
-    std::array<node, 1> startNodes{{source}};
+template <class GraphT, typename L>
+void BFSfrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
+    using NodeT = typename GraphT::NodeT;
+
+    std::array<NodeT, 1> startNodes{{source}};
     BFSfrom(G, startNodes.begin(), startNodes.end(), handle);
 }
 
@@ -84,21 +102,24 @@ void BFSfrom(const Graph &G, node source, L handle) {
  * @param source The source node.
  * @param handle Takes a node as input parameter.
  */
-template <typename L>
-void BFSEdgesFrom(const Graph &G, node source, L handle) {
-    std::vector<bool> marked(G.upperNodeIdBound());
-    std::queue<node> q;
+template <class GraphT, typename L>
+void BFSEdgesFrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
+    using NodeT = typename GraphT::NodeT;
+    using EdgeWeightT = typename GraphT::EdgeWeightT;
+
+    std::vector<bool> marked(static_cast<index>(G.upperNodeIdBound()));
+    std::queue<NodeT> q;
     q.push(source); // enqueue root
-    marked[source] = true;
+    marked[Impl::nodeIndex(source)] = true;
     do {
         const auto u = q.front();
         q.pop();
         // apply function
-        G.forNeighborsOf(u, [&](node, node v, edgeweight w, edgeid eid) {
-            if (!marked[v]) {
+        G.forNeighborsOf(u, [&](NodeT, NodeT v, EdgeWeightT w, edgeid eid) {
+            if (!marked[Impl::nodeIndex(v)]) {
                 handle(u, v, w, eid);
                 q.push(v);
-                marked[v] = true;
+                marked[Impl::nodeIndex(v)] = true;
             }
         });
     } while (!q.empty());
