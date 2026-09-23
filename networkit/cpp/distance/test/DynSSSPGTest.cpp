@@ -21,6 +21,14 @@ namespace NetworKit {
 
 class DynSSSPGTest : public testing::Test {};
 
+TEST_F(DynSSSPGTest, testDynDijkstraThrowsForInvalidSource) {
+    Graph emptyGraph(0);
+    EXPECT_THROW(DynDijkstra(emptyGraph, 0), std::runtime_error);
+
+    Graph G(1);
+    EXPECT_THROW(DynDijkstra(G, 5), std::runtime_error);
+}
+
 TEST_F(DynSSSPGTest, testDynamicBFS_1edge) {
     /* Graph:
         0    3   6

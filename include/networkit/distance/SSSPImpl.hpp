@@ -22,7 +22,10 @@ SingleSourceShortestPaths<GraphT>::SingleSourceShortestPaths(const GraphT &G, No
                                                              bool storeNodesSortedByDistance,
                                                              NodeT target)
     : Algorithm(), G(&G), source(source), target(target), storePaths(storePaths),
-      storeNodesSortedByDistance(storeNodesSortedByDistance) {}
+      storeNodesSortedByDistance(storeNodesSortedByDistance) {
+    if (!G.hasNode(source))
+        throw std::runtime_error("Error: node not in the graph.");
+}
 
 template <class GraphT>
 auto SingleSourceShortestPaths<GraphT>::getPath(NodeT t, bool forward) const -> std::vector<NodeT> {
