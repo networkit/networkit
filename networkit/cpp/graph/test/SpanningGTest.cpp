@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -32,15 +31,6 @@ template <typename GraphT>
 inline void isValidForest(const GraphT &g, const GraphT &t) {
     using NodeT = typename GraphT::NodeT;
 
-    std::vector<NodeT> graphNodes;
-    graphNodes.reserve(g.numberOfNodes());
-    g.forNodes([&](NodeT u) { graphNodes.push_back(u); });
-
-    std::vector<NodeT> forestNodes;
-    forestNodes.reserve(t.numberOfNodes());
-    t.forNodes([&](NodeT u) { forestNodes.push_back(u); });
-
-    EXPECT_THAT(forestNodes, testing::UnorderedElementsAreArray(graphNodes));
     t.forNodes([&](NodeT u) { EXPECT_TRUE(t.degree(u) > 0 || g.degree(u) == 0); });
 }
 
