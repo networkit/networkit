@@ -25,6 +25,8 @@ SingleSourceShortestPaths<GraphT>::SingleSourceShortestPaths(const GraphT &G, No
       storeNodesSortedByDistance(storeNodesSortedByDistance) {
     if (!G.hasNode(source))
         throw std::runtime_error("Error: node not in the graph.");
+    if (target != nullNodeId && !G.hasNode(target))
+        throw std::runtime_error("Error: node not in the graph.");
 }
 
 template <class GraphT>
