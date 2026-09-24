@@ -4,6 +4,7 @@
 
 #include <array>
 #include <cassert>
+#include <cstddef>
 #include <queue>
 #include <stdexcept>
 #include <type_traits>
@@ -34,11 +35,11 @@ auto callBFSHandle(F &f, NodeT u, count) -> decltype(f(u)) {
 }
 
 template <typename NodeT>
-index nodeIndex(NodeT u) {
+std::size_t nodeIndex(NodeT u) {
     if constexpr (std::is_signed_v<NodeT>) {
         assert(u >= 0);
     }
-    return static_cast<index>(u);
+    return static_cast<std::size_t>(u);
 }
 
 template <class GraphT, typename NodeT>
@@ -66,14 +67,14 @@ template <class InputIt, typename L, class GraphT>
 void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
     using NodeT = typename GraphT::NodeT;
 
-    std::vector<bool> marked(static_cast<index>(G.upperNodeIdBound()));
+    std::vector<bool> marked(static_cast<std::size_t>(G.upperNodeIdBound()));
     std::queue<NodeT> q, qNext;
     count dist = 0;
     // enqueue start nodes, do not enqueue duplicates
     for (; first != last; ++first) {
         if (!Impl::isValidNode(G, *first))
             throw std::runtime_error("Error: source node not in the graph.");
-        const index uIndex = Impl::nodeIndex(*first);
+        const std::size_t uIndex = Impl::nodeIndex(*first);
         if (!marked[uIndex]) {
             q.push(*first);
             marked[uIndex] = true;
@@ -126,7 +127,7 @@ void BFSEdgesFrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
     using NodeT = typename GraphT::NodeT;
     using EdgeWeightT = typename GraphT::EdgeWeightT;
 
-    std::vector<bool> marked(static_cast<index>(G.upperNodeIdBound()));
+    std::vector<bool> marked(static_cast<std::size_t>(G.upperNodeIdBound()));
     std::queue<NodeT> q;
     if (!Impl::isValidNode(G, source))
         throw std::runtime_error("Error: source node not in the graph.");

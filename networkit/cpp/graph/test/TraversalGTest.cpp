@@ -19,6 +19,11 @@
 
 namespace NetworKit {
 
+namespace {
+
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+
 template <class GraphT_>
 struct BFSTraversalConfig {
     using GraphT = GraphT_;
@@ -97,17 +102,17 @@ TYPED_TEST(GenericBFSTraversalGTest, testBFSfromTypedGraphs) {
         sourceDistances.push_back(dist);
     });
 
-    EXPECT_THAT(sourceSequence, testing::ElementsAre(NodeT{0}, NodeT{1}, NodeT{2}, NodeT{3},
-                                                     NodeT{4}, NodeT{5}, NodeT{6}));
-    EXPECT_THAT(sourceDistances, testing::ElementsAre(0, 1, 1, 2, 2, 3, 3));
+    EXPECT_THAT(sourceSequence,
+                ElementsAre(NodeT{0}, NodeT{1}, NodeT{2}, NodeT{3}, NodeT{4}, NodeT{5}, NodeT{6}));
+    EXPECT_THAT(sourceDistances, ElementsAre(0, 1, 1, 2, 2, 3, 3));
 
     const std::vector<NodeT> sources{NodeT{0}, NodeT{6}};
     std::vector<NodeT> rangeSequence;
     Traversal::BFSfrom(G, sources.begin(), sources.end(),
                        [&](NodeT u) { rangeSequence.push_back(u); });
 
-    EXPECT_THAT(rangeSequence, testing::ElementsAre(NodeT{0}, NodeT{6}, NodeT{1}, NodeT{2},
-                                                    NodeT{4}, NodeT{3}, NodeT{5}));
+    EXPECT_THAT(rangeSequence,
+                ElementsAre(NodeT{0}, NodeT{6}, NodeT{1}, NodeT{2}, NodeT{4}, NodeT{3}, NodeT{5}));
 }
 
 TYPED_TEST(GenericBFSTraversalGTest, testBFSfromEmptySourceRange) {
@@ -135,8 +140,8 @@ TYPED_TEST(GenericBFSTraversalGTest, testBFSfromDuplicateSources) {
         distances.push_back(dist);
     });
 
-    EXPECT_THAT(sequence, testing::ElementsAre(NodeT{0}, NodeT{2}, NodeT{1}, NodeT{3}, NodeT{4}));
-    EXPECT_THAT(distances, testing::ElementsAre(0, 0, 1, 1, 2));
+    EXPECT_THAT(sequence, ElementsAre(NodeT{0}, NodeT{2}, NodeT{1}, NodeT{3}, NodeT{4}));
+    EXPECT_THAT(distances, ElementsAre(0, 0, 1, 1, 2));
 }
 
 TYPED_TEST(GenericBFSTraversalGTest, testBFSfromInvalidSources) {
@@ -175,8 +180,8 @@ TYPED_TEST(GenericBFSTraversalGTest, testBFSfromMultiSourceDistances) {
         distances.push_back(dist);
     });
 
-    EXPECT_THAT(sequence, testing::ElementsAre(NodeT{0}, NodeT{4}, NodeT{1}, NodeT{3}, NodeT{2}));
-    EXPECT_THAT(distances, testing::ElementsAre(0, 0, 1, 1, 2));
+    EXPECT_THAT(sequence, ElementsAre(NodeT{0}, NodeT{4}, NodeT{1}, NodeT{3}, NodeT{2}));
+    EXPECT_THAT(distances, ElementsAre(0, 0, 1, 1, 2));
 }
 
 TYPED_TEST(GenericBFSTraversalGTest, testBFSfromDirectedGraph) {
@@ -186,7 +191,7 @@ TYPED_TEST(GenericBFSTraversalGTest, testBFSfromDirectedGraph) {
     std::vector<NodeT> sequence;
     Traversal::BFSfrom(G, NodeT{0}, [&](NodeT u) { sequence.push_back(u); });
 
-    EXPECT_THAT(sequence, testing::ElementsAre(NodeT{0}, NodeT{1}, NodeT{2}, NodeT{4}));
+    EXPECT_THAT(sequence, ElementsAre(NodeT{0}, NodeT{1}, NodeT{2}, NodeT{4}));
 }
 
 TYPED_TEST(GenericBFSTraversalGTest, testBFSEdgesFromTypedGraphs) {
@@ -203,7 +208,7 @@ TYPED_TEST(GenericBFSTraversalGTest, testBFSEdgesFromTypedGraphs) {
 
     EXPECT_THAT(
         edgeSequence,
-        testing::ElementsAre(
+        ElementsAre(
             std::make_tuple(NodeT{0}, NodeT{1}, EdgeWeightT{10}, G.edgeId(NodeT{0}, NodeT{1})),
             std::make_tuple(NodeT{0}, NodeT{2}, EdgeWeightT{20}, G.edgeId(NodeT{0}, NodeT{2})),
             std::make_tuple(NodeT{1}, NodeT{3}, EdgeWeightT{30}, G.edgeId(NodeT{1}, NodeT{3})),
@@ -230,18 +235,17 @@ TYPED_TEST(GenericBFSTraversalGTest, testBFSEdgesFromCornerCases) {
         edgeSequence.emplace_back(u, v, w, eid);
     });
 
-    EXPECT_THAT(
-        edgeSequence,
-        testing::ElementsAre(
-            std::make_tuple(NodeT{0}, NodeT{1}, EdgeWeightT{20}, G.edgeId(NodeT{0}, NodeT{1})),
-            std::make_tuple(NodeT{0}, NodeT{2}, EdgeWeightT{30}, G.edgeId(NodeT{0}, NodeT{2}))));
+    EXPECT_THAT(edgeSequence, ElementsAre(std::make_tuple(NodeT{0}, NodeT{1}, EdgeWeightT{20},
+                                                          G.edgeId(NodeT{0}, NodeT{1})),
+                                          std::make_tuple(NodeT{0}, NodeT{2}, EdgeWeightT{30},
+                                                          G.edgeId(NodeT{0}, NodeT{2}))));
 
     edgeSequence.clear();
     Traversal::BFSEdgesFrom(G, NodeT{4}, [&](NodeT u, NodeT v, EdgeWeightT w, edgeid eid) {
         edgeSequence.emplace_back(u, v, w, eid);
     });
 
-    EXPECT_THAT(edgeSequence, testing::IsEmpty());
+    EXPECT_THAT(edgeSequence, IsEmpty());
 }
 
 TYPED_TEST(GenericBFSTraversalGTest, testBFSEdgesFromInvalidSource) {
@@ -253,6 +257,8 @@ TYPED_TEST(GenericBFSTraversalGTest, testBFSEdgesFromInvalidSource) {
                                          [](NodeT, NodeT, EdgeWeightT, edgeid) {}),
                  std::runtime_error);
 }
+
+} // namespace
 
 class TraversalGTest : public testing::TestWithParam<std::pair<bool, bool>> {
 protected:
