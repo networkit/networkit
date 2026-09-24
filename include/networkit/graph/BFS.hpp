@@ -5,6 +5,7 @@
 #include <array>
 #include <cassert>
 #include <queue>
+#include <stdexcept>
 #include <type_traits>
 #include <vector>
 
@@ -40,6 +41,15 @@ index nodeIndex(NodeT u) {
     return static_cast<index>(u);
 }
 
+template <class GraphT, typename NodeT>
+bool isValidNode(const GraphT &G, NodeT u) {
+    if constexpr (std::is_signed_v<NodeT>) {
+        if (u < 0)
+            return false;
+    }
+    return G.hasNode(u);
+}
+
 } // namespace Impl
 
 /**
@@ -50,6 +60,7 @@ index nodeIndex(NodeT u) {
  * @param first The first element of the start node range.
  * @param last The end of the start node range.
  * @param handle Takes a node, or a node and its distance from the nearest start node.
+ * @throws std::runtime_error If a start node is not in the graph.
  */
 template <class GraphT, class InputIt, typename L>
 void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
@@ -60,6 +71,8 @@ void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
     count dist = 0;
     // enqueue start nodes, do not enqueue duplicates
     for (; first != last; ++first) {
+        if (!Impl::isValidNode(G, *first))
+            throw std::runtime_error("Error: source node not in the graph.");
         const index uIndex = Impl::nodeIndex(*first);
         if (!marked[uIndex]) {
             q.push(*first);
@@ -90,6 +103,7 @@ void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
  * @param G The input graph.
  * @param source The source node.
  * @param handle Takes a node as input parameter.
+ * @throws std::runtime_error If the source node is not in the graph.
  */
 template <class GraphT, typename L>
 void BFSfrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
@@ -105,6 +119,7 @@ void BFSfrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
  * @param G The input graph.
  * @param source The source node.
  * @param handle Takes a node as input parameter.
+ * @throws std::runtime_error If the source node is not in the graph.
  */
 template <class GraphT, typename L>
 void BFSEdgesFrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
@@ -113,6 +128,8 @@ void BFSEdgesFrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
 
     std::vector<bool> marked(static_cast<index>(G.upperNodeIdBound()));
     std::queue<NodeT> q;
+    if (!Impl::isValidNode(G, source))
+        throw std::runtime_error("Error: source node not in the graph.");
     q.push(source); // enqueue root
     marked[Impl::nodeIndex(source)] = true;
     do {
