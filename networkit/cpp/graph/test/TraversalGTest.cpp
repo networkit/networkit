@@ -82,7 +82,8 @@ using BFSTraversalTestTypes =
                      BFSTraversalConfig<AdjListGraph<int32_t, double>>,
                      BFSTraversalConfig<AdjListGraph<int64_t, float>>>;
 
-TYPED_TEST_SUITE(GenericBFSTraversalGTest, BFSTraversalTestTypes);
+TYPED_TEST_SUITE(GenericBFSTraversalGTest, BFSTraversalTestTypes,
+                 /*Comma needed for variadic macro.*/);
 
 TYPED_TEST(GenericBFSTraversalGTest, testBFSfromTypedGraphs) {
     using NodeT = typename TestFixture::NodeT;

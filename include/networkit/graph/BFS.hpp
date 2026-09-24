@@ -62,7 +62,7 @@ bool isValidNode(const GraphT &G, NodeT u) {
  * @param handle Takes a node, or a node and its distance from the nearest start node.
  * @throws std::runtime_error If a start node is not in the graph.
  */
-template <class GraphT, class InputIt, typename L>
+template <class InputIt, typename L, class GraphT>
 void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
     using NodeT = typename GraphT::NodeT;
 
@@ -105,7 +105,7 @@ void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
  * @param handle Takes a node as input parameter.
  * @throws std::runtime_error If the source node is not in the graph.
  */
-template <class GraphT, typename L>
+template <typename L, class GraphT>
 void BFSfrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
     using NodeT = typename GraphT::NodeT;
 
@@ -121,7 +121,7 @@ void BFSfrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
  * @param handle Takes a node as input parameter.
  * @throws std::runtime_error If the source node is not in the graph.
  */
-template <class GraphT, typename L>
+template <typename L, class GraphT>
 void BFSEdgesFrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
     using NodeT = typename GraphT::NodeT;
     using EdgeWeightT = typename GraphT::EdgeWeightT;
