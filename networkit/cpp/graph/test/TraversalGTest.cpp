@@ -1,5 +1,4 @@
 #include <cstdint>
-#include <cstdlib>
 #include <queue>
 #include <stack>
 #include <tuple>
@@ -110,13 +109,10 @@ TYPED_TEST(GenericBFSTraversalGTest, testBFSfromEmptySourceRange) {
     const auto G = this->unweightedGraph();
     const std::vector<NodeT> sources;
 
-    EXPECT_EXIT(
-        {
-            count calls = 0;
-            Traversal::BFSfrom(G, sources.begin(), sources.end(), [&](NodeT) { ++calls; });
-            std::exit(calls == 0 ? 0 : 1);
-        },
-        testing::ExitedWithCode(0), "");
+    count calls = 0;
+    Traversal::BFSfrom(G, sources.begin(), sources.end(), [&](NodeT) { ++calls; });
+
+    EXPECT_EQ(calls, 0);
 }
 
 TYPED_TEST(GenericBFSTraversalGTest, testBFSfromDuplicateSources) {

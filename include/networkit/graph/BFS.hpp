@@ -43,12 +43,13 @@ index nodeIndex(NodeT u) {
 } // namespace Impl
 
 /**
- * Iterate over nodes in breadth-first search order starting from the nodes within the given range.
+ * Iterate over nodes in breadth-first search order starting from the unique nodes within the
+ * given range. All start nodes are visited at distance 0. Duplicate start nodes are ignored.
  *
  * @param G The input graph.
- * @param first The first element of the range.
- * @param last The end of the range.
- * @param handle Takes a node as input parameter.
+ * @param first The first element of the start node range.
+ * @param last The end of the start node range.
+ * @param handle Takes a node, or a node and its distance from the nearest start node.
  */
 template <class GraphT, class InputIt, typename L>
 void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
@@ -57,12 +58,15 @@ void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
     std::vector<bool> marked(static_cast<index>(G.upperNodeIdBound()));
     std::queue<NodeT> q, qNext;
     count dist = 0;
-    // enqueue start nodes
+    // enqueue start nodes, do not enqueue duplicates
     for (; first != last; ++first) {
-        q.push(*first);
-        marked[Impl::nodeIndex(*first)] = true;
+        const index uIndex = Impl::nodeIndex(*first);
+        if (!marked[uIndex]) {
+            q.push(*first);
+            marked[uIndex] = true;
+        }
     }
-    do {
+    while (!q.empty()) {
         const auto u = q.front();
         q.pop();
         // apply function
@@ -77,7 +81,7 @@ void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
             q.swap(qNext);
             ++dist;
         }
-    } while (!q.empty());
+    }
 }
 
 /**
