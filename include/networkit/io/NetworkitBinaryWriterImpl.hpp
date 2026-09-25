@@ -96,10 +96,11 @@ void NetworkitBinaryWriter::writeData(StreamT &outStream, const GraphT &G) {
             (G.isDirected() & nkbg::DIR_MASK)
             | ((static_cast<uint64_t>(weightFormat) << nkbg::WGHT_SHIFT) & nkbg::WGHT_MASK)
             | ((static_cast<uint64_t>(preserveEdgeIndex) << nkbg::INDEX_SHIFT) & nkbg::INDEX_MASK)
-            | ((static_cast<uint64_t>(nkbg::widthCode(sizeof(NodeT)))
+            | ((static_cast<uint64_t>(nkbg::byteWidthToWidthCode(sizeof(NodeT)))
                 << nkbg::NODE_TYPE_WIDTH_SHIFT)
                & nkbg::NODE_TYPE_WIDTH_MASK)
-            | ((static_cast<uint64_t>(nkbg::widthCode(tableWidth)) << nkbg::TABLE_WIDTH_SHIFT)
+            | ((static_cast<uint64_t>(nkbg::byteWidthToWidthCode(tableWidth))
+                << nkbg::TABLE_WIDTH_SHIFT)
                & nkbg::TABLE_WIDTH_MASK);
     };
 
@@ -277,7 +278,7 @@ void NetworkitBinaryWriter::writeData(StreamT &outStream, const GraphT &G) {
                                   transpWeightSize, adjIndexSize, transpIndexSize});
     }
 
-    const uint8_t tableWidth = nkbg::getFitWidthBytes(maxTableValue);
+    const uint8_t tableWidth = nkbg::requiredUintByteWidth(maxTableValue);
     strncpy(header.magic, FILE_FORMAT, 8);
     header.checksum = 0;
     setFeatures(tableWidth);
@@ -321,11 +322,11 @@ void NetworkitBinaryWriter::writeData(StreamT &outStream, const GraphT &G) {
 
     assert(!firstInChunk[0]);
     for (uint64_t c = 1; c < chunks; c++)
-        nkbg::writeUint(outStream, firstInChunk[c], tableWidth);
+        nkbg::writeFixedWidthUintLE(outStream, firstInChunk[c], tableWidth);
 
     for (uint64_t c = 1; c < chunks; c++)
-        nkbg::writeUint(outStream, adjOffsets[c - 1], tableWidth);
-    nkbg::writeUint(outStream, adjListSize, tableWidth);
+        nkbg::writeFixedWidthUintLE(outStream, adjOffsets[c - 1], tableWidth);
+    nkbg::writeFixedWidthUintLE(outStream, adjListSize, tableWidth);
     for (uint64_t u64 = 0; u64 < nodes; ++u64) {
         const NodeT u = static_cast<NodeT>(u64);
         uint8_t tmp[10];
@@ -342,8 +343,8 @@ void NetworkitBinaryWriter::writeData(StreamT &outStream, const GraphT &G) {
     }
 
     for (uint64_t c = 1; c < chunks; c++)
-        nkbg::writeUint(outStream, transpOffsets[c - 1], tableWidth);
-    nkbg::writeUint(outStream, adjTransposeSize, tableWidth);
+        nkbg::writeFixedWidthUintLE(outStream, transpOffsets[c - 1], tableWidth);
+    nkbg::writeFixedWidthUintLE(outStream, adjTransposeSize, tableWidth);
     for (uint64_t u64 = 0; u64 < nodes; ++u64) {
         const NodeT u = static_cast<NodeT>(u64);
         uint8_t tmp[10];
@@ -367,7 +368,7 @@ void NetworkitBinaryWriter::writeData(StreamT &outStream, const GraphT &G) {
     }
 
     for (uint64_t c = 1; c < chunks; c++)
-        nkbg::writeUint(outStream, adjWghtOffsets[c - 1], tableWidth);
+        nkbg::writeFixedWidthUintLE(outStream, adjWghtOffsets[c - 1], tableWidth);
     for (uint64_t u64 = 0; u64 < nodes; ++u64) {
         const NodeT u = static_cast<NodeT>(u64);
         if (!G.hasNode(u))
@@ -380,7 +381,7 @@ void NetworkitBinaryWriter::writeData(StreamT &outStream, const GraphT &G) {
     }
 
     for (uint64_t c = 1; c < chunks; c++)
-        nkbg::writeUint(outStream, transpWghtOffsets[c - 1], tableWidth);
+        nkbg::writeFixedWidthUintLE(outStream, transpWghtOffsets[c - 1], tableWidth);
     for (uint64_t u64 = 0; u64 < nodes; ++u64) {
         const NodeT u = static_cast<NodeT>(u64);
         if (!G.hasNode(u))
@@ -397,7 +398,7 @@ void NetworkitBinaryWriter::writeData(StreamT &outStream, const GraphT &G) {
     }
 
     for (uint64_t c = 1; c < chunks; c++)
-        nkbg::writeUint(outStream, adjIndexOffsets[c - 1], tableWidth);
+        nkbg::writeFixedWidthUintLE(outStream, adjIndexOffsets[c - 1], tableWidth);
     if (preserveEdgeIndex) {
         for (uint64_t u64 = 0; u64 < nodes; ++u64) {
             const NodeT u = static_cast<NodeT>(u64);
@@ -414,7 +415,7 @@ void NetworkitBinaryWriter::writeData(StreamT &outStream, const GraphT &G) {
     }
 
     for (uint64_t c = 1; c < chunks; c++)
-        nkbg::writeUint(outStream, transpIndexOffsets[c - 1], tableWidth);
+        nkbg::writeFixedWidthUintLE(outStream, transpIndexOffsets[c - 1], tableWidth);
     if (preserveEdgeIndex) {
         for (uint64_t u64 = 0; u64 < nodes; ++u64) {
             const NodeT u = static_cast<NodeT>(u64);

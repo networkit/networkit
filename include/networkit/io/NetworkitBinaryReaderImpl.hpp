@@ -27,27 +27,9 @@ inline const char *accessData(const std::vector<uint8_t> &source) {
 }
 } // namespace nkbg
 
-template <class GraphT>
-GraphT NetworkitBinaryReader::read(std::string_view path) {
-    MemoryMappedFile mmfile(path);
-    return readData<GraphT>(mmfile);
-}
-
-template <class GraphT>
-GraphT NetworkitBinaryReader::readFromBuffer(const std::vector<uint8_t> &data) {
-    return readData<GraphT>(data);
-}
-
-inline AnyBinaryGraph NetworkitBinaryReader::readCompact(std::string_view path) {
-    MemoryMappedFile mmfile(path);
-    return readCompactData(mmfile);
-}
-
 template <class T>
-AnyBinaryGraph NetworkitBinaryReader::readCompactData(const T &source) {
+nkbg::Header NetworkitBinaryReader::readHeader(const T &source) {
     nkbg::Header header;
-    nkbg::WeightFormat weightFormat;
-
     const char *startIt = nkbg::accessData(source);
     const char *it = startIt;
     memcpy(&header.magic, it, sizeof(uint64_t));
@@ -68,13 +50,17 @@ AnyBinaryGraph NetworkitBinaryReader::readCompactData(const T &source) {
         throw std::runtime_error("Reader expected another magic value");
     }
 
-    weightFormat =
-        static_cast<nkbg::WeightFormat>((header.features & nkbg::WGHT_MASK) >> nkbg::WGHT_SHIFT);
+    directed = (header.features & nkbg::DIR_MASK);
+    const auto weightFormatCode = (header.features & nkbg::WGHT_MASK) >> nkbg::WGHT_SHIFT;
+    weightFormat = static_cast<nkbg::WeightFormat>(weightFormatCode);
+    if (version >= 3)
+        indexed = (header.features & nkbg::INDEX_MASK) >> nkbg::INDEX_SHIFT;
     tableWidth = 8;
-    if (version >= 5)
-        tableWidth = nkbg::widthBytes(static_cast<uint8_t>(
-            (header.features & nkbg::TABLE_WIDTH_MASK) >> nkbg::TABLE_WIDTH_SHIFT));
-
+    if (version >= 5) {
+        const auto tableWidthCode =
+            (header.features & nkbg::TABLE_WIDTH_MASK) >> nkbg::TABLE_WIDTH_SHIFT;
+        tableWidth = nkbg::widthCodeToByteWidth(static_cast<uint8_t>(tableWidthCode));
+    }
     memcpy(&header.nodes, it, sizeof(uint64_t));
     it += sizeof(uint64_t);
     memcpy(&header.chunks, it, sizeof(uint64_t));
@@ -94,146 +80,126 @@ AnyBinaryGraph NetworkitBinaryReader::readCompactData(const T &source) {
         it += sizeof(uint64_t);
         memcpy(&header.offsetAdjIdTranspose, it, sizeof(uint64_t));
     }
+    return header;
+}
+
+template <class GraphT>
+GraphT NetworkitBinaryReader::read(std::string_view path) {
+    MemoryMappedFile mmfile(path);
+    return readSource<GraphT>(mmfile);
+}
+
+template <class GraphT>
+GraphT NetworkitBinaryReader::readFromBuffer(const std::vector<uint8_t> &data) {
+    return readSource<GraphT>(data);
+}
+
+inline AnyBinaryGraph NetworkitBinaryReader::readCompact(std::string_view path) {
+    MemoryMappedFile mmfile(path);
+    return readSourceCompact(mmfile);
+}
+
+template <class T>
+AnyBinaryGraph NetworkitBinaryReader::readSourceCompact(const T &source) {
+    auto header = readHeader(source);
 
     uint64_t maxUnsignedWeight = 1;
     int64_t minSignedWeight = 1;
     int64_t maxSignedWeight = 1;
-    if (header.nodes && weightFormat == nkbg::WeightFormat::VARINT) {
+    const bool signedWeights = weightFormat == nkbg::WeightFormat::SIGNED_VARINT;
+    const char *startIt = nkbg::accessData(source);
+    const char *it = startIt;
+    if (header.nodes && (weightFormat == nkbg::WeightFormat::VARINT || signedWeights)) {
+
         const char *adjIt = startIt + header.offsetAdjLists;
         const uint64_t weights =
-            nkbg::readUint(adjIt + (header.chunks - 1) * tableWidth, tableWidth);
+            nkbg::readFixedWidthUintLE(adjIt + (header.chunks - 1) * tableWidth, tableWidth);
+
         uint64_t weightOff = (header.chunks - 1) * tableWidth;
         const char *weightIt = startIt + header.offsetWeightLists;
-        for (uint64_t i = 0; i < weights; ++i) {
-            uint64_t weight;
-            weightOff +=
-                nkbg::varIntDecode(reinterpret_cast<const uint8_t *>(weightIt + weightOff), weight);
-            maxUnsignedWeight = std::max(maxUnsignedWeight, weight);
-        }
-    } else if (header.nodes && weightFormat == nkbg::WeightFormat::SIGNED_VARINT) {
-        const char *adjIt = startIt + header.offsetAdjLists;
-        const uint64_t weights =
-            nkbg::readUint(adjIt + (header.chunks - 1) * tableWidth, tableWidth);
-        uint64_t weightOff = (header.chunks - 1) * tableWidth;
-        const char *weightIt = startIt + header.offsetWeightLists;
+
         for (uint64_t i = 0; i < weights; ++i) {
             uint64_t encodedWeight;
             weightOff += nkbg::varIntDecode(reinterpret_cast<const uint8_t *>(weightIt + weightOff),
                                             encodedWeight);
-            const int64_t weight = nkbg::zigzagDecode(encodedWeight);
-            minSignedWeight = std::min(minSignedWeight, weight);
-            maxSignedWeight = std::max(maxSignedWeight, weight);
+
+            if (signedWeights) {
+                const int64_t weight = nkbg::zigzagDecode(encodedWeight);
+                minSignedWeight = std::min(minSignedWeight, weight);
+                maxSignedWeight = std::max(maxSignedWeight, weight);
+            } else {
+                maxUnsignedWeight = std::max(maxUnsignedWeight, encodedWeight);
+            }
         }
     }
 
-    if (header.nodes <= static_cast<uint64_t>(std::numeric_limits<uint8_t>::max()))
-        return readCompactDataWithNodeType<T, uint8_t>(source, weightFormat, minSignedWeight,
-                                                       maxSignedWeight, maxUnsignedWeight);
-    if (header.nodes <= static_cast<uint64_t>(std::numeric_limits<uint16_t>::max()))
-        return readCompactDataWithNodeType<T, uint16_t>(source, weightFormat, minSignedWeight,
-                                                        maxSignedWeight, maxUnsignedWeight);
-    if (header.nodes <= static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()))
-        return readCompactDataWithNodeType<T, uint32_t>(source, weightFormat, minSignedWeight,
-                                                        maxSignedWeight, maxUnsignedWeight);
-    return readCompactDataWithNodeType<T, uint64_t>(source, weightFormat, minSignedWeight,
+    // Detect node id bit width
+    nodeWidth = 8;
+    if (version >= 5)
+        nodeWidth = nkbg::widthCodeToByteWidth(static_cast<uint8_t>(
+            (header.features & nkbg::NODE_TYPE_WIDTH_MASK) >> nkbg::NODE_TYPE_WIDTH_SHIFT));
+
+    if (nodeWidth == 1)
+        return readCompactDataWithNodeType<T, uint8_t>(
+            header, source, weightFormat, minSignedWeight, maxSignedWeight, maxUnsignedWeight);
+    if (nodeWidth == 2)
+        return readCompactDataWithNodeType<T, uint16_t>(
+            header, source, weightFormat, minSignedWeight, maxSignedWeight, maxUnsignedWeight);
+    if (nodeWidth == 4)
+        return readCompactDataWithNodeType<T, uint32_t>(
+            header, source, weightFormat, minSignedWeight, maxSignedWeight, maxUnsignedWeight);
+    return readCompactDataWithNodeType<T, uint64_t>(header, source, weightFormat, minSignedWeight,
                                                     maxSignedWeight, maxUnsignedWeight);
 }
 
+// Detect edgeweight bit width
 template <class T, class NodeT>
-AnyBinaryGraph
-NetworkitBinaryReader::readCompactDataWithNodeType(const T &source, nkbg::WeightFormat weightFormat,
-                                                   int64_t minSignedWeight, int64_t maxSignedWeight,
-                                                   uint64_t maxUnsignedWeight) {
+AnyBinaryGraph NetworkitBinaryReader::readCompactDataWithNodeType(
+    const nkbg::Header &header, const T &source, nkbg::WeightFormat weightFormat,
+    int64_t minSignedWeight, int64_t maxSignedWeight, uint64_t maxUnsignedWeight) {
     switch (weightFormat) {
     case nkbg::WeightFormat::VARINT:
     case nkbg::WeightFormat::NONE:
         if (maxUnsignedWeight <= static_cast<uint64_t>(std::numeric_limits<uint8_t>::max()))
-            return readData<AdjListGraph<NodeT, uint8_t>>(source);
+            return readData<AdjListGraph<NodeT, uint8_t>>(header, source);
         if (maxUnsignedWeight <= static_cast<uint64_t>(std::numeric_limits<uint16_t>::max()))
-            return readData<AdjListGraph<NodeT, uint16_t>>(source);
+            return readData<AdjListGraph<NodeT, uint16_t>>(header, source);
         if (maxUnsignedWeight <= static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()))
-            return readData<AdjListGraph<NodeT, uint32_t>>(source);
-        return readData<AdjListGraph<NodeT, uint64_t>>(source);
+            return readData<AdjListGraph<NodeT, uint32_t>>(header, source);
+        return readData<AdjListGraph<NodeT, uint64_t>>(header, source);
     case nkbg::WeightFormat::SIGNED_VARINT:
         if (minSignedWeight >= static_cast<int64_t>(std::numeric_limits<int8_t>::min())
             && maxSignedWeight <= static_cast<int64_t>(std::numeric_limits<int8_t>::max()))
-            return readData<AdjListGraph<NodeT, int8_t>>(source);
+            return readData<AdjListGraph<NodeT, int8_t>>(header, source);
         if (minSignedWeight >= static_cast<int64_t>(std::numeric_limits<int16_t>::min())
             && maxSignedWeight <= static_cast<int64_t>(std::numeric_limits<int16_t>::max()))
-            return readData<AdjListGraph<NodeT, int16_t>>(source);
+            return readData<AdjListGraph<NodeT, int16_t>>(header, source);
         if (minSignedWeight >= static_cast<int64_t>(std::numeric_limits<int32_t>::min())
             && maxSignedWeight <= static_cast<int64_t>(std::numeric_limits<int32_t>::max()))
-            return readData<AdjListGraph<NodeT, int32_t>>(source);
-        return readData<AdjListGraph<NodeT, int64_t>>(source);
+            return readData<AdjListGraph<NodeT, int32_t>>(header, source);
+        return readData<AdjListGraph<NodeT, int64_t>>(header, source);
     case nkbg::WeightFormat::FLOAT:
-        return readData<AdjListGraph<NodeT, float>>(source);
+        return readData<AdjListGraph<NodeT, float>>(header, source);
     case nkbg::WeightFormat::DOUBLE:
-        return readData<AdjListGraph<NodeT, double>>(source);
+        return readData<AdjListGraph<NodeT, double>>(header, source);
     }
     throw std::runtime_error("Unsupported NetworkitBinaryGraph weight format");
 }
 
 template <class GraphT, class T>
-GraphT NetworkitBinaryReader::readData(const T &source) {
+GraphT readSource(const T &source) {
+    auto header = readHeader(source);
+    return readData<GraphT>(header, source);
+}
+
+template <class GraphT, class T>
+GraphT NetworkitBinaryReader::readData(const nkbg::Header &header, const T &source) {
     using NodeT = typename GraphT::NodeT;
     using EdgeWeightT = typename GraphT::EdgeWeightT;
 
-    nkbg::Header header;
-    nkbg::WeightFormat weightFormat;
-
     const char *startIt = nkbg::accessData(source);
     const char *it = startIt;
-    auto readHeader = [&]() {
-        memcpy(&header.magic, it, sizeof(uint64_t));
-        it += sizeof(uint64_t);
-        memcpy(&header.checksum, it, sizeof(uint64_t));
-        it += sizeof(uint64_t);
-        memcpy(&header.features, it, sizeof(uint64_t));
-        it += sizeof(uint64_t);
-        if (!memcmp("nkbg002", header.magic, 8)) {
-            version = 2;
-        } else if (!memcmp("nkbg003", header.magic, 8)) {
-            version = 3;
-        } else if (!memcmp("nkbg004", header.magic, 8)) {
-            version = 4;
-        } else if (!memcmp("nkbg005", header.magic, 8)) {
-            version = 5;
-        } else {
-            throw std::runtime_error("Reader expected another magic value");
-        }
-        directed = (header.features & nkbg::DIR_MASK);
-        weightFormat = static_cast<nkbg::WeightFormat>((header.features & nkbg::WGHT_MASK)
-                                                       >> nkbg::WGHT_SHIFT);
-        indexed = false;
-        if (version >= 3)
-            indexed = (header.features & nkbg::INDEX_MASK) >> nkbg::INDEX_SHIFT;
-        tableWidth = 8;
-        if (version >= 5)
-            tableWidth = nkbg::widthBytes(static_cast<uint8_t>(
-                (header.features & nkbg::TABLE_WIDTH_MASK) >> nkbg::TABLE_WIDTH_SHIFT));
-        memcpy(&header.nodes, it, sizeof(uint64_t));
-        it += sizeof(uint64_t);
-        memcpy(&header.chunks, it, sizeof(uint64_t));
-        it += sizeof(uint64_t);
-        memcpy(&header.offsetBaseData, it, sizeof(uint64_t));
-        it += sizeof(uint64_t);
-        memcpy(&header.offsetAdjLists, it, sizeof(uint64_t));
-        it += sizeof(uint64_t);
-        memcpy(&header.offsetAdjTranspose, it, sizeof(uint64_t));
-        it += sizeof(uint64_t);
-        memcpy(&header.offsetWeightLists, it, sizeof(uint64_t));
-        it += sizeof(uint64_t);
-        memcpy(&header.offsetWeightTranspose, it, sizeof(uint64_t));
-        it += sizeof(uint64_t);
-        if (version > 2) {
-            memcpy(&header.offsetAdjIdLists, it, sizeof(uint64_t));
-            it += sizeof(uint64_t);
-            memcpy(&header.offsetAdjIdTranspose, it, sizeof(uint64_t));
-            it += sizeof(uint64_t);
-        }
-    };
 
-    readHeader();
     nodes = header.nodes;
     chunks = header.chunks;
     if (nodes > static_cast<uint64_t>(std::numeric_limits<NodeT>::max()))
@@ -258,7 +224,7 @@ GraphT NetworkitBinaryReader::readData(const T &source) {
     std::vector<uint64_t> firstVert;
     firstVert.push_back(0);
     for (uint64_t ch = 1; ch < chunks; ch++) {
-        firstVert.push_back(nkbg::readUint(baseIt, tableWidth));
+        firstVert.push_back(nkbg::readFixedWidthUintLE(baseIt, tableWidth));
         baseIt += tableWidth;
     }
     firstVert.push_back(nodes);
@@ -269,11 +235,12 @@ GraphT NetworkitBinaryReader::readData(const T &source) {
     const char *transpWghtIt = startIt + header.offsetWeightTranspose;
     const char *adjIdIt = (version > 2) ? startIt + header.offsetAdjIdLists : nullptr;
     const char *transpIdIt = (version > 2) ? startIt + header.offsetAdjIdTranspose : nullptr;
-    const uint64_t adjListSize = nkbg::readUint(adjIt + (chunks - 1) * tableWidth, tableWidth);
+    const uint64_t adjListSize =
+        nkbg::readFixedWidthUintLE(adjIt + (chunks - 1) * tableWidth, tableWidth);
 
     if (!directed) {
         [[maybe_unused]] const uint64_t transposeListSize =
-            nkbg::readUint(transpIt + (chunks - 1) * tableWidth, tableWidth);
+            nkbg::readFixedWidthUintLE(transpIt + (chunks - 1) * tableWidth, tableWidth);
         assert(adjListSize == transposeListSize);
     }
 
@@ -291,13 +258,15 @@ GraphT NetworkitBinaryReader::readData(const T &source) {
         uint64_t indexOff = 0;
         uint64_t transIndexOff = 0;
         if (vertex) {
-            off = nkbg::readUint(adjIt + (c - 1) * tableWidth, tableWidth);
-            transpOff = nkbg::readUint(transpIt + (c - 1) * tableWidth, tableWidth);
-            wghtOff = nkbg::readUint(adjWghtIt + (c - 1) * tableWidth, tableWidth);
-            transWghtOff = nkbg::readUint(transpWghtIt + (c - 1) * tableWidth, tableWidth);
+            off = nkbg::readFixedWidthUintLE(adjIt + (c - 1) * tableWidth, tableWidth);
+            transpOff = nkbg::readFixedWidthUintLE(transpIt + (c - 1) * tableWidth, tableWidth);
+            wghtOff = nkbg::readFixedWidthUintLE(adjWghtIt + (c - 1) * tableWidth, tableWidth);
+            transWghtOff =
+                nkbg::readFixedWidthUintLE(transpWghtIt + (c - 1) * tableWidth, tableWidth);
             if (indexed) {
-                indexOff = nkbg::readUint(adjIdIt + (c - 1) * tableWidth, tableWidth);
-                transIndexOff = nkbg::readUint(transpIdIt + (c - 1) * tableWidth, tableWidth);
+                indexOff = nkbg::readFixedWidthUintLE(adjIdIt + (c - 1) * tableWidth, tableWidth);
+                transIndexOff =
+                    nkbg::readFixedWidthUintLE(transpIdIt + (c - 1) * tableWidth, tableWidth);
             }
         }
 

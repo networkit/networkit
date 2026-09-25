@@ -55,7 +55,7 @@ using AnyBinaryGraph = std::variant<
 class NetworkitBinaryReader final : public GraphReader {
 
 public:
-    NetworkitBinaryReader() {};
+    NetworkitBinaryReader(){};
 
     Graph read(std::string_view path) override;
     AnyBinaryGraph readCompact(std::string_view path);
@@ -72,14 +72,23 @@ private:
     bool weighted;
     bool indexed;
     count version;
+    uint8_t nodeWidth;
     uint8_t tableWidth;
+    nkbg::WeightFormat weightFormat;
 
-    template <class GraphT, class T>
-    GraphT readData(const T &source);
     template <class T>
-    AnyBinaryGraph readCompactData(const T &source);
+    nkbg::Header readHeader(const T &source);
+    template <class GraphT, class T>
+    GraphT readSource(const T &source);
+    template <class T>
+    AnyBinaryGraph readSourceCompact(const T &source);
+    template <class GraphT, class T>
+    GraphT readData(const nkbg::Header &header, const T &source);
+    // template <class T>
+    // AnyBinaryGraph readCompactData(const T &source);
     template <class T, class NodeT>
-    AnyBinaryGraph readCompactDataWithNodeType(const T &source, nkbg::WeightFormat weightFormat,
+    AnyBinaryGraph readCompactDataWithNodeType(const nkbg::Header &header, const T &source,
+                                               nkbg::WeightFormat weightFormat,
                                                int64_t minSignedWeight, int64_t maxSignedWeight,
                                                uint64_t maxUnsignedWeight);
 };
