@@ -210,7 +210,7 @@ class TestGraphIO(unittest.TestCase):
         )
         with open(output_filepath, "rb") as f:
             nkmagicbits = f.read(7)
-            self.assertEqual(nkmagicbits, b"nkbg004")
+            self.assertEqual(nkmagicbits, b"nkbg005")
 
         nk.graphio.writeGraph(
             nk.graphio.readGraph("input/foodweb-baydry.nkbg003"),
@@ -219,7 +219,8 @@ class TestGraphIO(unittest.TestCase):
         )
         with open(output_filepath, "rb") as f:
             nkmagicbits = f.read(7)
-            self.assertEqual(nkmagicbits, b"nkbg004")
+            self.assertEqual(nkmagicbits, b"nkbg005")
+
 
 if __name__ == "__main__":
     unittest.main()
