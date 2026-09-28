@@ -213,7 +213,10 @@ class Config:
 			result.setMeasure("Partition.CoreDecomposition")
 			result.setMeasureCorrelation("Spearman")
 		else:
-			raise Error("no preset given")
+			raise ValueError(
+				"unknown preset: expected one of 'complete' | 'minimal' | 'default'"
+				f" (got {preset!r})"
+			)
 
 		return result
 
@@ -717,7 +720,7 @@ class Profile:
 				directory += "/" + filename[:-1]
 			filename += "tex"
 		else:
-			raise Error("unknown output type")
+			raise ValueError("unknown output type")
 
 		with open(directory + "/" + filename, 'w') as file:
 			file.write(result)
