@@ -736,16 +736,16 @@ TEST_F(DistanceGTest, testNeighborhoodFunctionHeuristic) {
 }
 
 TEST_P(DistanceGTest, testAPSPWithRemovedNodeZero) {
-    auto G = generatePathGraphWithoutNodeZero();
+    const auto G = generatePathGraphWithoutNodeZero();
 
     APSP apsp(G);
     apsp.run();
 
-    EXPECT_DOUBLE_EQ(0, apsp.getDistance(1, 1));
-    EXPECT_DOUBLE_EQ(1, apsp.getDistance(1, 2));
-    EXPECT_DOUBLE_EQ(2, apsp.getDistance(1, 3));
-    EXPECT_DOUBLE_EQ(1, apsp.getDistance(2, 3));
-    EXPECT_DOUBLE_EQ(isDirected() ? infdist : 2, apsp.getDistance(3, 1));
+    EXPECT_DOUBLE_EQ(apsp.getDistance(1, 1), 0);
+    EXPECT_DOUBLE_EQ(apsp.getDistance(1, 2), 1);
+    EXPECT_DOUBLE_EQ(apsp.getDistance(1, 3), 2);
+    EXPECT_DOUBLE_EQ(apsp.getDistance(2, 3), 1);
+    EXPECT_DOUBLE_EQ(apsp.getDistance(3, 1), isDirected() ? infdist : 2);
 }
 
 TEST_P(DistanceGTest, testSPSP) {
@@ -777,17 +777,17 @@ TEST_P(DistanceGTest, testSPSP) {
 }
 
 TEST_P(DistanceGTest, testSPSPWithRemovedNodeZero) {
-    auto G = generatePathGraphWithoutNodeZero();
+    const auto G = generatePathGraphWithoutNodeZero();
     const std::vector<node> sources = {1, 2};
 
     SPSP spsp(G, sources.begin(), sources.end());
     spsp.run();
 
-    EXPECT_DOUBLE_EQ(0, spsp.getDistance(1, 1));
-    EXPECT_DOUBLE_EQ(1, spsp.getDistance(1, 2));
-    EXPECT_DOUBLE_EQ(2, spsp.getDistance(1, 3));
-    EXPECT_DOUBLE_EQ(1, spsp.getDistance(2, 3));
-    EXPECT_DOUBLE_EQ(isDirected() ? infdist : 1, spsp.getDistance(2, 1));
+    EXPECT_DOUBLE_EQ(spsp.getDistance(1, 1), 0);
+    EXPECT_DOUBLE_EQ(spsp.getDistance(1, 2), 1);
+    EXPECT_DOUBLE_EQ(spsp.getDistance(1, 3), 2);
+    EXPECT_DOUBLE_EQ(spsp.getDistance(2, 3), 1);
+    EXPECT_DOUBLE_EQ(spsp.getDistance(2, 1), isDirected() ? infdist : 1);
 }
 
 TEST_P(DistanceGTest, testSPSPWithTargets) {
@@ -817,27 +817,27 @@ TEST_P(DistanceGTest, testSPSPWithTargets) {
 }
 
 TEST_P(DistanceGTest, testSPSPWithTargetsAndRemovedNodeZero) {
-    auto G = generatePathGraphWithoutNodeZero();
+    const auto G = generatePathGraphWithoutNodeZero();
     const std::vector<node> sources = {1, 2};
     const std::vector<node> targets = {2, 3};
 
     SPSP spsp(G, sources.begin(), sources.end(), targets.begin(), targets.end());
     spsp.run();
 
-    EXPECT_DOUBLE_EQ(1, spsp.getDistance(1, 2));
-    EXPECT_DOUBLE_EQ(2, spsp.getDistance(1, 3));
-    EXPECT_DOUBLE_EQ(0, spsp.getDistance(2, 2));
-    EXPECT_DOUBLE_EQ(1, spsp.getDistance(2, 3));
+    EXPECT_DOUBLE_EQ(spsp.getDistance(1, 2), 1);
+    EXPECT_DOUBLE_EQ(spsp.getDistance(1, 3), 2);
+    EXPECT_DOUBLE_EQ(spsp.getDistance(2, 2), 0);
+    EXPECT_DOUBLE_EQ(spsp.getDistance(2, 3), 1);
 }
 
 TEST_P(DistanceGTest, testSPSPWithEmptySources) {
-    auto G = generatePathGraphWithoutNodeZero();
+    const auto G = generatePathGraphWithoutNodeZero();
     const std::vector<node> sources;
 
     SPSP spsp(G, sources.begin(), sources.end());
     spsp.run();
 
-    EXPECT_TRUE(spsp.getDistances().empty());
+    EXPECT_THAT(spsp.getDistances(), testing::IsEmpty());
 }
 
 TEST_P(DistanceGTest, testSPSPWithUnreachableTarget) {
