@@ -6,6 +6,8 @@
  *               Fabian Brandt-Tumescheit <brandtfa@hu-berlin.de>
  */
 
+#include <algorithm>
+
 #include <networkit/auxiliary/NumericTools.hpp>
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
@@ -23,9 +25,18 @@ void PageRank::run() {
     const auto n = G.numberOfNodes();
     const auto z = G.upperNodeIdBound();
 
+    scoreData.assign(z, 0.0);
+    max = 0.0;
+    iterations = 0;
+
+    if (n == 0) {
+        hasRun = true;
+        return;
+    }
+
     const auto teleportProb = (1.0 - damp) / static_cast<double>(n);
     const double factor = damp / static_cast<double>(n);
-    scoreData.resize(z, 1.0 / static_cast<double>(n));
+    std::fill(scoreData.begin(), scoreData.end(), 1.0 / static_cast<double>(n));
     std::vector<double> pr = scoreData;
 
     std::vector<double> deg(z, 0.0);
@@ -40,8 +51,6 @@ void PageRank::run() {
         });
     }
     count nSinks = sinks.size();
-
-    iterations = 0;
 
     auto sumL1Norm = [&](const node u) { return std::abs(scoreData[u] - pr[u]); };
 

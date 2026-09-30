@@ -10,6 +10,7 @@
 #include <iostream>
 #include <random>
 
+#include <gmock/gmock-more-matchers.h>
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -598,6 +599,18 @@ TEST_P(CentralityGTest, testPageRank) {
 
     doTest(PageRank::Norm::L1_NORM);
     doTest(PageRank::Norm::L2_NORM);
+}
+
+TEST_F(CentralityGTest, testPageRankOnEmptyGraph) {
+    const Graph G(0);
+
+    PageRank pr(G);
+    pr.run();
+
+    EXPECT_THAT(pr.scores(), testing::IsEmpty());
+    EXPECT_THAT(pr.ranking(), testing::IsEmpty());
+    EXPECT_EQ(pr.numberOfIterations(), 0);
+    EXPECT_DOUBLE_EQ(pr.maximum(), 0.0);
 }
 
 TEST_P(CentralityGTest, testNormalizedPageRank) {
