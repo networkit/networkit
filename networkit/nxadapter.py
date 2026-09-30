@@ -1,6 +1,8 @@
 """
 This module handles compatibility between NetworKit and NetworkX
 """
+from __future__ import annotations
+
 from typing import Union, Mapping
 
 # local imports
