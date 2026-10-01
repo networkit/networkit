@@ -5,10 +5,13 @@
  *      Author: cls
  */
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <random>
+#include <set>
+#include <stdexcept>
 
 #include <gmock/gmock-more-matchers.h>
 #include <gtest/gtest.h>
@@ -1852,6 +1855,51 @@ TEST_F(CentralityGTest, runTestApproxGroupBetweennessSmallGraph) {
     } while (std::next_permutation(inGroup.begin(), inGroup.end()));
 
     EXPECT_TRUE(gb.scoreOfGroup(gb.groupMaxBetweenness()) >= maxScore * eps);
+}
+
+TEST_F(CentralityGTest, testGroupClosenessInvalidGroupSize) {
+    for (count h : {0, 1}) {
+        for (count n : {0, 1, 2}) {
+            Graph g(n);
+            EXPECT_THROW(GroupCloseness(g, 0, h).run(), std::invalid_argument);
+            EXPECT_THROW(GroupCloseness(g, n + 1, h).run(), std::invalid_argument);
+        }
+
+        Graph g(3);
+        g.removeNode(1);
+        EXPECT_THROW(GroupCloseness(g, 3, h).run(), std::invalid_argument);
+
+        GroupCloseness gc(g, 2, h);
+        g.removeNode(0);
+        g.removeNode(2);
+        EXPECT_THROW(gc.run(), std::invalid_argument);
+    }
+}
+
+TEST_F(CentralityGTest, testGroupClosenessWithoutImprovingCandidates) {
+    for (count h : {0, 1}) {
+        for (count n : {1, 2, 4}) {
+            Graph g(n);
+            for (count k = 1; k <= n; ++k) {
+                GroupCloseness gc(g, k, h);
+                gc.run();
+                auto group = gc.groupMaxCloseness();
+                EXPECT_THAT(group, testing::SizeIs(k));
+                EXPECT_THAT(group, testing::UnorderedElementsAreArray(
+                                       std::set<node>(group.begin(), group.end())));
+                EXPECT_THAT(group,
+                            testing::Each(testing::Truly([&](node u) { return g.hasNode(u); })));
+            }
+        }
+
+        Graph g(5);
+        g.addEdge(0, 2);
+        g.addEdge(3, 4);
+        g.removeNode(1);
+        GroupCloseness gc(g, g.numberOfNodes(), h);
+        gc.run();
+        EXPECT_THAT(gc.groupMaxCloseness(), testing::UnorderedElementsAre(0, 2, 3, 4));
+    }
 }
 
 TEST_F(CentralityGTest, testGroupCloseness) {
