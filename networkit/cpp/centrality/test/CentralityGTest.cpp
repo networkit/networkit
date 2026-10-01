@@ -10,7 +10,6 @@
 #include <iomanip>
 #include <iostream>
 #include <random>
-#include <set>
 #include <stdexcept>
 
 #include <gmock/gmock-more-matchers.h>
@@ -1884,11 +1883,11 @@ TEST_F(CentralityGTest, testGroupClosenessWithoutImprovingCandidates) {
                 GroupCloseness gc(g, k, h);
                 gc.run();
                 auto group = gc.groupMaxCloseness();
-                EXPECT_THAT(group, testing::SizeIs(k));
-                EXPECT_THAT(group, testing::UnorderedElementsAreArray(
-                                       std::set<node>(group.begin(), group.end())));
-                EXPECT_THAT(group,
-                            testing::Each(testing::Truly([&](node u) { return g.hasNode(u); })));
+                ASSERT_EQ(group.size(), k);
+                std::sort(group.begin(), group.end());
+                EXPECT_EQ(std::adjacent_find(group.begin(), group.end()), group.end());
+                for (node u : group)
+                    EXPECT_TRUE(g.hasNode(u));
             }
         }
 
@@ -1898,7 +1897,9 @@ TEST_F(CentralityGTest, testGroupClosenessWithoutImprovingCandidates) {
         g.removeNode(1);
         GroupCloseness gc(g, g.numberOfNodes(), h);
         gc.run();
-        EXPECT_THAT(gc.groupMaxCloseness(), testing::UnorderedElementsAre(0, 2, 3, 4));
+        auto group = gc.groupMaxCloseness();
+        std::sort(group.begin(), group.end());
+        EXPECT_EQ(group, (std::vector<node>{0, 2, 3, 4}));
     }
 }
 
