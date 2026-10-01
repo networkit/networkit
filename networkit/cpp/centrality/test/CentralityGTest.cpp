@@ -5,10 +5,12 @@
  *      Author: cls
  */
 
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <random>
 
+#include <gmock/gmock-more-matchers.h>
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -599,6 +601,18 @@ TEST_P(CentralityGTest, testPageRank) {
     doTest(PageRank::Norm::L2_NORM);
 }
 
+TEST_F(CentralityGTest, testPageRankOnEmptyGraph) {
+    const Graph G(0);
+
+    PageRank pr(G);
+    pr.run();
+
+    EXPECT_THAT(pr.scores(), testing::IsEmpty());
+    EXPECT_THAT(pr.ranking(), testing::IsEmpty());
+    EXPECT_EQ(pr.numberOfIterations(), 0);
+    EXPECT_DOUBLE_EQ(pr.maximum(), 0.0);
+}
+
 TEST_P(CentralityGTest, testNormalizedPageRank) {
     /* Graph:
      0 <---> 1
@@ -684,6 +698,78 @@ TEST_F(CentralityGTest, testEigenvectorCentrality) {
     EXPECT_NEAR(0.5290, std::fabs(cen[5]), tol);
     EXPECT_NEAR(0.2254, std::fabs(cen[6]), tol);
     EXPECT_NEAR(0.1503, std::fabs(cen[7]), tol);
+}
+
+TEST_F(CentralityGTest, testEigenvectorCentralityEmptyGraph) {
+    Graph G(0);
+
+    EigenvectorCentrality centrality(G);
+    centrality.run();
+
+    EXPECT_TRUE(centrality.scores().empty());
+}
+
+TEST_P(CentralityGTest, testEigenvectorCentralityNoEdges) {
+    for (count n : {1, 2, 5}) {
+        Graph G(n, isWeighted(), isDirected());
+
+        EigenvectorCentrality centrality(G);
+        centrality.run();
+        const std::vector<double> cen = centrality.scores();
+
+        ASSERT_EQ(n, cen.size());
+
+        double squaredNorm = 0.0;
+        for (node u = 0; u < n; ++u) {
+            EXPECT_TRUE(std::isfinite(cen[u]));
+            EXPECT_NEAR(1.0 / std::sqrt(static_cast<double>(n)), cen[u], 1e-12);
+            squaredNorm += cen[u] * cen[u];
+        }
+        EXPECT_NEAR(1.0, squaredNorm, 1e-12);
+    }
+}
+
+TEST_F(CentralityGTest, testEigenvectorCentralityIsolatedNode) {
+    count n = 9;
+    Graph G(n, true);
+
+    G.addEdge(0, 2, 3);
+    G.addEdge(1, 2, 2);
+    G.addEdge(2, 3, 3);
+    G.addEdge(2, 4, 2);
+    G.addEdge(2, 5, 1.5);
+    G.addEdge(3, 5, 3);
+    G.addEdge(4, 5, 2);
+    G.addEdge(5, 6, 3);
+    G.addEdge(5, 7, 2);
+
+    EigenvectorCentrality centrality(G);
+    centrality.run();
+    std::vector<double> cen = centrality.scores();
+
+    const double tol = 1e-4;
+    EXPECT_NEAR(0.2254, std::fabs(cen[0]), tol);
+    EXPECT_NEAR(0.1503, std::fabs(cen[1]), tol);
+    EXPECT_NEAR(0.5290, std::fabs(cen[2]), tol);
+    EXPECT_NEAR(0.4508, std::fabs(cen[3]), tol);
+    EXPECT_NEAR(0.3006, std::fabs(cen[4]), tol);
+    EXPECT_NEAR(0.5290, std::fabs(cen[5]), tol);
+    EXPECT_NEAR(0.2254, std::fabs(cen[6]), tol);
+    EXPECT_NEAR(0.1503, std::fabs(cen[7]), tol);
+    EXPECT_NEAR(0.0, cen[8], tol);
+}
+
+TEST_F(CentralityGTest, testEigenvectorCentralityDirectedAcyclic) {
+    Graph G(2, false, true);
+    G.addEdge(0, 1);
+
+    EigenvectorCentrality centrality(G);
+    centrality.run();
+    const std::vector<double> cen = centrality.scores();
+
+    ASSERT_EQ(2u, cen.size());
+    EXPECT_TRUE(std::isfinite(cen[0]));
+    EXPECT_TRUE(std::isfinite(cen[1]));
 }
 
 TEST_F(CentralityGTest, testPageRankCentrality) {
@@ -1556,6 +1642,42 @@ TEST_F(CentralityGTest, testLaplacianCentralityUnweighted) {
     EXPECT_EQ(10, scores[3]);
     EXPECT_EQ(16, scores[4]);
     EXPECT_EQ(6, scores[5]);
+}
+
+TEST_F(CentralityGTest, testLaplacianCentralityFractionalWeights) {
+    // The node's own weighted degree must not be truncated before being squared.
+    // The weighted degrees here are 2.5, 3.75 and 1.25, and every value below is
+    // exact in binary floating point.
+    Graph G(3, true);
+
+    G.addEdge(0, 1, 2.5);
+    G.addEdge(1, 2, 1.25);
+
+    LaplacianCentrality lc(G);
+    lc.run();
+    std::vector<double> scores = lc.scores();
+
+    EXPECT_DOUBLE_EQ(31.25, scores[0]);
+    EXPECT_DOUBLE_EQ(37.5, scores[1]);
+    EXPECT_DOUBLE_EQ(12.5, scores[2]);
+}
+
+TEST_F(CentralityGTest, testLaplacianCentralityFractionalWeightsNormalized) {
+    Graph G(3, true);
+
+    G.addEdge(0, 1, 2.5);
+    G.addEdge(1, 2, 1.25);
+
+    LaplacianCentrality lc(G, true);
+    lc.run();
+    std::vector<double> scores = lc.scores();
+
+    // Removing the middle vertex releases the whole Laplacian energy of this
+    // path, so its normalized score is 1. Truncating the weighted degree shrank
+    // the denominator and pushed the score above 1.
+    EXPECT_NEAR(31.25 / 37.5, scores[0], 1e-12);
+    EXPECT_NEAR(1.0, scores[1], 1e-12);
+    EXPECT_NEAR(12.5 / 37.5, scores[2], 1e-12);
 }
 
 TEST_P(CentralityGTest, testGroupDegree) {

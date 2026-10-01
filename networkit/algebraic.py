@@ -55,7 +55,7 @@ def adjacencyMatrix(G, matrixType="sparse"):
 	elif matrixType == "dense":
 		A = np.zeros(shape=(n,n))
 	else:
-		raise InputError("unknown matrix type: '{0}'".format(matrixType))
+		raise ValueError("unknown matrix type: '{0}'".format(matrixType))
 	# TODO: replace .edges() with efficient iterations
 	if G.isWeighted():
 		if G.isDirected():

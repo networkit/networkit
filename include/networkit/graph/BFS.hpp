@@ -3,7 +3,11 @@
 #define NETWORKIT_GRAPH_BFS_HPP_
 
 #include <array>
+#include <cassert>
+#include <cstddef>
 #include <queue>
+#include <stdexcept>
+#include <type_traits>
 #include <vector>
 
 #include <networkit/graph/Graph.hpp>
@@ -12,56 +16,86 @@ namespace NetworKit {
 
 namespace Traversal {
 
+namespace Impl {
+
 /**
  * Calls the given BFS handle with distance parameter
  */
-template <class F>
-auto callBFSHandle(F &f, node u, count dist) -> decltype(f(u, dist)) {
+template <class F, class NodeT>
+auto callBFSHandle(F &f, NodeT u, count dist) -> decltype(f(u, dist)) {
     return f(u, dist);
 }
 
 /**
  * Calls the given BFS handle without distance parameter
  */
-template <class F>
-auto callBFSHandle(F &f, node u, count) -> decltype(f(u)) {
+template <class F, class NodeT>
+auto callBFSHandle(F &f, NodeT u, count) -> decltype(f(u)) {
     return f(u);
 }
 
+template <typename NodeT>
+std::size_t nodeIndex(NodeT u) {
+    if constexpr (std::is_signed_v<NodeT>) {
+        assert(u >= 0);
+    }
+    return static_cast<std::size_t>(u);
+}
+
+template <class GraphT, typename NodeT>
+bool isValidNode(const GraphT &G, NodeT u) {
+    if constexpr (std::is_signed_v<NodeT>) {
+        if (u < 0)
+            return false;
+    }
+    return G.hasNode(u);
+}
+
+} // namespace Impl
+
 /**
- * Iterate over nodes in breadth-first search order starting from the nodes within the given range.
+ * Iterate over nodes in breadth-first search order starting from the unique nodes within the
+ * given range. All start nodes are visited at distance 0. Duplicate start nodes are ignored.
  *
  * @param G The input graph.
- * @param first The first element of the range.
- * @param last The end of the range.
- * @param handle Takes a node as input parameter.
+ * @param first The first element of the start node range.
+ * @param last The end of the start node range.
+ * @param handle Takes a node, or a node and its distance from the nearest start node.
+ * @throws std::runtime_error If a start node is not in the graph.
  */
-template <class InputIt, typename L>
-void BFSfrom(const Graph &G, InputIt first, InputIt last, L handle) {
-    std::vector<bool> marked(G.upperNodeIdBound());
-    std::queue<node> q, qNext;
+template <class InputIt, typename L, class GraphT>
+void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
+    using NodeT = typename GraphT::NodeT;
+
+    std::vector<bool> marked(static_cast<std::size_t>(G.upperNodeIdBound()));
+    std::queue<NodeT> q, qNext;
     count dist = 0;
-    // enqueue start nodes
+    // enqueue start nodes, do not enqueue duplicates
     for (; first != last; ++first) {
-        q.push(*first);
-        marked[*first] = true;
+        if (!Impl::isValidNode(G, *first))
+            throw std::runtime_error("Error: source node not in the graph.");
+        const std::size_t uIndex = Impl::nodeIndex(*first);
+        if (!marked[uIndex]) {
+            q.push(*first);
+            marked[uIndex] = true;
+        }
     }
-    do {
+    while (!q.empty()) {
         const auto u = q.front();
         q.pop();
         // apply function
-        callBFSHandle(handle, u, dist);
-        G.forNeighborsOf(u, [&](node v) {
-            if (!marked[v]) {
+        Impl::callBFSHandle(handle, u, dist);
+        G.forNeighborsOf(u, [&](NodeT v) {
+            if (!marked[Impl::nodeIndex(v)]) {
                 qNext.push(v);
-                marked[v] = true;
+                marked[Impl::nodeIndex(v)] = true;
             }
         });
         if (q.empty() && !qNext.empty()) {
             q.swap(qNext);
             ++dist;
         }
-    } while (!q.empty());
+    }
 }
 
 /**
@@ -70,10 +104,13 @@ void BFSfrom(const Graph &G, InputIt first, InputIt last, L handle) {
  * @param G The input graph.
  * @param source The source node.
  * @param handle Takes a node as input parameter.
+ * @throws std::runtime_error If the source node is not in the graph.
  */
-template <typename L>
-void BFSfrom(const Graph &G, node source, L handle) {
-    std::array<node, 1> startNodes{{source}};
+template <typename L, class GraphT>
+void BFSfrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
+    using NodeT = typename GraphT::NodeT;
+
+    std::array<NodeT, 1> startNodes{{source}};
     BFSfrom(G, startNodes.begin(), startNodes.end(), handle);
 }
 
@@ -83,22 +120,28 @@ void BFSfrom(const Graph &G, node source, L handle) {
  * @param G The input graph.
  * @param source The source node.
  * @param handle Takes a node as input parameter.
+ * @throws std::runtime_error If the source node is not in the graph.
  */
-template <typename L>
-void BFSEdgesFrom(const Graph &G, node source, L handle) {
-    std::vector<bool> marked(G.upperNodeIdBound());
-    std::queue<node> q;
+template <typename L, class GraphT>
+void BFSEdgesFrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
+    using NodeT = typename GraphT::NodeT;
+    using EdgeWeightT = typename GraphT::EdgeWeightT;
+
+    std::vector<bool> marked(static_cast<std::size_t>(G.upperNodeIdBound()));
+    std::queue<NodeT> q;
+    if (!Impl::isValidNode(G, source))
+        throw std::runtime_error("Error: source node not in the graph.");
     q.push(source); // enqueue root
-    marked[source] = true;
+    marked[Impl::nodeIndex(source)] = true;
     do {
         const auto u = q.front();
         q.pop();
         // apply function
-        G.forNeighborsOf(u, [&](node, node v, edgeweight w, edgeid eid) {
-            if (!marked[v]) {
+        G.forNeighborsOf(u, [&](NodeT, NodeT v, EdgeWeightT w, edgeid eid) {
+            if (!marked[Impl::nodeIndex(v)]) {
                 handle(u, v, w, eid);
                 q.push(v);
-                marked[v] = true;
+                marked[Impl::nodeIndex(v)] = true;
             }
         });
     } while (!q.empty());

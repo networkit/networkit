@@ -1,8 +1,8 @@
 /*
  * TopologicalSortImpl.hpp
  *
- *  Created on: 10.09.2026
- *      Author: NetworKit contributors
+ *  Created on: 22.11.2021
+ *      Author: Fabian Brandt-Tumescheit
  */
 #ifndef NETWORKIT_GRAPH_TOPOLOGICAL_SORT_IMPL_HPP_
 #define NETWORKIT_GRAPH_TOPOLOGICAL_SORT_IMPL_HPP_

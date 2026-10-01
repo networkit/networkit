@@ -2827,7 +2827,7 @@ class SpectralCentrality:
 
 		Not implemented yet.
 		"""
-		raise NotImplemented
+		raise NotImplementedError
 
 	def normFactor(self):
 		""" 
@@ -2835,7 +2835,7 @@ class SpectralCentrality:
 
 		Not implemented yet.
 		"""
-		raise NotImplemented
+		raise NotImplementedError
 
 	def run(self):
 		""" 

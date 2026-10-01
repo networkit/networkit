@@ -51,6 +51,13 @@ class TestAlgebraic(unittest.TestCase):
 		A2 = nk.algebraic.adjacencyMatrix(G, "sparse")
 		self.assertIsInstance(A2, scipy.sparse.csr_matrix)
 
+	def testAdjacencyMatrixUnknownType(self):
+		G = nk.Graph(2)
+		G.addEdge(0, 1)
+		with self.assertRaises(ValueError) as ctx:
+			nk.algebraic.adjacencyMatrix(G, "bogus")
+		self.assertIn("unknown matrix type", str(ctx.exception))
+
 	def testAdjacencyEigenvector(self):
 		G = nk.readGraph("input/jazz2_directed.gml",nk.Format.GML)
 		eigen1 = nk.algebraic.adjacencyEigenvector(G, 1)

@@ -17,10 +17,10 @@ void LaplacianCentrality::run() {
     double totalLaplacianEnergy = 0.0;
 
     G.parallelForNodes([&](node u) {
-        count degreeU = G.weightedDegree(u);
-        double energyLossOnNodeDrop = static_cast<double>(degreeU * degreeU);
+        const edgeweight degreeU = G.weightedDegree(u);
+        double energyLossOnNodeDrop = degreeU * degreeU;
 #pragma omp atomic
-        totalLaplacianEnergy += static_cast<double>(degreeU * degreeU);
+        totalLaplacianEnergy += degreeU * degreeU;
 
         G.forNeighborsOf(u, [&](node v, edgeweight ew) {
             energyLossOnNodeDrop += ew * (ew + 2 * G.weightedDegree(v));
