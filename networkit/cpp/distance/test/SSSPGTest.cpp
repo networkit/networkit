@@ -15,6 +15,15 @@ namespace NetworKit {
 
 class SSSPGTest : public testing::Test {};
 
+TEST_F(SSSPGTest, testDijkstraThrowsForInvalidSourceOrTarget) {
+    Graph emptyGraph(0);
+    EXPECT_THROW(Dijkstra(emptyGraph, 0), std::runtime_error);
+
+    Graph G(1);
+    EXPECT_THROW(Dijkstra(G, 5), std::runtime_error);
+    EXPECT_THROW(Dijkstra(G, 0, false, false, 5), std::runtime_error);
+}
+
 TEST_F(SSSPGTest, testDijkstra) {
     /* Graph:
          ______
