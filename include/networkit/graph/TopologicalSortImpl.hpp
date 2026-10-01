@@ -1,25 +1,29 @@
 /*
- * TopologicalSort.cpp
+ * TopologicalSortImpl.hpp
  *
- *  Created on: 22.11.2021
- *      Author: Fabian Brandt-Tumescheit
+ *  Created on: 10.09.2026
+ *      Author: NetworKit contributors
  */
+#ifndef NETWORKIT_GRAPH_TOPOLOGICAL_SORT_IMPL_HPP_
+#define NETWORKIT_GRAPH_TOPOLOGICAL_SORT_IMPL_HPP_
 
+#include <algorithm>
+#include <sstream>
 #include <stack>
 #include <stdexcept>
 
-#include <networkit/graph/GraphTools.hpp>
-#include <networkit/graph/TopologicalSort.hpp>
-
 namespace NetworKit {
 
-TopologicalSort::TopologicalSort(const Graph &G)
-    : G(G), computedNodeIdMap(GraphTools::getContinuousNodeIds(G)) {
+template <typename GraphT>
+GenericTopologicalSort<GraphT>::GenericTopologicalSort(const GraphT &G)
+    : G(G), computedNodeIdMap(computeContinuousNodeIds(G)) {
     checkDirected();
 }
 
-TopologicalSort::TopologicalSort(const Graph &G, const std::unordered_map<node, node> &nodeIdMap,
-                                 bool checkMapping)
+template <typename GraphT>
+GenericTopologicalSort<GraphT>::GenericTopologicalSort(const GraphT &G,
+                                                       const NodeIdMapping &nodeIdMap,
+                                                       bool checkMapping)
     : G(G), nodeIdMap(&nodeIdMap) {
     checkDirected();
     if (nodeIdMap.size() != G.numberOfNodes())
@@ -29,18 +33,33 @@ TopologicalSort::TopologicalSort(const Graph &G, const std::unordered_map<node, 
         checkNodeIdMap();
 }
 
-void TopologicalSort::checkDirected() {
+template <typename GraphT>
+typename GenericTopologicalSort<GraphT>::NodeIdMapping
+GenericTopologicalSort<GraphT>::computeContinuousNodeIds(const GraphT &G) {
+    NodeIdMapping nodeIdMap;
+    nodeIdMap.reserve(G.numberOfNodes());
+
+    index continuousId = 0;
+    G.forNodes([&](NodeT u) { nodeIdMap.emplace(u, continuousId++); });
+
+    return nodeIdMap;
+}
+
+template <typename GraphT>
+void GenericTopologicalSort<GraphT>::checkDirected() {
     if (!G.isDirected())
         throw std::runtime_error("Topological sort is defined for directed graphs only.");
 }
 
-void TopologicalSort::checkNodeIdMap() {
+template <typename GraphT>
+void GenericTopologicalSort<GraphT>::checkNodeIdMap() {
     if (!nodeIdMap)
         return;
 
-    size_t numberOfNodes = G.numberOfNodes();
+    const count numberOfNodes = G.numberOfNodes();
     std::vector<bool> checkTable(numberOfNodes);
-    for (auto &[origNode, mappedNode] : *nodeIdMap) {
+    for (const auto &entry : *nodeIdMap) {
+        const index mappedNode = entry.second;
         if (mappedNode < numberOfNodes && !checkTable[mappedNode])
             checkTable[mappedNode] = true;
         else
@@ -48,20 +67,21 @@ void TopologicalSort::checkNodeIdMap() {
     }
 }
 
-void TopologicalSort::run() {
+template <typename GraphT>
+void GenericTopologicalSort<GraphT>::run() {
     reset();
 
-    std::stack<node> nodeStack;
+    std::stack<NodeT> nodeStack;
 
-    G.forNodes([&](node u) {
-        node mappedU = mapNode(u);
+    G.forNodes([&](NodeT u) {
+        const index mappedU = mapNode(u);
         if (topSortMark[mappedU] == NodeMark::PERM)
             return;
 
         nodeStack.push(u);
         do {
-            node v = nodeStack.top();
-            node mappedV = mapNode(v);
+            const NodeT v = nodeStack.top();
+            const index mappedV = mapNode(v);
 
             if (topSortMark[mappedV] != NodeMark::NONE) {
                 nodeStack.pop();
@@ -72,8 +92,8 @@ void TopologicalSort::run() {
                 }
             } else {
                 topSortMark[mappedV] = NodeMark::TEMP;
-                G.forNeighborsOf(v, [&](node w) {
-                    node mappedW = mapNode(w);
+                G.forNeighborsOf(v, [&](NodeT w) {
+                    const index mappedW = mapNode(w);
 
                     if (topSortMark[mappedW] == NodeMark::NONE)
                         nodeStack.push(w);
@@ -87,24 +107,26 @@ void TopologicalSort::run() {
     hasRun = true;
 }
 
-node TopologicalSort::mapNode(node u) {
+template <typename GraphT>
+index GenericTopologicalSort<GraphT>::mapNode(NodeT u) const {
     if (nodeIdMap) {
-        auto it = nodeIdMap->find(u);
+        const auto it = nodeIdMap->find(u);
         if (it == nodeIdMap->cend()) {
             std::stringstream errorMsg;
             errorMsg << "Node id mapping does not contain node " << u;
             throw std::runtime_error(errorMsg.str());
         }
         return it->second;
-    } else if (computedNodeIdMap.has_value())
+    } else if (computedNodeIdMap.has_value()) {
         return computedNodeIdMap.value().at(u);
-    else
-        return u;
+    } else {
+        return static_cast<index>(u);
+    }
 }
 
-void TopologicalSort::reset() {
-    // Reset node marks
-    count n = G.numberOfNodes();
+template <typename GraphT>
+void GenericTopologicalSort<GraphT>::reset() {
+    const count n = G.numberOfNodes();
     if (n == 0)
         throw std::runtime_error("Graph should contain at least one node.");
 
@@ -113,9 +135,10 @@ void TopologicalSort::reset() {
         topology.resize(n);
     }
     std::fill(topSortMark.begin(), topSortMark.end(), NodeMark::NONE);
-    std::fill(topology.begin(), topology.end(), 0);
-    // Reset current
+    std::fill(topology.begin(), topology.end(), NodeT{0});
     current = n - 1;
 }
 
 } // namespace NetworKit
+
+#endif // NETWORKIT_GRAPH_TOPOLOGICAL_SORT_IMPL_HPP_

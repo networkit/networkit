@@ -3,7 +3,6 @@ networkit_add_module(graph
     GraphTools.cpp
     KruskalMSF.cpp
     RandomMaximumSpanningForest.cpp
-    TopologicalSort.cpp
     UnionMaximumSpanningForest.cpp
     DHBGraph.cpp
     )
