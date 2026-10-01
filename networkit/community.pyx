@@ -50,7 +50,7 @@ cdef extern from "<networkit/community/CommunityDetectionAlgorithm.hpp>":
 
 	cdef cppclass _CommunityDetectionAlgorithm "NetworKit::CommunityDetectionAlgorithm"(_Algorithm):
 		_CommunityDetectionAlgorithm(const _Graph &_G)
-		_Partition &getPartition() except +
+		_Partition getPartition() except +
 
 cdef class CommunityDetector(Algorithm):
 	""" 
