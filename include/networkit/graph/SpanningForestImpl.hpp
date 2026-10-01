@@ -9,11 +9,11 @@
 #define NETWORKIT_GRAPH_SPANNING_FOREST_IMPL_HPP_
 
 #include <cassert>
-#include <queue>
 #include <type_traits>
 #include <vector>
 
 #include <networkit/auxiliary/Log.hpp>
+#include <networkit/graph/BFS.hpp>
 
 namespace NetworKit {
 
@@ -44,34 +44,14 @@ void GenericSpanningForest<GraphT>::run() {
         if (visited[nodeIndex(source)])
             return;
 
-        std::queue<NodeT> queue;
-        queue.push(source);
         visited[nodeIndex(source)] = true;
+        Traversal::BFSEdgesFrom(*G, source, [&](NodeT u, NodeT v, EdgeWeightT weight, edgeid) {
+            if (visited[nodeIndex(v)])
+                return;
 
-        while (!queue.empty()) {
-            const NodeT u = queue.front();
-            queue.pop();
-
-            if (G->isWeighted()) {
-                for (const auto &[v, weight] : G->weightNeighborRange(u)) {
-                    if (visited[nodeIndex(v)])
-                        continue;
-
-                    visited[nodeIndex(v)] = true;
-                    forest.addEdge(u, v, weight);
-                    queue.push(v);
-                }
-            } else {
-                for (const NodeT v : G->neighborRange(u)) {
-                    if (visited[nodeIndex(v)])
-                        continue;
-
-                    visited[nodeIndex(v)] = true;
-                    forest.addEdge(u, v);
-                    queue.push(v);
-                }
-            }
-        }
+            visited[nodeIndex(v)] = true;
+            forest.addEdge(u, v, weight);
+        });
     });
 
     hasRun = true;
