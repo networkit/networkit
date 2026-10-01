@@ -340,6 +340,10 @@ rather than depending on implicit conversion from NetworKit's traditional `node`
 
 If readers or other infrastructure have not yet been migrated, reuse an existing generic graph conversion helper instead of duplicating conversion logic in every test.
 
+Preserve the effective test coverage of all changed and newly created files. Behavior that was covered before the migration should remain covered afterward, 
+and newly introduced generic code paths should be covered where appropriate.
+
+This does not require running or analyzing coverage tooling. Compare the existing and migrated tests to ensure that relevant behavior and code paths are covered at least as well as before.
 ### GoogleTest assertion style
 
 Use `EXPECT_THAT` extensively for arrays, vectors, ranges, and other container-like results.
@@ -532,13 +536,14 @@ Before finishing, confirm all of the following:
 * **The deleted `.cpp` has also been removed from the corresponding `CMakeLists.txt`.**
 * **No stale build-system reference to the deleted `.cpp` remains.**
 * Tests are typed over representative configurations.
-* The default legacy configuration is included in the test matrix.
+* The default legacy configuration is included in the test matrix.7
 * Container and vector comparisons preferentially use `EXPECT_THAT`.
 * Short scalar `EXPECT_EQ` and boolean `EXPECT_TRUE`/`EXPECT_FALSE` assertions remain simple.
 * The affected tests pass.
 * Formatting and compiler warnings are clean.
 * The diff contains no accidental unrelated changes.
 * Performance-sensitive default specializations show no meaningful regression.
+* Test coverage of changed and newly created files has not been reduced; previously tested behavior remains covered and new generic code paths are tested where appropriate.
 
 ## Expected completion report
 
