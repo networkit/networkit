@@ -720,14 +720,20 @@ cdef class Partition:
 		if self._this.numberOfElements() != other._this.numberOfElements():
 			return False
 
-		cdef index i = 0
+		# Build a bijection between subset ids (independent of the concrete ids).
+		# Previously a frozen loop index `i` (never incremented) made every
+		# equal-length comparison return True — see #1511.
 		cdef dict selfToOther = dict()
-		for index in range(self._this.numberOfElements()):
-			selfSubset = self[i]
-			if selfSubset in selfToOther:
-				if selfToOther[selfSubset] != other[i]:
-					return False
-			else:
-				selfToOther[selfSubset] = other[i]
+		cdef dict otherToSelf = dict()
+		cdef index idx
+		for idx in range(self._this.numberOfElements()):
+			s = self[idx]
+			o = other[idx]
+			if s in selfToOther and selfToOther[s] != o:
+				return False
+			if o in otherToSelf and otherToSelf[o] != s:
+				return False
+			selfToOther[s] = o
+			otherToSelf[o] = s
 		return True
 
