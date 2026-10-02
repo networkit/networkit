@@ -200,34 +200,56 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count &visEdges,
 
     edgeweight level_bound = 2.0 * closeNodes + static_cast<double>(farNodes);
     const auto &reachU = *(reachUPtr.get());
-    for (count j = 0; j < levels[1].size(); j++) {
-        node w = levels[1][j];
-        // we subtract 2 not to count the node itself
-        double bound =
-            (level_bound - 2 - G.degree(w)) * (n - 1.0) / (reachU[w] - 1.0) / (reachU[w] - 1.0);
-        if (toAnalyze[w] && bound > S2[w]
-            && (!G.isDirected() || sccsPtr->componentOfNode(w) == sccsPtr->componentOfNode(x))) {
-            S2[w] = bound;
-        }
-    }
-
-    // now we compute it for the other levels
-    for (omp_index i = 2; i <= static_cast<omp_index>(nLevs); i++) {
-        if (!G.isDirected() && i > 2) {
-            level_bound += sumLevs[i - 3];
-        }
-        if (i < nLevs) {
-            level_bound -= static_cast<edgeweight>(sumLevs[nLevs] - sumLevs[i + 1]);
-        }
-        for (count j = 0; j < levels[i].size(); j++) {
-            node w = levels[i][j];
-            double bound =
-                (level_bound - 2 - G.degree(w)) * (n - 1.0) / (reachU[w] - 1.0) / (reachU[w] - 1.0);
-            if (toAnalyze[w] && bound > S2[w]
-                && (!G.isDirected()
-                    || sccsPtr->componentOfNode(w) == sccsPtr->componentOfNode(x))) {
-                // TODO MICHELE: as before.
+    if (!G.isDirected()) {
+        for (node w : levels[1]) {
+            // we subtract 2 not to count the node itself
+            const double reach = reachU[w] - 1.0;
+            const double bound = (level_bound - 2 - G.degree(w)) * (n - 1.0) / reach / reach;
+            if (toAnalyze[w] && bound > S2[w]) {
                 S2[w] = bound;
+            }
+        }
+
+        // now we compute it for the other levels
+        for (omp_index i = 2; i <= static_cast<omp_index>(nLevs); i++) {
+            if (i > 2) {
+                level_bound += sumLevs[i - 3];
+            }
+            if (i < nLevs) {
+                level_bound -= static_cast<edgeweight>(sumLevs[nLevs] - sumLevs[i + 1]);
+            }
+            for (node w : levels[i]) {
+                const double reach = reachU[w] - 1.0;
+                const double bound = (level_bound - 2 - G.degree(w)) * (n - 1.0) / reach / reach;
+                if (toAnalyze[w] && bound > S2[w]) {
+                    // TODO MICHELE: as before.
+                    S2[w] = bound;
+                }
+            }
+        }
+    } else {
+        const auto componentX = sccsPtr->componentOfNode(x);
+        for (node w : levels[1]) {
+            // we subtract 2 not to count the node itself
+            const double reach = reachU[w] - 1.0;
+            const double bound = (level_bound - 2 - G.degree(w)) * (n - 1.0) / reach / reach;
+            if (toAnalyze[w] && bound > S2[w] && sccsPtr->componentOfNode(w) == componentX) {
+                S2[w] = bound;
+            }
+        }
+
+        // now we compute it for the other levels
+        for (omp_index i = 2; i <= static_cast<omp_index>(nLevs); i++) {
+            if (i < nLevs) {
+                level_bound -= static_cast<edgeweight>(sumLevs[nLevs] - sumLevs[i + 1]);
+            }
+            for (node w : levels[i]) {
+                const double reach = reachU[w] - 1.0;
+                const double bound = (level_bound - 2 - G.degree(w)) * (n - 1.0) / reach / reach;
+                if (toAnalyze[w] && bound > S2[w] && sccsPtr->componentOfNode(w) == componentX) {
+                    // TODO MICHELE: as before.
+                    S2[w] = bound;
+                }
             }
         }
     }
