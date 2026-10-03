@@ -124,6 +124,8 @@ public:
 
     /**
      * Executes the Kadabra algorithm.
+     *
+     * @throws std::invalid_argument If the input graph is empty.
      */
     void run() override;
 
