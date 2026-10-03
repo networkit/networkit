@@ -10,6 +10,7 @@
 #include <deque>
 #include <limits>
 #include <omp.h>
+#include <stdexcept>
 
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/auxiliary/Parallelism.hpp>
@@ -290,6 +291,9 @@ void KadabraBetweenness::fillResult() {
 }
 
 void KadabraBetweenness::run() {
+    if (G.isEmpty())
+        throw std::invalid_argument("KadabraBetweenness: input graph is empty");
+
     init();
     const count n = G.upperNodeIdBound();
     const auto omp_max_threads = omp_get_max_threads();
