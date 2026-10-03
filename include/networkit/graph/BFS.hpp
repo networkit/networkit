@@ -67,7 +67,7 @@ template <class InputIt, typename L, class GraphT>
 void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
     using NodeT = typename GraphT::NodeT;
 
-    std::vector<bool> marked(static_cast<std::size_t>(G.upperNodeIdBound()));
+    std::vector<uint8_t> marked(static_cast<std::size_t>(G.upperNodeIdBound()));
     std::queue<NodeT> q, qNext;
     count dist = 0;
     // enqueue start nodes, do not enqueue duplicates
@@ -77,7 +77,7 @@ void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
         const std::size_t uIndex = Impl::nodeIndex(*first);
         if (!marked[uIndex]) {
             q.push(*first);
-            marked[uIndex] = true;
+            marked[uIndex] = 1;
         }
     }
     while (!q.empty()) {
@@ -88,7 +88,7 @@ void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
         G.forNeighborsOf(u, [&](NodeT v) {
             if (!marked[Impl::nodeIndex(v)]) {
                 qNext.push(v);
-                marked[Impl::nodeIndex(v)] = true;
+                marked[Impl::nodeIndex(v)] = 1;
             }
         });
         if (q.empty() && !qNext.empty()) {
@@ -127,12 +127,12 @@ void BFSEdgesFrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
     using NodeT = typename GraphT::NodeT;
     using EdgeWeightT = typename GraphT::EdgeWeightT;
 
-    std::vector<bool> marked(static_cast<std::size_t>(G.upperNodeIdBound()));
+    std::vector<uint8_t> marked(static_cast<std::size_t>(G.upperNodeIdBound()));
     std::queue<NodeT> q;
     if (!Impl::isValidNode(G, source))
         throw std::runtime_error("Error: source node not in the graph.");
     q.push(source); // enqueue root
-    marked[Impl::nodeIndex(source)] = true;
+    marked[Impl::nodeIndex(source)] = 1;
     do {
         const auto u = q.front();
         q.pop();
@@ -141,7 +141,7 @@ void BFSEdgesFrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
             if (!marked[Impl::nodeIndex(v)]) {
                 handle(u, v, w, eid);
                 q.push(v);
-                marked[Impl::nodeIndex(v)] = true;
+                marked[Impl::nodeIndex(v)] = 1;
             }
         });
     } while (!q.empty());
