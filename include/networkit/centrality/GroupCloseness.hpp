@@ -31,7 +31,7 @@ public:
      * much faster in practice.
      *
      * @param G An unweighted graph.
-     * @param k Size of the group of nodes
+     * @param k Size of the group of nodes, between 1 and G.numberOfNodes().
      * @param H If equal 0, simply runs the algorithm proposed in Bergamini et
      * al.. If > 0, interrupts all BFSs after H iterations (suggested for very
      * large networks).
@@ -42,6 +42,7 @@ public:
     /**
      * Computes the group with maximum closeness on the graph passed in the
      * constructor.
+     * @throws std::invalid_argument If k is zero or exceeds the number of nodes.
      */
     void run() override;
 
