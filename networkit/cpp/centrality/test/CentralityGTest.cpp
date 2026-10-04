@@ -1928,10 +1928,7 @@ TEST_F(CentralityGTest, testGroupCloseness) {
 
 TEST_F(CentralityGTest, testKadabraEmptyGraph) {
     Graph G(0);
-    KadabraBetweenness kadabra(G, 0.1, 0.1);
-
-    EXPECT_THROW(kadabra.run(), std::invalid_argument);
-    EXPECT_FALSE(kadabra.hasFinished());
+    EXPECT_THROW(KadabraBetweenness(G, 0.1, 0.1), std::invalid_argument);
 }
 
 TEST_F(CentralityGTest, testKadabraAllNodesRemoved) {
@@ -1939,12 +1936,9 @@ TEST_F(CentralityGTest, testKadabraAllNodesRemoved) {
     G.removeNode(0);
     G.removeNode(1);
     G.removeNode(2);
-    EXPECT_TRUE(G.isEmpty());
-    EXPECT_GT(G.upperNodeIdBound(), 0);
-    KadabraBetweenness kadabra(G, 0.1, 0.1);
-
-    EXPECT_THROW(kadabra.run(), std::invalid_argument);
-    EXPECT_FALSE(kadabra.hasFinished());
+    ASSERT_TRUE(G.isEmpty());
+    ASSERT_GT(G.upperNodeIdBound(), 0);
+    EXPECT_THROW(KadabraBetweenness(G, 0.1, 0.1), std::invalid_argument);
 }
 
 /**

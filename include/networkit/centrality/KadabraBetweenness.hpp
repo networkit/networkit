@@ -117,6 +117,7 @@ public:
      * approximate the betweenness centrality of all the nodes.
      * @param unionSample algorithm parameter that is automatically chosen.
      * @param startFactor algorithm parameter that is automatically chosen.
+     * @throws std::invalid_argument If the input graph is empty.
      */
     KadabraBetweenness(const Graph &G, double err = 0.01, double delta = 0.1,
                        bool deterministic = false, count k = 0, count unionSample = 0,
@@ -124,8 +125,6 @@ public:
 
     /**
      * Executes the Kadabra algorithm.
-     *
-     * @throws std::invalid_argument If the input graph is empty.
      */
     void run() override;
 

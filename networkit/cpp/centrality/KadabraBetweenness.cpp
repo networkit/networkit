@@ -27,6 +27,9 @@ KadabraBetweenness::KadabraBetweenness(const Graph &G, const double err, const d
                                        const count startFactor)
     : G(G), delta(delta), err(err), deterministic(deterministic), k(k), startFactor(startFactor),
       unionSample(unionSample), absolute(k == 0), stop(false) {
+    if (G.isEmpty())
+        throw std::invalid_argument("KadabraBetweenness: input graph is empty");
+
     const count n = G.upperNodeIdBound();
     if (k > n)
         throw std::runtime_error(
@@ -291,9 +294,6 @@ void KadabraBetweenness::fillResult() {
 }
 
 void KadabraBetweenness::run() {
-    if (G.isEmpty())
-        throw std::invalid_argument("KadabraBetweenness: input graph is empty");
-
     init();
     const count n = G.upperNodeIdBound();
     const auto omp_max_threads = omp_get_max_threads();
