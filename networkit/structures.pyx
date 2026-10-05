@@ -721,12 +721,16 @@ cdef class Partition:
 			return False
 
 		# Build a bijection between subset ids (independent of the concrete ids).
-		# Previously a frozen loop index `i` (never incremented) made every
-		# equal-length comparison return True — see #1511.
+		# Unassigned elements (labeled none) are absent from every subset: they
+		# must be unassigned on both sides and do not take part in the id mapping.
 		cdef dict selfToOther = dict()
 		cdef dict otherToSelf = dict()
 		cdef index idx
 		for idx in range(self._this.numberOfElements()):
+			if self._this.contains(idx) != other._this.contains(idx):
+				return False
+			if not self._this.contains(idx):
+				continue
 			s = self[idx]
 			o = other[idx]
 			if s in selfToOther and selfToOther[s] != o:

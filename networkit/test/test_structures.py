@@ -96,7 +96,7 @@ class TestStructures(unittest.TestCase):
 		self.assertFalse(p1==p2)
 
 	def testPartitionEqualityDifferentStructure(self):
-		"""Regression #1511: equal-length partitions with different grouping !=."""
+		"""Equal-length partitions with different grouping are not equal."""
 		singles = nk.Partition(3)
 		singles.allToSingletons()
 
@@ -129,6 +129,22 @@ class TestStructures(unittest.TestCase):
 		pair_right.addToSubset(1, 1)
 		pair_right.addToSubset(1, 2)
 		self.assertFalse(pair_left == pair_right)
+
+		# Unassigned (none) vs assigned at the same index is not equal.
+		left = nk.Partition(2)
+		left.addToSubset(0, 0)
+		right = nk.Partition(2)
+		right.addToSubset(0, 1)
+		self.assertFalse(left == right)
+
+		# Same assignment, both unassigned at the same index, different ids.
+		same_a = nk.Partition(2)
+		same_a.setUpperBound(5)
+		same_a.addToSubset(4, 0)
+		same_b = nk.Partition(2)
+		same_b.addToSubset(0, 0)
+		self.assertTrue(same_a == same_b)
+		self.assertTrue(nk.Partition(3) == nk.Partition(3))
 
 if __name__ == "__main__":
 	unittest.main()
