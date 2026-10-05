@@ -20,6 +20,9 @@
 namespace NetworKit {
 
 GroupCloseness::GroupCloseness(const Graph &G, count k, count H) : G(&G), k(k), H(H) {
+    if (k == 0 || k > G.numberOfNodes())
+        throw std::invalid_argument("Group size must be between 1 and the number of nodes.");
+
     d1Global.resize(omp_get_max_threads(), std::vector<count>(G.upperNodeIdBound()));
 }
 
@@ -69,7 +72,7 @@ void GroupCloseness::updateDistances(node u) {
 }
 
 void GroupCloseness::run() {
-    if (k == 0 || k > G->numberOfNodes())
+    if (k > G->numberOfNodes())
         throw std::invalid_argument("Group size must be between 1 and the number of nodes.");
 
     const count n = G->upperNodeIdBound();
@@ -157,10 +160,12 @@ void GroupCloseness::run() {
         if (maxNode == none) {
             // Disconnected or isolated nodes can have zero marginal gain. Still
             // return k distinct nodes rather than using none as a distance index.
-            G->forNodes([&](node v) {
-                if (maxNode == none && std::find(S.begin(), S.begin() + i, v) == S.begin() + i)
+            for (const node v : G->nodeRange()) {
+                if (std::ranges::find(S.begin(), S.begin() + i, v) == S.begin() + i) {
                     maxNode = v;
-            });
+                    break;
+                }
+            }
         }
         S[i] = maxNode;
 
