@@ -38,6 +38,7 @@ Modules
    GraphMLIO
    helpers
    independentset
+   isomorphism
    linkprediction
    matching
    nxadapter
