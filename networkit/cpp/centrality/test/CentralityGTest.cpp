@@ -1926,6 +1926,21 @@ TEST_F(CentralityGTest, testGroupCloseness) {
     EXPECT_NEAR(gc.scoreOfGroup(apx), 1.0, 1e-5);
 }
 
+TEST_F(CentralityGTest, testKadabraEmptyGraph) {
+    Graph G(0);
+    EXPECT_THROW(KadabraBetweenness(G, 0.1, 0.1), std::invalid_argument);
+}
+
+TEST_F(CentralityGTest, testKadabraAllNodesRemoved) {
+    Graph G(3);
+    G.removeNode(0);
+    G.removeNode(1);
+    G.removeNode(2);
+    ASSERT_TRUE(G.isEmpty());
+    ASSERT_GT(G.upperNodeIdBound(), 0);
+    EXPECT_THROW(KadabraBetweenness(G, 0.1, 0.1), std::invalid_argument);
+}
+
 /**
  * This test succeeds with the fixed random seed (42).
  * However, the Kadabra algorithm computes a correct epsilon-approximation of
