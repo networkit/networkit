@@ -57,3 +57,10 @@ requires = [
   "setuptools",
   "wheel"
 ]
+
+[[tool.cibuildwheel.overrides]]
+select = "cp315-manylinux_x86_64"
+repair-wheel-command = [
+  'auditwheel repair -w {dest_dir} {wheel}',
+  'python -I -B "{project}/networkit/test/check_curveball_wheel.py" --wheel-dir "{dest_dir}"',
+]
