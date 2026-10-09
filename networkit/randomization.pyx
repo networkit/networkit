@@ -1,5 +1,7 @@
 # distutils: language=c++
 
+from ._curveball_planning import CurveballTradePlan, curveballTradePlan
+
 from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair

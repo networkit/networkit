@@ -6,7 +6,8 @@ url = "https://networkit.github.io/"
 
 download_url = "https://pypi.python.org/pypi/networkit"
 
-license = "MIT"
+# Different components retain their respective licenses; see License.txt.
+license = "MIT AND Apache-2.0"
 
 author = "Christian L. Staudt, Henning Meyerhenke"
 
@@ -42,6 +43,7 @@ classifiers = [
     "Intended Audience :: End Users/Desktop",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: C++",

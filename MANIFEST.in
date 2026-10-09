@@ -1,5 +1,7 @@
 include networkit.pc
 include version.py
+include networkit/_licenses/curveball-planner/LICENSE
+include networkit/_licenses/curveball-planner/NOTICE
 include CMakeLists.txt
 graft include
 graft extlibs/tlx

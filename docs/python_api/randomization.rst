@@ -5,3 +5,5 @@ networkit.randomization
     :members:
     :undoc-members:
     :show-inheritance:
+
+.. include:: ../CurveballPlanning.rst

@@ -19,3 +19,10 @@ NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPO
 NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
 OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Component license exception for the proposed ordinary-Curveball planner:
+networkit/_curveball_planning.py, networkit/test/test_curveball_planning.py,
+and docs/CurveballPlanning.rst are Apache-2.0-derived contributions retaining
+their original license and attribution. The corresponding Apache License 2.0
+and NOTICE are shipped at networkit/_licenses/curveball-planner/.
+The MIT terms above remain unchanged for the existing NetworKit code.

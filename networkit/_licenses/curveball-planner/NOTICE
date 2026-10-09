@@ -1,0 +1,22 @@
+Curveball attempted-trade planner component
+Copyright 2026 DaniilKi contributors.
+
+The new _curveball_planning.py, test_curveball_planning.py and
+docs/CurveballPlanning.rst adapt the Apache-2.0 Curveball Error Budget
+planner and its arithmetic, published v0.3.0 project commit
+a4858a43354b9e26064ac11d3705b88dec8d4f42. The earlier kernel arithmetic
+has historical lineage at 9319b8289617a6a08aeb528000bddff4da7ca121.
+This component retains Apache-2.0;
+it is not relabeled as upstream MIT. Its LICENSE is bundled here.
+
+The ordinary Curveball sampler is existing NetworKit code and is unchanged.
+Algorithm attribution: Carstens, Berger and Strona, arXiv:1609.05137v3;
+Carstens et al., arXiv:1804.08487v2, ESA 2018;
+Dyer, Greenhill and Ullrich, arXiv:1301.4055 (heat-bath chains).
+The conditional operator premise is credited to OpenAI/math family 131,
+fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb. No Lean code or manuscript text
+is incorporated in this component. The conditional corollary is not a new
+sampler result or an end-to-end implementation certificate.
+
+OpenAI Codex assisted adaptation, tests and documentation. Maintainer
+review and acceptance remain necessary; no upstream endorsement is implied.
