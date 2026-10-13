@@ -107,8 +107,6 @@ def _calculateNodeColoring(G, palette, nodeScores=None, nodePartition=None):
                 (len(palette) - 1)
                 * (value - minimum)
                 / (maximum - minimum)
-                * (value - minimum)
-                / (maximum - minimum)
             )
             r = int(palette[ratio][0] * 255)
             g = int(palette[ratio][1] * 255)
@@ -148,8 +146,6 @@ def _calculateEdgeColoring(G, palette, edgeScores: List[float] = None):
             minimum, maximum, value = float(minimum), float(maximum), float(value)
             ratio = int(
                 (len(palette) - 1)
-                * (value - minimum)
-                / (maximum - minimum)
                 * (value - minimum)
                 / (maximum - minimum)
             )
