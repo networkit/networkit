@@ -158,14 +158,22 @@ def symmetricEigenvectors(matrix, cutoff=-1, reverse=False):
 		second one holding the corresponding eigenvectors.
 	"""
 	if cutoff == -1:
-		cutoff = matrix.shape[0] - 3
+		cutoff = max(0, matrix.shape[0] - 3)
 
 	if reverse:
 		mode = "SA"
 	else:
 		mode = "LA"
 
-	w, v = scipy.sparse.linalg.eigsh(matrix, cutoff + 1, which=mode)
+	if matrix.shape[0] <= 2:
+		if not 0 <= cutoff < matrix.shape[0]:
+			raise ValueError("cutoff must select an eigenvector of the matrix")
+		dense = matrix.toarray() if scipy.sparse.issparse(matrix) else np.asarray(matrix)
+		w, v = np.linalg.eigh(dense)
+		selection = slice(0, cutoff + 1) if reverse else slice(-cutoff - 1, None)
+		w, v = w[selection], v[:, selection]
+	else:
+		w, v = scipy.sparse.linalg.eigsh(matrix, cutoff + 1, which=mode)
 
 	orderlist = zip(w, range(0, len(w)))
 	orderlist = sorted(orderlist)
@@ -198,14 +206,23 @@ def eigenvectors(matrix, cutoff=-1, reverse=False):
 
 	"""
 	if cutoff == -1:
-		cutoff = matrix.shape[0] - 3
+		cutoff = max(0, matrix.shape[0] - 3)
 
 	if reverse:
 		mode = "SR"
 	else:
 		mode = "LR"
 
-	w, v = scipy.sparse.linalg.eigs(matrix, cutoff + 1, which=mode)
+	if matrix.shape[0] <= 2:
+		if not 0 <= cutoff < matrix.shape[0]:
+			raise ValueError("cutoff must select an eigenvector of the matrix")
+		dense = matrix.toarray() if scipy.sparse.issparse(matrix) else np.asarray(matrix)
+		w, v = np.linalg.eig(dense)
+		order = np.argsort(w)
+		selection = order[:cutoff + 1] if reverse else order[-cutoff - 1:]
+		w, v = w[selection], v[:, selection]
+	else:
+		w, v = scipy.sparse.linalg.eigs(matrix, cutoff + 1, which=mode)
 
 	orderlist = zip(w, range(0, len(w)))
 	orderlist = sorted(orderlist)
