@@ -211,7 +211,7 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count &visEdges,
         }
 
         // now we compute it for the other levels
-        for (omp_index i = 2; i <= static_cast<omp_index>(nLevs); i++) {
+        for (omp_index i = 2; i <= static_cast<omp_index>(nLevs); ++i) {
             if (i > 2) {
                 level_bound += sumLevs[i - 3];
             }
