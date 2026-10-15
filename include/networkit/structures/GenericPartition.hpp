@@ -13,6 +13,7 @@
 #include <limits>
 #include <map>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <type_traits>
 #include <utility>

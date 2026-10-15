@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cassert>
 #include <iterator>
+#include <stdexcept>
 #include <unordered_set>
 
 namespace NetworKit {
