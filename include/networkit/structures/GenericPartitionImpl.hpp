@@ -18,7 +18,7 @@ GenericPartition<IndexType>::GenericPartition(const std::vector<IndexType> &data
     IndexType maxId = 0;
     for (auto elem : data) {
         if (elem != noneIndex && elem > maxId) {
-            max_elem = elem;
+            maxId = elem;
         }
     }
     this->omega = maxId;
@@ -105,7 +105,8 @@ void GenericPartition<IndexType>::compact(bool useTurbo) {
                 }
             });
     }
-    // MK: @Alexandra, since compact() is a trivial renumeration, we do not need to re-scan the uuper bound again
+    // MK: @Alexandra, since compact() is a trivial renumeration, we do not need to re-scan
+    // the upper bound again
     this->setUpperBound(i);
 }
 
