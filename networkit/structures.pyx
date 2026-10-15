@@ -83,13 +83,11 @@ cdef class Cover:
 		"""
 		return self._this.extend()
 
-	# @Mikhail this does not fail if e is already assigned, afterwards e is in all of its previously assigned subsets + in the new subset s, comment potentially misleading
-	# For Partition addToSubset(s, e) fails if e is already assigned, maybe the comment was simply copy pasted
 	def addToSubset(self, s, e):
 		"""
 		addToSubset(s, e)
 
-		Add the (previously unassigned) element `e` to the set `s`.
+		Add the element `e` to the set `s`.
 
 		Parameters
 		----------

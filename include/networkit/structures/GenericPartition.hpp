@@ -19,7 +19,6 @@
 #include <vector>
 
 #include <networkit/Globals.hpp>
-#include <networkit/auxiliary/Log.hpp>
 
 namespace NetworKit {
 
@@ -183,11 +182,6 @@ public:
             // trying to shrink omega, must ensure we do not shrink it too much
             for (IndexType e = 0; e < this->z; ++e) {
                 if (data[e] != noneIndex && data[e] > upper - 1) {
-                    // @Mikhail Wasn't sure what type of error to throw here and how to word the
-                    // error message
-                    ERROR("Shrinking upper bound this much would result in elements being mapped "
-                          "to invalid subset ids. Try larger number for upper or using compact() "
-                          "first.");
                     throw std::invalid_argument(
                         "Shrinking upper bound this much would result in "
                         "elements being mapped to invalid subset ids. Try "

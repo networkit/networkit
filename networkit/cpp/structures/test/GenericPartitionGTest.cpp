@@ -245,8 +245,6 @@ TYPED_TEST_P(GenericPartitionGTest, testRemoveAndResetUseTypedNoneSentinel) {
 }
 
 TYPED_TEST_P(GenericPartitionGTest, testSetUpperBound) {
-    constexpr auto none = GenericPartition<TypeParam>::noneIndex;
-
     const std::vector<TypeParam> vector{0, 1, 2, 3, 4, 5};
     GenericPartition<TypeParam> partition(vector);
     EXPECT_ANY_THROW(partition.setUpperBound(TypeParam{5}));

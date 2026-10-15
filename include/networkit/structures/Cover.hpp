@@ -13,7 +13,6 @@
 #include <vector>
 
 #include <networkit/Globals.hpp>
-#include <networkit/auxiliary/Log.hpp>
 #include <networkit/structures/GenericPartition.hpp>
 
 namespace NetworKit {
@@ -93,7 +92,7 @@ public:
     std::set<IndexType> getMembers(IndexType s) const;
 
     /**
-     * Add the (previously unassigned) element @a e to the set @a s.
+     * Add the element @a e to the set @a s.
      * @param[in] s a subset
      * @param[in] e an element
      */

@@ -14,16 +14,14 @@ GenericPartition<IndexType>::GenericPartition() : z(0), omega(0), data(0) {}
 template <IntegralValue IndexType>
 GenericPartition<IndexType>::GenericPartition(const std::vector<IndexType> &data)
     : z(data.size()), omega(), data(data) {
-    // @Mikhail I changed this bc before if the data vector contained numbers (other than 0) and
-    // 'none' entries, this always set omega to 0. Omega is the maximum subset index assigned so if
-    // for example data = [5, 3, none, 4, none], it should be 5 not 0
-    auto max_elem = noneIndex;
+    // Unassigned entries are not subset ids, so skip them when finding the largest id.
+    IndexType maxId = 0;
     for (auto elem : data) {
-        if (elem != noneIndex && (max_elem == noneIndex || elem > max_elem)) {
+        if (elem != noneIndex && elem > maxId) {
             max_elem = elem;
         }
     }
-    this->omega = (max_elem == noneIndex) ? 0 : max_elem;
+    this->omega = maxId;
 }
 
 template <IntegralValue IndexType>
@@ -35,8 +33,8 @@ GenericPartition<IndexType>::GenericPartition(IndexType z, IndexType defaultValu
 
 template <IntegralValue IndexType>
 void GenericPartition<IndexType>::allToSingletons() {
-    setUpperBound(numberOfElements());
     parallelForEntries([&](IndexType e, IndexType) { data[e] = e; });
+    setUpperBound(numberOfElements());
 }
 
 template <IntegralValue IndexType>
