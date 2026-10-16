@@ -135,6 +135,8 @@ def connectedComponentsSizes(G, relativeSizes=True):
 		raise MissingDependencyError("matplotlib")
 	csizes = components.ConnectedComponents(G).run().getComponentSizes()
 	data = sorted(list(csizes.values()), reverse=True)
+	if not data:
+		raise ValueError("connectedComponentsSizes: graph has no components (0 nodes?)")
 	colors = seaborn.color_palette("Set2", 10)
 	total = sum(data)
 	# explode the largest component pie piece
