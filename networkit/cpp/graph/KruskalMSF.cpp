@@ -34,7 +34,7 @@ void KruskalMSF::run() {
 
             // if edge does not close cycle, add it to tree
             if (uf.find(e.u) != uf.find(e.v)) {
-                forest.addEdge(e.u, e.v);
+                forest.addEdge(e.u, e.v, e.weight);
                 totalWeight += e.weight;
                 uf.merge(e.u, e.v);
             }
