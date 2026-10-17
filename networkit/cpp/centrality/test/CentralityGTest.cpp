@@ -1195,6 +1195,23 @@ TEST_P(CentralityGTest, testClosenessCentrality) {
     }
 }
 
+TEST_F(CentralityGTest, testHarmonicClosenessSingleton) {
+    for (bool normalized : {false, true}) {
+        for (bool directed : {false, true}) {
+            Graph G(1, false, directed);
+            HarmonicCloseness centrality(G, normalized);
+            centrality.run();
+            EXPECT_DOUBLE_EQ(centrality.score(0), 0.);
+            EXPECT_DOUBLE_EQ(centrality.maximum(), 0.);
+        }
+        Graph empty(0);
+        HarmonicCloseness centrality(empty, normalized);
+        centrality.run();
+        EXPECT_TRUE(centrality.scores().empty());
+        EXPECT_DOUBLE_EQ(centrality.maximum(), 0.);
+    }
+}
+
 TEST_F(CentralityGTest, testHarmonicClosenessMaximum) {
     Graph G(4);
     G.addEdge(0, 1);
