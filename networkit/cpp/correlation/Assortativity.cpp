@@ -48,8 +48,8 @@ void Assortativity::run() {
         std::vector<double> a(k, 0.0);
         std::vector<double> b(k, 0.0);
         // normalize and calculate sums
-        count m = G->isDirected() ? G->numberOfEdges()
-                                  : 2 * G->numberOfEdges() - G->numberOfSelfLoops();
+        count m =
+            G->isDirected() ? G->numberOfEdges() : 2 * G->numberOfEdges() - G->numberOfSelfLoops();
         for (index i = 0; i < k; ++i) {
             for (index j = 0; j < k; ++j) {
                 E[i][j] = E[i][j] / m;
