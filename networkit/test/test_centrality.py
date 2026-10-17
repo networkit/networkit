@@ -388,6 +388,15 @@ class TestCentrality(unittest.TestCase):
         self.assertAlmostEqual(CL.bound(0), 0.62, 2)
         self.assertTrue(CL.areDistinguished(0, 8))
 
+    def testHarmonicClosenessMaximum(self):
+        g = nk.Graph(4)
+        for u in range(3):
+            g.addEdge(u, u + 1)
+        for normalized in (False, True):
+            centrality = nk.centrality.HarmonicCloseness(g, normalized).run()
+            self.assertEqual(centrality.maximum(), 1.0 if normalized else 3.0)
+            self.assertAlmostEqual(centrality.centralization(), 2 / 5)
+
     def testDynTopHarmonicCloseness(self):
         k = 5
 
