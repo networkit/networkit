@@ -49,6 +49,6 @@ void HarmonicCloseness::run() {
 }
 
 double HarmonicCloseness::maximum() {
-    return normalized ? static_cast<double>(G.numberOfNodes() - 1) : 1.f;
+    return normalized ? 1. : static_cast<double>(G.numberOfNodes() - 1);
 }
 } // namespace NetworKit

@@ -1195,6 +1195,22 @@ TEST_P(CentralityGTest, testClosenessCentrality) {
     }
 }
 
+TEST_F(CentralityGTest, testHarmonicClosenessMaximum) {
+    Graph G(4);
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+
+    for (bool normalized : {false, true}) {
+        HarmonicCloseness centrality(G, normalized);
+        centrality.run();
+        EXPECT_DOUBLE_EQ(centrality.maximum(), normalized ? 1. : 3.);
+        // Raw scores are [11/6, 5/2, 5/2, 11/6]. Scaling every score
+        // and its theoretical maximum leaves centralization at 2/5.
+        EXPECT_NEAR(centrality.centralization(), 2. / 5., 1e-12);
+    }
+}
+
 TEST_F(CentralityGTest, testHarmonicClosenessCentrality) {
     /* Graph:
      0    3
