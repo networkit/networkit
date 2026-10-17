@@ -200,6 +200,7 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count &visEdges,
 
     edgeweight level_bound = 2.0 * closeNodes + static_cast<double>(farNodes);
     const auto &reachU = *(reachUPtr.get());
+    const auto nLevsInt = static_cast<int32_t>(nLevs);
     if (!G.isDirected()) {
         for (node w : levels[1]) {
             // we subtract 2 not to count the node itself
@@ -211,11 +212,11 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count &visEdges,
         }
 
         // now we compute it for the other levels
-        for (int32_t i = 2; i <= static_cast<int32_t>(nLevs); ++i) {
+        for (int32_t i = 2; i <= nLevsInt; ++i) {
             if (i > 2) {
                 level_bound += sumLevs[i - 3];
             }
-            if (i < nLevs) {
+            if (i < nLevsInt) {
                 level_bound -= static_cast<edgeweight>(sumLevs[nLevs] - sumLevs[i + 1]);
             }
             for (node w : levels[i]) {
@@ -239,8 +240,8 @@ void TopCloseness::BFSbound(node x, std::vector<double> &S2, count &visEdges,
         }
 
         // now we compute it for the other levels
-        for (int32_t i = 2; i <= static_cast<int32_t>(nLevs); ++i) {
-            if (i < nLevs) {
+        for (int32_t i = 2; i <= nLevsInt; ++i) {
+            if (i < nLevsInt) {
                 level_bound -= static_cast<edgeweight>(sumLevs[nLevs] - sumLevs[i + 1]);
             }
             for (node w : levels[i]) {
