@@ -1259,7 +1259,7 @@ TEST_F(CentralityGTest, testHarmonicClosenessCentrality) {
     EXPECT_NEAR(3.5, hc[3], tol);
     EXPECT_NEAR(3.5, hc[4], tol);
     EXPECT_NEAR(3.1667, hc[5], tol);
-    EXPECT_NEAR(1, maximum, tol);
+    EXPECT_NEAR(5., maximum, tol);
 }
 
 TEST_F(CentralityGTest, runKPathCentrality) {
