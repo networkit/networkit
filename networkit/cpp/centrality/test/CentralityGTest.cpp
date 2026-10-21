@@ -1207,7 +1207,7 @@ TEST_F(CentralityGTest, testHarmonicClosenessSingleton) {
         Graph empty(0);
         HarmonicCloseness centrality(empty, normalized);
         centrality.run();
-        EXPECT_TRUE(centrality.scores().empty());
+        EXPECT_THAT(centrality.scores(), testing::IsEmpty());
         EXPECT_DOUBLE_EQ(centrality.maximum(), 0.);
     }
 }
