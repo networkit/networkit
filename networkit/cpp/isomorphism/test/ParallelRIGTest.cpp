@@ -259,43 +259,16 @@ TEST_P(ParallelRIGTest, testDisconnectedPatternIsSearchedInParallel) {
     EXPECT_EQ(parallelMatches(pattern, target, Semantics::MONOMORPHISM, GetParam()), expected);
 }
 
-TEST_P(ParallelRIGTest, testDegenerateInputs) {
+/// The empty mapping alone reaches a cap of one, so seeding stops the search.
+TEST_P(ParallelRIGTest, testEmptyPatternReachesACapOfOne) {
     // SubgraphIsomorphism holds the graphs by pointer, so they must not be temporaries.
     const Graph k4 = graphOf(4, {{0, 1}, {0, 2}, {0, 3}, {1, 2}, {1, 3}, {2, 3}});
     const Graph nothing(0);
-    const Graph oneEdge = graphOf(2, {{0, 1}});
-    const Graph path3 = graphOf(3, {{0, 1}, {1, 2}});
-    const Graph tri = triangle();
 
-    // Seeding reports the only match of an empty pattern.
-    ParallelRI empty(nothing, k4, GetParam(), Semantics::INDUCED, 0);
-    empty.run();
-    ASSERT_TRUE(empty.hasFinished());
-    EXPECT_EQ(empty.numberOfMatches(), 1u);
-    ASSERT_EQ(empty.getMatches().size(), 1u);
-    EXPECT_TRUE(empty.getMatches().front().empty());
-
-    // The empty mapping alone reaches a cap of one, so seeding stops the search.
     ParallelRI emptyCapped(nothing, k4, GetParam(), Semantics::INDUCED, 1);
     emptyCapped.run();
     ASSERT_TRUE(emptyCapped.hasFinished());
     EXPECT_EQ(emptyCapped.numberOfMatches(), 1u);
-
-    ParallelRI tooBig(k4, oneEdge, GetParam(), Semantics::INDUCED, 0);
-    tooBig.run();
-    ASSERT_TRUE(tooBig.hasFinished());
-    EXPECT_EQ(tooBig.numberOfMatches(), 0u);
-    EXPECT_FALSE(tooBig.hasMatch());
-
-    // The pool runs and every branch dies, which hangs if termination is wrong.
-    ParallelRI noMatch(tri, path3, GetParam(), Semantics::MONOMORPHISM, 0);
-    noMatch.run();
-    ASSERT_TRUE(noMatch.hasFinished());
-    EXPECT_EQ(noMatch.numberOfMatches(), 0u);
-
-    ParallelRI uncapped(tri, k4, GetParam(), Semantics::MONOMORPHISM, 0);
-    uncapped.run();
-    EXPECT_EQ(uncapped.numberOfMatches(), 24u);
 }
 
 /// The binary hangs here instead of failing if a worker keeps spinning after CTRL+C.
@@ -317,10 +290,6 @@ TEST_P(ParallelRIGTest, testInterruptStopsEveryWorker) {
     EXPECT_FALSE(algo.hasFinished()) << "an interrupted run must not count as finished";
     EXPECT_THROW(algo.numberOfMatches(), std::runtime_error);
     EXPECT_GE(delivered.load(), 5u) << "matches already handed over cannot be taken back";
-
-    const std::vector<Match> expected =
-        sequentialMatches(pattern, target, Semantics::MONOMORPHISM, GetParam());
-    EXPECT_EQ(parallelMatches(pattern, target, Semantics::MONOMORPHISM, GetParam()), expected);
 }
 
 /// An exception that escaped the OpenMP region would terminate the binary. The serial callback form

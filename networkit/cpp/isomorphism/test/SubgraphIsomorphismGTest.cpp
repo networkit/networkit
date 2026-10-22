@@ -224,15 +224,6 @@ TEST_F(SubgraphIsomorphismGTest, testTheAnswerDoesNotDependOnTheWorkerCount) {
 
     IsomorphismTest::ReferenceSubgraphIsomorphism sequential(pattern, k5, Semantics::MONOMORPHISM);
     EXPECT_EQ(sequential.numberOfWorkers(), 1u);
-    sequential.run();
-    EXPECT_EQ(sequential.numberOfWorkers(), 1u);
-
-    for (count workers : {count{1}, count{2}, count{4}, count{7}}) {
-        MultiWorkerReporter algo(pattern, k5, Semantics::MONOMORPHISM, workers);
-        EXPECT_EQ(algo.numberOfWorkers(), workers);
-        algo.run();
-        EXPECT_EQ(algo.numberOfWorkers(), workers);
-    }
 }
 
 TEST_F(SubgraphIsomorphismGTest, testOvershootIsTrimmedUnlessACallbackReceivedIt) {

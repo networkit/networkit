@@ -86,6 +86,9 @@ protected:
 
 INSTANTIATE_TEST_SUITE_P(Variants, RIGTest, testing::Values(RI::Variant::RI, RI::Variant::RI_DS));
 
+/// Checks of the RI-DS domains, which plain RI does not build.
+class RIDSGTest : public testing::Test {};
+
 TEST_P(RIGTest, testAgreesWithTheReference) {
     const RI::Variant variant = GetParam();
     const auto make = [variant](const Graph &pattern, const Graph &target, Semantics semantics,
@@ -298,10 +301,7 @@ TEST_P(RIGTest, testSelectiveDomainsDoNotChangeTheMatchSet) {
 
 /// The domains are set by hand, since a computed domain keeps every neighbour that could host the
 /// pattern node. The slice of target node 5 has a node below and a node above the domain.
-TEST_P(RIGTest, testCandidatesAreIntersectedWithTheDomain) {
-    if (GetParam() == RI::Variant::RI)
-        GTEST_SKIP() << "plain RI builds no domains";
-
+TEST_F(RIDSGTest, testCandidatesAreIntersectedWithTheDomain) {
     const SearchGraph pattern(IsomorphismTest::graphOf(2, {{0, 1}}), /* buildMatrix = */ true);
     const SearchGraph target(IsomorphismTest::graphOf(10, {{5, 1}, {5, 3}, {5, 7}, {5, 9}}),
                              /* buildMatrix = */ false);
@@ -401,7 +401,7 @@ TEST_P(RIGTest, testSingletonDomainsAreRemovedAndComeFirst) {
  * centres nested domains of sizes 1 to 4, so all four end as singletons only if the removals
  * chain.
  */
-TEST_P(RIGTest, testForwardCheckingReachesAFixpoint) {
+TEST_F(RIDSGTest, testForwardCheckingReachesAFixpoint) {
     constexpr index leafLabel = 9;
 
     // Target nodes 0..3 carry label 0 and have degrees 4, 3, 2 and 1; 4..13 are label-9 pendants.
@@ -431,12 +431,7 @@ TEST_P(RIGTest, testForwardCheckingReachesAFixpoint) {
     const SearchGraph patternGraph(pattern, /* buildMatrix = */ true);
     const SearchGraph targetGraph(target, /* buildMatrix = */ false);
     const RIImpl::Domains domains = RIImpl::computeDomains(
-        patternGraph, targetGraph, patternNodeLabels, targetNodeLabels, GetParam());
-
-    if (GetParam() == RI::Variant::RI) {
-        EXPECT_TRUE(domains.ofPatternNode.empty()) << "plain RI must build no domains at all";
-        return;
-    }
+        patternGraph, targetGraph, patternNodeLabels, targetNodeLabels, RI::Variant::RI_DS);
 
     EXPECT_FALSE(domains.anyEmpty);
     for (node centre = 0; centre < 4; ++centre)

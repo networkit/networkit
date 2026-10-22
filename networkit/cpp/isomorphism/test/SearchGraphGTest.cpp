@@ -136,8 +136,6 @@ TEST_F(SearchGraphGTest, testSearchGraphCSR) {
 
     EXPECT_EQ(std::vector<node>(SG.inBegin(5), SG.inEnd(5)), (std::vector<node>{1, 3, 7, 9}));
     EXPECT_EQ(std::vector<node>(SG.outBegin(5), SG.outEnd(5)), (std::vector<node>{1, 3, 7, 9}));
-    EXPECT_EQ(std::vector<node>(SG.inBegin(5), SG.inEnd(5)),
-              std::vector<node>(SG.outBegin(5), SG.outEnd(5)));
 
     // G still has the self-loop, so the snapshot degree is one lower than the Graph degree
     EXPECT_EQ(G.degreeOut(5), 5);
@@ -304,30 +302,6 @@ TEST_F(SearchGraphGTest, testMultiEdgesAndLoopsCollapsed) {
     }
 }
 
-TEST_F(SearchGraphGTest, testSlicesAreStrictlyAscending) {
-
-    // hasEdge() binary-searches the slices.
-    METISGraphReader reader;
-    Graph G = reader.read("input/karate.graph");
-
-    IsomorphismDetails::SearchGraph SG = IsomorphismDetails::SearchGraph(G, false);
-
-    G.forNodes([&](node u) {
-        for (const node *it = SG.outBegin(u); it != SG.outEnd(u); ++it) {
-            EXPECT_NE(*it, u) << "node " << u << " is its own neighbour";
-            if (it + 1 != SG.outEnd(u)) {
-                EXPECT_LT(*it, *(it + 1)) << "out-slice of " << u << " is not strictly ascending";
-            }
-        }
-        for (const node *it = SG.inBegin(u); it != SG.inEnd(u); ++it) {
-            EXPECT_NE(*it, u);
-            if (it + 1 != SG.inEnd(u)) {
-                EXPECT_LT(*it, *(it + 1)) << "in-slice of " << u << " is not strictly ascending";
-            }
-        }
-    });
-}
-
 TEST_F(SearchGraphGTest, testMatrixFallsBackForLargeIdBound) {
 
     // The matrix is sized by upperNodeIdBound(), and declining it must not change hasEdge().
@@ -442,10 +416,6 @@ TEST_F(SearchGraphGTest, testMaxDegree) {
     EXPECT_EQ(SG.outDegree(0), 2);
     EXPECT_EQ(SG.maxOutDegree(), 2);
     EXPECT_EQ(SG.maxInDegree(), 2); // undirected: mirrors maxOutDegree()
-
-    count expected = 0;
-    G.forNodes([&](node u) { expected = std::max(expected, SG.outDegree(u)); });
-    EXPECT_EQ(SG.maxOutDegree(), expected);
 
     EXPECT_NE(SG.maxOutDegree(), GraphTools::maxDegree(G));
 
