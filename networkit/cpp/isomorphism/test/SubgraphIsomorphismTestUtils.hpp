@@ -392,6 +392,42 @@ inline std::vector<Case> standardCases() {
                      {},
                      {},
                      {}});
+    cases.push_back({"directed-empty-pattern",
+                     Graph(0, false, true),
+                     directedTarget,
+                     Semantics::INDUCED,
+                     {},
+                     {},
+                     {},
+                     {}});
+
+    // Each star exceeds the target's maximum degree in one direction, but not its size.
+    const Graph oneEdge = graphOf(5, {{1, 2}});
+    const Graph oneArc = graphOf(5, {{1, 2}}, true);
+    cases.push_back({"star-exceeds-max-degree",
+                     graphOf(4, {{0, 1}, {0, 2}, {0, 3}}),
+                     oneEdge,
+                     Semantics::MONOMORPHISM,
+                     {},
+                     {},
+                     {},
+                     {}});
+    cases.push_back({"in-star-exceeds-max-in-degree",
+                     graphOf(4, {{1, 0}, {2, 0}, {3, 0}}, true),
+                     oneArc,
+                     Semantics::MONOMORPHISM,
+                     {},
+                     {},
+                     {},
+                     {}});
+    cases.push_back({"out-star-exceeds-max-out-degree",
+                     graphOf(4, {{0, 1}, {0, 2}, {0, 3}}, true),
+                     oneArc,
+                     Semantics::MONOMORPHISM,
+                     {},
+                     {},
+                     {},
+                     {}});
 
     cases.push_back({"labelled-path3-in-k4",
                      path3,
@@ -426,7 +462,7 @@ inline std::vector<Case> standardCases() {
                      {},
                      {}});
 
-    // The edge-label cases use MONOMORPHISM, since the induced rule constrains non-edges, which
+    // Most edge-label cases use MONOMORPHISM, since the induced rule constrains non-edges, which
     // carry no labels.
     const LabelledGraph edgeLabelledPattern = labelledGraphOf(3, {{0, 1, 1}, {1, 2, 2}});
     const LabelledGraph edgeLabelledTarget =
@@ -535,6 +571,33 @@ inline std::vector<Case> standardCases() {
                      {},
                      edgeLabelledPattern.edgeLabels,
                      labelledLoops.edgeLabels});
+
+    // The node labels rule out one of the two edge-labelled matches.
+    cases.push_back({"node-and-edge-labelled",
+                     edgeLabelledPattern.G,
+                     edgeLabelledTarget.G,
+                     Semantics::MONOMORPHISM,
+                     {7, none, 8},
+                     {7, 9, 8, 7},
+                     edgeLabelledPattern.edgeLabels,
+                     edgeLabelledTarget.edgeLabels});
+
+    // The labelled square occurs in the target, but the diagonal makes every occurrence
+    // non-induced.
+    const LabelledGraph labelledSquare =
+        labelledGraphOf(4, {{0, 1, 0}, {1, 2, 42}, {2, 3, 0}, {3, 0, 42}});
+    const LabelledGraph squareWithDiagonal =
+        labelledGraphOf(4, {{0, 1, 42}, {1, 2, 0}, {2, 3, 42}, {3, 0, 0}, {0, 2, 42}});
+    for (const Semantics semantics : {Semantics::MONOMORPHISM, Semantics::INDUCED})
+        cases.push_back({semantics == Semantics::INDUCED ? "edge-labelled-square-induced"
+                                                         : "edge-labelled-square-mono",
+                         labelledSquare.G,
+                         squareWithDiagonal.G,
+                         semantics,
+                         {},
+                         {},
+                         labelledSquare.edgeLabels,
+                         squareWithDiagonal.edgeLabels});
 
     return cases;
 }
