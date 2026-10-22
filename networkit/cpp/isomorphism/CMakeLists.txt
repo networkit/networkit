@@ -1,4 +1,5 @@
 networkit_add_module(isomorphism
+    SearchGraph.cpp
     SubgraphIsomorphism.cpp
     )
 
