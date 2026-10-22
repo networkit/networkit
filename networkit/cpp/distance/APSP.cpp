@@ -19,14 +19,20 @@ void APSP::run() {
     const count n = G.upperNodeIdBound();
     distances.assign(n, std::vector<edgeweight>(n));
 
+    if (G.numberOfNodes() == 0) {
+        hasRun = true;
+        return;
+    }
+
+    const node initialSource = *G.nodeRange().begin();
     sssps.resize(omp_get_max_threads());
 #pragma omp parallel
     {
         omp_index i = omp_get_thread_num();
         if (G.isWeighted())
-            sssps[i] = std::unique_ptr<SSSP>(new Dijkstra(G, 0, false));
+            sssps[i] = std::unique_ptr<SSSP>(new Dijkstra(G, initialSource, false));
         else
-            sssps[i] = std::unique_ptr<SSSP>(new BFS(G, 0, false));
+            sssps[i] = std::unique_ptr<SSSP>(new BFS(G, initialSource, false));
     }
 
     G.parallelForNodes([&](node source) {

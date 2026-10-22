@@ -266,4 +266,24 @@ TEST_F(EdmondsKarpGTest, testEdmondsKarpUnconnected) {
     EXPECT_DOUBLE_EQ(0, edKa.getMaxFlow()) << "max flow is not correct";
 }
 
+TEST_F(EdmondsKarpGTest, testConstructorThrowsForOutOfRangeSource) {
+    Graph G(3, false, true);
+
+    EXPECT_THROW(EdmondsKarp(G, 99, 0), std::runtime_error);
+}
+
+TEST_F(EdmondsKarpGTest, testConstructorThrowsForOutOfRangeSink) {
+    Graph G(3, false, true);
+
+    EXPECT_THROW(EdmondsKarp(G, 0, 99), std::runtime_error);
+}
+
+TEST_F(EdmondsKarpGTest, testConstructorThrowsForDeletedEndpoint) {
+    Graph G(4, false, true);
+    G.removeNode(3);
+
+    EXPECT_THROW(EdmondsKarp(G, 3, 0), std::runtime_error);
+    EXPECT_THROW(EdmondsKarp(G, 0, 3), std::runtime_error);
+}
+
 } /* namespace NetworKit */

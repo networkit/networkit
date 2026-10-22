@@ -302,12 +302,18 @@ void Lamg<Matrix>::initializeMultipleComponents(const Graph &G,
         // construct new objects
         compHierarchies[compIdx] = LevelHierarchy<Matrix>();
 
-        // construct block matrix via neighborsOf in G
+        // Construct the component's Laplacian block
         std::vector<Triplet> triplets;
         for (node u : component) {
+            double weightedDegree = 0.0;
             G.forNeighborsOf(u, [&](node v, edgeweight w) {
-                triplets.push_back({graph2Components[u], graph2Components[v], w});
+                if (u != v) {
+                    weightedDegree += w;
+                    triplets.push_back({graph2Components[u], graph2Components[v], -w});
+                }
             });
+            if (weightedDegree != 0.0)
+                triplets.push_back({graph2Components[u], graph2Components[u], weightedDegree});
         }
         Matrix compMatrix(component.size(), component.size(), triplets);
         lamgSetup.setup(compMatrix, compHierarchies[compIdx]);
@@ -362,7 +368,7 @@ void Lamg<Matrix>::setup(const Matrix &laplacianMatrix, const Graph &G) {
 
 template <class Matrix>
 void Lamg<Matrix>::setup(const Matrix &laplacianMatrix) {
-    Graph G = MatrixTools::matrixToGraph(laplacianMatrix);
+    Graph G = MatrixTools::laplacianToGraph(laplacianMatrix);
     setup(laplacianMatrix, G);
 }
 

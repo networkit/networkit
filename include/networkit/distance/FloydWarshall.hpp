@@ -8,13 +8,16 @@
 #ifndef NETWORKIT_DISTANCE_FLOYD_WARSHALL_HPP_
 #define NETWORKIT_DISTANCE_FLOYD_WARSHALL_HPP_
 
+#include <limits>
+#include <vector>
+
 #include <networkit/base/Algorithm.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
 /**
- * @class FloydWarshall
+ * @class GenericFloydWarshall
  * @brief Computes all-pairs shortest paths using the Floyd-Warshall algorithm.
  *
  * This algorithm finds the shortest paths between all node pairs in a weighted graph,
@@ -25,8 +28,13 @@ namespace NetworKit {
  * The algorithm has a time complexity of O(n³), making it suitable for small to
  * medium-sized graphs.
  */
-class FloydWarshall : public Algorithm {
+template <typename GraphT>
+class GenericFloydWarshall : public Algorithm {
 public:
+    using NodeT = typename GraphT::NodeT;
+    using EdgeWeightT = typename GraphT::EdgeWeightT;
+    using DistanceT = edgeweight;
+
     /**
      * @brief Initializes the Floyd-Warshall algorithm for a given graph.
      *
@@ -34,7 +42,7 @@ public:
      *
      * @param G The graph on which shortest paths will be computed.
      */
-    FloydWarshall(const Graph &G);
+    GenericFloydWarshall(const GraphT &G);
     /**
      * @brief Runs the Floyd-Warshall algorithm.
      *
@@ -52,7 +60,7 @@ public:
      * @param target The destination node.
      * @return The shortest path distance from `source` to `target`.
      */
-    edgeweight getDistance(node source, node target) const;
+    DistanceT getDistance(NodeT source, NodeT target) const;
     /**
      * @brief Checks whether a node is part of a negative cycle.
      *
@@ -62,7 +70,7 @@ public:
      * @param u The node to check.
      * @return `true` if the node is in a negative cycle, otherwise `false`.
      */
-    bool isNodeInNegativeCycle(node u) const;
+    bool isNodeInNegativeCycle(NodeT u) const;
 
     /**
      * @brief Retrieves the shortest path between two nodes.
@@ -77,7 +85,7 @@ public:
      * @param target The destination node.
      * @return A vector of nodes forming the shortest path.
      */
-    std::vector<node> getNodesOnShortestPath(node source, node target) const;
+    std::vector<NodeT> getNodesOnShortestPath(NodeT source, NodeT target) const;
 
     /**
      * @brief Returns the full all-pairs distance matrix.
@@ -87,17 +95,22 @@ public:
      *
      * @return A matrix where entry [u][v] is the shortest distance from u to v.
      */
-    const std::vector<std::vector<edgeweight>> &getDistances() const;
+    const std::vector<std::vector<DistanceT>> &getDistances() const;
 
 private:
-    const Graph *graph;
-    static constexpr edgeweight infiniteDistance = std::numeric_limits<edgeweight>::max();
-    std::vector<std::vector<edgeweight>> distances;
+    const GraphT *graph;
+    static constexpr DistanceT infiniteDistance = std::numeric_limits<DistanceT>::max();
+    std::vector<std::vector<DistanceT>> distances;
     std::vector<bool> nodesInNegativeCycle;
-    std::vector<std::vector<node>> pathMatrix;
+    std::vector<std::vector<NodeT>> pathMatrix;
     std::vector<std::vector<count>> hops;
     void tagNegativeCycles();
 };
+
+using FloydWarshall = GenericFloydWarshall<Graph>;
+
 } // namespace NetworKit
+
+#include <networkit/distance/FloydWarshallImpl.hpp>
 
 #endif // NETWORKIT_DISTANCE_FLOYD_WARSHALL_HPP_

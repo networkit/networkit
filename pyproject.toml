@@ -34,7 +34,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "scipy<1.17.0",
+  "scipy",
   "numpy",
   "tabulate"
 ]
@@ -52,10 +52,10 @@ networkit = 'networkit.vizbridges:NetworkitIplotxNetworkDataProvider'
 
 [build-system]
 requires = [
-  "cython",
+  "cython<3.3.0",
   "cmake",
   "numpy",
-  "scipy<1.17.0",
+  "scipy",
   "setuptools",
   "wheel"
 ]

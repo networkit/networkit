@@ -1276,7 +1276,7 @@ void AdjListGraph<NodeT, EdgeWeightT>::removeEdge(NodeT u, NodeT v) {
             balancedParallelForNodes([&](NodeT w) {
                 for (index i = 0; i < inEdges[w].size(); ++i) {
                     NodeT vv = inEdges[w][i];
-                    if (vv != none) {
+                    if (vv != NullNodeId<NodeT>) {
                         index j = indexInOutEdgeArray(vv, w);
                         inEdgeIds[w][i] = outEdgeIds[vv][j];
                     }

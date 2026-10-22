@@ -5,274 +5,269 @@
  *      Author: Maximilian Vogel (uocvf@student.kit.edu)
  */
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <networkit/auxiliary/Log.hpp>
+#include <concepts>
+#include <cstdint>
+#include <set>
+
 #include <networkit/structures/Cover.hpp>
 
-#include <iostream>
-
 namespace NetworKit {
+namespace {
 
-class CoverGTest : public testing::Test {};
+using ::testing::ElementsAre;
+using ::testing::Pair;
 
-TEST_F(CoverGTest, testConstructor) {
-    Cover c(10);
-    EXPECT_EQ(0u, c.lowerBound());
-    EXPECT_EQ(1u, c.upperBound());
+template <typename IndexType>
+class GenericCoverGTest : public ::testing::Test {};
+
+TYPED_TEST_SUITE_P(GenericCoverGTest);
+
+template <typename IndexType>
+GenericCover<IndexType> makeOverlappingCover() {
+    constexpr IndexType n{10};
+    GenericCover<IndexType> cover(n);
+    for (IndexType i = 0; i < n; i += IndexType{2}) {
+        IndexType sid = cover.toSingleton(i);
+        cover.toSingleton(i + IndexType{1});
+        cover.addToSubset(sid, i + IndexType{1});
+    }
+    for (IndexType i = 0; i < n; ++i) {
+        cover.addToSubset(i + IndexType{1}, IndexType{0});
+    }
+    return cover;
 }
 
-TEST_F(CoverGTest, testAllToSingletonsAndUpperBound) {
-    Cover c(10);
-    EXPECT_EQ(1u, c.upperBound());
-    c.allToSingletons();
-    EXPECT_EQ(0u, c.lowerBound());
-    EXPECT_EQ(11u, c.upperBound());
+TYPED_TEST_P(GenericCoverGTest, testConstructor) {
+    GenericCover<TypeParam> cover(TypeParam{10});
+    EXPECT_EQ(cover.lowerBound(), TypeParam{0});
+    EXPECT_EQ(cover.upperBound(), TypeParam{1});
 }
 
-TEST_F(CoverGTest, testContains) {
-    Cover c(10);
-    c.toSingleton(0);
-    EXPECT_TRUE(c.contains(0));
-    EXPECT_FALSE(c.contains(1));
+TYPED_TEST_P(GenericCoverGTest, testPartitionConstructor) {
+    GenericPartition<TypeParam> partition(TypeParam{4});
+    partition.allToSingletons();
+
+    GenericCover<TypeParam> cover(partition);
+
+    EXPECT_EQ(cover.numberOfElements(), count{4});
+    EXPECT_EQ(cover.upperBound(), TypeParam{4});
+    EXPECT_THAT(cover.subsetsOf(TypeParam{0}), ElementsAre(TypeParam{0}));
+    EXPECT_THAT(cover.subsetsOf(TypeParam{3}), ElementsAre(TypeParam{3}));
 }
 
-TEST_F(CoverGTest, testUpperBoundAfterMerges) {
-    count n = 10;
-    Cover c(n);
-    for (index i = 0; i < n; i += 2) {
-        index sid = c.toSingleton(i);
-        c.toSingleton(i + 1);
-        c.addToSubset(sid, i + 1);
-    }
-    for (index i = 0; i < n; i++) {
-        c.addToSubset(i + 1, 0);
-    }
-    c.mergeSubsets(1, 3);
-    c.mergeSubsets(5, 11);
-    EXPECT_EQ(13u, c.upperBound());
+TYPED_TEST_P(GenericCoverGTest, testAllToSingletonsAndUpperBound) {
+    GenericCover<TypeParam> cover(TypeParam{10});
+    EXPECT_EQ(cover.upperBound(), TypeParam{1});
+    cover.allToSingletons();
+    EXPECT_EQ(cover.lowerBound(), TypeParam{0});
+    EXPECT_EQ(cover.upperBound(), TypeParam{11});
 }
 
-TEST_F(CoverGTest, testToSingleton) {
-    count n = 10;
-    Cover c(n);
-    c.allToSingletons();
-    std::set<index> controlSet2;
-    controlSet2.insert(1);
-    DEBUG("c[0] ", c[0], " and controlSet2 ", controlSet2);
-    EXPECT_TRUE(c[0] == controlSet2);
-    c.addToSubset(5, 0);
-    c.addToSubset(2, 0);
-    c.addToSubset(3, 0);
-    c.addToSubset(4, 0);
-    c.addToSubset(0, 1);
-    c.toSingleton(0);
-    std::set<index> controlSet;
-    controlSet.insert(11);
-    DEBUG("c[0] ", c[0], " and controlSet ", controlSet);
-    EXPECT_TRUE(c[0] == controlSet);
+TYPED_TEST_P(GenericCoverGTest, testContains) {
+    GenericCover<TypeParam> cover(TypeParam{10});
+    cover.toSingleton(TypeParam{0});
+    EXPECT_TRUE(cover.contains(TypeParam{0}));
+    EXPECT_FALSE(cover.contains(TypeParam{1}));
 }
 
-TEST_F(CoverGTest, testAddToSubset) {
-    count n = 10;
-    Cover c(n);
-    c.addToSubset(0, 0);
-    c.addToSubset(0, 1);
-    std::set<index> controlSet = {0};
-    EXPECT_TRUE(c.inSameSubset(0, 1));
-    EXPECT_TRUE(c[0] == controlSet);
-    EXPECT_TRUE(c[1] == controlSet);
+TYPED_TEST_P(GenericCoverGTest, testUpperBoundAfterMerges) {
+    GenericCover<TypeParam> cover = makeOverlappingCover<TypeParam>();
+    cover.mergeSubsets(TypeParam{1}, TypeParam{3});
+    cover.mergeSubsets(TypeParam{5}, TypeParam{11});
+    EXPECT_EQ(cover.upperBound(), TypeParam{13});
 }
 
-TEST_F(CoverGTest, testAddToSubset2) {
-    count n = 10;
-    Cover c(n);
-    index sid = c.toSingleton(0);
-    c.addToSubset(sid, 5);
-    EXPECT_TRUE(c.inSameSubset(0, 5));
+TYPED_TEST_P(GenericCoverGTest, testToSingleton) {
+    GenericCover<TypeParam> cover(TypeParam{10});
+    cover.allToSingletons();
+
+    EXPECT_THAT(cover[TypeParam{0}], ElementsAre(TypeParam{1}));
+    cover.addToSubset(TypeParam{5}, TypeParam{0});
+    cover.addToSubset(TypeParam{2}, TypeParam{0});
+    cover.addToSubset(TypeParam{3}, TypeParam{0});
+    cover.addToSubset(TypeParam{4}, TypeParam{0});
+    cover.addToSubset(TypeParam{0}, TypeParam{1});
+    cover.toSingleton(TypeParam{0});
+
+    EXPECT_THAT(cover[TypeParam{0}], ElementsAre(TypeParam{11}));
 }
 
-TEST_F(CoverGTest, testMoveToSubset) {
-    count n = 10;
-    Cover c(n);
-    c.allToSingletons();
-    c.addToSubset(5, 0);
-    c.addToSubset(2, 0);
-    c.addToSubset(3, 0);
-    c.addToSubset(4, 0);
-    c.addToSubset(0, 1);
-    c.moveToSubset(8, 0);
-    std::set<index> controlSet = {8};
-    EXPECT_EQ(c[0], controlSet);
+TYPED_TEST_P(GenericCoverGTest, testAddToSubset) {
+    GenericCover<TypeParam> cover(TypeParam{10});
+    cover.addToSubset(TypeParam{0}, TypeParam{0});
+    cover.addToSubset(TypeParam{0}, TypeParam{1});
+
+    EXPECT_TRUE(cover.inSameSubset(TypeParam{0}, TypeParam{1}));
+    EXPECT_THAT(cover[TypeParam{0}], ElementsAre(TypeParam{0}));
+    EXPECT_THAT(cover[TypeParam{1}], ElementsAre(TypeParam{0}));
 }
 
-TEST_F(CoverGTest, testSubsetSizesWithUnassignedElements) {
-    count n = 10;
-    Cover c(n);
-    for (index i = 0; i < n; i += 2) {
-        c.toSingleton(i);
-    }
-    std::vector<index> controlSet = {1, 1, 1, 1, 1};
-    EXPECT_EQ(c.subsetSizes(), controlSet);
+TYPED_TEST_P(GenericCoverGTest, testAddToSubset2) {
+    GenericCover<TypeParam> cover(TypeParam{10});
+    TypeParam sid = cover.toSingleton(TypeParam{0});
+    cover.addToSubset(sid, TypeParam{5});
+    EXPECT_TRUE(cover.inSameSubset(TypeParam{0}, TypeParam{5}));
 }
 
-TEST_F(CoverGTest, testSubsetSizesTrivial) {
-    count n = 10;
-    Cover c(n);
-    for (index i = 0; i < n; i++) {
-        c.toSingleton(i);
-    }
-    std::vector<index> controlSet = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-    EXPECT_EQ(c.subsetSizes(), controlSet);
+TYPED_TEST_P(GenericCoverGTest, testMoveToSubset) {
+    GenericCover<TypeParam> cover(TypeParam{10});
+    cover.allToSingletons();
+    cover.addToSubset(TypeParam{5}, TypeParam{0});
+    cover.addToSubset(TypeParam{2}, TypeParam{0});
+    cover.addToSubset(TypeParam{3}, TypeParam{0});
+    cover.addToSubset(TypeParam{4}, TypeParam{0});
+    cover.addToSubset(TypeParam{0}, TypeParam{1});
+    cover.moveToSubset(TypeParam{8}, TypeParam{0});
+    EXPECT_THAT(cover[TypeParam{0}], ElementsAre(TypeParam{8}));
 }
 
-TEST_F(CoverGTest, testSubsetSizesTrivial2) {
-    count n = 10;
-    Cover c(n);
-    for (index i = 0; i < n; i += 2) {
-        c.toSingleton(i);
+TYPED_TEST_P(GenericCoverGTest, testSubsetSizesWithUnassignedElements) {
+    constexpr TypeParam n{10};
+    GenericCover<TypeParam> cover(n);
+    for (TypeParam i = 0; i < n; i += TypeParam{2}) {
+        cover.toSingleton(i);
     }
-    for (index i = 1; i < n; i += 2) {
-        c.addToSubset((i / 2) + 1, i);
-    }
-    std::vector<index> controlSet = {2, 2, 2, 2, 2};
-    EXPECT_EQ(c.subsetSizes(), controlSet);
+    EXPECT_THAT(cover.subsetSizes(), ElementsAre(count{1}, count{1}, count{1}, count{1}, count{1}));
 }
 
-TEST_F(CoverGTest, testSubsetSizesAssignedToMultipleSubsets) {
-    count n = 10;
-    Cover c(n);
-    for (index i = 0; i < n; i++) {
-        c.toSingleton(i);
+TYPED_TEST_P(GenericCoverGTest, testSubsetSizesTrivial) {
+    constexpr TypeParam n{10};
+    GenericCover<TypeParam> cover(n);
+    for (TypeParam i = 0; i < n; ++i) {
+        cover.toSingleton(i);
     }
-    for (index i = 1; i < n; i += 2) {
-        c.addToSubset(i, i);
-    }
-    std::vector<index> controlSet = {2, 1, 2, 1, 2, 1, 2, 1, 2, 1};
-    EXPECT_EQ(c.subsetSizes(), controlSet);
+    EXPECT_THAT(cover.subsetSizes(), ElementsAre(count{1}, count{1}, count{1}, count{1}, count{1},
+                                                 count{1}, count{1}, count{1}, count{1}, count{1}));
 }
 
-TEST_F(CoverGTest, testSubsetSizesAssignedToMultipleSubsets2) {
-    count n = 10;
-    Cover c(n);
-    for (index i = 0; i < n; i += 2) {
-        index sid = c.toSingleton(i);
-        c.toSingleton(i + 1);
-        c.addToSubset(sid, i + 1);
+TYPED_TEST_P(GenericCoverGTest, testSubsetSizesTrivial2) {
+    constexpr TypeParam n{10};
+    GenericCover<TypeParam> cover(n);
+    for (TypeParam i = 0; i < n; i += TypeParam{2}) {
+        cover.toSingleton(i);
     }
-    for (index i = 0; i < n; i++) {
-        c.addToSubset(i + 1, 0);
+    for (TypeParam i = 1; i < n; i += TypeParam{2}) {
+        cover.addToSubset(i / TypeParam{2} + TypeParam{1}, i);
     }
-    std::vector<index> controlSet = {2, 2, 3, 2, 3, 2, 3, 2, 3, 2};
-    EXPECT_EQ(c.subsetSizes(), controlSet);
+    EXPECT_THAT(cover.subsetSizes(), ElementsAre(count{2}, count{2}, count{2}, count{2}, count{2}));
 }
 
-TEST_F(CoverGTest, testSubsetSizeMapMultipleSets) {
-    count n = 10;
-    Cover c(n);
-    for (index i = 0; i < n; i++) {
-        c.toSingleton(i);
+TYPED_TEST_P(GenericCoverGTest, testSubsetSizesAssignedToMultipleSubsets) {
+    constexpr TypeParam n{10};
+    GenericCover<TypeParam> cover(n);
+    for (TypeParam i = 0; i < n; ++i) {
+        cover.toSingleton(i);
     }
-    for (index i = 1; i < n; i += 2) {
-        c.addToSubset(i, i);
+    for (TypeParam i = 1; i < n; i += TypeParam{2}) {
+        cover.addToSubset(i, i);
     }
-    std::map<index, count> controlMap;
-    controlMap[1] = 2;
-    controlMap[2] = 1;
-    controlMap[3] = 2;
-    controlMap[4] = 1;
-    controlMap[5] = 2;
-    controlMap[6] = 1;
-    controlMap[7] = 2;
-    controlMap[8] = 1;
-    controlMap[9] = 2;
-    controlMap[10] = 1;
-    EXPECT_EQ(c.subsetSizeMap(), controlMap);
+    EXPECT_THAT(cover.subsetSizes(), ElementsAre(count{2}, count{1}, count{2}, count{1}, count{2},
+                                                 count{1}, count{2}, count{1}, count{2}, count{1}));
 }
 
-TEST_F(CoverGTest, testMergeSubsetsAndGetMembers) {
-    count n = 10;
-    Cover c(n);
-    for (index i = 0; i < n; i += 2) {
-        index sid = c.toSingleton(i);
-        c.toSingleton(i + 1);
-        c.addToSubset(sid, i + 1);
+TYPED_TEST_P(GenericCoverGTest, testSubsetSizesAssignedToMultipleSubsets2) {
+    GenericCover<TypeParam> cover = makeOverlappingCover<TypeParam>();
+
+    EXPECT_THAT(cover.subsetSizes(), ElementsAre(count{2}, count{2}, count{3}, count{2}, count{3},
+                                                 count{2}, count{3}, count{2}, count{3}, count{2}));
+}
+
+TYPED_TEST_P(GenericCoverGTest, testSubsetSizeMapMultipleSets) {
+    constexpr TypeParam n{10};
+    GenericCover<TypeParam> cover(n);
+    for (TypeParam i = 0; i < n; ++i) {
+        cover.toSingleton(i);
     }
-    for (index i = 0; i < n; i++) {
-        c.addToSubset(i + 1, 0);
+    for (TypeParam i = 1; i < n; i += TypeParam{2}) {
+        cover.addToSubset(i, i);
     }
-    c.mergeSubsets(1, 3);
-    c.mergeSubsets(5, 11);
-    auto c11 = c.getMembers(11);
-    std::vector<index> controlSetSizes = {2, 2, 2, 3, 2, 3, 2, 6};
+
+    EXPECT_THAT(cover.subsetSizeMap(),
+                ElementsAre(Pair(TypeParam{1}, count{2}), Pair(TypeParam{2}, count{1}),
+                            Pair(TypeParam{3}, count{2}), Pair(TypeParam{4}, count{1}),
+                            Pair(TypeParam{5}, count{2}), Pair(TypeParam{6}, count{1}),
+                            Pair(TypeParam{7}, count{2}), Pair(TypeParam{8}, count{1}),
+                            Pair(TypeParam{9}, count{2}), Pair(TypeParam{10}, count{1})));
+}
+
+TYPED_TEST_P(GenericCoverGTest, testMergeSubsetsAndGetMembers) {
+    GenericCover<TypeParam> cover = makeOverlappingCover<TypeParam>();
+
+    cover.mergeSubsets(TypeParam{1}, TypeParam{3});
+    cover.mergeSubsets(TypeParam{5}, TypeParam{11});
+
     // remaining subset IDs 2,4,6,7,8,9,10,12
     // their sizes          2,2,2,3,2,3,2,6
-    std::set<index> controlSetMembers = {0, 1, 2, 3, 4, 5};
-    EXPECT_EQ(controlSetSizes, c.subsetSizes()); // check if subsets sizes are correct
-    auto c12 = c.getMembers(12);
-    EXPECT_EQ(c12, controlSetMembers); // check if elements of merged subsets are correct
+    EXPECT_THAT(cover.subsetSizes(), ElementsAre(count{2}, count{2}, count{2}, count{3}, count{2},
+                                                 count{3}, count{2}, count{6}));
+    EXPECT_THAT(cover.getMembers(TypeParam{12}),
+                ElementsAre(TypeParam{0}, TypeParam{1}, TypeParam{2}, TypeParam{3}, TypeParam{4},
+                            TypeParam{5}));
 }
 
-TEST_F(CoverGTest, testNumberOfSubsets) {
-    count n = 10;
-    Cover c(n);
-    for (index i = 0; i < n; i += 2) {
-        index sid = c.toSingleton(i);
-        c.toSingleton(i + 1);
-        c.addToSubset(sid, i + 1);
-    }
-    for (index i = 0; i < n; i++) {
-        c.addToSubset(i + 1, 0);
-    }
-    EXPECT_EQ(n, c.numberOfSubsets());
-    c.mergeSubsets(1, 2);
-    c.mergeSubsets(3, 11);
-    EXPECT_EQ(8u, c.numberOfSubsets());
+TYPED_TEST_P(GenericCoverGTest, testNumberOfSubsets) {
+    GenericCover<TypeParam> cover = makeOverlappingCover<TypeParam>();
+
+    EXPECT_EQ(cover.numberOfSubsets(), count{10});
+    cover.mergeSubsets(TypeParam{1}, TypeParam{2});
+    cover.mergeSubsets(TypeParam{3}, TypeParam{11});
+    EXPECT_EQ(cover.numberOfSubsets(), count{8});
 }
 
-TEST_F(CoverGTest, testSubsetsOf) {
-    count n = 10;
-    Cover c(n);
-    for (index i = 0; i < n; i += 2) {
-        index sid = c.toSingleton(i);
-        c.toSingleton(i + 1);
-        c.addToSubset(sid, i + 1);
-    }
-    for (index i = 0; i < n; i++) {
-        c.addToSubset(i + 1, 0);
-    }
-    auto subsetsOf0 = c.subsetsOf(0);
-    std::set<index> controlSet0 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    auto subsetsOf3 = c.subsetsOf(3);
-    std::set<index> controlSet3 = {3, 4};
-    EXPECT_EQ(controlSet0, subsetsOf0);
-    EXPECT_EQ(controlSet3, subsetsOf3);
-    c.mergeSubsets(1, 3);
-    c.mergeSubsets(5, 11);
-    subsetsOf0 = c.subsetsOf(0);
-    controlSet0 = {2, 4, 6, 7, 8, 9, 10, 12};
-    EXPECT_EQ(controlSet0, subsetsOf0);
+TYPED_TEST_P(GenericCoverGTest, testSubsetsOf) {
+    GenericCover<TypeParam> cover = makeOverlappingCover<TypeParam>();
+
+    EXPECT_THAT(cover.subsetsOf(TypeParam{0}),
+                ElementsAre(TypeParam{1}, TypeParam{2}, TypeParam{3}, TypeParam{4}, TypeParam{5},
+                            TypeParam{6}, TypeParam{7}, TypeParam{8}, TypeParam{9}, TypeParam{10}));
+    EXPECT_THAT(cover.subsetsOf(TypeParam{3}), ElementsAre(TypeParam{3}, TypeParam{4}));
+    cover.mergeSubsets(TypeParam{1}, TypeParam{3});
+    cover.mergeSubsets(TypeParam{5}, TypeParam{11});
+    EXPECT_THAT(cover.subsetsOf(TypeParam{0}),
+                ElementsAre(TypeParam{2}, TypeParam{4}, TypeParam{6}, TypeParam{7}, TypeParam{8},
+                            TypeParam{9}, TypeParam{10}, TypeParam{12}));
 }
 
-TEST_F(CoverGTest, testInSameSubset) {
-    count n = 10;
-    Cover c(n);
-    for (index i = 0; i < n; i += 2) {
-        index sid = c.toSingleton(i);
-        c.toSingleton(i + 1);
-        c.addToSubset(sid, i + 1);
+TYPED_TEST_P(GenericCoverGTest, testInSameSubset) {
+    constexpr TypeParam n{10};
+    GenericCover<TypeParam> cover(n);
+    for (TypeParam i = 0; i < n; i += TypeParam{2}) {
+        TypeParam sid = cover.toSingleton(i);
+        cover.toSingleton(i + TypeParam{1});
+        cover.addToSubset(sid, i + TypeParam{1});
     }
-    EXPECT_TRUE(c.inSameSubset(0, 1));
-    EXPECT_FALSE(c.inSameSubset(0, 2));
-    EXPECT_FALSE(c.inSameSubset(1, 5));
-    c.mergeSubsets(1, 3);
-    EXPECT_TRUE(c.inSameSubset(0, 1));
-    EXPECT_TRUE(c.inSameSubset(0, 2));
-    EXPECT_FALSE(c.inSameSubset(1, 5));
-    c.mergeSubsets(5, 11);
-    EXPECT_TRUE(c.inSameSubset(0, 1));
-    EXPECT_TRUE(c.inSameSubset(0, 2));
-    EXPECT_TRUE(c.inSameSubset(1, 5));
+    EXPECT_TRUE(cover.inSameSubset(TypeParam{0}, TypeParam{1}));
+    EXPECT_FALSE(cover.inSameSubset(TypeParam{0}, TypeParam{2}));
+    EXPECT_FALSE(cover.inSameSubset(TypeParam{1}, TypeParam{5}));
+    cover.mergeSubsets(TypeParam{1}, TypeParam{3});
+    EXPECT_TRUE(cover.inSameSubset(TypeParam{0}, TypeParam{1}));
+    EXPECT_TRUE(cover.inSameSubset(TypeParam{0}, TypeParam{2}));
+    EXPECT_FALSE(cover.inSameSubset(TypeParam{1}, TypeParam{5}));
+    cover.mergeSubsets(TypeParam{5}, TypeParam{11});
+    EXPECT_TRUE(cover.inSameSubset(TypeParam{0}, TypeParam{1}));
+    EXPECT_TRUE(cover.inSameSubset(TypeParam{0}, TypeParam{2}));
+    EXPECT_TRUE(cover.inSameSubset(TypeParam{1}, TypeParam{5}));
 }
 
-} /* namespace NetworKit */
+REGISTER_TYPED_TEST_SUITE_P(GenericCoverGTest, testConstructor, testPartitionConstructor,
+                            testAllToSingletonsAndUpperBound, testContains,
+                            testUpperBoundAfterMerges, testToSingleton, testAddToSubset,
+                            testAddToSubset2, testMoveToSubset,
+                            testSubsetSizesWithUnassignedElements, testSubsetSizesTrivial,
+                            testSubsetSizesTrivial2, testSubsetSizesAssignedToMultipleSubsets,
+                            testSubsetSizesAssignedToMultipleSubsets2,
+                            testSubsetSizeMapMultipleSets, testMergeSubsetsAndGetMembers,
+                            testNumberOfSubsets, testSubsetsOf, testInSameSubset);
+
+using GenericCoverTestTypes =
+    ::testing::Types<index, std::uint32_t, std::uint16_t, std::int64_t, std::int32_t, std::int16_t>;
+
+INSTANTIATE_TYPED_TEST_SUITE_P(TestGenericCover, GenericCoverGTest, GenericCoverTestTypes, );
+
+static_assert(std::same_as<Cover, GenericCover<index>>);
+
+} // namespace
+} // namespace NetworKit

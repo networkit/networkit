@@ -3,7 +3,6 @@ networkit_add_module(distance
     APSP.cpp
     AdamicAdarDistance.cpp
     AlgebraicDistance.cpp
-    BFS.cpp
     BidirectionalBFS.cpp
     BidirectionalDijkstra.cpp
     CommuteTimeDistance.cpp
@@ -12,7 +11,6 @@ networkit_add_module(distance
     Eccentricity.cpp
     EffectiveDiameter.cpp
     EffectiveDiameterApproximation.cpp
-    FloydWarshall.cpp
     GraphDistance.cpp
     HopPlotApproximation.cpp
     IncompleteDijkstra.cpp
@@ -25,7 +23,6 @@ networkit_add_module(distance
     PrunedLandmarkLabeling.cpp
     ReverseBFS.cpp
     SPSP.cpp
-    SSSP.cpp
     Volume.cpp
     )
 
