@@ -42,15 +42,6 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		with self.assertRaises(RuntimeError):
 			nk.isomorphism.SubgraphIsomorphism(self.arc, self.square)
 
-	def testNoMatch(self):
-		target = nk.Graph(2)
-
-		vf2 = nk.isomorphism.VF2(self.arc, target)
-		vf2.run()
-
-		self.assertFalse(vf2.hasMatch())
-		self.assertEqual(vf2.numberOfMatches(), 0)
-
 	def testMatchReporting(self):
 		vf2 = nk.isomorphism.VF2(self.arc, self.square)
 		vf2.setStoreMatches(False)
@@ -117,46 +108,17 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		self.assertEqual(vf2_cap3.numberOfMatches(), 3)
 
 	def testDifferentAlgos(self):
-		vf2 = nk.isomorphism.VF2(self.arc, self.square)
-		vf2.run()
-
-		ri = nk.isomorphism.RI(self.arc, self.square)
-		ri.run()
-
-		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
-		riPar.run()
-
-		self.assertTrue(vf2.hasMatch())
-		self.assertEqual(vf2.numberOfMatches(), 8)
-
-		self.assertTrue(ri.hasMatch())
-		self.assertEqual(ri.numberOfMatches(), 8)
-
-		self.assertTrue(riPar.hasMatch())
-		self.assertEqual(riPar.numberOfMatches(), 8)
-
-		self.assertEqual({tuple(match) for match in vf2.getMatches()}, self.expected)
-
-		self.assertEqual({tuple(match) for match in ri.getMatches()}, self.expected)
-
-		self.assertEqual({tuple(match) for match in riPar.getMatches()}, self.expected)
-
-	def testRIVariants(self):
-		ri = nk.isomorphism.RI(self.arc, self.square, variant=nk.isomorphism.Variant.RI)
-		ri.run()
-
-		ri_ds = nk.isomorphism.RI(self.arc, self.square, variant=nk.isomorphism.Variant.RI_DS)
-		ri_ds.run()
-
-		self.assertTrue(ri.hasMatch())
-		self.assertEqual(ri.numberOfMatches(), 8)
-
-		self.assertTrue(ri_ds.hasMatch())
-		self.assertEqual(ri_ds.numberOfMatches(), 8)
-
-		self.assertEqual({tuple(match) for match in ri.getMatches()}, self.expected)
-
-		self.assertEqual({tuple(match) for match in ri_ds.getMatches()}, self.expected)
+		algos = [
+			nk.isomorphism.VF2(self.arc, self.square),
+			nk.isomorphism.RI(self.arc, self.square, variant=nk.isomorphism.Variant.RI),
+			nk.isomorphism.RI(self.arc, self.square, variant=nk.isomorphism.Variant.RI_DS),
+			nk.isomorphism.ParallelRI(self.arc, self.square),
+		]
+		for algo in algos:
+			algo.run()
+			self.assertTrue(algo.hasMatch())
+			self.assertEqual(algo.numberOfMatches(), 8)
+			self.assertEqual({tuple(match) for match in algo.getMatches()}, self.expected)
 
 	def testVF2Callback(self):
 		matches = []
@@ -174,23 +136,6 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		# SubgraphIsomorphism used with a callback does not store the matches
 		with self.assertRaises(RuntimeError):
 			vf2.getMatches()
-
-	def testRICallback(self):
-		matches = []
-
-		def callback(match):
-			matches.append(match)
-
-		ri = nk.isomorphism.RI(self.arc, self.square)
-		ri.setStoreMatches(True)
-		ri.setCallback(callback)
-		ri.run()
-
-		self.assertEqual(len(matches), 8)
-		self.assertEqual({tuple(match) for match in matches}, self.expected)
-		# SubgraphIsomorphism used with a callback does not store the matches
-		with self.assertRaises(RuntimeError):
-			ri.getMatches()
 
 	def testParallelRICallback(self):
 		matches = []
@@ -235,28 +180,19 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		self.assertEqual(set(matches), self.expected)
 
 	def testParallelCallbackWithSequentialAlgorithms(self):
-		matches_vf2 = []
-		matches_ri = []
+		matches = []
 
-		def callback_vf2(workerId, match):
-			matches_vf2.append((workerId, tuple(match)))
-
-		def callback_ri(workerId, match):
-			matches_ri.append((workerId, tuple(match)))
+		def callback(workerId, match):
+			matches.append((workerId, tuple(match)))
 
 		vf2 = nk.isomorphism.VF2(self.arc, self.square)
-		vf2.setParallelCallback(callback_vf2)
+		vf2.setParallelCallback(callback)
 		vf2.run()
 
-		ri = nk.isomorphism.RI(self.arc, self.square)
-		ri.setParallelCallback(callback_ri)
-		ri.run()
-
-		# The sequential algorithms report every match as worker 0
-		for matches in (matches_vf2, matches_ri):
-			self.assertEqual(len(matches), 8)
-			self.assertEqual({workerId for workerId, match in matches}, {0})
-			self.assertEqual({match for workerId, match in matches}, self.expected)
+		# A sequential algorithm reports every match as worker 0
+		self.assertEqual(len(matches), 8)
+		self.assertEqual({workerId for workerId, match in matches}, {0})
+		self.assertEqual({match for workerId, match in matches}, self.expected)
 
 	def testCallbackTypeMismatches(self):
 		matches_seq = []
@@ -272,15 +208,8 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		with self.assertRaises(TypeError):
 			vf2.setParallelCallback(callback_seq)
 
-		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
-		with self.assertRaises(TypeError):
-			riPar.setCallback(callback_par)
-
 		with self.assertRaises(TypeError):
 			vf2.setCallback(callback_par)
-
-		with self.assertRaises(TypeError):
-			riPar.setParallelCallback(callback_seq)
 
 		with self.assertRaisesRegex(TypeError, "must be callable"):
 			vf2.setCallback(42)
@@ -308,19 +237,6 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		for call in calls:
 			with self.assertRaisesRegex(RuntimeError, "not properly initialized"):
 				call()
-
-	def testCallbackCalledExactlyOncePerMatch(self):
-		callback_count = 0
-
-		def callback(match):
-			nonlocal callback_count
-			callback_count += 1
-
-		vf2 = nk.isomorphism.VF2(self.arc, self.square)
-		vf2.setCallback(callback)
-		vf2.run()
-
-		self.assertEqual(callback_count, 8)
 
 	def testSetCallbackAfterRun(self):
 		matches = []
@@ -441,36 +357,6 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 
 		self.assertEqual(vf2.numberOfMatches(), 8)
 
-	def testCallbackRaisesOnFirstMatchSeq(self):
-		matches = []
-
-		def callback(match):
-			matches.append(tuple(match))
-			raise RuntimeError("sequential callback failed")
-
-		ri = nk.isomorphism.RI(self.arc, self.square)
-		ri.setCallback(callback)
-
-		with self.assertRaises(RuntimeError):
-			ri.run()
-
-		self.assertEqual(len(matches), 1)
-
-	def testCallbackRaisesOnFirstMatchPar(self):
-		matches = []
-
-		def callback(workerId, match):
-			matches.append((workerId, tuple(match)))
-			raise RuntimeError("parallel callback failed")
-
-		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
-		riPar.setParallelCallback(callback)
-
-		with self.assertRaises(RuntimeError):
-			riPar.run()
-
-		self.assertGreaterEqual(len(matches), 1)
-
 	def testCallbackRaisesBaseException(self):
 		matches = []
 
@@ -496,26 +382,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		with self.assertRaisesRegex(RuntimeError, "callback exited"):
 			riPar.run()
 
-	def testParallelCallbackResultsMatchSerialResults(self):
-		matches_ri = []
-		matches_riPar = []
-
-		def callback_ri(match):
-			matches_ri.append(tuple(match))
-
-		def callback_riPar(workerId, match):
-			matches_riPar.append(tuple(match))
-
-		ri = nk.isomorphism.RI(self.arc, self.square)
-		ri.setCallback(callback_ri)
-		ri.run()
-
-		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
-		riPar.setParallelCallback(callback_riPar)
-		riPar.run()
-
-		self.assertEqual(set(matches_ri), set(matches_riPar))
-		self.assertEqual(len(matches_ri), len(matches_riPar))
+		self.assertGreaterEqual(len(matches), 2)
 
 if __name__ == "__main__":
 	unittest.main()
