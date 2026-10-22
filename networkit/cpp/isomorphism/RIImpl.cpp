@@ -299,9 +299,8 @@ RIImpl::RIImpl(const SearchGraph &pattern, const SearchGraph &target,
                const Domains &domains, SubgraphIsomorphism::Semantics semantics,
                Aux::SignalHandler &handler, MatchReporter report)
     : patternGraph(&pattern), targetGraph(&target), patternNodeLabels(&patternNodeLabels),
-      targetNodeLabels(&targetNodeLabels), nodeLabelled(!patternNodeLabels.empty()),
-      ordering(&ordering), domains(&domains), semantics(semantics), handler(&handler),
-      report(std::move(report)) {
+      targetNodeLabels(&targetNodeLabels), ordering(&ordering), domains(&domains),
+      semantics(semantics), handler(&handler), report(std::move(report)) {
 
     // Sized here rather than in run(), because the workers of ParallelRI only call expand().
     matchBuffer.assign(pattern.upperNodeIdBound(), none);
@@ -354,7 +353,7 @@ bool RIImpl::recurse(State &state) {
     return keepGoing;
 }
 
-bool RIImpl::expand(State &state, std::vector<State> &children) {
+bool RIImpl::expand(const State &state, std::vector<State> &children) {
     const count full = ordering->order.size();
 
     if (state.depth == full)
@@ -363,22 +362,15 @@ bool RIImpl::expand(State &state, std::vector<State> &children) {
     candidateBuffer.clear();
     candidatesFor(state, candidateBuffer);
 
-    for (index k = state.nextCandidate; k < candidateBuffer.size(); ++k) {
-        // Advance first, so that a resumed expansion continues after this candidate.
-        state.nextCandidate = k + 1;
-
-        const node tv = candidateBuffer[k];
+    for (const node tv : candidateBuffer) {
         if (!consistent(state, tv))
             continue;
 
         State child = state;
         child.mapping[state.depth] = tv;
         child.depth = state.depth + 1;
-        child.nextCandidate = 0;
         children.push_back(std::move(child));
     }
-
-    state.nextCandidate = candidateBuffer.size();
 
     return true;
 }

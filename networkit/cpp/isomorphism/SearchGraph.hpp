@@ -13,24 +13,6 @@
 namespace NetworKit {
 namespace IsomorphismDetails {
 
-/// Number of values that occur in both sorted, strictly ascending ranges.
-inline count intersectionSize(const node *aBegin, const node *aEnd, const node *bBegin,
-                              const node *bEnd) noexcept {
-    count common = 0;
-    while (aBegin != aEnd && bBegin != bEnd) {
-        if (*aBegin < *bBegin) {
-            ++aBegin;
-        } else if (*bBegin < *aBegin) {
-            ++bBegin;
-        } else {
-            ++common;
-            ++aBegin;
-            ++bBegin;
-        }
-    }
-    return common;
-}
-
 /**
  * A read-only snapshot of a Graph for the inner loops of a subgraph search, since
  * `Graph::hasEdge()` is too slow there. It stores sorted CSR adjacency for out- and in-arcs,
@@ -83,10 +65,6 @@ public:
             return (matrix[static_cast<std::size_t>(u) * matrixStride + v / 64] >> (v % 64)) & 1u;
 
         return std::binary_search(outBegin(u), outEnd(u), v);
-    }
-
-    count commonOutNeighbors(node u, node v) const noexcept {
-        return intersectionSize(outBegin(u), outEnd(u), outBegin(v), outEnd(v));
     }
 
     bool hasEdgeLabels() const noexcept { return !outLabel.empty(); }

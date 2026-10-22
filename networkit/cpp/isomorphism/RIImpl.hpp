@@ -49,11 +49,10 @@ public:
                                   const std::vector<index> &targetNodeLabels, RI::Variant variant);
 
     /// A node of the search tree. `mapping[i]` is the image of `order[i]` for positions below
-    /// `depth`, and `nextCandidate` is where @ref expand() resumes.
+    /// `depth`.
     struct State {
         std::vector<node> mapping;
         count depth = 0;
-        index nextCandidate = 0;
     };
 
     /// Computes the matching order of Bonnici et al. Under RI-DS, single-element domains come
@@ -76,7 +75,7 @@ public:
     /// Appends the children of @a state to @a children, or reports @a state if it is complete.
     /// @a state must descend from rootState(). Returns false once the cap on the number of matches
     /// is reached.
-    bool expand(State &state, std::vector<State> &children);
+    bool expand(const State &state, std::vector<State> &children);
 
 private:
     bool recurse(State &state);
@@ -100,7 +99,6 @@ private:
 
     const std::vector<index> *patternNodeLabels;
     const std::vector<index> *targetNodeLabels;
-    bool nodeLabelled;
 
     const Ordering *ordering;
     const Domains *domains;

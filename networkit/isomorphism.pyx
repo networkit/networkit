@@ -3,8 +3,6 @@
 from libcpp cimport bool as bool_t
 from libcpp.vector cimport vector
 from libcpp.string cimport string
-from libc.stdint cimport uint64_t
-from cpython.ref cimport PyObject
 from cython.operator cimport dereference
 
 from .helpers import stdstring
@@ -75,7 +73,6 @@ cdef extern from "<networkit/isomorphism/SubgraphIsomorphism.hpp>" namespace "Ne
 		MONOMORPHISM
 
 	cdef cppclass _SubgraphIsomorphism "NetworKit::SubgraphIsomorphism" (_Algorithm):
-		_SubgraphIsomorphism(const _Graph &pattern, const _Graph &target, _Semantics semantics, count maxMatches) except +
 		count numberOfWorkers() except +
 		void setNodeLabels(const vector[index] &patternNodeLabels, const vector[index] &targetNodeLabels) except +
 		void setEdgeLabels(const vector[index] &patternEdgeLabels, const vector[index] &targetEdgeLabels) except +

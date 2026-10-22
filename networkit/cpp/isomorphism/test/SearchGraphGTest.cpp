@@ -6,13 +6,11 @@
  */
 
 #include <algorithm>
-#include <iterator>
 #include <stdexcept>
 #include <vector>
 
 #include <gtest/gtest.h>
 
-#include <networkit/auxiliary/Random.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/EdgeListReader.hpp>
@@ -470,60 +468,6 @@ TEST_F(SearchGraphGTest, testMaxDegree) {
     EXPECT_EQ(IsomorphismDetails::SearchGraph(Graph(0), false).maxOutDegree(), 0);
     EXPECT_EQ(IsomorphismDetails::SearchGraph(Graph(0), false).maxInDegree(), 0);
     EXPECT_EQ(IsomorphismDetails::SearchGraph(Graph(5), false).maxOutDegree(), 0);
-}
-
-TEST_F(SearchGraphGTest, testIntersectionSize) {
-
-    auto expectAgrees = [](std::vector<node> a, std::vector<node> b) {
-        std::vector<node> common;
-        std::set_intersection(a.begin(), a.end(), b.begin(), b.end(), std::back_inserter(common));
-        EXPECT_EQ(IsomorphismDetails::intersectionSize(a.data(), a.data() + a.size(), b.data(),
-                                                       b.data() + b.size()),
-                  common.size());
-    };
-
-    expectAgrees({}, {});
-    expectAgrees({1, 2, 3}, {});
-    expectAgrees({}, {1, 2, 3});
-    expectAgrees({1, 3, 5}, {2, 4, 6});    // disjoint
-    expectAgrees({1, 2, 3}, {1, 2, 3});    // identical
-    expectAgrees({1, 2, 3}, {3});          // last element only
-    expectAgrees({1, 2, 3}, {1});          // first element only
-    expectAgrees({0, 5, 9}, {5, 9, 11});   // partial overlap, unequal lengths
-    expectAgrees({2}, {1, 2, 3, 4, 5, 6}); // one against many
-
-    Aux::Random::setSeed(42, false);
-    for (int trial = 0; trial < 50; ++trial) {
-        std::vector<node> a, b;
-        for (node u = 0; u < 40; ++u) {
-            if (Aux::Random::probability() < 0.4)
-                a.push_back(u);
-            if (Aux::Random::probability() < 0.4)
-                b.push_back(u);
-        }
-        expectAgrees(a, b);
-    }
-}
-
-TEST_F(SearchGraphGTest, testCommonOutNeighbors) {
-
-    Graph G = Graph(6);
-    G.addEdge(0, 2);
-    G.addEdge(0, 3);
-    G.addEdge(0, 4);
-    G.addEdge(1, 3);
-    G.addEdge(1, 3); // parallel: must not double-count node 3
-    G.addEdge(1, 4);
-    G.addEdge(1, 5);
-
-    IsomorphismDetails::SearchGraph SG = IsomorphismDetails::SearchGraph(G, false);
-
-    // N(0) = {2,3,4}, N(1) = {3,4,5}, N(2) = {0}, N(3) = {0,1}, N(5) = {1}
-    EXPECT_EQ(SG.commonOutNeighbors(0, 1), 2); // nodes 3 and 4, counted once despite the parallel
-    EXPECT_EQ(SG.commonOutNeighbors(1, 0), 2); // symmetric when undirected
-    EXPECT_EQ(SG.commonOutNeighbors(0, 5), 0); // {2,3,4} and {1} share nothing
-    EXPECT_EQ(SG.commonOutNeighbors(2, 3), 1); // node 0
-    EXPECT_EQ(SG.commonOutNeighbors(0, 0), SG.outDegree(0));
 }
 
 TEST_F(SearchGraphGTest, testEdgeLabelsStayWithTheirArcs) {

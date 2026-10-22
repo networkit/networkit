@@ -2,8 +2,6 @@
 #include <stdexcept>
 #include <vector>
 
-#include <tlx/unused.hpp>
-
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/isomorphism/VF2.hpp>

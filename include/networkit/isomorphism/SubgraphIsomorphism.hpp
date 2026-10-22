@@ -128,16 +128,9 @@ protected:
     SubgraphIsomorphism(const Graph &pattern, const Graph &target, Semantics semantics,
                         count maxMatches);
 
-    bool isNodeLabelled() const noexcept { return !patternNodeLabels.empty(); }
-
-    /// An algorithm without edge-label support must throw from run() if this returns true.
-    bool isEdgeLabelled() const noexcept { return !patternEdgeLabels.empty(); }
-
     bool hasCallback() const noexcept {
         return static_cast<bool>(callback) || static_cast<bool>(parallelCallback);
     }
-
-    bool hasSerialCallback() const noexcept { return static_cast<bool>(callback); }
 
     bool storesMatches() const noexcept { return storeMatches && !hasCallback(); }
 
@@ -146,13 +139,6 @@ protected:
 
     /// Records one match of a sequential search. Returns false once the cap is reached.
     bool reportMatch(const Match &match);
-
-    /// How many more matches a sequential search may report, or @ref none without a cap.
-    count remainingMatches() const noexcept {
-        if (maxMatches == 0)
-            return none;
-        return matchCount >= maxMatches ? 0 : maxMatches - matchCount;
-    }
 
     /**
      * Passes one match to the callback from any thread, but neither counts nor stores it. Returns

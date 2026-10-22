@@ -230,8 +230,8 @@ private:
         }
     }
 
-    /// Every state is expanded completely, so `RIImpl::State::nextCandidate` never resumes an
-    /// expansion. A position without a parent therefore pushes one state per target node at once.
+    /// Every state is expanded completely, so a position without a parent pushes one state per
+    /// target node at once.
     void workerLoop(index tid, RIImpl &impl) {
         RIImpl::State state;
         std::vector<RIImpl::State> children;
