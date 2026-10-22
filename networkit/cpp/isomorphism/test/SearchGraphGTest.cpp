@@ -6,7 +6,6 @@
  */
 
 #include <algorithm>
-#include <stdexcept>
 #include <vector>
 
 #include <gtest/gtest.h>
@@ -587,19 +586,6 @@ TEST_F(SearchGraphGTest, testCollapsedLabelledEdges) {
         EXPECT_EQ(unlabelled.edgeLabel(0, 1), none) << "directed=" << directed;
         EXPECT_EQ(unlabelled.outLabelBegin(0), nullptr) << "directed=" << directed;
     }
-}
-
-TEST_F(SearchGraphGTest, testEdgeLabelsNeedEdgeIds) {
-
-    Graph G = IsomorphismTest::graphOf(3, {{0, 1}, {1, 2}});
-    ASSERT_FALSE(G.hasEdgeIds());
-    EXPECT_THROW(IsomorphismDetails::SearchGraph(G, false, std::vector<index>{1, 2}),
-                 std::runtime_error);
-
-    G.indexEdges();
-    EXPECT_THROW(IsomorphismDetails::SearchGraph(G, false, std::vector<index>{1}),
-                 std::runtime_error);
-    EXPECT_NO_THROW(IsomorphismDetails::SearchGraph(G, false, std::vector<index>{1, 2}));
 }
 
 } // namespace NetworKit

@@ -1,7 +1,7 @@
 #include <algorithm>
+#include <cassert>
 #include <cstddef>
 #include <numeric>
-#include <stdexcept>
 #include <utility>
 #include <vector>
 
@@ -89,14 +89,8 @@ bool compactSlices(std::vector<index> &first, std::vector<node> &head, std::vect
 SearchGraph::SearchGraph(const Graph &G, bool buildMatrix, const std::vector<index> &edgeLabels)
     : lostLabels(false), maxOut(0), maxIn(0), matrixStride(0), n(G.numberOfNodes()),
       z(G.upperNodeIdBound()), directed(G.isDirected()), hasMatrix(buildMatrix) {
-    if (!edgeLabels.empty()) {
-        if (!G.hasEdgeIds())
-            throw std::runtime_error("SearchGraph: edge labels need a graph with edge ids - call "
-                                     "indexEdges() on it first");
-        if (edgeLabels.size() < G.upperEdgeIdBound())
-            throw std::runtime_error(
-                "SearchGraph: edge label vector is shorter than the graph's upperEdgeIdBound()");
-    }
+    // SubgraphIsomorphism::prepareRun() has validated the labels.
+    assert(edgeLabels.empty() || (G.hasEdgeIds() && edgeLabels.size() >= G.upperEdgeIdBound()));
 
     if (hasMatrix && z > maxMatrixNodes) {
         if (n <= z / 2) {
