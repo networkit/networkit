@@ -134,13 +134,14 @@ private:
 
     bool feasible(node pu, node tv) const {
 
-        return ruleSuccessors(pu, tv) && rulePredecessors(pu, tv) && ruleTerminalCounts(pu, tv)
+        return ruleSuccessors(pu, tv) && rulePredecessors(pu, tv)
+               && (!edgeLabelled || ruleEdgeLabels(pu, tv)) && ruleTerminalCounts(pu, tv)
                && ruleNewCounts(pu, tv)
                && nodeLabelsCompatible(*patternNodeLabels, *targetNodeLabels, pu, tv);
     }
 
-    /// Every mapped out-neighbour of @a pu needs a corresponding out-edge of @a tv with a
-    /// compatible edge label. Under INDUCED semantics, the same holds in reverse.
+    /// Every mapped out-neighbour of @a pu needs a corresponding out-edge of @a tv. Under INDUCED
+    /// semantics, the same holds in reverse.
     bool ruleSuccessors(node pu, node tv) const {
 
         for (auto it = patternGraph.outBegin(pu); it != patternGraph.outEnd(pu); ++it) {
@@ -149,15 +150,10 @@ private:
                 if (!targetGraph.hasEdge(tv, core1[u])) {
                     return false;
                 }
-                if (edgeLabelled
-                    && !labelsCompatible(patternGraph.edgeLabel(pu, u),
-                                         targetGraph.edgeLabel(tv, core1[u]))) {
-                    return false;
-                }
             }
         }
 
-        // The loop above has already compared the labels of the edges that both graphs contain.
+        // ruleEdgeLabels() compares the labels of the edges that both graphs contain.
         if (semantics == SubgraphIsomorphism::Semantics::INDUCED) {
             for (auto it = targetGraph.outBegin(tv); it != targetGraph.outEnd(tv); ++it) {
                 node v = *it;
@@ -183,11 +179,6 @@ private:
                 if (!targetGraph.hasEdge(core1[u], tv)) {
                     return false;
                 }
-                if (edgeLabelled
-                    && !labelsCompatible(patternGraph.edgeLabel(u, pu),
-                                         targetGraph.edgeLabel(core1[u], tv))) {
-                    return false;
-                }
             }
         }
 
@@ -195,6 +186,34 @@ private:
             for (auto it = targetGraph.inBegin(tv); it != targetGraph.inEnd(tv); ++it) {
                 node v = *it;
                 if (core2[v] != none && !patternGraph.hasEdge(core2[v], pu)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /// The images of the edges between @a pu and the mapped pattern nodes need compatible labels.
+    /// ruleSuccessors() and rulePredecessors() have checked that the images exist. A separate pass
+    /// keeps the label loads out of their loops when the graphs carry no edge labels.
+    bool ruleEdgeLabels(node pu, node tv) const {
+
+        for (auto it = patternGraph.outBegin(pu); it != patternGraph.outEnd(pu); ++it) {
+            node u = *it;
+            if (core1[u] != none
+                && !labelsCompatible(patternGraph.edgeLabel(pu, u),
+                                     targetGraph.edgeLabel(tv, core1[u]))) {
+                return false;
+            }
+        }
+
+        if (patternGraph.isDirected()) {
+            for (auto it = patternGraph.inBegin(pu); it != patternGraph.inEnd(pu); ++it) {
+                node u = *it;
+                if (core1[u] != none
+                    && !labelsCompatible(patternGraph.edgeLabel(u, pu),
+                                         targetGraph.edgeLabel(core1[u], tv))) {
                     return false;
                 }
             }
