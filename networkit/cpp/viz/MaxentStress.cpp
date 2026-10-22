@@ -135,7 +135,9 @@ void MaxentStress::run() {
             oldCoordinates = newCoordinates;
 
             t.start();
-            newLowerBound = std::floor(5 * std::log(numSolves));
+            // std::log(0) is -inf and has no count value; none differs from every other bound.
+            newLowerBound =
+                numSolves == 0 ? none : static_cast<count>(std::floor(5 * std::log(numSolves)));
             if (newLowerBound != currentLowerBound) {
                 repulsiveForces = CoordinateVector(dim, Vector(compactG->numberOfNodes(), 0));
                 Octree<double> octree(oldCoordinates);
