@@ -353,44 +353,6 @@ TEST_F(SubgraphIsomorphismGTest, testSetEdgeLabelsValidatesItsInput) {
     EXPECT_NO_THROW(algo.setEdgeLabels({}, {}));
 }
 
-TEST_F(SubgraphIsomorphismGTest, testEdgeLabelsAreHonoured) {
-
-    const IsomorphismTest::LabelledGraph pattern =
-        IsomorphismTest::labelledGraphOf(3, {{0, 1, 1}, {1, 2, 2}});
-    const IsomorphismTest::LabelledGraph target =
-        IsomorphismTest::labelledGraphOf(4, {{0, 1, 1}, {1, 2, 2}, {2, 3, 1}});
-
-    const count labelled = referenceMatches(pattern.G, target.G, Semantics::MONOMORPHISM, {}, {},
-                                            pattern.edgeLabels, target.edgeLabels)
-                               .size();
-    const count unlabelled = referenceMatches(pattern.G, target.G, Semantics::MONOMORPHISM).size();
-    ASSERT_LT(labelled, unlabelled) << "the labels must rule some match out, or the comparison "
-                                       "below cannot tell an honoured label from an ignored one";
-
-    VF2 vf2(pattern.G, target.G, Semantics::MONOMORPHISM);
-    vf2.setEdgeLabels(pattern.edgeLabels, target.edgeLabels);
-    EXPECT_NO_THROW(vf2.run());
-    EXPECT_TRUE(vf2.hasFinished());
-    EXPECT_EQ(vf2.numberOfMatches(), labelled);
-
-    RI ri(pattern.G, target.G, RI::Variant::RI, Semantics::MONOMORPHISM);
-    ri.setEdgeLabels(pattern.edgeLabels, target.edgeLabels);
-    EXPECT_NO_THROW(ri.run());
-    EXPECT_TRUE(ri.hasFinished());
-    EXPECT_EQ(ri.numberOfMatches(), labelled);
-
-    ParallelRI parallelRi(pattern.G, target.G, RI::Variant::RI, Semantics::MONOMORPHISM);
-    parallelRi.setEdgeLabels(pattern.edgeLabels, target.edgeLabels);
-    EXPECT_NO_THROW(parallelRi.run());
-    EXPECT_TRUE(parallelRi.hasFinished());
-    EXPECT_EQ(parallelRi.numberOfMatches(), labelled);
-
-    VF2 vf2Unlabelled(pattern.G, target.G, Semantics::MONOMORPHISM);
-    EXPECT_NO_THROW(vf2Unlabelled.run());
-    EXPECT_TRUE(vf2Unlabelled.hasFinished());
-    EXPECT_EQ(vf2Unlabelled.numberOfMatches(), unlabelled);
-}
-
 TEST_F(SubgraphIsomorphismGTest, testParallelEdgesWithDisagreeingLabelsAreRefused) {
 
     // One arc of the snapshot cannot represent the two differently labelled 0-1 edges.

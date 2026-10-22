@@ -45,10 +45,6 @@ struct Snapshot {
     explicit Snapshot(const Case &testCase)
         : pattern(testCase.pattern, /* buildMatrix = */ true, testCase.patternEdgeLabels),
           target(testCase.target, /* buildMatrix = */ false, testCase.targetEdgeLabels) {}
-
-    bool refused() const {
-        return pattern.collapsedLabelledEdges() || target.collapsedLabelledEdges();
-    }
 };
 
 /// Computes the domains before the ordering, as both drivers do.
@@ -481,8 +477,6 @@ TEST_P(RIGTest, testExpandAgreesWithRun) {
 
     for (const Case &testCase : IsomorphismTest::standardCases()) {
         const Snapshot snapshot(testCase);
-        if (snapshot.refused())
-            continue;
 
         Aux::SignalHandler handler;
         const Preprocessed prep(snapshot.pattern, snapshot.target, testCase.patternNodeLabels,
