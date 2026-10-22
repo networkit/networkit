@@ -47,12 +47,6 @@ public:
         out1.assign(patternGraph.upperNodeIdBound(), none);
         in2.assign(targetGraph.upperNodeIdBound(), none);
         out2.assign(targetGraph.upperNodeIdBound(), none);
-        mapping.resize(patternGraph.upperNodeIdBound(), none);
-
-        if (patternGraph.numberOfNodes() == 0) {
-            reportMapping();
-            return;
-        }
 
         if (patternGraph.numberOfNodes() > targetGraph.numberOfNodes()
             || patternGraph.maxInDegree() > targetGraph.maxInDegree()
@@ -67,8 +61,9 @@ private:
     /// One level of the depth-first search. Returns false if the whole search must stop.
     bool match(count depth) {
 
+        // At full depth, core1 holds the image of every pattern node and none elsewhere.
         if (depth == patternGraph.numberOfNodes()) {
-            return reportMapping();
+            return report(core1);
         }
 
         index cursor = 0;
@@ -386,19 +381,13 @@ private:
         restoreTerminalSets[6] = membersOut1.size();
         restoreTerminalSets[7] = membersOut2.size();
 
-        // An undirected graph has in1 = out1 and in2 = out2, so the out-neighbours suffice.
+        // An undirected graph uses only the out-sets, and its in-sets stay empty.
         for (auto it = patternGraph.outBegin(pu); it != patternGraph.outEnd(pu); ++it) {
             node u = *it;
             if (core1[u] == none && out1[u] == none) {
                 out1[u] = membersOut1.size();
                 membersOut1.push_back(u);
                 t1out++;
-
-                if (!patternGraph.isDirected()) {
-                    in1[u] = membersIn1.size();
-                    membersIn1.push_back(u);
-                    t1in++;
-                }
             }
         }
 
@@ -408,12 +397,6 @@ private:
                 out2[v] = membersOut2.size();
                 membersOut2.push_back(v);
                 t2out++;
-
-                if (!targetGraph.isDirected()) {
-                    in2[v] = membersIn2.size();
-                    membersIn2.push_back(v);
-                    t2in++;
-                }
             }
         }
 
@@ -471,17 +454,6 @@ private:
         }
     }
 
-    bool reportMapping() {
-
-        for (index u = 0; u < mapping.size(); ++u) {
-            if (patternGraph.hasNode(u)) {
-                mapping[u] = core1[u];
-            }
-        }
-
-        return report(mapping);
-    }
-
     SearchGraph patternGraph;
     SearchGraph targetGraph;
 
@@ -505,8 +477,6 @@ private:
     std::vector<index> in1, out1, in2, out2;
     /// Current sizes of the four terminal sets.
     count t1in, t1out, t2in, t2out;
-
-    std::vector<node> mapping;
 
     std::vector<node> membersIn1, membersIn2, membersOut1, membersOut2;
 };

@@ -44,7 +44,7 @@ public:
 
     /**
      * Receives one match at a time, never concurrently. The match refers to an internal buffer
-     * that the next match overwrites. @ref ParallelRI serializes the calls with a lock, which a
+     * and is valid only during the call. @ref ParallelRI serializes the calls with a lock, which a
      * @ref ParallelMatchCallback avoids.
      */
     using MatchCallback = std::function<void(const Match &)>;
