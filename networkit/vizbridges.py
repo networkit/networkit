@@ -724,7 +724,7 @@ class NetworkitIplotxNetworkDataProvider(IplotxNetworkDataProvider):
 
 def iplotxFromGraph(
     G: Graph,
-    layout: LayoutType,
+    layout: Optional[LayoutType] = None,
     **kwargs,
 ):
     """Visualise graph using iplotx.
@@ -733,6 +733,9 @@ def iplotxFromGraph(
     ----------
     G : networkit.graph.Graph
             The input graph.
+    layout: LayoutType, optional
+            The layout to use for the graph. If None, a MaxentStress layout in two dimensions
+            with k=1 is computed.
     **kwargs: Keyword arguments passed to iplotx.network.
 
 
@@ -749,6 +752,16 @@ def iplotxFromGraph(
 
     if "network" in kwargs:
         raise ValueError("`network` argument is not allowed, use `G` instead.")
+
+    if layout is None:
+        layout_engine = MaxentStress(
+            G,
+            2,
+            1,
+        )
+        layout_engine.run()
+        layout = layout_engine.getCoordinates()
+        del layout_engine
 
     artist = ipx.network(
         network=G,

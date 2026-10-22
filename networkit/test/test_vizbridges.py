@@ -201,6 +201,12 @@ class TestVizbridges(unittest.TestCase):
         with self.assertRaises(Exception):
             vizbridges.widgetFromGraph(G, edgeScores=scores)
 
+    def testIplotXFromGraphDefaultLayout(self):
+        for directed, weighted in zip([True, False], [True, False]):
+            with self.subTest(directed=directed, weighted=weighted):
+                G = self.getSmallGraph(weighted, directed)
+                vizbridges.iplotxFromGraph(G)
+
 
 if __name__ == "__main__":
     unittest.main()
