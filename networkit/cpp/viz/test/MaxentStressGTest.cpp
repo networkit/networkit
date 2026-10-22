@@ -182,4 +182,29 @@ TEST_F(MaxentStressGTest, benchMaxentStressCoordConjGradIdPrecond) {
     }
 }
 
+TEST_F(MaxentStressGTest, testGraphWithDeletedNodes) {
+    Graph G(4, true);
+    G.addEdge(0, 1, 1.0);
+    G.addEdge(0, 2, 2.0);
+    G.addEdge(3, 1, 4.0);
+    G.addEdge(3, 2, 5.0);
+    G.addEdge(1, 2, 3.0);
+    G.removeNode(1);
+
+    const std::vector<Point<double>> start = {{0.0, 0.0}, {9.0, 9.0}, {1.0, 0.0}, {2.0, 1.0}};
+    MaxentStress coldStart(G, 2, 2, 1e-5);
+    MaxentStress warmStart(G, 2, start, 2, 1e-5);
+    for (MaxentStress *algo : {&coldStart, &warmStart}) {
+        algo->run();
+        const auto coordinates = algo->getCoordinates();
+        ASSERT_EQ(coordinates.size(), G.upperNodeIdBound());
+        // What remains is the path 0 - 2 - 3 with edge weights 2 and 5.
+        EXPECT_NEAR(coordinates[0].distance(coordinates[2]), 2.0, 0.2);
+        EXPECT_NEAR(coordinates[2].distance(coordinates[3]), 5.0, 0.5);
+        EXPECT_NEAR(coordinates[0].distance(coordinates[3]), 7.0, 0.7);
+    }
+    EXPECT_EQ(coldStart.getCoordinates()[1], Point<double>(0.0, 0.0));
+    EXPECT_EQ(warmStart.getCoordinates()[1], start[1]);
+}
+
 } /* namespace NetworKit */
