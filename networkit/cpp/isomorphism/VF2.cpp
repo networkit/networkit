@@ -13,7 +13,9 @@ namespace NetworKit {
 
 namespace {
 
+using IsomorphismDetails::labelsCompatible;
 using IsomorphismDetails::MatchReporter;
+using IsomorphismDetails::nodeLabelsCompatible;
 using IsomorphismDetails::SearchGraph;
 
 class VF2Impl {
@@ -26,9 +28,8 @@ public:
         : patternGraph(pattern, /* buildMatrix = */ true, patternEdgeLabels),
           targetGraph(target, /* buildMatrix = */ false, targetEdgeLabels),
           patternNodeLabels(&patternNodeLabels), targetNodeLabels(&targetNodeLabels),
-          nodeLabelled(!patternNodeLabels.empty()), edgeLabelled(!patternEdgeLabels.empty()),
-          semantics(semantics), handler(&handler), report(std::move(report)), t1in(0), t1out(0),
-          t2in(0), t2out(0) {
+          edgeLabelled(!patternEdgeLabels.empty()), semantics(semantics), handler(&handler),
+          report(std::move(report)), t1in(0), t1out(0), t2in(0), t2out(0) {
         if (patternGraph.collapsedLabelledEdges()) {
             throw std::runtime_error(
                 "VF2 does not run if pattern has unequally-labelled collapsed edges.");
@@ -142,7 +143,8 @@ private:
     bool feasible(node pu, node tv) const {
 
         return ruleSuccessors(pu, tv) && rulePredecessors(pu, tv) && ruleTerminalCounts(pu, tv)
-               && ruleNewCounts(pu, tv) && ruleLabels(pu, tv);
+               && ruleNewCounts(pu, tv)
+               && nodeLabelsCompatible(*patternNodeLabels, *targetNodeLabels, pu, tv);
     }
 
     /// Every mapped out-neighbour of @a pu needs a corresponding out-edge of @a tv with a
@@ -155,12 +157,10 @@ private:
                 if (!targetGraph.hasEdge(tv, core1[u])) {
                     return false;
                 }
-                if (edgeLabelled) {
-                    if (!(patternGraph.edgeLabel(pu, u) == targetGraph.edgeLabel(tv, core1[u])
-                          || patternGraph.edgeLabel(pu, u) == none
-                          || targetGraph.edgeLabel(tv, core1[u]) == none)) {
-                        return false;
-                    }
+                if (edgeLabelled
+                    && !labelsCompatible(patternGraph.edgeLabel(pu, u),
+                                         targetGraph.edgeLabel(tv, core1[u]))) {
+                    return false;
                 }
             }
         }
@@ -191,12 +191,10 @@ private:
                 if (!targetGraph.hasEdge(core1[u], tv)) {
                     return false;
                 }
-                if (edgeLabelled) {
-                    if (!(patternGraph.edgeLabel(u, pu) == targetGraph.edgeLabel(core1[u], tv)
-                          || patternGraph.edgeLabel(u, pu) == none
-                          || targetGraph.edgeLabel(core1[u], tv) == none)) {
-                        return false;
-                    }
+                if (edgeLabelled
+                    && !labelsCompatible(patternGraph.edgeLabel(u, pu),
+                                         targetGraph.edgeLabel(core1[u], tv))) {
+                    return false;
                 }
             }
         }
@@ -303,21 +301,6 @@ private:
         }
 
         return true;
-    }
-
-    /// @ref none is a wildcard on either side.
-    bool ruleLabels(node pu, node tv) const {
-
-        if (!nodeLabelled) {
-            return true;
-        }
-
-        if ((*patternNodeLabels)[pu] == (*targetNodeLabels)[tv] || (*patternNodeLabels)[pu] == none
-            || (*targetNodeLabels)[tv] == none) {
-            return true;
-        }
-
-        return false;
     }
 
     /// The smallest node in a terminal set, or @ref none if the set is empty. @a positions holds
@@ -459,7 +442,6 @@ private:
 
     const std::vector<index> *patternNodeLabels;
     const std::vector<index> *targetNodeLabels;
-    bool nodeLabelled;
     bool edgeLabelled;
 
     SubgraphIsomorphism::Semantics semantics;

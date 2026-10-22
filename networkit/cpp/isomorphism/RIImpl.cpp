@@ -14,21 +14,6 @@ namespace IsomorphismDetails {
 
 namespace {
 
-/// @ref none is a wildcard on either side.
-bool nodeLabelsCompatible(const std::vector<index> &patternNodeLabels,
-                          const std::vector<index> &targetNodeLabels, node pu, node tv) {
-    if (patternNodeLabels.empty())
-        return true;
-
-    const index patternLabel = patternNodeLabels[pu];
-    const index targetLabel = targetNodeLabels[tv];
-    return patternLabel == none || targetLabel == none || patternLabel == targetLabel;
-}
-
-bool edgeLabelsCompatible(index patternLabel, index targetLabel) noexcept {
-    return patternLabel == none || targetLabel == none || patternLabel == targetLabel;
-}
-
 /// Ignores direction and visits a directed mutual pair twice, once per arc.
 template <typename Callback>
 void forEachIncidentArc(const SearchGraph &g, node u, Callback fn) {
@@ -56,12 +41,10 @@ void forEachDistinctNeighbor(const SearchGraph &g, node u, Callback fn) {
             fn(*it);
 }
 
-bool couldMap(const SearchGraph &pattern, const SearchGraph &target,
-              const std::vector<index> &patternNodeLabels,
-              const std::vector<index> &targetNodeLabels, node pu, node tv) {
-    if (!target.hasNode(tv))
-        return false;
-
+/// The checks of a candidate that do not depend on the partial mapping.
+bool degreesAndLabelsFit(const SearchGraph &pattern, const SearchGraph &target,
+                         const std::vector<index> &patternNodeLabels,
+                         const std::vector<index> &targetNodeLabels, node pu, node tv) {
     if (target.outDegree(tv) < pattern.outDegree(pu))
         return false;
 
@@ -84,7 +67,7 @@ bool intersectsDomain(const node *begin, const node *end, const index *labels, i
         if (*candidate != *it)
             continue;
 
-        if (labels == nullptr || edgeLabelsCompatible(patternLabel, labels[it - begin]))
+        if (labels == nullptr || labelsCompatible(patternLabel, labels[it - begin]))
             return true;
     }
 
@@ -420,7 +403,7 @@ void RIImpl::candidatesFor(const State &state, std::vector<node> &out) const {
     for (const node *it = begin; it != end; ++it) {
         const node tv = *it;
 
-        if (filterLabels && !edgeLabelsCompatible(patternLabel, sliceLabels[it - begin]))
+        if (filterLabels && !labelsCompatible(patternLabel, sliceLabels[it - begin]))
             continue;
 
         if (domain != nullptr) {
@@ -438,13 +421,8 @@ void RIImpl::candidatesFor(const State &state, std::vector<node> &out) const {
 bool RIImpl::consistent(const State &state, node tv) const {
     const node pu = ordering->order[state.depth];
 
-    if (targetGraph->outDegree(tv) < patternGraph->outDegree(pu))
-        return false;
-
-    if (patternGraph->isDirected() && targetGraph->inDegree(tv) < patternGraph->inDegree(pu))
-        return false;
-
-    if (!ruleLabels(pu, tv))
+    if (!degreesAndLabelsFit(*patternGraph, *targetGraph, *patternNodeLabels, *targetNodeLabels, pu,
+                             tv))
         return false;
 
     if (!ruleEdgesToPrefix(state, tv))
@@ -470,8 +448,8 @@ bool RIImpl::ruleEdgesToPrefix(const State &state, node tv) const {
             if (!targetGraph->hasEdge(ti, tv))
                 return false;
             if (edgeLabelled
-                && !edgeLabelsCompatible(patternGraph->edgeLabel(pi, pu),
-                                         targetGraph->edgeLabel(ti, tv)))
+                && !labelsCompatible(patternGraph->edgeLabel(pi, pu),
+                                     targetGraph->edgeLabel(ti, tv)))
                 return false;
         }
 
@@ -480,8 +458,8 @@ bool RIImpl::ruleEdgesToPrefix(const State &state, node tv) const {
             if (!targetGraph->hasEdge(tv, ti))
                 return false;
             if (edgeLabelled
-                && !edgeLabelsCompatible(patternGraph->edgeLabel(pu, pi),
-                                         targetGraph->edgeLabel(tv, ti)))
+                && !labelsCompatible(patternGraph->edgeLabel(pu, pi),
+                                     targetGraph->edgeLabel(tv, ti)))
                 return false;
         }
     }
@@ -507,10 +485,6 @@ bool RIImpl::ruleNonEdgesToPrefix(const State &state, node tv) const {
     return true;
 }
 
-bool RIImpl::ruleLabels(node pu, node tv) const {
-    return nodeLabelsCompatible(*patternNodeLabels, *targetNodeLabels, pu, tv);
-}
-
 RIImpl::Domains RIImpl::computeDomains(const SearchGraph &pattern, const SearchGraph &target,
                                        const std::vector<index> &patternNodeLabels,
                                        const std::vector<index> &targetNodeLabels,
@@ -530,7 +504,9 @@ RIImpl::Domains RIImpl::computeDomains(const SearchGraph &pattern, const SearchG
 
         std::vector<node> &domain = result.ofPatternNode[pu];
         for (node tv = 0; tv < target.upperNodeIdBound(); ++tv)
-            if (couldMap(pattern, target, patternNodeLabels, targetNodeLabels, pu, tv))
+            if (target.hasNode(tv)
+                && degreesAndLabelsFit(pattern, target, patternNodeLabels, targetNodeLabels, pu,
+                                       tv))
                 domain.push_back(tv);
     }
 

@@ -93,8 +93,6 @@ private:
 
     bool ruleNonEdgesToPrefix(const State &state, node tv) const;
 
-    bool ruleLabels(node pu, node tv) const;
-
     bool reportMapping(const State &state);
 
     const SearchGraph *patternGraph;

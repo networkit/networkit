@@ -13,6 +13,18 @@
 namespace NetworKit {
 namespace IsomorphismDetails {
 
+/// @ref none is a wildcard on either side.
+inline bool labelsCompatible(index patternLabel, index targetLabel) noexcept {
+    return patternLabel == none || targetLabel == none || patternLabel == targetLabel;
+}
+
+/// Empty label vectors put no constraint on the nodes.
+inline bool nodeLabelsCompatible(const std::vector<index> &patternNodeLabels,
+                                 const std::vector<index> &targetNodeLabels, node pu, node tv) {
+    return patternNodeLabels.empty()
+           || labelsCompatible(patternNodeLabels[pu], targetNodeLabels[tv]);
+}
+
 /**
  * A read-only snapshot of a Graph for the inner loops of a subgraph search, since
  * `Graph::hasEdge()` is too slow there. It stores sorted CSR adjacency for out- and in-arcs,
