@@ -283,8 +283,9 @@ RIImpl::Ordering RIImpl::computeOrdering(const SearchGraph &pattern, const Domai
     return result;
 }
 
-bool RIImpl::patternCannotFit(const SearchGraph &pattern, const SearchGraph &target) {
-    if (pattern.numberOfNodes() > target.numberOfNodes())
+bool RIImpl::cannotMatch(const SearchGraph &pattern, const SearchGraph &target,
+                         const Domains &domains) {
+    if (domains.anyEmpty || pattern.numberOfNodes() > target.numberOfNodes())
         return true;
 
     if (pattern.maxOutDegree() > target.maxOutDegree())
@@ -311,14 +312,8 @@ RIImpl::State RIImpl::rootState() const {
 }
 
 void RIImpl::run() {
-    // An empty pattern has exactly one match, the empty mapping, so it must not return early.
-    if (!ordering->order.empty()) {
-        if (patternCannotFit(*patternGraph, *targetGraph))
-            return;
-
-        if (domains->anyEmpty)
-            return;
-    }
+    if (cannotMatch(*patternGraph, *targetGraph, *domains))
+        return;
 
     State state = rootState();
     recurse(state);
@@ -525,9 +520,6 @@ RIImpl::Domains RIImpl::computeDomains(const SearchGraph &pattern, const SearchG
         return result;
 
     const count z = pattern.upperNodeIdBound();
-    if (z == 0)
-        return result;
-
     result.ofPatternNode.assign(z, {});
     result.earnsItsKeep.assign(z, false);
 

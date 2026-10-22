@@ -59,7 +59,10 @@ public:
     /// first, and a full tie goes to the smaller domain.
     static Ordering computeOrdering(const SearchGraph &pattern, const Domains &domains);
 
-    static bool patternCannotFit(const SearchGraph &pattern, const SearchGraph &target);
+    /// Whether the sizes, the degrees or an empty RI-DS domain rule out every match. False for an
+    /// empty pattern, whose one match is the empty mapping.
+    static bool cannotMatch(const SearchGraph &pattern, const SearchGraph &target,
+                            const Domains &domains);
 
     /// @a ordering and @a domains must outlive this object.
     RIImpl(const SearchGraph &pattern, const SearchGraph &target,

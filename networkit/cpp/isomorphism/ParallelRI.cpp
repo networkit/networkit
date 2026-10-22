@@ -82,7 +82,7 @@ public:
           patternNodeLabels(&patternNodeLabels), targetNodeLabels(&targetNodeLabels),
           ordering(&ordering), domains(&domains), semantics(semantics), handler(&handler),
           deliver(std::move(deliver)), storeMatches(storeMatches), maxMatches(maxMatches),
-          numWorkers(numWorkers == 0 ? 1 : numWorkers),
+          numWorkers(numWorkers),
           // Worker is neither copyable nor movable, so the vector is sized on construction.
           workers(this->numWorkers), activeWorkers(this->numWorkers), stopped(false),
           tokenHolder(0), tokenDirty(false), tokenHops(0), published(0),
@@ -97,9 +97,8 @@ public:
     }
 
     void run() {
-        // The early exits of RIImpl::run(). An empty pattern has one match, the empty mapping.
-        if (!ordering->order.empty()
-            && (RIImpl::patternCannotFit(*patternGraph, *targetGraph) || domains->anyEmpty))
+        // The early exit of RIImpl::run().
+        if (RIImpl::cannotMatch(*patternGraph, *targetGraph, *domains))
             return;
 
 #pragma omp parallel num_threads(static_cast<int>(numWorkers))
