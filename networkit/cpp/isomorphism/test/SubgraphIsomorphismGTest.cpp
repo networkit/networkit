@@ -8,9 +8,11 @@
  */
 
 #include <atomic>
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 #include <omp.h>
@@ -356,33 +358,43 @@ TEST_F(SubgraphIsomorphismGTest, testSetEdgeLabelsValidatesItsInput) {
 TEST_F(SubgraphIsomorphismGTest, testParallelEdgesWithDisagreeingLabelsAreRefused) {
 
     // One arc of the snapshot cannot represent the two differently labelled 0-1 edges.
-    const IsomorphismTest::LabelledGraph pattern =
-        IsomorphismTest::labelledGraphOf(3, {{0, 1, 1}, {1, 2, 2}});
-    const IsomorphismTest::LabelledGraph target =
+    const IsomorphismTest::LabelledGraph plain =
+        IsomorphismTest::labelledGraphOf(4, {{0, 1, 1}, {1, 2, 2}, {2, 3, 1}});
+    const IsomorphismTest::LabelledGraph disagreeing =
         IsomorphismTest::labelledGraphOf(4, {{0, 1, 1}, {0, 1, 4}, {1, 2, 2}, {2, 3, 1}});
 
-    RI ri(pattern.G, target.G, RI::Variant::RI, Semantics::MONOMORPHISM);
-    ri.setEdgeLabels(pattern.edgeLabels, target.edgeLabels);
-    EXPECT_THROW(ri.run(), std::runtime_error);
-    EXPECT_FALSE(ri.hasFinished());
+    using Factory =
+        std::function<std::unique_ptr<SubgraphIsomorphism>(const Graph &, const Graph &)>;
+    const std::vector<Factory> factories = {
+        [](const Graph &pattern, const Graph &target) {
+            return std::unique_ptr<SubgraphIsomorphism>(
+                new VF2(pattern, target, Semantics::MONOMORPHISM));
+        },
+        [](const Graph &pattern, const Graph &target) {
+            return std::unique_ptr<SubgraphIsomorphism>(
+                new RI(pattern, target, RI::Variant::RI, Semantics::MONOMORPHISM));
+        },
+        [](const Graph &pattern, const Graph &target) {
+            return std::unique_ptr<SubgraphIsomorphism>(
+                new ParallelRI(pattern, target, RI::Variant::RI, Semantics::MONOMORPHISM));
+        }};
 
-    ParallelRI parallelRi(pattern.G, target.G, RI::Variant::RI, Semantics::MONOMORPHISM);
-    parallelRi.setEdgeLabels(pattern.edgeLabels, target.edgeLabels);
-    EXPECT_THROW(parallelRi.run(), std::runtime_error);
-    EXPECT_FALSE(parallelRi.hasFinished());
+    for (const Factory &make : factories) {
+        for (const std::string side : {"pattern", "target"}) {
+            const IsomorphismTest::LabelledGraph &pattern = side == "pattern" ? disagreeing : plain;
+            const IsomorphismTest::LabelledGraph &target = side == "pattern" ? plain : disagreeing;
 
-    const IsomorphismTest::LabelledGraph agreeing =
-        IsomorphismTest::labelledGraphOf(4, {{0, 1, 1}, {0, 1, 1}, {1, 2, 2}, {2, 3, 1}});
-
-    RI lossless(pattern.G, agreeing.G, RI::Variant::RI, Semantics::MONOMORPHISM);
-    lossless.setEdgeLabels(pattern.edgeLabels, agreeing.edgeLabels);
-    EXPECT_NO_THROW(lossless.run())
-        << "collapsing equally-labelled parallel edges is lossless and must not be refused";
-    EXPECT_TRUE(lossless.hasFinished());
-    EXPECT_EQ(lossless.numberOfMatches(),
-              referenceMatches(pattern.G, agreeing.G, Semantics::MONOMORPHISM, {}, {},
-                               pattern.edgeLabels, agreeing.edgeLabels)
-                  .size());
+            std::unique_ptr<SubgraphIsomorphism> algo = make(pattern.G, target.G);
+            algo->setEdgeLabels(pattern.edgeLabels, target.edgeLabels);
+            try {
+                algo->run();
+                ADD_FAILURE() << "disagreeing labels in the " << side << " were accepted";
+            } catch (const std::runtime_error &e) {
+                EXPECT_NE(std::string(e.what()).find(side), std::string::npos) << e.what();
+            }
+            EXPECT_FALSE(algo->hasFinished());
+        }
+    }
 }
 
 TEST_F(SubgraphIsomorphismGTest, testRunRechecksGraphInvariants) {

@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <array>
-#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -581,10 +580,7 @@ RISearchSetup prepareRISearch(const Graph &pattern, const Graph &target,
     SearchGraph patternGraph(pattern, /* buildMatrix = */ true, patternEdgeLabels);
     SearchGraph targetGraph(target, /* buildMatrix = */ false, targetEdgeLabels);
 
-    if (patternGraph.collapsedLabelledEdges() || targetGraph.collapsedLabelledEdges())
-        throw std::runtime_error(algorithmName
-                                 + " does not support parallel edges whose edge labels disagree - "
-                                   "see SubgraphIsomorphism::setEdgeLabels()");
+    refuseLostLabels(patternGraph, targetGraph, algorithmName);
 
     RIImpl::Domains domains = RIImpl::computeDomains(patternGraph, targetGraph, patternNodeLabels,
                                                      targetNodeLabels, variant);

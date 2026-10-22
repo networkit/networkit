@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include <tlx/math/div_ceil.hpp>
@@ -142,6 +143,11 @@ private:
     bool directed;
     bool hasMatrix;
 };
+
+/// Throws `std::runtime_error` if @a pattern or @a target lost an edge label when it collapsed
+/// parallel edges. The message starts with @a algorithmName.
+void refuseLostLabels(const SearchGraph &pattern, const SearchGraph &target,
+                      const std::string &algorithmName);
 
 } // namespace IsomorphismDetails
 } // namespace NetworKit

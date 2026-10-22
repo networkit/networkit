@@ -513,6 +513,29 @@ inline std::vector<Case> standardCases() {
                      edgeLabelledPattern.edgeLabels,
                      parallelAgreeing.edgeLabels});
 
+    const LabelledGraph parallelAgreeingPattern =
+        labelledGraphOf(3, {{0, 1, 1}, {0, 1, 1}, {1, 2, 2}});
+    cases.push_back({"edge-labelled-parallel-pattern-edges-same-label",
+                     parallelAgreeingPattern.G,
+                     edgeLabelledTarget.G,
+                     Semantics::MONOMORPHISM,
+                     {},
+                     {},
+                     parallelAgreeingPattern.edgeLabels,
+                     edgeLabelledTarget.edgeLabels});
+
+    // The snapshot drops target self-loops, so their labels cannot disagree.
+    const LabelledGraph labelledLoops =
+        labelledGraphOf(4, {{0, 1, 1}, {1, 2, 2}, {2, 3, 1}, {2, 2, 7}, {2, 2, 8}});
+    cases.push_back({"edge-labelled-target-self-loops",
+                     edgeLabelledPattern.G,
+                     labelledLoops.G,
+                     Semantics::MONOMORPHISM,
+                     {},
+                     {},
+                     edgeLabelledPattern.edgeLabels,
+                     labelledLoops.edgeLabels});
+
     return cases;
 }
 

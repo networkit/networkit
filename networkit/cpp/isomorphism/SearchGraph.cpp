@@ -2,6 +2,8 @@
 #include <cassert>
 #include <cstddef>
 #include <numeric>
+#include <stdexcept>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -185,6 +187,18 @@ void SearchGraph::buildAdjacencyMatrix() {
         for (const node *it = outBegin(u); it != outEnd(u); ++it)
             matrix[static_cast<std::size_t>(u) * matrixStride + *it / 64] |= uint64_t{1}
                                                                              << (*it % 64);
+}
+
+void refuseLostLabels(const SearchGraph &pattern, const SearchGraph &target,
+                      const std::string &algorithmName) {
+    if (!pattern.collapsedLabelledEdges() && !target.collapsedLabelledEdges())
+        return;
+
+    const std::string side = pattern.collapsedLabelledEdges() ? "pattern" : "target";
+    throw std::runtime_error(algorithmName
+                             + " does not support parallel edges whose edge labels disagree, as in "
+                               "the "
+                             + side + " - see SubgraphIsomorphism::setEdgeLabels()");
 }
 
 } // namespace IsomorphismDetails

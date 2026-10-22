@@ -1,5 +1,4 @@
 #include <array>
-#include <stdexcept>
 #include <vector>
 
 #include <networkit/Globals.hpp>
@@ -30,14 +29,7 @@ public:
           patternNodeLabels(&patternNodeLabels), targetNodeLabels(&targetNodeLabels),
           edgeLabelled(!patternEdgeLabels.empty()), semantics(semantics), handler(&handler),
           report(std::move(report)), t1in(0), t1out(0), t2in(0), t2out(0) {
-        if (patternGraph.collapsedLabelledEdges()) {
-            throw std::runtime_error(
-                "VF2 does not run if pattern has unequally-labelled collapsed edges.");
-        }
-        if (targetGraph.collapsedLabelledEdges()) {
-            throw std::runtime_error(
-                "VF2 does not run if target has unequally-labelled collapsed edges.");
-        }
+        IsomorphismDetails::refuseLostLabels(patternGraph, targetGraph, "VF2");
     }
 
     void run() {
