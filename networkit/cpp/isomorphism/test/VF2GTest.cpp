@@ -5,23 +5,16 @@
  *      Author: Alexandra
  */
 
-#include <algorithm>
-#include <iterator>
-#include <vector>
+#include <memory>
 
 #include <gtest/gtest.h>
 
-#include <networkit/auxiliary/Random.hpp>
-#include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/graph/Graph.hpp>
-#include <networkit/graph/GraphTools.hpp>
-#include <networkit/io/EdgeListReader.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 #include <networkit/isomorphism/SubgraphIsomorphism.hpp>
 #include <networkit/isomorphism/VF2.hpp>
 
 #include "SubgraphIsomorphismTestUtils.hpp"
-#include "../SearchGraph.hpp"
 
 namespace NetworKit {
 

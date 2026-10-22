@@ -13,8 +13,6 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/EdgeListReader.hpp>
-#include <networkit/io/METISGraphReader.hpp>
-#include <networkit/isomorphism/SubgraphIsomorphism.hpp>
 
 #include "SubgraphIsomorphismTestUtils.hpp"
 #include "../SearchGraph.hpp"

@@ -18,7 +18,6 @@
 #include <gtest/gtest.h>
 
 #include <networkit/Globals.hpp>
-#include <networkit/auxiliary/Parallelism.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/isomorphism/SubgraphIsomorphism.hpp>
