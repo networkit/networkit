@@ -26,7 +26,7 @@ template <typename T>
 class GraphLayoutAlgorithm {
 public:
     GraphLayoutAlgorithm(const Graph &G, count dim)
-        : G(&G), vertexCoordinates(std::vector<Point<T>>(G.upperNodeIdBound(), Point<T>(dim))) {}
+        : G(&G), vertexCoordinates(G.upperNodeIdBound(), Point<T>(std::vector<T>(dim))) {}
     virtual ~GraphLayoutAlgorithm() = default;
 
     virtual void run() = 0;
