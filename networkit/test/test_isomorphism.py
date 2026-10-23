@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import time
 import unittest
 
 import networkit as nk
@@ -67,7 +68,7 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		self.assertEqual({tuple(match) for match in vf2.getMatches()}, self.expected)
 
 	def testGraphsMustNotBeNone(self):
-		for algorithm in (nk.isomorphism.VF2, nk.isomorphism.RI):
+		for algorithm in (nk.isomorphism.VF2, nk.isomorphism.RI, nk.isomorphism.ParallelRI):
 			with self.assertRaises(TypeError):
 				algorithm(None, self.square)
 
@@ -84,14 +85,16 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 	def testUnknownVariantRaises(self):
 		# Variant values are plain integers as well. 256 and 257 check that the value is not
 		# truncated to 8 bits, which would turn them into RI and RI_DS.
-		for variant in (2, 256, 257, -1):
-			with self.assertRaises(ValueError):
-				nk.isomorphism.RI(self.arc, self.square, variant)
+		for algorithm in (nk.isomorphism.RI, nk.isomorphism.ParallelRI):
+			for variant in (2, 256, 257, -1):
+				with self.assertRaises(ValueError):
+					algorithm(self.arc, self.square, variant)
 
 	def testDomainFilterThresholdOutsideTheUnitIntervalRaises(self):
-		for threshold in (-0.1, 1.1, float("nan")):
-			with self.assertRaises(ValueError):
-				nk.isomorphism.RI(self.arc, self.square, domainFilterThreshold=threshold)
+		for algorithm in (nk.isomorphism.RI, nk.isomorphism.ParallelRI):
+			for threshold in (-0.1, 1.1, float("nan")):
+				with self.assertRaises(ValueError):
+					algorithm(self.arc, self.square, domainFilterThreshold=threshold)
 
 	def testIsoVsMono(self):
 		# Due to the diagonal edge in the target there should be no induced matching
@@ -156,6 +159,9 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 			nk.isomorphism.RI(self.arc, self.square, variant=nk.isomorphism.Variant.RI_DS),
 			nk.isomorphism.RI(self.arc, self.square, variant=nk.isomorphism.Variant.RI_DS,
 							  domainFilterThreshold=0.0),
+			nk.isomorphism.ParallelRI(self.arc, self.square),
+			nk.isomorphism.ParallelRI(self.arc, self.square, variant=nk.isomorphism.Variant.RI_DS,
+									  domainFilterThreshold=0.0),
 		]
 		for algo in algos:
 			algo.run()
@@ -179,6 +185,47 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		# SubgraphIsomorphism used with a callback does not store the matches
 		with self.assertRaises(RuntimeError):
 			vf2.getMatches()
+
+	def testParallelRICallback(self):
+		matches = []
+
+		def callback(workerId, match):
+			matches.append((workerId, match))
+
+		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
+		riPar.setParallelCallback(callback)
+		riPar.run()
+
+		self.assertEqual(len(matches), 8)
+		for workerId, match in matches:
+			self.assertLess(workerId, nk.getMaxNumberOfThreads())
+		self.assertEqual({tuple(match) for workerId, match in matches}, self.expected)
+		# SubgraphIsomorphism used with a callback does not store the matches
+		with self.assertRaises(RuntimeError):
+			riPar.getMatches()
+
+	def testSerialCallbackWithParallelRI(self):
+		matches = []
+		inFlight = 0
+		maxInFlight = 0
+
+		def callback(match):
+			nonlocal inFlight, maxInFlight
+			inFlight += 1
+			maxInFlight = max(maxInFlight, inFlight)
+			# Sleeping releases the GIL, which would let an overlapping call start
+			time.sleep(0.001)
+			matches.append(tuple(match))
+			inFlight -= 1
+
+		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
+		riPar.setCallback(callback)
+		riPar.run()
+
+		# The workers of ParallelRI take turns at a callback set with setCallback
+		self.assertEqual(maxInFlight, 1)
+		self.assertEqual(len(matches), 8)
+		self.assertEqual(set(matches), self.expected)
 
 	def testParallelCallbackWithSequentialAlgorithms(self):
 		matches = []
@@ -399,6 +446,16 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 			ri.run()
 
 		self.assertEqual(len(matches), 3)
+
+		# Other workers may report a match before they notice that the search stopped
+		riPar = nk.isomorphism.ParallelRI(self.arc, self.square)
+		riPar.setParallelCallback(callback_par)
+
+		with self.assertRaisesRegex(RuntimeError, "callback exited"):
+			riPar.run()
+
+		self.assertGreaterEqual(len(matches), 4)
+		self.assertLessEqual(len(matches), 3 + nk.getMaxNumberOfThreads())
 
 if __name__ == "__main__":
 	unittest.main()
