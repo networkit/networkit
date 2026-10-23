@@ -102,6 +102,7 @@ template <class Matrix>
 void SolverLamg<Matrix>::solve(Vector &x, const Vector &b, LAMGSolverStatus &status) {
     bStages = std::vector<std::vector<Vector>>(hierarchy.size(), std::vector<Vector>());
     bool reducedToOneNode = false;
+    double initialResidual = 0.0;
     if (hierarchy.size() >= 2) {
         Vector bc = b;
         Vector xc = x;
@@ -112,6 +113,9 @@ void SolverLamg<Matrix>::solve(Vector &x, const Vector &b, LAMGSolverStatus &sta
             if (hierarchy.at(1).getLaplacian().numberOfRows() == 1) {
                 // The remaining unknown is the constant null-space mode. Gauge it at 0
                 // and interpolate; the singular 1x1 row does not determine eliminated nodes.
+                // Match solveCycle: desiredResidualReduction is relative to this initial
+                // residual, which Lamg::solveThread sets from tol*||b||/||L*x0-b||.
+                initialResidual = (b - hierarchy.at(0).getLaplacian() * x).length();
                 xc = Vector(1, 0.0);
                 hierarchy.at(1).interpolate(xc, x, bStages[1]);
                 reducedToOneNode = true;
@@ -138,7 +142,7 @@ void SolverLamg<Matrix>::solve(Vector &x, const Vector &b, LAMGSolverStatus &sta
     status.residual = residual;
     if (reducedToOneNode) {
         status.numIters = 0;
-        status.converged = residual <= status.desiredResidualReduction * b.length();
+        status.converged = residual <= initialResidual * status.desiredResidualReduction;
     }
 }
 

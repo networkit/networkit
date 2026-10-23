@@ -254,4 +254,33 @@ TEST(LAMGGTest, starEliminatedToOneNode) {
     EXPECT_TRUE(status.converged);
 }
 
+TEST(LAMGGTest, starEliminatedToOneNodeNonzeroGuess) {
+    omp_set_num_threads(1);
+
+    Graph graph(201);
+    for (node v = 1; v < 201; ++v)
+        graph.addEdge(0, v);
+
+    const auto L = CSRMatrix::laplacianMatrix(graph);
+    Lamg<CSRMatrix> lamg;
+    lamg.setupConnected(L);
+
+    Vector rhs(201, 0.0);
+    rhs[0] = -1.0;
+    rhs[1] = 1.0;
+
+    // Nonzero guess: solveThread sets the reduction to tol*||b||/||L*x0-b||.
+    // The one-node result is still the gauged solution, independent of x0.
+    Vector result(201, 0.0);
+    result[0] = 1e8;
+    const double initialResidual = (rhs - L * result).length();
+    EXPECT_GT(initialResidual, rhs.length() * 1e6);
+
+    const auto status = lamg.solve(rhs, result);
+    EXPECT_TRUE(vector_almost_equal(L * result, rhs))
+        << "Lamg result: " << result << "\nL * result: " << L * result << "\nrhs: " << rhs;
+    EXPECT_LT(status.residual, 1e-6 * rhs.length());
+    EXPECT_TRUE(status.converged);
+}
+
 } /* namespace NetworKit */
