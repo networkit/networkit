@@ -101,6 +101,7 @@ public:
 template <class Matrix>
 void SolverLamg<Matrix>::solve(Vector &x, const Vector &b, LAMGSolverStatus &status) {
     bStages = std::vector<std::vector<Vector>>(hierarchy.size(), std::vector<Vector>());
+    bool reducedToOneNode = false;
     if (hierarchy.size() >= 2) {
         Vector bc = b;
         Vector xc = x;
@@ -109,20 +110,25 @@ void SolverLamg<Matrix>::solve(Vector &x, const Vector &b, LAMGSolverStatus &sta
         if (hierarchy.getType(1) == ELIMINATION) {
             hierarchy.at(1).restrict(b, bc, bStages[1]);
             if (hierarchy.at(1).getLaplacian().numberOfRows() == 1) {
-                x.fill(0.0);
-                return;
+                // The remaining unknown is the constant null-space mode. Gauge it at 0
+                // and interpolate; the singular 1x1 row does not determine eliminated nodes.
+                xc = Vector(1, 0.0);
+                hierarchy.at(1).interpolate(xc, x, bStages[1]);
+                reducedToOneNode = true;
             } else {
                 hierarchy.at(1).coarseType(x, xc);
                 finest = 1;
             }
         }
-        solveCycle(xc, bc, finest, status);
+        if (!reducedToOneNode) {
+            solveCycle(xc, bc, finest, status);
 
-        // interpolate from finest == ELIMINATION level back to actual finest level
-        if (finest == 1) {
-            hierarchy.at(1).interpolate(xc, x, bStages[1]);
-        } else {
-            x = xc;
+            // interpolate from finest == ELIMINATION level back to actual finest level
+            if (finest == 1) {
+                hierarchy.at(1).interpolate(xc, x, bStages[1]);
+            } else {
+                x = xc;
+            }
         }
     } else {
         solveCycle(x, b, 0, status);
@@ -130,6 +136,10 @@ void SolverLamg<Matrix>::solve(Vector &x, const Vector &b, LAMGSolverStatus &sta
 
     double residual = (b - hierarchy.at(0).getLaplacian() * x).length();
     status.residual = residual;
+    if (reducedToOneNode) {
+        status.numIters = 0;
+        status.converged = residual <= status.desiredResidualReduction * b.length();
+    }
 }
 
 template <class Matrix>
