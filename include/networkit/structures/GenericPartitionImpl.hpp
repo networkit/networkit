@@ -34,7 +34,7 @@ GenericPartition<IndexType>::GenericPartition(IndexType z, IndexType defaultValu
 template <IntegralValue IndexType>
 void GenericPartition<IndexType>::allToSingletons() {
     parallelForEntries([&](IndexType e, IndexType) { data[e] = e; });
-    setUpperBound(numberOfElements());
+    this->omega = (numberOfElements() == 0) ? 0 : numberOfElements() - 1;
 }
 
 template <IntegralValue IndexType>
@@ -107,7 +107,7 @@ void GenericPartition<IndexType>::compact(bool useTurbo) {
     }
     // MK: @Alexandra, since compact() is a trivial renumeration, we do not need to re-scan
     // the upper bound again
-    this->setUpperBound(i);
+    this->omega = (i == 0) ? 0 : i - 1;
 }
 
 template <IntegralValue IndexType>

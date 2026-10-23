@@ -19,6 +19,7 @@ class TestCorrelation(unittest.TestCase):
 		G.addEdge(2,3)
 		G.addEdge(1,2)
 		P = nk.Partition(4)
+		P.setUpperBound(2)
 		P.addToSubset(0,0)
 		P.addToSubset(0,1)
 		P.addToSubset(1,2)

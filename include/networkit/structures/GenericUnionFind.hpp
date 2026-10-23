@@ -94,7 +94,7 @@ public:
      * */
     GenericPartition<IndexType> toPartition() {
         GenericPartition<IndexType> partition(static_cast<IndexType>(parent.size()));
-        partition.setUpperBound(static_cast<IndexType>(parent.empty() ? 1 : parent.size()));
+        partition.setUpperBound(static_cast<IndexType>(parent.size()));
         for (std::size_t e = 0; e < parent.size(); ++e) {
             const auto element = static_cast<IndexType>(e);
             partition.addToSubset(find(element), element);
