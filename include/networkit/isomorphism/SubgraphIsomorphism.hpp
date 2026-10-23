@@ -23,6 +23,7 @@ namespace NetworKit {
  * times.
  *
  * @ref VF2 is the reference implementation, and @ref RI is usually faster on sparse targets.
+ * @ref ParallelRI runs RI on several threads and reports the matches in no fixed order.
  *
  * Pattern and target must both be directed or both be undirected, and the pattern must not contain
  * self-loops. The search ignores edge weights and target self-loops, and it collapses parallel
@@ -128,7 +129,7 @@ protected:
     // A sequential run() calls prepareRun(), then reportMatch() per match until it returns false,
     // then finishRun(). A parallel run() calls prepareRun(), passes every match to
     // invokeCallback(), and calls finishRun(matches, found) after the join. Inside the parallel
-    // region, workers may only poll Aux::SignalHandler::isRunning().
+    // region, workers may only poll Aux::SignalHandler::isRunning(). See ParallelRI.cpp.
 
     /// @throws std::invalid_argument If @a semantics is not a known value.
     SubgraphIsomorphism(const Graph &pattern, const Graph &target, Semantics semantics,
