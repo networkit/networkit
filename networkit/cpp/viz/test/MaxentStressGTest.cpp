@@ -196,8 +196,8 @@ TEST_F(MaxentStressGTest, testGraphWithDeletedNodes) {
     MaxentStress warmStart(G, 2, start, 2, 1e-5);
     for (MaxentStress *algo : {&coldStart, &warmStart}) {
         algo->run();
-        const auto coordinates = algo->getCoordinates();
-        ASSERT_EQ(coordinates.size(), G.upperNodeIdBound());
+        const std::vector<Point<double>> coordinates = algo->getCoordinates();
+        ASSERT_THAT(coordinates, testing::SizeIs(G.upperNodeIdBound()));
         // What remains is the path 0 - 2 - 3 with edge weights 2 and 5.
         EXPECT_NEAR(coordinates[0].distance(coordinates[2]), 2.0, 0.2);
         EXPECT_NEAR(coordinates[2].distance(coordinates[3]), 5.0, 0.5);
