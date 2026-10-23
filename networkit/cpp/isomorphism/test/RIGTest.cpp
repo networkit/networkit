@@ -11,6 +11,7 @@
 #include <numeric>
 #include <span>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -39,6 +40,7 @@ using IsomorphismDetails::RIDomains;
 using IsomorphismDetails::RIImpl;
 using IsomorphismDetails::RIOrdering;
 using IsomorphismDetails::RISearchSetup;
+using IsomorphismDetails::RIState;
 using IsomorphismDetails::SearchGraph;
 using IsomorphismTest::Case;
 using IsomorphismTest::Match;
@@ -78,12 +80,16 @@ Case halfRefinedCase() {
             {}};
 }
 
-/// Runs the search on unlabelled graphs with the given domains and returns the matches.
+/// Runs the search with the given domains and returns the matches.
 std::vector<Match> matchesOf(const SearchGraph &pattern, const SearchGraph &target,
-                             const RIOrdering &ordering, const RIDomains &domains) {
+                             const RIOrdering &ordering, const RIDomains &domains,
+                             std::span<const index> patternNodeLabels = {},
+                             std::span<const index> targetNodeLabels = {},
+                             Semantics semantics = Semantics::MONOMORPHISM) {
     Aux::SignalHandler handler;
     std::vector<Match> matches;
-    RIImpl(pattern, target, {}, {}, ordering, domains, Semantics::MONOMORPHISM, handler,
+    RIImpl(pattern, target, patternNodeLabels, targetNodeLabels, ordering, domains, semantics,
+           handler,
            [&matches](std::span<const node> match) {
                matches.emplace_back(match.begin(), match.end());
                return true;
@@ -508,6 +514,36 @@ TEST_P(RIGTest, testForwardCheckingRejectsImpossibleInstances) {
     algo.setNodeLabels(patternNodeLabels, targetNodeLabels);
     algo.run();
     EXPECT_EQ(algo.numberOfMatches(), 0u);
+}
+
+/// Drives RIImpl one level at a time, as the ParallelRI workers do. A difference to run() means
+/// that a state lacks something that run() carries from one depth to the next.
+TEST_P(RIGTest, testExpandAgreesWithRun) {
+    for (const Case &testCase : IsomorphismTest::standardCases()) {
+        const RISearchSetup setup = setupOf(testCase, GetParam());
+        const std::vector<Match> viaRun =
+            matchesOf(setup.patternGraph, setup.targetGraph, setup.ordering, setup.domains,
+                      testCase.patternNodeLabels, testCase.targetNodeLabels, testCase.semantics);
+
+        Aux::SignalHandler handler;
+        std::vector<Match> viaExpand;
+        RIImpl expander(setup.patternGraph, setup.targetGraph, testCase.patternNodeLabels,
+                        testCase.targetNodeLabels, setup.ordering, setup.domains,
+                        testCase.semantics, handler, [&viaExpand](std::span<const node> match) {
+                            viaExpand.emplace_back(match.begin(), match.end());
+                            return true;
+                        });
+
+        std::vector<RIState> pending{expander.rootState()};
+        while (!pending.empty()) {
+            // Moved out first, since expand() appends the children to `pending`.
+            const RIState state = std::move(pending.back());
+            pending.pop_back();
+            EXPECT_TRUE(expander.expand(state, pending)) << "case: " << testCase.name;
+        }
+
+        EXPECT_THAT(viaExpand, UnorderedElementsAreArray(viaRun)) << "case: " << testCase.name;
+    }
 }
 
 /// The search checks for an interrupt before every report, so no match follows the interrupt.

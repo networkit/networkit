@@ -1,4 +1,5 @@
 networkit_add_module(isomorphism
+    ParallelRI.cpp
     RI.cpp
     RIImpl.cpp
     SearchGraph.cpp

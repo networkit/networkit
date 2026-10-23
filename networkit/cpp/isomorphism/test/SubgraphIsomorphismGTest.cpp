@@ -28,6 +28,7 @@
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/isomorphism/ParallelRI.hpp>
 #include <networkit/isomorphism/RI.hpp>
 #include <networkit/isomorphism/SubgraphIsomorphism.hpp>
 #include <networkit/isomorphism/VF2.hpp>
@@ -114,6 +115,26 @@ public:
 private:
     count numWorkers;
 };
+
+using Factory = std::function<std::unique_ptr<SubgraphIsomorphism>(const Graph &, const Graph &)>;
+
+/// The real algorithms, for the base-class behaviour that each of them has to keep.
+std::vector<std::pair<std::string, Factory>> algorithms() {
+    return {{"VF2",
+             [](const Graph &pattern, const Graph &target) -> std::unique_ptr<SubgraphIsomorphism> {
+                 return std::make_unique<VF2>(pattern, target, Semantics::MONOMORPHISM);
+             }},
+            {"RI",
+             [](const Graph &pattern, const Graph &target) -> std::unique_ptr<SubgraphIsomorphism> {
+                 return std::make_unique<RI>(pattern, target, RI::Variant::RI,
+                                             Semantics::MONOMORPHISM);
+             }},
+            {"ParallelRI",
+             [](const Graph &pattern, const Graph &target) -> std::unique_ptr<SubgraphIsomorphism> {
+                 return std::make_unique<ParallelRI>(pattern, target, RI::Variant::RI,
+                                                     Semantics::MONOMORPHISM);
+             }}};
+}
 
 TEST_F(SubgraphIsomorphismGTest, testHarnessDrivesAnAlgorithmThroughTheRunProtocol) {
     const auto make = [](const Graph &pattern, const Graph &target, Semantics semantics,
@@ -298,25 +319,31 @@ TEST_F(SubgraphIsomorphismGTest, testUnknownSemanticsIsRejected) {
     EXPECT_NO_THROW(VF2 algo(pattern, target, Semantics::MONOMORPHISM));
 }
 
+/// ParallelRI hands its matches over only after the join, so whether a run stores them has to be
+/// fixed by prepareRun() rather than read from the settings afterwards.
 TEST_F(SubgraphIsomorphismGTest, testGetMatchesFollowsTheLastRun) {
     const Graph pattern = graphOf(2, {{0, 1}});
     const Graph target = graphOf(4, {{0, 1}, {1, 2}, {2, 3}, {3, 0}});
 
-    VF2 algo(pattern, target, Semantics::MONOMORPHISM);
-    algo.setStoreMatches(false);
-    algo.run();
-    ASSERT_EQ(algo.numberOfMatches(), 8u);
+    for (const auto &[name, make] : algorithms()) {
+        SCOPED_TRACE(name);
 
-    // The run only counted, so turning storage on afterwards must not expose an empty result.
-    algo.setStoreMatches(true);
-    EXPECT_THROW(algo.getMatches(), std::runtime_error);
+        const std::unique_ptr<SubgraphIsomorphism> algo = make(pattern, target);
+        algo->setStoreMatches(false);
+        algo->run();
+        ASSERT_EQ(algo->numberOfMatches(), 8u);
 
-    algo.run();
-    EXPECT_THAT(algo.getMatches(), SizeIs(8));
+        // The run only counted, so turning storage on afterwards must not expose an empty result.
+        algo->setStoreMatches(true);
+        EXPECT_THROW(algo->getMatches(), std::runtime_error);
 
-    // A callback set after the run does not take away the matches that run stored.
-    algo.setCallback([](std::span<const node>) {});
-    EXPECT_THAT(algo.getMatches(), SizeIs(8));
+        algo->run();
+        EXPECT_THAT(algo->getMatches(), SizeIs(8));
+
+        // A callback set after the run does not take away the matches that run stored.
+        algo->setCallback([](std::span<const node>) {});
+        EXPECT_THAT(algo->getMatches(), SizeIs(8));
+    }
 }
 
 TEST_F(SubgraphIsomorphismGTest, testRunValidatesNodeLabels) {
@@ -375,19 +402,7 @@ TEST_F(SubgraphIsomorphismGTest, testParallelEdgesWithDisagreeingLabelsAreRefuse
     const IsomorphismTest::LabelledGraph disagreeing =
         IsomorphismTest::labelledGraphOf(4, {{0, 1, 1}, {0, 1, 4}, {1, 2, 2}, {2, 3, 1}});
 
-    using Factory =
-        std::function<std::unique_ptr<SubgraphIsomorphism>(const Graph &, const Graph &)>;
-    const std::vector<std::pair<std::string, Factory>> factories = {
-        {"VF2",
-         [](const Graph &pattern, const Graph &target) -> std::unique_ptr<SubgraphIsomorphism> {
-             return std::make_unique<VF2>(pattern, target, Semantics::MONOMORPHISM);
-         }},
-        {"RI",
-         [](const Graph &pattern, const Graph &target) -> std::unique_ptr<SubgraphIsomorphism> {
-             return std::make_unique<RI>(pattern, target, RI::Variant::RI, Semantics::MONOMORPHISM);
-         }}};
-
-    for (const auto &[name, make] : factories) {
+    for (const auto &[name, make] : algorithms()) {
         SCOPED_TRACE(name);
         for (const std::string_view side : {"pattern", "target"}) {
             const IsomorphismTest::LabelledGraph &pattern = side == "pattern" ? disagreeing : plain;

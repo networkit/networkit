@@ -76,14 +76,17 @@ inline bool degreesAndLabelsFit(const SearchGraph &pattern, const SearchGraph &t
 }
 
 /**
- * The RI search behind @ref RI. @ref run() enumerates all matches depth first and passes each one
- * to the reporter, see @ref MatchReporter.
+ * The RI search, shared by @ref RI and @ref ParallelRI. @ref run() enumerates all matches depth
+ * first for RI. @ref expand() produces the children of one @ref RIState for the workers of
+ * ParallelRI, which can steal unexplored states from each other. Both pass each match to the
+ * reporter, see @ref MatchReporter.
  */
 template <MatchReporter Reporter>
 class RIImpl {
 
 public:
-    /// @a ordering and @a domains must outlive this object.
+    /// @a ordering and @a domains must outlive this object. The match buffer is sized here rather
+    /// than in run(), because the workers of ParallelRI only call expand().
     RIImpl(const SearchGraph &pattern, const SearchGraph &target,
            std::span<const index> patternNodeLabels, std::span<const index> targetNodeLabels,
            const RIOrdering &ordering, const RIDomains &domains,
@@ -100,6 +103,54 @@ public:
             return;
 
         search();
+    }
+
+    /// Appends the children of @a state to @a children, or reports @a state if it is complete.
+    /// Children that complete the mapping are reported right away instead, except for those of the
+    /// root. Like search(), it polls for an interrupt first and before every match. @a state must
+    /// descend from rootState(). Returns false on an interrupt or once the cap on the number of
+    /// matches is reached. Unlike run(), it does not apply cannotMatch().
+    bool expand(const RIState &state, std::vector<RIState> &children) {
+        if (!handler->isRunning())
+            return false;
+
+        const count matchDepth = ordering->order.size();
+        if (state.depth == matchDepth)
+            return reportMapping(state);
+
+        candidateBuffer.clear();
+        candidatesFor(state, candidateBuffer);
+
+        // A child that completes the mapping is reported here, which saves a state per match. The
+        // children of the root stay states, so that ParallelRI deals them out even for a one-node
+        // pattern.
+        const bool reportChildren = state.depth != 0 && state.depth + 1 == matchDepth;
+        if (reportChildren)
+            for (index i = 0; i < state.depth; ++i)
+                matchBuffer[ordering->order[i]] = state.mapping[i];
+
+        for (const node tv : candidateBuffer) {
+            if (!consistent(state, tv))
+                continue;
+
+            if (reportChildren) {
+                // A slow callback must not hold up an interrupt for a whole level of candidates.
+                if (!handler->isRunning())
+                    return false;
+
+                matchBuffer[ordering->order[state.depth]] = tv;
+                if (!report(matchBuffer))
+                    return false;
+                continue;
+            }
+
+            RIState child = state;
+            child.mapping[state.depth] = tv;
+            child.depth = state.depth + 1;
+            children.push_back(std::move(child));
+        }
+
+        return true;
     }
 
 private:
@@ -321,12 +372,17 @@ private:
 
     SubgraphIsomorphism::Semantics semantics;
 
-    /// The search only polls isRunning() and returns. The caller throws for the interrupt.
+    /// Only isRunning() may be called, since ParallelRI calls expand() inside an OpenMP region. The
+    /// caller throws for the interrupt.
     Aux::SignalHandler *handler;
 
     Reporter report;
 
     std::vector<node> matchBuffer;
+
+    /// The candidates of the state that expand() works on. A member, so that the allocation
+    /// carries over from one call to the next.
+    std::vector<node> candidateBuffer;
 };
 
 struct RISearchSetup {
