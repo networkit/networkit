@@ -200,24 +200,22 @@ IndexType GenericCover<IndexType>::extend() {
 
 template <IntegralValue IndexType>
 void GenericCover<IndexType>::setUpperBound(IndexType upper) {
-    // MK: @Alexandra, some tests pass upper=0, and it should be handled somehow.
-    // I propose to drop this assert and use this->omega = (upper == 0) ? 0 : upper - 1;
-    // Therefore the comparisons here should be adjusted accordingly.
-    // Same for the other method in GenericPartitionImpl
-    assert(upper > 0);
-    if (upper - 1 < this->omega) {
+    // omega should never be < 0
+    const IndexType newOmega = (upper == 0) ? 0 : upper - 1;
+
+    if (newOmega < this->omega) {
         // trying to shrink omega, must ensure we do not shrink it too much
         for (IndexType e = 0; e <= this->z; ++e) {
             if (!data[e].empty()
                 && std::any_of(data[e].begin(), data[e].end(),
-                               [upper](IndexType x) { return x > upper - 1; })) {
+                               [newOmega](IndexType x) { return x > newOmega; })) {
                 throw std::invalid_argument(
                     "Shrinking upper bound this much would result in elements being mapped to "
                     "invalid subset ids. Try larger number for upper or using compact() first.");
             }
         }
     }
-    this->omega = upper - 1;
+    this->omega = newOmega;
 }
 
 template <IntegralValue IndexType>

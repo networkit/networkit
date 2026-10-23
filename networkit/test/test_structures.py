@@ -238,10 +238,6 @@ class TestStructures(unittest.TestCase):
 		with self.assertRaises(Exception):
 			c1.setUpperBound(1)
 
-	def testPartition(self):
-		p1 = nk.Partition(0)
-		print(p1.upperBound())
-
 
 if __name__ == "__main__":
 	unittest.main()

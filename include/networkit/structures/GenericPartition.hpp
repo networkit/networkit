@@ -178,11 +178,13 @@ public:
      * @param[in] upper highest assigned subset ID + 1
      */
     inline void setUpperBound(IndexType upper) {
-        assert(upper > 0);
-        if (upper - 1 < this->omega) {
+        // omega should never be < 0
+        const IndexType newOmega = (upper == 0) ? 0 : upper - 1;
+
+        if (newOmega < this->omega) {
             // trying to shrink omega, must ensure we do not shrink it too much
             for (IndexType e = 0; e < this->z; ++e) {
-                if (data[e] != noneIndex && data[e] > upper - 1) {
+                if (data[e] != noneIndex && data[e] > newOmega) {
                     throw std::invalid_argument(
                         "Shrinking upper bound this much would result in "
                         "elements being mapped to invalid subset ids. Try "
@@ -190,7 +192,7 @@ public:
                 }
             }
         }
-        this->omega = upper - 1;
+        this->omega = newOmega;
     }
 
     /**
