@@ -67,11 +67,12 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		self.assertEqual({tuple(match) for match in vf2.getMatches()}, self.expected)
 
 	def testGraphsMustNotBeNone(self):
-		with self.assertRaises(TypeError):
-			nk.isomorphism.VF2(None, self.square)
+		for algorithm in (nk.isomorphism.VF2, nk.isomorphism.RI):
+			with self.assertRaises(TypeError):
+				algorithm(None, self.square)
 
-		with self.assertRaises(TypeError):
-			nk.isomorphism.VF2(self.arc, None)
+			with self.assertRaises(TypeError):
+				algorithm(self.arc, None)
 
 	def testUnknownSemanticsRaises(self):
 		# Semantics values are plain integers, so an out-of-range one must be rejected. 256 checks
@@ -79,6 +80,18 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		for semantics in (5, 256, -1):
 			with self.assertRaises(ValueError):
 				nk.isomorphism.VF2(self.arc, self.square, semantics)
+
+	def testUnknownVariantRaises(self):
+		# Variant values are plain integers as well. 256 and 257 check that the value is not
+		# truncated to 8 bits, which would turn them into RI and RI_DS.
+		for variant in (2, 256, 257, -1):
+			with self.assertRaises(ValueError):
+				nk.isomorphism.RI(self.arc, self.square, variant)
+
+	def testDomainFilterThresholdOutsideTheUnitIntervalRaises(self):
+		for threshold in (-0.1, 1.1, float("nan")):
+			with self.assertRaises(ValueError):
+				nk.isomorphism.RI(self.arc, self.square, domainFilterThreshold=threshold)
 
 	def testIsoVsMono(self):
 		# Due to the diagonal edge in the target there should be no induced matching
@@ -135,6 +148,20 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 		self.assertEqual(vf2_noCap.numberOfMatches(), 8)
 		self.assertEqual(vf2_cap0.numberOfMatches(), 8)
 		self.assertEqual(vf2_cap3.numberOfMatches(), 3)
+
+	def testDifferentAlgos(self):
+		algos = [
+			nk.isomorphism.VF2(self.arc, self.square),
+			nk.isomorphism.RI(self.arc, self.square, variant=nk.isomorphism.Variant.RI),
+			nk.isomorphism.RI(self.arc, self.square, variant=nk.isomorphism.Variant.RI_DS),
+			nk.isomorphism.RI(self.arc, self.square, variant=nk.isomorphism.Variant.RI_DS,
+							  domainFilterThreshold=0.0),
+		]
+		for algo in algos:
+			algo.run()
+			self.assertTrue(algo.hasMatch())
+			self.assertEqual(algo.numberOfMatches(), 8)
+			self.assertEqual({tuple(match) for match in algo.getMatches()}, self.expected)
 
 	def testVF2Callback(self):
 		matches = []
@@ -363,6 +390,15 @@ class TestSubgraphIsomorphism(unittest.TestCase):
 			vf2.run()
 
 		self.assertEqual(len(matches), 2)
+
+		# RI stops its search in the same way
+		ri = nk.isomorphism.RI(self.arc, self.square)
+		ri.setCallback(callback_seq)
+
+		with self.assertRaisesRegex(RuntimeError, "callback exited"):
+			ri.run()
+
+		self.assertEqual(len(matches), 3)
 
 if __name__ == "__main__":
 	unittest.main()

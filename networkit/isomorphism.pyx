@@ -116,6 +116,8 @@ cdef class SubgraphIsomorphism(Algorithm):
 	non-edges. The search finds an occurrence once per automorphism of the pattern, so a triangle
 	occurs six times.
 
+	VF2 is the reference implementation, and RI is usually faster on sparse targets.
+
 	Pattern and target must both be directed or both be undirected, and the pattern must not contain
 	self-loops. The search ignores edge weights and target self-loops, and it collapses parallel
 	edges.
@@ -321,7 +323,8 @@ cdef class VF2(SubgraphIsomorphism):
 	Finds every occurrence of a pattern graph inside a target graph using the VF2 algorithm.
 
 	VF2 extends a partial mapping one node pair at a time, depth first, and draws the candidate
-	pairs from the terminal sets of unmapped nodes adjacent to mapped ones.
+	pairs from the terminal sets of unmapped nodes adjacent to mapped ones. VF2 serves as the
+	reference implementation, but RI is usually faster on sparse targets.
 
 	Parameters
 	----------
@@ -340,3 +343,60 @@ cdef class VF2(SubgraphIsomorphism):
 		self._pattern = pattern
 		self._target = target
 		self._this = new _VF2(pattern._this, target._this, semantics, maxMatches)
+
+cdef extern from "<networkit/isomorphism/RI.hpp>" namespace "NetworKit":
+	cdef enum class _RIVariant "NetworKit::RI::Variant":
+		RI,
+		RI_DS
+
+	cdef cppclass _RI "NetworKit::RI" (_SubgraphIsomorphism):
+		_RI(const _Graph &pattern, const _Graph &target, _RIVariant variant, _Semantics semantics, count maxMatches, double domainFilterThreshold) except +
+
+class Variant(object):
+	"""
+	Variant of RI.
+
+	- RI: Plain RI.
+	- RI_DS: RI-DS-SI-FC, which computes candidate domains with forward checking before the search.
+	"""
+	RI = _RIVariant.RI
+	RI_DS = _RIVariant.RI_DS
+
+cdef class RI(SubgraphIsomorphism):
+	"""
+	RI(pattern, target, variant=networkit.isomorphism.Variant.RI,
+	   semantics=networkit.isomorphism.Semantics.INDUCED, maxMatches=0, domainFilterThreshold=0.8)
+
+	Finds every occurrence of a pattern graph inside a target graph using the RI algorithm.
+
+	RI fixes the order of the pattern nodes once and then backtracks along this order. The variant
+	networkit.isomorphism.Variant.RI_DS first computes a domain of candidate target nodes for every
+	pattern node. It pays off for disconnected patterns and selective node labels, but otherwise
+	usually costs more than it saves.
+
+	Parameters
+	----------
+	pattern : networkit.Graph
+		The pattern graph. Must not contain self-loops.
+	target : networkit.Graph
+		The target graph. Must agree with pattern on directedness.
+	variant : networkit.isomorphism.Variant, optional
+		Plain RI or RI-DS. Default: networkit.isomorphism.Variant.RI
+	semantics : networkit.isomorphism.Semantics, optional
+		Whether matches must be induced. Default: networkit.isomorphism.Semantics.INDUCED
+	maxMatches : int, optional
+		Stop after this many matches; 0 means no limit. Default: 0
+	domainFilterThreshold : float, optional
+		Only for networkit.isomorphism.Variant.RI_DS, which builds the domains from degrees and
+		labels and then shrinks them. The search filters the candidates of a pattern node through
+		its domain if the shrinking removed at least this fraction of the domain or left one target
+		node. 0 always filters, and 1 filters only through single-node domains. The value changes
+		the running time, not the matches. Must be between 0 and 1. Default: 0.8
+	"""
+
+	def __cinit__(self, Graph pattern not None, Graph target not None, variant=_RIVariant.RI,
+				  semantics=_Semantics.INDUCED, maxMatches=0, domainFilterThreshold=0.8):
+		self._pattern = pattern
+		self._target = target
+		self._this = new _RI(pattern._this, target._this, variant, semantics, maxMatches,
+							 domainFilterThreshold)
