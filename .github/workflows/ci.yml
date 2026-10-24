@@ -139,7 +139,7 @@ jobs:
         shell: bash
         env:
           TLX_PATH: /Users/runner/work/networkit/networkit/tlx
-          NATIVE: ${{ matrix.os == 'full (native)' }}
+          NATIVE: ${{ matrix.build-configuration == 'full (native)' }}
 
   macos-build-latest-version-misc:
     name: "macOS ${{ matrix.os }} (${{ matrix.compiler }}): core"
