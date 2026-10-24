@@ -7,7 +7,9 @@
 
 #include <string>
 #include <vector>
+
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/viz/Point.hpp>
