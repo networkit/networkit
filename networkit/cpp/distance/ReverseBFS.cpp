@@ -59,7 +59,7 @@ void ReverseBFS::run() {
                 visited[v] = true;
                 distances[v] = distances[u] + 1;
                 if (storePaths) {
-                    previous[v] = {u};
+                    previous[v].assign(1, u);
                     npaths[v] = npaths[u];
                 }
             } else if (storePaths && (distances[v] == distances[u] + 1)) {
