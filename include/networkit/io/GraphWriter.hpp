@@ -16,12 +16,15 @@ namespace NetworKit {
  * @ingroup io
  * Abstract base class for graph writers.
  */
-class GraphWriter {
+template <class GraphT>
+class GraphWriterBase {
 public:
-    virtual ~GraphWriter() = default;
+    virtual ~GraphWriterBase() = default;
 
-    virtual void write(const Graph &G, std::string_view path) = 0;
+    virtual void write(const GraphT &G, std::string_view path) = 0;
 };
+
+using GraphWriter = GraphWriterBase<Graph>;
 
 } /* namespace NetworKit */
 #endif // NETWORKIT_IO_GRAPH_WRITER_HPP_
