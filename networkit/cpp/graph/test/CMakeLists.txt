@@ -3,6 +3,8 @@ networkit_add_test(graph GraphGTest
     auxiliary dyn_distance io generators)
 networkit_add_test(graph GraphToolsGTest generators io)
 networkit_add_test(graph TraversalGTest generators)
+networkit_add_test(graph BFSTraversalGTest)
+networkit_add_test(graph DFSTraversalGTest)
 networkit_add_test(graph SpanningGTest io)
 networkit_add_test(graph TopologicalSortGTest)
 networkit_add_test(graph AttributeGTest graph)

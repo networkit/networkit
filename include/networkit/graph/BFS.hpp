@@ -3,23 +3,20 @@
 #define NETWORKIT_GRAPH_BFS_HPP_
 
 #include <array>
-#include <cassert>
 #include <cstddef>
-#include <cstdint>
 #include <queue>
 #include <stdexcept>
-#include <type_traits>
 #include <vector>
 
+#include <networkit/Globals.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/TraversalImpl.hpp>
 
 namespace NetworKit {
 
 namespace Traversal {
 
 namespace Impl {
-
-enum class Visit : uint8_t { Unvisited = 0, Visited = 1 };
 
 /**
  * Calls the given BFS handle with distance parameter
@@ -35,23 +32,6 @@ auto callBFSHandle(F &f, NodeT u, count dist) -> decltype(f(u, dist)) {
 template <class F, class NodeT>
 auto callBFSHandle(F &f, NodeT u, count) -> decltype(f(u)) {
     return f(u);
-}
-
-template <typename NodeT>
-std::size_t nodeIndex(NodeT u) {
-    if constexpr (std::is_signed_v<NodeT>) {
-        assert(u >= 0);
-    }
-    return static_cast<std::size_t>(u);
-}
-
-template <class GraphT, typename NodeT>
-bool isValidNode(const GraphT &G, NodeT u) {
-    if constexpr (std::is_signed_v<NodeT>) {
-        if (u < 0)
-            return false;
-    }
-    return G.hasNode(u);
 }
 
 } // namespace Impl
@@ -70,8 +50,7 @@ template <class InputIt, typename L, class GraphT>
 void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
     using NodeT = typename GraphT::NodeT;
 
-    std::vector<Impl::Visit> marked(static_cast<std::size_t>(G.upperNodeIdBound()),
-                                    Impl::Visit::Unvisited);
+    std::vector<Visit> marked(static_cast<std::size_t>(G.upperNodeIdBound()), Visit::Unvisited);
     std::queue<NodeT> q, qNext;
     count dist = 0;
     // enqueue start nodes, do not enqueue duplicates
@@ -79,9 +58,9 @@ void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
         if (!Impl::isValidNode(G, *first))
             throw std::runtime_error("Error: source node not in the graph.");
         const std::size_t uIndex = Impl::nodeIndex(*first);
-        if (marked[uIndex] == Impl::Visit::Unvisited) {
+        if (marked[uIndex] == Visit::Unvisited) {
             q.push(*first);
-            marked[uIndex] = Impl::Visit::Visited;
+            marked[uIndex] = Visit::Visited;
         }
     }
     while (!q.empty()) {
@@ -91,9 +70,9 @@ void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
         Impl::callBFSHandle(handle, u, dist);
         G.forNeighborsOf(u, [&](NodeT v) {
             const std::size_t vIndex = Impl::nodeIndex(v);
-            if (marked[vIndex] == Impl::Visit::Unvisited) {
+            if (marked[vIndex] == Visit::Unvisited) {
                 qNext.push(v);
-                marked[vIndex] = Impl::Visit::Visited;
+                marked[vIndex] = Visit::Visited;
             }
         });
         if (q.empty() && !qNext.empty()) {
@@ -132,23 +111,22 @@ void BFSEdgesFrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
     using NodeT = typename GraphT::NodeT;
     using EdgeWeightT = typename GraphT::EdgeWeightT;
 
-    std::vector<Impl::Visit> marked(static_cast<std::size_t>(G.upperNodeIdBound()),
-                                    Impl::Visit::Unvisited);
+    std::vector<Visit> marked(static_cast<std::size_t>(G.upperNodeIdBound()), Visit::Unvisited);
     std::queue<NodeT> q;
     if (!Impl::isValidNode(G, source))
         throw std::runtime_error("Error: source node not in the graph.");
     q.push(source); // enqueue root
-    marked[Impl::nodeIndex(source)] = Impl::Visit::Visited;
+    marked[Impl::nodeIndex(source)] = Visit::Visited;
     do {
         const auto u = q.front();
         q.pop();
         // apply function
         G.forNeighborsOf(u, [&](NodeT, NodeT v, EdgeWeightT w, edgeid eid) {
             const std::size_t vIndex = Impl::nodeIndex(v);
-            if (marked[vIndex] == Impl::Visit::Unvisited) {
+            if (marked[vIndex] == Visit::Unvisited) {
                 handle(u, v, w, eid);
                 q.push(v);
-                marked[vIndex] = Impl::Visit::Visited;
+                marked[vIndex] = Visit::Visited;
             }
         });
     } while (!q.empty());
