@@ -2,6 +2,7 @@
 #include <stack>
 #include <vector>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/VectorComparator.hpp>
@@ -12,6 +13,8 @@
 #include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
+
+using ::testing::Pair;
 
 class TraversalGTest : public testing::TestWithParam<std::pair<bool, bool>> {
 protected:
@@ -85,7 +88,7 @@ TEST_P(TraversalGTest, testBFSfrom) {
             doBFS(G, sources);
             curNode = 0;
             Traversal::BFSEdgesFrom(G, randNodes[i - 1], [&](node u, node v, edgeweight, edgeid) {
-                EXPECT_EQ(edgeSequence[curNode++], std::make_pair(u, v));
+                EXPECT_THAT(edgeSequence[curNode++], Pair(u, v));
             });
         }
     }
@@ -138,7 +141,7 @@ TEST_P(TraversalGTest, testDFSfrom) {
             curNode = 0;
             Traversal::DFSEdgesFrom(G, source, [&](node u, node v, edgeweight w, edgeid) {
                 EXPECT_LT(curNode, edgeSequence.size());
-                EXPECT_EQ(edgeSequence[curNode++], std::make_pair(u, v));
+                EXPECT_THAT(edgeSequence[curNode++], Pair(u, v));
                 EXPECT_EQ(w, G.weight(u, v));
             });
             EXPECT_EQ(curNode, edgeSequence.size());

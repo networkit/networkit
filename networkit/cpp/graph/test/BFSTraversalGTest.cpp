@@ -21,6 +21,7 @@ namespace NetworKit {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::FieldsAre;
 using ::testing::IsEmpty;
 
 template <class TestT>
@@ -147,13 +148,12 @@ TYPED_TEST(GenericBFSTraversalGTest, testBFSEdgesFromTypedGraphs) {
 
     EXPECT_THAT(
         edgeSequence,
-        ElementsAre(
-            std::make_tuple(NodeT{0}, NodeT{1}, EdgeWeightT{10}, G.edgeId(NodeT{0}, NodeT{1})),
-            std::make_tuple(NodeT{0}, NodeT{2}, EdgeWeightT{20}, G.edgeId(NodeT{0}, NodeT{2})),
-            std::make_tuple(NodeT{1}, NodeT{3}, EdgeWeightT{30}, G.edgeId(NodeT{1}, NodeT{3})),
-            std::make_tuple(NodeT{2}, NodeT{4}, EdgeWeightT{40}, G.edgeId(NodeT{2}, NodeT{4})),
-            std::make_tuple(NodeT{3}, NodeT{5}, EdgeWeightT{50}, G.edgeId(NodeT{3}, NodeT{5})),
-            std::make_tuple(NodeT{4}, NodeT{6}, EdgeWeightT{60}, G.edgeId(NodeT{4}, NodeT{6}))));
+        ElementsAre(FieldsAre(NodeT{0}, NodeT{1}, EdgeWeightT{10}, G.edgeId(NodeT{0}, NodeT{1})),
+                    FieldsAre(NodeT{0}, NodeT{2}, EdgeWeightT{20}, G.edgeId(NodeT{0}, NodeT{2})),
+                    FieldsAre(NodeT{1}, NodeT{3}, EdgeWeightT{30}, G.edgeId(NodeT{1}, NodeT{3})),
+                    FieldsAre(NodeT{2}, NodeT{4}, EdgeWeightT{40}, G.edgeId(NodeT{2}, NodeT{4})),
+                    FieldsAre(NodeT{3}, NodeT{5}, EdgeWeightT{50}, G.edgeId(NodeT{3}, NodeT{5})),
+                    FieldsAre(NodeT{4}, NodeT{6}, EdgeWeightT{60}, G.edgeId(NodeT{4}, NodeT{6}))));
 }
 
 TYPED_TEST(GenericBFSTraversalGTest, testBFSEdgesFromCornerCases) {
@@ -174,10 +174,10 @@ TYPED_TEST(GenericBFSTraversalGTest, testBFSEdgesFromCornerCases) {
         edgeSequence.emplace_back(u, v, w, eid);
     });
 
-    EXPECT_THAT(edgeSequence, ElementsAre(std::make_tuple(NodeT{0}, NodeT{1}, EdgeWeightT{20},
-                                                          G.edgeId(NodeT{0}, NodeT{1})),
-                                          std::make_tuple(NodeT{0}, NodeT{2}, EdgeWeightT{30},
-                                                          G.edgeId(NodeT{0}, NodeT{2}))));
+    EXPECT_THAT(
+        edgeSequence,
+        ElementsAre(FieldsAre(NodeT{0}, NodeT{1}, EdgeWeightT{20}, G.edgeId(NodeT{0}, NodeT{1})),
+                    FieldsAre(NodeT{0}, NodeT{2}, EdgeWeightT{30}, G.edgeId(NodeT{0}, NodeT{2}))));
 
     edgeSequence.clear();
     Traversal::BFSEdgesFrom(G, NodeT{4}, [&](NodeT u, NodeT v, EdgeWeightT w, edgeid eid) {

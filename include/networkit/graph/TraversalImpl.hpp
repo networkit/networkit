@@ -10,14 +10,9 @@
 
 #include <cassert>
 #include <cstddef>
-#include <cstdint>
 #include <type_traits>
 
-namespace NetworKit {
-namespace Traversal {
-namespace Impl {
-
-enum class Visit : uint8_t { Unvisited = 0, Visited = 1 };
+namespace NetworKit::Traversal::Impl {
 
 template <typename NodeT>
 std::size_t nodeIndex(NodeT u) {
@@ -36,8 +31,6 @@ bool isValidNode(const GraphT &G, NodeT u) {
     return G.hasNode(u);
 }
 
-} // namespace Impl
-} // namespace Traversal
-} // namespace NetworKit
+} // namespace NetworKit::Traversal::Impl
 
 #endif // NETWORKIT_GRAPH_TRAVERSAL_IMPL_HPP_

@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include <networkit/Globals.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/TraversalImpl.hpp>
 
@@ -28,11 +29,10 @@ void DFSfrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
 
     if (!Impl::isValidNode(G, source))
         throw std::runtime_error("Error: source node not in the graph.");
-    std::vector<Impl::Visit> marked(static_cast<std::size_t>(G.upperNodeIdBound()),
-                                    Impl::Visit::Unvisited);
+    std::vector<Visit> marked(static_cast<std::size_t>(G.upperNodeIdBound()), Visit::Unvisited);
     std::stack<NodeT> s;
     s.push(source); // enqueue root
-    marked[Impl::nodeIndex(source)] = Impl::Visit::Visited;
+    marked[Impl::nodeIndex(source)] = Visit::Visited;
     do {
         const auto u = s.top();
         s.pop();
@@ -40,9 +40,9 @@ void DFSfrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
         handle(u);
         G.forNeighborsOf(u, [&](NodeT v) {
             const std::size_t vIndex = Impl::nodeIndex(v);
-            if (marked[vIndex] == Impl::Visit::Unvisited) {
+            if (marked[vIndex] == Visit::Unvisited) {
                 s.push(v);
-                marked[vIndex] = Impl::Visit::Visited;
+                marked[vIndex] = Visit::Visited;
             }
         });
     } while (!s.empty());
@@ -63,21 +63,20 @@ void DFSEdgesFrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
 
     if (!Impl::isValidNode(G, source))
         throw std::runtime_error("Error: source node not in the graph.");
-    std::vector<Impl::Visit> marked(static_cast<std::size_t>(G.upperNodeIdBound()),
-                                    Impl::Visit::Unvisited);
+    std::vector<Visit> marked(static_cast<std::size_t>(G.upperNodeIdBound()), Visit::Unvisited);
     std::stack<NodeT> s;
     s.push(source); // enqueue root
-    marked[Impl::nodeIndex(source)] = Impl::Visit::Visited;
+    marked[Impl::nodeIndex(source)] = Visit::Visited;
     do {
         const auto u = s.top();
         s.pop();
         // apply function
         G.forNeighborsOf(u, [&](NodeT, NodeT v, EdgeWeightT w, edgeid eid) {
             const std::size_t vIndex = Impl::nodeIndex(v);
-            if (marked[vIndex] == Impl::Visit::Unvisited) {
+            if (marked[vIndex] == Visit::Unvisited) {
                 handle(u, v, w, eid);
                 s.push(v);
-                marked[vIndex] = Impl::Visit::Visited;
+                marked[vIndex] = Visit::Visited;
             }
         });
     } while (!s.empty());
