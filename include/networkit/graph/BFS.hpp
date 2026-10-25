@@ -3,23 +3,19 @@
 #define NETWORKIT_GRAPH_BFS_HPP_
 
 #include <array>
-#include <cassert>
 #include <cstddef>
-#include <cstdint>
 #include <queue>
 #include <stdexcept>
-#include <type_traits>
 #include <vector>
 
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/TraversalImpl.hpp>
 
 namespace NetworKit {
 
 namespace Traversal {
 
 namespace Impl {
-
-enum class Visit : uint8_t { Unvisited = 0, Visited = 1 };
 
 /**
  * Calls the given BFS handle with distance parameter
@@ -35,23 +31,6 @@ auto callBFSHandle(F &f, NodeT u, count dist) -> decltype(f(u, dist)) {
 template <class F, class NodeT>
 auto callBFSHandle(F &f, NodeT u, count) -> decltype(f(u)) {
     return f(u);
-}
-
-template <typename NodeT>
-std::size_t nodeIndex(NodeT u) {
-    if constexpr (std::is_signed_v<NodeT>) {
-        assert(u >= 0);
-    }
-    return static_cast<std::size_t>(u);
-}
-
-template <class GraphT, typename NodeT>
-bool isValidNode(const GraphT &G, NodeT u) {
-    if constexpr (std::is_signed_v<NodeT>) {
-        if (u < 0)
-            return false;
-    }
-    return G.hasNode(u);
 }
 
 } // namespace Impl
