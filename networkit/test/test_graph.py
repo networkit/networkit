@@ -75,6 +75,22 @@ class TestGraph(unittest.TestCase):
                     else:
                         self.assertAlmostEqual(G.totalEdgeWeight(), G.numberOfEdges())
 
+    def testConstructorWithCooMatrixFractionalWeights(self):
+        expectedWeights = {(0, 1): 0.25, (1, 2): 0.5, (2, 0): 0.75}
+        for dtype in [np.float32, np.float64]:
+            S = sc.sparse.coo_matrix(
+                ([0.25, 0.5, 0.75], ([0, 1, 2], [1, 2, 0])), dtype=dtype
+            )
+            for directed in [True, False]:
+                for n in [0, 3]:
+                    with self.subTest(dtype=dtype, directed=directed, n=n):
+                        G = nk.GraphFromCoo(S, n=n, weighted=True, directed=directed)
+                        self.assertEqual(G.numberOfNodes(), 3)
+                        self.assertEqual(G.numberOfEdges(), 3)
+                        for (u, v), weight in expectedWeights.items():
+                            self.assertEqual(G.weight(u, v), weight)
+                        self.assertEqual(G.totalEdgeWeight(), 1.5)
+
     def testAddNodes(self):
         G = nk.Graph(0)
         G.addNodes(10)
@@ -176,6 +192,23 @@ class TestGraph(unittest.TestCase):
 
         for i in range(len(S.row)):
             self.assertTrue(G.hasEdge(S.row[i], S.col[i]))
+
+    def testAddEdgesCooMatrixFractionalWeights(self):
+        expectedWeights = {(0, 1): 0.25, (1, 2): 0.5, (2, 0): 0.75}
+        for dtype in [np.float32, np.float64]:
+            S = sc.sparse.coo_matrix(
+                ([0.25, 0.5, 0.75], ([0, 1, 2], [1, 2, 0])), dtype=dtype
+            )
+            for directed in [True, False]:
+                for addMissing in [True, False]:
+                    with self.subTest(dtype=dtype, directed=directed, addMissing=addMissing):
+                        G = nk.Graph(0 if addMissing else 3, weighted=True, directed=directed)
+                        G.addEdges(S, addMissing=addMissing)
+                        self.assertEqual(G.numberOfNodes(), 3)
+                        self.assertEqual(G.numberOfEdges(), 3)
+                        for (u, v), weight in expectedWeights.items():
+                            self.assertEqual(G.weight(u, v), weight)
+                        self.assertEqual(G.totalEdgeWeight(), 1.5)
 
     def testAddEdgesWithNonFloatWeights(self):
         # Use a weighted graph so weights are actually stored/checked

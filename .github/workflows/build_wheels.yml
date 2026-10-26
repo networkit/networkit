@@ -325,10 +325,13 @@ jobs:
 
   upload-packages:
     if: github.repository == 'networkit/networkit' && github.ref == 'refs/heads/master'
-    name: 'PyPi test upload'
+    name: 'Nightly upload to anaconda.org'
     runs-on: ubuntu-latest
     needs: [cpython-macos, cpython-linux-x86_64, cpython-windows, cpython-linux-aarch64, source-distribution]
+    env:
+      ANACONDA_ORG: networkit-nightly
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v7
         with:
           path: ./dist
@@ -337,11 +340,21 @@ jobs:
         name: Install Python
         with:
           python-version: '3.12'
-      - name: Upload to TestPyPI
+      # Two pushes on the same day build the same version, so --force replaces the earlier files.
+      - name: Upload to anaconda.org
         run: |
-          pip install twine
-          ls -la ./dist/ 
-          python3 -m twine upload --repository testpypi --verbose --skip-existing ./dist/*
+          if [ -z "$ANACONDA_API_TOKEN" ]; then
+            echo "::error::The secret ANACONDA_NIGHTLY_UPLOAD_TOKEN is not set."
+            exit 1
+          fi
+          pip install anaconda-client==1.14.1 packaging
+          ls -la ./dist/
+          anaconda upload --force --no-progress --user "$ANACONDA_ORG" ./dist/*
         env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TWINE_PYPI_TEST }}
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_NIGHTLY_UPLOAD_TOKEN }}
+      - name: Keep the five newest nightlies
+        run: |
+          python3 .github/workflows/scripts/prune_anaconda_nightlies.py \
+            --owner "$ANACONDA_ORG" --package networkit-nightly --keep 5
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_NIGHTLY_UPLOAD_TOKEN }}

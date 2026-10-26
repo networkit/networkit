@@ -5,11 +5,15 @@
  *      Author: cls
  */
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <random>
+#include <stdexcept>
+#include <unordered_set>
 
+#include <gmock/gmock-more-matchers.h>
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -600,6 +604,18 @@ TEST_P(CentralityGTest, testPageRank) {
     doTest(PageRank::Norm::L2_NORM);
 }
 
+TEST_F(CentralityGTest, testPageRankOnEmptyGraph) {
+    const Graph G(0);
+
+    PageRank pr(G);
+    pr.run();
+
+    EXPECT_THAT(pr.scores(), testing::IsEmpty());
+    EXPECT_THAT(pr.ranking(), testing::IsEmpty());
+    EXPECT_EQ(pr.numberOfIterations(), 0);
+    EXPECT_DOUBLE_EQ(pr.maximum(), 0.0);
+}
+
 TEST_P(CentralityGTest, testNormalizedPageRank) {
     /* Graph:
      0 <---> 1
@@ -1179,6 +1195,39 @@ TEST_P(CentralityGTest, testClosenessCentrality) {
     }
 }
 
+TEST_F(CentralityGTest, testHarmonicClosenessSingleton) {
+    for (bool normalized : {false, true}) {
+        for (bool directed : {false, true}) {
+            Graph G(1, false, directed);
+            HarmonicCloseness centrality(G, normalized);
+            centrality.run();
+            EXPECT_DOUBLE_EQ(centrality.score(0), 0.);
+            EXPECT_DOUBLE_EQ(centrality.maximum(), 0.);
+        }
+        Graph empty(0);
+        HarmonicCloseness centrality(empty, normalized);
+        centrality.run();
+        EXPECT_THAT(centrality.scores(), testing::IsEmpty());
+        EXPECT_DOUBLE_EQ(centrality.maximum(), 0.);
+    }
+}
+
+TEST_F(CentralityGTest, testHarmonicClosenessMaximum) {
+    Graph G(4);
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+
+    for (bool normalized : {false, true}) {
+        HarmonicCloseness centrality(G, normalized);
+        centrality.run();
+        EXPECT_DOUBLE_EQ(centrality.maximum(), normalized ? 1. : 3.);
+        // Raw scores are [11/6, 5/2, 5/2, 11/6]. Scaling every score
+        // and its theoretical maximum leaves centralization at 2/5.
+        EXPECT_NEAR(centrality.centralization(), 2. / 5., 1e-12);
+    }
+}
+
 TEST_F(CentralityGTest, testHarmonicClosenessCentrality) {
     /* Graph:
      0    3
@@ -1210,7 +1259,7 @@ TEST_F(CentralityGTest, testHarmonicClosenessCentrality) {
     EXPECT_NEAR(3.5, hc[3], tol);
     EXPECT_NEAR(3.5, hc[4], tol);
     EXPECT_NEAR(3.1667, hc[5], tol);
-    EXPECT_NEAR(1, maximum, tol);
+    EXPECT_NEAR(5., maximum, tol);
 }
 
 TEST_F(CentralityGTest, runKPathCentrality) {
@@ -1631,6 +1680,42 @@ TEST_F(CentralityGTest, testLaplacianCentralityUnweighted) {
     EXPECT_EQ(6, scores[5]);
 }
 
+TEST_F(CentralityGTest, testLaplacianCentralityFractionalWeights) {
+    // The node's own weighted degree must not be truncated before being squared.
+    // The weighted degrees here are 2.5, 3.75 and 1.25, and every value below is
+    // exact in binary floating point.
+    Graph G(3, true);
+
+    G.addEdge(0, 1, 2.5);
+    G.addEdge(1, 2, 1.25);
+
+    LaplacianCentrality lc(G);
+    lc.run();
+    std::vector<double> scores = lc.scores();
+
+    EXPECT_DOUBLE_EQ(31.25, scores[0]);
+    EXPECT_DOUBLE_EQ(37.5, scores[1]);
+    EXPECT_DOUBLE_EQ(12.5, scores[2]);
+}
+
+TEST_F(CentralityGTest, testLaplacianCentralityFractionalWeightsNormalized) {
+    Graph G(3, true);
+
+    G.addEdge(0, 1, 2.5);
+    G.addEdge(1, 2, 1.25);
+
+    LaplacianCentrality lc(G, true);
+    lc.run();
+    std::vector<double> scores = lc.scores();
+
+    // Removing the middle vertex releases the whole Laplacian energy of this
+    // path, so its normalized score is 1. Truncating the weighted degree shrank
+    // the denominator and pushed the score above 1.
+    EXPECT_NEAR(31.25 / 37.5, scores[0], 1e-12);
+    EXPECT_NEAR(1.0, scores[1], 1e-12);
+    EXPECT_NEAR(12.5 / 37.5, scores[2], 1e-12);
+}
+
 TEST_P(CentralityGTest, testGroupDegree) {
     Aux::Random::setSeed(42, false);
     constexpr count nodes = 12;
@@ -1805,6 +1890,52 @@ TEST_F(CentralityGTest, runTestApproxGroupBetweennessSmallGraph) {
     EXPECT_TRUE(gb.scoreOfGroup(gb.groupMaxBetweenness()) >= maxScore * eps);
 }
 
+TEST_F(CentralityGTest, testGroupClosenessInvalidGroupSize) {
+    for (count h : {0, 1}) {
+        for (count n : {0, 1, 2}) {
+            Graph g(n);
+            EXPECT_THROW(GroupCloseness(g, 0, h), std::invalid_argument);
+            EXPECT_THROW(GroupCloseness(g, n + 1, h), std::invalid_argument);
+        }
+
+        Graph g(3);
+        g.removeNode(1);
+        EXPECT_THROW(GroupCloseness(g, 3, h), std::invalid_argument);
+
+        GroupCloseness gc(g, 2, h);
+        g.removeNode(0);
+        g.removeNode(2);
+        EXPECT_THROW(gc.run(), std::invalid_argument);
+    }
+}
+
+TEST_F(CentralityGTest, testGroupClosenessWithoutImprovingCandidates) {
+    for (count h : {0, 1}) {
+        for (count n : {1, 2, 4}) {
+            Graph g(n);
+            for (count k = 1; k <= n; ++k) {
+                GroupCloseness gc(g, k, h);
+                gc.run();
+                const std::vector<node> group = gc.groupMaxCloseness();
+                ASSERT_EQ(group.size(), k);
+                EXPECT_EQ(std::unordered_set<node>(group.begin(), group.end()).size(), k);
+                for (node u : group)
+                    EXPECT_TRUE(g.hasNode(u));
+            }
+        }
+
+        Graph g(5);
+        g.addEdge(0, 2);
+        g.addEdge(3, 4);
+        g.removeNode(1);
+        GroupCloseness gc(g, g.numberOfNodes(), h);
+        gc.run();
+        std::vector<node> group = gc.groupMaxCloseness();
+        std::sort(group.begin(), group.end());
+        EXPECT_EQ(group, (std::vector<node>{0, 2, 3, 4}));
+    }
+}
+
 TEST_F(CentralityGTest, testGroupCloseness) {
     Aux::Random::setSeed(42, false);
 
@@ -1826,6 +1957,21 @@ TEST_F(CentralityGTest, testGroupCloseness) {
     gc.run();
     auto apx = gc.groupMaxCloseness();
     EXPECT_NEAR(gc.scoreOfGroup(apx), 1.0, 1e-5);
+}
+
+TEST_F(CentralityGTest, testKadabraEmptyGraph) {
+    Graph G(0);
+    EXPECT_THROW(KadabraBetweenness(G, 0.1, 0.1), std::invalid_argument);
+}
+
+TEST_F(CentralityGTest, testKadabraAllNodesRemoved) {
+    Graph G(3);
+    G.removeNode(0);
+    G.removeNode(1);
+    G.removeNode(2);
+    ASSERT_TRUE(G.isEmpty());
+    ASSERT_GT(G.upperNodeIdBound(), 0);
+    EXPECT_THROW(KadabraBetweenness(G, 0.1, 0.1), std::invalid_argument);
 }
 
 /**

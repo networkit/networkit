@@ -514,7 +514,7 @@ cdef class Graph:
 		if isinstance(inputData, coo_matrix):
 			try:
 				row, col = dtyped_row_col(inputData.row, inputData.col)
-				data = np.asarray(inputData.data, dtype=inputData.row.dtype, order='C')
+				data = np.asarray(inputData.data, dtype=np.double, order='C')
 				if addMissing:	
 					for i in range(len(inputData.row)):
 						# Calling Python interface of addEdge due to addMissing support. 

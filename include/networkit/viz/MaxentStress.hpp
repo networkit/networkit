@@ -176,6 +176,26 @@ private:
     bool hasRun;
 
     /**
+     * Copy of the input graph with continuous node ids. Only set if the input graph has deleted
+     * nodes.
+     */
+    std::unique_ptr<Graph> compactCopy;
+
+    /** The graph we lay out: the input graph if it is compact, else @a compactCopy. */
+    const Graph *compactG;
+
+    /** Id in the input graph of each node of @a compactCopy. */
+    std::vector<node> originalIds;
+
+    /** Sets @a compactCopy and @a originalIds if the input graph has deleted nodes. */
+    void compactInputGraph();
+
+    /** Returns the coordinates of node @a u of @a compactG. */
+    Point<double> &coordinatesOf(node u) {
+        return vertexCoordinates[compactCopy ? originalIds[u] : u];
+    }
+
+    /**
      * Checks whether the MaxentStress algorithm converged, i.e. ||newCoords - oldCoords|| /
      * ||oldCoords|| < convThreshold.
      * @param newCoords The new coordinates computed in the current round of the algorithm.
