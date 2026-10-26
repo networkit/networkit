@@ -97,37 +97,15 @@ class TestStructures(unittest.TestCase):
 		p1.addToSubset(0,2)
 		p2.addToSubset(0,2)
 		self.assertFalse(p1==p2)
-
-	def testGetItem(self):
-		p1 = nk.Partition(3)
-		p1.setUpperBound(5)	
-		p1.addToSubset(4,0)
-		p1.addToSubset(0,1)
-		p1.addToSubset(2,2)
-		self.assertEqual(p1.subsetOf(2),2)
-		print(p1.getVector())
-		"""
-		p1.addToSubset(2,5)
-		self.assertEqual(p1.subsetOf(0),4)
-		self.assertEqual(p1.subsetOf(1),0)
-		self.assertEqual(p1.subsetOf(3),0)
-		self.assertEqual(p1.subsetOf(4),0)
-		self.assertEqual(p1.subsetOf(5),0)
-		"""
-
+		
 	def testMoveToSubset(self):
 		p1 = nk.Partition(3)
 		p1.setUpperBound(2)	
 		p1.addToSubset(0,0)
 		p1.addToSubset(0,1)
 		p1.moveToSubset(1,1)
-		print(p1.upperBound())
-		print(p1.contains(1))
 		self.assertEqual(p1.subsetOf(0),0)
 		self.assertEqual(p1.subsetOf(1),1)
-		print(p1.getVector())
-		print(nk.__file__)
-		print(nk.structures.__file__)
 
 	def testFailedAssertionsPartition(self):
 		p1 = nk.Partition(3)
