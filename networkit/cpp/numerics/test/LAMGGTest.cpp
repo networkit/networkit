@@ -232,7 +232,6 @@ TEST(LAMGGTest, starEliminatedToOneNode) {
     omp_set_num_threads(1);
 
     // A star eliminates every leaf and leaves a one-row Laplacian.
-    // Issue #1546: the compatible RHS e_1 - e_0 was solved as the zero vector.
     Graph graph(201);
     for (node v = 1; v < 201; ++v)
         graph.addEdge(0, v);
@@ -275,6 +274,36 @@ TEST(LAMGGTest, starEliminatedToOneNodeNonzeroGuess) {
     result[0] = 1e8;
     const double initialResidual = (rhs - L * result).length();
     EXPECT_GT(initialResidual, rhs.length() * 1e6);
+
+    const auto status = lamg.solve(rhs, result);
+    EXPECT_TRUE(vector_almost_equal(L * result, rhs))
+        << "Lamg result: " << result << "\nL * result: " << L * result << "\nrhs: " << rhs;
+    EXPECT_LT(status.residual, 1e-6 * rhs.length());
+    EXPECT_TRUE(status.converged);
+}
+
+TEST(LAMGGTest, starEliminatedToOneNodeInexactRhsNonzeroGuess) {
+    omp_set_num_threads(1);
+
+    Graph graph(201);
+    for (node v = 1; v < 201; ++v)
+        graph.addEdge(0, v);
+
+    const auto L = CSRMatrix::laplacianMatrix(graph);
+    Lamg<CSRMatrix> lamg;
+    lamg.setupConnected(L);
+
+    // 0.1, 0.2 and 0.3 are not exact in binary, so the residual stays near 6e-17
+    // instead of 0. With a zero residual, any threshold would report converged.
+    Vector rhs(201, 0.0);
+    rhs[0] = -0.3;
+    rhs[5] = 0.1;
+    rhs[7] = 0.2;
+
+    // Far from the solution, a threshold scaled by ||b|| instead of ||L*x0-b||
+    // drops below that residual.
+    Vector result(201, 0.0);
+    result[0] = 1e8;
 
     const auto status = lamg.solve(rhs, result);
     EXPECT_TRUE(vector_almost_equal(L * result, rhs))
