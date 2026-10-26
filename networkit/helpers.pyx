@@ -35,10 +35,10 @@ def ranked(sample):
 	list(float)
 		Ranking of input values.
 	"""
-	cdef vector[pair[double, count]] helper = vector[pair[double, count]](len(sample))
 	cdef vector[double] result = vector[double](len(sample), 0)
 	if len(sample) == 0:
 		return result
+	cdef vector[pair[double, count]] helper = vector[pair[double, count]](len(sample))
 	for i in range(len(sample)):
 		helper[i] = <pair[double, count]?>(sample[i], i)
 	sort(helper.begin(), helper.end())
