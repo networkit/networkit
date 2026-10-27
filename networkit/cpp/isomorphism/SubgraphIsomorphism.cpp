@@ -41,12 +41,12 @@ void validateEdgeLabels(const Graph &pattern, const Graph &target,
         return;
 
     if (!pattern.hasEdgeIds())
-        throw std::runtime_error("Pattern graph has no edge ids - call indexEdges() on it before "
-                                 "setting edge labels");
+        throw std::runtime_error("Pattern graph has no edge ids - call indexEdges() on it to use "
+                                 "edge labels");
 
     if (!target.hasEdgeIds())
-        throw std::runtime_error("Target graph has no edge ids - call indexEdges() on it before "
-                                 "setting edge labels");
+        throw std::runtime_error("Target graph has no edge ids - call indexEdges() on it to use "
+                                 "edge labels");
 
     if (patternEdgeLabels.size() < pattern.upperEdgeIdBound())
         throw std::runtime_error("Pattern edge label vector is shorter than the pattern's "
