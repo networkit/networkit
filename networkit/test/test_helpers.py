@@ -29,20 +29,44 @@ class TestHelpers(unittest.TestCase):
 		self.assertEqual(ranks[2], 2.0)
 
 	def testRankedNanOrderIndependent(self):
-		"""The same multiset must give the same ranks regardless of input order."""
-		sample_a = [self.nan, 1.0, 2.0]
-		sample_b = [2.0, self.nan, 1.0]
-		ranks_a = ranked(sample_a)
-		ranks_b = ranked(sample_b)
+		"""Ranks must follow their elements under permutation: ties share
+		average ranks, NaN positions get NaN ranks, infinities rank at the
+		extremes, and each element keeps its own rank regardless of order."""
+		base = [2.0, self.nan, 1.0, 2.0, float("-inf"), float("inf")]
+		expected_by_value = {
+			float("-inf"): 1.0,
+			1.0: 2.0,
+			2.0: 3.5,  # tie: average of ranks 3 and 4
+			float("inf"): 5.0,
+		}
+		permutations = [
+			base,
+			[float("inf"), 2.0, self.nan, 1.0, float("-inf"), 2.0],
+			[2.0, 2.0, 1.0, float("inf"), float("-inf"), self.nan],
+		]
 
-		def summary(ranks):
-			return (
-				sorted(r for r in ranks if not math.isnan(r)),
-				sum(1 for r in ranks if math.isnan(r)),
+		reference = None
+		for sample in permutations:
+			ranks = ranked(sample)
+			self.assertEqual(len(ranks), len(sample))
+			# per-element correspondence: every rank must match the value
+			# actually sitting at that position
+			for value, rank in zip(sample, ranks):
+				if value != value:  # NaN
+					self.assertTrue(math.isnan(rank))
+				else:
+					self.assertEqual(rank, expected_by_value[value])
+			# elementwise permutation invariant: (value, rank) pairs, with
+			# NaN ranks excluded, must not depend on input order
+			pairs = sorted(
+				(value, rank)
+				for value, rank in zip(sample, ranks)
+				if not math.isnan(rank)
 			)
-
-		self.assertEqual(summary(ranks_a), summary(ranks_b))
-		self.assertEqual(summary(ranks_a), ([1.0, 2.0], 1))
+			if reference is None:
+				reference = pairs
+			else:
+				self.assertEqual(pairs, reference)
 
 	def testRankedAllNan(self):
 		ranks = ranked([self.nan, self.nan])
