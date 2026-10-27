@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cstdint>
 #include <span>
+#include <utility>
 #include <vector>
 
 #include <networkit/Globals.hpp>
@@ -96,13 +97,14 @@ private:
     count size = 0;
 };
 
+template <MatchReporter Reporter>
 class VF2Impl {
 
 public:
     VF2Impl(const Graph &pattern, const Graph &target, std::span<const index> patternNodeLabels,
             std::span<const index> targetNodeLabels, std::span<const index> patternEdgeLabels,
             std::span<const index> targetEdgeLabels, SubgraphIsomorphism::Semantics semantics,
-            Aux::SignalHandler &handler, MatchReporter report)
+            Aux::SignalHandler &handler, Reporter report)
         : patternGraph(pattern, /* buildMatrix = */ true, patternEdgeLabels),
           targetGraph(target, /* buildMatrix = */ false, targetEdgeLabels),
           patternNodeLabels(patternNodeLabels), targetNodeLabels(targetNodeLabels),
@@ -410,7 +412,7 @@ private:
 
     Aux::SignalHandler *handler;
 
-    MatchReporter report;
+    Reporter report;
 
     /// `core1[u]` is the target node that pattern node u is mapped to, or @ref none.
     std::vector<node> core1;

@@ -1,7 +1,7 @@
 #ifndef NETWORKIT_CPP_ISOMORPHISM_MATCH_REPORTER_HPP_
 #define NETWORKIT_CPP_ISOMORPHISM_MATCH_REPORTER_HPP_
 
-#include <functional>
+#include <concepts>
 #include <span>
 
 #include <networkit/Globals.hpp>
@@ -10,8 +10,13 @@ namespace NetworKit {
 namespace IsomorphismDetails {
 
 /// Receives a complete mapping, indexed by pattern node, from a search implementation. Returns
-/// false once the search must stop because the cap on the number of matches is reached.
-using MatchReporter = std::function<bool(std::span<const node>)>;
+/// false once the search must stop because the cap on the number of matches is reached. The search
+/// implementations take the reporter as a template parameter, so that the call per match needs no
+/// type erasure.
+template <typename Reporter>
+concept MatchReporter = requires(Reporter &report, std::span<const node> match) {
+    { report(match) } -> std::convertible_to<bool>;
+};
 
 } // namespace IsomorphismDetails
 } // namespace NetworKit
