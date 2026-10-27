@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -54,29 +55,30 @@ public:
 
     bool hasAdjacencyMatrix() const noexcept { return hasMatrix; }
 
-    const node *outBegin(node u) const noexcept { return outHead.data() + outFirst[u]; }
-
-    const node *outEnd(node u) const noexcept { return outHead.data() + outFirst[u + 1]; }
-
-    const node *inBegin(node u) const noexcept {
-        return directed ? inHead.data() + inFirst[u] : outBegin(u);
-    }
-
-    const node *inEnd(node u) const noexcept {
-        return directed ? inHead.data() + inFirst[u + 1] : outEnd(u);
-    }
-
     count outDegree(node u) const noexcept { return outFirst[u + 1] - outFirst[u]; }
 
     count inDegree(node u) const noexcept {
         return directed ? inFirst[u + 1] - inFirst[u] : outDegree(u);
     }
 
+    /// The distinct out-neighbours of @a u other than @a u, in ascending order.
+    std::span<const node> outNeighbors(node u) const noexcept {
+        return {outHead.data() + outFirst[u], outDegree(u)};
+    }
+
+    /// Like @ref outNeighbors() for the in-neighbours. Equal to it for an undirected graph.
+    std::span<const node> inNeighbors(node u) const noexcept {
+        if (!directed)
+            return outNeighbors(u);
+        return {inHead.data() + inFirst[u], inDegree(u)};
+    }
+
     bool hasEdge(node u, node v) const noexcept {
         if (hasMatrix)
             return (matrix[static_cast<std::size_t>(u) * matrixStride + v / 64] >> (v % 64)) & 1u;
 
-        return std::binary_search(outBegin(u), outEnd(u), v);
+        const std::span<const node> neighbors = outNeighbors(u);
+        return std::binary_search(neighbors.begin(), neighbors.end(), v);
     }
 
     bool hasEdgeLabels() const noexcept { return !outLabel.empty(); }
@@ -91,24 +93,29 @@ public:
         if (outLabel.empty())
             return none;
 
-        const node *begin = outBegin(u);
-        const node *end = outEnd(u);
-        const node *found = std::lower_bound(begin, end, v);
-        if (found == end || *found != v)
+        const std::span<const node> neighbors = outNeighbors(u);
+        const auto found = std::lower_bound(neighbors.begin(), neighbors.end(), v);
+        if (found == neighbors.end() || *found != v)
             return none;
 
-        return outLabel[outFirst[u] + static_cast<index>(found - begin)];
+        return outLabels(u)[static_cast<index>(found - neighbors.begin())];
     }
 
-    /// Labels aligned with the @ref outBegin() range, or nullptr without labels.
-    const index *outLabelBegin(node u) const noexcept {
-        return outLabel.empty() ? nullptr : outLabel.data() + outFirst[u];
+    /// The labels of the arcs to @ref outNeighbors(), position for position, or an empty span
+    /// without labels.
+    std::span<const index> outLabels(node u) const noexcept {
+        if (outLabel.empty())
+            return {};
+        return {outLabel.data() + outFirst[u], outDegree(u)};
     }
 
-    const index *inLabelBegin(node u) const noexcept {
+    /// Like @ref outLabels() for the arcs from @ref inNeighbors().
+    std::span<const index> inLabels(node u) const noexcept {
         if (!directed)
-            return outLabelBegin(u);
-        return inLabel.empty() ? nullptr : inLabel.data() + inFirst[u];
+            return outLabels(u);
+        if (inLabel.empty())
+            return {};
+        return {inLabel.data() + inFirst[u], inDegree(u)};
     }
 
 private:

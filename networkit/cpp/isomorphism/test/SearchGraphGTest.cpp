@@ -6,8 +6,10 @@
  */
 
 #include <algorithm>
+#include <span>
 #include <vector>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <networkit/graph/Graph.hpp>
@@ -20,6 +22,10 @@
 namespace NetworKit {
 
 using IsomorphismDetails::SearchGraph;
+using testing::Contains;
+using testing::ElementsAre;
+using testing::ElementsAreArray;
+using testing::IsEmpty;
 
 namespace {
 
@@ -45,8 +51,8 @@ void expectSlicesAreSimpleNeighborhoods(const Graph &G, const SearchGraph &SG) {
         const std::vector<node> expectedOut = simpleNeighbors(G, u, /* in = */ false);
         const std::vector<node> expectedIn = simpleNeighbors(G, u, /* in = */ true);
 
-        EXPECT_EQ(std::vector<node>(SG.outBegin(u), SG.outEnd(u)), expectedOut);
-        EXPECT_EQ(std::vector<node>(SG.inBegin(u), SG.inEnd(u)), expectedIn);
+        EXPECT_THAT(SG.outNeighbors(u), ElementsAreArray(expectedOut));
+        EXPECT_THAT(SG.inNeighbors(u), ElementsAreArray(expectedIn));
         EXPECT_EQ(SG.outDegree(u), expectedOut.size());
         EXPECT_EQ(SG.inDegree(u), expectedIn.size());
     });
@@ -59,26 +65,26 @@ void expectLabelsPairWithHeads(const Graph &G, const std::vector<index> &edgeLab
     const auto given = IsomorphismTest::edgeLabelsByPair(G, edgeLabels);
 
     G.forNodes([&](node u) {
-        const index *outLabels = SG.outLabelBegin(u);
-        ASSERT_NE(outLabels, nullptr);
+        const std::span<const node> successors = SG.outNeighbors(u);
+        const std::span<const index> outLabels = SG.outLabels(u);
+        ASSERT_EQ(outLabels.size(), successors.size());
 
-        index offset = 0;
-        for (const node *v = SG.outBegin(u); v != SG.outEnd(u); ++v, ++offset) {
-            const std::vector<index> &wanted = IsomorphismTest::labelsOfPair(given, u, *v);
-            EXPECT_NE(std::find(wanted.begin(), wanted.end(), outLabels[offset]), wanted.end())
-                << "out-arc " << u << " -> " << *v << " carries a label nobody gave it";
-            EXPECT_EQ(SG.edgeLabel(u, *v), outLabels[offset])
-                << "edgeLabel() and the out-slice disagree about " << u << " -> " << *v;
+        for (index i = 0; i < successors.size(); ++i) {
+            const node v = successors[i];
+            EXPECT_THAT(IsomorphismTest::labelsOfPair(given, u, v), Contains(outLabels[i]))
+                << "out-arc " << u << " -> " << v << " carries a label nobody gave it";
+            EXPECT_EQ(SG.edgeLabel(u, v), outLabels[i])
+                << "edgeLabel() and the out-slice disagree about " << u << " -> " << v;
         }
 
-        const index *inLabels = SG.inLabelBegin(u);
-        ASSERT_NE(inLabels, nullptr);
+        const std::span<const node> predecessors = SG.inNeighbors(u);
+        const std::span<const index> inLabels = SG.inLabels(u);
+        ASSERT_EQ(inLabels.size(), predecessors.size());
 
-        offset = 0;
-        for (const node *v = SG.inBegin(u); v != SG.inEnd(u); ++v, ++offset) {
-            const std::vector<index> &wanted = IsomorphismTest::labelsOfPair(given, *v, u);
-            EXPECT_NE(std::find(wanted.begin(), wanted.end(), inLabels[offset]), wanted.end())
-                << "in-arc " << *v << " -> " << u << " carries a label nobody gave it";
+        for (index i = 0; i < predecessors.size(); ++i) {
+            const node v = predecessors[i];
+            EXPECT_THAT(IsomorphismTest::labelsOfPair(given, v, u), Contains(inLabels[i]))
+                << "in-arc " << v << " -> " << u << " carries a label nobody gave it";
         }
     });
 }
@@ -128,8 +134,8 @@ TEST_F(SearchGraphGTest, testSearchGraphCSR) {
         }
     });
 
-    EXPECT_EQ(std::vector<node>(SG.inBegin(5), SG.inEnd(5)), (std::vector<node>{1, 3, 7, 9}));
-    EXPECT_EQ(std::vector<node>(SG.outBegin(5), SG.outEnd(5)), (std::vector<node>{1, 3, 7, 9}));
+    EXPECT_THAT(SG.inNeighbors(5), ElementsAre(1u, 3u, 7u, 9u));
+    EXPECT_THAT(SG.outNeighbors(5), ElementsAre(1u, 3u, 7u, 9u));
 
     // G still has the self-loop, so the snapshot degree is one lower than the Graph degree
     EXPECT_EQ(G.degreeOut(5), 5);
@@ -169,14 +175,14 @@ TEST_F(SearchGraphGTest, testSearchGraphCSR) {
     EXPECT_FALSE(SD.hasEdge(0, 4));
     EXPECT_FALSE(SD.hasEdge(0, 5));
 
-    EXPECT_EQ(std::vector<node>(SD.inBegin(0), SD.inEnd(0)), (std::vector<node>{}));
-    EXPECT_EQ(std::vector<node>(SD.outBegin(0), SD.outEnd(0)), (std::vector<node>{1, 2, 3}));
-    EXPECT_EQ(std::vector<node>(SD.inBegin(1), SD.inEnd(1)), (std::vector<node>{0}));
-    EXPECT_EQ(std::vector<node>(SD.outBegin(1), SD.outEnd(1)), (std::vector<node>{}));
+    EXPECT_THAT(SD.inNeighbors(0), IsEmpty());
+    EXPECT_THAT(SD.outNeighbors(0), ElementsAre(1u, 2u, 3u));
+    EXPECT_THAT(SD.inNeighbors(1), ElementsAre(0u));
+    EXPECT_THAT(SD.outNeighbors(1), IsEmpty());
 
     // Deleted or isolated nodes have empty slice
-    EXPECT_EQ(SD.inBegin(4), SD.inEnd(4));
-    EXPECT_EQ(SD.inBegin(6), SD.inEnd(6));
+    EXPECT_THAT(SD.inNeighbors(4), IsEmpty());
+    EXPECT_THAT(SD.inNeighbors(6), IsEmpty());
 
     EXPECT_EQ(SD.numberOfNodes(), 6);
     EXPECT_EQ(SD.upperNodeIdBound(), 8);
@@ -260,13 +266,13 @@ TEST_F(SearchGraphGTest, testMultiEdgesAndLoopsCollapsed) {
         expectSlicesAreSimpleNeighborhoods(G, S_Adj);
 
         for (const SearchGraph *SG : {&S_CSR, &S_Adj}) {
-            EXPECT_EQ(std::vector<node>(SG->outBegin(1), SG->outEnd(1)), (std::vector<node>{2}));
-            EXPECT_EQ(std::vector<node>(SG->outBegin(2), SG->outEnd(2)), (std::vector<node>{1}));
+            EXPECT_THAT(SG->outNeighbors(1), ElementsAre(2u));
+            EXPECT_THAT(SG->outNeighbors(2), ElementsAre(1u));
             EXPECT_EQ(SG->outDegree(1), 1);
             EXPECT_EQ(SG->outDegree(2), 1);
 
-            EXPECT_EQ(std::vector<node>(SG->inBegin(2), SG->inEnd(2)), (std::vector<node>{1}));
-            EXPECT_EQ(std::vector<node>(SG->inBegin(1), SG->inEnd(1)), (std::vector<node>{2}));
+            EXPECT_THAT(SG->inNeighbors(2), ElementsAre(1u));
+            EXPECT_THAT(SG->inNeighbors(1), ElementsAre(2u));
 
             EXPECT_TRUE(SG->hasEdge(1, 2));
             EXPECT_TRUE(SG->hasEdge(2, 1));
@@ -453,10 +459,8 @@ TEST_F(SearchGraphGTest, testEdgeLabelsStayWithTheirArcs) {
             expectSlicesAreSimpleNeighborhoods(labelled.G, SG);
             expectLabelsPairWithHeads(labelled.G, labelled.edgeLabels, SG);
 
-            EXPECT_EQ(std::vector<node>(SG.outBegin(9), SG.outEnd(9)),
-                      (std::vector<node>{0, 2, 4, 6}));
-            EXPECT_EQ(std::vector<index>(SG.outLabelBegin(9), SG.outLabelBegin(9) + 4),
-                      (std::vector<index>{5, 20, 40, 60}));
+            EXPECT_THAT(SG.outNeighbors(9), ElementsAre(0u, 2u, 4u, 6u));
+            EXPECT_THAT(SG.outLabels(9), ElementsAre(5u, 20u, 40u, 60u));
 
             // The reverse of a directed arc has no label.
             EXPECT_EQ(SG.edgeLabel(9, 7), none);
@@ -486,7 +490,7 @@ TEST_F(SearchGraphGTest, testEdgeLabelsStayWithTheirArcs) {
         expectSlicesAreSimpleNeighborhoods(labelled.G, SG);
         expectLabelsPairWithHeads(labelled.G, labelled.edgeLabels, SG);
 
-        EXPECT_EQ(std::vector<node>(SG.outBegin(4), SG.outEnd(4)), (std::vector<node>{1, 3}));
+        EXPECT_THAT(SG.outNeighbors(4), ElementsAre(1u, 3u));
         EXPECT_EQ(SG.edgeLabel(4, 1), 10u);
         EXPECT_EQ(SG.edgeLabel(4, 3), 30u);
 
@@ -510,13 +514,11 @@ TEST_F(SearchGraphGTest, testEdgeLabelsStayWithTheirArcs) {
     expectLabelsPairWithHeads(mutual.G, mutual.edgeLabels, SM);
 
     // The in-slices must carry the same labels, arc for arc.
-    ASSERT_EQ(SM.inDegree(1), 1u);
-    EXPECT_EQ(*SM.inBegin(1), 0u);
-    EXPECT_EQ(*SM.inLabelBegin(1), 7u);
+    EXPECT_THAT(SM.inNeighbors(1), ElementsAre(0u));
+    EXPECT_THAT(SM.inLabels(1), ElementsAre(7u));
 
-    ASSERT_EQ(SM.inDegree(0), 1u);
-    EXPECT_EQ(*SM.inBegin(0), 1u);
-    EXPECT_EQ(*SM.inLabelBegin(0), 8u);
+    EXPECT_THAT(SM.inNeighbors(0), ElementsAre(1u));
+    EXPECT_THAT(SM.inLabels(0), ElementsAre(8u));
 }
 
 TEST_F(SearchGraphGTest, testCollapsedLabelledEdges) {
@@ -544,7 +546,7 @@ TEST_F(SearchGraphGTest, testCollapsedLabelledEdges) {
         EXPECT_FALSE(unlabelled.hasEdgeLabels());
         EXPECT_FALSE(unlabelled.collapsedLabelledEdges());
         EXPECT_EQ(unlabelled.edgeLabel(0, 1), none);
-        EXPECT_EQ(unlabelled.outLabelBegin(0), nullptr);
+        EXPECT_THAT(unlabelled.outLabels(0), IsEmpty());
     }
 }
 

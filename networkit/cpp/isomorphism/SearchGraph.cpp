@@ -180,9 +180,8 @@ void SearchGraph::buildAdjacencyMatrix() {
 
     // We fill the matrix from the compacted CSR, so both hasEdge() backends agree.
     for (node u = 0; u < z; ++u)
-        for (const node *it = outBegin(u); it != outEnd(u); ++it)
-            matrix[static_cast<std::size_t>(u) * matrixStride + *it / 64] |= uint64_t{1}
-                                                                             << (*it % 64);
+        for (const node v : outNeighbors(u))
+            matrix[static_cast<std::size_t>(u) * matrixStride + v / 64] |= uint64_t{1} << (v % 64);
 }
 
 void refuseLostLabels(const SearchGraph &pattern, const SearchGraph &target,

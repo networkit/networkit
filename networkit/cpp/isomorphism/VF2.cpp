@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
+#include <span>
 #include <vector>
 
 #include <networkit/Globals.hpp>
@@ -64,10 +65,9 @@ public:
         return checkpoint;
     }
 
-    /// Adds the nodes in [begin, end) that are unmapped in @a core and not yet in the set.
-    void extend(const node *begin, const node *end, const std::vector<node> &core) {
-        for (const node *it = begin; it != end; ++it) {
-            const node u = *it;
+    /// Adds the @a nodes that are unmapped in @a core and not yet in the set.
+    void extend(std::span<const node> nodes, std::span<const node> core) {
+        for (const node u : nodes) {
             if (core[u] == none && !isMember[u]) {
                 isMember[u] = true;
                 members.push_back(u);
@@ -246,14 +246,14 @@ private:
 
         frame.out1Saved = out1.leave(pu);
         frame.out2Saved = out2.leave(tv);
-        out1.extend(patternGraph.outBegin(pu), patternGraph.outEnd(pu), core1);
-        out2.extend(targetGraph.outBegin(tv), targetGraph.outEnd(tv), core2);
+        out1.extend(patternGraph.outNeighbors(pu), core1);
+        out2.extend(targetGraph.outNeighbors(tv), core2);
 
         if (directed()) {
             frame.in1Saved = in1.leave(pu);
             frame.in2Saved = in2.leave(tv);
-            in1.extend(patternGraph.inBegin(pu), patternGraph.inEnd(pu), core1);
-            in2.extend(targetGraph.inBegin(tv), targetGraph.inEnd(tv), core2);
+            in1.extend(patternGraph.inNeighbors(pu), core1);
+            in2.extend(targetGraph.inNeighbors(tv), core2);
         }
     }
 
@@ -282,16 +282,14 @@ private:
     /// Every mapped out-neighbour of @a pu needs a corresponding out-edge of @a tv. Under INDUCED
     /// semantics, the same holds in reverse.
     bool ruleSuccessors(node pu, node tv) const {
-        for (auto it = patternGraph.outBegin(pu); it != patternGraph.outEnd(pu); ++it) {
-            const node u = *it;
+        for (const node u : patternGraph.outNeighbors(pu)) {
             if (core1[u] != none && !targetGraph.hasEdge(tv, core1[u]))
                 return false;
         }
 
         // ruleEdgeLabels() compares the labels of the edges that both graphs contain.
         if (induced) {
-            for (auto it = targetGraph.outBegin(tv); it != targetGraph.outEnd(tv); ++it) {
-                const node v = *it;
+            for (const node v : targetGraph.outNeighbors(tv)) {
                 if (core2[v] != none && !patternGraph.hasEdge(pu, core2[v]))
                     return false;
             }
@@ -305,15 +303,13 @@ private:
         if (!directed())
             return true;
 
-        for (auto it = patternGraph.inBegin(pu); it != patternGraph.inEnd(pu); ++it) {
-            const node u = *it;
+        for (const node u : patternGraph.inNeighbors(pu)) {
             if (core1[u] != none && !targetGraph.hasEdge(core1[u], tv))
                 return false;
         }
 
         if (induced) {
-            for (auto it = targetGraph.inBegin(tv); it != targetGraph.inEnd(tv); ++it) {
-                const node v = *it;
+            for (const node v : targetGraph.inNeighbors(tv)) {
                 if (core2[v] != none && !patternGraph.hasEdge(core2[v], pu))
                     return false;
             }
@@ -326,20 +322,24 @@ private:
     /// ruleSuccessors() and rulePredecessors() have checked that the images exist. A separate pass
     /// keeps the label loads out of their loops when the graphs carry no edge labels.
     bool ruleEdgeLabels(node pu, node tv) const {
-        const index *label = patternGraph.outLabelBegin(pu);
-        for (auto it = patternGraph.outBegin(pu); it != patternGraph.outEnd(pu); ++it, ++label) {
-            const node u = *it;
-            if (core1[u] != none && !labelsCompatible(*label, targetGraph.edgeLabel(tv, core1[u])))
+        const std::span<const node> successors = patternGraph.outNeighbors(pu);
+        const std::span<const index> outLabels = patternGraph.outLabels(pu);
+        for (index i = 0; i < successors.size(); ++i) {
+            const node u = successors[i];
+            if (core1[u] != none
+                && !labelsCompatible(outLabels[i], targetGraph.edgeLabel(tv, core1[u])))
                 return false;
         }
 
         if (!directed())
             return true;
 
-        label = patternGraph.inLabelBegin(pu);
-        for (auto it = patternGraph.inBegin(pu); it != patternGraph.inEnd(pu); ++it, ++label) {
-            const node u = *it;
-            if (core1[u] != none && !labelsCompatible(*label, targetGraph.edgeLabel(core1[u], tv)))
+        const std::span<const node> predecessors = patternGraph.inNeighbors(pu);
+        const std::span<const index> inLabels = patternGraph.inLabels(pu);
+        for (index i = 0; i < predecessors.size(); ++i) {
+            const node u = predecessors[i];
+            if (core1[u] != none
+                && !labelsCompatible(inLabels[i], targetGraph.edgeLabel(core1[u], tv)))
                 return false;
         }
 
@@ -352,8 +352,8 @@ private:
         // A terminal set holds only unmapped nodes, so membership alone decides.
         const auto inOut1 = [this](node u) { return out1.contains(u); };
         const auto inOut2 = [this](node v) { return out2.contains(v); };
-        if (!enoughInTarget(patternGraph.outBegin(pu), patternGraph.outEnd(pu), inOut1,
-                            targetGraph.outBegin(tv), targetGraph.outEnd(tv), inOut2))
+        if (!enoughInTarget(patternGraph.outNeighbors(pu), inOut1, targetGraph.outNeighbors(tv),
+                            inOut2))
             return false;
 
         if (!directed())
@@ -361,8 +361,8 @@ private:
 
         const auto inIn1 = [this](node u) { return in1.contains(u); };
         const auto inIn2 = [this](node v) { return in2.contains(v); };
-        return enoughInTarget(patternGraph.inBegin(pu), patternGraph.inEnd(pu), inIn1,
-                              targetGraph.inBegin(tv), targetGraph.inEnd(tv), inIn2);
+        return enoughInTarget(patternGraph.inNeighbors(pu), inIn1, targetGraph.inNeighbors(tv),
+                              inIn2);
     }
 
     /// Two-step look-ahead: the same count for unmapped neighbours outside all terminal sets.
@@ -378,22 +378,21 @@ private:
         const auto new2 = [this](node v) {
             return core2[v] == none && !out2.contains(v) && !(directed() && in2.contains(v));
         };
-        return enoughInTarget(patternGraph.outBegin(pu), patternGraph.outEnd(pu), new1,
-                              targetGraph.outBegin(tv), targetGraph.outEnd(tv), new2)
+        return enoughInTarget(patternGraph.outNeighbors(pu), new1, targetGraph.outNeighbors(tv),
+                              new2)
                && (!directed()
-                   || enoughInTarget(patternGraph.inBegin(pu), patternGraph.inEnd(pu), new1,
-                                     targetGraph.inBegin(tv), targetGraph.inEnd(tv), new2));
+                   || enoughInTarget(patternGraph.inNeighbors(pu), new1,
+                                     targetGraph.inNeighbors(tv), new2));
     }
 
-    /// Whether [targetBegin, targetEnd) holds at least as many nodes that pass @a targetTest as
-    /// [patternBegin, patternEnd) holds nodes that pass @a patternTest.
+    /// Whether @a targetNodes holds at least as many nodes that pass @a targetTest as
+    /// @a patternNodes holds nodes that pass @a patternTest.
     template <typename PatternTest, typename TargetTest>
-    static bool enoughInTarget(const node *patternBegin, const node *patternEnd,
-                               PatternTest patternTest, const node *targetBegin,
-                               const node *targetEnd, TargetTest targetTest) {
+    static bool enoughInTarget(std::span<const node> patternNodes, PatternTest patternTest,
+                               std::span<const node> targetNodes, TargetTest targetTest) {
         // The pattern side is small, and its count lets the target scan stop early.
-        auto needed = std::count_if(patternBegin, patternEnd, patternTest);
-        for (const node *it = targetBegin; needed != 0 && it != targetEnd; ++it) {
+        auto needed = std::ranges::count_if(patternNodes, patternTest);
+        for (auto it = targetNodes.begin(); needed != 0 && it != targetNodes.end(); ++it) {
             if (targetTest(*it))
                 --needed;
         }
