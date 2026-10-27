@@ -77,8 +77,7 @@ public:
         if (hasMatrix)
             return (matrix[static_cast<std::size_t>(u) * matrixStride + v / 64] >> (v % 64)) & 1u;
 
-        const std::span<const node> neighbors = outNeighbors(u);
-        return std::binary_search(neighbors.begin(), neighbors.end(), v);
+        return std::ranges::binary_search(outNeighbors(u), v);
     }
 
     bool hasEdgeLabels() const noexcept { return !outLabel.empty(); }
@@ -94,7 +93,7 @@ public:
             return none;
 
         const std::span<const node> neighbors = outNeighbors(u);
-        const auto found = std::lower_bound(neighbors.begin(), neighbors.end(), v);
+        const auto found = std::ranges::lower_bound(neighbors, v);
         if (found == neighbors.end() || *found != v)
             return none;
 

@@ -188,7 +188,7 @@ inline std::vector<Match> referenceMatches(const Graph &pattern, const Graph &ta
 }
 
 inline void sortMatches(std::vector<Match> &matches) {
-    std::sort(matches.begin(), matches.end());
+    std::ranges::sort(matches);
 }
 
 /// Edge label vectors are indexed by edge id, so their graphs come from labelledGraphOf().

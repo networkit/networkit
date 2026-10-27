@@ -41,8 +41,9 @@ std::vector<node> simpleNeighbors(const Graph &G, node u, bool in) {
         G.forInNeighborsOf(u, collect);
     else
         G.forNeighborsOf(u, collect);
-    std::sort(neighbors.begin(), neighbors.end());
-    neighbors.erase(std::unique(neighbors.begin(), neighbors.end()), neighbors.end());
+    std::ranges::sort(neighbors);
+    const auto [first, last] = std::ranges::unique(neighbors);
+    neighbors.erase(first, last);
     return neighbors;
 }
 

@@ -29,7 +29,7 @@ void sortSlices(const std::vector<index> &first, std::vector<node> &head, std::v
                 count z) {
     if (label.empty()) {
         for (node u = 0; u < z; ++u)
-            std::sort(head.data() + first[u], head.data() + first[u + 1]);
+            std::ranges::sort(std::span(head).subspan(first[u], first[u + 1] - first[u]));
         return;
     }
 
@@ -43,7 +43,7 @@ void sortSlices(const std::vector<index> &first, std::vector<node> &head, std::v
             slice.emplace_back(head[i], label[i]);
 
         // Sorting (head, label) pairs orders parallel arcs by label.
-        std::sort(slice.begin(), slice.end());
+        std::ranges::sort(slice);
 
         for (index i = begin; i < end; ++i) {
             head[i] = slice[i - begin].first;
