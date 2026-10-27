@@ -430,7 +430,7 @@ void VF2::run() {
     prepareRun();
     VF2Impl(*pattern, *target, patternNodeLabels, targetNodeLabels, patternEdgeLabels,
             targetEdgeLabels, semantics, handler,
-            [this](const Match &match) { return reportMatch(match); })
+            [this](std::span<const node> match) { return reportMatch(match); })
         .run();
     finishRun();
 }

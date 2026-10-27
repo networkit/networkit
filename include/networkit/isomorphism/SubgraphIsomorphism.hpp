@@ -42,10 +42,10 @@ public:
     using Match = std::vector<node>;
 
     /**
-     * Receives one match at a time, never concurrently. The match refers to an internal buffer
-     * and is valid only during the call.
+     * Receives one match at a time, never concurrently. The match is indexed like a @ref Match.
+     * It refers to an internal buffer and is valid only during the call.
      */
-    using MatchCallback = std::function<void(const Match &)>;
+    using MatchCallback = std::function<void(std::span<const node>)>;
 
     ~SubgraphIsomorphism() override = default;
 
@@ -119,7 +119,7 @@ protected:
     void prepareRun();
 
     /// Records one match. Returns false once the cap is reached.
-    bool reportMatch(const Match &match);
+    bool reportMatch(std::span<const node> match);
 
     /// Marks the run as finished.
     void finishRun();

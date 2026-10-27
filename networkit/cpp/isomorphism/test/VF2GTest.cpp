@@ -6,6 +6,7 @@
  */
 
 #include <memory>
+#include <span>
 
 #include <gtest/gtest.h>
 
@@ -57,7 +58,7 @@ TEST_F(VF2GTest, testInterruptStopsTheSearch) {
 
     VF2 algo(pattern, target, SubgraphIsomorphism::Semantics::MONOMORPHISM);
     count delivered = 0;
-    algo.setCallback([&](const SubgraphIsomorphism::Match &) {
+    algo.setCallback([&](std::span<const node>) {
         if (++delivered == 1)
             GlobalState::setReceivedSIGINT(true);
     });

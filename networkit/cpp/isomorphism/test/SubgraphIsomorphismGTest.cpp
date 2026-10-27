@@ -7,6 +7,7 @@
  */
 
 #include <memory>
+#include <span>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -60,7 +61,7 @@ TEST_F(SubgraphIsomorphismGTest, testInterruptLeavesTheAlgorithmUnfinishedButUsa
     IsomorphismTest::ReferenceSubgraphIsomorphism algo(pattern, target, Semantics::MONOMORPHISM);
 
     count delivered = 0;
-    algo.setCallback([&](const Match &) {
+    algo.setCallback([&](std::span<const node>) {
         if (++delivered == 5)
             GlobalState::setReceivedSIGINT(true);
     });
@@ -136,7 +137,7 @@ TEST_F(SubgraphIsomorphismGTest, testGetMatchesFollowsTheLastRun) {
     EXPECT_EQ(algo.getMatches().size(), 8u);
 
     // A callback set after the run does not take away the matches that run stored.
-    algo.setCallback([](const Match &) {});
+    algo.setCallback([](std::span<const node>) {});
     EXPECT_EQ(algo.getMatches().size(), 8u);
 }
 

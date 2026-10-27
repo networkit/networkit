@@ -9,6 +9,7 @@
 #include <initializer_list>
 #include <map>
 #include <memory>
+#include <span>
 #include <stdexcept>
 #include <string>
 #include <tuple>
@@ -599,7 +600,9 @@ void expectMatchesReference(Construct construct) {
         {
             std::vector<Match> collected;
             std::unique_ptr<SubgraphIsomorphism> algo = build();
-            algo->setCallback([&](const Match &match) { collected.push_back(match); });
+            algo->setCallback([&](std::span<const node> match) {
+                collected.emplace_back(match.begin(), match.end());
+            });
             algo->run();
 
             sortMatches(collected);

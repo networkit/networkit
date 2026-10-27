@@ -104,13 +104,13 @@ void SubgraphIsomorphism::prepareRun() {
     validateEdgeLabels(*pattern, *target, patternEdgeLabels, targetEdgeLabels);
 }
 
-bool SubgraphIsomorphism::reportMatch(const Match &match) {
+bool SubgraphIsomorphism::reportMatch(std::span<const node> match) {
     ++matchCount;
 
     if (callback)
         callback(match);
     else if (matchesStored)
-        result.push_back(match);
+        result.emplace_back(match.begin(), match.end());
 
     return maxMatches == 0 || matchCount < maxMatches;
 }
