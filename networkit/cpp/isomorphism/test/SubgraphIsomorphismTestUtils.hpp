@@ -25,9 +25,8 @@
 
 namespace NetworKit::IsomorphismTest {
 
-using Semantics = SubgraphIsomorphism::Semantics;
-
 using Match = SubgraphIsomorphism::Match;
+using Semantics = SubgraphIsomorphism::Semantics;
 
 // The reference matcher works on Graph rather than on SearchGraph, so that it cannot share a bug
 // with the code under test.
@@ -44,9 +43,10 @@ inline bool nodeLabelsCompatible(const std::vector<index> &patternNodeLabels,
 }
 
 /// The labels of all edges, keyed by ordered node pair. Parallel edges give a pair several labels.
-inline std::map<std::pair<node, node>, std::vector<index>>
-edgeLabelsByPair(const Graph &G, const std::vector<index> &edgeLabels) {
-    std::map<std::pair<node, node>, std::vector<index>> byPair;
+using LabelsByPair = std::map<std::pair<node, node>, std::vector<index>>;
+
+inline LabelsByPair edgeLabelsByPair(const Graph &G, const std::vector<index> &edgeLabels) {
+    LabelsByPair byPair;
     G.forEdges([&](node u, node v, edgeweight, edgeid eid) {
         const index label = eid < edgeLabels.size() ? edgeLabels[eid] : none;
         byPair[{u, v}].push_back(label);
@@ -56,8 +56,7 @@ edgeLabelsByPair(const Graph &G, const std::vector<index> &edgeLabels) {
     return byPair;
 }
 
-inline const std::vector<index> &
-labelsOfPair(const std::map<std::pair<node, node>, std::vector<index>> &byPair, node u, node v) {
+inline const std::vector<index> &labelsOfPair(const LabelsByPair &byPair, node u, node v) {
     static const std::vector<index> nothing;
     const auto found = byPair.find({u, v});
     return found == byPair.end() ? nothing : found->second;
@@ -66,13 +65,11 @@ labelsOfPair(const std::map<std::pair<node, node>, std::vector<index>> &byPair, 
 /// With parallel edges, some pattern label must be compatible with some target label.
 inline bool edgeLabelsCompatible(const std::vector<index> &patternEdgeLabels,
                                  const std::vector<index> &targetEdgeLabels) {
-    for (index patternLabel : patternEdgeLabels) {
-        for (index targetLabel : targetEdgeLabels) {
-            if (labelsCompatible(patternLabel, targetLabel))
-                return true;
-        }
-    }
-    return false;
+    return std::ranges::any_of(patternEdgeLabels, [&](index patternLabel) {
+        return std::ranges::any_of(targetEdgeLabels, [&](index targetLabel) {
+            return labelsCompatible(patternLabel, targetLabel);
+        });
+    });
 }
 
 /// Whether a complete mapping is a well-formed match.
@@ -87,8 +84,8 @@ inline bool isValidMatch(const Graph &pattern, const Graph &target, Semantics se
         return false;
 
     const bool edgeLabelled = !patternEdgeLabels.empty();
-    std::map<std::pair<node, node>, std::vector<index>> patternEdgeLabelsByPair;
-    std::map<std::pair<node, node>, std::vector<index>> targetEdgeLabelsByPair;
+    LabelsByPair patternEdgeLabelsByPair;
+    LabelsByPair targetEdgeLabelsByPair;
     if (edgeLabelled) {
         patternEdgeLabelsByPair = edgeLabelsByPair(pattern, patternEdgeLabels);
         targetEdgeLabelsByPair = edgeLabelsByPair(target, targetEdgeLabels);
@@ -238,7 +235,7 @@ inline LabelledGraph labelledGraphOf(count n,
     };
 
     Graph G(n, false, directed);
-    std::map<std::pair<node, node>, std::vector<index>> queued;
+    LabelsByPair queued;
     for (const std::tuple<node, node, index> &e : edges) {
         G.addEdge(std::get<0>(e), std::get<1>(e));
         queued[key(std::get<0>(e), std::get<1>(e))].push_back(std::get<2>(e));
