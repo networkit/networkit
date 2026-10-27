@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <networkit/GlobalState.hpp>
@@ -30,6 +31,7 @@ using IsomorphismTest::graphOf;
 using IsomorphismTest::Match;
 using IsomorphismTest::referenceMatches;
 using IsomorphismTest::Semantics;
+using testing::SizeIs;
 
 class SubgraphIsomorphismGTest : public testing::Test {
 protected:
@@ -134,11 +136,11 @@ TEST_F(SubgraphIsomorphismGTest, testGetMatchesFollowsTheLastRun) {
     EXPECT_THROW(algo.getMatches(), std::runtime_error);
 
     algo.run();
-    EXPECT_EQ(algo.getMatches().size(), 8u);
+    EXPECT_THAT(algo.getMatches(), SizeIs(8));
 
     // A callback set after the run does not take away the matches that run stored.
     algo.setCallback([](std::span<const node>) {});
-    EXPECT_EQ(algo.getMatches().size(), 8u);
+    EXPECT_THAT(algo.getMatches(), SizeIs(8));
 }
 
 TEST_F(SubgraphIsomorphismGTest, testRunValidatesNodeLabels) {

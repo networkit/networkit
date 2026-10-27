@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <networkit/Globals.hpp>
@@ -631,7 +632,7 @@ void expectRespectsMatchCap(Construct construct) {
 
         const count expected = std::min(cap, total);
         EXPECT_EQ(algo->numberOfMatches(), expected) << "cap: " << cap;
-        EXPECT_EQ(algo->getMatches().size(), expected) << "cap: " << cap;
+        EXPECT_THAT(algo->getMatches(), testing::SizeIs(expected)) << "cap: " << cap;
         EXPECT_TRUE(algo->hasMatch()) << "cap: " << cap;
 
         for (const Match &match : algo->getMatches()) {
