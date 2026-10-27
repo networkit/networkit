@@ -2,6 +2,7 @@
 #define NETWORKIT_ISOMORPHISM_SUBGRAPH_ISOMORPHISM_HPP_
 
 #include <functional>
+#include <span>
 #include <vector>
 
 #include <networkit/Globals.hpp>
@@ -22,7 +23,8 @@ namespace NetworKit {
  *
  * Pattern and target must both be directed or both be undirected, and the pattern must not contain
  * self-loops. The search ignores edge weights and target self-loops, and it collapses parallel
- * edges. The algorithm holds both graphs by reference, so they must outlive it.
+ * edges. The algorithm holds both graphs by reference, so they must outlive it. Since the graphs
+ * may change after construction, @ref run() validates them and the labels each time.
  */
 class SubgraphIsomorphism : public Algorithm {
 
@@ -49,33 +51,35 @@ public:
 
     /**
      * Runs the search. If a callback throws or CTRL+C interrupts the search, run() stops and
-     * rethrows, and the results stay unavailable. Throws `std::runtime_error` if a graph changed
-     * in a way that invalidates the input.
+     * rethrows, and the results stay unavailable. Throws `std::runtime_error` if the graphs break
+     * the requirements above, or if the labels do not fit the graphs.
      */
     void run() override = 0;
 
     /**
      * Restricts matches to map every pattern node to a target node with the same label. The label
-     * @ref none matches any label, and two empty vectors remove the labels. Call this before
-     * @ref run().
+     * @ref none matches any label, and two empty vectors remove the labels. The labels are copied.
+     * Call this before @ref run(), which throws if a vector is shorter than the node id bound of
+     * its graph.
      *
      * @param patternNodeLabels Labels of the pattern nodes, indexed by node id.
      * @param targetNodeLabels Labels of the target nodes, indexed by node id.
      */
-    void setNodeLabels(const std::vector<index> &patternNodeLabels,
-                       const std::vector<index> &targetNodeLabels);
+    void setNodeLabels(std::span<const index> patternNodeLabels,
+                       std::span<const index> targetNodeLabels);
 
     /**
      * Restricts matches to map every pattern edge to a target edge with the same label. The label
-     * @ref none matches any label, and two empty vectors remove the labels. Both graphs need edge
-     * ids, see `Graph::indexEdges()`. @ref run() throws for parallel edges with different labels.
-     * Call this before @ref run().
+     * @ref none matches any label, and two empty vectors remove the labels. The labels are copied.
+     * Call this before @ref run(), which throws if a graph has no edge ids (see
+     * `Graph::indexEdges()`), if a vector is shorter than the edge id bound of its graph, or for
+     * parallel edges with different labels.
      *
      * @param patternEdgeLabels Labels of the pattern edges, indexed by edge id.
      * @param targetEdgeLabels Labels of the target edges, indexed by edge id.
      */
-    void setEdgeLabels(const std::vector<index> &patternEdgeLabels,
-                       const std::vector<index> &targetEdgeLabels);
+    void setEdgeLabels(std::span<const index> patternEdgeLabels,
+                       std::span<const index> targetEdgeLabels);
 
     /**
      * Passes every match to @a callback instead of storing it, so @ref getMatches() throws.
@@ -111,7 +115,7 @@ protected:
 
     bool hasCallback() const noexcept { return static_cast<bool>(callback); }
 
-    /// Resets the results and revalidates the input. Call this at the start of run().
+    /// Resets the results and validates the input. Call this at the start of run().
     void prepareRun();
 
     /// Records one match. Returns false once the cap is reached.
@@ -134,14 +138,6 @@ protected:
     count maxMatches;
 
 private:
-    void validateInput() const;
-
-    void validateNodeLabels(const std::vector<index> &patternNodeLabels,
-                            const std::vector<index> &targetNodeLabels) const;
-
-    void validateEdgeLabels(const std::vector<index> &patternEdgeLabels,
-                            const std::vector<index> &targetEdgeLabels) const;
-
     std::vector<Match> result;
 
     MatchCallback callback;

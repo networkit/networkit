@@ -96,9 +96,15 @@ TEST_F(SubgraphIsomorphismGTest, testGraphsMustAgreeOnDirectedness) {
     const Graph undirected = graphOf(2, {{0, 1}});
     const Graph directed = graphOf(2, {{0, 1}}, true);
 
-    EXPECT_THROW(VF2 algo(undirected, directed), std::runtime_error);
-    EXPECT_THROW(VF2 algo(directed, undirected), std::runtime_error);
-    EXPECT_NO_THROW(VF2 algo(directed, directed));
+    // The graphs may change after construction, so only run() checks them.
+    VF2 undirectedPattern(undirected, directed);
+    EXPECT_THROW(undirectedPattern.run(), std::runtime_error);
+
+    VF2 directedPattern(directed, undirected);
+    EXPECT_THROW(directedPattern.run(), std::runtime_error);
+
+    VF2 agreeing(directed, directed);
+    EXPECT_NO_THROW(agreeing.run());
 }
 
 TEST_F(SubgraphIsomorphismGTest, testUnknownSemanticsIsRejected) {
@@ -134,43 +140,55 @@ TEST_F(SubgraphIsomorphismGTest, testGetMatchesFollowsTheLastRun) {
     EXPECT_EQ(algo.getMatches().size(), 8u);
 }
 
-TEST_F(SubgraphIsomorphismGTest, testSetNodeLabelsValidatesItsInput) {
+TEST_F(SubgraphIsomorphismGTest, testRunValidatesNodeLabels) {
 
     const Graph pattern = graphOf(2, {{0, 1}});
     const Graph target = graphOf(3, {{0, 1}, {1, 2}});
+    const std::vector<index> one{1}, two{1, 1}, three{1, 1, 1};
+
     VF2 algo(pattern, target, Semantics::MONOMORPHISM);
 
-    EXPECT_THROW(algo.setNodeLabels({1}, {1, 1, 1}), std::runtime_error) << "pattern too short";
-    EXPECT_THROW(algo.setNodeLabels({1, 1}, {1, 1}), std::runtime_error) << "target too short";
-    EXPECT_NO_THROW(algo.setNodeLabels({1, 1}, {1, 1, 1}));
-    EXPECT_NO_THROW(algo.setNodeLabels({}, {}));
+    algo.setNodeLabels(one, three);
+    EXPECT_THROW(algo.run(), std::runtime_error) << "pattern too short";
+
+    algo.setNodeLabels(two, two);
+    EXPECT_THROW(algo.run(), std::runtime_error) << "target too short";
+
+    algo.setNodeLabels(two, three);
+    EXPECT_NO_THROW(algo.run());
+
+    algo.setNodeLabels({}, {});
+    EXPECT_NO_THROW(algo.run());
 }
 
-TEST_F(SubgraphIsomorphismGTest, testSetEdgeLabelsValidatesItsInput) {
+TEST_F(SubgraphIsomorphismGTest, testRunValidatesEdgeLabels) {
 
     Graph pattern = graphOf(3, {{0, 1}, {1, 2}});
     Graph target = graphOf(4, {{0, 1}, {1, 2}, {2, 3}});
+    const std::vector<index> one{1}, two{1, 2}, three{1, 2, 3};
 
-    IsomorphismTest::ReferenceSubgraphIsomorphism unindexed(pattern, target,
-                                                            Semantics::MONOMORPHISM);
-    ASSERT_FALSE(pattern.hasEdgeIds());
-    EXPECT_THROW(unindexed.setEdgeLabels({1, 2}, {1, 2, 3}), std::runtime_error)
-        << "edge labels are indexed by edge id, so a graph without ids has no index space";
-
-    // Two empty vectors clear the labels, even without edge ids.
-    EXPECT_NO_THROW(unindexed.setEdgeLabels({}, {}));
-
-    pattern.indexEdges();
-    EXPECT_THROW(unindexed.setEdgeLabels({1, 2}, {1, 2, 3}), std::runtime_error)
-        << "the target needs edge ids as well";
-
-    target.indexEdges();
     IsomorphismTest::ReferenceSubgraphIsomorphism algo(pattern, target, Semantics::MONOMORPHISM);
 
-    EXPECT_THROW(algo.setEdgeLabels({1}, {1, 2, 3}), std::runtime_error) << "pattern too short";
-    EXPECT_THROW(algo.setEdgeLabels({1, 2}, {1, 2}), std::runtime_error) << "target too short";
-    EXPECT_NO_THROW(algo.setEdgeLabels({1, 2}, {1, 2, 3}));
-    EXPECT_NO_THROW(algo.setEdgeLabels({}, {}));
+    // Two empty vectors clear the labels, even without edge ids.
+    algo.setEdgeLabels({}, {});
+    EXPECT_NO_THROW(algo.run());
+
+    algo.setEdgeLabels(two, three);
+    ASSERT_FALSE(pattern.hasEdgeIds());
+    EXPECT_THROW(algo.run(), std::runtime_error)
+        << "edge labels are indexed by edge id, so a graph without ids has no index space";
+
+    pattern.indexEdges();
+    EXPECT_THROW(algo.run(), std::runtime_error) << "the target needs edge ids as well";
+
+    target.indexEdges();
+    EXPECT_NO_THROW(algo.run());
+
+    algo.setEdgeLabels(one, three);
+    EXPECT_THROW(algo.run(), std::runtime_error) << "pattern too short";
+
+    algo.setEdgeLabels(two, two);
+    EXPECT_THROW(algo.run(), std::runtime_error) << "target too short";
 }
 
 TEST_F(SubgraphIsomorphismGTest, testParallelEdgesWithDisagreeingLabelsAreRefused) {
@@ -218,8 +236,10 @@ TEST_F(SubgraphIsomorphismGTest, testRunRechecksNodeLabelSizes) {
     const Graph pattern = graphOf(2, {{0, 1}});
     Graph target = graphOf(3, {{0, 1}, {1, 2}});
 
+    const std::vector<index> patternLabels{1, 1};
+
     VF2 algo(pattern, target, Semantics::MONOMORPHISM);
-    algo.setNodeLabels({1, 1}, {1, 1, 1});
+    algo.setNodeLabels(patternLabels, std::vector<index>{1, 1, 1});
     ASSERT_NO_THROW(algo.run());
     ASSERT_GT(algo.numberOfMatches(), 0u);
 
@@ -233,7 +253,7 @@ TEST_F(SubgraphIsomorphismGTest, testRunRechecksNodeLabelSizes) {
     EXPECT_FALSE(algo.hasFinished());
     EXPECT_THROW(algo.getMatches(), std::runtime_error);
 
-    algo.setNodeLabels({1, 1}, {1, 1, 1, 1});
+    algo.setNodeLabels(patternLabels, std::vector<index>{1, 1, 1, 1});
     EXPECT_NO_THROW(algo.run());
     EXPECT_TRUE(algo.hasFinished());
 }

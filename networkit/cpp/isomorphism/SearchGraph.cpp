@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cstddef>
 #include <numeric>
+#include <span>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -93,7 +94,7 @@ bool compactSlices(std::vector<index> &first, std::vector<node> &head, std::vect
 
 } // namespace
 
-SearchGraph::SearchGraph(const Graph &G, bool buildMatrix, const std::vector<index> &edgeLabels)
+SearchGraph::SearchGraph(const Graph &G, bool buildMatrix, std::span<const index> edgeLabels)
     : lostLabels(false), maxOut(0), maxIn(0), matrixStride(0), n(G.numberOfNodes()),
       z(G.upperNodeIdBound()), directed(G.isDirected()), hasMatrix(buildMatrix) {
     // SubgraphIsomorphism::prepareRun() has validated the labels.
@@ -118,7 +119,7 @@ SearchGraph::SearchGraph(const Graph &G, bool buildMatrix, const std::vector<ind
         buildAdjacencyMatrix();
 }
 
-void SearchGraph::buildCSR(const Graph &G, const std::vector<index> &edgeLabels) {
+void SearchGraph::buildCSR(const Graph &G, std::span<const index> edgeLabels) {
     const bool labelled = !edgeLabels.empty();
 
     // forEdgesOf() visits every edge at u, so an undirected edge lands in both slices.

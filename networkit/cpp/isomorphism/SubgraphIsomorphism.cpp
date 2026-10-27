@@ -1,9 +1,63 @@
+#include <span>
 #include <stdexcept>
 #include <utility>
 
 #include <networkit/isomorphism/SubgraphIsomorphism.hpp>
 
 namespace NetworKit {
+
+namespace {
+
+void validateGraphs(const Graph &pattern, const Graph &target) {
+    if (pattern.isDirected() != target.isDirected())
+        throw std::runtime_error(
+            "Pattern and target graph must either both be directed or both be undirected");
+
+    // Target self-loops are harmless, since both semantics only constrain pairs of distinct nodes.
+    if (pattern.numberOfSelfLoops() > 0)
+        throw std::runtime_error("Subgraph isomorphism is undefined for patterns with self-loops");
+}
+
+void validateNodeLabels(const Graph &pattern, const Graph &target,
+                        std::span<const index> patternNodeLabels,
+                        std::span<const index> targetNodeLabels) {
+    // Two empty vectors clear the labels.
+    if (patternNodeLabels.empty() && targetNodeLabels.empty())
+        return;
+
+    if (patternNodeLabels.size() < pattern.upperNodeIdBound())
+        throw std::runtime_error("Pattern label vector is shorter than the pattern's "
+                                 "upperNodeIdBound()");
+
+    if (targetNodeLabels.size() < target.upperNodeIdBound())
+        throw std::runtime_error("Target label vector is shorter than the target's "
+                                 "upperNodeIdBound()");
+}
+
+void validateEdgeLabels(const Graph &pattern, const Graph &target,
+                        std::span<const index> patternEdgeLabels,
+                        std::span<const index> targetEdgeLabels) {
+    if (patternEdgeLabels.empty() && targetEdgeLabels.empty())
+        return;
+
+    if (!pattern.hasEdgeIds())
+        throw std::runtime_error("Pattern graph has no edge ids - call indexEdges() on it before "
+                                 "setting edge labels");
+
+    if (!target.hasEdgeIds())
+        throw std::runtime_error("Target graph has no edge ids - call indexEdges() on it before "
+                                 "setting edge labels");
+
+    if (patternEdgeLabels.size() < pattern.upperEdgeIdBound())
+        throw std::runtime_error("Pattern edge label vector is shorter than the pattern's "
+                                 "upperEdgeIdBound()");
+
+    if (targetEdgeLabels.size() < target.upperEdgeIdBound())
+        throw std::runtime_error("Target edge label vector is shorter than the target's "
+                                 "upperEdgeIdBound()");
+}
+
+} // namespace
 
 SubgraphIsomorphism::SubgraphIsomorphism(const Graph &pattern, const Graph &target,
                                          Semantics semantics, count maxMatches)
@@ -12,72 +66,18 @@ SubgraphIsomorphism::SubgraphIsomorphism(const Graph &pattern, const Graph &targ
     // Python passes the semantics as an integer, so any value can arrive here.
     if (semantics != Semantics::INDUCED && semantics != Semantics::MONOMORPHISM)
         throw std::invalid_argument("Unknown subgraph isomorphism semantics");
-
-    validateInput();
 }
 
-void SubgraphIsomorphism::validateInput() const {
-    if (pattern->isDirected() != target->isDirected())
-        throw std::runtime_error(
-            "Pattern and target graph must either both be directed or both be undirected");
-
-    // Target self-loops are harmless, since both semantics only constrain pairs of distinct nodes.
-    if (pattern->numberOfSelfLoops() > 0)
-        throw std::runtime_error("Subgraph isomorphism is undefined for patterns with self-loops");
+void SubgraphIsomorphism::setNodeLabels(std::span<const index> patternNodeLabels,
+                                        std::span<const index> targetNodeLabels) {
+    this->patternNodeLabels.assign(patternNodeLabels.begin(), patternNodeLabels.end());
+    this->targetNodeLabels.assign(targetNodeLabels.begin(), targetNodeLabels.end());
 }
 
-void SubgraphIsomorphism::validateNodeLabels(const std::vector<index> &patternNodeLabels,
-                                             const std::vector<index> &targetNodeLabels) const {
-    // Two empty vectors clear the labels.
-    if (patternNodeLabels.empty() && targetNodeLabels.empty())
-        return;
-
-    if (patternNodeLabels.size() < pattern->upperNodeIdBound())
-        throw std::runtime_error("Pattern label vector is shorter than the pattern's "
-                                 "upperNodeIdBound()");
-
-    if (targetNodeLabels.size() < target->upperNodeIdBound())
-        throw std::runtime_error("Target label vector is shorter than the target's "
-                                 "upperNodeIdBound()");
-}
-
-void SubgraphIsomorphism::validateEdgeLabels(const std::vector<index> &patternEdgeLabels,
-                                             const std::vector<index> &targetEdgeLabels) const {
-    if (patternEdgeLabels.empty() && targetEdgeLabels.empty())
-        return;
-
-    if (!pattern->hasEdgeIds())
-        throw std::runtime_error("Pattern graph has no edge ids - call indexEdges() on it before "
-                                 "setting edge labels");
-
-    if (!target->hasEdgeIds())
-        throw std::runtime_error("Target graph has no edge ids - call indexEdges() on it before "
-                                 "setting edge labels");
-
-    if (patternEdgeLabels.size() < pattern->upperEdgeIdBound())
-        throw std::runtime_error("Pattern edge label vector is shorter than the pattern's "
-                                 "upperEdgeIdBound()");
-
-    if (targetEdgeLabels.size() < target->upperEdgeIdBound())
-        throw std::runtime_error("Target edge label vector is shorter than the target's "
-                                 "upperEdgeIdBound()");
-}
-
-void SubgraphIsomorphism::setNodeLabels(const std::vector<index> &patternNodeLabels,
-                                        const std::vector<index> &targetNodeLabels) {
-    // Validate first, so that a rejected call changes nothing.
-    validateNodeLabels(patternNodeLabels, targetNodeLabels);
-
-    this->patternNodeLabels = patternNodeLabels;
-    this->targetNodeLabels = targetNodeLabels;
-}
-
-void SubgraphIsomorphism::setEdgeLabels(const std::vector<index> &patternEdgeLabels,
-                                        const std::vector<index> &targetEdgeLabels) {
-    validateEdgeLabels(patternEdgeLabels, targetEdgeLabels);
-
-    this->patternEdgeLabels = patternEdgeLabels;
-    this->targetEdgeLabels = targetEdgeLabels;
+void SubgraphIsomorphism::setEdgeLabels(std::span<const index> patternEdgeLabels,
+                                        std::span<const index> targetEdgeLabels) {
+    this->patternEdgeLabels.assign(patternEdgeLabels.begin(), patternEdgeLabels.end());
+    this->targetEdgeLabels.assign(targetEdgeLabels.begin(), targetEdgeLabels.end());
 }
 
 void SubgraphIsomorphism::setCallback(MatchCallback callback) {
@@ -97,11 +97,11 @@ void SubgraphIsomorphism::prepareRun() {
     matchCount = 0;
     matchesStored = storeMatches && !hasCallback();
 
-    // The graphs may have changed since construction, which can leave the label vectors too
-    // short. The check runs after the reset, so that a rejected run leaves no results behind.
-    validateInput();
-    validateNodeLabels(patternNodeLabels, targetNodeLabels);
-    validateEdgeLabels(patternEdgeLabels, targetEdgeLabels);
+    // The graphs may have changed since the labels were set, so only run() validates the input.
+    // The check runs after the reset, so that a rejected run leaves no results behind.
+    validateGraphs(*pattern, *target);
+    validateNodeLabels(*pattern, *target, patternNodeLabels, targetNodeLabels);
+    validateEdgeLabels(*pattern, *target, patternEdgeLabels, targetEdgeLabels);
 }
 
 bool SubgraphIsomorphism::reportMatch(const Match &match) {

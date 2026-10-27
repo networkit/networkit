@@ -20,8 +20,8 @@ inline bool labelsCompatible(index patternLabel, index targetLabel) noexcept {
 }
 
 /// Empty label vectors put no constraint on the nodes.
-inline bool nodeLabelsCompatible(const std::vector<index> &patternNodeLabels,
-                                 const std::vector<index> &targetNodeLabels, node pu, node tv) {
+inline bool nodeLabelsCompatible(std::span<const index> patternNodeLabels,
+                                 std::span<const index> targetNodeLabels, node pu, node tv) {
     return patternNodeLabels.empty()
            || labelsCompatible(patternNodeLabels[pu], targetNodeLabels[tv]);
 }
@@ -38,7 +38,7 @@ class SearchGraph {
 public:
     /// @a edgeLabels is indexed by edge id, or empty for no labels. The snapshot skips the
     /// adjacency matrix if the node id bound of @a G is too large.
-    SearchGraph(const Graph &G, bool buildMatrix, const std::vector<index> &edgeLabels = {});
+    SearchGraph(const Graph &G, bool buildMatrix, std::span<const index> edgeLabels = {});
 
     count numberOfNodes() const noexcept { return n; }
 
@@ -119,7 +119,7 @@ public:
     }
 
 private:
-    void buildCSR(const Graph &G, const std::vector<index> &edgeLabels);
+    void buildCSR(const Graph &G, std::span<const index> edgeLabels);
 
     void buildAdjacencyMatrix();
 

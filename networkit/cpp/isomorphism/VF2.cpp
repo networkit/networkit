@@ -99,13 +99,13 @@ private:
 class VF2Impl {
 
 public:
-    VF2Impl(const Graph &pattern, const Graph &target, const std::vector<index> &patternNodeLabels,
-            const std::vector<index> &targetNodeLabels, const std::vector<index> &patternEdgeLabels,
-            const std::vector<index> &targetEdgeLabels, SubgraphIsomorphism::Semantics semantics,
+    VF2Impl(const Graph &pattern, const Graph &target, std::span<const index> patternNodeLabels,
+            std::span<const index> targetNodeLabels, std::span<const index> patternEdgeLabels,
+            std::span<const index> targetEdgeLabels, SubgraphIsomorphism::Semantics semantics,
             Aux::SignalHandler &handler, MatchReporter report)
         : patternGraph(pattern, /* buildMatrix = */ true, patternEdgeLabels),
           targetGraph(target, /* buildMatrix = */ false, targetEdgeLabels),
-          patternNodeLabels(&patternNodeLabels), targetNodeLabels(&targetNodeLabels),
+          patternNodeLabels(patternNodeLabels), targetNodeLabels(targetNodeLabels),
           induced(semantics == SubgraphIsomorphism::Semantics::INDUCED), handler(&handler),
           report(std::move(report)), core1(patternGraph.upperNodeIdBound(), none),
           core2(targetGraph.upperNodeIdBound(), none),
@@ -138,7 +138,7 @@ private:
         TerminalSet::Checkpoint in1Saved, out1Saved, in2Saved, out2Saved;
     };
 
-    /// Both graphs agree on directedness, see SubgraphIsomorphism::validateInput().
+    /// Both graphs agree on directedness, see SubgraphIsomorphism::prepareRun().
     bool directed() const noexcept { return patternGraph.isDirected(); }
 
     /// The depth-first search. Each frame maps one pattern node, and the frames live on the heap,
@@ -273,7 +273,7 @@ private:
 
     bool feasible(node pu, node tv) const {
         // The node labels take constant time to check, so they go first.
-        return nodeLabelsCompatible(*patternNodeLabels, *targetNodeLabels, pu, tv)
+        return nodeLabelsCompatible(patternNodeLabels, targetNodeLabels, pu, tv)
                && ruleSuccessors(pu, tv) && rulePredecessors(pu, tv)
                && (!patternGraph.hasEdgeLabels() || ruleEdgeLabels(pu, tv))
                && ruleTerminalCounts(pu, tv) && ruleNewCounts(pu, tv);
@@ -402,8 +402,8 @@ private:
     SearchGraph patternGraph;
     SearchGraph targetGraph;
 
-    const std::vector<index> *patternNodeLabels;
-    const std::vector<index> *targetNodeLabels;
+    std::span<const index> patternNodeLabels;
+    std::span<const index> targetNodeLabels;
 
     /// True for SubgraphIsomorphism::Semantics::INDUCED, false for MONOMORPHISM.
     bool induced;
