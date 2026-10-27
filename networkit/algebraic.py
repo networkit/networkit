@@ -220,7 +220,7 @@ def eigenvectors(matrix, cutoff=-1, reverse=False):
 		w, v = np.linalg.eig(dense)
 		order = np.argsort(w)
 		selection = order[:cutoff + 1] if reverse else order[-cutoff - 1:]
-		w, v = w[selection], v[:, selection]
+		w, v = w[selection].astype(complex), v[:, selection].astype(complex)
 	else:
 		w, v = scipy.sparse.linalg.eigs(matrix, cutoff + 1, which=mode)
 

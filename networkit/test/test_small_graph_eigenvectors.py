@@ -23,6 +23,8 @@ class TestSmallGraphEigenvectors(unittest.TestCase):
                             with self.subTest(n=n, directed=directed, kind=kind, reverse=reverse, cutoff=cutoff):
                                 values, vectors = getattr(nk.algebraic, kind + "Eigenvectors")(
                                     graph, cutoff=cutoff, reverse=reverse)
+                                self.assertEqual(np.iscomplexobj(values), directed)
+                                self.assertEqual(np.iscomplexobj(vectors), directed)
                                 count = 1 if cutoff == -1 else cutoff + 1
                                 expected = reference[:count] if reverse else reference[-count:]
                                 np.testing.assert_allclose(values, expected, atol=1e-12)
@@ -39,3 +41,11 @@ class TestSmallGraphEigenvectors(unittest.TestCase):
     def testSingletonCentrality(self):
         centrality = nk.centrality.SciPyEVZ(nk.Graph(1), normalized=True).run()
         np.testing.assert_allclose(centrality.scores(), [1.0])
+
+    def testInvalidSmallGraphCutoff(self):
+        for n in (1, 2):
+            for func in (nk.algebraic.symmetricEigenvectors, nk.algebraic.eigenvectors):
+                for cutoff in (-2, n):
+                    with self.subTest(n=n, func=func.__name__, cutoff=cutoff):
+                        with self.assertRaises(ValueError):
+                            func(np.eye(n), cutoff=cutoff)
