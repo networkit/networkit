@@ -51,8 +51,10 @@ public:
 
     /**
      * Runs the search. If a callback throws or CTRL+C interrupts the search, run() stops and
-     * rethrows, and the results stay unavailable. Throws `std::runtime_error` if the graphs break
-     * the requirements above, or if the labels do not fit the graphs.
+     * rethrows, and the results stay unavailable.
+     *
+     * @throws std::runtime_error If the graphs break the requirements above, or if the labels do
+     * not fit the graphs.
      */
     void run() override = 0;
 
@@ -109,7 +111,7 @@ protected:
     // run() calls prepareRun(), then reportMatch() per match until it returns false, then
     // finishRun().
 
-    /// Throws `std::invalid_argument` for an unknown @a semantics value.
+    /// @throws std::invalid_argument If @a semantics is not a known value.
     SubgraphIsomorphism(const Graph &pattern, const Graph &target, Semantics semantics,
                         count maxMatches);
 

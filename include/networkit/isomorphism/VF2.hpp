@@ -29,6 +29,9 @@ public:
      * @param target The graph to look in. Must agree with @a pattern on directedness.
      * @param semantics Whether matches must be induced. See @ref SubgraphIsomorphism::Semantics.
      * @param maxMatches Stop after this many matches; 0 means no limit.
+     *
+     * @throws std::invalid_argument If @a semantics is not a known value. @ref run() checks the
+     * graphs, since they may change after construction.
      */
     VF2(const Graph &pattern, const Graph &target, Semantics semantics = Semantics::INDUCED,
         count maxMatches = 0);
