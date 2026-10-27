@@ -23,8 +23,7 @@
 #include <networkit/graph/Graph.hpp>
 #include <networkit/isomorphism/SubgraphIsomorphism.hpp>
 
-namespace NetworKit {
-namespace IsomorphismTest {
+namespace NetworKit::IsomorphismTest {
 
 using Semantics = SubgraphIsomorphism::Semantics;
 
@@ -645,7 +644,6 @@ void expectRespectsMatchCap(Construct construct) {
     }
 }
 
-} // namespace IsomorphismTest
-} // namespace NetworKit
+} // namespace NetworKit::IsomorphismTest
 
 #endif // NETWORKIT_CPP_ISOMORPHISM_TEST_SUBGRAPH_ISOMORPHISM_TEST_UTILS_HPP_

@@ -11,8 +11,7 @@
 #include <networkit/Globals.hpp>
 #include <networkit/graph/Graph.hpp>
 
-namespace NetworKit {
-namespace IsomorphismDetails {
+namespace NetworKit::IsomorphismDetails {
 
 /// @ref none is a wildcard on either side.
 inline bool labelsCompatible(index patternLabel, index targetLabel) noexcept {
@@ -154,7 +153,6 @@ private:
 void refuseLostLabels(const SearchGraph &pattern, const SearchGraph &target,
                       const std::string &algorithmName);
 
-} // namespace IsomorphismDetails
-} // namespace NetworKit
+} // namespace NetworKit::IsomorphismDetails
 
 #endif // NETWORKIT_CPP_ISOMORPHISM_SEARCH_GRAPH_HPP_

@@ -13,8 +13,7 @@
 
 #include "SearchGraph.hpp"
 
-namespace NetworKit {
-namespace IsomorphismDetails {
+namespace NetworKit::IsomorphismDetails {
 
 namespace {
 
@@ -197,5 +196,4 @@ void refuseLostLabels(const SearchGraph &pattern, const SearchGraph &target,
                              + side + " - see SubgraphIsomorphism::setEdgeLabels()");
 }
 
-} // namespace IsomorphismDetails
-} // namespace NetworKit
+} // namespace NetworKit::IsomorphismDetails

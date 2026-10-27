@@ -6,8 +6,7 @@
 
 #include <networkit/Globals.hpp>
 
-namespace NetworKit {
-namespace IsomorphismDetails {
+namespace NetworKit::IsomorphismDetails {
 
 /// Receives a complete mapping, indexed by pattern node, from a search implementation. Returns
 /// false once the search must stop because the cap on the number of matches is reached. The search
@@ -18,7 +17,6 @@ concept MatchReporter = requires(Reporter &report, std::span<const node> match) 
     { report(match) } -> std::convertible_to<bool>;
 };
 
-} // namespace IsomorphismDetails
-} // namespace NetworKit
+} // namespace NetworKit::IsomorphismDetails
 
 #endif // NETWORKIT_CPP_ISOMORPHISM_MATCH_REPORTER_HPP_
