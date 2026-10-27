@@ -1,13 +1,17 @@
 /*
  * SubgraphIsomorphismGTest.cpp
  *
- * Tests the base class SubgraphIsomorphism: the run() protocol, input validation and
- * interruption. Most tests use ReferenceSubgraphIsomorphism, a stand-in that reports a precomputed
- * match set.
+ * Tests the base class SubgraphIsomorphism: the run() protocol, the two callback forms, the
+ * per-worker accumulation of a parallel search, input validation and interruption. Most tests use
+ * two stand-ins that report a precomputed match set: ReferenceSubgraphIsomorphism for the
+ * sequential and MultiWorkerReporter for the parallel path.
  */
 
+#include <algorithm>
+#include <atomic>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <span>
 #include <stdexcept>
 #include <string>
@@ -15,11 +19,13 @@
 #include <utility>
 #include <vector>
 
+#include <omp.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <networkit/GlobalState.hpp>
 #include <networkit/Globals.hpp>
+#include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/isomorphism/RI.hpp>
@@ -47,6 +53,68 @@ protected:
     void TearDown() override { GlobalState::setReceivedSIGINT(false); }
 };
 
+/// Reports the reference matches from several threads, as a parallel algorithm does. It ignores
+/// @a maxMatches, like workers that overshoot the cap.
+class MultiWorkerReporter final : public SubgraphIsomorphism {
+
+public:
+    MultiWorkerReporter(const Graph &pattern, const Graph &target, Semantics semantics,
+                        count numWorkers, count maxMatches = 0)
+        : SubgraphIsomorphism(pattern, target, semantics, maxMatches), numWorkers(numWorkers) {}
+
+    void run() override {
+        const std::vector<Match> all = IsomorphismTest::referenceMatches(
+            *pattern, *target, semantics, patternNodeLabels, targetNodeLabels);
+
+        Aux::SignalHandler handler;
+        prepareRun();
+
+        struct alignas(64) Slot {
+            std::vector<Match> buffer;
+            count found = 0;
+        };
+        std::vector<Slot> slots(numWorkers);
+        const bool store = storesMatches();
+
+        // libomp leaks memory when a team grows past twice the CPU count, which fails the leak
+        // checks. We therefore request at most that many threads.
+        const count threads = std::min(numWorkers, 2 * static_cast<count>(omp_get_num_procs()));
+
+#pragma omp parallel num_threads(static_cast<int>(threads))
+        {
+            const index tid = static_cast<index>(omp_get_thread_num());
+
+            // Stride by the team size, since OpenMP may start fewer threads than requested.
+            const count team = static_cast<count>(omp_get_num_threads());
+
+            Slot &slot = slots[tid];
+            for (index i = tid; i < all.size(); i += team) {
+                // Non-throwing inside the region; the throw happens once after the join.
+                if (!handler.isRunning())
+                    break;
+                ++slot.found;
+                if (!invokeCallback(tid, all[i]) && store)
+                    slot.buffer.push_back(all[i]);
+            }
+        }
+
+        handler.assureRunning();
+
+        std::vector<Match> merged;
+        count found = 0;
+        for (Slot &slot : slots) {
+            found += slot.found;
+            for (Match &match : slot.buffer)
+                merged.push_back(std::move(match));
+        }
+
+        finishRun(std::move(merged), found);
+    }
+
+private:
+    count numWorkers;
+};
+
 TEST_F(SubgraphIsomorphismGTest, testHarnessDrivesAnAlgorithmThroughTheRunProtocol) {
     const auto make = [](const Graph &pattern, const Graph &target, Semantics semantics,
                          count maxMatches) -> std::unique_ptr<SubgraphIsomorphism> {
@@ -56,6 +124,114 @@ TEST_F(SubgraphIsomorphismGTest, testHarnessDrivesAnAlgorithmThroughTheRunProtoc
 
     IsomorphismTest::expectMatchesReference(make);
     IsomorphismTest::expectRespectsMatchCap(make);
+}
+
+TEST_F(SubgraphIsomorphismGTest, testBothCallbackFormsReceiveEveryMatchOnce) {
+    // A 4-path in K8 has 1680 matches, so the four workers compete for the callback.
+    const Graph pattern = graphOf(4, {{0, 1}, {1, 2}, {2, 3}});
+    const Graph target = completeGraph(8);
+    const count numWorkers = 4;
+
+    const std::vector<Match> expected = referenceMatches(pattern, target, Semantics::MONOMORPHISM);
+    ASSERT_THAT(expected, SizeIs(1680));
+
+    // The mutex keeps a regression from corrupting `collected` instead of failing the assertion.
+    std::atomic<int> inside{0};
+    std::atomic<int> maxObserved{0};
+    std::mutex collectedMutex;
+    std::vector<Match> collected;
+
+    MultiWorkerReporter serial(pattern, target, Semantics::MONOMORPHISM, numWorkers);
+    serial.setCallback([&](std::span<const node> match) {
+        const int now = inside.fetch_add(1, std::memory_order_acq_rel) + 1;
+        Aux::Parallel::atomic_max(maxObserved, now);
+
+        {
+            const std::lock_guard<std::mutex> guard(collectedMutex);
+            collected.emplace_back(match.begin(), match.end());
+        }
+
+        inside.fetch_sub(1, std::memory_order_acq_rel);
+    });
+    serial.run();
+
+    EXPECT_EQ(maxObserved.load(), 1) << "the serial callback form was entered concurrently";
+
+    EXPECT_THAT(collected, UnorderedElementsAreArray(expected));
+    EXPECT_EQ(serial.numberOfMatches(), expected.size());
+
+    std::vector<std::vector<Match>> perWorker(numWorkers);
+
+    MultiWorkerReporter parallel(pattern, target, Semantics::MONOMORPHISM, numWorkers);
+    parallel.setParallelCallback([&](index tid, std::span<const node> match) {
+        ASSERT_LT(tid, numWorkers);
+        perWorker[tid].emplace_back(match.begin(), match.end()); // each tid owns its slot
+    });
+    parallel.run();
+
+    std::vector<Match> fromWorkers;
+    for (const std::vector<Match> &slot : perWorker)
+        fromWorkers.insert(fromWorkers.end(), slot.begin(), slot.end());
+
+    EXPECT_THAT(fromWorkers, UnorderedElementsAreArray(expected));
+    EXPECT_EQ(parallel.numberOfMatches(), expected.size());
+}
+
+TEST_F(SubgraphIsomorphismGTest, testTheAnswerDoesNotDependOnTheWorkerCount) {
+    const Graph pattern = graphOf(2, {{0, 1}});
+
+    const Graph cycle = graphOf(5, {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 0}});
+
+    const std::vector<Match> expected = referenceMatches(pattern, cycle, Semantics::MONOMORPHISM);
+
+    for (count workers : {count{1}, count{2}, count{4}, count{8}}) {
+        MultiWorkerReporter algo(pattern, cycle, Semantics::MONOMORPHISM, workers);
+        algo.run();
+
+        EXPECT_THAT(algo.getMatches(), UnorderedElementsAreArray(expected))
+            << "workers: " << workers;
+        EXPECT_EQ(algo.numberOfMatches(), expected.size()) << "workers: " << workers;
+    }
+
+    const Graph k6 = completeGraph(6);
+    const count expectedCount = referenceMatches(pattern, k6, Semantics::MONOMORPHISM).size();
+
+    for (count workers : {count{1}, count{4}}) {
+        MultiWorkerReporter algo(pattern, k6, Semantics::MONOMORPHISM, workers);
+        algo.setStoreMatches(false);
+        algo.run();
+
+        EXPECT_EQ(algo.numberOfMatches(), expectedCount) << "workers: " << workers;
+        EXPECT_TRUE(algo.hasMatch()) << "workers: " << workers;
+        EXPECT_THROW(algo.getMatches(), std::runtime_error) << "workers: " << workers;
+    }
+}
+
+TEST_F(SubgraphIsomorphismGTest, testOvershootIsTrimmedUnlessACallbackReceivedIt) {
+    const Graph pattern = graphOf(2, {{0, 1}});
+    const Graph target = completeGraph(5);
+    const count total = referenceMatches(pattern, target, Semantics::MONOMORPHISM).size();
+    constexpr count cap = 5;
+    constexpr count numWorkers = 4;
+    ASSERT_GT(total, cap);
+
+    MultiWorkerReporter stored(pattern, target, Semantics::MONOMORPHISM, numWorkers, cap);
+    stored.run();
+    EXPECT_EQ(stored.numberOfMatches(), cap);
+    EXPECT_THAT(stored.getMatches(), SizeIs(cap));
+
+    MultiWorkerReporter counted(pattern, target, Semantics::MONOMORPHISM, numWorkers, cap);
+    counted.setStoreMatches(false);
+    counted.run();
+    EXPECT_EQ(counted.numberOfMatches(), cap);
+
+    count delivered = 0;
+    MultiWorkerReporter called(pattern, target, Semantics::MONOMORPHISM, numWorkers, cap);
+    called.setCallback([&](std::span<const node>) { ++delivered; });
+    called.run();
+    EXPECT_EQ(delivered, total);
+    EXPECT_EQ(called.numberOfMatches(), total) << "delivered matches cannot be taken back";
+    EXPECT_THROW(called.getMatches(), std::runtime_error);
 }
 
 TEST_F(SubgraphIsomorphismGTest, testInterruptLeavesTheAlgorithmUnfinishedButUsable) {

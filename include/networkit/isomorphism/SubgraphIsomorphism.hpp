@@ -2,6 +2,7 @@
 #define NETWORKIT_ISOMORPHISM_SUBGRAPH_ISOMORPHISM_HPP_
 
 #include <functional>
+#include <mutex>
 #include <span>
 #include <vector>
 
@@ -45,15 +46,23 @@ public:
 
     /**
      * Receives one match at a time, never concurrently. The match is indexed like a @ref Match.
-     * It refers to an internal buffer and is valid only during the call.
+     * It refers to an internal buffer and is valid only during the call. A parallel algorithm
+     * serializes the calls with a lock, which a @ref ParallelMatchCallback avoids.
      */
     using MatchCallback = std::function<void(std::span<const node>)>;
+
+    /**
+     * Receives one match at a time together with the id of the worker that found it. The id is
+     * less than `Aux::getMaxNumberOfThreads()` at the start of @ref run(). The callback may be
+     * called concurrently and must be thread-safe. The sequential algorithms pass worker id 0.
+     */
+    using ParallelMatchCallback = std::function<void(index, std::span<const node>)>;
 
     ~SubgraphIsomorphism() override = default;
 
     /**
-     * Runs the search. If a callback throws or CTRL+C interrupts the search, run() stops and
-     * rethrows, and the results stay unavailable.
+     * Runs the search. If a callback throws or CTRL+C interrupts the search, run() stops all
+     * workers and rethrows, and the results stay unavailable.
      *
      * @throws std::runtime_error If the graphs break the requirements above, or if the labels do
      * not fit the graphs.
@@ -87,9 +96,12 @@ public:
 
     /**
      * Passes every match to @a callback instead of storing it, so @ref getMatches() throws.
-     * Replaces an earlier callback. Call this before @ref run().
+     * Replaces an earlier callback of either form. Call this before @ref run().
      */
     void setCallback(MatchCallback callback);
+
+    /// Like @ref setCallback(), for a callback that may be called concurrently.
+    void setParallelCallback(ParallelMatchCallback callback);
 
     /**
      * Sets whether matches are stored. Pass false to only count them, so @ref getMatches() throws.
@@ -103,30 +115,52 @@ public:
      */
     const std::vector<Match> &getMatches() const;
 
-    /// Returns the number of matches found, stored or not.
+    /**
+     * Returns the number of matches found, stored or not. A parallel search with a callback may
+     * deliver and count a few matches beyond `maxMatches`.
+     */
     count numberOfMatches() const;
 
     /// Returns whether a match was found. Pass `maxMatches = 1` to stop at the first one.
     bool hasMatch() const;
 
 protected:
-    // run() calls prepareRun(), then reportMatch() per match until it returns false, then
-    // finishRun().
+    // A sequential run() calls prepareRun(), then reportMatch() per match until it returns false,
+    // then finishRun(). A parallel run() calls prepareRun(), passes every match to
+    // invokeCallback(), and calls finishRun(matches, found) after the join. Inside the parallel
+    // region, workers may only poll Aux::SignalHandler::isRunning().
 
     /// @throws std::invalid_argument If @a semantics is not a known value.
     SubgraphIsomorphism(const Graph &pattern, const Graph &target, Semantics semantics,
                         count maxMatches);
 
-    bool hasCallback() const noexcept { return static_cast<bool>(callback); }
+    bool hasCallback() const noexcept {
+        return static_cast<bool>(callback) || static_cast<bool>(parallelCallback);
+    }
+
+    /// Whether the current run stores its matches. prepareRun() fixes the value from the settings.
+    bool storesMatches() const noexcept { return matchesStored; }
 
     /// Resets the results and validates the input. Call this at the start of run().
     void prepareRun();
 
-    /// Records one match. Returns false once the cap is reached.
+    /// Records one match of a sequential search. Returns false once the cap is reached.
     bool reportMatch(std::span<const node> match);
 
-    /// Marks the run as finished.
+    /**
+     * Passes one match to the callback from any thread, but neither counts nor stores it. Returns
+     * true if a callback received the match, in which case the caller must not store it.
+     */
+    bool invokeCallback(index tid, std::span<const node> match);
+
+    /// Marks a sequential run as finished.
     void finishRun();
+
+    /**
+     * Marks a parallel run as finished. Adopts the concatenated matches of all workers and, unless
+     * a callback is set, trims them to the cap. Call this once, after the join.
+     */
+    void finishRun(std::vector<Match> &&matches, count found);
 
     const Graph *pattern;
     const Graph *target;
@@ -145,6 +179,10 @@ private:
     std::vector<Match> result;
 
     MatchCallback callback;
+    ParallelMatchCallback parallelCallback;
+
+    /// Serializes the calls of `callback`.
+    std::mutex reportMutex;
 
     count matchCount;
     bool storeMatches;

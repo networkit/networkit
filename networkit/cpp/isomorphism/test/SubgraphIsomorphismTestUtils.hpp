@@ -19,6 +19,7 @@
 #include <gtest/gtest.h>
 
 #include <networkit/Globals.hpp>
+#include <networkit/auxiliary/Parallelism.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/isomorphism/SubgraphIsomorphism.hpp>
@@ -552,8 +553,8 @@ inline void applyLabels(SubgraphIsomorphism &algo, const Case &testCase) {
         algo.setEdgeLabels(testCase.patternEdgeLabels, testCase.targetEdgeLabels);
 }
 
-/// Runs every standard case with stored matches, with a callback and with counting only, and
-/// compares each run with the reference.
+/// Runs every standard case with stored matches, with each callback form and with counting only,
+/// and compares each run with the reference.
 template <typename Construct>
 void expectMatchesReference(Construct construct) {
     for (const Case &testCase : standardCases()) {
@@ -591,6 +592,25 @@ void expectMatchesReference(Construct construct) {
             EXPECT_THAT(collected, testing::UnorderedElementsAreArray(expected))
                 << "serial callback";
             EXPECT_EQ(algo->numberOfMatches(), expected.size()) << "serial callback";
+        }
+
+        // Every worker owns its slot.
+        {
+            std::unique_ptr<SubgraphIsomorphism> algo = build();
+            std::vector<std::vector<Match>> perWorker(
+                static_cast<count>(Aux::getMaxNumberOfThreads()));
+            algo->setParallelCallback([&](index tid, std::span<const node> match) {
+                ASSERT_LT(tid, perWorker.size());
+                perWorker[tid].emplace_back(match.begin(), match.end());
+            });
+            algo->run();
+
+            std::vector<Match> collected;
+            for (const std::vector<Match> &slot : perWorker)
+                collected.insert(collected.end(), slot.begin(), slot.end());
+
+            EXPECT_THAT(collected, testing::UnorderedElementsAreArray(expected))
+                << "parallel callback";
         }
 
         {
