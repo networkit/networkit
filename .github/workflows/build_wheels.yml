@@ -160,7 +160,7 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v4.2.1
         env:
-          CIBW_BEFORE_BUILD: 
+          CIBW_BEFORE_BUILD:
             pip install cython &&
             brew install libomp ninja
           CIBW_ARCHS_MACOS: ${{ matrix.buildplat[1] }}
