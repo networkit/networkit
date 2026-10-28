@@ -32,6 +32,7 @@ using IsomorphismTest::Match;
 using IsomorphismTest::referenceMatches;
 using IsomorphismTest::Semantics;
 using testing::SizeIs;
+using testing::UnorderedElementsAreArray;
 
 class SubgraphIsomorphismGTest : public testing::Test {
 protected:
@@ -57,8 +58,7 @@ TEST_F(SubgraphIsomorphismGTest, testInterruptLeavesTheAlgorithmUnfinishedButUsa
     const Graph pattern = graphOf(3, {{0, 1}, {1, 2}});
     const Graph target = completeGraph(6);
 
-    std::vector<Match> expected = referenceMatches(pattern, target, Semantics::MONOMORPHISM);
-    IsomorphismTest::sortMatches(expected);
+    const std::vector<Match> expected = referenceMatches(pattern, target, Semantics::MONOMORPHISM);
 
     IsomorphismTest::ReferenceSubgraphIsomorphism algo(pattern, target, Semantics::MONOMORPHISM);
 
@@ -89,9 +89,7 @@ TEST_F(SubgraphIsomorphismGTest, testInterruptLeavesTheAlgorithmUnfinishedButUsa
     recovering.run();
 
     ASSERT_TRUE(recovering.hasFinished());
-    std::vector<Match> actual = recovering.getMatches();
-    IsomorphismTest::sortMatches(actual);
-    EXPECT_EQ(actual, expected);
+    EXPECT_THAT(recovering.getMatches(), UnorderedElementsAreArray(expected));
 }
 
 TEST_F(SubgraphIsomorphismGTest, testGraphsMustAgreeOnDirectedness) {

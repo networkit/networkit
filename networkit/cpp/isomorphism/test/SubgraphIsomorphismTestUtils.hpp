@@ -5,7 +5,6 @@
 // test cases, and assertions that compare an algorithm against the reference.
 
 #include <algorithm>
-#include <functional>
 #include <initializer_list>
 #include <map>
 #include <memory>
@@ -37,8 +36,8 @@ inline bool labelsCompatible(index patternLabel, index targetLabel) {
     return patternLabel == none || targetLabel == none || patternLabel == targetLabel;
 }
 
-inline bool nodeLabelsCompatible(const std::vector<index> &patternNodeLabels,
-                                 const std::vector<index> &targetNodeLabels, node pu, node tv) {
+inline bool nodeLabelsCompatible(std::span<const index> patternNodeLabels,
+                                 std::span<const index> targetNodeLabels, node pu, node tv) {
     return patternNodeLabels.empty()
            || labelsCompatible(patternNodeLabels[pu], targetNodeLabels[tv]);
 }
@@ -46,7 +45,7 @@ inline bool nodeLabelsCompatible(const std::vector<index> &patternNodeLabels,
 /// The labels of all edges, keyed by ordered node pair. Parallel edges give a pair several labels.
 using LabelsByPair = std::map<std::pair<node, node>, std::vector<index>>;
 
-inline LabelsByPair edgeLabelsByPair(const Graph &G, const std::vector<index> &edgeLabels) {
+inline LabelsByPair edgeLabelsByPair(const Graph &G, std::span<const index> edgeLabels) {
     LabelsByPair byPair;
     G.forEdges([&](node u, node v, edgeweight, edgeid eid) {
         const index label = eid < edgeLabels.size() ? edgeLabels[eid] : none;
@@ -64,8 +63,8 @@ inline const std::vector<index> &labelsOfPair(const LabelsByPair &byPair, node u
 }
 
 /// With parallel edges, some pattern label must be compatible with some target label.
-inline bool edgeLabelsCompatible(const std::vector<index> &patternEdgeLabels,
-                                 const std::vector<index> &targetEdgeLabels) {
+inline bool edgeLabelsCompatible(std::span<const index> patternEdgeLabels,
+                                 std::span<const index> targetEdgeLabels) {
     return std::ranges::any_of(patternEdgeLabels, [&](index patternLabel) {
         return std::ranges::any_of(targetEdgeLabels, [&](index targetLabel) {
             return labelsCompatible(patternLabel, targetLabel);
@@ -75,10 +74,10 @@ inline bool edgeLabelsCompatible(const std::vector<index> &patternEdgeLabels,
 
 /// Whether a complete mapping is a well-formed match.
 inline bool isValidMatch(const Graph &pattern, const Graph &target, Semantics semantics,
-                         const std::vector<index> &patternNodeLabels,
-                         const std::vector<index> &targetNodeLabels, const Match &match,
-                         const std::vector<index> &patternEdgeLabels = {},
-                         const std::vector<index> &targetEdgeLabels = {}) {
+                         std::span<const index> patternNodeLabels,
+                         std::span<const index> targetNodeLabels, std::span<const node> match,
+                         std::span<const index> patternEdgeLabels = {},
+                         std::span<const index> targetEdgeLabels = {}) {
     const count pz = pattern.upperNodeIdBound();
 
     if (match.size() != pz)
@@ -106,21 +105,16 @@ inline bool isValidMatch(const Graph &pattern, const Graph &target, Semantics se
     }
 
     // Injective: no two pattern nodes share an image.
-    for (node a = 0; a < pz; ++a) {
-        if (!pattern.hasNode(a))
-            continue;
-        for (node b = a + 1; b < pz; ++b) {
-            if (pattern.hasNode(b) && match[a] == match[b])
-                return false;
-        }
-    }
+    std::vector<node> images;
+    pattern.forNodes([&](node u) { images.push_back(match[u]); });
+    std::ranges::sort(images);
+    if (std::ranges::adjacent_find(images) != images.end())
+        return false;
 
     // Ordered pairs check both directions of a directed graph.
-    for (node a = 0; a < pz; ++a) {
-        if (!pattern.hasNode(a))
-            continue;
-        for (node b = 0; b < pz; ++b) {
-            if (a == b || !pattern.hasNode(b))
+    for (const node a : pattern.nodeRange()) {
+        for (const node b : pattern.nodeRange()) {
+            if (a == b)
                 continue;
 
             const bool patternEdge = pattern.hasEdge(a, b);
@@ -145,10 +139,10 @@ inline bool isValidMatch(const Graph &pattern, const Graph &target, Semantics se
 /// Checks every injective mapping, which takes O(targetNodes ^ patternNodes) time.
 inline std::vector<Match> referenceMatches(const Graph &pattern, const Graph &target,
                                            Semantics semantics,
-                                           const std::vector<index> &patternNodeLabels = {},
-                                           const std::vector<index> &targetNodeLabels = {},
-                                           const std::vector<index> &patternEdgeLabels = {},
-                                           const std::vector<index> &targetEdgeLabels = {}) {
+                                           std::span<const index> patternNodeLabels = {},
+                                           std::span<const index> targetNodeLabels = {},
+                                           std::span<const index> patternEdgeLabels = {},
+                                           std::span<const index> targetEdgeLabels = {}) {
     std::vector<node> patternNodes;
     pattern.forNodes([&](node u) { patternNodes.push_back(u); });
 
@@ -159,7 +153,7 @@ inline std::vector<Match> referenceMatches(const Graph &pattern, const Graph &ta
     Match current(pattern.upperNodeIdBound(), none);
     std::vector<bool> used(target.upperNodeIdBound(), false);
 
-    std::function<void(index)> assign = [&](index next) {
+    const auto assign = [&](const auto &self, index next) -> void {
         if (next == patternNodes.size()) {
             if (isValidMatch(pattern, target, semantics, patternNodeLabels, targetNodeLabels,
                              current, patternEdgeLabels, targetEdgeLabels))
@@ -174,18 +168,14 @@ inline std::vector<Match> referenceMatches(const Graph &pattern, const Graph &ta
 
             used[tv] = true;
             current[pu] = tv;
-            assign(next + 1);
+            self(self, next + 1);
             current[pu] = none;
             used[tv] = false;
         }
     };
-    assign(0);
+    assign(assign, 0);
 
     return matches;
-}
-
-inline void sortMatches(std::vector<Match> &matches) {
-    std::ranges::sort(matches);
 }
 
 /// Edge label vectors are indexed by edge id, so their graphs come from labelledGraphOf().
@@ -207,8 +197,8 @@ inline Case unlabelledCase(std::string name, Graph pattern, Graph target, Semant
 inline Graph graphOf(count n, std::initializer_list<std::pair<node, node>> edges,
                      bool directed = false) {
     Graph G(n, false, directed);
-    for (const std::pair<node, node> &e : edges)
-        G.addEdge(e.first, e.second);
+    for (const auto &[u, v] : edges)
+        G.addEdge(u, v);
     return G;
 }
 
@@ -237,9 +227,9 @@ inline LabelledGraph labelledGraphOf(count n,
 
     Graph G(n, false, directed);
     LabelsByPair queued;
-    for (const std::tuple<node, node, index> &e : edges) {
-        G.addEdge(std::get<0>(e), std::get<1>(e));
-        queued[key(std::get<0>(e), std::get<1>(e))].push_back(std::get<2>(e));
+    for (const auto &[u, v, label] : edges) {
+        G.addEdge(u, v);
+        queued[key(u, v)].push_back(label);
     }
     G.indexEdges();
 
@@ -569,10 +559,9 @@ void expectMatchesReference(Construct construct) {
     for (const Case &testCase : standardCases()) {
         SCOPED_TRACE("case: " + testCase.name);
 
-        std::vector<Match> expected = referenceMatches(
+        const std::vector<Match> expected = referenceMatches(
             testCase.pattern, testCase.target, testCase.semantics, testCase.patternNodeLabels,
             testCase.targetNodeLabels, testCase.patternEdgeLabels, testCase.targetEdgeLabels);
-        sortMatches(expected);
 
         const auto build = [&]() {
             std::unique_ptr<SubgraphIsomorphism> algo =
@@ -585,10 +574,7 @@ void expectMatchesReference(Construct construct) {
             std::unique_ptr<SubgraphIsomorphism> algo = build();
             algo->run();
 
-            std::vector<Match> actual = algo->getMatches();
-            sortMatches(actual);
-
-            EXPECT_EQ(actual, expected);
+            EXPECT_THAT(algo->getMatches(), testing::UnorderedElementsAreArray(expected));
             EXPECT_EQ(algo->numberOfMatches(), expected.size());
             EXPECT_EQ(algo->hasMatch(), !expected.empty());
         }
@@ -602,8 +588,8 @@ void expectMatchesReference(Construct construct) {
             });
             algo->run();
 
-            sortMatches(collected);
-            EXPECT_EQ(collected, expected) << "serial callback";
+            EXPECT_THAT(collected, testing::UnorderedElementsAreArray(expected))
+                << "serial callback";
             EXPECT_EQ(algo->numberOfMatches(), expected.size()) << "serial callback";
         }
 
