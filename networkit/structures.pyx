@@ -720,14 +720,24 @@ cdef class Partition:
 		if self._this.numberOfElements() != other._this.numberOfElements():
 			return False
 
-		cdef index i = 0
+		# Build a bijection between subset ids (independent of the concrete ids).
+		# Unassigned elements (labeled none) are absent from every subset: they
+		# must be unassigned on both sides and do not take part in the id mapping.
 		cdef dict selfToOther = dict()
-		for index in range(self._this.numberOfElements()):
-			selfSubset = self[i]
-			if selfSubset in selfToOther:
-				if selfToOther[selfSubset] != other[i]:
-					return False
-			else:
-				selfToOther[selfSubset] = other[i]
+		cdef dict otherToSelf = dict()
+		cdef index idx
+		for idx in range(self._this.numberOfElements()):
+			if self._this.contains(idx) != other._this.contains(idx):
+				return False
+			if not self._this.contains(idx):
+				continue
+			s = self[idx]
+			o = other[idx]
+			if s in selfToOther and selfToOther[s] != o:
+				return False
+			if o in otherToSelf and otherToSelf[o] != s:
+				return False
+			selfToOther[s] = o
+			otherToSelf[o] = s
 		return True
 

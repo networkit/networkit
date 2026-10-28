@@ -10,6 +10,7 @@
 #include <deque>
 #include <limits>
 #include <omp.h>
+#include <stdexcept>
 
 #include <networkit/auxiliary/Parallel.hpp>
 #include <networkit/auxiliary/Parallelism.hpp>
@@ -26,6 +27,9 @@ KadabraBetweenness::KadabraBetweenness(const Graph &G, const double err, const d
                                        const count startFactor)
     : G(G), delta(delta), err(err), deterministic(deterministic), k(k), startFactor(startFactor),
       unionSample(unionSample), absolute(k == 0), stop(false) {
+    if (G.isEmpty())
+        throw std::invalid_argument("KadabraBetweenness: input graph is empty");
+
     const count n = G.upperNodeIdBound();
     if (k > n)
         throw std::runtime_error(

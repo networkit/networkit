@@ -41,7 +41,7 @@ void HarmonicCloseness::run() {
 
         scoreData[v] = sum;
     });
-    if (normalized) {
+    if (normalized && G.numberOfNodes() > 1) {
         G.forNodes([&](node w) { scoreData[w] /= static_cast<double>(G.numberOfNodes() - 1); });
     }
 
@@ -49,6 +49,8 @@ void HarmonicCloseness::run() {
 }
 
 double HarmonicCloseness::maximum() {
-    return normalized ? static_cast<double>(G.numberOfNodes() - 1) : 1.f;
+    if (G.numberOfNodes() <= 1)
+        return 0.;
+    return normalized ? 1. : static_cast<double>(G.numberOfNodes() - 1);
 }
 } // namespace NetworKit

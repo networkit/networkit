@@ -20,6 +20,11 @@ namespace NetworKit {
 void SPSP::run() {
     distances.resize(sources.size());
 
+    if (sources.empty()) {
+        hasRun = true;
+        return;
+    }
+
     if (targets.empty())
         runWithoutTargets();
     else
@@ -29,13 +34,14 @@ void SPSP::run() {
 }
 
 void SPSP::runWithoutTargets() {
+    const node initialSource = sources.front();
 #pragma omp parallel
     {
         std::unique_ptr<SSSP> sssp;
         if (G->isWeighted())
-            sssp = std::unique_ptr<SSSP>(new Dijkstra(*G, 0, false));
+            sssp = std::unique_ptr<SSSP>(new Dijkstra(*G, initialSource, false));
         else
-            sssp = std::unique_ptr<SSSP>(new BFS(*G, 0, false));
+            sssp = std::unique_ptr<SSSP>(new BFS(*G, initialSource, false));
 
 #pragma omp for
         for (omp_index i = 0; i < sources.size(); ++i) {

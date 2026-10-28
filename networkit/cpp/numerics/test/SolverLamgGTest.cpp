@@ -18,6 +18,7 @@
 #include <networkit/io/METISGraphWriter.hpp>
 #include <networkit/numerics/GaussSeidelRelaxation.hpp>
 #include <networkit/numerics/LAMG/Lamg.hpp>
+#include <networkit/numerics/LAMG/Level/EliminationStage.hpp>
 #include <networkit/numerics/LAMG/MultiLevelSetup.hpp>
 #include <networkit/numerics/LAMG/SolverLamg.hpp>
 #include <networkit/structures/Partition.hpp>
@@ -78,6 +79,32 @@ TEST_F(SolverLamgGTest, testSmallGraphs) {
         DEBUG("numIters = ", status.numIters);
         DEBUG("DONE");
     }
+}
+
+TEST_F(SolverLamgGTest, testSolveWithSingletonEliminationLevelSetsZeroResult) {
+    const CSRMatrix finestLaplacian(
+        2, 2, std::vector<Triplet>{{0, 0, 1.0}, {0, 1, -1.0}, {1, 0, -1.0}, {1, 1, 1.0}});
+    const CSRMatrix coarseLaplacian(1, 1, std::vector<Triplet>{{0, 0, 0.0}});
+    const CSRMatrix interpolation(1, 1, std::vector<Triplet>{{0, 0, 1.0}});
+    const Vector q(1, 0.0);
+
+    LevelHierarchy<CSRMatrix> hierarchy;
+    hierarchy.addFinestLevel(finestLaplacian);
+    hierarchy.addEliminationLevel(
+        coarseLaplacian, {EliminationStage<CSRMatrix>(interpolation, q, std::vector<index>{0},
+                                                      std::vector<index>{1})});
+
+    GaussSeidelRelaxation<CSRMatrix> smoother;
+    SolverLamg<CSRMatrix> solver(hierarchy, smoother);
+    Vector x(2, 1.0);
+    const Vector b(2, 0.0);
+    LAMGSolverStatus status;
+
+    solver.solve(x, b, status);
+
+    EXPECT_EQ(x.getDimension(), 2);
+    EXPECT_DOUBLE_EQ(x[0], 0.0);
+    EXPECT_DOUBLE_EQ(x[1], 0.0);
 }
 
 Vector SolverLamgGTest::randVector(count dimension) const {

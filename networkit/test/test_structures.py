@@ -95,5 +95,56 @@ class TestStructures(unittest.TestCase):
 		p1.extend()
 		self.assertFalse(p1==p2)
 
+	def testPartitionEqualityDifferentStructure(self):
+		"""Equal-length partitions with different grouping are not equal."""
+		singles = nk.Partition(3)
+		singles.allToSingletons()
+
+		one = nk.Partition(3)
+		one.setUpperBound(1)
+		one.addToSubset(0, 0)
+		one.addToSubset(0, 1)
+		one.addToSubset(0, 2)
+		self.assertFalse(singles == one)
+
+		# Same singleton structure, different subset ids → equal (id-independent)
+		a = nk.Partition(3)
+		a.setUpperBound(10)
+		a.addToSubset(9, 0)
+		a.addToSubset(7, 1)
+		a.addToSubset(4, 2)
+		b = nk.Partition(3)
+		b.allToSingletons()
+		self.assertTrue(a == b)
+
+		# Same multiset of sizes [2,1] but different element assignment → unequal
+		pair_left = nk.Partition(3)
+		pair_left.setUpperBound(2)
+		pair_left.addToSubset(0, 0)
+		pair_left.addToSubset(0, 1)
+		pair_left.addToSubset(1, 2)
+		pair_right = nk.Partition(3)
+		pair_right.setUpperBound(2)
+		pair_right.addToSubset(0, 0)
+		pair_right.addToSubset(1, 1)
+		pair_right.addToSubset(1, 2)
+		self.assertFalse(pair_left == pair_right)
+
+		# Unassigned (none) vs assigned at the same index is not equal.
+		left = nk.Partition(2)
+		left.addToSubset(0, 0)
+		right = nk.Partition(2)
+		right.addToSubset(0, 1)
+		self.assertFalse(left == right)
+
+		# Same assignment, both unassigned at the same index, different ids.
+		same_a = nk.Partition(2)
+		same_a.setUpperBound(5)
+		same_a.addToSubset(4, 0)
+		same_b = nk.Partition(2)
+		same_b.addToSubset(0, 0)
+		self.assertTrue(same_a == same_b)
+		self.assertTrue(nk.Partition(3) == nk.Partition(3))
+
 if __name__ == "__main__":
 	unittest.main()

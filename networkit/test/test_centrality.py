@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import unittest
+import math
 import os
 import networkit as nk
 import numpy as np
@@ -387,6 +388,23 @@ class TestCentrality(unittest.TestCase):
         self.assertAlmostEqual(CL.bound(0), 0.62, 2)
         self.assertTrue(CL.areDistinguished(0, 8))
 
+    def testHarmonicClosenessSingleton(self):
+        for normalized in (False, True):
+            with self.subTest(normalized=normalized):
+                centrality = nk.centrality.HarmonicCloseness(nk.Graph(1), normalized).run()
+                self.assertEqual(centrality.score(0), 0.0)
+                self.assertEqual(centrality.maximum(), 0.0)
+                self.assertEqual(centrality.ranking(), [(0, 0.0)])
+
+    def testHarmonicClosenessMaximum(self):
+        g = nk.Graph(4)
+        for u in range(3):
+            g.addEdge(u, u + 1)
+        for normalized in (False, True):
+            centrality = nk.centrality.HarmonicCloseness(g, normalized).run()
+            self.assertEqual(centrality.maximum(), 1.0 if normalized else 3.0)
+            self.assertAlmostEqual(centrality.centralization(), 2 / 5)
+
     def testDynTopHarmonicCloseness(self):
         k = 5
 
@@ -411,6 +429,18 @@ class TestCentrality(unittest.TestCase):
         CLL.run()
         # test if lists have the same length
         self.assertEqual(len(CL.ranking()), len(CLL.ranking()))
+
+    def testEigenvectorCentralityWithoutEdges(self):
+        for n in range(4):
+            for directed in (False, True):
+                G = nk.Graph(n, False, directed)
+                ec = nk.centrality.EigenvectorCentrality(G)
+                ec.run()
+                scores = ec.scores()
+                self.assertEqual(len(scores), n)
+                self.assertTrue(all(math.isfinite(s) for s in scores))
+                for s in scores:
+                    self.assertAlmostEqual(s, 1.0 / math.sqrt(n))
 
     def testEstimateBetweeness(self):
         CL = nk.centrality.EstimateBetweenness(self.L, 50)

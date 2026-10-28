@@ -17,8 +17,8 @@ void LocalCommunity<ShellMaintainsExtDeg, MaintainBoundary, AllowRemoval>::addNo
     std::tie(uIt, std::ignore) = community.insert({u, CommunityInfo()});
     shell.erase(u);
 
-    node boundaryNeighbor = none; // if u is in the boundary and has only one neighbor outside of
-                                  // the community, store it here.
+    // If u has exactly one shell neighbor, store it here for removal bookkeeping.
+    node exclusiveShellNeighbor = none;
     std::unordered_map<node, count>::iterator boundaryIt;
 
     if (MaintainBoundary) {
@@ -54,7 +54,7 @@ void LocalCommunity<ShellMaintainsExtDeg, MaintainBoundary, AllowRemoval>::addNo
                             if (it != shell.end()) {
                                 it->second.numExclusiveBoundaryMembers += 1;
                                 if (AllowRemoval) {
-                                    *uIt->second.exclusiveOutsideNeighbor = it->first;
+                                    *vIt->second.exclusiveOutsideNeighbor = it->first;
                                 }
                             }
                         });
@@ -95,7 +95,7 @@ void LocalCommunity<ShellMaintainsExtDeg, MaintainBoundary, AllowRemoval>::addNo
                 if (MaintainBoundary) {
                     if (boundaryIt == currentBoundary->end()) {
                         std::tie(boundaryIt, std::ignore) = currentBoundary->insert({u, 0});
-                        boundaryNeighbor = v;
+                        exclusiveShellNeighbor = v;
                     }
 
                     ++boundaryIt->second;
@@ -114,10 +114,14 @@ void LocalCommunity<ShellMaintainsExtDeg, MaintainBoundary, AllowRemoval>::addNo
 #endif
             }
         });
-
+    // If the added node u has exactly one outside neighbor, that shell node gains
+    // u as an exclusive boundary member. Store the neighbor for future removals.
     if (MaintainBoundary && boundaryIt != currentBoundary->end() && boundaryIt->second == 1) {
-        assert(boundaryNeighbor != none);
-        shell[boundaryNeighbor].numExclusiveBoundaryMembers += 1;
+        assert(exclusiveShellNeighbor != none);
+        shell[exclusiveShellNeighbor].numExclusiveBoundaryMembers += 1;
+        if (AllowRemoval) {
+            *uIt->second.exclusiveOutsideNeighbor = exclusiveShellNeighbor;
+        }
     }
 
     if (MaintainBoundary && AllowRemoval && boundaryIt == currentBoundary->end()) {
@@ -162,89 +166,95 @@ void LocalCommunity<ShellMaintainsExtDeg, MaintainBoundary, AllowRemoval>::remov
         }
     }
 
-    G->forNeighborsOf(
-        u, [&](node, node v, edgeweight ew) { // insert external neighbors of u into shell
-            auto vIt = community.find(v);
-            if (vIt != community.end()) {
-                if (MaintainBoundary) {
-                    if (wasFullyInternal) {
-                        vIt->second.numFullyInternalNeighbors -= 1;
-                    }
+    G->forNeighborsOf(u, [&](node, node v,
+                             edgeweight ew) { // insert external neighbors of u into shell
+        auto vIt = community.find(v);
+        if (vIt != community.end()) {
+            if (MaintainBoundary) {
+                if (wasFullyInternal) {
+                    vIt->second.numFullyInternalNeighbors -= 1;
+                }
 
-                    auto it = currentBoundary->find(v);
+                auto it = currentBoundary->find(v);
+                // v was a fully internal node
+                if (it == currentBoundary->end()) {
+                    std::tie(it, std::ignore) = currentBoundary->insert({v, 0});
+                }
+
+                assert(it != currentBoundary->end());
+
+                it->second += 1;
+
+                if (it->second == 1) {
                     // v was a fully internal node
-                    if (it == currentBoundary->end()) {
-                        std::tie(it, std::ignore) = currentBoundary->insert({v, 0});
-                    }
+                    // therefore, u is now the exclusive outside neighbor of v
+                    *vIt->second.exclusiveOutsideNeighbor = u;
 
-                    assert(it != currentBoundary->end());
-
-                    it->second += 1;
-
-                    if (it->second == 1) {
-                        // v was a fully internal node
-                        // therefore, u is now the exclusive outside neighbor of v
-                        *vIt->second.exclusiveOutsideNeighbor = u;
-
-                        // inform all neighbors of v that they now have one fully
-                        // internal neighbor less
-                        G->forNeighborsOf(v, [&](node x) {
-                            auto comIt = community.find(x);
-                            if (comIt != community.end()) {
-                                comIt->second.numFullyInternalNeighbors -= 1;
-                            } else {
-                                assert(x == u);
-                            }
-                        });
-
-                        // u has now a neighbor that is only in the boundary
-                        // becuase of u
-                        uIt->second.numExclusiveBoundaryMembers += 1;
-                    } else if (it->second == 2) {
-                        *vIt->second.exclusiveOutsideNeighbor = none;
-
-                        uIt->second.numExclusiveBoundaryMembers -= 1;
-                    }
-                }
-
-                intWeight -= ew;
-                extWeight += ew;
-
-                vIt->second.intDeg -= ew;
-                uIt->second.intDeg += ew;
-
-                if (ShellMaintainsExtDeg) {
-                    vIt->second.extDeg += ew;
-                }
-            } else {
-                auto it = shell.find(v);
-                assert(it != shell.end());
-
-                it->second.intDeg -= ew;
-                if (ShellMaintainsExtDeg) {
-                    it->second.extDeg += ew;
-                    uIt->second.extDeg += ew;
-                }
-
-                extWeight -= ew;
-
-                if (*it->second.intDeg == 0) {
-                    shell.erase(it);
-                } else {
-#ifdef NETWORKIT_SANITY_CHECKS
-#ifndef NDEBUG
-                    {
-                        auto intExtDeg = calculateIntExtDeg(v);
-                        assert(*shell[v].intDeg == intExtDeg.first);
-                        if (ShellMaintainsExtDeg) {
-                            assert(*shell[v].extDeg == intExtDeg.second);
+                    // inform all neighbors of v that they now have one fully
+                    // internal neighbor less
+                    G->forNeighborsOf(v, [&](node x) {
+                        auto comIt = community.find(x);
+                        if (comIt != community.end()) {
+                            comIt->second.numFullyInternalNeighbors -= 1;
+                        } else {
+                            assert(x == u);
                         }
+                    });
+
+                    // v is now a boundary node whose only shell neighbor is u.
+                    uIt->second.numExclusiveBoundaryMembers += 1;
+                } else if (it->second == 2) {
+                    if (AllowRemoval) {
+                        const auto exclusiveOutsideNeighbor = *vIt->second.exclusiveOutsideNeighbor;
+                        assert(exclusiveOutsideNeighbor != none);
+
+                        auto shellIt = shell.find(exclusiveOutsideNeighbor);
+                        assert(shellIt != shell.end());
+                        shellIt->second.numExclusiveBoundaryMembers -= 1;
+
+                        *vIt->second.exclusiveOutsideNeighbor = none;
                     }
-#endif
-#endif
                 }
             }
-        });
+
+            intWeight -= ew;
+            extWeight += ew;
+
+            vIt->second.intDeg -= ew;
+            uIt->second.intDeg += ew;
+
+            if (ShellMaintainsExtDeg) {
+                vIt->second.extDeg += ew;
+            }
+        } else {
+            auto it = shell.find(v);
+            assert(it != shell.end());
+
+            it->second.intDeg -= ew;
+            if (ShellMaintainsExtDeg) {
+                it->second.extDeg += ew;
+                uIt->second.extDeg += ew;
+            }
+
+            extWeight -= ew;
+
+            if (*it->second.intDeg == 0) {
+                shell.erase(it);
+            } else {
+#ifdef NETWORKIT_SANITY_CHECKS
+#ifndef NDEBUG
+                {
+                    auto intExtDeg = calculateIntExtDeg(v);
+                    assert(*shell[v].intDeg == intExtDeg.first);
+                    if (ShellMaintainsExtDeg) {
+                        assert(*shell[v].extDeg == intExtDeg.second);
+                    }
+                }
+#endif
+#endif
+            }
+        }
+    });
 
 #ifdef NETWORKIT_SANITY_CHECKS
 #ifndef NDEBUG

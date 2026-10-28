@@ -1,6 +1,8 @@
 #include <queue>
 #include <stack>
+#include <vector>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/VectorComparator.hpp>
@@ -11,6 +13,8 @@
 #include <networkit/graph/GraphTools.hpp>
 
 namespace NetworKit {
+
+using ::testing::Pair;
 
 class TraversalGTest : public testing::TestWithParam<std::pair<bool, bool>> {
 protected:
@@ -84,7 +88,7 @@ TEST_P(TraversalGTest, testBFSfrom) {
             doBFS(G, sources);
             curNode = 0;
             Traversal::BFSEdgesFrom(G, randNodes[i - 1], [&](node u, node v, edgeweight, edgeid) {
-                EXPECT_EQ(edgeSequence[curNode++], std::make_pair(u, v));
+                EXPECT_THAT(edgeSequence[curNode++], Pair(u, v));
             });
         }
     }
@@ -122,15 +126,25 @@ TEST_P(TraversalGTest, testDFSfrom) {
 
     for (int seed : {1, 2, 3}) {
         Aux::Random::setSeed(seed, false);
-        const auto G = ErdosRenyiGenerator(n, p, directed()).generate();
+        auto G = ErdosRenyiGenerator(n, p, directed()).generate();
+        if (weighted()) {
+            GraphTools::randomizeWeights(G);
+        }
         G.forNodes([&](node source) {
             doDFS(G, source);
             count curNode = 0;
-            Traversal::DFSfrom(G, source, [&](node u) { EXPECT_EQ(sequence[curNode++], u); });
-            curNode = 0;
-            Traversal::DFSEdgesFrom(G, source, [&](node u, node v, edgeweight, edgeid) {
-                EXPECT_EQ(edgeSequence[curNode++], std::make_pair(u, v));
+            Traversal::DFSfrom(G, source, [&](node u) {
+                EXPECT_LT(curNode, sequence.size());
+                EXPECT_EQ(sequence[curNode++], u);
             });
+            EXPECT_EQ(curNode, sequence.size());
+            curNode = 0;
+            Traversal::DFSEdgesFrom(G, source, [&](node u, node v, edgeweight w, edgeid) {
+                EXPECT_LT(curNode, edgeSequence.size());
+                EXPECT_THAT(edgeSequence[curNode++], Pair(u, v));
+                EXPECT_EQ(w, G.weight(u, v));
+            });
+            EXPECT_EQ(curNode, edgeSequence.size());
         });
     }
 }

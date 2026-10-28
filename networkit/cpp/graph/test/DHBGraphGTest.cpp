@@ -16,6 +16,7 @@ using namespace NetworKit;
 class DHBGraphGTest : public ::testing::TestWithParam<std::tuple<bool, bool>> {
 public:
     virtual void SetUp();
+    virtual void TearDown();
 
 protected:
     DHBGraph Ghouse;
@@ -23,6 +24,7 @@ protected:
     std::vector<std::vector<edgeweight>> Ahouse;
     count n_house;
     count m_house;
+    int maxThreadsBefore;
 
     bool isGraph() const { return !isWeighted() && !isDirected(); }
     bool isWeightedGraph() const { return isWeighted() && !isDirected(); }
@@ -82,6 +84,8 @@ count DHBGraphGTest::countSelfLoopsManually(const DHBGraph &G) {
 }
 
 void DHBGraphGTest::SetUp() {
+    maxThreadsBefore = Aux::getMaxNumberOfThreads();
+
     /*
      *    0
      *   . \
@@ -119,6 +123,10 @@ void DHBGraphGTest::SetUp() {
             ew += 1.0;
         }
     }
+}
+
+void DHBGraphGTest::TearDown() {
+    Aux::setNumberOfThreads(maxThreadsBefore);
 }
 
 /** CONSTRUCTORS **/
@@ -681,7 +689,6 @@ TEST_P(DHBGraphGTest, testAddEdgeFalseState) {
 }
 
 TEST_P(DHBGraphGTest, testAddEdges_weighted_edge_no_update) {
-    Aux::setNumberOfThreads(1);
     DHBGraph G = createGraph(5);
     WeightedEdge e1(0, 2, defaultEdgeWeight);
     WeightedEdge e2(1, 2, defaultEdgeWeight);
@@ -778,6 +785,33 @@ TEST_P(DHBGraphGTest, testAddEdges_edge_with_update) {
     ASSERT_TRUE(G.hasEdge(1, 0));
     ASSERT_EQ(G.weight(3, 1), isWeightedGraph() ? 3.0 : defaultEdgeWeight);
     ASSERT_EQ(G.weight(1, 0), isWeightedGraph() ? 2.0 : defaultEdgeWeight);
+}
+
+TEST_P(DHBGraphGTest, testAddEdges_counts_in_parallel) {
+    Aux::setNumberOfThreads(4);
+    count const n = 100'000;
+
+    for (bool const do_update : {false, true}) {
+        DHBGraph G = createGraph(n);
+        G.addEdge(0, 1);
+        G.addEdge(2, 2);
+
+        // A self-loop at every node, and each edge of the cycle 0, 1, ..., n - 1 in both
+        // directions.
+        std::vector<WeightedEdge> edges;
+        for (node u = 0; u < n; ++u) {
+            node const v = (u + 1) % n;
+            edges.emplace_back(u, u, defaultEdgeWeight);
+            edges.emplace_back(u, v, defaultEdgeWeight);
+            edges.emplace_back(v, u, defaultEdgeWeight);
+        }
+        G.addEdges(std::move(edges), do_update);
+
+        count const cycleEdges = isDirected() ? 2 * n : n;
+        EXPECT_EQ(n, G.numberOfSelfLoops());
+        EXPECT_EQ(n, countSelfLoopsManually(G));
+        EXPECT_EQ(n + cycleEdges, G.numberOfEdges());
+    }
 }
 
 TEST_P(DHBGraphGTest, testRemoveEdge) {
@@ -877,7 +911,6 @@ TEST_P(DHBGraphGTest, testRemoveAdjacentEdges_selfloop_outEdge) {
 }
 
 TEST_P(DHBGraphGTest, testRemoveSelfLoops) {
-    Aux::setNumberOfThreads(1);
     DHBGraph G = this->Ghouse;
     G.addEdge(0, 0);
     G.addEdge(1, 1);
@@ -888,6 +921,27 @@ TEST_P(DHBGraphGTest, testRemoveSelfLoops) {
     ASSERT_FALSE(G.hasEdge(0, 0));
     ASSERT_FALSE(G.hasEdge(1, 1));
     ASSERT_FALSE(G.hasEdge(2, 2));
+}
+
+TEST_P(DHBGraphGTest, testRemoveSelfLoops_in_parallel) {
+    Aux::setNumberOfThreads(4);
+    count const n = 100'000;
+    DHBGraph G = createGraph(n);
+    for (node u = 0; u < n; ++u) {
+        G.addEdge(u, u);
+        G.addEdge(u, (u + 1) % n);
+    }
+    ASSERT_EQ(n, G.numberOfSelfLoops());
+    ASSERT_EQ(2 * n, G.numberOfEdges());
+
+    G.removeSelfLoops();
+
+    EXPECT_EQ(0, G.numberOfSelfLoops());
+    EXPECT_EQ(0, countSelfLoopsManually(G));
+    EXPECT_EQ(n, G.numberOfEdges());
+    for (node u = 0; u < n; ++u) {
+        ASSERT_TRUE(G.hasEdge(u, (u + 1) % n));
+    }
 }
 
 TEST_P(DHBGraphGTest, testHasEdge) {
