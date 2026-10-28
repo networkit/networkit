@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <span>
+#include <utility>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -14,20 +15,18 @@
 
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/GraphTools.hpp>
-#include <networkit/io/EdgeListReader.hpp>
 
 #include "SubgraphIsomorphismTestUtils.hpp"
 #include "../SearchGraph.hpp"
 
 namespace NetworKit {
+namespace {
 
 using IsomorphismDetails::SearchGraph;
 using testing::Contains;
 using testing::ElementsAre;
 using testing::ElementsAreArray;
 using testing::IsEmpty;
-
-namespace {
 
 /// The distinct out-neighbours, or with @a in the in-neighbours, of @a u other than @a u, in
 /// ascending order.
@@ -90,13 +89,10 @@ void expectLabelsPairWithHeads(const Graph &G, const std::vector<index> &edgeLab
     });
 }
 
-} // namespace
-
 class SearchGraphGTest : public testing::Test {};
 
 TEST_F(SearchGraphGTest, testSearchGraphCSR) {
-
-    Graph G = Graph(10);
+    Graph G(10);
 
     G.addEdge(3, 5);
     G.addEdge(9, 1);
@@ -115,15 +111,15 @@ TEST_F(SearchGraphGTest, testSearchGraphCSR) {
     expectSlicesAreSimpleNeighborhoods(G, SG);
 
     // Even nodes never have incident edges, so none should be found
-    G.forNodes([&](node u) {
+    for (const node u : G.nodeRange()) {
         EXPECT_EQ(SG.outDegree(u), SG.inDegree(u));
-        if (u % 2 == 0) {
-            for (node v = 0; v < G.upperNodeIdBound(); v++) {
-                EXPECT_FALSE(SG.hasEdge(u, v));
-                EXPECT_FALSE(SG.hasEdge(v, u));
-            }
+        if (u % 2 != 0)
+            continue;
+        for (const node v : G.nodeRange()) {
+            EXPECT_FALSE(SG.hasEdge(u, v));
+            EXPECT_FALSE(SG.hasEdge(v, u));
         }
-    });
+    }
 
     // The snapshot drops the self-loop at node 5.
     G.forEdges([&](node u, node v) {
@@ -143,7 +139,7 @@ TEST_F(SearchGraphGTest, testSearchGraphCSR) {
     EXPECT_EQ(SG.outDegree(5), 4);
     EXPECT_FALSE(SG.isDirected());
 
-    Graph D = Graph(8, false, true);
+    Graph D(8, false, true);
 
     D.addEdge(0, 5);
     D.addEdge(0, 4);
@@ -190,9 +186,8 @@ TEST_F(SearchGraphGTest, testSearchGraphCSR) {
 }
 
 TEST_F(SearchGraphGTest, testSearchGraphAdjMatrix) {
-
     // Graph G is directed and needs two 64-bit words per row
-    Graph G = Graph(75, false, true);
+    Graph G(75, false, true);
 
     G.addEdge(1, 20);
     G.addEdge(42, 7);
@@ -204,40 +199,40 @@ TEST_F(SearchGraphGTest, testSearchGraphAdjMatrix) {
     G.removeEdge(25, 62);
 
     SearchGraph SG(G, true);
+    ASSERT_TRUE(SG.hasAdjacencyMatrix());
 
-    G.forEdges([&](node u, node v) {
-        EXPECT_TRUE(SG.hasEdge(u, v));
-        EXPECT_FALSE(SG.hasEdge(v, u));
-    });
-
-    G.forNodes([&](node u) {
-        if ((u != 1) && (u != 7) && (u != 20) && (u != 42) && (u != 50) && (u != 74)) {
-            for (node v = 0; v < G.upperNodeIdBound(); v++) {
-                EXPECT_FALSE(SG.hasEdge(u, v));
-                EXPECT_FALSE(SG.hasEdge(v, u));
-            }
+    for (const node u : G.nodeRange()) {
+        for (const node v : G.nodeRange()) {
+            EXPECT_EQ(SG.hasEdge(u, v), G.hasEdge(u, v)) << "u=" << u << " v=" << v;
         }
-    });
+    }
+}
 
-    // Graph H is directed but has edge (v,u) for every edge (u,v) and needs one 64-bit word per row
-    EdgeListReader reader('\t', 0, "#", true, true);
-    Graph H = reader.read("input/example.edgelist");
+TEST_F(SearchGraphGTest, testAdjMatrixMutualArcs) {
+    // Every arc has its reverse, and each row fits in one 64-bit word.
+    Graph G(11, false, /* directed = */ true);
+    for (const auto &[u, v] : std::vector<std::pair<node, node>>{
+             {1, 5}, {1, 6}, {2, 4}, {2, 8}, {3, 7}, {3, 10}, {4, 8}, {5, 6}, {7, 10}, {9, 10}}) {
+        G.addEdge(u, v);
+        G.addEdge(v, u);
+    }
 
-    SearchGraph SH(H, true);
+    SearchGraph SG(G, true);
+    ASSERT_TRUE(SG.hasAdjacencyMatrix());
 
-    H.forEdges([&](node u, node v) {
-        EXPECT_TRUE(SH.hasEdge(u, v));
-        EXPECT_TRUE(SH.hasEdge(v, u));
-    });
+    for (const node u : G.nodeRange()) {
+        for (const node v : G.nodeRange()) {
+            EXPECT_EQ(SG.hasEdge(u, v), G.hasEdge(u, v)) << "u=" << u << " v=" << v;
+        }
+    }
 }
 
 TEST_F(SearchGraphGTest, testMultiEdgesAndLoopsCollapsed) {
-
     // Both hasEdge() backends must agree edge for edge. The id bound exceeds 64, so a matrix row
     // spans two words.
     for (bool directed : {false, true}) {
         SCOPED_TRACE(testing::Message() << "directed=" << directed);
-        Graph G = Graph(70, false, directed);
+        Graph G(70, false, directed);
 
         G.addEdge(1, 2);
         G.addEdge(1, 2); // parallel
@@ -289,8 +284,8 @@ TEST_F(SearchGraphGTest, testMultiEdgesAndLoopsCollapsed) {
             EXPECT_FALSE(SG->hasEdge(69, 69));
         }
 
-        for (node u = 0; u < G.upperNodeIdBound(); u++) {
-            for (node v = 0; v < G.upperNodeIdBound(); v++) {
+        for (const node u : G.nodeRange()) {
+            for (const node v : G.nodeRange()) {
                 EXPECT_EQ(S_CSR.hasEdge(u, v), S_Adj.hasEdge(u, v)) << "u=" << u << " v=" << v;
             }
             EXPECT_FALSE(S_CSR.hasEdge(u, u));
@@ -300,9 +295,8 @@ TEST_F(SearchGraphGTest, testMultiEdgesAndLoopsCollapsed) {
 }
 
 TEST_F(SearchGraphGTest, testMatrixFallsBackForLargeIdBound) {
-
     // upperNodeIdBound() sets the matrix size, and declining the matrix must not change hasEdge().
-    Graph big = Graph(30000);
+    Graph big(30000);
     big.addEdge(1, 2);
 
     SearchGraph SBig(big, true);
@@ -318,7 +312,7 @@ TEST_F(SearchGraphGTest, testMatrixFallsBackForLargeIdBound) {
     EXPECT_FALSE(SearchGraph(Graph(23169), true).hasAdjacencyMatrix());
 
     // removeNode() never lowers the id bound.
-    Graph carved = Graph(30000);
+    Graph carved(30000);
     carved.addEdge(0, 1);
     carved.addEdge(1, 2);
     for (node u = 3; u < 30000; ++u)
@@ -345,7 +339,7 @@ TEST_F(SearchGraphGTest, testMatrixFallsBackForLargeIdBound) {
     EXPECT_TRUE(SCompacted.hasAdjacencyMatrix());
     expectSlicesAreSimpleNeighborhoods(compacted, SCompacted);
 
-    Graph ordinary = Graph(75);
+    Graph ordinary(75);
     ordinary.addEdge(1, 20);
     ordinary.removeNode(38);
 
@@ -358,8 +352,7 @@ TEST_F(SearchGraphGTest, testMatrixFallsBackForLargeIdBound) {
 }
 
 TEST_F(SearchGraphGTest, testHasNode) {
-
-    Graph G = Graph(10);
+    Graph G(10);
     G.addEdge(0, 1);
     G.removeNode(4);
     G.removeNode(9); // the last id: the bound must not shrink with it
@@ -382,7 +375,7 @@ TEST_F(SearchGraphGTest, testHasNode) {
     EXPECT_EQ(SEmpty.numberOfNodes(), 0);
     EXPECT_EQ(SEmpty.upperNodeIdBound(), 0);
 
-    Graph allRemoved = Graph(5);
+    Graph allRemoved(5);
     for (node u = 0; u < 5; ++u)
         allRemoved.removeNode(u);
 
@@ -401,9 +394,8 @@ TEST_F(SearchGraphGTest, testHasNode) {
 }
 
 TEST_F(SearchGraphGTest, testMaxDegree) {
-
     // Parallel edges and loops make the maximum differ from GraphTools::maxDegree().
-    Graph G = Graph(5);
+    Graph G(5);
     G.addEdge(0, 1);
     G.addEdge(0, 1); // parallel
     G.addEdge(0, 1); // parallel
@@ -421,7 +413,7 @@ TEST_F(SearchGraphGTest, testMaxDegree) {
     EXPECT_NE(SG.maxOutDegree(), GraphTools::maxDegree(G));
 
     // The two maxima come from different nodes.
-    Graph D = Graph(4, false, true);
+    Graph D(4, false, true);
     D.addEdge(0, 1);
     D.addEdge(0, 2);
     D.addEdge(0, 3); // out-degree 3, in-degree 0
@@ -441,7 +433,6 @@ TEST_F(SearchGraphGTest, testMaxDegree) {
 }
 
 TEST_F(SearchGraphGTest, testEdgeLabelsStayWithTheirArcs) {
-
     // Node 9 gets its neighbours in descending order, so the sort must move every label.
     for (bool directed : {false, true}) {
         SCOPED_TRACE(testing::Message() << "directed=" << directed);
@@ -523,7 +514,6 @@ TEST_F(SearchGraphGTest, testEdgeLabelsStayWithTheirArcs) {
 }
 
 TEST_F(SearchGraphGTest, testCollapsedLabelledEdges) {
-
     for (bool directed : {false, true}) {
         SCOPED_TRACE(testing::Message() << "directed=" << directed);
         const IsomorphismTest::LabelledGraph plain =
@@ -551,4 +541,5 @@ TEST_F(SearchGraphGTest, testCollapsedLabelledEdges) {
     }
 }
 
+} // namespace
 } // namespace NetworKit

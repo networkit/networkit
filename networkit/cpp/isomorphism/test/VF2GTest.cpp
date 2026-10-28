@@ -20,11 +20,11 @@
 #include "SubgraphIsomorphismTestUtils.hpp"
 
 namespace NetworKit {
+namespace {
 
 class VF2GTest : public testing::Test {};
 
 TEST_F(VF2GTest, testInitialTriangleCount) {
-
     // Count triangles in karate graph as initial test
     const Graph pattern = IsomorphismTest::graphOf(3, {{0, 1}, {1, 2}, {2, 0}});
 
@@ -38,7 +38,6 @@ TEST_F(VF2GTest, testInitialTriangleCount) {
 }
 
 TEST_F(VF2GTest, testAgreesWithTheReference) {
-
     const auto make = [](const Graph &pattern, const Graph &target,
                          SubgraphIsomorphism::Semantics semantics,
                          count maxMatches) -> std::unique_ptr<SubgraphIsomorphism> {
@@ -50,7 +49,6 @@ TEST_F(VF2GTest, testAgreesWithTheReference) {
 }
 
 TEST_F(VF2GTest, testInterruptStopsTheSearch) {
-
     // VF2 polls for CTRL+C once per 1024 candidates, and this search tries about 25000.
     const Graph pattern = IsomorphismTest::graphOf(3, {{0, 1}, {1, 2}});
     const Graph target = IsomorphismTest::completeGraph(30);
@@ -71,4 +69,5 @@ TEST_F(VF2GTest, testInterruptStopsTheSearch) {
     EXPECT_LT(delivered, total) << "the search ignored the interrupt";
 }
 
+} // namespace
 } // namespace NetworKit

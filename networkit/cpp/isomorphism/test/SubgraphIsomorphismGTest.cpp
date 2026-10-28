@@ -9,7 +9,7 @@
 #include <memory>
 #include <span>
 #include <stdexcept>
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -25,13 +25,16 @@
 #include "SubgraphIsomorphismTestUtils.hpp"
 
 namespace NetworKit {
+namespace {
 
 using IsomorphismTest::completeGraph;
 using IsomorphismTest::graphOf;
 using IsomorphismTest::Match;
 using IsomorphismTest::referenceMatches;
 using IsomorphismTest::Semantics;
+using testing::HasSubstr;
 using testing::SizeIs;
+using testing::ThrowsMessage;
 using testing::UnorderedElementsAreArray;
 
 class SubgraphIsomorphismGTest : public testing::Test {
@@ -41,7 +44,6 @@ protected:
 };
 
 TEST_F(SubgraphIsomorphismGTest, testHarnessDrivesAnAlgorithmThroughTheRunProtocol) {
-
     const auto make = [](const Graph &pattern, const Graph &target, Semantics semantics,
                          count maxMatches) -> std::unique_ptr<SubgraphIsomorphism> {
         return std::make_unique<IsomorphismTest::ReferenceSubgraphIsomorphism>(
@@ -53,7 +55,6 @@ TEST_F(SubgraphIsomorphismGTest, testHarnessDrivesAnAlgorithmThroughTheRunProtoc
 }
 
 TEST_F(SubgraphIsomorphismGTest, testInterruptLeavesTheAlgorithmUnfinishedButUsable) {
-
     // The test sets the global flag instead of raising a real SIGINT.
     const Graph pattern = graphOf(3, {{0, 1}, {1, 2}});
     const Graph target = completeGraph(6);
@@ -93,7 +94,6 @@ TEST_F(SubgraphIsomorphismGTest, testInterruptLeavesTheAlgorithmUnfinishedButUsa
 }
 
 TEST_F(SubgraphIsomorphismGTest, testGraphsMustAgreeOnDirectedness) {
-
     const Graph undirected = graphOf(2, {{0, 1}});
     const Graph directed = graphOf(2, {{0, 1}}, true);
 
@@ -109,7 +109,6 @@ TEST_F(SubgraphIsomorphismGTest, testGraphsMustAgreeOnDirectedness) {
 }
 
 TEST_F(SubgraphIsomorphismGTest, testUnknownSemanticsIsRejected) {
-
     // Python passes the semantics as a plain integer, so any value can arrive here.
     const Graph pattern = graphOf(3, {{0, 1}, {1, 2}});
     const Graph target = graphOf(3, {{0, 1}, {1, 2}, {2, 0}});
@@ -120,7 +119,6 @@ TEST_F(SubgraphIsomorphismGTest, testUnknownSemanticsIsRejected) {
 }
 
 TEST_F(SubgraphIsomorphismGTest, testGetMatchesFollowsTheLastRun) {
-
     const Graph pattern = graphOf(2, {{0, 1}});
     const Graph target = graphOf(4, {{0, 1}, {1, 2}, {2, 3}, {3, 0}});
 
@@ -142,7 +140,6 @@ TEST_F(SubgraphIsomorphismGTest, testGetMatchesFollowsTheLastRun) {
 }
 
 TEST_F(SubgraphIsomorphismGTest, testRunValidatesNodeLabels) {
-
     const Graph pattern = graphOf(2, {{0, 1}});
     const Graph target = graphOf(3, {{0, 1}, {1, 2}});
     const std::vector<index> one{1}, two{1, 1}, three{1, 1, 1};
@@ -163,7 +160,6 @@ TEST_F(SubgraphIsomorphismGTest, testRunValidatesNodeLabels) {
 }
 
 TEST_F(SubgraphIsomorphismGTest, testRunValidatesEdgeLabels) {
-
     Graph pattern = graphOf(3, {{0, 1}, {1, 2}});
     Graph target = graphOf(4, {{0, 1}, {1, 2}, {2, 3}});
     const std::vector<index> one{1}, two{1, 2}, three{1, 2, 3};
@@ -193,31 +189,24 @@ TEST_F(SubgraphIsomorphismGTest, testRunValidatesEdgeLabels) {
 }
 
 TEST_F(SubgraphIsomorphismGTest, testParallelEdgesWithDisagreeingLabelsAreRefused) {
-
     // One arc of the snapshot cannot represent the two differently labelled 0-1 edges.
     const IsomorphismTest::LabelledGraph plain =
         IsomorphismTest::labelledGraphOf(4, {{0, 1, 1}, {1, 2, 2}, {2, 3, 1}});
     const IsomorphismTest::LabelledGraph disagreeing =
         IsomorphismTest::labelledGraphOf(4, {{0, 1, 1}, {0, 1, 4}, {1, 2, 2}, {2, 3, 1}});
 
-    for (const std::string side : {"pattern", "target"}) {
+    for (const std::string_view side : {"pattern", "target"}) {
         const IsomorphismTest::LabelledGraph &pattern = side == "pattern" ? disagreeing : plain;
         const IsomorphismTest::LabelledGraph &target = side == "pattern" ? plain : disagreeing;
 
         VF2 algo(pattern.G, target.G, Semantics::MONOMORPHISM);
         algo.setEdgeLabels(pattern.edgeLabels, target.edgeLabels);
-        try {
-            algo.run();
-            ADD_FAILURE() << "disagreeing labels in the " << side << " were accepted";
-        } catch (const std::runtime_error &e) {
-            EXPECT_NE(std::string(e.what()).find(side), std::string::npos) << e.what();
-        }
+        EXPECT_THAT([&] { algo.run(); }, ThrowsMessage<std::runtime_error>(HasSubstr(side)));
         EXPECT_FALSE(algo.hasFinished());
     }
 }
 
 TEST_F(SubgraphIsomorphismGTest, testRunRechecksGraphInvariants) {
-
     Graph pattern = graphOf(3, {{0, 1}, {1, 2}});
     const Graph target = graphOf(4, {{0, 1}, {1, 2}, {2, 3}});
 
@@ -233,7 +222,6 @@ TEST_F(SubgraphIsomorphismGTest, testRunRechecksGraphInvariants) {
 }
 
 TEST_F(SubgraphIsomorphismGTest, testRunRechecksNodeLabelSizes) {
-
     const Graph pattern = graphOf(2, {{0, 1}});
     Graph target = graphOf(3, {{0, 1}, {1, 2}});
 
@@ -260,7 +248,6 @@ TEST_F(SubgraphIsomorphismGTest, testRunRechecksNodeLabelSizes) {
 }
 
 TEST_F(SubgraphIsomorphismGTest, testRunRechecksEdgeLabelSizes) {
-
     const IsomorphismTest::LabelledGraph pattern = IsomorphismTest::labelledGraphOf(2, {{0, 1, 1}});
     IsomorphismTest::LabelledGraph target =
         IsomorphismTest::labelledGraphOf(3, {{0, 1, 1}, {1, 2, 1}});
@@ -285,4 +272,5 @@ TEST_F(SubgraphIsomorphismGTest, testRunRechecksEdgeLabelSizes) {
     EXPECT_TRUE(algo.hasFinished());
 }
 
+} // namespace
 } // namespace NetworKit
