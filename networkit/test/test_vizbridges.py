@@ -200,13 +200,7 @@ class TestVizbridges(unittest.TestCase):
         scores = [None] * G.numberOfEdges()
         with self.assertRaises(Exception):
             vizbridges.widgetFromGraph(G, edgeScores=scores)
-
-    def testIplotXFromGraphDefaultLayout(self):
-        for directed, weighted in zip([True, False], [True, False]):
-            with self.subTest(directed=directed, weighted=weighted):
-                G = self.getSmallGraph(weighted, directed)
-                vizbridges.iplotxFromGraph(G)
-
+               
     def testPublicWidgetScoreColors(self):
         graph = nk.Graph(5)
         for i in range(5):
@@ -221,6 +215,12 @@ class TestVizbridges(unittest.TestCase):
         for edge in widget.graph.edges:
             edgeId = graph.edgeId(edge.data["source"], edge.data["target"])
             self.assertEqual(tuple(edge.data["color"]), expected[edgeId])
+
+    def testIplotXFromGraphDefaultLayout(self):
+        for directed, weighted in zip([True, False], [True, False]):
+            with self.subTest(directed=directed, weighted=weighted):
+                G = self.getSmallGraph(weighted, directed)
+                vizbridges.iplotxFromGraph(G)
 
 
 if __name__ == "__main__":
