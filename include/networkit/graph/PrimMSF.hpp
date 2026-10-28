@@ -7,6 +7,10 @@
  */
 #ifndef NETWORKIT_GRAPH_PRIM_MSF_HPP_
 #define NETWORKIT_GRAPH_PRIM_MSF_HPP_
+
+#include <limits>
+#include <stdexcept>
+
 #include <networkit/Globals.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/graph/SpanningForest.hpp>
@@ -22,8 +26,12 @@ namespace NetworKit {
  * If the graph is connected, the result is a Minimum Spanning Tree (MST).
  * Otherwise, it yields a forest of MSTs for each connected component.
  */
-class PrimMSF : public SpanningForest {
+template <typename GraphT>
+class GenericPrimMSF : public GenericSpanningForest<GraphT> {
 public:
+    using NodeT = typename GraphT::NodeT;
+    using EdgeWeightT = typename GraphT::EdgeWeightT;
+
     /**
      * @brief Initializes the PrimMSF algorithm for a given graph.
      *
@@ -33,7 +41,7 @@ public:
      * @param G The graph on which the minimum spanning forest will be computed.
      * @throws std::runtime_error if graph is not an undirected graph
      */
-    PrimMSF(const Graph &G) : SpanningForest(G) {
+    GenericPrimMSF(const GraphT &G) : GenericSpanningForest<GraphT>(G) {
         if (G.isDirected()) {
             throw std::runtime_error("The graph is not an undirected graph.");
         }
@@ -52,15 +60,21 @@ public:
      * @return The total weight of the minimum spanning forest.
      */
     edgeweight getTotalWeight() const {
-        assureFinished();
-        if (G->isWeighted())
+        this->assureFinished();
+        if (this->G->isWeighted())
             return totalWeight;
-        return static_cast<edgeweight>(forest.numberOfEdges());
+        return static_cast<edgeweight>(this->forest.numberOfEdges());
     }
 
 private:
-    static constexpr edgeweight infiniteWeight = std::numeric_limits<edgeweight>::max();
+    static constexpr EdgeWeightT infiniteWeight = std::numeric_limits<EdgeWeightT>::max();
     edgeweight totalWeight = 0;
 };
+
+using PrimMSF = GenericPrimMSF<Graph>;
+
 } // namespace NetworKit
+
+#include <networkit/graph/PrimMSFImpl.hpp>
+
 #endif // NETWORKIT_GRAPH_PRIM_MSF_HPP_
