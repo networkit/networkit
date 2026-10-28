@@ -42,8 +42,8 @@ std::vector<node> simpleNeighbors(const Graph &G, node u, bool in) {
     else
         G.forNeighborsOf(u, collect);
     std::ranges::sort(neighbors);
-    const auto [first, last] = std::ranges::unique(neighbors);
-    neighbors.erase(first, last);
+    // Not std::ranges::unique, whose subrange result clang 11 cannot compile with libstdc++ 12.
+    neighbors.erase(std::unique(neighbors.begin(), neighbors.end()), neighbors.end());
     return neighbors;
 }
 
