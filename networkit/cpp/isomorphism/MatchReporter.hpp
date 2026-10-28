@@ -13,9 +13,7 @@ namespace NetworKit::IsomorphismDetails {
 /// implementations take the reporter as a template parameter, so that the call per match needs no
 /// type erasure.
 template <typename Reporter>
-concept MatchReporter = requires(Reporter &report, std::span<const node> match) {
-    { report(match) } -> std::convertible_to<bool>;
-};
+concept MatchReporter = std::predicate<Reporter &, std::span<const node>>;
 
 } // namespace NetworKit::IsomorphismDetails
 

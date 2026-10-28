@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include <networkit/Globals.hpp>
@@ -151,7 +151,7 @@ private:
 /// Throws `std::runtime_error` if @a pattern or @a target lost an edge label when it collapsed
 /// parallel edges. The message starts with @a algorithmName.
 void refuseLostLabels(const SearchGraph &pattern, const SearchGraph &target,
-                      const std::string &algorithmName);
+                      std::string_view algorithmName);
 
 } // namespace NetworKit::IsomorphismDetails
 

@@ -43,7 +43,7 @@ public:
 
     /// The nodes in the order they joined. Nodes that left the set may stay listed, so callers
     /// skip the entries that contains() rejects.
-    const std::vector<node> &joined() const noexcept { return members; }
+    std::span<const node> joined() const noexcept { return members; }
 
     /// The smallest node in the set, or @ref none if the set is empty.
     node smallest() const {
@@ -79,8 +79,8 @@ public:
 
     /// Removes the nodes that joined after leave(@a u) returned @a checkpoint, then puts @a u back.
     void restore(node u, Checkpoint checkpoint) {
-        for (index i = checkpoint.mark; i < members.size(); ++i)
-            isMember[members[i]] = false;
+        for (const node v : std::span(members).subspan(checkpoint.mark))
+            isMember[v] = false;
         size -= members.size() - checkpoint.mark;
         members.resize(checkpoint.mark);
 
@@ -231,7 +231,7 @@ private:
         // mapPair() appends to the member list, and unmapPair() truncates it again. Every pair
         // mapped at this depth or below is unmapped before control returns here, so the list is the
         // same at every visit of this frame.
-        const std::vector<node> &members = frame.candidates->joined();
+        const std::span<const node> members = frame.candidates->joined();
         while (frame.cursor < members.size()) {
             const node tv = members[frame.cursor++];
             if (frame.candidates->contains(tv))
@@ -284,20 +284,16 @@ private:
     /// Every mapped out-neighbour of @a pu needs a corresponding out-edge of @a tv. Under INDUCED
     /// semantics, the same holds in reverse.
     bool ruleSuccessors(node pu, node tv) const {
-        for (const node u : patternGraph.outNeighbors(pu)) {
-            if (core1[u] != none && !targetGraph.hasEdge(tv, core1[u]))
-                return false;
-        }
-
         // ruleEdgeLabels() compares the labels of the edges that both graphs contain.
-        if (induced) {
-            for (const node v : targetGraph.outNeighbors(tv)) {
-                if (core2[v] != none && !patternGraph.hasEdge(pu, core2[v]))
-                    return false;
-            }
-        }
-
-        return true;
+        const auto imageIsSuccessor = [&](node u) {
+            return core1[u] == none || targetGraph.hasEdge(tv, core1[u]);
+        };
+        const auto preimageIsSuccessor = [&](node v) {
+            return core2[v] == none || patternGraph.hasEdge(pu, core2[v]);
+        };
+        return std::ranges::all_of(patternGraph.outNeighbors(pu), imageIsSuccessor)
+               && (!induced
+                   || std::ranges::all_of(targetGraph.outNeighbors(tv), preimageIsSuccessor));
     }
 
     /// The mirror image of ruleSuccessors() for in-edges.
@@ -305,19 +301,15 @@ private:
         if (!directed())
             return true;
 
-        for (const node u : patternGraph.inNeighbors(pu)) {
-            if (core1[u] != none && !targetGraph.hasEdge(core1[u], tv))
-                return false;
-        }
-
-        if (induced) {
-            for (const node v : targetGraph.inNeighbors(tv)) {
-                if (core2[v] != none && !patternGraph.hasEdge(core2[v], pu))
-                    return false;
-            }
-        }
-
-        return true;
+        const auto imageIsPredecessor = [&](node u) {
+            return core1[u] == none || targetGraph.hasEdge(core1[u], tv);
+        };
+        const auto preimageIsPredecessor = [&](node v) {
+            return core2[v] == none || patternGraph.hasEdge(core2[v], pu);
+        };
+        return std::ranges::all_of(patternGraph.inNeighbors(pu), imageIsPredecessor)
+               && (!induced
+                   || std::ranges::all_of(targetGraph.inNeighbors(tv), preimageIsPredecessor));
     }
 
     /// The images of the edges between @a pu and the mapped pattern nodes need compatible labels.
@@ -394,11 +386,14 @@ private:
                                std::span<const node> targetNodes, TargetTest targetTest) {
         // The pattern side is small, and its count lets the target scan stop early.
         auto needed = std::ranges::count_if(patternNodes, patternTest);
-        for (auto it = targetNodes.begin(); needed != 0 && it != targetNodes.end(); ++it) {
-            if (targetTest(*it))
-                --needed;
+        if (needed == 0)
+            return true;
+
+        for (const node v : targetNodes) {
+            if (targetTest(v) && --needed == 0)
+                return true;
         }
-        return needed == 0;
+        return false;
     }
 
     SearchGraph patternGraph;

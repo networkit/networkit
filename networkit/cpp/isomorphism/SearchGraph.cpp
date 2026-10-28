@@ -5,6 +5,7 @@
 #include <span>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -32,7 +33,8 @@ void sortSlices(const std::vector<index> &first, std::vector<node> &head, std::v
         return;
     }
 
-    std::vector<std::pair<node, index>> slice;
+    using Arc = std::pair<node, index>;
+    std::vector<Arc> slice;
     for (node u = 0; u < z; ++u) {
         const index begin = first[u];
         const index end = first[u + 1];
@@ -44,10 +46,8 @@ void sortSlices(const std::vector<index> &first, std::vector<node> &head, std::v
         // Sorting (head, label) pairs orders parallel arcs by label.
         std::ranges::sort(slice);
 
-        for (index i = begin; i < end; ++i) {
-            head[i] = slice[i - begin].first;
-            label[i] = slice[i - begin].second;
-        }
+        std::ranges::transform(slice, head.begin() + begin, &Arc::first);
+        std::ranges::transform(slice, label.begin() + begin, &Arc::second);
     }
 }
 
@@ -185,12 +185,12 @@ void SearchGraph::buildAdjacencyMatrix() {
 }
 
 void refuseLostLabels(const SearchGraph &pattern, const SearchGraph &target,
-                      const std::string &algorithmName) {
+                      std::string_view algorithmName) {
     if (!pattern.collapsedLabelledEdges() && !target.collapsedLabelledEdges())
         return;
 
     const std::string side = pattern.collapsedLabelledEdges() ? "pattern" : "target";
-    throw std::runtime_error(algorithmName
+    throw std::runtime_error(std::string(algorithmName)
                              + " does not support parallel edges whose edge labels disagree, as in "
                                "the "
                              + side + " - see SubgraphIsomorphism::setEdgeLabels()");
