@@ -51,7 +51,7 @@ void DynBFS::run() {
                 sumDist += distances[v];
                 ++reachedNodes;
                 if (storePreds) {
-                    previous[v] = {u};
+                    previous[v].assign(1, u);
                 }
                 npaths[v] = npaths[u];
                 maxDistance = static_cast<count>(distances[v]);

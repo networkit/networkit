@@ -4,14 +4,14 @@ set -o pipefail
 
 python3 -m venv pyenv && . pyenv/bin/activate
 pip3 install --upgrade pip
- 
+
 # cython is required because git does not contain _NetworKit.
 pip3 install 'cython<3.3.0' setuptools
 
 # Several modules are required to build the documentation.
 pip3 install sphinx
 pip3 install Jinja2 sphinx_bootstrap_theme numpydoc exhale nbsphinx breathe
-pip3 install sphinx_copybutton sphinxcontrib.bibtex sphinx_gallery sphinx_last_updated_by_git 
+pip3 install sphinx_copybutton sphinxcontrib.bibtex sphinx_gallery sphinx_last_updated_by_git
 pip3 install ipykernel ipython matplotlib nbconvert jupyter-client networkx tabulate
 pip3 install ipycytoscape plotly seaborn powerlaw anywidget
 

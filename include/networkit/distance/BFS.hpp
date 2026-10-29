@@ -99,7 +99,7 @@ void BreadthFirstSearch<GraphT>::run() {
                 this->sumDist += this->distances[v];
                 ++this->reachedNodes;
                 if (this->storePaths) {
-                    this->previous[v] = {u};
+                    this->previous[v].assign(1, u);
                     this->npaths[v] = this->npaths[u];
                 }
             } else if (this->storePaths && (this->distances[v] == this->distances[u] + weightOne)) {

@@ -51,7 +51,7 @@
 #
 # code-style:
 # -----------
-# Description: For code check always use a the (latest - 1) major release of clang-format. 
+# Description: For code check always use a the (latest - 1) major release of clang-format.
 #
 # Jobs:
 # =====
@@ -106,14 +106,14 @@ env:
 
 jobs:
   macos-build-latest-version-apple-clang:
-    name: "macOS ${{ matrix.os }} ${{ startsWith(matrix.os, '14') && ', arm64' || '' }} (apple-clang, CPython 3.15): ${{ matrix.build-configuration }}"
+    name: "macOS ${{ matrix.os }} ${{ startsWith(matrix.os, '15') && ', arm64' || '' }} (apple-clang, CPython 3.15): ${{ matrix.build-configuration }}"
     runs-on: macos-${{ matrix.os }}
     env:
       CC: cc
       CXX: c++
     strategy:
       matrix:
-        os: ['14', 'latest']
+        os: ['15', 'latest']
         build-configuration: ['full', 'full (native)']
     steps:
       - name: Install prerequisites
@@ -139,31 +139,35 @@ jobs:
         shell: bash
         env:
           TLX_PATH: /Users/runner/work/networkit/networkit/tlx
-          NATIVE: ${{ matrix.os == 'full (native)' }}
+          NATIVE: ${{ matrix.build-configuration == 'full (native)' }}
 
   macos-build-latest-version-misc:
     name: "macOS ${{ matrix.os }} (${{ matrix.compiler }}): core"
     runs-on: macos-${{ matrix.os }}
     strategy:
       matrix:
-        # Temporary: GCC 15 currently fails to compile macOS 26 SDK Mach headers
-        # included by GoogleTest, so keep it on the newest known-good macOS image.
+        # Temporary: GCC 15 failed to compile macOS 26 SDK Mach headers included by
+        # GoogleTest, so keep GCC on the newest known-good macOS image.
         include:
           - os: 'latest'
-            compiler: 'llvm-20'
+            compiler: 'clang-23'
           - os: '15'
-            compiler: 'gcc-15'
+            compiler: 'gcc-16'
     steps:
       - name: Install prerequisites
         run: |
           brew install ninja
-      - name: Install compiler llvm
-        if: matrix.compiler == 'llvm-20'
+      - name: Install compiler clang
+        if: matrix.compiler == 'clang-23'
         run: |
           brew update
           brew install libomp
-          brew reinstall llvm@20
-          brew link --overwrite llvm@20
+          brew reinstall llvm@23
+          brew link --overwrite llvm@23
+      - name: Install compiler gcc
+        if: matrix.compiler == 'gcc-16'
+        run: |
+          brew install gcc@16
       - name: Checkout networkit
         uses: actions/checkout@v5
         with:
@@ -172,12 +176,12 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
         shell: bash
         env:
-          CC: ${{ matrix.compiler == 'llvm-20' && '/opt/homebrew/opt/llvm@20/bin/clang' || 'gcc-15' }}
-          CXX: ${{ matrix.compiler == 'llvm-20' && '/opt/homebrew/opt/llvm@20/bin/clang++' || 'g++-15' }}
+          CC: ${{ matrix.compiler == 'clang-23' && '/opt/homebrew/opt/llvm@23/bin/clang' || 'gcc-16' }}
+          CXX: ${{ matrix.compiler == 'clang-23' && '/opt/homebrew/opt/llvm@23/bin/clang++' || 'g++-16' }}
 
   linux-build-latest:
     name: "Linux (gcc-14${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.15' || '' }}): ${{ matrix.build-configuration }}"
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       CC: gcc-14
       CXX: g++-14
@@ -187,11 +191,8 @@ jobs:
     steps:
       - name: Install prerequisites
         run:  |
-          sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu noble main universe'
           sudo apt-get update
           sudo apt-get install ninja-build g++-14 gcc-14
-          sudo apt-get install libomp-14-dev
-      # "binutils" install from plucky is a workaround: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=119657
       - name: Setup Python 3.15
         uses: actions/setup-python@v5
         with:
@@ -218,17 +219,17 @@ jobs:
 
   linux-build-misc:
     name: "Linux (${{ matrix.compiler }}): core"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
-        compiler: ['llvm-20']
+        compiler: ['clang-23']
     steps:
       - name: Install prerequisites
         run:  |
-          curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/jammy llvm-toolchain-jammy-20 main" | sudo tee /etc/apt/sources.list.d/llvm20.list
+          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          echo "deb http://apt.llvm.org/noble llvm-toolchain-noble-23 main" | sudo tee /etc/apt/sources.list.d/llvm23.list
           sudo apt-get update
-          sudo apt-get install clang-20 libomp-20-dev ninja-build
+          sudo apt-get install clang-23 libomp-23-dev ninja-build
       - name: Checkout networkit
         uses: actions/checkout@v5
         with:
@@ -242,12 +243,12 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/cpp_only.sh
         shell: bash
         env:
-          CC: clang-20
-          CXX: clang++-20
+          CC: clang-23
+          CXX: clang++-23
 
   linux-pep-518-install:
     name: "Linux: Release build using pyproject.toml"
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout networkit
         uses: actions/checkout@v5
@@ -265,21 +266,18 @@ jobs:
           mkdir ./tmp && cd ./tmp
           python3 -c "import networkit"
 
-  linux-build-min-support:
-    name: "Linux (${{ matrix.compiler }}, CPython 3.10): full"
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        compiler: ['gcc-10', 'clang-11']
+  linux-build-min-support-gcc:
+    name: "Linux (gcc-12, CPython 3.10): full"
+    runs-on: ubuntu-24.04
+    env:
+      CC: gcc-12
+      CXX: g++-12
     steps:
       - name: Install prerequisites
         run:  |
-          curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          echo "deb http://apt.llvm.org/focal llvm-toolchain-focal-11 main" | sudo tee /etc/apt/sources.list.d/llvm11.list
           sudo apt-get update
           sudo apt-get install ninja-build
-          sudo apt-get install clang-11 clang++-11 libomp-11-dev
-          sudo apt-get install gcc-10 g++-10
+          sudo apt-get install gcc-12 g++-12
       - name: Setup Python 3.10
         uses: actions/setup-python@v5
         with:
@@ -296,13 +294,42 @@ jobs:
       - name: Prepare environment and run checks
         run:  ${{ github.workspace }}/.github/workflows/scripts/full.sh
         shell: bash
-        env:
-          CC: ${{ matrix.compiler == 'gcc-10' && 'gcc-10' || 'clang-11' }}
-          CXX: ${{ matrix.compiler == 'gcc-10' && 'g++-10' || 'clang++-11' }}
+
+  linux-build-min-support-clang:
+    name: "Linux (clang-14, CPython 3.10): full"
+    runs-on: ubuntu-24.04
+    # The 22.04 runners are retired, but clang 14 cannot compile the C++20
+    # libstdc++ headers of gcc 14 on 24.04. Ubuntu 22.04 ships clang 14 with
+    # a libstdc++ it supports, and CPython 3.10.
+    container: ubuntu:22.04
+    env:
+      CC: clang-14
+      CXX: clang++-14
+      DEBIAN_FRONTEND: noninteractive
+      TLX_PATH: /__w/networkit/networkit/tlx
+    steps:
+      - name: Install prerequisites
+        run:  |
+          apt-get update
+          apt-get install -y git cmake ninja-build python3-dev python3-venv
+          apt-get install -y clang-14 libomp-14-dev libstdc++-12-dev
+      - name: Checkout networkit
+        uses: actions/checkout@v5
+        with:
+          submodules: true
+      - name: Checkout tlx
+        uses: actions/checkout@v5
+        with:
+          repository: tlx/tlx
+          path: tlx
+      - name: Prepare environment and run checks
+        # github.workspace holds the host path, not the container one.
+        run:  $GITHUB_WORKSPACE/.github/workflows/scripts/full.sh
+        shell: bash
 
   linux-build-clang-tidy:
-    name: "Linux (llvm-22): clang-tidy"
-    runs-on: ubuntu-22.04
+    name: "Linux (clang-22): clang-tidy"
+    runs-on: ubuntu-26.04
     env:
       CC: clang-22
       CXX: clang++-22
@@ -310,10 +337,8 @@ jobs:
     steps:
       - name: Install prerequisites
         run: |
-          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
-          echo "deb http://apt.llvm.org/jammy llvm-toolchain-jammy-${LLVM_VERSION} main" | sudo tee /etc/apt/sources.list.d/llvm${LLVM_VERSION}.list
           sudo apt-get update
-          sudo apt-get install python3.10 libomp-${LLVM_VERSION}-dev clang-${LLVM_VERSION} clang-tidy-${LLVM_VERSION} ninja-build
+          sudo apt-get install libomp-${LLVM_VERSION}-dev clang-${LLVM_VERSION} clang-tidy-${LLVM_VERSION} ninja-build
       - name: Checkout networkit
         uses: actions/checkout@v4
         with:
@@ -324,7 +349,7 @@ jobs:
 
   linux-build-coverage:
     name: "Linux (gcc-12, CPython 3.12): coverage"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     env:
       CC: gcc-12
       CXX: g++-12
@@ -335,7 +360,6 @@ jobs:
     steps:
       - name: Install prerequisites
         run:  |
-          sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu jammy main universe'
           sudo apt-get update
           sudo apt-get install gcc-12 g++-12 ninja-build
       - name: Setup Python 3.12
@@ -371,15 +395,13 @@ jobs:
           file: ${{ env.COVERALLS_DUMP_FILE }}
 
   linux-build-leak:
-    name: "Linux (gcc-10): leak checks"
-    runs-on: ubuntu-22.04
+    name: "Linux (clang-17): leak checks"
+    runs-on: ubuntu-26.04
     env:
       UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1:report_error_type=1:suppressions=../UBSAN.filter
     steps:
       - name: Install prerequisites
         run:  |
-          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
-          echo "deb http://apt.llvm.org/jammy llvm-toolchain-jammy-17 main" | sudo tee /etc/apt/sources.list.d/llvm17.list
           sudo apt-get update
           sudo apt-get install libomp-17-dev clang-17 clang-tidy-17 ninja-build
       - name: Checkout
@@ -466,17 +488,17 @@ jobs:
           NATIVE: ${{ matrix.build-configuration == 'full (native)' }}
 
   documentation-build:
-    name: "Linux (gcc-11, CPython 3.15): documentation"
-    runs-on: ubuntu-22.04
+    name: "Linux (gcc-16, CPython 3.15): documentation"
+    runs-on: ubuntu-24.04
     env:
-      CC: gcc-11
-      CXX: g++-11
+      CC: gcc-16
+      CXX: g++-16
     steps:
       - name: Install prerequisites
         run:  |
-          sudo add-apt-repository 'deb http://mirrors.kernel.org/ubuntu jammy main universe'
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
           sudo apt-get update
-          sudo apt-get install gcc-11 g++-11 ninja-build
+          sudo apt-get install gcc-16 g++-16 ninja-build
           sudo apt-get install doxygen pandoc
       - name: Setup Python 3.15
         uses: actions/setup-python@v5
@@ -494,14 +516,12 @@ jobs:
         shell: bash
   style-guide-compliance-build:
     name: "Linux (default): code-style"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     env:
       LLVM_VERSION: 22
     steps:
       - name: Install prerequisites
         run: |
-          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
-          echo "deb http://apt.llvm.org/jammy llvm-toolchain-jammy-${LLVM_VERSION} main" | sudo tee /etc/apt/sources.list.d/llvm${LLVM_VERSION}.list
           sudo apt-get update
           sudo apt-get install clang-format-${LLVM_VERSION} python3-yaml
       - name: Checkout networkit
