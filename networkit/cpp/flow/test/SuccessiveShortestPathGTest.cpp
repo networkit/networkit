@@ -648,4 +648,60 @@ TEST_F(SuccessiveShortestPathGTest, testDimacsGeneratedMin10x20) {
     G.forEdges([&](node, node, edgeid eid) { EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]); });
     checkFlowConservation(G, flow);
 }
+// A max-heap revisits the suffix for every one of the 2^25 paths.
+TEST_F(SuccessiveShortestPathGTest, testLayeredAlternativePaths) {
+    constexpr count stages = 25;
+    Graph G(3 * stages + 1, /*weighted=*/true, /*directed=*/true);
+    G.indexEdges();
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
+    auto supply = G.attachNodeDoubleAttribute(supplyName);
+    G.forNodes([&](node u) { supply.set(u, 0.0); });
+    supply.set(0, 1.0);
+    supply.set(3 * stages, -1.0);
+
+    for (count i = 0; i < stages; ++i) {
+        const node u = 3 * i;
+        addCostAndCapacity(G, capacities, u, u + 1, double(uint64_t{1} << (stages - i)), 1);
+        addCostAndCapacity(G, capacities, u + 1, u + 3, 0, 1);
+        addCostAndCapacity(G, capacities, u, u + 2, 0, 1);
+        addCostAndCapacity(G, capacities, u + 2, u + 3, 0, 1);
+    }
+
+    SuccessiveShortestPathMinCostFlow solver(G, capacityName, supplyName);
+    solver.run();
+    EXPECT_DOUBLE_EQ(solver.getTotalCost(), 0.0);
+    checkFlowConservation(G, solver.getFlow());
+}
+
+TEST_F(SuccessiveShortestPathGTest, testSwitchToUnreachableSupply) {
+    Graph G(5, /*weighted=*/true, /*directed=*/true);
+    G.indexEdges();
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
+    auto supply = G.attachNodeDoubleAttribute(supplyName);
+    supply.set(0, 1);
+    supply.set(1, 1);
+    supply.set(2, -1);
+    supply.set(3, -1);
+    supply.set(4, 0);
+
+    // Source 0 cannot reach source 1. The second augmentation must cancel
+    // 0 -> 2 and send source 0's unit to node 3 instead.
+    addCostAndCapacity(G, capacities, 0, 2, 5, 1);
+    addCostAndCapacity(G, capacities, 0, 4, 6, 1);
+    addCostAndCapacity(G, capacities, 4, 3, 0, 1);
+    addCostAndCapacity(G, capacities, 1, 2, 0, 1);
+    addCostAndCapacity(G, capacities, 1, 3, 10, 1);
+
+    SuccessiveShortestPathMinCostFlow solver(G, capacityName, supplyName);
+    solver.run();
+    EXPECT_DOUBLE_EQ(solver.getTotalCost(), 6.0);
+    const auto flow = solver.getFlow();
+    EXPECT_DOUBLE_EQ(flow.get(G.edgeId(0, 2)), 0.0);
+    EXPECT_DOUBLE_EQ(flow.get(G.edgeId(1, 2)), 1.0);
+    EXPECT_DOUBLE_EQ(flow.get(G.edgeId(0, 4)), 1.0);
+    EXPECT_DOUBLE_EQ(flow.get(G.edgeId(4, 3)), 1.0);
+    EXPECT_DOUBLE_EQ(flow.get(G.edgeId(1, 3)), 0.0);
+    checkFlowConservation(G, flow);
+}
+
 } // namespace NetworKit

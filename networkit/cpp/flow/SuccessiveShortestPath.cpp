@@ -104,9 +104,9 @@ void SuccessiveShortestPathMinCostFlow::dijkstraOnResidualGraph(
     const Graph::EdgeDoubleAttribute &capacities) const {
 
     const auto comparator = [&](const NodeWithCost &nwc1, const NodeWithCost &nwc2) -> bool {
-        if (!Aux::NumericTools::equal(nwc1.distance, nwc2.distance))
-            return nwc1.distance > nwc2.distance;
-        return nwc1.u > nwc2.u;
+        if (nwc1.distance != nwc2.distance)
+            return nwc1.distance < nwc2.distance;
+        return nwc1.u < nwc2.u;
     };
 
     tlx::d_ary_heap<NodeWithCost, 2, decltype(comparator)> minHeap(comparator);
@@ -190,14 +190,7 @@ void SuccessiveShortestPathMinCostFlow::run() {
         dijkstraOnResidualGraph(start, nodePotential, distances, parentNode, parentEdge,
                                 parentDirection, capacities);
 
-        // (c) update nodePotentials
-        residualGraph.parallelForNodes([&](node u) {
-            if (distances[u] < infiniteCosts) {
-                nodePotential[u] += distances[u];
-            }
-        });
-
-        // (d) pick a demand node target reachable from start
+        // (c) pick a demand node target reachable from start
         node target = none;
         for (const node u : residualGraph.nodeRange()) {
             if (supply.get(u) < -epsilon && distances[u] < infiniteCosts) {
@@ -210,6 +203,12 @@ void SuccessiveShortestPathMinCostFlow::run() {
             throw std::runtime_error(
                 "SuccessiveShortestPathMinCostFlow: unable to satisfy all supplies/demands");
         }
+
+        // (d) keep reduced costs non-negative, including arcs from nodes that
+        // this supply cannot reach. Capping every distance at the target's
+        // distance preserves feasibility when the next supply changes.
+        residualGraph.parallelForNodes(
+            [&](node u) { nodePotential[u] += std::min(distances[u], distances[target]); });
 
         // (e) compute bottleneck-flow = min(b[s], -b[t], min residual capacity on path)
         double bottleneckFlow = std::min(supply.get(start), -supply.get(target));
