@@ -35,8 +35,11 @@ void Assortativity::run() {
         // compact partition so matrix doesn't get unnecessarily large
         Partition P = *partition;
         P.compact();
-        // create kxk matrix with entries $e_{ij}$, the fraction of edges connecting nodes of type i
-        // to nodes of type j
+        // create kxk mixing matrix with entries $e_{ij}$, the fraction of edge counts from nodes of
+        // type i to nodes of type j. For undirected graphs, each edge {u, v} with u != v is counted
+        // once in each direction and each self-loop is counted once; for directed graphs, each
+        // edge is counted once. The matrix is normalized by the total of these counts (2m minus
+        // the number of self-loops for undirected graphs, m for directed graphs).
         count k = P.upperBound();
         std::vector<std::vector<double>> E(k, std::vector<double>(k, 0.0));
         G->forEdges([&](node u, node v) {
