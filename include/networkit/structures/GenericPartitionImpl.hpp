@@ -105,8 +105,6 @@ void GenericPartition<IndexType>::compact(bool useTurbo) {
                 }
             });
     }
-    // MK: @Alexandra, since compact() is a trivial renumeration, we do not need to re-scan
-    // the upper bound again
     this->omega = (i == 0) ? 0 : i - 1;
 }
 

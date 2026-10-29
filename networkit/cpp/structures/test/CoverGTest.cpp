@@ -262,6 +262,7 @@ TYPED_TEST_P(GenericCoverGTest, testSetUpperBound) {
     EXPECT_ANY_THROW(cover.setUpperBound(TypeParam{5}));
     cover.moveToSubset(TypeParam{0}, TypeParam{5});
     cover.setUpperBound(TypeParam{5});
+    EXPECT_EQ(cover.upperBound(), TypeParam{5});
 }
 
 REGISTER_TYPED_TEST_SUITE_P(GenericCoverGTest, testConstructor, testPartitionConstructor,
