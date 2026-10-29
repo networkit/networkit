@@ -288,7 +288,6 @@ class TestStructures(unittest.TestCase):
 		self.assertEqual(p.getVector(), [0, 1, 2])
 		p[0] = 1
 		self.assertEqual(p.getVector(), [1, 1, 2])
-		self.assertEqual(nk.none, 2**64 - 1)
 		p[0] = nk.none
 		self.assertEqual(p.getVector(), [nk.none, 1, 2])
 

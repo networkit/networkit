@@ -35,6 +35,7 @@ class TestCorrelation(unittest.TestCase):
 			G.addEdge(0, 1)
 			G.addEdge(1, 1)
 			P = nk.Partition(2)
+			P.setUpperBound(2)
 			P.addToSubset(0, 0)
 			P.addToSubset(1, 1)
 			assor = nk.correlation.Assortativity(G, P).run()
