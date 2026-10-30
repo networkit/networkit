@@ -118,7 +118,7 @@ private:
 
 using Factory = std::function<std::unique_ptr<SubgraphIsomorphism>(const Graph &, const Graph &)>;
 
-/// The real algorithms, for the base-class behaviour that each of them has to keep.
+/// The real algorithms, for the base-class behavior that each of them has to keep.
 std::vector<std::pair<std::string, Factory>> algorithms() {
     return {{"VF2",
              [](const Graph &pattern, const Graph &target) -> std::unique_ptr<SubgraphIsomorphism> {
