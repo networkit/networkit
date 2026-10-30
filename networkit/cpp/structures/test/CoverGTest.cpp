@@ -252,6 +252,19 @@ TYPED_TEST_P(GenericCoverGTest, testInSameSubset) {
     EXPECT_TRUE(cover.inSameSubset(TypeParam{1}, TypeParam{5}));
 }
 
+TYPED_TEST_P(GenericCoverGTest, testSetUpperBound) {
+    GenericCover<TypeParam> cover(TypeParam{6});
+    cover.setUpperBound(TypeParam{6});
+    for (TypeParam i = 0; i < TypeParam{6}; i += TypeParam{1}) {
+        cover.addToSubset(i, i);
+        cover.addToSubset(TypeParam{0}, i);
+    }
+    EXPECT_ANY_THROW(cover.setUpperBound(TypeParam{5}));
+    cover.moveToSubset(TypeParam{0}, TypeParam{5});
+    cover.setUpperBound(TypeParam{5});
+    EXPECT_EQ(cover.upperBound(), TypeParam{5});
+}
+
 REGISTER_TYPED_TEST_SUITE_P(GenericCoverGTest, testConstructor, testPartitionConstructor,
                             testAllToSingletonsAndUpperBound, testContains,
                             testUpperBoundAfterMerges, testToSingleton, testAddToSubset,
@@ -260,7 +273,8 @@ REGISTER_TYPED_TEST_SUITE_P(GenericCoverGTest, testConstructor, testPartitionCon
                             testSubsetSizesTrivial2, testSubsetSizesAssignedToMultipleSubsets,
                             testSubsetSizesAssignedToMultipleSubsets2,
                             testSubsetSizeMapMultipleSets, testMergeSubsetsAndGetMembers,
-                            testNumberOfSubsets, testSubsetsOf, testInSameSubset);
+                            testNumberOfSubsets, testSubsetsOf, testInSameSubset,
+                            testSetUpperBound);
 
 using GenericCoverTestTypes =
     ::testing::Types<index, std::uint32_t, std::uint16_t, std::int64_t, std::int32_t, std::int16_t>;

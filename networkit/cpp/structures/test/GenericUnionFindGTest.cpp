@@ -37,6 +37,7 @@ TYPED_TEST_P(GenericUnionFindGTest, testEmptyUnionFindConvertsToEmptyPartition) 
 
     EXPECT_EQ(partition.numberOfElements(), TypeParam{0});
     EXPECT_EQ(partition.numberOfSubsets(), count{0});
+    EXPECT_EQ(partition.upperBound(), TypeParam{1});
 }
 
 TYPED_TEST_P(GenericUnionFindGTest, testSingleElementAndSelfMerge) {

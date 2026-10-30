@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cassert>
 #include <iterator>
+#include <stdexcept>
 #include <unordered_set>
 
 namespace NetworKit {
@@ -199,7 +200,22 @@ IndexType GenericCover<IndexType>::extend() {
 
 template <IntegralValue IndexType>
 void GenericCover<IndexType>::setUpperBound(IndexType upper) {
-    this->omega = upper - 1;
+    // omega should never be < 0
+    const IndexType newOmega = (upper == 0) ? 0 : upper - 1;
+
+    if (newOmega < this->omega
+        && std::ranges::any_of(
+            data,
+            [newOmega](const std::set<IndexType> &subsets) {
+                // std::set is sorted, so the last id is the largest one
+                return !subsets.empty() && *subsets.rbegin() > newOmega;
+            })) {
+        throw std::invalid_argument(
+            "Shrinking upper bound this much would result in elements being mapped to invalid "
+            "subset ids. Try larger number for upper.");
+    }
+
+    this->omega = newOmega;
 }
 
 template <IntegralValue IndexType>

@@ -647,6 +647,7 @@ class TestCentrality(unittest.TestCase):
 
     def testLocalPartitionCoverage(self):
         part = nk.structures.Partition(9)
+        part.setUpperBound(2)
         part.addToSubset(0, 1)
         part.addToSubset(0, 2)
         part.addToSubset(0, 3)
@@ -684,6 +685,7 @@ class TestCentrality(unittest.TestCase):
 
     def testPermanenceCentrality(self):
         part = nk.structures.Partition(9)
+        part.setUpperBound(2)
         part.addToSubset(0, 1)
         part.addToSubset(0, 2)
         part.addToSubset(0, 3)

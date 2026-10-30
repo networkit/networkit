@@ -13,6 +13,7 @@
 #include <limits>
 #include <map>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -49,8 +50,8 @@ public:
     /**
      * Create a new partition data structure for @a z elements. Initialize each
      * entry to the default value. WARNING: this circumvents the standard
-     * interface and may leave the object in an inconsistent state. Use only in
-     * exceptional cases.
+     * interface and leaves the object in an inconsistent state if @a defaultValue is neither none
+     * nor 0. Use only in exceptional cases.
      *
      * @param[in] z maximum ValueType
      * @param[in] defaultValue
@@ -59,8 +60,10 @@ public:
 
     GenericPartition(const std::vector<IndexType> &data);
 
-    /* Updates the maximum index of the partition to @a newZ and sets all its
-     * values to @a defaultValue.
+    /**
+     * Updates the maximum index of the partition to @a newZ and sets all its
+     * values to @a defaultValue. WARNING: this leaves the object in an inconsistent state if @a
+     * defaultValue is neither none nor 0. Use only in exceptional cases.
      *
      * @param[in] newZ New maximum index of the partition. @param[in]
      * defaultValue Default value of all the elements in the partition.
@@ -174,7 +177,23 @@ public:
      *
      * @param[in] upper highest assigned subset ID + 1
      */
-    inline void setUpperBound(IndexType upper) { this->omega = upper - 1; }
+    inline void setUpperBound(IndexType upper) {
+        // omega should never be < 0
+        const IndexType newOmega = (upper == 0) ? 0 : upper - 1;
+
+        if (newOmega < this->omega) {
+            // trying to shrink omega, must ensure we do not shrink it too much
+            for (IndexType e = 0; e < this->z; ++e) {
+                if (data[e] != noneIndex && data[e] > newOmega) {
+                    throw std::invalid_argument(
+                        "Shrinking upper bound this much would result in "
+                        "elements being mapped to invalid subset ids. Try "
+                        "larger number for upper or using compact() first.");
+                }
+            }
+        }
+        this->omega = newOmega;
+    }
 
     /**
      * Return an upper bound for the subset ids that have been assigned.
