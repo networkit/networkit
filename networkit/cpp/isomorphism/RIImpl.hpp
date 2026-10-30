@@ -43,16 +43,6 @@ struct RIState {
     count depth = 0;
 };
 
-/// Computes the RI-DS domains from degrees and labels, refines them with one pass over the pattern
-/// arcs, and applies forward checking. Returns empty domains under plain RI.
-RIDomains computeDomains(const SearchGraph &pattern, const SearchGraph &target,
-                         std::span<const index> patternNodeLabels,
-                         std::span<const index> targetNodeLabels, RI::Variant variant);
-
-/// Computes the matching order of Bonnici et al. Under RI-DS, single-element domains come first,
-/// and a full tie goes to the smaller domain.
-RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains);
-
 /// Whether the sizes, the degrees or an empty RI-DS domain rule out every match. False for an
 /// empty pattern, whose one match is the empty mapping.
 bool cannotMatch(const SearchGraph &pattern, const SearchGraph &target, const RIDomains &domains);

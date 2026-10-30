@@ -33,7 +33,6 @@
 namespace NetworKit {
 namespace {
 
-using IsomorphismDetails::computeOrdering;
 using IsomorphismDetails::prepareRISearch;
 using IsomorphismDetails::RIDomains;
 using IsomorphismDetails::RIImpl;
@@ -293,7 +292,8 @@ TEST_P(RIGTest, testSelectiveDomainsDoNotChangeTheMatchSet) {
 }
 
 /// The domains are set by hand, since a computed domain keeps every neighbor that could host the
-/// pattern node. The slice of target node 5 has a node below and a node above the domain.
+/// pattern node. Pattern node 1 has node 0 as its parent, so its candidates come from the slice of
+/// target node 5. That slice has a node below and a node above the domain.
 TEST_F(RIDSGTest, testCandidatesAreIntersectedWithTheDomain) {
     const SearchGraph pattern(IsomorphismTest::graphOf(2, {{0, 1}}), /* buildMatrix = */ true);
     const SearchGraph target(IsomorphismTest::graphOf(10, {{5, 1}, {5, 3}, {5, 7}, {5, 9}}),
@@ -302,8 +302,7 @@ TEST_F(RIDSGTest, testCandidatesAreIntersectedWithTheDomain) {
     RIDomains domains;
     domains.ofPatternNode = {{5}, {3, 7}};
     domains.earnsItsKeep = {false, true};
-    const RIOrdering ordering = computeOrdering(pattern, domains);
-    ASSERT_EQ(ordering.parent, (std::vector<index>{none, 0}));
+    const RIOrdering ordering{{0, 1}, {none, 0}};
 
     EXPECT_THAT(matchesOf(pattern, target, ordering, domains),
                 UnorderedElementsAre(Match{5, 3}, Match{5, 7}));
@@ -321,9 +320,7 @@ TEST_F(RIDSGTest, testInSliceCandidatesAreIntersectedWithTheDomain) {
     RIDomains domains;
     domains.ofPatternNode = {{5}, {3, 4, 7}};
     domains.earnsItsKeep = {false, true};
-    const RIOrdering ordering = computeOrdering(pattern, domains);
-    ASSERT_EQ(ordering.order, (std::vector<node>{0, 1}));
-    ASSERT_EQ(ordering.parent, (std::vector<index>{none, 0}));
+    const RIOrdering ordering{{0, 1}, {none, 0}};
 
     EXPECT_THAT(matchesOf(pattern, target, ordering, domains),
                 UnorderedElementsAre(Match{5, 3}, Match{5, 7}));

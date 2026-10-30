@@ -115,8 +115,8 @@ bool forwardCheckSingletons(const SearchGraph &pattern, std::vector<std::vector<
     return true;
 }
 
-} // namespace
-
+/// Computes the matching order of Bonnici et al. Under RI-DS, single-element domains come first,
+/// and a full tie goes to the smaller domain.
 RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains) {
     // The score of an unordered node is the triple (V_vis, V_neig, V_unv) of Bonnici et al.: its
     // arcs into the ordered prefix, the prefix nodes two hops away through an unordered node, and
@@ -220,16 +220,8 @@ RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains)
     return result;
 }
 
-bool cannotMatch(const SearchGraph &pattern, const SearchGraph &target, const RIDomains &domains) {
-    if (domains.anyEmpty || pattern.numberOfNodes() > target.numberOfNodes())
-        return true;
-
-    if (pattern.maxOutDegree() > target.maxOutDegree())
-        return true;
-
-    return pattern.isDirected() && pattern.maxInDegree() > target.maxInDegree();
-}
-
+/// Computes the RI-DS domains from degrees and labels, refines them with one pass over the pattern
+/// arcs, and applies forward checking. Returns empty domains under plain RI.
 RIDomains computeDomains(const SearchGraph &pattern, const SearchGraph &target,
                          std::span<const index> patternNodeLabels,
                          std::span<const index> targetNodeLabels, RI::Variant variant) {
@@ -301,6 +293,18 @@ RIDomains computeDomains(const SearchGraph &pattern, const SearchGraph &target,
     }
 
     return result;
+}
+
+} // namespace
+
+bool cannotMatch(const SearchGraph &pattern, const SearchGraph &target, const RIDomains &domains) {
+    if (domains.anyEmpty || pattern.numberOfNodes() > target.numberOfNodes())
+        return true;
+
+    if (pattern.maxOutDegree() > target.maxOutDegree())
+        return true;
+
+    return pattern.isDirected() && pattern.maxInDegree() > target.maxInDegree();
 }
 
 RISearchSetup prepareRISearch(const Graph &pattern, const Graph &target,
