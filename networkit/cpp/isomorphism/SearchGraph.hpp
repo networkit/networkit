@@ -79,6 +79,34 @@ public:
         return std::ranges::binary_search(outNeighbors(u), v);
     }
 
+    /// Ignores direction and visits a directed mutual pair twice, once per arc.
+    template <typename Callback>
+    void forEachIncidentArc(node u, Callback fn) const {
+        for (const node v : outNeighbors(u))
+            fn(v);
+
+        // The in-slices of an undirected snapshot are its out-slices.
+        if (!directed)
+            return;
+
+        for (const node v : inNeighbors(u))
+            fn(v);
+    }
+
+    /// Ignores direction and visits every neighbor of @a u once.
+    template <typename Callback>
+    void forEachDistinctNeighbor(node u, Callback fn) const {
+        for (const node v : outNeighbors(u))
+            fn(v);
+
+        if (!directed)
+            return;
+
+        for (const node v : inNeighbors(u))
+            if (!hasEdge(u, v))
+                fn(v);
+    }
+
     bool hasEdgeLabels() const noexcept { return !outLabel.empty(); }
 
     /// Whether collapsing parallel edges with different labels discarded a label. The algorithms

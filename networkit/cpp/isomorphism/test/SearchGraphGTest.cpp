@@ -432,6 +432,42 @@ TEST_F(SearchGraphGTest, testMaxDegree) {
     EXPECT_EQ(SearchGraph(Graph(5), false).maxOutDegree(), 0);
 }
 
+TEST_F(SearchGraphGTest, testNeighborWalks) {
+    // Node 0 has the mutual pair 0 <-> 1, the arcs 0 -> 2 and 3 -> 0, a parallel arc and a loop.
+    Graph D(4, false, /* directed = */ true);
+    for (const auto &[u, v] :
+         std::vector<std::pair<node, node>>{{0, 1}, {1, 0}, {0, 2}, {0, 2}, {3, 0}, {0, 0}})
+        D.addEdge(u, v);
+
+    Graph U(3);
+    U.addEdge(0, 1);
+    U.addEdge(0, 2);
+
+    for (bool buildMatrix : {false, true}) {
+        SCOPED_TRACE(testing::Message() << "buildMatrix=" << buildMatrix);
+        const SearchGraph SD(D, buildMatrix);
+        const SearchGraph SU(U, buildMatrix);
+
+        std::vector<node> visited;
+        const auto visit = [&visited](node v) { visited.push_back(v); };
+
+        SD.forEachIncidentArc(0, visit);
+        EXPECT_THAT(visited, ElementsAre(1u, 2u, 1u, 3u));
+
+        visited.clear();
+        SD.forEachDistinctNeighbor(0, visit);
+        EXPECT_THAT(visited, ElementsAre(1u, 2u, 3u));
+
+        visited.clear();
+        SU.forEachIncidentArc(0, visit);
+        EXPECT_THAT(visited, ElementsAre(1u, 2u));
+
+        visited.clear();
+        SU.forEachDistinctNeighbor(0, visit);
+        EXPECT_THAT(visited, ElementsAre(1u, 2u));
+    }
+}
+
 TEST_F(SearchGraphGTest, testEdgeLabelsStayWithTheirArcs) {
     // Node 9 gets its neighbors in descending order, so the sort must move every label.
     for (bool directed : {false, true}) {

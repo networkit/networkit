@@ -13,33 +13,6 @@ namespace NetworKit::IsomorphismDetails {
 
 namespace {
 
-/// Ignores direction and visits a directed mutual pair twice, once per arc.
-template <typename Callback>
-void forEachIncidentArc(const SearchGraph &g, node u, Callback fn) {
-    for (const node v : g.outNeighbors(u))
-        fn(v);
-
-    // The in-slices of an undirected snapshot are its out-slices.
-    if (!g.isDirected())
-        return;
-
-    for (const node v : g.inNeighbors(u))
-        fn(v);
-}
-
-template <typename Callback>
-void forEachDistinctNeighbor(const SearchGraph &g, node u, Callback fn) {
-    for (const node v : g.outNeighbors(u))
-        fn(v);
-
-    if (!g.isDirected())
-        return;
-
-    for (const node v : g.inNeighbors(u))
-        if (!g.hasEdge(u, v))
-            fn(v);
-}
-
 bool intersectsDomain(const Slice &slice, index patternLabel, std::span<const node> domain) {
     auto candidate = domain.begin();
     for (index i = 0; i < slice.nodes.size(); ++i) {
@@ -167,11 +140,11 @@ RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains)
     const auto tripleFor = [&](node u) {
         std::array<count, 3> score{visCount[u], 0, 0};
 
-        forEachDistinctNeighbor(pattern, u, [&](node v) {
+        pattern.forEachDistinctNeighbor(u, [&](node v) {
             if (inOrder[v])
                 return;
 
-            forEachDistinctNeighbor(pattern, v, [&](node w) {
+            pattern.forEachDistinctNeighbor(v, [&](node w) {
                 if (!inOrder[w] || reached.indexIsUsed(w))
                     return;
                 reached.insert(w, true);
@@ -180,7 +153,7 @@ RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains)
         });
         reached.reset();
 
-        forEachDistinctNeighbor(pattern, u, [&](node v) {
+        pattern.forEachDistinctNeighbor(u, [&](node v) {
             if (!inOrder[v] && visCount[v] == 0)
                 ++score[2];
         });
@@ -236,7 +209,7 @@ RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains)
         inOrder[best] = true;
         result.order.push_back(best);
         result.parent.push_back(firstOrderedNeighbor[best]);
-        forEachIncidentArc(pattern, best, [&](node v) {
+        pattern.forEachIncidentArc(best, [&](node v) {
             ++visCount[v];
             if (firstOrderedNeighbor[v] == none)
                 firstOrderedNeighbor[v] = position;
