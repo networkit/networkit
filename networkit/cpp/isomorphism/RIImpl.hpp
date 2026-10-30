@@ -139,15 +139,14 @@ private:
         };
 
         openLevel();
-        while (true) {
+        while (!levels.empty()) {
             Level &level = levels.back();
             if (level.next == level.end) {
                 // We have tried every candidate at this depth, so we go back to the depth above.
                 candidates.resize(level.begin);
                 levels.pop_back();
-                if (levels.empty())
-                    return;
-                --state.depth;
+                if (!levels.empty())
+                    --state.depth;
                 continue;
             }
 
@@ -156,16 +155,18 @@ private:
             if (!consistent(state, tv))
                 continue;
 
+            // Polled only after a candidate passes, since isRunning() is an out-of-line call.
             if (!handler->isRunning())
                 return;
 
             // Nothing reads a mapping entry at or above the depth, so backtracking needs no reset.
             state.mapping[state.depth] = tv;
-            if (state.depth + 1 < matchDepth) {
+            if (state.depth + 1 == matchDepth) {
+                if (!reportMapping(state))
+                    return;
+            } else {
                 ++state.depth;
                 openLevel();
-            } else if (!reportMapping(state)) {
-                return;
             }
         }
     }
