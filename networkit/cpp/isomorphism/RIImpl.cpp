@@ -56,15 +56,6 @@ void collectArcConstraints(const SearchGraph &pattern, node pu, std::vector<ArcC
         collect(false);
 }
 
-/**
- * Minimum fraction of a domain that the refinement and forward checking must remove before the
- * search intersects target neighborhoods with the domain. Below it, the degree and label checks
- * in RIImpl::consistent() reject the same candidates more cheaply. On caidaRouterLevel with a
- * labelled triangle pattern, intersecting costs 21% at a yield of 0.56 and breaks even at about
- * 0.8.
- */
-constexpr double MinSweepYieldForSliceIntersection = 0.8;
-
 /// Forward checking, Section 4.2.2 of Kimmig, Meyerhenke and Strash. Returns false if a domain
 /// becomes empty, in which case there are no matches.
 bool forwardCheckSingletons(const SearchGraph &pattern, std::vector<std::vector<node>> &domains) {
@@ -224,7 +215,8 @@ RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains)
 /// arcs, and applies forward checking. Returns empty domains under plain RI.
 RIDomains computeDomains(const SearchGraph &pattern, const SearchGraph &target,
                          std::span<const index> patternNodeLabels,
-                         std::span<const index> targetNodeLabels, RI::Variant variant) {
+                         std::span<const index> targetNodeLabels, RI::Variant variant,
+                         double domainFilterThreshold) {
     RIDomains result;
     if (variant != RI::Variant::RI_DS)
         return result;
@@ -285,11 +277,10 @@ RIDomains computeDomains(const SearchGraph &pattern, const SearchGraph &target,
         const count built = builtSize[pu];
         const count kept = result.ofPatternNode[pu].size();
         const count pruned = built - kept;
-        result.earnsItsKeep[pu] =
-            kept == 1
-            || (built != 0
-                && static_cast<double>(pruned)
-                       >= MinSweepYieldForSliceIntersection * static_cast<double>(built));
+        const bool prunedEnough =
+            built != 0
+            && static_cast<double>(pruned) >= domainFilterThreshold * static_cast<double>(built);
+        result.earnsItsKeep[pu] = kept == 1 || prunedEnough;
     }
 
     return result;
@@ -312,14 +303,14 @@ RISearchSetup prepareRISearch(const Graph &pattern, const Graph &target,
                               std::span<const index> targetNodeLabels,
                               std::span<const index> patternEdgeLabels,
                               std::span<const index> targetEdgeLabels, RI::Variant variant,
-                              std::string_view algorithmName) {
+                              double domainFilterThreshold, std::string_view algorithmName) {
     SearchGraph patternGraph(pattern, /* buildMatrix = */ true, patternEdgeLabels);
     SearchGraph targetGraph(target, /* buildMatrix = */ false, targetEdgeLabels);
 
     refuseLostLabels(patternGraph, targetGraph, algorithmName);
 
-    RIDomains domains =
-        computeDomains(patternGraph, targetGraph, patternNodeLabels, targetNodeLabels, variant);
+    RIDomains domains = computeDomains(patternGraph, targetGraph, patternNodeLabels,
+                                       targetNodeLabels, variant, domainFilterThreshold);
     RIOrdering ordering = computeOrdering(patternGraph, domains);
 
     return RISearchSetup{std::move(patternGraph), std::move(targetGraph), std::move(domains),

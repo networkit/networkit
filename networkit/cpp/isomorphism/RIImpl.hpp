@@ -29,8 +29,8 @@ struct RIDomains {
     /// Sorted target nodes that each pattern node can be mapped to.
     std::vector<std::vector<node>> ofPatternNode;
 
-    /// Whether intersecting candidates with the domain pays off. See
-    /// MinSweepYieldForSliceIntersection in RIImpl.cpp.
+    /// Whether intersecting candidates with the domain pays off. See the parameter
+    /// `domainFilterThreshold` of @ref RI.
     std::vector<bool> earnsItsKeep;
 
     bool anyEmpty = false;
@@ -336,14 +336,15 @@ struct RISearchSetup {
     RIOrdering ordering;
 };
 
-/// Builds the snapshots, the RI-DS domains and the matching order. Throws `std::runtime_error` if a
-/// graph has parallel edges with different edge labels.
+/// Builds the snapshots, the RI-DS domains and the matching order. See @ref RI for
+/// @a domainFilterThreshold. Throws `std::runtime_error` if a graph has parallel edges with
+/// different edge labels.
 RISearchSetup prepareRISearch(const Graph &pattern, const Graph &target,
                               std::span<const index> patternNodeLabels,
                               std::span<const index> targetNodeLabels,
                               std::span<const index> patternEdgeLabels,
                               std::span<const index> targetEdgeLabels, RI::Variant variant,
-                              std::string_view algorithmName);
+                              double domainFilterThreshold, std::string_view algorithmName);
 
 } // namespace NetworKit::IsomorphismDetails
 

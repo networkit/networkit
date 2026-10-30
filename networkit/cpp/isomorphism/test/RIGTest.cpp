@@ -6,6 +6,7 @@
  */
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <numeric>
 #include <span>
@@ -47,17 +48,34 @@ using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
 
+/// The default of the RI constructor.
+constexpr double defaultDomainFilterThreshold = 0.8;
+
 RISearchSetup setupOf(const Graph &pattern, const Graph &target,
                       std::span<const index> patternNodeLabels,
                       std::span<const index> targetNodeLabels, RI::Variant variant) {
     return prepareRISearch(pattern, target, patternNodeLabels, targetNodeLabels, {}, {}, variant,
-                           "RI");
+                           defaultDomainFilterThreshold, "RI");
 }
 
-RISearchSetup setupOf(const Case &testCase, RI::Variant variant) {
+RISearchSetup setupOf(const Case &testCase, RI::Variant variant,
+                      double domainFilterThreshold = defaultDomainFilterThreshold) {
     return prepareRISearch(testCase.pattern, testCase.target, testCase.patternNodeLabels,
                            testCase.targetNodeLabels, testCase.patternEdgeLabels,
-                           testCase.targetEdgeLabels, variant, "RI");
+                           testCase.targetEdgeLabels, variant, domainFilterThreshold, "RI");
+}
+
+/// The refinement removes target nodes 2 and 3, half of the domain of pattern node 1, since they
+/// have no neighbor with label 1. It removes nothing from the domain of pattern node 0.
+Case halfRefinedCase() {
+    return {"half-refined",
+            IsomorphismTest::graphOf(2, {{0, 1}}),
+            IsomorphismTest::graphOf(6, {{0, 4}, {1, 5}, {2, 3}}),
+            Semantics::MONOMORPHISM,
+            {1, 0},
+            {0, 0, 0, 0, 1, 1},
+            {},
+            {}};
 }
 
 /// Runs the search on unlabelled graphs with the given domains and returns the matches.
@@ -112,15 +130,35 @@ TEST_P(RIGTest, testUnknownVariantIsRejected) {
     EXPECT_NO_THROW(RI algo(pattern, target, GetParam()));
 }
 
+/// The threshold is a fraction of a domain. NaN fails every comparison, so it gets a case of its
+/// own.
+TEST_P(RIGTest, testDomainFilterThresholdOutsideTheUnitIntervalIsRejected) {
+    const Graph pattern = IsomorphismTest::graphOf(3, {{0, 1}, {1, 2}});
+    const Graph target = IsomorphismTest::graphOf(3, {{0, 1}, {1, 2}, {2, 0}});
+
+    for (const double threshold : {-0.1, 1.1, std::numeric_limits<double>::quiet_NaN()})
+        EXPECT_THROW(RI algo(pattern, target, GetParam(), Semantics::INDUCED, 0, threshold),
+                     std::invalid_argument)
+            << "threshold " << threshold;
+
+    for (const double threshold : {0.0, 1.0})
+        EXPECT_NO_THROW(RI algo(pattern, target, GetParam(), Semantics::INDUCED, 0, threshold))
+            << "threshold " << threshold;
+}
+
 TEST_P(RIGTest, testAgreesWithTheReference) {
     const RI::Variant variant = GetParam();
-    const auto make = [variant](const Graph &pattern, const Graph &target, Semantics semantics,
-                                count maxMatches) -> std::unique_ptr<SubgraphIsomorphism> {
-        return std::make_unique<RI>(pattern, target, variant, semantics, maxMatches);
-    };
+    for (const double threshold : {0.0, defaultDomainFilterThreshold, 1.0}) {
+        SCOPED_TRACE(testing::Message() << "threshold " << threshold);
+        const auto make =
+            [variant, threshold](const Graph &pattern, const Graph &target, Semantics semantics,
+                                 count maxMatches) -> std::unique_ptr<SubgraphIsomorphism> {
+            return std::make_unique<RI>(pattern, target, variant, semantics, maxMatches, threshold);
+        };
 
-    IsomorphismTest::expectMatchesReference(make);
-    IsomorphismTest::expectRespectsMatchCap(make);
+        IsomorphismTest::expectMatchesReference(make);
+        IsomorphismTest::expectRespectsMatchCap(make);
+    }
 }
 
 TEST_P(RIGTest, testOrderingInvariants) {
@@ -246,8 +284,13 @@ TEST_P(RIGTest, testVariantsAgreeOnKarate) {
     RI withDomains(pattern, karate, RI::Variant::RI_DS, Semantics::MONOMORPHISM, 0);
     withDomains.run();
 
+    RI filteringEverywhere(pattern, karate, RI::Variant::RI_DS, Semantics::MONOMORPHISM, 0, 0.0);
+    filteringEverywhere.run();
+
     EXPECT_THAT(withDomains.getMatches(), UnorderedElementsAreArray(plain.getMatches()))
         << "RI-DS is pure pruning and must not change the match set";
+    EXPECT_THAT(filteringEverywhere.getMatches(), UnorderedElementsAreArray(plain.getMatches()))
+        << "filtering the candidates through every domain must not change the match set";
     EXPECT_THAT(plain.getMatches(), SizeIs(expected));
     EXPECT_EQ(expected, 270u);
 }
@@ -324,6 +367,23 @@ TEST_F(RIDSGTest, testInSliceCandidatesAreIntersectedWithTheDomain) {
 
     EXPECT_THAT(matchesOf(pattern, target, ordering, domains),
                 UnorderedElementsAre(Match{5, 3}, Match{5, 7}));
+}
+
+/// No domain of this case ends with a single node, so only the threshold decides which domains
+/// filter the candidates.
+TEST_F(RIDSGTest, testDomainFilterThresholdSelectsTheDomains) {
+    const Case testCase = halfRefinedCase();
+    const auto filtering = [&testCase](double threshold) {
+        return setupOf(testCase, RI::Variant::RI_DS, threshold).domains.earnsItsKeep;
+    };
+
+    ASSERT_EQ(setupOf(testCase, RI::Variant::RI_DS).domains.ofPatternNode,
+              (std::vector<std::vector<node>>{{4, 5}, {0, 1}}));
+
+    EXPECT_EQ(filtering(0.0), (std::vector<bool>{true, true}));
+    EXPECT_EQ(filtering(0.5), (std::vector<bool>{false, true}));
+    EXPECT_EQ(filtering(0.6), (std::vector<bool>{false, false}));
+    EXPECT_EQ(filtering(1.0), (std::vector<bool>{false, false}));
 }
 
 /**
@@ -498,15 +558,20 @@ TEST_P(RIGTest, testMatchesReferenceOnRandomGraphs) {
                     const std::vector<Match> expected = IsomorphismTest::referenceMatches(
                         pattern, target, semantics, patternNodeLabels, targetNodeLabels);
 
-                    RI algo(pattern, target, variant, semantics, 0);
-                    if (nodeLabelled)
-                        algo.setNodeLabels(patternNodeLabels, targetNodeLabels);
-                    algo.run();
+                    // Under RI-DS, 0 filters through every domain and 1 only through the
+                    // single-node ones.
+                    for (const double threshold : {0.0, defaultDomainFilterThreshold, 1.0}) {
+                        RI algo(pattern, target, variant, semantics, 0, threshold);
+                        if (nodeLabelled)
+                            algo.setNodeLabels(patternNodeLabels, targetNodeLabels);
+                        algo.run();
 
-                    EXPECT_THAT(algo.getMatches(), UnorderedElementsAreArray(expected))
-                        << "directed: " << directed
-                        << ", induced: " << (semantics == Semantics::INDUCED)
-                        << ", nodeLabelled: " << nodeLabelled << ", trial: " << trial;
+                        EXPECT_THAT(algo.getMatches(), UnorderedElementsAreArray(expected))
+                            << "directed: " << directed
+                            << ", induced: " << (semantics == Semantics::INDUCED)
+                            << ", nodeLabelled: " << nodeLabelled << ", trial: " << trial
+                            << ", threshold: " << threshold;
+                    }
                 }
             }
         }

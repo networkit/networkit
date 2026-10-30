@@ -49,17 +49,27 @@ public:
      * @param variant Plain RI or RI-DS. See @ref Variant.
      * @param semantics Whether matches must be induced. See @ref SubgraphIsomorphism::Semantics.
      * @param maxMatches Stop after this many matches; 0 means no limit.
+     * @param domainFilterThreshold Only for @ref Variant::RI_DS, which builds the domains from
+     * degrees and labels and then shrinks them. The search filters the candidates of a pattern
+     * node through its domain if the shrinking removed at least this fraction of the domain or left
+     * one target node. Below the threshold, the filter removes too few candidates to pay for its
+     * lookups. 0 always filters, and 1 filters only through single-node domains. The value changes
+     * the running time, not the matches. The default comes from caidaRouterLevel with a triangle
+     * pattern and node labels, where filtering cost time below about 0.8.
      *
-     * @throws std::invalid_argument If @a variant or @a semantics is not a known value. @ref run()
-     * checks the graphs, since they may change after construction.
+     * @throws std::invalid_argument If @a variant or @a semantics is not a known value, or if
+     * @a domainFilterThreshold is not between 0 and 1. @ref run() checks the graphs, since they may
+     * change after construction.
      */
     RI(const Graph &pattern, const Graph &target, Variant variant = Variant::RI,
-       Semantics semantics = Semantics::INDUCED, count maxMatches = 0);
+       Semantics semantics = Semantics::INDUCED, count maxMatches = 0,
+       double domainFilterThreshold = 0.8);
 
     void run() override;
 
 private:
     Variant variant;
+    double domainFilterThreshold;
 };
 
 } // namespace NetworKit
