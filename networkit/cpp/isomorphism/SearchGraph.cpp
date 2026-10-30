@@ -46,8 +46,8 @@ void sortSlices(const std::vector<index> &first, std::vector<node> &head, std::v
         // Sorting (head, label) pairs orders parallel arcs by label.
         std::ranges::sort(slice);
 
-        std::ranges::transform(slice, head.begin() + begin, &Arc::first);
-        std::ranges::transform(slice, label.begin() + begin, &Arc::second);
+        std::ranges::transform(slice, head.data() + begin, &Arc::first);
+        std::ranges::transform(slice, label.data() + begin, &Arc::second);
     }
 }
 
