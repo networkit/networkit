@@ -18,7 +18,7 @@
 namespace NetworKit::IsomorphismDetails {
 
 /// `order[i]` is the pattern node mapped at depth i. `parent[i]` is the position of an earlier
-/// neighbour of `order[i]`, or @ref none if position i starts a new connected component.
+/// neighbor of `order[i]`, or @ref none if position i starts a new connected component.
 struct RIOrdering {
     std::vector<node> order;
     std::vector<index> parent;
@@ -57,7 +57,7 @@ RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains)
 /// empty pattern, whose one match is the empty mapping.
 bool cannotMatch(const SearchGraph &pattern, const SearchGraph &target, const RIDomains &domains);
 
-/// The out- or in-neighbours of one node, with one arc label per entry.
+/// The out- or in-neighbors of one node, with one arc label per entry.
 struct Slice {
     std::span<const node> nodes;
     /// Empty if the graph has no edge labels.
