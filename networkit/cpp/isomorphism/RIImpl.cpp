@@ -82,7 +82,7 @@ void collectArcConstraints(const SearchGraph &pattern, node pu, std::vector<ArcC
 
 /**
  * Minimum fraction of a domain that the refinement and forward checking must remove before the
- * search intersects target neighbourhoods with the domain. Below it, the degree and label checks
+ * search intersects target neighborhoods with the domain. Below it, the degree and label checks
  * in RIImpl::consistent() reject the same candidates more cheaply. On caidaRouterLevel with a
  * labelled triangle pattern, intersecting costs 21% at a yield of 0.56 and breaks even at about
  * 0.8.
@@ -144,7 +144,7 @@ bool forwardCheckSingletons(const SearchGraph &pattern, std::vector<std::vector<
 RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains) {
     // The score of an unordered node is the triple (V_vis, V_neig, V_unv) of Bonnici et al.: its
     // arcs into the ordered prefix, the prefix nodes two hops away through an unordered node, and
-    // its unordered neighbours adjacent to no prefix node. Where Figure 2 of the paper disagrees
+    // its unordered neighbors adjacent to no prefix node. Where Figure 2 of the paper disagrees
     // with its text, this follows the text. The best score is reset in every iteration, and ties
     // go to the smallest node id.
 
@@ -159,8 +159,8 @@ RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains)
 
     std::vector<count> visCount(z, 0);
 
-    // The position of the first ordered neighbour of each node, which becomes its parent.
-    std::vector<index> firstOrderedNeighbour(z, none);
+    // The position of the first ordered neighbor of each node, which becomes its parent.
+    std::vector<index> firstOrderedNeighbor(z, none);
 
     SparseVector<bool> reached(z, false);
 
@@ -235,11 +235,11 @@ RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains)
         const index position = result.order.size();
         inOrder[best] = true;
         result.order.push_back(best);
-        result.parent.push_back(firstOrderedNeighbour[best]);
+        result.parent.push_back(firstOrderedNeighbor[best]);
         forEachIncidentArc(pattern, best, [&](node v) {
             ++visCount[v];
-            if (firstOrderedNeighbour[v] == none)
-                firstOrderedNeighbour[v] = position;
+            if (firstOrderedNeighbor[v] == none)
+                firstOrderedNeighbor[v] = position;
         });
     }
 

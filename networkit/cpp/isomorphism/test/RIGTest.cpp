@@ -262,7 +262,7 @@ TEST_P(RIGTest, testSelectiveDomainsDoNotChangeTheMatchSet) {
     constexpr count perClass = 10;
 
     Graph target(2 * perClass);
-    // Class-0 nodes 1..9 have degree but no class-1 neighbour.
+    // Class-0 nodes 1..9 have degree but no class-1 neighbor.
     for (node u = 1; u + 1 < perClass; ++u)
         target.addEdge(u, u + 1);
     target.addEdge(0, perClass);
@@ -292,7 +292,7 @@ TEST_P(RIGTest, testSelectiveDomainsDoNotChangeTheMatchSet) {
     EXPECT_THAT(algo.getMatches(), UnorderedElementsAreArray(expected));
 }
 
-/// The domains are set by hand, since a computed domain keeps every neighbour that could host the
+/// The domains are set by hand, since a computed domain keeps every neighbor that could host the
 /// pattern node. The slice of target node 5 has a node below and a node above the domain.
 TEST_F(RIDSGTest, testCandidatesAreIntersectedWithTheDomain) {
     const SearchGraph pattern(IsomorphismTest::graphOf(2, {{0, 1}}), /* buildMatrix = */ true);
@@ -310,7 +310,7 @@ TEST_F(RIDSGTest, testCandidatesAreIntersectedWithTheDomain) {
 }
 
 /// The directed counterpart. Pattern node 1 points to its parent, so its candidates come from the
-/// in-slice of target node 5. Domain node 4 is only an out-neighbour of node 5 and must not appear.
+/// in-slice of target node 5. Domain node 4 is only an out-neighbor of node 5 and must not appear.
 TEST_F(RIDSGTest, testInSliceCandidatesAreIntersectedWithTheDomain) {
     const SearchGraph pattern(IsomorphismTest::graphOf(2, {{1, 0}}, /* directed = */ true),
                               /* buildMatrix = */ true);
@@ -381,7 +381,7 @@ TEST_P(RIGTest, testSingletonDomainsAreRemovedAndComeFirst) {
     EXPECT_EQ(domains[0], (std::vector<node>{0, 1, 2, 4, 5}));
     EXPECT_EQ(domains[1], (std::vector<node>{0, 1, 2, 4, 5}));
     EXPECT_THAT(domains[1], Contains(2u))
-        << "target node 2 is a neighbour of target node 3, which is why the sweep kept 3 - without "
+        << "target node 2 is a neighbor of target node 3, which is why the sweep kept 3 - without "
            "this the removal above could be the sweep's rather than forward checking's";
 
     EXPECT_EQ(prep.ordering.order.front(), 2u)
@@ -390,7 +390,7 @@ TEST_P(RIGTest, testSingletonDomainsAreRemovedAndComeFirst) {
 
 /**
  * Removing a singleton's target node can create a new singleton. Degrees give the four star
- * centres nested domains of sizes 1 to 4, so all four end as singletons only if the removals
+ * centers nested domains of sizes 1 to 4, so all four end as singletons only if the removals
  * chain.
  */
 TEST_F(RIDSGTest, testForwardCheckingReachesAFixpoint) {
@@ -412,7 +412,7 @@ TEST_F(RIDSGTest, testForwardCheckingReachesAFixpoint) {
         ASSERT_EQ(labelZeroNodesOfThatDegree, 5 - degree);
     }
 
-    // Centres 0..3 have 4, 3, 2 and 1 leaves. The single refinement pass visits the centres before
+    // Centers 0..3 have 4, 3, 2 and 1 leaves. The single refinement pass visits the centers before
     // it refines any leaf domain.
     const Graph pattern = IsomorphismTest::graphOf(
         14, {{0, 4}, {0, 5}, {0, 6}, {0, 7}, {1, 8}, {1, 9}, {1, 10}, {2, 11}, {2, 12}, {3, 13}});
@@ -424,10 +424,10 @@ TEST_F(RIDSGTest, testForwardCheckingReachesAFixpoint) {
         setupOf(pattern, target, patternNodeLabels, targetNodeLabels, RI::Variant::RI_DS).domains;
 
     EXPECT_FALSE(domains.anyEmpty);
-    for (node centre = 0; centre < 4; ++centre)
-        EXPECT_EQ(domains.ofPatternNode[centre], (std::vector<node>{centre}))
-            << "centre " << centre << " should have been narrowed to one target node by the "
-            << "cascade, not left at " << domains.ofPatternNode[centre].size() << " entries";
+    for (node center = 0; center < 4; ++center)
+        EXPECT_EQ(domains.ofPatternNode[center], (std::vector<node>{center}))
+            << "center " << center << " should have been narrowed to one target node by the "
+            << "cascade, not left at " << domains.ofPatternNode[center].size() << " entries";
 }
 
 /// Two pattern nodes that need the same target node make the instance impossible. Plain RI, which
