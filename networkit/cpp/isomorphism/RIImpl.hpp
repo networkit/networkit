@@ -178,14 +178,12 @@ private:
         const node pu = ordering->order[pos];
         const index parentPos = ordering->parent[pos];
 
-        const std::vector<node> *builtDomain =
-            domains->ofPatternNode.empty() ? nullptr : &domains->ofPatternNode[pu];
-
         if (parentPos == none) {
             // Without a parent, the domain replaces the scan over all target nodes, whatever its
             // yield.
-            if (builtDomain != nullptr) {
-                out.insert(out.end(), builtDomain->begin(), builtDomain->end());
+            if (!domains->ofPatternNode.empty()) {
+                const std::vector<node> &domain = domains->ofPatternNode[pu];
+                out.insert(out.end(), domain.begin(), domain.end());
                 return;
             }
 
@@ -195,8 +193,10 @@ private:
             return;
         }
 
-        const std::vector<node> *domain =
-            builtDomain != nullptr && domains->earnsItsKeep[pu] ? builtDomain : nullptr;
+        const bool useDomain = !domains->ofPatternNode.empty() && domains->earnsItsKeep[pu];
+        std::span<const node> domain;
+        if (useDomain)
+            domain = domains->ofPatternNode[pu];
 
         const node pp = ordering->order[parentPos];
         const node parentImage = state.mapping[parentPos];
@@ -215,16 +215,16 @@ private:
 
         const bool filterLabels = !slice.labels.empty() && patternLabel != none;
 
-        auto inDomain = domain == nullptr ? std::vector<node>::const_iterator{} : domain->begin();
+        auto inDomain = domain.begin();
         for (index i = 0; i < slice.nodes.size(); ++i) {
             const node tv = slice.nodes[i];
 
             if (filterLabels && !labelsCompatible(patternLabel, slice.labels[i]))
                 continue;
 
-            if (domain != nullptr) {
-                inDomain = std::lower_bound(inDomain, domain->end(), tv);
-                if (inDomain == domain->end())
+            if (useDomain) {
+                inDomain = std::lower_bound(inDomain, domain.end(), tv);
+                if (inDomain == domain.end())
                     return;
                 if (*inDomain != tv)
                     continue;
