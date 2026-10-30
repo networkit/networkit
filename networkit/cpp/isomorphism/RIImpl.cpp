@@ -144,6 +144,9 @@ RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains)
             if (inOrder[v])
                 return;
 
+            if (visCount[v] == 0)
+                ++score[2];
+
             pattern.forEachDistinctNeighbor(v, [&](node w) {
                 if (!inOrder[w] || reached.indexIsUsed(w))
                     return;
@@ -152,11 +155,6 @@ RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains)
             });
         });
         reached.reset();
-
-        pattern.forEachDistinctNeighbor(u, [&](node v) {
-            if (!inOrder[v] && visCount[v] == 0)
-                ++score[2];
-        });
 
         return score;
     };
