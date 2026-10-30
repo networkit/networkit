@@ -41,6 +41,9 @@ struct ArcConstraint {
 
 /// A directed mutual pair yields two constraints, since its two arcs may carry different labels.
 void collectArcConstraints(const SearchGraph &pattern, node pu, std::vector<ArcConstraint> &out) {
+    const count inArcs = pattern.isDirected() ? pattern.inDegree(pu) : 0;
+    out.reserve(out.size() + pattern.outDegree(pu) + inArcs);
+
     const auto collect = [&](bool outgoing) {
         const Slice slice = sliceOf(pattern, pu, outgoing);
         for (index i = 0; i < slice.nodes.size(); ++i)
