@@ -28,7 +28,7 @@ using testing::ElementsAre;
 using testing::ElementsAreArray;
 using testing::IsEmpty;
 
-/// The distinct out-neighbours, or with @a in the in-neighbours, of @a u other than @a u, in
+/// The distinct out-neighbors, or with @a in the in-neighbors, of @a u other than @a u, in
 /// ascending order.
 std::vector<node> simpleNeighbors(const Graph &G, node u, bool in) {
     std::vector<node> neighbors;
@@ -433,7 +433,7 @@ TEST_F(SearchGraphGTest, testMaxDegree) {
 }
 
 TEST_F(SearchGraphGTest, testEdgeLabelsStayWithTheirArcs) {
-    // Node 9 gets its neighbours in descending order, so the sort must move every label.
+    // Node 9 gets its neighbors in descending order, so the sort must move every label.
     for (bool directed : {false, true}) {
         SCOPED_TRACE(testing::Message() << "directed=" << directed);
         const IsomorphismTest::LabelledGraph labelled = IsomorphismTest::labelledGraphOf(

@@ -30,7 +30,7 @@ inline bool nodeLabelsCompatible(std::span<const index> patternNodeLabels,
  * `Graph::hasEdge()` is too slow there. It stores sorted CSR adjacency for out- and in-arcs,
  * optionally one edge label per arc, and optionally a bit-packed adjacency matrix for small graphs
  * such as the pattern. The snapshot collapses parallel edges and drops self-loops, so degrees count
- * distinct neighbours.
+ * distinct neighbors.
  */
 class SearchGraph {
 
@@ -60,12 +60,12 @@ public:
         return directed ? inFirst[u + 1] - inFirst[u] : outDegree(u);
     }
 
-    /// The distinct out-neighbours of @a u other than @a u, in ascending order.
+    /// The distinct out-neighbors of @a u other than @a u, in ascending order.
     std::span<const node> outNeighbors(node u) const noexcept {
         return {outHead.data() + outFirst[u], outDegree(u)};
     }
 
-    /// Like @ref outNeighbors() for the in-neighbours. Equal to it for an undirected graph.
+    /// Like @ref outNeighbors() for the in-neighbors. Equal to it for an undirected graph.
     std::span<const node> inNeighbors(node u) const noexcept {
         if (!directed)
             return outNeighbors(u);

@@ -281,7 +281,7 @@ private:
                && ruleTerminalCounts(pu, tv) && ruleNewCounts(pu, tv);
     }
 
-    /// Every mapped out-neighbour of @a pu needs a corresponding out-edge of @a tv. Under INDUCED
+    /// Every mapped out-neighbor of @a pu needs a corresponding out-edge of @a tv. Under INDUCED
     /// semantics, the same holds in reverse.
     bool ruleSuccessors(node pu, node tv) const {
         // ruleEdgeLabels() compares the labels of the edges that both graphs contain.
@@ -340,7 +340,7 @@ private:
         return true;
     }
 
-    /// One-step look-ahead: @a pu must not have more unmapped neighbours in the terminal sets than
+    /// One-step look-ahead: @a pu must not have more unmapped neighbors in the terminal sets than
     /// @a tv has.
     bool ruleTerminalCounts(node pu, node tv) const {
         // A terminal set holds only unmapped nodes, so membership alone decides.
@@ -359,7 +359,7 @@ private:
                               inIn2);
     }
 
-    /// Two-step look-ahead: the same count for unmapped neighbours outside all terminal sets.
+    /// Two-step look-ahead: the same count for unmapped neighbors outside all terminal sets.
     bool ruleNewCounts(node pu, node tv) const {
         // MONOMORPHISM allows extra target edges, so this rule does not apply.
         if (!induced)
