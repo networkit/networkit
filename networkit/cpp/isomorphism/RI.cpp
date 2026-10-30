@@ -9,11 +9,16 @@
 namespace NetworKit {
 
 RI::RI(const Graph &pattern, const Graph &target, Variant variant, Semantics semantics,
-       count maxMatches)
-    : SubgraphIsomorphism(pattern, target, semantics, maxMatches), variant(variant) {
+       count maxMatches, double domainFilterThreshold)
+    : SubgraphIsomorphism(pattern, target, semantics, maxMatches), variant(variant),
+      domainFilterThreshold(domainFilterThreshold) {
     // Python passes the variant as an integer, so any value can arrive here.
     if (variant != Variant::RI && variant != Variant::RI_DS)
         throw std::invalid_argument("Unknown RI variant");
+
+    // Negated, so that NaN fails too.
+    if (!(domainFilterThreshold >= 0.0 && domainFilterThreshold <= 1.0))
+        throw std::invalid_argument("The domain filter threshold must be between 0 and 1");
 }
 
 void RI::run() {
@@ -26,7 +31,7 @@ void RI::run() {
 
     const RISearchSetup setup =
         prepareRISearch(*pattern, *target, patternNodeLabels, targetNodeLabels, patternEdgeLabels,
-                        targetEdgeLabels, variant, "RI");
+                        targetEdgeLabels, variant, domainFilterThreshold, "RI");
 
     RIImpl(setup.patternGraph, setup.targetGraph, patternNodeLabels, targetNodeLabels,
            setup.ordering, setup.domains, semantics, handler,
