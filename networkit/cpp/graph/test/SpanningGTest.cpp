@@ -298,6 +298,27 @@ TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSFUnweighted) {
     EXPECT_EQ(msf.getTotalWeight(), 4);
 }
 
+template <class MSF>
+void expectTotalWeightSurvivesRerun() {
+    Graph g(3, true);
+    g.addEdge(0, 1, 1.5);
+    g.addEdge(1, 2, 2.5);
+
+    MSF msf(g);
+    msf.run();
+    msf.run();
+
+    EXPECT_EQ(msf.getTotalWeight(), 4);
+}
+
+TEST_F(SpanningGTest, testKruskalMinimumSpanningForestRerun) {
+    expectTotalWeightSurvivesRerun<KruskalMSF>();
+}
+
+TEST_F(SpanningGTest, testPrimMinimumSpanningForestRerun) {
+    expectTotalWeightSurvivesRerun<PrimMSF>();
+}
+
 TEST_F(SpanningGTest, testPrimMinimumSpanningForestRemovedNodes) {
     Graph g(100, true);
     g.addEdge(97, 98, 1.5);

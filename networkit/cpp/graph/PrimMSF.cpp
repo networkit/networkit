@@ -25,6 +25,7 @@ void PrimMSF::run() {
     }
     // Weighted graph
     forest = GraphTools::copyNodes(*G);
+    totalWeight = 0;
     const count nodeIdBound = G->upperNodeIdBound();
     std::vector<edgeweight> weights(nodeIdBound, infiniteWeight);
     std::vector<node> parents(nodeIdBound, none);
