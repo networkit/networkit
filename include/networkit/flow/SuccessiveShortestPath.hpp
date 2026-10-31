@@ -92,11 +92,21 @@ public:
     }
 
 private:
+    friend class SuccessiveShortestPathGTest;
+
     struct NodeWithCost {
         cost distance;
         node u;
+
+        bool operator<(const NodeWithCost &other) const {
+            if (distance != other.distance)
+                return distance < other.distance;
+            return u < other.u;
+        }
     };
     std::vector<cost> computeNodePotentials(count numberOfNodes) const;
+    void updateNodePotentials(std::span<cost> nodePotential, std::span<const cost> distances,
+                              node target) const;
     void dijkstraOnResidualGraph(node start, std::span<const cost> nodePotential,
                                  std::span<cost> distances, std::span<node> parentNode,
                                  std::span<edgeid> parentEdge, std::span<int> parentDirection,

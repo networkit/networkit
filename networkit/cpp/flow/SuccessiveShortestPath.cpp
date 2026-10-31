@@ -103,13 +103,7 @@ void SuccessiveShortestPathMinCostFlow::dijkstraOnResidualGraph(
     std::span<node> parentNode, std::span<edgeid> parentEdge, std::span<int> parentDirection,
     const Graph::EdgeDoubleAttribute &capacities) const {
 
-    const auto comparator = [&](const NodeWithCost &nwc1, const NodeWithCost &nwc2) -> bool {
-        if (nwc1.distance != nwc2.distance)
-            return nwc1.distance < nwc2.distance;
-        return nwc1.u < nwc2.u;
-    };
-
-    tlx::d_ary_heap<NodeWithCost, 2, decltype(comparator)> minHeap(comparator);
+    tlx::d_ary_heap<NodeWithCost, 2> minHeap;
 
     std::ranges::fill(distances, infiniteCosts);
     distances[start] = 0;
@@ -158,6 +152,15 @@ void SuccessiveShortestPathMinCostFlow::dijkstraOnResidualGraph(
     } while (!minHeap.empty());
 }
 
+void SuccessiveShortestPathMinCostFlow::updateNodePotentials(std::span<cost> nodePotential,
+                                                             std::span<const cost> distances,
+                                                             node target) const {
+    // Capping every distance at the target's distance preserves feasibility,
+    // including arcs from nodes that this supply cannot reach.
+    residualGraph.parallelForNodes(
+        [&](node u) { nodePotential[u] += std::min(distances[u], distances[target]); });
+}
+
 void SuccessiveShortestPathMinCostFlow::run() {
     const count numberOfNodes = residualGraph.numberOfNodes();
 
@@ -204,11 +207,8 @@ void SuccessiveShortestPathMinCostFlow::run() {
                 "SuccessiveShortestPathMinCostFlow: unable to satisfy all supplies/demands");
         }
 
-        // (d) keep reduced costs non-negative, including arcs from nodes that
-        // this supply cannot reach. Capping every distance at the target's
-        // distance preserves feasibility when the next supply changes.
-        residualGraph.parallelForNodes(
-            [&](node u) { nodePotential[u] += std::min(distances[u], distances[target]); });
+        // (d) keep reduced costs non-negative when the next supply changes.
+        updateNodePotentials(nodePotential, distances, target);
 
         // (e) compute bottleneck-flow = min(b[s], -b[t], min residual capacity on path)
         double bottleneckFlow = std::min(supply.get(start), -supply.get(target));

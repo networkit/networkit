@@ -4,6 +4,11 @@
  *  Authors: Andreas Scharf (andreas.b.scharf@gmail.com)
  *
  */
+#include <array>
+#include <cmath>
+
+#include <tlx/container/d_ary_heap.hpp>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <networkit/flow/SuccessiveShortestPath.hpp>
@@ -14,6 +19,58 @@ class SuccessiveShortestPathGTest : public ::testing::Test {
 protected:
     const std::string capacityName = "capacity";
     const std::string supplyName = "supply";
+
+    void checkHeapOrder() {
+        using Item = SuccessiveShortestPathMinCostFlow::NodeWithCost;
+        // Adjacent distances must not be treated as a tie, even when the node
+        // with the larger distance has a smaller id.
+        const std::array<Item, 5> expected{
+            {{0, 4}, {1, 2}, {1, 5}, {std::nextafter(1.0, 2.0), 0}, {9, 1}}};
+        tlx::d_ary_heap<Item, 2> heap;
+        for (const auto i : {4, 1, 3, 0, 2})
+            heap.push(expected[i]);
+        for (const auto &item : expected) {
+            ASSERT_FALSE(heap.empty());
+            EXPECT_DOUBLE_EQ(heap.top().distance, item.distance);
+            EXPECT_EQ(heap.top().u, item.u);
+            heap.pop();
+        }
+        EXPECT_TRUE(heap.empty());
+    }
+
+    void checkPotentialUpdate(SuccessiveShortestPathMinCostFlow &solver) {
+        auto &G = solver.residualGraph;
+        solver.flows = G.getEdgeDoubleAttribute("flow");
+        const auto capacities = G.getEdgeDoubleAttribute(capacityName);
+        auto potentials = solver.computeNodePotentials(G.numberOfNodes());
+        std::vector<double> distances(G.numberOfNodes());
+        std::vector<node> parentNode(G.numberOfNodes());
+        std::vector<edgeid> parentEdge(G.numberOfNodes());
+        std::vector<int> parentDirection(G.numberOfNodes());
+        solver.dijkstraOnResidualGraph(0, potentials, distances, parentNode, parentEdge,
+                                       parentDirection, capacities);
+        ASSERT_TRUE(std::isinf(distances[1]));
+        ASSERT_GT(distances[3], distances[2]);
+
+        auto checkReducedCosts = [&] {
+            G.forEdges([&](node u, node v, edgeweight cost, edgeid eid) {
+                if (capacities.get(eid) > solver.flows.get(eid))
+                    EXPECT_GE(cost + potentials[u] - potentials[v], 0.0)
+                        << "forward residual arc " << u << " -> " << v;
+                if (solver.flows.get(eid) > 0)
+                    EXPECT_GE(-cost + potentials[v] - potentials[u], 0.0)
+                        << "backward residual arc " << v << " -> " << u;
+            });
+        };
+        checkReducedCosts();
+        solver.updateNodePotentials(potentials, distances, 2);
+        checkReducedCosts();
+        // Augment along the shortest path: its new reverse residual arc must
+        // also have a non-negative reduced cost.
+        ASSERT_EQ(parentNode[2], 0);
+        solver.flows.set(parentEdge[2], 1.0);
+        checkReducedCosts();
+    }
 
     template <typename CapacityAttr>
     static void addCostAndCapacity(Graph &G, CapacityAttr &capacities, node u, node v, double cost,
@@ -648,9 +705,28 @@ TEST_F(SuccessiveShortestPathGTest, testDimacsGeneratedMin10x20) {
     G.forEdges([&](node, node, edgeid eid) { EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]); });
     checkFlowConservation(G, flow);
 }
-// A max-heap revisits the suffix for every one of the 2^25 paths.
+TEST_F(SuccessiveShortestPathGTest, testHeapExtractsMinimumDistance) {
+    checkHeapOrder();
+}
+
+TEST_F(SuccessiveShortestPathGTest, testPotentialUpdatePreservesReducedCosts) {
+    Graph G(4, /*weighted=*/true, /*directed=*/true);
+    G.indexEdges();
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
+    auto supply = G.attachNodeDoubleAttribute(supplyName);
+    G.forNodes([&](node u) { supply.set(u, 0); });
+    addCostAndCapacity(G, capacities, 0, 2, 5, 1);
+    addCostAndCapacity(G, capacities, 0, 3, 9, 1);
+    addCostAndCapacity(G, capacities, 1, 2, 0, 1);
+    addCostAndCapacity(G, capacities, 1, 3, 0, 1);
+
+    SuccessiveShortestPathMinCostFlow solver(G, capacityName, supplyName);
+    checkPotentialUpdate(solver);
+}
+
+// Keep the end-to-end path check small: heap order is asserted directly above.
 TEST_F(SuccessiveShortestPathGTest, testLayeredAlternativePaths) {
-    constexpr count stages = 25;
+    constexpr count stages = 5;
     Graph G(3 * stages + 1, /*weighted=*/true, /*directed=*/true);
     G.indexEdges();
     auto capacities = G.attachEdgeDoubleAttribute(capacityName);
