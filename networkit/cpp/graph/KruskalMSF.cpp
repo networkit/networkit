@@ -19,6 +19,7 @@ void KruskalMSF::run() {
     if (G->isWeighted()) {
         count z = G->upperNodeIdBound();
         forest = GraphTools::copyNodes(*G);
+        totalWeight = 0.0;
         UnionFind uf(z);
 
         // sort edges in non-decreasing weight order
