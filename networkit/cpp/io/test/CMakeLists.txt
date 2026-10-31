@@ -3,6 +3,9 @@ networkit_add_test(io IOGTest
 
 networkit_add_test(io IOTestUtilsGTest)
 
+networkit_add_test(io METISGraphIOGTest
+        generators)
+
 networkit_add_test(io METISParserGTest)
 
 networkit_add_test(io MemoryMappedFileGTest)

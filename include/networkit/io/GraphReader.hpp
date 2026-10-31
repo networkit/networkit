@@ -12,11 +12,13 @@
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
+
 /**
  * @ingroup io
- * Abstract base class for graph readers.
+ * Type-independent part of all graph readers. Shared by all instantiations of
+ * GraphReaderBase, so that e.g. GraphReader::DISCARD_EDGES has a single type.
  */
-class GraphReader {
+class GraphReaderOptions {
 public:
     // How to deal with multi-edges
     enum MultipleEdgesHandling {
@@ -24,16 +26,26 @@ public:
         SUM_WEIGHTS_UP, // If an edge occurs again, the weight of it is added to the existing edge
         KEEP_MINIMUM_WEIGHT // The edge with the lowest weight is kept
     };
+};
 
-    virtual ~GraphReader() = default;
+/**
+ * @ingroup io
+ * Abstract base class for graph readers.
+ */
+template <class GraphT>
+class GraphReaderBase : public GraphReaderOptions {
+public:
+    virtual ~GraphReaderBase() = default;
 
     /**
      * Given the path of an input file, read the graph contained.
      *
      * @param[in]  path  input file path
      */
-    virtual Graph read(std::string_view path) = 0;
+    virtual GraphT read(std::string_view path) = 0;
 };
+
+using GraphReader = GraphReaderBase<Graph>;
 
 } /* namespace NetworKit */
 #endif // NETWORKIT_IO_GRAPH_READER_HPP_
