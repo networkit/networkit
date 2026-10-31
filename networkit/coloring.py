@@ -27,7 +27,11 @@ class SpectralColoring(object):
 		This function does not need to be called, it is sufficient to call run()
 		for the SpectralColoring-object.
 		"""
-		spectrum = adjacencyEigenvectors(self.graph)
+		n = self.graph.numberOfNodes()
+		# Ask for as many eigenvectors as the solver allows: eigsh needs k < n, eigs (directed)
+		# needs k < n - 1, and graphs with n <= 2 are solved densely.
+		cutoff = n - 1 if n <= 2 else n - 3 if self.graph.isDirected() else n - 2
+		spectrum = adjacencyEigenvectors(self.graph, cutoff=cutoff)
 		self.eigenvalues = spectrum[0]
 		self.eigenvectors = spectrum[1]
 
@@ -71,6 +75,9 @@ class SpectralColoring(object):
 		"""
 		otherColor = self.nextColor
 		self.nextColor += 1
+
+		if depth >= len(self.eigenvectors):
+			raise RuntimeError("SpectralColoring: ran out of eigenvectors before finding a valid coloring")
 
 		vs = self.colors[color]
 
