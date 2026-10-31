@@ -54,12 +54,14 @@ protected:
 
         auto checkReducedCosts = [&] {
             G.forEdges([&](node u, node v, edgeweight cost, edgeid eid) {
-                if (capacities.get(eid) > solver.flows.get(eid))
+                if (capacities.get(eid) > solver.flows.get(eid)) {
                     EXPECT_GE(cost + potentials[u] - potentials[v], 0.0)
                         << "forward residual arc " << u << " -> " << v;
-                if (solver.flows.get(eid) > 0)
+                }
+                if (solver.flows.get(eid) > 0) {
                     EXPECT_GE(-cost + potentials[v] - potentials[u], 0.0)
                         << "backward residual arc " << v << " -> " << u;
+                }
             });
         };
         checkReducedCosts();
@@ -67,7 +69,7 @@ protected:
         checkReducedCosts();
         // Augment along the shortest path: its new reverse residual arc must
         // also have a non-negative reduced cost.
-        ASSERT_EQ(parentNode[2], 0);
+        ASSERT_EQ(parentNode[2], node{0});
         solver.flows.set(parentEdge[2], 1.0);
         checkReducedCosts();
     }
