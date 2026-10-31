@@ -8,6 +8,7 @@
 #ifndef NETWORKIT_FLOW_SUCCESSIVE_SHORTEST_PATH_HPP_
 #define NETWORKIT_FLOW_SUCCESSIVE_SHORTEST_PATH_HPP_
 
+#include <compare>
 #include <span>
 
 #include <networkit/base/Algorithm.hpp>
@@ -98,11 +99,7 @@ private:
         cost distance;
         node u;
 
-        bool operator<(const NodeWithCost &other) const {
-            if (distance != other.distance)
-                return distance < other.distance;
-            return u < other.u;
-        }
+        auto operator<=>(const NodeWithCost &) const = default;
     };
     std::vector<cost> computeNodePotentials(count numberOfNodes) const;
     void updateNodePotentials(std::span<cost> nodePotential, std::span<const cost> distances,
