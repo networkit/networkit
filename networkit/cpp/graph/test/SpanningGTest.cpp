@@ -298,4 +298,23 @@ TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSFUnweighted) {
     EXPECT_EQ(msf.getTotalWeight(), 4);
 }
 
+TEST_F(SpanningGTest, testPrimMinimumSpanningForestRemovedNodes) {
+    Graph g(100, true);
+    g.addEdge(97, 98, 1.5);
+    g.addEdge(98, 99, 2.5);
+    g.addEdge(97, 99, 5);
+    for (node u = 0; u < 97; ++u) {
+        g.removeNode(u);
+    }
+
+    PrimMSF msf(g);
+    msf.run();
+    Graph T = msf.getForest();
+
+    isValidForest(g, T);
+    EXPECT_EQ(T.numberOfEdges(), 2u);
+    EXPECT_FALSE(T.hasEdge(97, 99));
+    EXPECT_EQ(msf.getTotalWeight(), 4);
+}
+
 } /* namespace NetworKit */
