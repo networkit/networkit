@@ -27,7 +27,7 @@ PrunedLandmarkLabeling::PrunedLandmarkLabeling(const Graph &G)
         Aux::Parallel::sort(nodesSortedByDegreeDesc.begin(), nodesSortedByDegreeDesc.end(),
                             [&G](node u, node v) { return G.degree(u) > G.degree(v); });
 
-    visited.resize(G.upperNodeIdBound());
+    visited.resize(G.upperNodeIdBound(), Visit::Unvisited);
 
     labelsOut.resize(G.upperNodeIdBound());
     if (G.isDirected())
@@ -39,8 +39,8 @@ PrunedLandmarkLabeling::PrunedLandmarkLabeling(const Graph &G)
 
 template <bool Reverse>
 void PrunedLandmarkLabeling::prunedBFS(node root, node rankOfRootNode) {
-    std::fill(visited.begin(), visited.end(), false);
-    visited[root] = true;
+    std::ranges::fill(visited, Visit::Unvisited);
+    visited[root] = Visit::Visited;
 
     std::queue<node> q1, q2;
     q1.push(root);
@@ -48,9 +48,10 @@ void PrunedLandmarkLabeling::prunedBFS(node root, node rankOfRootNode) {
     index level = 0;
 
     const auto visitNeighbor = [&](node v) -> void {
-        if (visited[v])
+        if (visited[v] == Visit::Visited) {
             return;
-        visited[v] = true;
+        }
+        visited[v] = Visit::Visited;
         q2.push(v);
     };
 
