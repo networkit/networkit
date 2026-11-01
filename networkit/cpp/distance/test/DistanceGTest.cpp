@@ -6,6 +6,7 @@
  */
 
 #include <limits>
+#include <vector>
 #include <gmock/gmock-more-matchers.h>
 #include <gtest/gtest.h>
 
@@ -38,6 +39,8 @@
 #include <networkit/generators/ErdosRenyiGenerator.hpp>
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/io/METISGraphReader.hpp>
+
+#include "../VertexDiameterBound.hpp"
 
 namespace NetworKit {
 class DistanceGTest : public testing::TestWithParam<std::pair<bool, bool>> {
@@ -510,6 +513,17 @@ TEST_F(DistanceGTest, testDiameterEmptyGraph) {
     estimatedSamples.run();
     EXPECT_TRUE(estimatedSamples.hasFinished());
     EXPECT_EQ(estimatedSamples.getDiameter(), expectedDiameter);
+}
+
+TEST_F(DistanceGTest, testVertexDiameterBound) {
+    constexpr edgeweight infDist = std::numeric_limits<edgeweight>::max();
+    // The second largest distance comes after the largest one, and unreachable nodes are ignored.
+    const std::vector<edgeweight> distances{3, 0, 1, 2, infDist};
+    EXPECT_EQ(DiameterDetails::vertexDiameterBound<edgeweight>(distances), 6);
+
+    // Two nodes are equally far, with integral distances.
+    const std::vector<count> tied{2, 0, 2, 1, none};
+    EXPECT_EQ(DiameterDetails::vertexDiameterBound<count>(tied), 5);
 }
 
 TEST_F(DistanceGTest, testEstimatedDiameterRange) {

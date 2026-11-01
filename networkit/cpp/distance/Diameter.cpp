@@ -16,6 +16,8 @@
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/structures/Partition.hpp>
 
+#include "VertexDiameterBound.hpp"
+
 namespace NetworKit {
 
 Diameter::Diameter(const Graph &G, DiameterAlgo algo, double error, count nSamples)
@@ -254,28 +256,12 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &
 
 edgeweight Diameter::estimatedVertexDiameter(const Graph &G, count samples) {
 
-    edgeweight infDist = std::numeric_limits<edgeweight>::max();
-
     // TODO: consider weights
 
     auto estimateFrom = [&](node v) -> count {
         BFS bfs(G, v);
         bfs.run();
-        auto distances = bfs.getDistances();
-
-        // get two largest path lengths
-        edgeweight maxD = 0;
-        edgeweight maxD2 = 0; // second largest distance
-        for (auto d : distances) {
-            if ((d != infDist) && (d >= maxD)) {
-                maxD2 = maxD;
-                maxD = d;
-            }
-        }
-
-        edgeweight dMax = maxD + maxD2;
-        count vd = (count)dMax + 1; // count the nodes, not the edges
-        return vd;
+        return DiameterDetails::vertexDiameterBound<edgeweight>(bfs.getDistances());
     };
 
     edgeweight vdMax = 0;
