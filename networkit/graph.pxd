@@ -339,6 +339,17 @@ cdef class EdgeStringAttribute:
 	cdef _Graph* _G
 	cdef setThis(self, _EdgeStringAttribute& other, _Graph* graph)
 
+cdef extern from "<networkit/graph/SteinerTree.hpp>":
+
+	cdef cppclass _SteinerTree "NetworKit::SteinerTree<NetworKit::Graph>"(_Algorithm):
+		_SteinerTree(_Graph, vector[node]) except +
+		bool_t hasTree() except +
+		_Graph getTree() except +
+		edgeweight getTotalWeight() except +
+
+cdef class SteinerTree(Algorithm):
+	cdef Graph _G
+
 cdef extern from "<networkit/graph/SpanningForest.hpp>":
 
 	cdef cppclass _SpanningForest "NetworKit::SpanningForest":
