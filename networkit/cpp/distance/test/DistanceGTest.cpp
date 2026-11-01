@@ -58,6 +58,23 @@ protected:
         return G;
     }
 
+    // Compares the distances of all ordered node pairs with APSP. forNodePairs only visits s < t,
+    // which is not enough for directed graphs.
+    static void expectExactDistances(const Graph &G, const PrunedLandmarkLabeling &pll) {
+        APSP apsp(G);
+        apsp.run();
+        G.forNodes([&](node s) -> void {
+            G.forNodes([&](node t) -> void {
+                const double dist = apsp.getDistance(s, t);
+                if (dist == std::numeric_limits<double>::max()) {
+                    EXPECT_EQ(pll.query(s, t), none);
+                } else {
+                    EXPECT_EQ(pll.query(s, t), dist);
+                }
+            });
+        });
+    }
+
     Graph generatePathGraphWithoutNodeZero() const {
         Graph G(4, isWeighted(), isDirected());
         G.addEdge(1, 2);
@@ -941,15 +958,244 @@ TEST_P(DistanceGTest, testPrunedLandmarkLabeling) {
     });
 }
 
-TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingThrowsWithEdgeRemoval) {
+TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingThrowsWithUnsupportedEvent) {
     Graph G(2, isWeighted(), isDirected());
     G.addEdge(0, 1);
 
     DynPrunedLandmarkLabeling pll(G);
     pll.run();
 
-    G.removeEdge(0, 1);
-    EXPECT_THROW(pll.update(GraphEvent(GraphEvent::EDGE_REMOVAL, 0, 1, 1)), std::runtime_error);
+    EXPECT_THROW(pll.update(GraphEvent(GraphEvent::EDGE_WEIGHT_UPDATE, 0, 1, 2)),
+                 std::runtime_error);
+}
+
+TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingThrowsOnStaleGraph) {
+    Graph G(4, isWeighted(), isDirected());
+    const auto addEdge = [&](node u, node v) -> void {
+        G.addEdge(u, v);
+        if (isDirected()) {
+            G.addEdge(v, u);
+        }
+    };
+    addEdge(0, 2);
+    addEdge(1, 2);
+    addEdge(0, 3);
+    addEdge(1, 3);
+    addEdge(2, 3);
+
+    DynPrunedLandmarkLabeling pll(G);
+    pll.run();
+
+    using ::testing::HasSubstr;
+    using ::testing::ThrowsMessage;
+
+    G.removeEdge(2, 0);
+    G.removeEdge(3, 2);
+    if (isDirected()) {
+        G.removeEdge(0, 2);
+        G.removeEdge(2, 3);
+    }
+    EXPECT_THAT([&]() -> void { pll.update(GraphEvent(GraphEvent::EDGE_REMOVAL, 2, 0)); },
+                ThrowsMessage<std::runtime_error>(
+                    HasSubstr("Graph differs from the labels by more than this event")));
+}
+
+TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingRemoveEdge) {
+    /**	 0---1
+     *	 |   |
+     *	 3---2---4
+     */
+
+    // Directed graphs get both orientations of every edge.
+    Graph G(5, isWeighted(), isDirected());
+    DynPrunedLandmarkLabeling pll(G);
+    const auto addEdge = [&](node u, node v) -> void {
+        G.addEdge(u, v);
+        if (isDirected()) {
+            G.addEdge(v, u);
+        }
+    };
+    const auto removeEdge = [&](node u, node v) -> void {
+        G.removeEdge(u, v);
+        pll.update(GraphEvent(GraphEvent::EDGE_REMOVAL, u, v));
+        if (isDirected()) {
+            G.removeEdge(v, u);
+            pll.update(GraphEvent(GraphEvent::EDGE_REMOVAL, v, u));
+        }
+    };
+
+    addEdge(0, 1);
+    addEdge(1, 2);
+    addEdge(2, 3);
+    addEdge(3, 0);
+    addEdge(2, 4);
+
+    pll.run();
+
+    EXPECT_EQ(pll.query(0, 2), 2);
+    EXPECT_EQ(pll.query(0, 4), 3);
+
+    // The distances increase but the nodes stay connected.
+    removeEdge(1, 2);
+    EXPECT_EQ(pll.query(0, 2), 2);
+    EXPECT_EQ(pll.query(1, 2), 3);
+    EXPECT_EQ(pll.query(1, 4), 4);
+
+    // The graph becomes disconnected.
+    removeEdge(2, 3);
+    EXPECT_EQ(pll.query(0, 2), none);
+    EXPECT_EQ(pll.query(0, 4), none);
+    EXPECT_EQ(pll.query(2, 4), 1);
+}
+
+TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingRemoveEdgeGreedyRestore) {
+    /**	     0---1---2
+     *	    /         \
+     *	7--6           3
+     *	    \         /
+     *	     5-------4
+     */
+
+    // Directed graphs get both orientations of every edge.
+    Graph G(8, isWeighted(), isDirected());
+    const auto addEdge = [&](node u, node v) -> void {
+        G.addEdge(u, v);
+        if (isDirected()) {
+            G.addEdge(v, u);
+        }
+    };
+
+    for (node u = 0; u < 7; ++u) {
+        addEdge(u, (u + 1) % 7);
+    }
+    addEdge(6, 7);
+
+    DynPrunedLandmarkLabeling pll(G);
+    pll.run();
+
+    const auto updateEdge = [&](GraphEvent::Type type, node u, node v) -> void {
+        for (const auto &[s, t] : {std::pair{u, v}, std::pair{v, u}}) {
+            if (type == GraphEvent::EDGE_ADDITION) {
+                G.addEdge(s, t);
+            } else {
+                G.removeEdge(s, t);
+            }
+            pll.update(GraphEvent(type, s, t));
+            if (!isDirected()) {
+                break;
+            }
+        }
+    };
+
+    // Removing {0, 1} affects {0, 5, 6, 7} on the side of 0 and {1, 2, 3} on the side of 1. Both
+    // sets are larger than n / log2(n), so the cover is restored from the smaller set: the one of
+    // the target when removing (0, 1), the one of the source when removing (1, 0). In directed
+    // graphs, each removal covers both cases.
+    updateEdge(GraphEvent::EDGE_REMOVAL, 0, 1);
+    expectExactDistances(G, pll);
+
+    updateEdge(GraphEvent::EDGE_ADDITION, 0, 1);
+    expectExactDistances(G, pll);
+
+    updateEdge(GraphEvent::EDGE_REMOVAL, 1, 0);
+    expectExactDistances(G, pll);
+}
+
+TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingRemoveAsymmetricEdges) {
+    // Edges: 0->1, 1->2, 1->4, 2->3, 2->6, 3->0, 3->5, 4->5, 5->2, 6->7, 7->1. In directed
+    // graphs, most nodes reach each other only along the orientation of the edges.
+    Graph G(8, isWeighted(), isDirected());
+    for (const auto &[u, v] : {std::pair<node, node>{0, 1},
+                               {1, 2},
+                               {1, 4},
+                               {2, 3},
+                               {2, 6},
+                               {3, 0},
+                               {3, 5},
+                               {4, 5},
+                               {5, 2},
+                               {6, 7},
+                               {7, 1}}) {
+        G.addEdge(u, v);
+    }
+
+    DynPrunedLandmarkLabeling pll(G);
+    pll.run();
+    expectExactDistances(G, pll);
+
+    const auto updateEdge = [&](GraphEvent::Type type, node u, node v) -> void {
+        if (type == GraphEvent::EDGE_ADDITION) {
+            G.addEdge(u, v);
+        } else {
+            G.removeEdge(u, v);
+        }
+        pll.update(GraphEvent(type, u, v));
+        expectExactDistances(G, pll);
+    };
+
+    // 1 still reaches 2 through 4 and 5.
+    updateEdge(GraphEvent::EDGE_REMOVAL, 1, 2);
+    updateEdge(GraphEvent::EDGE_ADDITION, 1, 2);
+    // In directed graphs, the other nodes do not reach 6 and 7 anymore.
+    updateEdge(GraphEvent::EDGE_REMOVAL, 2, 6);
+    // In directed graphs, no node reaches 0 anymore.
+    updateEdge(GraphEvent::EDGE_REMOVAL, 3, 0);
+    // 7 reaches 4 directly instead of through 1.
+    updateEdge(GraphEvent::EDGE_ADDITION, 7, 4);
+    updateEdge(GraphEvent::EDGE_REMOVAL, 1, 4);
+    updateEdge(GraphEvent::EDGE_REMOVAL, 5, 2);
+}
+
+TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingAddEdgeFollowsHubOrder) {
+    // Node 2 has the largest degree, so it is the hub with the smallest rank. In directed graphs,
+    // adding (3, 2) needs a search from 2 to the nodes that reach 3, and a search from 3 to the
+    // nodes that 2 reaches. If the search from 3 runs first, 3 becomes a hub of 2, and removing
+    // (4, 1) then gives wrong distances.
+    Graph G(5, isWeighted(), isDirected());
+    for (const auto &[u, v] : {std::pair<node, node>{0, 3},
+                               {1, 2},
+                               {1, 3},
+                               {1, 4},
+                               {2, 0},
+                               {2, 1},
+                               {2, 3},
+                               {2, 4},
+                               {3, 0},
+                               {3, 4},
+                               {4, 1},
+                               {4, 3}}) {
+        G.addEdge(u, v);
+    }
+
+    DynPrunedLandmarkLabeling pll(G);
+    pll.run();
+
+    G.addEdge(3, 2);
+    pll.update(GraphEvent(GraphEvent::EDGE_ADDITION, 3, 2));
+    expectExactDistances(G, pll);
+
+    G.removeEdge(4, 1);
+    pll.update(GraphEvent(GraphEvent::EDGE_REMOVAL, 4, 1));
+    expectExactDistances(G, pll);
+}
+
+TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingUpdateBeforeRun) {
+    Graph G(3, isWeighted(), isDirected());
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+    G.addEdge(0, 2);
+
+    DynPrunedLandmarkLabeling pll(G);
+
+    // The labels are still empty, and run() computes them on the updated graph. The distance from
+    // 0 to 2 does not change, so a removal on empty labels would look for a hub of (0, 2).
+    G.removeEdge(1, 2);
+    pll.update(GraphEvent(GraphEvent::EDGE_REMOVAL, 1, 2));
+    G.addEdge(2, 1);
+    pll.update(GraphEvent(GraphEvent::EDGE_ADDITION, 2, 1));
+
+    pll.run();
+    expectExactDistances(G, pll);
 }
 
 TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingAddEdge) {
