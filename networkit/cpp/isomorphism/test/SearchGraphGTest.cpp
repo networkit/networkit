@@ -449,7 +449,7 @@ TEST_F(SearchGraphGTest, testNeighborWalks) {
         const SearchGraph SU(U, buildMatrix);
 
         std::vector<node> visited;
-        const auto visit = [&visited](node v) { visited.push_back(v); };
+        const auto visit = [&visited](node v) -> void { visited.push_back(v); };
 
         SD.forEachIncidentArc(0, visit);
         EXPECT_THAT(visited, ElementsAre(1u, 2u, 1u, 3u));

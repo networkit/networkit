@@ -3,7 +3,7 @@
  *
  * Tests the base class SubgraphIsomorphism: the run() protocol, input validation and
  * interruption. Some tests use ReferenceSubgraphIsomorphism, a stand-in that reports a precomputed
- * match set; the others use VF2.
+ * match set; the others use VF2 and RI.
  */
 
 #include <functional>

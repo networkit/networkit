@@ -2,6 +2,7 @@
 #define NETWORKIT_CPP_ISOMORPHISM_SEARCH_GRAPH_HPP_
 
 #include <algorithm>
+#include <concepts>
 #include <cstdint>
 #include <span>
 #include <string_view>
@@ -79,7 +80,7 @@ public:
     }
 
     /// Ignores direction and visits a directed mutual pair twice, once per arc.
-    template <typename Callback>
+    template <std::invocable<node> Callback>
     void forEachIncidentArc(node u, Callback fn) const {
         for (const node v : outNeighbors(u))
             fn(v);
@@ -93,7 +94,7 @@ public:
     }
 
     /// Ignores direction and visits every neighbor of @a u once.
-    template <typename Callback>
+    template <std::invocable<node> Callback>
     void forEachDistinctNeighbor(node u, Callback fn) const {
         for (const node v : outNeighbors(u))
             fn(v);

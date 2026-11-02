@@ -68,14 +68,12 @@ RISearchSetup setupOf(const Case &testCase, RI::Variant variant,
 /// The refinement removes target nodes 2 and 3, half of the domain of pattern node 1, since they
 /// have no neighbor with label 1. It removes nothing from the domain of pattern node 0.
 Case halfRefinedCase() {
-    return {"half-refined",
-            IsomorphismTest::graphOf(2, {{0, 1}}),
-            IsomorphismTest::graphOf(6, {{0, 4}, {1, 5}, {2, 3}}),
-            Semantics::MONOMORPHISM,
-            {1, 0},
-            {0, 0, 0, 0, 1, 1},
-            {},
-            {}};
+    return {.name = "half-refined",
+            .pattern = IsomorphismTest::graphOf(2, {{0, 1}}),
+            .target = IsomorphismTest::graphOf(6, {{0, 4}, {1, 5}, {2, 3}}),
+            .semantics = Semantics::MONOMORPHISM,
+            .patternNodeLabels = {1, 0},
+            .targetNodeLabels = {0, 0, 0, 0, 1, 1}};
 }
 
 /// Runs the search on unlabelled graphs with the given domains and returns the matches.
@@ -84,7 +82,7 @@ std::vector<Match> matchesOf(const SearchGraph &pattern, const SearchGraph &targ
     Aux::SignalHandler handler;
     std::vector<Match> matches;
     RIImpl(pattern, target, {}, {}, ordering, domains, Semantics::MONOMORPHISM, handler,
-           [&matches](std::span<const node> match) {
+           [&matches](std::span<const node> match) -> bool {
                matches.emplace_back(match.begin(), match.end());
                return true;
            })
@@ -158,6 +156,7 @@ TEST_P(RIGTest, testAgreesWithTheReference) {
 
         IsomorphismTest::expectMatchesReference(make);
         IsomorphismTest::expectRespectsMatchCap(make);
+        IsomorphismTest::expectCallbackStopsTheSearch(make);
     }
 }
 
@@ -213,7 +212,7 @@ TEST_P(RIGTest, testOrderingInvariants) {
 TEST_P(RIGTest, testOrderingHandTraced) {
     const RI::Variant variant = GetParam();
     // Under RI-DS, the target shapes the order through the domains.
-    const auto orderingOf = [variant](const Graph &pattern) {
+    const auto orderingOf = [variant](const Graph &pattern) -> RIOrdering {
         return setupOf(pattern, pattern, {}, {}, variant).ordering;
     };
 
@@ -259,8 +258,7 @@ TEST_P(RIGTest, testOrderingHandTraced) {
 /// Unlike on the corpus, the domains prune on karate. ChibaNishizekiTriangleEdgeScore provides an
 /// independent expected count.
 TEST_P(RIGTest, testVariantsAgreeOnKarate) {
-    METISGraphReader reader;
-    Graph karate = reader.read("input/karate.graph");
+    Graph karate = METISGraphReader{}.read("input/karate.graph");
     karate.indexEdges();
 
     ChibaNishizekiTriangleEdgeScore triangleScore(karate);
@@ -373,7 +371,7 @@ TEST_F(RIDSGTest, testInSliceCandidatesAreIntersectedWithTheDomain) {
 /// filter the candidates.
 TEST_F(RIDSGTest, testDomainFilterThresholdSelectsTheDomains) {
     const Case testCase = halfRefinedCase();
-    const auto filtering = [&testCase](double threshold) {
+    const auto filtering = [&testCase](double threshold) -> std::vector<bool> {
         return setupOf(testCase, RI::Variant::RI_DS, threshold).domains.earnsItsKeep;
     };
 
@@ -392,7 +390,7 @@ TEST_F(RIDSGTest, testDomainFilterThresholdSelectsTheDomains) {
  * 1. Only forward checking can then remove target node 3 from their domains.
  */
 TEST_P(RIGTest, testSingletonDomainsAreRemovedAndComeFirst) {
-    const auto expectSingletonsFirst = [](const RISearchSetup &prep, const char *name) {
+    const auto expectSingletonsFirst = [](const RISearchSetup &prep, const char *name) -> void {
         if (prep.domains.ofPatternNode.empty())
             return;
 
@@ -462,7 +460,7 @@ TEST_F(RIDSGTest, testForwardCheckingReachesAFixpoint) {
 
     for (const count degree : {4u, 3u, 2u, 1u}) {
         count labelZeroNodesOfThatDegree = 0;
-        target.forNodes([&](node v) {
+        target.forNodes([&](node v) -> void {
             if (targetNodeLabels[v] == 0 && target.degree(v) >= degree)
                 ++labelZeroNodesOfThatDegree;
         });
@@ -518,7 +516,7 @@ TEST_P(RIGTest, testInterruptStopsTheSearch) {
 
     RI algo(pattern, cycle, GetParam(), Semantics::MONOMORPHISM, 0);
     count delivered = 0;
-    algo.setCallback([&](std::span<const node>) {
+    algo.setCallback([&](std::span<const node>) -> void {
         if (++delivered == 5)
             GlobalState::setReceivedSIGINT(true);
     });

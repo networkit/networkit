@@ -119,7 +119,7 @@ private:
         levels.reserve(matchDepth);
 
         // levels.back() holds the candidates for position state.depth.
-        const auto openLevel = [&] {
+        const auto openLevel = [&]() -> void {
             const index begin = candidates.size();
             candidatesFor(state, candidates);
             levels.push_back({begin, begin, candidates.size()});

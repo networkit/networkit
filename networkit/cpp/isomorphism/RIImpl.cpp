@@ -44,7 +44,7 @@ void collectArcConstraints(const SearchGraph &pattern, node pu, std::vector<ArcC
     const count inArcs = pattern.isDirected() ? pattern.inDegree(pu) : 0;
     out.reserve(out.size() + pattern.outDegree(pu) + inArcs);
 
-    const auto collect = [&](bool outgoing) {
+    const auto collect = [&](bool outgoing) -> void {
         const Slice slice = sliceOf(pattern, pu, outgoing);
         for (index i = 0; i < slice.nodes.size(); ++i)
             out.push_back(
@@ -131,17 +131,17 @@ RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains)
 
     SparseVector<bool> reached(z, false);
 
-    const auto tripleFor = [&](node u) {
+    const auto tripleFor = [&](node u) -> std::array<count, 3> {
         std::array<count, 3> score{visCount[u], 0, 0};
 
-        pattern.forEachDistinctNeighbor(u, [&](node v) {
+        pattern.forEachDistinctNeighbor(u, [&](node v) -> void {
             if (inOrder[v])
                 return;
 
             if (visCount[v] == 0)
                 ++score[2];
 
-            pattern.forEachDistinctNeighbor(v, [&](node w) {
+            pattern.forEachDistinctNeighbor(v, [&](node w) -> void {
                 if (!inOrder[w] || reached.indexIsUsed(w))
                     return;
                 reached.insert(w, true);
@@ -165,7 +165,7 @@ RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains)
         if (pattern.hasNode(u) && domainSize(u) == 1)
             ++remainingSingletons;
 
-    const auto eligible = [&](node u) {
+    const auto eligible = [&](node u) -> bool {
         return pattern.hasNode(u) && !inOrder[u]
                && (remainingSingletons == 0 || domainSize(u) == 1);
     };
@@ -201,7 +201,7 @@ RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains)
         inOrder[best] = true;
         result.order.push_back(best);
         result.parent.push_back(firstOrderedNeighbor[best]);
-        pattern.forEachIncidentArc(best, [&](node v) {
+        pattern.forEachIncidentArc(best, [&](node v) -> void {
             ++visCount[v];
             if (firstOrderedNeighbor[v] == none)
                 firstOrderedNeighbor[v] = position;
@@ -254,7 +254,7 @@ RIDomains computeDomains(const SearchGraph &pattern, const SearchGraph &target,
         constraints.clear();
         collectArcConstraints(pattern, pu, constraints);
 
-        const auto keep = [&](node tv) {
+        const auto keep = [&](node tv) -> bool {
             for (const ArcConstraint &arc : constraints)
                 if (!intersectsDomain(sliceOf(target, tv, arc.outgoing), arc.label,
                                       result.ofPatternNode[arc.pj]))
@@ -263,7 +263,7 @@ RIDomains computeDomains(const SearchGraph &pattern, const SearchGraph &target,
             return true;
         };
 
-        std::erase_if(domain, [&](node tv) { return !keep(tv); });
+        std::erase_if(domain, [&](node tv) -> bool { return !keep(tv); });
     }
 
     result.anyEmpty = !forwardCheckSingletons(pattern, result.ofPatternNode);

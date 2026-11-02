@@ -35,7 +35,7 @@ void RI::run() {
 
     RIImpl(setup.patternGraph, setup.targetGraph, patternNodeLabels, targetNodeLabels,
            setup.ordering, setup.domains, semantics, handler,
-           [this](std::span<const node> match) { return reportMatch(match); })
+           [this](std::span<const node> match) -> bool { return reportMatch(match); })
         .run();
 
     // RIImpl only polls isRunning(), so an interrupted search returns normally and throws here.
