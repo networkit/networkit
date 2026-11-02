@@ -32,7 +32,7 @@ using testing::IsEmpty;
 /// ascending order.
 std::vector<node> simpleNeighbors(const Graph &G, node u, bool in) {
     std::vector<node> neighbors;
-    const auto collect = [&](node v) {
+    const auto collect = [&](node v) -> void {
         if (v != u)
             neighbors.push_back(v);
     };
@@ -41,13 +41,13 @@ std::vector<node> simpleNeighbors(const Graph &G, node u, bool in) {
     else
         G.forNeighborsOf(u, collect);
     std::ranges::sort(neighbors);
-    // Not std::ranges::unique, whose subrange result clang 11 cannot compile with libstdc++ 12.
+    // Not std::ranges::unique, whose subrange result clang 14 cannot compile with libstdc++ 12.
     neighbors.erase(std::unique(neighbors.begin(), neighbors.end()), neighbors.end());
     return neighbors;
 }
 
 void expectSlicesAreSimpleNeighborhoods(const Graph &G, const SearchGraph &SG) {
-    G.forNodes([&](node u) {
+    G.forNodes([&](node u) -> void {
         const std::vector<node> expectedOut = simpleNeighbors(G, u, /* in = */ false);
         const std::vector<node> expectedIn = simpleNeighbors(G, u, /* in = */ true);
 
@@ -64,7 +64,7 @@ void expectLabelsPairWithHeads(const Graph &G, const std::vector<index> &edgeLab
                                const SearchGraph &SG) {
     const auto given = IsomorphismTest::edgeLabelsByPair(G, edgeLabels);
 
-    G.forNodes([&](node u) {
+    G.forNodes([&](node u) -> void {
         const std::span<const node> successors = SG.outNeighbors(u);
         const std::span<const index> outLabels = SG.outLabels(u);
         ASSERT_EQ(outLabels.size(), successors.size());
@@ -122,7 +122,7 @@ TEST_F(SearchGraphGTest, testSearchGraphCSR) {
     }
 
     // The snapshot drops the self-loop at node 5.
-    G.forEdges([&](node u, node v) {
+    G.forEdges([&](node u, node v) -> void {
         if (u == v) {
             EXPECT_FALSE(SG.hasEdge(u, v));
         } else {
@@ -159,7 +159,7 @@ TEST_F(SearchGraphGTest, testSearchGraphCSR) {
     EXPECT_TRUE(SD.isDirected());
     EXPECT_NE(SD.inDegree(0), SD.outDegree(0));
 
-    D.forEdges([&](node u, node v) {
+    D.forEdges([&](node u, node v) -> void {
         if (u == v) {
             EXPECT_FALSE(SD.hasEdge(u, v));
         } else {

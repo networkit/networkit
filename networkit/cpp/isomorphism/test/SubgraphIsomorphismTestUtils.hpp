@@ -19,6 +19,7 @@
 #include <gtest/gtest.h>
 
 #include <networkit/Globals.hpp>
+#include <networkit/auxiliary/Random.hpp>
 #include <networkit/auxiliary/SignalHandling.hpp>
 #include <networkit/graph/Graph.hpp>
 #include <networkit/isomorphism/SubgraphIsomorphism.hpp>
@@ -47,7 +48,7 @@ using LabelsByPair = std::map<std::pair<node, node>, std::vector<index>>;
 
 inline LabelsByPair edgeLabelsByPair(const Graph &G, std::span<const index> edgeLabels) {
     LabelsByPair byPair;
-    G.forEdges([&](node u, node v, edgeweight, edgeid eid) {
+    G.forEdges([&](node u, node v, edgeweight, edgeid eid) -> void {
         const index label = eid < edgeLabels.size() ? edgeLabels[eid] : none;
         byPair[{u, v}].push_back(label);
         if (!G.isDirected() && u != v)
@@ -65,8 +66,8 @@ inline const std::vector<index> &labelsOfPair(const LabelsByPair &byPair, node u
 /// With parallel edges, some pattern label must be compatible with some target label.
 inline bool edgeLabelsCompatible(std::span<const index> patternEdgeLabels,
                                  std::span<const index> targetEdgeLabels) {
-    return std::ranges::any_of(patternEdgeLabels, [&](index patternLabel) {
-        return std::ranges::any_of(targetEdgeLabels, [&](index targetLabel) {
+    return std::ranges::any_of(patternEdgeLabels, [&](index patternLabel) -> bool {
+        return std::ranges::any_of(targetEdgeLabels, [&](index targetLabel) -> bool {
             return labelsCompatible(patternLabel, targetLabel);
         });
     });
@@ -106,7 +107,8 @@ inline bool isValidMatch(const Graph &pattern, const Graph &target, Semantics se
 
     // Injective: no two pattern nodes share an image.
     std::vector<node> images;
-    pattern.forNodes([&](node u) { images.push_back(match[u]); });
+    for (const node u : pattern.nodeRange())
+        images.push_back(match[u]);
     std::ranges::sort(images);
     if (std::ranges::adjacent_find(images) != images.end())
         return false;
@@ -143,11 +145,7 @@ inline std::vector<Match> referenceMatches(const Graph &pattern, const Graph &ta
                                            std::span<const index> targetNodeLabels = {},
                                            std::span<const index> patternEdgeLabels = {},
                                            std::span<const index> targetEdgeLabels = {}) {
-    std::vector<node> patternNodes;
-    pattern.forNodes([&](node u) { patternNodes.push_back(u); });
-
-    std::vector<node> targetNodes;
-    target.forNodes([&](node v) { targetNodes.push_back(v); });
+    const std::vector<node> patternNodes(pattern.nodeRange().begin(), pattern.nodeRange().end());
 
     std::vector<Match> matches;
     Match current(pattern.upperNodeIdBound(), none);
@@ -162,7 +160,7 @@ inline std::vector<Match> referenceMatches(const Graph &pattern, const Graph &ta
         }
 
         const node pu = patternNodes[next];
-        for (node tv : targetNodes) {
+        for (const node tv : target.nodeRange()) {
             if (used[tv])
                 continue;
 
@@ -178,20 +176,24 @@ inline std::vector<Match> referenceMatches(const Graph &pattern, const Graph &ta
     return matches;
 }
 
-/// Edge label vectors are indexed by edge id, so their graphs come from labelledGraphOf().
+/// Edge label vectors are indexed by edge id, so their graphs come from labelledGraphOf(). The
+/// labels default to empty, so that a case built with designated initializers can leave them out.
 struct Case {
     std::string name;
     Graph pattern;
     Graph target;
     Semantics semantics;
-    std::vector<index> patternNodeLabels;
-    std::vector<index> targetNodeLabels;
-    std::vector<index> patternEdgeLabels;
-    std::vector<index> targetEdgeLabels;
+    std::vector<index> patternNodeLabels{};
+    std::vector<index> targetNodeLabels{};
+    std::vector<index> patternEdgeLabels{};
+    std::vector<index> targetEdgeLabels{};
 };
 
 inline Case unlabelledCase(std::string name, Graph pattern, Graph target, Semantics semantics) {
-    return {std::move(name), std::move(pattern), std::move(target), semantics, {}, {}, {}, {}};
+    return {.name = std::move(name),
+            .pattern = std::move(pattern),
+            .target = std::move(target),
+            .semantics = semantics};
 }
 
 inline Graph graphOf(count n, std::initializer_list<std::pair<node, node>> edges,
@@ -221,7 +223,7 @@ struct LabelledGraph {
 inline LabelledGraph labelledGraphOf(count n,
                                      std::initializer_list<std::tuple<node, node, index>> edges,
                                      bool directed = false) {
-    const auto key = [directed](node u, node v) {
+    const auto key = [directed](node u, node v) -> std::pair<node, node> {
         return directed || u <= v ? std::pair<node, node>{u, v} : std::pair<node, node>{v, u};
     };
 
@@ -235,7 +237,7 @@ inline LabelledGraph labelledGraphOf(count n,
 
     std::vector<index> edgeLabels(G.upperEdgeIdBound(), none);
     std::map<std::pair<node, node>, index> handedOut;
-    G.forEdges([&](node u, node v, edgeweight, edgeid eid) {
+    G.forEdges([&](node u, node v, edgeweight, edgeid eid) -> void {
         const std::pair<node, node> pair = key(u, v);
         edgeLabels[eid] = queued[pair][handedOut[pair]++];
     });
@@ -344,38 +346,30 @@ inline std::vector<Case> standardCases() {
                                    graphOf(4, {{0, 1}, {0, 2}, {0, 3}}, true), oneArc,
                                    Semantics::MONOMORPHISM));
 
-    cases.push_back({"labelled-path3-in-k4",
-                     path3,
-                     k4,
-                     Semantics::MONOMORPHISM,
-                     /* pattern */ {7, 8, 7},
-                     /* target  */ {7, 8, 7, 9},
-                     {},
-                     {}});
-    cases.push_back({"labelled-wildcard-on-pattern",
-                     path3,
-                     k4,
-                     Semantics::MONOMORPHISM,
-                     {none, 8, none},
-                     {7, 8, 7, 9},
-                     {},
-                     {}});
-    cases.push_back({"labelled-wildcard-on-target",
-                     path3,
-                     k4,
-                     Semantics::MONOMORPHISM,
-                     {7, 8, 7},
-                     {none, 8, 7, none},
-                     {},
-                     {}});
-    cases.push_back({"labelled-no-match",
-                     triangle,
-                     k4,
-                     Semantics::MONOMORPHISM,
-                     {1, 1, 1},
-                     {1, 1, 2, 2},
-                     {},
-                     {}});
+    cases.push_back({.name = "labelled-path3-in-k4",
+                     .pattern = path3,
+                     .target = k4,
+                     .semantics = Semantics::MONOMORPHISM,
+                     .patternNodeLabels = {7, 8, 7},
+                     .targetNodeLabels = {7, 8, 7, 9}});
+    cases.push_back({.name = "labelled-wildcard-on-pattern",
+                     .pattern = path3,
+                     .target = k4,
+                     .semantics = Semantics::MONOMORPHISM,
+                     .patternNodeLabels = {none, 8, none},
+                     .targetNodeLabels = {7, 8, 7, 9}});
+    cases.push_back({.name = "labelled-wildcard-on-target",
+                     .pattern = path3,
+                     .target = k4,
+                     .semantics = Semantics::MONOMORPHISM,
+                     .patternNodeLabels = {7, 8, 7},
+                     .targetNodeLabels = {none, 8, 7, none}});
+    cases.push_back({.name = "labelled-no-match",
+                     .pattern = triangle,
+                     .target = k4,
+                     .semantics = Semantics::MONOMORPHISM,
+                     .patternNodeLabels = {1, 1, 1},
+                     .targetNodeLabels = {1, 1, 2, 2}});
 
     // Most edge-label cases use MONOMORPHISM, since the induced rule constrains non-edges, which
     // carry no labels.
@@ -383,59 +377,49 @@ inline std::vector<Case> standardCases() {
     const LabelledGraph edgeLabelledTarget =
         labelledGraphOf(4, {{0, 1, 1}, {1, 2, 2}, {2, 3, 1}, {0, 3, 3}});
 
-    cases.push_back({"edge-labelled-match",
-                     edgeLabelledPattern.G,
-                     edgeLabelledTarget.G,
-                     Semantics::MONOMORPHISM,
-                     {},
-                     {},
-                     edgeLabelledPattern.edgeLabels,
-                     edgeLabelledTarget.edgeLabels});
+    cases.push_back({.name = "edge-labelled-match",
+                     .pattern = edgeLabelledPattern.G,
+                     .target = edgeLabelledTarget.G,
+                     .semantics = Semantics::MONOMORPHISM,
+                     .patternEdgeLabels = edgeLabelledPattern.edgeLabels,
+                     .targetEdgeLabels = edgeLabelledTarget.edgeLabels});
 
     // An implementation that ignores edge labels reports matches here.
     const LabelledGraph nearMissTarget =
         labelledGraphOf(4, {{0, 1, 1}, {1, 2, 5}, {2, 3, 1}, {0, 3, 3}});
-    cases.push_back({"edge-labelled-near-miss",
-                     edgeLabelledPattern.G,
-                     nearMissTarget.G,
-                     Semantics::MONOMORPHISM,
-                     {},
-                     {},
-                     edgeLabelledPattern.edgeLabels,
-                     nearMissTarget.edgeLabels});
+    cases.push_back({.name = "edge-labelled-near-miss",
+                     .pattern = edgeLabelledPattern.G,
+                     .target = nearMissTarget.G,
+                     .semantics = Semantics::MONOMORPHISM,
+                     .patternEdgeLabels = edgeLabelledPattern.edgeLabels,
+                     .targetEdgeLabels = nearMissTarget.edgeLabels});
 
     const LabelledGraph wildcardPattern = labelledGraphOf(3, {{0, 1, none}, {1, 2, 2}});
-    cases.push_back({"edge-labelled-wildcard-on-pattern",
-                     wildcardPattern.G,
-                     edgeLabelledTarget.G,
-                     Semantics::MONOMORPHISM,
-                     {},
-                     {},
-                     wildcardPattern.edgeLabels,
-                     edgeLabelledTarget.edgeLabels});
+    cases.push_back({.name = "edge-labelled-wildcard-on-pattern",
+                     .pattern = wildcardPattern.G,
+                     .target = edgeLabelledTarget.G,
+                     .semantics = Semantics::MONOMORPHISM,
+                     .patternEdgeLabels = wildcardPattern.edgeLabels,
+                     .targetEdgeLabels = edgeLabelledTarget.edgeLabels});
 
     const LabelledGraph wildcardTarget =
         labelledGraphOf(4, {{0, 1, none}, {1, 2, 2}, {2, 3, 1}, {0, 3, none}});
-    cases.push_back({"edge-labelled-wildcard-on-target",
-                     edgeLabelledPattern.G,
-                     wildcardTarget.G,
-                     Semantics::MONOMORPHISM,
-                     {},
-                     {},
-                     edgeLabelledPattern.edgeLabels,
-                     wildcardTarget.edgeLabels});
+    cases.push_back({.name = "edge-labelled-wildcard-on-target",
+                     .pattern = edgeLabelledPattern.G,
+                     .target = wildcardTarget.G,
+                     .semantics = Semantics::MONOMORPHISM,
+                     .patternEdgeLabels = edgeLabelledPattern.edgeLabels,
+                     .targetEdgeLabels = wildcardTarget.edgeLabels});
 
     // The two arcs of a directed mutual pair carry independent labels.
     const LabelledGraph mutualPattern = labelledGraphOf(2, {{0, 1, 7}}, true);
     const LabelledGraph mutualTarget = labelledGraphOf(3, {{0, 1, 7}, {1, 0, 8}, {1, 2, 8}}, true);
-    cases.push_back({"directed-mutual-pair-different-labels",
-                     mutualPattern.G,
-                     mutualTarget.G,
-                     Semantics::MONOMORPHISM,
-                     {},
-                     {},
-                     mutualPattern.edgeLabels,
-                     mutualTarget.edgeLabels});
+    cases.push_back({.name = "directed-mutual-pair-different-labels",
+                     .pattern = mutualPattern.G,
+                     .target = mutualTarget.G,
+                     .semantics = Semantics::MONOMORPHISM,
+                     .patternEdgeLabels = mutualPattern.edgeLabels,
+                     .targetEdgeLabels = mutualTarget.edgeLabels});
 
     // A search may walk one arc of a mutual pair and only look up the other. From target nodes 0
     // and 2 such a search walks different arcs, and each time the other arc has the wrong label.
@@ -443,59 +427,51 @@ inline std::vector<Case> standardCases() {
     const LabelledGraph twoLabelTarget = labelledGraphOf(
         6, {{0, 1, 1}, {1, 0, 5}, {3, 0, 2}, {2, 3, 9}, {3, 2, 2}, {2, 1, 4}, {4, 5, 1}, {5, 4, 2}},
         true);
-    cases.push_back({"directed-mutual-pair-labels-checked-both-ways",
-                     twoLabelPair.G,
-                     twoLabelTarget.G,
-                     Semantics::MONOMORPHISM,
-                     {},
-                     {},
-                     twoLabelPair.edgeLabels,
-                     twoLabelTarget.edgeLabels});
+    cases.push_back({.name = "directed-mutual-pair-labels-checked-both-ways",
+                     .pattern = twoLabelPair.G,
+                     .target = twoLabelTarget.G,
+                     .semantics = Semantics::MONOMORPHISM,
+                     .patternEdgeLabels = twoLabelPair.edgeLabels,
+                     .targetEdgeLabels = twoLabelTarget.edgeLabels});
 
     // Parallel edges with equal labels collapse without loss.
     const LabelledGraph parallelAgreeing =
         labelledGraphOf(4, {{0, 1, 1}, {0, 1, 1}, {1, 2, 2}, {2, 3, 1}});
-    cases.push_back({"edge-labelled-parallel-edges-same-label",
-                     edgeLabelledPattern.G,
-                     parallelAgreeing.G,
-                     Semantics::MONOMORPHISM,
-                     {},
-                     {},
-                     edgeLabelledPattern.edgeLabels,
-                     parallelAgreeing.edgeLabels});
+    cases.push_back({.name = "edge-labelled-parallel-edges-same-label",
+                     .pattern = edgeLabelledPattern.G,
+                     .target = parallelAgreeing.G,
+                     .semantics = Semantics::MONOMORPHISM,
+                     .patternEdgeLabels = edgeLabelledPattern.edgeLabels,
+                     .targetEdgeLabels = parallelAgreeing.edgeLabels});
 
     const LabelledGraph parallelAgreeingPattern =
         labelledGraphOf(3, {{0, 1, 1}, {0, 1, 1}, {1, 2, 2}});
-    cases.push_back({"edge-labelled-parallel-pattern-edges-same-label",
-                     parallelAgreeingPattern.G,
-                     edgeLabelledTarget.G,
-                     Semantics::MONOMORPHISM,
-                     {},
-                     {},
-                     parallelAgreeingPattern.edgeLabels,
-                     edgeLabelledTarget.edgeLabels});
+    cases.push_back({.name = "edge-labelled-parallel-pattern-edges-same-label",
+                     .pattern = parallelAgreeingPattern.G,
+                     .target = edgeLabelledTarget.G,
+                     .semantics = Semantics::MONOMORPHISM,
+                     .patternEdgeLabels = parallelAgreeingPattern.edgeLabels,
+                     .targetEdgeLabels = edgeLabelledTarget.edgeLabels});
 
     // The snapshot drops target self-loops, so their labels cannot disagree.
     const LabelledGraph labelledLoops =
         labelledGraphOf(4, {{0, 1, 1}, {1, 2, 2}, {2, 3, 1}, {2, 2, 7}, {2, 2, 8}});
-    cases.push_back({"edge-labelled-target-self-loops",
-                     edgeLabelledPattern.G,
-                     labelledLoops.G,
-                     Semantics::MONOMORPHISM,
-                     {},
-                     {},
-                     edgeLabelledPattern.edgeLabels,
-                     labelledLoops.edgeLabels});
+    cases.push_back({.name = "edge-labelled-target-self-loops",
+                     .pattern = edgeLabelledPattern.G,
+                     .target = labelledLoops.G,
+                     .semantics = Semantics::MONOMORPHISM,
+                     .patternEdgeLabels = edgeLabelledPattern.edgeLabels,
+                     .targetEdgeLabels = labelledLoops.edgeLabels});
 
     // The node labels rule out one of the two edge-labelled matches.
-    cases.push_back({"node-and-edge-labelled",
-                     edgeLabelledPattern.G,
-                     edgeLabelledTarget.G,
-                     Semantics::MONOMORPHISM,
-                     {7, none, 8},
-                     {7, 9, 8, 7},
-                     edgeLabelledPattern.edgeLabels,
-                     edgeLabelledTarget.edgeLabels});
+    cases.push_back({.name = "node-and-edge-labelled",
+                     .pattern = edgeLabelledPattern.G,
+                     .target = edgeLabelledTarget.G,
+                     .semantics = Semantics::MONOMORPHISM,
+                     .patternNodeLabels = {7, none, 8},
+                     .targetNodeLabels = {7, 9, 8, 7},
+                     .patternEdgeLabels = edgeLabelledPattern.edgeLabels,
+                     .targetEdgeLabels = edgeLabelledTarget.edgeLabels});
 
     // The labelled square occurs in the target, but the diagonal makes every occurrence
     // non-induced.
@@ -504,15 +480,32 @@ inline std::vector<Case> standardCases() {
     const LabelledGraph squareWithDiagonal =
         labelledGraphOf(4, {{0, 1, 42}, {1, 2, 0}, {2, 3, 42}, {3, 0, 0}, {0, 2, 42}});
     for (const Semantics semantics : {Semantics::MONOMORPHISM, Semantics::INDUCED})
-        cases.push_back({semantics == Semantics::INDUCED ? "edge-labelled-square-induced"
-                                                         : "edge-labelled-square-mono",
-                         labelledSquare.G,
-                         squareWithDiagonal.G,
-                         semantics,
-                         {},
-                         {},
-                         labelledSquare.edgeLabels,
-                         squareWithDiagonal.edgeLabels});
+        cases.push_back({.name = semantics == Semantics::INDUCED ? "edge-labelled-square-induced"
+                                                                 : "edge-labelled-square-mono",
+                         .pattern = labelledSquare.G,
+                         .target = squareWithDiagonal.G,
+                         .semantics = semantics,
+                         .patternEdgeLabels = labelledSquare.edgeLabels,
+                         .targetEdgeLabels = squareWithDiagonal.edgeLabels});
+
+    // Seeded random graphs reach deeper backtracking than the small cases above. The directed ones
+    // catch a search that maps two pattern nodes to one target node through the in-terminal sets,
+    // or that skips the induced check of the in-arcs.
+    Aux::Random::setSeed(42, false);
+    const auto randomGraph = [](count n, bool directed) -> Graph {
+        Graph G(n, false, directed);
+        for (node u = 0; u < n; ++u)
+            for (node v = directed ? 0 : u + 1; v < n; ++v)
+                if (u != v && Aux::Random::probability() < 0.5)
+                    G.addEdge(u, v);
+        return G;
+    };
+    for (index i = 0; i < 40; ++i) {
+        const bool directed = i % 2 == 1;
+        cases.push_back(unlabelledCase("random-" + std::to_string(i), randomGraph(4, directed),
+                                       randomGraph(8, directed),
+                                       i % 4 < 2 ? Semantics::INDUCED : Semantics::MONOMORPHISM));
+    }
 
     return cases;
 }
@@ -563,7 +556,7 @@ void expectMatchesReference(Construct construct) {
             testCase.pattern, testCase.target, testCase.semantics, testCase.patternNodeLabels,
             testCase.targetNodeLabels, testCase.patternEdgeLabels, testCase.targetEdgeLabels);
 
-        const auto build = [&]() {
+        const auto build = [&]() -> std::unique_ptr<SubgraphIsomorphism> {
             std::unique_ptr<SubgraphIsomorphism> algo =
                 construct(testCase.pattern, testCase.target, testCase.semantics, count{0});
             applyLabels(*algo, testCase);
@@ -583,7 +576,7 @@ void expectMatchesReference(Construct construct) {
         {
             std::vector<Match> collected;
             std::unique_ptr<SubgraphIsomorphism> algo = build();
-            algo->setCallback([&](std::span<const node> match) {
+            algo->setCallback([&](std::span<const node> match) -> void {
                 collected.emplace_back(match.begin(), match.end());
             });
             algo->run();
@@ -626,6 +619,48 @@ void expectRespectsMatchCap(Construct construct) {
                 << "cap: " << cap << " produced a malformed match";
         }
     }
+}
+
+/// A callback receives exactly as many matches as the cap allows, and an exception from it stops
+/// run() and reaches the caller. A parallel search may pass a callback a few matches beyond the
+/// cap, so this suits only the sequential algorithms.
+template <typename Construct>
+void expectCallbackStopsTheSearch(Construct construct) {
+    // 24 matches: every ordering of 3 of K4's 4 nodes.
+    const Graph pattern = graphOf(3, {{0, 1}, {1, 2}, {2, 0}});
+    const Graph target = completeGraph(4);
+    const count total = 24;
+
+    for (count cap : {count{1}, count{5}, total, total + 10}) {
+        std::vector<Match> collected;
+        std::unique_ptr<SubgraphIsomorphism> algo =
+            construct(pattern, target, Semantics::MONOMORPHISM, cap);
+        algo->setCallback([&](std::span<const node> match) -> void {
+            collected.emplace_back(match.begin(), match.end());
+        });
+        algo->run();
+
+        EXPECT_THAT(collected, testing::SizeIs(std::min(cap, total))) << "cap: " << cap;
+        EXPECT_EQ(algo->numberOfMatches(), collected.size()) << "cap: " << cap;
+        for (const Match &match : collected) {
+            EXPECT_TRUE(isValidMatch(pattern, target, Semantics::MONOMORPHISM, {}, {}, match))
+                << "cap: " << cap << " produced a malformed match";
+        }
+    }
+
+    std::unique_ptr<SubgraphIsomorphism> algo =
+        construct(pattern, target, Semantics::MONOMORPHISM, count{0});
+    count delivered = 0;
+    algo->setCallback([&](std::span<const node>) -> void {
+        if (++delivered == 3)
+            throw std::runtime_error("the callback gave up");
+    });
+
+    EXPECT_THAT([&]() -> void { algo->run(); },
+                testing::ThrowsMessage<std::runtime_error>(testing::HasSubstr("gave up")));
+    EXPECT_EQ(delivered, 3u) << "the search went on after the callback threw";
+    EXPECT_FALSE(algo->hasFinished());
+    EXPECT_THROW(algo->numberOfMatches(), std::runtime_error);
 }
 
 } // namespace NetworKit::IsomorphismTest

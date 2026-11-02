@@ -28,8 +28,7 @@ TEST_F(VF2GTest, testInitialTriangleCount) {
     // Count triangles in karate graph as initial test
     const Graph pattern = IsomorphismTest::graphOf(3, {{0, 1}, {1, 2}, {2, 0}});
 
-    METISGraphReader reader;
-    Graph karate = reader.read("input/karate.graph");
+    Graph karate = METISGraphReader{}.read("input/karate.graph");
 
     VF2 vf(pattern, karate);
     vf.run();
@@ -46,6 +45,7 @@ TEST_F(VF2GTest, testAgreesWithTheReference) {
 
     IsomorphismTest::expectMatchesReference(make);
     IsomorphismTest::expectRespectsMatchCap(make);
+    IsomorphismTest::expectCallbackStopsTheSearch(make);
 }
 
 TEST_F(VF2GTest, testInterruptStopsTheSearch) {
@@ -56,7 +56,7 @@ TEST_F(VF2GTest, testInterruptStopsTheSearch) {
 
     VF2 algo(pattern, target, SubgraphIsomorphism::Semantics::MONOMORPHISM);
     count delivered = 0;
-    algo.setCallback([&](std::span<const node>) {
+    algo.setCallback([&](std::span<const node>) -> void {
         if (++delivered == 1)
             GlobalState::setReceivedSIGINT(true);
     });

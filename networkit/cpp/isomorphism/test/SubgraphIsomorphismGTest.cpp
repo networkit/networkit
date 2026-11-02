@@ -2,8 +2,8 @@
  * SubgraphIsomorphismGTest.cpp
  *
  * Tests the base class SubgraphIsomorphism: the run() protocol, input validation and
- * interruption. Most tests use ReferenceSubgraphIsomorphism, a stand-in that reports a precomputed
- * match set.
+ * interruption. Some tests use ReferenceSubgraphIsomorphism, a stand-in that reports a precomputed
+ * match set; the others use VF2.
  */
 
 #include <memory>
@@ -52,6 +52,7 @@ TEST_F(SubgraphIsomorphismGTest, testHarnessDrivesAnAlgorithmThroughTheRunProtoc
 
     IsomorphismTest::expectMatchesReference(make);
     IsomorphismTest::expectRespectsMatchCap(make);
+    IsomorphismTest::expectCallbackStopsTheSearch(make);
 }
 
 TEST_F(SubgraphIsomorphismGTest, testInterruptLeavesTheAlgorithmUnfinishedButUsable) {
@@ -64,7 +65,7 @@ TEST_F(SubgraphIsomorphismGTest, testInterruptLeavesTheAlgorithmUnfinishedButUsa
     IsomorphismTest::ReferenceSubgraphIsomorphism algo(pattern, target, Semantics::MONOMORPHISM);
 
     count delivered = 0;
-    algo.setCallback([&](std::span<const node>) {
+    algo.setCallback([&](std::span<const node>) -> void {
         if (++delivered == 5)
             GlobalState::setReceivedSIGINT(true);
     });
@@ -135,7 +136,7 @@ TEST_F(SubgraphIsomorphismGTest, testGetMatchesFollowsTheLastRun) {
     EXPECT_THAT(algo.getMatches(), SizeIs(8));
 
     // A callback set after the run does not take away the matches that run stored.
-    algo.setCallback([](std::span<const node>) {});
+    algo.setCallback([](std::span<const node>) -> void {});
     EXPECT_THAT(algo.getMatches(), SizeIs(8));
 }
 
@@ -166,7 +167,7 @@ TEST_F(SubgraphIsomorphismGTest, testRunValidatesEdgeLabels) {
 
     IsomorphismTest::ReferenceSubgraphIsomorphism algo(pattern, target, Semantics::MONOMORPHISM);
 
-    // Two empty vectors clear the labels, even without edge ids.
+    // Two empty spans clear the labels, even without edge ids.
     algo.setEdgeLabels({}, {});
     EXPECT_NO_THROW(algo.run());
 
@@ -201,7 +202,8 @@ TEST_F(SubgraphIsomorphismGTest, testParallelEdgesWithDisagreeingLabelsAreRefuse
 
         VF2 algo(pattern.G, target.G, Semantics::MONOMORPHISM);
         algo.setEdgeLabels(pattern.edgeLabels, target.edgeLabels);
-        EXPECT_THAT([&] { algo.run(); }, ThrowsMessage<std::runtime_error>(HasSubstr(side)));
+        EXPECT_THAT([&]() -> void { algo.run(); },
+                    ThrowsMessage<std::runtime_error>(HasSubstr(side)));
         EXPECT_FALSE(algo.hasFinished());
     }
 }
