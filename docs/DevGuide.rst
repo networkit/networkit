@@ -7,7 +7,7 @@ This guide is designed to give potential contributors a quick understanding of t
 
 The following text assumes some basic familiarity with the Git
 version control software. It is not a Git tutorial, because you
-will find a good one `here <https://try.github.io/>`__. Rather, it
+will find a good one `here <https://coddy.tech/landing/git>`__. Rather, it
 explains concepts and workflows for the development of this project.
 
 If you want to contribute, you should consider reading the `technical
