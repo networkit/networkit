@@ -16,13 +16,20 @@ namespace NetworKit {
 /**
  * Base class for spanning forest/tree algorithms.
  */
-class SpanningForest : public Algorithm {
+template <typename GraphT>
+class GenericSpanningForest : public Algorithm {
+public:
+    using NodeT = typename GraphT::NodeT;
+    using EdgeWeightT = typename GraphT::EdgeWeightT;
+
 protected:
-    const Graph *G;
-    Graph forest;
+    const GraphT *G;
+    GraphT forest;
+
+    static GraphT copyNodes(const GraphT &G);
 
 public:
-    SpanningForest(const Graph &G) : G(&G) {}
+    GenericSpanningForest(const GraphT &G) : G(&G) {}
 
     void run() override;
 
@@ -30,11 +37,16 @@ public:
      * @return Forest computed by run method.
      * Note: So far no explicit check if run method has been invoked before.
      */
-    const Graph &getForest() {
+    const GraphT &getForest() {
         assureFinished();
         return forest;
     }
 };
 
+using SpanningForest = GenericSpanningForest<Graph>;
+
 } /* namespace NetworKit */
+
+#include <networkit/graph/SpanningForestImpl.hpp>
+
 #endif // NETWORKIT_GRAPH_SPANNING_FOREST_HPP_
