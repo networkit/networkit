@@ -30,7 +30,12 @@ class SpectralColoring(object):
 		n = self.graph.numberOfNodes()
 		# Ask for as many eigenvectors as the solver allows: eigsh needs k < n, eigs (directed)
 		# needs k < n - 1, and graphs with n <= 2 are solved densely.
-		cutoff = n - 1 if n <= 2 else n - 3 if self.graph.isDirected() else n - 2
+		if n <= 2:
+			cutoff = n - 1
+		elif self.graph.isDirected():
+			cutoff = n - 3
+		else:
+			cutoff = n - 2
 		spectrum = adjacencyEigenvectors(self.graph, cutoff=cutoff)
 		self.eigenvalues = spectrum[0]
 		self.eigenvectors = spectrum[1]
@@ -73,11 +78,11 @@ class SpectralColoring(object):
 		depth : int, optional
 			Sets index of eigenvector to compare to `depth`. Default: 0
 		"""
-		otherColor = self.nextColor
-		self.nextColor += 1
-
 		if depth >= len(self.eigenvectors):
 			raise RuntimeError("SpectralColoring: ran out of eigenvectors before finding a valid coloring")
+
+		otherColor = self.nextColor
+		self.nextColor += 1
 
 		vs = self.colors[color]
 
@@ -111,6 +116,10 @@ class SpectralColoring(object):
 
 		Main method of SpectralColoring. This computes a valid coloring.
 		"""
+		if self.graph.numberOfNodes() == 0:
+			self.coloring = {}
+			return
+
 		self.prepareSpectrum()
 
 		self.colors = {0 : set(self.graph.iterNodes())}

@@ -47,6 +47,13 @@ class TestColoring(unittest.TestCase):
 		spCol.nextColor = 1
 		with self.assertRaises(RuntimeError):
 			spCol.split(0)
+		self.assertEqual(spCol.nextColor, 1)
+
+	def testSpectralColoringEmptyGraph(self):
+		for directed in [False, True]:
+			spCol = nk.coloring.SpectralColoring(nk.Graph(0, directed=directed))
+			spCol.run()
+			self.assertEqual(spCol.getColoring(), {})
 
 if __name__ == "__main__":
 	unittest.main()
