@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <atomic>
+#include <concepts>
 #include <deque>
 #include <exception>
 #include <functional>
@@ -85,10 +86,10 @@ public:
 
 #pragma omp single
             {
-                stopOnException([&] { seedRoots(tid); });
+                stopOnException([&]() -> void { seedRoots(tid); });
             }
 
-            stopOnException([&] { workerLoop(tid); });
+            stopOnException([&]() -> void { workerLoop(tid); });
         }
 
         if (failure)
@@ -183,7 +184,7 @@ private:
 
     /// An exception must not leave an OpenMP region, so this stores the first one for run() to
     /// rethrow after the join, and stops all workers.
-    template <typename Step>
+    template <std::invocable Step>
     void stopOnException(Step &&step) {
         try {
             step();
@@ -396,7 +397,9 @@ void ParallelRI::run() {
     // Left empty without a callback, so that no match pays for a call that does nothing.
     ParallelRIImpl::Deliver deliver;
     if (hasCallback())
-        deliver = [this](index tid, std::span<const node> match) { invokeCallback(tid, match); };
+        deliver = [this](index tid, std::span<const node> match) -> void {
+            invokeCallback(tid, match);
+        };
 
     ParallelRIImpl impl(setup, patternNodeLabels, targetNodeLabels, semantics, handler,
                         std::move(deliver), storesMatches(), maxMatches, numWorkers);

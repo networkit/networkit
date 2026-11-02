@@ -4,7 +4,7 @@
  * Tests the base class SubgraphIsomorphism: the run() protocol, the two callback forms, the
  * per-worker accumulation of a parallel search, input validation and interruption. Some tests use
  * stand-ins that report a precomputed match set, ReferenceSubgraphIsomorphism for the sequential
- * and MultiWorkerReporter for the parallel path; the others use VF2 and RI.
+ * and MultiWorkerReporter for the parallel path; the others use VF2, RI and ParallelRI.
  */
 
 #include <algorithm>
@@ -161,7 +161,7 @@ TEST_F(SubgraphIsomorphismGTest, testBothCallbackFormsReceiveEveryMatchOnce) {
     std::vector<Match> collected;
 
     MultiWorkerReporter serial(pattern, target, Semantics::MONOMORPHISM, numWorkers);
-    serial.setCallback([&](std::span<const node> match) {
+    serial.setCallback([&](std::span<const node> match) -> void {
         const int now = inside.fetch_add(1, std::memory_order_acq_rel) + 1;
         Aux::Parallel::atomic_max(maxObserved, now);
 
@@ -182,7 +182,7 @@ TEST_F(SubgraphIsomorphismGTest, testBothCallbackFormsReceiveEveryMatchOnce) {
     std::vector<std::vector<Match>> perWorker(numWorkers);
 
     MultiWorkerReporter parallel(pattern, target, Semantics::MONOMORPHISM, numWorkers);
-    parallel.setParallelCallback([&](index tid, std::span<const node> match) {
+    parallel.setParallelCallback([&](index tid, std::span<const node> match) -> void {
         ASSERT_LT(tid, numWorkers);
         perWorker[tid].emplace_back(match.begin(), match.end()); // each tid owns its slot
     });
@@ -246,7 +246,7 @@ TEST_F(SubgraphIsomorphismGTest, testOvershootIsTrimmedUnlessACallbackReceivedIt
 
     count delivered = 0;
     MultiWorkerReporter called(pattern, target, Semantics::MONOMORPHISM, numWorkers, cap);
-    called.setCallback([&](std::span<const node>) { ++delivered; });
+    called.setCallback([&](std::span<const node>) -> void { ++delivered; });
     called.run();
     EXPECT_EQ(delivered, total);
     EXPECT_EQ(called.numberOfMatches(), total) << "delivered matches cannot be taken back";

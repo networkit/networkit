@@ -591,7 +591,8 @@ TEST_P(RIGTest, testExpandAgreesWithRun) {
         Aux::SignalHandler handler;
         std::vector<Match> viaExpand;
         RIImpl expander(setup, testCase.patternNodeLabels, testCase.targetNodeLabels,
-                        testCase.semantics, handler, [&viaExpand](std::span<const node> match) {
+                        testCase.semantics, handler,
+                        [&viaExpand](std::span<const node> match) -> bool {
                             viaExpand.emplace_back(match.begin(), match.end());
                             return true;
                         });

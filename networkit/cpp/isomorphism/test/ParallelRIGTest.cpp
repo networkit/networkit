@@ -41,8 +41,7 @@ using testing::UnorderedElementsAreArray;
 
 /// Unlike the corpus, karate gives a search tree lopsided enough to exercise the work stealing.
 Graph karate() {
-    METISGraphReader reader;
-    return reader.read("input/karate.graph");
+    return METISGraphReader{}.read("input/karate.graph");
 }
 
 /// In karate, a 5-path occurs 22 064 times.
@@ -282,7 +281,7 @@ TEST_P(ParallelRIGTest, testEveryMatchIsReportedExactlyOnce) {
     ParallelRI algo(pattern, target, Semantics::MONOMORPHISM, 0, GetParam());
 
     std::vector<std::vector<Match>> perWorker(static_cast<count>(Aux::getMaxNumberOfThreads()));
-    algo.setParallelCallback([&](index tid, std::span<const node> match) {
+    algo.setParallelCallback([&](index tid, std::span<const node> match) -> void {
         ASSERT_LT(tid, perWorker.size())
             << "a worker id outside [0, Aux::getMaxNumberOfThreads()) would make every documented "
                "per-worker accumulator unsafe";
@@ -332,7 +331,7 @@ TEST_P(ParallelRIGTest, testInterruptStopsEveryWorker) {
     ParallelRI algo(pattern, target, Semantics::MONOMORPHISM, 0, GetParam());
 
     std::atomic<count> delivered{0};
-    algo.setParallelCallback([&](index, std::span<const node>) {
+    algo.setParallelCallback([&](index, std::span<const node>) -> void {
         if (delivered.fetch_add(1) + 1 == 5)
             GlobalState::setReceivedSIGINT(true);
     });
@@ -355,7 +354,7 @@ TEST_P(ParallelRIGTest, testSingleWorkerReportsNothingAfterTheInterrupt) {
     ParallelRI algo(pattern, target, Semantics::MONOMORPHISM, 0, GetParam());
 
     count delivered = 0;
-    algo.setCallback([&](std::span<const node>) {
+    algo.setCallback([&](std::span<const node>) -> void {
         if (++delivered == 5)
             GlobalState::setReceivedSIGINT(true);
     });
@@ -385,12 +384,12 @@ TEST_P(ParallelRIGTest, testThrowingCallbackStopsEveryWorker) {
         ParallelRI algo(pattern, target, Semantics::MONOMORPHISM, 0, GetParam());
         std::atomic<count> delivered{0};
         if (parallelForm)
-            algo.setParallelCallback([&](index, std::span<const node>) {
+            algo.setParallelCallback([&](index, std::span<const node>) -> void {
                 delivered.fetch_add(1);
                 throw CallbackFailure();
             });
         else
-            algo.setCallback([&](std::span<const node>) {
+            algo.setCallback([&](std::span<const node>) -> void {
                 delivered.fetch_add(1);
                 throw CallbackFailure();
             });
@@ -403,7 +402,8 @@ TEST_P(ParallelRIGTest, testThrowingCallbackStopsEveryWorker) {
         EXPECT_LE(delivered.load(), static_cast<count>(Aux::getMaxNumberOfThreads()));
 
         std::atomic<count> counted{0};
-        algo.setParallelCallback([&](index, std::span<const node>) { counted.fetch_add(1); });
+        algo.setParallelCallback(
+            [&](index, std::span<const node>) -> void { counted.fetch_add(1); });
         algo.run();
         EXPECT_TRUE(algo.hasFinished());
         EXPECT_EQ(counted.load(), expected);
