@@ -683,6 +683,35 @@ class TestCentrality(unittest.TestCase):
         self.assertLessEqual(CL.numberOfIterations(), maxIters)
         self.assertLessEqual(CLL.numberOfIterations(), maxIters)
 
+    def testGPUPageRank(self):
+        Backend = nk.centrality.GPUBackend
+        self.assertTrue(nk.centrality.GPUPageRank.isBuilt(Backend.AUTO))
+        self.assertTrue(nk.centrality.GPUPageRank.isBuilt(Backend.CPU))
+
+        # Metal computes in single precision
+        for backend in (Backend.AUTO, Backend.CPU):
+            for G in (self.L, self.LL):
+                gpu = nk.centrality.GPUPageRank(G, backend=backend)
+                gpu.run()
+                self.assertNotEqual(gpu.usedBackend(), Backend.AUTO)
+                if backend == Backend.CPU:
+                    self.assertEqual(gpu.usedBackend(), Backend.CPU)
+                cpu = nk.centrality.PageRank(G)
+                cpu.run()
+                for a, b in zip(gpu.scores(), cpu.scores()):
+                    self.assertAlmostEqual(a, b, delta=1e-7 + 1e-4 * b)
+
+        gpu = nk.centrality.GPUPageRank(self.L)
+        gpu.maxIterations = 2
+        self.assertEqual(gpu.maxIterations, 2)
+        gpu.run()
+        self.assertLessEqual(gpu.numberOfIterations(), 2)
+
+        for backend in (Backend.CUDA, Backend.METAL):
+            if not nk.centrality.GPUPageRank.isBuilt(backend):
+                with self.assertRaises(Exception):
+                    nk.centrality.GPUPageRank(self.L, backend=backend).run()
+
     def testPermanenceCentrality(self):
         part = nk.structures.Partition(9)
         part.setUpperBound(2)
