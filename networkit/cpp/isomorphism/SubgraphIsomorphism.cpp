@@ -21,7 +21,7 @@ void validateGraphs(const Graph &pattern, const Graph &target) {
 void validateNodeLabels(const Graph &pattern, const Graph &target,
                         std::span<const index> patternNodeLabels,
                         std::span<const index> targetNodeLabels) {
-    // Two empty vectors clear the labels.
+    // Two empty spans clear the labels.
     if (patternNodeLabels.empty() && targetNodeLabels.empty())
         return;
 
@@ -61,8 +61,8 @@ void validateEdgeLabels(const Graph &pattern, const Graph &target,
 
 SubgraphIsomorphism::SubgraphIsomorphism(const Graph &pattern, const Graph &target,
                                          Semantics semantics, count maxMatches)
-    : Algorithm(), pattern(&pattern), target(&target), semantics(semantics), maxMatches(maxMatches),
-      matchCount(0), storeMatches(true), matchesStored(false) {
+    : Algorithm(), pattern(&pattern), target(&target), semantics(semantics),
+      maxMatches(maxMatches) {
     // Python passes the semantics as an integer, so any value can arrive here.
     if (semantics != Semantics::INDUCED && semantics != Semantics::MONOMORPHISM)
         throw std::invalid_argument("Unknown subgraph isomorphism semantics");

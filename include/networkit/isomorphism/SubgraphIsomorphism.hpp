@@ -60,9 +60,9 @@ public:
 
     /**
      * Restricts matches to map every pattern node to a target node with the same label. The label
-     * @ref none matches any label, and two empty vectors remove the labels. The labels are copied.
-     * Call this before @ref run(), which throws if a vector is shorter than the node id bound of
-     * its graph.
+     * @ref none matches any label, and two empty spans remove the labels. The labels are copied.
+     * Call this before @ref run(), which throws if a span is shorter than the node id bound of its
+     * graph.
      *
      * @param patternNodeLabels Labels of the pattern nodes, indexed by node id.
      * @param targetNodeLabels Labels of the target nodes, indexed by node id.
@@ -72,9 +72,9 @@ public:
 
     /**
      * Restricts matches to map every pattern edge to a target edge with the same label. The label
-     * @ref none matches any label, and two empty vectors remove the labels. The labels are copied.
+     * @ref none matches any label, and two empty spans remove the labels. The labels are copied.
      * Call this before @ref run(), which throws if a graph has no edge ids (see
-     * `Graph::indexEdges()`), if a vector is shorter than the edge id bound of its graph, or for
+     * `Graph::indexEdges()`), if a span is shorter than the edge id bound of its graph, or for
      * parallel edges with different labels.
      *
      * @param patternEdgeLabels Labels of the pattern edges, indexed by edge id.
@@ -144,11 +144,11 @@ private:
 
     MatchCallback callback;
 
-    count matchCount;
-    bool storeMatches;
+    count matchCount = 0;
+    bool storeMatches = true;
     /// Whether the last run() stores its matches. The settings may change after that run, so
     /// getMatches() checks this flag rather than the settings.
-    bool matchesStored;
+    bool matchesStored = false;
 };
 
 } // namespace NetworKit

@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cassert>
+#include <concepts>
 #include <cstdint>
 #include <span>
 #include <utility>
@@ -16,9 +17,9 @@ namespace NetworKit {
 
 namespace {
 
+using IsomorphismDetails::degreesAndLabelsFit;
 using IsomorphismDetails::labelsCompatible;
 using IsomorphismDetails::MatchReporter;
-using IsomorphismDetails::nodeLabelsCompatible;
 using IsomorphismDetails::SearchGraph;
 
 /// The unmapped nodes of one graph that are adjacent to mapped nodes in one direction.
@@ -31,14 +32,15 @@ public:
         count mark;
     };
 
-    explicit TerminalSet(count upperNodeIdBound) : isMember(upperNodeIdBound, false) {}
+    explicit TerminalSet(count upperNodeIdBound)
+        : membership(upperNodeIdBound, Membership::ABSENT) {}
 
     bool empty() const noexcept { return size == 0; }
 
     bool contains(node u) const noexcept {
         // An undirected search gives its in-sets no storage, so it must never query them.
-        assert(u < isMember.size());
-        return isMember[u];
+        assert(u < membership.size());
+        return membership[u] == Membership::PRESENT;
     }
 
     /// The nodes in the order they joined. Nodes that left the set may stay listed, so callers
@@ -60,7 +62,7 @@ public:
     Checkpoint leave(node u) {
         const Checkpoint checkpoint{contains(u), members.size()};
         if (checkpoint.wasMember) {
-            isMember[u] = false;
+            membership[u] = Membership::ABSENT;
             --size;
         }
         return checkpoint;
@@ -69,8 +71,8 @@ public:
     /// Adds the @a nodes that are unmapped in @a core and not yet in the set.
     void extend(std::span<const node> nodes, std::span<const node> core) {
         for (const node u : nodes) {
-            if (core[u] == none && !isMember[u]) {
-                isMember[u] = true;
+            if (core[u] == none && membership[u] == Membership::ABSENT) {
+                membership[u] = Membership::PRESENT;
                 members.push_back(u);
                 ++size;
             }
@@ -80,19 +82,21 @@ public:
     /// Removes the nodes that joined after leave(@a u) returned @a checkpoint, then puts @a u back.
     void restore(node u, Checkpoint checkpoint) {
         for (const node v : std::span(members).subspan(checkpoint.mark))
-            isMember[v] = false;
+            membership[v] = Membership::ABSENT;
         size -= members.size() - checkpoint.mark;
         members.resize(checkpoint.mark);
 
         if (checkpoint.wasMember) {
-            isMember[u] = true;
+            membership[u] = Membership::PRESENT;
             ++size;
         }
     }
 
 private:
-    /// Whether each node is in the set. One byte per node keeps the target-side sets small.
-    std::vector<uint8_t> isMember;
+    /// Whether a node is in the set. One byte per node keeps the target-side sets small.
+    enum class Membership : uint8_t { ABSENT, PRESENT };
+
+    std::vector<Membership> membership;
     std::vector<node> members;
     count size = 0;
 };
@@ -274,8 +278,9 @@ private:
     }
 
     bool feasible(node pu, node tv) const {
-        // The node labels take constant time to check, so they go first.
-        return nodeLabelsCompatible(patternNodeLabels, targetNodeLabels, pu, tv)
+        // The degrees and node labels take constant time to check, so they go first.
+        return degreesAndLabelsFit(patternGraph, targetGraph, patternNodeLabels, targetNodeLabels,
+                                   pu, tv)
                && ruleSuccessors(pu, tv) && rulePredecessors(pu, tv)
                && (!patternGraph.hasEdgeLabels() || ruleEdgeLabels(pu, tv))
                && ruleTerminalCounts(pu, tv) && ruleNewCounts(pu, tv);
@@ -285,10 +290,10 @@ private:
     /// semantics, the same holds in reverse.
     bool ruleSuccessors(node pu, node tv) const {
         // ruleEdgeLabels() compares the labels of the edges that both graphs contain.
-        const auto imageIsSuccessor = [&](node u) {
+        const auto imageIsSuccessor = [&](node u) -> bool {
             return core1[u] == none || targetGraph.hasEdge(tv, core1[u]);
         };
-        const auto preimageIsSuccessor = [&](node v) {
+        const auto preimageIsSuccessor = [&](node v) -> bool {
             return core2[v] == none || patternGraph.hasEdge(pu, core2[v]);
         };
         return std::ranges::all_of(patternGraph.outNeighbors(pu), imageIsSuccessor)
@@ -301,10 +306,10 @@ private:
         if (!directed())
             return true;
 
-        const auto imageIsPredecessor = [&](node u) {
+        const auto imageIsPredecessor = [&](node u) -> bool {
             return core1[u] == none || targetGraph.hasEdge(core1[u], tv);
         };
-        const auto preimageIsPredecessor = [&](node v) {
+        const auto preimageIsPredecessor = [&](node v) -> bool {
             return core2[v] == none || patternGraph.hasEdge(core2[v], pu);
         };
         return std::ranges::all_of(patternGraph.inNeighbors(pu), imageIsPredecessor)
@@ -344,8 +349,8 @@ private:
     /// @a tv has.
     bool ruleTerminalCounts(node pu, node tv) const {
         // A terminal set holds only unmapped nodes, so membership alone decides.
-        const auto inOut1 = [this](node u) { return out1.contains(u); };
-        const auto inOut2 = [this](node v) { return out2.contains(v); };
+        const auto inOut1 = [this](node u) -> bool { return out1.contains(u); };
+        const auto inOut2 = [this](node v) -> bool { return out2.contains(v); };
         if (!enoughInTarget(patternGraph.outNeighbors(pu), inOut1, targetGraph.outNeighbors(tv),
                             inOut2))
             return false;
@@ -353,8 +358,8 @@ private:
         if (!directed())
             return true;
 
-        const auto inIn1 = [this](node u) { return in1.contains(u); };
-        const auto inIn2 = [this](node v) { return in2.contains(v); };
+        const auto inIn1 = [this](node u) -> bool { return in1.contains(u); };
+        const auto inIn2 = [this](node v) -> bool { return in2.contains(v); };
         return enoughInTarget(patternGraph.inNeighbors(pu), inIn1, targetGraph.inNeighbors(tv),
                               inIn2);
     }
@@ -366,10 +371,10 @@ private:
             return true;
 
         // An undirected graph has no in-sets to look up.
-        const auto new1 = [this](node u) {
+        const auto new1 = [this](node u) -> bool {
             return core1[u] == none && !out1.contains(u) && !(directed() && in1.contains(u));
         };
-        const auto new2 = [this](node v) {
+        const auto new2 = [this](node v) -> bool {
             return core2[v] == none && !out2.contains(v) && !(directed() && in2.contains(v));
         };
         return enoughInTarget(patternGraph.outNeighbors(pu), new1, targetGraph.outNeighbors(tv),
@@ -381,7 +386,7 @@ private:
 
     /// Whether @a targetNodes holds at least as many nodes that pass @a targetTest as
     /// @a patternNodes holds nodes that pass @a patternTest.
-    template <typename PatternTest, typename TargetTest>
+    template <std::predicate<node> PatternTest, std::predicate<node> TargetTest>
     static bool enoughInTarget(std::span<const node> patternNodes, PatternTest patternTest,
                                std::span<const node> targetNodes, TargetTest targetTest) {
         // The pattern side is small, and its count lets the target scan stop early.
@@ -390,7 +395,9 @@ private:
             return true;
 
         for (const node v : targetNodes) {
-            if (targetTest(v) && --needed == 0)
+            if (!targetTest(v))
+                continue;
+            if (--needed == 0)
                 return true;
         }
         return false;
@@ -427,7 +434,7 @@ void VF2::run() {
     prepareRun();
     VF2Impl(*pattern, *target, patternNodeLabels, targetNodeLabels, patternEdgeLabels,
             targetEdgeLabels, semantics, handler,
-            [this](std::span<const node> match) { return reportMatch(match); })
+            [this](std::span<const node> match) -> bool { return reportMatch(match); })
         .run();
     finishRun();
 }

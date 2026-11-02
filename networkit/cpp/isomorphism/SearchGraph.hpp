@@ -2,7 +2,6 @@
 #define NETWORKIT_CPP_ISOMORPHISM_SEARCH_GRAPH_HPP_
 
 #include <algorithm>
-#include <cstddef>
 #include <cstdint>
 #include <span>
 #include <string_view>
@@ -74,7 +73,7 @@ public:
 
     bool hasEdge(node u, node v) const noexcept {
         if (hasMatrix)
-            return (matrix[static_cast<std::size_t>(u) * matrixStride + v / 64] >> (v % 64)) & 1u;
+            return (matrix[matrixWord(u, v)] >> (v % 64)) & 1u;
 
         return std::ranges::binary_search(outNeighbors(u), v);
     }
@@ -121,6 +120,9 @@ private:
 
     void buildAdjacencyMatrix();
 
+    /// The word of the adjacency matrix that holds the bit of the arc @a u -> @a v.
+    index matrixWord(node u, node v) const noexcept { return u * matrixStride + v / 64; }
+
     std::vector<index> outFirst;
     std::vector<node> outHead;
 
@@ -131,22 +133,37 @@ private:
     std::vector<index> outLabel;
     std::vector<index> inLabel;
 
-    bool lostLabels;
+    bool lostLabels = false;
 
     std::vector<bool> nodeExists;
 
-    count maxOut;
-    count maxIn;
+    count maxOut = 0;
+    count maxIn = 0;
 
     /// Row-major, with matrixStride 64-bit words per row. Empty if not built.
     std::vector<uint64_t> matrix;
-    count matrixStride;
+    count matrixStride = 0;
 
     count n;
     count z;
     bool directed;
     bool hasMatrix;
 };
+
+/// The checks of a candidate that do not depend on the partial mapping: @a tv needs at least the
+/// out- and in-degree of @a pu, and a compatible node label.
+inline bool degreesAndLabelsFit(const SearchGraph &pattern, const SearchGraph &target,
+                                std::span<const index> patternNodeLabels,
+                                std::span<const index> targetNodeLabels, node pu, node tv) {
+    if (target.outDegree(tv) < pattern.outDegree(pu))
+        return false;
+
+    // The in-degrees of an undirected graph are its out-degrees.
+    if (pattern.isDirected() && target.inDegree(tv) < pattern.inDegree(pu))
+        return false;
+
+    return nodeLabelsCompatible(patternNodeLabels, targetNodeLabels, pu, tv);
+}
 
 /// Throws `std::runtime_error` if @a pattern or @a target lost an edge label when it collapsed
 /// parallel edges. The message starts with @a algorithmName.

@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <cassert>
-#include <cstddef>
 #include <numeric>
 #include <span>
 #include <stdexcept>
@@ -25,11 +24,12 @@ bool matrixFits(count z) {
     return z == 0 || tlx::div_ceil(z, 64) <= maxWords / z;
 }
 
-void sortSlices(const std::vector<index> &first, std::vector<node> &head, std::vector<index> &label,
-                count z) {
+/// Sorts each slice of a CSR by head. The node id bound is `first.size() - 1`.
+void sortSlices(std::span<const index> first, std::span<node> head, std::span<index> label) {
+    const count z = first.size() - 1;
     if (label.empty()) {
         for (node u = 0; u < z; ++u)
-            std::ranges::sort(std::span(head).subspan(first[u], first[u + 1] - first[u]));
+            std::ranges::sort(head.subspan(first[u], first[u + 1] - first[u]));
         return;
     }
 
@@ -46,15 +46,15 @@ void sortSlices(const std::vector<index> &first, std::vector<node> &head, std::v
         // Sorting (head, label) pairs orders parallel arcs by label.
         std::ranges::sort(slice);
 
-        std::ranges::transform(slice, head.data() + begin, &Arc::first);
-        std::ranges::transform(slice, label.data() + begin, &Arc::second);
+        std::ranges::transform(slice, head.subspan(begin).begin(), &Arc::first);
+        std::ranges::transform(slice, label.subspan(begin).begin(), &Arc::second);
     }
 }
 
 /// Drops self-loops and collapses parallel edges in a sorted CSR. Returns true if collapsed
 /// parallel arcs had different labels.
-bool compactSlices(std::vector<index> &first, std::vector<node> &head, std::vector<index> &label,
-                   count z) {
+bool compactSlices(std::vector<index> &first, std::vector<node> &head, std::vector<index> &label) {
+    const count z = first.size() - 1;
     const bool labelled = !label.empty();
     bool lost = false;
 
@@ -94,8 +94,8 @@ bool compactSlices(std::vector<index> &first, std::vector<node> &head, std::vect
 } // namespace
 
 SearchGraph::SearchGraph(const Graph &G, bool buildMatrix, std::span<const index> edgeLabels)
-    : lostLabels(false), maxOut(0), maxIn(0), matrixStride(0), n(G.numberOfNodes()),
-      z(G.upperNodeIdBound()), directed(G.isDirected()), hasMatrix(buildMatrix) {
+    : n(G.numberOfNodes()), z(G.upperNodeIdBound()), directed(G.isDirected()),
+      hasMatrix(buildMatrix) {
     // SubgraphIsomorphism::prepareRun() has validated the labels.
     assert(edgeLabels.empty() || (G.hasEdgeIds() && edgeLabels.size() >= G.upperEdgeIdBound()));
 
@@ -134,7 +134,7 @@ void SearchGraph::buildCSR(const Graph &G, std::span<const index> edgeLabels) {
         if (!G.hasNode(u))
             continue;
         nodeExists[u] = true;
-        G.forEdgesOf(u, [&](node, node v, edgeweight, edgeid eid) {
+        G.forEdgesOf(u, [&](node, node v, edgeweight, edgeid eid) -> void {
             outHead.push_back(v);
             if (labelled)
                 outLabel.push_back(edgeLabels[eid]);
@@ -142,8 +142,8 @@ void SearchGraph::buildCSR(const Graph &G, std::span<const index> edgeLabels) {
     }
     outFirst[z] = outHead.size();
 
-    sortSlices(outFirst, outHead, outLabel, z);
-    lostLabels = compactSlices(outFirst, outHead, outLabel, z);
+    sortSlices(outFirst, outHead, outLabel);
+    lostLabels = compactSlices(outFirst, outHead, outLabel);
 
     for (node u = 0; u < z; ++u)
         maxOut = std::max(maxOut, outDegree(u));
@@ -176,12 +176,12 @@ void SearchGraph::buildCSR(const Graph &G, std::span<const index> edgeLabels) {
 
 void SearchGraph::buildAdjacencyMatrix() {
     matrixStride = tlx::div_ceil(z, 64);
-    matrix.assign(static_cast<std::size_t>(z) * matrixStride, 0);
+    matrix.assign(z * matrixStride, 0);
 
     // We fill the matrix from the compacted CSR, so both hasEdge() backends agree.
     for (node u = 0; u < z; ++u)
         for (const node v : outNeighbors(u))
-            matrix[static_cast<std::size_t>(u) * matrixStride + v / 64] |= uint64_t{1} << (v % 64);
+            matrix[matrixWord(u, v)] |= uint64_t{1} << (v % 64);
 }
 
 void refuseLostLabels(const SearchGraph &pattern, const SearchGraph &target,
