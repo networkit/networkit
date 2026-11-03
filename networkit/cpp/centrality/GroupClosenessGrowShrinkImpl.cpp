@@ -27,7 +27,7 @@ GroupClosenessGrowShrinkImpl<WeightType>::GroupClosenessGrowShrinkImpl(const Gra
       maxIterations(maxIterations), heap(distance), heap_(distance_) {
 
     if (G.isDirected())
-        std::runtime_error("Error, this algorithm does not support directed graphs.");
+        throw std::runtime_error("Error, this algorithm does not support directed graphs.");
 
 #if __AVX2__
     INFO("AVX2 is available.");
@@ -446,7 +446,7 @@ node GroupClosenessGrowShrinkImpl<WeightType>::estimateHighestDecrement() {
 #ifdef __AVX2__
                 sumOfMins[x] += randVec[x].items[j];
 #else
-                sumOfMins[x] = randVec[K * x + j];
+                sumOfMins[x] += randVec[K * x + j];
 #endif // __AVX2__
             }
 

@@ -2276,6 +2276,13 @@ TEST_F(CentralityGTest, testGroupClosenessEmptyGroups) {
                  std::runtime_error);
 }
 
+TEST_F(CentralityGTest, testGroupClosenessGrowShrinkDirectedExplicitInsertions) {
+    const Graph G(10, false, true);
+    const auto group = std::to_array<node>({0});
+    EXPECT_THROW(GroupClosenessGrowShrink(G, group.begin(), group.end(), false, 1),
+                 std::runtime_error);
+}
+
 TEST_P(CentralityGTest, testGroupClosenessGrowShrink) {
     const count k = 5;
     auto G = EdgeListReader{'\t', 0, "#", false, false}.read("input/MIT8.edgelist");
