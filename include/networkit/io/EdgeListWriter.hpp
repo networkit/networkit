@@ -18,10 +18,12 @@ namespace NetworKit {
  * in the format fromNodeSEPARATORtoNode, where separator can be specified by
  * the user.
  */
-class EdgeListWriter final : public GraphWriter {
+template <class GraphT>
+class GenericEdgeListWriter final : public GraphWriterBase<GraphT> {
+    using NodeT = typename GraphT::NodeT;
 
 public:
-    EdgeListWriter() = default; // nullary constructor for Python shell
+    GenericEdgeListWriter() = default; // nullary constructor for Python shell
 
     /**
      * @param[in]  separator  character used to separate nodes in an edge line
@@ -29,20 +31,25 @@ public:
      * @param[in]  bothDirections  for undirected graphs: if every edge shall be written in both
      * directions (default: false)
      */
-    EdgeListWriter(char separator, node firstNode, bool bothDirections = false);
+    GenericEdgeListWriter(char separator, NodeT firstNode, bool bothDirections = false);
 
     /**
      * Write the graph to a file.
      * @param[in]  G    the graph
      * @param[in]  path  the output file path
      */
-    void write(const Graph &G, std::string_view path) override;
+    void write(const GraphT &G, std::string_view path) override;
 
 private:
     char separator; //!< character separating nodes in an edge line
-    node firstNode;
+    NodeT firstNode;
     bool bothDirections;
 };
 
+using EdgeListWriter = GenericEdgeListWriter<Graph>;
+
 } /* namespace NetworKit */
+
+#include <networkit/io/EdgeListWriterImpl.hpp>
+
 #endif // NETWORKIT_IO_EDGE_LIST_WRITER_HPP_
