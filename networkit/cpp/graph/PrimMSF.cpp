@@ -48,7 +48,7 @@ void PrimMSF::run() {
                 continue;
             }
             if (const node parentNode = parents[currentNode]; currentNode != parentNode) {
-                forest.addEdge(parentNode, currentNode);
+                forest.addEdge(parentNode, currentNode, currentWeight);
                 totalWeight += currentWeight;
             }
             visited[currentNode] = Visit::Visited;

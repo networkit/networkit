@@ -702,6 +702,27 @@ class TestGraph(unittest.TestCase):
         pmf.run()
         self.assertEqual(G.numberOfNodes(), pmf.getForest().numberOfNodes())
 
+    def testMinimumSpanningForestPreservesWeights(self):
+        G = nk.Graph(6, weighted=True)
+        G.addEdge(0, 1, 2.5)
+        G.addEdge(1, 2, -1.25)
+        G.addEdge(0, 2, 4.0)
+        G.addEdge(3, 4, 0.0)
+
+        for algorithm in (nk.graph.PrimMSF, nk.graph.KruskalMSF):
+            with self.subTest(algorithm=algorithm.__name__):
+                msf = algorithm(G).run()
+                forest = msf.getForest()
+                self.assertTrue(forest.isWeighted())
+                self.assertEqual(forest.numberOfNodes(), 6)
+                self.assertEqual(forest.numberOfEdges(), 3)
+                self.assertEqual(forest.weight(0, 1), 2.5)
+                self.assertEqual(forest.weight(1, 2), -1.25)
+                self.assertTrue(forest.hasEdge(3, 4))
+                self.assertEqual(forest.weight(3, 4), 0.0)
+                self.assertEqual(forest.totalEdgeWeight(), 1.25)
+                self.assertEqual(msf.getTotalWeight(), 1.25)
+
     def testSpanningForest(self):
         G = self.getSmallGraph()
         sf = nk.graph.SpanningForest(G)
