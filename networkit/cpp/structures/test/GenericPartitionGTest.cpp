@@ -244,16 +244,33 @@ TYPED_TEST_P(GenericPartitionGTest, testRemoveAndResetUseTypedNoneSentinel) {
     EXPECT_THAT(partition.getVector(), ElementsAre(none, none));
 }
 
+TYPED_TEST_P(GenericPartitionGTest, testSetUpperBound) {
+    const std::vector<TypeParam> vector{0, 1, 2, 3, 4, 5};
+    GenericPartition<TypeParam> partition(vector);
+    EXPECT_ANY_THROW(partition.setUpperBound(TypeParam{5}));
+    partition.setUpperBound(TypeParam{42});
+    EXPECT_EQ(partition.upperBound(), TypeParam{42});
+    partition.setUpperBound(TypeParam{6});
+    EXPECT_EQ(partition.upperBound(), TypeParam{6});
+}
+
+TYPED_TEST_P(GenericPartitionGTest, testVectorConstructorSkipsUnassignedEntries) {
+    constexpr TypeParam none = GenericPartition<TypeParam>::noneIndex;
+    const GenericPartition<TypeParam> partition(std::vector<TypeParam>{0, none, 2});
+    EXPECT_EQ(partition.upperBound(), TypeParam{3});
+}
+
 REGISTER_TYPED_TEST_SUITE_P(GenericPartitionGTest, testSizeConstructorCreatesUnassignedElements,
                             testSizeAndDefaultValueConstructorInitializesElements,
                             testVectorConstructorInitializesFromVector,
                             testSingletonsUseTemplateIndexType, testMoveMergeAndMembers,
                             testCompactRenumbersSparseSubsetIds,
                             testRemoveAndResetUseTypedNoneSentinel, testAddToSubset,
-                            testNumberOfSubsetsAfterSingletons,
+                            testSetUpperBound, testNumberOfSubsetsAfterSingletons,
                             testNumberOfSubsetsAfterMovingAndMerging, testBoundsAfterSingletons,
                             testContainsAssignedElementsOnly, testMergedPartitionStructure,
-                            testCompactPreservesMergedPartitionStructure);
+                            testCompactPreservesMergedPartitionStructure,
+                            testVectorConstructorSkipsUnassignedEntries);
 
 using GenericPartitionTestTypes =
     ::testing::Types<index, std::uint32_t, std::uint16_t, std::int64_t, std::int32_t, std::int16_t>;

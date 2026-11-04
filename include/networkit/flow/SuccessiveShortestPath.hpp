@@ -8,6 +8,7 @@
 #ifndef NETWORKIT_FLOW_SUCCESSIVE_SHORTEST_PATH_HPP_
 #define NETWORKIT_FLOW_SUCCESSIVE_SHORTEST_PATH_HPP_
 
+#include <compare>
 #include <span>
 
 #include <networkit/base/Algorithm.hpp>
@@ -92,11 +93,17 @@ public:
     }
 
 private:
+    friend class SuccessiveShortestPathGTest;
+
     struct NodeWithCost {
         cost distance;
         node u;
+
+        auto operator<=>(const NodeWithCost &) const = default;
     };
     std::vector<cost> computeNodePotentials(count numberOfNodes) const;
+    void updateNodePotentials(std::span<cost> nodePotential, std::span<const cost> distances,
+                              node target) const;
     void dijkstraOnResidualGraph(node start, std::span<const cost> nodePotential,
                                  std::span<cost> distances, std::span<node> parentNode,
                                  std::span<edgeid> parentEdge, std::span<int> parentDirection,

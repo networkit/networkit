@@ -53,7 +53,7 @@ void DynDijkstra::run() {
 
     auto initPath = [&](node u, node v) {
         if (storePreds) {
-            previous[v] = {u};
+            previous[v].assign(1, u);
         }
         npaths[v] = npaths[u];
     };

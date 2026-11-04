@@ -14,8 +14,14 @@ GenericPartition<IndexType>::GenericPartition() : z(0), omega(0), data(0) {}
 template <IntegralValue IndexType>
 GenericPartition<IndexType>::GenericPartition(const std::vector<IndexType> &data)
     : z(data.size()), omega(), data(data) {
-    auto max_elem = *std::max_element(data.begin(), data.end());
-    this->omega = (max_elem == noneIndex) ? 0 : max_elem;
+    // Unassigned entries are not subset ids, so skip them when finding the largest id.
+    IndexType maxId = 0;
+    for (auto elem : data) {
+        if (elem != noneIndex && elem > maxId) {
+            maxId = elem;
+        }
+    }
+    this->omega = maxId;
 }
 
 template <IntegralValue IndexType>
@@ -27,8 +33,8 @@ GenericPartition<IndexType>::GenericPartition(IndexType z, IndexType defaultValu
 
 template <IntegralValue IndexType>
 void GenericPartition<IndexType>::allToSingletons() {
-    setUpperBound(numberOfElements());
     parallelForEntries([&](IndexType e, IndexType) { data[e] = e; });
+    this->omega = (numberOfElements() == 0) ? 0 : numberOfElements() - 1;
 }
 
 template <IntegralValue IndexType>
@@ -99,7 +105,7 @@ void GenericPartition<IndexType>::compact(bool useTurbo) {
                 }
             });
     }
-    this->setUpperBound(i);
+    this->omega = (i == 0) ? 0 : i - 1;
 }
 
 template <IntegralValue IndexType>

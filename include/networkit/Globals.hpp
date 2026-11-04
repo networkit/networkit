@@ -43,6 +43,8 @@ inline constexpr NodeT NullNodeId = std::numeric_limits<NodeT>::max();
 
 inline constexpr edgeid nullEdgeId = std::numeric_limits<edgeid>::max();
 
+enum class Visit : uint8_t { Unvisited = 0, Visited = 1 };
+
 } // namespace NetworKit
 
 #endif // NETWORKIT_GLOBALS_HPP_

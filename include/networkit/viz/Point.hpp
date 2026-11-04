@@ -61,7 +61,7 @@ public:
     Storage(Storage &&) noexcept = default;
     Storage &operator=(Storage &&) noexcept = default;
 
-    explicit Storage(count dimension) : data(dimension) {}
+    explicit Storage(count dimension) : data(dimension) { data.fill(0); }
     explicit Storage(const std::vector<T> &values) : data(values.size()) {
         std::copy(values.begin(), values.end(), data.begin());
     }

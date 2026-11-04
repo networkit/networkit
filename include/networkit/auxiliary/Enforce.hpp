@@ -2,6 +2,7 @@
 #define NETWORKIT_AUXILIARY_ENFORCE_HPP_
 
 #include <cassert>
+#include <exception>
 #include <stdexcept>
 #include <string>
 

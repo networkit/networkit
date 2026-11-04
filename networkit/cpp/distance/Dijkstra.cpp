@@ -50,7 +50,7 @@ void Dijkstra::run() {
 
     auto initPath = [&](node u, node v) {
         if (storePaths) {
-            previous[v] = {u};
+            previous[v].assign(1, u);
             npaths[v] = npaths[u];
         }
     };

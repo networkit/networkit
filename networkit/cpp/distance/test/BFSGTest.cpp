@@ -5,7 +5,6 @@
 
 #include <networkit/distance/BFS.hpp>
 #include <networkit/graph/AdjListGraph.hpp>
-#include <networkit/graph/GraphTestUtils.hpp>
 #include <networkit/io/METISGraphReader.hpp>
 
 namespace NetworKit {
@@ -69,8 +68,7 @@ TYPED_TEST_P(BFSGTest, testBFSThrowsStorepathNotTrueCallPredecessor) {
 TYPED_TEST_P(BFSGTest, testShortestPaths) {
     using GraphT = AdjListGraph<typename TestFixture::NodeT, typename TestFixture::EdgeWeightT>;
     using NodeT = typename TestFixture::NodeT;
-    const GraphT G_typed =
-        TestUtils::ToTGraph<GraphT>(METISGraphReader{}.read("input/PGPgiantcompo.graph"));
+    const GraphT G_typed = GenericMETISGraphReader<GraphT>{}.read("input/PGPgiantcompo.graph");
     const NodeT source{2};
     BreadthFirstSearch<GraphT> bfs(G_typed, source);
     bfs.run();

@@ -19,6 +19,14 @@ namespace NetworKit {
  *
  * Assortativity computes a coefficient that expresses the correlation of a
  * node attribute among connected pairs of nodes.
+ *
+ * For a partition of the node set (a nominal attribute), the coefficient is
+ * computed from the mixing matrix e, where e_ij is the fraction of edge counts
+ * from nodes in subset i to nodes in subset j. In undirected graphs, each edge
+ * {u, v} with u != v is counted once in each direction and each self-loop is
+ * counted once, and the mixing matrix is normalized by the total of these
+ * counts (2m minus the number of self-loops). In directed graphs, each edge is
+ * counted once and the matrix is normalized by m.
  */
 class Assortativity final : public Algorithm {
 
