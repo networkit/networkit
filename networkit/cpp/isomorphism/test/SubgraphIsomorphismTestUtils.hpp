@@ -552,9 +552,13 @@ void expectMatchesReference(Construct construct) {
     for (const Case &testCase : standardCases()) {
         SCOPED_TRACE("case: " + testCase.name);
 
-        const std::vector<Match> expected = referenceMatches(
+        std::vector<Match> expected = referenceMatches(
             testCase.pattern, testCase.target, testCase.semantics, testCase.patternNodeLabels,
             testCase.targetNodeLabels, testCase.patternEdgeLabels, testCase.targetEdgeLabels);
+        // UnorderedElementsAreArray would compare every pair of matches, which is slow for the
+        // random cases with over a thousand matches. The checks below compare sorted lists instead,
+        // and WhenSorted() sorts only the matches of the algorithm.
+        std::ranges::sort(expected);
 
         const auto build = [&]() -> std::unique_ptr<SubgraphIsomorphism> {
             std::unique_ptr<SubgraphIsomorphism> algo =
@@ -567,7 +571,8 @@ void expectMatchesReference(Construct construct) {
             std::unique_ptr<SubgraphIsomorphism> algo = build();
             algo->run();
 
-            EXPECT_THAT(algo->getMatches(), testing::UnorderedElementsAreArray(expected));
+            EXPECT_THAT(algo->getMatches(),
+                        testing::WhenSorted(testing::ElementsAreArray(expected)));
             EXPECT_EQ(algo->numberOfMatches(), expected.size());
             EXPECT_EQ(algo->hasMatch(), !expected.empty());
         }
@@ -581,7 +586,7 @@ void expectMatchesReference(Construct construct) {
             });
             algo->run();
 
-            EXPECT_THAT(collected, testing::UnorderedElementsAreArray(expected))
+            EXPECT_THAT(collected, testing::WhenSorted(testing::ElementsAreArray(expected)))
                 << "serial callback";
             EXPECT_EQ(algo->numberOfMatches(), expected.size()) << "serial callback";
         }
