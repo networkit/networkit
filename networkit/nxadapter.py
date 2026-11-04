@@ -53,6 +53,8 @@ def nx2nk(
     Other types will be converted into their string representation.
     Attribute keys are always converted to strings.
     Optionally, a dictionary that maps attribute names to specific types can be supplied.
+    Parallel edges of a networkx multigraph stay parallel edges,
+    each with its own weight and attributes.
 
     Parameters
     ----------
@@ -73,19 +75,24 @@ def nx2nk(
     z = max(idmap.values()) + 1
     # print("z = {0}".format(z))
 
-    if weightAttr is not None:
-        nkG = graph.Graph(z, weighted=True, directed=nxG.is_directed())
-        for u_, v_ in nxG.edges():
-            u, v = idmap[u_], idmap[v_]
-            w = nxG[u_][v_][weightAttr]
-            nkG.addEdge(u, v, w)
-    else:
-        nkG = graph.Graph(z, directed=nxG.is_directed())
-        for u_, v_ in nxG.edges():
-            u, v = idmap[u_], idmap[v_]
-            assert u < z
-            assert v < z
+    nkG = graph.Graph(
+        z,
+        weighted=weightAttr is not None,
+        directed=nxG.is_directed(),
+        edgesIndexed=data,
+    )
+    # in a multigraph, nxG[u_][v_] holds all parallel edges,
+    # so read the weight from each edge's own data
+    edges = list(nxG.edges(data=True))  # one snapshot for both edge loops
+    edgeIds = []
+    for u_, v_, edgeData in edges:
+        u, v = idmap[u_], idmap[v_]
+        if weightAttr is not None:
+            nkG.addEdge(u, v, edgeData[weightAttr])
+        else:
             nkG.addEdge(u, v)
+        if data:
+            edgeIds.append(nkG.upperEdgeIdBound() - 1)  # id of the edge just added
 
     assert nkG.numberOfNodes() == nxG.number_of_nodes()
     assert nkG.numberOfEdges() == nxG.number_of_edges()
@@ -124,9 +131,9 @@ def nx2nk(
                 else:
                     attribute[idmap[node]] = str(value)
 
-        # edge attributes
-        nkG.indexEdges()
-        for u, v, attributes in nxG.edges(data=True):
+        # edge attributes; each edge uses the id it got from addEdge,
+        # so parallel edges of a multigraph do not overwrite each other
+        for eid, (_, _, attributes) in zip(edgeIds, edges):
             # when we see a new attr, create/attach to graph. otherwise add to existing (get by name). if type is not compatible, raise exception. type is inferred from the first occurence.
             for key, value in attributes.items():
                 if key == weightAttr:
@@ -153,11 +160,11 @@ def nx2nk(
                         )
 
                 if valueType is int:
-                    attribute[idmap[u], idmap[v]] = int(value)
+                    attribute[eid] = int(value)
                 elif valueType is float:
-                    attribute[idmap[u], idmap[v]] = float(value)
+                    attribute[eid] = float(value)
                 else:
-                    attribute[idmap[u], idmap[v]] = str(value)
+                    attribute[eid] = str(value)
 
     return nkG
 
