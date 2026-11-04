@@ -75,23 +75,24 @@ def nx2nk(
     z = max(idmap.values()) + 1
     # print("z = {0}".format(z))
 
-    if weightAttr is not None:
-        nkG = graph.Graph(
-            z, weighted=True, directed=nxG.is_directed(), edgesIndexed=data
-        )
-        # in a multigraph, nxG[u_][v_] holds all parallel edges,
-        # so read the weight from each edge's own data
-        for u_, v_, edgeData in nxG.edges(data=True):
-            u, v = idmap[u_], idmap[v_]
-            w = edgeData[weightAttr]
-            nkG.addEdge(u, v, w)
-    else:
-        nkG = graph.Graph(z, directed=nxG.is_directed(), edgesIndexed=data)
-        for u_, v_ in nxG.edges():
-            u, v = idmap[u_], idmap[v_]
-            assert u < z
-            assert v < z
+    nkG = graph.Graph(
+        z,
+        weighted=weightAttr is not None,
+        directed=nxG.is_directed(),
+        edgesIndexed=data,
+    )
+    # in a multigraph, nxG[u_][v_] holds all parallel edges,
+    # so read the weight from each edge's own data
+    edges = list(nxG.edges(data=True))  # one snapshot for both edge loops
+    edgeIds = []
+    for u_, v_, edgeData in edges:
+        u, v = idmap[u_], idmap[v_]
+        if weightAttr is not None:
+            nkG.addEdge(u, v, edgeData[weightAttr])
+        else:
             nkG.addEdge(u, v)
+        if data:
+            edgeIds.append(nkG.upperEdgeIdBound() - 1)  # id of the edge just added
 
     assert nkG.numberOfNodes() == nxG.number_of_nodes()
     assert nkG.numberOfEdges() == nxG.number_of_edges()
@@ -130,9 +131,9 @@ def nx2nk(
                 else:
                     attribute[idmap[node]] = str(value)
 
-        # edge attributes; edge ids follow the order in which we added the edges,
+        # edge attributes; each edge uses the id it got from addEdge,
         # so parallel edges of a multigraph do not overwrite each other
-        for eid, (_, _, attributes) in enumerate(nxG.edges(data=True)):
+        for eid, (_, _, attributes) in zip(edgeIds, edges):
             # when we see a new attr, create/attach to graph. otherwise add to existing (get by name). if type is not compatible, raise exception. type is inferred from the first occurence.
             for key, value in attributes.items():
                 if key == weightAttr:
