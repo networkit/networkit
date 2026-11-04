@@ -323,6 +323,19 @@ class TestNXAdapter(unittest.TestCase):
                     sorted(color for _, color in colors), ["blue", "green", "red"]
                 )
 
+                nkG = nk.nxadapter.nx2nk(nxG, weightAttr="weight", data=True)
+                colors = nkG.getEdgeAttribute("color", str)
+                edges = []
+                nkG.forEdges(
+                    lambda u, v, w, eid: edges.append(
+                        (min(u, v), max(u, v), w, colors[eid])
+                    )
+                )
+                self.assertEqual(
+                    sorted(edges),
+                    [(0, 1, 2, "red"), (0, 1, 5, "blue"), (1, 2, 1, "green")],
+                )
+
 
 if __name__ == "__main__":
     unittest.main()
