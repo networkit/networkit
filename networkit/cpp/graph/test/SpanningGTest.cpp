@@ -298,4 +298,32 @@ TEST_F(SpanningGTest, testPrimMinimumSpanningForestIsMSFUnweighted) {
     EXPECT_EQ(msf.getTotalWeight(), 4);
 }
 
+template <class MSF>
+void expectForestKeepsEdgeWeights() {
+    Graph g(6, true);
+    g.addEdge(0, 1, 2.5);
+    g.addEdge(1, 2, -1.25);
+    g.addEdge(0, 2, 4.);
+    g.addEdge(3, 4, 0.);
+
+    MSF msf(g);
+    msf.run();
+    const Graph T = msf.getForest();
+
+    EXPECT_TRUE(T.isWeighted());
+    EXPECT_EQ(T.numberOfEdges(), 3u);
+    EXPECT_TRUE(T.hasEdge(3, 4));
+    T.forEdges([&](node u, node v, edgeweight w) -> void { EXPECT_EQ(w, g.weight(u, v)); });
+    EXPECT_EQ(T.totalEdgeWeight(), msf.getTotalWeight());
+    EXPECT_EQ(msf.getTotalWeight(), 1.25);
+}
+
+TEST_F(SpanningGTest, testKruskalMinimumSpanningForestKeepsEdgeWeights) {
+    expectForestKeepsEdgeWeights<KruskalMSF>();
+}
+
+TEST_F(SpanningGTest, testPrimMinimumSpanningForestKeepsEdgeWeights) {
+    expectForestKeepsEdgeWeights<PrimMSF>();
+}
+
 } /* namespace NetworKit */
