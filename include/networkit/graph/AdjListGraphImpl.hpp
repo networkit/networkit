@@ -1490,11 +1490,14 @@ bool AdjListGraph<NodeT, EdgeWeightT>::checkConsistency() const {
         });
     });
 
-    bool correctNodeUpperbound = (z == outEdges.size()) && ((directed ? z : 0) == inEdges.size())
-                                 && ((weighted ? z : 0) == outEdgeWeights.size())
-                                 && ((weighted && directed ? z : 0) == inEdgeWeights.size())
-                                 && ((edgesIndexed ? z : 0) == outEdgeIds.size())
-                                 && ((edgesIndexed && directed ? z : 0) == inEdgeIds.size());
+    // z is of type NodeT, which may be signed
+    const auto upperBound = static_cast<count>(z);
+    bool correctNodeUpperbound =
+        (upperBound == outEdges.size()) && ((directed ? upperBound : 0) == inEdges.size())
+        && ((weighted ? upperBound : 0) == outEdgeWeights.size())
+        && ((weighted && directed ? upperBound : 0) == inEdgeWeights.size())
+        && ((edgesIndexed ? upperBound : 0) == outEdgeIds.size())
+        && ((edgesIndexed && directed ? upperBound : 0) == inEdgeIds.size());
 
     if (!correctNodeUpperbound)
         DEBUG("Saved node upper bound doesn't actually match the actual node upper bound!");
