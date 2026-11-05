@@ -2,6 +2,7 @@
 
 from cython.operator cimport preincrement, dereference
 
+from libc.math cimport isnan, NAN
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 
@@ -39,13 +40,25 @@ def ranked(sample):
 	if len(sample) == 0:
 		return result
 	cdef vector[pair[double, count]] helper = vector[pair[double, count]](len(sample))
+	cdef count finiteCount = 0
+	cdef double v
 	for i in range(len(sample)):
-		helper[i] = <pair[double, count]?>(sample[i], i)
-	sort(helper.begin(), helper.end())
+		# Convert once. The sort compares this C double, so the NaN test
+		# has to use that value rather than the original Python object.
+		v = sample[i]
+		if isnan(v):
+			result[i] = NAN
+		else:
+			helper[finiteCount] = <pair[double, count]?>(v, i)
+			finiteCount += 1
+	if finiteCount == 0:
+		# Either no samples at all, or every sample is NaN; there is nothing to sort.
+		return result
+	sort(helper.begin(), helper.begin() + finiteCount)
 	cdef double value = helper[0].first
 	cdef double summ = 0.
 	cdef count length = 0
-	for i in range(len(sample)):
+	for i in range(finiteCount):
 		if value == helper[i].first:
 			summ += (i+1)
 			length += 1
@@ -58,7 +71,7 @@ def ranked(sample):
 			length = 1
 	summ /= length
 	for j in range(length):
-		result[helper[len(sample)-j-1].second] = summ
+		result[helper[finiteCount-j-1].second] = summ
 	return result
 
 # Cython helper functions
