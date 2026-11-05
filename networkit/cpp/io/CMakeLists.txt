@@ -11,8 +11,6 @@ networkit_add_module(io
     DotPartitionWriter.cpp
     EdgeListCoverReader.cpp
     EdgeListPartitionReader.cpp
-    EdgeListReader.cpp
-    EdgeListWriter.cpp
     GMLGraphReader.cpp
     GMLGraphWriter.cpp
     GraphIO.cpp
