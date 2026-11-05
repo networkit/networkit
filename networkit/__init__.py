@@ -169,7 +169,7 @@ def overview(G):
 
     def getClusteringCoefficient(G):
         lcc = centrality.LocalClusteringCoefficient(G, True).run().scores()
-        return sum(lcc) / n
+        return sum(lcc) / n if n else 0.0
 
     def getComponentPartition(G):
         if G.isDirected():
@@ -189,7 +189,9 @@ def overview(G):
         print("clustering coefficient\t\t{:.6f}".format(getClusteringCoefficient(G)))
     print(
         "min/max/avg degree\t\t{:d}, {:d}, {:.6f}".format(
-            int(min(degrees)), int(max(degrees)), sum(degrees) / n
+            int(min(degrees, default=0)),
+            int(max(degrees, default=0)),
+            sum(degrees) / n if n else 0.0,
         )
     )
     print(
@@ -198,9 +200,9 @@ def overview(G):
         )
     )
     cp = getComponentPartition(G)
-    lcs = max(cp.subsetSizes())
+    lcs = max(cp.subsetSizes(), default=0)
     print("number of connected components\t{}".format(cp.numberOfSubsets()))
-    print("size of largest component\t{} ({:.2f} %)".format(lcs, 100 * lcs / n))
+    print("size of largest component\t{} ({:.2f} %)".format(lcs, 100 * lcs / n if n else 0.0))
 
 
 # -------- Setup ---------- #

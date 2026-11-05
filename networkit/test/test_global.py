@@ -42,5 +42,8 @@ class TestGlobal(unittest.TestCase):
 		arr = np.array([0, 0, 0, 4], dtype=np.float64)
 		self.assertAlmostEqual(nk.stats.gini(arr), 0.75, places=12)
 
+	def testOverviewEmptyGraph(self):
+		nk.overview(nk.Graph(0))
+
 if __name__ == "__main__":
 	unittest.main()
