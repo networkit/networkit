@@ -212,7 +212,7 @@ std::optional<RIDomains> computeDomains(const SearchGraph &pattern, const Search
     RIDomains result;
     const count z = pattern.upperNodeIdBound();
     result.ofPatternNode.assign(z, {});
-    result.earnsItsKeep.assign(z, false);
+    result.filtersCandidates.assign(z, false);
 
     // Walking the target ids in ascending order keeps every domain sorted.
     for (node pu = 0; pu < z; ++pu) {
@@ -243,16 +243,12 @@ std::optional<RIDomains> computeDomains(const SearchGraph &pattern, const Search
         constraints.clear();
         collectArcConstraints(pattern, pu, constraints);
 
-        const auto keep = [&](node tv) -> bool {
-            for (const ArcConstraint &arc : constraints)
-                if (!intersectsDomain(sliceOf(target, tv, arc.outgoing), arc.label,
-                                      result.ofPatternNode[arc.pj]))
-                    return false;
-
-            return true;
-        };
-
-        std::erase_if(domain, [&](node tv) -> bool { return !keep(tv); });
+        std::erase_if(domain, [&](node tv) -> bool {
+            return std::ranges::any_of(constraints, [&](const ArcConstraint &arc) -> bool {
+                return !intersectsDomain(sliceOf(target, tv, arc.outgoing), arc.label,
+                                         result.ofPatternNode[arc.pj]);
+            });
+        });
     }
 
     if (!forwardCheckSingletons(pattern, result.ofPatternNode))
@@ -270,7 +266,7 @@ std::optional<RIDomains> computeDomains(const SearchGraph &pattern, const Search
         const bool prunedEnough =
             built != 0
             && static_cast<double>(pruned) >= domainFilterThreshold * static_cast<double>(built);
-        result.earnsItsKeep[pu] = kept == 1 || prunedEnough;
+        result.filtersCandidates[pu] = kept == 1 || prunedEnough;
     }
 
     return result;

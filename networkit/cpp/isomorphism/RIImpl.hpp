@@ -48,9 +48,9 @@ struct RIDomains {
     /// Sorted target nodes that each pattern node can be mapped to.
     std::vector<std::vector<node>> ofPatternNode;
 
-    /// Whether intersecting candidates with the domain pays off. See the parameter
-    /// `domainFilterThreshold` of @ref RI.
-    std::vector<bool> earnsItsKeep;
+    /// Whether candidatesFor() filters the candidates of a pattern node through its domain. See
+    /// the parameter `domainFilterThreshold` of @ref RI.
+    std::vector<bool> filtersCandidates;
 };
 
 /// A node of the search tree. `mapping[i]` is the image of `order[i]` for positions below
@@ -211,7 +211,7 @@ private:
             return;
         }
 
-        const bool useDomain = !domains->ofPatternNode.empty() && domains->earnsItsKeep[pu];
+        const bool useDomain = !domains->ofPatternNode.empty() && domains->filtersCandidates[pu];
         std::span<const node> domain;
         if (useDomain)
             domain = domains->ofPatternNode[pu];

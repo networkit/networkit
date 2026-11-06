@@ -345,8 +345,9 @@ TEST_P(RIGTest, testSelectiveDomainsDoNotChangeTheMatchSet) {
     const RISearchSetup setup =
         setupOf(pattern, target, patternNodeLabels, targetNodeLabels, RI::Variant::RI_DS);
     ASSERT_EQ(setup.ordering.parent, (std::vector<index>{none, 0}));
-    ASSERT_TRUE(setup.domains.earnsItsKeep[1]) << "RI-DS no longer intersects the candidates of "
-                                                  "pattern node 1, so this case tests nothing";
+    ASSERT_TRUE(setup.domains.filtersCandidates[1])
+        << "RI-DS no longer intersects the candidates of "
+           "pattern node 1, so this case tests nothing";
 
     const std::vector<Match> expected = IsomorphismTest::referenceMatches(
         pattern, target, Semantics::MONOMORPHISM, patternNodeLabels, targetNodeLabels);
@@ -368,7 +369,7 @@ TEST_F(RIDSGTest, testCandidatesAreIntersectedWithTheDomain) {
         .patternGraph = pattern,
         .targetGraph = SearchGraph(IsomorphismTest::graphOf(10, {{5, 1}, {5, 3}, {5, 7}, {5, 9}}),
                                    /* buildMatrix = */ false),
-        .domains = {.ofPatternNode = {{5}, {3, 7}}, .earnsItsKeep = {false, true}},
+        .domains = {.ofPatternNode = {{5}, {3, 7}}, .filtersCandidates = {false, true}},
         .ordering = orderingFrom(pattern, {0, 1})};
 
     EXPECT_THAT(matchesOf(setup), UnorderedElementsAre(Match{5, 3}, Match{5, 7}));
@@ -385,7 +386,7 @@ TEST_F(RIDSGTest, testInSliceCandidatesAreIntersectedWithTheDomain) {
             SearchGraph(IsomorphismTest::graphOf(10, {{1, 5}, {3, 5}, {7, 5}, {9, 5}, {5, 4}},
                                                  /* directed = */ true),
                         /* buildMatrix = */ false),
-        .domains = {.ofPatternNode = {{5}, {3, 4, 7}}, .earnsItsKeep = {false, true}},
+        .domains = {.ofPatternNode = {{5}, {3, 4, 7}}, .filtersCandidates = {false, true}},
         .ordering = orderingFrom(pattern, {0, 1})};
 
     EXPECT_THAT(matchesOf(setup), UnorderedElementsAre(Match{5, 3}, Match{5, 7}));
@@ -396,7 +397,7 @@ TEST_F(RIDSGTest, testInSliceCandidatesAreIntersectedWithTheDomain) {
 TEST_F(RIDSGTest, testDomainFilterThresholdSelectsTheDomains) {
     const Case testCase = halfRefinedCase();
     const auto filtering = [&testCase](double threshold) -> std::vector<bool> {
-        return setupOf(testCase, RI::Variant::RI_DS, threshold).domains.earnsItsKeep;
+        return setupOf(testCase, RI::Variant::RI_DS, threshold).domains.filtersCandidates;
     };
 
     ASSERT_EQ(setupOf(testCase, RI::Variant::RI_DS).domains.ofPatternNode,

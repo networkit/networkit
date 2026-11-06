@@ -16,7 +16,8 @@ RI::RI(const Graph &pattern, const Graph &target, Semantics semantics, count max
     if (variant != Variant::RI && variant != Variant::RI_DS)
         throw std::invalid_argument("Unknown RI variant");
 
-    // Negated, so that NaN fails too.
+    // The default of 0.8 comes from caidaRouterLevel with a triangle pattern and node labels,
+    // where filtering cost time below about 0.8. The check is negated, so that NaN fails too.
     if (!(domainFilterThreshold >= 0.0 && domainFilterThreshold <= 1.0))
         throw std::invalid_argument("The domain filter threshold must be between 0 and 1");
 }

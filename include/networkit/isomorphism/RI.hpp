@@ -17,7 +17,8 @@ namespace NetworKit {
  *
  * The variant @ref Variant::RI_DS first computes a domain of candidate target nodes for every
  * pattern node. It pays off for disconnected patterns and selective node labels, but otherwise
- * usually costs more than it saves.
+ * usually costs more than it saves. The domains need memory for up to |V_pattern| * |V_target|
+ * target node ids.
  *
  * The implementation is based on
  *
@@ -54,8 +55,7 @@ public:
      * node through its domain if the shrinking removed at least this fraction of the domain or left
      * one target node. Below the threshold, the filter removes too few candidates to pay for its
      * lookups. 0 always filters, and 1 filters only through single-node domains. The value changes
-     * the running time, not the matches. The default comes from caidaRouterLevel with a triangle
-     * pattern and node labels, where filtering cost time below about 0.8.
+     * the running time, not the matches.
      *
      * @throws std::invalid_argument If @a variant or @a semantics is not a known value, or if
      * @a domainFilterThreshold is not between 0 and 1. @ref run() checks the graphs, since they may
