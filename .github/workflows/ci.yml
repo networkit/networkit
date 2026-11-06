@@ -102,7 +102,7 @@ env:
   MONOLITH: ON
   TLX_PATH: /home/runner/work/networkit/networkit/tlx
   TLX_PATH_WIN: /d/a/networkit/networkit/tlx
-  NATIVE: OFF
+  PRESET: release
 
 jobs:
   macos-build-latest-version-apple-clang:
@@ -139,7 +139,7 @@ jobs:
         shell: bash
         env:
           TLX_PATH: /Users/runner/work/networkit/networkit/tlx
-          NATIVE: ${{ matrix.build-configuration == 'full (native)' }}
+          PRESET: ${{ matrix.build-configuration == 'full (native)' && 'release-native' || 'release' }}
 
   macos-build-latest-version-misc:
     name: "macOS ${{ matrix.os }} (${{ matrix.compiler }}): core"
@@ -212,7 +212,7 @@ jobs:
         run:  ${{ github.workspace }}/.github/workflows/scripts/$SCRIPT
         shell: bash
         env:
-          NATIVE: ${{ matrix.build-configuration == 'full (native)' }}
+          PRESET: ${{ matrix.build-configuration == 'full (native)' && 'release-native' || 'release' }}
           MONOLITH: ${{ matrix.build-configuration != 'core (non-monolithic)' }}
           SCRIPT: ${{ startsWith(matrix.build-configuration, 'core') && 'cpp_only.sh' || 'full.sh'}}
           CXX_STANDARD: ${{ matrix.build-configuration == 'core (C++20)' && '20' || env.CXX_STANDARD }}
@@ -397,8 +397,6 @@ jobs:
   linux-build-leak:
     name: "Linux (clang-17): leak checks"
     runs-on: ubuntu-26.04
-    env:
-      UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1:report_error_type=1:suppressions=../UBSAN.filter
     steps:
       - name: Install prerequisites
         run:  |
@@ -410,10 +408,9 @@ jobs:
           submodules: true
       - name: Prepare environment and run checks
         run:  |
-          mkdir build && cd build
-          cmake -GNinja -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DNETWORKIT_WITH_SANITIZERS=leak  -DCMAKE_CXX_COMPILER=/usr/bin/clang++-17 ..
-          ninja
-          ctest -V -C Debug
+          cmake --preset leak -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DCMAKE_CXX_COMPILER=/usr/bin/clang++-17
+          cmake --build --preset leak
+          ctest --preset leak -V
         shell: bash
         timeout-minutes: 180
 
@@ -433,10 +430,9 @@ jobs:
       - name: Prepare environment and run checks
         shell: bash
         run: |
-          mkdir build && cd build
-          cmake -GNinja -DNETWORKIT_STATIC=ON -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_MONOLITH=ON -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DNETWORKIT_WARNINGS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_SANITY_CHECKS=ON ..
-          ninja
-          ctest -V -C Debug
+          cmake --preset debug -DNETWORKIT_STATIC=ON -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }}
+          cmake --build --preset debug
+          ctest --preset debug -V
 
   windows-build-latest:
     name: "Windows (msvc 14.X, CPython 3.15): ${{ matrix.build-configuration }}"
@@ -471,11 +467,9 @@ jobs:
           python -m venv pyenv
           . ./pyenv/Scripts/activate
           pip install cython==3.0.9 ipython ipywidgets==7.7.1 jupyter jupyterlab-widgets==1.1.1 numpy setuptools
-          mkdir build && cd build
-          cmake -GNinja -DNETWORKIT_BUILD_TESTS=ON -DNETWORKIT_STATIC=ON -DCMAKE_BUILD_TYPE=Release -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DNETWORKIT_WARNINGS=ON -DNETWORKIT_WARNINGS_AS_ERRORS=ON -DNETWORKIT_EXT_TLX=${{ env.TLX_PATH_WIN }} -DNETWORKIT_NATIVE=${{ env.NATIVE }} ..
-          ninja
-          ctest -V -C Release
-          cd ..
+          cmake --preset ${{ env.PRESET }} -DNETWORKIT_STATIC=ON -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DNETWORKIT_EXT_TLX=${{ env.TLX_PATH_WIN }}
+          cmake --build --preset ${{ env.PRESET }}
+          ctest --preset ${{ env.PRESET }} -V
           python setup.py build_ext --inplace --external-tlx=${{ env.TLX_PATH_WIN }}
           pip install -e .
           python -c 'import networkit'
@@ -485,7 +479,7 @@ jobs:
           pip install ipycytoscape plotly seaborn
           python notebooks/test_notebooks.py "notebooks"
         env:
-          NATIVE: ${{ matrix.build-configuration == 'full (native)' }}
+          PRESET: ${{ matrix.build-configuration == 'full (native)' && 'release-native' || 'release' }}
 
   documentation-build:
     name: "Linux (gcc-16, CPython 3.15): documentation"

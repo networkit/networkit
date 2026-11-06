@@ -195,7 +195,7 @@ Building from source requires:
   - Debian/Ubuntu: `apt-get install python3-dev`
   - RHEL/CentOS: `dnf install python3-devel`
   - Windows: [Official installer](https://www.python.org/downloads/windows/)
-- **[CMake]**: Version 3.6 or higher
+- **[CMake]**: Version 3.21 or higher
 - **Build System**: [Make] or [Ninja]
 
 ### Python Module
@@ -250,6 +250,18 @@ For debugging with address/leak sanitizers:
 ```bash
 cmake -DNETWORKIT_WITH_SANITIZERS=leak ..
 ```
+
+#### CMake Presets
+
+`CMakePresets.json` defines the configurations that CI builds (`debug`, `leak`, `release`, `release-native` and `clang-tidy`), plus `debug-asan` for local development. Each one builds in `build/<preset>`:
+
+```bash
+cmake --preset debug-asan
+cmake --build --preset debug-asan
+ctest --preset debug-asan
+```
+
+The `clang-tidy` preset needs LLVM's Clang and clang-tidy. On macOS, add `-DCMAKE_CXX_COMPILER=$(brew --prefix llvm)/bin/clang++ -DNETWORKIT_CLANG_TIDY_EXECUTABLE=$(brew --prefix llvm)/bin/clang-tidy`, because `clang++` is Apple's compiler and Homebrew does not put LLVM's tools on the `PATH`. Personal presets go into the untracked `CMakeUserPresets.json`.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
