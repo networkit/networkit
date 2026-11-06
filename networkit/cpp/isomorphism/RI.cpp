@@ -33,8 +33,7 @@ void RI::run() {
         prepareRISearch(*pattern, *target, patternNodeLabels, targetNodeLabels, patternEdgeLabels,
                         targetEdgeLabels, variant, domainFilterThreshold, "RI");
 
-    RIImpl(setup.patternGraph, setup.targetGraph, patternNodeLabels, targetNodeLabels,
-           setup.ordering, setup.domains, semantics, handler,
+    RIImpl(setup, patternNodeLabels, targetNodeLabels, semantics, handler,
            [this](std::span<const node> match) -> bool { return reportMatch(match); })
         .run();
 

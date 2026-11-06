@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <array>
+#include <optional>
 #include <span>
 #include <string_view>
 #include <utility>
@@ -212,15 +213,13 @@ RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains)
 }
 
 /// Computes the RI-DS domains from degrees and labels, refines them with one pass over the pattern
-/// arcs, and applies forward checking. Returns empty domains under plain RI.
-RIDomains computeDomains(const SearchGraph &pattern, const SearchGraph &target,
-                         std::span<const index> patternNodeLabels,
-                         std::span<const index> targetNodeLabels, RI::Variant variant,
-                         double domainFilterThreshold) {
+/// arcs, and applies forward checking. Returns no domains if one of them becomes empty, in which
+/// case there are no matches.
+std::optional<RIDomains> computeDomains(const SearchGraph &pattern, const SearchGraph &target,
+                                        std::span<const index> patternNodeLabels,
+                                        std::span<const index> targetNodeLabels,
+                                        double domainFilterThreshold) {
     RIDomains result;
-    if (variant != RI::Variant::RI_DS)
-        return result;
-
     const count z = pattern.upperNodeIdBound();
     result.ofPatternNode.assign(z, {});
     result.earnsItsKeep.assign(z, false);
@@ -266,7 +265,8 @@ RIDomains computeDomains(const SearchGraph &pattern, const SearchGraph &target,
         std::erase_if(domain, [&](node tv) -> bool { return !keep(tv); });
     }
 
-    result.anyEmpty = !forwardCheckSingletons(pattern, result.ofPatternNode);
+    if (!forwardCheckSingletons(pattern, result.ofPatternNode))
+        return std::nullopt;
 
     // What the build removed does not count, since consistent() rejects those candidates anyway. A
     // single-node domain always pays off, since the walk over the slice then stops at that node.
@@ -286,17 +286,19 @@ RIDomains computeDomains(const SearchGraph &pattern, const SearchGraph &target,
     return result;
 }
 
-} // namespace
-
-bool cannotMatch(const SearchGraph &pattern, const SearchGraph &target, const RIDomains &domains) {
-    if (domains.anyEmpty || pattern.numberOfNodes() > target.numberOfNodes())
-        return true;
+/// Whether the target is large enough in nodes and degrees to host the pattern. True for an empty
+/// pattern.
+bool sizesAndDegreesFit(const SearchGraph &pattern, const SearchGraph &target) {
+    if (pattern.numberOfNodes() > target.numberOfNodes())
+        return false;
 
     if (pattern.maxOutDegree() > target.maxOutDegree())
-        return true;
+        return false;
 
-    return pattern.isDirected() && pattern.maxInDegree() > target.maxInDegree();
+    return !pattern.isDirected() || pattern.maxInDegree() <= target.maxInDegree();
 }
+
+} // namespace
 
 RISearchSetup prepareRISearch(const Graph &pattern, const Graph &target,
                               std::span<const index> patternNodeLabels,
@@ -304,17 +306,31 @@ RISearchSetup prepareRISearch(const Graph &pattern, const Graph &target,
                               std::span<const index> patternEdgeLabels,
                               std::span<const index> targetEdgeLabels, RI::Variant variant,
                               double domainFilterThreshold, std::string_view algorithmName) {
-    SearchGraph patternGraph(pattern, /* buildMatrix = */ true, patternEdgeLabels);
-    SearchGraph targetGraph(target, /* buildMatrix = */ false, targetEdgeLabels);
+    RISearchSetup setup{
+        .patternGraph = SearchGraph(pattern, /* buildMatrix = */ true, patternEdgeLabels),
+        .targetGraph = SearchGraph(target, /* buildMatrix = */ false, targetEdgeLabels),
+        .domains = {},
+        .ordering = {}};
 
-    refuseLostLabels(patternGraph, targetGraph, algorithmName);
+    refuseLostLabels(setup.patternGraph, setup.targetGraph, algorithmName);
 
-    RIDomains domains = computeDomains(patternGraph, targetGraph, patternNodeLabels,
-                                       targetNodeLabels, variant, domainFilterThreshold);
-    RIOrdering ordering = computeOrdering(patternGraph, domains);
+    // An impossible instance skips the domains and the order.
+    setup.canMatch = sizesAndDegreesFit(setup.patternGraph, setup.targetGraph);
+    if (!setup.canMatch)
+        return setup;
 
-    return RISearchSetup{std::move(patternGraph), std::move(targetGraph), std::move(domains),
-                         std::move(ordering)};
+    if (variant == RI::Variant::RI_DS) {
+        std::optional<RIDomains> domains =
+            computeDomains(setup.patternGraph, setup.targetGraph, patternNodeLabels,
+                           targetNodeLabels, domainFilterThreshold);
+        setup.canMatch = domains.has_value();
+        if (!setup.canMatch)
+            return setup;
+        setup.domains = std::move(*domains);
+    }
+
+    setup.ordering = computeOrdering(setup.patternGraph, setup.domains);
+    return setup;
 }
 
 } // namespace NetworKit::IsomorphismDetails

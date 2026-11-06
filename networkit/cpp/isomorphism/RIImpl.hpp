@@ -32,8 +32,6 @@ struct RIDomains {
     /// Whether intersecting candidates with the domain pays off. See the parameter
     /// `domainFilterThreshold` of @ref RI.
     std::vector<bool> earnsItsKeep;
-
-    bool anyEmpty = false;
 };
 
 /// A node of the search tree. `mapping[i]` is the image of `order[i]` for positions below
@@ -42,10 +40,6 @@ struct RIState {
     std::vector<node> mapping;
     count depth = 0;
 };
-
-/// Whether the sizes, the degrees or an empty RI-DS domain rule out every match. False for an
-/// empty pattern, whose one match is the empty mapping.
-bool cannotMatch(const SearchGraph &pattern, const SearchGraph &target, const RIDomains &domains);
 
 /// The out- or in-neighbors of one node, with one arc label per entry.
 struct Slice {
@@ -62,6 +56,19 @@ inline Slice sliceOf(const SearchGraph &g, node u, bool outgoing) {
     return {g.inNeighbors(u), g.inLabels(u)};
 }
 
+/// What @ref prepareRISearch() computes before the search.
+struct RISearchSetup {
+    SearchGraph patternGraph;
+    SearchGraph targetGraph;
+    RIDomains domains;
+    RIOrdering ordering;
+
+    /// False if the sizes, the degrees or an empty RI-DS domain rule out every match. The domains
+    /// and the order are then not computed. True for an empty pattern, whose one match is the
+    /// empty mapping.
+    bool canMatch = true;
+};
+
 /**
  * The RI search behind @ref RI. @ref run() enumerates all matches depth first and passes each one
  * to the reporter, see @ref MatchReporter.
@@ -70,23 +77,21 @@ template <MatchReporter Reporter>
 class RIImpl {
 
 public:
-    /// @a ordering and @a domains must outlive this object.
-    RIImpl(const SearchGraph &pattern, const SearchGraph &target,
-           std::span<const index> patternNodeLabels, std::span<const index> targetNodeLabels,
-           const RIOrdering &ordering, const RIDomains &domains,
-           SubgraphIsomorphism::Semantics semantics, Aux::SignalHandler &handler, Reporter report)
-        : patternGraph(&pattern), targetGraph(&target), patternNodeLabels(patternNodeLabels),
-          targetNodeLabels(targetNodeLabels), ordering(&ordering), domains(&domains),
+    /// @a setup must outlive this object.
+    RIImpl(const RISearchSetup &setup, std::span<const index> patternNodeLabels,
+           std::span<const index> targetNodeLabels, SubgraphIsomorphism::Semantics semantics,
+           Aux::SignalHandler &handler, Reporter report)
+        : patternGraph(&setup.patternGraph), targetGraph(&setup.targetGraph),
+          patternNodeLabels(patternNodeLabels), targetNodeLabels(targetNodeLabels),
+          ordering(&setup.ordering), domains(&setup.domains), canMatch(setup.canMatch),
           semantics(semantics), handler(&handler), report(std::move(report)),
-          matchBuffer(pattern.upperNodeIdBound(), none) {}
+          matchBuffer(setup.patternGraph.upperNodeIdBound(), none) {}
 
     RIState rootState() const { return RIState{std::vector<node>(ordering->order.size(), none)}; }
 
     void run() {
-        if (cannotMatch(*patternGraph, *targetGraph, *domains))
-            return;
-
-        search();
+        if (canMatch)
+            search();
     }
 
 private:
@@ -306,6 +311,9 @@ private:
     const RIOrdering *ordering;
     const RIDomains *domains;
 
+    /// See @ref RISearchSetup::canMatch.
+    bool canMatch;
+
     SubgraphIsomorphism::Semantics semantics;
 
     /// The search only polls isRunning() and returns. The caller throws for the interrupt.
@@ -316,16 +324,9 @@ private:
     std::vector<node> matchBuffer;
 };
 
-struct RISearchSetup {
-    SearchGraph patternGraph;
-    SearchGraph targetGraph;
-    RIDomains domains;
-    RIOrdering ordering;
-};
-
-/// Builds the snapshots, the RI-DS domains and the matching order. See @ref RI for
-/// @a domainFilterThreshold. Throws `std::runtime_error` if a graph has parallel edges with
-/// different edge labels.
+/// Builds the snapshots, decides whether a match is possible, and if so, computes the RI-DS
+/// domains and the matching order. See @ref RI for @a domainFilterThreshold. Throws
+/// `std::runtime_error` if a graph has parallel edges with different edge labels.
 RISearchSetup prepareRISearch(const Graph &pattern, const Graph &target,
                               std::span<const index> patternNodeLabels,
                               std::span<const index> targetNodeLabels,

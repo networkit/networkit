@@ -44,6 +44,7 @@ using IsomorphismTest::Case;
 using IsomorphismTest::Match;
 using Semantics = SubgraphIsomorphism::Semantics;
 using testing::Contains;
+using testing::IsEmpty;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
@@ -76,12 +77,11 @@ Case halfRefinedCase() {
             .targetNodeLabels = {0, 0, 0, 0, 1, 1}};
 }
 
-/// Runs the search on unlabelled graphs with the given domains and returns the matches.
-std::vector<Match> matchesOf(const SearchGraph &pattern, const SearchGraph &target,
-                             const RIOrdering &ordering, const RIDomains &domains) {
+/// Runs the search on unlabelled graphs and returns the matches.
+std::vector<Match> matchesOf(const RISearchSetup &setup) {
     Aux::SignalHandler handler;
     std::vector<Match> matches;
-    RIImpl(pattern, target, {}, {}, ordering, domains, Semantics::MONOMORPHISM, handler,
+    RIImpl(setup, {}, {}, Semantics::MONOMORPHISM, handler,
            [&matches](std::span<const node> match) -> bool {
                matches.emplace_back(match.begin(), match.end());
                return true;
@@ -167,6 +167,12 @@ TEST_P(RIGTest, testOrderingInvariants) {
         const RISearchSetup setup = setupOf(testCase, GetParam());
         const SearchGraph &pattern = setup.patternGraph;
         const RIOrdering &ordering = setup.ordering;
+
+        // An impossible instance gets no order.
+        if (!setup.canMatch) {
+            EXPECT_THAT(ordering.order, IsEmpty()) << "case: " << testCase.name;
+            continue;
+        }
 
         ASSERT_THAT(ordering.order, SizeIs(pattern.numberOfNodes())) << "case: " << testCase.name;
         ASSERT_THAT(ordering.parent, SizeIs(ordering.order.size())) << "case: " << testCase.name;
@@ -338,35 +344,31 @@ TEST_P(RIGTest, testSelectiveDomainsDoNotChangeTheMatchSet) {
 /// pattern node. Pattern node 1 has node 0 as its parent, so its candidates come from the slice of
 /// target node 5. That slice has a node below and a node above the domain.
 TEST_F(RIDSGTest, testCandidatesAreIntersectedWithTheDomain) {
-    const SearchGraph pattern(IsomorphismTest::graphOf(2, {{0, 1}}), /* buildMatrix = */ true);
-    const SearchGraph target(IsomorphismTest::graphOf(10, {{5, 1}, {5, 3}, {5, 7}, {5, 9}}),
-                             /* buildMatrix = */ false);
+    const RISearchSetup setup{
+        .patternGraph =
+            SearchGraph(IsomorphismTest::graphOf(2, {{0, 1}}), /* buildMatrix = */ true),
+        .targetGraph = SearchGraph(IsomorphismTest::graphOf(10, {{5, 1}, {5, 3}, {5, 7}, {5, 9}}),
+                                   /* buildMatrix = */ false),
+        .domains = {.ofPatternNode = {{5}, {3, 7}}, .earnsItsKeep = {false, true}},
+        .ordering = {.order = {0, 1}, .parent = {none, 0}}};
 
-    RIDomains domains;
-    domains.ofPatternNode = {{5}, {3, 7}};
-    domains.earnsItsKeep = {false, true};
-    const RIOrdering ordering{{0, 1}, {none, 0}};
-
-    EXPECT_THAT(matchesOf(pattern, target, ordering, domains),
-                UnorderedElementsAre(Match{5, 3}, Match{5, 7}));
+    EXPECT_THAT(matchesOf(setup), UnorderedElementsAre(Match{5, 3}, Match{5, 7}));
 }
 
 /// The directed counterpart. Pattern node 1 points to its parent, so its candidates come from the
 /// in-slice of target node 5. Domain node 4 is only an out-neighbor of node 5 and must not appear.
 TEST_F(RIDSGTest, testInSliceCandidatesAreIntersectedWithTheDomain) {
-    const SearchGraph pattern(IsomorphismTest::graphOf(2, {{1, 0}}, /* directed = */ true),
-                              /* buildMatrix = */ true);
-    const SearchGraph target(IsomorphismTest::graphOf(10, {{1, 5}, {3, 5}, {7, 5}, {9, 5}, {5, 4}},
-                                                      /* directed = */ true),
-                             /* buildMatrix = */ false);
+    const RISearchSetup setup{
+        .patternGraph = SearchGraph(IsomorphismTest::graphOf(2, {{1, 0}}, /* directed = */ true),
+                                    /* buildMatrix = */ true),
+        .targetGraph =
+            SearchGraph(IsomorphismTest::graphOf(10, {{1, 5}, {3, 5}, {7, 5}, {9, 5}, {5, 4}},
+                                                 /* directed = */ true),
+                        /* buildMatrix = */ false),
+        .domains = {.ofPatternNode = {{5}, {3, 4, 7}}, .earnsItsKeep = {false, true}},
+        .ordering = {.order = {0, 1}, .parent = {none, 0}}};
 
-    RIDomains domains;
-    domains.ofPatternNode = {{5}, {3, 4, 7}};
-    domains.earnsItsKeep = {false, true};
-    const RIOrdering ordering{{0, 1}, {none, 0}};
-
-    EXPECT_THAT(matchesOf(pattern, target, ordering, domains),
-                UnorderedElementsAre(Match{5, 3}, Match{5, 7}));
+    EXPECT_THAT(matchesOf(setup), UnorderedElementsAre(Match{5, 3}, Match{5, 7}));
 }
 
 /// No domain of this case ends with a single node, so only the threshold decides which domains
@@ -433,7 +435,7 @@ TEST_P(RIGTest, testSingletonDomainsAreRemovedAndComeFirst) {
 
     const std::vector<std::vector<node>> &domains = prep.domains.ofPatternNode;
 
-    EXPECT_FALSE(prep.domains.anyEmpty);
+    EXPECT_TRUE(prep.canMatch);
     EXPECT_EQ(domains[2], (std::vector<node>{unique}));
     EXPECT_EQ(domains[0], (std::vector<node>{0, 1, 2, 4, 5}));
     EXPECT_EQ(domains[1], (std::vector<node>{0, 1, 2, 4, 5}));
@@ -477,10 +479,11 @@ TEST_F(RIDSGTest, testForwardCheckingReachesAFixpoint) {
     for (node u = 0; u < 4; ++u)
         patternNodeLabels[u] = 0;
 
-    const RIDomains domains =
-        setupOf(pattern, target, patternNodeLabels, targetNodeLabels, RI::Variant::RI_DS).domains;
+    const RISearchSetup setup =
+        setupOf(pattern, target, patternNodeLabels, targetNodeLabels, RI::Variant::RI_DS);
+    const RIDomains &domains = setup.domains;
 
-    EXPECT_FALSE(domains.anyEmpty);
+    EXPECT_TRUE(setup.canMatch);
     for (node center = 0; center < 4; ++center)
         EXPECT_EQ(domains.ofPatternNode[center], (std::vector<node>{center}))
             << "center " << center << " should have been narrowed to one target node by the "
@@ -500,14 +503,44 @@ TEST_P(RIGTest, testForwardCheckingRejectsImpossibleInstances) {
     const Graph pattern = IsomorphismTest::graphOf(4, {{0, 1}, {2, 3}});
     const std::vector<index> patternNodeLabels{rareLabel, 0, rareLabel, 0};
 
-    const RIDomains domains =
-        setupOf(pattern, target, patternNodeLabels, targetNodeLabels, RI::Variant::RI_DS).domains;
-    EXPECT_TRUE(domains.anyEmpty) << "one target node cannot host two pattern nodes at once";
+    EXPECT_FALSE(
+        setupOf(pattern, target, patternNodeLabels, targetNodeLabels, RI::Variant::RI_DS).canMatch)
+        << "one target node cannot host two pattern nodes at once";
 
     RI algo(pattern, target, Semantics::MONOMORPHISM, 0, GetParam());
     algo.setNodeLabels(patternNodeLabels, targetNodeLabels);
     algo.run();
     EXPECT_EQ(algo.numberOfMatches(), 0u);
+}
+
+/// Too few target nodes or too small target degrees rule out every match before the domains and the
+/// order are computed.
+TEST_P(RIGTest, testSizesAndDegreesRuleOutEveryMatch) {
+    struct Impossible {
+        const char *name;
+        Graph pattern;
+        Graph target;
+    };
+
+    const std::vector<Impossible> cases{
+        {"more pattern nodes", IsomorphismTest::graphOf(3, {{0, 1}, {1, 2}}),
+         IsomorphismTest::graphOf(2, {{0, 1}})},
+        {"larger degree", IsomorphismTest::graphOf(4, {{0, 1}, {0, 2}, {0, 3}}),
+         IsomorphismTest::graphOf(4, {{0, 1}, {1, 2}, {2, 3}})},
+        {"larger in-degree",
+         IsomorphismTest::graphOf(4, {{1, 0}, {2, 0}, {3, 0}}, /* directed = */ true),
+         IsomorphismTest::graphOf(4, {{0, 1}, {0, 2}, {0, 3}}, /* directed = */ true)}};
+
+    for (const Impossible &impossible : cases) {
+        const RISearchSetup setup =
+            setupOf(impossible.pattern, impossible.target, {}, {}, GetParam());
+        EXPECT_FALSE(setup.canMatch) << impossible.name;
+        EXPECT_THAT(setup.domains.ofPatternNode, IsEmpty()) << impossible.name;
+        EXPECT_THAT(setup.ordering.order, IsEmpty()) << impossible.name;
+    }
+
+    // The empty mapping matches an empty pattern.
+    EXPECT_TRUE(setupOf(Graph(0), Graph(0), {}, {}, GetParam()).canMatch);
 }
 
 /// The search checks for an interrupt before every report, so no match follows the interrupt.
