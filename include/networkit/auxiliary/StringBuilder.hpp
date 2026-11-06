@@ -3,8 +3,10 @@
 
 #include <algorithm>
 #include <cassert>
+#include <concepts>
 #include <iterator>
 #include <ostream>
+#include <ranges>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -170,13 +172,7 @@ inline auto printFormatPartToStream(std::ostream &stream, std::string_view::cons
 
 // Iteratable
 template <typename T>
-concept IteratableType = requires(const T &t) {
-    std::begin(t);
-    requires std::is_same_v<decltype(std::begin(t)), decltype(std::end(t))>;
-    requires std::is_base_of_v<
-        std::input_iterator_tag,
-        typename std::iterator_traits<decltype(std::begin(t))>::iterator_category>;
-};
+concept IteratableType = std::ranges::input_range<const T> && std::ranges::common_range<const T>;
 template <typename T>
 constexpr bool isIteratable() {
     return IteratableType<T>;
@@ -205,8 +201,7 @@ constexpr bool isTuple() {
 // Streamable
 template <typename T>
 concept StreamableType = requires(std::ostream &os, const T &t) {
-    os << t;
-    requires std::is_base_of_v<std::ostream, std::decay_t<decltype(os << t)>>;
+    { os << t } -> std::convertible_to<std::ostream &>;
 };
 template <typename T>
 constexpr bool isStreamable() {
