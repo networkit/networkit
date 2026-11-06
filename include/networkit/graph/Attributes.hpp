@@ -219,8 +219,6 @@ public:
             return storage == iter.storage && idx == iter.idx;
         }
 
-        bool operator!=(Iterator const &iter) const noexcept { return !(*this == iter); }
-
     private:
         AttributeStorage_type *storage;
         index idx;

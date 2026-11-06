@@ -73,10 +73,6 @@ public:
         return elementIter == rhs.elementIter;
     }
 
-    bool operator!=(const NeighborIteratorBase &rhs) const {
-        return !(elementIter == rhs.elementIter);
-    }
-
     value_type operator*() const { return *elementIter; }
 };
 
@@ -149,8 +145,6 @@ public:
     bool operator==(const NeighborWeightIteratorBase &rhs) const {
         return elementIter == rhs.elementIter && weightIter == rhs.weightIter;
     }
-
-    bool operator!=(const NeighborWeightIteratorBase &rhs) const { return !(*this == rhs); }
 
     std::pair<typename containerType::value_type, typename weightContainerType::value_type>
     operator*() const {

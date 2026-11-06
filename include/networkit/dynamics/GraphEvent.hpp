@@ -39,7 +39,6 @@ public:
     GraphEvent(Type type, node u = none, node v = none, edgeweight w = defaultEdgeWeight);
 
     bool operator==(const GraphEvent &rhs) const noexcept;
-    bool operator!=(const GraphEvent &rhs) const noexcept;
     friend bool operator<(const GraphEvent &a, const GraphEvent &b) noexcept;
     friend bool operator>(const GraphEvent &a, const GraphEvent &b) noexcept;
     bool operator<=(const GraphEvent &rhs) const noexcept;
