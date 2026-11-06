@@ -34,6 +34,7 @@ static void PrintTo(const AdjListGraph<NodeT, EdgeWeightT> &G, std::ostream *os)
 namespace {
 
 using ::testing::HasSubstr;
+using ::testing::Not;
 using ::testing::ThrowsMessage;
 using TestUtils::TemporaryDirectory;
 
@@ -270,6 +271,45 @@ void checkWritesFloatingPointWeightsExactly() {
 TEST(METISGraphIOGTest, testWriteFloatingPointWeightsExactly) {
     checkWritesFloatingPointWeightsExactly<double>();
     checkWritesFloatingPointWeightsExactly<float>();
+}
+
+// 100000 is exact in float and double, but the shortest to_chars text is "1e+05".
+// That token is not an integer, so an integral reader rejects the file METIS would misread.
+template <class EdgeWeightT>
+void checkWritesIntegralFloatingWeightsAsDigits() {
+    using Source = AdjListGraph<int, EdgeWeightT>;
+    using Integral = AdjListGraph<int, int>;
+    const TemporaryDirectory directory;
+    const std::string path = directory.path("integral_floating.graph");
+
+    Source G(4, true);
+    G.addEdge(0, 1, static_cast<EdgeWeightT>(100000));
+    G.addEdge(1, 2, static_cast<EdgeWeightT>(-250000));
+    G.addEdge(2, 3, static_cast<EdgeWeightT>(1000000));
+    G.addEdge(0, 2, static_cast<EdgeWeightT>(0));
+    GenericMETISGraphWriter<Source>{}.write(G, path);
+
+    std::ifstream file(path);
+    ASSERT_TRUE(static_cast<bool>(file));
+    const std::string text{std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
+    // The writer separates a weight from the next id with a tab, so these are whole tokens.
+    EXPECT_THAT(text, HasSubstr(" 100000\t"));
+    EXPECT_THAT(text, HasSubstr(" -250000\t"));
+    EXPECT_THAT(text, HasSubstr(" 1000000\t"));
+    EXPECT_THAT(text, HasSubstr(" 0\t"));
+    EXPECT_THAT(text, Not(HasSubstr("e")));
+
+    Integral expected(4, true);
+    expected.addEdge(0, 1, 100000);
+    expected.addEdge(1, 2, -250000);
+    expected.addEdge(2, 3, 1000000);
+    expected.addEdge(0, 2, 0);
+    EXPECT_THAT(GenericMETISGraphReader<Integral>{}.read(path), IsSameGraphAs(expected));
+}
+
+TEST(METISGraphIOGTest, testWriteIntegralFloatingWeightsWithoutExponent) {
+    checkWritesIntegralFloatingWeightsAsDigits<double>();
+    checkWritesIntegralFloatingWeightsAsDigits<float>();
 }
 
 TEST(METISGraphIOGTest, testReadThrowsIfNodesDoNotFitNodeType) {
