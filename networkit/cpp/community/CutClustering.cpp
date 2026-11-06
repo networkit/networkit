@@ -220,7 +220,7 @@ void NetworKit::CutClustering::clusterHierarchyRecursion(
         // no breakpoints have been found, this means that the upper bound is a tight lower bound
         // for the upper clusters
         if (middle == -1) {
-            if (result.count(upper) == 0)
+            if (!result.contains(upper))
                 // upperClusters won't be used anymore
                 result.insert(std::make_pair(upper, std::move(upperClusters)));
 

@@ -505,7 +505,7 @@ TEST_F(AuxGTest, testBloomFilter) {
 
     for (uint64_t i = 0; i < size; ++i) {
         uint64_t key = Aux::Random::integer();
-        if (randomKeys.count(key) == 0) {
+        if (!randomKeys.contains(key)) {
             if (bf.isMember(key)) {
                 WARN("Bloom filter: Maybe only false positive, maybe indication of bug!");
             }

@@ -62,7 +62,7 @@ std::set<node> RandomBFS::expandOneCommunity(const std::set<node> &s) {
 
         for (node u : currentLevel) {
             g->forNeighborsOf(u, [&](node v) {
-                if (result.count(v) == 0) {
+                if (!result.contains(v)) {
                     nextLevel.push_back(v);
                 }
             });
