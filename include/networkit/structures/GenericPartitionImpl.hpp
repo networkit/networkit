@@ -81,7 +81,7 @@ void GenericPartition<IndexType>::compact(bool useTurbo) {
         Aux::Parallel::sort(usedIds.begin(), usedIds.end());
         auto last = std::unique(usedIds.begin(), usedIds.end());
         usedIds.erase(last, usedIds.end());
-        usedIds.erase(std::remove(usedIds.begin(), usedIds.end(), noneIndex), usedIds.end());
+        std::erase(usedIds, noneIndex);
         i = usedIds.size();
 
         this->parallelForEntries(
