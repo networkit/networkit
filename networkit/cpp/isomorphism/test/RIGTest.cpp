@@ -34,6 +34,7 @@
 namespace NetworKit {
 namespace {
 
+using IsomorphismDetails::orderingFrom;
 using IsomorphismDetails::prepareRISearch;
 using IsomorphismDetails::RIDomains;
 using IsomorphismDetails::RIImpl;
@@ -44,6 +45,8 @@ using IsomorphismTest::Case;
 using IsomorphismTest::Match;
 using Semantics = SubgraphIsomorphism::Semantics;
 using testing::Contains;
+using testing::ElementsAre;
+using testing::ElementsAreArray;
 using testing::IsEmpty;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
@@ -186,28 +189,31 @@ TEST_P(RIGTest, testOrderingInvariants) {
             seen[pu] = true;
         }
 
-        if (!ordering.parent.empty()) {
-            EXPECT_EQ(ordering.parent[0], none) << "case: " << testCase.name;
-        }
-
         for (index i = 0; i < ordering.order.size(); ++i) {
             const node pu = ordering.order[i];
 
-            const index parentPos = ordering.parent[i];
-            if (parentPos != none) {
-                ASSERT_LT(parentPos, i) << "case: " << testCase.name;
-                const node pp = ordering.order[parentPos];
-                EXPECT_TRUE(pattern.hasEdge(pp, pu) || pattern.hasEdge(pu, pp))
-                    << "case: " << testCase.name << " - parent is not adjacent";
+            std::vector<index> earlierNeighbors;
+            bool mutualWithFirst = false;
+            for (index j = 0; j < i; ++j) {
+                const node pj = ordering.order[j];
+                const bool forward = pattern.hasEdge(pj, pu);
+                const bool backward = pattern.hasEdge(pu, pj);
+                if (!forward && !backward)
+                    continue;
+                if (earlierNeighbors.empty())
+                    mutualWithFirst = pattern.isDirected() && forward && backward;
+                earlierNeighbors.push_back(j);
             }
 
             // A `none` parent means exactly that no earlier position is adjacent.
-            bool anyEarlierAdjacent = false;
-            for (index j = 0; j < i && !anyEarlierAdjacent; ++j) {
-                const node earlier = ordering.order[j];
-                anyEarlierAdjacent = pattern.hasEdge(earlier, pu) || pattern.hasEdge(pu, earlier);
-            }
-            EXPECT_EQ(parentPos == none, !anyEarlierAdjacent)
+            EXPECT_EQ(ordering.parent[i], earlierNeighbors.empty() ? none : earlierNeighbors[0])
+                << "case: " << testCase.name << " at position " << i;
+
+            // The candidates come from the slice along the parent arc, so only a directed mutual
+            // pair keeps the parent among the checked neighbors.
+            if (!earlierNeighbors.empty() && !mutualWithFirst)
+                earlierNeighbors.erase(earlierNeighbors.begin());
+            EXPECT_THAT(ordering.checkedNeighborsOf(i), ElementsAreArray(earlierNeighbors))
                 << "case: " << testCase.name << " at position " << i;
         }
     }
@@ -233,6 +239,19 @@ TEST_P(RIGTest, testOrderingHandTraced) {
     const RIOrdering split = orderingOf(IsomorphismTest::graphOf(4, {{0, 1}, {2, 3}}));
     EXPECT_EQ(split.order, (std::vector<node>{0, 1, 2, 3}));
     EXPECT_EQ(split.parent, (std::vector<index>{none, 0, none, 2}));
+
+    // In a triangle, the last node checks only its arc to the second node. Its candidates come from
+    // the slice of its parent, the first node.
+    const RIOrdering triangle = orderingOf(IsomorphismTest::graphOf(3, {{0, 1}, {1, 2}, {2, 0}}));
+    EXPECT_EQ(triangle.order, (std::vector<node>{0, 1, 2}));
+    EXPECT_EQ(triangle.parent, (std::vector<index>{none, 0, 0}));
+    EXPECT_THAT(triangle.checkedNeighborsOf(2), ElementsAre(1u));
+
+    // The candidates come from one arc of a mutual pair, so the other arc to the parent is checked.
+    const RIOrdering mutual =
+        orderingOf(IsomorphismTest::graphOf(2, {{0, 1}, {1, 0}}, /* directed = */ true));
+    EXPECT_EQ(mutual.parent, (std::vector<index>{none, 0}));
+    EXPECT_THAT(mutual.checkedNeighborsOf(1), ElementsAre(0u));
 
     const RIOrdering worked = orderingOf(IsomorphismTest::graphOf(
         8, {{4, 1}, {4, 5}, {4, 0}, {4, 3}, {1, 2}, {1, 6}, {5, 2}, {5, 7}, {0, 7}, {3, 6}}));
@@ -344,13 +363,13 @@ TEST_P(RIGTest, testSelectiveDomainsDoNotChangeTheMatchSet) {
 /// pattern node. Pattern node 1 has node 0 as its parent, so its candidates come from the slice of
 /// target node 5. That slice has a node below and a node above the domain.
 TEST_F(RIDSGTest, testCandidatesAreIntersectedWithTheDomain) {
+    const SearchGraph pattern(IsomorphismTest::graphOf(2, {{0, 1}}), /* buildMatrix = */ true);
     const RISearchSetup setup{
-        .patternGraph =
-            SearchGraph(IsomorphismTest::graphOf(2, {{0, 1}}), /* buildMatrix = */ true),
+        .patternGraph = pattern,
         .targetGraph = SearchGraph(IsomorphismTest::graphOf(10, {{5, 1}, {5, 3}, {5, 7}, {5, 9}}),
                                    /* buildMatrix = */ false),
         .domains = {.ofPatternNode = {{5}, {3, 7}}, .earnsItsKeep = {false, true}},
-        .ordering = {.order = {0, 1}, .parent = {none, 0}}};
+        .ordering = orderingFrom(pattern, {0, 1})};
 
     EXPECT_THAT(matchesOf(setup), UnorderedElementsAre(Match{5, 3}, Match{5, 7}));
 }
@@ -358,15 +377,16 @@ TEST_F(RIDSGTest, testCandidatesAreIntersectedWithTheDomain) {
 /// The directed counterpart. Pattern node 1 points to its parent, so its candidates come from the
 /// in-slice of target node 5. Domain node 4 is only an out-neighbor of node 5 and must not appear.
 TEST_F(RIDSGTest, testInSliceCandidatesAreIntersectedWithTheDomain) {
+    const SearchGraph pattern(IsomorphismTest::graphOf(2, {{1, 0}}, /* directed = */ true),
+                              /* buildMatrix = */ true);
     const RISearchSetup setup{
-        .patternGraph = SearchGraph(IsomorphismTest::graphOf(2, {{1, 0}}, /* directed = */ true),
-                                    /* buildMatrix = */ true),
+        .patternGraph = pattern,
         .targetGraph =
             SearchGraph(IsomorphismTest::graphOf(10, {{1, 5}, {3, 5}, {7, 5}, {9, 5}, {5, 4}},
                                                  /* directed = */ true),
                         /* buildMatrix = */ false),
         .domains = {.ofPatternNode = {{5}, {3, 4, 7}}, .earnsItsKeep = {false, true}},
-        .ordering = {.order = {0, 1}, .parent = {none, 0}}};
+        .ordering = orderingFrom(pattern, {0, 1})};
 
     EXPECT_THAT(matchesOf(setup), UnorderedElementsAre(Match{5, 3}, Match{5, 7}));
 }

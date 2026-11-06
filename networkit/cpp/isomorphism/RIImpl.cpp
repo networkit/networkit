@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <optional>
 #include <span>
 #include <string_view>
@@ -119,16 +120,12 @@ RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains)
     const count z = pattern.upperNodeIdBound();
     const count total = pattern.numberOfNodes();
 
-    RIOrdering result;
-    result.order.reserve(total);
-    result.parent.reserve(total);
+    std::vector<node> order;
+    order.reserve(total);
 
     std::vector<bool> inOrder(z, false);
 
     std::vector<count> visCount(z, 0);
-
-    // The position of the first ordered neighbor of each node, which becomes its parent.
-    std::vector<index> firstOrderedNeighbor(z, none);
 
     SparseVector<bool> reached(z, false);
 
@@ -171,7 +168,7 @@ RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains)
                && (remainingSingletons == 0 || domainSize(u) == 1);
     };
 
-    while (result.order.size() < total) {
+    while (order.size() < total) {
         // Compute the expensive triple only for the nodes that are best on the first term.
         count bestVis = 0;
         for (node u = 0; u < z; ++u)
@@ -197,19 +194,12 @@ RIOrdering computeOrdering(const SearchGraph &pattern, const RIDomains &domains)
         if (remainingSingletons != 0)
             --remainingSingletons;
 
-        // A node without arcs into the order starts a new component and has no parent.
-        const index position = result.order.size();
         inOrder[best] = true;
-        result.order.push_back(best);
-        result.parent.push_back(firstOrderedNeighbor[best]);
-        pattern.forEachIncidentArc(best, [&](node v) -> void {
-            ++visCount[v];
-            if (firstOrderedNeighbor[v] == none)
-                firstOrderedNeighbor[v] = position;
-        });
+        order.push_back(best);
+        pattern.forEachIncidentArc(best, [&](node v) -> void { ++visCount[v]; });
     }
 
-    return result;
+    return orderingFrom(pattern, std::move(order));
 }
 
 /// Computes the RI-DS domains from degrees and labels, refines them with one pass over the pattern
@@ -299,6 +289,47 @@ bool sizesAndDegreesFit(const SearchGraph &pattern, const SearchGraph &target) {
 }
 
 } // namespace
+
+RIOrdering orderingFrom(const SearchGraph &pattern, std::vector<node> order) {
+    std::vector<index> positionOf(pattern.upperNodeIdBound(), none);
+    for (index i = 0; i < order.size(); ++i)
+        positionOf[order[i]] = i;
+
+    RIOrdering result{.order = std::move(order),
+                      .parent = {},
+                      .checkedNeighborsFirst = {0},
+                      .checkedNeighbors = {}};
+    const count total = result.order.size();
+    result.parent.reserve(total);
+    result.checkedNeighborsFirst.reserve(total + 1);
+
+    std::vector<index> &checked = result.checkedNeighbors;
+    for (index i = 0; i < total; ++i) {
+        const node pu = result.order[i];
+
+        const index begin = checked.size();
+        pattern.forEachDistinctNeighbor(pu, [&](node v) -> void {
+            if (positionOf[v] < i)
+                checked.push_back(positionOf[v]);
+        });
+        const auto earlier = checked.begin() + static_cast<std::ptrdiff_t>(begin);
+        std::sort(earlier, checked.end());
+
+        // A node without earlier neighbors starts a new component and has no parent.
+        index parentPos = none;
+        if (earlier != checked.end()) {
+            parentPos = *earlier;
+            const node pp = result.order[parentPos];
+            if (!(pattern.isDirected() && pattern.hasEdge(pp, pu) && pattern.hasEdge(pu, pp)))
+                checked.erase(earlier);
+        }
+
+        result.parent.push_back(parentPos);
+        result.checkedNeighborsFirst.push_back(checked.size());
+    }
+
+    return result;
+}
 
 RISearchSetup prepareRISearch(const Graph &pattern, const Graph &target,
                               std::span<const index> patternNodeLabels,

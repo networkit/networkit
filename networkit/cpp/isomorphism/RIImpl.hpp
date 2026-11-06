@@ -18,12 +18,30 @@
 
 namespace NetworKit::IsomorphismDetails {
 
-/// `order[i]` is the pattern node mapped at depth i. `parent[i]` is the position of an earlier
-/// neighbor of `order[i]`, or @ref none if position i starts a new connected component.
+/// `order[i]` is the pattern node mapped at depth i. `parent[i]` is the position of the first
+/// earlier neighbor of `order[i]`, or @ref none if position i starts a new connected component.
+/// @ref orderingFrom() fills the other fields from these two.
 struct RIOrdering {
     std::vector<node> order;
     std::vector<index> parent;
+
+    /// See @ref checkedNeighborsOf().
+    std::vector<index> checkedNeighborsFirst;
+    std::vector<index> checkedNeighbors;
+
+    /// The positions before @a i whose pattern nodes share an arc with `order[i]`, in ascending
+    /// order. The parent is left out, since the candidates for position i come from the target
+    /// slice along its arc, unless it forms a directed mutual pair with `order[i]`. The candidates
+    /// then come from only one of the two arcs.
+    std::span<const index> checkedNeighborsOf(index i) const {
+        return std::span<const index>(checkedNeighbors)
+            .subspan(checkedNeighborsFirst[i],
+                     checkedNeighborsFirst[i + 1] - checkedNeighborsFirst[i]);
+    }
 };
+
+/// Completes @a order to an RIOrdering. Every node of @a pattern must occur in @a order once.
+RIOrdering orderingFrom(const SearchGraph &pattern, std::vector<node> order);
 
 /// RI-DS candidate domains, indexed by pattern node. Empty under plain RI.
 struct RIDomains {
@@ -86,7 +104,8 @@ public:
           patternNodeLabels(patternNodeLabels), targetNodeLabels(targetNodeLabels),
           ordering(&setup.ordering), domains(&setup.domains), canMatch(setup.canMatch),
           semantics(semantics), handler(&handler), report(std::move(report)),
-          matchBuffer(setup.patternGraph.upperNodeIdBound(), none) {}
+          matchBuffer(setup.patternGraph.upperNodeIdBound(), none),
+          mapped(setup.targetGraph.upperNodeIdBound(), false) {}
 
     RIState rootState() const { return RIState{std::vector<node>(ordering->order.size(), none)}; }
 
@@ -102,6 +121,9 @@ private:
     void search() {
         if (!handler->isRunning())
             return;
+
+        // An earlier run may have stopped with target nodes still marked.
+        mapped.assign(mapped.size(), false);
 
         const count matchDepth = ordering->order.size();
         RIState state = rootState();
@@ -138,8 +160,10 @@ private:
                 // We have tried every candidate at this depth, so we go back to the depth above.
                 candidates.resize(level.begin);
                 levels.pop_back();
-                if (!levels.empty())
+                if (!levels.empty()) {
                     --state.depth;
+                    mapped[state.mapping[state.depth]] = false;
+                }
                 continue;
             }
 
@@ -158,6 +182,7 @@ private:
                 if (!reportMapping(state))
                     return;
             } else {
+                mapped[tv] = true;
                 ++state.depth;
                 openLevel();
             }
@@ -194,8 +219,9 @@ private:
         const node pp = ordering->order[parentPos];
         const node parentImage = state.mapping[parentPos];
 
-        // For a mutual pair, walk the shorter slice, since ruleEdgesToPrefix() checks both
-        // directions.
+        // Every candidate has the arc of the walked slice, so ruleEdgesToPrefix() does not check
+        // it again. For a mutual pair, walk the shorter slice, since ruleEdgesToPrefix() checks
+        // both directions.
         const bool forward = patternGraph->hasEdge(pp, pu);
         const bool backward = patternGraph->isDirected() && patternGraph->hasEdge(pu, pp);
         const bool useOut =
@@ -241,17 +267,16 @@ private:
                || ruleNonEdgesToPrefix(state, tv);
     }
 
+    /// Checks injectivity and the arcs to the positions of RIOrdering::checkedNeighborsOf().
     bool ruleEdgesToPrefix(const RIState &state, node tv) const {
+        if (mapped[tv])
+            return false;
+
         const node pu = ordering->order[state.depth];
 
-        for (index i = 0; i < state.depth; ++i) {
-            const node ti = state.mapping[i];
-
-            // Injectivity.
-            if (ti == tv)
-                return false;
-
+        for (const index i : ordering->checkedNeighborsOf(state.depth)) {
             const node pi = ordering->order[i];
+            const node ti = state.mapping[i];
 
             if (patternGraph->hasEdge(pi, pu) && !arcFits(pi, pu, ti, tv))
                 return false;
@@ -323,6 +348,9 @@ private:
     Reporter report;
 
     std::vector<node> matchBuffer;
+
+    /// Marks the target nodes of the mapped prefix, for the injectivity check.
+    std::vector<bool> mapped;
 };
 
 /// Builds the snapshots, decides whether a match is possible, and if so, computes the RI-DS
