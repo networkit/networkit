@@ -6,7 +6,6 @@
  * match set; the others use VF2 and RI.
  */
 
-#include <functional>
 #include <memory>
 #include <span>
 #include <stdexcept>
@@ -200,8 +199,7 @@ TEST_F(SubgraphIsomorphismGTest, testParallelEdgesWithDisagreeingLabelsAreRefuse
     const IsomorphismTest::LabelledGraph disagreeing =
         IsomorphismTest::labelledGraphOf(4, {{0, 1, 1}, {0, 1, 4}, {1, 2, 2}, {2, 3, 1}});
 
-    using Factory =
-        std::function<std::unique_ptr<SubgraphIsomorphism>(const Graph &, const Graph &)>;
+    using Factory = std::unique_ptr<SubgraphIsomorphism> (*)(const Graph &, const Graph &);
     const std::vector<std::pair<std::string, Factory>> factories = {
         {"VF2",
          [](const Graph &pattern, const Graph &target) -> std::unique_ptr<SubgraphIsomorphism> {
