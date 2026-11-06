@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <concepts>
 #include <cstdint>
+#include <optional>
 #include <span>
 #include <string_view>
 #include <vector>
@@ -119,9 +120,18 @@ public:
         if (outLabel.empty())
             return none;
 
+        return findArc(u, v).value_or(none);
+    }
+
+    /// Looks up the arc @a u -> @a v and its label with one binary search. Returns no value if the
+    /// arc does not exist, and @ref none for an arc of a snapshot without labels.
+    std::optional<index> findArc(node u, node v) const noexcept {
         const std::span<const node> neighbors = outNeighbors(u);
         const auto found = std::ranges::lower_bound(neighbors, v);
         if (found == neighbors.end() || *found != v)
+            return std::nullopt;
+
+        if (outLabel.empty())
             return none;
 
         return outLabels(u)[static_cast<index>(found - neighbors.begin())];

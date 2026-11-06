@@ -2,6 +2,7 @@
 #define NETWORKIT_CPP_ISOMORPHISM_RI_IMPL_HPP_
 
 #include <algorithm>
+#include <optional>
 #include <span>
 #include <string_view>
 #include <utility>
@@ -242,7 +243,6 @@ private:
 
     bool ruleEdgesToPrefix(const RIState &state, node tv) const {
         const node pu = ordering->order[state.depth];
-        const bool edgeLabelled = patternGraph->hasEdgeLabels();
 
         for (index i = 0; i < state.depth; ++i) {
             const node ti = state.mapping[i];
@@ -253,27 +253,28 @@ private:
 
             const node pi = ordering->order[i];
 
-            if (patternGraph->hasEdge(pi, pu)) {
-                if (!targetGraph->hasEdge(ti, tv))
-                    return false;
-                if (edgeLabelled
-                    && !labelsCompatible(patternGraph->edgeLabel(pi, pu),
-                                         targetGraph->edgeLabel(ti, tv)))
-                    return false;
-            }
+            if (patternGraph->hasEdge(pi, pu) && !arcFits(pi, pu, ti, tv))
+                return false;
 
             // The reverse arc of a directed pattern has its own label.
-            if (patternGraph->isDirected() && patternGraph->hasEdge(pu, pi)) {
-                if (!targetGraph->hasEdge(tv, ti))
-                    return false;
-                if (edgeLabelled
-                    && !labelsCompatible(patternGraph->edgeLabel(pu, pi),
-                                         targetGraph->edgeLabel(tv, ti)))
-                    return false;
-            }
+            if (patternGraph->isDirected() && patternGraph->hasEdge(pu, pi)
+                && !arcFits(pu, pi, tv, ti))
+                return false;
         }
 
         return true;
+    }
+
+    /// Whether the target has the arc @a tFrom -> @a tTo with a label that fits the pattern arc
+    /// @a pFrom -> @a pTo.
+    bool arcFits(node pFrom, node pTo, node tFrom, node tTo) const {
+        if (!patternGraph->hasEdgeLabels())
+            return targetGraph->hasEdge(tFrom, tTo);
+
+        // One search finds both the arc and its label.
+        const std::optional<index> targetLabel = targetGraph->findArc(tFrom, tTo);
+        return targetLabel.has_value()
+               && labelsCompatible(patternGraph->edgeLabel(pFrom, pTo), *targetLabel);
     }
 
     bool ruleNonEdgesToPrefix(const RIState &state, node tv) const {

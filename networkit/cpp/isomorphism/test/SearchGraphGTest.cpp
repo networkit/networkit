@@ -75,6 +75,8 @@ void expectLabelsPairWithHeads(const Graph &G, const std::vector<index> &edgeLab
                 << "out-arc " << u << " -> " << v << " carries a label nobody gave it";
             EXPECT_EQ(SG.edgeLabel(u, v), outLabels[i])
                 << "edgeLabel() and the out-slice disagree about " << u << " -> " << v;
+            EXPECT_EQ(SG.findArc(u, v), outLabels[i])
+                << "findArc() and the out-slice disagree about " << u << " -> " << v;
         }
 
         const std::span<const node> predecessors = SG.inNeighbors(u);
@@ -547,6 +549,28 @@ TEST_F(SearchGraphGTest, testEdgeLabelsStayWithTheirArcs) {
 
     EXPECT_THAT(SM.inNeighbors(0), ElementsAre(1u));
     EXPECT_THAT(SM.inLabels(0), ElementsAre(8u));
+}
+
+/// Unlike edgeLabel(), which returns @ref none for both, findArc() tells a missing arc from an arc
+/// without a label.
+TEST_F(SearchGraphGTest, testFindArc) {
+    const IsomorphismTest::LabelledGraph mutual = IsomorphismTest::labelledGraphOf(
+        3, {{0, 1, 7}, {1, 0, 8}, {1, 2, 9}}, /* directed = */ true);
+
+    for (bool buildMatrix : {false, true}) {
+        SCOPED_TRACE(testing::Message() << "buildMatrix=" << buildMatrix);
+
+        const SearchGraph labelled(mutual.G, buildMatrix, mutual.edgeLabels);
+        EXPECT_EQ(labelled.findArc(0, 1), 7u);
+        EXPECT_EQ(labelled.findArc(1, 0), 8u);
+        EXPECT_EQ(labelled.findArc(1, 2), 9u);
+        EXPECT_FALSE(labelled.findArc(2, 1).has_value());
+        EXPECT_FALSE(labelled.findArc(0, 2).has_value());
+
+        const SearchGraph unlabelled(mutual.G, buildMatrix);
+        EXPECT_EQ(unlabelled.findArc(1, 2), none);
+        EXPECT_FALSE(unlabelled.findArc(2, 1).has_value());
+    }
 }
 
 TEST_F(SearchGraphGTest, testCollapsedLabelledEdges) {
