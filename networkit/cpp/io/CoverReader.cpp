@@ -18,7 +18,7 @@ Cover CoverReader::read(std::string_view path, Graph &G) {
     node current;
 
     while (std::getline(file, line)) {
-        if (line.substr(0, 1) != "#") {
+        if (!line.starts_with('#')) {
             communities.setUpperBound(i + 1);
             std::stringstream linestream(line);
             while (linestream >> current) {

@@ -49,7 +49,7 @@ Cover SNAPEdgeListPartitionReader::read(std::string_view path,
     while (file.good()) {
         ++i;
         std::getline(file, line);
-        if (line.compare(0, commentPrefix.length(), commentPrefix) == 0) {
+        if (line.starts_with(commentPrefix)) {
         } else if (line.empty()) {
         } else {
             std::stringstream linestream(line);
