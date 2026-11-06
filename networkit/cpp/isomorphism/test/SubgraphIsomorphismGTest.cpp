@@ -209,7 +209,7 @@ TEST_F(SubgraphIsomorphismGTest, testParallelEdgesWithDisagreeingLabelsAreRefuse
          }},
         {"RI",
          [](const Graph &pattern, const Graph &target) -> std::unique_ptr<SubgraphIsomorphism> {
-             return std::make_unique<RI>(pattern, target, RI::Variant::RI, Semantics::MONOMORPHISM);
+             return std::make_unique<RI>(pattern, target, Semantics::MONOMORPHISM);
          }}};
 
     for (const auto &[name, make] : factories) {

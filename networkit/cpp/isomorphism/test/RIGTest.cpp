@@ -123,9 +123,11 @@ TEST_P(RIGTest, testUnknownVariantIsRejected) {
     const Graph pattern = IsomorphismTest::graphOf(3, {{0, 1}, {1, 2}});
     const Graph target = IsomorphismTest::graphOf(3, {{0, 1}, {1, 2}, {2, 0}});
 
-    EXPECT_THROW(RI algo(pattern, target, static_cast<RI::Variant>(2)), std::invalid_argument);
-    EXPECT_THROW(RI algo(pattern, target, static_cast<RI::Variant>(256)), std::invalid_argument);
-    EXPECT_NO_THROW(RI algo(pattern, target, GetParam()));
+    EXPECT_THROW(RI algo(pattern, target, Semantics::INDUCED, 0, static_cast<RI::Variant>(2)),
+                 std::invalid_argument);
+    EXPECT_THROW(RI algo(pattern, target, Semantics::INDUCED, 0, static_cast<RI::Variant>(256)),
+                 std::invalid_argument);
+    EXPECT_NO_THROW(RI algo(pattern, target, Semantics::INDUCED, 0, GetParam()));
 }
 
 /// The threshold is a fraction of a domain. NaN fails every comparison, so it gets a case of its
@@ -135,12 +137,12 @@ TEST_P(RIGTest, testDomainFilterThresholdOutsideTheUnitIntervalIsRejected) {
     const Graph target = IsomorphismTest::graphOf(3, {{0, 1}, {1, 2}, {2, 0}});
 
     for (const double threshold : {-0.1, 1.1, std::numeric_limits<double>::quiet_NaN()})
-        EXPECT_THROW(RI algo(pattern, target, GetParam(), Semantics::INDUCED, 0, threshold),
+        EXPECT_THROW(RI algo(pattern, target, Semantics::INDUCED, 0, GetParam(), threshold),
                      std::invalid_argument)
             << "threshold " << threshold;
 
     for (const double threshold : {0.0, 1.0})
-        EXPECT_NO_THROW(RI algo(pattern, target, GetParam(), Semantics::INDUCED, 0, threshold))
+        EXPECT_NO_THROW(RI algo(pattern, target, Semantics::INDUCED, 0, GetParam(), threshold))
             << "threshold " << threshold;
 }
 
@@ -151,7 +153,7 @@ TEST_P(RIGTest, testAgreesWithTheReference) {
         const auto make =
             [variant, threshold](const Graph &pattern, const Graph &target, Semantics semantics,
                                  count maxMatches) -> std::unique_ptr<SubgraphIsomorphism> {
-            return std::make_unique<RI>(pattern, target, variant, semantics, maxMatches, threshold);
+            return std::make_unique<RI>(pattern, target, semantics, maxMatches, variant, threshold);
         };
 
         IsomorphismTest::expectMatchesReference(make);
@@ -276,13 +278,13 @@ TEST_P(RIGTest, testVariantsAgreeOnKarate) {
     ASSERT_LT(setupOf(pattern, karate, {}, {}, RI::Variant::RI_DS).domains.ofPatternNode[0].size(),
               karate.numberOfNodes());
 
-    RI plain(pattern, karate, RI::Variant::RI, Semantics::MONOMORPHISM, 0);
+    RI plain(pattern, karate, Semantics::MONOMORPHISM, 0, RI::Variant::RI);
     plain.run();
 
-    RI withDomains(pattern, karate, RI::Variant::RI_DS, Semantics::MONOMORPHISM, 0);
+    RI withDomains(pattern, karate, Semantics::MONOMORPHISM, 0, RI::Variant::RI_DS);
     withDomains.run();
 
-    RI filteringEverywhere(pattern, karate, RI::Variant::RI_DS, Semantics::MONOMORPHISM, 0, 0.0);
+    RI filteringEverywhere(pattern, karate, Semantics::MONOMORPHISM, 0, RI::Variant::RI_DS, 0.0);
     filteringEverywhere.run();
 
     EXPECT_THAT(withDomains.getMatches(), UnorderedElementsAreArray(plain.getMatches()))
@@ -325,7 +327,7 @@ TEST_P(RIGTest, testSelectiveDomainsDoNotChangeTheMatchSet) {
         pattern, target, Semantics::MONOMORPHISM, patternNodeLabels, targetNodeLabels);
     ASSERT_FALSE(expected.empty()) << "a case with no matches would not exercise the search";
 
-    RI algo(pattern, target, GetParam(), Semantics::MONOMORPHISM, 0);
+    RI algo(pattern, target, Semantics::MONOMORPHISM, 0, GetParam());
     algo.setNodeLabels(patternNodeLabels, targetNodeLabels);
     algo.run();
 
@@ -502,7 +504,7 @@ TEST_P(RIGTest, testForwardCheckingRejectsImpossibleInstances) {
         setupOf(pattern, target, patternNodeLabels, targetNodeLabels, RI::Variant::RI_DS).domains;
     EXPECT_TRUE(domains.anyEmpty) << "one target node cannot host two pattern nodes at once";
 
-    RI algo(pattern, target, GetParam(), Semantics::MONOMORPHISM, 0);
+    RI algo(pattern, target, Semantics::MONOMORPHISM, 0, GetParam());
     algo.setNodeLabels(patternNodeLabels, targetNodeLabels);
     algo.run();
     EXPECT_EQ(algo.numberOfMatches(), 0u);
@@ -514,7 +516,7 @@ TEST_P(RIGTest, testInterruptStopsTheSearch) {
     const Graph cycle =
         IsomorphismTest::graphOf(6, {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 0}});
 
-    RI algo(pattern, cycle, GetParam(), Semantics::MONOMORPHISM, 0);
+    RI algo(pattern, cycle, Semantics::MONOMORPHISM, 0, GetParam());
     count delivered = 0;
     algo.setCallback([&](std::span<const node>) -> void {
         if (++delivered == 5)
@@ -559,7 +561,7 @@ TEST_P(RIGTest, testMatchesReferenceOnRandomGraphs) {
                     // Under RI-DS, 0 filters through every domain and 1 only through the
                     // single-node ones.
                     for (const double threshold : {0.0, defaultDomainFilterThreshold, 1.0}) {
-                        RI algo(pattern, target, variant, semantics, 0, threshold);
+                        RI algo(pattern, target, semantics, 0, variant, threshold);
                         if (nodeLabelled)
                             algo.setNodeLabels(patternNodeLabels, targetNodeLabels);
                         algo.run();

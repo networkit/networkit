@@ -8,8 +8,8 @@
 
 namespace NetworKit {
 
-RI::RI(const Graph &pattern, const Graph &target, Variant variant, Semantics semantics,
-       count maxMatches, double domainFilterThreshold)
+RI::RI(const Graph &pattern, const Graph &target, Semantics semantics, count maxMatches,
+       Variant variant, double domainFilterThreshold)
     : SubgraphIsomorphism(pattern, target, semantics, maxMatches), variant(variant),
       domainFilterThreshold(domainFilterThreshold) {
     // Python passes the variant as an integer, so any value can arrive here.

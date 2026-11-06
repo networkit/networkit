@@ -46,9 +46,9 @@ public:
     /**
      * @param pattern The graph to look for. Must not contain self-loops.
      * @param target The graph to look in. Must agree with @a pattern on directedness.
-     * @param variant Plain RI or RI-DS. See @ref Variant.
      * @param semantics Whether matches must be induced. See @ref SubgraphIsomorphism::Semantics.
      * @param maxMatches Stop after this many matches; 0 means no limit.
+     * @param variant Plain RI or RI-DS. See @ref Variant.
      * @param domainFilterThreshold Only for @ref Variant::RI_DS, which builds the domains from
      * degrees and labels and then shrinks them. The search filters the candidates of a pattern
      * node through its domain if the shrinking removed at least this fraction of the domain or left
@@ -61,9 +61,8 @@ public:
      * @a domainFilterThreshold is not between 0 and 1. @ref run() checks the graphs, since they may
      * change after construction.
      */
-    RI(const Graph &pattern, const Graph &target, Variant variant = Variant::RI,
-       Semantics semantics = Semantics::INDUCED, count maxMatches = 0,
-       double domainFilterThreshold = 0.8);
+    RI(const Graph &pattern, const Graph &target, Semantics semantics = Semantics::INDUCED,
+       count maxMatches = 0, Variant variant = Variant::RI, double domainFilterThreshold = 0.8);
 
     void run() override;
 
