@@ -42,9 +42,9 @@ class FixedLinearCongruentialMap; // forward declaration (implementation below)
  */
 template <typename T>
 class LinearCongruentialMap {
-    static_assert(!std::is_signed<T>::value, "LinearCongruentialMap requires unsigned types");
+    static_assert(!std::is_signed_v<T>, "LinearCongruentialMap requires unsigned types");
 
-    using signed_value_type = typename std::make_signed<T>::type;
+    using signed_value_type = std::make_signed_t<T>;
     using signed_tuple = std::tuple<signed_value_type, signed_value_type, signed_value_type>;
 
     friend FixedLinearCongruentialMap<T>;
@@ -163,9 +163,9 @@ private:
  */
 template <typename T>
 class FixedLinearCongruentialMap {
-    static_assert(!std::is_signed<T>::value, "LinearCongruentialMap requires unsigned types");
+    static_assert(!std::is_signed_v<T>, "LinearCongruentialMap requires unsigned types");
 
-    using signed_value_type = typename std::make_signed<T>::type;
+    using signed_value_type = std::make_signed_t<T>;
     using signed_tuple = std::tuple<signed_value_type, signed_value_type, signed_value_type>;
 
 public:
