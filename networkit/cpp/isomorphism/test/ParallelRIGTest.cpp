@@ -36,7 +36,13 @@ using IsomorphismTest::completeGraph;
 using IsomorphismTest::graphOf;
 using IsomorphismTest::Match;
 using Semantics = SubgraphIsomorphism::Semantics;
+using testing::ElementsAreArray;
+using testing::Gt;
+using testing::HasSubstr;
+using testing::IsEmpty;
+using testing::Not;
 using testing::SizeIs;
+using testing::ThrowsMessage;
 using testing::UnorderedElementsAreArray;
 
 /// Unlike the corpus, karate gives a search tree lopsided enough to exercise the work stealing.
@@ -92,12 +98,14 @@ TEST_P(ParallelRIGTest, testUnknownVariantIsRejected) {
     const Graph pattern = path(3);
     const Graph target = completeGraph(3);
 
-    EXPECT_THROW(
-        ParallelRI algo(pattern, target, Semantics::INDUCED, 0, static_cast<RI::Variant>(2)),
-        std::invalid_argument);
-    EXPECT_THROW(
-        ParallelRI algo(pattern, target, Semantics::INDUCED, 0, static_cast<RI::Variant>(256)),
-        std::invalid_argument);
+    for (const int variant : {2, 256})
+        EXPECT_THAT(
+            [&]() -> void {
+                ParallelRI algo(pattern, target, Semantics::INDUCED, 0,
+                                static_cast<RI::Variant>(variant));
+            },
+            ThrowsMessage<std::invalid_argument>(HasSubstr("variant")))
+            << "variant " << variant;
     EXPECT_NO_THROW(ParallelRI algo(pattern, target, Semantics::INDUCED, 0, GetParam()));
 }
 
@@ -108,8 +116,11 @@ TEST_P(ParallelRIGTest, testDomainFilterThresholdOutsideTheUnitIntervalIsRejecte
     const Graph target = completeGraph(3);
 
     for (const double threshold : {-0.1, 1.1, std::numeric_limits<double>::quiet_NaN()})
-        EXPECT_THROW(ParallelRI algo(pattern, target, Semantics::INDUCED, 0, GetParam(), threshold),
-                     std::invalid_argument)
+        EXPECT_THAT(
+            [&]() -> void {
+                ParallelRI algo(pattern, target, Semantics::INDUCED, 0, GetParam(), threshold);
+            },
+            ThrowsMessage<std::invalid_argument>(HasSubstr("threshold")))
             << "threshold " << threshold;
 
     for (const double threshold : {0.0, 1.0})
@@ -150,7 +161,7 @@ TEST_P(ParallelRIGTest, testAnswerDoesNotDependOnWorkerCount) {
         Aux::setNumberOfThreads(workers);
 
         ParallelRI algo(pattern, target, Semantics::MONOMORPHISM, 0, GetParam());
-        EXPECT_EQ(sortedMatches(algo), expected) << "workers: " << workers;
+        EXPECT_THAT(sortedMatches(algo), ElementsAreArray(expected)) << "workers: " << workers;
         EXPECT_EQ(algo.numberOfMatches(), expected.size()) << "workers: " << workers;
     }
 }
@@ -164,7 +175,7 @@ TEST_P(ParallelRIGTest, testCapHoldsAtEveryWorkerCount) {
 
     const std::vector<Match> all =
         sortedMatches(RI(pattern, target, Semantics::MONOMORPHISM, 0, GetParam()));
-    ASSERT_GT(all.size(), cap);
+    ASSERT_THAT(all, SizeIs(Gt(cap)));
 
     for (const int workers : workerCounts()) {
         Aux::setNumberOfThreads(workers);
@@ -198,7 +209,7 @@ TEST_P(ParallelRIGTest, testSingletonDomainAgreesAtEveryWorkerCount) {
     RI reference(pattern, target, Semantics::MONOMORPHISM, 0, RI::Variant::RI);
     reference.setNodeLabels(patternNodeLabels, targetNodeLabels);
     const std::vector<Match> expected = sortedMatches(reference);
-    ASSERT_FALSE(expected.empty());
+    ASSERT_THAT(expected, Not(IsEmpty()));
 
     for (const Match &match : expected)
         ASSERT_EQ(match[3], anchor);
@@ -208,7 +219,7 @@ TEST_P(ParallelRIGTest, testSingletonDomainAgreesAtEveryWorkerCount) {
 
         ParallelRI algo(pattern, target, Semantics::MONOMORPHISM, 0, GetParam());
         algo.setNodeLabels(patternNodeLabels, targetNodeLabels);
-        EXPECT_EQ(sortedMatches(algo), expected) << "workers: " << workers;
+        EXPECT_THAT(sortedMatches(algo), ElementsAreArray(expected)) << "workers: " << workers;
     }
 }
 
@@ -262,7 +273,7 @@ TEST_P(ParallelRIGTest, testFewerThreadsThanWorkers) {
     ASSERT_FALSE(threw);
     EXPECT_EQ(workers, 4u) << "the case needs more workers than the nested region starts";
     std::ranges::sort(actual);
-    EXPECT_EQ(actual, expected);
+    EXPECT_THAT(actual, ElementsAreArray(expected));
 }
 
 /// The merged per-worker slots must pair up one to one with the expected matches, which a
@@ -305,10 +316,10 @@ TEST_P(ParallelRIGTest, testDisconnectedPatternIsSearchedInParallel) {
 
     const std::vector<Match> expected =
         sortedMatches(RI(pattern, target, Semantics::MONOMORPHISM, 0, GetParam()));
-    ASSERT_GT(expected.size(), 1000u);
+    ASSERT_THAT(expected, SizeIs(Gt(1000u)));
 
-    EXPECT_EQ(sortedMatches(ParallelRI(pattern, target, Semantics::MONOMORPHISM, 0, GetParam())),
-              expected);
+    EXPECT_THAT(sortedMatches(ParallelRI(pattern, target, Semantics::MONOMORPHISM, 0, GetParam())),
+                ElementsAreArray(expected));
 }
 
 /// The empty mapping alone reaches a cap of one, so seeding stops the search.
