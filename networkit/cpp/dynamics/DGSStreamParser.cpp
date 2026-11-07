@@ -27,7 +27,7 @@ std::vector<GraphEvent> DGSStreamParser::getStream() {
     std::string cookie = "DGS004";
     std::getline(dgsFile, line); // get DGS version
     ++lineCount;
-    if (line.compare(0, cookie.size(), cookie)) {
+    if (!line.starts_with(cookie)) {
         ERROR("found ", line, " instead of ", cookie, " in first line");
         throw std::runtime_error("expected cookie in first line");
     }

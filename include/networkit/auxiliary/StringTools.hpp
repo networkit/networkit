@@ -13,6 +13,8 @@
 #include <string_view>
 #include <vector>
 
+#include <tlx/define/deprecated.hpp>
+
 namespace Aux {
 
 /**
@@ -57,18 +59,23 @@ inline std::vector<std::string> split(std::string_view s, char delim = ' ') {
 }
 
 /**
+ * DEPRECATED: use std::string_view::ends_with instead.
  * Determines whether @a str ends with @a suffix.
  */
-inline bool ends_with(std::string_view str, std::string_view suffix) {
-    return str.size() >= suffix.size()
-           && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
-}
+inline bool TLX_DEPRECATED(ends_with(std::string_view str, std::string_view suffix));
 
 /**
+ * DEPRECATED: use std::string_view::starts_with instead.
  * Determines whether @a str starts with @a prefix.
  */
+inline bool TLX_DEPRECATED(starts_with(std::string_view str, std::string_view prefix));
+
+inline bool ends_with(std::string_view str, std::string_view suffix) {
+    return str.ends_with(suffix);
+}
+
 inline bool starts_with(std::string_view str, std::string_view prefix) {
-    return str.size() >= prefix.size() && str.compare(0, prefix.size(), prefix) == 0;
+    return str.starts_with(prefix);
 }
 
 } /* namespace StringTools */

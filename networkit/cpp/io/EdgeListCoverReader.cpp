@@ -21,7 +21,7 @@ Cover EdgeListCoverReader::read(std::string_view path, Graph &G) {
     index omega = 0;
 
     while (std::getline(file, line)) {
-        if (line.substr(0, 1) != "#") {
+        if (!line.starts_with('#')) {
             std::stringstream linestream(line);
             index c, v;
             linestream >> v;
