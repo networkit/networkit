@@ -21,6 +21,8 @@ namespace NetworKit {
  * The search finds an occurrence once per automorphism of the pattern, so a triangle occurs six
  * times.
  *
+ * @ref VF2 is the reference implementation, and @ref RI is usually faster on sparse targets.
+ *
  * Pattern and target must both be directed or both be undirected, and the pattern must not contain
  * self-loops. The search ignores edge weights and target self-loops, and it collapses parallel
  * edges. The algorithm holds both graphs by reference, so they must outlive it. Since the graphs

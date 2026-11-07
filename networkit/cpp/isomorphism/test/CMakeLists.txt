@@ -1,3 +1,4 @@
 networkit_add_test(isomorphism SearchGraphGTest auxiliary graph io)
 networkit_add_test(isomorphism SubgraphIsomorphismGTest auxiliary graph)
 networkit_add_test(isomorphism VF2GTest auxiliary graph io)
+networkit_add_test(isomorphism RIGTest auxiliary edgescores generators graph io)
