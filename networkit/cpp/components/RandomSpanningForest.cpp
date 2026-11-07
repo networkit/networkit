@@ -38,7 +38,7 @@ void RandomSpanningForest::run() {
             node neigh = GraphTools::randomNeighbor(*G, curr);
 
             // if not seen before, insert tree edge
-            if (visited.count(neigh) == 0) {
+            if (!visited.contains(neigh)) {
                 forest.addEdge(curr, neigh);
                 visited.insert(neigh);
             }

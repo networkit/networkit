@@ -73,7 +73,7 @@ void PubWebGenerator::determineNeighbors(Graph &g) {
             const auto currentBest = pq.top();
             pq.pop();
 
-            if (eligibleEdges.count(currentBest.second) > 0) {
+            if (eligibleEdges.contains(currentBest.second)) {
                 // edge is already marked => insert it
                 edgeweight ew = BASE_WEIGHT / -currentBest.first;
                 g.addEdge(currentBest.second.first, currentBest.second.second, ew);

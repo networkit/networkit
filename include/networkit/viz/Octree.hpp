@@ -134,9 +134,7 @@ struct OctreeNode {
             centerOfMass.scale(1.0 / (double)weight);
 
             // remove empty children
-            children.erase(std::remove_if(children.begin(), children.end(),
-                                          [&](OctreeNode<T> &child) { return child.isEmpty(); }),
-                           children.end());
+            std::erase_if(children, [&](OctreeNode<T> &child) { return child.isEmpty(); });
 
             for (auto &child : children) {
                 child.computeCenterOfMass();
