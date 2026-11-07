@@ -542,8 +542,6 @@ public:
 
         bool operator==(NeighborIterator const &rhs) const { return it == rhs.it; }
 
-        bool operator!=(NeighborIterator const &rhs) const { return !(it == rhs.it); }
-
         node operator*() const { return it->vertex(); }
     };
 
@@ -607,8 +605,6 @@ public:
         }
 
         bool operator==(NeighborWeightIterator const &rhs) const { return it == rhs.it; }
-
-        bool operator!=(NeighborWeightIterator const &rhs) const { return !(it == rhs.it); }
 
         std::pair<node, edgeweight> operator*() const {
             return std::make_pair(it->vertex(), it->data().weight);
