@@ -2,6 +2,7 @@
 #define NETWORKIT_AUXILIARY_ARRAY_TOOLS_HPP_
 
 #include <cmath>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -14,14 +15,14 @@ template <class ArrayIt, class PermIt>
 void applyPermutation(ArrayIt first, ArrayIt last, PermIt permFirst) {
 
     using PermType = typename std::iterator_traits<PermIt>::value_type;
-    static_assert(std::is_integral<PermType>::value, "Elements of permutation must be integral.");
+    static_assert(std::is_integral_v<PermType>, "Elements of permutation must be integral.");
 
     const size_t arraySize =
         static_cast<typename std::iterator_traits<ArrayIt>::difference_type>(last - first);
 
     const size_t usedBitsInPerm = tlx::integer_log2_ceil(arraySize);
     // Avoid to use the sign bit if signed integral
-    const size_t bitsInPerm = sizeof(PermType) * 8 - (std::is_signed<PermType>::value ? 1 : 0);
+    const size_t bitsInPerm = sizeof(PermType) * 8 - (std::is_signed_v<PermType> ? 1 : 0);
 
     if (bitsInPerm == usedBitsInPerm) {
         // All bits in permutation are needed, we mark swapped elements with a bool vector
@@ -45,7 +46,7 @@ void applyPermutation(ArrayIt first, ArrayIt last, PermIt permFirst) {
     } else {
         // Not all bits in the permutation are needed, we use the last (or, if signed integral,
         // second to last) bit in the permutation to mark swapped elements
-        const auto mask = PermType{1} << (bitsInPerm - (std::is_signed<PermType>::value ? 2 : 1));
+        const auto mask = PermType{1} << (bitsInPerm - (std::is_signed_v<PermType> ? 2 : 1));
 
         const auto swapped = [&permFirst, mask = mask](size_t i) -> bool {
             return (permFirst[i] & mask) != 0;
