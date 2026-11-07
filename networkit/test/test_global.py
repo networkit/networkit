@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import contextlib
+import io
 import numpy as np
 import unittest
 
@@ -43,7 +45,12 @@ class TestGlobal(unittest.TestCase):
 		self.assertAlmostEqual(nk.stats.gini(arr), 0.75, places=12)
 
 	def testOverviewEmptyGraph(self):
-		nk.overview(nk.Graph(0))
+		for directed in (False, True):
+			with self.subTest(directed=directed):
+				with contextlib.redirect_stdout(io.StringIO()) as out:
+					nk.overview(nk.Graph(0, directed=directed))
+				self.assertIn("0, 0, 0.000000", out.getvalue())
+				self.assertIn("0 (0.00 %)", out.getvalue())
 
 if __name__ == "__main__":
 	unittest.main()
