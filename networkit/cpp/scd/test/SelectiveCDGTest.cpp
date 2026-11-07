@@ -1,4 +1,6 @@
+#include <cmath>
 #include <memory>
+#include <vector>
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -35,6 +37,23 @@ TEST_F(SelectiveCDGTest, testRunApproximatePageRank) {
 
     ApproximatePageRank apr(G, 0.4);
     const auto prVector = apr.run(0);
+}
+
+TEST_F(SelectiveCDGTest, testApproximatePageRankRearmsAtEpsilonBoundary) {
+    // Star with center 0 and three leaves. After the first push the center keeps residual 0.25:
+    // with this eps, 0.25 >= eps * 3 holds but 0.25 / 3 >= eps does not, so the center must
+    // still be pushed again.
+    Graph G(4);
+    for (node leaf = 1; leaf < 4; ++leaf) {
+        G.addEdge(0, leaf);
+    }
+    const double eps = std::nextafter(0.25 / 3, 1.0);
+    ApproximatePageRank apr(G, 0.5, eps);
+    std::vector<double> scores(G.upperNodeIdBound());
+    for (const auto &[u, score] : apr.run(0)) {
+        scores[u] = score;
+    }
+    EXPECT_GT(scores[0], 0.5);
 }
 
 TEST_F(SelectiveCDGTest, testRandomBFS) {
