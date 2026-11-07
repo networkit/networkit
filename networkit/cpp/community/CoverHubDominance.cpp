@@ -18,7 +18,7 @@ void NetworKit::CoverHubDominance::run() {
         for (index c : (*C)[u]) {
             count internalDeg = 0;
             G->forNeighborsOf(u, [&](node v) {
-                if ((*C)[v].count(c) > 0) {
+                if ((*C)[v].contains(c)) {
                     internalDeg++;
                 }
             });
