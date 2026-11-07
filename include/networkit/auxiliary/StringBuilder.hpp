@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cassert>
 #include <iterator>
+#include <ostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -11,8 +12,6 @@
 #include <tuple>
 #include <type_traits>
 #include <utility>
-
-#include <networkit/auxiliary/TemplateUtils.hpp>
 
 namespace Aux {
 
@@ -169,24 +168,18 @@ inline auto printFormatPartToStream(std::ostream &stream, std::string_view::cons
     return std::make_tuple(end, false);
 }
 
-// Brace Yourself: Templatemetaprogramming is coming
-////////////////////////////////////////////////////
-
 // Iteratable
-struct IsIteratableHelper {
-    static std::false_type isIteratable(...);
-
-    template <
-        typename T, class Iterator = decltype(std::begin(std::declval<T>())),
-        AUX_REQUIRE(EndIteratorValid, isSame<Iterator, decltype(std::end(std::declval<T>()))>()),
-        AUX_REQUIRE(HasInputIterator,
-                    isBaseOrSame<std::input_iterator_tag,
-                                 typename std::iterator_traits<Iterator>::iterator_category>())>
-    static std::true_type isIteratable(const T &);
+template <typename T>
+concept IteratableType = requires(const T &t) {
+    std::begin(t);
+    requires std::is_same_v<decltype(std::begin(t)), decltype(std::end(t))>;
+    requires std::is_base_of_v<
+        std::input_iterator_tag,
+        typename std::iterator_traits<decltype(std::begin(t))>::iterator_category>;
 };
 template <typename T>
 constexpr bool isIteratable() {
-    return decltype(IsIteratableHelper::isIteratable(std::declval<T>()))::value;
+    return IteratableType<T>;
 }
 
 // Pair
@@ -210,20 +203,14 @@ constexpr bool isTuple() {
 }
 
 // Streamable
-struct IsStreamableHelper {
-    static std::false_type isStreamable(...);
-
-    template <
-        typename T,
-        typename _streamT = typename std::decay<decltype(std::declval<std::ostream &>()
-                                                         << std::declval<const T &>())>::type,
-        typename std::enable_if<std::is_same<std::ostream, _streamT>::value
-                                || std::is_base_of<std::ostream, _streamT>::value> * = nullptr>
-    static std::true_type isStreamable(const T &);
+template <typename T>
+concept StreamableType = requires(std::ostream &os, const T &t) {
+    os << t;
+    requires std::is_base_of_v<std::ostream, std::decay_t<decltype(os << t)>>;
 };
 template <typename T>
 constexpr bool isStreamable() {
-    return decltype(IsStreamableHelper::isStreamable(std::declval<T>()))::value;
+    return StreamableType<T>;
 }
 
 // And now: implement the actual printing:
