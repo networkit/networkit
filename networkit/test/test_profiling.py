@@ -27,6 +27,22 @@ class TestProfileCreate(unittest.TestCase):
 			with self.subTest(n=n):
 				self.assertIsInstance(Profile.create(nk.Graph(n)), Profile)
 
+	def testCreateWithPartitionMeasures(self):
+		# Timings for assortativity and centralization only exist for node centralities;
+		# partition-only configs used to raise UnboundLocalError, and a partition after
+		# a centrality reported that centrality's timings.
+		G = nk.Graph(3)
+		G.addEdge(0, 1)
+		G.addEdge(1, 2)
+		G.addEdge(0, 2)
+		for measures in (["Partition.Communities"], ["Centrality.Degree", "Partition.Communities"]):
+			with self.subTest(measures=measures):
+				cfg = Config()
+				for measure in measures:
+					cfg.setMeasure(measure)
+				profile = Profile.create(G, config=cfg)
+				self.assertEqual(profile.getElapsedTime("Partition.Communities")[3:], (0.0, 0.0))
+
 
 if __name__ == "__main__":
 	unittest.main()
