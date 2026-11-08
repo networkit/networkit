@@ -290,9 +290,6 @@ public:
         return true;
     }
 
-    /// Returns false, if all coordinates match
-    bool operator!=(const Point &other) const noexcept { return !(*this == other); }
-
     /// Compute element-wise min and returns new Point
     Point min(const Point &other) const {
         assertMatchingDimensions(other);

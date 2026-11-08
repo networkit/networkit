@@ -248,14 +248,6 @@ public:
     }
 
     /**
-     * Compares this matrix to @a other and returns false if the shape and zero
-     * element are the same as well as
-     * all entries, otherwise returns true.
-     * @param other
-     */
-    bool operator!=(const CSRGeneralMatrix &other) const { return !((*this) == other); }
-
-    /**
      * @return Number of rows.
      */
     count numberOfRows() const noexcept { return nRows; }
