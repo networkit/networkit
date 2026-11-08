@@ -9,7 +9,6 @@
 #include <vector>
 
 #include <networkit/Globals.hpp>
-#include <networkit/graph/Graph.hpp>
 #include <networkit/graph/TraversalImpl.hpp>
 
 namespace NetworKit {
@@ -47,6 +46,7 @@ auto callBFSHandle(F &f, NodeT u, count) -> decltype(f(u)) {
  * @throws std::runtime_error If a start node is not in the graph.
  */
 template <class InputIt, typename L, class GraphT>
+    requires Impl::TraversalHandle<L, typename GraphT::NodeT, typename GraphT::EdgeWeightT>
 void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
     using NodeT = typename GraphT::NodeT;
 
@@ -91,6 +91,7 @@ void BFSfrom(const GraphT &G, InputIt first, InputIt last, L handle) {
  * @throws std::runtime_error If the source node is not in the graph.
  */
 template <typename L, class GraphT>
+    requires Impl::TraversalHandle<L, typename GraphT::NodeT, typename GraphT::EdgeWeightT>
 void BFSfrom(const GraphT &G, typename GraphT::NodeT source, L handle) {
     using NodeT = typename GraphT::NodeT;
 

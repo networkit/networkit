@@ -2,11 +2,13 @@
 #ifndef NETWORKIT_GRAPH_DIJKSTRA_HPP_
 #define NETWORKIT_GRAPH_DIJKSTRA_HPP_
 
+#include <algorithm>
+#include <array>
 #include <limits>
+#include <stdexcept>
 #include <vector>
 
-#include <networkit/graph/AdjListGraph.hpp>
-#include <networkit/graph/Graph.hpp>
+#include <networkit/Globals.hpp>
 #include <networkit/graph/TraversalImpl.hpp>
 
 #include <tlx/container/d_ary_addressable_int_heap.hpp>
@@ -15,6 +17,7 @@ namespace NetworKit {
 
 namespace Traversal {
 
+namespace Impl {
 /**
  * Calls the given Dijkstra handle with distance parameter
  */
@@ -30,26 +33,31 @@ template <class F, class NodeT, class EdgeWeight>
 auto callDijkstraHandle(F &f, NodeT u, EdgeWeight) -> decltype(f(u)) {
     return f(u);
 }
+} // namespace Impl
 
 /**
  * Iterate over nodes with Dijkstra starting from the nodes within the given range.
+ * Duplicate source nodes are ignored.
  *
  * @param G The input graph.
- * @param first The first element of the range.
+ * @param first The beginning of the range of source nodes.
  * @param last The end of the range.
  * @param handle Takes a node and its distance from the nodes in the range as input parameters.
+ * @throws std::runtime_error If a source node is not in the graph.
  */
 template <class InputIt, typename Handle, class GraphT>
+    requires Impl::TraversalHandle<Handle, typename GraphT::NodeT, typename GraphT::EdgeWeightT>
 void DijkstraFrom(const GraphT &G, InputIt first, InputIt last, Handle handle) {
     using NodeT = typename GraphT::NodeT;
     using EdgeWeightT = typename GraphT::EdgeWeightT;
     std::vector<EdgeWeightT> distance(G.upperNodeIdBound(),
                                       std::numeric_limits<EdgeWeightT>::max());
-    const auto compareDistance = [&distance](NodeT u, NodeT v) noexcept -> bool {
+    const auto compareDistance = [&distance](std::size_t u, std::size_t v) noexcept -> bool {
         return distance[u] < distance[v];
     };
 
-    tlx::d_ary_addressable_int_heap<NodeT, 2, decltype(compareDistance)> heap{compareDistance};
+    tlx::d_ary_addressable_int_heap<std::size_t, 2, decltype(compareDistance)> heap{
+        compareDistance};
 
     std::for_each(first, last, [&](const NodeT u) {
         if (!Impl::isValidNode(G, u))
@@ -58,34 +66,35 @@ void DijkstraFrom(const GraphT &G, InputIt first, InputIt last, Handle handle) {
         if (distance[u] == EdgeWeightT{0})
             return;
         distance[u] = EdgeWeightT{0};
-        heap.push(u);
+        heap.push(Impl::nodeIndex(u));
     });
 
     while (!heap.empty()) {
-        const auto u = heap.extract_top();
-        callDijkstraHandle(handle, u, distance[u]);
+        const auto u = static_cast<NodeT>(heap.extract_top());
+        Impl::callDijkstraHandle(handle, u, distance[u]);
         G.forNeighborsOf(
             u, [&](NodeT /* source */, const NodeT v, const EdgeWeightT w, edgeid /*id*/) {
                 if (distance[v] > distance[u] + w) {
                     distance[v] = distance[u] + w;
-                    heap.update(v);
+                    heap.update(Impl::nodeIndex(v));
                 }
             });
     }
 }
 
 /**
- * Iterate over nodes with Dijkstra starting from the nodes within the given range.
+ * Performs a Dijkstra traversal starting from the given source node.
  *
  * @param G The input graph.
  * @param u The source node.
- * @param lambda Takes a node and its distance from `u` as input parameters.
+ * @param lambda Takes a node and optionally its distance from the source node.
+ * @throws std::runtime_error If the source node is not in the graph.
  */
 template <typename Lambda, class GraphT>
+    requires Impl::TraversalHandle<Lambda, typename GraphT::NodeT, typename GraphT::EdgeWeightT>
 void DijkstraFrom(const GraphT &G, typename GraphT::NodeT u, Lambda lambda) {
-    using NodeT = typename GraphT::NodeT;
-    std::vector<NodeT> vec({u});
-    DijkstraFrom(G, vec.begin(), vec.end(), lambda);
+    const auto sources = std::to_array({u});
+    DijkstraFrom(G, sources.begin(), sources.end(), lambda);
 }
 
 } // namespace Traversal

@@ -8,12 +8,9 @@
 #ifndef NETWORKIT_GRAPH_TEST_TRAVERSAL_TEST_HELPER_HPP_
 #define NETWORKIT_GRAPH_TEST_TRAVERSAL_TEST_HELPER_HPP_
 
-#include <cstdint>
-
 #include <gtest/gtest.h>
 
 #include <networkit/graph/AdjListGraph.hpp>
-#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 
@@ -77,12 +74,6 @@ using TraversalTestTypes = ::testing::Types<
     TraversalConfig<AdjListGraph<uint16_t, double>>,
     TraversalConfig<AdjListGraph<uint64_t, uint64_t>>, TraversalConfig<AdjListGraph<int, int>>,
     TraversalConfig<AdjListGraph<int32_t, double>>, TraversalConfig<AdjListGraph<int64_t, float>>>;
-
-// Dijkstra's addressable integer heap requires unsigned node IDs.
-using DijkstraTraversalTestTypes =
-    ::testing::Types<TraversalConfig<Graph>, TraversalConfig<AdjListGraph<uint32_t, float>>,
-                     TraversalConfig<AdjListGraph<uint16_t, double>>,
-                     TraversalConfig<AdjListGraph<uint64_t, uint64_t>>>;
 
 } // namespace NetworKit
 

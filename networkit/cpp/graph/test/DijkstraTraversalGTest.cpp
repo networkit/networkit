@@ -25,7 +25,7 @@ template <class TestT>
 using GenericDijkstraTraversalGTest = GenericTraversalGTest<TestT>;
 
 // Includes graphs with identical node and weight types.
-TYPED_TEST_SUITE(GenericDijkstraTraversalGTest, DijkstraTraversalTestTypes,
+TYPED_TEST_SUITE(GenericDijkstraTraversalGTest, TraversalTestTypes,
                  /*Comma needed for variadic macro.*/);
 
 TYPED_TEST(GenericDijkstraTraversalGTest, testDijkstraFromTypedGraphs) {
