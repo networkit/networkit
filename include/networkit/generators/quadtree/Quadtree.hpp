@@ -10,6 +10,7 @@
 
 #include <cmath>
 #include <memory>
+#include <numbers>
 #include <omp.h>
 #include <vector>
 
@@ -40,8 +41,8 @@ public:
      */
     Quadtree(double maxR, bool theoreticalSplit = false, double alpha = 1, count capacity = 1000,
              double balance = 0.5) {
-        root =
-            QuadNode<T, poincare>(0, 0, 2 * PI, maxR, capacity, theoreticalSplit, alpha, balance);
+        root = QuadNode<T, poincare>(0, 0, 2 * std::numbers::pi, maxR, capacity, theoreticalSplit,
+                                     alpha, balance);
         this->maxRadius = maxR;
     }
 
@@ -53,7 +54,8 @@ public:
         assert(radii.size() == content.size());
         double R = stretch * HyperbolicSpace::hyperbolicAreaToRadius(n);
         double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
-        root = QuadNode<T>(0, 0, 2 * PI, r, capacity, theoreticalSplit, alpha, balance);
+        root =
+            QuadNode<T>(0, 0, 2 * std::numbers::pi, r, capacity, theoreticalSplit, alpha, balance);
         maxRadius = r;
         for (index i = 0; i < n; i++) {
             assert(content[i] < n);
@@ -120,7 +122,7 @@ public:
             maxR = std::max(std::abs(minR), maxR);
             minR = 0;
             minPhi = 0;
-            maxPhi = 2 * PI;
+            maxPhi = 2 * std::numbers::pi;
         } else {
             double spread = std::asin(radius / r_e);
             minPhi = cc_phi - spread;
@@ -140,13 +142,14 @@ public:
         root.getElementsInEuclideanCircle(center, radius, circleDenizens, minPhi, maxPhi, minR,
                                           maxR);
         if (minPhi < 0) {
-            root.getElementsInEuclideanCircle(center, radius, circleDenizens, 2 * PI + minPhi,
-                                              2 * PI, minR, maxR);
+            root.getElementsInEuclideanCircle(center, radius, circleDenizens,
+                                              2 * std::numbers::pi + minPhi, 2 * std::numbers::pi,
+                                              minR, maxR);
             wraparound = true;
         }
-        if (maxPhi > 2 * PI) {
-            root.getElementsInEuclideanCircle(center, radius, circleDenizens, 0, maxPhi - 2 * PI,
-                                              minR, maxR);
+        if (maxPhi > 2 * std::numbers::pi) {
+            root.getElementsInEuclideanCircle(center, radius, circleDenizens, 0,
+                                              maxPhi - 2 * std::numbers::pi, minR, maxR);
             wraparound = true;
         }
 

@@ -35,9 +35,6 @@ inline constexpr edgeweight nullWeight = 0.0;
 inline constexpr index none =
     std::numeric_limits<index>::max(); ///< value for not existing nodes/edges
 
-inline constexpr double PI =
-    3.141592653589793238462643383279502884197169399375105820974944592307816406286;
-
 template <class NodeT>
 inline constexpr NodeT NullNodeId = std::numeric_limits<NodeT>::max();
 

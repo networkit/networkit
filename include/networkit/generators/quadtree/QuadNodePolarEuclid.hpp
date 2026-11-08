@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cassert>
 #include <functional>
+#include <numbers>
 #include <vector>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -375,13 +376,13 @@ public:
             updateMinMax(phi, maxR);
             updateMinMax(phi, minR);
         }
-        if (phi + PI > leftAngle && phi + PI < rightAngle) {
-            updateMinMax(phi + PI, maxR);
-            updateMinMax(phi + PI, minR);
+        if (phi + std::numbers::pi > leftAngle && phi + std::numbers::pi < rightAngle) {
+            updateMinMax(phi + std::numbers::pi, maxR);
+            updateMinMax(phi + std::numbers::pi, minR);
         }
-        if (phi - PI > leftAngle && phi - PI < rightAngle) {
-            updateMinMax(phi - PI, maxR);
-            updateMinMax(phi - PI, minR);
+        if (phi - std::numbers::pi > leftAngle && phi - std::numbers::pi < rightAngle) {
+            updateMinMax(phi - std::numbers::pi, maxR);
+            updateMinMax(phi - std::numbers::pi, minR);
         }
 
         /**
@@ -462,7 +463,7 @@ public:
      */
     void getElementsInEuclideanCircle(Point2DWithIndex<double> center, double radius,
                                       vector<T> &result, double minAngle = 0,
-                                      double maxAngle = 2 * PI, double lowR = 0,
+                                      double maxAngle = 2 * std::numbers::pi, double lowR = 0,
                                       double highR = 1) const {
         if (minAngle >= rightAngle || maxAngle <= leftAngle || lowR >= maxR || highR < lowerBoundR)
             return;
