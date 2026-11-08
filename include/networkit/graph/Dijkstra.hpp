@@ -7,6 +7,7 @@
 
 #include <networkit/graph/AdjListGraph.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/graph/TraversalImpl.hpp>
 
 #include <tlx/container/d_ary_addressable_int_heap.hpp>
 
@@ -50,9 +51,14 @@ void DijkstraFrom(const GraphT &G, InputIt first, InputIt last, Handle handle) {
 
     tlx::d_ary_addressable_int_heap<NodeT, 2, decltype(compareDistance)> heap{compareDistance};
 
-    std::for_each(first, last, [&heap, &distance](const NodeT u) {
+    std::for_each(first, last, [&](const NodeT u) {
+        if (!Impl::isValidNode(G, u))
+            throw std::runtime_error("Error: source node not in the graph.");
+        // During initialization, zero identifies an already inserted source.
+        if (distance[u] == EdgeWeightT{0})
+            return;
+        distance[u] = EdgeWeightT{0};
         heap.push(u);
-        distance[u] = 0;
     });
 
     while (!heap.empty()) {
