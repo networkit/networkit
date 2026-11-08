@@ -42,7 +42,7 @@ auto callDijkstraHandle(F &f, NodeT u, EdgeWeight) -> decltype(f(u)) {
  * @param G The input graph.
  * @param first The beginning of the range of source nodes.
  * @param last The end of the range.
- * @param handle Takes a node and its distance from the nodes in the range as input parameters.
+ * @param handle Takes a node and optionally its distance from the nodes in the range.
  * @throws std::runtime_error If a source node is not in the graph.
  */
 template <class InputIt, typename Handle, class GraphT>
