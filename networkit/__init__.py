@@ -111,6 +111,7 @@ from . import viz
 from . import randomization
 from . import independentset
 from . import planarity
+from . import isomorphism
 from .support import MissingDependencyError
 from .graphtools import GraphTools as graphtools
 

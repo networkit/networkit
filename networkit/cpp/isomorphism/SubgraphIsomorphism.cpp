@@ -1,3 +1,4 @@
+#include <mutex>
 #include <span>
 #include <stdexcept>
 #include <utility>
@@ -82,6 +83,12 @@ void SubgraphIsomorphism::setEdgeLabels(std::span<const index> patternEdgeLabels
 
 void SubgraphIsomorphism::setCallback(MatchCallback callback) {
     this->callback = std::move(callback);
+    parallelCallback = nullptr;
+}
+
+void SubgraphIsomorphism::setParallelCallback(ParallelMatchCallback callback) {
+    parallelCallback = std::move(callback);
+    this->callback = nullptr;
 }
 
 void SubgraphIsomorphism::setStoreMatches(bool storeMatches) {
@@ -107,7 +114,10 @@ void SubgraphIsomorphism::prepareRun() {
 bool SubgraphIsomorphism::reportMatch(std::span<const node> match) {
     ++matchCount;
 
-    if (callback)
+    // The search is sequential, so the parallel callback runs as worker 0.
+    if (parallelCallback)
+        parallelCallback(0, match);
+    else if (callback)
         callback(match);
     else if (matchesStored)
         result.emplace_back(match.begin(), match.end());
@@ -115,8 +125,40 @@ bool SubgraphIsomorphism::reportMatch(std::span<const node> match) {
     return maxMatches == 0 || matchCount < maxMatches;
 }
 
+bool SubgraphIsomorphism::invokeCallback(index tid, std::span<const node> match) {
+    if (parallelCallback) {
+        parallelCallback(tid, match);
+        return true;
+    }
+
+    if (callback) {
+        // A MatchCallback must never be called concurrently.
+        const std::lock_guard<std::mutex> guard(reportMutex);
+        callback(match);
+        return true;
+    }
+
+    return false;
+}
+
 void SubgraphIsomorphism::finishRun() {
     // reportMatch() already enforced the cap.
+    hasRun = true;
+}
+
+void SubgraphIsomorphism::finishRun(std::vector<Match> &&matches, count found) {
+    matchCount = found;
+    if (matchesStored)
+        result = std::move(matches);
+
+    // Workers may overshoot the cap. Without a callback, no match has reached the caller yet, so we
+    // trim the result to the cap.
+    if (!hasCallback() && maxMatches != 0 && matchCount > maxMatches) {
+        matchCount = maxMatches;
+        if (result.size() > maxMatches)
+            result.resize(maxMatches);
+    }
+
     hasRun = true;
 }
 
