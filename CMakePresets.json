@@ -1,0 +1,151 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 21,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "NETWORKIT_BUILD_TESTS": "ON"
+            }
+        },
+        {
+            "name": "debug",
+            "displayName": "Debug with sanity checks",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "NETWORKIT_WARNINGS": "ON",
+                "NETWORKIT_SANITY_CHECKS": "ON"
+            }
+        },
+        {
+            "name": "debug-asan",
+            "displayName": "Debug with address and undefined behavior sanitizers",
+            "inherits": "debug",
+            "cacheVariables": {
+                "NETWORKIT_WITH_SANITIZERS": "address"
+            }
+        },
+        {
+            "name": "leak",
+            "displayName": "Debug with address, leak and undefined behavior sanitizers",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "NETWORKIT_WITH_SANITIZERS": "leak"
+            }
+        },
+        {
+            "name": "release",
+            "displayName": "Release with warnings as errors",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "NETWORKIT_WARNINGS": "ON",
+                "NETWORKIT_WARNINGS_AS_ERRORS": "ON"
+            }
+        },
+        {
+            "name": "release-native",
+            "displayName": "Release with warnings as errors, optimized for this machine",
+            "inherits": "release",
+            "cacheVariables": {
+                "NETWORKIT_NATIVE": "ON"
+            }
+        },
+        {
+            "name": "clang-tidy",
+            "displayName": "Debug with clang-tidy checks",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "NETWORKIT_CLANG_TIDY": "ON",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "debug",
+            "configurePreset": "debug"
+        },
+        {
+            "name": "debug-asan",
+            "configurePreset": "debug-asan"
+        },
+        {
+            "name": "leak",
+            "configurePreset": "leak"
+        },
+        {
+            "name": "release",
+            "configurePreset": "release"
+        },
+        {
+            "name": "release-native",
+            "configurePreset": "release-native"
+        },
+        {
+            "name": "clang-tidy",
+            "configurePreset": "clang-tidy"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "debug",
+            "configurePreset": "debug",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "debug-asan",
+            "configurePreset": "debug-asan",
+            "output": {
+                "outputOnFailure": true
+            },
+            "environment": {
+                "UBSAN_OPTIONS": "print_stacktrace=1:halt_on_error=1:report_error_type=1:suppressions='${sourceDir}/UBSAN.filter'"
+            }
+        },
+        {
+            "name": "leak",
+            "configurePreset": "leak",
+            "output": {
+                "outputOnFailure": true
+            },
+            "environment": {
+                "UBSAN_OPTIONS": "print_stacktrace=1:halt_on_error=1:report_error_type=1:suppressions='${sourceDir}/UBSAN.filter'"
+            }
+        },
+        {
+            "name": "release",
+            "configurePreset": "release",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "release-native",
+            "configurePreset": "release-native",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "clang-tidy",
+            "configurePreset": "clang-tidy",
+            "output": {
+                "outputOnFailure": true
+            }
+        }
+    ]
+}
