@@ -2324,6 +2324,34 @@ TEST_P(DHBGraphGTest, testForWeightedEdgesWithIds) {
     }
 }
 
+TEST_P(DHBGraphGTest, testForEdgesConstRefCallbacks) {
+    DHBGraph G = createGraph(4);
+    G.addEdge(0, 1, 1.0);
+    G.addEdge(0, 2, 2.0);
+    G.addEdge(0, 3, 3.0);
+    G.indexEdges();
+
+    const edgeweight expectedWeightSum = isWeighted() ? 6.0 : 3.0;
+
+    const double weightSum =
+        G.sumForEdgesParallel([](node, node, const edgeweight &ew) -> double { return ew; });
+    EXPECT_EQ(weightSum, expectedWeightSum);
+
+    const double idSum =
+        G.sumForEdgesParallel([](node, node, const edgeid &eid) -> double { return eid; });
+    EXPECT_EQ(idSum, 3.0);
+
+    const double weightedIdSum =
+        G.sumForEdgesParallel([](const node &, const node &, const edgeweight &ew,
+                                 const edgeid &eid) -> double { return ew + eid; });
+    EXPECT_EQ(weightedIdSum, expectedWeightSum + 3.0);
+
+    edgeweight neighborWeightSum = 0;
+    G.forNeighborsOf(0,
+                     [&](const node &, const edgeweight &ew) -> void { neighborWeightSum += ew; });
+    EXPECT_EQ(neighborWeightSum, expectedWeightSum);
+}
+
 TEST_P(DHBGraphGTest, testParallelForEdgesWithIds) {
     std::vector<DHBGraph> graphs;
     graphs.emplace_back(10, false, false);
