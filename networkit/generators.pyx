@@ -36,7 +36,7 @@ cdef object toPoint2DVector(const vector[_Point2D]& v):
 cdef object toNodePoint2DVector(const vector[pair[node, _Point2D]]& v):
 	return [(v[i].first, v[i].second.asPair()) for i in range(v.size())]
 
-cdef extern from "<networkit/generators/StaticGraphGenerator.hpp>":
+cdef extern from "<networkit/generators/StaticGraphGeneratorBase.hpp>":
 
 	cdef cppclass _StaticGraphGenerator "NetworKit::StaticGraphGenerator":
 		_StaticGraphGenerator()
