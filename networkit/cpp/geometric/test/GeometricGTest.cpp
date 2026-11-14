@@ -6,6 +6,7 @@
  */
 
 #include <cmath>
+#include <numbers>
 #include <gtest/gtest.h>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -73,7 +74,7 @@ TEST_F(GeometricGTest, testEuclideanCircleConsistency) {
             HyperbolicSpace::polarToCartesian(angles[i], radii[i]);
         double r_e, euRadius;
         HyperbolicSpace::getEuclideanCircle(radii[i], R, r_e, euRadius);
-        double mirrorangle = fmod(angles[i] + PI, 2 * PI);
+        double mirrorangle = fmod(angles[i] + std::numbers::pi, 2 * std::numbers::pi);
         double mirrorradiusInside = std::abs(r_e - euRadius) - epsilon;
         Point2DWithIndex<double> counterPointInside =
             HyperbolicSpace::polarToCartesian(mirrorangle, mirrorradiusInside);

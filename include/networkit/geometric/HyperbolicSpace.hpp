@@ -10,6 +10,7 @@
 
 #include <cmath>
 #include <map>
+#include <numbers>
 #include <vector>
 
 #include <networkit/auxiliary/Random.hpp>
@@ -159,11 +160,11 @@ public:
      * @param return Radius of a hyperbolic circle with the given area
      */
     static inline double hyperbolicAreaToRadius(double area) {
-        return std::acosh(area / (2 * PI) + 1);
+        return std::acosh(area / (2 * std::numbers::pi) + 1);
     }
 
     static inline double radiusToHyperbolicArea(double radius) {
-        return 2 * PI * (std::cosh(radius) - 1);
+        return 2 * std::numbers::pi * (std::cosh(radius) - 1);
     }
 
     static double getExpectedDegree(double n, double alpha, double R) {
@@ -173,9 +174,11 @@ public:
         double secondSumTerm =
             std::exp(-alpha * R)
             * (alpha * (R / 2)
-                   * ((PI / 4) * std::pow((1 / alpha), 2) - (PI - 1) * (1 / alpha) + (PI - 2))
+                   * ((std::numbers::pi / 4) * std::pow((1 / alpha), 2)
+                      - (std::numbers::pi - 1) * (1 / alpha) + (std::numbers::pi - 2))
                - 1);
-        double expectedDegree = (2 / PI) * xi * xi * n * (firstSumTerm + secondSumTerm);
+        double expectedDegree =
+            (2 / std::numbers::pi) * xi * xi * n * (firstSumTerm + secondSumTerm);
         return expectedDegree;
     }
 
@@ -183,7 +186,7 @@ public:
                                                   double epsilon) {
         double gamma = 2 * alpha + 1;
         double xiInv = ((gamma - 2) / (gamma - 1));
-        double v = k * (PI / 2) * xiInv * xiInv;
+        double v = k * (std::numbers::pi / 2) * xiInv * xiInv;
         double currentR = 2 * std::log(n / v);
         double lowerBound = currentR / 2;
         double upperBound = currentR * 2;
@@ -212,11 +215,12 @@ public:
         } else {
             double beta = 1 / T;
             if (T < 1) { // cold regime
-                double Iinv = ((beta / PI) * std::sin(PI / beta));
-                double v = (targetAvgDegree * Iinv) * (PI / 2) * xiInv * xiInv;
+                double Iinv = ((beta / std::numbers::pi) * std::sin(std::numbers::pi / beta));
+                double v = (targetAvgDegree * Iinv) * (std::numbers::pi / 2) * xiInv * xiInv;
                 result = 2 * std::log(n / v);
             } else { // hot regime
-                double v = targetAvgDegree * (1 - beta) * std::pow((PI / 2), beta) * xiInv * xiInv;
+                double v = targetAvgDegree * (1 - beta) * std::pow((std::numbers::pi / 2), beta)
+                           * xiInv * xiInv;
                 result = 2 * std::log(n / v) / beta;
             }
         }
@@ -227,10 +231,10 @@ public:
                                              double alpha) {
         double deltaPhi = maxPhi - minPhi;
         assert(deltaPhi >= 0);
-        assert(deltaPhi <= 2 * PI);
+        assert(deltaPhi <= 2 * std::numbers::pi);
         double ringArea = radiusToHyperbolicArea(alpha * EuclideanRadiusToHyperbolic(maxR))
                           - radiusToHyperbolicArea(alpha * EuclideanRadiusToHyperbolic(minR));
-        return ringArea * (deltaPhi / (2 * PI));
+        return ringArea * (deltaPhi / (2 * std::numbers::pi));
     }
 
     /**

@@ -9,6 +9,7 @@
 #define NETWORKIT_GENERATORS_HYPERBOLIC_GENERATOR_HPP_
 
 #include <cmath>
+#include <numbers>
 #include <vector>
 
 #include <networkit/auxiliary/Timer.hpp>
@@ -131,7 +132,7 @@ private:
         // Most innerband is defined by cLow = 0
         double minTheta, maxTheta;
         if (cLow == 0)
-            return std::make_tuple(0.0, 2 * PI);
+            return std::make_tuple(0.0, 2 * std::numbers::pi);
 
         double a = (std::cosh(radius) * std::cosh(cLow) - std::cosh(thresholdDistance))
                    / (std::sinh(radius) * std::sinh(cLow));
@@ -161,11 +162,11 @@ private:
         std::vector<double>::iterator low;
         std::vector<double>::iterator high;
 
-        if (minTheta == -2 * PI)
+        if (minTheta == -2 * std::numbers::pi)
             minTheta = 0;
         // Case 1: We do not have overlap 2pi, simply put all the points between min and max to the
         // list
-        if (maxTheta <= 2 * PI && minTheta >= 0) {
+        if (maxTheta <= 2 * std::numbers::pi && minTheta >= 0) {
             low = std::lower_bound(bandAngles.begin(), bandAngles.end(), minTheta);
             high = std::upper_bound(bandAngles.begin(), bandAngles.end(), maxTheta);
             auto first = band.begin() + (low - bandAngles.begin());
@@ -175,17 +176,17 @@ private:
             slab.insert(slab.end(), first, last);
         }
         // Case 2: We have 'forward' overlap at 2pi, that is maxTheta > 2pi
-        else if (maxTheta > 2 * PI) {
+        else if (maxTheta > 2 * std::numbers::pi) {
             // 1. Get points from minTheta to 2pi
             low = std::lower_bound(bandAngles.begin(), bandAngles.end(), minTheta);
-            high = std::upper_bound(bandAngles.begin(), bandAngles.end(), 2 * PI);
+            high = std::upper_bound(bandAngles.begin(), bandAngles.end(), 2 * std::numbers::pi);
             auto first = band.begin() + (low - bandAngles.begin());
             auto last = band.begin() + (high - bandAngles.begin());
             slab.insert(slab.end(), first, last);
 
             // 2. Get points from 0 to maxTheta%2pi
             low = std::lower_bound(bandAngles.begin(), bandAngles.end(), 0);
-            maxTheta = fmod(maxTheta, (2 * PI));
+            maxTheta = fmod(maxTheta, (2 * std::numbers::pi));
             high = std::upper_bound(bandAngles.begin(), bandAngles.end(), maxTheta);
             auto first2 = band.begin() + (low - bandAngles.begin());
             auto last2 = band.begin() + (high - bandAngles.begin());
@@ -194,9 +195,9 @@ private:
         // Case 3: We have 'backward' overlap at 2pi, that is minTheta < 0
         else if (minTheta < 0) {
             // 1. Get points from 2pi + minTheta to 2pi
-            minTheta = (2 * PI) + minTheta;
+            minTheta = (2 * std::numbers::pi) + minTheta;
             low = std::lower_bound(bandAngles.begin(), bandAngles.end(), minTheta);
-            high = std::upper_bound(bandAngles.begin(), bandAngles.end(), 2 * PI);
+            high = std::upper_bound(bandAngles.begin(), bandAngles.end(), 2 * std::numbers::pi);
             auto first = band.begin() + (low - bandAngles.begin());
             auto last = band.begin() + (high - bandAngles.begin());
             slab.insert(slab.end(), first, last);

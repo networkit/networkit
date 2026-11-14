@@ -6,6 +6,7 @@
  */
 
 #include <cmath>
+#include <numbers>
 
 #include <tlx/unused.hpp>
 
@@ -198,10 +199,10 @@ void DynamicHyperbolicGenerator::moveNode(index toMove) {
         /**
          * nodes should cross the center, not bounce off it
          */
-        if (newphi > PI) {
-            newphi -= PI;
+        if (newphi > std::numbers::pi) {
+            newphi -= std::numbers::pi;
         } else {
-            newphi += PI;
+            newphi += std::numbers::pi;
         }
     }
     double newradius = std::acosh(newcosh) / alpha;
@@ -212,9 +213,9 @@ void DynamicHyperbolicGenerator::moveNode(index toMove) {
 
     newphi += angularMovement[toMove] / newradius;
     if (newphi < 0)
-        newphi += (std::floor(-newphi / (2 * PI)) + 1) * 2 * PI;
-    if (newphi > 2 * PI)
-        newphi -= std::floor(newphi / (2 * PI)) * 2 * PI;
+        newphi += (std::floor(-newphi / (2 * std::numbers::pi)) + 1) * 2 * std::numbers::pi;
+    if (newphi > 2 * std::numbers::pi)
+        newphi -= std::floor(newphi / (2 * std::numbers::pi)) * 2 * std::numbers::pi;
 
     angles[toMove] = newphi;
     radii[toMove] = newradius;
@@ -225,7 +226,7 @@ std::vector<index> DynamicHyperbolicGenerator::getNeighborsInBands(index i, bool
     const double phi = angles[i];
     assert(bands.size() == bandAngles.size());
     assert(bands.size() == bandRadii.size() - 1);
-    count expectedDegree = (4 / PI) * nodeCount * std::exp(-(radii[i]) / 2);
+    count expectedDegree = (4 / std::numbers::pi) * nodeCount * std::exp(-(radii[i]) / 2);
     std::vector<index> near;
     near.reserve(expectedDegree * 1.1);
     for (index j = 0; j < bands.size(); j++) {
