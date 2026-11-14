@@ -29,6 +29,19 @@ if "NETWORKIT_OSX_CROSSBUILD" in os.environ:
 if "NETWORKIT_BUILD_TESTS" in os.environ:
     build_tests = True
 
+# GPU backends, off unless asked for: NETWORKIT_WITH_CUDA=ON, NETWORKIT_WITH_METAL=ON (which
+# also needs NETWORKIT_METAL_CPP_PATH and the Metal compiler). They are passed on to CMake as they
+# are.
+gpuOptions = [
+    "-D{0}={1}".format(name, os.environ[name])
+    for name in (
+        "NETWORKIT_WITH_CUDA",
+        "NETWORKIT_WITH_METAL",
+        "NETWORKIT_METAL_CPP_PATH",
+    )
+    if name in os.environ
+]
+
 try:
     from setuptools import setup  # to ensure setuptools is installed
 except ImportError:
@@ -120,6 +133,7 @@ def buildNetworKit(
         comp_cmd.append("-DNETWORKIT_BUILD_CORE=OFF")
     if build_tests:
         comp_cmd.append("-DNETWORKIT_BUILD_TESTS=ON")
+    comp_cmd.extend(gpuOptions)
     if sys.platform == "win32":
         comp_cmd.append(
             "-DNETWORKIT_STATIC=ON"
