@@ -3,7 +3,6 @@
 #include <fstream>
 #include <iterator>
 #include <limits>
-#include <ostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -21,15 +20,6 @@
 #include "IOTestUtils.hpp"
 
 namespace NetworKit {
-
-// Prints a summary in failure messages instead of the raw bytes of the graph. Must be in the
-// namespace of the graph to be found by gtest, static to stay local to this file.
-template <class NodeT, class EdgeWeightT>
-static void PrintTo(const AdjListGraph<NodeT, EdgeWeightT> &G, std::ostream *os) {
-    *os << (G.isDirected() ? "directed" : "undirected") << ' '
-        << (G.isWeighted() ? "weighted" : "unweighted") << " graph with " << G.numberOfNodes()
-        << " nodes and " << G.numberOfEdges() << " edges";
-}
 
 namespace {
 

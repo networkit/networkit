@@ -1,6 +1,8 @@
 networkit_add_test(io IOGTest
         auxiliary community generators structures)
 
+networkit_add_test(io EdgeListIOGTest)
+
 networkit_add_test(io IOTestUtilsGTest)
 
 networkit_add_test(io METISGraphIOGTest
