@@ -8,12 +8,9 @@
 #ifndef NETWORKIT_GRAPH_TEST_TRAVERSAL_TEST_HELPER_HPP_
 #define NETWORKIT_GRAPH_TEST_TRAVERSAL_TEST_HELPER_HPP_
 
-#include <cstdint>
-
 #include <gtest/gtest.h>
 
 #include <networkit/graph/AdjListGraph.hpp>
-#include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
 

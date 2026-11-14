@@ -8,7 +8,6 @@
 #include <vector>
 
 #include <networkit/Globals.hpp>
-#include <networkit/graph/Graph.hpp>
 #include <networkit/graph/TraversalImpl.hpp>
 
 namespace NetworKit {
