@@ -11,6 +11,8 @@
 #include <array>
 #include <cassert>
 #include <charconv>
+#include <cmath>
+#include <cstdint>
 #include <fstream>
 #include <stdexcept>
 #include <type_traits>
@@ -20,6 +22,23 @@
 #include <networkit/io/METISGraphWriter.hpp>
 
 namespace NetworKit {
+
+namespace Impl {
+
+// Integral floating-point values strictly within the int64 range can be written
+// as digits, avoiding exponents that METIS integer readers cannot parse.
+template <class WeightT>
+std::to_chars_result metisWeightToChars(char *first, char *last, WeightT weight) {
+    if constexpr (std::is_floating_point_v<WeightT>) {
+        constexpr WeightT int64Bound = static_cast<WeightT>(std::uint64_t{1} << 63);
+        if (std::abs(weight) < int64Bound && std::trunc(weight) == weight) {
+            return std::to_chars(first, last, static_cast<std::int64_t>(weight));
+        }
+    }
+    return std::to_chars(first, last, weight);
+}
+
+} // namespace Impl
 
 template <class GraphT>
 void GenericMETISGraphWriter<GraphT>::write(const GraphT &G, std::string_view path) {
@@ -72,8 +91,9 @@ void GenericMETISGraphWriter<GraphT>::write(const GraphT &G, bool weighted, std:
                 const auto weight = static_cast<std::common_type_t<EdgeWeightT, int>>(w);
                 // std::to_chars writes the shortest text that reads back as the same value, which
                 // operator<< does not (it rounds floating-point values to six significant digits).
+                // Exact integers are written in plain digits; see metisWeightToChars.
                 [[maybe_unused]] const auto [end, ec] =
-                    std::to_chars(buffer.data(), buffer.data() + buffer.size(), weight);
+                    Impl::metisWeightToChars(buffer.data(), buffer.data() + buffer.size(), weight);
                 assert(ec == std::errc{});
                 file << metisId(v) << ' ';
                 file.write(buffer.data(), end - buffer.data());
