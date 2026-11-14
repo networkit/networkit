@@ -14,7 +14,6 @@
 #include <cmath>
 #include <cstdint>
 #include <fstream>
-#include <limits>
 #include <stdexcept>
 #include <type_traits>
 #include <vector>
@@ -24,22 +23,22 @@
 
 namespace NetworKit {
 
-// std::to_chars picks the shortest text. For an exact integer that can be "1e+05",
-// which METIS strtol reads as 1 and which an integral reader rejects. Plain digits
-// stay inside the exact integer range: below 2^53 for double and 2^24 for float.
-// The 2^63 cap keeps the int64_t conversion in range for a wider long double.
+namespace Impl {
+
+// Integral floating-point values strictly within the int64 range can be written
+// as digits, avoiding exponents that METIS integer readers cannot parse.
 template <class WeightT>
 std::to_chars_result metisWeightToChars(char *first, char *last, WeightT weight) {
     if constexpr (std::is_floating_point_v<WeightT>) {
-        constexpr WeightT exactIntegerBound = WeightT{2} / std::numeric_limits<WeightT>::epsilon();
         constexpr WeightT int64Bound = static_cast<WeightT>(std::uint64_t{1} << 63);
-        constexpr WeightT bound = exactIntegerBound < int64Bound ? exactIntegerBound : int64Bound;
-        if (std::isfinite(weight) && std::abs(weight) < bound && std::trunc(weight) == weight) {
+        if (std::abs(weight) < int64Bound && std::trunc(weight) == weight) {
             return std::to_chars(first, last, static_cast<std::int64_t>(weight));
         }
     }
     return std::to_chars(first, last, weight);
 }
+
+} // namespace Impl
 
 template <class GraphT>
 void GenericMETISGraphWriter<GraphT>::write(const GraphT &G, std::string_view path) {
@@ -94,7 +93,7 @@ void GenericMETISGraphWriter<GraphT>::write(const GraphT &G, bool weighted, std:
                 // operator<< does not (it rounds floating-point values to six significant digits).
                 // Exact integers are written in plain digits; see metisWeightToChars.
                 [[maybe_unused]] const auto [end, ec] =
-                    metisWeightToChars(buffer.data(), buffer.data() + buffer.size(), weight);
+                    Impl::metisWeightToChars(buffer.data(), buffer.data() + buffer.size(), weight);
                 assert(ec == std::errc{});
                 file << metisId(v) << ' ';
                 file.write(buffer.data(), end - buffer.data());

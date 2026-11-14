@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <array>
+#include <charconv>
 #include <cstdint>
 #include <fstream>
 #include <iterator>
@@ -33,6 +35,7 @@ static void PrintTo(const AdjListGraph<NodeT, EdgeWeightT> &G, std::ostream *os)
 
 namespace {
 
+using ::testing::AllOf;
 using ::testing::HasSubstr;
 using ::testing::Not;
 using ::testing::ThrowsMessage;
@@ -284,24 +287,21 @@ void checkWritesIntegralFloatingWeightsAsDigits() {
 
     Source G(4, true);
     G.addEdge(0, 1, static_cast<EdgeWeightT>(100000));
-    G.addEdge(1, 2, static_cast<EdgeWeightT>(-250000));
+    G.addEdge(1, 2, static_cast<EdgeWeightT>(-1000000));
     G.addEdge(2, 3, static_cast<EdgeWeightT>(1000000));
     G.addEdge(0, 2, static_cast<EdgeWeightT>(0));
     GenericMETISGraphWriter<Source>{}.write(G, path);
 
     std::ifstream file(path);
-    ASSERT_TRUE(static_cast<bool>(file));
+    ASSERT_TRUE(file.is_open());
     const std::string text{std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
     // The writer separates a weight from the next id with a tab, so these are whole tokens.
-    EXPECT_THAT(text, HasSubstr(" 100000\t"));
-    EXPECT_THAT(text, HasSubstr(" -250000\t"));
-    EXPECT_THAT(text, HasSubstr(" 1000000\t"));
-    EXPECT_THAT(text, HasSubstr(" 0\t"));
-    EXPECT_THAT(text, Not(HasSubstr("e")));
+    EXPECT_THAT(text, AllOf(HasSubstr(" 100000\t"), HasSubstr(" -1000000\t"),
+                            HasSubstr(" 1000000\t"), HasSubstr(" 0\t"), Not(HasSubstr("e"))));
 
     Integral expected(4, true);
     expected.addEdge(0, 1, 100000);
-    expected.addEdge(1, 2, -250000);
+    expected.addEdge(1, 2, -1000000);
     expected.addEdge(2, 3, 1000000);
     expected.addEdge(0, 2, 0);
     EXPECT_THAT(GenericMETISGraphReader<Integral>{}.read(path), IsSameGraphAs(expected));
@@ -310,6 +310,66 @@ void checkWritesIntegralFloatingWeightsAsDigits() {
 TEST(METISGraphIOGTest, testWriteIntegralFloatingWeightsWithoutExponent) {
     checkWritesIntegralFloatingWeightsAsDigits<double>();
     checkWritesIntegralFloatingWeightsAsDigits<float>();
+}
+
+TEST(METISGraphIOGTest, testWriteLargeFloatingIntegralWeightsAndFallback) {
+    using Source = AdjListGraph<int, double>;
+    using Integral = AdjListGraph<int, int64_t>;
+    const TemporaryDirectory directory;
+    const std::string intPath = directory.path("large_integral.graph");
+    Source integral(2, true);
+    integral.addEdge(0, 1, 1e17);
+    GenericMETISGraphWriter<Source>{}.write(integral, intPath);
+
+    std::ifstream intFile(intPath);
+    ASSERT_TRUE(intFile.is_open());
+    const std::string intText{std::istreambuf_iterator<char>(intFile),
+                              std::istreambuf_iterator<char>()};
+    EXPECT_THAT(intText, HasSubstr(" 100000000000000000\t"));
+    Integral expected(2, true);
+    expected.addEdge(0, 1, int64_t{100000000000000000});
+    EXPECT_THAT(GenericMETISGraphReader<Integral>{}.read(intPath), IsSameGraphAs(expected));
+
+    const std::string fallbackPath = directory.path("large_fallback.graph");
+    Source fallback(3, true);
+    fallback.addEdge(0, 1, 1e20);
+    fallback.addEdge(1, 2, 0x1p63);
+    GenericMETISGraphWriter<Source>{}.write(fallback, fallbackPath);
+    std::ifstream fallbackFile(fallbackPath);
+    ASSERT_TRUE(fallbackFile.is_open());
+    const std::string fallbackText{std::istreambuf_iterator<char>(fallbackFile),
+                                   std::istreambuf_iterator<char>()};
+    // The standard formatter may choose digits or exponent at 2^63 depending
+    // on the shortest representation, so compare with its direct output.
+    std::array<char, 32> boundBuffer;
+    const auto [boundEnd, boundError] =
+        std::to_chars(boundBuffer.data(), boundBuffer.data() + boundBuffer.size(), 0x1p63);
+    ASSERT_EQ(boundError, std::errc{});
+    const std::string boundText(boundBuffer.data(), boundEnd);
+    EXPECT_THAT(fallbackText, AllOf(HasSubstr(" 1e+20\t"), HasSubstr(" " + boundText + "\t")));
+    EXPECT_THAT(GenericMETISGraphReader<Source>{}.read(fallbackPath), IsSameGraphAs(fallback));
+}
+
+TEST(METISGraphIOGTest, testFloatingFormatterFallbacks) {
+    const std::array<double, 7> values{2.5,
+                                       1e20,
+                                       0x1p63,
+                                       -0x1p63,
+                                       std::numeric_limits<double>::infinity(),
+                                       -std::numeric_limits<double>::infinity(),
+                                       std::numeric_limits<double>::quiet_NaN()};
+    for (const double value : values) {
+        std::array<char, 32> actualBuffer;
+        std::array<char, 32> expectedBuffer;
+        const auto [actualEnd, actualError] = Impl::metisWeightToChars(
+            actualBuffer.data(), actualBuffer.data() + actualBuffer.size(), value);
+        const auto [expectedEnd, expectedError] = std::to_chars(
+            expectedBuffer.data(), expectedBuffer.data() + expectedBuffer.size(), value);
+        ASSERT_EQ(actualError, std::errc{});
+        ASSERT_EQ(expectedError, std::errc{});
+        EXPECT_EQ(std::string(actualBuffer.data(), actualEnd),
+                  std::string(expectedBuffer.data(), expectedEnd));
+    }
 }
 
 TEST(METISGraphIOGTest, testReadThrowsIfNodesDoNotFitNodeType) {
