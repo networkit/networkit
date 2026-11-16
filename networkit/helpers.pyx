@@ -142,11 +142,11 @@ cdef asarray_1d(vector[element_t]* vec):
 	np.ndarray
 	"""
 	cdef:
-		element_t[:] values
 		element_t* target
 
 	values = np.empty(vec.size(), get_dtype[element_t]())
-	target = &values[0]
+	# ctypes.data instead of a typed memoryview: those are not available in the limited API.
+	target = <element_t*><size_t>values.ctypes.data
 	iterator = vec.begin()
 	while iterator != vec.end():
 		target[0] = dereference(iterator)
@@ -170,7 +170,6 @@ cdef asarray_2d(vector[vector[element_t]]* nested):
 	np.ndarray
 	"""
 	cdef:
-		element_t[:] values
 		element_t* target
 		size_t num_rows, num_cols
 
@@ -185,7 +184,7 @@ cdef asarray_2d(vector[vector[element_t]]* nested):
 	values = np.empty(num_rows * num_cols, get_dtype[element_t]())
 
 	# Populate the memory.
-	target = &values[0]
+	target = <element_t*><size_t>values.ctypes.data
 	while row_iterator != nested.end():
 		row = dereference(row_iterator)
 		iterator = row.begin()

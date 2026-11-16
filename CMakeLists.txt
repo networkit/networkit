@@ -329,7 +329,8 @@ if(NETWORKIT_PYTHON)
 		target_include_directories(${TARGET_LIB} BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 		target_include_directories(${TARGET_LIB} PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
 		target_include_directories(${TARGET_LIB} PRIVATE "${NETWORKIT_PYTHON}")
-		target_include_directories(${TARGET_LIB} PUBLIC "${NETWORKIT_NUMPY}")
+		# Stable ABI (abi3), Python >= 3.10
+		target_compile_definitions(${TARGET_LIB} PRIVATE Py_LIMITED_API=0x030A0000 CYTHON_LIMITED_API=1)
 
 		if(NOT NETWORKIT_BUILD_CORE)
 			if(NOT EXTERNAL_NETWORKIT_CORE)
@@ -354,6 +355,7 @@ if(NETWORKIT_PYTHON)
 		if(WIN32)
 			set_target_properties(${TARGET_LIB} PROPERTIES SUFFIX .pyd)
 			target_link_libraries(${TARGET_LIB} PRIVATE ${Python3_LIBRARIES})
+			set_target_properties(${TARGET_LIB} PROPERTIES OUTPUT_NAME "${TARGET_LIB}")
 		endif()
 
 		# If rpath-content is set explicitly, omit the dynamic binary path
