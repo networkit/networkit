@@ -2369,7 +2369,8 @@ class Norm(object):
 
 class SinkHandling(object):
 	NO_SINK_HANDLING = _SinkHandling.NO_SINK_HANDLING
-	L2_NORM = _SinkHandling.DISTRIBUTE_SINKS
+	DISTRIBUTE_SINKS = _SinkHandling.DISTRIBUTE_SINKS
+	L2_NORM = DISTRIBUTE_SINKS # deprecated: the earlier, mistaken name of DISTRIBUTE_SINKS
 	NoSinkHandling = NO_SINK_HANDLING # this + following added for backwards compatibility
 	DistributeSinks = DISTRIBUTE_SINKS
 

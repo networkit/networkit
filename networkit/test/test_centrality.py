@@ -683,6 +683,19 @@ class TestCentrality(unittest.TestCase):
         self.assertLessEqual(CL.numberOfIterations(), maxIters)
         self.assertLessEqual(CLL.numberOfIterations(), maxIters)
 
+    def testPageRankSinkHandlingNames(self):
+        SH = nk.centrality.SinkHandling
+        self.assertEqual(SH.DISTRIBUTE_SINKS, SH.DistributeSinks)
+        self.assertEqual(SH.NO_SINK_HANDLING, SH.NoSinkHandling)
+        self.assertNotEqual(SH.DISTRIBUTE_SINKS, SH.NO_SINK_HANDLING)
+        # 0 -> 1 -> 2, where 2 is a sink: distributing its mass keeps the scores summing to 1.
+        G = nk.Graph(3, directed=True)
+        G.addEdge(0, 1)
+        G.addEdge(1, 2)
+        pr = nk.centrality.PageRank(G, distributeSinks=SH.DISTRIBUTE_SINKS)
+        pr.run()
+        self.assertAlmostEqual(sum(pr.scores()), 1.0, places=6)
+
     def testPermanenceCentrality(self):
         part = nk.structures.Partition(9)
         part.setUpperBound(2)
