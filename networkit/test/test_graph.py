@@ -8,6 +8,41 @@ import scipy as sc
 
 class TestGraph(unittest.TestCase):
 
+    def testSteinerTree(self):
+        G = nk.Graph(4, weighted=True)
+        G.addEdge(0, 3, 1)
+        G.addEdge(1, 3, 1)
+        G.addEdge(2, 3, 1)
+        G.addEdge(0, 1, 2.5)
+        G.addEdge(1, 2, 2.5)
+
+        algo = nk.graph.SteinerTree(G, [0, 1, 2])
+        algo.run()
+
+        self.assertTrue(algo.hasTree())
+        self.assertEqual(algo.getTotalWeight(), 3)
+        tree = algo.getTree()
+        self.assertEqual(tree.numberOfEdges(), 3)
+        self.assertEqual(tree.degree(3), 3)
+
+    def testSteinerTreeDisconnectedTerminals(self):
+        G = nk.Graph(4)
+        G.addEdge(0, 1)
+        G.addEdge(2, 3)
+
+        algo = nk.graph.SteinerTree(G, [0, 1, 2])
+        algo.run()
+
+        self.assertFalse(algo.hasTree())
+        self.assertEqual(algo.getTotalWeight(), 0)
+        self.assertEqual(algo.getTree().numberOfEdges(), 0)
+
+    def testSteinerTreeInvalidInput(self):
+        with self.assertRaises(RuntimeError):
+            nk.graph.SteinerTree(nk.Graph(2, directed=True), [0])
+        with self.assertRaises(RuntimeError):
+            nk.graph.SteinerTree(nk.Graph(2), [5])
+
     def testConstructorWithCooAndNumNodes(self):
         row = np.array([0, 1, 2])
         col = np.array([1, 2, 0])
