@@ -9,7 +9,7 @@
 #define NETWORKIT_GENERATORS_RMAT_GENERATOR_HPP_
 
 #include <stdint.h>
-#include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/generators/StaticGraphGeneratorBase.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
