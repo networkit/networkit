@@ -15,6 +15,8 @@
 #   "true". Even then it never replaces a human approval (see "Required repository settings" below)
 #   and never approves changes to CI, build, packaging or third-party files.
 # - Maintainers can request a new review by adding the label "claude-review" to the pull request.
+# - At most CLAUDE_REVIEW_MAX_PER_DAY reviews (repository variable, default 10) start in any
+#   24 hours. Set it to 0 to pause the bot.
 #
 # Security model (pull_request_target runs with this repository's secrets)
 # ------------------------------------------------------------------------
@@ -81,16 +83,63 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
-      pull-requests: write # inline review comments only
+      pull-requests: write # inline review comments, daily-limit note
+      actions: read # count earlier runs for the daily limit
     outputs:
       result: ${{ steps.claude.outputs.structured_output }}
     steps:
+      # Hard cap on the number of reviews in any 24 hours, independent of the Claude plan.
+      # Set the repository variable CLAUDE_REVIEW_MAX_PER_DAY to change it (default 10).
+      - name: Check the daily review limit
+        id: cap
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          MAX_PER_DAY: ${{ vars.CLAUDE_REVIEW_MAX_PER_DAY || '10' }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$MAX_PER_DAY" =~ ^[0-9]+$ ]]; then
+            echo "::error::CLAUDE_REVIEW_MAX_PER_DAY must be a whole number, not '$MAX_PER_DAY'."
+            exit 1
+          fi
+          since=$(date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%SZ)
+          ids=$(gh api -X GET --paginate --slurp "repos/$REPO/actions/workflows/claude-pr-review.yml/runs" \
+                  -f created=">=$since" -f per_page=100 \
+                | jq -r --arg me "$RUN_ID" '[.[].workflow_runs[]] | map(select((.id | tostring) != $me)) | .[].id')
+          used=0
+          for id in $ids; do
+            # Count a run only if its Claude step started. Skipped and capped runs do not count.
+            n=$(gh api "repos/$REPO/actions/runs/$id/jobs?per_page=100" \
+                  --jq '[.jobs[].steps[]? | select(.name == "Run Claude review")
+                         | select(.status != "queued" and .status != "pending" and .status != "waiting")
+                         | select(.conclusion != "skipped")] | length')
+            used=$((used + n))
+          done
+          echo "Reviews in the last 24 hours: $used (limit: $MAX_PER_DAY)"
+          if [ "$used" -lt "$MAX_PER_DAY" ]; then ok=true; else ok=false; fi
+          echo "ok=$ok" >> "$GITHUB_OUTPUT"
+          echo "- Daily limit: $used of $MAX_PER_DAY reviews used before this run (review started: $ok)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Report that the daily limit is reached
+        if: steps.cap.outputs.ok != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          MAX_PER_DAY: ${{ vars.CLAUDE_REVIEW_MAX_PER_DAY || '10' }}
+        run: |
+          body="Claude did not review this pull request. The limit of $MAX_PER_DAY automated reviews in 24 hours is reached. To start the review later, add the label \`claude-review\`. If the label is already on the pull request, remove it and add it again."
+          gh api -X POST "repos/$REPO/issues/$PR/comments" -f body="$body" > /dev/null
+
       - name: Check out base branch (trusted)
+        if: steps.cap.outputs.ok == 'true'
         uses: actions/checkout@v6
         with:
           persist-credentials: false
 
       - name: Collect PR metadata and diff (text from the GitHub API)
+        if: steps.cap.outputs.ok == 'true'
         id: data
         env:
           GH_TOKEN: ${{ github.token }}
@@ -119,7 +168,7 @@ jobs:
           echo "rebuild=$rebuild" >> "$GITHUB_OUTPUT"
 
       - name: Check out merge base (trusted, from master's history)
-        if: steps.data.outputs.rebuild == 'true'
+        if: steps.cap.outputs.ok == 'true' && steps.data.outputs.rebuild == 'true'
         uses: actions/checkout@v6
         with:
           ref: ${{ steps.data.outputs.merge_base }}
@@ -127,6 +176,7 @@ jobs:
           persist-credentials: false
 
       - name: Rebuild PR files in pr-head (apply the diff as text, run nothing)
+        if: steps.cap.outputs.ok == 'true'
         env:
           REBUILD: ${{ steps.data.outputs.rebuild }}
         run: |
@@ -173,7 +223,8 @@ jobs:
           } > "$notes"
           rm -rf "$work"
 
-      - name: Run Claude review
+      - name: Run Claude review # the daily limit counts this step name; keep them in sync
+        if: steps.cap.outputs.ok == 'true'
         id: claude
         uses: anthropics/claude-code-action@v1
         with:
