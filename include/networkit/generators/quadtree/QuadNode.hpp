@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cassert>
 #include <functional>
+#include <numbers>
 #include <vector>
 
 #include <networkit/auxiliary/Log.hpp>
@@ -446,10 +447,10 @@ public:
 
         // again with mirrored phi
         double mirrorphi;
-        if (phi >= PI)
-            mirrorphi = phi - PI;
+        if (phi >= std::numbers::pi)
+            mirrorphi = phi - std::numbers::pi;
         else
-            mirrorphi = phi + PI;
+            mirrorphi = phi + std::numbers::pi;
         if (mirrorphi >= leftAngle && mirrorphi < rightAngle) {
             double lower = coshMinR * coshr + sinhMinR * sinhr;
             double upper = coshMaxR * coshr + sinhMaxR * sinhr;
@@ -564,7 +565,7 @@ public:
      */
     void getElementsInEuclideanCircle(Point2DWithIndex<double> center, double radius,
                                       vector<T> &result, double minAngle = 0,
-                                      double maxAngle = 2 * PI, double lowR = 0,
+                                      double maxAngle = 2 * std::numbers::pi, double lowR = 0,
                                       double highR = 1) const {
         if (!poincare)
             throw std::runtime_error(

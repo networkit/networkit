@@ -9,6 +9,7 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <numbers>
 #include <random>
 #include <stdexcept>
 #include <unordered_set>
@@ -1762,7 +1763,7 @@ TEST_P(CentralityGTest, testGroupDegree) {
     } while (std::next_permutation(reference.begin(), reference.end()));
 
     EXPECT_TRUE(scoreNoGroup > 0.5 * maxScore);
-    EXPECT_TRUE(scorePlusGroup > (1.0 - 1.0 / std::exp(1.0)) * static_cast<double>(maxScore + k));
+    EXPECT_TRUE(scorePlusGroup > (1.0 - 1.0 / std::numbers::e) * static_cast<double>(maxScore + k));
     EXPECT_EQ(scoreNoGroup, gd.scoreOfGroup(gd.groupMaxDegree()));
     EXPECT_EQ(scorePlusGroup, gdIncludeGroup.scoreOfGroup(gdIncludeGroup.groupMaxDegree()));
 }
@@ -2233,7 +2234,7 @@ TEST_P(CentralityGTest, testGedWalk) {
                 }
             } while (std::next_permutation(reference.begin(), reference.end()));
 
-            EXPECT_GE(apxScore, (1. - 1. / std::exp(1)) * maxScore - epsilon);
+            EXPECT_GE(apxScore, (1. - 1. / std::numbers::e) * maxScore - epsilon);
         }
     }
 }
@@ -2533,9 +2534,9 @@ TEST_P(CentralityGTest, testGroupHarmonicCloseness) {
         // Guaranted approximation ratio
         double approxRatio;
         if (isDirected())
-            approxRatio = lambda * (1. - 1. / (2. * std::exp(1.)));
+            approxRatio = lambda * (1. - 1. / (2. * std::numbers::e));
         else
-            approxRatio = lambda * (1. - 1. / std::exp(1.)) / 2.;
+            approxRatio = lambda * (1. - 1. / std::numbers::e) / 2.;
 
         for (const count k : {3, 4, 5}) {
             GroupHarmonicCloseness ghc(G, k);

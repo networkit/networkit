@@ -7,6 +7,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <numbers>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
@@ -21,14 +22,15 @@ double HyperbolicSpace::nativeDistance(double firstangle, double firstR, double 
     assert(firstR >= 0);
     assert(secondR >= 0);
     assert(firstangle >= 0);
-    assert(firstangle < 2 * PI);
+    assert(firstangle < 2 * std::numbers::pi);
     assert(secondangle >= 0);
-    assert(secondangle < 2 * PI);
+    assert(secondangle < 2 * std::numbers::pi);
     double result;
     if (firstangle == secondangle) {
         result = std::abs(firstR - secondR);
     } else {
-        double deltaPhi = PI - std::abs(PI - std::abs(firstangle - secondangle));
+        double deltaPhi =
+            std::numbers::pi - std::abs(std::numbers::pi - std::abs(firstangle - secondangle));
         double coshDist = std::cosh(firstR) * std::cosh(secondR)
                           - std::sinh(firstR) * std::sinh(secondR) * std::cos(deltaPhi);
         if (coshDist >= 1)
@@ -60,7 +62,7 @@ double HyperbolicSpace::poincareMetric(Point2DWithIndex<double> a, Point2DWithIn
 
 void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, double R,
                                  double alpha) {
-    fillPoints(angles, radii, 0, 2 * PI, 0, R, alpha);
+    fillPoints(angles, radii, 0, 2 * std::numbers::pi, 0, R, alpha);
 }
 
 void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, double minPhi,
@@ -93,7 +95,7 @@ void HyperbolicSpace::fillPoints(vector<double> &angles, vector<double> &radii, 
 }
 void HyperbolicSpace::fillPointsSorted(vector<double> &angles, vector<double> &radii, double R,
                                        double alpha) {
-    fillPointsSorted(angles, radii, 0, 2 * PI, 0, R, alpha);
+    fillPointsSorted(angles, radii, 0, 2 * std::numbers::pi, 0, R, alpha);
 }
 
 void HyperbolicSpace::fillPointsSorted(vector<double> &angles, vector<double> &radii, double minPhi,
@@ -160,7 +162,7 @@ void HyperbolicSpace::cartesianToPolar(Point2DWithIndex<double> a, double &phi, 
         phi = -std::acos(a[0] / r);
     }
     if (phi < 0)
-        phi += 2 * PI;
+        phi += 2 * std::numbers::pi;
 }
 
 void HyperbolicSpace::getEuclideanCircle(Point2DWithIndex<double> hyperbolicCenter,
@@ -222,12 +224,14 @@ double HyperbolicSpace::hyperbolicSpaceInEuclideanCircle(double r_c, double d_c,
         if (d_c - r_c < r_max) {
             // remaining query circle is smaller than the disk representation
             // adding small circle around origin
-            result += 2 * PI * (std::cosh(EuclideanRadiusToHyperbolic(d_c - r_c)) - 1);
+            result +=
+                2 * std::numbers::pi * (std::cosh(EuclideanRadiusToHyperbolic(d_c - r_c)) - 1);
         } else {
             // adding small circle around origin
-            result += 2 * PI * (std::cosh(EuclideanRadiusToHyperbolic(r_max)) - 1);
+            result += 2 * std::numbers::pi * (std::cosh(EuclideanRadiusToHyperbolic(r_max)) - 1);
         }
-        assert(result <= 2 * PI * (std::cosh(EuclideanRadiusToHyperbolic(r_max)) - 1));
+        assert(result
+               <= 2 * std::numbers::pi * (std::cosh(EuclideanRadiusToHyperbolic(r_max)) - 1));
         // correcting integral start to exclude circle
         min = std::nextafter(d_c - r_c, std::numeric_limits<double>::max());
     }
