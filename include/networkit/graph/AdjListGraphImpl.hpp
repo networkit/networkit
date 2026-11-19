@@ -108,8 +108,9 @@ inline void AdjListGraph<NodeT, EdgeWeightT>::forOutEdgesOfImpl(NodeT u, L handl
         NodeT v = outEdges[u][i];
 
         if (useEdgeInIteration<graphIsDirected>(u, v)) {
-            edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
-                          getOutEdgeId<graphHasEdgeIds>(u, i));
+            GraphDetails::edgeLambda<NodeT, EdgeWeightT>(handle, u, v,
+                                                         getOutEdgeWeight<hasWeights>(u, i),
+                                                         getOutEdgeId<graphHasEdgeIds>(u, i));
         }
     }
 }
@@ -121,15 +122,17 @@ inline void AdjListGraph<NodeT, EdgeWeightT>::forInEdgesOfImpl(NodeT u, L handle
         for (index i = 0; i < inEdges[u].size(); ++i) {
             NodeT v = inEdges[u][i];
 
-            edgeLambda<L>(handle, u, v, getInEdgeWeight<hasWeights>(u, i),
-                          getInEdgeId<graphHasEdgeIds>(u, i));
+            GraphDetails::edgeLambda<NodeT, EdgeWeightT>(handle, u, v,
+                                                         getInEdgeWeight<hasWeights>(u, i),
+                                                         getInEdgeId<graphHasEdgeIds>(u, i));
         }
     } else {
         for (index i = 0; i < outEdges[u].size(); ++i) {
             NodeT v = outEdges[u][i];
 
-            edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
-                          getOutEdgeId<graphHasEdgeIds>(u, i));
+            GraphDetails::edgeLambda<NodeT, EdgeWeightT>(handle, u, v,
+                                                         getOutEdgeWeight<hasWeights>(u, i),
+                                                         getOutEdgeId<graphHasEdgeIds>(u, i));
         }
     }
 }
@@ -164,8 +167,9 @@ inline double AdjListGraph<NodeT, EdgeWeightT>::parallelSumForEdgesImpl(L handle
             // undirected, do not iterate over edges twice
             // {u, v} instead of (u, v); if v == nullNodeId, u > v is not fulfilled
             if (useEdgeInIteration<graphIsDirected>(u, v)) {
-                sum += edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
-                                     getOutEdgeId<graphHasEdgeIds>(u, i));
+                sum += GraphDetails::edgeLambda<NodeT, EdgeWeightT>(
+                    handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
+                    getOutEdgeId<graphHasEdgeIds>(u, i));
             }
         }
     }
