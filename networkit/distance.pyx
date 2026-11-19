@@ -498,6 +498,10 @@ cdef class Diameter(Algorithm):
 	- networkit.distance.DiameterAlgo.ESTIMATED_SAMPLES
 	- networkit.distance.DiameterAlgo.ESTIMATED_PEDANTIC
 
+	In directed graphs, the diameter is the largest finite distance, so it stays defined on graphs
+	that are not strongly connected. For directed graphs, ESTIMATED_PEDANTIC returns an upper bound
+	on the vertex diameter, and ESTIMATED_SAMPLES bounds it only if the graph is strongly connected.
+
 	Parameters
 	----------
 	G : networkit.Graph

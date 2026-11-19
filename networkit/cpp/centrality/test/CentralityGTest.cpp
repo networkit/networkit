@@ -274,6 +274,24 @@ TEST_F(CentralityGTest, runApproxBetweenness) {
     bc1.run();
 }
 
+TEST_F(CentralityGTest, testApproxBetweennessDirected) {
+    Aux::Random::setSeed(42, true);
+    const Graph G = ErdosRenyiGenerator(200, 0.03, true).generate();
+    const double epsilon = 0.02;
+
+    Betweenness exact(G, true);
+    exact.run();
+    ApproxBetweenness approximate(G, epsilon, 0.1);
+    approximate.run();
+
+    double largestExact = 0;
+    G.forNodes([&](node u) -> void {
+        largestExact = std::max(largestExact, exact.score(u));
+        EXPECT_NEAR(approximate.score(u), exact.score(u), epsilon);
+    });
+    EXPECT_GT(largestExact, epsilon);
+}
+
 TEST_F(CentralityGTest, testBetweennessCentralityWeighted) {
     /* Graph:
      0    3   6

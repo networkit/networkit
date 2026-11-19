@@ -27,6 +27,11 @@ enum DiameterAlgo {
 
 /**
  * @ingroup distance
+ * Computes or estimates the diameter of a graph.
+ *
+ * In directed graphs, the diameter is the largest finite distance, so it stays defined on graphs
+ * that are not strongly connected. For directed graphs, ESTIMATED_PEDANTIC returns an upper bound
+ * on the vertex diameter, and ESTIMATED_SAMPLES bounds it only if the graph is strongly connected.
  */
 class Diameter final : public Algorithm {
 
@@ -58,6 +63,17 @@ private:
      * @return Pair of lower and upper bound for diameter.
      */
     std::pair<edgeweight, edgeweight> estimatedDiameterRange(const Graph &G, double error);
+
+    /**
+     * Directed counterpart of estimatedDiameterRange. It runs BFS from the nodes that can still be
+     * endpoints of a longer shortest path until the bounds meet, which takes O(nm) time in the
+     * worst case and few BFS on real-world graphs.
+     *
+     * @param G The directed graph.
+     * @param error The maximum allowed relative error. Set to 0 for the exact diameter.
+     * @return Pair of lower and upper bound for diameter.
+     */
+    std::pair<edgeweight, edgeweight> estimatedDirectedDiameterRange(const Graph &G, double error);
 
     /**
      * Get the exact diameter of the graph @a G. The algorithm for unweighted graphs is the same as

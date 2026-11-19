@@ -5,10 +5,17 @@
  *      Author: Daniel Hoske, Christian Staudt
  */
 
+#include <algorithm>
+#include <array>
+#include <limits>
 #include <numeric>
+#include <span>
+#include <utility>
+#include <vector>
 
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
+#include <networkit/components/StronglyConnectedComponents.hpp>
 #include <networkit/distance/BFS.hpp>
 #include <networkit/distance/Diameter.hpp>
 #include <networkit/distance/Dijkstra.hpp>
@@ -16,7 +23,165 @@
 #include <networkit/graph/GraphTools.hpp>
 #include <networkit/structures/Partition.hpp>
 
+#include "VertexDiameterBound.hpp"
+
 namespace NetworKit {
+
+namespace {
+
+/*
+ * Bounds on the eccentricities of the nodes of a directed graph that does not have to be strongly
+ * connected. The forward eccentricity of a node is its largest finite distance to another node, and
+ * the backward eccentricity the largest finite distance from another node. The diameter is the
+ * largest eccentricity of either kind, so it is enough to bound the eccentricities of one kind.
+ *
+ * This extends the idea of "On computing the diameter of real-world directed (weighted) graphs"
+ * by Crescenzi et al. (SEA 2012), which assumes a strongly connected graph, in two ways: bounds
+ * follow the edges between strongly connected components, and a longest shortest path that exceeds
+ * the lower bound has to start and end at nodes whose eccentricity can exceed it.
+ */
+class DirectedEccentricityBounds {
+public:
+    enum Direction { FORWARD = 0, BACKWARD = 1 };
+
+    static constexpr Direction opposite(Direction direction) {
+        return direction == FORWARD ? BACKWARD : FORWARD;
+    }
+
+    explicit DirectedEccentricityBounds(const Graph &G)
+        : G(G), transposed(GraphTools::transpose(G)), scc(G) {
+        scc.run();
+        membersOfComponent.resize(scc.numberOfComponents());
+        G.forNodes(
+            [&](node u) -> void { membersOfComponent[scc.componentOfNode(u)].push_back(u); });
+        bounds[FORWARD].assign(G.upperNodeIdBound(), G.numberOfNodes() - 1);
+        bounds[BACKWARD] = bounds[FORWARD];
+
+        const auto largestComponent = std::ranges::max_element(
+            membersOfComponent, {},
+            [](std::span<const node> members) -> count { return members.size(); });
+        pivotComponent = static_cast<index>(largestComponent - membersOfComponent.begin());
+        const std::span<const node> members = membersOfComponent[pivotComponent];
+        const node pivot =
+            *std::ranges::max_element(members, {}, [&](node u) -> count { return totalDegree(u); });
+        distancesFromPivot[FORWARD] = sweep(FORWARD, pivot);
+        distancesFromPivot[BACKWARD] = sweep(BACKWARD, pivot);
+        propagate();
+    }
+
+    count lowerBound() const { return lower; }
+
+    // Runs a BFS from source in the given direction and returns the distances, none for the
+    // unreachable nodes.
+    std::vector<count> sweep(Direction direction, node source) {
+        std::vector<count> distances(G.upperNodeIdBound(), none);
+        count eccentricity = 0;
+        Traversal::BFSfrom(graph(direction), source, [&](node u, count dist) -> void {
+            distances[u] = dist;
+            eccentricity = std::max(eccentricity, dist);
+        });
+        lower = std::max(lower, eccentricity);
+        bounds[direction][source] = std::min(bounds[direction][source], eccentricity);
+
+        // All the nodes of a component are connected to the same nodes, so they can go via source.
+        const Direction otherDirection = opposite(direction);
+        const count eccentricityOfSource = bounds[otherDirection][source];
+        for (node u : membersOfComponent[scc.componentOfNode(source)]) {
+            bounds[otherDirection][u] =
+                std::min(bounds[otherDirection][u], distances[u] + eccentricityOfSource);
+        }
+        return distances;
+    }
+
+    // Uses that a pair of nodes that is further apart than target consists of candidates.
+    void refine(count target) {
+        for (Direction direction : {FORWARD, BACKWARD}) {
+            const Direction otherDirection = opposite(direction);
+            count furthestCandidate = 0;
+            G.forNodes([&](node u) -> void {
+                if (bounds[otherDirection][u] > target
+                    && distancesFromPivot[direction][u] != none) {
+                    furthestCandidate =
+                        std::max(furthestCandidate, distancesFromPivot[direction][u]);
+                }
+            });
+            for (node u : membersOfComponent[pivotComponent]) {
+                bounds[direction][u] = std::min(
+                    bounds[direction][u],
+                    std::max(target, distancesFromPivot[otherDirection][u] + furthestCandidate));
+            }
+        }
+        propagate();
+    }
+
+    count numberOfCandidates(Direction direction, count target) const {
+        count candidates = 0;
+        G.forNodes([&](node u) -> void { candidates += bounds[direction][u] > target; });
+        return candidates;
+    }
+
+    count largestBound(Direction direction) const {
+        count largest = 0;
+        G.forNodes([&](node u) -> void { largest = std::max(largest, bounds[direction][u]); });
+        return largest;
+    }
+
+    node nodeWithLargestBound(Direction direction) const {
+        node best = none;
+        G.forNodes([&](node u) -> void {
+            if (best == none
+                || std::make_pair(bounds[direction][u], totalDegree(u))
+                       > std::make_pair(bounds[direction][best], totalDegree(best))) {
+                best = u;
+            }
+        });
+        return best;
+    }
+
+private:
+    const Graph &graph(Direction direction) const { return direction == FORWARD ? G : transposed; }
+
+    count totalDegree(node u) const { return G.degreeOut(u) + G.degreeIn(u); }
+
+    // A shortest path visits each component at most once, so a node is bounded by the path through
+    // the rest of its component plus the bound of the node reached by the edge that leaves it.
+    void propagateComponent(Direction direction, std::span<const node> members) {
+        count boundAfterLeaving = 0;
+        for (node u : members) {
+            graph(direction).forNeighborsOf(u, [&](node v) -> void {
+                if (scc.componentOfNode(u) != scc.componentOfNode(v)) {
+                    boundAfterLeaving = std::max(boundAfterLeaving, bounds[direction][v] + 1);
+                }
+            });
+        }
+        const count bound = members.size() - 1 + boundAfterLeaving;
+        for (node u : members) {
+            bounds[direction][u] = std::min(bounds[direction][u], bound);
+        }
+    }
+
+    // Components are numbered in reverse topological order, so the components that a component has
+    // edges to are processed before it.
+    void propagate() {
+        for (auto it = membersOfComponent.begin(); it != membersOfComponent.end(); ++it) {
+            propagateComponent(FORWARD, *it);
+        }
+        for (auto it = membersOfComponent.rbegin(); it != membersOfComponent.rend(); ++it) {
+            propagateComponent(BACKWARD, *it);
+        }
+    }
+
+    const Graph &G;
+    const Graph transposed;
+    StronglyConnectedComponents scc;
+    std::vector<std::vector<node>> membersOfComponent;
+    std::array<std::vector<count>, 2> bounds;
+    std::array<std::vector<count>, 2> distancesFromPivot;
+    index pivotComponent = 0;
+    count lower = 0;
+};
+
+} // namespace
 
 Diameter::Diameter(const Graph &G, DiameterAlgo algo, double error, count nSamples)
     : Algorithm(), G(&G), error(error), nSamples(nSamples) {
@@ -79,7 +244,9 @@ edgeweight Diameter::exactDiameter(const Graph &G) {
             dijkstra.run();
             auto distances = dijkstra.getDistances();
             G.forNodes([&](node u) {
-                if (diameter < distances[u]) {
+                if (diameter < distances[u]
+                    && (!G.isDirected()
+                        || distances[u] != std::numeric_limits<edgeweight>::max())) {
                     diameter = distances[u];
                 }
             });
@@ -93,11 +260,11 @@ edgeweight Diameter::exactDiameter(const Graph &G) {
 }
 
 std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &G, double error) {
-    if (G.isDirected()) {
-        throw std::runtime_error("Error, the diameter of directed graphs cannot be computed yet.");
-    }
     if (G.isWeighted()) {
         WARN("The input graph is weighted, but this algorithm ignores weights.");
+    }
+    if (G.isDirected()) {
+        return estimatedDirectedDiameterRange(G, error);
     }
 
     Aux::SignalHandler handler;
@@ -252,30 +419,61 @@ std::pair<edgeweight, edgeweight> Diameter::estimatedDiameterRange(const Graph &
     return {lb, ub};
 }
 
+std::pair<edgeweight, edgeweight> Diameter::estimatedDirectedDiameterRange(const Graph &G,
+                                                                           double error) {
+    using Bounds = DirectedEccentricityBounds;
+
+    Aux::SignalHandler handler;
+    Bounds bounds(G);
+    // Terminates after at most 2n sweeps: bounds only decrease and the target only increases, so
+    // nodes never become candidates again, and each sweep drops its source's bound to its exact
+    // eccentricity, which is at most the lower bound, so it stops being a candidate.
+    while (true) {
+        handler.assureRunning();
+        const count lower = bounds.lowerBound();
+        const count target =
+            std::max(lower, static_cast<count>(static_cast<double>(lower) * (1. + error)));
+        bounds.refine(target);
+
+        const count forward = bounds.numberOfCandidates(Bounds::FORWARD, target);
+        const count backward = bounds.numberOfCandidates(Bounds::BACKWARD, target);
+        const Bounds::Direction direction =
+            forward <= backward ? Bounds::FORWARD : Bounds::BACKWARD;
+        if (std::min(forward, backward) == 0) {
+            return {bounds.lowerBound(), bounds.largestBound(direction)};
+        }
+        bounds.sweep(direction, bounds.nodeWithLargestBound(direction));
+    }
+}
+
 edgeweight Diameter::estimatedVertexDiameter(const Graph &G, count samples) {
 
-    edgeweight infDist = std::numeric_limits<edgeweight>::max();
-
     // TODO: consider weights
+
+    const Graph transposed = G.isDirected() ? GraphTools::transpose(G) : Graph();
 
     auto estimateFrom = [&](node v) -> count {
         BFS bfs(G, v);
         bfs.run();
-        auto distances = bfs.getDistances();
-
-        // get two largest path lengths
-        edgeweight maxD = 0;
-        edgeweight maxD2 = 0; // second largest distance
-        for (auto d : distances) {
-            if ((d != infDist) && (d >= maxD)) {
-                maxD2 = maxD;
-                maxD = d;
-            }
+        if (G.isDirected()) {
+            // A path through v consists of a path to v and a path from v.
+            BFS transposedBfs(transposed, v);
+            transposedBfs.run();
+            const auto largestDistance = [](std::span<const edgeweight> distances) -> edgeweight {
+                edgeweight largest = 0;
+                for (edgeweight dist : distances) {
+                    if (dist != std::numeric_limits<edgeweight>::max()) {
+                        largest = std::max(largest, dist);
+                    }
+                }
+                return largest;
+            };
+            return static_cast<count>(largestDistance(bfs.getDistances())
+                                      + largestDistance(transposedBfs.getDistances()))
+                   + 1;
         }
 
-        edgeweight dMax = maxD + maxD2;
-        count vd = (count)dMax + 1; // count the nodes, not the edges
-        return vd;
+        return DiameterDetails::vertexDiameterBound<edgeweight>(bfs.getDistances());
     };
 
     edgeweight vdMax = 0;
@@ -292,6 +490,14 @@ edgeweight Diameter::estimatedVertexDiameter(const Graph &G, count samples) {
 }
 
 edgeweight Diameter::estimatedVertexDiameterPedantic(const Graph &G) {
+    if (G.isDirected()) {
+        using Bounds = DirectedEccentricityBounds;
+        Bounds bounds(G);
+        bounds.refine(bounds.lowerBound());
+        return std::min(bounds.largestBound(Bounds::FORWARD), bounds.largestBound(Bounds::BACKWARD))
+               + 1;
+    }
+
     count vd = 0;
     if (!G.isWeighted()) {
         std::vector<bool> visited(G.upperNodeIdBound(), false);
