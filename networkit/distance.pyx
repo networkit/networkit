@@ -1781,10 +1781,10 @@ cdef class DynPrunedLandmarkLabeling(Algorithm, DynAlgorithm):
 	Dynamic Pruned Landmark Labeling algorithm based on the paper "Fully
 	Dynamic 2-Hop Cover Labeling " from D'Angelo et al., ACM JEA 2019. The
 	algorithm computes distance labels by performing pruned breadth-first
-	searches from each vertex. Distance labels can be updated efficiently
-	after edge insertions.
+	searches from each vertex. Distance labels can be updated after edge
+	insertions and edge removals.
 	Note: this algorithm only works for unweighted graphs and only supports
-	edge insertions.
+	edge insertions and edge removals.
 
 	Parameters
 	----------

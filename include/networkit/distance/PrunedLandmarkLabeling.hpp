@@ -52,7 +52,7 @@ protected:
 
     const Graph *G;
     std::vector<node> nodesSortedByDegreeDesc;
-    std::vector<bool> visited;
+    std::vector<Visit> visited;
     std::vector<std::vector<Label>> labelsOut, labelsIn;
     std::vector<Label> labelsUCopy, labelsVCopy;
 

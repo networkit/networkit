@@ -941,15 +941,132 @@ TEST_P(DistanceGTest, testPrunedLandmarkLabeling) {
     });
 }
 
-TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingThrowsWithEdgeRemoval) {
+TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingThrowsWithUnsupportedEvent) {
     Graph G(2, isWeighted(), isDirected());
     G.addEdge(0, 1);
 
     DynPrunedLandmarkLabeling pll(G);
     pll.run();
 
-    G.removeEdge(0, 1);
-    EXPECT_THROW(pll.update(GraphEvent(GraphEvent::EDGE_REMOVAL, 0, 1, 1)), std::runtime_error);
+    EXPECT_THROW(pll.update(GraphEvent(GraphEvent::EDGE_WEIGHT_UPDATE, 0, 1, 2)),
+                 std::runtime_error);
+}
+
+TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingRemoveEdge) {
+    /**	 0---1
+     *	 |   |
+     *	 3---2---4
+     */
+
+    // Directed graphs get both orientations of every edge.
+    Graph G(5, isWeighted(), isDirected());
+    DynPrunedLandmarkLabeling pll(G);
+    const auto addEdge = [&](node u, node v) -> void {
+        G.addEdge(u, v);
+        if (isDirected()) {
+            G.addEdge(v, u);
+        }
+    };
+    const auto removeEdge = [&](node u, node v) -> void {
+        G.removeEdge(u, v);
+        pll.update(GraphEvent(GraphEvent::EDGE_REMOVAL, u, v));
+        if (isDirected()) {
+            G.removeEdge(v, u);
+            pll.update(GraphEvent(GraphEvent::EDGE_REMOVAL, v, u));
+        }
+    };
+
+    addEdge(0, 1);
+    addEdge(1, 2);
+    addEdge(2, 3);
+    addEdge(3, 0);
+    addEdge(2, 4);
+
+    pll.run();
+
+    EXPECT_EQ(pll.query(0, 2), 2);
+    EXPECT_EQ(pll.query(0, 4), 3);
+
+    // The distances increase but the nodes stay connected.
+    removeEdge(1, 2);
+    EXPECT_EQ(pll.query(0, 2), 2);
+    EXPECT_EQ(pll.query(1, 2), 3);
+    EXPECT_EQ(pll.query(1, 4), 4);
+
+    // The graph becomes disconnected.
+    removeEdge(2, 3);
+    EXPECT_EQ(pll.query(0, 2), none);
+    EXPECT_EQ(pll.query(0, 4), none);
+    EXPECT_EQ(pll.query(2, 4), 1);
+}
+
+TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingRemoveEdgeGreedyRestore) {
+    /**	     0---1---2
+     *	    /         \
+     *	7--6           3
+     *	    \         /
+     *	     5-------4
+     */
+
+    // Directed graphs get both orientations of every edge.
+    Graph G(8, isWeighted(), isDirected());
+    const auto addEdge = [&](node u, node v) -> void {
+        G.addEdge(u, v);
+        if (isDirected()) {
+            G.addEdge(v, u);
+        }
+    };
+
+    for (node u = 0; u < 7; ++u) {
+        addEdge(u, (u + 1) % 7);
+    }
+    addEdge(6, 7);
+
+    DynPrunedLandmarkLabeling pll(G);
+    pll.run();
+
+    const auto updateEdge = [&](GraphEvent::Type type, node u, node v) -> void {
+        for (const auto &[s, t] : {std::pair{u, v}, std::pair{v, u}}) {
+            if (type == GraphEvent::EDGE_ADDITION) {
+                G.addEdge(s, t);
+            } else {
+                G.removeEdge(s, t);
+            }
+            pll.update(GraphEvent(type, s, t));
+            if (!isDirected()) {
+                break;
+            }
+        }
+    };
+
+    // forNodePairs only visits s < t, which is not enough for directed graphs.
+    const auto expectExactDistances = [&]() -> void {
+        APSP apsp(G);
+        apsp.run();
+        G.forNodes([&](node s) -> void {
+            G.forNodes([&](node t) -> void {
+                const double dist = apsp.getDistance(s, t);
+                if (dist == std::numeric_limits<double>::max()) {
+                    EXPECT_EQ(pll.query(s, t), none);
+                } else {
+                    EXPECT_EQ(pll.query(s, t), dist);
+                }
+            });
+        });
+    };
+
+    // Removing {0, 1} affects {0, 5, 6, 7} on the side of 0 and {1, 2, 3} on the side of 1. Both
+    // sets are larger than n / log2(n), so the cover is restored from the smaller set: the one of
+    // the target when removing (0, 1), the one of the source when removing (1, 0). In directed
+    // graphs, each removal covers both cases.
+    updateEdge(GraphEvent::EDGE_REMOVAL, 0, 1);
+    expectExactDistances();
+
+    updateEdge(GraphEvent::EDGE_ADDITION, 0, 1);
+    expectExactDistances();
+
+    updateEdge(GraphEvent::EDGE_REMOVAL, 1, 0);
+    expectExactDistances();
 }
 
 TEST_P(DistanceGTest, testDynPrunedLandmarkLabelingAddEdge) {
