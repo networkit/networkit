@@ -43,7 +43,7 @@ class TestCentrality(unittest.TestCase):
         listScores = CL.scores()
         arrayScores = CL.scores(asarray=True)
         self.assertIsInstance(listScores, list)
-        self.assertIsInstance(arrayScores.base, np.ndarray)
+        self.assertIsInstance(arrayScores, np.ndarray)
         np.testing.assert_allclose(listScores, arrayScores)
 
     def testCompactScores(self):

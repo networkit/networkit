@@ -329,8 +329,6 @@ if(NETWORKIT_PYTHON)
 		target_include_directories(${TARGET_LIB} BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 		target_include_directories(${TARGET_LIB} PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
 		target_include_directories(${TARGET_LIB} PRIVATE "${NETWORKIT_PYTHON}")
-		target_include_directories(${TARGET_LIB} PUBLIC "${NETWORKIT_NUMPY}")
-
 		if(NOT NETWORKIT_BUILD_CORE)
 			if(NOT EXTERNAL_NETWORKIT_CORE)
 				message(FATAL_ERROR "Core build is disabled but no external core library was found.")
@@ -348,12 +346,19 @@ if(NETWORKIT_PYTHON)
 					OUTPUT_NAME "${TARGET_LIB}.${NETWORKIT_PYTHON_SOABI}")
 
 		if (NETWORKIT_BUILD_TESTS)
+			# Cython line tracing needs CPython internals, which the limited API does not provide.
 			target_compile_definitions(${TARGET_LIB} PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1)
+		else()
+			# Stable ABI (abi3), Python >= 3.10
+			target_compile_definitions(${TARGET_LIB} PRIVATE Py_LIMITED_API=0x030A0000 CYTHON_LIMITED_API=1)
 		endif()
 
 		if(WIN32)
 			set_target_properties(${TARGET_LIB} PROPERTIES SUFFIX .pyd)
 			target_link_libraries(${TARGET_LIB} PRIVATE ${Python3_LIBRARIES})
+			# Py_LIMITED_API auto-links python3.lib, which lives next to the versioned lib
+			target_link_directories(${TARGET_LIB} PRIVATE ${Python3_LIBRARY_DIRS})
+			set_target_properties(${TARGET_LIB} PROPERTIES OUTPUT_NAME "${TARGET_LIB}")
 		endif()
 
 		# If rpath-content is set explicitly, omit the dynamic binary path

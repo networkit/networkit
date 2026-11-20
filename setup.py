@@ -37,11 +37,8 @@ except ImportError:
     )
     sys.exit(1)
 
-os_soabi = sysconfig.get_config_var("SOABI")
-if os_soabi is None:
-    os_soabi = sysconfig.get_config_var("EXT_SUFFIX").split(".")[
-        1
-    ]  # get_config_var('SOABI') is None on win32-systems
+# Stable ABI (abi3): one wheel per platform for all Python >= 3.10.
+os_soabi = "abi3"
 
 import os
 import platform
@@ -323,6 +320,7 @@ setup(
     python_requires=version.python_requires,
     classifiers=version.classifiers,
     cmdclass={"build_ext": build_ext},
+    options={"bdist_wheel": {"py_limited_api": "cp310"}},
     ext_modules=cythonize(["networkit/*pyx"], compiler_directives=compiler_directives),
     test_suite="nose.collector",
     install_requires=version.install_requires,
