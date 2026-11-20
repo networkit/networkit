@@ -329,9 +329,6 @@ if(NETWORKIT_PYTHON)
 		target_include_directories(${TARGET_LIB} BEFORE PUBLIC "${PROJECT_SOURCE_DIR}/include")
 		target_include_directories(${TARGET_LIB} PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/ttmath/")
 		target_include_directories(${TARGET_LIB} PRIVATE "${NETWORKIT_PYTHON}")
-		# Stable ABI (abi3), Python >= 3.10
-		target_compile_definitions(${TARGET_LIB} PRIVATE Py_LIMITED_API=0x030A0000 CYTHON_LIMITED_API=1)
-
 		if(NOT NETWORKIT_BUILD_CORE)
 			if(NOT EXTERNAL_NETWORKIT_CORE)
 				message(FATAL_ERROR "Core build is disabled but no external core library was found.")
@@ -349,7 +346,11 @@ if(NETWORKIT_PYTHON)
 					OUTPUT_NAME "${TARGET_LIB}.${NETWORKIT_PYTHON_SOABI}")
 
 		if (NETWORKIT_BUILD_TESTS)
+			# Cython line tracing needs CPython internals, which the limited API does not provide.
 			target_compile_definitions(${TARGET_LIB} PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1)
+		else()
+			# Stable ABI (abi3), Python >= 3.10
+			target_compile_definitions(${TARGET_LIB} PRIVATE Py_LIMITED_API=0x030A0000 CYTHON_LIMITED_API=1)
 		endif()
 
 		if(WIN32)
