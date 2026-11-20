@@ -17,7 +17,9 @@ public:
      * Parallel Leiden algorithm for community detection.
      *
      * @param graph A networkit graph
-     * @param iterations Number of Leiden Iterations to be run
+     * @param iterations Maximum number of Leiden iterations; stops early if an iteration changes
+     *        nothing. Negative: iterate until an iteration moves no node
+     *        (as in igraph).
      * @param randomize Randomize node order?
      * @param gamma Resolution parameter
      */

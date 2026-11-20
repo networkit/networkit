@@ -24,7 +24,8 @@ void ParallelLeiden::run() {
     totalTime.start();
     do { // Leiden iteration
         INFO(numberOfIterations, "Leiden iteration(s) left");
-        numberOfIterations--;
+        if (numberOfIterations > 0)
+            numberOfIterations--;
         changed = false;
         const Graph *currentGraph = G;
         Graph coarse;
@@ -57,7 +58,7 @@ void ParallelLeiden::run() {
         } while (true);
         flattenPartition();
         INFO("Leiden iteration done, took ", totalTime.elapsedTag(), "so far");
-    } while (changed && numberOfIterations > 0);
+    } while (changed && numberOfIterations != 0); // negative: until no node moved (as igraph)
     hasRun = true;
 }
 
