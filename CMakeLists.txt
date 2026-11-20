@@ -355,6 +355,8 @@ if(NETWORKIT_PYTHON)
 		if(WIN32)
 			set_target_properties(${TARGET_LIB} PROPERTIES SUFFIX .pyd)
 			target_link_libraries(${TARGET_LIB} PRIVATE ${Python3_LIBRARIES})
+			# Py_LIMITED_API auto-links python3.lib, which lives next to the versioned lib
+			target_link_directories(${TARGET_LIB} PRIVATE ${Python3_LIBRARY_DIRS})
 			set_target_properties(${TARGET_LIB} PROPERTIES OUTPUT_NAME "${TARGET_LIB}")
 		endif()
 
