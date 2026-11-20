@@ -2,9 +2,7 @@
 #define NETWORKIT_GRAPH_DHB_GRAPH_HPP_
 
 #include <networkit/Globals.hpp>
-#include <networkit/auxiliary/ArrayTools.hpp>
 #include <networkit/auxiliary/FunctionTraits.hpp>
-#include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/graph/Attributes.hpp>
 #include <networkit/graph/EdgeIterators.hpp>
@@ -13,22 +11,8 @@
 
 #include <omp.h>
 #include <dhb/dynamic_hashed_blocks.h>
-#include <tlx/define/deprecated.hpp>
 
 #include <algorithm>
-#include <fstream>
-#include <functional>
-#include <iostream>
-#include <memory>
-#include <numeric>
-#include <queue>
-#include <sstream>
-#include <stack>
-#include <stdexcept>
-#include <thread>
-#include <typeindex>
-#include <unordered_map>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
