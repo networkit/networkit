@@ -1,6 +1,7 @@
 #ifndef NETWORKIT_AUXILIARY_FUNCTION_TRAITS_HPP_
 #define NETWORKIT_AUXILIARY_FUNCTION_TRAITS_HPP_
 
+#include <cstddef>
 #include <tuple>
 #include <type_traits>
 
