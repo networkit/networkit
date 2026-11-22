@@ -8,8 +8,6 @@
 #ifndef NETWORKIT_NUMERICS_LAMG_LEVEL_HIERARCHY_HPP_
 #define NETWORKIT_NUMERICS_LAMG_LEVEL_HIERARCHY_HPP_
 
-// networkit-format
-
 #include <networkit/algebraic/CSRMatrix.hpp>
 #include <networkit/algebraic/DenseMatrix.hpp>
 #include <networkit/algebraic/DynamicMatrix.hpp>

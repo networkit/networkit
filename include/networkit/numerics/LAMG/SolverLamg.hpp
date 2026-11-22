@@ -8,8 +8,6 @@
 #ifndef NETWORKIT_NUMERICS_LAMG_SOLVER_LAMG_HPP_
 #define NETWORKIT_NUMERICS_LAMG_SOLVER_LAMG_HPP_
 
-// networkit-format
-
 #include <cmath>
 #include <vector>
 

@@ -5,8 +5,6 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
-// networkit-format
-
 #include <algorithm>
 #include <cmath>
 #include <numeric>

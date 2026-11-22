@@ -5,8 +5,6 @@
  *      Author: Lukas
  */
 
-// networkit-format
-
 #include <gtest/gtest.h>
 
 #include <networkit/algebraic/CSRMatrix.hpp>

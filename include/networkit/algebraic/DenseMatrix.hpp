@@ -8,8 +8,6 @@
 #ifndef NETWORKIT_ALGEBRAIC_DENSE_MATRIX_HPP_
 #define NETWORKIT_ALGEBRAIC_DENSE_MATRIX_HPP_
 
-// networkit-format
-
 #include <cassert>
 #include <vector>
 
