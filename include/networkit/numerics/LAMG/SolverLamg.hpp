@@ -8,6 +8,8 @@
 #ifndef NETWORKIT_NUMERICS_LAMG_SOLVER_LAMG_HPP_
 #define NETWORKIT_NUMERICS_LAMG_SOLVER_LAMG_HPP_
 
+// networkit-format
+
 #include <cmath>
 #include <vector>
 
@@ -225,7 +227,11 @@ void SolverLamg<Matrix>::cycle(Vector &x, const Vector &b, const int finest, con
                     bCoarse[i] = B[currLvl][i];
                 }
 
-                Vector xCoarse = DenseMatrix::LUSolve(hierarchy.getCoarseMatrix(), bCoarse);
+                Vector permutedRhs(bCoarse.getDimension());
+                for (index i = 0; i < bCoarse.getDimension(); ++i) {
+                    permutedRhs[i] = bCoarse[hierarchy.getCoarsePermutation()[i]];
+                }
+                Vector xCoarse = DenseMatrix::LUSolve(hierarchy.getCoarseMatrix(), permutedRhs);
                 for (index i = 0; i < X[currLvl].getDimension(); ++i) {
                     X[currLvl][i] = xCoarse[i];
                 }

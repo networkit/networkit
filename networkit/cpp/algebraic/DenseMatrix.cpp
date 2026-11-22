@@ -5,7 +5,12 @@
  *      Author: Michael Wegner (michael.wegner@student.kit.edu)
  */
 
+// networkit-format
+
 #include <algorithm>
+#include <cmath>
+#include <numeric>
+#include <stdexcept>
 
 #include <networkit/algebraic/DenseMatrix.hpp>
 
@@ -294,6 +299,36 @@ void DenseMatrix::LUDecomposition(DenseMatrix &matrix) {
             matrix.setValue(i, k, matrix(i, k) / matrix(k, k));
             for (index j = k + 1; j < matrix.numberOfRows(); ++j) {
                 matrix.setValue(i, j, matrix(i, j) - (matrix(i, k) * matrix(k, j)));
+            }
+        }
+    }
+}
+
+void DenseMatrix::LUDecomposition(DenseMatrix &matrix, std::vector<index> &permutation) {
+    assert(matrix.numberOfRows() == matrix.numberOfColumns());
+    const count n = matrix.numberOfRows();
+    permutation.resize(n);
+    std::iota(permutation.begin(), permutation.end(), 0);
+    for (index k = 0; k < n; ++k) {
+        index pivot = k;
+        for (index i = k + 1; i < n; ++i) {
+            if (std::abs(matrix(i, k)) > std::abs(matrix(pivot, k))) {
+                pivot = i;
+            }
+        }
+        if (matrix(pivot, k) == 0.0) {
+            throw std::runtime_error("Cannot decompose a singular matrix");
+        }
+        if (pivot != k) {
+            for (index j = 0; j < n; ++j) {
+                std::swap(matrix(k, j), matrix(pivot, j));
+            }
+            std::swap(permutation[k], permutation[pivot]);
+        }
+        for (index i = k + 1; i < n; ++i) {
+            matrix.setValue(i, k, matrix(i, k) / matrix(k, k));
+            for (index j = k + 1; j < n; ++j) {
+                matrix.setValue(i, j, matrix(i, j) - matrix(i, k) * matrix(k, j));
             }
         }
     }

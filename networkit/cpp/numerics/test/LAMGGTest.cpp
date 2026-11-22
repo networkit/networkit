@@ -5,15 +5,70 @@
  *      Author: Lukas
  */
 
+// networkit-format
+
 #include <gtest/gtest.h>
 
 #include <networkit/algebraic/CSRMatrix.hpp>
 #include <networkit/algebraic/Vector.hpp>
 #include <networkit/components/ConnectedComponents.hpp>
 #include <networkit/graph/Graph.hpp>
+#include <networkit/numerics/GaussSeidelRelaxation.hpp>
 #include <networkit/numerics/LAMG/Lamg.hpp>
+#include <networkit/numerics/LAMG/SolverLamg.hpp>
 
 namespace NetworKit {
+
+TEST(LAMGCoarseSolveGTest, testPartialPivoting) {
+    const DenseMatrix matrix(3, 3, std::vector<double>{1, 2, 3, 2, 4, 7, 3, 8, 9});
+    DenseMatrix lu = matrix;
+    std::vector<index> permutation;
+    DenseMatrix::LUDecomposition(lu, permutation);
+    const Vector rhs{6, 13, 20};
+    Vector permutedRhs(3);
+    for (index i = 0; i < 3; ++i) {
+        permutedRhs[i] = rhs[permutation[i]];
+    }
+    const Vector x = DenseMatrix::LUSolve(lu, permutedRhs);
+    EXPECT_NEAR((matrix * x - rhs).length(), 0.0, 1e-12);
+}
+
+TEST(LAMGCoarseSolveGTest, testEmptyLU) {
+    DenseMatrix matrix;
+    std::vector<index> permutation{0};
+    DenseMatrix::LUDecomposition(matrix, permutation);
+    EXPECT_TRUE(permutation.empty());
+}
+
+TEST(LAMGCoarseSolveGTest, testSingularLU) {
+    DenseMatrix matrix(2, 2, std::vector<double>{1, 2, 2, 4});
+    std::vector<index> permutation;
+    EXPECT_THROW(DenseMatrix::LUDecomposition(matrix, permutation), std::runtime_error);
+}
+
+TEST(LAMGCoarseSolveGTest, testZeroPivot) {
+    Graph graph(2);
+    graph.addEdge(0, 1);
+    const auto laplacian = CSRMatrix::laplacianMatrix(graph);
+    const CSRMatrix identity(2, 2, std::vector<Triplet>{{0, 0, 1.0}, {1, 1, 1.0}});
+    LevelHierarchy<CSRMatrix> hierarchy;
+    hierarchy.addFinestLevel(laplacian);
+    hierarchy.addAggregationLevel(laplacian, identity, identity);
+    hierarchy.setLastAsCoarsest();
+
+    GaussSeidelRelaxation<CSRMatrix> smoother;
+    SolverLamg<CSRMatrix> solver(hierarchy, smoother);
+    const Vector rhs{1.0, -1.0};
+    Vector x(2);
+    LAMGSolverStatus status;
+    status.maxIters = 1;
+    status.numPreSmoothIters = 0;
+    status.numPostSmoothIters = 0;
+    solver.solve(x, rhs, status);
+
+    EXPECT_NEAR((laplacian * x - rhs).length(), 0.0, 1e-12);
+    EXPECT_NEAR(x[0] - x[1], 1.0, 1e-12);
+}
 
 // list of variants:
 // - solver function: solve, parallelSolve

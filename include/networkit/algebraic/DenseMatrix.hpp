@@ -8,6 +8,8 @@
 #ifndef NETWORKIT_ALGEBRAIC_DENSE_MATRIX_HPP_
 #define NETWORKIT_ALGEBRAIC_DENSE_MATRIX_HPP_
 
+// networkit-format
+
 #include <cassert>
 #include <vector>
 
@@ -324,6 +326,14 @@ public:
      * @param matrix The matrix to decompose into LU.
      */
     static void LUDecomposition(DenseMatrix &matrix);
+
+    /**
+     * Decomposes @a matrix in-place using partial pivoting, so that P * A = L * U.
+     * @param matrix Square matrix to decompose.
+     * @param permutation Row permutation: row i of P * A is row permutation[i] of A.
+     * @throws std::runtime_error if the matrix is singular.
+     */
+    static void LUDecomposition(DenseMatrix &matrix, std::vector<index> &permutation);
 
     /**
      * Computes the solution vector x to the system @a LU * x = @a b where @a LU is a matrix
