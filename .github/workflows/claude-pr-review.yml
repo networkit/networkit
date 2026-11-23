@@ -24,6 +24,8 @@
 # - The workflow never downloads the PR branch. It reads the PR diff as text from the GitHub API and
 #   rebuilds the PR's files in ./pr-head by applying that diff to the merge-base commit, which is
 #   part of master's history. So no "allow-unsafe-pr-checkout" exception is needed.
+# - Claude reads the PR at the head commit that the event names, with the title and body from the
+#   event. A push or an edit after a maintainer added "claude-review" does not reach Claude.
 # - Pull request code is never built, installed or executed. Claude gets read-only file tools
 #   (Read, Grep, Glob) and one tool to post inline comments. Bash, file edits and web access are
 #   denied.
@@ -144,24 +146,32 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          PR: ${{ github.event.pull_request.number }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
           mkdir -p pr-context
-          gh pr view "$PR" --repo "$REPO" \
-            --json number,title,body,author,baseRefName,headRefOid,additions,deletions,changedFiles,files,labels \
-            > pr-context/pr.json
+          # Read the PR as the event shows it: title and body from the event payload, files and diff at
+          # HEAD_SHA. For an outside PR, this is the state that the maintainer checked before adding the
+          # label. A later push or edit does not reach Claude.
+          compare="repos/$REPO/compare/$BASE_SHA...$HEAD_SHA"
+          cmp="$RUNNER_TEMP/compare.json"
+          gh api "$compare" > "$cmp" 2> /dev/null || echo '{}' > "$cmp"
+          jq --slurpfile cmp "$cmp" '.pull_request | {
+                number, title, body, author: .user.login, base: .base.ref, head_sha: .head.sha,
+                additions, deletions, changed_files, labels: [.labels[].name],
+                files: [$cmp[0].files[]? | {filename, status, additions, deletions}]}' \
+            "$GITHUB_EVENT_PATH" > pr-context/pr.json
           rebuild=false
-          if gh pr diff "$PR" --repo "$REPO" > pr-context/pr.diff 2> pr-context/diff-error.txt; then
+          if gh api "$compare" -H 'Accept: application/vnd.github.diff' \
+               > pr-context/pr.diff 2> pr-context/diff-error.txt; then
             [ -s pr-context/pr.diff ] && rebuild=true
           else
             echo "GitHub did not return the diff (it is probably too large). Use pr.json and the base files." \
               > pr-context/pr.diff
           fi
           # The merge base is a commit of the base branch, so checking it out is not a fork checkout.
-          mb=$(gh api "repos/$REPO/compare/$BASE_SHA...$HEAD_SHA" --jq .merge_base_commit.sha 2> /dev/null || true)
+          mb=$(jq -r '.merge_base_commit.sha // ""' "$cmp")
           [[ "$mb" =~ ^[0-9a-f]{40}$ ]] || mb="$BASE_SHA"
           [ "$mb" = "$HEAD_SHA" ] && rebuild=false
           echo "merge_base=$mb" >> "$GITHUB_OUTPUT"
