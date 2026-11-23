@@ -41,30 +41,27 @@ double Modularity::getQuality(const Partition &zeta, const Graph &G) {
             "Modularity is undefined for graphs without edges (including self-loops).");
     }
 
-    //!< cluster -> sum of the weights of incident edges for all nodes
-    std::vector<double> incidentWeightSum(zeta.upperBound(), 0.0);
-
-    // compute volume of each cluster
+    const bool directed = G.isDirected();
+    std::vector<double> outVolume(zeta.upperBound(), 0.0);
+    std::vector<double> inVolume(directed ? zeta.upperBound() : 0, 0.0);
     G.parallelForNodes([&](node v) {
-        // add to cluster weight
-        index c = zeta[v];
-        assert(zeta.lowerBound() <= c);
-        assert(c < zeta.upperBound());
-        // account for self-loops a second time
+        const index c = zeta[v];
+        assert(c >= zeta.lowerBound() && c < zeta.upperBound());
 #pragma omp atomic
-        incidentWeightSum[c] += G.weightedDegree(v) + G.weight(v, v);
+        outVolume[c] += G.weightedDegree(v, !directed);
+        if (directed) {
+#pragma omp atomic
+            inVolume[c] += G.weightedDegreeIn(v);
+        }
     });
 
-    // compute sum of squared cluster volumes and divide by squared graph volume
+    const auto &incoming = directed ? inVolume : outVolume;
+    const double volume = directed ? gTotalEdgeWeight : 2 * gTotalEdgeWeight;
     expCov = 0.0;
-
 #pragma omp parallel for reduction(+ : expCov)
     for (omp_index c = static_cast<omp_index>(zeta.lowerBound());
          c < static_cast<omp_index>(zeta.upperBound()); ++c) {
-        // squared
-        expCov +=
-            ((incidentWeightSum[c] / gTotalEdgeWeight) * (incidentWeightSum[c] / gTotalEdgeWeight))
-            / 4;
+        expCov += (outVolume[c] / volume) * (incoming[c] / volume);
     }
 
     DEBUG("expected coverage: ", expCov);

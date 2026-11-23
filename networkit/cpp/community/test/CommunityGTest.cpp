@@ -381,6 +381,23 @@ TEST_F(CommunityGTest, testModularity) {
     EXPECT_GE(0.0, modSingleton) << "singleton clustering should have modularity less than 0.0";
 }
 
+TEST_F(CommunityGTest, testDirectedModularity) {
+    Graph G(4, true, true);
+    G.addEdge(0, 0, 1);
+    G.addEdge(0, 1, 2);
+    G.addEdge(1, 2, 3);
+    G.addEdge(2, 1, 1);
+    Partition zeta(4);
+    zeta.allToSingletons();
+    zeta.moveToSubset(0, 1);
+
+    // The two nonempty edge groups have (out, in) volumes (6, 4) and (1, 3).
+    Modularity modularity;
+    EXPECT_NEAR(modularity.getQuality(zeta, G), 3.0 / 7 - 27.0 / 49, 1e-14);
+    zeta.moveToSubset(0, 2);
+    EXPECT_NEAR(modularity.getQuality(zeta, G), 0.0, 1e-14);
+}
+
 TEST_F(CommunityGTest, testCoverage) {
 
     count n = 100;

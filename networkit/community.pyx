@@ -514,9 +514,12 @@ cdef class Modularity:
 
  	Notes
 	-----
-	Modularity is defined as:
+	For undirected graphs, modularity is defined as:
 
 	.. math:: mod(\zeta) := \\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)} - \\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }
+
+	For directed graphs, the expected fraction of internal edges for each community
+	is the product of its incoming and outgoing fractions of the total edge weight.
 
 	"""
 	cdef _Modularity _this

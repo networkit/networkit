@@ -18,12 +18,9 @@ namespace NetworKit {
  * to a partition of a graph which is higher for more modular networks and partitions which better
  * capture the modular structure.
  *
- * Modularity is defined as:
- *
- * $$mod(\\zeta) := \\frac{\\sum_{C \\in \\zeta} \\sum_{ e \\in E(C) } \\omega(e)}{\\sum_{e \\in E}
- * \\omega(e)}
- * \\frac{ \\sum_{C \\in \\zeta}( \\sum_{v \\in C} \\omega(v) )^2 }{4( \\sum_{e \\in E} \\omega(e)
- * )^2 }$$
+ * For directed graphs the expected internal edge fraction of each community
+ * is the product of its incoming and outgoing weight fractions. For undirected
+ * graphs it is the square of its fraction of the total degree.
  */
 class Modularity final : public QualityMeasure {
 
