@@ -18,9 +18,14 @@ namespace NetworKit {
  * to a partition of a graph which is higher for more modular networks and partitions which better
  * capture the modular structure.
  *
- * For directed graphs the expected internal edge fraction of each community
- * is the product of its incoming and outgoing weight fractions. For undirected
- * graphs it is the square of its fraction of the total degree.
+ * Modularity is defined as
+ *
+ * $$mod(\\zeta) := cov(\\zeta)
+ *     - \\sum_{C \\in \\zeta} \\frac{vol^{out}(C) \\cdot vol^{in}(C)}{\\omega(E)^2},$$
+ *
+ * where $\\omega(E)$ is the total edge weight. For directed graphs (Leicht and Newman, 2008),
+ * $vol^{out}(C)$ and $vol^{in}(C)$ are the out- and in-volumes of $C$. For undirected graphs
+ * both are half the volume of $C$.
  */
 class Modularity final : public QualityMeasure {
 

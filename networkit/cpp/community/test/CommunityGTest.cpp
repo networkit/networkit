@@ -391,7 +391,7 @@ TEST_F(CommunityGTest, testDirectedModularity) {
     zeta.allToSingletons();
     zeta.moveToSubset(0, 1);
 
-    // The two nonempty edge groups have (out, in) volumes (6, 4) and (1, 3).
+    // Communities {0, 1} and {2} have (out, in) volumes (6, 4) and (1, 3); m = 7.
     Modularity modularity;
     EXPECT_NEAR(modularity.getQuality(zeta, G), 3.0 / 7 - 27.0 / 49, 1e-14);
     zeta.moveToSubset(0, 2);
