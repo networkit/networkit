@@ -14,7 +14,7 @@
 # - Comment-only: the bot never approves a pull request.
 # - Maintainers can request a new review by adding the label "claude-review" to the pull request.
 # - At most CLAUDE_REVIEW_MAX_PER_DAY reviews (repository variable, default 10) start in any
-#   24 hours. Set it to 0 to pause the bot.
+#   24 hours. Runs that start at the same time can exceed it slightly. Set it to 0 to pause the bot.
 #
 # Security model (pull_request_target runs with this repository's secrets)
 # ------------------------------------------------------------------------
@@ -83,8 +83,11 @@ jobs:
     outputs:
       result: ${{ steps.claude.outputs.structured_output }}
     steps:
-      # Hard cap on the number of reviews in any 24 hours, independent of the Claude plan.
+      # Cap on the number of reviews in any 24 hours, independent of the Claude plan.
       # Set the repository variable CLAUDE_REVIEW_MAX_PER_DAY to change it (default 10).
+      # The cap is soft. Runs that start at the same time can all pass this check before one of them
+      # counts. A strict cap would need one concurrency group for all PRs, but GitHub keeps only one
+      # pending run per group and cancels the others, so reviews would get lost.
       - name: Check the daily review limit
         id: cap
         env:
