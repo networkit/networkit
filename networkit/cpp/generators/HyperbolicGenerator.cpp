@@ -20,6 +20,7 @@
  */
 
 #include <algorithm>
+#include <numbers>
 #include <omp.h>
 #include <random>
 
@@ -154,7 +155,7 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
         for (omp_index i = 0; i < static_cast<omp_index>(n); i++) {
             const double coshr = std::cosh(radii[i]);
             const double sinhr = std::sinh(radii[i]);
-            count expectedDegree = (4 / PI) * n * std::exp(-(radii[i]) / 2);
+            count expectedDegree = (4 / std::numbers::pi) * n * std::exp(-(radii[i]) / 2);
             vector<index> near;
             near.reserve(expectedDegree * 1.1);
             Point2DWithIndex<double> pointV(angles[i], radii[i], i);
@@ -169,7 +170,9 @@ Graph HyperbolicGenerator::generateCold(const vector<double> &angles, const vect
                     const count sSize = neighborCandidates.size();
                     for (index w = 0; w < sSize; w++) {
                         double deltaPhi =
-                            PI - std::abs(PI - std::abs(angles[i] - neighborCandidates[w].getX()));
+                            std::numbers::pi
+                            - std::abs(std::numbers::pi
+                                       - std::abs(angles[i] - neighborCandidates[w].getX()));
                         if (coshr * std::cosh(neighborCandidates[w].getY())
                                 - sinhr * std::sinh(neighborCandidates[w].getY())
                                       * std::cos(deltaPhi)

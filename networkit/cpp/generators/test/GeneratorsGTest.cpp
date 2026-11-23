@@ -9,6 +9,7 @@
 
 #include <cmath>
 #include <fstream>
+#include <numbers>
 #include <numeric>
 
 #include <networkit/generators/BarabasiAlbertGenerator.hpp>
@@ -1187,7 +1188,7 @@ TEST_F(GeneratorsGTest, testHyperbolicPointGeneration) {
     HyperbolicSpace::fillPoints(angles, radii, R, alpha);
     for (index i = 0; i < n; i++) {
         EXPECT_GE(angles[i], 0);
-        EXPECT_LT(angles[i], 2 * PI);
+        EXPECT_LT(angles[i], 2 * std::numbers::pi);
         EXPECT_GE(radii[i], 0);
         EXPECT_LE(radii[i], R);
     }
