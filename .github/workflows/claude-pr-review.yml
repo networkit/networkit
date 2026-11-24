@@ -285,7 +285,7 @@ jobs:
             Report only real problems that you can point to in the code. Do not praise. Do not restate the diff. If you are not sure about a problem, say why you are not sure.
 
             ## Inline comments
-            For each finding on a changed line, call mcp__github_inline_comment__create_inline_comment with confirmed: true.
+            For each finding on a changed line, call mcp__github_inline_comment__create_inline_comment with confirmed: true and commit_id: ${{ github.event.pull_request.head.sha }}.
             Use the line number in the new file (side RIGHT) and verify it in pr-head/. Comment only on lines that the diff changes or shows as context.
             Post at most 10 inline comments. Put other findings in the summary only.
             Use a ```suggestion block only for a small and complete replacement of the selected lines.
