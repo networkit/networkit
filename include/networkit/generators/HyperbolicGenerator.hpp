@@ -13,7 +13,7 @@
 #include <vector>
 
 #include <networkit/auxiliary/Timer.hpp>
-#include <networkit/generators/StaticGraphGenerator.hpp>
+#include <networkit/generators/StaticGraphGeneratorBase.hpp>
 #include <networkit/geometric/HyperbolicSpace.hpp>
 
 namespace NetworKit {
