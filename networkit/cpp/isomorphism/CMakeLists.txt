@@ -1,4 +1,6 @@
 networkit_add_module(isomorphism
+    RI.cpp
+    RIImpl.cpp
     SearchGraph.cpp
     SubgraphIsomorphism.cpp
     VF2.cpp
