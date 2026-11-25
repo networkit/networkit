@@ -248,11 +248,22 @@ class TestCommunity(unittest.TestCase):
 
 	def testPLMProlong(self):
 		PLM = nk.community.PLM(self.L)
-		PLM.run()	
-		PLMP = PLM.getPartition()		
+		PLM.run()
+		PLMP = PLM.getPartition()
 		coarse = PLM.coarsen(self.L, PLMP)
 		part = PLM.prolong(coarse[0], PLMP, self.L, coarse[1])
 		self.assertDictEqual(part.subsetSizeMap(), {0:9})
+
+	def testPLMGetPartitionIdempotent(self):
+		plm = nk.community.PLM(self.L)
+		plm.run()
+		p1 = plm.getPartition()
+		p2 = plm.getPartition()
+		self.assertGreater(p1.numberOfElements(), 0)
+		self.assertEqual(p1.numberOfElements(), p2.numberOfElements())
+		self.assertEqual(p1.numberOfSubsets(), p2.numberOfSubsets())
+		for u in self.L.iterNodes():
+			self.assertEqual(p1.subsetOf(u), p2.subsetOf(u))
 
 	def testLouvainMapEquation(self):
 		LME = nk.community.LouvainMapEquation(self.L)
