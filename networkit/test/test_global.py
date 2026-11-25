@@ -43,6 +43,21 @@ class TestGlobal(unittest.TestCase):
 		# numpy array as input
 		arr = np.array([0, 0, 0, 4], dtype=np.float64)
 		self.assertAlmostEqual(nk.stats.gini(arr), 0.75, places=12)
+		# empty and all-zero inputs -> 0.0
+		self.assertEqual(nk.stats.gini([]), 0.0)
+		self.assertEqual(nk.stats.gini(np.array([], dtype=np.float64)), 0.0)
+		self.assertEqual(nk.stats.gini([0, 0, 0]), 0.0)
+		self.assertEqual(nk.stats.gini([0.0, 0.0, 0.0]), 0.0)
+		self.assertEqual(nk.stats.gini([-0.0, 0.0]), 0.0)
+		self.assertEqual(nk.stats.gini(np.zeros(4, dtype=np.float64)), 0.0)
+		self.assertEqual(nk.stats.gini(np.zeros(4, dtype=np.int64)), 0.0)
+		# mixed-sign inputs summing to zero -> ValueError
+		with self.assertRaises(ValueError):
+			nk.stats.gini([-1, 1])
+		with self.assertRaises(ValueError):
+			nk.stats.gini([-1.0, 0.0, 1.0])
+		with self.assertRaises(ValueError):
+			nk.stats.gini(np.array([-1.0, 1.0], dtype=np.float64))
 
 	def testOverviewEmptyGraph(self):
 		for directed in (False, True):
