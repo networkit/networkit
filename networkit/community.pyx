@@ -711,20 +711,26 @@ cdef extern from "<networkit/community/ParallelLeiden.hpp>":
 
 cdef class ParallelLeiden(CommunityDetector):
 	""" 
-	ParallelLeiden(G, randomize=True, iterations=3, gamma=1)
+	ParallelLeiden(G, iterations=3, randomize=True, gamma=1)
 
-	Parallel Leiden Algorithm.
+	Leiden community detection with multi-resolution modularity.
+
+	Undirected graphs use the parallel implementation. Directed inputs preserve
+	incoming and outgoing edge weights. Their moving, refinement, and aggregation
+	loops run serially; partition helpers may use OpenMP.
 
 	Parameters
 	----------
 	G : networkit.Graph
-		A graph.
+		A graph. Directed inputs require finite, nonnegative edge weights.
 	randomize : bool, optional
 		Whether to randomize the node order or not. Default: True
 	iterations : int, optional
 		Maximum count of Leiden runs. Default: 3
 	gamma : float, optional
-		Multi-resolution modularity parameter: 1.0 (standard modularity), 0.0 (one community), 2m (singleton communities). Default: 1.0
+		Modularity resolution parameter. Larger values favor smaller communities;
+		1.0 gives standard modularity. Default: 1.0
+		For directed inputs, gamma must be finite and nonnegative.
 	"""
 
 	def __cinit__(self, Graph G not None, int iterations = 3, bool_t randomize = True, double gamma = 1):

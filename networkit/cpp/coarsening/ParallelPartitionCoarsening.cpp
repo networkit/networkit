@@ -5,6 +5,7 @@
  *      Author: cls
  */
 
+// networkit-format
 #include <numeric>
 
 #include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
@@ -27,6 +28,37 @@ void ParallelPartitionCoarsening::run() {
     G->forNodes([&](const node u) { partBegin[nodeToSuperNode[u] + 2]++; });
     std::partial_sum(partBegin.begin(), partBegin.end(), partBegin.begin());
     G->forNodes([&](const node u) { nodesSortedByPart[partBegin[nodeToSuperNode[u] + 1]++] = u; });
+
+    if (G->isDirected()) {
+        Gcoarsened = Graph(numParts, true, true);
+        std::vector<edgeweight> incidentPartWeights(numParts, 0.0);
+        std::vector<node> incidentParts;
+        std::vector<node> lastSeen(numParts, none);
+        for (node su = 0; su < numParts; ++su) {
+            for (index i = partBegin[su]; i < partBegin[su + 1]; ++i) {
+                const node u = nodesSortedByPart[i];
+                G->forNeighborsOf(u, [&](node v, edgeweight ew) {
+                    const node sv = nodeToSuperNode[v];
+                    // Track presence separately: a zero weight is still an arc.
+                    if (lastSeen[sv] != su) {
+                        lastSeen[sv] = su;
+                        incidentParts.push_back(sv);
+                    }
+                    incidentPartWeights[sv] += ew;
+                });
+            }
+            for (node sv : incidentParts) {
+                // Every ordered arc contributes once, including internal arcs
+                // that become a self-loop on the coarse node.
+                Gcoarsened.addEdge(su, sv, incidentPartWeights[sv]);
+                incidentPartWeights[sv] = 0.0;
+            }
+            incidentParts.clear();
+        }
+        this->nodeMapping = nodeToSuperNode.getVector();
+        hasRun = true;
+        return;
+    }
 
     Gcoarsened = Graph(numParts, true, false);
 
