@@ -18,12 +18,14 @@ namespace NetworKit {
  * to a partition of a graph which is higher for more modular networks and partitions which better
  * capture the modular structure.
  *
- * Modularity is defined as:
+ * Modularity is defined as
  *
- * $$mod(\\zeta) := \\frac{\\sum_{C \\in \\zeta} \\sum_{ e \\in E(C) } \\omega(e)}{\\sum_{e \\in E}
- * \\omega(e)}
- * \\frac{ \\sum_{C \\in \\zeta}( \\sum_{v \\in C} \\omega(v) )^2 }{4( \\sum_{e \\in E} \\omega(e)
- * )^2 }$$
+ * $$mod(\\zeta) := cov(\\zeta)
+ *     - \\sum_{C \\in \\zeta} \\frac{vol^{out}(C) \\cdot vol^{in}(C)}{\\omega(E)^2},$$
+ *
+ * where $\\omega(E)$ is the total edge weight. For directed graphs (Leicht and Newman, 2008),
+ * $vol^{out}(C)$ and $vol^{in}(C)$ are the out- and in-volumes of $C$. For undirected graphs
+ * both are half the volume of $C$.
  */
 class Modularity final : public QualityMeasure {
 
