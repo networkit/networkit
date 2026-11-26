@@ -324,6 +324,21 @@ TEST_F(CommunityGTest, testParallelLeiden) {
     EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta2));
 }
 
+TEST_F(CommunityGTest, testParallelLeidenUntilStable) {
+    METISGraphReader reader;
+    Modularity modularity;
+    Graph G = reader.read("input/caidaRouterLevel.graph");
+
+    ParallelLeiden fixed(G, 1, false);
+    fixed.run();
+    ParallelLeiden stable(G, -1, false);
+    stable.run();
+    Partition zeta = stable.getPartition();
+
+    EXPECT_TRUE(GraphClusteringTools::isProperClustering(G, zeta));
+    EXPECT_GE(modularity.getQuality(zeta, G), modularity.getQuality(fixed.getPartition(), G));
+}
+
 TEST_F(CommunityGTest, testDeletedNodesPLM) {
     METISGraphReader reader;
     Modularity modularity;

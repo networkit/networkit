@@ -722,7 +722,7 @@ cdef class ParallelLeiden(CommunityDetector):
 	randomize : bool, optional
 		Whether to randomize the node order or not. Default: True
 	iterations : int, optional
-		Maximum count of Leiden runs. Default: 3
+		Maximum count of Leiden runs; stops early if a run changes nothing. Negative: run until a run moves no node (as igraph). Default: 3
 	gamma : float, optional
 		Multi-resolution modularity parameter: 1.0 (standard modularity), 0.0 (one community), 2m (singleton communities). Default: 1.0
 	"""
