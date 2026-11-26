@@ -1,24 +1,116 @@
+#include <algorithm>
 #include <atomic>
+#include <cmath>
 #include <condition_variable>
+#include <limits>
 #include <omp.h>
 #include <queue>
+#include <stdexcept>
 #include <thread>
 #include <tlx/unused.hpp>
+#include <networkit/auxiliary/Random.hpp>
 #include <networkit/auxiliary/Timer.hpp>
 #include <networkit/coarsening/ParallelPartitionCoarsening.hpp>
 #include <networkit/community/ParallelLeiden.hpp>
 
 namespace NetworKit {
+namespace {
+
+Partition directedSingletons(const Graph &graph) {
+    Partition partition(graph.upperNodeIdBound());
+    index next = 0;
+    graph.forNodes([&](node u) { partition[u] = next++; });
+    partition.setUpperBound(next);
+    return partition;
+}
+
+void compactDirected(const Graph &graph, Partition &partition) {
+    std::vector<index> labels(partition.upperBound(), none);
+    index next = 0;
+    graph.forNodes([&](node u) {
+        const index old = partition[u];
+        if (old == none || old >= labels.size())
+            throw std::logic_error("Directed Leiden requires a partition of all active nodes");
+        if (labels[old] == none)
+            labels[old] = next++;
+        partition[u] = labels[old];
+    });
+    partition.setUpperBound(next);
+}
+
+double directedTotalWeight(const Graph &graph) {
+    double total = 0;
+    graph.forEdges([&](node, node, edgeweight weight) {
+        if (!std::isfinite(weight) || weight < 0)
+            throw std::invalid_argument("Directed Leiden requires finite nonnegative weights");
+        total += weight;
+    });
+    if (!std::isfinite(total))
+        throw std::invalid_argument("Directed Leiden requires a finite total edge weight");
+    return total;
+}
+
+struct DirectedVolumes {
+    std::vector<double> out, in, communityOut, communityIn;
+    double total;
+
+    DirectedVolumes(const Graph &graph, const Partition &partition)
+        : out(graph.upperNodeIdBound()), in(graph.upperNodeIdBound()),
+          communityOut(partition.upperBound()), communityIn(partition.upperBound()),
+          total(directedTotalWeight(graph)) {
+        if (total == 0)
+            return;
+        // Normalize before products: no squared total weight or product of raw strengths.
+        // Each directed loop contributes once to each of the two strengths.
+        graph.forEdges([&](node u, node v, edgeweight weight) {
+            const double mass = weight / total;
+            out[u] += mass;
+            in[v] += mass;
+        });
+        graph.forNodes([&](node u) {
+            communityOut[partition[u]] += out[u];
+            communityIn[partition[u]] += in[u];
+        });
+    }
+};
+
+long double directedInsertion(double cut, double out, double in, double targetOut, double targetIn,
+                              double gamma) {
+    return static_cast<long double>(cut)
+           - static_cast<long double>(gamma)
+                 * (static_cast<long double>(out) * targetIn
+                    + static_cast<long double>(in) * targetOut);
+}
+
+std::vector<node> directedOrder(const Graph &graph, bool randomize) {
+    std::vector<node> nodes;
+    nodes.reserve(graph.numberOfNodes());
+    graph.forNodes([&](node u) { nodes.push_back(u); });
+    if (randomize)
+        std::shuffle(nodes.begin(), nodes.end(), Aux::Random::getURNG());
+    return nodes;
+}
+
+} // namespace
+
 ParallelLeiden::ParallelLeiden(const Graph &graph, int iterations, bool randomize, double gamma)
-    : CommunityDetectionAlgorithm(graph), gamma(gamma), numberOfIterations(iterations),
+    : CommunityDetectionAlgorithm(graph, Partition()), gamma(gamma), numberOfIterations(iterations),
       random(randomize) {
-    this->result = Partition(graph.numberOfNodes());
-    this->result.allToSingletons();
+    if (graph.isDirected()) {
+        result = directedSingletons(graph);
+    } else {
+        this->result = Partition(graph.numberOfNodes());
+        this->result.allToSingletons();
+    }
 }
 
 void ParallelLeiden::run() {
     if (VECTOR_OVERSIZE < 1) {
         throw std::invalid_argument("VECTOR_OVERSIZE cant be smaller than 1");
+    }
+    if (G->isDirected()) {
+        directedRun();
+        return;
     }
     auto totalTime = Aux::Timer();
     totalTime.start();
@@ -59,6 +151,245 @@ void ParallelLeiden::run() {
         INFO("Leiden iteration done, took ", totalTime.elapsedTag(), "so far");
     } while (changed && numberOfIterations > 0);
     hasRun = true;
+}
+
+void ParallelLeiden::directedRun() {
+    if (!std::isfinite(gamma) || gamma < 0)
+        throw std::invalid_argument("Directed Leiden requires finite nonnegative gamma");
+    if (directedTotalWeight(*G) == 0) {
+        result = directedSingletons(*G);
+        hasRun = true;
+        return;
+    }
+
+    do {
+        // Preserve the existing finite do/while budget, including one pass for <= 0.
+        if (numberOfIterations > 0)
+            --numberOfIterations;
+        changed = false;
+        const Graph *currentGraph = G;
+        Graph coarse;
+        std::vector<node> originalToCurrent(G->upperNodeIdBound(), none);
+        G->forNodes([&](node u) { originalToCurrent[u] = u; });
+
+        while (true) {
+            handler.assureRunning();
+            changed = directedMove(*currentGraph) || changed;
+            if (currentGraph->numberOfNodes() == result.numberOfSubsets())
+                break;
+            Partition refined = directedRefine(*currentGraph);
+            // Every aggregation must contract; otherwise retain the moved partition.
+            if (refined.numberOfSubsets() == currentGraph->numberOfNodes())
+                break;
+            handler.assureRunning();
+            ParallelPartitionCoarsening ppc(*currentGraph, refined, false);
+            ppc.run();
+            Graph next = std::move(ppc.getCoarseGraph());
+            auto map = std::move(ppc.getFineToCoarseNodeMapping());
+            Partition nextPartition(next.upperNodeIdBound());
+            nextPartition.setUpperBound(result.upperBound());
+            currentGraph->forNodes([&](node u) {
+                const node c = map[u];
+                if (nextPartition[c] != none && nextPartition[c] != result[u])
+                    throw std::logic_error("Directed Leiden refinement crossed a parent community");
+                nextPartition[c] = result[u];
+            });
+            G->forNodes([&](node u) { originalToCurrent[u] = map[originalToCurrent[u]]; });
+            result = std::move(nextPartition);
+            coarse = std::move(next);
+            currentGraph = &coarse;
+        }
+
+        // Compose the aggregation mapping with the final partition, not just node IDs.
+        Partition flattened(G->upperNodeIdBound());
+        flattened.setUpperBound(result.upperBound());
+        G->forNodes([&](node u) { flattened[u] = result[originalToCurrent[u]]; });
+        compactDirected(*G, flattened);
+        result = std::move(flattened);
+    } while (changed && numberOfIterations > 0);
+    hasRun = true;
+}
+
+bool ParallelLeiden::directedMove(const Graph &graph) {
+    compactDirected(graph, result);
+    result.setUpperBound(graph.numberOfNodes());
+    DirectedVolumes volumes(graph, result);
+    if (volumes.total == 0)
+        return false;
+    const count capacity = result.upperBound();
+    std::vector<count> sizes(capacity);
+    graph.forNodes([&](node u) { ++sizes[result[u]]; });
+    std::vector<index> empty;
+    for (index c = 0; c < capacity; ++c)
+        if (sizes[c] == 0)
+            empty.push_back(c);
+
+    std::queue<node> queue;
+    std::vector<bool> inQueue(graph.upperNodeIdBound(), false);
+    for (node u : directedOrder(graph, random)) {
+        queue.push(u);
+        inQueue[u] = true;
+    }
+    std::vector<double> cuts(capacity);
+    std::vector<bool> seen(capacity, false);
+    std::vector<index> touched;
+    bool moved = false;
+    while (!queue.empty()) {
+        handler.assureRunning();
+        const node u = queue.front();
+        queue.pop();
+        inQueue[u] = false; // Also clear this for nodes which do not move.
+        for (index c : touched) {
+            cuts[c] = 0;
+            seen[c] = false;
+        }
+        touched.clear();
+        const index old = result[u];
+        auto addCut = [&](node v, edgeweight weight) {
+            if (u == v || weight == 0)
+                return;
+            const index c = result[v];
+            if (!seen[c]) {
+                seen[c] = true;
+                touched.push_back(c);
+            }
+            cuts[c] += weight / volumes.total;
+        };
+        graph.forNeighborsOf(u, addCut);
+        graph.forInNeighborsOf(u, addCut);
+        const double remainingOut =
+            sizes[old] == 1 ? 0.0 : std::max(0.0, volumes.communityOut[old] - volumes.out[u]);
+        const double remainingIn =
+            sizes[old] == 1 ? 0.0 : std::max(0.0, volumes.communityIn[old] - volumes.in[u]);
+        const long double current = directedInsertion(cuts[old], volumes.out[u], volumes.in[u],
+                                                      remainingOut, remainingIn, gamma);
+        index best = none; // A fresh singleton has insertion score zero.
+        long double bestScore = 0;
+        for (index c : touched) {
+            if (c == old)
+                continue;
+            const long double score =
+                directedInsertion(cuts[c], volumes.out[u], volumes.in[u], volumes.communityOut[c],
+                                  volumes.communityIn[c], gamma);
+            if (score > bestScore || (score == bestScore && c < best)) {
+                best = c;
+                bestScore = score;
+            }
+        }
+        const long double tolerance = 16 * std::numeric_limits<double>::epsilon()
+                                      * std::max({1.0L, std::abs(current), std::abs(bestScore)});
+        if (bestScore <= current + tolerance)
+            continue;
+        if (best == none) {
+            if (empty.empty())
+                throw std::logic_error("Directed Leiden has no free singleton label");
+            best = empty.back();
+            empty.pop_back();
+        }
+        result[u] = best;
+        --sizes[old];
+        ++sizes[best];
+        volumes.communityOut[old] = remainingOut;
+        volumes.communityIn[old] = remainingIn;
+        volumes.communityOut[best] += volumes.out[u];
+        volumes.communityIn[best] += volumes.in[u];
+        if (sizes[old] == 0) {
+            volumes.communityOut[old] = volumes.communityIn[old] = 0;
+            empty.push_back(old);
+        }
+        moved = true;
+        auto invalidate = [&](node v) {
+            if (v != u && !inQueue[v]) {
+                inQueue[v] = true;
+                queue.push(v);
+            }
+        };
+        graph.forNeighborsOf(u, invalidate);
+        graph.forInNeighborsOf(u, invalidate);
+    }
+    compactDirected(graph, result);
+    return moved;
+}
+
+Partition ParallelLeiden::directedRefine(const Graph &graph) {
+    DirectedVolumes parent(graph, result);
+    Partition refined = directedSingletons(graph);
+    if (parent.total == 0)
+        return refined;
+    const count capacity = refined.upperBound();
+    std::vector<count> sizes(capacity, 1);
+    std::vector<double> out(capacity), in(capacity), boundary(capacity), cuts(capacity);
+    graph.forNodes([&](node u) {
+        out[refined[u]] = parent.out[u];
+        in[refined[u]] = parent.in[u];
+    });
+    graph.forEdges([&](node u, node v, edgeweight weight) {
+        if (u != v && result[u] == result[v]) {
+            const double mass = weight / parent.total;
+            boundary[refined[u]] += mass;
+            boundary[refined[v]] += mass;
+        }
+    });
+    std::vector<bool> seen(capacity, false);
+    std::vector<index> touched;
+    for (node u : directedOrder(graph, random)) {
+        handler.assureRunning();
+        const index old = refined[u];
+        if (sizes[old] != 1)
+            continue;
+        const index s = result[u];
+        auto wellConnected = [&](index c) {
+            return directedInsertion(boundary[c], out[c], in[c],
+                                     std::max(0.0, parent.communityOut[s] - out[c]),
+                                     std::max(0.0, parent.communityIn[s] - in[c]), gamma)
+                   >= 0;
+        };
+        if (!wellConnected(old)) // R condition, with the parent partition fixed.
+            continue;
+        for (index c : touched) {
+            cuts[c] = 0;
+            seen[c] = false;
+        }
+        touched.clear();
+        auto addCut = [&](node v, edgeweight weight) {
+            if (u == v || result[v] != s || weight == 0)
+                return;
+            const index c = refined[v];
+            if (!seen[c]) {
+                seen[c] = true;
+                touched.push_back(c);
+            }
+            cuts[c] += weight / parent.total;
+        };
+        graph.forNeighborsOf(u, addCut);
+        graph.forInNeighborsOf(u, addCut);
+        index best = none;
+        long double bestScore = 0;
+        for (index c : touched) {
+            if (c == old || !wellConnected(c)) // T condition for the current target.
+                continue;
+            const long double score =
+                directedInsertion(cuts[c], out[old], in[old], out[c], in[c], gamma);
+            if (score > bestScore || (score == bestScore && c < best)) {
+                best = c;
+                bestScore = score;
+            }
+        }
+        if (best == none)
+            continue;
+        // Each connection was present in both old boundaries. This ordering avoids
+        // an intermediate doubled boundary and clamps only cancellation roundoff.
+        boundary[best] =
+            std::max(0.0, boundary[best] - cuts[best]) + std::max(0.0, boundary[old] - cuts[best]);
+        out[best] += out[old];
+        in[best] += in[old];
+        ++sizes[best];
+        sizes[old] = 0;
+        out[old] = in[old] = boundary[old] = 0;
+        refined[u] = best;
+    }
+    compactDirected(graph, refined);
+    return refined;
 }
 
 void ParallelLeiden::calculateVolumes(const Graph &graph) {

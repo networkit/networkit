@@ -5,6 +5,8 @@
  *      Author: cls
  */
 
+// networkit-format
+#include <limits>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <networkit/auxiliary/Log.hpp>
@@ -53,6 +55,266 @@
 namespace NetworKit {
 
 class CommunityGTest : public testing::Test {};
+
+class ParallelLeidenTestAccess {
+public:
+    static bool move(ParallelLeiden &algorithm, const Graph &graph, const Partition &initial) {
+        algorithm.result = initial;
+        return algorithm.directedMove(graph);
+    }
+
+    static const Partition &partition(const ParallelLeiden &algorithm) { return algorithm.result; }
+
+    static Partition refine(ParallelLeiden &algorithm, const Graph &graph,
+                            const Partition &parent) {
+        algorithm.result = parent;
+        return algorithm.directedRefine(graph);
+    }
+};
+
+namespace {
+
+// A deliberately small dense, ordered-pair reference. It uses neither the
+// production move score nor community-volume or graph-degree helpers.
+double directedQualityReference(const Graph &graph, const Partition &partition, double gamma) {
+    const auto n = graph.upperNodeIdBound();
+    std::vector<std::vector<long double>> weights(n, std::vector<long double>(n));
+    graph.forEdges([&](node u, node v, edgeweight w) { weights[u][v] = w; });
+    std::vector<long double> outgoing(n), incoming(n);
+    long double total = 0.0L;
+    graph.forNodes([&](node u) {
+        graph.forNodes([&](node v) {
+            outgoing[u] += weights[u][v];
+            incoming[v] += weights[u][v];
+            total += weights[u][v];
+        });
+    });
+    long double quality = 0.0L;
+    graph.forNodes([&](node u) {
+        graph.forNodes([&](node v) {
+            if (partition[u] == partition[v])
+                quality +=
+                    weights[u][v] / total - gamma * outgoing[u] * incoming[v] / (total * total);
+        });
+    });
+    return static_cast<double>(quality);
+}
+
+void expectDirectedMembership(const Graph &graph, const Partition &partition,
+                              const std::vector<index> &expected) {
+    ASSERT_GE(partition.numberOfElements(), graph.upperNodeIdBound());
+    ASSERT_EQ(expected.size(), graph.upperNodeIdBound());
+    graph.forNodes([&](node u) {
+        EXPECT_NE(partition[u], none);
+        graph.forNodes([&](node v) {
+            EXPECT_EQ(partition[u] == partition[v], expected[u] == expected[v])
+                << "vertices " << u << " and " << v;
+        });
+    });
+}
+
+} // namespace
+
+TEST_F(CommunityGTest, testDirectedLeidenIncomingMove) {
+    // Only the incoming-only vertex can make the improving move: moving
+    // either member out of {1,2} would lose its strong internal connection.
+    for (bool transpose : {false, true}) {
+        Graph G(4, true, true);
+        G.addEdge(1, 2, 4.0);
+        G.addEdge(2, 1, 4.0);
+        if (transpose)
+            G.addEdge(0, 1, 1.0);
+        else
+            G.addEdge(1, 0, 1.0);
+        G.addEdge(3, 3, 4.0);
+        Partition initial(std::vector<index>{0, 1, 1, 2});
+        ASSERT_NEAR(directedQualityReference(G, initial, 1.0), 68.0 / 169.0, 1e-14);
+        ParallelLeiden algorithm(G, 1, false);
+        EXPECT_TRUE(ParallelLeidenTestAccess::move(algorithm, G, initial));
+        const auto &result = ParallelLeidenTestAccess::partition(algorithm);
+        expectDirectedMembership(G, result, {0, 0, 0, 1});
+        EXPECT_NEAR(directedQualityReference(G, result, 1.0), 72.0 / 169.0, 1e-14);
+    }
+}
+
+TEST_F(CommunityGTest, testDirectedLeidenRefinementDirectionality) {
+    Graph G(4, true, true);
+    G.addEdge(0, 1, 1.0);
+    G.addEdge(0, 2, 2.0);
+    G.addEdge(1, 3, 5.0);
+    const Partition parent(std::vector<index>{0, 0, 1, 2});
+    // At gamma=1 the directed merge gain for {0},{1} is +5/64,
+    // whereas discarding directions gives -1/64. At gamma=3 the
+    // directed R condition is negative and the pair must stay split.
+    ParallelLeiden positive(G, 1, false, 1.0);
+    auto refined = ParallelLeidenTestAccess::refine(positive, G, parent);
+    expectDirectedMembership(G, refined, {0, 0, 1, 2});
+    EXPECT_NEAR(directedQualityReference(G, refined, 1.0), 0.0, 1e-14);
+    ParallelLeiden negative(G, 1, false, 3.0);
+    refined = ParallelLeidenTestAccess::refine(negative, G, parent);
+    expectDirectedMembership(G, refined, {0, 1, 2, 3});
+    EXPECT_NEAR(directedQualityReference(G, refined, 3.0), -15.0 / 64.0, 1e-14);
+}
+
+TEST_F(CommunityGTest, testDirectedLeidenRefinementTargetCondition) {
+    Graph G(4, true, true);
+    G.addEdge(0, 1, 5.0);
+    G.addEdge(1, 0, 5.0);
+    G.addEdge(1, 2, 2.0);
+    G.addEdge(2, 1, 2.0);
+    G.addEdge(2, 3, 1.0);
+    G.addEdge(3, 2, 1.0);
+    G.addEdge(3, 3, 20.0);
+    Partition parent(4);
+    parent.allToOnePartition();
+    ParallelLeiden algorithm(G, 1, false);
+    const auto refined = ParallelLeidenTestAccess::refine(algorithm, G, parent);
+    // After {0,1} forms, vertex 2 has positive gain 2/36 into it,
+    // but that target's T-condition score is -12/36. This improving
+    // merge is therefore forbidden by refinement, not by local moving.
+    expectDirectedMembership(G, refined, {0, 0, 1, 2});
+    EXPECT_NEAR(directedQualityReference(G, refined, 1.0), 3.0 / 8.0, 1e-14);
+}
+
+TEST_F(CommunityGTest, testDirectedLeidenResolution) {
+    // Literal scores from the independent rational incoming-only fixture.
+    Graph G(4, true, true);
+    G.addEdge(0, 1, 3.0);
+    G.addEdge(2, 3, 1.0);
+    for (double gamma : {0.5, 1.0, 2.0}) {
+        ParallelLeiden algorithm(G, 3, false, gamma);
+        algorithm.run();
+        const auto &result = algorithm.getPartition();
+        if (gamma == 2.0) {
+            expectDirectedMembership(G, result, {0, 1, 2, 2});
+            EXPECT_NEAR(directedQualityReference(G, result, gamma), 1.0 / 8.0, 1e-14);
+        } else {
+            expectDirectedMembership(G, result, {0, 0, 1, 1});
+            const double expected = gamma == 1.0 ? 3.0 / 8.0 : 11.0 / 16.0;
+            EXPECT_NEAR(directedQualityReference(G, result, gamma), expected, 1e-14);
+        }
+    }
+}
+
+TEST_F(CommunityGTest, testDirectedLeidenFlowClusters) {
+    // The frozen six-node rational fixture exercises loops, a one-way
+    // bridge, refinement, aggregation and projection to original nodes.
+    Graph G(6, true, true);
+    G.addEdge(0, 1, 3.0);
+    G.addEdge(1, 0, 1.0);
+    G.addEdge(1, 2, 2.0);
+    G.addEdge(2, 0, 2.0);
+    G.addEdge(2, 3, 0.5);
+    G.addEdge(3, 4, 4.0);
+    G.addEdge(4, 3, 2.0);
+    G.addEdge(4, 5, 1.0);
+    G.addEdge(5, 3, 3.0);
+    G.addEdge(0, 0, 0.25);
+    G.addEdge(5, 5, 0.5);
+    for (bool randomize : {false, true}) {
+        Aux::Random::setSeed(42, false);
+        ParallelLeiden algorithm(G, 3, randomize);
+        algorithm.run();
+        expectDirectedMembership(G, algorithm.getPartition(), {0, 0, 0, 1, 1, 1});
+        EXPECT_NEAR(directedQualityReference(G, algorithm.getPartition(), 1.0), 36.0 / 77.0, 1e-14);
+        Modularity quality;
+        EXPECT_NEAR(quality.getQuality(algorithm.getPartition(), G), 36.0 / 77.0, 1e-14);
+    }
+}
+
+TEST_F(CommunityGTest, testDirectedLeidenCoarseMoveComposition) {
+    // Local moving stops at four strong pairs. Coarse moves must join each
+    // disconnected four-node group and then project those final labels back.
+    Graph G(8, true, true);
+    for (node group : {0, 4}) {
+        for (node u = group; u < group + 4; ++u) {
+            for (node v = u + 1; v < group + 4; ++v) {
+                const edgeweight weight = u / 2 == v / 2 ? 4.0 : 2.0;
+                G.addEdge(u, v, weight);
+                G.addEdge(v, u, weight);
+            }
+        }
+    }
+
+    Partition singletons(8);
+    singletons.allToSingletons();
+    ParallelLeiden local(G, 1, false);
+    EXPECT_TRUE(ParallelLeidenTestAccess::move(local, G, singletons));
+    const Partition pairs = ParallelLeidenTestAccess::partition(local);
+    expectDirectedMembership(G, pairs, {0, 0, 1, 1, 2, 2, 3, 3});
+    EXPECT_NEAR(directedQualityReference(G, pairs, 1.0), 1.0 / 4.0, 1e-14);
+    EXPECT_FALSE(ParallelLeidenTestAccess::move(local, G, pairs));
+
+    ParallelLeiden algorithm(G, 1, false);
+    algorithm.run();
+    const auto &result = algorithm.getPartition();
+    expectDirectedMembership(G, result, {0, 0, 0, 0, 1, 1, 1, 1});
+    EXPECT_NEAR(directedQualityReference(G, result, 1.0), 1.0 / 2.0, 1e-14);
+}
+
+TEST_F(CommunityGTest, testDirectedLeidenGappedNodes) {
+    Graph G(21, true, true);
+    for (node u = 0; u < 21; ++u) {
+        if (u != 0 && u != 2 && u != 7 && u != 11 && u != 20)
+            G.removeNode(u);
+    }
+    G.addEdge(0, 2, 2.0);
+    G.addEdge(2, 0, 1.0);
+    G.addEdge(2, 7, 1.0);
+    G.addEdge(7, 11, 3.0);
+    G.addEdge(11, 7, 2.0);
+    G.addEdge(11, 11, 0.5);
+    G.addEdge(0, 11, 0.0);
+    ParallelLeiden algorithm(G, 3, false);
+    algorithm.run();
+    const auto &result = algorithm.getPartition();
+    std::vector<index> expected(21, none);
+    expected[0] = expected[2] = 0;
+    expected[7] = expected[11] = 1;
+    expected[20] = 2;
+    expectDirectedMembership(G, result, expected);
+    for (node u = 0; u < 21; ++u) {
+        if (!G.hasNode(u)) {
+            EXPECT_EQ(result[u], none);
+        }
+    }
+    EXPECT_NEAR(directedQualityReference(G, result, 1.0), 132.0 / 361.0, 1e-14);
+}
+
+TEST_F(CommunityGTest, testDirectedLeidenEmptyAndInvalidInputs) {
+    Graph empty(0, true, true);
+    ParallelLeiden emptyAlgorithm(empty, 1, false);
+    emptyAlgorithm.run();
+    EXPECT_EQ(emptyAlgorithm.getPartition().numberOfSubsets(), 0);
+
+    Graph zero(4, true, true);
+    zero.removeNode(1);
+    zero.addEdge(0, 2, 0.0);
+    ParallelLeiden zeroAlgorithm(zero, 1, false);
+    zeroAlgorithm.run();
+    expectDirectedMembership(zero, zeroAlgorithm.getPartition(), {0, none, 1, 2});
+    EXPECT_EQ(zeroAlgorithm.getPartition()[1], none);
+
+    Graph valid(2, true, true);
+    valid.addEdge(0, 1, 1.0);
+    for (double gamma : {-1.0, std::numeric_limits<double>::infinity(),
+                         std::numeric_limits<double>::quiet_NaN()}) {
+        ParallelLeiden invalid(valid, 1, false, gamma);
+        EXPECT_THROW(invalid.run(), std::invalid_argument);
+    }
+    for (double weight : {-1.0, std::numeric_limits<double>::infinity(),
+                          std::numeric_limits<double>::quiet_NaN()}) {
+        Graph invalidGraph(2, true, true);
+        invalidGraph.addEdge(0, 1, weight);
+        ParallelLeiden invalid(invalidGraph, 1, false);
+        EXPECT_THROW(invalid.run(), std::invalid_argument);
+    }
+    Graph overflow(3, true, true);
+    overflow.addEdge(0, 1, std::numeric_limits<double>::max());
+    overflow.addEdge(1, 2, std::numeric_limits<double>::max());
+    ParallelLeiden invalid(overflow, 1, false);
+    EXPECT_THROW(invalid.run(), std::invalid_argument);
+}
 
 TEST_F(CommunityGTest, testLabelPropagationOnUniformGraph) {
     ErdosRenyiGenerator graphGen(100, 0.2);

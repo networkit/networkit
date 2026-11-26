@@ -16,6 +16,11 @@ public:
     /**
      * Parallel Leiden algorithm for community detection.
      *
+     * Undirected inputs use the parallel implementation. Directed moving, refinement,
+     * and aggregation loops run serially; partition helpers may use OpenMP.
+     * Directed inputs require finite, nonnegative edge weights and gamma, and a finite
+     * total edge weight.
+     *
      * @param graph A networkit graph
      * @param iterations Number of Leiden Iterations to be run
      * @param randomize Randomize node order?
@@ -29,6 +34,14 @@ public:
     int VECTOR_OVERSIZE = 10000;
 
 private:
+    friend class ParallelLeidenTestAccess;
+
+    void directedRun();
+
+    bool directedMove(const Graph &graph);
+
+    Partition directedRefine(const Graph &graph);
+
     inline double modularityDelta(double cutD, double degreeV, double volD) const {
         return cutD - gamma * degreeV * volD * inverseGraphVolume;
     };

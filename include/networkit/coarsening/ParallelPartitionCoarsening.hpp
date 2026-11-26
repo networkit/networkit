@@ -18,6 +18,11 @@ namespace NetworKit {
  */
 class ParallelPartitionCoarsening final : public GraphCoarsening {
 public:
+    /**
+     * Aggregate edge weights according to @a zeta, preserving edge direction.
+     * Directed edge aggregation loops run serially, regardless of @a parallel.
+     * Partition helpers may use OpenMP.
+     */
     ParallelPartitionCoarsening(const Graph &G, const Partition &zeta, bool parallel = true);
 
     void run() override;
