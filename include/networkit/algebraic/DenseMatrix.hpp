@@ -326,6 +326,14 @@ public:
     static void LUDecomposition(DenseMatrix &matrix);
 
     /**
+     * Decomposes @a matrix in-place using partial pivoting, so that P * A = L * U.
+     * @param matrix Square matrix to decompose.
+     * @param permutation Row permutation: row i of P * A is row permutation[i] of A.
+     * @throws std::runtime_error if the matrix is singular.
+     */
+    static void LUDecomposition(DenseMatrix &matrix, std::vector<index> &permutation);
+
+    /**
      * Computes the solution vector x to the system @a LU * x = @a b where @a LU is a matrix
      * decomposed into L and U.
      * @param LU Matrix decomposed into lower L and upper U matrix.

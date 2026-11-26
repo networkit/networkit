@@ -31,6 +31,7 @@ private:
     std::vector<LevelAggregation<Matrix>> aggregationLevels;
     LevelFinest<Matrix> finestLevel;
     DenseMatrix coarseLUMatrix;
+    std::vector<index> coarsePermutation;
 
     void createCoarseMatrix();
 
@@ -43,6 +44,7 @@ public:
     void addAggregationLevel(const Matrix &A, const Matrix &P, const Matrix &R);
     void setLastAsCoarsest();
     inline const DenseMatrix &getCoarseMatrix() const { return coarseLUMatrix; }
+    inline const std::vector<index> &getCoarsePermutation() const { return coarsePermutation; }
 
     inline count size() const {
         return levelType.size() + 1; // elimination + aggregation levels + finestLevel
@@ -89,7 +91,7 @@ void LevelHierarchy<Matrix>::setLastAsCoarsest() {
     }
 
     coarseLUMatrix = DenseMatrix(n, n, entries);
-    DenseMatrix::LUDecomposition(coarseLUMatrix);
+    DenseMatrix::LUDecomposition(coarseLUMatrix, coarsePermutation);
 }
 
 template <class Matrix>
