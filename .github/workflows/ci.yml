@@ -466,7 +466,7 @@ jobs:
           cd ../..
           python -m venv pyenv
           . ./pyenv/Scripts/activate
-          pip install cython==3.0.9 ipython ipywidgets==7.7.1 jupyter jupyterlab-widgets==1.1.1 numpy setuptools
+          pip install "cython>=3.1,<3.3.0" ipython ipywidgets==7.7.1 jupyter jupyterlab-widgets==1.1.1 numpy setuptools
           cmake --preset ${{ env.PRESET }} -DNETWORKIT_STATIC=ON -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DNETWORKIT_EXT_TLX=${{ env.TLX_PATH_WIN }}
           cmake --build --preset ${{ env.PRESET }}
           ctest --preset ${{ env.PRESET }} -V

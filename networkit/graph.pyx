@@ -4,8 +4,6 @@ from cython.operator import dereference, preincrement
 
 import numpy as np
 from scipy.sparse import coo_matrix
-cimport numpy as cnp
-cnp.import_array()
 
 from .base import Algorithm
 from .helpers import stdstring, pystring
@@ -452,69 +450,23 @@ cdef class Graph:
 			Check if edge is already present in the graph. If detected, do not insert the edge. Default: False
 		"""
 
-		cdef cnp.ndarray[cnp.npy_uintp, ndim = 1, mode = 'c'] row_u_pt, col_u_pt
-		cdef cnp.ndarray[cnp.npy_uint32, ndim = 1, mode = 'c'] row_u_32t, col_u_32t
-		cdef cnp.ndarray[cnp.npy_uint16, ndim = 1, mode = 'c'] row_u_16t, col_u_16t
-		cdef cnp.ndarray[cnp.npy_uint8, ndim = 1, mode = 'c'] row_u_8t, col_u_8t
-
-		cdef cnp.ndarray[cnp.npy_intp, ndim = 1, mode = 'c'] row_pt, col_pt
-		cdef cnp.ndarray[cnp.npy_int32, ndim = 1, mode = 'c'] row_32t, col_32t
-		cdef cnp.ndarray[cnp.npy_int16, ndim = 1, mode = 'c'] row_16t, col_16t
-		cdef cnp.ndarray[cnp.npy_int8, ndim = 1, mode = 'c'] row_8t, col_8t
-
-		cdef cnp.ndarray[cnp.npy_float64, ndim = 1, mode = 'c'] data_pt
-		cdef cnp.ndarray[cnp.npy_float32, ndim = 1, mode = 'c'] data_32t
-
+		# Plain numpy arrays (no typed buffers): the numpy C API is not part of the limited API.
 		def dtyped_row_col(row, col):
 			if row.dtype != col.dtype:
 				raise TypeError("Row and column indices must have the same data type.")
-			if row.dtype == np.uintp:
-				row_u_pt = row.view(np.uintp)
-				col_u_pt = col.view(np.uintp)
-				return row_u_pt, col_u_pt
-			if row.dtype == np.uint32:
-				row_u_32t = row.view(np.uint32)
-				col_u_32t = col.view(np.uint32)
-				return row_u_32t, col_u_32t
-			if row.dtype == np.uint16:
-				row_u_16t = row.view(np.uint16)
-				col_u_16t = col.view(np.uint16)
-				return row_u_16t, col_u_16t
-			if row.dtype == np.uint8:
-				row_u_8t = row.view(np.uint8)
-				col_u_8t = col.view(np.uint8)
-				return row_u_8t, col_u_8t
-			if row.dtype == np.intp:
-				row_pt = row.view(np.intp)
-				col_pt = col.view(np.intp)
-				return row_pt, col_pt
-			if row.dtype == np.int32:
-				row_32t = row.view(np.int32)
-				col_32t = col.view(np.int32)
-				return row_32t, col_32t
-			if row.dtype == np.int16:
-				row_16t = row.view(np.int16)
-				col_16t = col.view(np.int16)
-				return row_16t, col_16t
-			if row.dtype == np.int8:
-				row_8t = row.view(np.int8)
-				col_8t = col.view(np.int8)
-				return row_8t, col_8t
-			raise TypeError("Unsupported data type for row and column indices. Supported types are np.intp, np.int32, np.int16, and np.int8.")
+			if row.dtype not in (np.uintp, np.uint32, np.uint16, np.uint8, np.intp, np.int32, np.int16, np.int8):
+				raise TypeError("Unsupported data type for row and column indices. Supported types are np.intp, np.int32, np.int16, and np.int8.")
+			return row.tolist(), col.tolist()
 
 		def dtyped_data(data):
-			if data.dtype == np.float64:
-				data_pt = data.view(np.float64)
-				return data_pt
-			if data.dtype == np.float32:
-				data_32t = data.view(np.float32)
-				return data_32t
-			raise TypeError("Unsupported data type for edge weights. Supported types are np.float32 and np.float64.")
+			if data.dtype not in (np.float64, np.float32):
+				raise TypeError("Unsupported data type for edge weights. Supported types are np.float32 and np.float64.")
+			return data.tolist()
 
 		if isinstance(inputData, coo_matrix):
 			try:
 				row, col = dtyped_row_col(inputData.row, inputData.col)
-				data = np.asarray(inputData.data, dtype=np.double, order='C')
+				data = np.asarray(inputData.data, dtype=np.double, order='C').tolist()
 				if addMissing:	
 					for i in range(len(inputData.row)):
 						# Calling Python interface of addEdge due to addMissing support. 
@@ -536,7 +488,7 @@ cdef class Graph:
 			else:
 				try:
 					row, col = dtyped_row_col(inputData[0], inputData[1])
-					data = np.ones(len(row), dtype = np.double)
+					data = [1.0] * len(row)
 				except (TypeError, ValueError) as e:
 					raise TypeError('invalid input format') from e
 			
@@ -1253,22 +1205,18 @@ def GraphFromCsr(csr, directed=True, weighted=False):
 	cdef count nCols = <count>csr.shape[1]
 
 	# Use raw buffer pointers and call the fast C++ entrypoint to avoid python loops
-	cdef cnp.ndarray indptr_arr = indptr
-	cdef cnp.ndarray indices_arr = indices
-	cdef cnp.ndarray data_arr = data
-
 	# Ensure arrays are contiguous C order
-	indptr_arr = np.ascontiguousarray(indptr_arr, dtype=np.int64)
-	indices_arr = np.ascontiguousarray(indices_arr, dtype=np.int64)
-	data_arr = np.ascontiguousarray(data_arr, dtype=np.double)
+	indptr_arr = np.ascontiguousarray(indptr, dtype=np.int64)
+	indices_arr = np.ascontiguousarray(indices, dtype=np.int64)
+	data_arr = np.ascontiguousarray(data, dtype=np.double)
 
-	cdef const index* indptr_ptr = <const index*> indptr_arr.data
-	cdef const index* indices_ptr = <const index*> indices_arr.data
-	cdef const double* data_ptr = <const double*> data_arr.data
+	cdef const index* indptr_ptr = <const index*><size_t>indptr_arr.ctypes.data
+	cdef const index* indices_ptr = <const index*><size_t>indices_arr.ctypes.data
+	cdef const double* data_ptr = <const double*><size_t>data_arr.ctypes.data
 
-	cdef size_t indptr_size = indptr_arr.shape[0]
-	cdef size_t indices_size = indices_arr.shape[0]
-	cdef size_t data_size = data_arr.shape[0]
+	cdef size_t indptr_size = len(indptr_arr)
+	cdef size_t indices_size = len(indices_arr)
+	cdef size_t data_size = len(data_arr)
 
 	# _fromCSRRaw is a Cython-only helper that forwards to Graph::fromCSR via
 	# std::span; Cython cannot construct a std::span directly yet.
