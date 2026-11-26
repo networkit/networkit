@@ -27,12 +27,23 @@ def gini(values):
 	Returns
 	-------
 	float
-		Gini coefficient.
+		Gini coefficient. Empty or all-zero input yields 0.0.
+
+	Raises
+	------
+	ValueError
+		If `values` contains non-zero entries that sum to zero.
 	"""
+	if len(values) == 0:
+		return 0.0
 	sorted_list = sorted(values)
 	height, area = 0, 0
 	for value in sorted_list:
 		height += value
 		area += height - value / 2.
 	fair_area = height * len(values) / 2
+	if fair_area == 0:
+		if all(value == 0 for value in sorted_list):
+			return 0.0
+		raise ValueError("Gini coefficient is undefined when values sum to zero")
 	return (fair_area - area) / fair_area
