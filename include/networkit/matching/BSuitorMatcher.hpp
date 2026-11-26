@@ -84,9 +84,7 @@ protected:
         }
 
         void remove(node u) {
-            partners.erase(std::remove_if(partners.begin(), partners.end(),
-                                          [u](const MatchingNode &v) { return v.id == u; }),
-                           partners.end());
+            std::erase_if(partners, [u](const MatchingNode &v) { return v.id == u; });
             min = MatchingNode();
         }
     };

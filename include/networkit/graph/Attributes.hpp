@@ -219,8 +219,6 @@ public:
             return storage == iter.storage && idx == iter.idx;
         }
 
-        bool operator!=(Iterator const &iter) const noexcept { return !(*this == iter); }
-
     private:
         AttributeStorage_type *storage;
         index idx;
@@ -282,8 +280,8 @@ public:
     Attribute(Attribute const &other)
         : ownedStorage{other.ownedStorage}, theGraph{other.theGraph}, valid{other.valid} {}
 
-    template <bool ic = isConst, std::enable_if_t<ic, int> = 0>
     Attribute(Attribute<NodeOrEdge, GraphType, T, false> const &other)
+        requires(isConst)
         : ownedStorage{other.ownedStorage}, theGraph{other.theGraph}, valid{other.valid} {}
 
     Attribute &operator=(Attribute other) {
@@ -303,8 +301,8 @@ public:
         other.valid = false;
     }
 
-    template <bool ic = isConst, std::enable_if_t<ic, int> = 0>
     Attribute(Attribute<NodeOrEdge, GraphType, T, false> &&other) noexcept
+        requires(isConst)
         : ownedStorage{std::move(other.ownedStorage)}, theGraph{std::move(other.theGraph)},
           valid{other.valid} {
         other.valid = false;
@@ -319,8 +317,9 @@ public:
 
     auto size() const noexcept { return lockStorage()->size(); }
 
-    template <bool ic = isConst>
-    std::enable_if_t<!ic> set(index i, T v) {
+    void set(index i, T v)
+        requires(!isConst)
+    {
         checkAttribute();
 #ifndef NDEBUG
         indexOK(i);
@@ -328,8 +327,9 @@ public:
         lockStorage()->set(i, std::move(v));
     }
 
-    template <bool ic = isConst>
-    std::enable_if_t<!ic> set2(node u, node v, T t) {
+    void set2(node u, node v, T t)
+        requires(!isConst)
+    {
         static_assert(NodeOrEdge::edges, "attribute(u,v) for edges only");
         checkAttribute();
         set(theGraph->edgeId(u, v), t);
@@ -405,8 +405,9 @@ public:
         out.close();
     }
 
-    template <bool ic = isConst>
-    std::enable_if_t<!ic> read(const std::string &filename) {
+    void read(const std::string &filename)
+        requires(!isConst)
+    {
         std::ifstream in(filename);
         if (!in) {
             ERROR("cannot open ", filename, " for reading");

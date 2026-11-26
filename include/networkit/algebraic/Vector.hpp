@@ -140,12 +140,6 @@ public:
     bool operator==(const Vector &other) const;
 
     /**
-     * Compares this vector and @a other element-wise.
-     * @return True, if this vector is element-wise unequal to @a other, otherwise false.
-     */
-    bool operator!=(const Vector &other) const;
-
-    /**
      * Computes the outer product of @a v1 and @a v2.
      * @param v1 First Vector.
      * @param v2 Second Vector.

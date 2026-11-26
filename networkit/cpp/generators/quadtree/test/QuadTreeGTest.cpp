@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <numbers>
 #include <stack>
 #include <vector>
 
@@ -56,7 +57,7 @@ TEST_F(QuadTreeGTest, testQuadTreeHyperbolicCircle) {
 
     for (index i = 0; i < n; i++) {
         EXPECT_GE(angles[i], 0);
-        EXPECT_LT(angles[i], 2 * PI);
+        EXPECT_LT(angles[i], 2 * std::numbers::pi);
         EXPECT_GE(radii[i], 0);
         EXPECT_LT(radii[i], R);
         TRACE("Added (", angles[i], ",", radii[i], ")");
@@ -177,7 +178,7 @@ TEST_F(QuadTreeGTest, testQuadTreeThresholdGrowth) {
 
     for (index i = 0; i < n; i++) {
         EXPECT_GE(angles[i], 0);
-        EXPECT_LT(angles[i], 2 * PI);
+        EXPECT_LT(angles[i], 2 * std::numbers::pi);
         EXPECT_GE(radii[i], 0);
         EXPECT_LT(radii[i], R);
         TRACE("Added (", angles[i], ",", radii[i], ")");
@@ -237,7 +238,7 @@ TEST_F(QuadTreeGTest, testQuadTreeDeletion) {
 
     for (index i = 0; i < n; i++) {
         EXPECT_GE(angles[i], 0);
-        EXPECT_LT(angles[i], 2 * PI);
+        EXPECT_LT(angles[i], 2 * std::numbers::pi);
         EXPECT_GE(radii[i], 0);
         EXPECT_LT(radii[i], R);
         TRACE("Added (", angles[i], ",", radii[i], ")");
@@ -304,7 +305,7 @@ TEST_F(QuadTreeGTest, testEuclideanCircle) {
 
     for (index i = 0; i < n; i++) {
         EXPECT_GE(angles[i], 0);
-        EXPECT_LT(angles[i], 2 * PI);
+        EXPECT_LT(angles[i], 2 * std::numbers::pi);
         EXPECT_GE(radii[i], 0);
         EXPECT_LT(radii[i], R);
         TRACE("Added (", angles[i], ",", radii[i], ")");
@@ -326,7 +327,7 @@ TEST_F(QuadTreeGTest, testEuclideanCircle) {
             maxR = std::max(std::abs(minR), maxR);
             minR = 0;
             minPhi = 0;
-            maxPhi = 2 * PI;
+            maxPhi = 2 * std::numbers::pi;
         } else {
             spread = std::asin(radius / query.length());
             HyperbolicSpace::cartesianToPolar(query, phi_c, r_c);
@@ -347,12 +348,13 @@ TEST_F(QuadTreeGTest, testEuclideanCircle) {
         root.getElementsInEuclideanCircle(query, radius, circleDenizens, minPhi, maxPhi, minR,
                                           maxR);
         if (minPhi < 0) {
-            root.getElementsInEuclideanCircle(query, radius, circleDenizens, 2 * PI + minPhi,
-                                              2 * PI, minR, maxR);
-        }
-        if (maxPhi > 2 * PI) {
-            root.getElementsInEuclideanCircle(query, radius, circleDenizens, 0, maxPhi - 2 * PI,
+            root.getElementsInEuclideanCircle(query, radius, circleDenizens,
+                                              2 * std::numbers::pi + minPhi, 2 * std::numbers::pi,
                                               minR, maxR);
+        }
+        if (maxPhi > 2 * std::numbers::pi) {
+            root.getElementsInEuclideanCircle(query, radius, circleDenizens, 0,
+                                              maxPhi - 2 * std::numbers::pi, minR, maxR);
         }
 
         // check whether bounds were correct by calling again without bounds and comparing
@@ -408,7 +410,7 @@ TEST_F(QuadTreeGTest, testQuadTreeBalance) {
 
     for (index i = 0; i < n; i++) {
         EXPECT_GE(angles[i], 0);
-        EXPECT_LT(angles[i], 2 * PI);
+        EXPECT_LT(angles[i], 2 * std::numbers::pi);
         EXPECT_GE(radii[i], 0);
         EXPECT_LT(radii[i], R);
         TRACE("Added (", angles[i], ",", radii[i], ")");
@@ -492,7 +494,7 @@ TEST_F(QuadTreeGTest, testProbabilisticQuery) {
     count n = 5000;
     count m = n * 3;
     count capacity = 20;
-    double R = 2 * std::log(8 * n / (PI * (m / n) * 2));
+    double R = 2 * std::log(8 * n / (std::numbers::pi * (m / n) * 2));
     double r = HyperbolicSpace::hyperbolicRadiusToEuclidean(R);
     double alpha = 1;
 
@@ -677,7 +679,7 @@ TEST_F(QuadTreeGTest, debugTreeExport) {
 
     count treeheight = quad.height();
     DEBUG("Quadtree height: ", treeheight);
-    auto deg = [](double rad) -> double { return 180 * rad / PI; };
+    auto deg = [](double rad) -> double { return 180 * rad / std::numbers::pi; };
     tlx::unused(treeheight, deg);
 
     index query = Aux::Random::integer(n - 1);
@@ -759,7 +761,7 @@ TEST_F(QuadTreeGTest, testPolarEuclidQuery) {
     vector<index> content(n);
 
     double minPhi = 0;
-    double maxPhi = 2 * PI;
+    double maxPhi = 2 * std::numbers::pi;
     double minR = 0;
 
     /**
@@ -820,7 +822,7 @@ TEST_F(QuadTreeGTest, testQuadTreePolarEuclidInsertion) {
     vector<index> content(n);
 
     double minPhi = 0;
-    double maxPhi = 2 * PI;
+    double maxPhi = 2 * std::numbers::pi;
     double minR = 0;
 
     /**
@@ -856,7 +858,7 @@ TEST_F(QuadTreeGTest, testQuadTreePolarEuclidInsertion) {
 TEST_F(QuadTreeGTest, testQuadNodeHyperbolicDistances) {
     double minR, maxR, minPhi, maxPhi;
     std::tie(minPhi, minR, maxPhi, maxR) =
-        std::make_tuple(6.1850105367549055, 0.0, 6.2831853071795862, 0.99998090224083802);
+        std::make_tuple(6.1850105367549055, 0.0, 2 * std::numbers::pi, 0.99998090224083802);
     ASSERT_LE(minPhi, maxPhi);
     ASSERT_LE(minR, maxR);
 

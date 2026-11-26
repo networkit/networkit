@@ -514,7 +514,7 @@ cdef class Graph:
 		if isinstance(inputData, coo_matrix):
 			try:
 				row, col = dtyped_row_col(inputData.row, inputData.col)
-				data = np.asarray(inputData.data, dtype=inputData.row.dtype, order='C')
+				data = np.asarray(inputData.data, dtype=np.double, order='C')
 				if addMissing:	
 					for i in range(len(inputData.row)):
 						# Calling Python interface of addEdge due to addMissing support. 
@@ -1816,6 +1816,75 @@ cdef cppclass NodePairCallbackWrapper:
 			message = stdstring("An Exception occurred, aborting execution of iterator: {0}".format(e))
 		if (error):
 			throw_runtime_error(message)
+
+cdef class SteinerTree(Algorithm):
+	"""
+	SteinerTree(G, terminals)
+
+	Computes a light tree that connects a given set of terminal nodes, possibly through other
+	nodes. Finding the lightest one is NP-hard. This is the approximation algorithm from "A faster
+	approximation algorithm for the Steiner problem in graphs" by K. Mehlhorn (1988): the weight of
+	the result is at most 2(1 - 1/l) times the optimal one, where l is the number of leaves of an
+	optimal tree, which is at most the number of terminals. The resulting tree is then replaced by a
+	minimum spanning tree of the subgraph induced by its nodes, and leaves that are not terminals are
+	removed. This keeps the guarantee and often makes the tree lighter. It runs in O(m log n) time.
+
+	Unweighted graphs are treated as having unit weights.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		An undirected graph with non-negative edge weights.
+	terminals : list(int)
+		The nodes to connect. Duplicates are ignored.
+	"""
+
+	def __cinit__(self, Graph G not None, vector[node] terminals):
+		self._G = G
+		self._this = new _SteinerTree(G._this, terminals)
+
+	def hasTree(self):
+		"""
+		hasTree()
+
+		Returns whether all terminals are in the same connected component, which is always the case
+		for fewer than two terminals.
+
+		Returns
+		-------
+		bool
+			True if a tree connecting all terminals exists.
+		"""
+		return (<_SteinerTree*>(self._this)).hasTree()
+
+	def getTree(self):
+		"""
+		getTree()
+
+		Returns the tree, a weighted graph with the same node ids as the input graph. Nodes deleted
+		from the input graph are deleted from the tree too, and nodes outside the tree have no edges.
+		Its edges have unit weight if the input graph is unweighted. It has no edges if the terminals
+		are not connected.
+
+		Returns
+		-------
+		networkit.Graph
+			The tree connecting the terminals.
+		"""
+		return Graph().setThis((<_SteinerTree*>(self._this)).getTree())
+
+	def getTotalWeight(self):
+		"""
+		getTotalWeight()
+
+		Returns the total weight of the tree.
+
+		Returns
+		-------
+		float
+			The total weight of the edges of the tree.
+		"""
+		return (<_SteinerTree*>(self._this)).getTotalWeight()
 
 cdef class SpanningForest:
 	""" 

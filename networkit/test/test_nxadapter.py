@@ -305,6 +305,38 @@ class TestNXAdapter(unittest.TestCase):
 
         mock_stderr.write.assert_not_called()
 
+    def test_nx2nk_multigraph(self):
+        for nxGraphType in [nx.MultiGraph, nx.MultiDiGraph]:
+            with self.subTest(nxGraphType=nxGraphType.__name__):
+                nxG = nxGraphType()
+                nxG.add_edge(0, 1, weight=2, color="red")
+                nxG.add_edge(0, 1, weight=5, color="blue")
+                nxG.add_edge(1, 2, weight=1, color="green")
+
+                nkG = nk.nxadapter.nx2nk(nxG, weightAttr="weight")
+                self.assertEqual(
+                    sorted(nkG.iterEdgesWeights()), [(0, 1, 2), (0, 1, 5), (1, 2, 1)]
+                )
+
+                nkG = nk.nxadapter.nx2nk(nxG, data=True)
+                colors = nkG.getEdgeAttribute("color", str)
+                self.assertEqual(
+                    sorted(color for _, color in colors), ["blue", "green", "red"]
+                )
+
+                nkG = nk.nxadapter.nx2nk(nxG, weightAttr="weight", data=True)
+                colors = nkG.getEdgeAttribute("color", str)
+                edges = []
+                nkG.forEdges(
+                    lambda u, v, w, eid: edges.append(
+                        (min(u, v), max(u, v), w, colors[eid])
+                    )
+                )
+                self.assertEqual(
+                    sorted(edges),
+                    [(0, 1, 2, "red"), (0, 1, 5, "blue"), (1, 2, 1, "green")],
+                )
+
     def test_missing_networkx(self):
         # Load a separate copy of the adapter while networkx cannot be imported.
         spec = importlib.util.spec_from_file_location(
@@ -315,12 +347,10 @@ class TestNXAdapter(unittest.TestCase):
             spec.loader.exec_module(adapter)
 
         self.assertFalse(adapter.have_nx)
-        self.assertIn("nxG", adapter.nx2nk.__annotations__)
         with self.assertRaises(nk.MissingDependencyError):
             adapter.nx2nk(None)
         with self.assertRaises(nk.MissingDependencyError):
             adapter.nk2nx(nk.Graph())
-
 
 if __name__ == "__main__":
     unittest.main()

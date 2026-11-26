@@ -6,6 +6,7 @@
  */
 
 #include <cmath>
+#include <numbers>
 #include <queue>
 #include <set>
 
@@ -73,7 +74,7 @@ void PubWebGenerator::determineNeighbors(Graph &g) {
             const auto currentBest = pq.top();
             pq.pop();
 
-            if (eligibleEdges.count(currentBest.second) > 0) {
+            if (eligibleEdges.contains(currentBest.second)) {
                 // edge is already marked => insert it
                 edgeweight ew = BASE_WEIGHT / -currentBest.first;
                 g.addEdge(currentBest.second.first, currentBest.second.second, ew);
@@ -88,7 +89,7 @@ void PubWebGenerator::determineNeighbors(Graph &g) {
 void PubWebGenerator::addNodesToArea(index area, count num, Graph &g) {
     for (index j = 0; j < num; ++j) {
         // compute random angle between [0, 2pi) and distance between [0, width/2]
-        coordinate angle = Aux::Random::real() * 2.0 * PI;
+        coordinate angle = Aux::Random::real() * 2.0 * std::numbers::pi;
         coordinate dist = Aux::Random::real() * denseAreaXYR[area].rad;
 
         // compute coordinates and adjust them

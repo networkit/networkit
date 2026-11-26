@@ -38,8 +38,6 @@ public:
         typedef AlignedAllocator<U, Alignment> other;
     };
 
-    bool operator!=(const AlignedAllocator &other) const { return !(*this == other); }
-
     void construct(T *const p, const T &t) const {
         void *const pv = static_cast<void *>(p);
 

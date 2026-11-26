@@ -5,10 +5,14 @@
  *      Author: cls
  */
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <numbers>
 #include <random>
+#include <stdexcept>
+#include <unordered_set>
 
 #include <gmock/gmock-more-matchers.h>
 #include <gtest/gtest.h>
@@ -1192,6 +1196,39 @@ TEST_P(CentralityGTest, testClosenessCentrality) {
     }
 }
 
+TEST_F(CentralityGTest, testHarmonicClosenessSingleton) {
+    for (bool normalized : {false, true}) {
+        for (bool directed : {false, true}) {
+            Graph G(1, false, directed);
+            HarmonicCloseness centrality(G, normalized);
+            centrality.run();
+            EXPECT_DOUBLE_EQ(centrality.score(0), 0.);
+            EXPECT_DOUBLE_EQ(centrality.maximum(), 0.);
+        }
+        Graph empty(0);
+        HarmonicCloseness centrality(empty, normalized);
+        centrality.run();
+        EXPECT_THAT(centrality.scores(), testing::IsEmpty());
+        EXPECT_DOUBLE_EQ(centrality.maximum(), 0.);
+    }
+}
+
+TEST_F(CentralityGTest, testHarmonicClosenessMaximum) {
+    Graph G(4);
+    G.addEdge(0, 1);
+    G.addEdge(1, 2);
+    G.addEdge(2, 3);
+
+    for (bool normalized : {false, true}) {
+        HarmonicCloseness centrality(G, normalized);
+        centrality.run();
+        EXPECT_DOUBLE_EQ(centrality.maximum(), normalized ? 1. : 3.);
+        // Raw scores are [11/6, 5/2, 5/2, 11/6]. Scaling every score
+        // and its theoretical maximum leaves centralization at 2/5.
+        EXPECT_NEAR(centrality.centralization(), 2. / 5., 1e-12);
+    }
+}
+
 TEST_F(CentralityGTest, testHarmonicClosenessCentrality) {
     /* Graph:
      0    3
@@ -1223,7 +1260,7 @@ TEST_F(CentralityGTest, testHarmonicClosenessCentrality) {
     EXPECT_NEAR(3.5, hc[3], tol);
     EXPECT_NEAR(3.5, hc[4], tol);
     EXPECT_NEAR(3.1667, hc[5], tol);
-    EXPECT_NEAR(1, maximum, tol);
+    EXPECT_NEAR(5., maximum, tol);
 }
 
 TEST_F(CentralityGTest, runKPathCentrality) {
@@ -1726,7 +1763,7 @@ TEST_P(CentralityGTest, testGroupDegree) {
     } while (std::next_permutation(reference.begin(), reference.end()));
 
     EXPECT_TRUE(scoreNoGroup > 0.5 * maxScore);
-    EXPECT_TRUE(scorePlusGroup > (1.0 - 1.0 / std::exp(1.0)) * static_cast<double>(maxScore + k));
+    EXPECT_TRUE(scorePlusGroup > (1.0 - 1.0 / std::numbers::e) * static_cast<double>(maxScore + k));
     EXPECT_EQ(scoreNoGroup, gd.scoreOfGroup(gd.groupMaxDegree()));
     EXPECT_EQ(scorePlusGroup, gdIncludeGroup.scoreOfGroup(gdIncludeGroup.groupMaxDegree()));
 }
@@ -1854,6 +1891,52 @@ TEST_F(CentralityGTest, runTestApproxGroupBetweennessSmallGraph) {
     EXPECT_TRUE(gb.scoreOfGroup(gb.groupMaxBetweenness()) >= maxScore * eps);
 }
 
+TEST_F(CentralityGTest, testGroupClosenessInvalidGroupSize) {
+    for (count h : {0, 1}) {
+        for (count n : {0, 1, 2}) {
+            Graph g(n);
+            EXPECT_THROW(GroupCloseness(g, 0, h), std::invalid_argument);
+            EXPECT_THROW(GroupCloseness(g, n + 1, h), std::invalid_argument);
+        }
+
+        Graph g(3);
+        g.removeNode(1);
+        EXPECT_THROW(GroupCloseness(g, 3, h), std::invalid_argument);
+
+        GroupCloseness gc(g, 2, h);
+        g.removeNode(0);
+        g.removeNode(2);
+        EXPECT_THROW(gc.run(), std::invalid_argument);
+    }
+}
+
+TEST_F(CentralityGTest, testGroupClosenessWithoutImprovingCandidates) {
+    for (count h : {0, 1}) {
+        for (count n : {1, 2, 4}) {
+            Graph g(n);
+            for (count k = 1; k <= n; ++k) {
+                GroupCloseness gc(g, k, h);
+                gc.run();
+                const std::vector<node> group = gc.groupMaxCloseness();
+                ASSERT_EQ(group.size(), k);
+                EXPECT_EQ(std::unordered_set<node>(group.begin(), group.end()).size(), k);
+                for (node u : group)
+                    EXPECT_TRUE(g.hasNode(u));
+            }
+        }
+
+        Graph g(5);
+        g.addEdge(0, 2);
+        g.addEdge(3, 4);
+        g.removeNode(1);
+        GroupCloseness gc(g, g.numberOfNodes(), h);
+        gc.run();
+        std::vector<node> group = gc.groupMaxCloseness();
+        std::sort(group.begin(), group.end());
+        EXPECT_EQ(group, (std::vector<node>{0, 2, 3, 4}));
+    }
+}
+
 TEST_F(CentralityGTest, testGroupCloseness) {
     Aux::Random::setSeed(42, false);
 
@@ -1875,6 +1958,21 @@ TEST_F(CentralityGTest, testGroupCloseness) {
     gc.run();
     auto apx = gc.groupMaxCloseness();
     EXPECT_NEAR(gc.scoreOfGroup(apx), 1.0, 1e-5);
+}
+
+TEST_F(CentralityGTest, testKadabraEmptyGraph) {
+    Graph G(0);
+    EXPECT_THROW(KadabraBetweenness(G, 0.1, 0.1), std::invalid_argument);
+}
+
+TEST_F(CentralityGTest, testKadabraAllNodesRemoved) {
+    Graph G(3);
+    G.removeNode(0);
+    G.removeNode(1);
+    G.removeNode(2);
+    ASSERT_TRUE(G.isEmpty());
+    ASSERT_GT(G.upperNodeIdBound(), 0);
+    EXPECT_THROW(KadabraBetweenness(G, 0.1, 0.1), std::invalid_argument);
 }
 
 /**
@@ -2136,7 +2234,7 @@ TEST_P(CentralityGTest, testGedWalk) {
                 }
             } while (std::next_permutation(reference.begin(), reference.end()));
 
-            EXPECT_GE(apxScore, (1. - 1. / std::exp(1)) * maxScore - epsilon);
+            EXPECT_GE(apxScore, (1. - 1. / std::numbers::e) * maxScore - epsilon);
         }
     }
 }
@@ -2176,6 +2274,13 @@ TEST_F(CentralityGTest, testGroupClosenessEmptyGroups) {
     Graph G(10);
     std::vector<node> emptyGroup;
     EXPECT_THROW(GroupClosenessGrowShrink(G, emptyGroup.begin(), emptyGroup.end()),
+                 std::runtime_error);
+}
+
+TEST_F(CentralityGTest, testGroupClosenessGrowShrinkDirectedExplicitInsertions) {
+    const Graph G(10, false, true);
+    const auto group = std::to_array<node>({0});
+    EXPECT_THROW(GroupClosenessGrowShrink(G, group.begin(), group.end(), false, 1),
                  std::runtime_error);
 }
 
@@ -2429,9 +2534,9 @@ TEST_P(CentralityGTest, testGroupHarmonicCloseness) {
         // Guaranted approximation ratio
         double approxRatio;
         if (isDirected())
-            approxRatio = lambda * (1. - 1. / (2. * std::exp(1.)));
+            approxRatio = lambda * (1. - 1. / (2. * std::numbers::e));
         else
-            approxRatio = lambda * (1. - 1. / std::exp(1.)) / 2.;
+            approxRatio = lambda * (1. - 1. / std::numbers::e) / 2.;
 
         for (const count k : {3, 4, 5}) {
             GroupHarmonicCloseness ghc(G, k);

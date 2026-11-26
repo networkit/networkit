@@ -20,6 +20,9 @@ cdef extern from "<algorithm>" namespace "std":
 	_Partition move( _Partition t) nogil
 	_Cover move(_Cover t) nogil
 
+cdef extern from "<networkit/structures/Partition.hpp>" namespace "NetworKit::Partition":
+	index _noneIndex "NetworKit::Partition::noneIndex"
+
 cdef extern from "<networkit/structures/Cover.hpp>":
 
 	cdef cppclass _Cover "NetworKit::Cover":
@@ -54,6 +57,7 @@ cdef class Cover:
 cdef extern from "<networkit/structures/Partition.hpp>":
 
 	cdef cppclass _Partition "NetworKit::Partition":
+		index noneIndex
 		_Partition() except +
 		_Partition(index) except +
 		_Partition(_Partition) except +

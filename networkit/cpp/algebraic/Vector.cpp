@@ -57,10 +57,6 @@ bool Vector::operator==(const Vector &other) const {
     return isTransposed() == other.isTransposed() && values == other.values;
 }
 
-bool Vector::operator!=(const Vector &other) const {
-    return !(*this == other);
-}
-
 double Vector::innerProduct(const Vector &v1, const Vector &v2) {
     assert(v1.getDimension() == v2.getDimension());
     double inner_prod = 0.;

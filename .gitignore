@@ -9,6 +9,7 @@ plots
 *.dot$
 tracelog*
 *.json
+!CMakePresets.json
 *.csv
 scripts/SparsificationEvaluation/input/
 scripts/SparsificationEvaluation/output/

@@ -1,7 +1,9 @@
 #ifndef NETWORKIT_AUXILIARY_FUNCTION_TRAITS_HPP_
 #define NETWORKIT_AUXILIARY_FUNCTION_TRAITS_HPP_
 
+#include <cstddef>
 #include <tuple>
+#include <type_traits>
 
 namespace Aux {
 
@@ -27,7 +29,7 @@ struct FunctionTraits<R(Args...)> {
     struct arg_impl<N, false> {};
     template <size_t N>
     struct arg_impl<N, true> {
-        using type = typename std::tuple_element<N, std::tuple<Args...>>::type;
+        using type = std::tuple_element_t<N, std::tuple<Args...>>;
     };
 
     template <size_t N>

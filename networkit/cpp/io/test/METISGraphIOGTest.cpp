@@ -1,0 +1,386 @@
+#include <algorithm>
+#include <array>
+#include <charconv>
+#include <cstdint>
+#include <fstream>
+#include <iterator>
+#include <limits>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <type_traits>
+
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
+#include <networkit/auxiliary/Random.hpp>
+#include <networkit/generators/ErdosRenyiGenerator.hpp>
+#include <networkit/graph/AdjListGraph.hpp>
+#include <networkit/io/METISGraphReader.hpp>
+#include <networkit/io/METISGraphWriter.hpp>
+
+#include "IOTestUtils.hpp"
+
+namespace NetworKit {
+
+namespace {
+
+using ::testing::AllOf;
+using ::testing::HasSubstr;
+using ::testing::Not;
+using ::testing::ThrowsMessage;
+using TestUtils::TemporaryDirectory;
+
+// Matches a graph of the same type with the same nodes, edges, and edge weights as `expected`.
+// Explains the first difference.
+MATCHER_P(IsSameGraphAs, expected, "has the same nodes, edges, and edge weights") {
+    using GraphT = std::remove_cvref_t<decltype(arg)>;
+    static_assert(std::is_same_v<GraphT, std::remove_cvref_t<decltype(expected)>>,
+                  "IsSameGraphAs compares graphs of the same type only");
+    using NodeT = typename GraphT::NodeT;
+    using EdgeWeightT = typename GraphT::EdgeWeightT;
+
+    const auto explainCount = [result_listener](const char *what, count actual,
+                                                count wanted) -> bool {
+        *result_listener << what << " is " << actual << " instead of " << wanted;
+        return false;
+    };
+    if (arg.numberOfNodes() != expected.numberOfNodes()) {
+        return explainCount("number of nodes", arg.numberOfNodes(), expected.numberOfNodes());
+    }
+    if (arg.upperNodeIdBound() != expected.upperNodeIdBound()) {
+        return explainCount("upper node id bound", static_cast<count>(arg.upperNodeIdBound()),
+                            static_cast<count>(expected.upperNodeIdBound()));
+    }
+    if (arg.numberOfEdges() != expected.numberOfEdges()) {
+        return explainCount("number of edges", arg.numberOfEdges(), expected.numberOfEdges());
+    }
+    if (arg.isWeighted() != expected.isWeighted()) {
+        *result_listener << "is " << (arg.isWeighted() ? "weighted" : "unweighted");
+        return false;
+    }
+    if (arg.isDirected() != expected.isDirected()) {
+        *result_listener << "is " << (arg.isDirected() ? "directed" : "undirected");
+        return false;
+    }
+
+    // The counters are set by the reader, so check that they match the stored entries.
+    if (!arg.checkConsistency()) {
+        *result_listener << "is inconsistent";
+        return false;
+    }
+
+    // The two directions of an undirected edge are stored (and read) separately, so check both.
+    // Same number of edges, so it suffices to check that every expected edge is in arg.
+    // The cast prints 8-bit integral weights as numbers instead of characters.
+    using PrintedWeightT = std::common_type_t<EdgeWeightT, int>;
+    const auto hasWeight = [&](NodeT u, NodeT v, EdgeWeightT wanted) -> bool {
+        if (arg.weight(u, v) != wanted) {
+            *result_listener << "edge " << u << "-" << v << " has weight "
+                             << static_cast<PrintedWeightT>(arg.weight(u, v)) << " instead of "
+                             << static_cast<PrintedWeightT>(wanted);
+            return false;
+        }
+        return true;
+    };
+    const auto isInArg = [&](const WeightedEdgeT<NodeT, EdgeWeightT> &edge) -> bool {
+        if (!arg.hasEdge(edge.u, edge.v) || !arg.hasEdge(edge.v, edge.u)) {
+            *result_listener << "has no edge " << edge.u << "-" << edge.v;
+            return false;
+        }
+        return hasWeight(edge.u, edge.v, edge.weight) && hasWeight(edge.v, edge.u, edge.weight);
+    };
+    return std::ranges::all_of(expected.edgeWeightRange(), isInArg);
+}
+
+template <class GraphT_>
+class METISGraphIOGTest : public ::testing::Test {
+public:
+    using GraphT = GraphT_;
+    using NodeT = typename GraphT::NodeT;
+    using EdgeWeightT = typename GraphT::EdgeWeightT;
+
+protected:
+    // Returns a random graph with weights representable by all tested edge weight types, or without
+    // weights. It is sparse enough to have isolated nodes, whose METIS adjacency lines are empty.
+    static GraphT randomGraph(bool weighted) {
+        constexpr count n = 50;
+        Aux::Random::setSeed(42, false);
+        const Graph edges = ErdosRenyiGenerator(n, 0.05).generate();
+        GraphT G(n, weighted);
+        edges.forEdges([&](node u, node v) -> void {
+            G.addEdge(static_cast<NodeT>(u), static_cast<NodeT>(v),
+                      static_cast<EdgeWeightT>(Aux::Random::integer(1, 100)));
+        });
+        return G;
+    }
+
+    // Returns the contents of a METIS file storing G. Does not use the METIS writer, so that the
+    // read tests do not depend on it.
+    static std::string toMETIS(const GraphT &G) {
+        std::ostringstream metis;
+        metis << "% A comment\n"
+              << G.numberOfNodes() << ' ' << G.numberOfEdges() << ' ' << int{G.isWeighted()}
+              << '\n';
+        G.forNodes([&](NodeT u) -> void {
+            G.forNeighborsOf(u, [&](NodeT, NodeT v, EdgeWeightT w, edgeid) -> void {
+                metis << static_cast<count>(v) + 1 << ' ';
+                if (G.isWeighted()) {
+                    // The cast prints 8-bit integral weights as numbers instead of characters.
+                    metis << static_cast<std::common_type_t<EdgeWeightT, int>>(w) << ' ';
+                }
+            });
+            metis << '\n';
+        });
+        return metis.str();
+    }
+};
+
+using METISGraphIOTestTypes =
+    ::testing::Types<Graph, AdjListGraph<uint32_t, float>, AdjListGraph<uint16_t, double>,
+                     AdjListGraph<uint64_t, uint64_t>, AdjListGraph<int, int>,
+                     AdjListGraph<int64_t, float>, AdjListGraph<uint32_t, uint8_t>>;
+
+TYPED_TEST_SUITE(METISGraphIOGTest, METISGraphIOTestTypes, /*Comma needed for variadic macro.*/);
+
+TYPED_TEST(METISGraphIOGTest, testReadUnweighted) {
+    using GraphT = typename TestFixture::GraphT;
+    const TemporaryDirectory directory;
+    const GraphT expected = TestFixture::randomGraph(false);
+    const std::string path =
+        directory.writeFile("unweighted.graph", TestFixture::toMETIS(expected));
+    EXPECT_THAT(GenericMETISGraphReader<GraphT>{}.read(path), IsSameGraphAs(expected));
+}
+
+TYPED_TEST(METISGraphIOGTest, testReadIntegerWeights) {
+    using GraphT = typename TestFixture::GraphT;
+    const TemporaryDirectory directory;
+    const GraphT expected = TestFixture::randomGraph(true);
+    const std::string path = directory.writeFile("weighted.graph", TestFixture::toMETIS(expected));
+    EXPECT_THAT(GenericMETISGraphReader<GraphT>{}.read(path), IsSameGraphAs(expected));
+}
+
+TYPED_TEST(METISGraphIOGTest, testReadFractionalWeights) {
+    using GraphT = typename TestFixture::GraphT;
+    using NodeT = typename TestFixture::NodeT;
+    using EdgeWeightT = typename TestFixture::EdgeWeightT;
+    // A weighted triangle whose weights are exactly representable by float and double.
+    const TemporaryDirectory directory;
+    const std::string path = directory.writeFile("fractional_weights.graph", "3 3 1\n"
+                                                                             "2 0.5 3 1.25\n"
+                                                                             "1 0.5 3 2.75\n"
+                                                                             "1 1.25 2 2.75\n");
+    GenericMETISGraphReader<GraphT> reader;
+    if constexpr (std::is_integral_v<EdgeWeightT>) {
+        EXPECT_THAT([&]() -> void { reader.read(path); },
+                    ThrowsMessage<std::runtime_error>(HasSubstr("METIS value 0.5 is not valid")));
+    } else {
+        GraphT expected(3, true);
+        expected.addEdge(NodeT{0}, NodeT{1}, static_cast<EdgeWeightT>(0.5));
+        expected.addEdge(NodeT{0}, NodeT{2}, static_cast<EdgeWeightT>(1.25));
+        expected.addEdge(NodeT{1}, NodeT{2}, static_cast<EdgeWeightT>(2.75));
+        EXPECT_THAT(reader.read(path), IsSameGraphAs(expected));
+    }
+}
+
+TYPED_TEST(METISGraphIOGTest, testReadLargerGraph) {
+    using GraphT = typename TestFixture::GraphT;
+    const GraphT G = GenericMETISGraphReader<GraphT>{}.read("input/jazz.graph");
+    EXPECT_FALSE(G.isWeighted());
+    EXPECT_EQ(G.numberOfNodes(), count{198});
+    EXPECT_EQ(G.numberOfEdges(), count{2742});
+}
+
+TYPED_TEST(METISGraphIOGTest, testWriteAndReadBack) {
+    using GraphT = typename TestFixture::GraphT;
+    using NodeT = typename TestFixture::NodeT;
+    using EdgeWeightT = typename TestFixture::EdgeWeightT;
+    const TemporaryDirectory directory;
+    const std::string path = directory.path("roundtrip.graph");
+
+    GraphT G(6, true);
+    G.addEdge(NodeT{0}, NodeT{1}, EdgeWeightT{2});
+    G.addEdge(NodeT{1}, NodeT{3}, EdgeWeightT{5});
+    G.addEdge(NodeT{3}, NodeT{5}, EdgeWeightT{7});
+    G.addEdge(NodeT{0}, NodeT{4}, EdgeWeightT{100});
+    // Leave a gap in the node ids, the writer has to compact them.
+    G.removeNode(NodeT{2});
+
+    GenericMETISGraphWriter<GraphT>{}.write(G, path);
+
+    // Nodes after the removed node 2 are shifted down by one.
+    GraphT expected(5, true);
+    expected.addEdge(NodeT{0}, NodeT{1}, EdgeWeightT{2});
+    expected.addEdge(NodeT{1}, NodeT{2}, EdgeWeightT{5});
+    expected.addEdge(NodeT{2}, NodeT{4}, EdgeWeightT{7});
+    expected.addEdge(NodeT{0}, NodeT{3}, EdgeWeightT{100});
+    EXPECT_THAT(GenericMETISGraphReader<GraphT>{}.read(path), IsSameGraphAs(expected));
+}
+
+TYPED_TEST(METISGraphIOGTest, testReadThrowsIfNodeIdTooLarge) {
+    using GraphT = typename TestFixture::GraphT;
+    const TemporaryDirectory directory;
+    const std::string path = directory.writeFile("id_too_large.graph", "2 1\n"
+                                                                       "3\n"
+                                                                       "\n");
+    EXPECT_THAT([&]() -> void { GenericMETISGraphReader<GraphT>{}.read(path); },
+                ThrowsMessage<std::runtime_error>(
+                    AllOf(HasSubstr("id_too_large.graph"),
+                          HasSubstr("has node id 3, but the valid ids are 1 to 2"))));
+}
+
+TEST(METISGraphIOGTest, testReadThrowsIfNodeIdNegative) {
+    using Reader = GenericMETISGraphReader<AdjListGraph<int, int>>;
+    const TemporaryDirectory directory;
+    const std::string path = directory.writeFile("negative_id.graph", "2 1\n"
+                                                                      "-1\n"
+                                                                      "\n");
+    EXPECT_THAT([&]() -> void { Reader{}.read(path); },
+                ThrowsMessage<std::runtime_error>(
+                    AllOf(HasSubstr("negative_id.graph"),
+                          HasSubstr("has node id -1, but the valid ids are 1 to 2"))));
+}
+
+// Weights with more than six significant digits must survive writing and reading back.
+template <class EdgeWeightT>
+void checkWritesFloatingPointWeightsExactly() {
+    using GraphT = AdjListGraph<uint32_t, EdgeWeightT>;
+    const TemporaryDirectory directory;
+    const std::string path = directory.path("precise_weights.graph");
+
+    GraphT G(3, true);
+    G.addEdge(0u, 1u, static_cast<EdgeWeightT>(1234567));
+    G.addEdge(1u, 2u, static_cast<EdgeWeightT>(53.71));
+
+    GenericMETISGraphWriter<GraphT>{}.write(G, path);
+
+    std::ifstream file(path);
+    const std::string text{std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
+    EXPECT_THAT(text, HasSubstr("1234567"));
+    EXPECT_THAT(text, HasSubstr("53.71"));
+    EXPECT_THAT(GenericMETISGraphReader<GraphT>{}.read(path), IsSameGraphAs(G));
+}
+
+TEST(METISGraphIOGTest, testWriteFloatingPointWeightsExactly) {
+    checkWritesFloatingPointWeightsExactly<double>();
+    checkWritesFloatingPointWeightsExactly<float>();
+}
+
+// 100000 is exact in float and double, but the shortest to_chars text is "1e+05".
+// That token is not an integer, so an integral reader rejects the file METIS would misread.
+template <class EdgeWeightT>
+void checkWritesIntegralFloatingWeightsAsDigits() {
+    using Source = AdjListGraph<int, EdgeWeightT>;
+    using Integral = AdjListGraph<int, int>;
+    const TemporaryDirectory directory;
+    const std::string path = directory.path("integral_floating.graph");
+
+    Source G(4, true);
+    G.addEdge(0, 1, static_cast<EdgeWeightT>(100000));
+    G.addEdge(1, 2, static_cast<EdgeWeightT>(-1000000));
+    G.addEdge(2, 3, static_cast<EdgeWeightT>(1000000));
+    G.addEdge(0, 2, static_cast<EdgeWeightT>(0));
+    GenericMETISGraphWriter<Source>{}.write(G, path);
+
+    std::ifstream file(path);
+    ASSERT_TRUE(file.is_open());
+    const std::string text{std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
+    // The writer separates a weight from the next id with a tab, so these are whole tokens.
+    EXPECT_THAT(text, AllOf(HasSubstr(" 100000\t"), HasSubstr(" -1000000\t"),
+                            HasSubstr(" 1000000\t"), HasSubstr(" 0\t"), Not(HasSubstr("e"))));
+
+    Integral expected(4, true);
+    expected.addEdge(0, 1, 100000);
+    expected.addEdge(1, 2, -1000000);
+    expected.addEdge(2, 3, 1000000);
+    expected.addEdge(0, 2, 0);
+    EXPECT_THAT(GenericMETISGraphReader<Integral>{}.read(path), IsSameGraphAs(expected));
+}
+
+TEST(METISGraphIOGTest, testWriteIntegralFloatingWeightsWithoutExponent) {
+    checkWritesIntegralFloatingWeightsAsDigits<double>();
+    checkWritesIntegralFloatingWeightsAsDigits<float>();
+}
+
+TEST(METISGraphIOGTest, testWriteLargeFloatingIntegralWeightsAndFallback) {
+    using Source = AdjListGraph<int, double>;
+    using Integral = AdjListGraph<int, int64_t>;
+    const TemporaryDirectory directory;
+    const std::string intPath = directory.path("large_integral.graph");
+    Source integral(2, true);
+    integral.addEdge(0, 1, 1e17);
+    GenericMETISGraphWriter<Source>{}.write(integral, intPath);
+
+    std::ifstream intFile(intPath);
+    ASSERT_TRUE(intFile.is_open());
+    const std::string intText{std::istreambuf_iterator<char>(intFile),
+                              std::istreambuf_iterator<char>()};
+    EXPECT_THAT(intText, HasSubstr(" 100000000000000000\t"));
+    Integral expected(2, true);
+    expected.addEdge(0, 1, int64_t{100000000000000000});
+    EXPECT_THAT(GenericMETISGraphReader<Integral>{}.read(intPath), IsSameGraphAs(expected));
+
+    const std::string fallbackPath = directory.path("large_fallback.graph");
+    Source fallback(3, true);
+    fallback.addEdge(0, 1, 1e20);
+    fallback.addEdge(1, 2, 0x1p63);
+    GenericMETISGraphWriter<Source>{}.write(fallback, fallbackPath);
+    std::ifstream fallbackFile(fallbackPath);
+    ASSERT_TRUE(fallbackFile.is_open());
+    const std::string fallbackText{std::istreambuf_iterator<char>(fallbackFile),
+                                   std::istreambuf_iterator<char>()};
+    // The standard formatter may choose digits or exponent at 2^63 depending
+    // on the shortest representation, so compare with its direct output.
+    std::array<char, 32> boundBuffer;
+    const auto [boundEnd, boundError] =
+        std::to_chars(boundBuffer.data(), boundBuffer.data() + boundBuffer.size(), 0x1p63);
+    ASSERT_EQ(boundError, std::errc{});
+    const std::string boundText(boundBuffer.data(), boundEnd);
+    EXPECT_THAT(fallbackText, AllOf(HasSubstr(" 1e+20\t"), HasSubstr(" " + boundText + "\t")));
+    EXPECT_THAT(GenericMETISGraphReader<Source>{}.read(fallbackPath), IsSameGraphAs(fallback));
+}
+
+TEST(METISGraphIOGTest, testFloatingFormatterFallbacks) {
+    const std::array<double, 7> values{2.5,
+                                       1e20,
+                                       0x1p63,
+                                       -0x1p63,
+                                       std::numeric_limits<double>::infinity(),
+                                       -std::numeric_limits<double>::infinity(),
+                                       std::numeric_limits<double>::quiet_NaN()};
+    for (const double value : values) {
+        std::array<char, 32> actualBuffer;
+        std::array<char, 32> expectedBuffer;
+        const auto [actualEnd, actualError] = Impl::metisWeightToChars(
+            actualBuffer.data(), actualBuffer.data() + actualBuffer.size(), value);
+        const auto [expectedEnd, expectedError] = std::to_chars(
+            expectedBuffer.data(), expectedBuffer.data() + expectedBuffer.size(), value);
+        ASSERT_EQ(actualError, std::errc{});
+        ASSERT_EQ(expectedError, std::errc{});
+        EXPECT_EQ(std::string(actualBuffer.data(), actualEnd),
+                  std::string(expectedBuffer.data(), expectedEnd));
+    }
+}
+
+TEST(METISGraphIOGTest, testReadThrowsIfNodesDoNotFitNodeType) {
+    using Reader = GenericMETISGraphReader<AdjListGraph<uint16_t, double>>;
+
+    constexpr count maxNodes = std::numeric_limits<uint16_t>::max();
+    const TemporaryDirectory directory;
+
+    // The largest node id maxNodes - 1 is still smaller than NullNodeId<uint16_t>.
+    const std::string fits =
+        directory.writeFile("max_nodes.graph", std::to_string(maxNodes) + " 0\n");
+    EXPECT_EQ(Reader{}.read(fits).numberOfNodes(), maxNodes);
+
+    const std::string tooMany =
+        directory.writeFile("too_many_nodes.graph", std::to_string(maxNodes + 1) + " 0\n");
+    EXPECT_THAT([&]() -> void { Reader{}.read(tooMany); },
+                ThrowsMessage<std::runtime_error>(
+                    HasSubstr("has " + std::to_string(maxNodes + 1)
+                              + " nodes, but the node type of the graph can hold at most "
+                              + std::to_string(maxNodes) + " nodes")));
+}
+
+} // namespace
+} // namespace NetworKit

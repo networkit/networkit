@@ -546,7 +546,7 @@ node GroupClosenessLocalSearchImpl<WeightType>::estimateFarnessDecrease(bool get
 #ifdef __AVX2__
                 sumOfMins[x] += randVec[x].items[j];
 #else
-                sumOfMins[x] = randVec[K * x + j];
+                sumOfMins[x] += randVec[K * x + j];
 #endif // __AVX2__
 
             if (sumOfMins[x] == 0)

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.21)
 project(networkit CXX)
 
 if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
@@ -96,6 +96,9 @@ elseif (MSVC)
 	# TTMath requires running an ASM for MSVC which we disable here at the cost of worse performance
 	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /DTTMATH_NOASM=1")
 
+	# Since CMake 3.15 (policy CMP0092), /W3 is no longer part of the default MSVC flags
+	set(NETWORKIT_CXX_FLAGS "${NETWORKIT_CXX_FLAGS} /W3")
+
 	if (NETWORKIT_NATIVE)
 		message(WARNING "Compiling NetworKit with native instructions is not yet supported by MSVC. Activating AVX2-support if possible.")
 		include(CheckCXXCompilerFlag)
@@ -137,12 +140,12 @@ if (NETWORKIT_SANITY_CHECKS)
 endif()
 
 
-# finding or creating OpenMP target. This is likely to fail for CMake Version < 3.12.
+# finding OpenMP target
 find_package(OpenMP)
 
 # FindOpenMP.cmake does not reliably find a user installed openmp library for clang/llvm on
-# both Linux- and macOS-systems (even for CMake Version >= 3.12). The following section
-# manually sets the required fields for clang-like compiler.
+# both Linux- and macOS-systems. The following section manually sets the required fields for
+# clang-like compiler.
 if(NOT OpenMP_FOUND)
 	if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
 		# This will find default libomp-installations for homebrew/MacPorts
@@ -175,16 +178,6 @@ if(NOT OpenMP_FOUND)
 
 	# After setting basic OpenMP-folders, run find_package again to set everything. Also acts as a final sanity check.
 	find_package(OpenMP REQUIRED)
-endif()
-
-if(NOT TARGET OpenMP::OpenMP_CXX)
-	message("Creating custom OpenMP target for CMake Version < 3.12. Current CMake Version ${CMAKE_VERSION}")
-	find_package(Threads REQUIRED)
-	add_library(OpenMP::OpenMP_CXX IMPORTED INTERFACE)
-	set_property(TARGET OpenMP::OpenMP_CXX
-				 PROPERTY INTERFACE_COMPILE_OPTIONS ${OpenMP_CXX_FLAGS})
-	set_property(TARGET OpenMP::OpenMP_CXX
-				 PROPERTY INTERFACE_LINK_LIBRARIES ${OpenMP_CXX_FLAGS} Threads::Threads)
 endif()
 
 if (CMAKE_SIZEOF_VOID_P LESS 8)
@@ -317,11 +310,7 @@ if(NETWORKIT_PYTHON)
 	if(WIN32)
 		# Linking against Python3_libs is only neccessary on Windows. On other OSes 
 		# this can lead to segmentation faults when importing NetworKit in Python.
-		if(${CMAKE_VERSION} VERSION_LESS "3.12.0") 
-			FIND_PACKAGE(FindPythonLibs ${NETWORKIT_PYTHON_VERSION} EXACT REQUIRED)
-		else()
-			FIND_PACKAGE(Python3 ${NETWORKIT_PYTHON_VERSION} EXACT COMPONENTS Interpreter Development REQUIRED)
-		endif()
+		FIND_PACKAGE(Python3 ${NETWORKIT_PYTHON_VERSION} EXACT COMPONENTS Interpreter Development REQUIRED)
 	endif()
 	
 	foreach (EXT base centrality clique coarsening community components correlation

@@ -29,11 +29,11 @@
 
 #include <networkit/Globals.hpp>
 #include <networkit/auxiliary/ArrayTools.hpp>
-#include <networkit/auxiliary/FunctionTraits.hpp>
 #include <networkit/auxiliary/Log.hpp>
 #include <networkit/auxiliary/Random.hpp>
 #include <networkit/graph/Attributes.hpp>
 #include <networkit/graph/EdgeIterators.hpp>
+#include <networkit/graph/EdgeLambda.hpp>
 #include <networkit/graph/EdgeUtils.hpp>
 #include <networkit/graph/GraphConcepts.hpp>
 #include <networkit/graph/NeighborIterators.hpp>
@@ -365,71 +365,6 @@ private:
      */
     template <bool graphIsDirected, bool hasWeights, bool graphHasEdgeIds, typename L>
     inline double parallelSumForEdgesImpl(L handle) const;
-
-    /* Compile-time callable dispatcher.
-     *
-     * Aux::FunctionTraits lets us inspect a callable's arity and parameter types
-     * so we can invoke it with the best matching edge callback signature.
-     * SafeArg prevents out-of-bounds access to Traits::arg<N> by returning void
-     * when the callable has fewer than N + 1 parameters.
-     * ArgType normalizes the inspected type with std::decay_t so comparisons work
-     * for references, const qualifiers, and other call-compatible forms.
-     *
-     * The overload selection below is ordered from most specific to least specific.
-     * This matters because several lambda signatures overlap, especially when node
-     * and EdgeWeightT are the same type.
-     *
-     * If no branch matches, the static_assert produces a clear compile-time error
-     * instead of a long substitution failure.
-     */
-
-    // Return void when the callable does not have an Nth parameter.
-    template <typename TraitsT, size_t N, bool InRange = (N < TraitsT::arity)>
-    struct SafeArg {
-        using type = void;
-    };
-
-    // Enable this specialization only when N is in range.
-    template <typename TraitsT, size_t N>
-    struct SafeArg<TraitsT, N, true> {
-        using type = typename TraitsT::template arg<N>::type;
-    };
-
-    template <typename F, size_t N>
-    using ArgType = std::decay_t<typename SafeArg<Aux::FunctionTraits<F>, N>::type>;
-
-    template <class F>
-    decltype(auto) edgeLambda(F &f, NodeT u, NodeT v, EdgeWeightT ew, edgeid id) const {
-        using Traits = Aux::FunctionTraits<F>;
-        constexpr size_t arity = Traits::arity;
-
-        // Most specific signatures first to avoid ambiguity between overlapping
-        // callable shapes and implicit conversions.
-        if constexpr (arity >= 3 && std::is_same_v<ArgType<F, 2>, EdgeWeightT>
-                      && std::is_same_v<ArgType<F, 3>, edgeid>) {
-            return f(u, v, ew, id);
-        } else if constexpr (arity >= 2 && std::is_same_v<ArgType<F, 2>, edgeid>
-                             && std::is_same_v<ArgType<F, 1>, NodeT>) {
-            return f(u, v, id);
-        } else if constexpr (arity >= 2 && std::is_same_v<ArgType<F, 2>, EdgeWeightT>) {
-            return f(u, v, ew);
-        } else if constexpr (arity >= 1 && std::is_same_v<ArgType<F, 1>, EdgeWeightT>
-                             && !std::is_same_v<NodeT, EdgeWeightT>) {
-            // Treat this as a weight-taking callback only when node ids and weights
-            // are distinct types.
-            return f(v, ew);
-        } else if constexpr (arity >= 1 && std::is_same_v<ArgType<F, 1>, NodeT>) {
-            return f(u, v);
-        } else if constexpr (arity >= 1 && std::is_same_v<ArgType<F, 1>, EdgeWeightT>) {
-            return f(v, ew);
-        } else if constexpr (arity >= 1 && std::is_same_v<ArgType<F, 0>, NodeT>) {
-            return f(v);
-        } else {
-            static_assert(!std::is_same_v<F, F>,
-                          "Your lambda does not support the required parameters or the parameters "
-                          "have the wrong type.");
-        }
-    }
 
     /**
      * Calls the given BFS handle with distance parameter

@@ -76,8 +76,6 @@ public:
     bool operator==(const EdgeIteratorBase &rhs) const noexcept {
         return nodeIter == rhs.nodeIter && i == rhs.i;
     }
-
-    bool operator!=(const EdgeIteratorBase &rhs) const noexcept { return !(*this == rhs); }
 };
 
 template <class T>
@@ -136,8 +134,6 @@ public:
         return this->EdgeIteratorBase<GraphType, NodeT, EdgeWeightT>::operator==(
             static_cast<EdgeIteratorBase<GraphType, NodeT, EdgeWeightT>>(rhs));
     }
-
-    bool operator!=(const EdgeWeightTIterator &rhs) const noexcept { return !(*this == rhs); }
 
     // The returned edge depends on both the type of edge and graph
     IterEdgeWeightT operator*() const noexcept {

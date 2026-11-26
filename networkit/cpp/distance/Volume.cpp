@@ -24,7 +24,7 @@ std::unordered_map<node, double> Volume::nodesWithinDistance(const Graph &G, dou
         for (auto &m : msToCheck) {
             for (node m2 : G.neighborRange(m)) {
                 r2 = ms[m] + G.weight(m, m2);
-                if (ms.count(m2) == 0) {
+                if (!ms.contains(m2)) {
                     if (r2 <= r) {
                         ms[m2] = r2;
                         msToCheckNew.push_back(m2);

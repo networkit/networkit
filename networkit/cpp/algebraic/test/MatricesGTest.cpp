@@ -1044,7 +1044,7 @@ TYPED_TEST(MatricesGTest, testMatrixMultiplication) {
 
 TYPED_TEST(MatricesGTest, testMatricesTransposedMultiplication) {
     using Matrix = typename TestFixture::Matrix;
-    if (std::is_same<Matrix, DenseMatrix>::value) {
+    if (std::is_same_v<Matrix, DenseMatrix>) {
         GTEST_SKIP() << "Skipping mmT/mTm test for DenseMatrix";
     }
     std::vector<Triplet> triplets1 = {{0, 0, 1}, {0, 1, 2}, {0, 2, 3}, {1, 0, 2}, {1, 1, 2}};
@@ -1084,7 +1084,7 @@ TYPED_TEST(MatricesGTest, testMatricesTransposedMultiplication) {
 
 TYPED_TEST(MatricesGTest, testMatrixTransposedVectorMultiplication) {
     using Matrix = typename TestFixture::Matrix;
-    if (std::is_same<Matrix, DenseMatrix>::value) {
+    if (std::is_same_v<Matrix, DenseMatrix>) {
         GTEST_SKIP() << "Skipping mmT/mTm test for DenseMatrix";
     }
     std::vector<Triplet> triplets1 = {{0, 0, 1}, {1, 0, 2}, {2, 0, 3}, {0, 1, 2}, {1, 1, 2}};
@@ -1313,7 +1313,7 @@ TYPED_TEST(MatricesGTest, testLaplacianOfGraph) {
 
 TYPED_TEST(MatricesGTest, testNormalizedLaplacianOfGraph) {
     using Matrix = typename TestFixture::Matrix;
-    if (std::is_same<Matrix, DenseMatrix>::value) {
+    if (std::is_same_v<Matrix, DenseMatrix>) {
         GTEST_SKIP() << "Skipping normalizedLaplacian test for DenseMatrix";
     }
 
@@ -1442,7 +1442,7 @@ TYPED_TEST(MatricesGTest, testParallelForNonZeroElementsInRowOrder) {
 
 TYPED_TEST(MatricesGTest, testBigMatrixMultiplication) {
     using Matrix = typename TestFixture::Matrix;
-    if (std::is_same<Matrix, DenseMatrix>::value) {
+    if (std::is_same_v<Matrix, DenseMatrix>) {
         GTEST_SKIP() << "Skipping big matrix multiplication test for DenseMatrix.";
     }
 

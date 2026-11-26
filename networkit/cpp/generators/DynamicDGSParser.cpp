@@ -30,7 +30,7 @@ void DynamicDGSParser::initializeGraph() {
 
         // handle first line
         std::getline(dgsFile, line);
-        if (!line.compare(0, cookie.size(), cookie)) { // compare prefix
+        if (line.starts_with(cookie)) {
             DEBUG("found magic cookie: DGS004");
         } else {
             DEBUG("First line: ", line);

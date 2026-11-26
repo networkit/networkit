@@ -2,6 +2,7 @@
 #define NETWORKIT_STRUCTURES_LOCAL_COMMUNITY_HPP_
 
 #include <set>
+#include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -75,15 +76,15 @@ public:
 
         void set(ValueType v) { value = v; }
 
-        template <typename SecondValue,
-                  typename std::enable_if<std::is_scalar<SecondValue>::value, int>::type = 0>
+        template <class SecondValue>
+            requires std::is_scalar_v<SecondValue>
         OptionalValue &operator+=(SecondValue v) {
             value += v;
             return *this;
         }
 
-        template <typename SecondValue,
-                  typename std::enable_if<std::is_scalar<SecondValue>::value, int>::type = 0>
+        template <class SecondValue>
+            requires std::is_scalar_v<SecondValue>
         OptionalValue &operator-=(SecondValue v) {
             value -= v;
             return *this;

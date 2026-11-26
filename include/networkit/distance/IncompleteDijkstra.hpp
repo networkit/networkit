@@ -8,6 +8,7 @@
 #ifndef NETWORKIT_DISTANCE_INCOMPLETE_DIJKSTRA_HPP_
 #define NETWORKIT_DISTANCE_INCOMPLETE_DIJKSTRA_HPP_
 
+#include <algorithm> // tlx's d_ary_addressable_int_heap uses std::fill without including it
 #include <unordered_set>
 #include <vector>
 

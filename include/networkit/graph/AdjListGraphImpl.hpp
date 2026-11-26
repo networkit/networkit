@@ -108,8 +108,9 @@ inline void AdjListGraph<NodeT, EdgeWeightT>::forOutEdgesOfImpl(NodeT u, L handl
         NodeT v = outEdges[u][i];
 
         if (useEdgeInIteration<graphIsDirected>(u, v)) {
-            edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
-                          getOutEdgeId<graphHasEdgeIds>(u, i));
+            GraphDetails::edgeLambda<NodeT, EdgeWeightT>(handle, u, v,
+                                                         getOutEdgeWeight<hasWeights>(u, i),
+                                                         getOutEdgeId<graphHasEdgeIds>(u, i));
         }
     }
 }
@@ -121,15 +122,17 @@ inline void AdjListGraph<NodeT, EdgeWeightT>::forInEdgesOfImpl(NodeT u, L handle
         for (index i = 0; i < inEdges[u].size(); ++i) {
             NodeT v = inEdges[u][i];
 
-            edgeLambda<L>(handle, u, v, getInEdgeWeight<hasWeights>(u, i),
-                          getInEdgeId<graphHasEdgeIds>(u, i));
+            GraphDetails::edgeLambda<NodeT, EdgeWeightT>(handle, u, v,
+                                                         getInEdgeWeight<hasWeights>(u, i),
+                                                         getInEdgeId<graphHasEdgeIds>(u, i));
         }
     } else {
         for (index i = 0; i < outEdges[u].size(); ++i) {
             NodeT v = outEdges[u][i];
 
-            edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
-                          getOutEdgeId<graphHasEdgeIds>(u, i));
+            GraphDetails::edgeLambda<NodeT, EdgeWeightT>(handle, u, v,
+                                                         getOutEdgeWeight<hasWeights>(u, i),
+                                                         getOutEdgeId<graphHasEdgeIds>(u, i));
         }
     }
 }
@@ -164,8 +167,9 @@ inline double AdjListGraph<NodeT, EdgeWeightT>::parallelSumForEdgesImpl(L handle
             // undirected, do not iterate over edges twice
             // {u, v} instead of (u, v); if v == nullNodeId, u > v is not fulfilled
             if (useEdgeInIteration<graphIsDirected>(u, v)) {
-                sum += edgeLambda<L>(handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
-                                     getOutEdgeId<graphHasEdgeIds>(u, i));
+                sum += GraphDetails::edgeLambda<NodeT, EdgeWeightT>(
+                    handle, u, v, getOutEdgeWeight<hasWeights>(u, i),
+                    getOutEdgeId<graphHasEdgeIds>(u, i));
             }
         }
     }
@@ -1490,11 +1494,14 @@ bool AdjListGraph<NodeT, EdgeWeightT>::checkConsistency() const {
         });
     });
 
-    bool correctNodeUpperbound = (z == outEdges.size()) && ((directed ? z : 0) == inEdges.size())
-                                 && ((weighted ? z : 0) == outEdgeWeights.size())
-                                 && ((weighted && directed ? z : 0) == inEdgeWeights.size())
-                                 && ((edgesIndexed ? z : 0) == outEdgeIds.size())
-                                 && ((edgesIndexed && directed ? z : 0) == inEdgeIds.size());
+    // z is of type NodeT, which may be signed
+    const auto upperBound = static_cast<count>(z);
+    bool correctNodeUpperbound =
+        (upperBound == outEdges.size()) && ((directed ? upperBound : 0) == inEdges.size())
+        && ((weighted ? upperBound : 0) == outEdgeWeights.size())
+        && ((weighted && directed ? upperBound : 0) == inEdgeWeights.size())
+        && ((edgesIndexed ? upperBound : 0) == outEdgeIds.size())
+        && ((edgesIndexed && directed ? upperBound : 0) == inEdgeIds.size());
 
     if (!correctNodeUpperbound)
         DEBUG("Saved node upper bound doesn't actually match the actual node upper bound!");

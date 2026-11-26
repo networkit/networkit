@@ -10,6 +10,8 @@
 #ifndef NETWORKIT_COMMUNITY_LOUVAIN_MAP_EQUATION_HPP_
 #define NETWORKIT_COMMUNITY_LOUVAIN_MAP_EQUATION_HPP_
 
+#include <type_traits>
+
 #include <networkit/auxiliary/SparseVector.hpp>
 #include <networkit/auxiliary/SpinLock.hpp>
 #include <networkit/community/CommunityDetectionAlgorithm.hpp>
@@ -68,7 +70,7 @@ private:
               cutUpdateToOriginCluster(cuptoc), cutUpdateToTargetCluster(cupttc) {}
     };
 
-    static_assert(std::is_trivially_destructible<Move>::value,
+    static_assert(std::is_trivially_destructible_v<Move>,
                   "LouvainMapEquation::Move struct is not trivially destructible");
 
     ParallelizationType parallelizationType;

@@ -38,7 +38,7 @@ std::vector<std::pair<node, double>> ApproximatePageRank::run(const std::set<nod
         });
 
         prRes[u] = std::make_pair(prRes[u].first + alpha * res, (1.0 - alpha) * res / 2);
-        if ((prRes[u].second / volume) >= eps) {
+        if (prRes[u].second >= eps * volume) {
             activeNodes.push(u);
         }
     };

@@ -8,6 +8,41 @@ import scipy as sc
 
 class TestGraph(unittest.TestCase):
 
+    def testSteinerTree(self):
+        G = nk.Graph(4, weighted=True)
+        G.addEdge(0, 3, 1)
+        G.addEdge(1, 3, 1)
+        G.addEdge(2, 3, 1)
+        G.addEdge(0, 1, 2.5)
+        G.addEdge(1, 2, 2.5)
+
+        algo = nk.graph.SteinerTree(G, [0, 1, 2])
+        algo.run()
+
+        self.assertTrue(algo.hasTree())
+        self.assertEqual(algo.getTotalWeight(), 3)
+        tree = algo.getTree()
+        self.assertEqual(tree.numberOfEdges(), 3)
+        self.assertEqual(tree.degree(3), 3)
+
+    def testSteinerTreeDisconnectedTerminals(self):
+        G = nk.Graph(4)
+        G.addEdge(0, 1)
+        G.addEdge(2, 3)
+
+        algo = nk.graph.SteinerTree(G, [0, 1, 2])
+        algo.run()
+
+        self.assertFalse(algo.hasTree())
+        self.assertEqual(algo.getTotalWeight(), 0)
+        self.assertEqual(algo.getTree().numberOfEdges(), 0)
+
+    def testSteinerTreeInvalidInput(self):
+        with self.assertRaises(RuntimeError):
+            nk.graph.SteinerTree(nk.Graph(2, directed=True), [0])
+        with self.assertRaises(RuntimeError):
+            nk.graph.SteinerTree(nk.Graph(2), [5])
+
     def testConstructorWithCooAndNumNodes(self):
         row = np.array([0, 1, 2])
         col = np.array([1, 2, 0])
@@ -74,6 +109,22 @@ class TestGraph(unittest.TestCase):
                         self.assertAlmostEqual(G.totalEdgeWeight(), float(data.sum()))
                     else:
                         self.assertAlmostEqual(G.totalEdgeWeight(), G.numberOfEdges())
+
+    def testConstructorWithCooMatrixFractionalWeights(self):
+        expectedWeights = {(0, 1): 0.25, (1, 2): 0.5, (2, 0): 0.75}
+        for dtype in [np.float32, np.float64]:
+            S = sc.sparse.coo_matrix(
+                ([0.25, 0.5, 0.75], ([0, 1, 2], [1, 2, 0])), dtype=dtype
+            )
+            for directed in [True, False]:
+                for n in [0, 3]:
+                    with self.subTest(dtype=dtype, directed=directed, n=n):
+                        G = nk.GraphFromCoo(S, n=n, weighted=True, directed=directed)
+                        self.assertEqual(G.numberOfNodes(), 3)
+                        self.assertEqual(G.numberOfEdges(), 3)
+                        for (u, v), weight in expectedWeights.items():
+                            self.assertEqual(G.weight(u, v), weight)
+                        self.assertEqual(G.totalEdgeWeight(), 1.5)
 
     def testAddNodes(self):
         G = nk.Graph(0)
@@ -176,6 +227,23 @@ class TestGraph(unittest.TestCase):
 
         for i in range(len(S.row)):
             self.assertTrue(G.hasEdge(S.row[i], S.col[i]))
+
+    def testAddEdgesCooMatrixFractionalWeights(self):
+        expectedWeights = {(0, 1): 0.25, (1, 2): 0.5, (2, 0): 0.75}
+        for dtype in [np.float32, np.float64]:
+            S = sc.sparse.coo_matrix(
+                ([0.25, 0.5, 0.75], ([0, 1, 2], [1, 2, 0])), dtype=dtype
+            )
+            for directed in [True, False]:
+                for addMissing in [True, False]:
+                    with self.subTest(dtype=dtype, directed=directed, addMissing=addMissing):
+                        G = nk.Graph(0 if addMissing else 3, weighted=True, directed=directed)
+                        G.addEdges(S, addMissing=addMissing)
+                        self.assertEqual(G.numberOfNodes(), 3)
+                        self.assertEqual(G.numberOfEdges(), 3)
+                        for (u, v), weight in expectedWeights.items():
+                            self.assertEqual(G.weight(u, v), weight)
+                        self.assertEqual(G.totalEdgeWeight(), 1.5)
 
     def testAddEdgesWithNonFloatWeights(self):
         # Use a weighted graph so weights are actually stored/checked
@@ -668,6 +736,27 @@ class TestGraph(unittest.TestCase):
         pmf = nk.graph.PrimMSF(G)
         pmf.run()
         self.assertEqual(G.numberOfNodes(), pmf.getForest().numberOfNodes())
+
+    def testMinimumSpanningForestPreservesWeights(self):
+        G = nk.Graph(6, weighted=True)
+        G.addEdge(0, 1, 2.5)
+        G.addEdge(1, 2, -1.25)
+        G.addEdge(0, 2, 4.0)
+        G.addEdge(3, 4, 0.0)
+
+        for algorithm in (nk.graph.PrimMSF, nk.graph.KruskalMSF):
+            with self.subTest(algorithm=algorithm.__name__):
+                msf = algorithm(G).run()
+                forest = msf.getForest()
+                self.assertTrue(forest.isWeighted())
+                self.assertEqual(forest.numberOfNodes(), 6)
+                self.assertEqual(forest.numberOfEdges(), 3)
+                self.assertEqual(forest.weight(0, 1), 2.5)
+                self.assertEqual(forest.weight(1, 2), -1.25)
+                self.assertTrue(forest.hasEdge(3, 4))
+                self.assertEqual(forest.weight(3, 4), 0.0)
+                self.assertEqual(forest.totalEdgeWeight(), 1.25)
+                self.assertEqual(msf.getTotalWeight(), 1.25)
 
     def testSpanningForest(self):
         G = self.getSmallGraph()

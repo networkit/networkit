@@ -81,7 +81,7 @@ void BiasedRandomWalk::preprocessNode(node t, double paramP, double paramQ) {
             if (x == t) {
                 pTable.push_back(weight / paramP);
                 pSum += weight / paramP;
-            } else if (tNbrs.count(x)) {
+            } else if (tNbrs.contains(x)) {
                 pTable.push_back(weight);
                 pSum += weight;
             } else {

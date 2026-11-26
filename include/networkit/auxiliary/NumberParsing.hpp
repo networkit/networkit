@@ -33,9 +33,9 @@ template <typename Real, typename CharIterator, typename ValidationPolicy>
 std::tuple<Real, CharIterator> strTo(CharIterator it, CharIterator end, RealTag);
 
 template <typename T>
-using ArithmeticTag = typename std::conditional<
-    std::is_integral<T>::value, IntegerTag,
-    typename std::conditional<std::is_floating_point<T>::value, RealTag, void>::type>::type;
+using ArithmeticTag =
+    std::conditional_t<std::is_integral_v<T>, IntegerTag,
+                       std::conditional_t<std::is_floating_point_v<T>, RealTag, void>>;
 
 } // namespace Impl
 
@@ -73,7 +73,7 @@ std::tuple<Integer, CharIterator> strTo(CharIterator it, const CharIterator end,
     std::tie(it, c) = dropSpaces(it, end);
 
     bool isNegative = false;
-    if (std::is_signed<Integer>::value) { // this should be optimized away entirely
+    if constexpr (std::is_signed_v<Integer>) { // this should be optimized away entirely
         switch (c) {
         case '-':
             isNegative = true;

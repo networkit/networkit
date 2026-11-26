@@ -19,11 +19,9 @@ std::vector<std::pair<node, node>>
 byScore(const std::vector<LinkPredictor::prediction> &predictions, double minScore) {
     std::list<LinkPredictor::prediction> predictionsList;
     std::copy(predictions.begin(), predictions.end(), std::back_inserter(predictionsList));
-    predictionsList.erase(std::remove_if(predictionsList.begin(), predictionsList.end(),
-                                         [&](const std::pair<std::pair<node, node>, double> &p) {
-                                             return p.second < minScore;
-                                         }),
-                          predictionsList.end());
+    std::erase_if(predictionsList, [&](const std::pair<std::pair<node, node>, double> &p) {
+        return p.second < minScore;
+    });
     std::vector<std::pair<node, node>> selectedLinks;
     selectedLinks.reserve(predictionsList.size());
     std::transform(predictionsList.begin(), predictionsList.end(),

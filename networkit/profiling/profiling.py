@@ -1134,6 +1134,8 @@ class Profile:
 			elapsedPostRank = timeit.default_timer() - timerPostRank
 			self.verbosePrint("{:.2F} s".format(elapsedPostRank))
 
+			elapsedPostAssortativity = 0.0
+			elapsedPostCentralization = 0.0
 			if self.__measures[name]["category"] == "Node Centrality":
 				self.verbosePrint("    Assortativity: ", end="")
 				timerPostAssortativity = timeit.default_timer()

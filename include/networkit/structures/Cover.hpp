@@ -92,7 +92,7 @@ public:
     std::set<IndexType> getMembers(IndexType s) const;
 
     /**
-     * Add the (previously unassigned) element @a e to the set @a s.
+     * Add the element @a e to the set @a s.
      * @param[in] s a subset
      * @param[in] e an element
      */

@@ -514,9 +514,13 @@ cdef class Modularity:
 
  	Notes
 	-----
-	Modularity is defined as:
+	For undirected graphs, modularity is defined as:
 
 	.. math:: mod(\zeta) := \\frac{\sum_{C \in \zeta} \sum_{ e \in E(C) } \omega(e)}{\sum_{e \in E} \omega(e)} - \\frac{ \sum_{C \in \zeta}( \sum_{v \in C} \omega(v) )^2 }{4( \sum_{e \in E} \omega(e) )^2 }
+
+	For directed graphs (Leicht and Newman, 2008), the second term is
+	:math:`\\sum_{C \\in \\zeta} \\frac{vol^{out}(C) \\cdot vol^{in}(C)}{(\\sum_{e \\in E} \\omega(e))^2}`,
+	where :math:`vol^{out}(C)` and :math:`vol^{in}(C)` are the out- and in-volumes of :math:`C`.
 
 	"""
 	cdef _Modularity _this

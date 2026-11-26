@@ -42,10 +42,6 @@ bool GraphEvent::operator==(const GraphEvent &rhs) const noexcept {
     return (type == rhs.type && u == rhs.u && v == rhs.v && w == rhs.w);
 }
 
-bool GraphEvent::operator!=(const GraphEvent &rhs) const noexcept {
-    return !(*this == rhs);
-}
-
 bool operator<(const GraphEvent &a, const GraphEvent &b) noexcept {
     return (a.type < b.type || (a.type == b.type && a.u < b.u)
             || (a.type == b.type && a.u == b.u && a.v < b.v)

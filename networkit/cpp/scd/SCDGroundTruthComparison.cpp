@@ -64,7 +64,7 @@ void SCDGroundTruthComparison::run() {
         for (node u : foundNodes) {
             if (g->hasNode(u)) {
                 for (index s : (*groundTruth)[u]) {
-                    if (ignoreSeeds || allowedSubsets.count(s) > 0) {
+                    if (ignoreSeeds || allowedSubsets.contains(s)) {
                         ++overlap[s];
                     }
                 }

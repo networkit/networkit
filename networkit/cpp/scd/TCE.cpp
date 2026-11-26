@@ -129,7 +129,7 @@ std::set<node> expandSeedSetInternal(const Graph &g, const std::set<node> &s, bo
                 if (!noverify) {
                     double debugWeight = 0;
                     g.forNeighborsOf(localGraph.toGlobal(v), [&](node, node y, edgeweight ew) {
-                        if (result.count(y)) {
+                        if (result.contains(y)) {
                             debugWeight += ew;
                         }
                     });
@@ -190,7 +190,7 @@ std::set<node> expandSeedSetInternal(const Graph &g, const std::set<node> &s, bo
                 g.forEdgesOf(u, [&](node, node v, edgeweight ew) {
                     debugVolumeOld += ew;
                     debugVolumeNew += ew;
-                    if (!result.count(v)) {
+                    if (!result.contains(v)) {
                         debugCutsizeOld += ew;
 
                         if (v != gUMax) {
@@ -201,7 +201,7 @@ std::set<node> expandSeedSetInternal(const Graph &g, const std::set<node> &s, bo
             }
             g.forEdgesOf(gUMax, [&](node, node v, edgeweight ew) {
                 debugVolumeNew += ew;
-                if (!result.count(v)) {
+                if (!result.contains(v)) {
                     debugCutsizeNew += ew;
                 }
             });
@@ -233,7 +233,7 @@ std::set<node> expandSeedSetInternal(const Graph &g, const std::set<node> &s, bo
 
             g.forNeighborsOf(u, [&](node, node v, edgeweight ew) {
                 uVol += ew;
-                if (result.count(v) > 0) {
+                if (result.contains(v)) {
                     uCutChange += ew;
                 } else {
                     uCutChange -= ew;
@@ -258,7 +258,7 @@ std::set<node> expandSeedSetInternal(const Graph &g, const std::set<node> &s, bo
                         if (v != u) {
                             debugVolumeNew += ew;
                         }
-                        if (!result.count(x)) {
+                        if (!result.contains(x)) {
                             debugCutsizeOld += ew;
                             if (v != u) {
                                 debugCutsizeNew += ew;

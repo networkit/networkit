@@ -89,8 +89,6 @@ public:
 
     bool operator==(const NodeIteratorBase &rhs) const noexcept { return u == rhs.u; }
 
-    bool operator!=(const NodeIteratorBase &rhs) const noexcept { return !(*this == rhs); }
-
     NodeT operator*() const noexcept {
         assert(u < G->upperNodeIdBound());
         return u;

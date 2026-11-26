@@ -4,16 +4,64 @@
  *  Authors: Andreas Scharf (andreas.b.scharf@gmail.com)
  *
  */
+#include <cmath>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <networkit/flow/SuccessiveShortestPath.hpp>
 #include <networkit/graph/Graph.hpp>
 
 namespace NetworKit {
+// Matches a residual graph whose usable arcs have non-negative reduced costs.
+MATCHER_P3(HasNonNegativeReducedCosts, potentials, capacities, flows,
+           "has non-negative reduced costs on all residual arcs") {
+    bool feasible = true;
+    const auto checkArc = [&](node from, node to, double reducedCost) -> void {
+        if (reducedCost < 0.0) {
+            *result_listener << "\n  arc " << from << " -> " << to << " has reduced cost "
+                             << reducedCost;
+            feasible = false;
+        }
+    };
+    arg.forEdges([&](node u, node v, edgeweight cost, edgeid eid) -> void {
+        if (capacities.get(eid) > flows.get(eid)) {
+            checkArc(u, v, cost + potentials[u] - potentials[v]);
+        }
+        if (flows.get(eid) > 0) {
+            checkArc(v, u, -cost + potentials[v] - potentials[u]);
+        }
+    });
+    return feasible;
+}
+
 class SuccessiveShortestPathGTest : public ::testing::Test {
 protected:
     const std::string capacityName = "capacity";
     const std::string supplyName = "supply";
+
+    void checkPotentialUpdate(SuccessiveShortestPathMinCostFlow &solver) {
+        auto &G = solver.residualGraph;
+        solver.flows = G.getEdgeDoubleAttribute(solver.FLOW);
+        const auto capacities = G.getEdgeDoubleAttribute(capacityName);
+        auto potentials = solver.computeNodePotentials(G.numberOfNodes());
+        std::vector<double> distances(G.numberOfNodes());
+        std::vector<node> parentNode(G.numberOfNodes());
+        std::vector<edgeid> parentEdge(G.numberOfNodes());
+        std::vector<int> parentDirection(G.numberOfNodes());
+        solver.dijkstraOnResidualGraph(0, potentials, distances, parentNode, parentEdge,
+                                       parentDirection, capacities);
+        ASSERT_TRUE(std::isinf(distances[1]));
+        ASSERT_GT(distances[3], distances[2]);
+
+        EXPECT_THAT(G, HasNonNegativeReducedCosts(potentials, capacities, solver.flows));
+        solver.updateNodePotentials(potentials, distances, 2);
+        EXPECT_THAT(G, HasNonNegativeReducedCosts(potentials, capacities, solver.flows));
+        // Augment along the shortest path: its new reverse residual arc must
+        // also have a non-negative reduced cost.
+        ASSERT_EQ(parentNode[2], node{0});
+        solver.flows.set(parentEdge[2], 1.0);
+        EXPECT_THAT(G, HasNonNegativeReducedCosts(potentials, capacities, solver.flows));
+    }
 
     template <typename CapacityAttr>
     static void addCostAndCapacity(Graph &G, CapacityAttr &capacities, node u, node v, double cost,
@@ -648,4 +696,74 @@ TEST_F(SuccessiveShortestPathGTest, testDimacsGeneratedMin10x20) {
     G.forEdges([&](node, node, edgeid eid) { EXPECT_DOUBLE_EQ(flow.get(eid), expected[eid]); });
     checkFlowConservation(G, flow);
 }
+TEST_F(SuccessiveShortestPathGTest, testPotentialUpdatePreservesReducedCosts) {
+    Graph G(4, /*weighted=*/true, /*directed=*/true);
+    G.indexEdges();
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
+    auto supply = G.attachNodeDoubleAttribute(supplyName);
+    G.forNodes([&](node u) { supply.set(u, 0); });
+    addCostAndCapacity(G, capacities, 0, 2, 5, 1);
+    addCostAndCapacity(G, capacities, 0, 3, 9, 1);
+    addCostAndCapacity(G, capacities, 1, 2, 0, 1);
+    addCostAndCapacity(G, capacities, 1, 3, 0, 1);
+
+    SuccessiveShortestPathMinCostFlow solver(G, capacityName, supplyName);
+    checkPotentialUpdate(solver);
+}
+
+TEST_F(SuccessiveShortestPathGTest, testLayeredAlternativePaths) {
+    constexpr count stages = 5;
+    Graph G(3 * stages + 1, /*weighted=*/true, /*directed=*/true);
+    G.indexEdges();
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
+    auto supply = G.attachNodeDoubleAttribute(supplyName);
+    G.forNodes([&](node u) { supply.set(u, 0.0); });
+    supply.set(0, 1.0);
+    supply.set(3 * stages, -1.0);
+
+    for (count i = 0; i < stages; ++i) {
+        const node u = 3 * i;
+        addCostAndCapacity(G, capacities, u, u + 1, double(uint64_t{1} << (stages - i)), 1);
+        addCostAndCapacity(G, capacities, u + 1, u + 3, 0, 1);
+        addCostAndCapacity(G, capacities, u, u + 2, 0, 1);
+        addCostAndCapacity(G, capacities, u + 2, u + 3, 0, 1);
+    }
+
+    SuccessiveShortestPathMinCostFlow solver(G, capacityName, supplyName);
+    solver.run();
+    EXPECT_DOUBLE_EQ(solver.getTotalCost(), 0.0);
+    checkFlowConservation(G, solver.getFlow());
+}
+
+TEST_F(SuccessiveShortestPathGTest, testSwitchToUnreachableSupply) {
+    Graph G(5, /*weighted=*/true, /*directed=*/true);
+    G.indexEdges();
+    auto capacities = G.attachEdgeDoubleAttribute(capacityName);
+    auto supply = G.attachNodeDoubleAttribute(supplyName);
+    supply.set(0, 1);
+    supply.set(1, 1);
+    supply.set(2, -1);
+    supply.set(3, -1);
+    supply.set(4, 0);
+
+    // Source 0 cannot reach source 1. The second augmentation must cancel
+    // 0 -> 2 and send source 0's unit to node 3 instead.
+    addCostAndCapacity(G, capacities, 0, 2, 5, 1);
+    addCostAndCapacity(G, capacities, 0, 4, 6, 1);
+    addCostAndCapacity(G, capacities, 4, 3, 0, 1);
+    addCostAndCapacity(G, capacities, 1, 2, 0, 1);
+    addCostAndCapacity(G, capacities, 1, 3, 10, 1);
+
+    SuccessiveShortestPathMinCostFlow solver(G, capacityName, supplyName);
+    solver.run();
+    EXPECT_DOUBLE_EQ(solver.getTotalCost(), 6.0);
+    const auto flow = solver.getFlow();
+    EXPECT_DOUBLE_EQ(flow.get(G.edgeId(0, 2)), 0.0);
+    EXPECT_DOUBLE_EQ(flow.get(G.edgeId(1, 2)), 1.0);
+    EXPECT_DOUBLE_EQ(flow.get(G.edgeId(0, 4)), 1.0);
+    EXPECT_DOUBLE_EQ(flow.get(G.edgeId(4, 3)), 1.0);
+    EXPECT_DOUBLE_EQ(flow.get(G.edgeId(1, 3)), 0.0);
+    checkFlowConservation(G, flow);
+}
+
 } // namespace NetworKit
