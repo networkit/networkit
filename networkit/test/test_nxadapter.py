@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import unittest
 import unittest.mock
+import importlib.util
 import io
 import networkit as nk
 import networkx as nx
@@ -336,6 +337,20 @@ class TestNXAdapter(unittest.TestCase):
                     [(0, 1, 2, "red"), (0, 1, 5, "blue"), (1, 2, 1, "green")],
                 )
 
+    def test_missing_networkx(self):
+        # Load a separate copy of the adapter while networkx cannot be imported.
+        spec = importlib.util.spec_from_file_location(
+            "networkit._nxadapterWithoutNetworkx", nk.nxadapter.__file__
+        )
+        adapter = importlib.util.module_from_spec(spec)
+        with unittest.mock.patch.dict("sys.modules", {"networkx": None}):
+            spec.loader.exec_module(adapter)
+
+        self.assertFalse(adapter.have_nx)
+        with self.assertRaises(nk.MissingDependencyError):
+            adapter.nx2nk(None)
+        with self.assertRaises(nk.MissingDependencyError):
+            adapter.nk2nx(nk.Graph())
 
 if __name__ == "__main__":
     unittest.main()
