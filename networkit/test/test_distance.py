@@ -345,6 +345,42 @@ class TestDistance(unittest.TestCase):
 		self.assertEqual(pll.query(0, 1), 1)
 		self.assertEqual(pll.query(2, 4), 2)
 
+		g.removeEdge(2, 3)
+		pll.update(nk.dynamics.GraphEvent(
+			nk.dynamics.GraphEventType.EDGE_REMOVAL, 2, 3, 1))
+
+		self.assertEqual(pll.query(0, 2), 2)
+		self.assertEqual(pll.query(2, 4), nk.none)
+
+	def testDynPrunedLandmarkLabelingDirectedEdgeRemoval(self):
+		# 0 -> 1 -> 2 and a longer path 0 -> 3 -> 4 -> 2.
+		g = nk.Graph(5, False, True)
+		for e in [[0, 1], [1, 2], [0, 3], [3, 4], [4, 2]]:
+			g.addEdge(e[0], e[1])
+
+		pll = nk.distance.DynPrunedLandmarkLabeling(g)
+		pll.run()
+		self.assertEqual(pll.query(0, 2), 2)
+
+		g.removeEdge(1, 2)
+		pll.update(nk.dynamics.GraphEvent(
+			nk.dynamics.GraphEventType.EDGE_REMOVAL, 1, 2, 1))
+
+		self.assertEqual(pll.query(0, 2), 3)
+		self.assertEqual(pll.query(1, 2), nk.none)
+		# The removed edge was directed: the opposite direction is unreachable anyway.
+		self.assertEqual(pll.query(2, 1), nk.none)
+
+	def testDynPrunedLandmarkLabelingUnsupportedEvent(self):
+		g = nk.Graph(3)
+		g.addEdge(0, 1)
+		pll = nk.distance.DynPrunedLandmarkLabeling(g)
+		pll.run()
+
+		with self.assertRaises(RuntimeError):
+			pll.update(nk.dynamics.GraphEvent(
+				nk.dynamics.GraphEventType.EDGE_WEIGHT_UPDATE, 0, 1, 2))
+
 	def testAdamicAdarDistance(self):
 		self.L.indexEdges()
 		adam = nk.distance.AdamicAdarDistance(self.L)
