@@ -53,6 +53,13 @@
 # -----------
 # Description: For code check always use a the (latest - 1) major release of clang-format.
 #
+# gpu
+# ---
+# Description: Builds the GPU backends (Metal on macOS, CUDA on Linux) and runs the GPU tests only.
+#              Hosted runners have no NVIDIA GPU, so CUDA only checks the build and the CPU
+#              fallback. The GPU benchmark logs which backend ran.
+# Build-type:  Debug
+#
 # Jobs:
 # =====
 # 0. Rationale:
@@ -72,10 +79,11 @@
 # - Latest version (clang/Python): core
 # - Minimum version (gcc/Python, clang/Python): full
 # - Additional: core (non-monolithic), core (C++20), clang-tidy, code-style, coverage,
-#               documentation
+#               documentation, gpu (CUDA)
 #
 # 2. macOS:
 # - Latest version (apple-clang): full, full (native)
+# - macOS 15 (apple-clang): gpu (Metal)
 # - Latest version (gcc/Python, clang/Python): core
 #
 # 3. Windows
@@ -179,6 +187,42 @@ jobs:
           CC: ${{ matrix.compiler == 'clang-23' && '/opt/homebrew/opt/llvm@23/bin/clang' || 'gcc-16' }}
           CXX: ${{ matrix.compiler == 'clang-23' && '/opt/homebrew/opt/llvm@23/bin/clang++' || 'g++-16' }}
 
+  macos-build-metal:
+    name: "macOS 15, arm64 (apple-clang): gpu (Metal)"
+    runs-on: macos-15
+    env:
+      CC: cc
+      CXX: c++
+      METAL_CPP_URL: https://developer.apple.com/metal/cpp/files/metal-cpp_26.zip
+      METAL_CPP_SHA256: 4df3c078b9aadcb516212e9cb03004cbc5ce9a3e9c068fa3144d021db585a3a4
+    steps:
+      - name: Install prerequisites
+        run: |
+          brew install libomp
+          brew install ninja
+      - name: Install the Metal compiler
+        # Xcode 26 and later download it separately.
+        run: |
+          xcrun -sdk macosx -f metal || xcodebuild -downloadComponent MetalToolchain
+          xcrun -sdk macosx metal --version
+      - name: Checkout networkit
+        uses: actions/checkout@v5
+        with:
+          submodules: true
+      - name: Download metal-cpp
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/metal-cpp.zip" "$METAL_CPP_URL"
+          echo "$METAL_CPP_SHA256  $RUNNER_TEMP/metal-cpp.zip" | shasum -a 256 -c -
+          unzip -q "$RUNNER_TEMP/metal-cpp.zip" -d "$RUNNER_TEMP"
+      - name: Prepare environment and run checks
+        run: |
+          mkdir build && cd build
+          cmake -GNinja -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DNETWORKIT_WARNINGS=ON -DNETWORKIT_WARNINGS_AS_ERRORS=ON -DNETWORKIT_WITH_METAL=ON -DNETWORKIT_METAL_CPP_PATH="$RUNNER_TEMP/metal-cpp" ..
+          ninja networkit_tests
+          ./networkit_tests --loglevel INFO --gtest_filter='GPUPageRankGTest.*'
+          NETWORKIT_GPU_BENCHMARK_MAX_SCALE=12 ./networkit_tests --loglevel INFO --gtest_filter='GPUPageRankBenchmark.*'
+        shell: bash
+
   linux-build-latest:
     name: "Linux (gcc-14${{ startsWith(matrix.build-configuration, 'full') && ', CPython 3.15' || '' }}): ${{ matrix.build-configuration }}"
     runs-on: ubuntu-26.04
@@ -245,6 +289,33 @@ jobs:
         env:
           CC: clang-23
           CXX: clang++-23
+
+  linux-build-cuda:
+    name: "Linux (gcc-14, CUDA 12.9): gpu (CUDA)"
+    runs-on: ubuntu-24.04
+    env:
+      CC: gcc-14
+      CXX: g++-14
+    steps:
+      - name: Install prerequisites
+        run:  |
+          wget -q https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb
+          sudo dpkg -i cuda-keyring_1.1-1_all.deb
+          sudo apt-get update
+          sudo apt-get install ninja-build gcc-14 g++-14 cuda-nvcc-12-9 cuda-cudart-dev-12-9
+      - name: Checkout networkit
+        uses: actions/checkout@v5
+        with:
+          submodules: true
+      - name: Prepare environment and run checks
+        # There is no GPU to detect the architecture from, so name one.
+        run: |
+          mkdir build && cd build
+          cmake -GNinja -DNETWORKIT_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DNETWORKIT_CXX_STANDARD=${{ env.CXX_STANDARD }} -DNETWORKIT_WARNINGS=ON -DNETWORKIT_WARNINGS_AS_ERRORS=ON -DNETWORKIT_WITH_CUDA=ON -DCMAKE_CUDA_COMPILER=/usr/local/cuda-12.9/bin/nvcc -DCMAKE_CUDA_HOST_COMPILER=g++-14 -DCMAKE_CUDA_ARCHITECTURES=80 ..
+          ninja networkit_tests
+          ./networkit_tests --loglevel INFO --gtest_filter='GPUPageRankGTest.*'
+          NETWORKIT_GPU_BENCHMARK_MAX_SCALE=12 ./networkit_tests --loglevel INFO --gtest_filter='GPUPageRankBenchmark.*'
+        shell: bash
 
   linux-pep-518-install:
     name: "Linux: Release build using pyproject.toml"

@@ -2466,6 +2466,127 @@ cdef class PageRank(Centrality):
 			(<_PageRank*>(self._this)).maxIterations = maxIterations
 
 
+cdef extern from "<networkit/centrality/GPUPageRank.hpp>":
+
+	cdef enum class _GPUBackend "NetworKit::GPUBackend":
+		AUTO,
+		CUDA,
+		METAL,
+		CPU
+
+class GPUBackend(object):
+	AUTO = _GPUBackend.AUTO
+	CUDA = _GPUBackend.CUDA
+	METAL = _GPUBackend.METAL
+	CPU = _GPUBackend.CPU
+
+cdef extern from "<networkit/centrality/GPUPageRank.hpp>":
+
+	cdef cppclass _GPUPageRank "NetworKit::GPUPageRank" (_Centrality):
+		_GPUPageRank(_Graph, double damp, double tol, _GPUBackend backend) except +
+		count numberOfIterations() except +
+		_GPUBackend usedBackend() except +
+		count maxIterations
+
+	bool_t _GPUPageRankIsBuilt "NetworKit::GPUPageRank::isBuilt"(_GPUBackend backend)
+
+cdef class GPUPageRank(Centrality):
+	"""
+	GPUPageRank(G, damp=0.85, tol=1e-8, backend=GPUBackend.AUTO)
+
+	Prototype of PageRank that runs on a GPU, with the default parameters of PageRank: no sink
+	handling, no normalization, and the L2 norm as stopping criterion.
+
+	Parameter :code:`backend` can be one of the following:
+
+	- networkit.centrality.GPUBackend.AUTO: the first backend that finds a GPU, in the order CUDA,
+	  Metal, then the CPU.
+	- networkit.centrality.GPUBackend.CUDA: NVIDIA GPUs, in double precision. Needs NetworKit built
+	  with CUDA.
+	- networkit.centrality.GPUBackend.METAL: Apple GPUs, in single precision. Needs NetworKit built
+	  with Metal.
+	- networkit.centrality.GPUBackend.CPU: PageRank, on the CPU.
+
+	If the backend finds no GPU, or the graph does not fit in its memory, this runs PageRank on the
+	CPU.
+
+	Parameters
+	----------
+	G : networkit.Graph
+		Graph to be processed.
+	damp : float, optional
+		Damping factor of the PageRank algorithm. Default: 0.85
+	tol : float, optional
+		Error tolerance for PageRank iteration. Default: 1e-8
+	backend : networkit.centrality.GPUBackend, optional
+		Backend to run on. Raises an error if NetworKit is built without it. Default: GPUBackend.AUTO
+	"""
+
+	def __cinit__(self, Graph G, double damp=0.85, double tol=1e-8, backend=GPUBackend.AUTO):
+		self._G = G
+		self._this = new _GPUPageRank(G._this, damp, tol, backend)
+
+	def numberOfIterations(self):
+		"""
+		numberOfIterations()
+
+		Returns the number of iterations performed by the algorithm.
+
+		Returns
+		-------
+		int
+			Number of iterations performed by the algorithm.
+		"""
+		return (<_GPUPageRank*>(self._this)).numberOfIterations()
+
+	def usedBackend(self):
+		"""
+		usedBackend()
+
+		Returns the backend the algorithm ran on: GPUBackend.CPU if it fell back to the CPU,
+		never GPUBackend.AUTO.
+
+		Returns
+		-------
+		networkit.centrality.GPUBackend
+			The backend the algorithm ran on.
+		"""
+		return (<_GPUPageRank*>(self._this)).usedBackend()
+
+	@staticmethod
+	def isBuilt(backend):
+		"""
+		isBuilt(backend)
+
+		Returns whether NetworKit is built with the given backend. AUTO and CPU are always built.
+
+		Parameters
+		----------
+		backend : networkit.centrality.GPUBackend
+			The backend.
+
+		Returns
+		-------
+		bool
+			True if NetworKit is built with the backend.
+		"""
+		return _GPUPageRankIsBuilt(backend)
+
+	property maxIterations:
+		"""
+		Property :code:`maxIterations` sets a stopping criteria based on number
+		of runs. Default: unlimited
+		"""
+		def __get__(self):
+			""" Get the maximum number of iterations. """
+			return (<_GPUPageRank*>(self._this)).maxIterations
+		def __set__(self, maxIterations):
+			""" Set the maximum number of iterations. """
+			if maxIterations < 0:
+				raise Exception("Max iterations cannot be a negative number.")
+			(<_GPUPageRank*>(self._this)).maxIterations = maxIterations
+
+
 cdef extern from "<networkit/centrality/SpanningEdgeCentrality.hpp>":
 
 	cdef cppclass _SpanningEdgeCentrality "NetworKit::SpanningEdgeCentrality"(_Algorithm):
